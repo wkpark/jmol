@@ -263,9 +263,9 @@ public class GT {
         Logger.debug("GT adding " + className);
       }
     } catch (IllegalAccessException e) {
-      Logger.warn("Illegal Access Exception: " + e.getMessage());
+      Logger.warn("Illegal Access Exception: " + e.toString());
     } catch (InstantiationException e) {
-      Logger.warn("Instantiation Exception: " + e.getMessage());
+      Logger.warn("Instantiation Exception: " + e.toString());
     }
   }
 

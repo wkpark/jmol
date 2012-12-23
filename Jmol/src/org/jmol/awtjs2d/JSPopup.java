@@ -42,15 +42,11 @@ abstract public class JSPopup extends GenericPopup {
   //  (on exit)           checkMenuFocus(item.getName(), item.getActionCommand(), false);
   //  (on checkbox click) checkBoxStateChanged(e.getSource());   
   
-  //TODO: JavaScript objects:
-  //     new Jmol.Menu.PopupMenu(name)
-  //     new Jmol.Menu.SubMenu(entry)
-  //     new Jmol.Menu.MenuItem(entry)
-  //     new Jmol.Menu.ButtonGroup()
-  //     new Jmol.Menu.CheckBoxMenuItem(entry)
-  //     new Jmol.Menu.RadioButtonMenuItem(entry)
+  //     new Jmol.Menu.PopupMenu(applet, name)
+  //     new Jmol.Menu.SubMenu(applet, entry)
+  //     new Jmol.Menu.MenuItem(applet, entry, isCheckBox, isRadio)
+  //     new Jmol.Menu.ButtonGroup(applet)
   // 
-  //TODO: Jmol given in j2sNative blocks, for example:  setText, setActionCommand
   
   public JSPopup() {
     // required by reflection
@@ -77,6 +73,7 @@ abstract public class JSPopup extends GenericPopup {
      *      b.setText(entry);
      *     if (script != null)
      *      b.setActionCommand(script);
+     *     this.popupMenu.tainted = true;
      *
      */
     {
@@ -111,7 +108,7 @@ abstract public class JSPopup extends GenericPopup {
      * @j2sNative
      * 
      *  if (this.buttonGroup == null)
-     *    this.buttonGroup = new Jmol.Menu.ButtonGroup();
+     *    this.buttonGroup = new Jmol.Menu.ButtonGroup(this.popupMenu);
      *    this.buttonGroup.add(newMenu);
      * 
      */
@@ -123,6 +120,7 @@ abstract public class JSPopup extends GenericPopup {
      * @j2sNative
      * 
      *  menu.add(item);
+     *  this.popupMenu.tainted = true;
      * 
      */
     {}
@@ -132,7 +130,8 @@ abstract public class JSPopup extends GenericPopup {
     /**
      * @j2sNative
      * 
-     *  menu.addSeparator();
+     *  menu.add(new Jmol.Menu.MenuItem(this.popupMenu, null, false, false));
+     *  this.popupMenu.tainted = true;
      * 
      */
     {}
@@ -155,13 +154,7 @@ abstract public class JSPopup extends GenericPopup {
     /**
      * @j2sNative
      * 
-     *      if (isRadio) {
-     *        item = new Jmol.Menu.RadioButtonMenuItem(entry);
-     *        item.setArmed(state);
-     *      } else {
-     *        item = new Jmol.Menu.CheckBoxMenuItem(entry);
-     *        item.setState(state);
-     *      }
+     *      item = new Jmol.Menu.MenuItem(this.popupMenu, entry, !isRadio, isRadio);
      *      item.setSelected(state);
      *      item.addItemListener(this);
      *     
@@ -177,7 +170,7 @@ abstract public class JSPopup extends GenericPopup {
     /**
      * @j2sNative
      * 
-     *      item = new Jmol.Menu.MenuItem(entry);
+     *      item = new Jmol.Menu.MenuItem(this.popupMenu, entry);
      *      item.addActionListener(this);
      *     
      */
@@ -189,7 +182,7 @@ abstract public class JSPopup extends GenericPopup {
     /**
      * @j2sNative
      * 
-     *   return new Jmol.Menu.PopupMenu(name, this.viewer);
+     *   return new Jmol.Menu.PopupMenu(this.viewer.applet, name);
      *     
      */
     {
@@ -210,6 +203,7 @@ abstract public class JSPopup extends GenericPopup {
      *   } catch (e) {
      *   // ignore
      *   }
+     *  this.popupMenu.tainted = true;
      *     
      */
     {}
@@ -224,6 +218,7 @@ abstract public class JSPopup extends GenericPopup {
      *   } catch (e) {
      *   // ignore
      *   }
+     *  this.popupMenu.tainted = true;
      *     
      */
     {}
@@ -246,7 +241,7 @@ abstract public class JSPopup extends GenericPopup {
      *        this.menuGetAsText(sb, level + 1, m.getPopupMenu(), name);
      *      } else if (m.isItem) {
      *        flags = "enabled:" + m.isEnabled();
-     *        if (m.isCheckBoxItem)
+     *        if (m.isCheckBox)
      *          flags += ";checked:" + m.getState();
      *        var script = this.fixScript(m.getName(), m.getActionCommand());
      *        this.addItemText(sb, 'I', level, m.getName(), m.getText(), script, flags);
@@ -313,17 +308,18 @@ abstract public class JSPopup extends GenericPopup {
      * @j2sNative
      * 
      *  menu.insert(subMenu, index)
+     *  this.popupMenu.tainted = true;
      * 
      */
     {}
   }
 
   
-    public Object menuNewEntry(String entry, String id) {
+    public Object menuNewSubMenu(String entry, String id) {
     /**
      * @j2sNative
      * 
-     *    var menu = new Jmol.Menu.SubMenu(entry);
+     *    var menu = new Jmol.Menu.SubMenu(this.popupMenu, entry);
      *    this.updateButton(menu, entry, null);
      *    menu.setName(id);
      *    menu.setAutoscrolls(true);
@@ -339,6 +335,7 @@ abstract public class JSPopup extends GenericPopup {
      * @j2sNative
      * 
      *  menu.remove(index);
+     *  this.popupMenu.tainted = true;
      * 
      */
     {}
@@ -349,6 +346,7 @@ abstract public class JSPopup extends GenericPopup {
      * @j2sNative
      * 
      *  menu.removeAll();
+     *  this.popupMenu.tainted = true;
      * 
      */
     {}
@@ -359,6 +357,7 @@ abstract public class JSPopup extends GenericPopup {
      * @j2sNative
      * 
      *  menu.setAutoscrolls(true);
+     *  this.popupMenu.tainted = true;
      * 
      */
     {}
@@ -368,11 +367,8 @@ abstract public class JSPopup extends GenericPopup {
     /**
      * @j2sNative
      * 
-     *     if (item.isCheckBox)
-     *       item.setState(state);
-     *     else
-     *       item.setArmed(state);
-     *     item.setSelected(state);
+     *  item.setSelected(state);
+     *  this.popupMenu.tainted = true;
      * 
      */
     {}
@@ -387,6 +383,7 @@ abstract public class JSPopup extends GenericPopup {
      * @j2sNative
      * 
      *  this.setCheckBoxValue(source, source.getActionCommand(), source.isSelected());
+     *  this.popupMenu.tainted = true;
      * 
      */
     {}
@@ -397,6 +394,7 @@ abstract public class JSPopup extends GenericPopup {
      * @j2sNative
      * 
      *  menu.setText(entry);
+     *  this.popupMenu.tainted = true;
      * 
      */
     {}
@@ -410,7 +408,7 @@ abstract public class JSPopup extends GenericPopup {
     /**
      * @j2sNative
      * 
-     *  popup.show(x, y);
+     *  popup.menuShowPopup(x, y);
      * 
      */
     {}

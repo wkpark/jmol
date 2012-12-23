@@ -134,7 +134,7 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
         //input.close();
         Logger.info("JmolSparshClientAdapter successful starting driver process");
       } catch (Exception e) {
-        System.out.println(e.getMessage());
+        System.out.println(e.toString());
       }
     }
 */
@@ -144,9 +144,9 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
       Logger.info("SparshUI connection established at 127.0.0.1 port " + port);
       return true;
     } catch (UnknownHostException e) {
-      err = e.getMessage();
+      err = e.toString();
     } catch (IOException e) {
-      err = e.getMessage();
+      err = e.toString();
     }
     actionManager = null;
     Logger.error("Cannot create SparshUI connection at 127.0.0.1 port " + port

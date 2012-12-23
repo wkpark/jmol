@@ -64,8 +64,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
   protected String strMenuStructure;
   protected int updateMode;
 
-  private String menuName;
-  private Object frankPopup; // JPopupMenu
+  protected String menuName;
+  private Object frankPopup;
   private Object popupMenu;
   private int nFrankList = 0;
   private int itemMax = 25;
@@ -271,9 +271,9 @@ abstract public class GenericPopup implements JmolPopupInterface,
   }
 
   protected void initialize(Viewer viewer, PopupResource bundle, String title) {
-    popupMenu = menuCreatePopup(title);
-    menuName = title;
     this.viewer = viewer;
+    menuName = title;
+    popupMenu = menuCreatePopup(title);
     menuSetListeners();
     htMenus.put(title, popupMenu);
     allowSignedFeatures = (!viewer.isApplet() || viewer
@@ -425,7 +425,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
       } else if (item.indexOf("Menu") >= 0) {
         if (item.indexOf("more") < 0)
           buttonGroup = null;
-        Object subMenu = menuNewEntry(label, id + "." + item);
+        Object subMenu = menuNewSubMenu(label, id + "." + item);
         menuAddSubMenu(menu, subMenu);
         htMenus.put(item, subMenu);
         if (item.indexOf("Computed") < 0)
@@ -712,7 +712,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
         if (pt == nmod + 1)
           nmod = itemMax;
         String id = "mo" + pt + "Menu";
-        subMenu = menuNewEntry(Math.max(i + 2 - nmod, 1) + "..." + (i + 1),
+        subMenu = menuNewSubMenu(Math.max(i + 2 - nmod, 1) + "..." + (i + 1),
             menuGetId(menu) + "." + id);
         menuAddSubMenu(menu, subMenu);
         htMenus.put(id, subMenu);
@@ -841,7 +841,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     for (int i = 0; i < infolist.length; i++) {
       if (pt >= 0 && (pt++ % nmod) == 0) {
         String id = "drawsymop" + pt + "Menu";
-        subMenu = menuNewEntry((i + 1) + "..."
+        subMenu = menuNewSubMenu((i + 1) + "..."
             + Math.min(i + itemMax, infolist.length), menuGetId(menu) + "."
             + id);
         menuAddSubMenu(menu, subMenu);
@@ -875,7 +875,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     for (int i = 0; i < list.length; i++) {
       if (pt >= 0 && (pt++ % nmod) == 0) {
         String id = "symop" + pt + "Menu";
-        subMenu = menuNewEntry((i + 1) + "..."
+        subMenu = menuNewSubMenu((i + 1) + "..."
             + Math.min(i + itemMax, list.length), menuGetId(menu) + "." + id);
         menuAddSubMenu(menu, subMenu);
         htMenus.put(id, subMenu);
@@ -909,7 +909,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     for (int i = 0; i < modelCount; i++) {
       if (pt >= 0 && (pt++ % nmod) == 0) {
         String id = "model" + pt + "Menu";
-        subMenu = menuNewEntry((i + 1) + "..."
+        subMenu = menuNewSubMenu((i + 1) + "..."
             + Math.min(i + itemMax, modelCount), menuGetId(menu) + "." + id);
         menuAddSubMenu(menu, subMenu);
         htMenus.put(id, subMenu);
@@ -1007,7 +1007,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
           .getPolymerCountInModel(modelIndex)));
       Object submenu = htMenus.get("BiomoleculesMenu");
       if (submenu == null) {
-        submenu = menuNewEntry(GT._(getMenuText("biomoleculesMenuText")),
+        submenu = menuNewSubMenu(GT._(getMenuText("biomoleculesMenuText")),
             menuGetId(menu) + ".biomolecules");
         menuAddSubMenu(menu, submenu);
       }
@@ -1052,13 +1052,13 @@ abstract public class GenericPopup implements JmolPopupInterface,
     for (int i = menuGetItemCount(menu); --i >= aboutComputedMenuBaseCount;)
       menuRemoveItem(menu, i);
 
-    Object subMenu = menuNewEntry("About molecule", "modelSetMenu");
+    Object subMenu = menuNewSubMenu("About molecule", "modelSetMenu");
     // No need to localize this, as it will be overwritten with the model's name      
     menuAddSubMenu(menu, subMenu);
     htMenus.put("modelSetMenu", subMenu);
     updateModelSetComputedMenu();
 
-    subMenu = menuNewEntry("Jmol " + JmolConstants.version
+    subMenu = menuNewSubMenu("Jmol " + JmolConstants.version
         + (isSigned ? " (signed)" : ""), "aboutJmolMenu");
     menuAddSubMenu(menu, subMenu);
     htMenus.put("aboutJmolMenu", subMenu);
@@ -1071,35 +1071,44 @@ abstract public class GenericPopup implements JmolPopupInterface,
         "show url \"http://wiki.jmol.org/index.php/Internationalisation\"",
         null);
 
-    subMenu = menuNewEntry(GT._("System"), "systemMenu");
+    subMenu = menuNewSubMenu(GT._("System"), "systemMenu");
     menuAddSubMenu(menu, subMenu);
     htMenus.put("systemMenu", subMenu);
     addMenuItem(subMenu, viewer.getOperatingSystemName());
-    int availableProcessors = Runtime.getRuntime().availableProcessors();
-    if (availableProcessors > 0)
-      addMenuItem(subMenu, (availableProcessors == 1) ? GT._("1 processor")
-          : GT._("{0} processors", availableProcessors));
-    else
-      addMenuItem(subMenu, GT._("unknown processor count"));
     menuAddSeparator(subMenu);
     addMenuItem(subMenu, GT._("Java version:"));
     addMenuItem(subMenu, viewer.getJavaVendor());
     addMenuItem(subMenu, viewer.getJavaVersion());
-    menuAddSeparator(subMenu);
-    addMenuItem(subMenu, GT._("Java memory usage:"));
-    Runtime runtime = Runtime.getRuntime();
-    //runtime.gc();
-    long mbTotal = convertToMegabytes(runtime.totalMemory());
-    long mbFree = convertToMegabytes(runtime.freeMemory());
-    long mbMax = convertToMegabytes(maxMemoryForNewerJvm());
-    addMenuItem(subMenu, GT._("{0} MB total",
-        new Object[] { new Long(mbTotal) }));
-    addMenuItem(subMenu, GT._("{0} MB free", new Object[] { new Long(mbFree) }));
-    if (mbMax > 0)
-      addMenuItem(subMenu, GT._("{0} MB maximum",
-          new Object[] { new Long(mbMax) }));
-    else
-      addMenuItem(subMenu, GT._("unknown maximum"));
+    Runtime runtime = null;
+    /**
+     * @j2sNative
+     *   
+     */
+    {
+      runtime = Runtime.getRuntime();
+    }
+    if (runtime != null) {
+      int availableProcessors = runtime.availableProcessors();
+      if (availableProcessors > 0)
+        addMenuItem(subMenu, (availableProcessors == 1) ? GT._("1 processor")
+            : GT._("{0} processors", availableProcessors));
+      else
+        addMenuItem(subMenu, GT._("unknown processor count"));
+      addMenuItem(subMenu, GT._("Java memory usage:"));
+      //runtime.gc();
+      long mbTotal = convertToMegabytes(runtime.totalMemory());
+      long mbFree = convertToMegabytes(runtime.freeMemory());
+      long mbMax = convertToMegabytes(runtime.maxMemory());
+      addMenuItem(subMenu, GT._("{0} MB total",
+          new Object[] { new Long(mbTotal) }));
+      addMenuItem(subMenu, GT._("{0} MB free",
+          new Object[] { new Long(mbFree) }));
+      if (mbMax > 0)
+        addMenuItem(subMenu, GT._("{0} MB maximum", new Object[] { new Long(
+            mbMax) }));
+      else
+        addMenuItem(subMenu, GT._("unknown maximum"));
+    }
   }
 
   private void updateLanguageSubmenu() {
@@ -1169,10 +1178,6 @@ abstract public class GenericPopup implements JmolPopupInterface,
       menuAddSubMenu(frankPopup, menu);
       i = iNew + 1;
     }
-  }
-
-  private long maxMemoryForNewerJvm() {
-    return Runtime.getRuntime().maxMemory();
   }
 
   private void show(int x, int y, boolean doPopup) {

@@ -242,7 +242,7 @@ public class ForceFieldUFF extends ForceField {
       }
       br.close();
     } catch (Exception e) {
-      System.err.println("Exception " + e.getMessage() + " in getResource "
+      System.err.println("Exception " + e.toString() + " in getResource "
           + fileName);
       try{
         br.close();
@@ -271,7 +271,7 @@ public class ForceFieldUFF extends ForceField {
 
       br.close();
     } catch (Exception e) {
-      System.err.println("Exception " + e.getMessage() + " in getResource "
+      System.err.println("Exception " + e.toString() + " in getResource "
           + fileName);
 
     }

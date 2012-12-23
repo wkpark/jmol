@@ -7310,7 +7310,7 @@ public class ScriptEvaluator {
       return lowestStdDev;
     } catch (Exception e) {
       //System.out.println(e.getMessage());
-      evalError(e.getMessage(), null);
+      evalError(e.toString(), null);
       return 0; // unattainable
     }
   }
@@ -8359,10 +8359,10 @@ public class ScriptEvaluator {
           runScript(sb.toString());
         } catch (Exception e) {
           viewer.setSelectionSubset(bsSubset);
-          errorStr(-1, "Error: " + e.getMessage());
+          errorStr(-1, "Error: " + e.toString());
         } catch (Error er) {
           viewer.setSelectionSubset(bsSubset);
-          errorStr(-1, "Error: " + er.getMessage());
+          errorStr(-1, "Error: " + er.toString());
         }
         viewer.setSelectionSubset(bsSubset);
       }
@@ -9288,7 +9288,7 @@ public class ScriptEvaluator {
         showString(viewer.getFilePath(localName, false) + " created");
         os.close();
       } catch (IOException e) {
-        Logger.error("error closing file " + e.getMessage());
+        Logger.error("error closing file " + e.toString());
       }
     if (tokType > 0) {
       // we are just loading an atom property

@@ -66,7 +66,7 @@ public class InvalidSmilesException extends Exception {
    */
   public InvalidSmilesException(Throwable cause) {
     super(cause);
-    lastError = cause.getMessage();
+    lastError = cause.toString();
   }
 
   /**

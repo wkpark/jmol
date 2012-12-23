@@ -217,8 +217,8 @@ abstract public class SwingPopup extends GenericPopup {
     return newMenuItem(jmi, menu, entry, script, id);
   }
 
-  public Object menuCreatePopup(String name) {
-    return new JPopupMenu(name);
+  public Object menuCreatePopup(String title) {
+    return new JPopupMenu(title);
   }
 
   public void menuEnable(Object menu, boolean enable) {
@@ -301,7 +301,7 @@ abstract public class SwingPopup extends GenericPopup {
       ((JMenu) menu).insert((JMenu) subMenu, index);
   }
 
-  public Object menuNewEntry(String entry, String id) {
+  public Object menuNewSubMenu(String entry, String id) {
     JMenu jm = new JMenu(entry);
     updateButton(jm, entry, null);
     jm.setName(id);

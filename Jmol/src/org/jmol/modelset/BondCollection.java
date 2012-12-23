@@ -792,7 +792,7 @@ abstract public class BondCollection extends AtomCollection {
       bsAtoms.set(bond.getAtomIndex1());
       bsAtoms.set(bond.getAtomIndex2());
     } catch (Exception e) {
-      Logger.error("Exception in seBondOrder: " + e.getMessage());
+      Logger.error("Exception in seBondOrder: " + e.toString());
     }
     return bsAtoms;
   }

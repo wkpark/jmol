@@ -445,7 +445,7 @@ public class ForceFieldMMFF extends ForceField {
       }
       br.close();
     } catch (Exception e) {
-      System.err.println("Exception " + e.getMessage() + " in getResource "
+      System.err.println("Exception " + e.toString() + " in getResource "
           + fileName + " line=" + line);
     }
   }
@@ -481,7 +481,7 @@ public class ForceFieldMMFF extends ForceField {
       }
       br.close();
     } catch (Exception e) {
-      System.err.println("Exception " + e.getMessage() + " in getResource "
+      System.err.println("Exception " + e.toString() + " in getResource "
           + fileName + " line=" + line);
 
     }

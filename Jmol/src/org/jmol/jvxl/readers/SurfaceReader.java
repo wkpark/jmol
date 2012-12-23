@@ -559,9 +559,9 @@ public abstract class SurfaceReader implements VertexDataServer {
       try {
         readSurfaceData(false);
       } catch (Exception e) {
-        System.out.println(e.getMessage());
+        System.out.println(e.toString());
         Logger.error("Exception in SurfaceReader::readSurfaceData: "
-            + e.getMessage());
+            + e.toString());
       }
       return;
     }

@@ -294,7 +294,7 @@ public abstract class Exporter {
       bw.close();
       os = null;
     } catch (IOException e) {
-      System.out.println(e.getMessage());
+      System.out.println(e.toString());
       return "ERROR EXPORTING FILE";
     }
     return "OK " + nBytes + " " + jmolRenderer.getExportName() + " " + fileName ;

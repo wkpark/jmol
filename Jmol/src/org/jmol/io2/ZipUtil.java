@@ -249,7 +249,7 @@ public class ZipUtil implements JmolZipUtility {
       s = getZipDirectoryOrErrorAndClose(bis, false);
       bis.close();
     } catch (Exception e) {
-      Logger.error(e.getMessage());
+      Logger.error(e.toString());
     }
     for (int i = 0; i < s.length; i++)
       sb.append(s[i]).appendC('\n');
@@ -263,7 +263,7 @@ public class ZipUtil implements JmolZipUtility {
       s = getZipDirectoryOrErrorAndClose(bis, addManifest);
       bis.close();
     } catch (Exception e) {
-      Logger.error(e.getMessage());
+      Logger.error(e.toString());
     }
     return s;
   }
@@ -476,8 +476,8 @@ public class ZipUtil implements JmolZipUtility {
         nBytes = f.length();
       }
     } catch (IOException e) {
-      Logger.info(e.getMessage());
-      return e.getMessage();
+      Logger.info(e.toString());
+      return e.toString();
     }
     return msg + " " + nBytes + " " + fullFilePath;
   }

@@ -77,7 +77,7 @@ public class MinimizationThread extends JmolThread {
   @Override
   protected void oops(Exception e) {
     if (this.minimizer.minimizationOn())
-      Logger.error(e.getMessage());
+      Logger.error(e.toString());
   }
   
 

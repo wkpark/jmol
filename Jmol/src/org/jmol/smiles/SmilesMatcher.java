@@ -123,7 +123,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       return search.getMolecularFormula(!isSmarts);
     } catch (InvalidSmilesException e) {
       if (InvalidSmilesException.getLastError() == null)
-        InvalidSmilesException.setLastError(e.getMessage());
+        InvalidSmilesException.setLastError(e.toString());
       return null;
     }
   }
@@ -138,7 +138,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       return (new SmilesGenerator()).getSmiles(atoms, atomCount, bsSelected);
     } catch (InvalidSmilesException e) {
       if (InvalidSmilesException.getLastError() == null)
-        InvalidSmilesException.setLastError(e.getMessage());
+        InvalidSmilesException.setLastError(e.toString());
       return null;
     }
   }
@@ -182,8 +182,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       return find(pattern, search, isSmarts, !isSmarts, firstMatchOnly);
     } catch (Exception e) {
       if (InvalidSmilesException.getLastError() == null)
-        InvalidSmilesException.setLastError(e.getMessage());
-      System.out.println(e.getMessage());
+        InvalidSmilesException.setLastError(e.toString());
+      System.out.println(e.toString());
       return null;
     }
   }
@@ -295,8 +295,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
           //System.out.println(smarts[i] + "  "+ ret[i]);
       } catch (Exception e) {
         if (InvalidSmilesException.getLastError() == null)
-          InvalidSmilesException.setLastError(e.getMessage());
-        System.out.println(e.getMessage());
+          InvalidSmilesException.setLastError(e.toString());
+        System.out.println(e.toString());
         // ret[i] will be null in that case
       }
     }
@@ -393,8 +393,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       }
     } catch (Exception e) {
       if (InvalidSmilesException.getLastError() == null)
-        InvalidSmilesException.setLastError(e.getMessage());
-      System.out.println(e.getMessage());
+        InvalidSmilesException.setLastError(e.toString());
+      System.out.println(e.toString());
     }
     return null;
   }

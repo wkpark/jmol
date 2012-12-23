@@ -24,7 +24,7 @@ interface JmolAbstractMenu {
   int    menuGetPosition(Object menu);
 
   void   menuInsertSubMenu(Object menu, Object subMenu, int index);
-  Object menuNewEntry(String entry, String id);
+  Object menuNewSubMenu(String entry, String id);
   void   menuRemoveAll(Object menu);
   void   menuRemoveItem(Object menu, int index);
   void   menuSetAutoscrolls(Object menu);

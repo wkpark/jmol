@@ -23,6 +23,10 @@
  */
 package org.jmol.awtjs2d;
 
+import java.net.URL;
+
+import javax.swing.ImageIcon;
+
 import org.jmol.i18n.GT;
 import org.jmol.modelkit.ModelKitPopupResourceBundle;
 import org.jmol.popup.PopupResource;
@@ -31,16 +35,12 @@ import org.jmol.viewer.Viewer;
 
 public class JSModelKitPopup extends JSPopup {
 
-
-  private String imagePath;
-
   public JSModelKitPopup() {
     // required by reflection
   }
   
   public void jpiInitialize(Viewer viewer, String menu) {
     updateMode = UPDATE_NEVER;
-    imagePath = "org/jmol/modelkit/images/"; 
     boolean doTranslate = GT.getDoTranslate();
     GT.setDoTranslate(true);
     PopupResource bundle = new ModelKitPopupResourceBundle();
@@ -95,5 +95,15 @@ public class JSModelKitPopup extends JSPopup {
 //    }
 //    super.menuCheckClick(source, script);  
 //  }
+
+  @Override
+  protected Object getEntryIcon(String[] ret) {
+    String entry = ret[0];
+    if (!entry.startsWith("<"))
+      return null;
+    int pt = entry.indexOf(">");
+    ret[0] = entry.substring(pt + 1);
+    return "org/jmol/modelkit/images/" + entry.substring(1, pt);
+  }
 
 }

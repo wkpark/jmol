@@ -170,7 +170,7 @@ class PmeshReader extends PolygonFileReader {
       nPolygons = binarydoc.readInt();
       binarydoc.readByteArray(ignored, 0, 64);
     } catch (Exception e) {
-      pmeshError += " " + e.getMessage();
+      pmeshError += " " + e.toString();
       binarydoc.close();
       return false;
     }

@@ -95,7 +95,7 @@ public class DotsRenderer extends ShapeRenderer {
               atom.getColix()), map, nPoints);
       } catch (Exception e) {
         System.out.println("Dots rendering error");
-        System.out.println(e.getMessage());
+        System.out.println(e.toString());
         // ignore -- some sort of fluke
       }
     }

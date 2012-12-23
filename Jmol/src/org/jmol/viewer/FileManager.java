@@ -652,7 +652,7 @@ public class FileManager {
       }
       return (asInputStream ? bis : JmolBinary.getInputStreamReader(bis));
     } catch (Exception ioe) {
-      return ioe.getMessage();
+      return ioe.toString();
     }
   }
 
@@ -762,7 +762,7 @@ public class FileManager {
         fileData.put(name0, sb.toString());
       }
     } catch (Exception ioe) {
-      fileData.put(name0, ioe.getMessage());
+      fileData.put(name0, ioe.toString());
     }
     if (bis != null)
       try {
@@ -813,7 +813,7 @@ public class FileManager {
       bis.close();
       return bytes;
     } catch (Exception ioe) {
-      return ioe.getMessage();
+      return ioe.toString();
     }
   }
 
@@ -867,7 +867,7 @@ public class FileManager {
       data[1] = sb.toString();
       return true;
     } catch (Exception ioe) {
-      data[1] = ioe.getMessage();
+      data[1] = ioe.toString();
       return false;
     }
   }
@@ -921,8 +921,8 @@ public class FileManager {
        at sun.awt.image.ImageFetcher.run(Unknown Source)
        */
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      retFileNameOrError[0] = e.getMessage() + " opening " + fullPathName;
+      System.out.println(e.toString());
+      retFileNameOrError[0] = e.toString() + " opening " + fullPathName;
       return null;
     }
     if (apiPlatform.getImageWidth(image) < 1) {
@@ -982,7 +982,7 @@ public class FileManager {
         //        name = "file:" + name;
         url = new URL(appletDocumentBaseURL, name, null);
       } catch (MalformedURLException e) {
-        return new String[] { isFullLoad ? e.getMessage() : null };
+        return new String[] { isFullLoad ? e.toString() : null };
       }
     } else {
       // This code is for the app -- no local file reading for headless
@@ -993,7 +993,7 @@ public class FileManager {
         try {
           url = new URL((URL) null, name, null);
         } catch (MalformedURLException e) {
-          return new String[] { isFullLoad ? e.getMessage() : null };
+          return new String[] { isFullLoad ? e.toString() : null };
         }
       } else {
         file = viewer.apiPlatform.newFile(name);

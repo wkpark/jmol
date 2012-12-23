@@ -1442,7 +1442,7 @@ class ScriptMathProcessor {
         pattern = Pattern.compile(sFind,
             isCaseInsensitive ? Pattern.CASE_INSENSITIVE : 0);
       } catch (Exception e) {
-        eval.evalError(e.getMessage(), null);
+        eval.evalError(e.toString(), null);
       }
       String[] list = ScriptVariable.listValue(x1);
       if (Logger.debugging)
@@ -2676,7 +2676,7 @@ class ScriptMathProcessor {
             viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
             tok != Token.smiles && tok != Token.substructure, false);
       } catch (Exception e) {
-        eval.evalError(e.getMessage(), null);
+        eval.evalError(e.toString(), null);
       }
     return addXBs(bs);
   }

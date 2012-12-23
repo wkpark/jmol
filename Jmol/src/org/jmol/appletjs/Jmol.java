@@ -746,7 +746,7 @@ public class Jmol implements JmolSyncInterface {
         	}
         }
       } catch (Exception e) {
-        Logger.error("Exception " + e.getMessage() + " with nX, nY: " + nX
+        Logger.error("Exception " + e + " with nX, nY: " + nX
             + " " + nY);
       }
      // for (int i = 0; i < nX; i++)
@@ -769,7 +769,7 @@ public class Jmol implements JmolSyncInterface {
       	{
       	}
       } catch (Exception e) {
-        Logger.error("Exception " + e.getMessage() + " for " + functionName + " with nX, nY, nZ: " + nX
+        Logger.error("Exception " + e + " for " + functionName + " with nX, nY, nZ: " + nX
             + " " + nY + " " + nZ);
       }
      // for (int i = 0; i < nX; i++)

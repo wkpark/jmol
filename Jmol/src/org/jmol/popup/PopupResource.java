@@ -32,12 +32,16 @@ import org.jmol.i18n.GT;
 public abstract class PopupResource {
 
   // Properties to store menu structure and contents
-  protected Properties structure = new Properties();
-  protected Properties words = new Properties();
+  protected Properties structure, words;
 
   abstract public String getMenuName();
 
   protected PopupResource(String menuStructure, Properties menuText) {
+    // when these were defined above, then they were overwritten by
+    // setFields operating a second time, probably because MainPopupResourceBundle does not
+    // have any fields of its own.
+    structure = new Properties();
+    words = new Properties();
     buildStructure(menuStructure);
     localize(menuStructure != null, menuText);
   }

@@ -3546,7 +3546,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           null, null));
     } catch (Throwable e) {
       // ignore if this uses too much memory
-      Logger.error("state could not be saved: " + e.getMessage());
+      Logger.error("state could not be saved: " + e.toString());
       s = "Jmol " + getJmolVersion();
     }
     return s;
@@ -5079,7 +5079,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         bsB = (asScript ? modelSet.addHydrogens(vConnections, pts)
             : addHydrogensInline(bsAtoms, vConnections, pts));
       } catch (Exception e) {
-        System.out.println(e.getMessage());
+        System.out.println(e.toString());
         // ignore
       }
       if (wasAppendNew)
@@ -9385,7 +9385,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /*
    * void debugStack(String msg) { //what's the right way to do this? try {
    * Logger.error(msg); String t = null; t.substring(3); } catch (Exception e) {
-   * System.out.println(e.getMessage()); } }
+   * System.out.println(e.toString()); } }
    */
 
   @Override
@@ -9953,7 +9953,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       getMinimizer(true).minimize(steps, crit, bsSelected, bsMotionFixed,
           haveFixed, isSilent, ff);
     } catch (Exception e) {
-      Logger.error("Minimization error: " + e.getMessage());
+      Logger.error("Minimization error: " + e.toString());
     }
   }
 
@@ -10777,7 +10777,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         showString(msg, false);
         nFiles += 2;
       } catch (Exception e) {
-        return "script error " + e.getMessage();
+        return "script error " + e.toString();
       }
     }
     try {

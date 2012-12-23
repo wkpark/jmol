@@ -49,7 +49,7 @@ public class DefaultLogger implements LoggerInterface {
       out.println(
           (Logger.logLevel() ? "[" + Logger.getLevel(level) + "] " : "") +
           txt +
-          (e != null ? ": " + e.getMessage() : ""));
+          (e != null ? ": " + e.toString() : ""));
       if (e != null) {
         StackTraceElement[] elements = e.getStackTrace();
         if (elements != null) {

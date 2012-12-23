@@ -238,7 +238,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
       }
       br.close();
     } catch (Exception e) {
-      Logger.error("Exception " + e.getMessage() + " in getResource "
+      Logger.error("Exception " + e.toString() + " in getResource "
           + resourceName);
       try {
         br.close();

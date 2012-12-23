@@ -13,7 +13,7 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
     try {
       throw new UnknownServiceException("No local file reading in JavaScript version of Jmol");
     } catch (IOException e) {
-      return e.getMessage();
+      return e.toString();
     }
   }
 
@@ -27,7 +27,7 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
 				conn.outputString(post);
 			return conn.getStringXBuilder();
 		} catch (IOException e) {
-			return e.getMessage();
+			return e.toString();
 		}
 	}
 

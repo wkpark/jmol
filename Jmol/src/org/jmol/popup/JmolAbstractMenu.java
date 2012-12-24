@@ -8,7 +8,7 @@ interface JmolAbstractMenu {
   void   menuAddItem(Object menu, Object item);
   void   menuAddSeparator(Object menu);
   void   menuAddSubMenu(Object menu, Object subMenu);
-  void   menuCheckClick(Object source, String script);
+  void   checkMenuClick(Object source, String script);
   void   menuClearListeners(Object menu);
   Object menuCreateCheckboxItem(Object menu, String entry, String basename,
                                                 String id, boolean state, boolean isRadio);

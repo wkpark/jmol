@@ -100,7 +100,7 @@ abstract public class SwingPopup extends GenericPopup {
     protected MenuItemListener(){}
     
     public void actionPerformed(ActionEvent e) {
-      menuCheckClick(e.getSource(), e.getActionCommand());
+      checkMenuClick(e.getSource(), e.getActionCommand());
     }
   }
 

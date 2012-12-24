@@ -293,18 +293,18 @@ abstract public class GenericPopup implements JmolPopupInterface,
       return;
     // first entry is just the main item
     for (int i = nFrankList; --i > 0;) {
+      Object[] f = frankList[i];
       /**
-       * In JSmol, a menu item can belong to more than one menu,
-       * but in Java when it is added to one menu it is lost from another.
+       * In JSmol, a menu item can belong to more than one menu, but in Java
+       * when it is added to one menu it is lost from another.
        * 
        * @j2sNative
        * 
-       * this.frankList[i][1].parent = this.frankList[i][0];
+       *            f[1].parent = f[0];
        * 
        */
       {
-      menuInsertSubMenu(frankList[i][0], frankList[i][1],
-          ((Integer) frankList[i][2]).intValue());
+        menuInsertSubMenu(f[0], f[1], ((Integer) f[2]).intValue());
       }
     }
     nFrankList = 1;
@@ -547,7 +547,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     viewer.evalStringQuiet(what);
   }
 
-  public void menuCheckClick(Object source, String script) {
+  public void checkMenuClick(Object source, String script) {
     restorePopupMenu();
     if (script == null || script.length() == 0)
       return;

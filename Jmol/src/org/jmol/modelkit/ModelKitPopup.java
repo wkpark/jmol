@@ -62,7 +62,7 @@ public class ModelKitPopup extends SwingPopup {
   }
   
   @Override
-  public void menuCheckClick(Object source, String script) {
+  public void checkMenuClick(Object source, String script) {
     if (script.equals("clearQ")) {
       for (Object o : htCheckbox.values()) {
         JMenuItem item = (JMenuItem) o;
@@ -76,7 +76,7 @@ public class ModelKitPopup extends SwingPopup {
       viewer.evalStringQuiet("set picking assignAtom_C");
       return;
     }
-    super.menuCheckClick(source, script);  
+    super.checkMenuClick(source, script);  
   }
   
   @Override

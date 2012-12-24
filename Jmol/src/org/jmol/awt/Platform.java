@@ -1,6 +1,11 @@
 package org.jmol.awt;
 
+import java.awt.Container;
+import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
+import java.awt.Window;
+
+import javax.swing.JDialog;
 
 
 import netscape.javascript.JSObject;
@@ -207,6 +212,23 @@ public class Platform implements ApiPlatform {
 
   public void notifyEndOfRendering() {
     // N/A
+  }
+
+  /**
+   * @param p 
+   * @return The hosting frame or JDialog.
+   */
+  static public Window getWindow(Container p) {
+    while (p != null) {
+      if (p instanceof Frame)
+        return (Frame) p;
+      else if (p instanceof JDialog)
+        return (JDialog) p;
+      else if (p instanceof JmolFrame)
+        return ((JmolFrame) p).getFrame();
+      p = p.getParent();
+    }
+    return null;
   }
 
 }

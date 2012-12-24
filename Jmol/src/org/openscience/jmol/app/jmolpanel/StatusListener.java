@@ -33,6 +33,7 @@ import org.jmol.constant.EnumCallback;
 import org.jmol.export.dialog.Dialog;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.openscience.jmol.app.jmolpanel.console.AppConsole;
 import org.openscience.jmol.app.webexport.WebExport;
 
 import java.awt.Component;

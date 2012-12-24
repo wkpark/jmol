@@ -10,12 +10,13 @@ public interface JmolAppConsoleInterface {
 
   public JmolScriptEditorInterface getScriptEditor();
 
-  public JmolAppConsoleInterface getAppConsole(JmolViewer viewer);
+  public void start(JmolViewer viewer);
 
   public void zap();
 
   public void dispose();
 
   public String getText();
+
 
 }

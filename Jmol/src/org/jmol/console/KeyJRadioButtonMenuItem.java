@@ -26,20 +26,28 @@ package org.jmol.console;
 
 import java.util.Map;
 
-import javax.swing.AbstractButton;
 import javax.swing.JRadioButtonMenuItem;
 
-public class KeyJRadioButtonMenuItem extends JRadioButtonMenuItem implements GetKey {
+import org.jmol.api.JmolAbstractButton;
+
+
+public class KeyJRadioButtonMenuItem extends JRadioButtonMenuItem implements JmolAbstractButton {
+  
+  // currently application-only
   
   private String key;
   public String getKey() {
     return key;
   }
   
-  public KeyJRadioButtonMenuItem(String key, String label, Map<String, AbstractButton> menuMap) {
-    super(KeyJMenuItem.getLabelWithoutMnemonic(label));
-    this.key = key;
-    KeyJMenuItem.map(this, key, label, menuMap);
+  public KeyJRadioButtonMenuItem(String key, String label, Map<String, Object> menuMap) {
+    super(GenericConsole.getLabelWithoutMnemonic(label));
+    GenericConsole.map(this, this.key = key, label, menuMap);
   }
+  
+  public void addConsoleListener(Object console) {
+  }
+
+
 }
 

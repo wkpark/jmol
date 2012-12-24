@@ -24,15 +24,17 @@
 package org.openscience.jmol.app.jmolpanel;
 
 import org.jmol.api.Interface;
+import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
-import org.jmol.console.JmolConsole;
-import org.jmol.console.KeyJMenuItem;
+import org.jmol.awt.Platform;
 import org.jmol.export.JmolFileDropper;
 import org.jmol.export.dialog.Dialog;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.export.image.ImageCreator;
 import org.jmol.i18n.GT;
+import org.openscience.jmol.app.jmolpanel.console.AppConsole;
+import org.openscience.jmol.app.jmolpanel.console.ConsoleTextArea;
 import org.openscience.jmol.app.jsonkiosk.BannerFrame;
 import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
 import org.openscience.jmol.app.jsonkiosk.JsonNioServer;
@@ -935,7 +937,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
     menu.addMenuListener(new MenuListener() {
         public void menuSelected(MenuEvent e) {
-          String menuKey = KeyJMenuItem.getKey(e.getSource());
+          String menuKey = ((JmolAbstractButton) e.getSource()).getKey();
           if (menuKey.equals("display") || menuKey.equals("tools"))
             setMenuState();
         }
@@ -1521,7 +1523,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     d = new Dimension(width, 30);
     status.setPreferredSize(d);
     toolbar.setPreferredSize(d);
-    JmolConsole.getWindow(this).pack();
+    Platform.getWindow(this).pack();
   }
 
   void updateLabels() {

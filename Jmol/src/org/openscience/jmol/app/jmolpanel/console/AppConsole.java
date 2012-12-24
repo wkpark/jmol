@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.openscience.jmol.app.jmolpanel;
+package org.openscience.jmol.app.jmolpanel.console;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,11 +32,8 @@ import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -51,8 +48,9 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.JScrollPane;
 
-import org.jmol.api.JmolAppConsoleInterface;
+import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolViewer;
+import org.jmol.awt.Platform;
 import org.jmol.console.JmolConsole;
 import org.jmol.i18n.GT;
 import org.jmol.util.CommandHistory;
@@ -60,14 +58,26 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+import org.openscience.jmol.app.jmolpanel.HelpDialog;
 
-public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
-    EnterListener {
+public class AppConsole extends JmolConsole implements EnterListener {
 
   public static final String ALL_BUTTONS = "Editor Variables Clear History State UndoRedo Close Help";
 
   // note:  "Check" "Top" "Step" not included in 12.1
 
+  public AppConsole() {
+    // required for Class.forName  
+    // should be used only in the context:
+    // appConsole = ((JmolApplicationConsoleInterface) Interface
+    //       .getApplicationInterface("jmolpanel.AppConsole")).getAppConsole(viewer, display);
+    // appConsole.start(viewer);
+  }
+
+  public void start(JmolViewer viewer) {
+    setup(viewer, null, null);
+  }
+  
   /**
    * general entry point
    * 
@@ -77,8 +87,13 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
    */
   public AppConsole(JmolViewer viewer,
       Container externalContainer, String enabledButtons) {
+    setup(viewer, externalContainer, enabledButtons);
+  }
+
+  private void setup(JmolViewer viewer, Container externalContainer,
+                     String enabledButtons) {
     this.viewer = viewer;
-    Window w = getWindow((Container) viewer.getDisplay());
+    Window w = Platform.getWindow((Container) viewer.getDisplay());
     viewerFrame = (w instanceof JFrame ? (JFrame) w : null);
     if (externalContainer == null) {
       jcd = new JDialog(viewerFrame, null, false);
@@ -93,33 +108,11 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     layoutWindow(enabledButtons);
   }
 
-  public AppConsole() {
-    // required for Class.forName  
-    // should be used only in the context:
-    // appConsole = ((JmolApplicationConsoleInterface) Interface
-    //       .getApplicationInterface("jmolpanel.AppConsole")).getAppConsole(viewer, display);
-  }
-
-  /**
-   * don't delete! used by Viewer after it gets the class by name
-   * 
-   * @param viewer
-   * @return         AppConsole or AppletConsole
-   */
-  public JmolAppConsoleInterface getAppConsole(JmolViewer viewer) {
-    // used after reflection gets the class
-    return new AppConsole(viewer, null, null);
-  }
-
-
-  JDialog jcd;
+  public JDialog jcd;
 
   protected ConsoleTextPane console;
-  protected JButton stepButton;
-  protected Map<String, AbstractButton> buttons = new HashMap<String, AbstractButton>();
-
-  private JButton varButton, haltButton, closeButton, clearButton;
-  private JButton helpButton, undoButton, redoButton, checkButton, topButton;
+  private JmolAbstractButton varButton, haltButton, closeButton, clearButton, stepButton;
+  private JmolAbstractButton helpButton, undoButton, redoButton, checkButton, topButton;
   private JPanel buttonPanel = new JPanel();
 
   /*
@@ -153,9 +146,9 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
   }
 
   @Override
-  protected JButton setButton(String label) {
-    JButton b = super.setButton(label);
-    buttonPanel.add(b);
+  protected JmolAbstractButton setButton(String label) {
+    JmolAbstractButton b = super.setButton(label);
+    buttonPanel.add((JButton) b);
     return b;
   }
 
@@ -176,7 +169,8 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     labels.put("Variables", GT._("Variables"));
   }
 
-  private void layoutWindow(String enabledButtons) {
+  @Override
+  protected void layoutWindow(String enabledButtons) {
     setTitle();
     console = new ConsoleTextPane(this);
     console.setPrompt();
@@ -210,6 +204,11 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
     //  container.add(consolePane,BorderLayout.CENTER);
     //container.add(buttonPanelWrapper,BorderLayout.SOUTH);
 
+  }
+
+  private static void setEnabled(JmolAbstractButton button, boolean TF) {
+    if (button != null)
+      button.setEnabled(TF);
   }
 
   private void enableButton(String name) {
@@ -347,10 +346,6 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
   private String[] undoStack = new String[MAXUNDO + 1];
   private int undoPointer = 0;
   private boolean undoSaved = false;
-
-  public void zap() {
-    //undoClear();
-  }
 
   private void undoClear() {
     if (undoButton == null)
@@ -978,6 +973,7 @@ public class AppConsole extends JmolConsole implements JmolAppConsoleInterface,
           getLength() - offsetAfterPrompt, att, true);
     }
   }
+
 }
 
 interface EnterListener {

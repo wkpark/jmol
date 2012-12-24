@@ -26,20 +26,25 @@ package org.jmol.console;
 
 import java.util.Map;
 
-import javax.swing.AbstractButton;
 import javax.swing.JMenu;
 
-public class KeyJMenu extends JMenu implements GetKey {
+import org.jmol.api.JmolAbstractButton;
+
+public class KeyJMenu extends JMenu implements JmolAbstractButton {
 
   private String key;
   public String getKey() {
     return key;
   }
   
-  public KeyJMenu(String key, String label, Map<String, AbstractButton> menuMap) {
-    super(KeyJMenuItem.getLabelWithoutMnemonic(label));
-    this.key = key;
-    KeyJMenuItem.map(this, key, label, menuMap);
+  public KeyJMenu(String key, String label, Map<String, Object> menuMap) {
+    super(GenericConsole.getLabelWithoutMnemonic(label));
+    GenericConsole.map(this, this.key = key, label, menuMap);
   }
+  
+  public void addConsoleListener(Object console) {
+  }
+
+
 }
 

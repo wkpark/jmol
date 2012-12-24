@@ -27,21 +27,25 @@ package org.jmol.console;
 import java.util.Map;
 
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.AbstractButton;
 
-public class KeyJCheckBoxMenuItem extends JCheckBoxMenuItem implements GetKey {
+import org.jmol.api.JmolAbstractButton;
+
+public class KeyJCheckBoxMenuItem extends JCheckBoxMenuItem implements JmolAbstractButton {
 
   private String key;
     public String getKey() {
       return key;
     }
 
-  public KeyJCheckBoxMenuItem(String key, String label, Map<String, AbstractButton> menuMap,
+  public KeyJCheckBoxMenuItem(String key, String label, Map<String, Object> menuMap,
       boolean isChecked) {
-    super(KeyJMenuItem.getLabelWithoutMnemonic(label), isChecked);
-    this.key = key;
-    KeyJMenuItem.map(this, key, label, menuMap);
+    super(GenericConsole.getLabelWithoutMnemonic(label), isChecked);
+    GenericConsole.map(this, this.key = key, label, menuMap);
   }
+
+  public void addConsoleListener(Object console) {
+  }
+
 
 }
 

@@ -24,20 +24,13 @@
 package org.jmol.console;
 
 
-import org.jmol.api.JmolCallbackListener;
+import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolScriptEditorInterface;
-import org.jmol.api.JmolViewer;
-import org.jmol.constant.EnumCallback;
-import org.jmol.i18n.GT;
-import org.jmol.script.ScriptCompiler;
-import org.jmol.script.Token;
+import org.jmol.awt.Platform;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
-import org.jmol.viewer.Viewer;
 
 import java.awt.Container;
-import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,29 +39,18 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 
-public abstract class JmolConsole implements JmolCallbackListener, ActionListener, WindowListener {
+public abstract class JmolConsole extends GenericConsole implements ActionListener, WindowListener {
 
-  public JmolViewer viewer;
   protected JFrame viewerFrame;
   protected Container externalContainer;
 
-  protected JButton editButton, runButton, historyButton, stateButton;
-  protected Map<String, String> labels;
-  
-  abstract protected void setupLabels();
-  
-  protected Map<String, AbstractButton> menuMap = new Hashtable<String, AbstractButton>();
-  
+  @Override
   public void dispose() {
     if (externalContainer instanceof Window)
       ((Window) externalContainer).dispose();
@@ -80,15 +62,8 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
     return (externalContainer instanceof JFrame ? ((JFrame) externalContainer)
         .getContentPane() : externalContainer);
   }
-  protected String getLabel(String key) {
-    if (labels == null) {
-      labels = new Hashtable<String, String>();
-      labels.put("title", GT._("Jmol Script Console") + " " + Viewer.getJmolVersion());
-      setupLabels();
-    }
-    return labels.get(key);
-  }
 
+  @Override
   protected void setTitle() {
     if (externalContainer instanceof JFrame)
       ((JFrame) this.externalContainer).setTitle(getLabel("title"));
@@ -96,17 +71,21 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
       ((JDialog) externalContainer).setTitle(getLabel("title"));
   }
 
+  @Override
   public void setVisible(boolean isVisible) {
     externalContainer.setVisible(isVisible);
   }
 
+  @Override
+  protected JmolAbstractButton setButton(String label) {
+    return addButton(new JmolButton(getLabel(label)), label);
+  }
+
   protected ScriptEditor scriptEditor;
   
-  void setScriptEditor(ScriptEditor se) {
-    scriptEditor = se;
-  }
-  
+  @Override
   public JmolScriptEditorInterface getScriptEditor() {
+    // is called by viewer during application startup, despite what Eclipse says.
     return (scriptEditor == null ? 
         (scriptEditor = new ScriptEditor(viewer, viewerFrame, this)) : scriptEditor);
   }
@@ -115,59 +94,8 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   //  System.out.println("Console " + this + " finalize");
   //}
   
-  abstract protected void clearContent(String text);
-  abstract protected void execute(String strCommand);
-  abstract public String getText();
-  
-  public int nTab = 0;
-  private String incompleteCmd;
-  
-  public String completeCommand(String thisCmd) {
-    if (thisCmd.length() == 0)
-      return null;
-    String strCommand = (nTab <= 0 || incompleteCmd == null ? thisCmd
-        : incompleteCmd);
-    incompleteCmd = strCommand;
-    String[] splitCmd = ScriptCompiler.splitCommandLine(thisCmd);
-    if (splitCmd == null)
-      return null;
-    boolean asCommand = splitCmd[2] == null;
-    String notThis = splitCmd[asCommand ? 1 : 2];
-    String s = splitCmd[1];
-    if (notThis.length() == 0)
-      return null;
-    splitCmd = ScriptCompiler.splitCommandLine(strCommand);
-    String cmd = null;
-    if (!asCommand && (notThis.charAt(0) == '"' || notThis.charAt(0) == '\'')) {
-      char q = notThis.charAt(0);
-      notThis = TextFormat.trim(notThis, "\"\'");
-      String stub = TextFormat.trim(splitCmd[2], "\"\'");
-      cmd = nextFileName(stub, nTab);
-      if (cmd != null)
-        cmd = splitCmd[0] + splitCmd[1] + q + cmd + q;
-    } else {
-      Map<String, Token> map = null;
-      if (!asCommand) {
-        //System.out.println(" tsting " + splitCmd[0] + "///" + splitCmd[1] + "///" + splitCmd[2]);
-        notThis = s;
-        if (splitCmd[2].startsWith("$") 
-            || s.equalsIgnoreCase("isosurface ")
-            || s.equalsIgnoreCase("contact ")
-            || s.equalsIgnoreCase("draw ")
-         ) {
-          map = new Hashtable<String, Token>();
-          viewer.getObjectMap(map, splitCmd[2].startsWith("$"));
-        }
-      }
-      cmd = Token.completeCommand(map, s.equalsIgnoreCase("set "), asCommand, asCommand ? splitCmd[1]
-          : splitCmd[2], nTab);
-      cmd = splitCmd[0]
-          + (cmd == null ? notThis : asCommand ? cmd : splitCmd[1] + cmd);
-    }
-    return (cmd == null || cmd.equals(strCommand) ? null : cmd);
-  }
-
-  private String nextFileName(String stub, int nTab) {
+  @Override
+  protected String nextFileName(String stub, int nTab) {
     String sname = FileManager.getLocalPathForWritingFile(viewer, stub);
     String root = sname.substring(0, sname.lastIndexOf("/") + 1);
     if (sname.startsWith("file:/"))
@@ -191,7 +119,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
     return null;
   }
 
-  protected class FileChecker implements FilenameFilter {
+  private class FileChecker implements FilenameFilter {
     private String stub;
     private List<String> v = new ArrayList<String>();
     
@@ -211,48 +139,13 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
     }
   }
   
-  protected void setEnabled(JButton button, boolean TF) {
-    if (button != null)
-      button.setEnabled(TF);
-  }
-
-  protected JButton setButton(String s) {
-    JButton b = new JButton(getLabel(s));
-    b.addActionListener(this);
-    menuMap.put(s, b);
-    return b;
-  }
-
-  protected String defaultMessage;
-  protected JLabel label1;
-  
-
-  protected void updateLabels() {
-    boolean doTranslate = GT.getDoTranslate();
-    labels = null;
-    GT.setDoTranslate(true);
-    defaultMessage = getLabel("default");
-    KeyJMenuItem.setAbstractButtonLabels(menuMap, labels);
-    setTitle();
-    if (label1 != null)
-      label1.setText(getLabel("label1"));
-    GT.setDoTranslate(doTranslate);
-  }
-
   public void actionPerformed(ActionEvent e) {
-    Object source = e.getSource();
-    if (source == runButton) {
-      execute(null);
-    } else if (source == editButton) {
-      viewer.getProperty("DATA_API","scriptEditor", null);
-    } else if (source == historyButton) {
-      clearContent(viewer.getSetHistory(Integer.MAX_VALUE));
-    } else if (source == stateButton) {
-      clearContent(viewer.getStateInfo());
-      // problem here is that in some browsers, you cannot clip from
-      // the editor.
-      //viewer.getProperty("DATA_API","scriptEditor", new String[] { "current state" , viewer.getStateInfo() });
-    }
+    doAction(e.getSource());
+  }
+
+  @Override
+  protected boolean isMenuItem(Object source) {
+    return source instanceof JMenuItem;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -260,7 +153,7 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   ////////////////////////////////////////////////////////////////
 
   protected void addWindowListener() {
-    Window w = getWindow(externalContainer);
+    Window w = Platform.getWindow(externalContainer);
     if (w != null)
       w.addWindowListener(this);
   }
@@ -279,13 +172,6 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
 
   public void windowClosing(WindowEvent we) {
     destroyConsole();
-  }
-
-  private void destroyConsole() {
-    // if the viewer is an applet, when we close the console
-    // we 
-    if (viewer.isApplet())
-      viewer.getProperty("DATA_API", "getAppConsole", Boolean.FALSE);
   }
 
   /**
@@ -316,84 +202,4 @@ public abstract class JmolConsole implements JmolCallbackListener, ActionListene
   public void windowOpened(WindowEvent we) {
   }
 
-  ///////////// JmolCallbackListener interface
-
-  // Allowing for just the callbacks needed to provide status feedback to the console.
-  // For applications that embed Jmol, see the example application Integration.java.
-
-  public boolean notifyEnabled(EnumCallback type) {
-    // See org.jmol.viewer.JmolConstants.java for a complete list
-    switch (type) {
-    case ECHO:
-    case MEASURE:
-    case MESSAGE:
-    case PICK:
-      return true;
-    case ANIMFRAME:
-    case APPLETREADY:
-    case ATOMMOVED:
-    case CLICK:
-    case ERROR:
-    case EVAL:
-    case HOVER:
-    case LOADSTRUCT:
-    case MINIMIZATION:
-    case RESIZE:
-    case SCRIPT:
-    case SYNC:
-      break;
-    }
-    return false;
-  }
-
-  abstract public void sendConsoleMessage(String info);
-  abstract public void sendConsoleEcho(String info);
-  
-  @SuppressWarnings("incomplete-switch")
-  public void notifyCallback(EnumCallback type, Object[] data) {
-    String strInfo = (data == null || data[1] == null ? null : data[1]
-        .toString());
-    switch (type) {
-    case ECHO:
-      sendConsoleEcho(strInfo);
-      break;
-    case MEASURE:
-      String mystatus = (String) data[3];
-      if (mystatus.indexOf("Picked") >= 0 || mystatus.indexOf("Sequence") >= 0) // picking mode
-        sendConsoleMessage(strInfo);
-      else if (mystatus.indexOf("Completed") >= 0)
-        sendConsoleEcho(strInfo.substring(strInfo.lastIndexOf(",") + 2, strInfo
-            .length() - 1));
-      break;
-    case MESSAGE:
-      sendConsoleMessage(data == null ? null : strInfo);
-      break;
-    case PICK:
-      sendConsoleMessage(strInfo);
-      break;
-    }
-  }
-
-  public void setCallbackFunction(String callbackType, String callbackFunction) {
-    // application-dependent option
-  }
-
-  /**
-   * @param p 
-   * @return The hosting frame or JDialog.
-   */
-  static public Window getWindow(Container p) {
-    while (p != null) {
-      if (p instanceof Frame)
-        return (Frame) p;
-      else if (p instanceof JDialog)
-        return (JDialog) p;
-      else if (p instanceof JmolFrame)
-        return ((JmolFrame) p).getFrame();
-      p = p.getParent();
-    }
-    return null;
-  }
-
-  
 }

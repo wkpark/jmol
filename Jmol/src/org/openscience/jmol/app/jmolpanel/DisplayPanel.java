@@ -45,7 +45,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.jmol.api.JmolViewer;
-import org.jmol.console.JmolFrame;
+import org.jmol.awt.JmolFrame;
 import org.jmol.i18n.GT;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 

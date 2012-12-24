@@ -23,13 +23,12 @@
  */
 package org.jmol.awtjs2d;
 
-import org.jmol.api.JmolPopupInterface;
 import org.jmol.i18n.GT;
 import org.jmol.popup.MainPopupResourceBundle;
 import org.jmol.popup.PopupResource;
 import org.jmol.viewer.Viewer;
 
-public class JSmolPopup extends JSPopup implements JmolPopupInterface {
+public class JSmolPopup extends JSPopup {
   
   /*
    * If adding a custom popup menu to an application, simply subclass 

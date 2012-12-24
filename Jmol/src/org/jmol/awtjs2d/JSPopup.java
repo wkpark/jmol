@@ -59,7 +59,7 @@ abstract public class JSPopup extends GenericPopup {
    * @param script
    */
 
-  private void updateButton(Object b, String entry, String script) {
+  protected void updateButton(Object b, String entry, String script) {
     String[] ret = new String[] { entry };
     Object icon = getEntryIcon(ret);
     entry = ret[0];

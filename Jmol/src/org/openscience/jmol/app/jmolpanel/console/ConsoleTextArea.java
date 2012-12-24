@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.openscience.jmol.app.jmolpanel;
+package org.openscience.jmol.app.jmolpanel.console;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -32,6 +32,7 @@ import javax.swing.JTextArea;
 import javax.swing.JOptionPane;
 import javax.swing.text.Document;
 import org.jmol.i18n.GT;
+import org.openscience.jmol.app.jmolpanel.LoopedStreams;
 
 public class ConsoleTextArea extends JTextArea {
 

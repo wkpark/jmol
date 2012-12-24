@@ -23,9 +23,8 @@
  */
 package org.jmol.console;
 
-import org.jmol.api.JmolAppConsoleInterface;
+import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolViewer;
-import org.jmol.i18n.GT;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -49,97 +48,80 @@ import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Keymap;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
+//import javax.swing.text.SimpleAttributeSet;
+//import javax.swing.text.StyleConstants;
 
-import org.jmol.viewer.JmolConstants;
+public class AppletConsole extends JmolConsole {
 
-public class AppletConsole extends JmolConsole implements JmolAppConsoleInterface {
+  //private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
 
-  /**
-   * general entry point
-   * 
-   * @param viewer
-   * @param externalContainer   a JFrame or JPanel or null
-   * 
-   */
-  private AppletConsole(JmolViewer viewer, Container externalContainer) {
+  public AppletConsole() {
+    input = new ControlEnterTextArea();
+    output = new GenericTextPane();
+  }
+  
+  private class GenericTextPane extends JTextPane implements GenericTextArea {
+    private final Document outputDocument;
+    GenericTextPane() {
+      super();
+      outputDocument = getDocument();
+    }
+    public int getLength() {
+      return outputDocument.getLength();
+    }
+    public void insertString(int pt, String message, Object att) throws Exception {      
+      outputDocument.insertString(pt, message, (AttributeSet) att);
+    }
+  }
+  
+  public void start(JmolViewer viewer) {
     this.viewer = viewer;
     Component display = (Component) viewer.getDisplay();
     this.viewerFrame = (display instanceof JFrame ? (JFrame) display : null);
-    if (externalContainer == null) {
-      JFrame jf = new JFrame();
-      jf.setSize(600, 400);
-      this.externalContainer = jf;
-    } else {
-      this.externalContainer = externalContainer;      
-      viewer.setConsole(this);
-    }
+    JFrame jf = new JFrame();
+    jf.setSize(600, 400);
+    this.externalContainer = jf;
+    setLabels();
+    //System.out.println("AppletConsole.setupOutput " + input);
+    JTextArea ta = (JTextArea) input;
+    ta.setLineWrap(true);
+    ta.setWrapStyleWord(true);
+    ta.setDragEnabled(true);
+    Keymap map = ta.getKeymap();
+    //    KeyStroke shiftCR = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,
+    //                                               InputEvent.SHIFT_MASK);
+    KeyStroke shiftA = KeyStroke.getKeyStroke(KeyEvent.VK_A,
+        InputEvent.SHIFT_MASK);
+    map.removeKeyStrokeBinding(shiftA);
+    //System.out.println("AppletConsole.setupOutput " + output);
+    ((JTextPane) output).setEditable(false);
+    ((JTextPane) output).setDragEnabled(true);
+    //    output.setLineWrap(true);
+    //    output.setWrapStyleWord(true);
+    //StyleConstants.setBold(attributesCommand, true);
     addWindowListener();
-    layoutWindow();
-    output(defaultMessage);
+    displayConsole();
   }
 
-  public AppletConsole() {
-    // required for Class.forName  
+  @Override
+  protected JmolAbstractButton getLabel1() {
+    return  new JmolLabel(getLabel("label1"), SwingConstants.CENTER);
   }
   
-  /**
-   * don't delete! used by Viewer after it gets the class by name
-   * 
-   * @param viewer
-   * @return          AppletConsole
-   */
-  public JmolAppConsoleInterface getAppConsole(JmolViewer viewer) {
-    return new AppletConsole(viewer, null);
-  }
-
   //public void finalize() {
   //  System.out.println("Console " + this + " finalize");
   //}
 
-  protected final JTextArea input = new ControlEnterTextArea();
-  private JButton clearOutButton, clearInButton, loadButton;
-  private final JTextPane output = new JTextPane();
-  private final Document outputDocument = output.getDocument();
-  private final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
-
   
   @Override
-  public void sendConsoleEcho(String strEcho) {
-    if (strEcho == null) {
-      // null here means new language
-      updateLabels();
-      output(null);
-      strEcho = defaultMessage;
-    }
-    output(strEcho);
-  }
-
-  @Override
-  public void sendConsoleMessage(String strInfo) {
-    // null here indicates "clear console"
-    if (strInfo != null && output.getText().startsWith(defaultMessage))
-      output(null);
-    output(strInfo);
-  }
-
-  public void zap() {
-  }
-
-  private void layoutWindow() {
+  protected void layoutWindow(String enabledButtons) {
     //Logger.debug("Console constructor");
-    setLabels();
-    setupInput();
-    setupOutput();
-
-    JScrollPane jscrollInput = new JScrollPane(input);
+    JScrollPane jscrollInput = new JScrollPane((JTextArea)input);
     jscrollInput.setMinimumSize(new Dimension(2, 100));
 
-    JScrollPane jscrollOutput = new JScrollPane(output);
+    JScrollPane jscrollOutput = new JScrollPane((JTextPane) output);
     jscrollOutput.setMinimumSize(new Dimension(2, 100));
     Container c = getPane();
     c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
@@ -157,17 +139,17 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     Container c2 = new Container();
     c2.setLayout(new BoxLayout(c2, BoxLayout.X_AXIS));
     c2.add(Box.createGlue());
-    c2.add(editButton);
-    c2.add(runButton);
-    c2.add(loadButton);
-    c2.add(clearInButton);
-    c2.add(clearOutButton);
-    c2.add(historyButton);
-    c2.add(stateButton);
+    add(c2, editButton);
+    add(c2, runButton);
+    add(c2, loadButton);
+    add(c2, clearInButton);
+    add(c2, clearOutButton);
+    add(c2, historyButton);
+    add(c2, stateButton);
     c2.add(Box.createGlue());
     c.add(c2);
-    label1.setAlignmentX(Component.CENTER_ALIGNMENT);
-    c.add(label1);
+    ((JLabel) label1).setAlignmentX(Component.CENTER_ALIGNMENT);
+    c.add((JLabel) label1);
     if (externalContainer instanceof JFrame)
       ((JFrame) externalContainer).setJMenuBar(createMenubar());
 
@@ -175,44 +157,11 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
 
   }
 
-  private void setLabels() {
-    boolean doTranslate = GT.getDoTranslate();
-    GT.setDoTranslate(true);
-    editButton = setButton("Editor");
-    stateButton = setButton("State");
-    runButton = setButton("Run");
-    clearOutButton = setButton("Clear Output");
-    clearInButton = setButton("Clear Input");
-    historyButton = setButton("History");
-    loadButton = setButton("Load");
-    label1 = new JLabel(getLabel("label1"), SwingConstants.CENTER);
-    defaultMessage = getLabel("default");
-    setTitle();
-    GT.setDoTranslate(doTranslate);
+  private void add(Container c2, JmolAbstractButton b) {
+    c2.add((JButton) b);
   }
 
-  @Override
-  protected void setupLabels() {
-    labels.put("help", GT._("&Help"));
-    labels.put("search", GT._("&Search..."));
-    labels.put("commands", GT._("&Commands"));
-    labels.put("functions", GT._("Math &Functions"));
-    labels.put("parameters", GT._("Set &Parameters"));
-    labels.put("more", GT._("&More"));
-    labels.put("Editor", GT._("Editor"));
-    labels.put("State", GT._("State"));
-    labels.put("Run", GT._("Run"));
-    labels.put("Clear Output", GT._("Clear Output"));
-    labels.put("Clear Input", GT._("Clear Input"));
-    labels.put("History", GT._("History"));
-    labels.put("Load", GT._("Load"));
-    labels.put("label1", GT
-        ._("press CTRL-ENTER for new line or paste model data and press Load"));
-    labels.put("default",
-        GT._("Messages will appear here. Enter commands in the box below. Click the console Help menu item for on-line help, which will appear in a new browser window."));
-  }
-
-  protected JMenuBar createMenubar() {
+  private JMenuBar createMenubar() {
     JMenuBar mb = new JMenuBar();
     //addNormalMenuBar(mb);
     mb.add(Box.createHorizontalGlue());
@@ -220,7 +169,7 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     return mb;
   }
   
-  protected void addHelpMenuBar(JMenuBar menuBar) {
+  private void addHelpMenuBar(JMenuBar menuBar) {
     JMenu m0 = new KeyJMenu("help", getLabel("help"), menuMap);
     JMenuItem item = createMenuItem("search");
     item.addActionListener(this);
@@ -269,154 +218,54 @@ public class AppletConsole extends JmolConsole implements JmolAppConsoleInterfac
     }
   }
 
-  protected JMenuItem createMenuItem(String cmd) {
+  private JMenuItem createMenuItem(String cmd) {
     return new KeyJMenuItem(cmd, getLabel(cmd), menuMap);
-  }
-
-  private void setupInput() {
-    //System.out.println("AppletConsole.setupOutput " + input);
-    input.setLineWrap(true);
-    input.setWrapStyleWord(true);
-    input.setDragEnabled(true);
-    //input.setText("Input a command in the box below or select a menu item from above.");
-
-    Keymap map = input.getKeymap();
-    //    KeyStroke shiftCR = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,
-    //                                               InputEvent.SHIFT_MASK);
-    KeyStroke shiftA = KeyStroke.getKeyStroke(KeyEvent.VK_A,
-        InputEvent.SHIFT_MASK);
-    map.removeKeyStrokeBinding(shiftA);
-  }
-
-  private void setupOutput() {
-    //System.out.println("AppletConsole.setupOutput " + output);
-    output.setEditable(false);
-    output.setDragEnabled(true);
-    //    output.setLineWrap(true);
-    //    output.setWrapStyleWord(true);
-    StyleConstants.setBold(attributesCommand, true);
   }
 
   @Override
   public void setVisible(boolean visible) {
     super.setVisible(visible);
-    input.requestFocus();
+    ((JTextArea) input).requestFocus();
   }
 
-  private void output(String message) {
-    output(message, null);
-  }
-
-  @Override
-  public String getText() {
-    return output.getText();
-  }
-
-  private void output(String message, AttributeSet att) {
-    //System.out.println("AppletConsole.output " + message + " " + att);
-    if (message == null || message.length() == 0) {
-      output.setText("");
-      return;
-    }
-    if (message.charAt(message.length() - 1) != '\n')
-      message += "\n";
-    try {
-      outputDocument.insertString(outputDocument.getLength(), message, att);
-    } catch (BadLocationException ble) {
-    }
-    output.setCaretPosition(outputDocument.getLength());
-  }
-
-  @Override
-  protected void clearContent(String text) {
-    //System.out.println("AppletConsole.clearContent()");
-    output.setText(text);
-  }
-  
   @Override
   public void actionPerformed(ActionEvent e) {
-    Object source = e.getSource();
-    //System.out.println("AppletConsole.actionPerformed" +  source);
-    if (source == clearInButton) {
-      input.setText("");
-      return;
-    }
-    if (source == clearOutButton) {
-      output.setText("");
-      return;
-    }
-    if (source == loadButton) {
-      viewer.loadInline(input.getText(), false);
-      return;
-    }
-    if (source instanceof JMenuItem) {
-      execute(((JMenuItem) source).getName());
-      return;
-    }
-    
-    super.actionPerformed(e);
+    doAction(e.getSource());
   }
 
   @Override
   protected void execute(String strCommand) {
-    String cmd = (strCommand == null ? input.getText() : strCommand);
+    super.execute(strCommand);
     if (strCommand == null)
-      input.setText(null);
-    String strErrorMessage = viewer.script(cmd + JmolConstants.SCRIPT_EDITOR_IGNORE);
-    if (strErrorMessage != null && !strErrorMessage.equals("pending"))
-      output(strErrorMessage);
-    if (strCommand == null)
-      input.requestFocus();
+      ((JTextArea) input).requestFocus();
   }
 
-  class ControlEnterTextArea extends JTextArea {
+  class ControlEnterTextArea extends JTextArea implements GenericTextArea {
     @SuppressWarnings("deprecation")
     @Override
     public void processComponentKeyEvent(KeyEvent ke) {
       int kcode = ke.getKeyCode();
-      switch (ke.getID()) {
-      case KeyEvent.KEY_PRESSED:
-        switch (kcode) {
-        case KeyEvent.VK_TAB:
-          ke.consume();
-          if (input.getCaretPosition() == input.getText().length()) {
-            String cmd = completeCommand(getText());
-            if (cmd != null)
-              setText(cmd.replace('\t',' '));
-            nTab++;
-            return;
-          }
-          break;
-        case KeyEvent.VK_ESCAPE:
-          ke.consume();
-          setText("");
-          break;
-        }
-        nTab = 0;
-        if (kcode == KeyEvent.VK_ENTER && !ke.isControlDown()) {
-          execute(null);
-          return;
-        }
-        if (kcode == KeyEvent.VK_UP || kcode == KeyEvent.VK_DOWN) {
-          recallCommand(kcode == KeyEvent.VK_UP);
-          return;
-        }
-        break;
-      case KeyEvent.KEY_RELEASED:
-        if (kcode == KeyEvent.VK_ENTER && !ke.isControlDown())
-          return;
-        break;
+      int kid = ke.getID();
+      boolean isControlDown = ke.isControlDown();
+      int mode = processKey(kcode, kid, isControlDown);
+      if ((mode & 1) == 1)
+        ke.consume();
+      if ((mode & 2) == 2) {
+        if (kcode == KeyEvent.VK_ENTER)
+          ke.setModifiers(0);
+        super.processComponentKeyEvent(ke);
       }
-      if (kcode == KeyEvent.VK_ENTER)
-        ke.setModifiers(0);
-      super.processComponentKeyEvent(ke);
     }
 
-    private void recallCommand(boolean up) {
-      String cmd = viewer.getSetHistory(up ? -1 : 1);
-      if (cmd == null)
-        return;
-      setText(cmd);
+    public int getLength() {
+      // unused;
+      return 0;
+    }
+
+    public void insertString(int length, String message, Object att)
+        throws Exception {
+      // unused
     }
   }
+
 }

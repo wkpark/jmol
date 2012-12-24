@@ -23,13 +23,12 @@
  */
 package org.jmol.awtjs2d;
 
-import java.net.URL;
-
-import javax.swing.ImageIcon;
+//import java.net.URL;
 
 import org.jmol.i18n.GT;
 import org.jmol.modelkit.ModelKitPopupResourceBundle;
 import org.jmol.popup.PopupResource;
+//import org.jmol.util.Elements;
 import org.jmol.util.Elements;
 import org.jmol.viewer.Viewer;
 
@@ -48,53 +47,44 @@ public class JSModelKitPopup extends JSPopup {
     GT.setDoTranslate(doTranslate);
   }
 
-  //TODO: implement these in JavaScript
-  
-//  protected void checkMenuClick(Object source, String script) {
-//  if (script.equals("clearQ")) {
-//    for (Object o : htCheckbox.values()) {
-//      JMenuItem item = (JMenuItem) o;
-//      if (item.getActionCommand().indexOf(":??") < 0)
-//        continue;        
-//      menuSetLabel(item, "??");
-//      item.setActionCommand("_??P!:");
-//      item.setSelected(false);
-//      item.setArmed(false);
-//    }
-//    viewer.evalStringQuiet("set picking assignAtom_C");
-//    return;
-//  }
-//  super.checkMenuClick(source, script);  
-//}
+  @Override
+  public void checkMenuClick(Object source, String script) {
+    if (script.equals("clearQ")) {
+      for (Object o : htCheckbox.values()) {
+        /**
+         * @j2sNative
+         * 
+         * script = o.getActionCommand();
+         * if (script.indexOf(":??") < 0)
+         *  continue;   
+         * this.updateButton(o, "??", "_??P!:");
+         * o.setSelected(false);
+         * this.thisPopup.tainted = true;
+         */
+        {
+          System.out.println(o);
+        }
+      }
+      viewer.evalStringQuiet("set picking assignAtom_C");
+      return;
+    }
+    super.checkMenuClick(source, script);  
+  }
 
-//  Override
-//  protected String setCheckBoxOption(Object item, String name, String what) {
-//    // atom type
-//    String element = JOptionPane.showInputDialog(GT._("Element?"), "");
-//    if (element == null || Elements.elementNumberFromSymbol(element, true) == 0)
-//      return null;
-//    setLabel(item, element);
-//    ((JMenuItem) item).setActionCommand("assignAtom_" + element + "P!:??");
-//    return "set picking assignAtom_" + element;
-//  }
-
-//  @Override
-//  public void menuCheckClick(Object source, String script) {
-//    if (script.equals("clearQ")) {
-//      for (Object o : htCheckbox.values()) {
-//        JMenuItem item = (JMenuItem) o;
-//        if (item.getActionCommand().indexOf(":??") < 0)
-//          continue;        
-//        setLabel(item, "??");
-//        item.setActionCommand("_??P!:");
-//        item.setSelected(false);
-//        item.setArmed(false);
-//      }
-//      viewer.evalStringQuiet("set picking assignAtom_C");
-//      return;
-//    }
-//    super.menuCheckClick(source, script);  
-//  }
+  @Override
+  public String menuSetCheckBoxOption(Object item, String name, String what) {
+    String element = GT._("Element?");
+    /**
+     * @j2sNative
+     * 
+     * element = prompt(element, "");
+     * 
+     */
+    if (element == null || Elements.elementNumberFromSymbol(element, true) == 0)
+      return null;
+    updateButton(item, element, "assignAtom_" + element + "P!:??");
+    return "set picking assignAtom_" + element;
+  }
 
   @Override
   protected Object getEntryIcon(String[] ret) {

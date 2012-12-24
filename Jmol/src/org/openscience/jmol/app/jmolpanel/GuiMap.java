@@ -40,6 +40,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JCheckBox;
 
+import org.jmol.console.GenericConsole;
 import org.jmol.console.KeyJMenu;
 import org.jmol.console.KeyJMenuItem;
 import org.jmol.console.KeyJCheckBox;
@@ -53,7 +54,7 @@ public class GuiMap {
 
   private static Object language;
 
-  Map<String, AbstractButton> map = new Hashtable<String, AbstractButton>();
+  Map<String, Object> map = new Hashtable<String, Object>();
   
   Map<String, String> labels;
   
@@ -276,7 +277,7 @@ public class GuiMap {
     boolean doTranslate = GT.getDoTranslate();
     GT.setDoTranslate(true);
     setupLabels();
-    KeyJMenuItem.setAbstractButtonLabels(map, labels);
+    GenericConsole.setAbstractButtonLabels(map, labels);
     GT.setDoTranslate(doTranslate);
   }
 

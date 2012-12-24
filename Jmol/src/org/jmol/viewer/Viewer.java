@@ -8224,19 +8224,29 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         appConsole = null;
       } else if (appConsole == null && paramInfo != null
           && ((Boolean) paramInfo).booleanValue()) {
-        for (int i = 0; i < 4 && appConsole == null; i++) {
-          appConsole = (isApplet ? (JmolAppConsoleInterface) Interface
-              .getOptionInterface("console.AppletConsole")
-              : (JmolAppConsoleInterface) Interface
-                  .getApplicationInterface("jmolpanel.AppConsole"))
-              .getAppConsole(this);
-          if (appConsole == null)
-            try {
-              Thread.currentThread().wait(100);
-            } catch (InterruptedException e) {
-              //
-            }
+        /**
+         * @j2sNative
+         * 
+         *            this.appConsole = org.jmol.api.Interface
+         *            .getOptionInterface("consolejs.AppletConsole");
+         * 
+         */
+        {
+          for (int i = 0; i < 4 && appConsole == null; i++) {
+            appConsole = (isApplet ? (JmolAppConsoleInterface) Interface
+                .getOptionInterface("console.AppletConsole")
+                : (JmolAppConsoleInterface) Interface
+                    .getApplicationInterface("jmolpanel.console.AppConsole"));
+            if (appConsole == null)
+              try {
+                Thread.currentThread().wait(100);
+              } catch (InterruptedException e) {
+                //
+              }
+          }
         }
+        if (appConsole != null)
+          appConsole.start(this);
       }
       scriptEditor = (appConsole == null ? null : appConsole.getScriptEditor());
       return appConsole;

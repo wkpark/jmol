@@ -459,9 +459,7 @@ all support for previous versions removed
         <include name="**/jmol/**" />
         <exclude name="**/jmol/_documents/**" />
         <exclude name="**/jmol/applet/**" />
-        <exclude name="**/jmol/appletjs/**" />
-        <exclude name="**/jmol/awtjs/**" />
-        <exclude name="**/jmol/exportjs/**" />
+        <exclude name="**/jmol/*js/**" />
         <exclude name="**/jmol/console/**" />
         <exclude name="**/jmol/popup/**" />
         <exclude name="org/jmol/util/BitSet32.class" />

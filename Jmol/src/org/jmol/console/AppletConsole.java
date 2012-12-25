@@ -47,7 +47,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
-import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Keymap;
 //import javax.swing.text.SimpleAttributeSet;
@@ -63,16 +63,21 @@ public class AppletConsole extends JmolConsole {
   }
   
   private class GenericTextPane extends JTextPane implements GenericTextArea {
+    
     private final Document outputDocument;
+    
     GenericTextPane() {
       super();
       outputDocument = getDocument();
     }
-    public int getLength() {
-      return outputDocument.getLength();
-    }
-    public void insertString(int pt, String message, Object att) throws Exception {      
-      outputDocument.insertString(pt, message, (AttributeSet) att);
+
+    public void append(String message) {
+      try {
+        outputDocument.insertString(outputDocument.getLength(), message, null);
+      } catch (BadLocationException e) {
+        // ignore
+      }
+      setCaretPosition(outputDocument.getLength());
     }
   }
   
@@ -255,16 +260,6 @@ public class AppletConsole extends JmolConsole {
           ke.setModifiers(0);
         super.processComponentKeyEvent(ke);
       }
-    }
-
-    public int getLength() {
-      // unused;
-      return 0;
-    }
-
-    public void insertString(int length, String message, Object att)
-        throws Exception {
-      // unused
     }
   }
 

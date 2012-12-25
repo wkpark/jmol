@@ -7,7 +7,7 @@ public interface JmolAbstractButton {
   void setToolTipText(String tip);
 
   void setText(String label);
-  
+
   String getKey();
 
   boolean isSelected();

@@ -38,7 +38,7 @@ import javax.swing.JPanel;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.Logger;
-import org.openscience.jmol.app.jmolpanel.AppConsole;
+import org.openscience.jmol.app.jmolpanel.console.AppConsole;
 
 /**
  * A example of integrating the Jmol viewer into a java application, with optional console.

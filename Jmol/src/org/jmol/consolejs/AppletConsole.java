@@ -28,6 +28,24 @@ import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.console.GenericConsole;
 
+
+/**
+ * 
+ * An interface to Jmol.Console. 
+ * 
+ *   keyboard events are returned to 
+ *   
+ *     GenericConsole.processKey(kcode, kid, isControlDown);
+ *   
+ *   button events are returned to 
+ *   
+ *     GenericConsole.doAction(source);
+ *   
+ *   12/24/2012
+ *   
+ * @author Bob Hanson hansonr@stolaf.edu
+ *   
+ */
 public class AppletConsole extends GenericConsole {
 
   public AppletConsole() {
@@ -44,16 +62,17 @@ public class AppletConsole extends GenericConsole {
   @Override
   protected void layoutWindow(String enabledButtons) {
     /**
-     * TODO: all the buttons are set up; implement the window now
-     * also set up this.input, this.output
-     * it can stay hidden at this point
+     * Implement the window now in HTML.
+     * Also set up this.input and this.output.
+     * Console can stay hidden at this point.
      * 
      * @j2sNative
      * 
-     *            jsConsole = Jmol.Console.createConsole(this); 
-     *            this.label1 = jsConsole.label1;
-     *            this.setTitle();
+     *            this.jsConsole = Jmol.Console.createConsole(this); 
      */
+    {  
+    }
+    setTitle();
   }
 
   @Override
@@ -61,8 +80,8 @@ public class AppletConsole extends GenericConsole {
     /**
      * @j2sNative
      * 
-     * if (jsConsole)
-     *   jsConsole.setTitle(this.getLabel("title"));
+     * if (this.jsConsole)
+     *   this.jsConsole.setTitle(this.getLabel("title"));
      * 
      */
   }
@@ -72,21 +91,11 @@ public class AppletConsole extends GenericConsole {
     /**
      * @j2sNative
      * 
-     *            jsConsole.setVisible(visible);
+     *            this.jsConsole.setVisible(visible);
      * 
      */
     {
     }
-  }
-
-  public void actionPerformed(Object source) {
-    // TODO -- button press -- tie this in to JavaScript so that it can be called
-    doAction(source);
-  }
-
-  public void processComponentKeyEvent(int kcode, int kid, boolean isControlDown) {
-    // TODO -- key pressed -- tie this in to JavaScript so that it can be called
-    processKey(kcode, kid, isControlDown);
   }
 
   @Override
@@ -94,7 +103,7 @@ public class AppletConsole extends GenericConsole {
     /**
      * @j2sNative
      * 
-     *            return console.setButton(text);
+     *            return new Jmol.Console.Button(text);
      */
     {
       return null;
@@ -108,13 +117,13 @@ public class AppletConsole extends GenericConsole {
 
   @Override
   protected boolean isMenuItem(Object source) {
-    //ignore
+    //ignore -- no console menu in JSmol (yet)
     return false;
   }
 
   @Override
   public JmolScriptEditorInterface getScriptEditor() {
-    //ignore
+    //ignore -- no Script Editor in JSmol
     return null;
   }
 

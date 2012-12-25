@@ -27,6 +27,7 @@ package org.jmol.console;
 import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.awt.Platform;
+import org.jmol.i18n.GT;
 import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.FileManager;
 
@@ -81,6 +82,19 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
     return addButton(new JmolButton(getLabel(label)), label);
   }
 
+  @Override
+  protected void updateLabels() {
+    boolean doTranslate = GT.getDoTranslate();
+    labels = null;
+    GT.setDoTranslate(true);
+    defaultMessage = getLabel("default");
+    setAbstractButtonLabels(menuMap, labels);
+    setTitle();
+    if (label1 != null)
+      label1.setText(getLabel("label1"));
+    GT.setDoTranslate(doTranslate);
+  }
+  
   protected ScriptEditor scriptEditor;
   
   @Override

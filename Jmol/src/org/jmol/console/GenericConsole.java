@@ -103,7 +103,20 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     loadButton = setButton("Load");
     defaultMessage = getLabel("default");
     setTitle();
+    GT.setDoTranslate(false);
+    /**
+    *
+    * no help menu yet
+    * 
+    * @j2sNative 
+    * 
+    * this.defaultMessage = this.getLabel("default").split("Click")[0];
+    * 
+    */
+    {
+    }
     GT.setDoTranslate(doTranslate);
+    defaultMessage = getLabel("default");
   }
 
   protected String getLabel(String key) {
@@ -117,22 +130,14 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
 
   protected void displayConsole() {
     layoutWindow(null);
-    output(defaultMessage);
+    outputMsg(defaultMessage);
   }
 
   protected String defaultMessage;
   protected JmolAbstractButton label1;
   
   protected void updateLabels() {
-    boolean doTranslate = GT.getDoTranslate();
-    labels = null;
-    GT.setDoTranslate(true);
-    defaultMessage = getLabel("default");
-    GenericConsole.setAbstractButtonLabels(menuMap, labels);
-    setTitle();
-    if (label1 != null)
-      label1.setText(getLabel("label1"));
-    GT.setDoTranslate(doTranslate);
+    return;
   }
 
   abstract protected String nextFileName(String stub, int nTab);
@@ -221,7 +226,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
       input.setText(null);
     String strErrorMessage = viewer.script(cmd + JmolConstants.SCRIPT_EDITOR_IGNORE);
     if (strErrorMessage != null && !strErrorMessage.equals("pending"))
-      output(strErrorMessage);
+      outputMsg(strErrorMessage);
   }
 
   protected void destroyConsole() {
@@ -241,10 +246,10 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
       if (key.indexOf("Tip") == key.length() - 3) {
         m.setToolTipText(labels.get(key));
       } else {
-        char mnemonic = GenericConsole.getMnemonic(label);
+        char mnemonic = getMnemonic(label);
         if (mnemonic != ' ')
           m.setMnemonic(mnemonic);
-        label = GenericConsole.getLabelWithoutMnemonic(label);
+        label = getLabelWithoutMnemonic(label);
         m.setText(label);
       }
     }
@@ -319,29 +324,20 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     if (strEcho == null) {
       // null here means new language
       updateLabels();
-      output(null);
+      outputMsg(null);
       strEcho = defaultMessage;
     }
-    output(strEcho);
+    outputMsg(strEcho);
   }
 
-  protected void output(String message) {
-    outputAttr(message, null);
-  }
-
-  protected void outputAttr(String message, Object att) {
-    //System.out.println("AppletConsole.output " + message + " " + att);
+  private void outputMsg(String message) {
     if (message == null || message.length() == 0) {
       output.setText("");
       return;
     }
     if (message.charAt(message.length() - 1) != '\n')
       message += "\n";
-    try {
-      output.insertString(output.getLength(), message, att);
-    } catch (Exception e) {
-    }
-    output.setCaretPosition(output.getLength());
+    output.append(message);
   }
 
   protected void clearContent(String text) {
@@ -352,8 +348,8 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   public void sendConsoleMessage(String strInfo) {
     // null here indicates "clear console"
     if (strInfo != null && output.getText().startsWith(defaultMessage))
-      output(null);
-    output(strInfo);
+      outputMsg(null);
+    outputMsg(strInfo);
   }
   
   @SuppressWarnings("incomplete-switch")

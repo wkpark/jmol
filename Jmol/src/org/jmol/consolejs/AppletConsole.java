@@ -68,7 +68,7 @@ public class AppletConsole extends GenericConsole {
      * 
      * @j2sNative
      * 
-     *            this.jsConsole = Jmol.Console.createConsole(this); 
+     *            this.jsConsole = new Jmol.Console.JSConsole(this); 
      */
     {  
     }

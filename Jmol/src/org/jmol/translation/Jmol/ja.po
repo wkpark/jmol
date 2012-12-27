@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-11-21 07:45+0100\n"
+"POT-Creation-Date: 2012-12-27 21:08+0100\n"
 "PO-Revision-Date: 2012-08-08 08:00+0000\n"
 "Last-Translator: Rubia <Unknown>\n"
 "Language-Team: Japanese <Jmol-developers@lists.sf.net>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "X-Poedit-Country: Japan\n"
 "X-Poedit-Language: Japanese\n"
 
-#: org/jmol/appletjs/Jmol.java:370
+#: org/jmol/appletjs/Jmol.java:365
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -29,8 +29,12 @@ msgid ""
 "See http://www.jmol.org for more information"
 msgstr ""
 
-#: org/jmol/appletjs/Jmol.java:537
+#: org/jmol/appletjs/Jmol.java:532
 msgid "File Error:"
+msgstr ""
+
+#: org/jmol/awtjs2d/JSModelKitPopup.java:76
+msgid "Element?"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:100
@@ -171,7 +175,7 @@ msgid "Executing script 2..."
 msgstr "スクリプト2を実行中..."
 
 #: org/openscience/jmol/app/jmolpanel/AboutDialog.java:70
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:206
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:207
 msgid "About Jmol"
 msgstr "Jmolについて"
 
@@ -181,59 +185,6 @@ msgstr "Jmolについて"
 #, java-format
 msgid "Unable to find url \"{0}\"."
 msgstr "url \"{0}\" が見つかりません"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:164
-msgid "Check"
-msgstr "チェック"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:165
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:231
-msgid "Clear"
-msgstr "クリア"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:166
-msgid "Close"
-msgstr "閉じる"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:167
-msgid "Halt"
-msgstr "終了"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:168
-msgid "Help"
-msgstr "ヘルプ"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:169
-msgid "Editor"
-msgstr "エディター"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:170
-msgid "History"
-msgstr "履歴"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:171
-msgid "State"
-msgstr "状況"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:172
-msgid "Step"
-msgstr "ステップ"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:173
-msgid "Top"
-msgstr "トップ"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:174
-msgid "Undo"
-msgstr "元に戻す"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:175
-msgid "Redo"
-msgstr "やり直し"
-
-#: org/openscience/jmol/app/jmolpanel/AppConsole.java:176
-msgid "Variables"
-msgstr "変数"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:186
 msgid "AtomSetChooser"
@@ -339,11 +290,6 @@ msgstr ""
 msgid "Vibration OFF"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/ConsoleTextArea.java:87
-#, java-format
-msgid "Error reading from BufferedReader: {0}"
-msgstr "BufferedReader: {0} からの読み取りエラー"
-
 #: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:232
 msgid "Delete atoms"
 msgstr "原子を削除"
@@ -427,561 +373,566 @@ msgstr "保存"
 msgid "Cancel"
 msgstr "取り消し"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:66
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
 msgid "&Macros"
 msgstr "マクロ(&M)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:67
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
 msgid "&File"
 msgstr "ファイル(&F)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:68
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
 msgid "&New"
 msgstr "新規(&N)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:69
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:70
 msgid "&Open"
 msgstr "開く(&O)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:70
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
 msgid "Open a file."
 msgstr "ファイルを開く"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:71
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
 msgid "Open &URL"
 msgstr "URLを開く(&U)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:72
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
 msgid "&Get PDB"
 msgstr "PDBを取得(&G)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:73
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
 msgid "Get &MOL"
 msgstr "MOLを取得(&M)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:74
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:75
 msgid "&Reload"
 msgstr "再読み込み(&R)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:78
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
 msgid "Scrip&t Editor..."
 msgstr "スクリプトエディタ(&T)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:79
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
 msgid "Conso&le..."
 msgstr "コンソール(&L)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:80
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
 msgid "Jmol Java &Console"
 msgstr "Jmol Java コンソール(&C)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:81
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:82
 msgid "AtomSet&Chooser..."
 msgstr "原子セットセレクタ(&C)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:82
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
 msgid "&Save As..."
 msgstr "名前を付けて保存(&S)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:83
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
 msgid "&Export"
 msgstr "エクスポート(&E)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:84
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:85
 msgid "Export &Image..."
 msgstr "画像として書き出し(&I)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:85
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
 msgid "Save current view as an image."
 msgstr "現在のビューを画像として保存"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:86
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:87
 msgid "Export to &Web Page..."
 msgstr "Web ページとして書き出し(&W)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:87
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:88
 msgid "Export one or more views to a web page."
 msgstr "ビューをWeb ページとして書き出す"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:88
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:89
 msgid "Render in POV-&Ray..."
 msgstr "POV-Rayでレンダリング(&R)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:89
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:90
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:114
 msgid "Render in POV-Ray"
 msgstr "POV-Rayでレンダリング"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:90
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
 msgid "Write &State..."
 msgstr "状態を書き出し(&S)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:91
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
 msgid "Save current view as a Jmol state script."
 msgstr "現在の状態を書き出し"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:92
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
 msgid "&Print..."
 msgstr "印刷(&P)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:93
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:94
 msgid "Print view."
 msgstr "表示内容を印刷"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:94
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:95
 msgid "&Close"
 msgstr "閉じる(&C)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:95
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:96
 msgid "E&xit"
 msgstr "終了(&X)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:96
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
 msgid "Recent &Files..."
 msgstr "最近使ったファイル(&F)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:97
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:98
 msgid "&Edit"
 msgstr "編集(&E)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:99
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:100
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
 msgid "Select &All"
 msgstr "すべて選択(&A)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:100
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:101
 msgid "Deselect All"
 msgstr "すべての選択を解除"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:101
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:102
 msgid "Copy &Image"
 msgstr "画像をコピー(&I)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:102
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
 msgid "Copy Script"
 msgstr "スクリプトをコピー"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:103
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:104
 msgid "Pr&eferences..."
 msgstr "環境設定(&E)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:104
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:105
 msgid "&Paste"
 msgstr "貼り付け(&P)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:106
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:107
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:108
 msgid "&Select"
 msgstr "選択(&S)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:108
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
 msgid "&All"
 msgstr "すべて(&A)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:109
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:122
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:110
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:123
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:129
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
 msgid "&None"
 msgstr "なし(&N)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:110
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
 msgid "Hydrogen"
 msgstr "水素"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:111
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
 msgid "Carbon"
 msgstr "炭素"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:112
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
 msgid "Nitrogen"
 msgstr "窒素"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:113
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
 msgid "Oxygen"
 msgstr "酸素"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:114
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:115
 msgid "Phosphorus"
 msgstr "リン"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:115
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
 msgid "Sulfur"
 msgstr "硫黄"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:116
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:117
 msgid "Amino"
 msgstr "アミノ酸"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:117
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
 msgid "Nucleic"
 msgstr "核酸"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:118
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
 msgid "Water"
 msgstr "水"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:119
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:120
 msgid "Hetero"
 msgstr "ヘテロ"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:120
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
 msgid "&Display"
 msgstr "表示(&D)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:121
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:122
 msgid "&Atom"
 msgstr "原子(&A)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:123
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:124
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:125
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:126
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
 #, java-format
 msgid "{0}% van der Waals"
 msgstr "van der Waals半径の {0}%"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:127
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:128
 msgid "&Bond"
 msgstr "結合(&B)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:129
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:130
 msgid "&Wireframe"
 msgstr "ワイヤフレーム(&W)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:130
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:131
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:132
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:145
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
 #, java-format
 msgid "{0} Å"
 msgstr "{0} Å"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:133
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:134
 msgid "&Label"
 msgstr "ラベル(&L)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:135
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
 msgid "&Symbol"
 msgstr "元素記号(&S)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:136
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
 msgid "&Name"
 msgstr "名前(&N)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:137
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
 msgid "&Number"
 msgstr "番号(&N)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:138
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
 msgid "&Centered"
 msgstr "中心に(&C)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:139
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
 msgid "&Upper right"
 msgstr "右上(&U）"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:140
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:141
 msgid "&Vector"
 msgstr "ベクトル(&V)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:142
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
 msgid "&On"
 msgstr "表示(&O)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:143
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:144
 #, java-format
 msgid "{0} pixels"
 msgstr "{0} ピクセル"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:146
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:147
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:148
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:149
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:150
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
 #, java-format
 msgid "Scale {0}"
 msgstr "スケール {0}"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:151
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
 msgid "&Zoom"
 msgstr "ズーム(&Z)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:152
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:153
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:154
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:155
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:156
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
 #, java-format
 msgid "{0}%"
 msgstr "{0} %"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:157
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
 msgid "&Perspective Depth"
 msgstr "透視深度(&P)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:158
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
 msgid "A&xes"
 msgstr "座標軸(&X)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:159
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
 msgid "B&ounding Box"
 msgstr "バウンディングボックス(&O)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:160
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
 msgid "&Hydrogens"
 msgstr "水素(&H)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:161
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
 msgid "V&ectors"
 msgstr "ベクトル(&E)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:162
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
 msgid "&Measurements"
 msgstr "計測(&M)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:163
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
 msgid "Resi&ze"
 msgstr "サイズ変更(&Z)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:164
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
 msgid "&View"
 msgstr "ビュー(&V)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:165
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
 msgid "&Front"
 msgstr "前(&F)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:166
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
 msgid "&Top"
 msgstr "上(&T)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:167
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
 msgid "&Bottom"
 msgstr "下(&B)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:168
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
 msgid "&Right"
 msgstr "右(&R)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:169
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
 msgid "&Left"
 msgstr "左(&L)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:170
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
 msgid "Tr&ansform..."
 msgstr "変換(&A)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:171
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
 msgid "Define &Center"
 msgstr "中心を定義(&C)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:172
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
 msgid "&Tools"
 msgstr "ツール(&T)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:173
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:174
 msgid "&Gaussian..."
 msgstr "Gaussian(&G)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:175
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
 msgid "Distance &Units"
 msgstr "長さの単位(&U)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:176
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
 msgid "&Nanometers 1E-9"
 msgstr "ナノメータ 1E-9(&N)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:177
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
 msgid "&Angstroms 1E-10"
 msgstr "オングストローム 1E-10(&A)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:178
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
 msgid "&Picometers 1E-12"
 msgstr "ピコメータ 1E-12(&P)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:179
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
 msgid "&Animate..."
 msgstr "アニメーション(&A)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:180
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
 msgid "&Vibrate..."
 msgstr "振動(&V)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:181
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
 msgid "&Graph..."
 msgstr "グラフ(&G)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:182
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
 msgid "Calculate chemical &shifts..."
 msgstr "化学シフトを計算(&S)..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:183
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
 msgid "&Crystal Properties"
 msgstr "結晶の特性(&C)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:184
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
 msgid "&Once"
 msgstr "一回(&O)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:185
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
 msgid "&Loop"
 msgstr "ループ(&L)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:186
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:187
 msgid "P&alindrome"
 msgstr "往復繰り返し(&A)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:187
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:188
 msgid "&Stop animation"
 msgstr "停止(&S)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:188
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:189
 msgid "&Rewind to first frame"
 msgstr "最初のフレームへ(&R)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:189
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
 msgid "Rewind to first frame"
 msgstr "最初のフレームへ"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:190
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
 msgid "Go to &next frame"
 msgstr "次のフレームへ(&N)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:191
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
 msgid "Go to next frame"
 msgstr "次のフレームへ"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:192
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
 msgid "Go to &previous frame"
 msgstr "前のフレームへ(&P）"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:193
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:194
 msgid "Go to previous frame"
 msgstr "前のフレームへ"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:194
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
 msgid "All &frames"
 msgstr "すべてのフレーム(&F)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:195
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:196
 msgid "All frames"
 msgstr "すべてのフレーム"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:196
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
 msgid "Go to &last frame"
 msgstr "最後のフレームへ(&L)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:197
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
 msgid "Go to last frame"
 msgstr "最後のフレームへ"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:198
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
 msgid "Start &vibration"
 msgstr "振動を開始(&V)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:199
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
 msgid "&Stop vibration"
 msgstr "振動を停止(&S)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:200
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
 msgid "&First frequency"
 msgstr "最初の振動数(&F）"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:201
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
 msgid "&Next frequency"
 msgstr "次の振動数(&N)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:202
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
 msgid "&Previous frequency"
 msgstr "前の振動数(&P)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:203
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
 msgid "SurfaceTool..."
 msgstr "表面ツール..."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:204
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
 msgid "Control Display of Surfaces"
 msgstr "表面の表示をコントロール"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:205
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:206
 msgid "&Help"
 msgstr "ヘルプ(&H）"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:207
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:208
 msgid "User Guide"
 msgstr "ユーザーガイド"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:208
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:209
 msgid "What's New"
 msgstr "新着情報"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:209
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:210
 msgid "Hydrogens"
 msgstr "水素"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:210
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
 #: org/openscience/jmol/app/jmolpanel/MeasurementTable.java:66
 msgid "Measurements"
 msgstr "計測値"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:211
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
 msgid "Perspective Depth"
 msgstr "視点の深度"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:212
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
 msgid "Axes"
 msgstr "座標軸"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:213
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:214
 msgid "Bounding Box"
 msgstr "バウンディングボックス"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:215
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:216
 msgid "RasMol/Chime compatible axes orientation/rotations"
 msgstr "RasMol/Chime互換の軸の方向 /回転"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:217
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:218
 msgid "File Preview (requires restarting Jmol)"
 msgstr "ファイルのプレビュー(Jmolの再起動が必要)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:219
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:220
 msgid "Clear history (requires restarting Jmol)"
 msgstr "履歴をクリア (Jmolの再起動が必要)"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:220
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:221
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:222
 msgid "Use Atom Color"
 msgstr "原子の色を使用"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:222
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:223
 msgid "Rotate molecule."
 msgstr "分子を回転させる"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:224
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:225
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
 msgstr "SHIFTキーを押しながらドラッグして範囲内の複数の原子を選択する"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:226
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:227
 msgid "Click atoms to measure distances"
 msgstr "原子をクリックして距離を求める"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:228
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:229
 msgid "Click an atom to center on it"
 msgstr "クリックした原子を中心にする"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:229
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:230
 msgid "Return molecule to home position."
 msgstr "分子の位置を原点に戻す"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:230
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:231
 msgid "Open the model kit."
 msgstr "モデルキットを開く"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:366
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:232
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:158
+msgid "Clear"
+msgstr "クリア"
+
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:367
 #, java-format
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
@@ -990,20 +941,20 @@ msgstr ""
 "操作可能な3次元モデルを取得するには、ここ{1}の{0}をクリックしてください。アプ"
 "レットが最初にロードされる際はダウンロード時間が長くかかることがあります。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
 msgid "Insert the page TITLE here."
 msgstr "ここにページタイトルを挿入してください。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:370
 msgid "Insert the page INTRODUCTION here."
 msgstr "ここにページの紹介を挿入してください。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:371
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:372
 #, java-format
 msgid "Insert a caption for {0} here."
 msgstr "ここに {0} へのキャプションを挿入してください。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:372
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:373
 #, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
@@ -1012,11 +963,11 @@ msgstr ""
 "ここに補足説明テキストを挿入してください。長いテキストはJmolのモデル{0}の周り"
 "で折り返されます。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:374
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:375
 msgid "Insert your TITLE and INTRODUCTION here."
 msgstr "ここにタイトルと紹介を挿入してください。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:376
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:377
 #, java-format
 msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
@@ -1025,7 +976,7 @@ msgstr ""
 "ボタン{0}が下のボックスに表示されます。 {0}の情報をここから下に挿入してくださ"
 "い。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:377
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:378
 #, java-format
 msgid "Insert more information for {0} here."
 msgstr "ここに {0} への情報をさらに挿入してください。"
@@ -1040,90 +991,90 @@ msgstr "Jmolヘルプ"
 msgid "OK"
 msgstr "OK"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:225
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:227
 msgid "Initializing 3D display..."
 msgstr "3次元表示を初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:262
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:264
 msgid "Initializing Script Window..."
 msgstr "スクリプトウィンドウを初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:283
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:285
 msgid "Building Command Hooks..."
 msgstr "コマンドのフックを構築しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:298
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:300
 msgid "Building Menubar..."
 msgstr "メニューバーを構築しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:313
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:315
 msgid "Starting display..."
 msgstr "表示開始..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:360
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:362
 msgid "Setting up Drag-and-Drop..."
 msgstr "ドラッグ&ドロップの設定をしています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:368
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:370
 msgid "Launching main frame..."
 msgstr "主フレームを立ち上げています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:372
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:374
 msgid "Initializing Preferences..."
 msgstr "環境設定を初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:374
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:376
 msgid "Initializing Recent Files..."
 msgstr "最近使ったファイルを初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:448
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:450
 msgid "Jmol Java Console"
 msgstr "Jmol Java コンソール"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:468
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:470
 msgid "Could not create ConsoleTextArea: "
 msgstr "コンソールのテキスト領域を作成できませんでした: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:512
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:514
 msgid "Creating main window..."
 msgstr "メインウィンドウを作成しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:513
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:515
 msgid "Initializing Swing..."
 msgstr "Swingを初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:524
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:526
 msgid "Initializing Jmol..."
 msgstr "Jmolを初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:613
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:615
 msgid "Closing Jmol..."
 msgstr "Jmolを終了しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1167
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1169
 msgid "Open URL"
 msgstr "URLを開く"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1168
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1170
 msgid "Enter URL of molecular model"
 msgstr "分子モデルのURLを入力してください"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1192
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1194
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1201
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1203
 msgid ""
 "Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1370
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1372
 msgid "IO Exception:"
 msgstr "入出力の例外："
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1508
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1510
 msgid "width height?"
 msgstr "幅　高さ？"
 
@@ -1369,6 +1320,59 @@ msgstr "読み込んでいます..."
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:57
 msgid "What's New in Jmol"
 msgstr "Jmolの新機能"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:157
+msgid "Check"
+msgstr "チェック"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:159
+msgid "Close"
+msgstr "閉じる"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:160
+msgid "Halt"
+msgstr "終了"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:161
+msgid "Help"
+msgstr "ヘルプ"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:162
+msgid "Editor"
+msgstr "エディター"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:163
+msgid "History"
+msgstr "履歴"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:164
+msgid "State"
+msgstr "状況"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:165
+msgid "Step"
+msgstr "ステップ"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:166
+msgid "Top"
+msgstr "トップ"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:167
+msgid "Undo"
+msgstr "元に戻す"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:168
+msgid "Redo"
+msgstr "やり直し"
+
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:169
+msgid "Variables"
+msgstr "変数"
+
+#: org/openscience/jmol/app/jmolpanel/console/ConsoleTextArea.java:88
+#, java-format
+msgid "Error reading from BufferedReader: {0}"
+msgstr "BufferedReader: {0} からの読み取りエラー"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:482
 msgid "magic"

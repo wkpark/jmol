@@ -271,7 +271,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     if (port != 0) {
       inSocket = openSocket("127.0.0.1", port);
       inSocket.setPacketReader(new AsciiLinePacketReader());
-      inSocket.setPacketWriter(new RawPacketWriter());
+      inSocket.setPacketWriter(RawPacketWriter.INSTANCE);
       inSocket.listen(new SocketObserver() {
 
         public void connectionOpened(NIOSocket nioSocket) {
@@ -287,6 +287,11 @@ public class JsonNioService extends NIOService implements JsonNioServer {
           Logger.info(Thread.currentThread().getName()
               + " inSocket connectionBroken");
         }
+
+        public void packetSent(NIOSocket arg0, Object arg1) {
+          // TODO
+          
+        }
       });
 
       // outSocket is used to send JSON commands to the NIO server
@@ -296,7 +301,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       if (version == 1) {
         outSocket = openSocket("127.0.0.1", port);
         outSocket.setPacketReader(new AsciiLinePacketReader());
-        outSocket.setPacketWriter(new RawPacketWriter());
+        outSocket.setPacketWriter(RawPacketWriter.INSTANCE);
         outSocket.listen(new SocketObserver() {
 
           public void connectionOpened(NIOSocket nioSocket) {
@@ -312,6 +317,11 @@ public class JsonNioService extends NIOService implements JsonNioServer {
             halt = true;
             Logger.info(Thread.currentThread().getName()
                 + " outSocket connectionBroken");
+          }
+
+          public void packetSent(NIOSocket arg0, Object arg1) {
+            // TODO
+            
           }
         });
       }
@@ -404,7 +414,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
               + " Received connection: " + nioSocket);
 
           nioSocket.setPacketReader(new AsciiLinePacketReader());
-          nioSocket.setPacketWriter(new RawPacketWriter());
+          nioSocket.setPacketWriter(RawPacketWriter.INSTANCE);
           nioSocket.listen(new SocketObserverAdapter() {
 
             @Override

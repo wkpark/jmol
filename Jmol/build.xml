@@ -63,7 +63,7 @@
   <property name="docbook-xsl" value="docbook-xsl-1.76.1" />
   <property name="docbook-xml" value="docbook-xml-4.4" />
   <!--property name="vecmath.jar" value="vecmath1.2-1.14.jar" / -->
-  <property name="naga.jar" value="naga-2_1-r42.jar" />
+  <property name="naga.jar" value="naga-3_0.jar" />
   <property name="itext.jar" value="itext-1.4.5.jar" />
   <property name="commons-cli.jar" value="commons-cli-1.0.jar" />
   <property name="saxon.jar" value="saxon.jar" />

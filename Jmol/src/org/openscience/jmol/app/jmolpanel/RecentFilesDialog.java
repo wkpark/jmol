@@ -49,6 +49,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   private static final int MAX_FILES = 10;
   private JButton okButton;
   private JButton cancelButton;
+  private JButton clearButton;
   String[] files = new String[MAX_FILES];
   JList fileList;
   java.util.Properties props;
@@ -63,13 +64,11 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     getFiles();
     getContentPane().setLayout(new java.awt.BorderLayout());
     JPanel buttonPanel = new JPanel();
-    okButton = new JButton(GT._("Open"));
-    okButton.addActionListener(this);
-    buttonPanel.add(okButton);
-    cancelButton =
-        new JButton(GT._("Cancel"));
-    cancelButton.addActionListener(this);
-    buttonPanel.add(cancelButton);
+    
+    okButton = addButton(buttonPanel, GT._("Open"));
+    cancelButton = addButton(buttonPanel, GT._("Cancel"));
+    clearButton = addButton(buttonPanel, GT._("Clear"));
+
     getContentPane().add("South", buttonPanel);
 
     fileList = new JList(files);
@@ -98,6 +97,13 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     pack();
   }
 
+  private JButton addButton(JPanel buttonPanel, String label) {
+    JButton btn = new JButton(label);
+    btn.addActionListener(this);
+    buttonPanel.add(btn);
+    return btn;
+  }
+
   private void getFiles() {
 
     props = JmolPanel.historyFile.getProperties();
@@ -116,11 +122,9 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     int currentPosition = -1;
 
     //Find if file is already present
-    for (int i = 0; i < MAX_FILES; i++) {
-      if ((files[i] != null) && files[i].equals(name)) {
+    for (int i = 0; i < MAX_FILES; i++)
+      if (name.equals(files[i]))
         currentPosition = i;
-      }
-    }
 
     //No change so cope out
     if (currentPosition == 0) {
@@ -148,15 +152,11 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     saveList();
   }
 
-  /** Saves the list to the history file. Called automaticaly when files are added **/
+  /** Saves the list to the history file. Called automatically when files are added **/
   public void saveList() {
-
-    for (int i = 0; i < 10; i++) {
-      if (files[i] != null) {
+    for (int i = 0; i < MAX_FILES; i++)
+      if (files[i] != null)
         props.setProperty("recentFilesFile" + i, files[i]);
-      }
-    }
-
     JmolPanel.historyFile.addProperties(props);
   }
 
@@ -176,6 +176,16 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     selectedFileName = null;
   }
 
+  void clear() {
+    files = new String[MAX_FILES];
+    fileList.setListData(files);
+       for (int i = 0; i < MAX_FILES; i++) {
+        props.setProperty("recentFilesFile" + i, "");
+    }
+    JmolPanel.historyFile.addProperties(props);
+    cancel();
+  }
+  
   void close() {
     setVisible(false);
   }
@@ -190,6 +200,9 @@ class RecentFilesDialog extends JDialog implements ActionListener,
       }
     } else if (e.getSource() == cancelButton) {
       cancel();
+      close();
+    } else if (e.getSource() == clearButton) {
+      clear();
       close();
     }
   }
@@ -212,8 +225,14 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   public void windowDeactivated(java.awt.event.WindowEvent e) {
   }
 
+  /**
+   * 
+   * " (*)" appended to a file name indicates that this file was loaded asynchronously
+   * 
+   * @param fullPathName
+   */
   public void notifyFileOpen(String fullPathName) {
-    if (fullPathName != null)
+    if (fullPathName != null && !fullPathName.equals("Jmol Model Kit"))
       addFile(fullPathName);
   }
 }

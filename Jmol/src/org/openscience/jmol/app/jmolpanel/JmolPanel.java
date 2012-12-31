@@ -1284,8 +1284,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
       recentFiles.setVisible(true);
       String selection = recentFiles.getFile();
-      if (selection != null)
-        viewer.openFileAsync(selection);
+      if (selection == null || selection.length() == 0)
+        return;
+      if (selection.endsWith(" (*)"))
+        viewer.openFileAsyncPDB(selection.substring(0, selection.length() - 4), true);
+      else
+        viewer.openFileAsyncPDB(selection, false);
     }
   }
 

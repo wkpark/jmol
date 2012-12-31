@@ -352,10 +352,12 @@ class StatusManager {
   }
   
   synchronized void setFileLoadStatus(String fullPathName, String fileName,
-                                        String modelName, String errorMsg,
-                                        int ptLoad, boolean doCallback) {
+                                      String modelName, String errorMsg,
+                                      int ptLoad, boolean doCallback,
+                                      Boolean isAsync) {
     if (fullPathName == null && "resetUndo".equals(fileName)) {
-      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer.getProperty("DATA_API", "getAppConsole", null);
+      JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) viewer
+          .getProperty("DATA_API", "getAppConsole", null);
       if (appConsole != null)
         appConsole.zap();
       fileName = viewer.getZapName();
@@ -368,10 +370,13 @@ class StatusManager {
       String name = (String) viewer.getParameter("_smilesString");
       if (name.length() != 0)
         fileName = name;
-      jmolCallbackListener.notifyCallback(EnumCallback.LOADSTRUCT,
-          new Object[] { sJmol, 
-              fullPathName, fileName, modelName, errorMsg, Integer.valueOf(ptLoad)
-          , viewer.getParameter("_modelNumber"), viewer.getModelNumberDotted(viewer.getModelCount() - 1) });
+      jmolCallbackListener
+          .notifyCallback(EnumCallback.LOADSTRUCT,
+              new Object[] { sJmol, fullPathName, fileName, modelName,
+                  errorMsg, Integer.valueOf(ptLoad),
+                  viewer.getParameter("_modelNumber"),
+                  viewer.getModelNumberDotted(viewer.getModelCount() - 1),
+                  isAsync });
     }
   }
 

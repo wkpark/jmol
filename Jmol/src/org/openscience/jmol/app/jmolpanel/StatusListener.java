@@ -116,7 +116,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     switch (type) {
     case LOADSTRUCT:
       notifyFileLoaded(strInfo, (String) data[2], (String) data[3],
-          (String) data[4]);
+          (String) data[4], (Boolean) data[8]);
       return;
     case ANIMFRAME:
       int[] iData = (int[]) data[1];
@@ -244,7 +244,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   }
 
   private void notifyFileLoaded(String fullPathName, String fileName,
-                                String modelName, String errorMsg) {
+                                String modelName, String errorMsg, Boolean isAsync) {
     if (errorMsg != null) {
       return;
     }
@@ -259,7 +259,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       title = fileName;
     else if (modelName != null)
       title = modelName;
-    jmol.notifyFileOpen(fullPathName, title);    
+    jmol.notifyFileOpen(fullPathName == null ? null : fullPathName + (isAsync == Boolean.TRUE ? " (*)" : ""), title);    
     if (jSpecViewFrame != null) {
       if (fullPathName == null) {
         jSpecViewFrame.syncScript("close ALL");

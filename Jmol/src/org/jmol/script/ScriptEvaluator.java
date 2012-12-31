@@ -8763,6 +8763,7 @@ public class ScriptEvaluator {
       // LOAD [[APPEND]] SMILES
       // LOAD [[APPEND]] TRAJECTORY
       // LOAD [[APPEND]] MODEL
+      // LOAD SYNC  (asynchronous -- flag for RecentFileDialog)
       // LOAD [[APPEND]] "fileNameInQuotes"
 
       switch (tok) {
@@ -8774,6 +8775,10 @@ public class ScriptEvaluator {
         break;
       case Token.smiles:
         isSmiles = true;
+        i++;
+        break;
+      case Token.sync:
+        htParams.put("async", Boolean.TRUE);
         i++;
         break;
       case Token.trajectory:

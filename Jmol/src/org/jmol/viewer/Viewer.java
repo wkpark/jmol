@@ -1941,11 +1941,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // //////////////// methods that open a file to create a model set ///////////
 
-  @Override
-  public void openFileAsync(String fileName) {
-    openFileAsyncPDB(fileName, false);
-  }
-
   /**
    * opens a file as a model, a script, or a surface via the creation of a
    * script that is queued \t at the beginning disallows script option - used by
@@ -2158,7 +2153,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     // and finally to create the model set...
 
-    return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
+    return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript, htParams);
   }
 
   private Map<String, Object> ligandModels;
@@ -2368,7 +2363,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       zap(true, false/*true*/, false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromArrayData(
         arrayData, setLoadParameters(null, isAppend), isAppend);
-    return createModelSetAndReturnError(atomSetCollection, isAppend, null);
+    return createModelSetAndReturnError(atomSetCollection, isAppend, null, null);
   }
 
   private String loadInlineScript(String strModel, char newLine, boolean isAppend,
@@ -2458,7 +2453,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       zap(true, false/*true*/, false);
     Object atomSetCollection = fileManager.createAtomSetCollectionFromString(
         strModel, loadScript, htParams, isAppend, isLoadCommand);
-    return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
+    return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript, null);
   }
 
   private String openStringsInline(String[] arrayModels,
@@ -2471,7 +2466,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Object atomSetCollection = fileManager.createAtomSeCollectionFromStrings(
         arrayModels, loadScript, setLoadParameters(htParams, isAppend),
         isAppend);
-    return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript);
+    return createModelSetAndReturnError(atomSetCollection, isAppend, loadScript, null);
   }
 
   public char getInlineChar() {
@@ -2494,11 +2489,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param isAppend
    * @param loadScript
    *        if null, then some special method like DOM; turn of preserveState
+   * @param htParams 
    * @return errMsg
    */
   private String createModelSetAndReturnError(Object atomSetCollection,
                                               boolean isAppend,
-                                              StringXBuilder loadScript) {
+                                              StringXBuilder loadScript, Map<String, Object> htParams) {
     String fullPathName = fileManager.getFullPathName();
     String fileName = fileManager.getFileName();
     String errMsg;
@@ -2509,7 +2505,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (atomSetCollection instanceof String) {
       errMsg = (String) atomSetCollection;
       setFileLoadStatus(EnumFileStatus.NOT_LOADED, fullPathName,
-          null, null, errMsg);
+          null, null, errMsg, null);
       if (displayLoadErrors && !isAppend
           && !errMsg.equals("#CANCELED#"))
         zapMsg(errMsg);
@@ -2520,7 +2516,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     else if (getModelkitMode() && !fileName.equals("Jmol Model Kit"))
       setModelKitMode(false);
     setFileLoadStatus(EnumFileStatus.CREATING_MODELSET,
-        fullPathName, fileName, null, null);
+        fullPathName, fileName, null, null, null);
 
     // null fullPathName implies we are doing a merge
     pushHoldRepaintWhy("createModelSet");
@@ -2557,7 +2553,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     errMsg = getErrorMessage();
 
     setFileLoadStatus(EnumFileStatus.CREATED, fullPathName,
-        fileName, getModelSetName(), errMsg);
+        fileName, getModelSetName(), errMsg, htParams == null ? null : (Boolean) htParams.get("async"));
     if (isAppend) {
       selectAll();
       setTainted(true);
@@ -2874,7 +2870,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     initializeModel(false);
     if (notify)
       setFileLoadStatus(EnumFileStatus.ZAPPED, null,
-          (resetUndo ? "resetUndo" : getZapName()), null, null);
+          (resetUndo ? "resetUndo" : getZapName()), null, null, null);
     if (Logger.debugging)
       Logger.checkMemory();
   }
@@ -5661,12 +5657,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   private void setFileLoadStatus(EnumFileStatus ptLoad,
                                  String fullPathName, String fileName,
-                                 String modelName, String strError) {
+                                 String modelName, String strError, Boolean isAsync) {
     setErrorMessage(strError, null);
     global.setParamI("_loadPoint", ptLoad.getCode()); 
     boolean doCallback = (ptLoad != EnumFileStatus.CREATING_MODELSET);
     statusManager.setFileLoadStatus(fullPathName, fileName, modelName,
-        strError, ptLoad.getCode(), doCallback);
+        strError, ptLoad.getCode(), doCallback, isAsync);
     if (doCallback)
       sendJSpecViewModelChange(getCurrentModelIndex());
   }
@@ -9481,7 +9477,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setCurrentModelIndexClear(getModelCount() > 1 ? -1 : 0, getModelCount() > 1);
     hoverAtomIndex = -1;
     setFileLoadStatus(EnumFileStatus.DELETED, null, null, null,
-        null);
+        null, null);
     refreshMeasures(true);
     if (bsD0 != null)
       bsDeleted.andNot(bsD0);

@@ -187,4 +187,7 @@ public class Platform implements ApiPlatform {
     return false;
   }
 
+  public void notifyEndOfRendering() {
+    // N/A
+  }
 }

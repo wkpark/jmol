@@ -167,7 +167,7 @@ public class Platform implements ApiPlatform {
     return Font.newFont(fontFace, isBold, isItalic, fontSize);
   }
 
-  public Object getJsObjectInfo(Object jsObject, String method, Object[] args) {
+  public Object getJsObjectInfo(Object[] jsObject, String method, Object[] args) {
     return null;
   }
 

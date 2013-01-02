@@ -183,7 +183,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private Object display;
   private GData gdata;
   private JmolAdapter modelAdapter;
-  public boolean isJS2D, isJS3D;
+  public boolean isJS, isJS2D, isJS3D;
 
   public enum ACCESS { NONE, READSPT, ALL }
   
@@ -437,6 +437,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       platform = (String) o;
       isJS3D = (platform.indexOf(".awtjs.") >= 0);
       isJS2D = (platform.indexOf("2d") >= 0);
+      isJS = (isJS2D || isJS3D);
       o = Interface.getInterface(platform);
     }
     apiPlatform = (ApiPlatform) o;
@@ -7261,7 +7262,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void showString(String str, boolean isPrint) {
-    if (isScriptQueued && (!isSilent || isPrint) && !isSingleThreaded)
+    if (isScriptQueued && (!isSilent || isPrint) && !isJS)
       Logger.warn(str); // warn here because we still want to be be able to turn this off
     scriptEcho(str);
   }
@@ -7824,7 +7825,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean getShowFrank() {
     if (isPreviewOnly || isApplet && creatingImage)
       return false;
-    return (isSignedApplet && !isSignedAppletLocal || frankOn);
+    return (!isJS && isSignedApplet && !isSignedAppletLocal || frankOn);
   }
 
   public boolean isSignedApplet() {

@@ -820,9 +820,14 @@ all support for previous versions removed
         <include name="**/*" />
         <exclude name="JmolSmiles*" />
         <exclude name="org/jmol/applet/**/*" />
+        <exclude name="org/jmol/appletjs/**/*" />
         <exclude name="org/jmol/awt/**/*" />
+        <exclude name="org/jmol/awtjs/**/*" />
+        <exclude name="org/jmol/awtjs2d/**/*" />
         <exclude name="org/jmol/console/**/*" />
+        <exclude name="org/jmol/consolejs/**/*" />
         <exclude name="org/jmol/export/**/*" />
+        <exclude name="org/jmol/exportjs/**/*" />
         <exclude name="org/jmol/modelkit/**/*" />
         <exclude name="org/jmol/multitouch/jni/*" />
         <exclude name="org/jmol/multitouch/sparshui/*" />

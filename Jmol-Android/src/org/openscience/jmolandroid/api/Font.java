@@ -1,5 +1,6 @@
 package org.openscience.jmolandroid.api;
 
+import org.jmol.util.JmolFont;
 import org.openscience.jmolandroid.JmolActivity;
 
 import android.graphics.Color;

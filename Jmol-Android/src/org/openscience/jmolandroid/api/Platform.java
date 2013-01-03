@@ -147,7 +147,7 @@ public class Platform implements ApiPlatform {
   
   ///// FONT
   
-  public int fontStringWidth(Object fontMetrics, String text) {
+	public int fontStringWidth(JmolFont font, Object fontMetrics, String text) {
     return Font.stringWidth(fontMetrics, text);
   }
 
@@ -190,4 +190,7 @@ public class Platform implements ApiPlatform {
   public void notifyEndOfRendering() {
     // N/A
   }
+  
 }
+
+

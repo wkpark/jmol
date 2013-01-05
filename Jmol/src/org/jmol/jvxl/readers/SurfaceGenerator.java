@@ -1269,7 +1269,7 @@ public class SurfaceGenerator {
         return null;
       }
       try {
-        br = JmolBinary.getInputStreamReader((BufferedInputStream) value);
+        br = JmolBinary.getInputStreamReader((BufferedInputStream) value, true);
       } catch (Exception e) {
         // TODO
       }        

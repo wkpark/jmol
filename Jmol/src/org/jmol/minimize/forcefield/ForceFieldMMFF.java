@@ -456,6 +456,7 @@ public class ForceFieldMMFF extends ForceField {
     String line = null;
     try {
       BufferedReader br = getBufferedReader(fileName);
+      
       //turns out from the Jar file
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
       // and within Eclipse it's a BufferedInputStream

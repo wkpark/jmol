@@ -515,7 +515,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         }
         if (!(value instanceof BufferedReader))
         try {
-          value = JmolBinary.getInputStreamReader((InputStream) value);
+          value = JmolBinary.getInputStreamReader((InputStream) value, true);
         } catch (IOException e) {
           // ignore
         }

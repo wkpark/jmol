@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-12-27 21:08+0100\n"
+"POT-Creation-Date: 2013-01-07 07:16+0100\n"
 "PO-Revision-Date: 2012-08-24 11:14+0000\n"
 "Last-Translator: Wang Dianjin <Unknown>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -364,7 +364,7 @@ msgstr "保存"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:364
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:502
-#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:70
+#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr "取消(&C)"
 
@@ -923,6 +923,7 @@ msgid "Open the model kit."
 msgstr "打开 model kit."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:232
+#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:70
 #: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:158
 msgid "Clear"
 msgstr "清空"
@@ -1063,11 +1064,11 @@ msgstr ""
 "输入一个化合物的名字或ID (SMILES, InChl, CAS). 前言带“:”从PubChem导入;不然 "
 "Jmol 将会用 NCI/NIH 分解器"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1372
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1376
 msgid "IO Exception:"
 msgstr "IO异常"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1510
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1514
 msgid "width height?"
 msgstr "宽度或高度？"
 
@@ -1298,11 +1299,11 @@ msgstr "键的容许误差：两个键的半径 + 这个值"
 msgid "Minimum Bonding Distance"
 msgstr "最小成键距离"
 
-#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:61
+#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:62
 msgid "Recent Files"
 msgstr "最近用过的文件"
 
-#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:66
+#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:68
 msgid "Open"
 msgstr "打开"
 
@@ -1367,67 +1368,67 @@ msgstr "变量"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "从缓冲阅读器读取错误：{0}"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:482
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:492
 msgid "magic"
 msgstr "魔力"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:483
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:493
 msgid "role"
 msgstr "角色"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:502
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:512
 msgid "type"
 msgstr "类型"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:508
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:518
 msgid "text"
 msgstr "文本"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:519
 msgid "visibility"
 msgstr "可见性"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:514
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:524
 msgid "command"
 msgstr "命令"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:521
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:531
 msgid "id"
 msgstr "编号"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:550
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:560
 msgid "startup"
 msgstr "启动"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:551
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:561
 msgid "filename"
 msgstr "文件名"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:558
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:568
 msgid "startup_script"
 msgstr "启动_脚本"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:564
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:574
 msgid "banner"
 msgstr "标语"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:565
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:575
 msgid "banner_text"
 msgstr "标语_文本"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:569
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:579
 msgid "style"
 msgstr "风格"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:612
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:622
 msgid "x"
 msgstr "x"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:613
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:623
 msgid "y"
 msgstr "y"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:630
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:640
 msgid "sync"
 msgstr "同步"
 

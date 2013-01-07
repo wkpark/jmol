@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2012-12-27 21:08+0100\n"
+"POT-Creation-Date: 2013-01-07 07:16+0100\n"
 "PO-Revision-Date: 2012-08-07 13:15+0000\n"
 "Last-Translator: Martin Slavík <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -371,7 +371,7 @@ msgstr "Uložit"
 
 #: org/openscience/jmol/app/jmolpanel/GaussianDialog.java:364
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:502
-#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:70
+#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr "Zrušit"
 
@@ -933,6 +933,7 @@ msgid "Open the model kit."
 msgstr "Spustit modelovací mód"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:232
+#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:70
 #: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:158
 msgid "Clear"
 msgstr "Vyčistit"
@@ -1072,11 +1073,11 @@ msgid ""
 "Resolver."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1372
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1376
 msgid "IO Exception:"
 msgstr "IO výjimka:"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1510
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1514
 msgid "width height?"
 msgstr "šířka výška?"
 
@@ -1307,11 +1308,11 @@ msgstr "Vazebná tolerance - součet 2 kovalentních poloměrů a této hodnoty"
 msgid "Minimum Bonding Distance"
 msgstr "Minimální vazebná vzdálenost"
 
-#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:61
+#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:62
 msgid "Recent Files"
 msgstr "Naposledy otevřené soubory"
 
-#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:66
+#: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:68
 msgid "Open"
 msgstr "Otevřít"
 
@@ -1376,67 +1377,67 @@ msgstr "Proměnné"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Chyba při čtení vyrovnávací paměti: {0}"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:482
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:492
 msgid "magic"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:483
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:493
 msgid "role"
 msgstr "role"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:502
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:512
 msgid "type"
 msgstr "typ"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:508
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:518
 msgid "text"
 msgstr "text"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:509
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:519
 msgid "visibility"
 msgstr "viditelnost"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:514
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:524
 msgid "command"
 msgstr "příkaz"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:521
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:531
 msgid "id"
 msgstr "id"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:550
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:560
 msgid "startup"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:551
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:561
 msgid "filename"
 msgstr "název souboru"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:558
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:568
 msgid "startup_script"
 msgstr ""
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:564
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:574
 msgid "banner"
 msgstr "banner"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:565
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:575
 msgid "banner_text"
 msgstr "banner_text"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:569
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:579
 msgid "style"
 msgstr "styl"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:612
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:622
 msgid "x"
 msgstr "x"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:613
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:623
 msgid "y"
 msgstr "y"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:630
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:640
 msgid "sync"
 msgstr "synchronizace"
 

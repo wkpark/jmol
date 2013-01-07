@@ -372,7 +372,7 @@ public class ZipUtil implements JmolZipUtility {
                                 boolean isSparDir, String newName, int ptSlash,
                                 List<Object> v) {
     CRC32 crc = new CRC32();
-    crc.update(ret);
+    crc.update(ret, 0, ret.length);
     Long crcValue = Long.valueOf(crc.getValue());
     // only add to the data list v when the data in the file is new
     if (crcMap.containsKey(crcValue)) {

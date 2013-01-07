@@ -24,7 +24,6 @@
 
 package org.jmol.export.image;
 
-import java.awt.Image;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,9 +31,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import org.jmol.api.Interface;
 import org.jmol.api.JmolImageCreatorInterface;
-import org.jmol.api.JmolPdfCreatorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.io.Base64;
 import org.jmol.io2.JpegEncoder;
@@ -42,93 +39,60 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
-public class ImageCreator implements JmolImageCreatorInterface {
+public class GenericImageCreator implements JmolImageCreatorInterface {
   
-  private Viewer viewer;
+  protected Viewer viewer;
   private double privateKey;
   
-  public ImageCreator() {
+  public GenericImageCreator() {
     // can set viewer later
   }
   
-  public ImageCreator(JmolViewer viewer){
-    // for clipImage only
-    this.viewer = (Viewer) viewer;
-  }
- 
   public void setViewer(JmolViewer viewer, double privateKey) {
     this.viewer = (Viewer) viewer;
     this.privateKey = privateKey;
   }
   
-  public String clipImage(String text) {
-    String msg;
-    try {
-      if (text == null) {
-        Image image = (Image) viewer.getScreenImageBuffer(null);
-        ImageSelection.setClipboard(image);
-        msg = "OK image to clipboard: " + (image.getWidth(null) * image.getHeight(null));
-      } else {
-        ImageSelection.setClipboard(text);
-        msg = "OK text to clipboard: " + text.length();
-      }
-    } catch (Error er) {
-      msg = viewer.getErrorMessage();
-    } finally {
-      if (text == null)
-        viewer.releaseScreenImage();
-    }
-    return msg;
-  }
-
-  public String getClipboardText() {
-    return ImageSelection.getClipboardText();
-  }
-  
-  public static String getClipboardTextStatic() {
-    return ImageSelection.getClipboardText();
-  }
-
   /**
    * 
    * @param fileName
    * @param type
-   * @param text_or_bytes
+   * @param text
+   * @param bytes_or_image
    * @param scripts
+   * @param appendix
    * @param quality
    * @return null (canceled) or a message starting with OK or an error message
    */
-  public Object createImage(String fileName, String type, Object text_or_bytes,
-                            String[] scripts, int quality) {
+  public Object createImage(String fileName, String type, String text, Object bytes_or_image,
+                            String[] scripts, Object appendix, int quality) {
     // this method may not be accessed, though public, unless 
     // accessed via viewer, which provides its private key.
-    if (!viewer.checkPrivateKey(privateKey))
-      return "NO SECURITY";
-    // returns message starting with OK or an error message
-    boolean isBytes = (Escape.isAB(text_or_bytes) || text_or_bytes instanceof Image);
-    boolean appendText = (text_or_bytes instanceof Object[]);
-    if (appendText)
-      text_or_bytes = ((Object[]) text_or_bytes)[0];
-    String text = (isBytes ? null : (String) text_or_bytes);
-    boolean isText = (quality == Integer.MIN_VALUE);
+    boolean isBytes = (bytes_or_image != null);
+    boolean isText = (!isBytes && quality == Integer.MIN_VALUE);
     FileOutputStream os = null;
     long len = -1;
     try {
+      if (!viewer.checkPrivateKey(privateKey))
+        return "NO SECURITY";
+      // returns message starting with OK or an error message
       if ("OutputStream".equals(type))
         return new FileOutputStream(fileName);
-      if ((isText || isBytes) && text_or_bytes == null)
-        return "NO DATA";
       if (isBytes) {
-        if (text_or_bytes instanceof Image) {
-          getImageBytes(type, quality, fileName, scripts, text_or_bytes, null);
+        if (bytes_or_image instanceof byte[]) {
+          len = ((byte[]) bytes_or_image).length;
+          os = new FileOutputStream(fileName);
+          byte[] b = (byte[]) bytes_or_image;
+          os.write(b, 0, b.length);
+          os.flush();
+          os.close();
+        } else {
+          getImageBytes(type, quality, fileName, scripts, bytes_or_image, null, null);
           return fileName;
         }
-        len = ((byte[]) text_or_bytes).length;
-        os = new FileOutputStream(fileName);
-        os.write((byte[]) text_or_bytes);
-        os.flush();
-        os.close();
       } else if (isText) {
+        if (text == null)
+          return "NO DATA";
         os = new FileOutputStream(fileName);
         OutputStreamWriter osw = new OutputStreamWriter(os);
         BufferedWriter bw = new BufferedWriter(osw, 8192);
@@ -139,7 +103,7 @@ public class ImageCreator implements JmolImageCreatorInterface {
       } else {
         len = 1;
         Object bytesOrError = getImageBytes(type, quality, fileName, scripts,
-            (appendText ? text_or_bytes : null), null);
+            null, appendix, null);
         if (bytesOrError instanceof String)
           return bytesOrError;
         byte[] bytes = (byte[]) bytesOrError;
@@ -165,8 +129,9 @@ public class ImageCreator implements JmolImageCreatorInterface {
         + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality));
   }
 
-  public Object getImageBytes(String type, int quality, String fileName, String[] scripts,
-                              Object appendText, OutputStream os)
+  public Object getImageBytes(String type, int quality, String fileName,
+                              String[] scripts, Object objImage,
+                              Object appendix, OutputStream os)
       throws IOException {
     byte[] bytes = null;
     String errMsg = null;
@@ -174,31 +139,33 @@ public class ImageCreator implements JmolImageCreatorInterface {
     boolean isPDF = type.equals("PDF");
     boolean isOsTemp = (os == null && fileName != null && !isPDF);
     boolean asBytes = (os == null && fileName == null && !isPDF);
-    boolean isImage = (appendText instanceof Image);
-    Image image = (Image) (isImage ? appendText : viewer.getScreenImageBuffer(null));
+    boolean isImage = (objImage != null);
+    Object image = (isImage ? objImage : viewer.getScreenImageBuffer(null));
     try {
       if (image == null) {
         errMsg = viewer.getErrorMessage();
       } else {
         Object ret = null;
         boolean includeState = (asBytes && type.equals("PNGJ") || !asBytes
-            && appendText == null);
+            && appendix == null);
         if (type.equals("PNGJ") && includeState)
-          ret = viewer.getWrappedState(fileName, scripts, true, true, image.getWidth(null), image
-              .getHeight(null));
+          ret = viewer.getWrappedState(fileName, scripts, true, true,
+              viewer.apiPlatform.getImageWidth(image), viewer.apiPlatform
+                  .getImageHeight(image));
         if (isOsTemp)
           os = new FileOutputStream(fileName);
         if (type.equals("JPEG") || type.equals("JPG")) {
           if (quality <= 0)
             quality = 75;
           if (asBytes) {
-            bytes = JpegEncoder.getBytes(viewer.apiPlatform, image,
-                quality, Viewer.getJmolVersion());
+            bytes = JpegEncoder.getBytes(viewer.apiPlatform, image, quality,
+                Viewer.getJmolVersion());
           } else {
-            String caption = (includeState ? (String) viewer.getWrappedState(null, null, true, false, image
-                            .getWidth(null), image.getHeight(null)) : Viewer.getJmolVersion());
-            JpegEncoder.write(viewer.apiPlatform, image, quality, os,
-                caption);
+            String caption = (includeState ? (String) viewer.getWrappedState(
+                null, null, true, false, viewer.apiPlatform
+                    .getImageWidth(image), viewer.apiPlatform
+                    .getImageHeight(image)) : Viewer.getJmolVersion());
+            JpegEncoder.write(viewer.apiPlatform, image, quality, os, caption);
           }
         } else if (type.equals("JPG64") || type.equals("JPEG64")) {
           if (quality <= 0)
@@ -217,23 +184,25 @@ public class ImageCreator implements JmolImageCreatorInterface {
           else if (quality > 9)
             quality = 9;
           int bgcolor = (type.equals("PNGT") ? viewer.getBackgroundArgb() : 0);
-          bytes = PngEncoder.getBytes(image, quality, bgcolor, type);
+          bytes = GenericPngEncoder.getBytesType(viewer.apiPlatform, image, quality,
+              bgcolor, type);
           byte[] b = null;
           if (includeState) {
             int nPNG = bytes.length;
             b = bytes;
             if (ret == null)
               ret = viewer.getWrappedState(null, scripts, true, false,
-                  image.getWidth(null), image.getHeight(null));
+                  viewer.apiPlatform.getImageWidth(image), viewer.apiPlatform
+                      .getImageHeight(image));
             bytes = (Escape.isAB(ret) ? (byte[]) ret : ((String) ret)
                 .getBytes());
             int nState = bytes.length;
-            PngEncoder.setJmolTypeText(b, nPNG, nState, type);
+            GenericPngEncoder.setJmolTypeText(b, nPNG, nState, type);
           }
           if (!asBytes) {
             if (b != null)
-              os.write(b);
-            os.write(bytes);
+              os.write(b, 0, b.length);
+            os.write(bytes, 0, bytes.length);
             b = bytes = null;
           } else if (b != null) {
             byte[] bt = new byte[b.length + bytes.length];
@@ -242,31 +211,17 @@ public class ImageCreator implements JmolImageCreatorInterface {
             bytes = bt;
             b = bt = null;
           }
-        } else if (type.equals("PPM")) {
-          if (asBytes) {
-            bytes = PpmEncoder.getBytes(image);
-          } else {
-            PpmEncoder.write(image, os);
-          }
-        } else if (type.equals("GIF")) {
-          if (asBytes) {
-            bytes = GifEncoder.getBytes(image);
-          } else {
-            GifEncoder.write(image, os);
-          }
-        } else if (type.equals("PDF")) {
-          // applet will not have this interface
-          // PDF is application-only because it is such a HUGE package
-          JmolPdfCreatorInterface pci = (JmolPdfCreatorInterface) Interface
-              .getApplicationInterface("jmolpanel.PdfCreator");
-          errMsg = pci.createPdfDocument(fileName, image);
+        } else {
+          String[] errRet = new String[1];
+          bytes = getOtherBytes(fileName, image, type, asBytes, os, errRet);
+          errMsg = errRet[0];
         }
-        if (appendText != null && os != null) {
-          byte[] b = (Escape.isAB(appendText) ? (byte[]) appendText
-              : appendText instanceof String ? ((String) appendText).getBytes()
+        if (appendix != null && os != null) {
+          byte[] b = (Escape.isAB(appendix) ? (byte[]) appendix
+              : appendix instanceof String ? ((String) appendix).getBytes()
                   : null);
           if (b != null && b.length > 0)
-            os.write(b);
+            os.write(b, 0, b.length);
         }
         if (os != null)
           os.flush();
@@ -288,4 +243,34 @@ public class ImageCreator implements JmolImageCreatorInterface {
       return errMsg;
     return bytes;
   }
+
+  /**
+   * 
+   * GIF PPM PDF -- not available in JavaScript
+   * 
+   * @param fileName  
+   * @param objImage 
+   * @param type 
+   * @param asBytes 
+   * @param os 
+   * @param errRet 
+   * @return byte array if needed
+   * @throws IOException 
+   */
+  byte[] getOtherBytes(String fileName, Object objImage, String type,
+                       boolean asBytes, OutputStream os, String[] errRet) throws IOException {
+    errRet[0] = "file type " + type + " not available on this platform";
+    return null;
+  }
+  
+  public String clipImage(String text) {
+    // Java only
+    return null;
+  }
+
+  public String getClipboardText() {
+    // Java only
+    return null;
+  }
+  
 }

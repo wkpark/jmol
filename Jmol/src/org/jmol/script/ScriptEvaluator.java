@@ -6909,9 +6909,15 @@ public class ScriptEvaluator {
         viewer.showConsole(false);
       break;
     case Token.on:
-      if (isSyntaxCheck)
-        break;
-      viewer.showConsole(true);
+      if (!isSyntaxCheck)
+        viewer.showConsole(true);
+      break;
+    case Token.clear:
+      if (!isSyntaxCheck)
+        viewer.clearConsole();
+      break;
+    case Token.write:
+      showString(stringParameter(2));
       break;
     default:
       error(ERROR_invalidArgument);
@@ -14593,7 +14599,7 @@ public class ScriptEvaluator {
               && fullPath[0] != null) {
             String ext = (type.equals("Idtf") ? ".tex" : ".ini");
             fileName = fullPath[0] + ext;
-            msg = viewer.createImageSet(fileName, ext, data, null,
+            msg = viewer.createImageSet(fileName, ext, data, null, null,
                 Integer.MIN_VALUE, 0, 0, null, 0, fullPath);
             if (type.equals("Idtf"))
               data = data.substring(0, data.indexOf("\\begin{comment}"));
@@ -14722,7 +14728,10 @@ public class ScriptEvaluator {
       if (doDefer)
         msg = viewer.streamFileData(fileName, type, type2, 0, null);
       else
-        msg = viewer.createImageSet(fileName, type, bytes, scripts, quality,
+        msg = viewer.createImageSet(fileName, type, 
+            (bytes instanceof String ? (String) bytes : null), 
+            (bytes instanceof byte[] ? (byte[]) bytes : null), 
+            scripts, quality,
             width, height, bsFrames, nVibes, fullPath);
     }
     if (!isSyntaxCheck && msg != null) {
@@ -15004,6 +15013,8 @@ public class ScriptEvaluator {
         msg = viewer.getSavedCoordinates(nameC);
       break;
     case Token.state:
+      if (!isSyntaxCheck)
+        viewer.clearConsole();
       if ((len = statementLength) == 2) {
         if (!isSyntaxCheck)
           msg = viewer.getStateInfo();
@@ -15082,6 +15093,8 @@ public class ScriptEvaluator {
       break;
     case Token.file:
       // as a string
+      if (!isSyntaxCheck)
+        viewer.clearConsole();
       if (statementLength == 2) {
         if (!isSyntaxCheck)
           msg = viewer.getCurrentFileAsString();
@@ -15106,6 +15119,7 @@ public class ScriptEvaluator {
       if (n < 1)
         error(ERROR_invalidArgument);
       if (!isSyntaxCheck) {
+        viewer.clearConsole();
         viewer.removeCommand();
         msg = viewer.getSetHistory(n);
       }

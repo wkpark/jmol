@@ -650,7 +650,7 @@ public class FileManager {
         bis.close();
         return JmolBinary.getBufferedReaderForString(s);
       }
-      return (asInputStream ? bis : JmolBinary.getInputStreamReader(bis, true));
+      return (asInputStream ? bis : JmolBinary.getBufferedReader(bis));
     } catch (Exception ioe) {
       return ioe.toString();
     }
@@ -746,8 +746,8 @@ public class FileManager {
           sb.append("\nEND Directory Entry " + name0 + "\n");
         fileData.put(name0, sb.toString());
       } else {
-        BufferedReader br = JmolBinary.getInputStreamReader(
-            JmolBinary.isGzipS(bis) ? JmolBinary.newGZIPInputStream(bis) : bis, true);
+        BufferedReader br = JmolBinary.getBufferedReader(
+            JmolBinary.isGzipS(bis) ? new BufferedInputStream(JmolBinary.newGZIPInputStream(bis)) : bis);
         String line;
         sb = new StringXBuilder();
         if (header != null)

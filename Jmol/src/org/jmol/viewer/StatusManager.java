@@ -640,14 +640,15 @@ class StatusManager {
    * 
    * @param fileNameOrError 
    * @param type
-   * @param text_or_bytes
+   * @param text
+   * @param bytes
    * @param quality
    * @return null (canceled) or a message starting with OK or an error message
    */
-  String createImage(String fileNameOrError, String type, Object text_or_bytes,
+  String createImage(String fileNameOrError, String type, String text, byte[] bytes,
                      int quality) {
     return (jmolStatusListener == null  ? null :
-      jmolStatusListener.createImage(fileNameOrError, type, text_or_bytes, quality));
+      jmolStatusListener.createImage(fileNameOrError, type, text == null ? bytes : text, quality));
   }
 
   Map<String, Object> getRegistryInfo() {

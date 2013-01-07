@@ -206,8 +206,8 @@ public class MainPopupResourceBundle extends PopupResource {
       {   "fileMenu",
           "SIGNEDloadFileOrUrl SIGNEDloadPdb SIGNEDloadScript - "
               + "reload SIGNEDloadFileUnitCell - "
-              + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface - SIGNEDwriteGif SIGNEDwriteJpg SIGNEDwritePng SIGNEDwritePngJmol SIGNEDwritePovray - "
-              + "SIGNEDwriteVrml SIGNEDwriteX3d SIGNEDwriteIdtf SIGNEDwriteMaya" },
+              + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface - SIGNEDJAVAwriteGif SIGNEDJAVAwriteJpg SIGNEDwritePng SIGNEDwritePngJmol SIGNEDJAVAwritePovray - "
+              + "SIGNEDJAVAwriteVrml SIGNEDJAVAwriteX3d SIGNEDJAVAwriteIdtf SIGNEDJAVAwriteMaya" },
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
       { "[set_spin_Y]Menu", null },
@@ -490,15 +490,15 @@ public class MainPopupResourceBundle extends PopupResource {
       { "writeHistory", "if (_applet && !_signedApplet) { console;show history } else { write history \"?FILEROOT?.his\"}" },     
       { "SIGNEDwriteJmol", "write \"?FILEROOT?.jmol\"" },      
       { "SIGNEDwriteIsosurface", "write isosurface \"?FILEROOT?.jvxl\"" },      
-      { "SIGNEDwriteGif", "write image \"?FILEROOT?.gif\"" },      
-      { "SIGNEDwriteJpg", "write image \"?FILEROOT?.jpg\"" },      
+      { "SIGNEDJAVAwriteGif", "write image \"?FILEROOT?.gif\"" },      
+      { "SIGNEDJAVAwriteJpg", "write image \"?FILEROOT?.jpg\"" },      
       { "SIGNEDwritePng", "write image \"?FILEROOT?.png\"" },      
       { "SIGNEDwritePngJmol", "write PNGJ \"?FILEROOT?.png\"" },      
-      { "SIGNEDwritePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
-      { "SIGNEDwriteVrml", "write VRML \"?FILEROOT?.wrl\"" },      
-      { "SIGNEDwriteX3d", "write X3D \"?FILEROOT?.x3d\"" },      
-      { "SIGNEDwriteIdtf", "write IDTF \"?FILEROOT?.idtf\"" },      
-      { "SIGNEDwriteMaya", "write MAYA \"?FILEROOT?.ma\"" },       
+      { "SIGNEDJAVAwritePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
+      { "SIGNEDJAVAwriteVrml", "write VRML \"?FILEROOT?.wrl\"" },      
+      { "SIGNEDJAVAwriteX3d", "write X3D \"?FILEROOT?.x3d\"" },      
+      { "SIGNEDJAVAwriteIdtf", "write IDTF \"?FILEROOT?.idtf\"" },      
+      { "SIGNEDJAVAwriteMaya", "write MAYA \"?FILEROOT?.ma\"" },       
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },
       { "UNITCELLshow", "console on;show unitcell" },
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },

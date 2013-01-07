@@ -25,6 +25,7 @@
 package org.jmol.minimize.forcefield;
 
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -522,7 +523,7 @@ abstract public class ForceField {
      * 
      */
     {
-    return JmolBinary.getInputStreamReader((InputStream) url.getContent(), false);
+    return JmolBinary.getBufferedReader(new BufferedInputStream((InputStream) url.getContent()));
     }
   }
 

@@ -39,8 +39,9 @@ public class Platform extends org.jmol.awtjs2d.Platform {
 	}
 
   @Override
-	public int[] grabPixels(Object imageobj, int width, int height) {
-		return Image.grabPixels(imageobj, width, height);
+	public int[] grabPixels(Object imageobj, int width, int height, 
+                          int[] pixels, int startRow, int nRows) {
+    return null; // can't do this with a 3D canvas
 	}
 
   @Override

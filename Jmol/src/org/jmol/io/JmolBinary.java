@@ -58,7 +58,7 @@ public class JmolBinary {
   public static String determineSurfaceTypeIs(InputStream is) {
     BufferedReader br;
     try {
-      br = getInputStreamReader(new BufferedInputStream(is), true);//, "ISO-8859-1"));
+      br = getBufferedReader(new BufferedInputStream(is));//, "ISO-8859-1"));
     } catch (IOException e) {
       return null;
     }
@@ -175,15 +175,12 @@ public class JmolBinary {
     return (nSurfaces < 0 ? "Jvxl" : "Cube"); //Final test looks at surface definition line
   }
 
-  private static Encoding getUTFEncodingForStream(InputStream is) throws IOException {
+  private static Encoding getUTFEncodingForStream(BufferedInputStream is) throws IOException {
     byte[] abMagic = new byte[4];
     abMagic[3] = 1;
-    System.out.println("JmolBinary testing mark");
     try{
     is.mark(5);
-    System.out.println("JmolBinary testing mark OK");
     } catch (Exception e) {
-      System.out.println("JmolBinary testing mark NONE");
       return Encoding.NONE;
     }
     is.read(abMagic, 0, 4);
@@ -541,17 +538,17 @@ public class JmolBinary {
   }
 
   /**
-   * @param is
-   * @param checkEncoding TODO
+   * @param bis
    * @return Reader
    * @throws IOException
    */
-  public static BufferedReader getInputStreamReader(InputStream is, boolean checkEncoding)
+  public static BufferedReader getBufferedReader(BufferedInputStream bis)
       throws IOException {
-    if (!checkEncoding || getUTFEncodingForStream(is) == Encoding.NONE)
-      return new BufferedReader(new InputStreamReader(is, "UTF-8"));
-    byte[] bytes = getStreamBytes(is, -1);
-    is.close();
+    // could also just make sure we have a buffered input stream here.
+    if (getUTFEncodingForStream(bis) == Encoding.NONE)
+      return new BufferedReader(new InputStreamReader(bis, "UTF-8"));
+    byte[] bytes = getStreamBytes(bis, -1);
+    bis.close();
     return getBufferedReaderForString(fixUTF(bytes));
   }
 

@@ -180,8 +180,9 @@ public class Platform implements ApiPlatform {
 		Image.disposeGraphics(gOffscreen);
 	}
 
-	public int[] grabPixels(Object imageobj, int width, int height) {
-	  // only for JpegInfo
+	public int[] grabPixels(Object imageobj, int width, int height, 
+                          int[] pixels, int startRow, int nRows) {
+	  // j2s will only pull in the entire pixels set, not a subset
 		return Image.grabPixels(imageobj, width, height);
 	}
 
@@ -271,5 +272,4 @@ public class Platform implements ApiPlatform {
 		return Font.newFont(fontFace, isBold, isItalic, fontSize, "px");
 	}
 
-	
 }

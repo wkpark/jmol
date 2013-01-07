@@ -103,9 +103,13 @@ public interface ApiPlatform {
    * @param image
    * @param width
    * @param height
+   * @param pixels 
+   * @param startRow 
+   * @param nRows 
    * @return         pixels
    */
-  int[] grabPixels(Object image, int width, int height);
+  int[] grabPixels(Object image, int width, int height, 
+                   int[] pixels, int startRow, int nRows);
 
   /**
    * can be ignored (return false) if platform cannot save images

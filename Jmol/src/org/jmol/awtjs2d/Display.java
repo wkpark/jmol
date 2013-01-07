@@ -37,7 +37,7 @@ class Display {
      * 
      */
     {
-      System.out.println("Display.hasFocus");
+      System.out.println(canvas);
     }
     return true;
   }
@@ -48,7 +48,7 @@ class Display {
      * 
      */
     {
-      System.out.println("requestFocus");
+      System.out.println(canvas);
     }
   }
 

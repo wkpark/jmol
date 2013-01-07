@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 
-import org.jmol.export.image.ImageCreator;
+import org.jmol.export.image.GenericImageCreator;
 import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
@@ -736,10 +736,10 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private Object createImage(String fileName, String type, Object image, int width, int height) throws Exception {
     if (image instanceof Image) {
-      ImageCreator ic = new ImageCreator();
+      GenericImageCreator ic = new GenericImageCreator();
       // we need the viewer's private key to access the image creator
       ic.setViewer(viewer, privateKey);
-      return ic.createImage(fileName, type, image, null, Integer.MIN_VALUE);
+      return ic.createImage(fileName, type, null, image, null, null, Integer.MIN_VALUE);
     }
     /*  TGA test -- not worth it 
     // write simple TGA file

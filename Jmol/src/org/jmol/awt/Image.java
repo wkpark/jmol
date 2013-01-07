@@ -106,9 +106,12 @@ class Image {
     return bytes;
   }
 
-  static int[] grabPixels(Object imageobj, int width, int height) {
-    PixelGrabber pixelGrabber = new PixelGrabber((java.awt.Image) imageobj, 0,
-        0, width, height, true);
+  static int[] grabPixels(Object imageobj, int width, int height, 
+                          int[] pixels, int startRow, int nRows) {
+    java.awt.Image image = (java.awt.Image) imageobj;
+    PixelGrabber pixelGrabber = (pixels == null ? new PixelGrabber(image, 0,
+        0, width, height, true) : new PixelGrabber(image, 0, startRow, width, nRows, pixels, 0,
+            width));
     try {
       pixelGrabber.grabPixels();
     } catch (InterruptedException e) {
@@ -136,7 +139,7 @@ class Image {
       g.clearRect(0, 0, width, height);
       g.drawImage(image, 0, 0, width, height, 0, 0, width0, height0, null);
     }
-    return grabPixels(imageOffscreen, width, height);
+    return grabPixels(imageOffscreen, width, height, null, 0, 0);
   }
 
   public static int[] getTextPixels(String text, JmolFont font3d, Object gObj,
@@ -148,7 +151,7 @@ class Image {
     g.setColor(Color.white);
     g.setFont((Font) font3d.font);
     g.drawString(text, 0, ascent);
-    return grabPixels(image, width, height);
+    return grabPixels(image, width, height, null, 0, 0);
   }
 
   static Object newBufferedImage(Object image, int w, int h) {

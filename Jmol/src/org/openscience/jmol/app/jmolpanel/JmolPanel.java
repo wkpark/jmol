@@ -31,7 +31,7 @@ import org.jmol.awt.Platform;
 import org.jmol.export.JmolFileDropper;
 import org.jmol.export.dialog.Dialog;
 import org.jmol.export.history.HistoryFile;
-import org.jmol.export.image.ImageCreator;
+import org.jmol.export.image.AwtImageCreator;
 import org.jmol.i18n.GT;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;
 import org.openscience.jmol.app.jmolpanel.console.ConsoleTextArea;
@@ -1089,7 +1089,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.loadInline(ImageCreator.getClipboardTextStatic(), false);
+      viewer.loadInline(AwtImageCreator.getClipboardTextStatic(), false);
     }
   }
 
@@ -1103,7 +1103,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      (new ImageCreator(viewer)).clipImage(null);
+      (new AwtImageCreator(viewer)).clipImage(null);
     }
   }
 
@@ -1114,7 +1114,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      (new ImageCreator(viewer)).clipImage((String) viewer.getProperty(
+      (new AwtImageCreator(viewer)).clipImage((String) viewer.getProperty(
           "string", "stateInfo", null));
     }
   }

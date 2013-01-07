@@ -427,6 +427,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
     }
     while (st.hasMoreTokens()) {
       item = st.nextToken();
+      if (!checkKey(item))
+        continue;
       String label = popupResourceBundle.getWord(item);
       Object newMenu = null;
       String script = "";
@@ -511,6 +513,22 @@ abstract public class GenericPopup implements JmolPopupInterface,
         str = "addMenuItem('\t" + str + "\t')";
         Logger.info(str);
       }
+    }
+  }
+
+  /**
+   * @param key  
+   * @return true unless a JAVA-only key in JavaScript
+   */
+  private boolean checkKey(String key) {
+    /**
+     * @j2sNative
+     *
+     * return (key.indexOf("JAVA") < 0);
+     * 
+     */
+    {
+      return true;
     }
   }
 

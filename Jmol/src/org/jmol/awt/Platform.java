@@ -112,8 +112,8 @@ public class Platform implements ApiPlatform {
     Image.drawImage(g, img, x, y, width, height);
   }
 
-  public int[] grabPixels(Object imageobj, int width, int height) {
-    return Image.grabPixels(imageobj, width, height); 
+  public int[] grabPixels(Object imageobj, int width, int height, int[] pixels, int startRow, int nRows) {
+    return Image.grabPixels(imageobj, width, height, pixels, startRow, nRows); 
   }
 
   public int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,

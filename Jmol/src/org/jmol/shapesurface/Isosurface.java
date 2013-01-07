@@ -122,9 +122,9 @@ import org.jmol.script.Token;
 import org.jmol.viewer.Viewer;
 //import org.jmol.viewer.StateManager.Orientation;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
@@ -515,7 +515,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         }
         if (!(value instanceof BufferedReader))
         try {
-          value = JmolBinary.getInputStreamReader((InputStream) value, true);
+          value = JmolBinary.getBufferedReader((BufferedInputStream) value);
         } catch (IOException e) {
           // ignore
         }

@@ -4542,7 +4542,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } else {
       c.setViewer(this, privateKey);
       try {
-        bytes = c.getImageBytes(type, quality, fileName, scripts, null, os);
+        bytes = c.getImageBytes(type, quality, fileName, scripts, null, null, os);
       } catch (IOException e) {
         bytes = e;
         setErrorMessage("Error creating image: " + e, null);
@@ -8982,7 +8982,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    * @param fileName
    * @param type
-   * @param text_or_bytes
+   * @param text
+   * @param bytes
    * @param scripts 
    * @param quality
    * @param width
@@ -8992,11 +8993,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param fullPath
    * @return message starting with "OK" or an error message
    */
-  public String createImageSet(String fileName, String type, Object text_or_bytes,
+  public String createImageSet(String fileName, String type, String text, byte[] bytes,
                             String[] scripts, int quality, int width, int height,
                             BitSet bsFrames, int nVibes, String[] fullPath) {
     if (bsFrames == null && nVibes == 0)
-      return (String) createImagePathCheck(fileName, type, text_or_bytes, scripts, quality,
+      return (String) createImagePathCheck(fileName, type, text, bytes, scripts, null, quality,
           width, height, fullPath, true);
     String info = "";
     int n = 0;
@@ -9012,14 +9013,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String froot = fileName.substring(0, ptDot);
     String fext = fileName.substring(ptDot);
     StringXBuilder sb = new StringXBuilder();
-    text_or_bytes = new Object[] { "" };
     if (bsFrames == null) { 
       transformManager.vibrationOn = true;
       sb = new StringXBuilder();
       for (int i = 0; i < nVibes; i++) {
         for (int j = 0; j < 20; j++) {
           transformManager.setVibrationT(j/20f+0.2501f);
-          if (!writeFrame(++n, froot, fext, fullPath, type, text_or_bytes,
+          if (!writeFrame(++n, froot, fext, fullPath, type,
               quality, width, height, sb))
             return "ERROR WRITING FILE SET: \n" + info;
         }
@@ -9029,7 +9029,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames
           .nextSetBit(i + 1)) {
         setCurrentModelIndex(i);
-        if (!writeFrame(++n, froot, fext, fullPath, type, text_or_bytes,
+        if (!writeFrame(++n, froot, fext, fullPath, type,
             quality, width, height, sb))
           return "ERROR WRITING FILE SET: \n" + info;
       }
@@ -9041,14 +9041,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private boolean writeFrame(int n, String froot, String fext,
                              String[] fullPath, String type,
-                             Object text_or_bytes, int quality, int width,
+                             int quality, int width,
                              int height, StringXBuilder sb) {
     String fileName = "0000" + n;
     fileName = froot + fileName.substring(fileName.length() - 4) + fext;
     if (fullPath != null)
       fullPath[0] = fileName;
-    String msg = (String) createImagePathCheck(fileName, type, text_or_bytes, null,
-        quality, width, height, null, false);
+    String msg = (String) createImagePathCheck(fileName, type, null, null, null,
+        "", quality, width, height, null, false);
     scriptEcho(msg);
     sb.append(msg).append("\n");
     return msg.startsWith("OK");
@@ -9062,14 +9062,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Object createZip(String fileName, String type, String stateInfo,
                           String[] scripts) {
-  return createImagePathCheck(fileName, type, stateInfo, scripts, Integer.MIN_VALUE, -1,
+  return createImagePathCheck(fileName, type, stateInfo, null, scripts, null, Integer.MIN_VALUE, -1,
       -1, null, true);
 }
 
   @Override
   public Object createImage(String fileName, String type, Object text_or_bytes,
                             int quality, int width, int height) {
-    return createImagePathCheck(fileName, type, text_or_bytes, null, quality, width, height,
+    String text = (text_or_bytes instanceof String ? (String) text_or_bytes : null);
+    byte[] bytes = (text_or_bytes instanceof byte[] ? (byte[]) text_or_bytes : null); 
+    return createImagePathCheck(fileName, type, text, bytes, null, null, quality, width, height,
+        null, true);
+  }
+
+  public Object createImage(String fileName, String type, String text, byte[] bytes,
+                            int quality, int width, int height) {
+    return createImagePathCheck(fileName, type, text, bytes, null, null, quality, width, height,
         null, true);
   }
 
@@ -9083,9 +9091,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *        starts with ? --> use file dialog; null --> to clipboard
    * @param type
    *        PNG, JPG, etc.
-   * @param text_or_bytes
-   *        String or byte[] or null if an image
+   * @param text
+   *        String to output
+   * @param bytes
+   *        byte[] or null if an image
    * @param scripts 
+   * @param appendix
+   *        byte[] or String 
    * @param quality
    *        Integer.MIN_VALUE --> not an image
    * @param width
@@ -9097,7 +9109,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return null (canceled) or a message starting with OK or an error message
    */
   private Object createImagePathCheck(String fileName, String type,
-                             Object text_or_bytes, String[] scripts, int quality, int width,
+                             String text, byte[] bytes, String[] scripts, Object appendix, 
+                             int quality, int width,
                              int height, String[] fullPath, boolean doCheck) {
 
     /*
@@ -9130,7 +9143,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     try {
       if (fileName == null) {
-        err = clipImage((String) text_or_bytes);
+        err = clipImage(text);
       } else {
         if (doCheck)
           fileName = getFileNameFromDialog(fileName, quality);
@@ -9141,25 +9154,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         } else if (type.equals("ZIP") || type.equals("ZIPALL")) {
           if (scripts != null && type.equals("ZIP"))
             type = "ZIPALL";
-          err = JmolBinary.createZipSet(fileManager, this, fileName, (String) text_or_bytes, scripts, type
+          err = JmolBinary.createZipSet(fileManager, this, fileName, text, scripts, type
               .equals("ZIPALL"));
         } else if (type.equals("SCENE")) {
-          err = createSceneSet(fileName, (String) text_or_bytes, width, height);
+          err = createSceneSet(fileName, text, width, height);
         } else {
           // see if application wants to do it (returns non-null String)
           // both Jmol application and applet return null
           if (!type.equals("OutputStream"))
-            err = statusManager.createImage(fileName, type, text_or_bytes,
+            err = statusManager.createImage(fileName, type, text, bytes,
                 quality);
           if (err == null) {
             // application can do it itself or allow Jmol to do it here
             JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
-                .getOptionInterface("export.image.ImageCreator");
+                .getOptionInterface(isJS2D ? "exportjs.JSImageCreator" : "export.image.AwtImageCreator");
             c.setViewer(this, privateKey);
-            err = c.createImage(fileName, type, text_or_bytes, scripts, quality);
+            err = c.createImage(fileName, type, text, bytes, scripts, null, quality);
             if (err instanceof String)
               // report error status (text_or_bytes == null)
-              statusManager.createImage((String) err, type, null, quality);
+              statusManager.createImage((String) err, type, null, null, quality);
           }
         }
       }
@@ -9711,7 +9724,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public OutputStream getOutputStream(String localName, String[] fullPath) {
     if (!isRestricted(ACCESS.ALL))
       return null;
-    Object ret = createImagePathCheck(localName, "OutputStream", null, null,
+    Object ret = createImagePathCheck(localName, "OutputStream", null, null, null, null,
         Integer.MIN_VALUE, 0, 0, fullPath, true);
     if (ret instanceof String) {
       Logger.error((String) ret);
@@ -10774,13 +10787,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         iSceneLast = iScene;
         str[2] = "all"; // full PNGJ
         String fileName = fileRoot + "_scene_" + iScene + ".all." + fileExt;
-        String msg = (String) createImagePathCheck(fileName, "PNGJ", null, 
-            str, -1, width, height, null, false);
+        String msg = (String) createImagePathCheck(fileName, "PNGJ", null, null, 
+            str, null, -1, width, height, null, false);
         str[0] = null; // script0 only saved in first file
         str[2] = "min"; // script only -- for fast loading
         fileName = fileRoot + "_scene_" + iScene + ".min." + fileExt;
-        msg += "\n" + (String) createImagePathCheck(fileName, "PNGJ", null, 
-            str, -1, Math.min(width, 200), Math.min(height, 200), null, false);
+        msg += "\n" + (String) createImagePathCheck(fileName, "PNGJ", null, null,
+            str, null, -1, Math.min(width, 200), Math.min(height, 200), null, false);
         showString(msg, false);
         nFiles += 2;
       } catch (Exception e) {

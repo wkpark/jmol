@@ -37,11 +37,6 @@ import org.jmol.viewer.Viewer;
  */
 class Image {
 
-  static Object createImage(Object data) {
-    // getFileAsImage
-    return null;
-  }
-
   /**
    * @param display  
    * @param image 
@@ -142,10 +137,15 @@ class Image {
       }
   }
   
+  static Object createImage(Object data) {
+    // getFileAsImage -- for getting an image for an echo or background
+    return null;
+  }
+
   static int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
                                  Object imageobj, int width, int height,
                                  int bgcolor) {
-    // this is a background image;
+    // rendering an image ?? 
     return null;
   }
 
@@ -254,12 +254,18 @@ class Image {
     }
   }
 
+  /**
+   * @param image  
+   */
   static void flush(Object image) {
-    //((java.awt.Image) image).flush();
+    // N/A
   }
 
+  /**
+   * @param graphicForText  
+   */
   static void disposeGraphics(Object graphicForText) {
-    //((java.awt.Graphics) graphicForText).dispose();
+    // N/A
   }
 
 }

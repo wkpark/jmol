@@ -23,8 +23,6 @@
  */
 package org.jmol.export.image;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -154,9 +152,7 @@ public class GenericPngEncoder extends GenericCRCEncoder {
     writeText(getJmolTypeText(type, 0, 0));
 
     writeText("Software\0Jmol " + Viewer.getJmolVersion());
-    writeText("Creation Time\0"
-        + (new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z"))
-            .format(new Date()));
+    writeText("Creation Time\0" + apiPlatform.getDateFormat());
 
     if (!encodeAlpha && transparentColor != null)
       writeTransparentColor(transparentColor.intValue());
@@ -292,9 +288,9 @@ public class GenericPngEncoder extends GenericCRCEncoder {
 
     bytesPerPixel = (encodeAlpha ? 4 : 3);
     byteWidth = width * bytesPerPixel;
-    
+
     int scanWidth = byteWidth + 1; // the added 1 is for the filter byte
-    
+
     //boolean doFilter = (filter != FILTER_NONE);
 
     int rowsLeft = height; // number of rows remaining to write
@@ -334,10 +330,19 @@ public class GenericPngEncoder extends GenericCRCEncoder {
         //            priorRow = new byte[scanWidth - 1];
         //            break;
         //          }
-
+        int[] pixels;
         int nPixels = width * nRows;
-        int[] pixels = apiPlatform.grabPixels(image, width, height,
-            new int[nPixels], startRow, nRows);
+        /**
+         * @j2sNative
+         * 
+         *            pixels = null;
+         * 
+         */
+        {
+          pixels = new int[nPixels];
+        }
+        pixels = apiPlatform.grabPixels(image, width, height, pixels, startRow,
+            nRows);
         if (pixels == null)
           return false;
         scanPos = 0;

@@ -182,7 +182,7 @@ class Image {
    * @param windowSize
    * @param backgroundTransparent
    * @param canvas
-   * @return a context(2d)
+   * @return a canvas
    */
   static Object allocateRgbImage(int windowWidth, int windowHeight,
                                  int[] pBuffer, int windowSize,

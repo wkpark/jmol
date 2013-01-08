@@ -107,5 +107,4 @@ public class AwtImageCreator extends GenericImageCreator {
     return ImageSelection.getClipboardText();
   }
 
-
 }

@@ -4,6 +4,8 @@ import java.awt.Container;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import java.awt.Window;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JDialog;
 
@@ -230,5 +232,11 @@ public class Platform implements ApiPlatform {
     }
     return null;
   }
+
+  public String getDateFormat() {
+    return (new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z"))
+        .format(new Date());
+  }
+
 
 }

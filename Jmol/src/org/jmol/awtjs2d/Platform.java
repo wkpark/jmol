@@ -182,8 +182,9 @@ public class Platform implements ApiPlatform {
 
 	public int[] grabPixels(Object imageobj, int width, int height, 
                           int[] pixels, int startRow, int nRows) {
+	  // from PNG and JPG image creators
 	  // j2s will only pull in the entire pixels set, not a subset
-		return Image.grabPixels(imageobj, width, height);
+		return Image.grabPixels(Image.getGraphics(imageobj), width, height);
 	}
 
 	public int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
@@ -272,4 +273,19 @@ public class Platform implements ApiPlatform {
 		return Font.newFont(fontFace, isBold, isItalic, fontSize, "px");
 	}
 
+  public String getDateFormat() {
+    /**
+     * 
+     * Mon Jan 07 2013 19:54:39 GMT-0600 (Central Standard Time)
+     * 
+     * j2sNative
+     * 
+     * return (new Date()).split(" (")[0];
+     */
+    {
+      return null;
+    }
+  }
+
+	
 }

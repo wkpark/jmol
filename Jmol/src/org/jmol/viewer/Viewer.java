@@ -4521,8 +4521,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     type = type.toLowerCase();
     if (!Parser.isOneOf(type, "jpg;jpeg;jpg64;jpeg64"))
       try {
-        c = (JmolImageCreatorInterface) Interface
-            .getOptionInterface("export.image.ImageCreator");
+        c = getImageCreator();
       } catch (Error er) {
         // unsigned applet will not have this interface
         // and thus will not use os or filename
@@ -8966,8 +8965,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return "no";
     JmolImageCreatorInterface c;
     try {
-      c = (JmolImageCreatorInterface) Interface
-          .getOptionInterface("export.image.ImageCreator");
+      c = getImageCreator();
       c.setViewer(this, privateKey);
       return c.clipImage(text);
     } catch (Error er) {
@@ -9166,8 +9164,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                 quality);
           if (err == null) {
             // application can do it itself or allow Jmol to do it here
-            JmolImageCreatorInterface c = (JmolImageCreatorInterface) Interface
-                .getOptionInterface(isJS2D ? "exportjs.JSImageCreator" : "export.image.AwtImageCreator");
+            JmolImageCreatorInterface c = getImageCreator();
             c.setViewer(this, privateKey);
             err = c.createImage(fileName, type, text, bytes, scripts, null, quality);
             if (err instanceof String)
@@ -9186,6 +9183,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       resizeImage(saveWidth, saveHeight, true, false, true);
     }
     return ("CANCELED".equals(err) ? null : err);
+  }
+
+  private JmolImageCreatorInterface getImageCreator() {
+    return (JmolImageCreatorInterface) Interface
+    .getOptionInterface(isJS2D ? "exportjs.JSImageCreator" : "export.image.AwtImageCreator");
   }
 
   private String getFileNameFromDialog(String fileName, int quality) {

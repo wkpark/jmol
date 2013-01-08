@@ -191,6 +191,9 @@ public class Platform implements ApiPlatform {
     // N/A
   }
   
+	public String getDateFormat() {
+		return null;
+	}
 }
 
 

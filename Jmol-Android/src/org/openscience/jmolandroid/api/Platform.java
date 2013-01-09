@@ -93,7 +93,9 @@ public class Platform implements ApiPlatform {
     Image.drawImage(graphic, img, x, y, width, height);
   }
 
-  public int[] grabPixels(Object imageobj, int width, int height) {
+  public int[] grabPixels(Object imageobj, int width, int height, 
+      int[] pixels, int startRow, int nRows) {
+  	// not to be used for PNG or JPG creation in JmolAndroid
     return Image.grabPixels(imageobj, width, height);
   }
 

@@ -1,9 +1,6 @@
 package org.jmol.api;
 
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.jmol.util.JmolFont;
 import org.jmol.util.Point3f;
 import org.jmol.viewer.ActionManager;

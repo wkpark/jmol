@@ -80,9 +80,9 @@ public class AxesRenderer extends FontLineShapeRenderer {
     int modelIndex = viewer.getCurrentModelIndex();
     // includes check here for background model present
     boolean isUnitCell = (axesMode == EnumAxesMode.UNITCELL);
-    if (viewer.isJmolDataFrameForModel(modelIndex) 
-        && !viewer.getModelSet().getJmolFrameType(modelIndex).equals("plot data")
-        || isUnitCell && modelIndex < 0)
+    if (viewer.isJmolDataFrameForModel(modelIndex)
+        && !viewer.getModelSet().getJmolFrameType(modelIndex).equals(
+            "plot data") || isUnitCell && modelIndex < 0)
       return false;
     int nPoints = 6;
     int labelPtr = 0;
@@ -98,7 +98,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     }
     if (axes.labels != null) {
       if (nPoints != 3)
-        nPoints = axes.labels.length;
+        nPoints = (axes.labels.length < 6 ? 3 : 6);
       labelPtr = -1;
     }
     boolean isDataFrame = viewer.isJmolDataFrame();
@@ -140,12 +140,10 @@ public class AxesRenderer extends FontLineShapeRenderer {
         }
         atomA.setT(axes.getOriginPoint(isDataFrame));
       }
-      viewer.transformPtNoClip(axes.getOriginPoint(isDataFrame),
-          originScreen);
+      viewer.transformPtNoClip(axes.getOriginPoint(isDataFrame), originScreen);
       diameter = getDiameter((int) originScreen.z, mad);
       for (int i = nPoints; --i >= 0;)
-        viewer.transformPtNoClip(axes.getAxisPoint(i, isDataFrame),
-            screens[i]);
+        viewer.transformPtNoClip(axes.getAxisPoint(i, isDataFrame), screens[i]);
     }
     float xCenter = originScreen.x;
     float yCenter = originScreen.y;
@@ -173,11 +171,15 @@ public class AxesRenderer extends FontLineShapeRenderer {
       renderLine(originScreen, screens[i], diameter, pt0, pt1, drawTicks
           && tickInfo != null);
     }
-    if (nPoints == 3 && !isXY) { // a b c
-      colix = viewer.getColixBackgroundContrast();
-      g3d.setColix(colix);
-      renderLabel("0", originScreen.x, originScreen.y, originScreen.z, xCenter,
-          yCenter);
+    if (nPoints == 3 && !isXY) { // a b c [orig]
+      String label0 = (axes.labels == null || axes.labels.length == 3 || axes.labels[3] == null ? "0"
+          : axes.labels[3]);
+      if (label0 != null && label0.length() != 0) {
+        colix = viewer.getColixBackgroundContrast();
+        g3d.setColix(colix);
+        renderLabel(label0, originScreen.x, originScreen.y, originScreen.z,
+            xCenter, yCenter);
+      }
     }
     if (isXY)
       g3d.setSlab(slab);

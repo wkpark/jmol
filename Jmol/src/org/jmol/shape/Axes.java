@@ -191,7 +191,8 @@ public String getShapeState() {
     if (labels != null) {
       sb.append("  axes labels ");
       for (int i = 0; i < labels.length; i++)
-        sb.append(Escape.escapeStr(labels[i])).append(" ");
+        if (labels[i] != null)
+          sb.append(Escape.escapeStr(labels[i])).append(" ");
       sb.append(";\n");
     }
     return super.getShapeState() + sb;

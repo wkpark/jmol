@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-01-07 07:16+0100\n"
-"PO-Revision-Date: 2012-10-13 00:55+0100\n"
+"PO-Revision-Date: 2013-01-10 00:15+0100\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -42,7 +42,7 @@ msgstr "Error de archivo:"
 
 #: org/jmol/awtjs2d/JSModelKitPopup.java:76
 msgid "Element?"
-msgstr ""
+msgstr "¿Elemento?"
 
 #: org/openscience/jmol/app/JmolApp.java:100
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -146,12 +146,8 @@ msgid "window width x height, e.g. {0}"
 msgstr "ancho x alto de ventana, p.ej. {0}"
 
 #: org/openscience/jmol/app/JmolApp.java:225
-msgid ""
-"JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
-"2, maximum compression 9)"
-msgstr ""
-"Calidad de imagen JPG (de 1 a 100; 75 predet.) o compresión de imagen PNG "
-"(de 0 a 9; 2 predet.; 9 es la máxima compresión)"
+msgid "JPG image quality (1-100; default 75) or PNG image compression (0-9; default 2, maximum compression 9)"
+msgstr "Calidad de imagen JPG (de 1 a 100; 75 predet.) o compresión de imagen PNG (de 0 a 9; 2 predet.; 9 es la máxima compresión)"
 
 #: org/openscience/jmol/app/JmolApp.java:230
 #, java-format
@@ -163,12 +159,8 @@ msgid "For example:"
 msgstr "Por ejemplo:"
 
 #: org/openscience/jmol/app/JmolApp.java:250
-msgid ""
-"The -D options are as follows (defaults in parenthesis) and must be called "
-"preceding '-jar Jmol.jar':"
-msgstr ""
-"Las opciones -D son éstas (valores predeterminados entre paréntesis) y deben "
-"invocarse antes de «-jar Jmol.jar»:"
+msgid "The -D options are as follows (defaults in parenthesis) and must be called preceding '-jar Jmol.jar':"
+msgstr "Las opciones -D son éstas (valores predeterminados entre paréntesis) y deben invocarse antes de «-jar Jmol.jar»:"
 
 #: org/openscience/jmol/app/JmolApp.java:502
 msgid "Executing script 1..."
@@ -917,9 +909,7 @@ msgstr "Rotar molécula"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:225
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
-"Selecciona un grupo de átomos pulsando Mayús. y arrastrando con el botón "
-"principal"
+msgstr "Selecciona un grupo de átomos pulsando Mayús. y arrastrando con el botón principal"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:227
 msgid "Click atoms to measure distances"
@@ -945,13 +935,8 @@ msgstr "Limpiar"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:367
 #, java-format
-msgid ""
-"To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
-"be significant the first time the applet is loaded."
-msgstr ""
-"Para obtener un modelo tridimensional que puedes manejar, pulsa {0}aquí{1}. "
-"El tiempo de descarga puede ser considerable la primera vez que se carga la "
-"miniaplicación."
+msgid "To get a 3-D model you can manipulate, click {0}here{1}. Download time may be significant the first time the applet is loaded."
+msgstr "Para obtener un modelo tridimensional que puedes manejar, pulsa {0}aquí{1}. El tiempo de descarga puede ser considerable la primera vez que se carga la miniaplicación."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
 msgid "Insert the page TITLE here."
@@ -968,12 +953,8 @@ msgstr "Inserta aquí una leyenda para «{0}»."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:373
 #, java-format
-msgid ""
-"Insert additional explanatory text here. Long text will wrap around Jmol "
-"model {0}."
-msgstr ""
-"Inserta aquí texto explicativo adicional. Si el texto es largo, rodeará al "
-"modelo Jmol \"{0}\"."
+msgid "Insert additional explanatory text here. Long text will wrap around Jmol model {0}."
+msgstr "Inserta aquí texto explicativo adicional. Si el texto es largo, rodeará al modelo Jmol \"{0}\"."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:375
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -981,12 +962,8 @@ msgstr "Inserta aquí el TÍTULO y la INTRODUCCIÓN."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:377
 #, java-format
-msgid ""
-"The button {0} will appear in the box below.  Insert information for {0} "
-"here and below."
-msgstr ""
-"El botón «{0}» se mostrará en el recuadro de aquí abajo.  Inserta la "
-"información de «{0}» aquí y también más abajo."
+msgid "The button {0} will appear in the box below.  Insert information for {0} here and below."
+msgstr "El botón «{0}» se mostrará en el recuadro de aquí abajo.  Inserta la información de «{0}» aquí y también más abajo."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:378
 #, java-format
@@ -1073,19 +1050,11 @@ msgstr "Escribe la URL del modelo molecular"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1194
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
-msgstr ""
-"Escribe un identificador PDB de 4 caracteres, o bien \"=\" y un "
-"identificador de ligando de 3 caracteres"
+msgstr "Escribe un identificador PDB de 4 caracteres, o bien \"=\" y un identificador de ligando de 3 caracteres"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1203
-msgid ""
-"Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
-"with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
-"Resolver."
-msgstr ""
-"Escribe un nombre o identificador (SMILES, InChI, CAS) de un compuesto. Para "
-"cargarlo desde PubChem, debe anteponerse \":\"; en caso contrario, se "
-"cargará desde NCI/NIH Resolver."
+msgid "Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH Resolver."
+msgstr "Escribe un nombre o identificador (SMILES, InChI, CAS) de un compuesto. Para cargarlo desde PubChem, debe anteponerse \":\"; en caso contrario, se cargará desde NCI/NIH Resolver."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1376
 msgid "IO Exception:"
@@ -1120,8 +1089,7 @@ msgid "File Name:"
 msgstr "Nombre de archivo:"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:159
-msgid ""
-"'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
+msgid "'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'"
 msgstr "«cafeina.pov» -> «cafeina.pov», «cafeina.pov.ini», «cafeina.pov.spt»"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:169
@@ -1150,8 +1118,7 @@ msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr ""
-"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1617,12 +1584,8 @@ msgstr "Bitácora"
 
 #: org/openscience/jmol/app/webexport/WebExport.java:162
 #, java-format
-msgid ""
-"Page skeleton and JavaScript generated by export to web function using {0} "
-"on {1}."
-msgstr ""
-"Armazón de la página y JavaScript generados por la función exportar a página "
-"web de {0} el {1}."
+msgid "Page skeleton and JavaScript generated by export to web function using {0} on {1}."
+msgstr "Armazón de la página y JavaScript generados por la función exportar a página web de {0} el {1}."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:155
 msgid "A web page containing Jmol applets"
@@ -1710,9 +1673,7 @@ msgstr "Ha fallado la llamada a FileWriter."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:562
 msgid "Errors occurred during web page creation.  See Log Tab!"
-msgstr ""
-"Ha habido errores durante la creación de la página web. Consulta la pestaña "
-"Biitácora."
+msgstr "Ha habido errores durante la creación de la página web. Consulta la pestaña Biitácora."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:637
 #, java-format
@@ -1747,13 +1708,11 @@ msgstr "creando {0}"
 msgid ""
 "Could not find or open:\n"
 "{0}\n"
-"Please check that you are using a Jmol.jar that is part of a full Jmol "
-"distribution."
+"Please check that you are using a Jmol.jar that is part of a full Jmol distribution."
 msgstr ""
 "No se ha podido encontrar o abrir:\n"
 "{0}\n"
-"Comprueba que estás usando un archivo Jmol.jar que forma parte de una "
-"distribución completa de Jmol."
+"Comprueba que estás usando un archivo Jmol.jar que forma parte de una distribución completa de Jmol."
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:796
 #, java-format

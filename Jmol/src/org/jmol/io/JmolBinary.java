@@ -437,6 +437,25 @@ public class JmolBinary {
     return getJzu().writeZipFile(fm, viewer, outFileName, fileNamesAndByteArrays, msg);
   }
 
+
+  public static String postByteArray(FileManager fm, String outFileName,
+                                      byte[] bytes) {
+    Object ret = fm.getBufferedInputStreamOrErrorMessageFromName(outFileName,
+        null, false, false, bytes, false);
+    if (ret instanceof String)
+      return (String) ret;
+    try {
+      ret = getStreamAsBytes((BufferedInputStream) ret, null);
+    } catch (IOException e) {
+      try {
+        ((BufferedInputStream) ret).close();
+      } catch (IOException e1) {
+        // ignore
+      }
+    }
+    return fixUTF((byte[]) ret);
+  }
+
   public static boolean isBase64(StringXBuilder sb) {
     return (sb.indexOf(";base64,") == 0);
   }

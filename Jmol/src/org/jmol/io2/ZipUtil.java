@@ -466,7 +466,7 @@ public class ZipUtil implements JmolZipUtility {
           return bytes;
         fullFilePath = outFileName;
         nBytes = bytes.length;
-        String ret = postByteArray(fm, outFileName, bytes);
+        String ret = JmolBinary.postByteArray(fm, outFileName, bytes);
         if (ret.indexOf("Exception") >= 0)
           return ret;
         msg += " " + ret;
@@ -480,24 +480,6 @@ public class ZipUtil implements JmolZipUtility {
       return e.toString();
     }
     return msg + " " + nBytes + " " + fullFilePath;
-  }
-
-  private static String postByteArray(FileManager fm, String outFileName,
-                                      byte[] bytes) {
-    Object ret = fm.getBufferedInputStreamOrErrorMessageFromName(outFileName,
-        null, false, false, bytes, false);
-    if (ret instanceof String)
-      return (String) ret;
-    try {
-      ret = JmolBinary.getStreamAsBytes((BufferedInputStream) ret, null);
-    } catch (IOException e) {
-      try {
-        ((BufferedInputStream) ret).close();
-      } catch (IOException e1) {
-        // ignore
-      }
-    }
-    return JmolBinary.fixUTF((byte[]) ret);
   }
 
   public String getSceneScript(String[] scenes, Map<String, String> htScenes,
@@ -606,8 +588,7 @@ public class ZipUtil implements JmolZipUtility {
     List<String> newFileNames = new ArrayList<String>();
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name = fileNames.get(iFile);
-      int itype = FileManager.urlTypeIndex(name);
-      boolean isLocal = (itype < 0 || itype == FileManager.URL_LOCAL);
+      boolean isLocal = FileManager.isLocal(name);
       String newName = name;
       // also check that somehow we don't have a local file with the same name as
       // a fixed remote file name (because someone extracted the files and then used them)

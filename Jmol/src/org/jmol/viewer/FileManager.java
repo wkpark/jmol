@@ -427,10 +427,7 @@ public class FileManager {
                 Base64.getBase64((byte[]) o)).toString();
           }
         }
-        int iurl = urlPrefixes.length;
-        for (; --iurl >= 0;)
-          if (name.startsWith(urlPrefixes[iurl]))
-            break;
+        int iurl = urlTypeIndex(name);
         boolean isURL = (iurl >= 0);
         String post = null;
         if (isURL && (iurl = name.indexOf("?POST?")) >= 0) {
@@ -945,6 +942,13 @@ public class FileManager {
     }
     return -1;
   }
+  
+  public static boolean isLocal(String fileName) {
+    int itype = urlTypeIndex(fileName);
+    return (itype < 0 || itype == FileManager.URL_LOCAL);
+  }
+
+
 
   /**
    * 
@@ -1200,8 +1204,7 @@ public class FileManager {
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name0 = fileNames.get(iFile);
       String name = name0;
-      int itype = urlTypeIndex(name);
-      if (isLocal == (itype < 0 || itype == URL_LOCAL)) {
+      if (isLocal == isLocal(name)) {
         int pt = (noPath ? -1 : name.indexOf("/" + dataPath + "/"));
         if (pt >= 0) {
           name = name.substring(pt + 1);

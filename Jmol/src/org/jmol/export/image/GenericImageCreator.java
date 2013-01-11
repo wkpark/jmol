@@ -108,7 +108,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
           return bytesOrError;
         byte[] bytes = (byte[]) bytesOrError;
         if (bytes != null)
-          return new String(bytes);
+          return (fileName == null ? bytes : new String(bytes));
         len = (new File(fileName)).length();
       }
     } catch (IOException exc) {

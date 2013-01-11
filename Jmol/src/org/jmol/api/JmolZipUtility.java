@@ -67,4 +67,6 @@ public interface JmolZipUtility {
 
   public boolean cachePngjFile(FileManager fm, String[] data);
 
+ // public String postByteArray(FileManager fm, String outFileName, byte[] bytes);
+
 }

@@ -3017,13 +3017,31 @@ abstract public class ModelCollection extends BondCollection {
       mol.append(isModelKit ? "Jmol Model Kit" : viewer.getFullPathName()
           .replace('\\', '/'));
       String version = Viewer.getJmolVersion();
-      Calendar c = Calendar.getInstance();
       mol.append("\n__Jmol-").append(version.substring(0, 2));
-      TextFormat.rFill(mol, "_00", "" + (1 + c.get(Calendar.MONTH)));
-      TextFormat.rFill(mol, "00", "" + c.get(Calendar.DAY_OF_MONTH));
-      mol.append(("" + c.get(Calendar.YEAR)).substring(2, 4));
-      TextFormat.rFill(mol, "00", "" + c.get(Calendar.HOUR_OF_DAY));
-      TextFormat.rFill(mol, "00", "" + c.get(Calendar.MINUTE));
+      int cMM, cDD, cYYYY, cHH, cmm;
+      /**
+       * @j2sNative
+       * 
+       * var c = new Date();
+       * cMM = c.getMonth();
+       * cDD = c.getDate();
+       * cYYYY = c.getFullYear();
+       * cHH = c.getHours();
+       * cmm = c.getMinutes();
+       */
+      {
+        Calendar c = Calendar.getInstance();
+        cMM = c.get(Calendar.MONTH);
+        cDD = c.get(Calendar.DAY_OF_MONTH);
+        cYYYY = c.get(Calendar.YEAR);
+        cHH = c.get(Calendar.HOUR_OF_DAY);
+        cmm = c.get(Calendar.MINUTE);
+      }
+      TextFormat.rFill(mol, "_00", "" + (1 + cMM));
+      TextFormat.rFill(mol, "00", "" + cDD);
+      mol.append(("" + cYYYY).substring(2, 4));
+      TextFormat.rFill(mol, "00", "" + cHH);
+      TextFormat.rFill(mol, "00", "" + cmm);
       mol.append("3D 1   1.00000     0.00000     0");
       //       This line has the format:
       //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR

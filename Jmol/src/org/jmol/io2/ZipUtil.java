@@ -588,7 +588,7 @@ public class ZipUtil implements JmolZipUtility {
     List<String> newFileNames = new ArrayList<String>();
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name = fileNames.get(iFile);
-      boolean isLocal = FileManager.isLocal(name);
+      boolean isLocal = !viewer.isJS && FileManager.isLocal(name);
       String newName = name;
       // also check that somehow we don't have a local file with the same name as
       // a fixed remote file name (because someone extracted the files and then used them)

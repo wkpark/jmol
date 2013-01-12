@@ -9175,7 +9175,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
             // application can do it itself or allow Jmol to do it here
             JmolImageCreatorInterface c = getImageCreator();
             c.setViewer(this, privateKey);
-            err = c.createImage((FileManager.isLocal(fileName) ? fileName : null), 
+            err = c.createImage((!isJS && FileManager.isLocal(fileName) ? fileName : null), 
                 type, text, bytes, scripts, null, quality);
             if (err instanceof String)
               // report error status (text_or_bytes == null)

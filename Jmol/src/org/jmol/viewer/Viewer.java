@@ -9101,9 +9101,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *        String to output
    * @param bytes
    *        byte[] or null if an image
-   * @param scripts 
+   * @param scripts
    * @param appendix
-   *        byte[] or String 
+   *        byte[] or String
    * @param quality
    *        Integer.MIN_VALUE --> not an image
    * @param width
@@ -9115,9 +9115,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return null (canceled) or a message starting with OK or an error message
    */
   private Object createImagePathCheck(String fileName, String type,
-                             String text, byte[] bytes, String[] scripts, Object appendix, 
-                             int quality, int width,
-                             int height, String[] fullPath, boolean doCheck) {
+                                      String text, byte[] bytes,
+                                      String[] scripts, Object appendix,
+                                      int quality, int width, int height,
+                                      String[] fullPath, boolean doCheck) {
 
     /*
      * 
@@ -9151,20 +9152,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (fileName == null) {
         err = clipImage(text);
       } else {
-        if (doCheck) {
+        if (doCheck)
           fileName = getOutputFileNameFromDialog(fileName, quality);
-        }
         if (fullPath != null)
           fullPath[0] = fileName;
+        String localName = (!isJS && FileManager.isLocal(fileName) ? fileName
+            : null);
         if (fileName == null) {
           err = "CANCELED";
         } else if (type.equals("ZIP") || type.equals("ZIPALL")) {
           if (scripts != null && type.equals("ZIP"))
             type = "ZIPALL";
-          err = JmolBinary.createZipSet(fileManager, this, fileName, text, scripts, type
-              .equals("ZIPALL"));
+          err = JmolBinary.createZipSet(fileManager, this, localName, text,
+              scripts, type.equals("ZIPALL"));
         } else if (type.equals("SCENE")) {
-          err = createSceneSet(fileName, text, width, height);
+          err = (isJS ? "ERROR: Not Available" : createSceneSet(fileName, text, width,
+              height));
         } else {
           // see if application wants to do it (returns non-null String)
           // both Jmol application and applet return null
@@ -9175,17 +9178,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
             // application can do it itself or allow Jmol to do it here
             JmolImageCreatorInterface c = getImageCreator();
             c.setViewer(this, privateKey);
-            err = c.createImage((!isJS && FileManager.isLocal(fileName) ? fileName : null), 
-                type, text, bytes, scripts, null, quality);
+            err = c.createImage(localName, type, text, bytes, scripts, null,
+                quality);
             if (err instanceof String)
               // report error status (text_or_bytes == null)
-              statusManager.createImage((String) err, type, null, null, quality);
-            else if (err instanceof byte[]){
-              err = JmolBinary.postByteArray(fileManager, fileName, (byte[]) err);
-              err = "OK " + err;
-            }
-            
+              statusManager
+                  .createImage((String) err, type, null, null, quality);
           }
+        }
+        if (err instanceof byte[]) {
+          err = JmolBinary.postByteArray(fileManager, fileName, (byte[]) err);
+          err = "OK " + err;
         }
       }
     } catch (Throwable er) {

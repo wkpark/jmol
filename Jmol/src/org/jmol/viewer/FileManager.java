@@ -944,6 +944,8 @@ public class FileManager {
   }
   
   public static boolean isLocal(String fileName) {
+    if (fileName == null)
+      return false;
     int itype = urlTypeIndex(fileName);
     return (itype < 0 || itype == FileManager.URL_LOCAL);
   }

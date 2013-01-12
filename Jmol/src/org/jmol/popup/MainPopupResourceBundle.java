@@ -206,7 +206,7 @@ public class MainPopupResourceBundle extends PopupResource {
       {   "fileMenu",
           "SIGNEDloadFileOrUrl SIGNEDloadPdb SIGNEDloadScript - "
               + "reload SIGNEDloadFileUnitCell - "
-              + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface - SIGNEDJAVAwriteGif SIGNEDJAVAwriteJpg SIGNEDwritePng SIGNEDwritePngJmol SIGNEDJAVAwritePovray - "
+              + "writeFileTextVARIABLE writeState writeHistory SIGNEDwriteJmol SIGNEDwriteIsosurface - SIGNEDJAVAwriteGif SIGNEDNOGLwriteJpg SIGNEDNOGLwritePng SIGNEDNOGLwritePngJmol SIGNEDJAVAwritePovray - "
               + "SIGNEDJAVAwriteVrml SIGNEDJAVAwriteX3d SIGNEDJAVAwriteIdtf SIGNEDJAVAwriteMaya" },
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
@@ -491,9 +491,9 @@ public class MainPopupResourceBundle extends PopupResource {
       { "SIGNEDwriteJmol", "write \"?FILEROOT?.jmol\"" },      
       { "SIGNEDwriteIsosurface", "write isosurface \"?FILEROOT?.jvxl\"" },      
       { "SIGNEDJAVAwriteGif", "write image \"?FILEROOT?.gif\"" },      
-      { "SIGNEDJAVAwriteJpg", "write image \"?FILEROOT?.jpg\"" },      
-      { "SIGNEDwritePng", "write image \"?FILEROOT?.png\"" },      
-      { "SIGNEDwritePngJmol", "write PNGJ \"?FILEROOT?.png\"" },      
+      { "SIGNEDNOGLwriteJpg", "write image \"?FILEROOT?.jpg\"" },      
+      { "SIGNEDNOGLwritePng", "write image \"?FILEROOT?.png\"" },      
+      { "SIGNEDNOGLwritePngJmol", "write PNGJ \"?FILEROOT?.png\"" },      
       { "SIGNEDJAVAwritePovray", "write POVRAY \"?FILEROOT?.pov\"" },      
       { "SIGNEDJAVAwriteVrml", "write VRML \"?FILEROOT?.wrl\"" },      
       { "SIGNEDJAVAwriteX3d", "write X3D \"?FILEROOT?.x3d\"" },      

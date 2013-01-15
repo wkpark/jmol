@@ -125,6 +125,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     if (atomIndex >= 0)
       while (cubeIterator.hasMoreElements()) {
         Atom a = (Atom) cubeIterator.nextElement();
+        System.out.println(a.index + " " + a);
         if ((iNext = a.index) != atomIndex
             && (!checkGreater || iNext > atomIndex)
             && (bsSelected == null || bsSelected.get(iNext))) {

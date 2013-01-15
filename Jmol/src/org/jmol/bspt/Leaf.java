@@ -52,6 +52,7 @@ class Leaf extends Element {
   void sort(int dim) {
     for (int i = count; --i > 0; ) { // this is > not >=
       Point3f champion = tuples[i];
+      System.out.println("Leaf sort " + champion);
       float championValue = Node.getDimensionValue(champion, dim);
       for (int j = i; --j >= 0; ) {
         Point3f challenger = tuples[j];
@@ -59,6 +60,7 @@ class Leaf extends Element {
         if (challengerValue > championValue) {
           tuples[i] = challenger;
           tuples[j] = champion;
+          System.out.println("setting " + i + " " + j);
           champion = challenger;
           championValue = challengerValue;
         }

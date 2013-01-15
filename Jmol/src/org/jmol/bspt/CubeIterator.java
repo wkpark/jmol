@@ -43,7 +43,7 @@ public class CubeIterator {
   private int leafIndex;
   private Leaf leaf;
   private float radius;  
-  private float[] centerValues;
+  //private float[] centerValues; causes grief with JavaScript
   private float cx, cy, cz;
   private float dx, dy, dz;
 
@@ -52,7 +52,7 @@ public class CubeIterator {
   private boolean tHemisphere;
 
   CubeIterator(Bspt bspt) {
-    centerValues = new float[bspt.dimMax];
+    //centerValues = new float[bspt.dimMax];
     set(bspt);
   }
 
@@ -73,9 +73,9 @@ public class CubeIterator {
     //this.center = center;
     this.radius = radius;
     tHemisphere = false;
-    cx = centerValues[0] = center.x;
-    cy = centerValues[1] = center.y;
-    cz = centerValues[2] = center.z;
+    /*centerValues[0] =*/ cx = center.x;
+    /*centerValues[1] =*/ cy = center.y;
+    /*centerValues[2] =*/ cz = center.z;
     leaf = null;
     stack[0] = bspt.eleRoot;
     sp = 1;
@@ -135,14 +135,26 @@ public class CubeIterator {
     Element ele = stack[--sp];
     while (ele instanceof Node) {
       Node node = (Node)ele;
-      float centerValue = centerValues[node.dim];
-      float maxValue = centerValue + radius;
-      float minValue = centerValue;
+      float minValue;
+      switch (node.dim) {
+      case 0:
+        minValue = cx;
+        break;
+      case 1:
+        minValue = cy;
+        break;
+      case 2:
+      default:
+        minValue = cz;
+        break;
+      }
+      float maxValue = minValue + radius;
       if (! tHemisphere || node.dim != 0)
         minValue -= radius;
       if (minValue <= node.maxLeft && maxValue >= node.minLeft) {
-        if (maxValue >= node.minRight && minValue <= node.maxRight)
+        if (maxValue >= node.minRight && minValue <= node.maxRight) {
           stack[sp++] = node.eleRight;
+        }
         ele = node.eleLeft;
       } else if (maxValue >= node.minRight && minValue <= node.maxRight) {
         ele = node.eleRight;
@@ -163,10 +175,10 @@ public class CubeIterator {
    */
   private boolean isWithinRadius(Point3f t) {
     dx = t.x - cx;
-    return (!tHemisphere || dx >= 0)        
-    && (dx = Math.abs(dx)) <= radius
-    && (dy = Math.abs(t.y - cy)) <= radius
-    && (dz = Math.abs(t.z - cz)) <= radius;
+    return ((!tHemisphere || dx >= 0)        
+        && (dx = Math.abs(dx)) <= radius
+        && (dy = Math.abs(t.y - cy)) <= radius
+        && (dz = Math.abs(t.z - cz)) <= radius);
   }
     
 }

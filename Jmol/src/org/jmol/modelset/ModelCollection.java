@@ -2609,6 +2609,7 @@ abstract public class ModelCollection extends BondCollection {
             || !(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA)
             || isFirstExcluded && bsExclude.get(atomIndexNear))
           continue;
+        System.out.println(i + " " + atomIndexNear);
         short order = getBondOrder(myBondingRadius, atomNear
             .getBondingRadiusFloat(), iter.foundDistance2(), minBondDistance2,
             bondTolerance);

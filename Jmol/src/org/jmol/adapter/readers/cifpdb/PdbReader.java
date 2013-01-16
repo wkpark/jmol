@@ -34,6 +34,7 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
+import org.jmol.util.Parser;
 import org.jmol.util.Point3f;
 import org.jmol.util.Quadric;
 import org.jmol.util.StringXBuilder;
@@ -126,6 +127,8 @@ public class PdbReader extends AtomSetCollectionReader {
   private int lastSourceSerial = Integer.MIN_VALUE;
   private int lastTargetSerial = Integer.MIN_VALUE;
   private int tlsGroupID;
+  private int atomTypePt0;
+  private int atomTypeLen;
 
   final private static String lineOptions = 
    "ATOM    " + //0
@@ -162,6 +165,19 @@ public class PdbReader extends AtomSetCollectionReader {
    if (htParams.containsKey("vTlsModels")) {
      // from   load files "tls.out" "xxxx.pdb"
      vTlsModels = (List<Map<String, Object>>) htParams.remove("vTlsModels");
+   }
+   if (checkFilterKey("TYPE ")) {
+     // first column, nColumns;
+     String s = filter.substring(filter.indexOf("TYPE ") + 5).replace(',', ' ').replace(';', ' ');
+     String[] tokens = Parser.getTokens(s);
+     atomTypePt0 = Integer.parseInt(tokens[0]) - 1;
+     int pt = tokens[1].indexOf("=");
+     if (pt >= 0) {
+       filterAtomTypeStr = tokens[1].substring(pt + 1).toUpperCase();
+     } else {
+       pt = tokens[1].length();
+     }
+     atomTypeLen = Integer.parseInt(tokens[1].substring(0, pt));
    }
    if (checkFilterKey("CONF ")) {
      configurationPtr = parseIntAt(filter, filter.indexOf("CONF ") + 5);
@@ -669,6 +685,12 @@ REMARK 290 REMARK: NULL
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(line.charAt(26));
     atom.isHetero = line.startsWith("HETATM");
     atom.elementSymbol = deduceElementSymbol(atom.isHetero);
+    if (atomTypeLen > 0) {
+      // becomes atomType
+      String s = line.substring(atomTypePt0, atomTypePt0 + atomTypeLen).trim();
+      if (s.length() > 0)
+      atom.atomName += "\0" + s;
+    }
     if (!filterPDBAtom(atom, fileAtomIndex++))
       return;
     atom.atomSerial = serial;
@@ -802,6 +824,7 @@ REMARK 290 REMARK: NULL
        * read the bfactor from cols 61-66 (1-based)
        ****************************************************************/
         atom.bfactor = parseFloatRange(line, 60, 66);
+        
     }
     
     atom.occupancy = (Float.isNaN(floatOccupancy) ? 100
@@ -1185,7 +1208,7 @@ COLUMNS        DATA TYPE       FIELD         DEFINITION
 
 64 - 70        Integer         u[1][2]       U(2,3)                
 
-73 - 76        LString(4)      segID         Segment identifier, left-justified.
+73 - 76        LString(4)      segID         Segment identifier, left-justified.  (Jmol atomType)
 
 77 - 78        LString(2)      element       Element symbol, right-justified.
 

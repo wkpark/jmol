@@ -745,7 +745,9 @@ public abstract class AtomSetCollectionReader {
   private boolean filterAltLoc;
   private boolean filterGroup3;
   private boolean filterChain;
+  private boolean filterAtomName;
   private boolean filterAtomType;
+  protected String filterAtomTypeStr;
   private boolean filterElement;
   protected boolean filterHetero;
   private boolean filterEveryNth;
@@ -804,7 +806,7 @@ public abstract class AtomSetCollectionReader {
     }
     if (filter == null)
       return;
-    filterAtomType = checkFilterKey("*.") || checkFilterKey("!.");
+    filterAtomName = checkFilterKey("*.") || checkFilterKey("!.");
     filterElement = checkFilterKey("_");
     filterHetero = checkFilterKey("HETATM"); // PDB
     filterGroup3 = checkFilterKey("[");
@@ -813,9 +815,11 @@ public abstract class AtomSetCollectionReader {
     filterEveryNth = checkFilterKey("/=");
     if (filterEveryNth)
       filterN = parseIntStr(filter.substring(filter.indexOf("/=") + 2));
+    else
+      filterAtomType = checkFilterKey("=");
     if (filterN == Integer.MIN_VALUE)
       filterEveryNth = false;
-    haveAtomFilter = filterAtomType || filterElement || filterGroup3 || filterChain
+    haveAtomFilter = filterAtomName || filterAtomType || filterElement || filterGroup3 || filterChain
         || filterAltLoc || filterHetero || filterEveryNth || checkFilterKey("/=");
     if (bsFilter == null) {
       // bsFilter is usually null, but from MDTOP it gets set to indicate
@@ -861,11 +865,19 @@ public abstract class AtomSetCollectionReader {
     return isOK;
   }
 
+  /**
+   * 
+   * @param atom
+   * @param f
+   * @return  true if a filter is found
+   */
   private boolean checkFilter(Atom atom, String f) {
     return (!filterGroup3 || atom.group3 == null || !filterReject(f, "[",
         atom.group3.toUpperCase() + "]"))
-        && (!filterAtomType || atom.atomName == null || !filterReject(f, ".",
-            atom.atomName.toUpperCase() + ";"))
+        && (!filterAtomName || atom.atomName == null || !filterReject(f, ".",
+            atom.atomName.toUpperCase() + (filterAtomTypeStr == null ? ";" : "\0")))
+        && (filterAtomTypeStr == null || atom.atomName == null 
+            || atom.atomName.toUpperCase().indexOf("\0" + filterAtomTypeStr) >= 0)
         && (!filterElement || atom.elementSymbol == null || !filterReject(f, "_",
             atom.elementSymbol.toUpperCase() + ";"))
         && (!filterChain || atom.chainID == '\0' || !filterReject(f, ":", ""

@@ -664,6 +664,10 @@ REMARK 290 REMARK: NULL
     }
   } 
   
+  // Note that segID (columns 73-76) is not generally read, 
+  // but can be read into the atomType atom property 
+  // starting in Jmol 13.1.12 using FILTER "type 73,4"
+  
   // Gromacs pdb_wide_format:
   //%-6s%5u %-4.4s %3.3s %c%4d%c   %10.5f%10.5f%10.5f%8.4f%8.4f    %2s\n")
   //0         1         2         3         4         5         6         7
@@ -1176,6 +1180,7 @@ Polyproline 10
   /*
  The ANISOU records present the anisotropic temperature factors.
 
+
 Record Format
 
 COLUMNS        DATA TYPE       FIELD         DEFINITION                  
@@ -1208,7 +1213,7 @@ COLUMNS        DATA TYPE       FIELD         DEFINITION
 
 64 - 70        Integer         u[1][2]       U(2,3)                
 
-73 - 76        LString(4)      segID         Segment identifier, left-justified.  (Jmol atomType)
+73 - 76        LString(4)      segID         Segment identifier, left-justified. 
 
 77 - 78        LString(2)      element       Element symbol, right-justified.
 

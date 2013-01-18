@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/appletjs/Jmol.java:365
 #, java-format
@@ -47,11 +47,11 @@ msgstr "διάφανο φόντο"
 
 #: org/openscience/jmol/app/JmolApp.java:138
 msgid "give this help page"
-msgstr ""
+msgstr "εμφάνιση αυτής της σελίδας βοηθείας"
 
 #: org/openscience/jmol/app/JmolApp.java:140
 msgid "no display (and also exit when done)"
-msgstr ""
+msgstr "καμία ένδειξη (και επίσης έξοδος όταν αυτό πραγματοποιηθεί)"
 
 #: org/openscience/jmol/app/JmolApp.java:142
 msgid "check script syntax only - no file loading"
@@ -940,9 +940,9 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Για να αποκτήσετε ένα 3-D μοντέλο που μπορείτε να χειριστείτε, κάντε κλικ {0}"
-"εδώ{1}. Ο χρόνος κατεβάσματος μπορεί να είναι σημαντικός την πρώτη φορά που "
-"φορτώνεται το applet."
+"Για να αποκτήσετε ένα 3-D μοντέλο που μπορείτε να χειριστείτε, κάντε κλικ "
+"{0}εδώ{1}. Ο χρόνος κατεβάσματος μπορεί να είναι σημαντικός την πρώτη φορά "
+"που φορτώνεται το applet."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
 msgid "Insert the page TITLE here."
@@ -1866,9 +1866,13 @@ msgstr ""
 #~ msgid "Enter a four-digit PDB ID"
 #~ msgstr "Εισαγωγή τετραψήφιου κωδικού PDB"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
 #~ msgstr ""
 #~ "Δεν μπορεί να βρεθεί ή να ανοιχτεί:\n"
 #~ "{0}"
+
+#~ msgid "Jmol Script Console"
+#~ msgstr "Κονσόλα Script του Jmol"

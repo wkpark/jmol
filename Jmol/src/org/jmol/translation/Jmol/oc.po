@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/appletjs/Jmol.java:365
 #, java-format
@@ -1841,20 +1841,20 @@ msgstr ""
 msgid "unimplemented"
 msgstr ""
 
-#~ msgid "name"
-#~ msgstr "nom"
-
-#~ msgid "value"
-#~ msgstr "valor"
+#~ msgid "domain"
+#~ msgstr "domeni"
 
 #~ msgid "expires"
 #~ msgstr "expira"
 
-#~ msgid "domain"
-#~ msgstr "domeni"
-
 #~ msgid "path"
 #~ msgstr "camin"
+
+#~ msgid "value"
+#~ msgstr "valor"
+
+#~ msgid "name"
+#~ msgstr "nom"
 
 #~ msgid "Method"
 #~ msgstr "Metòde"

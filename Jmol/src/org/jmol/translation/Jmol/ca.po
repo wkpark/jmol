@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-07 06:12+0000\n"
-"X-Generator: Launchpad (build 16402)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
 
@@ -124,7 +124,8 @@ msgstr "fitxer d'script que s'executarà o '-' per a System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:179
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "utilitza la interfície multitàctil (requereix el paràmetre «sparshui»)"
+msgstr ""
+"utilitza la interfície multitàctil (requereix el paràmetre «sparshui»)"
 
 #: org/openscience/jmol/app/JmolApp.java:186
 msgid "Jmol script to execute BEFORE -s option"
@@ -1929,21 +1930,26 @@ msgstr "no implementat"
 #~ msgid "vector"
 #~ msgstr "vector"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Vés al primer {0} de la col·lecció"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Reprodueix la col·lecció sencera de {0}s"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Vés al següent {0} de la col·lecció"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Salta al darrer {0} de la col·lecció"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Consola script del Jmol"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Vés a l''anterior {0} de la col·lecció"
 
@@ -1953,6 +1959,7 @@ msgstr "no implementat"
 #~ msgid "Show Selected"
 #~ msgstr "Mostra allò seleccionat"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1974,18 +1981,21 @@ msgstr "no implementat"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "feu doble clic i arrosegueu per a reordenar"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "afegeix {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "afegeix {0}.png"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Inseriu un text explicatori addicional ací. Si el text és llarg, "
-#~ "s''ajustarà al voltant del model de Jmol {0}."
+#~ "Inseriu un text explicatori addicional ací. Si el text és llarg, s''ajustarà "
+#~ "al voltant del model de Jmol {0}."
 
 #~ msgid "Output Conso&le..."
 #~ msgstr "Scrip&t…"
@@ -2015,8 +2025,7 @@ msgstr "no implementat"
 #~ msgstr "Aconseguix l'arxiu MOL a partir del nom o identificador del compost"
 
 #~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-#~ msgstr ""
-#~ "Escriu el nom o l'identificador (SMILES, InChI, CAS) d'una molècula."
+#~ msgstr "Escriu el nom o l'identificador (SMILES, InChI, CAS) d'una molècula."
 
 #~ msgid "domain"
 #~ msgstr "domini"

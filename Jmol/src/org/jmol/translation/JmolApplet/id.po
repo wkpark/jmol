@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-26 15:24+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -148,7 +148,8 @@ msgid "Check"
 msgstr "Periksa"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Paling Atas"
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -358,9 +359,8 @@ msgid "Append models"
 msgstr "Tambahkan model"
 
 #: org/jmol/export/dialog/FilePreview.java:100
-#, fuzzy
 msgid "PDB cartoons"
-msgstr "Kartun"
+msgstr ""
 
 #: org/jmol/i18n/Language.java:77
 msgid "Arabic"
@@ -2155,7 +2155,8 @@ msgstr "obyek tidak dikenal"
 #: org/jmol/script/ScriptEvaluator.java:3184
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parameter {0} tidak dikenal dalam status skrip Jmol (ditetapkan saja)"
+msgstr ""
+"parameter {0} tidak dikenal dalam status skrip Jmol (ditetapkan saja)"
 
 #: org/jmol/script/ScriptEvaluator.java:3187
 #, java-format
@@ -2252,7 +2253,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:123
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "klik dua titik untuk memutar pada sumbu berlawanan arah jarum jam "
 "(memerlukan {0})"
@@ -2303,7 +2305,8 @@ msgstr "lepaskan pilihan kelompok atom ini (memerlukan {0})"
 #: org/jmol/viewer/ActionManager.java:133
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr "tambahkan kelompok atom pada atom yang sudah dipilih (memerlukan {0})"
+msgstr ""
+"tambahkan kelompok atom pada atom yang sudah dipilih (memerlukan {0})"
 
 #: org/jmol/viewer/ActionManager.java:134
 #, java-format
@@ -2504,18 +2507,22 @@ msgstr "Tetapkan berkas log menjadi {0}"
 #~ msgid "Minimize"
 #~ msgstr "Kecilkan"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Model"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "Permukaan iso JVXL"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Gambar"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "KESALAHAN: tidak bisa menetapkan tanda bolean menjadi variabel: {0}"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Berkas {0}"
 
@@ -2531,20 +2538,21 @@ msgstr "Tetapkan berkas log menjadi {0}"
 #~ msgid "Script with history"
 #~ msgstr "Skrip dengana riwayat"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "KESALAHAN: tidak bisa menetapkan bolean menjadi angka numerik: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
-#~ "KESALAHAN: Tidak bisa menetapkan angka ini menjadi variabel untuk bolean: "
-#~ "{0}"
+#~ "KESALAHAN: Tidak bisa menetapkan angka ini menjadi variabel untuk bolean: {0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Membuat berkas dengan aplet ini tidak diijinkan. Untuk format Base64 "
-#~ "JPEG, gunakan {0}."
+#~ "Membuat berkas dengan aplet ini tidak diijinkan. Untuk format Base64 JPEG, "
+#~ "gunakan {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Gagal membuat berkas."

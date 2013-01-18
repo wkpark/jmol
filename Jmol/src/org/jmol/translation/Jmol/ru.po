@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-27 20:04+0000\n"
-"X-Generator: Launchpad (build 16378)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/appletjs/Jmol.java:365
 #, java-format
@@ -943,8 +943,9 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Чтобы получить 3D модель, которой можно манипулировать, щёлкните {0}здесь"
-"{1}. Время загрузки может быть существенным при первой загрузке апплета."
+"Чтобы получить 3D модель, которой можно манипулировать, щёлкните "
+"{0}здесь{1}. Время загрузки может быть существенным при первой загрузке "
+"апплета."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
 msgid "Insert the page TITLE here."
@@ -965,8 +966,8 @@ msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
-"Вставьте дополнительный поясняющий текст здесь. Длинный текст будет \"обёрнут"
-"\" вокруг Jmol модели {0}."
+"Вставьте дополнительный поясняющий текст здесь. Длинный текст будет "
+"\"обёрнут\" вокруг Jmol модели {0}."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:375
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1871,6 +1872,7 @@ msgstr "не реализовано"
 #~ msgid "Jmol Script Console"
 #~ msgstr "Консоль сценариев Jmol"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти к следующему {0} в коллекции"
 
@@ -1910,30 +1912,37 @@ msgstr "не реализовано"
 #~ msgid "atom set"
 #~ msgstr "Набор атомов"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Идти к первой {0} в коллекции"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Идти к предыдущей {0} в коллекции"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Смотреть всю коллекцию {0}"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти к последней {0} в коллекции"
 
 #~ msgid "Show Selected"
 #~ msgstr "Показать Выбранное"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "добавление {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "добавление JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "добавление {0}.png"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1977,12 +1986,13 @@ msgstr "не реализовано"
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Варианты -D следующие (в скобках значения по умолчанию):"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Введите сюда поясненяющий текст. Длинный текст будет обернут вокруг "
-#~ "модели Jmol {0}."
+#~ "Введите сюда поясненяющий текст. Длинный текст будет обернут вокруг модели "
+#~ "Jmol {0}."
 
 #~ msgid "domain"
 #~ msgstr "домен"

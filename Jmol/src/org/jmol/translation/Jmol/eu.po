@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-26 15:24+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/appletjs/Jmol.java:365
 #, java-format
@@ -37,7 +37,8 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:100
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr "Errorea Jmol abiaraztean: 'user.home' propietatea ez dago definituta."
+msgstr ""
+"Errorea Jmol abiaraztean: 'user.home' propietatea ez dago definituta."
 
 #: org/openscience/jmol/app/JmolApp.java:137
 msgid "transparent background"
@@ -159,8 +160,8 @@ msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
-"-D aukerak ondorengoak dira (lehenetsiak parentesi artean) eta '-jar Jmol."
-"jar'-en aurretik deitu behar dira:"
+"-D aukerak ondorengoak dira (lehenetsiak parentesi artean) eta '-jar "
+"Jmol.jar'-en aurretik deitu behar dira:"
 
 #: org/openscience/jmol/app/JmolApp.java:502
 msgid "Executing script 1..."
@@ -888,7 +889,8 @@ msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:216
 msgid "RasMol/Chime compatible axes orientation/rotations"
-msgstr "RasMol/Chime-rekin bateragarriak diren ardatzen orientazio/errotazioak"
+msgstr ""
+"RasMol/Chime-rekin bateragarriak diren ardatzen orientazio/errotazioak"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:218
 msgid "File Preview (requires restarting Jmol)"
@@ -1861,29 +1863,29 @@ msgstr "Deskargatu ikuspegia"
 msgid "unimplemented"
 msgstr "inplementatu gabea"
 
-#~ msgid "name"
-#~ msgstr "izena"
-
-#~ msgid "value"
-#~ msgstr "balioa"
+#~ msgid "domain"
+#~ msgstr "domeinua"
 
 #~ msgid "expires"
 #~ msgstr "iraungitze-data"
 
-#~ msgid "domain"
-#~ msgstr "domeinua"
+#~ msgid "HTTP-Version"
+#~ msgstr "HTTP-bertsioa"
 
 #~ msgid "path"
 #~ msgstr "bidea"
 
-#~ msgid "HTTP-Version"
-#~ msgstr "HTTP-bertsioa"
+#~ msgid "value"
+#~ msgstr "balioa"
 
-#~ msgid "Status-Code"
-#~ msgstr "Egoera-kodea"
+#~ msgid "name"
+#~ msgstr "izena"
 
 #~ msgid "Reason-Phrase"
 #~ msgstr "Arrazoia-esaldia"
+
+#~ msgid "Status-Code"
+#~ msgstr "Egoera-kodea"
 
 #~ msgid "Method"
 #~ msgstr "Metodoa"

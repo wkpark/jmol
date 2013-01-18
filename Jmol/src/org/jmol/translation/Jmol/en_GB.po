@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/appletjs/Jmol.java:365
 #, java-format
@@ -1865,36 +1865,6 @@ msgstr "Download view"
 msgid "unimplemented"
 msgstr "unimplemented"
 
-#~ msgid "name"
-#~ msgstr "Name"
-
-#~ msgid "value"
-#~ msgstr "Value"
-
-#~ msgid "expires"
-#~ msgstr "expires"
-
-#~ msgid "domain"
-#~ msgstr "domain"
-
-#~ msgid "path"
-#~ msgstr "path"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "HTTP-Version"
-
-#~ msgid "Status-Code"
-#~ msgstr "Status-Code"
-
-#~ msgid "Reason-Phrase"
-#~ msgstr "Reason-Phrase"
-
-#~ msgid "Method"
-#~ msgstr "Method"
-
-#~ msgid "Request-URI"
-#~ msgstr "Request-URI"
-
 #~ msgid "Controller"
 #~ msgstr "Controller"
 
@@ -1904,18 +1874,23 @@ msgstr "unimplemented"
 #~ msgid "atom set"
 #~ msgstr "atom set"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Go to first {0} in the collection"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Go to previous {0} in the collection"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Play the whole collection of {0}'s"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Jump to last {0} in the collection"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Go to next {0} in the collection"
 
@@ -1931,6 +1906,7 @@ msgstr "unimplemented"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "double-click and drag to reorder"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1938,15 +1914,18 @@ msgstr "unimplemented"
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "adding {0}.spt"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "adding JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "adding {0}.png"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1989,6 +1968,36 @@ msgstr "unimplemented"
 
 #~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 #~ msgstr "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
+
+#~ msgid "domain"
+#~ msgstr "domain"
+
+#~ msgid "expires"
+#~ msgstr "expires"
+
+#~ msgid "HTTP-Version"
+#~ msgstr "HTTP-Version"
+
+#~ msgid "path"
+#~ msgstr "path"
+
+#~ msgid "value"
+#~ msgstr "Value"
+
+#~ msgid "name"
+#~ msgstr "Name"
+
+#~ msgid "Reason-Phrase"
+#~ msgstr "Reason-Phrase"
+
+#~ msgid "Status-Code"
+#~ msgstr "Status-Code"
+
+#~ msgid "Method"
+#~ msgstr "Method"
+
+#~ msgid "Request-URI"
+#~ msgstr "Request-URI"
 
 #~ msgid "Wireframe"
 #~ msgstr "Wireframe"

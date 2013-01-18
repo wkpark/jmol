@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-07 06:12+0000\n"
-"X-Generator: Launchpad (build 16402)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -62,7 +62,8 @@ msgstr "pas d'affichage (et également quitter lorsque vous avez terminé)"
 
 #: org/openscience/jmol/app/JmolApp.java:142
 msgid "check script syntax only - no file loading"
-msgstr "vérifier la syntaxe de script seulement - pas de chargement de fichier"
+msgstr ""
+"vérifier la syntaxe de script seulement - pas de chargement de fichier"
 
 #: org/openscience/jmol/app/JmolApp.java:144
 msgid "check script syntax only - with file loading"
@@ -1153,7 +1154,8 @@ msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
+msgstr ""
+"Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1686,8 +1688,8 @@ msgstr "Donner un nom à l’instance de Jmol:"
 #: org/openscience/jmol/app/webexport/WebPanel.java:485
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
-"Erreur lors de la création d’une nouvelle instance contenant un(des) script"
-"(s) et une image"
+"Erreur lors de la création d’une nouvelle instance contenant un(des) "
+"script(s) et une image"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:496
 #, java-format
@@ -1929,18 +1931,23 @@ msgstr "non-implémenté"
 #~ msgid "vector"
 #~ msgstr "vecteur"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Aller au premier {0} de la collection"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Aller au {0} précédent de la collection"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Jouer la collection complète de {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Aller au {0} suivant de la collection"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Aller au dernier {0} de la collection"
 
@@ -1966,22 +1973,26 @@ msgstr "non-implémenté"
 #~ msgid "Show Selected"
 #~ msgstr "Afficher les options sélectionnées"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé "
-#~ "entourent le modèle de Jmol {0}."
+#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé entourent "
+#~ "le modèle de Jmol {0}."
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "ajoutant {0}. spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "ajoutant {0}. png"
 
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "ajoutant JmolPopIn.js"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"

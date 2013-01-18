@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:00+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "X-Poedit-Country: Nederlands\n"
 "X-Poedit-Language: Dutch\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -151,7 +151,8 @@ msgid "Check"
 msgstr "Controleer"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Omhoog"
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -361,9 +362,8 @@ msgid "Append models"
 msgstr "Modellen toevoegen"
 
 #: org/jmol/export/dialog/FilePreview.java:100
-#, fuzzy
 msgid "PDB cartoons"
-msgstr "Tekening"
+msgstr ""
 
 #: org/jmol/i18n/Language.java:77
 msgid "Arabic"
@@ -2254,8 +2254,10 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:123
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
-msgstr "klik op twee punten om tegen de klok in rond te draaien (vereist {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
+msgstr ""
+"klik op twee punten om tegen de klok in rond te draaien (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:124
 #, java-format
@@ -2303,7 +2305,8 @@ msgstr "deselecteer deze groep van atomen (vereist {0})"
 #: org/jmol/viewer/ActionManager.java:133
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr "voeg deze groep atomen toe aan de geselecteerde atoomset (vereist {0})"
+msgstr ""
+"voeg deze groep atomen toe aan de geselecteerde atoomset (vereist {0})"
 
 #: org/jmol/viewer/ActionManager.java:134
 #, java-format
@@ -2501,23 +2504,26 @@ msgstr "logbestand veranderd naar {0}"
 #~ msgid "About Jmol"
 #~ msgstr "Over Jmol"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "FOUT: kan een booleaans niet vullen met een tekenreeks: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "FOUT: kan een booleaans niet vullen met een numerieke waarde: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
-#~ "FOUT: Kan de waarde van deze variabele niet veranderen naar een "
-#~ "booleaans: {0}"
+#~ "FOUT: Kan de waarde van deze variabele niet veranderen naar een booleaans: "
+#~ "{0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Bestand aanmaken niet toegestaan voor deze applet. Voor Base64 JPEG "
-#~ "formaat, gebruik {0}."
+#~ "Bestand aanmaken niet toegestaan voor deze applet. Voor Base64 JPEG formaat, "
+#~ "gebruik {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Aanmaken bestand mislukt."
@@ -2525,6 +2531,7 @@ msgstr "logbestand veranderd naar {0}"
 #~ msgid "Script with state"
 #~ msgstr "Script met status"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Bestand {0}"
 
@@ -2540,9 +2547,11 @@ msgstr "logbestand veranderd naar {0}"
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL Isooppervlak"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Plaatje"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D model"
 

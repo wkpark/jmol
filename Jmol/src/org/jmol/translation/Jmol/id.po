@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-03 16:00+0000\n"
-"X-Generator: Launchpad (build 15890)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/appletjs/Jmol.java:365
 #, java-format
@@ -1062,7 +1062,8 @@ msgstr "Tulis URL model molekuler"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1194
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
-msgstr "Masukkan ID model PDB empat digit atau \"=\" dan ID ligand tiga digit"
+msgstr ""
+"Masukkan ID model PDB empat digit atau \"=\" dan ID ligand tiga digit"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1203
 msgid ""
@@ -1071,8 +1072,8 @@ msgid ""
 "Resolver."
 msgstr ""
 "Masukkan nama atau identifier (SMILES, InChl, CAS) dari kompon. Awali dengan "
-"\":\" untuk memuat dari PubChem; jika tidak Jmol akan memakai Pengurai NCI/"
-"NIH."
+"\":\" untuk memuat dari PubChem; jika tidak Jmol akan memakai Pengurai "
+"NCI/NIH."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1376
 msgid "IO Exception:"
@@ -1865,36 +1866,6 @@ msgstr "Tampilan Muaturun"
 msgid "unimplemented"
 msgstr "belum diimplementasi"
 
-#~ msgid "name"
-#~ msgstr "nama"
-
-#~ msgid "value"
-#~ msgstr "nilai"
-
-#~ msgid "expires"
-#~ msgstr "kedaluarsa"
-
-#~ msgid "domain"
-#~ msgstr "domain"
-
-#~ msgid "path"
-#~ msgstr "path"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "Versi-HTTP"
-
-#~ msgid "Status-Code"
-#~ msgstr "Kode-Status"
-
-#~ msgid "Reason-Phrase"
-#~ msgstr "Frasa-Alasan"
-
-#~ msgid "Method"
-#~ msgstr "Metode"
-
-#~ msgid "Request-URI"
-#~ msgstr "URI-Permintaan"
-
 #~ msgid "Controller"
 #~ msgstr "Pengendali"
 
@@ -1904,33 +1875,41 @@ msgstr "belum diimplementasi"
 #~ msgid "atom set"
 #~ msgstr "atom set"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Menuju yang pertama {0} dalam koleksi"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Menuju ke sebelumnya {0} dalam koleksi"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Menjalankan seluruh koleksi dari {0}"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Loncat ke terakhir {0} dalam koleksi"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Konsul Skrip Jmol"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ke selanjutnya {0} dalam koleksi"
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Butang bersihkan konsul (Jmol perlu dijalankan ulang)"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "menambah {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "menambah {0}.png"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1950,12 +1929,13 @@ msgstr "belum diimplementasi"
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Pilihan -D adalah sebagai berikut (bawaan di dalam kurung):"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Sisipkan tambahan teks penjelasan disini. Teks panjang akan dilipat "
-#~ "sesuai dengan model Jmol {0}."
+#~ "Sisipkan tambahan teks penjelasan disini. Teks panjang akan dilipat sesuai "
+#~ "dengan model Jmol {0}."
 
 #~ msgid "Show Selected"
 #~ msgstr "Tampilkan Pilihan"
@@ -2022,3 +2002,33 @@ msgstr "belum diimplementasi"
 
 #~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
 #~ msgstr "Tuliskan nama atau pengenal (SMILES, InChI, CAS) dari molekul"
+
+#~ msgid "Status-Code"
+#~ msgstr "Kode-Status"
+
+#~ msgid "domain"
+#~ msgstr "domain"
+
+#~ msgid "HTTP-Version"
+#~ msgstr "Versi-HTTP"
+
+#~ msgid "path"
+#~ msgstr "path"
+
+#~ msgid "value"
+#~ msgstr "nilai"
+
+#~ msgid "name"
+#~ msgstr "nama"
+
+#~ msgid "Reason-Phrase"
+#~ msgstr "Frasa-Alasan"
+
+#~ msgid "expires"
+#~ msgstr "kedaluarsa"
+
+#~ msgid "Method"
+#~ msgstr "Metode"
+
+#~ msgid "Request-URI"
+#~ msgstr "URI-Permintaan"

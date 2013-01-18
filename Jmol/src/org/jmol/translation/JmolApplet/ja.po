@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:00+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "X-Poedit-Country: Japan\n"
 "X-Poedit-Language: Japanese\n"
 
@@ -108,9 +108,7 @@ msgstr "読み込み"
 
 #: org/jmol/console/GenericConsole.java:89
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"改行するにはCtrl-Enterキーを押してください。またはデータをペーストして[読み込"
-"み]ボタンをクリックしてください。"
+msgstr "改行するにはCtrl-Enterキーを押してください。またはデータをペーストして[読み込み]ボタンをクリックしてください。"
 
 #: org/jmol/console/GenericConsole.java:91
 msgid ""
@@ -118,9 +116,8 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
-"メッセージはここに表示されます。下のボックスにコマンドを入力してください。コ"
-"ンソールのヘルプメニューの項目をクリックするとブラウザの新しいウィンドウでオ"
-"ンラインヘルプが表示されます。"
+"メッセージはここに表示されます。下のボックスにコマンドを入力してください。コンソールのヘルプメニューの項目をクリックするとブラウザの新しいウィンドウでオン"
+"ラインヘルプが表示されます。"
 
 #: org/jmol/console/GenericConsole.java:125
 msgid "Jmol Script Console"
@@ -151,7 +148,8 @@ msgid "Check"
 msgstr "チェック"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "トップ"
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -361,9 +359,8 @@ msgid "Append models"
 msgstr "モデルを追加する"
 
 #: org/jmol/export/dialog/FilePreview.java:100
-#, fuzzy
 msgid "PDB cartoons"
-msgstr "カートゥーン"
+msgstr ""
 
 #: org/jmol/i18n/Language.java:77
 msgid "Arabic"
@@ -689,8 +686,7 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
-"注意: バックボーンのアミド水素の位置は無視されます。それらの位置は標準DSSP解"
-"析のように近似されます。\n"
+"注意: バックボーンのアミド水素の位置は無視されます。それらの位置は標準DSSP解析のように近似されます。\n"
 "この近似を用いないためには {0}を使用してください。\n"
 "\n"
 
@@ -702,8 +698,7 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
-"注意: バックボーンのアミド水素の位置が利用されます。結果は標準DSSP解析と大き"
-"く異なる可能性があります。\n"
+"注意: バックボーンのアミド水素の位置が利用されます。結果は標準DSSP解析と大きく異なる可能性があります。\n"
 "これらの水素の位置を無視するには {0} を使用してください。\n"
 "\n"
 
@@ -2079,9 +2074,7 @@ msgstr "データがありません"
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
-msgstr ""
-"JmolでMEPデータを表示するのに必要な部分電荷がファイルから読み込まれていませ"
-"ん。"
+msgstr "JmolでMEPデータを表示するのに必要な部分電荷がファイルから読み込まれていません。"
 
 #: org/jmol/script/ScriptEvaluator.java:3128
 msgid "No unit cell"
@@ -2156,8 +2149,7 @@ msgstr "認識できないオブジェクト"
 #: org/jmol/script/ScriptEvaluator.java:3184
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr ""
-"Jmol state スクリプトでの認識できない {0} パラメーター (いずれにせよ設定)"
+msgstr "Jmol state スクリプトでの認識できない {0} パラメーター (いずれにせよ設定)"
 
 #: org/jmol/script/ScriptEvaluator.java:3187
 #, java-format
@@ -2224,8 +2216,7 @@ msgstr "Z軸の回りの回転"
 #: org/jmol/viewer/ActionManager.java:117
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
-msgstr ""
-"Z軸の回りの回転(マウスの横方向移動) または表示の拡大(マウスの縦方向移動)"
+msgstr "Z軸の回りの回転(マウスの横方向移動) または表示の拡大(マウスの縦方向移動)"
 
 #: org/jmol/viewer/ActionManager.java:118
 msgid "zoom"
@@ -2251,7 +2242,8 @@ msgstr "2点をクリックして軸の回りに時計回りに回転させる (
 
 #: org/jmol/viewer/ActionManager.java:123
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "2点をクリックして軸の回りに反時計回りに回転させる ({0}が必要)"
 
 #: org/jmol/viewer/ActionManager.java:124
@@ -2275,8 +2267,7 @@ msgstr "完全なコンテキストメニューをポップアップ表示する
 
 #: org/jmol/viewer/ActionManager.java:128
 msgid "pop up recent context menu (click on Jmol frank)"
-msgstr ""
-"最近のコンテキストメニューをポップアップ表示する(右下のJmolロゴをクリック)"
+msgstr "最近のコンテキストメニューをポップアップ表示する(右下のJmolロゴをクリック)"
 
 #: org/jmol/viewer/ActionManager.java:129
 #, java-format
@@ -2309,8 +2300,7 @@ msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
 msgstr ""
-"すべてが選択されている場合はすべてを選択解除してください。さもなければ、選択"
-"された原子の集合にこのグループの原子を追加してください。( {0} が必要)"
+"すべてが選択されている場合はすべてを選択解除してください。さもなければ、選択された原子の集合にこのグループの原子を追加してください。( {0} が必要)"
 
 #: org/jmol/viewer/ActionManager.java:135
 #, java-format

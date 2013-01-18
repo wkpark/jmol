@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-01-07 07:16+0100\n"
-"PO-Revision-Date: 2012-08-07 13:15+0000\n"
-"Last-Translator: Martin Slavík <Unknown>\n"
+"PO-Revision-Date: 2013-01-13 09:41+0000\n"
+"Last-Translator: Zdeněk Chalupský <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
 
@@ -29,14 +29,19 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
+"Jmol Aplet verze {0} {1}.\n"
+"\n"
+"Open Science projekt.\n"
+"\n"
+"Pro více informací navštivte  http://www.jmol.org"
 
 #: org/jmol/appletjs/Jmol.java:532
 msgid "File Error:"
-msgstr ""
+msgstr "Chyba souboru:"
 
 #: org/jmol/awtjs2d/JSModelKitPopup.java:76
 msgid "Element?"
-msgstr ""
+msgstr "Prvek?"
 
 #: org/openscience/jmol/app/JmolApp.java:100
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -72,7 +77,7 @@ msgstr "tichý start"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "kiosk mode -- no frame"
-msgstr ""
+msgstr "kiosk mód -- bez rámu"
 
 #: org/openscience/jmol/app/JmolApp.java:150
 msgid "list commands during script execution"
@@ -92,11 +97,11 @@ msgstr "poslat pouze výstup příkazů print na konzoli (předpokládá -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "restrict local file access"
-msgstr ""
+msgstr "omezit přístup k lokálním souborům"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "restrict local file access (allow reading of SPT files)"
-msgstr ""
+msgstr "omezit přístup k lokálním souborům (povolit čtení SPT souborů)"
 
 #: org/openscience/jmol/app/JmolApp.java:162
 msgid "independent command thread"
@@ -108,7 +113,7 @@ msgstr "konec po skriptu (implicitně s -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "port for JSON/MolecularPlayground-style communication"
-msgstr ""
+msgstr "port pro JSON / MolecularPlayground - styl komunikace"
 
 #: org/openscience/jmol/app/JmolApp.java:173
 msgid "script file to execute or '-' for System.in"
@@ -286,11 +291,11 @@ msgstr "Skočit na poslední soubor atomů v kolekci"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:395
 msgid "Vibration ON"
-msgstr ""
+msgstr "Vibrace zapnout"
 
 #: org/openscience/jmol/app/jmolpanel/AtomSetChooser.java:396
 msgid "Vibration OFF"
-msgstr ""
+msgstr "Vibrace vypnout"
 
 #: org/openscience/jmol/app/jmolpanel/DisplayPanel.java:232
 msgid "Delete atoms"
@@ -965,7 +970,8 @@ msgstr "Vložte zde titulek pro {0}."
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
-msgstr "Zde vlož text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
+msgstr ""
+"Zde vlož text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:375
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1065,6 +1071,8 @@ msgstr "Zadat URL molekulárního modelu"
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1194
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
+"Zadej čtyřčíselný  identifikátor PDB modelu nebo \"=\" a tříčíselný "
+"identifikátor ligandu"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1203
 msgid ""
@@ -1072,6 +1080,8 @@ msgid ""
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
+"Zadej jméno nebo identifikátor (SMILES, InChI, CAS) sloučeniny. Předřaď "
+"\":\" pro nahrání z PubChem; jinak Jmol použije NCI/NIH Resolver."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1376
 msgid "IO Exception:"
@@ -1379,7 +1389,7 @@ msgstr "Chyba při čtení vyrovnávací paměti: {0}"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:492
 msgid "magic"
-msgstr ""
+msgstr "magie"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:493
 msgid "role"
@@ -1407,7 +1417,7 @@ msgstr "id"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:560
 msgid "startup"
-msgstr ""
+msgstr "startup"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:561
 msgid "filename"
@@ -1415,7 +1425,7 @@ msgstr "název souboru"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:568
 msgid "startup_script"
-msgstr ""
+msgstr "startup_script"
 
 #: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:574
 msgid "banner"
@@ -1455,7 +1465,7 @@ msgstr "Gradiány"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Circle Fraction"
-msgstr ""
+msgstr "frakce kružnice"
 
 #: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Units of Pi"
@@ -1864,30 +1874,6 @@ msgstr "Ulož pohled"
 msgid "unimplemented"
 msgstr "neimplementováno"
 
-#~ msgid "name"
-#~ msgstr "název"
-
-#~ msgid "value"
-#~ msgstr "hodnota"
-
-#~ msgid "expires"
-#~ msgstr "vyprší"
-
-#~ msgid "domain"
-#~ msgstr "doména"
-
-#~ msgid "path"
-#~ msgstr "cesta"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "HTTP-verze"
-
-#~ msgid "Method"
-#~ msgstr "Metoda"
-
-#~ msgid "Request-URI"
-#~ msgstr "URI požadavku"
-
 #~ msgid "All"
 #~ msgstr "Vše"
 
@@ -1930,18 +1916,23 @@ msgstr "neimplementováno"
 #~ msgid "vector"
 #~ msgstr "vektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Přejít na první {0} v kolekci"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Přejít na předchozí {0} v kolekci"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Přehrát celou kolekci {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Přejít na další {0} ve sbírce"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Přejít na poslední  {0} ve sbírce"
 
@@ -1963,12 +1954,14 @@ msgstr "neimplementováno"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "poklepejte a táhněte pro změnu pořadí"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
 #~ "Zde vložte vysvětlující text. Delší text bude obtékat Jmol model {0}."
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1976,9 +1969,11 @@ msgstr "neimplementováno"
 #~ "Nemohu najít nebo otevřít:\n"
 #~ "{0}"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "přidávám {0}.spt"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "přidávám {0}.png"
 
@@ -2014,3 +2009,27 @@ msgstr "neimplementováno"
 
 #~ msgid "Enter a four-digit PDB ID"
 #~ msgstr "Zadej čtyřčíselný PDB ID"
+
+#~ msgid "domain"
+#~ msgstr "doména"
+
+#~ msgid "expires"
+#~ msgstr "vyprší"
+
+#~ msgid "HTTP-Version"
+#~ msgstr "HTTP-verze"
+
+#~ msgid "path"
+#~ msgstr "cesta"
+
+#~ msgid "value"
+#~ msgstr "hodnota"
+
+#~ msgid "name"
+#~ msgstr "název"
+
+#~ msgid "Method"
+#~ msgstr "Metoda"
+
+#~ msgid "Request-URI"
+#~ msgstr "URI požadavku"

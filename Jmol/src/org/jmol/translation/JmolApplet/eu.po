@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-28 17:28+0000\n"
-"X-Generator: Launchpad (build 15864)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -149,7 +149,8 @@ msgid "Check"
 msgstr "Egiaztatu"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Igo"
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -359,9 +360,8 @@ msgid "Append models"
 msgstr "Gehitu ereduak"
 
 #: org/jmol/export/dialog/FilePreview.java:100
-#, fuzzy
 msgid "PDB cartoons"
-msgstr "Marrazkia"
+msgstr ""
 
 #: org/jmol/i18n/Language.java:77
 msgid "Arabic"
@@ -2242,7 +2242,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:123
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "klikatu bi puntutan ardatzaren inguruan ezkerrera biratzeko ({0} behar du)"
 

@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:00+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -106,8 +106,7 @@ msgstr "載入"
 
 #: org/jmol/console/GenericConsole.java:89
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"按下 CTRL-ENTER 來新增一行，或貼上分子模型資料然後點擊 載入 (Load) 選項。"
+msgstr "按下 CTRL-ENTER 來新增一行，或貼上分子模型資料然後點擊 載入 (Load) 選項。"
 
 #: org/jmol/console/GenericConsole.java:91
 msgid ""
@@ -115,8 +114,7 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
-"訊息會顯示於此。在以下的視窗中可以輸入指令。線上的求助訊息可以點擊主控台上的 "
-"求助(Help) 選單，求助訊息就可以再新的瀏灠器視窗中顯示。"
+"訊息會顯示於此。在以下的視窗中可以輸入指令。線上的求助訊息可以點擊主控台上的 求助(Help) 選單，求助訊息就可以再新的瀏灠器視窗中顯示。"
 
 #: org/jmol/console/GenericConsole.java:125
 msgid "Jmol Script Console"
@@ -147,7 +145,8 @@ msgid "Check"
 msgstr "勾選"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "回到頂端"
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -357,9 +356,8 @@ msgid "Append models"
 msgstr "附加模型"
 
 #: org/jmol/export/dialog/FilePreview.java:100
-#, fuzzy
 msgid "PDB cartoons"
-msgstr "卡通"
+msgstr ""
 
 #: org/jmol/i18n/Language.java:77
 msgid "Arabic"
@@ -685,9 +683,8 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
-"注意：主幹上的含氮基中氫原子的位置是顯現的而且在逼近計算中將會被乎略。在標準"
-"的 DSSP 逼近法分析中，氫原子的位置將是顯現在大約位置而己。使用 {0} 選項就不採"
-"用這樣的逼近法來計算。\n"
+"注意：主幹上的含氮基中氫原子的位置是顯現的而且在逼近計算中將會被乎略。在標準的 DSSP 逼近法分析中，氫原子的位置將是顯現在大約位置而己。使用 {0} "
+"選項就不採用這樣的逼近法來計算。\n"
 "\n"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:583
@@ -698,9 +695,8 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
-"注意：主幹上的含氮基中氫原子的位置是顯現的而且將會被引入逼近計算中。計算的結"
-"果可能和標準的 DSSP 法的結果有著顯著的不同。使用 {0} 選項則不採計這些氫原子的"
-"位置。\n"
+"注意：主幹上的含氮基中氫原子的位置是顯現的而且將會被引入逼近計算中。計算的結果可能和標準的 DSSP 法的結果有著顯著的不同。使用 {0} "
+"選項則不採計這些氫原子的位置。\n"
 "\n"
 
 #: org/jmol/popup/GenericPopup.java:587
@@ -2243,7 +2239,8 @@ msgstr "點取兩個點以繞著該軸順時針轉動 (需要 {0})"
 
 #: org/jmol/viewer/ActionManager.java:123
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "點取兩個點以繞著該軸逆時針旋轉 (需要 {0})"
 
 #: org/jmol/viewer/ActionManager.java:124
@@ -2299,8 +2296,7 @@ msgstr "將這些原子加到已經選取的原子中 (需要 {0})"
 msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
-msgstr ""
-"若已經全選, 請先取消全選, 或者是將這堆原子加到已經選取的原子中 (需要 {0})"
+msgstr "若已經全選, 請先取消全選, 或者是將這堆原子加到已經選取的原子中 (需要 {0})"
 
 #: org/jmol/viewer/ActionManager.java:135
 #, java-format
@@ -2475,9 +2471,9 @@ msgstr "無法設定紀錄檔之路徑"
 msgid "Setting log file to {0}"
 msgstr "設定紀錄檔到 {0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr "Applet 不能新增這個檔案。要用 Base64 JPEC 格式檔，請使用 {0}。"
 
 #~ msgid "File creation failed."
@@ -2495,9 +2491,11 @@ msgstr "設定紀錄檔到 {0}"
 #~ msgid "Top"
 #~ msgstr "頂端"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "檔案 {0}"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} 圖形"
 
@@ -2516,17 +2514,21 @@ msgstr "設定紀錄檔到 {0}"
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL 等位面"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D 模型"
 
 #~ msgid "About Jmol"
 #~ msgstr "關於Jmol"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "錯誤：不能把布林旗標設定為字串：{0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "錯誤：不能把這個變數值設定至布林值：{0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "錯誤：不能把布林旗標設定為數字：{0}"

@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-10 21:44+0000\n"
-"X-Generator: Launchpad (build 16118)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "X-Poedit-Country: The Netherlands\n"
 "X-Poedit-Language: Dutch\n"
 
@@ -93,7 +93,8 @@ msgstr "geen console -- alle uitvoer naar de command line"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "stuur alleen input van print berichten naar de console (impliceert -i)"
+msgstr ""
+"stuur alleen input van print berichten naar de console (impliceert -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "restrict local file access"
@@ -1868,36 +1869,6 @@ msgstr "Overhalendialoog"
 msgid "unimplemented"
 msgstr "niet geimplementeerd"
 
-#~ msgid "name"
-#~ msgstr "naam"
-
-#~ msgid "value"
-#~ msgstr "waarde"
-
-#~ msgid "expires"
-#~ msgstr "verloopt"
-
-#~ msgid "domain"
-#~ msgstr "domein"
-
-#~ msgid "path"
-#~ msgstr "folder"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "HTTP-versie"
-
-#~ msgid "Status-Code"
-#~ msgstr "Status-code"
-
-#~ msgid "Reason-Phrase"
-#~ msgstr "Reden"
-
-#~ msgid "Method"
-#~ msgstr "Methode"
-
-#~ msgid "Request-URI"
-#~ msgstr "Request-URI"
-
 #~ msgid "All"
 #~ msgstr "Alle"
 
@@ -1940,18 +1911,23 @@ msgstr "niet geimplementeerd"
 #~ msgid "vector"
 #~ msgstr "vector"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Ga naar de eerste {0} in de collectie"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Ga naar de vorige {0} in de collectie"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Speel de hele collectie van {0}'s af"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ga naar de volgende {0} in de collectie"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Ga naar de laatste {0} in de collectie"
 
@@ -1964,6 +1940,7 @@ msgstr "niet geimplementeerd"
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "Dubbelklik en sleep om de volgorde te wijzigen"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1977,18 +1954,21 @@ msgstr "niet geimplementeerd"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "toevoegen JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "toevoegen {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "toevoegen {0}.spt"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} "
-#~ "heen gezet."
+#~ "Voeg hier extra uitleg in. Lange teksten worden om het Jmol-model {0} heen "
+#~ "gezet."
 
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Leeg console knop (vereist een herstart van Jmol)"
@@ -2025,3 +2005,33 @@ msgstr "niet geimplementeerd"
 
 #~ msgid "Enter a four-digit PDB ID"
 #~ msgstr "Geef de vier-cijferige PDB code"
+
+#~ msgid "domain"
+#~ msgstr "domein"
+
+#~ msgid "expires"
+#~ msgstr "verloopt"
+
+#~ msgid "HTTP-Version"
+#~ msgstr "HTTP-versie"
+
+#~ msgid "path"
+#~ msgstr "folder"
+
+#~ msgid "value"
+#~ msgstr "waarde"
+
+#~ msgid "name"
+#~ msgstr "naam"
+
+#~ msgid "Reason-Phrase"
+#~ msgstr "Reden"
+
+#~ msgid "Status-Code"
+#~ msgstr "Status-code"
+
+#~ msgid "Method"
+#~ msgstr "Methode"
+
+#~ msgid "Request-URI"
+#~ msgstr "Request-URI"

@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-11 06:32+0000\n"
-"X-Generator: Launchpad (build 16356)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -152,7 +152,8 @@ msgid "Check"
 msgstr "Vérifier"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Retourner en haut"
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -2260,7 +2261,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:123
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "Cliquez sur deux points afin de tourner autour de l'axe dans le sens inverse "
 "des aiguilles d'une montre (requiert {0})"
@@ -2312,7 +2314,8 @@ msgstr "Dé-sélectionner ce groupe d''atomes (requiert {0})"
 #: org/jmol/viewer/ActionManager.java:133
 #, java-format
 msgid "add this group of atoms to the set of selected atoms (requires {0})"
-msgstr "ajouter ce groupe d'atomes au set d'atomes sélectionnés (requiert {0})"
+msgstr ""
+"ajouter ce groupe d'atomes au set d'atomes sélectionnés (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:134
 #, java-format
@@ -2390,7 +2393,8 @@ msgstr "choisir un point DRAW (pour des mesures) (requiert {0})"
 #: org/jmol/viewer/ActionManager.java:148
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr "choisir un label afin de basculer entre affiché/masqué (requiert {0})"
+msgstr ""
+"choisir un label afin de basculer entre affiché/masqué (requiert {0})"
 
 #: org/jmol/viewer/ActionManager.java:149
 #, java-format
@@ -2459,7 +2463,8 @@ msgstr "Choisir deux atomes pour faire tourner le modèle autour d'un axe"
 
 #: org/jmol/viewer/ActionManager.java:1817
 msgid "pick one more atom in order to display the symmetry relationship"
-msgstr "choisir un atome supplémentaire afin d'afficher la relation symétrique"
+msgstr ""
+"choisir un atome supplémentaire afin d'afficher la relation symétrique"
 
 #: org/jmol/viewer/ActionManager.java:1818
 msgid ""
@@ -2514,15 +2519,16 @@ msgstr "Configuration du fichier journal dans {0}"
 #~ msgid "File creation failed."
 #~ msgstr "Création du fichier échoué"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fichier {0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "La création de fichier par cette n''est pas autorisée. Pour le format "
-#~ "JPEG Base64, utiliser {0}."
+#~ "La création de fichier par cette n''est pas autorisée. Pour le format JPEG "
+#~ "Base64, utiliser {0}."
 
 #~ msgid "File or URL"
 #~ msgstr "Fichier ou URL"
@@ -2530,9 +2536,11 @@ msgstr "Configuration du fichier journal dans {0}"
 #~ msgid "Minimize"
 #~ msgstr "Réduire"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} Modèle 3D"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Image"
 
@@ -2548,17 +2556,20 @@ msgstr "Configuration du fichier journal dans {0}"
 #~ msgid "Script with state"
 #~ msgstr "Script avec statistiques"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
 #~ "ERREUR : Impossible de définir une chaîne de caractère comme étant "
 #~ "booléenne : {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
 #~ "ERREUR : Impossible de définir la valeur de cette variable comme étant "
 #~ "booléenne : {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr ""
-#~ "ERREUR : Impossible de définir une valeur numérique comme étant "
-#~ "booléenne : {0}"
+#~ "ERREUR : Impossible de définir une valeur numérique comme étant booléenne : "
+#~ "{0}"

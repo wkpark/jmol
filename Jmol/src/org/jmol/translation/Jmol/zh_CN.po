@@ -13,8 +13,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "X-Poedit-Bookmarks: -1,-1,-1,-1,-1,69,-1,-1,-1,-1\n"
 
 #: org/jmol/appletjs/Jmol.java:365
@@ -933,9 +933,7 @@ msgstr "清空"
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
-msgstr ""
-"请点击 {0} 启动Jmol {1} 以显示可以操纵的三维模型。（Java 小程序首次载入时可能"
-"下载时间较长）"
+msgstr "请点击 {0} 启动Jmol {1} 以显示可以操纵的三维模型。（Java 小程序首次载入时可能下载时间较长）"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
 msgid "Insert the page TITLE here."
@@ -1061,8 +1059,7 @@ msgid ""
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
-"输入一个化合物的名字或ID (SMILES, InChl, CAS). 前言带“:”从PubChem导入;不然 "
-"Jmol 将会用 NCI/NIH 分解器"
+"输入一个化合物的名字或ID (SMILES, InChl, CAS). 前言带“:”从PubChem导入;不然 Jmol 将会用 NCI/NIH 分解器"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1376
 msgid "IO Exception:"
@@ -1852,33 +1849,6 @@ msgstr "下载视图"
 msgid "unimplemented"
 msgstr "未实现"
 
-#~ msgid "name"
-#~ msgstr "名称,"
-
-#~ msgid "value"
-#~ msgstr "值"
-
-#~ msgid "expires"
-#~ msgstr "有效期"
-
-#~ msgid "domain"
-#~ msgstr "域名"
-
-#~ msgid "path"
-#~ msgstr "路径"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "HTTP-版本"
-
-#~ msgid "Status-Code"
-#~ msgstr "状态-代码"
-
-#~ msgid "Method"
-#~ msgstr "方法"
-
-#~ msgid "Request-URI"
-#~ msgstr "需求-链接"
-
 #~ msgid "Controller"
 #~ msgstr "控制器"
 
@@ -1894,6 +1864,7 @@ msgstr "未实现"
 #~ msgid "Output Conso&le..."
 #~ msgstr "输出控制台(&L)..."
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
@@ -1908,12 +1879,15 @@ msgstr "未实现"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "正在增加 JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "正在增加 {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "正在增加 {0}.spt"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1921,6 +1895,7 @@ msgstr "未实现"
 #~ "无法找到或打开：\n"
 #~ "{0}"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "跳转到集合中的最后一个 {0}"
 
@@ -1930,15 +1905,19 @@ msgstr "未实现"
 #~ msgid "vector"
 #~ msgstr "矢量"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "跳转到集合中的第一个 {0}"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "跳转到集合中的前一个{0}"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "播放 {0} 的整个集合"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "跳转到集合中的下一个 {0}"
 
@@ -1968,3 +1947,30 @@ msgstr "未实现"
 
 #~ msgid "Get MOL file by compound name or ID"
 #~ msgstr "根据化合物名称或 ID 获取 MOL 文件"
+
+#~ msgid "domain"
+#~ msgstr "域名"
+
+#~ msgid "expires"
+#~ msgstr "有效期"
+
+#~ msgid "path"
+#~ msgstr "路径"
+
+#~ msgid "value"
+#~ msgstr "值"
+
+#~ msgid "name"
+#~ msgstr "名称,"
+
+#~ msgid "Status-Code"
+#~ msgstr "状态-代码"
+
+#~ msgid "Method"
+#~ msgstr "方法"
+
+#~ msgid "Request-URI"
+#~ msgstr "需求-链接"
+
+#~ msgid "HTTP-Version"
+#~ msgstr "HTTP-版本"

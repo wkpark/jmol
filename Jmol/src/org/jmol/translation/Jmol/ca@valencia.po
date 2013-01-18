@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
 
@@ -1881,18 +1881,23 @@ msgstr ""
 #~ msgid "vector"
 #~ msgstr "vector"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Vés al primer {0} de la col·lecció"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Vés a l''anterior {0} de la col·lecció"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Reprodueix la col·lecció sencera de {0}s"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Vés al següent {0} de la col·lecció"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Salta al darrer {0} de la col·lecció"
 
@@ -1902,12 +1907,13 @@ msgstr ""
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Botó de neteja de la consola (cal reiniciar el Jmol)"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Inseriu un text explicatori addicional ací. Si el text és llarg, "
-#~ "s''ajustarà al voltant del model de Jmol {0}."
+#~ "Inseriu un text explicatori addicional ací. Si el text és llarg, s''ajustarà "
+#~ "al voltant del model de Jmol {0}."
 
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "feu doble clic i arrosegueu per a reordenar"
@@ -1918,12 +1924,15 @@ msgstr ""
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "s'afig JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "afig {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "afig {0}.spt"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"

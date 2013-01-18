@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-01-07 07:16+0100\n"
-"PO-Revision-Date: 2012-09-05 20:45+0000\n"
+"PO-Revision-Date: 2013-01-08 11:35+0000\n"
 "Last-Translator: Peter Sahlin <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-06 18:20+0000\n"
-"X-Generator: Launchpad (build 15909)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/appletjs/Jmol.java:365
 #, java-format
@@ -26,14 +26,19 @@ msgid ""
 "\n"
 "See http://www.jmol.org for more information"
 msgstr ""
+"Jmol Applet version {0} {1}.\n"
+"\n"
+"Ett projekt inom OpenScience.\n"
+"\n"
+"Se http://www.jmol.org för mer information"
 
 #: org/jmol/appletjs/Jmol.java:532
 msgid "File Error:"
-msgstr ""
+msgstr "Filfel:"
 
 #: org/jmol/awtjs2d/JSModelKitPopup.java:76
 msgid "Element?"
-msgstr ""
+msgstr "Grundämne?"
 
 #: org/openscience/jmol/app/JmolApp.java:100
 msgid "Error starting Jmol: the property 'user.home' is not defined."
@@ -85,7 +90,8 @@ msgstr "ingen konsol - all output till sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:156
 msgid "send only output from print messages to console (implies -i)"
-msgstr "sänd endast output från utskriftsmeddelanden till konsoll (kräver -i)"
+msgstr ""
+"sänd endast output från utskriftsmeddelanden till konsoll (kräver -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "restrict local file access"
@@ -1866,36 +1872,6 @@ msgstr "Nedladdningsvy"
 msgid "unimplemented"
 msgstr "ej implementerad"
 
-#~ msgid "name"
-#~ msgstr "namn"
-
-#~ msgid "value"
-#~ msgstr "värde"
-
-#~ msgid "expires"
-#~ msgstr "förfaller"
-
-#~ msgid "domain"
-#~ msgstr "domän"
-
-#~ msgid "path"
-#~ msgstr "sökväg"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "HTTP-version"
-
-#~ msgid "Status-Code"
-#~ msgstr "Statuskod"
-
-#~ msgid "Reason-Phrase"
-#~ msgstr "Orsaksfras"
-
-#~ msgid "Method"
-#~ msgstr "Metod"
-
-#~ msgid "Request-URI"
-#~ msgstr "Fråge-URI"
-
 #~ msgid "All"
 #~ msgstr "Allt"
 
@@ -1904,6 +1880,33 @@ msgstr "ej implementerad"
 
 #~ msgid "vector"
 #~ msgstr "vector"
+
+#~ msgid "domain"
+#~ msgstr "domän"
+
+#~ msgid "HTTP-Version"
+#~ msgstr "HTTP-version"
+
+#~ msgid "path"
+#~ msgstr "sökväg"
+
+#~ msgid "value"
+#~ msgstr "värde"
+
+#~ msgid "name"
+#~ msgstr "namn"
+
+#~ msgid "Status-Code"
+#~ msgstr "Statuskod"
+
+#~ msgid "Method"
+#~ msgstr "Metod"
+
+#~ msgid "Reason-Phrase"
+#~ msgstr "Orsaksfras"
+
+#~ msgid "Request-URI"
+#~ msgstr "Fråge-URI"
 
 #~ msgid "Go to next vector in the collection"
 #~ msgstr "Gå till nästa vektor i samlingen"
@@ -1934,6 +1937,9 @@ msgstr "ej implementerad"
 
 #~ msgid "Go to previous vector in the collection"
 #~ msgstr "Gå till föregående vektor i samlingen"
+
+#~ msgid "expires"
+#~ msgstr "förfaller"
 
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol skriptkonsol"

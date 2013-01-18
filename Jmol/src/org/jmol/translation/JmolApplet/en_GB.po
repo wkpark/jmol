@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-10 18:16+0000\n"
-"X-Generator: Launchpad (build 15924)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -147,7 +147,8 @@ msgid "Check"
 msgstr "Check"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Top"
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -2247,8 +2248,10 @@ msgstr "click on two points to spin around axis clockwise (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:123
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
-msgstr "click on two points to spin around axis anti-clockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
+msgstr ""
+"click on two points to spin around axis anti-clockwise (requires {0})"
 
 #: org/jmol/viewer/ActionManager.java:124
 #, java-format
@@ -2483,12 +2486,11 @@ msgstr "Cannot set log file path."
 msgid "Setting log file to {0}"
 msgstr "Setting log file to {0}"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "File creation failed."
@@ -2502,6 +2504,7 @@ msgstr "Setting log file to {0}"
 #~ msgid "Top"
 #~ msgstr "Top"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "File {0}"
 
@@ -2514,12 +2517,14 @@ msgstr "Setting log file to {0}"
 #~ msgid "Script with state"
 #~ msgstr "Script with state"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D Model"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "JVXL Isosurface"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Image"
 
@@ -2529,12 +2534,15 @@ msgstr "Setting log file to {0}"
 #~ msgid "About Jmol"
 #~ msgstr "About Jmol"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to string value: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "ERROR: cannot set boolean flag to numeric value: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr "ERROR: Cannot set value of this variable to a boolean: {0}"
 

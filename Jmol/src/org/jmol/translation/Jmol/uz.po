@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/appletjs/Jmol.java:365
 #, java-format
@@ -1841,29 +1841,29 @@ msgstr "Юклашни кўриш"
 msgid "unimplemented"
 msgstr ""
 
-#~ msgid "name"
-#~ msgstr "ном"
-
-#~ msgid "value"
-#~ msgstr "қиймат"
+#~ msgid "domain"
+#~ msgstr "домен"
 
 #~ msgid "expires"
 #~ msgstr "тугади"
 
-#~ msgid "domain"
-#~ msgstr "домен"
-
 #~ msgid "path"
 #~ msgstr "йўл"
 
-#~ msgid "HTTP-Version"
-#~ msgstr "HTTP-версия"
+#~ msgid "value"
+#~ msgstr "қиймат"
 
 #~ msgid "Status-Code"
 #~ msgstr "холат коди"
+
+#~ msgid "HTTP-Version"
+#~ msgstr "HTTP-версия"
 
 #~ msgid "Method"
 #~ msgstr "Усул"
 
 #~ msgid "Request-URI"
 #~ msgstr "Сўралган URL"
+
+#~ msgid "name"
+#~ msgstr "ном"

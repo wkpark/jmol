@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-28 10:36+0000\n"
-"X-Generator: Launchpad (build 16378)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "Language: uk\n"
 
 #: org/jmol/appletjs/Jmol.java:365
@@ -44,8 +44,8 @@ msgstr "Елемент?"
 #: org/openscience/jmol/app/JmolApp.java:100
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
-"home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості "
+"«user.home»."
 
 #: org/openscience/jmol/app/JmolApp.java:137
 msgid "transparent background"
@@ -918,7 +918,8 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:225
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr ""
+"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:227
 msgid "Click atoms to measure distances"
@@ -949,8 +950,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
-"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
+"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
 msgid "Insert the page TITLE here."
@@ -1900,18 +1901,23 @@ msgstr "не реалізовано"
 #~ msgid "atom set"
 #~ msgstr "набір атомів"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Перейти до першого {0} у збірці"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Перейти до попереднього {0} у збірці"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Відтворити усю збірку {0}"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти до наступного {0} у збірці"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти до останнього {0} у збірці"
 
@@ -1924,12 +1930,15 @@ msgstr "не реалізовано"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "додавання JmolPopIn.js"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "додавання {0}.png"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "додавання {0}.spt"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1940,16 +1949,16 @@ msgstr "не реалізовано"
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Кнопка спорожнення консолі (потрібен перезапуску Jmol)"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде "
-#~ "поділено на частини і розташовано навколо моделі Jmol {0}."
+#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде поділено "
+#~ "на частини і розташовано навколо моделі Jmol {0}."
 
 #~ msgid "double-click and drag to reorder"
-#~ msgstr ""
-#~ "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
+#~ msgstr "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Параметри -D (типові значення вказано у дужках):"

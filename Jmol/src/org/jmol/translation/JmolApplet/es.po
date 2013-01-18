@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-12-27 21:08+0100\n"
-"PO-Revision-Date: 2012-09-15 13:13+0100\n"
+"PO-Revision-Date: 2012-09-15 20:24+0000\n"
 "Last-Translator: Angel Herráez <aherraez@users.sourceforge.net>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:00+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "X-Poedit-Country: SPAIN\n"
 "X-Poedit-Language: Spanish\n"
 "X-Poedit-SourceCharset: utf-8\n"
@@ -147,7 +147,8 @@ msgid "Check"
 msgstr "Comprobar"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Subir"
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -2252,11 +2253,13 @@ msgstr ""
 #: org/jmol/viewer/ActionManager.java:122
 #, java-format
 msgid "click on two points to spin around axis clockwise (requires {0})"
-msgstr "pulsa en dos puntos para definir un eje de giro horario (requiere {0})"
+msgstr ""
+"pulsa en dos puntos para definir un eje de giro horario (requiere {0})"
 
 #: org/jmol/viewer/ActionManager.java:123
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "pulsa en dos puntos para definir un eje de giro antihorario (requiere {0})"
 
@@ -2379,7 +2382,8 @@ msgstr "elige un átomo"
 #: org/jmol/viewer/ActionManager.java:147
 #, java-format
 msgid "pick a DRAW point (for measurements) (requires {0}"
-msgstr "elige un punto de un objeto dibujado (para mediciones) (requiere {0})"
+msgstr ""
+"elige un punto de un objeto dibujado (para mediciones) (requiere {0})"
 
 #: org/jmol/viewer/ActionManager.java:148
 #, java-format
@@ -2507,16 +2511,17 @@ msgstr "Definiendo el archivo de registro como {0}"
 #~ msgid "About Jmol"
 #~ msgstr "Acerca de Jmol"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
-#~ "ERROR: no es posible dar valor de texto a una variable lógica booleana: "
-#~ "{0}"
+#~ "ERROR: no es posible dar valor de texto a una variable lógica booleana: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr ""
-#~ "ERROR: no es posible dar valor numérico a una variable lógica booleana: "
-#~ "{0}"
+#~ "ERROR: no es posible dar valor numérico a una variable lógica booleana: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
 #~ "ERROR: no es posible ajustar el valor de esta variable a un valor lógico "
@@ -2525,22 +2530,25 @@ msgstr "Definiendo el archivo de registro como {0}"
 #~ msgid "File creation failed."
 #~ msgstr "Ha fallado la creación del archivo."
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
 #~ "No está permitida la creación de archivos desde esta miniaplicación. Para "
 #~ "usar un formato JPEG Base64, utiliza {0}."
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Archivo {0}"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "Imagen {0}"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "Isosuperficie JVXL"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "Modelo 3D {0}"
 

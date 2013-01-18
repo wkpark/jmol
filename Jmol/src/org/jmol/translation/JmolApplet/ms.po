@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-04 15:00+0000\n"
-"X-Generator: Launchpad (build 15901)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -148,7 +148,8 @@ msgid "Check"
 msgstr "Semak"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Atas[sebagaimana \"pergi ke atas\""
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -2154,7 +2155,8 @@ msgstr "objek tidak dikenalpasti"
 #: org/jmol/script/ScriptEvaluator.java:3184
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parameter {0} tidak dikenali didalam skrip keadaan Jmol (tetapkan jua)"
+msgstr ""
+"parameter {0} tidak dikenali didalam skrip keadaan Jmol (tetapkan jua)"
 
 #: org/jmol/script/ScriptEvaluator.java:3187
 #, java-format
@@ -2221,7 +2223,8 @@ msgstr "putar Z"
 #: org/jmol/viewer/ActionManager.java:117
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
-msgstr "putar Z (gerakan melintang tetikus) atau zum (gerakan menegak tetikus)"
+msgstr ""
+"putar Z (gerakan melintang tetikus) atau zum (gerakan menegak tetikus)"
 
 #: org/jmol/viewer/ActionManager.java:118
 msgid "zoom"
@@ -2249,7 +2252,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:123
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "klik pada dua titik untuk putar disekeliling paksi lawan jam (perlukan {0})"
 
@@ -2497,16 +2501,17 @@ msgstr "Tetapkan fail log ke {0}"
 #~ msgid "Molecular Orbitals"
 #~ msgstr "Orbit Molekul"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Penciptaan fail oleh aplet ini tidak dibenarkan. Untuk format JPEG "
-#~ "Base64, guna {0}."
+#~ "Penciptaan fail oleh aplet ini tidak dibenarkan. Untuk format JPEG Base64, "
+#~ "guna {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Penciptaan fail gagal."
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fail {0}"
 
@@ -2525,22 +2530,27 @@ msgstr "Tetapkan fail log ke {0}"
 #~ msgid "Java memory usage"
 #~ msgstr "Penggunaan ingatan Java"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "Model 3D {0}"
 
 #~ msgid "JVXL Isosurface"
 #~ msgstr "Permukaan Iso JVXL"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "Imej {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to string value: {0}"
 #~ msgstr ""
 #~ "RALAT: tidak dapat tetapkan bendera boolean kepada nilai rentetan: {0}"
 
+#, java-format
 #~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
 #~ msgstr "RALAT: tidak dapat tetapkan bendera boolean kepada nilai angka: {0}"
 
+#, java-format
 #~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
 #~ msgstr ""
 #~ "RALAT: tidak dapat tetapkan nilai pembolehubah ini kepada boolean: {0}"

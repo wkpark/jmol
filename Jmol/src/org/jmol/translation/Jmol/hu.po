@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-25 09:01+0000\n"
-"X-Generator: Launchpad (build 15843)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 "X-Poedit-Country: HUNGARY\n"
 "X-Poedit-Language: Hungarian\n"
 "X-Poedit-SourceCharset: utf-8\n"
@@ -1867,18 +1867,23 @@ msgstr ""
 #~ msgid "vector"
 #~ msgstr "vektor"
 
+#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Ugárs az első {0}-ra a gyűjteményben"
 
+#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Ugárs az előző {0}-ra a gyűjteményben"
 
+#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "A teljes {0} gyűjtemény lejátszása"
 
+#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Ugárs a következő  {0}-ra a gyűjteményben"
 
+#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Ugárs az utolsó {0}-ra a gyűjteményben"
 
@@ -1894,12 +1899,13 @@ msgstr ""
 #~ msgid "Jmol Script Console"
 #~ msgstr "Jmol parancsnyelvi konzol"
 
+#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Itt egy hosszabb, magyarázó szöveget adhat meg. Ha hosszú, akkor a {0} "
-#~ "Jmol modell körül megjelenni."
+#~ "Itt egy hosszabb, magyarázó szöveget adhat meg. Ha hosszú, akkor a {0} Jmol "
+#~ "modell körül megjelenni."
 
 #~ msgid "double-click and drag to reorder"
 #~ msgstr "dupla kattinttással vagy húzással rendezhető át"
@@ -1910,12 +1916,15 @@ msgstr ""
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "JmolPopIn.js hozzáadása"
 
+#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "{0}.png hozzáadása"
 
+#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "{0}.spt hozzáadása"
 
+#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"

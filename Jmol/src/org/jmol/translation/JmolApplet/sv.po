@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2012-12-27 21:08+0100\n"
-"PO-Revision-Date: 2012-09-05 20:55+0000\n"
+"PO-Revision-Date: 2013-01-09 09:38+0000\n"
 "Last-Translator: Peter Sahlin <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-06 18:20+0000\n"
-"X-Generator: Launchpad (build 15909)\n"
+"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -148,7 +148,8 @@ msgid "Check"
 msgstr "Kontrollera"
 
 #: org/jmol/console/ScriptEditor.java:137
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Överst"
 
 #: org/jmol/console/ScriptEditor.java:138
@@ -2030,28 +2031,28 @@ msgstr "ogiltigt argument"
 
 #: org/jmol/script/ScriptEvaluator.java:3094
 msgid "invalid parameter order"
-msgstr ""
+msgstr "ogiltig parameterordning"
 
 #: org/jmol/script/ScriptEvaluator.java:3097
 msgid "keyword expected"
-msgstr ""
+msgstr "nyckelord förväntat"
 
 #: org/jmol/script/ScriptEvaluator.java:3100
 msgid "no MO coefficient data available"
-msgstr ""
+msgstr "inga MO-koefficientdata tillgängliga"
 
 #: org/jmol/script/ScriptEvaluator.java:3103
 #, java-format
 msgid "An MO index from 1 to {0} is required"
-msgstr ""
+msgstr "Ett MO-index från 1 till {0} krävs"
 
 #: org/jmol/script/ScriptEvaluator.java:3106
 msgid "no MO basis/coefficient data available for this frame"
-msgstr ""
+msgstr "inga MO bas/koefficientdata tillgängliga för denna bildruta"
 
 #: org/jmol/script/ScriptEvaluator.java:3109
 msgid "no MO occupancy data available"
-msgstr ""
+msgstr "Inga MO occupancy data tillgängliga"
 
 #: org/jmol/script/ScriptEvaluator.java:3112
 msgid "Only one molecular orbital is available in this file"
@@ -2060,12 +2061,12 @@ msgstr "Endast en molekylorbital är tillgänglig i denna fil"
 #: org/jmol/script/ScriptEvaluator.java:3115
 #, java-format
 msgid "{0} require that only one model be displayed"
-msgstr ""
+msgstr "{0} kräver att endast en modell visas"
 
 #: org/jmol/script/ScriptEvaluator.java:3118
 #, java-format
 msgid "{0} requires that only one model be loaded"
-msgstr ""
+msgstr "{0} kräver att endast en modell hämtas"
 
 #: org/jmol/script/ScriptEvaluator.java:3121
 msgid "No data available"
@@ -2076,24 +2077,26 @@ msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr ""
+"Inga partiella laddningar lästes från filen; Jmol behöver det för att "
+"rendera MEP-data."
 
 #: org/jmol/script/ScriptEvaluator.java:3128
 msgid "No unit cell"
-msgstr ""
+msgstr "Ingen enhetscell"
 
 #: org/jmol/script/ScriptEvaluator.java:3134
 #, java-format
 msgid "number must be ({0} or {1})"
-msgstr ""
+msgstr "tal måste vara ({0} eller {1})"
 
 #: org/jmol/script/ScriptEvaluator.java:3137
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
-msgstr ""
+msgstr "decimaltal utanför intervallet  ({0} - {1})"
 
 #: org/jmol/script/ScriptEvaluator.java:3140
 msgid "object name expected after '$'"
-msgstr ""
+msgstr "objektnamn förväntat efter '$'"
 
 #: org/jmol/script/ScriptEvaluator.java:3144
 #, java-format
@@ -2101,27 +2104,29 @@ msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr ""
+"plan förväntat -- antingen tre punkter eller atomuttryck eller {0} or {1} or "
+"{2}"
 
 #: org/jmol/script/ScriptEvaluator.java:3147
 msgid "property name expected"
-msgstr ""
+msgstr "egenskapsnamn förväntat"
 
 #: org/jmol/script/ScriptEvaluator.java:3150
 #, java-format
 msgid "space group {0} was not found."
-msgstr ""
+msgstr "space group {0} hittades inte."
 
 #: org/jmol/script/ScriptEvaluator.java:3153
 msgid "quoted string expected"
-msgstr ""
+msgstr "sträng inom citationstecken förväntad"
 
 #: org/jmol/script/ScriptEvaluator.java:3156
 msgid "quoted string or identifier expected"
-msgstr ""
+msgstr "sträng inom citationstecken eller identifierare förväntad"
 
 #: org/jmol/script/ScriptEvaluator.java:3159
 msgid "too many rotation points were specified"
-msgstr ""
+msgstr "för många rotationspunkter specifierade"
 
 #: org/jmol/script/ScriptEvaluator.java:3162
 msgid "too many script levels"
@@ -2129,48 +2134,48 @@ msgstr "för många script-nivåer"
 
 #: org/jmol/script/ScriptEvaluator.java:3165
 msgid "unrecognized atom property"
-msgstr ""
+msgstr "okänd atomegenskap"
 
 #: org/jmol/script/ScriptEvaluator.java:3168
 msgid "unrecognized bond property"
-msgstr ""
+msgstr "okänd bindningsegenskap"
 
 #: org/jmol/script/ScriptEvaluator.java:3171
 msgid "unrecognized command"
-msgstr ""
+msgstr "okänt kommando"
 
 #: org/jmol/script/ScriptEvaluator.java:3174
 msgid "runtime unrecognized expression"
-msgstr ""
+msgstr "runtime okänt uttryck"
 
 #: org/jmol/script/ScriptEvaluator.java:3177
 msgid "unrecognized object"
-msgstr ""
+msgstr "okänt objekt"
 
 #: org/jmol/script/ScriptEvaluator.java:3184
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr ""
+msgstr "okänd {0} parameter i Jmol state script (set ändå)"
 
 #: org/jmol/script/ScriptEvaluator.java:3187
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
-msgstr ""
+msgstr "okänd VISA-parameter --  använd {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:3193
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
-msgstr ""
+msgstr "skriva vad? {0} eller {1} \"filename\""
 
 #: org/jmol/script/ScriptEvaluator.java:7640
 #, java-format
 msgid "{0} connections deleted"
-msgstr ""
+msgstr "{0} anslutningar raderade"
 
 #: org/jmol/script/ScriptEvaluator.java:7661
 #, java-format
 msgid "{0} new bonds; {1} modified"
-msgstr ""
+msgstr "{0} nya bindningar; {1} modifierade"
 
 #: org/jmol/script/ScriptEvaluator.java:9287
 #, java-format
@@ -2245,7 +2250,8 @@ msgstr "klicka på två punkter för att rotera runt axel medurs (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:123
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "klicka på två punkter för att rotera runt axel moturs (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:124
@@ -2486,27 +2492,30 @@ msgstr "Loggfil sätts till {0}"
 #~ msgid "Top"
 #~ msgstr "Överst"
 
+#, java-format
 #~ msgid "File {0}"
 #~ msgstr "Fil {0}"
 
 #~ msgid "File or URL"
 #~ msgstr "Fil eller URL"
 
+#, java-format
 #~ msgid "{0} 3D Model"
 #~ msgstr "{0} 3D-modell"
 
+#, java-format
 #~ msgid "{0} Image"
 #~ msgstr "{0} Bild"
 
 #~ msgid "About Jmol"
 #~ msgstr "Om Jmol"
 
+#, java-format
 #~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
+#~ "File creation by this applet is not allowed. For Base64 JPEG format, use {0}."
 #~ msgstr ""
-#~ "Skapande av filer genom det här programmet är inte tillåtet. För Base64 "
-#~ "JPEG-format, använd {0}."
+#~ "Skapande av filer genom det här programmet är inte tillåtet. För Base64 JPEG-"
+#~ "format, använd {0}."
 
 #~ msgid "File creation failed."
 #~ msgstr "Skapande av en fil misslyckades."

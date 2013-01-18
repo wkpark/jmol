@@ -27,12 +27,13 @@ package org.jmol.smiles;
 import java.util.List;
 
 import org.jmol.api.SmilesMatcherInterface;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.JmolNode;
 import org.jmol.util.TextFormat;
 
-/**
+/** 
  * Originating author: Nicholas Vervelle
  * 
  * A class to handle a variety of SMILES/SMARTS-related functions, including:
@@ -389,7 +390,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       case MODE_MAP:
         search.getMaps = true;
         List<int[]> vl = (List<int[]>) search.search(false);
-        return vl.toArray(new int[vl.size()][]);
+        return vl.toArray(ArrayUtil.newInt2(vl.size()));
       }
     } catch (Exception e) {
       if (InvalidSmilesException.getLastError() == null)

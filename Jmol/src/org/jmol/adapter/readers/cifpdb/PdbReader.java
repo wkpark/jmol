@@ -1105,7 +1105,7 @@ Polyproline 10
      * number right after the word MODEL :-(
      ****************************************************************/
     checkNotPDB();
-    isHexSerial = false;
+    isHexSerial = isHexSeq = false;
     haveMappedSerials = false;
     sbConect = null;
     atomSetCollection.newAtomSet();

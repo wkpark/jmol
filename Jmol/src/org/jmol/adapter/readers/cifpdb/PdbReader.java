@@ -195,7 +195,7 @@ public class PdbReader extends AtomSetCollectionReader {
         .indexOf(line.substring(0, 6))) >> 3;
     boolean isAtom = (ptOption == 0 || ptOption == 1);
     boolean isModel = (ptOption == 2);
-    int serial = (isAtom ? parseIntRange(line, 6, 11) : 0);
+    serial = (isAtom ? getSerial() : 0);
     boolean isNewModel = ((isTrajectory || isSequential) && !isMultiModel
         && isAtom && serial == 1);
     if (getHeader) {
@@ -233,7 +233,7 @@ public class PdbReader extends AtomSetCollectionReader {
       return true;
     if (isAtom) {
       getHeader = false;
-      atom(serial);
+      atom();
       return true;
     }
     switch (ptOption) {
@@ -664,7 +664,37 @@ REMARK 290 REMARK: NULL
     }
   } 
   
-  // Note that segID (columns 73-76) is not generally read, 
+
+  // Schroedinger perversion 
+  // https://www.schrodinger.com/AcrobatFile.php?type=supportdocs&type2=&ident=530
+  // assumes sequential numbers with atom 99999 or seq 9999 present
+  // otherwise "20000" before atom 99999 is different from "20000" after ???
+  
+  private boolean isHexSerial; 
+  private boolean isHexSeq;
+  private int serial;
+
+  private char currentChainID;
+  
+  private int getSerial() {
+    if (isHexSerial)
+      return serial = Integer.parseInt(line.substring(6, 11), 16);
+    serial = parseIntRange(line, 6, 11);
+    if (serial == 99999)
+      isHexSerial = true;
+    return serial;
+  }
+
+  private int getSeqNo() {
+    if (isHexSeq)
+      return Integer.parseInt(line.substring(22, 26), 16);
+    int n = parseIntRange(line, 22, 26);
+    if (n == 9999)
+      isHexSeq = true;
+    return n;
+  }
+
+// Note that segID (columns 73-76) is not generally read, 
   // but can be read into the atomType atom property 
   // starting in Jmol 13.1.12 using FILTER "type 73,4"
   
@@ -674,7 +704,7 @@ REMARK 290 REMARK: NULL
   //01234567890123456789012345678901234567890123456789012345678901234567890123456789
   //aaaaaauuuuu ssss sss cnnnnc   xxxxxxxxxxyyyyyyyyyyzzzzzzzzzzccccccccrrrrrrrr
  
-  private void atom(int serial) {
+  private void atom() {
     Atom atom = new Atom();
     atom.atomName = line.substring(12, 16).trim();
     char ch = line.charAt(16);
@@ -685,7 +715,12 @@ REMARK 290 REMARK: NULL
     if (chainAtomCounts != null)
       chainAtomCounts[ch]++;
     atom.chainID = ch;
-    atom.sequenceNumber = parseIntRange(line, 22, 26);
+    atom.sequenceNumber = getSeqNo();
+    if (isHexSeq && ch != currentChainID) {
+      currentChainID = ch;
+      if (atom.sequenceNumber < 9999)
+        isHexSeq = false;
+    }
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(line.charAt(26));
     atom.isHetero = line.startsWith("HETATM");
     atom.elementSymbol = deduceElementSymbol(atom.isHetero);
@@ -1070,6 +1105,7 @@ Polyproline 10
      * number right after the word MODEL :-(
      ****************************************************************/
     checkNotPDB();
+    isHexSerial = false;
     haveMappedSerials = false;
     sbConect = null;
     atomSetCollection.newAtomSet();

@@ -120,7 +120,7 @@ public class JmolSmilesApplet extends Applet {
    * @param smiles
    * @return  reversed chirality SMILES string 
    */
-  public String reverseChiralit(String smiles) {
+  public String reverseChirality(String smiles) {
     return (new SmilesMatcher()).reverseChirality(smiles);  
   }
 

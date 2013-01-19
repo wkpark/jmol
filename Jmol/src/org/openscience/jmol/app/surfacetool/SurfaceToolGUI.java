@@ -82,7 +82,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
   private JPanel objectsPanel;
   private JPanel topPanel;
   private JPanel angleUnitsPanel;
-  private JComboBox angleUnitsList;
+  private JComboBox<String> angleUnitsList;
   private JPanel originPanel;
   private JRadioButton viewCenterButton;
   private JRadioButton absoluteButton;
@@ -104,7 +104,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
   //  private JSpinner thicknessSpinner;
   private ButtonGroup whichOrigin;
   private JScrollPane surfaceScrollPane;
-  private JList surfaceList;
+  private JList<SurfaceStatus> surfaceList;
 
   /**
    * Builds and opens a GUI to control slicing. Called automatically when a new
@@ -120,6 +120,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
    * @param slicer
    *        (SurfaceTool) the surfaceTool that activated this GUI
    */
+  @SuppressWarnings("unchecked")
   SurfaceToolGUI(JmolViewer viewer, HistoryFile hfile, String winName,
       SurfaceTool slicer) {
     super(new BorderLayout());
@@ -198,7 +199,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
       JLabel space = new JLabel("   ");
       angleUnitsPanel.add(space, BorderLayout.WEST);
       String[] angleUnits = slicer.getAngleUnitsList();
-      angleUnitsList = new JComboBox(angleUnits);
+      angleUnitsList = new JComboBox<String>(angleUnits);
       angleUnitsList.setSelectedIndex(slicer.getAngleUnits());
       angleUnitsList.addActionListener(this);
       angleUnitsPanel.add(angleUnitsList, BorderLayout.EAST);
@@ -259,7 +260,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
       objectsPanel = new JPanel();
       objectsPanel.setBorder(BorderFactory.createTitledBorder(GT
           ._("Select Surface(s)")));
-      surfaceList = new JList(new DefaultListModel());
+      surfaceList = new JList<SurfaceStatus>(new DefaultListModel<SurfaceStatus>());
       surfaceList.setCellRenderer(new SurfaceListCellRenderer());
       surfaceList.addListSelectionListener(this);
       updateSurfaceList();
@@ -350,7 +351,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
   public void valueChanged(ListSelectionEvent e) {
     if (e.getValueIsAdjusting())
       return; // wait until done
-    JList whichList = (JList) e.getSource();
+    JList<?> whichList = (JList<?>) e.getSource();
     if (whichList.isSelectionEmpty())
       return;// nothing selected
     int[] selected = whichList.getSelectedIndices();
@@ -498,7 +499,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
     //this just check that the list is complete and other things will be updated
     //as they change?  For starters, we'll just reset it and make it match the
     //contents of the slicer.surfaces list.  May only need ID and color...
-    DefaultListModel listModel = (DefaultListModel) surfaceList.getModel();
+    DefaultListModel<SurfaceStatus> listModel = (DefaultListModel<SurfaceStatus>) surfaceList.getModel();
     listModel.removeAllElements();
     int size = slicer.getSurfaces().size();
     for (int i = 0; i < size; i++) {
@@ -648,6 +649,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
 
   }
 
+  @SuppressWarnings("unchecked")
   class SurfaceListCellRenderer extends JLabel implements ListCellRenderer {
 
     public Component getListCellRendererComponent(JList list, Object value,

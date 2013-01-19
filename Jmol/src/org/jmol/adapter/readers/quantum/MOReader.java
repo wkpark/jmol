@@ -208,7 +208,7 @@ abstract public class MOReader extends BasisFunctionReader {
     int n = 0;
     int pt = 0;
     while (line != null && (pt = line.indexOf(".")) >= 0 && pt < 10) {
-      if (parseIntStr(line.substring(0, pt)) != n + 1)
+      if (parseIntRange(line, 0, pt) != n + 1)
         break;
       moTypes.add(n++, line.substring(pt + 1, Math.min(40, line.length())).trim());
       while (readLine() != null && line.startsWith("       ")) {

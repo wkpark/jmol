@@ -111,13 +111,13 @@ public class Wien2kReader extends AtomSetCollectionReader {
     }
     float factor = (readLine().toLowerCase().indexOf("ang") >= 0 ? 1f : ANGSTROMS_PER_BOHR);
     readLine();
-    float a = parseFloatStr(line.substring(0,10)) * factor;
-    float b = parseFloatStr(line.substring(10,20)) * factor;
-    float c = parseFloatStr(line.substring(20,30)) * factor;
+    float a = parseFloatRange(line, 0,10) * factor;
+    float b = parseFloatRange(line, 10,20) * factor;
+    float c = parseFloatRange(line, 20,30) * factor;
     int l = line.length();
-    float alpha = (l >= 40 ? parseFloatStr(line.substring(30,40)) : 0);
-    float beta = (l >= 50 ? parseFloatStr(line.substring(40,50)) : 0);
-    float gamma = (l >= 60 ? parseFloatStr(line.substring(50,60)) : 0);
+    float alpha = (l >= 40 ? parseFloatRange(line, 30,40) : 0);
+    float beta = (l >= 50 ? parseFloatRange(line, 40,50) : 0);
+    float gamma = (l >= 60 ? parseFloatRange(line, 50,60) : 0);
     if (isrhombohedral) {
       float ar = (float) Math.sqrt(a * a /3 + c * c / 9) ;
       alpha = beta = gamma = (float) (Math.acos( (2*c * c  - 3 * a * a) 
@@ -142,7 +142,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
       int thisAtom = atomSetCollection.getAtomCount();
       addAtom();
       if (readLine().indexOf("MULT=") == 10)
-        for (int i = parseIntStr(line.substring(15,18)); --i >= 0; ) { 
+        for (int i = parseIntRange(line, 15,18); --i >= 0; ) { 
           readLine();
           if (!doSymmetry)
             addAtom();
@@ -167,9 +167,9 @@ public class Wien2kReader extends AtomSetCollectionReader {
   }
 
   private void addAtom() {
-    float a = parseFloatStr(line.substring(12,22));
-    float b = parseFloatStr(line.substring(25,35));
-    float c = parseFloatStr(line.substring(38,48));
+    float a = parseFloatRange(line, 12,22);
+    float b = parseFloatRange(line, 25,35);
+    float c = parseFloatRange(line, 38,48);
 /*    if (false && isrhombohedral) {
       float ar = a;
       float br = b;
@@ -185,7 +185,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
   private void readSymmetry() throws Exception {
     if (line.indexOf("SYMMETRY") < 0)
       return;
-    int n = parseIntStr(line.substring(0, 4).trim());
+    int n = parseIntRange(line, 0, 4);
     for (int i = n; --i >= 0;) {
       String xyz = getJones() + "," + getJones() + "," + getJones();
       if (doSymmetry)

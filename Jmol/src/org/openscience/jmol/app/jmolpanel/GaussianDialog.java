@@ -71,7 +71,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
 
   private JPanel container;
   private JTextField checkField, optsField, fileField, selectField;
-  private JComboBox memBox, methBox, basisBox, dfBox;
+  private JComboBox<String> memBox, methBox, basisBox, dfBox;
   private JSpinner procSpinner, chargeSpinner, multSpinner;
   private JButton fileButton, saveButton, cancelButton;
   private JFileChooser fileChooser;
@@ -228,7 +228,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
     
     JLabel memLabel = new JLabel(GT._("Amount of Memory:"));
     linkLabels.add(memLabel);
-    memBox = new JComboBox(MEMORY_LIST);
+    memBox = new JComboBox<String>(MEMORY_LIST);
     linkControls.add(memBox);
     memBox.setSelectedIndex(0);
     
@@ -253,14 +253,14 @@ public class GaussianDialog extends JDialog implements ActionListener,
     
     JLabel methLabel = new JLabel(GT._("Method: "));
     routeLabels.add(methLabel);
-    methBox = new JComboBox(METHOD_LIST);
+    methBox = new JComboBox<String>(METHOD_LIST);
     routeControls.add(methBox);
     methBox.setSelectedIndex(0);
     methBox.addActionListener(this);
     
     JLabel basisLabel = new JLabel(GT._("Basis Set: "));
     routeLabels.add(basisLabel);
-    basisBox = new JComboBox(BASIS_LIST);
+    basisBox = new JComboBox<String>(BASIS_LIST);
     routeControls.add(basisBox);
     basisBox.setSelectedIndex(3);
    
@@ -268,7 +268,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
     JLabel dfLabel = 
       new JLabel(GT._("Density Fitting Basis Set (DFT Only): "));
     routeLabels.add(dfLabel);
-    dfBox = new JComboBox(DF_LIST);
+    dfBox = new JComboBox<String>(DF_LIST);
     routeControls.add(dfBox);
     dfBox.setSelectedIndex(0);
     
@@ -397,7 +397,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
 	  mult = multSpinner.getValue().toString();
 	  if (mult.equals("")) mult = DEFAULT_MULT;
 	
-	  String basis = basisBox.getSelectedItem().toString();
+	  String basis = (String) basisBox.getSelectedItem();
 	  if (basis.equals("")) basis = DEFAULT_BASIS;
 	  meth = methBox.getSelectedItem().toString();
 	  if (meth.equals("")) meth = DEFAULT_METHOD;

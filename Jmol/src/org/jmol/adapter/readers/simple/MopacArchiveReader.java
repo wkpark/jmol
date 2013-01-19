@@ -107,9 +107,9 @@ MERS=(1,2,2)   GNORM=4
     setFractionalCoordinates(false);
     while (readLine() != null && line.length() >= 50) {
       vAtoms.add(atom = new Atom());
-      atom.x = parseFloatStr(line.substring(5, 18));
-      atom.y = parseFloatStr(line.substring(21, 34));
-      atom.z = parseFloatStr(line.substring(37, 50));
+      atom.x = parseFloatRange(line, 5, 18);
+      atom.y = parseFloatRange(line, 21, 34);
+      atom.z = parseFloatRange(line, 37, 50);
       if (line.length() > 58 && line.charAt(58) != ' ') {
         // internal coordinates
         switch (atomCount) {
@@ -123,9 +123,9 @@ MERS=(1,2,2)   GNORM=4
           break;
         default:
           setAtom(atom, 
-              parseIntStr(line.substring(54, 59)) - 1, 
-              parseIntStr(line.substring(60, 65)) - 1, 
-              parseIntStr(line.substring(66, 71)) - 1, 
+              parseIntRange(line, 54, 59) - 1, 
+              parseIntRange(line, 60, 65) - 1, 
+              parseIntRange(line, 66, 71) - 1, 
               atom.x, atom.y, atom.z);
         }
       }
@@ -134,7 +134,7 @@ MERS=(1,2,2)   GNORM=4
       if (!sym.equals("Tv")) {
         atomCount++;
         if (line.length() >= 84)
-          atom.partialCharge = parseFloatStr(line.substring(76, 84));
+          atom.partialCharge = parseFloatRange(line, 76, 84);
         if (JmolAdapter.getElementNumber(sym) != 0)
           atomSetCollection.addAtom(atom);
         setAtomCoord(atom);

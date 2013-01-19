@@ -172,8 +172,8 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       discardLinesUntilContains(":-");
       readLine();
       while (line != null && line.length() >= 20) {
-        int iOrb = parseIntStr(line.substring(0, 10));
-        float energy = parseFloatStr(line.substring(10, 20));
+        int iOrb = parseIntRange(line, 0, 10);
+        float energy = parseFloatRange(line, 10, 20);
         StringXBuilder cData = new StringXBuilder();
         cData.append(line.substring(20));
         while (readLine() != null && line.length() >= 10) {
@@ -217,7 +217,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
     readLine();
     for (int i = 0; i < orbitals.size(); i++) {
       readLine();
-      float occupancy = parseFloatStr(line.substring(31, 45)) + parseFloatStr(line.substring(47, 61));
+      float occupancy = parseFloatRange(line, 31, 45) + parseFloatRange(line, 47, 61);
       orbitals.get(i).put("occupancy", Float.valueOf(occupancy));
     }
     sortOrbitals();

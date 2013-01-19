@@ -70,7 +70,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   static int qualityPNG = 2;
   
   private JSlider qSliderJPEG, qSliderPNG;
-  private JComboBox cb;
+  private JComboBox<String> cb;
 
   JPanel qPanelJPEG, qPanelPNG;
   static JFileChooser imageChooser;
@@ -271,7 +271,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     JPanel cbPanel = new JPanel();
     cbPanel.setLayout(new FlowLayout());
     cbPanel.setBorder(new TitledBorder(GT._("Image Type")));
-    cb = new JComboBox();
+    cb = new JComboBox<String>();
     for (int i = 0; i < choices.length; i++) {
       cb.addItem(choices[i]);
     }
@@ -335,9 +335,10 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   }
 
   public class ExportChoiceListener implements ItemListener {
+    @SuppressWarnings("unchecked")
     public void itemStateChanged(ItemEvent e) {
 
-      JComboBox source = (JComboBox) e.getSource();
+      JComboBox<String> source = (JComboBox<String>) e.getSource();
       File selectedFile = imageChooser.getSelectedFile();
       if (selectedFile == null)
         selectedFile = initialFile;

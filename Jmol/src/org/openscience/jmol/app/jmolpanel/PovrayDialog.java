@@ -86,18 +86,18 @@ public class PovrayDialog extends JDialog {
   private JLabel              imageSizeHeight;
   private JFormattedTextField imageSizeTextHeight;
   private JCheckBox	          imageSizeRatioBox;
-  private JComboBox           imageSizeRatioCombo;
+  private JComboBox<String>           imageSizeRatioCombo;
   
   private JCheckBox outputFormatCheck;
-  private JComboBox outputFormatCombo;
+  private JComboBox<String> outputFormatCombo;
 
   private JCheckBox outputAlphaCheck;
   
   private JCheckBox mosaicPreviewCheck;
   private JLabel    mosaicPreviewStart;
-  private JComboBox mosaicPreviewComboStart;
+  private JComboBox<String> mosaicPreviewComboStart;
   private JLabel    mosaicPreviewEnd;
-  private JComboBox mosaicPreviewComboEnd;
+  private JComboBox<String> mosaicPreviewComboEnd;
 
   private String outputExtension = ".png";
   private String outputFileType = "N";
@@ -313,7 +313,7 @@ public class PovrayDialog extends JDialog {
     });
     imageSizeBox.add(imageSizeRatioBox);
     imageSizeBox.add(Box.createHorizontalStrut(10));
-    imageSizeRatioCombo = new JComboBox();
+    imageSizeRatioCombo = new JComboBox<String>();
     text = GT._("User defined");
     imageSizeRatioCombo.addItem(text);
     text = GT._("Keep ratio of Jmol window");
@@ -354,7 +354,7 @@ public class PovrayDialog extends JDialog {
     outputBox.add(outputFormatCheck);
 */    
     outputBox.add(Box.createHorizontalStrut(10));
-    outputFormatCombo = new JComboBox();
+    outputFormatCombo = new JComboBox<String>();
     //case 0
     text = GT._("N - PNG");
     outputFormatCombo.addItem(text);
@@ -413,7 +413,7 @@ public class PovrayDialog extends JDialog {
     text = GT._("Initial size of the tiles");
     mosaicPreviewStart.setToolTipText(text);
     mosaicBox.add(mosaicPreviewStart);
-    mosaicPreviewComboStart = new JComboBox();
+    mosaicPreviewComboStart = new JComboBox<String>();
     for (int power = 0; power < 8; power++) {
     	mosaicPreviewComboStart.addItem(Integer.toString((int)Math.pow(2, power)));
     }
@@ -431,7 +431,7 @@ public class PovrayDialog extends JDialog {
     text = GT._("Final size of the tiles");
     mosaicPreviewEnd.setToolTipText(text);
     mosaicBox.add(mosaicPreviewEnd);
-    mosaicPreviewComboEnd = new JComboBox();
+    mosaicPreviewComboEnd = new JComboBox<String>();
     for (int power = 0; power < 8; power++) {
     	mosaicPreviewComboEnd.addItem(Integer.toString((int)Math.pow(2, power)));
     }

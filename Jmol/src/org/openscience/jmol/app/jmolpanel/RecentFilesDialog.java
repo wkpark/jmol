@@ -51,7 +51,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   private JButton cancelButton;
   private JButton clearButton;
   String[] files = new String[MAX_FILES];
-  JList fileList;
+  JList<String> fileList;
   java.util.Properties props;
 
   /** Creates a hidden recent files dialog
@@ -71,7 +71,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
 
     getContentPane().add("South", buttonPanel);
 
-    fileList = new JList(files);
+    fileList = new JList<String>(files);
     fileList.setSelectedIndex(0);
     fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 

@@ -82,7 +82,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
       lenLine = line.length();
     }
     ptFloat += 8;
-    return parseFloatStr(line.substring(ptFloat - 8, ptFloat));
+    return parseFloatRange(line, ptFloat - 8, ptFloat);
   }
 
   private Point3f getPoint() throws Exception {

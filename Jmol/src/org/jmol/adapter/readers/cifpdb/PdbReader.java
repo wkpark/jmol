@@ -800,8 +800,8 @@ REMARK 290 REMARK: NULL
   protected void setAdditionalAtomParameters(Atom atom) {
     if (isPQR) {
       if (gromacsWideFormat) {
-        atom.partialCharge = parseFloatStr(line.substring(60, 68));
-        atom.radius = fixRadius(parseFloatStr(line.substring(68, 76)));
+        atom.partialCharge = parseFloatRange(line, 60, 68);
+        atom.radius = fixRadius(parseFloatRange(line, 68, 76));
       } else {
         String[] tokens = getTokens();
         int pt = tokens.length - 2 - (line.length() > 75 ? 1 : 0);
@@ -814,8 +814,8 @@ REMARK 290 REMARK: NULL
     float floatOccupancy;
     
     if (gromacsWideFormat) {
-      floatOccupancy = parseFloatStr(line.substring(60, 68));
-      atom.bfactor = fixRadius(parseFloatStr(line.substring(68, 76)));
+      floatOccupancy = parseFloatRange(line, 60, 68);
+      atom.bfactor = fixRadius(parseFloatRange(line, 68, 76));
     } else {
       /****************************************************************
        * read the occupancy from cols 55-60 (1-based) 
@@ -1005,14 +1005,14 @@ Polyproline 10
       endChainIDIndex = 31;
       endIndex = 33;
       if (line.length() >= 40)
-      substructureType = Structure.getHelixType(parseIntStr(line.substring(38, 40)));
+      substructureType = Structure.getHelixType(parseIntRange(line, 38, 40));
     } else if (line.startsWith("SHEET ")) {
       structureType = EnumStructure.SHEET;
       startChainIDIndex = 21;
       startIndex = 22;
       endChainIDIndex = 32;
       endIndex = 33;
-      strandCount = parseIntStr(line.substring(14, 16));
+      strandCount = parseIntRange(line, 14, 16);
     } else if (line.startsWith("TURN  ")) {
       structureType = EnumStructure.TURN;
       startChainIDIndex = 19;
@@ -1026,7 +1026,7 @@ Polyproline 10
       return;
 
     String structureID = line.substring(11, 15).trim();
-    int serialID = parseIntStr(line.substring(7, 10));
+    int serialID = parseIntRange(line, 7, 10);
     char startChainID = line.charAt(startChainIDIndex);
     int startSequenceNumber = parseIntRange(line, startIndex, startIndex + 4);
     char startInsertionCode = line.charAt(startIndex + 4);
@@ -1412,7 +1412,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
             int fromC = components.indexOf(" C ", toC + 4);
             chain1 = line.charAt(fromC);
             chain2 = line.charAt(toC);
-            res1 = parseIntStr(line.substring(fromC + 1, toC));
+            res1 = parseIntRange(line, fromC + 1, toC);
             res2 = parseIntStr(line.substring(toC + 1));
           }
           if (chain1 == chain2) {
@@ -1462,8 +1462,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
                 parseFloatStr(tokens[7]));
           } else {
             int n = line.length();
-            origin.set(parseFloatStr(line.substring(n - 27, n - 18)),
-                parseFloatStr(line.substring(n - 18, n - 9)), parseFloatStr(line
+            origin.set(parseFloatRange(line, n - 27, n - 18),
+                parseFloatRange(line, n - 18, n - 9), parseFloatStr(line
                     .substring(n - 9, n)));
           }
           if (Float.isNaN(origin.x) || Float.isNaN(origin.y) || Float.isNaN(origin.z)) {

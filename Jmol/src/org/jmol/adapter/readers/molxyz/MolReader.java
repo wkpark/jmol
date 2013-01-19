@@ -320,7 +320,7 @@ public class MolReader extends AtomSetCollectionReader {
         atomIndex2 = parseIntRange(line, 3, 6);
         order = parseIntRange(line, 6, 9);
         if (is2D && order == 1 && line.length() >= 12)
-          stereo = parseIntStr(line.substring(9, 12));
+          stereo = parseIntRange(line, 9, 12);
       }
       switch (order) {
       case 0:

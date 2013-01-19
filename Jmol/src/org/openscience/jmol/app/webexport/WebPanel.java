@@ -120,7 +120,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
   private JTextField remoteAppletPath, localAppletPath, pageAuthorName,
       webPageTitle;
   private JFileChooser fc;
-  private JList instanceList;
+  private JList<JmolInstance> instanceList;
   protected Widgets theWidgets;
   protected int nWidgets;
   private Checkbox[] widgetCheckboxes;
@@ -157,13 +157,14 @@ abstract class WebPanel extends JPanel implements ActionListener,
 
   // Need the panel maker and the action listener.
 
+  @SuppressWarnings("unchecked")
   JPanel getPanel(int infoWidth, int infoHeight) {
 
     // For layout purposes, put things in separate panels
 
     // Create the list and list view to handle the list of
     // Jmol Instances.
-    instanceList = new JList(new DefaultListModel());
+    instanceList = new JList<JmolInstance>(new DefaultListModel<JmolInstance>());
     instanceList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
     instanceList.setTransferHandler(new ArrayListTransferHandler(this));
     instanceList.setCellRenderer(new InstanceCellRenderer());
@@ -249,7 +250,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     return panel;
   }
 
-  JList getInstanceList() {
+  JList<JmolInstance> getInstanceList() {
     return instanceList;
   }
 
@@ -413,11 +414,11 @@ abstract class WebPanel extends JPanel implements ActionListener,
   }
 
   public void itemStateChanged(ItemEvent e) {
-    DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
+    DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
     int[] list = instanceList.getSelectedIndices();
     if (list.length == 0)
       return; // don't try to update things if there is nothing in the list...
-    JmolInstance instance = (JmolInstance) listModel.get(list[0]);
+    JmolInstance instance = listModel.get(list[0]);
     Object source = e.getSource();
     int stateChange = e.getStateChange();
     for (int i = 0; i < nWidgets; i++) {
@@ -469,7 +470,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
           ._("Give the occurrence of Jmol a name:"), label);
       if (name == null || name.length() == 0)
         return;
-      DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
+      DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
       int width = 300;
       int height = 300;
       if (appletSizeSpinnerH != null) {
@@ -504,11 +505,11 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
 
     if (e.getSource() == deleteInstanceButton) {
-      DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
+      DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
       // find out which are selected and remove them.
       int[] todelete = instanceList.getSelectedIndices();
       for (int i = 0; i < todelete.length; i++) {
-        JmolInstance instance = (JmolInstance) listModel.get(todelete[i]);
+        JmolInstance instance = listModel.get(todelete[i]);
         try {
           instance.delete();
         } catch (IOException err) {
@@ -521,11 +522,11 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
 
     if (e.getSource() == showInstanceButton) {
-      DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
+      DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
       int[] list = instanceList.getSelectedIndices();
       if (list.length != 1)
         return;
-      JmolInstance instance = (JmolInstance) listModel.get(list[0]);
+      JmolInstance instance = listModel.get(list[0]);
       viewer.evalStringQuiet(")" + instance.script); // leading paren disabled
                                                       // history
       return;
@@ -569,7 +570,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
   public void valueChanged(ListSelectionEvent e) {
     if (e.getValueIsAdjusting())
       return; // wait until done
-    JList whichList = (JList) e.getSource();
+    JList<?> whichList = (JList<?>) e.getSource();
     if (whichList.isSelectionEmpty())
       return;// nothing selected
     if (whichList.getMinSelectionIndex() != whichList.getMaxSelectionIndex())
@@ -596,12 +597,12 @@ abstract class WebPanel extends JPanel implements ActionListener,
   String getInstanceName(int i) {
     if (i < 0)
       i = instanceList.getSelectedIndex();
-    JmolInstance instance = (JmolInstance) instanceList.getModel()
+    JmolInstance instance = instanceList.getModel()
         .getElementAt(i);
     return (instance == null ? "" : instance.name);
   }
 
-  String fileWriter(File file, JList InstanceList) throws IOException { // returns
+  String fileWriter(File file, JList<JmolInstance> InstanceList) throws IOException { // returns
                                                                           // true
                                                                           // if
                                                                           // successful.
@@ -631,7 +632,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     datadirPath = datadirPath.replace('\\', '/');
     fileName = datadirPath + "/" + fileName;
     boolean made_datadir = (file.exists() && file.isDirectory() || file.mkdir());
-    DefaultListModel listModel = (DefaultListModel) InstanceList.getModel();
+    DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) InstanceList.getModel();
     LogPanel.log("");
     if (made_datadir) {
       LogPanel.log(GT._("Using directory {0}", datadirPath));
@@ -643,7 +644,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
         throw IOe;
       }
       for (int i = 0; i < listModel.getSize(); i++) {
-        JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
+        JmolInstance thisInstance = listModel.getElementAt(i);
         String javaname = thisInstance.javaname;
         String script = thisInstance.script;
         LogPanel.log("  ...jmolApplet" + i);
@@ -722,7 +723,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
         htmlAppletTemplate = GuiMap.getResourceString(this, panelName
             + "_template2");
       for (int i = 0; i < listModel.getSize(); i++)
-        html = getAppletDefs(i, html, appletDefs, (JmolInstance) listModel
+        html = getAppletDefs(i, html, appletDefs, listModel
             .getElementAt(i));
       html = TextFormat.simpleReplace(html, "@AUTHOR@", GT
           .escapeHTML(pageAuthorName.getText()));
@@ -764,9 +765,9 @@ abstract class WebPanel extends JPanel implements ActionListener,
 
   public BitSet allSelectedWidgets() {
     BitSet selectedWidgets = BitSetUtil.newBitSet(nWidgets);
-    DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
+    DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
     for (int i = 0; i < listModel.getSize(); i++) {
-      JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
+      JmolInstance thisInstance = listModel.getElementAt(i);
       selectedWidgets.or(thisInstance.whichWidgets);
     }
     return selectedWidgets;
@@ -849,11 +850,11 @@ abstract class WebPanel extends JPanel implements ActionListener,
   }
 
   void syncLists() {
-    DefaultListModel model1 = (DefaultListModel) instanceList.getModel();
+    DefaultListModel<JmolInstance> model1 = (DefaultListModel<JmolInstance>) instanceList.getModel();
     for (int j = 0; j < webPanels.length; j++) {
       if (j != panelIndex) {
-        JList list = webPanels[j].instanceList;
-        DefaultListModel model2 = (DefaultListModel) list.getModel();
+        JList<JmolInstance> list = webPanels[j].instanceList;
+        DefaultListModel<JmolInstance> model2 = (DefaultListModel<JmolInstance>) list.getModel();
         model2.clear();
         int n = model1.getSize();
         for (int i = 0; i < n; i++)
@@ -865,7 +866,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     enableButtons(instanceList);
   }
 
-  void enableButtons(JList list) {
+  void enableButtons(JList<JmolInstance> list) {
     int nSelected = list.getSelectedIndices().length;
     int nListed = list.getModel().getSize();
     saveButton.setEnabled(nListed > 0);
@@ -873,8 +874,8 @@ abstract class WebPanel extends JPanel implements ActionListener,
 //    showInstanceButton.setEnabled(nSelected == 1);
   }
 
+  @SuppressWarnings("unchecked")
   class InstanceCellRenderer extends JLabel implements ListCellRenderer {
-
     public Component getListCellRendererComponent(JList list, Object value,
                                                   int index,
                                                   boolean isSelected,
@@ -901,7 +902,7 @@ class ArrayListTransferHandler extends TransferHandler {
   DataFlavor localArrayListFlavor, serialArrayListFlavor;
   String localArrayListType = DataFlavor.javaJVMLocalObjectMimeType
       + ";class=java.util.ArrayList";
-  JList source = null;
+  JList<?> source = null;
   int[] sourceIndices = null;
   int addIndex = -1; // Location where items were added
   int addCount = 0; // Number of items added
@@ -918,15 +919,16 @@ class ArrayListTransferHandler extends TransferHandler {
     serialArrayListFlavor = new DataFlavor(ArrayList.class, "ArrayList");
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public boolean importData(JComponent c, Transferable t) {
     if (sourceIndices == null || !canImport(c, t.getTransferDataFlavors())) {
       return false;
     }
-    JList target = null;
+    JList<?> target = null;
     List<?> alist = null;
     try {
-      target = (JList) c;
+      target = (JList<?>) c;
       if (hasLocalArrayListFlavor(t.getTransferDataFlavors())) {
         alist = (List<?>) t.getTransferData(localArrayListFlavor);
       } else if (hasSerialArrayListFlavor(t.getTransferDataFlavors())) {
@@ -988,7 +990,7 @@ class ArrayListTransferHandler extends TransferHandler {
     return true;
   }
 
-  private static Object objectOf(DefaultListModel listModel, Object objectName) {
+  private static Object objectOf(DefaultListModel<?> listModel, Object objectName) {
     if (objectName instanceof String) {
       String name = (String) objectName;
       Object o;
@@ -1005,7 +1007,7 @@ class ArrayListTransferHandler extends TransferHandler {
     //System.out.println("action="+action + " " + addCount + " " +
     // sourceIndices);
     if ((action == MOVE) && (sourceIndices != null)) {
-      DefaultListModel model = (DefaultListModel) source.getModel();
+      DefaultListModel<?> model = (DefaultListModel<?>) source.getModel();
 
       // If we are moving items around in the same list, we
       // need to adjust the indices accordingly since those
@@ -1019,7 +1021,7 @@ class ArrayListTransferHandler extends TransferHandler {
       }
       for (int i = sourceIndices.length - 1; i >= 0; i--)
         model.remove(sourceIndices[i]);
-      ((JList) c).setSelectedIndices(new int[] {});
+      ((JList<?>) c).setSelectedIndices(new int[] {});
       if (webPanel != null)
         webPanel.syncLists();
     }
@@ -1067,16 +1069,16 @@ class ArrayListTransferHandler extends TransferHandler {
 
   @Override
   protected Transferable createTransferable(JComponent c) {
-    if (c instanceof JList) {
-      source = (JList) c;
+    if (c instanceof JList<?>) {
+      source = (JList<?>) c;
       sourceIndices = source.getSelectedIndices();
-      Object[] values = source.getSelectedValues();
-      if (values == null || values.length == 0) {
+      List<?> values = source.getSelectedValuesList();
+      if (values == null || values.size() == 0) {
         return null;
       }
-      List<String> alist = new ArrayList<String>(values.length);
-      for (int i = 0; i < values.length; i++) {
-        Object o = values[i];
+      List<String> alist = new ArrayList<String>(values.size());
+      for (int i = 0; i < values.size(); i++) {
+        Object o = values.get(i);
         String str = o.toString();
         if (str == null)
           str = "";

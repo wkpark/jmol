@@ -177,7 +177,7 @@ MRC header: mapc,mapr,maps: 2,1,3
     }
     if (line == null)
       return 0;
-    float val = parseFloatStr(line.substring(linePt, linePt+12));
+    float val = parseFloatRange(line, linePt, linePt+12);
     linePt += 12;
     nRead++;
     //System.out.println("val " + val);

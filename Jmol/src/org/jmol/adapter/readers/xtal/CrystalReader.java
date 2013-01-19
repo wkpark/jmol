@@ -579,7 +579,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       // these won't get properties, and we don't know exactly which
       // other atom to associate with them.
 
-      bsInputAtomsIgnore.set(parseIntStr(line.substring(21, 25)) - 1);
+      bsInputAtomsIgnore.set(parseIntRange(line, 21, 25) - 1);
       readLine();
     }
 
@@ -591,7 +591,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       if (line.length() == 0)
         continue;
       nPrim++;
-      int iAtom = parseIntStr(line.substring(4, 8)) - 1;
+      int iAtom = parseIntRange(line, 4, 8) - 1;
       if (indexToPrimitive[iAtom] < 0) {
         // no other primitive atom is mapped to a given conventional atom.
         indexToPrimitive[iAtom] = iPrim++;
@@ -798,8 +798,8 @@ public class CrystalReader extends AtomSetCollectionReader {
       if (line.charAt(3) != ' ') {
         int iConv = getAtomIndexFromPrimitiveIndex(iPrim);
         if (iConv >= 0)
-          atoms[i0 + iConv].partialCharge = parseFloatStr(line.substring(9, 11))
-          - parseFloatStr(line.substring(12, 18));
+          atoms[i0 + iConv].partialCharge = parseFloatRange(line, 9, 11)
+          - parseFloatRange(line, 12, 18);
         iPrim++;
       }
     return true;
@@ -844,7 +844,7 @@ public class CrystalReader extends AtomSetCollectionReader {
      * 118(   1 H ) 
      * 
      */
-    int numAtomsFrag = parseIntStr(line.substring(39, 44));
+    int numAtomsFrag = parseIntRange(line, 39, 44);
     if (numAtomsFrag < 0)
       return true;
     atomFrag = new int[numAtomsFrag];
@@ -897,8 +897,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     List<String[]> vData = new ArrayList<String[]>();
     int freqAtomCount = atomCount;
     while (readLine() != null && line.length() > 0) {
-      int i0 = parseIntStr(line.substring(1, 5));
-      int i1 = parseIntStr(line.substring(6, 10));
+      int i0 = parseIntRange(line, 1, 5);
+      int i1 = parseIntRange(line, 6, 10);
       String irrep = (isLongMode ? line.substring(48, 51) : line.substring(49,
           52)).trim();
       String intens = (!haveIntensities ? "not available" : (isLongMode ? line

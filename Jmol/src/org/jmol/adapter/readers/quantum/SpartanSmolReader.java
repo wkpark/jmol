@@ -259,7 +259,7 @@ public class SpartanSmolReader extends SpartanInputReader {
     while (readLine() != null && !line.startsWith("END ")) {
       header.append(line).append("\n");
       if ((pt = line.indexOf(")")) > 0)
-        titles.put("Title" + parseIntStr(line.substring(0, pt)), (line
+        titles.put("Title" + parseIntRange(line, 0, pt), (line
             .substring(pt + 1).trim()));
     }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader", header

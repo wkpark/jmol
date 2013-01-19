@@ -138,8 +138,8 @@ public class WebExport extends JPanel implements WindowListener {
     showMoleculesAndOrbitals = (runStatus == STAND_ALONE || JmolViewer
         .checkOption(viewer, "webMakerAllTabs"));
     if (showMoleculesAndOrbitals) {
-      mainTabs.addTab("Orbitals", (new Orbitals()).getPanel());
-      mainTabs.addTab("Molecules", (new Molecules()).getPanel());
+      //mainTabs.addTab("Orbitals", (new Orbitals()).getPanel());
+      //mainTabs.addTab("Molecules", (new Molecules()).getPanel());
     }
 
     //The LogPanel should always be the last one

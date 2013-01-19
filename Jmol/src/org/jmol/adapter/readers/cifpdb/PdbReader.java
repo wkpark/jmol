@@ -1463,8 +1463,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
           } else {
             int n = line.length();
             origin.set(parseFloatRange(line, n - 27, n - 18),
-                parseFloatRange(line, n - 18, n - 9), parseFloatStr(line
-                    .substring(n - 9, n)));
+                parseFloatRange(line, n - 18, n - 9), parseFloatRange(line, n - 9, n));
           }
           if (Float.isNaN(origin.x) || Float.isNaN(origin.y) || Float.isNaN(origin.z)) {
             origin.set(Float.NaN, Float.NaN, Float.NaN);

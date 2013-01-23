@@ -38,16 +38,6 @@ import org.jmol.viewer.Viewer;
 class Image {
 
   /**
-   * @param display  
-   * @param image 
-   * @throws InterruptedException 
-   */
-  static void waitForDisplay(Object display, Object image) throws InterruptedException {
-    // this is important primarily for retrieving images from 
-    // files, as in set echo ID myimage "image.gif"
-  }
-
-  /**
    * @param canvas
    * @return width
    */
@@ -55,7 +45,7 @@ class Image {
     /**
      * @j2sNative
      * 
-     *            return canvas.width;
+     *            return (canvas.imageWidth ? canvas.imageWidth : canvas.width);
      */
     {
       return 0;
@@ -70,7 +60,7 @@ class Image {
     /**
      * @j2sNative
      * 
-     *            return canvas.height;
+     *            return (canvas.imageHeight ? canvas.imageHeight : canvas.height);
      */
     {
       return 0;
@@ -102,7 +92,7 @@ class Image {
      *            return this.toIntARGB(data);
      */
     {
-      return null;
+      return toIntARGB(null);
     }
   }
 
@@ -137,18 +127,6 @@ class Image {
       }
   }
   
-  static Object createImage(Object data) {
-    // getFileAsImage -- for getting an image for an echo or background
-    return null;
-  }
-
-  static int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
-                                 Object imageobj, int width, int height,
-                                 int bgcolor) {
-    // rendering an image ?? 
-    return null;
-  }
-
   /**
    * @param text  
    * @param font3d 
@@ -252,20 +230,6 @@ class Image {
     {
       fromIntARGB(null, null);
     }
-  }
-
-  /**
-   * @param image  
-   */
-  static void flush(Object image) {
-    // N/A
-  }
-
-  /**
-   * @param graphicForText  
-   */
-  static void disposeGraphics(Object graphicForText) {
-    // N/A
   }
 
 }

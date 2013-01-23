@@ -1,7 +1,6 @@
 package org.jmol.awtjs;
 
 import org.jmol.util.JmolFont;
-import org.jmol.viewer.Viewer;
 
 /**
  * 
@@ -20,11 +19,6 @@ public class Platform extends org.jmol.awtjs2d.Platform {
 			int[] pBuffer, int windowSize, boolean backgroundTransparent) {
 		return Image.allocateRgbImage(windowWidth, windowHeight, pBuffer,
 				windowSize, backgroundTransparent);
-	}
-
-  @Override
-	public Object createImage(Object data) {
-		return Image.createImage(data);
 	}
 
   @Override
@@ -69,21 +63,6 @@ public class Platform extends org.jmol.awtjs2d.Platform {
 	}
 
   @Override
-	public int getImageHeight(Object image) {
-		return Image.getHeight(image);
-	}
-
-  @Override
-	public int getImageWidth(Object image) {
-		return Image.getWidth(image);
-	}
-
-  @Override
-	public Object getJpgImage(Viewer viewer, int quality, String comment) {
-		return Image.getJpgImage(this, viewer, quality, comment);
-	}
-
-  @Override
 	public Object getStaticGraphics(Object image, boolean backgroundTransparent) {
 		return Image.getStaticGraphics(image, backgroundTransparent);
 	}
@@ -96,13 +75,6 @@ public class Platform extends org.jmol.awtjs2d.Platform {
   @Override
 	public Object newOffScreenImage(int w, int h) {
 		return Image.newBufferedImage(w, h);
-	}
-
-  @Override
-	public boolean waitForDisplay(Object display, Object image)
-			throws InterruptedException {
-		Image.waitForDisplay(display, image);
-		return true;
 	}
 
 	// /// FONT

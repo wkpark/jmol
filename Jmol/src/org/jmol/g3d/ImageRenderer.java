@@ -76,9 +76,17 @@ class ImageRenderer {
     }
     if (x + width <= 0 || x >= g3d.width || y + height <= 0 || y >= g3d.height)
       return;
-    int[] buffer = g3d.apiPlatform.drawImageToBuffer(
-        g3d.platform.getGraphicsForTextOrImage(width, height),
-        g3d.platform.offscreenImage, image, width, height, 
+    Object g;
+    /**
+     * @j2sNative
+     * 
+     * g = null;
+     *  
+     */
+    {
+      g = g3d.platform.getGraphicsForTextOrImage(width, height);
+    } 
+    int[] buffer = g3d.apiPlatform.drawImageToBuffer(g, g3d.platform.offscreenImage, image, width, height, 
         isBackground ? bgcolor : 0);
     if (buffer == null)
       return; // not supported on this platform (yet)
@@ -98,7 +106,6 @@ class ImageRenderer {
           bgcolor);
     else
       plotImageUnClipped(x, y, z, g3d, width, height, buffer, bgcolor);
-    return;
   }
 
   private static void plotImageClipped(int x, int y, int z, Graphics3D g3d,
@@ -115,6 +122,16 @@ class ImageRenderer {
     }
   }
 
+  /**
+   * @param x 
+   * @param y 
+   * @param z 
+   * @param g3d 
+   * @param textWidth 
+   * @param textHeight 
+   * @param buffer 
+   * @param bgargb  used in transparent backgrounds?  
+   */
   private static void plotImageUnClipped(int x, int y, int z, Graphics3D g3d,
                                          int textWidth, int textHeight,
                                          int[] buffer, int bgargb) {
@@ -128,10 +145,10 @@ class ImageRenderer {
       while (j < textWidth) {
         if (z < zbuf[pbufOffset]) {
           int argb = buffer[offset];
-          if (argb != bgargb && (argb & 0xFF000000) == 0xFF000000)
+          //if (argb != bgargb) && (argb & 0xFF000000) == 0xFF000000)
             g3d.addPixel(pbufOffset, z, argb);
-          else if (argb == 0 && bgargb != 0)
-            g3d.addPixel(pbufOffset, z, bgargb);
+          //else if (argb == 0 && bgargb != 0)
+            //g3d.addPixel(pbufOffset, z, bgargb);
         }
         ++offset;
         ++j;

@@ -586,9 +586,12 @@ public class Parser {
 
   public static int parseIntRadix(String s, int i) {
     /**
+     * 
+     * JavaScript uses parseIntRadix
+     * 
      * @j2sNative
      * 
-     *    return Integer.parseIntRadix(s, i); // special
+     *    return parseInt(s, i);
      */
     {
       return Integer.parseInt(s, i);

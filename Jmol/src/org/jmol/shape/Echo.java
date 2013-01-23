@@ -173,6 +173,9 @@ public class Echo extends TextShape {
 
   @Override
   public boolean getPropertyData(String property, Object[] data) {
+    if ("currentTarget" == property) {
+      return (currentObject != null && (data[0] = currentObject.target) != null);
+    }
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
       boolean isWild = TextFormat.isWild(key);

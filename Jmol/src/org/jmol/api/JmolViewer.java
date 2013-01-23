@@ -186,7 +186,7 @@ abstract public class JmolViewer {
 
   // for POV-Ray -- returns the INI file
   
-  abstract public String generateOutput(String type, String[] fileName, int width, int height); 
+  abstract public String generateOutputForExport(String type, String[] fileName, int width, int height); 
 
   abstract public void setJmolCallbackListener(JmolCallbackListener jmolCallbackListener);
 

@@ -25,6 +25,7 @@
 
 package org.jmol.awtjs;
 
+
 import org.jmol.api.ApiPlatform;
 import org.jmol.util.JmolFont;
 import org.jmol.viewer.Viewer;
@@ -36,65 +37,6 @@ import org.jmol.viewer.Viewer;
  * 
  */
 class Image {
-
-	/**
-   * @param data  
-   * @return null
-   */
-	static Object createImage(Object data) {
-		return null;
-	}
-
-	/**
-	 * @param display
-	 * @param image
-	 * @throws InterruptedException
-	 */
-	static void waitForDisplay(Object display, Object image)
-			throws InterruptedException {
-	}
-
-	/**
-   * @param image  
-	 * @return 0
-   */
-	static int getWidth(Object image) {
-    /**
-     * @j2sNative
-     * 
-     *            return canvas.width;
-     */
-    {
-      return 0;
-    }
-	}
-
-  /**
-   * @param image  
-   * @return 0
-   */
-	static int getHeight(Object image) {
-    /**
-     * @j2sNative
-     * 
-     *            return canvas.height;
-     */
-    {
-      return 0;
-    }
-	}
-
-	/**
-   * @param apiPlatform 
-	 * @param viewer 
-	 * @param quality  
-	 * @param comment 
-	 * @return null
-   */
-	static Object getJpgImage(ApiPlatform apiPlatform, Viewer viewer,
-			int quality, String comment) {
-		return null;
-	}
 
 	/**
    * @param imageobj  

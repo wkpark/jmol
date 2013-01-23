@@ -26,8 +26,10 @@ import org.jmol.viewer.Viewer;
 
 public class Platform implements ApiPlatform {
 
+  JmolViewer viewer;
+  
   public void setViewer(JmolViewer viewer, Object display) {
-    // ignored
+    this.viewer = viewer;
   }
   
   ///// Display 
@@ -102,6 +104,12 @@ public class Platform implements ApiPlatform {
     return Image.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent);
   }
 
+  /**
+   * could be byte[] (from ZIP file) or String (local file name) or URL
+   * @param data 
+   * @return image object
+   * 
+   */
   public Object createImage(Object data) {
     return Image.createImage(data);
   }
@@ -160,8 +168,8 @@ public class Platform implements ApiPlatform {
     return Image.newBufferedImage(w, h);
   }
 
-  public boolean waitForDisplay(Object display, Object image) throws InterruptedException {
-    Image.waitForDisplay(display, image);
+  public boolean waitForDisplay(Object ignored, Object image) throws InterruptedException {
+    Image.waitForDisplay(viewer.getDisplay(), image);
     return true;
   }
 

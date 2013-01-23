@@ -4258,7 +4258,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public String generateOutput(String type, String[] fileName, int width,
+  public String generateOutputForExport(String type, String[] fileName, int width,
                                int height) {
     if (noGraphicsAllowed || repaintManager == null)
       return null;
@@ -4880,6 +4880,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void haltScriptExecution() {
     eval.haltExecution();
+    stopScriptDelayThread();
     setStringPropertyTok("pathForAllFiles", Token.pathforallfiles, "");
     clearTimeouts();
   }
@@ -8340,7 +8341,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean checkObjectHovered(int x, int y) {
-    return (shapeManager != null && shapeManager.checkObjectHovered(x, y,
+    return (x >= 0 && shapeManager != null && shapeManager.checkObjectHovered(x, y,
         getVisibleFramesBitSet(), getBondPicking()));
   }
 
@@ -9567,14 +9568,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return 0;
   }
 
-  public Object getFileAsImage(String pathName, String[] retFileNameOrError) {
-    //if (!haveDisplay) {
-    //  retFileNameOrError[0] = "no display";
-    //  return null;
-    //}
-    return fileManager.getFileAsImage(pathName, retFileNameOrError);
+  public void loadImage(String pathName, String echoName) {
+    fileManager.loadImage(pathName, echoName);
   }
 
+  void loadImageData(Object image, String nameOrError, String echoName, ScriptContext sc) {
+    
+    //what will "image" be in JavaScript. Maybe a unique canvas? We don't really want to hang on to the image itself?
+    
+    if (image == null)
+      Logger.info(nameOrError);
+    if (echoName == null) {
+      setBackgroundImage((image == null ? null : nameOrError), image);
+    } else {
+      setShapeProperty(JmolConstants.SHAPE_ECHO, "text", nameOrError);
+      if (image != null)
+        setShapeProperty(JmolConstants.SHAPE_ECHO, "image", image);
+    }
+    if (sc != null) {
+      // JavaScript single-threaded resuming of eval.
+      sc.mustResumeEval = true;
+      eval.resumeEval(sc);
+    }
+  }
+  
   public String cd(String dir) {
     if (dir == null) {
       dir = ".";
@@ -10846,21 +10863,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private JmolThread scriptDelayThread;
-  
+
+  private void stopScriptDelayThread() {
+    if (scriptDelayThread != null) {
+      scriptDelayThread.interrupt();
+      scriptDelayThread = null;
+    }
+  }
   public void delayScript(ScriptEvaluator eval, int millis) {
     if (autoExit)
       return;
-    if (scriptDelayThread != null)
-      scriptDelayThread.interrupt();
+    stopScriptDelayThread();
     scriptDelayThread = new ScriptDelayThread(eval, this, millis);
     scriptDelayThread.run();
   }
 
   private void clearThreads() {
-    if (scriptDelayThread != null) {
-      scriptDelayThread.interrupt();
-      scriptDelayThread = null;
-    }
+    stopScriptDelayThread();
     stopMinimization();
     setVibrationOff();
     setSpinOn(false);
@@ -10869,5 +10888,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean queueOnHold = false;
+
+  public ScriptContext getEvalContextAndHoldQueue(ScriptEvaluator eval) {
+    if (eval == null || !isJS)
+      return null;    
+    eval.scriptLevel--;
+    eval.pushContext2(null);
+    ScriptContext sc = eval.thisContext;
+    ScriptContext sc0 = sc;
+    while (sc0 != null) {
+      sc0.mustResumeEval = true;
+      sc0 = sc0.parentContext;
+    }
+    sc.isJSThread = true;
+    queueOnHold = true;
+    return sc;
+  }
 
 }

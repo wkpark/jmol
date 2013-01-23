@@ -486,7 +486,16 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
           + ((pbuf[offset4] >> 2) & 0x3F3F3F3F)
           + ((pbuf[offset4++ + width4] >> 2) & 0x3F3F3F3F);
         argb += (argb & 0xC0C0C0C0) >> 6;
-        pbuf[offset1] = argb & 0x00FFFFFF;
+        /**
+         * I don't know why this is necessary.
+         * 
+         * @j2sNative
+         * 
+         * this.pbuf[offset1] = argb & 0x00FFFFFF | 0xFF000000;
+         */
+        {
+          pbuf[offset1] = argb & 0x00FFFFFF;
+        }
       }
     if (downsampleZBuffer) {
       //we will add the alpha mask later
@@ -944,9 +953,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   public void drawImage(Object objImage, int x, int y, int z, int zSlab, 
                         short bgcolix, int width, int height) {
-    if (objImage == null || width == 0 || height == 0)
-      return;
-    if (isClippedZ(zSlab))
+    if (objImage == null || width == 0 || height == 0 || isClippedZ(zSlab))
       return;
     plotImage(x, y, z, objImage, null, bgcolix, width, height);
   }

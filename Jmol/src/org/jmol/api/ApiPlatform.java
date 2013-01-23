@@ -114,12 +114,12 @@ public interface ApiPlatform {
   /**
    * can be ignored (return false) if platform cannot save images
    * 
-   * @param display
+   * @param boolIsEcho
    * @param image
    * @return        false only if this platform cannot save images
    * @throws InterruptedException
    */
-  boolean waitForDisplay(Object display, Object image) throws InterruptedException;
+  boolean waitForDisplay(Object boolIsEcho, Object image) throws InterruptedException;
 
   JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure, char type);
 

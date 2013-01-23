@@ -6015,7 +6015,7 @@ public class ScriptEvaluator {
       draw();
       return;
     case Token.echo:
-      echo(1, false);
+      echo(1, null, false);
       return;
     case Token.frank:
       frank(1);
@@ -7713,16 +7713,8 @@ public class ScriptEvaluator {
     if (theTok == Token.image) {
       // background IMAGE "xxxx.jpg"
       String file = parameterAsString(checkLast(++i));
-      if (isSyntaxCheck)
-        return;
-      String[] retFileName = new String[1];
-      Object image = null;
-      if (!file.equalsIgnoreCase("none") && file.length() > 0) {
-        image = viewer.getFileAsImage(file, retFileName);
-        if (image == null)
-          evalError(retFileName[0], null);
-      }
-      viewer.setBackgroundImage(retFileName[0], image);
+      if (!isSyntaxCheck && !file.equalsIgnoreCase("none") && file.length() > 0)
+        viewer.loadImage(file, null);
       return;
     }
     if (isColorParam(i) || theTok == Token.none) {
@@ -8571,21 +8563,14 @@ public class ScriptEvaluator {
     }
   }
 
-  private void echo(int index, boolean isImage) throws ScriptException {
+  private void echo(int index, String id, boolean isImage) throws ScriptException {
     if (isSyntaxCheck)
       return;
     String text = optParameterAsString(index);
     if (viewer.getEchoStateActive()) {
       if (isImage) {
-        String[] retFileName = new String[1];
-        Object image = viewer.getFileAsImage(text, retFileName);
-        if (image == null) {
-          text = retFileName[0];
-        } else {
-          setShapeProperty(JmolConstants.SHAPE_ECHO, "text", retFileName[0]);
-          setShapeProperty(JmolConstants.SHAPE_ECHO, "image", image);
-          text = null;
-        }
+        viewer.loadImage(text, id);
+        return;
       } else if (text.startsWith("\1")) {
         // no reporting, just screen echo, from mouseManager key press
         text = text.substring(1);
@@ -13354,10 +13339,16 @@ public class ScriptEvaluator {
         break;
       case Token.string:
       case Token.image:
-        if (theTok == Token.image)
+        boolean isImage = (theTok == Token.image);
+        if (isImage)
           pt++;
         checkLength(pt);
-        echo(pt - 1, theTok == Token.image);
+        if (id == null && isImage) {
+          String[] data = new String[1];
+          getShapePropertyData(JmolConstants.SHAPE_ECHO, "currentTarget", data);
+          id = data[0];          
+        }
+        echo(pt - 1, id, isImage);
         return;
       default:
         if (isCenterParameter(pt - 1)) {
@@ -14598,7 +14589,7 @@ public class ScriptEvaluator {
           // todo -- there's no reason this data has to be done this way. 
           // we could send all of them out to file directly
           fullPath[0] = fileName;
-          data = viewer.generateOutput(data,
+          data = viewer.generateOutputForExport(data,
               isCommand || fileName != null ? fullPath : null, width, height);
           if (data == null || data.length() == 0)
             return "";

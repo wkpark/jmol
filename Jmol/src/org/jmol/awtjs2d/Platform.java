@@ -140,6 +140,7 @@ public class Platform implements ApiPlatform {
 
   public void drawImage(Object context, Object canvas, int x, int y, int width,
                         int height) {
+    
     // from Viewer.render1
     Image.drawImage(context, canvas, x, y, width, height);
   }
@@ -171,26 +172,47 @@ public class Platform implements ApiPlatform {
   public void notifyEndOfRendering() {
   }
 
+  /**
+   * could be byte[] (from ZIP file) or String (local file name) or URL
+   * @param data 
+   * @return image object
+   * 
+   */
 	public Object createImage(Object data) {
-	  // getFileAsImage
-		return Image.createImage(data);
+	  // N/A in JS
+	  return null;
 	}
 
 	public void disposeGraphics(Object gOffscreen) {
-		Image.disposeGraphics(gOffscreen);
+	  // N/A
 	}
 
-	public int[] grabPixels(Object imageobj, int width, int height, 
+	public int[] grabPixels(Object canvas, int width, int height, 
                           int[] pixels, int startRow, int nRows) {
-	  // from PNG and JPG image creators
-	  // j2s will only pull in the entire pixels set, not a subset
-		return Image.grabPixels(Image.getGraphics(imageobj), width, height);
+	  // from PNG and JPG image creators, also JSmol._loadImage()
+	  
+	  /**
+	   * @j2sNative
+	   * 
+	   *     if (canvas.image && (width != canvas.width || height != canvas.height)
+     *       Jmol._setCanvasImage(canvas, width, height);
+	   *     if (canvas.buf32) return canvas.buf32;
+	   */
+    int[] buf = Image.grabPixels(Image.getGraphics(canvas), width, height); 
+    /**
+     * @j2sNative
+     *  
+     *  canvas.buf32 = buf;
+     * 
+     */
+    {
+      return buf;
+    }
 	}
 
 	public int[] drawImageToBuffer(Object gOffscreen, Object imageOffscreen,
-			Object imageobj, int width, int height, int bgcolor) {
-		return Image.drawImageToBuffer(gOffscreen, imageOffscreen, imageobj, width,
-				height, bgcolor);
+			Object canvas, int width, int height, int bgcolor) {
+	  return grabPixels(canvas, width, height, null, 0, 0);
 	}
 
 	public int[] getTextPixels(String text, JmolFont font3d, Object context,
@@ -199,19 +221,19 @@ public class Platform implements ApiPlatform {
 	}
 
 	public void flushImage(Object imagePixelBuffer) {
-		Image.flush(imagePixelBuffer);
+	  // N/A
 	}
 
 	public Object getGraphics(Object image) {
 		return Image.getGraphics(image);
 	}
 
-  public int getImageHeight(Object image) {
-		return Image.getHeight(image);
+  public int getImageHeight(Object canvas) {
+		return Image.getHeight(canvas);
 	}
 
-	public int getImageWidth(Object image) {
-		return Image.getWidth(image);
+	public int getImageWidth(Object canvas) {
+		return Image.getWidth(canvas);
 	}
 
 	public Object getJpgImage(Viewer viewer, int quality, String comment) {
@@ -244,10 +266,31 @@ public class Platform implements ApiPlatform {
     return null;
 	}
 
-	public boolean waitForDisplay(Object canvas, Object image)
+	public boolean waitForDisplay(Object echoNameAndPath, Object zipBytes)
 			throws InterruptedException {
-		Image.waitForDisplay(canvas, image);
-		return true;
+  
+	  /**
+	   * 
+	   * this is important specifically for retrieving images from
+	   * files, as in set echo ID myimage "image.gif"
+	   * 
+	   * return will be immediate, before the image is created, so here there is
+	   * no "wait." Instead, we give it a callback 
+	   * 
+	   * @j2sNative
+	   * 
+     * if (typeof Jmol == "undefined" || !Jmol._getHiddenCanvas) return false;
+	   * var viewer = this.viewer;
+	   * var sc = viewer.getEvalContextAndHoldQueue(viewer.eval);
+	   * var echoName = echoNameAndPath[0];
+	   * return Jmol._loadImage(this, echoNameAndPath, zipBytes, 
+	   *   function(canvas, pathOrError) { viewer.loadImageData(canvas, pathOrError, echoName, sc) }
+	   * );
+	   * 
+	   */	  
+	  {
+	    return false;	    
+	  }
 	}
 
 	// /// FONT

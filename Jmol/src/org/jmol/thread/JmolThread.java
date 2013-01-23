@@ -56,20 +56,9 @@ abstract public class JmolThread extends Thread {
    */
   public void setEval(ScriptEvaluator eval) {
     this.eval = eval;
-    sc = null;
-    if (eval == null || !isJS)
-      return;
-    eval.scriptLevel--;
-    eval.pushContext2(null);
-    sc = eval.thisContext;
-    ScriptContext sc0 = sc;
-    while (sc0 != null) {
-      sc0.mustResumeEval = true;
-      sc0 = sc0.parentContext;
-    }
-    sc.isJSThread = true;
-    viewer.queueOnHold = true;
-    useTimeout = eval.allowJSThreads;
+    sc = viewer.getEvalContextAndHoldQueue(eval);
+    if (sc != null)
+      useTimeout = eval.allowJSThreads;
   }
 
   public void resumeEval() {
@@ -158,7 +147,7 @@ abstract public class JmolThread extends Thread {
     /**
      * @j2sNative
      * 
-     * return this.interrupted;
+     * return this.stopped;
      */
     {
       return super.isInterrupted();

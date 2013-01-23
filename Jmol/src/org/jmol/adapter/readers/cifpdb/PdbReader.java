@@ -74,6 +74,30 @@ import java.util.Map;
 
 public class PdbReader extends AtomSetCollectionReader {
 
+
+  // serial number and sequence number extensions added Jan 2012 by BH, Jmol 13.1.12
+  // Schroedinger HEX solution: 
+  // https://www.schrodinger.com/AcrobatFile.php?type=supportdocs&type2=&ident=530
+  // allows for about 1,000,000 atoms
+  // assumes sequential numbering with no surprises
+  // incompatible with CONECT
+  // because there can be two atoms with atom number "10000", one base 10 and one base 16 
+  
+  // hybrid-36 solution:
+  // cci.lbl.gov/cctbx_sources/iotbx/pdb/hybrid_36.py
+  // allows for about 87,000,000 atoms
+  // no problem with sequential numbering or CONECT
+  
+  private final static int MODE_PDB = 0;
+  private final static int MODE_HEX = 1;
+  private final static int MODE_HYBRID36 = 2;
+
+  private int serMode = MODE_PDB;
+  private int seqMode = MODE_PDB;
+  
+  private int serial;
+
+  
   private int lineLength;
 
   private StringXBuilder pdbHeader;
@@ -195,7 +219,7 @@ public class PdbReader extends AtomSetCollectionReader {
         .indexOf(line.substring(0, 6))) >> 3;
     boolean isAtom = (ptOption == 0 || ptOption == 1);
     boolean isModel = (ptOption == 2);
-    serial = (isAtom ? getSerial() : 0);
+    serial = (isAtom ? getSerial(6, 11) : 0);
     boolean isNewModel = ((isTrajectory || isSequential) && !isMultiModel
         && isAtom && serial == 1);
     if (getHeader) {
@@ -404,8 +428,11 @@ public class PdbReader extends AtomSetCollectionReader {
     if (lineLength < 8)
       return;
     appendLoadNote(line.substring(7).trim());
-    if (lineLength >= 66)
-      atomSetCollection.setCollectionName(line.substring(62, 66));
+    String pdbID = (lineLength >= 66 ? line.substring(62, 66).trim() : "");
+    if (pdbID.length() == 4) {
+      atomSetCollection.setCollectionName(pdbID);
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("havePDBHeaderName", Boolean.TRUE);
+    }
     if (lineLength > 50)
       line = line.substring(0, 50);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("CLASSIFICATION", line.substring(7).trim());
@@ -664,34 +691,63 @@ REMARK 290 REMARK: NULL
     }
   } 
   
-
-  // Schroedinger perversion 
-  // https://www.schrodinger.com/AcrobatFile.php?type=supportdocs&type2=&ident=530
-  // assumes sequential numbers with atom 99999 or seq 9999 present
-  // otherwise "20000" before atom 99999 is different from "20000" after ???
-  
-  private boolean isHexSerial; 
-  private boolean isHexSeq;
-  private int serial;
-
-  private char currentChainID;
-  
-  private int getSerial() {
-    if (isHexSerial)
-      return serial = Integer.parseInt(line.substring(6, 11), 16);
-    serial = parseIntRange(line, 6, 11);
-    if (serial == 99999)
-      isHexSerial = true;
-    return serial;
+  private int getSerial(int i, int j) {
+    char c = line.charAt(i);
+    boolean isBase10 = (c == ' ' || line.charAt(j - 1) == ' ');
+    switch (serMode) {
+    default:
+    case MODE_PDB:
+      if (isBase10)
+        return parseIntRange(line, i, j);
+      try {
+        return serial = Integer.parseInt(line.substring(i, j));
+      } catch (Exception e) {
+        serMode = (Character.isDigit(c) ? MODE_HEX : MODE_HYBRID36);
+        return getSerial(i, j);
+      }
+    case MODE_HYBRID36:
+      // -16696160 = Integer.parseInt("100000", 10) - Integer.parseInt("A0000",36)
+      //  26973856 = Integer.parseInt("100000", 10) - Integer.parseInt("A0000",36) 
+      //           + (Integer.parseInt("100000",36) - Integer.parseInt("A0000",36))
+      return (isBase10 || Character.isDigit(c) ? parseIntRange(line, i, j)
+          : Parser.parseIntRadix(line.substring(i, j), 36) + (Character.isUpperCase(c) ? -16696160 : 26973856));
+    case MODE_HEX:
+      if (!isBase10)
+        return serial = Parser.parseIntRadix(line.substring(i, j), 16);
+      // reset from MODEL or new chain
+      serMode = MODE_PDB;
+      return getSerial(i, j);
+    }
   }
 
-  private int getSeqNo() {
-    if (isHexSeq)
-      return Integer.parseInt(line.substring(22, 26), 16);
-    int n = parseIntRange(line, 22, 26);
-    if (n == 9999)
-      isHexSeq = true;
-    return n;
+  private int getSeqNo(int i, int j) {
+    char c = line.charAt(i);
+    boolean isBase10 = (c == ' ' || line.charAt(j - 1) == ' ');
+    switch (seqMode) {
+    default:
+    case MODE_PDB:
+      if (isBase10)
+        return parseIntRange(line, i, j);
+      try {
+        return Integer.parseInt(line.substring(i, j));
+      } catch (Exception e) {
+        seqMode = (Character.isDigit(c) ? MODE_HEX : MODE_HYBRID36);
+        return getSeqNo(i, j);
+      }
+    case MODE_HYBRID36:
+      // -456560 = Integer.parseInt("10000", 10) - Integer.parseInt("A000",36)
+      //  756496 = Integer.parseInt("10000", 10) - Integer.parseInt("A000",36) 
+      //         + (Integer.parseInt("10000",36) - Integer.parseInt("A000",36)) 
+      return (isBase10 || Character.isDigit(c) ? parseIntRange(line, i, j)
+          : Parser.parseIntRadix(line.substring(i, j), 36)
+              + (Character.isUpperCase(c) ? -456560 : 756496));
+    case MODE_HEX:
+      if (!isBase10)
+        return Parser.parseIntRadix(line.substring(i, j), 16);
+      // reset from MODEL or new chain
+      seqMode = MODE_PDB;
+      return getSeqNo(i, j);
+    }
   }
 
 // Note that segID (columns 73-76) is not generally read, 
@@ -715,12 +771,7 @@ REMARK 290 REMARK: NULL
     if (chainAtomCounts != null)
       chainAtomCounts[ch]++;
     atom.chainID = ch;
-    atom.sequenceNumber = getSeqNo();
-    if (isHexSeq && ch != currentChainID) {
-      currentChainID = ch;
-      if (atom.sequenceNumber < 9999)
-        isHexSeq = false;
-    }
+    atom.sequenceNumber = getSeqNo(22, 26);
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(line.charAt(26));
     atom.isHetero = line.startsWith("HETATM");
     atom.elementSymbol = deduceElementSymbol(atom.isHetero);
@@ -945,14 +996,13 @@ REMARK 290 REMARK: NULL
       sb.setLength(0);
     }
     int sourceSerial = -1;
-    sourceSerial = parseIntRange(line, 6, 11);
+    sourceSerial = getSerial(6, 11);
     if (sourceSerial < 0)
       return;
     for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
       int offset = i * 5 + 11;
       int offsetEnd = offset + 5;
-      int targetSerial = (offsetEnd <= lineLength ? parseIntRange(line, offset,
-          offsetEnd) : -1);
+      int targetSerial = (offsetEnd <= lineLength ? getSerial(offset, offsetEnd) : -1);
       if (targetSerial < 0)
         continue;
       boolean isDoubleBond = (sourceSerial == lastSourceSerial && targetSerial == lastTargetSerial);
@@ -1105,7 +1155,6 @@ Polyproline 10
      * number right after the word MODEL :-(
      ****************************************************************/
     checkNotPDB();
-    isHexSerial = isHexSeq = false;
     haveMappedSerials = false;
     sbConect = null;
     atomSetCollection.newAtomSet();

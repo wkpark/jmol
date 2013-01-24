@@ -1132,9 +1132,9 @@ public final class ModelLoader {
         // automatic bonding, and additional bonds might be made.
         boolean doBond = (forceAutoBond || doAutoBond && (
                 modelBondCount == 0
-                || modelIsPDB 
+                || modelIsPDB && jmolData == null 
                   && (modelSet.getModelSetAuxiliaryInfoBoolean("havePDBHeaderName") 
-                      || modelIsPDB && jmolData == null && modelBondCount < modelAtomCount / 2) 
+                      || modelBondCount < modelAtomCount / 2) 
                 || modelHasSymmetry && !symmetryAlreadyAppliedToBonds 
                   && !modelSet.getModelAuxiliaryInfoBoolean(i, "hasBonds")
                 ));

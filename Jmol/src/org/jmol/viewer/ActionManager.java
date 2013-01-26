@@ -1556,7 +1556,7 @@ public class ActionManager {
       break;
     case PICKINGSTYLE_SELECT_DRAG:
       if (binding.getName() != "drag")
-        setBinding(dragBinding = (dragBinding == null ? Binding.newBinding("drag") : dragBinding));
+        setBinding(dragBinding = (dragBinding == null ? Binding.newBinding("Drag") : dragBinding));
       rubberbandSelectionMode = true;
       break;
     case PICKINGSTYLE_SELECT_RASMOL:

@@ -14220,21 +14220,27 @@ public class ScriptEvaluator {
       String saveName = optParameterAsString(2);
       if (getToken(1).tok != Token.orientation)
         checkLength23();
-      float timeSeconds;
+      float floatSecondsTotal;
       switch (getToken(1).tok) {
       case Token.rotation:
-        timeSeconds = (statementLength > 3 ? floatParameter(3) : 0);
-        if (timeSeconds < 0)
+        floatSecondsTotal = (statementLength > 3 ? floatParameter(3) : 0);
+        if (floatSecondsTotal < 0)
           error(ERROR_invalidArgument);
-        if (!isSyntaxCheck)
-          viewer.restoreRotation(saveName, timeSeconds);
+        if (!isSyntaxCheck) {
+          viewer.restoreRotation(saveName, floatSecondsTotal);
+          if (isJS && floatSecondsTotal > 0 && viewer.waitForMoveTo())
+            throw new ScriptInterruption(this, "restoreRotation", 1);
+        }
         return;
       case Token.orientation:
-        timeSeconds = (statementLength > 3 ? floatParameter(3) : 0);
-        if (timeSeconds < 0)
+        floatSecondsTotal = (statementLength > 3 ? floatParameter(3) : 0);
+        if (floatSecondsTotal < 0)
           error(ERROR_invalidArgument);
-        if (!isSyntaxCheck)
-          viewer.restoreOrientation(saveName, timeSeconds);
+        if (!isSyntaxCheck) {
+          viewer.restoreOrientation(saveName, floatSecondsTotal);
+          if (isJS && floatSecondsTotal > 0 && viewer.waitForMoveTo())
+            throw new ScriptInterruption(this, "restoreOrientation", 1);
+        }
         return;
       case Token.bonds:
         if (!isSyntaxCheck)

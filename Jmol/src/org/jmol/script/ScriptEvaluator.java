@@ -11155,12 +11155,12 @@ public class ScriptEvaluator {
     //Point3f currentCenter = viewer.getRotationCenter();
     int i = 1;
     // zoomTo time-sec
-    float time = (isZoomTo ? (isFloatParameter(i) ? floatParameter(i++) : 2f)
+    float floatSecondsTotal = (isZoomTo ? (isFloatParameter(i) ? floatParameter(i++) : 2f)
         : 0f);
-    if (time < 0) {
+    if (floatSecondsTotal < 0) {
       // zoom -10
       i--;
-      time = 0;
+      floatSecondsTotal = 0;
     }
     // zoom {x y z} or (atomno=3)
     int ptCenter = 0;
@@ -11225,9 +11225,12 @@ public class ScriptEvaluator {
     if (Float.isNaN(yTrans))
       yTrans = 0;
     if (isSameAtom && Math.abs(zoom - newZoom) < 1)
-      time = 0;
-    viewer.moveTo(this, time, center, JmolConstants.center, Float.NaN, null,
+      floatSecondsTotal = 0;
+    viewer.moveTo(this, floatSecondsTotal, center, JmolConstants.center, Float.NaN, null,
         newZoom, xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
+    if (isJS && floatSecondsTotal > 0 && viewer.waitForMoveTo())
+      throw new ScriptInterruption(this, "zoomTo", 1);
+
   }
 
   private float getZoom(int ptCenter, int i, BitSet bs, float currentZoom)

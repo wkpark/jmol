@@ -15129,7 +15129,8 @@ public class ScriptEvaluator {
         error(ERROR_invalidArgument);
       if (!isSyntaxCheck) {
         viewer.clearConsole();
-        viewer.removeCommand();
+        if (scriptLevel == 0)
+          viewer.removeCommand();
         msg = viewer.getSetHistory(n);
       }
       break;

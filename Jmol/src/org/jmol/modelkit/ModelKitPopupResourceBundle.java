@@ -75,8 +75,7 @@ public class ModelKitPopupResourceBundle extends PopupResource {
   @Override
   protected String[] getWordContents() {
     
-    boolean wasTranslating = GT.getDoTranslate();
-    GT.setDoTranslate(true);
+    boolean wasTranslating = GT.setDoTranslate(true);
     String[] words = new String[] {
         "atomMenu", "<atoms.png>",//GT._("atoms"),
         "moreAtomMenu", "<dotdotdot.png>",//GT._("more..."),

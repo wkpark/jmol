@@ -58,7 +58,7 @@ public class JmolBinary {
   public static String determineSurfaceTypeIs(InputStream is) {
     BufferedReader br;
     try {
-      br = getBufferedReader(new BufferedInputStream(is));//, "ISO-8859-1"));
+      br = getBufferedReader(new BufferedInputStream(is), "ISO-8859-1");
     } catch (IOException e) {
       return null;
     }
@@ -558,17 +558,18 @@ public class JmolBinary {
 
   /**
    * @param bis
+   * @param charSet TODO
    * @return Reader
    * @throws IOException
    */
-  public static BufferedReader getBufferedReader(BufferedInputStream bis)
+  public static BufferedReader getBufferedReader(BufferedInputStream bis, String charSet)
       throws IOException {
     // could also just make sure we have a buffered input stream here.
     if (getUTFEncodingForStream(bis) == Encoding.NONE)
-      return new BufferedReader(new InputStreamReader(bis, "UTF-8"));
+      return new BufferedReader(new InputStreamReader(bis, (charSet == null ? "UTF-8" : charSet)));
     byte[] bytes = getStreamBytes(bis, -1);
     bis.close();
-    return getBufferedReaderForString(fixUTF(bytes));
+    return getBufferedReaderForString(charSet == null ? fixUTF(bytes) : new String(bytes, charSet));
   }
 
   /**

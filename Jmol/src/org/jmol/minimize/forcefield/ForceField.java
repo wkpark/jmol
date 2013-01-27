@@ -523,7 +523,7 @@ abstract public class ForceField {
      * 
      */
     {
-    return JmolBinary.getBufferedReader(new BufferedInputStream((InputStream) url.getContent()));
+    return JmolBinary.getBufferedReader(new BufferedInputStream((InputStream) url.getContent()), null);
     }
   }
 

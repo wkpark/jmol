@@ -40,8 +40,7 @@ public class JSModelKitPopup extends JSPopup {
   
   public void jpiInitialize(Viewer viewer, String menu) {
     updateMode = UPDATE_NEVER;
-    boolean doTranslate = GT.getDoTranslate();
-    GT.setDoTranslate(true);
+    boolean doTranslate = GT.setDoTranslate(true);
     PopupResource bundle = new ModelKitPopupResourceBundle();
     initialize(viewer, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);

@@ -92,8 +92,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   }
 
   protected void setLabels() {
-    boolean doTranslate = GT.getDoTranslate();
-    GT.setDoTranslate(true);
+    boolean doTranslate = GT.setDoTranslate(true);
     editButton = setButton("Editor");
     stateButton = setButton("State");
     runButton = setButton("Run");

@@ -1539,8 +1539,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       gaussianDialog.dispose();
       gaussianDialog = null;
     }
-    boolean doTranslate = GT.getDoTranslate();
-    GT.setDoTranslate(true);
+    boolean doTranslate = GT.setDoTranslate(true);
     getDialogs();
     GT.setDoTranslate(doTranslate);
     guimap.updateLabels();

@@ -65,7 +65,7 @@ class MsmsReader extends PmeshReader {
     Logger.info("reading from file " + fileName);
     try {
     br = JmolBinary.getBufferedReader(sg.getAtomDataServer().getBufferedInputStream(
-        fileName));
+        fileName), null);
     } catch (Exception e) {
       Logger.info("Note: file " + fileName + " was not found");
       br = null;

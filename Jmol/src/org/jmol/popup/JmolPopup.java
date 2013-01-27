@@ -43,8 +43,7 @@ public class JmolPopup extends SwingPopup {
   }
 
   public void jpiInitialize(Viewer viewer, String menu) {
-    boolean doTranslate = GT.getDoTranslate();
-    GT.setDoTranslate(true);
+    boolean doTranslate = GT.setDoTranslate(true);
     PopupResource bundle = new MainPopupResourceBundle(strMenuStructure = menu,
         menuText);
     initialize(viewer, bundle, bundle.getMenuName());

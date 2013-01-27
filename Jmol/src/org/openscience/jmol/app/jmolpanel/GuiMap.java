@@ -274,8 +274,7 @@ public class GuiMap {
   }
 
   public void updateLabels() {
-    boolean doTranslate = GT.getDoTranslate();
-    GT.setDoTranslate(true);
+    boolean doTranslate = GT.setDoTranslate(true);
     setupLabels();
     GenericConsole.setAbstractButtonLabels(map, labels);
     GT.setDoTranslate(doTranslate);

@@ -225,7 +225,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
       // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
       // and within Eclipse it's a BufferedInputStream
 
-      br = JmolBinary.getBufferedReader(new BufferedInputStream(is));
+      br = JmolBinary.getBufferedReader(new BufferedInputStream(is), null);
       String line;
       while ((line = br.readLine()) != null) {
         if (line.startsWith("#"))

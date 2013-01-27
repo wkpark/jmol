@@ -546,8 +546,7 @@ public class MainPopupResourceBundle extends PopupResource {
   @Override
   protected String[] getWordContents() {
     
-    boolean wasTranslating = GT.getDoTranslate();
-    GT.setDoTranslate(true);
+    boolean wasTranslating = GT.setDoTranslate(true);
     String[] words = new String[] {
         "modelSetMenu", GT._("No atoms loaded"),
         

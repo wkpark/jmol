@@ -162,8 +162,16 @@ public class GT {
     ignoreApplicationBundle = true;
   }
 
-  public static void setDoTranslate(boolean TF) {
+  /**
+   * 
+   * @param TF
+   * @return  initial setting of GT.doTranslate
+   * 
+   */
+  public static boolean setDoTranslate(boolean TF) {
+    boolean b = getDoTranslate();
     getTextWrapper().doTranslate = TF;
+    return b;
   }
 
   public static boolean getDoTranslate() {

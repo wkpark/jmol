@@ -647,7 +647,7 @@ public class FileManager {
         bis.close();
         return JmolBinary.getBufferedReaderForString(s);
       }
-      return (asInputStream ? bis : JmolBinary.getBufferedReader(bis));
+      return (asInputStream ? bis : JmolBinary.getBufferedReader(bis, null));
     } catch (Exception ioe) {
       return ioe.toString();
     }
@@ -744,7 +744,7 @@ public class FileManager {
         fileData.put(name0, sb.toString());
       } else {
         BufferedReader br = JmolBinary.getBufferedReader(
-            JmolBinary.isGzipS(bis) ? new BufferedInputStream(JmolBinary.newGZIPInputStream(bis)) : bis);
+            JmolBinary.isGzipS(bis) ? new BufferedInputStream(JmolBinary.newGZIPInputStream(bis)) : bis, null);
         String line;
         sb = new StringXBuilder();
         if (header != null)

@@ -4735,7 +4735,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public String scriptWait(String strScript) {
     return (String) evalWait("JSON", strScript,
-        "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated", false);
+        "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated");
   }
 
   @Override
@@ -4743,25 +4743,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // null statusList will return a String 
     //  -- output from PRINT/MESSAGE/ECHO commands or an error message
     // otherwise, specific status messages will be created as a Java object
-    return evalWait("object",strScript,statusList, false);
+    return evalWait("object",strScript,statusList);
   }
 
-  public Object evalStringWaitStatus(String returnType, String strScript,
-                                     String statusList) {
-    return evalWait(returnType,strScript, statusList,true);
-  }
-
-  private Object evalWait(String returnType, String strScript,
-                          String statusList, boolean doTranslate) {
+  private Object evalWait(String returnType, String strScript, String statusList) {
     //can't do waitForQueue in JavaScript and then wait for the queue:
     scriptManager.waitForQueue();
-    boolean doTranslateTemp = GT.getDoTranslate();
-    if (!doTranslate)
-      GT.setDoTranslate(false);
+    boolean doTranslateTemp = GT.setDoTranslate(false);
     Object ret = evalStringWaitStatusQueued(returnType, strScript, statusList,
         false, false, false);
-    if (!doTranslate)
-      GT.setDoTranslate(doTranslateTemp);
+    GT.setDoTranslate(doTranslateTemp);
     return ret;
   }
 

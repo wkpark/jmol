@@ -4933,10 +4933,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         f = f.substring(1);
         type = '#';
       } else
-      if (f.indexOf("=") > 0) {
-        // =xxxx=....
+      if (f.indexOf("/") > 0) {
+        // =xxxx/....
         try {
-          int pt = f.indexOf("=");
+          int pt = f.indexOf("/");
           String database = f.substring(0, pt);
           f = global.resolveDataBase(database, f.substring(pt + 1));
           return (f == null ? name : f);

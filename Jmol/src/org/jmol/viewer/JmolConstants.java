@@ -1293,7 +1293,15 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //    "@hetero", handled specially
 
   };
-  public static String[] databases = { "mp", "http://www.materialsproject.org/materials/%ID/cif" };
+  public static String[] databases = { 
+    "cactus", "http://cactus.nci.nih.gov/chemical/structure/%FILE",
+    "ligand", "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
+    "mp", "http://www.materialsproject.org/materials/%FILE/cif",
+    "pdb", "http://www.rcsb.org/pdb/files/%FILE.pdb.gz",
+    "nmr", "http://www.nmrdb.org/predictor?smiles=",
+    "smiles", "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True",
+    "pubchem", "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
+  };
   
   public final static String MODELKIT_ZAP_STRING = "1 0 C 0 0";
   public static final String MODELKIT_ZAP_TITLE = "Jmol Model Kit";//do not ever change this -- it is in the state

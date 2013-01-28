@@ -685,8 +685,22 @@ public class StateManager {
         useScriptQueue = g.useScriptQueue;
         useArcBall = g.useArcBall;
         databases = g.databases;
+      }    
+      if (databases == null) {
+        databases = new Hashtable<String, String>();
+        getDataBaseList(JmolConstants.databases);
+        loadFormat = databases.get("pdb");
+        loadLigandFormat = databases.get("ligand");
+        nmrUrlFormat = databases.get("nmr");
+        smilesUrlFormat = databases.get("smiles");
+        nihResolverFormat = databases.get("cactus");
+        pubChemFormat = databases.get("pubchem");
+        
+        // beyond these six, they are just in the form load =xxx/id
+        
+        getDataBaseList(userDatabases);
       }
-    
+
     for (EnumCallback item : EnumCallback.values())        
         resetValue(item.name() + "Callback", g);        
 
@@ -1022,12 +1036,8 @@ public class StateManager {
     boolean forceAutoBond = false;
     boolean fractionalRelative = false; // true: UNITCELL offset will change meaning of {1/2 1/2 1/2} 
     char inlineNewlineChar = '|'; //pseudo static
-    String loadFormat = "http://www.rcsb.org/pdb/files/%FILE.pdb.gz";
-    String loadLigandFormat = "http://www.rcsb.org/pdb/files/ligand/%FILE.cif";
-    String nmrUrlFormat = "http://www.nmrdb.org/predictor?smiles=";
-    String smilesUrlFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True"; 
-    String nihResolverFormat = "http://cactus.nci.nih.gov/chemical/structure/%FILE";
-    String pubChemFormat = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d";
+    String loadFormat, loadLigandFormat, nmrUrlFormat, smilesUrlFormat, nihResolverFormat, pubChemFormat;
+
     String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
     String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
     String edsUrlOptions = "within 2.0 {*}";
@@ -1738,15 +1748,10 @@ public class StateManager {
     }
 
     public String resolveDataBase(String database, String id) {
-      if (databases == null) {
-        databases = new Hashtable<String, String>();
-        getDataBaseList(JmolConstants.databases);
-        getDataBaseList(userDatabases);
-      }
       String format = databases.get(database.toLowerCase());
       if (format == null)
         return null;
-      return TextFormat.formatStringS(format, "ID", id);
+      return (format.indexOf("%FILE") < 0 ? format + id : TextFormat.formatStringS(format, "FILE", id));
     }
 
     private void getDataBaseList(String[] list) {

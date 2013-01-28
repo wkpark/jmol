@@ -692,8 +692,8 @@ public class StateManager {
         loadFormat = databases.get("pdb");
         loadLigandFormat = databases.get("ligand");
         nmrUrlFormat = databases.get("nmr");
-        smilesUrlFormat = databases.get("smiles");
-        nihResolverFormat = databases.get("cactus");
+        smilesUrlFormat = databases.get("nci") + "/file?format=sdf&get3d=True";
+        nihResolverFormat = databases.get("nci");
         pubChemFormat = databases.get("pubchem");
         
         // beyond these six, they are just in the form load =xxx/id
@@ -1751,7 +1751,14 @@ public class StateManager {
       String format = databases.get(database.toLowerCase());
       if (format == null)
         return null;
-      return (format.indexOf("%FILE") < 0 ? format + id : TextFormat.formatStringS(format, "FILE", id));
+      if (id.indexOf("/") < 0) {
+        if (database.equals("pubchem"))
+          id = "name/" + id;
+        else if (database.equals("nci"))
+          id += "/file?format=sdf&get3d=True";
+      }
+      return (format.indexOf("%FILE") < 0 ? format + id : TextFormat
+          .formatStringS(format, "FILE", id));
     }
 
     private void getDataBaseList(String[] list) {

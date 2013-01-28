@@ -1294,12 +1294,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   };
   public static String[] databases = { 
-    "cactus", "http://cactus.nci.nih.gov/chemical/structure/%FILE",
     "ligand", "http://www.rcsb.org/pdb/files/ligand/%FILE.cif",
     "mp", "http://www.materialsproject.org/materials/%FILE/cif",
-    "pdb", "http://www.rcsb.org/pdb/files/%FILE.pdb.gz",
+    "nci", "http://cactus.nci.nih.gov/chemical/structure/%FILE",
     "nmr", "http://www.nmrdb.org/predictor?smiles=",
-    "smiles", "http://cactus.nci.nih.gov/chemical/structure/%FILE/file?format=sdf&get3d=True",
+    "pdb", "http://www.rcsb.org/pdb/files/%FILE.pdb.gz",
     "pubchem", "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
   };
   

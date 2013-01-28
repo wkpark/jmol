@@ -4913,20 +4913,44 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (fileName.length() != 0 && isDatabaseCode(fileName.charAt(0)));
   }
 
+  /**
+   * Jmol will either specify a type  or look for it in the first character,
+   * making sure it is found using isDatabaseCode() first. Starting with 
+   * Jmol 13.1.13, we allow a generalized search using =xxx= where xxx is
+   * a known or user-specified database designation.
+   *  
+   * @param name
+   * @param type
+   * @param withPrefix
+   * @return String or String[]
+   */
   public Object setLoadFormat(String name, char type, boolean withPrefix) {
     String format;
     String f = name.substring(1);
     switch (type) {
     case '=':
-    case '#': // ligand
       if (name.startsWith("==")) {
         f = f.substring(1);
         type = '#';
+      } else
+      if (f.indexOf("=") > 0) {
+        // =xxxx=....
+        try {
+          int pt = f.indexOf("=");
+          String database = f.substring(0, pt);
+          f = global.resolveDataBase(database, f.substring(pt + 1));
+          return (f == null ? name : f);
+        } catch (Exception e) {
+          return name;
+        }
       }
+      //$FALL-THROUGH$
+    case '#': // ligand
       String s = (type == '=' ? global.loadFormat : global.loadLigandFormat);
       if (f.indexOf(".") > 0 && s.indexOf("%FILE.") >= 0)
         s = s.substring(0, s.indexOf("%FILE") + 5);
       return TextFormat.formatStringS(s, "FILE", f);
+      
     case ':': // PubChem
       format = global.pubChemFormat;
       String fl = f.toLowerCase();
@@ -4948,7 +4972,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       return TextFormat.formatStringS(format, "FILE", f);
     case '$':
-      if (f.startsWith("$")) {
+      if (name.startsWith("$$")) {
         // 2D version
         f = f.substring(1);
         format = TextFormat.simpleReplace(global.smilesUrlFormat, "&get3d=True", "");
@@ -4989,7 +5013,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           f);
       return new String[] { server, strCutoff };
     }
-    return name.substring(1);
+    return f;
   }
 
   public String[] getElectronDensityLoadInfo() {

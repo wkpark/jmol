@@ -1293,6 +1293,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //    "@hetero", handled specially
 
   };
+  public static String[] databases = { "mp", "http://www.materialsproject.org/materials/%ID/cif" };
+  
   public final static String MODELKIT_ZAP_STRING = "1 0 C 0 0";
   public static final String MODELKIT_ZAP_TITLE = "Jmol Model Kit";//do not ever change this -- it is in the state
   public final static String ADD_HYDROGEN_TITLE = "Viewer.AddHydrogens"; //do not ever change this -- it is in the state

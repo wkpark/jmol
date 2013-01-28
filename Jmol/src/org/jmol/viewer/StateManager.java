@@ -27,7 +27,6 @@ package org.jmol.viewer;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumCallback;
 import org.jmol.constant.EnumStructure;
@@ -115,6 +114,7 @@ public class StateManager {
 
   Viewer viewer;
   Map<String, Object> saved = new Hashtable<String, Object>();
+  
   String lastOrientation = "";
   String lastConnections = "";
   String lastSelected = "";
@@ -125,7 +125,7 @@ public class StateManager {
   StateManager(Viewer viewer) {
     this.viewer = viewer;
   }
-
+  
   GlobalSettings getGlobalSettings(GlobalSettings gsOld, boolean clearUserVariables) {
     return new GlobalSettings(gsOld, clearUserVariables);
   }
@@ -628,6 +628,7 @@ public class StateManager {
     Map<String, Boolean> htBooleanParameterFlags;
     Map<String, Boolean> htPropertyFlagsRemoved;
     Map<String, ScriptVariable> htUserVariables = new Hashtable<String, ScriptVariable>();
+    Map<String, String> databases;
 
     /*
      *  Mostly these are just saved and restored directly from Viewer.
@@ -683,9 +684,10 @@ public class StateManager {
         legacyAutoBonding = g.legacyAutoBonding;
         useScriptQueue = g.useScriptQueue;
         useArcBall = g.useArcBall;
+        databases = g.databases;
       }
-
-      for (EnumCallback item : EnumCallback.values())        
+    
+    for (EnumCallback item : EnumCallback.values())        
         resetValue(item.name() + "Callback", g);        
 
       setParamI("historyLevel", 0); //deprecated ? doesn't do anything
@@ -1710,6 +1712,7 @@ public class StateManager {
     }
     
     private boolean haveSetStructureList;
+    private String[] userDatabases;
     
     public void setStructureList(float[] list, EnumStructure type) {
       haveSetStructureList = true;
@@ -1732,6 +1735,25 @@ public class StateManager {
       }
       if (atomIndex >= 0)
         ScriptVariable.getBitSet(pickedSet, false).set(atomIndex);
+    }
+
+    public String resolveDataBase(String database, String id) {
+      if (databases == null) {
+        databases = new Hashtable<String, String>();
+        getDataBaseList(JmolConstants.databases);
+        getDataBaseList(userDatabases);
+      }
+      String format = databases.get(database.toLowerCase());
+      if (format == null)
+        return null;
+      return TextFormat.formatStringS(format, "ID", id);
+    }
+
+    private void getDataBaseList(String[] list) {
+      if (list == null)
+        return;
+      for (int i = 0; i < list.length; i += 2)
+        databases.put(list[i].toLowerCase(), list[i + 1]);
     }
   }
 

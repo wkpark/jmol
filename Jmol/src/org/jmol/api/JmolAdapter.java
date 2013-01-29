@@ -163,7 +163,7 @@ public abstract class JmolAdapter {
  * @return The atomSetCollection or String with an error message
  */
 abstract public Object getAtomSetCollectionReader(String name, String type,
-                                 BufferedReader bufferedReader, Map<String, Object> htParams);
+                                 Object bufferedReader, Map<String, Object> htParams);
 
 abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   /**
@@ -206,7 +206,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
    * @return           AtomSetCollection or error string
    */
   public Object getAtomSetCollectionFromReader(String name, String type,
-                                               BufferedReader bufferedReader,
+                                               Object bufferedReader,
                                                Map<String, Object> htParams) {
     if (htParams == null)
       htParams = new Hashtable<String, Object>();
@@ -436,7 +436,7 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   }
 
   abstract public Object getAtomSetCollectionFromReader(String fname,
-                                            BufferedReader reader,
+                                            Object reader,
                                             Map<String, Object> htParams) throws Exception;
 
 }

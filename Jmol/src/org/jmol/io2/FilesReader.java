@@ -110,10 +110,8 @@ public class FilesReader implements JmolFilesReaderInterface {
       jd.setStream((BufferedInputStream) t, true);
       return jd;
     }
-    if (t instanceof BufferedReader || t instanceof JmolDocument) {
-      return t;
-    }
-    return (t == null ? "error opening:" + namesAsGivenIn[i] : (String) t);
+    return (t instanceof BufferedReader || t instanceof JmolDocument ? t :
+      t == null ? "error opening:" + namesAsGivenIn[i] : (String) t);
   }
 
   public Object getAtomSetCollection() {

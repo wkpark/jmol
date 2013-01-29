@@ -298,6 +298,21 @@ public class BoxInfo {
       xyzMax.z = pt.z + margin;
   }
 
+  public static void addPointXYZ(float x, float y, float z, Point3f xyzMin, Point3f xyzMax, float margin) {
+    if (x - margin < xyzMin.x)
+      xyzMin.x = x - margin;
+    if (x + margin > xyzMax.x)
+      xyzMax.x = x + margin;
+    if (y - margin < xyzMin.y)
+      xyzMin.y = y - margin;
+    if (y + margin > xyzMax.y)
+      xyzMax.y = y + margin;
+    if (z - margin < xyzMin.z)
+      xyzMin.z = z - margin;
+    if (z + margin > xyzMax.z)
+      xyzMax.z = z + margin;
+  }
+
   public void setBbcage(float scale) {
     isScaleSet = true;
     bbCenter.add2(bbCorner0, bbCorner1);

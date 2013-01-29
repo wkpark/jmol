@@ -37,11 +37,6 @@ public interface JmolZipUtility {
                                         String shortName,
                                         Map<String, byte[]> pngjCache);
 
-  public String addPngFileBytes(String name, byte[] ret, int iFile,
-                                Hashtable<Object, String> crcMap,
-                                boolean isSparDir, String newName, int ptSlash,
-                                List<Object> v);
-
   public Object writeZipFile(FileManager fm, Viewer viewer, String outFileName,
                              List<Object> fileNamesAndByteArrays, String msg);
 

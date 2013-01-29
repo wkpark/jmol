@@ -30,6 +30,7 @@ import java.util.StringTokenizer;
 
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolDocument;
 import org.jmol.io.LimitedLineReader;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -41,7 +42,7 @@ public class Resolver {
   private final static String[] readerSets = new String[] {
     "cifpdb.", ";Cif;Pdb;",
     "molxyz.", ";Mol3D;Mol;Xyz;",
-    "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;Pqr;P2n;TlsDataOnly;",
+    "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;Pqr;P2n;TlsDataOnly;PyMOL;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
@@ -88,7 +89,7 @@ public class Resolver {
    * @throws Exception
    */
   static Object getAtomCollectionReader(String fullName, String type,
-                                        BufferedReader bufferedReader,
+                                        Object bufferedReader,
                                         Map<String, Object> htParams, int ptFile)
       throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = null;
@@ -102,7 +103,7 @@ public class Resolver {
       else
         Logger.info("The Resolver assumes " + readerName);
     } else {
-      readerName = determineAtomSetCollectionReader(bufferedReader, true);
+      readerName = determineAtomSetCollectionReader((BufferedReader) bufferedReader, true);
       if (readerName.charAt(0) == '\n') {
         type = (String) htParams.get("defaultType");
         if (type != null) {
@@ -121,7 +122,7 @@ public class Resolver {
         Logger.info("The Resolver thinks " + readerName);
     }
     if (errMsg != null) {
-      bufferedReader.close();
+      SmarterJmolAdapter.close(bufferedReader);
       return errMsg;
     }
     htParams.put("ptFile", Integer.valueOf(ptFile));
@@ -709,10 +710,13 @@ public class Resolver {
   private final static String[] magResFileStartRecords =
   {"MagRes", "# magres"};
 
+  private final static String[] pymolStartRecords =
+  {"PyMOL", "}q" };
+
   private final static String[][] fileStartsWithRecords =
   { sptContainsRecords, cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
-    zMatrixFileStartRecords, magResFileStartRecords };
+    zMatrixFileStartRecords, magResFileStartRecords, pymolStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

@@ -1521,6 +1521,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int CURSOR_MOVE = 3;
   public final static int CURSOR_WAIT = 4;
   public final static int CURSOR_ZOOM = 5;
+  public static final String binaryExtensions = ";pse=PyMOL;";// PyMOL
 
   public final static int getShapeVisibilityFlag(int shapeID) {
     return (4 << shapeID);

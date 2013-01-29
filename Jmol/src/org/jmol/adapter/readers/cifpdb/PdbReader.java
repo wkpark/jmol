@@ -125,7 +125,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private List<Map<String, Object>> vTlsModels;
   private StringXBuilder sbTlsErrors;
 
-  private int[] chainAtomCounts;  
+  protected int[] chainAtomCounts;  
   
   private StringXBuilder sbIgnored, sbSelected, sbConect, sb;
 
@@ -142,7 +142,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private boolean resetKey = true;
   private String compnd = null;
   private int conformationIndex;
-  private int fileAtomIndex;
+  protected int fileAtomIndex;
   private char lastAltLoc = '\0';
   private String lastAtomData;
   private int lastAtomIndex;
@@ -760,29 +760,34 @@ REMARK 290 REMARK: NULL
   //01234567890123456789012345678901234567890123456789012345678901234567890123456789
   //aaaaaauuuuu ssss sss cnnnnc   xxxxxxxxxxyyyyyyyyyyzzzzzzzzzzccccccccrrrrrrrr
  
-  private void atom() {
+  protected Atom processAtom(
+        String name, 
+        char altID, 
+        String group3, 
+        char chain, 
+        int seqNo,
+        char insCode,
+        boolean isHetero,
+        String sym
+        ) {
     Atom atom = new Atom();
-    atom.atomName = line.substring(12, 16).trim();
-    char ch = line.charAt(16);
+    atom.atomName = name;
+    char ch = altID;
     if (ch != ' ')
       atom.alternateLocationID = ch;
-    atom.group3 = parseTokenRange(line, 17, 20);
-    ch = line.charAt(21);
+    atom.group3 = group3;
+    ch = chain;
     if (chainAtomCounts != null)
       chainAtomCounts[ch]++;
     atom.chainID = ch;
-    atom.sequenceNumber = getSeqNo(22, 26);
-    atom.insertionCode = JmolAdapter.canonizeInsertionCode(line.charAt(26));
-    atom.isHetero = line.startsWith("HETATM");
-    atom.elementSymbol = deduceElementSymbol(atom.isHetero);
-    if (atomTypeLen > 0) {
-      // becomes atomType
-      String s = line.substring(atomTypePt0, atomTypePt0 + atomTypeLen).trim();
-      if (s.length() > 0)
-      atom.atomName += "\0" + s;
-    }
-    if (!filterPDBAtom(atom, fileAtomIndex++))
-      return;
+    atom.sequenceNumber = seqNo;
+    atom.insertionCode = JmolAdapter.canonizeInsertionCode(insCode);
+    atom.isHetero = isHetero;    
+    atom.elementSymbol = sym;
+    return atom;
+  }
+  
+  protected void processAtom2(Atom atom, int serial, float x, float y, float z, int charge) {
     atom.atomSerial = serial;
     if (serial > maxSerial)
       maxSerial = serial;
@@ -801,32 +806,8 @@ REMARK 290 REMARK: NULL
       if (atom.group3.equals("UNK"))
         nUNK++;
     }
-
-    if (gromacsWideFormat) {
-      setAtomCoordXYZ(atom, parseFloatRange(line, 30, 40), parseFloatRange(line, 40, 50),
-          parseFloatRange(line, 50, 60));
-    } else {
-      //calculate the charge from cols 79 & 80 (1-based): 2+, 3-, etc
-      int charge = 0;
-      if (lineLength >= 80) {
-        char chMagnitude = line.charAt(78);
-        char chSign = line.charAt(79);
-        if (chSign >= '0' && chSign <= '7') {
-          char chT = chSign;
-          chSign = chMagnitude;
-          chMagnitude = chT;
-        }
-        if ((chSign == '+' || chSign == '-' || chSign == ' ')
-            && chMagnitude >= '0' && chMagnitude <= '7') {
-          charge = chMagnitude - '0';
-          if (chSign == '-')
-            charge = -charge;
-        }
-      }
-      atom.formalCharge = charge;
-      setAtomCoordXYZ(atom, parseFloatRange(line, 30, 38), parseFloatRange(line, 38, 46),
-          parseFloatRange(line, 46, 54));
-    }
+    setAtomCoordXYZ(atom, x, y, z);
+    atom.formalCharge = charge;
     setAdditionalAtomParameters(atom);
     if (haveMappedSerials)
       atomSetCollection.addAtomWithMappedSerialNumber(atom);
@@ -842,9 +823,58 @@ REMARK 290 REMARK: NULL
       }
     }
   }
-  
-  
 
+
+  private void atom() {
+    boolean isHetero = line.startsWith("HETATM");
+    Atom atom = processAtom(
+        line.substring(12, 16).trim(), 
+        line.charAt(16),
+        parseTokenRange(line, 17, 20),
+        line.charAt(21),
+        getSeqNo(22, 26),
+        line.charAt(26),
+        isHetero,
+        deduceElementSymbol(isHetero)
+    );
+    if (atomTypeLen > 0) {
+      // becomes atomType
+      String s = line.substring(atomTypePt0, atomTypePt0 + atomTypeLen).trim();
+      if (s.length() > 0)
+      atom.atomName += "\0" + s;
+    }
+    if (!filterPDBAtom(atom, fileAtomIndex++))
+      return;
+    int charge = 0;
+    float x, y, z;
+    if (gromacsWideFormat) {
+      x = parseFloatRange(line, 30, 40);
+      y = parseFloatRange(line, 40, 50);
+      z = parseFloatRange(line, 50, 60);
+    } else {
+      //calculate the charge from cols 79 & 80 (1-based): 2+, 3-, etc
+      if (lineLength >= 80) {
+        char chMagnitude = line.charAt(78);
+        char chSign = line.charAt(79);
+        if (chSign >= '0' && chSign <= '7') {
+          char chT = chSign;
+          chSign = chMagnitude;
+          chMagnitude = chT;
+        }
+        if ((chSign == '+' || chSign == '-' || chSign == ' ')
+            && chMagnitude >= '0' && chMagnitude <= '7') {
+          charge = chMagnitude - '0';
+          if (chSign == '-')
+            charge = -charge;
+        }
+      }
+      x = parseFloatRange(line, 30, 38);
+      y = parseFloatRange(line, 38, 46);
+      z = parseFloatRange(line, 46, 54);
+    }    
+    processAtom2(atom, serial, x, y, z, charge);
+  }
+  
   protected boolean filterPDBAtom(Atom atom, int iAtom) {
     if (!filterAtom(atom, iAtom))
       return false;

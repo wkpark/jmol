@@ -152,6 +152,7 @@ class DataManager {
       }
       if (oldData != null && oldData[2] instanceof BitSet && !createNew)
         bs.or((BitSet) (oldData[2]));
+      data[3] = Integer.valueOf(1);
       data[2] = bs;
       data[1] = f;
       if (type.indexOf("property_atom.") == 0) {

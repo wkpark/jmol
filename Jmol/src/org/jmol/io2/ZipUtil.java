@@ -367,7 +367,7 @@ public class ZipUtil implements JmolZipUtility {
     return new GZIPInputStream(bis, 512);
   }
 
-  public String addPngFileBytes(String name, byte[] ret, int iFile,
+  private String addPngFileBytes(String name, byte[] ret, int iFile,
                                 Hashtable<Object, String> crcMap,
                                 boolean isSparDir, String newName, int ptSlash,
                                 List<Object> v) {

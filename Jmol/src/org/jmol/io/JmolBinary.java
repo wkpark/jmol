@@ -592,5 +592,20 @@ public class JmolBinary {
     return null;
   }
 
+  public static String getBinaryType(String name) {
+    if (name == null)
+      return null;
+    int i = name.lastIndexOf(".");
+    if (i < 0 || (i = JmolConstants.binaryExtensions.indexOf(";" + name.substring(i + 1) + "=")) < 0)
+        return null;
+    i = JmolConstants.binaryExtensions.indexOf("=", i);
+    name = JmolConstants.binaryExtensions.substring(i + 1);
+    return name.substring(0, name.indexOf(";"));
+  }
+
+  public static boolean checkBinaryType(String fileTypeIn) {
+    return (JmolConstants.binaryExtensions.indexOf("=" + fileTypeIn + ";") >= 0);
+  }
+
 }
 

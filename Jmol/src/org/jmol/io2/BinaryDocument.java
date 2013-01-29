@@ -235,31 +235,25 @@ public class BinaryDocument implements JmolDocument {
     return (isBigEndian ? (a << 8) + b : (b << 8) + a);
   }
   
-//  /**
-//   * never used in Jmol
-//   * 
-//   * @return
-//   * @throws Exception
-//   */
-//  public long readLong() throws Exception {
-//    nBytes += 8;
-//    return (isBigEndian ? ioReadLong()
-//       : ((((long) ioReadByte()) & 0xff)
-//        | (((long) ioReadByte()) & 0xff) << 8
-//        | (((long) ioReadByte()) & 0xff) << 16
-//        | (((long) ioReadByte()) & 0xff) << 24
-//        | (((long) ioReadByte()) & 0xff) << 32
-//        | (((long) ioReadByte()) & 0xff) << 40
-//        | (((long) ioReadByte()) & 0xff) << 48 
-//        | (((long) ioReadByte()) & 0xff) << 54));
-//  }
+  public long readLong() throws Exception {
+    nBytes += 8;
+    return (isBigEndian ? ioReadLong()
+       : ((((long) ioReadByte()) & 0xff)
+        | (((long) ioReadByte()) & 0xff) << 8
+        | (((long) ioReadByte()) & 0xff) << 16
+        | (((long) ioReadByte()) & 0xff) << 24
+        | (((long) ioReadByte()) & 0xff) << 32
+        | (((long) ioReadByte()) & 0xff) << 40
+        | (((long) ioReadByte()) & 0xff) << 48 
+        | (((long) ioReadByte()) & 0xff) << 54));
+  }
 
-//  private long ioReadLong() throws Exception {
-//    long b = stream.readLong();
-//    if (os != null)
-//      writeLong(b);
-//    return b;
-//  }
+  private long ioReadLong() throws Exception {
+    long b = stream.readLong();
+    if (os != null)
+      writeLong(b);
+    return b;
+  }
 
   public void writeLong(long b) throws Exception {
     writeInt((int)((b >> 32) & 0xFFFFFFFFl));
@@ -296,32 +290,28 @@ public class BinaryDocument implements JmolDocument {
     return f;
   }
 
-//  /**
-//   * never implemented in Jmol
-//   *  
-//   */
-//  public double readDouble() throws Exception {
-//    nBytes += 8;
-//    return (isBigEndian ? ioReadDouble() : Double.longBitsToDouble(readLELong()));  
-//  }
-//    
-//  private double ioReadDouble() throws Exception {
-//    double d = stream.readDouble();
-//    if (os != null)
-//      writeLong(Double.doubleToRawLongBits(d));
-//    return d;
-//  }
+  public double readDouble() throws Exception {
+    nBytes += 8;
+    return (isBigEndian ? ioReadDouble() : Double.longBitsToDouble(readLELong()));  
+  }
+    
+  private double ioReadDouble() throws Exception {
+    double d = stream.readDouble();
+    if (os != null)
+      writeLong(Double.doubleToRawLongBits(d));
+    return d;
+  }
 
-//  private long readLELong() throws Exception {
-//    return ((((long) ioReadByte()) & 0xff)
-//          | (((long) ioReadByte()) & 0xff) << 8
-//          | (((long) ioReadByte()) & 0xff) << 16 
-//          | (((long) ioReadByte()) & 0xff) << 24
-//          | (((long) ioReadByte()) & 0xff) << 32
-//          | (((long) ioReadByte()) & 0xff) << 40
-//          | (((long) ioReadByte()) & 0xff) << 48
-//          | (((long) ioReadByte()) & 0xff) << 56);
-//  }
+  private long readLELong() throws Exception {
+    return ((((long) ioReadByte()) & 0xff)
+          | (((long) ioReadByte()) & 0xff) << 8
+          | (((long) ioReadByte()) & 0xff) << 16 
+          | (((long) ioReadByte()) & 0xff) << 24
+          | (((long) ioReadByte()) & 0xff) << 32
+          | (((long) ioReadByte()) & 0xff) << 40
+          | (((long) ioReadByte()) & 0xff) << 48
+          | (((long) ioReadByte()) & 0xff) << 56);
+  }
 
   public void seek(long offset) {
     // slower, but all that is available using the applet

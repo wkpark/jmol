@@ -30,7 +30,11 @@ public interface JmolDocument {
 
   int readInt() throws Exception;
 
+  long readLong() throws Exception;
+
   float readFloat() throws Exception;
+
+  double readDouble() throws Exception;
 
   short readShort() throws Exception;
 

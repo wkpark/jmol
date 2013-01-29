@@ -30,7 +30,6 @@ import java.util.StringTokenizer;
 
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.api.JmolDocument;
 import org.jmol.io.LimitedLineReader;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;

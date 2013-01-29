@@ -31,7 +31,7 @@ import java.util.Map;
 
 import org.jmol.adapter.readers.cifpdb.PdbReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.api.JmolAdapter;
+import org.jmol.adapter.smarter.Bond;
 import org.jmol.api.JmolDocument;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Escape;
@@ -90,8 +90,10 @@ public class PyMOLReader extends PdbReader {
   final private static byte UNICODE = 86; /* V */
   
   
+  private static final int MARK_BONDS = 40;
   private static final int MARK_COORDS = 39;
   private static final int MARK_ATOMS = 41;
+  private static final int SET_FOV = 152;
   private JmolDocument binaryDoc;
 
   @Override
@@ -108,9 +110,11 @@ public class PyMOLReader extends PdbReader {
   private int nextMark;
   private List<Object> thisList;
   private List<Object> coords;
+  private List<Object> bonds;
   private Point3f xyzMin = Point3f.new3(1e6f, 1e6f, 1e6f);
   private Point3f xyzMax = Point3f.new3(-1e6f, -1e6f, -1e6f);
 
+  @SuppressWarnings("unchecked")
   @Override
   public void processBinaryDocument(JmolDocument doc) throws Exception {
     this.binaryDoc = doc;
@@ -139,7 +143,7 @@ public class PyMOLReader extends PdbReader {
       case APPENDS:
         l = getObjects(getMark());
         ((List<Object>) peek()).addAll(l);
-        //System.out.println("appends " + l.size() + " to " + list.size() + " " + marks.get(marks.size() - 1));
+        System.out.println("appends " + l.size() + " to " + list.size() + " nextMark = " + nextMark);
         switch (nextMark) {
         case MARK_ATOMS:
           addAtom(l);
@@ -147,6 +151,11 @@ public class PyMOLReader extends PdbReader {
         case MARK_COORDS:
           if (coords == null)
             coords = ((List<Object>) peek());
+          break;
+        case MARK_BONDS:
+          if (bonds == null && l.size() == 7)
+            bonds = ((List<Object>) list.get(nextMark - 1));
+          break;
         }
         break;
       case BINFLOAT:
@@ -375,6 +384,7 @@ public class PyMOLReader extends PdbReader {
 //
 //  ### UNMAPPED: 11, 12, 17, 19
 
+  @SuppressWarnings("unchecked")
   private void addAtom(List<Object> list) {
     if (list.size() != 47) {
       System.out.println(list);
@@ -387,6 +397,8 @@ public class PyMOLReader extends PdbReader {
     String altLoc = getString(2);
     String insCode = " "; //?    
     String group3 = getString(5);
+    if (group3.equals(" "))
+      return;
     String name = getString(6);
     String sym = getString(7);
     if (sym.equals(" "))
@@ -432,9 +444,12 @@ public class PyMOLReader extends PdbReader {
     return ((Double) thisList.get(i)).floatValue();
   }
 
+  @SuppressWarnings("unchecked")
   private void process(Map<String, Object> map) {
+    connect();
     List<Object> view = (List<Object>) map.get("view");
-    setView(view);
+    List<Object> settings = (List<Object>) map.get("settings");
+    setView(view, settings);
     List<Object> names = (List<Object>) map.get("names");
     for (int i = 0; i < names.size(); i++) {
       List<Object> item = getList(names, i);
@@ -447,17 +462,42 @@ public class PyMOLReader extends PdbReader {
 
   }
 
-  private void setView(List<Object> view) {
+  @SuppressWarnings("unchecked")
+  private void connect() {
+    if (bonds == null) {
+      System.out.println("bonds not found");
+      return;
+    }
+    for (int i = 0; i < bonds.size(); i++) {
+      thisList = (List<Object>) bonds.get(i);
+      int order = getInt(2);
+      if (order < 1 || order > 3)
+        continue; // for now
+      order = 1; // lots of issues with, for example, C=O=CH3 in t.pse
+      System.out.println(thisList);
+      try {
+        atomSetCollection.addBond(new Bond(getInt(0), getInt(1), order));
+      } catch (Exception e) {
+        // ignore - some sort of phantom atom
+      }
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private void setView(List<Object> view, List<Object> settings) {
+    thisList = (List<Object>) settings.get(SET_FOV);
+    float fov = getFloat(2);
+
     thisList = view;
     StringXBuilder sb = new StringXBuilder();
-    
     float d = Math.abs(xyzMax.x-xyzMin.x);
     d = Math.max(d, Math.abs(xyzMax.y-xyzMin.y));
     d = Math.max(d, Math.abs(xyzMax.z-xyzMin.z));
     d /= 2;
     //float fov = getFloat(24);
     float f = Math.abs(getFloat(18) - getFloat(21));
-    sb.append("{ p2j_ar = (_width+0.0) / (_height+0.0); p2j_fov = ").appendF(20f)
+    System.out.println("fov, range: " + fov + " " + getFloat(18) + " " + getFloat(21) + " " + f);
+    sb.append("{ p2j_ar = (_width+0.0) / (_height+0.0); p2j_fov = ").appendF(fov)
       .append(";if( p2j_ar < 1) { p2j_fov*=p2j_ar};")
       .append("zoom @{(").appendF(d).append(" / (").appendF(f)
       .append(" * ( sin(p2j_fov/2.0) / cos(p2j_fov/2.0) ) ) * 100 )} };");
@@ -484,6 +524,7 @@ public class PyMOLReader extends PdbReader {
     
   }
 
+  @SuppressWarnings("unchecked")
   private static List<Object> getList(List<Object> list, int i) {
     if (list == null || list.size() <= i)
       return null;

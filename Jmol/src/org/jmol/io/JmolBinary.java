@@ -134,6 +134,8 @@ public class JmolBinary {
     if (pt0 >= 0) {
       if (line.indexOf(PMESH_BINARY_MAGIC_NUMBER) == 0)
         return ".Pmesh";
+      if (line.indexOf("phimap") >= 0)
+        return "DELPHI";
       if (line.indexOf("MAP ") == 208)
         return "MRC";
       if (line.length() > 37 && (line.charAt(36) == 0 && line.charAt(37) == 100 

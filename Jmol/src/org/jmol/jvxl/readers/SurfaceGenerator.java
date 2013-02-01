@@ -1291,25 +1291,26 @@ public class SurfaceGenerator {
       return newReaderBr(fileType.substring(1) + "Reader", br);
     if (fileType.equals("Jvxl+"))
       return newReaderBr("JvxlReader", br);
-    if (fileType.equals("MRC")) {
+    if ("MRC DSN6 DELPHI".indexOf(fileType) >= 0) {
       try {
         br.close();
       } catch (IOException e) {
         // ignore
       }
       br = null;
+
+    if (fileType.equals("MRC")) {
       readerData = params.fileName;
-      return newReaderBr("MrcBinaryReader", br);
+      return newReaderBr("MrcBinaryReader", null);
+    }
+    if (fileType.equals("DELPHI")) {
+      readerData = params.fileName;
+      return newReaderBr("DelPhiBinaryReader", null);
     }
     readerData = new Object[] { params.fileName, data };
     if (fileType.equals("DSN6")) {
-      try {
-        br.close();
-      } catch (IOException e) {
-        // ignore
-      }
-      br = null;
-      return newReaderBr("Dsn6BinaryReader", br);
+      return newReaderBr("Dsn6BinaryReader", null);
+    }
     }
     return null;
   }

@@ -16973,7 +16973,7 @@ public class ScriptEvaluator {
     List<Object[]> propertyList = new ArrayList<Object[]>();
     boolean defaultMesh = false;
     if (isPmesh || isPlot3d)
-      addShapeProperty(propertyList, "fileType", "Pmesh.");
+      addShapeProperty(propertyList, "fileType", ".Pmesh");
     
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
@@ -17050,7 +17050,7 @@ public class ScriptEvaluator {
         isPmesh = true;
         sbCommand.append(" pmesh");
         propertyName = "fileType";
-        propertyValue = "Pmesh.";
+        propertyValue = ".Pmesh";
         break;
       case Token.intersection:
         // isosurface intersection {A} {B} VDW....
@@ -18069,16 +18069,16 @@ public class ScriptEvaluator {
         surfaceObjectSeen = true;
         break;
       case Token.mrc:
-        addShapeProperty(propertyList, "fileType", "MrcBinary.");
+        addShapeProperty(propertyList, "fileType", ".MrcBinary");
         sbCommand.append(" mrc");
         continue;
       case Token.object:
       case Token.obj:
-        addShapeProperty(propertyList, "fileType", "Obj.");
+        addShapeProperty(propertyList, "fileType", ".Obj");
         sbCommand.append(" obj");
         continue;
       case Token.msms:
-        addShapeProperty(propertyList, "fileType", "Msms.");
+        addShapeProperty(propertyList, "fileType", ".Msms");
         sbCommand.append(" msms");
         continue;
       case Token.phase:

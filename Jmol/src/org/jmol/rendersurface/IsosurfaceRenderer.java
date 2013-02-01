@@ -388,6 +388,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int iA = polygon[0];
       int iB = polygon[1];
       int iC = polygon[2];
+      
+     //373  386  395
+     //if (iC != 394 )//|| iB != 385)
+     //continue;
 /*
       int iTest = 6596;
       if (iA == iTest|| iB == iTest || iC == iTest)
@@ -502,6 +506,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       // -n is an intensity2sided and does not correspond to a true normal
       // index
       if (n >= 0) {
+        ptTemp.add(vertexVectors[n]);
+        ptTemp.add(vertexVectors[n]);
         ptTemp.add(vertexVectors[n]);
         viewer.transformPtScr(ptTemp, ptTempi);
         g3d.drawLineAB(screens[i], ptTempi);

@@ -173,6 +173,7 @@ public class Parameters {
   final static public int SURFACE_RADICAL = 7 | IS_SILENT;
   final static int SURFACE_FUNCTIONXY = 8;
   final static int SURFACE_FUNCTIONXYZ = 9;
+  final static int SURFACE_GEODESIC = 10 | IS_SILENT;
 
   // getSurface or mapColor:
   final static int SURFACE_SOLVENT = 11 | IS_SOLVENTTYPE | NO_ANISOTROPY | IS_SLABBABLE ;
@@ -415,8 +416,8 @@ public class Parameters {
     isContoured = true;
   }
 
-  void setSphere(float radius) {
-    dataType = SURFACE_SPHERE;
+  void setSphere(float radius, boolean isGeodesic) {
+    dataType = (isGeodesic ? SURFACE_GEODESIC : SURFACE_SPHERE);
     distance = radius;
     setEccentricity(Point4f.new4(0, 0, 1, 1));
     cutoff = Float.MIN_VALUE;
@@ -862,6 +863,8 @@ public class Parameters {
     origin = null;
     steps = null;
     volumeData = null;
+    center = null;
+    isAnisotropic = false;
   }
 
     public void addSlabInfo(Object[] slabObject) {

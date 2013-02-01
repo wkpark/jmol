@@ -177,16 +177,17 @@ public class Geodesic {
   private static Vector3f[] vertexVectors;
   private static short[][] faceVertexesArrays;
   private static short[][] neighborVertexesArrays;
+  private static int currentLevel;
 
   static public short[][] getNeighborVertexesArrays() {
     if (vertexCounts == null)
-      createGeodesic();
+      createGeodesic(maxLevel);
      return neighborVertexesArrays;
   }
   
   static public short getVertexCount(int level) {
     if (vertexCounts == null)
-      createGeodesic();
+      createGeodesic(maxLevel);
     return vertexCounts[level];
   }
 
@@ -194,7 +195,7 @@ public class Geodesic {
   
   static public Vector3f[] getVertexVectors() {
     if (vertexCounts == null)
-      createGeodesic();
+      createGeodesic(maxLevel);
     return vertexVectors;
   }
 
@@ -208,14 +209,15 @@ public class Geodesic {
 
   ////////////// private methods ///////////////
   
-  synchronized private static void createGeodesic() {
+  synchronized public static void createGeodesic(int lvl) {
+    if (lvl < currentLevel)
+      return;
+    currentLevel = lvl;
     // from getVertexCount()
     //only one per applet set
-    if (vertexCounts != null)
-      return;
-    short[] v = new short[maxLevel + 1];
-    neighborVertexesArrays = ArrayUtil.newShort2(maxLevel + 1);
-    faceVertexesArrays = ArrayUtil.newShort2(maxLevel + 1);
+    short[] v = new short[lvl + 1];
+    neighborVertexesArrays = ArrayUtil.newShort2(lvl + 1);
+    faceVertexesArrays = ArrayUtil.newShort2(lvl + 1);
     vertexVectors = new Vector3f[12];
     vertexVectors[0] = Vector3f.new3(0, 0, halfRoot5);
     for (int i = 0; i < 5; ++i) {
@@ -231,15 +233,13 @@ public class Geodesic {
     neighborVertexesArrays[0] = neighborVertexesIcosahedron;
     v[0] = 12;
 
-    for (int i = 0; i < maxLevel; ++i)
+    for (int i = 0; i < lvl; ++i)
       quadruple(i, v);
 
-    /*      for (int i = 0; i < maxLevel; ++i) {
-     System.out.println("geodesic level " + i + " vertexCount= "
-     + v[i] + " faceCount=" + getFaceCount(i)
-     + " edgeCount=" + getEdgeCount(i));
-     }
-     */
+   //for (int i = 0; i <= lvl; ++i) {
+   //  System.out.println("geodesic level " + i + " vertexCount= "
+   //  + v[i] + " faceCount=" + faceVertexesArrays[i].length / 3);
+   //}
     vertexCounts = v;
   }
 

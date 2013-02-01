@@ -467,6 +467,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
         line = "0 0 0 0 0 0 0 0 0 0";
       }
     }
+    System.out.println(voxelValue);
     return voxelValue;
   }
 

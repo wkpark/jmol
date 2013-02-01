@@ -29,8 +29,10 @@ import java.util.Random;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+import org.jmol.util.MeshSurface;
 import org.jmol.util.Point3f;
 import org.jmol.util.StringXBuilder;
+import org.jmol.util.Tuple3f;
 import org.jmol.util.Vector3f;
 
 class IsoShapeReader extends VolumeDataReader {
@@ -122,8 +124,14 @@ class IsoShapeReader extends VolumeDataReader {
       ptsPerAngstrom = 10f;
       maxGrid = 22;
       break;
+    case Parameters.SURFACE_GEODESIC:
+      if (!isMapData && monteCarloCount == 0)
+        break;
+      type = "geodesic";
+      //$FALL-THROUGH$
     case Parameters.SURFACE_ELLIPSOID2:
-      type = "ellipsoid";
+      if (type.equals("sphere"))
+        type = "ellipsoid";
       //$FALL-THROUGH$
     case Parameters.SURFACE_SPHERE:
     default:
@@ -401,14 +409,14 @@ class IsoShapeReader extends VolumeDataReader {
     return (Math.abs(phi_m) < 0.0000000001 ? 0 : theta_lm * phi_m * psi_normalization);
   }
 
-  private boolean monteCarloDone;
+  private boolean surfaceDone;
   private int nTries;
 
   private void createMonteCarloOrbital() {
-    if (monteCarloDone || aoMax2 == 0 || params.distance > radius)
+    if (surfaceDone || aoMax2 == 0 || params.distance > radius)
       return;
     boolean isS = (psi_m == 0 && psi_l == 0);
-    monteCarloDone = true;
+    surfaceDone = true;
     float value;
     float rave = 0;
     nTries = 0;
@@ -480,8 +488,29 @@ class IsoShapeReader extends VolumeDataReader {
       addVertexCopy(ptPsi, 0, 0);
       addTriangleCheck(0, 0, 0, 0, 0, false, 0);
       return;
+    case Parameters.SURFACE_GEODESIC:
+      if (!isMapData) {
+        createGeodesic();
+        return;
+      }
     }
     super.readSurfaceData(isMapData);
+  }
+
+  private void createGeodesic() {
+    MeshSurface ms = MeshSurface.getSphereData(4);
+    Tuple3f[] pts = ms.altVertices;
+    for (int i = 0; i < pts.length; i++) {
+      Point3f pt = Point3f.newP(pts[i]);
+      pt.scale(params.distance);
+      pt.add(center);
+      addVertexCopy(pt, 0, i);
+    }
+    int[][] faces = ms.polygonIndexes;
+    for (int i = 0; i < faces.length; i++) {
+      int[] face = faces[i];
+      addTriangleCheck(face[0], face[1], face[2], 7, 7, false, 0);
+    }    
   }
 
 }

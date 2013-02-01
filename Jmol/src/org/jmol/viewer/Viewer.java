@@ -1977,7 +1977,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         }
       } else if (type.equals("Jmol")) {
         cmd = "load ";
-      } else if (type.equals("Cube")) {
+      } else if (type.equals(".Cube")) {
         cmd = "isosurface sign red blue ";
       } else if (!type.equals("spt")) {
         cmd = global.defaultDropScript;
@@ -5959,9 +5959,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     // Eval
     try {
-      if (appConsole == null)
+      if (appConsole == null && showConsole)
         getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
-      appConsole.setVisible(showConsole);
+      appConsole.setVisible(true);
     } catch (Throwable e) {
       // no console for this client... maybe no Swing
     }
@@ -8249,6 +8249,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
          * 
          *            this.appConsole = org.jmol.api.Interface
          *            .getOptionInterface("consolejs.AppletConsole");
+         *            if (this.appConsole != null {
+         *              this.appConsole.start(this);
+         *              return this.appConsole;
+         *            }
          * 
          */
         {
@@ -8259,6 +8263,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                     .getApplicationInterface("jmolpanel.console.AppConsole"));
             if (appConsole == null)
               try {
+                System.out.println("Viewer can't start appConsole");
                 Thread.currentThread().wait(100);
               } catch (InterruptedException e) {
                 //

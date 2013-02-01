@@ -194,8 +194,9 @@ public class Mesh extends MeshSurface {
         normals[i] = normal;
     }
     if (!isTriangleSet)
-      for (int i = normixCount; --i >= 0;)
+      for (int i = normixCount; --i >= 0;) {
         normals[i].normalize();
+      }
     return normals;
   }
   
@@ -317,7 +318,6 @@ public class Mesh extends MeshSurface {
   public Point3f[] getOffsetVertices(Point4f thePlane) {
     if (altVertices != null && !recalcAltVertices)
       return (Point3f[]) altVertices;
-    System.out.println("Mesh  recalculating vertices");
     altVertices = new Point3f[vertexCount];
     for (int i = 0; i < vertexCount; i++)
       altVertices[i] = Point3f.newP(vertices[i]);

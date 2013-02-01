@@ -991,4 +991,26 @@ public class MeshSurface {
     return (float) (((q) + factor * Math.sqrt(q * q + p)) / 2);
   }
 
+  /**
+   * Calculates the data (faces, vertices, normals) for a sphere.
+   * 
+   * @return The data.
+   */
+  public static MeshSurface getSphereData(int lvl) {
+    // _ObjExporter only
+    Geodesic.createGeodesic(lvl);
+    int vertexCount = Geodesic.getVertexCount(lvl);
+    short[] f = Geodesic.getFaceVertexes(lvl);
+    int nFaces = f.length / 3;
+    int[][] faces = ArrayUtil.newInt2(nFaces);
+    for (int i = 0, fpt = 0; i < nFaces; i++) {
+      faces[i] = new int[] { f[fpt++], f[fpt++], f[fpt++] };
+    }
+    Vector3f[] vectors = new Vector3f[vertexCount];
+    for (int i = 0; i < vertexCount; i++)
+      vectors[i] = Geodesic.getVertexVector(i);
+    return newMesh(true, vectors, 0, faces, vectors, 0);
+  }
+
+
 }

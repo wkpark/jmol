@@ -455,8 +455,8 @@ public class PyMOLReader extends PdbReader {
       List<Object> item = getList(names, i);
       if (item == null)
         continue;
-      System.out.println(i + " " + item.get(0) + " "
-          + getList(getList(item, 5), 0));
+      //System.out.println(i + " " + item.get(0) + " "
+        //  + getList(getList(item, 5), 0));
     }
     System.out.println("--");
 
@@ -472,9 +472,9 @@ public class PyMOLReader extends PdbReader {
       thisList = (List<Object>) bonds.get(i);
       int order = getInt(2);
       if (order < 1 || order > 3)
-        continue; // for now
-      order = 1; // lots of issues with, for example, C=O=CH3 in t.pse
-      System.out.println(thisList);
+        order = 1; 
+      // TODO: hydrogen bonds?
+      //System.out.println(thisList);
       try {
         atomSetCollection.addBond(new Bond(getInt(0), getInt(1), order));
       } catch (Exception e) {

@@ -810,7 +810,16 @@ public class SurfaceGenerator {
 
     // these next four set the reader themselves.
     if ("sphere" == propertyName) {
-      params.setSphere(((Float) value).floatValue());
+      params.setSphere(((Float) value).floatValue(), false);
+      readerData = new Float(params.distance);
+      surfaceReader = newReader("IsoShapeReader");
+      generateSurface();
+      return true;
+    }
+
+    // these next four set the reader themselves.
+    if ("geodesic" == propertyName) {
+      params.setSphere(((Float) value).floatValue(), true);
       readerData = new Float(params.distance);
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
@@ -1278,24 +1287,10 @@ public class SurfaceGenerator {
     if (fileType == null)
       fileType = "UNKNOWN";
     Logger.info("data file type was determined to be " + fileType);
+    if (fileType.indexOf(".") == 0)
+      return newReaderBr(fileType.substring(1) + "Reader", br);
     if (fileType.equals("Jvxl+"))
       return newReaderBr("JvxlReader", br);
-    if (fileType.equals("Jvxl"))
-      return newReaderBr("JvxlReader", br);
-    if (fileType.equals("JvxlXML"))
-      return newReaderBr("JvxlXmlReader", br);
-    if (fileType.equals("Apbs"))
-      return newReaderBr("ApbsReader", br);
-    if (fileType.equals("Cube"))
-      return newReaderBr("CubeReader", br);
-    if (fileType.equals("Jaguar"))
-      return newReaderBr("JaguarReader", br);
-    if (fileType.equals("Xplor"))
-      return newReaderBr("XplorReader", br);
-    if (fileType.equals("Xsf"))
-      return newReaderBr("XsfReader", br);
-    if (fileType.equals("PltFormatted"))
-      return newReaderBr("PltFormattedReader", br);
     if (fileType.equals("MRC")) {
       try {
         br.close();
@@ -1315,27 +1310,6 @@ public class SurfaceGenerator {
       }
       br = null;
       return newReaderBr("Dsn6BinaryReader", br);
-    }
-    if (fileType.equals("Efvet")) {
-      return newReaderBr("EfvetReader", br);
-    }
-    if (fileType.equals("Pmesh")) {
-      return newReaderBr("PmeshReader", br);
-    }
-    if (fileType.equals("Obj")) {
-      return newReaderBr("ObjReader", br);
-    }
-    if (fileType.equals("Msms")) {
-      return newReaderBr("MsmsReader", br);
-    }
-    if (fileType.equals("Kinemage")) {
-      return newReaderBr("KinemageReader", br);
-    }
-    if (fileType.equals("CastepDensity")) {
-      return newReaderBr("CastepDensityReader", br);
-    }
-    if (fileType.equals("Nff")) {
-      return newReaderBr("NffFileReader", br);
     }
     return null;
   }

@@ -49,11 +49,11 @@ import org.jmol.util.Point3f;
  */
 
 
-class NffFileReader extends PolygonFileReader {
+class NffReader extends PolygonFileReader {
 
   protected int nPolygons;
   
-  NffFileReader(){}
+  NffReader(){}
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {

@@ -69,7 +69,7 @@ public class JmolBinary {
     // JVXL should be on the FIRST line of the file, but it may be 
     // after comments or missing.
 
-    // Apbs, Jvxl, or Cube, also efvet
+    // Apbs, Jvxl, or Cube, also efvet and DHBD
 
     String line = null;
     LimitedLineReader br = null;
@@ -86,52 +86,54 @@ public class JmolBinary {
     //for (int i = 0; i < 220; i++)
     //  System.out.print(" " + i + ":" + (0 + line.charAt(i)));
     //System.out.println("");
+    
+    // "." prefix means "just append Reader to the name"
     switch (line.charAt(0)) {
     case '@':
       if (line.indexOf("@text") == 0)
-        return "Kinemage";
+        return ".Kinemage";
       break;
     case '#':
       if (line.indexOf(".obj") >= 0)
-        return "Obj"; // #file: pymol.obj
+        return ".Obj"; // #file: pymol.obj
       if (line.indexOf("MSMS") >= 0)
-        return "Msms";
+        return ".Msms";
       break;
     case '&':
       if (line.indexOf("&plot") == 0)
-        return "Jaguar";
+        return ".Jaguar";
       break;
     case '\r':
     case '\n':
       if (line.indexOf("ZYX") >= 0)
-        return "Xplor";
+        return ".Xplor";
       break;
     }
     if (line.indexOf("Here is your gzipped map") >= 0)
       return "UPPSALA" + line;
     if (line.indexOf("! nspins") >= 0)
-      return "CastepDensity";
+      return ".CastepDensity";
     if (line.indexOf("<jvxl") >= 0 && line.indexOf("<?xml") >= 0)
-      return "JvxlXML";
+      return ".JvxlXml";
     if (line.indexOf("#JVXL+") >= 0)
       return "Jvxl+";
     if (line.indexOf("#JVXL") >= 0)
-      return "Jvxl";
+      return ".Jvxl";
     if (line.indexOf("<efvet ") >= 0)
-      return "Efvet";
+      return ".Efvet";
     if (line.indexOf("usemtl") >= 0)
-      return "Obj";
+      return ".Obj";
     if (line.indexOf("# object with") == 0)
-      return "Nff";
+      return ".Nff";
     if (line.indexOf("BEGIN_DATAGRID_3D") >= 0 || line.indexOf("BEGIN_BANDGRID_3D") >= 0)
-      return "Xsf";
+      return ".Xsf";
     // binary formats: problem here is that the buffered reader
     // may be translating byte sequences into unicode
     // and thus shifting the offset
     int pt0 = line.indexOf('\0');
     if (pt0 >= 0) {
       if (line.indexOf(PMESH_BINARY_MAGIC_NUMBER) == 0)
-        return "Pmesh";
+        return ".Pmesh";
       if (line.indexOf("MAP ") == 208)
         return "MRC";
       if (line.length() > 37 && (line.charAt(36) == 0 && line.charAt(37) == 100 
@@ -140,11 +142,15 @@ public class JmolBinary {
           return "DSN6";
       }
     }
+    
+    if (line.indexOf(" 0.00000e+00 0.00000e+00      0      0\n") >= 0)
+      return ".Uhbd"; // older APBS http://sourceforge.net/p/apbs/code/ci/9527462a39126fb6cd880924b3cc4880ec4b78a9/tree/src/mg/vgrid.c
+    
     // Apbs, Jvxl, Obj, or Cube, maybe formatted Plt
 
     line = br.readLineWithNewline();
     if (line.indexOf("object 1 class gridpositions counts") == 0)
-      return "Apbs";
+      return ".Apbs";
 
     String[] tokens = Parser.getTokens(line);
     String line2 = br.readLineWithNewline();// second line
@@ -154,17 +160,17 @@ public class JmolBinary {
       if (tokens.length == 3 && Parser.parseInt(tokens[0]) != Integer.MIN_VALUE
           && Parser.parseInt(tokens[1]) != Integer.MIN_VALUE
           && Parser.parseInt(tokens[2]) != Integer.MIN_VALUE)
-        return "PltFormatted";
+        return ".PltFormatted";
     }
     String line3 = br.readLineWithNewline(); // third line
     if (line.startsWith("v ") && line2.startsWith("v ") && line3.startsWith("v "))
-        return "Obj";
+        return ".Obj";
     //next line should be the atom line
     int nAtoms = Parser.parseInt(line3);
     if (nAtoms == Integer.MIN_VALUE)
       return (line3.indexOf("+") == 0 ? "Jvxl+" : null);
     if (nAtoms >= 0)
-      return "Cube"; //Can't be a Jvxl file
+      return ".Cube"; //Can't be a Jvxl file
     nAtoms = -nAtoms;
     for (int i = 4 + nAtoms; --i >= 0;)
       if ((line = br.readLineWithNewline()) == null)
@@ -172,7 +178,7 @@ public class JmolBinary {
     int nSurfaces = Parser.parseInt(line);
     if (nSurfaces == Integer.MIN_VALUE)
       return null;
-    return (nSurfaces < 0 ? "Jvxl" : "Cube"); //Final test looks at surface definition line
+    return (nSurfaces < 0 ? ".Jvxl" : ".Cube"); //Final test looks at surface definition line
   }
 
   private static Encoding getUTFEncodingForStream(BufferedInputStream is) throws IOException {

@@ -2,7 +2,6 @@ package org.jmol.export;
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.Geodesic;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Point3f;
 import org.jmol.util.Tuple3f;
@@ -183,26 +182,6 @@ class MeshData {
       for (int i = 0; i < n; i++)
         normals[i].scale(-1);
     return MeshSurface.newMesh(false, vertexes, 0, faces, normals, 0);
-  }
-
-  /**
-   * Calculates the data (faces, vertices, normals) for a sphere.
-   * 
-   * @return The data.
-   */
-  static MeshSurface getSphereData() {
-    // _ObjExporter only
-    int vertexCount = Geodesic.getVertexCount(2);
-    short[] f = Geodesic.getFaceVertexes(2);
-    int nFaces = f.length / 3;
-    int[][] faces = ArrayUtil.newInt2(nFaces);
-    int fpt = -1;
-    for (int i = 0; i < nFaces; i++)
-      faces[i] = new int[] { f[++fpt], f[++fpt], f[++fpt] };
-    Vector3f[] vectors = new Vector3f[vertexCount];
-    for (int i = 0; i < vertexCount; i++)
-      vectors[i] = Geodesic.getVertexVector(i);
-    return MeshSurface.newMesh(true, vectors, 0, faces, vectors, 0);
   }
 
 }

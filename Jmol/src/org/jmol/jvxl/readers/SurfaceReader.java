@@ -292,10 +292,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     voxelCounts = v.voxelCounts;
     voxelData = v.getVoxelData();
     volumeData = v;
-    
-/*    if (mustCalcPoint)
-      v.setDataSource(this);
-*/  }
+  }
 
   protected abstract boolean readVolumeParameters(boolean isMapData);
 
@@ -800,6 +797,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         //    .getInterpolatedPixelValue(meshData.vertices[i]);
         } else {
           value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i]);
+          //System.out.println(i + " " + meshData.vertices[i] + " " + value);
           if (haveSurfaceAtoms)
             meshData.vertexSource[i] = getSurfaceAtomIndex();
         }

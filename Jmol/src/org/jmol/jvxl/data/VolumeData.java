@@ -145,6 +145,7 @@ public class VolumeData implements VolumeDataInterface {
   
   public void setVoxelDataAsArray(float[][][] voxelData) {
     this.voxelData = voxelData;
+    this.sr = null;
   }
 
   private Map<Integer, Float> voxelMap; // alternative to voxelData for sparse (plane interesected) data
@@ -193,6 +194,7 @@ public class VolumeData implements VolumeDataInterface {
 
 
   public void setVolumetricOrigin(float x, float y, float z) {
+    System.out.println("vd setvo " + x + " " + y + " " + z + " " + this);
     volumetricOrigin.set(x, y, z);
   }
 

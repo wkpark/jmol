@@ -778,7 +778,7 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private void outputEllipsoid1(Point3f center, float rx, float ry, float rz,
                                 AxisAngle4f a, short colix) {
-    MeshSurface data = MeshData.getSphereData();
+    MeshSurface data = MeshSurface.getSphereData(3);
     addTexture(colix, null);
     String name;
     if (center instanceof Atom) {

@@ -90,7 +90,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
     setup(viewer, externalContainer, enabledButtons);
   }
 
-  private void setup(JmolViewer viewer, Container externalContainer,
+  public void setup(JmolViewer viewer, Container externalContainer,
                      String enabledButtons) {
     this.viewer = viewer;
     Window w = Platform.getWindow((Container) viewer.getDisplay());

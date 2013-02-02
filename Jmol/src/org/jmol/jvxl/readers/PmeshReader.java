@@ -86,8 +86,6 @@ import org.jmol.util.Point3f;
 
 class PmeshReader extends PolygonFileReader {
 
-  final static String PMESH_BINARY_MAGIC_NUMBER = JmolBinary.PMESH_BINARY_MAGIC_NUMBER;
-
   private boolean isBinary;
   protected int nPolygons;
   protected String pmeshError;
@@ -123,7 +121,7 @@ class PmeshReader extends PolygonFileReader {
       br.mark(4);
       char[] buf = new char[5];
       br.read(buf, 0, 5);
-      if ((new String(buf)).startsWith(PMESH_BINARY_MAGIC_NUMBER)) {
+      if ((new String(buf)).startsWith(JmolBinary.PMESH_BINARY_MAGIC_NUMBER)) {
         br.close();
         binarydoc = newBinaryDocument();
         binarydoc.setStream(sg.getAtomDataServer().getBufferedInputStream(

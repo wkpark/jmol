@@ -420,19 +420,18 @@ public class MarchingCubes extends TriangleData {
       yzPlanes[1] = plane;
     }
   }
-/*
-  private void dumpPlane(int n, float[] plane) {
-    float test = 0;
-    if (plane == null)
-      for (int y = 0; y <= cubeCountY; y++)
-        for (int z = 0; z <= cubeCountZ; z++)
-          test += volumeData.voxelData[n][y][z];
-    else
-      for (int i = 0; i < yzCount; i++)
-        test += plane[i];
-    System.out.println(isXLowToHigh + " test " + n + "=" + test);
-  }
-*/  
+//  private void dumpPlane(int n, float[] plane) {
+//    float test = 0;
+//    if (plane == null)
+//      for (int y = 0; y <= cubeCountY; y++)
+//        for (int z = 0; z <= cubeCountZ; z++)
+//          test += volumeData.voxelData[n][y][z];
+//    else
+//      for (int i = 0; i < yzCount; i++)
+//        test += plane[i];
+//    System.out.println(isXLowToHigh + " test " + n + "=" + test);
+//  }
+  
   protected void processTriangles(int insideMask) {
 
     // the inside mask serves to define the triangles necessary

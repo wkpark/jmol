@@ -371,8 +371,8 @@ class IsoSolventReader extends AtomDataReader {
       return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
     int iAtom = Math.abs(valueA < valueB ? voxelSource[vA] : voxelSource[vB]);
-    if (iAtom < 1 || iAtom -   1 >= atomIndex.length)
-      System.out.println("isosolv HHHHHMMMM");
+    //if (iAtom < 1 || iAtom -   1 >= atomIndex.length)
+      //System.out.println("isosolv HHHHHMMMM");
     iAtomSurface = atomIndex[iAtom - 1];
     float fraction = fReturn[0] = MeshSurface
         .getSphericalInterpolationFraction((voxelSource[vA] < 0 ? solventRadius : 

@@ -1272,7 +1272,7 @@ public class SurfaceGenerator {
       fname += Parser.getQuotedStringAt(fileType,
           fileType.indexOf("A HREF") + 1);
       params.fileName = fname;
-        value = atomDataServer.getBufferedInputStream(fname);
+      value = atomDataServer.getBufferedInputStream(fname);
       if (value == null) {
         Logger.error("Isosurface: could not open file " + fname);
         return null;
@@ -1281,14 +1281,12 @@ public class SurfaceGenerator {
         br = JmolBinary.getBufferedReader((BufferedInputStream) value, null);
       } catch (Exception e) {
         // TODO
-      }        
+      }
       fileType = JmolBinary.determineSurfaceFileType(br);
     }
     if (fileType == null)
       fileType = "UNKNOWN";
     Logger.info("data file type was determined to be " + fileType);
-    if (fileType.indexOf(".") == 0)
-      return newReaderBr(fileType.substring(1) + "Reader", br);
     if (fileType.equals("Jvxl+"))
       return newReaderBr("JvxlReader", br);
     if ("MRC DSN6 DELPHI".indexOf(fileType) >= 0) {
@@ -1299,20 +1297,19 @@ public class SurfaceGenerator {
       }
       br = null;
 
-    if (fileType.equals("MRC")) {
-      readerData = params.fileName;
-      return newReaderBr("MrcBinaryReader", null);
+      if (fileType.equals("MRC")) {
+        readerData = params.fileName;
+        return newReaderBr("MrcBinaryReader", null);
+      }
+      if (fileType.equals("DELPHI")) {
+        readerData = params.fileName;
+        return newReaderBr("DelPhiBinaryReader", null);
+      }
+      readerData = new Object[] { params.fileName, data };
+      if (fileType.equals("DSN6"))
+        return newReaderBr("Dsn6BinaryReader", null);
     }
-    if (fileType.equals("DELPHI")) {
-      readerData = params.fileName;
-      return newReaderBr("DelPhiBinaryReader", null);
-    }
-    readerData = new Object[] { params.fileName, data };
-    if (fileType.equals("DSN6")) {
-      return newReaderBr("Dsn6BinaryReader", null);
-    }
-    }
-    return null;
+    return newReaderBr(fileType + "Reader", br);
   }
   
 

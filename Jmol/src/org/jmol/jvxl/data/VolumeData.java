@@ -194,7 +194,7 @@ public class VolumeData implements VolumeDataInterface {
 
 
   public void setVolumetricOrigin(float x, float y, float z) {
-    System.out.println("vd setvo " + x + " " + y + " " + z + " " + this);
+    //System.out.println("vd setvo " + x + " " + y + " " + z + " " + this);
     volumetricOrigin.set(x, y, z);
   }
 

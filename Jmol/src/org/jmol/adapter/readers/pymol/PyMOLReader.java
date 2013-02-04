@@ -44,7 +44,6 @@ import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix4f;
 import org.jmol.util.Point3f;
 import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.JmolConstants;
@@ -465,7 +464,6 @@ public class PyMOLReader extends PdbReader {
     case REP_NONBONDED:
       f = getFloatSetting(PyMOL.nonbonded_size);
       ss = new ShapeSettings(JmolConstants.SHAPE_BALLS, bs, null);
-      System.out.println(shapeID + " " + f + " @" + bs.nextSetBit(0));
       ss.setRadiusData(new RadiusData(null, f, RadiusData.EnumType.FACTOR, EnumVdw.AUTO));
       ss.setColors(colixes, 0);
       shapes.add(ss);
@@ -474,7 +472,6 @@ public class PyMOLReader extends PdbReader {
     case REP_SPHERES:
       f = (shapeID == REP_NBSPHERES ? 1 : getFloatSetting(PyMOL.sphere_scale));
       ss = new ShapeSettings(JmolConstants.SHAPE_BALLS, bs, null);
-      System.out.println(shapeID + " " + f + " @" + bs.nextSetBit(0));
       ss.setRadiusData(new RadiusData(null, f, RadiusData.EnumType.FACTOR, EnumVdw.AUTO));
       ss.setColors(colixes, 0);
       shapes.add(ss);
@@ -507,13 +504,11 @@ public class PyMOLReader extends PdbReader {
     bs.and(reps[REP_CARTOON]);
     if (bs.isEmpty())
       return;
-    System.out.println(key + "  " + bs);
     ShapeSettings ss = new ShapeSettings(JmolConstants.SHAPE_CARTOON, bs, null);
     ss.setColors(colixes, getFloatSetting(PyMOL.cartoon_transparency));
     ss.setSize(getFloatSetting(sizeID) * factor);
     shapes.add(ss);
   }
-
   
   private float getRotationRadius() {
     Point3f center = Point3f.new3(
@@ -536,13 +531,11 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void setView(StringXBuilder sb, List<Object> view) {
+
     sb.append("set navigationMode off; set zoomLarge false;");
     
     float modelWidth = 2 * getRotationRadius();
     
-    //Math.max(Math.max(Math.abs(xyzMax.x - xyzMin.x), Math
-      //  .abs(xyzMax.y - xyzMin.y)), Math.abs(xyzMax.z - xyzMin.z));
-
     // calculate Jmol camera position, which is in screen widths,
     // and is from the front of the screen, not the center.
     
@@ -566,11 +559,6 @@ public class PyMOLReader extends PdbReader {
     Point3f center = Point3f.new3(getFloat(view, 19), getFloat(view, 20),
         getFloat(view, 21));
 
-    //    sb.append("{ p2j_ar = (_width+0.0) / (_height+0.0); p2j_fov = ").appendF(
-    //      fov).append(";if( p2j_ar < 1) { p2j_fov*=p2j_ar};").append("zoom @{(")
-    //    .appendF(d).append(" / (").appendF(f).append(
-    //      " * ( sin(p2j_fov/2.0) / cos(p2j_fov/2.0) ) ) * 100 )} };");
-
     sb.append("center ").append(Escape.escapePt(center)).append(";");
     sb.append("rotate @{quaternion({")
         // only the first two rows are needed
@@ -584,7 +572,6 @@ public class PyMOLReader extends PdbReader {
 
     boolean depthCue = getBooleanSetting(PyMOL.depth_cue); // 84
     sb.append("set zShade " + depthCue + ";");
-
     if (depthCue) {
       float fog_start = getFloatSetting(PyMOL.fog_start); // 192
       sb.append("set zshadePower 2;set zslab " + (fog_start * 100) + "; set zdepth 0;");

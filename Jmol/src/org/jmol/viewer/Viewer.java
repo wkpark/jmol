@@ -47,6 +47,7 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.ShapeSettings;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 
@@ -10166,6 +10167,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.loadShape(shapeID);
   }
 
+  public ShapeSettings newShapeInfo(int shapeID, BitSet bsAtoms, Object info) {
+    return new ShapeSettings(shapeID, bsAtoms, info);
+  }
+  
   public void setShapeSize(int shapeID, int mad, BitSet bsSelected) {
     // might be atoms or bonds
     if (bsSelected == null)

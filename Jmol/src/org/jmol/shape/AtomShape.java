@@ -112,6 +112,21 @@ public abstract class AtomShape extends Shape {
         setColixAndPalette(colix, pid, i);
       return;
     }
+    if ("colors" == propertyName) {
+      isActive = true;
+      Object[] data = (Object[]) value;
+      short[] colixes = (short[]) data[0];
+      float translucency  = ((Float) data[1]).floatValue();
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        short colix = colixes[i];
+        if (translucency > 0.01f)
+          colix = Colix.getColixTranslucent3(colix, true, translucency);
+        setColixAndPalette(colix, EnumPalette.UNKNOWN.id, i);
+      }
+      return;
+    }
     if ("translucency" == propertyName) {
       isActive = true;
       boolean isTranslucent = (value.equals("translucent"));
@@ -157,7 +172,7 @@ public abstract class AtomShape extends Shape {
     }
     if (bsColixSet == null)
       bsColixSet = BitSet.newN(atomCount);
-    colixes[atomIndex] = colix = setColix(colix, paletteID, atomIndex);
+    colixes[atomIndex] = colix = getColixI(colix, paletteID, atomIndex);
     bsColixSet.setBitTo(atomIndex, colix != Colix.INHERIT_ALL);
     paletteIDs[atomIndex] = paletteID;
   }

@@ -250,7 +250,8 @@ public class AtomSetCollection {
    */
   public void appendAtomSetCollection(int collectionIndex,
                                       AtomSetCollection collection) {
-    // Initialisations
+    
+    // Initializations
     int existingAtomsCount = atomCount;
 
     // auxiliary info
@@ -736,6 +737,9 @@ public class AtomSetCollection {
                                                       structureCount + 32);
     structure.atomSetIndex = currentAtomSetIndex;
     structures[structureCount++] = structure;
+    if (bsStructuredModels == null)
+      bsStructuredModels = new BitSet();
+    bsStructuredModels.set(structure.atomSetIndex);
     if (structure.strandCount >= 1) {
       int i = structureCount;
       for (i = structureCount; --i >= 0 
@@ -1473,6 +1477,8 @@ public class AtomSetCollection {
   }
 
   boolean haveMappedSerials;
+
+  public BitSet bsStructuredModels;
   void mapMostRecentAtomSerialNumber() {
     // from ??
     if (atomCount == 0)
@@ -1946,4 +1952,5 @@ public class AtomSetCollection {
        }
     }
   }
+
 }

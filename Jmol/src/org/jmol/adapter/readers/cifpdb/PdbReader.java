@@ -1158,7 +1158,8 @@ Polyproline 10
     if (substructureType == EnumStructure.NONE)
       substructureType = structureType;
     Structure structure = new Structure(-1, structureType, substructureType,
-        structureID, serialID, strandCount, startChainID, startSequenceNumber,
+        structureID, serialID, strandCount);
+    structure.set(startChainID, startSequenceNumber,
         startInsertionCode, endChainID, endSequenceNumber, endInsertionCode);
     atomSetCollection.addStructure(structure);
   }
@@ -1172,7 +1173,7 @@ Polyproline 10
     return (iModel == Integer.MIN_VALUE ? 0 : iModel);
   }
   
-  private void model(int modelNumber) {
+  protected void model(int modelNumber) {
     /****************************************************************
      * mth 2004 02 28
      * note that the pdb spec says:

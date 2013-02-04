@@ -26,7 +26,7 @@ package org.jmol.util;
 
 final public class BitSetUtil {
 
-  public static final BitSet bsNull= new BitSet();
+  public final static BitSet emptySet = new BitSet();
 
   public static BitSet newAndSetBit(int i) {
     BitSet bs = newBitSet(i + 1);
@@ -171,6 +171,23 @@ final public class BitSetUtil {
     return BitSet.newN(nFree);
   }
   
-  public final static BitSet emptySet = new BitSet();
+  /**
+   * offset the bitset by the specified number of bits
+   * starting at a given position
+   * 
+   * @param bs0
+   * @param pos    starting position; no change before this
+   * @param offset
+   * @return       new BitSet
+   */
+  public static BitSet offset(BitSet bs0, int pos, int offset) {
+    if (bs0 == null)
+      return null;
+    BitSet bs = BitSet.newN(bs0.length() + offset);
+    for (int i = bs0.nextSetBit(0); i >= pos; i = bs.nextSetBit(i + 1))
+      bs.set(i + offset);
+    return bs;
+  }
 
+  
 }

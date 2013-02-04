@@ -63,7 +63,7 @@ public class Balls extends AtomShape {
       byte pid = EnumPalette.pidOf(value);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
-        atom.setColixAtom(setColixA(colix, pid, atom));
+        atom.setColixAtom(getColixA(colix, pid, atom));
         bsColixSet.setBitTo(i, colix != Colix.USE_PALETTE
             || pid != EnumPalette.NONE.id);
         atom.setPaletteID(pid);
@@ -87,13 +87,27 @@ public class Balls extends AtomShape {
           colix = Colix.USE_PALETTE;
         byte pid = EnumPalette.pidOf(color);
         Atom atom = atoms[i];
-        atom.setColixAtom(setColixA(colix, pid, atom));
+        atom.setColixAtom(getColixA(colix, pid, atom));
         bsColixSet.setBitTo(i, colix != Colix.USE_PALETTE
             || pid != EnumPalette.NONE.id);
         atom.setPaletteID(pid);
       }
       return;
     }
+    if ("colors" == propertyName) {
+      Object[] data = (Object[]) value;
+      short[] colixes = (short[]) data[0];
+      //float translucency  = ((Float) data[1]).floatValue();
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        atoms[i].setColixAtom(colixes[i]);
+        atoms[i].setPaletteID(EnumPalette.UNKNOWN.id);
+        bsColixSet.set(i);
+      }
+      return;
+    }
+
     if ("translucency" == propertyName) {
       boolean isTranslucent = (((String) value).equals("translucent"));
       if (bsColixSet == null)

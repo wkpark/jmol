@@ -52,7 +52,7 @@ public class ShapeManager {
   private GData gdata;
   private ModelSet modelSet;
   private Shape[] shapes;
-  private Viewer viewer;
+  public Viewer viewer;
 
   public ShapeManager(Viewer viewer, ModelSet modelSet) {
     // from ParallelProcessor
@@ -165,6 +165,12 @@ public class ShapeManager {
       shapes = new Shape[JmolConstants.SHAPE_MAX];
   }
   
+  /**
+   * @param shapeID
+   * @param size in milliangstroms
+   * @param rd
+   * @param bsSelected
+   */
   public void setShapeSizeBs(int shapeID, int size, RadiusData rd, BitSet bsSelected) {
     if (shapes == null)
       return;
@@ -174,7 +180,7 @@ public class ShapeManager {
     if (rd != null && rd.value != 0 && rd.vdwType == EnumVdw.TEMP)
       modelSet.getBfactor100Lo();
     viewer.setShapeErrorState(shapeID, "set size");
-    if (rd != null && rd.value != 0 || rd == null && size != 0)
+    if (rd == null ? size != 0 : rd.value != 0)
       loadShape(shapeID);
     if (shapes[shapeID] != null) {
       shapes[shapeID].setShapeSizeRD(size, rd, bsSelected);
@@ -362,8 +368,7 @@ public class ShapeManager {
       if (shapes[i] != null && shapes[i].isBioShape) {
         shapes[i].setModelSet(modelSet);
         shapes[i].setShapeSizeRD(0, null, bsAllAtoms);
-        shapes[i].setShapeProperty("color",
-            EnumPalette.NONE, bsAllAtoms);
+        shapes[i].setShapeProperty("color", EnumPalette.NONE, bsAllAtoms);
       }
   }
 

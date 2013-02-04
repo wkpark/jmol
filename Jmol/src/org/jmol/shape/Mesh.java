@@ -232,7 +232,7 @@ public class Mesh extends MeshSurface {
 
   //public Vector data1;
   //public Vector data2;
-  public List<Object> xmlProperties;
+  //public List<Object> xmlProperties;
   public boolean colorDensity;
   public Object cappingObject;
   public Object slabbingObject;

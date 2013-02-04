@@ -151,10 +151,10 @@ public abstract class MeshCollection extends Shape {
  @Override
  public void setProperty(String propertyName, Object value, BitSet bs) {
 
-   if (propertyName == "setXml") {
-     if (currentMesh != null)
-       currentMesh.xmlProperties = xmlProperties;
-   }
+//   if (propertyName == "setXml") {
+//     if (currentMesh != null)
+//       currentMesh.xmlProperties = xmlProperties;
+//   }
    
     if ("init" == propertyName) {
       title = null;

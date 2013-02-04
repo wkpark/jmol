@@ -8657,8 +8657,11 @@ public class ScriptEvaluator {
     int nFiles = 1;
     Map<String, Object> htParams = new Hashtable<String, Object>();
     // ignore optional file format
-    if (isStateScript && forceNoAddHydrogens)
-      htParams.put("doNotAddHydrogens", Boolean.TRUE);
+    if (isStateScript) {
+      htParams.put("isStateScript", Boolean.TRUE);
+      if (forceNoAddHydrogens)
+        htParams.put("doNotAddHydrogens", Boolean.TRUE);
+    }
     String modelName = null;
     String[] filenames = null;
     String[] tempFileInfo = null;

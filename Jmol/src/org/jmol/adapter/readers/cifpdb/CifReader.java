@@ -1489,7 +1489,7 @@ _pdbx_struct_oper_list.vector[3]
         return;
       }
     while (tokenizer.getData()) {
-      Structure structure = new Structure(-1, EnumStructure.HELIX, EnumStructure.HELIX, null, 0, 0, '\0', 0, '\0', '\0', 0, '\0');
+      Structure structure = new Structure(-1, EnumStructure.HELIX, EnumStructure.HELIX, null, 0, 0);
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
@@ -1565,7 +1565,7 @@ _pdbx_struct_oper_list.vector[3]
         return;
       }
     while (tokenizer.getData()) {
-      Structure structure = new Structure(-1, EnumStructure.SHEET, EnumStructure.SHEET, null, 0, 0, '\0', 0, '\0', '\0', 0, '\0');
+      Structure structure = new Structure(-1, EnumStructure.SHEET, EnumStructure.SHEET, null, 0, 0);
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case BEG_ASYM_ID:
@@ -1614,31 +1614,27 @@ _pdbx_struct_oper_list.vector[3]
   };
 
   
-  /*
+//  loop_
+//  _struct_site_gen.id 
+//  _struct_site_gen.site_id 
+//  _struct_site_gen.pdbx_num_res 
+//  _struct_site_gen.label_comp_id 
+//  _struct_site_gen.label_asym_id 
+//  _struct_site_gen.label_seq_id 
+//  _struct_site_gen.auth_comp_id 
+//  _struct_site_gen.auth_asym_id 
+//  _struct_site_gen.auth_seq_id 
+//  _struct_site_gen.label_atom_id 
+//  _struct_site_gen.label_alt_id 
+//  _struct_site_gen.symmetry 
+//  _struct_site_gen.details 
+//  1 CAT 5 GLN A 92  GLN A 92  . . ? ? 
+//  2 CAT 5 GLU A 58  GLU A 58  . . ? ? 
+//  3 CAT 5 HIS A 40  HIS A 40  . . ? ? 
+//  4 CAT 5 TYR A 38  TYR A 38  . . ? ? 
+//  5 CAT 5 PHE A 100 PHE A 100 . . ? ? 
+//  # 
 
-loop_
-_struct_site_gen.id 
-_struct_site_gen.site_id 
-_struct_site_gen.pdbx_num_res 
-_struct_site_gen.label_comp_id 
-_struct_site_gen.label_asym_id 
-_struct_site_gen.label_seq_id 
-_struct_site_gen.auth_comp_id 
-_struct_site_gen.auth_asym_id 
-_struct_site_gen.auth_seq_id 
-_struct_site_gen.label_atom_id 
-_struct_site_gen.label_alt_id 
-_struct_site_gen.symmetry 
-_struct_site_gen.details 
-1 CAT 5 GLN A 92  GLN A 92  . . ? ? 
-2 CAT 5 GLU A 58  GLU A 58  . . ? ? 
-3 CAT 5 HIS A 40  HIS A 40  . . ? ? 
-4 CAT 5 TYR A 38  TYR A 38  . . ? ? 
-5 CAT 5 PHE A 100 PHE A 100 . . ? ? 
-# 
-
-*/
-  
   //private int siteNum;
   private Map<String, Map<String, Object>> htSites;
   

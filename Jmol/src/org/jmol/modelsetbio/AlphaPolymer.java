@@ -70,14 +70,13 @@ public class AlphaPolymer extends BioPolymer {
   }
 
   @Override
-  public void addStructure(EnumStructure type,
-                                    String structureID, int serialID, int strandCount,
-                             char startChainID, int startSeqcode,
-                             char endChainID, int endSeqcode) {
+  public void addStructure(EnumStructure type, String structureID,
+                           int serialID, int strandCount, char startChainID,
+                           int startSeqcode, char endChainID, int endSeqcode) {
     int indexStart, indexEnd;
-    if ((indexStart = getIndex(startChainID, startSeqcode)) == -1 ||
-        (indexEnd = getIndex(endChainID, endSeqcode)) == -1)
-      return;
+      if ((indexStart = getIndex(startChainID, startSeqcode)) == -1
+          || (indexEnd = getIndex(endChainID, endSeqcode)) == -1)
+        return;
     //System.out.println("AlphaPolymer addSecStr " + type + " " + indexStart + " " + indexEnd);
     addStructureProtected(type, structureID, serialID, strandCount, indexStart, indexEnd);
   }

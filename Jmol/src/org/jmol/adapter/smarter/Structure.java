@@ -32,12 +32,14 @@ public class Structure extends AtomSetObject {
   public String structureID;
   public int serialID;
   public int strandCount;
-  public char startChainID = ' ';
+  
+  
+  public char startChainID = '\0';
+  public char startInsertionCode = '\0';
+  public char endChainID = '\0';
+  public char endInsertionCode = '\0';
   public int startSequenceNumber;
-  public char startInsertionCode = ' ';
-  public char endChainID = ' ';
   public int endSequenceNumber;
-  public char endInsertionCode = ' ';
 
   public static EnumStructure getHelixType(int type) {
     switch (type) {
@@ -52,9 +54,7 @@ public class Structure extends AtomSetObject {
   }
   
   public Structure(int modelIndex, EnumStructure structureType, EnumStructure substructureType,
-            String structureID, int serialID, int strandCount,
-            char startChainID, int startSequenceNumber, char startInsertionCode,
-            char endChainID, int endSequenceNumber, char endInsertionCode) {
+                   String structureID, int serialID, int strandCount) {
     this.structureType = structureType;
     this.substructureType = substructureType;
     if (structureID == null)
@@ -62,7 +62,12 @@ public class Structure extends AtomSetObject {
     this.atomSetIndex = modelIndex;
     this.structureID = structureID;
     this.strandCount = strandCount; // 1 for sheet initially; 0 for helix or turn
-    this.serialID = serialID;
+    this.serialID = serialID;    
+  }
+  
+  
+  public void set(char startChainID, int startSequenceNumber, char startInsertionCode,
+            char endChainID, int endSequenceNumber, char endInsertionCode) {
     this.startChainID = startChainID;
     this.startSequenceNumber = startSequenceNumber;
     this.startInsertionCode = startInsertionCode;

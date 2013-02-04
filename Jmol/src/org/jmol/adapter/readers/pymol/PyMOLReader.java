@@ -32,11 +32,22 @@ import java.util.Map;
 import org.jmol.adapter.readers.cifpdb.PdbReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Bond;
+import org.jmol.adapter.smarter.Structure;
 import org.jmol.api.JmolDocument;
+import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumStructure;
+import org.jmol.constant.EnumVdw;
+import org.jmol.modelset.ShapeSettings;
 import org.jmol.util.BoxInfo;
 //import org.jmol.util.Escape;
+import org.jmol.util.BitSet;
+import org.jmol.util.Colix;
+import org.jmol.util.Escape;
+import org.jmol.util.Logger;
+import org.jmol.util.Matrix4f;
 import org.jmol.util.Point3f;
 import org.jmol.util.StringXBuilder;
+import org.jmol.viewer.JmolConstants;
 
 /**
  * experimental PyMOL PSE (binary Python serialization) file
@@ -46,317 +57,84 @@ import org.jmol.util.StringXBuilder;
  */
 
 public class PyMOLReader extends PdbReader {
+  private List<Object> settings;
+  private int atomCount0;
+  private int atomCount;
+  private int strucNo;
+  private boolean isHidden;
+  private List<Object> pymolAtoms;
+  private BitSet bsBonded = new BitSet();
+  private BitSet bsHidden = new BitSet();
+  private int[] atomMap;
+  private Map<String, BitSet> ssMap = new Hashtable<String, BitSet>();
+  private Map<String, BitSet> ssMapA = new Hashtable<String, BitSet>();
+  private List<Integer> colixList = new ArrayList<Integer>();
 
-  final private static byte APPEND = 97; /* a */
-  final private static byte APPENDS = 101; /* e */
-  final private static byte BINFLOAT = 71; /* G */
-  final private static byte BININT = 74; /* J */
-  final private static byte BININT1 = 75; /* K */
-  final private static byte BININT2 = 77; /* M */
-  final private static byte BINPUT = 113; /* q */
-  final private static byte BINSTRING = 84; /* T */
-  final private static byte BINUNICODE = 87; /* X */
-  final private static byte BUILD = 98; /* b */
-  final private static byte EMPTY_DICT = 125; /* } */
-  final private static byte EMPTY_LIST = 93; /* ] */
-  final private static byte GLOBAL = 99; /* c */
-  final private static byte LONG_BINPUT = 114; /* r */
-  final private static byte MARK = 40; /* ( */
-  final private static byte NONE = 78; /* N */
-  final private static byte OBJ = 111; /* o */
-  final private static byte SETITEM = 115; /* s */
-  final private static byte SETITEMS = 117; /* u */
-  final private static byte SHORT_BINSTRING = 85; /* U */
-  final private static byte STOP = 46; /* . */
-  
-//  final private static byte BINGET = 104; /* h */
-//  final private static byte BINPERSID = 81; /* Q */
-//  final private static byte DICT = 100; /* d */
-//  final private static byte DUP = 50; /* 2 */
-//  final private static byte EMPTY_TUPLE = 41; /* ) */
-//  final private static byte FLOAT = 70; /* F */
-//  final private static byte GET = 103; /* g */
-//  final private static byte INST = 105; /* i */
-//  final private static byte INT = 73; /* I */
-//  final private static byte LIST = 108; /* l */
-//  final private static byte LONG = 76; /* L */
-//  final private static byte LONG_BINGET = 106; /* j */
-//  final private static byte PERSID = 80; /* P */
-//  final private static byte POP = 48; /* 0 */
-//  final private static byte POP_MARK = 49; /* 1 */
-//  final private static byte PUT = 112; /* p */
-//  final private static byte REDUCE = 82; /* R */
-//  final private static byte STRING = 83; /* S */
-//  final private static byte TUPLE = 116; /* t */
-//  final private static byte UNICODE = 86; /* V */
-  
-  
-  //private static final int MARK_BONDS = 40;
-  //private static final int MARK_COORDS = 39;
-  //private static final int MARK_ATOMS = 41;
-  private static final int SET_FOV = 152;
-  private JmolDocument binaryDoc;
+  private List<ShapeSettings> shapes = new ArrayList<ShapeSettings>();
+  private short[] colixes;
+  private boolean isStateScript;
 
   @Override
   protected void initializeReader() throws Exception {
     isBinary = true;
+    isStateScript = htParams.containsKey("isStateScript");
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("noAutoBond", Boolean.TRUE);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("shapes", shapes);
     super.initializeReader();
   }
-  
-//  private Map<Object, Object> temp  = new Hashtable<Object, Object>();
 
-  private List<Object> list = new ArrayList<Object>();
-  private List<Integer> marks = new ArrayList<Integer>();
-  private List<Object> build = new ArrayList<Object>();
-  private int nextMark;
-//  private List<Object> thisList;
-//  private List<Object> coords;
-//  private List<Object> bonds;
+  //  private Map<Object, Object> temp  = new Hashtable<Object, Object>();
+
   private Point3f xyzMin = Point3f.new3(1e6f, 1e6f, 1e6f);
   private Point3f xyzMax = Point3f.new3(-1e6f, -1e6f, -1e6f);
   private int nModels;
-  private float thisBfactor;
-  private float thisOcc;
 
-  @SuppressWarnings("unchecked")
   @Override
   public void processBinaryDocument(JmolDocument doc) throws Exception {
-    this.binaryDoc = doc;
-    String s, module, name;
-    byte b;
-    int i, mark;
-    double d;
-    Object o;
-    byte[] a;
-    Map<String, Object> map;
-    List<Object> l;
-    boolean going = true;
+    PickleReader reader = new PickleReader(doc);
+    Map<String, Object> map = reader.getMap();
+    reader = null;
+    process(map);
+  }
 
-    while (going) {
-      b = binaryDoc.readByte();
-      switch (b) {
-      case EMPTY_DICT: //}
-        push(new Hashtable<String, Object>());
-        //System.out.println("emptyDict at " + list.size());
-        break;
-      case APPEND:
-        o = pop();
-        ((List<Object>) peek()).add(o);
-        //System.out.println("append to " + list.size());
-        break;
-      case APPENDS:
-        l = getObjects(getMark());
-        ((List<Object>) peek()).addAll(l);
-        //System.out.println("appends " + l.size() + " to " + list.size() + " nextMark = " + nextMark);
-//        switch (nextMark) {
-//        case MARK_ATOMS:
-//          addAtom(l);
-//          break;
-//        case MARK_COORDS:
-//          if (coords == null)
-//            coords = ((List<Object>) peek());
-//          break;
-//        case MARK_BONDS:
-//          if (bonds == null && l.size() == 7)
-//            bonds = ((List<Object>) list.get(nextMark - 1));
-//          break;
-//        }
-        break;
-      case BINFLOAT:
-        d = binaryDoc.readDouble();
-        push(Double.valueOf(d));
-        break;
-      case BININT:
-        i = binaryDoc.readInt();
-        push(Integer.valueOf(i));
-        break;
-      case BININT1:
-        i = binaryDoc.readByte() & 0xff;
-        push(Integer.valueOf(i));
-        break;
-      case BININT2:
-        i = (binaryDoc.readByte() & 0xff | ((binaryDoc.readByte() & 0xff) << 8)) & 0xffff;
-        push(Integer.valueOf(i));
-        break;
-      case BINPUT:
-        i = binaryDoc.readByte();
-        //unnec? temp.put(Integer.valueOf(i), peek());
-        break;
-      case LONG_BINPUT:
-        i = binaryDoc.readInt();
-        //unnec? temp.put(Integer.valueOf(i), peek());
-        break;
-      case SHORT_BINSTRING:
-        i = binaryDoc.readByte();
-        a = new byte[i];
-        binaryDoc.readByteArray(a, 0, i);
-        s = new String(a);
-        push(s);
-        //if (s.length() > 0)
-          //System.out.println(list.size() + " = " + s);
-        break;
-      case BINSTRING:
-        i = binaryDoc.readInt();
-        a = new byte[i];
-        binaryDoc.readByteArray(a, 0, i);
-        s = new String(a);
-        push(s);
-        break;
-      case BINUNICODE:
-        i = binaryDoc.readInt();
-        a = new byte[i];
-        binaryDoc.readByteArray(a, 0, i);
-        s = new String(a, "UTF-8");
-        push(s);
-        break;
-      case EMPTY_LIST:
-        push(new ArrayList<Object>());
-        break;
-      case GLOBAL:
-        module = readString();
-        name = readString();
-        push(new String[] { "global", module, name });
-        break;
-      case BUILD:
-        o = pop();
-        build.add(o);
-        //System.out.println("build");
-        break;
-      case MARK:
-        i = list.size();
-        //System.out.println("mark " + i);
-        marks.add(Integer.valueOf(i));
-        break;
-      case NONE:
-        push(null);
-        break;
-      case OBJ:
-        //System.out.println("OBJ");
-        push(getObjects(getMark()));
-        break;
-      case SETITEM:
-        o = pop();
-        s = (String) pop();
-        //System.out.println("setItem ." + s + " to " + list.size());
-        ((Map<String, Object>) peek()).put(s, o);
-        break;
-      case SETITEMS:
-        mark = getMark();
-        l = getObjects(mark);
-        map = (Map<String, Object>) peek();
-        //System.out.println("setItems to " + list.size());
-        for (i = l.size(); --i >= 0;) {
-          o = l.get(i);
-          s = (String) l.get(--i);
-        //  System.out.println(" " + (mark + i) + " ." + s);
-          map.put(s, o);
-        }
-        break;
-      case STOP:
-        going = false;
-        break;
-      default:
-        
-        // not used?
-        System.out.println("PyMOL reader error: " + b + " " + binaryDoc.getPosition());
-
-//        switch (b) {
-//        case BINGET:
-//          i = binaryDoc.readByte();
-//          push(temp.remove(Integer.valueOf(i)));
-//          break;
-//        case BINPERSID:
-//          s = (String) pop();
-//          push(new Object[] { "persid", s }); // for now
-//          break;
-//        case DICT:
-//          map = new Hashtable<String, Object>();
-//          mark = getMark();
-//          for (i = list.size(); i >= mark;) {
-//            o = list.remove(--i);
-//            s = (String) list.remove(--i);
-//            map.put(s, o);
-//          }
-//          push(map);
-//          break;
-//        case DUP:
-//          push(peek());
-//          break;
-//        case EMPTY_TUPLE:
-//          push(new Point3f());
-//          break;
-//        case FLOAT:
-//          s = readString();
-//          push(Double.valueOf(s));
-//          break;
-//        case GET:
-//          s = readString();
-//          o = temp.remove(s);
-//          push(o);
-//          break;
-//        case INST:
-//          l = getObjects(getMark());
-//          module = readString();
-//          name = readString();
-//          push(new Object[] { "inst", module, name, l });
-//          break;
-//        case INT:
-//          s = readString();
-//          try {
-//            push(Integer.valueOf(Integer.parseInt(s)));
-//          } catch (Exception e) {
-//            System.out.println("INT too large: " + s + " @ " + binaryDoc.getPosition());
-//            push(Integer.valueOf(Integer.MAX_VALUE));
-//          }
-//          break;
-//        case LIST:
-//          push(getObjects(getMark()));
-//          break;
-//        case LONG:
-//          i = (int) binaryDoc.readLong();
-//          push(Long.valueOf(i));
-//          break;
-//        case LONG_BINGET:
-//          i = binaryDoc.readInt();
-//          push(temp.remove(Integer.valueOf(i)));
-//          break;
-//        case PERSID:
-//          s = readString();
-//          push(new Object[] { "persid", s });
-//          break;
-//        case POP:
-//          pop();
-//          break;
-//        case POP_MARK:
-//          getObjects(getMark());
-//          break;
-//        case PUT:
-//          s = readString();
-//          temp.put(s, peek());
-//          break;
-//        case REDUCE:
-//          push(new Object[] { "reduce", pop(), pop() });
-//          break;
-//        case STRING:
-//          s = readString();
-//          push(Escape.unescapeUnicode(s));
-//          break;
-//        case TUPLE:
-//          l = getObjects(getMark());
-//          Point3f pt = new Point3f();
-//          pt.x = ((Double) l.get(0)).floatValue();
-//          pt.y = ((Double) l.get(1)).floatValue();
-//          pt.z = ((Double) l.get(2)).floatValue();
-//          break;
-//        case UNICODE:
-//          a = readLineBytes();
-//          s = new String(a, "UTF-8");
-//          push(s);
-//          break;
-//        }
-      }
+  private BitSet[] reps = new BitSet[17];
+  
+  private void process(Map<String, Object> map) {
+    for (int i = 0; i < 17; i++)
+      reps[i] = BitSet.newN(1000);
+    settings = getMapList(map, "settings");
+    List<Object> names = getMapList(map, "names");
+    for (int i = 1; i < names.size(); i++) {
+      processBranch(getList(names, i));
     }
-    process((Map<String, Object>) list.remove(0));
+    
+    // we are done if this is a state script
+    
+    if (isStateScript)
+      return;
+    setRendering(getMapList(map, "view"));
+  }
+
+  /**
+   * This is what a normal reader would not have.
+   * Only executed if NOT in a state script
+   * 
+   * @param view 
+   * 
+   */
+  
+  private void setRendering(List<Object> view) {
+    StringXBuilder sb = new StringXBuilder();
+    
+    setView(sb, view);
+    setColixes();
+    setShapes();
+
+    //sb.append("background white;");
+    sb.append("frame *;");
+    sb.append("set cartoonfancy;");
+
+    addJmolScript(sb.toString());
   }
 
   private static String getString(List<Object> list, int i) {
@@ -377,7 +155,7 @@ public class PyMOLReader extends PdbReader {
     if (list == null || list.size() <= i)
       return null;
     Object o = list.get(i);
-    return (o instanceof List<?> ? (List<Object>)o : null);
+    return (o instanceof List<?> ? (List<Object>) o : null);
   }
 
   @SuppressWarnings("unchecked")
@@ -385,20 +163,14 @@ public class PyMOLReader extends PdbReader {
     return (List<Object>) map.get(key);
   }
 
-  private void process(Map<String, Object> map) {
-    List<Object> view = getMapList(map, "view");
-    List<Object> settings = getMapList(map, "settings");
-    List<Object> names = getMapList(map, "names");
-    for (int i = 1; i < names.size(); i++) { 
-      processBranch(getList(names, i));
-//      List<Object> item = getList(names, i);
-//      if (item == null)
-//        continue;
-//      System.out.println(i + " " + item.get(0) + " "
-//          + getList(getList(item, 5), 0));
-    }
-//    System.out.println("--");
-    setView(view, settings);
+  private boolean getBooleanSetting(int i) {
+    return (getFloatSetting(i) != 0);
+  }
+
+  private float getFloatSetting(int i) {
+    float v = ((Number) getList(settings, i).get(2)).floatValue();
+    Logger.info("Pymol setting " + i + " = " + v);
+    return v;
   }
 
   private final static int BRANCH_MOLECULE = 1;
@@ -409,25 +181,24 @@ public class PyMOLReader extends PdbReader {
   private final static int BRANCH_SURFACE = 7;
   private final static int BRANCH_GROUP = 12;
 
-//  #cf. \pymol\layer1\PyMOLObject.h
-//  #define cObjectCallback     5
-//  #define cObjectGadget       8
-//  #define cObjectCalculator   9
-//  #define cObjectSlice        10
-//  #define cObjectAlignment    11
+  //  #cf. \pymol\layer1\PyMOLObject.h
+  //  #define cObjectCallback     5
+  //  #define cObjectGadget       8
+  //  #define cObjectCalculator   9
+  //  #define cObjectSlice        10
+  //  #define cObjectAlignment    11
 
-  
   private void processBranch(List<Object> branch) {
     String name = (String) branch.get(0);
     if (name.indexOf("_") == 0 || getInt(branch, 1) != 0) // otherwise, it's just a selection
       return;
-    boolean isHidden = (getInt(branch, 2) != 1);
-    System.out.println("Branch " + name + " isHidden = " + isHidden);
+    isHidden = (getInt(branch, 2) != 1);
+    Logger.info("PyMOL model " + (nModels + 1) + " Branch " + name + (isHidden ? " (hidden)" : ""));
     int type = getInt(branch, 4);
     List<Object> deepBranch = getList(branch, 5);
     switch (type) {
     case BRANCH_MOLECULE:
-      processModels(deepBranch);
+      processBranchModels(deepBranch);
       break;
     case BRANCH_MAPSURFACE:
       break;
@@ -444,215 +215,385 @@ public class PyMOLReader extends PdbReader {
     }
   }
 
-  
-  private int atomCount;
-  private int[] atomMap;
-  private void processModels(List<Object> deepBranch) {
+  private void processBranchModels(List<Object> deepBranch) {
     processCryst(getList(deepBranch, 10));
-    atomCount = atomSetCollection.getAtomCount();
+    atomCount = atomCount0 = atomSetCollection.getAtomCount();
     atomMap = new int[getInt(deepBranch, 3)];
     List<Object> coordBranches = getList(deepBranch, 4);
     List<Object> bonds = getList(deepBranch, 6);
-    List<Object> pymolAtoms = getList(deepBranch, 7);
-    System.out.println("PyMOL model count = " + coordBranches.size());
+    pymolAtoms = getList(deepBranch, 7);
     int lastEnd = -1;
     for (int i = 0; i < coordBranches.size(); i++) {
-
       List<Object> coordBranch = getList(coordBranches, i);
-      int thisCount = getInt(coordBranch, 0);
+      //int thisCount = getInt(coordBranch, 0);
       int thisEnd = getInt(coordBranch, 1);
       if (thisEnd != lastEnd) {
+        processStructures();
         model(++nModels);
         lastEnd = thisEnd;
       }
-      //if (nModels < 9)
-        //continue;
       List<Object> coords = getList(coordBranch, 2);
-      List<Object> pointers = getList(coordBranch, 3);
-      int n = pointers.size();
-      for (int j = 0; j < n; j++) {
-        int pt = getInt(pointers, j);
-        atomMap[pt] = atomCount++;
-        addAtom(pymolAtoms, pt, coords);
-      }
+      List<Object> idxToAtm = getList(coordBranch, 3);
+      int n = idxToAtm.size();
+      for (int idx = 0; idx < n; idx++)
+        addAtom(pymolAtoms, getInt(idxToAtm, idx), idx, coords);
     }
+    processStructures();
     processBonds(bonds);
   }
 
-//chain     => 1,     # chain ID
-//ac        => 2,     # alternate conformation indicator
-//segid     => 4,     # segment ID
-//          
-//resix     => 0,     # without insertion code, unlike "resno"
-//resno     => 3,     # using this and not the sequence number (resix) to deal with boundary case of insertion code... untested    
-//residue   => 5,     # 3-letter identifier
-//          
-//atomno    => 22,    # original PDB atom number
-//atom      => 6,     # (e.g. CB, NZ)
-//symbol    => 7,     # (e.g. C, N)
-//type      => 13,    # internal index number of "atom name"
-//mol2      => 8,     # MOL2 atom type (i.e. N.am)
-//charge    => 18,    # atom charge
-//
-//bf        => 14,    # temperature factor
-//occ       => 15,    # occupany
-//vdw       => 16,    # van der Waals radius
-//          
-//color     => 21,    # color code index
-//label     => 9,     # label text
-//          
-//reps      => 20,    # representation flags 
-//ss        => 10,    # s.s. assignment, S/H/L/""
-//
-//cartoon   => 23,    # cartoon type modifier
-//
-//### UNMAPPED: 11, 12, 17, 19
+  //chain     => 1,     # chain ID
+  //ac        => 2,     # alternate conformation indicator
+  //segid     => 4,     # segment ID
+  //          
+  //resix     => 0,     # without insertion code, unlike "resno"
+  //resno     => 3,     # using this and not the sequence number (resix) to deal with boundary case of insertion code... untested    
+  //residue   => 5,     # 3-letter identifier
+  //          
+  //atomno    => 22,    # original PDB atom number
+  //atom      => 6,     # (e.g. CB, NZ)
+  //symbol    => 7,     # (e.g. C, N)
+  //type      => 13,    # internal index number of "atom name"
+  //mol2      => 8,     # MOL2 atom type (i.e. N.am)
+  //charge    => 18,    # atom charge
+  //
+  //bf        => 14,    # temperature factor
+  //occ       => 15,    # occupany
+  //vdw       => 16,    # van der Waals radius
+  //          
+  //color     => 21,    # color code index
+  //label     => 9,     # label text
+  //          
+  //reps      => 20,    # representation flags 
+  //ss        => 10,    # s.s. assignment, S/H/L/""
+  //
+  //cartoon   => 23,    # cartoon type modifier
+  //
+  //### UNMAPPED: 11, 12, 17, 19
 
-private void addAtom(List<Object> pymolAtoms, int pt, List<Object> coords) {
-  List<Object> a = getList(pymolAtoms, pt);
-  int seqNo = getInt(a, 0);
-  String chainID = getString(a, 1);
-  String altLoc = getString(a, 2);
-  String insCode = " "; //?    
-  String group3 = getString(a, 5);
-  if (group3.length() > 3)
-    group3 = group3.substring(0, 3);
-  if (group3.equals(" "))
-    group3 = "UNK";
-  String name = getString(a, 6);
-  String sym = getString(a, 7);
-  if (sym.equals(" "))
-    sym = getString(a, 7);
-  List<Object> list2 = getList(a, 20);
-  boolean isHetero = (getInt(list2, 0) == 1);
-  Atom atom = processAtom(name, altLoc.charAt(0), 
-      group3, chainID.charAt(0), seqNo, insCode.charAt(0),
-     isHetero, sym);
-  if (!filterPDBAtom(atom, fileAtomIndex++))
-    return;
-  int serNo = getInt(a, 22);
-  int cpt = getInt(a, 36) * 3;
-  float x = getFloat(coords, cpt);
-  float y = getFloat(coords, ++cpt);
-  float z = getFloat(coords, ++cpt);
-  BoxInfo.addPointXYZ(x, y, z, xyzMin, xyzMax, 0);
-  //System.out.println(chainID +  " " + fileAtomIndex + " " + serNo + " " + x  + " " + y + " " + z);
-  int charge = 0; //?
-  thisBfactor = getFloat(a, 14);
-  thisOcc = getFloat(a, 15);
-  processAtom2(atom, serNo, x, y, z, charge);
-}
- 
-@Override
-protected void setAdditionalAtomParameters(Atom atom) {
-  atom.bfactor = thisBfactor;
-  atom.occupancy = (int) (thisOcc * 100);
-}
+  private void addAtom(List<Object> pymolAtoms, int apt, int idx,
+                       List<Object> coords) {
+    atomMap[apt] = -1;
+    List<Object> a = getList(pymolAtoms, apt);
+    int seqNo = getInt(a, 0);
+    String chainID = getString(a, 1);
+    String altLoc = getString(a, 2);
+    String insCode = " "; //?    
+    String group3 = getString(a, 5);
+    if (group3.length() > 3)
+      group3 = group3.substring(0, 3);
+    if (group3.equals(" "))
+      group3 = "UNK";
+    String name = getString(a, 6);
+    String sym = getString(a, 7);
+    if (sym.equals(" "))
+      sym = getString(a, 7);
+    Atom atom = processAtom(name, altLoc.charAt(0), group3, chainID.charAt(0),
+        seqNo, insCode.charAt(0), false, sym);
+    if (!filterPDBAtom(atom, fileAtomIndex++))
+      return;
+    atom.bfactor = getFloat(a, 14);
+    atom.occupancy = (int) (getFloat(a, 15) * 100);
+    String ss = getString(a, 10);
+    BitSet bs = ssMap.get(ss);
+    if (bs == null)
+      ssMap.put(ss, bs = new BitSet());
+    if (ssMapA.get(ss) == null)
+      ssMapA.put(ss, new BitSet());
+    List<Object> list2 = getList(a, 20);
+    for (int i = 0; i < REP_MAX; i++)
+      if (getInt(list2, i) == 1)
+        reps[i].set(atomCount);
+    bsHidden.setBitTo(atomCount, isHidden);
+    atomMap[apt] = atomCount++;
+    int serNo = getInt(a, 22);
+    bs.set(seqNo);
+    int charge = getInt(a, 18);
+    int cpt = idx * 3;
+    float x = getFloat(coords, cpt);
+    float y = getFloat(coords, ++cpt);
+    float z = getFloat(coords, ++cpt);
+    BoxInfo.addPointXYZ(x, y, z, xyzMin, xyzMax, 0);
+    //System.out.println(chainID +  " " + fileAtomIndex + " " + serNo + " " + x  + " " + y + " " + z);
+    processAtom2(atom, serNo, x, y, z, charge);
+    int color = getInt(a, 21);
+    color = PyMOL.getColor(color);
+    colixList.add(Integer.valueOf(Colix.getColixO(Integer.valueOf(color))));    
+  }
 
+  @Override
+  protected void setAdditionalAtomParameters(Atom atom) {
+  }
+
+  private void processStructures() {
+    if (atomSetCollection.bsStructuredModels == null)
+      atomSetCollection.bsStructuredModels = new BitSet();
+    atomSetCollection.bsStructuredModels.set(Math.max(atomSetCollection.getCurrentAtomSetIndex(), 0));
+
+    processSS(ssMap.get("H"),ssMapA.get("H"),EnumStructure.HELIX, 0);
+    processSS(ssMap.get("S"),ssMapA.get("S"),EnumStructure.SHEET, 1);
+    processSS(ssMap.get("L"),ssMapA.get("L"),EnumStructure.TURN, 0);
+    ssMap = new Hashtable<String, BitSet>();
+  }
+
+  private void processSS(BitSet bs, BitSet bsAtomType, EnumStructure type, int strandCount) {
+    if (bs == null)
+      return;
+    int istart = -1;
+    int iend = -1;
+    int inew = -1;
+    int imodel = -1;
+    int thismodel = -1;
+    Atom[] atoms = atomSetCollection.getAtoms();
+    for (int i = atomCount0; i < atomCount; i++) {
+      int seqNo = atoms[i].sequenceNumber;
+      thismodel = atoms[i].atomSetIndex;
+      if (seqNo >= 0 && bs.get(seqNo)) {
+        if (istart >= 0) {
+          if (imodel == thismodel) {
+            iend = i;
+            continue;
+          }
+          inew = i;
+        } else {
+          istart = iend = i;
+          imodel = thismodel;
+          continue;
+        }
+      } else if (istart < 0) {
+        continue;
+      } else {
+        inew = -1;
+      }
+      Structure structure = new Structure(imodel, type, type, type.toString(), ++strucNo, strandCount);
+      Atom a = atoms[istart];
+      Atom b = atoms[iend];
+      bsAtomType.setBits(istart, iend + 1);
+      structure.set(a.chainID, a.sequenceNumber, a.insertionCode,
+          b.chainID, b.sequenceNumber, b.insertionCode);
+      atomSetCollection.addStructure(structure);
+      istart = iend = inew;
+    }    
+  }
 
   private void processBonds(List<Object> bonds) {
+    boolean valence = getBooleanSetting(PyMOL.valence);
+    bsBonded.clear(atomCount); // sets length
     for (int i = 0; i < bonds.size(); i++) {
       List<Object> b = getList(bonds, i);
-      int order = getInt(b, 2);
+      int order = (valence ? getInt(b, 2) : 1);
       if (order < 1 || order > 3)
         order = 1;
       // TODO: hydrogen bonds?
       int ia = atomMap[getInt(b, 0)];
       int ib = atomMap[getInt(b, 1)];
-      if (ia == 2198 && ib==2157)
-      System.out.println("bond " + i + " " + getInt(b, 0) + " " + getInt(b, 1) + " / " + ia + " " + ib);
+      bsBonded.set(ia);
+      bsBonded.set(ib);
       atomSetCollection.addBond(new Bond(ia, ib, order));
     }
   }
-
+  
   private void processCryst(List<Object> cryst) {
     if (cryst == null || cryst.size() == 0)
       return;
-    List<Object> l = getList(cryst, 0);
-    List<Object> a = getList(cryst, 1);
-    setUnitCell(getFloat(l, 0), getFloat(l, 1), getFloat(l, 2),
-        getFloat(a, 0), getFloat(a, 1), getFloat(a, 2));
-    setSpaceGroupName(getString(cryst, 2));
+    List<Object> l = getList(getList(cryst, 0), 0);
+    List<Object> a = getList(getList(cryst, 0), 1);
+    setUnitCell(getFloat(l, 0), getFloat(l, 1), getFloat(l, 2), getFloat(a, 0),
+        getFloat(a, 1), getFloat(a, 2));
+    setSpaceGroupName(getString(cryst, 1));
   }
 
-  private void setView(List<Object> view, List<Object> settings) {
-    float fov = getFloat(getList(settings, SET_FOV), 2);
-    StringXBuilder sb = new StringXBuilder();
-    float d = Math.abs(xyzMax.x-xyzMin.x);
-    d = Math.max(d, Math.abs(xyzMax.y-xyzMin.y));
-    d = Math.max(d, Math.abs(xyzMax.z-xyzMin.z));
-    d /= 2;
-    //float fov = getFloat(24);
-    float f = Math.abs(getFloat(view, 18) - getFloat(view, 21));
-    System.out.println("fov, range: " + fov + " " + getFloat(view, 18) + " " + getFloat(view, 21) + " " + f);
-    sb.append("{ p2j_ar = (_width+0.0) / (_height+0.0); p2j_fov = ").appendF(fov)
-      .append(";if( p2j_ar < 1) { p2j_fov*=p2j_ar};")
-      .append("zoom @{(").appendF(d).append(" / (").appendF(f)
-      .append(" * ( sin(p2j_fov/2.0) / cos(p2j_fov/2.0) ) ) * 100 )} };");
-
-    
-    sb.append("center {")
-    .appendF(getFloat(view, 19)).append(" ")
-    .appendF(getFloat(view, 20)).append(" ")
-    .appendF(getFloat(view, 21)).append("};");
-    sb.append("rotate @{quaternion({") // only the first two rows are needed
-      .appendF(getFloat(view, 0)).append(" ")
-      .appendF(getFloat(view, 1)).append(" ")
-      .appendF(getFloat(view, 2)).append("}{")
-      .appendF(getFloat(view, 4)).append(" ")
-      .appendF(getFloat(view, 5)).append(" ")
-      .appendF(getFloat(view, 6)).append("})};");
-    sb.append("translate X ").appendF(getFloat(view, 16)).append(" angstroms;");
-    sb.append("translate Y ").appendF(-getFloat(view, 17)).append(" angstroms;");
-
-
-    
-    
-    addJmolScript(sb.toString());
-    
+  private void setColixes() {
+    colixes = new short[colixList.size()];
+    for (int i = colixes.length; --i >= 0;)
+      colixes[i] = (short) colixList.get(i).intValue();
   }
 
-  private List<Object> getObjects(int mark) {
-    int n = list.size() - mark;
-    List<Object> args = new ArrayList<Object>();
-    for (int j = 0; j < n; j++)
-      args.add(null);
-    for (int j = n, i = list.size(); --i >= mark;)
-      args.set(--j, list.remove(i));
-    return args;
-  }
+  private final static int REP_STICKS    = 0;
+  private final static int REP_SPHERES   = 1;  
+  private final static int REP_NBSPHERES = 4;
+  private final static int REP_CARTOON   = 5;
+  private final static int REP_LINES     = 7;
+  private final static int REP_NONBONDED = 11;
+  private final static int REP_MAX = 12;
+
+  //TODO:
   
-//  private byte[] readLineBytes() throws Exception {
-//    String s = readString();
-//    return s.getBytes();
-//  }
+  private final static int REP_SURFACE   = 2;
+  private final static int REP_LABELS    = 3;  
+  private final static int REP_BACKBONE  = 6;
+  private final static int REP_MESH      = 8;
+  private final static int REP_DOTS      = 9;
+  private final static int REP_DASHES    = 10;
 
-  private String readString() throws Exception {
-    StringXBuilder sb = new StringXBuilder();
-    while(true) {
-      byte b = binaryDoc.readByte();
-      if (b == 0xA)
-        break;
-      sb.appendC((char)b);
+  
+  private void setShapes() {
+    ShapeSettings ss;
+    BitSet bs = BitSet.newN(atomCount);
+    bs.setBits(0, atomCount);
+    ss = new ShapeSettings(JmolConstants.SHAPE_BALLS, bs, null);
+    ss.setSize(0);
+    ss.setColors(colixes, 0);
+    shapes.add(ss);
+    ss = new ShapeSettings(JmolConstants.SHAPE_STICKS, bs, null);
+    ss.setSize(0);
+    shapes.add(ss);
+    bs = new BitSet();
+    for (int i = 0; i < REP_MAX; i++)
+      setShape(i);
+    if (!bsHidden.isEmpty())
+      shapes.add(new ShapeSettings(0, bsHidden, "hidden"));
+  }
+
+  private void setShape(int shapeID) {
+    // add more to implement
+    BitSet bs = reps[shapeID];
+    float f;
+    switch (shapeID) {
+    case REP_NONBONDED:
+    case REP_NBSPHERES:
+      bs.andNot(bsBonded);
+      break;
+    case REP_LINES:
+      bs.andNot(reps[REP_STICKS]);
+      break;
     }
-    return sb.toString();
-  }
-  
-  private int getMark() {
-    int mark = marks.remove(marks.size() - 1).intValue();
-    nextMark = (mark == 1 ? 0 : marks.get(marks.size() - 1).intValue());
-    return mark;
+    if (bs.isEmpty())
+      return;
+    ShapeSettings ss = null;
+    switch (shapeID) {
+    case REP_NONBONDED:
+      f = getFloatSetting(PyMOL.nonbonded_size);
+      ss = new ShapeSettings(JmolConstants.SHAPE_BALLS, bs, null);
+      System.out.println(shapeID + " " + f + " @" + bs.nextSetBit(0));
+      ss.setRadiusData(new RadiusData(null, f, RadiusData.EnumType.FACTOR, EnumVdw.AUTO));
+      ss.setColors(colixes, 0);
+      shapes.add(ss);
+      break;
+    case REP_NBSPHERES:
+    case REP_SPHERES:
+      f = (shapeID == REP_NBSPHERES ? 1 : getFloatSetting(PyMOL.sphere_scale));
+      ss = new ShapeSettings(JmolConstants.SHAPE_BALLS, bs, null);
+      System.out.println(shapeID + " " + f + " @" + bs.nextSetBit(0));
+      ss.setRadiusData(new RadiusData(null, f, RadiusData.EnumType.FACTOR, EnumVdw.AUTO));
+      ss.setColors(colixes, 0);
+      shapes.add(ss);
+      break;
+    case REP_STICKS:
+      f = getFloatSetting(PyMOL.stick_radius) * 2;
+      ss = new ShapeSettings(JmolConstants.SHAPE_STICKS, bs, null);
+      ss.setSize(f);
+      shapes.add(ss);
+      break;
+    case REP_LINES:
+      f = getFloatSetting(PyMOL.line_width) * 8/1000;
+      ss = new ShapeSettings(JmolConstants.SHAPE_STICKS, bs, null);
+      ss.setSize(f);
+      shapes.add(ss);
+      break;
+    case REP_CARTOON:
+      setCartoon("H", PyMOL.cartoon_oval_length, 2);
+      setCartoon("S", PyMOL.cartoon_rect_length, 2);
+      setCartoon("L", PyMOL.cartoon_loop_radius, 2);
+      break;
+    default:
+    }
   }
 
-  private void push(Object o) {
-    list.add(o);
-  }
-  
-  private Object peek() {
-    return list.get(list.size() - 1);
+  private void setCartoon(String key, int sizeID, float factor) {
+    BitSet bs = ssMapA.get(key);
+    if (bs == null)
+      return;
+    bs.and(reps[REP_CARTOON]);
+    if (bs.isEmpty())
+      return;
+    System.out.println(key + "  " + bs);
+    ShapeSettings ss = new ShapeSettings(JmolConstants.SHAPE_CARTOON, bs, null);
+    ss.setColors(colixes, getFloatSetting(PyMOL.cartoon_transparency));
+    ss.setSize(getFloatSetting(sizeID) * factor);
+    shapes.add(ss);
   }
 
-  private Object pop() {
-    return list.remove(list.size() - 1);
+  
+  private float getRotationRadius() {
+    Point3f center = Point3f.new3(
+        (xyzMax.x + xyzMin.x)/2,
+        (xyzMax.y + xyzMin.y)/2,
+        (xyzMax.z + xyzMin.z)/2);
+    float d2max = 0;
+    Atom[] atoms = atomSetCollection.getAtoms();
+    for (int i = 0; i < atomCount; i++) {
+      Atom a = atoms[i];
+      float dx = (a.x - center.x);
+      float dy = (a.y - center.y);
+      float dz = (a.z - center.z);
+      float d2 = dx*dx + dy*dy + dz*dz;
+      if (d2 > d2max)
+        d2max = d2;
+    }
+    // 1 is approximate -- for atom radius
+    return (float) Math.pow(d2max, 0.5f) + 1;
   }
+
+  private void setView(StringXBuilder sb, List<Object> view) {
+    sb.append("set navigationMode off; set zoomLarge false;");
+    
+    float modelWidth = 2 * getRotationRadius();
+    
+    //Math.max(Math.max(Math.abs(xyzMax.x - xyzMin.x), Math
+      //  .abs(xyzMax.y - xyzMin.y)), Math.abs(xyzMax.z - xyzMin.z));
+
+    // calculate Jmol camera position, which is in screen widths,
+    // and is from the front of the screen, not the center.
+    
+    float fov = getFloatSetting(PyMOL.field_of_view);
+    float tan = (float) Math.tan(fov / 2 * Math.PI / 180);
+    float jmolCameraDepth = (0.5f / tan - 0.5f);
+    float pymolCameraToCenter = -getFloat(view, 18) / modelWidth;
+    float zoom = (jmolCameraDepth + 0.5f) / pymolCameraToCenter * 100;
+
+    sb.append("set cameraDepth " + jmolCameraDepth + ";");
+    sb.append("zoom " + zoom + ";");
+
+    Logger.info("set cameraDepth " + jmolCameraDepth);
+    Logger.info("zoom " + zoom);
+    
+    //float aspectRatio = viewer.getScreenWidth() * 1.0f
+      //  / viewer.getScreenHeight();
+    //if (aspectRatio < 1)
+      //fov *= aspectRatio;
+
+    Point3f center = Point3f.new3(getFloat(view, 19), getFloat(view, 20),
+        getFloat(view, 21));
+
+    //    sb.append("{ p2j_ar = (_width+0.0) / (_height+0.0); p2j_fov = ").appendF(
+    //      fov).append(";if( p2j_ar < 1) { p2j_fov*=p2j_ar};").append("zoom @{(")
+    //    .appendF(d).append(" / (").appendF(f).append(
+    //      " * ( sin(p2j_fov/2.0) / cos(p2j_fov/2.0) ) ) * 100 )} };");
+
+    sb.append("center ").append(Escape.escapePt(center)).append(";");
+    sb.append("rotate @{quaternion({")
+        // only the first two rows are needed
+        .appendF(getFloat(view, 0)).append(" ").appendF(getFloat(view, 1))
+        .append(" ").appendF(getFloat(view, 2)).append("}{").appendF(
+            getFloat(view, 4)).append(" ").appendF(getFloat(view, 5)).append(
+            " ").appendF(getFloat(view, 6)).append("})};");
+    sb.append("translate X ").appendF(getFloat(view, 16)).append(" angstroms;");
+    sb.append("translate Y ").appendF(-getFloat(view, 17))
+        .append(" angstroms;");
+
+    boolean depthCue = getBooleanSetting(PyMOL.depth_cue); // 84
+    sb.append("set zShade " + depthCue + ";");
+
+    if (depthCue) {
+      float fog_start = getFloatSetting(PyMOL.fog_start); // 192
+      sb.append("set zshadePower 2;set zslab " + (fog_start * 100) + "; set zdepth 0;");
+    }
+    
+    boolean orthographic = getBooleanSetting(PyMOL.orthoscopic);
+    sb.append("set perspectiveDepth " + !orthographic + ";");
+
+  }
+
+
 }

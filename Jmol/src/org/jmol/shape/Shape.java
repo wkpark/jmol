@@ -138,11 +138,7 @@ public abstract class Shape {
     // shape-dependent Jmol 12.0.RC6
   }
   
-  protected List<Object> xmlProperties;
-  
   public void setShapeSizeRD(int size, RadiusData rd, BitSet bsSelected) {
-    setXmlProperty("size", (rd == null ? Integer.valueOf(size) : (Object) rd),
-          bsSelected);
     if (rd == null)
       setSize(size, bsSelected);
     else
@@ -177,76 +173,10 @@ public abstract class Shape {
    */
   public void setShapeProperty(String propertyName, Object value,
                                BitSet bsSelected) {
-    if (!setXmlProperty(propertyName, value, bsSelected))
       setProperty(propertyName, value, bsSelected == null ? 
           viewer.getSelectionSet(false) : bsSelected);
   }
 
-  /**
-   * may NOT be over-ridden by shape; executed BEFORE shape's setProperty
-   * 
-   * @param propertyName
-   * @param value
-   * @param bs
-   * @return true if we are done
-   */
-  private boolean setXmlProperty(String propertyName, Object value, BitSet bs) {
-    
-    // xmlProperties is not implemented. 
-    // I thought this might be a prelude to an XML-based state
-    // but it turns out that is problematic because some of
-    // these are HUGE (isosurface, for example, passes incredible 
-    // amounts of information via the setProperty mechanism.
-    // So "initXml" is never actuated, and xmlProperties is always null.
-    String myType = JmolConstants.shapeClassBases[shapeID];
-    /*
-    if (propertyName == "initXml") {
-      xmlProperties = new Vector();
-      return true;
-    }
-    if (propertyName == "showXml") {
-      if (xmlProperties != null) {
-        String s = getXmlPropertyString(xmlProperties, myType);
-        if (s != null)
-          Logger.info(s);
-      }
-      return true;
-    }
-    if (propertyName == "setXml") {
-      setXmlProperty("showXml", null, null);
-      return false;
-    }
-    */
-    if (Logger.debuggingHigh && shapeID != JmolConstants.SHAPE_HOVER)
-      Logger.info(myType + " setProperty: " + propertyName + " = " + value);
-
-    /*
-    if (xmlProperties == null)
-      return false;
-
-    if (propertyName == "setProperties" || propertyName == "thisID")
-      return false;
-    Vector attributes = new Vector();
-    attributes.add(new Object[] { "select",
-        bs == null ? null : Escape.escape(bs) });
-    xmlProperties.add(XmlUtil
-        .escape(propertyName, attributes, value, false, ""));
-        
-    */
-    return false;
-  }
-
-/*
-  static private String getXmlPropertyString(Vector xmlProperties, String type) {
-    if (xmlProperties == null || xmlProperties.size() == 0)
-      return null;
-    StringXBuilder sb = new StringXBuilder();
-    XmlUtil.openTag(sb, "shape", new String[] { "type", type });
-    XmlUtil.toXml(sb, "property", xmlProperties);
-    XmlUtil.closeTag(sb, "shape");
-    return sb.toString();
-  }
-*/
   /**
    * may come from any source -- executed AFTER a shape's own setProperty method
    * 
@@ -256,17 +186,13 @@ public abstract class Shape {
    */
   @SuppressWarnings("unchecked")
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
-/*    if (propertyName == "setXml") {
-      // some states mignt also check this in order to preseve their state
-      xmlProperties = new Vector();
-      return;
-    }
-*/
     if (propertyName == "setProperties") {
+      if (bsSelected == null)
+        bsSelected = viewer.getSelectionSet(false);
       List<Object[]> propertyList = (List<Object[]>) value;
       while (propertyList.size() > 0) {
         Object[] data = propertyList.remove(0);
-        setShapeProperty(((String) data[0]).intern(), data[1], null);
+        setShapeProperty(((String) data[0]).intern(), data[1], bsSelected);
       }
       return;
     }
@@ -386,16 +312,16 @@ public abstract class Shape {
     return (d2 < dmin2 ? d2 : -1);
   }
   
-  public short setColix(short colix, byte paletteID, int atomIndex) {
-    return setColixA(colix, paletteID, modelSet.atoms[atomIndex]);
+  public short getColixI(short colix, byte paletteID, int atomIndex) {
+    return getColixA(colix, paletteID, modelSet.atoms[atomIndex]);
   }
 
-  protected short setColixA(short colix, byte paletteID, Atom atom) {
+  protected short getColixA(short colix, byte paletteID, Atom atom) {
     return (colix == Colix.USE_PALETTE ? viewer.getColixAtomPalette(atom,
         paletteID) : colix);
   }
 
-  protected short setColixB(short colix, int pid, Bond bond) {
+  protected short getColixB(short colix, int pid, Bond bond) {
     return (colix == Colix.USE_PALETTE ? viewer.getColixBondPalette(bond,
         pid) : colix);
   }

@@ -424,8 +424,7 @@ public class Model {
   public void addSecondaryStructure(EnumStructure type, 
                              String structureID, int serialID, int strandCount,
                              char startChainID, int startSeqcode,
-                             char endChainID, int endSeqcode) {
-    
+                             char endChainID, int endSeqcode) { 
   }
 
   /**

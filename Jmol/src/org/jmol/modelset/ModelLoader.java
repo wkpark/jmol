@@ -90,13 +90,15 @@ public final class ModelLoader {
   private int[][] group3Counts;
   private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
   
+  @SuppressWarnings("unchecked")
   public ModelLoader(Viewer viewer, String modelSetName,
       StringXBuilder loadScript, Object atomSetCollection, ModelSet mergeModelSet,
       BitSet bsNew) {
     this.viewer = viewer;
     modelSet = new ModelSet(viewer, modelSetName);
+    JmolAdapter adapter = viewer.getModelAdapter();
     this.mergeModelSet = mergeModelSet;
-    merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
+    merging = (this.mergeModelSet != null && this.mergeModelSet.atomCount > 0);
     if (merging) {
       modelSet.canSkipLoad = false;
     } else {
@@ -112,7 +114,6 @@ public final class ModelLoader {
     }    
     if (!modelSet.preserveState)
       modelSet.canSkipLoad = false;
-    JmolAdapter adapter = viewer.getModelAdapter();
     Map<String, Object> info = adapter.getAtomSetCollectionAuxiliaryInfo(atomSetCollection);
     info.put("loadScript", loadScript);
     initializeInfo(adapter.getFileTypeName(atomSetCollection).toLowerCase().intern(), info);
@@ -183,8 +184,10 @@ public final class ModelLoader {
     doAddHydrogens = (jbr != null && !isTrajectory
         && modelSet.getModelSetAuxiliaryInfoValue("pdbNoHydrogens") == null
         && viewer.getBooleanProperty("pdbAddHydrogens"));
-    if (info != null)
+    if (info != null) {
       info.remove("pdbNoHydrogens");
+      shapes = (List<ShapeSettings>) info.get("shapes");    
+    }
     noAutoBond = modelSet.getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = modelSet.getModelSetAuxiliaryInfoBoolean("is2D");
     doMinimize = is2D && modelSet.getModelSetAuxiliaryInfoBoolean("doMinimize");
@@ -254,6 +257,7 @@ public final class ModelLoader {
   private int adapterTrajectoryCount = 0;
   private boolean noAutoBond;
   private boolean is2D;
+  private List<ShapeSettings> shapes;
   
   public ModelSet getModelSet() {
     return modelSet;
@@ -263,6 +267,7 @@ public final class ModelLoader {
     return modelSet.atomCount;
   }
 
+  @SuppressWarnings("unchecked")
   private void createModelSet(JmolAdapter adapter, Object atomSetCollection,
                               BitSet bsNew) {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
@@ -371,7 +376,7 @@ public final class ModelLoader {
 
     freeze();
 
-    finalizeShapes();
+    finalizeShapes(shapes);
     if (mergeModelSet != null) {
       mergeModelSet.releaseModelSet();
     }
@@ -945,9 +950,8 @@ public final class ModelLoader {
   /**
    * Pull in all spans of helix, etc. in the file(s)
    * 
-   * We do turn first, because sometimes a group is defined
-   * twice, and this way it gets marked as helix or sheet
-   * if it is both one of those and turn.
+   * We do turn first, because sometimes a group is defined twice, and this way
+   * it gets marked as helix or sheet if it is both one of those and turn.
    * 
    * @param adapter
    * @param atomSetCollection
@@ -956,40 +960,41 @@ public final class ModelLoader {
                                            Object atomSetCollection) {
     JmolAdapterStructureIterator iterStructure = adapter
         .getStructureIterator(atomSetCollection);
-    if (iterStructure != null)
-      while (iterStructure.hasNext()) {
-        if (iterStructure.getStructureType() != EnumStructure.TURN) {
-          defineStructure(iterStructure.getModelIndex(),
-              iterStructure.getSubstructureType(),
-              iterStructure.getStructureID(), 
-              iterStructure.getSerialID(),
-              iterStructure.getStrandCount(),
-              iterStructure.getStartChainID(), iterStructure
-                  .getStartSequenceNumber(), iterStructure
-                  .getStartInsertionCode(), iterStructure.getEndChainID(),
-              iterStructure.getEndSequenceNumber(), iterStructure
-                  .getEndInsertionCode());
-        }
-      }
+    if (iterStructure == null)
+      return;
+    BitSet bs = iterStructure.getStructuredModels();
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+        structuresDefinedInFile.set(baseModelIndex + i);
+    while (iterStructure.hasNext()) {
+      if (iterStructure.getStructureType() != EnumStructure.TURN)
+        setStructure(iterStructure);
+    }
 
     // define turns LAST. (pulled by the iterator first)
     // so that if they overlap they get overwritten:
 
     iterStructure = adapter.getStructureIterator(atomSetCollection);
-    if (iterStructure != null)
-      while (iterStructure.hasNext()) {
-        if (iterStructure.getStructureType() == EnumStructure.TURN)
-          defineStructure(iterStructure.getModelIndex(),
-              iterStructure.getSubstructureType(),
-              iterStructure.getStructureID(), 1, 1,
-              iterStructure.getStartChainID(), iterStructure
-                  .getStartSequenceNumber(), iterStructure
-                  .getStartInsertionCode(), iterStructure.getEndChainID(),
-              iterStructure.getEndSequenceNumber(), iterStructure
-                  .getEndInsertionCode());
-      }
+    while (iterStructure.hasNext()) {
+      if (iterStructure.getStructureType() == EnumStructure.TURN)
+        setStructure(iterStructure);
+    }
   }
   
+  private void setStructure(JmolAdapterStructureIterator iterStructure) {
+    int i = iterStructure.getModelIndex();
+    EnumStructure t = iterStructure.getSubstructureType();
+    String id = iterStructure.getStructureID();
+    int serID = iterStructure.getSerialID();
+    int count = iterStructure.getStrandCount();
+    iterStructure.getSerialID();
+    defineStructure(i, t, id, serID, count, iterStructure.getStartChainID(),
+          iterStructure.getStartSequenceNumber(), iterStructure
+              .getStartInsertionCode(), iterStructure.getEndChainID(),
+          iterStructure.getEndSequenceNumber(), iterStructure
+              .getEndInsertionCode());
+  }
+
   private BitSet structuresDefinedInFile = new BitSet();
 
   private void defineStructure(int modelIndex, EnumStructure subType,
@@ -999,8 +1004,7 @@ public final class ModelLoader {
                                char startInsertionCode, char endChainID,
                                int endSequenceNumber, char endInsertionCode) {
     EnumStructure type = (subType == EnumStructure.NOT ? EnumStructure.NONE : subType);
-    int startSeqCode = Group.getSeqcode(startSequenceNumber,
-        startInsertionCode);
+    int startSeqCode = Group.getSeqcode(startSequenceNumber, startInsertionCode);
     int endSeqCode = Group.getSeqcode(endSequenceNumber, endInsertionCode);
     Model[] models = modelSet.models;
     if (modelIndex >= 0 || isTrajectory) { //from PDB file
@@ -1413,7 +1417,7 @@ public final class ModelLoader {
 
   ///////////////  shapes  ///////////////
   
-  private void finalizeShapes() {
+  private void finalizeShapes(List<ShapeSettings> shapeSettings) {
     modelSet.shapeManager = viewer.getShapeManager();
     if (!merging)
       modelSet.shapeManager.resetShapes();
@@ -1422,6 +1426,15 @@ public final class ModelLoader {
       modelSet.assignAromaticBonds(false);
     if (merging && baseModelCount == 1)
         modelSet.shapeManager.setShapePropertyBs(JmolConstants.SHAPE_MEASURES, "clearModelIndex", null, null);
+    if (shapeSettings != null) {
+      for (int i = 0; i < shapeSettings.size(); i++) {
+        ShapeSettings ss = shapeSettings.get(i);
+        ss.offset(baseAtomIndex);
+        ss.createShape(modelSet.shapeManager);
+      }
+      modelSet.setBsHidden(viewer.getHiddenSet());
+    }
+    
   }
 
   /**

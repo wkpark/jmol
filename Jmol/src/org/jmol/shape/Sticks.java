@@ -136,7 +136,7 @@ public class Sticks extends Shape {
           bsColixSet.set(iter.nextIndex());
           Bond bond = iter.next();
           if (isEnergy) {
-              bond.setColix(setColixB(colix, pal.id, bond));
+              bond.setColix(getColixB(colix, pal.id, bond));
               bond.setPaletteID(pal.id);
           } else {
             bond.setColix(Colix.getColix(JmolEdge.getArgbHbondType(bond.order)));

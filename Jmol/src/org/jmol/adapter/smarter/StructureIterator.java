@@ -27,17 +27,20 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.constant.EnumStructure;
+import org.jmol.util.BitSet;
 
 public class StructureIterator extends JmolAdapterStructureIterator {
   private int structureCount;
   private Structure[] structures;
   private Structure structure;
   private int istructure;
+  private BitSet bsModelsDefined;
   
   StructureIterator(AtomSetCollection atomSetCollection) {
     structureCount = atomSetCollection.getStructureCount();
     structures = atomSetCollection.getStructures();
     istructure = 0;
+    bsModelsDefined = atomSetCollection.bsStructuredModels;
   }
 
   @Override
@@ -106,5 +109,10 @@ public class StructureIterator extends JmolAdapterStructureIterator {
   @Override
   public int getStrandCount() {
     return structure.strandCount;
+  }
+
+  @Override
+  public BitSet getStructuredModels() {
+    return bsModelsDefined;
   }
 }

@@ -27,6 +27,7 @@ package org.jmol.shapebio;
 
 import java.util.Map;
 
+import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
@@ -284,11 +285,27 @@ public class BioShape {
     for (int i = monomerCount; --i >= 0;) {
       int atomIndex = leadAtomIndices[i];
       if (bsSelected.get(atomIndex)) {
-        colixes[i] = shape.setColix(colix, pid, atomIndex);
+        colixes[i] = shape.getColixI(colix, pid, atomIndex);
         if (colixesBack != null && colixesBack.length > i)
           colixesBack[i] = 0;
         paletteIDs[i] = pid;
         bsColixSet.setBitTo(i, colixes[i] != Colix.INHERIT_ALL);
+      }
+    }
+  }
+  
+  void setColixes(short[] colixes, BitSet bsSelected) {
+    isActive = true;
+    if (bsColixSet == null)
+      bsColixSet = new BitSet();
+    for (int i = monomerCount; --i >= 0;) {
+      int atomIndex = leadAtomIndices[i];
+      if (bsSelected.get(atomIndex)) {
+        colixes[i] = shape.getColixI(colixes[atomIndex], EnumPalette.UNKNOWN.id, atomIndex);
+        if (colixesBack != null && colixesBack.length > i)
+          colixesBack[i] = 0;
+        paletteIDs[i] = EnumPalette.UNKNOWN.id;
+        bsColixSet.set(i);
       }
     }
   }

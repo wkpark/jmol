@@ -73,6 +73,8 @@ public class PyMOLReader extends PdbReader {
   private short[] colixes;
   private boolean isStateScript;
 
+  private boolean valence; 
+
   @Override
   protected void initializeReader() throws Exception {
     isBinary = true;
@@ -97,11 +99,14 @@ public class PyMOLReader extends PdbReader {
   }
 
   private BitSet[] reps = new BitSet[17];
+  private float cartoonTranslucency;
   
   private void process(Map<String, Object> map) {
     for (int i = 0; i < 17; i++)
       reps[i] = BitSet.newN(1000);
     settings = getMapList(map, "settings");
+    valence = getBooleanSetting(PyMOL.valence);
+    cartoonTranslucency = getFloatSetting(PyMOL.cartoon_transparency);
     List<Object> names = getMapList(map, "names");
     for (int i = 1; i < names.size(); i++) {
       processBranch(getList(names, i));
@@ -200,16 +205,12 @@ public class PyMOLReader extends PdbReader {
       processBranchModels(deepBranch);
       break;
     case BRANCH_MAPSURFACE:
-      break;
     case BRANCH_MAPMESH:
-      break;
     case BRANCH_MEASURE:
-      break;
     case BRANCH_CGO:
-      break;
     case BRANCH_SURFACE:
-      break;
     case BRANCH_GROUP:
+      System.out.println("Unprocessed branch type " + type);
       break;
     }
   }
@@ -237,6 +238,7 @@ public class PyMOLReader extends PdbReader {
       for (int idx = 0; idx < n; idx++)
         addAtom(pymolAtoms, getInt(idxToAtm, idx), idx, coords);
     }
+    System.out.println( " " + (atomCount - atomCount0) + " atoms");
     processStructures();
     processBonds(bonds);
   }
@@ -376,7 +378,6 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void processBonds(List<Object> bonds) {
-    boolean valence = getBooleanSetting(PyMOL.valence);
     bsBonded.clear(atomCount); // sets length
     for (int i = 0; i < bonds.size(); i++) {
       List<Object> b = getList(bonds, i);
@@ -493,7 +494,14 @@ public class PyMOLReader extends PdbReader {
       setCartoon("S", PyMOL.cartoon_rect_length, 2);
       setCartoon("L", PyMOL.cartoon_loop_radius, 2);
       break;
+    case  REP_SURFACE:   //   = 2;
+    case  REP_LABELS:    //   = 3;  
+    case  REP_BACKBONE:  //   = 6;
+    case  REP_MESH:      //   = 8;
+    case  REP_DOTS:      //   = 9;
+    case  REP_DASHES:    //   = 10;
     default:
+      System.out.println("Unprocessed representation type " + shapeID);
     }
   }
 
@@ -505,7 +513,7 @@ public class PyMOLReader extends PdbReader {
     if (bs.isEmpty())
       return;
     ShapeSettings ss = new ShapeSettings(JmolConstants.SHAPE_CARTOON, bs, null);
-    ss.setColors(colixes, getFloatSetting(PyMOL.cartoon_transparency));
+    ss.setColors(colixes, cartoonTranslucency);
     ss.setSize(getFloatSetting(sizeID) * factor);
     shapes.add(ss);
   }
@@ -532,7 +540,7 @@ public class PyMOLReader extends PdbReader {
 
   private void setView(StringXBuilder sb, List<Object> view) {
 
-    sb.append("set navigationMode off; set zoomLarge false;");
+    sb.append("set navigationMode off; set zoomLarge false;set measurementUnits ANGSTROMS;color measures NONE;");
     
     float modelWidth = 2 * getRotationRadius();
     
@@ -577,9 +585,14 @@ public class PyMOLReader extends PdbReader {
       sb.append("set zshadePower 2;set zslab " + (fog_start * 100) + "; set zdepth 0;");
     }
     
-    boolean orthographic = getBooleanSetting(PyMOL.orthoscopic);
-    sb.append("set perspectiveDepth " + !orthographic + ";");
-
+    sb.append("set perspectiveDepth " + (!getBooleanSetting(PyMOL.orthoscopic)) + ";");
+    sb.append("set measurements " + ((int) (getFloatSetting(PyMOL.dash_width) + 0.5)) + ";");
+    sb.append("set traceAlpha " + getBooleanSetting(PyMOL.cartoon_round_helices) + ";");
+    sb.append("set cartoonRockets " + getBooleanSetting(PyMOL.cartoon_cylindrical_helices) + ";");
+    sb.append("set ribbonBorder " + getBooleanSetting(PyMOL.cartoon_fancy_helices) + ";");
+    //{ command => 'set hermiteLevel -4',                                                       comment => 'so that SS reps have some thickness' },
+    //{ command => 'set ribbonAspectRatio 8',                                                   comment => 'degree of W/H ratio, but somehow not tied directly to actual width parameter...' },
+    sb.append("background " + getList(settings, PyMOL.bg_rgb).get(2) + ";");
   }
 
 

@@ -293,6 +293,8 @@ public class Measurement {
 
   private String formatDistance(String units) {
     String label = getLabelString();
+    if (label == null)
+      return "";
     if (units == null) {
       int pt = strFormat.indexOf("//"); 
       if (pt >= 0) {
@@ -358,8 +360,13 @@ public class Measurement {
 
   private String getLabelString() {
     String s = countPlusIndices[0] + ":";
-    String label = (strFormat != null && strFormat.length() > 2 
+    String label = null;
+    if (strFormat != null) {
+      if (strFormat.length() == 0)
+        return null;
+      label = (strFormat.length() > 2 
         && strFormat.indexOf(s)==0? strFormat : null);
+    }
     if (label == null) {
       strFormat = null;
       label = viewer.getDefaultMeasurementLabel(countPlusIndices[0]);

@@ -140,16 +140,14 @@ class PickleReader {
         i = binaryDoc.readByte();
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
-        s = new String(a);
+        s = new String(a, "UTF-8");
         push(s);
-        //if (s.length() > 0)
-        //System.out.println(list.size() + " = " + s);
         break;
       case BINSTRING:
         i = binaryDoc.readInt();
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
-        s = new String(a);
+        s = new String(a, "UTF-8");
         push(s);
         break;
       case BINUNICODE:

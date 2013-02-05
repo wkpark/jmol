@@ -517,4 +517,10 @@ public class ShapeManager {
     return navigationCrossHairMinMax;
   }
 
+  public void setModelSet(ModelSet modelSet) {
+    this.modelSet = viewer.modelSet = modelSet;
+    // TODO
+    
+  }
+
 }

@@ -260,7 +260,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private ActionManager actionManager;
   private ShapeManager shapeManager;
   private ModelManager modelManager;
-  private ModelSet modelSet;
+  ModelSet modelSet;
   private JmolRepaintInterface repaintManager;
   private ScriptManager scriptManager;
   private SelectionManager selectionManager;
@@ -8499,6 +8499,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   // synchronized here trapped the eventQueue
+  @Override
   public Object evaluateExpression(Object stringOrTokens) {
     return ScriptEvaluator.evaluateExpression(this, stringOrTokens, false);
   }

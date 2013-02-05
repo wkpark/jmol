@@ -616,5 +616,7 @@ abstract public class JmolViewer {
    */
   abstract public Object getProperty(String returnType, String infoType, Object paramInfo);
 
+  abstract public Object evaluateExpression(Object expression);
+
 }
 

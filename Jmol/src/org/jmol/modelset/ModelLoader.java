@@ -90,7 +90,6 @@ public final class ModelLoader {
   private int[][] group3Counts;
   private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
   
-  @SuppressWarnings("unchecked")
   public ModelLoader(Viewer viewer, String modelSetName,
       StringXBuilder loadScript, Object atomSetCollection, ModelSet mergeModelSet,
       BitSet bsNew) {
@@ -267,7 +266,6 @@ public final class ModelLoader {
     return modelSet.atomCount;
   }
 
-  @SuppressWarnings("unchecked")
   private void createModelSet(JmolAdapter adapter, Object atomSetCollection,
                               BitSet bsNew) {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
@@ -1419,6 +1417,8 @@ public final class ModelLoader {
   
   private void finalizeShapes(List<ShapeSettings> shapeSettings) {
     modelSet.shapeManager = viewer.getShapeManager();
+    modelSet.shapeManager.setModelSet(modelSet);
+    modelSet.setBsHidden(viewer.getHiddenSet());
     if (!merging)
       modelSet.shapeManager.resetShapes();
     modelSet.shapeManager.loadDefaultShapes(modelSet);
@@ -1430,9 +1430,8 @@ public final class ModelLoader {
       for (int i = 0; i < shapeSettings.size(); i++) {
         ShapeSettings ss = shapeSettings.get(i);
         ss.offset(baseAtomIndex);
-        ss.createShape(modelSet.shapeManager);
+        ss.createShape(modelSet);
       }
-      modelSet.setBsHidden(viewer.getHiddenSet());
     }
     
   }

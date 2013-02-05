@@ -57,6 +57,7 @@ import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 
 import org.jmol.jvxl.calc.MarchingSquares;
+import org.jmol.modelset.Atom;
 import org.jmol.script.Token;
 import org.jmol.shape.Mesh;
 
@@ -663,7 +664,7 @@ public class IsosurfaceMesh extends Mesh {
         if (isTranslucent)
           colorScheme = colorScheme.substring(12);
         colorEncoder.setColorScheme(colorScheme, isTranslucent);
-        remapColors(null, Float.NaN);
+        remapColors(null, null, Float.NaN);
       }
       if (jvxlData.vertexColorMap != null)
         for (Map.Entry<String, BitSet> entry : jvxlData.vertexColorMap
@@ -687,11 +688,12 @@ public class IsosurfaceMesh extends Mesh {
 
   /**
    * remaps colors based on a new color scheme or translucency level
+   * @param viewer 
    * 
    * @param ce
    * @param translucentLevel
    */
-  void remapColors(ColorEncoder ce, float translucentLevel) {
+  void remapColors(Viewer viewer, ColorEncoder ce, float translucentLevel) {
     if (ce == null)
       ce = colorEncoder;
     if (ce == null)
@@ -703,6 +705,7 @@ public class IsosurfaceMesh extends Mesh {
     }
     float min = ce.lo;
     float max = ce.hi;
+    boolean inherit = (vertexSource != null && ce.currentPalette == ColorEncoder.INHERIT);
     vertexColorMap = null;
     polygonColixes = null;
     jvxlData.vertexCount = vertexCount;
@@ -710,6 +713,14 @@ public class IsosurfaceMesh extends Mesh {
       return;
     if (vertexColixes == null || vertexColixes.length != vertexCount)
       vertexColixes = new short[vertexCount];
+    if (inherit) {
+     
+      Atom[] atoms = viewer.getModelSet().atoms;
+      for (int i = mergeVertexCount0; i < vertexCount; i++)
+        vertexColixes[i] = Colix.copyColixTranslucency(colix,
+            atoms[vertexSource[i]].getColix());
+      return;
+    }
     if (jvxlData.isBicolorMap) {
       for (int i = mergeVertexCount0; i < vertexCount; i++)
         vertexColixes[i] = Colix.copyColixTranslucency(colix,
@@ -765,7 +776,7 @@ public class IsosurfaceMesh extends Mesh {
     initialize(lighting, null, null);
     if (colorEncoder != null || jvxlData.isBicolorMap) {
       vertexColixes = null;
-      remapColors(null, Float.NaN);
+      remapColors(null, null, Float.NaN);
     }
   }
 

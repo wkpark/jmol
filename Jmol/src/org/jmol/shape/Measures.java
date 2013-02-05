@@ -395,8 +395,8 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
   }
 
-  private void defineAll(int iPt, Measurement m, boolean isDelete, boolean isShow,
-                      boolean doSelect) {
+  private void defineAll(int iPt, Measurement m, boolean isDelete,
+                         boolean isShow, boolean doSelect) {
     if (!viewer.getMeasureAllModelsFlag()) {
       if (isDelete) {
         if (iPt == Integer.MIN_VALUE)
@@ -419,21 +419,13 @@ public class Measures extends Shape implements JmolMeasurementClient {
     int nPoints = m.getCount();
     for (int i = 1; i <= nPoints; i++) {
       int atomIndex = m.getAtomIndex(i);
-      points.add(atomIndex >= 0 ? (Object) viewer.getAtomBits(
-          Token.atomno, Integer.valueOf(atoms[atomIndex].getAtomNumber()))
-          : (Object) m.getAtom(i));
+      points.add(atomIndex >= 0 ? (Object) viewer.getAtomBits(Token.atomno,
+          Integer.valueOf(atoms[atomIndex].getAtomNumber())) : (Object) m
+          .getAtom(i));
     }
-    MeasurementData md = new MeasurementData(viewer, points, 
-                   tokAction,
-                   radiusData, 
-                   strFormat, null,
-                   tickInfo,
-                   mustBeConnected,
-                   mustNotBeConnected,
-                   intramolecular, true);
-    define(md, (isDelete ? Token.delete 
-        : Token.define
-        ));
+    define((new MeasurementData(viewer, points)).set(tokAction, radiusData, strFormat, null, tickInfo,
+        mustBeConnected, mustNotBeConnected, intramolecular, true),
+        (isDelete ? Token.delete : Token.define));
   }
 
   private int find(Measurement m) {

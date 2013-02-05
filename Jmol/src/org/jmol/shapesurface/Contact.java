@@ -265,7 +265,7 @@ public class Contact extends Isosurface {
         ce.setRange(-0.5f, 1f, false);
     }
     if (ce != null)
-      thisMesh.remapColors(ce, translucentLevel);
+      thisMesh.remapColors(viewer, ce, translucentLevel);
   }
 
   /**

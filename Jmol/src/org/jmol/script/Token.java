@@ -1232,7 +1232,8 @@ public class Token {
   final static int polygon        = misc  | 282;
   public final static int prev    = misc  | 284;
   public final static int probe   = misc  | 285;
-  final static int rad            = misc  | 286;
+  public final static int pymol   = misc  | 286;
+  final static int rad            = misc  | 287;
   final static int radical        = misc  | 288;
   public final static int range   = misc  | 290;
   public final static int rasmol  = misc  | 292;
@@ -1915,6 +1916,7 @@ public class Token {
       "protein",         new Token(protein),
       "psi",             new Token(psi),
       "purine",          new Token(purine),
+      "PyMOL",           new Token(pymol),
       "pyrimidine",      new Token(pyrimidine),
       "random",          new Token(random),
       "range",           new Token(range),

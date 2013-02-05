@@ -222,7 +222,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("remapColor" == propertyName) {
       if (thisMesh != null) {
-        thisMesh.remapColors((ColorEncoder) value, translucentLevel);
+        thisMesh.remapColors(viewer, (ColorEncoder) value, translucentLevel);
       }
       return;
     }
@@ -276,7 +276,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         thisMesh.jvxlData.isBicolorMap = true;
         thisMesh.jvxlData.colorDensity = false;
         thisMesh.isColorSolid = false;
-        thisMesh.remapColors(null, translucentLevel);
+        thisMesh.remapColors(null, null, translucentLevel);
       }
       return;
     }

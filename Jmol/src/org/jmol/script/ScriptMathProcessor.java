@@ -1296,18 +1296,19 @@ class ScriptMathProcessor {
         case Token.decimal:
           rangeMinMax[rPt++ % 2] = ScriptVariable.fValue(args[i]);
           break;
-          
+
         case Token.string:
           String s = ScriptVariable.sValue(args[i]);
           if (s.equalsIgnoreCase("vdw") || s.equalsIgnoreCase("vanderwaals"))
-            vdw = (i + 1 < args.length && args[i + 1].tok == Token.integer 
-                ? args[++i].asInt() : 100) / 100f;
+            vdw = (i + 1 < args.length && args[i + 1].tok == Token.integer ? args[++i]
+                .asInt()
+                : 100) / 100f;
           else if (s.equalsIgnoreCase("notConnected"))
             isNotConnected = true;
           else if (s.equalsIgnoreCase("connected"))
             isAllConnected = true;
           else if (s.equalsIgnoreCase("minArray"))
-          	asArray = (nBitSets >= 1);
+            asArray = (nBitSets >= 1);
           else if (Parser.isOneOf(s.toLowerCase(),
               "nm;nanometers;pm;picometers;angstroms;ang;au"))
             units = s.toLowerCase();
@@ -1324,12 +1325,11 @@ class ScriptMathProcessor {
       if (isNull)
         return addXStr("");
       if (vdw != Float.MAX_VALUE && (nBitSets != 2 || nPoints != 2))
-          return addXStr("");
+        return addXStr("");
       rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax, 0, null, null)
           : new RadiusData(null, vdw, EnumType.FACTOR, EnumVdw.AUTO));
-      MeasurementData md = new MeasurementData(viewer, points, 0, rd, strFormat, units,
-          null, isAllConnected, isNotConnected, null, true);
-      return addXObj(md.getMeasurements(asArray));
+      return addXObj((new MeasurementData(viewer, points)).set(0, rd, strFormat, units, null, isAllConnected,
+          isNotConnected, null, true).getMeasurements(asArray));
     case Token.angle:
       if ((nPoints = args.length) != 3 && nPoints != 4)
         return false;
@@ -1347,7 +1347,8 @@ class ScriptMathProcessor {
     case 3:
       return addXFloat(Measure.computeAngleABC(pts[0], pts[1], pts[2], true));
     case 4:
-      return addXFloat(Measure.computeTorsion(pts[0], pts[1], pts[2], pts[3], true));
+      return addXFloat(Measure.computeTorsion(pts[0], pts[1], pts[2], pts[3],
+          true));
     }
     return false;
   }

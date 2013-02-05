@@ -133,6 +133,9 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
         atomB.screenY, zB, mad);
     if (!renderLabel)
       return;
+    String s = measurement.getString();
+    if (s == null || s.length() == 0)
+      return;
     if (mad > 0)
       radius <<= 1;
     int z = (zA + zB) / 2;
@@ -142,7 +145,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     int y = (atomA.screenY + atomB.screenY) / 2;
     drawString(x, y, z, radius, doJustify
         && (x - atomA.screenX) * (y - atomA.screenY) > 0, false, false,
-        (doJustify ? 0 : Integer.MAX_VALUE), measurement.getString());
+        (doJustify ? 0 : Integer.MAX_VALUE), s);
   }
                            
 

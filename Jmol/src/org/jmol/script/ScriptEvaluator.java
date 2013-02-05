@@ -9605,8 +9605,8 @@ public class ScriptEvaluator {
         tickInfo.id = "default";
       if (value != null && strFormat != null && tokAction == Token.opToggle)
         tokAction = Token.define;
-      setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure",
-          new MeasurementData(viewer, points, tokAction, rd, strFormat, null, tickInfo,
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure", 
+          (new MeasurementData(viewer, points)).set(tokAction, rd, strFormat, null, tickInfo,
               isAllConnected, isNotConnected, intramolecular, isAll));
       return;
     }
@@ -16977,7 +16977,7 @@ public class ScriptEvaluator {
     boolean defaultMesh = false;
     if (isPmesh || isPlot3d)
       addShapeProperty(propertyList, "fileType", "Pmesh");
-    
+
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -17173,6 +17173,7 @@ public class ScriptEvaluator {
       case Token.variable:
         onlyOneModel = theToken.value;
         boolean isVariable = (theTok == Token.variable);
+        int tokProperty = tokAt(i + 1);
         if (mepOrMlp == null) { // not mlp or mep
           if (!surfaceObjectSeen && !isMapped && !planeSeen) {
             addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
@@ -17181,18 +17182,31 @@ public class ScriptEvaluator {
             surfaceObjectSeen = true;
           }
           propertyName = "property";
-          if (smoothing == null)
-            smoothing = viewer.getIsosurfacePropertySmoothing(false) == 1 ? Boolean.TRUE
-                : Boolean.FALSE;
+          if (smoothing == null) {
+            boolean allowSmoothing = true;
+            switch (tokProperty) {
+            case Token.atomindex:
+            case Token.atomno:
+            case Token.elemno:
+            case Token.color:
+            case Token.resno:
+              allowSmoothing = false;
+              break;
+            }
+            smoothing = (allowSmoothing
+                && viewer.getIsosurfacePropertySmoothing(false) == 1 ? Boolean.TRUE
+                : Boolean.FALSE);
+          }
           addShapeProperty(propertyList, "propertySmoothing", smoothing);
           sbCommand.append(" isosurfacePropertySmoothing " + smoothing);
-          if (smoothingPower == Integer.MAX_VALUE)
-            smoothingPower = viewer.getIsosurfacePropertySmoothing(true);
-          addShapeProperty(propertyList, "propertySmoothingPower", Integer
-              .valueOf(smoothingPower));
-          if (smoothing == Boolean.TRUE)
+          if (smoothing == Boolean.TRUE) {
+            if (smoothingPower == Integer.MAX_VALUE)
+              smoothingPower = viewer.getIsosurfacePropertySmoothing(true);
+            addShapeProperty(propertyList, "propertySmoothingPower", Integer
+                .valueOf(smoothingPower));
             sbCommand.append(" isosurfacePropertySmoothingPower "
                 + smoothingPower);
+          }
           if (viewer.isRangeSelected())
             addShapeProperty(propertyList, "rangeSelected", Boolean.TRUE);
         } else {
@@ -17229,17 +17243,18 @@ public class ScriptEvaluator {
           if (!isSyntaxCheck/* && (surfaceObjectSeen)*/)
             sbCommand.append(" \"\" ").append(Escape.escape(data));
         } else {
-          int tokProperty = getToken(++i).tok;
+          getToken(++i);
           if (!isSyntaxCheck) {
             sbCommand.append(" " + theToken.value);
             Atom[] atoms = viewer.getModelSet().atoms;
             viewer.autoCalculate(tokProperty);
-            for (int iAtom = atomCount; --iAtom >= 0;)
-              data[iAtom] = Atom.atomPropertyFloat(viewer, atoms[iAtom],
-                  tokProperty);
+            if (tokProperty != Token.color)
+              for (int iAtom = atomCount; --iAtom >= 0;)
+                data[iAtom] = Atom.atomPropertyFloat(viewer, atoms[iAtom],
+                    tokProperty);
           }
           if (tokProperty == Token.color)
-            colorScheme = "colorRGB";
+            colorScheme = "inherit";
           if (tokAt(i + 1) == Token.within) {
             float d = floatParameter(i = i + 2);
             sbCommand.append(" within " + d);
@@ -17523,7 +17538,7 @@ public class ScriptEvaluator {
         case Token.density:
           sbCommand.append("mo [1] squared ");
           addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
-          linearCombination = new float[] {1};
+          linearCombination = new float[] { 1 };
           offset = moNumber = 0;
           i++;
           break;

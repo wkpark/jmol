@@ -25,9 +25,14 @@
 
 package org.jmol.modelset;
 
+import java.util.List;
+
 import org.jmol.atomdata.RadiusData;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
+import org.jmol.util.Point3fi;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.ShapeManager;
 
 /**
@@ -44,11 +49,13 @@ public class ShapeSettings {
   private Object info;
   
   private int size = -1;
-  private RadiusData rd;
   
-  private int argb;
   private short[] colixes;
   private Object[] colors;
+
+  public int argb;
+  public float translucency;
+  public RadiusData rd;
 
   /**
    * 
@@ -71,7 +78,8 @@ public class ShapeSettings {
   public void offset(int offset) {
     if (offset <= 0)
       return;
-    bsAtoms = BitSetUtil.offset(bsAtoms, 0, offset);
+    if (bsAtoms != null)
+      bsAtoms = BitSetUtil.offset(bsAtoms, 0, offset);
     if (colixes != null) {
       short[] c = new short[colixes.length + offset];
       System.arraycopy(colixes, 0, c, offset, colixes.length);
@@ -79,17 +87,50 @@ public class ShapeSettings {
     }
   }
 
-  public void createShape(ShapeManager sm) {
-    if (info != null && info.equals("hidden")) {
+  public void createShape(ModelSet m) {
+    ShapeManager sm = m.shapeManager;
+    int modelIndex = getModelIndex(m);
+    switch (shapeID) {
+    case -1:
       sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
       return;
+    case JmolConstants.SHAPE_ISOSURFACE:
+      if (modelIndex < 0)
+        return;
+      sm.setShapePropertyBs(JmolConstants.SHAPE_BALLS, "colors", colors, bsAtoms);      
+      String s = info.toString().replace('\'', '_').replace('"', '_');
+      s = "script('isosurface ID \"" + s + "\"  model " + m.models[modelIndex].getModelNumberDotted() + " select " + Escape.escape(bsAtoms) 
+          + " solvent " + (size/1000f) + " map property color')";
+      if (translucency > 0)
+        s += " translucent " + translucency;
+      System.out.println("shapeSettings: " + s);
+      sm.viewer.evaluateExpression(s);
+      return;
+    case JmolConstants.SHAPE_MEASURES:
+      if (modelIndex < 0)
+        return;
+      MeasurementData md = (MeasurementData) info;
+      md.setModelSet(m);
+      List<Object> points = md.points;
+      for (int i = points.size(); --i >= 0;)
+        ((Point3fi) points.get(i)).modelIndex = (short) modelIndex;
+      sm.setShapePropertyBs(JmolConstants.SHAPE_MEASURES, "measure", md, bsAtoms);
+      return;
+    default:
+      if (size != -1 || rd != null)
+        sm.setShapeSizeBs(shapeID, size, rd, bsAtoms);
+      if (argb != 0)
+        sm.setShapePropertyBs(shapeID, "color", Integer.valueOf(argb), bsAtoms);
+      else if (colors != null)
+        sm.setShapePropertyBs(shapeID, "colors", colors, bsAtoms);
     }
-    if (size != -1 || rd != null)
-      sm.setShapeSizeBs(shapeID, size, rd, bsAtoms);
-    if (argb != 0)
-      sm.setShapePropertyBs(shapeID, "color", Integer.valueOf(argb), bsAtoms);
-    else if (colors != null)
-      sm.setShapePropertyBs(shapeID, "colors", colors, bsAtoms);
+  }
+
+  private int getModelIndex(ModelSet m) {
+    if (bsAtoms == null)
+      return -1;
+    int iAtom = bsAtoms.nextSetBit(0);
+    return (iAtom < 0 ? -1 : m.atoms[iAtom].modelIndex);
   }
 
   public void setColors(short[] colixes, float translucency) {
@@ -100,13 +141,5 @@ public class ShapeSettings {
   public void setSize(float size) {
     this.size = (int) (size * 1000);
   }
-  
-  public void setColor(int argb) {
-    this.argb = argb;
-  }
-
-  public void setRadiusData(RadiusData rd) {
-    this.rd = rd;
-  }
-  
+    
 }

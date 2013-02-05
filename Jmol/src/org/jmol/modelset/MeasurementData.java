@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jmol.api.JmolMeasurementClient;
+import org.jmol.api.JmolViewer;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.script.Token;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Point3fi;
@@ -48,29 +50,38 @@ public class MeasurementData implements JmolMeasurementClient {
   public boolean mustBeConnected;
   public boolean mustNotBeConnected;
   public TickInfo tickInfo;
-  public int tokAction;
+  public int tokAction = Token.define;
   public List<Object> points;
   //public float[] rangeMinMax;
   public RadiusData radiusData;
   public String strFormat;
+  public String note;
   public boolean isAll;
 
   private String units;
   public Boolean intramolecular;
   private float[] minArray;
+  private ModelSet modelSet;
+  
+  public MeasurementData(JmolViewer viewer, List<Object> points) {
+    this.viewer = (Viewer) viewer;
+    this.points = points;
+  }
+  
+  public MeasurementData setModelSet(ModelSet m) {
+    modelSet = m;
+    return this;
+  }
   
   /*
-   * the general constructor. tokAction is not used here, but simply
-   * passed back to the 
+   * the general constructor. tokAction is not used here
    */
-  public MeasurementData(Viewer viewer, List<Object> points, int tokAction,
-                 RadiusData radiusData, String strFormat, String units,
+  public MeasurementData set(int tokAction, RadiusData radiusData, String strFormat, String units,
                  TickInfo tickInfo,
                  boolean mustBeConnected, boolean mustNotBeConnected,
                  Boolean intramolecular, boolean isAll) {
-    this.viewer = viewer;
+    this.modelSet = viewer.getModelSet();
     this.tokAction = tokAction;
-    this.points = points;
     if (points.size() >= 2 && points.get(0) instanceof BitSet && points.get(1) instanceof BitSet) {
       justOneModel = BitSetUtil.haveCommon(
           viewer.getModelBitSet((BitSet) points.get(0), false),
@@ -85,6 +96,7 @@ public class MeasurementData implements JmolMeasurementClient {
     this.mustNotBeConnected = mustNotBeConnected;
     this.intramolecular = intramolecular;    
     this.isAll = isAll;
+    return this;
   }
   
   /**
@@ -125,12 +137,12 @@ public class MeasurementData implements JmolMeasurementClient {
       minArray = new float[((BitSet) points.get(0)).cardinality()];
       for (int i = 0; i < minArray.length; i++)
         minArray[i] = -0f;
-      define(null, viewer.getModelSet());
+      define(null, modelSet);
       return minArray;      
     }
       
     measurementStrings = new ArrayList<String>();
-    define(null, viewer.getModelSet());
+    define(null, modelSet);
     return measurementStrings;
   }
   

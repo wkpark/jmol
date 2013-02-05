@@ -74,6 +74,7 @@ import org.jmol.constant.EnumPalette;
   private final static String BYRESIDUE_SHAPELY = BYRESIDUE_PREFIX + "_shapely"; 
   private final static String BYRESIDUE_AMINO = BYRESIDUE_PREFIX + "_amino"; 
   
+  public final static int INHERIT = -2;
   public final static int CUSTOM = -1;
   public final static int ROYGB = 0;
   public final static int BGYOR = 1;
@@ -247,7 +248,8 @@ import org.jmol.constant.EnumPalette;
     // ColorManager.setCurrentColorRange
     
     colorScheme = colorScheme.toLowerCase();
-    
+    if (colorScheme.equals("inherit"))
+      return INHERIT;
     
     // check for "name = [x...] [x...] ..." 
     // or "[x...] [x...] ..."

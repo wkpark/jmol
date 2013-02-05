@@ -595,6 +595,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     } else if (("nci" == propertyName || "orbital" == propertyName)
         && sg != null) {
       sg.getParams().testFlags = (viewer.getTestFlag(2) ? 2 : 0);
+    } else if ("solvent" == propertyName) {
+        sg.getParams().testFlags = (viewer.getTestFlag(1) ? 1 : 0);
     }
 
     // surface Export3D only (return TRUE) or shared (return FALSE)

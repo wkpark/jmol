@@ -240,6 +240,8 @@ class IsoSolventReader extends AtomDataReader {
       generateSolventCavity();
       resetVoxelData(Float.MAX_VALUE);
       markSphereVoxels(0, Float.NaN);
+//    } else if ((params.testFlags & 1) == 1){
+//      generateSolventCubeQuick(true);
     } else {
       voxelSource = new int[volumeData.nPoints];
       generateSolventCube();
@@ -539,6 +541,142 @@ class IsoSolventReader extends AtomDataReader {
     myAtomCount = firstNearbyAtom = n;
     thisAtomSet = BitSetUtil.setAll(myAtomCount);
   }
+
+  
+//  void generateSolventCubeQuick(boolean isFirstPass) {
+//    float distance = params.distance;
+//    float rA, rB;
+//    Point3f ptA;
+//    Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
+//    Point3i pt0 = new Point3i(), pt1 = new Point3i();
+//    float value = Float.MAX_VALUE;
+//    for (int x = 0; x < nPointsX; ++x)
+//      for (int y = 0; y < nPointsY; ++y)
+//        for (int z = 0; z < nPointsZ; ++z)
+//          voxelData[x][y][z] = value;
+//    if (dataType == Parameters.SURFACE_NOMAP)
+//      return;
+//    int atomCount = myAtomCount;
+//    float maxRadius = 0;
+//    float r0 = (isFirstPass && isCavity ? cavityRadius : 0);
+//    boolean isWithin = (isFirstPass && distance != Float.MAX_VALUE && point != null);
+//    AtomIndexIterator iter = (doCalculateTroughs ? 
+//        atomDataServer.getSelectedAtomIterator(bsMySelected, true, false, false) : null);
+//    for (int iAtom = 0; iAtom < atomCount; iAtom++) {
+//      ptA = atomXyz[iAtom];
+//      rA = atomRadius[iAtom];
+//      if (rA > maxRadius)
+//        maxRadius = rA;
+//      if (isWithin && ptA.distance(point) > distance + rA + 0.5)
+//        continue;
+//      boolean isNearby = (iAtom >= firstNearbyAtom);
+//      setGridLimitsForAtom(ptA, rA + r0, pt0, pt1);
+//      volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
+//      for (int i = pt0.x; i < pt1.x; i++) {
+//        ptY0.setT(ptXyzTemp);
+//        for (int j = pt0.y; j < pt1.y; j++) {
+//          ptZ0.setT(ptXyzTemp);
+//          for (int k = pt0.z; k < pt1.z; k++) {
+//            float v = ptXyzTemp.distance(ptA) - rA;
+//            if (v < voxelData[i][j][k]) {
+//              voxelData[i][j][k] = (isNearby || isWithin
+//                  && ptXyzTemp.distance(point) > distance ? Float.NaN : v);
+//            }
+//            ptXyzTemp.add(volumetricVectors[2]);
+//          }
+//          ptXyzTemp.setT(ptZ0);
+//          ptXyzTemp.add(volumetricVectors[1]);
+//        }
+//        ptXyzTemp.setT(ptY0);
+//        ptXyzTemp.add(volumetricVectors[0]);
+//      }
+//    }
+//    if (isCavity && isFirstPass)
+//      return;
+//    if (doCalculateTroughs) {
+//      Point3i ptA0 = new Point3i();
+//      Point3i ptB0 = new Point3i();
+//      Point3i ptA1 = new Point3i();
+//      Point3i ptB1 = new Point3i();
+//      for (int iAtom = 0; iAtom < firstNearbyAtom - 1; iAtom++)
+//        if (atomNo[iAtom] > 0) {
+//          ptA = atomXyz[iAtom];
+//          rA = atomRadius[iAtom] + solventRadius;
+//          int iatomA = atomIndex[iAtom];
+//          if (isWithin && ptA.distance(point) > distance + rA + 0.5)
+//            continue;
+//          setGridLimitsForAtom(ptA, rA - solventRadius, ptA0, ptA1);
+//          atomDataServer.setIteratorForAtom(iter, iatomA, rA + solventRadius + maxRadius);
+//          //true ==> only atom index > this atom accepted
+//          while (iter.hasNext()) {
+//            int iatomB = iter.next();
+//            Point3f ptB = atomXyz[myIndex[iatomB]];
+//            rB = atomData.atomRadius[iatomB] + solventRadius;
+//            if (isWithin && ptB.distance(point) > distance + rB + 0.5)
+//              continue;
+//            if (params.thePlane != null
+//                && Math.abs(volumeData.distancePointToPlane(ptB)) > 2 * rB)
+//              continue;
+//
+//            float dAB = ptA.distance(ptB);
+//            if (dAB >= rA + rB)
+//              continue;
+//            //defining pt0 and pt1 very crudely -- this could be refined
+//            setGridLimitsForAtom(ptB, rB - solventRadius, ptB0, ptB1);
+//            pt0.x = Math.min(ptA0.x, ptB0.x);
+//            pt0.y = Math.min(ptA0.y, ptB0.y);
+//            pt0.z = Math.min(ptA0.z, ptB0.z);
+//            pt1.x = Math.max(ptA1.x, ptB1.x);
+//            pt1.y = Math.max(ptA1.y, ptB1.y);
+//            pt1.z = Math.max(ptA1.z, ptB1.z);
+//            volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
+//            for (int i = pt0.x; i < pt1.x; i++) {
+//              ptY0.setT(ptXyzTemp);
+//              for (int j = pt0.y; j < pt1.y; j++) {
+//                ptZ0.setT(ptXyzTemp);
+//                for (int k = pt0.z; k < pt1.z; k++) {
+//                  float dVS = checkSpecialVoxel(ptA, rA, ptB, rB, dAB,
+//                      ptXyzTemp);
+//                  if (!Float.isNaN(dVS)) {
+//                    float v = solventRadius - dVS;
+//                    if (v < voxelData[i][j][k]) {
+//                      voxelData[i][j][k] = (isWithin
+//                          && ptXyzTemp.distance(point) > distance ? Float.NaN
+//                          : v);
+//                    }
+//                  }
+//                  ptXyzTemp.add(volumetricVectors[2]);
+//                }
+//                ptXyzTemp.setT(ptZ0);
+//                ptXyzTemp.add(volumetricVectors[1]);
+//              }
+//              ptXyzTemp.setT(ptY0);
+//              ptXyzTemp.add(volumetricVectors[0]);
+//            }
+//          }
+//        }
+//      iter.release();
+//      iter = null;
+//    }
+//    if (params.thePlane == null) {
+//      for (int x = 0; x < nPointsX; ++x)
+//        for (int y = 0; y < nPointsY; ++y)
+//          for (int z = 0; z < nPointsZ; ++z)
+//            if (voxelData[x][y][z] == Float.MAX_VALUE)
+//              voxelData[x][y][z] = Float.NaN;
+//    } else { //solvent planes just focus on negative values
+//      value = 0.001f;
+//      for (int x = 0; x < nPointsX; ++x)
+//        for (int y = 0; y < nPointsY; ++y)
+//          for (int z = 0; z < nPointsZ; ++z)
+//            if (voxelData[x][y][z] < value) {
+//              // Float.NaN will also match ">=" this way
+//            } else {
+//              voxelData[x][y][z] = value;
+//            }
+//    }
+//  }
+
 
   private void generateSolventCube() {
     if (dataType == Parameters.SURFACE_NOMAP)

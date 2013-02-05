@@ -917,6 +917,7 @@ public class SurfaceGenerator {
     if ("molecular" == propertyName || "solvent" == propertyName
         || "sasurface" == propertyName || "nomap" == propertyName) {
       params.setSolvent(propertyName, ((Float) value).floatValue());
+
       Logger.info(params.calculationType);
       processState();
       return true;

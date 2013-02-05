@@ -17191,6 +17191,7 @@ public class ScriptEvaluator {
             case Token.elemno:
             case Token.color:
             case Token.resno:
+            case Token.temperature:
               allowSmoothing = false;
               break;
             }

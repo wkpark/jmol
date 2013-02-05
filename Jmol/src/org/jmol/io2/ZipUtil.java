@@ -766,6 +766,8 @@ public class ZipUtil implements JmolZipUtility {
             && exceptFiles == manifest.indexOf("|" + thisEntry + "|") >= 0)
           continue;
         byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
+//        String s = new String(bytes);
+//        System.out.println("ziputil " + s.substring(0, 100));
         if (JmolBinary.isZipFile(bytes)) {
           BufferedInputStream bis = new BufferedInputStream(
               new ByteArrayInputStream(bytes));

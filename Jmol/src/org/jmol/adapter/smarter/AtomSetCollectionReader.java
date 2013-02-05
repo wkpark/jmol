@@ -481,6 +481,8 @@ public abstract class AtomSetCollectionReader {
       latticeCells[1] = (int) pt.y;
       latticeCells[2] = (int) pt.z;
       doCentroidUnitCell = (htParams.containsKey("centroid"));
+      if (doCentroidUnitCell && (latticeCells[2] == -1 || latticeCells[2] == 0))
+        latticeCells[2] = 1;
       centroidPacked = doCentroidUnitCell && htParams.containsKey("packed");
       doPackUnitCell = !doCentroidUnitCell && (htParams.containsKey("packed") || latticeCells[2] < 0);
       

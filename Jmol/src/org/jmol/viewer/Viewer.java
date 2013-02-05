@@ -10931,4 +10931,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return sc;
   }
 
+  public void checkInheritedShapes() {
+    shapeManager.checkInheritedShapes();
+  }
+
 }

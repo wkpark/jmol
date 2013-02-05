@@ -523,4 +523,15 @@ public class ShapeManager {
     
   }
 
+  /**
+   * starting with Jmol 13.1.13, isosurfaces can use "property color" 
+   * to inherit the color of the underlying atoms. This is then dynamic
+   * 
+   */
+  public void checkInheritedShapes() {
+    if (shapes[JmolConstants.SHAPE_ISOSURFACE] == null)
+      return;
+    setShapePropertyBs(JmolConstants.SHAPE_ISOSURFACE, "remapInherited", null, null);
+  }
+
 }

@@ -8240,8 +8240,9 @@ public class ScriptEvaluator {
           .valueOf(JmolEdge.BOND_COVALENT_MASK));
     if (doClearBondSet)
       viewer.selectBonds(null);
+    if (shapeType == JmolConstants.SHAPE_BALLS)
+      viewer.checkInheritedShapes();
   }
-
 
   private void setShapeTranslucency(int shapeType, String prefix,
                                     String translucency,

@@ -74,7 +74,6 @@ import org.jmol.constant.EnumPalette;
   private final static String BYRESIDUE_SHAPELY = BYRESIDUE_PREFIX + "_shapely"; 
   private final static String BYRESIDUE_AMINO = BYRESIDUE_PREFIX + "_amino"; 
   
-  public final static int INHERIT = -2;
   public final static int CUSTOM = -1;
   public final static int ROYGB = 0;
   public final static int BGYOR = 1;
@@ -90,7 +89,8 @@ import org.jmol.constant.EnumPalette;
   public final static int WB  = 11;
   public final static int USER = -12;
   public final static int RESU = -13;
-  public final static int ALT = 14; // == 0
+  public final static int INHERIT = 14;
+  public final static int ALT = 15; // == 0
 
   private final static String[] colorSchemes = {
     "roygb", "bgyor", 
@@ -98,7 +98,7 @@ import org.jmol.constant.EnumPalette;
     BYRESIDUE_AMINO, 
     "rwb", "bwr", "low", "high", "bw", "wb",
     // custom
-    "user", "resu", 
+    "user", "resu", "inherit",
     // ALT_NAMES:
     "rgb", "bgr", 
     "jmol", "rasmol", BYRESIDUE_PREFIX 

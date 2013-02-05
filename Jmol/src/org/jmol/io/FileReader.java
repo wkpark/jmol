@@ -83,7 +83,6 @@ public class FileReader {
       if (fileTypeIn == null)
         fileTypeIn = JmolBinary.getBinaryType(fullPathNameIn);
       boolean isBinary = JmolBinary.checkBinaryType(fileTypeIn);
-
       t = fm.getUnzippedBufferedReaderOrErrorMessageFromName(fullPathNameIn,
           bytes, true, isBinary, false, true);
       if (t == null || t instanceof String) {
@@ -94,14 +93,11 @@ public class FileReader {
         atomSetCollection = errorMessage;
         return;
       }
-    }
-
-    if (reader == null) {
       if (t instanceof BufferedReader) {
         reader = t;
       } else if (t instanceof ZInputStream) {
         String name = fullPathNameIn;
-        boolean isBinary = (JmolBinary.getBinaryType(name) != null);
+        isBinary = (JmolBinary.getBinaryType(name) != null);
         String[] subFileList = null;
         if (name.indexOf("|") >= 0 && !name.endsWith(".zip")) {
           subFileList = TextFormat.splitChars(name, "|");
@@ -134,9 +130,6 @@ public class FileReader {
       if (!(atomSetCollection instanceof String))
         atomSetCollection = viewer.getModelAdapter().getAtomSetCollection(
             atomSetCollection);
-    }
-
-    if (reader != null)
       try {
         if (reader instanceof BufferedReader)
           ((BufferedReader) reader).close();
@@ -145,6 +138,7 @@ public class FileReader {
       } catch (IOException e) {
         // ignore
       }
+    }
 
     if (atomSetCollection instanceof String)
       return;

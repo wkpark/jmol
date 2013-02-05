@@ -618,6 +618,10 @@ public class IsosurfaceMesh extends Mesh {
     if (colorEncoder == null)
       return;
     colorCommand = colorEncoder.getColorScheme();
+    if (colorCommand.equals("inherit")) {
+      colorCommand = "#inherit;";
+      return;
+    }
     if (colorCommand == null)
       return;
     colorCommand = "color $"
@@ -698,6 +702,8 @@ public class IsosurfaceMesh extends Mesh {
       ce = colorEncoder;
     if (ce == null)
       ce = colorEncoder = new ColorEncoder(null);
+    colorEncoder = ce;
+    setColorCommand();
     if (Float.isNaN(translucentLevel)) {
       translucentLevel = Colix.getColixTranslucencyLevel(colix);
     } else {
@@ -714,11 +720,13 @@ public class IsosurfaceMesh extends Mesh {
     if (vertexColixes == null || vertexColixes.length != vertexCount)
       vertexColixes = new short[vertexCount];
     if (inherit) {
-     
       Atom[] atoms = viewer.getModelSet().atoms;
-      for (int i = mergeVertexCount0; i < vertexCount; i++)
-        vertexColixes[i] = Colix.copyColixTranslucency(colix,
-            atoms[vertexSource[i]].getColix());
+      for (int i = mergeVertexCount0; i < vertexCount; i++) {
+        int pt = vertexSource[i];
+        if (pt < atoms.length)
+          vertexColixes[i] = Colix.copyColixTranslucency(colix,
+            atoms[pt].getColix());
+      }
       return;
     }
     if (jvxlData.isBicolorMap) {
@@ -772,11 +780,11 @@ public class IsosurfaceMesh extends Mesh {
     isColorSolid = false;
   }
 
-  public void reinitializeLightingAndColor() {
+  public void reinitializeLightingAndColor(Viewer viewer) {
     initialize(lighting, null, null);
     if (colorEncoder != null || jvxlData.isBicolorMap) {
       vertexColixes = null;
-      remapColors(null, null, Float.NaN);
+      remapColors(viewer, null, Float.NaN);
     }
   }
 

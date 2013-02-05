@@ -619,7 +619,7 @@ public class PyMOLReader extends PdbReader {
 
   private void setSurface() {
     BitSet bs = reps[REP_SURFACE];
-    if (bsModelAtoms.isEmpty() || bs.isEmpty())
+    if (isStateScript || bsModelAtoms.isEmpty() || bs.isEmpty())
       return;
     ShapeSettings ss = new ShapeSettings(JmolConstants.SHAPE_ISOSURFACE, bs, branchName + "_" + branchID);
     ss.setSize(getFloatSetting(PyMOL.solvent_radius));

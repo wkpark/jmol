@@ -208,10 +208,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     //isosurface-only (no calculation required; no calc parameters to set)
 
-//    if ("navigate" == propertyName) {
-//      navigate(((Integer) value).intValue());
-//      return;
-//    }
+    //    if ("navigate" == propertyName) {
+    //      navigate(((Integer) value).intValue());
+    //      return;
+    //    }
     if ("delete" == propertyName) {
       setPropertySuper(propertyName, value, bs);
       if (!explicitID)
@@ -220,10 +220,18 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
-    if ("remapColor" == propertyName) {
-      if (thisMesh != null) {
-        thisMesh.remapColors(viewer, (ColorEncoder) value, translucentLevel);
+    if ("remapInherited" == propertyName) {
+      for (int i = meshCount; --i >= 0;) {
+        if (isomeshes[i] != null
+            && isomeshes[i].colorCommand.equals("#inherit;"))
+          isomeshes[i].remapColors(viewer, null, Float.NaN);
       }
+      return;
+    }
+
+    if ("remapColor" == propertyName) {
+      if (thisMesh != null)
+        thisMesh.remapColors(viewer, (ColorEncoder) value, translucentLevel);
       return;
     }
 
@@ -271,12 +279,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       Object[] colors = (Object[]) value;
       if (thisMesh != null) {
         thisMesh.colorPhased = true;
-        thisMesh.colix = thisMesh.jvxlData.minColorIndex = Colix.getColix(((Integer) colors[0]).intValue());
-        thisMesh.jvxlData.maxColorIndex = Colix.getColix(((Integer) colors[1]).intValue());
+        thisMesh.colix = thisMesh.jvxlData.minColorIndex = Colix
+            .getColix(((Integer) colors[0]).intValue());
+        thisMesh.jvxlData.maxColorIndex = Colix.getColix(((Integer) colors[1])
+            .intValue());
         thisMesh.jvxlData.isBicolorMap = true;
         thisMesh.jvxlData.colorDensity = false;
         thisMesh.isColorSolid = false;
-        thisMesh.remapColors(null, null, translucentLevel);
+        thisMesh.remapColors(viewer, null, translucentLevel);
       }
       return;
     }
@@ -332,8 +342,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         if (meshes[i].connections != null
             && meshes[i].modelIndex == ((Integer) ((Object[]) value)[0])
                 .intValue())
-          ((IsosurfaceMesh) meshes[i]).updateCoordinates((Matrix4f) ((Object[]) value)[2],
-              (BitSet) ((Object[]) value)[1]);
+          ((IsosurfaceMesh) meshes[i]).updateCoordinates(
+              (Matrix4f) ((Object[]) value)[2], (BitSet) ((Object[]) value)[1]);
       return;
     }
 
@@ -514,11 +524,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           return;
         }
         if (!(value instanceof BufferedReader))
-        try {
-          value = JmolBinary.getBufferedReader((BufferedInputStream) value, "ISO-8859-1");
-        } catch (IOException e) {
-          // ignore
-        }
+          try {
+            value = JmolBinary.getBufferedReader((BufferedInputStream) value,
+                "ISO-8859-1");
+          } catch (IOException e) {
+            // ignore
+          }
       }
     } else if ("atomIndex" == propertyName) {
       atomIndex = ((Integer) value).intValue();
@@ -659,7 +670,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   protected void slabPolygons(Object[] slabInfo) {
     thisMesh.slabPolygons(slabInfo, false);
-    thisMesh.reinitializeLightingAndColor();
+    thisMesh.reinitializeLightingAndColor(viewer);
   }
 
   private void setPropertySuper(String propertyName, Object value, BitSet bs) {
@@ -903,7 +914,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         appendCmd(sb, imesh.getState(myType));
       if (!imesh.isColorSolid && Colix.isColixTranslucent(imesh.colix))
         appendCmd(sb, "color " + myType + " " + getTranslucentLabel(imesh.colix));
-      if (imesh.colorCommand != null) {
+      if (imesh.colorCommand != null && !imesh.colorCommand.equals("#inherit;")) {
         appendCmd(sb, imesh.colorCommand);
       }
       boolean colorArrayed = (imesh.isColorSolid && imesh.polygonColixes != null);
@@ -1337,7 +1348,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     List<Object[]> slabInfo = sg.getSlabInfo();
     if (slabInfo != null) {
       thisMesh.slabPolygonsList(slabInfo, false);
-      thisMesh.reinitializeLightingAndColor();
+      thisMesh.reinitializeLightingAndColor(viewer);
     }
     // may not be the final color scheme, though.
     thisMesh.setColorCommand();

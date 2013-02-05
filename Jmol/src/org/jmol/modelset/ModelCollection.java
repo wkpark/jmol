@@ -1860,6 +1860,9 @@ abstract public class ModelCollection extends BondCollection {
       BitSet bs = molecules[i].atomList;
       center.set(0, 0, 0);
       int n = 0;
+      if (bs.get(1888))
+      System.out.println(bs.cardinality() + " " +  bs);
+      
       for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
         if (isOneMolecule || centroidPacked) {
           center.setT(atoms[j]);

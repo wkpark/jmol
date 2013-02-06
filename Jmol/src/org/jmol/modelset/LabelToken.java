@@ -286,7 +286,7 @@ public class LabelToken {
   public static String formatLabelMeasure(Viewer viewer, Measurement measurement,
                                    String label, float value, String units) {
     Map<String, Object> htValues = new Hashtable<String, Object>();
-    htValues.put("#", "" + (measurement.getIndex() + 1));
+    htValues.put("#", "" + (measurement.index + 1));
     htValues.put("VALUE", new Float(value));
     htValues.put("UNITS", units);
     LabelToken[] tokens = compile(viewer, label, '\1', htValues);

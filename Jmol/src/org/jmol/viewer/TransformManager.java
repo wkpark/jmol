@@ -895,6 +895,10 @@ public class TransformManager {
   public int zSlabValue;
   int zDepthValue;
 
+  int getZShadeStart() {
+    return (zShadeEnabled ? zSlabValue : 0);
+  }
+
   float slabRange = 0f;
 
   public void setSlabRange(float value) {

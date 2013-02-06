@@ -1192,6 +1192,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getTranslationScript();
   }
 
+  public int getZShadeStart() {
+    return transformManager.getZShadeStart();
+  }
+
   @Override
   public int getZoomPercent() {
     // deprecated

@@ -1016,10 +1016,10 @@ public class ActionManager {
           enterMeasurementMode(nearestAtomIndex);
         }
         addToMeasurement(nearestAtomIndex, null, true);
-        measurementPending.setColix(Colix.MAGENTA);
+        measurementPending.colix = Colix.MAGENTA;
       } else if (measurementPending != null) {
         measurementPending.setCount(1);
-        measurementPending.setColix(Colix.GOLD);
+        measurementPending.colix = Colix.GOLD;
       }
       if (measurementPending == null)
         return;

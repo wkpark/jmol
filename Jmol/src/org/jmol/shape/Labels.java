@@ -38,6 +38,7 @@ import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.Hashtable;
+import java.util.List;
 
 import java.util.Map;
 
@@ -86,10 +87,11 @@ public class Labels extends AtomShape {
     translucentAllowed = false;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void setProperty(String propertyName, Object value, BitSet bsSelected) {
     isActive = true;
-    
+
     //System.out.println(propertyName + " Labels " + value);
 
     if ("setDefaults" == propertyName) {
@@ -102,9 +104,9 @@ public class Labels extends AtomShape {
       byte pid = EnumPalette.pidOf(value);
       short colix = Colix.getColixO(value);
       if (!setDefaults)
-        for (int i = atomCount; --i >= 0;)
-          if (bsSelected.get(i))
-            setLabelColix(i, colix, pid);
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+            .nextSetBit(i + 1))
+          setLabelColix(i, colix, pid);
       if (setDefaults || !defaultsOnlyForNone) {
         defaultColix = colix;
         defaultPaletteID = pid;
@@ -117,29 +119,43 @@ public class Labels extends AtomShape {
         return;
       float val = ((Float) value).floatValue();
       float scalePixelsPerMicron = (val == 0 ? 0 : 10000f / val);
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i)) {
-          if (strings.length <= i)
-            continue;
-          text = getLabel(i);
-          if (text == null) {
-            text = Text.newLabel(gdata, null, strings[i], (short) 0, (short) 0, 0, 0,
-                0, 0, 0, scalePixelsPerMicron);
-            putLabel(i, text);
-          } else {
-            text.setScalePixelsPerMicron(scalePixelsPerMicron);
-          }
+      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+          .nextSetBit(i + 1)) {
+        if (strings.length <= i)
+          continue;
+        text = getLabel(i);
+        if (text == null) {
+          text = Text.newLabel(gdata, null, strings[i], (short) 0, (short) 0,
+              0, 0, 0, 0, 0, scalePixelsPerMicron);
+          putLabel(i, text);
+        } else {
+          text.setScalePixelsPerMicron(scalePixelsPerMicron);
         }
+      }
       return;
     }
 
     if ("label" == propertyName) {
       setScaling();
       String strLabel = (String) value;
-      LabelToken[][] tokens = (strLabel == null || strLabel.length() == 0 ? nullToken : new LabelToken[][] { null });
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i)) 
-          setLabel(tokens, strLabel, i);
+      LabelToken[][] tokens = (strLabel == null || strLabel.length() == 0 ? nullToken
+          : new LabelToken[][] { null });
+      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+          .nextSetBit(i + 1))
+        setLabel(tokens, strLabel, i);
+      return;
+    }
+
+    if ("labels" == propertyName) {
+      setScaling();
+      List<String> labels = (List<String>) value;
+      for (int i = bsSelected.nextSetBit(0), pt = 0; i >= 0 && i < atomCount; i = bsSelected
+          .nextSetBit(i + 1)) {
+        String strLabel = labels.get(pt++);
+        LabelToken[][] tokens = (strLabel == null || strLabel.length() == 0 ? nullToken
+            : new LabelToken[][] { null });
+        setLabel(tokens, strLabel, i);
+      }
       return;
     }
 
@@ -147,7 +163,7 @@ public class Labels extends AtomShape {
       labelBoxes = null;
       return;
     }
-    
+
     if ("translucency" == propertyName || "bgtranslucency" == propertyName) {
       // no translucency
       return;
@@ -159,9 +175,9 @@ public class Labels extends AtomShape {
         bsBgColixSet = new BitSet();
       short bgcolix = Colix.getColixO(value);
       if (!setDefaults)
-        for (int i = atomCount; --i >= 0;)
-          if (bsSelected.get(i))
-            setBgcolix(i, bgcolix);
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+            .nextSetBit(i + 1))
+          setBgcolix(i, bgcolix);
       if (setDefaults || !defaultsOnlyForNone)
         defaultBgcolix = bgcolix;
       return;
@@ -180,9 +196,9 @@ public class Labels extends AtomShape {
       }
       byte fid = gdata.getFontFid(fontsize);
       if (!setDefaults)
-        for (int i = atomCount; --i >= 0;)
-          if (bsSelected.get(i))
-            setFont(i, fid);
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+            .nextSetBit(i + 1))
+          setFont(i, fid);
       if (setDefaults || !defaultsOnlyForNone)
         defaultFontId = fid;
       return;
@@ -191,9 +207,9 @@ public class Labels extends AtomShape {
     if ("font" == propertyName) {
       byte fid = ((JmolFont) value).fid;
       if (!setDefaults)
-        for (int i = atomCount; --i >= 0;)
-          if (bsSelected.get(i))
-            setFont(i, fid);
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+            .nextSetBit(i + 1))
+          setFont(i, fid);
       if (setDefaults || !defaultsOnlyForNone)
         defaultFontId = fid;
       return;
@@ -211,9 +227,9 @@ public class Labels extends AtomShape {
       else if (offset == zeroOffset)
         offset = 0;
       if (!setDefaults)
-        for (int i = atomCount; --i >= 0;)
-          if (bsSelected.get(i))
-            setOffsets(i, offset, isExact);
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+            .nextSetBit(i + 1))
+          setOffsets(i, offset, isExact);
       if (setDefaults || !defaultsOnlyForNone)
         defaultOffset = offset;
       return;
@@ -226,9 +242,9 @@ public class Labels extends AtomShape {
         alignment = Object2d.ALIGN_RIGHT;
       else if (type.equalsIgnoreCase("center"))
         alignment = Object2d.ALIGN_CENTER;
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i))
-          setAlignment(i, alignment);
+      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+          .nextSetBit(i + 1))
+        setAlignment(i, alignment);
       if (setDefaults || !defaultsOnlyForNone)
         defaultAlignment = alignment;
       return;
@@ -237,9 +253,9 @@ public class Labels extends AtomShape {
     if ("pointer" == propertyName) {
       int pointer = ((Integer) value).intValue();
       if (!setDefaults)
-        for (int i = atomCount; --i >= 0;)
-          if (bsSelected.get(i))
-            setPointer(i, pointer);
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+            .nextSetBit(i + 1))
+          setPointer(i, pointer);
       if (setDefaults || !defaultsOnlyForNone)
         defaultPointer = pointer;
       return;
@@ -248,9 +264,9 @@ public class Labels extends AtomShape {
     if ("front" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();
       if (!setDefaults)
-        for (int i = atomCount; --i >= 0;)
-          if (bsSelected.get(i))
-            setFront(i, TF);
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+            .nextSetBit(i + 1))
+          setFront(i, TF);
       if (setDefaults || !defaultsOnlyForNone)
         defaultZPos = (TF ? FRONT_FLAG : 0);
       return;
@@ -259,9 +275,9 @@ public class Labels extends AtomShape {
     if ("group" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();
       if (!setDefaults)
-        for (int i = atomCount; --i >= 0;)
-          if (bsSelected.get(i))
-            setGroup(i, TF);
+        for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+            .nextSetBit(i + 1))
+          setGroup(i, TF);
       if (setDefaults || !defaultsOnlyForNone)
         defaultZPos = (TF ? GROUP_FLAG : 0);
       return;
@@ -269,8 +285,8 @@ public class Labels extends AtomShape {
 
     if ("display" == propertyName || "toggleLabel" == propertyName) {
       // toggle
-      int mode = ("toggleLabel" == propertyName ? 0 
-          : ((Boolean) value).booleanValue() ? 1 : -1);
+      int mode = ("toggleLabel" == propertyName ? 0 : ((Boolean) value)
+          .booleanValue() ? 1 : -1);
       if (mads == null)
         mads = new short[atomCount];
       String strLabelPDB = null;
@@ -279,55 +295,53 @@ public class Labels extends AtomShape {
       LabelToken[] tokensUNK = null;
       String strLabel;
       LabelToken[] tokens;
-      for (int atomIndex = atomCount; --atomIndex >= 0;) {
-        if (bsSelected.get(atomIndex)) {
-          Atom atom = atoms[atomIndex];
-          if (formats == null || atomIndex >= formats.length)
-            formats = ArrayUtil.ensureLengthS(formats, atomIndex + 1);
-          if (strings != null && strings.length > atomIndex
-              && strings[atomIndex] != null) {
-            mads[atomIndex] = (short) (mode == 0 && mads[atomIndex] < 0  
-                || mode == 1 ? 1 : -1);
-          } else {
-            if (bsSizeSet == null)
-              bsSizeSet = new BitSet();
-            strings = ArrayUtil.ensureLengthS(strings, atomIndex + 1);
-            if (atom.getGroup3(false).equals("UNK")) {
-              if (strLabelUNK == null) {
-                strLabelUNK = viewer.getStandardLabelFormat(1);
-                tokensUNK = LabelToken.compile(viewer, strLabelUNK, '\0', null);
-              }              
-              strLabel = strLabelUNK;
-              tokens = tokensUNK;
-            } else {
-              if (strLabelPDB == null) {
-                strLabelPDB = viewer.getStandardLabelFormat(2);
-                tokensPDB = LabelToken.compile(viewer, strLabelPDB, '\0', null);
-              }
-              strLabel = strLabelPDB;
-              tokens = tokensPDB;
+      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
+          .nextSetBit(i + 1)) {
+        Atom atom = atoms[i];
+        if (formats == null || i >= formats.length)
+          formats = ArrayUtil.ensureLengthS(formats, i + 1);
+        if (strings != null && strings.length > i && strings[i] != null) {
+          mads[i] = (short) (mode == 0 && mads[i] < 0 || mode == 1 ? 1 : -1);
+        } else {
+          if (bsSizeSet == null)
+            bsSizeSet = new BitSet();
+          strings = ArrayUtil.ensureLengthS(strings, i + 1);
+          if (atom.getGroup3(false).equals("UNK")) {
+            if (strLabelUNK == null) {
+              strLabelUNK = viewer.getStandardLabelFormat(1);
+              tokensUNK = LabelToken.compile(viewer, strLabelUNK, '\0', null);
             }
-            strings[atomIndex] = LabelToken.formatLabelAtomArray(viewer, atom, tokens, '\0', null);
-            formats[atomIndex] = strLabel;
-            bsSizeSet.set(atomIndex);
-            if ((bsBgColixSet == null || !bsBgColixSet.get(atomIndex))
-                && defaultBgcolix != 0)
-              setBgcolix(atomIndex, defaultBgcolix);
-            mads[atomIndex] = (short) (mode >= 0 ? 1 : -1);
+            strLabel = strLabelUNK;
+            tokens = tokensUNK;
+          } else {
+            if (strLabelPDB == null) {
+              strLabelPDB = viewer.getStandardLabelFormat(2);
+              tokensPDB = LabelToken.compile(viewer, strLabelPDB, '\0', null);
+            }
+            strLabel = strLabelPDB;
+            tokens = tokensPDB;
           }
-          atom.setShapeVisibility(myVisibilityFlag, strings != null
-              && atomIndex < strings.length && strings[atomIndex] != null
-              && mads[atomIndex] >= 0);
-          //        } else if (strings != null && atomIndex < strings.length) {
-          //        strings[atomIndex] = null;          
+          strings[i] = LabelToken.formatLabelAtomArray(viewer, atom, tokens,
+              '\0', null);
+          formats[i] = strLabel;
+          bsSizeSet.set(i);
+          if ((bsBgColixSet == null || !bsBgColixSet.get(i))
+              && defaultBgcolix != 0)
+            setBgcolix(i, defaultBgcolix);
+          mads[i] = (short) (mode >= 0 ? 1 : -1);
         }
+        atom.setShapeVisibility(myVisibilityFlag, strings != null
+            && i < strings.length && strings[i] != null && mads[i] >= 0);
+        //        } else if (strings != null && atomIndex < strings.length) {
+        //        strings[atomIndex] = null;          
       }
       return;
     }
 
     if (propertyName.startsWith("label:")) {
       setScaling();
-      setLabel(new LabelToken[1][], propertyName.substring(6), ((Integer)value).intValue());
+      setLabel(new LabelToken[1][], propertyName.substring(6),
+          ((Integer) value).intValue());
       return;
     }
 
@@ -349,7 +363,7 @@ public class Labels extends AtomShape {
       BitSetUtil.deleteBits(bsBgColixSet, bsSelected);
       // pass to super
     }
-    
+
     super.setProperty(propertyName, value, bsSelected);
 
   }

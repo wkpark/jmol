@@ -40,10 +40,12 @@ public class LabelsRenderer extends ShapeRenderer {
   protected int ascent;
   protected int descent;
   final int[] minZ = new int[1];
+  private int zCutoff;
 
   @Override
   protected boolean render() {
     fidPrevious = 0;
+    zCutoff = viewer.getZShadeStart();
 
     Labels labels = (Labels) shape;
 
@@ -92,6 +94,8 @@ public class LabelsRenderer extends ShapeRenderer {
       int textAlign = Labels.getAlignment(offsetFull);
       int pointer = offsetFull & Labels.POINTER_FLAGS;
       int zSlab = atom.screenZ - atom.screenDiameter / 2 - 3;
+      if (zCutoff > 0 && zSlab > zCutoff)
+        continue;
       if (zSlab < 1)
         zSlab = 1;
       int zBox = zSlab;

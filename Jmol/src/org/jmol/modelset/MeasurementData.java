@@ -46,20 +46,20 @@ public class MeasurementData implements JmolMeasurementClient {
   private JmolMeasurementClient client;
   private List<String> measurementStrings;
 
-  private Atom[] atoms;
+  public List<Object> points;
   public boolean mustBeConnected;
   public boolean mustNotBeConnected;
   public TickInfo tickInfo;
   public int tokAction = Token.define;
-  public List<Object> points;
-  //public float[] rangeMinMax;
   public RadiusData radiusData;
   public String strFormat;
   public String note;
   public boolean isAll;
-
-  private String units;
+  public short colix;
   public Boolean intramolecular;
+
+  private Atom[] atoms;
+  private String units;
   private float[] minArray;
   private ModelSet modelSet;
   

@@ -72,6 +72,7 @@ public class PyMOLReader extends PdbReader {
   private Map<String, BitSet> ssMap = new Hashtable<String, BitSet>();
   private Map<String, BitSet> ssMapA = new Hashtable<String, BitSet>();
   private List<Integer> colixList = new ArrayList<Integer>();
+  private List<String> labels = new ArrayList<String>();
 
   private List<ShapeSettings> shapes = new ArrayList<ShapeSettings>();
   private short[] colixes;
@@ -109,7 +110,6 @@ public class PyMOLReader extends PdbReader {
   		"set navigationMode off;" +
       "set zoomLarge false;" +
       "set measurementUnits ANGSTROMS;" +
-      "color measures NONE;" +
       "set ssBondsBackbone FALSE;')";
 
   private void process(Map<String, Object> map) {
@@ -275,6 +275,8 @@ public class PyMOLReader extends PdbReader {
     if (isHidden)
       return;
     List<Object> measure = getList(getList(deepBranch, 2), 0);
+
+    int color = getInt(getList(deepBranch, 0), 2);
     //List<Object> reps = getList(getList(deepBranch, 0), 3);
     int pt;
     int nCoord = (
@@ -291,9 +293,27 @@ public class PyMOLReader extends PdbReader {
     BitSet bs = BitSetUtil.newAndSetBit(0);
     MeasurementData md = new MeasurementData(viewer, points);
     md.note = branchName;
-    md.strFormat = "";
+    String strFormat = "";
+    int nDigits = -1;
+    switch (nCoord) {
+    case 2:
+      nDigits = (int) getFloatSetting(PyMOL.label_distance_digits);
+      break;
+    case 3:
+      nDigits = (int) getFloatSetting(PyMOL.label_angle_digits);
+      break;
+    case 4:
+      nDigits = (int) getFloatSetting(PyMOL.label_dihedral_digits);
+      break;
+    }
+    if (nDigits >= 0)
+      strFormat = nCoord + ":%0." + nDigits + "VALUE %UNITS";
+    md.strFormat = strFormat;
+    md.colix = Colix.getColix(PyMOL.getRGB(color));
     ShapeSettings ss = new ShapeSettings(JmolConstants.SHAPE_MEASURES, bs, 
         md);
+    //int n = -(int) (getFloatSetting(PyMOL.dash_width) + 0.5);
+    //ss.setSize(0.2f); probably good, but this will set it to be not dashed. Should implement that in Jmol
     shapes.add(ss);
   }
 
@@ -396,6 +416,13 @@ public class PyMOLReader extends PdbReader {
     for (int i = 0; i < REP_MAX; i++)
       if (getInt(list2, i) == 1)
         reps[i].set(atomCount);
+    if (reps[REP_LABELS].get(atomCount)) {
+      String label = getString(a, 9);
+      if (label.equals(" "))
+        reps[REP_LABELS].clear(atomCount);
+      else
+        labels.add(label);
+    }
     bsHidden.setBitTo(atomCount, isHidden);
     bsModelAtoms.set(atomCount);
     atomMap[apt] = atomCount++;
@@ -410,7 +437,7 @@ public class PyMOLReader extends PdbReader {
     //System.out.println(chainID +  " " + fileAtomIndex + " " + serNo + " " + x  + " " + y + " " + z);
     processAtom2(atom, serNo, x, y, z, charge);
     int color = getInt(a, 21);
-    color = PyMOL.getColor(color);
+    color = PyMOL.getRGB(color);
     colixList.add(Integer.valueOf(Colix.getColixO(Integer.valueOf(color))));    
   }
 
@@ -606,8 +633,10 @@ public class PyMOLReader extends PdbReader {
     case REP_SURFACE: //   = 2;
       // must be done for each model
       break;
-
-    case REP_LABELS: //   = 3;  
+    case REP_LABELS: //   = 3;
+      ss = new ShapeSettings(JmolConstants.SHAPE_LABELS, bs, labels);
+      shapes.add(ss);
+      break;
     case REP_BACKBONE: //   = 6;
     case REP_MESH: //   = 8;
     case REP_DOTS: //   = 9;
@@ -707,9 +736,8 @@ public class PyMOLReader extends PdbReader {
       sb.append("set zshadePower 2;set zslab " + (fog_start * 100) + "; set zdepth 0;");
     }
     
-    sb.append("set perspectiveDepth " + (!getBooleanSetting(PyMOL.orthoscopic)) + ";");
+    sb.append("set perspectiveDepth " + (!getBooleanSetting(PyMOL.ortho)) + ";");
 
-    sb.append("set measurements " + (-(int) (getFloatSetting(PyMOL.dash_width) + 0.5)) + ";");
     sb.append("set traceAlpha " + getBooleanSetting(PyMOL.cartoon_round_helices) + ";");
     sb.append("set cartoonRockets " + getBooleanSetting(PyMOL.cartoon_cylindrical_helices) + ";");
     sb.append("set ribbonBorder " + getBooleanSetting(PyMOL.cartoon_fancy_helices) + ";");

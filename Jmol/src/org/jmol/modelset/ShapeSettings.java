@@ -90,6 +90,7 @@ public class ShapeSettings {
   public void createShape(ModelSet m) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
+    sm.loadShape(shapeID);
     switch (shapeID) {
     case -1:
       sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
@@ -106,6 +107,9 @@ public class ShapeSettings {
       System.out.println("shapeSettings: " + s);
       sm.viewer.evaluateExpression(s);
       return;
+    case JmolConstants.SHAPE_LABELS:
+      sm.setShapePropertyBs(JmolConstants.SHAPE_LABELS, "labels", info, bsAtoms);
+      return;
     case JmolConstants.SHAPE_MEASURES:
       if (modelIndex < 0)
         return;
@@ -115,6 +119,8 @@ public class ShapeSettings {
       for (int i = points.size(); --i >= 0;)
         ((Point3fi) points.get(i)).modelIndex = (short) modelIndex;
       sm.setShapePropertyBs(JmolConstants.SHAPE_MEASURES, "measure", md, bsAtoms);
+      if (size != -1)
+        sm.setShapeSizeBs(shapeID, size, null, null);
       return;
     default:
       if (size != -1 || rd != null)

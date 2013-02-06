@@ -51,7 +51,13 @@ public class Measurement {
   private Viewer viewer;
 
   public ModelSet modelSet;
-
+  public int index;
+  public boolean isVisible = true;
+  public boolean isHidden = false;
+  public boolean isDynamic = false;
+  public boolean isTrajectory = false;
+  public short colix;
+  
   public int traceX = Integer.MIN_VALUE, traceY;
   
   protected int count;
@@ -118,56 +124,7 @@ public class Measurement {
   public float getValue() {
     return value;
   }
-  
-  private boolean isVisible = true;
-  private boolean isHidden = false;
-  private boolean isDynamic = false;
-  private boolean isTrajectory = false;
-  
-  public boolean isVisible() {
-    return isVisible;
-  }
-  public boolean isHidden() {
-    return isHidden;
-  }
-  public boolean isDynamic() {
-    return isDynamic;
-  }
-  
-  public boolean isTrajectory() {
-    return isTrajectory;
-  }
-  
-  public void setVisible(boolean TF) {
-    this.isVisible = TF;
-  }
-  public void setHidden(boolean TF) {
-    this.isHidden = TF;
-  }
-  public void setDynamic(boolean TF) {
-    this.isDynamic = TF;
-  }
-  
-  private short colix;
-  
-  public short getColix() {
-    return colix;
-  }
-  
-  public void setColix(short colix) {
-    this.colix = colix;
-  }
-  
-  private int index;
-  
-  public void setIndex(int index) {
-    this.index = index;
-  }
-  
-  public int getIndex() {
-    return index;
-  }
-  
+    
   private AxisAngle4f aa;
   
   public AxisAngle4f getAxisAngle() {

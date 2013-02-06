@@ -1966,9 +1966,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       fileName = "file://" + (fileName.startsWith("/") ? "" : "/") + fileName;
 
     String cmd = null;
-    if (fileName.endsWith("jvxl"))
+    if (fileName.endsWith("jvxl")) {
       cmd = "isosurface ";
-    else if (!fileName.endsWith(".spt")) {
+    } else if (fileName.endsWith(".pse")) {
+      cmd = "zap;load SYNC " + Escape.escapeStr(fileName)
+          + " filter 'DORESIZE'";
+      return;
+    }
+    if (!fileName.endsWith(".spt")) {
       String type = fileManager.getFileTypeName(fileName);
       if (type == null) {
         type = JmolBinary
@@ -1984,9 +1989,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         cmd = "load ";
       } else if (type.equals("Cube")) {
         cmd = "isosurface sign red blue ";
-      } else if (type.equals("PyMOL")) {
-        cmd = "zap;load SYNC " + Escape.escapeStr(fileName) + " filter 'DORESIZE'";
-        return;
       } else if (!type.equals("spt")) {
         cmd = global.defaultDropScript;
         cmd = TextFormat.simpleReplace(cmd, "%FILE", fileName);

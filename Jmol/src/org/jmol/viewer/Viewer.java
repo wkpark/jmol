@@ -10939,4 +10939,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.checkInheritedShapes();
   }
 
+  @Override
+  public void resizeInnerPanel(int width, int height) {
+    statusManager.resizeInnerPanel(width, height);
+  }
+
+
+  
 }

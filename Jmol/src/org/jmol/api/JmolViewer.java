@@ -618,5 +618,6 @@ abstract public class JmolViewer {
 
   abstract public Object evaluateExpression(Object expression);
 
+  abstract public void resizeInnerPanel(int width, int height); 
 }
 

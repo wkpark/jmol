@@ -700,5 +700,10 @@ class StatusManager {
             + (myParam == null || myParam.length() == 0 ? "" : ":" + myParam)));
   }
 
+  public void resizeInnerPanel(int width, int height) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.resizeInnerPanel("preferredWidthHeight " + width + " " + height + ";");    
+  }
+
 }
 

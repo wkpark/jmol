@@ -77,6 +77,8 @@ public class PyMOLReader extends PdbReader {
   private List<ShapeSettings> shapes = new ArrayList<ShapeSettings>();
   private short[] colixes;
   private boolean isStateScript;
+  private int width;
+  private int height;
 
   private boolean valence;
 
@@ -113,23 +115,35 @@ public class PyMOLReader extends PdbReader {
       "set ssBondsBackbone FALSE;')";
 
   private void process(Map<String, Object> map) {
-    
+
     // immediate execution prior to file loading
-    
+
     if (!isStateScript)
       viewer.evaluateExpression(preScript);
-    
+
     for (int i = 0; i < 17; i++)
       reps[i] = BitSet.newN(1000);
     settings = getMapList(map, "settings");
+    if (filter != null && filter.indexOf("NORESIZE") < 0)
+      try {
+        width = getInt(getMapList(map, "main"), 0);
+        height = getInt(getMapList(map, "main"), 1);
+      } catch (Exception e) {
+        // ignore
+      }
+    if (width > 0 && height > 0) {
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
+          "perferredWidthHeight", new int[] { width, height });
+      viewer.resizeInnerPanel(width, height);
+    }
     valence = getBooleanSetting(PyMOL.valence);
     cartoonTranslucency = getFloatSetting(PyMOL.cartoon_transparency);
     List<Object> names = getMapList(map, "names");
     for (int i = 1; i < names.size(); i++)
       processBranch(getList(names, i));
-    
+
     // we are done if this is a state script
-    
+
     if (isStateScript)
       return;
 
@@ -219,7 +233,7 @@ public class PyMOLReader extends PdbReader {
   private int branchID;
   
   private void processBranch(List<Object> branch) {
-    branchName = (String) branch.get(0);
+    branchName = getString(branch, 0);
     if (branchName.indexOf("_") == 0 || getInt(branch, 1) != 0) // otherwise, it's just a selection
       return;
     isHidden = (getInt(branch, 2) != 1);
@@ -272,7 +286,7 @@ public class PyMOLReader extends PdbReader {
   // };
 
   private void processBranchMeasure(List<Object> deepBranch) {
-    if (isHidden)
+    if (isHidden || branchName.indexOf("measure") < 0)
       return;
     List<Object> measure = getList(getList(deepBranch, 2), 0);
 
@@ -729,9 +743,11 @@ public class PyMOLReader extends PdbReader {
     sb.append("translate Y ").appendF(-getFloat(view, 17))
         .append(" angstroms;");
 
+    // seems to be something else here -- fog is not always present
     boolean depthCue = getBooleanSetting(PyMOL.depth_cue); // 84
-    sb.append("set zShade " + depthCue + ";");
-    if (depthCue) {
+    boolean fog = getBooleanSetting(PyMOL.fog); // 88
+    sb.append("set zShade " + (depthCue && fog) + ";");
+    if (depthCue && fog) {
       float fog_start = getFloatSetting(PyMOL.fog_start); // 192
       sb.append("set zshadePower 2;set zslab " + (fog_start * 100) + "; set zdepth 0;");
     }
@@ -745,7 +761,4 @@ public class PyMOLReader extends PdbReader {
     //{ command => 'set ribbonAspectRatio 8',                                                   comment => 'degree of W/H ratio, but somehow not tied directly to actual width parameter...' },
     sb.append("background " + getList(settings, PyMOL.bg_rgb).get(2) + ";");
   }
-
-
-
 }

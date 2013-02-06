@@ -124,7 +124,7 @@ public class PyMOLReader extends PdbReader {
     for (int i = 0; i < 17; i++)
       reps[i] = BitSet.newN(1000);
     settings = getMapList(map, "settings");
-    if (filter != null && filter.indexOf("NORESIZE") < 0)
+    if (!isStateScript && filter != null && filter.indexOf("DORESIZE") >= 0)
       try {
         width = getInt(getMapList(map, "main"), 0);
         height = getInt(getMapList(map, "main"), 1);

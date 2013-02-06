@@ -7,7 +7,7 @@ package org.jmol.adapter.readers.pymol;
  *  
  *  Settings: http://sourceforge.net/p/pymol/code/4008/tree/trunk/pymol/layer1/Setting.h
  *
- *  Colors: These are derived from Color.pm (Gordon, via Jaime Prilusky, Jan 2013)
+ *  Colors: These are derived from Color.pm (Roni Gordon, via Jaime Prilusky, Jan 2013)
  *  
  *  with note therein:
  *  

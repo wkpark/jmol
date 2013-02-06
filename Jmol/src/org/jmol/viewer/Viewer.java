@@ -1982,7 +1982,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         }
       } else if (type.equals("Jmol")) {
         cmd = "load ";
-      } else if (type.equals(".Cube")) {
+      } else if (type.equals("Cube")) {
         cmd = "isosurface sign red blue ";
       } else if (type.equals("PyMOL")) {
         cmd = "zap;load SYNC " + Escape.escapeStr(fileName) + " filter 'DORESIZE'";

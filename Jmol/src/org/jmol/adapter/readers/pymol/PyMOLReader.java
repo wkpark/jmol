@@ -44,6 +44,7 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3f;
@@ -112,14 +113,16 @@ public class PyMOLReader extends PdbReader {
   		"set navigationMode off;" +
       "set zoomLarge false;" +
       "set measurementUnits ANGSTROMS;" +
-      "set ssBondsBackbone FALSE;')";
+      "set ssBondsBackbone FALSE;" +
+      "')";
 
   private void process(Map<String, Object> map) {
 
     // immediate execution prior to file loading
-
     if (!isStateScript)
       viewer.evaluateExpression(preScript);
+
+    addColors(getMapList(map, "colors"));
 
     for (int i = 0; i < 17; i++)
       reps[i] = BitSet.newN(1000);
@@ -128,14 +131,14 @@ public class PyMOLReader extends PdbReader {
       try {
         width = getInt(getMapList(map, "main"), 0);
         height = getInt(getMapList(map, "main"), 1);
+        if (width > 0 && height > 0) {
+          atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
+              "perferredWidthHeight", new int[] { width, height });
+          viewer.resizeInnerPanel(width, height);
+        }
       } catch (Exception e) {
         // ignore
       }
-    if (width > 0 && height > 0) {
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
-          "perferredWidthHeight", new int[] { width, height });
-      viewer.resizeInnerPanel(width, height);
-    }
     valence = getBooleanSetting(PyMOL.valence);
     cartoonTranslucency = getFloatSetting(PyMOL.cartoon_transparency);
     List<Object> names = getMapList(map, "names");
@@ -148,6 +151,17 @@ public class PyMOLReader extends PdbReader {
       return;
 
     setRendering(getMapList(map, "view"));
+  }
+
+  private void addColors(List<Object> colors) {
+    if (colors == null || colors.size() == 0)
+      return;
+    Point3f pt = new Point3f();
+    for (int i = colors.size(); --i >= 0;) {
+      List<Object> c = getList(colors, i);
+      PyMOL.addColor((Integer) c.get(1), ColorUtil.colorPtToInt(getPoint(getList(c, 2), 0,
+          pt)));
+    }
   }
 
   /**
@@ -450,8 +464,7 @@ public class PyMOLReader extends PdbReader {
     BoxInfo.addPointXYZ(x, y, z, xyzMin, xyzMax, 0);
     //System.out.println(chainID +  " " + fileAtomIndex + " " + serNo + " " + x  + " " + y + " " + z);
     processAtom2(atom, serNo, x, y, z, charge);
-    int color = getInt(a, 21);
-    color = PyMOL.getRGB(color);
+    int color = PyMOL.getRGB(getInt(a, 21));
     colixList.add(Integer.valueOf(Colix.getColixO(Integer.valueOf(color))));    
   }
 

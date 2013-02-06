@@ -1,5 +1,8 @@
 package org.jmol.adapter.readers.pymol;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 /**
  * PyMOL settings and constants. 
  * 
@@ -6136,7 +6139,20 @@ class PyMOL {
   };
 
   static int getRGB(int color) {
-    return (color < colors.length && color >= 0 ? colors[color] : 0);
+    if (color < colors.length)
+      return (colors[color]);
+    if (moreColors != null) {
+      Integer c = moreColors.get(Integer.valueOf(color));
+      if (c != null)
+        return c.intValue();
+    }
+    return 0;
+  }
+  
+  private final static Map<Integer, Integer> moreColors = new Hashtable<Integer, Integer>();
+  
+  static void addColor(Integer id, int value) {
+    moreColors.put(id, Integer.valueOf(value));
   }
   
 }

@@ -27,13 +27,8 @@ package org.jmol.shape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
-import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Point3i;
-
-import java.util.Hashtable;
-import java.util.Map;
-
 
 public class Hover extends TextShape {
 
@@ -129,12 +124,6 @@ public class Hover extends TextShape {
 
   @Override
   public String getShapeState() {
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    if (atomFormats != null)
-      for (int i = viewer.getAtomCount(); --i >= 0;)
-        if (atomFormats[i] != null)
-          setStateInfo(temp, i, "set hoverLabel " + Escape.escapeStr(atomFormats[i]));
-    return "\n  hover " + Escape.escapeStr((labelFormat == null ? "" : labelFormat)) 
-    + ";\n" + getShapeCommands(temp, null);
+    return viewer.getShapeState(this);
   }
 }

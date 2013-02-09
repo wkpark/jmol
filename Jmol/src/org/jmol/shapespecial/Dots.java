@@ -34,6 +34,7 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.StringXBuilder;
 
+import org.jmol.api.JmolStateCreator;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.geodesic.EnvelopeCalculation;
@@ -299,6 +300,9 @@ public class Dots extends AtomShape {
     BitSet[] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)
       return "";
+    JmolStateCreator sc = viewer.getStateCreator();
+    if (sc == null)
+      return "";
     StringXBuilder s = new StringXBuilder();
     Map<String, BitSet> temp = new Hashtable<String, BitSet>();
     int atomCount = viewer.getAtomCount();
@@ -307,7 +311,7 @@ public class Dots extends AtomShape {
       if (!bsOn.get(i) || dotsConvexMaps[i] == null)
         continue;
       if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp, i, getColorCommand(type, paletteIDs[i], colixes[i]));
+        BitSetUtil.setMapBitSet(temp, i, i, getColorCommand(type, paletteIDs[i], colixes[i], translucentAllowed));
       BitSet bs = dotsConvexMaps[i];
       if (!bs.isEmpty()) {
         float r = ec.getAppropriateRadius(i);
@@ -315,8 +319,7 @@ public class Dots extends AtomShape {
             + Escape.escape(bs));
       }
     }
-    s.append(getShapeCommands(temp, null));
-    return s.toString();
+    return s.append(sc.getCommands(temp, null, "select")).toString();
   }
 
 }

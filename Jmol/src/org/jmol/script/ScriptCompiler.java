@@ -32,6 +32,7 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
 import org.jmol.util.StringXBuilder;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 import org.jmol.api.Interface;
@@ -48,7 +49,7 @@ import java.util.Map;
 
 
 
-public class ScriptCompiler extends ScriptCompilationTokenParser {
+class ScriptCompiler extends ScriptCompilationTokenParser {
 
   /*
    * The Compiler class is really two parts -- 
@@ -66,14 +67,10 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
    * 
    */
   
-  public ScriptCompiler(Viewer viewer) {
+  ScriptCompiler(Viewer viewer) {
     this.viewer = viewer;
   }
   
-  public ScriptCompiler(ScriptCompiler compiler) {
-    this.viewer = compiler.viewer;
-  }
-
   private String filename;
   private boolean isSilent;
 
@@ -144,8 +141,8 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     }
   }
   
-  static void addContextVariable(Map<String, ScriptVariable> contextVariables, String ident) {
-    contextVariables.put(ident, ScriptVariable.newVariable(Token.string, "").setName(ident));
+  static void addContextVariable(Map<String, ScriptVariable> contextVariables, String name) {
+    contextVariables.put(name, ScriptVariable.newVariable(Token.string, "").setName(name));
   }
 
   private boolean isContextVariable(String ident) {
@@ -246,13 +243,13 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     vFunctionStack = new ArrayList<ScriptFunction>();
     htUserFunctions = new Hashtable<String, Boolean>();
     script = cleanScriptComments(script);
-    ichToken = script.indexOf(Viewer.STATE_VERSION_STAMP);
+    ichToken = script.indexOf(JmolConstants.STATE_VERSION_STAMP);
     isStateScript = (ichToken >= 0);
     if (isStateScript) {
       ptSemi = script.indexOf(";", ichToken);
       if (ptSemi >= ichToken)
         viewer.setStateScriptVersion(script.substring(
-            ichToken + Viewer.STATE_VERSION_STAMP.length(), ptSemi).trim());
+            ichToken + JmolConstants.STATE_VERSION_STAMP.length(), ptSemi).trim());
     }
     cchScript = script.length();
 
@@ -2227,7 +2224,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     boolean isMath = (isVariable && ichT + 3 < cchScript && script
         .charAt(ichT + 1) == '{');
     if (isMath && parseVariables) {
-      ichT = ichMathTerminator(script, ichToken + 1, cchScript);
+      ichT = TextFormat.ichMathTerminator(script, ichToken + 1, cchScript);
       return (ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
     }
     int ptSpace = -1;
@@ -2297,45 +2294,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return false;
     }
     return (cchToken = ichT - ichToken) > 0;
-  }
-
-  /**
-   * For @{....}
-   * 
-   * @param script
-   * @param ichT
-   * @param len
-   * @return     position of "}"
-   */
-  public static int ichMathTerminator(String script, int ichT, int len) {
-    int nP = 1;
-    char chFirst = '\0';
-    char chLast = '\0';
-    while (nP > 0 && ++ichT < len) {
-      char ch = script.charAt(ichT);
-      if (chFirst != '\0') {
-        if (chLast == '\\') {
-          ch = '\0';
-        } else if (ch == chFirst) {
-          chFirst = '\0';
-        }
-        chLast = ch;
-        continue;
-      }
-      switch(ch) {
-      case '\'':
-      case '"':
-        chFirst = ch;
-        break;
-      case '{':
-        nP++;
-        break;
-      case '}':
-        nP--;
-        break;
-      }
-    }
-    return ichT;
   }
 
   private float lookingAtExponential() {
@@ -2648,70 +2606,6 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       Logger.error(errorMessage);
     }
     return false;
-  }
-
-  /**
-   * used by app to separate a command line into three sections:
-   * 
-   * prefix....;cmd ........ token
-   * 
-   * where token can be a just-finished single or double quote or
-   * a string of characters
-   * 
-   * @param cmd
-   * @return String[] {prefix, cmd..... token}
-   */
-  public static String[] splitCommandLine(String cmd) {
-    String[] sout = new String[3];
-    boolean isEscaped1 = false;
-    boolean isEscaped2 = false;
-    boolean isEscaped = false;
-    if (cmd.length() == 0)
-      return null;
-    int ptQ = -1;
-    int ptCmd = 0;
-    int ptToken = 0;
-    for (int i = 0; i < cmd.length(); i++) {
-      switch(cmd.charAt(i)) {
-      case '"':
-        if (!isEscaped && !isEscaped1) {
-          isEscaped2 = !isEscaped2;
-          if (isEscaped2)
-            ptQ = ptToken = i;
-        }
-        break;
-      case '\'':
-        if (!isEscaped && !isEscaped2) {
-          isEscaped1 = !isEscaped1;
-          if (isEscaped1)
-            ptQ = ptToken = i;
-        }
-        break;
-      case '\\':
-        isEscaped = !isEscaped;
-        continue;
-      case ' ':
-        if (!isEscaped && !isEscaped1 && !isEscaped2) {
-          ptToken = i + 1;
-          ptQ = -1;
-        }
-        break;
-      case ';':
-        if (!isEscaped1 && !isEscaped2) {
-          ptCmd = ptToken = i + 1;
-          ptQ = -1;
-        }
-        break;
-      default:
-        if (!isEscaped1 && !isEscaped2)
-          ptQ = -1;
-      }
-      isEscaped = false;        
-     }
-    sout[0] = cmd.substring(0, ptCmd);
-    sout[1] = (ptToken == ptCmd ? cmd.substring(ptCmd) : cmd.substring(ptCmd, (ptToken > ptQ ? ptToken : ptQ)));
-    sout[2] = (ptToken == ptCmd ? null : cmd.substring(ptToken));
-    return sout;
   }
 
 

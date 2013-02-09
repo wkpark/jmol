@@ -25,31 +25,34 @@
 
 package org.jmol.shape;
 
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Group;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
-import org.jmol.viewer.JmolConstants;
 
 public abstract class AtomShape extends Shape {
 
   // Balls, Dots, Ellipsoids, Halos, Labels, Polyhedra, Stars, Vectors
 
+  public short mad = (short)-1;
   public short[] mads;
   public short[] colixes;
   public byte[] paletteIDs;
-  protected BitSet bsSizeSet;
-  protected BitSet bsColixSet;
   public int atomCount;
   public Atom[] atoms;
   public boolean isActive;
+  
+  public int monomerCount;
+  public BitSet bsSizeDefault;
+  
+  public Group[] getMonomers() {
+    return null;
+  }
 
   @Override
   protected void initModelSet() {
@@ -192,18 +195,17 @@ public abstract class AtomShape extends Shape {
 
   @Override
   public String getShapeState() {
-    if (!isActive)
-      return "";
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();
-    String type = JmolConstants.shapeClassBases[shapeID];
-    if (bsSizeSet != null)
-      for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet.nextSetBit(i + 1))
-          setStateInfo(temp, i, type + (mads[i] < 0 ? " on" : " " + mads[i] / 2000f));
-    if (bsColixSet != null)
-      for (int i = bsColixSet.nextSetBit(0); i >= 0; i = bsColixSet.nextSetBit(i + 1))
-          setStateInfo(temp2, i, getColorCommand(type, paletteIDs[i], colixes[i]));
-    return getShapeCommands(temp, temp2);
+    // stars and vectors will do this
+    return (isActive ? viewer.getAtomShapeState(this) : "");
+  }
+
+  /**
+   * @param i  
+   * @return script, but only for Measures
+   */
+  public String getInfoAsString(int i) {
+    // only in Measures
+    return null;
   }
 
 }

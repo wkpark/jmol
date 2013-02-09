@@ -109,6 +109,10 @@ public class JcampdxReader extends MolReader {
   @Override
   public void initializeReader() throws Exception {
     // trajectories would be OK for IR, but just too complicated for others.
+    
+    // tells Jmol to start talking with JSpecView
+    
+    viewer.setBooleanProperty("_jspecview", true);
     if (isTrajectory) {
       Logger.warn("TRAJECTORY keyword ignored");
       isTrajectory = false;

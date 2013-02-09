@@ -23,8 +23,6 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.script.ScriptContext;
-import org.jmol.script.ScriptEvaluator;
 import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.Point3f;
@@ -462,7 +460,7 @@ class StatusManager {
     }
     String sJmol = (msWalltime == 0 ? jmolScriptCallback(EnumCallback.SCRIPT)
         : null);
-    boolean isScriptCompletion = (strStatus == ScriptEvaluator.SCRIPT_COMPLETED);
+    boolean isScriptCompletion = (strStatus == JmolConstants.SCRIPT_COMPLETED);
 
     if (recordStatus("script")) {
       boolean isError = (strErrorMessageUntranslated != null);
@@ -510,8 +508,7 @@ class StatusManager {
           viewer.scriptEditor.notifyScriptStart();
       } else if (viewer.scriptEditor.isVisible()
           && ((String) data[2]).length() > 0) {
-        viewer.scriptEditor.notifyContext((ScriptContext) viewer.getProperty(
-            "DATA_API", "scriptContext", null), data);
+        viewer.scriptEditor.notifyContext(viewer.getScriptContext(), data);
       }
     }
 

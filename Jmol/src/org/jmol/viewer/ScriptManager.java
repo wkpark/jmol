@@ -26,34 +26,68 @@ package org.jmol.viewer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jmol.api.Interface;
+import org.jmol.api.JmolScriptEvaluator;
+import org.jmol.api.JmolScriptManager;
+import org.jmol.script.ScriptContext;
 import org.jmol.thread.CommandWatcherThread;
 import org.jmol.thread.ScriptQueueThread;
+import org.jmol.util.BitSet;
 import org.jmol.util.Logger;
+import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 
-public class ScriptManager {
+public class ScriptManager implements JmolScriptManager {
 
   private Viewer viewer;
+  private JmolScriptEvaluator eval;
+  
+  public JmolScriptEvaluator getEval() {
+    return eval;
+  }
+  
+  private JmolScriptEvaluator evalTemp;
+
   private Thread[] queueThreads = new Thread[2];
   private boolean[] scriptQueueRunning = new boolean[2];
   private CommandWatcherThread commandWatcherThread;
+  
 
   public List<List<Object>> scriptQueue = new ArrayList<List<Object>>();
 
-  ScriptManager(Viewer viewer) {
-    this.viewer = viewer;
+  public List<List<Object>> getScriptQueue() {
+    return scriptQueue;
   }
 
-  void clear() {
+  public boolean isScriptQueued() {
+    return isScriptQueued;
+  }
+
+  public ScriptManager() {
+    // by reflection only
+  }
+  
+  public void setViewer(Viewer viewer) {
+    this.viewer = viewer;
+    eval = newScriptEvaluator();
+    eval.setCompiler();
+  }
+ 
+  private JmolScriptEvaluator newScriptEvaluator() {
+    return ((JmolScriptEvaluator) Interface
+        .getOptionInterface("script.ScriptEvaluator")).setViewer(viewer);
+  }
+
+  public void clear(boolean isAll) {
+    if (!isAll) {
+      evalTemp = null;
+      return;
+    }
     startCommandWatcher(false);
     interruptQueueThreads();
   }
 
-  //public String addScript(String strScript) {
-  //  return (String) addScript("string", strScript, "", false, false);
-  //}
-
-  String addScript(String strScript, boolean isScriptFile,
+  public String addScript(String strScript, boolean isScriptFile,
                           boolean isQuiet) {
     return (String) addScript("String", strScript, "", isScriptFile, isQuiet);
   }
@@ -64,7 +98,6 @@ public class ScriptManager {
     /**
      * @j2sNative
      *  this.useCommandWatcherThread = false; 
-     *  //return this.viewer.evalStringWaitStatus(returnType, strScript, statusList, isScriptFile, isQuiet, true);
      */
     {}
         
@@ -104,11 +137,11 @@ public class ScriptManager {
   //  return scriptQueue.size();
   //}
 
-  void clearQueue() {
+  public void clearQueue() {
     scriptQueue.clear();
   }
 
-  void waitForQueue() {
+  public void waitForQueue() {
     // just can't do this in JavaScript. 
     // if we are here and it is single-threaded, and there is
     // a script running, then that's a problem.
@@ -130,7 +163,7 @@ public class ScriptManager {
     }
   }
 
-  synchronized void flushQueue(String command) {
+  synchronized private void flushQueue(String command) {
     for (int i = scriptQueue.size(); --i >= 0;) {
       String strScript = (String) (scriptQueue.get(i).get(0));
       if (strScript.indexOf(command) == 0) {
@@ -165,7 +198,7 @@ public class ScriptManager {
 
  private boolean useCommandWatcherThread = false;
 
-  synchronized void startCommandWatcher(boolean isStart) {
+  synchronized public void startCommandWatcher(boolean isStart) {
     useCommandWatcherThread = isStart;
     if (isStart) {
       if (commandWatcherThread != null)
@@ -247,4 +280,202 @@ public class ScriptManager {
       }
     }
   }
+
+  private int scriptIndex;
+  private boolean isScriptQueued = true;
+
+  public Object evalStringWaitStatusQueued(String returnType, String strScript,
+                                           String statusList,
+                                           boolean isScriptFile,
+                                           boolean isQuiet, boolean isQueued) {
+    // from the scriptManager or scriptWait()
+    if (strScript == null)
+      return null;
+    String str = checkScriptExecution(strScript, false);
+    if (str != null)
+      return str;
+    StringXBuilder outputBuffer = (statusList == null
+        || statusList.equals("output") ? new StringXBuilder() : null);
+
+    // typically request:
+    // "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated"
+    // set up first with applet.jmolGetProperty("jmolStatus",statusList)
+    // flush list
+    String oldStatusList = viewer.statusManager.getStatusList();
+    viewer.getStatusChanged(statusList);
+    if (viewer.isSyntaxCheck)
+      Logger.info("--checking script:\n" + eval.getScript() + "\n----\n");
+    boolean historyDisabled = (strScript.indexOf(")") == 0);
+    if (historyDisabled)
+      strScript = strScript.substring(1);
+    historyDisabled = historyDisabled || !isQueued; // no history for scriptWait
+    // 11.5.45
+    viewer.setErrorMessage(null, null);
+    boolean isOK = (isScriptFile ? eval.compileScriptFile(strScript, isQuiet)
+        : eval.compileScriptString(strScript, isQuiet));
+    String strErrorMessage = eval.getErrorMessage();
+    String strErrorMessageUntranslated = eval.getErrorMessageUntranslated();
+    viewer.setErrorMessage(strErrorMessage, strErrorMessageUntranslated);
+    viewer.refresh(7,"script complete");
+    if (isOK) {
+      isScriptQueued = isQueued;
+      if (!isQuiet)
+        viewer.setScriptStatus(null, strScript, -2 - (++scriptIndex), null);
+      eval.evaluateCompiledScript(viewer.isSyntaxCheck, viewer.isSyntaxAndFileCheck,
+          historyDisabled, viewer.listCommands, outputBuffer, isQueued || !viewer.isSingleThreaded);
+    } else {
+      viewer.scriptStatus(strErrorMessage);
+      viewer.setScriptStatus("Jmol script terminated", strErrorMessage, 1,
+          strErrorMessageUntranslated);
+      viewer.setStateScriptVersion(null); // set by compiler
+    }
+    if (strErrorMessage != null && viewer.autoExit)
+      viewer.exitJmol();
+    if (viewer.isSyntaxCheck) {
+      if (strErrorMessage == null)
+        Logger.info("--script check ok");
+      else
+        Logger.error("--script check error\n" + strErrorMessageUntranslated);
+      Logger.info("(use 'exit' to stop checking)");
+    }
+    isScriptQueued = true;
+    if (returnType.equalsIgnoreCase("String"))
+      return strErrorMessageUntranslated;
+    if (outputBuffer != null)
+      return (strErrorMessageUntranslated == null ? outputBuffer.toString()
+          : strErrorMessageUntranslated);
+    // get Vector of Vectors of Vectors info
+    Object info = viewer.getStatusChanged(statusList);
+    viewer.getStatusChanged(oldStatusList);
+    return info;
+  }
+  
+  private String checkScriptExecution(String strScript, boolean isInsert) {
+    String str = strScript;
+    if (str.indexOf("\1##") >= 0)
+      str = str.substring(0, str.indexOf("\1##"));
+    if (checkResume(str))
+      return "script processing resumed";
+    if (checkStepping(str))
+      return "script processing stepped";
+    if (checkHalt(str, isInsert))
+      return "script execution halted";
+    return null;
+  }
+
+  private boolean checkResume(String str) {
+    if (str.equalsIgnoreCase("resume")) {
+      viewer.setScriptStatus("", "execution resumed", 0, null);
+      eval.resumePausedExecution();
+      return true;
+    }
+    return false;
+  }
+
+  private boolean checkStepping(String str) {
+    if (str.equalsIgnoreCase("step")) {
+      eval.stepPausedExecution();
+      return true;
+    }
+    if (str.equalsIgnoreCase("?")) {
+      viewer.scriptStatus(eval.getNextStatement());
+      return true;
+    }
+    return false;
+  }
+
+  public String evalStringQuietSync(String strScript, boolean isQuiet,
+                                    boolean allowSyncScript) {
+    // central point for all incoming script processing
+    // all menu items, all mouse movement -- everything goes through this method
+    // by setting syncScriptTarget = ">" the user can direct that all scripts
+    // initiated WITHIN this applet (not sent to it)
+    // we append #NOSYNC; here so that the receiving applet does not attempt
+    // to pass it back to us or any other applet.
+    //System.out.println("OK, I'm in evalStringQUiet");
+    if (allowSyncScript && viewer.statusManager.syncingScripts
+        && strScript.indexOf("#NOSYNC;") < 0)
+      viewer.syncScript(strScript + " #NOSYNC;", null, 0);
+    if (eval.isPaused() && strScript.charAt(0) != '!')
+      strScript = '!' + TextFormat.trim(strScript, "\n\r\t ");
+    boolean isInsert = (strScript.length() > 0 && strScript.charAt(0) == '!');
+    if (isInsert)
+      strScript = strScript.substring(1);
+    String msg = checkScriptExecution(strScript, isInsert);
+    if (msg != null)
+      return msg;
+    if (viewer.isScriptExecuting() && (isInsert || eval.isPaused())) {
+      viewer.insertedCommand = strScript;
+      if (strScript.indexOf("moveto ") == 0)
+        flushQueue("moveto ");
+      return "!" + strScript;
+    }
+    viewer.insertedCommand = "";
+    if (isQuiet)
+      strScript += JmolConstants.SCRIPT_EDITOR_IGNORE;
+    return addScript(strScript, false, isQuiet
+        && !viewer.getMessageStyleChime());
+  }
+
+  public boolean checkHalt(String str, boolean isInsert) {
+    if (str.equalsIgnoreCase("pause")) {
+      viewer.pauseScriptExecution();
+      if (viewer.scriptEditorVisible)
+        viewer.setScriptStatus("", "paused -- type RESUME to continue", 0, null);
+      return true;
+    }
+    if (str.equalsIgnoreCase("menu")) {
+      viewer.getProperty("DATA_API", "getPopupMenu", "\0");
+      return true;
+    }
+    str = str.toLowerCase();
+    boolean exitScript = false;
+    String haltType = null;
+    if (str.startsWith("exit")) {
+      viewer.haltScriptExecution();
+      viewer.clearScriptQueue();
+      viewer.clearTimeouts();
+      exitScript = str.equals(haltType = "exit");
+    } else if (str.startsWith("quit")) {
+      viewer.haltScriptExecution();
+      exitScript = str.equals(haltType = "quit");
+    }
+    if (haltType == null)
+      return false;
+    // !quit or !exit
+    if (isInsert) {
+      viewer.clearThreads();
+      viewer.queueOnHold = false;
+    }
+    if (isInsert || viewer.waitForMoveTo()) {
+      viewer.stopMotion();
+    }
+    Logger.info(viewer.isSyntaxCheck ? haltType
+        + " -- stops script checking" : (isInsert ? "!" : "") + haltType
+        + " received");
+    viewer.isSyntaxCheck = false;
+    return exitScript;
+  }
+
+  public BitSet getAtomBitSetEval(JmolScriptEvaluator eval,
+                                  Object atomExpression) {
+    if (eval == null) {
+      eval = evalTemp;
+      if (eval == null)
+        eval = evalTemp = newScriptEvaluator();
+    }
+    return eval.getAtomBitSet(atomExpression);
+  }
+
+  public Object scriptCheckRet(String strScript, boolean returnContext) {
+    // from ConsoleTextPane.checkCommand() and applet Jmol.scriptProcessor()
+    if (strScript.indexOf(")") == 0 || strScript.indexOf("!") == 0) // history
+      // disabled
+      strScript = strScript.substring(1);
+    ScriptContext sc = newScriptEvaluator().checkScriptSilent(strScript);
+    if (returnContext || sc.errorMessage == null)
+      return sc;
+    return sc.errorMessage;
+  }
+  
 }

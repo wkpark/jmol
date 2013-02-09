@@ -115,7 +115,7 @@ public class LabelsRenderer extends ShapeRenderer {
 
       Text text = labels.getLabel(i);
       float[] boxXY = (!isExport
-          || viewer.getCreatingImage() ? labels.getBox(i) : new float[5]);
+          || viewer.creatingImage ? labels.getBox(i) : new float[5]);
       if (boxXY == null)
         labels.putBox(i, boxXY = new float[5]);
       if (text != null) {

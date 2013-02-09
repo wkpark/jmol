@@ -1290,29 +1290,29 @@ public class SurfaceGenerator {
     Logger.info("data file type was determined to be " + fileType);
     if (fileType.equals("Jvxl+"))
       return newReaderBr("JvxlReader", br);
-    if ("MRC DSN6 DELPHI".indexOf(fileType) >= 0) {
+    
+    readerData = new Object[] { params.fileName, data };
+
+    if ("Mrc DelPhi Dsn6".indexOf(fileType.toUpperCase()) >= 0) {
       try {
         br.close();
       } catch (IOException e) {
         // ignore
       }
       br = null;
-
-      if (fileType.equals("MRC")) {
-        readerData = params.fileName;
-        return newReaderBr("MrcBinaryReader", null);
-      }
-      if (fileType.equals("DELPHI")) {
-        readerData = params.fileName;
-        return newReaderBr("DelPhiBinaryReader", null);
-      }
-      readerData = new Object[] { params.fileName, data };
-      if (fileType.equals("DSN6"))
-        return newReaderBr("Dsn6BinaryReader", null);
+      fileType += "Binary";
     }
     return newReaderBr(fileType + "Reader", br);
   }
   
+  private Object readerData;
+  
+  Object getReaderData() {
+    // needed by DelPhiBinary, Dsn6Binary, IsoShape, MrcBinary, Msms, Pmesh
+    Object o = readerData;
+    readerData = null;
+    return o;
+  }
 
   void initializeIsosurface() {
     params.initialize();
@@ -1464,10 +1464,4 @@ public class SurfaceGenerator {
     return surfaceReader.getSpanningVectors();
   }
 
-  Object readerData;
-  public Object getReaderData() {
-    Object o = readerData;
-    readerData = null;
-    return o;
-  }
 }

@@ -140,21 +140,6 @@ public class FileManager {
         : appletProxy);
   }
 
-  String getState(StringXBuilder sfunc) {
-    StringXBuilder commands = new StringXBuilder();
-    if (sfunc != null) {
-      sfunc.append("  _setFileState;\n");
-      commands.append("function _setFileState() {\n\n");
-    }
-    if (commands.indexOf("append") < 0
-        && viewer.getModelSetFileName().equals("zapped"))
-      commands.append("  zap;\n");
-    viewer.appendLoadStates(commands);
-    if (sfunc != null)
-      commands.append("\n}\n\n");
-    return commands.toString();
-  }
-
   String getFileTypeName(String fileName) {
     int pt = fileName.indexOf("::");
     if (pt >= 0)
@@ -1262,7 +1247,7 @@ public class FileManager {
   public Map<String, byte[]> pngjCache;
   public Map<String, byte[]> spardirCache;
   
-  void clearPngjCache(String fileName) {
+  public void clearPngjCache(String fileName) {
     if (fileName == null || pngjCache != null && pngjCache.containsKey(getCanonicalName(JmolBinary.getZipRoot(fileName))))
       pngjCache = null;
   }

@@ -31,9 +31,6 @@ import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
-
-
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.StaticConstants;
 import org.jmol.modelset.Atom;
@@ -53,7 +50,7 @@ class ColorManager {
    * 
    */
 
-  private ColorEncoder propertyColorEncoder = new ColorEncoder(null);
+  ColorEncoder propertyColorEncoder = new ColorEncoder(null);
   private Viewer viewer;
   private GData g3d;
 
@@ -205,7 +202,7 @@ class ColorManager {
           .getSelectedGroupIndexWithinChain(), 0, atom
           .getSelectedGroupCountWithinChain() - 1, ColorEncoder.BGYOR, false);
     case StaticConstants.PALETTE_POLYMER:
-      Model m = viewer.getModelSet().getModels()[atom.modelIndex];
+      Model m = viewer.getModelSet().models[atom.modelIndex];
       return propertyColorEncoder.getColorIndexFromPalette(atom
           .getPolymerIndexInModel(), 0, m.getBioPolymerCount() - 1,
           ColorEncoder.BGYOR, false);
@@ -343,18 +340,6 @@ class ColorManager {
     if (!isReset)
       setPropertyColorRange(range[0], range[1]);
     propertyColorEncoder.isTranslucent = isTranslucent;
-  }
-
-  String getState(StringXBuilder sfunc) {
-    StringXBuilder s = new StringXBuilder();
-    int n = propertyColorEncoder.getState(s);
-    //String colors = getColorSchemeList(getColorSchemeArray(USER));
-    //if (colors.length() > 0)
-    //s.append("userColorScheme = " + colors + ";\n");
-    if (n > 0 && sfunc != null)
-      sfunc.append("\n  _setColorState\n");
-    return (n > 0 && sfunc != null ? "function _setColorState() {\n"
-        + s.append("}\n\n").toString() : s.toString());
   }
 
   void setUserScale(int[] scale) {

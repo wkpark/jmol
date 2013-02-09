@@ -48,29 +48,21 @@ abstract public class BondCollection extends AtomCollection {
   }
 
   //note: Molecules is set up to only be calculated WHEN NEEDED
-  protected JmolMolecule[] molecules;
-  protected int moleculeCount;
+  public JmolMolecule[] molecules;
+  public int moleculeCount;
 
   protected void resetMolecules() {
     molecules = null;
     moleculeCount = 0;
   }
 
-  protected Bond[] bonds;
-  protected int bondCount;
+  public Bond[] bonds;
+  public int bondCount;
   
-  public Bond[] getBonds() {
-    return bonds;
-  }
-
   public Bond getBondAt(int bondIndex) {
     return bonds[bondIndex];
   }
 
-  public int getBondCount() {
-    return bondCount;
-  }
-  
   public BondIterator getBondIteratorForType(int bondType, BitSet bsAtoms) {
     //Dipoles, Sticks
     return new BondIteratorSelected(bonds, bondCount, bondType, bsAtoms, 
@@ -819,7 +811,7 @@ abstract public class BondCollection extends AtomCollection {
       viewer.deleteAtoms(bs, false);
   }
   
-  protected boolean haveHiddenBonds;
+  public boolean haveHiddenBonds;
   
   public void displayBonds(BondSet bs, boolean isDisplay) {
     if (!isDisplay)

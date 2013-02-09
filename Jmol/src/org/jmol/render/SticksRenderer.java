@@ -101,7 +101,7 @@ public class SticksRenderer extends ShapeRenderer {
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
     hbondsSolid = viewer.getHbondsSolid();
     isAntialiased = g3d.isAntialiased();
-    Bond[] bonds = modelSet.getBonds();
+    Bond[] bonds = modelSet.bonds;
     boolean needTranslucent = false;
     if (isPass2)
       for (int i = bsForPass2.nextSetBit(0); i >= 0; i = bsForPass2.nextSetBit(i + 1)) {
@@ -109,7 +109,7 @@ public class SticksRenderer extends ShapeRenderer {
         renderBond();
       }
     else
-    for (int i = modelSet.getBondCount(); --i >= 0; ) {
+    for (int i = modelSet.bondCount; --i >= 0; ) {
       bond = bonds[i];
       if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) != 0 && renderBond()) {
         needTranslucent = true;
@@ -165,7 +165,7 @@ public class SticksRenderer extends ShapeRenderer {
       return false;
     colixA = atomA0.getColix();
     colixB = atomB0.getColix();
-    if (((colix = bond.getColix()) & Colix.OPAQUE_MASK) == Colix.USE_PALETTE) {
+    if (((colix = bond.colix) & Colix.OPAQUE_MASK) == Colix.USE_PALETTE) {
       colix = (short) (colix & ~Colix.OPAQUE_MASK);
       colixA = Colix.getColixInherited((short) (colix | viewer
           .getColixAtomPalette(atomA0, EnumPalette.CPK.id)), colixA);
@@ -242,7 +242,7 @@ public class SticksRenderer extends ShapeRenderer {
     xB = atomB.screenX;
     yB = atomB.screenY;
 
-    mad = bond.getMad();
+    mad = bond.mad;
     if (multipleBondRadiusFactor > 0 && bondOrder > 1)
       mad *= multipleBondRadiusFactor;
     dx = xB - xA;

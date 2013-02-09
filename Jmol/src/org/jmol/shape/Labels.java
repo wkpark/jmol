@@ -31,9 +31,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
-import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
-import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JmolConstants;
 
@@ -55,17 +53,18 @@ public class Labels extends AtomShape {
 
   private Map<Integer, float[]> labelBoxes;
 
-  private BitSet bsFontSet, bsBgColixSet;
+  public BitSet bsFontSet;
+  public BitSet bsBgColixSet;
 
-  private int defaultOffset;
-  private int defaultAlignment;
-  private int defaultZPos;
-  private byte defaultFontId;
-  private short defaultColix;
-  private short defaultBgcolix;
-  private byte defaultPaletteID;
-  private int defaultPointer;
-  private static int zeroOffset = (JmolConstants.LABEL_DEFAULT_X_OFFSET << 8)
+  public int defaultOffset;
+  public int defaultAlignment;
+  public int defaultZPos;
+  public byte defaultFontId;
+  public short defaultColix;
+  public short defaultBgcolix;
+  public byte defaultPaletteID;
+  public int defaultPointer;
+  public static int zeroOffset = (JmolConstants.LABEL_DEFAULT_X_OFFSET << 8)
       | JmolConstants.LABEL_DEFAULT_Y_OFFSET;
 
   public byte zeroFontId;
@@ -100,7 +99,6 @@ public class Labels extends AtomShape {
     }
 
     if ("color" == propertyName) {
-      isActive = true;
       byte pid = EnumPalette.pidOf(value);
       short colix = Colix.getColixO(value);
       if (!setDefaults)
@@ -427,8 +425,6 @@ public class Labels extends AtomShape {
   public Object getProperty(String property, int index) {
     if (property.equals("offsets"))
       return offsets;
-    if (property.equals("defaultState"))
-      return getDefaultState();
     if (property.equals("label"))
       return (strings != null && index < strings.length && strings[index] != null 
           ? strings[index] : "");
@@ -585,75 +581,11 @@ public class Labels extends AtomShape {
     }
   }
 
-  private String getDefaultState() {
-    StringXBuilder s = new StringXBuilder().append("\n# label defaults;\n");
-    appendCmd(s, "select none");
-    appendCmd(s, getColorCommand("label", defaultPaletteID, defaultColix));
-    appendCmd(s, "background label " + encodeColor(defaultBgcolix));
-    appendCmd(s, "set labelOffset " + Object2d.getXOffset(defaultOffset) + " "
-        + (-Object2d.getYOffset(defaultOffset)));
-    String align = Object2d.getAlignmentName(defaultAlignment);
-    appendCmd(s, "set labelAlignment " + (align.length() < 5 ? "left" : align));
-    String pointer = Object2d.getPointer(defaultPointer);
-    appendCmd(s, "set labelPointer " + (pointer.length() == 0 ? "off" : pointer));
-    if ((defaultZPos & FRONT_FLAG) != 0)
-      appendCmd(s, "set labelFront");
-    else if ((defaultZPos & GROUP_FLAG) != 0)
-      appendCmd(s, "set labelGroup");
-    appendCmd(s, getFontCommand("label", JmolFont.getFont3D(defaultFontId)));
-    return s.toString();
-  }
-
   @Override
   public String getShapeState() {
     if (!isActive || bsSizeSet == null)
       return "";
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();
-    Map<String, BitSet> temp3 = new Hashtable<String, BitSet>();
-    for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet
-        .nextSetBit(i + 1)) {
-      setStateInfo(temp, i, "label " + Escape.escapeStr(formats[i]));
-      if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp2, i, getColorCommand("label", paletteIDs[i],
-            colixes[i]));
-      if (bsBgColixSet != null && bsBgColixSet.get(i))
-        setStateInfo(temp2, i, "background label " + encodeColor(bgcolixes[i]));
-      Text text = getLabel(i);
-      float sppm = (text != null ? text.getScalePixelsPerMicron() : 0);
-      if (sppm > 0)
-        setStateInfo(temp2, i, "set labelScaleReference " + (10000f / sppm));
-      if (offsets != null && offsets.length > i) {
-        int offsetFull = offsets[i];
-        setStateInfo(
-            temp2,
-            i,
-            "set "
-                + ((offsetFull & EXACT_OFFSET_FLAG) == EXACT_OFFSET_FLAG ? "labelOffsetExact "
-                    : "labelOffset ")
-                + Object2d.getXOffset(offsetFull >> FLAG_OFFSET) + " "
-                + (-Object2d.getYOffset(offsetFull >> FLAG_OFFSET)));
-        String align = Object2d.getAlignmentName(offsetFull >> 2);
-        String pointer = Object2d.getPointer(offsetFull);
-        if (pointer.length() > 0)
-          setStateInfo(temp2, i, "set labelPointer " + pointer);
-        if ((offsetFull & FRONT_FLAG) != 0)
-          setStateInfo(temp2, i, "set labelFront");
-        else if ((offsetFull & GROUP_FLAG) != 0)
-          setStateInfo(temp2, i, "set labelGroup");
-        // labelAlignment must come last, so we put it in a separate hash
-        // table
-        if (align.length() > 0)
-          setStateInfo(temp3, i, "set labelAlignment " + align);
-      }
-      if (mads != null && mads[i] < 0)
-        setStateInfo(temp2, i, "set toggleLabel");
-      if (bsFontSet != null && bsFontSet.get(i))
-        setStateInfo(temp2, i, getFontCommand("label", JmolFont
-            .getFont3D(fids[i])));
-    }
-    return getShapeCommands(temp, temp2)
-        + getShapeCommands(null, temp3);
+    return viewer.getShapeState(this);
   }
 
   private int pickedAtom = -1;

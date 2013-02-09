@@ -36,7 +36,7 @@ public class Backbone extends BioShapeCollection {
   
   @Override
   public void initShape() {
-    super.initShape();
+    super.initShape(); 
     madOn = 1;
     madHelixSheet = 1500;
     madTurnRandom = 500;

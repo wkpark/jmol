@@ -46,7 +46,7 @@ class ContextToken extends Token {
   void addName(String name) {
     if (contextVariables == null)
       contextVariables = new Hashtable<String, ScriptVariable>();
-    ScriptCompiler.addContextVariable(contextVariables, name);
+    contextVariables.put(name, ScriptVariable.newVariable(Token.string, "").setName(name));
   }
   
 }

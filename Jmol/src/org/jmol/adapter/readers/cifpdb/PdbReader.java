@@ -341,6 +341,8 @@ public class PdbReader extends AtomSetCollectionReader {
   protected void finalizeReader() throws Exception {
     checkNotPDB();
     atomSetCollection.connectAll(maxSerial, isConnectStateBug);
+    if (atomSetCollection.getStructureCount() > 0)
+      atomSetCollection.bsStructuredModels.setBits(0, atomSetCollection.getAtomSetCount());
     if (vBiomolecules != null && vBiomolecules.size() > 0
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);

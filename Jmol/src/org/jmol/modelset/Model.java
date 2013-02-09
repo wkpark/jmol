@@ -99,16 +99,16 @@ public class Model {
   public int trajectoryBaseIndex;
   protected boolean hasRasmolHBonds;
   
-  String loadState = "";
-  StringXBuilder loadScript = new StringXBuilder();
+  public String loadState = "";
+  public StringXBuilder loadScript = new StringXBuilder();
 
-  boolean isModelKit;
+  public boolean isModelKit;
   public boolean isModelkit() {
     return isModelKit;
   }
   
-  boolean isTrajectory;
-  int selectedTrajectory = -1;
+  public boolean isTrajectory;
+  public int selectedTrajectory = -1;
   
   Map<String, Integer> dataFrames;
   int dataSourceFrame = -1;
@@ -116,8 +116,8 @@ public class Model {
   String jmolFrameType;
   
   // set in ModelLoader phase:
-  protected int firstAtomIndex;  
-  protected int atomCount = 0; // includes deleted atoms
+  public int firstAtomIndex;  
+  public int atomCount = 0; // includes deleted atoms
   protected final BitSet bsAtoms = new BitSet();
   final BitSet bsAtomsDeleted = new BitSet();
   // this one is variable and calculated only if necessary:
@@ -131,19 +131,19 @@ public class Model {
     bondCount = -1;    
   }
   
-  protected int getBondCount() {
+  public int getBondCount() {
     if (bondCount >= 0)
       return bondCount;
-    Bond[] bonds = modelSet.getBonds();
+    Bond[] bonds = modelSet.bonds;
     bondCount = 0;
-    for (int i = modelSet.getBondCount(); --i >= 0;)
+    for (int i = modelSet.bondCount; --i >= 0;)
       if (bonds[i].atom1.modelIndex == modelIndex)
         bondCount++;
     return bondCount;
   }
   
   int firstMoleculeIndex;
-  int moleculeCount;
+  public int moleculeCount;
   
   public int nAltLocs;
   int nInsertions;
@@ -156,11 +156,11 @@ public class Model {
   int biosymmetryCount;
 
   protected Map<String, Object> auxiliaryInfo;
-  Properties properties;
+  public Properties properties;
   float defaultRotationRadius;
   String defaultStructure;
 
-  Orientation orientation;
+  public Orientation orientation;
 
   public Model(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex, 
       String jmolData, Properties properties, Map<String, Object> auxiliaryInfo) {
@@ -197,9 +197,9 @@ public class Model {
   }
   
   protected boolean structureTainted;
-  boolean isJmolDataFrame;
+  public boolean isJmolDataFrame;
   public long frameDelay;
-  public SymmetryInterface unitCell;
+  public SymmetryInterface simpleCage;
   
   public String getModelNumberDotted() {
     return modelSet.getModelNumberDotted(modelIndex);
@@ -239,7 +239,7 @@ public class Model {
       chains[i].calcSelectedGroupsCount(bsSelected);
   }
 
-  int getGroupCount() {
+  public int getGroupCount() {
     if (groupCount < 0) {
       groupCount = 0;
       for (int i = chainCount; --i >= 0;)
@@ -248,7 +248,7 @@ public class Model {
     return groupCount;
   }
 
-  Chain getChainAt(int i) {
+  public Chain getChainAt(int i) {
     return (i < chainCount ? chains[i] : null);
   }
 

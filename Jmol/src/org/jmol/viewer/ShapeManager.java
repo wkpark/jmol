@@ -51,7 +51,7 @@ public class ShapeManager {
 
   private GData gdata;
   private ModelSet modelSet;
-  private Shape[] shapes;
+  Shape[] shapes;
   public Viewer viewer;
 
   public ShapeManager(Viewer viewer, ModelSet modelSet) {
@@ -200,8 +200,10 @@ public class ShapeManager {
                                BitSet bsSelected) {
     if (shapes == null || shapes[shapeID] == null)
       return;
+    if (bsSelected == null)
+      bsSelected = viewer.getSelectionSet(false);
     viewer.setShapeErrorState(shapeID, "set " + propertyName);
-    shapes[shapeID].setShapeProperty(propertyName.intern(), value, bsSelected);
+    shapes[shapeID].setProperty(propertyName.intern(), value, bsSelected);
     viewer.setShapeErrorState(-1, null);
   }
 
@@ -270,12 +272,14 @@ public class ShapeManager {
   }
 
   void deleteVdwDependentShapes(BitSet bs) {
+    if (bs == null)
+      bs = viewer.getSelectionSet(false);
     if (shapes[JmolConstants.SHAPE_ISOSURFACE] != null)
-      shapes[JmolConstants.SHAPE_ISOSURFACE].setShapeProperty("deleteVdw", null, bs);
+      shapes[JmolConstants.SHAPE_ISOSURFACE].setProperty("deleteVdw", null, bs);
     if (shapes[JmolConstants.SHAPE_CONTACT] != null)
-      shapes[JmolConstants.SHAPE_CONTACT].setShapeProperty("deleteVdw", null, bs);
+      shapes[JmolConstants.SHAPE_CONTACT].setProperty("deleteVdw", null, bs);
   }
-
+  
   float getAtomShapeValue(int tok, Group group, int atomIndex) {
     int iShape = JmolConstants.shapeTokenIndex(tok);
     if (iShape < 0 || shapes[iShape] == null) 
@@ -284,7 +288,7 @@ public class ShapeManager {
     if (mad == 0) {
       if ((group.shapeVisibilityFlags & shapes[iShape].myVisibilityFlag) == 0)
         return 0;
-      mad = shapes[iShape].getSize(group);
+      mad = shapes[iShape].getSizeG(group);
     }
     return mad / 2000f;
   }
@@ -332,21 +336,6 @@ public class ShapeManager {
     return info;
   }
 
-  void getShapeState(StringXBuilder commands, boolean isAll, int iShape) {
-    if (shapes == null)
-      return;
-    String cmd;
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      if (iShape != Integer.MAX_VALUE && i != iShape)
-        continue;
-      Shape shape = shapes[i];
-      if (shape != null && (isAll || JmolConstants.isShapeSecondary(i))
-          && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
-        commands.append(cmd);
-    }
-    commands.append("  select *;\n");
-  }
-
   void mergeShapes(Shape[] newShapes) {
     if (newShapes == null)
       return;
@@ -368,7 +357,7 @@ public class ShapeManager {
       if (shapes[i] != null && shapes[i].isBioShape) {
         shapes[i].setModelSet(modelSet);
         shapes[i].setShapeSizeRD(0, null, bsAllAtoms);
-        shapes[i].setShapeProperty("color", EnumPalette.NONE, bsAllAtoms);
+        shapes[i].setProperty("color", EnumPalette.NONE, bsAllAtoms);
       }
   }
 
@@ -519,8 +508,6 @@ public class ShapeManager {
 
   public void setModelSet(ModelSet modelSet) {
     this.modelSet = viewer.modelSet = modelSet;
-    // TODO
-    
   }
 
   /**

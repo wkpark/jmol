@@ -23,39 +23,86 @@
  */
 package org.jmol.viewer;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
-
-import org.jmol.script.ScriptEvaluator;
+import org.jmol.api.JmolPropertyManager;
+import org.jmol.api.SymmetryInterface;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
+import org.jmol.modelset.Chain;
+import org.jmol.modelset.Group;
+import org.jmol.modelset.LabelToken;
+import org.jmol.modelset.Model;
+import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.ScriptVariable;
 import org.jmol.script.ScriptVariableInt;
 import org.jmol.script.Token;
+import org.jmol.util.BitSet;
+import org.jmol.util.BitSetUtil;
+import org.jmol.util.Elements;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Parser;
+import org.jmol.util.Point3f;
+import org.jmol.util.Quaternion;
 import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
-
+import org.jmol.util.Vector3f;
 
 /**
  * 
- * The PropertyManager handles all operations relating to delivery of
- * properties with the getProperty() method, or its specifically cast 
- * forms getPropertyString() or getPropertyJSON().
- *
+ * The PropertyManager handles all operations relating to delivery of properties
+ * with the getProperty() method, or its specifically cast forms
+ * getPropertyString() or getPropertyJSON().
+ * 
+ * It is instantiated by reflection
+ * 
  */
 
-public class PropertyManager {
+public class PropertyManager implements JmolPropertyManager {
+
+  public PropertyManager() {
+    // required for reflection
+  }
+
+  Viewer viewer;
+  private Map<String, Integer> map = new Hashtable<String, Integer>();
+
+  public void setViewer(Viewer viewer) {
+    this.viewer = viewer;
+    for (int i = 0, p = 0; i < propertyTypes.length; i += 3)
+      map.put(propertyTypes[i].toLowerCase(), Integer.valueOf(p++));
+  }
+
+  public int getPropertyNumber(String infoType) {
+    Integer n = map.get(infoType == null ? "" : infoType.toLowerCase());
+    return (n == null ? -1 : n.intValue());
+  }
+
+  public String getDefaultPropertyParam(int propID) {
+    return (propID < 0 ? "" : propertyTypes[propID * 3 + 2]);
+  }
+
+  public boolean checkPropertyParameter(String name) {
+    int propID = getPropertyNumber(name);
+    String type = getParamType(propID);
+    return (type.length() > 0 && type != atomExpression);
+  }
 
   private final static String atomExpression = "<atom selection>";
-  
+
   private final static String[] propertyTypes = {
     "appletInfo"      , "", "",
     "fileName"        , "", "",
@@ -106,34 +153,34 @@ public class PropertyManager {
   private final static int PROP_APPLET_INFO = 0;
   private final static int PROP_FILENAME = 1;
   private final static int PROP_FILEHEADER = 2;
-          public final static int PROP_FILECONTENTS_PATH = 3;
+  private final static int PROP_FILECONTENTS_PATH = 3;
   private final static int PROP_FILECONTENTS = 4;
-  
+
   private final static int PROP_ANIMATION_INFO = 5;
   private final static int PROP_MODEL_INFO = 6;
   //private final static int PROP_VIBRATION_INFO = 7; //not implemented -- see auxiliaryInfo
   private final static int PROP_LIGAND_INFO = 7;
-   private final static int PROP_SHAPE_INFO = 8;
+  private final static int PROP_SHAPE_INFO = 8;
   private final static int PROP_MEASUREMENT_INFO = 9;
-  
+
   private final static int PROP_CENTER_INFO = 10;
   private final static int PROP_ORIENTATION_INFO = 11;
   private final static int PROP_TRANSFORM_INFO = 12;
   private final static int PROP_ATOM_LIST = 13;
   private final static int PROP_ATOM_INFO = 14;
-  
+
   private final static int PROP_BOND_INFO = 15;
   private final static int PROP_CHAIN_INFO = 16;
   private final static int PROP_POLYMER_INFO = 17;
   private final static int PROP_MOLECULE_INFO = 18;
   private final static int PROP_STATE_INFO = 19;
-  
+
   private final static int PROP_EXTRACT_MODEL = 20;
   private final static int PROP_JMOL_STATUS = 21;
   private final static int PROP_JMOL_VIEWER = 22;
   private final static int PROP_MESSAGE_QUEUE = 23;
   private final static int PROP_AUXILIARY_INFO = 24;
-  
+
   private final static int PROP_BOUNDBOX_INFO = 25;
   private final static int PROP_DATA_INFO = 26;
   private final static int PROP_IMAGE = 27;
@@ -151,55 +198,37 @@ public class PropertyManager {
   private final static int PROP_COUNT = 39;
 
   //// static methods used by Eval and Viewer ////
-  
-  public static int getPropertyNumber(String infoType) {
-    if (infoType == null)
-      return -1;
-    for(int i = 0; i < PROP_COUNT; i++)
-      if(infoType.equalsIgnoreCase(getPropertyName(i)))
-        return i;
-    return -1;
-  }
-  
-  public static String getDefaultParam(int propID) {
-    if (propID < 0)
-      return "";
-    return propertyTypes[propID * 3 + 2];
-  }
-  
-  public static boolean acceptsStringParameter(String name) {
-    int propID = getPropertyNumber(name);
-    String type = getParamType(propID);
-    return (type.length() > 0 && type != atomExpression);
-  }
-  
-  public static Object getProperty(Viewer viewer, String returnType, String infoType, Object paramInfo) {
+
+  public Object getProperty(String returnType, String infoType, Object paramInfo) {
     if (propertyTypes.length != PROP_COUNT * 3)
-      Logger.warn("propertyTypes is not the right length: " + propertyTypes.length + " != " + PROP_COUNT * 3);
+      Logger.warn("propertyTypes is not the right length: "
+          + propertyTypes.length + " != " + PROP_COUNT * 3);
     Object info;
     if (infoType.indexOf(".") >= 0 || infoType.indexOf("[") >= 0) {
-      info = getModelProperty(viewer, infoType, paramInfo);
+      info = getModelProperty(infoType, paramInfo);
     } else {
-      info = getPropertyAsObject(viewer, infoType, paramInfo, returnType);
+      info = getPropertyAsObject(infoType, paramInfo, returnType);
     }
     if (returnType == null)
       return info;
     boolean requestedReadable = returnType.equalsIgnoreCase("readable");
     if (requestedReadable)
       returnType = (isReadableAsString(infoType) ? "String" : "JSON");
-    if (returnType.equalsIgnoreCase("String")) return (info == null ? "" : info.toString());
+    if (returnType.equalsIgnoreCase("String"))
+      return (info == null ? "" : info.toString());
     if (requestedReadable)
       return Escape.toReadable(infoType, info);
     else if (returnType.equalsIgnoreCase("JSON"))
       return "{" + Escape.toJSON(infoType, info) + "}";
     return info;
   }
-  
-  static Object getModelProperty(Viewer viewer, String propertyName, Object propertyValue) {
+
+  private Object getModelProperty(String propertyName, Object propertyValue) {
     propertyName = propertyName.replace(']', ' ').replace('[', ' ').replace(
         '.', ' ');
     propertyName = TextFormat.simpleReplace(propertyName, "  ", " ");
-    String[] names = TextFormat.splitChars(TextFormat.trim(propertyName, " "), " ");
+    String[] names = TextFormat.splitChars(TextFormat.trim(propertyName, " "),
+        " ");
     ScriptVariable[] args = new ScriptVariable[names.length];
     propertyName = names[0];
     int n;
@@ -209,18 +238,19 @@ public class PropertyManager {
       else
         args[i] = ScriptVariable.newVariable(Token.string, names[i]);
     }
-    return extractProperty(getProperty(viewer, null, propertyName, propertyValue), args, 1);
+    return extractProperty(getProperty(null, propertyName, propertyValue),
+        args, 1);
   }
 
   @SuppressWarnings("unchecked")
-  public static Object extractProperty(Object property, ScriptVariable[] args, int ptr) {
+  public Object extractProperty(Object property, ScriptVariable[] args, int ptr) {
     if (ptr >= args.length)
       return property;
     int pt;
     ScriptVariable arg = args[ptr++];
     switch (arg.tok) {
     case Token.integer:
-      pt = arg.asInt() - 1;  //one-based, as for array selectors
+      pt = arg.asInt() - 1; //one-based, as for array selectors
       if (property instanceof List<?>) {
         List<Object> v = (List<Object>) property;
         if (pt < 0)
@@ -231,17 +261,16 @@ public class PropertyManager {
       }
       if (property instanceof Matrix3f) {
         Matrix3f m = (Matrix3f) property;
-        float[][] f = new float[][] {
-            new float[] {m.m00, m.m01, m.m02}, 
-            new float[] {m.m10, m.m11, m.m12}, 
-            new float[] {m.m20, m.m21, m.m22}}; 
+        float[][] f = new float[][] { new float[] { m.m00, m.m01, m.m02 },
+            new float[] { m.m10, m.m11, m.m12 },
+            new float[] { m.m20, m.m21, m.m22 } };
         if (pt < 0)
           pt += 3;
         if (pt >= 0 && pt < 3)
           return extractProperty(f, args, --ptr);
         return "";
       }
-      
+
       if (Escape.isAI(property)) {
         int[] ilist = (int[]) property;
         if (pt < 0)
@@ -291,17 +320,16 @@ public class PropertyManager {
         return "";
       }
       break;
-      
-      
+
     case Token.string:
       String key = arg.asString();
-      if (property instanceof Map<?,?>) {
+      if (property instanceof Map<?, ?>) {
         Map<String, Object> h = (Map<String, Object>) property;
         if (key.equalsIgnoreCase("keys")) {
           List<Object> keys = new ArrayList<Object>();
           Iterator<String> e = h.keySet().iterator();
           while (e.hasNext())
-            keys.add(e.next()); 
+            keys.add(e.next());
           return extractProperty(keys, args, ptr);
         }
         if (!h.containsKey(key)) {
@@ -324,7 +352,7 @@ public class PropertyManager {
         ptr--;
         for (pt = 0; pt < v.size(); pt++) {
           Object o = v.get(pt);
-          if (o instanceof Map<?,?>)
+          if (o instanceof Map<?, ?>)
             v2.add(extractProperty(o, args, ptr));
         }
         return v2;
@@ -335,31 +363,28 @@ public class PropertyManager {
   }
 
   //// private static methods ////
-  
+
   private static String getPropertyName(int propID) {
-    if (propID < 0)
-      return "";
-    return propertyTypes[propID * 3];
+    return (propID < 0 ? "" : propertyTypes[propID * 3]);
   }
-  
+
   private static String getParamType(int propID) {
-    if (propID < 0)
-      return "";
-    return propertyTypes[propID * 3 + 1];
+    return (propID < 0 ? "" : propertyTypes[propID * 3 + 1]);
   }
-  
-  private final static String[] readableTypes = {
-    "", "stateinfo", "extractmodel", "filecontents", "fileheader", "image", "menu", "minimizationInfo"};
-  
+
+  private final static String[] readableTypes = { "", "stateinfo",
+      "extractmodel", "filecontents", "fileheader", "image", "menu",
+      "minimizationInfo" };
+
   private static boolean isReadableAsString(String infoType) {
-    for (int i = readableTypes.length; --i >= 0; )
+    for (int i = readableTypes.length; --i >= 0;)
       if (infoType.equalsIgnoreCase(readableTypes[i]))
-          return true;
+        return true;
     return false;
   }
-  
-  private static Object getPropertyAsObject(Viewer viewer, String infoType,
-                                            Object paramInfo, String returnType) {
+
+  private Object getPropertyAsObject(String infoType, Object paramInfo,
+                                     String returnType) {
     //Logger.debug("getPropertyAsObject(\"" + infoType+"\", \"" + paramInfo + "\")");
     if (infoType.equals("tokenList")) {
       return Token.getTokensLike((String) paramInfo);
@@ -367,7 +392,7 @@ public class PropertyManager {
     int id = getPropertyNumber(infoType);
     boolean iHaveParameter = (paramInfo != null && paramInfo.toString()
         .length() > 0);
-    Object myParam = (iHaveParameter ? paramInfo : getDefaultParam(id));
+    Object myParam = (iHaveParameter ? paramInfo : getDefaultPropertyParam(id));
     //myParam may now be a bitset
     switch (id) {
     case PROP_APPLET_INFO:
@@ -397,9 +422,9 @@ public class PropertyManager {
     case PROP_ERROR_MESSAGE:
       return viewer.getErrorMessageUn();
     case PROP_EVALUATE:
-      return ScriptEvaluator.evaluateExpression(viewer, myParam.toString(), false);
+      return viewer.evaluateExpression(myParam.toString());
     case PROP_EXTRACT_MODEL:
-      return viewer.getModelExtract(myParam, true, "MOL");
+      return viewer.getModelExtract(myParam, true, false, "MOL");
     case PROP_FILE_INFO:
       return getFileInfo(viewer.getFileData(), myParam.toString());
     case PROP_FILENAME:
@@ -413,7 +438,8 @@ public class PropertyManager {
       return viewer.getCurrentFileAsString();
     case PROP_IMAGE:
       String params = myParam.toString();
-      int height = -1, width = -1;
+      int height = -1,
+      width = -1;
       int pt;
       if ((pt = params.indexOf("height=")) >= 0)
         height = Parser.parseInt(params.substring(pt + 7));
@@ -424,9 +450,9 @@ public class PropertyManager {
       else if (width < 0)
         width = height;
       else
-        height = width;        
-      return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1, width, height,
-          null, null);
+        height = width;
+      return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1,
+          width, height, null, null);
     case PROP_ISOSURFACE_INFO:
       return viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getInfo");
     case PROP_ISOSURFACE_DATA:
@@ -460,23 +486,25 @@ public class PropertyManager {
     case PROP_SHAPE_INFO:
       return viewer.getShapeInfo();
     case PROP_STATE_INFO:
-      return viewer.getStateInfo(myParam.toString(), 0, 0);
+      return viewer.getStateInfo3(myParam.toString(), 0, 0);
     case PROP_TRANSFORM_INFO:
       return viewer.getMatrixRotate();
     }
     String[] data = new String[PROP_COUNT];
     for (int i = 0; i < PROP_COUNT; i++) {
       String paramType = getParamType(i);
-      String paramDefault = getDefaultParam(i);
+      String paramDefault = getDefaultPropertyParam(i);
       String name = getPropertyName(i);
       data[i] = (name.charAt(0) == 'X' ? "" : name
-          + (paramType != "" ? " " + getParamType(i)
-              + (paramDefault != "" ? " #default: " + getDefaultParam(i) : "")
-              : ""));
+          + (paramType != "" ? " "
+              + getParamType(i)
+              + (paramDefault != "" ? " #default: "
+                  + getDefaultPropertyParam(i) : "") : ""));
     }
     Arrays.sort(data);
     StringXBuilder info = new StringXBuilder();
-    info.append("getProperty ERROR\n").append(infoType).append("?\nOptions include:\n");
+    info.append("getProperty ERROR\n").append(infoType).append(
+        "?\nOptions include:\n");
     for (int i = 0; i < PROP_COUNT; i++)
       if (data[i].length() > 0)
         info.append("\n getProperty ").append(data[i]);
@@ -492,7 +520,7 @@ public class PropertyManager {
     if (objHeader instanceof Map) {
       return (haveType ? ((Map<?, ?>) objHeader).get(type) : objHeader);
     }
-    String[] lines = TextFormat.split((String)objHeader, '\n');
+    String[] lines = TextFormat.split((String) objHeader, '\n');
     String keyLast = "";
     StringXBuilder sb = new StringXBuilder();
     if (haveType)
@@ -500,9 +528,10 @@ public class PropertyManager {
     String key = "";
     for (int i = 0; i < lines.length; i++) {
       String line = lines[i];
-      if (line.length() < 12) continue;
-      key = line.substring(0,6).trim();
-      String cont = line.substring(7,10).trim();
+      if (line.length() < 12)
+        continue;
+      key = line.substring(0, 6).trim();
+      String cont = line.substring(7, 10).trim();
       if (key.equals("REMARK")) {
         key += cont;
       }
@@ -516,7 +545,7 @@ public class PropertyManager {
         keyLast = key;
       }
       if (!haveType || key.equals(type))
-        sb.append(line.substring(10).trim()).appendC('\n');      
+        sb.append(line.substring(10).trim()).appendC('\n');
     }
     if (!haveType) {
       ht.put(keyLast, sb.toString());
@@ -526,4 +555,785 @@ public class PropertyManager {
     return ht;
   }
 
+  /// info ///
+
+  public List<Map<String, Object>> getMoleculeInfo(ModelSet modelSet,
+                                                   Object atomExpression) {
+    BitSet bsAtoms = viewer.getAtomBitSet(atomExpression);
+    if (modelSet.moleculeCount == 0) {
+      modelSet.getMolecules();
+    }
+    List<Map<String, Object>> V = new ArrayList<Map<String, Object>>();
+    BitSet bsTemp = new BitSet();
+    for (int i = 0; i < modelSet.moleculeCount; i++) {
+      bsTemp = BitSetUtil.copy(bsAtoms);
+      JmolMolecule m = modelSet.molecules[i];
+      bsTemp.and(m.atomList);
+      if (bsTemp.length() > 0) {
+        Map<String, Object> info = new Hashtable<String, Object>();
+        info.put("mf", m.getMolecularFormula(false)); // sets atomCount and nElements
+        info.put("number", Integer.valueOf(m.moleculeIndex + 1)); //for now
+        info.put("modelNumber", modelSet.getModelNumberDotted(m.modelIndex));
+        info.put("numberInModel", Integer.valueOf(m.indexInModel + 1));
+        info.put("nAtoms", Integer.valueOf(m.atomCount));
+        info.put("nElements", Integer.valueOf(m.nElements));
+        V.add(info);
+      }
+    }
+    return V;
+  }
+
+  public Map<String, Object> getModelInfo(Object atomExpression) {
+
+    BitSet bsModels = viewer.getModelBitSet(viewer
+        .getAtomBitSet(atomExpression), false);
+
+    ModelSet m = viewer.getModelSet();
+    Map<String, Object> info = new Hashtable<String, Object>();
+    info.put("modelSetName", m.modelSetName);
+    info.put("modelCount", Integer.valueOf(m.modelCount));
+    info.put("isTainted", Boolean.valueOf(m.tainted != null));
+    info.put("canSkipLoad", Boolean.valueOf(m.canSkipLoad));
+    info.put("modelSetHasVibrationVectors", Boolean.valueOf(m
+        .modelSetHasVibrationVectors()));
+    if (m.modelSetProperties != null) {
+      info.put("modelSetProperties", m.modelSetProperties);
+    }
+    info.put("modelCountSelected", Integer.valueOf(BitSetUtil
+        .cardinalityOf(bsModels)));
+    info.put("modelsSelected", bsModels);
+    List<Map<String, Object>> vModels = new ArrayList<Map<String, Object>>();
+    m.getMolecules();
+
+    for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
+      Map<String, Object> model = new Hashtable<String, Object>();
+      model.put("_ipt", Integer.valueOf(i));
+      model.put("num", Integer.valueOf(m.getModelNumber(i)));
+      model.put("file_model", m.getModelNumberDotted(i));
+      model.put("name", m.getModelName(i));
+      String s = m.getModelTitle(i);
+      if (s != null)
+        model.put("title", s);
+      s = m.getModelFileName(i);
+      if (s != null)
+        model.put("file", s);
+      s = (String) m.getModelAuxiliaryInfoValue(i, "modelID");
+      if (s != null)
+        model.put("id", s);
+      model.put("vibrationVectors", Boolean.valueOf(m
+          .modelHasVibrationVectors(i)));
+      Model mi = m.models[i];
+      model.put("atomCount", Integer.valueOf(mi.atomCount));
+      model.put("bondCount", Integer.valueOf(mi.getBondCount()));
+      model.put("groupCount", Integer.valueOf(mi.getGroupCount()));
+      model.put("moleculeCount", Integer.valueOf(mi.moleculeCount));
+      model.put("polymerCount", Integer.valueOf(mi.getBioPolymerCount()));
+      model.put("chainCount", Integer.valueOf(m.getChainCountInModel(i, true)));
+      if (mi.properties != null) {
+        model.put("modelProperties", mi.properties);
+      }
+      Float energy = (Float) m.getModelAuxiliaryInfoValue(i, "Energy");
+      if (energy != null) {
+        model.put("energy", energy);
+      }
+      model.put("atomCount", Integer.valueOf(mi.atomCount));
+      vModels.add(model);
+    }
+    info.put("models", vModels);
+    return info;
+  }
+
+  public Map<String, Object> getLigandInfo(Object atomExpression) {
+    BitSet bsAtoms = viewer.getAtomBitSet(atomExpression);
+    BitSet bsSolvent = viewer.getAtomBitSet("solvent");
+    Map<String, Object> info = new Hashtable<String, Object>();
+    List<Map<String, Object>> ligands = new ArrayList<Map<String, Object>>();
+    info.put("ligands", ligands);
+    ModelSet ms = viewer.modelSet;
+    BitSet bsExclude = BitSetUtil.copyInvert(bsAtoms, ms.atomCount);
+    bsExclude.or(bsSolvent);
+    Atom[] atoms = ms.atoms;
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
+      if (atoms[i].isProtein() || atoms[i].isNucleic())
+        bsExclude.set(i);
+    BitSet[] bsModelAtoms = new BitSet[ms.modelCount];
+    for (int i = ms.modelCount; --i >= 0;) {
+      bsModelAtoms[i] = viewer.getModelUndeletedAtomsBitSet(i);
+      bsModelAtoms[i].andNot(bsExclude);
+    }
+    JmolMolecule[] molList = JmolMolecule.getMolecules(atoms, bsModelAtoms,
+        null, bsExclude);
+    for (int i = 0; i < molList.length; i++) {
+      BitSet bs = molList[i].atomList;
+      Map<String, Object> ligand = new Hashtable<String, Object>();
+      ligands.add(ligand);
+      ligand.put("atoms", Escape.escape(bs));
+      String names = "";
+      String sep = "";
+      Group lastGroup = null;
+      char chainlast = '\0';
+      String reslist = "";
+      String model = "";
+      int resnolast = Integer.MAX_VALUE;
+      int resnofirst = Integer.MAX_VALUE;
+      for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1)) {
+        Atom atom = atoms[j];
+        if (lastGroup == atom.group)
+          continue;
+        lastGroup = atom.group;
+        int resno = atom.getResno();
+        char chain = atom.getChainID();
+        if (resnolast != resno - 1) {
+          if (reslist.length() != 0 && resnolast != resnofirst)
+            reslist += "-" + resnolast;
+          chain = '\1';
+          resnofirst = resno;
+        }
+        model = "/" + ms.getModelNumberDotted(atom.modelIndex);
+        if (chainlast != '\0' && chain != chainlast)
+          reslist += ":" + chainlast + model;
+        if (chain == '\1')
+          reslist += " " + resno;
+        resnolast = resno;
+        chainlast = atom.getChainID();
+        names += sep + atom.getGroup3(false);
+        sep = "-";
+      }
+      reslist += (resnofirst == resnolast ? "" : "-" + resnolast)
+          + (chainlast == '\0' ? "" : ":" + chainlast) + model;
+      ligand.put("groupNames", names);
+      ligand.put("residueList", reslist.substring(1));
+    }
+    return info;
+  }
+
+  public Object getSymmetryInfo(BitSet bsAtoms, String xyz, int op, Point3f pt,
+                                Point3f pt2, String id, int type) {
+    int iModel = -1;
+    if (bsAtoms == null) {
+      iModel = viewer.getCurrentModelIndex();
+      if (iModel < 0)
+        return "";
+      bsAtoms = viewer.getModelUndeletedAtomsBitSet(iModel);
+    }
+    int iAtom = bsAtoms.nextSetBit(0);
+    if (iAtom < 0)
+      return "";
+    iModel = viewer.modelSet.atoms[iAtom].modelIndex;
+    SymmetryInterface uc = viewer.modelSet.getUnitCell(iModel);
+    if (uc == null)
+      return "";
+    return uc.getSymmetryInfo(viewer.modelSet, iModel, iAtom, uc, xyz, op, pt,
+        pt2, id, type);
+  }
+
+  
+  public String getModelExtract(BitSet bs, boolean doTransform,
+                                boolean isModelKit, String type) {
+    boolean asV3000 = type.equalsIgnoreCase("V3000");
+    boolean asSDF = type.equalsIgnoreCase("SDF");
+    boolean asXYZVIB = type.equalsIgnoreCase("XYZVIB");
+    boolean asChemDoodle = type.equalsIgnoreCase("CD");
+    StringXBuilder mol = new StringXBuilder();
+    ModelSet ms = viewer.modelSet;
+    if (!asXYZVIB && !asChemDoodle) {
+      mol.append(isModelKit ? "Jmol Model Kit" : viewer.getFullPathName()
+          .replace('\\', '/'));
+      String version = Viewer.getJmolVersion();
+      mol.append("\n__Jmol-").append(version.substring(0, 2));
+      int cMM, cDD, cYYYY, cHH, cmm;
+      /**
+       * @j2sNative
+       * 
+       * var c = new Date();
+       * cMM = c.getMonth();
+       * cDD = c.getDate();
+       * cYYYY = c.getFullYear();
+       * cHH = c.getHours();
+       * cmm = c.getMinutes();
+       */
+      {
+        Calendar c = Calendar.getInstance();
+        cMM = c.get(Calendar.MONTH);
+        cDD = c.get(Calendar.DAY_OF_MONTH);
+        cYYYY = c.get(Calendar.YEAR);
+        cHH = c.get(Calendar.HOUR_OF_DAY);
+        cmm = c.get(Calendar.MINUTE);
+      }
+      TextFormat.rFill(mol, "_00", "" + (1 + cMM));
+      TextFormat.rFill(mol, "00", "" + cDD);
+      mol.append(("" + cYYYY).substring(2, 4));
+      TextFormat.rFill(mol, "00", "" + cHH);
+      TextFormat.rFill(mol, "00", "" + cmm);
+      mol.append("3D 1   1.00000     0.00000     0");
+      //       This line has the format:
+      //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
+      //  A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6->
+      mol.append("\nJmol version ").append(Viewer.getJmolVersion()).append(
+          " EXTRACT: ").append(Escape.escape(bs)).append("\n");
+    }
+    BitSet bsAtoms = BitSetUtil.copy(bs);
+    Atom[] atoms = ms.atoms;
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+      if (doTransform && atoms[i].isDeleted())
+        bsAtoms.clear(i);
+    BitSet bsBonds = getCovalentBondsForAtoms(ms.bonds, ms.bondCount, bsAtoms);
+    if (!asXYZVIB && bsAtoms.cardinality() == 0)
+      return "";
+    boolean isOK = true;
+    Quaternion q = (doTransform ? viewer.getRotationQuaternion() : null);
+    if (asSDF) {
+      String header = mol.toString();
+      mol = new StringXBuilder();
+      BitSet bsModels = viewer.getModelBitSet(bsAtoms, true);
+      for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
+          .nextSetBit(i + 1)) {
+        mol.append(header);
+        BitSet bsTemp = BitSetUtil.copy(bsAtoms);
+        bsTemp.and(ms.getModelAtomBitSetIncludingDeleted(i, false));
+        bsBonds = getCovalentBondsForAtoms(ms.bonds, ms.bondCount, bsTemp);
+        if (!(isOK = addMolFile(mol, bsTemp, bsBonds, false, false, q)))
+          break;
+        mol.append("$$$$\n");
+      }
+    } else if (asXYZVIB) {
+      LabelToken[] tokens1 = LabelToken.compile(viewer,
+          "%-2e %10.5x %10.5y %10.5z %10.5vx %10.5vy %10.5vz\n", '\0', null);
+      LabelToken[] tokens2 = LabelToken.compile(viewer,
+          "%-2e %10.5x %10.5y %10.5z\n", '\0', null);
+      BitSet bsModels = viewer.getModelBitSet(bsAtoms, true);
+      for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
+          .nextSetBit(i + 1)) {
+        BitSet bsTemp = BitSetUtil.copy(bsAtoms);
+        bsTemp.and(ms.getModelAtomBitSetIncludingDeleted(i, false));
+        if (bsTemp.cardinality() == 0)
+          continue;
+        mol.appendI(bsTemp.cardinality()).appendC('\n');
+        Properties props = ms.models[i].properties;
+        mol.append("Model[" + (i + 1) + "]: ");
+        if (ms.frameTitles[i] != null && ms.frameTitles[i].length() > 0) {
+          mol.append(ms.frameTitles[i].replace('\n', ' '));
+        } else if (props == null) {
+          mol.append("Jmol " + Viewer.getJmolVersion());
+        } else {
+          StringXBuilder sb = new StringXBuilder();
+          Enumeration<?> e = props.propertyNames();
+          String path = null;
+          while (e.hasMoreElements()) {
+            String propertyName = (String) e.nextElement();
+            if (propertyName.equals(".PATH"))
+              path = props.getProperty(propertyName);
+            else
+              sb.append(";").append(propertyName).append("=").append(
+                  props.getProperty(propertyName));
+          }
+          if (path != null)
+            sb.append(";PATH=").append(path);
+          path = sb.substring(sb.length() > 0 ? 1 : 0);
+          mol.append(path.replace('\n', ' '));
+        }
+        mol.appendC('\n');
+        for (int j = bsTemp.nextSetBit(0); j >= 0; j = bsTemp.nextSetBit(j + 1))
+          mol.append(LabelToken.formatLabelAtomArray(viewer, atoms[j],
+              (ms.getVibrationVector(j, false) == null ? tokens2 : tokens1), '\0',
+              null));
+      }
+    } else {
+      isOK = addMolFile(mol, bsAtoms, bsBonds, asV3000, asChemDoodle, q);
+    }
+    return (isOK ? mol.toString()
+        : "ERROR: Too many atoms or bonds -- use V3000 format.");
+  }
+
+  private boolean addMolFile(StringXBuilder mol, BitSet bsAtoms, BitSet bsBonds,
+                             boolean asV3000, boolean asChemDoodle, Quaternion q) {
+    int nAtoms = bsAtoms.cardinality();
+    int nBonds = bsBonds.cardinality();
+    if (!asV3000 && !asChemDoodle && (nAtoms > 999 || nBonds > 999))
+      return false;
+    ModelSet ms = viewer.modelSet;
+    int[] atomMap = new int[ms.atomCount];
+    Point3f pTemp = new Point3f();
+    if (asV3000) {
+      mol.append("  0  0  0  0  0  0            999 V3000");
+    } else if (asChemDoodle) {
+      mol.append("{\"mol\":{\"scaling\":[20,-20,20],\"a\":[");
+    } else {
+      TextFormat.rFill(mol, "   ", "" + nAtoms);
+      TextFormat.rFill(mol, "   ", "" + nBonds);
+      mol.append("  0  0  0  0              1 V2000");
+    }
+    if (!asChemDoodle)
+      mol.append("\n");
+    if (asV3000) {
+      mol.append("M  V30 BEGIN CTAB\nM  V30 COUNTS ").appendI(nAtoms)
+          .append(" ").appendI(nBonds).append(" 0 0 0\n").append(
+              "M  V30 BEGIN ATOM\n");
+    }
+    Point3f ptTemp = new Point3f();
+    for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
+        .nextSetBit(i + 1))
+      getAtomRecordMOL(ms, mol, atomMap[i] = ++n, ms.atoms[i], q, pTemp, ptTemp, asV3000,
+          asChemDoodle);
+    if (asV3000) {
+      mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");
+    } else if (asChemDoodle) {
+      mol.append("],\"b\":[");
+    }
+    for (int i = bsBonds.nextSetBit(0), n = 0; i >= 0; i = bsBonds
+        .nextSetBit(i + 1))
+      getBondRecordMOL(mol, ++n, ms.bonds[i], atomMap, asV3000, asChemDoodle);
+    // 21 21 0 0 0
+    if (asV3000) {
+      mol.append("M  V30 END BOND\nM  V30 END CTAB\n");
+    }
+    if (asChemDoodle)
+      mol.append("]}}");
+    else {
+      mol.append("M  END\n");
+    }
+    if (!asChemDoodle && !asV3000) {
+      float[] pc = ms.getPartialCharges();
+      if (pc != null) {
+        mol.append("> <JMOL_PARTIAL_CHARGES>\n").appendI(nAtoms)
+            .appendC('\n');
+        for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
+            .nextSetBit(i + 1))
+          mol.appendI(++n).append(" ").appendF(pc[i]).appendC('\n');
+      }
+    }
+    return true;
+  }
+
+  private static BitSet getCovalentBondsForAtoms(Bond[] bonds, int bondCount, BitSet bsAtoms) {
+    BitSet bsBonds = new BitSet();
+    for (int i = 0; i < bondCount; i++) {
+      Bond bond = bonds[i];
+      if (bsAtoms.get(bond.atom1.index) && bsAtoms.get(bond.atom2.index)
+          && bond.isCovalent())
+        bsBonds.set(i);
+    }
+    return bsBonds;
+  }
+
+  /*
+  L-Alanine
+  GSMACCS-II07189510252D 1 0.00366 0.00000 0
+  Figure 1, J. Chem. Inf. Comput. Sci., Vol 32, No. 3., 1992
+  0 0 0 0 0 999 V3000
+  M  V30 BEGIN CTAB
+  M  V30 COUNTS 6 5 0 0 1
+  M  V30 BEGIN ATOM
+  M  V30 1 C -0.6622 0.5342 0 0 CFG=2
+  M  V30 2 C 0.6622 -0.3 0 0
+  M  V30 3 C -0.7207 2.0817 0 0 MASS=13
+  M  V30 4 N -1.8622 -0.3695 0 0 CHG=1
+  M  V30 5 O 0.622 -1.8037 0 0
+  M  V30 6 O 1.9464 0.4244 0 0 CHG=-1
+  M  V30 END ATOM
+  M  V30 BEGIN BOND
+  M  V30 1 1 1 2
+  M  V30 2 1 1 3 CFG=1
+  M  V30 3 1 1 4
+  M  V30 4 2 2 5
+  M  V30 5 1 2 6
+  M  V30 END BOND
+  M  V30 END CTAB
+  M  END
+   */
+
+  private void getAtomRecordMOL(ModelSet ms, StringXBuilder mol, int n, Atom a, Quaternion q,
+                                Point3f pTemp, Point3f ptTemp, boolean asV3000,
+                                boolean asChemDoodle) {
+    //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
+    //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
+    //012345678901234567890123456789012
+    
+    if (ms.models[a.modelIndex].isTrajectory)
+      a.setFractionalCoordPt(ptTemp, ms.trajectorySteps.get(a.modelIndex)[a.index
+          - ms.models[a.modelIndex].firstAtomIndex], true);
+    else
+      pTemp.setT(a);
+    if (q != null)
+      q.transformP2(pTemp, pTemp);
+    int elemNo = a.getElementNumber();
+    String sym = (a.isDeleted() ? "Xx" : Elements
+        .elementSymbolFromNumber(elemNo));
+    int iso = a.getIsotopeNumber();
+    int charge = a.getFormalCharge();
+    if (asV3000) {
+      mol.append("M  V30 ").appendI(n).append(" ").append(sym).append(" ")
+          .appendF(pTemp.x).append(" ").appendF(pTemp.y).append(" ").appendF(
+              pTemp.z).append(" 0");
+      if (charge != 0)
+        mol.append(" CHG=").appendI(charge);
+      if (iso != 0)
+        mol.append(" MASS=").appendI(iso);
+      mol.append("\n");
+    } else if (asChemDoodle) {
+      if (n != 1)
+        mol.append(",");
+      mol.append("{");
+      if (a.getElementNumber() != 6)
+        mol.append("\"l\":\"").append(a.getElementSymbol()).append("\",");
+      if (charge != 0)
+        mol.append("\"c\":").appendI(charge).append(",");
+      if (iso != 0 && iso != Elements.getNaturalIsotope(elemNo))
+        mol.append("\"m\":").appendI(iso).append(",");
+      mol.append("\"x\":").appendF(a.x*20).append(",\"y\":").appendF(-a.y*20).append(
+          ",\"z\":").appendF(a.z*20).append("}");
+    } else {
+      mol.append(TextFormat.sprintf("%10.5p%10.5p%10.5p",
+          "p", new Object[] {pTemp }));
+      mol.append(" ").append(sym);
+      if (sym.length() == 1)
+        mol.append(" ");
+      if (iso > 0)
+        iso -= Elements.getNaturalIsotope(a.getElementNumber());
+      mol.append(" ");
+      TextFormat.rFill(mol, "  ", "" + iso);
+      TextFormat.rFill(mol, "   ", "" + (charge == 0 ? 0 : 4 - charge));
+      mol.append("  0  0  0  0\n");
+    }
+  }
+
+  private void getBondRecordMOL(StringXBuilder mol, int n, Bond b, int[] atomMap,
+                                boolean asV3000, boolean asChemDoodle) {
+    //  1  2  1  0
+    int a1 = atomMap[b.atom1.index];
+    int a2 = atomMap[b.atom2.index];
+    int order = b.getValence();
+    if (order > 3)
+      order = 1;
+    switch (b.order & ~JmolEdge.BOND_NEW) {
+    case JmolEdge.BOND_AROMATIC:
+      order = (asChemDoodle ? 2: 4);
+      break;
+    case JmolEdge.BOND_PARTIAL12:
+      order = (asChemDoodle ? 1: 5);
+      break;
+    case JmolEdge.BOND_AROMATIC_SINGLE:
+      order = (asChemDoodle ? 1: 6);
+      break;
+    case JmolEdge.BOND_AROMATIC_DOUBLE:
+      order = (asChemDoodle ? 2: 7);
+      break;
+    case JmolEdge.BOND_PARTIAL01:
+      order = (asChemDoodle ? 1: 8);
+      break;
+    }
+    if (asV3000) {
+      mol.append("M  V30 ").appendI(n).append(" ").appendI(order).append(" ")
+          .appendI(a1).append(" ").appendI(a2).appendC('\n');
+    } else if (asChemDoodle) {
+      if (n != 1)
+        mol.append(",");
+      mol.append("{\"b\":").appendI(a1 - 1).append(",\"e\":").appendI(a2 - 1);
+      if (order != 1)
+        mol.append(",\"o\":").appendI(order);
+      mol.append("}");
+    } else {
+      TextFormat.rFill(mol, "   ", "" + a1);
+      TextFormat.rFill(mol, "   ", "" + a2);
+      mol.append("  ").appendI(order).append("  0  0  0\n");
+    }
+  }
+
+  public String getChimeInfo(int tok, BitSet bs) {
+    switch (tok) {
+    case Token.info:
+      break;
+    case Token.basepair:
+      return getBasePairInfo(bs);
+    default:
+      return getChimeInfoA(viewer.modelSet.atoms, tok, bs);
+    }
+    StringXBuilder sb = new StringXBuilder();
+    viewer.modelSet.models[0].getChimeInfo(sb, 0);
+    return sb.appendC('\n').toString().substring(1);
+  }
+
+  private String getChimeInfoA(Atom[] atoms, int tok, BitSet bs) {
+    StringXBuilder info = new StringXBuilder();
+    info.append("\n");
+    char id;
+    String s = "";
+    Chain clast = null;
+    Group glast = null;
+    int modelLast = -1;
+    int n = 0;
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        id = atoms[i].getChainID();
+        s = (id == '\0' ? " " : "" + id);
+        switch (tok) {
+        case Token.chain:
+          break;
+        case Token.selected:
+          s = atoms[i].getInfo();
+          break;
+        case Token.atoms:
+          s = "" + atoms[i].getAtomNumber();
+          break;
+        case Token.group:
+          s = atoms[i].getGroup3(false);
+          break;
+        case Token.residue:
+          s = "[" + atoms[i].getGroup3(false) + "]"
+              + atoms[i].getSeqcodeString() + ":" + s;
+          break;
+        case Token.sequence:
+          if (atoms[i].getModelIndex() != modelLast) {
+            info.appendC('\n');
+            n = 0;
+            modelLast = atoms[i].getModelIndex();
+            info.append("Model " + atoms[i].getModelNumber());
+            glast = null;
+            clast = null;
+          }
+          if (atoms[i].getChain() != clast) {
+            info.appendC('\n');
+            n = 0;
+            clast = atoms[i].getChain();
+            info.append("Chain " + s + ":\n");
+            glast = null;
+          }
+          Group g = atoms[i].getGroup();
+          if (g != glast) {
+            if ((n++) % 5 == 0 && n > 1)
+              info.appendC('\n');
+            TextFormat.lFill(info, "          ", "["
+                + atoms[i].getGroup3(false) + "]" + atoms[i].getResno() + " ");
+            glast = g;
+          }
+          continue;
+        default:
+          return "";
+        }
+        if (info.indexOf("\n" + s + "\n") < 0)
+          info.append(s).appendC('\n');
+      }
+    if (tok == Token.sequence)
+      info.appendC('\n');
+    return info.toString().substring(1);
+  }
+
+  public String getModelFileInfo(BitSet frames) {
+    ModelSet ms = viewer.modelSet;
+    StringXBuilder sb = new StringXBuilder();
+    for (int i = 0; i < ms.modelCount; ++i) {
+      if (frames != null && !frames.get(i))
+        continue;
+      String s = "[\"" + ms.getModelNumberDotted(i) + "\"] = ";
+      sb.append("\n\nfile").append(s).append(Escape.escapeStr(ms.getModelFileName(i)));
+      String id = (String) ms.getModelAuxiliaryInfoValue(i, "modelID");
+      if (id != null)
+        sb.append("\nid").append(s).append(Escape.escapeStr(id));
+      sb.append("\ntitle").append(s).append(Escape.escapeStr(ms.getModelTitle(i)));
+      sb.append("\nname").append(s).append(Escape.escapeStr(ms.getModelName(i)));
+    }
+    return sb.toString();
+  }
+
+  public List<Map<String, Object>> getAllAtomInfo(BitSet bs) {
+    List<Map<String, Object>> V = new ArrayList<Map<String, Object>>();
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      V.add(getAtomInfoLong(i));
+    }
+    return V;
+  }
+
+  public void getAtomIdentityInfo(int i, Map<String, Object> info) {
+    ModelSet ms = viewer.modelSet;
+    info.put("_ipt", Integer.valueOf(i));
+    info.put("atomIndex", Integer.valueOf(i));
+    info.put("atomno", Integer.valueOf(ms.getAtomNumber(i)));
+    info.put("info", ms.getAtomInfo(i, null));
+    info.put("sym", ms.getElementSymbol(i));
+  }
+
+  private Map<String, Object> getAtomInfoLong(int i) {
+    ModelSet ms = viewer.modelSet;
+    Atom atom = ms.atoms[i];
+    Map<String, Object> info = new Hashtable<String, Object>();
+    getAtomIdentityInfo(i, info);
+    info.put("element", ms.getElementName(i));
+    info.put("elemno", Integer.valueOf(ms.getElementNumber(i)));
+    info.put("x", Float.valueOf(atom.x));
+    info.put("y", Float.valueOf(atom.y));
+    info.put("z", Float.valueOf(atom.z));
+    info.put("coord", Point3f.newP(atom));
+    if (ms.vibrationVectors != null && ms.vibrationVectors[i] != null) {
+      info.put("vibVector", Vector3f.newV(ms.vibrationVectors[i]));
+    }
+    info.put("bondCount", Integer.valueOf(atom.getCovalentBondCount()));
+    info.put("radius", Float.valueOf((float) (atom.getRasMolRadius() / 120.0)));
+    info.put("model", atom.getModelNumberForLabel());
+    info.put("shape", Atom.atomPropertyString(viewer, atom, Token.shape));
+    info.put("visible", Boolean.valueOf(atom.isVisible(0)));
+    info.put("clickabilityFlags", Integer.valueOf(atom.clickabilityFlags));
+    info.put("visibilityFlags", Integer.valueOf(atom.shapeVisibilityFlags));
+    info.put("spacefill", Float.valueOf(atom.getRadius()));
+    String strColor = Escape.escapeColor(viewer
+        .getColorArgbOrGray(atom.colixAtom));
+    if (strColor != null)
+      info.put("color", strColor);
+    info.put("colix", Integer.valueOf(atom.colixAtom));
+    boolean isTranslucent = atom.isTranslucent();
+    if (isTranslucent)
+      info.put("translucent", Boolean.valueOf(isTranslucent));
+    info.put("formalCharge", Integer.valueOf(atom.getFormalCharge()));
+    info.put("partialCharge", Float.valueOf(atom.getPartialCharge()));
+    float d = atom.getSurfaceDistance100() / 100f;
+    if (d >= 0)
+      info.put("surfaceDistance", Float.valueOf(d));
+    if (ms.models[atom.modelIndex].isBioModel) {
+      info.put("resname", atom.getGroup3(false));
+      int seqNum = atom.getSeqNumber();
+      char insCode = atom.getInsertionCode();
+      if (seqNum > 0)
+        info.put("resno", Integer.valueOf(seqNum));
+      if (insCode != 0)
+        info.put("insertionCode", "" + insCode);
+      char chainID = atom.getChainID();
+      info.put("name", ms.getAtomName(i));
+      info.put("chain", (chainID == '\0' ? "" : "" + chainID));
+      info.put("atomID", Integer.valueOf(atom.atomID));
+      info.put("groupID", Integer.valueOf(atom.getGroupID()));
+      if (atom.alternateLocationID != '\0')
+        info.put("altLocation", "" + atom.alternateLocationID);
+      info.put("structure", Integer.valueOf(atom.getProteinStructureType()
+          .getId()));
+      info.put("polymerLength", Integer.valueOf(atom.getPolymerLength()));
+      info.put("occupancy", Integer.valueOf(atom.getOccupancy100()));
+      int temp = atom.getBfactor100();
+      info.put("temp", Integer.valueOf(temp / 100));
+    }
+    return info;
+  }
+
+  public List<Map<String, Object>> getAllBondInfo(BitSet bs) {
+    List<Map<String, Object>> v = new ArrayList<Map<String, Object>>();
+    ModelSet ms = viewer.modelSet;
+    int bondCount = ms.bondCount;
+    if (bs instanceof BondSet) {
+      for (int i = bs.nextSetBit(0); i >= 0 && i < bondCount; i = bs.nextSetBit(i + 1))
+        v.add(getBondInfo(i));
+      return v;
+    }
+    int thisAtom = (bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
+    Bond[] bonds = ms.bonds;
+    for (int i = 0; i < bondCount; i++) {
+      if (thisAtom >= 0 ? (bonds[i].atom1.index == thisAtom || bonds[i].atom2.index == thisAtom)
+          : bs.get(bonds[i].atom1.index) && bs.get(bonds[i].atom2.index)) {
+        v.add(getBondInfo(i));
+      }
+    }
+    return v;
+  }
+
+  private Map<String, Object> getBondInfo(int i) {
+    Bond bond = viewer.modelSet.bonds[i];
+    Atom atom1 = bond.atom1;
+    Atom atom2 = bond.atom2;
+    Map<String, Object> info = new Hashtable<String, Object>();
+    info.put("_bpt", Integer.valueOf(i));
+    Map<String, Object> infoA = new Hashtable<String, Object>();
+    getAtomIdentityInfo(atom1.index, infoA);
+    Map<String, Object> infoB = new Hashtable<String, Object>();
+    getAtomIdentityInfo(atom2.index, infoB);
+    info.put("atom1", infoA);
+    info.put("atom2", infoB);
+    info.put("order", Float.valueOf(JmolEdge
+        .getBondOrderNumberFromOrder(bond.order)));
+    info.put("radius", Float.valueOf((float) (bond.mad / 2000.)));
+    info.put("length_Ang", Float.valueOf(atom1.distance(atom2)));
+    info.put("visible", Boolean.valueOf(bond.shapeVisibilityFlags != 0));
+    String strColor = Escape.escapeColor(viewer.getColorArgbOrGray(bond.colix));
+    if (strColor != null)
+      info.put("color", strColor);
+    info.put("colix", Integer.valueOf(bond.colix));
+    boolean isTranslucent = bond.isTranslucent();
+    if (isTranslucent)
+      info.put("translucent", Boolean.valueOf(isTranslucent));
+    return info;
+  }
+
+  public Map<String, List<Map<String, Object>>> getAllChainInfo(BitSet bs) {
+    Map<String, List<Map<String, Object>>> finalInfo = new Hashtable<String, List<Map<String, Object>>>();
+    List<Map<String, Object>> modelVector = new ArrayList<Map<String, Object>>();
+    int modelCount = viewer.modelSet.modelCount;
+    for (int i = 0; i < modelCount; ++i) {
+      Map<String, Object> modelInfo = new Hashtable<String, Object>();
+      List<Map<String, List<Map<String, Object>>>> info = getChainInfo(i, bs);
+      if (info.size() > 0) {
+        modelInfo.put("modelIndex", Integer.valueOf(i));
+        modelInfo.put("chains", info);
+        modelVector.add(modelInfo);
+      }
+    }
+    finalInfo.put("models", modelVector);
+    return finalInfo;
+  }
+
+  private List<Map<String, List<Map<String, Object>>>> getChainInfo(
+                                                                    int modelIndex,
+                                                                    BitSet bs) {
+    Model model = viewer.modelSet.models[modelIndex];
+    int nChains = model.getChainCount(true);
+    List<Map<String, List<Map<String, Object>>>> infoChains = new ArrayList<Map<String, List<Map<String, Object>>>>();
+    for (int i = 0; i < nChains; i++) {
+      Chain chain = model.getChainAt(i);
+      List<Map<String, Object>> infoChain = new ArrayList<Map<String, Object>>();
+      int nGroups = chain.getGroupCount();
+      Map<String, List<Map<String, Object>>> arrayName = new Hashtable<String, List<Map<String, Object>>>();
+      for (int igroup = 0; igroup < nGroups; igroup++) {
+        Group group = chain.getGroup(igroup);
+        if (bs.get(group.firstAtomIndex))
+          infoChain.add(group.getGroupInfo(igroup));
+      }
+      if (!infoChain.isEmpty()) {
+        arrayName.put("residues", infoChain);
+        infoChains.add(arrayName);
+      }
+    }
+    return infoChains;
+  }
+
+  public Map<String, List<Map<String, Object>>> getAllPolymerInfo(BitSet bs) {
+    Map<String, List<Map<String, Object>>> finalInfo = new Hashtable<String, List<Map<String, Object>>>();
+    List<Map<String, Object>> modelVector = new ArrayList<Map<String, Object>>();
+    int modelCount = viewer.modelSet.modelCount;
+    Model[] models = viewer.modelSet.models;
+    for (int i = 0; i < modelCount; ++i)
+      if (models[i].isBioModel)
+        models[i].getAllPolymerInfo(bs, finalInfo, modelVector);
+    finalInfo.put("models", modelVector);
+    return finalInfo;
+  }
+
+  private String getBasePairInfo(BitSet bs) {
+    StringXBuilder info = new StringXBuilder();
+    List<Bond> vHBonds = new ArrayList<Bond>();
+    viewer.modelSet.calcRasmolHydrogenBonds(bs, bs, vHBonds, true, 1, false, null);
+    for (int i = vHBonds.size(); --i >= 0;) {
+      Bond b = vHBonds.get(i);
+      getAtomResidueInfo(info, b.atom1);
+      info.append(" - ");
+      getAtomResidueInfo(info, b.atom2);
+      info.append("\n");
+    }
+    return info.toString();
+  }
+
+  private static void getAtomResidueInfo(StringXBuilder info, Atom atom) {
+    info.append("[").append(atom.getGroup3(false)).append("]").append(
+        atom.getSeqcodeString()).append(":");
+    char id = atom.getChainID();
+    info.append(id == '\0' ? " " : "" + id);
+  }
+
+  
+  
+  
 }

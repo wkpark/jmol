@@ -34,7 +34,6 @@ import org.jmol.util.Point3f;
 import org.jmol.util.Point3i;
 import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
@@ -100,8 +99,10 @@ public abstract class Shape {
   public int shapeID;
   public int myVisibilityFlag;
   protected float translucentLevel;
-  protected boolean translucentAllowed = true;
+  public boolean translucentAllowed = true;
   public boolean isBioShape;
+  public BitSet bsSizeSet;
+  public BitSet bsColixSet;
   
   public Viewer getViewer() {
     return viewer;
@@ -117,6 +118,27 @@ public abstract class Shape {
     initShape();
     //System.out.println("Shape " + shapeID + " " + this + " initialized");
 
+  }
+
+
+  abstract public String getShapeState();
+
+  /**
+   * 
+   * @param atomIndex
+   * @return size
+   */
+  public int getSize(int atomIndex) {
+    return 0;
+  }
+
+  /**
+   * 
+   * @param group
+   * @return size
+   */
+  public int getSizeG(Group group) {
+    return 0;
   }
 
   public void setModelSet(ModelSet modelSet) {
@@ -164,17 +186,13 @@ public abstract class Shape {
   }
 
   /**
-   * specifically from modelSet.setShapeProperty, mostly from ScriptEvaluation,
-   * but not always  -- definitely not from "super.setProperty"
    * 
-   * @param propertyName
-   * @param value
-   * @param bsSelected
+   * @param property
+   * @param data
+   * @return true if serviced
    */
-  public void setShapeProperty(String propertyName, Object value,
-                               BitSet bsSelected) {
-      setProperty(propertyName, value, bsSelected == null ? 
-          viewer.getSelectionSet(false) : bsSelected);
+  public boolean getPropertyData(String property, Object[] data) {
+    return false;
   }
 
   /**
@@ -192,7 +210,7 @@ public abstract class Shape {
       List<Object[]> propertyList = (List<Object[]>) value;
       while (propertyList.size() > 0) {
         Object[] data = propertyList.remove(0);
-        setShapeProperty(((String) data[0]).intern(), data[1], bsSelected);
+        setProperty(((String) data[0]).intern(), data[1], bsSelected);
       }
       return;
     }
@@ -206,16 +224,6 @@ public abstract class Shape {
     }
 
     Logger.warn("unassigned " + JmolConstants.shapeClassBases[shapeID] + " + shape setProperty:" + propertyName + ":" + value);
-  }
-
-  /**
-   * 
-   * @param property
-   * @param data
-   * @return true if serviced
-   */
-  public boolean getPropertyData(String property, Object[] data) {
-    return false;
   }
 
   /**
@@ -330,10 +338,6 @@ public abstract class Shape {
     return null;
   }
 
-  public String getShapeState() {
-    return null;
-  }
-
   /**
    * 
    * @param bs
@@ -341,99 +345,52 @@ public abstract class Shape {
   public void setVisibilityFlags(BitSet bs) {
   }
 
-  static public void setStateInfo(Map<String, BitSet> ht,
-                                  int i, String key) {
-    setStateInfo(ht, i, i, key);
+  public static short getColix(short[] colixes, int i, Atom atom) {
+    return Colix.getColixInherited(
+        (colixes == null || i >= colixes.length ? Colix.INHERIT_ALL
+            : colixes[i]), atom.getColix());
   }
-
-  static public void setStateInfo(Map<String, BitSet> ht,
-                                  int i1, int i2, String key) {
-    StateManager.setStateInfo(ht, i1, i2, key);
-  }
-
-  static public String getShapeCommands(Map<String, BitSet> htDefine,
-                                        Map<String, BitSet> htMore) {
-    return StateManager.getCommands(htDefine, htMore, "select");
-  }
-
-  static public String getShapeCommandsSel(Map<String, BitSet> htDefine,
-                                        Map<String, BitSet> htMore,
-                                        String selectCmd) {
-    return StateManager.getCommands(htDefine, htMore, selectCmd);
-  }
-
-  static public void appendCmd(StringXBuilder s, String cmd) {
-    StateManager.appendCmd(s, cmd);
-  }
-
-  static public String getFontCommand(String type, JmolFont font) {
+  
+  public static String getFontCommand(String type, JmolFont font) {
     if (font == null)
       return "";
     return "font " + type + " " + font.fontSizeNominal + " " + font.fontFace + " "
         + font.fontStyle;
   }
 
-  public String getColorCommandUnk(String type, short colix) {
-    return getColorCommand(type, EnumPalette.UNKNOWN.id, colix);
+  public static String getColorCommandUnk(String type, short colix,
+                                   boolean translucentAllowed) {
+    return getColorCommand(type, EnumPalette.UNKNOWN.id, colix,
+        translucentAllowed);
   }
 
-  public String getColorCommand(String type, byte pid, short colix) {
+  public static String getColorCommand(String type, byte pid, short colix,
+                                       boolean translucentAllowed) {
     if (pid == EnumPalette.UNKNOWN.id && colix == Colix.INHERIT_ALL)
       return "";
-    return "color " + type + " " + encodeTransColor(pid, colix, translucentAllowed);
+    String s = (pid == EnumPalette.UNKNOWN.id && colix == Colix.INHERIT_ALL ? ""
+        : (translucentAllowed ? getTranslucentLabel(colix) + " " : "")
+            + (pid != EnumPalette.UNKNOWN.id
+                && !EnumPalette.isPaletteVariable(pid) ? EnumPalette
+                .getPaletteName(pid) : encodeColor(colix)));
+    return "color " + type + " " + s;
   }
 
-  private static String encodeTransColor(byte pid, short colix,
-                                  boolean translucentAllowed) {
-    if (pid == EnumPalette.UNKNOWN.id && colix == Colix.INHERIT_ALL)
-      return "";
-    /* nuance here is that some palettes depend upon a
-     * point-in-time calculation that takes into account
-     * some aspect of the current state, such as what groups
-     * are selected in the case of "color group". So we have
-     * to identify these and NOT use them in serialization.
-     * Serialization of the palette name is just a convenience
-     * anyway. 
-     */
-    return (translucentAllowed ? getTranslucentLabel(colix) + " " : "")
-        + (pid != EnumPalette.UNKNOWN.id 
-        && !EnumPalette.isPaletteVariable(pid) 
-        ? EnumPalette.getPaletteName(pid) : encodeColor(colix));
-  }
-
-  protected static String encodeColor(short colix) {
+  public static String encodeColor(short colix) {
     // used also by labels for background state (no translucent issues there?)
     return (Colix.isColixColorInherited(colix) ? "none" : Colix
         .getHexCode(colix));
   }
 
-  protected static String getTranslucentLabel(short colix) {
+  public static String getTranslucentLabel(short colix) {
     return (Colix.isColixTranslucent(colix) ? "translucent "
         + Colix.getColixTranslucencyFractional(colix): "opaque");
   }
 
-  public static short getColix(short[] colixes, int i, Atom atom) {
-    return Colix.getColixInherited(
-        (colixes == null || i >= colixes.length ? Colix.INHERIT_ALL
-            : colixes[i]), atom.getColix());
-  }
-
-  /**
-   * 
-   * @param atomIndex
-   * @return size
-   */
-  public int getSize(int atomIndex) {
-    return 0;
-  }
-
-  /**
-   * 
-   * @param group
-   * @return size
-   */
-  public int getSize(Group group) {
-    return 0;
-  }
-
+  
+  protected static void appendCmd(StringXBuilder s, String cmd) {
+    if (cmd.length() == 0)
+      return;
+    s.append("  ").append(cmd).append(";\n");
+  }    
 }

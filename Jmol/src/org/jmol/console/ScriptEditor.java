@@ -48,10 +48,10 @@ import javax.swing.undo.UndoManager;
 import javax.swing.JScrollPane;
 
 import org.jmol.api.JmolScriptEditorInterface;
-import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 import org.jmol.script.ScriptContext;
 
 public final class ScriptEditor extends JDialog implements JmolScriptEditorInterface, ActionListener {
@@ -72,7 +72,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   protected JButton stepButton;
   protected JButton resumeButton;
 
-  private JmolViewer viewer;
+  private Viewer viewer;
 
   /*
    * methods sendeditorEcho, sendeditorMessage(strStatus), notifyScriptStart(),
@@ -93,7 +93,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   protected SimpleAttributeSet attEcho;
   protected SimpleAttributeSet attError;
 
-  ScriptEditor(JmolViewer viewer, JFrame frame, JmolConsole jmolConsole) {
+  ScriptEditor(Viewer viewer, JFrame frame, JmolConsole jmolConsole) {
     super(frame, null, false);
     // from appConsole only;
     setAttributes();
@@ -312,8 +312,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       return;
     }
     if (source == loadButton) {
-      setContext((ScriptContext) viewer.getProperty("DATA_API",
-          "scriptContext", null));
+      setContext(viewer.getScriptContext());
       return;
     }
     if (source == topButton) {

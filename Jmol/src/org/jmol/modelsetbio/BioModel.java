@@ -367,9 +367,9 @@ public final class BioModel extends Model{
     //      and setAtomPositions (bsAtoms null)
     BitSet bsDelete = new BitSet();
     hasRasmolHBonds = false;
-    Model[] models = modelSet.getModels();
-    Bond[] bonds = modelSet.getBonds();
-    for (int i = modelSet.getBondCount(); --i >= 0;) {
+    Model[] models = modelSet.models;
+    Bond[] bonds = modelSet.bonds;
+    for (int i = modelSet.bondCount; --i >= 0;) {
       Bond bond = bonds[i];
       Atom atom1 = bond.getAtom1();
       Model m = models[atom1.modelIndex];
@@ -458,8 +458,8 @@ public final class BioModel extends Model{
   @Override
   public void getChimeInfo(StringXBuilder sb, int nHetero) {
     int n = 0;
-    Model[] models = modelSet.getModels();
-    int modelCount = modelSet.getModelCount();
+    Model[] models = modelSet.models;
+    int modelCount = modelSet.modelCount;
     int atomCount = modelSet.getAtomCount();
     Atom[] atoms = modelSet.atoms;
     sb.append("\nMolecule name ....... "
@@ -540,7 +540,7 @@ public final class BioModel extends Model{
     int nTurn = 0;
     int nSheet = 0;
     BitSet bsTainted = null;
-    Model[] models = modelSet.getModels();
+    Model[] models = modelSet.models;
     Atom[] atoms = modelSet.atoms;
     int atomCount = modelSet.getAtomCount();
     

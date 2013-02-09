@@ -25,14 +25,9 @@ package org.jmol.viewer;
 
 import org.jmol.thread.AnimationThread;
 import org.jmol.util.BitSet;
-import org.jmol.util.Escape;
-import org.jmol.util.StringXBuilder;
 
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.modelset.ModelSet;
-
-import java.util.Hashtable;
-import java.util.Map;
 
 public class AnimationManager {
 
@@ -61,14 +56,14 @@ public class AnimationManager {
   public int lastModelPainted;
   
   private AnimationThread animationThread;
-  private int backgroundModelIndex = -1;
+  int backgroundModelIndex = -1;
   private final BitSet bsVisibleFrames = new BitSet();
   
   BitSet getVisibleFramesBitSet() {
     return bsVisibleFrames;
   }
   
-  private float firstFrameDelay;
+  float firstFrameDelay;
   private int intAnimThread;
   float lastFrameDelay = 1;
 
@@ -77,7 +72,7 @@ public class AnimationManager {
       setAnimationOff(false);
     int formerModelIndex = currentModelIndex;
     ModelSet modelSet = viewer.getModelSet();
-    int modelCount = (modelSet == null ? 0 : modelSet.getModelCount());
+    int modelCount = (modelSet == null ? 0 : modelSet.modelCount);
     if (modelCount == 1)
       currentModelIndex = modelIndex = 0;
     else if (modelIndex < 0 || modelIndex >= modelCount)
@@ -130,7 +125,7 @@ public class AnimationManager {
 
   void setBackgroundModelIndex(int modelIndex) {
     ModelSet modelSet = viewer.getModelSet();
-    if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.getModelCount())
+    if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.modelCount)
       modelIndex = -1;
     backgroundModelIndex = modelIndex;
     if (modelIndex >= 0)
@@ -191,64 +186,6 @@ public class AnimationManager {
     setAnimationFps(10);
     setAnimationReplayMode(EnumAnimationMode.ONCE, 0, 0);
     initializePointers(0);
-  }
-  
-  Map<String, Object> getAnimationInfo(){
-    Map<String, Object> info = new Hashtable<String, Object>();
-    info.put("firstModelIndex", Integer.valueOf(firstModelIndex));
-    info.put("lastModelIndex", Integer.valueOf(lastModelIndex));
-    info.put("animationDirection", Integer.valueOf(animationDirection));
-    info.put("currentDirection", Integer.valueOf(currentDirection));
-    info.put("displayModelIndex", Integer.valueOf(currentModelIndex));
-    info.put("displayModelNumber", viewer.getModelNumberDotted(currentModelIndex));
-    info.put("displayModelName", (currentModelIndex >=0 ? viewer.getModelName(currentModelIndex) : ""));
-    info.put("animationFps", Integer.valueOf(animationFps));
-    info.put("animationReplayMode", animationReplayMode.name());
-    info.put("firstFrameDelay", new Float(firstFrameDelay));
-    info.put("lastFrameDelay", new Float(lastFrameDelay));
-    info.put("animationOn", Boolean.valueOf(animationOn));
-    info.put("animationPaused", Boolean.valueOf(animationPaused));
-    return info;
-  }
- 
-  String getState(StringXBuilder sfunc) {
-    int modelCount = viewer.getModelCount();
-    if (modelCount < 2)
-      return "";
-    StringXBuilder commands = new StringXBuilder();
-    if (sfunc != null) {
-      sfunc.append("  _setFrameState;\n");
-      commands.append("function _setFrameState() {\n");
-    }
-    commands.append("# frame state;\n");
-    
-    commands.append("# modelCount ").appendI(modelCount)
-        .append(";\n# first ").append(
-             viewer.getModelNumberDotted(0)).append(";\n# last ").append(
-             viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
-    if (backgroundModelIndex >= 0)
-      StateManager.appendCmd(commands, "set backgroundModel " + 
-          viewer.getModelNumberDotted(backgroundModelIndex));
-    BitSet bs = viewer.getFrameOffsets();
-    if (bs != null)
-      StateManager.appendCmd(commands, "frame align " + Escape.escape(bs));
-    StateManager.appendCmd(commands, 
-        "frame RANGE " + viewer.getModelNumberDotted(firstModelIndex) + " "
-            + viewer.getModelNumberDotted(lastModelIndex));
-    StateManager.appendCmd(commands, 
-        "animation DIRECTION " + (animationDirection == 1 ? "+1" : "-1"));
-    StateManager.appendCmd(commands, "animation FPS " + animationFps);
-    StateManager.appendCmd(commands, "animation MODE " + animationReplayMode.name()
-        + " " + firstFrameDelay + " " + lastFrameDelay);
-    StateManager.appendCmd(commands, "frame " + viewer.getModelNumberDotted(currentModelIndex));
-    StateManager.appendCmd(commands, "animation "
-            + (!animationOn ? "OFF" : currentDirection == 1 ? "PLAY"
-                : "PLAYREV"));
-    if (animationOn && animationPaused)
-      StateManager.appendCmd(commands, "animation PAUSE");
-    if (sfunc != null)
-      commands.append("}\n\n");
-    return commands.toString();
   }
   
   void setAnimationDirection(int animationDirection) {

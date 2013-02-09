@@ -113,7 +113,7 @@ public class Axes extends FontLineShape {
     else
       originPoint.setT(fixedOrigin);
     if (axesMode == EnumAxesMode.UNITCELL
-        && modelSet.getCellInfos() != null) {
+        && modelSet.unitCells != null) {
       SymmetryInterface unitcell = viewer.getCurrentUnitCell();
       if (unitcell != null) {
         Point3f[] vectors = unitcell.getUnitCellVertices();

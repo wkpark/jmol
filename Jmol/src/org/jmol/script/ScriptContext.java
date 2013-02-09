@@ -71,17 +71,4 @@ public class ScriptContext {
   public boolean displayLoadErrorsSave;
   public int tryPt;
 
-  ScriptContext() {
-  }
-
-  StringXBuilder getContextTrace(StringXBuilder sb, boolean isTop) {
-    if (sb == null)
-      sb = new StringXBuilder();
-    sb.append(ScriptEvaluator.setErrorLineMessage(functionName, scriptFileName,
-        lineNumbers[pc], pc, ScriptEvaluator.statementAsString(statement, (isTop ? iToken : 9999), false)));
-    if (parentContext != null)
-      parentContext.getContextTrace(sb, false);
-    return sb;
-  }
-
 }

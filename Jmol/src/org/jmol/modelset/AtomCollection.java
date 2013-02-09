@@ -54,7 +54,6 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
-import org.jmol.util.StringXBuilder;
 import org.jmol.util.Vector3f;
 
 import org.jmol.util.Measure;
@@ -116,7 +115,7 @@ abstract public class AtomCollection {
   protected GData g3d;
 
   public Atom[] atoms;
-  int atomCount;
+  public int atomCount;
 
   public List<Point3f> getAtomPointVector(BitSet bs) {
     List<Point3f> v = new ArrayList<Point3f>();
@@ -208,7 +207,7 @@ abstract public class AtomCollection {
     return atoms[i].getElementNumber();
   }
 
-  String getElementName(int i) {
+  public String getElementName(int i) {
       return Elements.elementNameFromNumber(atoms[i]
           .getAtomicAndIsotopeNumber());
   }
@@ -927,19 +926,19 @@ abstract public class AtomCollection {
   final public static byte TAINT_ATOMTYPE = 1;
   final public static byte TAINT_COORD = 2;
   final public static byte TAINT_ELEMENT = 3;
-  public final static byte TAINT_FORMALCHARGE = 4;
-  public final static byte TAINT_HYDROPHOBICITY = 5;
-  final private static byte TAINT_IONICRADIUS = 6;
-  final private static byte TAINT_OCCUPANCY = 7;
-  final private static byte TAINT_PARTIALCHARGE = 8;
-  final private static byte TAINT_TEMPERATURE = 9;
-  final private static byte TAINT_VALENCE = 10;
-  final private static byte TAINT_VANDERWAALS = 11;
-  final private static byte TAINT_VIBRATION = 12;
+  final public static byte TAINT_FORMALCHARGE = 4;
+  final public static byte TAINT_HYDROPHOBICITY = 5;
+  final public static byte TAINT_IONICRADIUS = 6;
+  final public static byte TAINT_OCCUPANCY = 7;
+  final public static byte TAINT_PARTIALCHARGE = 8;
+  final public static byte TAINT_TEMPERATURE = 9;
+  final public static byte TAINT_VALENCE = 10;
+  final public static byte TAINT_VANDERWAALS = 11;
+  final public static byte TAINT_VIBRATION = 12;
   final public static byte TAINT_ATOMNO = 13;
   final public static byte TAINT_MAX = 14; // 1 more than last number, above
   
-  final private static String[] userSettableValues = {
+  public final static String[] userSettableValues = {
     "atomName",
     "atomType",
     "coord",
@@ -961,8 +960,8 @@ abstract public class AtomCollection {
      Logger.error("AtomCollection.java userSettableValues is not length TAINT_MAX!");
   }
   
-  protected BitSet[] tainted;  // not final -- can be set to null
-  boolean canSkipLoad = true;
+  public BitSet[] tainted;  // not final -- can be set to null
+  public boolean canSkipLoad = true;
 
   public static int getUserSettableType(String dataType) {
     boolean isExplicit = (dataType.indexOf("property_") == 0);
@@ -971,11 +970,6 @@ abstract public class AtomCollection {
       if (userSettableValues[i].equalsIgnoreCase(check))
         return i;
     return (isExplicit ? TAINT_MAX : -1);
-  }
-
-  private boolean isTainted(int atomIndex, byte type) {
-    return (tainted != null && tainted[type] != null 
-        && tainted[type].get(atomIndex));
   }
 
   public BitSet getTaintedAtoms(byte type) {
@@ -1033,100 +1027,6 @@ abstract public class AtomCollection {
       tainted[type].clear(i);
     if (tainted[type].nextSetBit(0) < 0)
       tainted[type] = null;
-  }
-
-  public String getAtomicPropertyState(int taintWhat, BitSet bsSelected) {
-    if (!preserveState)
-      return "";
-    BitSet bs;
-    StringXBuilder commands = new StringXBuilder();
-    for (byte i = 0; i < TAINT_MAX; i++)
-      if (taintWhat < 0 || i == taintWhat)
-      if((bs = (bsSelected != null ? bsSelected : getTaintedAtoms(i))) != null)
-        getAtomicPropertyStateBuffer(commands, i, bs, null, null);
-    return commands.toString();
-  }
-  
-  public void getAtomicPropertyStateBuffer(StringXBuilder commands, 
-                                     byte type, BitSet bs,
-                                     String label, float[] fData) {
-    if (!viewer.getPreserveState())
-      return;
-    // see setAtomData()
-    StringXBuilder s = new StringXBuilder();
-    String dataLabel = (label == null ? userSettableValues[type] : label)
-        + " set";
-    int n = 0;
-    boolean isDefault = (type == TAINT_COORD);
-    if (bs != null)
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        s.appendI(i + 1).append(" ").append(atoms[i].getElementSymbol()).append(
-            " ").append(atoms[i].getInfo().replace(' ', '_')).append(" ");
-        switch (type) {
-        case TAINT_MAX:
-          if (i < fData.length) // when data are appended, the array may not
-            // extend that far
-            s.appendF(fData[i]);
-          break;
-        case TAINT_ATOMNO:
-          s.appendI(atoms[i].getAtomNumber());
-          break;
-        case TAINT_ATOMNAME:
-          s.append(atoms[i].getAtomName());
-          break;
-        case TAINT_ATOMTYPE:
-          s.append(atoms[i].getAtomType());
-          break;
-        case TAINT_COORD:
-          if (isTainted(i, TAINT_COORD))
-            isDefault = false;
-          s.appendF(atoms[i].x).append(" ").appendF(atoms[i].y).append(" ")
-              .appendF(atoms[i].z);
-          break;
-        case TAINT_VIBRATION:
-          Vector3f v = atoms[i].getVibrationVector();
-          if (v == null)
-            v = new Vector3f();
-          s.appendF(v.x).append(" ").appendF(v.y).append(" ").appendF(v.z);
-          break;
-        case TAINT_ELEMENT:
-          s.appendI(atoms[i].getAtomicAndIsotopeNumber());
-          break;
-        case TAINT_FORMALCHARGE:
-          s.appendI(atoms[i].getFormalCharge());
-          break;
-        case TAINT_IONICRADIUS:
-          s.appendF(atoms[i].getBondingRadiusFloat());
-          break;
-        case TAINT_OCCUPANCY:
-          s.appendI(atoms[i].getOccupancy100());
-          break;
-        case TAINT_PARTIALCHARGE:
-          s.appendF(atoms[i].getPartialCharge());
-          break;
-        case TAINT_TEMPERATURE:
-          s.appendF(atoms[i].getBfactor100() / 100f);
-          break;
-        case TAINT_VALENCE:
-          s.appendI(atoms[i].getValence());
-          break;
-        case TAINT_VANDERWAALS:
-          s.appendF(atoms[i].getVanderwaalsRadiusFloat(viewer,
-              EnumVdw.AUTO));
-          break;
-        }
-        s.append(" ;\n");
-        ++n;
-      }
-    if (n == 0)
-      return;
-    if (isDefault)
-      dataLabel += "(default)";
-    commands.append("\n  DATA \"" + dataLabel + "\"\n").appendI(n).append(
-        " ;\nJmol Property Data Format 1 -- Jmol ").append(
-        Viewer.getJmolVersion()).append(";\n");
-    commands.appendSB(s);
-    commands.append("  end \"" + dataLabel + "\";\n");
   }
 
   ///////////////////////////////////////////
@@ -2104,71 +2004,6 @@ abstract public class AtomCollection {
     }    
   }
   
-  protected String getChimeInfo(int tok, BitSet bs) {
-    StringXBuilder info = new StringXBuilder();
-    info.append("\n");
-    char id;
-    String s = "";
-    Chain clast = null;
-    Group glast = null;
-    int modelLast = -1;
-    int n = 0;
-    if (bs != null)
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        id = atoms[i].getChainID();
-        s = (id == '\0' ? " " : "" + id);
-        switch (tok) {
-        case Token.chain:
-          break;
-        case Token.selected:
-          s = atoms[i].getInfo();
-          break;
-        case Token.atoms:
-          s = "" + atoms[i].getAtomNumber();
-          break;
-        case Token.group:
-          s = atoms[i].getGroup3(false);
-          break;
-        case Token.residue:
-          s = "[" + atoms[i].getGroup3(false) + "]"
-              + atoms[i].getSeqcodeString() + ":" + s;
-          break;
-        case Token.sequence:
-          if (atoms[i].getModelIndex() != modelLast) {
-            info.appendC('\n');
-            n = 0;
-            modelLast = atoms[i].getModelIndex();
-            info.append("Model " + atoms[i].getModelNumber());
-            glast = null;
-            clast = null;
-          }
-          if (atoms[i].getChain() != clast) {
-            info.appendC('\n');
-            n = 0;
-            clast = atoms[i].getChain();
-            info.append("Chain " + s + ":\n");
-            glast = null;
-          }
-          Group g = atoms[i].getGroup();
-          if (g != glast) {
-            if ((n++) % 5 == 0 && n > 1)
-              info.appendC('\n');
-            TextFormat.lFill(info, "          ", "["
-                + atoms[i].getGroup3(false) + "]" + atoms[i].getResno() + " ");
-            glast = g;
-          }
-          continue;
-        default:
-          return "";
-        }
-        if (info.indexOf("\n" + s + "\n") < 0)
-          info.append(s).appendC('\n');
-      }
-    if (tok == Token.sequence)
-      info.appendC('\n');
-    return info.toString().substring(1);
-  }
-
   /*
    * ******************************************************
    * 

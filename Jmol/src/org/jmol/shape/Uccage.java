@@ -29,7 +29,7 @@ public class Uccage extends FontLineShape {
 
   @Override
   public String getShapeState() {
-    return (modelSet.haveUnitCells() ? super.getShapeState() : "");
+    return (modelSet.haveUnitCells ? super.getShapeState() : "");
   }
 
   @Override

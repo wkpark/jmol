@@ -4,6 +4,7 @@ import java.util.Map;
 
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.BitSet;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
@@ -153,5 +154,18 @@ public interface SymmetryInterface {
   public Point3f toSupercell(Point3f fpt);
 
   public boolean isSupercell();
+
+  public String getSymmetryOperationInfo(Map<String, Object> sginfo, int symOp, String drawID, boolean labelOnly);
+
+  public Map<String, Object> getSpaceGroupInfo(ModelSet modelSet, int modelIndex,
+                                               String spaceGroup, int symOp,
+                                               Point3f pt1, Point3f pt2,
+                                               String drawID);
+
+  public Object getSymmetryInfo(ModelSet modelSet, int iModel, int iAtom, SymmetryInterface uc, String xyz, int op,
+                                Point3f pt, Point3f pt2, String id, int type);
+
+  public void setCentroid(ModelSet modelSet, int iAtom0, int iAtom1,
+                          int[] minmax);
 
 }

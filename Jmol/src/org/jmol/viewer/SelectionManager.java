@@ -27,18 +27,12 @@ import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
-import org.jmol.util.Escape;
-import org.jmol.util.StringXBuilder;
 
 import org.jmol.api.JmolSelectionListener;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.ModelSet;
 
-
-import java.util.Hashtable;
-import java.util.Map;
-
-class SelectionManager {
+public class SelectionManager {
 
   private Viewer viewer;
 
@@ -48,12 +42,12 @@ class SelectionManager {
     this.viewer = viewer;
   }
 
-  private final BitSet bsHidden = new BitSet();
-  private final BitSet bsSelection = new BitSet();
-  private final BitSet bsFixed = new BitSet();
+  final BitSet bsHidden = new BitSet();
+  final BitSet bsSelection = new BitSet();
+  final BitSet bsFixed = new BitSet();
 
   BitSet bsSubset; // set in Eval and only pointed to here
-  private BitSet bsDeleted;
+  BitSet bsDeleted;
 
   void deleteModelAtoms(BitSet bsDeleted) {
     BitSetUtil.deleteBits(bsHidden, bsDeleted);
@@ -70,7 +64,7 @@ class SelectionManager {
   private final static int UNKNOWN = -1;
   private int empty = TRUE;
 
-  private boolean hideNotSelected;
+  boolean hideNotSelected;
 
   void clear() {
     clearSelection(true);
@@ -286,42 +280,6 @@ class SelectionManager {
     for (int i = listeners.length; --i >= 0;)
       if (listeners[i] != null)
         listeners[i].selectionChanged(bsSelection);
-  }
-
-  String getState(StringXBuilder sfunc) {
-    StringXBuilder commands = new StringXBuilder();
-    if (sfunc != null) {
-      sfunc.append("  _setSelectionState;\n");
-      commands.append("function _setSelectionState() {\n");
-    }
-    StateManager.appendCmd(commands, viewer.getTrajectoryInfo());
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    String cmd = null;
-    addBs(commands, "hide ", bsHidden);
-    addBs(commands, "subset ", bsSubset);
-    addBs(commands, "delete ", bsDeleted);
-    addBs(commands, "fix ", bsFixed);
-    temp.put("-", bsSelection);
-    cmd = StateManager.getCommands(temp, null, "select");
-    if (cmd == null)
-      StateManager.appendCmd(commands, "select none");
-    else
-      commands.append(cmd);
-    StateManager.appendCmd(commands, "set hideNotSelected " + hideNotSelected);
-    commands.append((String) viewer.getShapeProperty(JmolConstants.SHAPE_STICKS,
-        "selectionState"));
-    if (viewer.getSelectionHaloEnabled(false))
-      StateManager.appendCmd(commands, "SelectionHalos ON");
-    if (sfunc != null)
-      commands.append("}\n\n");
-    return commands.toString();
-  }
-
-  private static void addBs(StringXBuilder sb, String key, 
-                            BitSet bs) {
-    if (bs == null || bs.length() == 0)
-      return;
-    StateManager.appendCmd(sb, key + Escape.escape(bs));
   }
 
   int deleteAtoms(BitSet bs) {

@@ -700,17 +700,6 @@ import org.jmol.constant.EnumPalette;
   }
 */
 
-  public int getState(StringXBuilder s) {
-    int n = 0;
-    for (Map.Entry<String, int[]> entry : schemes.entrySet()) {
-      String name = entry.getKey();
-      if (name.length() > 0 & n++ >= 0)
-        s.append("color \"" + name + "="
-            + getColorSchemeList(entry.getValue()) + "\";\n");
-    }
-    return n;
-  }
-
   public String getColorScheme() {
     return (isTranslucent ? "translucent " : "")
         + (currentPalette < 0 ? getColorSchemeList(getColorSchemeArray(currentPalette))

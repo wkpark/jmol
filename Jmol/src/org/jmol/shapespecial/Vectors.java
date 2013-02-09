@@ -51,8 +51,4 @@ public Object getProperty(String propertyName, int param) {
    return super.getProperty(propertyName, param);
  }
 
- @Override
-public String getShapeState() {
-    return (isActive ? super.getShapeState() : "");
-  }
 }

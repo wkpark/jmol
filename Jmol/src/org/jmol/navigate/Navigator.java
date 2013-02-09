@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.jmol.api.Event;
 import org.jmol.api.JmolNavigatorInterface;
-import org.jmol.script.ScriptEvaluator;
+import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.script.Token;
 import org.jmol.thread.JmolThread;
 import org.jmol.util.Escape;
@@ -97,7 +97,7 @@ public final class Navigator extends JmolThread implements
 
   private boolean isStep;
 
-  public void navigateList(ScriptEvaluator eval, List<Object[]> list) {
+  public void navigateList(JmolScriptEvaluator eval, List<Object[]> list) {
     // needs testing in Jmol/Java
     // still not correct for JS
     setEval(eval);

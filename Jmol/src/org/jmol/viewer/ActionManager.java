@@ -35,7 +35,6 @@ import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.MeasurementPending;
-import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
 import org.jmol.thread.HoverWatcherThread;
 import org.jmol.util.BitSet;
@@ -498,7 +497,6 @@ public class ActionManager {
       binding = predragBinding;
     viewer.setPickingMode(null, PICKING_IDENTIFY);
     viewer.setPickingStyle(null, rootPickingStyle);
-    eval = null;
     isAltKeyReleased = true;
   }
 
@@ -617,262 +615,6 @@ public class ActionManager {
   public void mouseExited(long time, int x, int y) {
     setCurrent(time, x, y, 0);
     exitMeasurementMode();
-  }
-
-  public void mouseAction(int action, long time, int x, int y, int count,
-                          int modifiers) {
-    if (!viewer.getMouseEnabled())
-      return;
-      //System.out.println("ActionManager mouseAction action=" + action + " x y = " + x + " " + y + " count = " + count + " mods = " + modifiers);
-    switch (action) {
-    case Binding.MOVED:
-      setCurrent(time, x, y, modifiers);
-      moved.setCurrent(current, Binding.MOVED);
-      if (measurementPending != null || hoverActive)
-        checkPointOrAtomClicked(x, y, 0, 0, time, false, Binding.MOVED);
-      else if (isZoomArea(x))
-        checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0,
-            false);
-      else if (viewer.getCursor() == JmolConstants.CURSOR_ZOOM)//if (dragSelectedMode)
-        viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
-      return;
-    case Binding.WHEELED:
-      if (viewer.isApplet() && !viewer.hasFocus())
-        return;
-      // sun bug? noted by Charles Xie that wheeling on a Java page
-      // effected inappropriate wheeling on this Java component
-      setCurrent(time, current.x, current.y, modifiers);
-      checkAction(Binding.getMouseAction(0, modifiers), current.x, current.y,
-          0, y, time, Binding.WHEELED);
-      return;
-    case Binding.CLICKED:
-      setMouseMode();
-      clickedCount = (count > 1 ? count : clicked.check(0, 0, 0, modifiers, time,
-          MAX_DOUBLE_CLICK_MILLIS) ? clickedCount + 1 : 1);
-      if (clickedCount == 1)
-        setCurrent(time, x, y, modifiers);        
-      clicked.setCurrent(current, Binding.CLICKED);
-      viewer.setFocus();
-      if (atomPickingMode != PICKING_SELECT_ATOM
-          && isBound(Binding.getMouseAction(Integer.MIN_VALUE, modifiers),
-              ACTION_selectAndDrag))
-        return;
-      checkPointOrAtomClicked(x, y, modifiers, clickedCount, time, false,
-          Binding.CLICKED);
-      return;
-    case Binding.DRAGGED2:
-      return;
-    case Binding.DRAGGED:
-      setMouseMode();
-      int deltaX = x - dragged.x;
-      int deltaY = y - dragged.y;
-      setCurrent(time, x, y, modifiers);
-      dragged.setCurrent(current, Binding.DRAGGED);
-      if (atomPickingMode != PICKING_ASSIGN_ATOM)
-        exitMeasurementMode();
-      action = Binding.getMouseAction(pressedCount, modifiers);
-      dragGesture.add(action, x, y, time);
-      checkAction(action, x, y, deltaX, deltaY, time, Binding.DRAGGED);
-      return;
-    case Binding.PRESSED:
-      setMouseMode();
-      pressedCount = (pressed.check(0, 0, 0, modifiers, time,
-          MAX_DOUBLE_CLICK_MILLIS) ? pressedCount + 1 : 1);
-      if (pressedCount == 1)
-        setCurrent(time, x, y, modifiers);
-      pressed.setCurrent(current, Binding.PRESSED);
-      dragged.setCurrent(current, Binding.PRESSED);
-      viewer.setFocus();
-      boolean isSelectAndDrag = isBound(Binding.getMouseAction(
-          Integer.MIN_VALUE, modifiers), ACTION_selectAndDrag);
-      action = Binding.getMouseAction(pressedCount, modifiers);
-      dragGesture.setAction(action, time);
-      if (Binding.getModifiers(action) != 0) {
-        action = viewer.notifyMouseClicked(x, y, action, Binding.PRESSED);
-        if (action == 0)
-          return;
-      }
-      pressedAtomIndex = Integer.MAX_VALUE;
-      if (drawMode
-          && (isBound(action, ACTION_dragDrawObject) || isBound(action,
-              ACTION_dragDrawPoint)) || labelMode
-          && isBound(action, ACTION_dragLabel)) {
-        viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, action);
-        return;
-      }
-      checkUserAction(action, x, y, 0, 0, time, Binding.PRESSED);
-      boolean isBound = false;
-      switch (atomPickingMode) {
-      case PICKING_ASSIGN_ATOM:
-        isBound = isBound(action, ACTION_assignNew);
-        break;
-      case PICKING_DRAG_ATOM:
-        isBound = isBound(action, ACTION_dragAtom) 
-            || isBound(action, ACTION_dragZ);
-        break;
-      case PICKING_DRAG_SELECTED:
-      case PICKING_DRAG_MOLECULE:
-        isBound = isBound(action, ACTION_dragAtom)
-            || isBound(action, ACTION_rotateSelected)
-            || isBound(action, ACTION_dragZ);
-        break;
-      case PICKING_DRAG_MINIMIZE:
-        isBound = isBound(action, ACTION_dragMinimize)
-            || isBound(action, ACTION_dragZ);
-        break;
-      case PICKING_DRAG_MINIMIZE_MOLECULE:
-        isBound = isBound(action, ACTION_dragMinimizeMolecule)
-            || isBound(action, ACTION_rotateSelected)
-            || isBound(action, ACTION_dragZ);
-        break;
-      }
-      if (isBound) {
-        dragAtomIndex = viewer.findNearestAtomIndexMovable(x, y, true);
-        if (dragAtomIndex >= 0
-            && (atomPickingMode == PICKING_ASSIGN_ATOM 
-                || atomPickingMode == PICKING_INVERT_STEREO)
-            && viewer.isAtomAssignable(dragAtomIndex)) {
-          enterMeasurementMode(dragAtomIndex);
-          measurementPending.addPoint(dragAtomIndex, null, false);
-        }
-        return;
-      }
-      if (isBound(action, ACTION_popupMenu)) {
-        char type = 'j';
-        if (viewer.getModelkitMode()) {
-          Map<String, Object> t = viewer.checkObjectClicked(x, y, Binding.getMouseAction(1,
-              Binding.LEFT));
-          type = (t != null && "bond".equals(t.get("type")) ? 'b' : viewer
-              .findNearestAtomIndex(x, y) >= 0 ? 'a' : 'm');
-        }
-        viewer.popupMenu(x, y, type);
-        return;
-      }
-      if (dragSelectedMode) {
-        haveSelection = true;
-        if (isSelectAndDrag) {
-          haveSelection = (viewer.findNearestAtomIndexMovable(x, y, true) >= 0);
-          // checkPointOrAtomClicked(x, y, mods, pressedCount, true);
-        }
-        if (!haveSelection)
-          return;
-        if (isBound(action, ACTION_dragSelected) || isBound(action, ACTION_dragZ))
-          viewer.moveSelected(Integer.MIN_VALUE, 0, Integer.MIN_VALUE,
-              Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
-        return;
-      }
-      if (viewer.useArcBall())
-        viewer.rotateArcBall(x, y, 0);
-      checkMotionRotateZoom(action, x, 0, 0, true);
-      return;
-    case Binding.RELEASED:
-      setCurrent(time, x, y, modifiers);
-      viewer.spinXYBy(0, 0, 0);
-      boolean dragRelease = !pressed.check(xyRange, x, y, modifiers, time,
-          Long.MAX_VALUE);
-      viewer.setInMotion(false);
-      viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
-      action = Binding.getMouseAction(pressedCount, modifiers);
-      dragGesture.add(action, x, y, time);
-      if (dragRelease)
-        viewer.setRotateBondIndex(Integer.MIN_VALUE);
-      if (dragAtomIndex >= 0) {
-        if (atomPickingMode == PICKING_DRAG_MINIMIZE
-            || atomPickingMode == PICKING_DRAG_MINIMIZE_MOLECULE)
-          minimize(true);
-      }
-      if (atomPickingMode == PICKING_ASSIGN_ATOM
-          && isBound(action, ACTION_assignNew)) {
-        if (measurementPending == null || dragAtomIndex < 0)
-          return;
-        // H C + -, etc.
-        // also check valence and add/remove H atoms as necessary?
-        if (measurementPending.getCount() == 2) {
-          viewer.undoMoveActionClear(-1, Token.save, true);
-          viewer.script("assign connect "
-              + measurementPending.getMeasurementScript(" ", false));
-        } else if (pickAtomAssignType.equals("Xx")) {
-          exitMeasurementMode();
-          viewer.refresh(3, "bond dropped");
-        } else {
-          if (pressed.inRange(xyRange, dragged.x, dragged.y)) {
-            String s = "assign atom ({" + dragAtomIndex + "}) \""
-                + pickAtomAssignType + "\"";
-            if (isPickAtomAssignCharge) {
-              s += ";{atomindex=" + dragAtomIndex + "}.label='%C'; ";
-              viewer.undoMoveActionClear(dragAtomIndex,
-                  AtomCollection.TAINT_FORMALCHARGE, true);
-            } else {
-              viewer.undoMoveActionClear(-1, Token.save, true);
-            }
-            viewer.script(s);
-          } else if (!isPickAtomAssignCharge) {
-            viewer.undoMoveActionClear(-1, Token.save, true);
-            Atom a = viewer.getModelSet().atoms[dragAtomIndex];
-            if (a.getElementNumber() == 1) {
-              viewer.script("assign atom ({" + dragAtomIndex + "}) \"X\"");
-            } else {
-              Point3f ptNew = Point3f.new3(x, y, a.screenZ);
-              viewer.unTransformPoint(ptNew, ptNew);
-              viewer.script("assign atom ({" + dragAtomIndex + "}) \""
-                  + pickAtomAssignType + "\" " + Escape.escapePt(ptNew));
-            }
-          }
-        }
-        exitMeasurementMode();
-        return;
-      }
-      dragAtomIndex = -1;
-      boolean isRbAction = isRubberBandSelect(action);
-      if (isRbAction) {
-        BitSet bs = viewer.findAtomsInRectangle(rectRubber);
-        if (bs.length() > 0) {
-          String s = Escape.escape(bs);
-          if (isBound(action, ACTION_selectOr))
-            viewer.script("selectionHalos on;select selected or " + s);
-          else if (isBound(action, ACTION_selectAndNot))
-            viewer.script("selectionHalos on;select selected and not " + s);
-          else
-            // ACTION_selectToggle
-            viewer.script("selectionHalos on;select selected tog " + s);
-        }
-        viewer.refresh(3, "mouseReleased");
-      }
-      rubberbandSelectionMode = (binding.getName() == "drag");
-      rectRubber.x = Integer.MAX_VALUE;
-      if (dragRelease) {
-        viewer.notifyMouseClicked(x, y,
-            Binding.getMouseAction(pressedCount, 0), Binding.RELEASED);
-      }
-      if (drawMode
-          && (isBound(action, ACTION_dragDrawObject) || isBound(action,
-              ACTION_dragDrawPoint)) || labelMode
-          && isBound(action, ACTION_dragLabel)) {
-        viewer.checkObjectDragged(Integer.MAX_VALUE, 0, x, y, action);
-        return;
-      }
-      if (dragSelectedMode && isBound(action, ACTION_dragSelected)
-          && haveSelection)
-        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE,
-            Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
-
-      if (dragRelease && checkUserAction(action, x, y, 0, 0, time, Binding.RELEASED))
-        return;
-
-      if (viewer.getAllowGestures()) {
-        if (isBound(action, ACTION_swipe)) {
-          float speed = getExitRate();
-          if (speed > 0)
-            viewer.spinXYBy(dragGesture.getDX(4, 2), dragGesture.getDY(4, 2),
-                speed * 30 * gestureSwipeFactor);
-          if (viewer.getLogGestures())
-            viewer.log("$NOW$ swipe " + dragGesture + " " + speed);
-          return;
-        }
-
-      }
-      return;
-    }
   }
 
   private boolean haveSelection;
@@ -1237,137 +979,6 @@ public class ActionManager {
         * SLIDE_ZOOM_X_PERCENT / 100f;
   }
 
-  private boolean checkPointOrAtomClicked(int x, int y, int mods,
-                                          int clickedCount, long time, 
-                                          boolean atomOnly, int mode) {
-    if (!viewer.haveModelSet())
-      return false;
-    // points are always picked up first, then atoms
-    // so that atom picking can be superceded by draw picking
-    int action = Binding.getMouseAction(clickedCount, mods);
-    if (action != Binding.MOVED) {
-      checkUserAction(action, x, y, 0, 0, time, mode);
-      action = viewer.notifyMouseClicked(x, y, action, mode);
-      if (action == Binding.MOVED)
-        return false;
-    }
-    if (isBound(action, ACTION_clickFrank) && viewer.frankClicked(x, y)) {
-      viewer.popupMenu(-x, y, 'j');
-      return false;
-    }
-    if (isBound(action, ACTION_clickFrank) && viewer.frankClickedModelKit(x, y)) {
-      viewer.popupMenu(0, 0, 'm');
-      return false;
-    }
-    Point3fi nearestPoint = null;
-    boolean isBond = false;
-    boolean isIsosurface = false;
-    Map<String, Object> t = null;
-    // t.tok will let us know if this is an atom or a bond that was clicked
-    if (!drawMode && !atomOnly) {
-      t = viewer.checkObjectClicked(x, y, action);
-      if (t != null) {
-        isBond = "bond".equals(t.get("type"));
-        isIsosurface = "isosurface".equals(t.get("type"));
-        nearestPoint = getPoint(t);
-      }
-    }
-    if (isBond)
-      clickedCount = 1;
-
-    if (nearestPoint != null && Float.isNaN(nearestPoint.x))
-      return false;
-    int nearestAtomIndex = findNearestAtom(x, y, nearestPoint, clickedCount > 0);
-
-    if (clickedCount == 0 && atomPickingMode != PICKING_ASSIGN_ATOM) {
-      // mouse move
-      if (measurementPending == null)
-        return (nearestAtomIndex >= 0);
-      if (nearestPoint != null
-          || measurementPending.getIndexOf(nearestAtomIndex) == 0)
-        measurementPending.addPoint(nearestAtomIndex, nearestPoint, false);
-      if (measurementPending.haveModified())
-        viewer.setPendingMeasurement(measurementPending);
-      viewer.refresh(3, "measurementPending");
-      return (nearestAtomIndex >= 0);
-    }
-    setMouseMode();
-
-    if (isBound(action, ACTION_stopMotion)) {
-      viewer.stopMotion();
-      // continue checking --- no need to exit here
-    }
-
-    if (viewer.getNavigationMode() && atomPickingMode == PICKING_NAVIGATE
-        && isBound(action, ACTION_pickNavigate)) {
-      viewer.navTranslatePercent(x * 100f / viewer.getScreenWidth() - 50f,
-          y * 100f / viewer.getScreenHeight() - 50f);
-      return false;
-    }
-
-    // bond change by clicking on a bond
-    // bond deletion by clicking a bond
-    if (isBond) {
-      if (isBound(action, bondPickingMode == PICKING_ROTATE_BOND
-          || bondPickingMode == PICKING_ASSIGN_BOND ? ACTION_assignNew
-          : ACTION_deleteBond)) {
-        if (bondPickingMode == PICKING_ASSIGN_BOND)
-          viewer.undoMoveActionClear(-1, Token.save, true);
-        int index = ((Integer) t.get("index")).intValue();
-        switch (bondPickingMode) {
-        case PICKING_ASSIGN_BOND:
-          viewer.script("assign bond [{" + index + "}] \""
-              + pickBondAssignType + "\"");
-          break;
-        case PICKING_ROTATE_BOND:
-          viewer.setRotateBondIndex(index);
-          break;
-        case PICKING_DELETE_BOND:
-          viewer.deleteBonds(BitSetUtil.newAndSetBit(index));
-        }
-        return false;
-      }
-    } else if (isIsosurface) {
-      return false;
-    } else {
-      if (atomPickingMode != PICKING_ASSIGN_ATOM && measurementPending != null
-          && isBound(action, ACTION_pickMeasure)) {
-        atomOrPointPicked(nearestAtomIndex, nearestPoint, action);
-        if (addToMeasurement(nearestAtomIndex, nearestPoint, false) == 4)
-          toggleMeasurement();
-        return false;
-      }
-
-      if (isBound(action, ACTION_setMeasure)) {
-        if (measurementPending != null) {
-          addToMeasurement(nearestAtomIndex, nearestPoint, true);
-          toggleMeasurement();
-        } else if (!drawMode && !labelMode && !dragSelectedMode
-            && measuresEnabled) {
-          enterMeasurementMode(nearestAtomIndex);
-          addToMeasurement(nearestAtomIndex, nearestPoint, true);
-        }
-        atomOrPointPicked(nearestAtomIndex, nearestPoint, action);
-        return false;
-      }
-    }
-    boolean isDragSelected = (dragSelectedMode && (isBound(action,
-        ACTION_rotateSelected) || isBound(action, ACTION_dragSelected)));
-    
-    if (isDragSelected || isSelectAction(action)) {
-      // TODO: in drawMode the binding changes
-        if (!isIsosurface)
-          atomOrPointPicked(nearestAtomIndex, nearestPoint, isDragSelected ? 0 : action);
-      return (nearestAtomIndex >= 0);
-    }
-    if (isBound(action, ACTION_reset)) {
-      if (nearestAtomIndex < 0)
-        viewer.script("!reset");
-      return false;
-    }
-    return (nearestAtomIndex >= 0);
-  }
-
   private Point3fi getPoint(Map<String, Object> t) {
     Point3fi pt = new Point3fi();
     pt.setT((Point3f) t.get("pt"));
@@ -1428,15 +1039,6 @@ public class ActionManager {
     viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
   }
 
-  private void toggleMeasurement() {
-    if (measurementPending == null)
-      return;
-    int measurementCount = measurementPending.getCount();
-    if (measurementCount >= 2 && measurementCount <= 4)
-      viewer.script("!measure " + measurementPending.getMeasurementScript(" ", true));
-    exitMeasurementMode();
-  }
-  
   public void checkHover() {
     if (!viewer.getInMotion()
         && !viewer.getSpinOn() && !viewer.getNavOn()
@@ -1575,204 +1177,6 @@ public class ActionManager {
     binding = newBinding;
   }
   
-  private void atomOrPointPicked(int atomIndex, Point3fi ptClicked, int action) {
-    // atomIndex < 0 is off structure.
-    // if picking spin or picking symmetry is on, then 
-    // we need to enter this method to process those events.
-    if (atomIndex < 0) {
-      resetMeasurement(); // for set picking measure only
-      if (isBound(action, ACTION_selectNone)) {
-        viewer.script("select none");
-        return;
-      }
-      if (atomPickingMode != PICKING_SPIN
-          && atomPickingMode != PICKING_SYMMETRY)
-        return;
-    }
-    int n = 2;
-    switch (atomPickingMode) {
-    case PICKING_DRAG_ATOM:
-      // this is done in mouse drag, not mouse release
-    case PICKING_DRAG_MINIMIZE:
-      return;
-    case PICKING_OFF:
-      return;
-    case PICKING_STRUTS:
-    case PICKING_CONNECT:
-    case PICKING_DELETE_BOND:
-      boolean isDelete = (atomPickingMode == PICKING_DELETE_BOND);
-      boolean isStruts = (atomPickingMode == PICKING_STRUTS);
-      if (!isBound(action, (isDelete ? ACTION_deleteBond : ACTION_connectAtoms)))
-        return;
-      if (measurementQueued == null || measurementQueued.getCount() == 0 || measurementQueued.getCount() > 2) {
-        resetMeasurement();
-        enterMeasurementMode(atomIndex);
-      }
-      addToMeasurement(atomIndex, ptClicked, true);
-      if (queueAtom(atomIndex, ptClicked) != 2)
-        return;
-      String cAction = (isDelete
-          || measurementQueued.isConnected(viewer.getModelSet().atoms, 2) ? " DELETE"
-          : isStruts ? "STRUTS" : "");
-      viewer.script("connect "
-          + measurementQueued.getMeasurementScript(" ", true) + cAction);
-      resetMeasurement();
-      return;
-    case PICKING_MEASURE_TORSION:
-      n++;
-      //$FALL-THROUGH$
-    case PICKING_MEASURE_ANGLE:
-      n++;
-      //$FALL-THROUGH$
-    case PICKING_MEASURE:
-    case PICKING_MEASURE_DISTANCE:
-    case PICKING_MEASURE_SEQUENCE:
-      if (!isBound(action, ACTION_pickMeasure))
-        return;
-      if (measurementQueued == null || measurementQueued.getCount() == 0 || measurementQueued.getCount() > n) {
-        resetMeasurement();
-        enterMeasurementMode(atomIndex);
-      }
-      addToMeasurement(atomIndex, ptClicked, true);
-      queueAtom(atomIndex, ptClicked);
-      int i = measurementQueued.getCount();
-      if (i == 1) {
-        viewer.setPicked(-1);
-        viewer.setPicked(atomIndex);
-      }
-      if (i < n)
-        return;
-      if (atomPickingMode == PICKING_MEASURE_SEQUENCE) {
-        getSequence();
-      } else {
-        viewer.setStatusMeasuring("measurePicked", n, measurementQueued
-            .getStringDetail(), measurementQueued.getValue());
-        if (atomPickingMode == PICKING_MEASURE
-            || pickingStyleMeasure == PICKINGSTYLE_MEASURE_ON) {
-          viewer.script("measure "
-              + measurementQueued.getMeasurementScript(" ", true));
-        }
-      }
-      resetMeasurement();
-      return;
-    }
-    int mode = (measurementPending != null
-        && atomPickingMode != PICKING_IDENTIFY ? PICKING_IDENTIFY
-        : atomPickingMode);
-    switch (mode) {
-    case PICKING_CENTER:
-      if (!isBound(action, ACTION_pickAtom))
-        return;
-      if (ptClicked == null) {
-        viewer.script("zoomTo (atomindex=" + atomIndex + ")");
-        viewer.setStatusAtomPicked(atomIndex, null);
-      } else {
-        viewer.script("zoomTo " + Escape.escapePt(ptClicked));
-      }
-      return;
-    case PICKING_SPIN:
-    case PICKING_SYMMETRY:
-      checkTwoAtomAction(action, ptClicked, atomIndex);
-    }
-    if (ptClicked != null)
-      return;
-    // atoms only here:
-    BitSet bs;
-    String spec = "atomindex=" + atomIndex;
-    switch (mode) {
-    case PICKING_IDENTIFY:
-      if (isBound(action, ACTION_pickAtom))
-        viewer.setStatusAtomPicked(atomIndex, null);
-      return;
-    case PICKING_LABEL:
-      if (isBound(action, ACTION_pickLabel)) {
-        viewer.script("set labeltoggle {atomindex=" + atomIndex + "}");
-        viewer.setStatusAtomPicked(atomIndex, null);
-      }
-      return;
-    case PICKING_INVERT_STEREO:
-      if (isBound(action, ACTION_assignNew)) {
-        bs = viewer.getAtomBitSet("connected(atomIndex=" + atomIndex
-            + ") and !within(SMARTS,'[r50,R]')");
-        int nb = bs.cardinality();
-        switch (nb) {
-        case 0:
-        case 1:
-          // not enough non-ring atoms
-          return;
-        case 2:
-          break;
-        case 3:
-        case 4:
-          // three or four are not in a ring. So let's find the shortest two
-          // branches and invert them.
-          int[] lengths = new int[nb];
-          int[] points = new int[nb];
-          int ni = 0;
-          for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1), ni++) {
-            lengths[ni] = viewer.getBranchBitSet(i, atomIndex).cardinality();
-            points[ni] = i;
-          }
-          for (int j = 0; j < nb - 2; j++) {
-            int max = Integer.MIN_VALUE;
-            int imax = 0;
-            for (int i = 0; i < nb; i++)
-              if (lengths[i] >= max && bs.get(points[i])) {
-                imax = points[i];
-                max = lengths[i];
-              }
-            bs.clear(imax);
-          }
-        }
-        viewer.undoMoveActionClear(atomIndex, AtomCollection.TAINT_COORD, true);
-        viewer.invertSelected(null, null, atomIndex, bs);
-        viewer.setStatusAtomPicked(atomIndex, "inverted: " + Escape.escape(bs));
-      }
-      return;
-    case PICKING_DELETE_ATOM:
-      if (isBound(action, ACTION_deleteAtom)) {
-        bs = getSelectionSet("(" + spec + ")");
-        viewer.deleteAtoms(bs, false);
-        viewer.setStatusAtomPicked(atomIndex, "deleted: " + Escape.escape(bs));
-      }
-      return;
-    }
-    // set picking select options:
-    switch (atomPickingMode) {
-    default:
-      return;
-    case PICKING_SELECT_ATOM:
-      applySelectStyle(spec, action);
-      break;
-    case PICKING_SELECT_GROUP:
-      applySelectStyle("within(group, " + spec + ")", action);
-      break;
-    case PICKING_SELECT_CHAIN:
-      applySelectStyle("within(chain, " + spec + ")", action);
-      break;
-    case PICKING_SELECT_POLYMER:
-      applySelectStyle("within(polymer, " + spec + ")", action);
-      break;
-    case PICKING_SELECT_STRUCTURE:
-      applySelectStyle("within(structure, " + spec + ")", action);
-      break;
-    case PICKING_SELECT_MOLECULE:
-      applySelectStyle("within(molecule, " + spec + ")", action);
-      break;
-    case PICKING_SELECT_MODEL:
-      applySelectStyle("within(model, " + spec + ")", action);
-      break;
-    // only the next two use VISIBLE (as per the documentation)
-    case PICKING_SELECT_ELEMENT:
-      applySelectStyle("visible and within(element, " + spec + ")", action);
-      break;
-    case PICKING_SELECT_SITE:
-      applySelectStyle("visible and within(site, " + spec + ")", action);
-      break;
-    }
-    viewer.clearClickCount();
-    viewer.setStatusAtomPicked(atomIndex, null);
-  }
 
   private void getSequence() {
     int a1 = measurementQueued.getAtomIndex(1);
@@ -1783,91 +1187,12 @@ public class ActionManager {
     viewer.setStatusMeasuring("measureSequence", -2, sequence, 0);
   }
 
-  private void checkTwoAtomAction(int action, Point3fi ptClicked, int atomIndex) {
-    if (!isBound(action, ACTION_pickAtom))
-      return;
-    boolean isSpin = (atomPickingMode == PICKING_SPIN);
-    if (viewer.getSpinOn() || viewer.getNavOn() || viewer.getPendingMeasurement() != null) {
-      resetMeasurement();
-      if (viewer.getSpinOn())
-        viewer.script("spin off");
-      return;
-    }
-    if (measurementQueued.getCount() >= 2)
-      resetMeasurement();
-    int queuedAtomCount = measurementQueued.getCount(); 
-    if (queuedAtomCount == 1) {
-      if (ptClicked == null) {
-        if (measurementQueued.getAtomIndex(1) == atomIndex)
-          return;
-      } else {
-        if (measurementQueued.getAtom(1).distance(ptClicked) == 0)
-          return;
-      }
-    }
-    if (atomIndex >= 0 || ptClicked != null)
-      queuedAtomCount = queueAtom(atomIndex, ptClicked);
-    if (queuedAtomCount < 2) {
-      if (isSpin)
-      viewer.scriptStatus(queuedAtomCount == 1 ?
-          GT._("pick one more atom in order to spin the model around an axis") :
-          GT._("pick two atoms in order to spin the model around an axis"));
-      else
-        viewer.scriptStatus(queuedAtomCount == 1 ?
-            GT._("pick one more atom in order to display the symmetry relationship") :
-            GT._("pick two atoms in order to display the symmetry relationship between them"));
-      return;
-    }
-    String s = measurementQueued.getMeasurementScript(" ", false);
-    if (isSpin)
-      viewer.script("spin" + s + " " + viewer.getPickingSpinRate());
-    else  
-      viewer.script("draw symop" + s + ";show symop" + s);
-  }
-
   private int queueAtom(int atomIndex, Point3fi ptClicked) {
     int n = measurementQueued.addPoint(atomIndex, ptClicked, true);
     if (atomIndex >= 0)
       viewer.setStatusAtomPicked(atomIndex, "Atom #" + n + ":"
           + viewer.getAtomInfo(atomIndex));
     return n;
-  }
-
-  private boolean selectionWorking = false;
-  private ScriptEvaluator eval;
-  private void applySelectStyle(String item, int action) {
-    if (measurementPending != null || selectionWorking)
-      return;
-    selectionWorking = true;
-    String s = (rubberbandSelectionMode || isBound(action,
-            ACTION_selectToggle) ? "selected and not (" + item
-            + ") or (not selected) and " 
-            : isBound(action, ACTION_selectAndNot) ? "selected and not "
-            : isBound(action, ACTION_selectOr) ? "selected or " 
-            : action == 0 || isBound(action, ACTION_selectToggleExtended) ? "selected tog " 
-            : isBound(action, ACTION_select) ? "" : null);
-    if (s != null) {
-      s += "(" + item + ")";
-      if (Logger.debugging)
-        Logger.debug(s);
-      BitSet bs = getSelectionSet(s);
-      if (bs != null) {
-        viewer.select(bs, false, null, false);
-        viewer.refresh(3, "selections set");
-      }
-    }
-    selectionWorking = false;
-  }
-
-  private BitSet getSelectionSet(String script) {
-    try {
-      if (eval == null)
-        eval = new ScriptEvaluator(viewer);
-      return viewer.getAtomBitSetEval(eval, script);
-    } catch (Exception e) {
-      // ignore
-    }
-    return null;
   }
 
   protected class MotionPoint {
@@ -1983,6 +1308,690 @@ public class ActionManager {
       if (nodes.length == 0) return "" + this;
       return Binding.getMouseActionName(action, false) + " nPoints = " + ptNext + " " + nodes[0];
     }
+  }
+
+  public void mouseAction(int action, long time, int x, int y, int count,
+                          int modifiers) {
+    if (!viewer.getMouseEnabled())
+      return;
+      //System.out.println("ActionManager mouseAction action=" + action + " x y = " + x + " " + y + " count = " + count + " mods = " + modifiers);
+    switch (action) {
+    case Binding.MOVED:
+      setCurrent(time, x, y, modifiers);
+      moved.setCurrent(current, Binding.MOVED);
+      if (measurementPending != null || hoverActive)
+        checkPointOrAtomClicked(x, y, 0, 0, time, false, Binding.MOVED);
+      else if (isZoomArea(x))
+        checkMotionRotateZoom(Binding.getMouseAction(1, Binding.LEFT), 0, 0, 0,
+            false);
+      else if (viewer.getCursor() == JmolConstants.CURSOR_ZOOM)//if (dragSelectedMode)
+        viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
+      return;
+    case Binding.WHEELED:
+      if (viewer.isApplet() && !viewer.hasFocus())
+        return;
+      // sun bug? noted by Charles Xie that wheeling on a Java page
+      // effected inappropriate wheeling on this Java component
+      setCurrent(time, current.x, current.y, modifiers);
+      checkAction(Binding.getMouseAction(0, modifiers), current.x, current.y,
+          0, y, time, Binding.WHEELED);
+      return;
+    case Binding.CLICKED:
+      setMouseMode();
+      clickedCount = (count > 1 ? count : clicked.check(0, 0, 0, modifiers, time,
+          MAX_DOUBLE_CLICK_MILLIS) ? clickedCount + 1 : 1);
+      if (clickedCount == 1)
+        setCurrent(time, x, y, modifiers);        
+      clicked.setCurrent(current, Binding.CLICKED);
+      viewer.setFocus();
+      if (atomPickingMode != PICKING_SELECT_ATOM
+          && isBound(Binding.getMouseAction(Integer.MIN_VALUE, modifiers),
+              ACTION_selectAndDrag))
+        return;
+      checkPointOrAtomClicked(x, y, modifiers, clickedCount, time, false,
+          Binding.CLICKED);
+      return;
+    case Binding.DRAGGED2:
+      return;
+    case Binding.DRAGGED:
+      setMouseMode();
+      int deltaX = x - dragged.x;
+      int deltaY = y - dragged.y;
+      setCurrent(time, x, y, modifiers);
+      dragged.setCurrent(current, Binding.DRAGGED);
+      if (atomPickingMode != PICKING_ASSIGN_ATOM)
+        exitMeasurementMode();
+      action = Binding.getMouseAction(pressedCount, modifiers);
+      dragGesture.add(action, x, y, time);
+      checkAction(action, x, y, deltaX, deltaY, time, Binding.DRAGGED);
+      return;
+    case Binding.PRESSED:
+      setMouseMode();
+      pressedCount = (pressed.check(0, 0, 0, modifiers, time,
+          MAX_DOUBLE_CLICK_MILLIS) ? pressedCount + 1 : 1);
+      if (pressedCount == 1)
+        setCurrent(time, x, y, modifiers);
+      pressed.setCurrent(current, Binding.PRESSED);
+      dragged.setCurrent(current, Binding.PRESSED);
+      viewer.setFocus();
+      boolean isSelectAndDrag = isBound(Binding.getMouseAction(
+          Integer.MIN_VALUE, modifiers), ACTION_selectAndDrag);
+      action = Binding.getMouseAction(pressedCount, modifiers);
+      dragGesture.setAction(action, time);
+      if (Binding.getModifiers(action) != 0) {
+        action = viewer.notifyMouseClicked(x, y, action, Binding.PRESSED);
+        if (action == 0)
+          return;
+      }
+      pressedAtomIndex = Integer.MAX_VALUE;
+      if (drawMode
+          && (isBound(action, ACTION_dragDrawObject) || isBound(action,
+              ACTION_dragDrawPoint)) || labelMode
+          && isBound(action, ACTION_dragLabel)) {
+        viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, action);
+        return;
+      }
+      checkUserAction(action, x, y, 0, 0, time, Binding.PRESSED);
+      boolean isBound = false;
+      switch (atomPickingMode) {
+      case PICKING_ASSIGN_ATOM:
+        isBound = isBound(action, ACTION_assignNew);
+        break;
+      case PICKING_DRAG_ATOM:
+        isBound = isBound(action, ACTION_dragAtom) 
+            || isBound(action, ACTION_dragZ);
+        break;
+      case PICKING_DRAG_SELECTED:
+      case PICKING_DRAG_MOLECULE:
+        isBound = isBound(action, ACTION_dragAtom)
+            || isBound(action, ACTION_rotateSelected)
+            || isBound(action, ACTION_dragZ);
+        break;
+      case PICKING_DRAG_MINIMIZE:
+        isBound = isBound(action, ACTION_dragMinimize)
+            || isBound(action, ACTION_dragZ);
+        break;
+      case PICKING_DRAG_MINIMIZE_MOLECULE:
+        isBound = isBound(action, ACTION_dragMinimizeMolecule)
+            || isBound(action, ACTION_rotateSelected)
+            || isBound(action, ACTION_dragZ);
+        break;
+      }
+      if (isBound) {
+        dragAtomIndex = viewer.findNearestAtomIndexMovable(x, y, true);
+        if (dragAtomIndex >= 0
+            && (atomPickingMode == PICKING_ASSIGN_ATOM 
+                || atomPickingMode == PICKING_INVERT_STEREO)
+            && viewer.isAtomAssignable(dragAtomIndex)) {
+          enterMeasurementMode(dragAtomIndex);
+          measurementPending.addPoint(dragAtomIndex, null, false);
+        }
+        return;
+      }
+      if (isBound(action, ACTION_popupMenu)) {
+        char type = 'j';
+        if (viewer.getModelkitMode()) {
+          Map<String, Object> t = viewer.checkObjectClicked(x, y, Binding.getMouseAction(1,
+              Binding.LEFT));
+          type = (t != null && "bond".equals(t.get("type")) ? 'b' : viewer
+              .findNearestAtomIndex(x, y) >= 0 ? 'a' : 'm');
+        }
+        viewer.popupMenu(x, y, type);
+        return;
+      }
+      if (dragSelectedMode) {
+        haveSelection = true;
+        if (isSelectAndDrag) {
+          haveSelection = (viewer.findNearestAtomIndexMovable(x, y, true) >= 0);
+          // checkPointOrAtomClicked(x, y, mods, pressedCount, true);
+        }
+        if (!haveSelection)
+          return;
+        if (isBound(action, ACTION_dragSelected) || isBound(action, ACTION_dragZ))
+          viewer.moveSelected(Integer.MIN_VALUE, 0, Integer.MIN_VALUE,
+              Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
+        return;
+      }
+      if (viewer.useArcBall())
+        viewer.rotateArcBall(x, y, 0);
+      checkMotionRotateZoom(action, x, 0, 0, true);
+      return;
+    case Binding.RELEASED:
+      setCurrent(time, x, y, modifiers);
+      viewer.spinXYBy(0, 0, 0);
+      boolean dragRelease = !pressed.check(xyRange, x, y, modifiers, time,
+          Long.MAX_VALUE);
+      viewer.setInMotion(false);
+      viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
+      action = Binding.getMouseAction(pressedCount, modifiers);
+      dragGesture.add(action, x, y, time);
+      if (dragRelease)
+        viewer.setRotateBondIndex(Integer.MIN_VALUE);
+      if (dragAtomIndex >= 0) {
+        if (atomPickingMode == PICKING_DRAG_MINIMIZE
+            || atomPickingMode == PICKING_DRAG_MINIMIZE_MOLECULE)
+          minimize(true);
+      }
+      if (atomPickingMode == PICKING_ASSIGN_ATOM
+          && isBound(action, ACTION_assignNew)) {
+        if (measurementPending == null || dragAtomIndex < 0)
+          return;
+        assignNew(x, y);
+        return;
+      }
+      dragAtomIndex = -1;
+      boolean isRbAction = isRubberBandSelect(action);
+      if (isRbAction)
+        selectRb(action);
+      rubberbandSelectionMode = (binding.getName() == "drag");
+      rectRubber.x = Integer.MAX_VALUE;
+      if (dragRelease) {
+        viewer.notifyMouseClicked(x, y,
+            Binding.getMouseAction(pressedCount, 0), Binding.RELEASED);
+      }
+      if (drawMode
+          && (isBound(action, ACTION_dragDrawObject) || isBound(action,
+              ACTION_dragDrawPoint)) || labelMode
+          && isBound(action, ACTION_dragLabel)) {
+        viewer.checkObjectDragged(Integer.MAX_VALUE, 0, x, y, action);
+        return;
+      }
+      if (dragSelectedMode && isBound(action, ACTION_dragSelected)
+          && haveSelection)
+        viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE,
+            Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
+
+      if (dragRelease && checkUserAction(action, x, y, 0, 0, time, Binding.RELEASED))
+        return;
+
+      if (viewer.getAllowGestures()) {
+        if (isBound(action, ACTION_swipe)) {
+          float speed = getExitRate();
+          if (speed > 0)
+            viewer.spinXYBy(dragGesture.getDX(4, 2), dragGesture.getDY(4, 2),
+                speed * 30 * gestureSwipeFactor);
+          if (viewer.getLogGestures())
+            viewer.log("$NOW$ swipe " + dragGesture + " " + speed);
+          return;
+        }
+
+      }
+      return;
+    }
+  }
+  
+  /// methods that follow utilize script or eval
+  
+  private void runScript(String script) {
+    viewer.script(script);
+  }
+  
+  private BitSet getSelectionSet(String script) {
+    try {
+      return viewer.getAtomBitSetEval(null, script);
+    } catch (Exception e) {
+      // ignore
+    }
+    return null;
+  }
+
+  private void selectRb(int action) {
+    BitSet bs = viewer.findAtomsInRectangle(rectRubber);
+    if (bs.length() > 0) {
+      String s = Escape.escape(bs);
+      if (isBound(action, ACTION_selectOr))
+        runScript("selectionHalos on;select selected or " + s);
+      else if (isBound(action, ACTION_selectAndNot))
+        runScript("selectionHalos on;select selected and not " + s);
+      else
+        // ACTION_selectToggle
+        runScript("selectionHalos on;select selected tog " + s);
+    }
+    viewer.refresh(3, "mouseReleased");
+  }
+
+  private void assignNew(int x, int y) {
+    // H C + -, etc.
+    // also check valence and add/remove H atoms as necessary?
+    if (measurementPending.getCount() == 2) {
+      viewer.undoMoveActionClear(-1, Token.save, true);
+      runScript("assign connect "
+          + measurementPending.getMeasurementScript(" ", false));
+    } else if (pickAtomAssignType.equals("Xx")) {
+      exitMeasurementMode();
+      viewer.refresh(3, "bond dropped");
+    } else {
+      if (pressed.inRange(xyRange, dragged.x, dragged.y)) {
+        String s = "assign atom ({" + dragAtomIndex + "}) \""
+            + pickAtomAssignType + "\"";
+        if (isPickAtomAssignCharge) {
+          s += ";{atomindex=" + dragAtomIndex + "}.label='%C'; ";
+          viewer.undoMoveActionClear(dragAtomIndex,
+              AtomCollection.TAINT_FORMALCHARGE, true);
+        } else {
+          viewer.undoMoveActionClear(-1, Token.save, true);
+        }
+        runScript(s);
+      } else if (!isPickAtomAssignCharge) {
+        viewer.undoMoveActionClear(-1, Token.save, true);
+        Atom a = viewer.getModelSet().atoms[dragAtomIndex];
+        if (a.getElementNumber() == 1) {
+          runScript("assign atom ({" + dragAtomIndex + "}) \"X\"");
+        } else {
+          Point3f ptNew = Point3f.new3(x, y, a.screenZ);
+          viewer.unTransformPoint(ptNew, ptNew);
+          runScript("assign atom ({" + dragAtomIndex + "}) \""
+              + pickAtomAssignType + "\" " + Escape.escapePt(ptNew));
+        }
+      }
+    }
+    exitMeasurementMode();
+  }
+
+  private boolean checkPointOrAtomClicked(int x, int y, int mods,
+                                          int clickedCount, long time, 
+                                          boolean atomOnly, int mode) {
+    if (!viewer.haveModelSet())
+      return false;
+    // points are always picked up first, then atoms
+    // so that atom picking can be superceded by draw picking
+    int action = Binding.getMouseAction(clickedCount, mods);
+    if (action != Binding.MOVED) {
+      checkUserAction(action, x, y, 0, 0, time, mode);
+      action = viewer.notifyMouseClicked(x, y, action, mode);
+      if (action == Binding.MOVED)
+        return false;
+    }
+    if (isBound(action, ACTION_clickFrank) && viewer.frankClicked(x, y)) {
+      viewer.popupMenu(-x, y, 'j');
+      return false;
+    }
+    if (isBound(action, ACTION_clickFrank) && viewer.frankClickedModelKit(x, y)) {
+      viewer.popupMenu(0, 0, 'm');
+      return false;
+    }
+    Point3fi nearestPoint = null;
+    boolean isBond = false;
+    boolean isIsosurface = false;
+    Map<String, Object> t = null;
+    // t.tok will let us know if this is an atom or a bond that was clicked
+    if (!drawMode && !atomOnly) {
+      t = viewer.checkObjectClicked(x, y, action);
+      if (t != null) {
+        isBond = "bond".equals(t.get("type"));
+        isIsosurface = "isosurface".equals(t.get("type"));
+        nearestPoint = getPoint(t);
+      }
+    }
+    if (isBond)
+      clickedCount = 1;
+
+    if (nearestPoint != null && Float.isNaN(nearestPoint.x))
+      return false;
+    int nearestAtomIndex = findNearestAtom(x, y, nearestPoint, clickedCount > 0);
+
+    if (clickedCount == 0 && atomPickingMode != PICKING_ASSIGN_ATOM) {
+      // mouse move
+      if (measurementPending == null)
+        return (nearestAtomIndex >= 0);
+      if (nearestPoint != null
+          || measurementPending.getIndexOf(nearestAtomIndex) == 0)
+        measurementPending.addPoint(nearestAtomIndex, nearestPoint, false);
+      if (measurementPending.haveModified())
+        viewer.setPendingMeasurement(measurementPending);
+      viewer.refresh(3, "measurementPending");
+      return (nearestAtomIndex >= 0);
+    }
+    setMouseMode();
+
+    if (isBound(action, ACTION_stopMotion)) {
+      viewer.stopMotion();
+      // continue checking --- no need to exit here
+    }
+
+    if (viewer.getNavigationMode() && atomPickingMode == PICKING_NAVIGATE
+        && isBound(action, ACTION_pickNavigate)) {
+      viewer.navTranslatePercent(x * 100f / viewer.getScreenWidth() - 50f,
+          y * 100f / viewer.getScreenHeight() - 50f);
+      return false;
+    }
+
+    // bond change by clicking on a bond
+    // bond deletion by clicking a bond
+    if (isBond) {
+      if (isBound(action, bondPickingMode == PICKING_ROTATE_BOND
+          || bondPickingMode == PICKING_ASSIGN_BOND ? ACTION_assignNew
+          : ACTION_deleteBond)) {
+        if (bondPickingMode == PICKING_ASSIGN_BOND)
+          viewer.undoMoveActionClear(-1, Token.save, true);
+        int index = ((Integer) t.get("index")).intValue();
+        switch (bondPickingMode) {
+        case PICKING_ASSIGN_BOND:
+          runScript("assign bond [{" + index + "}] \""
+              + pickBondAssignType + "\"");
+          break;
+        case PICKING_ROTATE_BOND:
+          viewer.setRotateBondIndex(index);
+          break;
+        case PICKING_DELETE_BOND:
+          viewer.deleteBonds(BitSetUtil.newAndSetBit(index));
+        }
+        return false;
+      }
+    } else if (isIsosurface) {
+      return false;
+    } else {
+      if (atomPickingMode != PICKING_ASSIGN_ATOM && measurementPending != null
+          && isBound(action, ACTION_pickMeasure)) {
+        atomOrPointPicked(nearestAtomIndex, nearestPoint, action);
+        if (addToMeasurement(nearestAtomIndex, nearestPoint, false) == 4)
+          toggleMeasurement();
+        return false;
+      }
+
+      if (isBound(action, ACTION_setMeasure)) {
+        if (measurementPending != null) {
+          addToMeasurement(nearestAtomIndex, nearestPoint, true);
+          toggleMeasurement();
+        } else if (!drawMode && !labelMode && !dragSelectedMode
+            && measuresEnabled) {
+          enterMeasurementMode(nearestAtomIndex);
+          addToMeasurement(nearestAtomIndex, nearestPoint, true);
+        }
+        atomOrPointPicked(nearestAtomIndex, nearestPoint, action);
+        return false;
+      }
+    }
+    boolean isDragSelected = (dragSelectedMode && (isBound(action,
+        ACTION_rotateSelected) || isBound(action, ACTION_dragSelected)));
+    
+    if (isDragSelected || isSelectAction(action)) {
+      // TODO: in drawMode the binding changes
+        if (!isIsosurface)
+          atomOrPointPicked(nearestAtomIndex, nearestPoint, isDragSelected ? 0 : action);
+      return (nearestAtomIndex >= 0);
+    }
+    if (isBound(action, ACTION_reset)) {
+      if (nearestAtomIndex < 0)
+        runScript("!reset");
+      return false;
+    }
+    return (nearestAtomIndex >= 0);
+  }
+
+  private void toggleMeasurement() {
+    if (measurementPending == null)
+      return;
+    int measurementCount = measurementPending.getCount();
+    if (measurementCount >= 2 && measurementCount <= 4)
+      runScript("!measure " + measurementPending.getMeasurementScript(" ", true));
+    exitMeasurementMode();
+  }
+  
+  private void atomOrPointPicked(int atomIndex, Point3fi ptClicked, int action) {
+    // atomIndex < 0 is off structure.
+    // if picking spin or picking symmetry is on, then 
+    // we need to enter this method to process those events.
+    if (atomIndex < 0) {
+      resetMeasurement(); // for set picking measure only
+      if (isBound(action, ACTION_selectNone)) {
+        runScript("select none");
+        return;
+      }
+      if (atomPickingMode != PICKING_SPIN
+          && atomPickingMode != PICKING_SYMMETRY)
+        return;
+    }
+    int n = 2;
+    switch (atomPickingMode) {
+    case PICKING_DRAG_ATOM:
+      // this is done in mouse drag, not mouse release
+    case PICKING_DRAG_MINIMIZE:
+      return;
+    case PICKING_OFF:
+      return;
+    case PICKING_STRUTS:
+    case PICKING_CONNECT:
+    case PICKING_DELETE_BOND:
+      boolean isDelete = (atomPickingMode == PICKING_DELETE_BOND);
+      boolean isStruts = (atomPickingMode == PICKING_STRUTS);
+      if (!isBound(action, (isDelete ? ACTION_deleteBond : ACTION_connectAtoms)))
+        return;
+      if (measurementQueued == null || measurementQueued.getCount() == 0 || measurementQueued.getCount() > 2) {
+        resetMeasurement();
+        enterMeasurementMode(atomIndex);
+      }
+      addToMeasurement(atomIndex, ptClicked, true);
+      if (queueAtom(atomIndex, ptClicked) != 2)
+        return;
+      String cAction = (isDelete
+          || measurementQueued.isConnected(viewer.getModelSet().atoms, 2) ? " DELETE"
+          : isStruts ? "STRUTS" : "");
+      runScript("connect "
+          + measurementQueued.getMeasurementScript(" ", true) + cAction);
+      resetMeasurement();
+      return;
+    case PICKING_MEASURE_TORSION:
+      n++;
+      //$FALL-THROUGH$
+    case PICKING_MEASURE_ANGLE:
+      n++;
+      //$FALL-THROUGH$
+    case PICKING_MEASURE:
+    case PICKING_MEASURE_DISTANCE:
+    case PICKING_MEASURE_SEQUENCE:
+      if (!isBound(action, ACTION_pickMeasure))
+        return;
+      if (measurementQueued == null || measurementQueued.getCount() == 0 || measurementQueued.getCount() > n) {
+        resetMeasurement();
+        enterMeasurementMode(atomIndex);
+      }
+      addToMeasurement(atomIndex, ptClicked, true);
+      queueAtom(atomIndex, ptClicked);
+      int i = measurementQueued.getCount();
+      if (i == 1) {
+        viewer.setPicked(-1);
+        viewer.setPicked(atomIndex);
+      }
+      if (i < n)
+        return;
+      if (atomPickingMode == PICKING_MEASURE_SEQUENCE) {
+        getSequence();
+      } else {
+        viewer.setStatusMeasuring("measurePicked", n, measurementQueued
+            .getStringDetail(), measurementQueued.getValue());
+        if (atomPickingMode == PICKING_MEASURE
+            || pickingStyleMeasure == PICKINGSTYLE_MEASURE_ON) {
+          runScript("measure "
+              + measurementQueued.getMeasurementScript(" ", true));
+        }
+      }
+      resetMeasurement();
+      return;
+    }
+    int mode = (measurementPending != null
+        && atomPickingMode != PICKING_IDENTIFY ? PICKING_IDENTIFY
+        : atomPickingMode);
+    switch (mode) {
+    case PICKING_CENTER:
+      if (!isBound(action, ACTION_pickAtom))
+        return;
+      if (ptClicked == null) {
+        runScript("zoomTo (atomindex=" + atomIndex + ")");
+        viewer.setStatusAtomPicked(atomIndex, null);
+      } else {
+        runScript("zoomTo " + Escape.escapePt(ptClicked));
+      }
+      return;
+    case PICKING_SPIN:
+    case PICKING_SYMMETRY:
+      checkTwoAtomAction(action, ptClicked, atomIndex);
+    }
+    if (ptClicked != null)
+      return;
+    // atoms only here:
+    BitSet bs;
+    switch (mode) {
+    case PICKING_IDENTIFY:
+      if (isBound(action, ACTION_pickAtom))
+        viewer.setStatusAtomPicked(atomIndex, null);
+      return;
+    case PICKING_LABEL:
+      if (isBound(action, ACTION_pickLabel)) {
+        runScript("set labeltoggle {atomindex=" + atomIndex + "}");
+        viewer.setStatusAtomPicked(atomIndex, null);
+      }
+      return;
+    case PICKING_INVERT_STEREO:
+      if (isBound(action, ACTION_assignNew)) {
+        bs = viewer.getAtomBitSet("connected(atomIndex=" + atomIndex
+            + ") and !within(SMARTS,'[r50,R]')");
+        int nb = bs.cardinality();
+        switch (nb) {
+        case 0:
+        case 1:
+          // not enough non-ring atoms
+          return;
+        case 2:
+          break;
+        case 3:
+        case 4:
+          // three or four are not in a ring. So let's find the shortest two
+          // branches and invert them.
+          int[] lengths = new int[nb];
+          int[] points = new int[nb];
+          int ni = 0;
+          for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1), ni++) {
+            lengths[ni] = viewer.getBranchBitSet(i, atomIndex).cardinality();
+            points[ni] = i;
+          }
+          for (int j = 0; j < nb - 2; j++) {
+            int max = Integer.MIN_VALUE;
+            int imax = 0;
+            for (int i = 0; i < nb; i++)
+              if (lengths[i] >= max && bs.get(points[i])) {
+                imax = points[i];
+                max = lengths[i];
+              }
+            bs.clear(imax);
+          }
+        }
+        viewer.undoMoveActionClear(atomIndex, AtomCollection.TAINT_COORD, true);
+        viewer.invertSelected(null, null, atomIndex, bs);
+        viewer.setStatusAtomPicked(atomIndex, "inverted: " + Escape.escape(bs));
+      }
+      return;
+    case PICKING_DELETE_ATOM:
+      if (isBound(action, ACTION_deleteAtom)) {
+        bs = BitSetUtil.newAndSetBit(atomIndex);
+        viewer.deleteAtoms(bs, false);
+        viewer.setStatusAtomPicked(atomIndex, "deleted: " + Escape.escape(bs));
+      }
+      return;
+    }
+    // set picking select options:
+    String spec = "atomindex=" + atomIndex;
+    switch (atomPickingMode) {
+    default:
+      return;
+    case PICKING_SELECT_ATOM:
+      applySelectStyle(spec, action);
+      break;
+    case PICKING_SELECT_GROUP:
+      applySelectStyle("within(group, " + spec + ")", action);
+      break;
+    case PICKING_SELECT_CHAIN:
+      applySelectStyle("within(chain, " + spec + ")", action);
+      break;
+    case PICKING_SELECT_POLYMER:
+      applySelectStyle("within(polymer, " + spec + ")", action);
+      break;
+    case PICKING_SELECT_STRUCTURE:
+      applySelectStyle("within(structure, " + spec + ")", action);
+      break;
+    case PICKING_SELECT_MOLECULE:
+      applySelectStyle("within(molecule, " + spec + ")", action);
+      break;
+    case PICKING_SELECT_MODEL:
+      applySelectStyle("within(model, " + spec + ")", action);
+      break;
+    // only the next two use VISIBLE (as per the documentation)
+    case PICKING_SELECT_ELEMENT:
+      applySelectStyle("visible and within(element, " + spec + ")", action);
+      break;
+    case PICKING_SELECT_SITE:
+      applySelectStyle("visible and within(site, " + spec + ")", action);
+      break;
+    }
+    viewer.clearClickCount();
+    viewer.setStatusAtomPicked(atomIndex, null);
+  }
+
+  private void checkTwoAtomAction(int action, Point3fi ptClicked, int atomIndex) {
+    if (!isBound(action, ACTION_pickAtom))
+      return;
+    boolean isSpin = (atomPickingMode == PICKING_SPIN);
+    if (viewer.getSpinOn() || viewer.getNavOn() || viewer.getPendingMeasurement() != null) {
+      resetMeasurement();
+      if (viewer.getSpinOn())
+        runScript("spin off");
+      return;
+    }
+    if (measurementQueued.getCount() >= 2)
+      resetMeasurement();
+    int queuedAtomCount = measurementQueued.getCount(); 
+    if (queuedAtomCount == 1) {
+      if (ptClicked == null) {
+        if (measurementQueued.getAtomIndex(1) == atomIndex)
+          return;
+      } else {
+        if (measurementQueued.getAtom(1).distance(ptClicked) == 0)
+          return;
+      }
+    }
+    if (atomIndex >= 0 || ptClicked != null)
+      queuedAtomCount = queueAtom(atomIndex, ptClicked);
+    if (queuedAtomCount < 2) {
+      if (isSpin)
+      viewer.scriptStatus(queuedAtomCount == 1 ?
+          GT._("pick one more atom in order to spin the model around an axis") :
+          GT._("pick two atoms in order to spin the model around an axis"));
+      else
+        viewer.scriptStatus(queuedAtomCount == 1 ?
+            GT._("pick one more atom in order to display the symmetry relationship") :
+            GT._("pick two atoms in order to display the symmetry relationship between them"));
+      return;
+    }
+    String s = measurementQueued.getMeasurementScript(" ", false);
+    if (isSpin)
+      runScript("spin" + s + " " + viewer.getPickingSpinRate());
+    else  
+      runScript("draw symop" + s + ";show symop" + s);
+  }
+
+  private boolean selectionWorking = false;
+  private void applySelectStyle(String item, int action) {
+    if (measurementPending != null || selectionWorking)
+      return;
+    selectionWorking = true;
+    String s = (rubberbandSelectionMode || isBound(action,
+            ACTION_selectToggle) ? "selected and not (" + item
+            + ") or (not selected) and " 
+            : isBound(action, ACTION_selectAndNot) ? "selected and not "
+            : isBound(action, ACTION_selectOr) ? "selected or " 
+            : action == 0 || isBound(action, ACTION_selectToggleExtended) ? "selected tog " 
+            : isBound(action, ACTION_select) ? "" : null);
+    if (s != null) {
+      s += "(" + item + ")";
+      if (Logger.debugging)
+        Logger.debug(s);
+      BitSet bs = getSelectionSet(s);
+      if (bs != null) {
+        viewer.select(bs, false, null, false);
+        viewer.refresh(3, "selections set");
+      }
+    }
+    selectionWorking = false;
   }
 
 } 

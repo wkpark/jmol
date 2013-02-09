@@ -44,11 +44,11 @@ public final class Chain {
     this.chainID = chainID;
   }
 
-  Group getGroup(int groupIndex) {
+  public Group getGroup(int groupIndex) {
     return groups[groupIndex];
   }
   
-  int getGroupCount() {
+  public int getGroupCount() {
     return groupCount;
   }
 

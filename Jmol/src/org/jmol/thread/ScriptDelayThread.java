@@ -25,7 +25,7 @@
 
 package org.jmol.thread;
 
-import org.jmol.script.ScriptEvaluator;
+import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.viewer.Viewer;
 
 public class ScriptDelayThread extends JmolThread {
@@ -39,7 +39,7 @@ public class ScriptDelayThread extends JmolThread {
    * @param viewer
    * @param millis    negative to bypass pop/hold sequence
    */
-  public ScriptDelayThread(ScriptEvaluator eval, Viewer viewer, int millis) {
+  public ScriptDelayThread(JmolScriptEvaluator eval, Viewer viewer, int millis) {
     super();
     setViewer(viewer, "ScriptDelayThread");
     this.millis = millis;
@@ -76,8 +76,7 @@ public class ScriptDelayThread extends JmolThread {
         mode = MAIN;
         break;
       case MAIN:
-        if (stopped || eval.executionStopped || !isJS
-            && eval.currentThread != Thread.currentThread()) {
+        if (stopped || eval.isStopped()) {
           mode = FINISH;
           break;
         }

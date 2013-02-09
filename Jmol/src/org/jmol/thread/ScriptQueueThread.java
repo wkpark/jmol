@@ -27,19 +27,19 @@ package org.jmol.thread;
 
 import java.util.List;
 
+import org.jmol.api.JmolScriptManager;
 import org.jmol.util.Logger;
-import org.jmol.viewer.ScriptManager;
 import org.jmol.viewer.Viewer;
 
 public class ScriptQueueThread extends JmolThread {
   /**
    * 
    */
-  private final ScriptManager scriptManager;
+  private final JmolScriptManager scriptManager;
   private boolean startedByCommandThread = false;
   private int pt;
 
-  public ScriptQueueThread(ScriptManager scriptManager, Viewer viewer, boolean startedByCommandThread, int pt) {
+  public ScriptQueueThread(JmolScriptManager scriptManager, Viewer viewer, boolean startedByCommandThread, int pt) {
     super();
     setViewer(viewer, "QueueThread" + pt);
     this.scriptManager = scriptManager;
@@ -56,7 +56,7 @@ public class ScriptQueueThread extends JmolThread {
         mode = MAIN;
         break;
       case MAIN:
-        if (stopped || scriptManager.scriptQueue.size() == 0) {
+        if (stopped || scriptManager.getScriptQueue().size() == 0) {
           mode = FINISH;
           break;
         }
@@ -76,7 +76,8 @@ public class ScriptQueueThread extends JmolThread {
   }
 
   private boolean runNextScript() {
-    if (scriptManager.scriptQueue.size() == 0)
+    List<List<Object>> queue = scriptManager.getScriptQueue();
+    if (queue.size() == 0)
       return false;
     //Logger.info("SCRIPT QUEUE BUSY" +  scriptQueue.size());
     List<Object> scriptItem = scriptManager.getScriptItem(false, startedByCommandThread);
@@ -88,14 +89,14 @@ public class ScriptQueueThread extends JmolThread {
     boolean isScriptFile = ((Boolean) scriptItem.get(3)).booleanValue();
     boolean isQuiet = ((Boolean) scriptItem.get(4)).booleanValue();
     if (Logger.debugging) {
-      Logger.info("Queue[" + pt + "][" + scriptManager.scriptQueue.size()
+      Logger.info("Queue[" + pt + "][" + queue.size()
           + "] scripts; running: " + script);
     }
     //System.out.println("removing: " + scriptItem + " " + script);
-    scriptManager.scriptQueue.remove(0);
+    queue.remove(0);
     //System.out.println("removed: " + scriptItem);
     viewer.evalStringWaitStatusQueued(returnType, script, statusList, isScriptFile, isQuiet, true);
-    if (scriptManager.scriptQueue.size() == 0) {// might have been cleared with an exit
+    if (queue.size() == 0) {// might have been cleared with an exit
       //Logger.info("SCRIPT QUEUE READY", 0);
       return false;
     }

@@ -283,16 +283,16 @@ public class LabelToken {
     return getLabel(tokens);
   }
 
-  public static String formatLabelMeasure(Viewer viewer, Measurement measurement,
+  public static String formatLabelMeasure(Viewer viewer, Measurement m,
                                    String label, float value, String units) {
     Map<String, Object> htValues = new Hashtable<String, Object>();
-    htValues.put("#", "" + (measurement.index + 1));
+    htValues.put("#", "" + (m.index + 1));
     htValues.put("VALUE", new Float(value));
     htValues.put("UNITS", units);
     LabelToken[] tokens = compile(viewer, label, '\1', htValues);
     setValues(tokens, htValues);
-    Atom[] atoms = measurement.modelSet.atoms;
-    int[] indices = measurement.getCountPlusIndices();
+    Atom[] atoms = m.modelSet.atoms;
+    int[] indices = m.getCountPlusIndices();
     for (int i = indices[0]; i >= 1; --i)
       if (indices[i] >= 0)
         formatLabelAtomArray(viewer, atoms[indices[i]], tokens, (char) ('0' + i), null);

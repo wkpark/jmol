@@ -3,7 +3,6 @@ package org.jmol.api;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 

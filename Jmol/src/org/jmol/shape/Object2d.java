@@ -10,6 +10,8 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
 public abstract class Object2d {
+  
+  // Echo, Label
 
   public final static int POINTER_NONE = 0;
   public final static int POINTER_ON = 1;
@@ -35,7 +37,7 @@ public abstract class Object2d {
   protected Viewer viewer;
   protected GData gdata;
   public Point3f xyz;
-  String target;
+  public String target;
   protected String script;
   public short colix;
   public short bgcolix;
@@ -69,7 +71,7 @@ public abstract class Object2d {
   
   protected float scalePixelsPerMicron;
 
-  float getScalePixelsPerMicron() {
+  public float getScalePixelsPerMicron() {
     return scalePixelsPerMicron;
   }
 
@@ -229,7 +231,7 @@ public abstract class Object2d {
     return true;
   }
 
-  static String getAlignmentName(int align) {
+  public static String getAlignmentName(int align) {
     return hAlignNames[align & 3];
   }
 
@@ -237,7 +239,7 @@ public abstract class Object2d {
     this.pointer = pointer;
   }
 
-  static String getPointer(int pointer) {
+  public static String getPointer(int pointer) {
     return ((pointer & POINTER_ON) == 0 ? ""
         : (pointer & POINTER_BACKGROUND) > 0 ? "background" : "on");
   }

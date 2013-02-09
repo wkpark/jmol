@@ -93,4 +93,10 @@ public class Frank extends FontShape {
     font3d = gdata.getFont3DScaled(baseFont3d, imageFontScaling);
     calcMetrics();
   }
+  
+  @Override
+  public String getShapeState() {
+    return viewer.getFontState(myType, font3d);
+  }
+  
 }

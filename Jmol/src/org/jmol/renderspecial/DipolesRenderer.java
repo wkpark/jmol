@@ -139,7 +139,7 @@ public class DipolesRenderer extends ShapeRenderer {
 
   private boolean renderDipoleVector(Dipole dipole) {
     short colixA = (dipole.bond == null ? dipole.colix : Colix
-        .getColixInherited(dipole.colix, dipole.bond.getColix()));
+        .getColixInherited(dipole.colix, dipole.bond.colix));
     short colixB = colixA;
     if (dipole.atoms[0] != null) {
       colixA = Colix.getColixInherited(colixA, dipole.atoms[0].getColix());

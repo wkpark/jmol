@@ -2,7 +2,6 @@ package org.jmol.api;
 
 import java.util.List;
 
-import org.jmol.script.ScriptEvaluator;
 import org.jmol.util.Point3f;
 import org.jmol.util.Vector3f;
 import org.jmol.viewer.TransformManager;
@@ -26,7 +25,7 @@ public interface JmolNavigatorInterface extends Runnable {
 
   void navigateKey(int keyCode, int modifiers);
 
-  void navigateList(ScriptEvaluator eval, List<Object[]> list);
+  void navigateList(JmolScriptEvaluator eval, List<Object[]> list);
 
   void navigateAxis(Vector3f rotAxis, float degrees);
 

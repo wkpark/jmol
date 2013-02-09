@@ -64,7 +64,6 @@ import org.jmol.util.TextFormat;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.PropertyManager;
 import org.jmol.viewer.Viewer;
 
 class ScriptMathProcessor {
@@ -1503,12 +1502,12 @@ class ScriptMathProcessor {
       propertyValue = (args.length > pt && args[pt].tok == Token.bitset ? (Object) ScriptVariable
           .bsSelectVar(args[pt++])
           : args.length > pt && args[pt].tok == Token.string
-              && PropertyManager.acceptsStringParameter(propertyName) ? args[pt++].value
+              && viewer.checkPropertyParameter(propertyName) ? args[pt++].value
               : (Object) "");
     }
     Object property = viewer.getProperty(null, propertyName, propertyValue);
     if (pt < args.length)
-      property = PropertyManager.extractProperty(property, args, pt);
+      property = viewer.extractProperty(property, args, pt);
     return addXObj(ScriptVariable.isVariableType(property) ? property : Escape
         .toReadable(propertyName, property));
   }
@@ -1787,7 +1786,7 @@ class ScriptMathProcessor {
             + (i >= sList2.length ? "" : sList2[i]);
       return addXAS(sList3);
     }
-    x2 = (args.length == 0 ? ScriptVariable.vAll : args[0]);
+    x2 = (args.length == 0 ? ScriptVariable.newVariable(Token.all, "all") : args[0]);
     boolean isAll = (x2.tok == Token.all);
     if (x1.tok != Token.varray && x1.tok != Token.string) {
       wasX = false;
@@ -2753,7 +2752,7 @@ class ScriptMathProcessor {
           break;
         return addXInt(ScriptVariable.sizeOf(x2));
       case Token.type:
-        return addXStr(ScriptVariable.typeOf(x2));
+        return addXStr(typeOf(x2));
       case Token.keys:
         if (x2.tok != Token.hash)
           return addXStr("");
@@ -3331,6 +3330,28 @@ class ScriptMathProcessor {
           : addXFloat(f));
     }
     return true;
+  }
+
+  static private String typeOf(ScriptVariable x) {
+    int tok = (x == null ? Token.nada : x.tok);
+    switch (tok) {
+    case Token.on:
+    case Token.off:
+      return "boolean";
+    case Token.bitset:
+      return (x.value instanceof BondSet ? "bondset" : "bitset");
+    case Token.integer:
+    case Token.decimal:
+    case Token.point3f:
+    case Token.point4f:
+    case Token.string:
+    case Token.varray:
+    case Token.hash:
+    case Token.matrix3f:
+    case Token.matrix4f:
+      return Token.astrType[tok];
+    }
+    return "?";
   }
 
   private boolean getAllProperties(ScriptVariable x2, String abbr)

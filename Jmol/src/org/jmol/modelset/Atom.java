@@ -59,10 +59,10 @@ final public class Atom extends Point3fi implements JmolNode {
   
   public static final int RADIUS_MAX = 16;
 
-  char alternateLocationID = '\0';
+  public char alternateLocationID = '\0';
   public byte atomID;
   int atomSite;
-  Group group;
+  public Group group;
   private float userDefinedVanDerWaalRadius;
   byte valence;
   
@@ -76,7 +76,7 @@ final public class Atom extends Point3fi implements JmolNode {
   
   public short madAtom;
 
-  short colixAtom;
+  public short colixAtom;
   byte paletteID = EnumPalette.CPK.id;
 
   Bond[] bonds;
@@ -101,8 +101,8 @@ final public class Atom extends Point3fi implements JmolNode {
     return nBackbonesDisplayed;
   }
   
-  int clickabilityFlags;
-  int shapeVisibilityFlags;
+  public int clickabilityFlags;
+  public int shapeVisibilityFlags;
   public static final int BACKBONE_VISIBILITY_FLAG = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_BACKBONE);
 
   public Atom(int modelIndex, int atomIndex,
@@ -516,7 +516,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return Elements.getBondingRadiusFloat(atomicAndIsotopeNumber, 0);
   }
 
-  float getBondingRadiusFloat() {
+  public float getBondingRadiusFloat() {
     float[] ionicRadii = group.chain.model.modelSet.ionicRadii;
     float r = (ionicRadii == null ? 0 : ionicRadii[index]);
     return (r == 0 ? Elements.getBondingRadiusFloat(atomicAndIsotopeNumber,
@@ -564,7 +564,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return paletteID;
   }
 
-  float getRadius() {
+  public float getRadius() {
     return Math.abs(madAtom / (1000f * 2));
   }
 
@@ -806,7 +806,7 @@ final public class Atom extends Point3fi implements JmolNode {
     setFractionalCoordPt(this, ptNew, asAbsolute);
   }
   
-  void setFractionalCoordPt(Point3f pt, Point3f ptNew, boolean asAbsolute) {
+  public void setFractionalCoordPt(Point3f pt, Point3f ptNew, boolean asAbsolute) {
     pt.setT(ptNew);
     SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c != null)
@@ -909,7 +909,7 @@ final public class Atom extends Point3fi implements JmolNode {
       info.append("%");
       info.appendC(alternateLocationID);
     }
-    if (group.chain.model.modelSet.getModelCount() > 1) {
+    if (group.chain.model.modelSet.modelCount > 1) {
       info.append("/");
       info.append(getModelNumberForLabel());
     }
@@ -1066,11 +1066,11 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.getSelectedMonomerIndex();
   }
 
-  Chain getChain() {
+  public Chain getChain() {
     return group.chain;
   }
 
-  String getModelNumberForLabel() {
+  public String getModelNumberForLabel() {
     return group.chain.model.modelSet.getModelNumberForAtomLabel(modelIndex);
   }
   
@@ -1118,7 +1118,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.getSeqcodeString();
   }
 
-  int getSeqNumber() {
+  public int getSeqNumber() {
     return group.getSeqNumber();
   }
 

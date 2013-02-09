@@ -128,4 +128,5 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
   void eval(ScriptContext context, ShapeManager shapeManager) {
     viewer.evalParallel(context, shapeManager);
   }
+
 }

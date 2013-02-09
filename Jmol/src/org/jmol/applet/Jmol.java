@@ -284,6 +284,9 @@ public class Jmol implements WrappedApplet {
     s = getValue("JmolAppletProxy", null);
     if (s != null)
       options += "-appletProxy " + s;
+    if (getBooleanValue("noScripting", false))
+      options += "-noScripting ";
+    
     viewer = JmolViewer.allocateViewer(appletWrapper, null, fullName,
         appletWrapper.getDocumentBase(), appletWrapper.getCodeBase(), options,
         new MyStatusListener());

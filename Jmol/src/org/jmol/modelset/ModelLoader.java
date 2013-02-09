@@ -1038,6 +1038,7 @@ public final class ModelLoader {
 
     if (someModelsHaveUnitcells) {
       modelSet.unitCells = new SymmetryInterface[modelSet.modelCount];
+      modelSet.haveUnitCells = true;
       boolean haveMergeCells = (mergeModelSet != null && mergeModelSet.unitCells != null);
       for (int i = 0; i < modelSet.modelCount; i++) {
         if (haveMergeCells && i < baseModelCount) {

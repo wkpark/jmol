@@ -48,9 +48,10 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
     // can set viewer later
   }
   
-  public void setViewer(JmolViewer viewer, double privateKey) {
+  public JmolImageCreatorInterface setViewer(JmolViewer viewer, double privateKey) {
     this.viewer = (Viewer) viewer;
     this.privateKey = privateKey;
+    return this;
   }
   
   /**

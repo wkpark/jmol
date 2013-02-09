@@ -1429,7 +1429,7 @@ public void initShape() {
     }
     str.append(";\n");
     appendCmd(str, mesh.getState("draw"));
-    appendCmd(str, getColorCommandUnk("draw", mesh.colix));
+    appendCmd(str, getColorCommandUnk("draw", mesh.colix, translucentAllowed));
     return str.toString();
   }
 

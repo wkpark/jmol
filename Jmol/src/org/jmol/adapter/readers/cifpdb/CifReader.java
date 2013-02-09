@@ -232,6 +232,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   
   @Override
   protected void finalizeReader() throws Exception {
+    if (atomSetCollection.getStructureCount() > 0)
+      atomSetCollection.bsStructuredModels.setBits(0, atomSetCollection.getAtomSetCount());
     if (vBiomolecules != null && vBiomolecules.size() == 1
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);

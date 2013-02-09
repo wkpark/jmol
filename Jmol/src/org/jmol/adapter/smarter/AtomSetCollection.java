@@ -195,6 +195,8 @@ public class AtomSetCollection {
       AtomSetCollectionReader atomSetCollectionReader, 
       AtomSetCollection[] array, List<?> list) {
     
+    // merging files
+    
     this.fileTypeName = fileTypeName;
     allowMultiple = (atomSetCollectionReader == null || atomSetCollectionReader.desiredVibrationNumber < 0);
     // set the default PATH properties as defined in the SmarterJmolAdapter
@@ -739,7 +741,7 @@ public class AtomSetCollection {
     structures[structureCount++] = structure;
     if (bsStructuredModels == null)
       bsStructuredModels = new BitSet();
-    bsStructuredModels.set(structure.atomSetIndex);
+    bsStructuredModels.set(Math.max(structure.atomSetIndex, 0));
     if (structure.strandCount >= 1) {
       int i = structureCount;
       for (i = structureCount; --i >= 0 

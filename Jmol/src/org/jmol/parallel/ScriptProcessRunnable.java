@@ -62,7 +62,7 @@ public class ScriptProcessRunnable implements Runnable {
           Logger.debug("Process " + process.processName + " complete");
       }
     } catch (Exception e) {
-      if (this.parallelProcessor.tok != Token.trycmd)
+      if (this.parallelProcessor.getTok() != Token.trycmd)
         e.printStackTrace();
     } catch (Error er) {
       this.parallelProcessor.clearShapeManager(er);

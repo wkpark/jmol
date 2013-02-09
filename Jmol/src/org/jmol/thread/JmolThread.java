@@ -1,7 +1,7 @@
 package org.jmol.thread;
 
+import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.script.ScriptContext;
-import org.jmol.script.ScriptEvaluator;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -19,7 +19,7 @@ abstract public class JmolThread extends Thread {
   protected static final int CHECK3 = 3;
   
   protected Viewer viewer;
-  protected ScriptEvaluator eval;
+  protected JmolScriptEvaluator eval;
   protected ScriptContext sc;
 
   protected boolean hoverEnabled;
@@ -54,11 +54,11 @@ abstract public class JmolThread extends Thread {
    * 
    * @param eval
    */
-  public void setEval(ScriptEvaluator eval) {
+  public void setEval(JmolScriptEvaluator eval) {
     this.eval = eval;
     sc = viewer.getEvalContextAndHoldQueue(eval);
     if (sc != null)
-      useTimeout = eval.allowJSThreads;
+      useTimeout = eval.getAllowJSThreads();
   }
 
   public void resumeEval() {

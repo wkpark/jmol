@@ -1,4 +1,4 @@
-/* $RCSfile$
+ /* $RCSfile$
  * $Author: egonw $
  * $Date: 2005-11-10 09:52:44 -0600 (Thu, 10 Nov 2005) $
  * $Revision: 4255 $
@@ -33,14 +33,12 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
-import org.jmol.script.ScriptFunction;
 import org.jmol.script.ScriptVariable;
 import org.jmol.script.Token;
 import org.jmol.util.Escape;
 
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
-import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Point3f;
@@ -93,7 +91,7 @@ public class StateManager {
     Arrays.sort(list, 0, n);
     for (int i = 0; i < n; i++)
       if (list[i] != null)
-        appendCmd(sb, list[i]);
+        sb.append("  ").append(list[i]).append(";\n");
     if (n == 0 && !definedOnly)
       sb.append("# --no global user variables defined--;\n");
     return sb.toString();
@@ -420,13 +418,13 @@ public class StateManager {
       ModelSet modelSet = viewer.getModelSet();
       if (modelSet == null)
         return;
-      bondCount = modelSet.getBondCount();
+      bondCount = modelSet.bondCount;
       connections = new Connection[bondCount + 1];
-      Bond[] bonds = modelSet.getBonds();
+      Bond[] bonds = modelSet.bonds;
       for (int i = bondCount; --i >= 0;) {
         Bond b = bonds[i];
         connections[i] = new Connection(b.getAtomIndex1(), b.getAtomIndex2(), b
-            .getMad(), b.getColix(), b.order, b.getEnergy(), b.getShapeVisibilityFlags());
+            .mad, b.colix, b.order, b.getEnergy(), b.getShapeVisibilityFlags());
       }
     }
 
@@ -472,78 +470,9 @@ public class StateManager {
     }
   }
 
-  private final static Map<String, ScriptFunction> staticFunctions = new Hashtable<String, ScriptFunction>();
-  private Map<String, ScriptFunction> localFunctions = new Hashtable<String, ScriptFunction>();
-
-  Map<String, ScriptFunction> getFunctions(boolean isStatic) {
-    return (isStatic ? staticFunctions : localFunctions);
-  }
-
-  String getFunctionCalls(String selectedFunction) {
-    if (selectedFunction == null)
-      selectedFunction = "";
-    StringXBuilder s = new StringXBuilder();
-    int pt = selectedFunction.indexOf("*");
-    boolean isGeneric = (pt >= 0);
-    boolean isStatic = (selectedFunction.indexOf("static_") == 0);
-    boolean namesOnly = (selectedFunction.equalsIgnoreCase("names") || selectedFunction.equalsIgnoreCase("static_names"));
-    if (namesOnly)
-      selectedFunction = "";
-    if (isGeneric)
-      selectedFunction = selectedFunction.substring(0, pt);
-    selectedFunction = selectedFunction.toLowerCase();
-    Map<String, ScriptFunction> ht = getFunctions(isStatic);
-    String[] names = new String[ht.size()];
-    Iterator<String> e = ht.keySet().iterator();
-    int n = 0;
-    while (e.hasNext()) {
-      String name = e.next();
-      if (selectedFunction.length() == 0 && !name.startsWith("_")
-          || name.equalsIgnoreCase(selectedFunction) || isGeneric
-          && name.toLowerCase().indexOf(selectedFunction) == 0)
-        names[n++] = name;
-    }
-    Arrays.sort(names, 0, n);
-    for (int i = 0; i < n; i++) {
-      ScriptFunction f = ht.get(names[i]);
-      s.append(namesOnly ? f.getSignature() : f.toString());
-      s.appendC('\n');
-    }
-    return s.toString();
-  }
-
-  public void clearFunctions() {
-    staticFunctions.clear();
-    localFunctions.clear();
-  }
-
-  private static boolean isStaticFunction(String name) {
-    return name.startsWith("static_");  
-  }
-  
-  boolean isFunction(String name) {
-    return (isStaticFunction(name) ? staticFunctions : localFunctions).containsKey(name);
-  }
-
-  void addFunction(ScriptFunction function) {
-    (isStaticFunction(function.name) ? staticFunctions
-        : localFunctions).put(function.name, function);
-  }
-  
-  void removeFunction(String name) {
-    ScriptFunction function = getFunction(name);
-    if (function == null)
-      return;
-    staticFunctions.remove(name);
-    localFunctions.remove(name);
-  }
-
-  ScriptFunction getFunction(String name) {
-    if (name == null)
-      return null;
-    ScriptFunction function = (isStaticFunction(name) ? staticFunctions
-        : localFunctions).get(name);
-    return (function == null || function.aatoken == null ? null : function);
+  static boolean doReportProperty(String name) {
+    return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name
+        + ";") < 0);
   }
   
   protected final static String unreportedProperties =
@@ -1052,73 +981,6 @@ public class StateManager {
     boolean zeroBasedXyzRasmol = false;
     boolean legacyAutoBonding = false;
 
-    /**
-     *  these settings are determined when the file is loaded and are
-     *  kept even though they might later change. So we list them here
-     *  and ALSO let them be defined in the settings. 10.9.98 missed this. 
-     * @param htParams 
-     *  
-     * @return script command
-     */
-    String getLoadState(Map<String, Object> htParams) {
-      
-      
-      // some commands register flags so that they will be 
-      // restored in a saved state definition, but will not execute
-      // now so that there is no chance any embedded scripts or
-      // default load scripts will run and slow things down.
-      StringXBuilder str = new StringXBuilder();
-      appendCmd(str, "set allowEmbeddedScripts false");
-      if (allowEmbeddedScripts)
-        setParamB("allowEmbeddedScripts", true);
-      appendCmd(str, "set appendNew " + appendNew);
-      appendCmd(str, "set appletProxy " + Escape.escapeStr(appletProxy));
-      appendCmd(str, "set applySymmetryToBonds " + applySymmetryToBonds);
-      if (atomTypes.length() > 0)
-        appendCmd(str, "set atomTypes " + Escape.escapeStr(atomTypes));
-      appendCmd(str, "set autoBond " + autoBond);
-//      appendCmd(str, "set autoLoadOrientation " + autoLoadOrientation);
-      if (axesOrientationRasmol)
-        appendCmd(str, "set axesOrientationRasmol true");
-      appendCmd(str, "set bondRadiusMilliAngstroms " + bondRadiusMilliAngstroms);
-      appendCmd(str, "set bondTolerance " + bondTolerance);
-      appendCmd(str, "set defaultLattice " + Escape.escapePt(ptDefaultLattice));
-      appendCmd(str, "set defaultLoadFilter " + Escape.escapeStr(defaultLoadFilter)) ;
-      appendCmd(str, "set defaultLoadScript \"\"");
-      if (defaultLoadScript.length() > 0)
-        setParamS("defaultLoadScript", defaultLoadScript);
-      appendCmd(str, "set defaultStructureDssp " + defaultStructureDSSP);
-      String sMode = viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null);
-      appendCmd(str, "set defaultVDW " + sMode);
-      if (sMode.equals("User"))
-        appendCmd(str, viewer.getDefaultVdwTypeNameOrData(Integer.MAX_VALUE, null));
-      appendCmd(str, "set forceAutoBond " + forceAutoBond);
-      appendCmd(str, "#set defaultDirectory " + Escape.escapeStr(defaultDirectory));
-      appendCmd(str, "#set loadFormat " + Escape.escapeStr(loadFormat));
-      appendCmd(str, "#set loadLigandFormat " + Escape.escapeStr(loadLigandFormat));
-      appendCmd(str, "#set smilesUrlFormat " + Escape.escapeStr(smilesUrlFormat));
-      appendCmd(str, "#set nihResolverFormat " + Escape.escapeStr(nihResolverFormat));
-      appendCmd(str, "#set pubChemFormat " + Escape.escapeStr(pubChemFormat));
-      appendCmd(str, "#set edsUrlFormat " + Escape.escapeStr(edsUrlFormat));
-      appendCmd(str, "#set edsUrlCutoff " + Escape.escapeStr(edsUrlCutoff));
-//      if (autoLoadOrientation)
-  //      appendCmd(str, "set autoLoadOrientation true");
-      appendCmd(str, "set legacyAutoBonding " + legacyAutoBonding);
-      appendCmd(str, "set minBondDistance " + minBondDistance);
-      // these next two might be part of a 2D->3D operation
-      appendCmd(str, "set minimizationCriterion  " + minimizationCriterion);
-      appendCmd(str, "set minimizationSteps  " + minimizationSteps);
-      appendCmd(str, "set pdbAddHydrogens " + (htParams != null && htParams.get("pdbNoHydrogens") == null ? pdbAddHydrogens : false));
-      appendCmd(str, "set pdbGetHeader " + pdbGetHeader);
-      appendCmd(str, "set pdbSequential " + pdbSequential);
-      appendCmd(str, "set percentVdwAtom " + percentVdwAtom);
-      appendCmd(str, "set smallMoleculeMaxAtoms " + smallMoleculeMaxAtoms);
-      appendCmd(str, "set smartAromatic " + smartAromatic);
-      if (zeroBasedXyzRasmol)
-        appendCmd(str, "set zeroBasedXyzRasmol true");
-      return str.toString();
-    }
-
     void setDefaultLattice(Point3f ptLattice) {
       ptDefaultLattice.setT(ptLattice);
     }
@@ -1257,7 +1119,7 @@ public class StateManager {
     String pickLabel = "";
     float pointGroupDistanceTolerance = 0.2f;
     float pointGroupLinearTolerance = 8.0f;
-    boolean preserveState = true;
+    public boolean preserveState = true;
     String propertyColorScheme = "roygb";
     String quaternionFrame = "p"; // was c prior to Jmol 11.7.47
     boolean saveProteinStructureState = true;
@@ -1307,51 +1169,6 @@ public class StateManager {
 
     int ellipsoidDotCount = 200;
     float ellipsoidAxisDiameter = 0.02f;
-
-    String getWindowState(StringXBuilder sfunc, int width, int height) {
-      StringXBuilder str = new StringXBuilder();
-      if (sfunc != null) {
-        sfunc
-            .append("  initialize;\n  set refreshing false;\n  _setWindowState;\n");
-        str.append("\nfunction _setWindowState() {\n");
-      }
-      if (width != 0)
-        str.append("# preferredWidthHeight ").appendI(width).append(" ").appendI(height).append(";\n");
-      str
-      .append("# width ").appendI(width == 0 ? viewer.getScreenWidth() : width)
-      .append(";\n# height ").appendI(height == 0 ? viewer.getScreenHeight() : height)
-      .append(";\n");
-      appendCmd(str, "stateVersion = " + getParameter("_version"));
-      appendCmd(str, "background " + Escape.escapeColor(objColors[0]));
-      for (int i = 1; i < OBJ_MAX; i++)
-        if (objColors[i] != 0)
-          appendCmd(str, getObjectNameFromId(i) + "Color = \""
-              + Escape.escapeColor(objColors[i]) + '"');
-      if (backgroundImageFileName != null)
-        appendCmd(str, "background IMAGE /*file*/" + Escape.escapeStr(backgroundImageFileName));
-      str.append(getSpecularState());
-      appendCmd(str, "statusReporting  = " + statusReporting);
-      if (sfunc != null)
-        str.append("}\n\n");
-      return str.toString();
-    }
-
-    String getSpecularState() {
-      StringXBuilder str = new StringXBuilder();
-      appendCmd(str, "set ambientPercent " + GData.getAmbientPercent());
-      appendCmd(str, "set diffusePercent " + GData.getDiffusePercent());
-      appendCmd(str, "set specular " + GData.getSpecular());
-      appendCmd(str, "set specularPercent " + GData.getSpecularPercent());
-      appendCmd(str, "set specularPower " + GData.getSpecularPower());
-      int se = GData.getSpecularExponent();
-      int pe = GData.getPhongExponent();
-      if (Math.pow(2, se) == pe)
-        appendCmd(str, "set specularExponent " + se);
-      else
-        appendCmd(str, "set phongExponent " + pe);        
-      appendCmd(str, "set zShadePower " + zShadePower);
-      return str.toString();
-    }
 
     //testing
 
@@ -1550,159 +1367,12 @@ public class StateManager {
       return null;
     }
 
-    String getAllSettings(String prefix) {
-      StringXBuilder commands = new StringXBuilder();
-      Iterator<String> e;
-      String key;
-      String[] list = new String[htBooleanParameterFlags.size()
-          + htNonbooleanParameterValues.size()+ htUserVariables.size()];
-      //booleans
-      int n = 0;
-      String _prefix = "_" + prefix;
-      e = htBooleanParameterFlags.keySet().iterator();
-      while (e.hasNext()) {
-        key = e.next();
-        if (prefix == null || key.indexOf(prefix) == 0
-            || key.indexOf(_prefix) == 0)
-          list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
-              + htBooleanParameterFlags.get(key);
-      }
-      //save as _xxxx if you don't want "set" to be there first
-      e = htNonbooleanParameterValues.keySet().iterator();
-      while (e.hasNext()) {
-        key = e.next();
-        if (key.charAt(0) != '@'
-            && (prefix == null || key.indexOf(prefix) == 0 || key
-                .indexOf(_prefix) == 0)) {
-          Object value = htNonbooleanParameterValues.get(key);
-          if (value instanceof String)
-            value = chop(Escape.escapeStr((String) value));
-          list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
-              + value;
-        }
-      }
-      e = htUserVariables.keySet().iterator();
-      while (e.hasNext()) {
-        key = e.next();
-        if (prefix == null || key.indexOf(prefix) == 0) {
-          ScriptVariable value = htUserVariables.get(key);
-          String s = value.asString();
-          list[n++] = key + " " + (key.startsWith("@") ? "" : "= ") + (value.tok == Token.string ? chop(Escape.escapeStr(s)) : s);
-        }
-      }
-      Arrays.sort(list, 0, n);
-      for (int i = 0; i < n; i++)
-        if (list[i] != null)
-          appendCmd(commands, list[i]);
-      commands.append("\n");
-      return commands.toString();
-    }
-
-    private String chop(String s) {
-      int len = s.length();
-      if (len < 512)
-        return s;
-      StringXBuilder sb = new StringXBuilder();
-      String sep = "\"\\\n    + \"";
-      int pt = 0;
-      for (int i = 72; i < len; pt = i, i += 72) {
-        while (s.charAt(i - 1) == '\\')
-          i++;
-        sb.append((pt == 0 ? "" : sep)).append(s.substring(pt, i));
-      }
-      sb.append(sep).append(s.substring(pt, len));
-      return sb.toString();
-    }
-
-    String getState(StringXBuilder sfunc) {
-      String[] list = new String[htBooleanParameterFlags.size()
-          + htNonbooleanParameterValues.size()];
-      StringXBuilder commands = new StringXBuilder();
-      boolean isState = (sfunc != null);
-      if (isState) {
-        sfunc.append("  _setVariableState;\n");
-        commands.append("function _setVariableState() {\n\n");
-      }
-      int n = 0;
-      Iterator<String> e;
-      String key;
-      //booleans
-      e = htBooleanParameterFlags.keySet().iterator();
-      while (e.hasNext()) {
-        key = e.next();       
-        if (doReportProperty(key))
-          list[n++] = "set " + key + " " + htBooleanParameterFlags.get(key);
-      }
-      e = htNonbooleanParameterValues.keySet().iterator();
-      while (e.hasNext()) {
-        key = e.next();
-        if (doReportProperty(key)) {
-          Object value = htNonbooleanParameterValues.get(key);
-          if (key.charAt(0) == '=') {
-            //save as =xxxx if you don't want "set" to be there first
-            // (=color [element], =frame ...; set unitcell) -- see Viewer.java
-            key = key.substring(1);
-          } else {
-            if (key.indexOf("default") == 0)
-              key = " set " + key;
-            else
-              key = "set " + key;
-            value = Escape.escape(value);
-          }
-          list[n++] = key + " " + value;
-        }
-      }
-      switch (axesMode) {
-      case UNITCELL:
-        list[n++] = "set axes unitcell";
-        break;
-      case BOUNDBOX:
-        list[n++] = "set axes window";
-        break;
-      default:
-        list[n++] = "set axes molecular";
-      }
-
-      Arrays.sort(list, 0, n);
-      for (int i = 0; i < n; i++)
-        if (list[i] != null)
-          appendCmd(commands, list[i]);
-
-      String s = StateManager.getVariableList(htUserVariables, 0, false, true);
-      if (s.length() > 0) {
-        commands.append("\n#user-defined atom sets; \n");
-        commands.append(s);
-      }
-
-      // label defaults
-
-      viewer.loadShape(JmolConstants.SHAPE_LABELS);
-      commands.append((String) viewer.getShapeProperty(JmolConstants.SHAPE_LABELS,
-          "defaultState"));
-
-      // structure defaults
-      
-      if (haveSetStructureList) {
-        commands.append("struture HELIX set " + Escape.escape(structureList.get(EnumStructure.HELIX)));
-        commands.append("struture SHEET set " + Escape.escape(structureList.get(EnumStructure.SHEET)));
-        commands.append("struture TURN set " + Escape.escape(structureList.get(EnumStructure.TURN)));
-      }
-      if (sfunc != null)
-        commands.append("\n}\n\n");
-      return commands.toString();
-    }
-
-    private boolean doReportProperty(String name) {
-      return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name
-          + ";") < 0);
-    }
-
     String getVariableList() {
       return StateManager.getVariableList(htUserVariables, 0, true, false);
     }
 
     // static because we don't plan to be changing these
-    private Map<EnumStructure, float[]> structureList = new Hashtable<EnumStructure, float[]>();
+    Map<EnumStructure, float[]> structureList = new Hashtable<EnumStructure, float[]>();
     
     {
       structureList.put(EnumStructure.TURN, 
@@ -1721,7 +1391,7 @@ public class StateManager {
       });
     }
     
-    private boolean haveSetStructureList;
+    boolean haveSetStructureList;
     private String[] userDatabases;
     
     public void setStructureList(float[] list, EnumStructure type) {
@@ -1769,20 +1439,6 @@ public class StateManager {
     }
   }
 
-  ///////// state serialization 
-
-  public static void setStateInfo(Map<String, BitSet> ht,
-                                  int i1, int i2, String key) {
-    BitSet bs;
-    if (ht.containsKey(key)) {
-      bs = ht.get(key);
-    } else {
-      bs = new BitSet();
-      ht.put(key, bs);
-    }
-    bs.setBits(i1, i2 + 1);
-  }
-
   public static String varClip(String name, String sv, int nMax) {
     if (nMax > 0 && sv.length() > nMax)
       sv = sv.substring(0, nMax) + " #...more (" + sv.length()
@@ -1791,39 +1447,6 @@ public class StateManager {
     return sv;
   }
 
-  public static String getCommands(Map<String, BitSet> htDefine,
-                                   Map<String, BitSet> htMore,
-                                   String selectCmd) {
-    StringXBuilder s = new StringXBuilder();
-    String setPrev = getCommands2(htDefine, s, null, selectCmd);
-    if (htMore != null)
-      getCommands2(htMore, s, setPrev, "select");
-    return s.toString();
-  }
+  ///////// state serialization 
 
-  private static String getCommands2(Map<String, BitSet> ht,
-                                    StringXBuilder s,
-                                    String setPrev, String selectCmd) {
-    if (ht == null)
-      return "";
-    for (Map.Entry<String, BitSet> entry : ht.entrySet()) {
-      String key = entry.getKey();
-      String set = Escape.escape(entry.getValue());
-      if (set.length() < 5) // nothing selected
-        continue;
-      set = selectCmd + " " + set;
-      if (!set.equals(setPrev))
-        appendCmd(s, set);
-      setPrev = set;
-      if (key.indexOf("-") != 0) // - for key means none required
-        appendCmd(s, key);
-    }
-    return setPrev;
-  }
-
-  public static void appendCmd(StringXBuilder s, String cmd) {
-    if (cmd.length() == 0)
-      return;
-    s.append("  ").append(cmd).append(";\n");
-  }
 }

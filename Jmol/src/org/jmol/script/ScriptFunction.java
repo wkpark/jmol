@@ -28,10 +28,11 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.jmol.api.JmolScriptFunction;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.StringXBuilder;
 
-public class ScriptFunction {
+public class ScriptFunction implements JmolScriptFunction {
 
   // / functions
 
@@ -53,18 +54,18 @@ public class ScriptFunction {
   int chpt0;
   int cmdpt0 = -1;
   protected String typeName;
-  public String name;
+  String name;
   int nParameters;
   List<String> names = new ArrayList<String>();
-  public int tok;
+  int tok;
 
   Map<String, String> variables = new Hashtable<String, String>();
-  public boolean isVariable(String ident) {
+  boolean isVariable(String ident) {
     return variables.containsKey(ident);
   }
 
   ScriptVariable returnValue;
-  public Token[][] aatoken;
+  Token[][] aatoken;
   int[][] lineIndices;
   short[] lineNumbers;
   String script;
@@ -96,7 +97,7 @@ public class ScriptFunction {
     contextVariables.put("_retval", new ScriptVariableInt(tok == Token.trycmd ? Integer.MAX_VALUE : 0));
   }
 
-  public void unsetVariables(Map<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {
+  void unsetVariables(Map<String, ScriptVariable> contextVariables, List<ScriptVariable> params) {
     // note: this method is never called.
     // set list values in case they have changed.
     int nParams = (params == null ? 0 : params.size());
@@ -159,6 +160,16 @@ public class ScriptFunction {
       script += "\n";
   }
 
+  @Override
+  public String toString() {
+    StringXBuilder s = new StringXBuilder().append("/*\n * ").append(name)
+        .append("\n */\n").append(getSignature()).append("{\n");
+    if (script != null)
+      s.append(script);
+    s.append("}\n");
+    return s.toString();
+  }
+
   public String getSignature() {
     StringXBuilder s = new StringXBuilder().append(typeName)
       .append(" ").append(name).append(" (");
@@ -171,13 +182,15 @@ public class ScriptFunction {
     return s.toString();
   }
 
-  @Override
-  public String toString() {
-    StringXBuilder s = new StringXBuilder().append("/*\n * ").append(name)
-        .append("\n */\n").append(getSignature()).append("{\n");
-    if (script != null)
-      s.append(script);
-    s.append("}\n");
-    return s.toString();
+  public Object geTokens() {
+    return aatoken;
+  }
+
+  public String getName() {
+    return name;
+  }
+  
+  public int getTok() {
+    return tok;
   }
 }

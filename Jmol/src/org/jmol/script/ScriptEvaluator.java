@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 
+import org.jmol.api.JmolScriptEvaluator;
+import org.jmol.api.JmolScriptFunction;
 import org.jmol.api.MinimizerInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
@@ -91,13 +93,12 @@ import org.jmol.api.JmolParallelProcessor;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.PropertyManager;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.Viewer.ACCESS;
 
-public class ScriptEvaluator {
+public class ScriptEvaluator implements JmolScriptEvaluator {
 
   /*
    * The ScriptEvaluator class, the Viewer, the xxxxManagers, the Graphics3D
@@ -200,19 +201,29 @@ public class ScriptEvaluator {
    * Bob Hanson, 6/2009 hansonr@stolaf.edu
    */
 
-  public static final String SCRIPT_COMPLETED = "Script completed";
-
-  public boolean allowJSThreads = true;
+  private boolean allowJSThreads = true;
+  
+  public boolean getAllowJSThreads() {
+    return allowJSThreads;
+  }
 
   private boolean listCommands;
   private boolean isJS;
 
-  public ScriptEvaluator(Viewer viewer) {
+  public JmolScriptEvaluator setViewer(Viewer viewer) {
     this.viewer = viewer;
+    this.compiler = (compiler == null ? (ScriptCompiler) viewer.compiler : compiler);
     isJS = viewer.isSingleThreaded;
-    this.compiler = (compiler == null ? viewer.compiler : compiler);
     definedAtomSets = viewer.definedAtomSets;
+    return this;
+  }
+
+  public ScriptEvaluator() {
     currentThread = Thread.currentThread();
+  }
+
+  public void setCompiler() {
+    viewer.compiler = compiler = new ScriptCompiler(viewer);
   }
 
   // //////////////// primary interfacing methods //////////////////
@@ -242,7 +253,7 @@ public class ScriptEvaluator {
     this.isCmdLine_C_Option = isCmdLine_C_Option;
     executionStopped = executionPaused = false;
     executionStepping = false;
-    isExecuting = true;
+    executing = true;
     isSyntaxCheck = this.isCmdLine_c_or_C_Option = isCmdLine_c_or_C_Option;
     timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
@@ -264,7 +275,8 @@ public class ScriptEvaluator {
    * @return [ ScriptFunction, Params ]
    */
   private Object[] createFunction(String fname, String xyz, String ret) {
-    ScriptEvaluator e = new ScriptEvaluator(viewer);
+    ScriptEvaluator e = new ScriptEvaluator();
+    e.setViewer(viewer);
     try {
       e.compileScript(null, "function " + fname + "(" + xyz + ") { return "
           + ret + "}", false);
@@ -329,8 +341,8 @@ public class ScriptEvaluator {
     if (errorMessage == null && executionStopped)
       setErrorMessage("execution interrupted");
     else if (!tQuiet && !isSyntaxCheck)
-      viewer.scriptStatus(SCRIPT_COMPLETED);
-    isExecuting = isSyntaxCheck = this.isCmdLine_c_or_C_Option = this.historyDisabled = false;
+      viewer.scriptStatus(JmolConstants.SCRIPT_COMPLETED);
+    executing = isSyntaxCheck = this.isCmdLine_c_or_C_Option = this.historyDisabled = false;
     String msg = getErrorMessageUntranslated();
     viewer.setErrorMessage(errorMessage, msg);
     if (!tQuiet)
@@ -447,6 +459,16 @@ public class ScriptEvaluator {
     return sc;
   }
 
+  static StringXBuilder getContextTrace(ScriptContext sc, StringXBuilder sb, boolean isTop) {
+    if (sb == null)
+      sb = new StringXBuilder();
+    sb.append(setErrorLineMessage(sc.functionName, sc.scriptFileName,
+        sc.lineNumbers[sc.pc], sc.pc, ScriptEvaluator.statementAsString(sc.statement, (isTop ? sc.iToken : 9999), false)));
+    if (sc.parentContext != null)
+      getContextTrace(sc.parentContext, sb, false);
+    return sb;
+  }
+
   // //////////////////////// script execution /////////////////////
 
   private boolean tQuiet;
@@ -462,17 +484,17 @@ public class ScriptEvaluator {
     logMessages = (debugScript && Logger.debugging);
   }
 
-  public boolean executionStopped;
+  private boolean executionStopped;
   private boolean executionPaused;
   private boolean executionStepping;
-  private boolean isExecuting;
+  private boolean executing;
 
   private long timeBeginExecution;
   private long timeEndExecution;
 
   private boolean mustResumeEval;  // see resumeEval
 
-  public int getExecutionWalltime() {
+  private int getExecutionWalltime() {
     return (int) (timeEndExecution - timeBeginExecution);
   }
 
@@ -503,16 +525,20 @@ public class ScriptEvaluator {
     executionStepping = false;
   }
 
-  public boolean isScriptExecuting() {
-    return isExecuting && !executionStopped;
+  public boolean isExecuting() {
+    return executing && !executionStopped;
   }
 
-  public boolean isExecutionPaused() {
+  public boolean isPaused() {
     return executionPaused;
   }
 
-  public boolean isExecutionStepping() {
+  public boolean isStepping() {
     return executionStepping;
+  }
+
+  public boolean isStopped() {
+    return executionStopped || !isJS && currentThread != Thread.currentThread();
   }
 
   /**
@@ -614,17 +640,16 @@ public class ScriptEvaluator {
   /**
    * a general-use method to evaluate a "SET" type expression.
    * 
-   * @param viewer
    * @param expr
-   * @param asVariable TODO
+   * @param asVariable
    * @return an object of one of the following types: Boolean, Integer, Float,
    *         String, Point3f, BitSet
    */
 
-  public static Object evaluateExpression(Viewer viewer, Object expr, boolean asVariable) {
+  public Object evaluateExpression(Object expr, boolean asVariable) {
     // Text.formatText for MESSAGE and ECHO
     // prior to 12.[2/3].32 was not thread-safe for compilation.
-    ScriptEvaluator e = new ScriptEvaluator(viewer);
+    ScriptEvaluator e = (ScriptEvaluator) (new ScriptEvaluator()).setViewer(viewer);
     try {
       // disallow end-of-script message and JavaScript script queuing
       e.pushContext(null);
@@ -659,16 +684,16 @@ public class ScriptEvaluator {
   /**
    * used for TRY command
    * 
-   * @param viewer
    * @param context
    * @param shapeManager
    * @return  true if successful; false if not
    */
-  public static boolean evaluateParallel(Viewer viewer, ScriptContext context,
+  public boolean evaluateParallel(ScriptContext context,
                                         ShapeManager shapeManager) {
-    ScriptEvaluator e = new ScriptEvaluator(viewer);
+    ScriptEvaluator e = new ScriptEvaluator();
+    e.setViewer(viewer);
     e.historyDisabled = true;
-    e.compiler = new ScriptCompiler(e.compiler);
+    e.compiler = new ScriptCompiler(viewer);
     e.shapeManager = shapeManager;
     try {
       e.restoreScriptContext(context, true, false, false);
@@ -691,25 +716,24 @@ public class ScriptEvaluator {
   /**
    * a general method to evaluate a string representing an atom set.
    * 
-   * @param e
    * @param atomExpression
    * @return is a bitset indicating the selected atoms
    * 
    */
-  public static BitSet getAtomBitSet(ScriptEvaluator e, Object atomExpression) {
+  public BitSet getAtomBitSet(Object atomExpression) {
     if (atomExpression instanceof BitSet)
       return (BitSet) atomExpression;
     BitSet bs = new BitSet();
     try {
-      e.pushContext(null);
+      pushContext(null);
       String scr = "select (" + atomExpression + ")";
       scr = TextFormat.replaceAllCharacters(scr, "\n\r", "),(");
       scr = TextFormat.simpleReplace(scr, "()", "(none)");
-      if (e.compileScript(null, scr, false)) {
-        e.statement = e.aatoken[0];
-        bs = e.atomExpression(e.statement, 1, 0, false, false, true, true);
+      if (compileScript(null, scr, false)) {
+        statement = aatoken[0];
+        bs = atomExpression(statement, 1, 0, false, false, true, true);
       }
-      e.popContext(false, false);
+      popContext(false, false);
     } catch (Exception ex) {
       Logger.error("getAtomBitSet " + atomExpression + "\n" + ex);
     }
@@ -719,16 +743,13 @@ public class ScriptEvaluator {
   /**
    * just provides a vector list of atoms in a string-based expression
    * 
-   * @param e
    * @param atomCount
    * @param atomExpression
    * @return vector list of selected atoms
    */
-  public static List<Integer> getAtomBitSetVector(ScriptEvaluator e,
-                                                  int atomCount,
-                                                  Object atomExpression) {
+  public List<Integer> getAtomBitSetVector(int atomCount, Object atomExpression) {
     List<Integer> V = new ArrayList<Integer>();
-    BitSet bs = getAtomBitSet(e, atomExpression);
+    BitSet bs = getAtomBitSet(atomExpression);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       V.add(Integer.valueOf(i));
     }
@@ -1254,7 +1275,7 @@ public class ScriptEvaluator {
         label = "";
       return isExplicitlyAll ? new String[] { label } : (Object) label;
     }
-    ModelSet modelSet = viewer.getModelSet();
+    ModelSet modelSet = viewer.modelSet;
     int n = 0;
     int[] indices = (isAtoms || !useAtomMap ? null : ((BondSet) tokenValue)
         .getAssociatedAtoms());
@@ -1480,7 +1501,7 @@ public class ScriptEvaluator {
       fvMinMax = -Float.MAX_VALUE;
       break;
     }
-    ModelSet modelSet = viewer.getModelSet();
+    ModelSet modelSet = viewer.modelSet;
     int mode = (isPt ? 3 : isString ? 2 : isInt ? 1 : 0);
     if (isAtoms) {
       boolean haveBitSet = (bs != null);
@@ -1705,7 +1726,7 @@ public class ScriptEvaluator {
           break;
         case Token.color:
           ColorUtil.colorPointFromInt(viewer.getColorArgbOrGray(bond
-              .getColix()), ptT);
+              .colix), ptT);
           switch (minmaxtype) {
           case Token.all:
             vout.add(Point3f.newP(ptT));
@@ -1925,7 +1946,7 @@ public class ScriptEvaluator {
 
   private final static int scriptLevelMax = 100;
 
-  public Thread currentThread;
+  private Thread currentThread;
   protected Viewer viewer;
   protected ScriptCompiler compiler;
   private Map<String, Object> definedAtomSets;
@@ -1935,7 +1956,8 @@ public class ScriptEvaluator {
   private String scriptFileName;
   private String functionName;
   private boolean isStateScript;
-  public int scriptLevel;
+  private int scriptLevel;
+  
   private int scriptReportingLevel = 0;
   private int commandHistoryLevelMax = 0;
 
@@ -1976,11 +1998,11 @@ public class ScriptEvaluator {
     strScript = fixScriptPath(strScript, filename);
     restoreScriptContext(compiler.compile(filename, strScript, false, false,
         debugCompiler, false), false, false, false);
-    isStateScript = (script.indexOf(Viewer.STATE_VERSION_STAMP) >= 0);
+    isStateScript = (script.indexOf(JmolConstants.STATE_VERSION_STAMP) >= 0);
     forceNoAddHydrogens = (isStateScript && script.indexOf("pdbAddHydrogens") < 0);
     String s = script;
     pc = setScriptExtensions();
-    if (!isSyntaxCheck && viewer.isScriptEditorVisible()
+    if (!isSyntaxCheck && viewer.scriptEditorVisible
         && strScript.indexOf(JmolConstants.SCRIPT_EDITOR_IGNORE) < 0)
       viewer.scriptStatus("");
     script = s;
@@ -2174,7 +2196,7 @@ public class ScriptEvaluator {
 
   static int tryPt;
   
-  ScriptVariable runFunctionRet(ScriptFunction function, String name,
+  ScriptVariable runFunctionRet(JmolScriptFunction function, String name,
                                 List<ScriptVariable> params,
                                 ScriptVariable tokenAtom, boolean getReturn,
                                 boolean setContextPath, boolean allowThreads)
@@ -2193,11 +2215,11 @@ public class ScriptEvaluator {
 
     pushContext(null);
     allowJSThreads = allowThreads;
-    boolean isTry = (function.tok == Token.trycmd);
+    boolean isTry = (function.getTok() == Token.trycmd);
     thisContext.isTryCatch = isTry;
     thisContext.isFunction = !isTry;
     functionName = name;
-    if (function.tok == Token.trycmd) {
+    if (function.getTok() == Token.trycmd) {
       viewer.resetError();
       thisContext.displayLoadErrorsSave = viewer.displayLoadErrors;
       thisContext.tryPt = ++tryPt;
@@ -2271,15 +2293,16 @@ public class ScriptEvaluator {
    * note that functions requiring motion cannot be run 
    * in JavaScript
    * 
-   * @param function
+   * @param f
    * @param params
    * @param tokenAtom
    * @throws ScriptException
    */
-  private void restoreFunction(ScriptFunction function,
+  private void restoreFunction(JmolScriptFunction f,
                            List<ScriptVariable> params, 
                            ScriptVariable tokenAtom)
       throws ScriptException {
+    ScriptFunction function = (ScriptFunction) f;
     aatoken = function.aatoken;
     lineNumbers = function.lineNumbers;
     lineIndices = function.lineIndices;
@@ -2551,7 +2574,7 @@ public class ScriptEvaluator {
             // I can't remember why we have to be checking list variables
             // for atom names. 
             fixed[j] = ScriptVariable.newVariable(Token.bitset,
-                bs == null ? getAtomBitSet(this, ScriptVariable
+                bs == null ? getAtomBitSet(ScriptVariable
                     .sValue(fixed[j])) : bs);
           }
         } else if (v instanceof Boolean) {
@@ -2583,7 +2606,7 @@ public class ScriptEvaluator {
             s = (String) v;
             if (isExpression && !forceString) {
               // select @x  where x is "arg", for example
-              fixed[j] = Token.newTokenObj(Token.bitset, getAtomBitSet(this, s));
+              fixed[j] = Token.newTokenObj(Token.bitset, getAtomBitSet(s));
             } else {
               if (!isExpression) {
                 //print @x
@@ -2671,15 +2694,24 @@ public class ScriptEvaluator {
     this.tQuiet = tQuiet;
   }
 
-  public ScriptContext thisContext = null;
+  private ScriptContext thisContext;
+  
+  public ScriptContext getThisContext() {
+    return thisContext;
+  }
 
-  public void pushContext(ContextToken token) throws ScriptException {
+  public void pushContextDown() {
+    scriptLevel--;
+    pushContext2(null);
+  }
+  
+  private void pushContext(ContextToken token) throws ScriptException {
     if (scriptLevel == scriptLevelMax)
       error(ERROR_tooManyScriptLevels);
     pushContext2(token);
   }
   
-  public void pushContext2(ContextToken token) {
+  private void pushContext2(ContextToken token) {
     thisContext = getScriptContext();
     thisContext.token = token;
     if (token == null) {
@@ -2842,6 +2874,28 @@ public class ScriptEvaluator {
   }
 
   // /////////////// error message support /////////////////
+
+  public void setException(ScriptException sx, String msg, String untranslated) {
+    // from ScriptException, while initializing
+    sx.untranslated = (untranslated == null ? msg : untranslated);
+    errorType = msg;
+    iCommandError = pc;
+    if (sx.message == null) {
+      sx.message = "";
+      return;
+    }
+    String s = ScriptEvaluator.getContextTrace(getScriptContext(), null, true).toString();
+    while (thisContext != null && !thisContext.isTryCatch)
+      popContext(false, false);
+    sx.message += s;
+    sx.untranslated += s;
+    if (thisContext != null || isSyntaxCheck
+        || msg.indexOf("file recognized as a script file:") >= 0)
+      return;
+    Logger.error("eval ERROR: " + toString());
+    if (viewer.autoExit)
+      viewer.exitJmol();
+  }
 
   private boolean error;
   private String errorMessage;
@@ -3644,7 +3698,7 @@ public class ScriptEvaluator {
         rpn.addOp(instruction);
         break;
       case Token.define:
-        rpn.addXBs(getAtomBitSet(this, value));
+        rpn.addXBs(getAtomBitSet(value));
         break;
       case Token.hkl:
         rpn.addXVar(ScriptVariable.newScriptVariableToken(instruction));
@@ -4011,8 +4065,7 @@ public class ScriptEvaluator {
     if (expressionResult instanceof String
         && (mustBeBitSet || ((String) expressionResult).startsWith("({"))) {
       // allow for select @{x} where x is a string that can evaluate to a bitset
-      expressionResult = (isSyntaxCheck ? new BitSet() : getAtomBitSet(this,
-          expressionResult));
+      expressionResult = (isSyntaxCheck ? new BitSet() : getAtomBitSet(expressionResult));
     }
     if (!mustBeBitSet && !(expressionResult instanceof BitSet))
       return null; // because result is in expressionResult in that case
@@ -4035,7 +4088,7 @@ public class ScriptEvaluator {
                               float comparisonFloat) {
     BitSet bs = new BitSet();
     int atomCount = viewer.getAtomCount();
-    ModelSet modelSet = viewer.getModelSet();
+    ModelSet modelSet = viewer.modelSet;
     Atom[] atoms = modelSet.atoms;
     float propertyFloat = 0;
     viewer.autoCalculate(tokWhat);
@@ -4061,7 +4114,7 @@ public class ScriptEvaluator {
   private BitSet compareString(int tokWhat, int tokOperator,
                                String comparisonString) throws ScriptException {
     BitSet bs = new BitSet();
-    Atom[] atoms = viewer.getModelSet().atoms;
+    Atom[] atoms = viewer.modelSet.atoms;
     int atomCount = viewer.getAtomCount();
     boolean isCaseSensitive = (tokWhat == Token.chain && viewer
         .getChainCaseSensitive());
@@ -4084,7 +4137,7 @@ public class ScriptEvaluator {
     int bitsetComparator = tokOperator;
     int bitsetBaseValue = comparisonValue;
     int atomCount = viewer.getAtomCount();
-    ModelSet modelSet = viewer.getModelSet();
+    ModelSet modelSet = viewer.modelSet;
     Atom[] atoms = modelSet.atoms;
     int imax = -1;
     int imin = 0;
@@ -7268,7 +7321,7 @@ public class ScriptEvaluator {
       if (m == null)
         m = new Matrix4f();
 
-      Atom[] atoms = viewer.getModelSet().atoms;
+      Atom[] atoms = viewer.modelSet.atoms;
       int atomCount = viewer.getAtomCount();
       int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles,
           atoms, atomCount, bsA, isSmarts, true);
@@ -7350,7 +7403,7 @@ public class ScriptEvaluator {
       asAtoms = (smiles == null);
       if (asAtoms)
         b = viewer.getSmilesMatcher().getSubstructureSetArray(pattern,
-            viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
+            viewer.modelSet.atoms, viewer.getAtomCount(), bsSelected,
             null, isSmarts, false);
       else
         b = viewer.getSmilesMatcher().find(pattern, smiles, isSmarts, false);
@@ -7683,7 +7736,7 @@ public class ScriptEvaluator {
       name = name.substring(0, name.indexOf("."));
     if (name.indexOf("[") >= 0)
       name = name.substring(0, name.indexOf("["));
-    int propertyID = PropertyManager.getPropertyNumber(name);
+    int propertyID = viewer.getPropertyNumber(name);
     String param = optParameterAsString(2);
     int tok = tokAt(2);
     BitSet bs = (tok == Token.expressionBegin || tok == Token.bitset ? atomExpressionAt(2)
@@ -7693,12 +7746,12 @@ public class ScriptEvaluator {
       property = ""; // produces a list from Property Manager
       param = "";
     } else if (propertyID >= 0 && statementLength < 3) {
-      param = PropertyManager.getDefaultParam(propertyID);
+      param = viewer.getDefaultPropertyParam(propertyID);
       if (param.equals("(visible)")) {
         viewer.setModelVisibility();
         bs = viewer.getVisibleSet();
       }
-    } else if (propertyID == PropertyManager.PROP_FILECONTENTS_PATH) {
+    } else if (propertyID == viewer.getPropertyNumber("fileContents")) {
       for (int i = 3; i < statementLength; i++)
         param += parameterAsString(i);
     }
@@ -9381,7 +9434,7 @@ public class ScriptEvaluator {
       String smarts = stringParameter(statementLength == 3 ? 2 : 4);
       if (isSyntaxCheck)
         return;
-      Atom[] atoms = viewer.getModelSet().atoms;
+      Atom[] atoms = viewer.modelSet.atoms;
       int atomCount = viewer.getAtomCount();
       int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smarts,
           atoms, atomCount, viewer.getSelectionSet(false), true, false);
@@ -9996,7 +10049,7 @@ public class ScriptEvaluator {
     String msg = null;
     if (statementLength == 1) {
       if (!isSyntaxCheck)
-        msg = getScriptContext().getContextTrace(null, true).toString();
+        msg = getContextTrace(getScriptContext(), null, true).toString();
     } else {
       msg = parameterExpressionString(1, 0);
     }
@@ -10837,8 +10890,8 @@ public class ScriptEvaluator {
       break;
     default:
       if (statementLength == 4 && tokAt(2) == Token.bonds)
-        bs = new BondSet(BitSetUtil.newBitSet2(0, viewer.getModelSet()
-            .getBondCount()));
+        bs = new BondSet(BitSetUtil.newBitSet2(0, viewer.modelSet
+            .bondCount));
       else
         bs = atomExpressionAt(i);
     }
@@ -14149,9 +14202,9 @@ public class ScriptEvaluator {
     if (icell != Integer.MAX_VALUE)
       viewer.setCurrentUnitCellOffset(icell);
     else if (id != null)
-      viewer.setCurrentUnitCell(id);
+      viewer.setCurrentCage(id);
     else if (points != null)
-      viewer.setCurrentUnitCellPts(points);
+      viewer.setCurrentCagePts(points);
     setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitCell", mad);
     if (pt != null)
       viewer.setCurrentUnitCellOffsetPt(pt);
@@ -14653,7 +14706,7 @@ public class ScriptEvaluator {
         } else if ((data == "SDF" || data == "MOL" || data == "V2000"
             || data == "V3000" || data == "CD")
             && isCoord) {
-          data = viewer.getModelExtract("selected", true, data);
+          data = viewer.getModelExtract("selected", true, false, data);
           if (data.startsWith("ERROR:"))
             bytes = data;
         } else if (data == "XYZ" || data == "XYZRN" || data == "XYZVIB"
@@ -14673,17 +14726,16 @@ public class ScriptEvaluator {
           if (isCoord) {
             BitSet tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
             viewer.setAtomCoordRelative(Point3f.new3(0, 0, 0), null);
-            data = (String) viewer.getProperty("string", "stateInfo", null);
+            data = viewer.getStateInfo();
             viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
           } else {
-            data = (String) viewer.getProperty("string", "stateInfo", null);
+            data = viewer.getStateInfo();
             if (localPath != null || remotePath != null)
               data = FileManager.setScriptFileReferences(data, localPath,
                   remotePath, null);
           }
         } else if (data == "ZIP" || data == "ZIPALL") {
-
-          data = (String) viewer.getProperty("string", "stateInfo", null);
+          data = viewer.getStateInfo();
           bytes = viewer.createZip(fileName, type, data, scripts);
         } else if (data == "HISTORY") {
           data = viewer.getSetHistory(Integer.MAX_VALUE);
@@ -14922,7 +14974,7 @@ public class ScriptEvaluator {
       break;
     case Token.trajectory:
       if (!isSyntaxCheck)
-        msg = viewer.getTrajectoryInfo();
+        msg = viewer.getTrajectoryState();
       break;
     case Token.historylevel:
       value = "" + commandHistoryLevelMax;
@@ -16484,7 +16536,7 @@ public class ScriptEvaluator {
           if (isSyntaxCheck || !(expressionResult instanceof BitSet)) {
             pts = new Point3f[] { pt };
           } else {
-            Atom[] atoms = viewer.getModelSet().atoms;
+            Atom[] atoms = viewer.modelSet.atoms;
             bs = (BitSet) expressionResult;
             pts = new Point3f[bs.cardinality()];
             for (int k = 0, j = bs.nextSetBit(0); j >= 0; j = bs
@@ -17248,7 +17300,7 @@ public class ScriptEvaluator {
           getToken(++i);
           if (!isSyntaxCheck) {
             sbCommand.append(" " + theToken.value);
-            Atom[] atoms = viewer.getModelSet().atoms;
+            Atom[] atoms = viewer.modelSet.atoms;
             viewer.autoCalculate(tokProperty);
             if (tokProperty != Token.color)
               for (int iAtom = atomCount; --iAtom >= 0;)
@@ -17474,7 +17526,7 @@ public class ScriptEvaluator {
         bs = atomExpressionAt(i);
         sbCommand.append(" ellipsoid ").append(Escape.escape(bs));
         int iAtom = bs.nextSetBit(0);
-        Atom[] atoms = viewer.getModelSet().atoms;
+        Atom[] atoms = viewer.modelSet.atoms;
         if (iAtom >= 0)
           propertyValue = atoms[iAtom].getEllipsoid();
         if (propertyValue == null)
@@ -18089,7 +18141,7 @@ public class ScriptEvaluator {
         surfaceObjectSeen = true;
         break;
       case Token.mrc:
-        addShapeProperty(propertyList, "fileType", "MrcBinary");
+        addShapeProperty(propertyList, "fileType", "Mrc");
         sbCommand.append(" mrc");
         continue;
       case Token.object:
@@ -18846,6 +18898,39 @@ public class ScriptEvaluator {
 
   private static int getPartialBondOrderFromString(String s) {
     return getPartialBondOrderFromFloatEncodedInt(getFloatEncodedInt(s));
+  }
+
+  public BitSet addHydrogensInline(BitSet bsAtoms, List<Atom> vConnections, Point3f[] pts) throws Exception {
+    int modelIndex = viewer.getAtomModelIndex(bsAtoms.nextSetBit(0));
+    if (modelIndex != viewer.modelSet.modelCount - 1)
+      return new BitSet();
+
+    // must be added to the LAST data set only
+
+    BitSet bsA = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+    viewer.setAppendNew(false);
+    // BitSet bsB = getAtomBits(Token.hydrogen, null);
+    // bsA.andNot(bsB);
+    int atomIndex = viewer.modelSet.getAtomCount();
+    int atomno = viewer.modelSet.getAtomCountInModel(modelIndex);
+    StringXBuilder sbConnect = new StringXBuilder();
+    for (int i = 0; i < vConnections.size(); i++) {
+      Atom a = vConnections.get(i);
+      sbConnect.append(";  connect 0 100 ")
+          .append("({" + (atomIndex++) + "}) ").append(
+              "({" + a.index + "}) group;");
+    }
+    StringXBuilder sb = new StringXBuilder();
+    sb.appendI(pts.length).append("\n").append(JmolConstants.ADD_HYDROGEN_TITLE)
+        .append("#noautobond").append("\n");
+    for (int i = 0; i < pts.length; i++)
+      sb.append("H ").appendF(pts[i].x).append(" ").appendF(pts[i].y).append(" ")
+          .appendF(pts[i].z).append(" - - - - ").appendI(++atomno).appendC('\n');
+    viewer.loadInlineScript(sb.toString(), '\n', true, null);
+    runScriptBuffer(sbConnect.toString(), null);
+    BitSet bsB = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+    bsB.andNot(bsA);
+    return bsB;
   }
 
 }

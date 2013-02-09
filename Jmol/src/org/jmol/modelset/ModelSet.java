@@ -27,7 +27,6 @@ package org.jmol.modelset;
 
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
-import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Matrix3f;
@@ -42,7 +41,6 @@ import org.jmol.util.Vector3f;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
-import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.Token;
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
@@ -137,20 +135,6 @@ import java.util.Map;
         return i;
       }
     return -1;
-  }
-
-  public String getTrajectoryInfo() {
-    String s = "";
-    if (trajectorySteps == null)
-      return "";
-    for (int i = modelCount; --i >= 0; )
-      if (models[i].selectedTrajectory >= 0) {
-        s = " or " + getModelNumberDotted(models[i].selectedTrajectory) + s;
-        i = models[i].trajectoryBaseIndex; //skip other trajectories
-      }
-    if (s.length() > 0)
-      s = "set trajectory {" + s.substring(4) + "}"; 
-    return s;
   }
 
   public BitSet getBitSetTrajectories() {
@@ -526,163 +510,6 @@ import java.util.Map;
    * methods for definining the state 
    * 
    ********************************************************/
-
-  public String getDefinedState(StringXBuilder sfunc, boolean isAll) {
-    int len = stateScripts.size();
-    if (len == 0)
-      return "";
-    
-    boolean haveDefs = false;    
-    StringXBuilder commands = new StringXBuilder();
-    String cmd;
-    for (int i = 0; i < len; i++) {
-      StateScript ss = stateScripts.get(i); 
-      if (ss.inDefinedStateBlock && (cmd = ss.toString()).length() > 0) {
-        commands.append("  ").append(cmd).append("\n");
-        haveDefs = true;
-      }
-    }
-
-    if (!haveDefs)
-      return "";
-    cmd = "";
-    if (isAll && sfunc != null) {
-      sfunc.append("  _setDefinedState;\n");
-      cmd = "function _setDefinedState() {\n\n";
-    }
-
-    if (sfunc != null)
-      commands.append("\n}\n\n");
-    return cmd + commands.toString();
-  }
-  
-  public String getState(StringXBuilder sfunc, boolean isAll,
-                         boolean withProteinStructure) {
-    StringXBuilder commands = new StringXBuilder();
-    if (isAll && sfunc != null) {
-      sfunc.append("  _setModelState;\n");
-      commands.append("function _setModelState() {\n");
-    }
-    String cmd;
-
-    // connections
-
-    if (isAll) {
-
-      int len = stateScripts.size();
-      for (int i = 0; i < len; i++) {
-        StateScript ss = stateScripts.get(i);
-        if (!ss.inDefinedStateBlock && (cmd = ss.toString()).length() > 0) {
-          commands.append("  ").append(cmd).append("\n");
-        }
-      }
-
-      StringXBuilder sb = new StringXBuilder();
-      for (int i = 0; i < bondCount; i++)
-        if (!models[bonds[i].atom1.modelIndex].isModelKit)
-          if (bonds[i].isHydrogen()
-              || (bonds[i].order & JmolEdge.BOND_NEW) != 0) {
-            Bond bond = bonds[i];
-            int index = bond.atom1.index;
-            if (bond.atom1.getGroup().isAdded(index))
-              index = -1 - index;
-            sb.appendI(index).appendC('\t').appendI(bond.atom2.index).appendC('\t')
-                .appendI(bond.order & ~JmolEdge.BOND_NEW).appendC('\t').appendF(
-                    bond.mad / 1000f).appendC('\t').appendF(bond.getEnergy())
-                .appendC('\t').append(
-                    JmolEdge.getBondOrderNameFromOrder(bond.order)).append(
-                    ";\n");
-          }
-      if (sb.length() > 0)
-        commands.append("data \"connect_atoms\"\n").appendSB(sb).append(
-            "end \"connect_atoms\";\n");
-      commands.append("\n");
-    }
-
-    // bond visibility
-
-    if (haveHiddenBonds) {
-      BondSet bs = new BondSet();
-      for (int i = bondCount; --i >= 0;)
-        if (bonds[i].mad != 0
-            && (bonds[i].shapeVisibilityFlags & Bond.myVisibilityFlag) == 0)
-          bs.set(i);
-      if (bs.isEmpty())
-        haveHiddenBonds = false;
-      else
-        commands.append("  hide ").append(Escape.escapeBs(bs, false)).append(
-            ";\n");
-    }
-
-    // shape construction
-
-    viewer.setModelVisibility();
-
-    // unnecessary. Removed in 11.5.35 -- oops!
-
-    if (withProteinStructure)
-      commands.append(getProteinStructureState(null, isAll, false, 0));
-
-    viewer.getShapeState(commands, isAll, Integer.MAX_VALUE);
-
-    if (isAll) {
-      boolean needOrientations = false;
-      for (int i = 0; i < modelCount; i++)
-        if (models[i].isJmolDataFrame) {
-          needOrientations = true;
-          break;
-        }
-      for (int i = 0; i < modelCount; i++) {
-        String fcmd = "  frame " + getModelNumberDotted(i);
-        String s = (String) getModelAuxiliaryInfoValue(i, "modelID");
-        if (s != null && !s.equals(getModelAuxiliaryInfoValue(i, "modelID0")))
-          commands.append(fcmd).append("; frame ID ").append(Escape.escapeStr(s))
-              .append(";\n");
-        String t = frameTitles[i];
-        if (t != null && t.length() > 0)
-          commands.append(fcmd).append("; frame title ").append(
-              Escape.escapeStr(t)).append(";\n");
-        if (needOrientations && models[i].orientation != null
-            && !isTrajectorySubFrame(i))
-          commands.append(fcmd).append("; ").append(
-              models[i].orientation.getMoveToText(false)).append(";\n");
-        if (models[i].frameDelay != 0 && !isTrajectorySubFrame(i))
-          commands.append(fcmd).append("; frame delay ").appendF(
-              models[i].frameDelay / 1000f).append(";\n");
-        if (models[i].unitCell != null) {
-          commands.append(fcmd).append("; unitcell ").append(
-              Escape.escape(models[i].unitCell.getUnitCellVectors()))
-              .append(";\n");
-          viewer.getShapeState(commands, isAll, JmolConstants.SHAPE_UCCAGE);
-        }
-      }
-
-      if (unitCells != null) {
-        for (int i = 0; i < modelCount; i++) {
-          SymmetryInterface symmetry = getUnitCell(i);
-          if (symmetry == null)
-            continue;
-          commands.append("  frame ").append(getModelNumberDotted(i));
-          Point3f pt = symmetry.getFractionalOffset();
-          if (pt != null)
-            commands.append("; set unitcell ").append(Escape.escapePt(pt));
-          pt = symmetry.getUnitCellMultiplier();
-          if (pt != null)
-            commands.append("; set unitcell ").append(Escape.escapePt(pt));
-          commands.append(";\n");
-        }
-        viewer.getShapeState(commands, isAll, JmolConstants.SHAPE_UCCAGE);
-//        if (viewer.getObjectMad(StateManager.OBJ_UNITCELL) == 0)
-  //        commands.append("  unitcell OFF;\n");
-      }
-      commands.append("  set fontScaling " + viewer.getFontScaling() + ";\n");
-      if (viewer.isModelKitMode())
-        commands.append("  set modelKitMode true;\n");
-    }
-    if (sfunc != null)
-      commands.append("\n}\n\n");
-    return commands.toString();
-  }
 
   private void includeAllRelatedFrames(BitSet bsModels) {
     int j;

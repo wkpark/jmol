@@ -5,7 +5,7 @@ import org.jmol.util.GData;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
 
-public interface JmolRepaintInterface {
+public interface JmolRepaintManager {
 
   void set(Viewer viewer, ShapeManager shapeManager);
 

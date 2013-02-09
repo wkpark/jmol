@@ -36,7 +36,6 @@ import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Point3fi;
-import org.jmol.util.StringXBuilder;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.script.Token;
@@ -48,9 +47,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-public class Measures extends Shape implements JmolMeasurementClient {
+public class Measures extends AtomShape implements JmolMeasurementClient {
 
-  private BitSet bsColixSet;
   private BitSet bsSelected;
   private String strFormat;
   private boolean mustBeConnected = false;
@@ -58,13 +56,10 @@ public class Measures extends Shape implements JmolMeasurementClient {
   private RadiusData radiusData;
   private Boolean intramolecular;
 
-  private Atom[] atoms;
-
   public int measurementCount = 0;
   public final List<Measurement> measurements = new ArrayList<Measurement>();
   public MeasurementPending measurementPending;
   
-  public short mad = (short)-1;
   public short colix; // default to none in order to contrast with background
   
   public JmolFont font3d;
@@ -84,7 +79,6 @@ public class Measures extends Shape implements JmolMeasurementClient {
   
   @Override
   public void initShape() {
-    super.initShape();
     font3d = gdata.getFont3D(JmolConstants.MEASURE_DEFAULT_FONTSIZE);
   }
 
@@ -555,7 +549,8 @@ public class Measures extends Shape implements JmolMeasurementClient {
     return info;
   }
 
-  private String getInfoAsString(int index) {
+  @Override
+  public String getInfoAsString(int index) {
     return measurements.get(index).getInfoAsString(null);
   }
   
@@ -582,62 +577,10 @@ public class Measures extends Shape implements JmolMeasurementClient {
     }
   }
   
- @Override
-public String getShapeState() {
-    StringXBuilder commands = new StringXBuilder();
-    appendCmd(commands, "measures delete");
-    for (int i = 0; i < measurementCount; i++)
-      appendCmd(commands, getState(i));
-    appendCmd(commands, "select *; set measures " + viewer.getMeasureDistanceUnits());
-    appendCmd(commands, getFontCommand("measures", font3d));
-    int nHidden = 0;
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    BitSet bs = BitSetUtil.newBitSet(measurementCount);
-    for (int i = 0; i < measurementCount; i++) {
-      Measurement m = measurements.get(i);
-      if (m.isHidden) {
-        nHidden++;
-        bs.set(i);
-      }
-      if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp, i, getColorCommandUnk("measure", m.colix));
-      if (m.getStrFormat() != null)
-        setStateInfo(temp, i, "measure "
-            + Escape.escapeStr(m.getStrFormat()));
-    }
-    if (nHidden > 0)
-      if (nHidden == measurementCount)
-        appendCmd(commands, "measures off; # lines and numbers off");
-      else
-        for (int i = 0; i < measurementCount; i++)
-          if (bs.get(i))
-            setStateInfo(temp, i, "measure off");
-    if (defaultTickInfo != null) {
-      commands.append(" measure ");
-      FontLineShape.addTickInfo(commands, defaultTickInfo, true);
-      commands.append(";\n");
-    }
-    if (mad >= 0)
-      commands.append(" set measurements " + (mad / 2000f)).append(";\n");
-    String s = getShapeCommandsSel(temp, null, "select measures");
-    if (s != null && s.length() != 0) {
-      commands.append(s);
-      appendCmd(commands, "select measures ({null})");
-    }
-    
-    return commands.toString();
+  @Override
+  public String getShapeState() {
+    return viewer.getMeasurementState(this, measurements, 
+        measurementCount, font3d, defaultTickInfo);
   }
   
-  private String getState(int index) {
-    Measurement m = measurements.get(index);
-    int count = m.getCount();
-    StringXBuilder sb = new StringXBuilder().append("measure");
-    TickInfo tickInfo = m.getTickInfo();
-    if (tickInfo != null)
-      FontLineShape.addTickInfo(sb, tickInfo, true);
-    for (int i = 1; i <= count; i++)
-      sb.append(" ").append(m.getLabel(i, true, true));
-    sb.append("; # " + getInfoAsString(index));
-    return sb.toString();
-  }
 }

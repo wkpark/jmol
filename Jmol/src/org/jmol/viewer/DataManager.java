@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.constant.EnumVdw;
-import org.jmol.modelset.AtomCollection;
 import org.jmol.script.Token;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
@@ -48,7 +47,7 @@ import org.jmol.util.StringXBuilder;
 
 class DataManager {
 
-  private Map<String, Object[]> dataValues = new Hashtable<String, Object[]>();
+  Map<String, Object[]> dataValues = new Hashtable<String, Object[]>();
 
   Viewer viewer;
   DataManager(Viewer viewer) {
@@ -252,67 +251,7 @@ class DataManager {
     }    
   }
 
-  void getDataState(StringXBuilder state, StringXBuilder sfunc, String atomProps) {
-    if (dataValues == null)
-      return;
-    Iterator<String> e = dataValues.keySet().iterator();
-    StringXBuilder sb = new StringXBuilder();
-    int n = 0;
-    if (atomProps.length() > 0) {
-      n = 1;
-      sb.append(atomProps);
-    }
-    while (e.hasNext()) {
-      String name = e.next();
-      if (name.indexOf("property_") == 0) {
-        n++;
-        Object[] obj = dataValues.get(name);
-        Object data = obj[1];
-        if (data != null && ((Integer)obj[3]).intValue() == 1) {
-          viewer.getAtomicPropertyState(sb, AtomCollection.TAINT_MAX, 
-              (BitSet) obj[2], 
-              name, (float[]) data);
-          sb.append("\n");
-        } else {
-          sb.append("\n").append(Escape.encapsulateData(name, data, 0));//j2s issue?
-        }
-      } else if (name.indexOf("data2d") == 0) {
-        Object[] obj = dataValues.get(name);
-        Object data = obj[1];
-        if (data != null && ((Integer)obj[3]).intValue() == 2) {
-          n++;
-          sb.append("\n").append(Escape.encapsulateData(name, data, 2));
-        }
-      } else if (name.indexOf("data3d") == 0) {
-        Object[] obj = dataValues.get(name);
-        Object data = obj[1];
-        if (data != null && ((Integer)obj[3]).intValue() == 3) {
-          n++;
-          sb.append("\n").append(Escape.encapsulateData(name, data, 3));
-        }
-      }
-    }
-    
-    if (userVdws != null) {
-      String info = getDefaultVdwNameOrData(0, EnumVdw.USER, bsUserVdws);
-      if (info.length() > 0) {
-        n++;
-        sb.append(info);
-      }
-    }
-    
-    if (n == 0)
-      return;
-    if (sfunc != null)
-      state.append("function _setDataState() {\n");
-    state.appendSB(sb);  
-    if (sfunc != null) {
-      sfunc.append("  _setDataState;\n");
-      state.append("}\n\n");
-    }
-  }
-
-  private float[] userVdws;
+  float[] userVdws;
   int[] userVdwMars;
   EnumVdw defaultVdw = EnumVdw.JMOL;
   BitSet bsUserVdws;

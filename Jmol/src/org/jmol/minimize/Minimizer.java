@@ -303,8 +303,8 @@ public class Minimizer implements MinimizerInterface {
 
     Logger.info(GT._("{0} atoms will be minimized.", "" + atomCount));
     Logger.info("minimize: getting bonds...");
-    bonds = viewer.getModelSet().getBonds();
-    rawBondCount = viewer.getModelSet().getBondCount();
+    bonds = viewer.modelSet.bonds;
+    rawBondCount = viewer.modelSet.bondCount;
     getBonds();
     Logger.info("minimize: getting angles...");
     getAngles();

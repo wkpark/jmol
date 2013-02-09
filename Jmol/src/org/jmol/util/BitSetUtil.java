@@ -23,6 +23,8 @@
  */
 package org.jmol.util;
 
+import java.util.Map;
+
 
 final public class BitSetUtil {
 
@@ -187,6 +189,15 @@ final public class BitSetUtil {
     for (int i = bs0.nextSetBit(0); i >= pos; i = bs.nextSetBit(i + 1))
       bs.set(i + offset);
     return bs;
+  }
+
+  public static void setMapBitSet(Map<String, BitSet> ht, int i1, int i2, String key) {
+    BitSet bs;
+    if (ht.containsKey(key))
+      bs = ht.get(key);
+    else
+      ht.put(key, bs = new BitSet());
+    bs.setBits(i1, i2 + 1);
   }
 
   

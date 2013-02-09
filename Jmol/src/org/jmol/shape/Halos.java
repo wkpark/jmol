@@ -25,11 +25,9 @@
 
 package org.jmol.shape;
 
-
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 public class Halos extends AtomShape {
@@ -38,22 +36,22 @@ public class Halos extends AtomShape {
 
   public BitSet bsHighlight;
   public short colixHighlight = Colix.RED;
-  
+
   void initState() {
     Logger.debug("init halos");
     translucentAllowed = false;
   }
-  
- @Override
-public void setProperty(String propertyName, Object value, BitSet bs) {
+
+  @Override
+  public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("translucency" == propertyName)
       return;
     if ("argbSelection" == propertyName) {
-      colixSelection = Colix.getColix(((Integer)value).intValue());
+      colixSelection = Colix.getColix(((Integer) value).intValue());
       return;
     }
     if ("argbHighlight" == propertyName) {
-      colixHighlight = Colix.getColix(((Integer)value).intValue());
+      colixHighlight = Colix.getColix(((Integer) value).intValue());
       return;
     }
     if ("highlight" == propertyName) {
@@ -65,12 +63,12 @@ public void setProperty(String propertyName, Object value, BitSet bs) {
       BitSetUtil.deleteBits(bsHighlight, bs);
       // pass through to AtomShape
     }
-    
+
     super.setProperty(propertyName, value, bs);
   }
 
- @Override
-public void setVisibilityFlags(BitSet bs) {
+  @Override
+  public void setVisibilityFlags(BitSet bs) {
     BitSet bsSelected = (viewer.getSelectionHaloEnabled(false) ? viewer
         .getSelectionSet(false) : null);
     for (int i = atomCount; --i >= 0;) {
@@ -79,17 +77,10 @@ public void setVisibilityFlags(BitSet bs) {
       atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
     }
   }
-  
- @Override
-public String getShapeState() {
-    String state = super.getShapeState()
-        + (colixSelection == Colix.USE_PALETTE ? ""
-            : colixSelection == Colix.INHERIT_ALL ? "  color SelectionHalos NONE;\n"
-                : getColorCommandUnk("selectionHalos", colixSelection) + ";\n");
-    if (bsHighlight != null)
-      state += "  set highlight " + Escape.escape(bsHighlight) + "; "
-          + getColorCommandUnk("highlight", colixHighlight) + ";\n";
-    return state;
+
+  @Override
+  public String getShapeState() {
+    return viewer.getShapeState(this);
   }
- 
+
 }

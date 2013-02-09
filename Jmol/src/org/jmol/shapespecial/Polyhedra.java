@@ -624,6 +624,8 @@ public class Polyhedra extends AtomShape {
 
   @Override
   public String getShapeState() {
+    if (polyhedronCount == 0)
+      return "";
     StringXBuilder s = new StringXBuilder();
     for (int i = 0; i < polyhedronCount; i++)
       s.append(polyhedrons[i].getState());
@@ -631,7 +633,7 @@ public class Polyhedra extends AtomShape {
       appendCmd(s, "polyhedra frontedges");
     else if (drawEdges == EDGES_ALL)
       appendCmd(s, "polyhedra edges");
-    s.append(super.getShapeState());
+    s.append(viewer.getAtomShapeState(this));
     return s.toString();
   }
 }

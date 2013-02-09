@@ -12,7 +12,7 @@ import org.jmol.util.Point3f;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 
-public class Object2dShape extends Shape {
+public abstract class Object2dShape extends Shape {
 
   // Echo, Hover, JmolImage
 
@@ -254,6 +254,5 @@ public class Object2dShape extends Shape {
       viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
     return false;
   }
-
 
 }

@@ -26,8 +26,6 @@ package org.jmol.shape;
 
 import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
-import org.jmol.util.Escape;
-import org.jmol.util.StringXBuilder;
 import org.jmol.util.TextFormat;
 
 import java.util.Iterator;
@@ -195,15 +193,6 @@ public class Echo extends TextShape {
 
   @Override
   public String getShapeState() {
-    StringXBuilder s = new StringXBuilder();
-    s.append("\n  set echo off;\n");
-    Iterator<Text> e = objects.values().iterator();
-    while (e.hasNext()) {
-      Text t = e.next();
-      s.append(t.getState());
-      if (t.hidden)
-        s.append("  set echo ID ").append(Escape.escapeStr(t.target)).append(" hidden;\n");
-    }
-    return s.toString();
+    return viewer.getShapeState(this);
   }
 }

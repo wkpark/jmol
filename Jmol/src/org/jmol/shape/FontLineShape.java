@@ -27,9 +27,6 @@ package org.jmol.shape;
 
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.BitSet;
-import org.jmol.util.Escape;
-import org.jmol.util.StringXBuilder;
-
 
 public abstract class FontLineShape extends FontShape {
 
@@ -59,43 +56,7 @@ public abstract class FontLineShape extends FontShape {
 
   @Override
   public String getShapeState() {
-    String s = super.getShapeState();
-    if (tickInfos == null)
-      return s;
-    StringXBuilder sb = new StringXBuilder();
-    sb.append(s);
-    if (tickInfos[0] != null)
-      appendTickInfo(sb, 0);
-    if (tickInfos[1] != null)
-      appendTickInfo(sb, 1);
-    if (tickInfos[2] != null)
-      appendTickInfo(sb, 2);
-    if (tickInfos[3] != null)
-      appendTickInfo(sb, 3);
-    if (s.indexOf(" off") >= 0)
-      sb.append("  " + myType + " off;\n");
-    return sb.toString();
-  }
-  
-  private void appendTickInfo(StringXBuilder sb, int i) {
-    sb.append("  ");
-    sb.append(myType);
-    addTickInfo(sb, tickInfos[i], false);
-    sb.append(";\n");
-  }
-
-  public static void addTickInfo(StringXBuilder sb, TickInfo tickInfo, boolean addFirst) {
-    sb.append(" ticks ").append(tickInfo.type).append(" ").append(Escape.escapePt(tickInfo.ticks));
-    boolean isUnitCell = (tickInfo.scale != null && Float.isNaN(tickInfo.scale.x));
-    if (isUnitCell)
-      sb.append(" UNITCELL");
-    if (tickInfo.tickLabelFormats != null)
-      sb.append(" format ").append(Escape.escapeStrA(tickInfo.tickLabelFormats, false));
-    if (!isUnitCell && tickInfo.scale != null)
-      sb.append(" scale ").append(Escape.escapePt(tickInfo.scale));
-    if (addFirst && !Float.isNaN(tickInfo.first) && tickInfo.first != 0)
-      sb.append(" first ").appendF(tickInfo.first);
-    if (tickInfo.reference != null) // not implemented
-      sb.append(" point ").append(Escape.escapePt(tickInfo.reference)); 
+    String s = viewer.getFontState(myType, font3d);
+    return (tickInfos == null ? s : viewer.getFontLineShapeState(s, myType, tickInfos));
   }
 }

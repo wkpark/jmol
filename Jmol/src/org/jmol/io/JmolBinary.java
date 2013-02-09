@@ -136,13 +136,13 @@ public class JmolBinary {
       if (line.indexOf(PMESH_BINARY_MAGIC_NUMBER) == 0)
         return "Pmesh";
       if (line.indexOf(DELPHI_BINARY_MAGIC_NUMBER) == 0)
-        return "DELPHI";
+        return "DelPhi";
       if (line.indexOf("MAP ") == 208)
-        return "MRC";
+        return "Mrc";
       if (line.length() > 37 && (line.charAt(36) == 0 && line.charAt(37) == 100 
           || line.charAt(36) == 0 && line.charAt(37) == 100)) { 
            // header19 (short)100
-          return "DSN6";
+          return "Dsn6";
       }
     }
     

@@ -25,15 +25,14 @@
 
 package org.jmol.shapebio;
 
-import java.util.Map;
-
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Group;
 import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.NucleicPolymer;
-import org.jmol.shape.Shape;
+import org.jmol.shape.AtomShape;
 import org.jmol.shape.Mesh;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
@@ -42,7 +41,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Vector3f;
 import org.jmol.viewer.JmolConstants;
 
-public class BioShape {
+public class BioShape extends AtomShape {
 
   public int modelIndex;
   public int modelVisibilityFlags = 0;
@@ -54,18 +53,14 @@ public class BioShape {
   public Mesh[] meshes;
   public boolean[] meshReady;
 
-  public short[] mads;
-  public short[] colixes;
   public short[] colixesBack;
-  byte[] paletteIDs;
 
-  BitSet bsColixSet;
-  BitSet bsSizeSet;
-  BitSet bsSizeDefault = new BitSet();
-  boolean isActive;
-  
-  public int monomerCount;
   public Monomer[] monomers;
+
+  @Override
+  public Group[] getMonomers() {
+    return monomers;
+  }
 
   public Vector3f[] wingVectors;
   int[] leadAtomIndices;
@@ -75,6 +70,7 @@ public class BioShape {
     this.modelIndex = modelIndex;
     this.bioPolymer = bioPolymer;
     isActive = shape.isActive;
+    bsSizeDefault = new BitSet();
     monomerCount = bioPolymer.monomerCount;
     if (monomerCount > 0) {
       colixes = new short[monomerCount];
@@ -186,7 +182,8 @@ public class BioShape {
     return (short)(Math.sqrt(bFactor100/eightPiSquared100) * 1000);
   }
 
-  void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BitSet bsNot) {
+  @Override
+  public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BitSet bsNot) {
     bioPolymer.findNearestAtomIndex(xMouse, yMouse, closest, mads,
         shape.myVisibilityFlag, bsNot);
   }
@@ -336,29 +333,8 @@ public class BioShape {
     }
   }
 
-  void setShapeState(Map<String, BitSet> temp,
-                     Map<String, BitSet> temp2) {
-    if (!isActive || bsSizeSet == null && bsColixSet == null)
-      return;
-    String type = JmolConstants.shapeClassBases[shape.shapeID];
-    for (int i = 0; i < monomerCount; i++) {
-      int atomIndex1 = monomers[i].firstAtomIndex;
-      int atomIndex2 = monomers[i].lastAtomIndex;
-      if (bsSizeSet != null && (bsSizeSet.get(i) 
-          || bsColixSet != null && bsColixSet.get(i))) {//shapes MUST have been set with a size
-        if (bsSizeDefault.get(i))
-          Shape.setStateInfo(temp, atomIndex1, atomIndex2, type + (bsSizeSet.get(i) ? " on" : " off"));
-        else
-          Shape.setStateInfo(temp, atomIndex1, atomIndex2, type + " "
-              + (mads[i] / 2000f));
-      }
-      if (bsColixSet != null && bsColixSet.get(i))
-        Shape.setStateInfo(temp2, atomIndex1, atomIndex2, shape
-            .getColorCommand(type, paletteIDs[i], colixes[i]));
-    }
-  }  
-
- void setModelClickability() {
+  @Override
+  public void setModelClickability() {
     if (!isActive || wingVectors == null)
       return;
     boolean isNucleicPolymer = bioPolymer instanceof NucleicPolymer;

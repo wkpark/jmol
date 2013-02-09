@@ -30,9 +30,11 @@ import java.util.Iterator;
 import java.util.Map;
 
 
+import org.jmol.api.JmolStateCreator;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
 import org.jmol.util.Escape;
 import org.jmol.util.Matrix3f;
@@ -40,7 +42,6 @@ import org.jmol.util.Point3f;
 import org.jmol.util.Quadric;
 import org.jmol.util.StringXBuilder;
 import org.jmol.util.Vector3f;
-import org.jmol.viewer.StateManager;
 
 
 public class Ellipsoids extends AtomShape {
@@ -279,7 +280,7 @@ public class Ellipsoids extends AtomShape {
         v1.scale(ellipsoid.lengths[i]);
         sb.append(" ").append(Escape.escapePt(v1));
       }
-      sb.append(" " + getColorCommandUnk("", ellipsoid.colix));
+      sb.append(" " + getColorCommandUnk("", ellipsoid.colix, translucentAllowed));
       if (!ellipsoid.isOn)
         sb.append(" off");
       sb.append(";\n");
@@ -289,22 +290,25 @@ public class Ellipsoids extends AtomShape {
   private void getStateAtoms(StringXBuilder sb) {
     if (madset == null)
       return;
+    JmolStateCreator sc = viewer.getStateCreator();
+    if (sc == null)
+      return;
     for (int ii = 0; ii < 3; ii++) {
       if (madset[ii] == null)
         continue;
-      StateManager.appendCmd(sb, "Ellipsoids set " + (ii + 1) + "\n");
+      appendCmd(sb, "Ellipsoids set " + (ii + 1) + "\n");
       Map<String, BitSet> temp = new Hashtable<String, BitSet>();
       Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();
       if (bsSizeSet != null)
         for (int i = bsSizeSet.nextSetBit(0); i >= 0; i = bsSizeSet
             .nextSetBit(i + 1))
-          setStateInfo(temp, i, "Ellipsoids " + madset[ii][i]);
+          BitSetUtil.setMapBitSet(temp, i, i, "Ellipsoids " + madset[ii][i]);
       if (bsColixSet != null && colixset[ii] != null)
         for (int i = bsColixSet.nextSetBit(0); i >= 0; i = bsColixSet
             .nextSetBit(i + 1))
-          setStateInfo(temp2, i, getColorCommand("Ellipsoids",
-              paletteIDset[ii][i], colixset[ii][i]));
-      sb.append(getShapeCommands(temp, temp2));
+          BitSetUtil.setMapBitSet(temp2, i, i, getColorCommand("Ellipsoids",
+              paletteIDset[ii][i], colixset[ii][i], translucentAllowed));
+      sb.append(sc.getCommands(temp, temp2, "select"));
     }
   }
 

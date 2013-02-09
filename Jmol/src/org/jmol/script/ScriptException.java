@@ -25,37 +25,20 @@
 
 package org.jmol.script;
 
-import org.jmol.util.Logger;
+import org.jmol.api.JmolScriptEvaluator;
 
 public class ScriptException extends Exception {
 
-  protected final ScriptEvaluator eval;
-  protected String message;
-  private String untranslated;
+  protected final JmolScriptEvaluator eval;
+  String message;
+  String untranslated;
 
-  ScriptException(ScriptEvaluator scriptEvaluator, String msg, String untranslated, boolean isError) {
+  ScriptException(JmolScriptEvaluator scriptEvaluator, String msg, String untranslated, boolean isError) {
     eval = scriptEvaluator;
     message = msg;
     if (!isError) // ScriptInterruption
       return;
-    eval.errorType = msg;
-    eval.iCommandError = eval.pc;
-    this.untranslated = (untranslated == null ? msg : untranslated);
-    if (message == null) {
-      message = "";
-      return;
-    }
-    String s = eval.getScriptContext().getContextTrace(null, true).toString();
-    while (eval.thisContext != null && !eval.thisContext.isTryCatch)
-      eval.popContext(false, false);
-    message += s;
-    this.untranslated += s;
-    if (eval.thisContext != null || eval.isSyntaxCheck
-        || msg.indexOf("file recognized as a script file:") >= 0)
-      return;
-    Logger.error("eval ERROR: " + toString());
-    if (eval.viewer.autoExit)
-      eval.viewer.exitJmol();
+    eval.setException(this, msg, untranslated);
   }
 
   protected String getErrorMessageUntranslated() {

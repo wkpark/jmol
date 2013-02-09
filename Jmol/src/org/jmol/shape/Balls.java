@@ -25,16 +25,12 @@
 
 package org.jmol.shape;
 
-import java.util.Map;
-
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.util.BitSet;
 import org.jmol.util.Colix;
 import org.jmol.viewer.JmolConstants;
-
-import java.util.Hashtable;
 
 public class Balls extends AtomShape {
   
@@ -156,24 +152,9 @@ public void setVisibilityFlags(BitSet bs) {
     }
   }
 
- @Override
-public String getShapeState() {
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    float r = 0;
-    for (int i = 0; i < atomCount; i++) {
-      if (bsSizeSet != null && bsSizeSet.get(i)) {
-        if ((r = atoms[i].madAtom) < 0)
-          setStateInfo(temp, i, "Spacefill on");
-        else
-          setStateInfo(temp, i, "Spacefill " + (r / 2000f));
-      }
-      if (bsColixSet != null && bsColixSet.get(i)) {
-        byte pid = atoms[i].getPaletteID();
-        if (pid != EnumPalette.CPK.id || atoms[i].isTranslucent())
-          setStateInfo(temp, i, getColorCommand("atoms", pid, atoms[i].getColix()));
-      }
-    }
-    return getShapeCommands(temp, null);
+  @Override
+  public String getShapeState() {
+    return viewer.getShapeState(this);
   }
   
   /*

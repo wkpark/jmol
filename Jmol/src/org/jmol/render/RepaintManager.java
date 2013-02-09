@@ -24,7 +24,7 @@
 package org.jmol.render;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.api.JmolRepaintInterface;
+import org.jmol.api.JmolRepaintManager;
 import org.jmol.modelset.ModelSet;
 import org.jmol.shape.Shape;
 import org.jmol.util.BitSet;
@@ -35,7 +35,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
 
-public class RepaintManager implements JmolRepaintInterface {
+public class RepaintManager implements JmolRepaintManager {
 
   private Viewer viewer;
   private ShapeManager shapeManager;

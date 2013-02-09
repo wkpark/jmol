@@ -35,7 +35,7 @@ class ModelManager {
   private final Viewer viewer;
   private ModelSet modelSet;
 
-  private String fullPathName;
+  private String modelSetPathName;
   private String fileName;
 
   ModelManager(Viewer viewer) {
@@ -43,7 +43,7 @@ class ModelManager {
   }
 
   ModelSet zap() {
-    fullPathName = fileName = null;
+    modelSetPathName = fileName = null;
     return (modelSet = (new ModelLoader(viewer, viewer.getZapName(), null, null, null, null)).getModelSet());
   }
   
@@ -52,7 +52,7 @@ class ModelManager {
   }
 
   String getModelSetPathName() {
-    return fullPathName;
+    return modelSetPathName;
   }
 
   ModelSet createModelSet(String fullPathName, String fileName,
@@ -60,7 +60,7 @@ class ModelManager {
                           BitSet bsNew, boolean isAppend) {
     String modelSetName = null;
     if (isAppend) {
-      modelSetName = modelSet.getModelSetName();
+      modelSetName = modelSet.modelSetName;
       if (modelSetName.equals("zapped"))
         modelSetName = null;
       else if (modelSetName.indexOf(" (modified)") < 0)
@@ -68,7 +68,7 @@ class ModelManager {
     } else if (atomSetCollection == null) {
       return zap();
     } else {
-      this.fullPathName = fullPathName;
+      this.modelSetPathName = fullPathName;
       this.fileName = fileName;
     }
     if (atomSetCollection != null) {

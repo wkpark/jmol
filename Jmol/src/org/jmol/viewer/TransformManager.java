@@ -25,8 +25,8 @@ package org.jmol.viewer;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolNavigatorInterface;
+import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.constant.EnumStereoMode;
-import org.jmol.script.ScriptEvaluator;
 import org.jmol.script.Token;
 import org.jmol.thread.MoveThread;
 import org.jmol.thread.MoveToThread;
@@ -141,103 +141,6 @@ public class TransformManager {
     resetNavigationPoint(true);
   }
 
-  String getState(StringXBuilder sfunc) {
-    StringXBuilder commands = new StringXBuilder();
-    if (sfunc != null) {
-      sfunc.append("  _setPerspectiveState;\n");
-      commands.append("function _setPerspectiveState() {\n");
-    }
-    StateManager
-        .appendCmd(commands, "set perspectiveModel " + perspectiveModel);
-    StateManager.appendCmd(commands, "set scaleAngstromsPerInch "
-        + scale3DAngstromsPerInch);
-    StateManager
-        .appendCmd(commands, "set perspectiveDepth " + perspectiveDepth);
-    StateManager.appendCmd(commands, "set visualRange " + visualRange);
-    if (!isWindowCentered())
-      StateManager.appendCmd(commands, "set windowCentered false");
-    StateManager.appendCmd(commands, "set cameraDepth " + cameraDepth);
-    if (mode == MODE_NAVIGATION)
-      StateManager.appendCmd(commands, "set navigationMode true");
-    StateManager.appendCmd(commands, viewer.getBoundBoxCommand(false));
-    StateManager.appendCmd(commands, "center "
-        + Escape.escapePt(fixedRotationCenter));
-    commands.append(viewer.getSavedOrienationText(null));
-
-    StateManager.appendCmd(commands, getMoveToText(0, false));
-    if (stereoMode != EnumStereoMode.NONE)
-      StateManager.appendCmd(commands, "stereo "
-          + (stereoColors == null ? stereoMode.getName() : Escape
-              .escapeColor(stereoColors[0])
-              + " " + Escape.escapeColor(stereoColors[1])) + " "
-          + stereoDegrees);
-    if (mode != MODE_NAVIGATION && !zoomEnabled)
-      StateManager.appendCmd(commands, "zoom off");
-    commands.append("  slab ").appendI(slabPercentSetting).append(";depth ")
-        .appendI(depthPercentSetting).append(
-            slabEnabled && mode != MODE_NAVIGATION ? ";slab on" : "").append(
-            ";\n");
-    commands.append("  set slabRange ").appendF(slabRange).append(";\n");
-    if (zShadeEnabled)
-      commands.append("  set zShade;\n");
-    try {
-      if (zSlabPoint != null)
-        commands.append("  set zSlab ").append(Escape.escapePt(zSlabPoint))
-            .append(";\n");
-    } catch (Exception e) {
-      // don't care
-    }
-    if (slabPlane != null)
-      commands.append("  slab plane ").append(Escape.escape(slabPlane)).append(
-          ";\n");
-    if (depthPlane != null)
-      commands.append("  depth plane ").append(Escape.escape(depthPlane))
-          .append(";\n");
-    commands.append(getSpinState(true)).append("\n");
-    if (viewer.modelSetHasVibrationVectors() && vibrationOn)
-      StateManager.appendCmd(commands, "set vibrationPeriod " + vibrationPeriod
-          + ";vibration on");
-    if (mode == MODE_NAVIGATION) {
-      commands.append(getNavigationState());
-      if (depthPlane != null || slabPlane != null)
-        commands.append("  slab on;\n");
-    }
-    if (sfunc != null)
-      commands.append("}\n\n");
-    return commands.toString();
-  }
-
-  /**
-   * @param isAll
-   * @return spin state
-   */
-  String getSpinState(boolean isAll) {
-    String s = "  set spinX " + (int) spinX + "; set spinY " + (int) spinY
-        + "; set spinZ " + (int) spinZ + "; set spinFps " + (int) spinFps + ";";
-    if (!Float.isNaN(navFps))
-      s += "  set navX " + (int) navX + "; set navY " + (int) navY
-          + "; set navZ " + (int) navZ + "; set navFps " + (int) navFps + ";";
-    if (navOn)
-      s += " navigation on;";
-    if (!spinOn)
-      return s;
-    String prefix = (isSpinSelected ? "\n  select "
-        + Escape.escape(viewer.getSelectionSet(false)) + ";\n  rotateSelected"
-        : "\n ");
-    if (isSpinInternal) {
-      Point3f pt = Point3f.newP(internalRotationCenter);
-      pt.sub(rotationAxis);
-      s += prefix + " spin " + rotationRate + " "
-          + Escape.escapePt(internalRotationCenter) + " " + Escape.escapePt(pt);
-    } else if (isSpinFixed) {
-      s += prefix + " spin axisangle " + Escape.escapePt(rotationAxis) + " "
-          + rotationRate;
-    } else {
-      s += " spin on";
-    }
-    return s + ";";
-  }
-
   protected boolean haveNotifiedNaN = false;
 
   final static int DEFAULT_SPIN_Y = 30;
@@ -269,7 +172,7 @@ public class TransformManager {
   public final AxisAngle4f fixedRotationAxis = new AxisAngle4f();
   public final AxisAngle4f internalRotationAxis = new AxisAngle4f();
   protected Vector3f internalTranslation;
-  private final Point3f internalRotationCenter = Point3f.new3(0, 0, 0);
+  final Point3f internalRotationCenter = Point3f.new3(0, 0, 0);
   private float internalRotationAngle = 0;
 
   /* ***************************************************************
@@ -427,7 +330,7 @@ public class TransformManager {
    * **************************************************************
    */
 
-  boolean rotateAxisAngleAtCenter(ScriptEvaluator eval, Point3f rotCenter,
+  boolean rotateAxisAngleAtCenter(JmolScriptEvaluator eval, Point3f rotCenter,
                                   Vector3f rotAxis, float degreesPerSecond,
                                   float endDegrees, boolean isSpin,
                                   BitSet bsAtoms) {
@@ -482,7 +385,7 @@ public class TransformManager {
    * ROTATIONS**************************************************************
    */
 
-  boolean rotateAboutPointsInternal(ScriptEvaluator eval, Point3f point1,
+  boolean rotateAboutPointsInternal(JmolScriptEvaluator eval, Point3f point1,
                                     Point3f point2, float degreesPerSecond,
                                     float endDegrees, boolean isClockwise,
                                     boolean isSpin, BitSet bsAtoms,
@@ -1699,7 +1602,7 @@ public class TransformManager {
    * move/moveTo support
    ****************************************************************/
 
-  void move(ScriptEvaluator eval, Vector3f dRot, float dZoom, Vector3f dTrans,
+  void move(JmolScriptEvaluator eval, Vector3f dRot, float dZoom, Vector3f dTrans,
             float dSlab, float floatSecondsTotal, int fps) {
 
     MoveThread motion = new MoveThread(this, viewer);
@@ -1730,7 +1633,7 @@ public class TransformManager {
   public MoveToThread motion;
 
   // from Viewer
-  void moveTo(ScriptEvaluator eval, float floatSecondsTotal, Point3f center,
+  void moveTo(JmolScriptEvaluator eval, float floatSecondsTotal, Point3f center,
               Tuple3f rotAxis, float degrees, Matrix3f matrixEnd, float zoom,
               float xTrans, float yTrans, float newRotationRadius,
               Point3f navCenter, float xNav, float yNav, float navDepth) {
@@ -2015,7 +1918,7 @@ public class TransformManager {
     setSpin(null, false, Float.MAX_VALUE, null, null, false);
   }
 
-  private void setSpin(ScriptEvaluator eval, boolean spinOn, float endDegrees,
+  private void setSpin(JmolScriptEvaluator eval, boolean spinOn, float endDegrees,
                        List<Point3f> endPositions, BitSet bsAtoms,
                        boolean isGesture) {
     if (navOn && spinOn)
@@ -2067,7 +1970,7 @@ public class TransformManager {
   }
 
   boolean vibrationOn;
-  private float vibrationPeriod;
+  float vibrationPeriod;
   public int vibrationPeriodMs;
   private float vibrationAmplitude;
   private float vibrationRadians;
@@ -2618,7 +2521,7 @@ public class TransformManager {
     return true;
   }
 
-  public void navigateList(ScriptEvaluator eval, List<Object[]> list) {
+  public void navigateList(JmolScriptEvaluator eval, List<Object[]> list) {
     if (getNav())
       nav.navigateList(eval, list);
   }

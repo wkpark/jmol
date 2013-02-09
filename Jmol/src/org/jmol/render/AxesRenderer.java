@@ -75,7 +75,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     }
     font3d = g3d.getFont3DScaled(axes.font3d, imageFontScaling);
 
-    SymmetryInterface[] cellInfos = modelSet.getCellInfos();
+    SymmetryInterface[] cellInfos = modelSet.unitCells;
 
     int modelIndex = viewer.getCurrentModelIndex();
     // includes check here for background model present

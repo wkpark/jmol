@@ -55,23 +55,13 @@ public class Bond extends JmolEdge {
       this(bs);
       associatedAtoms = atoms;
     }
-
   }
 
-  Atom atom1;
-  Atom atom2;
+  public Atom atom1;
+  public Atom atom2;
 
-  short mad;
-  public short getMad() {
-    return mad;
-  }
-
-
-  short colix;
-  
-  public short getColix() {
-    return colix;
-  }
+  public short mad;
+  public short colix;
   
   public Bond(Atom atom1, Atom atom2, int order,
               short mad, short colix) {
@@ -87,7 +77,7 @@ public class Bond extends JmolEdge {
     setShapeVisibility(mad != 0);
   }
 
-  int shapeVisibilityFlags;
+  public int shapeVisibilityFlags;
   
   public void setShapeVisibilityFlags(int shapeVisibilityFlags) {
     this.shapeVisibilityFlags = shapeVisibilityFlags;
@@ -110,7 +100,7 @@ public class Bond extends JmolEdge {
   }
             
   
-  final static int myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_STICKS);
+  public final static int myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_STICKS);
 
   public String getIdentity() {
     return (index + 1) + " "+ getOrderNumberAsString() + " " + atom1.getInfo() + " -- "
@@ -156,7 +146,7 @@ public class Bond extends JmolEdge {
     return 0;
   }
   
-  int getValence() {
+  public int getValence() {
     return (!isCovalent() ? 0
         : isPartial() || is(BOND_AROMATIC) ? 1
         : order & 7);
@@ -178,7 +168,7 @@ public class Bond extends JmolEdge {
     colix = Colix.getColixTranslucent3(colix, isTranslucent, translucentLevel);
   }
   
-  boolean isTranslucent() {
+  public boolean isTranslucent() {
     return Colix.isColixTranslucent(colix);
     //but may show up translucent anyway!
   }

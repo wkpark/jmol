@@ -110,25 +110,27 @@ public class JmolConstants {
 
   public final static String DEFAULT_HELP_PATH = "http://chemapps.stolaf.edu/jmol/docs/index.htm";
 
-  public final static String EMBEDDED_SCRIPT_TAG = "**** Jmol Embedded Script ****";
+  public final static String STATE_VERSION_STAMP = "# Jmol state version ";
 
-  public static final String NOTE_SCRIPT_FILE = "NOTE: file recognized as a script file: ";
+  public final static String EMBEDDED_SCRIPT_TAG = "**** Jmol Embedded Script ****";
 
   public static String embedScript(String s) {
     return "\n/**" + EMBEDDED_SCRIPT_TAG + " \n" + s + "\n**/";
   }
-  
-  public static final String SCRIPT_EDITOR_IGNORE = "\1## EDITOR_IGNORE ##";
 
-  public static final String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";
+  public final static String NOTE_SCRIPT_FILE = "NOTE: file recognized as a script file: ";
+ 
+  public final static String SCRIPT_EDITOR_IGNORE = "\1## EDITOR_IGNORE ##";
+
+  public final static String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";
 
   public final static float radiansPerDegree = (float) (Math.PI / 180);
 
-  public static final String allowedQuaternionFrames = "RC;RP;a;b;c;n;p;q;x;";
+  public final static String allowedQuaternionFrames = "RC;RP;a;b;c;n;p;q;x;";
 
   //note: Eval.write() processing requires drivers to be first-letter-capitalized.
   //do not capitalize any other letter in the word. Separate by semicolon.
-  public static final String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
+  public final static String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
 
   public final static Vector3f center = Vector3f.new3(0, 0, 0);
   public final static Vector3f axisX = Vector3f.new3(1, 0, 0);
@@ -151,10 +153,10 @@ public class JmolConstants {
   public final static float DEFAULT_MIN_BOND_DISTANCE = 0.4f;
   public final static float DEFAULT_MAX_CONNECT_DISTANCE = 100000000f;
   public final static float DEFAULT_MIN_CONNECT_DISTANCE = 0.1f;
-  public static final int MINIMIZATION_ATOM_MAX = 200;
-  public static final float MINIMIZE_FIXED_RANGE = 5.0f;
+  public final static int MINIMIZATION_ATOM_MAX = 200;
+  public final static float MINIMIZE_FIXED_RANGE = 5.0f;
 
-  public static final int MOUSE_NONE = -1;
+  public final static int MOUSE_NONE = -1;
 
   public final static byte MULTIBOND_NEVER =     0;
   public final static byte MULTIBOND_WIREFRAME = 1;
@@ -1303,7 +1305,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   };
   
   public final static String MODELKIT_ZAP_STRING = "1 0 C 0 0";
-  public static final String MODELKIT_ZAP_TITLE = "Jmol Model Kit";//do not ever change this -- it is in the state
+  public final static String MODELKIT_ZAP_TITLE = "Jmol Model Kit";//do not ever change this -- it is in the state
   public final static String ADD_HYDROGEN_TITLE = "Viewer.AddHydrogens"; //do not ever change this -- it is in the state
 
   ////////////////////////////////////////////////////////////////
@@ -1521,7 +1523,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int CURSOR_MOVE = 3;
   public final static int CURSOR_WAIT = 4;
   public final static int CURSOR_ZOOM = 5;
-  public static final String binaryExtensions = ";pse=PyMOL;";// PyMOL
+  public final static String binaryExtensions = ";pse=PyMOL;";// PyMOL
+
+  public static final String SCRIPT_COMPLETED = "Script completed";
 
   public final static int getShapeVisibilityFlag(int shapeID) {
     return (4 << shapeID);
@@ -1555,6 +1559,4 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     }
   }
 
-
-  
 }

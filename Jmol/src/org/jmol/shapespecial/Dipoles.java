@@ -399,8 +399,8 @@ public class Dipoles extends Shape {
     if (partialCharges == null)
       return;
     clear(true);
-    Bond[] bonds = modelSet.getBonds();
-    for (int i = modelSet.getBondCount(); --i >= 0;) {
+    Bond[] bonds = modelSet.bonds;
+    for (int i = modelSet.bondCount; --i >= 0;) {
       Bond bond = bonds[i];
       if (!bond.isCovalent())
         continue;
@@ -644,7 +644,7 @@ public class Dipoles extends Shape {
           appendCmd(s, "frame "
               + viewer.getModelNumberDotted(thisModel = dipole.modelIndex));
         s.append(dipole.getShapeState());
-        appendCmd(s, getColorCommandUnk("dipole", dipole.colix));
+        appendCmd(s, getColorCommandUnk("dipole", dipole.colix, translucentAllowed));
       }
     }
     return s.toString();

@@ -58,6 +58,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
+
 import org.openscience.jmol.app.jmolpanel.HelpDialog;
 
 public class AppConsole extends JmolConsole implements EnterListener {
@@ -90,9 +91,9 @@ public class AppConsole extends JmolConsole implements EnterListener {
     setup(viewer, externalContainer, enabledButtons);
   }
 
-  public void setup(JmolViewer viewer, Container externalContainer,
+  private void setup(JmolViewer viewer, Container externalContainer,
                      String enabledButtons) {
-    this.viewer = viewer;
+    setViewer(viewer);
     Window w = Platform.getWindow((Container) viewer.getDisplay());
     viewerFrame = (w instanceof JFrame ? (JFrame) w : null);
     if (externalContainer == null) {

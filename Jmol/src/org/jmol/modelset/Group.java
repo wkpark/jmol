@@ -549,7 +549,7 @@ public class Group {
       BitSetUtil.deleteBits(bsAdded, bsDeleted);
   }
 
-  protected Map<String, Object> getGroupInfo(int igroup) {
+  public Map<String, Object> getGroupInfo(int igroup) {
     Map<String, Object> infoGroup = new Hashtable<String, Object>();
     infoGroup.put("groupIndex", Integer.valueOf(igroup));
     infoGroup.put("groupID", Short.valueOf(groupID));

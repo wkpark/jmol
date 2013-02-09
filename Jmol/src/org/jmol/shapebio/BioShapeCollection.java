@@ -25,9 +25,6 @@
 
 package org.jmol.shapebio;
 
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
@@ -41,7 +38,6 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
-import org.jmol.viewer.JmolConstants;
 /****************************************************************
  * Mps stands for Model-Polymer-Shape
  * 
@@ -76,7 +72,7 @@ public abstract class BioShapeCollection extends Shape {
   }
 
   @Override
-  public int getSize(Group group) {
+  public int getSizeG(Group group) {
     Monomer m = (Monomer) group;
     int groupIndex = m.getGroupIndex();
     int leadAtomIndex = m.getLeadAtom().getIndex();
@@ -185,20 +181,12 @@ public abstract class BioShapeCollection extends Shape {
 
   @Override
   public String getShapeState() {
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();    
-    for (int i = bioShapes.length; --i >= 0; ) {
-      BioShape bioShape = bioShapes[i];
-      if (bioShape.monomerCount > 0)
-        bioShape.setShapeState(temp, temp2);
-    }
-    return "\n" + getShapeCommandsSel(temp, temp2,
-        shapeID == JmolConstants.SHAPE_BACKBONE ? "Backbone" : "select");
+    return viewer.getAtomShapeSetState(this, bioShapes);
   }
 
   void initialize() {
-    int modelCount = modelSet.getModelCount();
-    Model[] models = modelSet.getModels();
+    int modelCount = modelSet.modelCount;
+    Model[] models = modelSet.models;
     int n = modelSet.getBioPolymerCount();
     BioShape[] shapes = new BioShape[n--];
     for (int i = modelCount; --i >= 0;)
@@ -223,7 +211,7 @@ public abstract class BioShapeCollection extends Shape {
     if (bioShapes == null)
       return;
     bs = BitSetUtil.copy(bs);
-    for (int i = modelSet.getModelCount(); --i >= 0; )
+    for (int i = modelSet.modelCount; --i >= 0; )
       if (bs.get(i) && modelSet.isTrajectory(i))
         bs.set(modelSet.getTrajectoryIndex(i));
     

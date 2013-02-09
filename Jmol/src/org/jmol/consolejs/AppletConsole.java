@@ -54,7 +54,7 @@ public class AppletConsole extends GenericConsole {
   Object jsConsole;
 
   public void start(JmolViewer viewer) {
-    this.viewer = viewer;
+    setViewer(viewer);
     setLabels();
     displayConsole(); // will call layoutWindow
   }

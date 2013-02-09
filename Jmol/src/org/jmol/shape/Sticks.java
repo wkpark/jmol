@@ -48,8 +48,6 @@ public class Sticks extends Shape {
   private boolean reportAll;
   
   private BitSet bsOrderSet;
-  private BitSet bsSizeSet;
-  private BitSet bsColixSet;
   private BitSet selectedBonds;
 
   @Override
@@ -188,8 +186,8 @@ public class Sticks extends Shape {
 
   @Override
   public void setModelClickability() {
-    Bond[] bonds = modelSet.getBonds();
-    for (int i = modelSet.getBondCount(); --i >= 0;) {
+    Bond[] bonds = modelSet.bonds;
+    for (int i = modelSet.bondCount; --i >= 0;) {
       Bond bond = bonds[i];
       if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) == 0
           || modelSet.isAtomHidden(bond.getAtomIndex1())
@@ -202,45 +200,7 @@ public class Sticks extends Shape {
 
   @Override
   public String getShapeState() {
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();
-    boolean haveTainted = false;
-    Bond[] bonds = modelSet.getBonds();
-    short r;
-    int bondCount = modelSet.getBondCount();
-
-    if (reportAll || bsSizeSet != null) {
-      int i0 = (reportAll ? bondCount - 1 : bsSizeSet.nextSetBit(0));
-      for (int i = i0; i >= 0; i = (reportAll ? i - 1 : bsSizeSet
-          .nextSetBit(i + 1)))
-        setStateInfo(temp, i, "wireframe "
-            + ((r = bonds[i].getMad()) == 1 ? "on" : "" + (r / 2000f)));
-    }
-    if (reportAll || bsOrderSet != null) {
-      int i0 = (reportAll ? bondCount - 1 : bsOrderSet.nextSetBit(0));
-      for (int i = i0; i >= 0; i = (reportAll ? i - 1 : bsOrderSet
-          .nextSetBit(i + 1))) {
-        Bond bond = bonds[i];
-        if (reportAll || (bond.order & JmolEdge.BOND_NEW) == 0)
-          setStateInfo(temp, i, "bondOrder "
-              + JmolEdge.getBondOrderNameFromOrder(bond.order));
-      }
-    }
-    if (bsColixSet != null)
-      for (int i = bsColixSet.nextSetBit(0); i >= 0; i = bsColixSet
-          .nextSetBit(i + 1)) {
-        short colix = bonds[i].getColix();
-        if ((colix & Colix.OPAQUE_MASK) == Colix.USE_PALETTE)
-          setStateInfo(temp, i, getColorCommand("bonds",
-              EnumPalette.CPK.id, colix));
-        else
-          setStateInfo(temp, i, getColorCommandUnk("bonds", colix));
-      }
-
-    return getShapeCommandsSel(temp, null, "select BONDS")
-        + "\n"
-        + (haveTainted ? getShapeCommandsSel(temp2, null, "select BONDS")
-            + "\n" : "");
+    return viewer.getBondState(this, bsOrderSet, reportAll);
   }
   
   @Override
@@ -294,8 +254,8 @@ public class Sticks extends Shape {
     }
     Bond pickedBond = null;
     Point3f v = new Point3f();
-    Bond[] bonds = modelSet.getBonds();
-    for (int i = modelSet.getBondCount(); --i >= 0;) {
+    Bond[] bonds = modelSet.bonds;
+    for (int i = modelSet.bondCount; --i >= 0;) {
       Bond bond = bonds[i];
       if (bond.getShapeVisibilityFlags() == 0)
         continue;

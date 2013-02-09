@@ -48,12 +48,4 @@ public abstract class FontShape extends Shape {
     }
   }
 
-  @Override
-  public String getShapeState() {
-    String s = viewer.getObjectState(myType);
-    String fcmd = Shape.getFontCommand(myType, font3d);
-      if (fcmd.length() > 0)
-        fcmd = "  " + fcmd + ";\n"; 
-    return (s.length() < 3 ? "" : s + fcmd);
-  }
 }

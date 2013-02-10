@@ -191,6 +191,7 @@ public class JmolMolecule {
     jm.nodes = nodes;
     jm.firstAtomIndex = firstAtomIndex;
     jm.atomList = atomList;
+    jm.atomCount = atomList.cardinality();
     jm.moleculeIndex = moleculeIndex;
     jm.modelIndex = modelIndex;
     jm.indexInModel = indexInModel;
@@ -204,9 +205,8 @@ public class JmolMolecule {
     }
     elementCounts = new int[Elements.elementNumberMax];
     altElementCounts = new int[Elements.altElementMax];
-    int count = 0;
+    atomCount = atomList.cardinality();
     for (int i = atomList.nextSetBit(0); i >= 0; i = atomList.nextSetBit(i + 1)) {
-      count++;
       int n = nodes[i].getAtomicAndIsotopeNumber();
       if (n < Elements.elementNumberMax) {
         elementCounts[n]++;
@@ -229,7 +229,6 @@ public class JmolMolecule {
         altElementMax = Math.max(altElementMax, n);
       }
     }
-    atomCount = count;
   }
 
   private static boolean getCovalentlyConnectedBitSet(JmolNode[] atoms, 

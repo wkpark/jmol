@@ -31,11 +31,13 @@ import java.util.Map;
 
 
 import org.jmol.api.JmolStateCreator;
+import org.jmol.modelset.Atom;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Colix;
+import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Point3f;
@@ -145,6 +147,14 @@ public class Ellipsoids extends AtomShape {
         ellipsoid.isOn = ((Boolean) value).booleanValue();
         return;
       }
+      if ("atoms" == propertyName) {
+        setAtoms((BitSet) value);
+        return;
+      }
+      if ("points" == propertyName) {
+        setPoints((Object[])value);
+        return;
+      }
       if ("axes" == propertyName) {
         ellipsoid.isValid = false;
         ellipsoid.axes = (Vector3f[]) value;
@@ -234,6 +244,93 @@ public class Ellipsoids extends AtomShape {
     }
   }
 
+  private void setPoints(Object[] data) {
+    Point3f[] value = (Point3f[]) data[1];
+    if (value == null)
+      return;
+    BitSet bs = (BitSet) data[2];
+    int n = bs.cardinality();
+    if (n < 3)
+      return;
+    Point3f ptCenter = new Point3f();
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+      ptCenter.add(value[i]);
+    ptCenter.scale(1.0f/n);
+    ellipsoid.center = ptCenter;
+    double Sxx = 0, Syy = 0, Szz = 0, Sxy = 0, Sxz = 0, Syz = 0;
+    Point3f pt = new Point3f();
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      pt.setT(value[i]);
+      pt.sub(ptCenter);
+      Sxx += (double) pt.x * (double) pt.x;
+      Syy += (double) pt.y * (double) pt.y;
+      Szz += (double) pt.z * (double) pt.z;
+      Sxy += (double) pt.x * (double) pt.y;
+      Sxz += (double) pt.x * (double) pt.z;
+      Syz += (double) pt.y * (double) pt.z;
+    }
+    double[][] N = new double[3][3];
+    N[0][0] = Syy + Szz;
+    N[0][1] = N[1][0] = -Sxy;
+    N[0][2] = N[2][0] = -Sxz;
+    N[1][1] = Sxx + Szz;
+    N[1][2] = N[2][1] = -Syz;
+    N[2][2] = Sxx + Syy;
+
+    Eigen eigen = Eigen.newM(N);
+
+    ellipsoid.axes = eigen.getEigenVectors3();
+    double[] v = eigen.getEigenvalues();
+    ellipsoid.lengths = new float[3];
+    for (int i = 0; i < 3; i++)
+      ellipsoid.lengths[i] = (float) v[i] / n / 3;
+    ellipsoid.scale = 1;
+    updateEquation(ellipsoid);
+  }
+
+
+  private void setAtoms(BitSet bs) {
+    int n = bs.cardinality();
+    if (n == 0)
+      return;
+    Atom[] atoms = viewer.modelSet.atoms;
+    Point3f ptCenter = new Point3f();
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+      ptCenter.add(atoms[i]);
+    ptCenter.scale(1.0f/n);
+    ellipsoid.center = ptCenter;
+    double Sxx = 0, Syy = 0, Szz = 0, Sxy = 0, Sxz = 0, Syz = 0;
+    Point3f pt = new Point3f();
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      pt.setT(atoms[i]);
+      pt.sub(ptCenter);
+      Sxx += (double) pt.x * (double) pt.x;
+      Syy += (double) pt.y * (double) pt.y;
+      Szz += (double) pt.z * (double) pt.z;
+      Sxy += (double) pt.x * (double) pt.y;
+      Sxz += (double) pt.x * (double) pt.z;
+      Syz += (double) pt.y * (double) pt.z;
+    }
+    double[][] N = new double[3][3];
+    N[0][0] = Syy + Szz;
+    N[0][1] = N[1][0] = -Sxy;
+    N[0][2] = N[2][0] = -Sxz;
+    N[1][1] = Sxx + Szz;
+    N[1][2] = N[2][1] = -Syz;
+    N[2][2] = Sxx + Syy;
+
+    Eigen eigen = Eigen.newM(N);
+
+    ellipsoid.axes = eigen.getEigenVectors3();
+    double[] v = eigen.getEigenvalues();
+    ellipsoid.lengths = new float[3];
+    for (int i = 0; i < 3; i++)
+      ellipsoid.lengths[i] = (float) v[i] / n / 3;
+    ellipsoid.scale = 1;
+    updateEquation(ellipsoid);
+  }
+
+
   private void checkSets() {
     if (colixset == null) {
       colixset = ArrayUtil.newShort2(3);
@@ -242,7 +339,7 @@ public class Ellipsoids extends AtomShape {
     }
   }
 
-  private void updateEquation(Ellipsoid ellipsoid) {
+  private static void updateEquation(Ellipsoid ellipsoid) {
     if (ellipsoid.axes == null || ellipsoid.lengths == null)
       return;
     Matrix3f mat = new Matrix3f();

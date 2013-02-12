@@ -178,8 +178,6 @@ public class PyMOLReader extends PdbReader {
     setView(sb, view);
     setColixes();
     setShapes();
-
-    //sb.append("background white;");
     sb.append("frame *;");
     sb.append("set cartoonfancy;");
 
@@ -345,30 +343,42 @@ public class PyMOLReader extends PdbReader {
     shapes.add(ss);
   }
 
+  List<BitSet> aStates = new ArrayList<BitSet>();
   private void processBranchModels(List<Object> deepBranch) {
     processCryst(getList(deepBranch, 10));
     atomCount = atomCount0 = atomSetCollection.getAtomCount();
     atomMap = new int[getInt(deepBranch, 3)];
-    List<Object> coordBranches = getList(deepBranch, 4);
+    List<Object> states = getList(deepBranch, 4);
     List<Object> bonds = getList(deepBranch, 6);
     pymolAtoms = getList(deepBranch, 7);
-    int lastEnd = -1;
-    for (int i = 0; i < coordBranches.size(); i++) {
+    //int lastEnd = -1;
+    int ns = states.size();
+    BitSet bsState = null;
+    for (int i = 0; i < ns; i++) {
       branchID++;
-      List<Object> coordBranch = getList(coordBranches, i);
+      List<Object> state = getList(states, i);
+      String name = getString(state, 5);
+      if (name.length() == 0) {
+        if (aStates.size() < ns)
+          for (int j = states.size(); j < ns; j++)
+            aStates.add(new BitSet());
+        //here
+        bsState = aStates.get(i);
+      } else {
+      }
       //int thisCount = getInt(coordBranch, 0);
-      int thisEnd = getInt(coordBranch, 1);
-      if (thisEnd != lastEnd) {
+      //int thisEnd = getInt(coordBranch, 1);
+      //if (thisEnd != lastEnd) {
         processStructures();
         setSurface();
         model(++nModels);
-        lastEnd = thisEnd;
-      }
-      List<Object> coords = getList(coordBranch, 2);
-      List<Object> idxToAtm = getList(coordBranch, 3);
+        //lastEnd = thisEnd;
+      //}
+      List<Object> coords = getList(state, 2);
+      List<Object> idxToAtm = getList(state, 3);
       int n = idxToAtm.size();
       for (int idx = 0; idx < n; idx++)
-        addAtom(pymolAtoms, getInt(idxToAtm, idx), idx, coords);
+        addAtom(pymolAtoms, getInt(idxToAtm, idx), idx, coords, bsState);
     }
     Logger.info( "read " + (atomCount - atomCount0) + " atoms");
     processStructures();
@@ -410,7 +420,7 @@ public class PyMOLReader extends PdbReader {
   //### UNMAPPED: 11, 12, 17, 19
 
   private void addAtom(List<Object> pymolAtoms, int apt, int idx,
-                       List<Object> coords) {
+                       List<Object> coords, BitSet bsState) {
     atomMap[apt] = -1;
     List<Object> a = getList(pymolAtoms, apt);
     int seqNo = getInt(a, 0);
@@ -434,6 +444,8 @@ public class PyMOLReader extends PdbReader {
       bsWater.set(atomCount);
     atom.bfactor = getFloat(a, 14);
     atom.occupancy = (int) (getFloat(a, 15) * 100);
+    if (bsState != null)
+      bsState.set(atomCount);
     String ss = getString(a, 10);
     BitSet bs = ssMap.get(ss);
     if (bs == null)

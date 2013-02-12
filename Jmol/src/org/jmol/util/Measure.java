@@ -519,12 +519,14 @@ final public class Measure {
       return q;
 
     double Sxx = 0, Sxy = 0, Sxz = 0, Syx = 0, Syy = 0, Syz = 0, Szx = 0, Szy = 0, Szz = 0;
+    Point3f ptA = new Point3f();
+    Point3f ptB = new Point3f();
     for (int i = n + 1; --i >= 1;) {
       Point3f aij = centerAndPoints[0][i];
       Point3f bij = centerAndPoints[1][i];
-      Point3f ptA = Point3f.newP(aij);
+      ptA.setT(aij);
       ptA.sub(centerAndPoints[0][0]);
-      Point3f ptB = Point3f.newP(bij);
+      ptB.setT(bij);
       ptB.sub(centerAndPoints[0][1]);
       Sxx += (double) ptA.x * (double) ptB.x;
       Sxy += (double) ptA.x * (double) ptB.y;
@@ -553,7 +555,7 @@ final public class Measure {
     N[3][3] = -Sxx - Syy + Szz;
 
     Eigen eigen = Eigen.newM(N);
-
+ 
     float[] v = eigen.getEigenvectorsFloatTransposed()[3];
     q = Quaternion.newP4(Point4f.new4(v[1], v[2], v[3], v[0]));
     retStddev[1] = getRmsd(centerAndPoints, q);

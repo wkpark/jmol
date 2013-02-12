@@ -3980,18 +3980,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   @Override
   public void refresh(int mode, String strWhy) {
-    //System.out.flush();    
-    //System.out.println("viewer refresh " + mode +
-    //"-------------------"
-    // + Thread.currentThread().getName() + " " + strWhy);
-    //System.out.flush();
-    // refresh(2) indicates this is a mouse motion -- not going through Eval
-    // so we bypass Eval and mainline on the other viewer!
     // refresh(-1) is used in stateManager to force no repaint
+    // refresh(2) indicates this is a mouse motion -- not going through Eval
+    //            so we bypass Eval and mainline on the other viewer!
     // refresh(3) is used by operations to ONLY do a repaint -- no syncing
     // refresh(6) is used to do no refresh if in motion
     // refresh(7) is used to send JavaScript a "new orientation" command
-    //   for example, at the end of a script
+    //            for example, at the end of a script
     if (repaintManager == null || !refreshing)
       return;
     if (mode == 6 && getInMotion())

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.JmolDocument;
+import org.jmol.util.Logger;
 import org.jmol.util.StringXBuilder;
 
 /**
@@ -87,30 +88,14 @@ class PickleReader {
       switch (b) {
       case EMPTY_DICT: //}
         push(new Hashtable<String, Object>());
-        //System.out.println("emptyDict at " + list.size());
         break;
       case APPEND:
         o = pop();
         ((List<Object>) peek()).add(o);
-        //System.out.println("append to " + list.size());
         break;
       case APPENDS:
         l = getObjects(getMark());
         ((List<Object>) peek()).addAll(l);
-        //System.out.println("appends " + l.size() + " to " + list.size() + " nextMark = " + nextMark);
-        //        switch (nextMark) {
-        //        case MARK_ATOMS:
-        //          addAtom(l);
-        //          break;
-        //        case MARK_COORDS:
-        //          if (coords == null)
-        //            coords = ((List<Object>) peek());
-        //          break;
-        //        case MARK_BONDS:
-        //          if (bonds == null && l.size() == 7)
-        //            bonds = ((List<Object>) list.get(nextMark - 1));
-        //          break;
-        //        }
         break;
       case BINFLOAT:
         d = binaryDoc.readDouble();
@@ -172,7 +157,8 @@ class PickleReader {
         break;
       case MARK:
         i = list.size();
-        //System.out.println("mark " + i);
+        if (Logger.debugging)
+          System.out.print("\n " + Integer.toHexString((int) binaryDoc.getPosition()) + " [");
         marks.add(Integer.valueOf(i));
         break;
       case NONE:
@@ -185,18 +171,15 @@ class PickleReader {
       case SETITEM:
         o = pop();
         s = (String) pop();
-        //System.out.println("setItem ." + s + " to " + list.size());
         ((Map<String, Object>) peek()).put(s, o);
         break;
       case SETITEMS:
         mark = getMark();
         l = getObjects(mark);
         map = (Map<String, Object>) peek();
-        //System.out.println("setItems to " + list.size());
         for (i = l.size(); --i >= 0;) {
           o = l.get(i);
           s = (String) l.get(--i);
-          //  System.out.println(" " + (mark + i) + " ." + s);
           map.put(s, o);
         }
         break;
@@ -339,6 +322,10 @@ class PickleReader {
   }
 
   private void push(Object o) {
+    if (Logger.debugging) {
+      if (o instanceof String || o instanceof Double || o instanceof Integer)
+        System.out.print (o + ", ");
+    }
     list.add(o);
   }
 

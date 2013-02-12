@@ -11514,6 +11514,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         String key = parameterAsString(i);
         Object value = null;
         switch (tokAt(i)) {
+        case Token.dollarsign:
+          key = "points";
+          Object[] data = new Object[3];
+          data[0] = objectNameParameter(++i);
+          if (isSyntaxCheck)
+            continue;
+          getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "getVertices", data);
+          value = data;
+          break;
+        case Token.bitset:
+        case Token.expressionBegin:
+          key = "atoms";
+          value = atomExpressionAt(i);
+          i = iToken;
+          break;
         case Token.axes:
           Vector3f[] axes = new Vector3f[3];
           for (int j = 0; j < 3; j++) {

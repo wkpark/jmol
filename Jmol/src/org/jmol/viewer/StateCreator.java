@@ -95,11 +95,11 @@ import org.jmol.viewer.Viewer.ACCESS;
 public class StateCreator implements JmolStateCreator {
 
   public StateCreator() {
-    
+
     // by reflection only!
-    
+
   }
-  
+
   private Viewer viewer;
 
   public void setViewer(Viewer viewer) {
@@ -167,7 +167,8 @@ public class StateCreator implements JmolStateCreator {
     if (isAll || type.equalsIgnoreCase("variableState"))
       s.append(getVariableState(global, sfunc)); // removed in 12.1.16; unnecessary in state // ARGH!!!
     if (isAll || type.equalsIgnoreCase("dataState"))
-      getDataState(viewer.dataManager, s, sfunc, getAtomicPropertyState((byte) -1, null));
+      getDataState(viewer.dataManager, s, sfunc, getAtomicPropertyState(
+          (byte) -1, null));
     // connections, atoms, bonds, labels, echos, shapes
     if (isAll || type.equalsIgnoreCase("modelState"))
       s.append(getModelState(sfunc, true, viewer
@@ -711,13 +712,13 @@ public class StateCreator implements JmolStateCreator {
     ModelSet m = viewer.modelSet;
     if (m.trajectorySteps == null)
       return "";
-    for (int i = m.modelCount; --i >= 0; )
+    for (int i = m.modelCount; --i >= 0;)
       if (m.models[i].selectedTrajectory >= 0) {
         s = " or " + m.getModelNumberDotted(m.models[i].selectedTrajectory) + s;
         i = m.models[i].trajectoryBaseIndex; //skip other trajectories
       }
     if (s.length() > 0)
-      s = "set trajectory {" + s.substring(4) + "}"; 
+      s = "set trajectory {" + s.substring(4) + "}";
     return s;
   }
 
@@ -863,7 +864,7 @@ public class StateCreator implements JmolStateCreator {
   }
 
   private static String getCommands2(Map<String, BitSet> ht, StringXBuilder s,
-                             String setPrev, String selectCmd) {
+                                     String setPrev, String selectCmd) {
     if (ht == null)
       return "";
     for (Map.Entry<String, BitSet> entry : ht.entrySet()) {
@@ -932,7 +933,7 @@ public class StateCreator implements JmolStateCreator {
   }
 
   private static void addTickInfo(StringXBuilder sb, TickInfo tickInfo,
-                                 boolean addFirst) {
+                                  boolean addFirst) {
     sb.append(" ticks ").append(tickInfo.type).append(" ").append(
         Escape.escapePt(tickInfo.ticks));
     boolean isUnitCell = (tickInfo.scale != null && Float
@@ -969,8 +970,9 @@ public class StateCreator implements JmolStateCreator {
               + (as.mads[i] / 2000f));
       }
       if (as.bsColixSet != null && as.bsColixSet.get(i))
-        BitSetUtil.setMapBitSet(temp2, atomIndex1, atomIndex2, Shape.getColorCommand(type,
-            as.paletteIDs[i], as.colixes[i], shape.translucentAllowed));
+        BitSetUtil.setMapBitSet(temp2, atomIndex1, atomIndex2, Shape
+            .getColorCommand(type, as.paletteIDs[i], as.colixes[i],
+                shape.translucentAllowed));
     }
   }
 
@@ -1004,8 +1006,8 @@ public class StateCreator implements JmolStateCreator {
         bs.set(i);
       }
       if (as.bsColixSet != null && as.bsColixSet.get(i))
-        BitSetUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("measure", m.colix,
-            as.translucentAllowed));
+        BitSetUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("measure",
+            m.colix, as.translucentAllowed));
       if (m.getStrFormat() != null)
         BitSetUtil.setMapBitSet(temp, i, i, "measure "
             + Escape.escapeStr(m.getStrFormat()));
@@ -1070,8 +1072,8 @@ public class StateCreator implements JmolStateCreator {
           BitSetUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("bonds",
               EnumPalette.CPK.id, colix, shape.translucentAllowed));
         else
-          BitSetUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("bonds", colix,
-              shape.translucentAllowed));
+          BitSetUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("bonds",
+              colix, shape.translucentAllowed));
       }
 
     String s = getCommands(temp, null, "select BONDS") + "\n"
@@ -1152,7 +1154,8 @@ public class StateCreator implements JmolStateCreator {
       Labels l = (Labels) shape;
       for (int i = l.bsSizeSet.nextSetBit(0); i >= 0; i = l.bsSizeSet
           .nextSetBit(i + 1)) {
-        BitSetUtil.setMapBitSet(temp, i, i, "label " + Escape.escapeStr(l.formats[i]));
+        BitSetUtil.setMapBitSet(temp, i, i, "label "
+            + Escape.escapeStr(l.formats[i]));
         if (l.bsColixSet != null && l.bsColixSet.get(i))
           BitSetUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand("label",
               l.paletteIDs[i], l.colixes[i], l.translucentAllowed));
@@ -1166,15 +1169,17 @@ public class StateCreator implements JmolStateCreator {
               + (10000f / sppm));
         if (l.offsets != null && l.offsets.length > i) {
           int offsetFull = l.offsets[i];
-          BitSetUtil.setMapBitSet(
-              temp2,
-              i,
-              i,
-              "set "
-                  + ((offsetFull & Labels.EXACT_OFFSET_FLAG) == Labels.EXACT_OFFSET_FLAG ? "labelOffsetExact "
-                      : "labelOffset ")
-                  + Object2d.getXOffset(offsetFull >> Labels.FLAG_OFFSET) + " "
-                  + (-Object2d.getYOffset(offsetFull >> Labels.FLAG_OFFSET)));
+          BitSetUtil
+              .setMapBitSet(
+                  temp2,
+                  i,
+                  i,
+                  "set "
+                      + ((offsetFull & Labels.EXACT_OFFSET_FLAG) == Labels.EXACT_OFFSET_FLAG ? "labelOffsetExact "
+                          : "labelOffset ")
+                      + Object2d.getXOffset(offsetFull >> Labels.FLAG_OFFSET)
+                      + " "
+                      + (-Object2d.getYOffset(offsetFull >> Labels.FLAG_OFFSET)));
           String align = Object2d.getAlignmentName(offsetFull >> 2);
           String pointer = Object2d.getPointer(offsetFull);
           if (pointer.length() > 0)
@@ -1191,8 +1196,8 @@ public class StateCreator implements JmolStateCreator {
         if (l.mads != null && l.mads[i] < 0)
           BitSetUtil.setMapBitSet(temp2, i, i, "set toggleLabel");
         if (l.bsFontSet != null && l.bsFontSet.get(i))
-          BitSetUtil.setMapBitSet(temp2, i, i, Shape.getFontCommand("label", JmolFont
-              .getFont3D(l.fids[i])));
+          BitSetUtil.setMapBitSet(temp2, i, i, Shape.getFontCommand("label",
+              JmolFont.getFont3D(l.fids[i])));
       }
       s = getCommands(temp, temp2, "select")
           + getCommands(null, temp3, "select");
@@ -1212,8 +1217,8 @@ public class StateCreator implements JmolStateCreator {
         if (shape.bsColixSet != null && shape.bsColixSet.get(i)) {
           byte pid = atoms[i].getPaletteID();
           if (pid != EnumPalette.CPK.id || atoms[i].isTranslucent())
-            BitSetUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("atoms", pid,
-                atoms[i].getColix(), shape.translucentAllowed));
+            BitSetUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("atoms",
+                pid, atoms[i].getColix(), shape.translucentAllowed));
         }
       }
       s = getCommands(temp, null, "select");
@@ -1394,13 +1399,15 @@ public class StateCreator implements JmolStateCreator {
     int pt = selectedFunction.indexOf("*");
     boolean isGeneric = (pt >= 0);
     boolean isStatic = (selectedFunction.indexOf("static_") == 0);
-    boolean namesOnly = (selectedFunction.equalsIgnoreCase("names") || selectedFunction.equalsIgnoreCase("static_names"));
+    boolean namesOnly = (selectedFunction.equalsIgnoreCase("names") || selectedFunction
+        .equalsIgnoreCase("static_names"));
     if (namesOnly)
       selectedFunction = "";
     if (isGeneric)
       selectedFunction = selectedFunction.substring(0, pt);
     selectedFunction = selectedFunction.toLowerCase();
-    Map<String, JmolScriptFunction> ht = (isStatic ? Viewer.staticFunctions : viewer.localFunctions);
+    Map<String, JmolScriptFunction> ht = (isStatic ? Viewer.staticFunctions
+        : viewer.localFunctions);
     String[] names = new String[ht.size()];
     Iterator<String> e = ht.keySet().iterator();
     int n = 0;
@@ -1420,10 +1427,9 @@ public class StateCreator implements JmolStateCreator {
     return s.toString();
   }
 
-  
   private static boolean isTainted(BitSet[] tainted, int atomIndex, byte type) {
-    return (tainted != null && tainted[type] != null 
-        && tainted[type].get(atomIndex));
+    return (tainted != null && tainted[type] != null && tainted[type]
+        .get(atomIndex));
   }
 
   public String getAtomicPropertyState(byte taintWhat, BitSet bsSelected) {
@@ -1433,19 +1439,21 @@ public class StateCreator implements JmolStateCreator {
     StringXBuilder commands = new StringXBuilder();
     for (byte type = 0; type < AtomCollection.TAINT_MAX; type++)
       if (taintWhat < 0 || type == taintWhat)
-      if((bs = (bsSelected != null ? bsSelected : viewer.getTaintedAtoms(type))) != null)
-        getAtomicPropertyStateBuffer(commands, type, bs, null, null);
+        if ((bs = (bsSelected != null ? bsSelected : viewer
+            .getTaintedAtoms(type))) != null)
+          getAtomicPropertyStateBuffer(commands, type, bs, null, null);
     return commands.toString();
   }
-  
-  public void getAtomicPropertyStateBuffer(StringXBuilder commands, 
-                                     byte type, BitSet bs,
-                                     String label, float[] fData) {
+
+  public void getAtomicPropertyStateBuffer(StringXBuilder commands, byte type,
+                                           BitSet bs, String label,
+                                           float[] fData) {
     if (!viewer.global.preserveState)
       return;
     // see setAtomData()
     StringXBuilder s = new StringXBuilder();
-    String dataLabel = (label == null ? AtomCollection.userSettableValues[type] : label)
+    String dataLabel = (label == null ? AtomCollection.userSettableValues[type]
+        : label)
         + " set";
     int n = 0;
     boolean isDefault = (type == AtomCollection.TAINT_COORD);
@@ -1453,8 +1461,9 @@ public class StateCreator implements JmolStateCreator {
     BitSet[] tainted = viewer.modelSet.tainted;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        s.appendI(i + 1).append(" ").append(atoms[i].getElementSymbol()).append(
-            " ").append(atoms[i].getInfo().replace(' ', '_')).append(" ");
+        s.appendI(i + 1).append(" ").append(atoms[i].getElementSymbol())
+            .append(" ").append(atoms[i].getInfo().replace(' ', '_')).append(
+                " ");
         switch (type) {
         case AtomCollection.TAINT_MAX:
           if (i < fData.length) // when data are appended, the array may not
@@ -1504,8 +1513,7 @@ public class StateCreator implements JmolStateCreator {
           s.appendI(atoms[i].getValence());
           break;
         case AtomCollection.TAINT_VANDERWAALS:
-          s.appendF(atoms[i].getVanderwaalsRadiusFloat(viewer,
-              EnumVdw.AUTO));
+          s.appendF(atoms[i].getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO));
           break;
         }
         s.append(" ;\n");
@@ -1522,7 +1530,6 @@ public class StateCreator implements JmolStateCreator {
     commands.append("  end \"" + dataLabel + "\";\n");
   }
 
-
   public void undoMoveAction(int action, int n) {
     switch (action) {
     case Token.undomove:
@@ -1532,15 +1539,16 @@ public class StateCreator implements JmolStateCreator {
         viewer.undoClear();
         break;
       case -1:
-        (action == Token.undomove ? viewer.actionStates : viewer.actionStatesRedo).clear();
+        (action == Token.undomove ? viewer.actionStates
+            : viewer.actionStatesRedo).clear();
         break;
       case 0:
         n = Integer.MAX_VALUE;
         //$FALL-THROUGH$
       default:
         if (n > MAX_ACTION_UNDO)
-          n = (action == Token.undomove ? viewer.actionStates : viewer.actionStatesRedo)
-              .size();
+          n = (action == Token.undomove ? viewer.actionStates
+              : viewer.actionStatesRedo).size();
         for (int i = 0; i < n; i++)
           undoMoveActionClear(0, action, true);
       }
@@ -1645,6 +1653,7 @@ public class StateCreator implements JmolStateCreator {
 
   private boolean undoWorking = false;
   private final static int MAX_ACTION_UNDO = 100;
+
   void appendLoadStates(StringXBuilder cmds) {
     Map<String, Boolean> ligandModelSet = viewer.ligandModelSet;
     if (ligandModelSet != null) {
@@ -1675,8 +1684,8 @@ public class StateCreator implements JmolStateCreator {
             ms.tainted[AtomCollection.TAINT_ELEMENT].andNot(bs);
         }
         m.loadScript = new StringXBuilder();
-        Viewer.getInlineData(commands, viewer.getModelExtract(bs, false, true, "MOL"),
-            i > 0);
+        Viewer.getInlineData(commands, viewer.getModelExtract(bs, false, true,
+            "MOL"), i > 0);
       } else {
         commands.appendSB(m.loadScript);
       }
@@ -1695,7 +1704,7 @@ public class StateCreator implements JmolStateCreator {
   }
 
   private String createSceneSet(String sceneFile, String type, int width,
-                             int height) {
+                                int height) {
     String script0 = viewer.getFileAsString(sceneFile);
     if (script0 == null)
       return "no such file: " + sceneFile;
@@ -1707,7 +1716,7 @@ public class StateCreator implements JmolStateCreator {
     List<Integer> list = new ArrayList<Integer>();
     String script = JmolBinary.getSceneScript(scenes, htScenes, list);
     Logger.debug(script);
-    script0 = TextFormat.simpleReplace(script0, "pause scene", "delay " 
+    script0 = TextFormat.simpleReplace(script0, "pause scene", "delay "
         + viewer.animationManager.lastFrameDelay + " # scene");
     String[] str = new String[] { script0, script, null };
     viewer.saveState("_scene0");
@@ -1726,13 +1735,15 @@ public class StateCreator implements JmolStateCreator {
         iSceneLast = iScene;
         str[2] = "all"; // full PNGJ
         String fileName = fileRoot + "_scene_" + iScene + ".all." + fileExt;
-        String msg = (String) createImagePathCheck(fileName, "PNGJ", null, null, 
-            str, null, -1, width, height, null, false);
+        String msg = (String) createImagePathCheck(fileName, "PNGJ", null,
+            null, str, null, -1, width, height, null, false);
         str[0] = null; // script0 only saved in first file
         str[2] = "min"; // script only -- for fast loading
         fileName = fileRoot + "_scene_" + iScene + ".min." + fileExt;
-        msg += "\n" + (String) createImagePathCheck(fileName, "PNGJ", null, null,
-            str, null, -1, Math.min(width, 200), Math.min(height, 200), null, false);
+        msg += "\n"
+            + (String) createImagePathCheck(fileName, "PNGJ", null, null, str,
+                null, -1, Math.min(width, 200), Math.min(height, 200), null,
+                false);
         viewer.showString(msg, false);
         nFiles += 2;
       } catch (Exception e) {
@@ -1752,8 +1763,8 @@ public class StateCreator implements JmolStateCreator {
                                int width, int height, BitSet bsFrames,
                                int nVibes, String[] fullPath) {
     if (bsFrames == null && nVibes == 0)
-      return (String) createImagePathCheck(fileName, type, text, bytes, scripts, null, quality,
-          width, height, fullPath, true);
+      return (String) createImagePathCheck(fileName, type, text, bytes,
+          scripts, null, quality, width, height, fullPath, true);
     String info = "";
     int n = 0;
     fileName = getOutputFileNameFromDialog(fileName, quality);
@@ -1768,14 +1779,14 @@ public class StateCreator implements JmolStateCreator {
     String froot = fileName.substring(0, ptDot);
     String fext = fileName.substring(ptDot);
     StringXBuilder sb = new StringXBuilder();
-    if (bsFrames == null) { 
+    if (bsFrames == null) {
       viewer.transformManager.vibrationOn = true;
       sb = new StringXBuilder();
       for (int i = 0; i < nVibes; i++) {
         for (int j = 0; j < 20; j++) {
-          viewer.transformManager.setVibrationT(j/20f+0.2501f);
-          if (!writeFrame(++n, froot, fext, fullPath, type,
-              quality, width, height, sb))
+          viewer.transformManager.setVibrationT(j / 20f + 0.2501f);
+          if (!writeFrame(++n, froot, fext, fullPath, type, quality, width,
+              height, sb))
             return "ERROR WRITING FILE SET: \n" + info;
         }
       }
@@ -1784,8 +1795,8 @@ public class StateCreator implements JmolStateCreator {
       for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames
           .nextSetBit(i + 1)) {
         viewer.setCurrentModelIndex(i);
-        if (!writeFrame(++n, froot, fext, fullPath, type,
-            quality, width, height, sb))
+        if (!writeFrame(++n, froot, fext, fullPath, type, quality, width,
+            height, sb))
           return "ERROR WRITING FILE SET: \n" + info;
       }
     }
@@ -1795,15 +1806,14 @@ public class StateCreator implements JmolStateCreator {
   }
 
   private boolean writeFrame(int n, String froot, String fext,
-                             String[] fullPath, String type,
-                             int quality, int width,
-                             int height, StringXBuilder sb) {
+                             String[] fullPath, String type, int quality,
+                             int width, int height, StringXBuilder sb) {
     String fileName = "0000" + n;
     fileName = froot + fileName.substring(fileName.length() - 4) + fext;
     if (fullPath != null)
       fullPath[0] = fileName;
-    String msg = (String) createImagePathCheck(fileName, type, null, null, null,
-        "", quality, width, height, null, false);
+    String msg = (String) createImagePathCheck(fileName, type, null, null,
+        null, "", quality, width, height, null, false);
     viewer.scriptEcho(msg);
     sb.append(msg).append("\n");
     return msg.startsWith("OK");
@@ -1836,11 +1846,11 @@ public class StateCreator implements JmolStateCreator {
    * @param doCheck
    * @return null (canceled) or a message starting with OK or an error message
    */
-  public Object createImagePathCheck(String fileName, String type,
-                                      String text, byte[] bytes,
-                                      String[] scripts, Object appendix,
-                                      int quality, int width, int height,
-                                      String[] fullPath, boolean doCheck) {
+  public Object createImagePathCheck(String fileName, String type, String text,
+                                     byte[] bytes, String[] scripts,
+                                     Object appendix, int quality, int width,
+                                     int height, String[] fullPath,
+                                     boolean doCheck) {
 
     /*
      * 
@@ -1885,11 +1895,11 @@ public class StateCreator implements JmolStateCreator {
         } else if (type.equals("ZIP") || type.equals("ZIPALL")) {
           if (scripts != null && type.equals("ZIP"))
             type = "ZIPALL";
-          err = JmolBinary.createZipSet(viewer.fileManager, viewer, localName, text,
-              scripts, type.equals("ZIPALL"));
+          err = JmolBinary.createZipSet(viewer.fileManager, viewer, localName,
+              text, scripts, type.equals("ZIPALL"));
         } else if (type.equals("SCENE")) {
-          err = (viewer.isJS ? "ERROR: Not Available" : createSceneSet(fileName, text, width,
-              height));
+          err = (viewer.isJS ? "ERROR: Not Available" : createSceneSet(
+              fileName, text, width, height));
         } else {
           // see if application wants to do it (returns non-null String)
           // both Jmol application and applet return null
@@ -1903,19 +1913,20 @@ public class StateCreator implements JmolStateCreator {
                 quality);
             if (err instanceof String)
               // report error status (text_or_bytes == null)
-              viewer.statusManager
-                  .createImage((String) err, type, null, null, quality);
+              viewer.statusManager.createImage((String) err, type, null, null,
+                  quality);
           }
         }
         if (err instanceof byte[]) {
-          err = JmolBinary.postByteArray(viewer.fileManager, fileName, (byte[]) err);
+          err = JmolBinary.postByteArray(viewer.fileManager, fileName,
+              (byte[]) err);
           err = "OK " + err;
         }
       }
     } catch (Throwable er) {
       //er.printStackTrace();
-      Logger.error(viewer.setErrorMessage((String) (err = "ERROR creating image??: "
-          + er), null));
+      Logger.error(viewer.setErrorMessage(
+          (String) (err = "ERROR creating image??: " + er), null));
     }
     viewer.creatingImage = false;
     if (quality != Integer.MIN_VALUE) {
@@ -1984,8 +1995,8 @@ public class StateCreator implements JmolStateCreator {
         String script2 = Parser.getQuotedAttribute(script, "script");
         boolean isNIH = (modelID != null && modelID.startsWith("$"));
         if (isNIH)
-          filename = (modelID.substring(1)
-              .equals(viewer.getParameter("_smilesstring")) ? null : modelID);
+          filename = (modelID.substring(1).equals(
+              viewer.getParameter("_smilesstring")) ? null : modelID);
         String id = (isNIH || modelID == null ? null : (filename == null ? ""
             : filename + "#")
             + modelID);
@@ -2007,8 +2018,8 @@ public class StateCreator implements JmolStateCreator {
           script += ";" + script2;
       } else if (script.toLowerCase().startsWith("jspecview")) {
         if (!disableSend)
-          sm.syncSend(viewer.fullName + "JSpecView" + script.substring(9),
-              ">", 0);
+          sm.syncSend(viewer.fullName + "JSpecView" + script.substring(9), ">",
+              0);
         return;
       }
       //System.out.println("Jmol executing script for JSpecView: " + script);
@@ -2016,7 +2027,7 @@ public class StateCreator implements JmolStateCreator {
       return;
     }
     quickScript(script);
-   if (disableSend)
+    if (disableSend)
       viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
   }
 
@@ -2036,26 +2047,28 @@ public class StateCreator implements JmolStateCreator {
       break;
     case 4:
       if (key.equals("rotateXYBy"))
-        viewer.rotateXYBy(Parser.parseFloatStr(tokens[2]), Parser.parseFloatStr(tokens[3]));
+        viewer.rotateXYBy(Parser.parseFloatStr(tokens[2]), Parser
+            .parseFloatStr(tokens[3]));
       else if (key.equals("translateXYBy"))
-        viewer.translateXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]));
+        viewer.translateXYBy(Parser.parseInt(tokens[2]), Parser
+            .parseInt(tokens[3]));
       else if (key.equals("rotateMolecule"))
         viewer.rotateSelected(Parser.parseFloatStr(tokens[2]), Parser
             .parseFloatStr(tokens[3]), null);
       break;
     case 5:
       if (key.equals("spinXYBy"))
-        viewer.spinXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]), Parser
-            .parseFloatStr(tokens[4]));
-      else if (key.equals("zoomByFactor"))
-        viewer.zoomByFactor(Parser.parseFloatStr(tokens[2]), Parser.parseInt(tokens[3]),
-            Parser.parseInt(tokens[4]));
-      else if (key.equals("rotateZBy"))
-        viewer.rotateZBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
-            Parser.parseInt(tokens[4]));
-      else if (key.equals("rotateArcBall"))
-        viewer.rotateArcBall(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
+        viewer.spinXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
             Parser.parseFloatStr(tokens[4]));
+      else if (key.equals("zoomByFactor"))
+        viewer.zoomByFactor(Parser.parseFloatStr(tokens[2]), Parser
+            .parseInt(tokens[3]), Parser.parseInt(tokens[4]));
+      else if (key.equals("rotateZBy"))
+        viewer.rotateZBy(Parser.parseInt(tokens[2]),
+            Parser.parseInt(tokens[3]), Parser.parseInt(tokens[4]));
+      else if (key.equals("rotateArcBall"))
+        viewer.rotateArcBall(Parser.parseInt(tokens[2]), Parser
+            .parseInt(tokens[3]), Parser.parseFloatStr(tokens[4]));
       break;
     case 7:
       if (key.equals("centerAt"))
@@ -2064,7 +2077,7 @@ public class StateCreator implements JmolStateCreator {
                 .parseFloatStr(tokens[5]), Parser.parseFloatStr(tokens[6])));
       break;
     }
-   }
+  }
 
   public String generateOutputForExport(String type, String[] fileName,
                                         int width, int height) {
@@ -2080,7 +2093,8 @@ public class StateCreator implements JmolStateCreator {
     int saveHeight = viewer.dimScreen.height;
     viewer.resizeImage(width, height, true, true, false);
     viewer.setModelVisibility();
-    String data = viewer.repaintManager.renderExport(type, viewer.gdata, viewer.modelSet, fName);
+    String data = viewer.repaintManager.renderExport(type, viewer.gdata,
+        viewer.modelSet, fName);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
@@ -2097,8 +2111,8 @@ public class StateCreator implements JmolStateCreator {
     useDialog |= viewer.isApplet && (fileName.indexOf("http:") < 0);
     fileName = FileManager.getLocalPathForWritingFile(viewer, fileName);
     if (useDialog)
-      fileName = viewer.dialogAsk(quality == Integer.MIN_VALUE ? "save" : "saveImage",
-          fileName);
+      fileName = viewer.dialogAsk(quality == Integer.MIN_VALUE ? "save"
+          : "saveImage", fileName);
     return fileName;
   }
 
@@ -2136,7 +2150,8 @@ public class StateCreator implements JmolStateCreator {
       }
     } else {
       try {
-        bytes = c.getImageBytes(type, quality, fileName, scripts, null, null, os);
+        bytes = c.getImageBytes(type, quality, fileName, scripts, null, null,
+            os);
       } catch (IOException e) {
         bytes = e;
         viewer.setErrorMessage("Error creating image: " + e, null);
@@ -2168,8 +2183,8 @@ public class StateCreator implements JmolStateCreator {
       // quality = Integer.MIN_VALUE;
     } else if (type.equals("PLOT")) {
       sb = new OutputStringBuilder(new BufferedOutputStream(os));
-      msg = viewer.modelSet.getPdbData(modelIndex, type2, viewer.getSelectionSet(false),
-          parameters, sb);
+      msg = viewer.modelSet.getPdbData(modelIndex, type2, viewer
+          .getSelectionSet(false), parameters, sb);
     }
     if (msg != null)
       msg = "OK " + msg + " " + fullPath[0];
@@ -2193,14 +2208,15 @@ public class StateCreator implements JmolStateCreator {
       return sb.toString();
     }
     String pathName = viewer.getModelSetPathName();
-    return (pathName == null ? "" : (String) viewer.getFileAsBytes(pathName, os));
+    return (pathName == null ? "" : (String) viewer
+        .getFileAsBytes(pathName, os));
   }
 
   public OutputStream getOutputStream(String localName, String[] fullPath) {
     if (!viewer.isRestricted(ACCESS.ALL))
       return null;
-    Object ret = createImagePathCheck(localName, "OutputStream", null, null, null, null,
-        Integer.MIN_VALUE, 0, 0, fullPath, true);
+    Object ret = createImagePathCheck(localName, "OutputStream", null, null,
+        null, null, Integer.MIN_VALUE, 0, 0, fullPath, true);
     if (ret instanceof String) {
       Logger.error((String) ret);
       return null;
@@ -2228,13 +2244,14 @@ public class StateCreator implements JmolStateCreator {
     if (!fileName.endsWith(".spt")) {
       String type = viewer.fileManager.getFileTypeName(fileName);
       if (type == null) {
-        type = JmolBinary
-            .determineSurfaceTypeIs(viewer.getBufferedInputStream(fileName));
+        type = JmolBinary.determineSurfaceTypeIs(viewer
+            .getBufferedInputStream(fileName));
         if (type != null) {
-          viewer.evalString("if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} "
-              + Escape.escapeStr(fileName)
-              + " mesh nofill }; else; { isosurface "
-              + Escape.escapeStr(fileName) + "}");
+          viewer
+              .evalString("if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} "
+                  + Escape.escapeStr(fileName)
+                  + " mesh nofill }; else; { isosurface "
+                  + Escape.escapeStr(fileName) + "}");
           return;
         }
       } else if (type.equals("Jmol")) {
@@ -2252,7 +2269,8 @@ public class StateCreator implements JmolStateCreator {
     if (allowScript && viewer.scriptEditorVisible && cmd == null)
       showEditor(new String[] { fileName, viewer.getFileAsString(fileName) });
     else
-      viewer.evalString((cmd == null ? "script " : cmd) + Escape.escapeStr(fileName));
+      viewer.evalString((cmd == null ? "script " : cmd)
+          + Escape.escapeStr(fileName));
   }
 
   public void showEditor(String[] file_text) {
@@ -2262,8 +2280,8 @@ public class StateCreator implements JmolStateCreator {
       file_text[1] = "<no data>";
     String filename = file_text[0];
     String msg = file_text[1];
-    JmolScriptEditorInterface scriptEditor = (JmolScriptEditorInterface) viewer.getProperty(
-        "DATA_API", "getScriptEditor", Boolean.TRUE);
+    JmolScriptEditorInterface scriptEditor = (JmolScriptEditorInterface) viewer
+        .getProperty("DATA_API", "getScriptEditor", Boolean.TRUE);
     if (scriptEditor == null)
       return;
     if (msg != null) {

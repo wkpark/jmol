@@ -614,7 +614,10 @@ public class ActionManager {
 
   public void mouseExited(long time, int x, int y) {
     setCurrent(time, x, y, 0);
-    exitMeasurementMode();
+    if (measurementPending != null) {
+      exitMeasurementMode();
+      viewer.refresh(3, "mouseExit");
+    }
   }
 
   private boolean haveSelection;

@@ -1100,8 +1100,10 @@ public class ActionManager {
   }
     
   void setPickingMode(int pickingMode) {
+    boolean isNew = false;
     switch (pickingMode) {
     case -1: // from  set modelkit OFF
+      isNew = true;
       bondPickingMode = PICKING_IDENTIFY_BOND;
       pickingMode = PICKING_IDENTIFY;
       break;
@@ -1115,11 +1117,14 @@ public class ActionManager {
       bondPickingMode = pickingMode;
       if (viewer.getBondPicking())
         return;
+      isNew = true;
       break;
       // if we have bondPicking mode, then we don't set atomPickingMode to this
     }
+    isNew |= (atomPickingMode != pickingMode);
     atomPickingMode = pickingMode;
-    resetMeasurement();
+    if (isNew)
+      resetMeasurement();
   }
 
   void setAtomPickingOption(String option) {

@@ -320,7 +320,7 @@ public class Token {
   final static int exitjmol     = scriptCommand | 16 | noArgs;
 //final static int file         see intproperty
   final static int font         = scriptCommand | 18;
-  final static int frame        = scriptCommand | 19;
+  public final static int frame        = scriptCommand | 19;
 //final static int getproperty  see mathfunc
   final static int gotocmd      = scriptCommand | 20 /*must be even*/| implicitStringCommand;
   public final static int hbond = scriptCommand | 22 | deprecatedparam | expression | defaultON;
@@ -450,7 +450,7 @@ public class Token {
   public final static int carbohydrate    = predefinedset | 36;
   final static int clickable              = predefinedset | 38;
   final static int displayed              = predefinedset | 40;
-  final static int hidden                 = predefinedset | 42;
+  public final static int hidden                 = predefinedset | 42;
   public final static int specialposition = predefinedset | 44;
   final static int visible                = predefinedset | 46;
   final static int basemodel              = predefinedset | 48;
@@ -1184,7 +1184,8 @@ public class Token {
   public final static int modifyorcreate = misc  | 202;
   final static int modelbased     = misc  | 204;
   final static int molecular      = misc  | 206;
-  final static int monomer        = misc  | 208;
+  final static int monomer        = misc  | 207;
+  public final static int movie          = misc  | 208;
   final static int mrc            = misc  | 209;
   final static int msms           = misc  | 210;
   final static int name           = misc  | 211;
@@ -1875,6 +1876,7 @@ public class Token {
       "molecules",       null, 
       "modelIndex",      new Token(modelindex),
       "monomer",         new Token(monomer),
+      "movie",           new Token(movie),
       "mul",             new Token(mul),
       "nci",             new Token(nci),
       "next",            new Token(next),

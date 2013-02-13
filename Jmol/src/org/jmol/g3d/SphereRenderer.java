@@ -447,6 +447,7 @@ public class SphereRenderer {
   private final Point3f ptTemp = new Point3f();
   private final int[] planeShades = new int[3];
   private final float[][] dxyz = new float[3][3];
+  private int z0;
   
   private void renderQuadrantClipped(int radius, int xSign, int ySign) {
     boolean isEllipsoid = (mat != null);
@@ -515,27 +516,35 @@ public class SphereRenderer {
           if (checkOctant) {
             ptTemp.set(xCurrent - x, yCurrent - y, zPixel - z);
             mat.transform(ptTemp);
-            int thisOctant = Quadric.getOctant(ptTemp); 
+            int thisOctant = Quadric.getOctant(ptTemp);
+            z0 = zPixel;
             if (thisOctant == selectedOctant) {
-              iShade = getPlaneShade(xCurrent, yCurrent, zroot);
+              iShade = getPlaneShade(xCurrent, yCurrent, zroot);              
               zPixel = (int) zroot[0];
               mode = 3;
                 // another option: show back only
                 //iRoot = 1;
                 //zPixel = (int) zroot[iRoot];
             }
+            boolean isCore = (z < slab ? zPixel >= slab : zPixel < slab);
+            if (isCore) {
+              z0 = zPixel = slab;
+              mode = 0;
+            }
+            if (zPixel < slab || zPixel > depth || zbuf[offset] <= z0)
+              continue;
           }
         } else {
           int zOffset = (int)Math.sqrt(s2 - j2);
           zPixel = z + (z < slab ? zOffset : -zOffset);          
+          boolean isCore = (z < slab ? zPixel >= slab : zPixel < slab);
+          if (isCore) {
+            zPixel = slab;
+            mode = 0;
+          }
+          if (zPixel < slab || zPixel > depth || zbuf[offset] <= zPixel)
+            continue;
         }
-        boolean isCore = (z < slab ? zPixel >= slab : zPixel < slab);
-        if (isCore) {
-          zPixel = slab;
-          mode = 0;
-        }
-        if (zPixel < slab || zPixel > depth || zbuf[offset] <= zPixel)
-          continue;
         switch(mode) {
         case 0: //core
           iShade = (SHADE_SLAB_CLIPPED - 3 + ((randu >> 8) & 0x07));
@@ -546,6 +555,7 @@ public class SphereRenderer {
           iShade = Shader.getEllipsoidShade(xCurrent, yCurrent, (float) zroot[iRoot], radius, mDeriv);
           break;
         case 3: //ellipsoid fill
+          g3d.clearPixel(offset, z0);
           break;
         default: //sphere
           int x8 = ((j * xSign + radius) << 8) / dDivisor;

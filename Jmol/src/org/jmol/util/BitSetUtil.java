@@ -174,21 +174,20 @@ final public class BitSetUtil {
   }
   
   /**
-   * offset the bitset by the specified number of bits
+   * offset the bitset in place by the specified number of bits
    * starting at a given position
    * 
    * @param bs0
    * @param pos    starting position; no change before this
    * @param offset
-   * @return       new BitSet
    */
-  public static BitSet offset(BitSet bs0, int pos, int offset) {
+  public static void offset(BitSet bs0, int pos, int offset) {
     if (bs0 == null)
-      return null;
-    BitSet bs = BitSet.newN(bs0.length() + offset);
-    for (int i = bs0.nextSetBit(0); i >= pos; i = bs.nextSetBit(i + 1))
-      bs.set(i + offset);
-    return bs;
+      return;
+      BitSet bsTemp = BitSet.newN(bs0.length() + offset);
+    for (int i = bs0.nextSetBit(0); i >= pos; i = bs0.nextSetBit(i + 1))
+      bsTemp.set(i + offset);
+    copy2(bsTemp, bs0);
   }
 
   public static void setMapBitSet(Map<String, BitSet> ht, int i1, int i2, String key) {

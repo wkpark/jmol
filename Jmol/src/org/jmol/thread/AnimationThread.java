@@ -81,7 +81,7 @@ public class AnimationThread extends JmolThread {
           mode = FINISH;
           break;
         }
-        if (animationManager.currentModelIndex == framePointer) {
+        if (animationManager.getCurrentFrame() == framePointer) {
           targetTime += animationManager.firstFrameDelayMs;
           sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
           if (!runSleep(sleepTime, CHECK1))
@@ -90,7 +90,7 @@ public class AnimationThread extends JmolThread {
         mode = CHECK1;
         break;
       case CHECK1:
-        if (animationManager.currentModelIndex == framePointer2) {
+        if (animationManager.getCurrentFrame() == framePointer2) {
           targetTime += animationManager.lastFrameDelayMs;
           sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
           if (!runSleep(sleepTime, CHECK2))
@@ -100,14 +100,14 @@ public class AnimationThread extends JmolThread {
         break;
       case CHECK2:
         if (!isFirst
-            && animationManager.lastModelPainted == animationManager.currentModelIndex
+            && animationManager.lastModelPainted == animationManager.getCurrentFrame()
             && !animationManager.setAnimationNext()) {
           mode = FINISH;
           break;
         }
         isFirst = false;
         targetTime += (int) ((1000f / animationManager.animationFps) + viewer
-            .getFrameDelayMs(animationManager.currentModelIndex));
+            .getFrameDelayMs(animationManager.getCurrentFrame()));
         mode = CHECK3;
         break;
       case CHECK3:

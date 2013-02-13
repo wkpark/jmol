@@ -26,8 +26,10 @@
 package org.jmol.modelset;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.script.Token;
 import org.jmol.util.BitSet;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -44,7 +46,7 @@ import org.jmol.viewer.ShapeManager;
  */
 public class ShapeSettings {
 
-  private int shapeID;
+  private int id;
   private BitSet bsAtoms;
   private Object info;
   
@@ -59,12 +61,12 @@ public class ShapeSettings {
 
   /**
    * 
-   * @param shapeID
+   * @param id   A Token or JmolConstants.SHAPE_XXXX
    * @param bsAtoms
    * @param info     optional additional information for the shape
    */
-  public ShapeSettings(int shapeID, BitSet bsAtoms, Object info) {
-    this.shapeID = shapeID;
+  public ShapeSettings(int id, BitSet bsAtoms, Object info) {
+    this.id = id;
     this.bsAtoms = bsAtoms;
     this.info = info;
   }
@@ -75,61 +77,83 @@ public class ShapeSettings {
    * 
    * @param offset
    */
+  @SuppressWarnings("unchecked")
   public void offset(int offset) {
     if (offset <= 0)
       return;
     if (bsAtoms != null)
-      bsAtoms = BitSetUtil.offset(bsAtoms, 0, offset);
+      BitSetUtil.offset(bsAtoms, 0, offset);
     if (colixes != null) {
       short[] c = new short[colixes.length + offset];
       System.arraycopy(colixes, 0, c, offset, colixes.length);
       colixes = c;
     }
+    if (id == Token.movie) {
+      List<BitSet> aStates = (List<BitSet>)((Map<String, Object>) info).get("states");
+      for (int i = aStates.size(); --i >= 0;)
+        BitSetUtil.offset(aStates.get(i), 0, offset);
+    }  
   }
 
+  @SuppressWarnings("unchecked")
   public void createShape(ModelSet m) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
-    sm.loadShape(shapeID);
-    switch (shapeID) {
-    case -1:
+    switch (id) {
+    case Token.movie:
+      sm.viewer.setMovie((Map<String, Object>) info);
+      return;
+    case Token.frame:
+      int frame = ((Integer) info).intValue();
+      if (frame > 0)
+        sm.viewer.setCurrentModelIndex(frame + modelIndex - 1);
+      else {
+        sm.viewer.setAnimationRange(-1, -1);
+        sm.viewer.setCurrentModelIndex(-1);
+      }
+      return;
+    case Token.hidden:
       sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
       return;
     case JmolConstants.SHAPE_ISOSURFACE:
       if (modelIndex < 0)
         return;
-      sm.setShapePropertyBs(JmolConstants.SHAPE_BALLS, "colors", colors, bsAtoms);      
+      sm.setShapePropertyBs(JmolConstants.SHAPE_BALLS, "colors", colors,
+          bsAtoms);
       String s = info.toString().replace('\'', '_').replace('"', '_');
-      s = "script('isosurface ID \"" + s + "\"  model " + m.models[modelIndex].getModelNumberDotted() + " select " + Escape.escape(bsAtoms) 
-          + " solvent " + (size/1000f) + " map property color')";
+      s = "script('isosurface ID \"" + s + "\"  model "
+          + m.models[modelIndex].getModelNumberDotted() + " select "
+          + Escape.escape(bsAtoms) + " solvent " + (size / 1000f)
+          + " map property color')";
       if (translucency > 0)
         s += " translucent " + translucency;
       System.out.println("shapeSettings: " + s);
       sm.viewer.evaluateExpression(s);
       return;
     case JmolConstants.SHAPE_LABELS:
-      sm.setShapePropertyBs(JmolConstants.SHAPE_LABELS, "labels", info, bsAtoms);
+      sm.loadShape(id);
+      sm.setShapePropertyBs(id, "labels", info, bsAtoms);
       return;
     case JmolConstants.SHAPE_MEASURES:
       if (modelIndex < 0)
         return;
+      sm.loadShape(id);
       MeasurementData md = (MeasurementData) info;
       md.setModelSet(m);
       List<Object> points = md.points;
       for (int i = points.size(); --i >= 0;)
         ((Point3fi) points.get(i)).modelIndex = (short) modelIndex;
-      sm.setShapePropertyBs(JmolConstants.SHAPE_MEASURES, "measure", md, bsAtoms);
+      sm.setShapePropertyBs(id, "measure", md, bsAtoms);
       if (size != -1)
-        sm.setShapeSizeBs(shapeID, size, null, null);
+        sm.setShapeSizeBs(id, size, null, null);
       return;
-    default:
-      if (size != -1 || rd != null)
-        sm.setShapeSizeBs(shapeID, size, rd, bsAtoms);
-      if (argb != 0)
-        sm.setShapePropertyBs(shapeID, "color", Integer.valueOf(argb), bsAtoms);
-      else if (colors != null)
-        sm.setShapePropertyBs(shapeID, "colors", colors, bsAtoms);
     }
+    if (size != -1 || rd != null)
+      sm.setShapeSizeBs(id, size, rd, bsAtoms);
+    if (argb != 0)
+      sm.setShapePropertyBs(id, "color", Integer.valueOf(argb), bsAtoms);
+    else if (colors != null)
+      sm.setShapePropertyBs(id, "colors", colors, bsAtoms);
   }
 
   private int getModelIndex(ModelSet m) {

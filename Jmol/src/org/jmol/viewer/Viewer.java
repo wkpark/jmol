@@ -44,7 +44,6 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelSet;
-import org.jmol.modelset.ShapeSettings;
 import org.jmol.modelset.TickInfo;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
@@ -2868,7 +2867,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setCenter();
     clearAtomSets();
     animationManager.initializePointers(1);
-    setCurrentModelIndex(0);
+    if (!modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL"))
+      setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
     setFrankOn(getShowFrank());
     startHoverWatcher(true);
@@ -9399,10 +9399,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.loadShape(shapeID);
   }
 
-  public ShapeSettings newShapeInfo(int shapeID, BitSet bsAtoms, Object info) {
-    return new ShapeSettings(shapeID, bsAtoms, info);
-  }
-  
   public void setShapeSize(int shapeID, int mad, BitSet bsSelected) {
     // might be atoms or bonds
     if (bsSelected == null)
@@ -10112,6 +10108,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (getScriptManager() == null)
       return null;
     return eval.getScriptContext();
+  }
+
+  public void setMovie(Map<String, Object> info) {
+    animationManager.setMovie(info);
   }
 
 }

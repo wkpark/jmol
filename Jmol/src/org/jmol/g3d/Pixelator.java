@@ -38,6 +38,11 @@ class Pixelator {
     g = graphics3d;
   }
 
+  void clearPixel(int offset, int z) {
+    if (!g.isPass2 && g.zbuf[offset] > z)
+      g.zbuf[offset] = Integer.MAX_VALUE;
+  }
+  
   void addPixel(int offset, int z, int p) {
     if (!g.isPass2) {
       g.zbuf[offset] = z;

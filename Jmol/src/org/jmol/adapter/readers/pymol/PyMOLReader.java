@@ -39,6 +39,7 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ShapeSettings;
+import org.jmol.script.Token;
 import org.jmol.util.BoxInfo;
 //import org.jmol.util.Escape;
 import org.jmol.util.BitSet;
@@ -53,9 +54,9 @@ import org.jmol.util.StringXBuilder;
 import org.jmol.viewer.JmolConstants;
 
 /**
- * experimental PyMOL PSE (binary Python serialization) file
- * 
- * bigendian file.
+ * experimental PyMOL PSE (binary Python session) file reader
+ * Feb 2013  Jmol 13.1.13
+ * @author Bob Hanson hansonr@stolaf.edu
  * 
  */
 
@@ -89,6 +90,7 @@ public class PyMOLReader extends PdbReader {
     isStateScript = htParams.containsKey("isStateScript");
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("noAutoBond", Boolean.TRUE);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("shapes", shapes);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPyMOL", Boolean.TRUE);
     super.initializeReader();
   }
 
@@ -108,12 +110,18 @@ public class PyMOLReader extends PdbReader {
 
   private BitSet[] reps = new BitSet[17];
   private float cartoonTranslucency;
-
+  private Map<String, Object> movie;
+  private Map<String, Object> pymol = new Hashtable<String, Object>();
+  private List<BitSet> aStates = new ArrayList<BitSet>();
+  private int pymolFrame = -1;
+  private boolean allStates;
+  
   private final static String preScript = "script('" +
   		"set navigationMode off;" +
       "set zoomLarge false;" +
       "set measurementUnits ANGSTROMS;" +
       "set ssBondsBackbone FALSE;" +
+      "set cartoonFancy;" +
       "')";
 
   private void process(Map<String, Object> map) {
@@ -123,10 +131,24 @@ public class PyMOLReader extends PdbReader {
       viewer.evaluateExpression(preScript);
 
     addColors(getMapList(map, "colors"));
-
     for (int i = 0; i < 17; i++)
       reps[i] = BitSet.newN(1000);
     settings = getMapList(map, "settings");
+    allStates = getBooleanSetting(PyMOL.all_states);
+    List<Object> mov = getMapList(map, "movie");
+    if (mov != null && !allStates) {
+      int frameCount = getInt(mov, 0);
+      if (frameCount > 0) {
+        pymolFrame = (int) getFloatSetting(PyMOL.frame);
+        movie = new Hashtable<String, Object>();
+        movie.put("states", aStates);
+        movie.put("frameCount", Integer.valueOf(frameCount));
+        movie.put("frames", getList(mov, 4));
+        movie.put("frameStrings", getList(mov, 5));
+        movie.put("currentFrame", Integer.valueOf(pymolFrame));
+        pymol.put("movie", movie);
+      }
+    }
     if (!isStateScript && filter != null && filter.indexOf("DORESIZE") >= 0)
       try {
         width = getInt(getMapList(map, "main"), 0);
@@ -178,8 +200,7 @@ public class PyMOLReader extends PdbReader {
     setView(sb, view);
     setColixes();
     setShapes();
-    sb.append("frame *;");
-    sb.append("set cartoonfancy;");
+    setFrame();
 
     addJmolScript(sb.toString());
   }
@@ -343,7 +364,6 @@ public class PyMOLReader extends PdbReader {
     shapes.add(ss);
   }
 
-  List<BitSet> aStates = new ArrayList<BitSet>();
   private void processBranchModels(List<Object> deepBranch) {
     processCryst(getList(deepBranch, 10));
     atomCount = atomCount0 = atomSetCollection.getAtomCount();
@@ -358,9 +378,11 @@ public class PyMOLReader extends PdbReader {
       branchID++;
       List<Object> state = getList(states, i);
       String name = getString(state, 5);
-      if (name.length() == 0) {
+      System.out.println("i = " + i + " name=" + name);
+      if (name.trim().length() == 0) {
+        pymolFrame = (int) getFloatSetting(PyMOL.frame);
         if (aStates.size() < ns)
-          for (int j = states.size(); j < ns; j++)
+          for (int j = aStates.size(); j < ns; j++)
             aStates.add(new BitSet());
         //here
         bsState = aStates.get(i);
@@ -587,8 +609,7 @@ public class PyMOLReader extends PdbReader {
   
   private void setShapes() {
     ShapeSettings ss;
-    BitSet bs = BitSet.newN(atomCount);
-    bs.setBits(0, atomCount);
+    BitSet bs = BitSetUtil.newBitSet2(0, atomCount);
     ss = new ShapeSettings(JmolConstants.SHAPE_BALLS, bs, null);
     ss.setSize(0);
     ss.setColors(colixes, 0);
@@ -596,11 +617,10 @@ public class PyMOLReader extends PdbReader {
     ss = new ShapeSettings(JmolConstants.SHAPE_STICKS, bs, null);
     ss.setSize(0);
     shapes.add(ss);
-    bs = new BitSet();
     for (int i = 0; i < REP_MAX; i++)
       setShape(i);
     if (!bsHidden.isEmpty())
-      shapes.add(new ShapeSettings(-1, bsHidden, null));
+      shapes.add(new ShapeSettings(Token.hidden, bsHidden, null));
   }
 
   private void setShape(int shapeID) {
@@ -682,6 +702,15 @@ public class PyMOLReader extends PdbReader {
     case REP_DASHES: //   = 10;
     default:
       System.out.println("Unprocessed representation type " + shapeID);
+    }
+  }
+  
+  private void setFrame() {
+    BitSet bs = BitSetUtil.newAndSetBit(0);
+    if (!allStates && pymol.containsKey("movie")) {
+      shapes.add(new ShapeSettings(Token.movie, bs, pymol.get("movie"))); 
+    } else {
+      shapes.add(new ShapeSettings(Token.frame, bs, Integer.valueOf(pymolFrame)));
     }
   }
 

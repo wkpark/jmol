@@ -633,6 +633,10 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     pixel.addPixel(offset, z, p);
   }
   
+  void clearPixel(int offset, int z) {
+    pixel.clearPixel(offset, z);
+  }
+  
   public void drawFilledCircle(short colixRing, short colixFill, int diameter,
                                int x, int y, int z) {
     if (isClippedZ(z))

@@ -177,15 +177,14 @@ public final class ModelLoader {
     isTrajectory = (modelSet.trajectorySteps != null);
     if (isTrajectory) {
       info.remove("trajectorySteps");
-      modelSet.vibrationSteps = (List<Vector3f[]>) info.get("vibrationSteps");
-      info.remove("vibrationSteps");
+      modelSet.vibrationSteps = (List<Vector3f[]>) info.remove("vibrationSteps");
     }
     doAddHydrogens = (jbr != null && !isTrajectory
         && modelSet.getModelSetAuxiliaryInfoValue("pdbNoHydrogens") == null
         && viewer.getBooleanProperty("pdbAddHydrogens"));
     if (info != null) {
       info.remove("pdbNoHydrogens");
-      shapes = (List<ShapeSettings>) info.get("shapes");    
+      shapes = (List<ShapeSettings>) info.remove("shapes");    
     }
     noAutoBond = modelSet.getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = modelSet.getModelSetAuxiliaryInfoBoolean("is2D");
@@ -1178,6 +1177,9 @@ public final class ModelLoader {
       if (modelSet.modelSetAuxiliaryInfo != null) {
         modelSet.modelSetAuxiliaryInfo.put("group3Lists", group3Lists);
         modelSet.modelSetAuxiliaryInfo.put("group3Counts", group3Counts);
+        for (int i = 0; i < group3Counts.length; i++)
+          if (group3Counts[i] == null)
+            group3Counts[i] = new int[0];
       }
   }
 

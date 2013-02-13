@@ -23,6 +23,9 @@
  */
 package org.jmol.viewer;
 
+import java.util.List;
+import java.util.Map;
+
 import org.jmol.thread.AnimationThread;
 import org.jmol.util.BitSet;
 
@@ -67,7 +70,45 @@ public class AnimationManager {
   private int intAnimThread;
   float lastFrameDelay = 1;
 
+  private Map<String, Object> movie;
+
+  private int currentFrameIndex;
+
+  void clear() {
+    setMovie(null);
+    setAnimationOn(false);
+    setCurrentModelIndex(0, true);
+    currentDirection = 1;
+    setAnimationDirection(1);
+    setAnimationFps(10);
+    setAnimationReplayMode(EnumAnimationMode.ONCE, 0, 0);
+    initializePointers(0);
+  }
+  
+  @SuppressWarnings("unchecked")
+  private void setFrame(int frameIndex) {
+    if (movie == null) {
+      setCurrentModelIndex(frameIndex, true);
+      return;
+    }
+    currentModelIndex = -1;
+    if (frameIndex == -1)
+      frameIndex = ((Integer) movie.get("currentFrame")).intValue();
+    currentFrameIndex = frameIndex;
+    List<BitSet> bs = (List<BitSet>) movie.get("states");
+    List<Object> frames = (List<Object>) movie.get("frames");
+    if (bs == null || frames == null || frameIndex >= frames.size())
+      return;
+    int iState = ((Integer) frames.get(frameIndex)).intValue();
+    viewer.displayAtoms(bs.get(iState), true, false, null, true);
+    setViewer(true);
+ }
+
   void setCurrentModelIndex(int modelIndex, boolean clearBackgroundModel) {
+    if (movie != null) {
+      setFrame(modelIndex);
+      return;
+    }
     if (modelIndex < 0)
       setAnimationOff(false);
     int formerModelIndex = currentModelIndex;
@@ -81,8 +122,8 @@ public class AnimationManager {
     boolean isSameSource = false;
     if (currentModelIndex != modelIndex) {
       if (modelCount > 0) {
-        boolean toDataFrame = viewer.isJmolDataFrameForModel(modelIndex);
-        boolean fromDataFrame = viewer.isJmolDataFrameForModel(currentModelIndex);
+        boolean toDataFrame = isJmolDataFrameForModel(modelIndex);
+        boolean fromDataFrame = isJmolDataFrameForModel(currentModelIndex);
         if (fromDataFrame)
           viewer.setJmolDataFrame(null, -1, currentModelIndex);
         if (currentModelIndex != -1)
@@ -109,6 +150,10 @@ public class AnimationManager {
         }
       }
     }
+    setViewer(clearBackgroundModel);
+  }
+
+  private void setViewer(boolean clearBackgroundModel) {
     viewer.setTrajectory(currentModelIndex);
     viewer.setFrameOffset(currentModelIndex);
     if (currentModelIndex == -1 && clearBackgroundModel)
@@ -116,11 +161,12 @@ public class AnimationManager {
     viewer.setTainted(true);
     setFrameRangeVisible();
     setStatusFrameChanged();
-    if (modelSet != null) {
-      if (!viewer.getSelectAllModels())
+    if (viewer.modelSet != null && !viewer.getSelectAllModels())
         viewer.setSelectionSubset(viewer.getModelUndeletedAtomsBitSet(currentModelIndex));
-    }
-  
+  }
+
+  private boolean isJmolDataFrameForModel(int i) {
+    return movie == null && viewer.isJmolDataFrameForModel(i);
   }
 
   void setBackgroundModelIndex(int modelIndex) {
@@ -142,6 +188,10 @@ public class AnimationManager {
   
   private void setFrameRangeVisible() {
     bsVisibleFrames.clearAll();
+    if (movie != null) {
+      bsVisibleFrames.setBits(0, viewer.getModelCount());
+      return;
+    }
     if (backgroundModelIndex >= 0)
       bsVisibleFrames.set(backgroundModelIndex);
     if (currentModelIndex >= 0) {
@@ -153,12 +203,12 @@ public class AnimationManager {
     int nDisplayed = 0;
     int frameDisplayed = 0;
     for (int i = firstModelIndex; i != lastModelIndex; i += frameStep)
-      if (!viewer.isJmolDataFrameForModel(i)) {
+      if (!isJmolDataFrameForModel(i)) {
         bsVisibleFrames.set(i);
         nDisplayed++;
         frameDisplayed = i;
       }
-    if (firstModelIndex == lastModelIndex || !viewer.isJmolDataFrameForModel(lastModelIndex)
+    if (firstModelIndex == lastModelIndex || !isJmolDataFrameForModel(lastModelIndex)
         || nDisplayed == 0) {
       bsVisibleFrames.set(lastModelIndex);
       if (nDisplayed == 0)
@@ -166,28 +216,24 @@ public class AnimationManager {
       nDisplayed = 0;
     }
     if (nDisplayed == 1 && currentModelIndex < 0)
-      setCurrentModelIndex(frameDisplayed, true);
+      setFrame(frameDisplayed);
+    //System.out.println(bsVisibleFrames + "  " + frameDisplayed + " " + currentModelIndex);
+   
   }
 
   void initializePointers(int frameStep) {
     firstModelIndex = 0;
-    int modelCount = viewer.getModelCount();
+    int modelCount = getFrameCount();
     lastModelIndex = (frameStep == 0 ? 0 
         : modelCount) - 1;
     this.frameStep = frameStep;
     viewer.setFrameVariables();
   }
 
-  void clear() {
-    setAnimationOn(false);
-    setCurrentModelIndex(0, true);
-    currentDirection = 1;
-    setAnimationDirection(1);
-    setAnimationFps(10);
-    setAnimationReplayMode(EnumAnimationMode.ONCE, 0, 0);
-    initializePointers(0);
+  private int getFrameCount() {
+    return (movie == null ? viewer.getModelCount() : ((Integer) movie.get("frameCount")).intValue());
   }
-  
+
   void setAnimationDirection(int animationDirection) {
     this.animationDirection = animationDirection;
     //if (animationReplayMode != ANIMATION_LOOP)
@@ -214,7 +260,7 @@ public class AnimationManager {
   }
 
   void setAnimationRange(int framePointer, int framePointer2) {
-    int modelCount = viewer.getModelCount();
+    int modelCount = getFrameCount();
     if (framePointer < 0) framePointer = 0;
     if (framePointer2 < 0) framePointer2 = modelCount;
     if (framePointer >= modelCount) framePointer = modelCount - 1;
@@ -270,7 +316,7 @@ public class AnimationManager {
   void resumeAnimation() {
     if(currentModelIndex < 0)
       setAnimationRange(firstModelIndex, lastModelIndex);
-    if (viewer.getModelCount() <= 1) {
+    if (getFrameCount() <= 1) {
       animationOn(false);
       return;
     }
@@ -288,11 +334,11 @@ public class AnimationManager {
   }
 
   void setAnimationLast() {
-    setCurrentModelIndex(animationDirection > 0 ? lastModelIndex : firstModelIndex, true);
+    setFrame(animationDirection > 0 ? lastModelIndex : firstModelIndex);
   }
 
   void rewindAnimation() {
-    setCurrentModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex, true);
+    setFrame(animationDirection > 0 ? firstModelIndex : lastModelIndex);
     currentDirection = 1;
     viewer.setFrameVariables();
   }
@@ -303,36 +349,36 @@ public class AnimationManager {
 
   boolean setAnimationRelative(int direction) {
     int frameStep = this.frameStep * direction * currentDirection;
-    int modelIndexNext = currentModelIndex + frameStep;
-    boolean isDone = (modelIndexNext > firstModelIndex
-        && modelIndexNext > lastModelIndex || modelIndexNext < firstModelIndex
-        && modelIndexNext < lastModelIndex);    
+    int frameNext = getCurrentFrame() + frameStep;
+    boolean isDone = (frameNext > firstModelIndex
+        && frameNext > lastModelIndex || frameNext < firstModelIndex
+        && frameNext < lastModelIndex);    
     if (isDone) {
       switch (animationReplayMode) {
       case ONCE:
         return false;
       case LOOP:
-        modelIndexNext = (animationDirection == currentDirection ? firstModelIndex
+        frameNext = (animationDirection == currentDirection ? firstModelIndex
             : lastModelIndex);
         break;
       case PALINDROME:
         currentDirection = -currentDirection;
-        modelIndexNext -= 2 * frameStep;
+        frameNext -= 2 * frameStep;
       }
     }
     //Logger.debug("next="+modelIndexNext+" dir="+currentDirection+" isDone="+isDone);
-    int nModels = viewer.getModelCount();
-    if (modelIndexNext < 0 || modelIndexNext >= nModels)
+    if (frameNext < 0 || frameNext >= getFrameCount())
       return false;
-    setCurrentModelIndex(modelIndexNext, true);
+    setFrame(frameNext);
     return true;
   }
 
   float getAnimRunTimeSeconds() {
+    int modelCount = getFrameCount();
     if (firstModelIndex == lastModelIndex
         || lastModelIndex < 0 || firstModelIndex < 0
-        || lastModelIndex >= viewer.getModelCount()
-        || firstModelIndex >= viewer.getModelCount())
+        || lastModelIndex >= modelCount
+        || firstModelIndex >= modelCount)
       return  0;
     int i0 = Math.min(firstModelIndex, lastModelIndex);
     int i1 = Math.max(firstModelIndex, lastModelIndex);
@@ -341,6 +387,16 @@ public class AnimationManager {
     for (int i = i0; i <= i1; i++)
       nsec += viewer.getFrameDelayMs(i) / 1000f;
     return nsec;
+  }
+
+  public void setMovie(Map<String, Object> info) {
+    
+    movie = info;
+    
+  }
+
+  public int getCurrentFrame() {
+    return (movie == null ? currentModelIndex : currentFrameIndex);
   }
  
 }

@@ -348,8 +348,10 @@ public class GData implements JmolGraphicsInterface {
   }
 
   public synchronized void setCel(boolean val) {
-    if (shader.celOn == val)
+    short bgContrast = Colix.getColorContrast(bgcolor);
+    if (shader.celOn == val && bgContrast == shader.bgContrast)
       return;
+    shader.bgContrast = bgContrast;
     shader.celOn = val;
     flushCaches();
   }
@@ -480,7 +482,10 @@ public class GData implements JmolGraphicsInterface {
   public void setBackgroundArgb(int argb) {
     bgcolor = argb;
     // background of Jmol transparent in front of certain applications (VLC Player)
-    // when background [0,0,1]. 
+    // when background [0,0,1].
+    
+    // maintain contrasting colour for cel shading edges
+    setCel(shader.celOn);
   }
 
   public void setBackgroundImage(Object image) {

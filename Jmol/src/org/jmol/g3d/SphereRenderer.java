@@ -186,10 +186,10 @@ public class SphereRenderer {
         if (z2 >= 0) {
           float z = (float)Math.sqrt(z2);
           int height = (int)z;
-          int shadeIndexSE = shader.getDitheredNoisyShadeIndex( x,  y, z, radiusF);
-          int shadeIndexSW = shader.getDitheredNoisyShadeIndex(-x,  y, z, radiusF);
-          int shadeIndexNE = shader.getDitheredNoisyShadeIndex( x, -y, z, radiusF);
-          int shadeIndexNW = shader.getDitheredNoisyShadeIndex(-x, -y, z, radiusF);
+          int shadeIndexSE = shader.getShadeN( x,  y, z, radiusF);
+          int shadeIndexSW = shader.getShadeN(-x,  y, z, radiusF);
+          int shadeIndexNE = shader.getShadeN( x, -y, z, radiusF);
+          int shadeIndexNW = shader.getShadeN(-x, -y, z, radiusF);
           int packed = (height |
                         (shadeIndexSE << 7) |
                         (shadeIndexSW << 13) |

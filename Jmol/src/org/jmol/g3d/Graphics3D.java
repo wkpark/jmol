@@ -1865,9 +1865,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     for (int i = normixCount; --i >= 0; ) {
       Vector3f tv = transformedVectors[i];
       rotationMatrix.transform2(vertexVectors[i], tv);
-      shadeIndexes[i] = shader.getShadeIndexNormalized(tv.x, -tv.y, tv.z);
+      shadeIndexes[i] = shader.getShadeB(tv.x, -tv.y, tv.z);
       shadeIndexes2Sided[i] = (tv.z >= 0 ? shadeIndexes[i] 
-          : shader.getShadeIndexNormalized(-tv.x, tv.y, -tv.z));
+          : shader.getShadeB(-tv.x, tv.y, -tv.z));
     }
   }
 

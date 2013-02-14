@@ -365,7 +365,7 @@ class CylinderRenderer {
       yRaster[i] = (int) (yR);
       zRaster[i] = (int) (zR + 0.5);
     }
-    fp8ShadeIndexUp[i] = shader.getFp8ShadeIndex((float) xR, (float) yR,
+    fp8ShadeIndexUp[i] = shader.getShadeFp8((float) xR, (float) yR,
         (float) zR);
   }
 

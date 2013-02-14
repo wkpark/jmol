@@ -206,7 +206,7 @@ public class Shader {
       for (; i < celShadeIndexNormal; ++i)
         shades[i] = celShade;
       red += redStep * celShadeIndexNormal;
-      grn += bluStep * celShadeIndexNormal;
+      grn += grnStep * celShadeIndexNormal;
       blu += bluStep * celShadeIndexNormal;
       final int celLight = ColorUtil.rgb((int)Math.floor(red), (int)Math.floor(grn), (int)Math.floor(blu));
       for (; i < shadeIndexMax;i++)

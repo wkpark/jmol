@@ -376,6 +376,7 @@ public final class Shader {
   public static byte[][][] ellipsoidShades;
   public static int nOut;
   public static int nIn;
+  public static boolean celOn;
 
   public static int getEllipsoidShade(float x, float y, float z, int radius,
                                        Matrix4f mDeriv) {

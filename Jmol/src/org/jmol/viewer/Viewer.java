@@ -750,6 +750,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     GData.setAmbientPercent(global.ambientPercent);
     GData.setDiffusePercent(global.diffusePercent);
     GData.setSpecular(global.specular);
+    GData.setCel(global.celShading);
     GData.setSpecularPercent(global.specularPercent);
     GData.setSpecularPower(-global.specularExponent);
     GData.setPhongExponent(global.phongExponent);

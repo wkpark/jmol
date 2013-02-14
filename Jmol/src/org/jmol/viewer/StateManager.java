@@ -497,7 +497,7 @@ public class StateManager {
         + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showtiming;showunitcell"
-        + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;specularpower;stateversion"
+        + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;celshading;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate;vibrationperiod"
         + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled;mousedragfactor;mousewheelfactor"
         //    saved in the hash table but not considered part of the state:
@@ -754,6 +754,7 @@ public class StateManager {
       setParamB("cartoonFancy", cartoonFancy);
       setParamB("cartoonRockets", cartoonRockets);
       setParamB("chainCaseSensitive", chainCaseSensitive);
+      setParamB("celShading", celShading);
       setParamS("dataSeparator", dataSeparator);
       setParamB("debugScript", debugScript);
       setParamS("defaultAngleLabel", defaultAngleLabel);
@@ -1086,6 +1087,7 @@ public class StateManager {
     float axesScale = 2;
     boolean bondPicking = false;
     float cameraDepth = 3.0f;
+    boolean celShading = false;
     String dataSeparator = "~~~";
     boolean debugScript = false;
     float defaultDrawArrowScale = 0.5f;
@@ -1393,7 +1395,7 @@ public class StateManager {
     
     boolean haveSetStructureList;
     private String[] userDatabases;
-    
+   
     public void setStructureList(float[] list, EnumStructure type) {
       haveSetStructureList = true;
       structureList.put(type, list);

@@ -345,6 +345,17 @@ public class GData implements JmolGraphicsInterface {
     flushCaches();
   }
 
+  public synchronized static void setCel(boolean val) {
+    if (Shader.celOn == val)
+      return;
+    Shader.celOn = val;
+    flushCaches();
+  }
+
+  public static boolean getCel() {
+    return Shader.celOn;
+  }
+
   private static void flushCaches() {
     Colix.flushShades();
     Shader.flushSphereCache();

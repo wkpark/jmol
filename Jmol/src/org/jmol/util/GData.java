@@ -39,6 +39,8 @@ public class GData implements JmolGraphicsInterface {
 
   public int bufferSize;
 
+  public Shader shader;
+
   public final static byte ENDCAPS_NONE = 0;
   public final static byte ENDCAPS_OPEN = 1;
   public final static byte ENDCAPS_FLAT = 2;
@@ -46,7 +48,7 @@ public class GData implements JmolGraphicsInterface {
   public final static byte ENDCAPS_OPENEND = 4;
   
   public GData() {
-    
+    shader = new Shader();
   }
   
   public void initialize(ApiPlatform apiPlatform) {
@@ -208,7 +210,7 @@ public class GData implements JmolGraphicsInterface {
   public int[] getShades(short colix) {
     if (colix < 0)
       colix = changeableColixMap[colix & Colix.UNMASK_CHANGEABLE_TRANSLUCENT];
-    return (inGreyscaleMode ? Colix.getShadesGreyscale(colix) : Colix
+    return (inGreyscaleMode ? shader.getShadesGreyscale(colix) : shader
         .getShades(colix));
   }
 
@@ -222,8 +224,8 @@ public class GData implements JmolGraphicsInterface {
     this.inGreyscaleMode = greyscaleMode;
   }
 
-  public static int getSpecularPower() {
-    return Shader.specularPower;
+  public int getSpecularPower() {
+    return shader.specularPower;
   }
 
   /**
@@ -231,20 +233,20 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setSpecularPower(int val) {
+  public synchronized void setSpecularPower(int val) {
     if (val < 0) {
       setSpecularExponent(-val);
       return;
     }
-    if (Shader.specularPower == val)
+    if (shader.specularPower == val)
       return;
-    Shader.specularPower = val;
-    Shader.intenseFraction = val / 100f;
+    shader.specularPower = val;
+    shader.intenseFraction = val / 100f;
     flushCaches();
   }
 
-  public static int getSpecularPercent() {
-    return Shader.specularPercent;
+  public int getSpecularPercent() {
+    return shader.specularPercent;
   }
 
   /**
@@ -253,16 +255,16 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setSpecularPercent(int val) {
-    if (Shader.specularPercent == val)
+  public synchronized void setSpecularPercent(int val) {
+    if (shader.specularPercent == val)
       return;
-    Shader.specularPercent = val;
-    Shader.specularFactor = val / 100f;
+    shader.specularPercent = val;
+    shader.specularFactor = val / 100f;
     flushCaches();
   }
 
-  public static int getSpecularExponent() {
-    return Shader.specularExponent;
+  public int getSpecularExponent() {
+    return shader.specularExponent;
   }
 
   /**
@@ -271,17 +273,17 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setSpecularExponent(int val) {
-    if (Shader.specularExponent == val)
+  public synchronized void setSpecularExponent(int val) {
+    if (shader.specularExponent == val)
       return;
-    Shader.specularExponent = val;
-    Shader.phongExponent = (int) Math.pow(2, val);
-    Shader.usePhongExponent = false;
+    shader.specularExponent = val;
+    shader.phongExponent = (int) Math.pow(2, val);
+    shader.usePhongExponent = false;
     flushCaches();
   }
 
-  public static int getPhongExponent() {
-    return Shader.phongExponent;
+  public int getPhongExponent() {
+    return shader.phongExponent;
   }
 
   /**
@@ -289,19 +291,19 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setPhongExponent(int val) {
-    if (Shader.phongExponent == val && Shader.usePhongExponent)
+  public synchronized void setPhongExponent(int val) {
+    if (shader.phongExponent == val && shader.usePhongExponent)
       return;
-    Shader.phongExponent = val;
+    shader.phongExponent = val;
     float x = (float) (Math.log(val) / Math.log(2));
-    Shader.usePhongExponent = (x != (int) x);
-    if (!Shader.usePhongExponent)
-      Shader.specularExponent = (int) x;
+    shader.usePhongExponent = (x != (int) x);
+    if (!shader.usePhongExponent)
+      shader.specularExponent = (int) x;
     flushCaches();
   }
 
-  public static int getDiffusePercent() {
-    return Shader.diffusePercent;
+  public int getDiffusePercent() {
+    return shader.diffusePercent;
   }
 
   /**
@@ -309,16 +311,16 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setDiffusePercent(int val) {
-    if (Shader.diffusePercent == val)
+  public synchronized void setDiffusePercent(int val) {
+    if (shader.diffusePercent == val)
       return;
-    Shader.diffusePercent = val;
-    Shader.diffuseFactor = val / 100f;
+    shader.diffusePercent = val;
+    shader.diffuseFactor = val / 100f;
     flushCaches();
   }
 
-  public static int getAmbientPercent() {
-    return Shader.ambientPercent;
+  public int getAmbientPercent() {
+    return shader.ambientPercent;
   }
 
   /**
@@ -326,43 +328,43 @@ public class GData implements JmolGraphicsInterface {
    * 
    * @param val
    */
-  public synchronized static void setAmbientPercent(int val) {
-    if (Shader.ambientPercent == val)
+  public synchronized void setAmbientPercent(int val) {
+    if (shader.ambientPercent == val)
       return;
-    Shader.ambientPercent = val;
-    Shader.ambientFraction = val / 100f;
+    shader.ambientPercent = val;
+    shader.ambientFraction = val / 100f;
     flushCaches();
   }
 
-  public static boolean getSpecular() {
-    return Shader.specularOn;
+  public boolean getSpecular() {
+    return shader.specularOn;
   }
 
-  public synchronized static void setSpecular(boolean val) {
-    if (Shader.specularOn == val)
+  public synchronized void setSpecular(boolean val) {
+    if (shader.specularOn == val)
       return;
-    Shader.specularOn = val;
+    shader.specularOn = val;
     flushCaches();
   }
 
-  public synchronized static void setCel(boolean val) {
-    if (Shader.celOn == val)
+  public synchronized void setCel(boolean val) {
+    if (shader.celOn == val)
       return;
-    Shader.celOn = val;
+    shader.celOn = val;
     flushCaches();
   }
 
-  public static boolean getCel() {
-    return Shader.celOn;
+  public boolean getCel() {
+    return shader.celOn;
   }
 
-  private static void flushCaches() {
-    Colix.flushShades();
-    Shader.flushSphereCache();
+  private void flushCaches() {
+    shader.flushShades();
+    shader.flushSphereCache();
   }
 
-  public static Point3f getLightSource() {
-    return Point3f.new3(Shader.xLight, Shader.yLight, Shader.zLight);
+  public Vector3f getLightSource() {
+    return shader.lightSource;
   }
 
   public boolean isClipped3(int x, int y, int z) {

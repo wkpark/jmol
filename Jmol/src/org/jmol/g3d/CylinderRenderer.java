@@ -42,10 +42,12 @@ class CylinderRenderer {
 
   private final Graphics3D g3d;
   private final LineRenderer line3d;
+  private final Shader shader;
 
   CylinderRenderer(Graphics3D g3d) {
     this.g3d = g3d;
     line3d = g3d.line3d;
+    shader = g3d.shader;
   }
 
   private short colixA, colixB;
@@ -241,7 +243,7 @@ class CylinderRenderer {
     colixA = colix;
     this.isScreenedA = isScreened;
     shadesA = g3d.getShades(colix);
-    int shadeIndexTip = Shader.getShadeIndex(dxB, dyB, -dzB);
+    int shadeIndexTip = shader.getShadeIndex(dxB, dyB, -dzB);
     g3d.plotPixelClippedScreened(shadesA[shadeIndexTip], isScreenedA, (int) xTip,
         (int) yTip, (int) zTip);
 
@@ -363,7 +365,7 @@ class CylinderRenderer {
       yRaster[i] = (int) (yR);
       zRaster[i] = (int) (zR + 0.5);
     }
-    fp8ShadeIndexUp[i] = Shader.getFp8ShadeIndex((float) xR, (float) yR,
+    fp8ShadeIndexUp[i] = shader.getFp8ShadeIndex((float) xR, (float) yR,
         (float) zR);
   }
 
@@ -637,12 +639,12 @@ class CylinderRenderer {
     float dxf = (isFloat ? dxBf : (float) dxB);
     float dyf = (isFloat ? dyBf : (float) dyB);
     if (dzf >= 0 || !tCylinder) {
-      endcapShadeIndex = Shader.getShadeIndex(-dxf, -dyf, dzf);
+      endcapShadeIndex = shader.getShadeIndex(-dxf, -dyf, dzf);
       colixEndcap = colixA;
       shadesEndcap = shadesA;
       //Logger.debug("endcap is A");
     } else {
-      endcapShadeIndex = Shader.getShadeIndex(dxf, dyf, -dzf);
+      endcapShadeIndex = shader.getShadeIndex(dxf, dyf, -dzf);
       colixEndcap = colixB;
       shadesEndcap = shadesB;
       xEndcap += dxB;

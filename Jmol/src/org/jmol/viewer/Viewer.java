@@ -747,14 +747,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     // transfer default global settings to managers and g3d
 
-    GData.setAmbientPercent(global.ambientPercent);
-    GData.setDiffusePercent(global.diffusePercent);
-    GData.setSpecular(global.specular);
-    GData.setCel(global.celShading);
-    GData.setSpecularPercent(global.specularPercent);
-    GData.setSpecularPower(-global.specularExponent);
-    GData.setPhongExponent(global.phongExponent);
-    GData.setSpecularPower(global.specularPower);
+    gdata.setAmbientPercent(global.ambientPercent);
+    gdata.setDiffusePercent(global.diffusePercent);
+    gdata.setSpecular(global.specular);
+    gdata.setCel(global.celShading);
+    gdata.setSpecularPercent(global.specularPercent);
+    gdata.setSpecularPower(-global.specularExponent);
+    gdata.setPhongExponent(global.phongExponent);
+    gdata.setSpecularPower(global.specularPower);
     if (modelSet != null)
       animationManager.setAnimationOn(false);
     animationManager.setAnimationFps(global.animationFps);
@@ -6127,7 +6127,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case Token.phongexponent:
       // 11.9.13
       value = checkIntRange(value, 0, 1000);
-      GData.setPhongExponent(value);
+      gdata.setPhongExponent(value);
       break;
     case Token.helixstep:
       // 11.8.RC3
@@ -6189,11 +6189,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         value = checkIntRange(value, -10, -1);
       else
         value = checkIntRange(value, 0, 100);
-      GData.setSpecularPower(value);
+      gdata.setSpecularPower(value);
       break;
     case Token.specularexponent:
       value = checkIntRange(-value, -10, -1);
-      GData.setSpecularPower(value);
+      gdata.setSpecularPower(value);
       break;
     case Token.bondradiusmilliangstroms:
       setMarBond((short) value);
@@ -6204,15 +6204,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     case Token.specularpercent:
       value = checkIntRange(value, 0, 100);
-      GData.setSpecularPercent(value);
+      gdata.setSpecularPercent(value);
       break;
     case Token.diffusepercent:
       value = checkIntRange(value, 0, 100);
-      GData.setDiffusePercent(value);
+      gdata.setDiffusePercent(value);
       break;
     case Token.ambientpercent:
       value = checkIntRange(value, 0, 100);
-      GData.setAmbientPercent(value);
+      gdata.setAmbientPercent(value);
       break;
     case Token.zdepth:
       transformManager.zDepthToPercent(value);
@@ -6295,6 +6295,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case Token.celshading:
+      // 13.1.13
+      global.celShading = value;
+      gdata.setCel(value);
+      break;
     case Token.cartoonfancy:
       // 12.3.7
       global.cartoonFancy = value;
@@ -6608,7 +6613,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.hbondsSolid = value;
       break;
     case Token.specular:
-      GData.setSpecular(value);
+      gdata.setSpecular(value);
       break;
     case Token.slabenabled:
       // Eval.slab

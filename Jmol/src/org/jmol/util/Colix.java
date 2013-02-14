@@ -116,11 +116,12 @@ public class Colix {
   public final static short RAW_RGB = 3;
   public final static short SPECIAL_COLIX_MAX = 4;
 
-  private static int colixMax = SPECIAL_COLIX_MAX;
-  private static int[] argbs = new int[128];
+  static int colixMax = SPECIAL_COLIX_MAX;
+  
+  static int[] argbs = new int[128];
+  
   private static int[] argbsGreyscale;
-  private static int[][] ashades = ArrayUtil.newInt2(128);
-  private static int[][] ashadesGreyscale;
+
   private static final Int2IntHash colixHash = new Int2IntHash(256);
   private static final int RAW_RGB_INT = RAW_RGB;
   public final static short UNMASK_CHANGEABLE_TRANSLUCENT = 0x07FF;
@@ -154,7 +155,7 @@ public class Colix {
   public final static short YELLOW = 21;
   public final static short HOTPINK = 22;
   public final static short GOLD = 23;
-
+  
   public Colix() {
   }
   
@@ -195,9 +196,6 @@ public class Colix {
 
       if (argbsGreyscale != null)
         argbsGreyscale = ArrayUtil.arrayCopyI(argbsGreyscale, newSize);
-      ashades = ArrayUtil.arrayCopyII(ashades, newSize);
-      if (ashadesGreyscale != null)
-        ashadesGreyscale = ArrayUtil.arrayCopyII(ashadesGreyscale, newSize);
     }
     argbs[colixMax] = argb;
     if (argbsGreyscale != null)
@@ -206,7 +204,12 @@ public class Colix {
     return (colixMax < LAST_AVAILABLE_COLIX ? colixMax++ : colixMax);
   }
 
-  private synchronized static void calcArgbsGreyscale() {
+  static void setLastGrey(int argb) {
+    calcArgbsGreyscale();
+    argbsGreyscale[LAST_AVAILABLE_COLIX] = ColorUtil.calcGreyscaleRgbFromRgb(argb);
+  }
+
+  synchronized static void calcArgbsGreyscale() {
     if (argbsGreyscale != null)
       return;
     int[] a = new int[argbs.length];
@@ -219,40 +222,6 @@ public class Colix {
     if (argbsGreyscale == null)
       calcArgbsGreyscale();
     return argbsGreyscale[colix & OPAQUE_MASK];
-  }
-
-  public final static int[] getShadesArgb(int argb, boolean asGrey) {
-    if (asGrey) {
-      if (argbsGreyscale == null)
-        calcArgbsGreyscale();
-      argbsGreyscale[LAST_AVAILABLE_COLIX] = ColorUtil.calcGreyscaleRgbFromRgb(argb);
-    }
-    return ashades[LAST_AVAILABLE_COLIX] = Shader.getShades(argb, false);
-  }
-
-  public final static int[] getShades(short colix) {
-    colix &= OPAQUE_MASK;
-    int[] shades = ashades[colix];
-    if (shades == null)
-      shades = ashades[colix] = Shader.getShades(argbs[colix], false);
-    return shades;
-  }
-
-  public final static int[] getShadesGreyscale(short colix) {
-    colix &= OPAQUE_MASK;
-    if (ashadesGreyscale == null)
-      ashadesGreyscale = ArrayUtil.newInt2(ashades.length);
-    int[] shadesGreyscale = ashadesGreyscale[colix];
-    if (shadesGreyscale == null)
-      shadesGreyscale = ashadesGreyscale[colix] =
-        Shader.getShades(argbs[colix], true);
-    return shadesGreyscale;
-  }
-
-  public final synchronized static void flushShades() {
-    for (int i = colixMax; --i >= 0; )
-      ashades[i] = null;
-    Shader.sphereShadingCalculated = false;
   }
 
   /*

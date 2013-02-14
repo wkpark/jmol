@@ -418,14 +418,15 @@ public class StateCreator implements JmolStateCreator {
 
   public String getSpecularState() {
     StringXBuilder str = new StringXBuilder();
-    appendCmd(str, "set ambientPercent " + GData.getAmbientPercent());
-    appendCmd(str, "set diffusePercent " + GData.getDiffusePercent());
-    appendCmd(str, "set specular " + GData.getSpecular());
-    appendCmd(str, "set specularPercent " + GData.getSpecularPercent());
-    appendCmd(str, "set specularPower " + GData.getSpecularPower());
-    appendCmd(str, "set celShading " + GData.getCel());
-    int se = GData.getSpecularExponent();
-    int pe = GData.getPhongExponent();
+    GData g = viewer.gdata;
+    appendCmd(str, "set ambientPercent " + g.getAmbientPercent());
+    appendCmd(str, "set diffusePercent " + g.getDiffusePercent());
+    appendCmd(str, "set specular " + g.getSpecular());
+    appendCmd(str, "set specularPercent " + g.getSpecularPercent());
+    appendCmd(str, "set specularPower " + g.getSpecularPower());
+    appendCmd(str, "set celShading " + g.getCel());
+    int se = g.getSpecularExponent();
+    int pe = g.getPhongExponent();
     if (Math.pow(2, se) == pe)
       appendCmd(str, "set specularExponent " + se);
     else

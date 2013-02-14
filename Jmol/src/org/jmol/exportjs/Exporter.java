@@ -154,7 +154,6 @@ public abstract class Exporter {
   protected int screenHeight;
   protected int slabZ;
   protected int depthZ;
-  protected Point3f lightSource = GData.getLightSource();
   protected Point3f fixedRotationCenter;
   protected Point3f referenceCenter;
   protected Point3f cameraPosition;

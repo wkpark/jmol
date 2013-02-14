@@ -779,7 +779,7 @@ public class Token {
   // handled specially in ScriptEvaluator
 
   public final static int backgroundmodel  = setparam | 2;
-  public final static int celShading       = setparam | 3;
+  public final static int celshading       = setparam | 3;
   public final static int debug            = setparam | 4;
   public final static int defaultlattice   = setparam | 6;
   public final static int highlight        = setparam | 8;// 12.0.RC14
@@ -2139,7 +2139,7 @@ public class Token {
       // set params
 
       "backgroundModel",                          new Token(backgroundmodel),
-      "celShading",                                new Token(celShading),
+      "celShading",                                new Token(celshading),
       "debug",                                    new Token(debug),
       "defaultLattice",                           new Token(defaultlattice),
       "measurements",                             new Token(measurements),

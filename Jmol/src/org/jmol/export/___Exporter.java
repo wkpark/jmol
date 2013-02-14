@@ -164,7 +164,7 @@ public abstract class ___Exporter {
   protected int screenHeight;
   protected int slabZ;
   protected int depthZ;
-  protected Point3f lightSource = GData.getLightSource();
+  protected Vector3f lightSource;
   protected Point3f fixedRotationCenter;
   protected Point3f referenceCenter;
   protected Point3f cameraPosition;
@@ -218,6 +218,7 @@ public abstract class ___Exporter {
     }
     slabZ = g3d.getSlab();
     depthZ = g3d.getDepth();
+    lightSource = g3d.getLightSource();
     Point3f[] cameraFactors = viewer.getCameraFactors();
     referenceCenter = cameraFactors[0];
     cameraPosition = cameraFactors[1];

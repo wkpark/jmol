@@ -66,10 +66,10 @@ public class _TachyonExporter extends __RayTracerExporter {
   }
   
   private void getLightingInfo() {
-    lighting = " AMBIENT " + round(GData.getAmbientPercent() / 100f)
-        + " DIFFUSE " + round(GData.getDiffusePercent()/100f) 
-        + " SPECULAR " + round(GData.getSpecularPercent() / 100f);
-    phong = " Phong Plastic 0.5 Phong_size " + GData.getSpecularExponent();
+    lighting = " AMBIENT " + round(g3d.getAmbientPercent() / 100f)
+        + " DIFFUSE " + round(g3d.getDiffusePercent()/100f) 
+        + " SPECULAR " + round(g3d.getSpecularPercent() / 100f);
+    phong = " Phong Plastic 0.5 Phong_size " + g3d.getSpecularExponent();
   }  
   
   /* 

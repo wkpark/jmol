@@ -53,10 +53,12 @@ import org.jmol.util.Shader;
 
 final class LineRenderer {
 
-  private Graphics3D g3d;
+  private final Graphics3D g3d;
+  private final Shader shader;
 
   LineRenderer(Graphics3D g3d) {
     this.g3d = g3d;
+    shader = g3d.shader;
   }
 
   private BitSet lineBits;
@@ -533,7 +535,7 @@ final class LineRenderer {
             && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            int rand8 = Shader.nextRandom8Bit();
+            int rand8 = shader.nextRandom8Bit();
             g3d.addPixel(offset, zCurrent, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
           }
         }
@@ -576,7 +578,7 @@ final class LineRenderer {
             && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            int rand8 = Shader.nextRandom8Bit();
+            int rand8 = g3d.shader.nextRandom8Bit();
             g3d.addPixel(offset, zCurrent, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
           }
         }
@@ -671,7 +673,7 @@ final class LineRenderer {
       if (argb != 0 && isInWindow && offset >= 0 && offset < offsetMax 
           && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
         if (zFloat < zbuf[offset]) {
-          int rand8 = Shader.nextRandom8Bit();
+          int rand8 = shader.nextRandom8Bit();
           g3d.addPixel(offset, (int) zFloat, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
         }
       }

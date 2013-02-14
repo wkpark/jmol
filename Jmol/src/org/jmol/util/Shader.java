@@ -25,12 +25,9 @@
 package org.jmol.util;
 
 
-
-
-
 /**
  *<p>
- * All static functions.
+ * All functions.
  * Implements the shading of RGB values to support shadow and lighting
  * highlights.
  *</p>
@@ -40,63 +37,115 @@ package org.jmol.util;
  *</p>
  *
  * @author Miguel, miguel@jmol.org
+ * @author Bob Hanson, hansonr@stolaf.edu
+ * 
  */
-public final class Shader {
+public class Shader {
 
   // there are 64 shades of a given color
   // 0 = ambient
   // 52 = normal
   // 56 = max for 
   // 63 = specular
-  public static final int shadeIndexMax = 64;
-  public static final int shadeIndexLast = shadeIndexMax - 1;
-  public static final byte shadeIndexNormal = 52;
-  public final static byte shadeIndexNoisyLimit = 56;
+  private static int shadeIndexMax = 64;
+  public static int shadeIndexLast = shadeIndexMax - 1;
+  public static byte shadeIndexNormal = 52;
+  public static byte shadeIndexNoisyLimit = 56;
 
   // the viewer vector is always {0 0 1}
 
-  // the light source vector -- up and to the left
-  private static final float xLightsource = -1;
-  private static final float yLightsource = -1;
-  private static final float zLightsource = 2.5f;
-  
-  private static final float magnitudeLight =
-    (float)Math.sqrt(xLightsource * xLightsource +
-                     yLightsource * yLightsource +
-                     zLightsource * zLightsource);
   // the light source vector normalized
-  public static final float xLight = xLightsource / magnitudeLight;
-  public static final float yLight = yLightsource / magnitudeLight;
-  public static final float zLight = zLightsource / magnitudeLight;
+  private float xLight, yLight, zLight;
   
-  public static boolean specularOn = true; 
-  public static boolean usePhongExponent = false;
+  public Shader() {
+    setLightSource(-1f, -1f, 2.5f); 
+  }
+  
+  Vector3f lightSource = new Vector3f();
+  
+  private void setLightSource(float x, float y, float z) {
+    lightSource.set(x, y, z);
+    lightSource.normalize();
+    xLight = lightSource.x;
+    yLight = lightSource.y;
+    zLight = lightSource.z;
+  }
+
+  public boolean specularOn = true; 
+  public boolean usePhongExponent = false;
   
   //fractional distance from black for ambient color
-  public static int ambientPercent = 45;
+  public int ambientPercent = 45;
   
   // df in I = df * (N dot L) + sf * (R dot V)^p
-  public static int diffusePercent = 84;
+  public int diffusePercent = 84;
 
   // log_2(p) in I = df * (N dot L) + sf * (R dot V)^p
   // for faster calculation of shades
-  public static int specularExponent = 6;
+  public int specularExponent = 6;
 
   // sf in I = df * (N dot L) + sf * (R dot V)^p
   // not a percent of anything, really
-  public static int specularPercent = 22;
+  public int specularPercent = 22;
   
   // fractional distance to white for specular dot
-  public static int specularPower = 40;
+  public int specularPower = 40;
 
   // p in I = df * (N dot L) + sf * (R dot V)^p
-  public static int phongExponent = 64;
+  public int phongExponent = 64;
   
-  public static float ambientFraction = ambientPercent / 100f;
-  public static float diffuseFactor = diffusePercent / 100f;
-  public static float intenseFraction = specularPower / 100f;
-  public static float specularFactor = specularPercent / 100f;
+  public float ambientFraction = ambientPercent / 100f;
+  public float diffuseFactor = diffusePercent / 100f;
+  public float intenseFraction = specularPower / 100f;
+  public float specularFactor = specularPercent / 100f;
   
+  private int[][] ashades = ArrayUtil.newInt2(128);
+  private int[][] ashadesGreyscale;
+
+  public int[] getShadesLast(int argb, boolean asGrey) {
+    Colix.allocateColix(argb);
+    checkShades();
+    if (asGrey)
+      Colix.setLastGrey(argb);
+    return ashades[Colix.LAST_AVAILABLE_COLIX] = getShades2(argb, false);
+  }
+
+  public int[] getShades(short colix) {
+    checkShades();
+    colix &= Colix.OPAQUE_MASK;
+    int[] shades = ashades[colix];
+    if (shades == null)
+      shades = ashades[colix] = getShades2(Colix.argbs[colix], false);
+    return shades;
+  }
+
+  public int[] getShadesGreyscale(short colix) {
+    checkShades();
+    colix &= Colix.OPAQUE_MASK;
+    if (ashadesGreyscale == null)
+      ashadesGreyscale = ArrayUtil.newInt2(ashades.length);
+    int[] shadesGreyscale = ashadesGreyscale[colix];
+    if (shadesGreyscale == null)
+      shadesGreyscale = ashadesGreyscale[colix] =
+        getShades2(Colix.argbs[colix], true);
+    return shadesGreyscale;
+  }
+
+  private void checkShades() {
+    if (ashades != null && ashades.length == Colix.colixMax)
+      return;
+    ashades = ArrayUtil.arrayCopyII(ashades, Colix.colixMax);
+    if (ashadesGreyscale != null)
+      ashadesGreyscale = ArrayUtil.arrayCopyII(ashadesGreyscale, Colix.colixMax);
+  }
+  
+  public void flushShades() {
+    checkShades();
+    for (int i = Colix.colixMax; --i >= 0; )
+      ashades[i] = null;
+    sphereShadingCalculated = false;
+  }
+
   /*
    * intensity calculation:
    * 
@@ -110,7 +159,7 @@ public final class Shader {
    *              black  <---ambient%--x---specular power---->  white
    */
   
-  public static int[] getShades(int rgb, boolean greyScale) {
+  public int[] getShades2(int rgb, boolean greyScale) {
     int[] shades = new int[shadeIndexMax];
     if (rgb == 0)
       return shades;
@@ -178,7 +227,7 @@ public final class Shader {
     return shades;
   }
 
-  public static int getShadeIndex(float x, float y, float z) {
+  public int getShadeIndex(float x, float y, float z) {
     // from Cylinder3D.calcArgbEndcap and renderCone
     // from GData.getShadeIndex and getShadeIndex
     double magnitude = Math.sqrt(x*x + y*y + z*z);
@@ -188,13 +237,13 @@ public final class Shader {
                   * shadeIndexLast);
   }
 
-  public static byte getShadeIndexNormalized(float x, float y, float z) {
+  public byte getShadeIndexNormalized(float x, float y, float z) {
     //from Normix3D.setRotationMatrix
     return (byte) Math.round (getFloatShadeIndexNormalized(x, y, z)
                   * shadeIndexLast);
   }
 
-  public static int getFp8ShadeIndex(float x, float y, float z) {
+  public int getFp8ShadeIndex(float x, float y, float z) {
     //from calcDitheredNoisyShadeIndex (not utilized)
     //and Cylinder.calcRotatedPoint
     double magnitude = Math.sqrt(x*x + y*y + z*z);
@@ -204,7 +253,7 @@ public final class Shader {
                  * shadeIndexLast * (1 << 8));
   }
 
-  private static float getFloatShadeIndexNormalized(float x, float y, float z) {
+  private float getFloatShadeIndexNormalized(float x, float y, float z) {
     float NdotL = x * xLight + y * yLight + z * zLight;
     if (NdotL <= 0)
       return 0;
@@ -252,7 +301,7 @@ public final class Shader {
   }
 
   /*
-   static byte getDitheredShadeIndex(float x, float y, float z) {
+   byte getDitheredShadeIndex(float x, float y, float z) {
    //not utilized
    // add some randomness to prevent banding
    int fp8ShadeIndex = getFp8ShadeIndex(x, y, z);
@@ -271,7 +320,7 @@ public final class Shader {
    }
    */
 
-  public static byte getDitheredNoisyShadeIndex(float x, float y, float z, float r) {
+  public byte getDitheredNoisyShadeIndex(float x, float y, float z, float r) {
     // from Sphere3D only
     // add some randomness to prevent banding
     int fp8ShadeIndex = (int) Math.floor(getFloatShadeIndexNormalized(x / r, y / r, z / r)
@@ -296,8 +345,8 @@ public final class Shader {
     The Art of Computer Programming,
     Volume 2: Seminumerical Algorithms, section 3.2.1.
 
-  static long seed = 1;
-  static int nextRandom8Bit() {
+  long seed = 1;
+  int nextRandom8Bit() {
     seed = (seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
     //    return (int)(seed >>> (48 - bits));
     return (int)(seed >>> 40);
@@ -309,10 +358,10 @@ public final class Shader {
   // Sphere shading cache for Large spheres
   ////////////////////////////////////////////////////////////////
 
-  public static boolean sphereShadingCalculated = false;
-  public final static byte[] sphereShadeIndexes = new byte[256 * 256];
+  public boolean sphereShadingCalculated = false;
+  public byte[] sphereShadeIndexes = new byte[256 * 256];
 
-  public synchronized static void calcSphereShading() {
+  public synchronized void calcSphereShading() {
     //if (!sphereShadingCalculated) { //unnecessary -- but be careful!
     float xF = -127.5f;
     for (int i = 0; i < 256; ++xF, ++i) {
@@ -331,7 +380,7 @@ public final class Shader {
   }
   
   /*
-  static byte getSphereshadeIndex(int x, int y, int r) {
+  byte getSphereshadeIndex(int x, int y, int r) {
     int d = 2*r + 1;
     x += r;
     if (x < 0)
@@ -351,7 +400,7 @@ public final class Shader {
     
   // this doesn't really need to be synchronized
   // no serious harm done if two threads write seed at the same time
-  private static int seed = 0x12345679; // turn lo bit on
+  private int seed = 0x12345679; // turn lo bit on
   /**
    *<p>
    * Implements RANDU algorithm for random noise in lighting/shading.
@@ -363,7 +412,7 @@ public final class Shader {
    *
    * @return Next random
    */
-  public static int nextRandom8Bit() {
+  public int nextRandom8Bit() {
     int t = seed;
     seed = t = ((t << 16) + (t << 1) + t) & 0x7FFFFFFF;
     return t >> 23;
@@ -372,13 +421,13 @@ public final class Shader {
   private final static int SLIM = 20;
   private final static int SDIM = SLIM * 2;
   public final static int maxSphereCache = 128;
-  public final static int[][] sphereShapeCache = ArrayUtil.newInt2(maxSphereCache);
-  public static byte[][][] ellipsoidShades;
-  public static int nOut;
-  public static int nIn;
-  public static boolean celOn;
+  public int[][] sphereShapeCache = ArrayUtil.newInt2(maxSphereCache);
+  public byte[][][] ellipsoidShades;
+  public int nOut;
+  public int nIn;
+  public boolean celOn;
 
-  public static int getEllipsoidShade(float x, float y, float z, int radius,
+  public int getEllipsoidShade(float x, float y, float z, int radius,
                                        Matrix4f mDeriv) {
     float tx = mDeriv.m00 * x + mDeriv.m01 * y + mDeriv.m02 * z + mDeriv.m03;
     float ty = mDeriv.m10 * x + mDeriv.m11 * y + mDeriv.m12 * z + mDeriv.m13;
@@ -410,7 +459,7 @@ public final class Shader {
         : ellipsoidShades[i + SLIM][j + SLIM][k]);
   }
 
-  public static void createEllipsoidShades() {
+  public void createEllipsoidShades() {
     
     // we don't need to cache rear-directed normals (kk < 0)
     
@@ -422,7 +471,7 @@ public final class Shader {
               - SLIM, kk);
   }
 
-  public static synchronized void flushSphereCache() {
+  public synchronized void flushSphereCache() {
     for (int i =  maxSphereCache; --i >= 0;)
       sphereShapeCache[i] = null;
     ellipsoidShades = null;

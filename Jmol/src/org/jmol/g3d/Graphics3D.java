@@ -619,8 +619,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         if (argbCurrent == 0)
           argbCurrent = 0xFFFFFFFF;
         lastRawColor = argbCurrent;
-        Colix.allocateColix(argbCurrent);
-        Colix.getShadesArgb(argbCurrent, inGreyscaleMode);
+        shader.getShadesLast(argbCurrent, inGreyscaleMode);
       }
     }
     shadesCurrent = getShades(colix);
@@ -702,13 +701,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   public void volumeRender(boolean TF) {
     if (TF) {
-      saveAmbient = Shader.ambientPercent;
-      saveDiffuse = Shader.diffusePercent;
-      GData.setAmbientPercent(100);
-      GData.setDiffusePercent(0);
+      saveAmbient = shader.ambientPercent;
+      saveDiffuse = shader.diffusePercent;
+      setAmbientPercent(100);
+      setDiffusePercent(0);
     } else {
-      GData.setAmbientPercent(saveAmbient);
-      GData.setDiffusePercent(saveDiffuse);
+      setAmbientPercent(saveAmbient);
+      setDiffusePercent(saveDiffuse);
     }
   }
   /**
@@ -1747,13 +1746,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         - screenA.z);
     int shadeIndex;
     if (screenC == null) {
-      shadeIndex = Shader.getShadeIndex(-vectorAB.x, -vectorAB.y, vectorAB.z);
+      shadeIndex = shader.getShadeIndex(-vectorAB.x, -vectorAB.y, vectorAB.z);
     } else {
       vectorAC.set(screenC.x - screenA.x, screenC.y - screenA.y, screenC.z
           - screenA.z);
       vectorAB.cross(vectorAB, vectorAC);
-      shadeIndex = vectorAB.z >= 0 ? Shader.getShadeIndex(-vectorAB.x,
-          -vectorAB.y, vectorAB.z) : Shader.getShadeIndex(vectorAB.x,
+      shadeIndex = vectorAB.z >= 0 ? shader.getShadeIndex(-vectorAB.x,
+          -vectorAB.y, vectorAB.z) : shader.getShadeIndex(vectorAB.x,
           vectorAB.y, -vectorAB.z);
     }
     if (shadeIndex > Shader.shadeIndexNoisyLimit)
@@ -1769,9 +1768,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     vectorNormal.cross(vectorAB, vectorAC);
     return
       (vectorNormal.z >= 0
-            ? Shader.getShadeIndex(-vectorNormal.x, -vectorNormal.y,
+            ? shader.getShadeIndex(-vectorNormal.x, -vectorNormal.y,
                                     vectorNormal.z)
-            : Shader.getShadeIndex(vectorNormal.x, vectorNormal.y,
+            : shader.getShadeIndex(vectorNormal.x, vectorNormal.y,
                                     -vectorNormal.z));
   }
     
@@ -1866,9 +1865,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     for (int i = normixCount; --i >= 0; ) {
       Vector3f tv = transformedVectors[i];
       rotationMatrix.transform2(vertexVectors[i], tv);
-      shadeIndexes[i] = Shader.getShadeIndexNormalized(tv.x, -tv.y, tv.z);
+      shadeIndexes[i] = shader.getShadeIndexNormalized(tv.x, -tv.y, tv.z);
       shadeIndexes2Sided[i] = (tv.z >= 0 ? shadeIndexes[i] 
-          : Shader.getShadeIndexNormalized(-tv.x, tv.y, -tv.z));
+          : shader.getShadeIndexNormalized(-tv.x, tv.y, -tv.z));
     }
   }
 

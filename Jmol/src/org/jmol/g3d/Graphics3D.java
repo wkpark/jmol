@@ -619,7 +619,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         if (argbCurrent == 0)
           argbCurrent = 0xFFFFFFFF;
         lastRawColor = argbCurrent;
-        shader.getShadesLast(argbCurrent, inGreyscaleMode);
+        shader.setLastColix(argbCurrent, inGreyscaleMode);
       }
     }
     shadesCurrent = getShades(colix);

@@ -38,6 +38,7 @@ package org.jmol.util;
  *
  * @author Miguel, miguel@jmol.org
  * @author Bob Hanson, hansonr@stolaf.edu
+ * @author N David Brown -- cel shading
  * 
  */
 public class Shader {
@@ -101,13 +102,34 @@ public class Shader {
   
   private int[][] ashades = ArrayUtil.newInt2(128);
   private int[][] ashadesGreyscale;
+  private int rgbContrast;
 
-  public int[] getShadesLast(int argb, boolean asGrey) {
+  public void setCel(boolean celOn, int argb) {
+    argb = Colix.getArgb(ColorUtil.getBgContrast(argb));
+    if (argb == 0xFF000000)
+      argb = 0xFF040404; // problem here is with antialiasDisplay on white background
+    if (this.celOn == celOn && rgbContrast == argb)
+      return;
+    this.celOn = celOn;
+    rgbContrast = argb;
+    flushCaches();
+  }
+  
+  public void flushCaches() {
+    flushShades();
+    flushSphereCache();
+  }
+  
+  public boolean getCelOn() {
+    return celOn;
+  }
+  
+  public void setLastColix(int argb, boolean asGrey) {
     Colix.allocateColix(argb);
     checkShades();
     if (asGrey)
       Colix.setLastGrey(argb);
-    return ashades[Colix.LAST_AVAILABLE_COLIX] = getShades2(argb, false);
+    ashades[Colix.LAST_AVAILABLE_COLIX] = getShades2(argb, false);
   }
 
   public int[] getShades(short colix) {
@@ -158,21 +180,20 @@ public class Shader {
    *                     af*x........ x ..............x+(255-x)*if
    *              black  <---ambient%--x---specular power---->  white
    */
-  
-  public int[] getShades2(int rgb, boolean greyScale) {
+
+  private int[] getShades2(int rgb, boolean greyScale) {
     int[] shades = new int[shadeIndexMax];
     if (rgb == 0)
       return shades;
-    
 
     float red0 = ((rgb >> 16) & 0xFF);
-    float grn0 = ((rgb >>  8) & 0xFF);
-    float blu0 = (rgb         & 0xFF);
-    
+    float grn0 = ((rgb >> 8) & 0xFF);
+    float blu0 = (rgb & 0xFF);
+
     float red = 0;
     float grn = 0;
     float blu = 0;
-    
+
     float f = ambientFraction;
 
     while (true) {
@@ -188,62 +209,75 @@ public class Shader {
         blu0++;
         if (f < 0.1f)
           f += 0.1f;
-        rgb = ColorUtil.rgb((int)Math.floor(red0), (int)Math.floor(grn0), (int)Math.floor(blu0));
+        rgb = ColorUtil.rgb((int) Math.floor(red0), (int) Math.floor(grn0),
+            (int) Math.floor(blu0));
         continue;
       }
       break;
     }
-    f = (1 - f) / shadeIndexNormal;
 
-    float redStep = red0 * f;
-    float grnStep = grn0 * f;
-    float bluStep = blu0 * f;
+    int i;
+    
+   if (celOn) {
 
-    int i = 0;
-    if (celOn) {
-      final int celShadeIndexNormal = shadeIndexMax/2;
-      final int celShade = ColorUtil.rgb((int)Math.floor(red), (int)Math.floor(grn), (int)Math.floor(blu));
-      for (; i < celShadeIndexNormal; ++i)
-        shades[i] = celShade;
-      red += redStep * celShadeIndexNormal;
-      grn += grnStep * celShadeIndexNormal;
-      blu += bluStep * celShadeIndexNormal;
-      final int celLight = ColorUtil.rgb((int)Math.floor(red), (int)Math.floor(grn), (int)Math.floor(blu));
-      for (; i < shadeIndexMax;i++)
-        shades[i] = celLight;
-    } else {
+     int max = shadeIndexMax/2;
+
+     f = (1 - f) /shadeIndexNormal;
+
+     float redStep = red0 * f;
+     float grnStep = grn0 * f;
+     float bluStep = blu0 * f;
+
+     int _rgb = ColorUtil.rgb((int) Math.floor(red), (int) Math.floor(grn),
+         (int) Math.floor(blu));
+     for (i = 0; i < max; ++i)
+       shades[i] = _rgb;
+
+     red += redStep * max;
+     grn += grnStep * max;
+     blu += bluStep * max;
+
+     _rgb = ColorUtil.rgb((int) Math.floor(red), (int) Math.floor(grn),
+         (int) Math.floor(blu));
+     for (; i < shadeIndexMax; i++)
+       shades[i] = _rgb;
+
+     // Min r,g,b is 4,4,4 or else antialiasing bleeds background colour into edges.
+     shades[0] = shades[1] = rgbContrast;
+
+   } else {
+
+      f = (1 - f) / shadeIndexNormal;
+      float redStep = red0 * f;
+      float grnStep = grn0 * f;
+      float bluStep = blu0 * f;
+
       for (i = 0; i < shadeIndexNormal; ++i) {
-        shades[i] = ColorUtil.rgb((int)Math.floor(red), (int)Math.floor(grn), (int)Math.floor(blu));
+        shades[i] = ColorUtil.rgb((int) Math.floor(red), (int) Math.floor(grn),
+            (int) Math.floor(blu));
         red += redStep;
         grn += grnStep;
         blu += bluStep;
       }
 
-      shades[i++] = rgb;    
+      shades[i++] = rgb;
 
       f = intenseFraction / (shadeIndexMax - i);
       redStep = (255.5f - red) * f;
       grnStep = (255.5f - grn) * f;
       bluStep = (255.5f - blu) * f;
 
-      for (; i < shadeIndexMax;i++) {
+      for (; i < shadeIndexMax; i++) {
         red += redStep;
         grn += grnStep;
         blu += bluStep;
-        shades[i] = ColorUtil.rgb((int)Math.floor(red), (int)Math.floor(grn), (int)Math.floor(blu));
+        shades[i] = ColorUtil.rgb((int) Math.floor(red), (int) Math.floor(grn),
+            (int) Math.floor(blu));
       }
     }
-    
     if (greyScale)
       for (; --i >= 0;)
         shades[i] = ColorUtil.calcGreyscaleRgbFromRgb(shades[i]);
-    
-    if (celOn) {
-      // Create edges.
-      // Note: min r,g,b is 4,4,4 or else antialiasing bleeds background colour into edges.
-       shades[0] = shades[1] = bgContrast == Colix.BLACK ? ColorUtil.rgb(4, 4, 4) : ColorUtil.rgb(255, 255, 255);     
-    }
-    
     return shades;
   }
 
@@ -314,13 +348,7 @@ public class Shader {
         intensity += k_specular * specularFactor;
       }
     }
-    
-    if (celOn && z < 0.5f)
-        return 0f;
-    
-    if (intensity > 1)
-      return 1;
-    return intensity;
+    return (celOn && z < 0.5f ? 0f : intensity > 1 ? 1f : intensity);
   }
 
   /*
@@ -349,7 +377,7 @@ public class Shader {
     int fp8ShadeIndex = (int) Math.floor(getShadeF(x / r, y / r, z / r)
         * shadeIndexLast * (1 << 8));
     int shadeIndex = fp8ShadeIndex >> 8;
-    // this cannot overflow because if the float shadeIndex is 1.0
+    // this cannot overflow because the if the float shadeIndex is 1.0
     // then shadeIndex will be == shadeLast
     // but there will be no fractional component, so the next test will fail
     if ((fp8ShadeIndex & 0xFF) > nextRandom8Bit())
@@ -448,8 +476,10 @@ public class Shader {
   public byte[][][] ellipsoidShades;
   public int nOut;
   public int nIn;
-  public boolean celOn;
-  public short bgContrast;
+  private boolean celOn;
+
+  // Cel shading.
+  // @author N David Brown
 
   public int getEllipsoidShade(float x, float y, float z, int radius,
                                        Matrix4f mDeriv) {
@@ -500,4 +530,5 @@ public class Shader {
       sphereShapeCache[i] = null;
     ellipsoidShades = null;
   }
+  
 }

@@ -117,7 +117,7 @@ class ColorManager {
   short colixBackgroundContrast;
 
   void setColixBackgroundContrast(int argb) {
-    colixBackgroundContrast = Colix.getColorContrast(argb);
+    colixBackgroundContrast = ColorUtil.getBgContrast(argb);
   }
 
   short getColixBondPalette(Bond bond, int pid) {

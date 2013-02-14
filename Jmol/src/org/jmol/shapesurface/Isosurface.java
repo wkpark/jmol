@@ -223,7 +223,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if ("remapInherited" == propertyName) {
       for (int i = meshCount; --i >= 0;) {
         if (isomeshes[i] != null
-            && isomeshes[i].colorCommand.equals("#inherit;"))
+            && "#inherit;".equals(isomeshes[i].colorCommand))
           isomeshes[i].remapColors(viewer, null, Float.NaN);
       }
       return;

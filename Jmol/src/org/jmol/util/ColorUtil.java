@@ -476,4 +476,9 @@ public class ColorUtil {
     return rgb(grey, grey, grey);
   }
 
+  public static short getBgContrast(int argb) {
+    return ((calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? Colix.WHITE
+        : Colix.BLACK);
+  }
+
 }

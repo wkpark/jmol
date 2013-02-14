@@ -447,9 +447,6 @@ public class Colix {
     if (a == 0xFF)
       return getColix(argb);
     return getColixTranslucent3(getColix(argb), true, a / 255f);
-  }
-  
-  public static short getColorContrast(int argb) {
-    return ((ColorUtil.calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? Colix.WHITE : Colix.BLACK);
-  }
+  }  
+
 }

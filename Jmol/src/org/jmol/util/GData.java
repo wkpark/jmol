@@ -242,7 +242,7 @@ public class GData implements JmolGraphicsInterface {
       return;
     shader.specularPower = val;
     shader.intenseFraction = val / 100f;
-    flushCaches();
+    shader.flushCaches();
   }
 
   public int getSpecularPercent() {
@@ -260,7 +260,7 @@ public class GData implements JmolGraphicsInterface {
       return;
     shader.specularPercent = val;
     shader.specularFactor = val / 100f;
-    flushCaches();
+    shader.flushCaches();
   }
 
   public int getSpecularExponent() {
@@ -279,7 +279,7 @@ public class GData implements JmolGraphicsInterface {
     shader.specularExponent = val;
     shader.phongExponent = (int) Math.pow(2, val);
     shader.usePhongExponent = false;
-    flushCaches();
+    shader.flushCaches();
   }
 
   public int getPhongExponent() {
@@ -299,7 +299,7 @@ public class GData implements JmolGraphicsInterface {
     shader.usePhongExponent = (x != (int) x);
     if (!shader.usePhongExponent)
       shader.specularExponent = (int) x;
-    flushCaches();
+    shader.flushCaches();
   }
 
   public int getDiffusePercent() {
@@ -316,7 +316,7 @@ public class GData implements JmolGraphicsInterface {
       return;
     shader.diffusePercent = val;
     shader.diffuseFactor = val / 100f;
-    flushCaches();
+    shader.flushCaches();
   }
 
   public int getAmbientPercent() {
@@ -333,7 +333,7 @@ public class GData implements JmolGraphicsInterface {
       return;
     shader.ambientPercent = val;
     shader.ambientFraction = val / 100f;
-    flushCaches();
+    shader.flushCaches();
   }
 
   public boolean getSpecular() {
@@ -344,25 +344,15 @@ public class GData implements JmolGraphicsInterface {
     if (shader.specularOn == val)
       return;
     shader.specularOn = val;
-    flushCaches();
+    shader.flushCaches();
   }
 
-  public synchronized void setCel(boolean val) {
-    short bgContrast = Colix.getColorContrast(bgcolor);
-    if (shader.celOn == val && bgContrast == shader.bgContrast)
-      return;
-    shader.bgContrast = bgContrast;
-    shader.celOn = val;
-    flushCaches();
+  public void setCel(boolean val) {
+    shader.setCel(val, bgcolor);
   }
 
   public boolean getCel() {
-    return shader.celOn;
-  }
-
-  private void flushCaches() {
-    shader.flushShades();
-    shader.flushSphereCache();
+    return shader.getCelOn();
   }
 
   public Vector3f getLightSource() {
@@ -481,11 +471,9 @@ public class GData implements JmolGraphicsInterface {
    */
   public void setBackgroundArgb(int argb) {
     bgcolor = argb;
+    setCel(getCel());
     // background of Jmol transparent in front of certain applications (VLC Player)
-    // when background [0,0,1].
-    
-    // maintain contrasting colour for cel shading edges
-    setCel(shader.celOn);
+    // when background [0,0,1]. 
   }
 
   public void setBackgroundImage(Object image) {

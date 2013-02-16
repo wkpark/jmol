@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.JmolDocument;
-import org.jmol.util.Logger;
 import org.jmol.util.StringXBuilder;
+import org.jmol.viewer.Viewer;
 
 /**
  * generic Python Pickle file reader
@@ -22,6 +22,8 @@ class PickleReader {
   private List<Object> list = new ArrayList<Object>();
   private List<Integer> marks = new ArrayList<Integer>();
   private List<Object> build = new ArrayList<Object>();
+  private boolean logging;
+  private Viewer viewer;
 
 
   final private static byte APPEND = 97; /* a */
@@ -67,10 +69,17 @@ class PickleReader {
   //  final private static byte TUPLE = 116; /* t */
   //  final private static byte UNICODE = 86; /* V */
 
-  PickleReader(JmolDocument doc) {
+  PickleReader(JmolDocument doc, Viewer viewer) {
     binaryDoc = doc;
+    logging = (viewer.getLogFile().length() > 0);
+    if (logging)
+      this.viewer = viewer;
   }
 
+  private void log(String s) {
+    viewer.log(s + "\0");
+  }
+  
   @SuppressWarnings("unchecked")
   Map<String, Object> getMap() throws Exception {
     String s, module, name;
@@ -157,8 +166,8 @@ class PickleReader {
         break;
       case MARK:
         i = list.size();
-        if (Logger.debugging)
-          System.out.print("\n " + Integer.toHexString((int) binaryDoc.getPosition()) + " [");
+        if (logging)
+          log("\n " + Integer.toHexString((int) binaryDoc.getPosition()) + " [");
         marks.add(Integer.valueOf(i));
         break;
       case NONE:
@@ -288,6 +297,8 @@ class PickleReader {
         //        }
       }
     }
+    if (logging)
+      log("");
     return (Map<String, Object>) list.remove(0);
   }
   
@@ -322,10 +333,9 @@ class PickleReader {
   }
 
   private void push(Object o) {
-    if (Logger.debugging) {
-      if (o instanceof String || o instanceof Double || o instanceof Integer)
-        System.out.print (o + ", ");
-    }
+    if (logging
+        && (o instanceof String || o instanceof Double || o instanceof Integer))
+      log((o instanceof String ? "'" + o + "'" : o) + ", ");
     list.add(o);
   }
 

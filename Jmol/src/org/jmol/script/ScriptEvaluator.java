@@ -9407,7 +9407,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     StringXBuilder sb = new StringXBuilder();
     int modelCount = viewer.getModelCount();
     if (modelCount > 1)
-      sb.appendI(modelCount).append(" models\n");
+      sb.appendI(modelCount).append((viewer.isMovie() ? " states" : " models")+"\n");
     for (int i = 0; i < modelCount; i++) {
       Map<String, Object> moData = (Map<String, Object>) viewer
           .getModelAuxiliaryInfoValue(i, "moData");

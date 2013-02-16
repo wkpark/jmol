@@ -96,7 +96,6 @@ public class Model {
   public int hydrogenCount;
   public boolean isBioModel;
   public boolean isPdbWithMultipleBonds;
-  public int trajectoryBaseIndex;
   protected boolean hasRasmolHBonds;
   
   public String loadState = "";
@@ -106,9 +105,6 @@ public class Model {
   public boolean isModelkit() {
     return isModelKit;
   }
-  
-  public boolean isTrajectory;
-  public int selectedTrajectory = -1;
   
   Map<String, Integer> dataFrames;
   int dataSourceFrame = -1;
@@ -124,6 +120,19 @@ public class Model {
   public int getTrueAtomCount() {
     return bsAtoms.cardinality() - bsAtomsDeleted.cardinality();
   }
+  
+  public int trajectoryBaseIndex;
+  public boolean isTrajectory;
+  private int selectedTrajectory = -1;
+  
+  void setSelectedTrajectory(int i) {
+    selectedTrajectory = i;
+  }
+  
+  public int getSelectedTrajectory() {
+    return selectedTrajectory;
+  }
+  
   
   private int bondCount = -1;
 

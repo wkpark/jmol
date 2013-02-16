@@ -141,11 +141,13 @@ import java.util.Map;
     if (trajectorySteps == null)
       return null;
     BitSet bsModels = new BitSet();
-    for (int i = modelCount; --i >= 0;)
-      if (models[i].selectedTrajectory >= 0) {
-        bsModels.set(models[i].selectedTrajectory);
+    for (int i = modelCount; --i >= 0;) {
+      int t = models[i].getSelectedTrajectory(); 
+      if (t >= 0) {
+        bsModels.set(t);
         i = models[i].trajectoryBaseIndex; //skip other trajectories
       }
+    }
     return bsModels;
   }
 
@@ -165,7 +167,7 @@ import java.util.Map;
     if (atoms[models[modelIndex].firstAtomIndex].modelIndex == modelIndex)
       return;
     int baseModelIndex = models[modelIndex].trajectoryBaseIndex;
-    models[baseModelIndex].selectedTrajectory = modelIndex;
+    models[baseModelIndex].setSelectedTrajectory(modelIndex);
     setAtomPositions(baseModelIndex, modelIndex, trajectorySteps.get(modelIndex), 
         (vibrationSteps == null ? null : vibrationSteps.get(modelIndex)), true);    
     int m = viewer.getCurrentModelIndex();
@@ -193,12 +195,14 @@ import java.util.Map;
     int iFirst = models[baseModelIndex].firstAtomIndex;
     int iMax = iFirst + getAtomCountInModel(baseModelIndex);
     for (int pt = 0, i = iFirst; i < iMax && pt < trajectory.length
-        && trajectory[pt] != null; i++, pt++) {
+        ; i++, pt++) {
+      atoms[i].modelIndex = (short) modelIndex;
+      if (trajectory[pt] == null)
+        continue;
       if (isFractional)
         atoms[i].setFractionalCoordTo(trajectory[pt], true);
       else
         atoms[i].setT(trajectory[pt]);
-      atoms[i].modelIndex = (short) modelIndex;
       if (vibrationSteps != null) {
         if (vibrations != null && vibrations[pt] != null)
           vib = vibrations[pt];

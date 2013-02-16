@@ -379,7 +379,7 @@ class StatusManager {
   }
 
   synchronized void setStatusFrameChanged(int frameNo, int fileNo, int modelNo,
-                                          int firstNo, int lastNo) {
+                                          int firstNo, int lastNo, int currentFrame, String entryName) {
     //System.out.println("setStatusFrameChanged modelSet=" + viewer.getModelSet());
     if (viewer.getModelSet() == null)
       return;
@@ -389,12 +389,11 @@ class StatusManager {
       f = -2 - f;
     setStatusChanged("frameChanged", frameNo, (f >= 0 ? viewer
         .getModelNumberDotted(f) : ""), false);
-    String entryName = viewer.getMenuName(f);
     String sJmol = jmolScriptCallback(EnumCallback.ANIMFRAME);
     if (notifyEnabled(EnumCallback.ANIMFRAME)) {
       jmolCallbackListener.notifyCallback(EnumCallback.ANIMFRAME,
           new Object[] { sJmol,
-              new int[] { frameNo, fileNo, modelNo, firstNo, lastNo }, entryName });
+              new int[] { frameNo, fileNo, modelNo, firstNo, lastNo, currentFrame }, entryName });
     }
     
     if (viewer.jmolpopup != null && !isAnimationRunning)

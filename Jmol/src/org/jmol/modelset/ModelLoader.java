@@ -288,7 +288,7 @@ public final class ModelLoader {
     currentModel = null;
     if (merging) {
       baseModelCount = mergeModelSet.modelCount;
-      baseTrajectoryCount = mergeModelSet.getMergeTrajectoryCount(isTrajectory);
+      baseTrajectoryCount = mergeModelSet.mergeTrajectories(isTrajectory);
       if (baseTrajectoryCount > 0) {
         if (isTrajectory) {
           if (mergeModelSet.vibrationSteps == null) {
@@ -1155,6 +1155,7 @@ public final class ModelLoader {
       Logger
           .info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
     } else {
+      modelSet.initializeBspf();
       Logger
           .info("ModelSet: not autobonding; use  forceAutobond=true  to force automatic bond creation");
     }

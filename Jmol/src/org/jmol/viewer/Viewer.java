@@ -3873,9 +3873,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setFrameVariables() {
     global.setParamS("_firstFrame",
-        getModelNumberDotted(animationManager.firstModelIndex));
+        animationManager.getModelNumber(-1));
     global.setParamS("_lastFrame",
-        getModelNumberDotted(animationManager.lastModelIndex));
+        animationManager.getModelNumber(1));
     global.setParamF("_animTimeSec", animationManager
         .getAnimRunTimeSeconds());
   }
@@ -5088,18 +5088,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     transformManager.setVibrationPeriod(Float.NaN);
 
-    int firstIndex = animationManager.firstModelIndex;
-    int lastIndex = animationManager.lastModelIndex;
+    int firstIndex = animationManager.firstFrameIndex;
+    int lastIndex = animationManager.lastFrameIndex;
 
-    if (firstIndex == lastIndex)
+    boolean isMovie = animationManager.isMovie();
+    if (firstIndex == lastIndex && !isMovie)
       modelIndex = firstIndex;
     int frameID = getModelFileNumber(modelIndex);
+    int currentFrame = animationManager.getCurrentFrame();
     int fileNo = frameID;
     int modelNo = frameID % 1000000;
-    int firstNo = getModelFileNumber(firstIndex);
-    int lastNo = getModelFileNumber(lastIndex);
+    int firstNo = (isMovie ? firstIndex : getModelFileNumber(firstIndex));
+    int lastNo = (isMovie ? lastIndex : getModelFileNumber(lastIndex));
+    
     String strModelNo;
-    if (fileNo == 0) {
+    if (!isMovie && fileNo == 0) {
       strModelNo = getModelNumberDotted(firstIndex);
       if (firstIndex != lastIndex)
         strModelNo += " - " + getModelNumberDotted(lastIndex);
@@ -5112,7 +5115,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       fileNo = (fileNo < 1000000 ? 1 : fileNo / 1000000);
 
     global.setParamI("_currentFileNumber", fileNo);
+    
     global.setParamI("_currentModelNumberInFile", modelNo);
+    global.setParamI("_currentFrame", currentFrame);
     global.setParamI("_frameID", frameID);
     global.setParamS("_modelNumber", strModelNo);
     global.setParamS("_modelName", (modelIndex < 0 ? ""
@@ -5126,10 +5131,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     prevFrame = modelIndex;
+    
+    if (animationManager.animationOn)
+      frameNo = -2 - frameNo;
+    String entryName;
+    if (isMovie()) {
+      entryName = animationManager.getCurrentFrame() + "";
+    } else {
+      entryName = getModelName(frameNo);
+    String script = "" + getModelNumberDotted(frameNo);
+    if (!entryName.equals(script))
+      entryName = script + ": " + entryName;
+    if (entryName.length() > 50)
+      entryName = entryName.substring(0, 45) + "...";
+    }
 
+    
     statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo,
         (animationManager.animationDirection < 0 ? -firstNo : firstNo),
-        (animationManager.currentDirection < 0 ? -lastNo : lastNo));
+        (animationManager.currentDirection < 0 ? -lastNo : lastNo), currentFrame, entryName);
     if (doHaveJDX())
       getJSV().setModel(modelIndex);
   }
@@ -9685,16 +9705,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (isKiosk ? "null" : apiPlatform.prompt(label, data, list, asButtons));
   }
 
-  String getMenuName(int i) {
-    String script = "" + getModelNumberDotted(i);
-    String entryName = getModelName(i);
-    if (!entryName.equals(script))
-      entryName = script + ": " + entryName;
-    if (entryName.length() > 50)
-      entryName = entryName.substring(0, 45) + "...";
-    return entryName;
-  }
-
   public ColorEncoder getColorEncoder(String colorScheme) {
     return colorManager.getColorEncoder(colorScheme);
   }
@@ -10118,6 +10128,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setMovie(Map<String, Object> info) {
     animationManager.setMovie(info);
+  }
+
+  public boolean isMovie() {
+    return animationManager.isMovie();
   }
 
 }

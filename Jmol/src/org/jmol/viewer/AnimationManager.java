@@ -50,13 +50,14 @@ public class AnimationManager {
   int animationDirection = 1;
   int currentDirection = 1;
   public int currentModelIndex;
-  int firstModelIndex;
+  int firstFrameIndex;
+  int lastFrameIndex;
   int frameStep;
-  int lastModelIndex;
    
   public int firstFrameDelayMs;
   public int lastFrameDelayMs;
-  public int lastModelPainted;
+  
+  private int lastFramePainted;
   
   private AnimationThread animationThread;
   int backgroundModelIndex = -1;
@@ -91,17 +92,17 @@ public class AnimationManager {
       setCurrentModelIndex(frameIndex, true);
       return;
     }
-    currentModelIndex = -1;
     if (frameIndex == -1)
       frameIndex = ((Integer) movie.get("currentFrame")).intValue();
     currentFrameIndex = frameIndex;
-    List<BitSet> bs = (List<BitSet>) movie.get("states");
+    List<BitSet> states = (List<BitSet>) movie.get("states");
     List<Object> frames = (List<Object>) movie.get("frames");
-    if (bs == null || frames == null || frameIndex >= frames.size())
+    if (states == null || frames == null || frameIndex >= frames.size())
       return;
     int iState = ((Integer) frames.get(frameIndex)).intValue();
-    viewer.displayAtoms(bs.get(iState), true, false, null, true);
-    setViewer(true);
+    setModelIndex(iState, true);
+    viewer.displayAtoms(states.get(iState), true, false, null, true);
+    //setViewer(true);
  }
 
   void setCurrentModelIndex(int modelIndex, boolean clearBackgroundModel) {
@@ -109,6 +110,10 @@ public class AnimationManager {
       setFrame(modelIndex);
       return;
     }
+    setModelIndex(modelIndex, clearBackgroundModel);
+  }
+
+  private void setModelIndex(int modelIndex, boolean clearBackgroundModel) {
     if (modelIndex < 0)
       setAnimationOff(false);
     int formerModelIndex = currentModelIndex;
@@ -160,7 +165,7 @@ public class AnimationManager {
       setBackgroundModelIndex(-1);  
     viewer.setTainted(true);
     setFrameRangeVisible();
-    setStatusFrameChanged();
+    viewer.setStatusFrameChanged(currentModelIndex);
     if (viewer.modelSet != null && !viewer.getSelectAllModels())
         viewer.setSelectionSubset(viewer.getModelUndeletedAtomsBitSet(currentModelIndex));
   }
@@ -180,12 +185,6 @@ public class AnimationManager {
     setFrameRangeVisible(); 
   }
   
-  private void setStatusFrameChanged() {
-    if (viewer.getModelSet() != null)
-      viewer.setStatusFrameChanged(animationOn ? -2 - currentModelIndex
-          : currentModelIndex);
-  }
-  
   private void setFrameRangeVisible() {
     bsVisibleFrames.clearAll();
     if (movie != null) {
@@ -202,17 +201,17 @@ public class AnimationManager {
       return;
     int nDisplayed = 0;
     int frameDisplayed = 0;
-    for (int i = firstModelIndex; i != lastModelIndex; i += frameStep)
+    for (int i = firstFrameIndex; i != lastFrameIndex; i += frameStep)
       if (!isJmolDataFrameForModel(i)) {
         bsVisibleFrames.set(i);
         nDisplayed++;
         frameDisplayed = i;
       }
-    if (firstModelIndex == lastModelIndex || !isJmolDataFrameForModel(lastModelIndex)
+    if (firstFrameIndex == lastFrameIndex || !isJmolDataFrameForModel(lastFrameIndex)
         || nDisplayed == 0) {
-      bsVisibleFrames.set(lastModelIndex);
+      bsVisibleFrames.set(lastFrameIndex);
       if (nDisplayed == 0)
-        firstModelIndex = lastModelIndex;
+        firstFrameIndex = lastFrameIndex;
       nDisplayed = 0;
     }
     if (nDisplayed == 1 && currentModelIndex < 0)
@@ -222,10 +221,10 @@ public class AnimationManager {
   }
 
   void initializePointers(int frameStep) {
-    firstModelIndex = 0;
-    int modelCount = getFrameCount();
-    lastModelIndex = (frameStep == 0 ? 0 
-        : modelCount) - 1;
+    firstFrameIndex = 0;
+    int frameCount = getFrameCount();
+    lastFrameIndex = (frameStep == 0 ? 0 
+        : frameCount) - 1;
     this.frameStep = frameStep;
     viewer.setFrameVariables();
   }
@@ -260,13 +259,13 @@ public class AnimationManager {
   }
 
   void setAnimationRange(int framePointer, int framePointer2) {
-    int modelCount = getFrameCount();
+    int frameCount = getFrameCount();
     if (framePointer < 0) framePointer = 0;
-    if (framePointer2 < 0) framePointer2 = modelCount;
-    if (framePointer >= modelCount) framePointer = modelCount - 1;
-    if (framePointer2 >= modelCount) framePointer2 = modelCount - 1;
-    firstModelIndex = framePointer;
-    lastModelIndex = framePointer2;
+    if (framePointer2 < 0) framePointer2 = frameCount;
+    if (framePointer >= frameCount) framePointer = frameCount - 1;
+    if (framePointer2 >= frameCount) framePointer2 = frameCount - 1;
+    firstFrameIndex = framePointer;
+    lastFrameIndex = framePointer2;
     frameStep = (framePointer2 < framePointer ? -1 : 1);
     rewindAnimation();
   }
@@ -296,7 +295,7 @@ public class AnimationManager {
     if (!viewer.getSpinOn())
       viewer.refresh(3, "Viewer:setAnimationOff");
     animationOn(false);
-    setStatusFrameChanged();
+    viewer.setStatusFrameChanged(currentModelIndex);
   }
 
   void pauseAnimation() {
@@ -310,12 +309,12 @@ public class AnimationManager {
   }
   
   void repaintDone() {
-    lastModelPainted = currentModelIndex;
+    lastFramePainted = getCurrentFrame();
   }
   
   void resumeAnimation() {
     if(currentModelIndex < 0)
-      setAnimationRange(firstModelIndex, lastModelIndex);
+      setAnimationRange(firstFrameIndex, lastFrameIndex);
     if (getFrameCount() <= 1) {
       animationOn(false);
       return;
@@ -324,7 +323,7 @@ public class AnimationManager {
     animationPaused = false;
     if (animationThread == null) {
       intAnimThread++;
-      animationThread = new AnimationThread(this, viewer, firstModelIndex, lastModelIndex, intAnimThread);
+      animationThread = new AnimationThread(this, viewer, firstFrameIndex, lastFrameIndex, intAnimThread);
       animationThread.start();
     }
   }
@@ -334,11 +333,11 @@ public class AnimationManager {
   }
 
   void setAnimationLast() {
-    setFrame(animationDirection > 0 ? lastModelIndex : firstModelIndex);
+    setFrame(animationDirection > 0 ? lastFrameIndex : firstFrameIndex);
   }
 
   void rewindAnimation() {
-    setFrame(animationDirection > 0 ? firstModelIndex : lastModelIndex);
+    setFrame(animationDirection > 0 ? firstFrameIndex : lastFrameIndex);
     currentDirection = 1;
     viewer.setFrameVariables();
   }
@@ -350,16 +349,16 @@ public class AnimationManager {
   boolean setAnimationRelative(int direction) {
     int frameStep = this.frameStep * direction * currentDirection;
     int frameNext = getCurrentFrame() + frameStep;
-    boolean isDone = (frameNext > firstModelIndex
-        && frameNext > lastModelIndex || frameNext < firstModelIndex
-        && frameNext < lastModelIndex);    
+    boolean isDone = (frameNext > firstFrameIndex
+        && frameNext > lastFrameIndex || frameNext < firstFrameIndex
+        && frameNext < lastFrameIndex);    
     if (isDone) {
       switch (animationReplayMode) {
       case ONCE:
         return false;
       case LOOP:
-        frameNext = (animationDirection == currentDirection ? firstModelIndex
-            : lastModelIndex);
+        frameNext = (animationDirection == currentDirection ? firstFrameIndex
+            : lastFrameIndex);
         break;
       case PALINDROME:
         currentDirection = -currentDirection;
@@ -374,14 +373,14 @@ public class AnimationManager {
   }
 
   float getAnimRunTimeSeconds() {
-    int modelCount = getFrameCount();
-    if (firstModelIndex == lastModelIndex
-        || lastModelIndex < 0 || firstModelIndex < 0
-        || lastModelIndex >= modelCount
-        || firstModelIndex >= modelCount)
+    int frameCount = getFrameCount();
+    if (firstFrameIndex == lastFrameIndex
+        || lastFrameIndex < 0 || firstFrameIndex < 0
+        || lastFrameIndex >= frameCount
+        || firstFrameIndex >= frameCount)
       return  0;
-    int i0 = Math.min(firstModelIndex, lastModelIndex);
-    int i1 = Math.max(firstModelIndex, lastModelIndex);
+    int i0 = Math.min(firstFrameIndex, lastFrameIndex);
+    int i1 = Math.max(firstFrameIndex, lastFrameIndex);
     float nsec = 1f * (i1 - i0) / animationFps + firstFrameDelay
         + lastFrameDelay;
     for (int i = i0; i <= i1; i++)
@@ -390,13 +389,35 @@ public class AnimationManager {
   }
 
   public void setMovie(Map<String, Object> info) {
-    
     movie = info;
-    
+    setFrame(-1);
   }
 
   public int getCurrentFrame() {
     return (movie == null ? currentModelIndex : currentFrameIndex);
+  }
+
+  public boolean isMovie() {
+    return (movie != null);
+  }
+
+  public boolean currentIsLast() {
+    return lastFramePainted == getCurrentFrame();
+  }
+
+  public String getModelNumber(int i) {
+    switch (i) {
+    case -1:
+      i = firstFrameIndex;
+      break;
+    case 0:
+      i = currentFrameIndex;
+      break;
+    case 1:
+      i = lastFrameIndex;
+      break;
+    }
+    return (movie == null ? viewer.getModelNumberDotted(i) : "" + (i + 1));
   }
  
 }

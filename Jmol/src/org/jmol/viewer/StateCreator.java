@@ -554,15 +554,15 @@ public class StateCreator implements JmolStateCreator {
     if (bs != null)
       appendCmd(commands, "frame align " + Escape.escape(bs));
     appendCmd(commands, "frame RANGE "
-        + viewer.getModelNumberDotted(am.firstModelIndex) + " "
-        + viewer.getModelNumberDotted(am.lastModelIndex));
+        + am.getModelNumber(-1) + " "
+        + am.getModelNumber(1));
     appendCmd(commands, "animation DIRECTION "
         + (am.animationDirection == 1 ? "+1" : "-1"));
     appendCmd(commands, "animation FPS " + am.animationFps);
     appendCmd(commands, "animation MODE " + am.animationReplayMode.name() + " "
         + am.firstFrameDelay + " " + am.lastFrameDelay);
     appendCmd(commands, "frame "
-        + viewer.getModelNumberDotted(am.currentModelIndex));
+        + am.getModelNumber(0));
     appendCmd(commands, "animation "
         + (!am.animationOn ? "OFF" : am.currentDirection == 1 ? "PLAY"
             : "PLAYREV"));
@@ -714,11 +714,13 @@ public class StateCreator implements JmolStateCreator {
     ModelSet m = viewer.modelSet;
     if (m.trajectorySteps == null)
       return "";
-    for (int i = m.modelCount; --i >= 0;)
-      if (m.models[i].selectedTrajectory >= 0) {
-        s = " or " + m.getModelNumberDotted(m.models[i].selectedTrajectory) + s;
+    for (int i = m.modelCount; --i >= 0;) {
+      int t = m.models[i].getSelectedTrajectory(); 
+      if (t >= 0) {
+        s = " or " + m.getModelNumberDotted(t) + s;
         i = m.models[i].trajectoryBaseIndex; //skip other trajectories
       }
+    }
     if (s.length() > 0)
       s = "set trajectory {" + s.substring(4) + "}";
     return s;
@@ -836,8 +838,8 @@ public class StateCreator implements JmolStateCreator {
 
   private Map<String, Object> getAnimationInfo(AnimationManager am) {
     Map<String, Object> info = new Hashtable<String, Object>();
-    info.put("firstModelIndex", Integer.valueOf(am.firstModelIndex));
-    info.put("lastModelIndex", Integer.valueOf(am.lastModelIndex));
+    info.put("firstModelIndex", Integer.valueOf(am.firstFrameIndex));
+    info.put("lastModelIndex", Integer.valueOf(am.lastFrameIndex));
     info.put("animationDirection", Integer.valueOf(am.animationDirection));
     info.put("currentDirection", Integer.valueOf(am.currentDirection));
     info.put("displayModelIndex", Integer.valueOf(am.currentModelIndex));
@@ -2305,8 +2307,12 @@ public class StateCreator implements JmolStateCreator {
       FileWriter fstream = new FileWriter(viewer.logFile, !doClear);
       BufferedWriter out = new BufferedWriter(fstream);
       if (!doClear) {
+        int ptEnd = data.indexOf('\0'); 
+        if (ptEnd >= 0)
+          data = data.substring(0, ptEnd);
         out.write(data);
-        out.write('\n');
+        if (ptEnd < 0)
+          out.write('\n');
       }
       out.close();
     } catch (Exception e) {

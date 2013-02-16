@@ -101,6 +101,7 @@ public interface JmolStateCreator {
 
   void log(String data);
   
-  public void quickScript(String script);
-  
+  void quickScript(String script);
+
+
 }

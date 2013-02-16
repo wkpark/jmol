@@ -77,6 +77,7 @@ public class AnimationThread extends JmolThread {
         mode = MAIN;
         break;
       case MAIN:
+        //System.out.println("anim thred " + animationManager.getCurrentFrame() +" "+ framePointer);
         if (checkInterrupted() || !animationManager.animationOn) {
           mode = FINISH;
           break;
@@ -100,7 +101,7 @@ public class AnimationThread extends JmolThread {
         break;
       case CHECK2:
         if (!isFirst
-            && animationManager.lastModelPainted == animationManager.getCurrentFrame()
+            && animationManager.currentIsLast()
             && !animationManager.setAnimationNext()) {
           mode = FINISH;
           break;

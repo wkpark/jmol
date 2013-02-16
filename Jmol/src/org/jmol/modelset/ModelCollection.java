@@ -807,7 +807,7 @@ abstract public class ModelCollection extends BondCollection {
   public List<Point3f[]> trajectorySteps;
   protected List<Vector3f[]> vibrationSteps;
 
-  protected int getMergeTrajectoryCount(boolean isTrajectory) {
+  protected int mergeTrajectories(boolean isTrajectory) {
     if (trajectorySteps == null) {
       if (!isTrajectory)
         return 0;

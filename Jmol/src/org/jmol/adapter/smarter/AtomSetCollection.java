@@ -1601,7 +1601,7 @@ public class AtomSetCollection {
     return x;
   }
 
-  void finalizeTrajectoryAs(List<Point3f[]> trajectorySteps, List<Vector3f[]> vibrationSteps) {
+  public void finalizeTrajectoryAs(List<Point3f[]> trajectorySteps, List<Vector3f[]> vibrationSteps) {
     this.trajectorySteps = trajectorySteps;
     this.vibrationSteps = vibrationSteps;
     trajectoryStepCount = trajectorySteps.size();
@@ -1629,7 +1629,8 @@ public class AtomSetCollection {
         atoms[i].vectorY = v.y;
         atoms[i].vectorZ = v.z;
       }
-      atoms[i].setT(trajectory[i]);
+      if (trajectory[i] != null)
+        atoms[i].setT(trajectory[i]);
     }
     setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
     if (vibrationSteps != null)

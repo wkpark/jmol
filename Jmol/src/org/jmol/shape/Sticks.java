@@ -25,13 +25,13 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -47,8 +47,8 @@ public class Sticks extends Shape {
   private int myMask;
   private boolean reportAll;
   
-  private BitSet bsOrderSet;
-  private BitSet selectedBonds;
+  private BS bsOrderSet;
+  private BS selectedBonds;
 
   @Override
   public void initShape() {
@@ -64,19 +64,19 @@ public class Sticks extends Shape {
    * @param bsSelected
    */
   @Override
-  protected void setSize(int size, BitSet bsSelected) {
+  protected void setSize(int size, BS bsSelected) {
     if (size == Integer.MAX_VALUE) {
-      selectedBonds = BitSetUtil.copy(bsSelected);
+      selectedBonds = BSUtil.copy(bsSelected);
       return;
     }
     if (size == Integer.MIN_VALUE) { // smartaromatic has set the orders directly 
       if (bsOrderSet == null)
-        bsOrderSet = new BitSet();
+        bsOrderSet = new BS();
       bsOrderSet.or(bsSelected);
       return;
     }
     if (bsSizeSet == null)
-      bsSizeSet = new BitSet();
+      bsSizeSet = new BS();
     BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
         : modelSet.getBondIteratorForType(myMask, bsSelected));
     short mad = (short) size;
@@ -87,7 +87,7 @@ public class Sticks extends Shape {
   }
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
 
     if ("type" == propertyName) {
       myMask = ((Integer) value).intValue();
@@ -110,7 +110,7 @@ public class Sticks extends Shape {
 
     if ("bondOrder" == propertyName) {
       if (bsOrderSet == null)
-        bsOrderSet = new BitSet();
+        bsOrderSet = new BS();
       int order = ((Integer) value).shortValue();
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
           : modelSet.getBondIteratorForType(JmolEdge.BOND_ORDER_ANY, bs));
@@ -122,8 +122,8 @@ public class Sticks extends Shape {
     }
     if ("color" == propertyName) {
       if (bsColixSet == null)
-        bsColixSet = new BitSet();
-      short colix = Colix.getColixO(value);
+        bsColixSet = new BS();
+      short colix = C.getColixO(value);
       EnumPalette pal = (value instanceof EnumPalette ? (EnumPalette) value : null);
       if (pal == EnumPalette.TYPE || pal == EnumPalette.ENERGY) {
         //only for hydrogen bonds
@@ -137,12 +137,12 @@ public class Sticks extends Shape {
               bond.setColix(getColixB(colix, pal.id, bond));
               bond.setPaletteID(pal.id);
           } else {
-            bond.setColix(Colix.getColix(JmolEdge.getArgbHbondType(bond.order)));
+            bond.setColix(C.getColix(JmolEdge.getArgbHbondType(bond.order)));
           }
         }
         return;
       }
-      if (colix == Colix.USE_PALETTE && pal != EnumPalette.CPK)
+      if (colix == C.USE_PALETTE && pal != EnumPalette.CPK)
         return; //palettes not implemented for bonds
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
           : modelSet.getBondIteratorForType(myMask, bs));
@@ -150,14 +150,14 @@ public class Sticks extends Shape {
         int iBond = iter.nextIndex();
         Bond bond = iter.next();
         bond.setColix(colix);
-        bsColixSet.setBitTo(iBond, (colix != Colix.INHERIT_ALL
-            && colix != Colix.USE_PALETTE));
+        bsColixSet.setBitTo(iBond, (colix != C.INHERIT_ALL
+            && colix != C.USE_PALETTE));
       }
       return;
     }
     if ("translucency" == propertyName) {
       if (bsColixSet == null)
-        bsColixSet = new BitSet();
+        bsColixSet = new BS();
       boolean isTranslucent = (((String) value).equals("translucent"));
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
           : modelSet.getBondIteratorForType(myMask, bs));
@@ -178,9 +178,9 @@ public class Sticks extends Shape {
   @Override
   public Object getProperty(String property, int index) {
     if (property.equals("selectionState"))
-      return (selectedBonds != null ? "select BONDS " + Escape.escape(selectedBonds) + "\n":"");
+      return (selectedBonds != null ? "select BONDS " + Escape.e(selectedBonds) + "\n":"");
     if (property.equals("sets"))
-      return new BitSet[] { bsOrderSet, bsSizeSet, bsColixSet };
+      return new BS[] { bsOrderSet, bsSizeSet, bsColixSet };
     return null;
   }
 
@@ -204,8 +204,8 @@ public class Sticks extends Shape {
   }
   
   @Override
-  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
-    Point3f pt = new Point3f();
+  public boolean checkObjectHovered(int x, int y, BS bsVisible) {
+    P3 pt = new P3();
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)
       return false;
@@ -216,8 +216,8 @@ public class Sticks extends Shape {
 
   @Override
   public Map<String, Object> checkObjectClicked(int x, int y, int modifiers,
-                                    BitSet bsVisible) {
-    Point3f pt = new Point3f();
+                                    BS bsVisible) {
+    P3 pt = new P3();
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)
       return null;
@@ -235,7 +235,7 @@ public class Sticks extends Shape {
   }
 
   private final static int MAX_BOND_CLICK_DISTANCE_SQUARED = 10 * 10;
-  private final Point3i ptXY = new Point3i();
+  private final P3i ptXY = new P3i();
 
   /**
    * 
@@ -245,7 +245,7 @@ public class Sticks extends Shape {
    * @param pt
    * @return picked bond or null
    */
-  private Bond findPickedBond(int x, int y, BitSet bsVisible, Point3f pt) {
+  private Bond findPickedBond(int x, int y, BS bsVisible, P3 pt) {
     int dmin2 = MAX_BOND_CLICK_DISTANCE_SQUARED;
     if (gdata.isAntialiased()) {
       x <<= 1;
@@ -253,7 +253,7 @@ public class Sticks extends Shape {
       dmin2 <<= 1;
     }
     Bond pickedBond = null;
-    Point3f v = new Point3f();
+    P3 v = new P3();
     Bond[] bonds = modelSet.bonds;
     for (int i = modelSet.bondCount; --i >= 0;) {
       Bond bond = bonds[i];

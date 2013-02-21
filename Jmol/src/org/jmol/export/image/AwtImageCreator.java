@@ -36,16 +36,12 @@ import org.jmol.viewer.Viewer;
 public class AwtImageCreator extends GenericImageCreator {
 
   public AwtImageCreator() {
-    // can set viewer later
-  }
-
-  public AwtImageCreator(JmolViewer viewer) {
-    // for clipImage only
-    this.viewer = (Viewer) viewer;
+    // by reflection
   }
 
   @Override
-  public String clipImage(String text) {
+  public String clipImage(JmolViewer viewer, String text) {
+    this.viewer = (Viewer) viewer;
     String msg;
     try {
       if (text == null) {

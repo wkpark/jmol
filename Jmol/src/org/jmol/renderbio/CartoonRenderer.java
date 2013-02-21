@@ -26,12 +26,12 @@ package org.jmol.renderbio;
 
 import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.ProteinStructure;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.shapebio.BioShape;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 
 
 public class CartoonRenderer extends RocketsRenderer {
@@ -49,12 +49,12 @@ public class CartoonRenderer extends RocketsRenderer {
       renderNucleic();
       return;
     }
-    boolean val = viewer.getCartoonFlag(Token.cartoonrockets);
+    boolean val = viewer.getCartoonFlag(T.cartoonrockets);
     if (renderAsRockets != val) {
       bioShape.falsifyMesh();
       renderAsRockets = val;
     }
-    val = !viewer.getCartoonFlag(Token.rocketbarrels);
+    val = !viewer.getCartoonFlag(T.rocketbarrels);
     if (renderArrowHeads != val) {
       bioShape.falsifyMesh();
       renderArrowHeads = val;
@@ -72,10 +72,10 @@ public class CartoonRenderer extends RocketsRenderer {
     viewer.freeTempScreens(ribbonBottomScreens);
   }
 
-  Point3i ptConnectScr = new Point3i();
-  Point3f ptConnect = new Point3f();
+  P3i ptConnectScr = new P3i();
+  P3 ptConnect = new P3();
   void renderNucleic() {
-    renderEdges = viewer.getCartoonFlag(Token.cartoonbaseedges);
+    renderEdges = viewer.getCartoonFlag(T.cartoonbaseedges);
     boolean isTraceAlpha = viewer.getTraceAlpha();
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1)) {
@@ -162,21 +162,21 @@ public class CartoonRenderer extends RocketsRenderer {
   
   //// nucleic acid base rendering
   
-  private final Point3f[] ring6Points = new Point3f[6];
-  private final Point3i[] ring6Screens = new Point3i[6];
-  private final Point3f[] ring5Points = new Point3f[5];
-  private final Point3i[] ring5Screens = new Point3i[5];
+  private final P3[] ring6Points = new P3[6];
+  private final P3i[] ring6Screens = new P3i[6];
+  private final P3[] ring5Points = new P3[5];
+  private final P3i[] ring5Screens = new P3i[5];
 
   {
-    ring6Screens[5] = new Point3i();
+    ring6Screens[5] = new P3i();
     for (int i = 5; --i >= 0; ) {
-      ring5Screens[i] = new Point3i();
-      ring6Screens[i] = new Point3i();
+      ring5Screens[i] = new P3i();
+      ring6Screens[i] = new P3i();
     }
   }
 
   private void renderNucleicBaseStep(NucleicMonomer nucleotide,
-                             short thisMad, Point3i backboneScreen, Point3f ptConnect) {
+                             short thisMad, P3i backboneScreen, P3 ptConnect) {
     if (renderEdges) {
       renderLeontisWesthofEdges(nucleotide, thisMad);
       return;
@@ -185,8 +185,8 @@ public class CartoonRenderer extends RocketsRenderer {
     viewer.transformPoints(ring6Points, ring6Screens);
     renderRing6();
     boolean hasRing5 = nucleotide.maybeGetBaseRing5Points(ring5Points);
-    Point3i stepScreen;
-    Point3f stepPt;
+    P3i stepScreen;
+    P3 stepPt;
     if (hasRing5) {
       viewer.transformPoints(ring5Points, ring5Screens);
       renderRing5();
@@ -237,13 +237,13 @@ public class CartoonRenderer extends RocketsRenderer {
         ring6Screens[1], ring6Points[0], ring6Points[1], 0.005f);
     g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[1],
         ring6Screens[2], ring6Points[1], ring6Points[2], 0.005f);
-    boolean isTranslucent = Colix.isColixTranslucent(colix);
-    float tl = Colix.getColixTranslucencyLevel(colix);
-    short colixSugarEdge = Colix.getColixTranslucent3(Colix.RED, isTranslucent,
+    boolean isTranslucent = C.isColixTranslucent(colix);
+    float tl = C.getColixTranslucencyLevel(colix);
+    short colixSugarEdge = C.getColixTranslucent3(C.RED, isTranslucent,
         tl);
-    short colixWatsonCrickEdge = Colix.getColixTranslucent3(Colix.GREEN,
+    short colixWatsonCrickEdge = C.getColixTranslucent3(C.GREEN,
         isTranslucent, tl);
-    short colixHoogsteenEdge = Colix.getColixTranslucent3(Colix.BLUE,
+    short colixHoogsteenEdge = C.getColixTranslucent3(C.BLUE,
         isTranslucent, tl);
     g3d.setColix(colixSugarEdge);
     g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, 3, ring6Screens[2],

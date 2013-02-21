@@ -25,7 +25,7 @@ package org.jmol.adapter.readers.xml;
 
 
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.TextFormat;
 
 /**
@@ -40,7 +40,7 @@ public class XmlXsdReader extends XmlReader {
   public XmlXsdReader() {
   }
 
-  private BitSet bsBackbone = new BitSet();
+  private BS bsBackbone = new BS();
   
   private int iChain = -1;
   private int iGroup = 0;

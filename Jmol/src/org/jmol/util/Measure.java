@@ -28,15 +28,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.modelset.Atom;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 
 final public class Measure {
 
   public final static float radiansPerDegree = (float) (2 * Math.PI / 360);
   
-  public static float computeAngle(Tuple3f pointA, Tuple3f pointB, Tuple3f pointC, Vector3f vectorBA, Vector3f vectorBC, boolean asDegrees) {
+  public static float computeAngle(Tuple3f pointA, Tuple3f pointB, Tuple3f pointC, V3 vectorBA, V3 vectorBC, boolean asDegrees) {
     vectorBA.sub2(pointA, pointB);
     vectorBC.sub2(pointC, pointB);
     float angle = vectorBA.angle(vectorBC);
@@ -44,8 +44,8 @@ final public class Measure {
   }
 
   public static float computeAngleABC(Tuple3f pointA, Tuple3f pointB, Tuple3f pointC, boolean asDegrees) {
-    Vector3f vectorBA = new Vector3f();
-    Vector3f vectorBC = new Vector3f();        
+    V3 vectorBA = new V3();
+    V3 vectorBC = new V3();        
     return computeAngle(pointA, pointB, pointC, vectorBA, vectorBC, asDegrees);
   }
 
@@ -92,7 +92,7 @@ final public class Measure {
     return (asDegrees ? torsion / radiansPerDegree : torsion);
   }
 
-  public static Object computeHelicalAxis(String id, int tokType, Point3f a, Point3f b,
+  public static Object computeHelicalAxis(String id, int tokType, P3 a, P3 b,
                                     Quaternion dq) {
     /*
                 b
@@ -108,7 +108,7 @@ final public class Measure {
                 r 
     */
     
-    Vector3f vab = new Vector3f();
+    V3 vab = new V3();
     vab.sub2(b, a);
     /*
      * testing here to see if directing the normal makes any difference -- oddly
@@ -118,21 +118,21 @@ final public class Measure {
      * a negative angle implies a left-handed axis (sheets)
      */
     float theta = dq.getTheta();
-    Vector3f n = dq.getNormal();
+    V3 n = dq.getNormal();
     float v_dot_n = vab.dot(n);
     if (Math.abs(v_dot_n) < 0.0001f)
       v_dot_n = 0;
-    if (tokType == Token.axis) {
+    if (tokType == T.axis) {
       if (v_dot_n != 0)
         n.scale(v_dot_n);
       return n;
     }
-    Vector3f va_prime_d = new Vector3f();
+    V3 va_prime_d = new V3();
     va_prime_d.cross(vab, n);
     if (va_prime_d.dot(va_prime_d) != 0)
       va_prime_d.normalize();
-    Vector3f vda = new Vector3f();
-    Vector3f vcb = Vector3f.newV(n);
+    V3 vda = new V3();
+    V3 vcb = V3.newV(n);
     if (v_dot_n == 0)
       v_dot_n = Float.MIN_VALUE; // allow for perpendicular axis to vab
     vcb.scale(v_dot_n);
@@ -140,25 +140,25 @@ final public class Measure {
     vda.scale(0.5f);
     va_prime_d.scale(theta == 0 ? 0 : (float) (vda.length() / Math
         .tan(theta / 2 / 180 * Math.PI)));
-    Vector3f r = Vector3f.newV(va_prime_d);
+    V3 r = V3.newV(va_prime_d);
     if (theta != 0)
       r.add(vda);
-    if (tokType == Token.radius)
+    if (tokType == T.radius)
       return r;
-    Point3f pt_a_prime = Point3f.newP(a);
+    P3 pt_a_prime = P3.newP(a);
     pt_a_prime.sub(r);
-    if (tokType == Token.point) {
+    if (tokType == T.point) {
       return pt_a_prime;
     }
     if (v_dot_n != Float.MIN_VALUE)
       n.scale(v_dot_n);
     // must calculate directed angle:
-    Point3f pt_b_prime = Point3f.newP(pt_a_prime);
+    P3 pt_b_prime = P3.newP(pt_a_prime);
     pt_b_prime.add(n);
     theta = computeTorsion(a, pt_a_prime, pt_b_prime, b, true);
     if (Float.isNaN(theta) || r.length() < 0.0001f)
       theta = dq.getThetaDirectedV(n); // allow for r = 0
-    if (tokType == Token.angle)
+    if (tokType == T.angle)
       return new Float(theta);
     /*
     System.out.println("draw ID test VECTOR " + Escape.escape(pt_a_prime)
@@ -166,76 +166,76 @@ final public class Measure {
           + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0};")
           +"measure " + Escape.escape(a) + Escape.escape(pt_a_prime) + Escape.escape(pt_b_prime) + Escape.escape(b));
     */
-    if (tokType == Token.draw)
-      return "draw ID \"" + id + "\" VECTOR " + Escape.escapePt(pt_a_prime)
-          + " " + Escape.escapePt(n) + " color "
+    if (tokType == T.draw)
+      return "draw ID \"" + id + "\" VECTOR " + Escape.eP(pt_a_prime)
+          + " " + Escape.eP(n) + " color "
           + (theta < 0 ? "{255.0 200.0 0.0}" : "{255.0 0.0 128.0}");
-    if (tokType == Token.measure)
-      return "measure " + Escape.escapePt(a) + Escape.escapePt(pt_a_prime) + Escape.escapePt(pt_b_prime) + Escape.escapePt(b);
+    if (tokType == T.measure)
+      return "measure " + Escape.eP(a) + Escape.eP(pt_a_prime) + Escape.eP(pt_b_prime) + Escape.eP(b);
     // for now... array:
     float residuesPerTurn = Math.abs(theta == 0 ? 0 : 360f / theta);
     float pitch = Math.abs(v_dot_n == Float.MIN_VALUE ? 0 : n.length() * (theta == 0 ? 1 : 360f / theta));
     switch (tokType) {
-    case Token.array:
-      return new Object[] {pt_a_prime, n, r,  Point3f.new3(theta, pitch, residuesPerTurn)};
-    case Token.list:
+    case T.array:
+      return new Object[] {pt_a_prime, n, r,  P3.new3(theta, pitch, residuesPerTurn)};
+    case T.list:
       return new String[] { 
-          Escape.escapePt(pt_a_prime), // a' 
-          Escape.escapePt(n), // n
-          Escape.escapePt(r), // r
-          Escape.escapePt(Point3f.new3(theta /*(degrees)*/,pitch, residuesPerTurn))
+          Escape.eP(pt_a_prime), // a' 
+          Escape.eP(n), // n
+          Escape.eP(r), // r
+          Escape.eP(P3.new3(theta /*(degrees)*/,pitch, residuesPerTurn))
           };
     default:
       return null;
     }
   }
 
-  public static void getPlaneThroughPoints(Point3f pointA,
-                                              Point3f pointB,
-                                              Point3f pointC, Vector3f vNorm,
-                                              Vector3f vAB, Vector3f vAC, Point4f plane) {
+  public static void getPlaneThroughPoints(P3 pointA,
+                                              P3 pointB,
+                                              P3 pointC, V3 vNorm,
+                                              V3 vAB, V3 vAC, Point4f plane) {
     float w = getNormalThroughPoints(pointA, pointB, pointC, vNorm, vAB, vAC);
     plane.set(vNorm.x, vNorm.y, vNorm.z, w);
   }
   
-  public static void getPlaneThroughPoint(Point3f pt, Vector3f normal, Point4f plane) {
-    plane.set(normal.x, normal.y, normal.z, -normal.dot(Vector3f.newV(pt)));
+  public static void getPlaneThroughPoint(P3 pt, V3 normal, Point4f plane) {
+    plane.set(normal.x, normal.y, normal.z, -normal.dot(V3.newV(pt)));
   }
   
-  public static float distanceToPlane(Point4f plane, Point3f pt) {
+  public static float distanceToPlane(Point4f plane, P3 pt) {
     return (plane == null ? Float.NaN 
         : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w)
         / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
             * plane.z));
   }
 
-  public static float distanceToPlaneD(Point4f plane, float d, Point3f pt) {
+  public static float distanceToPlaneD(Point4f plane, float d, P3 pt) {
     return (plane == null ? Float.NaN : (plane.x * pt.x + plane.y
         * pt.y + plane.z * pt.z + plane.w) / d);
   }
 
-  public static float distanceToPlane(Vector3f norm, float w, Point3f pt) {
+  public static float distanceToPlane(V3 norm, float w, P3 pt) {
     return (norm == null ? Float.NaN 
         : (norm.x * pt.x + norm.y * pt.y + norm.z * pt.z + w)
         / (float) Math.sqrt(norm.x * norm.x + norm.y * norm.y + norm.z
             * norm.z));
   }
 
-  public static void calcNormalizedNormal(Point3f pointA, Point3f pointB,
-         Point3f pointC, Vector3f vNormNorm, Vector3f vAB, Vector3f vAC) {
+  public static void calcNormalizedNormal(P3 pointA, P3 pointB,
+         P3 pointC, V3 vNormNorm, V3 vAB, V3 vAC) {
     vAB.sub2(pointB, pointA);
     vAC.sub2(pointC, pointA);
     vNormNorm.cross(vAB, vAC);
     vNormNorm.normalize();
   }
 
-  public static float getDirectedNormalThroughPoints(Point3f pointA, 
-         Point3f pointB, Point3f pointC, Point3f ptRef, Vector3f vNorm, 
-         Vector3f vAB, Vector3f vAC) {
+  public static float getDirectedNormalThroughPoints(P3 pointA, 
+         P3 pointB, P3 pointC, P3 ptRef, V3 vNorm, 
+         V3 vAB, V3 vAC) {
     // for x = plane({atomno=1}, {atomno=2}, {atomno=3}, {atomno=4})
     float nd = getNormalThroughPoints(pointA, pointB, pointC, vNorm, vAB, vAC);
     if (ptRef != null) {
-      Point3f pt0 = Point3f.newP(pointA);
+      P3 pt0 = P3.newP(pointA);
       pt0.add(vNorm);
       float d = pt0.distance(ptRef);
       pt0.setT(pointA);
@@ -248,8 +248,8 @@ final public class Measure {
     return nd;
   }
   
-  public static float getNormalThroughPoints(Point3f pointA, Point3f pointB,
-                                   Point3f pointC, Vector3f vNorm, Vector3f vAB, Vector3f vAC) {
+  public static float getNormalThroughPoints(P3 pointA, P3 pointB,
+                                   P3 pointC, V3 vNorm, V3 vAB, V3 vAC) {
     // for Polyhedra
     calcNormalizedNormal(pointA, pointB, pointC, vNorm, vAB, vAC);
     // ax + by + cz + d = 0
@@ -258,7 +258,7 @@ final public class Measure {
     return -vAB.dot(vNorm);
   }
 
-  public static void getPlaneProjection(Point3f pt, Point4f plane, Point3f ptProj, Vector3f vNorm) {
+  public static void getPlaneProjection(P3 pt, Point4f plane, P3 ptProj, V3 vNorm) {
     float dist = distanceToPlane(plane, pt);
     vNorm.set(plane.x, plane.y, plane.z);
     vNorm.normalize();
@@ -277,11 +277,11 @@ final public class Measure {
    * @param normal
    * @return        true if winding is proper; false if not
    */
-  public static boolean getNormalFromCenter(Point3f ptCenter, Point3f ptA, Point3f ptB,
-                            Point3f ptC, boolean isOutward, Vector3f normal) {
+  public static boolean getNormalFromCenter(P3 ptCenter, P3 ptA, P3 ptB,
+                            P3 ptC, boolean isOutward, V3 normal) {
     // for Polyhedra
-    Vector3f vAB = new Vector3f();
-    Vector3f vAC = new Vector3f();
+    V3 vAB = new V3();
+    V3 vAC = new V3();
     float d = getNormalThroughPoints(ptA, ptB, ptC, normal, vAB, vAC);
     boolean isReversed = (distanceToPlane(normal, d, ptCenter) > 0);
     if (isReversed == isOutward)
@@ -290,27 +290,27 @@ final public class Measure {
     return !isReversed;
   }
 
-  public static void getNormalToLine(Point3f pointA, Point3f pointB,
-                                   Vector3f vNormNorm) {
+  public static void getNormalToLine(P3 pointA, P3 pointB,
+                                   V3 vNormNorm) {
     // vector in xy plane perpendicular to a line between two points RMH
     vNormNorm.sub2(pointA, pointB);
-    vNormNorm.cross(vNormNorm, JmolConstants.axisY);
+    vNormNorm.cross(vNormNorm, JC.axisY);
     vNormNorm.normalize();
     if (Float.isNaN(vNormNorm.x))
       vNormNorm.set(1, 0, 0);
   }
   
-  public static void getBisectingPlane(Point3f pointA, Vector3f vAB,
-                                                 Point3f ptTemp, Vector3f vTemp, Point4f plane) {
+  public static void getBisectingPlane(P3 pointA, V3 vAB,
+                                                 P3 ptTemp, V3 vTemp, Point4f plane) {
     ptTemp.scaleAdd2(0.5f, vAB, pointA);
     vTemp.setT(vAB);
     vTemp.normalize();
     getPlaneThroughPoint(ptTemp, vTemp, plane);
     }
     
-  public static void projectOntoAxis(Point3f point, Point3f axisA,
-                                     Vector3f axisUnitVector,
-                                     Vector3f vectorProjection) {
+  public static void projectOntoAxis(P3 point, P3 axisA,
+                                     V3 axisUnitVector,
+                                     V3 vectorProjection) {
     vectorProjection.sub2(point, axisA);
     float projectedLength = vectorProjection.dot(axisUnitVector);
     point.setT(axisUnitVector);
@@ -318,9 +318,9 @@ final public class Measure {
     vectorProjection.sub2(point, axisA);
   }
   
-  public static void calcBestAxisThroughPoints(Point3f[] points, Point3f axisA,
-                                               Vector3f axisUnitVector,
-                                               Vector3f vectorProjection,
+  public static void calcBestAxisThroughPoints(P3[] points, P3 axisA,
+                                               V3 axisUnitVector,
+                                               V3 vectorProjection,
                                                int nTriesMax) {
     // just a crude starting point.
 
@@ -388,18 +388,18 @@ final public class Measure {
      * 
      */
 
-    Point3f tempA = Point3f.newP(points[0]);
+    P3 tempA = P3.newP(points[0]);
     projectOntoAxis(tempA, axisA, axisUnitVector, vectorProjection);
     axisA.setT(tempA);
   }
 
-  public static float findAxis(Point3f[] points, int nPoints, Point3f axisA,
-                        Vector3f axisUnitVector, Vector3f vectorProjection) {
-    Vector3f sumXiYi = new Vector3f();
-    Vector3f vTemp = new Vector3f();
-    Point3f pt = new Point3f();
-    Point3f ptProj = new Point3f();
-    Vector3f a = Vector3f.newV(axisUnitVector);
+  public static float findAxis(P3[] points, int nPoints, P3 axisA,
+                        V3 axisUnitVector, V3 vectorProjection) {
+    V3 sumXiYi = new V3();
+    V3 vTemp = new V3();
+    P3 pt = new P3();
+    P3 ptProj = new P3();
+    V3 a = V3.newV(axisUnitVector);
 
     float sum_Xi2 = 0;
     float sum_Yi2 = 0;
@@ -414,7 +414,7 @@ final public class Measure {
       sumXiYi.add(vTemp);
       sum_Xi2 += vectorProjection.lengthSquared();
     }
-    Vector3f m = Vector3f.newV(sumXiYi);
+    V3 m = V3.newV(sumXiYi);
     m.scale(1 / sum_Xi2);
     vTemp.cross(m, axisUnitVector);
     axisUnitVector.add(vTemp);
@@ -426,24 +426,24 @@ final public class Measure {
   }
   
   
-  public static void calcAveragePoint(Point3f pointA, Point3f pointB,
-                                      Point3f pointC) {
+  public static void calcAveragePoint(P3 pointA, P3 pointB,
+                                      P3 pointC) {
     pointC.set((pointA.x + pointB.x) / 2, (pointA.y + pointB.y) / 2,
         (pointA.z + pointB.z) / 2);
   }
   
-  public static void calcAveragePointN(Point3f[] points, int nPoints,
-                                Point3f averagePoint) {
+  public static void calcAveragePointN(P3[] points, int nPoints,
+                                P3 averagePoint) {
     averagePoint.setT(points[0]);
     for (int i = 1; i < nPoints; i++)
       averagePoint.add(points[i]);
     averagePoint.scale(1f / nPoints);
   }
 
-  public static Point3f[] getCenterAndPoints(List<Point3f> vPts) {
+  public static P3[] getCenterAndPoints(List<P3> vPts) {
     int n = vPts.size();
-    Point3f[] pts = new Point3f[n + 1];
-    pts[0] = new Point3f();
+    P3[] pts = new P3[n + 1];
+    pts[0] = new P3();
     if (n > 0) {
       for (int i = 0; i < n; i++) {
         pts[0].add(pts[i + 1] = vPts.get(i));
@@ -453,13 +453,13 @@ final public class Measure {
     return pts;
   }
 
-  public static float getTransformMatrix4(List<Point3f> ptsA, List<Point3f> ptsB, Matrix4f m, Point3f centerA) {
-    Point3f[] cptsA = getCenterAndPoints(ptsA);
-    Point3f[] cptsB = getCenterAndPoints(ptsB);
+  public static float getTransformMatrix4(List<P3> ptsA, List<P3> ptsB, Matrix4f m, P3 centerA) {
+    P3[] cptsA = getCenterAndPoints(ptsA);
+    P3[] cptsB = getCenterAndPoints(ptsB);
     float[] retStddev = new float[2];
-    Quaternion q = calculateQuaternionRotation(new Point3f[][] { cptsA,
+    Quaternion q = calculateQuaternionRotation(new P3[][] { cptsA,
         cptsB }, retStddev, false);
-    Vector3f v = Vector3f.newV(cptsB[0]);
+    V3 v = V3.newV(cptsB[0]);
     v.sub(cptsA[0]);
     m.setMV(q.getMatrix(), v);
     if (centerA != null)
@@ -468,7 +468,7 @@ final public class Measure {
   }
   
   public static Quaternion calculateQuaternionRotation(
-                                                       Point3f[][] centerAndPoints,
+                                                       P3[][] centerAndPoints,
                                                        float[] retStddev,
                                                        boolean doReport) {
 
@@ -494,7 +494,7 @@ final public class Measure {
      *  along the trace of matrix M (eqn 20). 
      *  I'm not sure why the extra x^2 + y^2 + z^2 + x'^2 + y'^2 + z'^2
      *  is in there, but they are unnecessary and only contribute to larger
-     *  numerical averaging errors an additional processing time, as far as
+     *  numerical averaging errors and additional processing time, as far as
      *  I can tell. Adding aI, where a is a scalar and I is the 4x4 identity
      *  just offsets the eigenvalues but doesn't change the eigenvectors.
      * 
@@ -506,8 +506,8 @@ final public class Measure {
     int n = centerAndPoints[0].length - 1;
     if (doReport)
       for (int i = 1; i <= n; i++) {
-        Point3f aij = centerAndPoints[0][i];
-        Point3f bij = centerAndPoints[1][i];
+        P3 aij = centerAndPoints[0][i];
+        P3 bij = centerAndPoints[1][i];
         if (aij instanceof Atom)
           Logger.info(" atom 1 " + ((Atom) aij).getInfo() + "\tatom 2 "
               + ((Atom) bij).getInfo());
@@ -519,11 +519,11 @@ final public class Measure {
       return q;
 
     double Sxx = 0, Sxy = 0, Sxz = 0, Syx = 0, Syy = 0, Syz = 0, Szx = 0, Szy = 0, Szz = 0;
-    Point3f ptA = new Point3f();
-    Point3f ptB = new Point3f();
+    P3 ptA = new P3();
+    P3 ptB = new P3();
     for (int i = n + 1; --i >= 1;) {
-      Point3f aij = centerAndPoints[0][i];
-      Point3f bij = centerAndPoints[1][i];
+      P3 aij = centerAndPoints[0][i];
+      P3 bij = centerAndPoints[1][i];
       ptA.setT(aij);
       ptA.sub(centerAndPoints[0][0]);
       ptB.setT(bij);
@@ -563,11 +563,11 @@ final public class Measure {
     return q;
   }
 
-  public static float getRmsd(Point3f[][] centerAndPoints, Quaternion q) {
+  public static float getRmsd(P3[][] centerAndPoints, Quaternion q) {
     double sum = 0;
     double sum2 = 0;
     int n = centerAndPoints[0].length - 1;
-    Point3f ptAnew = new Point3f();
+    P3 ptAnew = new P3();
     for (int i = n + 1; --i >= 1;) {
       ptAnew.setT(centerAndPoints[0][i]);
       ptAnew.sub(centerAndPoints[0][0]);
@@ -580,10 +580,10 @@ final public class Measure {
     return (float) Math.sqrt((sum2 - sum * sum / n) / (n - 1));
   }
 
-  public static List<Point3f> transformPoints(List<Point3f> vPts, Matrix4f m4, Point3f center) {
-    List<Point3f> v = new ArrayList<Point3f>();
+  public static List<P3> transformPoints(List<P3> vPts, Matrix4f m4, P3 center) {
+    List<P3> v = new ArrayList<P3>();
     for (int i = 0; i < vPts.size(); i++) {
-      Point3f pt = Point3f.newP(vPts.get(i));
+      P3 pt = P3.newP(vPts.get(i));
       pt.sub(center);
       m4.transform2(pt, pt);
       pt.add(center);
@@ -592,10 +592,10 @@ final public class Measure {
     return v;
   }
 
-  public static boolean isInTetrahedron(Point3f pt, Point3f ptA, Point3f ptB,
-                                        Point3f ptC, Point3f ptD,
-                                        Point4f plane, Vector3f vTemp,
-                                        Vector3f vTemp2, Vector3f vTemp3, boolean fullyEnclosed) {
+  public static boolean isInTetrahedron(P3 pt, P3 ptA, P3 ptB,
+                                        P3 ptC, P3 ptD,
+                                        Point4f plane, V3 vTemp,
+                                        V3 vTemp2, V3 vTemp3, boolean fullyEnclosed) {
     getPlaneThroughPoints(ptC, ptD, ptA, vTemp, vTemp2, vTemp3, plane);
     boolean b = (distanceToPlane(plane, pt) >= 0);
     getPlaneThroughPoints(ptA, ptD, ptB, vTemp, vTemp2, vTemp3, plane);
@@ -628,9 +628,9 @@ final public class Measure {
     float b2 = plane2.y;
     float c2 = plane2.z;
     float d2 = plane2.w;
-    Vector3f norm1 = Vector3f.new3(a1, b1, c1);
-    Vector3f norm2 = Vector3f.new3(a2, b2, c2);
-    Vector3f nxn = new Vector3f();
+    V3 norm1 = V3.new3(a1, b1, c1);
+    V3 norm2 = V3.new3(a2, b2, c2);
+    V3 nxn = new V3();
     nxn.cross(norm1, norm2);
     float ax = Math.abs(nxn.x);
     float ay = Math.abs(nxn.y);
@@ -661,7 +661,7 @@ final public class Measure {
       z = 0;
     }
     List<Object>list = new ArrayList<Object>();
-    list.add(Point3f.new3(x, y, z));
+    list.add(P3.new3(x, y, z));
     nxn.normalize();
     list.add(nxn);
     return list;
@@ -677,13 +677,13 @@ final public class Measure {
    * @param vTemp 
    * @return       ptRte
    */
-  public static Point3f getIntersection(Point3f pt1, Vector3f v,
-                                               Point4f plane, Point3f ptRet, Vector3f tempNorm, Vector3f vTemp) {
+  public static P3 getIntersection(P3 pt1, V3 v,
+                                               Point4f plane, P3 ptRet, V3 tempNorm, V3 vTemp) {
     getPlaneProjection(pt1, plane, ptRet, tempNorm);
     tempNorm.set(plane.x, plane.y, plane.z);
     tempNorm.normalize();
     if (v == null)
-      v = Vector3f.newV(tempNorm);
+      v = V3.newV(tempNorm);
     float l_dot_n = v.dot(tempNorm);
     if (Math.abs(l_dot_n) < 0.01) return null;
     vTemp.setT(ptRet);

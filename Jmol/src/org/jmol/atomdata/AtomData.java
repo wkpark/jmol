@@ -115,8 +115,8 @@ package org.jmol.atomdata;
 
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 
 
 
@@ -135,9 +135,9 @@ public class AtomData {
   public String modelName;
   public int modelIndex;
   
-  public BitSet bsSelected;
-  public BitSet bsIgnored;
-  public BitSet[] bsMolecules;
+  public BS bsSelected;
+  public BS bsIgnored;
+  public BS[] bsMolecules;
   
   public RadiusData radiusData;
   
@@ -153,11 +153,11 @@ public class AtomData {
   public float hAtomRadius;
   
   public int[] atomIndex;
-  public Point3f[] atomXyz;
+  public P3[] atomXyz;
   public float[] atomRadius;
   public int[] atomicNumber;
   public int[] atomMolecule;
-  public Point3f[][] hAtoms;
+  public P3[][] hAtoms;
   public int atomCount;
   public int hydrogenAtomCount;
   public int adpMode;

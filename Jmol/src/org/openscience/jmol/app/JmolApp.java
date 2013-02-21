@@ -446,7 +446,7 @@ public class JmolApp {
 
         }
         else
-          script2 += ";write image " + width + " " + height + " " + type + " " + quality + " " + Escape.escapeStr(type_name);
+          script2 += ";write image " + width + " " + height + " " + type + " " + quality + " " + Escape.eS(type_name);
       }
     }
     if (GraphicsEnvironment.isHeadless())
@@ -489,7 +489,7 @@ public class JmolApp {
       if (script1 == null)
         script1 = "";
       script1 = (modelFilename.endsWith(".spt") ? "script " : "load ") 
-          + Escape.escapeStr(modelFilename) + ";" + script1;
+          + Escape.eS(modelFilename) + ";" + script1;
     }
 
     // OK, by now it is time to execute the script

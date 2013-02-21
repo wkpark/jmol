@@ -24,11 +24,11 @@
 package org.jmol.shape;
 
 
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.TextFormat;
 
@@ -318,7 +318,7 @@ public class Text extends Object2d {
   }
   
   public String getState() {
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     if (text == null || isLabelOrHover || target.equals("error"))
       return "";
     //set echo top left
@@ -327,7 +327,7 @@ public class Text extends Object2d {
     boolean isImage = (image != null);
     //    if (isDefine) {
     String strOff = null;
-    String echoCmd = "set echo ID " + Escape.escapeStr(target);
+    String echoCmd = "set echo ID " + Escape.eS(target);
     switch (valign) {
     case VALIGN_XY:
       if (movableXPercent == Integer.MAX_VALUE
@@ -342,7 +342,7 @@ public class Text extends Object2d {
       //$FALL-THROUGH$
     case VALIGN_XYZ:
       if (strOff == null)
-        strOff = Escape.escapePt(xyz);
+        strOff = Escape.eP(xyz);
       s.append("  ").append(echoCmd).append(" ").append(strOff);
       if (align != ALIGN_LEFT)
         s.append(";  ").append(echoCmd).append(" ").append(hAlignNames[align]);
@@ -357,13 +357,13 @@ public class Text extends Object2d {
       s.append("; ").append(echoCmd).append(" IMAGE /*file*/");
     else
       s.append("; echo ");
-    s.append(Escape.escapeStr(text)); // was textUnformatted, but that is not really the STATE
+    s.append(Escape.eS(text)); // was textUnformatted, but that is not really the STATE
     s.append(";\n");
     if (isImage && imageScale != 1)
       s.append("  ").append(echoCmd).append(" scale ").appendF(imageScale).append(";\n");
     if (script != null)
       s.append("  ").append(echoCmd).append(" script ").append(
-          Escape.escapeStr(script)).append(";\n");
+          Escape.eS(script)).append(";\n");
     if (modelIndex >= 0)
       s.append("  ").append(echoCmd).append(" model ").append(
           viewer.getModelNumberDotted(modelIndex)).append(";\n");
@@ -381,15 +381,15 @@ public class Text extends Object2d {
     if (scalePixelsPerMicron > 0)
       s.append(" " + (10000f / scalePixelsPerMicron)); // Angstroms per pixel
     s.append("; color echo");
-    if (Colix.isColixTranslucent(colix))
-      s.append(" translucent " + Colix.getColixTranslucencyFractional(colix));
-    s.append(" ").append(Colix.getHexCode(colix));
+    if (C.isColixTranslucent(colix))
+      s.append(" translucent " + C.getColixTranslucencyFractional(colix));
+    s.append(" ").append(C.getHexCode(colix));
     if (bgcolix != 0) {
       s.append("; color echo background");
-      if (Colix.isColixTranslucent(bgcolix))
+      if (C.isColixTranslucent(bgcolix))
         s.append(" translucent "
-            + Colix.getColixTranslucencyFractional(bgcolix));
-      s.append(" ").append(Colix.getHexCode(bgcolix));
+            + C.getColixTranslucencyFractional(bgcolix));
+      s.append(" ").append(C.getHexCode(bgcolix));
     }
     s.append(";\n");
     return s.toString();

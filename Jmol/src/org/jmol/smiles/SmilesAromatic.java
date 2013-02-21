@@ -27,11 +27,11 @@ package org.jmol.smiles;
 import java.util.List;
 
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 
 public class SmilesAromatic {
   /** 
@@ -53,7 +53,7 @@ public class SmilesAromatic {
    */
 
   public final static boolean isFlatSp2Ring(JmolNode[] atoms,
-                                            BitSet bsSelected, BitSet bs,
+                                            BS bsSelected, BS bs,
                                             float cutoff) {
     /*
      * 
@@ -126,12 +126,12 @@ public class SmilesAromatic {
     if (cutoff <= 0)
       cutoff = 0.01f;
 
-    Vector3f vTemp = new Vector3f();
-    Vector3f vA = new Vector3f();
-    Vector3f vB = new Vector3f();
-    Vector3f vMean = null;
+    V3 vTemp = new V3();
+    V3 vA = new V3();
+    V3 vB = new V3();
+    V3 vMean = null;
     int nPoints = bs.cardinality();
-    Vector3f[] vNorms = new Vector3f[nPoints * 2];
+    V3[] vNorms = new V3[nPoints * 2];
     int nNorms = 0;
     float maxDev = (1 - cutoff * 5);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -156,15 +156,15 @@ public class SmilesAromatic {
       // get the normals through r1 - k - r2 and r1 - iSub - r2
       getNormalThroughPoints(atoms[r1], atoms[i], atoms[r2], vTemp, vA, vB);
       if (vMean == null)
-        vMean = new Vector3f();
+        vMean = new V3();
       if (!addNormal(vTemp, vMean, maxDev))
         return false;
-      vNorms[nNorms++] = Vector3f.newV(vTemp);
+      vNorms[nNorms++] = V3.newV(vTemp);
       if (iSub >= 0) {
         getNormalThroughPoints(atoms[r1], atoms[iSub], atoms[r2], vTemp, vA, vB);
         if (!addNormal(vTemp, vMean, maxDev))
           return false;
-        vNorms[nNorms++] = Vector3f.newV(vTemp);
+        vNorms[nNorms++] = V3.newV(vTemp);
       }
     }
     boolean isFlat = checkStandardDeviation(vNorms, vMean, nNorms, cutoff);
@@ -172,7 +172,7 @@ public class SmilesAromatic {
     return isFlat;
   }
 
-  private final static boolean addNormal(Vector3f vTemp, Vector3f vMean,
+  private final static boolean addNormal(V3 vTemp, V3 vMean,
                                          float maxDev) {
     float similarity = vMean.dot(vTemp);
     if (similarity != 0 && Math.abs(similarity) < maxDev)
@@ -184,8 +184,8 @@ public class SmilesAromatic {
     return true;
   }
 
-  private final static boolean checkStandardDeviation(Vector3f[] vNorms,
-                                                      Vector3f vMean, int n,
+  private final static boolean checkStandardDeviation(V3[] vNorms,
+                                                      V3 vMean, int n,
                                                       float cutoff) {
     double sum = 0;
     double sum2 = 0;
@@ -200,15 +200,15 @@ public class SmilesAromatic {
   }
 
   static float getNormalThroughPoints(JmolNode pointA, JmolNode pointB,
-                                      JmolNode pointC, Vector3f vNorm,
-                                      Vector3f vAB, Vector3f vAC) {
-    vAB.sub2((Point3f) pointB, (Point3f) pointA);
-    vAC.sub2((Point3f) pointC, (Point3f) pointA);
+                                      JmolNode pointC, V3 vNorm,
+                                      V3 vAB, V3 vAC) {
+    vAB.sub2((P3) pointB, (P3) pointA);
+    vAC.sub2((P3) pointC, (P3) pointA);
     vNorm.cross(vAB, vAC);
     vNorm.normalize();
     // ax + by + cz + d = 0
     // so if a point is in the plane, then N dot X = -d
-    vAB.setT((Point3f) pointA);
+    vAB.setT((P3) pointA);
     return -vAB.dot(vNorm);
   }
 
@@ -218,8 +218,8 @@ public class SmilesAromatic {
    * @param bsAtoms
    * @return bsAromatic
    */
-  static BitSet checkAromaticDefined(JmolNode[] jmolAtoms, BitSet bsAtoms) {
-    BitSet bsDefined = new BitSet();
+  static BS checkAromaticDefined(JmolNode[] jmolAtoms, BS bsAtoms) {
+    BS bsDefined = new BS();
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
       JmolEdge[] bonds = jmolAtoms[i].getEdges();
       for (int j = 0; j < bonds.length; j++) {
@@ -236,17 +236,17 @@ public class SmilesAromatic {
   }
   
   static void checkAromaticStrict(JmolNode[] jmolAtoms,
-                                         BitSet bsAromatic, List<Object> v5,
+                                         BS bsAromatic, List<Object> v5,
                                          List<Object> v6) {
-    BitSet bsStrict = new BitSet();
-    BitSet bsTest = new BitSet();
+    BS bsStrict = new BS();
+    BS bsTest = new BS();
     for (int i = v5.size(); --i >= 0; ) {
-      BitSet bs = (BitSet) v5.get(i);
+      BS bs = (BS) v5.get(i);
       if (isAromaticRing(bsAromatic, bsTest, bs, 5))
         checkAromaticStrict(jmolAtoms, bsStrict, v5, v6, bs, true);
     }
     for (int i = v6.size(); --i >= 0; ) {
-      BitSet bs = (BitSet) v6.get(i);
+      BS bs = (BS) v6.get(i);
       if (isAromaticRing(bsAromatic, bsTest, bs, 6))
         checkAromaticStrict(jmolAtoms, bsStrict, v5, v6, bs, false);
     }
@@ -254,8 +254,8 @@ public class SmilesAromatic {
     bsAromatic.or(bsStrict);
   }
 
-  private static boolean isAromaticRing(BitSet bsAromatic, BitSet bsTest,
-                                        BitSet bs, int n) {
+  private static boolean isAromaticRing(BS bsAromatic, BS bsTest,
+                                        BS bs, int n) {
     bsTest.clearAll();
     bsTest.or(bs);
     bsTest.and(bsAromatic);
@@ -273,8 +273,8 @@ public class SmilesAromatic {
    * @param is5
    */
   private static void checkAromaticStrict(JmolNode[] jmolAtoms,
-                                          BitSet bsStrict, List<Object> v5,
-                                          List<Object> v6, BitSet bsRing,
+                                          BS bsStrict, List<Object> v5,
+                                          List<Object> v6, BS bsRing,
                                           boolean is5) {
     // I believe this gives the wrong answer for mmff94_dative.mol2 CIKSEU10
     // but at least it agrees with MMFF94.  -- Bob Hanson
@@ -293,14 +293,14 @@ public class SmilesAromatic {
             if (!bsRing.get(i2)) {
               boolean piShared = false;
               for (int k = v5.size(); --k >= 0 && !piShared;) {
-                BitSet bs = (BitSet) v5.get(k);
+                BS bs = (BS) v5.get(k);
                 if (bs.get(i2)
                     && (bsStrict.get(i2) || Math.abs(countInternalPairs(
                         jmolAtoms, bs, true)) == 3))
                   piShared = true;
               }
               for (int k = v6.size(); --k >= 0 && !piShared;) {
-                BitSet bs = (BitSet) v6.get(k);
+                BS bs = (BS) v6.get(k);
                 if (bs.get(i2)
                     && (bsStrict.get(i2) || Math.abs(countInternalPairs(
                         jmolAtoms, bs, false)) == 3))
@@ -329,7 +329,7 @@ public class SmilesAromatic {
    * @param is5
    * @return  number of pairs
    */
-  private static int countInternalPairs(JmolNode[] jmolAtoms, BitSet bsRing,
+  private static int countInternalPairs(JmolNode[] jmolAtoms, BS bsRing,
                                         boolean is5) {
     int nDouble = 0;
     int nAromatic = 0;

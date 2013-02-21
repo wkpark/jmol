@@ -28,8 +28,8 @@ import org.jmol.atomdata.AtomDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 
 class VolumeDataReader extends SurfaceReader {
 
@@ -54,7 +54,7 @@ class VolumeDataReader extends SurfaceReader {
   protected int dataType;
   protected boolean precalculateVoxelData;
   protected boolean allowMapData;
-  protected Point3f point;
+  protected P3 point;
   protected float ptsPerAngstrom;
   protected int maxGrid;
   protected AtomDataServer atomDataServer;
@@ -77,7 +77,7 @@ class VolumeDataReader extends SurfaceReader {
   void setup(boolean isMapData) {
     //as is, just the volumeData as we have it.
     //but subclasses can modify this behavior.
-    jvxlFileHeaderBuffer = new StringXBuilder().append("volume data read from file\n\n");
+    jvxlFileHeaderBuffer = new SB().append("volume data read from file\n\n");
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
   
@@ -223,7 +223,7 @@ class VolumeDataReader extends SurfaceReader {
       volumetricOrigin.z = min;
       if (isEccentric)
         eccentricityMatrix.transform(volumetricOrigin);
-      if (center.x != Float.MAX_VALUE)
+      if (center != null && center.x != Float.MAX_VALUE)
         volumetricOrigin.add(center);
       
       //System.out.println("/*volumeDatareader*/draw vector @{point" + volumetricOrigin + "} {" 

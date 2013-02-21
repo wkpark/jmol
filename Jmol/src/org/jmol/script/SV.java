@@ -36,27 +36,27 @@ import java.util.Map;
 
 
 import org.jmol.modelset.Bond.BondSet;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
-public class ScriptVariable extends Token {
+public class SV extends T {
 
-  final private static ScriptVariable vT = newScriptVariableIntValue(on, 1, "true");
-  final private static ScriptVariable vF = newScriptVariableIntValue(off, 0, "false");
+  final private static SV vT = newScriptVariableIntValue(on, 1, "true");
+  final private static SV vF = newScriptVariableIntValue(off, 0, "false");
 
-  int index = Integer.MAX_VALUE;
+  int index = Integer.MAX_VALUE;    
 
   private final static int FLAG_CANINCREMENT = 1;
   private final static int FLAG_LOCALVAR = 2;
@@ -64,43 +64,43 @@ public class ScriptVariable extends Token {
   private int flags = ~FLAG_CANINCREMENT & FLAG_LOCALVAR;
   private String myName;
 
-  ScriptVariable(int tok) {
-    this.tok = tok;
+  SV(int tok) {
+    super(tok);
   }
 
-  public static ScriptVariable newVariable(int tok, Object value) {
-    ScriptVariable sv = new ScriptVariable(tok);
+  public static SV newVariable(int tok, Object value) {
+    SV sv = new SV(tok);
     sv.value = value;
     return sv;
   }
 
-  static ScriptVariable newScriptVariableBs(BitSet bs, int index) {
-    ScriptVariable sv = new ScriptVariable(bitset);
+  static SV newScriptVariableBs(BS bs, int index) {
+    SV sv = new SV(bitset);
     sv.value = bs;
     if (index >= 0)
       sv.index = index;
     return sv;
   }
 
-  static ScriptVariable newScriptVariableToken(Token x) {
-    ScriptVariable sv = new ScriptVariable(x.tok);
+  static SV newScriptVariableToken(T x) {
+    SV sv = new SV(x.tok);
     sv.intValue = x.intValue;
     sv.value = x.value;
     return sv;
   }
   
-  static ScriptVariable newScriptVariableIntValue(int tok, int intValue, Object value) {
-    ScriptVariable sv = new ScriptVariable(tok);
+  static SV newScriptVariableIntValue(int tok, int intValue, Object value) {
+    SV sv = new SV(tok);
     sv.intValue = intValue;
     sv.value = value;
     return sv;
   }
 
   @SuppressWarnings("unchecked")
-  static int sizeOf(Token x) {
+  static int sizeOf(T x) {
     switch (x == null ? nada : x.tok) {
     case bitset:
-      return BitSetUtil.cardinalityOf(bsSelectToken(x));
+      return BSUtil.cardinalityOf(bsSelectToken(x));
     case on:
     case off:
       return -1;
@@ -119,37 +119,37 @@ public class ScriptVariable extends Token {
     case string:
       return ((String) x.value).length();
     case varray:
-      return x.intValue == Integer.MAX_VALUE ? ((ScriptVariable)x).getList().size()
+      return x.intValue == Integer.MAX_VALUE ? ((SV)x).getList().size()
           : sizeOf(selectItemTok(x));
     case hash:
-      return ((Map<String, ScriptVariable>) x.value).size();
+      return ((Map<String, SV>) x.value).size();
     default:
       return 0;
     }
   }
 
   static boolean isVariableType(Object x) {
-    return (x instanceof ScriptVariable
-        || x instanceof BitSet
+    return (x instanceof SV
+        || x instanceof BS
         || x instanceof Boolean
         || x instanceof Float
         || x instanceof Integer
-        || x instanceof Point3f    // stored as point3f
-        || x instanceof Vector3f   // stored as point3f
+        || x instanceof P3    // stored as point3f
+        || x instanceof V3   // stored as point3f
         || x instanceof Point4f    // stored as point4f
         || x instanceof Quaternion // stored as point4f
         || x instanceof String
         || x instanceof Map<?, ?>  // stored as Map<String, ScriptVariable>
         || x instanceof List<?>    // stored as list
     // in JavaScript, all these will be "Array" which is fine
-        || x instanceof ScriptVariable[] // stored as list
+        || x instanceof SV[] // stored as list
         || x instanceof double[]   // stored as list
         || x instanceof float[]    // stored as list
         || x instanceof float[][]  // stored as list
         || x instanceof Float[]    // stored as list
         || x instanceof int[]      // stored as list
         || x instanceof int[][]    // stored as list
-        || x instanceof Point3f[]  // stored as list
+        || x instanceof P3[]  // stored as list
         || x instanceof String[]); // stored as list
   }
 
@@ -160,11 +160,11 @@ public class ScriptVariable extends Token {
    */
   @SuppressWarnings("unchecked")
   public
-  static ScriptVariable getVariable(Object x) {
+  static SV getVariable(Object x) {
     if (x == null)
-      return newVariable(Token.string, "");
-    if (x instanceof ScriptVariable)
-      return (ScriptVariable) x;
+      return newVariable(T.string, "");
+    if (x instanceof SV)
+      return (SV) x;
 
     // the eight basic types are:
     // boolean, integer, decimal, string, point3f, point4f, bitset, and list
@@ -180,15 +180,15 @@ public class ScriptVariable extends Token {
       return newVariable(decimal, x);
     if (x instanceof String) {
       x = unescapePointOrBitsetAsVariable(x);
-      if (x instanceof ScriptVariable)
-        return (ScriptVariable) x;
+      if (x instanceof SV)
+        return (SV) x;
       return newVariable(string, x);
     }
-    if (x instanceof Point3f)
+    if (x instanceof P3)
       return newVariable(point3f, x);
-    if (x instanceof Vector3f) // point3f is not mutable anyway
-      return newVariable(point3f, Point3f.newP((Vector3f) x));
-    if (x instanceof BitSet)
+    if (x instanceof V3) // point3f is not mutable anyway
+      return newVariable(point3f, P3.newP((V3) x));
+    if (x instanceof BS)
       return newVariable(bitset, x);
     if (x instanceof Point4f)
       return newVariable(point4f, x);
@@ -223,19 +223,19 @@ public class ScriptVariable extends Token {
     if (Escape.isAS(x))
       return getVariableAS((String[]) x);
     if (Escape.isAV(x))
-      return getVariableAV((ScriptVariable[]) x);
+      return getVariableAV((SV[]) x);
     if (Escape.isAP(x))
-      return getVariableAP((Point3f[]) x);
+      return getVariableAP((P3[]) x);
     return newVariable(string, Escape.toReadable(null, x));
   }
 
   @SuppressWarnings("unchecked")
-  static ScriptVariable getVariableMap(Object x) {
+  static SV getVariableMap(Object x) {
     Map<String, Object> ht = (Map<String, Object>) x;
     Iterator<String> e = ht.keySet().iterator();
     while (e.hasNext()) {
-      if (!(ht.get(e.next()) instanceof ScriptVariable)) {
-        Map<String, ScriptVariable> x2 = new Hashtable<String, ScriptVariable>();
+      if (!(ht.get(e.next()) instanceof SV)) {
+        Map<String, SV> x2 = new Hashtable<String, SV>();
         for (Map.Entry<String, Object> entry : ht.entrySet()) {
           String key = entry.getKey();
           Object o = entry.getValue();
@@ -252,67 +252,67 @@ public class ScriptVariable extends Token {
     return newVariable(hash, x);
   }
 
-  static ScriptVariable getVariableList(List<?> v) {
+  static SV getVariableList(List<?> v) {
     int len = v.size();
-    if (len > 0 && v.get(0) instanceof ScriptVariable)
+    if (len > 0 && v.get(0) instanceof SV)
       return newVariable(varray, v);
-    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+    List<SV> objects = new ArrayList<SV>();
     for (int i = 0; i < len; i++)
       objects.add(getVariable(v.get(i)));
     return newVariable(varray, objects);
   }
 
-  static ScriptVariable getVariableAV(ScriptVariable[] v) {
-    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+  static SV getVariableAV(SV[] v) {
+    List<SV> objects = new ArrayList<SV>();
     for (int i = 0; i < v.length; i++)
       objects.add(v[i]);
     return newVariable(varray, objects);
   }
 
-  static ScriptVariable getVariableAD(double[] f) {
-    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+  static SV getVariableAD(double[] f) {
+    List<SV> objects = new ArrayList<SV>();
     for (int i = 0; i < f.length; i++)
       objects.add(newVariable(decimal, Float.valueOf((float) f[i])));
     return newVariable(varray, objects);
   }
 
-  static ScriptVariable getVariableAS(String[] s) {
-    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+  static SV getVariableAS(String[] s) {
+    List<SV> objects = new ArrayList<SV>();
     for (int i = 0; i < s.length; i++)
       objects.add(newVariable(string, s[i]));
     return newVariable(varray, objects);
   }
 
-  static ScriptVariable getVariableAP(Point3f[] p) {
-    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+  static SV getVariableAP(P3[] p) {
+    List<SV> objects = new ArrayList<SV>();
     for (int i = 0; i < p.length; i++)
       objects.add(newVariable(point3f, p[i]));
     return newVariable(varray, objects);
   }
 
-  static ScriptVariable getVariableAFF(float[][] fx) {
-    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+  static SV getVariableAFF(float[][] fx) {
+    List<SV> objects = new ArrayList<SV>();
     for (int i = 0; i < fx.length; i++)
       objects.add(getVariableAF(fx[i]));
     return newVariable(varray, objects);
   }
 
-  static ScriptVariable getVariableAII(int[][] ix) {
-    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+  static SV getVariableAII(int[][] ix) {
+    List<SV> objects = new ArrayList<SV>();
     for (int i = 0; i < ix.length; i++)
       objects.add(getVariableAI(ix[i]));
     return newVariable(varray, objects);
   }
 
-  static ScriptVariable getVariableAF(float[] f) {
-    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+  static SV getVariableAF(float[] f) {
+    List<SV> objects = new ArrayList<SV>();
     for (int i = 0; i < f.length; i++)
       objects.add(newVariable(decimal, Float.valueOf(f[i])));
     return newVariable(varray, objects);
   }
 
-  static ScriptVariable getVariableAI(int[] ix) {
-    List<ScriptVariable> objects = new ArrayList<ScriptVariable>();
+  static SV getVariableAI(int[] ix) {
+    List<SV> objects = new ArrayList<SV>();
     for (int i = 0; i < ix.length; i++)
       objects.add(newVariable(integer, Integer.valueOf(ix[i])));
     return newVariable(varray, objects);
@@ -328,7 +328,7 @@ public class ScriptVariable extends Token {
    * @return  new ScriptVariable
    */
   @SuppressWarnings("unchecked")
-  ScriptVariable set(ScriptVariable v, boolean asCopy) {
+  SV set(SV v, boolean asCopy) {
     // note: bitset, point3f ,point4f will not be copied
     //       because they are essentially immutable here
     index = v.index;
@@ -338,12 +338,12 @@ public class ScriptVariable extends Token {
     if (asCopy) {
       switch (tok) {
       case hash:
-        value = new Hashtable<String, ScriptVariable>(
-            (Map<String, ScriptVariable>) v.value);
+        value = new Hashtable<String, SV>(
+            (Map<String, SV>) v.value);
         break;
       case varray:
-        List<ScriptVariable> o2 = new ArrayList<ScriptVariable>();
-        List<ScriptVariable> o1 = v.getList();
+        List<SV> o2 = new ArrayList<SV>();
+        List<SV> o1 = v.getList();
         for (int i = 0; i < o1.size(); i++)
           o2.add(o1.get(i));
         value = o2;
@@ -353,14 +353,14 @@ public class ScriptVariable extends Token {
     return this;
   }
 
-  public ScriptVariable setName(String name) {
+  public SV setName(String name) {
     this.myName = name;
     flags |= FLAG_CANINCREMENT;
     //System.out.println("Variable: " + name + " " + intValue + " " + value);
     return this;
   }
 
-  public ScriptVariable setGlobal() {
+  public SV setGlobal() {
     flags &= ~FLAG_LOCALVAR;
     return this;
   }
@@ -409,7 +409,7 @@ public class ScriptVariable extends Token {
 
   // math-related Token static methods
 
-  private final static Point3f pt0 = new Point3f();
+  private final static P3 pt0 = new P3();
 
   /**
    * 
@@ -417,7 +417,7 @@ public class ScriptVariable extends Token {
    * @return   Object-wrapped value
    */
   
-  public static Object oValue(ScriptVariable x) {
+  public static Object oValue(SV x) {
     switch (x == null ? nada : x.tok) {
     case on:
       return Boolean.TRUE;
@@ -440,7 +440,7 @@ public class ScriptVariable extends Token {
    * @param x
    * @return  numeric value -- integer or decimal
    */
-  static Object nValue(Token x) {
+  static Object nValue(T x) {
     int iValue;
     switch (x == null ? nada : x.tok) {
     case decimal:
@@ -462,7 +462,7 @@ public class ScriptVariable extends Token {
   // there are reasons to use Token here rather than ScriptVariable
   // some of these functions, in particular iValue, fValue, and sValue
   
-  private static boolean bValue(Token x) {
+  private static boolean bValue(T x) {
     switch (x == null ? nada : x.tok) {
     case on:
     case hash:
@@ -487,7 +487,7 @@ public class ScriptVariable extends Token {
     }
   }
 
-  static int iValue(Token x) {
+  static int iValue(T x) {
     switch (x == null ? nada : x.tok) {
     case on:
       return 1;
@@ -504,13 +504,13 @@ public class ScriptVariable extends Token {
     case matrix4f:
       return (int) fValue(x);
     case bitset:
-      return BitSetUtil.cardinalityOf(bsSelectToken(x));
+      return BSUtil.cardinalityOf(bsSelectToken(x));
     default:
       return 0;
     }
   }
 
-  static float fValue(Token x) {
+  static float fValue(T x) {
     switch (x == null ? nada : x.tok) {
     case on:
       return 1;
@@ -523,22 +523,22 @@ public class ScriptVariable extends Token {
     case varray:
       int i = x.intValue;
       if (i == Integer.MAX_VALUE)
-        return ((ScriptVariable)x).getList().size();
+        return ((SV)x).getList().size();
       //$FALL-THROUGH$
     case string:
       return toFloat(sValue(x));
     case bitset:
       return iValue(x);
     case point3f:
-      return ((Point3f) x.value).distance(pt0);
+      return ((P3) x.value).distance(pt0);
     case point4f:
       return Measure.distanceToPlane((Point4f) x.value, pt0);
     case matrix3f:
-      Point3f pt = new Point3f();
+      P3 pt = new P3();
       ((Matrix3f) x.value).transform(pt);
       return pt.distance(pt0);
     case matrix4f:
-      Point3f pt1 = new Point3f();
+      P3 pt1 = new P3();
       ((Matrix4f) x.value).transform(pt1);
       return pt1.distance(pt0);
     default:
@@ -546,11 +546,11 @@ public class ScriptVariable extends Token {
     }
   }
 
-  static String sValue(Token x) {
+  static String sValue(T x) {
     if (x == null)
       return "";
     int i;
-    StringXBuilder sb;
+    SB sb;
     Map<Object, Boolean> map;
     switch (x.tok) {
     case on:
@@ -560,9 +560,9 @@ public class ScriptVariable extends Token {
     case integer:
       return "" + x.intValue;
     case bitset:
-      return Escape.escapeBs(bsSelectToken(x), !(x.value instanceof BondSet));
+      return Escape.eB(bsSelectToken(x), !(x.value instanceof BondSet));
     case varray:
-      List<ScriptVariable> sv = ((ScriptVariable) x).getList();
+      List<SV> sv = ((SV) x).getList();
       i = x.intValue;
       if (i <= 0)
         i = sv.size() - i;
@@ -570,9 +570,9 @@ public class ScriptVariable extends Token {
         return (i < 1 || i > sv.size() ? "" : sValue(sv.get(i - 1)));
       //$FALL-THROUGH$
     case hash:
-      sb = new StringXBuilder();
+      sb = new SB();
       map = new Hashtable<Object, Boolean>();
-      sValueArray(sb, (ScriptVariable) x, map, 0, false);
+      sValueArray(sb, (SV) x, map, 0, false);
       return sb.toString();
     case string:
       String s = (String) x.value;
@@ -588,14 +588,14 @@ public class ScriptVariable extends Token {
     case point4f:
     case matrix3f:
     case matrix4f:
-      return Escape.escape(x.value);
+      return Escape.e(x.value);
     default:
       return x.value.toString();
     }
   }
 
   @SuppressWarnings("unchecked")
-  private static void sValueArray(StringXBuilder sb, ScriptVariable vx,
+  private static void sValueArray(SB sb, SV vx,
                                   Map<Object, Boolean> map, int level,
                                   boolean isEscaped) {
     switch (vx.tok) {
@@ -606,7 +606,7 @@ public class ScriptVariable extends Token {
         break;
       }
       map.put(vx, Boolean.TRUE);
-      Map<String, ScriptVariable> ht = (Map<String, ScriptVariable>) vx.value;
+      Map<String, SV> ht = (Map<String, SV>) vx.value;
       Object[] keys = ht.keySet().toArray();
       Arrays.sort(keys);
 
@@ -615,7 +615,7 @@ public class ScriptVariable extends Token {
         String sep = "";
         for (int i = 0; i < keys.length; i++) {
           String key = (String) keys[i];
-          sb.append(sep).append(Escape.escapeStr(key)).appendC(':');
+          sb.append(sep).append(Escape.eS(key)).appendC(':');
           sValueArray(sb, ht.get(key), map, level + 1, true);
           sep = ", ";
         }
@@ -624,8 +624,8 @@ public class ScriptVariable extends Token {
       }
       for (int i = 0; i < keys.length; i++) {
         sb.append((String) keys[i]).append("\t:");
-        ScriptVariable v = ht.get(keys[i]);
-        StringXBuilder sb2 = new StringXBuilder();
+        SV v = ht.get(keys[i]);
+        SB sb2 = new SB();
         sValueArray(sb2, v, map, level + 1, isEscaped);
         String value = sb2.toString();
         sb.append(value.indexOf("\n") >= 0 ? "\n" : "\t");
@@ -641,11 +641,11 @@ public class ScriptVariable extends Token {
       map.put(vx, Boolean.TRUE);
       if (isEscaped)
         sb.append("[");
-      List<ScriptVariable> sx = vx.getList();
+      List<SV> sx = vx.getList();
       for (int i = 0; i < sx.size(); i++) {
         if (isEscaped && i > 0)
           sb.append(",");
-        ScriptVariable sv = sx.get(i);
+        SV sv = sx.get(i);
         sValueArray(sb, sv, map, level + 1, isEscaped);
         if (!isEscaped)
           sb.append("\n");
@@ -661,24 +661,24 @@ public class ScriptVariable extends Token {
     }
   }
 
-  static Point3f ptValue(ScriptVariable x) {
+  static P3 ptValue(SV x) {
     switch (x.tok) {
     case point3f:
-      return (Point3f) x.value;
+      return (P3) x.value;
     case string:
-      Object o = Escape.unescapePoint((String) x.value);
-      if (o instanceof Point3f)
-        return (Point3f) o;
+      Object o = Escape.uP((String) x.value);
+      if (o instanceof P3)
+        return (P3) o;
     }
     return null;
   }  
 
-  static Point4f pt4Value(ScriptVariable x) {
+  static Point4f pt4Value(SV x) {
     switch (x.tok) {
     case point4f:
       return (Point4f) x.value;
     case string:
-      Object o = Escape.unescapePoint((String) x.value);
+      Object o = Escape.uP((String) x.value);
       if (!(o instanceof Point4f))
         break;
       return (Point4f) o;
@@ -694,10 +694,10 @@ public class ScriptVariable extends Token {
     return Parser.parseFloatStrict(s);
   }
 
-  static ScriptVariable concatList(ScriptVariable x1, ScriptVariable x2,
+  static SV concatList(SV x1, SV x2,
                                           boolean asNew) {
-    List<ScriptVariable> v1 = x1.getList();
-    List<ScriptVariable> v2 = x2.getList();
+    List<SV> v1 = x1.getList();
+    List<SV> v2 = x2.getList();
     if (!asNew) {
       if (v2 == null)
         v1.add(newScriptVariableToken(x2));
@@ -706,7 +706,7 @@ public class ScriptVariable extends Token {
           v1.add(v2.get(i));
       return x1;
     }
-    List<ScriptVariable> vlist = new ArrayList<ScriptVariable>(
+    List<SV> vlist = new ArrayList<SV>(
         (v1 == null ? 1 : v1.size()) + (v2 == null ? 1 : v2.size()));
 
     if (v1 == null)
@@ -722,25 +722,25 @@ public class ScriptVariable extends Token {
     return getVariableList(vlist);
   }
 
-  static BitSet bsSelectToken(Token x) {
+  static BS bsSelectToken(T x) {
     x = selectItemTok(x, Integer.MIN_VALUE);
-    return (BitSet) x.value;
+    return (BS) x.value;
   }
 
-  static BitSet bsSelectVar(ScriptVariable var) {
+  static BS bsSelectVar(SV var) {
     if (var.index == Integer.MAX_VALUE)
       var = selectItemVar(var);
-    return (BitSet) var.value;
+    return (BS) var.value;
   }
 
-  static BitSet bsSelectRange(Token x, int n) {
+  static BS bsSelectRange(T x, int n) {
     x = selectItemTok(x);
     x = selectItemTok(x, (n <= 0 ? n : 1));
     x = selectItemTok(x, (n <= 0 ? Integer.MAX_VALUE - 1 : n));
-    return (BitSet) x.value;
+    return (BS) x.value;
   }
 
-  static ScriptVariable selectItemVar(ScriptVariable var) {
+  static SV selectItemVar(SV var) {
     // pass bitsets created by the select() or for() commands
     // and all arrays by reference
     if (var.index != Integer.MAX_VALUE || 
@@ -749,15 +749,15 @@ public class ScriptVariable extends Token {
     return selectItemVar2(var, Integer.MIN_VALUE);
   }
 
-  static Token selectItemTok(Token var) {
+  static T selectItemTok(T var) {
     return selectItemTok(var, Integer.MIN_VALUE);
   }
 
-  static ScriptVariable selectItemVar2(ScriptVariable var, int i2) {
-    return (ScriptVariable) selectItemTok(var, i2);
+  static SV selectItemVar2(SV var, int i2) {
+    return (SV) selectItemTok(var, i2);
   }
 
-  static Token selectItemTok(Token tokenIn, int i2) {
+  static T selectItemTok(T tokenIn, int i2) {
     switch (tokenIn.tok) {
     case matrix3f:
     case matrix4f:
@@ -771,7 +771,7 @@ public class ScriptVariable extends Token {
 
     // negative number is a count from the end
 
-    BitSet bs = null;
+    BS bs = null;
     String s = null;
 
     int i1 = tokenIn.intValue;
@@ -782,26 +782,26 @@ public class ScriptVariable extends Token {
       // the selected value or "ALL" (max_value)
       if (i2 == Integer.MIN_VALUE)
         i2 = i1;
-      ScriptVariable v = newScriptVariableIntValue(tokenIn.tok, i2, tokenIn.value);
+      SV v = newScriptVariableIntValue(tokenIn.tok, i2, tokenIn.value);
       return v;
     }
     int len = 0;
-    boolean isInputSelected = (tokenIn instanceof ScriptVariable && ((ScriptVariable) tokenIn).index != Integer.MAX_VALUE);
-    ScriptVariable tokenOut = newScriptVariableIntValue(tokenIn.tok, Integer.MAX_VALUE, null);
+    boolean isInputSelected = (tokenIn instanceof SV && ((SV) tokenIn).index != Integer.MAX_VALUE);
+    SV tokenOut = newScriptVariableIntValue(tokenIn.tok, Integer.MAX_VALUE, null);
 
     switch (tokenIn.tok) {
     case bitset:
       if (tokenIn.value instanceof BondSet) {
-        bs = new BondSet((BitSet) tokenIn.value,
+        bs = new BondSet((BS) tokenIn.value,
             ((BondSet) tokenIn.value).getAssociatedAtoms());
-        len = BitSetUtil.cardinalityOf(bs);
+        len = BSUtil.cardinalityOf(bs);
       } else {
-        bs = BitSetUtil.copy((BitSet) tokenIn.value);
-        len = (isInputSelected ? 1 : BitSetUtil.cardinalityOf(bs));
+        bs = BSUtil.copy((BS) tokenIn.value);
+        len = (isInputSelected ? 1 : BSUtil.cardinalityOf(bs));
       }
       break;
     case varray:
-      len = ((ScriptVariable)tokenIn).getList().size();
+      len = ((SV)tokenIn).getList().size();
       break;
     case string:
       s = (String) tokenIn.value;
@@ -893,9 +893,9 @@ public class ScriptVariable extends Token {
       if (i1 < 1 || i1 > len || i2 > len)
         return newVariable(string, "");
       if (i2 == i1)
-        return ((ScriptVariable) tokenIn).getList().get(i1 - 1);
-      List<ScriptVariable> o2 = new ArrayList<ScriptVariable>();
-      List<ScriptVariable> o1 = ((ScriptVariable) tokenIn).getList();
+        return ((SV) tokenIn).getList().get(i1 - 1);
+      List<SV> o2 = new ArrayList<SV>();
+      List<SV> o1 = ((SV) tokenIn).getList();
       n = i2 - i1 + 1;
       for (int i = 0; i < n; i++)
         o2.add(newScriptVariableToken(o1.get(i + i1 - 1)));
@@ -905,7 +905,7 @@ public class ScriptVariable extends Token {
     return tokenOut;
   }
 
-  boolean setSelectedValue(int selector, ScriptVariable var) {
+  boolean setSelectedValue(int selector, SV var) {
     if (selector == Integer.MAX_VALUE)
       return false;
     int len;
@@ -926,7 +926,7 @@ public class ScriptVariable extends Token {
       }
       if (selector != 0 && Math.abs(selector) <= len
           && var.tok == varray) {
-        List<ScriptVariable> sv = var.getList();
+        List<SV> sv = var.getList();
         if (sv.size() == len) {
           float[] data = new float[len];
           for (int i = 0; i < len; i++)
@@ -977,10 +977,10 @@ public class ScriptVariable extends Token {
   public String escape() {
     switch (tok) {
     case string:
-      return Escape.escape(value);
+      return Escape.e(value);
     case varray:
     case hash:
-      StringXBuilder sb = new StringXBuilder();
+      SB sb = new SB();
       Map<Object,Boolean>map = new Hashtable<Object,Boolean>();
       sValueArray(sb, this, map, 0, true);
       return sb.toString();
@@ -994,8 +994,8 @@ public class ScriptVariable extends Token {
       return o;
     Object v = null;
     String s = null;
-    if (o instanceof ScriptVariable) {
-      ScriptVariable sv = (ScriptVariable) o;
+    if (o instanceof SV) {
+      SV sv = (SV) o;
       switch (sv.tok) {
       case point3f:
       case point4f:
@@ -1018,13 +1018,13 @@ public class ScriptVariable extends Token {
       return s;
     if (v == null)
       v = Escape.unescapePointOrBitsetOrMatrixOrArray(s);
-    if (v instanceof Point3f)
+    if (v instanceof P3)
       return (newVariable(point3f, v));
     if (v instanceof Point4f)
       return newVariable(point4f, v);
-    if (v instanceof BitSet) {
+    if (v instanceof BS) {
       if (s != null && s.indexOf("[{") == 0)
-        v = new BondSet((BitSet) v);
+        v = new BondSet((BS) v);
       return newVariable(bitset, v);
     }
     if (v instanceof Matrix3f)
@@ -1034,11 +1034,11 @@ public class ScriptVariable extends Token {
     return o;
   }
 
-  public static ScriptVariable getBoolean(boolean value) {
+  public static SV getBoolean(boolean value) {
     return newScriptVariableToken(value ? vT : vF);
   }
   
-  static Object sprintf(String strFormat, ScriptVariable var) {
+  static Object sprintf(String strFormat, SV var) {
     if (var == null)
       return strFormat;
     int[] vd = (strFormat.indexOf("d") >= 0 || strFormat.indexOf("i") >= 0 ? new int[1]
@@ -1051,14 +1051,14 @@ public class ScriptVariable extends Token {
     Object[] of = new Object[] { vd, vf, ve, null, null, null};
     if (var.tok != varray)
       return sprintf(strFormat, var, of, vd, vf, ve, getS, getP, getQ);
-    List<ScriptVariable> sv = var.getList();
+    List<SV> sv = var.getList();
     String[] list2 = new String[sv.size()];
     for (int i = 0; i < list2.length; i++)
       list2[i] = sprintf(strFormat, sv.get(i), of, vd, vf, ve, getS, getP, getQ);
     return list2;
   }
 
-  private static String sprintf(String strFormat, ScriptVariable var, Object[] of, 
+  private static String sprintf(String strFormat, SV var, Object[] of, 
                                 int[] vd, float[] vf, double[] ve, boolean getS, boolean getP, boolean getQ) {
     if (vd != null)
       vd[0] = iValue(var);
@@ -1081,7 +1081,7 @@ public class ScriptVariable extends Token {
    * @param args
    * @return       formatted string
    */
-  static String sprintfArray(ScriptVariable[] args) {
+  static String sprintfArray(SV[] args) {
     switch(args.length){
     case 0:
       return "";
@@ -1089,7 +1089,7 @@ public class ScriptVariable extends Token {
       return sValue(args[0]);
     }
     String[] format = TextFormat.split(TextFormat.simpleReplace(sValue(args[0]), "%%","\1"), '%');
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
       Object ret = sprintf(TextFormat.formatCheck("%" + format[i]), (i < args.length ? args[i] : null));
@@ -1111,59 +1111,59 @@ public class ScriptVariable extends Token {
 
   @SuppressWarnings("unchecked")
   public
-  static BitSet getBitSet(ScriptVariable x, boolean allowNull) {
+  static BS getBitSet(SV x, boolean allowNull) {
     switch (x.tok) {
     case bitset:
       return bsSelectVar(x);
     case varray:
-      BitSet bs = new BitSet();
-      List<ScriptVariable> sv = (ArrayList<ScriptVariable>) x.value;
+      BS bs = new BS();
+      List<SV> sv = (ArrayList<SV>) x.value;
       for (int i = 0; i < sv.size(); i++)
         if (!sv.get(i).unEscapeBitSetArray(bs) && allowNull)
           return null;
       return bs;
     }
-    return (allowNull ? null : new BitSet());
+    return (allowNull ? null : new BS());
   }
 
-  static boolean areEqual(ScriptVariable x1, ScriptVariable x2) {
+  static boolean areEqual(SV x1, SV x2) {
     if (x1 == null || x2 == null)
       return false;
     if (x1.tok == string && x2.tok == string)
       return sValue(x1).equalsIgnoreCase(
           sValue(x2));
     if (x1.tok == point3f && x2.tok == point3f)
-      return (((Point3f) x1.value).distance((Point3f) x2.value) < 0.000001);
+      return (((P3) x1.value).distance((P3) x2.value) < 0.000001);
     if (x1.tok == point4f && x2.tok == point4f)
       return (((Point4f) x1.value).distance((Point4f) x2.value) < 0.000001);
     return (Math.abs(fValue(x1)
         - fValue(x2)) < 0.000001);
   }
 
-  protected class Sort implements Comparator<ScriptVariable> {
+  protected class Sort implements Comparator<SV> {
     private int arrayPt;
     
     protected Sort(int arrayPt) {
       this.arrayPt = arrayPt;
     }
     
-    public int compare(ScriptVariable x, ScriptVariable y) {
+    public int compare(SV x, SV y) {
       if (x.tok != y.tok) {
-        if (x.tok == Token.decimal || x.tok == Token.integer
-            || y.tok == Token.decimal || y.tok == Token.integer) {
+        if (x.tok == T.decimal || x.tok == T.integer
+            || y.tok == T.decimal || y.tok == T.integer) {
           float fx = fValue(x);
           float fy = fValue(y);
           return (fx < fy ? -1 : fx > fy ? 1 : 0);
         }
-        if (x.tok == Token.string || y.tok == Token.string)
+        if (x.tok == T.string || y.tok == T.string)
           return sValue(x).compareTo(sValue(y));
       }
       switch (x.tok) {
       case string:
         return sValue(x).compareTo(sValue(y));
       case varray:
-        List<ScriptVariable> sx = x.getList();
-        List<ScriptVariable> sy = y.getList();
+        List<SV> sx = x.getList();
+        List<SV> sy = y.getList();
         if (sx.size() != sy.size())
           return (sx.size() < sy.size() ? -1 : 1);
         int iPt = arrayPt;
@@ -1185,15 +1185,15 @@ public class ScriptVariable extends Token {
    * @param arrayPt   1-based or Integer.MIN_VALUE to reverse
    * @return sorted or reversed array
    */
-  ScriptVariable sortOrReverse(int arrayPt) {
-    List<ScriptVariable> x = getList();
+  SV sortOrReverse(int arrayPt) {
+    List<SV> x = getList();
     if (x == null || x.size() < 2) 
       return this;
     if (arrayPt == Integer.MIN_VALUE) {
       // reverse
       int n = x.size();
       for (int i = 0; i < n; i++) {
-        ScriptVariable v = x.get(i);
+        SV v = x.get(i);
         x.set(i, x.get(--n));
         x.set(n, v);
       }
@@ -1203,43 +1203,43 @@ public class ScriptVariable extends Token {
     return this;
   }
 
-  boolean unEscapeBitSetArray(BitSet bs) {
+  boolean unEscapeBitSetArray(BS bs) {
     switch(tok) {
     case string:
-      BitSet bs1 = Escape.unescapeBitset((String) value);
+      BS bs1 = Escape.uB((String) value);
       if (bs1 == null)
         return false;
       bs.or(bs1);
       return true;
     case bitset:
-      bs.or((BitSet) value);
+      bs.or((BS) value);
       return true;
     }
     return false;   
   }
 
-  static BitSet unEscapeBitSetArray(ArrayList<ScriptVariable> x, boolean allowNull) {
-    BitSet bs = new BitSet();
+  static BS unEscapeBitSetArray(ArrayList<SV> x, boolean allowNull) {
+    BS bs = new BS();
     for (int i = 0; i < x.size(); i++)
       if (!x.get(i).unEscapeBitSetArray(bs) && allowNull)
         return null;
     return bs;
   }
 
-  static String[] listValue(Token x) {
+  static String[] listValue(T x) {
     if (x.tok != varray)
       return new String[] { sValue(x) };
-    List<ScriptVariable> sv = ((ScriptVariable) x).getList();
+    List<SV> sv = ((SV) x).getList();
     String[] list = new String[sv.size()];
     for (int i = sv.size(); --i >= 0;)
       list[i] = sValue(sv.get(i));
     return list;
   }
 
-  static float[] flistValue(Token x, int nMin) {
+  static float[] flistValue(T x, int nMin) {
     if (x.tok != varray)
       return new float[] { fValue(x) };
-    List<ScriptVariable> sv = ((ScriptVariable) x).getList();
+    List<SV> sv = ((SV) x).getList();
     float[] list;
     list = new float[Math.max(nMin, sv.size())];
     if (nMin == 0)
@@ -1266,7 +1266,7 @@ public class ScriptVariable extends Token {
       return;
     }
     tok = varray;
-    List<ScriptVariable> o2 = new ArrayList<ScriptVariable>(dim);
+    List<SV> o2 = new ArrayList<SV>(dim);
     for (int i = 0; i < dim; i++) {
       float[] a = new float[dim];
       if (m3 == null)
@@ -1279,14 +1279,14 @@ public class ScriptVariable extends Token {
   }
 
   @SuppressWarnings("unchecked")
-  ScriptVariable mapValue(String key) {
-    return (tok == hash ? ((Map<String, ScriptVariable>) value).get(key) : null);
+  SV mapValue(String key) {
+    return (tok == hash ? ((Map<String, SV>) value).get(key) : null);
   }
 
   @SuppressWarnings("unchecked")
   public
-  List<ScriptVariable> getList() {
-    return (tok == varray ? (ArrayList<ScriptVariable>) value : null);
+  List<SV> getList() {
+    return (tok == varray ? (ArrayList<SV>) value : null);
   }
 
 }

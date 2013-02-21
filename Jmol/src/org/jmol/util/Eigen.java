@@ -75,18 +75,18 @@ public class Eigen {
     return e;
   }
 
-  public static void getUnitVectors(double[][] m, Vector3f[] unitVectors, float[] lengths) {
+  public static void getUnitVectors(double[][] m, V3[] unitVectors, float[] lengths) {
     newM(m).set(unitVectors, lengths);
     sort(unitVectors, lengths);
   }
 
-  private void set(Vector3f[] unitVectors, float[] lengths) {
+  private void set(V3[] unitVectors, float[] lengths) {
     float[][] eigenVectors = getEigenvectorsFloatTransposed();
     double[] eigenValues = getRealEigenvalues();
 
     for (int i = 0; i < n; i++) {
       if (unitVectors[i] == null)
-        unitVectors[i] = new Vector3f();
+        unitVectors[i] = new V3();
       unitVectors[i].setA(eigenVectors[i]);
       lengths[i] = (float) Math.sqrt(Math.abs(eigenValues[i]));
       //if (eigenValues[i] < 0)
@@ -184,10 +184,10 @@ public class Eigen {
     return f;
   }
   
-  public Vector3f[] getEigenVectors3() {
-    Vector3f[] v = new Vector3f[3];
+  public V3[] getEigenVectors3() {
+    V3[] v = new V3[3];
     for (int i = 0; i < 3; i++) {
-      v[i] = Vector3f.new3((float)V[0][i], (float)V[1][i], (float)V[2][i]);
+      v[i] = V3.new3((float)V[0][i], (float)V[1][i], (float)V[2][i]);
     }
     return v;
   }
@@ -1068,9 +1068,9 @@ public class Eigen {
         mm[p++] = (float) a[i][j];
     m.setA(mm);
     
-    Vector3f[] evec = eigen.getEigenVectors3();
-    Vector3f n = new Vector3f();
-    Vector3f cross = new Vector3f();
+    V3[] evec = eigen.getEigenVectors3();
+    V3 n = new V3();
+    V3 cross = new V3();
     for (int i = 0; i < 3; i++) {
       n.setT(evec[i]);
       m.transform(n);
@@ -1079,24 +1079,24 @@ public class Eigen {
       n.setT(evec[i]);
       n.normalize();
       cross.cross(evec[i], evec[(i + 1)%3]);
-      Logger.info("draw id eigv" + i + " " + Escape.escapePt(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
+      Logger.info("draw id eigv" + i + " " + Escape.eP(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
     }
     Logger.info("eigVl (" + eigen.d[0] + " + " + eigen.e[0] 
         + "I) (" + eigen.d[1] + " + " + eigen.e[1] 
         + "I) (" + eigen.d[2] + " + " + eigen.e[2] + "I)");
     
-    Vector3f[] unitVectors = new Vector3f[3];
+    V3[] unitVectors = new V3[3];
     float[] lengths = new float[3];
     eigen.set(unitVectors, lengths);
     sort(unitVectors, lengths);
     return new Quadric(unitVectors, lengths, false);
   }
 
-  public static Quadric getEllipsoid(Vector3f[] vectors, float[] lengths, boolean isThermal) {
+  public static Quadric getEllipsoid(V3[] vectors, float[] lengths, boolean isThermal) {
     //[0] is shortest; [2] is longest
-    Vector3f[] unitVectors = new Vector3f[vectors.length];
+    V3[] unitVectors = new V3[vectors.length];
     for (int i = vectors.length; --i >= 0;)
-      unitVectors[i] = Vector3f.newV(vectors[i]);
+      unitVectors[i] = V3.newV(vectors[i]);
     sort(unitVectors, lengths);
     return new Quadric(unitVectors, lengths, isThermal);
   }
@@ -1106,7 +1106,7 @@ public class Eigen {
    * @param vectors
    * @param lengths
    */
-  private static void sort(Vector3f[] vectors, float[] lengths) {
+  private static void sort(V3[] vectors, float[] lengths) {
     // for atoms, lengths need to have length 3 to allow for scaling
     Object[][] o = new Object[][] {
         new Object[] { vectors[0], Float.valueOf(Math.abs(lengths[0])) }, 
@@ -1114,7 +1114,7 @@ public class Eigen {
         new Object[] { vectors[2], Float.valueOf(Math.abs(lengths[2])) } }; 
     Arrays.sort(o, new EigenSort());
     for (int i = 0; i < 3; i++) {
-      vectors[i] = Vector3f.newV((Vector3f) o[i][0]);
+      vectors[i] = V3.newV((V3) o[i][0]);
       vectors[i].normalize();
       lengths[i] = ((Float) o[i][1]).floatValue();
     }

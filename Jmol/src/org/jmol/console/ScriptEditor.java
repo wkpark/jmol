@@ -50,7 +50,7 @@ import javax.swing.JScrollPane;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.script.ScriptContext;
 
@@ -244,7 +244,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   
   private synchronized void setContext(ScriptContext context) {
     pauseButton.setEnabled(viewer.isScriptExecuting());
-    if (context.script.indexOf(JmolConstants.SCRIPT_EDITOR_IGNORE) >= 0)
+    if (context.script.indexOf(JC.SCRIPT_EDITOR_IGNORE) >= 0)
       return; 
     parsedContext = context;
     filename = context.scriptFileName;

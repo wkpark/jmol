@@ -9,9 +9,9 @@ import org.jmol.modelset.Measurement;
 import org.jmol.modelset.TickInfo;
 import org.jmol.shape.AtomShape;
 import org.jmol.shape.Shape;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.viewer.Viewer;
 
 public interface JmolStateCreator {
@@ -31,7 +31,7 @@ public interface JmolStateCreator {
   
   String getLoadState(Map<String, Object> htParams);
 
-  String getModelState(StringXBuilder sfunc, boolean isAll,
+  String getModelState(SB sfunc, boolean isAll,
                                boolean withProteinStructure);
 
   String getFontState(String myType, JmolFont font3d);
@@ -39,18 +39,18 @@ public interface JmolStateCreator {
   String getFontLineShapeState(String s, String myType, TickInfo[] tickInfos);
 
   void getShapeSetState(AtomShape atomShape, Shape shape, int monomerCount, Group[] monomers,
-                     BitSet bsSizeDefault, Map<String, BitSet> temp, Map<String, BitSet> temp2);
+                     BS bsSizeDefault, Map<String, BS> temp, Map<String, BS> temp2);
 
   String getMeasurementState(AtomShape as, List<Measurement> mList, int measurementCount,
                              JmolFont font3d, TickInfo tickInfo);
 
-  String getBondState(Shape shape, BitSet bsOrderSet, boolean reportAll);
+  String getBondState(Shape shape, BS bsOrderSet, boolean reportAll);
 
   String getAtomShapeSetState(Shape shape, AtomShape[] shapes);
 
   String getShapeState(Shape shape);
 
-  String getCommands(Map<String, BitSet> htDefine, Map<String, BitSet> htMore,
+  String getCommands(Map<String, BS> htDefine, Map<String, BS> htMore,
                      String select);
 
   String getAllSettings(String prefix);
@@ -61,10 +61,10 @@ public interface JmolStateCreator {
 
   String getFunctionCalls(String selectedFunction);
 
-  String getAtomicPropertyState(byte taintCoord, BitSet bsSelected);
+  String getAtomicPropertyState(byte taintCoord, BS bsSelected);
 
-  void getAtomicPropertyStateBuffer(StringXBuilder commands, byte type,
-                                    BitSet bs, String name, float[] data);
+  void getAtomicPropertyStateBuffer(SB commands, byte type,
+                                    BS bs, String name, float[] data);
 
   void undoMoveAction(int action, int n);
 
@@ -72,7 +72,7 @@ public interface JmolStateCreator {
 
   String createImageSet(String fileName, String type, String text,
                         byte[] bytes, String[] scripts, int quality, int width,
-                        int height, BitSet bsFrames, int nVibes,
+                        int height, BS bsFrames, int nVibes,
                         String[] fullPath);
 
   Object createImagePathCheck(String fileName, String type,
@@ -102,6 +102,8 @@ public interface JmolStateCreator {
   void log(String data);
   
   void quickScript(String script);
+
+  String getAtomDefs(Map<String, Object> names);
 
 
 }

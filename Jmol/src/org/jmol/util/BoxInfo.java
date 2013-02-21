@@ -36,10 +36,10 @@ import java.util.Map;
 public class BoxInfo {
 
  
-  private final Point3f bbCorner0 = new Point3f();
-  private final Point3f bbCorner1 = new Point3f();
-  private final Point3f bbCenter = new Point3f();
-  private final Vector3f bbVector = new Vector3f();
+  private final P3 bbCorner0 = new P3();
+  private final P3 bbCorner1 = new P3();
+  private final P3 bbCenter = new P3();
+  private final V3 bbVector = new V3();
   private final Point3fi[] bbVertices = new Point3fi[8];
   private boolean isScaleSet;
 
@@ -85,23 +85,23 @@ public class BoxInfo {
   }
 
 
-  public Point3f[] getCanonicalCopy(float scale) {
+  public P3[] getCanonicalCopy(float scale) {
     return getCanonicalCopy(bbVertices, scale);
   }
 
-  public final static Point3f[] getCanonicalCopy(Point3f[] bbUcPoints, float scale) {
-    Point3f[] pts = new Point3f[8];
+  public final static P3[] getCanonicalCopy(P3[] bbUcPoints, float scale) {
+    P3[] pts = new P3[8];
     for (int i = 0; i < 8; i++)
-      pts[toCanonical[i]] = Point3f.newP(bbUcPoints[i]);
+      pts[toCanonical[i]] = P3.newP(bbUcPoints[i]);
     scaleBox(pts, scale);
     return pts;
   }
   
-  public static void scaleBox(Point3f[] pts, float scale) {
+  public static void scaleBox(P3[] pts, float scale) {
     if (scale == 0 || scale == 1)
       return;
-    Point3f center = new Point3f();
-    Vector3f v = new Vector3f();
+    P3 center = new P3();
+    V3 v = new V3();
     for (int i = 0; i < 8; i++)
       center.add(pts[i]);
     center.scale(1/8f);
@@ -112,18 +112,18 @@ public class BoxInfo {
     }
   }
 
-  public static Point4f[] getFacesFromCriticalPoints(Point3f[] points) {
+  public static Point4f[] getFacesFromCriticalPoints(P3[] points) {
     Point4f[] faces = new Point4f[6];
-    Vector3f vNorm = new Vector3f();
-    Vector3f vAB = new Vector3f();
-    Vector3f vAC = new Vector3f();
-    Point3f va = new Point3f();
-    Point3f vb = new Point3f();
-    Point3f vc = new Point3f();
+    V3 vNorm = new V3();
+    V3 vAB = new V3();
+    V3 vAC = new V3();
+    P3 va = new P3();
+    P3 vb = new P3();
+    P3 vc = new P3();
     
-    Point3f[] vertices = new Point3f[8];
+    P3[] vertices = new P3[8];
     for (int i = 0; i < 8; i++) {
-      vertices[i] = Point3f.newP(points[0]);
+      vertices[i] = P3.newP(points[0]);
       if ((i & 1) == 1)
         vertices[i].add(points[1]);
       if ((i & 2) == 2)
@@ -161,77 +161,77 @@ public class BoxInfo {
    *              Z                                       
    */
   
-  public final static Point3f[] unitCubePoints = { 
-    Point3f.new3(0, 0, 0), // 0
-    Point3f.new3(0, 0, 1), // 1
-    Point3f.new3(0, 1, 0), // 2
-    Point3f.new3(0, 1, 1), // 3
-    Point3f.new3(1, 0, 0), // 4
-    Point3f.new3(1, 0, 1), // 5
-    Point3f.new3(1, 1, 0), // 6
-    Point3f.new3(1, 1, 1), // 7
+  public final static P3[] unitCubePoints = { 
+    P3.new3(0, 0, 0), // 0
+    P3.new3(0, 0, 1), // 1
+    P3.new3(0, 1, 0), // 2
+    P3.new3(0, 1, 1), // 3
+    P3.new3(1, 0, 0), // 4
+    P3.new3(1, 0, 1), // 5
+    P3.new3(1, 1, 0), // 6
+    P3.new3(1, 1, 1), // 7
   };
 
-  private static Point3i[] facePoints = {
-    Point3i.new3(4, 0, 6),
-    Point3i.new3(4, 6, 5), 
-    Point3i.new3(5, 7, 1), 
-    Point3i.new3(1, 3, 0),
-    Point3i.new3(6, 2, 7), 
-    Point3i.new3(1, 0, 5), 
+  private static P3i[] facePoints = {
+    P3i.new3(4, 0, 6),
+    P3i.new3(4, 6, 5), 
+    P3i.new3(5, 7, 1), 
+    P3i.new3(1, 3, 0),
+    P3i.new3(6, 2, 7), 
+    P3i.new3(1, 0, 5), 
   };
 
   public final static int[] toCanonical = new int[] {0, 3, 4, 7, 1, 2, 5, 6};
 
-  protected final static Point3i[] cubeVertexOffsets = { 
-    Point3i.new3(0, 0, 0), //0 pt
-    Point3i.new3(1, 0, 0), //1 pt + yz
-    Point3i.new3(1, 0, 1), //2 pt + yz + 1
-    Point3i.new3(0, 0, 1), //3 pt + 1
-    Point3i.new3(0, 1, 0), //4 pt + z
-    Point3i.new3(1, 1, 0), //5 pt + yz + z
-    Point3i.new3(1, 1, 1), //6 pt + yz + z + 1
-    Point3i.new3(0, 1, 1)  //7 pt + z + 1 
+  protected final static P3i[] cubeVertexOffsets = { 
+    P3i.new3(0, 0, 0), //0 pt
+    P3i.new3(1, 0, 0), //1 pt + yz
+    P3i.new3(1, 0, 1), //2 pt + yz + 1
+    P3i.new3(0, 0, 1), //3 pt + 1
+    P3i.new3(0, 1, 0), //4 pt + z
+    P3i.new3(1, 1, 0), //5 pt + yz + z
+    P3i.new3(1, 1, 1), //6 pt + yz + z + 1
+    P3i.new3(0, 1, 1)  //7 pt + z + 1 
   };
 
-  public final static Point3f[] getCriticalPoints(Point3f[] bbVertices, Tuple3f offset) {
-    Point3f center = Point3f.newP(bbVertices[0]);
-    Point3f a = Point3f.newP(bbVertices[1]);
-    Point3f b = Point3f.newP(bbVertices[2]);
-    Point3f c = Point3f.newP(bbVertices[4]);
+  public final static P3[] getCriticalPoints(P3[] bbVertices, Tuple3f offset) {
+    P3 center = P3.newP(bbVertices[0]);
+    P3 a = P3.newP(bbVertices[1]);
+    P3 b = P3.newP(bbVertices[2]);
+    P3 c = P3.newP(bbVertices[4]);
     a.sub(center);
     b.sub(center);
     c.sub(center);
     if (offset != null)
       center.add(offset);
-    return new Point3f[] { center, a, b, c };
+    return new P3[] { center, a, b, c };
   }
   
-  private final static Point3f[] unitBboxPoints = new Point3f[8];
+  private final static P3[] unitBboxPoints = new P3[8];
   {
     for (int i = 0; i < 8; i++) {
-      unitBboxPoints[i] = Point3f.new3(-1, -1, -1);
+      unitBboxPoints[i] = P3.new3(-1, -1, -1);
       unitBboxPoints[i].scaleAdd2(2, unitCubePoints[i], unitBboxPoints[i]);
     }
   }
 
-  public Point3f getBoundBoxCenter() {
+  public P3 getBoundBoxCenter() {
     if (!isScaleSet)
       setBbcage(1);
     return bbCenter;
   }
 
-  public Vector3f getBoundBoxCornerVector() {
+  public V3 getBoundBoxCornerVector() {
     if (!isScaleSet)
       setBbcage(1);
     return bbVector;
   }
 
-  public Point3f[] getBoundBoxPoints(boolean isAll) {
+  public P3[] getBoundBoxPoints(boolean isAll) {
     if (!isScaleSet)
       setBbcage(1);
-    return (isAll ? new Point3f[] { bbCenter, Point3f.newP(bbVector), bbCorner0,
-        bbCorner1 } : new Point3f[] { bbCorner0, bbCorner1 });
+    return (isAll ? new P3[] { bbCenter, P3.newP(bbVector), bbCorner0,
+        bbCorner1 } : new P3[] { bbCorner0, bbCorner1 });
   }
 
   public Point3fi[] getBboxVertices() {
@@ -244,14 +244,14 @@ public class BoxInfo {
     if (!isScaleSet)
       setBbcage(1);
     Map<String, Object> info = new Hashtable<String, Object>();
-    info.put("center", Point3f.newP(bbCenter));
-    info.put("vector", Vector3f.newV(bbVector));
-    info.put("corner0", Point3f.newP(bbCorner0));
-    info.put("corner1", Point3f.newP(bbCorner1));
+    info.put("center", P3.newP(bbCenter));
+    info.put("vector", V3.newV(bbVector));
+    info.put("corner0", P3.newP(bbCorner0));
+    info.put("corner1", P3.newP(bbCorner1));
     return info;
   }
 
-  public void setBoundBox(Point3f pt1, Point3f pt2, boolean byCorner, float scale) {
+  public void setBoundBox(P3 pt1, P3 pt2, boolean byCorner, float scale) {
     if (pt1 != null) {
       if (scale == 0)
         return;
@@ -278,12 +278,12 @@ public class BoxInfo {
     bbCorner1.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
   }
   
-  public void addBoundBoxPoint(Point3f pt) {
+  public void addBoundBoxPoint(P3 pt) {
     isScaleSet = false;
     addPoint(pt, bbCorner0, bbCorner1, 0);
   }
 
-  public static void addPoint(Point3f pt, Point3f xyzMin, Point3f xyzMax, float margin) {
+  public static void addPoint(P3 pt, P3 xyzMin, P3 xyzMax, float margin) {
     if (pt.x - margin < xyzMin.x)
       xyzMin.x = pt.x - margin;
     if (pt.x + margin > xyzMax.x)
@@ -298,7 +298,7 @@ public class BoxInfo {
       xyzMax.z = pt.z + margin;
   }
 
-  public static void addPointXYZ(float x, float y, float z, Point3f xyzMin, Point3f xyzMax, float margin) {
+  public static void addPointXYZ(float x, float y, float z, P3 xyzMin, P3 xyzMax, float margin) {
     if (x - margin < xyzMin.x)
       xyzMin.x = x - margin;
     if (x + margin > xyzMax.x)
@@ -326,7 +326,7 @@ public class BoxInfo {
       bbVector.z -= scale / 2;
     }
     for (int i = 8; --i >= 0;) {
-      Point3f pt = bbVertices[i];
+      P3 pt = bbVertices[i];
       pt.setT(unitBboxPoints[i]);
       pt.x *= bbVector.x;
       pt.y *= bbVector.y;
@@ -337,7 +337,7 @@ public class BoxInfo {
     bbCorner1.setT(bbVertices[7]);
   }
   
-  public boolean isWithin(Point3f pt) {
+  public boolean isWithin(P3 pt) {
     if (!isScaleSet)
       setBbcage(1);
    return (pt.x >= bbCorner0.x && pt.x <= bbCorner1.x 

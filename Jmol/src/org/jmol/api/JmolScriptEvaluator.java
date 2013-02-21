@@ -7,10 +7,10 @@ import org.jmol.modelset.Atom;
 import org.jmol.script.ScriptException;
 
 import org.jmol.script.ScriptContext;
-import org.jmol.script.ScriptVariable;
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.script.SV;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
 
@@ -28,7 +28,7 @@ public interface JmolScriptEvaluator {
 
   void setCompiler();
 
-  BitSet getAtomBitSet(Object atomExpression);
+  BS getAtomBitSet(Object atomExpression);
 
   boolean isStopped();
 
@@ -70,25 +70,25 @@ public interface JmolScriptEvaluator {
 
   Object evaluateExpression(Object stringOrTokens, boolean asVariable);
 
-  void deleteAtomsInVariables(BitSet bsDeleted);
+  void deleteAtomsInVariables(BS bsDeleted);
 
-  Map<String, ScriptVariable> getContextVariables();
+  Map<String, SV> getContextVariables();
 
   boolean evaluateParallel(ScriptContext context, ShapeManager shapeManager);
 
   void runScript(String script) throws ScriptException;
 
-  void runScriptBuffer(String string, StringXBuilder outputBuffer) throws ScriptException;
+  void runScriptBuffer(String string, SB outputBuffer) throws ScriptException;
 
   float evalFunctionFloat(Object func, Object params, float[] values);
 
   void setException(ScriptException sx, String msg, String untranslated);
 
-  BitSet addHydrogensInline(BitSet bsAtoms, List<Atom> vConnections, Point3f[] pts) throws Exception;
+  BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts) throws Exception;
 
   void evaluateCompiledScript(boolean isSyntaxCheck,
                               boolean isSyntaxAndFileCheck,
                               boolean historyDisabled, boolean listCommands,
-                              StringXBuilder outputBuffer, boolean allowThreads);
+                              SB outputBuffer, boolean allowThreads);
 
 }

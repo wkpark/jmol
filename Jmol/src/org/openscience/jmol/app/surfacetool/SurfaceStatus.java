@@ -26,7 +26,7 @@
 package org.openscience.jmol.app.surfacetool;
 
 import org.jmol.shape.Mesh;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 
 /**
  * Class that holds the surface status information that the surface tool needs.
@@ -60,9 +60,9 @@ public class SurfaceStatus {
     kind = type;
     color = m.color;
     fillOn = m.fillTriangles;
-    translucency = Colix.getColixTranslucencyLevel(m.colix);
+    translucency = C.getColixTranslucencyLevel(m.colix);
     meshOn = m.drawTriangles;
-    meshColor = Colix.getArgb(m.meshColix);
+    meshColor = C.getArgb(m.meshColix);
     //TODO deal with mesh transparency
     meshTranslucency = 0; //ignored for now    
     lighting = m.lighting;
@@ -77,9 +77,9 @@ public class SurfaceStatus {
   public void updateExisting(Mesh m) {//updates data taken from Mesh...
     color = m.color;
     fillOn = m.fillTriangles;
-    translucency = Colix.getColixTranslucencyLevel(m.colix);
+    translucency = C.getColixTranslucencyLevel(m.colix);
     meshOn = m.drawTriangles;
-    meshColor = Colix.getArgb(m.meshColix);
+    meshColor = C.getArgb(m.meshColix);
     //TODO deal with mesh transparency
     meshTranslucency = 0; //ignored for now    
     lighting = m.lighting;

@@ -1,6 +1,6 @@
 package org.jmol.popup;
 
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 interface JmolAbstractMenu {
 
@@ -17,7 +17,7 @@ interface JmolAbstractMenu {
   void   menuEnable(Object menu, boolean enable);
   void   menuEnableItem(Object item, boolean enable);
   String menuGetId(Object menu);
-  void   menuGetAsText(StringXBuilder sb, int level,
+  void   menuGetAsText(SB sb, int level,
                                            Object menu, String menuName);
   int    menuGetItemCount(Object menu);
   Object menuGetParent(Object menu);

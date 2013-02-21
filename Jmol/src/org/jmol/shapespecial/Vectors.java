@@ -26,7 +26,7 @@ package org.jmol.shapespecial;
 
 
 import org.jmol.shape.AtomShape;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 public class Vectors extends AtomShape {
 
@@ -38,7 +38,7 @@ protected void initModelSet() {
   }
 
  @Override
-public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+public void setProperty(String propertyName, Object value, BS bsSelected) {
     if (!isActive)
       return;
     super.setProperty(propertyName, value, bsSelected);

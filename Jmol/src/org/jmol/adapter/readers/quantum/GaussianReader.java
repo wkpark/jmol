@@ -41,7 +41,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 /**
  * Reader for Gaussian 94/98/03/09 output files.
@@ -394,7 +394,7 @@ public class GaussianReader extends MOReader {
           slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
           slater[3] = nGaussians;
           if (Logger.debugging)
-            Logger.info("Slater " + shells.size() + " " + Escape.escape(slater));
+            Logger.info("Slater " + shells.size() + " " + Escape.e(slater));
           shells.add(slater);
           gaussianCount += nGaussians;
           for (int i = 0; i < nGaussians; i++) {
@@ -402,7 +402,7 @@ public class GaussianReader extends MOReader {
             line = TextFormat.simpleReplace(line, "D ", "D+");
             tokens = getTokens();
             if (Logger.debugging)
-              Logger.info("Gaussians " + (i + 1) + " " + Escape.escape(tokens));
+              Logger.info("Gaussians " + (i + 1) + " " + Escape.e(tokens));
             gdata.add(tokens);
           }
         }
@@ -641,7 +641,7 @@ public class GaussianReader extends MOReader {
     String tokens[] = getTokensStr(readLine());
     if (tokens.length != 8)
       return;
-    Vector3f dipole = Vector3f.new3(parseFloatStr(tokens[1]),
+    V3 dipole = V3.new3(parseFloatStr(tokens[1]),
         parseFloatStr(tokens[3]), parseFloatStr(tokens[5]));
     Logger.info("Molecular dipole for model " + atomSetCollection.getAtomSetCount()
         + " = " + dipole);

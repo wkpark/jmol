@@ -23,9 +23,9 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
 
 import java.util.ArrayList;
@@ -300,7 +300,7 @@ class StatusManager {
           new Object[] { sJmol, htmlName, Boolean.valueOf(isReady), null });
   }
 
-  synchronized void setStatusAtomMoved(BitSet bsMoved) {
+  synchronized void setStatusAtomMoved(BS bsMoved) {
     String sJmol = jmolScriptCallback(EnumCallback.ATOMMOVED);
     setStatusChanged("atomMoved", -1, bsMoved, false);
     if (notifyEnabled(EnumCallback.ATOMMOVED))
@@ -342,7 +342,7 @@ class StatusManager {
           new Object[] {sJmol, strInfo, Integer.valueOf(iatom) });
   }
   
-  synchronized void setStatusObjectHovered(String id, String strInfo, Point3f pt) {
+  synchronized void setStatusObjectHovered(String id, String strInfo, P3 pt) {
     String sJmol = jmolScriptCallback(EnumCallback.HOVER);
     if (notifyEnabled(EnumCallback.HOVER))
       jmolCallbackListener.notifyCallback(EnumCallback.HOVER, 
@@ -383,20 +383,19 @@ class StatusManager {
     //System.out.println("setStatusFrameChanged modelSet=" + viewer.getModelSet());
     if (viewer.getModelSet() == null)
       return;
-    boolean isAnimationRunning = (frameNo <= -2);
-    int f = frameNo;
-    if (isAnimationRunning)
-      f = -2 - f;
-    setStatusChanged("frameChanged", frameNo, (f >= 0 ? viewer
-        .getModelNumberDotted(f) : ""), false);
+    boolean animating = viewer.isAnimationOn();
+    setStatusChanged("frameChanged", frameNo, (frameNo >= 0 ? viewer
+        .getModelNumberDotted(frameNo) : ""), false);
     String sJmol = jmolScriptCallback(EnumCallback.ANIMFRAME);
+    if (animating)
+      frameNo = -2 - frameNo;
     if (notifyEnabled(EnumCallback.ANIMFRAME)) {
       jmolCallbackListener.notifyCallback(EnumCallback.ANIMFRAME,
           new Object[] { sJmol,
               new int[] { frameNo, fileNo, modelNo, firstNo, lastNo, currentFrame }, entryName });
     }
     
-    if (viewer.jmolpopup != null && !isAnimationRunning)
+    if (viewer.jmolpopup != null && !animating)
       viewer.jmolpopup.jpiUpdateComputedMenus();
 
   }
@@ -459,7 +458,7 @@ class StatusManager {
     }
     String sJmol = (msWalltime == 0 ? jmolScriptCallback(EnumCallback.SCRIPT)
         : null);
-    boolean isScriptCompletion = (strStatus == JmolConstants.SCRIPT_COMPLETED);
+    boolean isScriptCompletion = (strStatus == JC.SCRIPT_COMPLETED);
 
     if (recordStatus("script")) {
       boolean isError = (strErrorMessageUntranslated != null);

@@ -70,8 +70,8 @@ import javax.swing.event.ListSelectionListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
@@ -674,7 +674,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
       String html = GuiMap.getResourceString(this, panelName + "_template");
       html = fixHtml(html);
       String jsStr = "";
-      BitSet whichWidgets = allSelectedWidgets();
+      BS whichWidgets = allSelectedWidgets();
       for (int i = 0; i < nWidgets; i++) {
         if (whichWidgets.get(i)) {
           String scriptFileName = theWidgets.widgetList[i]
@@ -763,8 +763,8 @@ abstract class WebPanel extends JPanel implements ActionListener,
     return fileName;
   }
 
-  public BitSet allSelectedWidgets() {
-    BitSet selectedWidgets = BitSetUtil.newBitSet(nWidgets);
+  public BS allSelectedWidgets() {
+    BS selectedWidgets = BSUtil.newBitSet(nWidgets);
     DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
     for (int i = 0; i < listModel.getSize(); i++) {
       JmolInstance thisInstance = listModel.getElementAt(i);

@@ -52,14 +52,14 @@ package org.jmol.symmetry;
  *
  */
 
-import org.jmol.util.Point3i;
+import org.jmol.util.P3i;
 
 class HallTranslation {
   
   char translationCode = '\0';
   int rotationOrder;
   int rotationShift12ths;
-  Point3i vectorShift12ths = new Point3i();
+  P3i vectorShift12ths = new P3i();
 
   HallTranslation() {
   }
@@ -79,7 +79,7 @@ class HallTranslation {
   }
 
   private HallTranslation(char translationCode, 
-      Point3i vectorShift12ths) {
+      P3i vectorShift12ths) {
     this.translationCode = translationCode;
     this.rotationOrder = 0;
     this.rotationShift12ths = 0;
@@ -91,7 +91,7 @@ class HallTranslation {
     this.translationCode = translationCode;
     this.rotationOrder = order;
     this.rotationShift12ths = rotationShift12ths;
-    this.vectorShift12ths = new Point3i();        
+    this.vectorShift12ths = new P3i();        
   }
 
   final static String getHallLatticeEquivalent(int latticeParameter) {
@@ -176,14 +176,14 @@ class HallTranslation {
 
   final static HallTranslation[] hallTranslationTerms = {
     // all units are 12ths
-    new HallTranslation('a', Point3i.new3(6, 0, 0))
-    , new HallTranslation('b', Point3i.new3(0, 6, 0))
-    , new HallTranslation('c', Point3i.new3(0, 0, 6))
-    , new HallTranslation('n', Point3i.new3(6, 6, 6))
-    , new HallTranslation('u', Point3i.new3(3, 0, 0))
-    , new HallTranslation('v', Point3i.new3(0, 3, 0))
-    , new HallTranslation('w', Point3i.new3(0, 0, 3))
-    , new HallTranslation('d', Point3i.new3(3, 3, 3))
+    new HallTranslation('a', P3i.new3(6, 0, 0))
+    , new HallTranslation('b', P3i.new3(0, 6, 0))
+    , new HallTranslation('c', P3i.new3(0, 0, 6))
+    , new HallTranslation('n', P3i.new3(6, 6, 6))
+    , new HallTranslation('u', P3i.new3(3, 0, 0))
+    , new HallTranslation('v', P3i.new3(0, 3, 0))
+    , new HallTranslation('w', P3i.new3(0, 0, 3))
+    , new HallTranslation('d', P3i.new3(3, 3, 3))
     , new HallTranslation('1', 2, 6)
     , new HallTranslation('1', 3, 4)
     , new HallTranslation('2', 3, 8)
@@ -194,9 +194,9 @@ class HallTranslation {
     , new HallTranslation('4', 6, 8)
     , new HallTranslation('5', 6, 10)
     // extension to handle rhombohedral lattice as primitive
-    , new HallTranslation('r', Point3i.new3(4, 8, 8))
-    , new HallTranslation('s', Point3i.new3(8, 8, 4))
-    , new HallTranslation('t', Point3i.new3(8, 4, 8))
+    , new HallTranslation('r', P3i.new3(4, 8, 8))
+    , new HallTranslation('s', P3i.new3(8, 8, 4))
+    , new HallTranslation('t', P3i.new3(8, 4, 8))
   };
 }
 

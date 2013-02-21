@@ -121,17 +121,17 @@ import java.util.Map;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ContactPair;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 public class Parameters {
 
@@ -198,12 +198,12 @@ public class Parameters {
     atomIndex = -1;
     blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
     boundingBox = null;
-    bsExcluded = new BitSet[4];
+    bsExcluded = new BS[4];
     bsIgnore = null;
     bsSelected = null;
     bsSolvent = null;
     calculationType = "";
-    center = Point3f.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    center = P3.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     colorBySign = colorByPhase = colorBySets = false;
     colorDensity = false;
     colorEncoder = null;
@@ -304,7 +304,7 @@ public class Parameters {
 
   //defaults
   
-  final static float ANGSTROMS_PER_BOHR = JmolConstants.ANGSTROMS_PER_BOHR;
+  final static float ANGSTROMS_PER_BOHR = JC.ANGSTROMS_PER_BOHR;
   final static int defaultEdgeFractionBase = 35; //#$%.......
   final static int defaultEdgeFractionRange = 90;
   final static int defaultColorFractionBase = 35;
@@ -356,7 +356,7 @@ public class Parameters {
   float[] anisotropy = new float[3];
   boolean isAnisotropic;
 
-  void setAnisotropy(Point3f pt) { 
+  void setAnisotropy(P3 pt) { 
       anisotropy[0] = pt.x;
       anisotropy[1] = pt.y;
       anisotropy[2] = pt.z;
@@ -382,11 +382,11 @@ public class Parameters {
      *    rotation turns {0 0 1} into ecc. 
      * 
      */
-    Vector3f ecc = Vector3f.new3(info.x, info.y, info.z);
+    V3 ecc = V3.new3(info.x, info.y, info.z);
     float c = (scale > 0 ? scale : info.w < 0 ? 1f : ecc.length());
     float fab_c = Math.abs(info.w);
     ecc.normalize();
-    Vector3f z = Vector3f.new3(0, 0, 1);
+    V3 z = V3.new3(0, 0, 1);
     ecc.add(z);
     ecc.normalize();
     if (Float.isNaN(ecc.x)) // was exactly {0 0 -1} -- just rotate about x
@@ -471,7 +471,7 @@ public class Parameters {
   
   private String getScriptParams() {
     return " center "
-        + Escape.escapePt(center) + (Float.isNaN(scale) ? "" : " scale " + scale);
+        + Escape.eP(center) + (Float.isNaN(scale) ? "" : " scale " + scale);
   }
 
   void setLp(Point4f v) {
@@ -483,7 +483,7 @@ public class Parameters {
         cutoff = cutoff * cutoff;
     } 
     isSilent = !logMessages;
-    script = " center " + Escape.escapePt(center)
+    script = " center " + Escape.eP(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " LP {" + v.x + " "
         + v.y + " " + v.z + " " + v.w + "};";
   }
@@ -497,7 +497,7 @@ public class Parameters {
         cutoff = cutoff * cutoff;
     }
     isSilent = !logMessages;
-    script = " center " + Escape.escapePt(center)
+    script = " center " + Escape.eP(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " RAD {" + v.x + " "
         + v.y + " " + v.z + " " + v.w + "};";
   }
@@ -745,15 +745,15 @@ public class Parameters {
     isBicolorMap = true;
   }
   
-  Point3f center, point;
+  P3 center, point;
   float distance;
   public boolean allowVolumeRender;
   
   String script;
   
-  public BitSet bsSelected;
-  public BitSet bsIgnore;
-  public BitSet bsSolvent;
+  public BS bsSelected;
+  public BS bsIgnore;
+  public BS bsSolvent;
   
   public Object func;
 
@@ -797,9 +797,9 @@ public class Parameters {
   int maxSet;
   public float[] contoursDiscrete;
   public short[] contourColixes;
-  Point3f contourIncrements;
-  public Point3f[] boundingBox;
-  public BitSet[] bsExcluded;
+  P3 contourIncrements;
+  public P3[] boundingBox;
+  public BS[] bsExcluded;
   public int contourType;
   public boolean colorSchemeTranslucent;
   public ColorEncoder colorEncoder;
@@ -810,13 +810,13 @@ public class Parameters {
   public int randomSeed;
   public boolean fullyLit;
   public int[] vertexSource;
-  public BitSet[] intersection;
-  public Point3f origin;
-  public Point3f steps;
-  public Point3f points;
+  public BS[] intersection;
+  public P3 origin;
+  public P3 steps;
+  public P3 points;
   public VolumeData volumeData;
   public ContactPair contactPair;
-  public Point3f mapLattice;
+  public P3 mapLattice;
   public boolean isMapped;
   public boolean showTiming;
   

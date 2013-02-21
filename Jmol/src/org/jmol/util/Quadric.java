@@ -29,7 +29,7 @@ package org.jmol.util;
 public class Quadric {
 
   public float[] lengths;
-  public Vector3f[] vectors;
+  public V3[] vectors;
   public boolean isThermalEllipsoid = true;
   public float scale = 1;
   
@@ -46,7 +46,7 @@ public class Quadric {
       + vectors[2] + "\t" + lengths[2] + "\n");
   }
   
-  public Quadric(Vector3f[] vectors, float[] lengths, boolean isThermal) {
+  public Quadric(V3[] vectors, float[] lengths, boolean isThermal) {
     this.vectors = vectors;
     this.lengths = lengths;
     isThermalEllipsoid = isThermal;
@@ -66,7 +66,7 @@ public class Quadric {
   public Quadric(double[] bcart) {
     isThermalEllipsoid = true;
     lengths = new float[3];
-    vectors = new Vector3f[3];
+    vectors = new V3[3];
     getAxesForEllipsoid(bcart, vectors, lengths);
 
     for (int i = 0; i < 3; i++)
@@ -83,7 +83,7 @@ public class Quadric {
     scale = (isThermalEllipsoid ? Quadric.getRadius(size) : size < 1 ? 0 : size / 100.0f);
   }
 
-  public static void getAxesForEllipsoid(double[] coef, Vector3f[] unitVectors, float[] lengths) {
+  public static void getAxesForEllipsoid(double[] coef, V3[] unitVectors, float[] lengths) {
     
     // assumes an ellipsoid centered on 0,0,0
     // called by UnitCell for the initial creation of Object[] ellipsoid
@@ -98,7 +98,7 @@ public class Quadric {
     Eigen.getUnitVectors(mat, unitVectors, lengths);
   }
 
-  public static Matrix3f setEllipsoidMatrix(Vector3f[] unitAxes, float[] lengths, Vector3f vTemp, Matrix3f mat) {
+  public static Matrix3f setEllipsoidMatrix(V3[] unitAxes, float[] lengths, V3 vTemp, Matrix3f mat) {
     /*
      * Create a matrix that transforms cartesian coordinates
      * into ellipsoidal coordinates, where in that system we 
@@ -116,7 +116,7 @@ public class Quadric {
   }
 
   public static void getEquationForQuadricWithCenter(float x, float y, float z, Matrix3f mToElliptical, 
-                                             Vector3f vTemp, Matrix3f mTemp, double[] coef, Matrix4f mDeriv) {
+                                             V3 vTemp, Matrix3f mTemp, double[] coef, Matrix4f mDeriv) {
     /* Starting with a center point and a matrix that converts cartesian 
      * or screen coordinates to ellipsoidal coordinates, 
      * this method fills a float[10] with the terms for the 
@@ -196,7 +196,7 @@ public class Quadric {
     return true;
   }
 
-  public static int getOctant(Point3f pt) {
+  public static int getOctant(P3 pt) {
     int i = 0;
     if (pt.x < 0)
       i += 1;

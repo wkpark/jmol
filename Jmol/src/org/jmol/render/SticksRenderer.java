@@ -29,14 +29,14 @@ package org.jmol.render;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.Vector3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 
 public class SticksRenderer extends ShapeRenderer {
 
@@ -69,14 +69,14 @@ public class SticksRenderer extends ShapeRenderer {
   private boolean slabByAtom;
   private int[] dashDots;
 
-  private final Vector3f x = new Vector3f();
-  private final Vector3f y = new Vector3f();
-  private final Vector3f z = new Vector3f();
-  private final Point3f p1 = new Point3f();
-  private final Point3f p2 = new Point3f();
-  private final Point3i s1 = new Point3i();
-  private final Point3i s2 = new Point3i();
-  private final BitSet bsForPass2 = BitSet.newN(64);
+  private final V3 x = new V3();
+  private final V3 y = new V3();
+  private final V3 z = new V3();
+  private final P3 p1 = new P3();
+  private final P3 p2 = new P3();
+  private final P3i s1 = new P3i();
+  private final P3i s2 = new P3i();
+  private final BS bsForPass2 = BS.newN(64);
   private boolean isPass2;
   
   @Override
@@ -165,20 +165,20 @@ public class SticksRenderer extends ShapeRenderer {
       return false;
     colixA = atomA0.getColix();
     colixB = atomB0.getColix();
-    if (((colix = bond.colix) & Colix.OPAQUE_MASK) == Colix.USE_PALETTE) {
-      colix = (short) (colix & ~Colix.OPAQUE_MASK);
-      colixA = Colix.getColixInherited((short) (colix | viewer
+    if (((colix = bond.colix) & C.OPAQUE_MASK) == C.USE_PALETTE) {
+      colix = (short) (colix & ~C.OPAQUE_MASK);
+      colixA = C.getColixInherited((short) (colix | viewer
           .getColixAtomPalette(atomA0, EnumPalette.CPK.id)), colixA);
-      colixB = Colix.getColixInherited((short) (colix | viewer
+      colixB = C.getColixInherited((short) (colix | viewer
           .getColixAtomPalette(atomB0, EnumPalette.CPK.id)), colixB);
     } else {
-      colixA = Colix.getColixInherited(colix, colixA);
-      colixB = Colix.getColixInherited(colix, colixB);
+      colixA = C.getColixInherited(colix, colixA);
+      colixB = C.getColixInherited(colix, colixB);
     }
     boolean needTranslucent = false;
     if (!isExport && !isPass2) {
-      boolean doA = !Colix.isColixTranslucent(colixA);
-      boolean doB = !Colix.isColixTranslucent(colixB);
+      boolean doA = !C.isColixTranslucent(colixA);
+      boolean doB = !C.isColixTranslucent(colixB);
       if (!doA || !doB) {
         if (!doA && !doB && !needTranslucent) {
           g3d.setColix(!doA ? colixA : colixB);
@@ -196,8 +196,8 @@ public class SticksRenderer extends ShapeRenderer {
         bondOrder &= ~JmolEdge.BOND_SULFUR_MASK;
       if ((bondOrder & JmolEdge.BOND_COVALENT_MASK) != 0) {
         if (!showMultipleBonds
-            || modeMultipleBond == JmolConstants.MULTIBOND_NEVER
-            || (modeMultipleBond == JmolConstants.MULTIBOND_NOTSMALL && mad > JmolConstants.madMultipleBondSmallMaximum)) {
+            || modeMultipleBond == JC.MULTIBOND_NEVER
+            || (modeMultipleBond == JC.MULTIBOND_NOTSMALL && mad > JC.madMultipleBondSmallMaximum)) {
           bondOrder = 1;
         }
       }

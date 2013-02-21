@@ -29,19 +29,19 @@ import java.util.List;
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 //import org.jmol.util.Logger;
 
 /**
  * This class represents an atom in a <code>SmilesMolecule</code>.
  */
-public class SmilesAtom extends Point3f implements JmolNode {
+public class SmilesAtom extends P3 implements JmolNode {
 
   final static int STEREOCHEMISTRY_DEFAULT = 0;
   final static int STEREOCHEMISTRY_ALLENE = 2;
@@ -680,7 +680,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return -1;
   }
 
-  public void getGroupBits(BitSet bs) {
+  public void getGroupBits(BS bs) {
     bs.set(index);
     return;
   }
@@ -763,7 +763,7 @@ public class SmilesAtom extends Point3f implements JmolNode {
     return (atomType == null ? atomName : atomType);
   }
 
-  public BitSet findAtomsLike(String substring) {
+  public BS findAtomsLike(String substring) {
     return null;
   }
 

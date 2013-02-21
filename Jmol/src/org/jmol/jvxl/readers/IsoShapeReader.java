@@ -30,10 +30,10 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 class IsoShapeReader extends VolumeDataReader {
 
@@ -74,7 +74,7 @@ class IsoShapeReader extends VolumeDataReader {
   private static final float ATOMIC_ORBITAL_ZERO_CUT_OFF = 1e-7f;
 
   private float radius;
-  private final Point3f ptPsi = new Point3f();
+  private final P3 ptPsi = new P3();
 
   @Override
   protected void setup(boolean isMapData) {
@@ -162,7 +162,7 @@ class IsoShapeReader extends VolumeDataReader {
   }
 
   @Override
-  public float getValueAtPoint(Point3f pt) {
+  public float getValueAtPoint(P3 pt) {
     ptTemp.setT(pt);
     ptTemp.sub(center);
     if (isEccentric)
@@ -197,7 +197,7 @@ class IsoShapeReader extends VolumeDataReader {
   }
 
   private void setHeader(String line1) {
-    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer = new SB();
     jvxlFileHeaderBuffer.append(line1);
     if (sphere_radiusAngstroms > 0) {
       jvxlFileHeaderBuffer.append(" rad=").appendF(sphere_radiusAngstroms);
@@ -241,9 +241,9 @@ class IsoShapeReader extends VolumeDataReader {
   private double aoMax;
   private double aoMax2;
   private double angMax2;
-  private Vector3f planeU;
-  private Vector3f planeV;
-  private Point3f planeCenter;
+  private V3 planeU;
+  private V3 planeV;
+  private P3 planeCenter;
   private float planeRadius;
   
   private void autoScaleOrbital() {
@@ -331,12 +331,12 @@ class IsoShapeReader extends VolumeDataReader {
         + " for cutoff " + params.cutoff);
     if (params.thePlane != null && monteCarloCount > 0) {
       // get two perpendicular unit vectors in the plane.
-      planeCenter = new Point3f();
-      planeU = new Vector3f();
+      planeCenter = new P3();
+      planeU = new V3();
       Measure.getPlaneProjection(center, params.thePlane, planeCenter, planeU);
       planeU.set(params.thePlane.x, params.thePlane.y, params.thePlane.z);
       planeU.normalize();
-      planeV = Vector3f.new3(1, 0, 0);
+      planeV = V3.new3(1, 0, 0);
       if (Math.abs(planeU.dot(planeV)) > 0.5f)
         planeV.set(0, 1, 0);
       planeV.cross(planeU, planeV);
@@ -375,7 +375,7 @@ class IsoShapeReader extends VolumeDataReader {
 
   private double rnl;
 
-  private double hydrogenAtomPsi(Point3f pt) {
+  private double hydrogenAtomPsi(P3 pt) {
     // ref: http://www.stolaf.edu/people/hansonr/imt/concept/schroed.pdf
     double x2y2 = pt.x * pt.x + pt.y * pt.y;
     rnl = radialPart(Math.sqrt(x2y2 + pt.z * pt.z));
@@ -501,7 +501,7 @@ class IsoShapeReader extends VolumeDataReader {
     MeshSurface ms = MeshSurface.getSphereData(4);
     Tuple3f[] pts = ms.altVertices;
     for (int i = 0; i < pts.length; i++) {
-      Point3f pt = Point3f.newP(pts[i]);
+      P3 pt = P3.newP(pts[i]);
       pt.scale(params.distance);
       pt.add(center);
       addVertexCopy(pt, 0, i);

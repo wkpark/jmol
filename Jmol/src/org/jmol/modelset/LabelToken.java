@@ -31,10 +31,10 @@ import java.util.Map;
 
 
 import org.jmol.util.Escape;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Tuple3f;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 
 
@@ -95,66 +95,66 @@ public class LabelToken {
 
   final private static String labelTokenParams = "AaBbCcDEefGgIiLlMmNnoPpQqRrSsTtUuVvWXxYyZz%%%gqW";
   final private static int[] labelTokenIds = {
-      /* 'A' */Token.altloc,
-      /* 'a' */Token.atomname,
-      /* 'B' */Token.atomtype,
-      /* 'b' */Token.temperature,
-      /* 'C' */Token.formalcharge,
-      /* 'c' */Token.chain,
-      /* 'D' */Token.atomindex,
-      /* 'E' */Token.insertion,
-      /* 'e' */Token.element,
-      /* 'f' */Token.phi,
-      /* 'G' */Token.groupindex,
+      /* 'A' */T.altloc,
+      /* 'a' */T.atomname,
+      /* 'B' */T.atomtype,
+      /* 'b' */T.temperature,
+      /* 'C' */T.formalcharge,
+      /* 'c' */T.chain,
+      /* 'D' */T.atomindex,
+      /* 'E' */T.insertion,
+      /* 'e' */T.element,
+      /* 'f' */T.phi,
+      /* 'G' */T.groupindex,
       /* 'g' */'g', //getSelectedGroupIndexWithinChain()
-      /* 'I' */Token.ionic,
-      /* 'i' */Token.atomno,
-      /* 'L' */Token.polymerlength,
-      /* 'l' */Token.elemno,
-      /* 'M' */Token.model,
-      /* 'm' */Token.group1,
-      /* 'N' */Token.molecule,
-      /* 'n' */Token.group,
-      /* 'o' */Token.symmetry,
-      /* 'P' */Token.partialcharge,
-      /* 'p' */Token.psi,
+      /* 'I' */T.ionic,
+      /* 'i' */T.atomno,
+      /* 'L' */T.polymerlength,
+      /* 'l' */T.elemno,
+      /* 'M' */T.model,
+      /* 'm' */T.group1,
+      /* 'N' */T.molecule,
+      /* 'n' */T.group,
+      /* 'o' */T.symmetry,
+      /* 'P' */T.partialcharge,
+      /* 'p' */T.psi,
       /* 'Q' */'Q', //occupancy 0.0 to 1.0
-      /* 'q' */Token.occupancy,
-      /* 'R' */Token.resno,
+      /* 'q' */T.occupancy,
+      /* 'R' */T.resno,
       /* 'r' */'r',
-      /* 'S' */Token.site,
-      /* 's' */Token.chain,
-      /* 'T' */Token.straightness,
-      /* 't' */Token.temperature,
-      /* 'U' */Token.identify,
-      /* 'u' */Token.surfacedistance,
-      /* 'V' */Token.vanderwaals,
-      /* 'v' */Token.vibxyz,
+      /* 'S' */T.site,
+      /* 's' */T.chain,
+      /* 'T' */T.straightness,
+      /* 't' */T.temperature,
+      /* 'U' */T.identify,
+      /* 'u' */T.surfacedistance,
+      /* 'V' */T.vanderwaals,
+      /* 'v' */T.vibxyz,
       /* 'W' */'W', // identifier and XYZ coord
-      /* 'X' */Token.fracx,
-      /* 'x' */Token.atomx,
-      /* 'Y' */Token.fracy,
-      /* 'y' */Token.atomy,
-      /* 'Z' */Token.fracz,
-      /* 'z' */Token.atomz,
+      /* 'X' */T.fracx,
+      /* 'x' */T.atomx,
+      /* 'Y' */T.fracy,
+      /* 'y' */T.atomy,
+      /* 'Z' */T.fracz,
+      /* 'z' */T.atomz,
 
       // not having letter equivalents:
 
       //new for Jmol 11.9.5:
-      Token.backbone, Token.cartoon, Token.dots, Token.ellipsoid,
-      Token.geosurface, Token.halo, Token.meshRibbon, Token.ribbon,
-      Token.rocket, Token.star, Token.strands, Token.trace,
+      T.backbone, T.cartoon, T.dots, T.ellipsoid,
+      T.geosurface, T.halo, T.meshRibbon, T.ribbon,
+      T.rocket, T.star, T.strands, T.trace,
 
-      Token.adpmax, Token.adpmin, Token.atomid, Token.bondcount, Token.color,
-      Token.groupid, Token.covalent, Token.file, Token.format, Token.label,
-      Token.mass, Token.modelindex, Token.eta, Token.omega, Token.polymer, Token.property,
-      Token.radius, Token.selected, Token.shape, Token.sequence,
-      Token.spacefill, Token.structure, Token.substructure, Token.strucno,
-      Token.strucid, Token.symbol, Token.theta, Token.unitx, Token.unity,
-      Token.unitz, Token.valence, Token.vectorscale, Token.vibx, Token.viby, Token.vibz,
-      Token.volume, Token.unitxyz, Token.fracxyz, Token.xyz, Token.fuxyz,
-      Token.fux, Token.fuy, Token.fuz, Token.hydrophobic, Token.screenx, 
-      Token.screeny, Token.screenz, Token.screenxyz // added in 12.3.30
+      T.adpmax, T.adpmin, T.atomid, T.bondcount, T.color,
+      T.groupid, T.covalent, T.file, T.format, T.label,
+      T.mass, T.modelindex, T.eta, T.omega, T.polymer, T.property,
+      T.radius, T.selected, T.shape, T.sequence,
+      T.spacefill, T.structure, T.substructure, T.strucno,
+      T.strucid, T.symbol, T.theta, T.unitx, T.unity,
+      T.unitz, T.valence, T.vectorscale, T.vibx, T.viby, T.vibz,
+      T.volume, T.unitxyz, T.fracxyz, T.xyz, T.fuxyz,
+      T.fux, T.fuy, T.fuz, T.hydrophobic, T.screenx, 
+      T.screeny, T.screenz, T.screenxyz // added in 12.3.30
 
   };
 
@@ -169,9 +169,9 @@ public class LabelToken {
 
   private final static String twoCharLabelTokenParams = "fuv";
 
-  private final static int[] twoCharLabelTokenIds = { Token.fracx, Token.fracy,
-      Token.fracz, Token.unitx, Token.unity, Token.unitz, Token.vibx,
-      Token.viby, Token.vibz, };
+  private final static int[] twoCharLabelTokenIds = { T.fracx, T.fracy,
+      T.fracz, T.unitx, T.unity, T.unitz, T.vibx,
+      T.viby, T.vibz, };
 
   private LabelToken(String text, int pt) {
     this.text = text;
@@ -238,7 +238,7 @@ public class LabelToken {
                                    int[] indices) {
     if (atom == null)
       return null;
-    StringXBuilder strLabel = (chAtom > '0' ? null : new StringXBuilder());
+    SB strLabel = (chAtom > '0' ? null : new SB());
     if (tokens != null)
       for (int i = 0; i < tokens.length; i++) {
         LabelToken t = tokens[i];
@@ -315,7 +315,7 @@ public class LabelToken {
   }
 
   public static String getLabel(LabelToken[] tokens) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     for (int i = 0; i < tokens.length; i++) {
       LabelToken lt = tokens[i];
       if (lt == null)
@@ -393,10 +393,10 @@ public class LabelToken {
         String propertyName = strFormat.substring(ich, ichClose).toLowerCase();
         if (propertyName.startsWith("property_")) {
           lt.text = propertyName;
-          lt.tok = Token.data;
+          lt.tok = T.data;
           lt.data = viewer.getDataFloat(lt.text);
         } else {
-          Token token = Token.getTokenFromName(propertyName);
+          T token = T.getTokenFromName(propertyName);
           if (token != null && isLabelPropertyTok(token.tok))
             lt.tok = token.tok;
         }
@@ -424,9 +424,9 @@ public class LabelToken {
             if (!(Escape.isAS(lt.data)))
               lt.data = null;
           }
-          lt.tok = (lt.data == null ? Token.string : Token.array);
+          lt.tok = (lt.data == null ? T.string : T.array);
         } else {
-          lt.tok = Token.data;
+          lt.tok = T.data;
         }
         ich = ichCloseBracket + 1;
         break;
@@ -453,7 +453,7 @@ public class LabelToken {
   }
 
   private static void appendAtomTokenValue(Viewer viewer, Atom atom,
-                                           LabelToken t, StringXBuilder strLabel,
+                                           LabelToken t, SB strLabel,
                                            int[] indices) {
     String strT = null;
     float floatT = Float.NaN;
@@ -463,24 +463,24 @@ public class LabelToken {
 
       // special cases only for labels 
 
-      case Token.atomindex:
+      case T.atomindex:
         strT = "" + (indices == null ? atom.index : indices[atom.index]);
         break;
-      case Token.color:
+      case T.color:
         ptT = Atom.atomPropertyTuple(atom, t.tok);
         break;
-      case Token.data:
+      case T.data:
         if (t.data != null) {
           floatT = ((float[]) t.data)[atom.index];
         }
         break;
-      case Token.array:
+      case T.array:
         if (t.data != null) {
           String[] sdata = (String[]) t.data;
           strT = (atom.index < sdata.length ? sdata[atom.index] : "");
         }
         break;
-      case Token.formalcharge:
+      case T.formalcharge:
         int formalCharge = atom.getFormalCharge();
         if (formalCharge > 0)
           strT = "" + formalCharge + "+";
@@ -492,40 +492,40 @@ public class LabelToken {
       case 'g':
         strT = "" + atom.getSelectedGroupIndexWithinChain();
         break;
-      case Token.model:
+      case T.model:
         strT = atom.getModelNumberForLabel();
         break;
-      case Token.occupancy:
+      case T.occupancy:
         strT = "" + Atom.atomPropertyInt(atom, t.tok);
         break;
       case 'Q':
         floatT = atom.getOccupancy100() / 100f;
         break;
-      case Token.radius:
+      case T.radius:
         floatT = Atom.atomPropertyFloat(viewer, atom, t.tok);
         break;
       case 'r':
         strT = atom.getSeqcodeString();
         break;
-      case Token.strucid:
+      case T.strucid:
         strT = atom.getStructureId();
         break;
-      case Token.strucno:
+      case T.strucno:
         int id = atom.getStrucNo();
         strT = (id <= 0 ? "" : "" + id);
         break;
-      case Token.straightness:
-        floatT = atom.getGroupParameter(Token.straightness);
+      case T.straightness:
+        floatT = atom.getGroupParameter(T.straightness);
         if (Float.isNaN(floatT))
           strT = "null";
         break;
-      case Token.string:
+      case T.string:
         // label %{altName}
         strT = viewer.getModelAtomProperty(atom, t.text.substring(2, t.text
             .length() - 1));
         break;
-      case Token.structure:
-      case Token.substructure:
+      case T.structure:
+      case T.substructure:
         strT = Atom.atomPropertyString(viewer, atom, t.tok);
         break;
       case 'W':
@@ -535,20 +535,20 @@ public class LabelToken {
       // standard 
 
       default:
-        switch (t.tok & Token.PROPERTYFLAGS) {
-        case Token.intproperty:
+        switch (t.tok & T.PROPERTYFLAGS) {
+        case T.intproperty:
           if (t.intAsFloat)
             floatT = Atom.atomPropertyInt(atom, t.tok);
           else
             strT = "" + Atom.atomPropertyInt(atom, t.tok);
           break;
-        case Token.floatproperty:
+        case T.floatproperty:
           floatT = Atom.atomPropertyFloat(viewer, atom, t.tok);
           break;
-        case Token.strproperty:
+        case T.strproperty:
           strT = Atom.atomPropertyString(viewer, atom, t.tok);
           break;
-        case Token.atomproperty:
+        case T.atomproperty:
           ptT = Atom.atomPropertyTuple(atom, t.tok);
           break;
         default:

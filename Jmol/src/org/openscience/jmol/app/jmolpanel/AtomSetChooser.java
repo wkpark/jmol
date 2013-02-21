@@ -66,8 +66,8 @@ import java.util.Enumeration;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 
@@ -551,14 +551,14 @@ ActionListener, ChangeListener, Runnable {
         PrintWriter f = new PrintWriter(new FileOutputStream(fname));
         for (int idx = 0; idx < nidx; idx++ ) {
           int modelIndex = indexes[idx];
-          StringXBuilder str = new StringXBuilder();
+          SB str = new SB();
           str.append(viewer.getModelName(modelIndex)).append("\n");
           int natoms=0;
           int atomCount = viewer.getAtomCount();
           for (int i = 0; i < atomCount;  i++) {
             if (viewer.getAtomModelIndex(i)==modelIndex) {
               natoms++;
-              Point3f p = viewer.getAtomPoint3f(i);
+              P3 p = viewer.getAtomPoint3f(i);
               // should really be getElementSymbol(i) in stead
               str.append(viewer.getAtomName(i)).append("\t");
               str.appendF(p.x).append("\t").appendF(p.y).append("\t").appendF(p.z).append("\n");

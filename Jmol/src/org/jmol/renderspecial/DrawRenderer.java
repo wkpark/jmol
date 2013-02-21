@@ -32,15 +32,15 @@ import org.jmol.shapespecial.Draw;
 import org.jmol.shapespecial.DrawMesh;
 import org.jmol.shapespecial.Draw.EnumDrawType;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Hermite;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.V3;
 import org.jmol.viewer.ActionManager;
 
 public class DrawRenderer extends MeshRenderer {
@@ -48,12 +48,12 @@ public class DrawRenderer extends MeshRenderer {
   private EnumDrawType drawType;
   private DrawMesh dmesh;
 
-  private Point3f[] controlHermites;
-  private final Point3f vpt0 = new Point3f();
-  private final Point3f vpt1 = new Point3f();
-  private final Point3f vpt2 = new Point3f();
-  private final Vector3f vTemp = new Vector3f();
-  private final Vector3f vTemp2 = new Vector3f();
+  private P3[] controlHermites;
+  private final P3 vpt0 = new P3();
+  private final P3 vpt1 = new P3();
+  private final P3 vpt2 = new P3();
+  private final V3 vTemp = new V3();
+  private final V3 vTemp2 = new V3();
 
   @Override
   protected boolean render() {
@@ -88,7 +88,7 @@ public class DrawRenderer extends MeshRenderer {
       // atom-bond [ a -1  c d  ]
       // atom-atom [ a -1  c -1 ]
       
-      mesh.vertices = new Point3f[4];
+      mesh.vertices = new P3[4];
       mesh.vertexCount = 4;
       int[] c = mesh.connections;
       for (int i = 0; i < 4; i++) {
@@ -230,7 +230,7 @@ public class DrawRenderer extends MeshRenderer {
       }
       int nHermites = 5;
       if (controlHermites == null || controlHermites.length < nHermites + 1) {
-        controlHermites = new Point3f[nHermites + 1];
+        controlHermites = new P3[nHermites + 1];
       }
       Hermite.getHermiteList(tension, vertices[vertexCount - 3],
           vertices[vertexCount - 2], vertices[vertexCount - 1],
@@ -288,12 +288,12 @@ public class DrawRenderer extends MeshRenderer {
     vpt1.setT(vpt0);
     vpt1.add(vpt2);
     vpt1.scale(0.5f);
-    vertices[3] = Point3f.newP(vertices[i0]);
+    vertices[3] = P3.newP(vertices[i0]);
     vertices[3].add(vertices[j0]);
     vertices[3].scale(0.5f);
-    vertices[1] = Point3f.newP(vpt1); 
-    vertices[0] = Point3f.newP(vpt0);
-    vertices[2] = Point3f.newP(vpt2);
+    vertices[1] = P3.newP(vpt1); 
+    vertices[0] = P3.newP(vpt0);
+    vertices[2] = P3.newP(vpt2);
 
     for (int i = 0; i < 4; i++)
       viewer.transformPtScr(vertices[i], screens[i]);
@@ -308,7 +308,7 @@ public class DrawRenderer extends MeshRenderer {
     float dx = (screens[1].x - screens[0].x) * f;
     float dy = (screens[1].y - screens[0].y) * f;
     
-    if (dmax == 0 || Measure.computeTorsion(vpt2, vpt0, Point3f.new3(vpt0.x, vpt0.y, 10000f), vpt1, false) > 0) {
+    if (dmax == 0 || Measure.computeTorsion(vpt2, vpt0, P3.new3(vpt0.x, vpt0.y, 10000f), vpt1, false) > 0) {
       dx = -dx;
       dy = -dy;
     }
@@ -335,11 +335,11 @@ public class DrawRenderer extends MeshRenderer {
     }
   }
 
-  private void drawLineData(List<Point3f[]> lineData) {
+  private void drawLineData(List<P3[]> lineData) {
     if (diameter == 0)
       diameter = 3;
     for (int i = lineData.size(); --i >= 0;) {
-      Point3f[] pts = lineData.get(i);
+      P3[] pts = lineData.get(i);
       viewer.transformPtScr(pts[0], pt1i);
       viewer.transformPtScr(pts[1], pt2i);
       drawLine(-1, -2, true, pts[0], pts[1], pt1i, pt2i);
@@ -348,7 +348,7 @@ public class DrawRenderer extends MeshRenderer {
 
   private void renderXyArrow(int ptXY) {
     int ptXYZ = 1 - ptXY;
-    Point3f[] arrowPt = new Point3f[2];
+    P3[] arrowPt = new P3[2];
     arrowPt[ptXYZ] = vpt1;
     arrowPt[ptXY] = vpt0;
     // set up (0,0,0) to ptXYZ in real and screen coordinates
@@ -369,10 +369,10 @@ public class DrawRenderer extends MeshRenderer {
     renderArrowHead(vpt0, vpt1, 0, true, false, false);
   }
 
-  private final Point3f pt0f = new Point3f();
-  private final Point3i pt0i = new Point3i();
+  private final P3 pt0f = new P3();
+  private final P3i pt0i = new P3i();
 
-  private void renderArrowHead(Point3f pt1, Point3f pt2, float factor2,
+  private void renderArrowHead(P3 pt1, P3 pt2, float factor2,
                                boolean isTransformed, boolean withShaft,
                                boolean isBarb) {
     if (dmesh.noHead)
@@ -428,7 +428,7 @@ public class DrawRenderer extends MeshRenderer {
       g3d.fillCylinderScreen3I(GData.ENDCAPS_OPENEND, diameter, pt0i, pt1i, null, null, mad / 2000f);
   }
 
-  private final BitSet bsHandles = new BitSet();
+  private final BS bsHandles = new BS();
   
   private void renderHandles() {
     int diameter = Math.round(10 * imageFontScaling);
@@ -436,7 +436,7 @@ public class DrawRenderer extends MeshRenderer {
     case NONE:
       return;
     default:
-      short colixFill = Colix.getColixTranslucent3(Colix.GOLD, true,
+      short colixFill = C.getColixTranslucent3(C.GOLD, true,
           0.5f);
       bsHandles.clearAll();
       for (int i = dmesh.polygonCount; --i >= 0;) {
@@ -450,7 +450,7 @@ public class DrawRenderer extends MeshRenderer {
           if (bsHandles.get(k))
             continue;
           bsHandles.set(k);
-          g3d.drawFilledCircle(Colix.GOLD, colixFill, diameter,
+          g3d.drawFilledCircle(C.GOLD, colixFill, diameter,
               screens[k].x, screens[k].y, screens[k].z);
         }
       }

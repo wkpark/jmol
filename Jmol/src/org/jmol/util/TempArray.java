@@ -79,7 +79,7 @@ public class TempArray {
   ////////////////////////////////////////////////////////////////
   private final static int freePointsSize = 6;
   private final int[] lengthsFreePoints = new int[freePointsSize];
-  private final Point3f[][] freePoints = new Point3f[freePointsSize][];
+  private final P3[][] freePoints = new P3[freePointsSize][];
 
   private void clearTempPoints() {
     for (int i = 0; i < freePointsSize; i++) {
@@ -88,20 +88,20 @@ public class TempArray {
     }
   }
   
-  public Point3f[] allocTempPoints(int size) {
-    Point3f[] tempPoints;
+  public P3[] allocTempPoints(int size) {
+    P3[] tempPoints;
     int iFit = findBestFit(size, lengthsFreePoints);
     if (iFit > 0) {
       tempPoints = freePoints[iFit];
     } else {
-      tempPoints = new Point3f[size];
+      tempPoints = new P3[size];
       for (int i = size; --i >= 0;)
-        tempPoints[i] = new Point3f();
+        tempPoints[i] = new P3();
     }
     return tempPoints;
   }
 
-  public void freeTempPoints(Point3f[] tempPoints) {
+  public void freeTempPoints(P3[] tempPoints) {
     for (int i = 0; i < freePoints.length; i++)
       if (freePoints[i] == tempPoints) {
         lengthsFreePoints[i] = tempPoints.length;
@@ -117,7 +117,7 @@ public class TempArray {
   ////////////////////////////////////////////////////////////////
   private final static int freeScreensSize = 6;
   private final int[] lengthsFreeScreens = new int[freeScreensSize];
-  private final Point3i[][] freeScreens = new Point3i[freeScreensSize][];
+  private final P3i[][] freeScreens = new P3i[freeScreensSize][];
 
   private void clearTempScreens() {
     for (int i = 0; i < freeScreensSize; i++) {
@@ -126,20 +126,20 @@ public class TempArray {
     }
   }
   
-  public Point3i[] allocTempScreens(int size) {
-    Point3i[] tempScreens;
+  public P3i[] allocTempScreens(int size) {
+    P3i[] tempScreens;
     int iFit = findBestFit(size, lengthsFreeScreens);
     if (iFit > 0) {
       tempScreens = freeScreens[iFit];
     } else {
-      tempScreens = new Point3i[size];
+      tempScreens = new P3i[size];
       for (int i = size; --i >= 0;)
-        tempScreens[i] = new Point3i();
+        tempScreens[i] = new P3i();
     }
     return tempScreens;
   }
 
-  public void freeTempScreens(Point3i[] tempScreens) {
+  public void freeTempScreens(P3i[] tempScreens) {
     for (int i = 0; i < freeScreens.length; i++)
       if (freeScreens[i] == tempScreens) {
         lengthsFreeScreens[i] = tempScreens.length;

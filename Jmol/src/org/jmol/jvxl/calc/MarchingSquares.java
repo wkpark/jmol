@@ -31,7 +31,7 @@ import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
 
 public class MarchingSquares {
@@ -58,8 +58,8 @@ public class MarchingSquares {
   int thisContour = 0;
   private float valueMin, valueMax;
 
-  final Point3f pointA = new Point3f();
-  final Point3f pointB = new Point3f();
+  final P3 pointA = new P3();
+  final P3 pointB = new P3();
 
   private boolean contourFromZero = true;
   private float[] contoursDiscrete;
@@ -106,10 +106,10 @@ public class MarchingSquares {
   public int contourVertexCount;
   ContourVertex[] contourVertexes = new ContourVertex[1000];
 
-  private static class ContourVertex extends Point3f {
+  private static class ContourVertex extends P3 {
     float value;
 
-    ContourVertex(Point3f vertexXYZ) {
+    ContourVertex(P3 vertexXYZ) {
       setT(vertexXYZ);
     }
 
@@ -119,7 +119,7 @@ public class MarchingSquares {
 
   }
 
-  public int addContourVertex(Point3f vertexXYZ, float value) {
+  public int addContourVertex(P3 vertexXYZ, float value) {
     if (contourVertexCount == contourVertexes.length)
       contourVertexes = (ContourVertex[]) ArrayUtil
           .doubleLength(contourVertexes);
@@ -151,13 +151,13 @@ public class MarchingSquares {
   */
   
   float calcContourPoint(float cutoff, float valueA, float valueB,
-                         Point3f pt) {
+                         P3 pt) {
     
     return volumeData.calculateFractionalPoint(cutoff, pointA, pointB, valueA,
         valueB, pt);
   }
 
-  final Point3f ptTemp = new Point3f();
+  final P3 ptTemp = new P3();
 
   /////////// MUCH simpler!
 

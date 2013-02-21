@@ -59,15 +59,15 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Shape;
 import org.jmol.thread.ScriptDelayThread;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BSUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolFont;
@@ -79,20 +79,20 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Point4f;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SimpleUnitCell;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.modelset.TickInfo;
 import org.jmol.api.JmolParallelProcessor;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.FileManager;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
@@ -247,14 +247,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                                      boolean isCmdLine_C_Option,
                                      boolean historyDisabled,
                                      boolean listCommands,
-                                     StringXBuilder outputBuffer, 
+                                     SB outputBuffer, 
                                      boolean allowThreads) {
     boolean tempOpen = this.isCmdLine_C_Option;
     this.isCmdLine_C_Option = isCmdLine_C_Option;
     executionStopped = executionPaused = false;
     executionStepping = false;
     executing = true;
-    isSyntaxCheck = this.isCmdLine_c_or_C_Option = isCmdLine_c_or_C_Option;
+    chk = this.isCmdLine_c_or_C_Option = isCmdLine_c_or_C_Option;
     timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
     this.outputBuffer = outputBuffer;
@@ -280,9 +280,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     try {
       e.compileScript(null, "function " + fname + "(" + xyz + ") { return "
           + ret + "}", false);
-      List<ScriptVariable> params = new ArrayList<ScriptVariable>();
+      List<SV> params = new ArrayList<SV>();
       for (int i = 0; i < xyz.length(); i += 2)
-        params.add(ScriptVariable.newVariable(Token.decimal, Float.valueOf(0f)).setName(
+        params.add(SV.newVariable(T.decimal, Float.valueOf(0f)).setName(
             xyz.substring(i, i + 1)));
       return new Object[] { e.aatoken[0][1].value, params };
     } catch (Exception ex) {
@@ -340,9 +340,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     timeEndExecution = System.currentTimeMillis();
     if (errorMessage == null && executionStopped)
       setErrorMessage("execution interrupted");
-    else if (!tQuiet && !isSyntaxCheck)
-      viewer.scriptStatus(JmolConstants.SCRIPT_COMPLETED);
-    executing = isSyntaxCheck = this.isCmdLine_c_or_C_Option = this.historyDisabled = false;
+    else if (!tQuiet && !chk)
+      viewer.scriptStatus(JC.SCRIPT_COMPLETED);
+    executing = chk = this.isCmdLine_c_or_C_Option = this.historyDisabled = false;
     String msg = getErrorMessageUntranslated();
     viewer.setErrorMessage(errorMessage, msg);
     if (!tQuiet)
@@ -421,13 +421,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @param outputBuffer
    * @throws ScriptException
    */
-  public void runScriptBuffer(String script, StringXBuilder outputBuffer)
+  public void runScriptBuffer(String script, SB outputBuffer)
       throws ScriptException {
     pushContext(null);
     contextPath += " >> script() ";
     this.outputBuffer = outputBuffer;
     allowJSThreads = false;
-    if (compileScript(null, script + JmolConstants.SCRIPT_EDITOR_IGNORE, false))
+    if (compileScript(null, script + JC.SCRIPT_EDITOR_IGNORE, false))
       dispatchCommands(false);
     popContext(false, false);
   }
@@ -446,7 +446,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (sc.errorType != null)
       return sc;
     restoreScriptContext(sc, false, false, false);
-    isSyntaxCheck = true;
+    chk = true;
     isCmdLine_c_or_C_Option = isCmdLine_C_Option = false;
     pc = 0;
     try {
@@ -455,13 +455,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       setErrorMessage(e.toString());
       sc = getScriptContext();
     }
-    isSyntaxCheck = false;
+    chk = false;
     return sc;
   }
 
-  static StringXBuilder getContextTrace(ScriptContext sc, StringXBuilder sb, boolean isTop) {
+  static SB getContextTrace(ScriptContext sc, SB sb, boolean isTop) {
     if (sb == null)
-      sb = new StringXBuilder();
+      sb = new SB();
     sb.append(setErrorLineMessage(sc.functionName, sc.scriptFileName,
         sc.lineNumbers[sc.pc], sc.pc, ScriptEvaluator.statementAsString(sc.statement, (isTop ? sc.iToken : 9999), false)));
     if (sc.parentContext != null)
@@ -472,7 +472,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   // //////////////////////// script execution /////////////////////
 
   private boolean tQuiet;
-  protected boolean isSyntaxCheck;
+  protected boolean chk;
   private boolean isCmdLine_C_Option;
   protected boolean isCmdLine_c_or_C_Option;
   private boolean historyDisabled;
@@ -504,7 +504,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   public void pauseExecution(boolean withDelay) {
-    if (isSyntaxCheck || viewer.isHeadless())
+    if (chk || viewer.isHeadless())
       return;
     if (withDelay && !isJS )
       viewer.delayScript(this, -100);
@@ -612,18 +612,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void logDebugScript(int ifLevel) {
     if (logMessages) {
-      if (statement.length > 0)
-        Logger.debug(statement[0].toString());
-      for (int i = 1; i < statementLength; ++i)
-        Logger.debug(statement[i].toString());
+      if (st.length > 0)
+        Logger.debug(st[0].toString());
+      for (int i = 1; i < slen; ++i)
+        Logger.debug(st[i].toString());
     }
     iToken = -9999;
     if (logMessages) {
-      StringXBuilder strbufLog = new StringXBuilder();
+      SB strbufLog = new SB();
       String s = (ifLevel > 0 ? "                          ".substring(0,
           ifLevel * 2) : "");
       strbufLog.append(s).append(
-          statementAsString(statement, iToken, logMessages));
+          statementAsString(st, iToken, logMessages));
       viewer.scriptStatus(strbufLog.toString());
     } else {
       String cmd = getCommand(pc, false, false);
@@ -667,19 +667,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           setStatement(0);
           return (asVariable ? parameterExpressionList(2, -1, false).get(0) : parameterExpressionString(2, 0));
         }
-      } else if (expr instanceof Token[]) {
+      } else if (expr instanceof T[]) {
         contextVariables = viewer.getContextVariables();
-        BitSet bs = atomExpression((Token[]) expr, 0, 0, true, false, true, false);
-        return (asVariable ? ScriptVariable.newScriptVariableBs(bs, -1): bs);
+        BS bs = atomExpression((T[]) expr, 0, 0, true, false, true, false);
+        return (asVariable ? SV.newScriptVariableBs(bs, -1): bs);
           
       }
     } catch (Exception ex) {
       Logger.error("Error evaluating: " + expr + "\n" + ex);
     }
-    return (asVariable ? ScriptVariable.getVariable("ERROR") : "ERROR");
+    return (asVariable ? SV.getVariable("ERROR") : "ERROR");
   }
 
-  ShapeManager shapeManager;
+  ShapeManager sm;
 
   /**
    * used for TRY command
@@ -694,7 +694,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     e.setViewer(viewer);
     e.historyDisabled = true;
     e.compiler = new ScriptCompiler(viewer);
-    e.shapeManager = shapeManager;
+    e.sm = shapeManager;
     try {
       e.restoreScriptContext(context, true, false, false);
       // TODO: This will disallow some motion commands
@@ -720,18 +720,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @return is a bitset indicating the selected atoms
    * 
    */
-  public BitSet getAtomBitSet(Object atomExpression) {
-    if (atomExpression instanceof BitSet)
-      return (BitSet) atomExpression;
-    BitSet bs = new BitSet();
+  public BS getAtomBitSet(Object atomExpression) {
+    if (atomExpression instanceof BS)
+      return (BS) atomExpression;
+    BS bs = new BS();
     try {
       pushContext(null);
       String scr = "select (" + atomExpression + ")";
       scr = TextFormat.replaceAllCharacters(scr, "\n\r", "),(");
       scr = TextFormat.simpleReplace(scr, "()", "(none)");
       if (compileScript(null, scr, false)) {
-        statement = aatoken[0];
-        bs = atomExpression(statement, 1, 0, false, false, true, true);
+        st = aatoken[0];
+        bs = atomExpression(st, 1, 0, false, false, true, true);
       }
       popContext(false, false);
     } catch (Exception ex) {
@@ -749,7 +749,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    */
   public List<Integer> getAtomBitSetVector(int atomCount, Object atomExpression) {
     List<Integer> V = new ArrayList<Integer>();
-    BitSet bs = getAtomBitSet(atomExpression);
+    BS bs = getAtomBitSet(atomExpression);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       V.add(Integer.valueOf(i));
     }
@@ -757,10 +757,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   @SuppressWarnings("unchecked")
-  private List<ScriptVariable> parameterExpressionList(int pt, int ptAtom,
+  private List<SV> parameterExpressionList(int pt, int ptAtom,
                                                        boolean isArrayItem)
       throws ScriptException {
-    return (List<ScriptVariable>) parameterExpression(pt, -1, null, true, true,
+    return (List<SV>) parameterExpression(pt, -1, null, true, true,
         ptAtom, isArrayItem, null, null);
   }
 
@@ -776,10 +776,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         false, null, null)).booleanValue();
   }
 
-  private ScriptVariable parameterExpressionToken(int pt)
+  private SV parameterExpressionToken(int pt)
       throws ScriptException {
-    List<ScriptVariable> result = parameterExpressionList(pt, -1, false);
-    return (result.size() > 0 ? result.get(0) : ScriptVariable.newVariable(Token.string, ""));
+    List<SV> result = parameterExpressionList(pt, -1, false);
+    return (result.size() > 0 ? result.get(0) : SV.newVariable(T.string, ""));
   }
 
   /**
@@ -815,7 +815,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private Object parameterExpression(int pt, int ptMax, String key,
                                      boolean ignoreComma, boolean asVector,
                                      int ptAtom, boolean isArrayItem,
-                                     Map<String, ScriptVariable> localVars, String localVar)
+                                     Map<String, SV> localVars, String localVar)
       throws ScriptException {
 
     /*
@@ -844,70 +844,70 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (pt == 0 && ptMax == 0) // set command with v[...] = ....
       pt = 2;
     if (ptMax < pt)
-      ptMax = statementLength;
+      ptMax = slen;
     out: for (int i = pt; i < ptMax; i++) {
       v = null;
       int tok = getToken(i).tok;
-      if (isImplicitAtomProperty && tokAt(i + 1) != Token.per) {
-        ScriptVariable token = (localVars != null
+      if (isImplicitAtomProperty && tokAt(i + 1) != T.per) {
+        SV token = (localVars != null
             && localVars.containsKey(theToken.value) ? null
             : getBitsetPropertySelector(i, false));
         if (token != null) {
           rpn.addXVar(localVars.get(localVar));
-          if (!rpn.addOpAllowMath(token, (tokAt(i + 1) == Token.leftparen)))
+          if (!rpn.addOpAllowMath(token, (tokAt(i + 1) == T.leftparen)))
             error(ERROR_invalidArgument);
-          if ((token.intValue == Token.function || token.intValue == Token.parallel)
-              && tokAt(iToken + 1) != Token.leftparen) {
-            rpn.addOp(Token.tokenLeftParen);
-            rpn.addOp(Token.tokenRightParen);
+          if ((token.intValue == T.function || token.intValue == T.parallel)
+              && tokAt(iToken + 1) != T.leftparen) {
+            rpn.addOp(T.tokenLeftParen);
+            rpn.addOp(T.tokenRightParen);
           }
           i = iToken;
           continue;
         }
       }
       switch (tok) {
-      case Token.define:
+      case T.define:
         // @{@x} or @{@{x}} or @{@1} -- also userFunction(@1)
-        if (tokAt(++i) == Token.expressionBegin) {
+        if (tokAt(++i) == T.expressionBegin) {
           v = parameterExpressionToken(++i);
           i = iToken;
-        } else if (tokAt(i) == Token.integer) {
-          v = viewer.getAtomBits(Token.atomno, Integer
-              .valueOf(statement[i].intValue));
+        } else if (tokAt(i) == T.integer) {
+          v = viewer.getAtomBits(T.atomno, Integer
+              .valueOf(st[i].intValue));
           break;
         } else {
-          v = getParameter(ScriptVariable.sValue(statement[i]), Token.variable);
+          v = getParameter(SV.sValue(st[i]), T.variable);
         }
-        v = getParameter(((ScriptVariable) v).asString(), Token.variable);
+        v = getParameter(((SV) v).asString(), T.variable);
         break;
-      case Token.ifcmd:
-        if (getToken(++i).tok != Token.leftparen)
+      case T.ifcmd:
+        if (getToken(++i).tok != T.leftparen)
           error(ERROR_invalidArgument);
         if (localVars == null)
-          localVars = new Hashtable<String, ScriptVariable>();
+          localVars = new Hashtable<String, SV>();
         res = parameterExpression(++i, -1, null, ignoreComma, false, -1, false,
             localVars, localVar);
         boolean TF = ((Boolean) res).booleanValue();
         int iT = iToken;
-        if (getToken(iT++).tok != Token.semicolon)
+        if (getToken(iT++).tok != T.semicolon)
           error(ERROR_invalidArgument);
         parameterExpressionBoolean(iT, -1);
         int iF = iToken;
-        if (tokAt(iF++) != Token.semicolon)
+        if (tokAt(iF++) != T.semicolon)
           error(ERROR_invalidArgument);
         parameterExpression(-iF, -1, null, ignoreComma, false, 1, false,
             localVars, localVar);
         int iEnd = iToken;
-        if (tokAt(iEnd) != Token.rightparen)
+        if (tokAt(iEnd) != T.rightparen)
           error(ERROR_invalidArgument);
         v = parameterExpression(TF ? iT : iF, TF ? iF : iEnd, "XXX",
             ignoreComma, false, 1, false, localVars, localVar);
         i = iEnd;
         break;
-      case Token.forcmd:
-      case Token.select:
+      case T.forcmd:
+      case T.select:
         boolean isFunctionOfX = (pt > 0);
-        boolean isFor = (isFunctionOfX && tok == Token.forcmd);
+        boolean isFor = (isFunctionOfX && tok == T.forcmd);
         // it is important to distinguish between the select command:
         // select {atomExpression} (mathExpression)
         // and the select(dummy;{atomExpression};mathExpression) function:
@@ -916,11 +916,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // for(dummy;...
         // select(dummy;...
         if (isFunctionOfX) {
-          if (getToken(++i).tok != Token.leftparen
-              || !Token.tokAttr(getToken(++i).tok, Token.identifier))
+          if (getToken(++i).tok != T.leftparen
+              || !T.tokAttr(getToken(++i).tok, T.identifier))
             error(ERROR_invalidArgument);
           dummy = parameterAsString(i);
-          if (getToken(++i).tok != Token.semicolon)
+          if (getToken(++i).tok != T.semicolon)
             error(ERROR_invalidArgument);
         } else {
           dummy = "_x";
@@ -928,24 +928,24 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // for(dummy;{atom expr};...
         // select(dummy;{atom expr};...
         v = parameterExpressionToken(-(++i)).value;
-        if (!(v instanceof BitSet))
+        if (!(v instanceof BS))
           error(ERROR_invalidArgument);
-        BitSet bsAtoms = (BitSet) v;
+        BS bsAtoms = (BS) v;
         i = iToken;
-        if (isFunctionOfX && getToken(i++).tok != Token.semicolon)
+        if (isFunctionOfX && getToken(i++).tok != T.semicolon)
           error(ERROR_invalidArgument);
         // for(dummy;{atom expr};math expr)
         // select(dummy;{atom expr};math expr)
         // bsX is necessary because there are a few operations that still
         // are there for now that require it; could go, though.
-        BitSet bsSelect = new BitSet();
-        BitSet bsX = new BitSet();
-        String[] sout = (isFor ? new String[BitSetUtil.cardinalityOf(bsAtoms)]
+        BS bsSelect = new BS();
+        BS bsX = new BS();
+        String[] sout = (isFor ? new String[BSUtil.cardinalityOf(bsAtoms)]
             : null);
         if (localVars == null)
-          localVars = new Hashtable<String, ScriptVariable>();
+          localVars = new Hashtable<String, SV>();
         bsX.set(0);
-        ScriptVariable t = ScriptVariable.newScriptVariableBs(bsX, 0);
+        SV t = SV.newScriptVariableBs(bsX, 0);
         localVars.put(dummy, t.setName(dummy));
         // one test just to check for errors and get iToken
         int pt2 = -1;
@@ -954,9 +954,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           int np = 0;
           int tok2;
           while (np >= 0 && ++pt2 < ptMax) {
-            if ((tok2 = tokAt(pt2)) == Token.rightparen)
+            if ((tok2 = tokAt(pt2)) == T.rightparen)
               np--;
-            else if (tok2 == Token.leftparen)
+            else if (tok2 == T.leftparen)
               np++;
           }
         }
@@ -965,7 +965,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         int j = bsAtoms.nextSetBit(0);
         if (j < 0) {
           iToken = pt2 - 1;
-        } else if (!isSyntaxCheck) {
+        } else if (!chk) {
           for (; j >= 0; j = bsAtoms.nextSetBit(j + 1)) {
             if (jlast >= 0)
               bsX.clear(jlast);
@@ -978,7 +978,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             if (isFor) {
               if (res == null || ((List<?>) res).size() == 0)
                 error(ERROR_invalidArgument);
-              sout[p++] = ((ScriptVariable) ((List<?>) res).get(0)).asString();
+              sout[p++] = ((SV) ((List<?>) res).get(0)).asString();
             } else if (((Boolean) res).booleanValue()) {
               bsSelect.set(j);
             }
@@ -993,152 +993,152 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         i = iToken + 1;
         break;
-      case Token.semicolon: // for (i = 1; i < 3; i=i+1)
+      case T.semicolon: // for (i = 1; i < 3; i=i+1)
         break out;
-      case Token.decimal:
-        rpn.addXNum(ScriptVariable.newVariable(Token.decimal, theToken.value));
+      case T.decimal:
+        rpn.addXNum(SV.newVariable(T.decimal, theToken.value));
         break;
-      case Token.spec_seqcode:
-      case Token.integer:
+      case T.spec_seqcode:
+      case T.integer:
         rpn.addXNum(new ScriptVariableInt(theToken.intValue));
         break;
       // these next are for the within() command
-      case Token.plane:
-        if (tokAt(iToken + 1) == Token.leftparen) {
+      case T.plane:
+        if (tokAt(iToken + 1) == T.leftparen) {
           if (!rpn.addOpAllowMath(theToken, true))
             error(ERROR_invalidArgument);
           break;
         }
-        rpn.addXVar(ScriptVariable.newScriptVariableToken(theToken));
+        rpn.addXVar(SV.newScriptVariableToken(theToken));
         break;
       // for within:
-      case Token.atomname:
-      case Token.atomtype:
-      case Token.branch:
-      case Token.boundbox:
-      case Token.chain:
-      case Token.coord:
-      case Token.element:
-      case Token.group:
-      case Token.model:
-      case Token.molecule:
-      case Token.sequence:
-      case Token.site:
-      case Token.search:
-      case Token.smiles:
-      case Token.substructure:
-      case Token.structure:
+      case T.atomname:
+      case T.atomtype:
+      case T.branch:
+      case T.boundbox:
+      case T.chain:
+      case T.coord:
+      case T.element:
+      case T.group:
+      case T.model:
+      case T.molecule:
+      case T.sequence:
+      case T.site:
+      case T.search:
+      case T.smiles:
+      case T.substructure:
+      case T.structure:
         ////
-      case Token.on:
-      case Token.off:
-      case Token.string:
-      case Token.point3f:
-      case Token.point4f:
-      case Token.matrix3f:
-      case Token.matrix4f:
-      case Token.bitset:
-      case Token.hash:
-        rpn.addXVar(ScriptVariable.newScriptVariableToken(theToken));
+      case T.on:
+      case T.off:
+      case T.string:
+      case T.point3f:
+      case T.point4f:
+      case T.matrix3f:
+      case T.matrix4f:
+      case T.bitset:
+      case T.hash:
+        rpn.addXVar(SV.newScriptVariableToken(theToken));
         break;
-      case Token.dollarsign:
+      case T.dollarsign:
         ignoreError = true;
-        Point3f ptc;
+        P3 ptc;
         try{
           ptc = centerParameter(i);
-          rpn.addXVar(ScriptVariable.newVariable(Token.point3f, ptc));
+          rpn.addXVar(SV.newVariable(T.point3f, ptc));
         } catch (Exception e) {
           rpn.addXStr("");
         }
         ignoreError = false;
         i = iToken;
         break;
-      case Token.leftbrace:
-        if (tokAt(i + 1) == Token.string)
+      case T.leftbrace:
+        if (tokAt(i + 1) == T.string)
           v = getHash(i);
         else
           v = getPointOrPlane(i, false, true, true, false, 3, 4);
         i = iToken;
         break;
-      case Token.expressionBegin:
-        if (tokAt(i + 1) == Token.expressionEnd) {
+      case T.expressionBegin:
+        if (tokAt(i + 1) == T.expressionEnd) {
           v = new Hashtable<String, Object>();
           i++;
           break;
-        } else if (tokAt(i + 1) == Token.all
-            && tokAt(i + 2) == Token.expressionEnd) {
-          tok = Token.all;
+        } else if (tokAt(i + 1) == T.all
+            && tokAt(i + 2) == T.expressionEnd) {
+          tok = T.all;
           iToken += 2;
         }
         //$FALL-THROUGH$
-      case Token.all:
-        if (tok == Token.all)
+      case T.all:
+        if (tok == T.all)
           v = viewer.getModelUndeletedAtomsBitSet(-1);
         else
-          v = atomExpression(statement, i, 0, true, true, true, true);
+          v = atomExpression(st, i, 0, true, true, true, true);
         i = iToken;
         if (nParen == 0 && isOneExpressionOnly) {
           iToken++;
           return bitsetVariableVector(v);
         }
         break;
-      case Token.spacebeforesquare:
+      case T.spacebeforesquare:
         rpn.addOp(theToken);
         continue;
-      case Token.expressionEnd:
+      case T.expressionEnd:
         i++;
         break out;
-      case Token.rightbrace:
+      case T.rightbrace:
         if (!ignoreComma && nParen == 0 && nSquare == 0)
           break out;
         error(ERROR_invalidArgument);
         break;
-      case Token.comma: // ignore commas
+      case T.comma: // ignore commas
         if (!ignoreComma && nParen == 0 && nSquare == 0) {
           break out;
         }
         if (!rpn.addOp(theToken))
           error(ERROR_invalidArgument);
         break;
-      case Token.per:
-        ScriptVariable token = getBitsetPropertySelector(i + 1, false);
+      case T.per:
+        SV token = getBitsetPropertySelector(i + 1, false);
         if (token == null)
           error(ERROR_invalidArgument);
         // check for added min/max modifier
-        boolean isUserFunction = (token.intValue == Token.function);
+        boolean isUserFunction = (token.intValue == T.function);
         boolean allowMathFunc = true;
         int tok2 = tokAt(iToken + 2);
-        if (tokAt(iToken + 1) == Token.per) {
+        if (tokAt(iToken + 1) == T.per) {
           switch (tok2) {
-          case Token.all:
-            tok2 = Token.minmaxmask;
-            if (tokAt(iToken + 3) == Token.per
-                && tokAt(iToken + 4) == Token.bin)
-              tok2 = Token.selectedfloat;
+          case T.all:
+            tok2 = T.minmaxmask;
+            if (tokAt(iToken + 3) == T.per
+                && tokAt(iToken + 4) == T.bin)
+              tok2 = T.selectedfloat;
             //$FALL-THROUGH$
-          case Token.min:
-          case Token.max:
-          case Token.stddev:
-          case Token.sum:
-          case Token.sum2:
-          case Token.average:
-            allowMathFunc = (isUserFunction || tok2 == Token.minmaxmask || tok2 == Token.selectedfloat);
+          case T.min:
+          case T.max:
+          case T.stddev:
+          case T.sum:
+          case T.sum2:
+          case T.average:
+            allowMathFunc = (isUserFunction || tok2 == T.minmaxmask || tok2 == T.selectedfloat);
             token.intValue |= tok2;
             getToken(iToken + 2);
           }
         }
-        allowMathFunc &= (tokAt(iToken + 1) == Token.leftparen || isUserFunction);
+        allowMathFunc &= (tokAt(iToken + 1) == T.leftparen || isUserFunction);
         if (!rpn.addOpAllowMath(token, allowMathFunc))
           error(ERROR_invalidArgument);
         i = iToken;
-        if (token.intValue == Token.function && tokAt(i + 1) != Token.leftparen) {
-          rpn.addOp(Token.tokenLeftParen);
-          rpn.addOp(Token.tokenRightParen);
+        if (token.intValue == T.function && tokAt(i + 1) != T.leftparen) {
+          rpn.addOp(T.tokenLeftParen);
+          rpn.addOp(T.tokenRightParen);
         }
         break;
       default:
-        if (Token.tokAttr(theTok, Token.mathop)
-            || Token.tokAttr(theTok, Token.mathfunc)
-            && tokAt(iToken + 1) == Token.leftparen) {
+        if (T.tokAttr(theTok, T.mathop)
+            || T.tokAttr(theTok, T.mathfunc)
+            && tokAt(iToken + 1) == T.leftparen) {
           if (!rpn.addOp(theToken)) {
             if (ptAtom >= 0) {
               // this is expected -- the right parenthesis
@@ -1147,19 +1147,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             error(ERROR_invalidArgument);
           }
           switch (theTok) {
-          case Token.leftparen:
+          case T.leftparen:
             nParen++;
             break;
-          case Token.rightparen:
+          case T.rightparen:
             if (--nParen <= 0 && nSquare == 0 && isOneExpressionOnly) {
               iToken++;
               break out;
             }
             break;
-          case Token.leftsquare:
+          case T.leftsquare:
             nSquare++;
             break;
-          case Token.rightsquare:
+          case T.rightsquare:
             if (--nSquare == 0 && nParen == 0 && isOneExpressionOnly) {
               iToken++;
               break out;
@@ -1169,22 +1169,22 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else {
           // first check to see if the variable has been defined already
           String name = parameterAsString(i).toLowerCase();
-          boolean haveParens = (tokAt(i + 1) == Token.leftparen);
-          if (isSyntaxCheck) {
+          boolean haveParens = (tokAt(i + 1) == T.leftparen);
+          if (chk) {
             v = name;
           } else if (!haveParens
               && (localVars == null || (v = localVars.get(name)) == null)) {
             v = getContextVariableAsVariable(name);
           }
           if (v == null) {
-            if (Token.tokAttr(theTok, Token.identifier)
+            if (T.tokAttr(theTok, T.identifier)
                 && viewer.isFunction(name)) {
               if (!rpn
-                  .addOp(ScriptVariable.newVariable(Token.function, theToken.value)))
+                  .addOp(SV.newVariable(T.function, theToken.value)))
                 error(ERROR_invalidArgument);
               if (!haveParens) {
-                rpn.addOp(Token.tokenLeftParen);
-                rpn.addOp(Token.tokenRightParen);
+                rpn.addOp(T.tokenLeftParen);
+                rpn.addOp(T.tokenRightParen);
               }
             } else {
               rpn.addXVar(viewer.getOrSetNewVariable(name, false));
@@ -1193,37 +1193,37 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
       }
       if (v != null) {
-        if (v instanceof BitSet)
-          rpn.addXBs((BitSet) v);
+        if (v instanceof BS)
+          rpn.addXBs((BS) v);
         else
           rpn.addXObj(v);
       }
     }
-    ScriptVariable result = rpn.getResult(false);
+    SV result = rpn.getResult(false);
     if (result == null) {
-      if (!isSyntaxCheck)
+      if (!chk)
         rpn.dumpStacks("null result");
       error(ERROR_endOfStatementUnexpected);
     }
-    if (result.tok == Token.vector)
+    if (result.tok == T.vector)
       return result.value;
     if (returnBoolean)
       return Boolean.valueOf(result.asBoolean());
     if (returnString) {
-      if (result.tok == Token.string)
+      if (result.tok == T.string)
         result.intValue = Integer.MAX_VALUE;
       return result.asString();
     }
     switch (result.tok) {
-    case Token.on:
-    case Token.off:
+    case T.on:
+    case T.off:
       return Boolean.valueOf(result.intValue == 1);
-    case Token.integer:
+    case T.integer:
       return Integer.valueOf(result.intValue);
-    case Token.bitset:
-    case Token.decimal:
-    case Token.string:
-    case Token.point3f:
+    case T.bitset:
+    case T.decimal:
+    case T.string:
+    case T.point3f:
     default:
       return result.value;
     }
@@ -1232,34 +1232,34 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   @SuppressWarnings("unchecked")
   private Map<String, Object> getHash(int i) throws ScriptException {
     Map<String, Object> ht = new Hashtable<String, Object>();
-    for (i = i + 1; i < statementLength; i++) {
-      if (tokAt(i) == Token.rightbrace)
+    for (i = i + 1; i < slen; i++) {
+      if (tokAt(i) == T.rightbrace)
         break;
       String key = stringParameter(i++);
-      if (tokAt(i++) != Token.colon)
+      if (tokAt(i++) != T.colon)
         error(ERROR_invalidArgument);
-      List<ScriptVariable> v = (List<ScriptVariable>) parameterExpression(i, 0,
+      List<SV> v = (List<SV>) parameterExpression(i, 0,
           null, false, true, -1, false, null, null);
       ht.put(key, v.get(0));
       i = iToken;
-      if (tokAt(i) != Token.comma)
+      if (tokAt(i) != T.comma)
         break;
     }
     iToken = i;
-    if (tokAt(i) != Token.rightbrace)
+    if (tokAt(i) != T.rightbrace)
       error(ERROR_invalidArgument);
     return ht;
   }
 
-  List<ScriptVariable> bitsetVariableVector(Object v) {
-    List<ScriptVariable> resx = new ArrayList<ScriptVariable>();
-    if (v instanceof BitSet) {
-      resx.add(ScriptVariable.newVariable(Token.bitset, v));
+  List<SV> bitsetVariableVector(Object v) {
+    List<SV> resx = new ArrayList<SV>();
+    if (v instanceof BS) {
+      resx.add(SV.newVariable(T.bitset, v));
     }
     return resx;
   }
 
-  Object getBitsetIdent(BitSet bs, String label, Object tokenValue,
+  Object getBitsetIdent(BS bs, String label, Object tokenValue,
                         boolean useAtomMap, int index, boolean isExplicitlyAll) {
     boolean isAtoms = !(tokenValue instanceof BondSet);
     if (isAtoms) {
@@ -1270,7 +1270,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     int pt = (label == null ? -1 : label.indexOf("%"));
     boolean haveIndex = (index != Integer.MAX_VALUE);
-    if (bs == null || isSyntaxCheck || isAtoms && pt < 0) {
+    if (bs == null || chk || isAtoms && pt < 0) {
       if (label == null)
         label = "";
       return isExplicitlyAll ? new String[] { label } : (Object) label;
@@ -1287,7 +1287,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     LabelToken[] tokens = (asIdentity ? null : isAtoms ? LabelToken.compile(
         viewer, label, '\0', null) : LabelToken.compile(viewer, label, '\1',
         htValues));
-    int nmax = (haveIndex ? 1 : BitSetUtil.cardinalityOf(bs));
+    int nmax = (haveIndex ? 1 : BSUtil.cardinalityOf(bs));
     String[] sout = new String[nmax];
     for (int j = (haveIndex ? index : bs.nextSetBit(0)); j >= 0; j = bs
         .nextSetBit(j + 1)) {
@@ -1313,39 +1313,39 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return nmax == 1 && !isExplicitlyAll ? sout[0] : (Object) sout;
   }
 
-  private ScriptVariable getBitsetPropertySelector(int i, boolean mustBeSettable)
+  private SV getBitsetPropertySelector(int i, boolean mustBeSettable)
       throws ScriptException {
     int tok = getToken(i).tok;
     switch (tok) {
-    case Token.min:
-    case Token.max:
-    case Token.average:
-    case Token.stddev:
-    case Token.sum:
-    case Token.sum2:
-    case Token.property:
+    case T.min:
+    case T.max:
+    case T.average:
+    case T.stddev:
+    case T.sum:
+    case T.sum2:
+    case T.property:
       break;
     default:
-      if (Token.tokAttrOr(tok, Token.atomproperty, Token.mathproperty))
+      if (T.tokAttrOr(tok, T.atomproperty, T.mathproperty))
         break;
-      if (tok != Token.opIf && !Token.tokAttr(tok, Token.identifier))
+      if (tok != T.opIf && !T.tokAttr(tok, T.identifier))
         return null;
       String name = parameterAsString(i);
       if (!mustBeSettable && viewer.isFunction(name)) {
-        tok = Token.function;
+        tok = T.function;
         break;
       }
       if (!name.endsWith("?"))
         return null;
-      tok = Token.identifier;
+      tok = T.identifier;
     }
-    if (mustBeSettable && !Token.tokAttr(tok, Token.settable))
+    if (mustBeSettable && !T.tokAttr(tok, T.settable))
       return null;
-    return ScriptVariable.newScriptVariableIntValue(Token.propselector, tok, parameterAsString(i)
+    return SV.newScriptVariableIntValue(T.propselector, tok, parameterAsString(i)
         .toLowerCase());
   }
 
-  private float[] getBitsetPropertyFloat(BitSet bs, int tok, float min,
+  private float[] getBitsetPropertyFloat(BS bs, int tok, float min,
                                          float max) throws ScriptException {
     float[] data = (float[]) getBitsetProperty(bs, tok, null, null, null, null,
         false, Integer.MAX_VALUE, false);
@@ -1361,7 +1361,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   @SuppressWarnings("unchecked")
-  protected Object getBitsetProperty(BitSet bs, int tok, Point3f ptRef,
+  protected Object getBitsetProperty(BS bs, int tok, P3 ptRef,
                                      Point4f planeRef, Object tokenValue,
                                      Object opValue, boolean useAtomMap,
                                      int index, boolean asVectorIfAll)
@@ -1376,14 +1376,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isAtoms = haveIndex || !(tokenValue instanceof BondSet);
     // check minmax flags:
 
-    int minmaxtype = tok & Token.minmaxmask;
-    boolean selectedFloat = (minmaxtype == Token.selectedfloat);
+    int minmaxtype = tok & T.minmaxmask;
+    boolean selectedFloat = (minmaxtype == T.selectedfloat);
     int atomCount = viewer.getAtomCount();
-    float[] fout = (minmaxtype == Token.allfloat ? new float[atomCount] : null);
-    boolean isExplicitlyAll = (minmaxtype == Token.minmaxmask || selectedFloat);
-    tok &= ~Token.minmaxmask;
-    if (tok == Token.nada)
-      tok = (isAtoms ? Token.atoms : Token.bonds);
+    float[] fout = (minmaxtype == T.allfloat ? new float[atomCount] : null);
+    boolean isExplicitlyAll = (minmaxtype == T.minmaxmask || selectedFloat);
+    tok &= ~T.minmaxmask;
+    if (tok == T.nada)
+      tok = (isAtoms ? T.atoms : T.bonds);
 
     // determine property type:
 
@@ -1391,62 +1391,62 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isInt = false;
     boolean isString = false;
     switch (tok) {
-    case Token.xyz:
-    case Token.vibxyz:
-    case Token.fracxyz:
-    case Token.fuxyz:
-    case Token.unitxyz:
-    case Token.color:
-    case Token.screenxyz:
+    case T.xyz:
+    case T.vibxyz:
+    case T.fracxyz:
+    case T.fuxyz:
+    case T.unitxyz:
+    case T.color:
+    case T.screenxyz:
       isPt = true;
       break;
-    case Token.function:
-    case Token.distance:
+    case T.function:
+    case T.distance:
       break;
     default:
-      isInt = Token.tokAttr(tok, Token.intproperty)
-          && !Token.tokAttr(tok, Token.floatproperty);
+      isInt = T.tokAttr(tok, T.intproperty)
+          && !T.tokAttr(tok, T.floatproperty);
       // occupancy and radius considered floats here
-      isString = !isInt && Token.tokAttr(tok, Token.strproperty);
+      isString = !isInt && T.tokAttr(tok, T.strproperty);
       // structure considered int; for the name, use .label("%[structure]")
     }
 
     // preliminarty checks we only want to do once:
 
-    Point3f zero = (minmaxtype == Token.allfloat ? new Point3f() : null);
-    Point3f pt = (isPt || !isAtoms ? new Point3f() : null);
+    P3 zero = (minmaxtype == T.allfloat ? new P3() : null);
+    P3 pt = (isPt || !isAtoms ? new P3() : null);
     if (isExplicitlyAll || isString && !haveIndex
-        && minmaxtype != Token.allfloat && minmaxtype != Token.min)
-      minmaxtype = Token.all;
-    List<Object> vout = (minmaxtype == Token.all ? new ArrayList<Object>()
+        && minmaxtype != T.allfloat && minmaxtype != T.min)
+      minmaxtype = T.all;
+    List<Object> vout = (minmaxtype == T.all ? new ArrayList<Object>()
         : null);
-    BitSet bsNew = null;
+    BS bsNew = null;
     String userFunction = null;
-    List<ScriptVariable> params = null;
-    BitSet bsAtom = null;
-    ScriptVariable tokenAtom = null;
-    Point3f ptT = null;
+    List<SV> params = null;
+    BS bsAtom = null;
+    SV tokenAtom = null;
+    P3 ptT = null;
     float[] data = null;
 
     switch (tok) {
-    case Token.atoms:
-    case Token.bonds:
-      if (isSyntaxCheck)
+    case T.atoms:
+    case T.bonds:
+      if (chk)
         return bs;
-      bsNew = (tok == Token.atoms ? (isAtoms ? bs : viewer.getAtomBits(
-          Token.bonds, bs)) : (isAtoms ? (BitSet) new BondSet(viewer
+      bsNew = (tok == T.atoms ? (isAtoms ? bs : viewer.getAtomBits(
+          T.bonds, bs)) : (isAtoms ? (BS) new BondSet(viewer
           .getBondsForSelectedAtoms(bs)) : bs));
       int i;
       switch (minmaxtype) {
-      case Token.min:
+      case T.min:
         i = bsNew.nextSetBit(0);
         break;
-      case Token.max:
+      case T.max:
         i = bsNew.length() - 1;
         break;
-      case Token.stddev:
-      case Token.sum:
-      case Token.sum2:
+      case T.stddev:
+      case T.sum:
+      case T.sum2:
         return Float.valueOf(Float.NaN);
       default:
         return bsNew;
@@ -1455,32 +1455,32 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (i >= 0)
         bsNew.set(i);
       return bsNew;
-    case Token.identify:
+    case T.identify:
       switch (minmaxtype) {
       case 0:
-      case Token.all:
+      case T.all:
         return getBitsetIdent(bs, null, tokenValue, useAtomMap, index,
             isExplicitlyAll);
       }
       return "";
-    case Token.function:
+    case T.function:
       userFunction = (String) ((Object[]) opValue)[0];
-      params = (List<ScriptVariable>) ((Object[]) opValue)[1];
-      bsAtom = BitSetUtil.newBitSet(atomCount);
-      tokenAtom = ScriptVariable.newVariable(Token.bitset, bsAtom);
+      params = (List<SV>) ((Object[]) opValue)[1];
+      bsAtom = BSUtil.newBitSet(atomCount);
+      tokenAtom = SV.newVariable(T.bitset, bsAtom);
       break;
-    case Token.straightness:
-    case Token.surfacedistance:
+    case T.straightness:
+    case T.surfacedistance:
       viewer.autoCalculate(tok);
       break;
-    case Token.distance:
+    case T.distance:
       if (ptRef == null && planeRef == null)
-        return new Point3f();
+        return new P3();
       break;
-    case Token.color:
-      ptT = new Point3f();
+    case T.color:
+      ptT = new P3();
       break;
-    case Token.property:
+    case T.property:
       data = viewer.getDataFloat((String) opValue);
       break;
     }
@@ -1492,11 +1492,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     double sum = 0;
     double sum2 = 0;
     switch (minmaxtype) {
-    case Token.min:
+    case T.min:
       ivMinMax = Integer.MAX_VALUE;
       fvMinMax = Float.MAX_VALUE;
       break;
-    case Token.max:
+    case T.max:
       ivMinMax = Integer.MIN_VALUE;
       fvMinMax = -Float.MAX_VALUE;
       break;
@@ -1517,7 +1517,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i0 = 0;
         i1 = atomCount;
       }
-      if (isSyntaxCheck)
+      if (chk)
         i1 = 0;
       for (int i = i0; i >= 0 && i < i1; i = (haveBitSet ? bs.nextSetBit(i + 1)
           : i + 1)) {
@@ -1527,16 +1527,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case 0: // float
           float fv = Float.MAX_VALUE;
           switch (tok) {
-          case Token.function:
+          case T.function:
             bsAtom.set(i);
-            fv = ScriptVariable.fValue(runFunctionRet(null, userFunction, params,
+            fv = SV.fValue(runFunctionRet(null, userFunction, params,
                 tokenAtom, true, true, false));
             bsAtom.clear(i);
             break;
-          case Token.property:
+          case T.property:
             fv = (data == null ? 0 : data[i]);
             break;
-          case Token.distance:
+          case T.distance:
             if (planeRef != null)
               fv = Measure.distanceToPlane(planeRef, atom);
             else
@@ -1546,30 +1546,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             fv = Atom.atomPropertyFloat(viewer, atom, tok);
           }
           if (fv == Float.MAX_VALUE || Float.isNaN(fv)
-              && minmaxtype != Token.all) {
+              && minmaxtype != T.all) {
             n--; // don't count this one
             continue;
           }
           switch (minmaxtype) {
-          case Token.min:
+          case T.min:
             if (fv < fvMinMax)
               fvMinMax = fv;
             break;
-          case Token.max:
+          case T.max:
             if (fv > fvMinMax)
               fvMinMax = fv;
             break;
-          case Token.allfloat:
+          case T.allfloat:
             fout[i] = fv;
             break;
-          case Token.all:
+          case T.all:
             vout.add(Float.valueOf(fv));
             break;
-          case Token.sum2:
-          case Token.stddev:
+          case T.sum2:
+          case T.stddev:
             sum2 += ((double) fv) * fv;
             //$FALL-THROUGH$
-          case Token.sum:
+          case T.sum:
           default:
             sum += fv;
           }
@@ -1577,22 +1577,22 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case 1: // isInt
           int iv = 0;
           switch (tok) {
-          case Token.symop:
+          case T.symop:
             // a little weird:
             // First we determine how many operations we have in this model.
             // Then we get the symmetry bitset, which shows the assignments
             // of symmetry for this atom.
             if (atom.getModelIndex() != iModel)
               iModel = atom.getModelIndex();
-            BitSet bsSym = atom.getAtomSymmetry();
+            BS bsSym = atom.getAtomSymmetry();
             if (bsSym == null)
               break;
             int p = 0;
             switch (minmaxtype) {
-            case Token.min:
+            case T.min:
               ivvMinMax = Integer.MAX_VALUE;
               break;
-            case Token.max:
+            case T.max:
               ivvMinMax = Integer.MIN_VALUE;
               break;
             }
@@ -1600,49 +1600,49 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                 .nextSetBit(k + 1)) {
               iv += k + 1;
               switch (minmaxtype) {
-              case Token.min:
+              case T.min:
                 ivvMinMax = Math.min(ivvMinMax, k + 1);
                 break;
-              case Token.max:
+              case T.max:
                 ivvMinMax = Math.max(ivvMinMax, k + 1);
                 break;
               }
               p++;
             }
             switch (minmaxtype) {
-            case Token.min:
-            case Token.max:
+            case T.min:
+            case T.max:
               iv = ivvMinMax;
             }
             n += p - 1;
             break;
-          case Token.configuration:
-          case Token.cell:
-            errorStr(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
+          case T.configuration:
+          case T.cell:
+            errorStr(ERROR_unrecognizedAtomProperty, T.nameOf(tok));
             break;
           default:
             iv = Atom.atomPropertyInt(atom, tok);
           }
           switch (minmaxtype) {
-          case Token.min:
+          case T.min:
             if (iv < ivMinMax)
               ivMinMax = iv;
             break;
-          case Token.max:
+          case T.max:
             if (iv > ivMinMax)
               ivMinMax = iv;
             break;
-          case Token.allfloat:
+          case T.allfloat:
             fout[i] = iv;
             break;
-          case Token.all:
+          case T.all:
             vout.add(Integer.valueOf(iv));
             break;
-          case Token.sum2:
-          case Token.stddev:
+          case T.sum2:
+          case T.stddev:
             sum2 += ((double) iv) * iv;
             //$FALL-THROUGH$
-          case Token.sum:
+          case T.sum:
           default:
             sum += iv;
           }
@@ -1650,7 +1650,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case 2: // isString
           String s = Atom.atomPropertyString(viewer, atom, tok);
           switch (minmaxtype) {
-          case Token.allfloat:
+          case T.allfloat:
             fout[i] = Parser.parseFloatStr(s);
             break;
           default:
@@ -1662,13 +1662,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case 3: // isPt
           Tuple3f t = Atom.atomPropertyTuple(atom, tok);
           if (t == null)
-            errorStr(ERROR_unrecognizedAtomProperty, Token.nameOf(tok));
+            errorStr(ERROR_unrecognizedAtomProperty, T.nameOf(tok));
           switch (minmaxtype) {
-          case Token.allfloat:
+          case T.allfloat:
             fout[i] = (float) Math.sqrt(t.x * t.x + t.y * t.y + t.z * t.z);
             break;
-          case Token.all:
-            vout.add(Point3f.newP(t));
+          case T.all:
+            vout.add(P3.newP(t));
             break;
           default:
             pt.add(t);
@@ -1687,36 +1687,36 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         n++;
         Bond bond = modelSet.getBondAt(i);
         switch (tok) {
-        case Token.length:
+        case T.length:
           float fv = bond.getAtom1().distance(bond.getAtom2());
           switch (minmaxtype) {
-          case Token.min:
+          case T.min:
             if (fv < fvMinMax)
               fvMinMax = fv;
             break;
-          case Token.max:
+          case T.max:
             if (fv > fvMinMax)
               fvMinMax = fv;
             break;
-          case Token.all:
+          case T.all:
             vout.add(Float.valueOf(fv));
             break;
-          case Token.sum2:
-          case Token.stddev:
+          case T.sum2:
+          case T.stddev:
             sum2 += (double) fv * fv;
             //$FALL-THROUGH$
-          case Token.sum:
+          case T.sum:
           default:
             sum += fv;
           }
           break;
-        case Token.xyz:
+        case T.xyz:
           switch (minmaxtype) {
-          case Token.all:
+          case T.all:
             pt.setT(bond.getAtom1());
             pt.add(bond.getAtom2());
             pt.scale(0.5f);
-            vout.add(Point3f.newP(pt));
+            vout.add(P3.newP(pt));
             break;
           default:
             pt.add(bond.getAtom1());
@@ -1724,25 +1724,25 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             n++;
           }
           break;
-        case Token.color:
+        case T.color:
           ColorUtil.colorPointFromInt(viewer.getColorArgbOrGray(bond
               .colix), ptT);
           switch (minmaxtype) {
-          case Token.all:
-            vout.add(Point3f.newP(ptT));
+          case T.all:
+            vout.add(P3.newP(ptT));
             break;
           default:
             pt.add(ptT);
           }
           break;
         default:
-          errorStr(ERROR_unrecognizedBondProperty, Token.nameOf(tok));
+          errorStr(ERROR_unrecognizedBondProperty, T.nameOf(tok));
         }
       }
     }
-    if (minmaxtype == Token.allfloat)
+    if (minmaxtype == T.allfloat)
       return fout;
-    if (minmaxtype == Token.all) {
+    if (minmaxtype == T.all) {
       if (asVectorIfAll)
         return vout;
       int len = vout.size();
@@ -1763,14 +1763,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             fout[i] = Parser.parseFloatStr((String) v);
             break;
           case 3:
-            fout[i] = ((Point3f) v).distance(zero);
+            fout[i] = ((P3) v).distance(zero);
             break;
           }
         }
         return fout;
       }
-      if (tok == Token.sequence) {
-        StringXBuilder sb = new StringXBuilder();
+      if (tok == T.sequence) {
+        SB sb = new SB();
         for (int i = 0; i < len; i++)
           sb.append((String) vout.get(i));
         return sb.toString();
@@ -1778,26 +1778,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       String[] sout = new String[len];
       for (int i = len; --i >= 0;) {
         Object v = vout.get(i);
-        if (v instanceof Point3f)
-          sout[i] = Escape.escapePt((Point3f) v);
+        if (v instanceof P3)
+          sout[i] = Escape.eP((P3) v);
         else
           sout[i] = "" + vout.get(i);
       }
       return sout; // potential j2s issue here
     }
     if (isPt)
-      return (n == 0 ? pt : Point3f.new3(pt.x / n, pt.y / n, pt.z / n));
-    if (n == 0 || n == 1 && minmaxtype == Token.stddev)
+      return (n == 0 ? pt : P3.new3(pt.x / n, pt.y / n, pt.z / n));
+    if (n == 0 || n == 1 && minmaxtype == T.stddev)
       return Float.valueOf(Float.NaN);
     if (isInt) {
       switch (minmaxtype) {
-      case Token.min:
-      case Token.max:
+      case T.min:
+      case T.max:
         return Integer.valueOf(ivMinMax);
-      case Token.sum2:
-      case Token.stddev:
+      case T.sum2:
+      case T.stddev:
         break;
-      case Token.sum:
+      case T.sum:
         return Integer.valueOf((int) sum);
       default:
         if (sum / n == (int) (sum / n))
@@ -1806,16 +1806,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
     }
     switch (minmaxtype) {
-    case Token.min:
-    case Token.max:
+    case T.min:
+    case T.max:
       sum = fvMinMax;
       break;
-    case Token.sum:
+    case T.sum:
       break;
-    case Token.sum2:
+    case T.sum2:
       sum = sum2;
       break;
-    case Token.stddev:
+    case T.stddev:
       // because SUM (x_i - X_av)^2 = SUM(x_i^2) - 2X_av SUM(x_i) + SUM(X_av^2)
       // = SUM(x_i^2) - 2nX_av^2 + nX_av^2
       // = SUM(x_i^2) - nX_av^2
@@ -1829,49 +1829,49 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return Float.valueOf((float) sum);
   }
 
-  private void setBitsetProperty(BitSet bs, int tok, int iValue, float fValue,
-                                 Token tokenValue) throws ScriptException {
-    if (isSyntaxCheck || BitSetUtil.cardinalityOf(bs) == 0)
+  private void setBitsetProperty(BS bs, int tok, int iValue, float fValue,
+                                 T tokenValue) throws ScriptException {
+    if (chk || BSUtil.cardinalityOf(bs) == 0)
       return;
     String[] list = null;
     String sValue = null;
     float[] fvalues = null;
-    Point3f pt;
-    List<ScriptVariable> sv = null;
+    P3 pt;
+    List<SV> sv = null;
     int nValues = 0;
-    boolean isStrProperty = Token.tokAttr(tok, Token.strproperty);
-    if (tokenValue.tok == Token.varray) {
-      sv = ((ScriptVariable) tokenValue).getList();
+    boolean isStrProperty = T.tokAttr(tok, T.strproperty);
+    if (tokenValue.tok == T.varray) {
+      sv = ((SV) tokenValue).getList();
       if ((nValues = sv.size()) == 0)
         return;
     }
     switch (tok) {
-    case Token.xyz:
-    case Token.fracxyz:
-    case Token.fuxyz:
-    case Token.vibxyz:
+    case T.xyz:
+    case T.fracxyz:
+    case T.fuxyz:
+    case T.vibxyz:
       switch (tokenValue.tok) {
-      case Token.point3f:
+      case T.point3f:
         viewer.setAtomCoord(bs, tok, tokenValue.value);
         break;
-      case Token.varray:
+      case T.varray:
         theToken = tokenValue;
         viewer.setAtomCoord(bs, tok, getPointArray(-1, nValues));
         break;
       }
       return;
-    case Token.color:
+    case T.color:
       Object value = null;
       String prop = "color";
       switch (tokenValue.tok) {
-      case Token.varray:
+      case T.varray:
         int[] values = new int[nValues];
         for (int i = nValues; --i >= 0;) {
-          ScriptVariable svi = sv.get(i);
-          pt = ScriptVariable.ptValue(svi);
+          SV svi = sv.get(i);
+          pt = SV.ptValue(svi);
           if (pt != null) {
             values[i] = ColorUtil.colorPtToInt(pt);
-          } else if (svi.tok == Token.integer) {
+          } else if (svi.tok == T.integer) {
             values[i] = svi.intValue;
           } else {
             values[i] = ColorUtil.getArgbFromString(svi.asString());
@@ -1884,40 +1884,40 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         value = values;
         prop = "colorValues";
         break;
-      case Token.point3f:
+      case T.point3f:
         value = Integer.valueOf(ColorUtil
-            .colorPtToInt((Point3f) tokenValue.value));
+            .colorPtToInt((P3) tokenValue.value));
         break;
-      case Token.string:
+      case T.string:
         value = tokenValue.value;
         break;
       default:
-        value = Integer.valueOf(ScriptVariable.iValue(tokenValue));
+        value = Integer.valueOf(SV.iValue(tokenValue));
         break;
       }
-      setShapePropertyBs(JmolConstants.SHAPE_BALLS, prop, value, bs);
+      setShapePropertyBs(JC.SHAPE_BALLS, prop, value, bs);
       return;
-    case Token.label:
-    case Token.format:
-      if (tokenValue.tok != Token.varray)
-        sValue = ScriptVariable.sValue(tokenValue);
+    case T.label:
+    case T.format:
+      if (tokenValue.tok != T.varray)
+        sValue = SV.sValue(tokenValue);
       break;
-    case Token.element:
-    case Token.elemno:
+    case T.element:
+    case T.elemno:
       clearDefinedVariableAtomSets();
       isStrProperty = false;
       break;
     }
     switch (tokenValue.tok) {
-    case Token.varray:
+    case T.varray:
       if (isStrProperty)
-        list = ScriptVariable.listValue(tokenValue);
+        list = SV.listValue(tokenValue);
       else
-        fvalues = ScriptVariable.flistValue(tokenValue, nValues);
+        fvalues = SV.flistValue(tokenValue, nValues);
       break;
-    case Token.string:
+    case T.string:
       if (sValue == null)
-        list = Parser.getTokens(ScriptVariable.sValue(tokenValue));
+        list = Parser.getTokens(SV.sValue(tokenValue));
       break;
     }
     if (list != null) {
@@ -1925,11 +1925,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!isStrProperty) {
         fvalues = new float[nValues];
         for (int i = nValues; --i >= 0;)
-          fvalues[i] = (tok == Token.element ? Elements
+          fvalues[i] = (tok == T.element ? Elements
               .elementNumberFromSymbol(list[i], false) : Parser
               .parseFloatStr(list[i]));
       }
-      if (tokenValue.tok != Token.varray && nValues == 1) {
+      if (tokenValue.tok != T.varray && nValues == 1) {
         if (isStrProperty)
           sValue = list[0];
         else
@@ -1950,7 +1950,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   protected Viewer viewer;
   protected ScriptCompiler compiler;
   private Map<String, Object> definedAtomSets;
-  private StringXBuilder outputBuffer;
+  private SB outputBuffer;
 
   private String contextPath = "";
   private String scriptFileName;
@@ -1962,12 +1962,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private int commandHistoryLevelMax = 0;
 
   // created by Compiler:
-  private Token[][] aatoken;
+  private T[][] aatoken;
   private short[] lineNumbers;
   private int[][] lineIndices;
-  private Map<String, ScriptVariable> contextVariables;
+  private Map<String, SV> contextVariables;
 
-  public Map<String, ScriptVariable> getContextVariables() {
+  public Map<String, SV> getContextVariables() {
     return contextVariables;
   }
 
@@ -1981,8 +1981,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   protected int pc; // program counter
   private String thisCommand;
   private String fullCommand;
-  private Token[] statement;
-  private int statementLength;
+  private T[] st;
+  private int slen;
   private int iToken;
   private int lineEnd;
   private int pcEnd;
@@ -1998,12 +1998,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     strScript = fixScriptPath(strScript, filename);
     restoreScriptContext(compiler.compile(filename, strScript, false, false,
         debugCompiler, false), false, false, false);
-    isStateScript = (script.indexOf(JmolConstants.STATE_VERSION_STAMP) >= 0);
+    isStateScript = (script.indexOf(JC.STATE_VERSION_STAMP) >= 0);
     forceNoAddHydrogens = (isStateScript && script.indexOf("pdbAddHydrogens") < 0);
     String s = script;
     pc = setScriptExtensions();
-    if (!isSyntaxCheck && viewer.scriptEditorVisible
-        && strScript.indexOf(JmolConstants.SCRIPT_EDITOR_IGNORE) < 0)
+    if (!chk && viewer.scriptEditorVisible
+        && strScript.indexOf(JC.SCRIPT_EDITOR_IGNORE) < 0)
       viewer.scriptStatus("");
     script = s;
     return !error;
@@ -2106,28 +2106,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (v == null)
       v = viewer.getParameter(key);
     switch (tokType) {
-    case Token.variable:
-      return ScriptVariable.getVariable(v);
-    case Token.string:
+    case T.variable:
+      return SV.getVariable(v);
+    case T.string:
       if (!(v instanceof List<?>))
         break;
-      List<ScriptVariable> sv = (ArrayList<ScriptVariable>) v;
-      StringXBuilder sb = new StringXBuilder();
+      List<SV> sv = (ArrayList<SV>) v;
+      SB sb = new SB();
       for (int i = 0; i < sv.size(); i++)
         sb.append(sv.get(i).asString()).appendC('\n');
       return sb.toString();
     }
-    return (v instanceof ScriptVariable ? ScriptVariable
-        .oValue((ScriptVariable) v) : v);
+    return (v instanceof SV ? SV
+        .oValue((SV) v) : v);
   }
 
   private String getParameterEscaped(String var) {
-    ScriptVariable v = getContextVariableAsVariable(var);
+    SV v = getContextVariableAsVariable(var);
     return (v == null ? "" + viewer.getParameterEscaped(var) : v.escape());
   }
 
   private String getStringParameter(String var, boolean orReturnName) {
-    ScriptVariable v = getContextVariableAsVariable(var);
+    SV v = getContextVariableAsVariable(var);
     if (v != null)
       return v.asString();
     String val = "" + viewer.getParameter(var);
@@ -2140,17 +2140,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return Integer.valueOf(modelIndex < 0 ? 0 : viewer
           .getModelFileNumber(modelIndex));
     }
-    ScriptVariable v = getContextVariableAsVariable(var);
+    SV v = getContextVariableAsVariable(var);
     if (v == null) {
       Object val = viewer.getParameter(var);
       if (!(val instanceof String))
         return val;
-      v = ScriptVariable.newVariable(Token.string, val);
+      v = SV.newVariable(T.string, val);
     }
-    return ScriptVariable.nValue(v);
+    return SV.nValue(v);
   }
 
-  private ScriptVariable getContextVariableAsVariable(String var) {
+  private SV getContextVariableAsVariable(String var) {
     if (var.equals("expressionBegin"))
       return null;
     var = var.toLowerCase();
@@ -2171,9 +2171,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private Object getStringObjectAsVariable(String s, String key) {
     if (s == null || s.length() == 0)
       return s;
-    Object v = ScriptVariable.unescapePointOrBitsetAsVariable(s);
+    Object v = SV.unescapePointOrBitsetAsVariable(s);
     if (v instanceof String && key != null)
-      v = viewer.setUserVariable(key, ScriptVariable.newVariable(Token.string, v));
+      v = viewer.setUserVariable(key, SV.newVariable(T.string, v));
     return v;
   }
 
@@ -2182,11 +2182,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   @SuppressWarnings("unchecked")
   public float evalFunctionFloat(Object func, Object params, float[] values) {
     try {
-      List<ScriptVariable> p = (List<ScriptVariable>) params;
+      List<SV> p = (List<SV>) params;
       for (int i = 0; i < values.length; i++)
         p.get(i).value = new Float(values[i]);
       ScriptFunction f = (ScriptFunction) func;
-      return ScriptVariable
+      return SV
           .fValue(runFunctionRet(f, f.name, p, null, true, false, false));
     } catch (Exception e) {
       return Float.NaN;
@@ -2196,9 +2196,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   static int tryPt;
   
-  ScriptVariable runFunctionRet(JmolScriptFunction function, String name,
-                                List<ScriptVariable> params,
-                                ScriptVariable tokenAtom, boolean getReturn,
+  SV runFunctionRet(JmolScriptFunction function, String name,
+                                List<SV> params,
+                                SV tokenAtom, boolean getReturn,
                                 boolean setContextPath, boolean allowThreads)
       throws ScriptException {
     if (function == null) {
@@ -2215,11 +2215,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     pushContext(null);
     allowJSThreads = allowThreads;
-    boolean isTry = (function.getTok() == Token.trycmd);
+    boolean isTry = (function.getTok() == T.trycmd);
     thisContext.isTryCatch = isTry;
     thisContext.isFunction = !isTry;
     functionName = name;
-    if (function.getTok() == Token.trycmd) {
+    if (function.getTok() == T.trycmd) {
       viewer.resetError();
       thisContext.displayLoadErrorsSave = viewer.displayLoadErrors;
       thisContext.tryPt = ++tryPt;
@@ -2227,9 +2227,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       restoreFunction(function, params, tokenAtom);
       contextVariables.put("_breakval",
           new ScriptVariableInt(Integer.MAX_VALUE));
-      contextVariables.put("_errorval", ScriptVariable.newVariable(
-          Token.string, ""));
-      Map<String, ScriptVariable> cv = contextVariables;
+      contextVariables.put("_errorval", SV.newVariable(
+          T.string, ""));
+      Map<String, SV> cv = contextVariables;
       executeCommands(true);
       //JavaScript will not return here after DELAY
       while (thisContext.tryPt != tryPt)
@@ -2249,23 +2249,23 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       dispatchCommands(false);
       //JavaScript will not return here after DELAY
     }
-    ScriptVariable v = (getReturn ? getContextVariableAsVariable("_retval")
+    SV v = (getReturn ? getContextVariableAsVariable("_retval")
         : null);
     popContext(false, false);
     return v;
   }
 
-  private void processTry(Map<String, ScriptVariable> cv) throws ScriptException {
+  private void processTry(Map<String, SV> cv) throws ScriptException {
     viewer.displayLoadErrors = thisContext.displayLoadErrorsSave;
     popContext(false, false);
     String err = (String) viewer.getParameter("_errormessage");
     if (err.length() > 0) {
-      cv.put("_errorval", ScriptVariable.newVariable(
-          Token.string, err));
+      cv.put("_errorval", SV.newVariable(
+          T.string, err));
       viewer.resetError();
     }
     cv.put("_tryret", cv.get("_retval"));
-    ScriptVariable ret = cv.get("_tryret");
+    SV ret = cv.get("_tryret");
     if (ret.value != null || ret.intValue != Integer.MAX_VALUE) {
       returnCmd(ret);
       return;
@@ -2279,12 +2279,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
     }
     // normal return will skip the catch
-    if (pc + 1 < aatoken.length && aatoken[pc + 1][0].tok == Token.catchcmd) {
+    if (pc + 1 < aatoken.length && aatoken[pc + 1][0].tok == T.catchcmd) {
       // set the intValue positive to indicate "not done" for the IF evaluation
       ContextToken ct = (ContextToken) aatoken[pc + 1][0];
       if (ct.contextVariables != null && ct.name0 != null)
-        ct.contextVariables.put(ct.name0, ScriptVariable
-            .newVariable(Token.string, errMsg));
+        ct.contextVariables.put(ct.name0, SV
+            .newVariable(T.string, errMsg));
       ct.intValue = (errMsg.length() > 0 ? 1 : -1) * Math.abs(ct.intValue);
     }
   }
@@ -2299,8 +2299,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @throws ScriptException
    */
   private void restoreFunction(JmolScriptFunction f,
-                           List<ScriptVariable> params, 
-                           ScriptVariable tokenAtom)
+                           List<SV> params, 
+                           SV tokenAtom)
       throws ScriptException {
     ScriptFunction function = (ScriptFunction) f;
     aatoken = function.aatoken;
@@ -2309,7 +2309,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     script = function.script;
     pc = 0;
     if (function.names != null) {
-      contextVariables = new Hashtable<String, ScriptVariable>();
+      contextVariables = new Hashtable<String, SV>();
       function.setVariables(contextVariables, params);
     }
     if (tokenAtom != null)
@@ -2326,14 +2326,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    */
   private void defineSets() {
     if (!definedAtomSets.containsKey("# static")) {
-      for (int i = 0; i < JmolConstants.predefinedStatic.length; i++)
-        defineAtomSet(JmolConstants.predefinedStatic[i]);
+      for (int i = 0; i < JC.predefinedStatic.length; i++)
+        defineAtomSet(JC.predefinedStatic[i]);
       defineAtomSet("# static");
     }
     if (definedAtomSets.containsKey("# variable"))
       return;
-    for (int i = 0; i < JmolConstants.predefinedVariable.length; i++)
-      defineAtomSet(JmolConstants.predefinedVariable[i]);
+    for (int i = 0; i < JC.predefinedVariable.length; i++)
+      defineAtomSet(JC.predefinedVariable[i]);
     // Now, define all the elements as predefined sets
 
     // name ==> elemno=n for all standard elements, isotope-blind
@@ -2401,15 +2401,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               + script);
       return;
     }
-    Token[] statement = sc.aatoken[0];
+    T[] statement = sc.aatoken[0];
     if (statement.length <= 2) {
       viewer.scriptStatus("JmolConstants.java ERROR: bad predefinition length:"
           + script);
       return;
     }
     int tok = statement[1].tok;
-    if (!Token.tokAttr(tok, Token.identifier)
-        && !Token.tokAttr(tok, Token.predefinedset)) {
+    if (!T.tokAttr(tok, T.identifier)
+        && !T.tokAttr(tok, T.predefinedset)) {
       viewer.scriptStatus("JmolConstants.java ERROR: invalid variable name:"
           + script);
       return;
@@ -2420,26 +2420,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     definedAtomSets.put(name, statement);
   }
 
-  private BitSet lookupIdentifierValue(String identifier)
+  private BS lookupIdentifierValue(String identifier)
       throws ScriptException {
     // all variables and possible residue names for PDB
     // or atom names for non-pdb atoms are processed here.
 
     // priority is given to a defined variable.
 
-    BitSet bs = lookupValue(identifier, false);
+    BS bs = lookupValue(identifier, false);
     if (bs != null)
-      return BitSetUtil.copy(bs);
+      return BSUtil.copy(bs);
 
     // next we look for names of groups (PDB) or atoms (non-PDB)
-    bs = getAtomBits(Token.identifier, identifier);
-    return (bs == null ? new BitSet() : bs);
+    bs = getAtomBits(T.identifier, identifier);
+    return (bs == null ? new BS() : bs);
   }
 
-  private BitSet lookupValue(String setName, boolean plurals)
+  private BS lookupValue(String setName, boolean plurals)
       throws ScriptException {
-    if (isSyntaxCheck) {
-      return new BitSet();
+    if (chk) {
+      return new BS();
     }
     defineSets();
     setName = setName.toLowerCase();
@@ -2449,11 +2449,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       value = definedAtomSets.get("!" + setName);
       isDynamic = (value != null);
     }
-    if (value instanceof BitSet)
-      return (BitSet) value;
-    if (value instanceof Token[]) { // j2s OK -- any Array here
+    if (value instanceof BS)
+      return (BS) value;
+    if (value instanceof T[]) { // j2s OK -- any Array here
       pushContext(null);
-      BitSet bs = atomExpression((Token[]) value, -2, 0, true, false, true,
+      BS bs = atomExpression((T[]) value, -2, 0, true, false, true,
           true);
       popContext(false, false);
       if (!isDynamic)
@@ -2474,14 +2474,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return lookupValue(setName, true);
   }
 
-  public void deleteAtomsInVariables(BitSet bsDeleted) {
+  public void deleteAtomsInVariables(BS bsDeleted) {
     for (Map.Entry<String, Object> entry : definedAtomSets.entrySet()) {
       Object value = entry.getValue();
-      if (value instanceof BitSet) {
-        BitSetUtil.deleteBits((BitSet) value, bsDeleted);
+      if (value instanceof BS) {
+        BSUtil.deleteBits((BS) value, bsDeleted);
         if (!entry.getKey().startsWith("!"))
-          viewer.setUserVariable("@" + entry.getKey(), ScriptVariable
-              .newVariable(Token.bitset, value));
+          viewer.setUserVariable("@" + entry.getKey(), SV
+              .newVariable(T.bitset, value));
       }
     }
   }
@@ -2497,67 +2497,67 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    */
   @SuppressWarnings("unchecked")
   private boolean setStatement(int pc) throws ScriptException {
-    statement = aatoken[pc];
-    statementLength = statement.length;
-    if (statementLength == 0)
+    st = aatoken[pc];
+    slen = st.length;
+    if (slen == 0)
       return true;
-    Token[] fixed;
+    T[] fixed;
     int i;
     int tok;
-    for (i = 1; i < statementLength; i++) {
-      if (statement[i] == null) {
-        statementLength = i;
+    for (i = 1; i < slen; i++) {
+      if (st[i] == null) {
+        slen = i;
         return true;
       }
-      if (statement[i].tok == Token.define)
+      if (st[i].tok == T.define)
         break;
     }
-    if (i == statementLength)// || isScriptCheck)
-      return i == statementLength;
-    switch (statement[0].tok) {
-    case Token.parallel:
-    case Token.function:
-    case Token.identifier:
-      if (tokAt(1) == Token.leftparen)
+    if (i == slen)// || isScriptCheck)
+      return i == slen;
+    switch (st[0].tok) {
+    case T.parallel:
+    case T.function:
+    case T.identifier:
+      if (tokAt(1) == T.leftparen)
         return true;
     }
-    fixed = new Token[statementLength];
-    fixed[0] = statement[0];
+    fixed = new T[slen];
+    fixed[0] = st[0];
     boolean isExpression = false;
     int j = 1;
-    for (i = 1; i < statementLength; i++) {
-      if (statement[i] == null)
+    for (i = 1; i < slen; i++) {
+      if (st[i] == null)
         continue;
       switch (tok = getToken(i).tok) {
       default:
-        fixed[j] = statement[i];
+        fixed[j] = st[i];
         break;
-      case Token.expressionBegin:
-      case Token.expressionEnd:
+      case T.expressionBegin:
+      case T.expressionEnd:
         // @ in expression will be taken as SELECT
-        isExpression = (tok == Token.expressionBegin);
-        fixed[j] = statement[i];
+        isExpression = (tok == T.expressionBegin);
+        fixed[j] = st[i];
         break;
-      case Token.define:
-        if (++i == statementLength)
+      case T.define:
+        if (++i == slen)
           error(ERROR_invalidArgument);
         Object v;
         // compiler can indicate that a definition MUST
         // be interpreted as a String
-        boolean forceString = (theToken.intValue == Token.string);
+        boolean forceString = (theToken.intValue == T.string);
         // Object var_set;
         String s;
         String var = parameterAsString(i);
-        boolean isClauseDefine = (tokAt(i) == Token.expressionBegin);
-        boolean isSetAt = (j == 1 && statement[0] == Token.tokenSetCmd);
+        boolean isClauseDefine = (tokAt(i) == T.expressionBegin);
+        boolean isSetAt = (j == 1 && st[0] == T.tokenSetCmd);
         if (isClauseDefine) {
-          ScriptVariable vt = parameterExpressionToken(++i);
+          SV vt = parameterExpressionToken(++i);
           i = iToken;
-          v = (vt.tok == Token.varray ? vt : ScriptVariable.oValue(vt));
+          v = (vt.tok == T.varray ? vt : SV.oValue(vt));
         } else {
-          if (tokAt(i) == Token.integer) {
-            v = viewer.getAtomBits(Token.atomno, Integer
-                .valueOf(statement[i].intValue));
+          if (tokAt(i) == T.integer) {
+            v = viewer.getAtomBits(T.atomno, Integer
+                .valueOf(st[i].intValue));
           } else {
             v = getParameter(var, 0);
           }
@@ -2565,48 +2565,48 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             isClauseDefine = true;
         }
         tok = tokAt(0);
-        forceString |= (Token.tokAttr(tok, Token.implicitStringCommand) || tok == Token.script); // for the file names
-        if (v instanceof ScriptVariable) {
+        forceString |= (T.tokAttr(tok, T.implicitStringCommand) || tok == T.script); // for the file names
+        if (v instanceof SV) {
           // select @{...}
-          fixed[j] = (Token) v;
-          if (isExpression && fixed[j].tok == Token.varray) {
-            BitSet bs = ScriptVariable.getBitSet((ScriptVariable) v, true);
+          fixed[j] = (T) v;
+          if (isExpression && fixed[j].tok == T.varray) {
+            BS bs = SV.getBitSet((SV) v, true);
             // I can't remember why we have to be checking list variables
             // for atom names. 
-            fixed[j] = ScriptVariable.newVariable(Token.bitset,
-                bs == null ? getAtomBitSet(ScriptVariable
+            fixed[j] = SV.newVariable(T.bitset,
+                bs == null ? getAtomBitSet(SV
                     .sValue(fixed[j])) : bs);
           }
         } else if (v instanceof Boolean) {
-          fixed[j] = (((Boolean) v).booleanValue() ? Token.tokenOn
-              : Token.tokenOff);
+          fixed[j] = (((Boolean) v).booleanValue() ? T.tokenOn
+              : T.tokenOff);
         } else if (v instanceof Integer) {
           // if (isExpression && !isClauseDefine
           // && (var_set = getParameter(var + "_set", false)) != null)
           // fixed[j] = new Token(Token.define, "" + var_set);
           // else
-          fixed[j] = Token.newTokenIntVal(Token.integer, ((Integer) v).intValue(), v);
+          fixed[j] = T.t(T.integer, ((Integer) v).intValue(), v);
 
         } else if (v instanceof Float) {
-          fixed[j] = Token.newTokenIntVal(Token.decimal, getFloatEncodedInt("" + v), v);
+          fixed[j] = T.t(T.decimal, getFloatEncodedInt("" + v), v);
         } else if (v instanceof String) {
           if (!forceString) {
-            if ((tok != Token.set || j > 1 && statement[1].tok != Token.echo)
-                && Token.tokAttr(tok, Token.mathExpressionCommand)) {
-              v = getParameter((String) v, Token.variable);
+            if ((tok != T.set || j > 1 && st[1].tok != T.echo)
+                && T.tokAttr(tok, T.mathExpressionCommand)) {
+              v = getParameter((String) v, T.variable);
             }
             if (v instanceof String) {
               v = getStringObjectAsVariable((String) v, null);
             }
           }
-          if (v instanceof ScriptVariable) {
+          if (v instanceof SV) {
             // was a bitset 
-            fixed[j] = (Token) v;
+            fixed[j] = (T) v;
           } else {
             s = (String) v;
             if (isExpression && !forceString) {
               // select @x  where x is "arg", for example
-              fixed[j] = Token.newTokenObj(Token.bitset, getAtomBitSet(s));
+              fixed[j] = T.o(T.bitset, getAtomBitSet(s));
             } else {
               if (!isExpression) {
                 //print @x
@@ -2627,59 +2627,59 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               // there is a check for SET parameter name assignments.
               // even those may not work...
 
-              tok = (isSetAt ? Token.getTokFromName(s) : isClauseDefine
+              tok = (isSetAt ? T.getTokFromName(s) : isClauseDefine
                   || forceString || s.length() == 0 || s.indexOf(".") >= 0
                   || s.indexOf(" ") >= 0 || s.indexOf("=") >= 0
                   || s.indexOf(";") >= 0 || s.indexOf("[") >= 0
-                  || s.indexOf("{") >= 0 ? Token.string : Token.identifier);
-              fixed[j] = Token.newTokenObj(tok, v);
+                  || s.indexOf("{") >= 0 ? T.string : T.identifier);
+              fixed[j] = T.o(tok, v);
             }
           }
-        } else if (v instanceof BitSet) {
-          fixed[j] = ScriptVariable.newVariable(Token.bitset, v);
-        } else if (v instanceof Point3f) {
-          fixed[j] = ScriptVariable.newVariable(Token.point3f, v);
+        } else if (v instanceof BS) {
+          fixed[j] = SV.newVariable(T.bitset, v);
+        } else if (v instanceof P3) {
+          fixed[j] = SV.newVariable(T.point3f, v);
         } else if (v instanceof Point4f) {
-          fixed[j] = ScriptVariable.newVariable(Token.point4f, v);
+          fixed[j] = SV.newVariable(T.point4f, v);
         } else if (v instanceof Matrix3f) {
-          fixed[j] = ScriptVariable.newVariable(Token.matrix3f, v);
+          fixed[j] = SV.newVariable(T.matrix3f, v);
         } else if (v instanceof Matrix4f) {
-          fixed[j] = ScriptVariable.newVariable(Token.matrix4f, v);
+          fixed[j] = SV.newVariable(T.matrix4f, v);
         } else if (v instanceof Map<?, ?>) {
-          fixed[j] = ScriptVariable.newVariable(Token.hash, v);
+          fixed[j] = SV.newVariable(T.hash, v);
         } else if (v instanceof List<?>) {
-          List<ScriptVariable> sv = (ArrayList<ScriptVariable>) v;
-          BitSet bs = null;
+          List<SV> sv = (ArrayList<SV>) v;
+          BS bs = null;
           for (int k = 0; k < sv.size(); k++) {
-            ScriptVariable svk = sv.get(k);
-            if (svk.tok != Token.bitset) {
+            SV svk = sv.get(k);
+            if (svk.tok != T.bitset) {
               bs = null;
               break;
             }
             if (bs == null)
-              bs = new BitSet();
-            bs.or((BitSet) svk.value);
+              bs = new BS();
+            bs.or((BS) svk.value);
           }
-          fixed[j] = (bs == null ? ScriptVariable.getVariable(v) : Token.newTokenObj(
-              Token.bitset, bs));
+          fixed[j] = (bs == null ? SV.getVariable(v) : T.o(
+              T.bitset, bs));
         } else {
-          Point3f center = getObjectCenter(var, Integer.MIN_VALUE,
+          P3 center = getObjectCenter(var, Integer.MIN_VALUE,
               Integer.MIN_VALUE);
           if (center == null)
             error(ERROR_invalidArgument);
-          fixed[j] = Token.newTokenObj(Token.point3f, center);
+          fixed[j] = T.o(T.point3f, center);
         }
-        if (isSetAt && !Token.tokAttr(fixed[j].tok, Token.setparam))
+        if (isSetAt && !T.tokAttr(fixed[j].tok, T.setparam))
           error(ERROR_invalidArgument);
         break;
       }
 
       j++;
     }
-    statement = fixed;
-    for (i = j; i < statement.length; i++)
-      statement[i] = null;
-    statementLength = j;
+    st = fixed;
+    for (i = j; i < st.length; i++)
+      st[i] = null;
+    slen = j;
 
     return true;
   }
@@ -2718,7 +2718,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       scriptLevel = ++thisContext.scriptLevel;
     } else {
       thisContext.scriptLevel = -1;
-      contextVariables = new Hashtable<String, ScriptVariable>();
+      contextVariables = new Hashtable<String, SV>();
       if (token.contextVariables != null)
         for (String key : token.contextVariables.keySet())
           ScriptCompiler.addContextVariable(contextVariables, key);
@@ -2742,8 +2742,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     context.lineIndices = lineIndices;
     context.aatoken = aatoken;
 
-    context.statement = statement;
-    context.statementLength = statementLength;
+    context.statement = st;
+    context.statementLength = slen;
     context.pc = pc;
     context.lineEnd = lineEnd;
     context.pcEnd = pcEnd;
@@ -2755,7 +2755,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     context.errorMessage = errorMessage;
     context.errorType = errorType;
     context.iCommandError = iCommandError;
-    context.isSyntaxCheck = isSyntaxCheck;
+    context.chk = chk;
     context.executionStepping = executionStepping;
     context.executionPaused = executionPaused;
     context.scriptExtensions = scriptExtensions;
@@ -2795,8 +2795,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (context == null)
       return;
     if (!isFlowCommand) {
-      statement = context.statement;
-      statementLength = context.statementLength;
+      st = context.statement;
+      slen = context.statementLength;
       pc = context.pc;
       lineEnd = context.lineEnd;
       pcEnd = context.pcEnd;
@@ -2831,7 +2831,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private String getContext(boolean withVariables) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     ScriptContext context = thisContext;
     while (context != null) {
       if (withVariables) {
@@ -2855,7 +2855,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
     } else {
       sb.append(setErrorLineMessage(functionName, scriptFileName,
-          getLinenumber(null), pc, statementAsString(statement, -9999,
+          getLinenumber(null), pc, statementAsString(st, -9999,
               logMessages)));
     }
 
@@ -2889,7 +2889,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       popContext(false, false);
     sx.message += s;
     sx.untranslated += s;
-    if (thisContext != null || isSyntaxCheck
+    if (thisContext != null || chk
         || msg.indexOf("file recognized as a script file:") >= 0)
       return;
     Logger.error("eval ERROR: " + toString());
@@ -2985,7 +2985,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   void evalError(String message, String strUntranslated) throws ScriptException {
     if (ignoreError)
       throw new NullPointerException();
-    if (!isSyntaxCheck) {
+    if (!chk) {
       // String s = viewer.getSetHistory(1);
       // viewer.addCommand(s + CommandHistory.ERROR_FLAG);
       setCursorWait(false);
@@ -3283,7 +3283,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   @Override
   public String toString() {
-    StringXBuilder str = new StringXBuilder();
+    SB str = new SB();
     str.append("Eval\n pc:");
     str.appendI(pc);
     str.append("\n");
@@ -3291,7 +3291,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     str.append(" statements\n");
     for (int i = 0; i < aatoken.length; ++i) {
       str.append("----\n");
-      Token[] atoken = aatoken[i];
+      T[] atoken = aatoken[i];
       for (int j = 0; j < atoken.length; ++j) {
         str.appendO(atoken[j]);
         str.appendC('\n');
@@ -3302,30 +3302,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return str.toString();
   }
 
-  static String statementAsString(Token[] statement, int iTok,
+  static String statementAsString(T[] statement, int iTok,
                                   boolean doLogMessages) {
     if (statement.length == 0)
       return "";
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     int tok = statement[0].tok;
     switch (tok) {
-    case Token.nada:
+    case T.nada:
       return (String) statement[0].value;
-    case Token.end:
+    case T.end:
       if (statement.length == 2
-          && (statement[1].tok == Token.function || statement[1].tok == Token.parallel))
+          && (statement[1].tok == T.function || statement[1].tok == T.parallel))
         return ((ScriptFunction) (statement[1].value)).toString();
     }
     boolean useBraces = true;// (!Token.tokAttr(tok,
     // Token.atomExpressionCommand));
     boolean inBrace = false;
     boolean inClauseDefine = false;
-    boolean setEquals = (statement.length > 1 && tok == Token.set
+    boolean setEquals = (statement.length > 1 && tok == T.set
         && statement[0].value.equals("")
-        && (statement[0].intValue == '=' || statement[0].intValue == '#') && statement[1].tok != Token.expressionBegin);
+        && (statement[0].intValue == '=' || statement[0].intValue == '#') && statement[1].tok != T.expressionBegin);
     int len = statement.length;
     for (int i = 0; i < len; ++i) {
-      Token token = statement[i];
+      T token = statement[i];
       if (token == null) {
         len = i;
         break;
@@ -3335,38 +3335,38 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (i != 0)
         sb.appendC(' ');
       if (i == 2 && setEquals) {
-        if ((setEquals = (token.tok != Token.opEQ))
+        if ((setEquals = (token.tok != T.opEQ))
             || statement[0].intValue == '#') {
           sb.append(setEquals ? "= " : "== ");
           if (!setEquals)
             continue;
         }
       }
-      if (iTok == i && token.tok != Token.expressionEnd)
+      if (iTok == i && token.tok != T.expressionEnd)
         sb.append(">> ");
       switch (token.tok) {
-      case Token.expressionBegin:
+      case T.expressionBegin:
         if (useBraces)
           sb.append("{");
         continue;
-      case Token.expressionEnd:
+      case T.expressionEnd:
         if (inClauseDefine && i == statement.length - 1)
           useBraces = false;
         if (useBraces)
           sb.append("}");
         continue;
-      case Token.leftsquare:
-      case Token.rightsquare:
+      case T.leftsquare:
+      case T.rightsquare:
         break;
-      case Token.leftbrace:
-      case Token.rightbrace:
-        inBrace = (token.tok == Token.leftbrace);
+      case T.leftbrace:
+      case T.rightbrace:
+        inBrace = (token.tok == T.leftbrace);
         break;
-      case Token.define:
+      case T.define:
         if (i > 0 && ((String) token.value).equals("define")) {
           sb.append("@");
           if (i + 1 < statement.length
-              && statement[i + 1].tok == Token.expressionBegin) {
+              && statement[i + 1].tok == T.expressionBegin) {
             if (!useBraces)
               inClauseDefine = true;
             useBraces = true;
@@ -3374,30 +3374,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           continue;
         }
         break;
-      case Token.on:
+      case T.on:
         sb.append("true");
         continue;
-      case Token.off:
+      case T.off:
         sb.append("false");
         continue;
-      case Token.select:
+      case T.select:
         break;
-      case Token.integer:
+      case T.integer:
         sb.appendI(token.intValue);
         continue;
-      case Token.point3f:
-      case Token.point4f:
-      case Token.bitset:
-        sb.append(ScriptVariable.sValue(token)); // list
+      case T.point3f:
+      case T.point4f:
+      case T.bitset:
+        sb.append(SV.sValue(token)); // list
         continue;
-      case Token.varray:
-      case Token.hash:
-        sb.append(((ScriptVariable) token).escape()); // list
+      case T.varray:
+      case T.hash:
+        sb.append(((SV) token).escape()); // list
         continue;
-      case Token.seqcode:
+      case T.seqcode:
         sb.appendC('^');
         continue;
-      case Token.spec_seqcode_range:
+      case T.spec_seqcode_range:
         if (token.intValue != Integer.MAX_VALUE)
           sb.appendI(token.intValue);
         else
@@ -3407,74 +3407,74 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // if (token.intValue == Integer.MAX_VALUE)
         sb.append(inBrace ? "-" : "- ");
         //$FALL-THROUGH$
-      case Token.spec_seqcode:
+      case T.spec_seqcode:
         if (token.intValue != Integer.MAX_VALUE)
           sb.appendI(token.intValue);
         else
           sb.append(Group.getSeqcodeString(getSeqCode(token)));
         continue;
-      case Token.spec_chain:
+      case T.spec_chain:
         sb.append("*:");
         sb.appendC((char) token.intValue);
         continue;
-      case Token.spec_alternate:
+      case T.spec_alternate:
         sb.append("*%");
         if (token.value != null)
           sb.append(token.value.toString());
         continue;
-      case Token.spec_model:
+      case T.spec_model:
         sb.append("*/");
         //$FALL-THROUGH$
-      case Token.spec_model2:
-      case Token.decimal:
+      case T.spec_model2:
+      case T.decimal:
         if (token.intValue < Integer.MAX_VALUE) {
           sb.append(Escape.escapeModelFileNumber(token.intValue));
         } else {
           sb.append("" + token.value);
         }
         continue;
-      case Token.spec_resid:
+      case T.spec_resid:
         sb.appendC('[');
         sb.append(Group.getGroup3((short) token.intValue));
         sb.appendC(']');
         continue;
-      case Token.spec_name_pattern:
+      case T.spec_name_pattern:
         sb.appendC('[');
         sb.appendO(token.value);
         sb.appendC(']');
         continue;
-      case Token.spec_atom:
+      case T.spec_atom:
         sb.append("*.");
         break;
-      case Token.cell:
-        if (token.value instanceof Point3f) {
-          Point3f pt = (Point3f) token.value;
-          sb.append("cell=").append(Escape.escapePt(pt));
+      case T.cell:
+        if (token.value instanceof P3) {
+          P3 pt = (P3) token.value;
+          sb.append("cell=").append(Escape.eP(pt));
           continue;
         }
         break;
-      case Token.string:
+      case T.string:
         sb.append("\"").appendO(token.value).append("\"");
         continue;
-      case Token.opEQ:
-      case Token.opLE:
-      case Token.opGE:
-      case Token.opGT:
-      case Token.opLT:
-      case Token.opNE:
+      case T.opEQ:
+      case T.opLE:
+      case T.opGE:
+      case T.opGT:
+      case T.opLT:
+      case T.opNE:
         // not quite right -- for "inmath"
-        if (token.intValue == Token.property) {
+        if (token.intValue == T.property) {
           sb.append((String) statement[++i].value).append(" ");
         } else if (token.intValue != Integer.MAX_VALUE)
-          sb.append(Token.nameOf(token.intValue)).append(" ");
+          sb.append(T.nameOf(token.intValue)).append(" ");
         break;
-      case Token.trycmd:
+      case T.trycmd:
         continue;
-      case Token.end:
+      case T.end:
         sb.append("end");
         continue;
       default:
-        if (Token.tokAttr(token.tok, Token.identifier) || !doLogMessages)
+        if (T.tokAttr(token.tok, T.identifier) || !doLogMessages)
           break;
         sb.appendC('\n').append(token.toString()).appendC('\n');
         continue;
@@ -3490,87 +3490,87 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   ///////////// shape get/set properties ////////////////
 
   private Object getShapeProperty(int shapeType, String propertyName) {
-    return shapeManager.getShapePropertyIndex(shapeType, propertyName,
+    return sm.getShapePropertyIndex(shapeType, propertyName,
         Integer.MIN_VALUE);
   }
 
   private boolean getShapePropertyData(int shapeType, String propertyName,
                                    Object[] data) {
-    return shapeManager.getShapePropertyData(shapeType, propertyName, data);
+    return sm.getShapePropertyData(shapeType, propertyName, data);
   }
 
   private Object getShapePropertyIndex(int shapeType, String propertyName, int index) {
-    return shapeManager.getShapePropertyIndex(shapeType, propertyName, index);
+    return sm.getShapePropertyIndex(shapeType, propertyName, index);
   }
 
   private void addShapeProperty(List<Object[]> propertyList, String key,
                                 Object value) {
-    if (isSyntaxCheck)
+    if (chk)
       return;
     //System.out.println("addshapeprop " + key + " " + value);
     propertyList.add(new Object[] { key, value });
   }
 
   private void setObjectMad(int iShape, String name, int mad) {
-    if (isSyntaxCheck)
+    if (chk)
       return;
     viewer.setObjectMad(iShape, name, mad);
   }
 
   private void setObjectArgb(String str, int argb) {
-    if (isSyntaxCheck)
+    if (chk)
       return;
     viewer.setObjectArgb(str, argb);
   }
 
   private void setShapeProperty(int shapeType, String propertyName,
                                 Object propertyValue) {
-    if (isSyntaxCheck)
+    if (chk)
       return;
-    shapeManager.setShapePropertyBs(shapeType, propertyName, propertyValue, null);
+    sm.setShapePropertyBs(shapeType, propertyName, propertyValue, null);
   }
 
   private void setShapePropertyBs(int iShape, String propertyName,
-                                Object propertyValue, BitSet bs) {
-    if (isSyntaxCheck)
+                                Object propertyValue, BS bs) {
+    if (chk)
       return;
-    shapeManager.setShapePropertyBs(iShape, propertyName, propertyValue, bs);
+    sm.setShapePropertyBs(iShape, propertyName, propertyValue, bs);
   }
 
-  private void setShapeSizeBs(int shapeType, int size, BitSet bs) {
+  private void setShapeSizeBs(int shapeType, int size, BS bs) {
     // stars, halos, balls only
-    if (isSyntaxCheck)
+    if (chk)
       return;
-    shapeManager.setShapeSizeBs(shapeType, size, null, bs);
+    sm.setShapeSizeBs(shapeType, size, null, bs);
   }
 
   private void setShapeSize(int shapeType, RadiusData rd) {
-    if (isSyntaxCheck)
+    if (chk)
       return;
-    shapeManager.setShapeSizeBs(shapeType, 0, rd, null);
+    sm.setShapeSizeBs(shapeType, 0, rd, null);
   }
 
   ////////////////////  setting properties ////////////////////////
 
   private void setBooleanProperty(String key, boolean value) {
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.setBooleanProperty(key, value);
   }
 
   private boolean setIntProperty(String key, int value) {
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.setIntProperty(key, value);
     return true;
   }
 
   private boolean setFloatProperty(String key, float value) {
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.setFloatProperty(key, value);
     return true;
   }
 
   private void setStringProperty(String key, String value) {
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.setStringProperty(key, value);
   }
 
@@ -3581,7 +3581,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void showStringPrint(String str, boolean isPrint) {
-    if (isSyntaxCheck || str == null)
+    if (chk || str == null)
       return;
     if (outputBuffer != null)
       outputBuffer.append(str).appendC('\n');
@@ -3590,7 +3590,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void scriptStatusOrBuffer(String s) {
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (outputBuffer != null) {
       outputBuffer.append(s).appendC('\n');
@@ -3601,14 +3601,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   ///////////////// expression processing ///////////////////
 
-  private Token[] tempStatement;
+  private T[] tempStatement;
   private boolean isBondSet;
   private Object expressionResult;
 
-  private BitSet atomExpressionAt(int index) throws ScriptException {
+  private BS atomExpressionAt(int index) throws ScriptException {
     if (!checkToken(index))
       errorAt(ERROR_badArgumentCount, index);
-    return atomExpression(statement, index, 0, true, false, true, true);
+    return atomExpression(st, index, 0, true, false, true, true);
   }
 
   /**
@@ -3624,7 +3624,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @throws ScriptException
    */
   @SuppressWarnings("unchecked")
-  private BitSet atomExpression(Token[] code, int pcStart, int pcStop,
+  private BS atomExpression(T[] code, int pcStart, int pcStop,
                                 boolean allowRefresh, boolean allowUnderflow,
                                 boolean mustBeBitSet, boolean andNotDeleted)
       throws ScriptException {
@@ -3635,9 +3635,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // have a problem.
 
     isBondSet = false;
-    if (code != statement) {
-      tempStatement = statement;
-      statement = code;
+    if (code != st) {
+      tempStatement = st;
+      st = code;
     }
     ScriptMathProcessor rpn = new ScriptMathProcessor(this, false, false,
         mustBeBitSet);
@@ -3651,33 +3651,33 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int atomCount = viewer.getAtomCount();
     if (ignoreSubset)
       pcStart = -pcStart;
-    ignoreSubset |= isSyntaxCheck;
+    ignoreSubset |= chk;
     if (pcStop == 0 && code.length > pcStart)
       pcStop = pcStart + 1;
     // if (logMessages)
     // viewer.scriptStatus("start to evaluate expression");
     expression_loop: for (int pc = pcStart; pc < pcStop; ++pc) {
       iToken = pc;
-      Token instruction = code[pc];
+      T instruction = code[pc];
       if (instruction == null)
         break;
       Object value = instruction.value;
       // if (logMessages)
       // viewer.scriptStatus("instruction=" + instruction);
       switch (instruction.tok) {
-      case Token.expressionBegin:
+      case T.expressionBegin:
         pcStart = pc;
         pcStop = code.length;
         nExpress++;
         break;
-      case Token.expressionEnd:
+      case T.expressionEnd:
         nExpress--;
         if (nExpress > 0)
           continue;
         break expression_loop;
-      case Token.leftbrace:
+      case T.leftbrace:
         if (isPoint3f(pc)) {
-          Point3f pt = getPoint3f(pc, true);
+          P3 pt = getPoint3f(pc, true);
           if (pt != null) {
             rpn.addXPt(pt);
             pc = iToken;
@@ -3685,108 +3685,108 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
         }
         break; // ignore otherwise
-      case Token.rightbrace:
-        if (pc > 0 && code[pc - 1].tok == Token.leftbrace)
-          rpn.addXBs(new BitSet());
+      case T.rightbrace:
+        if (pc > 0 && code[pc - 1].tok == T.leftbrace)
+          rpn.addXBs(new BS());
         break;
-      case Token.leftsquare:
+      case T.leftsquare:
         isInMath = true;
         rpn.addOp(instruction);
         break;
-      case Token.rightsquare:
+      case T.rightsquare:
         isInMath = false;
         rpn.addOp(instruction);
         break;
-      case Token.define:
+      case T.define:
         rpn.addXBs(getAtomBitSet(value));
         break;
-      case Token.hkl:
-        rpn.addXVar(ScriptVariable.newScriptVariableToken(instruction));
-        rpn.addXVar(ScriptVariable.newVariable(Token.point4f, hklParameter(pc + 2)));
+      case T.hkl:
+        rpn.addXVar(SV.newScriptVariableToken(instruction));
+        rpn.addXVar(SV.newVariable(T.point4f, hklParameter(pc + 2)));
         pc = iToken;
         break;
-      case Token.plane:
-        rpn.addXVar(ScriptVariable.newScriptVariableToken(instruction));
-        rpn.addXVar(ScriptVariable.newVariable(Token.point4f, planeParameter(pc + 2)));
+      case T.plane:
+        rpn.addXVar(SV.newScriptVariableToken(instruction));
+        rpn.addXVar(SV.newVariable(T.point4f, planeParameter(pc + 2)));
         pc = iToken;
         break;
-      case Token.coord:
-        rpn.addXVar(ScriptVariable.newScriptVariableToken(instruction));
+      case T.coord:
+        rpn.addXVar(SV.newScriptVariableToken(instruction));
         rpn.addXPt(getPoint3f(pc + 2, true));
         pc = iToken;
         break;
-      case Token.string:
+      case T.string:
         String s = (String) value;
         if (s.indexOf("({") == 0) {
-          BitSet bs = Escape.unescapeBitset(s);
+          BS bs = Escape.uB(s);
           if (bs != null) {
             rpn.addXBs(bs);
             break;
           }
         }
-        rpn.addXVar(ScriptVariable.newScriptVariableToken(instruction));
+        rpn.addXVar(SV.newScriptVariableToken(instruction));
         // note that the compiler has changed all within() types to strings.
         if (s.equals("hkl")) {
-          rpn.addXVar(ScriptVariable.newVariable(Token.point4f, hklParameter(pc + 2)));
+          rpn.addXVar(SV.newVariable(T.point4f, hklParameter(pc + 2)));
           pc = iToken;
         }
         break;
-      case Token.smiles:
-      case Token.search:
-      case Token.substructure:
-      case Token.within:
-      case Token.contact:
-      case Token.connected:
-      case Token.comma:
+      case T.smiles:
+      case T.search:
+      case T.substructure:
+      case T.within:
+      case T.contact:
+      case T.connected:
+      case T.comma:
         rpn.addOp(instruction);
         break;
-      case Token.all:
+      case T.all:
         rpn.addXBs(viewer.getModelUndeletedAtomsBitSet(-1));
         break;
-      case Token.none:
-        rpn.addXBs(new BitSet());
+      case T.none:
+        rpn.addXBs(new BS());
         break;
-      case Token.on:
-      case Token.off:
-        rpn.addXVar(ScriptVariable.newScriptVariableToken(instruction));
+      case T.on:
+      case T.off:
+        rpn.addXVar(SV.newScriptVariableToken(instruction));
         break;
-      case Token.selected:
-        rpn.addXBs(BitSetUtil.copy(viewer.getSelectionSet(false)));
+      case T.selected:
+        rpn.addXBs(BSUtil.copy(viewer.getSelectionSet(false)));
         break;
-      case Token.subset:
-        BitSet bsSubset = viewer.getSelectionSubset();
+      case T.subset:
+        BS bsSubset = viewer.getSelectionSubset();
         rpn.addXBs(bsSubset == null ? viewer.getModelUndeletedAtomsBitSet(-1)
-            : BitSetUtil.copy(bsSubset));
+            : BSUtil.copy(bsSubset));
         break;
-      case Token.hidden:
-        rpn.addXBs(BitSetUtil.copy(viewer.getHiddenSet()));
+      case T.hidden:
+        rpn.addXBs(BSUtil.copy(viewer.getHiddenSet()));
         break;
-      case Token.fixed:
-        rpn.addXBs(BitSetUtil.copy(viewer.getMotionFixedAtoms()));
+      case T.fixed:
+        rpn.addXBs(BSUtil.copy(viewer.getMotionFixedAtoms()));
         break;
-      case Token.displayed:
-        rpn.addXBs(BitSetUtil.copyInvert(viewer.getHiddenSet(), atomCount));
+      case T.displayed:
+        rpn.addXBs(BSUtil.copyInvert(viewer.getHiddenSet(), atomCount));
         break;
-      case Token.basemodel:
+      case T.basemodel:
         rpn.addXBs(viewer.getBaseModelBitSet());
         break;
-      case Token.visible:
-        if (!isSyntaxCheck && !refreshed)
+      case T.visible:
+        if (!chk && !refreshed)
           viewer.setModelVisibility();
         refreshed = true;
         rpn.addXBs(viewer.getVisibleSet());
         break;
-      case Token.clickable:
+      case T.clickable:
         // a bit different, because it requires knowing what got slabbed
-        if (!isSyntaxCheck && allowRefresh)
+        if (!chk && allowRefresh)
           refresh();
         rpn.addXBs(viewer.getClickableSet());
         break;
-      case Token.spec_atom:
+      case T.spec_atom:
         if (viewer.allowSpecAtom()) {
           int atomID = instruction.intValue;
           if (atomID > 0)
-            rpn.addXBs(compareInt(Token.atomid, Token.opEQ, atomID));
+            rpn.addXBs(compareInt(T.atomid, T.opEQ, atomID));
           else
             rpn.addXBs(getAtomBits(instruction.tok, value));
         } else {
@@ -3794,33 +3794,33 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           rpn.addXBs(lookupIdentifierValue("_" + value));
         }
         break;
-      case Token.carbohydrate:
-      case Token.dna:
-      case Token.hetero:
-      case Token.isaromatic:
-      case Token.nucleic:
-      case Token.protein:
-      case Token.purine:
-      case Token.pyrimidine:
-      case Token.rna:
-      case Token.spec_name_pattern:
-      case Token.spec_alternate:
-      case Token.specialposition:
-      case Token.symmetry:
-      case Token.unitcell:
+      case T.carbohydrate:
+      case T.dna:
+      case T.hetero:
+      case T.isaromatic:
+      case T.nucleic:
+      case T.protein:
+      case T.purine:
+      case T.pyrimidine:
+      case T.rna:
+      case T.spec_name_pattern:
+      case T.spec_alternate:
+      case T.specialposition:
+      case T.symmetry:
+      case T.unitcell:
         rpn.addXBs(getAtomBits(instruction.tok, value));
         break;
-      case Token.spec_model:
+      case T.spec_model:
         // from select */1002 or */1000002 or */1.2
         // */1002 is equivalent to 1.2 when more than one file is present
-      case Token.spec_model2:
+      case T.spec_model2:
         // from just using the number 1.2
         int iModel = instruction.intValue;
         if (iModel == Integer.MAX_VALUE && value instanceof Integer) {
           // from select */n
           iModel = ((Integer) value).intValue();
           if (!viewer.haveFileSet()) {
-            rpn.addXBs(getAtomBits(Token.spec_model, Integer.valueOf(iModel)));
+            rpn.addXBs(getAtomBits(T.spec_model, Integer.valueOf(iModel)));
             break;
           }
           if (iModel <= 2147) // file number
@@ -3828,126 +3828,126 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         rpn.addXBs(bitSetForModelFileNumber(iModel));
         break;
-      case Token.spec_resid:
-      case Token.spec_chain:
+      case T.spec_resid:
+      case T.spec_chain:
         rpn
             .addXBs(getAtomBits(instruction.tok,
                 new Integer(instruction.intValue)));
         break;
-      case Token.spec_seqcode:
+      case T.spec_seqcode:
         if (isInMath)
           rpn.addXNum(new ScriptVariableInt(instruction.intValue));
         else
-          rpn.addXBs(getAtomBits(Token.spec_seqcode, new Integer(
+          rpn.addXBs(getAtomBits(T.spec_seqcode, new Integer(
               getSeqCode(instruction))));
         break;
-      case Token.spec_seqcode_range:
+      case T.spec_seqcode_range:
         if (isInMath) {
           rpn.addXNum(new ScriptVariableInt(instruction.intValue));
           // TODO -- in 13.0 had addXObj this adds a "-" to the X stack. 
-          rpn.addOp(Token.tokenMinus);
+          rpn.addOp(T.tokenMinus);
           rpn.addXNum(new ScriptVariableInt(code[++pc].intValue));
           break;
         }
-        int chainID = (pc + 3 < code.length && code[pc + 2].tok == Token.opAND
-            && code[pc + 3].tok == Token.spec_chain ? code[pc + 3].intValue
+        int chainID = (pc + 3 < code.length && code[pc + 2].tok == T.opAND
+            && code[pc + 3].tok == T.spec_chain ? code[pc + 3].intValue
             : 9);
-        rpn.addXBs(getAtomBits(Token.spec_seqcode_range, new int[] {
+        rpn.addXBs(getAtomBits(T.spec_seqcode_range, new int[] {
             getSeqCode(instruction), getSeqCode(code[++pc]), chainID }));
         if (chainID != 9)
           pc += 2;
         break;
-      case Token.cell:
-        Point3f pt = (Point3f) value;
-        rpn.addXBs(getAtomBits(Token.cell, new int[] { (int) Math.floor(pt.x * 1000),
+      case T.cell:
+        P3 pt = (P3) value;
+        rpn.addXBs(getAtomBits(T.cell, new int[] { (int) Math.floor(pt.x * 1000),
             (int) Math.floor(pt.y * 1000), (int) Math.floor(pt.z * 1000) }));
         break;
-      case Token.thismodel:
+      case T.thismodel:
         rpn.addXBs(viewer.getModelUndeletedAtomsBitSet(viewer
             .getCurrentModelIndex()));
         break;
-      case Token.hydrogen:
-      case Token.amino:
-      case Token.backbone:
-      case Token.solvent:
-      case Token.helix:
-      case Token.helixalpha:
-      case Token.helix310:
-      case Token.helixpi:
-      case Token.sidechain:
-      case Token.surface:
+      case T.hydrogen:
+      case T.amino:
+      case T.backbone:
+      case T.solvent:
+      case T.helix:
+      case T.helixalpha:
+      case T.helix310:
+      case T.helixpi:
+      case T.sidechain:
+      case T.surface:
         rpn.addXBs(lookupIdentifierValue((String) value));
         break;
-      case Token.opLT:
-      case Token.opLE:
-      case Token.opGE:
-      case Token.opGT:
-      case Token.opEQ:
-      case Token.opNE:
+      case T.opLT:
+      case T.opLE:
+      case T.opGE:
+      case T.opGT:
+      case T.opEQ:
+      case T.opNE:
         if (pc + 1 == code.length)
           error(ERROR_invalidArgument);
         val = code[++pc].value;
         int tokOperator = instruction.tok;
         int tokWhat = instruction.intValue;
-        String property = (tokWhat == Token.property ? (String) val : null);
+        String property = (tokWhat == T.property ? (String) val : null);
         if (property != null) {
           if (pc + 1 == code.length)
             error(ERROR_invalidArgument);
           val = code[++pc].value;
         }
-        if (tokWhat == Token.configuration && tokOperator != Token.opEQ)
+        if (tokWhat == T.configuration && tokOperator != T.opEQ)
           error(ERROR_invalidArgument);
-        if (isSyntaxCheck) {
-          rpn.addXBs(new BitSet());
+        if (chk) {
+          rpn.addXBs(new BS());
           break;
         }
-        boolean isModel = (tokWhat == Token.model);
-        boolean isIntProperty = Token.tokAttr(tokWhat, Token.intproperty);
-        boolean isFloatProperty = Token.tokAttr(tokWhat, Token.floatproperty);
+        boolean isModel = (tokWhat == T.model);
+        boolean isIntProperty = T.tokAttr(tokWhat, T.intproperty);
+        boolean isFloatProperty = T.tokAttr(tokWhat, T.floatproperty);
         boolean isIntOrFloat = isIntProperty && isFloatProperty;
         boolean isStringProperty = !isIntProperty
-            && Token.tokAttr(tokWhat, Token.strproperty);
-        if (tokWhat == Token.element)
+            && T.tokAttr(tokWhat, T.strproperty);
+        if (tokWhat == T.element)
           isIntProperty = !(isStringProperty = false);
         int tokValue = code[pc].tok;
         comparisonValue = code[pc].intValue;
         float comparisonFloat = Float.NaN;
-        if (val instanceof Point3f) {
-          if (tokWhat == Token.color) {
-            comparisonValue = ColorUtil.colorPtToInt((Point3f) val);
-            tokValue = Token.integer;
+        if (val instanceof P3) {
+          if (tokWhat == T.color) {
+            comparisonValue = ColorUtil.colorPtToInt((P3) val);
+            tokValue = T.integer;
             isIntProperty = true;
           }
         } else if (val instanceof String) {
-          if (tokWhat == Token.color) {
+          if (tokWhat == T.color) {
             comparisonValue = ColorUtil.getArgbFromString((String) val);
             if (comparisonValue == 0
-                && Token.tokAttr(tokValue, Token.identifier)) {
+                && T.tokAttr(tokValue, T.identifier)) {
               val = getStringParameter((String) val, true);
               if (((String) val).startsWith("{")) {
-                val = Escape.unescapePoint((String) val);
-                if (val instanceof Point3f)
-                  comparisonValue = ColorUtil.colorPtToInt((Point3f) val);
+                val = Escape.uP((String) val);
+                if (val instanceof P3)
+                  comparisonValue = ColorUtil.colorPtToInt((P3) val);
                 else
                   comparisonValue = 0;
               } else {
                 comparisonValue = ColorUtil.getArgbFromString((String) val);
               }
             }
-            tokValue = Token.integer;
+            tokValue = T.integer;
             isIntProperty = true;
           } else if (isStringProperty) {
-            if (Token.tokAttr(tokValue, Token.identifier))
+            if (T.tokAttr(tokValue, T.identifier))
               val = getStringParameter((String) val, true);
           } else {
-            if (Token.tokAttr(tokValue, Token.identifier))
+            if (T.tokAttr(tokValue, T.identifier))
               val = getNumericParameter((String) val);
             if (val instanceof String) {
-              if (tokWhat == Token.structure || tokWhat == Token.substructure
-                  || tokWhat == Token.element)
+              if (tokWhat == T.structure || tokWhat == T.substructure
+                  || tokWhat == T.element)
                 isStringProperty = !(isIntProperty = (comparisonValue != Integer.MAX_VALUE));
               else
-                val = ScriptVariable.nValue(code[pc]);
+                val = SV.nValue(code[pc]);
             }
             if (val instanceof Integer)
               comparisonFloat = comparisonValue = ((Integer) val).intValue();
@@ -3959,10 +3959,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (isStringProperty && !(val instanceof String)) {
           val = "" + val;
         }
-        if (val instanceof Integer || tokValue == Token.integer) {
+        if (val instanceof Integer || tokValue == T.integer) {
           if (isModel) {
             if (comparisonValue >= 1000000)
-              tokWhat = -Token.model;
+              tokWhat = -T.model;
           } else if (isIntOrFloat) {
             isFloatProperty = false;
           } else if (isFloatProperty) {
@@ -3970,7 +3970,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
         } else if (val instanceof Float) {
           if (isModel) {
-            tokWhat = -Token.model;
+            tokWhat = -T.model;
           } else {
             comparisonFloat = ((Float) val).floatValue();
             if (isIntOrFloat) {
@@ -3986,10 +3986,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (isModel && comparisonValue >= 1000000
             && comparisonValue % 1000000 == 0) {
           comparisonValue /= 1000000;
-          tokWhat = Token.file;
+          tokWhat = T.file;
           isModel = false;
         }
-        if (tokWhat == -Token.model && tokOperator == Token.opEQ) {
+        if (tokWhat == -T.model && tokOperator == T.opEQ) {
           rpn.addXBs(bitSetForModelFileNumber(comparisonValue));
           break;
         }
@@ -3999,30 +3999,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           else if (!Float.isNaN(comparisonFloat))
             comparisonFloat = -comparisonFloat;
         }
-        float[] data = (tokWhat == Token.property ? viewer
+        float[] data = (tokWhat == T.property ? viewer
             .getDataFloat(property) : null);
         rpn.addXBs(isIntProperty ? compareInt(tokWhat, tokOperator,
             comparisonValue) : isStringProperty ? compareString(tokWhat,
             tokOperator, (String) val) : compareFloat(tokWhat, data,
             tokOperator, comparisonFloat));
         break;
-      case Token.decimal:
-      case Token.integer:
-        rpn.addXNum(ScriptVariable.newScriptVariableToken(instruction));
+      case T.decimal:
+      case T.integer:
+        rpn.addXNum(SV.newScriptVariableToken(instruction));
         break;
-      case Token.bitset:
-        BitSet bs1 = BitSetUtil.copy((BitSet) value);
+      case T.bitset:
+        BS bs1 = BSUtil.copy((BS) value);
         //System.out.println(Escape.escape(bs1));
         //if (isStateScript && viewer.getTestFlag(1))
         //BitSetUtil.deleteBits(bs1, (BitSet) viewer.getModelSetAuxiliaryInfo("bsDeletedAtoms"));
         //System.out.println(Escape.escape(bs1));
         rpn.addXBs(bs1);
         break;
-      case Token.point3f:
-        rpn.addXPt((Point3f) value);
+      case T.point3f:
+        rpn.addXPt((P3) value);
         break;
       default:
-        if (Token.tokAttr(instruction.tok, Token.mathop)) {
+        if (T.tokAttr(instruction.tok, T.mathop)) {
           if (!rpn.addOp(instruction))
             error(ERROR_invalidArgument);
           break;
@@ -4040,8 +4040,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (val instanceof String)
           val = getStringObjectAsVariable((String) val, null);
         if (val instanceof List<?>) {
-          BitSet bs = ScriptVariable.unEscapeBitSetArray(
-              (ArrayList<ScriptVariable>) val, true);
+          BS bs = SV.unEscapeBitSetArray(
+              (ArrayList<SV>) val, true);
           if (bs == null)
             val = value;
           else
@@ -4057,20 +4057,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (expressionResult == null) {
       if (allowUnderflow)
         return null;
-      if (!isSyntaxCheck)
+      if (!chk)
         rpn.dumpStacks("after getResult");
       error(ERROR_endOfStatementUnexpected);
     }
-    expressionResult = ((ScriptVariable) expressionResult).value;
+    expressionResult = ((SV) expressionResult).value;
     if (expressionResult instanceof String
         && (mustBeBitSet || ((String) expressionResult).startsWith("({"))) {
       // allow for select @{x} where x is a string that can evaluate to a bitset
-      expressionResult = (isSyntaxCheck ? new BitSet() : getAtomBitSet(expressionResult));
+      expressionResult = (chk ? new BS() : getAtomBitSet(expressionResult));
     }
-    if (!mustBeBitSet && !(expressionResult instanceof BitSet))
+    if (!mustBeBitSet && !(expressionResult instanceof BS))
       return null; // because result is in expressionResult in that case
-    BitSet bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
-        : new BitSet());
+    BS bs = (expressionResult instanceof BS ? (BS) expressionResult
+        : new BS());
     isBondSet = (expressionResult instanceof BondSet);
     if (!isBondSet) {
       viewer.excludeAtoms(bs, ignoreSubset);
@@ -4078,15 +4078,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         bs.clearAll();
     }
     if (tempStatement != null) {
-      statement = tempStatement;
+      st = tempStatement;
       tempStatement = null;
     }
     return bs;
   }
 
-  private BitSet compareFloat(int tokWhat, float[] data, int tokOperator,
+  private BS compareFloat(int tokWhat, float[] data, int tokOperator,
                               float comparisonFloat) {
-    BitSet bs = new BitSet();
+    BS bs = new BS();
     int atomCount = viewer.getAtomCount();
     ModelSet modelSet = viewer.modelSet;
     Atom[] atoms = modelSet.atoms;
@@ -4099,7 +4099,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       default:
         propertyFloat = Atom.atomPropertyFloat(viewer, atom, tokWhat);
         break;
-      case Token.property:
+      case T.property:
         if (data == null || data.length <= i)
           continue;
         propertyFloat = data[i];
@@ -4111,12 +4111,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return bs;
   }
 
-  private BitSet compareString(int tokWhat, int tokOperator,
+  private BS compareString(int tokWhat, int tokOperator,
                                String comparisonString) throws ScriptException {
-    BitSet bs = new BitSet();
+    BS bs = new BS();
     Atom[] atoms = viewer.modelSet.atoms;
     int atomCount = viewer.getAtomCount();
-    boolean isCaseSensitive = (tokWhat == Token.chain && viewer
+    boolean isCaseSensitive = (tokWhat == T.chain && viewer
         .getChainCaseSensitive());
     if (!isCaseSensitive)
       comparisonString = comparisonString.toLowerCase();
@@ -4131,9 +4131,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return bs;
   }
 
-  protected BitSet compareInt(int tokWhat, int tokOperator, int comparisonValue) {
+  protected BS compareInt(int tokWhat, int tokOperator, int comparisonValue) {
     int propertyValue = Integer.MAX_VALUE;
-    BitSet propertyBitSet = null;
+    BS propertyBitSet = null;
     int bitsetComparator = tokOperator;
     int bitsetBaseValue = comparisonValue;
     int atomCount = viewer.getAtomCount();
@@ -4144,43 +4144,43 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int iModel = -1;
     int[] cellRange = null;
     int nOps = 0;
-    BitSet bs;
+    BS bs;
     // preliminary setup
     switch (tokWhat) {
-    case Token.symop:
+    case T.symop:
       switch (bitsetComparator) {
-      case Token.opGE:
-      case Token.opGT:
+      case T.opGE:
+      case T.opGT:
         imax = Integer.MAX_VALUE;
         break;
       }
       break;
-    case Token.atomindex:
+    case T.atomindex:
       try {
         switch (tokOperator) {
-        case Token.opLT:
-          return BitSetUtil.newBitSet2(0, comparisonValue);
-        case Token.opLE:
-          return BitSetUtil.newBitSet2(0, comparisonValue + 1);
-        case Token.opGE:
-          return BitSetUtil.newBitSet2(comparisonValue, atomCount);
-        case Token.opGT:
-          return BitSetUtil.newBitSet2(comparisonValue + 1, atomCount);
-        case Token.opEQ:
-          return (comparisonValue < atomCount ? BitSetUtil.newBitSet2(
-              comparisonValue, comparisonValue + 1) : new BitSet());
-        case Token.opNE:
+        case T.opLT:
+          return BSUtil.newBitSet2(0, comparisonValue);
+        case T.opLE:
+          return BSUtil.newBitSet2(0, comparisonValue + 1);
+        case T.opGE: 
+          return BSUtil.newBitSet2(comparisonValue, atomCount);
+        case T.opGT:
+          return BSUtil.newBitSet2(comparisonValue + 1, atomCount);
+        case T.opEQ:
+          return (comparisonValue < atomCount ? BSUtil.newBitSet2(
+              comparisonValue, comparisonValue + 1) : new BS());
+        case T.opNE:
         default:
-          bs = BitSetUtil.setAll(atomCount);
+          bs = BSUtil.setAll(atomCount);
           if (comparisonValue >= 0)
             bs.clear(comparisonValue);
           return bs;
         }
       } catch (Exception e) {
-        return new BitSet();
+        return new BS();
       }
     }
-    bs = BitSetUtil.newBitSet(atomCount);
+    bs = BSUtil.newBitSet(atomCount);
     for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
       Atom atom = atoms[i];
@@ -4188,11 +4188,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       default:
         propertyValue = Atom.atomPropertyInt(atom, tokWhat);
         break;
-      case Token.configuration:
+      case T.configuration:
         // these are all-inclusive; no need to do a by-atom comparison
-        return BitSetUtil.copy(viewer.getConformation(-1, comparisonValue - 1,
+        return BSUtil.copy(viewer.getConformation(-1, comparisonValue - 1,
             false));
-      case Token.symop:
+      case T.symop:
         propertyBitSet = atom.getAtomSymmetry();
         if (propertyBitSet == null)
           continue;
@@ -4229,7 +4229,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               && !(match = propertyBitSet.get(symop))) {
             continue;
           }
-          bitsetComparator = Token.none;
+          bitsetComparator = T.none;
           if (symop < 0)
             propertyValue = atom.getCellTranslation(comparisonValue, cellRange,
                 nOps);
@@ -4237,11 +4237,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             propertyValue = atom.getSymmetryTranslation(symop, cellRange, nOps);
         } else if (nOps > 0) {
           if (comparisonValue > nOps) {
-            if (bitsetComparator != Token.opLT
-                && bitsetComparator != Token.opLE)
+            if (bitsetComparator != T.opLT
+                && bitsetComparator != T.opLE)
               continue;
           }
-          if (bitsetComparator == Token.opNE) {
+          if (bitsetComparator == T.opNE) {
             if (comparisonValue > 0 && comparisonValue <= nOps
                 && !propertyBitSet.get(comparisonValue)) {
               bs.set(i);
@@ -4250,23 +4250,23 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
         }
         switch (bitsetComparator) {
-        case Token.opLT:
+        case T.opLT:
           imax = comparisonValue - 1;
           break;
-        case Token.opLE:
+        case T.opLE:
           imax = comparisonValue;
           break;
-        case Token.opGE:
+        case T.opGE:
           imin = comparisonValue - 1;
           break;
-        case Token.opGT:
+        case T.opGT:
           imin = comparisonValue;
           break;
-        case Token.opEQ:
+        case T.opEQ:
           imax = comparisonValue;
           imin = comparisonValue - 1;
           break;
-        case Token.opNE:
+        case T.opNE:
           match = !propertyBitSet.get(comparisonValue);
           break;
         }
@@ -4279,27 +4279,27 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         // note that a symop property can be both LE and GT !
         if (!match || propertyValue == Integer.MAX_VALUE)
-          tokOperator = Token.none;
+          tokOperator = T.none;
       }
       switch (tokOperator) {
-      case Token.none:
+      case T.none:
         break;
-      case Token.opLT:
+      case T.opLT:
         match = (propertyValue < comparisonValue);
         break;
-      case Token.opLE:
+      case T.opLE:
         match = (propertyValue <= comparisonValue);
         break;
-      case Token.opGE:
+      case T.opGE:
         match = (propertyValue >= comparisonValue);
         break;
-      case Token.opGT:
+      case T.opGT:
         match = (propertyValue > comparisonValue);
         break;
-      case Token.opEQ:
+      case T.opEQ:
         match = (propertyValue == comparisonValue);
         break;
-      case Token.opNE:
+      case T.opNE:
         match = (propertyValue != comparisonValue);
         break;
       }
@@ -4312,9 +4312,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private boolean compareStringValues(int tokOperator, String propertyValue,
                                 String comparisonValue) throws ScriptException {
     switch (tokOperator) {
-    case Token.opEQ:
-    case Token.opNE:
-      return (TextFormat.isMatch(propertyValue, comparisonValue, true, true) == (tokOperator == Token.opEQ));
+    case T.opEQ:
+    case T.opNE:
+      return (TextFormat.isMatch(propertyValue, comparisonValue, true, true) == (tokOperator == T.opEQ));
     default:
       error(ERROR_invalidArgument);
     }
@@ -4324,28 +4324,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private static boolean compareFloat(int tokOperator, float propertyFloat,
                                       float comparisonFloat) {
     switch (tokOperator) {
-    case Token.opLT:
+    case T.opLT:
       return propertyFloat < comparisonFloat;
-    case Token.opLE:
+    case T.opLE:
       return propertyFloat <= comparisonFloat;
-    case Token.opGE:
+    case T.opGE:
       return propertyFloat >= comparisonFloat;
-    case Token.opGT:
+    case T.opGT:
       return propertyFloat > comparisonFloat;
-    case Token.opEQ:
+    case T.opEQ:
       return propertyFloat == comparisonFloat;
-    case Token.opNE:
+    case T.opNE:
       return propertyFloat != comparisonFloat;
     }
     return false;
   }
 
-  private BitSet getAtomBits(int tokType, Object specInfo) {
-    return (isSyntaxCheck ? new BitSet() : viewer
+  private BS getAtomBits(int tokType, Object specInfo) {
+    return (chk ? new BS() : viewer
         .getAtomBits(tokType, specInfo));
   }
 
-  private static int getSeqCode(Token instruction) {
+  private static int getSeqCode(T instruction) {
     return (instruction.intValue != Integer.MAX_VALUE ? Group.getSeqcode(
         instruction.intValue, ' ') : ((Integer) instruction.value).intValue());
   }
@@ -4365,75 +4365,75 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (length >= 0)
       return checkLengthErrorPt(length, 0);
     // max
-    if (statementLength > -length) {
+    if (slen > -length) {
       iToken = -length;
       error(ERROR_badArgumentCount);
     }
-    return statementLength;
+    return slen;
   }
 
   private int checkLengthErrorPt(int length, int errorPt) throws ScriptException {
-    if (statementLength != length) {
-      iToken = errorPt > 0 ? errorPt : statementLength;
+    if (slen != length) {
+      iToken = errorPt > 0 ? errorPt : slen;
       error(errorPt > 0 ? ERROR_invalidArgument : ERROR_badArgumentCount);
     }
-    return statementLength;
+    return slen;
   }
 
   private int checkLength23() throws ScriptException {
-    iToken = statementLength;
-    if (statementLength != 2 && statementLength != 3)
+    iToken = slen;
+    if (slen != 2 && slen != 3)
       error(ERROR_badArgumentCount);
-    return statementLength;
+    return slen;
   }
 
   private int checkLength34() throws ScriptException {
-    iToken = statementLength;
-    if (statementLength != 3 && statementLength != 4)
+    iToken = slen;
+    if (slen != 3 && slen != 4)
       error(ERROR_badArgumentCount);
-    return statementLength;
+    return slen;
   }
 
   private int theTok;
-  private Token theToken;
+  private T theToken;
 
-  private Token getToken(int i) throws ScriptException {
+  private T getToken(int i) throws ScriptException {
     if (!checkToken(i))
       error(ERROR_endOfStatementUnexpected);
-    theToken = statement[i];
+    theToken = st[i];
     theTok = theToken.tok;
     return theToken;
   }
 
   private int tokAt(int i) {
-    return (i < statementLength && statement[i] != null ? statement[i].tok
-        : Token.nada);
+    return (i < slen && st[i] != null ? st[i].tok
+        : T.nada);
   }
 
-  private static int tokAtArray(int i, Token[] args) {
-    return (i < args.length && args[i] != null ? args[i].tok : Token.nada);
+  private static int tokAtArray(int i, T[] args) {
+    return (i < args.length && args[i] != null ? args[i].tok : T.nada);
   }
 
-  private Token tokenAt(int i, Token[] args) {
+  private T tokenAt(int i, T[] args) {
     return (i < args.length ? args[i] : null);
   }
 
   private boolean checkToken(int i) {
-    return (iToken = i) < statementLength;
+    return (iToken = i) < slen;
   }
 
   private int modelNumberParameter(int index) throws ScriptException {
     int iFrame = 0;
     boolean useModelNumber = false;
     switch (tokAt(index)) {
-    case Token.integer:
+    case T.integer:
       useModelNumber = true;
       //$FALL-THROUGH$
-    case Token.decimal:
+    case T.decimal:
       iFrame = getToken(index).intValue; // decimal Token intValue is
       // model/frame number encoded
       break;
-    case Token.string:
+    case T.string:
       iFrame = getFloatEncodedInt(stringParameter(index));
       break;
     default:
@@ -4443,7 +4443,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private String optParameterAsString(int i) throws ScriptException {
-    if (i >= statementLength)
+    if (i >= slen)
       return "";
     return parameterAsString(i);
   }
@@ -4452,12 +4452,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     getToken(i);
     if (theToken == null)
       error(ERROR_endOfStatementUnexpected);
-    return ScriptVariable.sValue(theToken);
+    return SV.sValue(theToken);
   }
 
   private int intParameter(int index) throws ScriptException {
     if (checkToken(index))
-      if (getToken(index).tok == Token.integer)
+      if (getToken(index).tok == T.integer)
         return theToken.intValue;
     error(ERROR_integerExpected);
     return 0;
@@ -4472,8 +4472,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private boolean isFloatParameter(int index) {
     switch (tokAt(index)) {
-    case Token.integer:
-    case Token.decimal:
+    case T.integer:
+    case T.decimal:
       return true;
     }
     return false;
@@ -4491,13 +4491,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (checkToken(index)) {
       getToken(index);
       switch (theTok) {
-      case Token.spec_seqcode_range:
+      case T.spec_seqcode_range:
         return -theToken.intValue;
-      case Token.spec_seqcode:
-      case Token.integer:
+      case T.spec_seqcode:
+      case T.integer:
         return theToken.intValue;
-      case Token.spec_model2:
-      case Token.decimal:
+      case T.spec_model2:
+      case T.decimal:
         return ((Float) theToken.value).floatValue();
       }
     }
@@ -4518,49 +4518,49 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private float[] floatParameterSet(int i, int nMin, int nMax)
       throws ScriptException {
     int tok = tokAt(i);
-    if (tok == Token.spacebeforesquare)
+    if (tok == T.spacebeforesquare)
       tok = tokAt(++i);
-    boolean haveBrace = (tok == Token.leftbrace);
-    boolean haveSquare = (tok == Token.leftsquare);
+    boolean haveBrace = (tok == T.leftbrace);
+    boolean haveSquare = (tok == T.leftsquare);
     float[] fparams = null;
     List<Float> v = new ArrayList<Float>();
     int n = 0;
     if (haveBrace || haveSquare)
       i++;
-    Point3f pt;
+    P3 pt;
     String s = null;
     switch (tokAt(i)) {
-    case Token.string:
-      s = ScriptVariable.sValue(statement[i]);
+    case T.string:
+      s = SV.sValue(st[i]);
       s = TextFormat.replaceAllCharacter(s, "{},[]\"'", ' ');
       fparams = Parser.parseFloatArray(s);
       n = fparams.length;
       break;
-    case Token.varray:
-      fparams = ScriptVariable.flistValue(statement[i++], 0);
+    case T.varray:
+      fparams = SV.flistValue(st[i++], 0);
       n = fparams.length;
       break;
     default:
       while (n < nMax) {
         tok = tokAt(i);
-        if (haveBrace && tok == Token.rightbrace || haveSquare
-            && tok == Token.rightsquare)
+        if (haveBrace && tok == T.rightbrace || haveSquare
+            && tok == T.rightsquare)
           break;
         switch (tok) {
-        case Token.comma:
-        case Token.leftbrace:
-        case Token.rightbrace:
+        case T.comma:
+        case T.leftbrace:
+        case T.rightbrace:
           break;
-        case Token.string:
+        case T.string:
           break;
-        case Token.point3f:
+        case T.point3f:
           pt = getPoint3f(i, false);
           v.add(Float.valueOf(pt.x));
           v.add(Float.valueOf(pt.y));
           v.add(Float.valueOf(pt.z));
           n += 3;
           break;
-        case Token.point4f:
+        case T.point4f:
           Point4f pt4 = getPoint4f(i);
           v.add(Float.valueOf(pt4.x));
           v.add(Float.valueOf(pt4.y));
@@ -4571,14 +4571,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         default:
           v.add(Float.valueOf(floatParameter(i)));
           n++;
-          if (n == nMax && haveSquare && tokAt(i + 1) == Token.rightbrace)
+          if (n == nMax && haveSquare && tokAt(i + 1) == T.rightbrace)
             i++;
         }
         i++;
       }
     }
-    if (haveBrace && tokAt(i++) != Token.rightbrace || haveSquare
-        && tokAt(i++) != Token.rightsquare)
+    if (haveBrace && tokAt(i++) != T.rightbrace || haveSquare
+        && tokAt(i++) != T.rightsquare)
       error(ERROR_invalidArgument);
     iToken = i - 1;
     if (n < nMin || n > nMax)
@@ -4593,54 +4593,54 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private boolean isArrayParameter(int i) {
     switch (tokAt(i)) {
-    case Token.varray:
-    case Token.matrix3f:
-    case Token.matrix4f:
-    case Token.spacebeforesquare:
-    case Token.leftsquare:
+    case T.varray:
+    case T.matrix3f:
+    case T.matrix4f:
+    case T.spacebeforesquare:
+    case T.leftsquare:
       return true;
     }
     return false;
   }
 
-  private Point3f[] getPointArray(int i, int nPoints) throws ScriptException {
-    Point3f[] points = (nPoints < 0 ? null : new Point3f[nPoints]);
-    List<Point3f> vp = (nPoints < 0 ? new ArrayList<Point3f>() : null);
-    int tok = (i < 0 ? Token.varray : getToken(i++).tok);
+  private P3[] getPointArray(int i, int nPoints) throws ScriptException {
+    P3[] points = (nPoints < 0 ? null : new P3[nPoints]);
+    List<P3> vp = (nPoints < 0 ? new ArrayList<P3>() : null);
+    int tok = (i < 0 ? T.varray : getToken(i++).tok);
     switch (tok) {
-    case Token.varray:
-      List<ScriptVariable> v = ((ScriptVariable) theToken).getList();
+    case T.varray:
+      List<SV> v = ((SV) theToken).getList();
       if (nPoints >= 0 && v.size() != nPoints)
         error(ERROR_invalidArgument);
       nPoints = v.size();
       if (points == null)
-        points = new Point3f[nPoints];
+        points = new P3[nPoints];
       for (int j = 0; j < nPoints; j++)
-        if ((points[j] = ScriptVariable.ptValue(v.get(j))) == null)
+        if ((points[j] = SV.ptValue(v.get(j))) == null)
           error(ERROR_invalidArgument);
       return points;
-    case Token.spacebeforesquare:
+    case T.spacebeforesquare:
       tok = tokAt(i++);
       break;
     }
-    if (tok != Token.leftsquare)
+    if (tok != T.leftsquare)
       error(ERROR_invalidArgument);
     int n = 0;
-    while (tok != Token.rightsquare && tok != Token.nada) {
+    while (tok != T.rightsquare && tok != T.nada) {
       tok = getToken(i).tok;
       switch (tok) {
-      case Token.nada:
-      case Token.rightsquare:
+      case T.nada:
+      case T.rightsquare:
         break;
-      case Token.comma:
+      case T.comma:
         i++;
         break;
       default:
         if (nPoints >= 0 && n == nPoints) {
-          tok = Token.nada;
+          tok = T.nada;
           break;
         }
-        Point3f pt = getPoint3f(i, true);
+        P3 pt = getPoint3f(i, true);
         if (points == null)
           vp.add(pt);
         else
@@ -4649,43 +4649,43 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i = iToken + 1;
       }
     }
-    if (tok != Token.rightsquare)
+    if (tok != T.rightsquare)
       error(ERROR_invalidArgument);
     if (points == null)
-      points = vp.toArray(new Point3f[vp.size()]);
+      points = vp.toArray(new P3[vp.size()]);
     return points;
   }
 
   private float[][] floatArraySet(int i, int nX, int nY) throws ScriptException {
     int tok = tokAt(i++);
-    if (tok == Token.spacebeforesquare)
+    if (tok == T.spacebeforesquare)
       tok = tokAt(i++);
-    if (tok != Token.leftsquare)
+    if (tok != T.leftsquare)
       error(ERROR_invalidArgument);
     float[][] fparams = ArrayUtil.newFloat2(nX);
     int n = 0;
-    while (tok != Token.rightsquare) {
+    while (tok != T.rightsquare) {
       tok = getToken(i).tok;
       switch (tok) {
-      case Token.spacebeforesquare:
-      case Token.rightsquare:
+      case T.spacebeforesquare:
+      case T.rightsquare:
         continue;
-      case Token.comma:
+      case T.comma:
         i++;
         break;
-      case Token.leftsquare:
+      case T.leftsquare:
         i++;
         float[] f = new float[nY];
         fparams[n++] = f;
         for (int j = 0; j < nY; j++) {
           f[j] = floatParameter(i++);
-          if (tokAt(i) == Token.comma)
+          if (tokAt(i) == T.comma)
             i++;
         }
-        if (tokAt(i++) != Token.rightsquare)
+        if (tokAt(i++) != T.rightsquare)
           error(ERROR_invalidArgument);
-        tok = Token.nada;
-        if (n == nX && tokAt(i) != Token.rightsquare)
+        tok = T.nada;
+        if (n == nX && tokAt(i) != T.rightsquare)
           error(ERROR_invalidArgument);
         break;
       default:
@@ -4698,26 +4698,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private float[][][] floatArraySetXYZ(int i, int nX, int nY, int nZ)
       throws ScriptException {
     int tok = tokAt(i++);
-    if (tok == Token.spacebeforesquare)
+    if (tok == T.spacebeforesquare)
       tok = tokAt(i++);
-    if (tok != Token.leftsquare || nX <= 0)
+    if (tok != T.leftsquare || nX <= 0)
       error(ERROR_invalidArgument);
     float[][][] fparams = ArrayUtil.newFloat3(nX, -1);
     int n = 0;
-    while (tok != Token.rightsquare) {
+    while (tok != T.rightsquare) {
       tok = getToken(i).tok;
       switch (tok) {
-      case Token.spacebeforesquare:
-      case Token.rightsquare:
+      case T.spacebeforesquare:
+      case T.rightsquare:
         continue;
-      case Token.comma:
+      case T.comma:
         i++;
         break;
-      case Token.leftsquare:
+      case T.leftsquare:
         fparams[n++] = floatArraySet(i, nY, nZ);
         i = ++iToken;
-        tok = Token.nada;
-        if (n == nX && tokAt(i) != Token.rightsquare)
+        tok = T.nada;
+        if (n == nX && tokAt(i) != T.rightsquare)
           error(ERROR_invalidArgument);
         break;
       default:
@@ -4728,14 +4728,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private String stringParameter(int index) throws ScriptException {
-    if (!checkToken(index) || getToken(index).tok != Token.string)
+    if (!checkToken(index) || getToken(index).tok != T.string)
       error(ERROR_stringExpected);
     return (String) theToken.value;
   }
 
   private String[] stringParameterSet(int i) throws ScriptException {
     switch (tokAt(i)) {
-    case Token.string:
+    case T.string:
       String s = stringParameter(i);
       if (s.startsWith("[\"")) {
         Object o = viewer.evaluateExpression(s);
@@ -4743,28 +4743,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           return TextFormat.split((String) o, '\n');
       }
       return new String[] { s };
-    case Token.spacebeforesquare:
+    case T.spacebeforesquare:
       i += 2;
       break;
-    case Token.leftsquare:
+    case T.leftsquare:
       ++i;
       break;
-    case Token.varray:
-      return ScriptVariable.listValue(getToken(i));
+    case T.varray:
+      return SV.listValue(getToken(i));
     default:
       error(ERROR_invalidArgument);
     }
     int tok;
     List<String> v = new ArrayList<String>();
-    while ((tok = tokAt(i)) != Token.rightsquare) {
+    while ((tok = tokAt(i)) != T.rightsquare) {
       switch (tok) {
-      case Token.comma:
+      case T.comma:
         break;
-      case Token.string:
+      case T.string:
         v.add(stringParameter(i));
         break;
       default:
-      case Token.nada:
+      case T.nada:
         error(ERROR_invalidArgument);
       }
       i++;
@@ -4785,12 +4785,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private boolean booleanParameter(int i) throws ScriptException {
-    if (statementLength == i)
+    if (slen == i)
       return true;
     switch (getToken(checkLast(i)).tok) {
-    case Token.on:
+    case T.on:
       return true;
-    case Token.off:
+    case T.off:
       return false;
     default:
       error(ERROR_booleanExpected);
@@ -4798,19 +4798,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return false;
   }
 
-  private Point3f atomCenterOrCoordinateParameter(int i) throws ScriptException {
+  private P3 atomCenterOrCoordinateParameter(int i) throws ScriptException {
     switch (getToken(i).tok) {
-    case Token.bitset:
-    case Token.expressionBegin:
-      BitSet bs = atomExpression(statement, i, 0, true, false, false, true);
+    case T.bitset:
+    case T.expressionBegin:
+      BS bs = atomExpression(st, i, 0, true, false, false, true);
       if (bs != null)
         return viewer.getAtomSetCenter(bs);
-      if (expressionResult instanceof Point3f)
-        return (Point3f) expressionResult;
+      if (expressionResult instanceof P3)
+        return (P3) expressionResult;
       error(ERROR_invalidArgument);
       break;
-    case Token.leftbrace:
-    case Token.point3f:
+    case T.leftbrace:
+    case T.point3f:
       return getPoint3f(i, true);
     }
     error(ERROR_invalidArgument);
@@ -4820,42 +4820,42 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private boolean isCenterParameter(int i) {
     int tok = tokAt(i);
-    return (tok == Token.dollarsign || tok == Token.leftbrace
-        || tok == Token.expressionBegin || tok == Token.point3f || tok == Token.bitset);
+    return (tok == T.dollarsign || tok == T.leftbrace
+        || tok == T.expressionBegin || tok == T.point3f || tok == T.bitset);
   }
 
-  private Point3f centerParameter(int i) throws ScriptException {
+  private P3 centerParameter(int i) throws ScriptException {
     return centerParameterForModel(i, Integer.MIN_VALUE);
   }
 
-  private Point3f centerParameterForModel(int i, int modelIndex) throws ScriptException {
-    Point3f center = null;
+  private P3 centerParameterForModel(int i, int modelIndex) throws ScriptException {
+    P3 center = null;
     expressionResult = null;
     if (checkToken(i)) {
       switch (getToken(i).tok) {
-      case Token.dollarsign:
+      case T.dollarsign:
         String id = objectNameParameter(++i);
         int index = Integer.MIN_VALUE;
         // allow for $pt2.3 -- specific vertex
-        if (tokAt(i + 1) == Token.leftsquare) {
+        if (tokAt(i + 1) == T.leftsquare) {
           index = parameterExpressionList(-i - 1, -1, true).get(0).asInt();
-          if (getToken(--iToken).tok != Token.rightsquare)
+          if (getToken(--iToken).tok != T.rightsquare)
             error(ERROR_invalidArgument);
         }
-        if (isSyntaxCheck)
-          return new Point3f();
-        if (tokAt(i + 1) == Token.per
-            && (tokAt(i + 2) == Token.length || tokAt(i + 2) == Token.size)) {
+        if (chk)
+          return new P3();
+        if (tokAt(i + 1) == T.per
+            && (tokAt(i + 2) == T.length || tokAt(i + 2) == T.size)) {
           index = Integer.MAX_VALUE;
           iToken = i + 2;
         }
         if ((center = getObjectCenter(id, index, modelIndex)) == null)
           errorStr(ERROR_drawObjectNotDefined, id);
         break;
-      case Token.bitset:
-      case Token.expressionBegin:
-      case Token.leftbrace:
-      case Token.point3f:
+      case T.bitset:
+      case T.expressionBegin:
+      case T.leftbrace:
+      case T.point3f:
         center = atomCenterOrCoordinateParameter(i);
         break;
       }
@@ -4866,57 +4866,57 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private Point4f planeParameter(int i) throws ScriptException {
-    Vector3f vAB = new Vector3f();
-    Vector3f vAC = new Vector3f();
+    V3 vAB = new V3();
+    V3 vAC = new V3();
     Point4f plane = null;
-    boolean isNegated = (tokAt(i) == Token.minus);
+    boolean isNegated = (tokAt(i) == T.minus);
     if (isNegated)
       i++;
-    if (i < statementLength)
+    if (i < slen)
       switch (getToken(i).tok) {
-      case Token.point4f:
+      case T.point4f:
         plane = Point4f.newPt((Point4f) theToken.value);
         break;
-      case Token.dollarsign:
+      case T.dollarsign:
         String id = objectNameParameter(++i);
-        if (isSyntaxCheck)
+        if (chk)
           return new Point4f();
-        int shapeType = shapeManager.getShapeIdFromObjectName(id);
+        int shapeType = sm.getShapeIdFromObjectName(id);
         switch (shapeType) {
-        case JmolConstants.SHAPE_DRAW:
-          setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", id);
-          Point3f[] points = (Point3f[]) getShapeProperty(
-              JmolConstants.SHAPE_DRAW, "vertices");
+        case JC.SHAPE_DRAW:
+          setShapeProperty(JC.SHAPE_DRAW, "thisID", id);
+          P3[] points = (P3[]) getShapeProperty(
+              JC.SHAPE_DRAW, "vertices");
           if (points == null || points.length < 3 || points[0] == null
               || points[1] == null || points[2] == null)
             break;
           Measure.getPlaneThroughPoints(points[0], points[1], points[2],
-              new Vector3f(), vAB, vAC, plane = new Point4f());
+              new V3(), vAB, vAC, plane = new Point4f());
           break;
-        case JmolConstants.SHAPE_ISOSURFACE:
-          setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", id);
-          plane = (Point4f) getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+        case JC.SHAPE_ISOSURFACE:
+          setShapeProperty(JC.SHAPE_ISOSURFACE, "thisID", id);
+          plane = (Point4f) getShapeProperty(JC.SHAPE_ISOSURFACE,
               "plane");
           break;
         }
         break;
-      case Token.x:
-        if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
+      case T.x:
+        if (!checkToken(++i) || getToken(i++).tok != T.opEQ)
           evalError("x=?", null);
         plane = Point4f.new4(1, 0, 0, -floatParameter(i));
         break;
-      case Token.y:
-        if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
+      case T.y:
+        if (!checkToken(++i) || getToken(i++).tok != T.opEQ)
           evalError("y=?", null);
         plane = Point4f.new4(0, 1, 0, -floatParameter(i));
         break;
-      case Token.z:
-        if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
+      case T.z:
+        if (!checkToken(++i) || getToken(i++).tok != T.opEQ)
           evalError("z=?", null);
         plane = Point4f.new4(0, 0, 1, -floatParameter(i));
         break;
-      case Token.identifier:
-      case Token.string:
+      case T.identifier:
+      case T.string:
         String str = parameterAsString(i);
         if (str.equalsIgnoreCase("xy"))
           return Point4f.new4(0, 0, 1, 0);
@@ -4926,27 +4926,27 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           return Point4f.new4(1, 0, 0, 0);
         iToken += 2;
         break;
-      case Token.leftbrace:
+      case T.leftbrace:
         if (!isPoint3f(i)) {
           plane = getPoint4f(i);
           break;
         }
         //$FALL-THROUGH$
-      case Token.bitset:
-      case Token.expressionBegin:
-        Point3f pt1 = atomCenterOrCoordinateParameter(i);
-        if (getToken(++iToken).tok == Token.comma)
+      case T.bitset:
+      case T.expressionBegin:
+        P3 pt1 = atomCenterOrCoordinateParameter(i);
+        if (getToken(++iToken).tok == T.comma)
           ++iToken;
-        Point3f pt2 = atomCenterOrCoordinateParameter(iToken);
-        if (getToken(++iToken).tok == Token.comma)
+        P3 pt2 = atomCenterOrCoordinateParameter(iToken);
+        if (getToken(++iToken).tok == T.comma)
           ++iToken;
-        Point3f pt3 = atomCenterOrCoordinateParameter(iToken);
+        P3 pt3 = atomCenterOrCoordinateParameter(iToken);
         i = iToken;
-        Vector3f norm = new Vector3f();
+        V3 norm = new V3();
         float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB, vAC);
         plane = new Point4f();
         plane.set(norm.x, norm.y, norm.z, w);
-        if (!isSyntaxCheck && Logger.debugging)
+        if (!chk && Logger.debugging)
           Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: "
               + plane);
         break;
@@ -4960,23 +4960,23 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private Point4f hklParameter(int i) throws ScriptException {
-    if (!isSyntaxCheck && viewer.getCurrentUnitCell() == null)
+    if (!chk && viewer.getCurrentUnitCell() == null)
       error(ERROR_noUnitCell);
-    Point3f pt = (Point3f) getPointOrPlane(i, false, true, false, true, 3, 3);
+    P3 pt = (P3) getPointOrPlane(i, false, true, false, true, 3, 3);
     Point4f p = getHklPlane(pt);
     if (p == null)
       error(ERROR_badMillerIndices);
-    if (!isSyntaxCheck && Logger.debugging)
+    if (!chk && Logger.debugging)
       Logger.info("defined plane: " + p);
     return p;
   }
 
-  protected Point4f getHklPlane(Point3f pt) {
-    Vector3f vAB = new Vector3f();
-    Vector3f vAC = new Vector3f();
-    Point3f pt1 = Point3f.new3(pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
-    Point3f pt2 = Point3f.new3(0, pt.y == 0 ? 1 : 1 / pt.y, 0);
-    Point3f pt3 = Point3f.new3(0, 0, pt.z == 0 ? 1 : 1 / pt.z);
+  protected Point4f getHklPlane(P3 pt) {
+    V3 vAB = new V3();
+    V3 vAC = new V3();
+    P3 pt1 = P3.new3(pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
+    P3 pt2 = P3.new3(0, pt.y == 0 ? 1 : 1 / pt.y, 0);
+    P3 pt3 = P3.new3(0, 0, pt.z == 0 ? 1 : 1 / pt.z);
     // trick for 001 010 100 is to define the other points on other edges
     if (pt.x == 0 && pt.y == 0 && pt.z == 0) {
       return null;
@@ -5000,7 +5000,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     viewer.toCartesian(pt1, false);
     viewer.toCartesian(pt2, false);
     viewer.toCartesian(pt3, false);
-    Vector3f plane = new Vector3f();
+    V3 plane = new V3();
     float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
     Point4f pt4 = new Point4f();
     pt4.set(plane.x, plane.y, plane.z, w);
@@ -5011,19 +5011,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // wireframe, ssbond, hbond, struts
     int mad = 1;
     switch (getToken(1).tok) {
-    case Token.only:
+    case T.only:
       restrictSelected(false, false);
       break;
-    case Token.on:
+    case T.on:
       break;
-    case Token.off:
+    case T.off:
       mad = 0;
       break;
-    case Token.integer:
+    case T.integer:
       int radiusRasMol = intParameterRange(1, 0, 750);
       mad = radiusRasMol * 4 * 2;
       break;
-    case Token.decimal:
+    case T.decimal:
       mad = (int) Math.floor(floatParameterRange(1, -3, 3) * 1000 * 2);
       if (mad < 0) {
         restrictSelected(false, false);
@@ -5037,18 +5037,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private int getSetAxesTypeMad(int index) throws ScriptException {
-    if (index == statementLength)
+    if (index == slen)
       return 1;
     switch (getToken(checkLast(index)).tok) {
-    case Token.on:
+    case T.on:
       return 1;
-    case Token.off:
+    case T.off:
       return 0;
-    case Token.dotted:
+    case T.dotted:
       return -1;
-    case Token.integer:
+    case T.integer:
       return intParameterRange(index, -1, 19);
-    case Token.decimal:
+    case T.decimal:
       float angstroms = floatParameterRange(index, 0, 2);
       return (int)Math.floor(angstroms * 1000 * 2);
     }
@@ -5058,11 +5058,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private boolean isColorParam(int i) {
     int tok = tokAt(i);
-    return (tok == Token.navy || tok == Token.spacebeforesquare
-        || tok == Token.leftsquare || tok == Token.varray
-        || tok == Token.point3f || isPoint3f(i) || (tok == Token.string || Token
-        .tokAttr(tok, Token.identifier))
-        && ColorUtil.getArgbFromString((String) statement[i].value) != 0);
+    return (tok == T.navy || tok == T.spacebeforesquare
+        || tok == T.leftsquare || tok == T.varray
+        || tok == T.point3f || isPoint3f(i) || (tok == T.string || T
+        .tokAttr(tok, T.identifier))
+        && ColorUtil.getArgbFromString((String) st[i].value) != 0);
   }
 
   private int getArgbParam(int index) throws ScriptException {
@@ -5077,32 +5077,32 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private int getArgbParamOrNone(int index, boolean allowNone) throws ScriptException {
-    Point3f pt = null;
+    P3 pt = null;
     if (checkToken(index)) {
       switch (getToken(index).tok) {
       default:
-        if (!Token.tokAttr(theTok, Token.identifier))
+        if (!T.tokAttr(theTok, T.identifier))
           break;
         //$FALL-THROUGH$
-      case Token.navy:
-      case Token.string:
+      case T.navy:
+      case T.string:
         return ColorUtil.getArgbFromString(parameterAsString(index));
-      case Token.spacebeforesquare:
+      case T.spacebeforesquare:
         return getColorTriad(index + 2);
-      case Token.leftsquare:
+      case T.leftsquare:
         return getColorTriad(++index);
-      case Token.varray:
-        float[] rgb = ScriptVariable.flistValue(theToken, 3);
+      case T.varray:
+        float[] rgb = SV.flistValue(theToken, 3);
         if (rgb != null && rgb.length != 3)
-          pt = Point3f.new3(rgb[0], rgb[1], rgb[2]);
+          pt = P3.new3(rgb[0], rgb[1], rgb[2]);
         break;
-      case Token.point3f:
-        pt = (Point3f) theToken.value;
+      case T.point3f:
+        pt = (P3) theToken.value;
         break;
-      case Token.leftbrace:
+      case T.leftbrace:
         pt = getPoint3f(index, false);
         break;
-      case Token.none:
+      case T.none:
         if (allowNone)
           return 0;
       }
@@ -5117,41 +5117,41 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int n = 0;
     String hex = "";
     getToken(i);
-    Point3f pt = null;
+    P3 pt = null;
     float val = 0;
     out: switch (theTok) {
-    case Token.integer:
-    case Token.spec_seqcode:
-    case Token.decimal:
-      for (; i < statementLength; i++) {
+    case T.integer:
+    case T.spec_seqcode:
+    case T.decimal:
+      for (; i < slen; i++) {
         switch (getToken(i).tok) {
-        case Token.comma:
+        case T.comma:
           continue;
-        case Token.identifier:
+        case T.identifier:
           if (n != 1 || colors[0] != 0)
             error(ERROR_badRGBColor);
           hex = "0" + parameterAsString(i);
           break out;
-        case Token.decimal:
+        case T.decimal:
           if (n > 2)
             error(ERROR_badRGBColor);
           val = floatParameter(i);
           break;
-        case Token.integer:
+        case T.integer:
           if (n > 2)
             error(ERROR_badRGBColor);
           val = theToken.intValue;
           break;
-        case Token.spec_seqcode:
+        case T.spec_seqcode:
           if (n > 2)
             error(ERROR_badRGBColor);
           val = ((Integer) theToken.value).intValue() % 256;
           break;
-        case Token.rightsquare:
+        case T.rightsquare:
           if (n != 3)
             error(ERROR_badRGBColor);
           --i;
-          pt = Point3f.new3(colors[0], colors[1], colors[2]);
+          pt = P3.new3(colors[0], colors[1], colors[2]);
           break out;
         default:
           error(ERROR_badRGBColor);
@@ -5160,16 +5160,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       error(ERROR_badRGBColor);
       break;
-    case Token.point3f:
-      pt = (Point3f) theToken.value;
+    case T.point3f:
+      pt = (P3) theToken.value;
       break;
-    case Token.identifier:
+    case T.identifier:
       hex = parameterAsString(i);
       break;
     default:
       error(ERROR_badRGBColor);
     }
-    if (getToken(++i).tok != Token.rightsquare)
+    if (getToken(++i).tok != T.rightsquare)
       error(ERROR_badRGBColor);
     if (pt != null)
       return ColorUtil.colorPtToInt(pt);
@@ -5183,7 +5183,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private boolean isPoint3f(int i) {
     // first check for simple possibilities:
     boolean isOK;
-    if ((isOK = (tokAt(i) == Token.point3f)) || tokAt(i) == Token.point4f
+    if ((isOK = (tokAt(i) == T.point3f)) || tokAt(i) == T.point4f
         || isFloatParameter(i + 1) && isFloatParameter(i + 2)
         && isFloatParameter(i + 3) && isFloatParameter(i + 4))
       return isOK;
@@ -5200,9 +5200,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return isOK;
   }
 
-  private Point3f getPoint3f(int i, boolean allowFractional)
+  private P3 getPoint3f(int i, boolean allowFractional)
       throws ScriptException {
-    return (Point3f) getPointOrPlane(i, false, allowFractional, true, false, 3,
+    return (P3) getPointOrPlane(i, false, allowFractional, true, false, 3,
         3);
   }
 
@@ -5210,7 +5210,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return (Point4f) getPointOrPlane(i, false, false, false, false, 4, 4);
   }
 
-  private Point3f fractionalPoint;
+  private P3 fractionalPoint;
 
   private Object getPointOrPlane(int index, boolean integerOnly,
                                  boolean allowFractional, boolean doConvert,
@@ -5221,52 +5221,52 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     float[] coord = new float[6];
     int n = 0;
     coordinatesAreFractional = implicitFractional;
-    if (tokAt(index) == Token.point3f) {
+    if (tokAt(index) == T.point3f) {
       if (minDim <= 3 && maxDim >= 3)
         return /*Point3f*/getToken(index).value;
       error(ERROR_invalidArgument);
     }
-    if (tokAt(index) == Token.point4f) {
+    if (tokAt(index) == T.point4f) {
       if (minDim <= 4 && maxDim >= 4)
         return /*Point4f*/getToken(index).value;
       error(ERROR_invalidArgument);
     }
     int multiplier = 1;
-    out: for (int i = index; i < statement.length; i++) {
+    out: for (int i = index; i < st.length; i++) {
       switch (getToken(i).tok) {
-      case Token.leftbrace:
-      case Token.comma:
-      case Token.opAnd:
-      case Token.opAND:
+      case T.leftbrace:
+      case T.comma:
+      case T.opAnd:
+      case T.opAND:
         break;
-      case Token.rightbrace:
+      case T.rightbrace:
         break out;
-      case Token.minus:
+      case T.minus:
         multiplier = -1;
         break;
-      case Token.spec_seqcode_range:
+      case T.spec_seqcode_range:
         if (n == 6)
           error(ERROR_invalidArgument);
         coord[n++] = theToken.intValue;
         multiplier = -1;
         break;
-      case Token.integer:
-      case Token.spec_seqcode:
+      case T.integer:
+      case T.spec_seqcode:
         if (n == 6)
           error(ERROR_invalidArgument);
         coord[n++] = theToken.intValue * multiplier;
         multiplier = 1;
         break;
-      case Token.divide:
-      case Token.spec_model: // after a slash
+      case T.divide:
+      case T.spec_model: // after a slash
         if (!allowFractional)
           error(ERROR_invalidArgument);
-        if (theTok == Token.divide)
+        if (theTok == T.divide)
           getToken(++i);
         n--;
         if (n < 0 || integerOnly)
           error(ERROR_invalidArgument);
-        if (theToken.value instanceof Integer || theTok == Token.integer) {
+        if (theToken.value instanceof Integer || theTok == T.integer) {
           coord[n++] /= (theToken.intValue == Integer.MAX_VALUE ? ((Integer) theToken.value)
               .intValue()
               : theToken.intValue);
@@ -5275,8 +5275,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         coordinatesAreFractional = true;
         break;
-      case Token.decimal:
-      case Token.spec_model2:
+      case T.decimal:
+      case T.spec_model2:
         if (integerOnly)
           error(ERROR_invalidArgument);
         if (n == 6)
@@ -5290,10 +5290,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (n < minDim || n > maxDim)
       error(ERROR_invalidArgument);
     if (n == 3) {
-      Point3f pt = Point3f.new3(coord[0], coord[1], coord[2]);
+      P3 pt = P3.new3(coord[0], coord[1], coord[2]);
       if (coordinatesAreFractional && doConvert) {
-        fractionalPoint = Point3f.newP(pt);
-        if (!isSyntaxCheck)
+        fractionalPoint = P3.newP(pt);
+        if (!chk)
           viewer.toCartesian(pt, !viewer.getFractionalRelative());
       }
       return pt;
@@ -5308,7 +5308,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return coord;
   }
 
-  private Point3f xypParameter(int index) throws ScriptException {
+  private P3 xypParameter(int index) throws ScriptException {
     // [x y] or [x,y] refers to an xy point on the screen
     //     return a Point3f with z = Float.MAX_VALUE
     // [x y %] or [x,y %] refers to an xy point on the screen
@@ -5316,21 +5316,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     //     return a Point3f with z = -Float.MAX_VALUE
 
     int tok = tokAt(index);
-    if (tok == Token.spacebeforesquare)
+    if (tok == T.spacebeforesquare)
       tok = tokAt(++index);
-    if (tok != Token.leftsquare || !isFloatParameter(++index))
+    if (tok != T.leftsquare || !isFloatParameter(++index))
       return null;
-    Point3f pt = new Point3f();
+    P3 pt = new P3();
     pt.x = floatParameter(index);
-    if (tokAt(++index) == Token.comma)
+    if (tokAt(++index) == T.comma)
       index++;
     if (!isFloatParameter(index))
       return null;
     pt.y = floatParameter(index);
-    boolean isPercent = (tokAt(++index) == Token.percent);
+    boolean isPercent = (tokAt(++index) == T.percent);
     if (isPercent)
       ++index;
-    if (tokAt(index) != Token.rightsquare)
+    if (tokAt(index) != T.rightsquare)
       return null;
     iToken = index;
     pt.z = (isPercent ? -1 : 1) * Float.MAX_VALUE;
@@ -5412,7 +5412,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   public void notifyResumeStatus() {
-    if (!isSyntaxCheck && !executionStopped && !executionStepping) {
+    if (!chk && !executionStopped && !executionStepping) {
       viewer.scriptStatus("script execution "
           + (error || executionStopped ? "interrupted" : "resumed"));
     }
@@ -5441,10 +5441,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private boolean dispatchCommands(boolean isSpt)
       throws ScriptException {
     long timeBegin = 0;
-    if (shapeManager == null)
-      shapeManager = viewer.getShapeManager();
+    if (sm == null)
+      sm = viewer.getShapeManager();
     debugScript = logMessages = false;
-    if (!isSyntaxCheck)
+    if (!chk)
       setDebugging();
     if (logMessages) {
       timeBegin = System.currentTimeMillis();
@@ -5458,7 +5458,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (aatoken == null)
       return true;
     commandLoop();
-    if (isSyntaxCheck)
+    if (chk)
       return true;
     String script = viewer.getInsertedCommand();
     if (script != "") {
@@ -5481,10 +5481,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void commandLoop() throws ScriptException {
     String lastCommand = "";
     boolean isForCheck = false; // indicates the stage of the for command loop
-    List<Token[]> vProcess = null;
+    List<T[]> vProcess = null;
     long lastTime = System.currentTimeMillis();
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
-      if (!isSyntaxCheck && isJS && allowJSThreads) {
+      if (!chk && isJS && allowJSThreads) {
         // every 100-ms check for interruptions
         if (!executionPaused && System.currentTimeMillis() - lastTime > 100) {
           pc--;
@@ -5492,25 +5492,25 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         lastTime = System.currentTimeMillis();
       }
-      if (!isSyntaxCheck && !checkContinue())
+      if (!chk && !checkContinue())
         break;
       if (lineNumbers[pc] > lineEnd)
         break;
       theToken = (aatoken[pc].length == 0 ? null : aatoken[pc][0]);
       // when checking scripts, we can't check statments
       // containing @{...}
-      if (!historyDisabled && !isSyntaxCheck
+      if (!historyDisabled && !chk
           && scriptLevel <= commandHistoryLevelMax && !tQuiet) {
         String cmdLine = getCommand(pc, true, true);
         if (theToken != null
             && cmdLine.length() > 0
             && !cmdLine.equals(lastCommand)
-            && (theToken.tok == Token.function
-                || theToken.tok == Token.parallel || !Token.tokAttr(
-                theToken.tok, Token.flowCommand)))
+            && (theToken.tok == T.function
+                || theToken.tok == T.parallel || !T.tokAttr(
+                theToken.tok, T.flowCommand)))
           viewer.addCommand(lastCommand = cmdLine);
       }
-      if (!isSyntaxCheck) {
+      if (!chk) {
         String script = viewer.getInsertedCommand();
         if (script != "")
           runScript(script);
@@ -5524,7 +5524,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       fullCommand = thisCommand + getNextComment();
       getToken(0);
       iToken = 0;
-      if ((listCommands || !isSyntaxCheck && scriptLevel > 0) && !isJS) {
+      if ((listCommands || !chk && scriptLevel > 0) && !isJS) {
         int milliSecDelay = viewer.getScriptDelay();
         if (listCommands || milliSecDelay > 0) {
           if (milliSecDelay > 0)
@@ -5534,15 +5534,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
       }
       if (vProcess != null
-          && (theTok != Token.end || statementLength < 2 || statement[1].tok != Token.process)) {
-        vProcess.add(statement);
+          && (theTok != T.end || slen < 2 || st[1].tok != T.process)) {
+        vProcess.add(st);
         continue;
       }
-      if (isSyntaxCheck) {
+      if (chk) {
         if (isCmdLine_c_or_C_Option)
           Logger.info(thisCommand);
-        if (statementLength == 1 && statement[0].tok != Token.function
-            && statement[0].tok != Token.parallel)
+        if (slen == 1 && st[0].tok != T.function
+            && st[0].tok != T.parallel)
           continue;
       } else {
         if (debugScript)
@@ -5554,12 +5554,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       if (theToken == null)
         continue;
-      if (Token.tokAttr(theToken.tok, Token.shapeCommand))
+      if (T.tokAttr(theToken.tok, T.shapeCommand))
         processShapeCommand(theToken.tok);
       else
         switch (theToken.tok) {
-        case Token.nada:
-          if (isSyntaxCheck || !viewer.getMessageStyleChime())
+        case T.nada:
+          if (chk || !viewer.getMessageStyleChime())
             break;
           String s = (String) theToken.value;
           if (s == null)
@@ -5568,301 +5568,301 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             viewer.showMessage(s);
           scriptStatusOrBuffer(s);
           break;
-        case Token.push:
+        case T.push:
           pushContext((ContextToken) theToken);
           break;
-        case Token.pop:
+        case T.pop:
           popContext(true, false);
           break;
-        case Token.colon:
+        case T.colon:
           break;
-        case Token.gotocmd:
-        case Token.loop:
+        case T.gotocmd:
+        case T.loop:
           if (viewer.isHeadless())
             break;
           //$FALL-THROUGH$
-        case Token.catchcmd:
-        case Token.breakcmd:
-        case Token.continuecmd:
-        case Token.elsecmd:
-        case Token.elseif:
-        case Token.end:
-        case Token.endifcmd:
-        case Token.forcmd:
-        case Token.ifcmd:
-        case Token.switchcmd:
-        case Token.casecmd:
-        case Token.defaultcmd:
-        case Token.whilecmd:
+        case T.catchcmd:
+        case T.breakcmd:
+        case T.continuecmd:
+        case T.elsecmd:
+        case T.elseif:
+        case T.end:
+        case T.endifcmd:
+        case T.forcmd:
+        case T.ifcmd:
+        case T.switchcmd:
+        case T.casecmd:
+        case T.defaultcmd:
+        case T.whilecmd:
           isForCheck = flowControl(theToken.tok, isForCheck, vProcess);
-          if (theTok == Token.process)
+          if (theTok == T.process)
             vProcess = null; // "end process"
           break;
-        case Token.animation:
+        case T.animation:
           animation();
           break;
-        case Token.assign:
+        case T.assign:
           assign();
           break;
-        case Token.background:
+        case T.background:
           background(1);
           break;
-        case Token.bind:
+        case T.bind:
           bind();
           break;
-        case Token.bondorder:
+        case T.bondorder:
           bondorder();
           break;
-        case Token.calculate:
+        case T.calculate:
           calculate();
           break;
-        case Token.cache:
+        case T.cache:
           cache();
           break;
-        case Token.cd:
+        case T.cd:
           cd();
           break;
-        case Token.center:
+        case T.center:
           center(1);
           break;
-        case Token.centerAt:
+        case T.centerAt:
           centerAt();
           break;
-        case Token.color:
+        case T.color:
           color();
           break;
-        case Token.compare:
+        case T.compare:
           compare();
           break;
-        case Token.configuration:
+        case T.configuration:
           configuration();
           break;
-        case Token.connect:
+        case T.connect:
           connect(1);
           break;
-        case Token.console:
+        case T.console:
           console();
           break;
-        case Token.data:
+        case T.data:
           data();
           break;
-        case Token.define:
+        case T.define:
           define();
           break;
-        case Token.delay:
+        case T.delay:
           delay();
           break;
-        case Token.delete:
+        case T.delete:
           delete();
           break;
-        case Token.depth:
+        case T.depth:
           slab(true);
           break;
-        case Token.display:
+        case T.display:
           display(true);
           break;
-        case Token.exit: // flush the queue and...
-        case Token.quit: // quit this only if it isn't the first command
-          if (isSyntaxCheck)
+        case T.exit: // flush the queue and...
+        case T.quit: // quit this only if it isn't the first command
+          if (chk)
             break;
-          if (pc > 0 && theToken.tok == Token.exit)
+          if (pc > 0 && theToken.tok == T.exit)
             viewer.clearScriptQueue();
           executionStopped = (pc > 0 || !viewer.usingScriptQueue());
           break;
-        case Token.exitjmol:
-          if (isSyntaxCheck)
+        case T.exitjmol:
+          if (chk)
             return;
           viewer.exitJmol();
           break;
-        case Token.file:
+        case T.file:
           file();
           break;
-        case Token.fixed:
+        case T.fixed:
           fixed();
           break;
-        case Token.font:
+        case T.font:
           font(-1, 0);
           break;
-        case Token.frame:
-        case Token.model:
+        case T.frame:
+        case T.model:
           frame(1);
           break;
-        case Token.parallel: // not actually found 
-        case Token.function:
-        case Token.identifier:
+        case T.parallel: // not actually found 
+        case T.function:
+        case T.identifier:
           function(); // when a function is a command
           break;
-        case Token.getproperty:
+        case T.getproperty:
           getProperty();
           break;
-        case Token.help:
+        case T.help:
           help();
           break;
-        case Token.hide:
+        case T.hide:
           display(false);
           break;
-        case Token.hbond:
+        case T.hbond:
           hbond();
           break;
-        case Token.history:
+        case T.history:
           history(1);
           break;
-        case Token.hover:
+        case T.hover:
           hover();
           break;
-        case Token.initialize:
-          if (!isSyntaxCheck)
+        case T.initialize:
+          if (!chk)
             viewer.initialize(!isStateScript);
           break;
-        case Token.invertSelected:
+        case T.invertSelected:
           invertSelected();
           break;
-        case Token.javascript:
-          script(Token.javascript, null);
+        case T.javascript:
+          script(T.javascript, null);
           break;
-        case Token.load:
+        case T.load:
           load();
           break;
-        case Token.log:
+        case T.log:
           log();
           break;
-        case Token.mapProperty:
+        case T.mapProperty:
           mapProperty();
           break;
-        case Token.message:
+        case T.message:
           message();
           break;
-        case Token.minimize:
+        case T.minimize:
           minimize();
           break;
-        case Token.move:
+        case T.move:
           move();
           break;
-        case Token.moveto:
+        case T.moveto:
           moveto();
           break;
-        case Token.navigate:
+        case T.navigate:
           navigate();
           break;
-        case Token.pause: // resume is done differently
+        case T.pause: // resume is done differently
           pause();
           break;
-        case Token.plot:
-        case Token.quaternion:
-        case Token.ramachandran:
-          plot(statement);
+        case T.plot:
+        case T.quaternion:
+        case T.ramachandran:
+          plot(st);
           break;
-        case Token.print:
+        case T.print:
           print();
           break;
-        case Token.process:
+        case T.process:
           pushContext((ContextToken) theToken);
           if (parallelProcessor != null)
-            vProcess = new ArrayList<Token[]>();
+            vProcess = new ArrayList<T[]>();
           break;
-        case Token.prompt:
+        case T.prompt:
           prompt();
           break;
-        case Token.redomove:
-        case Token.undomove:
+        case T.redomove:
+        case T.undomove:
           undoRedoMove();
           break;
-        case Token.refresh:
+        case T.refresh:
           refresh();
           break;
-        case Token.reset:
+        case T.reset:
           reset();
           break;
-        case Token.restore:
+        case T.restore:
           restore();
           break;
-        case Token.restrict:
+        case T.restrict:
           restrict();
           break;
-        case Token.resume:
-          if (!isSyntaxCheck)
+        case T.resume:
+          if (!chk)
             resumePausedExecution();
           break;
-        case Token.returncmd:
+        case T.returncmd:
           returnCmd(null);
           break;
-        case Token.rotate:
+        case T.rotate:
           rotate(false, false);
           break;
-        case Token.rotateSelected:
+        case T.rotateSelected:
           rotate(false, true);
           break;
-        case Token.save:
+        case T.save:
           save();
           break;
-        case Token.set:
+        case T.set:
           set();
           break;
-        case Token.script:
-          script(Token.script, null);
+        case T.script:
+          script(T.script, null);
           break;
-        case Token.select:
+        case T.select:
           select(1);
           break;
-        case Token.selectionhalos:
+        case T.selectionhalos:
           selectionHalo(1);
           break;
-        case Token.show:
+        case T.show:
           show();
           break;
-        case Token.slab:
+        case T.slab:
           slab(false);
           break;
         //case Token.slice:
         // slice();
         //break;
-        case Token.spin:
+        case T.spin:
           rotate(true, false);
           break;
-        case Token.ssbond:
+        case T.ssbond:
           ssbond();
           break;
-        case Token.step:
+        case T.step:
           if (pause())
             stepPausedExecution();
           break;
-        case Token.stereo:
+        case T.stereo:
           stereo();
           break;
-        case Token.structure:
+        case T.structure:
           structure();
           break;
-        case Token.subset:
+        case T.subset:
           subset();
           break;
-        case Token.sync:
+        case T.sync:
           sync();
           break;
-        case Token.timeout:
+        case T.timeout:
           timeout(1);
           break;
-        case Token.translate:
+        case T.translate:
           translate(false);
           break;
-        case Token.translateSelected:
+        case T.translateSelected:
           translate(true);
           break;
-        case Token.unbind:
+        case T.unbind:
           unbind();
           break;
-        case Token.vibration:
+        case T.vibration:
           vibration();
           break;
-        case Token.write:
+        case T.write:
           write(null);
           break;
-        case Token.zap:
+        case T.zap:
           zap(true);
           break;
-        case Token.zoom:
+        case T.zoom:
           zoom(false);
           break;
-        case Token.zoomTo:
+        case T.zoomTo:
           zoom(true);
           break;
         default:
@@ -5881,14 +5881,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int tok = tokAt(1);
     String fileName = parameterAsString(2);
     switch (tok) {
-    case Token.add:
-    case Token.remove:
-      if (!isSyntaxCheck) {
-        if (tok == Token.remove && tokAt(2) == Token.all)
+    case T.add:
+    case T.remove:
+      if (!chk) {
+        if (tok == T.remove && tokAt(2) == T.all)
           fileName = null;
-        int nBytes = viewer.cacheFileByName(fileName, tok == Token.add);
+        int nBytes = viewer.cacheFileByName(fileName, tok == T.add);
         showString(nBytes < 0 ? "cache cleared" : nBytes + " bytes "
-            + (tok == Token.add ? " cached" : " removed"));
+            + (tok == T.add ? " cached" : " removed"));
       }
       break;
     default:
@@ -5897,154 +5897,164 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void setCursorWait(boolean TF) {
-    if (!isSyntaxCheck)
-      viewer.setCursor(TF ? JmolConstants.CURSOR_WAIT : JmolConstants.CURSOR_DEFAULT);
+    if (!chk)
+      viewer.setCursor(TF ? JC.CURSOR_WAIT : JC.CURSOR_DEFAULT);
   }
 
   private void processShapeCommand(int tok) throws ScriptException {
     int iShape = 0;
     switch (tok) {
-    case Token.axes:
-      iShape = JmolConstants.SHAPE_AXES;
+    case T.axes:
+      iShape = JC.SHAPE_AXES;
       break;
-    case Token.backbone:
-      iShape = JmolConstants.SHAPE_BACKBONE;
+    case T.backbone:
+      iShape = JC.SHAPE_BACKBONE;
       break;
-    case Token.boundbox:
-      iShape = JmolConstants.SHAPE_BBCAGE;
+    case T.boundbox:
+      iShape = JC.SHAPE_BBCAGE;
       break;
-    case Token.cartoon:
-      iShape = JmolConstants.SHAPE_CARTOON;
+    case T.cartoon:
+      iShape = JC.SHAPE_CARTOON;
       break;
-    case Token.contact:
-      iShape = JmolConstants.SHAPE_CONTACT;
+    case T.contact:
+      iShape = JC.SHAPE_CONTACT;
       break;
-    case Token.dipole:
-      iShape = JmolConstants.SHAPE_DIPOLES;
+    case T.dipole:
+      iShape = JC.SHAPE_DIPOLES;
       break;
-    case Token.dots:
-      iShape = JmolConstants.SHAPE_DOTS;
+    case T.dots:
+      iShape = JC.SHAPE_DOTS;
       break;
-    case Token.draw:
-      iShape = JmolConstants.SHAPE_DRAW;
+    case T.draw:
+      iShape = JC.SHAPE_DRAW;
       break;
-    case Token.echo:
-      iShape = JmolConstants.SHAPE_ECHO;
+    case T.echo:
+      iShape = JC.SHAPE_ECHO;
       break;
-    case Token.ellipsoid:
-      iShape = JmolConstants.SHAPE_ELLIPSOIDS;
+    case T.ellipsoid:
+      iShape = JC.SHAPE_ELLIPSOIDS;
       break;
-    case Token.frank:
-      iShape = JmolConstants.SHAPE_FRANK;
+    case T.frank:
+      iShape = JC.SHAPE_FRANK;
       break;
-    case Token.geosurface:
-      iShape = JmolConstants.SHAPE_GEOSURFACE;
+    case T.geosurface:
+      iShape = JC.SHAPE_GEOSURFACE;
       break;
-    case Token.halo:
-      iShape = JmolConstants.SHAPE_HALOS;
+    case T.halo:
+      iShape = JC.SHAPE_HALOS;
       break;
-    case Token.isosurface:
-      iShape = JmolConstants.SHAPE_ISOSURFACE;
+    case T.isosurface:
+      iShape = JC.SHAPE_ISOSURFACE;
       break;
-    case Token.label:
-      iShape = JmolConstants.SHAPE_LABELS;
+    case T.label:
+      iShape = JC.SHAPE_LABELS;
       break;
-    case Token.lcaocartoon:
-      iShape = JmolConstants.SHAPE_LCAOCARTOON;
+    case T.lcaocartoon:
+      iShape = JC.SHAPE_LCAOCARTOON;
       break;
-    case Token.measurements:
-    case Token.measure:
-      iShape = JmolConstants.SHAPE_MEASURES;
+    case T.measurements:
+    case T.measure:
+      iShape = JC.SHAPE_MEASURES;
       break;
-    case Token.meshRibbon:
-      iShape = JmolConstants.SHAPE_MESHRIBBON;
+    case T.meshRibbon:
+      iShape = JC.SHAPE_MESHRIBBON;
       break;
-    case Token.mo:
-      iShape = JmolConstants.SHAPE_MO;
+    case T.mo:
+      iShape = JC.SHAPE_MO;
       break;
-    case Token.plot3d:
-      iShape = JmolConstants.SHAPE_PLOT3D;
+    case T.plot3d:
+      iShape = JC.SHAPE_PLOT3D;
       break;
-    case Token.pmesh:
-      iShape = JmolConstants.SHAPE_PMESH;
+    case T.pmesh:
+      iShape = JC.SHAPE_PMESH;
       break;
-    case Token.polyhedra:
-      iShape = JmolConstants.SHAPE_POLYHEDRA;
+    case T.polyhedra:
+      iShape = JC.SHAPE_POLYHEDRA;
       break;
-    case Token.ribbon:
-      iShape = JmolConstants.SHAPE_RIBBONS;
+    case T.ribbon:
+      iShape = JC.SHAPE_RIBBONS;
       break;
-    case Token.rocket:
-      iShape = JmolConstants.SHAPE_ROCKETS;
+    case T.rocket:
+      iShape = JC.SHAPE_ROCKETS;
       break;
-    case Token.spacefill: // aka cpk
-      iShape = JmolConstants.SHAPE_BALLS;
+    case T.spacefill: // aka cpk
+      iShape = JC.SHAPE_BALLS;
       break;
-    case Token.star:
-      iShape = JmolConstants.SHAPE_STARS;
+    case T.star:
+      iShape = JC.SHAPE_STARS;
       break;
-    case Token.strands:
-      iShape = JmolConstants.SHAPE_STRANDS;
+    case T.strands:
+      iShape = JC.SHAPE_STRANDS;
       break;
-    case Token.struts:
-      iShape = JmolConstants.SHAPE_STRUTS;
+    case T.struts:
+      iShape = JC.SHAPE_STRUTS;
       break;
-    case Token.trace:
-      iShape = JmolConstants.SHAPE_TRACE;
+    case T.trace:
+      iShape = JC.SHAPE_TRACE;
       break;
-    case Token.unitcell:
-      iShape = JmolConstants.SHAPE_UCCAGE;
+    case T.unitcell:
+      iShape = JC.SHAPE_UCCAGE;
       break;
-    case Token.vector:
-      iShape = JmolConstants.SHAPE_VECTORS;
+    case T.vector:
+      iShape = JC.SHAPE_VECTORS;
       break;
-    case Token.wireframe:
-      iShape = JmolConstants.SHAPE_STICKS;
+    case T.wireframe:
+      iShape = JC.SHAPE_STICKS;
       break;
     default:
       error(ERROR_unrecognizedCommand);
     }
 
+    // check for "OFF/delete/NONE" with no shape to avoid loading it at all
+    if (sm.getShape(iShape) == null && slen == 2) {
+      switch (st[1].tok) {
+      case T.off:
+      case T.delete:
+      case T.none:
+        return;
+      }
+    }
+    
     // atom objects:
 
     switch (tok) {
-    case Token.backbone:
-    case Token.cartoon:
-    case Token.meshRibbon:
-    case Token.ribbon:
-    case Token.rocket:
-    case Token.strands:
-    case Token.trace:
+    case T.backbone:
+    case T.cartoon:
+    case T.meshRibbon:
+    case T.ribbon:
+    case T.rocket:
+    case T.strands:
+    case T.trace:
       proteinShape(iShape);
       return;
-    case Token.dots:
-    case Token.geosurface:
+    case T.dots:
+    case T.geosurface:
       dots(iShape);
       return;
-    case Token.ellipsoid:
+    case T.ellipsoid:
       ellipsoid();
       return;
-    case Token.halo:
-    case Token.spacefill: // aka cpk
-    case Token.star:
-      setAtomShapeSize(iShape, (tok == Token.halo ? -1f : 1f));
+    case T.halo:
+    case T.spacefill: // aka cpk
+    case T.star:
+      setAtomShapeSize(iShape, (tok == T.halo ? -1f : 1f));
       return;
-    case Token.label:
+    case T.label:
       label(1);
       return;
-    case Token.lcaocartoon:
+    case T.lcaocartoon:
       lcaoCartoon();
       return;
-    case Token.polyhedra:
+    case T.polyhedra:
       polyhedra();
       return;
-    case Token.struts:
+    case T.struts:
       struts();
       return;
-    case Token.vector:
+    case T.vector:
       vector();
       return;
-    case Token.wireframe:
+    case T.wireframe:
       wireframe();
       return;
     }
@@ -6052,74 +6062,74 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // other objects:
 
     switch (tok) {
-    case Token.axes:
+    case T.axes:
       axes(1);
       return;
-    case Token.boundbox:
+    case T.boundbox:
       boundbox(1);
       return;
-    case Token.contact:
+    case T.contact:
       contact();
       return;
-    case Token.dipole:
+    case T.dipole:
       dipole();
       return;
-    case Token.draw:
+    case T.draw:
       draw();
       return;
-    case Token.echo:
+    case T.echo:
       echo(1, null, false);
       return;
-    case Token.frank:
+    case T.frank:
       frank(1);
       return;
-    case Token.isosurface:
-    case Token.plot3d:
-    case Token.pmesh:
+    case T.isosurface:
+    case T.plot3d:
+    case T.pmesh:
       isosurface(iShape);
       return;
-    case Token.measurements:
-    case Token.measure:
+    case T.measurements:
+    case T.measure:
       measure();
       return;
-    case Token.mo:
+    case T.mo:
       mo(false);
       return;
-    case Token.unitcell:
+    case T.unitcell:
       unitcell(1);
       return;
     }
   }
 
-  private boolean flowControl(int tok, boolean isForCheck, List<Token[]> vProcess)
+  private boolean flowControl(int tok, boolean isForCheck, List<T[]> vProcess)
       throws ScriptException {
     ContextToken ct;
     switch (tok) {
-    case Token.gotocmd:
+    case T.gotocmd:
       gotoCmd(parameterAsString(checkLast(1)));
       return isForCheck;
-    case Token.loop:
+    case T.loop:
       // back to the beginning of this script
       delay();
-      if (!isSyntaxCheck)
+      if (!chk)
         pc = -1;
       return isForCheck;
     }
-    int pt = statement[0].intValue;
-    boolean isDone = (pt < 0 && !isSyntaxCheck);
+    int pt = st[0].intValue;
+    boolean isDone = (pt < 0 && !chk);
     boolean isOK = true;
     int ptNext = 0;
     switch (tok) {
-    case Token.catchcmd:
+    case T.catchcmd:
       ct = (ContextToken) theToken;
       pushContext(ct);
       if (!isDone && ct.name0 != null)
         contextVariables.put(ct.name0, ct.contextVariables.get(ct.name0));
       isOK = !isDone;
       break;
-    case Token.switchcmd:
-    case Token.defaultcmd:
-    case Token.casecmd:
+    case T.switchcmd:
+    case T.defaultcmd:
+    case T.casecmd:
       ptNext = Math.abs(aatoken[Math.abs(pt)][0].intValue);
       switch (isDone ? 0 : switchCmd((ContextToken) theToken, tok)) {
       case 0:
@@ -6136,91 +6146,91 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       aatoken[pc][0].intValue = Math.abs(pt);
       theToken = aatoken[Math.abs(pt)][0];
-      if (theToken.tok != Token.end)
+      if (theToken.tok != T.end)
         theToken.intValue = ptNext;
       break;
-    case Token.ifcmd:
-    case Token.elseif:
+    case T.ifcmd:
+    case T.elseif:
       isOK = (!isDone && ifCmd());
-      if (isSyntaxCheck)
+      if (chk)
         break;
       ptNext = Math.abs(aatoken[Math.abs(pt)][0].intValue);
       ptNext = (isDone || isOK ? -ptNext : ptNext);
       aatoken[Math.abs(pt)][0].intValue = ptNext;
-      if (tok == Token.catchcmd)
+      if (tok == T.catchcmd)
         aatoken[pc][0].intValue = -pt; // reset to "done" state
       break;
-    case Token.elsecmd:
+    case T.elsecmd:
       checkLength(1);
-      if (pt < 0 && !isSyntaxCheck)
+      if (pt < 0 && !chk)
         pc = -pt - 1;
       break;
-    case Token.endifcmd:
+    case T.endifcmd:
       checkLength(1);
       break;
-    case Token.whilecmd:
+    case T.whilecmd:
       if (!isForCheck)
         pushContext((ContextToken) theToken);
       isForCheck = false;
-      if (!ifCmd() && !isSyntaxCheck) {
+      if (!ifCmd() && !chk) {
         pc = pt;
         popContext(true, false);
       }
       break;
-    case Token.breakcmd:
-      if (!isSyntaxCheck) {
+    case T.breakcmd:
+      if (!chk) {
         breakCmd(pt);
         break;
       }
-      if (statementLength == 1)
+      if (slen == 1)
         break;
       int n = intParameter(checkLast(1));
-      if (isSyntaxCheck)
+      if (chk)
         break;
       for (int i = 0; i < n; i++)
         popContext(true, false);
       break;
-    case Token.continuecmd:
+    case T.continuecmd:
       isForCheck = true;
-      if (!isSyntaxCheck)
+      if (!chk)
         pc = pt - 1;
-      if (statementLength > 1)
+      if (slen > 1)
         intParameter(checkLast(1));
       break;
-    case Token.forcmd:
+    case T.forcmd:
       // for (i = 1; i < 3; i = i + 1);
       // for (var i = 1; i < 3; i = i + 1);
       // for (;;;);
       // for (var x in {...}) { xxxxx }
       // for (var x in y) { xxxx }
-      Token token = theToken;
+      T token = theToken;
       int[] pts = new int[2];
       int j = 0;
       Object bsOrList = null;
-      for (int i = 1, nSkip = 0; i < statementLength && j < 2; i++) {
+      for (int i = 1, nSkip = 0; i < slen && j < 2; i++) {
         switch (tokAt(i)) {
-        case Token.semicolon:
+        case T.semicolon:
           if (nSkip > 0)
             nSkip--;
           else
             pts[j++] = i;
           break;
-        case Token.in:
+        case T.in:
           nSkip -= 2;
-          if (tokAt(++i) == Token.expressionBegin || tokAt(i) == Token.bitset) {
+          if (tokAt(++i) == T.expressionBegin || tokAt(i) == T.bitset) {
             bsOrList = atomExpressionAt(i);
             if (isBondSet)
-              bsOrList = new BondSet((BitSet) bsOrList);
+              bsOrList = new BondSet((BS) bsOrList);
           } else {
-            List<ScriptVariable> what = parameterExpressionList(-i, 1, false);
+            List<SV> what = parameterExpressionList(-i, 1, false);
             if (what == null || what.size() < 1)
               error(ERROR_invalidArgument);
-            ScriptVariable vl = what.get(0);
+            SV vl = what.get(0);
             switch (vl.tok) {
-            case Token.bitset:
-              bsOrList = ScriptVariable.getBitSet(vl, false);
+            case T.bitset:
+              bsOrList = SV.getBitSet(vl, false);
               break;
-            case Token.varray:
+            case T.varray:
               bsOrList = vl.getList();
               break;
             default:
@@ -6229,7 +6239,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
           i = iToken;
           break;
-        case Token.select:
+        case T.select:
           nSkip += 2;
           break;
         }
@@ -6241,23 +6251,23 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         pushContext((ContextToken) token);
         j = 2;
       }
-      if (tokAt(j) == Token.var)
+      if (tokAt(j) == T.var)
         j++;
       String key = parameterAsString(j);
       boolean isMinusMinus = key.equals("--") || key.equals("++");
       if (isMinusMinus) {
         key = parameterAsString(++j);
       }
-      ScriptVariable v = null;
-      if (Token.tokAttr(tokAt(j), Token.misc)
+      SV v = null;
+      if (T.tokAttr(tokAt(j), T.misc)
           || (v = getContextVariableAsVariable(key)) != null) {
         if (bsOrList == null && !isMinusMinus
-            && getToken(++j).tok != Token.opEQ)
+            && getToken(++j).tok != T.opEQ)
           error(ERROR_invalidArgument);
         if (bsOrList == null) {
           if (isMinusMinus)
             j -= 2;
-          setVariable(++j, statementLength - 1, key, 0);
+          setVariable(++j, slen - 1, key, 0);
         } else {
           // for (var x in {xx})....
           isOK = true;
@@ -6269,24 +6279,24 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               error(ERROR_invalidArgument);
             v = viewer.getOrSetNewVariable(key_incr, true);
           }
-          if (!isForCheck || v.tok != Token.bitset && v.tok != Token.varray
+          if (!isForCheck || v.tok != T.bitset && v.tok != T.varray
               || v.intValue == Integer.MAX_VALUE) {
             if (isForCheck) {
               // someone messed with this variable -- do not continue!
               isOK = false;
             } else {
-              v.set(ScriptVariable.getVariable(bsOrList), false);
+              v.set(SV.getVariable(bsOrList), false);
               v.intValue = 1;
             }
           } else {
             v.intValue++;
           }
           isOK = isOK
-              && (bsOrList instanceof BitSet ? ScriptVariable.bsSelectVar(v)
+              && (bsOrList instanceof BS ? SV.bsSelectVar(v)
                   .cardinality() == 1 : v.intValue <= v.getList().size());
           if (isOK) {
-            v = ScriptVariable.selectItemVar(v);
-            ScriptVariable t = getContextVariableAsVariable(key);
+            v = SV.selectItemVar(v);
+            SV t = getContextVariableAsVariable(key);
             if (t == null)
               t = viewer.getOrSetNewVariable(key, true);
             t.set(v, false);
@@ -6300,43 +6310,43 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         popContext(true, false);
       isForCheck = false;
       break;
-    case Token.end: // function, if, for, while, catch, switch
+    case T.end: // function, if, for, while, catch, switch
       switch (getToken(checkLast(1)).tok) {
-      case Token.trycmd:
+      case T.trycmd:
         ScriptFunction trycmd = (ScriptFunction) getToken(1).value;
-        if (isSyntaxCheck)
+        if (chk)
           return false;
         runFunctionRet(trycmd, "try", null, null, true, true, true);
         return false;
-      case Token.catchcmd:
+      case T.catchcmd:
         popContext(true, false);
         break;
-      case Token.function:
-      case Token.parallel:
+      case T.function:
+      case T.parallel:
         viewer.addFunction((ScriptFunction) theToken.value);
         return isForCheck;
-      case Token.process:
+      case T.process:
         addProcess(vProcess, pt, pc);
         popContext(true, false);
         break;
-      case Token.switchcmd:
+      case T.switchcmd:
         if (pt > 0 && switchCmd((ContextToken) aatoken[pt][0], 0) == -1) {
           // check for the default position
           for (; pt < pc; pt++)
-            if ((tok = aatoken[pt][0].tok) != Token.defaultcmd
-                && tok != Token.casecmd)
+            if ((tok = aatoken[pt][0].tok) != T.defaultcmd
+                && tok != T.casecmd)
               break;
           isOK = (pc == pt);
         }
         break;
       }
       if (isOK)
-        isOK = (theTok == Token.catchcmd || theTok == Token.process
-            || theTok == Token.ifcmd || theTok == Token.switchcmd);
-      isForCheck = (theTok == Token.forcmd || theTok == Token.whilecmd);
+        isOK = (theTok == T.catchcmd || theTok == T.process
+            || theTok == T.ifcmd || theTok == T.switchcmd);
+      isForCheck = (theTok == T.forcmd || theTok == T.whilecmd);
       break;
     }
-    if (!isOK && !isSyntaxCheck)
+    if (!isOK && !chk)
       pc = Math.abs(pt) - 1;
     return isForCheck;
   }
@@ -6345,13 +6355,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int pcTo = (strTo == null ? aatoken.length - 1 : -1);
     String s = null;
     for (int i = pcTo + 1; i < aatoken.length; i++) {
-      Token[] tokens = aatoken[i];
+      T[] tokens = aatoken[i];
       int tok = tokens[0].tok;
       switch (tok) {
-      case Token.message:
-      case Token.nada:
+      case T.message:
+      case T.nada:
         s = (String) tokens[tokens.length - 1].value;
-        if (tok == Token.nada)
+        if (tok == T.nada)
           s = s.substring(s.startsWith("#") ? 1 : 2);
         break;
       default:
@@ -6370,22 +6380,22 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int nPush = 0;
     for (int i = pcTo; i != pc; i += di) {
       switch (aatoken[i][0].tok) {
-      case Token.push:
-      case Token.process:
-      case Token.forcmd:
-      case Token.catchcmd:
-      case Token.whilecmd:
+      case T.push:
+      case T.process:
+      case T.forcmd:
+      case T.catchcmd:
+      case T.whilecmd:
         nPush++;
         break;
-      case Token.pop:
+      case T.pop:
         nPush--;
         break;
-      case Token.end:
+      case T.end:
         switch (aatoken[i][1].tok) {
-        case Token.process:
-        case Token.forcmd:
-        case Token.catchcmd:
-        case Token.whilecmd:
+        case T.process:
+        case T.forcmd:
+        case T.catchcmd:
+        case T.whilecmd:
           nPush--;
         }
         break;
@@ -6398,7 +6408,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (nPush != 0)
       error(ERROR_invalidArgument);
-    if (!isSyntaxCheck)
+    if (!chk)
       pc = pcTo - 1; // ... resetting the program counter
   }
 
@@ -6412,10 +6422,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     pc = Math.abs(aatoken[pt][0].intValue);
     int tok = aatoken[pt][0].tok;
-    if (tok == Token.casecmd || tok == Token.defaultcmd) {
+    if (tok == T.casecmd || tok == T.defaultcmd) {
       theToken = aatoken[pc--][0];
       int ptNext = Math.abs(theToken.intValue);
-      if (theToken.tok != Token.end)
+      if (theToken.tok != T.end)
         theToken.intValue = -ptNext;
     } else {
       while (thisContext != null
@@ -6427,10 +6437,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   static int iProcess;
 
-  private void addProcess(List<Token[]> vProcess, int pc, int pt) {
+  private void addProcess(List<T[]> vProcess, int pc, int pt) {
     if (parallelProcessor == null)
       return;
-    Token[][] statements = new Token[pt][];
+    T[][] statements = new T[pt][];
     for (int i = 0; i < vProcess.size(); i++)
       statements[i + 1 - pc] = vProcess.get(i);
     ScriptContext context = getScriptContext();
@@ -6441,9 +6451,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private int switchCmd(ContextToken c, int tok) throws ScriptException {
-    if (tok == Token.switchcmd)
+    if (tok == T.switchcmd)
       c.addName("_var");
-    ScriptVariable var = c.contextVariables.get("_var");
+    SV var = c.contextVariables.get("_var");
     if (var == null)
       return 1; // OK, case found -- no more testing
     if (tok == 0) {
@@ -6453,11 +6463,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       c.contextVariables.remove("_var");
       return -1;
     }
-    if (tok == Token.defaultcmd) // never do the default one directly
+    if (tok == T.defaultcmd) // never do the default one directly
       return -1;
-    ScriptVariable v = parameterExpressionToken(1);
-    if (tok == Token.casecmd) {
-      boolean isOK = ScriptVariable.areEqual(var, v);
+    SV v = parameterExpressionToken(1);
+    if (tok == T.casecmd) {
+      boolean isOK = SV.areEqual(var, v);
       if (isOK)
         c.contextVariables.remove("_var");
       return isOK ? 1 : -1;
@@ -6470,16 +6480,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return parameterExpressionBoolean(1, 0);
   }
 
-  private void returnCmd(ScriptVariable tv) throws ScriptException {
-    ScriptVariable t = getContextVariableAsVariable("_retval");
+  private void returnCmd(SV tv) throws ScriptException {
+    SV t = getContextVariableAsVariable("_retval");
     if (t == null) {
-      if (!isSyntaxCheck)
+      if (!chk)
         gotoCmd(null);
       return;
     }
-    ScriptVariable v = (tv != null || statementLength == 1 ? null
+    SV v = (tv != null || slen == 1 ? null
         : parameterExpressionToken(1));
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (tv == null)
       tv = (v == null ? new ScriptVariableInt(0) : v);
@@ -6490,7 +6500,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void help() throws ScriptException {
-    if (isSyntaxCheck)
+    if (chk)
       return;
     String what = optParameterAsString(1).toLowerCase();
     int pt = 0;
@@ -6499,24 +6509,24 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       showString(viewer.getBindingInfo(what.substring(pt + 1)));
       return;
     }
-    if (Token.tokAttr(Token.getTokFromName(what), Token.scriptCommand))
+    if (T.tokAttr(T.getTokFromName(what), T.scriptCommand))
       what = "?command=" + what;
     viewer.getHelp(what);
   }
 
   private void move() throws ScriptException {
-    if (statementLength > 11)
+    if (slen > 11)
       error(ERROR_badArgumentCount);
     // rotx roty rotz zoom transx transy transz slab seconds fps
-    Vector3f dRot = Vector3f.new3(floatParameter(1), floatParameter(2),
+    V3 dRot = V3.new3(floatParameter(1), floatParameter(2),
         floatParameter(3));
     float dZoom = floatParameter(4);
-    Vector3f dTrans = Vector3f.new3(intParameter(5), intParameter(6),
+    V3 dTrans = V3.new3(intParameter(5), intParameter(6),
         intParameter(7));
     float dSlab = floatParameter(8);
     float floatSecondsTotal = floatParameter(9);
-    int fps = (statementLength == 11 ? intParameter(10) : 30);
-    if (isSyntaxCheck)
+    int fps = (slen == 11 ? intParameter(10) : 30);
+    if (chk)
       return;
     refresh();
     if (!useThreads())
@@ -6536,48 +6546,48 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // yNav navDepth
     // where [zoom factor] is [0|n|+n|-n|*n|/n|IN|OUT]
     // moveto [time] front|back|left|right|top|bottom
-    if (statementLength == 2 && tokAt(1) == Token.stop) {
-      if (!isSyntaxCheck)
+    if (slen == 2 && tokAt(1) == T.stop) {
+      if (!chk)
         viewer.stopMotion();
       return;
     }
     float floatSecondsTotal;
-    if (statementLength == 2 && isFloatParameter(1)) {
+    if (slen == 2 && isFloatParameter(1)) {
       floatSecondsTotal = floatParameter(1);
-      if (isSyntaxCheck)
+      if (chk)
         return;
       if (!useThreads())
         floatSecondsTotal = 0;
       if (floatSecondsTotal > 0)
         refresh();
-      viewer.moveTo(this, floatSecondsTotal, null, JmolConstants.axisZ, 0, null, 100, 0, 0, 0,
+      viewer.moveTo(this, floatSecondsTotal, null, JC.axisZ, 0, null, 100, 0, 0, 0,
           null, Float.NaN, Float.NaN, Float.NaN);
       if (isJS && floatSecondsTotal > 0 && viewer.waitForMoveTo())
         throw new ScriptInterruption(this, "moveTo", 1);
       return;
     }
-    Vector3f axis = Vector3f.new3(Float.NaN, 0, 0);
-    Point3f center = null;
+    V3 axis = V3.new3(Float.NaN, 0, 0);
+    P3 center = null;
     int i = 1;
     floatSecondsTotal = (isFloatParameter(i) ? floatParameter(i++) : 2.0f);
     float degrees = 90;
-    BitSet bsCenter = null;
+    BS bsCenter = null;
     switch (getToken(i).tok) {
-    case Token.quaternion:
+    case T.quaternion:
       Quaternion q;
       boolean isMolecular = false;
-      if (tokAt(++i) == Token.molecular) {
+      if (tokAt(++i) == T.molecular) {
         // see comment below
         isMolecular = true;
         i++;
       }
-      if (tokAt(i) == Token.bitset || tokAt(i) == Token.expressionBegin) {
+      if (tokAt(i) == T.bitset || tokAt(i) == T.expressionBegin) {
         isMolecular = true;
         center = centerParameter(i);
-        if (!(expressionResult instanceof BitSet))
+        if (!(expressionResult instanceof BS))
           error(ERROR_invalidArgument);
-        bsCenter = (BitSet) expressionResult;
-        q = (isSyntaxCheck ? new Quaternion() : viewer
+        bsCenter = (BS) expressionResult;
+        q = (chk ? new Quaternion() : viewer
             .getAtomQuaternion(bsCenter.nextSetBit(0)));
       } else {
         q = getQuaternionParameter(i);
@@ -6603,9 +6613,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
        */
       degrees = (isMolecular ? -1 : 1) * (float) (aa.angle * 180.0 / Math.PI);
       break;
-    case Token.point4f:
-    case Token.point3f:
-    case Token.leftbrace:
+    case T.point4f:
+    case T.point3f:
+    case T.leftbrace:
       // {X, Y, Z} deg or {x y z deg}
       if (isPoint3f(i)) {
         axis.setT(getPoint3f(i, true));
@@ -6618,35 +6628,35 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         degrees = (pt4.x == 0 && pt4.y == 0 && pt4.z == 0 ? Float.NaN : pt4.w);
       }
       break;
-    case Token.front:
+    case T.front:
       axis.set(1, 0, 0);
       degrees = 0f;
       checkLength(++i);
       break;
-    case Token.back:
+    case T.back:
       axis.set(0, 1, 0);
       degrees = 180f;
       checkLength(++i);
       break;
-    case Token.left:
+    case T.left:
       axis.set(0, 1, 0);
       checkLength(++i);
       break;
-    case Token.right:
+    case T.right:
       axis.set(0, -1, 0);
       checkLength(++i);
       break;
-    case Token.top:
+    case T.top:
       axis.set(1, 0, 0);
       checkLength(++i);
       break;
-    case Token.bottom:
+    case T.bottom:
       axis.set(-1, 0, 0);
       checkLength(++i);
       break;
     default:
       // X Y Z deg
-      axis = Vector3f.new3(floatParameter(i++), floatParameter(i++),
+      axis = V3.new3(floatParameter(i++), floatParameter(i++),
           floatParameter(i++));
       degrees = floatParameter(i++);
     }
@@ -6668,11 +6678,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!isChange && Math.abs(yTrans - viewer.getTranslationYPercent()) >= 1)
         isChange = true;
     }
-    if (bsCenter == null && i != statementLength) {
+    if (bsCenter == null && i != slen) {
       // if any more, required (center)
       center = centerParameter(i);
-      if (expressionResult instanceof BitSet)
-        bsCenter = (BitSet) expressionResult;
+      if (expressionResult instanceof BS)
+        bsCenter = (BS) expressionResult;
       i = iToken + 1;
     }
     float rotationRadius = Float.NaN;
@@ -6707,26 +6717,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       isChange = true;
     // (navCenter) xNav yNav navDepth
 
-    Point3f navCenter = null;
+    P3 navCenter = null;
     float xNav = Float.NaN;
     float yNav = Float.NaN;
     float navDepth = Float.NaN;
 
-    if (i != statementLength) {
+    if (i != slen) {
       navCenter = centerParameter(i);
       i = iToken + 1;
-      if (i != statementLength) {
+      if (i != slen) {
         xNav = floatParameter(i++);
         yNav = floatParameter(i++);
       }
-      if (i != statementLength)
+      if (i != slen)
         navDepth = floatParameter(i++);
     }
 
-    if (i != statementLength)
+    if (i != slen)
       error(ERROR_badArgumentCount);
 
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (!isChange)
       floatSecondsTotal = 0;
@@ -6751,30 +6761,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
      * path {x y z theta} {x y z theta}{x y z theta}{x y z theta}... navigation
      * nSec trace (atom selection)
      */
-    if (statementLength == 1) {
+    if (slen == 1) {
       setBooleanProperty("navigationMode", true);
       return;
     }
-    Vector3f rotAxis = Vector3f.new3(0, 1, 0);
+    V3 rotAxis = V3.new3(0, 1, 0);
     List<Object[]> list = new ArrayList<Object[]>();
-    Point3f pt;
-    if (statementLength == 2) {
+    P3 pt;
+    if (slen == 2) {
       switch (getToken(1).tok) {
-      case Token.on:
-      case Token.off:
-        if (isSyntaxCheck)
+      case T.on:
+      case T.off:
+        if (chk)
           return;
-        setObjectMad(JmolConstants.SHAPE_AXES, "axes", 1);
-        setShapeProperty(JmolConstants.SHAPE_AXES, "position", Point3f.new3(50,
+        setObjectMad(JC.SHAPE_AXES, "axes", 1);
+        setShapeProperty(JC.SHAPE_AXES, "position", P3.new3(50,
             50, Float.MAX_VALUE));
         setBooleanProperty("navigationMode", true);
-        viewer.setNavOn(theTok == Token.on);
+        viewer.setNavOn(theTok == T.on);
         return;
-      case Token.stop:
-        if (!isSyntaxCheck)
+      case T.stop:
+        if (!chk)
           viewer.setNavXYZ(0, 0, 0);
         return;
-      case Token.point3f:
+      case T.point3f:
         break;
       default:
         error(ERROR_invalidArgument);
@@ -6782,66 +6792,66 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (!viewer.getNavigationMode())
       setBooleanProperty("navigationMode", true);
-    for (int i = 1; i < statementLength; i++) {
+    for (int i = 1; i < slen; i++) {
       float timeSec = (isFloatParameter(i) ? floatParameter(i++) : 2f);
       if (timeSec < 0)
         error(ERROR_invalidArgument);
-      if (!isSyntaxCheck && timeSec > 0)
+      if (!chk && timeSec > 0)
         refresh();
       switch (getToken(i).tok) {
-      case Token.point3f:
-      case Token.leftbrace:
+      case T.point3f:
+      case T.leftbrace:
         // navigate {x y z}
         pt = getPoint3f(i, true);
         iToken++;
-        if (iToken != statementLength)
+        if (iToken != slen)
           error(ERROR_invalidArgument);
-        if (isSyntaxCheck)
+        if (chk)
           return;
         viewer.setNavXYZ(pt.x, pt.y, pt.z);
         return;
-      case Token.depth:
+      case T.depth:
         float depth = floatParameter(++i);
-        if (!isSyntaxCheck)
-          list.add(new Object[] { Integer.valueOf(Token.depth), Float.valueOf(timeSec), Float.valueOf(depth)});
+        if (!chk)
+          list.add(new Object[] { Integer.valueOf(T.depth), Float.valueOf(timeSec), Float.valueOf(depth)});
           //viewer.setNavigationDepthPercent(timeSec, depth);
         continue;
-      case Token.center:
+      case T.center:
         pt = centerParameter(++i);
         i = iToken;
-        if (!isSyntaxCheck)
-          list.add(new Object[] { Integer.valueOf(Token.point), Float.valueOf(timeSec), pt});
+        if (!chk)
+          list.add(new Object[] { Integer.valueOf(T.point), Float.valueOf(timeSec), pt});
           //viewer.navigatePt(timeSec, pt);
         continue;
-      case Token.rotate:
+      case T.rotate:
         switch (getToken(++i).tok) {
-        case Token.x:
+        case T.x:
           rotAxis.set(1, 0, 0);
           i++;
           break;
-        case Token.y:
+        case T.y:
           rotAxis.set(0, 1, 0);
           i++;
           break;
-        case Token.z:
+        case T.z:
           rotAxis.set(0, 0, 1);
           i++;
           break;
-        case Token.point3f:
-        case Token.leftbrace:
+        case T.point3f:
+        case T.leftbrace:
           rotAxis.setT(getPoint3f(i, true));
           i = iToken + 1;
           break;
-        case Token.identifier:
+        case T.identifier:
           error(ERROR_invalidArgument); // for now
           break;
         }
         float degrees = floatParameter(i);
-        if (!isSyntaxCheck)
-          list.add(new Object[] { Integer.valueOf(Token.rotate), Float.valueOf(timeSec), rotAxis, Float.valueOf(degrees)});
+        if (!chk)
+          list.add(new Object[] { Integer.valueOf(T.rotate), Float.valueOf(timeSec), rotAxis, Float.valueOf(degrees)});
 //          viewer.navigateAxis(timeSec, rotAxis, degrees);
         continue;
-      case Token.translate:
+      case T.translate:
         float x = Float.NaN;
         float y = Float.NaN;
         if (isFloatParameter(++i)) {
@@ -6849,58 +6859,58 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           y = floatParameter(++i);
         } else {
           switch (tokAt(i)) {
-          case Token.x:
+          case T.x:
             x = floatParameter(++i);
             break;
-          case Token.y:
+          case T.y:
             y = floatParameter(++i);
             break;
           default:
             pt = centerParameter(i);
             i = iToken;
-            if (!isSyntaxCheck)
-              list.add(new Object[] { Integer.valueOf(Token.translate), Float.valueOf(timeSec), pt});
+            if (!chk)
+              list.add(new Object[] { Integer.valueOf(T.translate), Float.valueOf(timeSec), pt});
               //viewer.navTranslate(timeSec, pt);
             continue;
           }
         }
-        if (!isSyntaxCheck)
-          list.add(new Object[] { Integer.valueOf(Token.percent), Float.valueOf(timeSec), 
+        if (!chk)
+          list.add(new Object[] { Integer.valueOf(T.percent), Float.valueOf(timeSec), 
               Float.valueOf(x), Float.valueOf(y) });
           //viewer.navTranslatePercent(timeSec, x, y);
         continue;
-      case Token.divide:
+      case T.divide:
         continue;
-      case Token.trace:
-        Point3f[][] pathGuide;
-        List<Point3f[]> vp = new ArrayList<Point3f[]>();
-        BitSet bs = atomExpressionAt(++i);
+      case T.trace:
+        P3[][] pathGuide;
+        List<P3[]> vp = new ArrayList<P3[]>();
+        BS bs = atomExpressionAt(++i);
         i = iToken;
-        if (isSyntaxCheck)
+        if (chk)
           return;
         viewer.getPolymerPointsAndVectors(bs, vp);
         int n;
         if ((n = vp.size()) > 0) {
-          pathGuide = new Point3f[n][];
+          pathGuide = new P3[n][];
           for (int j = 0; j < n; j++) {
             pathGuide[j] = vp.get(j);
           }
-          list.add(new Object[] { Integer.valueOf(Token.trace), Float.valueOf(timeSec), pathGuide});
+          list.add(new Object[] { Integer.valueOf(T.trace), Float.valueOf(timeSec), pathGuide});
           //viewer.navigateGuide(timeSec, pathGuide);
           continue;
         }
         break;
-     case Token.path:
-        Point3f[] path;
+     case T.path:
+        P3[] path;
         float[] theta = null; // orientation; null for now
-        if (getToken(i + 1).tok == Token.dollarsign) {
+        if (getToken(i + 1).tok == T.dollarsign) {
           i++;
           // navigate timeSeconds path $id indexStart indexEnd
           String pathID = objectNameParameter(++i);
-          if (isSyntaxCheck)
+          if (chk)
             return;
-          setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", pathID);
-          path = (Point3f[]) getShapeProperty(JmolConstants.SHAPE_DRAW,
+          setShapeProperty(JC.SHAPE_DRAW, "thisID", pathID);
+          path = (P3[]) getShapeProperty(JC.SHAPE_DRAW,
               "vertices");
           refresh();
           if (path == null)
@@ -6909,20 +6919,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               : 0);
           int indexEnd = (int) (isFloatParameter(i + 1) ? floatParameter(++i)
               : Integer.MAX_VALUE);
-          if (!isSyntaxCheck)
-            list.add(new Object[] {Integer.valueOf(Token.path), Float.valueOf(timeSec), path, theta, new int[] {indexStart, indexEnd}});
+          if (!chk)
+            list.add(new Object[] {Integer.valueOf(T.path), Float.valueOf(timeSec), path, theta, new int[] {indexStart, indexEnd}});
             //viewer.navigatePath(timeSec, path, theta, indexStart, indexEnd);
           continue;
         }
-        List<Point3f> v = new ArrayList<Point3f>();
+        List<P3> v = new ArrayList<P3>();
         while (isCenterParameter(i + 1)) {
           v.add(centerParameter(++i));
           i = iToken;
         }
         if (v.size() > 0) {
-          path = v.toArray(new Point3f[v.size()]);
-          if (!isSyntaxCheck)
-            list.add(new Object[] {Integer.valueOf(Token.path), Float.valueOf(timeSec), path, theta, new int[] {0, Integer.MAX_VALUE}});
+          path = v.toArray(new P3[v.size()]);
+          if (!chk)
+            list.add(new Object[] {Integer.valueOf(T.path), Float.valueOf(timeSec), path, theta, new int[] {0, Integer.MAX_VALUE}});
             //viewer.navigatePath(timeSec, path, theta, 0, Integer.MAX_VALUE);
           continue;
         }
@@ -6938,8 +6948,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     checkLength(-3);
     int order = 0;
     switch (getToken(1).tok) {
-    case Token.integer:
-    case Token.decimal:
+    case T.integer:
+    case T.decimal:
       if ((order = JmolEdge.getBondOrderFromFloat(floatParameter(1))) == JmolEdge.BOND_ORDER_NULL)
         error(ERROR_invalidArgument);
       break;
@@ -6947,29 +6957,29 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if ((order = getBondOrderFromString(parameterAsString(1))) == JmolEdge.BOND_ORDER_NULL)
         error(ERROR_invalidArgument);
       // generic partial can be indicated by "partial n.m"
-      if (order == JmolEdge.BOND_PARTIAL01 && tokAt(2) == Token.decimal) {
-        order = getPartialBondOrderFromFloatEncodedInt(statement[2].intValue);
+      if (order == JmolEdge.BOND_PARTIAL01 && tokAt(2) == T.decimal) {
+        order = getPartialBondOrderFromFloatEncodedInt(st[2].intValue);
       }
     }
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", Integer
+    setShapeProperty(JC.SHAPE_STICKS, "bondOrder", Integer
         .valueOf(order));
   }
 
   private void console() throws ScriptException {
     switch (getToken(1).tok) {
-    case Token.off:
-      if (!isSyntaxCheck)
+    case T.off:
+      if (!chk)
         viewer.showConsole(false);
       break;
-    case Token.on:
-      if (!isSyntaxCheck)
+    case T.on:
+      if (!chk)
         viewer.showConsole(true);
       break;
-    case Token.clear:
-      if (!isSyntaxCheck)
+    case T.clear:
+      if (!chk)
         viewer.clearConsole();
       break;
-    case Token.write:
+    case T.write:
       showString(stringParameter(2));
       break;
     default:
@@ -6980,20 +6990,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void centerAt() throws ScriptException {
     String relativeTo = null;
     switch (getToken(1).tok) {
-    case Token.absolute:
+    case T.absolute:
       relativeTo = "absolute";
       break;
-    case Token.average:
+    case T.average:
       relativeTo = "average";
       break;
-    case Token.boundbox:
+    case T.boundbox:
       relativeTo = "boundbox";
       break;
     default:
       error(ERROR_invalidArgument);
     }
-    Point3f pt = Point3f.new3(0, 0, 0);
-    if (statementLength == 5) {
+    P3 pt = P3.new3(0, 0, 0);
+    if (slen == 5) {
       // centerAt xxx x y z
       pt.x = floatParameter(2);
       pt.y = floatParameter(3);
@@ -7004,7 +7014,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     } else {
       checkLength(2);
     }
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.setCenterAt(relativeTo, pt);
   }
 
@@ -7019,7 +7029,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean degreesSeen = false;
     int[] colors = null;
     int colorpt = 0;
-    for (int i = 1; i < statementLength; ++i) {
+    for (int i = 1; i < slen; ++i) {
       if (isColorParam(i)) {
         if (colorpt > 1)
           error(ERROR_badArgumentCount);
@@ -7034,20 +7044,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         continue;
       }
       switch (getToken(i).tok) {
-      case Token.on:
+      case T.on:
         checkLast(iToken = 1);
         iToken = 1;
         break;
-      case Token.off:
+      case T.off:
         checkLast(iToken = 1);
         stereoMode = EnumStereoMode.NONE;
         break;
-      case Token.integer:
-      case Token.decimal:
+      case T.integer:
+      case T.decimal:
         degrees = floatParameter(i);
         degreesSeen = true;
         break;
-      case Token.identifier:
+      case T.identifier:
         if (!degreesSeen)
           degrees = 3;
         stereoMode = EnumStereoMode.getStereoMode(parameterAsString(i));
@@ -7058,7 +7068,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         error(ERROR_invalidArgument);
       }
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     viewer.setStereoMode(colors, stereoMode, degrees);
   }
@@ -7078,92 +7088,92 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean doAnimate = false;
     float nSeconds = Float.NaN;
     Quaternion[] data1 = null, data2 = null;
-    BitSet bsAtoms1 = null, bsAtoms2 = null;
-    List<BitSet[]> vAtomSets = null;
+    BS bsAtoms1 = null, bsAtoms2 = null;
+    List<BS[]> vAtomSets = null;
     List<Object[]> vQuatSets = null;
-    BitSet bsFrom = (tokAt(1) == Token.subset ? null : atomExpressionAt(1));
-    BitSet bsTo = (tokAt(++iToken) == Token.subset ? null : atomExpressionAt(iToken));
+    BS bsFrom = (tokAt(1) == T.subset ? null : atomExpressionAt(1));
+    BS bsTo = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
     if (bsFrom == null || bsTo == null)
       error(ERROR_invalidArgument);
-    BitSet bsSubset = null;
+    BS bsSubset = null;
     boolean isSmiles = false;
     String strSmiles = null;
-    BitSet bs = BitSetUtil.copy(bsFrom);
+    BS bs = BSUtil.copy(bsFrom);
     bs.or(bsTo);
     boolean isToSubsetOfFrom = bs.equals(bsFrom);
     boolean isFrames = isToSubsetOfFrom;
-    for (int i = iToken + 1; i < statementLength; ++i) {
+    for (int i = iToken + 1; i < slen; ++i) {
       switch (getToken(i).tok) {
-      case Token.frame:
+      case T.frame:
         isFrames = true;
         break;
-      case Token.smiles:
+      case T.smiles:
         isSmiles = true;
         //$FALL-THROUGH$
-      case Token.search:
+      case T.search:
         strSmiles = stringParameter(++i);
         break;
-      case Token.decimal:
-      case Token.integer:
+      case T.decimal:
+      case T.integer:
         nSeconds = Math.abs(floatParameter(i));
         if (nSeconds > 0)
           doAnimate = true;
         break;
-      case Token.comma:
+      case T.comma:
         break;
-      case Token.subset:
+      case T.subset:
         bsSubset = atomExpressionAt(++i);
         i = iToken;
         break;
-      case Token.bitset:
-      case Token.expressionBegin:
+      case T.bitset:
+      case T.expressionBegin:
         if (vQuatSets != null)
           error(ERROR_invalidArgument);
         bsAtoms1 = atomExpressionAt(iToken);
         int tok = (isToSubsetOfFrom ? 0 : tokAt(iToken + 1));
-        bsAtoms2 = (tok == Token.bitset || tok == Token.expressionBegin ? atomExpressionAt(++iToken)
-            : BitSetUtil.copy(bsAtoms1));
+        bsAtoms2 = (tok == T.bitset || tok == T.expressionBegin ? atomExpressionAt(++iToken)
+            : BSUtil.copy(bsAtoms1));
         if (bsSubset != null) {
           bsAtoms1.and(bsSubset);
           bsAtoms2.and(bsSubset);
         }
         bsAtoms2.and(bsTo);
         if (vAtomSets == null)
-          vAtomSets = new ArrayList<BitSet[]>();
-        vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
+          vAtomSets = new ArrayList<BS[]>();
+        vAtomSets.add(new BS[] { bsAtoms1, bsAtoms2 });
         i = iToken;
         break;
-      case Token.varray:
+      case T.varray:
         if (vAtomSets != null)
           error(ERROR_invalidArgument);
         isQuaternion = true;
         data1 = ScriptMathProcessor
-            .getQuaternionArray(((ScriptVariable) theToken).getList(), Token.list);
+            .getQuaternionArray(((SV) theToken).getList(), T.list);
         getToken(++i);
         data2 = ScriptMathProcessor
-            .getQuaternionArray(((ScriptVariable) theToken).getList(), Token.list);
+            .getQuaternionArray(((SV) theToken).getList(), T.list);
         if (vQuatSets == null)
           vQuatSets = new ArrayList<Object[]>();
         vQuatSets.add(new Object[] { data1, data2 });
         break;
-      case Token.orientation:
+      case T.orientation:
         isQuaternion = true;
         break;
-      case Token.point:
-      case Token.atoms:
+      case T.point:
+      case T.atoms:
         isQuaternion = false;
         break;
-      case Token.rotate:
+      case T.rotate:
         doRotate = true;
         break;
-      case Token.translate:
+      case T.translate:
         doTranslate = true;
         break;
       default:
         error(ERROR_invalidArgument);
       }
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
 
     if (isFrames)
@@ -7177,49 +7187,49 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isAtoms = (!isQuaternion && strSmiles == null);
     if (vAtomSets == null && vQuatSets == null) {
       if (bsSubset == null) {
-        bsAtoms1 = (isAtoms ? viewer.getAtomBitSet("spine") : new BitSet());
+        bsAtoms1 = (isAtoms ? viewer.getAtomBitSet("spine") : new BS());
         if (bsAtoms1.nextSetBit(0) < 0) {
           bsAtoms1 = bsFrom;
           bsAtoms2 = bsTo;
         } else {
-          bsAtoms2 = BitSetUtil.copy(bsAtoms1);
+          bsAtoms2 = BSUtil.copy(bsAtoms1);
           bsAtoms1.and(bsFrom);
           bsAtoms2.and(bsTo);
         }
       } else {
-        bsAtoms1 = BitSetUtil.copy(bsFrom);
-        bsAtoms2 = BitSetUtil.copy(bsTo);
+        bsAtoms1 = BSUtil.copy(bsFrom);
+        bsAtoms2 = BSUtil.copy(bsTo);
         bsAtoms1.and(bsSubset);
         bsAtoms2.and(bsSubset);
         bsAtoms1.and(bsFrom);
         bsAtoms2.and(bsTo);
       }
-      vAtomSets = new ArrayList<BitSet[]>();
-      vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
+      vAtomSets = new ArrayList<BS[]>();
+      vAtomSets.add(new BS[] { bsAtoms1, bsAtoms2 });
     }
 
-    BitSet[] bsFrames;
+    BS[] bsFrames;
     if (isFrames) {
-      BitSet bsModels = viewer.getModelBitSet(bsFrom, false);
-      bsFrames = new BitSet[bsModels.cardinality()];
+      BS bsModels = viewer.getModelBitSet(bsFrom, false);
+      bsFrames = new BS[bsModels.cardinality()];
       for (int i = 0, iModel = bsModels.nextSetBit(0); iModel >= 0; iModel = bsModels.nextSetBit(iModel + 1), i++)
         bsFrames[i] = viewer.getModelUndeletedAtomsBitSet(iModel);       
     } else {
-      bsFrames = new BitSet[] { bsFrom };
+      bsFrames = new BS[] { bsFrom };
     }
     for (int iFrame = 0; iFrame < bsFrames.length; iFrame++) {
       bsFrom = bsFrames[iFrame];
       float[] retStddev = new float[2]; // [0] final, [1] initial for atoms
       Quaternion q = null;
       List<Quaternion> vQ = new ArrayList<Quaternion>();
-      Point3f[][] centerAndPoints = null;
-      List<BitSet[]> vAtomSets2 = (isFrames ? new ArrayList<BitSet[]>()
+      P3[][] centerAndPoints = null;
+      List<BS[]> vAtomSets2 = (isFrames ? new ArrayList<BS[]>()
           : vAtomSets);
       for (int i = 0; i < vAtomSets.size(); ++i) {
-        BitSet[] bss = vAtomSets.get(i);
+        BS[] bss = vAtomSets.get(i);
         if (isFrames)
           vAtomSets2
-              .add(bss = new BitSet[] { BitSetUtil.copy(bss[0]), bss[1] });
+              .add(bss = new BS[] { BSUtil.copy(bss[0]), bss[1] });
         bss[0].and(bsFrom);
       }
       if (isAtoms) {
@@ -7234,7 +7244,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       } else if (isQuaternion) {
         if (vQuatSets == null) {
           for (int i = 0; i < vAtomSets2.size(); i++) {
-            BitSet[] bss = vAtomSets2.get(i);
+            BS[] bss = vAtomSets2.get(i);
             data1 = viewer.getAtomGroupQuaternions(bss[0], Integer.MAX_VALUE);
             data2 = viewer.getAtomGroupQuaternions(bss[1], Integer.MAX_VALUE);
             for (int j = 0; j < data1.length && j < data2.length; j++) {
@@ -7266,7 +7276,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             null, m4, null, !isSmiles, false);
         if (Float.isNaN(stddev))
           error(ERROR_invalidArgument);
-        Vector3f translation = new Vector3f();
+        V3 translation = new V3();
         m4.get(translation);
         Matrix3f m3 = new Matrix3f();
         m4.getRotationScale(m3);
@@ -7274,11 +7284,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       if (centerAndPoints == null)
         centerAndPoints = viewer.getCenterAndPoints(vAtomSets2, true);
-      Point3f pt1 = new Point3f();
+      P3 pt1 = new P3();
       float endDegrees = Float.NaN;
-      Vector3f translation = null;
+      V3 translation = null;
       if (doTranslate) {
-        translation = Vector3f.newV(centerAndPoints[1][0]);
+        translation = V3.newV(centerAndPoints[1][0]);
         translation.sub(centerAndPoints[0][0]);
         endDegrees = 0;
       }
@@ -7291,9 +7301,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       if (Float.isNaN(endDegrees) || Float.isNaN(pt1.x))
         continue;
-      List<Point3f> ptsB = null;
+      List<P3> ptsB = null;
       if (doRotate && doTranslate && nSeconds != 0) {
-        List<Point3f> ptsA = viewer.getAtomPointVector(bsFrom);
+        List<P3> ptsA = viewer.getAtomPointVector(bsFrom);
         Matrix4f m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(),
             translation);
         ptsB = Measure.transformPoints(ptsA, m4, centerAndPoints[0][0]);
@@ -7307,16 +7317,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
   }
 
-  float getSmilesCorrelation(BitSet bsA, BitSet bsB, String smiles,
-                             List<Point3f> ptsA, List<Point3f> ptsB,
-                             Matrix4f m, List<BitSet> vReturn, 
+  float getSmilesCorrelation(BS bsA, BS bsB, String smiles,
+                             List<P3> ptsA, List<P3> ptsB,
+                             Matrix4f m, List<BS> vReturn, 
                              boolean isSmarts, boolean asMap)
       throws ScriptException {
     float tolerance = 0.1f; // TODO
     try {
       if (ptsA == null) {
-        ptsA = new ArrayList<Point3f>();
-        ptsB = new ArrayList<Point3f>();
+        ptsA = new ArrayList<P3>();
+        ptsB = new ArrayList<P3>();
       }
       if (m == null)
         m = new Matrix4f();
@@ -7353,7 +7363,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         Logger.info("getSmilesCorrelation stddev=" + stddev);
         if (vReturn != null) {
           if (stddev < tolerance) {
-            BitSet bs = new BitSet();
+            BS bs = new BS();
             for (int j = 0; j < maps[i].length; j++)
               bs.set(maps[i][j]);
             vReturn.add(bs);
@@ -7374,12 +7384,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
   }
 
-  Object getSmilesMatches(String pattern, String smiles, BitSet bsSelected,
-                          BitSet bsMatch3D, boolean isSmarts,
+  Object getSmilesMatches(String pattern, String smiles, BS bsSelected,
+                          BS bsMatch3D, boolean isSmarts,
                           boolean asOneBitset) throws ScriptException {
-    if (isSyntaxCheck) {
+    if (chk) {
       if (asOneBitset)
-        return new BitSet();
+        return new BS();
       return new String[] { "({})" };
     }
 
@@ -7395,7 +7405,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     boolean asAtoms = true;
-    BitSet[] b;
+    BS[] b;
     if (bsMatch3D == null) {
 
       // getting a BitSet or BitSet[] from a set of atoms or a pattern.
@@ -7418,20 +7428,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       // getting a correlation
 
-      List<BitSet> vReturn = new ArrayList<BitSet>();
+      List<BS> vReturn = new ArrayList<BS>();
       float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern, null,
           null, null, vReturn, isSmarts, false);
       if (Float.isNaN(stddev)) {
         if (asOneBitset)
-          return new BitSet();
+          return new BS();
         return new String[] {};
       }
       showString("RMSD " + stddev + " Angstroms");
-      b = vReturn.toArray(new BitSet[vReturn.size()]);
+      b = vReturn.toArray(new BS[vReturn.size()]);
     }
     if (asOneBitset) {
       // sum total of all now, not just first
-      BitSet bs = new BitSet();
+      BS bs = new BS();
       for (int j = 0; j < b.length; j++)
         bs.or(b[j]);
       if (asAtoms)
@@ -7446,21 +7456,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     String[] matches = new String[b.length];
     for (int j = 0; j < b.length; j++)
-      matches[j] = Escape.escapeBs(b[j], asAtoms);
+      matches[j] = Escape.eB(b[j], asAtoms);
     return matches;
   }
 
   private void connect(int index) throws ScriptException {
 
     final float[] distances = new float[2];
-    BitSet[] atomSets = new BitSet[2];
+    BS[] atomSets = new BS[2];
     atomSets[0] = atomSets[1] = viewer.getSelectionSet(false);
     float radius = Float.NaN;
     int color = Integer.MIN_VALUE;
     int distanceCount = 0;
     int bondOrder = JmolEdge.BOND_ORDER_NULL;
     int bo;
-    int operation = Token.modifyorcreate;
+    int operation = T.modifyorcreate;
     boolean isDelete = false;
     boolean haveType = false;
     boolean haveOperation = false;
@@ -7469,7 +7479,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isColorOrRadius = false;
     int nAtomSets = 0;
     int nDistances = 0;
-    BitSet bsBonds = new BitSet();
+    BS bsBonds = new BS();
     boolean isBonds = false;
     int expression2 = 0;
     int ptColor = 0;
@@ -7480,22 +7490,22 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
      * operation]
      */
 
-    if (statementLength == 1) {
-      if (!isSyntaxCheck)
+    if (slen == 1) {
+      if (!chk)
         viewer.rebondState(isStateScript); 
       return;
     }
 
-    for (int i = index; i < statementLength; ++i) {
+    for (int i = index; i < slen; ++i) {
       switch (getToken(i).tok) {
-      case Token.on:
-      case Token.off:
+      case T.on:
+      case T.off:
         checkLength(2);
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.rebondState(isStateScript);
         return;
-      case Token.integer:
-      case Token.decimal:
+      case T.integer:
+      case T.decimal:
         if (nAtomSets > 0) {
           if (haveType || isColorOrRadius)
             error(ERROR_invalidParameterOrder);
@@ -7509,14 +7519,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (++nDistances > 2)
           error(ERROR_badArgumentCount);
         float dist = floatParameter(i);
-        if (tokAt(i + 1) == Token.percent) {
+        if (tokAt(i + 1) == T.percent) {
           dist = -dist / 100f;
           i++;
         }
         distances[distanceCount++] = dist;
         break;
-      case Token.bitset:
-      case Token.expressionBegin:
+      case T.bitset:
+      case T.expressionBegin:
         if (nAtomSets > 2 || isBonds && nAtomSets > 0)
           error(ERROR_badArgumentCount);
         if (haveType || isColorOrRadius)
@@ -7526,7 +7536,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (nAtomSets == 2) {
           int pt = iToken;
           for (int j = i; j < pt; j++)
-            if (tokAt(j) == Token.identifier
+            if (tokAt(j) == T.identifier
                 && parameterAsString(j).equals("_1")) {
               expression2 = i;
               break;
@@ -7535,46 +7545,46 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         i = iToken;
         break;
-      case Token.group:
+      case T.group:
         addGroup = true;
         break;
-      case Token.color:
+      case T.color:
         int tok = tokAt(i + 1);
-        if (tok != Token.translucent && tok != Token.opaque)
+        if (tok != T.translucent && tok != T.opaque)
           ptColor = i + 1;
         continue;
-      case Token.translucent:
-      case Token.opaque:
+      case T.translucent:
+      case T.opaque:
         if (translucency != null)
           error(ERROR_invalidArgument);
         isColorOrRadius = true;
         translucency = parameterAsString(i);
-        if (theTok == Token.translucent && isFloatParameter(i + 1))
+        if (theTok == T.translucent && isFloatParameter(i + 1))
           translucentLevel = getTranslucentLevel(++i);
         ptColor = i + 1;
         break;
-      case Token.pdb:
-        boolean isAuto = (tokAt(2) == Token.auto);
+      case T.pdb:
+        boolean isAuto = (tokAt(2) == T.auto);
         checkLength(isAuto ? 3 : 2);
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setPdbConectBonding(isAuto, isStateScript);
         return;
-      case Token.adjust:
-      case Token.auto:
-      case Token.create:
-      case Token.modify:
-      case Token.modifyorcreate:
+      case T.adjust:
+      case T.auto:
+      case T.create:
+      case T.modify:
+      case T.modifyorcreate:
         // must be an operation and must be last argument
         haveOperation = true;
-        if (++i != statementLength)
+        if (++i != slen)
           error(ERROR_invalidParameterOrder);
         operation = theTok;
-        if (theTok == Token.auto
+        if (theTok == T.auto
             && !(bondOrder == JmolEdge.BOND_ORDER_NULL
                 || bondOrder == JmolEdge.BOND_H_REGULAR || bondOrder == JmolEdge.BOND_AROMATIC))
           error(ERROR_invalidArgument);
         break;
-      case Token.struts:
+      case T.struts:
         if (!isColorOrRadius) {
           color = 0xFFFFFF;
           translucency = "translucent";
@@ -7583,12 +7593,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           isColorOrRadius = true;
         }
         if (!haveOperation)
-          operation = Token.modifyorcreate;
+          operation = T.modifyorcreate;
         haveOperation = true;
         //$FALL-THROUGH$
-      case Token.identifier:
-      case Token.aromatic:
-      case Token.hbond:
+      case T.identifier:
+      case T.aromatic:
+      case T.hbond:
         if (i > 0) {
           if (ptColor == i)
             break;
@@ -7609,16 +7619,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         switch (bo) {
         case JmolEdge.BOND_PARTIAL01:
           switch (tokAt(i + 1)) {
-          case Token.decimal:
-            bo = getPartialBondOrderFromFloatEncodedInt(statement[++i].intValue);
+          case T.decimal:
+            bo = getPartialBondOrderFromFloatEncodedInt(st[++i].intValue);
             break;
-          case Token.integer:
+          case T.integer:
             bo = (short) intParameter(++i);
             break;
           }
           break;
         case JmolEdge.BOND_H_REGULAR:
-          if (tokAt(i + 1) == Token.integer) {
+          if (tokAt(i + 1) == T.integer) {
             bo = (short) (intParameter(++i) << JmolEdge.BOND_HBOND_SHIFT);
             energy = floatParameter(++i);
           }
@@ -7626,15 +7636,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         bondOrder = bo;
         break;
-      case Token.radius:
+      case T.radius:
         radius = floatParameter(++i);
         isColorOrRadius = true;
         break;
-      case Token.none:
-      case Token.delete:
-        if (++i != statementLength)
+      case T.none:
+      case T.delete:
+        if (++i != slen)
           error(ERROR_invalidParameterOrder);
-        operation = Token.delete;
+        operation = T.delete;
         // if (isColorOrRadius) / for struts automatic color
         // error(ERROR_invalidArgument);
         isDelete = true;
@@ -7655,28 +7665,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
       }
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (distanceCount < 2) {
       if (distanceCount == 0)
-        distances[0] = JmolConstants.DEFAULT_MAX_CONNECT_DISTANCE;
+        distances[0] = JC.DEFAULT_MAX_CONNECT_DISTANCE;
       distances[1] = distances[0];
-      distances[0] = JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE;
+      distances[0] = JC.DEFAULT_MIN_CONNECT_DISTANCE;
     }
     if (translucency != null || !Float.isNaN(radius)
         || color != Integer.MIN_VALUE) {
       if (!haveType)
         bondOrder = JmolEdge.BOND_ORDER_ANY;
       if (!haveOperation)
-        operation = Token.modify;
+        operation = T.modify;
     }
     int nNew = 0;
     int nModified = 0;
     int[] result;
     if (expression2 > 0) {
-      BitSet bs = new BitSet();
+      BS bs = new BS();
       definedAtomSets.put("_1", bs);
-      BitSet bs0 = atomSets[0];
+      BS bs0 = atomSets[0];
       for (int atom1 = bs0.nextSetBit(0); atom1 >= 0; atom1 = bs0
           .nextSetBit(atom1 + 1)) {
         bs.set(atom1);
@@ -7702,16 +7712,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (isColorOrRadius) {
       viewer.selectBonds(bsBonds);
       if (!Float.isNaN(radius))
-        setShapeSizeBs(JmolConstants.SHAPE_STICKS, Math.round(radius * 2000), null);
+        setShapeSizeBs(JC.SHAPE_STICKS, Math.round(radius * 2000), null);
       if (color != Integer.MIN_VALUE)
-        setShapePropertyBs(JmolConstants.SHAPE_STICKS, "color", Integer
+        setShapePropertyBs(JC.SHAPE_STICKS, "color", Integer
             .valueOf(color), bsBonds);
       if (translucency != null) {
         if (translucentLevel == Float.MAX_VALUE)
           translucentLevel = viewer.getDefaultTranslucent();
-        setShapeProperty(JmolConstants.SHAPE_STICKS, "translucentLevel", Float
+        setShapeProperty(JC.SHAPE_STICKS, "translucentLevel", Float
             .valueOf(translucentLevel));
-        setShapePropertyBs(JmolConstants.SHAPE_STICKS, "translucency",
+        setShapePropertyBs(JC.SHAPE_STICKS, "translucency",
             translucency, bsBonds);
       }
       viewer.selectBonds(null);
@@ -7723,11 +7733,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private float getTranslucentLevel(int i) throws ScriptException {
     float f = floatParameter(i);
-    return (theTok == Token.integer && f > 0 && f < 9 ? f + 1 : f);
+    return (theTok == T.integer && f > 0 && f < 9 ? f + 1 : f);
   }
 
   private void getProperty() throws ScriptException {
-    if (isSyntaxCheck)
+    if (chk)
       return;
     String retValue = "";
     String property = optParameterAsString(1);
@@ -7739,20 +7749,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int propertyID = viewer.getPropertyNumber(name);
     String param = optParameterAsString(2);
     int tok = tokAt(2);
-    BitSet bs = (tok == Token.expressionBegin || tok == Token.bitset ? atomExpressionAt(2)
+    BS bs = (tok == T.expressionBegin || tok == T.bitset ? atomExpressionAt(2)
         : null);
     if (property.length() > 0 && propertyID < 0) {
       // no such property
       property = ""; // produces a list from Property Manager
       param = "";
-    } else if (propertyID >= 0 && statementLength < 3) {
+    } else if (propertyID >= 0 && slen < 3) {
       param = viewer.getDefaultPropertyParam(propertyID);
       if (param.equals("(visible)")) {
         viewer.setModelVisibility();
         bs = viewer.getVisibleSet();
       }
     } else if (propertyID == viewer.getPropertyNumber("fileContents")) {
-      for (int i = 3; i < statementLength; i++)
+      for (int i = 3; i < slen; i++)
         param += parameterAsString(i);
     }
     retValue = (String) viewer.getProperty("readable", property,
@@ -7763,16 +7773,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void background(int i) throws ScriptException {
     getToken(i);
     int argb;
-    if (theTok == Token.image) {
+    if (theTok == T.image) {
       // background IMAGE "xxxx.jpg"
       String file = parameterAsString(checkLast(++i));
-      if (!isSyntaxCheck && !file.equalsIgnoreCase("none") && file.length() > 0)
+      if (!chk && !file.equalsIgnoreCase("none") && file.length() > 0)
         viewer.loadImage(file, null);
       return;
     }
-    if (isColorParam(i) || theTok == Token.none) {
+    if (isColorParam(i) || theTok == T.none) {
       argb = getArgbParamLast(i, true);
-      if (isSyntaxCheck)
+      if (chk)
         return;
       setObjectArgb("background", argb);
       viewer.setBackgroundImage(null, null);
@@ -7785,14 +7795,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void center(int i) throws ScriptException {
     // from center (atom) or from zoomTo under conditions of not
     // windowCentered()
-    if (statementLength == 1) {
+    if (slen == 1) {
       viewer.setNewRotationCenter(null);
       return;
     }
-    Point3f center = centerParameter(i);
+    P3 center = centerParameter(i);
     if (center == null)
       error(ERROR_invalidArgument);
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.setNewRotationCenter(center);
   }
 
@@ -7800,41 +7810,41 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String s = "";
     String id = getShapeNameParameter(2);
     Object[] data = new Object[] { id, null };
-    if (isSyntaxCheck)
+    if (chk)
       return "";
     int iTok = iToken;
     int tokCommand = tokAt(0);
     boolean isWild = TextFormat.isWild(id);
-    for (int iShape = JmolConstants.SHAPE_DIPOLES;;) {
-      if (iShape != JmolConstants.SHAPE_MO
+    for (int iShape = JC.SHAPE_DIPOLES;;) {
+      if (iShape != JC.SHAPE_MO
           && getShapePropertyData(iShape, "checkID", data)) {
         setShapeProperty(iShape, "thisID", id);
         switch (tokCommand) {
-        case Token.delete:
+        case T.delete:
           setShapeProperty(iShape, "delete", null);
           break;
-        case Token.hide:
-        case Token.display:
+        case T.hide:
+        case T.display:
           setShapeProperty(iShape, "hidden",
-              tokCommand == Token.display ? Boolean.FALSE : Boolean.TRUE);
+              tokCommand == T.display ? Boolean.FALSE : Boolean.TRUE);
           break;
-        case Token.show:
+        case T.show:
           //if (iShape == JmolConstants.SHAPE_ISOSURFACE && !isWild)
             //return getIsosurfaceJvxl(false, JmolConstants.SHAPE_ISOSURFACE);
           //else if (iShape == JmolConstants.SHAPE_PMESH && !isWild)
             //return getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH);
           s += (String) getShapeProperty(iShape, "command") + "\n";
           break;
-        case Token.color:
+        case T.color:
           colorShape(iShape, iTok + 1, false);
           break;
         }
         if (!isWild)
           break;
       }
-      if (iShape == JmolConstants.SHAPE_DIPOLES)
-        iShape = JmolConstants.SHAPE_MAX_HAS_ID;
-      if (--iShape < JmolConstants.SHAPE_MIN_HAS_ID)
+      if (iShape == JC.SHAPE_DIPOLES)
+        iShape = JC.SHAPE_MAX_HAS_ID;
+      if (--iShape < JC.SHAPE_MIN_HAS_ID)
         break;
     }
     return s;
@@ -7843,113 +7853,113 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void color() throws ScriptException {
     int i = 1;
     if (isColorParam(1)) {
-      theTok = Token.atoms;
+      theTok = T.atoms;
     } else {
       int argb = 0;
       i = 2;
       int tok = getToken(1).tok;
       switch (tok) {
-      case Token.dollarsign:
+      case T.dollarsign:
         setObjectProperty();
         return;
-      case Token.altloc:
-      case Token.amino:
-      case Token.chain:
-      case Token.fixedtemp:
-      case Token.formalcharge:
-      case Token.group:
-      case Token.hydrophobic:
-      case Token.insertion:
-      case Token.jmol:
-      case Token.molecule:
-      case Token.monomer:
-      case Token.none:
-      case Token.opaque:
-      case Token.partialcharge:
-      case Token.polymer:
-      case Token.property:
-      case Token.rasmol:
-      case Token.spacefill:
-      case Token.shapely:
-      case Token.straightness:
-      case Token.structure:
-      case Token.surfacedistance:
-      case Token.temperature:
-      case Token.translucent:
-      case Token.user:
-      case Token.vanderwaals:
-        theTok = Token.atoms;
+      case T.altloc:
+      case T.amino:
+      case T.chain:
+      case T.fixedtemp:
+      case T.formalcharge:
+      case T.group:
+      case T.hydrophobic:
+      case T.insertion:
+      case T.jmol:
+      case T.molecule:
+      case T.monomer:
+      case T.none:
+      case T.opaque:
+      case T.partialcharge:
+      case T.polymer:
+      case T.property:
+      case T.rasmol:
+      case T.spacefill:
+      case T.shapely:
+      case T.straightness:
+      case T.structure:
+      case T.surfacedistance:
+      case T.temperature:
+      case T.translucent:
+      case T.user:
+      case T.vanderwaals:
+        theTok = T.atoms;
         i = 1;
         break;
-      case Token.string:
+      case T.string:
         i = 1;
         String strColor = stringParameter(i++);
         if (isArrayParameter(i)) {
-          strColor = strColor += "=" + ScriptVariable.sValue(ScriptVariable.getVariableAS(stringParameterSet(i))).replace('\n',' ');
+          strColor = strColor += "=" + SV.sValue(SV.getVariableAS(stringParameterSet(i))).replace('\n',' ');
           i = iToken + 1;
         }
-        boolean isTranslucent = (tokAt(i) == Token.translucent);
-        if (!isSyntaxCheck)
+        boolean isTranslucent = (tokAt(i) == T.translucent);
+        if (!chk)
           viewer.setPropertyColorScheme(strColor, isTranslucent, true);
         if (isTranslucent)
           ++i;
-        if (tokAt(i) == Token.range || tokAt(i) == Token.absolute) {
+        if (tokAt(i) == T.range || tokAt(i) == T.absolute) {
           float min = floatParameter(++i);
           float max = floatParameter(++i);
-          if (!isSyntaxCheck)
+          if (!chk)
             viewer.setCurrentColorRange(min, max);
         }
         return;
-      case Token.range:
-      case Token.absolute:
+      case T.range:
+      case T.absolute:
         float min = floatParameter(2);
         float max = floatParameter(checkLast(3));
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setCurrentColorRange(min, max);
         return;
-      case Token.background:
+      case T.background:
         argb = getArgbParamLast(2, true);
-        if (!isSyntaxCheck)
+        if (!chk)
           setObjectArgb("background", argb);
         return;
-      case Token.bitset:
-      case Token.expressionBegin:
+      case T.bitset:
+      case T.expressionBegin:
         i = -1;
-        theTok = Token.atoms;
+        theTok = T.atoms;
         break;
-      case Token.rubberband:
+      case T.rubberband:
         argb = getArgbParamLast(2, false);
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setRubberbandArgb(argb);
         return;
-      case Token.highlight:
-      case Token.selectionhalos:
+      case T.highlight:
+      case T.selectionhalos:
         i = 2;
-        if (tokAt(2) == Token.opaque)
+        if (tokAt(2) == T.opaque)
           i++;
         argb = getArgbParamLast(i, true);
-        if (isSyntaxCheck)
+        if (chk)
           return;
-        shapeManager.loadShape(JmolConstants.SHAPE_HALOS);
-        setShapeProperty(JmolConstants.SHAPE_HALOS,
-            (tok == Token.selectionhalos ? "argbSelection" : "argbHighlight"),
+        sm.loadShape(JC.SHAPE_HALOS);
+        setShapeProperty(JC.SHAPE_HALOS,
+            (tok == T.selectionhalos ? "argbSelection" : "argbHighlight"),
             Integer.valueOf(argb));
         return;
-      case Token.axes:
-      case Token.boundbox:
-      case Token.unitcell:
-      case Token.identifier:
-      case Token.hydrogen:
+      case T.axes:
+      case T.boundbox:
+      case T.unitcell:
+      case T.identifier:
+      case T.hydrogen:
         // color element
         String str = parameterAsString(1);
         if (checkToken(2)) {
           switch (getToken(2).tok) {
-          case Token.rasmol:
-            argb = Token.rasmol;
+          case T.rasmol:
+            argb = T.rasmol;
             break;
-          case Token.none:
-          case Token.jmol:
-            argb = Token.jmol;
+          case T.none:
+          case T.jmol:
+            argb = T.jmol;
             break;
           default:
             argb = getArgbParam(2);
@@ -7967,9 +7977,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           return;
         error(ERROR_invalidArgument);
         break;
-      case Token.isosurface:
-      case Token.contact:
-        setShapeProperty(JmolConstants.shapeTokenIndex(tok), "thisID",
+      case T.isosurface:
+      case T.contact:
+        setShapeProperty(JC.shapeTokenIndex(tok), "thisID",
             MeshCollection.PREVIOUS_MESH_ID);
         break;
       }
@@ -7980,14 +7990,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private boolean changeElementColor(String str, int argb) {
     for (int i = Elements.elementNumberMax; --i >= 0;) {
       if (str.equalsIgnoreCase(Elements.elementNameFromNumber(i))) {
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setElementArgb(i, argb);
         return true;
       }
     }
     for (int i = Elements.altElementMax; --i >= 0;) {
       if (str.equalsIgnoreCase(Elements.altElementNameFromIndex(i))) {
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setElementArgb(Elements.altElementNumberFromIndex(i), argb);
         return true;
       }
@@ -7996,19 +8006,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return false;
     for (int i = Elements.elementNumberMax; --i >= 0;) {
       if (str.equalsIgnoreCase("_" + Elements.elementSymbolFromNumber(i))) {
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setElementArgb(i, argb);
         return true;
       }
     }
     for (int i = Elements.altElementMax; --i >= Elements.firstIsotope;) {
       if (str.equalsIgnoreCase("_" + Elements.altElementSymbolFromIndex(i))) {
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setElementArgb(Elements.altElementNumberFromIndex(i), argb);
         return true;
       }
       if (str.equalsIgnoreCase("_" + Elements.altIsotopeSymbolFromIndex(i))) {
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setElementArgb(Elements.altElementNumberFromIndex(i), argb);
         return true;
       }
@@ -8021,10 +8031,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String translucency = null;
     Object colorvalue = null;
     Object colorvalue1 = null;
-    BitSet bs = null;
+    BS bs = null;
     String prefix = "";
     boolean isColor = false;
-    boolean isIsosurface = (shapeType == JmolConstants.SHAPE_ISOSURFACE || shapeType == JmolConstants.SHAPE_CONTACT);
+    boolean isIsosurface = (shapeType == JC.SHAPE_ISOSURFACE || shapeType == JC.SHAPE_CONTACT);
     int typeMask = 0;
     boolean doClearBondSet = false;
     float translucentLevel = Float.MAX_VALUE;
@@ -8033,28 +8043,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       index = iToken + 1;
       if (isBondSet) {
         doClearBondSet = true;
-        shapeType = JmolConstants.SHAPE_STICKS;
+        shapeType = JC.SHAPE_STICKS;
       }
     }
     if (isBackground)
       getToken(index);
-    else if ((isBackground = (getToken(index).tok == Token.background)) == true)
+    else if ((isBackground = (getToken(index).tok == T.background)) == true)
       getToken(++index);
     if (isBackground)
       prefix = "bg";
     else if (isIsosurface) {
       switch (theTok) {
-      case Token.mesh:
+      case T.mesh:
         getToken(++index);
         prefix = "mesh";
         break;
-      case Token.phase:
+      case T.phase:
         int argb = getArgbParamOrNone(++index, false);
         colorvalue1 = (argb == 0 ? null : Integer.valueOf(argb));
         getToken(index = iToken + 1);
         break;
-      case Token.bitset:
-      case Token.expressionBegin:
+      case T.bitset:
+      case T.expressionBegin:
         if (theToken.value instanceof BondSet) {
           bs = (BondSet) theToken.value;
           prefix = "vertex";
@@ -8068,10 +8078,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       }
     }
-    if (!isSyntaxCheck && shapeType == JmolConstants.SHAPE_MO && !mo(true))
+    if (!chk && shapeType == JC.SHAPE_MO && !mo(true))
       return;
-    boolean isTranslucent = (theTok == Token.translucent);
-    if (isTranslucent || theTok == Token.opaque) {
+    boolean isTranslucent = (theTok == T.translucent);
+    if (isTranslucent || theTok == T.opaque) {
       if (translucentLevel == Float.MIN_VALUE)
         error(ERROR_invalidArgument);
       translucency = parameterAsString(index++);
@@ -8079,18 +8089,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         translucentLevel = getTranslucentLevel(index++);
     }
     int tok = 0;
-    if (index < statementLength && tokAt(index) != Token.on
-        && tokAt(index) != Token.off) {
+    if (index < slen && tokAt(index) != T.on
+        && tokAt(index) != T.off) {
       isColor = true;
       tok = getToken(index).tok;
-      if ((!isIsosurface || tokAt(index + 1) != Token.to)
+      if ((!isIsosurface || tokAt(index + 1) != T.to)
           && isColorParam(index)) {
         int argb = getArgbParamOrNone(index, false);
         colorvalue = (argb == 0 ? null : Integer.valueOf(argb));
-        if (translucency == null && tokAt(index = iToken + 1) != Token.nada) {
+        if (translucency == null && tokAt(index = iToken + 1) != T.nada) {
           getToken(index);
-          isTranslucent = (theTok == Token.translucent);
-          if (isTranslucent || theTok == Token.opaque) {
+          isTranslucent = (theTok == T.translucent);
+          if (isTranslucent || theTok == T.opaque) {
             translucency = parameterAsString(index);
             if (isTranslucent && isFloatParameter(index + 1))
               translucentLevel = getTranslucentLevel(++index);
@@ -8101,7 +8111,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           // checkLength(index + 1);
           // iToken = index;
         }
-      } else if (shapeType == JmolConstants.SHAPE_LCAOCARTOON) {
+      } else if (shapeType == JC.SHAPE_LCAOCARTOON) {
         iToken--; // back up one
       } else {
         // must not be a color, but rather a color SCHEME
@@ -8114,35 +8124,35 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         boolean isColorIndex = (isByElement || name
             .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
         EnumPalette pal = (isColorIndex || isIsosurface ? EnumPalette.PROPERTY
-            : tok == Token.spacefill ? EnumPalette.CPK
+            : tok == T.spacefill ? EnumPalette.CPK
                 : EnumPalette.getPalette(name));
         // color atoms "cpkScheme"
         if (pal == EnumPalette.UNKNOWN
             || (pal == EnumPalette.TYPE || pal == EnumPalette.ENERGY)
-            && shapeType != JmolConstants.SHAPE_HSTICKS)
+            && shapeType != JC.SHAPE_HSTICKS)
           error(ERROR_invalidArgument);
         Object data = null;
-        BitSet bsSelected = (pal != EnumPalette.PROPERTY
+        BS bsSelected = (pal != EnumPalette.PROPERTY
             && pal != EnumPalette.VARIABLE
             || !viewer.isRangeSelected() ? null : viewer.getSelectionSet(false));
         if (pal == EnumPalette.PROPERTY) {
           if (isColorIndex) {
-            if (!isSyntaxCheck) {
+            if (!chk) {
               data = getBitsetPropertyFloat(
                   bsSelected,
-                  (isByElement ? Token.elemno : Token.groupid) | Token.allfloat,
+                  (isByElement ? T.elemno : T.groupid) | T.allfloat,
                   Float.NaN, Float.NaN);
             }
           } else {
             if (!isColorIndex && !isIsosurface)
               index++;
             if (name.equals("property")
-                && Token.tokAttr((tok = getToken(index).tok),
-                    Token.atomproperty)
-                && !Token.tokAttr(tok, Token.strproperty)) {
-              if (!isSyntaxCheck) {
+                && T.tokAttr((tok = getToken(index).tok),
+                    T.atomproperty)
+                && !T.tokAttr(tok, T.strproperty)) {
+              if (!chk) {
                 data = getBitsetPropertyFloat(bsSelected, getToken(index++).tok
-                    | Token.allfloat, Float.NaN, Float.NaN);
+                    | T.allfloat, Float.NaN, Float.NaN);
               }
             }
           }
@@ -8151,15 +8161,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           name = parameterAsString(index++);
           data = new float[viewer.getAtomCount()];
           Parser.parseStringInfestedFloatArray(""
-              + getParameter(name, Token.string), null, (float[]) data);
+              + getParameter(name, T.string), null, (float[]) data);
           pal = EnumPalette.PROPERTY;
         }
         if (pal == EnumPalette.PROPERTY) {
           String scheme = null;
-          if (tokAt(index) == Token.string) {
+          if (tokAt(index) == T.string) {
             scheme = parameterAsString(index++).toLowerCase();
             if (isArrayParameter(index)) {
-              scheme += "=" + ScriptVariable.sValue(ScriptVariable.getVariableAS(stringParameterSet(index))).replace('\n',' ');
+              scheme += "=" + SV.sValue(SV.getVariableAS(stringParameterSet(index))).replace('\n',' ');
               index = iToken + 1;
             }
           } else if (isIsosurface && isColorParam(index)) {
@@ -8176,7 +8186,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           float min = 0;
           float max = Float.MAX_VALUE;
           if (!isColorIndex
-              && (tokAt(index) == Token.absolute || tokAt(index) == Token.range)) {
+              && (tokAt(index) == T.absolute || tokAt(index) == T.range)) {
             min = floatParameter(index + 1);
             max = floatParameter(index + 2);
             index += 3;
@@ -8190,7 +8200,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               max = Float.MAX_VALUE;
             }
           }
-          if (!isSyntaxCheck) {
+          if (!chk) {
             if (isIsosurface) {
             } else if (data == null) {
               viewer.setCurrentColorRange(name);
@@ -8222,35 +8232,35 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         colorvalue = pal;
       }
     }
-    if (isSyntaxCheck || shapeType < 0)
+    if (chk || shapeType < 0)
       return;
     switch (shapeType) {
-    case JmolConstants.SHAPE_STRUTS:
+    case JC.SHAPE_STRUTS:
       typeMask = JmolEdge.BOND_STRUT;
       break;
-    case JmolConstants.SHAPE_HSTICKS:
+    case JC.SHAPE_HSTICKS:
       typeMask = JmolEdge.BOND_HYDROGEN_MASK;
       break;
-    case JmolConstants.SHAPE_SSSTICKS:
+    case JC.SHAPE_SSSTICKS:
       typeMask = JmolEdge.BOND_SULFUR_MASK;
       break;
-    case JmolConstants.SHAPE_STICKS:
+    case JC.SHAPE_STICKS:
       typeMask = JmolEdge.BOND_COVALENT_MASK;
       break;
     default:
       typeMask = 0;
     }
     if (typeMask == 0) {
-      shapeManager.loadShape(shapeType);
-      if (shapeType == JmolConstants.SHAPE_LABELS)
-        setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer
+      sm.loadShape(shapeType);
+      if (shapeType == JC.SHAPE_LABELS)
+        setShapeProperty(JC.SHAPE_LABELS, "setDefaults", viewer
             .getNoneSelected());
     } else {
       if (bs != null) {
         viewer.selectBonds(bs);
         bs = null;
       }
-      shapeType = JmolConstants.SHAPE_STICKS;
+      shapeType = JC.SHAPE_STICKS;
       setShapeProperty(shapeType, "type", Integer.valueOf(typeMask));
     }
     if (isColor) {
@@ -8258,27 +8268,27 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // the state must not save them as paletteIDs, only as pure
       // color values.
       switch (tok) {
-      case Token.surfacedistance:
-      case Token.straightness:
+      case T.surfacedistance:
+      case T.straightness:
         viewer.autoCalculate(tok);
         break;
-      case Token.temperature:
+      case T.temperature:
         if (viewer.isRangeSelected())
           viewer.clearBfactorRange();
         break;
-      case Token.group:
+      case T.group:
         viewer.calcSelectedGroupsCount();
         break;
-      case Token.polymer:
-      case Token.monomer:
+      case T.polymer:
+      case T.monomer:
         viewer.calcSelectedMonomersCount();
         break;
-      case Token.molecule:
+      case T.molecule:
         viewer.calcSelectedMoleculesCount();
         break;
       }
       if (colorvalue1 != null 
-          && (isIsosurface || shapeType == JmolConstants.SHAPE_CARTOON || shapeType == JmolConstants.SHAPE_RIBBONS))
+          && (isIsosurface || shapeType == JC.SHAPE_CARTOON || shapeType == JC.SHAPE_RIBBONS))
         setShapeProperty(shapeType, "colorPhase", new Object[] { colorvalue1, colorvalue });
       else if (bs == null)
         setShapeProperty(shapeType, prefix + "color", colorvalue);
@@ -8289,17 +8299,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       setShapeTranslucency(shapeType, prefix, translucency, translucentLevel,
           bs);
     if (typeMask != 0)
-      setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+      setShapeProperty(JC.SHAPE_STICKS, "type", Integer
           .valueOf(JmolEdge.BOND_COVALENT_MASK));
     if (doClearBondSet)
       viewer.selectBonds(null);
-    if (shapeType == JmolConstants.SHAPE_BALLS)
+    if (shapeType == JC.SHAPE_BALLS)
       viewer.checkInheritedShapes();
   }
 
   private void setShapeTranslucency(int shapeType, String prefix,
                                     String translucency,
-                                    float translucentLevel, BitSet bs) {
+                                    float translucentLevel, BS bs) {
     if (translucentLevel == Float.MAX_VALUE)
       translucentLevel = viewer.getDefaultTranslucent();
     setShapeProperty(shapeType, "translucentLevel", Float
@@ -8308,14 +8318,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     if (bs == null)
       setShapeProperty(shapeType, prefix + "translucency", translucency);
-    else if (!isSyntaxCheck)
+    else if (!chk)
       setShapePropertyBs(shapeType, prefix + "translucency", translucency, bs);
   }
 
   private void cd() throws ScriptException {
-    if (isSyntaxCheck)
+    if (chk)
       return;
-    String dir = (statementLength == 1 ? null : parameterAsString(1));
+    String dir = (slen == 1 ? null : parameterAsString(1));
     showString(viewer.cd(dir));
   }
 
@@ -8323,53 +8333,53 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void mapProperty() throws ScriptException {
     // map {1.1}.straightness  {2.1}.property_x resno
-    BitSet bsFrom, bsTo;
+    BS bsFrom, bsTo;
     String property1, property2, mapKey;
     int tokProp1 = 0;
     int tokProp2 = 0;
     int tokKey = 0;
     while (true) {
-      if (tokAt(1) == Token.selected) {
+      if (tokAt(1) == T.selected) {
         bsFrom = viewer.getSelectionSet(false);
         bsTo = atomExpressionAt(2);
         property1 = property2 = "selected";
       } else {
         bsFrom = atomExpressionAt(1);
-        if (tokAt(++iToken) != Token.per
-            || !Token.tokAttr(tokProp1 = tokAt(++iToken), Token.atomproperty))
+        if (tokAt(++iToken) != T.per
+            || !T.tokAttr(tokProp1 = tokAt(++iToken), T.atomproperty))
           break;
         property1 = parameterAsString(iToken);
         bsTo = atomExpressionAt(++iToken);
-        if (tokAt(++iToken) != Token.per
-            || !Token.tokAttr(tokProp2 = tokAt(++iToken), Token.settable))
+        if (tokAt(++iToken) != T.per
+            || !T.tokAttr(tokProp2 = tokAt(++iToken), T.settable))
           break;
         property2 = parameterAsString(iToken);
       }
-      if (Token.tokAttr(tokKey = tokAt(iToken + 1), Token.atomproperty))
+      if (T.tokAttr(tokKey = tokAt(iToken + 1), T.atomproperty))
         mapKey = parameterAsString(++iToken);
       else
-        mapKey = Token.nameOf(tokKey = Token.atomno);
+        mapKey = T.nameOf(tokKey = T.atomno);
       checkLast(iToken);
-      if (isSyntaxCheck)
+      if (chk)
         return;
-      BitSet bsOut = null;
+      BS bsOut = null;
       showString("mapping " + property1.toUpperCase() + " for "
           + bsFrom.cardinality() + " atoms to " + property2.toUpperCase()
           + " for " + bsTo.cardinality() + " atoms using "
           + mapKey.toUpperCase());
-      if (Token.tokAttrOr(tokProp1, Token.intproperty, Token.floatproperty)
-          && Token.tokAttrOr(tokProp2, Token.intproperty, Token.floatproperty)
-          && Token.tokAttrOr(tokKey, Token.intproperty, Token.floatproperty)) {
+      if (T.tokAttrOr(tokProp1, T.intproperty, T.floatproperty)
+          && T.tokAttrOr(tokProp2, T.intproperty, T.floatproperty)
+          && T.tokAttrOr(tokKey, T.intproperty, T.floatproperty)) {
         float[] data1 = getBitsetPropertyFloat(bsFrom, tokProp1
-            | Token.selectedfloat, Float.NaN, Float.NaN);
+            | T.selectedfloat, Float.NaN, Float.NaN);
         float[] data2 = getBitsetPropertyFloat(bsFrom, tokKey
-            | Token.selectedfloat, Float.NaN, Float.NaN);
+            | T.selectedfloat, Float.NaN, Float.NaN);
         float[] data3 = getBitsetPropertyFloat(bsTo, tokKey
-            | Token.selectedfloat, Float.NaN, Float.NaN);
-        boolean isProperty = (tokProp2 == Token.property);
+            | T.selectedfloat, Float.NaN, Float.NaN);
+        boolean isProperty = (tokProp2 == T.property);
         float[] dataOut = new float[isProperty ? viewer.getAtomCount()
             : data3.length];
-        bsOut = new BitSet();
+        bsOut = new BS();
         if (data1.length == data2.length) {
           Map<Float, Float> ht = new Hashtable<Float, Float>();
           for (int i = 0; i < data1.length; i++) {
@@ -8399,13 +8409,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             + " = %[" + property1 + "]";
         String[] data = (String[]) getBitsetIdent(bsFrom, format, null, false,
             Integer.MAX_VALUE, false);
-        StringXBuilder sb = new StringXBuilder();
+        SB sb = new SB();
         for (int i = 0; i < data.length; i++)
           if (data[i].indexOf("null") < 0)
             sb.append(data[i]).appendC('\n');
         if (Logger.debugging)
           Logger.info(sb.toString());
-        BitSet bsSubset = BitSetUtil.copy(viewer.getSelectionSubset());
+        BS bsSubset = BSUtil.copy(viewer.getSelectionSubset());
         viewer.setSelectionSubset(bsTo);
         try {
           runScript(sb.toString());
@@ -8429,7 +8439,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String dataLabel = null;
     boolean isOneValue = false;
     int i;
-    switch (iToken = statementLength) {
+    switch (iToken = slen) {
     case 5:
       // parameters 3 and 4 are just for the ride: [end] and ["key"]
       dataString = parameterAsString(2);
@@ -8438,13 +8448,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case 2:
       dataLabel = parameterAsString(1);
       if (dataLabel.equalsIgnoreCase("clear")) {
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setData(null, null, 0, 0, 0, 0, 0);
         return;
       }
       if ((i = dataLabel.indexOf("@")) >= 0) {
         dataString = ""
-            + getParameter(dataLabel.substring(i + 1), Token.string);
+            + getParameter(dataLabel.substring(i + 1), T.string);
         dataLabel = dataLabel.substring(0, i).trim();
       } else if (dataString == null && (i = dataLabel.indexOf(" ")) >= 0) {
         dataString = dataLabel.substring(i + 1).trim();
@@ -8461,7 +8471,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       load();
       return;
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     boolean isDefault = (dataLabel.toLowerCase().indexOf("(default)") >= 0);
     data = new Object[4];
@@ -8506,7 +8516,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String[] tokens = Parser.getTokens(dataLabel);
     if (dataType.indexOf("property_") == 0
         && !(tokens.length == 2 && tokens[1].equals("set"))) {
-      BitSet bs = viewer.getSelectionSet(false);
+      BS bs = viewer.getSelectionSet(false);
       data[0] = dataType;
       int atomNumberField = (isOneValue ? 0 : ((Integer) viewer
           .getParameter("propertyAtomNumberField")).intValue());
@@ -8539,7 +8549,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyField = 0;
       int atomCount = viewer.getAtomCount();
       int[] atomMap = null;
-      BitSet bsTemp = BitSetUtil.newBitSet(atomCount);
+      BS bsTemp = BSUtil.newBitSet(atomCount);
       if (atomNumberField > 0) {
         atomMap = new int[atomCount + 2];
         for (int j = 0; j <= atomCount; j++)
@@ -8553,7 +8563,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         data[2] = atomMap;
       } else {
-        data[2] = BitSetUtil.copy(bs);
+        data[2] = BSUtil.copy(bs);
       }
       data[1] = dataString;
       data[3] = new Integer(0);
@@ -8592,33 +8602,33 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // will evaluate the moment it is defined and then represent
     // that set of atoms forever.
 
-    if (statementLength < 3 || !(getToken(1).value instanceof String))
+    if (slen < 3 || !(getToken(1).value instanceof String))
       error(ERROR_invalidArgument);
     String setName = ((String) getToken(1).value).toLowerCase();
     if (Parser.parseInt(setName) != Integer.MIN_VALUE)
       error(ERROR_invalidArgument);
-    if (isSyntaxCheck)
+    if (chk)
       return;
     boolean isSite = setName.startsWith("site_");
     boolean isDynamic = (setName.indexOf("dynamic_") == 0);
     if (isDynamic || isSite) {
-      Token[] code = new Token[statementLength];
-      for (int i = statementLength; --i >= 0;)
-        code[i] = statement[i];
+      T[] code = new T[slen];
+      for (int i = slen; --i >= 0;)
+        code[i] = st[i];
       definedAtomSets
           .put("!" + (isSite ? setName : setName.substring(8)), code);
       //if (!isSite)
       //viewer.addStateScript(thisCommand, false, true); removed for 12.1.16
     } else {
-      BitSet bs = atomExpressionAt(2);
+      BS bs = atomExpressionAt(2);
       definedAtomSets.put(setName, bs);
-      if (!isSyntaxCheck)
-        viewer.setUserVariable("@" + setName, ScriptVariable.newVariable(Token.bitset, bs));
+      if (!chk)
+        viewer.setUserVariable("@" + setName, SV.newVariable(T.bitset, bs));
     }
   }
 
   private void echo(int index, String id, boolean isImage) throws ScriptException {
-    if (isSyntaxCheck)
+    if (chk)
       return;
     String text = optParameterAsString(index);
     if (viewer.getEchoStateActive()) {
@@ -8631,7 +8641,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isImage = true;
       }
       if (text != null)
-        setShapeProperty(JmolConstants.SHAPE_ECHO, "text", text);
+        setShapeProperty(JC.SHAPE_ECHO, "text", text);
     }
     if (!isImage && viewer.getRefreshing())
       showString(viewer.formatText(text));
@@ -8639,7 +8649,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void message() throws ScriptException {
     String text = parameterAsString(checkLast(1));
-    if (isSyntaxCheck)
+    if (chk)
       return;
     String s = viewer.formatText(text);
     if (outputBuffer == null)
@@ -8649,41 +8659,41 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void log() throws ScriptException {
-    if (statementLength == 1)
+    if (slen == 1)
       error(ERROR_badArgumentCount);
-    if (isSyntaxCheck)
+    if (chk)
       return;
     String s = parameterExpressionString(1, 0);
-    if (tokAt(1) == Token.off)
+    if (tokAt(1) == T.off)
       setStringProperty("logFile", "");
     else
       viewer.log(s);
   }
 
   private void label(int index) throws ScriptException {
-    if (isSyntaxCheck)
+    if (chk)
       return;
-    shapeManager.loadShape(JmolConstants.SHAPE_LABELS);
+    sm.loadShape(JC.SHAPE_LABELS);
     String strLabel = null;
     switch (getToken(index).tok) {
-    case Token.on:
+    case T.on:
       strLabel = viewer.getStandardLabelFormat(0);
       break;
-    case Token.off:
+    case T.off:
       break;
-    case Token.hide:
-    case Token.display:
-      setShapeProperty(JmolConstants.SHAPE_LABELS, "display",
-          theTok == Token.display ? Boolean.TRUE : Boolean.FALSE);
+    case T.hide:
+    case T.display:
+      setShapeProperty(JC.SHAPE_LABELS, "display",
+          theTok == T.display ? Boolean.TRUE : Boolean.FALSE);
       return;
     default:
       strLabel = parameterAsString(index);
     }
-    shapeManager.setLabel(strLabel, viewer.getSelectionSet(false));
+    sm.setLabel(strLabel, viewer.getSelectionSet(false));
   }
 
   private void hover() throws ScriptException {
-    if (isSyntaxCheck)
+    if (chk)
       return;
     String strLabel = parameterAsString(1);
     if (strLabel.equalsIgnoreCase("on"))
@@ -8694,20 +8704,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void load() throws ScriptException {
-    boolean doLoadFiles = (!isSyntaxCheck || isCmdLine_C_Option);
+    boolean doLoadFiles = (!chk || isCmdLine_C_Option);
     boolean isAppend = false;
     boolean isInline = false;
     boolean isSmiles = false;
     boolean isData = false;
-    BitSet bsModels;
-    int i = (tokAt(0) == Token.data ? 0 : 1);
+    BS bsModels;
+    int i = (tokAt(0) == T.data ? 0 : 1);
     boolean appendNew = viewer.getAppendNew();
     String filter = null;
     List<Object> firstLastSteps = null;
     int modelCount0 = viewer.getModelCount()
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
     int atomCount0 = viewer.getAtomCount();
-    StringXBuilder loadScript = new StringXBuilder().append("load");
+    SB loadScript = new SB().append("load");
     int nFiles = 1;
     Map<String, Object> htParams = new Hashtable<String, Object>();
     // ignore optional file format
@@ -8726,11 +8736,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     // check for special parameters
 
-    if (statementLength == 1) {
+    if (slen == 1) {
       i = 0;
     } else {
       modelName = parameterAsString(i);
-      if (statementLength == 2 && !isSyntaxCheck) {
+      if (slen == 2 && !chk) {
         // spt, png, and pngj files may be
         // run using the LOAD command, but
         // we transfer them to the script command
@@ -8757,19 +8767,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // load OCCUPANCY
       // load PARTIALCHARGE
       switch (tok = tokAt(i)) {
-      case Token.menu:
+      case T.menu:
         String m = parameterAsString(checkLast(2));
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setMenu(m, true);
         return;
-      case Token.data:
+      case T.data:
         isData = true;
         loadScript.append(" /*data*/ data");
         String key = stringParameter(++i).toLowerCase();
-        loadScript.append(" ").append(Escape.escapeStr(key));
+        loadScript.append(" ").append(Escape.eS(key));
         isAppend = key.startsWith("append");
         String strModel = (key.indexOf("@") >= 0 ? ""
-            + getParameter(key.substring(key.indexOf("@") + 1), Token.string)
+            + getParameter(key.substring(key.indexOf("@") + 1), T.string)
             : parameterAsString(++i));
         strModel = viewer.fixInlineString(strModel, viewer.getInlineChar());
         htParams.put("fileData", strModel);
@@ -8778,30 +8788,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         loadScript.appendC('\n');
         loadScript.append(strModel);
         if (key.indexOf("@") < 0) {
-          loadScript.append(" end ").append(Escape.escapeStr(key));
+          loadScript.append(" end ").append(Escape.eS(key));
           i += 2; // skip END "key"
         }
         break;
-      case Token.append:
+      case T.append:
         isAppend = true;
         loadScript.append(" append");
         modelName = optParameterAsString(++i);
-        tok = Token.getTokFromName(modelName);
+        tok = T.getTokFromName(modelName);
         break;
-      case Token.identifier:
+      case T.identifier:
         i++;
         loadScript.append(" " + modelName);
-        tokType = (tok == Token.identifier
+        tokType = (tok == T.identifier
             && Parser.isOneOf(modelName.toLowerCase(),
-                JmolConstants.LOAD_ATOM_DATA_TYPES) ? Token
-            .getTokFromName(modelName) : Token.nada);
-        if (tokType != Token.nada) {
+                JC.LOAD_ATOM_DATA_TYPES) ? T
+            .getTokFromName(modelName) : T.nada);
+        if (tokType != T.nada) {
           // loading just some data here
           // xyz vxyz vibration temperature occupancy partialcharge
           htParams.put("atomDataOnly", Boolean.TRUE);
           htParams.put("modelNumber", Integer.valueOf(1));
-          if (tokType == Token.vibration)
-            tokType = Token.vibxyz;
+          if (tokType == T.vibration)
+            tokType = T.vibxyz;
           tempFileInfo = viewer.getFileInfo();
           isAppend = true;
         }
@@ -8815,48 +8825,48 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // LOAD [[APPEND]] "fileNameInQuotes"
 
       switch (tok) {
-      case Token.file:
-      case Token.inline:
-        isInline = (tok == Token.inline);
+      case T.file:
+      case T.inline:
+        isInline = (tok == T.inline);
         i++;
         loadScript.append(" " + modelName);
         break;
-      case Token.smiles:
+      case T.smiles:
         isSmiles = true;
         i++;
         break;
-      case Token.sync:
+      case T.sync:
         htParams.put("async", Boolean.TRUE);
         i++;
         break;
-      case Token.trajectory:
-      case Token.model:
+      case T.trajectory:
+      case T.model:
         i++;
         loadScript.append(" " + modelName);
-        if (tok == Token.trajectory)
+        if (tok == T.trajectory)
           htParams.put("isTrajectory", Boolean.TRUE);
         if (isPoint3f(i)) {
-          Point3f pt = getPoint3f(i, false);
+          P3 pt = getPoint3f(i, false);
           i = iToken + 1;
           // first last stride
           htParams.put("firstLastStep", new int[] { (int) pt.x, (int) pt.y,
               (int) pt.z });
-          loadScript.append(" " + Escape.escapePt(pt));
-        } else if (tokAt(i) == Token.bitset) {
-          bsModels = (BitSet) getToken(i++).value;
+          loadScript.append(" " + Escape.eP(pt));
+        } else if (tokAt(i) == T.bitset) {
+          bsModels = (BS) getToken(i++).value;
           htParams.put("bsModels", bsModels);
-          loadScript.append(" " + Escape.escape(bsModels));
+          loadScript.append(" " + Escape.e(bsModels));
         } else {
           htParams.put("firstLastStep", new int[] { 0, -1, 1 });
         }
         break;
-      case Token.identifier:
+      case T.identifier:
         // i has been incremented; continue...
         break;
       default:
         modelName = "fileset";
       }
-      if (getToken(i).tok != Token.string)
+      if (getToken(i).tok != T.string)
         error(ERROR_filenameExpected);
     }
     // long timeBegin = System.currentTimeMillis();
@@ -8868,7 +8878,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     int filePt = i;
     String localName = null;
-    if (tokAt(filePt + 1) == Token.as) {
+    if (tokAt(filePt + 1) == T.as) {
       localName = stringParameter(i = i + 2);
       if (viewer.getPathForAllFiles() != "") {
         // we use the LOCAL name when reading from a local path only (in the case of JMOL files)
@@ -8881,7 +8891,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String appendedData = null;
     String appendedKey = null;
     
-    if (statementLength == i + 1) {
+    if (slen == i + 1) {
 
       // end-of-command options:
       // LOAD SMILES "xxxx" --> load "$xxxx"
@@ -8907,39 +8917,39 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               error(ERROR_invalidArgument);
             for (int j = 0; j < filenames.length; j++)
               loadScript.append(" /*file*/")
-                  .append(Escape.escapeStr(filenames[j]));
+                  .append(Escape.eS(filenames[j]));
           }
         }
       }
-    } else if (getToken(i + 1).tok == Token.manifest
+    } else if (getToken(i + 1).tok == T.manifest
         // model/vibration index or list of model indices
-        || theTok == Token.integer || theTok == Token.varray
-        || theTok == Token.leftsquare || theTok == Token.spacebeforesquare
+        || theTok == T.integer || theTok == T.varray
+        || theTok == T.leftsquare || theTok == T.spacebeforesquare
         // {i j k} (lattice)
-        || theTok == Token.leftbrace || theTok == Token.point3f
+        || theTok == T.leftbrace || theTok == T.point3f
         // PACKED/CENTROID, either order
-        || theTok == Token.packed || theTok == Token.centroid
+        || theTok == T.packed || theTok == T.centroid
         // SUPERCELL {i j k}
-        || theTok == Token.supercell
+        || theTok == T.supercell
         // RANGE x.x or RANGE -x.x
-        || theTok == Token.range
+        || theTok == T.range
         // SPACEGROUP "nameOrNumber" 
         // or SPACEGROUP "IGNOREOPERATORS" 
         // or SPACEGROUP "" (same as current)
-        || theTok == Token.spacegroup
+        || theTok == T.spacegroup
         // UNITCELL [a b c alpha beta gamma]
         // or UNITCELL [ax ay az bx by bz cx cy cz] 
         // or UNITCELL "" (same as current)
         // UNITCELL "..." or UNITCELL ""
-        || theTok == Token.unitcell
+        || theTok == T.unitcell
         // OFFSET {x y z}
-        || theTok == Token.offset
+        || theTok == T.offset
         // FILTER "..."
-        || theTok == Token.filter && tokAt(i + 3) != Token.coord
+        || theTok == T.filter && tokAt(i + 3) != T.coord
         // Jmol 13.1.5 -- APPEND "data..."
-        || theTok == Token.append
+        || theTok == T.append
         // don't remember what this is:
-        || theTok == Token.identifier && tokAt(i + 3) != Token.coord
+        || theTok == T.identifier && tokAt(i + 3) != T.coord
 
     ) {
 
@@ -8963,10 +8973,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       // MANIFEST "..."
 
-      if ((tok = tokAt(i)) == Token.manifest) {
+      if ((tok = tokAt(i)) == T.manifest) {
         String manifest = stringParameter(++i);
         htParams.put("manifest", manifest);
-        sOptions += " MANIFEST " + Escape.escapeStr(manifest);
+        sOptions += " MANIFEST " + Escape.eS(manifest);
         tok = tokAt(++i);
       }
       // n >= 0: model number
@@ -8974,7 +8984,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // [index1, index2, index3,...]
 
       switch (tok) {
-      case Token.integer:
+      case T.integer:
         int n = intParameter(i);
         sOptions += " " + n;
         if (n < 0)
@@ -8983,12 +8993,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           htParams.put("modelNumber", Integer.valueOf(n));
         tok = tokAt(++i);
         break;
-      case Token.varray:
-      case Token.leftsquare:
-      case Token.spacebeforesquare:
+      case T.varray:
+      case T.leftsquare:
+      case T.spacebeforesquare:
         float[] data = floatParameterSet(i, 1, Integer.MAX_VALUE);
         i = iToken;
-        BitSet bs = new BitSet();
+        BS bs = new BS();
         for (int j = 0; j < data.length; j++)
           if (data[j] >= 1 && data[j] == (int) data[j])
             bs.set((int) data[j] - 1);
@@ -9003,8 +9013,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       // {i j k}
 
-      Point3f lattice = null;
-      if (tok == Token.leftbrace || tok == Token.point3f) {
+      P3 lattice = null;
+      if (tok == T.leftbrace || tok == T.point3f) {
         lattice = getPoint3f(i, false);
         i = iToken + 1;
         tok = tokAt(i);
@@ -9014,17 +9024,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // for PACKED, CENTROID, SUPERCELL, RANGE, SPACEGROUP, UNITCELL
 
       switch (tok) {
-      case Token.packed:
-      case Token.centroid:
-      case Token.supercell:
-      case Token.range:
-      case Token.spacegroup:
-      case Token.unitcell:
+      case T.packed:
+      case T.centroid:
+      case T.supercell:
+      case T.range:
+      case T.spacegroup:
+      case T.unitcell:
         if (lattice == null)
-          lattice = Point3f.new3(555, 555, -1);
+          lattice = P3.new3(555, 555, -1);
         iToken = i - 1;
       }
-      Point3f offset = null;
+      P3 offset = null;
       if (lattice != null) {
         htParams.put("lattice", lattice);
         i = iToken + 1;
@@ -9033,16 +9043,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
         // {i j k} PACKED, CENTROID -- either or both; either order
 
-        if (tokAt(i) == Token.packed) {
+        if (tokAt(i) == T.packed) {
           htParams.put("packed", Boolean.TRUE);
           sOptions += " PACKED";
           i++;
         }
-        if (tokAt(i) == Token.centroid) {
+        if (tokAt(i) == T.centroid) {
           htParams.put("centroid", Boolean.TRUE);
           sOptions += " CENTROID";
           i++;
-          if (tokAt(i) == Token.packed && !htParams.containsKey("packed")) {
+          if (tokAt(i) == T.packed && !htParams.containsKey("packed")) {
             htParams.put("packed", Boolean.TRUE);
             sOptions += " PACKED";
             i++;
@@ -9051,10 +9061,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
         // {i j k} ... SUPERCELL {i' j' k'}
 
-        if (tokAt(i) == Token.supercell) {
+        if (tokAt(i) == T.supercell) {
           Object supercell;
           if (isPoint3f(++i)) {
-            Point3f pt = getPoint3f(i, false);
+            P3 pt = getPoint3f(i, false);
             if (pt.x != (int) pt.x || pt.y != (int) pt.y || pt.z != (int) pt.z
                 || pt.x < 1 || pt.y < 1 || pt.z < 1) {
               iToken = i;
@@ -9072,7 +9082,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // {i j k} ... RANGE -x.y (from non-symmetry set)
 
         float distance = 0;
-        if (tokAt(i) == Token.range) {
+        if (tokAt(i) == T.range) {
           /*
            * # Jmol 11.3.9 introduces the capability of visualizing the close
            * contacts around a crystalline protein (or any other cyrstal
@@ -9103,11 +9113,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         String spacegroup = null;
         SymmetryInterface sg;
         int iGroup = Integer.MIN_VALUE;
-        if (tokAt(i) == Token.spacegroup) {
+        if (tokAt(i) == T.spacegroup) {
           ++i;
           spacegroup = TextFormat.simpleReplace(parameterAsString(i++), "''",
               "\"");
-          sOptions += " spacegroup " + Escape.escapeStr(spacegroup);
+          sOptions += " spacegroup " + Escape.eS(spacegroup);
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
             iGroup = -999;
           } else {
@@ -9130,7 +9140,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // {i j k} ... UNITCELL ""  // same as current
 
         float[] fparams = null;
-        if (tokAt(i) == Token.unitcell) {
+        if (tokAt(i) == T.unitcell) {
           ++i;
           if (optParameterAsString(i).length() == 0) {
             // unitcell "" -- use current unit cell
@@ -9161,7 +9171,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       if (offset != null)
         coordinatesAreFractional = false;
-      else if (tokAt(i) == Token.offset)
+      else if (tokAt(i) == T.offset)
         offset = getPoint3f(++i, true);
       if (offset != null) {
         if (coordinatesAreFractional) {
@@ -9171,7 +9181,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           sOptions += " offset {" + offset.x + " " + offset.y + " " + offset.z
               + "/1}";
         } else {
-          sOptions += " offset " + Escape.escapePt(offset);
+          sOptions += " offset " + Escape.eP(offset);
         }
         htParams.put("unitCellOffset", offset);
         i = iToken + 1;
@@ -9182,9 +9192,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // .... APPEND "appendedData" @x ....
       
 
-      if (tokAt(i) == Token.append) {
+      if (tokAt(i) == T.append) {
         // for CIF reader -- experimental
-        if (tokAt(++i) == Token.data) {
+        if (tokAt(++i) == T.data) {
           i += 2;
           appendedData = (String) getToken(i++).value;
           appendedKey = stringParameter(++i);
@@ -9196,7 +9206,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         htParams.put(appendedKey, appendedData);
       }
 
-      if (tokAt(i) == Token.filter)
+      if (tokAt(i) == T.filter)
         filter = stringParameter(++i);
 
     } else {
@@ -9211,40 +9221,40 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         loadScript.append(" " + modelName);
       }
 
-      Point3f pt = null;
-      BitSet bs = null;
+      P3 pt = null;
+      BS bs = null;
       List<String> fNames = new ArrayList<String>();
-      while (i < statementLength) {
+      while (i < slen) {
         switch (tokAt(i)) {
-        case Token.filter:
+        case T.filter:
           filter = stringParameter(++i);
           ++i;
           continue;
-        case Token.coord:
+        case T.coord:
           htParams.remove("isTrajectory");
           if (firstLastSteps == null) {
             firstLastSteps = new ArrayList<Object>();
-            pt = Point3f.new3(0, -1, 1);
+            pt = P3.new3(0, -1, 1);
           }
           if (isPoint3f(++i)) {
             pt = getPoint3f(i, false);
             i = iToken + 1;
-          } else if (tokAt(i) == Token.bitset) {
-            bs = (BitSet) getToken(i).value;
+          } else if (tokAt(i) == T.bitset) {
+            bs = (BS) getToken(i).value;
             pt = null;
             i = iToken + 1;
           }
           break;
-        case Token.identifier:
+        case T.identifier:
           error(ERROR_invalidArgument);
         }
         fNames.add(filename = parameterAsString(i++));
         if (pt != null) {
           firstLastSteps.add(new int[] { (int) pt.x, (int) pt.y, (int) pt.z });
-          loadScript.append(" COORD " + Escape.escapePt(pt));
+          loadScript.append(" COORD " + Escape.eP(pt));
         } else if (bs != null) {
           firstLastSteps.add(bs);
-          loadScript.append(" COORD " + Escape.escape(bs));
+          loadScript.append(" COORD " + Escape.e(bs));
         }
         loadScript.append(" /*file*/$FILENAME" + fNames.size() + "$");
       }
@@ -9275,7 +9285,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       htParams.put("filter", filter);
       if (filter.equalsIgnoreCase("2d")) // MOL file hack
         filter = "2D-noMin";
-      sOptions += " FILTER " + Escape.escapeStr(filter);
+      sOptions += " FILTER " + Escape.eS(filter);
     }
 
     // store inline data or variable data in htParams
@@ -9288,9 +9298,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isVariable = true;
         String s = getStringParameter(filename.substring(1), false);
         htParams.put("fileData", s);
-        loadScript = new StringXBuilder().append("{\n    var ")
+        loadScript = new SB().append("{\n    var ")
         .append(filename.substring(1)).append(" = ")
-        .append(Escape.escapeStr(s)).append(";\n    ").appendSB(loadScript);
+        .append(Escape.eS(s)).append(";\n    ").appendSB(loadScript);
       }
     }
 
@@ -9316,13 +9326,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // a single file or string -- complete the loadScript
       loadScript.append(" ");
       if (isVariable || isInline) {
-        loadScript.append(Escape.escapeStr(filename));
+        loadScript.append(Escape.eS(filename));
       } else if (!isData) {
         if (!filename.equals("string") && !filename.equals("string[]"))
           loadScript.append("/*file*/");
         if (localName != null)
           localName = viewer.getFilePath(localName, false);
-        loadScript.append((localName != null ? Escape.escapeStr(localName)
+        loadScript.append((localName != null ? Escape.eS(localName)
             : "$FILENAME$"));
       }
       if (sOptions.length() > 0)
@@ -9352,8 +9362,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     }
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
-      if (errMsg.indexOf(JmolConstants.NOTE_SCRIPT_FILE) == 0) {
-        filename = errMsg.substring(JmolConstants.NOTE_SCRIPT_FILE.length())
+      if (errMsg.indexOf(JC.NOTE_SCRIPT_FILE) == 0) {
+        filename = errMsg.substring(JC.NOTE_SCRIPT_FILE.length())
             .trim();
         script(0, filename);
         return;
@@ -9404,10 +9414,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void logLoadInfo(String msg) {
     if (msg.length() > 0)
       Logger.info(msg);
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     int modelCount = viewer.getModelCount();
     if (modelCount > 1)
-      sb.appendI(modelCount).append((viewer.isMovie() ? " states" : " models")+"\n");
+      sb.append((viewer.isMovie() ? viewer.getFrameCount() + " frames" : modelCount + " models")+"\n");
     for (int i = 0; i < modelCount; i++) {
       Map<String, Object> moData = (Map<String, Object>) viewer
           .getModelAuxiliaryInfoValue(i, "moData");
@@ -9422,7 +9432,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private String getFullPathName() throws ScriptException {
-    String filename = (!isSyntaxCheck || isCmdLine_C_Option ? viewer
+    String filename = (!chk || isCmdLine_C_Option ? viewer
         .getFullPathName() : "test.xyz");
     if (filename == null)
       error(ERROR_invalidArgument);
@@ -9430,9 +9440,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void measure() throws ScriptException {
-    if (tokAt(1) == Token.search) {
-      String smarts = stringParameter(statementLength == 3 ? 2 : 4);
-      if (isSyntaxCheck)
+    if (tokAt(1) == T.search) {
+      String smarts = stringParameter(slen == 3 ? 2 : 4);
+      if (chk)
         return;
       Atom[] atoms = viewer.modelSet.atoms;
       int atomCount = viewer.getAtomCount();
@@ -9440,30 +9450,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           atoms, atomCount, viewer.getSelectionSet(false), true, false);
       if (maps == null)
         return;
-      setShapeProperty(JmolConstants.SHAPE_MEASURES, "maps", maps);
+      setShapeProperty(JC.SHAPE_MEASURES, "maps", maps);
       return;
     }
-    switch (statementLength) {
+    switch (slen) {
     case 1:
     case 2:
       switch (getToken(1).tok) {
-      case Token.nada:
-      case Token.on:
-        setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll", Boolean.FALSE);
+      case T.nada:
+      case T.on:
+        setShapeProperty(JC.SHAPE_MEASURES, "hideAll", Boolean.FALSE);
         return;
-      case Token.off:
-        setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll", Boolean.TRUE);
+      case T.off:
+        setShapeProperty(JC.SHAPE_MEASURES, "hideAll", Boolean.TRUE);
         return;
-      case Token.list:
-        if (!isSyntaxCheck)
+      case T.list:
+        if (!chk)
           showStringPrint(viewer.getMeasurementInfoAsString(), false);
         return;
-      case Token.delete:
-        if (!isSyntaxCheck)
+      case T.delete:
+        if (!chk)
           viewer.clearAllMeasurements();
         return;
-      case Token.string:
-        setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormats",
+      case T.string:
+        setShapeProperty(JC.SHAPE_MEASURES, "setFormats",
             stringParameter(1));
         return;
       }
@@ -9472,13 +9482,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case 3: // measure delete N
       // search "smartsString"
       switch (getToken(1).tok) {
-      case Token.delete:
-        if (getToken(2).tok == Token.all) {
-          if (!isSyntaxCheck)
+      case T.delete:
+        if (getToken(2).tok == T.all) {
+          if (!chk)
             viewer.clearAllMeasurements();
         } else {
           int i = intParameter(2) - 1;
-          if (!isSyntaxCheck)
+          if (!chk)
             viewer.deleteMeasurement(i);
         }
         return;
@@ -9498,37 +9508,37 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isRange = true;
     RadiusData rd = null;
     Boolean intramolecular = null;
-    int tokAction = Token.opToggle;
+    int tokAction = T.opToggle;
     String strFormat = null;
     List<Object> points = new ArrayList<Object>();
-    BitSet bs = new BitSet();
+    BS bs = new BS();
     Object value = null;
     TickInfo tickInfo = null;
     int nBitSets = 0;
-    for (int i = 1; i < statementLength; ++i) {
+    for (int i = 1; i < slen; ++i) {
       switch (getToken(i).tok) {
-      case Token.identifier:
+      case T.identifier:
         errorStr(ERROR_keywordExpected, "ALL, ALLCONNECTED, DELETE");
         break;
       default:
         error(ERROR_expressionOrIntegerExpected);
         break;
-      case Token.opNot:
-        if (tokAt(i + 1) != Token.connected)
+      case T.opNot:
+        if (tokAt(i + 1) != T.connected)
           error(ERROR_invalidArgument);
         i++;
         isNotConnected = true;
         break;
-      case Token.connected:
-      case Token.allconnected:
-      case Token.all:
-        isAllConnected = (theTok == Token.allconnected);
+      case T.connected:
+      case T.allconnected:
+      case T.all:
+        isAllConnected = (theTok == T.allconnected);
         atomIndex = -1;
         isAll = true;
         if (isAllConnected && isNotConnected)
           error(ERROR_invalidArgument);
         break;
-      case Token.decimal:
+      case T.decimal:
         if (rd != null)
           error(ERROR_invalidArgument);
         isAll = true;
@@ -9536,12 +9546,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         ptFloat = (ptFloat + 1) % 2;
         rangeMinMax[ptFloat] = floatParameter(i);
         break;
-      case Token.delete:
-        if (tokAction != Token.opToggle)
+      case T.delete:
+        if (tokAction != T.opToggle)
           error(ERROR_invalidArgument);
-        tokAction = Token.delete;
+        tokAction = T.delete;
         break;
-      case Token.integer:
+      case T.integer:
         int iParam = intParameter(i);
         if (isAll) {
           isRange = true; // irrelevant if just four integers
@@ -9549,7 +9559,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           rangeMinMax[ptFloat] = iParam;
         } else {
           atomIndex = viewer.getAtomIndexFromAtomNumber(iParam);
-          if (!isSyntaxCheck && atomIndex < 0)
+          if (!chk && atomIndex < 0)
             return;
           if (value != null)
             error(ERROR_invalidArgument);
@@ -9558,31 +9568,31 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           countPlusIndexes[nAtoms] = atomIndex;
         }
         break;
-      case Token.modelindex:
+      case T.modelindex:
         modelIndex = intParameter(++i);
         break;
-      case Token.off:
-        if (tokAction != Token.opToggle)
+      case T.off:
+        if (tokAction != T.opToggle)
           error(ERROR_invalidArgument);
-        tokAction = Token.off;
+        tokAction = T.off;
         break;
-      case Token.on:
-        if (tokAction != Token.opToggle)
+      case T.on:
+        if (tokAction != T.opToggle)
           error(ERROR_invalidArgument);
-        tokAction = Token.on;
+        tokAction = T.on;
         break;
-      case Token.range:
+      case T.range:
         isAll = true;
         isRange = true; // unnecessary
         atomIndex = -1;
         break;
-      case Token.intramolecular:
-      case Token.intermolecular:
-        intramolecular = Boolean.valueOf(theTok == Token.intramolecular);
+      case T.intramolecular:
+      case T.intermolecular:
+        intramolecular = Boolean.valueOf(theTok == T.intramolecular);
         isAll = true;
-        isNotConnected = (theTok == Token.intermolecular);
+        isNotConnected = (theTok == T.intermolecular);
         break;
-      case Token.vanderwaals:
+      case T.vanderwaals:
         if (ptFloat >= 0)
           error(ERROR_invalidArgument);
         rd = encodeRadiusParameter(i, false, true);
@@ -9594,31 +9604,31 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (nBitSets == 1) {
           nBitSets++;
           nAtoms++;
-          BitSet bs2 = BitSetUtil.copy(bs);
-          BitSetUtil.invertInPlace(bs2, viewer.getAtomCount());
+          BS bs2 = BSUtil.copy(bs);
+          BSUtil.invertInPlace(bs2, viewer.getAtomCount());
           bs2.and(viewer.getAtomsWithinRadius(5, bs, false, null));
           points.add(bs2);
         }
         break;
-      case Token.bitset:
-      case Token.expressionBegin:
-      case Token.leftbrace:
-      case Token.point3f:
-      case Token.dollarsign:
-        if (theTok == Token.bitset || theTok == Token.expressionBegin)
+      case T.bitset:
+      case T.expressionBegin:
+      case T.leftbrace:
+      case T.point3f:
+      case T.dollarsign:
+        if (theTok == T.bitset || theTok == T.expressionBegin)
           nBitSets++;
         if (atomIndex >= 0)
           error(ERROR_invalidArgument);
         expressionResult = Boolean.FALSE;
         value = centerParameter(i);
-        if (expressionResult instanceof BitSet) {
-          value = bs = (BitSet) expressionResult;
-          if (!isSyntaxCheck && bs.length() == 0)
+        if (expressionResult instanceof BS) {
+          value = bs = (BS) expressionResult;
+          if (!chk && bs.length() == 0)
             return;
         }
-        if (value instanceof Point3f) {
+        if (value instanceof P3) {
           Point3fi v = new Point3fi();
-          v.setT((Point3f) value);
+          v.setT((P3) value);
           v.modelIndex = (short) modelIndex;
           value = v;
         }
@@ -9627,14 +9637,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i = iToken;
         points.add(value);
         break;
-      case Token.string:
+      case T.string:
         // measures "%a1 %a2 %v %u"
         strFormat = stringParameter(i);
         break;
-      case Token.ticks:
+      case T.ticks:
         tickInfo = checkTicks(i, false, true, true);
         i = iToken;
-        tokAction = Token.define;
+        tokAction = T.define;
         break;
       }
     }
@@ -9650,39 +9660,39 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             : -200);
       }
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (value != null || tickInfo != null) {
       if (rd == null)
         rd = new RadiusData(rangeMinMax, 0, null, null);
       if (value == null)
         tickInfo.id = "default";
-      if (value != null && strFormat != null && tokAction == Token.opToggle)
-        tokAction = Token.define;
-      setShapeProperty(JmolConstants.SHAPE_MEASURES, "measure", 
+      if (value != null && strFormat != null && tokAction == T.opToggle)
+        tokAction = T.define;
+      setShapeProperty(JC.SHAPE_MEASURES, "measure", 
           (new MeasurementData(viewer, points)).set(tokAction, rd, strFormat, null, tickInfo,
               isAllConnected, isNotConnected, intramolecular, isAll));
       return;
     }
     switch (tokAction) {
-    case Token.delete:
-      setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", countPlusIndexes);
+    case T.delete:
+      setShapeProperty(JC.SHAPE_MEASURES, "delete", countPlusIndexes);
       break;
-    case Token.on:
-      setShapeProperty(JmolConstants.SHAPE_MEASURES, "show", countPlusIndexes);
+    case T.on:
+      setShapeProperty(JC.SHAPE_MEASURES, "show", countPlusIndexes);
       break;
-    case Token.off:
-      setShapeProperty(JmolConstants.SHAPE_MEASURES, "hide", countPlusIndexes);
+    case T.off:
+      setShapeProperty(JC.SHAPE_MEASURES, "hide", countPlusIndexes);
       break;
     default:
-      setShapeProperty(JmolConstants.SHAPE_MEASURES,
+      setShapeProperty(JC.SHAPE_MEASURES,
           (strFormat == null ? "toggle" : "toggleOn"), countPlusIndexes);
       if (strFormat != null)
-        setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormats", strFormat);
+        setShapeProperty(JC.SHAPE_MEASURES, "setFormats", strFormat);
     }
   }
 
-  private String plot(Token[] args) throws ScriptException {
+  private String plot(T[] args) throws ScriptException {
     // also used for draw [quaternion, helix, ramachandran] 
     // and write quaternion, ramachandran, plot, ....
     // and plot property propertyX, propertyY, propertyZ //
@@ -9691,38 +9701,38 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       errorStr(ERROR_multipleModelsDisplayedNotOK, "plot");
     modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
     int pt = args.length - 1;
-    boolean isReturnOnly = (args != statement);
-    Token[] statementSave = statement;
+    boolean isReturnOnly = (args != st);
+    T[] statementSave = st;
     if (isReturnOnly)
-      statement = args;
-    int tokCmd = (isReturnOnly ? Token.show : args[0].tok);
-    int pt0 = (isReturnOnly || tokCmd == Token.quaternion
-        || tokCmd == Token.ramachandran ? 0 : 1);
+      st = args;
+    int tokCmd = (isReturnOnly ? T.show : args[0].tok);
+    int pt0 = (isReturnOnly || tokCmd == T.quaternion
+        || tokCmd == T.ramachandran ? 0 : 1);
     String filename = null;
     boolean makeNewFrame = true;
     boolean isDraw = false;
     switch (tokCmd) {
-    case Token.plot:
-    case Token.quaternion:
-    case Token.ramachandran:
+    case T.plot:
+    case T.quaternion:
+    case T.ramachandran:
       break;
-    case Token.draw:
+    case T.draw:
       makeNewFrame = false;
       isDraw = true;
       break;
-    case Token.show:
+    case T.show:
       makeNewFrame = false;
       break;
-    case Token.write:
+    case T.write:
       makeNewFrame = false;
-      if (tokAtArray(pt, args) == Token.string) {
+      if (tokAtArray(pt, args) == T.string) {
         filename = stringParameter(pt--);
-      } else if (tokAtArray(pt - 1, args) == Token.per) {
+      } else if (tokAtArray(pt - 1, args) == T.per) {
         filename = parameterAsString(pt - 2) + "." + parameterAsString(pt);
         pt -= 3;
       } else {
-        statement = statementSave;
-        iToken = statement.length;
+        st = statementSave;
+        iToken = st.length;
         error(ERROR_endOfStatementUnexpected);
       }
       break;
@@ -9735,59 +9745,59 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isSecondDerivative = false;
     boolean isRamachandranRelative = false;
     int propertyX = 0, propertyY = 0, propertyZ = 0;
-    BitSet bs = BitSetUtil.copy(viewer.getSelectionSet(false));
-    String preSelected = "; select " + Escape.escape(bs) + ";\n ";
+    BS bs = BSUtil.copy(viewer.getSelectionSet(false));
+    String preSelected = "; select " + Escape.e(bs) + ";\n ";
     String type = optParameterAsString(pt).toLowerCase();
-    Point3f minXYZ = null;
-    Point3f maxXYZ = null;
+    P3 minXYZ = null;
+    P3 maxXYZ = null;
     int tok = tokAtArray(pt0, args);
-    if (tok == Token.string)
-      tok = Token.getTokFromName((String) args[pt0].value);
+    if (tok == T.string)
+      tok = T.getTokFromName((String) args[pt0].value);
     switch (tok) {
     default:
       iToken = 1;
       error(ERROR_invalidArgument);
       break;
-    case Token.data:
+    case T.data:
       iToken = 1;
       type = "data";
       preSelected = "";
       break;
-    case Token.property:
+    case T.property:
       iToken = pt0 + 1;
-      if (!Token.tokAttr(propertyX = tokAt(iToken++), Token.atomproperty)
-          || !Token.tokAttr(propertyY = tokAt(iToken++), Token.atomproperty))
+      if (!T.tokAttr(propertyX = tokAt(iToken++), T.atomproperty)
+          || !T.tokAttr(propertyY = tokAt(iToken++), T.atomproperty))
         error(ERROR_invalidArgument);
-      if (Token.tokAttr(propertyZ = tokAt(iToken), Token.atomproperty))
+      if (T.tokAttr(propertyZ = tokAt(iToken), T.atomproperty))
         iToken++;
       else
         propertyZ = 0;
-      if (tokAt(iToken) == Token.min) {
+      if (tokAt(iToken) == T.min) {
         minXYZ = getPoint3f(++iToken, false);
         iToken++;
       }
-      if (tokAt(iToken) == Token.max) {
+      if (tokAt(iToken) == T.max) {
         maxXYZ = getPoint3f(++iToken, false);
         iToken++;
       }
-      type = "property " + Token.nameOf(propertyX) + " "
-          + Token.nameOf(propertyY)
-          + (propertyZ == 0 ? "" : " " + Token.nameOf(propertyZ));
+      type = "property " + T.nameOf(propertyX) + " "
+          + T.nameOf(propertyY)
+          + (propertyZ == 0 ? "" : " " + T.nameOf(propertyZ));
       if (bs.nextSetBit(0) < 0)
         bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
-      stateScript = "select " + Escape.escape(bs) + ";\n ";
+      stateScript = "select " + Escape.e(bs) + ";\n ";
       break;
-    case Token.ramachandran:
+    case T.ramachandran:
       if (type.equalsIgnoreCase("draw")) {
         isDraw = true;
         type = optParameterAsString(--pt).toLowerCase();
       }
       isRamachandranRelative = (pt > pt0 && type.startsWith("r"));
       type = "ramachandran" + (isRamachandranRelative ? " r" : "")
-          + (tokCmd == Token.draw ? " draw" : "");
+          + (tokCmd == T.draw ? " draw" : "");
       break;
-    case Token.quaternion:
-    case Token.helix:
+    case T.quaternion:
+    case T.helix:
       qFrame = " \"" + viewer.getQuaternionFrame() + "\"";
       stateScript = "set quaternionFrame" + qFrame + ";\n  ";
       isQuaternion = true;
@@ -9815,8 +9825,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           + (isSecondDerivative ? "2" : "") + (isDraw ? " draw" : "");
       break;
     }
-    statement = statementSave;
-    if (isSyntaxCheck) // just in case we later add parameter options to this
+    st = statementSave;
+    if (chk) // just in case we later add parameter options to this
       return "";
 
     // if not just drawing check to see if there is already a plot of this type
@@ -9824,7 +9834,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (makeNewFrame) {
       stateScript += "plot " + type;
       int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, stateScript);
-      if (ptDataFrame > 0 && tokCmd != Token.write && tokCmd != Token.show) {
+      if (ptDataFrame > 0 && tokCmd != T.write && tokCmd != T.show) {
         // no -- this is that way we switch frames. viewer.deleteAtoms(viewer.getModelUndeletedAtomsBitSet(ptDataFrame), true);
         // data frame can't be 0.
         viewer.setCurrentModelIndexClear(ptDataFrame, true);
@@ -9839,44 +9849,44 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // prepare data for property plotting
 
     float[] dataX = null, dataY = null, dataZ = null;
-    Point3f factors = Point3f.new3(1, 1, 1);
-    if (tok == Token.property) {
-      dataX = getBitsetPropertyFloat(bs, propertyX | Token.selectedfloat,
+    P3 factors = P3.new3(1, 1, 1);
+    if (tok == T.property) {
+      dataX = getBitsetPropertyFloat(bs, propertyX | T.selectedfloat,
           (minXYZ == null ? Float.NaN : minXYZ.x), (maxXYZ == null ? Float.NaN
               : maxXYZ.x));
-      dataY = getBitsetPropertyFloat(bs, propertyY | Token.selectedfloat,
+      dataY = getBitsetPropertyFloat(bs, propertyY | T.selectedfloat,
           (minXYZ == null ? Float.NaN : minXYZ.y), (maxXYZ == null ? Float.NaN
               : maxXYZ.y));
       if (propertyZ != 0)
-        dataZ = getBitsetPropertyFloat(bs, propertyZ | Token.selectedfloat,
+        dataZ = getBitsetPropertyFloat(bs, propertyZ | T.selectedfloat,
             (minXYZ == null ? Float.NaN : minXYZ.z),
             (maxXYZ == null ? Float.NaN : maxXYZ.z));
       if (minXYZ == null)
-        minXYZ = Point3f.new3(getMinMax(dataX, false, propertyX), getMinMax(
+        minXYZ = P3.new3(getMinMax(dataX, false, propertyX), getMinMax(
             dataY, false, propertyY), getMinMax(dataZ, false, propertyZ));
       if (maxXYZ == null)
-        maxXYZ = Point3f.new3(getMinMax(dataX, true, propertyX), getMinMax(
+        maxXYZ = P3.new3(getMinMax(dataX, true, propertyX), getMinMax(
             dataY, true, propertyY), getMinMax(dataZ, true, propertyZ));
       Logger.info("plot min/max: " + minXYZ + " " + maxXYZ);
-      Point3f center = Point3f.newP(maxXYZ);
+      P3 center = P3.newP(maxXYZ);
       center.add(minXYZ);
       center.scale(0.5f);
       factors.setT(maxXYZ);
       factors.sub(minXYZ);
       factors.set(factors.x / 200, factors.y / 200, factors.z / 200);
-      if (Token.tokAttr(propertyX, Token.intproperty)) {
+      if (T.tokAttr(propertyX, T.intproperty)) {
         factors.x = 1;
         center.x = 0;
       } else if (factors.x > 0.1 && factors.x <= 10) {
         factors.x = 1;
       }
-      if (Token.tokAttr(propertyY, Token.intproperty)) {
+      if (T.tokAttr(propertyY, T.intproperty)) {
         factors.y = 1;
         center.y = 0;
       } else if (factors.y > 0.1 && factors.y <= 10) {
         factors.y = 1;
       }
-      if (Token.tokAttr(propertyZ, Token.intproperty)) {
+      if (T.tokAttr(propertyZ, T.intproperty)) {
         factors.z = 1;
         center.z = 0;
       } else if (factors.z > 0.1 && factors.z <= 10) {
@@ -9897,19 +9907,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     // all set...
 
-    if (tokCmd == Token.write)
+    if (tokCmd == T.write)
       return viewer.streamFileData(filename, "PLOT", type, modelIndex,
           parameters);
     
     String data = (type.equals("data") ? "1 0 H 0 0 0 # Jmol PDB-encoded data" : viewer.getPdbData(modelIndex, type, parameters));
     
-    if (tokCmd == Token.show)
+    if (tokCmd == T.show)
       return data;
 
     if (Logger.debugging)
       Logger.info(data);
 
-    if (tokCmd == Token.draw) {
+    if (tokCmd == T.draw) {
       runScript(data);
       return "";
     }
@@ -9926,7 +9936,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return "";
     int modelCount = viewer.getModelCount();
     viewer.setJmolDataFrame(stateScript, modelIndex, modelCount - 1);
-    if (tok != Token.property)
+    if (tok != T.property)
       stateScript += ";\n" + preSelected;
     StateScript ss = viewer.addStateScript(stateScript, true, false);
 
@@ -9939,22 +9949,22 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       script = "frame 0.0; frame last; reset;select visible;wireframe only;";
       radius = 10;
       break;
-    case Token.property:
+    case T.property:
       viewer.setFrameTitle(modelCount - 1, type + " plot for model "
           + viewer.getModelNumberDotted(modelIndex));
       float f = 3;
       script = "frame 0.0; frame last; reset;" + "select visible; spacefill "
           + f + "; wireframe 0;" + "draw plotAxisX" + modelCount
-          + " {100 -100 -100} {-100 -100 -100} \"" + Token.nameOf(propertyX)
+          + " {100 -100 -100} {-100 -100 -100} \"" + T.nameOf(propertyX)
           + "\";" + "draw plotAxisY" + modelCount
-          + " {-100 100 -100} {-100 -100 -100} \"" + Token.nameOf(propertyY)
+          + " {-100 100 -100} {-100 -100 -100} \"" + T.nameOf(propertyY)
           + "\";";
       if (propertyZ != 0)
         script += "draw plotAxisZ" + modelCount
-            + " {-100 -100 100} {-100 -100 -100} \"" + Token.nameOf(propertyZ)
+            + " {-100 -100 100} {-100 -100 -100} \"" + T.nameOf(propertyZ)
             + "\";";
       break;
-    case Token.ramachandran:
+    case T.ramachandran:
       viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model "
           + viewer.getModelNumberDotted(modelIndex));
       script = "frame 0.0; frame last; reset;"
@@ -9962,11 +9972,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           + "draw ramaAxisX" + modelCount + " {100 0 0} {-100 0 0} \"phi\";"
           + "draw ramaAxisY" + modelCount + " {0 100 0} {0 -100 0} \"psi\";";
       break;
-    case Token.quaternion:
-    case Token.helix:
+    case T.quaternion:
+    case T.helix:
       viewer.setFrameTitle(modelCount - 1, type.replace('w', ' ') + qFrame
           + " for model " + viewer.getModelNumberDotted(modelIndex));
-      String color = (Colix
+      String color = (C
           .getHexCode(viewer.getColixBackgroundContrast()));
       script = "frame 0.0; frame last; reset;"
           + "select visible; wireframe 0; spacefill 3.0; "
@@ -9985,7 +9995,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     runScript(script + preSelected);
     ss.setModelIndex(viewer.getCurrentModelIndex());
     viewer.setRotationRadius(radius, true);
-    shapeManager.loadShape(JmolConstants.SHAPE_ECHO);
+    sm.loadShape(JC.SHAPE_ECHO);
     showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
         + (type.length() > 0 ? " created: " + type + (isQuaternion ? qFrame : "") : ""));
     return "";
@@ -9995,14 +10005,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (data == null)
       return 0;
     switch (tok) {
-    case Token.omega:
-    case Token.phi:
-    case Token.psi:
+    case T.omega:
+    case T.phi:
+    case T.psi:
       return (isMax ? 180 : -180);
-    case Token.eta:
-    case Token.theta:
+    case T.eta:
+    case T.theta:
       return (isMax ? 360 : 0);
-    case Token.straightness:
+    case T.straightness:
       return (isMax ? 1 : -1);
     }
     float fmax = (isMax ? -1E10f : 1E10f);
@@ -10017,7 +10027,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private boolean pause() throws ScriptException {
-    if (isSyntaxCheck || isJS && !allowJSThreads)
+    if (chk || isJS && !allowJSThreads)
       return false;
     String msg = optParameterAsString(1);
     if (!viewer.getBooleanProperty("_useCommandThread")) {
@@ -10040,69 +10050,69 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void print() throws ScriptException {
-    if (statementLength == 1)
+    if (slen == 1)
       error(ERROR_badArgumentCount);
     showStringPrint(parameterExpressionString(1, 0), true);
   }
 
   private void prompt() throws ScriptException {
     String msg = null;
-    if (statementLength == 1) {
-      if (!isSyntaxCheck)
+    if (slen == 1) {
+      if (!chk)
         msg = getContextTrace(getScriptContext(), null, true).toString();
     } else {
       msg = parameterExpressionString(1, 0);
     }
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.prompt(msg, "OK", null, true);
   }
 
   private void refresh() {
-    if (isSyntaxCheck)
+    if (chk)
       return;
     viewer.setTainted(true);
     viewer.requestRepaintAndWait();
   }
 
   private void reset() throws ScriptException {
-    if (statementLength == 3 && tokAt(1) == Token.function) {
-      if (!isSyntaxCheck)
+    if (slen == 3 && tokAt(1) == T.function) {
+      if (!chk)
         viewer.removeFunction(stringParameter(2));
       return;
     }
     checkLength(-2);
-    if (isSyntaxCheck)
+    if (chk)
       return;
-    if (statementLength == 1) {
+    if (slen == 1) {
       viewer.reset(false);
       return;
     }
     // possibly "all"
     switch (tokAt(1)) {
-    case Token.cache:
+    case T.cache:
       viewer.cacheClear();
       return;
-    case Token.error:
+    case T.error:
       viewer.resetError();
       return;
-    case Token.shape:
+    case T.shape:
       viewer.resetShapes(true);
       return;
-    case Token.function:
+    case T.function:
       viewer.clearFunctions();
       return;
-    case Token.structure:
-      BitSet bsAllAtoms = new BitSet();
+    case T.structure:
+      BS bsAllAtoms = new BS();
       runScript(viewer.getDefaultStructure(null, bsAllAtoms));
       viewer.resetBioshapes(bsAllAtoms);
       return;
-    case Token.vanderwaals:
+    case T.vanderwaals:
       viewer.setData("element_vdw", new Object[] { null, "" }, 0, 0, 0, 0, 0);
       return;
-    case Token.aromatic:
+    case T.aromatic:
       viewer.resetAromatic();
       return;
-    case Token.spin:
+    case T.spin:
       viewer.reset(true);
       return;
     }
@@ -10113,45 +10123,45 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void restrict() throws ScriptException {
-    boolean isBond = (tokAt(1) == Token.bonds);
+    boolean isBond = (tokAt(1) == T.bonds);
     select(isBond ? 2 : 1);
     restrictSelected(isBond, true);
   }
 
   private void restrictSelected(boolean isBond, boolean doInvert) {
-    if (isSyntaxCheck)
+    if (chk)
       return;
-    BitSet bsSelected = BitSetUtil.copy(viewer.getSelectionSet(true));
+    BS bsSelected = BSUtil.copy(viewer.getSelectionSet(true));
     if (doInvert) {
       viewer.invertSelection();
-      BitSet bsSubset = viewer.getSelectionSubset();
+      BS bsSubset = viewer.getSelectionSubset();
       if (bsSubset != null) {
-        bsSelected = BitSetUtil.copy(viewer.getSelectionSet(true));
+        bsSelected = BSUtil.copy(viewer.getSelectionSet(true));
         bsSelected.and(bsSubset);
         viewer.select(bsSelected, false, null, true);
-        BitSetUtil.invertInPlace(bsSelected, viewer.getAtomCount());
+        BSUtil.invertInPlace(bsSelected, viewer.getAtomCount());
         bsSelected.and(bsSubset);
       }
     }
-    BitSetUtil.andNot(bsSelected, viewer.getDeletedAtoms());
+    BSUtil.andNot(bsSelected, viewer.getDeletedAtoms());
     boolean bondmode = viewer.getBondSelectionModeOr();
 
     if (!isBond)
       setBooleanProperty("bondModeOr", true);
-    setShapeSizeBs(JmolConstants.SHAPE_STICKS, 0, null);
+    setShapeSizeBs(JC.SHAPE_STICKS, 0, null);
     // wireframe will not operate on STRUTS even though they are
     // a form of bond order (see BondIteratoSelected)
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_STRUT));
-    setShapeSizeBs(JmolConstants.SHAPE_STICKS, 0, null);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+    setShapeSizeBs(JC.SHAPE_STICKS, 0, null);
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_COVALENT_MASK));
     // also need to turn off backbones, ribbons, strands, cartoons
-    for (int shapeType = JmolConstants.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --shapeType >= 0;)
-      if (shapeType != JmolConstants.SHAPE_MEASURES)
+    for (int shapeType = JC.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --shapeType >= 0;)
+      if (shapeType != JC.SHAPE_MEASURES)
         setShapeSizeBs(shapeType, 0, null);
-    setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "delete", null);
-    shapeManager.setLabel(null, viewer.getSelectionSet(true));
+    setShapeProperty(JC.SHAPE_POLYHEDRA, "delete", null);
+    sm.setLabel(null, viewer.getSelectionSet(true));
 
     if (!isBond)
       setBooleanProperty("bondModeOr", bondmode);
@@ -10219,47 +10229,47 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
      * Bob Hanson 5/21/06
      */
 
-    if (statementLength == 2)
+    if (slen == 2)
       switch (getToken(1).tok) {
-      case Token.on:
-        if (!isSyntaxCheck)
+      case T.on:
+        if (!chk)
           viewer.setSpinOn(true);
         return;
-      case Token.off:
-        if (!isSyntaxCheck)
+      case T.off:
+        if (!chk)
           viewer.setSpinOn(false);
         return;
       }
 
-    BitSet bsAtoms = null;
+    BS bsAtoms = null;
     float degreesPerSecond = Float.MIN_VALUE;
     int nPoints = 0;
     float endDegrees = Float.MAX_VALUE;
     boolean isMolecular = false;
     boolean haveRotation = false;
-    List<Point3f> ptsA = null;
-    Point3f[] points = new Point3f[2];
-    Vector3f rotAxis = Vector3f.new3(0, 1, 0);
-    Vector3f translation = null;
+    List<P3> ptsA = null;
+    P3[] points = new P3[2];
+    V3 rotAxis = V3.new3(0, 1, 0);
+    V3 translation = null;
     Matrix4f m4 = null;
     Matrix3f m3 = null;
     int direction = 1;
     int tok;
     Quaternion q = null;
     boolean helicalPath = false;
-    List<Point3f> ptsB = null;
-    BitSet bsCompare = null;
-    Point3f invPoint = null;
+    List<P3> ptsB = null;
+    BS bsCompare = null;
+    P3 invPoint = null;
     Point4f invPlane = null;
     boolean axesOrientationRasmol = viewer.getAxesOrientationRasmol();
-    for (int i = 1; i < statementLength; ++i) {
+    for (int i = 1; i < slen; ++i) {
       switch (tok = getToken(i).tok) {
-      case Token.bitset:
-      case Token.expressionBegin:
-      case Token.leftbrace:
-      case Token.point3f:
-      case Token.dollarsign:
-        if (tok == Token.bitset || tok == Token.expressionBegin) {
+      case T.bitset:
+      case T.expressionBegin:
+      case T.leftbrace:
+      case T.point3f:
+      case T.dollarsign:
+        if (tok == T.bitset || tok == T.expressionBegin) {
           if (translation != null || q != null || nPoints == 2) {
             bsAtoms = atomExpressionAt(i);
             ptsB = null;
@@ -10272,9 +10282,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           nPoints = 0;
         // {X, Y, Z}
         // $drawObject[n]
-        Point3f pt1 = centerParameterForModel(i, viewer.getCurrentModelIndex());
-        if (!isSyntaxCheck && tok == Token.dollarsign
-            && tokAt(i + 2) != Token.leftsquare) {
+        P3 pt1 = centerParameterForModel(i, viewer.getCurrentModelIndex());
+        if (!chk && tok == T.dollarsign
+            && tokAt(i + 2) != T.leftsquare) {
           // rotation about an axis such as $line1
           isMolecular = true;
           rotAxis = getDrawObjectAxis(objectNameParameter(++i), viewer
@@ -10282,20 +10292,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         points[nPoints++] = pt1;
         break;
-      case Token.spin:
+      case T.spin:
         isSpin = true;
         continue;
-      case Token.internal:
-      case Token.molecular:
+      case T.internal:
+      case T.molecular:
         isMolecular = true;
         continue;
-      case Token.selected:
+      case T.selected:
         isSelected = true;
         break;
-      case Token.comma:
+      case T.comma:
         continue;
-      case Token.integer:
-      case Token.decimal:
+      case T.integer:
+      case T.decimal:
         if (isSpin) {
           // rotate spin ... [degreesPerSecond]
           // rotate spin ... [endDegrees] [degreesPerSecond]
@@ -10321,18 +10331,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         error(ERROR_invalidArgument);
         break;
-      case Token.minus:
+      case T.minus:
         direction = -1;
         continue;
-      case Token.x:
+      case T.x:
         haveRotation = true;
         rotAxis.set(direction, 0, 0);
         continue;
-      case Token.y:
+      case T.y:
         haveRotation = true;
         rotAxis.set(0, direction, 0);
         continue;
-      case Token.z:
+      case T.z:
         haveRotation = true;
         rotAxis.set(0, 0, (axesOrientationRasmol && !isMolecular ? -direction
             : direction));
@@ -10340,16 +10350,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
         // 11.6 options
 
-      case Token.point4f:
-      case Token.quaternion:
-        if (tok == Token.quaternion)
+      case T.point4f:
+      case T.quaternion:
+        if (tok == T.quaternion)
           i++;
         haveRotation = true;
         q = getQuaternionParameter(i);
         rotAxis.setT(q.getNormal());
         endDegrees = q.getTheta();
         break;
-      case Token.axisangle:
+      case T.axisangle:
         haveRotation = true;
         if (isPoint3f(++i)) {
           rotAxis.setT(centerParameter(i));
@@ -10360,7 +10370,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         endDegrees = p4.w;
         q = Quaternion.newVA(rotAxis, endDegrees);
         break;
-      case Token.branch:
+      case T.branch:
         haveRotation = true;
         int iAtom1 = atomExpressionAt(++i).nextSetBit(0);
         int iAtom2 = atomExpressionAt(++iToken).nextSetBit(0);
@@ -10376,28 +10386,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       // 12.0 options
 
-      case Token.translate:
-        translation = Vector3f.newV(centerParameter(++i));
+      case T.translate:
+        translation = V3.newV(centerParameter(++i));
         isMolecular = isSelected = true;
         break;
-      case Token.helix:
+      case T.helix:
         // screw motion, for quaternion-based operations
         helicalPath = true;
         continue;
-      case Token.symop:
+      case T.symop:
         int symop = intParameter(++i);
-        if (isSyntaxCheck)
+        if (chk)
           continue;
         Map<String, Object> info = viewer.getSpaceGroupInfo(null);
         Object[] op = (info == null ? null : (Object[]) info.get("operations"));
         if (symop == 0 || op == null || op.length < Math.abs(symop))
           error(ERROR_invalidArgument);
         op = (Object[]) op[Math.abs(symop) - 1];
-        translation = (Vector3f) op[5];
-        invPoint = (Point3f) op[6];
-        points[0] = (Point3f) op[7];
+        translation = (V3) op[5];
+        invPoint = (P3) op[6];
+        points[0] = (P3) op[7];
         if (op[8] != null)
-          rotAxis = (Vector3f) op[8];
+          rotAxis = (V3) op[8];
         endDegrees = ((Integer) op[9]).intValue();
         if (symop < 0) {
           endDegrees = -endDegrees;
@@ -10416,11 +10426,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         haveRotation = true;
         isSelected = true;
         continue;
-      case Token.compare:
-      case Token.matrix4f:
-      case Token.matrix3f:
+      case T.compare:
+      case T.matrix4f:
+      case T.matrix3f:
         haveRotation = true;
-        if (tok == Token.compare) {
+        if (tok == T.compare) {
           bsCompare = atomExpressionAt(++i);
           ptsA = viewer.getAtomPointVector(bsCompare);
           if (ptsA == null)
@@ -10430,26 +10440,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (ptsB == null || ptsA.size() != ptsB.size())
             errorAt(ERROR_invalidArgument, i);
           m4 = new Matrix4f();
-          points[0] = new Point3f();
+          points[0] = new P3();
           nPoints = 1;
-          float stddev = (isSyntaxCheck ? 0 : Measure.getTransformMatrix4(ptsA,
+          float stddev = (chk ? 0 : Measure.getTransformMatrix4(ptsA,
               ptsB, m4, points[0]));
           // if the standard deviation is very small, we leave ptsB
           // because it will be used to set the absolute final positions
           if (stddev > 0.001)
             ptsB = null;
-        } else if (tok == Token.matrix4f) {
+        } else if (tok == T.matrix4f) {
           m4 = (Matrix4f) theToken.value;
         }
         m3 = new Matrix3f();
         if (m4 != null) {
-          translation = new Vector3f();
+          translation = new V3();
           m4.get(translation);
           m4.getRotationScale(m3);
         } else {
           m3 = (Matrix3f) theToken.value;
         }
-        q = (isSyntaxCheck ? new Quaternion() : Quaternion.newM(m3));
+        q = (chk ? new Quaternion() : Quaternion.newM(m3));
         rotAxis.setT(q.getNormal());
         endDegrees = q.getTheta();
         isMolecular = true;
@@ -10459,7 +10469,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       i = iToken;
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (isSelected && bsAtoms == null)
       bsAtoms = viewer.getSelectionSet(false);
@@ -10482,15 +10492,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             : isSelected ? viewer.getSelectionSet(false) : viewer
                 .getModelUndeletedAtomsBitSet(-1));
       if (helicalPath && translation != null) {
-        points[1] = Point3f.newP(points[0]);
+        points[1] = P3.newP(points[0]);
         points[1].add(translation);
-        Object[] ret = (Object[]) Measure.computeHelicalAxis(null, Token.array,
+        Object[] ret = (Object[]) Measure.computeHelicalAxis(null, T.array,
             points[0], points[1], q);
-        points[0] = (Point3f) ret[0];
-        float theta = ((Point3f) ret[3]).x;
+        points[0] = (P3) ret[0];
+        float theta = ((P3) ret[3]).x;
         if (theta != 0) {
-          translation = (Vector3f) ret[1];
-          rotAxis = Vector3f.newV(translation);
+          translation = (V3) ret[1];
+          rotAxis = V3.newV(translation);
           if (theta < 0)
             rotAxis.scale(-1);
         }
@@ -10526,19 +10536,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         return;
       }
       if (nPoints == 0)
-        points[0] = new Point3f();
+        points[0] = new P3();
       // rotate MOLECULAR
       // rotate MOLECULAR (atom1)
       // rotate MOLECULAR x 10 (atom1)
       // rotate axisangle MOLECULAR (atom1)
-      points[1] = Point3f.newP(points[0]);
+      points[1] = P3.newP(points[0]);
       points[1].add(rotAxis);
       nPoints = 2;
     }
     if (nPoints == 0)
-      points[0] = new Point3f();
+      points[0] = new P3();
     if (nPoints < 2 || points[0].distance(points[1]) == 0) {
-      points[1] = Point3f.newP(points[0]);
+      points[1] = P3.newP(points[0]);
       points[1].y += 1.0;
     }
     if (endDegrees == Float.MAX_VALUE)
@@ -10561,7 +10571,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       ptsB = Measure.transformPoints(ptsA, m4, points[0]);
     }
     if (bsAtoms != null && !isSpin && ptsB != null) {
-      viewer.setAtomCoord(bsAtoms, Token.xyz, ptsB);
+      viewer.setAtomCoord(bsAtoms, T.xyz, ptsB);
     } else {
       if (!useThreads())
         return;
@@ -10572,26 +10582,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private Quaternion getQuaternionParameter(int i) throws ScriptException {
-    if (tokAt(i) == Token.varray) {
-      List<ScriptVariable> sv = ((ScriptVariable) getToken(i)).getList();
+    if (tokAt(i) == T.varray) {
+      List<SV> sv = ((SV) getToken(i)).getList();
       Point4f p4 = null;
-      if (sv.size() == 0 || (p4 = ScriptVariable.pt4Value(sv.get(0))) == null)
+      if (sv.size() == 0 || (p4 = SV.pt4Value(sv.get(0))) == null)
         error(ERROR_invalidArgument);
       return Quaternion.newP4(p4);
     }
     return Quaternion.newP4(getPoint4f(i));
   }
 
-  List<Point3f> getPointVector(Token t, int i) throws ScriptException {
+  List<P3> getPointVector(T t, int i) throws ScriptException {
     switch (t.tok) {
-    case Token.bitset:
-      return viewer.getAtomPointVector((BitSet) t.value);
-    case Token.varray:
-      List<Point3f> data = new ArrayList<Point3f>();
-      Point3f pt;
-      List<ScriptVariable> pts = ((ScriptVariable) t).getList();
+    case T.bitset:
+      return viewer.getAtomPointVector((BS) t.value);
+    case T.varray:
+      List<P3> data = new ArrayList<P3>();
+      P3 pt;
+      List<SV> pts = ((SV) t).getList();
       for (int j = 0; j < pts.size(); j++)
-        if ((pt = ScriptVariable.ptValue(pts.get(j))) != null)
+        if ((pt = SV.ptValue(pts.get(j))) != null)
           data.add(pt);
         else
           return null;
@@ -10602,30 +10612,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return null;
   }
 
-  private Point3f getObjectCenter(String axisID, int index, int modelIndex) {
+  private P3 getObjectCenter(String axisID, int index, int modelIndex) {
     Object[] data = new Object[] { axisID, Integer.valueOf(index),
         Integer.valueOf(modelIndex) };
-    return (getShapePropertyData(JmolConstants.SHAPE_DRAW, "getCenter", data)
-        || getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "getCenter", data)
-        || getShapePropertyData(JmolConstants.SHAPE_PMESH, "getCenter", data)
-        || getShapePropertyData(JmolConstants.SHAPE_CONTACT, "getCenter", data)
-        || getShapePropertyData(JmolConstants.SHAPE_MO, "getCenter", data) ? (Point3f) data[2]
+    return (getShapePropertyData(JC.SHAPE_DRAW, "getCenter", data)
+        || getShapePropertyData(JC.SHAPE_ISOSURFACE, "getCenter", data)
+        || getShapePropertyData(JC.SHAPE_PMESH, "getCenter", data)
+        || getShapePropertyData(JC.SHAPE_CONTACT, "getCenter", data)
+        || getShapePropertyData(JC.SHAPE_MO, "getCenter", data) ? (P3) data[2]
         : null);
   }
 
-  private Point3f[] getObjectBoundingBox(String id) {
+  private P3[] getObjectBoundingBox(String id) {
     Object[] data = new Object[] { id, null, null };
-    return (getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "getBoundingBox",
+    return (getShapePropertyData(JC.SHAPE_ISOSURFACE, "getBoundingBox",
         data)
-        || getShapePropertyData(JmolConstants.SHAPE_PMESH, "getBoundingBox", data)
-        || getShapePropertyData(JmolConstants.SHAPE_CONTACT, "getBoundingBox", data)
-        || getShapePropertyData(JmolConstants.SHAPE_MO, "getBoundingBox", data) ? (Point3f[]) data[2]
+        || getShapePropertyData(JC.SHAPE_PMESH, "getBoundingBox", data)
+        || getShapePropertyData(JC.SHAPE_CONTACT, "getBoundingBox", data)
+        || getShapePropertyData(JC.SHAPE_MO, "getBoundingBox", data) ? (P3[]) data[2]
         : null);
   }
 
-  private Vector3f getDrawObjectAxis(String axisID, int index) {
+  private V3 getDrawObjectAxis(String axisID, int index) {
     Object[] data = new Object[] { axisID, Integer.valueOf(index), null };
-    return (getShapePropertyData(JmolConstants.SHAPE_DRAW, "getSpinAxis", data) ? (Vector3f) data[2]
+    return (getShapePropertyData(JC.SHAPE_DRAW, "getSpinAxis", data) ? (V3) data[2]
         : null);
   }
 
@@ -10643,17 +10653,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String localPath = null;
     String remotePath = null;
     String scriptPath = null;
-    List<ScriptVariable> params = null;
+    List<SV> params = null;
     
-    if (tok == Token.javascript) {
+    if (tok == T.javascript) {
       checkLength(2);
-      if (!isSyntaxCheck)
+      if (!chk)
         viewer.jsEval(parameterAsString(1));
       return;
     }
     if (filename == null) {
       tok = tokAt(1);
-      if (tok != Token.string)
+      if (tok != T.string)
         error(ERROR_filenameExpected);
       filename = parameterAsString(1);
       if (filename.equalsIgnoreCase("applet")) {
@@ -10661,7 +10671,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         String appID = parameterAsString(2);
         theScript = parameterExpressionString(3, 0); // had _script variable??
         checkLast(iToken);
-        if (isSyntaxCheck)
+        if (chk)
           return;
         if (appID.length() == 0 || appID.equals("all"))
           appID = "*";
@@ -10671,11 +10681,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             return;
         }
       } else {
-        tok = tokAt(statementLength - 1);
-        doStep = (tok == Token.step);
+        tok = tokAt(slen - 1);
+        doStep = (tok == T.step);
         if (filename.equalsIgnoreCase("inline")) {
           theScript = parameterExpressionString(2,
-              (doStep ? statementLength - 1 : 0));
+              (doStep ? slen - 1 : 0));
           i = iToken + 1;
         }
         while (filename.equalsIgnoreCase("localPath")
@@ -10689,31 +10699,31 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             remotePath = parameterAsString(i++);
           filename = parameterAsString(i++);
         }
-        if ((tok = tokAt(i)) == Token.check) {
+        if ((tok = tokAt(i)) == T.check) {
           isCheck = true;
           tok = tokAt(++i);
         }
-        if (tok == Token.noload) {
+        if (tok == T.noload) {
           loadCheck = false;
           tok = tokAt(++i);
         }
-        if (tok == Token.line || tok == Token.lines) {
+        if (tok == T.line || tok == T.lines) {
           i++;
           lineEnd = lineNumber = Math.max(intParameter(i++), 0);
           if (checkToken(i)) {
-            if (getToken(i).tok == Token.minus)
+            if (getToken(i).tok == T.minus)
               lineEnd = (checkToken(++i) ? intParameter(i++) : 0);
             else
               lineEnd = -intParameter(i++);
             if (lineEnd <= 0)
               error(ERROR_invalidArgument);
           }
-        } else if (tok == Token.command || tok == Token.commands) {
+        } else if (tok == T.command || tok == T.commands) {
           i++;
           pc = Math.max(intParameter(i++) - 1, 0);
           pcEnd = pc + 1;
           if (checkToken(i)) {
-            if (getToken(i).tok == Token.minus)
+            if (getToken(i).tok == T.minus)
               pcEnd = (checkToken(++i) ? intParameter(i++) : 0);
             else
               pcEnd = -intParameter(i++);
@@ -10721,7 +10731,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               error(ERROR_invalidArgument);
           }
         }
-        if (tokAt(i) == Token.leftparen) {
+        if (tokAt(i) == T.leftparen) {
           params = parameterExpressionList(i, -1, false);
           i = iToken + 1;
         }
@@ -10731,14 +10741,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     // processing
 
-    if (isSyntaxCheck && !isCmdLine_c_or_C_Option)
+    if (chk && !isCmdLine_c_or_C_Option)
       return;
     if (isCmdLine_c_or_C_Option)
       isCheck = true;
-    boolean wasSyntaxCheck = isSyntaxCheck;
+    boolean wasSyntaxCheck = chk;
     boolean wasScriptCheck = isCmdLine_c_or_C_Option;
     if (isCheck)
-      isSyntaxCheck = isCmdLine_c_or_C_Option = true;
+      chk = isCmdLine_c_or_C_Option = true;
     pushContext(null);
     contextPath += " >> " + filename;
     if (theScript == null ? compileScriptFileInternal(filename, localPath,
@@ -10752,9 +10762,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       isCmdLine_C_Option &= loadCheck;
       executionStepping |= doStep;
       
-      contextVariables = new Hashtable<String, ScriptVariable>();
-      contextVariables.put("_arguments", (params == null ? ScriptVariable.getVariableAI(new int[]{})
-          : ScriptVariable.getVariableList(params)));
+      contextVariables = new Hashtable<String, SV>();
+      contextVariables.put("_arguments", (params == null ? SV.getVariableAI(new int[]{})
+          : SV.getVariableList(params)));
       
       if (isCheck)
         listCommands = true;
@@ -10771,20 +10781,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
     }
 
-    isSyntaxCheck = wasSyntaxCheck;
+    chk = wasSyntaxCheck;
     isCmdLine_c_or_C_Option = wasScriptCheck;
   }
 
   private void function() throws ScriptException {
-    if (isSyntaxCheck && !isCmdLine_c_or_C_Option)
+    if (chk && !isCmdLine_c_or_C_Option)
       return;
     String name = (String) getToken(0).value;
     if (!viewer.isFunction(name))
       error(ERROR_commandExpected);
-    List<ScriptVariable> params = (statementLength == 1 || statementLength == 3
-        && tokAt(1) == Token.leftparen && tokAt(2) == Token.rightparen ? null
+    List<SV> params = (slen == 1 || slen == 3
+        && tokAt(1) == T.leftparen && tokAt(2) == T.rightparen ? null
         : parameterExpressionList(1, -1, false));
-    if (isSyntaxCheck)
+    if (chk)
       return;
     runFunctionRet(null, name, params, null, false, true, true);
   }
@@ -10794,7 +10804,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     checkLength(-3);
     String text = "";
     String applet = "";
-    switch (statementLength) {
+    switch (slen) {
     case 1:
       applet = "*";
       text = "ON";
@@ -10803,14 +10813,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       applet = parameterAsString(1);
       if (applet.indexOf("jmolApplet") == 0 || Parser.isOneOf(applet, "*;.;^")) {
         text = "ON";
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.syncScript(text, applet, 0);
         applet = ".";
         break;
       }
-      if (tokAt(1) == Token.integer) {
+      if (tokAt(1) == T.integer) {
         // start/stop server on port <nnnn>
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.syncScript(null, null, intParameter(1));
         return;
       }
@@ -10818,26 +10828,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       applet = "*";
       break;
     case 3:
-      if (isSyntaxCheck)
+      if (chk)
         return;
       applet = parameterAsString(1);
-      text = (tokAt(2) == Token.stereo ? Viewer.SYNC_GRAPHICS_MESSAGE
+      text = (tokAt(2) == T.stereo ? Viewer.SYNC_GRAPHICS_MESSAGE
           : parameterAsString(2));
-      if (tokAt(1) == Token.integer) {
+      if (tokAt(1) == T.integer) {
         // send to server on port <nnnn>
         viewer.syncScript(text, null, intParameter(1));
         return;
       }
       break;
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     viewer.syncScript(text, applet, 0);
   }
 
   private void history(int pt) throws ScriptException {
     // history or set history
-    if (statementLength == 1) {
+    if (slen == 1) {
       // show it
       showString(viewer.getSetHistory(Integer.MAX_VALUE));
       return;
@@ -10847,19 +10857,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       int n = intParameter(checkLast(2));
       if (n < 0)
         error(ERROR_invalidArgument);
-      if (!isSyntaxCheck)
+      if (!chk)
         viewer.getSetHistory(n == 0 ? 0 : -2 - n);
       return;
     }
     switch (getToken(checkLast(1)).tok) {
     // pt = 1 history ON/OFF/CLEAR
-    case Token.on:
-    case Token.clear:
-      if (!isSyntaxCheck)
+    case T.on:
+    case T.clear:
+      if (!chk)
         viewer.getSetHistory(Integer.MIN_VALUE);
       return;
-    case Token.off:
-      if (!isSyntaxCheck)
+    case T.off:
+      if (!chk)
         viewer.getSetHistory(0);
       break;
     default:
@@ -10868,34 +10878,34 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void display(boolean isDisplay) throws ScriptException {
-    BitSet bs = null;
+    BS bs = null;
     Boolean addRemove = null;
     int i = 1;
     int tok;
     switch (tok = tokAt(1)) {
-    case Token.add:
-    case Token.remove:
-      addRemove = Boolean.valueOf(tok == Token.add);
+    case T.add:
+    case T.remove:
+      addRemove = Boolean.valueOf(tok == T.add);
       tok = tokAt(++i);
       break;
     }
-    boolean isGroup = (tok == Token.group);
+    boolean isGroup = (tok == T.group);
     if (isGroup)
       tok = tokAt(++i);
     switch (tok) {
-    case Token.dollarsign:
+    case T.dollarsign:
       setObjectProperty();
       return;
-    case Token.nada:
+    case T.nada:
       break;
     default:
-      if (statementLength == 4 && tokAt(2) == Token.bonds)
-        bs = new BondSet(BitSetUtil.newBitSet2(0, viewer.modelSet
+      if (slen == 4 && tokAt(2) == T.bonds)
+        bs = new BondSet(BSUtil.newBitSet2(0, viewer.modelSet
             .bondCount));
       else
         bs = atomExpressionAt(i);
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (bs instanceof BondSet) {
       viewer.displayBonds((BondSet) bs, isDisplay);
@@ -10905,16 +10915,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void delete() throws ScriptException {
-    if (statementLength == 1) {
+    if (slen == 1) {
       zap(true);
       return;
     }
-    if (tokAt(1) == Token.dollarsign) {
+    if (tokAt(1) == T.dollarsign) {
       setObjectProperty();
       return;
     }
-    BitSet bs = atomExpression(statement, 1, 0, true, false, true, false);
-    if (isSyntaxCheck)
+    BS bs = atomExpression(st, 1, 0, true, false, true, false);
+    if (chk)
       return;
     int nDeleted = viewer.deleteAtoms(bs, false);
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
@@ -10922,39 +10932,39 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void minimize() throws ScriptException {
-    BitSet bsSelected = null;
+    BS bsSelected = null;
     int steps = Integer.MAX_VALUE;
     float crit = 0;
     boolean addHydrogen = false;
     boolean isSilent = false;
-    BitSet bsFixed = null;
+    BS bsFixed = null;
     MinimizerInterface minimizer = viewer.getMinimizer(false);
     // may be null
-    for (int i = 1; i < statementLength; i++)
+    for (int i = 1; i < slen; i++)
       switch (getToken(i).tok) {
-      case Token.addhydrogens:
+      case T.addhydrogens:
         addHydrogen = true;
         continue;
-      case Token.cancel:
-      case Token.stop:
+      case T.cancel:
+      case T.stop:
         checkLength(2);
-        if (isSyntaxCheck || minimizer == null)
+        if (chk || minimizer == null)
           return;
         minimizer.setProperty(parameterAsString(i), null);
         return;
-      case Token.clear:
+      case T.clear:
         checkLength(2);
-        if (isSyntaxCheck || minimizer == null)
+        if (chk || minimizer == null)
           return;
         minimizer.setProperty("clear", null);
         return;
-      case Token.constraint:
+      case T.constraint:
         if (i != 1)
           error(ERROR_invalidArgument);
         int n = 0;
         float targetValue = 0;
         int[] aList = new int[5];
-        if (tokAt(++i) == Token.clear) {
+        if (tokAt(++i) == T.clear) {
           checkLength(3);
         } else {
           while (n < 4 && !isFloatParameter(i)) {
@@ -10966,106 +10976,106 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             error(ERROR_invalidArgument);
           targetValue = floatParameter(checkLast(i));
         }
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.getMinimizer(true).setProperty("constraint",
               new Object[] { aList, new int[n], Float.valueOf(targetValue) });
         return;
-      case Token.criterion:
+      case T.criterion:
         crit = floatParameter(++i);
         continue;
-      case Token.energy:
+      case T.energy:
         steps = 0;
         continue;
-      case Token.fixed:
+      case T.fixed:
         if (i != 1)
           error(ERROR_invalidArgument);
         bsFixed = atomExpressionAt(++i);
         if (bsFixed.nextSetBit(0) < 0)
           bsFixed = null;
         i = iToken;
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.getMinimizer(true).setProperty("fixed", bsFixed);
-        if (i + 1 == statementLength)
+        if (i + 1 == slen)
           return;
         continue;
-      case Token.select:
+      case T.select:
         bsSelected = atomExpressionAt(++i);
         i = iToken;
         continue;
-      case Token.silent:
+      case T.silent:
         isSilent = true;
         break;
-      case Token.step:
+      case T.step:
         steps = intParameter(++i);
         continue;
       default:
         error(ERROR_invalidArgument);
         break;
       }
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.minimize(steps, crit, bsSelected, bsFixed, 0, addHydrogen,
           isSilent, false);
   }
 
   private void select(int i) throws ScriptException {
     // NOTE this is called by restrict()
-    if (statementLength == 1) {
+    if (slen == 1) {
       viewer.select(null, false, null, tQuiet
           || scriptLevel > scriptReportingLevel);
       return;
     }
-    if (statementLength == 2 && tokAt(1) == Token.only)
+    if (slen == 2 && tokAt(1) == T.only)
       return; // coming from "cartoon only"
     // select beginexpr none endexpr
-    viewer.setNoneSelected(statementLength == 4 && tokAt(2) == Token.none);
+    viewer.setNoneSelected(slen == 4 && tokAt(2) == T.none);
     // select beginexpr bonds ( {...} ) endex pr
-    if (tokAt(2) == Token.bitset && getToken(2).value instanceof BondSet
-        || getToken(2).tok == Token.bonds && getToken(3).tok == Token.bitset) {
-      if (statementLength == iToken + 2) {
-        if (!isSyntaxCheck)
-          viewer.selectBonds((BitSet) theToken.value);
+    if (tokAt(2) == T.bitset && getToken(2).value instanceof BondSet
+        || getToken(2).tok == T.bonds && getToken(3).tok == T.bitset) {
+      if (slen == iToken + 2) {
+        if (!chk)
+          viewer.selectBonds((BS) theToken.value);
         return;
       }
       error(ERROR_invalidArgument);
     }
-    if (getToken(2).tok == Token.measure) {
-      if (statementLength == 5 && getToken(3).tok == Token.bitset) {
-        if (!isSyntaxCheck)
-          setShapeProperty(JmolConstants.SHAPE_MEASURES, "select",
+    if (getToken(2).tok == T.measure) {
+      if (slen == 5 && getToken(3).tok == T.bitset) {
+        if (!chk)
+          setShapeProperty(JC.SHAPE_MEASURES, "select",
               theToken.value);
         return;
       }
       error(ERROR_invalidArgument);
     }
-    BitSet bs = null;
+    BS bs = null;
     Boolean addRemove = null;
     boolean isGroup = false;
     if (getToken(1).intValue == 0) {
       Object v = parameterExpressionToken(0).value;
-      if (!(v instanceof BitSet))
+      if (!(v instanceof BS))
         error(ERROR_invalidArgument);
       checkLast(iToken);
-      bs = (BitSet) v;
+      bs = (BS) v;
     } else {
       int tok = tokAt(i);
       switch (tok) {
-      case Token.add:
-      case Token.remove:
-        addRemove = Boolean.valueOf(tok == Token.add);
+      case T.add:
+      case T.remove:
+        addRemove = Boolean.valueOf(tok == T.add);
         tok = tokAt(++i);
       }
-      isGroup = (tok == Token.group);
+      isGroup = (tok == T.group);
       if (isGroup)
         tok = tokAt(++i);
       bs = atomExpressionAt(i);
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (isBondSet) {
       viewer.selectBonds(bs);
     } else {
       if (bs.length() > viewer.getAtomCount()) {
-        BitSet bs1 = viewer.getModelUndeletedAtomsBitSet(-1);
+        BS bs1 = viewer.getModelUndeletedAtomsBitSet(-1);
         bs1.and(bs);
         bs = bs1;
       }
@@ -11075,13 +11085,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void subset() throws ScriptException {
-    BitSet bs = null;
-    if (!isSyntaxCheck)
+    BS bs = null;
+    if (!chk)
       viewer.setSelectionSubset(null);
-    if (statementLength != 1
-        && (statementLength != 4 || !getToken(2).value.equals("off")))
+    if (slen != 1
+        && (slen != 4 || !getToken(2).value.equals("off")))
       bs = atomExpressionAt(1);
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.setSelectionSubset(bs);
   }
 
@@ -11090,37 +11100,37 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // invertSelected PLANE
     // invertSelected HKL
     // invertSelected STEREO {sp3Atom} {one or two groups)
-    Point3f pt = null;
+    P3 pt = null;
     Point4f plane = null;
-    BitSet bs = null;
+    BS bs = null;
     int iAtom = Integer.MIN_VALUE;
     switch (tokAt(1)) {
-    case Token.nada:
-      if (isSyntaxCheck)
+    case T.nada:
+      if (chk)
         return;
       bs = viewer.getSelectionSet(false);
       pt = viewer.getAtomSetCenter(bs);
       viewer.invertAtomCoordPt(pt, bs);
       return;
-    case Token.stereo:
+    case T.stereo:
       iAtom = atomExpressionAt(2).nextSetBit(0);
       // and only these:
       bs = atomExpressionAt(iToken + 1);
       break;
-    case Token.point:
+    case T.point:
       pt = centerParameter(2);
       break;
-    case Token.plane:
+    case T.plane:
       plane = planeParameter(2);
       break;
-    case Token.hkl:
+    case T.hkl:
       plane = hklParameter(2);
       break;
     }
     checkLengthErrorPt(iToken + 1, 1);
     if (plane == null && pt == null && iAtom == Integer.MIN_VALUE)
       error(ERROR_invalidArgument);
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (iAtom == -1)
       return;
@@ -11133,20 +11143,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // translate [selected] X|Y|Z x.x [NM|ANGSTROMS]
     // translate [selected] X|Y x.x%
     // translate {x y z} [{atomExpression}]
-    BitSet bs = null;
+    BS bs = null;
     int i = 1;
     int i0 = 0;
-    if (tokAt(1) == Token.selected) {
+    if (tokAt(1) == T.selected) {
       isSelected = true;
       i0 = 1;
       i = 2;
     }
     if (isPoint3f(i)) {
-      Point3f pt = getPoint3f(i, true);
-      bs = (!isSelected && iToken + 1 < statementLength ? atomExpressionAt(++iToken)
+      P3 pt = getPoint3f(i, true);
+      bs = (!isSelected && iToken + 1 < slen ? atomExpressionAt(++iToken)
           : null);
       checkLast(iToken);
-      if (!isSyntaxCheck)
+      if (!chk)
         viewer.setAtomCoordRelative(pt, bs);
       return;
     }
@@ -11156,9 +11166,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     float amount = floatParameter(++i);
     char type;
     switch (tokAt(++i)) {
-    case Token.nada:
-    case Token.bitset:
-    case Token.expressionBegin:
+    case T.nada:
+    case T.bitset:
+    case T.expressionBegin:
       type = '\0';
       break;
     default:
@@ -11168,20 +11178,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     iToken = i0 + (type == '\0' ? 2 : 3);
     bs = (isSelected ? viewer.getSelectionSet(false)
-        : iToken + 1 < statementLength ? atomExpressionAt(++iToken) : null);
+        : iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
     checkLast(iToken);
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.translate(xyz, amount, type, bs);
   }
 
   private void zap(boolean isZapCommand) throws ScriptException {
-    if (statementLength == 1 || !isZapCommand) {
+    if (slen == 1 || !isZapCommand) {
       viewer.zap(true, isZapCommand && !isStateScript, true);
       refresh();
       return;
     }
-    BitSet bs = atomExpressionAt(1);
-    if (isSyntaxCheck)
+    BS bs = atomExpressionAt(1);
+    if (chk)
       return;
     int nDeleted = viewer.deleteAtoms(bs, true);
     boolean isQuiet = (tQuiet || scriptLevel > scriptReportingLevel);
@@ -11194,21 +11204,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (!isZoomTo) {
       // zoom
       // zoom on|off
-      int tok = (statementLength > 1 ? getToken(1).tok : Token.on);
+      int tok = (slen > 1 ? getToken(1).tok : T.on);
       switch (tok) {
-      case Token.in:
-      case Token.out:
+      case T.in:
+      case T.out:
         break;
-      case Token.on:
-      case Token.off:
-        if (statementLength > 2)
+      case T.on:
+      case T.off:
+        if (slen > 2)
           error(ERROR_badArgumentCount);
-        if (!isSyntaxCheck)
-          setBooleanProperty("zoomEnabled", tok == Token.on);
+        if (!chk)
+          setBooleanProperty("zoomEnabled", tok == T.on);
         return;
       }
     }
-    Point3f center = null;
+    P3 center = null;
     //Point3f currentCenter = viewer.getRotationCenter();
     int i = 1;
     // zoomTo time-sec
@@ -11221,14 +11231,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     // zoom {x y z} or (atomno=3)
     int ptCenter = 0;
-    BitSet bsCenter = null;
+    BS bsCenter = null;
     if (isCenterParameter(i)) {
       ptCenter = i;
       center = centerParameter(i);
-      if (expressionResult instanceof BitSet)
-        bsCenter = (BitSet) expressionResult;
+      if (expressionResult instanceof BS)
+        bsCenter = (BS) expressionResult;
       i = iToken + 1;
-    } else if (tokAt(i) == Token.integer && getToken(i).intValue == 0) {
+    } else if (tokAt(i) == T.integer && getToken(i).intValue == 0) {
       bsCenter = viewer.getAtomBitSet("visible");
       center = viewer.getAtomSetCenter(bsCenter);
     }
@@ -11243,17 +11253,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     i = iToken + 1;
     float xTrans = Float.NaN;
     float yTrans = Float.NaN;
-    if (i != statementLength) {
+    if (i != slen) {
       xTrans = floatParameter(i++);
       yTrans = floatParameter(i++);
     }
-    if (i != statementLength)
+    if (i != slen)
       error(ERROR_invalidArgument);
     if (newZoom < 0) {
       newZoom = -newZoom; // currentFactor
       if (isZoomTo) {
         // no factor -- check for no center (zoom out) or same center (zoom in)
-        if (statementLength == 1 || isSameAtom)
+        if (slen == 1 || isSameAtom)
           newZoom *= 2;
         else if (center == null)
           newZoom /= 2;
@@ -11265,8 +11275,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (!viewer.isWindowCentered()) {
       // do a smooth zoom only if not windowCentered
       if (center != null) {
-        BitSet bs = atomExpressionAt(ptCenter);
-        if (!isSyntaxCheck)
+        BS bs = atomExpressionAt(ptCenter);
+        if (!chk)
           viewer.setCenterBitSet(bs, false);
       }
       center = viewer.getRotationCenter();
@@ -11275,7 +11285,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (Float.isNaN(yTrans))
         yTrans = viewer.getTranslationYPercent();
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (Float.isNaN(xTrans))
       xTrans = 0;
@@ -11283,14 +11293,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       yTrans = 0;
     if (isSameAtom && Math.abs(zoom - newZoom) < 1)
       floatSecondsTotal = 0;
-    viewer.moveTo(this, floatSecondsTotal, center, JmolConstants.center, Float.NaN, null,
+    viewer.moveTo(this, floatSecondsTotal, center, JC.center, Float.NaN, null,
         newZoom, xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
     if (isJS && floatSecondsTotal > 0 && viewer.waitForMoveTo())
       throw new ScriptInterruption(this, "zoomTo", 1);
 
   }
 
-  private float getZoom(int ptCenter, int i, BitSet bs, float currentZoom)
+  private float getZoom(int ptCenter, int i, BS bs, float currentZoom)
       throws ScriptException {
     // where [zoom factor] is [0|n|+n|-n|*n|/n|IN|OUT]
 
@@ -11299,8 +11309,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // moveTo/zoom/zoomTo {center} 0
       float r = Float.NaN;
       if (bs == null) {
-        if (tokAt(ptCenter) == Token.dollarsign) {
-          Point3f[] bbox = getObjectBoundingBox(objectNameParameter(ptCenter + 1));
+        if (tokAt(ptCenter) == T.dollarsign) {
+          P3[] bbox = getObjectBoundingBox(objectNameParameter(ptCenter + 1));
           if (bbox == null || (r = bbox[0].distance(bbox[1]) / 2) == 0)
             error(ERROR_invalidArgument);
         }
@@ -11321,24 +11331,24 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // -factor|+factor|*factor|/factor]
       int tok = tokAt(i);
       switch (tok) {
-      case Token.out:
-      case Token.in:
-        zoom = currentZoom * (tok == Token.out ? 0.5f : 2f);
+      case T.out:
+      case T.in:
+        zoom = currentZoom * (tok == T.out ? 0.5f : 2f);
         i++;
         break;
-      case Token.divide:
-      case Token.times:
-      case Token.plus:
+      case T.divide:
+      case T.times:
+      case T.plus:
         float value = floatParameter(++i);
         i++;
         switch (tok) {
-        case Token.divide:
+        case T.divide:
           zoom = currentZoom / value;
           break;
-        case Token.times:
+        case T.times:
           zoom = currentZoom * value;
           break;
-        case Token.plus:
+        case T.plus:
           zoom = currentZoom + value;
           break;
         }
@@ -11355,19 +11365,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void delay() throws ScriptException {
     int millis = 0;
     switch (getToken(1).tok) {
-    case Token.on: // this is auto-provided as a default
+    case T.on: // this is auto-provided as a default
       millis = 1;
       break;
-    case Token.integer:
+    case T.integer:
       millis = intParameter(1) * 1000;
       break;
-    case Token.decimal:
+    case T.decimal:
       millis = (int) (floatParameter(1) * 1000);
       break;
     default:
       error(ERROR_numberExpected);
     }
-    if (isSyntaxCheck || viewer.isHeadless() || viewer.autoExit)
+    if (chk || viewer.isHeadless() || viewer.autoExit)
       return;
     refresh();
     doDelay(Math.abs(millis));
@@ -11377,41 +11387,41 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean TF = false;
     Point4f plane = null;
     String str;
-    if (isCenterParameter(1) || tokAt(1) == Token.point4f)
+    if (isCenterParameter(1) || tokAt(1) == T.point4f)
       plane = planeParameter(1);
     else
       switch (getToken(1).tok) {
-      case Token.integer:
+      case T.integer:
         int percent = intParameter(checkLast(1));
-        if (!isSyntaxCheck)
+        if (!chk)
           if (isDepth)
             viewer.depthToPercent(percent);
           else
             viewer.slabToPercent(percent);
         return;
-      case Token.on:
+      case T.on:
         checkLength(2);
         TF = true;
         //$FALL-THROUGH$
-      case Token.off:
+      case T.off:
         checkLength(2);
         setBooleanProperty("slabEnabled", TF);
         return;
-      case Token.reset:
+      case T.reset:
         checkLength(2);
-        if (isSyntaxCheck)
+        if (chk)
           return;
         viewer.slabReset();
         setBooleanProperty("slabEnabled", true);
         return;
-      case Token.set:
+      case T.set:
         checkLength(2);
-        if (isSyntaxCheck)
+        if (chk)
           return;
         viewer.setSlabDepthInternal(isDepth);
         setBooleanProperty("slabEnabled", true);
         return;
-      case Token.minus:
+      case T.minus:
         str = parameterAsString(2);
         if (str.equalsIgnoreCase("hkl"))
           plane = hklParameter(3);
@@ -11421,41 +11431,41 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         plane.scale(-1);
         break;
-      case Token.plane:
+      case T.plane:
         switch (getToken(2).tok) {
-        case Token.none:
+        case T.none:
           break;
         default:
           plane = planeParameter(2);
         }
         break;
-      case Token.hkl:
-        plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
+      case T.hkl:
+        plane = (getToken(2).tok == T.none ? null : hklParameter(2));
         break;
-      case Token.reference:
+      case T.reference:
         // only in 11.2; deprecated
         return;
       default:
         error(ERROR_invalidArgument);
       }
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.slabInternal(plane, isDepth);
   }
 
   /*
   private void slice() throws ScriptException{
-    if(!isSyntaxCheck && viewer.slicer==null){
+    if(!chk && viewer.slicer==null){
      viewer.createSlicer();
     }
     int tok1 = getToken(1).tok;
     if(tok1==Token.left||tok1==Token.right){
       switch (getToken(2).tok){
       case Token.on:
-        if(isSyntaxCheck) return;
+        if(chk) return;
         viewer.slicer.drawSlicePlane(tok1, true);
         return;
       case Token.off:
-        if(isSyntaxCheck) return;
+        if(chk) return;
         viewer.slicer.drawSlicePlane(tok1, false);
         return;
       default:
@@ -11475,7 +11485,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);  
         }
       }
-      if(!isSyntaxCheck){
+      if(!chk){
         viewer.slicer.setSlice(param[0], param[1], param[2], param[3]);
         viewer.slicer.sliceObject(name);
       }
@@ -11489,114 +11499,114 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int mad = 0;
     int i = 1;
     switch (getToken(1).tok) {
-    case Token.on:
+    case T.on:
       mad = 50;
       break;
-    case Token.off:
+    case T.off:
       break;
-    case Token.integer:
+    case T.integer:
       mad = intParameter(1);
       break;
-    case Token.set:
+    case T.set:
       checkLength(3);
-      shapeManager.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
-      setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "select", Integer.valueOf(intParameterRange(2, 1, 3)));      
+      sm.loadShape(JC.SHAPE_ELLIPSOIDS);
+      setShapeProperty(JC.SHAPE_ELLIPSOIDS, "select", Integer.valueOf(intParameterRange(2, 1, 3)));      
       return;
-    case Token.id:
-    case Token.times:
-    case Token.identifier:
-      shapeManager.loadShape(JmolConstants.SHAPE_ELLIPSOIDS);
-      if (theTok == Token.id)
+    case T.id:
+    case T.times:
+    case T.identifier:
+      sm.loadShape(JC.SHAPE_ELLIPSOIDS);
+      if (theTok == T.id)
         i++;
-      setShapeId(JmolConstants.SHAPE_ELLIPSOIDS, i, false);
+      setShapeId(JC.SHAPE_ELLIPSOIDS, i, false);
       i = iToken;
-      while (++i < statementLength) {
+      while (++i < slen) {
         String key = parameterAsString(i);
         Object value = null;
         switch (tokAt(i)) {
-        case Token.dollarsign:
+        case T.dollarsign:
           key = "points";
           Object[] data = new Object[3];
           data[0] = objectNameParameter(++i);
-          if (isSyntaxCheck)
+          if (chk)
             continue;
-          getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "getVertices", data);
+          getShapePropertyData(JC.SHAPE_ISOSURFACE, "getVertices", data);
           value = data;
           break;
-        case Token.bitset:
-        case Token.expressionBegin:
+        case T.bitset:
+        case T.expressionBegin:
           key = "atoms";
           value = atomExpressionAt(i);
           i = iToken;
           break;
-        case Token.axes:
-          Vector3f[] axes = new Vector3f[3];
+        case T.axes:
+          V3[] axes = new V3[3];
           for (int j = 0; j < 3; j++) {
-            axes[j] = new Vector3f();
+            axes[j] = new V3();
             axes[j].setT(centerParameter(++i));
             i = iToken;
           }
           value = axes;
           break;
-        case Token.center:
+        case T.center:
           value = centerParameter(++i);
           i = iToken;
           break;
-        case Token.color:
+        case T.color:
           float translucentLevel = Float.NaN;
-          if (tokAt(i) == Token.color)
+          if (tokAt(i) == T.color)
             i++;
-          if ((theTok = tokAt(i)) == Token.translucent) {
+          if ((theTok = tokAt(i)) == T.translucent) {
             value = "translucent";
             if (isFloatParameter(++i))
               translucentLevel = getTranslucentLevel(i++);
             else
               translucentLevel = viewer.getDefaultTranslucent();
-          } else if (theTok == Token.opaque) {
+          } else if (theTok == T.opaque) {
             value = "opaque";
             i++;
           }
           if (isColorParam(i)) {
-            setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "color", Integer
+            setShapeProperty(JC.SHAPE_ELLIPSOIDS, "color", Integer
                 .valueOf(getArgbParam(i)));
             i = iToken;
           }
           if (value == null)
             continue;
           if (!Float.isNaN(translucentLevel))
-            setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS,
+            setShapeProperty(JC.SHAPE_ELLIPSOIDS,
                 "translucentLevel", Float.valueOf(translucentLevel));
           key = "translucency";
           break;
-        case Token.delete:
+        case T.delete:
           value = Boolean.TRUE;
           checkLength(3);
           break;
-        case Token.modelindex:
+        case T.modelindex:
           value = Integer.valueOf(intParameter(++i));
           break;
-        case Token.on:
+        case T.on:
           value = Boolean.TRUE;
           break;
-        case Token.off:
+        case T.off:
           key = "on";
           value = Boolean.FALSE;
           break;
-        case Token.scale:
+        case T.scale:
           value = Float.valueOf(floatParameter(++i));
           break;
         }
         if (value == null)
           error(ERROR_invalidArgument);
-        setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, key.toLowerCase(),
+        setShapeProperty(JC.SHAPE_ELLIPSOIDS, key.toLowerCase(),
             value);
       }
-      setShapeProperty(JmolConstants.SHAPE_ELLIPSOIDS, "thisID", null);
+      setShapeProperty(JC.SHAPE_ELLIPSOIDS, "thisID", null);
       return;
     default:
       error(ERROR_invalidArgument);
     }
-    setShapeSizeBs(JmolConstants.SHAPE_ELLIPSOIDS, mad, null);
+    setShapeSizeBs(JC.SHAPE_ELLIPSOIDS, mad, null);
   }
 
   private String getShapeNameParameter(int i) throws ScriptException {
@@ -11606,13 +11616,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       error(ERROR_invalidArgument);
     if (isWild) {
       switch (tokAt(i + 1)) {
-      case Token.nada:
-      case Token.on:
-      case Token.off:
-      case Token.displayed:
-      case Token.hidden:
-      case Token.color:
-      case Token.delete:
+      case T.nada:
+      case T.on:
+      case T.off:
+      case T.displayed:
+      case T.hidden:
+      case T.color:
+      case T.delete:
         break;
       default:
         if (setMeshDisplayProperty(-1, 0, tokAt(i + 1)))
@@ -11620,7 +11630,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         id += optParameterAsString(++i);
       }
     }
-    if (tokAt(i + 1) == Token.times)
+    if (tokAt(i + 1) == T.times)
       id += parameterAsString(++i);
     iToken = i;
     return id;
@@ -11641,18 +11651,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int tok = tokAt(1);
     boolean isOnly = false;
     switch (tok) {
-    case Token.only:
+    case T.only:
       restrictSelected(false, false);
       break;
-    case Token.on:
+    case T.on:
       break;
-    case Token.off:
+    case T.off:
       scale = 0;
       break;
-    case Token.decimal:
+    case T.decimal:
       isOnly = (floatParameter(1) < 0);
       //$FALL-THROUGH$
-    case Token.integer:
+    case T.integer:
     default:
       rd = encodeRadiusParameter(1, isOnly, true);
       if (Float.isNaN(rd.value))
@@ -11686,38 +11696,38 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     EnumType factorType = EnumType.ABSOLUTE;
     EnumVdw vdwType = null;
 
-    int tok = (index == -1 ? Token.vanderwaals : getToken(index).tok);
+    int tok = (index == -1 ? T.vanderwaals : getToken(index).tok);
     switch (tok) {
-    case Token.adpmax:
-    case Token.adpmin:
-    case Token.ionic:
-    case Token.hydrophobic:
-    case Token.temperature:
-    case Token.vanderwaals:
+    case T.adpmax:
+    case T.adpmin:
+    case T.ionic:
+    case T.hydrophobic:
+    case T.temperature:
+    case T.vanderwaals:
       value = 1;
       factorType = EnumType.FACTOR;
-      vdwType = (tok == Token.vanderwaals ? null : EnumVdw.getVdwType2(Token.nameOf(tok)));
+      vdwType = (tok == T.vanderwaals ? null : EnumVdw.getVdwType2(T.nameOf(tok)));
       tok = tokAt(++index);
       break;
     }
     switch (tok) {
-    case Token.reset:
+    case T.reset:
       return viewer.getDefaultRadiusData();
-    case Token.auto:
-    case Token.rasmol:
-    case Token.babel:
-    case Token.babel21:
-    case Token.jmol:
+    case T.auto:
+    case T.rasmol:
+    case T.babel:
+    case T.babel21:
+    case T.jmol:
       value = 1;
       factorType = EnumType.FACTOR;
       iToken = index - 1;
       break;
-    case Token.plus:
-    case Token.integer:
-    case Token.decimal:
-      if (tok == Token.plus) {
+    case T.plus:
+    case T.integer:
+    case T.decimal:
+      if (tok == T.plus) {
         index++;
-      } else if (tokAt(index + 1) == Token.percent) {
+      } else if (tokAt(index + 1) == T.percent) {
         value = Math.round(floatParameter(index));
         iToken = ++index;
         factorType = EnumType.FACTOR;
@@ -11725,7 +11735,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           integerOutOfRange(0, 200);
         value /= 100;
         break;
-      } else if (tok == Token.integer) {
+      } else if (tok == T.integer) {
         value = intParameter(index);
         // rasmol 250-scale if positive or percent (again), if negative
         // (deprecated)
@@ -11742,7 +11752,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       value = floatParameterRange(index,
           (isOnly || !allowAbsolute ? -Atom.RADIUS_MAX : 0), Atom.RADIUS_MAX);
-      if (tok == Token.plus || !allowAbsolute) {
+      if (tok == T.plus || !allowAbsolute) {
         factorType = EnumType.OFFSET;
       } else {
         factorType = EnumType.ABSOLUTE;
@@ -11769,17 +11779,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     EnumStructure type = EnumStructure.getProteinStructureType(parameterAsString(1));
     if (type == EnumStructure.NOT)
       error(ERROR_invalidArgument);
-    BitSet bs = null;
+    BS bs = null;
     switch (tokAt(2)) {
-    case Token.bitset:
-    case Token.expressionBegin:
+    case T.bitset:
+    case T.expressionBegin:
       bs = atomExpressionAt(2);
       checkLast(iToken);
       break;
     default:
       checkLength(2);
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     clearDefinedVariableAtomSets();
     viewer.setProteinType(type, bs);
@@ -11787,84 +11797,84 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void wireframe() throws ScriptException {
     int mad = Integer.MIN_VALUE;
-    if (tokAt(1) == Token.reset)
+    if (tokAt(1) == T.reset)
       checkLast(1);
     else
       mad = getMadParameter();
-    if (isSyntaxCheck)
+    if (chk)
       return;
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_COVALENT_MASK));
     setShapeSizeBs(
-        JmolConstants.SHAPE_STICKS,
-        mad == Integer.MIN_VALUE ? 2 * JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS
+        JC.SHAPE_STICKS,
+        mad == Integer.MIN_VALUE ? 2 * JC.DEFAULT_BOND_MILLIANGSTROM_RADIUS
             : mad, null);
   }
 
   private void ssbond() throws ScriptException {
     int mad = getMadParameter();
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_SULFUR_MASK));
-    setShapeSizeBs(JmolConstants.SHAPE_STICKS, mad, null);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+    setShapeSizeBs(JC.SHAPE_STICKS, mad, null);
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_COVALENT_MASK));
   }
 
   private void struts() throws ScriptException {
-    boolean defOn = (tokAt(1) == Token.only || tokAt(1) == Token.on || statementLength == 1);
+    boolean defOn = (tokAt(1) == T.only || tokAt(1) == T.on || slen == 1);
     int mad = getMadParameter();
     if (defOn)
       mad = Math.round (viewer.getStrutDefaultRadius() * 2000f);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_STRUT));
-    setShapeSizeBs(JmolConstants.SHAPE_STICKS, mad, null);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+    setShapeSizeBs(JC.SHAPE_STICKS, mad, null);
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_COVALENT_MASK));
   }
 
   private void hbond() throws ScriptException {
-    if (statementLength == 2 && getToken(1).tok == Token.calculate) {
-      if (isSyntaxCheck)
+    if (slen == 2 && getToken(1).tok == T.calculate) {
+      if (chk)
         return;
       int n = viewer.autoHbond(null, null, false);
       scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));
       return;
     }
-    if (statementLength == 2 && getToken(1).tok == Token.delete) {
-      if (isSyntaxCheck)
+    if (slen == 2 && getToken(1).tok == T.delete) {
+      if (chk)
         return;
       connect(0);
       return;
     }
     int mad = getMadParameter();
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_HYDROGEN_MASK));
-    setShapeSizeBs(JmolConstants.SHAPE_STICKS, mad, null);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+    setShapeSizeBs(JC.SHAPE_STICKS, mad, null);
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_COVALENT_MASK));
   }
 
   private void configuration() throws ScriptException {
-    // if (!isSyntaxCheck && viewer.getDisplayModelIndex() <= -2)
+    // if (!chk && viewer.getDisplayModelIndex() <= -2)
     // error(ERROR_backgroundModelError, "\"CONFIGURATION\"");
-    BitSet bsAtoms;
-    if (statementLength == 1) {
+    BS bsAtoms;
+    if (slen == 1) {
       bsAtoms = viewer.setConformation();
       viewer.addStateScriptRet("select", null, viewer.getSelectionSet(false),
           null, "configuration", true, false);
     } else {
       int n = intParameter(checkLast(1));
-      if (isSyntaxCheck)
+      if (chk)
         return;
       bsAtoms = viewer.getConformation(viewer.getCurrentModelIndex(), n - 1,
           true);
       viewer.addStateScript("configuration " + n + ";", true, false);
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_HYDROGEN_MASK));
-    setShapeSizeBs(JmolConstants.SHAPE_STICKS, 0, bsAtoms);
+    setShapeSizeBs(JC.SHAPE_STICKS, 0, bsAtoms);
     viewer.autoHbond(bsAtoms, bsAtoms, true);
     viewer.select(bsAtoms, false, null, tQuiet);
   }
@@ -11873,21 +11883,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     EnumType type = EnumType.SCREEN;
     float value = 1;
     checkLength(-3);
-    switch (iToken = statementLength) {
+    switch (iToken = slen) {
     case 1:
       break;
     case 2:
       switch (getToken(1).tok) {
-      case Token.on:
+      case T.on:
         break;
-      case Token.off:
+      case T.off:
         value = 0;
         break;
-      case Token.integer:
+      case T.integer:
         // diameter Pixels
         value = intParameterRange(1, 0, 19);
         break;
-      case Token.decimal:
+      case T.decimal:
         // radius angstroms
         type = EnumType.ABSOLUTE;
         value = floatParameterRange(1, 0, 3);
@@ -11897,12 +11907,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       break;
     case 3:
-      if (tokAt(1) == Token.scale) {
+      if (tokAt(1) == T.scale) {
         setFloatProperty("vectorScale", floatParameterRange(2, -100, 100));
         return;
       }
     }
-    setShapeSize(JmolConstants.SHAPE_VECTORS, new RadiusData(null, value, type, null));
+    setShapeSize(JC.SHAPE_VECTORS, new RadiusData(null, value, type, null));
   }
 
   private void dipole() throws ScriptException {
@@ -11913,72 +11923,72 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean iHaveCoord = false;
     boolean idSeen = false;
 
-    shapeManager.loadShape(JmolConstants.SHAPE_DIPOLES);
-    if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_DIPOLES))
+    sm.loadShape(JC.SHAPE_DIPOLES);
+    if (tokAt(1) == T.list && listIsosurface(JC.SHAPE_DIPOLES))
       return;
-    setShapeProperty(JmolConstants.SHAPE_DIPOLES, "init", null);
-    if (statementLength == 1) {
-      setShapeProperty(JmolConstants.SHAPE_DIPOLES, "thisID", null);
+    setShapeProperty(JC.SHAPE_DIPOLES, "init", null);
+    if (slen == 1) {
+      setShapeProperty(JC.SHAPE_DIPOLES, "thisID", null);
       return;
     }
-    for (int i = 1; i < statementLength; ++i) {
+    for (int i = 1; i < slen; ++i) {
       propertyName = null;
       propertyValue = null;
       switch (getToken(i).tok) {
-      case Token.on:
+      case T.on:
         propertyName = "on";
         break;
-      case Token.off:
+      case T.off:
         propertyName = "off";
         break;
-      case Token.delete:
+      case T.delete:
         propertyName = "delete";
         break;
-      case Token.integer:
-      case Token.decimal:
+      case T.integer:
+      case T.decimal:
         propertyName = "value";
         propertyValue = Float.valueOf(floatParameter(i));
         break;
-      case Token.bitset:
+      case T.bitset:
         propertyName = "atomBitset";
         //$FALL-THROUGH$
-      case Token.expressionBegin:
+      case T.expressionBegin:
         if (propertyName == null)
           propertyName = (iHaveAtoms || iHaveCoord ? "endSet" : "startSet");
         propertyValue = atomExpressionAt(i);
         i = iToken;
         iHaveAtoms = true;
         break;
-      case Token.leftbrace:
-      case Token.point3f:
+      case T.leftbrace:
+      case T.point3f:
         // {X, Y, Z}
-        Point3f pt = getPoint3f(i, true);
+        P3 pt = getPoint3f(i, true);
         i = iToken;
         propertyName = (iHaveAtoms || iHaveCoord ? "endCoord" : "startCoord");
         propertyValue = pt;
         iHaveCoord = true;
         break;
-      case Token.bonds:
+      case T.bonds:
         propertyName = "bonds";
         break;
-      case Token.calculate:
+      case T.calculate:
         propertyName = "calculate";
         break;
-      case Token.id:
-        setShapeId(JmolConstants.SHAPE_DIPOLES, ++i, idSeen);
+      case T.id:
+        setShapeId(JC.SHAPE_DIPOLES, ++i, idSeen);
         i = iToken;
         break;
-      case Token.cross:
+      case T.cross:
         propertyName = "cross";
         propertyValue = Boolean.TRUE;
         break;
-      case Token.nocross:
+      case T.nocross:
         propertyName = "cross";
         propertyValue = Boolean.FALSE;
         break;
-      case Token.offset:
+      case T.offset:
         float v = floatParameter(++i);
-        if (theTok == Token.integer) {
+        if (theTok == T.integer) {
           propertyName = "offsetPercent";
           propertyValue = Integer.valueOf((int) v);
         } else {
@@ -11986,61 +11996,61 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           propertyValue = Float.valueOf(v);
         }
         break;
-      case Token.offsetside:
+      case T.offsetside:
         propertyName = "offsetSide";
         propertyValue = Float.valueOf(floatParameter(++i));
         break;
 
-      case Token.val:
+      case T.val:
         propertyName = "value";
         propertyValue = Float.valueOf(floatParameter(++i));
         break;
-      case Token.width:
+      case T.width:
         propertyName = "width";
         propertyValue = Float.valueOf(floatParameter(++i));
         break;
       default:
-        if (theTok == Token.times || Token.tokAttr(theTok, Token.identifier)) {
-          setShapeId(JmolConstants.SHAPE_DIPOLES, i, idSeen);
+        if (theTok == T.times || T.tokAttr(theTok, T.identifier)) {
+          setShapeId(JC.SHAPE_DIPOLES, i, idSeen);
           i = iToken;
           break;
         }
         error(ERROR_invalidArgument);
       }
-      idSeen = (theTok != Token.delete && theTok != Token.calculate);
+      idSeen = (theTok != T.delete && theTok != T.calculate);
       if (propertyName != null)
-        setShapeProperty(JmolConstants.SHAPE_DIPOLES, propertyName,
+        setShapeProperty(JC.SHAPE_DIPOLES, propertyName,
             propertyValue);
     }
     if (iHaveCoord || iHaveAtoms)
-      setShapeProperty(JmolConstants.SHAPE_DIPOLES, "set", null);
+      setShapeProperty(JC.SHAPE_DIPOLES, "set", null);
   }
 
   private void animationMode() throws ScriptException {
     float startDelay = 1, endDelay = 1;
-    if (statementLength > 5)
+    if (slen > 5)
       error(ERROR_badArgumentCount);
     EnumAnimationMode animationMode = null;
     switch (getToken(2).tok) {
-    case Token.once:
+    case T.once:
       animationMode = EnumAnimationMode.ONCE;
       startDelay = endDelay = 0;
       break;
-    case Token.loop:
+    case T.loop:
       animationMode = EnumAnimationMode.LOOP;
       break;
-    case Token.palindrome:
+    case T.palindrome:
       animationMode = EnumAnimationMode.PALINDROME;
       break;
     default:
       error(ERROR_invalidArgument);
     }
-    if (statementLength >= 4) {
+    if (slen >= 4) {
       startDelay = endDelay = floatParameter(3);
-      if (statementLength == 5)
+      if (slen == 5)
         endDelay = floatParameter(4);
     }
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.setAnimationReplayMode(animationMode, startDelay, endDelay);
   }
 
@@ -12048,26 +12058,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     checkLength(-3);
     float period = 0;
     switch (getToken(1).tok) {
-    case Token.on:
+    case T.on:
       checkLength(2);
       period = viewer.getVibrationPeriod();
       break;
-    case Token.off:
+    case T.off:
       checkLength(2);
       period = 0;
       break;
-    case Token.integer:
-    case Token.decimal:
+    case T.integer:
+    case T.decimal:
       checkLength(2);
       period = floatParameter(1);
       break;
-    case Token.scale:
+    case T.scale:
       setFloatProperty("vibrationScale", floatParameterRange(2, -10, 10));
       return;
-    case Token.period:
+    case T.period:
       setFloatProperty("vibrationPeriod", floatParameter(2));
       return;
-    case Token.identifier:
+    case T.identifier:
       error(ERROR_invalidArgument);
       break;
     default:
@@ -12075,7 +12085,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (period < 0)
       error(ERROR_invalidArgument);
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (period == 0) {
       viewer.setVibrationOff();
@@ -12088,13 +12098,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int i = 2;
     int direction = 0;
     switch (tokAt(i)) {
-    case Token.minus:
+    case T.minus:
       direction = -intParameter(++i);
       break;
-    case Token.plus:
+    case T.plus:
       direction = intParameter(++i);
       break;
-    case Token.integer:
+    case T.integer:
       direction = intParameter(i);
       if (direction > 0)
         direction = 0;
@@ -12105,115 +12115,115 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     checkLength(++i);
     if (direction != 1 && direction != -1)
       errorStr2(ERROR_numberMustBe, "-1", "1");
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.setAnimationDirection(direction);
   }
 
   private void calculate() throws ScriptException {
     boolean isSurface = false;
     boolean asDSSP = false;
-    BitSet bs;
-    BitSet bs2 = null;
+    BS bs;
+    BS bs2 = null;
     int n = Integer.MIN_VALUE;
-    if ((iToken = statementLength) >= 2) {
+    if ((iToken = slen) >= 2) {
       clearDefinedVariableAtomSets();
       switch (getToken(1).tok) {
-      case Token.identifier:
+      case T.identifier:
         checkLength(2);
         break;
-      case Token.aromatic:
+      case T.aromatic:
         checkLength(2);
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.assignAromaticBonds();
         return;
-      case Token.hbond:
-        if (statementLength == 2) {
-          if (!isSyntaxCheck) {
+      case T.hbond:
+        if (slen == 2) {
+          if (!chk) {
             n = viewer.autoHbond(null, null, false);
             break;
           }
           return;
         }
-        BitSet bs1 = null;
+        BS bs1 = null;
         // calculate hbonds STRUCTURE -- only the DSSP structurally-defining H bonds
-        asDSSP = (tokAt(++iToken) == Token.structure);
+        asDSSP = (tokAt(++iToken) == T.structure);
         if (asDSSP)
           bs1 = viewer.getSelectionSet(false);
         else
           bs1 = atomExpressionAt(iToken);
-        if (!asDSSP && !(asDSSP = (tokAt(++iToken) == Token.structure)))
+        if (!asDSSP && !(asDSSP = (tokAt(++iToken) == T.structure)))
           bs2 = atomExpressionAt(iToken);
-        if (!isSyntaxCheck) {
+        if (!chk) {
           n = viewer.autoHbond(bs1, bs2, false);
           break;
         }
         return;
-      case Token.hydrogen:
-        bs = (statementLength == 2 ? null : atomExpressionAt(2));
+      case T.hydrogen:
+        bs = (slen == 2 ? null : atomExpressionAt(2));
         checkLast(iToken);
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.addHydrogens(bs, false, false);
         return;
-      case Token.partialcharge:
+      case T.partialcharge:
         iToken = 1;
-        bs = (statementLength == 2 ? null : atomExpressionAt(2));
+        bs = (slen == 2 ? null : atomExpressionAt(2));
         checkLast(iToken);
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.calculatePartialCharges(bs);
         return;
-      case Token.pointgroup:
+      case T.pointgroup:
         pointGroup();
         return;
-      case Token.straightness:
+      case T.straightness:
         checkLength(2);
-        if (!isSyntaxCheck) {
+        if (!chk) {
           viewer.calculateStraightness();
           viewer.addStateScript("set quaternionFrame '"
               + viewer.getQuaternionFrame() + "'; calculate straightness",
               false, true);
         }
         return;
-      case Token.structure:
-        bs = (statementLength < 4 ? null : atomExpressionAt(2));
+      case T.structure:
+        bs = (slen < 4 ? null : atomExpressionAt(2));
         switch (tokAt(++iToken)) {
-        case Token.ramachandran:
+        case T.ramachandran:
           break;
-        case Token.dssp:
+        case T.dssp:
           asDSSP = true;
           break;
-        case Token.nada:
+        case T.nada:
           asDSSP = viewer.getDefaultStructureDSSP();
           break;
         default:
           error(ERROR_invalidArgument);
         }
-        if (!isSyntaxCheck)
+        if (!chk)
           showString(viewer.calculateStructures(bs, asDSSP, true));
         return;
-      case Token.struts:
-        bs = (iToken + 1 < statementLength ? atomExpressionAt(++iToken) : null);
-        bs2 = (iToken + 1 < statementLength ? atomExpressionAt(++iToken) : null);
+      case T.struts:
+        bs = (iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
+        bs2 = (iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
         checkLength(++iToken);
-        if (!isSyntaxCheck) {
+        if (!chk) {
           n = viewer.calculateStruts(bs, bs2);
           if (n > 0) {
-            setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+            setShapeProperty(JC.SHAPE_STICKS, "type", Integer
                 .valueOf(JmolEdge.BOND_STRUT));
-            setShapePropertyBs(JmolConstants.SHAPE_STICKS, "color", Integer
+            setShapePropertyBs(JC.SHAPE_STICKS, "color", Integer
                 .valueOf(0x0FFFFFF), null);
-            setShapeTranslucency(JmolConstants.SHAPE_STICKS, "", "translucent",
+            setShapeTranslucency(JC.SHAPE_STICKS, "", "translucent",
                 0.5f, null);
-            setShapeProperty(JmolConstants.SHAPE_STICKS, "type", Integer
+            setShapeProperty(JC.SHAPE_STICKS, "type", Integer
                 .valueOf(JmolEdge.BOND_COVALENT_MASK));
           }
           showString(GT._("{0} struts added", n));
         }
         return;
-      case Token.surface:
+      case T.surface:
         isSurface = true;
         // deprecated
         //$FALL-THROUGH$
-      case Token.surfacedistance:
+      case T.surfacedistance:
         /*
          * preferred:
          * 
@@ -12222,35 +12232,25 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
          */
         boolean isFrom = false;
         switch (tokAt(2)) {
-        case Token.within:
+        case T.within:
           iToken++;
           break;
-        case Token.nada:
+        case T.nada:
           isFrom = !isSurface;
           break;
-        case Token.from:
+        case T.from:
           isFrom = true;
           iToken++;
           break;
         default:
           isFrom = true;
         }
-        bs = (iToken + 1 < statementLength ? atomExpressionAt(++iToken)
+        bs = (iToken + 1 < slen ? atomExpressionAt(++iToken)
             : viewer.getSelectionSet(false));
         checkLength(++iToken);
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.calculateSurface(bs, (isFrom ? Float.MAX_VALUE : -1));
         return;
-        // Removed in Jmol 13.0.RC4
-        //      case Token.volume:
-        //        checkLength(2);
-        //        if (!isSyntaxCheck) {
-        //          float val = viewer.getVolume(null, null);
-        //          showString("" + Math.round(val * 10) / 10f + " A^3; "
-        //              + Math.round(val * 6.02) / 10f + " cm^3/mole (VDW "
-        //              + viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null) + ")");
-        //        }
-        //        return;
       }
       if (n != Integer.MIN_VALUE) {
         scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));
@@ -12265,64 +12265,64 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void pointGroup() throws ScriptException {
     switch (tokAt(0)) {
-    case Token.calculate:
-      if (!isSyntaxCheck)
+    case T.calculate:
+      if (!chk)
         showString(viewer.calculatePointGroup());
       return;
-    case Token.show:
-      if (!isSyntaxCheck)
+    case T.show:
+      if (!chk)
         showString(viewer.getPointGroupAsString(false, null, 0, 0));
       return;
     }
     // draw pointgroup [C2|C3|Cs|Ci|etc.] [n] [scale x]
     int pt = 2;
-    String type = (tokAt(pt) == Token.scale ? "" : optParameterAsString(pt));
+    String type = (tokAt(pt) == T.scale ? "" : optParameterAsString(pt));
     float scale = 1;
     int index = 0;
     if (type.length() > 0) {
       if (isFloatParameter(++pt))
         index = intParameter(pt++);
     }
-    if (tokAt(pt) == Token.scale)
+    if (tokAt(pt) == T.scale)
       scale = floatParameter(++pt);
-    if (!isSyntaxCheck)
+    if (!chk)
       runScript(viewer.getPointGroupAsString(true, type, index, scale));
   }
 
   private void dots(int iShape) throws ScriptException {
-    if (!isSyntaxCheck)
-      shapeManager.loadShape(iShape);
+    if (!chk)
+      sm.loadShape(iShape);
     setShapeProperty(iShape, "init", null);
     float value = Float.NaN;
     EnumType type = EnumType.ABSOLUTE;
     int ipt = 1;
     switch (getToken(ipt).tok) {
-    case Token.only:
+    case T.only:
       restrictSelected(false, false);
       value = 1;
       type = EnumType.FACTOR;
       break;
-    case Token.on:
+    case T.on:
       value = 1;
       type = EnumType.FACTOR;
       break;
-    case Token.off:
+    case T.off:
       value = 0;
       break;
-    case Token.integer:
+    case T.integer:
       int dotsParam = intParameter(ipt);
-      if (tokAt(ipt + 1) == Token.radius) {
+      if (tokAt(ipt + 1) == T.radius) {
         ipt++;
         setShapeProperty(iShape, "atom", Integer.valueOf(dotsParam));
         setShapeProperty(iShape, "radius", Float.valueOf(floatParameter(++ipt)));
-        if (tokAt(++ipt) == Token.color) {
+        if (tokAt(++ipt) == T.color) {
           setShapeProperty(iShape, "colorRGB", Integer
               .valueOf(getArgbParam(++ipt)));
           ipt++;
         }
-        if (getToken(ipt).tok != Token.bitset)
+        if (getToken(ipt).tok != T.bitset)
           error(ERROR_invalidArgument);
-        setShapeProperty(iShape, "dots", statement[ipt].value);
+        setShapeProperty(iShape, "dots", st[ipt].value);
         return;
       }
       break;
@@ -12338,37 +12338,37 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int mad = 0;
     // token has ondefault1
     switch (getToken(1).tok) {
-    case Token.only:
-      if (isSyntaxCheck)
+    case T.only:
+      if (chk)
         return;
       restrictSelected(false, false);
       mad = -1;
       break;
-    case Token.on:
+    case T.on:
       mad = -1; // means take default
       break;
-    case Token.off:
+    case T.off:
       break;
-    case Token.structure:
+    case T.structure:
       mad = -2;
       break;
-    case Token.temperature:
-    case Token.displacement:
+    case T.temperature:
+    case T.displacement:
       mad = -4;
       break;
-    case Token.integer:
+    case T.integer:
       mad = (intParameterRange(1, 0, 1000) * 8);
       break;
-    case Token.decimal:
+    case T.decimal:
       mad = Math.round(floatParameterRange(1, -Shape.RADIUS_MAX, Shape.RADIUS_MAX) * 2000);
       if (mad < 0) {
         restrictSelected(false, false);
         mad = -mad;
       }
       break;
-    case Token.bitset:
-      if (!isSyntaxCheck)
-        shapeManager.loadShape(shapeType);
+    case T.bitset:
+      if (!chk)
+        sm.loadShape(shapeType);
       setShapeProperty(shapeType, "bitset", theToken.value);
       return;
     default:
@@ -12380,23 +12380,35 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void animation() throws ScriptException {
     boolean animate = false;
     switch (getToken(1).tok) {
-    case Token.on:
+    case T.on:
       animate = true;
       //$FALL-THROUGH$
-    case Token.off:
-      if (!isSyntaxCheck)
+    case T.off:
+      if (!chk)
         viewer.setAnimationOn(animate);
       break;
-    case Token.frame:
+    case T.morph:
+      int morphCount = (int) floatParameter(2);
+      if (!chk)
+        viewer.setAnimMorphCount(Math.abs(morphCount));
+      break;
+    case T.display:
+      iToken = 2;
+      BS bs = (tokAt(2) == T.all ? null : atomExpressionAt(2));
+      checkLength(iToken + 1);
+      if (!chk)
+        viewer.setAnimDisplay(bs);
+      return;
+    case T.frame:
       frame(2);
       break;
-    case Token.mode:
+    case T.mode:
       animationMode();
       break;
-    case Token.direction:
+    case T.direction:
       animationDirection();
       break;
-    case Token.fps:
+    case T.fps:
       setIntProperty("animationFps", intParameter(checkLast(2)));
       break;
     default:
@@ -12411,29 +12423,29 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String type = null;
     if (index < 0)
       error(ERROR_invalidArgument);
-    if (atomsOrBonds == Token.connect) {
+    if (atomsOrBonds == T.connect) {
       index2 = atomExpressionAt(++iToken).nextSetBit(0);
     } else {
       type = parameterAsString(++iToken);
     }
-    Point3f pt = (++iToken < statementLength ? centerParameter(iToken) : null);
-    if (isSyntaxCheck)
+    P3 pt = (++iToken < slen ? centerParameter(iToken) : null);
+    if (chk)
       return;
     switch (atomsOrBonds) {
-    case Token.atoms:
+    case T.atoms:
       viewer.assignAtom(index, pt, type);
       break;
-    case Token.bonds:
+    case T.bonds:
       viewer.assignBond(index, (type + "p").charAt(0));
       break;
-    case Token.connect:
+    case T.connect:
       viewer.assignConnect(index, index2);
     }
   }
 
   private void file() throws ScriptException {
     int file = intParameter(checkLast(1));
-    if (isSyntaxCheck)
+    if (chk)
       return;
     int modelIndex = viewer.getModelNumberIndex(file * 1000000 + 1, false,
         false);
@@ -12452,8 +12464,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void fixed() throws ScriptException {
-    BitSet bs = (statementLength == 1 ? null : atomExpressionAt(1));
-    if (isSyntaxCheck)
+    BS bs = (slen == 1 ? null : atomExpressionAt(1));
+    if (chk)
       return;
     viewer.setMotionFixedAtoms(bs);
   }
@@ -12462,67 +12474,67 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean useModelNumber = true;
     // for now -- as before -- remove to implement
     // frame/model difference
-    if (statementLength == 1 && offset == 1) {
+    if (slen == 1 && offset == 1) {
       int modelIndex = viewer.getCurrentModelIndex();
       int m;
-      if (!isSyntaxCheck && modelIndex >= 0
+      if (!chk && modelIndex >= 0
           && (m = viewer.getJmolDataSourceFrame(modelIndex)) >= 0)
         viewer.setCurrentModelIndex(m == modelIndex ? Integer.MIN_VALUE : m);
       return;
     }
     switch (tokAt(1)) {
-    case Token.expressionBegin:
-    case Token.bitset:
+    case T.expressionBegin:
+    case T.bitset:
       int i = atomExpressionAt(1).nextSetBit(0);
       checkLength(iToken + 1);
-      if (isSyntaxCheck || i < 0)
+      if (chk || i < 0)
         return;
-      BitSet bsa = new BitSet();
+      BS bsa = new BS();
       bsa.set(i);
       viewer.setCurrentModelIndex(viewer.getModelBitSet(bsa, false).nextSetBit(
           0));
       return;
-    case Token.id:
+    case T.id:
       checkLength(3);
       String id = stringParameter(2);
-      if (!isSyntaxCheck)
+      if (!chk)
         viewer.setCurrentModelID(id);
       return;
-    case Token.delay:
+    case T.delay:
       long millis = 0;
       checkLength(3);
       switch (getToken(2).tok) {
-      case Token.integer:
-      case Token.decimal:
+      case T.integer:
+      case T.decimal:
         millis = (long) (floatParameter(2) * 1000);
         break;
       default:
         error(ERROR_integerExpected);
       }
-      if (!isSyntaxCheck)
+      if (!chk)
         viewer.setFrameDelayMs(millis);
       return;
-    case Token.title:
+    case T.title:
       if (checkLength23() > 0)
-        if (!isSyntaxCheck)
-          viewer.setFrameTitleObj(statementLength == 2 ? "@{_modelName}"
-              : (tokAt(2) == Token.varray ? ScriptVariable
-                  .listValue(statement[2]) : parameterAsString(2)));
+        if (!chk)
+          viewer.setFrameTitleObj(slen == 2 ? "@{_modelName}"
+              : (tokAt(2) == T.varray ? SV
+                  .listValue(st[2]) : parameterAsString(2)));
       return;
-    case Token.align:
-      BitSet bs = (statementLength == 2 || tokAt(2) == Token.none ? null
+    case T.align:
+      BS bs = (slen == 2 || tokAt(2) == T.none ? null
           : atomExpressionAt(2));
-      if (!isSyntaxCheck)
+      if (!chk)
         viewer.setFrameOffsets(bs);
       return;
     }
-    if (getToken(offset).tok == Token.minus) {
+    if (getToken(offset).tok == T.minus) {
       ++offset;
-      if (getToken(checkLast(offset)).tok != Token.integer
+      if (getToken(checkLast(offset)).tok != T.integer
           || intParameter(offset) != 1)
         error(ERROR_invalidArgument);
-      if (!isSyntaxCheck)
-        viewer.setAnimation(Token.prev);
+      if (!chk)
+        viewer.setAnimation(T.prev);
       return;
     }
     boolean isPlay = false;
@@ -12534,31 +12546,35 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     float fFrame = 0;
     boolean haveFileSet = viewer.haveFileSet();
 
-    for (int i = offset; i < statementLength; i++) {
+    for (int i = offset; i < slen; i++) {
       switch (getToken(i).tok) {
-      case Token.all:
-      case Token.times:
+      case T.all:
+      case T.times:
         checkLength(offset + (isRange ? 2 : 1));
         isAll = true;
         break;
-      case Token.minus: // ignore
+      case T.minus: // ignore
         if (nFrames != 1)
           error(ERROR_invalidArgument);
         isHyphen = true;
         break;
-      case Token.none:
+      case T.none:
         checkLength(offset + 1);
         break;
-      case Token.decimal:
+      case T.decimal:
         useModelNumber = false;
-        if ((fFrame = floatParameter(i)) < 0)
-          error(ERROR_invalidArgument);
+        if ((fFrame = floatParameter(i)) < 0) {
+          checkLength(i + 1);
+          if (!chk)
+            viewer.morph(-fFrame);
+          return;
+        }
         //$FALL-THROUGH$
-      case Token.integer:
-      case Token.string:
+      case T.integer:
+      case T.string:
         if (nFrames == 2)
           error(ERROR_invalidArgument);
-        int iFrame = (theTok == Token.string ? getFloatEncodedInt((String) theToken.value)
+        int iFrame = (theTok == T.string ? getFloatEncodedInt((String) theToken.value)
             : theToken.intValue);
         if (iFrame < 0 && nFrames == 1) {
           isHyphen = true;
@@ -12566,12 +12582,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (haveFileSet && iFrame < 1000000)
             iFrame *= 1000000;
         }
-        if (theTok == Token.decimal && haveFileSet && fFrame == (int) fFrame)
+        if (theTok == T.decimal && haveFileSet && fFrame == (int) fFrame)
           iFrame = (int) fFrame * 1000000;
         if (iFrame == Integer.MAX_VALUE) {
           if (i == 1) {
             String id = theToken.value.toString();
-            int modelIndex = (isSyntaxCheck ? -1 : viewer
+            int modelIndex = (chk ? -1 : viewer
                 .getModelIndexFromId(id));
             if (modelIndex >= 0) {
               checkLength(2);
@@ -12583,8 +12599,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         if (iFrame == -1) {
           checkLength(offset + 1);
-          if (!isSyntaxCheck)
-            viewer.setAnimation(Token.prev);
+          if (!chk)
+            viewer.setAnimation(T.prev);
           return;
         }
         if (iFrame >= 1000 && iFrame < 1000000 && haveFileSet)
@@ -12595,10 +12611,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           useModelNumber = false;
         frameList[nFrames++] = iFrame;
         break;
-      case Token.play:
+      case T.play:
         isPlay = true;
         break;
-      case Token.range:
+      case T.range:
         isRange = true;
         break;
       default:
@@ -12608,7 +12624,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (isRange && nFrames == 0)
       isAll = true;
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (isAll) {
       viewer.setAnimationOn(false);
@@ -12675,13 +12691,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           : modelIndex >= 0 ? modelIndex : 0, false);
     }
     if (isPlay)
-      viewer.setAnimation(Token.resume);
+      viewer.setAnimation(T.resume);
   }
 
-  BitSet bitSetForModelFileNumber(int m) {
+  BS bitSetForModelFileNumber(int m) {
     // where */1.0 or */1.1 or just 1.1 is processed
-    BitSet bs = BitSetUtil.newBitSet(viewer.getAtomCount());
-    if (isSyntaxCheck)
+    BS bs = BSUtil.newBitSet(viewer.getAtomCount());
+    if (chk)
       return bs;
     int modelCount = viewer.getModelCount();
     boolean haveFileSet = viewer.haveFileSet();
@@ -12712,16 +12728,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void frameControl(int i) throws ScriptException {
     switch (getToken(checkLast(i)).tok) {
-    case Token.playrev:
-    case Token.play:
-    case Token.resume:
-    case Token.pause:
-    case Token.next:
-    case Token.prev:
-    case Token.rewind:
-    case Token.first:
-    case Token.last:
-      if (!isSyntaxCheck)
+    case T.playrev:
+    case T.play:
+    case T.resume:
+    case T.pause:
+    case T.next:
+    case T.prev:
+    case T.rewind:
+    case T.first:
+    case T.last:
+      if (!chk)
         viewer.setAnimation(theTok);
       return;
     }
@@ -12729,7 +12745,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private int getShapeType(int tok) throws ScriptException {
-    int iShape = JmolConstants.shapeTokenIndex(tok);
+    int iShape = JC.shapeTokenIndex(tok);
     if (iShape < 0)
       error(ERROR_unrecognizedObject);
     return iShape;
@@ -12740,7 +12756,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String fontstyle = "Plain";
     int sizeAdjust = 0;
     float scaleAngstromsPerPixel = -1;
-    switch (iToken = statementLength) {
+    switch (iToken = slen) {
     case 6:
       scaleAngstromsPerPixel = floatParameter(5);
       if (scaleAngstromsPerPixel >= 5) // actually a zoom value
@@ -12748,12 +12764,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             / scaleAngstromsPerPixel / viewer.getScalePixelsPerAngstrom(false);
       //$FALL-THROUGH$
     case 5:
-      if (getToken(4).tok != Token.identifier)
+      if (getToken(4).tok != T.identifier)
         error(ERROR_invalidArgument);
       fontstyle = parameterAsString(4);
       //$FALL-THROUGH$
     case 4:
-      if (getToken(3).tok != Token.identifier)
+      if (getToken(3).tok != T.identifier)
         error(ERROR_invalidArgument);
       fontface = parameterAsString(3);
       if (!isFloatParameter(2))
@@ -12774,30 +12790,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       break;
     case 2:
     default:
-      if (shapeType == JmolConstants.SHAPE_LABELS) {
+      if (shapeType == JC.SHAPE_LABELS) {
         // set fontsize
-        fontsize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
+        fontsize = JC.LABEL_DEFAULT_FONTSIZE;
         break;
       }
       error(ERROR_badArgumentCount);
     }
-    if (shapeType == JmolConstants.SHAPE_LABELS) {
+    if (shapeType == JC.SHAPE_LABELS) {
       if (fontsize < 0
           || fontsize >= 1
-          && (fontsize < JmolConstants.LABEL_MINIMUM_FONTSIZE || fontsize > JmolConstants.LABEL_MAXIMUM_FONTSIZE))
-        integerOutOfRange(JmolConstants.LABEL_MINIMUM_FONTSIZE - sizeAdjust,
-            JmolConstants.LABEL_MAXIMUM_FONTSIZE - sizeAdjust);
-      setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer
+          && (fontsize < JC.LABEL_MINIMUM_FONTSIZE || fontsize > JC.LABEL_MAXIMUM_FONTSIZE))
+        integerOutOfRange(JC.LABEL_MINIMUM_FONTSIZE - sizeAdjust,
+            JC.LABEL_MAXIMUM_FONTSIZE - sizeAdjust);
+      setShapeProperty(JC.SHAPE_LABELS, "setDefaults", viewer
           .getNoneSelected());
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (GData.getFontStyleID(fontface) >= 0) {
       fontstyle = fontface;
       fontface = "SansSerif";
     }
     JmolFont font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
-    shapeManager.loadShape(shapeType);
+    sm.loadShape(shapeType);
     setShapeProperty(shapeType, "font", font3d);
     if (scaleAngstromsPerPixel >= 0)
       setShapeProperty(shapeType, "scalereference", Float
@@ -12824,13 +12840,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
      * context variables var x = ... check for deprecated SET words such as
      * "radius"
      */
-    if (statementLength == 1) {
+    if (slen == 1) {
       showString(viewer.getAllSettings(null));
       return;
     }
     boolean isJmolSet = (parameterAsString(0).equals("set"));
     String key = optParameterAsString(1);
-    if (isJmolSet && statementLength == 2 && key.indexOf("?") >= 0) {
+    if (isJmolSet && slen == 2 && key.indexOf("?") >= 0) {
       showString(viewer.getAllSettings(key.substring(0, key.indexOf("?"))));
       return;
     }
@@ -12840,45 +12856,45 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String sval;
     int ival = Integer.MAX_VALUE;
 
-    boolean showing = (!isSyntaxCheck && !tQuiet
-        && scriptLevel <= scriptReportingLevel && !((String) statement[0].value)
+    boolean showing = (!chk && !tQuiet
+        && scriptLevel <= scriptReportingLevel && !((String) st[0].value)
         .equals("var"));
 
     // THESE FIRST ARE DEPRECATED AND HAVE THEIR OWN COMMAND
     // anything in this block MUST RETURN
 
     switch (tok) {
-    case Token.axes:
+    case T.axes:
       axes(2);
       return;
-    case Token.background:
+    case T.background:
       background(2);
       return;
-    case Token.boundbox:
+    case T.boundbox:
       boundbox(2);
       return;
-    case Token.frank:
+    case T.frank:
       frank(2);
       return;
-    case Token.history:
+    case T.history:
       history(2);
       return;
-    case Token.label:
+    case T.label:
       label(2);
       return;
-    case Token.unitcell:
+    case T.unitcell:
       unitcell(2);
       return;
-    case Token.highlight:
-      shapeManager.loadShape(JmolConstants.SHAPE_HALOS);
-      setShapeProperty(JmolConstants.SHAPE_HALOS, "highlight",
-          (tokAt(2) == Token.off ? null : atomExpressionAt(2)));
+    case T.highlight:
+      sm.loadShape(JC.SHAPE_HALOS);
+      setShapeProperty(JC.SHAPE_HALOS, "highlight",
+          (tokAt(2) == T.off ? null : atomExpressionAt(2)));
       return;
-    case Token.display:// deprecated
-    case Token.selectionhalos:
+    case T.display:// deprecated
+    case T.selectionhalos:
       selectionHalo(2);
       return;
-    case Token.timeout:
+    case T.timeout:
       timeout(2);
       return;
     }
@@ -12890,7 +12906,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // anything in this block MUST RETURN
 
     switch (tok) {
-    case Token.structure:
+    case T.structure:
       EnumStructure type = EnumStructure.getProteinStructureType(parameterAsString(2));
       if (type == EnumStructure.NOT)
         error(ERROR_invalidArgument);
@@ -12900,18 +12916,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.setStructureList(data, type);
       checkLast(iToken);
       return;
-    case Token.axescolor:
+    case T.axescolor:
       ival = getArgbParam(2);
-      if (!isSyntaxCheck)
+      if (!chk)
         setObjectArgb("axes", ival);
       return;
-    case Token.bondmode:
+    case T.bondmode:
       setBondmode();
       return;
-    case Token.debug:
-      if (isSyntaxCheck)
+    case T.debug:
+      if (chk)
         return;
-      int iLevel = (tokAt(2) == Token.off || tokAt(2) == Token.integer
+      int iLevel = (tokAt(2) == T.off || tokAt(2) == T.integer
           && intParameter(2) == 0 ? 4 : 5);
       Logger.setLogLevel(iLevel);
       setIntProperty("logLevel", iLevel);
@@ -12924,30 +12940,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (showing)
         viewer.showParameter("logLevel", true, 80);
       return;
-    case Token.echo:
+    case T.echo:
       setEcho();
       return;
-    case Token.fontsize:
-      font(JmolConstants.SHAPE_LABELS, checkLength23() == 2 ? 0
+    case T.fontsize:
+      font(JC.SHAPE_LABELS, checkLength23() == 2 ? 0
           : floatParameter(2));
       return;
-    case Token.hbond:
+    case T.hbond:
       setHbond();
       return;
-    case Token.measure:
-    case Token.measurements:
+    case T.measure:
+    case T.measurements:
       setMonitor();
       return;
-    case Token.ssbond: // ssBondsBackbone
+    case T.ssbond: // ssBondsBackbone
       setSsbond();
       return;
-    case Token.togglelabel:
+    case T.togglelabel:
       setLabel("toggle");
       return;
-    case Token.usercolorscheme:
+    case T.usercolorscheme:
       setUserColors();
       return;
-    case Token.zslab:
+    case T.zslab:
       setZslab();
       return;
     }
@@ -12959,8 +12975,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean justShow = true;
 
     switch (tok) {
-    case Token.backgroundmodel:
-      if (statementLength > 2) {
+    case T.backgroundmodel:
+      if (slen > 2) {
         String modelDotted = stringSetting(2, false);
         int modelNumber;
         boolean useModelNumber = false;
@@ -12970,7 +12986,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else {
           modelNumber = getFloatEncodedInt(modelDotted);
         }
-        if (isSyntaxCheck)
+        if (chk)
           return;
         int modelIndex = viewer.getModelNumberIndex(modelNumber,
             useModelNumber, true);
@@ -12978,22 +12994,22 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         return;
       }
       break;
-    case Token.vanderwaals:
-      if (isSyntaxCheck)
+    case T.vanderwaals:
+      if (chk)
         return;
       viewer.setAtomProperty(viewer.getModelUndeletedAtomsBitSet(-1),
-          Token.vanderwaals, -1, Float.NaN, null, null, null);
+          T.vanderwaals, -1, Float.NaN, null, null, null);
       switch (tokAt(2)) {
-      case Token.probe:
+      case T.probe:
         runScript(Elements.VdwPROBE);
         return;
       }
-      newTok = Token.defaultvdw;
+      newTok = T.defaultvdw;
       //$FALL-THROUGH$
-    case Token.defaultvdw:
+    case T.defaultvdw:
       // allows unquoted string for known vdw type
-      if (statementLength > 2) {
-        sval = (statementLength == 3
+      if (slen > 2) {
+        sval = (slen == 3
             && EnumVdw.getVdwType(parameterAsString(2)) == null ? stringSetting(
             2, false)
             : parameterAsString(2));
@@ -13002,28 +13018,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         setStringProperty(key, sval);
       }
       break;
-    case Token.defaultlattice:
-      if (statementLength > 2) {
-        Point3f pt;
-        ScriptVariable var = parameterExpressionToken(2);
-        if (var.tok == Token.point3f)
-          pt = (Point3f) var.value;
+    case T.defaultlattice:
+      if (slen > 2) {
+        P3 pt;
+        SV var = parameterExpressionToken(2);
+        if (var.tok == T.point3f)
+          pt = (P3) var.value;
         else {
           int ijk = var.asInt();
           if (ijk < 555)
-            pt = new Point3f();
+            pt = new P3();
           else
             pt = viewer.getSymmetry().ijkToPoint3f(ijk + 111);
         }
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setDefaultLattice(pt);
       }
       break;
-    case Token.defaults:
-    case Token.defaultcolorscheme:
+    case T.defaults:
+    case T.defaultcolorscheme:
       // allows unquoted "jmol" or "rasmol"
-      if (statementLength > 2) {
-        if ((theTok = tokAt(2)) == Token.jmol || theTok == Token.rasmol) {
+      if (slen > 2) {
+        if ((theTok = tokAt(2)) == T.jmol || theTok == T.rasmol) {
           sval = parameterAsString(checkLast(2));
         } else {
           sval = stringSetting(2, false);
@@ -13031,68 +13047,68 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         setStringProperty(key, sval);
       }
       break;
-    case Token.formalcharge:
+    case T.formalcharge:
       ival = intSetting(2);
       if (ival == Integer.MIN_VALUE)
         error(ERROR_invalidArgument);
-      if (!isSyntaxCheck)
+      if (!chk)
         viewer.setFormalCharges(ival);
       return;
-    case Token.historylevel:
+    case T.historylevel:
       // save value locally as well
       ival = intSetting(2);
-      if (!isSyntaxCheck) {
+      if (!chk) {
         if (ival != Integer.MIN_VALUE)
           commandHistoryLevelMax = ival;
         setIntProperty(key, ival);
       }
       break;
-    case Token.language:
+    case T.language:
       // language can be used without quotes in a SET context
       // set language en
-      if (statementLength > 2)
+      if (slen > 2)
         setStringProperty(key, stringSetting(2, isJmolSet));
       break;
-    case Token.measurementunits:
-    case Token.energyunits:
-      if (statementLength > 2)
+    case T.measurementunits:
+    case T.energyunits:
+      if (slen > 2)
         setUnits(stringSetting(2, isJmolSet), tok);
       break;
-    case Token.picking:
-      if (!isSyntaxCheck)
+    case T.picking:
+      if (!chk)
         viewer.setPicked(-1);
-      if (statementLength > 2) {
+      if (slen > 2) {
         setPicking();
         return;
       }
       break;
-    case Token.pickingstyle:
-      if (statementLength > 2) {
+    case T.pickingstyle:
+      if (slen > 2) {
         setPickingStyle();
         return;
       }
       break;
-    case Token.property: // compiler may give different values to this token
+    case T.property: // compiler may give different values to this token
       // set property_xxxx will be handled in setVariable
       break;
-    case Token.scriptreportinglevel:
+    case T.scriptreportinglevel:
       // save value locally as well
       ival = intSetting(2);
-      if (!isSyntaxCheck && ival != Integer.MIN_VALUE)
+      if (!chk && ival != Integer.MIN_VALUE)
         setIntProperty(key, scriptReportingLevel = ival);
       break;
-    case Token.specular:
+    case T.specular:
       ival = intSetting(2);
       if (ival == Integer.MIN_VALUE || ival == 0 || ival == 1) {
         justShow = false;
         break;
       }
-      tok = Token.specularpercent;
+      tok = T.specularpercent;
       key = "specularPercent";
       setIntProperty(key, ival);
       break;
-    case Token.strands:
-      tok = Token.strandcount;
+    case T.strands:
+      tok = T.strandcount;
       key = "strandCount";
       setIntProperty(key, intSetting(2));
       break;
@@ -13112,51 +13128,51 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // THESE NEXT are deprecated:
 
       switch (tok) {
-      case Token.bonds:
-        newTok = Token.showmultiplebonds;
+      case T.bonds:
+        newTok = T.showmultiplebonds;
         break;
-      case Token.hetero:
-        newTok = Token.selecthetero;
+      case T.hetero:
+        newTok = T.selecthetero;
         break;
-      case Token.hydrogen:
-        newTok = Token.selecthydrogen;
+      case T.hydrogen:
+        newTok = T.selecthydrogen;
         break;
-      case Token.measurementnumbers:
-        newTok = Token.measurementlabels;
+      case T.measurementnumbers:
+        newTok = T.measurementlabels;
         break;
-      case Token.radius:
-        newTok = Token.solventproberadius;
+      case T.radius:
+        newTok = T.solventproberadius;
         setFloatProperty("solventProbeRadius", floatSetting(2));
         justShow = true;
         break;
-      case Token.scale3d:
-        newTok = Token.scaleangstromsperinch;
+      case T.scale3d:
+        newTok = T.scaleangstromsperinch;
         break;
-      case Token.solvent:
-        newTok = Token.solventprobe;
+      case T.solvent:
+        newTok = T.solventprobe;
         break;
-      case Token.color:
-        newTok = Token.defaultcolorscheme;
+      case T.color:
+        newTok = T.defaultcolorscheme;
         break;
-      case Token.spin:
+      case T.spin:
         sval = parameterAsString(2).toLowerCase();
         switch ("x;y;z;fps".indexOf(sval + ";")) {
         case 0:
-          newTok = Token.spinx;
+          newTok = T.spinx;
           break;
         case 2:
-          newTok = Token.spiny;
+          newTok = T.spiny;
           break;
         case 4:
-          newTok = Token.spinz;
+          newTok = T.spinz;
           break;
         case 6:
-          newTok = Token.spinfps;
+          newTok = T.spinfps;
           break;
         default:
           errorStr2(ERROR_unrecognizedParameter, "set SPIN ", sval);
         }
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setSpin(sval, (int) floatParameter(checkLast(3)));
         justShow = true;
         break;
@@ -13164,7 +13180,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     if (newTok != 0) {
-      key = Token.nameOf(tok = newTok);
+      key = T.nameOf(tok = newTok);
     } else if (!justShow && !isContextVariable) {
       // special cases must be checked
       if (key.length() == 0 || key.charAt(0) == '_') // these cannot be set by user
@@ -13181,9 +13197,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           return;
       }
       if (lckey.endsWith("callback"))
-        tok = Token.setparam;
+        tok = T.setparam;
     }
-    if (isJmolSet && !Token.tokAttr(tok, Token.setparam)) {
+    if (isJmolSet && !T.tokAttr(tok, T.setparam)) {
       iToken = 1;
       if (!isStateScript)
         errorStr2(ERROR_unrecognizedParameter, "SET", key);
@@ -13192,7 +13208,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     if (!justShow && isJmolSet) {
       // simple cases
-      switch (statementLength) {
+      switch (slen) {
       case 2:
         // set XXXX;
         // too bad we allow this...
@@ -13211,15 +13227,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
     }
 
-    if (!justShow && !isJmolSet && tokAt(2) == Token.none) {
-      if (!isSyntaxCheck)
+    if (!justShow && !isJmolSet && tokAt(2) == T.none) {
+      if (!chk)
         viewer.removeUserVariable(key.toLowerCase());
       justShow = true;
     }
 
     if (!justShow) {
-      int tok2 = (tokAt(1) == Token.expressionBegin ? 0 : tokAt(2));
-      int setType = statement[0].intValue;
+      int tok2 = (tokAt(1) == T.expressionBegin ? 0 : tokAt(2));
+      int setType = st[0].intValue;
       // recasted by compiler:
       // var c.xxx =
       // c.xxx =
@@ -13228,9 +13244,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // a[...][...].xxx =
       // var a[...][...].xxx =
 
-      int pt = (tok2 == Token.opEQ ? 3
+      int pt = (tok2 == T.opEQ ? 3
       // set x = ...
-          : setType == '=' && !key.equals("return") && tok2 != Token.opEQ ? 0
+          : setType == '=' && !key.equals("return") && tok2 != T.opEQ ? 0
           // {c}.xxx =
               // {...}.xxx =
               // {{...}[n]}.xxx =
@@ -13255,7 +13271,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void setZslab() throws ScriptException {
     // sets zSlab either based on a percent value or an atom position
-    Point3f pt = null;
+    P3 pt = null;
     if (isFloatParameter(2)) {
       checkLength(3);
       setIntProperty("zSlab", (int) floatParameter(2));
@@ -13265,16 +13281,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       pt = centerParameter(2);
       checkLength(iToken + 1);
     }
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.setZslabPoint(pt);
   }
 
   private void setBondmode() throws ScriptException {
     boolean bondmodeOr = false;
     switch (getToken(checkLast(2)).tok) {
-    case Token.opAnd:
+    case T.opAnd:
       break;
-    case Token.opOr:
+    case T.opOr:
       bondmodeOr = true;
       break;
     default:
@@ -13294,87 +13310,87 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // check for ID name or just name
     // also check simple OFF, NONE
     switch (getToken(2).tok) {
-    case Token.off:
+    case T.off:
       id = propertyName = "allOff";
       checkLength(++pt);
       break;
-    case Token.none:
+    case T.none:
       echoShapeActive = false;
       //$FALL-THROUGH$
-    case Token.all:
+    case T.all:
       // all and none get NO additional parameters;
       id = parameterAsString(2);
       checkLength(++pt);
       break;
-    case Token.left:
-    case Token.center:
-    case Token.right:
-    case Token.top:
-    case Token.middle:
-    case Token.bottom:
-    case Token.identifier:
-    case Token.string:
-    case Token.id:
-      if (theTok == Token.id)
+    case T.left:
+    case T.center:
+    case T.right:
+    case T.top:
+    case T.middle:
+    case T.bottom:
+    case T.identifier:
+    case T.string:
+    case T.id:
+      if (theTok == T.id)
         pt++;
       id = parameterAsString(pt++);
       break;
     }
 
-    if (!isSyntaxCheck) {
+    if (!chk) {
       viewer.setEchoStateActive(echoShapeActive);
-      shapeManager.loadShape(JmolConstants.SHAPE_ECHO);
+      sm.loadShape(JC.SHAPE_ECHO);
       if (id != null)
-        setShapeProperty(JmolConstants.SHAPE_ECHO,
+        setShapeProperty(JC.SHAPE_ECHO,
             propertyName == null ? "target" : propertyName, id);
     }
 
-    if (pt < statementLength) {
+    if (pt < slen) {
       // set echo name xxx
       // pt is usually 3, but could be 4 if ID used
       switch (getToken(pt++).tok) {
-      case Token.align:
+      case T.align:
         propertyName = "align";
         switch (getToken(pt).tok) {
-        case Token.left:
-        case Token.right:
-        case Token.center:
+        case T.left:
+        case T.right:
+        case T.center:
           propertyValue = parameterAsString(pt++);
           break;
         default:
           error(ERROR_invalidArgument);
         }
         break;
-      case Token.center:
-      case Token.left:
-      case Token.right:
+      case T.center:
+      case T.left:
+      case T.right:
         propertyName = "align";
         propertyValue = parameterAsString(pt - 1);
         break;
-      case Token.depth:
+      case T.depth:
         propertyName = "%zpos";
         propertyValue = Integer.valueOf((int) floatParameter(pt++));
         break;
-      case Token.display:
-      case Token.displayed:
-      case Token.on:
+      case T.display:
+      case T.displayed:
+      case T.on:
         propertyName = "hidden";
         propertyValue = Boolean.FALSE;
         break;
-      case Token.hide:
-      case Token.hidden:
+      case T.hide:
+      case T.hidden:
         propertyName = "hidden";
         propertyValue = Boolean.TRUE;
         break;
-      case Token.model:
-        int modelIndex = (isSyntaxCheck ? 0 : modelNumberParameter(pt++));
+      case T.model:
+        int modelIndex = (chk ? 0 : modelNumberParameter(pt++));
         if (modelIndex >= viewer.getModelCount())
           error(ERROR_invalidArgument);
         propertyName = "model";
         propertyValue = Integer.valueOf(modelIndex);
         break;
-      case Token.leftsquare:
-      case Token.spacebeforesquare:
+      case T.leftsquare:
+      case T.spacebeforesquare:
         // [ x y ] with or without %
         propertyName = "xypos";
         propertyValue = xypParameter(--pt);
@@ -13383,44 +13399,44 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         else
           pt = iToken + 1;
         break;
-      case Token.integer:
+      case T.integer:
         // x y without brackets
         pt--;
         int posx = intParameter(pt++);
         String namex = "xpos";
-        if (tokAt(pt) == Token.percent) {
+        if (tokAt(pt) == T.percent) {
           namex = "%xpos";
           pt++;
         }
         propertyName = "ypos";
         propertyValue = Integer.valueOf(intParameter(pt++));
-        if (tokAt(pt) == Token.percent) {
+        if (tokAt(pt) == T.percent) {
           propertyName = "%ypos";
           pt++;
         }
         checkLength(pt);
-        setShapeProperty(JmolConstants.SHAPE_ECHO, namex, Integer.valueOf(posx));
+        setShapeProperty(JC.SHAPE_ECHO, namex, Integer.valueOf(posx));
         break;
-      case Token.off:
+      case T.off:
         propertyName = "off";
         break;
-      case Token.scale:
+      case T.scale:
         propertyName = "scale";
         propertyValue = Float.valueOf(floatParameter(pt++));
         break;
-      case Token.script:
+      case T.script:
         propertyName = "script";
         propertyValue = parameterAsString(pt++);
         break;
-      case Token.string:
-      case Token.image:
-        boolean isImage = (theTok == Token.image);
+      case T.string:
+      case T.image:
+        boolean isImage = (theTok == T.image);
         if (isImage)
           pt++;
         checkLength(pt);
         if (id == null && isImage) {
           String[] data = new String[1];
-          getShapePropertyData(JmolConstants.SHAPE_ECHO, "currentTarget", data);
+          getShapePropertyData(JC.SHAPE_ECHO, "currentTarget", data);
           id = data[0];          
         }
         echo(pt - 1, id, isImage);
@@ -13436,34 +13452,34 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
     }
     checkLength(pt);
-    if (!isSyntaxCheck && propertyName != null)
-      setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
+    if (!chk && propertyName != null)
+      setShapeProperty(JC.SHAPE_ECHO, propertyName, propertyValue);
   }
 
   private int intSetting(int pt) throws ScriptException {
-    if (pt == statementLength)
+    if (pt == slen)
       return Integer.MIN_VALUE;
     return parameterExpressionToken(pt).asInt();
   }
 
   private float floatSetting(int pt)
       throws ScriptException {
-    if (pt == statementLength)
+    if (pt == slen)
       return Float.NaN;
-    return ScriptVariable.fValue(parameterExpressionToken(pt));
+    return SV.fValue(parameterExpressionToken(pt));
   }
 
   private String stringSetting(int pt, boolean isJmolSet)
       throws ScriptException {
-    if (isJmolSet && statementLength == pt + 1)
+    if (isJmolSet && slen == pt + 1)
       return parameterAsString(pt);
     return parameterExpressionToken(pt).asString();
   }
 
   private boolean setLabel(String str) throws ScriptException {
-    shapeManager.loadShape(JmolConstants.SHAPE_LABELS);
+    sm.loadShape(JC.SHAPE_LABELS);
     Object propertyValue = null;
-    setShapeProperty(JmolConstants.SHAPE_LABELS, "setDefaults", viewer
+    setShapeProperty(JC.SHAPE_LABELS, "setDefaults", viewer
         .getNoneSelected());
     while (true) {
       if (str.equals("scalereference")) {
@@ -13483,9 +13499,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       if (str.equals("alignment")) {
         switch (getToken(2).tok) {
-        case Token.left:
-        case Token.right:
-        case Token.center:
+        case T.left:
+        case T.right:
+        case T.center:
           str = "align";
           propertyValue = theToken.value;
           break;
@@ -13497,13 +13513,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (str.equals("pointer")) {
         int flags = Object2d.POINTER_NONE;
         switch (getToken(2).tok) {
-        case Token.off:
-        case Token.none:
+        case T.off:
+        case T.none:
           break;
-        case Token.background:
+        case T.background:
           flags |= Object2d.POINTER_BACKGROUND;
           //$FALL-THROUGH$
-        case Token.on:
+        case T.on:
           flags |= Object2d.POINTER_ON;
           break;
         default:
@@ -13514,16 +13530,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       if (str.equals("toggle")) {
         iToken = 1;
-        BitSet bs = (statementLength == 2 ? null : atomExpressionAt(2));
+        BS bs = (slen == 2 ? null : atomExpressionAt(2));
         checkLast(iToken);
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.togglePickingLabel(bs);
         return true;
       }
       iToken = 1;
-      boolean TF = (statementLength == 2 || getToken(2).tok == Token.on);
+      boolean TF = (slen == 2 || getToken(2).tok == T.on);
       if (str.equals("front") || str.equals("group")) {
-        if (!TF && tokAt(2) != Token.off)
+        if (!TF && tokAt(2) != T.off)
           error(ERROR_invalidArgument);
         if (!TF)
           str = "front";
@@ -13531,7 +13547,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       }
       if (str.equals("atom")) {
-        if (!TF && tokAt(2) != Token.off)
+        if (!TF && tokAt(2) != T.off)
           error(ERROR_invalidArgument);
         str = "front";
         propertyValue = (TF ? Boolean.FALSE : Boolean.TRUE);
@@ -13539,14 +13555,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       return false;
     }
-    BitSet bs = (iToken + 1 < statementLength ? atomExpressionAt(++iToken) : null);
+    BS bs = (iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
     checkLast(iToken);
-    if (isSyntaxCheck)
+    if (chk)
       return true;
     if (bs == null)
-      setShapeProperty(JmolConstants.SHAPE_LABELS, str, propertyValue);
+      setShapeProperty(JC.SHAPE_LABELS, str, propertyValue);
     else
-      setShapePropertyBs(JmolConstants.SHAPE_LABELS, str, propertyValue, bs);
+      setShapePropertyBs(JC.SHAPE_LABELS, str, propertyValue, bs);
     return true;
   }
 
@@ -13555,29 +13571,29 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // option.
     int tok = tokAt(checkLast(2));
     switch (tok) {
-    case Token.on:
-    case Token.off:
-      setBooleanProperty("measurementlabels", tok == Token.on);
+    case T.on:
+    case T.off:
+      setBooleanProperty("measurementlabels", tok == T.on);
       return;
-    case Token.dotted:
-    case Token.integer:
-    case Token.decimal:
-      setShapeSizeBs(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad(2), null);
+    case T.dotted:
+    case T.integer:
+    case T.decimal:
+      setShapeSizeBs(JC.SHAPE_MEASURES, getSetAxesTypeMad(2), null);
       return;
     }
-    setUnits(parameterAsString(2), Token.measurementunits);
+    setUnits(parameterAsString(2), T.measurementunits);
   }
 
   private boolean setUnits(String units, int tok) throws ScriptException {
-    if (tok == Token.measurementunits && Parser.isOneOf(units.toLowerCase(),
+    if (tok == T.measurementunits && Parser.isOneOf(units.toLowerCase(),
         "angstroms;au;bohr;nanometers;nm;picometers;pm;vanderwaals;vdw")) {
-      if (!isSyntaxCheck)
+      if (!chk)
         viewer.setUnits(units, true); 
-    } else if (tok == Token.energyunits && Parser.isOneOf(units.toLowerCase(), "kcal;kj")) {
-      if (!isSyntaxCheck)
+    } else if (tok == T.energyunits && Parser.isOneOf(units.toLowerCase(), "kcal;kj")) {
+      if (!chk)
         viewer.setUnits(units, false);
     } else {
-      errorStr2(ERROR_unrecognizedParameter, "set " + Token.nameOf(tok), units);
+      errorStr2(ERROR_unrecognizedParameter, "set " + T.nameOf(tok), units);
     }
     return true;
   }
@@ -13601,10 +13617,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean ssbondsBackbone = false;
     // shapeManager.loadShape(JmolConstants.SHAPE_SSSTICKS);
     switch (tokAt(checkLast(2))) {
-    case Token.backbone:
+    case T.backbone:
       ssbondsBackbone = true;
       break;
-    case Token.sidechain:
+    case T.sidechain:
       break;
     default:
       error(ERROR_invalidArgument);
@@ -13615,16 +13631,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void setHbond() throws ScriptException {
     boolean bool = false;
     switch (tokAt(checkLast(2))) {
-    case Token.backbone:
+    case T.backbone:
       bool = true;
       //$FALL-THROUGH$
-    case Token.sidechain:
+    case T.sidechain:
       setBooleanProperty("hbondsBackbone", bool);
       break;
-    case Token.solid:
+    case T.solid:
       bool = true;
       //$FALL-THROUGH$
-    case Token.dotted:
+    case T.dotted:
       setBooleanProperty("hbondsSolid", bool);
       break;
     default:
@@ -13634,12 +13650,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void setPicking() throws ScriptException {
     // set picking
-    if (statementLength == 2) {
+    if (slen == 2) {
       setStringProperty("picking", "identify");
       return;
     }
     // set picking @{"xxx"} or some large length, ignored
-    if (statementLength > 4 || tokAt(2) == Token.string) {
+    if (slen > 4 || tokAt(2) == T.string) {
       setStringProperty("picking", stringSetting(2, false));
       return;
     }
@@ -13649,9 +13665,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // set picking spin fps
     String type = "SELECT";
     switch (getToken(2).tok) {
-    case Token.select:
-    case Token.measure:
-    case Token.spin:
+    case T.select:
+    case T.measure:
+    case T.spin:
       if (checkLength34() == 4) {
         type = parameterAsString(2).toUpperCase();
         if (type.equals("SPIN"))
@@ -13660,7 +13676,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           i = 3;
       }
       break;
-    case Token.delete:
+    case T.delete:
       break;
     default:
       checkLength(3);
@@ -13676,26 +13692,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     String str = parameterAsString(i);
     switch (getToken(i).tok) {
-    case Token.on:
-    case Token.normal:
+    case T.on:
+    case T.normal:
       str = "identify";
       break;
-    case Token.off:
-    case Token.none:
+    case T.off:
+    case T.none:
       str = "off";
       break;
-    case Token.select:
+    case T.select:
       str = "atom";
       break;
-    case Token.label:
+    case T.label:
       str = "label";
       break;
-    case Token.bonds: // not implemented
+    case T.bonds: // not implemented
       str = "bond";
       break;
-    case Token.delete:
+    case T.delete:
       checkLength(4);
-      if (tokAt(3) != Token.bonds)
+      if (tokAt(3) != T.bonds)
         error(ERROR_invalidArgument);
       str = "deleteBond";
       break;
@@ -13708,7 +13724,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void setPickingStyle() throws ScriptException {
-    if (statementLength > 4 || tokAt(2) == Token.string) {
+    if (slen > 4 || tokAt(2) == T.string) {
       setStringProperty("pickingStyle", stringSetting(2, false));
       return;
     }
@@ -13716,11 +13732,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isMeasure = false;
     String type = "SELECT";
     switch (getToken(2).tok) {
-    case Token.measure:
+    case T.measure:
       isMeasure = true;
       type = "MEASURE";
       //$FALL-THROUGH$
-    case Token.select:
+    case T.select:
       if (checkLength34() == 4)
         i = 3;
       break;
@@ -13729,11 +13745,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     String str = parameterAsString(i);
     switch (getToken(i).tok) {
-    case Token.none:
-    case Token.off:
+    case T.none:
+    case T.off:
       str = (isMeasure ? "measureoff" : "toggle");
       break;
-    case Token.on:
+    case T.on:
       if (isMeasure)
         str = "measure";
       break;
@@ -13754,26 +13770,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String name = null;
     String script = null;
     int mSec = 0;
-    if (statementLength == index) {
+    if (slen == index) {
       showString(viewer.showTimeout(null));
       return;
     }
-    for (int i = index; i < statementLength; i++)
+    for (int i = index; i < slen; i++)
       switch (getToken(i).tok) {
-      case Token.id:
+      case T.id:
         name = parameterAsString(++i);
-        if (statementLength == 3) {
-          if (!isSyntaxCheck)
+        if (slen == 3) {
+          if (!chk)
             viewer.triggerTimeout(name);
           return;
         }
         break;
-      case Token.off:
+      case T.off:
         break;
-      case Token.integer:
+      case T.integer:
         mSec = intParameter(i);
         break;
-      case Token.decimal:
+      case T.decimal:
         mSec = Math.round(floatParameter(i) * 1000);
         break;
       default:
@@ -13785,18 +13801,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         break;
       }
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.setTimeout(name, mSec, script);
   }
 
   private void setUserColors() throws ScriptException {
     List<Integer> v = new ArrayList<Integer>();
-    for (int i = 2; i < statementLength; i++) {
+    for (int i = 2; i < slen; i++) {
       int argb = getArgbParam(i);
       v.add(Integer.valueOf(argb));
       i = iToken;
     }
-    if (isSyntaxCheck)
+    if (chk)
       return;
     int n = v.size();
     int[] scale = new int[n];
@@ -13816,26 +13832,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   @SuppressWarnings("unchecked")
   private void setVariable(int pt, int ptMax, String key, int setType)
       throws ScriptException {
-    BitSet bs = null;
+    BS bs = null;
     String propertyName = "";
-    int tokProperty = Token.nada;
+    int tokProperty = T.nada;
     boolean isArrayItem = (setType == '[');
     boolean settingProperty = false;
     boolean isExpression = false;
     boolean settingData = (key.startsWith("property_"));
-    ScriptVariable t = (settingData ? null : getContextVariableAsVariable(key));
+    SV t = (settingData ? null : getContextVariableAsVariable(key));
     boolean isUserVariable = (t != null);
-    if (pt > 0 && tokAt(pt - 1) == Token.expressionBegin) {
+    if (pt > 0 && tokAt(pt - 1) == T.expressionBegin) {
       bs = atomExpressionAt(pt - 1);
       pt = iToken + 1;
       isExpression = true;
     }
-    if (tokAt(pt) == Token.per) {
+    if (tokAt(pt) == T.per) {
       settingProperty = true;
-      ScriptVariable token = getBitsetPropertySelector(++pt, true);
+      SV token = getBitsetPropertySelector(++pt, true);
       if (token == null)
         error(ERROR_invalidArgument);
-      if (tokAt(++pt) != Token.opEQ)
+      if (tokAt(++pt) != T.opEQ)
         error(ERROR_invalidArgument);
       pt++;
       tokProperty = token.intValue;
@@ -13846,22 +13862,22 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     // get value
 
-    List<ScriptVariable> v = (List<ScriptVariable>) parameterExpression(pt,
+    List<SV> v = (List<SV>) parameterExpression(pt,
         ptMax, key, true, true, -1, isArrayItem, null, null);
     int nv = v.size();
     if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem
         && (nv < 3 || nv % 2 != 1))
       error(ERROR_invalidArgument);
-    if (isSyntaxCheck)
+    if (chk)
       return;
     // x[3][4] = ??
-    ScriptVariable tv = v.get(isArrayItem ? v.size() - 1 : 0);
+    SV tv = v.get(isArrayItem ? v.size() - 1 : 0);
 
     // create user variable if needed for list now, so we can do the copying
 
     boolean needVariable = (!isUserVariable && !isExpression && !settingData && (isArrayItem
         || settingProperty || !(tv.value instanceof String
-        || tv.tok == Token.integer || tv.value instanceof Integer
+        || tv.tok == T.integer || tv.value instanceof Integer
         || tv.value instanceof Float || tv.value instanceof Boolean)));
 
     if (needVariable) {
@@ -13872,19 +13888,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     if (isArrayItem) {
-      ScriptVariable tnew = (ScriptVariable.newVariable(Token.string, "")).set(tv, false);
+      SV tnew = (SV.newVariable(T.string, "")).set(tv, false);
       int nParam = v.size() / 2;
       for (int i = 0; i < nParam; i++) {
         boolean isLast = (i + 1 == nParam);
-        ScriptVariable vv = v.get(i * 2);
+        SV vv = v.get(i * 2);
         // stack is selector [ selector [ selector [ ... VALUE 
-        if (t.tok == Token.bitset) {
-          t.tok = Token.hash;
-          t.value = new Hashtable<String, ScriptVariable>();
+        if (t.tok == T.bitset) {
+          t.tok = T.hash;
+          t.value = new Hashtable<String, SV>();
         }
-        if (t.tok == Token.hash) {
+        if (t.tok == T.hash) {
           String hkey = vv.asString();
-          Map<String, ScriptVariable> tmap = (Map<String, ScriptVariable>) t.value;
+          Map<String, SV> tmap = (Map<String, SV>) t.value;
           if (isLast) {
             tmap.put(hkey, tnew);
             break;
@@ -13893,11 +13909,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else {
           int ipt = vv.asInt();
           // in the case of for (x in y) where y is an array, we need to select the item before continuing
-          if (t.tok == Token.varray)
-            t = ScriptVariable.selectItemVar(t);
+          if (t.tok == T.varray)
+            t = SV.selectItemVar(t);
           switch (t.tok) {
-          case Token.varray:
-            List<ScriptVariable> list = t.getList();
+          case T.varray:
+            List<SV> list = t.getList();
             if (ipt > list.size() || isLast)
               break;
             if (ipt <= 0)
@@ -13906,17 +13922,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               ipt = 0;
             t = list.get(ipt);
             continue;
-          case Token.matrix3f:
-          case Token.matrix4f:
+          case T.matrix3f:
+          case T.matrix4f:
             // check for row/column replacement
-            int dim = (t.tok == Token.matrix3f ? 3 : 4);
+            int dim = (t.tok == T.matrix3f ? 3 : 4);
             if (nParam == 1 && Math.abs(ipt) >= 1 && Math.abs(ipt) <= dim
-                && tnew.tok == Token.varray && tnew.getList().size() == dim)
+                && tnew.tok == T.varray && tnew.getList().size() == dim)
               break;
             if (nParam == 2) {
               int ipt2 = v.get(2).asInt();
               if (ipt2 >= 1 && ipt2 <= dim
-                  && (tnew.tok == Token.integer || tnew.tok == Token.decimal)) {
+                  && (tnew.tok == T.integer || tnew.tok == T.decimal)) {
                 i++;
                 ipt = ipt * 10 + ipt2;
                 break;
@@ -13935,16 +13951,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (settingProperty) {
       if (!isExpression) {
-        bs = ScriptVariable.getBitSet(t, true);
+        bs = SV.getBitSet(t, true);
         if (bs == null)
           error(ERROR_invalidArgument);
       }
       if (propertyName.startsWith("property_")) {
         viewer.setData(propertyName, new Object[] {
             propertyName,
-            (tv.tok == Token.varray ? ScriptVariable.flistValue(tv,((List<?>)tv.value).size() == bs.cardinality() ? bs.cardinality() : viewer.getAtomCount()) : tv.asString()), 
-             BitSetUtil.copy(bs), new Integer(tv.tok == Token.varray ? 1 : 0) }, 
-             viewer.getAtomCount(), 0, 0, tv.tok == Token.varray ? Integer.MAX_VALUE
+            (tv.tok == T.varray ? SV.flistValue(tv,((List<?>)tv.value).size() == bs.cardinality() ? bs.cardinality() : viewer.getAtomCount()) : tv.asString()), 
+             BSUtil.copy(bs), new Integer(tv.tok == T.varray ? 1 : 0) }, 
+             viewer.getAtomCount(), 0, 0, tv.tok == T.varray ? Integer.MAX_VALUE
             : Integer.MIN_VALUE, 0);
         return;
       }
@@ -13957,13 +13973,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     }
 
-    Object vv = ScriptVariable.oValue(tv);
+    Object vv = SV.oValue(tv);
 
     if (key.startsWith("property_")) {
-      if (tv.tok == Token.varray)
+      if (tv.tok == T.varray)
         vv = tv.asString();
       viewer.setData(key, new Object[] { key, "" + vv,
-          BitSetUtil.copy(viewer.getSelectionSet(false)), new Integer(0) }, 
+          BSUtil.copy(viewer.getSelectionSet(false)), new Integer(0) }, 
           viewer.getAtomCount(), 0, 0,
           Integer.MIN_VALUE, 0);
       return;
@@ -13978,10 +13994,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     } else if (vv instanceof String) {
       setStringProperty(key, (String) vv);
     } else if (vv instanceof BondSet) {
-      setStringProperty(key, Escape.escapeBs((BitSet) vv, false));
-    } else if (vv instanceof BitSet || vv instanceof Point3f
+      setStringProperty(key, Escape.eB((BS) vv, false));
+    } else if (vv instanceof BS || vv instanceof P3
         || vv instanceof Point4f) {
-      setStringProperty(key, Escape.escape(vv));
+      setStringProperty(key, Escape.e(vv));
     } else {
       Logger.error("ERROR -- return from propertyExpression was " + vv);
     }
@@ -13993,34 +14009,34 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     index = iToken + 1;
     int tok = tokAt(index);
     String type = optParameterAsString(index).toLowerCase();
-    if (statementLength == index + 1
+    if (slen == index + 1
         && Parser.isOneOf(type, "window;unitcell;molecular")) {
       setBooleanProperty("axes" + type, true);
       return;
     }
     switch (tok) {
-    case Token.center:
-      Point3f center = centerParameter(index + 1);
-      setShapeProperty(JmolConstants.SHAPE_AXES, "origin", center);
+    case T.center:
+      P3 center = centerParameter(index + 1);
+      setShapeProperty(JC.SHAPE_AXES, "origin", center);
       checkLast(iToken);
       return;
-    case Token.scale:
+    case T.scale:
       setFloatProperty("axesScale", floatParameter(checkLast(++index)));
       return;
-    case Token.label:
+    case T.label:
       switch (tok = tokAt(index + 1)) {
-      case Token.off:
-      case Token.on:
+      case T.off:
+      case T.on:
         checkLength(index + 2);
-        setShapeProperty(JmolConstants.SHAPE_AXES, "labels"
-            + (tok == Token.on ? "On" : "Off"), null);
+        setShapeProperty(JC.SHAPE_AXES, "labels"
+            + (tok == T.on ? "On" : "Off"), null);
         return;
       }
       String sOrigin = null;
-      switch (statementLength - index) {
+      switch (slen - index) {
       case 7:
         // axes labels "X" "Y" "Z" "-X" "-Y" "-Z"
-        setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
+        setShapeProperty(JC.SHAPE_AXES, "labels", new String[] {
             parameterAsString(++index), parameterAsString(++index),
             parameterAsString(++index), parameterAsString(++index),
             parameterAsString(++index), parameterAsString(++index) });
@@ -14030,7 +14046,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         //$FALL-THROUGH$
       case 4:
         // axes labels "X" "Y" "Z" [origin]
-        setShapeProperty(JmolConstants.SHAPE_AXES, "labels", new String[] {
+        setShapeProperty(JC.SHAPE_AXES, "labels", new String[] {
             parameterAsString(++index), parameterAsString(++index),
             parameterAsString(++index), sOrigin });
         break;
@@ -14041,65 +14057,65 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     // axes position [x y %]
     if (type.equals("position")) {
-      Point3f xyp;
-      if (tokAt(++index) == Token.off) {
-        xyp = new Point3f();
+      P3 xyp;
+      if (tokAt(++index) == T.off) {
+        xyp = new P3();
       } else {
         xyp = xypParameter(index);
         if (xyp == null)
           error(ERROR_invalidArgument);
         index = iToken;
       }
-      setShapeProperty(JmolConstants.SHAPE_AXES, "position", xyp);
+      setShapeProperty(JC.SHAPE_AXES, "position", xyp);
       return;
     }
     int mad = getSetAxesTypeMad(index);
-    if (isSyntaxCheck)
+    if (chk)
       return;
-    setObjectMad(JmolConstants.SHAPE_AXES, "axes", mad);
+    setObjectMad(JC.SHAPE_AXES, "axes", mad);
     if (tickInfo != null)
-      setShapeProperty(JmolConstants.SHAPE_AXES, "tickInfo", tickInfo);
+      setShapeProperty(JC.SHAPE_AXES, "tickInfo", tickInfo);
   }
 
   private void boundbox(int index) throws ScriptException {
     TickInfo tickInfo = checkTicks(index, false, true, false);
     index = iToken + 1;
     float scale = 1;
-    if (tokAt(index) == Token.scale) {
+    if (tokAt(index) == T.scale) {
       scale = floatParameter(++index);
-      if (!isSyntaxCheck && scale == 0)
+      if (!chk && scale == 0)
         error(ERROR_invalidArgument);
       index++;
-      if (index == statementLength) {
-        if (!isSyntaxCheck)
+      if (index == slen) {
+        if (!chk)
           viewer.setBoundBox(null, null, true, scale);
         return;
       }
     }
-    boolean byCorner = (tokAt(index) == Token.corners);
+    boolean byCorner = (tokAt(index) == T.corners);
     if (byCorner)
       index++;
     if (isCenterParameter(index)) {
       expressionResult = null;
       int index0 = index;
-      Point3f pt1 = centerParameter(index);
+      P3 pt1 = centerParameter(index);
       index = iToken + 1;
       if (byCorner || isCenterParameter(index)) {
         // boundbox CORNERS {expressionOrPoint1} {expressionOrPoint2}
         // boundbox {expressionOrPoint1} {vector}
-        Point3f pt2 = (byCorner ? centerParameter(index) : getPoint3f(index,
+        P3 pt2 = (byCorner ? centerParameter(index) : getPoint3f(index,
             true));
         index = iToken + 1;
-        if (!isSyntaxCheck)
+        if (!chk)
           viewer.setBoundBox(pt1, pt2, byCorner, scale);
-      } else if (expressionResult != null && expressionResult instanceof BitSet) {
+      } else if (expressionResult != null && expressionResult instanceof BS) {
         // boundbox {expression}
-        if (!isSyntaxCheck)
-          viewer.calcBoundBoxDimensions((BitSet) expressionResult, scale);
-      } else if (expressionResult == null && tokAt(index0) == Token.dollarsign) {
-        if (isSyntaxCheck)
+        if (!chk)
+          viewer.calcBoundBoxDimensions((BS) expressionResult, scale);
+      } else if (expressionResult == null && tokAt(index0) == T.dollarsign) {
+        if (chk)
           return;
-        Point3f[] bbox = getObjectBoundingBox(objectNameParameter(++index0));
+        P3[] bbox = getObjectBoundingBox(objectNameParameter(++index0));
         if (bbox == null)
           error(ERROR_invalidArgument);
         viewer.setBoundBox(bbox[0], bbox[1], true, scale);
@@ -14107,15 +14123,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       } else {
         error(ERROR_invalidArgument);
       }
-      if (index == statementLength)
+      if (index == slen)
         return;
     }
     int mad = getSetAxesTypeMad(index);
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (tickInfo != null)
-      setShapeProperty(JmolConstants.SHAPE_BBCAGE, "tickInfo", tickInfo);
-    setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
+      setShapeProperty(JC.SHAPE_BBCAGE, "tickInfo", tickInfo);
+    setObjectMad(JC.SHAPE_BBCAGE, "boundbox", mad);
   }
 
   /**
@@ -14132,48 +14148,48 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                               boolean allowScale, boolean allowFirst)
       throws ScriptException {
     iToken = index - 1;
-    if (tokAt(index) != Token.ticks)
+    if (tokAt(index) != T.ticks)
       return null;
     TickInfo tickInfo;
     String str = " ";
     switch (tokAt(index + 1)) {
-    case Token.x:
-    case Token.y:
-    case Token.z:
+    case T.x:
+    case T.y:
+    case T.z:
       str = parameterAsString(++index).toLowerCase();
       break;
-    case Token.identifier:
+    case T.identifier:
       error(ERROR_invalidArgument);
     }
-    if (tokAt(++index) == Token.none) {
+    if (tokAt(++index) == T.none) {
       tickInfo = new TickInfo(null);
       tickInfo.type = str;
       iToken = index;
       return tickInfo;
     }
-    tickInfo = new TickInfo((Point3f) getPointOrPlane(index, false, true,
+    tickInfo = new TickInfo((P3) getPointOrPlane(index, false, true,
         false, false, 3, 3));
-    if (coordinatesAreFractional || tokAt(iToken + 1) == Token.unitcell) {
-      tickInfo.scale = Point3f.new3(Float.NaN, Float.NaN, Float.NaN);
+    if (coordinatesAreFractional || tokAt(iToken + 1) == T.unitcell) {
+      tickInfo.scale = P3.new3(Float.NaN, Float.NaN, Float.NaN);
       allowScale = false;
     }
-    if (tokAt(iToken + 1) == Token.unitcell)
+    if (tokAt(iToken + 1) == T.unitcell)
       iToken++;
     tickInfo.type = str;
-    if (tokAt(iToken + 1) == Token.format)
+    if (tokAt(iToken + 1) == T.format)
       tickInfo.tickLabelFormats = stringParameterSet(iToken + 2);
     if (!allowScale)
       return tickInfo;
-    if (tokAt(iToken + 1) == Token.scale) {
+    if (tokAt(iToken + 1) == T.scale) {
       if (isFloatParameter(iToken + 2)) {
         float f = floatParameter(iToken + 2);
-        tickInfo.scale = Point3f.new3(f, f, f);
+        tickInfo.scale = P3.new3(f, f, f);
       } else {
         tickInfo.scale = getPoint3f(iToken + 2, true);
       }
     }
     if (allowFirst)
-      if (tokAt(iToken + 1) == Token.first)
+      if (tokAt(iToken + 1) == T.first)
         tickInfo.first = floatParameter(iToken + 2);
     // POINT {x,y,z} reference point not implemented
     //if (tokAt(iToken + 1) == Token.point)
@@ -14184,16 +14200,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void unitcell(int index) throws ScriptException {
     int icell = Integer.MAX_VALUE;
     int mad = Integer.MAX_VALUE;
-    Point3f pt = null;
+    P3 pt = null;
     TickInfo tickInfo = checkTicks(index, true, false, false);
     index = iToken;
     String id = null;
-    Point3f[] points = null;
+    P3[] points = null;
     switch (tokAt(index + 1)) {
-    case Token.string:
+    case T.string:
       id = objectNameParameter(++index);
       break;
-    case Token.dollarsign:
+    case T.dollarsign:
       index++;
       id = objectNameParameter(++index);
       break;
@@ -14201,18 +14217,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (isArrayParameter(index + 1)) {
         points = getPointArray(++index, 4);
         index = iToken;
-      }else if (statementLength == index + 2) {
-        if (getToken(index + 1).tok == Token.integer
+      }else if (slen == index + 2) {
+        if (getToken(index + 1).tok == T.integer
             && intParameter(index + 1) >= 111)
           icell = intParameter(++index);
-      } else if (statementLength > index + 1) {
-        pt = (Point3f) getPointOrPlane(++index, false, true, false, true, 3, 3);
+      } else if (slen > index + 1) {
+        pt = (P3) getPointOrPlane(++index, false, true, false, true, 3, 3);
         index = iToken;
       }
     }
     mad = getSetAxesTypeMad(++index);
     checkLast(iToken);
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (icell != Integer.MAX_VALUE)
       viewer.setCurrentUnitCellOffset(icell);
@@ -14220,11 +14236,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.setCurrentCage(id);
     else if (points != null)
       viewer.setCurrentCagePts(points);
-    setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitCell", mad);
+    setObjectMad(JC.SHAPE_UCCAGE, "unitCell", mad);
     if (pt != null)
       viewer.setCurrentUnitCellOffsetPt(pt);
     if (tickInfo != null)
-      setShapeProperty(JmolConstants.SHAPE_UCCAGE, "tickInfo", tickInfo);
+      setShapeProperty(JC.SHAPE_UCCAGE, "tickInfo", tickInfo);
   }
 
   private void frank(int index) throws ScriptException {
@@ -14233,14 +14249,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void selectionHalo(int pt) throws ScriptException {
     boolean showHalo = false;
-    switch (pt == statementLength ? Token.on : getToken(pt).tok) {
-    case Token.on:
-    case Token.selected:
+    switch (pt == slen ? T.on : getToken(pt).tok) {
+    case T.on:
+    case T.selected:
       showHalo = true;
       //$FALL-THROUGH$
-    case Token.off:
-    case Token.none:
-    case Token.normal:
+    case T.off:
+    case T.none:
+    case T.normal:
       setBooleanProperty("selectionHalos", showHalo);
       break;
     default:
@@ -14249,35 +14265,35 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void save() throws ScriptException {
-    if (statementLength > 1) {
+    if (slen > 1) {
       String saveName = optParameterAsString(2);
       switch (tokAt(1)) {
-      case Token.rotation:
-        if (!isSyntaxCheck)
+      case T.rotation:
+        if (!chk)
           viewer.saveOrientation(saveName);
         return;
-      case Token.orientation:
-        if (!isSyntaxCheck)
+      case T.orientation:
+        if (!chk)
           viewer.saveOrientation(saveName);
         return;
-      case Token.bonds:
-        if (!isSyntaxCheck)
+      case T.bonds:
+        if (!chk)
           viewer.saveBonds(saveName);
         return;
-      case Token.state:
-        if (!isSyntaxCheck)
+      case T.state:
+        if (!chk)
           viewer.saveState(saveName);
         return;
-      case Token.structure:
-        if (!isSyntaxCheck)
+      case T.structure:
+        if (!chk)
           viewer.saveStructure(saveName);
         return;
-      case Token.coord:
-        if (!isSyntaxCheck)
+      case T.coord:
+        if (!chk)
           viewer.saveCoordinates(saveName, viewer.getSelectionSet(false));
         return;
-      case Token.selection:
-        if (!isSyntaxCheck)
+      case T.selection:
+        if (!chk)
           viewer.saveSelection(saveName);
         return;
       }
@@ -14288,38 +14304,38 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void restore() throws ScriptException {
     // restore orientation name time
-    if (statementLength > 1) {
+    if (slen > 1) {
       String saveName = optParameterAsString(2);
-      if (getToken(1).tok != Token.orientation)
+      if (getToken(1).tok != T.orientation)
         checkLength23();
       float floatSecondsTotal;
       switch (getToken(1).tok) {
-      case Token.rotation:
-        floatSecondsTotal = (statementLength > 3 ? floatParameter(3) : 0);
+      case T.rotation:
+        floatSecondsTotal = (slen > 3 ? floatParameter(3) : 0);
         if (floatSecondsTotal < 0)
           error(ERROR_invalidArgument);
-        if (!isSyntaxCheck) {
+        if (!chk) {
           viewer.restoreRotation(saveName, floatSecondsTotal);
           if (isJS && floatSecondsTotal > 0 && viewer.waitForMoveTo())
             throw new ScriptInterruption(this, "restoreRotation", 1);
         }
         return;
-      case Token.orientation:
-        floatSecondsTotal = (statementLength > 3 ? floatParameter(3) : 0);
+      case T.orientation:
+        floatSecondsTotal = (slen > 3 ? floatParameter(3) : 0);
         if (floatSecondsTotal < 0)
           error(ERROR_invalidArgument);
-        if (!isSyntaxCheck) {
+        if (!chk) {
           viewer.restoreOrientation(saveName, floatSecondsTotal);
           if (isJS && floatSecondsTotal > 0 && viewer.waitForMoveTo())
             throw new ScriptInterruption(this, "restoreOrientation", 1);
         }
         return;
-      case Token.bonds:
-        if (!isSyntaxCheck)
+      case T.bonds:
+        if (!chk)
           viewer.restoreBonds(saveName);
         return;
-      case Token.coord:
-        if (isSyntaxCheck)
+      case T.coord:
+        if (chk)
           return;
         String script = viewer.getSavedCoordinates(saveName);
         if (script == null)
@@ -14327,24 +14343,24 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         runScript(script);
         viewer.checkCoordinatesChanged();
         return;
-      case Token.state:
-        if (isSyntaxCheck)
+      case T.state:
+        if (chk)
           return;
         String state = viewer.getSavedState(saveName);
         if (state == null)
           error(ERROR_invalidArgument);
         runScript(state);
         return;
-      case Token.structure:
-        if (isSyntaxCheck)
+      case T.structure:
+        if (chk)
           return;
         String shape = viewer.getSavedStructure(saveName);
         if (shape == null)
           error(ERROR_invalidArgument);
         runScript(shape);
         return;
-      case Token.selection:
-        if (!isSyntaxCheck)
+      case T.selection:
+        if (!chk)
           viewer.restoreSelection(saveName);
         return;
       }
@@ -14353,11 +14369,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         "bonds? coords? orientation? selection? state? structure?");
   }
 
-  String write(Token[] args) throws ScriptException {
+  String write(T[] args) throws ScriptException {
     int pt = 0, pt0 = 0;
     boolean isCommand, isShow;
     if (args == null) {
-      args = statement;
+      args = st;
       pt = pt0 = 1;
       isCommand = true;
       isShow = (viewer.isApplet() && !viewer.isSignedApplet()
@@ -14367,7 +14383,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       isCommand = false;
       isShow = true;
     }
-    int argCount = (isCommand ? statementLength : args.length);
+    int argCount = (isCommand ? slen : args.length);
     int len = 0;
     int nVibes = 0;
     int width = -1;
@@ -14386,15 +14402,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isCoord = false;
     boolean isExport = false;
     boolean isImage = false;
-    BitSet bsFrames = null;
+    BS bsFrames = null;
     String[] scripts = null;
     String type = "SPT";
-    int tok = (isCommand && args.length == 1 ? Token.clipboard : tokAtArray(pt,
+    int tok = (isCommand && args.length == 1 ? T.clipboard : tokAtArray(pt,
         args));
     switch (tok) {
-    case Token.nada:
+    case T.nada:
       break;
-    case Token.script:
+    case T.script:
       if (isArrayParameter(pt + 1)) {
         scripts = stringParameterSet(++pt);
         localPath = ".";
@@ -14404,109 +14420,109 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       break;
     default:
-      type = ScriptVariable.sValue(tokenAt(pt, args)).toUpperCase();
+      type = SV.sValue(tokenAt(pt, args)).toUpperCase();
     }
     switch (tok) {
-    case Token.nada:
+    case T.nada:
       break;
-    case Token.quaternion:
-    case Token.ramachandran:
-    case Token.property:
+    case T.quaternion:
+    case T.ramachandran:
+    case T.property:
       msg = plot(args);
       if (!isCommand)
         return msg;
       break;
-    case Token.inline:
+    case T.inline:
       type = "INLINE";
-      data = ScriptVariable.sValue(tokenAt(++pt, args));
+      data = SV.sValue(tokenAt(++pt, args));
       pt++;
       break;
-    case Token.pointgroup:
+    case T.pointgroup:
       type = "PGRP";
       pt++;
-      type2 = ScriptVariable.sValue(tokenAt(pt, args)).toLowerCase();
+      type2 = SV.sValue(tokenAt(pt, args)).toLowerCase();
       if (type2.equals("draw"))
         pt++;
       break;
-    case Token.coord:
+    case T.coord:
       pt++;
       isCoord = true;
       break;
-    case Token.state:
-    case Token.script:
-      val = ScriptVariable.sValue(tokenAt(++pt, args)).toLowerCase();
+    case T.state:
+    case T.script:
+      val = SV.sValue(tokenAt(++pt, args)).toLowerCase();
       while (val.equals("localpath") || val.equals("remotepath")) {
         if (val.equals("localpath"))
-          localPath = ScriptVariable.sValue(tokenAt(++pt, args));
+          localPath = SV.sValue(tokenAt(++pt, args));
         else
-          remotePath = ScriptVariable.sValue(tokenAt(++pt, args));
-        val = ScriptVariable.sValue(tokenAt(++pt, args)).toLowerCase();
+          remotePath = SV.sValue(tokenAt(++pt, args));
+        val = SV.sValue(tokenAt(++pt, args)).toLowerCase();
       }
       type = "SPT";
       break;
-    case Token.file:
-    case Token.function:
-    case Token.history:
-    case Token.isosurface:
-    case Token.menu:
-    case Token.mesh:
-    case Token.mo:
-    case Token.pmesh:
+    case T.file:
+    case T.function:
+    case T.history:
+    case T.isosurface:
+    case T.menu:
+    case T.mesh:
+    case T.mo:
+    case T.pmesh:
       pt++;
       break;
-    case Token.jmol:
+    case T.jmol:
       type = "ZIPALL";
       pt++;
       break;
-    case Token.var:
+    case T.var:
       type = "VAR";
       pt += 2;
       break;
-    case Token.frame:
-    case Token.identifier:
-    case Token.image:
-    case Token.scene:
-    case Token.string:
-    case Token.vibration:
+    case T.frame:
+    case T.identifier:
+    case T.image:
+    case T.scene:
+    case T.string:
+    case T.vibration:
       switch (tok) {
-      case Token.image:
+      case T.image:
         pt++;
         break;
-      case Token.vibration:
+      case T.vibration:
         nVibes = intParameterRange(++pt, 1, 10);
-        if (!isSyntaxCheck) {
+        if (!chk) {
           viewer.setVibrationOff();
           if (!isJS)
             viewer.delayScript(this, 100);          
         }
         pt++;
         break;
-      case Token.frame:
-        BitSet bsAtoms;
-        if (pt + 1 < argCount && args[++pt].tok == Token.expressionBegin
-            || args[pt].tok == Token.bitset) {
+      case T.frame:
+        BS bsAtoms;
+        if (pt + 1 < argCount && args[++pt].tok == T.expressionBegin
+            || args[pt].tok == T.bitset) {
           bsAtoms = atomExpression(args, pt, 0, true, false, true, true);
           pt = iToken + 1;
         } else {
           bsAtoms = viewer.getModelUndeletedAtomsBitSet(-1);
         }
-        if (!isSyntaxCheck)
+        if (!chk)
           bsFrames = viewer.getModelBitSet(bsAtoms, true);
         break;
-      case Token.scene:
-        val = ScriptVariable.sValue(tokenAt(++pt, args)).toUpperCase();
+      case T.scene:
+        val = SV.sValue(tokenAt(++pt, args)).toUpperCase();
         if (Parser.isOneOf(val, "PNG;PNGJ")) {
           sceneType = val;
           pt++;
         }
         break;
       default:
-      case Token.string:
-        Token t = Token.getTokenFromName(ScriptVariable.sValue(args[pt])
+      case T.string:
+        T t = T.getTokenFromName(SV.sValue(args[pt])
             .toLowerCase());
         if (t != null) {
           tok = t.tok;
-          type = ScriptVariable.sValue(t).toUpperCase();
+          type = SV.sValue(t).toUpperCase();
         }
         if (Parser.isOneOf(type, driverList.toUpperCase())) {
           // povray, maya, vrml, idtf
@@ -14526,25 +14542,25 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         break;
       }
-      if (tokAtArray(pt, args) == Token.integer) {
-        width = ScriptVariable.iValue(tokenAt(pt++, args));
-        height = ScriptVariable.iValue(tokenAt(pt++, args));
+      if (tokAtArray(pt, args) == T.integer) {
+        width = SV.iValue(tokenAt(pt++, args));
+        height = SV.iValue(tokenAt(pt++, args));
       }
       break;
     }
 
     if (msg == null) {
-      val = ScriptVariable.sValue(tokenAt(pt, args));
+      val = SV.sValue(tokenAt(pt, args));
       if (val.equalsIgnoreCase("clipboard")) {
-        if (isSyntaxCheck)
+        if (chk)
           return "";
         // if (isApplet)
         // evalError(GT._("The {0} command is not available for the applet.",
         // "WRITE CLIPBOARD"));
       } else if (Parser.isOneOf(val.toLowerCase(),
           "png;pngj;pngt;jpg;jpeg;jpg64;jpeg64")
-          && tokAtArray(pt + 1, args) == Token.integer) {
-        quality = ScriptVariable.iValue(tokenAt(++pt, args));
+          && tokAtArray(pt + 1, args) == T.integer) {
+        quality = SV.iValue(tokenAt(++pt, args));
       } else if (Parser.isOneOf(val.toLowerCase(),
           "xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;cd;pdb;pqr;cml")) {
         type = val.toUpperCase();
@@ -14567,29 +14583,29 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
 
       if (pt + 2 == argCount) {
-        data = ScriptVariable.sValue(tokenAt(++pt, args));
+        data = SV.sValue(tokenAt(++pt, args));
         if (data.length() > 0 && data.charAt(0) != '.')
           type = val.toUpperCase();
       }
       switch (tokAtArray(pt, args)) {
-      case Token.nada:
+      case T.nada:
         isShow = true;
         break;
-      case Token.clipboard:
+      case T.clipboard:
         break;
-      case Token.identifier:
-      case Token.string:
-        fileName = ScriptVariable.sValue(tokenAt(pt, args));
-        if (pt == argCount - 3 && tokAtArray(pt + 1, args) == Token.per) {
+      case T.identifier:
+      case T.string:
+        fileName = SV.sValue(tokenAt(pt, args));
+        if (pt == argCount - 3 && tokAtArray(pt + 1, args) == T.per) {
           // write filename.xxx gets separated as filename .spt
           // write isosurface filename.xxx also
-          fileName += "." + ScriptVariable.sValue(tokenAt(pt + 2, args));
+          fileName += "." + SV.sValue(tokenAt(pt + 2, args));
         }
         if (type != "VAR" && pt == pt0)
           type = "IMAGE";
         else if (fileName.length() > 0 && fileName.charAt(0) == '.'
             && (pt == pt0 + 1 || pt == pt0 + 2)) {
-          fileName = ScriptVariable.sValue(tokenAt(pt - 1, args)) + fileName;
+          fileName = SV.sValue(tokenAt(pt - 1, args)) + fileName;
           if (type != "VAR" && pt == pt0 + 1)
             type = "IMAGE";
         }
@@ -14659,7 +14675,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                 + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
             "CML|GIF|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGJ|PNGT|PPM|PQR|SDF|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
                 + driverList.toUpperCase().replace(';', '|'));
-      if (isSyntaxCheck)
+      if (chk)
         return "";
       Object bytes = null;
       boolean doDefer = false;
@@ -14734,13 +14750,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           data = viewer.getFunctionCalls(null);
           type = "TXT";
         } else if (data == "VAR") {
-          data = ((ScriptVariable) getParameter(ScriptVariable.sValue(tokenAt(
-              isCommand ? 2 : 1, args)), Token.variable)).asString();
+          data = ((SV) getParameter(SV.sValue(tokenAt(
+              isCommand ? 2 : 1, args)), T.variable)).asString();
           type = "TXT";
         } else if (data == "SPT") {
           if (isCoord) {
-            BitSet tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
-            viewer.setAtomCoordRelative(Point3f.new3(0, 0, 0), null);
+            BS tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
+            viewer.setAtomCoordRelative(P3.new3(0, 0, 0), null);
             data = viewer.getStateInfo();
             viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
           } else {
@@ -14759,17 +14775,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           data = getMoJvxl(Integer.MAX_VALUE);
           type = "XJVXL";
         } else if (data == "PMESH") {
-          if ((data = getIsosurfaceJvxl(true, JmolConstants.SHAPE_PMESH)) == null)
+          if ((data = getIsosurfaceJvxl(true, JC.SHAPE_PMESH)) == null)
             error(ERROR_noData);
           type = "XJVXL";
         } else if (data == "ISOSURFACE" || data == "MESH") {
           if ((data = getIsosurfaceJvxl(data == "MESH",
-              JmolConstants.SHAPE_ISOSURFACE)) == null)
+              JC.SHAPE_ISOSURFACE)) == null)
             error(ERROR_noData);
           type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
           if (!isShow)
             showString((String) getShapeProperty(
-                JmolConstants.SHAPE_ISOSURFACE, "jvxlFileInfo"));
+                JC.SHAPE_ISOSURFACE, "jvxlFileInfo"));
         } else {
           // image
           len = -1;
@@ -14814,7 +14830,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             scripts, quality,
             width, height, bsFrames, nVibes, fullPath);
     }
-    if (!isSyntaxCheck && msg != null) {
+    if (!chk && msg != null) {
       if (!msg.startsWith("OK"))
         evalError(msg, null);
       scriptStatusOrBuffer(msg
@@ -14831,73 +14847,75 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String msg = null;
     String name = null;
     int len = 2;
-    Token token = getToken(1);
-    int tok = (token instanceof ScriptVariable ? Token.nada : token.tok);
-    if (tok == Token.string) {
-      token = Token.getTokenFromName(str.toLowerCase());
+    T token = getToken(1);
+    int tok = (token instanceof SV ? T.nada : token.tok);
+    if (tok == T.string) {
+      token = T.getTokenFromName(str.toLowerCase());
       if (token != null)
         tok = token.tok;
     }
-    if (tok != Token.symop && tok != Token.state)
+    if (tok != T.symop && tok != T.state)
       checkLength(-3);
-    if (statementLength == 2 && str.indexOf("?") >= 0) {
+    if (slen == 2 && str.indexOf("?") >= 0) {
       showString(viewer.getAllSettings(str.substring(0, str.indexOf("?"))));
       return;
     }
     switch (tok) {
-    case Token.nada:
-      msg = ((ScriptVariable) theToken).escape();
+    case T.nada:
+      if (!chk)
+        msg = ((SV) theToken).escape();
       break;
-    case Token.cache:
-      msg = Escape.escape(viewer.cacheList());
+    case T.cache:
+      if (!chk)
+        msg = Escape.e(viewer.cacheList());
       break;
-    case Token.dssp:
+    case T.dssp:
       checkLength(2);
-      if (!isSyntaxCheck)
+      if (!chk)
         msg = viewer.calculateStructures(null, true, false);
       break;
-    case Token.pathforallfiles:
+    case T.pathforallfiles:
       checkLength(2);
-      if (!isSyntaxCheck)
+      if (!chk)
         msg = viewer.getPathForAllFiles();
       break;
-    case Token.nmr:
-    case Token.smiles:
-    case Token.drawing:
-    case Token.chemical:
-      checkLength(tok == Token.chemical ? 3 : 2);
-      if (isSyntaxCheck)
+    case T.nmr:
+    case T.smiles:
+    case T.drawing:
+    case T.chemical:
+      checkLength(tok == T.chemical ? 3 : 2);
+      if (chk)
         return;
       msg = viewer.getSmiles(0, 0, viewer.getSelectionSet(false), false, true,
           false, false);
       switch (tok) {
-      case Token.drawing:
+      case T.drawing:
         if (msg.length() > 0) {
           viewer.show2D(msg);
           return;
         }
         msg = "Could not show drawing -- Either insufficient atoms are selected or the model is a PDB file.";
         break;
-      case Token.nmr:
+      case T.nmr:
         if (msg.length() > 0) {
           viewer.showNMR(msg);
           return;
         }
         msg = "Could not show nmr -- Either insufficient atoms are selected or the model is a PDB file.";
         break;
-      case Token.chemical:
+      case T.chemical:
         len = 3;
         String info = null;
         if (msg.length() > 0) {
           char type = '/';
           switch (getToken(2).tok) {
-          case Token.inchi:
+          case T.inchi:
             type = 'I';
             break;
-          case Token.inchikey:
+          case T.inchikey:
             type = 'K';
             break;
-          case Token.name:
+          case T.name:
             type = 'N';
             break;
           default:
@@ -14911,113 +14929,114 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
       }
       break;
-    case Token.symop:
-      if (statementLength > 3) {
-        Point3f pt1 = centerParameter(2);
-        Point3f pt2 = centerParameter(++iToken);
-        if (!isSyntaxCheck)
+    case T.symop:
+      if (slen > 3) {
+        P3 pt1 = centerParameter(2);
+        P3 pt2 = centerParameter(++iToken);
+        if (!chk)
           msg = viewer.getSymmetryOperation(null, 0, pt1, pt2, false);
         len = ++iToken;
       } else {
         int iop = (checkLength23() == 2 ? 0 : intParameter(2));
-        if (!isSyntaxCheck)
+        if (!chk)
           msg = viewer.getSymmetryOperation(null, iop, null, null, false);
         len = -3;
       }
       break;
-    case Token.vanderwaals:
+    case T.vanderwaals:
       EnumVdw vdwType = null;
-      if (statementLength > 2) {
+      if (slen > 2) {
         vdwType = EnumVdw.getVdwType(parameterAsString(2));
         if (vdwType == null)
           error(ERROR_invalidArgument);
       }
-      if (!isSyntaxCheck)
+      if (!chk)
         showString(viewer.getDefaultVdwTypeNameOrData(0, vdwType));
       return;
-    case Token.function:
+    case T.function:
       checkLength23();
-      if (!isSyntaxCheck)
+      if (!chk)
         showString(viewer.getFunctionCalls(optParameterAsString(2)));
       return;
-    case Token.set:
+    case T.set:
       checkLength(2);
-      if (!isSyntaxCheck)
+      if (!chk)
         showString(viewer.getAllSettings(null));
       return;
-    case Token.url:
+    case T.url:
       // in a new window
-      if ((len = statementLength) == 2) {
-        if (!isSyntaxCheck)
+      if ((len = slen) == 2) {
+        if (!chk)
           viewer.showUrl(getFullPathName());
         return;
       }
       name = parameterAsString(2);
-      if (!isSyntaxCheck)
+      if (!chk)
         viewer.showUrl(name);
       return;
-    case Token.color:
+    case T.color:
       str = "defaultColorScheme";
       break;
-    case Token.scale3d:
+    case T.scale3d:
       str = "scaleAngstromsPerInch";
       break;
-    case Token.quaternion:
-    case Token.ramachandran:
-      if (isSyntaxCheck)
+    case T.quaternion:
+    case T.ramachandran:
+      if (chk)
         return;
       int modelIndex = viewer.getCurrentModelIndex();
       if (modelIndex < 0)
         errorStr(ERROR_multipleModelsDisplayedNotOK, "show " + theToken.value);
-      msg = plot(statement);
-      len = statementLength;
+      msg = plot(st);
+      len = slen;
       break;
-    case Token.trace:
-      if (!isSyntaxCheck)
+    case T.trace:
+      if (!chk)
         msg = getContext(false);
       break;
-    case Token.colorscheme:
+    case T.colorscheme:
       name = optParameterAsString(2);
       if (name.length() > 0)
         len = 3;
-      if (!isSyntaxCheck)
+      if (!chk)
         value = viewer.getColorSchemeList(name);
       break;
-    case Token.variables:
-      if (!isSyntaxCheck)
-        msg = viewer.getVariableList() + getContext(true);
+    case T.variables:
+      if (!chk)
+        msg = viewer.getAtomDefs(definedAtomSets)
+          + viewer.getVariableList() + getContext(true);
       break;
-    case Token.trajectory:
-      if (!isSyntaxCheck)
+    case T.trajectory:
+      if (!chk)
         msg = viewer.getTrajectoryState();
       break;
-    case Token.historylevel:
+    case T.historylevel:
       value = "" + commandHistoryLevelMax;
       break;
-    case Token.loglevel:
+    case T.loglevel:
       value = "" + Logger.getLogLevel();
       break;
-    case Token.debugscript:
+    case T.debugscript:
       value = "" + viewer.getDebugScript();
       break;
-    case Token.strandcount:
+    case T.strandcount:
       msg = "set strandCountForStrands "
-          + viewer.getStrandCount(JmolConstants.SHAPE_STRANDS)
+          + viewer.getStrandCount(JC.SHAPE_STRANDS)
           + "; set strandCountForMeshRibbon "
-          + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
+          + viewer.getStrandCount(JC.SHAPE_MESHRIBBON);
       break;
-    case Token.timeout:
-      msg = viewer.showTimeout((len = statementLength) == 2 ? null
+    case T.timeout:
+      msg = viewer.showTimeout((len = slen) == 2 ? null
           : parameterAsString(2));
       break;
-    case Token.defaultlattice:
-      value = Escape.escapePt(viewer.getDefaultLattice());
+    case T.defaultlattice:
+      value = Escape.eP(viewer.getDefaultLattice());
       break;
-    case Token.minimize:
-      if (!isSyntaxCheck)
+    case T.minimize:
+      if (!chk)
         msg = viewer.getMinimizationInfo();
       break;
-    case Token.axes:
+    case T.axes:
       switch (viewer.getAxesMode()) {
       case UNITCELL:
         msg = "set axesUnitcell";
@@ -15029,154 +15048,154 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         msg = "set axesMolecular";
       }
       break;
-    case Token.bondmode:
+    case T.bondmode:
       msg = "set bondMode " + (viewer.getBondSelectionModeOr() ? "OR" : "AND");
       break;
-    case Token.strands:
-      if (!isSyntaxCheck)
+    case T.strands:
+      if (!chk)
         msg = "set strandCountForStrands "
-            + viewer.getStrandCount(JmolConstants.SHAPE_STRANDS)
+            + viewer.getStrandCount(JC.SHAPE_STRANDS)
             + "; set strandCountForMeshRibbon "
-            + viewer.getStrandCount(JmolConstants.SHAPE_MESHRIBBON);
+            + viewer.getStrandCount(JC.SHAPE_MESHRIBBON);
       break;
-    case Token.hbond:
+    case T.hbond:
       msg = "set hbondsBackbone " + viewer.getHbondsBackbone()
           + ";set hbondsSolid " + viewer.getHbondsSolid();
       break;
-    case Token.spin:
-      if (!isSyntaxCheck)
+    case T.spin:
+      if (!chk)
         msg = viewer.getSpinState();
       break;
-    case Token.ssbond:
+    case T.ssbond:
       msg = "set ssbondsBackbone " + viewer.getSsbondsBackbone();
       break;
-    case Token.display:// deprecated
-    case Token.selectionhalos:
+    case T.display:// deprecated
+    case T.selectionhalos:
       msg = "selectionHalos "
           + (viewer.getSelectionHaloEnabled(false) ? "ON" : "OFF");
       break;
-    case Token.hetero:
+    case T.hetero:
       msg = "set selectHetero " + viewer.getRasmolSetting(tok);
       break;
-    case Token.addhydrogens:
+    case T.addhydrogens:
       msg = Escape.escapeAP(viewer.getAdditionalHydrogens(null, true, true,
           null));
       break;
-    case Token.hydrogen:
+    case T.hydrogen:
       msg = "set selectHydrogens " + viewer.getRasmolSetting(tok);
       break;
-    case Token.ambientpercent:
-    case Token.diffusepercent:
-    case Token.specular:
-    case Token.specularpower:
-    case Token.specularexponent:
-    case Token.lighting:
-      if (!isSyntaxCheck)
+    case T.ambientpercent:
+    case T.diffusepercent:
+    case T.specular:
+    case T.specularpower:
+    case T.specularexponent:
+    case T.lighting:
+      if (!chk)
         msg = viewer.getSpecularState();
       break;
-    case Token.save:
-      if (!isSyntaxCheck)
+    case T.save:
+      if (!chk)
         msg = viewer.listSavedStates();
       break;
-    case Token.unitcell:
-      if (!isSyntaxCheck)
+    case T.unitcell:
+      if (!chk)
         msg = viewer.getUnitCellInfoText();
       break;
-    case Token.coord:
-      if ((len = statementLength) == 2) {
-        if (!isSyntaxCheck)
+    case T.coord:
+      if ((len = slen) == 2) {
+        if (!chk)
           msg = viewer.getCoordinateState(viewer.getSelectionSet(false));
         break;
       }
       String nameC = parameterAsString(2);
-      if (!isSyntaxCheck)
+      if (!chk)
         msg = viewer.getSavedCoordinates(nameC);
       break;
-    case Token.state:
-      if (!isSyntaxCheck)
+    case T.state:
+      if (!chk)
         viewer.clearConsole();
-      if ((len = statementLength) == 2) {
-        if (!isSyntaxCheck)
+      if ((len = slen) == 2) {
+        if (!chk)
           msg = viewer.getStateInfo();
         break;
       }
       name = parameterAsString(2);
-      if (name.equals("/") && (len = statementLength) == 4) {
+      if (name.equals("/") && (len = slen) == 4) {
         name = parameterAsString(3).toLowerCase();
-        if (!isSyntaxCheck) {
+        if (!chk) {
           String[] info = TextFormat.split(viewer.getStateInfo(), '\n');
-          StringXBuilder sb = new StringXBuilder();
+          SB sb = new SB();
           for (int i = 0; i < info.length; i++)
             if (info[i].toLowerCase().indexOf(name) >= 0)
               sb.append(info[i]).appendC('\n');
           msg = sb.toString();
         }
         break;
-      } else if (tokAt(2) == Token.file && (len = statementLength) == 4) {
-        if (!isSyntaxCheck)
+      } else if (tokAt(2) == T.file && (len = slen) == 4) {
+        if (!chk)
           msg = viewer.getEmbeddedFileState(parameterAsString(3));
         break;
       }
       len = 3;
-      if (!isSyntaxCheck)
+      if (!chk)
         msg = viewer.getSavedState(name);
       break;
-    case Token.structure:
-      if ((len = statementLength) == 2) {
-        if (!isSyntaxCheck)
+    case T.structure:
+      if ((len = slen) == 2) {
+        if (!chk)
           msg = viewer.getProteinStructureState();
         break;
       }
       String shape = parameterAsString(2);
-      if (!isSyntaxCheck)
+      if (!chk)
         msg = viewer.getSavedStructure(shape);
       break;
-    case Token.data:
-      String type = ((len = statementLength) == 3 ? parameterAsString(2) : null);
-      if (!isSyntaxCheck) {
+    case T.data:
+      String type = ((len = slen) == 3 ? parameterAsString(2) : null);
+      if (!chk) {
         Object[] data = (type == null ? this.data : viewer.getData(type));
         msg = (data == null ? "no data" : 
           Escape.encapsulateData((String)data[0], data[1], ((Integer)data[3]).intValue()));
       }
       break;
-    case Token.spacegroup:
+    case T.spacegroup:
       Map<String, Object> info = null;
-      if ((len = statementLength) == 2) {
-        if (!isSyntaxCheck) {
+      if ((len = slen) == 2) {
+        if (!chk) {
           info = viewer.getSpaceGroupInfo(null);
         }
       } else {
         String sg = parameterAsString(2);
-        if (!isSyntaxCheck)
+        if (!chk)
           info = viewer.getSpaceGroupInfo(TextFormat.simpleReplace(sg, "''",
               "\""));
       }
       if (info != null)
         msg = "" + info.get("spaceGroupInfo") + info.get("symmetryInfo");
       break;
-    case Token.dollarsign:
+    case T.dollarsign:
       len = 3;
       msg = setObjectProperty();
       break;
-    case Token.boundbox:
-      if (!isSyntaxCheck) {
+    case T.boundbox:
+      if (!chk) {
         msg = viewer.getBoundBoxCommand(true);
       }
       break;
-    case Token.center:
-      if (!isSyntaxCheck)
-        msg = "center " + Escape.escapePt(viewer.getRotationCenter());
+    case T.center:
+      if (!chk)
+        msg = "center " + Escape.eP(viewer.getRotationCenter());
       break;
-    case Token.draw:
-      if (!isSyntaxCheck)
-        msg = (String) getShapeProperty(JmolConstants.SHAPE_DRAW, "command");
+    case T.draw:
+      if (!chk)
+        msg = (String) getShapeProperty(JC.SHAPE_DRAW, "command");
       break;
-    case Token.file:
+    case T.file:
       // as a string
-      if (!isSyntaxCheck)
+      if (!chk)
         viewer.clearConsole();
-      if (statementLength == 2) {
-        if (!isSyntaxCheck)
+      if (slen == 2) {
+        if (!chk)
           msg = viewer.getCurrentFileAsString();
         if (msg == null)
           msg = "<unavailable>";
@@ -15184,137 +15203,137 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       len = 3;
       value = parameterAsString(2);
-      if (!isSyntaxCheck)
+      if (!chk)
         msg = viewer.getFileAsString(value);
       break;
-    case Token.frame:
-      if (tokAt(2) == Token.all && (len = 3) > 0)
+    case T.frame:
+      if (tokAt(2) == T.all && (len = 3) > 0)
         msg = viewer.getModelFileInfoAll();
       else
         msg = viewer.getModelFileInfo();
       break;
-    case Token.history:
-      int n = ((len = statementLength) == 2 ? Integer.MAX_VALUE
+    case T.history:
+      int n = ((len = slen) == 2 ? Integer.MAX_VALUE
           : intParameter(2));
       if (n < 1)
         error(ERROR_invalidArgument);
-      if (!isSyntaxCheck) {
+      if (!chk) {
         viewer.clearConsole();
         if (scriptLevel == 0)
           viewer.removeCommand();
         msg = viewer.getSetHistory(n);
       }
       break;
-    case Token.isosurface:
-      if (!isSyntaxCheck)
-        msg = (String) getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+    case T.isosurface:
+      if (!chk)
+        msg = (String) getShapeProperty(JC.SHAPE_ISOSURFACE,
             "jvxlDataXml");
       break;
-    case Token.mo:
+    case T.mo:
       if (optParameterAsString(2).equalsIgnoreCase("list")) {
         msg = viewer.getMoInfo(-1);
         len = 3;
       } else {
-        int ptMO = ((len = statementLength) == 2 ? Integer.MIN_VALUE
+        int ptMO = ((len = slen) == 2 ? Integer.MIN_VALUE
             : intParameter(2));
-        if (!isSyntaxCheck)
+        if (!chk)
           msg = getMoJvxl(ptMO);
       }
       break;
-    case Token.model:
-      if (!isSyntaxCheck)
+    case T.model:
+      if (!chk)
         msg = viewer.getModelInfoAsString();
       break;
-    case Token.measurements:
-      if (!isSyntaxCheck)
+    case T.measurements:
+      if (!chk)
         msg = viewer.getMeasurementInfoAsString();
       break;
-    case Token.translation:
-    case Token.rotation:
-    case Token.moveto:
-      if (!isSyntaxCheck)
+    case T.translation:
+    case T.rotation:
+    case T.moveto:
+      if (!chk)
         msg = viewer.getOrientationText(tok, null);
       break;
-    case Token.orientation:
+    case T.orientation:
       len = 2;
-      if (statementLength > 3)
+      if (slen > 3)
         break;
       switch (tok = tokAt(2)) {
-      case Token.translation:
-      case Token.rotation:
-      case Token.moveto:
-      case Token.nada:
-        if (!isSyntaxCheck)
+      case T.translation:
+      case T.rotation:
+      case T.moveto:
+      case T.nada:
+        if (!chk)
           msg = viewer.getOrientationText(tok, null);
         break;
       default:
         name = optParameterAsString(2);
         msg = viewer.getOrientationText(0, name);
       }
-      len = statementLength;
+      len = slen;
       break;
-    case Token.pdbheader:
-      if (!isSyntaxCheck)
+    case T.pdbheader:
+      if (!chk)
         msg = viewer.getPDBHeader();
       break;
-    case Token.pointgroup:
+    case T.pointgroup:
       pointGroup();
       return;
-    case Token.symmetry:
-      if (!isSyntaxCheck)
+    case T.symmetry:
+      if (!chk)
         msg = viewer.getSymmetryInfoAsString();
       break;
-    case Token.transform:
-      if (!isSyntaxCheck)
+    case T.transform:
+      if (!chk)
         msg = "transform:\n" + viewer.getTransformText();
       break;
-    case Token.zoom:
+    case T.zoom:
       msg = "zoom "
           + (viewer.getZoomEnabled() ? ("" + viewer.getZoomSetting()) : "off");
       break;
-    case Token.frank:
+    case T.frank:
       msg = (viewer.getShowFrank() ? "frank ON" : "frank OFF");
       break;
-    case Token.radius:
+    case T.radius:
       str = "solventProbeRadius";
       break;
     // Chime related
-    case Token.basepair:
-    case Token.chain:
-    case Token.sequence:
-    case Token.residue:
-    case Token.selected:
-    case Token.group:
-    case Token.atoms:
-    case Token.info:
-    case Token.bonds:
+    case T.basepair:
+    case T.chain:
+    case T.sequence:
+    case T.residue:
+    case T.selected:
+    case T.group:
+    case T.atoms:
+    case T.info:
+    case T.bonds:
       msg = viewer.getChimeInfo(tok);
       break;
     // not implemented
-    case Token.echo:
-    case Token.fontsize:
-    case Token.property: // huh? why?
-    case Token.help:
-    case Token.solvent:
+    case T.echo:
+    case T.fontsize:
+    case T.property: // huh? why?
+    case T.help:
+    case T.solvent:
       value = "?";
       break;
-    case Token.identifier:
+    case T.identifier:
       if (str.equalsIgnoreCase("fileHeader")) {
-        if (!isSyntaxCheck)
+        if (!chk)
           msg = viewer.getPDBHeader();
       } else if (str.equalsIgnoreCase("menu")) {
-        if (!isSyntaxCheck)
+        if (!chk)
           value = viewer.getMenu("");
       } else if (str.equalsIgnoreCase("mouse")) {
-        String qualifiers = ((len = statementLength) == 2 ? null
+        String qualifiers = ((len = slen) == 2 ? null
             : parameterAsString(2));
-        if (!isSyntaxCheck)
+        if (!chk)
           msg = viewer.getBindingInfo(qualifiers);
       }
       break;
     }
     checkLength(len);
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (msg != null)
       showString(msg);
@@ -15329,7 +15348,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private String getIsosurfaceJvxl(boolean asMesh, int iShape) {
-    if (isSyntaxCheck)
+    if (chk)
       return "";
     return (String) getShapeProperty(iShape, asMesh ? "jvxlMeshX"
         : "jvxlDataXml");
@@ -15338,7 +15357,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   @SuppressWarnings("unchecked")
   private String getMoJvxl(int ptMO) throws ScriptException {
     // 0: all; Integer.MAX_VALUE: current;
-    shapeManager.loadShape(JmolConstants.SHAPE_MO);
+    sm.loadShape(JC.SHAPE_MO);
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
       errorStr(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
@@ -15346,30 +15365,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         .getModelAuxiliaryInfoValue(modelIndex, "moData");
     if (moData == null)
       error(ERROR_moModelError);
-    Integer n = (Integer) getShapeProperty(JmolConstants.SHAPE_MO, "moNumber");
+    Integer n = (Integer) getShapeProperty(JC.SHAPE_MO, "moNumber");
     if (n == null || n.intValue() == 0) {
-      setShapeProperty(JmolConstants.SHAPE_MO, "init", Integer
+      setShapeProperty(JC.SHAPE_MO, "init", Integer
           .valueOf(modelIndex));
     } else if (ptMO == Integer.MAX_VALUE) {
     }
-    setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
-    return (String) getShapePropertyIndex(JmolConstants.SHAPE_MO, "showMO", ptMO);
+    setShapeProperty(JC.SHAPE_MO, "moData", moData);
+    return (String) getShapePropertyIndex(JC.SHAPE_MO, "showMO", ptMO);
   }
 
   private void draw() throws ScriptException {
-    shapeManager.loadShape(JmolConstants.SHAPE_DRAW);
+    sm.loadShape(JC.SHAPE_DRAW);
     switch (tokAt(1)) {
-    case Token.list:
-      if (listIsosurface(JmolConstants.SHAPE_DRAW))
+    case T.list:
+      if (listIsosurface(JC.SHAPE_DRAW))
         return;
       break;
-    case Token.pointgroup:
+    case T.pointgroup:
       pointGroup();
       return;
-    case Token.helix:
-    case Token.quaternion:
-    case Token.ramachandran:
-      plot(statement);
+    case T.helix:
+    case T.quaternion:
+    case T.ramachandran:
+      plot(st);
       return;
     }
     boolean havePoints = false;
@@ -15385,19 +15404,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int intScale = 0;
     String swidth = "";
     int iptDisplayProperty = 0;
-    Point3f center = null;
-    String thisId = initIsosurface(JmolConstants.SHAPE_DRAW);
+    P3 center = null;
+    String thisId = initIsosurface(JC.SHAPE_DRAW);
     boolean idSeen = (thisId != null);
-    boolean isWild = (idSeen && getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
+    boolean isWild = (idSeen && getShapeProperty(JC.SHAPE_DRAW, "ID") == null);
     int[] connections = null;
     int iConnect = 0;
-    for (int i = iToken; i < statementLength; ++i) {
+    for (int i = iToken; i < slen; ++i) {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
-      case Token.unitcell:
-      case Token.boundbox:
-        if (isSyntaxCheck)
+      case T.unitcell:
+      case T.boundbox:
+        if (chk)
           break;
         List<Object> vp = viewer.getPlaneIntersection(theTok, null,
             intScale / 100f, 0);
@@ -15406,7 +15425,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyValue = vp;
         havePoints = true;
         break;
-      case Token.connect:
+      case T.connect:
         connections = new int[4];
         iConnect = 4;
         float[] farray = floatParameterSet(++i, 4, 4);
@@ -15415,23 +15434,23 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           connections[j] = (int) farray[j];
         havePoints = true;
         break;
-      case Token.bonds:
-      case Token.atoms:
+      case T.bonds:
+      case T.atoms:
         if (connections == null
-            || iConnect > (theTok == Token.bondcount ? 2 : 3)) {
+            || iConnect > (theTok == T.bondcount ? 2 : 3)) {
           iConnect = 0;
           connections = new int[] { -1, -1, -1, -1 };
         }
         connections[iConnect++] = atomExpressionAt(++i).nextSetBit(0);
         i = iToken;
-        connections[iConnect++] = (theTok == Token.bonds ? atomExpressionAt(++i)
+        connections[iConnect++] = (theTok == T.bonds ? atomExpressionAt(++i)
             .nextSetBit(0) : -1);
         i = iToken;
         havePoints = true;
         break;
-      case Token.slab:
+      case T.slab:
         switch (getToken(++i).tok) {
-        case Token.dollarsign:
+        case T.dollarsign:
           propertyName = "slab";
           propertyValue = objectNameParameter(++i);
           i = iToken;
@@ -15441,14 +15460,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         }
         break;
-      case Token.intersection:
+      case T.intersection:
         switch (getToken(++i).tok) {
-        case Token.unitcell:
-        case Token.boundbox:
+        case T.unitcell:
+        case T.boundbox:
           tokIntersect = theTok;
           isIntersect = true;
           continue;
-        case Token.dollarsign:
+        case T.dollarsign:
           propertyName = "intersect";
           propertyValue = objectNameParameter(++i);
           i = iToken;
@@ -15459,33 +15478,33 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         }
         break;
-      case Token.polygon:
+      case T.polygon:
         propertyName = "polygon";
         havePoints = true;
         List<Object> v = new ArrayList<Object>();
         int nVertices = 0;
         int nTriangles = 0;
-        Point3f[] points = null;
-        List<ScriptVariable> vpolygons = null;
+        P3[] points = null;
+        List<SV> vpolygons = null;
         if (isArrayParameter(++i)) {
           points = getPointArray(i, -1);
           nVertices = points.length;
         } else {
           nVertices = Math.max(0, intParameter(i));
-          points = new Point3f[nVertices];
+          points = new P3[nVertices];
           for (int j = 0; j < nVertices; j++)
             points[j] = centerParameter(++iToken);
         }
         switch (getToken(++iToken).tok) {
-        case Token.matrix3f:
-        case Token.matrix4f:
-          ScriptVariable sv = ScriptVariable.newScriptVariableToken(theToken);
+        case T.matrix3f:
+        case T.matrix4f:
+          SV sv = SV.newScriptVariableToken(theToken);
           sv.toArray();
           vpolygons = sv.getList();
           nTriangles = vpolygons.size();
           break;
-        case Token.varray:
-          vpolygons = ((ScriptVariable) theToken).getList();
+        case T.varray:
+          vpolygons = ((SV) theToken).getList();
           nTriangles = vpolygons.size();
           break;
         default:
@@ -15494,7 +15513,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         int[][] polygons = ArrayUtil.newInt2(nTriangles);
         for (int j = 0; j < nTriangles; j++) {
           float[] f = (vpolygons == null ? floatParameterSet(++iToken, 3, 4)
-              : ScriptVariable.flistValue(vpolygons.get(j), 0));
+              : SV.flistValue(vpolygons.get(j), 0));
           if (f.length < 3 || f.length > 4)
             error(ERROR_invalidArgument);
           polygons[j] = new int[] { (int) f[0], (int) f[1], (int) f[2],
@@ -15509,19 +15528,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyValue = v;
         i = iToken;
         break;
-      case Token.symop:
+      case T.symop:
         String xyz = null;
         int iSym = 0;
         plane = null;
-        Point3f target = null;
+        P3 target = null;
         switch (tokAt(++i)) {
-        case Token.string:
+        case T.string:
           xyz = stringParameter(i);
           break;
-        case Token.matrix4f:
-          xyz = ScriptVariable.sValue(getToken(i));
+        case T.matrix4f:
+          xyz = SV.sValue(getToken(i));
           break;
-        case Token.integer:
+        case T.integer:
         default:
           if (!isCenterParameter(i))
             iSym = intParameter(i++);
@@ -15529,40 +15548,40 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             center = centerParameter(i);
           if (isCenterParameter(iToken + 1))
             target = centerParameter(++iToken);
-          if (isSyntaxCheck)
+          if (chk)
             return;
           i = iToken;
         }
-        BitSet bsAtoms = null;
-        if (center == null && i + 1 < statementLength) {
+        BS bsAtoms = null;
+        if (center == null && i + 1 < slen) {
           center = centerParameter(++i);
           // draw ID xxx symop [n or "x,-y,-z"] [optional {center}]
           // so we also check here for the atom set to get the right model
-          bsAtoms = (tokAt(i) == Token.bitset
-              || tokAt(i) == Token.expressionBegin ? atomExpressionAt(i) : null);
+          bsAtoms = (tokAt(i) == T.bitset
+              || tokAt(i) == T.expressionBegin ? atomExpressionAt(i) : null);
           i = iToken + 1;
         }
         checkLast(iToken);
-        if (!isSyntaxCheck)
+        if (!chk)
           runScript((String) viewer.getSymmetryInfo(bsAtoms, xyz, iSym, center,
-              target, thisId, Token.draw));
+              target, thisId, T.draw));
         return;
-      case Token.frame:
+      case T.frame:
         isFrame = true;
         // draw ID xxx frame {center} {q1 q2 q3 q4}
         continue;
-      case Token.leftbrace:
-      case Token.point4f:
-      case Token.point3f:
+      case T.leftbrace:
+      case T.point4f:
+      case T.point3f:
         // {X, Y, Z}
-        if (theTok == Token.point4f || !isPoint3f(i)) {
+        if (theTok == T.point4f || !isPoint3f(i)) {
           propertyValue = getPoint4f(i);
           if (isFrame) {
             checkLast(iToken);
-            if (!isSyntaxCheck)
+            if (!chk)
               runScript((Quaternion.newP4((Point4f) propertyValue)).draw(
                   (thisId == null ? "frame" : thisId), " " + swidth,
-                  (center == null ? new Point3f() : center), intScale / 100f));
+                  (center == null ? new P3() : center), intScale / 100f));
             return;
           }
           propertyName = "planedef";
@@ -15573,21 +15592,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i = iToken;
         havePoints = true;
         break;
-      case Token.hkl:
-      case Token.plane:
+      case T.hkl:
+      case T.plane:
         if (!havePoints && !isIntersect && tokIntersect == 0
-            && theTok != Token.hkl) {
+            && theTok != T.hkl) {
           propertyName = "plane";
           break;
         }
-        if (theTok == Token.plane) {
+        if (theTok == T.plane) {
           plane = planeParameter(++i);
         } else {
           plane = hklParameter(++i);
         }
         i = iToken;
         if (tokIntersect != 0) {
-          if (isSyntaxCheck)
+          if (chk)
             break;
           List<Object> vpc = viewer.getPlaneIntersection(tokIntersect, plane,
               intScale / 100f, 0);
@@ -15600,14 +15619,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         havePoints = true;
         break;
-      case Token.linedata:
+      case T.linedata:
         propertyName = "lineData";
         propertyValue = floatParameterSet(++i, 0, Integer.MAX_VALUE);
         i = iToken;
         havePoints = true;
         break;
-      case Token.bitset:
-      case Token.expressionBegin:
+      case T.bitset:
+      case T.expressionBegin:
         propertyName = "atomSet";
         propertyValue = atomExpressionAt(i);
         if (isFrame)
@@ -15615,15 +15634,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i = iToken;
         havePoints = true;
         break;
-      case Token.varray:
+      case T.varray:
         propertyName = "modelBasedPoints";
-        propertyValue = ScriptVariable.listValue(theToken);
+        propertyValue = SV.listValue(theToken);
         havePoints = true;
         break;
-      case Token.spacebeforesquare:
-      case Token.comma:
+      case T.spacebeforesquare:
+      case T.comma:
         break;
-      case Token.leftsquare:
+      case T.leftsquare:
         // [x y] or [x y %]
         propertyValue = xypParameter(i);
         if (propertyValue != null) {
@@ -15636,35 +15655,35 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         isSavedState = true;
         break;
-      case Token.rightsquare:
+      case T.rightsquare:
         if (!isSavedState)
           error(ERROR_invalidArgument);
         isSavedState = false;
         break;
-      case Token.reverse:
+      case T.reverse:
         propertyName = "reverse";
         break;
-      case Token.string:
+      case T.string:
         propertyValue = stringParameter(i);
         propertyName = "title";
         break;
-      case Token.vector:
+      case T.vector:
         propertyName = "vector";
         break;
-      case Token.length:
+      case T.length:
         propertyValue = Float.valueOf(floatParameter(++i));
         propertyName = "length";
         break;
-      case Token.decimal:
+      case T.decimal:
         // $drawObject
         propertyValue = Float.valueOf(floatParameter(i));
         propertyName = "length";
         break;
-      case Token.modelindex:
+      case T.modelindex:
         propertyName = "modelIndex";
         propertyValue = Integer.valueOf(intParameter(++i));
         break;
-      case Token.integer:
+      case T.integer:
         if (isSavedState) {
           propertyName = "modelIndex";
           propertyValue = Integer.valueOf(intParameter(i));
@@ -15672,96 +15691,96 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           intScale = intParameter(i);
         }
         break;
-      case Token.scale:
-        if (++i >= statementLength)
+      case T.scale:
+        if (++i >= slen)
           error(ERROR_numberExpected);
         switch (getToken(i).tok) {
-        case Token.integer:
+        case T.integer:
           intScale = intParameter(i);
           continue;
-        case Token.decimal:
+        case T.decimal:
           intScale = Math.round(floatParameter(i) * 100);
           continue;
         }
         error(ERROR_numberExpected);
         break;
-      case Token.id:
-        thisId = setShapeId(JmolConstants.SHAPE_DRAW, ++i, idSeen);
-        isWild = (getShapeProperty(JmolConstants.SHAPE_DRAW, "ID") == null);
+      case T.id:
+        thisId = setShapeId(JC.SHAPE_DRAW, ++i, idSeen);
+        isWild = (getShapeProperty(JC.SHAPE_DRAW, "ID") == null);
         i = iToken;
         break;
-      case Token.modelbased:
+      case T.modelbased:
         propertyName = "fixed";
         propertyValue = Boolean.FALSE;
         break;
-      case Token.fixed:
+      case T.fixed:
         propertyName = "fixed";
         propertyValue = Boolean.TRUE;
         break;
-      case Token.offset:
-        Point3f pt = getPoint3f(++i, true);
+      case T.offset:
+        P3 pt = getPoint3f(++i, true);
         i = iToken;
         propertyName = "offset";
         propertyValue = pt;
         break;
-      case Token.crossed:
+      case T.crossed:
         propertyName = "crossed";
         break;
-      case Token.width:
+      case T.width:
         propertyValue = Float.valueOf(floatParameter(++i));
         propertyName = "width";
         swidth = propertyName + " " + propertyValue;
         break;
-      case Token.line:
+      case T.line:
         propertyName = "line";
         propertyValue = Boolean.TRUE;
         break;
-      case Token.curve:
+      case T.curve:
         propertyName = "curve";
         break;
-      case Token.arc:
+      case T.arc:
         propertyName = "arc";
         break;
-      case Token.arrow:
+      case T.arrow:
         propertyName = "arrow";
         break;
-      case Token.circle:
+      case T.circle:
         propertyName = "circle";
         break;
-      case Token.cylinder:
+      case T.cylinder:
         propertyName = "cylinder";
         break;
-      case Token.vertices:
+      case T.vertices:
         propertyName = "vertices";
         break;
-      case Token.nohead:
+      case T.nohead:
         propertyName = "nohead";
         break;
-      case Token.barb:
+      case T.barb:
         propertyName = "isbarb";
         break;
-      case Token.rotate45:
+      case T.rotate45:
         propertyName = "rotate45";
         break;
-      case Token.perpendicular:
+      case T.perpendicular:
         propertyName = "perp";
         break;
-      case Token.radius:
-      case Token.diameter:
-        boolean isRadius = (theTok == Token.radius);
+      case T.radius:
+      case T.diameter:
+        boolean isRadius = (theTok == T.radius);
         float f = floatParameter(++i);
         if (isRadius)
           f *= 2;
         propertyValue = Float.valueOf(f);
-        propertyName = (isRadius || tokAt(i) == Token.decimal ? "width"
+        propertyName = (isRadius || tokAt(i) == T.decimal ? "width"
             : "diameter");
         swidth = propertyName
-            + (tokAt(i) == Token.decimal ? " " + f : " " + ((int) f));
+            + (tokAt(i) == T.decimal ? " " + f : " " + ((int) f));
         break;
-      case Token.dollarsign:
+      case T.dollarsign:
         // $drawObject[m]
-        if ((tokAt(i + 2) == Token.leftsquare || isFrame)) {
-          Point3f pto = center = centerParameter(i);
+        if ((tokAt(i + 2) == T.leftsquare || isFrame)) {
+          P3 pto = center = centerParameter(i);
           i = iToken;
           propertyName = "coord";
           propertyValue = pto;
@@ -15773,17 +15792,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyName = "identifier";
         havePoints = true;
         break;
-      case Token.color:
-      case Token.translucent:
-      case Token.opaque:
-        if (theTok != Token.color)
+      case T.color:
+      case T.translucent:
+      case T.opaque:
+        if (theTok != T.color)
           --i;
-        if (tokAt(i + 1) == Token.translucent) {
+        if (tokAt(i + 1) == T.translucent) {
           i++;
           isTranslucent = true;
           if (isFloatParameter(i + 1))
             translucentLevel = getTranslucentLevel(++i);
-        } else if (tokAt(i + 1) == Token.opaque) {
+        } else if (tokAt(i + 1) == T.opaque) {
           i++;
           isTranslucent = true;
           translucentLevel = 0;
@@ -15797,9 +15816,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         idSeen = true;
         continue;
       default:
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, 0, theTok)) {
-          if (theTok == Token.times || Token.tokAttr(theTok, Token.identifier)) {
-            thisId = setShapeId(JmolConstants.SHAPE_DRAW, i, idSeen);
+        if (!setMeshDisplayProperty(JC.SHAPE_DRAW, 0, theTok)) {
+          if (theTok == T.times || T.tokAttr(theTok, T.identifier)) {
+            thisId = setShapeId(JC.SHAPE_DRAW, i, idSeen);
             i = iToken;
             break;
           }
@@ -15810,9 +15829,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i = iToken;
         continue;
       }
-      idSeen = (theTok != Token.delete);
+      idSeen = (theTok != T.delete);
       if (havePoints && !isInitialized && !isFrame) {
-        setShapeProperty(JmolConstants.SHAPE_DRAW, "points", Integer
+        setShapeProperty(JC.SHAPE_DRAW, "points", Integer
             .valueOf(intScale));
         isInitialized = true;
         intScale = 0;
@@ -15820,23 +15839,23 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (havePoints && isWild)
         error(ERROR_invalidArgument);
       if (propertyName != null)
-        setShapeProperty(JmolConstants.SHAPE_DRAW, propertyName, propertyValue);
+        setShapeProperty(JC.SHAPE_DRAW, propertyName, propertyValue);
     }
     if (havePoints) {
-      setShapeProperty(JmolConstants.SHAPE_DRAW, "set", connections);
+      setShapeProperty(JC.SHAPE_DRAW, "set", connections);
     }
     if (colorArgb != Integer.MIN_VALUE)
-      setShapeProperty(JmolConstants.SHAPE_DRAW, "color", Integer
+      setShapeProperty(JC.SHAPE_DRAW, "color", Integer
           .valueOf(colorArgb));
     if (isTranslucent)
-      setShapeTranslucency(JmolConstants.SHAPE_DRAW, "", "translucent",
+      setShapeTranslucency(JC.SHAPE_DRAW, "", "translucent",
           translucentLevel, null);
     if (intScale != 0) {
-      setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", Integer
+      setShapeProperty(JC.SHAPE_DRAW, "scale", Integer
           .valueOf(intScale));
     }
     if (iptDisplayProperty > 0) {
-      if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, iptDisplayProperty,
+      if (!setMeshDisplayProperty(JC.SHAPE_DRAW, iptDisplayProperty,
           0))
         error(ERROR_invalidArgument);
     }
@@ -15860,44 +15879,44 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isDesignParameter = false;
     int lighting = 0;
     int nAtomSets = 0;
-    shapeManager.loadShape(JmolConstants.SHAPE_POLYHEDRA);
-    setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
+    sm.loadShape(JC.SHAPE_POLYHEDRA);
+    setShapeProperty(JC.SHAPE_POLYHEDRA, "init", null);
     String setPropertyName = "centers";
     String decimalPropertyName = "radius_";
     boolean isTranslucent = false;
     float translucentLevel = Float.MAX_VALUE;
     int color = Integer.MIN_VALUE;
-    for (int i = 1; i < statementLength; ++i) {
+    for (int i = 1; i < slen; ++i) {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
-      case Token.delete:
-      case Token.on:
-      case Token.off:
-        if (i + 1 != statementLength || needsGenerating || nAtomSets > 1
+      case T.delete:
+      case T.on:
+      case T.off:
+        if (i + 1 != slen || needsGenerating || nAtomSets > 1
             || nAtomSets == 0 && "to".equals(setPropertyName))
           error(ERROR_incompatibleArguments);
-        propertyName = (theTok == Token.off ? "off" : theTok == Token.on ? "on"
+        propertyName = (theTok == T.off ? "off" : theTok == T.on ? "on"
             : "delete");
         onOffDelete = true;
         break;
-      case Token.opEQ:
-      case Token.comma:
+      case T.opEQ:
+      case T.comma:
         continue;
-      case Token.bonds:
+      case T.bonds:
         if (nAtomSets > 0)
           error(ERROR_invalidParameterOrder);
         needsGenerating = true;
         propertyName = "bonds";
         break;
-      case Token.radius:
+      case T.radius:
         decimalPropertyName = "radius";
         continue;
-      case Token.integer:
-      case Token.decimal:
+      case T.integer:
+      case T.decimal:
         if (nAtomSets > 0 && !isDesignParameter)
           error(ERROR_invalidParameterOrder);
-        if (theTok == Token.integer) {
+        if (theTok == T.integer) {
           if (decimalPropertyName == "radius_") {
             propertyName = "nVertices";
             propertyValue = Integer.valueOf(intParameter(i));
@@ -15912,8 +15931,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isDesignParameter = false;
         needsGenerating = true;
         break;
-      case Token.bitset:
-      case Token.expressionBegin:
+      case T.bitset:
+      case T.expressionBegin:
         if (typeSeen)
           error(ERROR_invalidParameterOrder);
         if (++nAtomSets > 2)
@@ -15925,11 +15944,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyValue = atomExpressionAt(i);
         i = iToken;
         break;
-      case Token.to:
+      case T.to:
         if (nAtomSets > 1)
           error(ERROR_invalidParameterOrder);
-        if (tokAt(i + 1) == Token.bitset 
-            || tokAt(i + 1) == Token.expressionBegin && !needsGenerating) {
+        if (tokAt(i + 1) == T.bitset 
+            || tokAt(i + 1) == T.expressionBegin && !needsGenerating) {
           propertyName = "toBitSet";
           propertyValue = atomExpressionAt(++i);
           i = iToken;
@@ -15940,30 +15959,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         setPropertyName = "to";
         continue;
-      case Token.facecenteroffset:
+      case T.facecenteroffset:
         if (!needsGenerating)
           error(ERROR_insufficientArguments);
         decimalPropertyName = "faceCenterOffset";
         isDesignParameter = true;
         continue;
-      case Token.distancefactor:
+      case T.distancefactor:
         if (!needsGenerating)
           error(ERROR_insufficientArguments);
         decimalPropertyName = "distanceFactor";
         isDesignParameter = true;
         continue;
-      case Token.color:
-      case Token.translucent:
-      case Token.opaque:
+      case T.color:
+      case T.translucent:
+      case T.opaque:
         isTranslucent = false;
-        if (theTok != Token.color)
+        if (theTok != T.color)
           --i;
-        if (tokAt(i + 1) == Token.translucent) {
+        if (tokAt(i + 1) == T.translucent) {
           i++;
           isTranslucent = true;
           if (isFloatParameter(i + 1))
             translucentLevel = getTranslucentLevel(++i);
-        } else if (tokAt(i + 1) == Token.opaque) {
+        } else if (tokAt(i + 1) == T.opaque) {
           i++;
           isTranslucent = true;
           translucentLevel = 0;
@@ -15974,24 +15993,24 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else if (!isTranslucent)
           error(ERROR_invalidArgument);
         continue;
-      case Token.collapsed:
-      case Token.flat:
+      case T.collapsed:
+      case T.flat:
         propertyName = "collapsed";
-        propertyValue = (theTok == Token.collapsed ? Boolean.TRUE
+        propertyValue = (theTok == T.collapsed ? Boolean.TRUE
             : Boolean.FALSE);
         if (typeSeen)
           error(ERROR_incompatibleArguments);
         typeSeen = true;
         break;
-      case Token.noedges:
-      case Token.edges:
-      case Token.frontedges:
+      case T.noedges:
+      case T.edges:
+      case T.frontedges:
         if (edgeParameterSeen)
           error(ERROR_incompatibleArguments);
         propertyName = parameterAsString(i);
         edgeParameterSeen = true;
         break;
-      case Token.fullylit:
+      case T.fullylit:
         lighting = theTok;
         continue;
       default:
@@ -16002,7 +16021,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         error(ERROR_invalidArgument);
       }
-      setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, propertyName,
+      setShapeProperty(JC.SHAPE_POLYHEDRA, propertyName,
           propertyValue);
       if (onOffDelete)
         return;
@@ -16010,38 +16029,38 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (!needsGenerating && !typeSeen && !edgeParameterSeen && lighting == 0)
       error(ERROR_insufficientArguments);
     if (needsGenerating)
-      setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "generate", null);
+      setShapeProperty(JC.SHAPE_POLYHEDRA, "generate", null);
     if (color != Integer.MIN_VALUE)
-      setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "colorThis", Integer
+      setShapeProperty(JC.SHAPE_POLYHEDRA, "colorThis", Integer
           .valueOf(color));
     if (isTranslucent)
-      setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", "translucentThis",
+      setShapeTranslucency(JC.SHAPE_POLYHEDRA, "", "translucentThis",
           translucentLevel, null);
     if (lighting != 0)
-      setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "token", Integer.valueOf(lighting));
-    setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
+      setShapeProperty(JC.SHAPE_POLYHEDRA, "token", Integer.valueOf(lighting));
+    setShapeProperty(JC.SHAPE_POLYHEDRA, "init", null);
   }
 
   private void contact() throws ScriptException {
-    shapeManager.loadShape(JmolConstants.SHAPE_CONTACT);
-    if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_CONTACT))
+    sm.loadShape(JC.SHAPE_CONTACT);
+    if (tokAt(1) == T.list && listIsosurface(JC.SHAPE_CONTACT))
       return;
     int iptDisplayProperty = 0;
     iToken = 1;
-    String thisId = initIsosurface(JmolConstants.SHAPE_CONTACT);
+    String thisId = initIsosurface(JC.SHAPE_CONTACT);
     boolean idSeen = (thisId != null);
-    boolean isWild = (idSeen && getShapeProperty(JmolConstants.SHAPE_CONTACT,
+    boolean isWild = (idSeen && getShapeProperty(JC.SHAPE_CONTACT,
         "ID") == null);
-    BitSet bsA = null;
-    BitSet bsB = null;
-    BitSet bs = null;
+    BS bsA = null;
+    BS bsB = null;
+    BS bs = null;
     RadiusData rd = null;
     float[] params = null;
     boolean colorDensity = false;
-    StringXBuilder sbCommand = new StringXBuilder();
+    SB sbCommand = new SB();
     int minSet = Integer.MAX_VALUE;
-    int displayType = Token.plane;
-    int contactType = Token.nada;
+    int displayType = T.plane;
+    int contactType = T.nada;
     float distance = Float.NaN;
     float saProbeRadius = Float.NaN;
     boolean localOnly = true;
@@ -16051,15 +16070,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean colorByType = false;
     int tok;
     boolean okNoAtoms = (iToken > 1);
-    for (int i = iToken; i < statementLength; ++i) {
+    for (int i = iToken; i < slen; ++i) {
       switch (tok = getToken(i).tok) {
       // these first do not need atoms defined
       default:
         okNoAtoms = true;
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, 0, theTok)) {
-          if (theTok != Token.times && !Token.tokAttr(theTok, Token.identifier))
+        if (!setMeshDisplayProperty(JC.SHAPE_CONTACT, 0, theTok)) {
+          if (theTok != T.times && !T.tokAttr(theTok, T.identifier))
             error(ERROR_invalidArgument);
-          thisId = setShapeId(JmolConstants.SHAPE_CONTACT, i, idSeen);
+          thisId = setShapeId(JC.SHAPE_CONTACT, i, idSeen);
           i = iToken;
           break;
         }
@@ -16067,48 +16086,48 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           iptDisplayProperty = i;
         i = iToken;
         continue;
-      case Token.id:
+      case T.id:
         okNoAtoms = true;
-        setShapeId(JmolConstants.SHAPE_CONTACT, ++i, idSeen);
-        isWild = (getShapeProperty(JmolConstants.SHAPE_CONTACT, "ID") == null);
+        setShapeId(JC.SHAPE_CONTACT, ++i, idSeen);
+        isWild = (getShapeProperty(JC.SHAPE_CONTACT, "ID") == null);
         i = iToken;
         break;
-      case Token.color:
+      case T.color:
         switch (tokAt(i + 1)) {
-        case Token.density:
-          tok = Token.nada;
+        case T.density:
+          tok = T.nada;
           colorDensity = true;
           sbCommand.append(" color density");
           i++;
           break;
-        case Token.type:
-          tok = Token.nada;
+        case T.type:
+          tok = T.nada;
           colorByType = true;
           sbCommand.append(" color type");
           i++;
           break;
         }
-        if (tok == Token.nada)
+        if (tok == T.nada)
           break;
         //$FALL-THROUGH$ to translucent
-      case Token.translucent:
-      case Token.opaque:
+      case T.translucent:
+      case T.opaque:
         okNoAtoms = true;
         if (colorpt == 0)
           colorpt = i;
-        setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, i, theTok);
+        setMeshDisplayProperty(JC.SHAPE_CONTACT, i, theTok);
         i = iToken;
         break;
-      case Token.slab:
+      case T.slab:
         okNoAtoms = true;
         userSlabObject = getCapSlabObject(i, false);
-        setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
+        setShapeProperty(JC.SHAPE_CONTACT, "slab", userSlabObject);
         i = iToken;
         break;
 
       // now after this you need atoms
 
-      case Token.density:
+      case T.density:
         colorDensity = true;
         sbCommand.append(" density");
         if (isFloatParameter(i + 1)) {
@@ -16118,107 +16137,107 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           sbCommand.append(" " + -params[0]);
         }
         break;
-      case Token.resolution:
+      case T.resolution:
         float resolution = floatParameter(++i);
         if (resolution > 0) {
           sbCommand.append(" resolution ").appendF(resolution);
-          setShapeProperty(JmolConstants.SHAPE_CONTACT, "resolution", Float
+          setShapeProperty(JC.SHAPE_CONTACT, "resolution", Float
               .valueOf(resolution));
         }
         break;
-      case Token.within:
-      case Token.distance:
+      case T.within:
+      case T.distance:
         distance = floatParameter(++i);
         sbCommand.append(" within ").appendF(distance);
         break;
-      case Token.plus:
-      case Token.integer:
-      case Token.decimal:
+      case T.plus:
+      case T.integer:
+      case T.decimal:
         rd = encodeRadiusParameter(i, false, false);
         sbCommand.append(" ").appendO(rd);
         i = iToken;
         break;
-      case Token.intermolecular:
-      case Token.intramolecular:
-        intramolecular = (tok == Token.intramolecular ? Boolean.TRUE
+      case T.intermolecular:
+      case T.intramolecular:
+        intramolecular = (tok == T.intramolecular ? Boolean.TRUE
             : Boolean.FALSE);
         sbCommand.append(" ").appendO(theToken.value);
         break;
-      case Token.minset:
+      case T.minset:
         minSet = intParameter(++i);
         break;
-      case Token.hbond:
-      case Token.clash:
-      case Token.vanderwaals:
+      case T.hbond:
+      case T.clash:
+      case T.vanderwaals:
         contactType = tok;
         sbCommand.append(" ").appendO(theToken.value);
         break;
-      case Token.sasurface:
+      case T.sasurface:
         if (isFloatParameter(i + 1))
           saProbeRadius = floatParameter(++i);
         //$FALL-THROUGH$
-      case Token.cap:
-      case Token.nci:
-      case Token.surface:
+      case T.cap:
+      case T.nci:
+      case T.surface:
         localOnly = false;
         //$FALL-THROUGH$
-      case Token.trim:
-      case Token.full:
-      case Token.plane:
-      case Token.connect:
+      case T.trim:
+      case T.full:
+      case T.plane:
+      case T.connect:
         displayType = tok;
         sbCommand.append(" ").appendO(theToken.value);
-        if (tok == Token.sasurface)
+        if (tok == T.sasurface)
           sbCommand.append(" ").appendF(saProbeRadius);
         break;
-      case Token.parameters:
+      case T.parameters:
         params = floatParameterSet(++i, 1, 10);
         i = iToken;
         break;
-      case Token.bitset:
-      case Token.expressionBegin:
+      case T.bitset:
+      case T.expressionBegin:
         if (isWild || bsB != null)
           error(ERROR_invalidArgument);
-        bs = BitSetUtil.copy(atomExpressionAt(i));
+        bs = BSUtil.copy(atomExpressionAt(i));
         i = iToken;
         if (bsA == null)
           bsA = bs;
         else
           bsB = bs;
-        sbCommand.append(" ").append(Escape.escape(bs));
+        sbCommand.append(" ").append(Escape.e(bs));
         break;
       }
-      idSeen = (theTok != Token.delete);
+      idSeen = (theTok != T.delete);
     }
     if (!okNoAtoms && bsA == null)
       error(ERROR_endOfStatementUnexpected);
-    if (isSyntaxCheck)
+    if (chk)
       return;
 
     if (bsA != null) {
       // bond mode, intramolec set here
       RadiusData rd1 = (rd == null ? new RadiusData(null,
           0.26f, EnumType.OFFSET, EnumVdw.AUTO) : rd);
-      if (displayType == Token.nci && bsB == null && intramolecular != null
+      if (displayType == T.nci && bsB == null && intramolecular != null
           && intramolecular.booleanValue())
         bsB = bsA;
       else
         bsB = setContactBitSets(bsA, bsB, localOnly, distance, rd1, true);
       switch (displayType) {
-      case Token.cap:
-      case Token.sasurface:
-        BitSet bsSolvent = lookupIdentifierValue("solvent");
+      case T.cap:
+      case T.sasurface:
+        BS bsSolvent = lookupIdentifierValue("solvent");
         bsA.andNot(bsSolvent);
         bsB.andNot(bsSolvent);
         bsB.andNot(bsA);
         break;
-      case Token.surface:
+      case T.surface:
         bsB.andNot(bsA);
         break;
-      case Token.nci:
+      case T.nci:
         if (minSet == Integer.MAX_VALUE)
           minSet = 100;
-        setShapeProperty(JmolConstants.SHAPE_CONTACT, "minset", Integer
+        setShapeProperty(JC.SHAPE_CONTACT, "minset", Integer
             .valueOf(minSet));
         sbCommand.append(" minSet ").appendI(minSet);
         if (params == null)
@@ -16232,26 +16251,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
 
       if (params != null)
-        sbCommand.append(" parameters ").append(Escape.escape(params));
+        sbCommand.append(" parameters ").append(Escape.e(params));
 
       // now adjust for type -- HBOND or HYDROPHOBIC or MISC
       // these are just "standard shortcuts" they are not necessary at all
-      setShapeProperty(JmolConstants.SHAPE_CONTACT, "set", new Object[] {
+      setShapeProperty(JC.SHAPE_CONTACT, "set", new Object[] {
           Integer.valueOf(contactType), Integer.valueOf(displayType),
           Boolean.valueOf(colorDensity), Boolean.valueOf(colorByType), bsA,
           bsB, rd, Float.valueOf(saProbeRadius), params, sbCommand.toString() });
       if (colorpt > 0)
-        setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT, colorpt, 0);
+        setMeshDisplayProperty(JC.SHAPE_CONTACT, colorpt, 0);
     }
     if (iptDisplayProperty > 0) {
-      if (!setMeshDisplayProperty(JmolConstants.SHAPE_CONTACT,
+      if (!setMeshDisplayProperty(JC.SHAPE_CONTACT,
           iptDisplayProperty, 0))
         error(ERROR_invalidArgument);
     }
     if (userSlabObject != null && bsA != null)
-      setShapeProperty(JmolConstants.SHAPE_CONTACT, "slab", userSlabObject);
-    if (bsA != null && (displayType == Token.nci || localOnly)) {
-      Object volume = getShapeProperty(JmolConstants.SHAPE_CONTACT, "volume");
+      setShapeProperty(JC.SHAPE_CONTACT, "slab", userSlabObject);
+    if (bsA != null && (displayType == T.nci || localOnly)) {
+      Object volume = getShapeProperty(JC.SHAPE_CONTACT, "volume");
       if (Escape.isAD(volume)) {
         double[] vs = (double[]) volume;
         double v = 0;
@@ -16259,27 +16278,27 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           v += Math.abs(vs[i]);
         volume = Float.valueOf((float) v);
       }
-      int nsets = ((Integer) getShapeProperty(JmolConstants.SHAPE_CONTACT, "nSets")).intValue();
+      int nsets = ((Integer) getShapeProperty(JC.SHAPE_CONTACT, "nSets")).intValue();
       
-      if (colorDensity || displayType != Token.trim) {
+      if (colorDensity || displayType != T.trim) {
         showString((nsets == 0 ? "" : nsets + " contacts with ") + "net volume " + volume + " A^3");
       }
     }
   }
 
-  BitSet setContactBitSets(BitSet bsA, BitSet bsB, boolean localOnly,
+  BS setContactBitSets(BS bsA, BS bsB, boolean localOnly,
                            float distance, RadiusData rd, boolean warnMultiModel) {
     boolean withinAllModels;
-    BitSet bs;
+    BS bs;
     if (bsB == null) {
       // default is within just one model when {B} is missing
-      bsB = BitSetUtil.setAll(viewer.getAtomCount());
-      BitSetUtil.andNot(bsB, viewer.getDeletedAtoms());
+      bsB = BSUtil.setAll(viewer.getAtomCount());
+      BSUtil.andNot(bsB, viewer.getDeletedAtoms());
       bsB.andNot(bsA);
       withinAllModels = false;
     } else {
       // two atom sets specified; within ALL MODELS here
-      bs = BitSetUtil.copy(bsA);
+      bs = BSUtil.copy(bsA);
       bs.or(bsB);
       int nModels = viewer.getModelBitSet(bs, false).cardinality();
       withinAllModels = (nModels > 1);
@@ -16308,7 +16327,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // we AND them and see if that is A. 
         // If so, then the smaller set is
         // removed from the larger set.
-        bs = BitSetUtil.copy(bsB);
+        bs = BSUtil.copy(bsB);
         bs.and(bsA);
         if (bs.equals(bsA))
           bsB.andNot(bsA);
@@ -16320,89 +16339,89 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void lcaoCartoon() throws ScriptException {
-    shapeManager.loadShape(JmolConstants.SHAPE_LCAOCARTOON);
-    if (tokAt(1) == Token.list
-        && listIsosurface(JmolConstants.SHAPE_LCAOCARTOON))
+    sm.loadShape(JC.SHAPE_LCAOCARTOON);
+    if (tokAt(1) == T.list
+        && listIsosurface(JC.SHAPE_LCAOCARTOON))
       return;
-    setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "init", fullCommand);
-    if (statementLength == 1) {
-      setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "lcaoID", null);
+    setShapeProperty(JC.SHAPE_LCAOCARTOON, "init", fullCommand);
+    if (slen == 1) {
+      setShapeProperty(JC.SHAPE_LCAOCARTOON, "lcaoID", null);
       return;
     }
     boolean idSeen = false;
     String translucency = null;
-    for (int i = 1; i < statementLength; i++) {
+    for (int i = 1; i < slen; i++) {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
-      case Token.cap:
-      case Token.slab:
+      case T.cap:
+      case T.slab:
         propertyName = (String) theToken.value;
-        if (tokAt(i + 1) == Token.off)
+        if (tokAt(i + 1) == T.off)
           iToken = i + 1;
         propertyValue = getCapSlabObject(i, true);
         i = iToken;
         break;
-      case Token.center:
+      case T.center:
         // serialized lcaoCartoon in isosurface format
-        isosurface(JmolConstants.SHAPE_LCAOCARTOON);
+        isosurface(JC.SHAPE_LCAOCARTOON);
         return;
-      case Token.rotate:
+      case T.rotate:
         float degx = 0;
         float degy = 0;
         float degz = 0;
         switch (getToken(++i).tok) {
-        case Token.x:
-          degx = floatParameter(++i) * JmolConstants.radiansPerDegree;
+        case T.x:
+          degx = floatParameter(++i) * JC.radiansPerDegree;
           break;
-        case Token.y:
-          degy = floatParameter(++i) * JmolConstants.radiansPerDegree;
+        case T.y:
+          degy = floatParameter(++i) * JC.radiansPerDegree;
           break;
-        case Token.z:
-          degz = floatParameter(++i) * JmolConstants.radiansPerDegree;
+        case T.z:
+          degz = floatParameter(++i) * JC.radiansPerDegree;
           break;
         default:
           error(ERROR_invalidArgument);
         }
         propertyName = "rotationAxis";
-        propertyValue = Vector3f.new3(degx, degy, degz);
+        propertyValue = V3.new3(degx, degy, degz);
         break;
-      case Token.on:
-      case Token.display:
-      case Token.displayed:
+      case T.on:
+      case T.display:
+      case T.displayed:
         propertyName = "on";
         break;
-      case Token.off:
-      case Token.hide:
-      case Token.hidden:
+      case T.off:
+      case T.hide:
+      case T.hidden:
         propertyName = "off";
         break;
-      case Token.delete:
+      case T.delete:
         propertyName = "delete";
         break;
-      case Token.bitset:
-      case Token.expressionBegin:
+      case T.bitset:
+      case T.expressionBegin:
         propertyName = "select";
         propertyValue = atomExpressionAt(i);
         i = iToken;
         break;
-      case Token.color:
+      case T.color:
         translucency = setColorOptions(null, i + 1,
-            JmolConstants.SHAPE_LCAOCARTOON, -2);
+            JC.SHAPE_LCAOCARTOON, -2);
         if (translucency != null)
-          setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "settranslucency",
+          setShapeProperty(JC.SHAPE_LCAOCARTOON, "settranslucency",
               translucency);
         i = iToken;
         idSeen = true;
         continue;
-      case Token.translucent:
-      case Token.opaque:
-        setMeshDisplayProperty(JmolConstants.SHAPE_LCAOCARTOON, i, theTok);
+      case T.translucent:
+      case T.opaque:
+        setMeshDisplayProperty(JC.SHAPE_LCAOCARTOON, i, theTok);
         i = iToken;
         idSeen = true;
         continue;
-      case Token.spacefill:
-      case Token.string:
+      case T.spacefill:
+      case T.string:
         propertyValue = parameterAsString(i).toLowerCase();
         if (propertyValue.equals("spacefill"))
           propertyValue = "cpk";
@@ -16412,9 +16431,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           propertyName = "molecular";
         }
         break;
-      case Token.select:
-        if (tokAt(i + 1) == Token.bitset
-            || tokAt(i + 1) == Token.expressionBegin) {
+      case T.select:
+        if (tokAt(i + 1) == T.bitset
+            || tokAt(i + 1) == T.expressionBegin) {
           propertyName = "select";
           propertyValue = atomExpressionAt(i + 1);
           i = iToken;
@@ -16425,22 +16444,22 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             propertyValue = "cpk";
         }
         break;
-      case Token.scale:
+      case T.scale:
         propertyName = "scale";
         propertyValue = Float.valueOf(floatParameter(++i));
         break;
-      case Token.lonepair:
-      case Token.lp:
+      case T.lonepair:
+      case T.lp:
         propertyName = "lonePair";
         break;
-      case Token.radical:
-      case Token.rad:
+      case T.radical:
+      case T.rad:
         propertyName = "radical";
         break;
-      case Token.molecular:
+      case T.molecular:
         propertyName = "molecular";
         break;
-      case Token.create:
+      case T.create:
         propertyValue = parameterAsString(++i);
         propertyName = "create";
         if (optParameterAsString(i + 1).equalsIgnoreCase("molecular")) {
@@ -16448,7 +16467,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           propertyName = "molecular";
         }
         break;
-      case Token.id:
+      case T.id:
         propertyValue = getShapeNameParameter(++i);
         i = iToken;
         if (idSeen)
@@ -16456,8 +16475,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyName = "lcaoID";
         break;
       default:
-        if (theTok == Token.times || Token.tokAttr(theTok, Token.identifier)) {
-          if (theTok != Token.times)
+        if (theTok == T.times || T.tokAttr(theTok, T.identifier)) {
+          if (theTok != T.times)
             propertyValue = parameterAsString(i);
           if (idSeen)
             error(ERROR_invalidArgument);
@@ -16466,14 +16485,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         break;
       }
-      if (theTok != Token.delete)
+      if (theTok != T.delete)
         idSeen = true;
       if (propertyName == null)
         error(ERROR_invalidArgument);
-      setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, propertyName,
+      setShapeProperty(JC.SHAPE_LCAOCARTOON, propertyName,
           propertyValue);
     }
-    setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "clear", null);
+    setShapeProperty(JC.SHAPE_LCAOCARTOON, "clear", null);
   }
 
   private Object getCapSlabObject(int i, boolean isLcaoCartoon)
@@ -16484,76 +16503,76 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     Object data = null;
     int tok0 = tokAt(i);
-    boolean isSlab = (tok0 == Token.slab);
+    boolean isSlab = (tok0 == T.slab);
     int tok = tokAt(i + 1);
     Point4f plane = null;
-    Point3f[] pts = null;
+    P3[] pts = null;
     float d, d2;
-    BitSet bs = null;
+    BS bs = null;
     Short slabColix = null;
     Integer slabMeshType = null;
-    if (tok == Token.translucent) {
+    if (tok == T.translucent) {
       float slabTranslucency = (isFloatParameter(++i + 1) ? floatParameter(++i)
           : 0.5f);
       if (isColorParam(i + 1)) {
-        slabColix = Short.valueOf(Colix.getColixTranslucent3(Colix
+        slabColix = Short.valueOf(C.getColixTranslucent3(C
             .getColix(getArgbParam(i + 1)), slabTranslucency != 0,
             slabTranslucency));
         i = iToken;
       } else {
-        slabColix = Short.valueOf(Colix.getColixTranslucent3(
-            Colix.INHERIT_COLOR, slabTranslucency != 0, slabTranslucency));
+        slabColix = Short.valueOf(C.getColixTranslucent3(
+            C.INHERIT_COLOR, slabTranslucency != 0, slabTranslucency));
       }
       switch (tok = tokAt(i + 1)) {
-      case Token.mesh:
-      case Token.fill:
+      case T.mesh:
+      case T.fill:
         slabMeshType = Integer.valueOf(tok);
         tok = tokAt(++i + 1);
         break;
       default:
-        slabMeshType = Integer.valueOf(Token.fill);
+        slabMeshType = Integer.valueOf(T.fill);
         break;
       }
     }
     //TODO: check for compatibility with LCAOCARTOONS
     switch (tok) {
-    case Token.bitset:
-    case Token.expressionBegin:
+    case T.bitset:
+    case T.expressionBegin:
       data = atomExpressionAt(i + 1);
-      tok = Token.decimal;
+      tok = T.decimal;
       iToken++;
       break;
-    case Token.off:
+    case T.off:
       iToken = i + 1;
       return new Integer(Integer.MIN_VALUE);
-    case Token.none:
+    case T.none:
       iToken = i + 1;
       break;
-    case Token.dollarsign:
+    case T.dollarsign:
       // do we need distance here? "-" here?
       i++;
       data = new Object[] { Float.valueOf(1), parameterAsString(++i) };
-      tok = Token.mesh;
+      tok = T.mesh;
       break;
-    case Token.within:
+    case T.within:
       // isosurface SLAB WITHIN RANGE f1 f2
       i++;
-      if (tokAt(++i) == Token.range) {
+      if (tokAt(++i) == T.range) {
         d = floatParameter(++i);
         d2 = floatParameter(++i);
         data = new Object[] { Float.valueOf(d), Float.valueOf(d2) };
-        tok = Token.range;
+        tok = T.range;
       } else if (isFloatParameter(i)) {
         // isosurface SLAB WITHIN distance {atomExpression}|[point array]
         d = floatParameter(i);
         if (isCenterParameter(++i)) {
-          Point3f pt = centerParameter(i);
-          if (isSyntaxCheck || !(expressionResult instanceof BitSet)) {
-            pts = new Point3f[] { pt };
+          P3 pt = centerParameter(i);
+          if (chk || !(expressionResult instanceof BS)) {
+            pts = new P3[] { pt };
           } else {
             Atom[] atoms = viewer.modelSet.atoms;
-            bs = (BitSet) expressionResult;
-            pts = new Point3f[bs.cardinality()];
+            bs = (BS) expressionResult;
+            pts = new P3[bs.cardinality()];
             for (int k = 0, j = bs.nextSetBit(0); j >= 0; j = bs
                 .nextSetBit(j + 1), k++)
               pts[k] = atoms[j];
@@ -16568,10 +16587,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         data = new Object[] { Float.valueOf(d), pts, bs };
       } else {
         data = getPointArray(i, 4);
-        tok = Token.boundbox;
+        tok = T.boundbox;
       }
       break;
-    case Token.boundbox:
+    case T.boundbox:
       iToken = i + 1;
       data = BoxInfo.getCriticalPoints(viewer.getBoundBoxVertices(), null);
       break;
@@ -16579,31 +16598,31 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // data = BoxInfo.getCriticalPoints(((JmolViewer)(viewer)).slicer.getSliceVert(), null);
     //iToken = i + 1;
     //break;  
-    case Token.brillouin:
-    case Token.unitcell:
+    case T.brillouin:
+    case T.unitcell:
       iToken = i + 1;
       SymmetryInterface unitCell = viewer.getCurrentUnitCell();
       if (unitCell == null) {
-        if (tok == Token.unitcell)
+        if (tok == T.unitcell)
           error(ERROR_invalidArgument);
       } else {
         pts = BoxInfo.getCriticalPoints(unitCell.getUnitCellVertices(),
             unitCell.getCartesianOffset());
         int iType = (int) unitCell
             .getUnitCellInfoType(SimpleUnitCell.INFO_DIMENSIONS);
-        Vector3f v1 = null;
-        Vector3f v2 = null;
+        V3 v1 = null;
+        V3 v2 = null;
         switch (iType) {
         case 3:
           break;
         case 1: // polymer
-          v2 = Vector3f.newV(pts[2]);
+          v2 = V3.newV(pts[2]);
           v2.sub(pts[0]);
           v2.scale(1000f);
           //$FALL-THROUGH$
         case 2: // slab
           // "a b c" is really "z y x"
-          v1 = Vector3f.newV(pts[1]);
+          v1 = V3.newV(pts[1]);
           v1.sub(pts[0]);
           v1.scale(1000f);
           pts[0].sub(v1);
@@ -16626,7 +16645,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           return new Integer((int) d);
         d2 = floatParameter(++i);
         data = new Object[] { Float.valueOf(d), Float.valueOf(d2) };
-        tok = Token.range;
+        tok = T.range;
         break;
       }
       // isosurface SLAB [plane]
@@ -16636,7 +16655,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!Float.isNaN(off))
         plane.w -= off;
       data = plane;
-      tok = Token.plane;
+      tok = T.plane;
     }
     Object colorData = (slabMeshType == null ? null : new Object[] {
         slabMeshType, slabColix });
@@ -16646,10 +16665,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private boolean mo(boolean isInitOnly) throws ScriptException {
     int offset = Integer.MAX_VALUE;
     boolean isNegOffset = false;
-    BitSet bsModels = viewer.getVisibleFramesBitSet();
+    BS bsModels = viewer.getVisibleFramesBitSet();
     List<Object[]> propertyList = new ArrayList<Object[]>();
     int i0 = 1;
-    if (tokAt(1) == Token.model || tokAt(1) == Token.frame) {
+    if (tokAt(1) == T.model || tokAt(1) == T.frame) {
       i0 = modelNumberParameter(2);
       if (i0 < 0)
         error(ERROR_invalidArgument);
@@ -16659,16 +16678,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     for (int iModel = bsModels.nextSetBit(0); iModel >= 0; iModel = bsModels
         .nextSetBit(iModel + 1)) {
-      shapeManager.loadShape(JmolConstants.SHAPE_MO);
+      sm.loadShape(JC.SHAPE_MO);
       int i = i0;
-      if (tokAt(i) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
+      if (tokAt(i) == T.list && listIsosurface(JC.SHAPE_MO))
         return true;
-      setShapeProperty(JmolConstants.SHAPE_MO, "init", Integer.valueOf(iModel));
+      setShapeProperty(JC.SHAPE_MO, "init", Integer.valueOf(iModel));
       String title = null;
-      int moNumber = ((Integer) getShapeProperty(JmolConstants.SHAPE_MO,
+      int moNumber = ((Integer) getShapeProperty(JC.SHAPE_MO,
           "moNumber")).intValue();
       float[] linearCombination = (float[]) getShapeProperty(
-          JmolConstants.SHAPE_MO, "moLinearCombination");
+          JC.SHAPE_MO, "moLinearCombination");
       if (isInitOnly)
         return true;// (moNumber != 0);
       if (moNumber == 0)
@@ -16677,70 +16696,70 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       Object propertyValue = null;
 
       switch (getToken(i).tok) {
-      case Token.cap:
-      case Token.slab:
+      case T.cap:
+      case T.slab:
         propertyName = (String) theToken.value;
         propertyValue = getCapSlabObject(i, false);
         i = iToken;
         break;
-      case Token.density:
+      case T.density:
         propertyName = "squareLinear";
         propertyValue = Boolean.TRUE;
         linearCombination = new float[] {1};
         offset = moNumber = 0;
         break;
-      case Token.integer:
+      case T.integer:
         moNumber = intParameter(i);
         linearCombination = moCombo(propertyList);
         if (linearCombination == null && moNumber < 0)
           linearCombination = new float[] { -100, -moNumber };
         break;
-      case Token.minus:
+      case T.minus:
         switch (tokAt(++i)) {
-        case Token.homo:
-        case Token.lumo:
+        case T.homo:
+        case T.lumo:
           break;
         default:
           error(ERROR_invalidArgument);
         }
         isNegOffset = true;
         //$FALL-THROUGH$
-      case Token.homo:
-      case Token.lumo:
+      case T.homo:
+      case T.lumo:
         if ((offset = moOffset(i)) == Integer.MAX_VALUE)
           error(ERROR_invalidArgument);
         moNumber = 0;
         linearCombination = moCombo(propertyList);
         break;
-      case Token.next:
-        moNumber = Token.next;
+      case T.next:
+        moNumber = T.next;
         linearCombination = moCombo(propertyList);
         break;
-      case Token.prev:
-        moNumber = Token.prev;
+      case T.prev:
+        moNumber = T.prev;
         linearCombination = moCombo(propertyList);
         break;
-      case Token.color:
-        setColorOptions(null, i + 1, JmolConstants.SHAPE_MO, 2);
+      case T.color:
+        setColorOptions(null, i + 1, JC.SHAPE_MO, 2);
         break;
-      case Token.plane:
+      case T.plane:
         // plane {X, Y, Z, W}
         propertyName = "plane";
         propertyValue = planeParameter(i + 1);
         break;
-      case Token.point:
+      case T.point:
         addShapeProperty(propertyList, "randomSeed",
-            tokAt(i + 2) == Token.integer ? Integer
+            tokAt(i + 2) == T.integer ? Integer
                 .valueOf(intParameter(i + 2)) : null);
         propertyName = "monteCarloCount";
         propertyValue = Integer.valueOf(intParameter(i + 1));
         break;
-      case Token.scale:
+      case T.scale:
         propertyName = "scale";
         propertyValue = Float.valueOf(floatParameter(i + 1));
         break;
-      case Token.cutoff:
-        if (tokAt(i + 1) == Token.plus) {
+      case T.cutoff:
+        if (tokAt(i + 1) == T.plus) {
           propertyName = "cutoffPositive";
           propertyValue = Float.valueOf(floatParameter(i + 2));
         } else {
@@ -16748,50 +16767,50 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           propertyValue = Float.valueOf(floatParameter(i + 1));
         }
         break;
-      case Token.debug:
+      case T.debug:
         propertyName = "debug";
         break;
-      case Token.noplane:
+      case T.noplane:
         propertyName = "plane";
         break;
-      case Token.pointsperangstrom:
-      case Token.resolution:
+      case T.pointsperangstrom:
+      case T.resolution:
         propertyName = "resolution";
         propertyValue = Float.valueOf(floatParameter(i + 1));
         break;
-      case Token.squared:
+      case T.squared:
         propertyName = "squareData";
         propertyValue = Boolean.TRUE;
         break;
-      case Token.titleformat:
-        if (i + 1 < statementLength && tokAt(i + 1) == Token.string) {
+      case T.titleformat:
+        if (i + 1 < slen && tokAt(i + 1) == T.string) {
           propertyName = "titleFormat";
           propertyValue = parameterAsString(i + 1);
         }
         break;
-      case Token.identifier:
+      case T.identifier:
         error(ERROR_invalidArgument);
         break;
       default:
         if (isArrayParameter(i)) {
           linearCombination = floatParameterSet(i, 1, Integer.MAX_VALUE);
-          if (tokAt(iToken + 1) == Token.squared) {
+          if (tokAt(iToken + 1) == T.squared) {
             addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
             iToken++;
           }
           break;
         }
         int ipt = iToken;
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_MO, 0, theTok))
+        if (!setMeshDisplayProperty(JC.SHAPE_MO, 0, theTok))
           error(ERROR_invalidArgument);
-        setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
-        setMeshDisplayProperty(JmolConstants.SHAPE_MO, ipt, tokAt(ipt));
+        setShapeProperty(JC.SHAPE_MO, "setProperties", propertyList);
+        setMeshDisplayProperty(JC.SHAPE_MO, ipt, tokAt(ipt));
         return true;
       }
       if (propertyName != null)
         addShapeProperty(propertyList, propertyName, propertyValue);
       if (moNumber != Integer.MAX_VALUE || linearCombination != null) {
-        if (tokAt(iToken + 1) == Token.string)
+        if (tokAt(iToken + 1) == T.string)
           title = parameterAsString(++iToken);
         setCursorWait(true);
         setMoData(propertyList, moNumber, linearCombination, offset,
@@ -16799,14 +16818,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         addShapeProperty(propertyList, "finalize", null);
       }
       if (propertyList.size() > 0)
-        setShapeProperty(JmolConstants.SHAPE_MO, "setProperties", propertyList);
+        setShapeProperty(JC.SHAPE_MO, "setProperties", propertyList);
       propertyList.clear();
     }
     return true;
   }
 
   private float[] moCombo(List<Object[]> propertyList) {
-    if (tokAt(iToken + 1) != Token.squared)
+    if (tokAt(iToken + 1) != T.squared)
       return null;
     addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
     iToken++;
@@ -16814,14 +16833,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private int moOffset(int index) throws ScriptException {
-    boolean isHomo = (getToken(index).tok == Token.homo);
+    boolean isHomo = (getToken(index).tok == T.homo);
     int offset = (isHomo ? 0 : 1);
     int tok = tokAt(++index);
-    if (tok == Token.integer && intParameter(index) < 0)
+    if (tok == T.integer && intParameter(index) < 0)
       offset += intParameter(index);
-    else if (tok == Token.plus)
+    else if (tok == T.plus)
       offset += intParameter(++index);
-    else if (tok == Token.minus)
+    else if (tok == T.minus)
       offset -= intParameter(++index);
     return offset;
   }
@@ -16830,7 +16849,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void setMoData(List<Object[]> propertyList, int moNumber, float[] lc,
                          int offset, boolean isNegOffset, int modelIndex,
                          String title) throws ScriptException {
-    if (isSyntaxCheck)
+    if (chk)
       return;
     if (modelIndex < 0) {
       modelIndex = viewer.getCurrentModelIndex();
@@ -16852,9 +16871,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           : 0);
       int lastMoCount = (moData.containsKey("lastMoCount") ? ((Integer) moData
           .get("lastMoCount")).intValue() : 1);
-      if (moNumber == Token.prev)
+      if (moNumber == T.prev)
         moNumber = lastMoNumber - 1;
-      else if (moNumber == Token.next)
+      else if (moNumber == T.next)
         moNumber = lastMoNumber + lastMoCount;
       mos = (List<Map<String, Object>>) (moData.get("mos"));
       nOrb = (mos == null ? 0 : mos.size());
@@ -16910,7 +16929,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // constuct set of equivalent energies and square this
 
         float energy = f.floatValue();
-        BitSet bs = BitSet.newN(nOrb);
+        BS bs = BS.newN(nOrb);
         int n = 0;
         boolean isAllElectrons = (lc.length == 1 && lc[0] == 1);
         for (int i = 0; i < nOrb; i++) {
@@ -16948,11 +16967,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     iToken = 0;
     int tok1 = tokAt(1);
     int tok2 = tokAt(2);
-    if (tok1 == Token.delete || tok2 == Token.delete
-        && tokAt(++iToken) == Token.all) {
+    if (tok1 == T.delete || tok2 == T.delete
+        && tokAt(++iToken) == T.all) {
       setShapeProperty(iShape, "delete", null);
       iToken += 2;
-      if (statementLength > iToken) {
+      if (slen > iToken) {
         setShapeProperty(iShape, "init", fullCommand);
         setShapeProperty(iShape, "thisID", MeshCollection.PREVIOUS_MESH_ID);
       }
@@ -16961,10 +16980,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     iToken = 1;
     if (!setMeshDisplayProperty(iShape, 0, tok1)) {
       setShapeProperty(iShape, "thisID", MeshCollection.PREVIOUS_MESH_ID);
-      if (iShape != JmolConstants.SHAPE_DRAW)
+      if (iShape != JC.SHAPE_DRAW)
         setShapeProperty(iShape, "title", new String[] { thisCommand });
-      if (tok1 != Token.id
-          && (tok2 == Token.times || tok1 == Token.times
+      if (tok1 != T.id
+          && (tok2 == T.times || tok1 == T.times
               && setMeshDisplayProperty(iShape, 0, tok2))) {
         String id = setShapeId(iShape, 1, false);
         iToken++;
@@ -16982,22 +17001,22 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private boolean listIsosurface(int iShape) throws ScriptException {
     checkLength23();
-    if (!isSyntaxCheck)
+    if (!chk)
       showString((String) getShapeProperty(iShape, "list"
-          + (tokAt(2) == Token.nada ? "" : " " + getToken(2).value)));
+          + (tokAt(2) == T.nada ? "" : " " + getToken(2).value)));
     return true;
   }
 
   private void isosurface(int iShape) throws ScriptException {
     // also called by lcaoCartoon
-    shapeManager.loadShape(iShape);
-    if (tokAt(1) == Token.list && listIsosurface(iShape))
+    sm.loadShape(iShape);
+    if (tokAt(1) == T.list && listIsosurface(iShape))
       return;
     int iptDisplayProperty = 0;
-    boolean isIsosurface = (iShape == JmolConstants.SHAPE_ISOSURFACE);
-    boolean isPmesh = (iShape == JmolConstants.SHAPE_PMESH);
-    boolean isPlot3d = (iShape == JmolConstants.SHAPE_PLOT3D);
-    boolean isLcaoCartoon = (iShape == JmolConstants.SHAPE_LCAOCARTOON);
+    boolean isIsosurface = (iShape == JC.SHAPE_ISOSURFACE);
+    boolean isPmesh = (iShape == JC.SHAPE_PMESH);
+    boolean isPlot3d = (iShape == JC.SHAPE_PLOT3D);
+    boolean isLcaoCartoon = (iShape == JC.SHAPE_LCAOCARTOON);
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
     boolean isMapped = false;
@@ -17021,16 +17040,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int ptWithin = 0;
     Boolean smoothing = null;
     int smoothingPower = Integer.MAX_VALUE;
-    BitSet bs = null;
-    BitSet bsSelect = null;
-    BitSet bsIgnore = null;
-    StringXBuilder sbCommand = new StringXBuilder();
-    Point3f pt;
+    BS bs = null;
+    BS bsSelect = null;
+    BS bsIgnore = null;
+    SB sbCommand = new SB();
+    P3 pt;
     Point4f plane = null;
-    Point3f lattice = null;
-    Point3f[] pts;
+    P3 lattice = null;
+    P3[] pts;
     String str = null;
-    int modelIndex = (isSyntaxCheck ? 0 : Integer.MIN_VALUE);
+    int modelIndex = (chk ? 0 : Integer.MIN_VALUE);
     setCursorWait(true);
     boolean idSeen = (initIsosurface(iShape) != null);
     boolean isWild = (idSeen && getShapeProperty(iShape, "ID") == null);
@@ -17046,137 +17065,137 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (isPmesh || isPlot3d)
       addShapeProperty(propertyList, "fileType", "Pmesh");
 
-    for (int i = iToken; i < statementLength; ++i) {
+    for (int i = iToken; i < slen; ++i) {
       String propertyName = null;
       Object propertyValue = null;
       getToken(i);
-      if (theTok == Token.identifier)
+      if (theTok == T.identifier)
         str = parameterAsString(i);
       switch (theTok) {
       // settings only
-      case Token.isosurfacepropertysmoothing:
-        smoothing = (getToken(++i).tok == Token.on ? Boolean.TRUE
-            : theTok == Token.off ? Boolean.FALSE : null);
+      case T.isosurfacepropertysmoothing:
+        smoothing = (getToken(++i).tok == T.on ? Boolean.TRUE
+            : theTok == T.off ? Boolean.FALSE : null);
         if (smoothing == null)
           error(ERROR_invalidArgument);
         continue;
-      case Token.isosurfacepropertysmoothingpower:
+      case T.isosurfacepropertysmoothingpower:
         smoothingPower = intParameter(++i);
         continue;
         // offset, rotate, and scale3d don't need to be saved in sbCommand
         // because they are display properties
-      case Token.move: // Jmol 13.0.RC2 -- required for state saving after coordinate-based translate/rotate
+      case T.move: // Jmol 13.0.RC2 -- required for state saving after coordinate-based translate/rotate
         propertyName = "moveIsosurface";
-        if (tokAt(++i) != Token.matrix4f)
+        if (tokAt(++i) != T.matrix4f)
           error(ERROR_invalidArgument);
         propertyValue = getToken(i++).value;
         break;
-      case Token.offset:
+      case T.offset:
         propertyName = "offset";
         propertyValue = centerParameter(++i);
         i = iToken;
         break;
-      case Token.rotate:
+      case T.rotate:
         propertyName = "rotate";
-        propertyValue = (tokAt(iToken = ++i) == Token.none ? null
+        propertyValue = (tokAt(iToken = ++i) == T.none ? null
             : getPoint4f(i));
         i = iToken;
         break;
-      case Token.scale3d:
+      case T.scale3d:
         propertyName = "scale3d";
         propertyValue = Float.valueOf(floatParameter(++i));
         break;
-      case Token.period:
+      case T.period:
         sbCommand.append(" periodic");
         propertyName = "periodic";
         break;
-      case Token.origin:
-      case Token.step:
-      case Token.point:
+      case T.origin:
+      case T.step:
+      case T.point:
         propertyName = theToken.value.toString();
         sbCommand.append(" ").appendO(theToken.value);
         propertyValue = centerParameter(++i);
-        sbCommand.append(" ").append(Escape.escape(propertyValue));
+        sbCommand.append(" ").append(Escape.e(propertyValue));
         i = iToken;
         break;
-      case Token.boundbox:
+      case T.boundbox:
         if (fullCommand.indexOf("# BBOX=") >= 0) {
           String[] bbox = TextFormat.split(Parser.getQuotedAttribute(
               fullCommand, "# BBOX"), ',');
-          pts = new Point3f[] { (Point3f) Escape.unescapePoint(bbox[0]),
-              (Point3f) Escape.unescapePoint(bbox[1]) };
+          pts = new P3[] { (P3) Escape.uP(bbox[0]),
+              (P3) Escape.uP(bbox[1]) };
         } else if (isCenterParameter(i + 1)) {
-          pts = new Point3f[] { getPoint3f(i + 1, true),
+          pts = new P3[] { getPoint3f(i + 1, true),
               getPoint3f(iToken + 1, true) };
           i = iToken;
         } else {
           pts = viewer.getBoundBoxVertices();
         }
-        sbCommand.append(" boundBox " + Escape.escapePt(pts[0]) + " "
-            + Escape.escapePt(pts[pts.length - 1]));
+        sbCommand.append(" boundBox " + Escape.eP(pts[0]) + " "
+            + Escape.eP(pts[pts.length - 1]));
         propertyName = "boundingBox";
         propertyValue = pts;
         break;
-      case Token.pmesh:
+      case T.pmesh:
         isPmesh = true;
         sbCommand.append(" pmesh");
         propertyName = "fileType";
         propertyValue = "Pmesh";
         break;
-      case Token.intersection:
+      case T.intersection:
         // isosurface intersection {A} {B} VDW....
         // isosurface intersection {A} {B} function "a-b" VDW....
         bsSelect = atomExpressionAt(++i);
-        if (isSyntaxCheck) {
-          bs = new BitSet();
-        } else if (tokAt(iToken + 1) == Token.expressionBegin
-            || tokAt(iToken + 1) == Token.bitset) {
+        if (chk) {
+          bs = new BS();
+        } else if (tokAt(iToken + 1) == T.expressionBegin
+            || tokAt(iToken + 1) == T.bitset) {
           bs = atomExpressionAt(++iToken);
           bs.and(viewer.getAtomsWithinRadius(5.0f, bsSelect, false, null));
         } else {
           // default is "within(5.0, selected) and not within(molecule,selected)"
           bs = viewer.getAtomsWithinRadius(5.0f, bsSelect, true, null);
-          bs.andNot(viewer.getAtomBits(Token.molecule, bsSelect));
+          bs.andNot(viewer.getAtomBits(T.molecule, bsSelect));
         }
         bs.andNot(bsSelect);
-        sbCommand.append(" intersection ").append(Escape.escape(bsSelect))
-            .append(" ").append(Escape.escape(bs));
+        sbCommand.append(" intersection ").append(Escape.e(bsSelect))
+            .append(" ").append(Escape.e(bs));
         i = iToken;
-        if (tokAt(i + 1) == Token.function) {
+        if (tokAt(i + 1) == T.function) {
           i++;
           String f = (String) getToken(++i).value;
-          sbCommand.append(" function ").append(Escape.escapeStr(f));
-          if (!isSyntaxCheck)
+          sbCommand.append(" function ").append(Escape.eS(f));
+          if (!chk)
             addShapeProperty(propertyList, "func", (f.equals("a+b")
                 || f.equals("a-b") ? f : createFunction("__iso__", "a,b", f)));
         } else {
           haveIntersection = true;
         }
         propertyName = "intersection";
-        propertyValue = new BitSet[] { bsSelect, bs };
+        propertyValue = new BS[] { bsSelect, bs };
         break;
-      case Token.display:
-      case Token.within:
-        boolean isDisplay = (theTok == Token.display);
+      case T.display:
+      case T.within:
+        boolean isDisplay = (theTok == T.display);
         if (isDisplay) {
           sbCommand.append(" display");
           iptDisplayProperty = i;
           int tok = tokAt(i + 1);
-          if (tok == Token.nada)
+          if (tok == T.nada)
             continue;
           i++;
-          addShapeProperty(propertyList, "token", Integer.valueOf(Token.on));
-          if (tok == Token.bitset || tok == Token.all) {
+          addShapeProperty(propertyList, "token", Integer.valueOf(T.on));
+          if (tok == T.bitset || tok == T.all) {
             propertyName = "bsDisplay";
-            if (tok == Token.all) {
+            if (tok == T.all) {
               sbCommand.append(" all");
             } else {
-              propertyValue = statement[i].value;
-              sbCommand.append(" ").append(Escape.escape(propertyValue));
+              propertyValue = st[i].value;
+              sbCommand.append(" ").append(Escape.e(propertyValue));
             }
             checkLast(i);
             break;
-          } else if (tok != Token.within) {
+          } else if (tok != T.within) {
             iToken = i;
             error(ERROR_invalidArgument);
           }
@@ -17184,10 +17203,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           ptWithin = i;
         }
         float distance;
-        Point3f ptc = null;
+        P3 ptc = null;
         bs = null;
         boolean havePt = false;
-        if (tokAt(i + 1) == Token.expressionBegin) {
+        if (tokAt(i + 1) == T.expressionBegin) {
           // within ( x.x , .... )
           distance = floatParameter(i + 3);
           if (isPoint3f(i + 4)) {
@@ -17199,7 +17218,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             havePt = true;
             iToken = iToken + 2;
           } else {
-            bs = atomExpression(statement, i + 5, statementLength, true, false,
+            bs = atomExpression(st, i + 5, slen, true, false,
                 false, true);
             if (bs == null)
               error(ERROR_invalidArgument);
@@ -17212,12 +17231,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           checkLast(iToken);
         i = iToken;
         if (fullCommand.indexOf("# WITHIN=") >= 0)
-          bs = Escape.unescapeBitset(Parser.getQuotedAttribute(fullCommand,
+          bs = Escape.uB(Parser.getQuotedAttribute(fullCommand,
               "# WITHIN"));
         else if (!havePt)
-          bs = (expressionResult instanceof BitSet ? (BitSet) expressionResult
+          bs = (expressionResult instanceof BS ? (BS) expressionResult
               : null);
-        if (!isSyntaxCheck) {
+        if (!chk) {
           if (bs != null && modelIndex >= 0) {
             bs.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
           }
@@ -17226,21 +17245,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
           getWithinDistanceVector(propertyList, distance, ptc, bs, isDisplay);
           sbCommand.append(" within ").appendF(distance).append(" ").append(
-              bs == null ? Escape.escapePt(ptc) : Escape.escape(bs));
+              bs == null ? Escape.eP(ptc) : Escape.e(bs));
         }
         continue;
-      case Token.parameters:
+      case T.parameters:
         propertyName = "parameters";
         // if > 1 parameter, then first is assumed to be the cutoff. 
         float[] fparams = floatParameterSet(++i, 1, 10);
         i = iToken;
         propertyValue = fparams;
-        sbCommand.append(" parameters ").append(Escape.escape(fparams));
+        sbCommand.append(" parameters ").append(Escape.e(fparams));
         break;
-      case Token.property:
-      case Token.variable:
+      case T.property:
+      case T.variable:
         onlyOneModel = theToken.value;
-        boolean isVariable = (theTok == Token.variable);
+        boolean isVariable = (theTok == T.variable);
         int tokProperty = tokAt(i + 1);
         if (mepOrMlp == null) { // not mlp or mep
           if (!surfaceObjectSeen && !isMapped && !planeSeen) {
@@ -17253,12 +17272,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (smoothing == null) {
             boolean allowSmoothing = true;
             switch (tokProperty) {
-            case Token.atomindex:
-            case Token.atomno:
-            case Token.elemno:
-            case Token.color:
-            case Token.resno:
-            case Token.temperature:
+            case T.atomindex:
+            case T.atomno:
+            case T.elemno:
+            case T.color:
+            case T.resno:
+            case T.temperature:
               allowSmoothing = false;
               break;
             }
@@ -17287,7 +17306,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
         if (str.toLowerCase().indexOf("property_") == 0) {
           data = new float[viewer.getAtomCount()];
-          if (isSyntaxCheck)
+          if (chk)
             continue;
           data = viewer.getDataFloat(str);
           if (data == null)
@@ -17305,26 +17324,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             data = floatParameterSet(i, atomCount, atomCount);
           } else {
             data = new float[atomCount];
-            if (!isSyntaxCheck)
+            if (!chk)
               Parser.parseStringInfestedFloatArray(""
-                  + getParameter(vname, Token.string), null, data);
+                  + getParameter(vname, T.string), null, data);
           }
-          if (!isSyntaxCheck/* && (surfaceObjectSeen)*/)
-            sbCommand.append(" \"\" ").append(Escape.escape(data));
+          if (!chk/* && (surfaceObjectSeen)*/)
+            sbCommand.append(" \"\" ").append(Escape.e(data));
         } else {
           getToken(++i);
-          if (!isSyntaxCheck) {
+          if (!chk) {
             sbCommand.append(" " + theToken.value);
             Atom[] atoms = viewer.modelSet.atoms;
             viewer.autoCalculate(tokProperty);
-            if (tokProperty != Token.color)
+            if (tokProperty != T.color)
               for (int iAtom = atomCount; --iAtom >= 0;)
                 data[iAtom] = Atom.atomPropertyFloat(viewer, atoms[iAtom],
                     tokProperty);
           }
-          if (tokProperty == Token.color)
+          if (tokProperty == T.color)
             colorScheme = "inherit";
-          if (tokAt(i + 1) == Token.within) {
+          if (tokAt(i + 1) == T.within) {
             float d = floatParameter(i = i + 2);
             sbCommand.append(" within " + d);
             addShapeProperty(propertyList, "propertyDistanceMax", Float
@@ -17333,7 +17352,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         propertyValue = data;
         break;
-      case Token.model:
+      case T.model:
         if (surfaceObjectSeen)
           error(ERROR_invalidArgument);
         modelIndex = modelNumberParameter(++i);
@@ -17346,50 +17365,50 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyName = "modelIndex";
         propertyValue = Integer.valueOf(modelIndex);
         break;
-      case Token.select:
+      case T.select:
         // in general, viewer.getCurrentSelection() is used, but we may
         // override that here. But we have to be careful that
         // we PREPEND the selection to the command if no surface object
         // has been seen yet, and APPEND it if it has.
         propertyName = "select";
-        BitSet bs1 = atomExpressionAt(++i);
+        BS bs1 = atomExpressionAt(++i);
         propertyValue = bs1;
         i = iToken;
-        boolean isOnly = (tokAt(i + 1) == Token.only);
+        boolean isOnly = (tokAt(i + 1) == T.only);
         if (isOnly) {
           i++;
-          BitSet bs2 = BitSetUtil.copy(bs1);
-          BitSetUtil.invertInPlace(bs2, viewer.getAtomCount());
+          BS bs2 = BSUtil.copy(bs1);
+          BSUtil.invertInPlace(bs2, viewer.getAtomCount());
           addShapeProperty(propertyList, "ignore", bs2);
-          sbCommand.append(" ignore ").append(Escape.escape(bs2));
+          sbCommand.append(" ignore ").append(Escape.e(bs2));
         }
         if (surfaceObjectSeen || isMapped) {
-          sbCommand.append(" select " + Escape.escape(propertyValue));
+          sbCommand.append(" select " + Escape.e(propertyValue));
         } else {
-          bsSelect = (BitSet) propertyValue;
+          bsSelect = (BS) propertyValue;
           if (modelIndex < 0 && bsSelect.nextSetBit(0) >= 0)
             modelIndex = viewer.getAtomModelIndex(bsSelect.nextSetBit(0));
         }
         break;
-      case Token.set:
+      case T.set:
         thisSetNumber = intParameter(++i);
         break;
-      case Token.center:
+      case T.center:
         propertyName = "center";
         propertyValue = centerParameter(++i);
-        sbCommand.append(" center " + Escape.escape(propertyValue));
+        sbCommand.append(" center " + Escape.e(propertyValue));
         i = iToken;
         break;
-      case Token.sign:
-      case Token.color:
+      case T.sign:
+      case T.color:
         int color;
         idSeen = true;
-        boolean isSign = (theTok == Token.sign);
+        boolean isSign = (theTok == T.sign);
         if (isSign) {
           sbCommand.append(" sign");
           addShapeProperty(propertyList, "sign", Boolean.TRUE);
         } else {
-          if (tokAt(i + 1) == Token.density) {
+          if (tokAt(i + 1) == T.density) {
             i++;
             propertyName = "colorDensity";
             sbCommand.append(" color density");
@@ -17402,14 +17421,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
            * because the term COLOR is too general.
            */
 
-          if (getToken(i + 1).tok == Token.string) {
+          if (getToken(i + 1).tok == T.string) {
             colorScheme = parameterAsString(++i);
             if (colorScheme.indexOf(" ") > 0) {
-              discreteColixes = Colix.getColixArray(colorScheme);
+              discreteColixes = C.getColixArray(colorScheme);
               if (discreteColixes == null)
                 error(ERROR_badRGBColor);
             }
-          } else if (theTok == Token.mesh) {
+          } else if (theTok == T.mesh) {
             i++;
             sbCommand.append(" color mesh");
             color = getArgbParam(++i);
@@ -17418,21 +17437,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             i = iToken;
             continue;
           }
-          if ((theTok = tokAt(i + 1)) == Token.translucent
-              || theTok == Token.opaque) {
+          if ((theTok = tokAt(i + 1)) == T.translucent
+              || theTok == T.opaque) {
             sbCommand.append(" color");
             translucency = setColorOptions(sbCommand, i + 1,
-                JmolConstants.SHAPE_ISOSURFACE, -2);
+                JC.SHAPE_ISOSURFACE, -2);
             i = iToken;
             continue;
           }
           switch (tokAt(i + 1)) {
-          case Token.absolute:
-          case Token.range:
+          case T.absolute:
+          case T.range:
             getToken(++i);
             sbCommand.append(" color range");
             addShapeProperty(propertyList, "rangeAll", null);
-            if (tokAt(i + 1) == Token.all) {
+            if (tokAt(i + 1) == T.all) {
               i++;
               sbCommand.append(" all");
               continue;
@@ -17446,7 +17465,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
           if (isColorParam(i + 1)) {
             color = getArgbParam(i + 1);
-            if (tokAt(i + 2) == Token.to) {
+            if (tokAt(i + 2) == T.to) {
               colorScheme = getColorRange(i + 1);
               i = iToken;
               break;
@@ -17473,17 +17492,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidParameterOrder);
         }
         continue;
-      case Token.cache:
+      case T.cache:
         if (!isIsosurface)
           error(ERROR_invalidArgument);
-        toCache = !isSyntaxCheck;
+        toCache = !chk;
         continue;
-      case Token.file:
-        if (tokAt(i + 1) != Token.string)
+      case T.file:
+        if (tokAt(i + 1) != T.string)
           error(ERROR_invalidParameterOrder);
         continue;
-      case Token.ionic:
-      case Token.vanderwaals:
+      case T.ionic:
+      case T.vanderwaals:
         //if (surfaceObjectSeen)
         sbCommand.append(" ").appendO(theToken.value);
         RadiusData rd = encodeRadiusParameter(i, false, true);
@@ -17498,26 +17517,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           surfaceObjectSeen = false;
         i = iToken;
         break;
-      case Token.plane:
+      case T.plane:
         // plane {X, Y, Z, W}
         planeSeen = true;
         propertyName = "plane";
         propertyValue = planeParameter(++i);
         i = iToken;
         //if (surfaceObjectSeen)
-        sbCommand.append(" plane ").append(Escape.escape(propertyValue));
+        sbCommand.append(" plane ").append(Escape.e(propertyValue));
         break;
-      case Token.scale:
+      case T.scale:
         propertyName = "scale";
         propertyValue = Float.valueOf(floatParameter(++i));
         sbCommand.append(" scale ").appendO(propertyValue);
         break;
-      case Token.all:
+      case T.all:
         if (idSeen)
           error(ERROR_invalidArgument);
         propertyName = "thisID";
         break;
-      case Token.ellipsoid:
+      case T.ellipsoid:
         // ellipsoid {xc yc zc f} where a = b and f = a/c
         // OR ellipsoid {u11 u22 u33 u12 u13 u23}
         surfaceObjectSeen = true;
@@ -17526,7 +17545,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           propertyValue = getPoint4f(i);
           propertyName = "ellipsoid";
           i = iToken;
-          sbCommand.append(" ellipsoid ").append(Escape.escape(propertyValue));
+          sbCommand.append(" ellipsoid ").append(Escape.e(propertyValue));
           break;
         } catch (ScriptException e) {
         }
@@ -17534,12 +17553,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           propertyName = "ellipsoid";
           propertyValue = floatParameterSet(i, 6, 6);
           i = iToken;
-          sbCommand.append(" ellipsoid ").append(Escape.escape(propertyValue));
+          sbCommand.append(" ellipsoid ").append(Escape.e(propertyValue));
           break;
         } catch (ScriptException e) {
         }
         bs = atomExpressionAt(i);
-        sbCommand.append(" ellipsoid ").append(Escape.escape(bs));
+        sbCommand.append(" ellipsoid ").append(Escape.e(bs));
         int iAtom = bs.nextSetBit(0);
         Atom[] atoms = viewer.modelSet.atoms;
         if (iAtom >= 0)
@@ -17548,30 +17567,30 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           return;
         i = iToken;
         propertyName = "ellipsoid";
-        if (!isSyntaxCheck)
+        if (!chk)
           addShapeProperty(propertyList, "center", viewer.getAtomPoint3f(iAtom));
         break;
-      case Token.hkl:
+      case T.hkl:
         // miller indices hkl
         planeSeen = true;
         propertyName = "plane";
         propertyValue = hklParameter(++i);
         i = iToken;
-        sbCommand.append(" plane ").append(Escape.escape(propertyValue));
+        sbCommand.append(" plane ").append(Escape.e(propertyValue));
         break;
-      case Token.lcaocartoon:
+      case T.lcaocartoon:
         surfaceObjectSeen = true;
         String lcaoType = parameterAsString(++i);
         addShapeProperty(propertyList, "lcaoType", lcaoType);
-        sbCommand.append(" lcaocartoon ").append(Escape.escapeStr(lcaoType));
+        sbCommand.append(" lcaocartoon ").append(Escape.eS(lcaoType));
         switch (getToken(++i).tok) {
-        case Token.bitset:
-        case Token.expressionBegin:
+        case T.bitset:
+        case T.expressionBegin:
           // automatically selects just the model of the first atom in the set.
           propertyName = "lcaoCartoon";
           bs = atomExpressionAt(i);
           i = iToken;
-          if (isSyntaxCheck)
+          if (chk)
             continue;
           int atomIndex = bs.nextSetBit(0);
           if (atomIndex < 0)
@@ -17580,8 +17599,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           modelIndex = viewer.getAtomModelIndex(atomIndex);
           addShapeProperty(propertyList, "modelIndex", Integer
               .valueOf(modelIndex));
-          Vector3f[] axes = { new Vector3f(), new Vector3f(),
-              Vector3f.newV(viewer.getAtomPoint3f(atomIndex)), new Vector3f() };
+          V3[] axes = { new V3(), new V3(),
+              V3.newV(viewer.getAtomPoint3f(atomIndex)), new V3() };
           if (!lcaoType.equalsIgnoreCase("s")
               && viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1],
                   lcaoType) == null)
@@ -17592,27 +17611,27 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_expressionExpected);
         }
         break;
-      case Token.mo:
+      case T.mo:
         // mo 1-based-index
         int moNumber = Integer.MAX_VALUE;
         int offset = Integer.MAX_VALUE;
-        boolean isNegOffset = (tokAt(i + 1) == Token.minus);
+        boolean isNegOffset = (tokAt(i + 1) == T.minus);
         if (isNegOffset)
           i++;
         float[] linearCombination = null;
         switch (tokAt(++i)) {
-        case Token.nada:
+        case T.nada:
           error(ERROR_badArgumentCount);
           break;
-        case Token.density:
+        case T.density:
           sbCommand.append("mo [1] squared ");
           addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
           linearCombination = new float[] { 1 };
           offset = moNumber = 0;
           i++;
           break;
-        case Token.homo:
-        case Token.lumo:
+        case T.homo:
+        case T.lumo:
           offset = moOffset(i);
           moNumber = 0;
           i = iToken;
@@ -17624,7 +17643,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             sbCommand.appendI(offset);
           //}
           break;
-        case Token.integer:
+        case T.integer:
           moNumber = intParameter(i);
           //if (surfaceObjectSeen)
           sbCommand.append(" mo ").appendI(moNumber);
@@ -17635,16 +17654,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             i = iToken;
           }
         }
-        boolean squared = (tokAt(i + 1) == Token.squared);
+        boolean squared = (tokAt(i + 1) == T.squared);
         if (squared) {
           addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
           sbCommand.append(" squared");
           if (linearCombination == null)
             linearCombination = new float[0];
-        } else if (tokAt(i + 1) == Token.point) {
+        } else if (tokAt(i + 1) == T.point) {
           ++i;
           int monteCarloCount = intParameter(++i);
-          int seed = (tokAt(i + 1) == Token.integer ? intParameter(++i)
+          int seed = (tokAt(i + 1) == T.integer ? intParameter(++i)
               : ((int) -System.currentTimeMillis()) % 10000);
           addShapeProperty(propertyList, "monteCarloCount", Integer
               .valueOf(monteCarloCount));
@@ -17656,62 +17675,62 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             isNegOffset, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
-      case Token.nci:
+      case T.nci:
         propertyName = "nci";
         //if (surfaceObjectSeen)
         sbCommand.append(" " + propertyName);
         int tok = tokAt(i + 1);
-        boolean isPromolecular = (tok != Token.file && tok != Token.string && tok != Token.mrc);
+        boolean isPromolecular = (tok != T.file && tok != T.string && tok != T.mrc);
         propertyValue = Boolean.valueOf(isPromolecular);
         if (isPromolecular)
           surfaceObjectSeen = true;
         break;
-      case Token.mep:
-      case Token.mlp:
-        boolean isMep = (theTok == Token.mep);
+      case T.mep:
+      case T.mlp:
+        boolean isMep = (theTok == T.mep);
         propertyName = (isMep ? "mep" : "mlp");
         //if (surfaceObjectSeen)
         sbCommand.append(" " + propertyName);
         String fname = null;
         int calcType = -1;
         surfaceObjectSeen = true;
-        if (tokAt(i + 1) == Token.integer) {
+        if (tokAt(i + 1) == T.integer) {
           calcType = intParameter(++i);
           sbCommand.append(" " + calcType);
           addShapeProperty(propertyList, "mepCalcType", Integer
               .valueOf(calcType));
         }
-        if (tokAt(i + 1) == Token.string) {
+        if (tokAt(i + 1) == T.string) {
           fname = stringParameter(++i);
           //if (surfaceObjectSeen)
-          sbCommand.append(" /*file*/" + Escape.escapeStr(fname));
-        } else if (tokAt(i + 1) == Token.property) {
+          sbCommand.append(" /*file*/" + Escape.eS(fname));
+        } else if (tokAt(i + 1) == T.property) {
           mepOrMlp = propertyName;
           continue;
         }
-        if (!isSyntaxCheck)
+        if (!chk)
           try {
             data = (fname == null && isMep ? viewer.getPartialCharges()
                 : viewer.getAtomicPotentials(isMep, bsSelect, bsIgnore, fname));
           } catch (Exception e) {
             // ignore
           }
-        if (!isSyntaxCheck && data == null)
+        if (!chk && data == null)
           error(ERROR_noPartialCharges);
         propertyValue = data;
         break;
-      case Token.volume:
-        doCalcVolume = !isSyntaxCheck;
+      case T.volume:
+        doCalcVolume = !chk;
         sbCommand.append(" volume");
         break;
-      case Token.id:
+      case T.id:
         setShapeId(iShape, ++i, idSeen);
         isWild = (getShapeProperty(iShape, "ID") == null);
         i = iToken;
         break;
-      case Token.colorscheme:
+      case T.colorscheme:
         // either order NOT OK -- documented for TRANSLUCENT "rwb"
-        if (tokAt(i + 1) == Token.translucent) {
+        if (tokAt(i + 1) == T.translucent) {
           isColorSchemeTranslucent = true;
           i++;
         }
@@ -17723,28 +17742,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           i = iToken;
         }
         break;
-      case Token.addhydrogens:
+      case T.addhydrogens:
         propertyName = "addHydrogens";
         propertyValue = Boolean.TRUE;
         sbCommand.append(" addHydrogens");
         break;
-      case Token.angstroms:
+      case T.angstroms:
         propertyName = "angstroms";
         sbCommand.append(" angstroms");
         break;
-      case Token.anisotropy:
+      case T.anisotropy:
         propertyName = "anisotropy";
         propertyValue = getPoint3f(++i, false);
         sbCommand.append(" anisotropy").append(
-            Escape.escapePt((Point3f) propertyValue));
+            Escape.eP((P3) propertyValue));
         i = iToken;
         break;
-      case Token.area:
-        doCalcArea = !isSyntaxCheck;
+      case T.area:
+        doCalcArea = !chk;
         sbCommand.append(" area");
         break;
-      case Token.atomicorbital:
-      case Token.orbital:
+      case T.atomicorbital:
+      case T.orbital:
         surfaceObjectSeen = true;
         if (isBicolor && !isPhased) {
           sbCommand.append(" phase \"_orb\"");
@@ -17759,11 +17778,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         sbCommand.append(" atomicOrbital ").appendI((int) nlmZprs[0]).append(
             " ").appendI((int) nlmZprs[1]).append(" ")
             .appendI((int) nlmZprs[2]).append(" ").appendF(nlmZprs[3]);
-        if (tokAt(i + 1) == Token.point) {
+        if (tokAt(i + 1) == T.point) {
           i += 2;
           nlmZprs[4] = intParameter(i);
-          nlmZprs[5] = (tokAt(i + 1) == Token.decimal ? floatParameter(++i) : 0);
-          nlmZprs[6] = (tokAt(i + 1) == Token.integer ? intParameter(++i)
+          nlmZprs[5] = (tokAt(i + 1) == T.decimal ? floatParameter(++i) : 0);
+          nlmZprs[6] = (tokAt(i + 1) == T.integer ? intParameter(++i)
               : ((int) -System.currentTimeMillis()) % 10000);
           //if (surfaceObjectSeen)
           sbCommand.append(" points ").appendI((int) nlmZprs[4]).appendC(' ')
@@ -17772,28 +17791,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyName = "hydrogenOrbital";
         propertyValue = nlmZprs;
         break;
-      case Token.binary:
+      case T.binary:
         sbCommand.append(" binary");
         // for PMESH, specifically
         // ignore for now
         continue;
-      case Token.blockdata:
+      case T.blockdata:
         sbCommand.append(" blockData");
         propertyName = "blockData";
         propertyValue = Boolean.TRUE;
         break;
-      case Token.cap:
-      case Token.slab:
+      case T.cap:
+      case T.slab:
         haveSlab = true;
         propertyName = (String) theToken.value;
         propertyValue = getCapSlabObject(i, false);
         i = iToken;
         break;
-      case Token.cavity:
+      case T.cavity:
         if (!isIsosurface)
           error(ERROR_invalidArgument);
         isCavity = true;
-        if (isSyntaxCheck)
+        if (chk)
           continue;
         float cavityRadius = (isFloatParameter(i + 1) ? floatParameter(++i)
             : 1.2f);
@@ -17809,17 +17828,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             .valueOf(cavityRadius));
         propertyName = "cavity";
         break;
-      case Token.contour:
-      case Token.contours:
+      case T.contour:
+      case T.contours:
         propertyName = "contour";
         sbCommand.append(" contour");
         switch (tokAt(i + 1)) {
-        case Token.discrete:
+        case T.discrete:
           propertyValue = floatParameterSet(i + 2, 1, Integer.MAX_VALUE);
-          sbCommand.append(" discrete ").append(Escape.escape(propertyValue));
+          sbCommand.append(" discrete ").append(Escape.e(propertyValue));
           i = iToken;
           break;
-        case Token.increment:
+        case T.increment:
           pt = getPoint3f(i + 2, false);
           if (pt.z <= 0 || pt.y < pt.x)
             error(ERROR_invalidArgument); // from to step
@@ -17827,22 +17846,22 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             pt.z = (pt.y - pt.x) / pt.z;
           propertyValue = pt;
           i = iToken;
-          sbCommand.append(" increment ").append(Escape.escapePt(pt));
+          sbCommand.append(" increment ").append(Escape.eP(pt));
           break;
         default:
           propertyValue = Integer
-              .valueOf(tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
+              .valueOf(tokAt(i + 1) == T.integer ? intParameter(++i) : 0);
           sbCommand.append(" ").appendO(propertyValue);
         }
         break;
-      case Token.decimal:
-      case Token.integer:
-      case Token.plus:
-      case Token.cutoff:
+      case T.decimal:
+      case T.integer:
+      case T.plus:
+      case T.cutoff:
         sbCommand.append(" cutoff ");
-        if (theTok == Token.cutoff)
+        if (theTok == T.cutoff)
           i++;
-        if (tokAt(i) == Token.plus) {
+        if (tokAt(i) == T.plus) {
           propertyName = "cutoffPositive";
           propertyValue = Float.valueOf(cutoff = floatParameter(++i));
           sbCommand.append("+").appendO(propertyValue);
@@ -17854,53 +17873,53 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           propertyName = "cutoffRange";
           propertyValue = floatParameterSet(i, 2, 2);
           addShapeProperty(propertyList, "cutoff", Float.valueOf(0));
-          sbCommand.append(Escape.escape(propertyValue));
+          sbCommand.append(Escape.e(propertyValue));
           i = iToken;
         }
         break;
-      case Token.downsample:
+      case T.downsample:
         propertyName = "downsample";
         propertyValue = Integer.valueOf(intParameter(++i));
         //if (surfaceObjectSeen)
         sbCommand.append(" downsample ").appendO(propertyValue);
         break;
-      case Token.eccentricity:
+      case T.eccentricity:
         propertyName = "eccentricity";
         propertyValue = getPoint4f(++i);
         //if (surfaceObjectSeen)
-        sbCommand.append(" eccentricity ").append(Escape.escape(propertyValue));
+        sbCommand.append(" eccentricity ").append(Escape.e(propertyValue));
         i = iToken;
         break;
-      case Token.ed:
+      case T.ed:
         sbCommand.append(" ed");
         // electron density - never documented
         setMoData(propertyList, -1, null, 0, false, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
-      case Token.debug:
-      case Token.nodebug:
+      case T.debug:
+      case T.nodebug:
         sbCommand.append(" ").appendO(theToken.value);
         propertyName = "debug";
-        propertyValue = (theTok == Token.debug ? Boolean.TRUE : Boolean.FALSE);
+        propertyValue = (theTok == T.debug ? Boolean.TRUE : Boolean.FALSE);
         break;
-      case Token.fixed:
+      case T.fixed:
         sbCommand.append(" fixed");
         propertyName = "fixed";
         propertyValue = Boolean.TRUE;
         break;
-      case Token.fullplane:
+      case T.fullplane:
         sbCommand.append(" fullPlane");
         propertyName = "fullPlane";
         propertyValue = Boolean.TRUE;
         break;
-      case Token.functionxy:
-      case Token.functionxyz:
+      case T.functionxy:
+      case T.functionxyz:
         // isosurface functionXY "functionName"|"data2d_xxxxx"
         // isosurface functionXYZ "functionName"|"data3d_xxxxx"
         // {origin} {ni ix iy iz} {nj jx jy jz} {nk kx ky kz}
         // or
         // isosurface origin.. step... count... functionXY[Z] = "x + y + z"
-        boolean isFxyz = (theTok == Token.functionxyz);
+        boolean isFxyz = (theTok == T.functionxyz);
         propertyName = "" + theToken.value;
         List<Object> vxy = new ArrayList<Object>();
         propertyValue = vxy;
@@ -17913,9 +17932,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           sbCommand.append(" =");
           name = parameterAsString(++i);
           //if (surfaceObjectSeen)
-          sbCommand.append(" ").append(Escape.escapeStr(name));
+          sbCommand.append(" ").append(Escape.eS(name));
           vxy.add(name);
-          if (!isSyntaxCheck)
+          if (!chk)
             addShapeProperty(propertyList, "func", createFunction("__iso__",
                 "x,y,z", name));
           //surfaceObjectSeen = true;
@@ -17934,29 +17953,29 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         //if (!surfaceObjectSeen)
         sbCommand.append(" inline");
         vxy.add(name); // (0) = name
-        Point3f pt3 = getPoint3f(++i, false);
+        P3 pt3 = getPoint3f(++i, false);
         //if (!surfaceObjectSeen)
-        sbCommand.append(" ").append(Escape.escapePt(pt3));
+        sbCommand.append(" ").append(Escape.eP(pt3));
         vxy.add(pt3); // (1) = {origin}
         Point4f pt4;
         ptX = ++iToken;
         vxy.add(pt4 = getPoint4f(ptX)); // (2) = {ni ix iy iz}
         //if (!surfaceObjectSeen)
-        sbCommand.append(" ").append(Escape.escape(pt4));
+        sbCommand.append(" ").append(Escape.e(pt4));
         nX = (int) pt4.x;
         ptY = ++iToken;
         vxy.add(pt4 = getPoint4f(ptY)); // (3) = {nj jx jy jz}
         //if (!surfaceObjectSeen)
-        sbCommand.append(" ").append(Escape.escape(pt4));
+        sbCommand.append(" ").append(Escape.e(pt4));
         nY = (int) pt4.x;
         vxy.add(pt4 = getPoint4f(++iToken)); // (4) = {nk kx ky kz}
         //if (!surfaceObjectSeen)
-        sbCommand.append(" ").append(Escape.escape(pt4));
+        sbCommand.append(" ").append(Escape.e(pt4));
         nZ = (int) pt4.x;
 
         if (nX == 0 || nY == 0 || nZ == 0)
           error(ERROR_invalidArgument);
-        if (!isSyntaxCheck) {
+        if (!chk) {
           float[][] fdata = null;
           float[][][] xyzdata = null;
           if (isFxyz) {
@@ -17986,7 +18005,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             }
             vxy.add(xyzdata); // (5) = float[][][] data
             //if (!surfaceObjectSeen)
-            sbCommand.append(" ").append(Escape.escape(xyzdata));
+            sbCommand.append(" ").append(Escape.e(xyzdata));
           } else {
             if (isInline) {
               nX = Math.abs(nX);
@@ -18024,73 +18043,73 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             }
             vxy.add(fdata); // (5) = float[][] data
             //if (!surfaceObjectSeen)
-            sbCommand.append(" ").append(Escape.escape(fdata));
+            sbCommand.append(" ").append(Escape.e(fdata));
           }
         }
         i = iToken;
         break;
-      case Token.gridpoints:
+      case T.gridpoints:
         propertyName = "gridPoints";
         sbCommand.append(" gridPoints");
         break;
-      case Token.ignore:
+      case T.ignore:
         propertyName = "ignore";
         propertyValue = bsIgnore = atomExpressionAt(++i);
-        sbCommand.append(" ignore ").append(Escape.escape(propertyValue));
+        sbCommand.append(" ignore ").append(Escape.e(propertyValue));
         i = iToken;
         break;
-      case Token.insideout:
+      case T.insideout:
         propertyName = "insideOut";
         sbCommand.append(" insideout");
         break;
-      case Token.internal:
-      case Token.interior:
-      case Token.pocket:
+      case T.internal:
+      case T.interior:
+      case T.pocket:
         //if (!surfaceObjectSeen)
         sbCommand.append(" ").appendO(theToken.value);
         propertyName = "pocket";
-        propertyValue = (theTok == Token.pocket ? Boolean.TRUE : Boolean.FALSE);
+        propertyValue = (theTok == T.pocket ? Boolean.TRUE : Boolean.FALSE);
         break;
-      case Token.lobe:
+      case T.lobe:
         // lobe {eccentricity}
         propertyName = "lobe";
         propertyValue = getPoint4f(++i);
         i = iToken;
         //if (!surfaceObjectSeen)
-        sbCommand.append(" lobe ").append(Escape.escape(propertyValue));
+        sbCommand.append(" lobe ").append(Escape.e(propertyValue));
         surfaceObjectSeen = true;
         break;
-      case Token.lonepair:
-      case Token.lp:
+      case T.lonepair:
+      case T.lp:
         // lp {eccentricity}
         propertyName = "lp";
         propertyValue = getPoint4f(++i);
         i = iToken;
         //if (!surfaceObjectSeen)
-        sbCommand.append(" lp ").append(Escape.escape(propertyValue));
+        sbCommand.append(" lp ").append(Escape.e(propertyValue));
         surfaceObjectSeen = true;
         break;
-      case Token.mapProperty:
-        if (isMapped || statementLength == i + 1)
+      case T.mapProperty:
+        if (isMapped || slen == i + 1)
           error(ERROR_invalidArgument);
         isMapped = true;
         if ((isCavity || haveRadius || haveIntersection) && !surfaceObjectSeen) {
           surfaceObjectSeen = true;
           addShapeProperty(propertyList, "bsSolvent", (haveRadius
-              || haveIntersection ? new BitSet()
+              || haveIntersection ? new BS()
               : lookupIdentifierValue("solvent")));
           addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         }
         if (sbCommand.length() == 0) {
-          plane = (Point4f) getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+          plane = (Point4f) getShapeProperty(JC.SHAPE_ISOSURFACE,
               "plane");
           if (plane == null) {
-            if (getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "contours") != null) {
+            if (getShapeProperty(JC.SHAPE_ISOSURFACE, "contours") != null) {
               addShapeProperty(propertyList, "nocontour", null);
             }
           } else {
             addShapeProperty(propertyList, "plane", plane);
-            sbCommand.append("plane ").append(Escape.escape(plane));
+            sbCommand.append("plane ").append(Escape.e(plane));
             planeSeen = true;
             plane = null;
           }
@@ -18101,36 +18120,36 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         addShapeProperty(propertyList, "map", (surfaceObjectSeen ? Boolean.TRUE
             : Boolean.FALSE));
         break;
-      case Token.maxset:
+      case T.maxset:
         propertyName = "maxset";
         propertyValue = Integer.valueOf(intParameter(++i));
         sbCommand.append(" maxSet ").appendO(propertyValue);
         break;
-      case Token.minset:
+      case T.minset:
         propertyName = "minset";
         propertyValue = Integer.valueOf(intParameter(++i));
         sbCommand.append(" minSet ").appendO(propertyValue);
         break;
-      case Token.radical:
+      case T.radical:
         // rad {eccentricity}
         surfaceObjectSeen = true;
         propertyName = "rad";
         propertyValue = getPoint4f(++i);
         i = iToken;
         //if (!surfaceObjectSeen)
-        sbCommand.append(" radical ").append(Escape.escape(propertyValue));
+        sbCommand.append(" radical ").append(Escape.e(propertyValue));
         break;
-      case Token.modelbased:
+      case T.modelbased:
         propertyName = "fixed";
         propertyValue = Boolean.FALSE;
         sbCommand.append(" modelBased");
         break;
-      case Token.molecular:
-      case Token.sasurface:
-      case Token.solvent:
+      case T.molecular:
+      case T.sasurface:
+      case T.solvent:
         onlyOneModel = theToken.value;
         float radius;
-        if (theTok == Token.molecular) {
+        if (theTok == T.molecular) {
           propertyName = "molecular";
           //if (!surfaceObjectSeen)
           sbCommand.append(" molecular");
@@ -18138,7 +18157,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else {
           addShapeProperty(propertyList, "bsSolvent",
               lookupIdentifierValue("solvent"));
-          propertyName = (theTok == Token.sasurface ? "sasurface" : "solvent");
+          propertyName = (theTok == T.sasurface ? "sasurface" : "solvent");
           //if (!surfaceObjectSeen)
           sbCommand.append(" ").appendO(theToken.value);
           radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
@@ -18147,7 +18166,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           sbCommand.append(" ").appendF(radius);
         }
         propertyValue = Float.valueOf(radius);
-        if (tokAt(i + 1) == Token.full) {
+        if (tokAt(i + 1) == T.full) {
           addShapeProperty(propertyList, "doFullMolecular", null);
           //if (!surfaceObjectSeen)
           sbCommand.append(" full");
@@ -18155,45 +18174,45 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         surfaceObjectSeen = true;
         break;
-      case Token.mrc:
+      case T.mrc:
         addShapeProperty(propertyList, "fileType", "Mrc");
         sbCommand.append(" mrc");
         continue;
-      case Token.object:
-      case Token.obj:
+      case T.object:
+      case T.obj:
         addShapeProperty(propertyList, "fileType", "Obj");
         sbCommand.append(" obj");
         continue;
-      case Token.msms:
+      case T.msms:
         addShapeProperty(propertyList, "fileType", "Msms");
         sbCommand.append(" msms");
         continue;
-      case Token.phase:
+      case T.phase:
         if (surfaceObjectSeen)
           error(ERROR_invalidArgument);
         propertyName = "phase";
         isPhased = true;
-        propertyValue = (tokAt(i + 1) == Token.string ? stringParameter(++i)
+        propertyValue = (tokAt(i + 1) == T.string ? stringParameter(++i)
             : "_orb");
-        sbCommand.append(" phase ").append(Escape.escape(propertyValue));
+        sbCommand.append(" phase ").append(Escape.e(propertyValue));
         break;
-      case Token.pointsperangstrom:
-      case Token.resolution:
+      case T.pointsperangstrom:
+      case T.resolution:
         propertyName = "resolution";
         propertyValue = Float.valueOf(floatParameter(++i));
         sbCommand.append(" resolution ").appendO(propertyValue);
         break;
-      case Token.reversecolor:
+      case T.reversecolor:
         propertyName = "reverseColor";
         propertyValue = Boolean.TRUE;
         sbCommand.append(" reversecolor");
         break;
-      case Token.sigma:
+      case T.sigma:
         propertyName = "sigma";
         propertyValue = Float.valueOf(sigma = floatParameter(++i));
         sbCommand.append(" sigma ").appendO(propertyValue);
         break;
-      case Token.geosurface:
+      case T.geosurface:
         // geosurface [radius]
         propertyName = "geodesic";
         propertyValue = Float.valueOf(floatParameter(++i));
@@ -18201,7 +18220,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         sbCommand.append(" geosurface ").appendO(propertyValue);
         surfaceObjectSeen = true;
         break;
-      case Token.sphere:
+      case T.sphere:
         // sphere [radius]
         propertyName = "sphere";
         propertyValue = Float.valueOf(floatParameter(++i));
@@ -18209,17 +18228,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         sbCommand.append(" sphere ").appendO(propertyValue);
         surfaceObjectSeen = true;
         break;
-      case Token.squared:
+      case T.squared:
         propertyName = "squareData";
         propertyValue = Boolean.TRUE;
         sbCommand.append(" squared");
         break;
-      case Token.inline:
-      case Token.string:
+      case T.inline:
+      case T.string:
         String filename = parameterAsString(i);
         String sType = null;
         isInline = filename.equalsIgnoreCase("inline");
-        if (tokAt(i + 1) == Token.string) {
+        if (tokAt(i + 1) == T.string) {
           sType = stringParameter(++i);
           if (!isInline)
             addShapeProperty(propertyList, "calculationType", sType);
@@ -18234,7 +18253,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             sType = TextFormat.replaceAllCharacter(sType, "{,}|", ' ');
           if (logMessages)
             Logger.debug("pmesh inline data:\n" + sType);
-          propertyValue = (isSyntaxCheck ? null : sType);
+          propertyValue = (chk ? null : sType);
           addShapeProperty(propertyList, "fileName", "");
           //if (!surfaceObjectSeen)
           sbCommand.append(" INLINE");
@@ -18247,8 +18266,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             filename = info[0];
             String strCutoff = (!firstPass || !Float.isNaN(cutoff) ? null
                 : info[1]);
-            if (strCutoff != null && !isSyntaxCheck) {
-              cutoff = ScriptVariable.fValue(ScriptVariable.getVariable(viewer
+            if (strCutoff != null && !chk) {
+              cutoff = SV.fValue(SV.getVariable(viewer
                   .evaluateExpression(strCutoff)));
               if (cutoff > 0) {
                 if (!Float.isNaN(sigma)) {
@@ -18268,7 +18287,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
               getWithinDistanceVector(propertyList, 2.0f, null, bs, false);
               //if (!surfaceObjectSeen)
-              sbCommand.append(" within 2.0 ").append(Escape.escape(bs));
+              sbCommand.append(" within 2.0 ").append(Escape.e(bs));
             }
             if (firstPass)
               defaultMesh = true;
@@ -18316,18 +18335,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             filename = getFullPathName();
           }
           int fileIndex = -1;
-          if (tokAt(i + 1) == Token.integer)
+          if (tokAt(i + 1) == T.integer)
             addShapeProperty(propertyList, "fileIndex", Integer
                 .valueOf(fileIndex = intParameter(++i)));
-          if (!isSyntaxCheck) {
+          if (!chk) {
             String[] fullPathNameOrError;
             String localName = null;
             if (fullCommand.indexOf("# FILE" + nFiles + "=") >= 0) {
               filename = Parser.getQuotedAttribute(fullCommand, "# FILE"
                   + nFiles);
-              if (tokAt(i + 1) == Token.as)
+              if (tokAt(i + 1) == T.as)
                 i += 2; // skip that
-            } else if (tokAt(i + 1) == Token.as) {
+            } else if (tokAt(i + 1) == T.as) {
               localName = viewer.getFilePath(
                   stringParameter(iToken = (i = i + 2)), false);
               fullPathNameOrError = viewer.getFullPathNameOrError(localName);
@@ -18354,7 +18373,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             if (localName != null)
               filename = localName;
             //if (!surfaceObjectSeen)
-            sbCommand.append(" /*file*/").append(Escape.escapeStr(filename));
+            sbCommand.append(" /*file*/").append(Escape.eS(filename));
             // null propertyValue indicates that we need a reader based on the fileName
           }
           //if (!surfaceObjectSeen)
@@ -18363,14 +18382,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         //if (!surfaceObjectSeen)
         if (sType != null)
-          sbCommand.append(" ").append(Escape.escapeStr(sType));
+          sbCommand.append(" ").append(Escape.eS(sType));
         surfaceObjectSeen = true;
         break;
-      case Token.connect:
+      case T.connect:
         propertyName = "connections";
         switch (tokAt(++i)) {
-        case Token.bitset:
-        case Token.expressionBegin:
+        case T.bitset:
+        case T.expressionBegin:
           propertyValue = new int[] { atomExpressionAt(i).nextSetBit(0) };
           break;
         default:
@@ -18379,13 +18398,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         i = iToken;
         break;
-      case Token.link:
+      case T.link:
         propertyName = "link";
         //if (!surfaceObjectSeen)
         sbCommand.append(" link");
         break;
-      case Token.lattice:
-        if (iShape != JmolConstants.SHAPE_ISOSURFACE)
+      case T.lattice:
+        if (iShape != JC.SHAPE_ISOSURFACE)
           error(ERROR_invalidArgument);
         pt = getPoint3f(iToken + 1, false);
         i = iToken;
@@ -18394,7 +18413,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         pt.x = (int) pt.x;
         pt.y = (int) pt.y;
         pt.z = (int) pt.z;
-        sbCommand.append(" lattice ").append(Escape.escapePt(pt));
+        sbCommand.append(" lattice ").append(Escape.eP(pt));
         if (isMapped) {
           propertyName = "mapLattice";
           propertyValue = pt;
@@ -18403,7 +18422,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         break;
       default:
-        if (theTok == Token.identifier) {
+        if (theTok == T.identifier) {
           propertyName = "thisID";
           propertyValue = str;
         }
@@ -18414,7 +18433,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         */
         if (!setMeshDisplayProperty(iShape, 0, theTok)) {
-          if (Token.tokAttr(theTok, Token.identifier) && !idSeen) {
+          if (T.tokAttr(theTok, T.identifier) && !idSeen) {
             setShapeId(iShape, i, idSeen);
             i = iToken;
             break;
@@ -18423,10 +18442,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         if (iptDisplayProperty == 0)
           iptDisplayProperty = i;
-        i = statementLength - 1;
+        i = slen - 1;
         break;
       }
-      idSeen = (theTok != Token.delete);
+      idSeen = (theTok != T.delete);
       if (isWild && surfaceObjectSeen)
         error(ERROR_invalidArgument);
       if (propertyName != null)
@@ -18435,10 +18454,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     // OK, now send them all
 
-    if (!isSyntaxCheck) {
+    if (!chk) {
       if ((isCavity || haveRadius) && !surfaceObjectSeen) {
         surfaceObjectSeen = true;
-        addShapeProperty(propertyList, "bsSolvent", (haveRadius ? new BitSet()
+        addShapeProperty(propertyList, "bsSolvent", (haveRadius ? new BS()
             : lookupIdentifierValue("solvent")));
         addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
       }
@@ -18467,20 +18486,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         propertyList.add(0, new Object[] { "newObject", null });
         boolean needSelect = (bsSelect == null);
         if (needSelect)
-          bsSelect = BitSetUtil.copy(viewer.getSelectionSet(false));
+          bsSelect = BSUtil.copy(viewer.getSelectionSet(false));
         if (modelIndex < 0)
           modelIndex = viewer.getCurrentModelIndex();
         bsSelect.and(viewer.getModelUndeletedAtomsBitSet(modelIndex));
         if (onlyOneModel != null) {
-          BitSet bsModels = viewer.getModelBitSet(bsSelect, false);
+          BS bsModels = viewer.getModelBitSet(bsSelect, false);
           if (bsModels.cardinality() != 1)
             errorStr(ERROR_multipleModelsDisplayedNotOK, "ISOSURFACE "
                 + onlyOneModel);
           if (needSelect) {
             propertyList.add(0, new Object[] { "select", bsSelect });
             if (sbCommand.indexOf("; isosurface map") == 0) {
-              sbCommand = new StringXBuilder().append(
-                  "; isosurface map select ").append(Escape.escape(bsSelect))
+              sbCommand = new SB().append(
+                  "; isosurface map select ").append(Escape.e(bsSelect))
                   .append(sbCommand.substring(16));
             }
           }
@@ -18500,20 +18519,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       setShapeProperty(iShape, "setProperties", propertyList);
 
       if (defaultMesh) {
-        setShapeProperty(iShape, "token", Integer.valueOf(Token.mesh));
-        setShapeProperty(iShape, "token", Integer.valueOf(Token.nofill));
-        setShapeProperty(iShape, "token", Integer.valueOf(Token.frontonly));
+        setShapeProperty(iShape, "token", Integer.valueOf(T.mesh));
+        setShapeProperty(iShape, "token", Integer.valueOf(T.nofill));
+        setShapeProperty(iShape, "token", Integer.valueOf(T.frontonly));
         sbCommand.append(" mesh nofill frontOnly");
       }
     }
     if (lattice != null) // before MAP, this is a display option
-      setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "lattice", lattice);
+      setShapeProperty(JC.SHAPE_ISOSURFACE, "lattice", lattice);
     if (iptDisplayProperty > 0) {
       if (!setMeshDisplayProperty(iShape, iptDisplayProperty, 0))
         error(ERROR_invalidArgument);
     }
 
-    if (isSyntaxCheck)
+    if (chk)
       return;
     Object area = null;
     Object volume = null;
@@ -18522,7 +18541,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (area instanceof Float)
         viewer.setFloatProperty("isosurfaceArea", ((Float) area).floatValue());
       else
-        viewer.setUserVariable("isosurfaceArea", ScriptVariable
+        viewer.setUserVariable("isosurfaceArea", SV
             .getVariableAD((double[]) area));
     }
     if (doCalcVolume) {
@@ -18531,7 +18550,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         viewer.setFloatProperty("isosurfaceVolume", ((Float) volume)
             .floatValue());
       else
-        viewer.setUserVariable("isosurfaceVolume", ScriptVariable
+        viewer.setUserVariable("isosurfaceVolume", SV
             .getVariableAD((double[]) volume));
     }
     if (!isLcaoCartoon) {
@@ -18542,7 +18561,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         cmd = sbCommand.toString();
         setShapeProperty(iShape, "finalize",
             (cmd.indexOf("; isosurface map") == 0 ? "" : " select "
-                + Escape.escape(bsSelect) + " ")
+                + Escape.e(bsSelect) + " ")
                 + cmd);
         s = (String) getShapeProperty(iShape, "ID");
         if (s != null && !tQuiet) {
@@ -18556,7 +18575,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           float[] minMax = (float[]) getShapeProperty(iShape, "minMaxInfo");
           if (minMax[0] != Float.MAX_VALUE)
             s += " min=" + minMax[0] + " max=" + minMax[1];
-          s += "; " + JmolConstants.shapeClassBases[iShape].toLowerCase()
+          s += "; " + JC.shapeClassBases[iShape].toLowerCase()
               + " count: " + getShapeProperty(iShape, "count");
           s += getIsosurfaceDataRange(iShape, "\n");
         }
@@ -18596,11 +18615,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
   }
 
-  private String setColorOptions(StringXBuilder sb, int index, int iShape,
+  private String setColorOptions(SB sb, int index, int iShape,
                                  int nAllowed) throws ScriptException {
     getToken(index);
     String translucency = "opaque";
-    if (theTok == Token.translucent) {
+    if (theTok == T.translucent) {
       translucency = "translucent";
       if (nAllowed < 0) {
         float value = (isFloatParameter(index + 1) ? floatParameter(++index)
@@ -18614,7 +18633,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       } else {
         setMeshDisplayProperty(iShape, index, theTok);
       }
-    } else if (theTok == Token.opaque) {
+    } else if (theTok == T.opaque) {
       if (nAllowed >= 0)
         setMeshDisplayProperty(iShape, index, theTok);
     } else {
@@ -18638,10 +18657,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private String getColorRange(int i) throws ScriptException {
     int color1 = getArgbParam(i);
-    if (tokAt(++iToken) != Token.to)
+    if (tokAt(++iToken) != T.to)
       error(ERROR_invalidArgument);
     int color2 = getArgbParam(++iToken);
-    int nColors = (tokAt(iToken + 1) == Token.integer ? intParameter(++iToken)
+    int nColors = (tokAt(iToken + 1) == T.integer ? intParameter(++iToken)
         : 0);
     return ColorEncoder.getColorSchemeList(ColorEncoder.getPaletteAtoB(color1,
         color2, nColors));
@@ -18660,13 +18679,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private static Object testData2; // for isosurface
 
   private void getWithinDistanceVector(List<Object[]> propertyList,
-                                       float distance, Point3f ptc, BitSet bs,
+                                       float distance, P3 ptc, BS bs,
                                        boolean isShow) {
-    List<Point3f> v = new ArrayList<Point3f>();
-    Point3f[] pts = new Point3f[2];
+    List<P3> v = new ArrayList<P3>();
+    P3[] pts = new P3[2];
     if (bs == null) {
-      Point3f pt1 = Point3f.new3(distance, distance, distance);
-      Point3f pt0 = Point3f.newP(ptc);
+      P3 pt1 = P3.new3(distance, distance, distance);
+      P3 pt0 = P3.newP(ptc);
       pt0.sub(pt1);
       pt1.add(ptc);
       pts[0] = pt0;
@@ -18698,69 +18717,69 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       throws ScriptException {
     String propertyName = null;
     Object propertyValue = null;
-    boolean allowCOLOR = (shape == JmolConstants.SHAPE_CONTACT);
+    boolean allowCOLOR = (shape == JC.SHAPE_CONTACT);
     boolean checkOnly = (i == 0);
     // these properties are all processed in MeshCollection.java
     if (!checkOnly)
       tok = getToken(i).tok;
     switch (tok) {
-    case Token.color:
+    case T.color:
       if (allowCOLOR)
         iToken++;
       else
         break;
       //$FALL-THROUGH$
-    case Token.opaque:
-    case Token.translucent:
+    case T.opaque:
+    case T.translucent:
       if (!checkOnly)
         colorShape(shape, iToken, false);
       return true;
-    case Token.nada:
-    case Token.delete:
-    case Token.on:
-    case Token.off:
-    case Token.hide:
-    case Token.hidden:
-    case Token.display:
-    case Token.displayed:
-      if (iToken == 1 && shape >= 0 && tokAt(2) == Token.nada)
+    case T.nada:
+    case T.delete:
+    case T.on:
+    case T.off:
+    case T.hide:
+    case T.hidden:
+    case T.display:
+    case T.displayed:
+      if (iToken == 1 && shape >= 0 && tokAt(2) == T.nada)
         setShapeProperty(shape, "thisID", null);
-      if (tok == Token.nada)
+      if (tok == T.nada)
         return (iToken == 1);
       if (checkOnly)
         return true;
       switch (tok) {
-      case Token.delete:
+      case T.delete:
         setShapeProperty(shape, "delete", null);
         return true;
-      case Token.hidden:
-      case Token.hide:
-        tok = Token.off;
+      case T.hidden:
+      case T.hide:
+        tok = T.off;
         break;
-      case Token.displayed:
-        tok = Token.on;
+      case T.displayed:
+        tok = T.on;
         break;
-      case Token.display:
-        if (i + 1 == statementLength)
-          tok = Token.on;
+      case T.display:
+        if (i + 1 == slen)
+          tok = T.on;
         break;
       }
       //$FALL-THROUGH$ for on/off/display
-    case Token.frontlit:
-    case Token.backlit:
-    case Token.fullylit:
-    case Token.contourlines:
-    case Token.nocontourlines:
-    case Token.dots:
-    case Token.nodots:
-    case Token.mesh:
-    case Token.nomesh:
-    case Token.fill:
-    case Token.nofill:
-    case Token.triangles:
-    case Token.notriangles:
-    case Token.frontonly:
-    case Token.notfrontonly:
+    case T.frontlit:
+    case T.backlit:
+    case T.fullylit:
+    case T.contourlines:
+    case T.nocontourlines:
+    case T.dots:
+    case T.nodots:
+    case T.mesh:
+    case T.nomesh:
+    case T.fill:
+    case T.nofill:
+    case T.triangles:
+    case T.notriangles:
+    case T.frontonly:
+    case T.notfrontonly:
       propertyName = "token";
       propertyValue = Integer.valueOf(tok);
       break;
@@ -18770,7 +18789,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (checkOnly)
       return true;
     setShapeProperty(shape, propertyName, propertyValue);
-    if ((tokAt(iToken + 1)) != Token.nada) {
+    if ((tokAt(iToken + 1)) != T.nada) {
       if (!setMeshDisplayProperty(shape, ++iToken, 0))
         --iToken;
     }
@@ -18784,8 +18803,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
      */
     String mouseAction = stringParameter(1);
     String name = parameterAsString(2);
-    Point3f range1 = null;
-    Point3f range2 = null;
+    P3 range1 = null;
+    P3 range2 = null;
     //if (tokAt(3) == Token.range) {
     //  range1 = xypParameter(4);
     //  range2 = xypParameter(++iToken);
@@ -18793,7 +18812,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     //} else {
     checkLength(3);
     //}
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.bindAction(mouseAction, name, range1, range2);
   }
 
@@ -18801,20 +18820,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     /*
      * unbind "MOUSE-ACTION"|all ["...script..."|actionName|all]
      */
-    if (statementLength != 1)
+    if (slen != 1)
       checkLength23();
     String mouseAction = optParameterAsString(1);
     String name = optParameterAsString(2);
-    if (mouseAction.length() == 0 || tokAt(1) == Token.all)
+    if (mouseAction.length() == 0 || tokAt(1) == T.all)
       mouseAction = null;
-    if (name.length() == 0 || tokAt(2) == Token.all)
+    if (name.length() == 0 || tokAt(2) == T.all)
       name = null;
     if (name == null && mouseAction != null
         && ActionManager.getActionFromName(mouseAction) >= 0) {
       name = mouseAction;
       mouseAction = null;
     }
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.unBindAction(mouseAction, name);
   }
 
@@ -18823,36 +18842,36 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int n = 1;
     int len = 2;
     switch (tokAt(1)) {
-    case Token.nada:
+    case T.nada:
       len = 1;
       break;
-    case Token.all:
+    case T.all:
       n = 0;
       break;
-    case Token.integer:
+    case T.integer:
       n = intParameter(1);
       break;
     default:
       error(ERROR_invalidArgument);
     }
     checkLength(len);
-    if (!isSyntaxCheck)
+    if (!chk)
       viewer.undoMoveAction(tokAt(0), n);
   }
 
-  BitSet getAtomsNearSurface(float distance, String surfaceId) {
+  BS getAtomsNearSurface(float distance, String surfaceId) {
     Object[] data = new Object[] { surfaceId, null, null };
-    if (isSyntaxCheck)
-      return new BitSet();
-    if (getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "getVertices",
+    if (chk)
+      return new BS();
+    if (getShapePropertyData(JC.SHAPE_ISOSURFACE, "getVertices",
             data))
-    return viewer.getAtomsNearPts(distance, (Point3f[]) data[1],
-        (BitSet) data[2]);
+    return viewer.getAtomsNearPts(distance, (P3[]) data[1],
+        (BS) data[2]);
     data[1] = Integer.valueOf(0);
     data[2] = Integer.valueOf(-1);
-    if (getShapePropertyData(JmolConstants.SHAPE_DRAW, "getCenter", data))
-      return viewer.getAtomsNearPt(distance, (Point3f) data[2]);
-    return new BitSet();
+    if (getShapePropertyData(JC.SHAPE_DRAW, "getCenter", data))
+      return viewer.getAtomsNearPt(distance, (P3) data[2]);
+    return new BS();
   }
 
   /**
@@ -18915,35 +18934,35 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return getPartialBondOrderFromFloatEncodedInt(getFloatEncodedInt(s));
   }
 
-  public BitSet addHydrogensInline(BitSet bsAtoms, List<Atom> vConnections, Point3f[] pts) throws Exception {
+  public BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts) throws Exception {
     int modelIndex = viewer.getAtomModelIndex(bsAtoms.nextSetBit(0));
     if (modelIndex != viewer.modelSet.modelCount - 1)
-      return new BitSet();
+      return new BS();
 
     // must be added to the LAST data set only
 
-    BitSet bsA = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+    BS bsA = viewer.getModelUndeletedAtomsBitSet(modelIndex);
     viewer.setAppendNew(false);
     // BitSet bsB = getAtomBits(Token.hydrogen, null);
     // bsA.andNot(bsB);
     int atomIndex = viewer.modelSet.getAtomCount();
     int atomno = viewer.modelSet.getAtomCountInModel(modelIndex);
-    StringXBuilder sbConnect = new StringXBuilder();
+    SB sbConnect = new SB();
     for (int i = 0; i < vConnections.size(); i++) {
       Atom a = vConnections.get(i);
       sbConnect.append(";  connect 0 100 ")
           .append("({" + (atomIndex++) + "}) ").append(
               "({" + a.index + "}) group;");
     }
-    StringXBuilder sb = new StringXBuilder();
-    sb.appendI(pts.length).append("\n").append(JmolConstants.ADD_HYDROGEN_TITLE)
+    SB sb = new SB();
+    sb.appendI(pts.length).append("\n").append(JC.ADD_HYDROGEN_TITLE)
         .append("#noautobond").append("\n");
     for (int i = 0; i < pts.length; i++)
       sb.append("H ").appendF(pts[i].x).append(" ").appendF(pts[i].y).append(" ")
           .appendF(pts[i].z).append(" - - - - ").appendI(++atomno).appendC('\n');
     viewer.loadInlineScript(sb.toString(), '\n', true, null);
     runScriptBuffer(sbConnect.toString(), null);
-    BitSet bsB = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+    BS bsB = viewer.getModelUndeletedAtomsBitSet(modelIndex);
     bsB.andNot(bsA);
     return bsB;
   }

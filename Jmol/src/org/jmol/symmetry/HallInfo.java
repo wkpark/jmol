@@ -55,8 +55,8 @@ package org.jmol.symmetry;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Point3i;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3i;
+import org.jmol.util.SB;
 
 class HallInfo {
   
@@ -67,7 +67,7 @@ class HallInfo {
   boolean isCentrosymmetric;
   int nRotations;
   RotationTerm[] rotationTerms = new RotationTerm[16];
-  Point3i vector12ths;
+  P3i vector12ths;
   String vectorCode;
   
   HallInfo(String hallSymbol) {
@@ -99,7 +99,7 @@ class HallInfo {
   }
   
   String dumpInfo() {
-    StringXBuilder sb =  new StringXBuilder();
+    SB sb =  new SB();
     sb.append("\nHall symbol: ").append(hallSymbol)
         .append("\nprimitive Hall symbol: ").append(primitiveHallSymbol)
         .append("\nlattice type: ").append(getLatticeDesignation());
@@ -142,7 +142,7 @@ class HallInfo {
   private String extractVectorInfo(String name) {
     // (nx ny nz)  where n is 1/12 of the edge. 
     // also allows for (nz), though that is not standard
-    vector12ths = new Point3i();
+    vector12ths = new P3i();
     vectorCode = "";
     int i = name.indexOf("(");
     int j = name.indexOf(")", i);
@@ -204,7 +204,7 @@ class HallInfo {
     boolean allPositive = true; //for now
     
     String dumpInfo() {
-      StringXBuilder sb= new StringXBuilder();
+      SB sb= new SB();
       sb.append("\ninput code: ")
            .append(inputCode).append("; primitive code: ").append(primitiveCode)
            .append("\norder: ").appendI(order).append(isImproper ? " (improper axis)" : "");

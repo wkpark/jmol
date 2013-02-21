@@ -67,7 +67,7 @@ public class JmolData {
     jmolApp.info.put("isDataOnly", Boolean.TRUE);
     jmolApp.parseCommandLine(args);
     if (!jmolApp.isSilent) {
-      System.out.println("JmolData using command options " + Escape.escape(args));
+      System.out.println("JmolData using command options " + Escape.e(args));
       if (!jmolApp.info.containsKey("noGraphics")) 
         System.out.println("Add -n (NOGRAPHICS) for faster performance if you are not creating images.");
     }

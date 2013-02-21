@@ -5,7 +5,7 @@ import java.io.DataInputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.viewer.Viewer;
 
 public interface JmolDocument {
@@ -16,7 +16,7 @@ public interface JmolDocument {
 
   long getPosition();
 
-  StringXBuilder getAllDataFiles(String binaryFileList, String firstFile);
+  SB getAllDataFiles(String binaryFileList, String firstFile);
 
   void getAllDataMapped(String replace, String string, Map<String, String> fileData);
 

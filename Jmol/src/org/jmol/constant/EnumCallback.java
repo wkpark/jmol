@@ -25,7 +25,7 @@
 
 package org.jmol.constant;
 
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 public enum EnumCallback {
 
@@ -60,7 +60,7 @@ public enum EnumCallback {
 
   public static synchronized String getNameList() {
     if (nameList == null) {
-      StringXBuilder names = new StringXBuilder();
+      SB names = new SB();
       for (EnumCallback item : values())
         names.append(item.name().toLowerCase()).append("Callback;");
       nameList = names.toString();

@@ -58,8 +58,8 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.TickInfo;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
-import org.jmol.script.ScriptVariable;
-import org.jmol.script.Token;
+import org.jmol.script.SV;
+import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
 import org.jmol.shape.Echo;
 import org.jmol.shape.Halos;
@@ -68,9 +68,9 @@ import org.jmol.shape.Labels;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Shape;
 import org.jmol.shape.Text;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.GData;
@@ -78,10 +78,10 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.viewer.StateManager.GlobalSettings;
 import org.jmol.viewer.Viewer.ACCESS;
 
@@ -123,7 +123,7 @@ public class StateCreator implements JmolStateCreator {
     }
     // we remove local file references in the embedded states for images
     try {
-      s = JmolConstants.embedScript(FileManager.setScriptFileReferences(s, ".",
+      s = JC.embedScript(FileManager.setScriptFileReferences(s, ".",
           null, null));
     } catch (Throwable e) {
       // ignore if this uses too much memory
@@ -136,17 +136,17 @@ public class StateCreator implements JmolStateCreator {
   public String getStateScript(String type, int width, int height) {
     //System.out.println("viewer getStateInfo " + type);
     boolean isAll = (type == null || type.equalsIgnoreCase("all"));
-    StringXBuilder s = new StringXBuilder();
-    StringXBuilder sfunc = (isAll ? new StringXBuilder()
+    SB s = new SB();
+    SB sfunc = (isAll ? new SB()
         .append("function _setState() {\n") : null);
     if (isAll)
-      s.append(JmolConstants.STATE_VERSION_STAMP + Viewer.getJmolVersion()
+      s.append(JC.STATE_VERSION_STAMP + Viewer.getJmolVersion()
           + ";\n");
     if (viewer.isApplet() && isAll) {
-      appendCmd(s, "# fullName = " + Escape.escapeStr(viewer.fullName));
+      appendCmd(s, "# fullName = " + Escape.eS(viewer.fullName));
       appendCmd(s, "# documentBase = "
-          + Escape.escapeStr(viewer.appletDocumentBase));
-      appendCmd(s, "# codeBase = " + Escape.escapeStr(viewer.appletCodeBase));
+          + Escape.eS(viewer.appletDocumentBase));
+      appendCmd(s, "# codeBase = " + Escape.eS(viewer.appletCodeBase));
       s.append("\n");
     }
 
@@ -200,14 +200,14 @@ public class StateCreator implements JmolStateCreator {
     return s.toString();
   }
 
-  private String getDefinedState(StringXBuilder sfunc, boolean isAll) {
+  private String getDefinedState(SB sfunc, boolean isAll) {
     ModelSet ms = viewer.modelSet;
     int len = ms.stateScripts.size();
     if (len == 0)
       return "";
 
     boolean haveDefs = false;
-    StringXBuilder commands = new StringXBuilder();
+    SB commands = new SB();
     String cmd;
     for (int i = 0; i < len; i++) {
       StateScript ss = ms.stateScripts.get(i);
@@ -229,9 +229,9 @@ public class StateCreator implements JmolStateCreator {
     return cmd + commands.toString();
   }
 
-  public String getModelState(StringXBuilder sfunc, boolean isAll,
+  public String getModelState(SB sfunc, boolean isAll,
                               boolean withProteinStructure) {
-    StringXBuilder commands = new StringXBuilder();
+    SB commands = new SB();
     if (isAll && sfunc != null) {
       sfunc.append("  _setModelState;\n");
       commands.append("function _setModelState() {\n");
@@ -255,7 +255,7 @@ public class StateCreator implements JmolStateCreator {
         }
       }
 
-      StringXBuilder sb = new StringXBuilder();
+      SB sb = new SB();
       for (int i = 0; i < ms.bondCount; i++)
         if (!models[bonds[i].atom1.modelIndex].isModelKit)
           if (bonds[i].isHydrogen()
@@ -288,7 +288,7 @@ public class StateCreator implements JmolStateCreator {
       if (bs.isEmpty())
         ms.haveHiddenBonds = false;
       else
-        commands.append("  hide ").append(Escape.escapeBs(bs, false)).append(
+        commands.append("  hide ").append(Escape.eB(bs, false)).append(
             ";\n");
     }
 
@@ -316,11 +316,11 @@ public class StateCreator implements JmolStateCreator {
         if (s != null
             && !s.equals(ms.getModelAuxiliaryInfoValue(i, "modelID0")))
           commands.append(fcmd).append("; frame ID ").append(
-              Escape.escapeStr(s)).append(";\n");
+              Escape.eS(s)).append(";\n");
         String t = ms.frameTitles[i];
         if (t != null && t.length() > 0)
           commands.append(fcmd).append("; frame title ").append(
-              Escape.escapeStr(t)).append(";\n");
+              Escape.eS(t)).append(";\n");
         if (needOrientations && models[i].orientation != null
             && !ms.isTrajectorySubFrame(i))
           commands.append(fcmd).append("; ").append(
@@ -330,9 +330,9 @@ public class StateCreator implements JmolStateCreator {
               models[i].frameDelay / 1000f).append(";\n");
         if (models[i].simpleCage != null) {
           commands.append(fcmd).append("; unitcell ").append(
-              Escape.escape(models[i].simpleCage.getUnitCellVectors())).append(
+              Escape.e(models[i].simpleCage.getUnitCellVectors())).append(
               ";\n");
-          getShapeState(commands, isAll, JmolConstants.SHAPE_UCCAGE);
+          getShapeState(commands, isAll, JC.SHAPE_UCCAGE);
         }
       }
 
@@ -342,15 +342,15 @@ public class StateCreator implements JmolStateCreator {
           if (symmetry == null)
             continue;
           commands.append("  frame ").append(ms.getModelNumberDotted(i));
-          Point3f pt = symmetry.getFractionalOffset();
+          P3 pt = symmetry.getFractionalOffset();
           if (pt != null)
-            commands.append("; set unitcell ").append(Escape.escapePt(pt));
+            commands.append("; set unitcell ").append(Escape.eP(pt));
           pt = symmetry.getUnitCellMultiplier();
           if (pt != null)
-            commands.append("; set unitcell ").append(Escape.escapePt(pt));
+            commands.append("; set unitcell ").append(Escape.eP(pt));
           commands.append(";\n");
         }
-        getShapeState(commands, isAll, JmolConstants.SHAPE_UCCAGE);
+        getShapeState(commands, isAll, JC.SHAPE_UCCAGE);
         //        if (viewer.getObjectMad(StateManager.OBJ_UNITCELL) == 0)
         //        commands.append("  unitcell OFF;\n");
       }
@@ -363,7 +363,7 @@ public class StateCreator implements JmolStateCreator {
     return commands.toString();
   }
 
-  private void getShapeState(StringXBuilder commands, boolean isAll, int iShape) {
+  private void getShapeState(SB commands, boolean isAll, int iShape) {
     Shape[] shapes = viewer.shapeManager.shapes;
     if (shapes == null)
       return;
@@ -373,21 +373,21 @@ public class StateCreator implements JmolStateCreator {
     int imax;
     if (iShape == Integer.MAX_VALUE) {
       i = 0;
-      imax = JmolConstants.SHAPE_MAX;
+      imax = JC.SHAPE_MAX;
     } else {
       imax = (i = iShape) + 1;
     }
     for (; i < imax; ++i)
       if ((shape = shapes[i]) != null
-          && (isAll || JmolConstants.isShapeSecondary(i))
+          && (isAll || JC.isShapeSecondary(i))
           && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
         commands.append(cmd);
     commands.append("  select *;\n");
   }
 
-  private String getWindowState(StringXBuilder sfunc, int width, int height) {
+  private String getWindowState(SB sfunc, int width, int height) {
     GlobalSettings global = viewer.global;
-    StringXBuilder str = new StringXBuilder();
+    SB str = new SB();
     if (sfunc != null) {
       sfunc
           .append("  initialize;\n  set refreshing false;\n  _setWindowState;\n");
@@ -408,7 +408,7 @@ public class StateCreator implements JmolStateCreator {
             + Escape.escapeColor(global.objColors[i]) + '"');
     if (global.backgroundImageFileName != null)
       appendCmd(str, "background IMAGE /*file*/"
-          + Escape.escapeStr(global.backgroundImageFileName));
+          + Escape.eS(global.backgroundImageFileName));
     str.append(getSpecularState());
     appendCmd(str, "statusReporting  = " + global.statusReporting);
     if (sfunc != null)
@@ -417,7 +417,7 @@ public class StateCreator implements JmolStateCreator {
   }
 
   public String getSpecularState() {
-    StringXBuilder str = new StringXBuilder();
+    SB str = new SB();
     GData g = viewer.gdata;
     appendCmd(str, "set ambientPercent " + g.getAmbientPercent());
     appendCmd(str, "set diffusePercent " + g.getDiffusePercent());
@@ -435,8 +435,8 @@ public class StateCreator implements JmolStateCreator {
     return str.toString();
   }
 
-  private String getFileState(StringXBuilder sfunc) {
-    StringXBuilder commands = new StringXBuilder();
+  private String getFileState(SB sfunc) {
+    SB commands = new SB();
     if (sfunc != null) {
       sfunc.append("  _setFileState;\n");
       commands.append("function _setFileState() {\n\n");
@@ -450,12 +450,12 @@ public class StateCreator implements JmolStateCreator {
     return commands.toString();
   }
 
-  private void getDataState(DataManager dm, StringXBuilder state,
-                            StringXBuilder sfunc, String atomProps) {
+  private void getDataState(DataManager dm, SB state,
+                            SB sfunc, String atomProps) {
     if (dm.dataValues == null)
       return;
     Iterator<String> e = dm.dataValues.keySet().iterator();
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     int n = 0;
     if (atomProps.length() > 0) {
       n = 1;
@@ -469,7 +469,7 @@ public class StateCreator implements JmolStateCreator {
         Object data = obj[1];
         if (data != null && ((Integer) obj[3]).intValue() == 1) {
           getAtomicPropertyStateBuffer(sb, AtomCollection.TAINT_MAX,
-              (BitSet) obj[2], name, (float[]) data);
+              (BS) obj[2], name, (float[]) data);
           sb.append("\n");
         } else {
           sb.append("\n").append(Escape.encapsulateData(name, data, 0));//j2s issue?
@@ -510,8 +510,8 @@ public class StateCreator implements JmolStateCreator {
     }
   }
 
-  private String getColorState(ColorManager cm, StringXBuilder sfunc) {
-    StringXBuilder s = new StringXBuilder();
+  private String getColorState(ColorManager cm, SB sfunc) {
+    SB s = new SB();
     int n = getCEState(cm.propertyColorEncoder, s);
     //String colors = getColorSchemeList(getColorSchemeArray(USER));
     //if (colors.length() > 0)
@@ -522,7 +522,7 @@ public class StateCreator implements JmolStateCreator {
         + s.append("}\n\n").toString() : s.toString());
   }
 
-  private int getCEState(ColorEncoder p, StringXBuilder s) {
+  private int getCEState(ColorEncoder p, SB s) {
     int n = 0;
     for (Map.Entry<String, int[]> entry : p.schemes.entrySet()) {
       String name = entry.getKey();
@@ -533,11 +533,11 @@ public class StateCreator implements JmolStateCreator {
     return n;
   }
 
-  private String getAnimState(AnimationManager am, StringXBuilder sfunc) {
+  private String getAnimState(AnimationManager am, SB sfunc) {
     int modelCount = viewer.getModelCount();
     if (modelCount < 2)
       return "";
-    StringXBuilder commands = new StringXBuilder();
+    SB commands = new SB();
     if (sfunc != null) {
       sfunc.append("  _setFrameState;\n");
       commands.append("function _setFrameState() {\n");
@@ -550,9 +550,9 @@ public class StateCreator implements JmolStateCreator {
     if (am.backgroundModelIndex >= 0)
       appendCmd(commands, "set backgroundModel "
           + viewer.getModelNumberDotted(am.backgroundModelIndex));
-    BitSet bs = viewer.getFrameOffsets();
+    BS bs = viewer.getFrameOffsets();
     if (bs != null)
-      appendCmd(commands, "frame align " + Escape.escape(bs));
+      appendCmd(commands, "frame align " + Escape.e(bs));
     appendCmd(commands, "frame RANGE "
         + am.getModelNumber(-1) + " "
         + am.getModelNumber(1));
@@ -561,6 +561,8 @@ public class StateCreator implements JmolStateCreator {
     appendCmd(commands, "animation FPS " + am.animationFps);
     appendCmd(commands, "animation MODE " + am.animationReplayMode.name() + " "
         + am.firstFrameDelay + " " + am.lastFrameDelay);
+    if (am.morphCount > 0)
+      appendCmd(commands, "animation MORPH " + am.morphCount);
     appendCmd(commands, "frame "
         + am.getModelNumber(0));
     appendCmd(commands, "animation "
@@ -574,10 +576,10 @@ public class StateCreator implements JmolStateCreator {
   }
 
   private String getVariableState(StateManager.GlobalSettings global,
-                                  StringXBuilder sfunc) {
+                                  SB sfunc) {
     String[] list = new String[global.htBooleanParameterFlags.size()
         + global.htNonbooleanParameterValues.size()];
-    StringXBuilder commands = new StringXBuilder();
+    SB commands = new SB();
     boolean isState = (sfunc != null);
     if (isState) {
       sfunc.append("  _setVariableState;\n");
@@ -608,7 +610,7 @@ public class StateCreator implements JmolStateCreator {
             key = " set " + key;
           else
             key = "set " + key;
-          value = Escape.escape(value);
+          value = Escape.e(value);
         }
         list[n++] = key + " " + value;
       }
@@ -638,20 +640,20 @@ public class StateCreator implements JmolStateCreator {
 
     // label defaults
 
-    viewer.loadShape(JmolConstants.SHAPE_LABELS);
+    viewer.loadShape(JC.SHAPE_LABELS);
     commands
-        .append(getDefaultLabelState((Labels) viewer.shapeManager.shapes[JmolConstants.SHAPE_LABELS]));
+        .append(getDefaultLabelState((Labels) viewer.shapeManager.shapes[JC.SHAPE_LABELS]));
 
     // structure defaults
 
     if (global.haveSetStructureList) {
       Map<EnumStructure, float[]> slist = global.structureList;
       commands.append("struture HELIX set "
-          + Escape.escape(slist.get(EnumStructure.HELIX)));
+          + Escape.e(slist.get(EnumStructure.HELIX)));
       commands.append("struture SHEET set "
-          + Escape.escape(slist.get(EnumStructure.SHEET)));
+          + Escape.e(slist.get(EnumStructure.SHEET)));
       commands.append("struture TURN set "
-          + Escape.escape(slist.get(EnumStructure.TURN)));
+          + Escape.e(slist.get(EnumStructure.TURN)));
     }
     if (sfunc != null)
       commands.append("\n}\n\n");
@@ -659,7 +661,7 @@ public class StateCreator implements JmolStateCreator {
   }
 
   private String getDefaultLabelState(Labels l) {
-    StringXBuilder s = new StringXBuilder().append("\n# label defaults;\n");
+    SB s = new SB().append("\n# label defaults;\n");
     appendCmd(s, "select none");
     appendCmd(s, Shape.getColorCommand("label", l.defaultPaletteID,
         l.defaultColix, l.translucentAllowed));
@@ -680,14 +682,14 @@ public class StateCreator implements JmolStateCreator {
     return s.toString();
   }
 
-  private String getSelectionState(SelectionManager sm, StringXBuilder sfunc) {
-    StringXBuilder commands = new StringXBuilder();
+  private String getSelectionState(SelectionManager sm, SB sfunc) {
+    SB commands = new SB();
     if (sfunc != null) {
       sfunc.append("  _setSelectionState;\n");
       commands.append("function _setSelectionState() {\n");
     }
     appendCmd(commands, getTrajectoryState());
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
+    Map<String, BS> temp = new Hashtable<String, BS>();
     String cmd = null;
     addBs(commands, "hide ", sm.bsHidden);
     addBs(commands, "subset ", sm.bsSubset);
@@ -701,7 +703,7 @@ public class StateCreator implements JmolStateCreator {
       commands.append(cmd);
     appendCmd(commands, "set hideNotSelected " + sm.hideNotSelected);
     commands.append((String) viewer.getShapeProperty(
-        JmolConstants.SHAPE_STICKS, "selectionState"));
+        JC.SHAPE_STICKS, "selectionState"));
     if (viewer.getSelectionHaloEnabled(false))
       appendCmd(commands, "SelectionHalos ON");
     if (sfunc != null)
@@ -726,8 +728,8 @@ public class StateCreator implements JmolStateCreator {
     return s;
   }
 
-  private String getViewState(TransformManager tm, StringXBuilder sfunc) {
-    StringXBuilder commands = new StringXBuilder();
+  private String getViewState(TransformManager tm, SB sfunc) {
+    SB commands = new SB();
     if (sfunc != null) {
       sfunc.append("  _setPerspectiveState;\n");
       commands.append("function _setPerspectiveState() {\n");
@@ -743,7 +745,7 @@ public class StateCreator implements JmolStateCreator {
     if (tm.mode == TransformManager.MODE_NAVIGATION)
       appendCmd(commands, "set navigationMode true");
     appendCmd(commands, viewer.getBoundBoxCommand(false));
-    appendCmd(commands, "center " + Escape.escapePt(tm.fixedRotationCenter));
+    appendCmd(commands, "center " + Escape.eP(tm.fixedRotationCenter));
     commands.append(viewer.getSavedOrienationText(null));
 
     appendCmd(commands, tm.getMoveToText(0, false));
@@ -768,16 +770,16 @@ public class StateCreator implements JmolStateCreator {
       commands.append("  set zShade;\n");
     try {
       if (tm.zSlabPoint != null)
-        commands.append("  set zSlab ").append(Escape.escapePt(tm.zSlabPoint))
+        commands.append("  set zSlab ").append(Escape.eP(tm.zSlabPoint))
             .append(";\n");
     } catch (Exception e) {
       // don't care
     }
     if (tm.slabPlane != null)
-      commands.append("  slab plane ").append(Escape.escape(tm.slabPlane))
+      commands.append("  slab plane ").append(Escape.e(tm.slabPlane))
           .append(";\n");
     if (tm.depthPlane != null)
-      commands.append("  depth plane ").append(Escape.escape(tm.depthPlane))
+      commands.append("  depth plane ").append(Escape.e(tm.depthPlane))
           .append(";\n");
     commands.append(getSpinState(true)).append("\n");
     if (viewer.modelSetHasVibrationVectors() && tm.vibrationOn)
@@ -811,16 +813,16 @@ public class StateCreator implements JmolStateCreator {
     if (!tm.spinOn)
       return s;
     String prefix = (tm.isSpinSelected ? "\n  select "
-        + Escape.escape(viewer.getSelectionSet(false)) + ";\n  rotateSelected"
+        + Escape.e(viewer.getSelectionSet(false)) + ";\n  rotateSelected"
         : "\n ");
     if (tm.isSpinInternal) {
-      Point3f pt = Point3f.newP(tm.internalRotationCenter);
+      P3 pt = P3.newP(tm.internalRotationCenter);
       pt.sub(tm.rotationAxis);
       s += prefix + " spin " + tm.rotationRate + " "
-          + Escape.escapePt(tm.internalRotationCenter) + " "
-          + Escape.escapePt(pt);
+          + Escape.eP(tm.internalRotationCenter) + " "
+          + Escape.eP(pt);
     } else if (tm.isSpinFixed) {
-      s += prefix + " spin axisangle " + Escape.escapePt(tm.rotationAxis) + " "
+      s += prefix + " spin axisangle " + Escape.eP(tm.rotationAxis) + " "
           + tm.rotationRate;
     } else {
       s += " spin on";
@@ -858,22 +860,22 @@ public class StateCreator implements JmolStateCreator {
 
   //// utility methods
 
-  public String getCommands(Map<String, BitSet> htDefine,
-                            Map<String, BitSet> htMore, String selectCmd) {
-    StringXBuilder s = new StringXBuilder();
+  public String getCommands(Map<String, BS> htDefine,
+                            Map<String, BS> htMore, String selectCmd) {
+    SB s = new SB();
     String setPrev = getCommands2(htDefine, s, null, selectCmd);
     if (htMore != null)
       getCommands2(htMore, s, setPrev, "select");
     return s.toString();
   }
 
-  private static String getCommands2(Map<String, BitSet> ht, StringXBuilder s,
+  private static String getCommands2(Map<String, BS> ht, SB s,
                                      String setPrev, String selectCmd) {
     if (ht == null)
       return "";
-    for (Map.Entry<String, BitSet> entry : ht.entrySet()) {
+    for (Map.Entry<String, BS> entry : ht.entrySet()) {
       String key = entry.getKey();
-      String set = Escape.escape(entry.getValue());
+      String set = Escape.e(entry.getValue());
       if (set.length() < 5) // nothing selected
         continue;
       set = selectCmd + " " + set;
@@ -886,16 +888,16 @@ public class StateCreator implements JmolStateCreator {
     return setPrev;
   }
 
-  private static void appendCmd(StringXBuilder s, String cmd) {
+  private static void appendCmd(SB s, String cmd) {
     if (cmd.length() == 0)
       return;
     s.append("  ").append(cmd).append(";\n");
   }
 
-  private static void addBs(StringXBuilder sb, String key, BitSet bs) {
+  private static void addBs(SB sb, String key, BS bs) {
     if (bs == null || bs.length() == 0)
       return;
-    appendCmd(sb, key + Escape.escape(bs));
+    appendCmd(sb, key + Escape.e(bs));
   }
 
   public String getFontState(String myType, JmolFont font3d) {
@@ -904,7 +906,7 @@ public class StateCreator implements JmolStateCreator {
     if (objId < 0)
       return "";
     int mad = viewer.getObjectMad(objId);
-    StringXBuilder s = new StringXBuilder().append("\n");
+    SB s = new SB().append("\n");
     appendCmd(s, myType
         + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted"
             : mad < 20 ? " " + mad : " " + (mad / 2000f)));
@@ -919,7 +921,7 @@ public class StateCreator implements JmolStateCreator {
   public String getFontLineShapeState(String s, String myType,
                                       TickInfo[] tickInfos) {
     boolean isOff = (s.indexOf(" off") >= 0);
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append(s);
     for (int i = 0; i < 4; i++)
       if (tickInfos[i] != null)
@@ -929,17 +931,17 @@ public class StateCreator implements JmolStateCreator {
     return sb.toString();
   }
 
-  private void appendTickInfo(String myType, StringXBuilder sb, TickInfo t) {
+  private void appendTickInfo(String myType, SB sb, TickInfo t) {
     sb.append("  ");
     sb.append(myType);
     addTickInfo(sb, t, false);
     sb.append(";\n");
   }
 
-  private static void addTickInfo(StringXBuilder sb, TickInfo tickInfo,
+  private static void addTickInfo(SB sb, TickInfo tickInfo,
                                   boolean addFirst) {
     sb.append(" ticks ").append(tickInfo.type).append(" ").append(
-        Escape.escapePt(tickInfo.ticks));
+        Escape.eP(tickInfo.ticks));
     boolean isUnitCell = (tickInfo.scale != null && Float
         .isNaN(tickInfo.scale.x));
     if (isUnitCell)
@@ -948,18 +950,18 @@ public class StateCreator implements JmolStateCreator {
       sb.append(" format ").append(
           Escape.escapeStrA(tickInfo.tickLabelFormats, false));
     if (!isUnitCell && tickInfo.scale != null)
-      sb.append(" scale ").append(Escape.escapePt(tickInfo.scale));
+      sb.append(" scale ").append(Escape.eP(tickInfo.scale));
     if (addFirst && !Float.isNaN(tickInfo.first) && tickInfo.first != 0)
       sb.append(" first ").appendF(tickInfo.first);
     if (tickInfo.reference != null) // not implemented
-      sb.append(" point ").append(Escape.escapePt(tickInfo.reference));
+      sb.append(" point ").append(Escape.eP(tickInfo.reference));
   }
 
   public void getShapeSetState(AtomShape as, Shape shape, int monomerCount,
-                               Group[] monomers, BitSet bsSizeDefault,
-                               Map<String, BitSet> temp,
-                               Map<String, BitSet> temp2) {
-    String type = JmolConstants.shapeClassBases[shape.shapeID];
+                               Group[] monomers, BS bsSizeDefault,
+                               Map<String, BS> temp,
+                               Map<String, BS> temp2) {
+    String type = JC.shapeClassBases[shape.shapeID];
     for (int i = 0; i < monomerCount; i++) {
       int atomIndex1 = monomers[i].firstAtomIndex;
       int atomIndex2 = monomers[i].lastAtomIndex;
@@ -967,14 +969,14 @@ public class StateCreator implements JmolStateCreator {
           && (as.bsSizeSet.get(i) || as.bsColixSet != null
               && as.bsColixSet.get(i))) {//shapes MUST have been set with a size
         if (bsSizeDefault.get(i))
-          BitSetUtil.setMapBitSet(temp, atomIndex1, atomIndex2, type
+          BSUtil.setMapBitSet(temp, atomIndex1, atomIndex2, type
               + (as.bsSizeSet.get(i) ? " on" : " off"));
         else
-          BitSetUtil.setMapBitSet(temp, atomIndex1, atomIndex2, type + " "
+          BSUtil.setMapBitSet(temp, atomIndex1, atomIndex2, type + " "
               + (as.mads[i] / 2000f));
       }
       if (as.bsColixSet != null && as.bsColixSet.get(i))
-        BitSetUtil.setMapBitSet(temp2, atomIndex1, atomIndex2, Shape
+        BSUtil.setMapBitSet(temp2, atomIndex1, atomIndex2, Shape
             .getColorCommand(type, as.paletteIDs[i], as.colixes[i],
                 shape.translucentAllowed));
     }
@@ -983,12 +985,12 @@ public class StateCreator implements JmolStateCreator {
   public String getMeasurementState(AtomShape as, List<Measurement> mList,
                                     int measurementCount, JmolFont font3d,
                                     TickInfo ti) {
-    StringXBuilder commands = new StringXBuilder();
+    SB commands = new SB();
     appendCmd(commands, "measures delete");
     for (int i = 0; i < measurementCount; i++) {
       Measurement m = mList.get(i);
       int count = m.getCount();
-      StringXBuilder sb = new StringXBuilder().append("measure");
+      SB sb = new SB().append("measure");
       TickInfo tickInfo = m.getTickInfo();
       if (tickInfo != null)
         addTickInfo(sb, tickInfo, true);
@@ -1001,8 +1003,8 @@ public class StateCreator implements JmolStateCreator {
         + viewer.getMeasureDistanceUnits());
     appendCmd(commands, Shape.getFontCommand("measures", font3d));
     int nHidden = 0;
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-    BitSet bs = BitSetUtil.newBitSet(measurementCount);
+    Map<String, BS> temp = new Hashtable<String, BS>();
+    BS bs = BSUtil.newBitSet(measurementCount);
     for (int i = 0; i < measurementCount; i++) {
       Measurement m = mList.get(i);
       if (m.isHidden) {
@@ -1010,11 +1012,11 @@ public class StateCreator implements JmolStateCreator {
         bs.set(i);
       }
       if (as.bsColixSet != null && as.bsColixSet.get(i))
-        BitSetUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("measure",
+        BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("measure",
             m.colix, as.translucentAllowed));
       if (m.getStrFormat() != null)
-        BitSetUtil.setMapBitSet(temp, i, i, "measure "
-            + Escape.escapeStr(m.getStrFormat()));
+        BSUtil.setMapBitSet(temp, i, i, "measure "
+            + Escape.eS(m.getStrFormat()));
     }
     if (nHidden > 0)
       if (nHidden == measurementCount)
@@ -1022,7 +1024,7 @@ public class StateCreator implements JmolStateCreator {
       else
         for (int i = 0; i < measurementCount; i++)
           if (bs.get(i))
-            BitSetUtil.setMapBitSet(temp, i, i, "measure off");
+            BSUtil.setMapBitSet(temp, i, i, "measure off");
     if (ti != null) {
       commands.append(" measure ");
       addTickInfo(commands, ti, true);
@@ -1039,11 +1041,11 @@ public class StateCreator implements JmolStateCreator {
     return commands.toString();
   }
 
-  private Map<String, BitSet> temp = new Hashtable<String, BitSet>();
-  private Map<String, BitSet> temp2 = new Hashtable<String, BitSet>();
-  private Map<String, BitSet> temp3 = new Hashtable<String, BitSet>();
+  private Map<String, BS> temp = new Hashtable<String, BS>();
+  private Map<String, BS> temp2 = new Hashtable<String, BS>();
+  private Map<String, BS> temp3 = new Hashtable<String, BS>();
 
-  public String getBondState(Shape shape, BitSet bsOrderSet, boolean reportAll) {
+  public String getBondState(Shape shape, BS bsOrderSet, boolean reportAll) {
     clearTemp();
     ModelSet modelSet = viewer.modelSet;
     boolean haveTainted = false;
@@ -1055,7 +1057,7 @@ public class StateCreator implements JmolStateCreator {
       int i0 = (reportAll ? bondCount - 1 : shape.bsSizeSet.nextSetBit(0));
       for (int i = i0; i >= 0; i = (reportAll ? i - 1 : shape.bsSizeSet
           .nextSetBit(i + 1)))
-        BitSetUtil.setMapBitSet(temp, i, i, "wireframe "
+        BSUtil.setMapBitSet(temp, i, i, "wireframe "
             + ((r = bonds[i].mad) == 1 ? "on" : "" + (r / 2000f)));
     }
     if (reportAll || bsOrderSet != null) {
@@ -1064,7 +1066,7 @@ public class StateCreator implements JmolStateCreator {
           .nextSetBit(i + 1))) {
         Bond bond = bonds[i];
         if (reportAll || (bond.order & JmolEdge.BOND_NEW) == 0)
-          BitSetUtil.setMapBitSet(temp, i, i, "bondOrder "
+          BSUtil.setMapBitSet(temp, i, i, "bondOrder "
               + JmolEdge.getBondOrderNameFromOrder(bond.order));
       }
     }
@@ -1072,11 +1074,11 @@ public class StateCreator implements JmolStateCreator {
       for (int i = shape.bsColixSet.nextSetBit(0); i >= 0; i = shape.bsColixSet
           .nextSetBit(i + 1)) {
         short colix = bonds[i].colix;
-        if ((colix & Colix.OPAQUE_MASK) == Colix.USE_PALETTE)
-          BitSetUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("bonds",
+        if ((colix & C.OPAQUE_MASK) == C.USE_PALETTE)
+          BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("bonds",
               EnumPalette.CPK.id, colix, shape.translucentAllowed));
         else
-          BitSetUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("bonds",
+          BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("bonds",
               colix, shape.translucentAllowed));
       }
 
@@ -1104,7 +1106,7 @@ public class StateCreator implements JmolStateCreator {
     }
     String s = "\n"
         + getCommands(temp, temp2,
-            shape.shapeID == JmolConstants.SHAPE_BACKBONE ? "Backbone"
+            shape.shapeID == JC.SHAPE_BACKBONE ? "Backbone"
                 : "select");
     clearTemp();
     return s;
@@ -1114,66 +1116,66 @@ public class StateCreator implements JmolStateCreator {
     clearTemp();
     String s;
     switch (shape.shapeID) {
-    case JmolConstants.SHAPE_ECHO:
+    case JC.SHAPE_ECHO:
       Echo es = (Echo) shape;
-      StringXBuilder sb = new StringXBuilder();
+      SB sb = new SB();
       sb.append("\n  set echo off;\n");
       Iterator<Text> e = es.objects.values().iterator();
       while (e.hasNext()) {
         Text t = e.next();
         sb.append(t.getState());
         if (t.hidden)
-          sb.append("  set echo ID ").append(Escape.escapeStr(t.target))
+          sb.append("  set echo ID ").append(Escape.eS(t.target))
               .append(" hidden;\n");
       }
       s = sb.toString();
       break;
-    case JmolConstants.SHAPE_HALOS:
+    case JC.SHAPE_HALOS:
       Halos hs = (Halos) shape;
       s = getAtomShapeState(hs)
-          + (hs.colixSelection == Colix.USE_PALETTE ? ""
-              : hs.colixSelection == Colix.INHERIT_ALL ? "  color SelectionHalos NONE;\n"
+          + (hs.colixSelection == C.USE_PALETTE ? ""
+              : hs.colixSelection == C.INHERIT_ALL ? "  color SelectionHalos NONE;\n"
                   : Shape.getColorCommandUnk("selectionHalos",
                       hs.colixSelection, hs.translucentAllowed)
                       + ";\n");
       if (hs.bsHighlight != null)
         s += "  set highlight "
-            + Escape.escape(hs.bsHighlight)
+            + Escape.e(hs.bsHighlight)
             + "; "
             + Shape.getColorCommandUnk("highlight", hs.colixHighlight,
                 hs.translucentAllowed) + ";\n";
       break;
-    case JmolConstants.SHAPE_HOVER:
+    case JC.SHAPE_HOVER:
       Hover h = (Hover) shape;
       if (h.atomFormats != null)
         for (int i = viewer.getAtomCount(); --i >= 0;)
           if (h.atomFormats[i] != null)
-            BitSetUtil.setMapBitSet(temp, i, i, "set hoverLabel "
-                + Escape.escapeStr(h.atomFormats[i]));
+            BSUtil.setMapBitSet(temp, i, i, "set hoverLabel "
+                + Escape.eS(h.atomFormats[i]));
       s = "\n  hover "
-          + Escape.escapeStr((h.labelFormat == null ? "" : h.labelFormat))
+          + Escape.eS((h.labelFormat == null ? "" : h.labelFormat))
           + ";\n" + getCommands(temp, null, "select");
       break;
-    case JmolConstants.SHAPE_LABELS:
+    case JC.SHAPE_LABELS:
       Labels l = (Labels) shape;
       for (int i = l.bsSizeSet.nextSetBit(0); i >= 0; i = l.bsSizeSet
           .nextSetBit(i + 1)) {
-        BitSetUtil.setMapBitSet(temp, i, i, "label "
-            + Escape.escapeStr(l.formats[i]));
+        BSUtil.setMapBitSet(temp, i, i, "label "
+            + Escape.eS(l.formats[i]));
         if (l.bsColixSet != null && l.bsColixSet.get(i))
-          BitSetUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand("label",
+          BSUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand("label",
               l.paletteIDs[i], l.colixes[i], l.translucentAllowed));
         if (l.bsBgColixSet != null && l.bsBgColixSet.get(i))
-          BitSetUtil.setMapBitSet(temp2, i, i, "background label "
+          BSUtil.setMapBitSet(temp2, i, i, "background label "
               + Shape.encodeColor(l.bgcolixes[i]));
         Text text = l.getLabel(i);
         float sppm = (text != null ? text.getScalePixelsPerMicron() : 0);
         if (sppm > 0)
-          BitSetUtil.setMapBitSet(temp2, i, i, "set labelScaleReference "
+          BSUtil.setMapBitSet(temp2, i, i, "set labelScaleReference "
               + (10000f / sppm));
         if (l.offsets != null && l.offsets.length > i) {
           int offsetFull = l.offsets[i];
-          BitSetUtil
+          BSUtil
               .setMapBitSet(
                   temp2,
                   i,
@@ -1187,41 +1189,41 @@ public class StateCreator implements JmolStateCreator {
           String align = Object2d.getAlignmentName(offsetFull >> 2);
           String pointer = Object2d.getPointer(offsetFull);
           if (pointer.length() > 0)
-            BitSetUtil.setMapBitSet(temp2, i, i, "set labelPointer " + pointer);
+            BSUtil.setMapBitSet(temp2, i, i, "set labelPointer " + pointer);
           if ((offsetFull & Labels.FRONT_FLAG) != 0)
-            BitSetUtil.setMapBitSet(temp2, i, i, "set labelFront");
+            BSUtil.setMapBitSet(temp2, i, i, "set labelFront");
           else if ((offsetFull & Labels.GROUP_FLAG) != 0)
-            BitSetUtil.setMapBitSet(temp2, i, i, "set labelGroup");
+            BSUtil.setMapBitSet(temp2, i, i, "set labelGroup");
           // labelAlignment must come last, so we put it in a separate hash
           // table
           if (align.length() > 0)
-            BitSetUtil.setMapBitSet(temp3, i, i, "set labelAlignment " + align);
+            BSUtil.setMapBitSet(temp3, i, i, "set labelAlignment " + align);
         }
         if (l.mads != null && l.mads[i] < 0)
-          BitSetUtil.setMapBitSet(temp2, i, i, "set toggleLabel");
+          BSUtil.setMapBitSet(temp2, i, i, "set toggleLabel");
         if (l.bsFontSet != null && l.bsFontSet.get(i))
-          BitSetUtil.setMapBitSet(temp2, i, i, Shape.getFontCommand("label",
+          BSUtil.setMapBitSet(temp2, i, i, Shape.getFontCommand("label",
               JmolFont.getFont3D(l.fids[i])));
       }
       s = getCommands(temp, temp2, "select")
           + getCommands(null, temp3, "select");
       temp3.clear();
       break;
-    case JmolConstants.SHAPE_BALLS:
+    case JC.SHAPE_BALLS:
       int atomCount = viewer.getAtomCount();
       Atom[] atoms = viewer.modelSet.atoms;
       float r = 0;
       for (int i = 0; i < atomCount; i++) {
         if (shape.bsSizeSet != null && shape.bsSizeSet.get(i)) {
           if ((r = atoms[i].madAtom) < 0)
-            BitSetUtil.setMapBitSet(temp, i, i, "Spacefill on");
+            BSUtil.setMapBitSet(temp, i, i, "Spacefill on");
           else
-            BitSetUtil.setMapBitSet(temp, i, i, "Spacefill " + (r / 2000f));
+            BSUtil.setMapBitSet(temp, i, i, "Spacefill " + (r / 2000f));
         }
         if (shape.bsColixSet != null && shape.bsColixSet.get(i)) {
           byte pid = atoms[i].getPaletteID();
           if (pid != EnumPalette.CPK.id || atoms[i].isTranslucent())
-            BitSetUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("atoms",
+            BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("atoms",
                 pid, atoms[i].getColix(), shape.translucentAllowed));
         }
       }
@@ -1250,27 +1252,27 @@ public class StateCreator implements JmolStateCreator {
     // restored in a saved state definition, but will not execute
     // now so that there is no chance any embedded scripts or
     // default load scripts will run and slow things down.
-    StringXBuilder str = new StringXBuilder();
+    SB str = new SB();
     appendCmd(str, "set allowEmbeddedScripts false");
     if (g.allowEmbeddedScripts)
-      g.setParamB("allowEmbeddedScripts", true);
+      g.setB("allowEmbeddedScripts", true);
     appendCmd(str, "set appendNew " + g.appendNew);
-    appendCmd(str, "set appletProxy " + Escape.escapeStr(g.appletProxy));
+    appendCmd(str, "set appletProxy " + Escape.eS(g.appletProxy));
     appendCmd(str, "set applySymmetryToBonds " + g.applySymmetryToBonds);
     if (g.atomTypes.length() > 0)
-      appendCmd(str, "set atomTypes " + Escape.escapeStr(g.atomTypes));
+      appendCmd(str, "set atomTypes " + Escape.eS(g.atomTypes));
     appendCmd(str, "set autoBond " + g.autoBond);
     //    appendCmd(str, "set autoLoadOrientation " + autoLoadOrientation);
     if (g.axesOrientationRasmol)
       appendCmd(str, "set axesOrientationRasmol true");
     appendCmd(str, "set bondRadiusMilliAngstroms " + g.bondRadiusMilliAngstroms);
     appendCmd(str, "set bondTolerance " + g.bondTolerance);
-    appendCmd(str, "set defaultLattice " + Escape.escapePt(g.ptDefaultLattice));
+    appendCmd(str, "set defaultLattice " + Escape.eP(g.ptDefaultLattice));
     appendCmd(str, "set defaultLoadFilter "
-        + Escape.escapeStr(g.defaultLoadFilter));
+        + Escape.eS(g.defaultLoadFilter));
     appendCmd(str, "set defaultLoadScript \"\"");
     if (g.defaultLoadScript.length() > 0)
-      g.setParamS("defaultLoadScript", g.defaultLoadScript);
+      g.setS("defaultLoadScript", g.defaultLoadScript);
     appendCmd(str, "set defaultStructureDssp " + g.defaultStructureDSSP);
     String sMode = viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null);
     appendCmd(str, "set defaultVDW " + sMode);
@@ -1279,17 +1281,17 @@ public class StateCreator implements JmolStateCreator {
           .getDefaultVdwTypeNameOrData(Integer.MAX_VALUE, null));
     appendCmd(str, "set forceAutoBond " + g.forceAutoBond);
     appendCmd(str, "#set defaultDirectory "
-        + Escape.escapeStr(g.defaultDirectory));
-    appendCmd(str, "#set loadFormat " + Escape.escapeStr(g.loadFormat));
+        + Escape.eS(g.defaultDirectory));
+    appendCmd(str, "#set loadFormat " + Escape.eS(g.loadFormat));
     appendCmd(str, "#set loadLigandFormat "
-        + Escape.escapeStr(g.loadLigandFormat));
+        + Escape.eS(g.loadLigandFormat));
     appendCmd(str, "#set smilesUrlFormat "
-        + Escape.escapeStr(g.smilesUrlFormat));
+        + Escape.eS(g.smilesUrlFormat));
     appendCmd(str, "#set nihResolverFormat "
-        + Escape.escapeStr(g.nihResolverFormat));
-    appendCmd(str, "#set pubChemFormat " + Escape.escapeStr(g.pubChemFormat));
-    appendCmd(str, "#set edsUrlFormat " + Escape.escapeStr(g.edsUrlFormat));
-    appendCmd(str, "#set edsUrlCutoff " + Escape.escapeStr(g.edsUrlCutoff));
+        + Escape.eS(g.nihResolverFormat));
+    appendCmd(str, "#set pubChemFormat " + Escape.eS(g.pubChemFormat));
+    appendCmd(str, "#set edsUrlFormat " + Escape.eS(g.edsUrlFormat));
+    appendCmd(str, "#set edsUrlCutoff " + Escape.eS(g.edsUrlCutoff));
     //    if (autoLoadOrientation)
     //      appendCmd(str, "set autoLoadOrientation true");
     appendCmd(str, "set legacyAutoBonding " + g.legacyAutoBonding);
@@ -1314,7 +1316,7 @@ public class StateCreator implements JmolStateCreator {
 
   public String getAllSettings(String prefix) {
     GlobalSettings g = viewer.global;
-    StringXBuilder commands = new StringXBuilder();
+    SB commands = new SB();
     Iterator<String> e;
     String key;
     String[] list = new String[g.htBooleanParameterFlags.size()
@@ -1339,7 +1341,7 @@ public class StateCreator implements JmolStateCreator {
               .indexOf(_prefix) == 0)) {
         Object value = g.htNonbooleanParameterValues.get(key);
         if (value instanceof String)
-          value = chop(Escape.escapeStr((String) value));
+          value = chop(Escape.eS((String) value));
         list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
             + value;
       }
@@ -1348,10 +1350,10 @@ public class StateCreator implements JmolStateCreator {
     while (e.hasNext()) {
       key = e.next();
       if (prefix == null || key.indexOf(prefix) == 0) {
-        ScriptVariable value = g.htUserVariables.get(key);
+        SV value = g.htUserVariables.get(key);
         String s = value.asString();
         list[n++] = key + " " + (key.startsWith("@") ? "" : "= ")
-            + (value.tok == Token.string ? chop(Escape.escapeStr(s)) : s);
+            + (value.tok == T.string ? chop(Escape.eS(s)) : s);
       }
     }
     Arrays.sort(list, 0, n);
@@ -1366,7 +1368,7 @@ public class StateCreator implements JmolStateCreator {
     int len = s.length();
     if (len < 512)
       return s;
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     String sep = "\"\\\n    + \"";
     int pt = 0;
     for (int i = 72; i < len; pt = i, i += 72) {
@@ -1380,16 +1382,16 @@ public class StateCreator implements JmolStateCreator {
 
   public String getAtomShapeState(AtomShape shape) {
     clearTemp();
-    String type = JmolConstants.shapeClassBases[shape.shapeID];
+    String type = JC.shapeClassBases[shape.shapeID];
     if (shape.bsSizeSet != null)
       for (int i = shape.bsSizeSet.nextSetBit(0); i >= 0; i = shape.bsSizeSet
           .nextSetBit(i + 1))
-        BitSetUtil.setMapBitSet(temp, i, i, type
+        BSUtil.setMapBitSet(temp, i, i, type
             + (shape.mads[i] < 0 ? " on" : " " + shape.mads[i] / 2000f));
     if (shape.bsColixSet != null)
       for (int i = shape.bsColixSet.nextSetBit(0); i >= 0; i = shape.bsColixSet
           .nextSetBit(i + 1))
-        BitSetUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand(type,
+        BSUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand(type,
             shape.paletteIDs[i], shape.colixes[i], shape.translucentAllowed));
     String s = getCommands(temp, temp2, "select");
     clearTemp();
@@ -1399,7 +1401,7 @@ public class StateCreator implements JmolStateCreator {
   public String getFunctionCalls(String selectedFunction) {
     if (selectedFunction == null)
       selectedFunction = "";
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     int pt = selectedFunction.indexOf("*");
     boolean isGeneric = (pt >= 0);
     boolean isStatic = (selectedFunction.indexOf("static_") == 0);
@@ -1431,16 +1433,16 @@ public class StateCreator implements JmolStateCreator {
     return s.toString();
   }
 
-  private static boolean isTainted(BitSet[] tainted, int atomIndex, byte type) {
+  private static boolean isTainted(BS[] tainted, int atomIndex, byte type) {
     return (tainted != null && tainted[type] != null && tainted[type]
         .get(atomIndex));
   }
 
-  public String getAtomicPropertyState(byte taintWhat, BitSet bsSelected) {
+  public String getAtomicPropertyState(byte taintWhat, BS bsSelected) {
     if (!viewer.global.preserveState)
       return "";
-    BitSet bs;
-    StringXBuilder commands = new StringXBuilder();
+    BS bs;
+    SB commands = new SB();
     for (byte type = 0; type < AtomCollection.TAINT_MAX; type++)
       if (taintWhat < 0 || type == taintWhat)
         if ((bs = (bsSelected != null ? bsSelected : viewer
@@ -1449,20 +1451,20 @@ public class StateCreator implements JmolStateCreator {
     return commands.toString();
   }
 
-  public void getAtomicPropertyStateBuffer(StringXBuilder commands, byte type,
-                                           BitSet bs, String label,
+  public void getAtomicPropertyStateBuffer(SB commands, byte type,
+                                           BS bs, String label,
                                            float[] fData) {
     if (!viewer.global.preserveState)
       return;
     // see setAtomData()
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     String dataLabel = (label == null ? AtomCollection.userSettableValues[type]
         : label)
         + " set";
     int n = 0;
     boolean isDefault = (type == AtomCollection.TAINT_COORD);
     Atom[] atoms = viewer.modelSet.atoms;
-    BitSet[] tainted = viewer.modelSet.tainted;
+    BS[] tainted = viewer.modelSet.tainted;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         s.appendI(i + 1).append(" ").append(atoms[i].getElementSymbol())
@@ -1490,9 +1492,9 @@ public class StateCreator implements JmolStateCreator {
               .appendF(atoms[i].z);
           break;
         case AtomCollection.TAINT_VIBRATION:
-          Vector3f v = atoms[i].getVibrationVector();
+          V3 v = atoms[i].getVibrationVector();
           if (v == null)
-            v = new Vector3f();
+            v = new V3();
           s.appendF(v.x).append(" ").appendF(v.y).append(" ").appendF(v.z);
           break;
         case AtomCollection.TAINT_ELEMENT:
@@ -1536,14 +1538,14 @@ public class StateCreator implements JmolStateCreator {
 
   public void undoMoveAction(int action, int n) {
     switch (action) {
-    case Token.undomove:
-    case Token.redomove:
+    case T.undomove:
+    case T.redomove:
       switch (n) {
       case -2:
         viewer.undoClear();
         break;
       case -1:
-        (action == Token.undomove ? viewer.actionStates
+        (action == T.undomove ? viewer.actionStates
             : viewer.actionStatesRedo).clear();
         break;
       case 0:
@@ -1551,7 +1553,7 @@ public class StateCreator implements JmolStateCreator {
         //$FALL-THROUGH$
       default:
         if (n > MAX_ACTION_UNDO)
-          n = (action == Token.undomove ? viewer.actionStates
+          n = (action == T.undomove ? viewer.actionStates
               : viewer.actionStatesRedo).size();
         for (int i = 0; i < n; i++)
           undoMoveActionClear(0, action, true);
@@ -1571,8 +1573,8 @@ public class StateCreator implements JmolStateCreator {
     //System.out.println(" " + type + " size=" + actionStates.size() + " "
     //    + +actionStatesRedo.size());
     switch (type) {
-    case Token.redomove:
-    case Token.undomove:
+    case T.redomove:
+    case T.undomove:
       // from MouseManager
       // CTRL-Z: type = 1 UNDO
       // CTRL-Y: type = -1 REDO
@@ -1582,11 +1584,11 @@ public class StateCreator implements JmolStateCreator {
       List<String> list2;
       switch (type) {
       default:
-      case Token.undomove:
+      case T.undomove:
         list1 = viewer.actionStates;
         list2 = viewer.actionStatesRedo;
         break;
-      case Token.redomove:
+      case T.redomove:
         list1 = viewer.actionStatesRedo;
         list2 = viewer.actionStates;
         if (viewer.actionStatesRedo.size() == 1)
@@ -1598,7 +1600,7 @@ public class StateCreator implements JmolStateCreator {
       undoWorking = true;
       list2.add(0, list1.remove(0));
       s = viewer.actionStatesRedo.get(0);
-      if (type == Token.undomove && list2.size() == 1) {
+      if (type == T.undomove && list2.size() == 1) {
         // must save current state, coord, etc.
         // but this destroys actionStatesRedo
         int[] pt = new int[] { 1 };
@@ -1623,8 +1625,8 @@ public class StateCreator implements JmolStateCreator {
       if (undoWorking && clearRedo)
         return;
       undoWorking = true;
-      BitSet bs;
-      StringXBuilder sb = new StringXBuilder();
+      BS bs;
+      SB sb = new SB();
       sb.append("#" + type + " " + taintedAtom + " " + (new Date()) + "\n");
       if (taintedAtom >= 0) {
         bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
@@ -1633,7 +1635,7 @@ public class StateCreator implements JmolStateCreator {
       } else {
         bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
         sb.append("zap ");
-        sb.append(Escape.escape(bs)).append(";");
+        sb.append(Escape.e(bs)).append(";");
         DataManager.getInlineData(sb, viewer.getModelExtract(bs, false, true,
             "MOL"), true, null);
         sb.append("set refreshing false;").append(
@@ -1658,7 +1660,7 @@ public class StateCreator implements JmolStateCreator {
   private boolean undoWorking = false;
   private final static int MAX_ACTION_UNDO = 100;
 
-  void appendLoadStates(StringXBuilder cmds) {
+  void appendLoadStates(SB cmds) {
     Map<String, Boolean> ligandModelSet = viewer.ligandModelSet;
     if (ligandModelSet != null) {
       for (String key : ligandModelSet.keySet()) {
@@ -1668,7 +1670,7 @@ public class StateCreator implements JmolStateCreator {
               Escape.encapsulateData("ligand_" + key, data.trim() + "\n", 0));
       }
     }
-    StringXBuilder commands = new StringXBuilder();
+    SB commands = new SB();
     ModelSet ms = viewer.modelSet;
     Model[] models = ms.models;
     int modelCount = ms.modelCount;
@@ -1680,14 +1682,14 @@ public class StateCreator implements JmolStateCreator {
       if (pt < 0 || pt != commands.lastIndexOf(m.loadState))
         commands.append(models[i].loadState);
       if (models[i].isModelKit) {
-        BitSet bs = ms.getModelAtomBitSetIncludingDeleted(i, false);
+        BS bs = ms.getModelAtomBitSetIncludingDeleted(i, false);
         if (ms.tainted != null) {
           if (ms.tainted[AtomCollection.TAINT_COORD] != null)
             ms.tainted[AtomCollection.TAINT_COORD].andNot(bs);
           if (ms.tainted[AtomCollection.TAINT_ELEMENT] != null)
             ms.tainted[AtomCollection.TAINT_ELEMENT].andNot(bs);
         }
-        m.loadScript = new StringXBuilder();
+        m.loadScript = new SB();
         Viewer.getInlineData(commands, viewer.getModelExtract(bs, false, true,
             "MOL"), i > 0);
       } else {
@@ -1764,7 +1766,7 @@ public class StateCreator implements JmolStateCreator {
 
   public String createImageSet(String fileName, String type, String text,
                                byte[] bytes, String[] scripts, int quality,
-                               int width, int height, BitSet bsFrames,
+                               int width, int height, BS bsFrames,
                                int nVibes, String[] fullPath) {
     if (bsFrames == null && nVibes == 0)
       return (String) createImagePathCheck(fileName, type, text, bytes,
@@ -1782,10 +1784,10 @@ public class StateCreator implements JmolStateCreator {
 
     String froot = fileName.substring(0, ptDot);
     String fext = fileName.substring(ptDot);
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     if (bsFrames == null) {
       viewer.transformManager.vibrationOn = true;
-      sb = new StringXBuilder();
+      sb = new SB();
       for (int i = 0; i < nVibes; i++) {
         for (int j = 0; j < 20; j++) {
           viewer.transformManager.setVibrationT(j / 20f + 0.2501f);
@@ -1811,7 +1813,7 @@ public class StateCreator implements JmolStateCreator {
 
   private boolean writeFrame(int n, String froot, String fext,
                              String[] fullPath, String type, int quality,
-                             int width, int height, StringXBuilder sb) {
+                             int width, int height, SB sb) {
     String fileName = "0000" + n;
     fileName = froot + fileName.substring(fileName.length() - 4) + fext;
     if (fullPath != null)
@@ -2010,9 +2012,9 @@ public class StateCreator implements JmolStateCreator {
         if (modelIndex == -2)
           return; // file was found, or no file was indicated, but not this model -- ignore
         script = (modelIndex == -1 && filename != null ? script = "load "
-            + Escape.escapeStr(filename) : "");
+            + Escape.eS(filename) : "");
         if (id != null)
-          script += ";model " + Escape.escapeStr(id);
+          script += ";model " + Escape.eS(id);
         if (atoms != null)
           script += ";select visible & (@"
               + TextFormat.simpleReplace(atoms, ",", " or @") + ")";
@@ -2077,7 +2079,7 @@ public class StateCreator implements JmolStateCreator {
     case 7:
       if (key.equals("centerAt"))
         viewer.centerAt(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
-            Point3f.new3(Parser.parseFloatStr(tokens[4]), Parser
+            P3.new3(Parser.parseFloatStr(tokens[4]), Parser
                 .parseFloatStr(tokens[5]), Parser.parseFloatStr(tokens[6])));
       break;
     }
@@ -2241,7 +2243,7 @@ public class StateCreator implements JmolStateCreator {
     if (fileName.endsWith("jvxl")) {
       cmd = "isosurface ";
     } else if (fileName.endsWith(".pse")) {
-      cmd = "zap;load SYNC " + Escape.escapeStr(fileName)
+      cmd = "zap;load SYNC " + Escape.eS(fileName)
           + " filter 'DORESIZE'";
       return;
     }
@@ -2253,9 +2255,9 @@ public class StateCreator implements JmolStateCreator {
         if (type != null) {
           viewer
               .evalString("if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} "
-                  + Escape.escapeStr(fileName)
+                  + Escape.eS(fileName)
                   + " mesh nofill }; else; { isosurface "
-                  + Escape.escapeStr(fileName) + "}");
+                  + Escape.eS(fileName) + "}");
           return;
         }
       } else if (type.equals("Jmol")) {
@@ -2274,7 +2276,7 @@ public class StateCreator implements JmolStateCreator {
       showEditor(new String[] { fileName, viewer.getFileAsString(fileName) });
     else
       viewer.evalString((cmd == null ? "script " : cmd)
-          + Escape.escapeStr(fileName));
+          + Escape.eS(fileName));
   }
 
   public void showEditor(String[] file_text) {
@@ -2319,4 +2321,15 @@ public class StateCreator implements JmolStateCreator {
       Logger.debug("cannot log " + data);
     }
   }
+  
+  public String getAtomDefs(Map<String, Object> names) {
+    SB sb = new SB();
+    for (Map.Entry<String, Object> e : names.entrySet()) {
+      if (e.getValue() instanceof BS)
+        sb.append("{" + e.getKey() + "} <" + ((BS) e.getValue()).cardinality()
+            + " atoms>\n");
+    }
+    return sb.append("\n").toString();
+  }
+
 }

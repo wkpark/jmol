@@ -27,8 +27,8 @@ import java.util.Map;
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Logger;
@@ -42,10 +42,10 @@ public abstract class ProteinStructure {
   int monomerIndexFirst;
   int monomerIndexLast;
   int monomerCount;
-  Point3f axisA, axisB;
-  Vector3f axisUnitVector;
-  final Vector3f vectorProjection = new Vector3f();
-  Point3f[] segments;
+  P3 axisA, axisB;
+  V3 axisUnitVector;
+  final V3 vectorProjection = new V3();
+  P3[] segments;
   int strucNo;
   String structureID;
   int serialID;
@@ -110,13 +110,13 @@ public abstract class ProteinStructure {
     if (segments != null)
       return;
     calcAxis();
-    segments = new Point3f[monomerCount + 1];
+    segments = new P3[monomerCount + 1];
     segments[monomerCount] = axisB;
     segments[0] = axisA;
-    Vector3f axis = Vector3f.newV(axisUnitVector);
+    V3 axis = V3.newV(axisUnitVector);
     axis.scale(axisB.distance(axisA) / monomerCount);
     for (int i = 1; i < monomerCount; i++) {
-      Point3f point = segments[i] = new Point3f();
+      P3 point = segments[i] = new P3();
       point.setT(segments[i - 1]);
       point.add(axis);
       //now it's just a constant-distance segmentation. 
@@ -166,23 +166,23 @@ public abstract class ProteinStructure {
     return i;
   }
 
-  public Point3f[] getSegments() {
+  public P3[] getSegments() {
     if (segments == null)
       calcSegments();
     return segments;
   }
 
-  public Point3f getAxisStartPoint() {
+  public P3 getAxisStartPoint() {
     calcAxis();
     return axisA;
   }
 
-  public Point3f getAxisEndPoint() {
+  public P3 getAxisEndPoint() {
     calcAxis();
     return axisB;
   }
 
-  Point3f getStructureMidPoint(int index) {
+  P3 getStructureMidPoint(int index) {
     if (segments == null)
       calcSegments();
     return segments[index];

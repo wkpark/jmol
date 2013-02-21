@@ -4,20 +4,20 @@ package org.jmol.util;
 /**
  * Interesting thing here is that JavaScript is 3x faster than Java in handling strings.
  * 
- * Java StringXBuilder is final, unfortunately. I guess they weren't thinking about Java2Script!
+ * Java StringBuilder is final, unfortunately. I guess they weren't thinking about Java2Script!
  * 
  * The reason we have to do this that several overloaded append methods is WAY too expensive
  * 
  */
 
-public class StringXBuilder {
+public class SB {
   
   private java.lang.StringBuilder sb;
   String s;
   
   //TODO: JS experiment with using array and .push() here
 
-  public StringXBuilder() {
+  public SB() {
     /**
      * @j2sNative
      * 
@@ -29,37 +29,37 @@ public class StringXBuilder {
     }
   }
 
-  public static StringXBuilder newN(int n) {
+  public static SB newN(int n) {
     /**
      * @j2sNative
-     *            return new org.jmol.util.StringXBuilder(); 
+     *            return new org.jmol.util.SB(); 
      */
     {
       // not perfect, because it requires defining sb twice. 
       // We can do better...
-      StringXBuilder sb = new StringXBuilder();
+      SB sb = new SB();
       sb.sb = new java.lang.StringBuilder(n);
       return sb;
     }
   }
 
-  public static StringXBuilder newS(String s) {
+  public static SB newS(String s) {
     /**
      * @j2sNative 
      * 
-     * var sb = new org.jmol.util.StringXBuilder();
+     * var sb = new org.jmol.util.SB();
      * sb.s = s;
      * return sb; 
      * 
      */
     {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.sb = new java.lang.StringBuilder(s);
     return sb;
     }
   }
 
-  public StringXBuilder append(String s) {
+  public SB append(String s) {
     /**
      * @j2sNative
      * 
@@ -72,7 +72,7 @@ public class StringXBuilder {
     return this;
   }
   
-  public StringXBuilder appendC(char c) {
+  public SB appendC(char c) {
     /**
      * @j2sNative
      * 
@@ -85,7 +85,7 @@ public class StringXBuilder {
     
   }
 
-  public StringXBuilder appendI(int i) {
+  public SB appendI(int i) {
     /**
      * @j2sNative
      * 
@@ -98,7 +98,7 @@ public class StringXBuilder {
     return this;
   }
 
-  public StringXBuilder appendB(boolean b) {
+  public SB appendB(boolean b) {
     /**
      * @j2sNative
      * 
@@ -116,7 +116,7 @@ public class StringXBuilder {
    * @param f
    * @return this
    */
-  public StringXBuilder appendF(float f) {
+  public SB appendF(float f) {
     /**
      * @j2sNative
      * 
@@ -132,7 +132,7 @@ public class StringXBuilder {
     return this;
   }
 
-  public StringXBuilder appendD(double d) {
+  public SB appendD(double d) {
     /**
      * @j2sNative
      * 
@@ -148,7 +148,7 @@ public class StringXBuilder {
     return this;
   }
 
-  public StringXBuilder appendSB(StringXBuilder buf) {
+  public SB appendSB(SB buf) {
     /**
      * @j2sNative
      * 
@@ -161,7 +161,7 @@ public class StringXBuilder {
     return this;
   }
 
-  public StringXBuilder appendO(Object data) {
+  public SB appendO(Object data) {
     /**
      * @j2sNative
      * 

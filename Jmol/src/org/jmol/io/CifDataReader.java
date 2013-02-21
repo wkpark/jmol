@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.jmol.api.JmolLineReader;
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 
 public class CifDataReader {
@@ -76,7 +76,7 @@ public class CifDataReader {
   public int ichPeeked;
   public int fieldCount;
   public String[] loopData;
-  public StringXBuilder fileHeader = new StringXBuilder();
+  public SB fileHeader = new SB();
   private boolean isHeader = true;
   
   ////////////////////////////////////////////////////////////////

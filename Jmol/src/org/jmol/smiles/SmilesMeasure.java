@@ -26,7 +26,7 @@ package org.jmol.smiles;
 
 
 import org.jmol.smiles.SmilesSearch.VTemp;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 public class SmilesMeasure  {
 
@@ -72,13 +72,13 @@ public class SmilesMeasure  {
   
   private final static float radiansPerDegree = (float) (2 * Math.PI / 360);
 
-  private final Point3f[] points = new Point3f[4];
+  private final P3[] points = new P3[4];
   
   boolean check() {
     for (int i = 0; i < type; i++) {
       int iAtom = search.patternAtoms[indices[i]].getMatchingAtom();
       //System.out.print(iAtom + "-");
-      points[i] = (Point3f) search.jmolAtoms[iAtom];
+      points[i] = (P3) search.jmolAtoms[iAtom];
       //System.out.println(points[i]);
     }
     float d = 0;
@@ -100,8 +100,8 @@ public class SmilesMeasure  {
     return ((d < min || d > max) == isNot);   
   }
 
-  public static void setTorsionData(Point3f pt1a, Point3f pt1,
-                                    Point3f pt2, Point3f pt2a,
+  public static void setTorsionData(P3 pt1a, P3 pt1,
+                                    P3 pt2, P3 pt2a,
                                     VTemp v, boolean isAll) {
     // We cross dihedral bonds with the bond axis
     // to get two vector projections in the

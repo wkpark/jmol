@@ -26,12 +26,12 @@
 package org.jmol.api;
 
 import org.jmol.util.Logger;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 public class Interface {
 
   public static Object getOptionInterface(String name) {
-    return getInterface(JmolConstants.CLASSBASE_OPTIONS + name);
+    return getInterface(JC.CLASSBASE_OPTIONS + name);
   }
 
   public static Object getApplicationInterface(String name) {

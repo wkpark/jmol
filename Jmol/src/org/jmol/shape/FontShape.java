@@ -24,7 +24,7 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
 
 
@@ -41,7 +41,7 @@ public abstract class FontShape extends Shape {
   }
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
     if ("font" == propertyName) {
       font3d = (JmolFont) value;
       return;

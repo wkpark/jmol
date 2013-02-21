@@ -35,9 +35,9 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quadric;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
 import java.util.ArrayList;
@@ -100,7 +100,7 @@ public class PdbReader extends AtomSetCollectionReader {
   
   private int lineLength;
 
-  private StringXBuilder pdbHeader;
+  private SB pdbHeader;
 
   private boolean applySymmetry;
   private boolean getTlsGroups;
@@ -123,11 +123,11 @@ public class PdbReader extends AtomSetCollectionReader {
   private List<Matrix4f> vBiomts;
   private List<Map<String, Object>> vBiomolecules;
   private List<Map<String, Object>> vTlsModels;
-  private StringXBuilder sbTlsErrors;
+  private SB sbTlsErrors;
 
   protected int[] chainAtomCounts;  
   
-  private StringXBuilder sbIgnored, sbSelected, sbConect, sb;
+  private SB sbIgnored, sbSelected, sbConect, sb;
 
   private int atomCount;
   private int maxSerial;
@@ -183,7 +183,7 @@ public class PdbReader extends AtomSetCollectionReader {
 @Override
  protected void initializeReader() throws Exception {
    setIsPDB();
-   pdbHeader = (getHeader ? new StringXBuilder() : null);
+   pdbHeader = (getHeader ? new SB() : null);
    applySymmetry = !checkFilterKey("NOSYMMETRY");
    getTlsGroups = checkFilterKey("TLS");
    if (htParams.containsKey("vTlsModels")) {
@@ -205,8 +205,8 @@ public class PdbReader extends AtomSetCollectionReader {
    }
    if (checkFilterKey("CONF ")) {
      configurationPtr = parseIntAt(filter, filter.indexOf("CONF ") + 5);
-     sbIgnored = new StringXBuilder();
-     sbSelected = new StringXBuilder();
+     sbIgnored = new SB();
+     sbSelected = new SB();
    }
    isLegacyModelType = (stateScriptVersionInt < 120000);
    isConnectStateBug = (stateScriptVersionInt >= 120151 && stateScriptVersionInt <= 120220
@@ -418,10 +418,10 @@ public class PdbReader extends AtomSetCollectionReader {
        
        // check for equal: 
        
-       System.out.println("TLS-U:  " + Escape.escape(anisou));
+       System.out.println("TLS-U:  " + Escape.e(anisou));
        anisou = (entry.getKey().anisoBorU);
        if (anisou != null)
-         System.out.println("ANISOU: " + Escape.escape(anisou));       
+         System.out.println("ANISOU: " + Escape.e(anisou));       
      }
      tlsU = null;
   }
@@ -1022,8 +1022,8 @@ REMARK 290 REMARK: NULL
   private void conect() {
     // adapted for improper non-crossreferenced files such as 1W7R
     if (sbConect == null) {
-      sbConect = new StringXBuilder();
-      sb = new StringXBuilder();
+      sbConect = new SB();
+      sb = new SB();
     } else {
       sb.setLength(0);
     }
@@ -1573,7 +1573,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
            * Parse tightly packed numbers e.g. -999.1234-999.1234-999.1234
            * assuming there are 4 places to the right of each decimal point
            */
-          Point3f origin = new Point3f();
+          P3 origin = new P3();
           tlsGroup.put("origin", origin);
           if (tokens.length == 8) {
             origin.set(parseFloatStr(tokens[5]), parseFloatStr(tokens[6]),
@@ -1699,7 +1699,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         }
       }
     }
-    StringXBuilder sdata = new StringXBuilder();
+    SB sdata = new SB();
     for (int i = 0; i < data.length; i++)
       sdata.appendI(data[i]).appendC('\n');
     atomSetCollection.setAtomSetAtomProperty("tlsGroup", sdata.toString(),
@@ -1735,7 +1735,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   private Map<Atom, float[]>tlsU;
   
   private void setTlsEllipsoid(Atom atom, Map<String, Object> group, SymmetryInterface symmetry) {
-    Point3f origin = (Point3f) group.get("origin");
+    P3 origin = (P3) group.get("origin");
     if (Float.isNaN(origin.x))
       return;
     
@@ -1808,7 +1808,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
 
   private void tlsAddError(String error) {
     if (sbTlsErrors == null)
-      sbTlsErrors = new StringXBuilder();
+      sbTlsErrors = new SB();
     sbTlsErrors.append(fileName).appendC('\t').append("TLS group ").appendI(
         tlsGroupID).appendC('\t').append(error).appendC('\n');
   }

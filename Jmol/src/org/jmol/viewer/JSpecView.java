@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.jmol.api.JmolJSpecView;
 import org.jmol.modelset.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
@@ -44,13 +44,13 @@ public class JSpecView implements JmolJSpecView {
       return null;
     //viewer.modelSet.htPeaks = null;
     //if (viewer.modelSet.htPeaks == null)
-    viewer.modelSet.htPeaks = new Hashtable<String, BitSet>();
-    Hashtable<String, BitSet> htPeaks = viewer.modelSet.htPeaks;
+    viewer.modelSet.htPeaks = new Hashtable<String, BS>();
+    Hashtable<String, BS> htPeaks = viewer.modelSet.htPeaks;
     for (int i = 0; i < peaks.size(); i++) {
       String peak = peaks.get(i);
-      BitSet bsPeak = htPeaks.get(peak);
+      BS bsPeak = htPeaks.get(peak);
       if (bsPeak == null) {
-        htPeaks.put(peak, bsPeak = new BitSet());
+        htPeaks.put(peak, bsPeak = new BS());
         String satoms = Parser.getQuotedAttribute(peak, "atoms");
         String select = Parser.getQuotedAttribute(peak, "select");
         String script = "";

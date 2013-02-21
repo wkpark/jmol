@@ -30,9 +30,9 @@ import java.util.List;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolTouchSimulatorInterface;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.viewer.ActionManager;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.binding.Binding;
 
@@ -233,7 +233,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   
   @Override
   public void processEvent(int groupID, int eventType, int touchID, int iData,
-                           Point3f pt, long time) {
+                           P3 pt, long time) {
     if (Logger.debugging)
       Logger.info(this + " time=" + time + " groupID=" + groupID + " "
           + Integer.toHexString(groupID) + " eventType=" + eventType + "("
@@ -242,7 +242,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     case DRAG_EVENT:
       if (iData == 2) {
         // This is a 2-finger drag
-        checkMotion(JmolConstants.CURSOR_MOVE);
+        checkMotion(JC.CURSOR_MOVE);
         viewer.translateXYBy((int) pt.x, (int) pt.y);
         logEvent("Drag", pt);
       }
@@ -254,7 +254,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       viewer.log("SparshUI reports no driver present -- setting haveMultiTouchInput FALSE");
       break;
     case ROTATE_EVENT:
-      checkMotion(JmolConstants.CURSOR_MOVE);
+      checkMotion(JC.CURSOR_MOVE);
       viewer.rotateZBy((int) pt.z, Integer.MAX_VALUE, Integer.MAX_VALUE);
       logEvent("Rotate", pt);
       break;
@@ -298,7 +298,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     }
   }
 
-  private void logEvent(String type, Point3f pt) {
+  private void logEvent(String type, P3 pt) {
     if (!viewer.getLogGestures())
       return;
     long time = System.currentTimeMillis(); 

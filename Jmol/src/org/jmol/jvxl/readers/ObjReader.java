@@ -28,10 +28,10 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 /*
  * 
@@ -87,7 +87,7 @@ class ObjReader extends PmeshReader {
   protected boolean readVertices() throws Exception {
     // also reads polygons
     pmeshError = "pmesh ERROR: invalid vertex/face list";
-    Point3f pt = new Point3f();
+    P3 pt = new P3();
     int color = 0;
     int ia, ib, ic, id = 0;
     int i = 0;
@@ -98,7 +98,7 @@ class ObjReader extends PmeshReader {
     int[] pymolMap = new int[3];
     // pymol writes a crude file with much re-writing of vertices
 
-    BitSet bsOK = new BitSet();
+    BS bsOK = new BS();
     while (readLine() != null) {
       if (line.length() < 2 || line.charAt(1) != ' ') {
         if (params.readAllData && line.startsWith("usemtl"))

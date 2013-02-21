@@ -3,9 +3,9 @@ package org.jmol.export;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 /**
  * Class to generate mesh data (faces, vertices, and normals) for several kinds
@@ -78,16 +78,16 @@ class MeshData {
     for (int i = 0; i < n; i++) {
       faces[i] = new int[] { i, (i + 1) % n, n };
     }
-    Point3f[] vertexes = new Point3f[vertexCount];
-    Point3f[] normals = new Point3f[vertexCount];
+    P3[] vertexes = new P3[vertexCount];
+    P3[] normals = new P3[vertexCount];
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * ndeg / 180. * Math.PI));
       float y = (float) (Math.sin(i * ndeg / 180. * Math.PI));
-      vertexes[i] = Point3f.new3(x, y, 0);
-      normals[i] = Point3f.new3(0, 0, 1);
+      vertexes[i] = P3.new3(x, y, 0);
+      normals[i] = P3.new3(0, 0, 1);
     }
-    vertexes[n] = Point3f.new3(0, 0, 0);
-    normals[n] = Point3f.new3(0, 0, 1);
+    vertexes[n] = P3.new3(0, 0, 0);
+    normals[n] = P3.new3(0, 0, 1);
     return MeshSurface.newMesh(false, vertexes, 0, faces, normals, 0);
   }
 
@@ -99,18 +99,18 @@ class MeshData {
    * @param pt3 Vertex 3.
    * @return The data.
    */
-  static MeshSurface getTriangleData(Point3f pt1, Point3f pt2,
-                                              Point3f pt3) {
-    Point3f[] vertexes = new Point3f[] { pt1, pt2, pt3 };
-    Vector3f v1 = new Vector3f();
-    Vector3f v2 = new Vector3f();
+  static MeshSurface getTriangleData(P3 pt1, P3 pt2,
+                                              P3 pt3) {
+    P3[] vertexes = new P3[] { pt1, pt2, pt3 };
+    V3 v1 = new V3();
+    V3 v2 = new V3();
     v1.setT(pt3);
     v1.sub(pt1);
     v2.setT(pt2);
     v2.sub(pt1);
     v2.cross(v2, v1);
     v2.normalize();
-    Vector3f[] normals = new Vector3f[] { v2, v2, v2 };
+    V3[] normals = new V3[] { v2, v2, v2 };
     int[][] faces = { { 0, 1, 2 } };
     return MeshSurface.newMesh(false, vertexes, 0, faces, normals, 0);
   }
@@ -123,7 +123,7 @@ class MeshData {
   static MeshSurface getConeData() {
     int ndeg = 10;
     int n = 360 / ndeg;
-    Point3f[] vertices = new Point3f[n + 1];
+    P3[] vertices = new P3[n + 1];
     int[][] faces = ArrayUtil.newInt2(n);
     for (int i = 0; i < n; i++)
       faces[i] = new int[] { i, (i + 1) % n, n };
@@ -131,9 +131,9 @@ class MeshData {
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * d));
       float y = (float) (Math.sin(i * d));
-      vertices[i] = Point3f.new3(x, y, 0);
+      vertices[i] = P3.new3(x, y, 0);
     }
-    vertices[n] = Point3f.new3(0, 0, 1);
+    vertices[n] = P3.new3(0, 0, 1);
     return MeshSurface.newMesh(false, vertices, 0, faces, vertices, 0);
   }
 
@@ -164,18 +164,18 @@ class MeshData {
         faces[++fpt] = new int[] { (i + 1) % n, (i + 1) % n + n, i + n };
       }
     }
-    Point3f[] vertexes = new Point3f[vertexCount];
-    Point3f[] normals = new Point3f[vertexCount];
+    P3[] vertexes = new P3[vertexCount];
+    P3[] normals = new P3[vertexCount];
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * ndeg / 180. * Math.PI));
       float y = (float) (Math.sin(i * ndeg / 180. * Math.PI));
-      vertexes[i] = Point3f.new3(x, y, 0);
-      normals[i] = Point3f.new3(x, y, 0);
+      vertexes[i] = P3.new3(x, y, 0);
+      normals[i] = P3.new3(x, y, 0);
     }
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos((i + 0.5) * ndeg / 180 * Math.PI));
       float y = (float) (Math.sin((i + 0.5) * ndeg / 180 * Math.PI));
-      vertexes[i + n] = Point3f.new3(x, y, 1);
+      vertexes[i + n] = P3.new3(x, y, 1);
       normals[i + n] = normals[i];
     }
     if (inSide)

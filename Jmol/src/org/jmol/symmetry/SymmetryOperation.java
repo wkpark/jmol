@@ -36,14 +36,14 @@ import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
 import org.jmol.util.Quaternion;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TriangleData;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
-import org.jmol.script.Token;
+import org.jmol.util.V3;
+import org.jmol.script.T;
 
 /*
  * Bob Hanson 4/2006
@@ -75,7 +75,7 @@ class SymmetryOperation extends Matrix4f {
     this.opId = opId;
   }
 
-  SymmetryOperation(SymmetryOperation op, Point3f[] atoms,
+  SymmetryOperation(SymmetryOperation op, P3[] atoms,
                            int atomIndex, int count, boolean doNormalize) {
     /*
      * externalizes and transforms an operation for use in atom reader
@@ -102,8 +102,8 @@ class SymmetryOperation extends Matrix4f {
     return (normalized || xyzOriginal == null ? xyz : xyzOriginal);
   }
 
-  private Point3f temp3 = new Point3f();
-  void newPoint(Point3f atom1, Point3f atom2,
+  private P3 temp3 = new P3();
+  void newPoint(P3 atom1, P3 atom2,
                        int transX, int transY, int transZ) {
     temp3.setT(atom1);
     transform2(temp3, temp3);
@@ -116,7 +116,7 @@ class SymmetryOperation extends Matrix4f {
   }
 
   final static String dumpSeitz(Matrix4f s) {
-    return new StringXBuilder().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
+    return new SB().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
         .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf(s.m03)).append("\t}\n")
         .append("{\t").appendI((int) s.m10).append("\t").appendI((int) s.m11).append("\t").appendI((int) s.m12)
         .append("\t").append(twelfthsOf(s.m13)).append("\t}\n")
@@ -125,7 +125,7 @@ class SymmetryOperation extends Matrix4f {
   }
   
   final static String dumpCanonicalSeitz(Matrix4f s) {
-    return new StringXBuilder().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
+    return new SB().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
         .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf(s.m03+12)).append("\t}\n")
         .append("{\t").appendI((int) s.m10).append("\t").appendI((int) s.m11).append("\t").appendI((int) s.m12)
         .append("\t").append(twelfthsOf(s.m13+12)).append("\t}\n").append("{\t").appendI((int) s.m20)
@@ -431,9 +431,9 @@ class SymmetryOperation extends Matrix4f {
     return (s.charAt(0) == '0' ? "" : n12ths > 0 ? "+" + s : s);
   }
 
-  Point3f atomTest = new Point3f();
+  P3 atomTest = new P3();
 
-  private void setOffset(Point3f[] atoms, int atomIndex, int count) {
+  private void setOffset(P3[] atoms, int atomIndex, int count) {
     /*
      * the center of mass of the full set of atoms is moved into the cell with this
      *  
@@ -465,23 +465,23 @@ class SymmetryOperation extends Matrix4f {
   }
 
   // action of this method depends upon setting of unitcell
-  private void transformCartesian(UnitCell unitcell, Point3f pt) {
+  private void transformCartesian(UnitCell unitcell, P3 pt) {
     unitcell.toFractional(pt, false);
     transform(pt);
     unitcell.toCartesian(pt, false);
 
   }
   
-  Vector3f[] rotateEllipsoid(Point3f cartCenter, Vector3f[] vectors,
-                                    UnitCell unitcell, Point3f ptTemp1, Point3f ptTemp2) {
-    Vector3f[] vRot = new Vector3f[3];
+  V3[] rotateEllipsoid(P3 cartCenter, V3[] vectors,
+                                    UnitCell unitcell, P3 ptTemp1, P3 ptTemp2) {
+    V3[] vRot = new V3[3];
     ptTemp2.setT(cartCenter);
     transformCartesian(unitcell, ptTemp2);
     for (int i = vectors.length; --i >= 0;) {
       ptTemp1.setT(cartCenter);
       ptTemp1.add(vectors[i]);
       transformCartesian(unitcell, ptTemp1);
-      vRot[i] = Vector3f.newV(ptTemp1);
+      vRot[i] = V3.newV(ptTemp1);
       vRot[i].sub(ptTemp2);
     }
     return vRot;
@@ -506,7 +506,7 @@ class SymmetryOperation extends Matrix4f {
    *              [9]      angle of rotation
    *              [10]      matrix representation
    */
-  public Object[] getDescription(SymmetryInterface uc, Point3f pt00, Point3f ptTarget, String id) {
+  public Object[] getDescription(SymmetryInterface uc, P3 pt00, P3 ptTarget, String id) {
     if (!isFinalized)
       doFinalize();
     return getDescription(this, xyzOriginal, uc, pt00, ptTarget, id);
@@ -514,19 +514,19 @@ class SymmetryOperation extends Matrix4f {
   
   private static Object[] getDescription(SymmetryOperation m,
                                          String xyzOriginal,
-                                         SymmetryInterface uc, Point3f pt00,
-                                         Point3f ptTarget, String id) {
-    Vector3f vtemp = new Vector3f();
-    Point3f ptemp = new Point3f();
-    Point3f pt01 = new Point3f();
-    Point3f pt02 = new Point3f();
-    Point3f pt03 = new Point3f();
-    Vector3f ftrans = new Vector3f();
-    Vector3f vtrans = new Vector3f();
+                                         SymmetryInterface uc, P3 pt00,
+                                         P3 ptTarget, String id) {
+    V3 vtemp = new V3();
+    P3 ptemp = new P3();
+    P3 pt01 = new P3();
+    P3 pt02 = new P3();
+    P3 pt03 = new P3();
+    V3 ftrans = new V3();
+    V3 vtrans = new V3();
     String xyz = getXYZFromMatrix(m, false, false, false);
     boolean typeOnly = (id == null);
     if (pt00 == null || Float.isNaN(pt00.x))
-      pt00 = new Point3f();
+      pt00 = new P3();
     if (ptTarget != null) {
       // Check to see if the two points only differ by
       // a translation after transformation.
@@ -555,10 +555,10 @@ class SymmetryOperation extends Matrix4f {
     pt02.add(pt00);
     pt03.add(pt00);
 
-    Point3f p0 = Point3f.newP(pt00);
-    Point3f p1 = Point3f.newP(pt01);
-    Point3f p2 = Point3f.newP(pt02);
-    Point3f p3 = Point3f.newP(pt03);
+    P3 p0 = P3.newP(pt00);
+    P3 p1 = P3.newP(pt01);
+    P3 p2 = P3.newP(pt02);
+    P3 p3 = P3.newP(pt03);
 
     uc.toFractional(p0, false);
     uc.toFractional(p1, false);
@@ -578,11 +578,11 @@ class SymmetryOperation extends Matrix4f {
     uc.toCartesian(p2, false);
     uc.toCartesian(p3, false);
 
-    Vector3f v01 = new Vector3f();
+    V3 v01 = new V3();
     v01.sub2(p1, p0);
-    Vector3f v02 = new Vector3f();
+    V3 v02 = new V3();
     v02.sub2(p2, p0);
-    Vector3f v03 = new Vector3f();
+    V3 v03 = new V3();
     v03.sub2(p3, p0);
 
     vtemp.cross(v01, v02);
@@ -608,13 +608,13 @@ class SymmetryOperation extends Matrix4f {
     // symop(sym,{0 0 0}) function will return the overall translation.
 
     Object[] info;
-    info = (Object[]) Measure.computeHelicalAxis(null, Token.array, pt00, p0,
+    info = (Object[]) Measure.computeHelicalAxis(null, T.array, pt00, p0,
         Quaternion.getQuaternionFrame(p0, p1, p2).div(
             Quaternion.getQuaternionFrame(pt00, pt01, pt02)));
-    Point3f pa1 = (Point3f) info[0];
-    Vector3f ax1 = (Vector3f) info[1];
-    int ang1 = (int) Math.abs(Parser.approx(((Point3f) info[3]).x, 1));
-    float pitch1 = approx(((Point3f) info[3]).y);
+    P3 pa1 = (P3) info[0];
+    V3 ax1 = (V3) info[1];
+    int ang1 = (int) Math.abs(Parser.approx(((P3) info[3]).x, 1));
+    float pitch1 = approx(((P3) info[3]).y);
 
     if (haveinversion) {
 
@@ -626,16 +626,16 @@ class SymmetryOperation extends Matrix4f {
 
     }
 
-    Vector3f trans = Vector3f.newV(p0);
+    V3 trans = V3.newV(p0);
     trans.sub(pt00);
     if (trans.length() < 0.1f)
       trans = null;
 
     // ////////// determination of type of operation from first principles
 
-    Point3f ptinv = null; // inverted point for translucent frame
-    Point3f ipt = null; // inversion center
-    Point3f pt0 = null; // reflection center
+    P3 ptinv = null; // inverted point for translucent frame
+    P3 ipt = null; // inversion center
+    P3 pt0 = null; // reflection center
 
     boolean istranslation = (ang1 == 0);
     boolean isrotation = !istranslation;
@@ -651,7 +651,7 @@ class SymmetryOperation extends Matrix4f {
 
       // simple inversion operation
 
-      ipt = Point3f.newP(pt00);
+      ipt = P3.newP(pt00);
       ipt.add(p0);
       ipt.scale(0.5f);
       ptinv = p0;
@@ -720,7 +720,7 @@ class SymmetryOperation extends Matrix4f {
        * The 4-fold case is simpler -- just a parallelogram.
        */
 
-      Vector3f d = (pitch1 == 0 ? new Vector3f() : ax1);
+      V3 d = (pitch1 == 0 ? new V3() : ax1);
       float f = 0;
       switch (ang1) {
       case 60: // 6_1 at x to 6-bar at i
@@ -735,12 +735,12 @@ class SymmetryOperation extends Matrix4f {
       case 180: // 2_1 to mirror plane
         // C2 with inversion is a mirror plane -- but could have a glide
         // component.
-        pt0 = new Point3f();
+        pt0 = new P3();
         pt0.setT(pt00);
         pt0.add(d);
         pa1.scaleAdd2(0.5f, d, pt00);
         if (pt0.distance(p0) > 0.1f) {
-          trans = Vector3f.newV(p0);
+          trans = V3.newV(p0);
           trans.sub(pt0);
           ptemp.setT(trans);
           uc.toFractional(ptemp, false);
@@ -762,9 +762,9 @@ class SymmetryOperation extends Matrix4f {
         vtemp.sub(d);
         vtemp.scale(f);
         pa1.add(vtemp);
-        ipt = new Point3f();
+        ipt = new P3();
         ipt.scaleAdd2(0.5f, d, pa1);
-        ptinv = new Point3f();
+        ptinv = new P3();
         ptinv.scaleAdd2(-2, ipt, pt00);
         ptinv.scale(-1);
       }
@@ -797,7 +797,7 @@ class SymmetryOperation extends Matrix4f {
 
     if (isrotation) {
 
-      Point3f pt1 = new Point3f();
+      P3 pt1 = new P3();
 
       vtemp.setT(ax1);
 
@@ -833,7 +833,7 @@ class SymmetryOperation extends Matrix4f {
     // time to get the description
 
     String info1 = "identity";
-    StringXBuilder draw1 = new StringXBuilder();
+    SB draw1 = new SB();
     String drawid;
 
     if (isinversion) {
@@ -888,7 +888,7 @@ class SymmetryOperation extends Matrix4f {
 
       // delete previous elements of this user-settable ID
 
-      draw1 = new StringXBuilder();
+      draw1 = new SB();
       draw1.append("// " + xyzOriginal + "|" + xyz + "|" + info1 + "\n");
       draw1.append(drawid).append("* delete");
 
@@ -918,7 +918,7 @@ class SymmetryOperation extends Matrix4f {
 
       if (isrotation) {
 
-        Point3f pt1 = new Point3f();
+        P3 pt1 = new P3();
 
         color = "red";
 
@@ -936,27 +936,27 @@ class SymmetryOperation extends Matrix4f {
             vtemp.scale(3);
             ptemp.scaleAdd2(-1, vtemp, pa1);
             draw1.append(drawid).append("rotVector2 diameter 0.1 ").append(
-                Escape.escapePt(pa1)).append(Escape.escapePt(ptemp)).append(
+                Escape.eP(pa1)).append(Escape.eP(ptemp)).append(
                 " color red");
           }
           scale = p0.distance(pt1);
-          draw1.append(drawid).append("rotLine1 ").append(Escape.escapePt(pt1))
-              .append(Escape.escapePt(ptinv)).append(" color red");
-          draw1.append(drawid).append("rotLine2 ").append(Escape.escapePt(pt1))
-              .append(Escape.escapePt(p0)).append(" color red");
+          draw1.append(drawid).append("rotLine1 ").append(Escape.eP(pt1))
+              .append(Escape.eP(ptinv)).append(" color red");
+          draw1.append(drawid).append("rotLine2 ").append(Escape.eP(pt1))
+              .append(Escape.eP(p0)).append(" color red");
         } else if (pitch1 == 0) {
           boolean isSpecial = (pt00.distance(p0) < 0.2f);
           if (!isSpecial) {
             draw1.append(drawid).append("rotLine1 ")
-                .append(Escape.escapePt(pt00)).append(Escape.escapePt(pa1)).append(
+                .append(Escape.eP(pt00)).append(Escape.eP(pa1)).append(
                     " color red");
-            draw1.append(drawid).append("rotLine2 ").append(Escape.escapePt(p0))
-                .append(Escape.escapePt(pa1)).append(" color red");
+            draw1.append(drawid).append("rotLine2 ").append(Escape.eP(p0))
+                .append(Escape.eP(pa1)).append(" color red");
           }
           vtemp.scale(3);
           ptemp.scaleAdd2(-1, vtemp, pa1);
           draw1.append(drawid).append("rotVector2 diameter 0.1 ").append(
-              Escape.escapePt(pa1)).append(Escape.escapePt(ptemp)).append(
+              Escape.eP(pa1)).append(Escape.eP(ptemp)).append(
               " color red");
           pt1.setT(pa1);
           if (pitch1 == 0 && pt00.distance(p0) < 0.2)
@@ -964,12 +964,12 @@ class SymmetryOperation extends Matrix4f {
         } else {
           // screw
           color = "orange";
-          draw1.append(drawid).append("rotLine1 ").append(Escape.escapePt(pt00))
-              .append(Escape.escapePt(pa1)).append(" color red");
+          draw1.append(drawid).append("rotLine1 ").append(Escape.eP(pt00))
+              .append(Escape.eP(pa1)).append(" color red");
           ptemp.setT(pa1);
           ptemp.add(vtemp);
-          draw1.append(drawid).append("rotLine2 ").append(Escape.escapePt(p0))
-              .append(Escape.escapePt(ptemp)).append(" color red");
+          draw1.append(drawid).append("rotLine2 ").append(Escape.eP(p0))
+              .append(Escape.eP(ptemp)).append(" color red");
           pt1.scaleAdd2(0.5f, vtemp, pa1);
         }
 
@@ -978,14 +978,14 @@ class SymmetryOperation extends Matrix4f {
         ptemp.setT(pt1);
         ptemp.add(vtemp);
         if (haveinversion && pitch1 != 0) {
-          draw1.append(drawid).append("rotRotLine1").append(Escape.escapePt(pt1))
-              .append(Escape.escapePt(ptinv)).append(" color red");
-          draw1.append(drawid).append("rotRotLine2").append(Escape.escapePt(pt1))
-              .append(Escape.escapePt(p0)).append(" color red");
+          draw1.append(drawid).append("rotRotLine1").append(Escape.eP(pt1))
+              .append(Escape.eP(ptinv)).append(" color red");
+          draw1.append(drawid).append("rotRotLine2").append(Escape.eP(pt1))
+              .append(Escape.eP(p0)).append(" color red");
         }
         draw1.append(drawid).append(
             "rotRotArrow arrow width 0.10 scale " + scale + " arc ").append(
-            Escape.escapePt(pt1)).append(Escape.escapePt(ptemp));
+            Escape.eP(pt1)).append(Escape.eP(ptemp));
         if (haveinversion)
           ptemp.setT(ptinv);
         else
@@ -993,13 +993,13 @@ class SymmetryOperation extends Matrix4f {
         if (ptemp.distance(p0) < 0.1f)
           ptemp.set((float) Math.random(), (float) Math.random(), (float) Math
               .random());
-        draw1.append(Escape.escapePt(ptemp));
+        draw1.append(Escape.eP(ptemp));
         ptemp.set(0, ang, 0);
-        draw1.append(Escape.escapePt(ptemp)).append(" color red");
+        draw1.append(Escape.eP(ptemp)).append(" color red");
         // draw the main vector
 
         draw1.append(drawid).append("rotVector1 vector diameter 0.1 ").append(
-            Escape.escapePt(pa1)).append(Escape.escapePt(vtemp)).append("color ")
+            Escape.eP(pa1)).append(Escape.eP(vtemp)).append("color ")
             .append(color);
       }
 
@@ -1009,7 +1009,7 @@ class SymmetryOperation extends Matrix4f {
 
         if (pt00.distance(pt0) > 0.2)
           draw1.append(drawid).append("planeVector arrow ").append(
-              Escape.escapePt(pt00)).append(Escape.escapePt(pt0)).append(
+              Escape.eP(pt00)).append(Escape.eP(pt0)).append(
               " color indigo");
 
         // faint inverted frame if trans is not null
@@ -1049,11 +1049,11 @@ class SymmetryOperation extends Matrix4f {
 
         // returns triangles and lines
         for (int i = v.size(); --i >= 0;) {
-          Point3f[] pts = (Point3f[]) v.get(i);
+          P3[] pts = (P3[]) v.get(i);
           draw1.append(drawid).append("planep").appendI(i).append(
-              Escape.escapePt(pts[0])).append(Escape.escapePt(pts[1]));
+              Escape.eP(pts[0])).append(Escape.eP(pts[1]));
           if (pts.length == 3)
-            draw1.append(Escape.escapePt(pts[2]));
+            draw1.append(Escape.eP(pts[2]));
           draw1.append(" color translucent ").append(color);
         }
 
@@ -1063,7 +1063,7 @@ class SymmetryOperation extends Matrix4f {
           ptemp.setT(pa1);
           ptemp.add(ax1);
           draw1.append(drawid).append("planeCircle scale 2.0 circle ").append(
-              Escape.escapePt(pa1)).append(Escape.escapePt(ptemp)).append(
+              Escape.eP(pa1)).append(Escape.eP(ptemp)).append(
               " color translucent ").append(color).append(" mesh fill");
         }
       }
@@ -1073,9 +1073,9 @@ class SymmetryOperation extends Matrix4f {
         // draw a faint frame showing the inversion
 
         draw1.append(drawid).append("invPoint diameter 0.4 ").append(
-            Escape.escapePt(ipt));
+            Escape.eP(ipt));
         draw1.append(drawid).append("invArrow arrow ").append(
-            Escape.escapePt(pt00)).append(Escape.escapePt(ptinv)).append(
+            Escape.eP(pt00)).append(Escape.eP(ptinv)).append(
             " color indigo");
         if (!isinversion) {
           ptemp.setT(ptinv);
@@ -1100,15 +1100,15 @@ class SymmetryOperation extends Matrix4f {
 
       if (trans != null) {
         if (pt0 == null)
-          pt0 = Point3f.newP(pt00);
+          pt0 = P3.newP(pt00);
         draw1.append(drawid).append("transVector vector ").append(
-            Escape.escapePt(pt0)).append(Escape.escapePt(trans));
+            Escape.eP(pt0)).append(Escape.eP(trans));
       }
 
       // color the targeted atoms opaque and add another frame if necessary
 
-      draw1.append("\nvar pt00 = " + Escape.escapePt(pt00));
-      draw1.append("\nvar p0 = " + Escape.escapePt(p0));
+      draw1.append("\nvar pt00 = " + Escape.eP(pt00));
+      draw1.append("\nvar p0 = " + Escape.eP(p0));
       draw1.append("\nif (within(0.2,p0).length == 0) {");
       draw1.append("\nvar set2 = within(0.2,p0.uxyz.xyz)");
       draw1.append("\nif (set2) {");
@@ -1116,13 +1116,13 @@ class SymmetryOperation extends Matrix4f {
           .append("cellOffsetVector arrow @p0 @set2 color grey");
       draw1.append(drawid).append(
           "offsetFrameX diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-          Escape.escapePt(v01)).append("*0.9} color red");
+          Escape.eP(v01)).append("*0.9} color red");
       draw1.append(drawid).append(
           "offsetFrameY diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-          Escape.escapePt(v02)).append("*0.9} color green");
+          Escape.eP(v02)).append("*0.9} color green");
       draw1.append(drawid).append(
           "offsetFrameZ diameter 0.20 @{set2.xyz} @{set2.xyz + ").append(
-          Escape.escapePt(v03)).append("*0.9} color purple");
+          Escape.eP(v03)).append("*0.9} color purple");
       draw1.append("\n}}\n");
 
       cmds = draw1.toString();
@@ -1136,10 +1136,10 @@ class SymmetryOperation extends Matrix4f {
       } else if (pitch1 == 0) {
       } else {
         // screw
-        trans = Vector3f.newV(ax1);
+        trans = V3.newV(ax1);
         ptemp.setT(trans);
         uc.toFractional(ptemp, false);
-        ftrans = Vector3f.newV(ptemp);
+        ftrans = V3.newV(ptemp);
       }
       if (haveinversion && pitch1 != 0) {
       }
@@ -1177,10 +1177,10 @@ class SymmetryOperation extends Matrix4f {
         Integer.valueOf(ang1), m2, vtrans };
   }
 
-  private static void drawLine(StringXBuilder s, String id, float diameter, Point3f pt0, Point3f pt1,
+  private static void drawLine(SB s, String id, float diameter, P3 pt0, P3 pt1,
                         String color) {
     s.append(id).append(" diameter ").appendF(diameter)
-        .append(Escape.escapePt(pt0)).append(Escape.escapePt(pt1))
+        .append(Escape.eP(pt0)).append(Escape.eP(pt1))
         .append(" color ").append(color);
   }
 

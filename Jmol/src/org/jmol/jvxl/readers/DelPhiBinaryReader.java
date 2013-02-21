@@ -27,8 +27,8 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 class DelPhiBinaryReader extends VolumeFileReader {
 
@@ -109,9 +109,9 @@ class DelPhiBinaryReader extends VolumeFileReader {
     // but it seems to be the case.
     
     float dx = (scale == 1 ? 54f/64f : 1/scale);
-    volumetricVectors[0] = Vector3f.new3(0, 0, dx);
-    volumetricVectors[1] = Vector3f.new3(0, dx, 0);
-    volumetricVectors[2] = Vector3f.new3(dx, 0, 0);
+    volumetricVectors[0] = V3.new3(0, 0, dx);
+    volumetricVectors[1] = V3.new3(0, dx, 0);
+    volumetricVectors[2] = V3.new3(dx, 0, 0);
     Logger.info("DelPhi resolution (pts/angstrom) set to: " + dx);    
     int nx = 65;
     voxelCounts[0] = voxelCounts[1] = voxelCounts[2] = nx;
@@ -126,7 +126,7 @@ class DelPhiBinaryReader extends VolumeFileReader {
     volumetricOrigin.y -= dx;
     volumetricOrigin.z -= dx;
     
-    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer = new SB();
     jvxlFileHeaderBuffer.append("DelPhi DATA ").append(nxttoplbl.replace('\n', ' ').trim()).append("\n\n");
   }
   

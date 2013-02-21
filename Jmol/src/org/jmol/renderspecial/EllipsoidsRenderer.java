@@ -28,21 +28,21 @@ package org.jmol.renderspecial;
 import java.util.Iterator;
 
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Normix;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Quadric;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
 import org.jmol.shape.Shape;
 import org.jmol.shapespecial.Ellipsoids;
 import org.jmol.shapespecial.Ellipsoids.Ellipsoid;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 public class EllipsoidsRenderer extends ShapeRenderer {
 
@@ -51,11 +51,11 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private boolean wireframeOnly;
   private int dotCount;
   private int[] coords;
-  private Vector3f[] axes;
+  private V3[] axes;
   private final float[] factoredLengths = new float[3];
   private int diameter, diameter0;
   private int selectedOctant = -1;
-  private Point3i[] selectedPoints = new Point3i[3];
+  private P3i[] selectedPoints = new P3i[3];
   private int iCutout = -1;
 
   private Matrix3f mat = new Matrix3f();
@@ -67,14 +67,14 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   
   
   private double[] coef = new double[10];
-  private final Vector3f v1 = new Vector3f();
-  private final Vector3f v2 = new Vector3f();
-  private final Vector3f v3 = new Vector3f();  
-  private final Point3f pt1 = new Point3f();
-  private final Point3f pt2 = new Point3f();
-  private final Point3i s0 = new Point3i();
-  private final Point3i s1 = new Point3i();
-  private final Point3i s2 = new Point3i();
+  private final V3 v1 = new V3();
+  private final V3 v2 = new V3();
+  private final V3 v3 = new V3();  
+  private final P3 pt1 = new P3();
+  private final P3 pt2 = new P3();
+  private final P3i s0 = new P3i();
+  private final P3i s1 = new P3i();
+  private final P3i s2 = new P3i();
   private int dotScale;
   
   private final static float toRadians = (float) Math.PI/180f;
@@ -192,14 +192,14 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     return true;
   }
 
-  private final Point3i[] screens = new Point3i[32];
+  private final P3i[] screens = new P3i[32];
   //private final int[] intensities = new int[32];
-  private final Point3f[] points = new Point3f[6];
+  private final P3[] points = new P3[6];
   {
     for (int i = 0; i < points.length; i++)
-      points[i] = new Point3f();
+      points[i] = new P3();
     for (int i = 0; i < screens.length; i++)
-      screens[i] = new Point3i();
+      screens[i] = new P3i();
   }
 
   private static int[] axisPoints = {-1, 1, -2, 2, -3, 3};
@@ -220,7 +220,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 
   private int dx;
   private float perspectiveFactor;
-  private Point3f center;
+  private P3 center;
   
   private void render1(Atom atom, Quadric ellipsoid) {
     if (!isSet)
@@ -281,13 +281,13 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     matScreenToEllipsoid.mulf(1f/perspectiveFactor);
   }
   
-  private final static Vector3f[] unitVectors = {
-    JmolConstants.axisX, JmolConstants.axisY, JmolConstants.axisZ};
+  private final static V3[] unitVectors = {
+    JC.axisX, JC.axisY, JC.axisZ};
   
-  private final static Vector3f[] unitAxisVectors = {
-    JmolConstants.axisNX, JmolConstants.axisX, 
-    JmolConstants.axisNY, JmolConstants.axisY, 
-    JmolConstants.axisNZ, JmolConstants.axisZ };
+  private final static V3[] unitAxisVectors = {
+    JC.axisNX, JC.axisX, 
+    JC.axisNY, JC.axisY, 
+    JC.axisNZ, JC.axisZ };
 
   
   private void setAxes() {
@@ -385,7 +385,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
   
   private boolean fillArc;
-  private BitSet bsTemp = new BitSet();
+  private BS bsTemp = new BS();
   
   private void renderArc(int ptA, int ptB) {
     v1.setT(points[ptA]);

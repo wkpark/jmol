@@ -29,11 +29,11 @@ import java.awt.event.MouseWheelEvent;
 
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.Event;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.util.Escape;
 import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.binding.Binding;
@@ -128,7 +128,7 @@ public class Mouse implements JmolMouseInterface {
     float y10 = t10[1];
     float y11 = t11[1]; 
     float dy1 = y11 - y10;
-    Vector3f v1 = Vector3f.new3(dx1, dy1, 0);
+    V3 v1 = V3.new3(dx1, dy1, 0);
     float d1 = v1.length();
     float[] t20 = t2[0];
     float[] t21 = t2[t2.length - 1];
@@ -138,7 +138,7 @@ public class Mouse implements JmolMouseInterface {
     float y20 = t20[1];
     float y21 = t21[1]; 
     float dy2 = y21 - y20;
-    Vector3f v2 = Vector3f.new3(dx2, dy2, 0);    
+    V3 v2 = V3.new3(dx2, dy2, 0);    
     float d2 = v2.length();
     // rooted finger --> zoom (at this position, perhaps?)
     if (d1 < 3 || d2 < 3)
@@ -156,8 +156,8 @@ public class Mouse implements JmolMouseInterface {
       viewer.translateXYBy(deltaX, deltaY);
     } else if (cos12 < -0.8) {
       // two classic zoom motions -- zoom
-      v1 = Vector3f.new3(x20 - x10, y20 - y10, 0);
-      v2 = Vector3f.new3(x21 - x11, y21 - y11, 0);
+      v1 = V3.new3(x20 - x10, y20 - y10, 0);
+      v2 = V3.new3(x21 - x11, y21 - y11, 0);
       float dx = v2.length() - v1.length();
       mouseWheel(System.currentTimeMillis(), dx < 0 ? -1 : 1, Binding.WHEEL);
     }
@@ -247,10 +247,10 @@ public class Mouse implements JmolMouseInterface {
       case 'z': // undo
         switch (modifiers) {
         case Binding.CTRL:
-          viewer.undoMoveAction(Token.undomove, 1);
+          viewer.undoMoveAction(T.undomove, 1);
           break;
         case Binding.CTRL_SHIFT:
-          viewer.undoMoveAction(Token.redomove, 1);
+          viewer.undoMoveAction(T.redomove, 1);
           break;
         }
         break;
@@ -258,7 +258,7 @@ public class Mouse implements JmolMouseInterface {
       case 'y': // redo
         switch (modifiers) {
         case Binding.CTRL:
-          viewer.undoMoveAction(Token.redomove, 1);
+          viewer.undoMoveAction(T.redomove, 1);
           break;
         }
         break;        
@@ -306,7 +306,7 @@ public class Mouse implements JmolMouseInterface {
     if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.escapeStr("\1" + keyBuffer));
+              + Escape.eS("\1" + keyBuffer));
   }
 
   private void sendKeyBuffer() {
@@ -314,7 +314,7 @@ public class Mouse implements JmolMouseInterface {
     if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.escapeStr(keyBuffer));
+              + Escape.eS(keyBuffer));
     clearKeyBuffer();
     viewer.script(kb);
   }

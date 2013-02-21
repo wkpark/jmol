@@ -26,7 +26,7 @@
 package org.jmol.symmetry;
 
 
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
 
 import java.util.Map;
@@ -39,7 +39,7 @@ class SymmetryInfo {
   String[] symmetryOperations;
   String symmetryInfoString;
   int[] cellRange;
-  private Point3f periodicOriginXyz;
+  private P3 periodicOriginXyz;
 
   boolean isPeriodic() {
     return periodicOriginXyz != null;
@@ -50,7 +50,7 @@ class SymmetryInfo {
   
   float[] setSymmetryInfo(Map<String, Object> info) {
     cellRange = (int[]) info.get("unitCellRange");
-    periodicOriginXyz = (Point3f) info.get("periodicOriginXyz");
+    periodicOriginXyz = (P3) info.get("periodicOriginXyz");
     spaceGroup = (String) info.get("spaceGroup");
     if (spaceGroup == null || spaceGroup == "")
       spaceGroup = "spacegroup unspecified";

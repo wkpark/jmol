@@ -28,8 +28,8 @@ package org.jmol.io;
 import java.io.BufferedReader;
 
 import org.jmol.util.Escape;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 
 
 public class XmlReader {
@@ -80,7 +80,7 @@ public class XmlReader {
     String closer = "</" + name + ">";
     String tag = "<" + name;
     if (data == null) {
-      StringXBuilder sb = new StringXBuilder();
+      SB sb = new SB();
       try {
         if (line == null)
           line = br.readLine();
@@ -152,12 +152,12 @@ public class XmlReader {
     return (pt1 <= 0 ? "" : data.substring(pt, pt1));
   }
 
-  public Point3f getXmlPoint(String data, String key) {
+  public P3 getXmlPoint(String data, String key) {
     String spt = getXmlAttrib(data, key).replace('(', '{').replace(')', '}');
-    Object value = Escape.unescapePoint(spt);
-    if (value instanceof Point3f)
-      return (Point3f) value;
-    return new Point3f();
+    Object value = Escape.uP(spt);
+    if (value instanceof P3)
+      return (P3) value;
+    return new P3();
   }
 
   /**

@@ -44,6 +44,10 @@ class Pixelator {
   }
   
   void addPixel(int offset, int z, int p) {
+    addPixel1(offset, z, p);
+  }
+
+  protected void addPixel1(int offset, int z, int p) {
     if (!g.isPass2) {
       g.zbuf[offset] = z;
       g.pbuf[offset] = p; 

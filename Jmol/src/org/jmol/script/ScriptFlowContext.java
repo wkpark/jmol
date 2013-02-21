@@ -141,7 +141,7 @@ class ScriptFlowContext {
   int pt0;
   int ptDefault;
   ScriptFunction function;
-  ScriptVariable var;
+  SV var;
   private ScriptFlowContext parent;
   int lineStart;
   int commandStart;

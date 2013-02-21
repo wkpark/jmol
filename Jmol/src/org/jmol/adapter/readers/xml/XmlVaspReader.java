@@ -29,8 +29,8 @@ package org.jmol.adapter.readers.xml;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 /**
  * 
@@ -42,7 +42,7 @@ import org.jmol.util.Vector3f;
 
 public class XmlVaspReader extends XmlReader {
   
-  private StringXBuilder data;
+  private SB data;
   private String name;
   private int atomCount;
   private int iAtom;
@@ -126,7 +126,7 @@ public class XmlVaspReader extends XmlReader {
     if ("varray".equals(localName)) {
       name = atts.get("name");
       if (name != null && Parser.isOneOf(name, "basis;positions;forces"))
-        data = new StringXBuilder();
+        data = new SB();
       return;
     }
 
@@ -202,9 +202,9 @@ public class XmlVaspReader extends XmlReader {
         } else if ("basis".equals(name) && !haveUnitCell) {
           haveUnitCell = true;
           float[] ijk = getTokensFloat(data.toString(), null, 9);
-          Vector3f va = Vector3f.new3(ijk[0], ijk[1], ijk[2]);
-          Vector3f vb = Vector3f.new3(ijk[3], ijk[4], ijk[5]);
-          Vector3f vc = Vector3f.new3(ijk[6], ijk[7], ijk[8]);
+          V3 va = V3.new3(ijk[0], ijk[1], ijk[2]);
+          V3 vb = V3.new3(ijk[3], ijk[4], ijk[5]);
+          V3 vc = V3.new3(ijk[6], ijk[7], ijk[8]);
           a = va.length();
           b = vb.length();
           c = vc.length();

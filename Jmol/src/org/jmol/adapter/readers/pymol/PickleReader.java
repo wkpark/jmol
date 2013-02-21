@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.JmolDocument;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -318,7 +318,7 @@ class PickleReader {
   //  }
 
   private String readString() throws Exception {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     while (true) {
       byte b = binaryDoc.readByte();
       if (b == 0xA)

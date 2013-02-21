@@ -30,18 +30,18 @@ package org.jmol.util;
  * for the optimization of compiled JavaScript using Java2Script
  * 
  */
-public class Point3f extends Tuple3f {
+public class P3 extends Tuple3f {
 
-  public static Point3f newP(Tuple3f t) {
-    Point3f p = new Point3f();
+  public static P3 newP(Tuple3f t) {
+    P3 p = new P3();
     p.x = t.x;
     p.y = t.y;
     p.z = t.z;
     return p;
   }
 
-  public static Point3f new3(float x, float y, float z) {
-    Point3f p = new Point3f();
+  public static P3 new3(float x, float y, float z) {
+    P3 p = new P3();
     p.x = x;
     p.y = y;
     p.z = z;
@@ -55,7 +55,7 @@ public class Point3f extends Tuple3f {
    *        the other point
    * @return the square of distance between these two points as a float
    */
-  public final float distanceSquared(Point3f p1) {
+  public final float distanceSquared(P3 p1) {
     double dx = x - p1.x;
     double dy = y - p1.y;
     double dz = z - p1.z;
@@ -69,7 +69,7 @@ public class Point3f extends Tuple3f {
    *        the other point
    * @return the distance between these two points
    */
-  public final float distance(Point3f p1) {
+  public final float distance(P3 p1) {
     return (float) Math.sqrt(distanceSquared(p1));
   }
 

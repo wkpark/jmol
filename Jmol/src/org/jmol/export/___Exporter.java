@@ -44,22 +44,22 @@ import java.util.Map;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.Atom;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Quaternion;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 
@@ -149,7 +149,7 @@ public abstract class ___Exporter {
   protected Viewer viewer;
   protected double privateKey;
   protected JmolRendererInterface jmolRenderer;
-  protected StringXBuilder output;
+  protected SB output;
   protected BufferedWriter bw;
   private FileOutputStream os;
   protected String fileName;
@@ -164,10 +164,10 @@ public abstract class ___Exporter {
   protected int screenHeight;
   protected int slabZ;
   protected int depthZ;
-  protected Vector3f lightSource;
-  protected Point3f fixedRotationCenter;
-  protected Point3f referenceCenter;
-  protected Point3f cameraPosition;
+  protected V3 lightSource;
+  protected P3 fixedRotationCenter;
+  protected P3 referenceCenter;
+  protected P3 cameraPosition;
   protected float cameraDistance;
   protected float aperatureAngle;
   protected float scalePixelsPerAngstrom;
@@ -190,13 +190,13 @@ public abstract class ___Exporter {
   
   final protected static float degreesPerRadian = (float) (180 / Math.PI);
 
-  final protected Point3f tempP1 = new Point3f();
-  final protected Point3f tempP2 = new Point3f();
-  final protected Point3f tempP3 = new Point3f();
-  final protected Point3f center = new Point3f();
-  final protected Vector3f tempV1 = new Vector3f();
-  final protected Vector3f tempV2 = new Vector3f();
-  final protected Vector3f tempV3 = new Vector3f();
+  final protected P3 tempP1 = new P3();
+  final protected P3 tempP2 = new P3();
+  final protected P3 tempP3 = new P3();
+  final protected P3 center = new P3();
+  final protected V3 tempV1 = new V3();
+  final protected V3 tempV2 = new V3();
+  final protected V3 tempV3 = new V3();
   final protected AxisAngle4f tempA = new AxisAngle4f();
   
   public ___Exporter() {
@@ -219,7 +219,7 @@ public abstract class ___Exporter {
     slabZ = g3d.getSlab();
     depthZ = g3d.getDepth();
     lightSource = g3d.getLightSource();
-    Point3f[] cameraFactors = viewer.getCameraFactors();
+    P3[] cameraFactors = viewer.getCameraFactors();
     referenceCenter = cameraFactors[0];
     cameraPosition = cameraFactors[1];
     fixedRotationCenter = cameraFactors[2];
@@ -244,7 +244,7 @@ public abstract class ___Exporter {
         return false;
       }
     } else {
-      this.output = (StringXBuilder) output;
+      this.output = (SB) output;
     }
     outputHeader();
     return true;
@@ -271,13 +271,13 @@ public abstract class ___Exporter {
   }
   
 
-  protected static void setTempVertex(Point3f pt, Point3f offset, Point3f ptTemp) {
+  protected static void setTempVertex(P3 pt, P3 offset, P3 ptTemp) {
     ptTemp.setT(pt);
     if (offset != null)
       ptTemp.add(offset);
   }
 
-  protected void outputVertices(Point3f[] vertices, int nVertices, Point3f offset) {
+  protected void outputVertices(P3[] vertices, int nVertices, P3 offset) {
     for (int i = 0; i < nVertices; i++) {
       if (Float.isNaN(vertices[i].x))
         continue;
@@ -286,7 +286,7 @@ public abstract class ___Exporter {
     }
   }
 
-  protected void outputVertex(Point3f pt, Point3f offset) {
+  protected void outputVertex(P3 pt, P3 offset) {
     setTempVertex(pt, offset, tempP1);
     output(tempP1);
   }
@@ -301,7 +301,7 @@ public abstract class ___Exporter {
   protected String getJmolPerspective() {
     if (commentChar == null)
       return "";
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append(commentChar).append("Jmol perspective:");
     sb.append("\n").append(commentChar).append("screen width height dim: " + screenWidth + " " + screenHeight + " " + viewer.getScreenDim());
     sb.append("\n").append(commentChar).append("perspectiveDepth: " + viewer.getPerspectiveDepth());
@@ -315,7 +315,7 @@ public abstract class ___Exporter {
     sb.append("\n").append(commentChar).append("boundboxCenter: " + viewer.getBoundBoxCenter());
     sb.append("\n").append(commentChar).append("translationOffset: " + viewer.getTranslationScript());
     sb.append("\n").append(commentChar).append("zoom: " + viewer.getZoomPercentFloat());
-    sb.append("\n").append(commentChar).append("moveto command: " + viewer.getOrientationText(Token.moveto, null));
+    sb.append("\n").append(commentChar).append("moveto command: " + viewer.getOrientationText(T.moveto, null));
     sb.append("\n");
     return sb.toString();
   }
@@ -351,7 +351,7 @@ public abstract class ___Exporter {
     return round(t.x) + " " + round(t.y) + " " + round(t.z); 
   }
   
-  final private Point3f tempC = new Point3f();
+  final private P3 tempC = new P3();
 
   protected String rgbFractionalFromArgb(int argb) {
     int red = (argb >> 16) & 0xFF;
@@ -364,11 +364,11 @@ public abstract class ___Exporter {
   }
 
   protected static String translucencyFractionalFromColix(short colix) {
-    return round(Colix.getColixTranslucencyFractional(colix));
+    return round(C.getColixTranslucencyFractional(colix));
   }
 
   protected static String opacityFractionalFromColix(short colix) {
-    return round(1 - Colix.getColixTranslucencyFractional(colix));
+    return round(1 - C.getColixTranslucencyFractional(colix));
   }
 
   protected static String opacityFractionalFromArgb(int argb) {
@@ -399,7 +399,7 @@ public abstract class ___Exporter {
    * @return Vector and HashTable
    */
   protected List<Short> getColorList(int i00, short[] colixes, int nVertices,
-                                BitSet bsSelected, Map<Short, Integer> htColixes) {
+                                BS bsSelected, Map<Short, Integer> htColixes) {
     int nColix = 0;
     List<Short> list = new ArrayList<Short>();
     boolean isAll = (bsSelected == null);
@@ -414,12 +414,12 @@ public abstract class ___Exporter {
     return list;
   }
 
-  protected static MeshSurface getConeMesh(Point3f centerBase, Matrix3f matRotateScale, short colix) {
+  protected static MeshSurface getConeMesh(P3 centerBase, Matrix3f matRotateScale, short colix) {
     MeshSurface ms = new MeshSurface();
     int ndeg = 10;
     int n = 360 / ndeg;
     ms.colix = colix;
-    ms.vertices = new Point3f[ms.vertexCount = n + 1];
+    ms.vertices = new P3[ms.vertexCount = n + 1];
     ms.polygonIndexes = ArrayUtil.newInt2(ms.polygonCount = n);
     for (int i = 0; i < n; i++)
       ms.polygonIndexes[i] = new int[] {i, (i + 1) % n, n };
@@ -427,23 +427,23 @@ public abstract class ___Exporter {
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * d));
       float y = (float) (Math.sin(i * d));
-      ms.vertices[i] = Point3f.new3(x, y, 0);
+      ms.vertices[i] = P3.new3(x, y, 0);
     }
-    ms.vertices[n] = Point3f.new3(0, 0, 1);
+    ms.vertices[n] = P3.new3(0, 0, 1);
     if (matRotateScale != null) {
-      ms.normals = new Vector3f[ms.vertexCount];
+      ms.normals = new V3[ms.vertexCount];
       for (int i = 0; i < ms.vertexCount; i++) {
         matRotateScale.transform(ms.vertices[i]);
-        ms.normals[i] = new Vector3f();
+        ms.normals[i] = new V3();
         ms.normals[i].setT(ms.vertices[i]);
-        ((Vector3f) ms.normals[i]).normalize();
+        ((V3) ms.normals[i]).normalize();
         ms.vertices[i].add(centerBase);
       }
     }
     return ms;
   }
 
-  protected Matrix3f getRotationMatrix(Point3f pt1, Point3f pt2, float radius) {    
+  protected Matrix3f getRotationMatrix(P3 pt1, P3 pt2, float radius) {    
     Matrix3f m = new Matrix3f();
     Matrix3f m1;
     if (pt2.x == pt1.x && pt2.y == pt1.y) {
@@ -467,7 +467,7 @@ public abstract class ___Exporter {
     return m1;
   }
 
-  protected Matrix3f getRotationMatrix(Point3f pt1, Point3f ptZ, float radius, Point3f ptX, Point3f ptY) {    
+  protected Matrix3f getRotationMatrix(P3 pt1, P3 ptZ, float radius, P3 ptX, P3 ptY) {    
     Matrix3f m = new Matrix3f();
     m.m00 = ptX.distance(pt1) * radius;
     m.m11 = ptY.distance(pt1) * radius;
@@ -486,7 +486,7 @@ public abstract class ___Exporter {
   abstract void drawCircle(int x, int y, int z,
                                    int diameter, short colix, boolean doFill);  //draw circle 
 
-  abstract boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
+  abstract boolean drawEllipse(P3 ptAtom, P3 ptX, P3 ptY,
                              short colix, boolean doFill);
 
   void drawSurface(MeshSurface meshSurface, short colix) {
@@ -495,7 +495,7 @@ public abstract class ___Exporter {
       return;
     int nFaces = 0;
     int nPolygons = meshSurface.polygonCount;
-    BitSet bsPolygons = meshSurface.bsPolygons;
+    BS bsPolygons = meshSurface.bsPolygons;
     int faceVertexMax = (meshSurface.haveQuads ? 4 : 3);
     int[][] indices = meshSurface.polygonIndexes;
     boolean isAll = (bsPolygons == null);
@@ -505,8 +505,8 @@ public abstract class ___Exporter {
     if (nFaces == 0)
       return;
 
-    Point3f[] vertices = (Point3f[]) meshSurface.getVertices();
-    Vector3f[] normals = (Vector3f[]) meshSurface.normals;
+    P3[] vertices = (P3[]) meshSurface.getVertices();
+    V3[] normals = (V3[]) meshSurface.normals;
 
     boolean colorSolid = (colix != 0);
     short[] colixes = (colorSolid ? null : meshSurface.vertexColixes);
@@ -544,12 +544,12 @@ public abstract class ___Exporter {
    * @param offset 
    * 
    */
-  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(P3[] vertices, V3[] normals,
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
-                                int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
+                                int nVertices, int nPolygons, int nFaces, BS bsPolygons,
                                 int faceVertexMax, short colix, List<Short> colorList,
-                                Map<Short, Integer> htColixes, Point3f offset) {
+                                Map<Short, Integer> htColixes, P3 offset) {
     // not implemented in _ObjExporter
   }
 
@@ -559,21 +559,21 @@ public abstract class ___Exporter {
 
   //rockets and dipoles
   abstract void fillConeScreen(short colix, byte endcap, int screenDiameter, 
-                         Point3f screenBase, Point3f screenTip, boolean isBarb);
+                         P3 screenBase, P3 screenTip, boolean isBarb);
   
-  abstract void drawCylinder(Point3f atom1, Point3f atom2, short colix1, short colix2,
+  abstract void drawCylinder(P3 atom1, P3 atom2, short colix1, short colix2,
                              byte endcaps, int madBond, int bondOrder);
 
   abstract void fillCylinderScreenMad(short colix, byte endcaps, int diameter, 
-                                        Point3f screenA, Point3f screenB);
+                                        P3 screenA, P3 screenB);
 
   abstract void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, 
-                             Point3f screenA, Point3f screenB);
+                             P3 screenA, P3 screenB);
 
-  abstract void fillEllipsoid(Point3f center, Point3f[] points, short colix, 
+  abstract void fillEllipsoid(P3 center, P3[] points, short colix, 
                               int x, int y, int z, int diameter,
                               Matrix3f toEllipsoidal, double[] coef,
-                              Matrix4f deriv, Point3i[] octantPoints);
+                              Matrix4f deriv, P3i[] octantPoints);
 
   void drawFilledCircle(short colixRing, short colixFill, int diameter, int x, int y, int z) {
     if (colixRing != 0)
@@ -583,10 +583,10 @@ public abstract class ___Exporter {
   }
 
   //rockets:
-  abstract void fillSphere(short colix, int diameter, Point3f pt);
+  abstract void fillSphere(short colix, int diameter, P3 pt);
   
   //cartoons, rockets, polyhedra:
-  protected abstract void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided);
+  protected abstract void fillTriangle(short colix, P3 ptA, P3 ptB, P3 ptC, boolean twoSided);
   
   
   private int nText;

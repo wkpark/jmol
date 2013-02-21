@@ -26,8 +26,8 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 
 
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 class CastepDensityReader extends VolumeFileReader {
 
@@ -60,12 +60,12 @@ class CastepDensityReader extends VolumeFileReader {
 
   @Override
   protected void readParameters() throws Exception {
-    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer = new SB();
     while (readLine() != null && line.indexOf(".") < 0) {
       // skip front stuff
     }
     for (int i = 0; i < 3; ++i) {
-      Vector3f voxelVector = volumetricVectors[i];
+      V3 voxelVector = volumetricVectors[i];
       voxelVector.set(parseFloatStr(line), parseFloat(), parseFloat());
       readLine();
     }

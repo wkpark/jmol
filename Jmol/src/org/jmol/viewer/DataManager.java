@@ -28,15 +28,15 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.constant.EnumVdw;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 
 /*
@@ -99,7 +99,7 @@ class DataManager {
       boolean createNew = (matchField != 0 || field != Integer.MIN_VALUE
           && field != Integer.MAX_VALUE);
       Object[] oldData = dataValues.get(type);
-      BitSet bs;
+      BS bs;
       float[] f = (oldData == null || createNew ? new float[actualAtomCount]
           : ArrayUtil.ensureLengthA(((float[]) oldData[1]), actualAtomCount));
 
@@ -116,11 +116,11 @@ class DataManager {
 
       if (field == Integer.MIN_VALUE) {
         // set the selected data elements to a single value
-        bs = (BitSet) data[2];
+        bs = (BS) data[2];
         Parser.setSelectedFloats(Parser.parseFloatStr(stringData), bs, f);
       } else if (field == 0 || field == Integer.MAX_VALUE) {
         // just get the selected token values
-        bs = (BitSet) data[2];
+        bs = (BS) data[2];
         if (floatData != null) {
           if (floatData.length == bs.cardinality())
             for (int i = bs.nextSetBit(0), pt = 0; i >= 0; i = bs
@@ -135,7 +135,7 @@ class DataManager {
         }
       } else if (matchField <= 0) {
         // get the specified field >= 1 for the selected atoms
-        bs = (BitSet) data[2];
+        bs = (BS) data[2];
         Parser.parseFloatArrayFromMatchAndField(stringData, bs, 0, 0, null,
             field, fieldColumnCount, f, 1);
       } else {
@@ -144,19 +144,19 @@ class DataManager {
         int[] iData = (int[]) data[2];
         Parser.parseFloatArrayFromMatchAndField(stringData, null, matchField,
             matchFieldColumnCount, iData, field, fieldColumnCount, f, 1);
-        bs = new BitSet();
+        bs = new BS();
         for (int i = iData.length; --i >= 0;)
           if (iData[i] >= 0)
             bs.set(iData[i]);
       }
-      if (oldData != null && oldData[2] instanceof BitSet && !createNew)
-        bs.or((BitSet) (oldData[2]));
+      if (oldData != null && oldData[2] instanceof BS && !createNew)
+        bs.or((BS) (oldData[2]));
       data[3] = Integer.valueOf(1);
       data[2] = bs;
       data[1] = f;
       if (type.indexOf("property_atom.") == 0) {
-        int tok = Token.getSettableTokFromString(type = type.substring(14));
-        if (tok == Token.nada) {
+        int tok = T.getSettableTokFromString(type = type.substring(14));
+        if (tok == T.nada) {
           Logger.error("Unknown atom property: " + type);
           return;
         }
@@ -227,7 +227,7 @@ class DataManager {
     return (float[][][]) data[1];
   }
 
-  void deleteModelAtoms(int firstAtomIndex, int nAtoms, BitSet bsDeleted) {
+  void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsDeleted) {
     if (dataValues == null)
       return;
     Iterator<String> e = dataValues.keySet().iterator();
@@ -235,7 +235,7 @@ class DataManager {
       String name = e.next();
       if (name.indexOf("property_") == 0) {
         Object[] obj = dataValues.get(name);
-        BitSetUtil.deleteBits((BitSet) obj[2], bsDeleted);
+        BSUtil.deleteBits((BS) obj[2], bsDeleted);
         switch (((Integer)obj[3]).intValue()) {
         case 1:
           obj[1] = ArrayUtil.deleteElements(obj[1], firstAtomIndex, nAtoms);
@@ -254,12 +254,12 @@ class DataManager {
   float[] userVdws;
   int[] userVdwMars;
   EnumVdw defaultVdw = EnumVdw.JMOL;
-  BitSet bsUserVdws;
+  BS bsUserVdws;
   
   private void setUserVdw(EnumVdw mode) {
     userVdwMars = new int[Elements.elementNumberMax];
     userVdws = new float[Elements.elementNumberMax];
-    bsUserVdws = new BitSet();
+    bsUserVdws = new BS();
     if (mode == EnumVdw.USER)
       mode = EnumVdw.JMOL;
     for (int i = 1; i < Elements.elementNumberMax; i++) {
@@ -286,7 +286,7 @@ class DataManager {
     defaultVdw = type;    
   }
 
-  String getDefaultVdwNameOrData(int mode, EnumVdw type, BitSet bs) {
+  String getDefaultVdwNameOrData(int mode, EnumVdw type, BS bs) {
     // called by getDataState and via Viewer: Eval.calculate,
     // Eval.show, StateManager.getLoadState, Viewer.setDefaultVdw
     switch (mode) {
@@ -304,7 +304,7 @@ class DataManager {
      type = defaultVdw;
     if (type == EnumVdw.USER && bsUserVdws == null)
       setUserVdw(defaultVdw);
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append(type.getVdwLabel()).append("\n");
     boolean isAll = (bs == null);
     int i0 = (isAll ? 1 : bs.nextSetBit(0));
@@ -319,11 +319,11 @@ class DataManager {
         + sb.append("  end \"element_vdw\";\n\n").toString());
   }
 
-  static void getInlineData(StringXBuilder loadScript, String strModel, boolean isAppend, String loadFilter) {
+  static void getInlineData(SB loadScript, String strModel, boolean isAppend, String loadFilter) {
     String tag = (isAppend ? "append" : "model") + " inline";
     loadScript.append("load /*data*/ data \"").append(tag).append("\"\n")
         .append(strModel).append("end \"").append(tag)
-        .append(loadFilter == null || loadFilter.length() == 0 ? "" : " filter" + Escape.escapeStr(loadFilter))
+        .append(loadFilter == null || loadFilter.length() == 0 ? "" : " filter" + Escape.eS(loadFilter))
         .append("\";");
   }
 }

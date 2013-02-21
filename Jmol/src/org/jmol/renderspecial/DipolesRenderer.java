@@ -29,11 +29,11 @@ package org.jmol.renderspecial;
 import org.jmol.render.ShapeRenderer;
 import org.jmol.shapespecial.Dipole;
 import org.jmol.shapespecial.Dipoles;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.V3;
 
 public class DipolesRenderer extends ShapeRenderer {
 
@@ -52,17 +52,17 @@ public class DipolesRenderer extends ShapeRenderer {
     return needTranslucent;
   }
 
-  private final Vector3f offset = new Vector3f();
-  private final Point3i[] screens = new Point3i[6];
-  private final Point3f[] points = new Point3f[6];
+  private final V3 offset = new V3();
+  private final P3i[] screens = new P3i[6];
+  private final P3[] points = new P3[6];
   {
     for (int i = 0; i < 6; i++) {
-      screens[i] = new Point3i();
-      points[i] = new Point3f();
+      screens[i] = new P3i();
+      points[i] = new P3();
     }
   }
-  private Point3f cross0 = new Point3f();
-  private Point3f cross1 = new Point3f();
+  private P3 cross0 = new P3();
+  private P3 cross1 = new P3();
   
   private final static int cylinderBase = 0;
   private final static int cross = 1;
@@ -81,7 +81,7 @@ public class DipolesRenderer extends ShapeRenderer {
   private final static float crossWidth = 0.04f;
 
   private boolean transform(Dipole dipole) {
-    Vector3f vector = dipole.vector;
+    V3 vector = dipole.vector;
     offset.setT(vector);
     if (dipole.center == null) {
       offset.scale(dipole.offsetAngstroms / dipole.dipoleValue);
@@ -138,17 +138,17 @@ public class DipolesRenderer extends ShapeRenderer {
   }
 
   private boolean renderDipoleVector(Dipole dipole) {
-    short colixA = (dipole.bond == null ? dipole.colix : Colix
+    short colixA = (dipole.bond == null ? dipole.colix : C
         .getColixInherited(dipole.colix, dipole.bond.colix));
     short colixB = colixA;
     if (dipole.atoms[0] != null) {
-      colixA = Colix.getColixInherited(colixA, dipole.atoms[0].getColix());
-      colixB = Colix.getColixInherited(colixB, dipole.atoms[1].getColix());
+      colixA = C.getColixInherited(colixA, dipole.atoms[0].getColix());
+      colixB = C.getColixInherited(colixB, dipole.atoms[1].getColix());
     }
     if (colixA == 0)
-      colixA = Colix.ORANGE;
+      colixA = C.ORANGE;
     if (colixB == 0)
-      colixB = Colix.ORANGE;
+      colixB = C.ORANGE;
     if (dipoleVectorScale < 0) {
       short c = colixA;
       colixA = colixB;

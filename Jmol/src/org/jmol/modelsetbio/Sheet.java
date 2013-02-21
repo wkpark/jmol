@@ -26,8 +26,8 @@ package org.jmol.modelsetbio;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 
 public class Sheet extends ProteinStructure {
 
@@ -48,17 +48,17 @@ public class Sheet extends ProteinStructure {
       axisA = alphaPolymer.getLeadPoint(monomerIndexFirst);
       axisB = alphaPolymer.getLeadPoint(monomerIndexFirst + 1);
     } else {
-      axisA = new Point3f();
+      axisA = new P3();
       alphaPolymer.getLeadMidPoint(monomerIndexFirst + 1, axisA);
-      axisB = new Point3f();
+      axisB = new P3();
       alphaPolymer.getLeadMidPoint(monomerIndexFirst + monomerCount - 1, axisB);
     }
 
-    axisUnitVector = new Vector3f();
+    axisUnitVector = new V3();
     axisUnitVector.sub2(axisB, axisA);
     axisUnitVector.normalize();
 
-    Point3f tempA = new Point3f();
+    P3 tempA = new P3();
     alphaPolymer.getLeadMidPoint(monomerIndexFirst, tempA);
     if (lowerNeighborIsHelixOrSheet()) {
       //System.out.println("ok"); 
@@ -66,7 +66,7 @@ public class Sheet extends ProteinStructure {
       Measure
           .projectOntoAxis(tempA, axisA, axisUnitVector, vectorProjection);
     }
-    Point3f tempB = new Point3f();
+    P3 tempB = new P3();
     alphaPolymer.getLeadMidPoint(monomerIndexFirst + monomerCount, tempB);
     if (upperNeighborIsHelixOrSheet()) {
       //System.out.println("ok");       
@@ -78,15 +78,15 @@ public class Sheet extends ProteinStructure {
     axisB = tempB;
   }
 
-  Vector3f widthUnitVector;
-  Vector3f heightUnitVector;
+  V3 widthUnitVector;
+  V3 heightUnitVector;
 
   void calcSheetUnitVectors() {
     if (!(alphaPolymer instanceof AminoPolymer))
       return;
     if (widthUnitVector == null) {
-      Vector3f vectorCO = new Vector3f();
-      Vector3f vectorCOSum = new Vector3f();
+      V3 vectorCO = new V3();
+      V3 vectorCOSum = new V3();
       AminoMonomer amino = (AminoMonomer) alphaPolymer.monomers[monomerIndexFirst];
       vectorCOSum.sub2(amino.getCarbonylOxygenAtom(), amino
           .getCarbonylCarbonAtom());
@@ -107,13 +107,13 @@ public class Sheet extends ProteinStructure {
     }
   }
 
-  public Vector3f getWidthUnitVector() {
+  public V3 getWidthUnitVector() {
     if (widthUnitVector == null)
       calcSheetUnitVectors();
     return widthUnitVector;
   }
 
-  public Vector3f getHeightUnitVector() {
+  public V3 getHeightUnitVector() {
     if (heightUnitVector == null)
       calcSheetUnitVectors();
     return heightUnitVector;

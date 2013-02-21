@@ -37,10 +37,10 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
 import org.jmol.util.Quaternion;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 public class ZMatrixReader extends AtomSetCollectionReader {
   /*
@@ -406,9 +406,9 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     return ia;
   }
 
-  private final Point3f pt0 = new Point3f();
-  private final Vector3f v1 = new Vector3f();
-  private final Vector3f v2 = new Vector3f();
+  private final P3 pt0 = new P3();
+  private final V3 v1 = new V3();
+  private final V3 v2 = new V3();
   private final Point4f plane1 = new Point4f();
   private final Point4f plane2 = new Point4f();
   
@@ -441,10 +441,10 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
       List<Object> list = Measure.getIntersectionPP(plane1, plane2);
       if (list.size() == 0)
         return null;
-      pt0.setT((Point3f) list.get(0));
+      pt0.setT((P3) list.get(0));
       d = (float) Math.sqrt(d * d - pt0.distanceSquared(vAtoms.get(ia)))
           * Math.signum(theta1) * Math.signum(theta2);
-      v2.setT((Vector3f) list.get(1));
+      v2.setT((V3) list.get(1));
     }
     atom.scaleAdd2(d, v2, pt0);
     return atom;

@@ -35,17 +35,17 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelSet;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.shape.Shape;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 public class ShapeManager {
 
@@ -68,7 +68,7 @@ public class ShapeManager {
 
   // public methods 
   
-  public void findNearestShapeAtomIndex(int x, int y, Atom[] closest, BitSet bsNot) {
+  public void findNearestShapeAtomIndex(int x, int y, Atom[] closest, BS bsNot) {
     if (shapes != null)
       for (int i = 0; i < shapes.length && closest[0] == null; ++i)
         if (shapes[i] != null)
@@ -105,7 +105,7 @@ public class ShapeManager {
    */
   public int getShapeIdFromObjectName(String objectName) {
     if (shapes != null)
-      for (int i = JmolConstants.SHAPE_MIN_SPECIAL; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i)
+      for (int i = JC.SHAPE_MIN_SPECIAL; i < JC.SHAPE_MAX_MESH_COLLECTION; ++i)
         if (shapes[i] != null && shapes[i].getIndexFromName(objectName) >= 0)
           return i;
     return -1;
@@ -117,11 +117,11 @@ public class ShapeManager {
     for (int i = 0; i < shapes.length; ++i)
       if (shapes[i] != null)
         shapes[i].setModelSet(newModelSet);
-    loadShape(JmolConstants.SHAPE_BALLS);
-    loadShape(JmolConstants.SHAPE_STICKS);
-    loadShape(JmolConstants.SHAPE_MEASURES);
-    loadShape(JmolConstants.SHAPE_BBCAGE);
-    loadShape(JmolConstants.SHAPE_UCCAGE);
+    loadShape(JC.SHAPE_BALLS);
+    loadShape(JC.SHAPE_STICKS);
+    loadShape(JC.SHAPE_MEASURES);
+    loadShape(JC.SHAPE_BBCAGE);
+    loadShape(JC.SHAPE_UCCAGE);
   }
 
   public Shape loadShape(int shapeID) {
@@ -129,11 +129,11 @@ public class ShapeManager {
       return null;
     if (shapes[shapeID] != null)
       return shapes[shapeID];
-    if (shapeID == JmolConstants.SHAPE_HSTICKS
-        || shapeID == JmolConstants.SHAPE_SSSTICKS
-        || shapeID == JmolConstants.SHAPE_STRUTS)
+    if (shapeID == JC.SHAPE_HSTICKS
+        || shapeID == JC.SHAPE_SSSTICKS
+        || shapeID == JC.SHAPE_STRUTS)
       return null;
-    String className = JmolConstants.getShapeClassName(shapeID, false);
+    String className = JC.getShapeClassName(shapeID, false);
     try {
       Class<?> shapeClass = Class.forName(className);
       Shape shape = (Shape) shapeClass.newInstance();
@@ -147,10 +147,10 @@ public class ShapeManager {
     }
   }
 
-  public void refreshShapeTrajectories(int baseModel, BitSet bs, Matrix4f mat) {
+  public void refreshShapeTrajectories(int baseModel, BS bs, Matrix4f mat) {
     Integer Imodel = Integer.valueOf(baseModel);
-    BitSet bsModelAtoms = viewer.getModelUndeletedAtomsBitSet(baseModel);
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
+    BS bsModelAtoms = viewer.getModelUndeletedAtomsBitSet(baseModel);
+    for (int i = 0; i < JC.SHAPE_MAX; i++)
       if (shapes[i] != null)
         setShapePropertyBs(i, "refreshTrajectories", new Object[] { Imodel, bs, mat }, bsModelAtoms);    
   }
@@ -162,7 +162,7 @@ public class ShapeManager {
   
   public void resetShapes() {
     if (!viewer.noGraphicsAllowed())
-      shapes = new Shape[JmolConstants.SHAPE_MAX];
+      shapes = new Shape[JC.SHAPE_MAX];
   }
   
   /**
@@ -171,11 +171,11 @@ public class ShapeManager {
    * @param rd
    * @param bsSelected
    */
-  public void setShapeSizeBs(int shapeID, int size, RadiusData rd, BitSet bsSelected) {
+  public void setShapeSizeBs(int shapeID, int size, RadiusData rd, BS bsSelected) {
     if (shapes == null)
       return;
     if (bsSelected == null && 
-        (shapeID != JmolConstants.SHAPE_STICKS || size != Integer.MAX_VALUE))
+        (shapeID != JC.SHAPE_STICKS || size != Integer.MAX_VALUE))
       bsSelected = viewer.getSelectionSet(false);
     if (rd != null && rd.value != 0 && rd.vdwType == EnumVdw.TEMP)
       modelSet.getBfactor100Lo();
@@ -188,16 +188,16 @@ public class ShapeManager {
     viewer.setShapeErrorState(-1, null);
   }
 
-  public void setLabel(String strLabel, BitSet bsSelection) {
+  public void setLabel(String strLabel, BS bsSelection) {
     if (strLabel != null) { // force the class to load and display
-      loadShape(JmolConstants.SHAPE_LABELS);
-      setShapeSizeBs(JmolConstants.SHAPE_LABELS, 0, null, bsSelection);
+      loadShape(JC.SHAPE_LABELS);
+      setShapeSizeBs(JC.SHAPE_LABELS, 0, null, bsSelection);
     }
-    setShapePropertyBs(JmolConstants.SHAPE_LABELS, "label", strLabel, bsSelection);
+    setShapePropertyBs(JC.SHAPE_LABELS, "label", strLabel, bsSelection);
   }
 
   public void setShapePropertyBs(int shapeID, String propertyName, Object value,
-                               BitSet bsSelected) {
+                               BS bsSelected) {
     if (shapes == null || shapes[shapeID] == null)
       return;
     if (bsSelected == null)
@@ -210,26 +210,26 @@ public class ShapeManager {
   // methods local to Viewer and other managers
   
   boolean checkFrankclicked(int x, int y) {
-    Shape frankShape = shapes[JmolConstants.SHAPE_FRANK];
+    Shape frankShape = shapes[JC.SHAPE_FRANK];
     return (frankShape != null && frankShape.wasClicked(x, y));
   }
 
   private final static int[] hoverable = {
-    JmolConstants.SHAPE_ECHO, 
-    JmolConstants.SHAPE_CONTACT,
-    JmolConstants.SHAPE_ISOSURFACE,
-    JmolConstants.SHAPE_DRAW,
-    JmolConstants.SHAPE_FRANK,
+    JC.SHAPE_ECHO, 
+    JC.SHAPE_CONTACT,
+    JC.SHAPE_ISOSURFACE,
+    JC.SHAPE_DRAW,
+    JC.SHAPE_FRANK,
   };
   
   private static int clickableMax = hoverable.length - 1;
   
-  Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible) {
     Shape shape;
     Map<String, Object> map = null;
     if (modifiers != 0
         && viewer.getBondPicking()
-        && (map = shapes[JmolConstants.SHAPE_STICKS].checkObjectClicked(x, y,
+        && (map = shapes[JC.SHAPE_STICKS].checkObjectClicked(x, y,
             modifiers, bsVisible)) != null)
       return map;
 
@@ -241,9 +241,9 @@ public class ShapeManager {
   }
  
   boolean checkObjectDragged(int prevX, int prevY, int x, int y, int modifiers,
-                             BitSet bsVisible, int iShape) {
+                             BS bsVisible, int iShape) {
     boolean found = false;
-    int n = (iShape > 0 ? iShape + 1 : JmolConstants.SHAPE_MAX);
+    int n = (iShape > 0 ? iShape + 1 : JC.SHAPE_MAX);
     for (int i = iShape; !found && i < n; ++i)
       if (shapes[i] != null)
         found = shapes[i].checkObjectDragged(prevX, prevY, x, y, modifiers,
@@ -251,8 +251,8 @@ public class ShapeManager {
     return found;
   }
 
-  boolean checkObjectHovered(int x, int y, BitSet bsVisible, boolean checkBonds) {
-    Shape shape = shapes[JmolConstants.SHAPE_STICKS];
+  boolean checkObjectHovered(int x, int y, BS bsVisible, boolean checkBonds) {
+    Shape shape = shapes[JC.SHAPE_STICKS];
     if (checkBonds && shape != null
         && shape.checkObjectHovered(x, y, bsVisible))
       return true;
@@ -264,24 +264,24 @@ public class ShapeManager {
     return false;
   }
 
-  void deleteShapeAtoms(Object[] value, BitSet bs) {
+  void deleteShapeAtoms(Object[] value, BS bs) {
     if (shapes != null)
-      for (int j = 0; j < JmolConstants.SHAPE_MAX; j++)
+      for (int j = 0; j < JC.SHAPE_MAX; j++)
         if (shapes[j] != null)
           setShapePropertyBs(j, "deleteModelAtoms", value, bs);
   }
 
-  void deleteVdwDependentShapes(BitSet bs) {
+  void deleteVdwDependentShapes(BS bs) {
     if (bs == null)
       bs = viewer.getSelectionSet(false);
-    if (shapes[JmolConstants.SHAPE_ISOSURFACE] != null)
-      shapes[JmolConstants.SHAPE_ISOSURFACE].setProperty("deleteVdw", null, bs);
-    if (shapes[JmolConstants.SHAPE_CONTACT] != null)
-      shapes[JmolConstants.SHAPE_CONTACT].setProperty("deleteVdw", null, bs);
+    if (shapes[JC.SHAPE_ISOSURFACE] != null)
+      shapes[JC.SHAPE_ISOSURFACE].setProperty("deleteVdw", null, bs);
+    if (shapes[JC.SHAPE_CONTACT] != null)
+      shapes[JC.SHAPE_CONTACT].setProperty("deleteVdw", null, bs);
   }
   
   float getAtomShapeValue(int tok, Group group, int atomIndex) {
-    int iShape = JmolConstants.shapeTokenIndex(tok);
+    int iShape = JC.shapeTokenIndex(tok);
     if (iShape < 0 || shapes[iShape] == null) 
       return 0;
     int mad = shapes[iShape].getSize(atomIndex);
@@ -293,11 +293,11 @@ public class ShapeManager {
     return mad / 2000f;
   }
 
-  void getObjectMap(Map<String, Token> map, boolean withDollar) {
+  void getObjectMap(Map<String, T> map, boolean withDollar) {
     if (shapes == null)
       return;
     Boolean bDollar = Boolean.valueOf(withDollar);
-      for (int i = JmolConstants.SHAPE_MIN_SPECIAL; i < JmolConstants.SHAPE_MAX_MESH_COLLECTION; ++i)
+      for (int i = JC.SHAPE_MIN_SPECIAL; i < JC.SHAPE_MAX_MESH_COLLECTION; ++i)
           getShapePropertyData(i, "getNames", new Object[] { map , bDollar } );
   }
 
@@ -307,9 +307,9 @@ public class ShapeManager {
     return null;
   }
 
-  private final BitSet bsRenderableAtoms = new BitSet();
+  private final BS bsRenderableAtoms = new BS();
 
-  BitSet getRenderableBitSet() {
+  BS getRenderableBitSet() {
     return bsRenderableAtoms;
   }
   
@@ -320,12 +320,12 @@ public class ShapeManager {
   
   Map<String, Object> getShapeInfo() {
     Map<String, Object> info = new Hashtable<String, Object>();
-    StringXBuilder commands = new StringXBuilder();
+    SB commands = new SB();
     if (shapes != null)
-      for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      for (int i = 0; i < JC.SHAPE_MAX; ++i) {
         Shape shape = shapes[i];
         if (shape != null) {
-          String shapeType = JmolConstants.shapeClassBases[i];
+          String shapeType = JC.shapeClassBases[i];
           List<Map<String, Object>> shapeDetail = shape.getShapeDetail();
           if (shapeDetail != null)
             info.put(shapeType, shapeDetail);
@@ -350,7 +350,7 @@ public class ShapeManager {
         }
   }
 
-  void resetBioshapes(BitSet bsAllAtoms) {
+  void resetBioshapes(BS bsAllAtoms) {
     if (shapes == null)
       return;
     for (int i = 0; i < shapes.length; ++i)
@@ -364,12 +364,12 @@ public class ShapeManager {
   void setAtomLabel(String strLabel, int i) {
     if (shapes == null)
       return;
-    loadShape(JmolConstants.SHAPE_LABELS);
-    shapes[JmolConstants.SHAPE_LABELS].setProperty("label:"+strLabel, Integer.valueOf(i), null);
+    loadShape(JC.SHAPE_LABELS);
+    shapes[JC.SHAPE_LABELS].setProperty("label:"+strLabel, Integer.valueOf(i), null);
   }
   
   void setModelVisibility() {
-    if (shapes == null || shapes[JmolConstants.SHAPE_BALLS] == null)
+    if (shapes == null || shapes[JC.SHAPE_BALLS] == null)
       return;
 
     //named objects must be set individually
@@ -379,17 +379,17 @@ public class ShapeManager {
     // in general f() does MORE than just check translucency. 
     // so isTranslucent = isTranslucent || f() would NOT work.
 
-    BitSet bs = viewer.getVisibleFramesBitSet();
+    BS bs = viewer.getVisibleFramesBitSet();
     
     //NOT balls (that is done later)
-    for (int i = 1; i < JmolConstants.SHAPE_MAX; i++)
+    for (int i = 1; i < JC.SHAPE_MAX; i++)
       if (shapes[i] != null)
         shapes[i].setVisibilityFlags(bs);
     // BALLS sets the JmolConstants.ATOM_IN_MODEL flag.
-    shapes[JmolConstants.SHAPE_BALLS].setVisibilityFlags(bs);
+    shapes[JC.SHAPE_BALLS].setVisibilityFlags(bs);
 
     //set clickability -- this enables measures and such
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+    for (int i = 0; i < JC.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
       if (shape != null)
         shape.setModelClickability();
@@ -398,11 +398,11 @@ public class ShapeManager {
 
   private final int[] navigationCrossHairMinMax = new int[4];
 
-  public void finalizeAtoms(BitSet bsAtoms, Point3f ptOffset) {
+  public void finalizeAtoms(BS bsAtoms, P3 ptOffset) {
     if (bsAtoms != null) {
       // translateSelected operation
-      Point3f ptCenter = viewer.getAtomSetCenter(bsAtoms);
-      Point3f pt = new Point3f();
+      P3 ptCenter = viewer.getAtomSetCenter(bsAtoms);
+      P3 pt = new P3();
       viewer.transformPt3f(ptCenter, pt);
       pt.add(ptOffset);
       viewer.unTransformPoint(pt, pt);
@@ -414,21 +414,21 @@ public class ShapeManager {
     Atom[] atoms = modelSet.atoms;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
+      if ((atom.getShapeVisibilityFlags() & JC.ATOM_IN_FRAME) == 0)
         continue;
       bsRenderableAtoms.set(i);
     }
   }
 
   public int[] transformAtoms() {
-    Vector3f[] vibrationVectors = modelSet.vibrationVectors;
+    V3[] vibrationVectors = modelSet.vibrationVectors;
     Atom[] atoms = modelSet.atoms;
     for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms.nextSetBit(i + 1)) {
       // note that this vibration business is not compatible with
       // PDB objects such as cartoons and traces, which 
       // use Cartesian coordinates, not screen coordinates
       Atom atom = atoms[i];
-      Point3i screen = (vibrationVectors != null && atom.hasVibration() ? viewer
+      P3i screen = (vibrationVectors != null && atom.hasVibration() ? viewer
           .transformPtVib(atom, vibrationVectors[i])
           : viewer.transformPt(atom));
       atom.screenX = screen.x;
@@ -516,9 +516,9 @@ public class ShapeManager {
    * 
    */
   public void checkInheritedShapes() {
-    if (shapes[JmolConstants.SHAPE_ISOSURFACE] == null)
+    if (shapes[JC.SHAPE_ISOSURFACE] == null)
       return;
-    setShapePropertyBs(JmolConstants.SHAPE_ISOSURFACE, "remapInherited", null, null);
+    setShapePropertyBs(JC.SHAPE_ISOSURFACE, "remapInherited", null, null);
   }
 
 }

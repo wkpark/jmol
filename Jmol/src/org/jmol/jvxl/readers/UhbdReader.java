@@ -25,7 +25,7 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 /**
  * UHBD reader
@@ -83,7 +83,7 @@ class UhbdReader extends VolumeFileReader {
   protected void readParameters() throws Exception {
     readLine();
     //                                                        POTENTIAL (kT/e)
-    jvxlFileHeaderBuffer = StringXBuilder.newS(line);
+    jvxlFileHeaderBuffer = SB.newS(line);
     jvxlFileHeaderBuffer.append("UHBD format ").append(line).append("\n");
     jvxlFileHeaderBuffer.append("see http://sourceforge.net/p/apbs/code/ci/9527462a39126fb6cd880924b3cc4880ec4b78a9/tree/src/mg/vgrid.c\n");
     readLine(); // ignored

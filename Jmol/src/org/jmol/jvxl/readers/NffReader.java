@@ -31,7 +31,7 @@ import java.util.Map;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 /* simple Neutral File Format reader 
  * 
@@ -108,7 +108,7 @@ class NffReader extends PolygonFileReader {
 
   private final Map<String, Integer> vertexMap = new Hashtable<String, Integer>();
   
-  private final Point3f pt = new Point3f();
+  private final P3 pt = new P3();
     
   private int getVertex() throws Exception {
     Integer i = vertexMap.get(readLine());

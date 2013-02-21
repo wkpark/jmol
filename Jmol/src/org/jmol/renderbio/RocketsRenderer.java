@@ -30,11 +30,11 @@ import org.jmol.modelsetbio.Helix;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.modelsetbio.ProteinStructure;
 import org.jmol.modelsetbio.Sheet;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.shapebio.BioShape;
 import org.jmol.util.GData;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 
 
 public class RocketsRenderer extends BioShapeRenderer {
@@ -47,7 +47,7 @@ public class RocketsRenderer extends BioShapeRenderer {
   protected void renderBioShape(BioShape bioShape) {
     if (!(bioShape.bioPolymer instanceof AminoPolymer))
       return;
-    boolean val = !viewer.getCartoonFlag(Token.rocketbarrels);
+    boolean val = !viewer.getCartoonFlag(T.rocketbarrels);
     if (renderArrowHeads != val) {
       bioShape.falsifyMesh();
       renderArrowHeads = val;
@@ -59,7 +59,7 @@ public class RocketsRenderer extends BioShapeRenderer {
     viewer.freeTempPoints(cordMidPoints);
   }
 
-  protected Point3f[] cordMidPoints;
+  protected P3[] cordMidPoints;
 
   protected boolean isSheet(int i) {
     return structureTypes[i] == EnumStructure.SHEET;
@@ -69,7 +69,7 @@ public class RocketsRenderer extends BioShapeRenderer {
     int midPointCount = monomerCount + 1;
     cordMidPoints = viewer.allocTempPoints(midPointCount);
     ProteinStructure proteinstructurePrev = null;
-    Point3f point;
+    P3 point;
     for (int i = 0; i < monomerCount; ++i) {
       point = cordMidPoints[i];
       Monomer residue = monomers[i];
@@ -139,7 +139,7 @@ public class RocketsRenderer extends BioShapeRenderer {
   protected void renderPending() {
     if (!tPending)
       return;
-    Point3f[] segments = proteinstructurePending.getSegments();
+    P3[] segments = proteinstructurePending.getSegments();
     boolean tEnd = (endIndexPending == proteinstructurePending
         .getMonomerCount() - 1);
     if (proteinstructurePending instanceof Helix)
@@ -151,13 +151,13 @@ public class RocketsRenderer extends BioShapeRenderer {
     tPending = false;
   }
 
-  private Point3f screenA = new Point3f();
-  private Point3f screenB = new Point3f();
-  private Point3f screenC = new Point3f();
+  private P3 screenA = new P3();
+  private P3 screenB = new P3();
+  private P3 screenC = new P3();
 
-  private void renderPendingRocketSegment(int i, Point3f pointStart,
-                                          Point3f pointBeforeEnd,
-                                          Point3f pointEnd, boolean tEnd) {
+  private void renderPendingRocketSegment(int i, P3 pointStart,
+                                          P3 pointBeforeEnd,
+                                          P3 pointEnd, boolean tEnd) {
     viewer.transformPt3f(pointStart, screenA);
     viewer.transformPt3f(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
@@ -173,7 +173,7 @@ public class RocketsRenderer extends BioShapeRenderer {
       }
       if (startIndexPending == endIndexPending)
         return;
-      Point3f t = screenB;
+      P3 t = screenB;
       screenB = screenC;
       screenC = t;
     }
@@ -181,8 +181,8 @@ public class RocketsRenderer extends BioShapeRenderer {
       g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenA, screenB);
   }
 
-  private void renderPendingSheet(Point3f pointStart, Point3f pointBeforeEnd,
-                          Point3f pointEnd, boolean tEnd) {
+  private void renderPendingSheet(P3 pointStart, P3 pointBeforeEnd,
+                          P3 pointEnd, boolean tEnd) {
     if (!g3d.setColix(colix))
       return;
     if (tEnd && renderArrowHeads) {
@@ -202,29 +202,29 @@ public class RocketsRenderer extends BioShapeRenderer {
     7, 6, 2, 3,
     7, 3, 1, 5 };
 
-  private final Point3f[] corners = new Point3f[8];
-  private final Point3f[] screenCorners = new Point3f[8];
+  private final P3[] corners = new P3[8];
+  private final P3[] screenCorners = new P3[8];
   {
     for (int i = 8; --i >= 0; ) {
-      screenCorners[i] = new Point3f();
-      corners[i] = new Point3f();
+      screenCorners[i] = new P3();
+      corners[i] = new P3();
     }
   }
 
-  private final Point3f pointTipOffset = new Point3f();
+  private final P3 pointTipOffset = new P3();
 
-  private final Vector3f scaledWidthVector = new Vector3f();
-  private final Vector3f scaledHeightVector = new Vector3f();
+  private final V3 scaledWidthVector = new V3();
+  private final V3 scaledHeightVector = new V3();
 
   private final static byte arrowHeadFaces[] =
   {0, 1, 3, 2,
    0, 4, 5, 2,
    1, 4, 5, 3};
 
-  void buildBox(Point3f pointCorner, Vector3f scaledWidthVector,
-                Vector3f scaledHeightVector, Vector3f lengthVector) {
+  void buildBox(P3 pointCorner, V3 scaledWidthVector,
+                V3 scaledHeightVector, V3 lengthVector) {
     for (int i = 8; --i >= 0; ) {
-      Point3f corner = corners[i];
+      P3 corner = corners[i];
       corner.setT(pointCorner);
       if ((i & 1) != 0)
         corner.add(scaledWidthVector);
@@ -236,10 +236,10 @@ public class RocketsRenderer extends BioShapeRenderer {
     }
   }
 
-  void buildArrowHeadBox(Point3f pointCorner, Vector3f scaledWidthVector,
-                         Vector3f scaledHeightVector, Point3f pointTip) {
+  void buildArrowHeadBox(P3 pointCorner, V3 scaledWidthVector,
+                         V3 scaledHeightVector, P3 pointTip) {
     for (int i = 4; --i >= 0; ) {
-      Point3f corner = corners[i];
+      P3 corner = corners[i];
       corner.setT(pointCorner);
       if ((i & 1) != 0)
         corner.add(scaledWidthVector);
@@ -253,10 +253,10 @@ public class RocketsRenderer extends BioShapeRenderer {
     viewer.transformPt3f(corners[5], screenCorners[5]);
   }
 
-  private final Vector3f lengthVector = new Vector3f();
-  private final Point3f pointCorner = new Point3f();
+  private final V3 lengthVector = new V3();
+  private final P3 pointCorner = new P3();
 
-  void drawBox(Point3f pointA, Point3f pointB) {
+  void drawBox(P3 pointA, P3 pointB) {
     Sheet sheet = (Sheet)proteinstructurePending;
     float scale = mad / 1000f;
     scaledWidthVector.setT(sheet.getWidthUnitVector());
@@ -280,7 +280,7 @@ public class RocketsRenderer extends BioShapeRenderer {
     }
   }
 
-  void drawArrowHeadBox(Point3f base, Point3f tip) {
+  void drawArrowHeadBox(P3 base, P3 tip) {
     Sheet sheet = (Sheet)proteinstructurePending;
     float scale = mad / 1000f;
     scaledWidthVector.setT(sheet.getWidthUnitVector());

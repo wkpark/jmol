@@ -24,8 +24,8 @@ package org.jmol.bspt;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 
 /**
  * Nodes of the bspt. It is a binary tree so nodes contain two children,
@@ -74,7 +74,7 @@ class Node extends Element {
   }
   
   @Override
-  Element addTuple(int level, Point3f tuple) {
+  Element addTuple(int level, P3 tuple) {
     float dimValue = getDimensionValue(tuple, dim);
     ++count;
     boolean addLeft;
@@ -116,7 +116,7 @@ class Node extends Element {
   }
   
   @Override
-  void dump(int level, StringXBuilder sb) {
+  void dump(int level, SB sb) {
     sb.append("\nnode LEFT" + level);
     eleLeft.dump(level + 1, sb);
     for (int i = 0; i < level; ++i)
@@ -130,7 +130,7 @@ class Node extends Element {
       return eleLeft.toString() + dim + ":" + "\n" + eleRight.toString();
     }
   
-  static float getDimensionValue(Point3f pt, int dim) {
+  static float getDimensionValue(P3 pt, int dim) {
     return (dim == 0 ? pt.x : dim == 1 ? pt.y : pt.z);
   }
 }

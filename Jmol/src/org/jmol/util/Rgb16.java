@@ -91,7 +91,7 @@ public final class Rgb16 {
 
   @Override
   public String toString() {
-    return new StringXBuilder()
+    return new SB()
     .append("Rgb16(").appendI(rScaled).appendC(',')
     .appendI(gScaled).appendC(',')
     .appendI(bScaled).append(" -> ")

@@ -8,7 +8,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 /**
  * Problems identified (Bob Hanson) --
@@ -294,7 +294,7 @@ public class GulpReader extends AtomSetCollectionReader {
   }
 
   private void scalePrimitiveData(int i, float value) {
-    Vector3f v = Vector3f.new3(primitiveData[i], primitiveData[i + 1], primitiveData[i + 2]);
+    V3 v = V3.new3(primitiveData[i], primitiveData[i + 1], primitiveData[i + 2]);
     v.normalize();
     v.scale(value);
     primitiveData[i++] = v.x;

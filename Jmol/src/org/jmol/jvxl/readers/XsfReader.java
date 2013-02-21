@@ -27,8 +27,8 @@ import java.io.BufferedReader;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 class XsfReader extends VolumeFileReader {
 
@@ -45,7 +45,7 @@ class XsfReader extends VolumeFileReader {
   protected void readParameters() throws Exception {
     isAngstroms = false;
     params.blockCubeData = true;
-    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer = new SB();
     jvxlFileHeaderBuffer.append("XsfReader file\n");
     boolean needCutoff = params.cutoffAutomatic;
     isAngstroms = true;
@@ -89,7 +89,7 @@ class XsfReader extends VolumeFileReader {
     } else {
       // data are slowest-z
       // reversed order -- so we just reverse the vectors
-      Vector3f v = volumetricVectors[0];
+      V3 v = volumetricVectors[0];
       volumetricVectors[0] = volumetricVectors[2];
       volumetricVectors[2] = v;
       int n = voxelCounts[0];

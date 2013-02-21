@@ -35,7 +35,7 @@ package org.jmol.util;
  * associated modelIndex (for measurement points)
  * 
  */
-public class Point3fi extends Point3f {
+public class Point3fi extends P3 {
   public int index;
   public int screenX;
   public int screenY;
@@ -43,7 +43,7 @@ public class Point3fi extends Point3f {
   public short screenDiameter = -1;
   public short modelIndex = -1;
 
-  public static void set2(Point3f p3f, Point3i p3i) {
+  public static void set2(P3 p3f, P3i p3i) {
     p3f.x = p3i.x;
     p3f.y = p3i.y;
     p3f.z = p3i.z;

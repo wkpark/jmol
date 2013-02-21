@@ -30,13 +30,13 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.viewer.JmolConstants;
-import org.jmol.script.Token;
+import org.jmol.viewer.JC;
+import org.jmol.script.T;
 
 import java.util.List;
 import java.util.Map;
@@ -211,7 +211,7 @@ public abstract class Monomer extends Group {
     return null;
   }
 
-  protected final Point3f getSpecialAtomPoint(byte[] interestingIDs,
+  protected final P3 getSpecialAtomPoint(byte[] interestingIDs,
                                     byte specialAtomID) {
     for (int i = interestingIDs.length; --i >= 0; ) {
       int interestingID = interestingIDs[i];
@@ -290,16 +290,16 @@ public abstract class Monomer extends Group {
       info.put("sequenceNumber", Integer.valueOf(seqNum));
     if (insCode != 0)      
       info.put("insertionCode","" + insCode);
-    float f = getGroupParameter(Token.phi);
+    float f = getGroupParameter(T.phi);
     if (!Float.isNaN(f))
       info.put("phi", new Float(f));
-    f = getGroupParameter(Token.psi);
+    f = getGroupParameter(T.psi);
     if (!Float.isNaN(f))
       info.put("psi", new Float(f));
-    f = getGroupParameter(Token.eta);
+    f = getGroupParameter(T.eta);
     if (!Float.isNaN(f))
       info.put("mu", new Float(f));
-    f = getGroupParameter(Token.theta);
+    f = getGroupParameter(T.theta);
     if (!Float.isNaN(f))
       info.put("theta", new Float(f));
     ProteinStructure structure = getProteinStructure();
@@ -326,7 +326,7 @@ public abstract class Monomer extends Group {
    * @param bsConformation
    * @param conformationIndex   will be >= 0
    */
-  void getConformation(Atom[] atoms, BitSet bsConformation, int conformationIndex) {
+  void getConformation(Atom[] atoms, BS bsConformation, int conformationIndex) {
 
     // A        A
     // A        B
@@ -352,7 +352,7 @@ public abstract class Monomer extends Group {
     }
   }
 
-  final void updateOffsetsForAlternativeLocations(Atom[] atoms, BitSet bsSelected) {
+  final void updateOffsetsForAlternativeLocations(Atom[] atoms, BS bsSelected) {
       for (int offsetIndex = offsets.length; --offsetIndex >= 0;) {
         int offset = offsets[offsetIndex] & 0xFF;
         if (offset == 255)
@@ -387,7 +387,7 @@ public abstract class Monomer extends Group {
 
   }
     
-  final void getMonomerSequenceAtoms(BitSet bsInclude, BitSet bsResult) {
+  final void getMonomerSequenceAtoms(BS bsInclude, BS bsResult) {
     super.selectAtoms(bsResult);
     bsResult.and(bsInclude);
   }
@@ -408,7 +408,7 @@ public abstract class Monomer extends Group {
    * @param qtype
    * @return center
    */
-  Point3f getQuaternionFrameCenter(char qtype) {
+  P3 getQuaternionFrameCenter(char qtype) {
     return null; 
   }
 
@@ -416,15 +416,15 @@ public abstract class Monomer extends Group {
     int iPrev = monomerIndex - mStep;
     Monomer prev = (mStep < 1 || monomerIndex <= 0 ? null : bioPolymer.monomers[iPrev]);
     Quaternion q2 = getQuaternion(qType);
-    Quaternion q1 = (mStep < 1 ? Quaternion.getQuaternionFrameV(JmolConstants.axisX, JmolConstants.axisY, JmolConstants.axisZ, false) 
+    Quaternion q1 = (mStep < 1 ? Quaternion.getQuaternionFrameV(JC.axisX, JC.axisY, JC.axisZ, false) 
         : prev == null ? null : prev.getQuaternion(qType));
     if (q1 == null || q2 == null)
       return super.getHelixData(tokType, qType, mStep);
-    Point3f a = (mStep < 1 ? Point3f.new3(0, 0, 0) : prev.getQuaternionFrameCenter(qType));
-    Point3f b = getQuaternionFrameCenter(qType);
+    P3 a = (mStep < 1 ? P3.new3(0, 0, 0) : prev.getQuaternionFrameCenter(qType));
+    P3 b = getQuaternionFrameCenter(qType);
     if (a == null || b == null)
       return super.getHelixData(tokType, qType, mStep);
-    return Measure.computeHelicalAxis(tokType == Token.draw ? "helixaxis" + getUniqueID() : null, 
+    return Measure.computeHelicalAxis(tokType == T.draw ? "helixaxis" + getUniqueID() : null, 
         tokType, a, b, q2.div(q1));
   }
 

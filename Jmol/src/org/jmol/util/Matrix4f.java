@@ -187,7 +187,7 @@ public class Matrix4f implements Serializable {
    * @param t  The translational components of the matrix
    * @return m
    */
- public static Matrix4f newMV(Matrix3f m1, Vector3f t) {
+ public static Matrix4f newMV(Matrix3f m1, V3 t) {
    Matrix4f m = new Matrix4f();
    m.setMV(m1, t);
    return m;
@@ -199,7 +199,7 @@ public class Matrix4f implements Serializable {
   * @param m1  The rotation matrix representing the rotational components
   * @param t  The translational components of the matrix
   */
-  public void setMV(Matrix3f m1, Vector3f t) {
+  public void setMV(Matrix3f m1, V3 t) {
     setM3(m1);
     setTranslation(t);
   }
@@ -441,7 +441,7 @@ public class Matrix4f implements Serializable {
    * @param trans
    *        the vector that will receive the translational component
    */
-  public final void get(Vector3f trans) {
+  public final void get(V3 trans) {
     trans.x = m03;
     trans.y = m13;
     trans.z = m23;
@@ -852,7 +852,7 @@ public class Matrix4f implements Serializable {
    * @param trans
    *        the translational component
    */
-  public void setTranslation(Vector3f trans) {
+  public void setTranslation(V3 trans) {
     m03 = trans.x;
     m13 = trans.y;
     m23 = trans.z;
@@ -1088,7 +1088,7 @@ public class Matrix4f implements Serializable {
    * @param pointOut
    *        the transformed point
    */
-  public final void transform2(Point3f point, Point3f pointOut) {
+  public final void transform2(P3 point, P3 pointOut) {
     try {
       pointOut.set(m00 * point.x + m01 * point.y + m02 * point.z + m03, m10
           * point.x + m11 * point.y + m12 * point.z + m13, m20 * point.x + m21
@@ -1105,7 +1105,7 @@ public class Matrix4f implements Serializable {
    * @param point
    *        the input point to be transformed.
    */
-  public final void transform(Point3f point) {
+  public final void transform(P3 point) {
     transform2(point, point);
   }
 
@@ -1118,7 +1118,7 @@ public class Matrix4f implements Serializable {
    * @param normalOut
    *        the transformed normal
    */
-  public final void transformV2(Vector3f normal, Vector3f normalOut) {
+  public final void transformV2(V3 normal, V3 normalOut) {
     normalOut.set(m00 * normal.x + m01 * normal.y + m02 * normal.z, m10
         * normal.x + m11 * normal.y + m12 * normal.z, m20 * normal.x + m21
         * normal.y + m22 * normal.z);
@@ -1131,7 +1131,7 @@ public class Matrix4f implements Serializable {
    * @param normal
    *        the input normal to be transformed.
    */
-  public final void transformV(Vector3f normal) {
+  public final void transformV(V3 normal) {
     transformV2(normal, normal);
   }
 

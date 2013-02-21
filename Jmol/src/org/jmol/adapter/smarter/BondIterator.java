@@ -25,10 +25,10 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapterBondIterator;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 class BondIterator extends JmolAdapterBondIterator {
-	private BitSet bsAtoms;
+	private BS bsAtoms;
 	private Bond[] bonds;
 	private int ibond;
 	private Bond bond;

@@ -25,10 +25,10 @@
 package org.jmol.renderspecial;
 
 import org.jmol.shapespecial.GeoSurface;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.Geodesic;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3i;
 
 
 /*
@@ -48,7 +48,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
     iShowSolid = !(viewer.getInMotion() && gs.ec.getDotsConvexMax() > 100);
     if (!iShowSolid)
       return false;
-    if (!g3d.setColix(Colix.BLACK))
+    if (!g3d.setColix(C.BLACK))
       return true;
     if (iShowSolid && faceMap == null)
       faceMap = new int[screenDotCount];
@@ -58,7 +58,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
   }
   
  @Override
-protected void renderConvex(short colix, BitSet visibilityMap, int nPoints) {
+protected void renderConvex(short colix, BS visibilityMap, int nPoints) {
     this.colix = colix;
     if (iShowSolid) {
       if (g3d.setColix(colix))       
@@ -68,11 +68,11 @@ protected void renderConvex(short colix, BitSet visibilityMap, int nPoints) {
     renderDots(nPoints);
   }
   
-  private Point3i facePt1 = new Point3i();
-  private Point3i facePt2 = new Point3i();
-  private Point3i facePt3 = new Point3i();
+  private P3i facePt1 = new P3i();
+  private P3i facePt2 = new P3i();
+  private P3i facePt3 = new P3i();
   
-  private void renderSurface(BitSet points) {
+  private void renderSurface(BS points) {
     if (faceMap == null)
       return;
     short[] faces = Geodesic.getFaceVertexes(screenLevel);

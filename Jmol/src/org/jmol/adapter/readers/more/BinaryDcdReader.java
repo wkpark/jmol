@@ -24,12 +24,12 @@
 
 package org.jmol.adapter.readers.more;
 
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 
 
 
@@ -98,7 +98,7 @@ ICNTRL(20)=VERNUM ! version number
   private int nModels;
   private int nAtoms;
   private int nFree;
-  private BitSet bsFree;
+  private BS bsFree;
   private float[] xAll, yAll, zAll;
   
 
@@ -130,7 +130,7 @@ ICNTRL(20)=VERNUM ! version number
     
     n = binaryDoc.readInt();  // HEADER
     n = binaryDoc.readInt();
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     for (int i = 0; i < n; i++)
       sb.append(binaryDoc.readString(80).trim()).appendC('\n');
     n = binaryDoc.readInt(); // TRAILER
@@ -145,11 +145,11 @@ ICNTRL(20)=VERNUM ! version number
     if (nFixed != 0) {
       // read list of free atoms
       binaryDoc.readInt(); // HEADER
-      bsFree = BitSetUtil.newBitSet(nFree);
+      bsFree = BSUtil.newBitSet(nFree);
       for (int i = 0; i < nFree; i++)
         bsFree.set(binaryDoc.readInt() - 1);
       n = binaryDoc.readInt() / 4; // TRAILER
-      Logger.info("free: " + bsFree.cardinality() + " " + Escape.escape(bsFree));
+      Logger.info("free: " + bsFree.cardinality() + " " + Escape.e(bsFree));
     }
     
     readCoordinates();
@@ -173,7 +173,7 @@ ICNTRL(20)=VERNUM ! version number
         .get("filteredAtomCount")).intValue());
     for (int i = 0; i < nModels; i++)
       if (doGetModel(++modelNumber, null)) {
-        Point3f[] trajectoryStep = new Point3f[atomCount];
+        P3[] trajectoryStep = new P3[atomCount];
         if (!getTrajectoryStep(trajectoryStep))
           return;
         trajectorySteps.add(trajectoryStep);
@@ -186,7 +186,7 @@ ICNTRL(20)=VERNUM ! version number
       }
   }
 
-  private boolean getTrajectoryStep(Point3f[] trajectoryStep)
+  private boolean getTrajectoryStep(P3[] trajectoryStep)
       throws Exception {
     try {
     int atomCount = trajectoryStep.length;
@@ -194,14 +194,14 @@ ICNTRL(20)=VERNUM ! version number
     float[] x = readFloatArray();
     float[] y = readFloatArray();
     float[] z = readFloatArray();
-    BitSet bs = (xAll == null ? null : bsFree);
+    BS bs = (xAll == null ? null : bsFree);
     if (bs == null) {
       xAll = x;
       yAll = y;
       zAll = z;
     }
     for (int i = 0, vpt = 0; i < nAtoms; i++) {
-      Point3f pt = new Point3f();
+      P3 pt = new P3();
       if (bs == null || bs.get(i)) {
         pt.set(x[vpt], y[vpt], z[vpt]);
         vpt++;

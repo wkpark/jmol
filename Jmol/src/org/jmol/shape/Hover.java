@@ -25,10 +25,10 @@
 package org.jmol.shape;
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.JmolFont;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3i;
 
 public class Hover extends TextShape {
 
@@ -38,7 +38,7 @@ public class Hover extends TextShape {
 
   public Text hoverText;
   public int atomIndex = -1;
-  public Point3i xy;
+  public P3i xy;
   public String text;
   public String labelFormat = "%U";
   public String[] atomFormats;
@@ -49,15 +49,15 @@ public class Hover extends TextShape {
     super.initShape();
     isHover = true;
     JmolFont font3d = gdata.getFont3DFSS(FONTFACE, FONTSTYLE, FONTSIZE);
-    short bgcolix = Colix.getColixS("#FFFFC3"); // 255, 255, 195
-    short colix = Colix.BLACK;
+    short bgcolix = C.getColixS("#FFFFC3"); // 255, 255, 195
+    short colix = C.BLACK;
     currentObject = hoverText = Text.newLabel(gdata, font3d, null, colix, bgcolix, 0, 0,
         1, Integer.MIN_VALUE, Object2d.ALIGN_LEFT, 0);
     hoverText.setAdjustForWindow(true);
   }
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  public void setProperty(String propertyName, Object value, BS bsSelected) {
 
     //if (Logger.debugging) {
       //Logger.debug("Hover.setProperty(" + propertyName + "," + value + ")");
@@ -97,7 +97,7 @@ public class Hover extends TextShape {
     }
 
     if ("xy" == propertyName) {
-      xy = (Point3i) value;
+      xy = (P3i) value;
       return;
     }
 

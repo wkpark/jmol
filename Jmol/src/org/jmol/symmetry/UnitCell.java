@@ -28,8 +28,8 @@ package org.jmol.symmetry;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Quadric;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Tuple3f;
@@ -47,9 +47,9 @@ import org.jmol.util.Tuple3f;
 
 class UnitCell extends SimpleUnitCell {
   
-  private Point3f[] vertices; // eight corners
-  private Point3f cartesianOffset = new Point3f();
-  private Point3f fractionalOffset = new Point3f();
+  private P3[] vertices; // eight corners
+  private P3 cartesianOffset = new P3();
+  private P3 fractionalOffset = new P3();
   
   UnitCell() {
     
@@ -89,7 +89,7 @@ class UnitCell extends SimpleUnitCell {
    * @param pt
    * @param offset
    */
-  final void toUnitCell(Point3f pt, Point3f offset) {
+  final void toUnitCell(P3 pt, P3 offset) {
     if (matrixCartesianToFractional == null)
       return;
     if (offset == null) {
@@ -125,18 +125,18 @@ class UnitCell extends SimpleUnitCell {
   }
   
   private boolean allFractionalRelative = false;
-  private Point3f unitCellMultiplier = null;
+  private P3 unitCellMultiplier = null;
   
   void setAllFractionalRelative(boolean TF) {
     allFractionalRelative = TF;
   }  
   
-  void setOffset(Point3f pt) {
+  void setOffset(P3 pt) {
     if (pt == null)
       return;
     // from "unitcell {i j k}" via uccage
     if (pt.x >= 100 || pt.y >= 100) {
-      unitCellMultiplier = Point3f.newP(pt);
+      unitCellMultiplier = P3.newP(pt);
       return;
     }
     if (pt.x == 0 && pt.y == 0 && pt.z == 0)
@@ -178,12 +178,12 @@ class UnitCell extends SimpleUnitCell {
     }
   }
 
-  void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ) {
+  void setMinMaxLatticeParameters(P3i minXYZ, P3i maxXYZ) {
     if (maxXYZ.x <= 555 && maxXYZ.y >= 555) {
       //alternative format for indicating a range of cells:
       //{111 666}
       //555 --> {0 0 0}
-      Point3f pt = new Point3f();
+      P3 pt = new P3();
       ijkToPoint3f(maxXYZ.x, pt, 0);
       minXYZ.x = (int) pt.x;
       minXYZ.y = (int) pt.y;
@@ -211,16 +211,16 @@ class UnitCell extends SimpleUnitCell {
        + "\ncartesian to fractional: " + matrixCartesianToFractional : "");
   }
 
-  Point3f[] getVertices() {
+  P3[] getVertices() {
     return vertices; // does not include offsets
   }
   
-  Point3f getCartesianOffset() {
+  P3 getCartesianOffset() {
     // for slabbing isosurfaces and rendering the ucCage
     return cartesianOffset;
   }
   
-  Point3f getFractionalOffset() {
+  P3 getFractionalOffset() {
     // no references??
     return fractionalOffset;
   }
@@ -359,10 +359,10 @@ class UnitCell extends SimpleUnitCell {
     return new Quadric(Bcart);
   }
   
-  Point3f[] getCanonicalCopy(float scale) {
-    Point3f[] pts = new Point3f[8];
+  P3[] getCanonicalCopy(float scale) {
+    P3[] pts = new P3[8];
     for (int i = 0; i < 8; i++) {
-      pts[i] = Point3f.newP(BoxInfo.unitCubePoints[i]);
+      pts[i] = P3.newP(BoxInfo.unitCubePoints[i]);
       matrixFractionalToCartesian.transform(pts[i]);
       //pts[i].add(cartesianOffset);
     }
@@ -385,9 +385,9 @@ class UnitCell extends SimpleUnitCell {
       return;
     matrixCtoFAbsolute = Matrix4f.newM(matrixCartesianToFractional);
     matrixFtoCAbsolute = Matrix4f.newM(matrixFractionalToCartesian);
-    vertices = new Point3f[8];
+    vertices = new P3[8];
     for (int i = 8; --i >= 0;) {
-      vertices[i] = new Point3f(); 
+      vertices[i] = new P3(); 
       matrixFractionalToCartesian.transform2(BoxInfo.unitCubePoints[i], vertices[i]);
       //System.out.println("UNITCELL " + vertices[i] + " " + BoxInfo.unitCubePoints[i]);
     }
@@ -405,9 +405,9 @@ class UnitCell extends SimpleUnitCell {
    * @param ptOffset TODO
    * @return       TRUE if pt has been set.
    */
-  public boolean checkDistance(Point3f f1, Point3f f2, float distance, float dx,
-                              int iRange, int jRange, int kRange, Point3f ptOffset) {
-    Point3f p1 = Point3f.newP(f1);
+  public boolean checkDistance(P3 f1, P3 f2, float distance, float dx,
+                              int iRange, int jRange, int kRange, P3 ptOffset) {
+    P3 p1 = P3.newP(f1);
     toCartesian(p1, true);
     for (int i = -iRange; i <= iRange; i++)
       for (int j = -jRange; j <= jRange; j++)
@@ -423,17 +423,17 @@ class UnitCell extends SimpleUnitCell {
     return false;
   }
 
-  public Point3f getUnitCellMultiplier() {
+  public P3 getUnitCellMultiplier() {
     return unitCellMultiplier ;
   }
 
-  public Point3f[] getUnitCellVectors() {
+  public P3[] getUnitCellVectors() {
     Matrix4f m = matrixFractionalToCartesian;
-    return new Point3f[] { 
-        Point3f.newP(cartesianOffset),
-        Point3f.new3(m.m00, m.m10, m.m20), 
-        Point3f.new3(m.m01, m.m11, m.m21), 
-        Point3f.new3(m.m02, m.m12, m.m22) };
+    return new P3[] { 
+        P3.newP(cartesianOffset),
+        P3.new3(m.m00, m.m10, m.m20), 
+        P3.new3(m.m01, m.m11, m.m21), 
+        P3.new3(m.m02, m.m12, m.m22) };
   }
 
 }

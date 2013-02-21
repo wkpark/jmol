@@ -25,16 +25,16 @@ package org.jmol.quantum;
 
 
 import org.jmol.modelset.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 
 abstract class QuantumCalculation {
 
   protected boolean doDebug = false;
-  protected BitSet bsExcluded;
+  protected BS bsExcluded;
 
   protected final static float bohr_per_angstrom = 1 / 0.52918f;
 
@@ -43,7 +43,7 @@ abstract class QuantumCalculation {
   protected float[] vd;
   protected int[] countsXYZ;
   
-  protected Point3f[] points;
+  protected P3[] points;
   protected int xMin, xMax, yMin, yMax, zMin, zMax;
 
   protected QMAtom[] qmAtoms;
@@ -74,7 +74,7 @@ abstract class QuantumCalculation {
   
   protected float unitFactor = bohr_per_angstrom;
 
-  protected void initialize(int nX, int nY, int nZ, Point3f[] points) {
+  protected void initialize(int nX, int nY, int nZ, P3[] points) {
     if (points != null) {
       this.points = points;
       nX = nY = nZ = points.length;
@@ -106,9 +106,9 @@ abstract class QuantumCalculation {
   protected float volume = 1;
 
   protected void setupCoordinates(float[] originXYZ, float[] stepsXYZ,
-                                  BitSet bsSelected,
-                                  Point3f[] atomCoordAngstroms,
-                                  Point3f[] points, boolean renumber) {
+                                  BS bsSelected,
+                                  P3[] atomCoordAngstroms,
+                                  P3[] points, boolean renumber) {
 
     // all coordinates come in as angstroms, not bohr, and are converted here into bohr
 
@@ -120,10 +120,10 @@ abstract class QuantumCalculation {
         volume *= stepBohr[i];
       }
       Logger.info("QuantumCalculation:"
-          + "\n origin = " + Escape.escape(originXYZ) 
-          + "\n steps = " + Escape.escape(stepsXYZ)
-          + "\n origin(Bohr)= " + Escape.escape(originBohr) 
-          + "\n steps(Bohr)= " + Escape.escape(stepBohr)
+          + "\n origin = " + Escape.e(originXYZ) 
+          + "\n steps = " + Escape.e(stepsXYZ)
+          + "\n origin(Bohr)= " + Escape.e(originBohr) 
+          + "\n steps(Bohr)= " + Escape.e(stepBohr)
           + "\n counts= " + nX + " " + nY + " " + nZ);
     }
 
@@ -146,7 +146,7 @@ abstract class QuantumCalculation {
     }
   }
 
-  public float process(Point3f pt) {
+  public float process(P3 pt) {
     doDebug = false;
     if (points == null || nX != 1)
       initializeOnePoint();
@@ -163,8 +163,8 @@ abstract class QuantumCalculation {
   }
 
   protected void initializeOnePoint() {
-    points = new Point3f[1];
-    points[0] = new Point3f();
+    points = new P3[1];
+    points[0] = new P3();
     if (voxelData == null || voxelData == voxelDataTemp) {
       voxelData = voxelDataTemp = new float[1][1][1];
     } else {
@@ -177,13 +177,13 @@ abstract class QuantumCalculation {
 
   protected abstract void process();
   
-  protected void setXYZBohr(Point3f[] points) {
+  protected void setXYZBohr(P3[] points) {
     setXYZBohr(xBohr, 0, nX, points);
     setXYZBohr(yBohr, 1, nY, points);
     setXYZBohr(zBohr, 2, nZ, points);
   }
 
-  private void setXYZBohr(float[] bohr, int i, int n, Point3f[] points) {
+  private void setXYZBohr(float[] bohr, int i, int n, P3[] points) {
     if (points != null) {
       float x = 0;
       for (int j = 0; j < n; j++) {

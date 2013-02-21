@@ -36,10 +36,10 @@ import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 /*
  * a simple molecular electrostatic potential cube generator
@@ -89,8 +89,8 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   
   protected int distanceMode = ONE_OVER_D;
   private float[] potentials;
-  private Point3f[] atomCoordAngstroms;
-  private BitSet bsSelected;
+  private P3[] atomCoordAngstroms;
+  private BS bsSelected;
   
   public MepCalculation() {
     rangeBohrOrAngstroms = 8; // Angstroms
@@ -99,8 +99,8 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   }
   
   public void assignPotentials(Atom[] atoms, float[] potentials,
-                               BitSet bsAromatic, BitSet bsCarbonyl,
-                               BitSet bsIgnore, String data) {
+                               BS bsAromatic, BS bsCarbonyl,
+                               BS bsIgnore, String data) {
     getAtomicPotentials(data, null);
     for (int i = 0; i < atoms.length; i++) {
       float f;
@@ -118,7 +118,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   }
 
   public void setup(int calcType, float[] potentials,
-                    Point3f[] atomCoordAngstroms, BitSet bsSelected) {
+                    P3[] atomCoordAngstroms, BS bsSelected) {
     if (calcType >= 0)
       distanceMode = calcType;
     this.potentials = potentials;
@@ -126,8 +126,8 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     this.bsSelected = bsSelected;
   }
   
-  public void calculate(VolumeDataInterface volumeData, BitSet bsSelected,
-                        Point3f[] atomCoordAngstroms, float[] potentials,
+  public void calculate(VolumeDataInterface volumeData, BS bsSelected,
+                        P3[] atomCoordAngstroms, float[] potentials,
                         int calcType) {
     setup(calcType, potentials, atomCoordAngstroms, bsSelected);
     voxelData = volumeData.getVoxelData();
@@ -139,7 +139,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     process();
   }
 
-  public float getValueAtPoint(Point3f pt) {
+  public float getValueAtPoint(P3 pt) {
     float value = 0;
     for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
         .nextSetBit(i + 1)) {

@@ -37,7 +37,7 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 public class ASimpleJvxlWriter {
 
@@ -76,7 +76,7 @@ public class ASimpleJvxlWriter {
     // -- set to null for faster calculation of JVXL data
     
     float[] areaVolumeReturn = new float[2]; // or null;
-    List<Point3f> surfacePointsReturn = new ArrayList<Point3f>(); // or null;
+    List<P3> surfacePointsReturn = new ArrayList<P3>(); // or null;
 
     params.isXLowToHigh = false;
     writeFile(outputFile + "A", jvxlGetData(null, params,
@@ -98,7 +98,7 @@ public class ASimpleJvxlWriter {
 
   public static String jvxlGetData(VoxelDataCreator vdc, Parameters params,
                                    VolumeData volumeData, String[] title,
-                                   List<Point3f> surfacePointsReturn,
+                                   List<P3> surfacePointsReturn,
                                    float[] areaVolumeReturn) {
     
     JvxlData jvxlData = new JvxlData();

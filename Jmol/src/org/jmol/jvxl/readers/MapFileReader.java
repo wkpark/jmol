@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
 
 // DSN6, MRC, and XPLOR readers
@@ -45,7 +45,7 @@ abstract class MapFileReader extends VolumeFileReader {
     isAngstroms = true;
     adjustment = sg.getParams().center;
     if (adjustment.x == Float.MAX_VALUE)
-      adjustment = new Point3f();
+      adjustment = new P3();
   }
 
     /* 
@@ -73,9 +73,9 @@ abstract class MapFileReader extends VolumeFileReader {
   protected int[] nxyzStart = new int[3];
   protected int na, nb, nc;
   protected float a, b, c, alpha, beta, gamma;
-  protected Point3f origin = new Point3f();
-  protected Point3f adjustment = new Point3f();
-  protected Point3f[] vectors = new Point3f[3];
+  protected P3 origin = new P3();
+  protected P3 adjustment = new P3();
+  protected P3[] vectors = new P3[3];
 
   protected void getVectorsAndOrigin() {
       
@@ -136,9 +136,9 @@ abstract class MapFileReader extends VolumeFileReader {
      This is because our x is the slowest running variable.
     */               
         
-    vectors[0] = Point3f.new3(1, 0, 0);
-    vectors[1] = Point3f.new3(0, 1, 0);
-    vectors[2] = Point3f.new3(0, 0, 1);
+    vectors[0] = P3.new3(1, 0, 0);
+    vectors[1] = P3.new3(0, 1, 0);
+    vectors[2] = P3.new3(0, 0, 1);
     unitCell.toCartesian(vectors[0], false);
     unitCell.toCartesian(vectors[1], false);
     unitCell.toCartesian(vectors[2], false);

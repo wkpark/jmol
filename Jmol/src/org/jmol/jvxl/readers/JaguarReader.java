@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 
 
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 /*
  * A simple Jaguar .PLT file reader for isosurface
@@ -84,7 +84,7 @@ class JaguarReader extends VolumeFileReader {
    */
   @Override
   protected void readParameters() throws Exception {
-    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer = new SB();
     jvxlFileHeaderBuffer.append("Jaguar data\n");
     jvxlFileHeaderBuffer.append("\n");
     String atomLine;

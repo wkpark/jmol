@@ -25,8 +25,8 @@ package org.jmol.bspt;
 
 import org.jmol.modelset.Atom;
 import org.jmol.util.Escape;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 
 /**
  * A leaf of Point3f objects in the bsp tree
@@ -34,12 +34,12 @@ import org.jmol.util.StringXBuilder;
  * @author Miguel, miguel@jmol.org
  */
 class Leaf extends Element {
-  Point3f[] tuples;
+  P3[] tuples;
     
   Leaf(Bspt bspt, Leaf leaf, int countToKeep) {
     this.bspt = bspt;
     count = 0;
-    tuples = new Point3f[Bspt.leafCountMax];
+    tuples = new P3[Bspt.leafCountMax];
     if (leaf == null)
       return;
     for (int i = countToKeep; i < Bspt.leafCountMax; ++i) {
@@ -51,10 +51,10 @@ class Leaf extends Element {
 
   void sort(int dim) {
     for (int i = count; --i > 0; ) { // this is > not >=
-      Point3f champion = tuples[i];
+      P3 champion = tuples[i];
       float championValue = Node.getDimensionValue(champion, dim);
       for (int j = i; --j >= 0; ) {
-        Point3f challenger = tuples[j];
+        P3 challenger = tuples[j];
         float challengerValue = Node.getDimensionValue(challenger, dim);
         if (challengerValue > championValue) {
           tuples[i] = challenger;
@@ -67,7 +67,7 @@ class Leaf extends Element {
   }
 
   @Override
-  Element addTuple(int level, Point3f tuple) {
+  Element addTuple(int level, P3 tuple) {
     if (count < Bspt.leafCountMax) {
       tuples[count++] = tuple;
       return this;
@@ -78,12 +78,12 @@ class Leaf extends Element {
     
  
   @Override
-  void dump(int level, StringXBuilder sb) {
+  void dump(int level, SB sb) {
     for (int i = 0; i < count; ++i) {
-      Point3f t = tuples[i];
+      P3 t = tuples[i];
       for (int j = 0; j < level; ++j)
         sb.append(".");
-      sb.append(Escape.escape(t)).append("Leaf ").appendI(i).append(": ").append(((Atom) t).getInfo());
+      sb.append(Escape.e(t)).append("Leaf ").appendI(i).append(": ").append(((Atom) t).getInfo());
     }
   }
 

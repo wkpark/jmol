@@ -25,12 +25,12 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Point4f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.jvxl.data.JvxlCoder;
 
 public class JvxlReader extends JvxlXmlReader {
@@ -56,7 +56,7 @@ public class JvxlReader extends JvxlXmlReader {
 
   @Override
   protected void readParameters() throws Exception {
-    jvxlFileHeaderBuffer = new StringXBuilder().append(skipComments(false));
+    jvxlFileHeaderBuffer = new SB().append(skipComments(false));
     if (line == null || line.length() == 0)
       line = "Line 1";
     jvxlFileHeaderBuffer.append(line).appendC('\n');
@@ -209,8 +209,8 @@ public class JvxlReader extends JvxlXmlReader {
         if (line.charAt(next[0]) == '[') {
            jvxlData.contourValues = params.contoursDiscrete = parseFloatArray();
            Logger.info("JVXL read: contourValues " + Escape.escapeAF(jvxlData.contourValues));            
-           jvxlData.contourColixes = params.contourColixes = Colix.getColixArray(getQuotedStringNext());
-           jvxlData.contourColors = Colix.getHexCodes(jvxlData.contourColixes);
+           jvxlData.contourColixes = params.contourColixes = C.getColixArray(getQuotedStringNext());
+           jvxlData.contourColors = C.getHexCodes(jvxlData.contourColixes);
            Logger.info("JVXL read: contourColixes " + jvxlData.contourColors); 
            params.nContours = jvxlData.contourValues.length;
                  }

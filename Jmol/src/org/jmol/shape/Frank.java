@@ -25,7 +25,7 @@
 package org.jmol.shape;
 
 import org.jmol.i18n.GT;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
 
 
@@ -64,7 +64,7 @@ public class Frank extends FontShape {
   }
 
   @Override
-  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+  public boolean checkObjectHovered(int x, int y, BS bsVisible) {
     if (!viewer.getShowFrank() || !wasClicked(x, y) || !viewer.menuEnabled())
       return false;
     if (gdata.isDisplayAntialiased() && !viewer.isSingleThreaded) {

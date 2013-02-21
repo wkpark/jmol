@@ -39,11 +39,11 @@ import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 /**
  * A preliminary reader for JCAMP-DX files having ##$MODELS= and ##$PEAKS= records
@@ -124,7 +124,7 @@ public class JcampdxReader extends MolReader {
     }
     selectedModel = desiredModelNumber;
     desiredModelNumber = Integer.MIN_VALUE;
-    peakFilePath = Escape.escapeStr(filePath);
+    peakFilePath = Escape.eS(filePath);
     htParams.remove("modelNumber");
     // peakIndex will be passed on to additional files in a ZIP file load
     // the peak file path is stripped of the "|xxxx.jdx" part 
@@ -135,7 +135,7 @@ public class JcampdxReader extends MolReader {
         htParams.put("peakIndex", peakIndex);
       }
       if (!htParams.containsKey("subFileName"))
-        peakFilePath = Escape.escapeStr(TextFormat.split(filePath, '|')[0]);
+        peakFilePath = Escape.eS(TextFormat.split(filePath, '|')[0]);
     } else {
       peakIndex = new int[1];
     }
@@ -239,7 +239,7 @@ public class JcampdxReader extends MolReader {
       modelType = "xyz";
     else if (modelType.length() == 0)
       modelType = null; // let Jmol set the type
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     while (readLine() != null && !line.contains("</ModelData>"))
       sb.append(line).appendC('\n');
     String data = sb.toString();
@@ -335,7 +335,7 @@ public class JcampdxReader extends MolReader {
   private void processPeakData() {
     if (peakData.size() == 0)
       return;
-    BitSet bsModels = new BitSet();
+    BS bsModels = new BS();
     int n = peakData.size();
     boolean havePeaks = (n > 0);
     for (int p = 0; p < n; p++) {

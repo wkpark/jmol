@@ -24,9 +24,9 @@
 
 package org.jmol.script;
 
-public class ScriptVariableInt extends ScriptVariable {
+public class ScriptVariableInt extends SV {
   public ScriptVariableInt(int intValue) {
-    super(Token.integer);
+    super(T.integer);
     this.intValue = intValue;
   }
 

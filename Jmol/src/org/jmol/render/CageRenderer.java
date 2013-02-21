@@ -27,17 +27,17 @@ package org.jmol.render;
 import org.jmol.shape.Bbcage;
 import org.jmol.shape.FontLineShape;
 import org.jmol.util.BoxInfo;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
 
 abstract class CageRenderer extends FontLineShapeRenderer {
 
   // Bbcage and Uccage
 
-  protected final Point3f[] screens = new Point3f[8];
+  protected final P3[] screens = new P3[8];
   {
     for (int i = 8; --i >= 0; )
-      screens[i] = new Point3f();
+      screens[i] = new P3();
   }
 
   protected char[] tickEdges;
@@ -52,8 +52,8 @@ abstract class CageRenderer extends FontLineShapeRenderer {
     setEdges();
   }
   
-  private Point3f pt = new Point3f();
-  protected void render(int mad, Point3f[] vertices, Point3f[] axisPoints,
+  private P3 pt = new P3();
+  protected void render(int mad, P3[] vertices, P3[] axisPoints,
                         int firstLine, int allowedEdges0, int allowedEdges1,
                         float scale) {
     //clearBox();

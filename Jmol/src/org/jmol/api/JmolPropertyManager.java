@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.modelset.ModelSet;
-import org.jmol.script.ScriptVariable;
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.script.SV;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 import org.jmol.viewer.Viewer;
 
 public interface JmolPropertyManager {
@@ -21,7 +21,7 @@ public interface JmolPropertyManager {
 
   boolean checkPropertyParameter(String name);
 
-  Object extractProperty(Object property, ScriptVariable[] args, int pt);
+  Object extractProperty(Object property, SV[] args, int pt);
 
   List<Map<String, Object>> getMoleculeInfo(ModelSet modelSet,
                                             Object atomExpression);
@@ -30,22 +30,22 @@ public interface JmolPropertyManager {
 
   Map<String, Object> getLigandInfo(Object atomExpression);
 
-  Object getSymmetryInfo(BitSet bsAtoms, String xyz, int op, Point3f pt,
-                         Point3f pt2, String id, int type);
+  Object getSymmetryInfo(BS bsAtoms, String xyz, int op, P3 pt,
+                         P3 pt2, String id, int type);
 
-  String getModelFileInfo(BitSet visibleFramesBitSet);
+  String getModelFileInfo(BS visibleFramesBitSet);
 
-  String getChimeInfo(int tok, BitSet selectionSet);
+  String getChimeInfo(int tok, BS selectionSet);
 
-  Map<String, List<Map<String, Object>>> getAllChainInfo(BitSet atomBitSet);
+  Map<String, List<Map<String, Object>>> getAllChainInfo(BS atomBitSet);
 
-  List<Map<String, Object>> getAllAtomInfo(BitSet atomBitSet);
+  List<Map<String, Object>> getAllAtomInfo(BS atomBitSet);
 
-  List<Map<String, Object>> getAllBondInfo(BitSet atomBitSet);
+  List<Map<String, Object>> getAllBondInfo(BS atomBitSet);
 
   void getAtomIdentityInfo(int atomIndex, Map<String, Object> info);
 
-  String getModelExtract(BitSet atomBitSet, boolean doTransform, boolean isModelKit,
+  String getModelExtract(BS atomBitSet, boolean doTransform, boolean isModelKit,
                          String type);
 
 }

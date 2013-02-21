@@ -66,7 +66,7 @@ package org.jmol.util;
  * @author Martin Buchholz
  * @since JDK1.0
  */
-public class BitSet implements Cloneable {
+public class BS implements Cloneable {
   /*
    * BitSets are packed into arrays of "words." Currently a word is a long,
    * which consists of 64 bits, requiring 6 address bits. The choice of word
@@ -110,7 +110,7 @@ public class BitSet implements Cloneable {
   /**
    * Creates a new bit set. All bits are initially {@code false}.
    */
-  public BitSet() {
+  public BS() {
     initWords(BITS_PER_WORD);
     sizeIsSticky = false;
   }
@@ -126,8 +126,8 @@ public class BitSet implements Cloneable {
    * @throws NegativeArraySizeException
    *           if the specified initial size is negative
    */
-  public static BitSet newN(int nbits) {
-    BitSet bs = new BitSet();
+  public static BS newN(int nbits) {
+    BS bs = new BS();
     bs.init(nbits);
     return bs;
   }
@@ -665,7 +665,7 @@ public class BitSet implements Cloneable {
    *         specified {@code BitSet}
    * @since 1.4
    */
-  public boolean intersects(BitSet set) {
+  public boolean intersects(BS set) {
     for (int i = Math.min(wordsInUse, set.wordsInUse) - 1; i >= 0; i--)
       if ((words[i] & set.words[i]) != 0)
         return true;
@@ -694,7 +694,7 @@ public class BitSet implements Cloneable {
    * @param set
    *          a bit set
    */
-  public void and(BitSet set) {
+  public void and(BS set) {
     if (this == set)
       return;
 
@@ -718,7 +718,7 @@ public class BitSet implements Cloneable {
    * @param set
    *          a bit set
    */
-  public void or(BitSet set) {
+  public void or(BS set) {
     if (this == set)
       return;
 
@@ -756,7 +756,7 @@ public class BitSet implements Cloneable {
    * @param set
    *          a bit set
    */
-  public void xor(BitSet set) {
+  public void xor(BS set) {
     int wordsInCommon = Math.min(wordsInUse, set.wordsInUse);
 
     if (wordsInUse < set.wordsInUse) {
@@ -785,7 +785,7 @@ public class BitSet implements Cloneable {
    *          the {@code BitSet} with which to mask this {@code BitSet}
    * @since 1.2
    */
-  public void andNot(BitSet set) {
+  public void andNot(BS set) {
     // Perform logical (a & !b) on words in common
     for (int i = Math.min(wordsInUse, set.wordsInUse) - 1; i >= 0; i--)
       words[i] &= ~set.words[i];
@@ -866,12 +866,12 @@ public class BitSet implements Cloneable {
    */
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof BitSet))
+    if (!(obj instanceof BS))
       return false;
     if (this == obj)
       return true;
 
-    BitSet set = (BitSet) obj;
+    BS set = (BS) obj;
 
     // checkInvariants();
     // set.checkInvariants();
@@ -903,7 +903,7 @@ public class BitSet implements Cloneable {
       setLength(wordsInUse);
 
     try {
-      BitSet result = (BitSet) super.clone();
+      BS result = (BS) super.clone();
       if (result.wordsInUse == 0)
         result.words = emptyBitmap;
       else
@@ -960,7 +960,7 @@ public class BitSet implements Cloneable {
 
     int numBits = (wordsInUse > 128) ? cardinality() : wordsInUse
         * BITS_PER_WORD;
-    StringXBuilder b = StringXBuilder.newN(6 * numBits + 2);
+    SB b = SB.newN(6 * numBits + 2);
     b.appendC('{');
 
     int i = nextSetBit(0);

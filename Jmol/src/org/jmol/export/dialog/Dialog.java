@@ -154,7 +154,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     closePreview();
     if (fileName.startsWith("/"))
       fileName = "file://" + fileName; // for Macs
-    return (!allowAppend || doCartoons ? "" : "#NOC#;") + (doAppend ? "load append " + Escape.escapeStr(fileName) : fileName);
+    return (!allowAppend || doCartoons ? "" : "#NOC#;") + (doAppend ? "load append " + Escape.eS(fileName) : fileName);
   }
 
   String closePreview() {

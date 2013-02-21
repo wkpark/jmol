@@ -33,11 +33,11 @@ import java.util.Map;
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Point4f;
-import org.jmol.util.StringXBuilder;
-import org.jmol.script.Token;
+import org.jmol.util.SB;
+import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.constant.EnumQuantumShell;
 import org.jmol.jvxl.data.JvxlCoder;
@@ -67,10 +67,10 @@ public class MolecularOrbital extends Isosurface {
   private Boolean moSquareData;
   private Boolean moSquareLinear;
   private Integer moRandomSeed;
-  private int moFill = Token.nofill;
-  private int moMesh = Token.mesh;
-  private int moDots = Token.nodots;
-  private int moFrontOnly = Token.frontonly;
+  private int moFill = T.nofill;
+  private int moMesh = T.mesh;
+  private int moDots = T.nodots;
+  private int moFrontOnly = T.frontonly;
   private String moTitleFormat;
   private boolean moDebug;
   private int myColorPt;
@@ -82,7 +82,7 @@ public class MolecularOrbital extends Isosurface {
 
   @SuppressWarnings("unchecked")
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
 
     // in the case of molecular orbitals, we just cache the information and
     // then send it all at once. 
@@ -117,7 +117,7 @@ public class MolecularOrbital extends Isosurface {
         moSlab = (List<Object>) thisModel.get("slab");
         if (moSlab == null)
           thisModel.put("slab", moSlab = new ArrayList<Object>());
-        if (tok == Token.none) {
+        if (tok == T.none) {
           moSlab = null;
           thisModel.remove("slab");
           return;
@@ -251,20 +251,20 @@ public class MolecularOrbital extends Isosurface {
     if ("token" == propertyName) {
       int tok = ((Integer) value).intValue();
       switch (tok) {
-      case Token.dots:
-      case Token.nodots:
+      case T.dots:
+      case T.nodots:
         moDots = tok;
         break;
-      case Token.fill:
-      case Token.nofill:
+      case T.fill:
+      case T.nofill:
         moFill = tok;
         break;
-      case Token.mesh:
-      case Token.nomesh:
+      case T.mesh:
+      case T.nomesh:
         moMesh = tok;
         break;
-      case Token.frontonly:
-      case Token.notfrontonly:
+      case T.frontonly:
+      case T.notfrontonly:
         moFrontOnly = tok;
         break;
       }
@@ -327,7 +327,7 @@ public class MolecularOrbital extends Isosurface {
     if (propertyName == "moLinearCombination")
       return moLinearCombination;
     if (propertyName == "showMO") {
-      StringXBuilder str = new StringXBuilder();
+      SB str = new SB();
       List<Map<String, Object>> mos = (List<Map<String, Object>>) (sg.getMoData().get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       int thisMO = param;
@@ -476,7 +476,7 @@ public class MolecularOrbital extends Isosurface {
   public String getShapeState() {
     if (htModels == null)
       return "";
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     int modelCount = viewer.getModelCount();
     for (int i = 0; i < modelCount; i++)
       s.append(getMoState(i));
@@ -488,7 +488,7 @@ public class MolecularOrbital extends Isosurface {
     strID = getId(modelIndex);
     if (!getSettings(strID))
       return "";
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     int modelCount = viewer.getModelCount();
     if (modelCount > 1)
       appendCmd(s, "frame " + viewer.getModelNumberDotted(modelIndex));
@@ -505,7 +505,7 @@ public class MolecularOrbital extends Isosurface {
       appendCmd(s, "mo plane {" + moPlane.x + " " + moPlane.y + " " + moPlane.z
           + " " + moPlane.w + "}");
     if (moTitleFormat != null)
-      appendCmd(s, "mo titleFormat " + Escape.escapeStr(moTitleFormat));
+      appendCmd(s, "mo titleFormat " + Escape.eS(moTitleFormat));
     //the following is a correct object==object test
     if (moColorNeg != null)
       appendCmd(s, "mo color "

@@ -36,7 +36,7 @@ import java.awt.event.MouseWheelListener;
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.Event;
 import org.jmol.export.image.AwtImageCreator;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.ActionManager;
@@ -198,7 +198,7 @@ class Mouse implements MouseWheelListener, MouseListener,
           if (ret == null)
             break;
           if (ret.startsWith("http://") && ret.indexOf("\n") < 0) {
-            viewer.evalString("load " + Escape.escapeStr(ret));
+            viewer.evalString("load " + Escape.eS(ret));
             break;
           }
           ret = viewer.loadInline(ret, false);
@@ -210,10 +210,10 @@ class Mouse implements MouseWheelListener, MouseListener,
       case 'z': // undo
         switch (modifiers) {
         case Binding.CTRL:
-          viewer.undoMoveAction(Token.undomove, 1);
+          viewer.undoMoveAction(T.undomove, 1);
           break;
         case Binding.CTRL_SHIFT:
-          viewer.undoMoveAction(Token.redomove, 1);
+          viewer.undoMoveAction(T.redomove, 1);
           break;
         }
         break;
@@ -221,7 +221,7 @@ class Mouse implements MouseWheelListener, MouseListener,
       case 'y': // redo
         switch (modifiers) {
         case Binding.CTRL:
-          viewer.undoMoveAction(Token.redomove, 1);
+          viewer.undoMoveAction(T.redomove, 1);
           break;
         }
         break;        
@@ -269,7 +269,7 @@ class Mouse implements MouseWheelListener, MouseListener,
     if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.escapeStr("\1" + keyBuffer));
+              + Escape.eS("\1" + keyBuffer));
   }
 
   private void sendKeyBuffer() {
@@ -277,7 +277,7 @@ class Mouse implements MouseWheelListener, MouseListener,
     if (viewer.getBooleanProperty("showKeyStrokes"))
       viewer
           .evalStringQuiet("!set echo _KEYSTROKES; set echo bottom left;echo "
-              + Escape.escapeStr(keyBuffer));
+              + Escape.eS(keyBuffer));
     clearKeyBuffer();
     viewer.script(kb);
   }

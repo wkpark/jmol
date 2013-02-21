@@ -37,17 +37,17 @@ import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 public class JvxlXmlReader extends VolumeFileReader {
 
@@ -105,7 +105,7 @@ public class JvxlXmlReader extends VolumeFileReader {
 
       if (edgeDataCount > 0)
         jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);
-      params.bsExcluded = jvxlData.jvxlExcluded = new BitSet[4];
+      params.bsExcluded = jvxlData.jvxlExcluded = new BS[4];
       hasColorData = (colorDataCount > 0); // for nonXML version of JVXL
       if (hasColorData)
         jvxlColorDataRead = jvxlReadData("color", colorDataCount);
@@ -126,11 +126,11 @@ public class JvxlXmlReader extends VolumeFileReader {
         jvxlDecodeContourData(jvxlData, xr.getXmlData("jvxlContourData", null,
             false, false));
       if (jvxlData.nVertexColors > 0) {
-        jvxlData.vertexColorMap = new Hashtable<String, BitSet>();
+        jvxlData.vertexColorMap = new Hashtable<String, BS>();
         for (int i = 0; i < jvxlData.nVertexColors; i++) {
           String s = xr.getXmlData("jvxlColorMap", null, true, false);
           String color = XmlReader.getXmlAttrib(s, "color");
-          BitSet bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlColorMap",
+          BS bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlColorMap",
               s, false, false));
           jvxlData.vertexColorMap.put(color, bs);
         }
@@ -148,7 +148,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   @Override
   protected void readParameters() throws Exception {
     String s = xr.getXmlData("jvxlFileTitle", null, false, false);
-    jvxlFileHeaderBuffer = StringXBuilder.newS(s);
+    jvxlFileHeaderBuffer = SB.newS(s);
     xr.toTag("jvxlVolumeData");
     String data = tempDataXml = xr.getXmlData("jvxlVolumeData", null, true, false);
     volumetricOrigin.setT(xr.getXmlPoint(data, "origin"));
@@ -217,10 +217,10 @@ public class JvxlXmlReader extends VolumeFileReader {
         }
         s = XmlReader.getXmlAttrib(data, "contourColors");
         if (s.length() > 0) {
-          jvxlData.contourColixes = params.contourColixes = Colix.getColixArray(s);
-          jvxlData.contourColors = Colix.getHexCodes(jvxlData.contourColixes);
+          jvxlData.contourColixes = params.contourColixes = C.getColixArray(s);
+          jvxlData.contourColors = C.getHexCodes(jvxlData.contourColixes);
           Logger.info("JVXL read: contourColixes " +
-              Colix.getHexCodes(jvxlData.contourColixes));        }
+              C.getHexCodes(jvxlData.contourColixes));        }
         params.contourFromZero = XmlReader.getXmlAttrib(data, "contourFromZero").equals("true");
       }
       params.nContours = (haveContourData ? nContourData : nContoursRead);
@@ -254,11 +254,11 @@ public class JvxlXmlReader extends VolumeFileReader {
       params.thePlane = null;
       params.mapLattice = null;
       try {
-        params.thePlane = (Point4f) Escape.unescapePoint(s);
+        params.thePlane = (Point4f) Escape.uP(s);
         s = XmlReader.getXmlAttrib(data, "maplattice");
         Logger.info("JVXL read: plane " + params.thePlane);
         if (s.indexOf("{") >= 0) {
-          params.mapLattice = (Point3f) Escape.unescapePoint(s);
+          params.mapLattice = (P3) Escape.uP(s);
           Logger.info("JVXL read: mapLattice " + params.mapLattice);
         }
         if (params.scale3d == 0)
@@ -443,13 +443,13 @@ public class JvxlXmlReader extends VolumeFileReader {
     return str;
   }
   
-  protected BitSet bsVoxelBitSet;
+  protected BS bsVoxelBitSet;
 
   @Override
-  protected BitSet getVoxelBitSet(int nPoints) throws Exception {
+  protected BS getVoxelBitSet(int nPoints) throws Exception {
     if (bsVoxelBitSet != null)
       return bsVoxelBitSet;
-    BitSet bs = new BitSet();
+    BS bs = new BS();
     int bsVoxelPtr = 0;
     if (surfaceDataCount <= 0)
       return bs; //unnecessary -- probably a plane or color density
@@ -481,9 +481,9 @@ public class JvxlXmlReader extends VolumeFileReader {
   protected float getSurfacePointAndFraction(float cutoff,
                                              boolean isCutoffAbsolute,
                                              float valueA, float valueB,
-                                             Point3f pointA,
-                                             Vector3f edgeVector,
-                                             int x, int y, int z, int vA, int vB, float[] fReturn, Point3f ptReturn) {
+                                             P3 pointA,
+                                             V3 edgeVector,
+                                             int x, int y, int z, int vA, int vB, float[] fReturn, P3 ptReturn) {
     if (edgeDataCount <= 0)
       return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
@@ -599,9 +599,9 @@ public class JvxlXmlReader extends VolumeFileReader {
     //hasColorData = true;
     short colixNeg = 0, colixPos = 0;
     if (params.colorBySign) {
-      colixPos = Colix.getColix(params.isColorReversed ? params.colorNeg
+      colixPos = C.getColix(params.isColorReversed ? params.colorNeg
           : params.colorPos);
-      colixNeg = Colix.getColix(params.isColorReversed ? params.colorPos
+      colixNeg = C.getColix(params.isColorReversed ? params.colorPos
           : params.colorNeg);
     }
     int vertexIncrement = meshData.vertexIncrement;
@@ -636,7 +636,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         short colix = (!params.colorBySign ? params.colorEncoder
             .getColorIndex(value) : (params.isColorReversed ? value > 0
             : value <= 0) ? colixNeg : colixPos);
-        colixes[i] = Colix.getColixTranslucent3(colix, true,
+        colixes[i] = C.getColixTranslucent3(colix, true,
             jvxlData.translucency);
       }
     return jvxlColorDataRead + "\n";
@@ -676,25 +676,25 @@ public class JvxlXmlReader extends VolumeFileReader {
    * @throws Exception 
    *    
    */
-  public Point3f[] jvxlDecodeVertexData(String data, boolean asArray) throws Exception {
+  public P3[] jvxlDecodeVertexData(String data, boolean asArray) throws Exception {
     int vertexCount = parseIntStr(XmlReader.getXmlAttrib(data, "count"));
     if (!asArray)
       Logger.info("Reading " + vertexCount + " vertices");
-    Point3f min = xr.getXmlPoint(data, "min");
-    Point3f range = xr.getXmlPoint(data, "max");
+    P3 min = xr.getXmlPoint(data, "min");
+    P3 range = xr.getXmlPoint(data, "max");
     range.sub(min);
     int colorFractionBase = jvxlData.colorFractionBase;
     int colorFractionRange = jvxlData.colorFractionRange;
     int ptCount = vertexCount * 3;
-    Point3f[] vertices = (asArray ? new Point3f[vertexCount] : null);
-    Point3f p = (asArray ? null : new Point3f());
+    P3[] vertices = (asArray ? new P3[vertexCount] : null);
+    P3 p = (asArray ? null : new P3());
     float fraction;
     String s = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(data, "data"));
     if (s.length() == 0)
       s = xr.getXmlData("jvxlVertexData", data, false, false); 
     for (int i = 0, pt = -1; i < vertexCount; i++) {
       if (asArray)
-        p = vertices[i] = new Point3f();
+        p = vertices[i] = new P3();
       fraction = JvxlCoder.jvxlFractionFromCharacter2(s.charAt(++pt), s.charAt(pt
           + ptCount), colorFractionBase, colorFractionRange);
       p.x = min.x + fraction * range.x;
@@ -804,8 +804,8 @@ public class JvxlXmlReader extends VolumeFileReader {
   protected void jvxlDecodeContourData(JvxlData jvxlData, String data)
       throws Exception {
     List<List<Object>> vs = new ArrayList<List<Object>>();
-    StringXBuilder values = new StringXBuilder();
-    StringXBuilder colors = new StringXBuilder();
+    SB values = new SB();
+    SB colors = new SB();
     int pt = -1;
     jvxlData.vContours = null;
     if (data == null)
@@ -815,17 +815,17 @@ public class JvxlXmlReader extends VolumeFileReader {
       String s = xr.getXmlData("jvxlContour", data.substring(pt), true, false);
       float value = parseFloatStr(XmlReader.getXmlAttrib(s, "value"));
       values.append(" ").appendF(value);
-      short colix = Colix.getColix(ColorUtil.getArgbFromString(XmlReader
+      short colix = C.getColix(ColorUtil.getArgbFromString(XmlReader
           .getXmlAttrib(s, "color")));
-      int color = Colix.getArgb(colix);
+      int color = C.getArgb(colix);
       colors.append(" ").append(Escape.escapeColor(color));
       String fData = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(s,
           "data"));
-      BitSet bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlContour", s,
+      BS bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlContour", s,
           false, false));
       int n = bs.length();
       IsosurfaceMesh.setContourVector(v, n, bs, value, colix, color,
-          StringXBuilder.newS(fData));
+          SB.newS(fData));
       vs.add(v);
     }
     int n = vs.size();
@@ -840,7 +840,7 @@ public class JvxlXmlReader extends VolumeFileReader {
             .floatValue();
         jvxlData.contourColixes[i] = ((short[]) jvxlData.vContours[i].get(3))[0];
       }
-      jvxlData.contourColors = Colix.getHexCodes(jvxlData.contourColixes);
+      jvxlData.contourColors = C.getHexCodes(jvxlData.contourColixes);
       Logger.info("JVXL read: " + n + " discrete contours");
       Logger.info("JVXL read: contour values: " + values);
       Logger.info("JVXL read: contour colors: " + colors);
@@ -849,7 +849,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   
   @Override
   protected void postProcessVertices() {
-    BitSet bsInvalid = params.bsExcluded[1]; 
+    BS bsInvalid = params.bsExcluded[1]; 
     if (bsInvalid != null) {
       if (meshDataServer != null)
         meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);

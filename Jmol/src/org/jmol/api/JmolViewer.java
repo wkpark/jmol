@@ -33,12 +33,12 @@ import java.util.Properties;
 import java.util.List;
 
 
-import org.jmol.script.Token;
-import org.jmol.util.BitSet;
+import org.jmol.script.T;
+import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -162,7 +162,7 @@ abstract public class JmolViewer {
 
   abstract public void setInMotion(boolean isInMotion);
 
-  abstract public BitSet getSmartsMatch(String smarts, BitSet bsSelected);
+  abstract public BS getSmartsMatch(String smarts, BS bsSelected);
   
   /**
    * an added class for rendering stereo in two independent applets
@@ -287,16 +287,16 @@ abstract public class JmolViewer {
 
   abstract public void showUrl(String urlString);
 
-  abstract public void calcAtomsMinMax(BitSet bs, BoxInfo boxInfo);
-  abstract public Point3f getBoundBoxCenter();
-  abstract public Vector3f getBoundBoxCornerVector();
+  abstract public void calcAtomsMinMax(BS bs, BoxInfo boxInfo);
+  abstract public P3 getBoundBoxCenter();
+  abstract public V3 getBoundBoxCornerVector();
   abstract public int getMeasurementCount();
   abstract public String getMeasurementStringValue(int i);
   abstract public int[] getMeasurementCountPlusIndices(int i);
 
   abstract public Object getDisplay();
 
-  abstract public BitSet getElementsPresentBitSet(int modelIndex);
+  abstract public BS getElementsPresentBitSet(int modelIndex);
 
   abstract public int getAnimationFps();
 
@@ -351,7 +351,7 @@ abstract public class JmolViewer {
 
   abstract public int getModelCount();
   abstract public int getDisplayModelIndex();
-  abstract public BitSet getVisibleFramesBitSet();
+  abstract public BS getVisibleFramesBitSet();
   abstract public int getAtomCount();
   abstract public int getBondCount(); // NOT THE REAL BOND COUNT -- just an array maximum
   abstract public int getGroupCount();
@@ -392,19 +392,19 @@ abstract public class JmolViewer {
   abstract public int getBackgroundArgb();
   
   abstract public float getAtomRadius(int atomIndex);
-  abstract public Point3f getAtomPoint3f(int atomIndex);
+  abstract public P3 getAtomPoint3f(int atomIndex);
   abstract public int getAtomArgb(int atomIndex);
   abstract public int getAtomModelIndex(int atomIndex);
 
   abstract public float getBondRadius(int bondIndex);
-  abstract public Point3f getBondPoint3f1(int bondIndex);
-  abstract public Point3f getBondPoint3f2(int bondIndex);
+  abstract public P3 getBondPoint3f1(int bondIndex);
+  abstract public P3 getBondPoint3f2(int bondIndex);
   abstract public int getBondArgb1(int bondIndex);
   abstract public int getBondArgb2(int bondIndex);
   abstract public int getBondOrder(int bondIndex);
   abstract public int getBondModelIndex(int bondIndex);
 
-  abstract public Point3f[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex);
+  abstract public P3[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex);
   
   abstract public boolean getAxesOrientationRasmol();
   abstract public int getPercentVdwAtom();
@@ -495,7 +495,7 @@ abstract public class JmolViewer {
   abstract public void clearSelection();
   //viewer.script("select none");
   //viewer.script("select ({2 3:6})");
-  abstract public void setSelectionSet(BitSet newSelection);
+  abstract public void setSelectionSet(BS newSelection);
   //viewer.script("selectionHalos ON"); //or OFF
   abstract public void setSelectionHalos(boolean haloEnabled);
   //viewer.script("center (selected)");
@@ -542,10 +542,10 @@ abstract public class JmolViewer {
    * @param b 
    * 
    */
-  abstract public void getObjectMap(Map<String, Token> map, boolean b);
+  abstract public void getObjectMap(Map<String, T> map, boolean b);
   
   abstract public void processEvent(int groupID, int eventType, int touchID, int iData,
-                           Point3f pt, long time);
+                           P3 pt, long time);
 
   abstract public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
                                      long when);
@@ -618,6 +618,9 @@ abstract public class JmolViewer {
 
   abstract public Object evaluateExpression(Object expression);
 
-  abstract public void resizeInnerPanel(int width, int height); 
+  abstract public void resizeInnerPanel(int width, int height);
+
+  abstract public String getAtomDefs(Map<String, Object> names);
+
 }
 

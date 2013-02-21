@@ -40,17 +40,17 @@ import org.jmol.util.TextFormat;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.Atom;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 
@@ -140,7 +140,7 @@ public abstract class Exporter {
   protected Viewer viewer;
   protected double privateKey;
   protected JmolRendererInterface jmolRenderer;
-  protected StringXBuilder output;
+  protected SB output;
   protected BufferedWriter bw;
   private FileOutputStream os;
   protected String fileName;
@@ -154,9 +154,9 @@ public abstract class Exporter {
   protected int screenHeight;
   protected int slabZ;
   protected int depthZ;
-  protected Point3f fixedRotationCenter;
-  protected Point3f referenceCenter;
-  protected Point3f cameraPosition;
+  protected P3 fixedRotationCenter;
+  protected P3 referenceCenter;
+  protected P3 cameraPosition;
   protected float cameraDistance;
   protected float aperatureAngle;
   protected float scalePixelsPerAngstrom;
@@ -179,13 +179,13 @@ public abstract class Exporter {
   
   final protected static float degreesPerRadian = (float) (180 / Math.PI);
 
-  final protected Point3f tempP1 = new Point3f();
-  final protected Point3f tempP2 = new Point3f();
-  final protected Point3f tempP3 = new Point3f();
-  final protected Point3f center = new Point3f();
-  final protected Vector3f tempV1 = new Vector3f();
-  final protected Vector3f tempV2 = new Vector3f();
-  final protected Vector3f tempV3 = new Vector3f();
+  final protected P3 tempP1 = new P3();
+  final protected P3 tempP2 = new P3();
+  final protected P3 tempP3 = new P3();
+  final protected P3 center = new P3();
+  final protected V3 tempV1 = new V3();
+  final protected V3 tempV2 = new V3();
+  final protected V3 tempV3 = new V3();
   final protected AxisAngle4f tempA = new AxisAngle4f();
   protected String appletName;
   
@@ -209,7 +209,7 @@ public abstract class Exporter {
     }
     slabZ = g3d.getSlab();
     depthZ = g3d.getDepth();
-    Point3f[] cameraFactors = viewer.getCameraFactors();
+    P3[] cameraFactors = viewer.getCameraFactors();
     referenceCenter = cameraFactors[0];
     cameraPosition = cameraFactors[1];
     fixedRotationCenter = cameraFactors[2];
@@ -234,7 +234,7 @@ public abstract class Exporter {
         return false;
       }
     } else {
-      this.output = (StringXBuilder) output;
+      this.output = (SB) output;
     }
     outputHeader();
     return true;
@@ -255,13 +255,13 @@ public abstract class Exporter {
     }
   }
 
-  protected static void setTempVertex(Point3f pt, Point3f offset, Point3f ptTemp) {
+  protected static void setTempVertex(P3 pt, P3 offset, P3 ptTemp) {
     ptTemp.setT(pt);
     if (offset != null)
       ptTemp.add(offset);
   }
 
-  protected void outputVertices(Point3f[] vertices, int nVertices, Point3f offset) {
+  protected void outputVertices(P3[] vertices, int nVertices, P3 offset) {
     // from exporters
     for (int i = 0; i < nVertices; i++) {
       if (Float.isNaN(vertices[i].x))
@@ -271,7 +271,7 @@ public abstract class Exporter {
     }
   }
 
-  protected void outputVertex(Point3f pt, Point3f offset) {
+  protected void outputVertex(P3 pt, P3 offset) {
     // from exporters
     setTempVertex(pt, offset, tempP1);
     output(tempP1);
@@ -323,7 +323,7 @@ public abstract class Exporter {
   abstract void drawCircle(int x, int y, int z,
                                    int diameter, short colix, boolean doFill);  //draw circle 
 
-  abstract boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
+  abstract boolean drawEllipse(P3 ptAtom, P3 ptX, P3 ptY,
                              short colix, boolean doFill);
 
   void drawSurface(MeshSurface meshSurface, short colix) {
@@ -332,7 +332,7 @@ public abstract class Exporter {
       return;
     int nFaces = 0;
     int nPolygons = meshSurface.polygonCount;
-    BitSet bsPolygons = meshSurface.bsPolygons;
+    BS bsPolygons = meshSurface.bsPolygons;
     int faceVertexMax = (meshSurface.haveQuads ? 4 : 3);
     int[][] indices = meshSurface.polygonIndexes;
     boolean isAll = (bsPolygons == null);
@@ -346,8 +346,8 @@ public abstract class Exporter {
     if (nFaces == 0)
       return;
 
-    Point3f[] vertices = (Point3f[]) meshSurface.getVertices();
-    Vector3f[] normals = (Vector3f[]) meshSurface.normals;
+    P3[] vertices = (P3[]) meshSurface.getVertices();
+    V3[] normals = (V3[]) meshSurface.normals;
 
     boolean colorSolid = (colix != 0);
     short[] colixes = (colorSolid ? null : meshSurface.vertexColixes);
@@ -375,11 +375,11 @@ public abstract class Exporter {
    * @param offset 
    * 
    */
-  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(P3[] vertices, V3[] normals,
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
-                                int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
-                                int faceVertexMax, short colix, Point3f offset) {
+                                int nVertices, int nPolygons, int nFaces, BS bsPolygons,
+                                int faceVertexMax, short colix, P3 offset) {
     // not implemented in _ObjExporter
   }
 
@@ -387,21 +387,21 @@ public abstract class Exporter {
   
   //rockets and dipoles
   abstract void fillConeScreen(short colix, byte endcap, int screenDiameter, 
-                         Point3f screenBase, Point3f screenTip, boolean isBarb);
+                         P3 screenBase, P3 screenTip, boolean isBarb);
   
-  abstract void drawCylinder(Point3f atom1, Point3f atom2, short colix1, short colix2,
+  abstract void drawCylinder(P3 atom1, P3 atom2, short colix1, short colix2,
                              byte endcaps, int madBond, int bondOrder);
 
   abstract void fillCylinderScreenMad(short colix, byte endcaps, int diameter, 
-                                        Point3f screenA, Point3f screenB);
+                                        P3 screenA, P3 screenB);
 
   abstract void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, 
-                             Point3f screenA, Point3f screenB, Point3f ptA, Point3f ptB, float radius);
+                             P3 screenA, P3 screenB, P3 ptA, P3 ptB, float radius);
 
-  abstract void fillEllipsoid(Point3f center, Point3f[] points, short colix, 
+  abstract void fillEllipsoid(P3 center, P3[] points, short colix, 
                               int x, int y, int z, int diameter,
                               Matrix3f toEllipsoidal, double[] coef,
-                              Matrix4f deriv, Point3i[] octantPoints);
+                              Matrix4f deriv, P3i[] octantPoints);
 
   void drawFilledCircle(short colixRing, short colixFill, int diameter, int x, int y, int z) {
     if (colixRing != 0)
@@ -411,10 +411,10 @@ public abstract class Exporter {
   }
 
   //rockets:
-  abstract void fillSphere(short colix, int diameter, Point3f pt);
+  abstract void fillSphere(short colix, int diameter, P3 pt);
   
   //cartoons, rockets, polyhedra:
-  protected abstract void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided, boolean isCartesian);
+  protected abstract void fillTriangle(short colix, P3 ptA, P3 ptB, P3 ptC, boolean twoSided, boolean isCartesian);
   
   
   public short lineWidthMad;

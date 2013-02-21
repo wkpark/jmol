@@ -29,7 +29,7 @@ import org.jmol.modelset.Group;
 import org.jmol.shape.Labels;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 
 public class LabelsRenderer extends ShapeRenderer {
@@ -77,9 +77,9 @@ public class LabelsRenderer extends ShapeRenderer {
           && labels.mads[i] < 0)
         continue;
       short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
-      colix = Colix.getColixInherited(colix, atom.getColix());
-      if (Colix.isColixTranslucent(colix))
-        colix = Colix.getColixTranslucent3(colix, false, 0);
+      colix = C.getColixInherited(colix, atom.getColix());
+      if (C.isColixTranslucent(colix))
+        colix = C.getColixTranslucent3(colix, false, 0);
       short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0
           : bgcolixes[i];
       if (bgcolix == 0 && g3d.getColorArgbOrGray(colix) == backgroundColor)

@@ -20,7 +20,7 @@ import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.util.JmolFont;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
@@ -34,7 +34,7 @@ public class Platform implements ApiPlatform {
   
   ///// Display 
 
-  public void convertPointFromScreen(Object display, Point3f ptTemp) {
+  public void convertPointFromScreen(Object display, P3 ptTemp) {
     Display.convertPointFromScreen(display, ptTemp);
   }
 

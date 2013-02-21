@@ -35,12 +35,12 @@ import java.util.List;
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
 
 public class _X3dExporter extends _VrmlExporter {
@@ -59,7 +59,7 @@ public class _X3dExporter extends _VrmlExporter {
       + "xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.1.xsd '>"
       + "\n");
     output("<head>\n");
-    output("<meta name='title' content=" + Escape.escapeStr(viewer.getModelSetName()).replace('<',' ').replace('>',' ').replace('&',' ') + "/>\n");
+    output("<meta name='title' content=" + Escape.eS(viewer.getModelSetName()).replace('<',' ').replace('>',' ').replace('&',' ') + "/>\n");
     output("<meta name='description' content='Jmol rendering'/>\n");
     output("<meta name='creator' content=' '/>\n");
     output("<meta name='created' content='" + getExportDate() + "'/>\n");
@@ -117,13 +117,13 @@ public class _X3dExporter extends _VrmlExporter {
     output("</Appearance>");
   }
   
-  private void outputTransRot(Point3f pt1, Point3f pt2, int x, int y, int z) {    
+  private void outputTransRot(P3 pt1, P3 pt2, int x, int y, int z) {    
     output(" ");
     outputTransRot(pt1, pt2, x, y, z, "='", "'");
   }
   
   @Override
-  protected void outputCircle(Point3f pt1, Point3f pt2, float radius, short colix,
+  protected void outputCircle(P3 pt1, P3 pt2, float radius, short colix,
                               boolean doFill) {
     if (doFill) {
 
@@ -179,7 +179,7 @@ public class _X3dExporter extends _VrmlExporter {
   }
 
   @Override
-  protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
+  protected void outputCone(P3 ptBase, P3 ptTip, float radius,
                             short colix) {
     float height = ptBase.distance(ptTip);
     output("<Transform");
@@ -206,8 +206,8 @@ public class _X3dExporter extends _VrmlExporter {
   }
 
   @Override
-  protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
-                                short colix, byte endcaps, float radius, Point3f ptX, Point3f ptY, boolean checkRadius) {
+  protected boolean outputCylinder(P3 ptCenter, P3 pt1, P3 pt2,
+                                short colix, byte endcaps, float radius, P3 ptX, P3 ptY, boolean checkRadius) {
     output("<Transform");
     if (ptX == null) {
       outputTransRot(pt1, pt2, 0, 1, 0);
@@ -229,7 +229,7 @@ public class _X3dExporter extends _VrmlExporter {
     return true;
   }
 
-  private void outputCylinderChild(Point3f pt1, Point3f pt2, short colix,
+  private void outputCylinderChild(P3 pt1, P3 pt2, short colix,
                                    byte endcaps, float radius) {
     float length = pt1.distance(pt2);
     String child = useTable.getDef("C" + colix + "_" + (int) (length * 100) + "_"
@@ -260,7 +260,7 @@ public class _X3dExporter extends _VrmlExporter {
   }
   
   @Override
-  protected void outputEllipsoid(Point3f center, Point3f[] points, short colix) {
+  protected void outputEllipsoid(P3 center, P3[] points, short colix) {
     output("<Transform translation='");
     output(center);
     output("'");
@@ -272,7 +272,7 @@ public class _X3dExporter extends _VrmlExporter {
   }
 
   @Override
-  protected void outputSphereChild(Point3f center, float radius, short colix) {
+  protected void outputSphereChild(P3 center, float radius, short colix) {
     output("<Transform translation='");
     output(center);
     output("'>\n<Shape ");
@@ -289,12 +289,12 @@ public class _X3dExporter extends _VrmlExporter {
   }
 
   @Override
-  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(P3[] vertices, V3[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes,
-                               int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
+                               int nVertices, int nPolygons, int nFaces, BS bsPolygons,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
+                               List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
     output("<Shape>\n");
     outputAppearance(colix, false);
     output("<IndexedFaceSet \n");
@@ -362,7 +362,7 @@ public class _X3dExporter extends _VrmlExporter {
   }
 
   @Override
-  protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3, short colix) {
+  protected void outputTriangle(P3 pt1, P3 pt2, P3 pt3, short colix) {
     // nucleic base
     // cartoons
     output("<Shape>\n");
@@ -381,7 +381,7 @@ public class _X3dExporter extends _VrmlExporter {
   }
 
   @Override
-  protected void outputTextPixel(Point3f pt, int argb) {
+  protected void outputTextPixel(P3 pt, int argb) {
     // text only
     String color = rgbFractionalFromArgb(argb);
     output("<Transform translation='");
@@ -423,7 +423,7 @@ public class _X3dExporter extends _VrmlExporter {
         + "<Transform translation='0.0 0.0 0.0'>"
         + "<Shape>");
       outputAppearance(colix, true);
-      output("<Text string=" + Escape.escapeStr(text) + ">");
+      output("<Text string=" + Escape.eS(text) + ">");
       output("<FontStyle ");
       String fontstyle = useTable.getDef("F" + useFontFace + useFontStyle);
       if (fontstyle.charAt(0) == '_') {

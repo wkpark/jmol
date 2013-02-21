@@ -5,19 +5,19 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 
 public class OutputStringBuilder {
 
   public String type;
-  StringXBuilder sb;
+  SB sb;
   BufferedWriter bw;
   long nBytes;
   
   public OutputStringBuilder(BufferedOutputStream os) {
     if (os == null) {
-      sb = new StringXBuilder();
+      sb = new SB();
     } else {     
       OutputStreamWriter osw = new OutputStreamWriter(os);
       bw = new BufferedWriter(osw, 8192);

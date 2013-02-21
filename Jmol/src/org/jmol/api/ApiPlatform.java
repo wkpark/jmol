@@ -2,7 +2,7 @@ package org.jmol.api;
 
 
 import org.jmol.util.JmolFont;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
 
@@ -14,7 +14,7 @@ public interface ApiPlatform {
 
   boolean isHeadless();
   
-  void convertPointFromScreen(Object display, Point3f ptTemp);
+  void convertPointFromScreen(Object display, P3 ptTemp);
 
   void getFullScreenDimensions(Object display, int[] widthHeight);
   

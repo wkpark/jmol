@@ -5,20 +5,20 @@ import java.util.Map;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Quadric;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 public interface SymmetryInterface {
 
   public SymmetryInterface setPointGroup(
                                      SymmetryInterface pointGroupPrevious,
-                                     Atom[] atomset, BitSet bsAtoms,
+                                     Atom[] atomset, BS bsAtoms,
                                      boolean haveVibration,
                                      float distanceTolerance,
                                      float linearTolerance);
@@ -57,7 +57,7 @@ public interface SymmetryInterface {
 
   public Object getLatticeDesignation();
 
-  public void setFinalOperations(Point3f[] atoms, int iAtomFirst,
+  public void setFinalOperations(P3[] atoms, int iAtomFirst,
                                           int noSymmetryCount,
                                           boolean doNormalize);
 
@@ -67,42 +67,42 @@ public interface SymmetryInterface {
 
   public String getSpaceGroupXyz(int i, boolean doNormalize);
 
-  public void newSpaceGroupPoint(int i, Point3f atom1, Point3f atom2,
+  public void newSpaceGroupPoint(int i, P3 atom1, P3 atom2,
                                           int transX, int transY, int transZ);
 
-  public Vector3f[] rotateEllipsoid(int i, Point3f ptTemp,
-                                         Vector3f[] axes, Point3f ptTemp1,
-                                         Point3f ptTemp2);
+  public V3[] rotateEllipsoid(int i, P3 ptTemp,
+                                         V3[] axes, P3 ptTemp1,
+                                         P3 ptTemp2);
 
   public void setUnitCellAllFractionalRelative(boolean TF);
   
   public void setUnitCell(float[] notionalUnitCell);
 
-  public void toCartesian(Point3f pt, boolean asAbsolue);
+  public void toCartesian(P3 pt, boolean asAbsolue);
 
   public Quadric getEllipsoid(float[] parBorU);
 
-  public Point3f ijkToPoint3f(int nnn);
+  public P3 ijkToPoint3f(int nnn);
 
-  public void toFractional(Point3f pt, boolean isAbsolute);
+  public void toFractional(P3 pt, boolean isAbsolute);
 
-  public Point3f[] getUnitCellVertices();
+  public P3[] getUnitCellVertices();
 
-  public Point3f[] getCanonicalCopy(float scale);
+  public P3[] getCanonicalCopy(float scale);
 
-  public Point3f getCartesianOffset();
+  public P3 getCartesianOffset();
 
   public float[] getNotionalUnitCell();
 
   public float[] getUnitCellAsArray(boolean vectorsOnly);
 
-  public void toUnitCell(Point3f pt, Point3f offset);
+  public void toUnitCell(P3 pt, P3 offset);
 
-  public void setOffsetPt(Point3f pt);
+  public void setOffsetPt(P3 pt);
 
   public void setOffset(int nnn);
 
-  public Point3f getUnitCellMultiplier();
+  public P3 getUnitCellMultiplier();
 
   public float getUnitCellInfoType(int infoType);
 
@@ -124,7 +124,7 @@ public interface SymmetryInterface {
 
   public Object[] getSymmetryOperationDescription(int iSym,
                                                          SymmetryInterface cellInfo, 
-                                                         Point3f pt1, Point3f pt2, String id);
+                                                         P3 pt1, P3 pt2, String id);
 
   public boolean isPolymer();
 
@@ -132,26 +132,26 @@ public interface SymmetryInterface {
 
   public void addSpaceGroupOperationM(Matrix4f mat);
 
-  public void setMinMaxLatticeParameters(Point3i minXYZ, Point3i maxXYZ);
+  public void setMinMaxLatticeParameters(P3i minXYZ, P3i maxXYZ);
 
   public void setUnitCellOrientation(Matrix3f matUnitCellOrientation);
 
   public String getMatrixFromString(String xyz, float[] temp, boolean allowScaling);
 
-  public boolean checkDistance(Point3f f1, Point3f f2, float distance, 
-                                        float dx, int iRange, int jRange, int kRange, Point3f ptOffset);
+  public boolean checkDistance(P3 f1, P3 f2, float distance, 
+                                        float dx, int iRange, int jRange, int kRange, P3 ptOffset);
 
-  public Point3f getFractionalOffset();
+  public P3 getFractionalOffset();
 
   public String fcoord(Tuple3f p);
 
   public void setCartesianOffset(Tuple3f origin);
 
-  public Point3f[] getUnitCellVectors();
+  public P3[] getUnitCellVectors();
 
   public SymmetryInterface getUnitCell(Tuple3f[] points);
 
-  public Point3f toSupercell(Point3f fpt);
+  public P3 toSupercell(P3 fpt);
 
   public boolean isSupercell();
 
@@ -159,11 +159,11 @@ public interface SymmetryInterface {
 
   public Map<String, Object> getSpaceGroupInfo(ModelSet modelSet, int modelIndex,
                                                String spaceGroup, int symOp,
-                                               Point3f pt1, Point3f pt2,
+                                               P3 pt1, P3 pt2,
                                                String drawID);
 
   public Object getSymmetryInfo(ModelSet modelSet, int iModel, int iAtom, SymmetryInterface uc, String xyz, int op,
-                                Point3f pt, Point3f pt2, String id, int type);
+                                P3 pt, P3 pt2, String id, int type);
 
   public void setCentroid(ModelSet modelSet, int iAtom0, int iAtom1,
                           int[] minmax);

@@ -28,12 +28,12 @@ import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.shape.Measures;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3i;
 
 
 public class MeasuresRenderer extends FontLineShapeRenderer {
@@ -178,7 +178,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     float stepAngle = aa.angle / dotCount;
     aaT.setAA(aa);
     int iMid = dotCount / 2;
-    Point3f ptArc = measurement.getPointArc();
+    P3 ptArc = measurement.getPointArc();
     for (int i = dotCount; --i >= 0; ) {
       aaT.angle = i * stepAngle;
       matrixT.setAA(aaT);
@@ -187,7 +187,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       pointT.add(atomB);
       // NOTE! Point3i screen is just a pointer 
       //  to viewer.transformManager.point3iScreenTemp
-      Point3i point3iScreenTemp = viewer.transformPt(pointT);
+      P3i point3iScreenTemp = viewer.transformPt(pointT);
       int zArc = point3iScreenTemp.z - zOffset;
       if (zArc < 0) zArc = 0;
       g3d.drawPixel(point3iScreenTemp.x, point3iScreenTemp.y, zArc);
@@ -234,7 +234,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     if (count == 0)
       return;
     g3d.setColix(measurementPending.traceX == Integer.MIN_VALUE ? viewer.getColixRubberband()
-        : count == 2 ? Colix.MAGENTA : Colix.GOLD);
+        : count == 2 ? C.MAGENTA : C.GOLD);
     measurementPending.refresh();
     if (measurementPending.haveTarget())
       renderMeasurement(count, measurementPending, measurementPending.traceX == Integer.MIN_VALUE);

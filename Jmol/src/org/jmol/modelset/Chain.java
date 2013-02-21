@@ -23,7 +23,7 @@
  */
 package org.jmol.modelset;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 public final class Chain {
 
@@ -58,7 +58,7 @@ public final class Chain {
    * 
    * @param bsSelected
    */
-  void calcSelectedGroupsCount(BitSet bsSelected) {
+  void calcSelectedGroupsCount(BS bsSelected) {
     selectedGroupCount = 0;
     for (int i = 0; i < groupCount; i++)
       groups[i].selectedIndex = (groups[i].isSelected(bsSelected) ? selectedGroupCount++
@@ -66,7 +66,7 @@ public final class Chain {
   }
 
   public int selectSeqcodeRange(int index0, int seqcodeA, int seqcodeB,
-                                BitSet bs) {
+                                BS bs) {
     int seqcode, indexA, indexB, minDiff;
     boolean isInexact = false;
     for (indexA = index0; indexA < groupCount
@@ -115,12 +115,12 @@ public final class Chain {
     return (isInexact ? -1 : indexB + 1);
   }
   
-  void fixIndices(int atomsDeleted, BitSet bsDeleted) {
+  void fixIndices(int atomsDeleted, BS bsDeleted) {
     for (int i = 0; i < groupCount; i++)
       groups[i].fixIndices(atomsDeleted, bsDeleted);
   }
 
-  void setAtomBitSet(BitSet bs) {
+  void setAtomBitSet(BS bs) {
     for (int i = 0; i < groupCount; i++)
       groups[i].selectAtoms(bs);
   }

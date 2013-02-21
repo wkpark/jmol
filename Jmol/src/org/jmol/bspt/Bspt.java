@@ -24,8 +24,8 @@ package org.jmol.bspt;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 
 
 //import org.jmol.util.Logger;
@@ -107,7 +107,7 @@ public final class Bspt {
    * 
    * @param tuple
    */
-  public void addTuple(Point3f tuple) {
+  public void addTuple(P3 tuple) {
     eleRoot = eleRoot.addTuple(0, tuple);
   }
 
@@ -123,7 +123,7 @@ public final class Bspt {
   }
 
   public void dump() {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     eleRoot.dump(0, sb);
     Logger.info(sb.toString());
   }

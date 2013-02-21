@@ -12,9 +12,9 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.jmol.api.JmolViewer;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 /**
  * methods required by Jmol that access java.awt.Component
@@ -71,19 +71,19 @@ class Display {
   static void setCursor(int c, Object display) {
     Container d = (Container) display;
     switch (c) {
-    case JmolConstants.CURSOR_HAND:
+    case JC.CURSOR_HAND:
       c = Cursor.HAND_CURSOR;
       break;
-    case JmolConstants.CURSOR_MOVE:
+    case JC.CURSOR_MOVE:
       c = Cursor.MOVE_CURSOR;
       break;
-    case JmolConstants.CURSOR_ZOOM:
+    case JC.CURSOR_ZOOM:
       c = Cursor.N_RESIZE_CURSOR;
       break;
-    case JmolConstants.CURSOR_CROSSHAIR:
+    case JC.CURSOR_CROSSHAIR:
       c = Cursor.CROSSHAIR_CURSOR;
       break;
-    case JmolConstants.CURSOR_WAIT:
+    case JC.CURSOR_WAIT:
       c = Cursor.WAIT_CURSOR;
       break;
     default:
@@ -112,7 +112,7 @@ class Display {
 
   }
 
-  public static void convertPointFromScreen(Object display, Point3f ptTemp) {
+  public static void convertPointFromScreen(Object display, P3 ptTemp) {
     Point xyTemp = new Point();
     xyTemp.x = (int) ptTemp.x;
     xyTemp.y = (int) ptTemp.y;

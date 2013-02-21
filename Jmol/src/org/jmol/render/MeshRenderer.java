@@ -26,25 +26,25 @@ package org.jmol.render;
 
 
 import org.jmol.api.SymmetryInterface;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Point4f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 public abstract class MeshRenderer extends ShapeRenderer {
 
   protected Mesh mesh;
-  protected Point3f[] vertices;
+  protected P3[] vertices;
   protected short[] normixes;
-  protected Point3i[] screens;
-  protected Vector3f[] transformedVectors;
+  protected P3i[] screens;
+  protected V3[] transformedVectors;
   protected int vertexCount;
   
   protected float imageFontScaling;
@@ -61,14 +61,14 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected boolean haveBsSlabGhost;
 
   protected Point4f thePlane;
-  protected Point3f latticeOffset = new Point3f();
+  protected P3 latticeOffset = new P3();
 
-  protected final Point3f pt1f = new Point3f();
-  protected final Point3f pt2f = new Point3f();
+  protected final P3 pt1f = new P3();
+  protected final P3 pt2f = new P3();
 
-  protected final Point3i pt1i = new Point3i();
-  protected final Point3i pt2i = new Point3i();
-  protected final Point3i pt3i = new Point3i();
+  protected final P3i pt1i = new P3i();
+  protected final P3i pt2i = new P3i();
+  protected final P3i pt3i = new P3i();
   protected int exportPass;
   protected boolean needTranslucent;
 
@@ -102,9 +102,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
       if (unitcell == null) 
         unitcell = mesh.getUnitCell();
       if (unitcell != null) {
-        Point3f vTemp = new Point3f();
-        Point3i minXYZ = new Point3i();
-        Point3i maxXYZ = Point3i.new3((int) mesh.lattice.x,
+        P3 vTemp = new P3();
+        P3i minXYZ = new P3i();
+        P3i maxXYZ = P3i.new3((int) mesh.lattice.x,
             (int) mesh.lattice.y, (int) mesh.lattice.z);
         unitcell.setMinMaxLatticeParameters(minXYZ, maxXYZ);
         for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
@@ -129,7 +129,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   private boolean doRender;
   protected boolean volumeRender;
-  protected BitSet bsSlab;
+  protected BS bsSlab;
   
   
   private boolean setVariables() {
@@ -140,7 +140,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     haveBsSlabGhost = (mesh.bsSlabGhost != null && (isExport ? exportPass == 2
         : g3d.isPass2()));
     isTranslucent = haveBsSlabGhost
-        || Colix.isColixTranslucent(mesh.colix);
+        || C.isColixTranslucent(mesh.colix);
     if (isTranslucent || volumeRender)
       needTranslucent = true;
     doRender = (setColix(mesh.colix) || mesh.showContourLines);
@@ -177,9 +177,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (haveBsSlabGhost)
       return true;
     if (volumeRender && !isTranslucent)
-      colix = Colix.getColixTranslucent3(colix, true, 0.8f);
+      colix = C.getColixTranslucent3(colix, true, 0.8f);
     this.colix = colix;
-    if (Colix.isColixLastAvailable(colix))
+    if (C.isColixLastAvailable(colix))
       g3d.setColor(mesh.color);
     return g3d.setColix(colix);
   }
@@ -203,16 +203,16 @@ public abstract class MeshRenderer extends ShapeRenderer {
       return;
     if (mesh.showPoints || mesh.polygonCount == 0)
       renderPoints();    
-    if (haveBsSlabGhost ? mesh.slabMeshType == Token.mesh : mesh.drawTriangles)
+    if (haveBsSlabGhost ? mesh.slabMeshType == T.mesh : mesh.drawTriangles)
       renderTriangles(false, mesh.showTriangles, false);
-    if (haveBsSlabGhost ? mesh.slabMeshType == Token.fill : mesh.fillTriangles)
+    if (haveBsSlabGhost ? mesh.slabMeshType == T.fill : mesh.fillTriangles)
       renderTriangles(true, mesh.showTriangles, generateSet);
   }
   
   protected void renderPoints() {
     if (mesh.isTriangleSet) {
       int[][] polygonIndexes = mesh.polygonIndexes;
-      BitSet bsPoints = BitSetUtil.newBitSet(mesh.vertexCount);
+      BS bsPoints = BSUtil.newBitSet(mesh.vertexCount);
       if (haveBsDisplay) {
         bsPoints.setBits(0, mesh.vertexCount);
         bsPoints.andNot(mesh.bsDisplay);
@@ -238,7 +238,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
         g3d.fillSphereI(4, screens[i]);
   }
 
-  protected BitSet bsPolygons = new BitSet();
+  protected BS bsPolygons = new BS();
 
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean generateSet) {
@@ -346,9 +346,9 @@ public abstract class MeshRenderer extends ShapeRenderer {
       exportSurface(colix);
   }
 
-  protected void drawTriangle(Point3i screenA, short colixA, 
-                            Point3i screenB, short colixB, 
-                            Point3i screenC, short colixC, int check, int diam) {
+  protected void drawTriangle(P3i screenA, short colixA, 
+                            P3i screenB, short colixB, 
+                            P3i screenC, short colixC, int check, int diam) {
     if (antialias || diam != 1) {
       if (antialias)
         diam <<= 1;
@@ -380,8 +380,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected void drawLine(int iA, int iB, boolean fill, 
-                          Point3f vA, Point3f vB, 
-                          Point3i sA, Point3i sB) {
+                          P3 vA, P3 vB, 
+                          P3i sA, P3i sB) {
     byte endCap = (iA != iB  && !fill ? GData.ENDCAPS_NONE 
         : width < 0 || width == -0.0 || iA != iB && isTranslucent ? GData.ENDCAPS_FLAT
         : GData.ENDCAPS_SPHERICAL);

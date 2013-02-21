@@ -29,16 +29,16 @@ package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,9 +114,9 @@ public class CrystalReader extends AtomSetCollectionReader {
   private List<String> vInputCoords;
 
   private Double energy;
-  private Point3f ptOriginShift = new Point3f();
+  private P3 ptOriginShift = new P3();
   private Matrix3f primitiveToCryst;
-  private Vector3f[] directLatticeVectors;
+  private V3[] directLatticeVectors;
   private String spaceGroupName;
 
   @Override
@@ -318,17 +318,17 @@ public class CrystalReader extends AtomSetCollectionReader {
     directLatticeVectors = read3Vectors(isBohr);
     if (Logger.debugging) {
       addJmolScript("draw va vector {0 0 0} "
-          + Escape.escapePt(directLatticeVectors[0]) + " color red");
+          + Escape.eP(directLatticeVectors[0]) + " color red");
       if (!isPolymer) {
         addJmolScript("draw vb vector {0 0 0} "
-            + Escape.escapePt(directLatticeVectors[1]) + " color green");
+            + Escape.eP(directLatticeVectors[1]) + " color green");
         if (!isSlab)
           addJmolScript("draw vc vector {0 0 0} "
-              + Escape.escapePt(directLatticeVectors[2]) + " color blue");
+              + Escape.eP(directLatticeVectors[2]) + " color blue");
       }
     }
-    Vector3f a = new Vector3f();
-    Vector3f b = new Vector3f();
+    V3 a = new V3();
+    V3 b = new V3();
     if (isPrimitive) {
       a = directLatticeVectors[0];
       b = directLatticeVectors[1];
@@ -340,12 +340,12 @@ public class CrystalReader extends AtomSetCollectionReader {
       mp.setColumnV(1, directLatticeVectors[1]);
       mp.setColumnV(2, directLatticeVectors[2]);
       mp.mul(primitiveToCryst);
-      a = new Vector3f();
-      b = new Vector3f();
+      a = new V3();
+      b = new V3();
       mp.getColumnV(0, a);
       mp.getColumnV(1, b);
     }
-    matUnitCellOrientation = Quaternion.getQuaternionFrame(new Point3f(), a, b)
+    matUnitCellOrientation = Quaternion.getQuaternionFrame(new P3(), a, b)
     .getMatrix();
     Logger.info("oriented unit cell is in model "
         + atomSetCollection.getAtomSetCount());
@@ -565,7 +565,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     if (vInputCoords == null)
       return false;
     havePrimitiveMapping = true;
-    BitSet bsInputAtomsIgnore = new BitSet();
+    BS bsInputAtomsIgnore = new BS();
     int n = vInputCoords.size();
     int[] indexToPrimitive = new int[n];
     primitiveToIndex = new int[n];
@@ -806,7 +806,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private boolean readTotalAtomicCharges() throws Exception {
-    StringXBuilder data = new StringXBuilder();
+    SB data = new SB();
     while (readLine() != null && line.indexOf("T") < 0)
       // TTTTT or SUMMED SPIN DENSITY
       data.append(line);

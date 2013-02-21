@@ -27,7 +27,7 @@ import java.applet.Applet;
 import java.awt.Event;
 import java.awt.Graphics;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.smiles.InvalidSmilesException;
 import org.jmol.smiles.SmilesMatcher;
@@ -90,7 +90,7 @@ public class JmolSmilesApplet extends Applet {
     int ret = -1;
     try {
       SmilesMatcher sm = new SmilesMatcher();
-      BitSet[] result = sm.find(pattern, smiles, isSmarts, !isAll);
+      BS[] result = sm.find(pattern, smiles, isSmarts, !isAll);
       if (result == null)
         lastError = InvalidSmilesException.getLastError();
       ret = (result == null ? -1 : result.length);

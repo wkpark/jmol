@@ -33,10 +33,10 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.io.OutputStringBuilder;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
@@ -99,7 +99,7 @@ public class Model {
   protected boolean hasRasmolHBonds;
   
   public String loadState = "";
-  public StringXBuilder loadScript = new StringXBuilder();
+  public SB loadScript = new SB();
 
   public boolean isModelKit;
   public boolean isModelkit() {
@@ -114,8 +114,8 @@ public class Model {
   // set in ModelLoader phase:
   public int firstAtomIndex;  
   public int atomCount = 0; // includes deleted atoms
-  protected final BitSet bsAtoms = new BitSet();
-  final BitSet bsAtomsDeleted = new BitSet();
+  protected final BS bsAtoms = new BS();
+  final BS bsAtomsDeleted = new BS();
   // this one is variable and calculated only if necessary:
   public int getTrueAtomCount() {
     return bsAtoms.cardinality() - bsAtomsDeleted.cardinality();
@@ -243,7 +243,7 @@ public class Model {
     return n;
   }
   
-  void calcSelectedGroupsCount(BitSet bsSelected) {
+  void calcSelectedGroupsCount(BS bsSelected) {
     for (int i = chainCount; --i >= 0; )
       chains[i].calcSelectedGroupsCount(bsSelected);
   }
@@ -270,7 +270,7 @@ public class Model {
     return null;
   }
 
-  public void fixIndices(int modelIndex, int nAtomsDeleted, BitSet bsDeleted) {
+  public void fixIndices(int modelIndex, int nAtomsDeleted, BS bsDeleted) {
     if (dataSourceFrame > modelIndex)
       dataSourceFrame--;
     if (trajectoryBaseIndex > modelIndex)
@@ -278,8 +278,8 @@ public class Model {
     firstAtomIndex -= nAtomsDeleted;
     for (int i = 0; i < chainCount; i++)
       chains[i].fixIndices(nAtomsDeleted, bsDeleted);
-    BitSetUtil.deleteBits(bsAtoms, bsDeleted);
-    BitSetUtil.deleteBits(bsAtomsDeleted, bsDeleted);
+    BSUtil.deleteBits(bsAtoms, bsDeleted);
+    BSUtil.deleteBits(bsAtomsDeleted, bsDeleted);
   }
 
   public void freeze() {
@@ -305,22 +305,22 @@ public class Model {
    * @param tokens 
    */
   public void getPdbData(Viewer viewer, String type, char ctype,
-                         boolean isDraw, BitSet bsSelected,
-                         OutputStringBuilder sb, LabelToken[] tokens, StringXBuilder pdbCONECT, BitSet bsWritten) {
+                         boolean isDraw, BS bsSelected,
+                         OutputStringBuilder sb, LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
   }
   
   /**
    * @param sb  
    * @param maxAtoms 
    */
-  public void getDefaultLargePDBRendering(StringXBuilder sb, int maxAtoms) {
+  public void getDefaultLargePDBRendering(SB sb, int maxAtoms) {
   }
   
   /**
    * @param bioBranches 
    * @return  updated bioBranches 
    */
-  public List<BitSet> getBioBranches(List<BitSet> bioBranches) {
+  public List<BS> getBioBranches(List<BS> bioBranches) {
     return bioBranches;
   }
 
@@ -329,7 +329,7 @@ public class Model {
    * @param bs 
    * @param bsResult 
    */
-  public void getGroupsWithin(int nResidues, BitSet bs, BitSet bsResult) {
+  public void getGroupsWithin(int nResidues, BS bs, BS bsResult) {
   }
 
   /**
@@ -337,7 +337,7 @@ public class Model {
    * @param bs 
    * @param bsResult 
    */
-  public void getSequenceBits(String specInfo, BitSet bs, BitSet bsResult) {
+  public void getSequenceBits(String specInfo, BS bs, BS bsResult) {
   }
 
   /**
@@ -349,16 +349,16 @@ public class Model {
    * @param dsspIgnoreHydrogens 
    * @param bsHBonds 
    */
-  public void getRasmolHydrogenBonds(BitSet bsA, BitSet bsB,
+  public void getRasmolHydrogenBonds(BS bsA, BS bsB,
                                      List<Bond> vHBonds, boolean nucleicOnly,
                                      int nMax, boolean dsspIgnoreHydrogens,
-                                     BitSet bsHBonds) {
+                                     BS bsHBonds) {
   }
 
   /**
    * @param bsAtoms   
    */
-  public void clearRasmolHydrogenBonds(BitSet bsAtoms) {
+  public void clearRasmolHydrogenBonds(BS bsAtoms) {
   }
 
 
@@ -368,7 +368,7 @@ public class Model {
   /**
    * @param bsSelected  
    */
-  public void calcSelectedMonomersCount(BitSet bsSelected) {
+  public void calcSelectedMonomersCount(BS bsSelected) {
     // BioModel only
   }
 
@@ -379,7 +379,7 @@ public class Model {
    * @param modelsExcluded 
    */
   public void calculatePolymers(Group[] groups, int groupCount,
-                                int baseGroupIndex, BitSet modelsExcluded) {
+                                int baseGroupIndex, BS modelsExcluded) {
   }
 
   /**
@@ -388,7 +388,7 @@ public class Model {
    * @param modelVector 
    */
   public void getAllPolymerInfo(
-                                BitSet bs,
+                                BS bs,
                                 Map<String, List<Map<String, Object>>> finalInfo,
                                 List<Map<String, Object>> modelVector) {
   }
@@ -403,7 +403,7 @@ public class Model {
    * @param isTraceAlpha 
    * @param sheetSmoothing 
    */
-  public void getPolymerPointsAndVectors(BitSet bs, List<Point3f[]> vList,
+  public void getPolymerPointsAndVectors(BS bs, List<P3[]> vList,
                                          boolean isTraceAlpha,
                                          float sheetSmoothing) {
   }
@@ -412,7 +412,7 @@ public class Model {
    * @param iPolymer  
    * @return list of points or null
    */
-  public Point3f[] getPolymerLeadMidPoints(int iPolymer) {
+  public P3[] getPolymerLeadMidPoints(int iPolymer) {
     return null;
   }
 
@@ -456,7 +456,7 @@ public class Model {
   public void setStructureList(Map<EnumStructure, float[]> structureList) {
   }
 
-  public void getChimeInfo(StringXBuilder sb, int nHetero) {
+  public void getChimeInfo(SB sb, int nHetero) {
     sb.append("\nNumber of Atoms ..... " + (modelSet.atomCount - nHetero));
     if (nHetero > 0)
       sb.append(" (" + nHetero + ")");
@@ -470,7 +470,7 @@ public class Model {
    * @param bs2 
    * @return number of struts
    */
-  public int calculateStruts(ModelSet modelSet, BitSet bs1, BitSet bs2) {
+  public int calculateStruts(ModelSet modelSet, BS bs1, BS bs2) {
     return 0;
   }
 
@@ -491,14 +491,14 @@ public class Model {
    * @param bs 
    * @param caseSensitive 
    */
-  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID, BitSet bs,
+  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID, BS bs,
                                  boolean caseSensitive) {
   }
 
   /**
    * @param bsConformation  
    */
-  public void setConformation(BitSet bsConformation) {
+  public void setConformation(BS bsConformation) {
     //
   }
 
@@ -507,7 +507,7 @@ public class Model {
    * @param conformationIndex 
    * @return true for BioModel
    */
-  public boolean getPdbConformation(BitSet bsConformation, int conformationIndex) {
+  public boolean getPdbConformation(BS bsConformation, int conformationIndex) {
     return false;
   }
 
@@ -518,7 +518,7 @@ public class Model {
    * @param mode 
    * @return     only for BioModel
    */
-  public String getProteinStructureState(BitSet bsAtoms, boolean taintedOnly,
+  public String getProteinStructureState(BS bsAtoms, boolean taintedOnly,
                                          boolean needPhiPsi, int mode) {
     return null;
   }

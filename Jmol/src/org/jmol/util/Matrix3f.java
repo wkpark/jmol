@@ -277,7 +277,7 @@ public class Matrix3f implements Serializable {
    * @param v
    *        the replacement row
    */
-  public final void setRowV(int row, Vector3f v) {
+  public final void setRowV(int row, V3 v) {
     if (row == 0) {
       m00 = v.x;
       m01 = v.y;
@@ -389,7 +389,7 @@ public class Matrix3f implements Serializable {
    * @param v
    *        the replacement column
    */
-  public final void setColumnV(int column, Vector3f v) {
+  public final void setColumnV(int column, V3 v) {
     if (column == 0) {
       m00 = v.x;
       m10 = v.y;
@@ -443,7 +443,7 @@ public class Matrix3f implements Serializable {
    * @param v
    *        The vector into which the matrix row values will be copied
    */
-  public final void getColumnV(int column, Vector3f v) {
+  public final void getColumnV(int column, V3 v) {
     if (column == 0) {
       v.x = m00;
       v.y = m10;

@@ -11,7 +11,7 @@ import org.jmol.api.Event;
 import org.jmol.api.Interface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 
 abstract public class Binding {
@@ -95,7 +95,7 @@ abstract public class Binding {
   
   private void addBinding(String key, Object value) {
     if (Logger.debugging)
-      Logger.debug("adding binding " + key + "\t==\t" + Escape.escape(value));
+      Logger.debug("adding binding " + key + "\t==\t" + Escape.e(value));
     bindings.put(key, value);
   }
   private void removeBinding(Iterator<String> e, String key) {
@@ -193,7 +193,7 @@ abstract public class Binding {
 
   @SuppressWarnings("unchecked")
   public String getBindingInfo(String[] actionNames, String qualifiers) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     String qlow = (qualifiers == null || qualifiers.equalsIgnoreCase("all") ? null
         : qualifiers.toLowerCase());
     List<String>[] names = new ArrayList[actionNames.length];
@@ -234,7 +234,7 @@ abstract public class Binding {
     return ((mouseAction & mod) == mod);
   }
   public static String getMouseActionName(int mouseAction, boolean addSortCode) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     if (mouseAction == 0)
       return "";
     boolean isMiddle = (includes(mouseAction, MIDDLE)

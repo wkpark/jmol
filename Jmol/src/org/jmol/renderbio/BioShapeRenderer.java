@@ -30,21 +30,21 @@ import org.jmol.modelsetbio.CarbohydratePolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.modelsetbio.NucleicPolymer; //import org.jmol.modelsetbio.ProteinStructure;
 import org.jmol.render.MeshRenderer;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shapebio.BioShape;
 import org.jmol.shapebio.BioShapeCollection;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Hermite;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Normix;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.V3;
 
 abstract class BioShapeRenderer extends MeshRenderer {
 
@@ -64,7 +64,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   private Mesh[] meshes;
   private boolean[] meshReady;
-  private BitSet bsRenderMesh;
+  private BS bsRenderMesh;
 
 
   protected int monomerCount;
@@ -72,14 +72,14 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   protected boolean isNucleic;
   protected boolean isCarbohydrate;
-  protected BitSet bsVisible = new BitSet();
-  protected Point3i[] ribbonTopScreens;
-  protected Point3i[] ribbonBottomScreens;
-  protected Point3f[] controlPoints;
-  protected Point3i[] controlPointScreens;
+  protected BS bsVisible = new BS();
+  protected P3i[] ribbonTopScreens;
+  protected P3i[] ribbonBottomScreens;
+  protected P3[] controlPoints;
+  protected P3i[] controlPointScreens;
 
   protected int[] leadAtomIndices;
-  protected Vector3f[] wingVectors;
+  protected V3[] wingVectors;
   protected short[] mads;
   protected short[] colixes;
   protected short[] colixesBack;
@@ -101,7 +101,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       invalidateMesh = true;
     isHighRes = TF;
 
-    boolean v = viewer.getCartoonFlag(Token.cartoonfancy);
+    boolean v = viewer.getCartoonFlag(T.cartoonfancy);
     if (cartoonFancy != v) {
       invalidateMesh = true;
       cartoonFancy = v;
@@ -177,8 +177,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
           sheetSmoothing, invalidateSheets);
     }
     monomerCount = bioShape.monomerCount;
-    bsRenderMesh = BitSet.newN(monomerCount);
+    bsRenderMesh = BS.newN(monomerCount);
     monomers = bioShape.monomers;
+    reversed = bioShape.bioPolymer.reversed;
     leadAtomIndices = bioShape.bioPolymer.getLeadAtomIndices();
 
     bsVisible.clearAll();
@@ -236,7 +237,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     calcScreenControlPoints(controlPoints);
   }
 
-  protected void calcScreenControlPoints(Point3f[] points) {
+  protected void calcScreenControlPoints(P3[] points) {
     int count = monomerCount + 1;
     controlPointScreens = viewer.allocTempScreens(count);
     for (int i = count; --i >= 0;) {
@@ -252,9 +253,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
    * @param offsetFraction
    * @return Point3i array THAT MUST BE LATER FREED
    */
-  protected Point3i[] calcScreens(float offsetFraction) {
+  protected P3i[] calcScreens(float offsetFraction) {
     int count = controlPoints.length;
-    Point3i[] screens = viewer.allocTempScreens(count);
+    P3i[] screens = viewer.allocTempScreens(count);
     if (offsetFraction == 0) {
       for (int i = count; --i >= 0;)
         viewer.transformPtScr(controlPoints[i], screens[i]);
@@ -268,10 +269,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
     return screens;
   }
 
-  private final Point3f pointT = new Point3f();
+  private final P3 pointT = new P3();
 
-  private void calc1Screen(Point3f center, Vector3f vector, short mad,
-                           float offset_1000, Point3i screen) {
+  private void calc1Screen(P3 center, V3 vector, short mad,
+                           float offset_1000, P3i screen) {
     pointT.setT(vector);
     float scale = mad * offset_1000;
     pointT.scaleAdd(scale, center);
@@ -279,7 +280,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   protected short getLeadColix(int i) {
-    return Colix.getColixInherited(colixes[i], monomers[i].getLeadAtom()
+    return C.getColixInherited(colixes[i], monomers[i].getLeadAtom()
         .getColix());
   }
 
@@ -293,6 +294,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private int diameterBeg, diameterMid, diameterEnd;
   private boolean doCap0, doCap1;
   protected short colixBack;
+  private BS reversed;
 
   private void setNeighbors(int i) {
     iPrev = Math.max(i - 1, 0);
@@ -346,7 +348,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     return (isHighRes & d > ABSOLUTE_MIN_MESH_SIZE || d >= MIN_MESH_RENDER_SIZE);
   }
 
-  protected void renderHermiteCylinder(Point3i[] screens, int i) {
+  protected void renderHermiteCylinder(P3i[] screens, int i) {
     //strands
     colix = getLeadColix(i);
     if (!setBioColix(colix))
@@ -413,7 +415,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         }
       }
     }
-    g3d.drawHermite7(doFill, ribbonBorder, isNucleic ? 4 : 7,
+    g3d.drawHermite7(doFill, ribbonBorder, (reversed.get(i) ? -1 : 1) * (isNucleic ? 4 : 7),
         ribbonTopScreens[iPrev], ribbonTopScreens[i], ribbonTopScreens[iNext],
         ribbonTopScreens[iNext2], ribbonBottomScreens[iPrev],
         ribbonBottomScreens[i], ribbonBottomScreens[iNext],
@@ -422,10 +424,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
   //// cardinal hermite (box or flat) arrow head (cartoon)
 
-  private final Point3i screenArrowTop = new Point3i();
-  private final Point3i screenArrowTopPrev = new Point3i();
-  private final Point3i screenArrowBot = new Point3i();
-  private final Point3i screenArrowBotPrev = new Point3i();
+  private final P3i screenArrowTop = new P3i();
+  private final P3i screenArrowTopPrev = new P3i();
+  private final P3i screenArrowBot = new P3i();
+  private final P3i screenArrowBotPrev = new P3i();
 
   protected void renderHermiteArrowHead(int i) {
     // cartoons only
@@ -486,8 +488,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
    * @param screenPtEnd
    * 
    */
-  protected void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
-                            Point3f screenPtBegin, Point3f screenPtEnd) {
+  protected void renderCone(int i, P3 pointBegin, P3 pointEnd,
+                            P3 screenPtBegin, P3 screenPtEnd) {
     int coneDiameter = mad + (mad >> 2);
     coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
         coneDiameter);
@@ -505,19 +507,19 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private final static int ABSOLUTE_MIN_MESH_SIZE = 3;
   private final static int MIN_MESH_RENDER_SIZE = 8;
 
-  private Point3f[] controlHermites;
-  private Vector3f[] wingHermites;
-  private Point3f[] radiusHermites;
+  private P3[] controlHermites;
+  private V3[] wingHermites;
+  private P3[] radiusHermites;
 
-  private Vector3f norm = new Vector3f();
-  private final Vector3f wing = new Vector3f();
-  private final Vector3f wing1 = new Vector3f();
-  private final Vector3f wingT = new Vector3f();
+  private V3 norm = new V3();
+  private final V3 wing = new V3();
+  private final V3 wing1 = new V3();
+  private final V3 wingT = new V3();
   private final AxisAngle4f aa = new AxisAngle4f();
-  private final Point3f pt = new Point3f();
-  private final Point3f pt1 = new Point3f();
-  private final Point3f ptPrev = new Point3f();
-  private final Point3f ptNext = new Point3f();
+  private final P3 pt = new P3();
+  private final P3 pt1 = new P3();
+  private final P3 ptPrev = new P3();
+  private final P3 ptNext = new P3();
   private final Matrix3f mat = new Matrix3f();
   private final static int MODE_TUBE = 0;
   private final static int MODE_FLAT = 1;
@@ -561,14 +563,14 @@ abstract class BioShapeRenderer extends MeshRenderer {
     // control points and vectors:
 
     if (controlHermites == null || controlHermites.length < nHermites + 1) {
-      controlHermites = new Point3f[nHermites + 1];
+      controlHermites = new P3[nHermites + 1];
     }
     Hermite.getHermiteList(isNucleic ? 4 : 7, controlPoints[iPrev],
         controlPoints[i], controlPoints[iNext], controlPoints[iNext2],
         controlPoints[iNext3], controlHermites, 0, nHermites, true);
     // wing hermites determine the orientation of the cartoon
     if (wingHermites == null || wingHermites.length < nHermites + 1) {
-      wingHermites = new Vector3f[nHermites + 1];
+      wingHermites = new V3[nHermites + 1];
     }
 
     wing.setT(wingVectors[iPrev]);
@@ -585,7 +587,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if (variableRadius) {
       if (radiusHermites == null
           || radiusHermites.length < ((nHermites + 1) >> 1) + 1) {
-        radiusHermites = new Point3f[((nHermites + 1) >> 1) + 1];
+        radiusHermites = new P3[((nHermites + 1) >> 1) + 1];
       }
       ptPrev.set(radius1, radius1, 0);
       pt.set(radius1, radius2, 0);
@@ -698,8 +700,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
     return true;
   }
 
-  private BitSet bsTemp;
-  private final Vector3f norml = new Vector3f();
+  private BS bsTemp;
+  private final V3 norml = new V3();
 
   /**
    * Matches normals for adjacent mesh sections to create a seamless overall
@@ -719,8 +721,8 @@ abstract class BioShapeRenderer extends MeshRenderer {
         && monomers[i].getStrucNo() == monomers[iNext].getStrucNo()
         && meshReady[i] && meshReady[iNext]) {
       try {
-        Vector3f[] normals2 = meshes[iNext].getNormalsTemp();
-        Vector3f[] normals = meshes[i].getNormalsTemp();
+        V3[] normals2 = meshes[iNext].getNormalsTemp();
+        V3[] normals = meshes[i].getNormalsTemp();
         int normixCount = normals.length;
         for (int j = 1; j <= nPer; ++j) {
           norml.add2(normals[normixCount - j], normals2[nPer - j]);
@@ -740,7 +742,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         meshes[i].setNormixes(meshes[i].normalsTemp);
         meshes[i].normalsTemp = null;
       } else if (meshes[i].normixes == null) {
-        meshes[i].initialize(Token.frontlit, null, null);
+        meshes[i].initialize(T.frontlit, null, null);
       }
       renderMesh(meshes[i]);
     }

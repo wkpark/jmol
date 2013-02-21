@@ -33,13 +33,13 @@ import java.util.Map;
 
 import org.jmol.modelset.Atom;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Tuple3f;
 
 /*
@@ -56,7 +56,7 @@ abstract public class CartesianExporter extends Exporter {
 
   protected AxisAngle4f viewpoint = new AxisAngle4f();
 
-  protected Point3f getModelCenter() {
+  protected P3 getModelCenter() {
     // "center" is the center of rotation, not
     // necessary the screen center or the center of the model. 
     // When the user uses ALT-CTRL-drag, Jmol is applying an 
@@ -74,12 +74,12 @@ abstract public class CartesianExporter extends Exporter {
     return referenceCenter;
   }
 
-  protected Point3f getCameraPosition() {
+  protected P3 getCameraPosition() {
 
     // used for VRML/X3D only
 
-    Point3f ptCamera = new Point3f();
-    Point3f pt = Point3f.new3(screenWidth / 2, screenHeight / 2, 0);
+    P3 ptCamera = new P3();
+    P3 pt = P3.new3(screenWidth / 2, screenHeight / 2, 0);
     viewer.unTransformPoint(pt, ptCamera);
     ptCamera.sub(center);
     // this is NOT QUITE correct when the model has been shifted with CTRL-ALT
@@ -98,7 +98,7 @@ abstract public class CartesianExporter extends Exporter {
 
   }
 
-  private void setTempPoints(Point3f ptA, Point3f ptB, boolean isCartesian) {
+  private void setTempPoints(P3 ptA, P3 ptB, boolean isCartesian) {
     if (isCartesian) {
       // really first order -- but actual coord
       tempP1.setT(ptA);
@@ -109,7 +109,7 @@ abstract public class CartesianExporter extends Exporter {
     }
   }
 
-  protected int getCoordinateMap(Tuple3f[] vertices, int[] coordMap, BitSet bsValid) {
+  protected int getCoordinateMap(Tuple3f[] vertices, int[] coordMap, BS bsValid) {
     int n = 0;
     for (int i = 0; i < coordMap.length; i++) {
       if (bsValid != null && !bsValid.get(i) || Float.isNaN(vertices[i].x)) {
@@ -123,7 +123,7 @@ abstract public class CartesianExporter extends Exporter {
   }
 
   protected int[] getNormalMap(Tuple3f[] normals, int nNormals,
-                               BitSet bsValid, List<String> vNormals) {
+                               BS bsValid, List<String> vNormals) {
     Map<String, Integer> htNormals = new Hashtable<String, Integer>();
     int[] normalMap = new int[nNormals];
     for (int i = 0; i < nNormals; i++) {
@@ -146,7 +146,7 @@ abstract public class CartesianExporter extends Exporter {
   }
 
   protected void outputIndices(int[][] indices, int[] map, int nPolygons,
-                               BitSet bsPolygons, int faceVertexMax) {
+                               BS bsPolygons, int faceVertexMax) {
     boolean isAll = (bsPolygons == null);
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsPolygons.nextSetBit(i + 1)))
@@ -164,23 +164,23 @@ abstract public class CartesianExporter extends Exporter {
     
   }
 
-  abstract protected void outputCircle(Point3f pt1, Point3f pt2, float radius,
+  abstract protected void outputCircle(P3 pt1, P3 pt2, float radius,
                                        short colix, boolean doFill);
 
-  abstract protected void outputCone(Point3f ptBase, Point3f ptTip,
+  abstract protected void outputCone(P3 ptBase, P3 ptTip,
                                      float radius, short colix);
 
-  abstract protected boolean outputCylinder(Point3f ptCenter, Point3f pt1,
-                                            Point3f pt2, short colix1,
+  abstract protected boolean outputCylinder(P3 ptCenter, P3 pt1,
+                                            P3 pt2, short colix1,
                                             byte endcaps, float radius,
-                                            Point3f ptX, Point3f ptY, boolean checkRadius);
+                                            P3 ptX, P3 ptY, boolean checkRadius);
 
-  abstract protected void outputEllipsoid(Point3f center, Point3f[] points,
+  abstract protected void outputEllipsoid(P3 center, P3[] points,
                                           short colix);
 
-  abstract protected void outputSphere(Point3f ptAtom2, float f, short colix, boolean checkRadius);
+  abstract protected void outputSphere(P3 ptAtom2, float f, short colix, boolean checkRadius);
 
-  abstract protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
+  abstract protected void outputTriangle(P3 pt1, P3 pt2, P3 pt3,
                                          short colix);
 
   // these are called by Export3D:
@@ -188,7 +188,7 @@ abstract public class CartesianExporter extends Exporter {
   @Override
   void drawAtom(Atom atom) {
     short colix = atom.getColix();
-    outputSphere(atom, atom.madAtom / 2000f, colix, Colix.isColixTranslucent(colix));
+    outputSphere(atom, atom.madAtom / 2000f, colix, C.isColixTranslucent(colix));
   }
 
   @Override
@@ -203,7 +203,7 @@ abstract public class CartesianExporter extends Exporter {
   }
 
   @Override
-  boolean drawEllipse(Point3f ptCenter, Point3f ptX, Point3f ptY, short colix,
+  boolean drawEllipse(P3 ptCenter, P3 ptX, P3 ptY, short colix,
                       boolean doFill) {
     tempV1.setT(ptX);
     tempV1.sub(ptCenter);
@@ -231,7 +231,7 @@ abstract public class CartesianExporter extends Exporter {
 
   @Override
   void fillConeScreen(short colix, byte endcap, int screenDiameter,
-                      Point3f screenBase, Point3f screenTip, boolean isBarb) {
+                      P3 screenBase, P3 screenTip, boolean isBarb) {
     viewer.unTransformPoint(screenBase, tempP1);
     viewer.unTransformPoint(screenTip, tempP2);
     float radius = viewer.unscaleToScreen(screenBase.z, screenDiameter) / 2;
@@ -241,7 +241,7 @@ abstract public class CartesianExporter extends Exporter {
   }
 
   @Override
-  void drawCylinder(Point3f ptA, Point3f ptB, short colix1, short colix2,
+  void drawCylinder(P3 ptA, P3 ptB, short colix1, short colix2,
                     byte endcaps, int mad, int bondOrder) {
     setTempPoints(ptA, ptB, bondOrder < 0);
     float radius = mad / 2000f;
@@ -267,7 +267,7 @@ abstract public class CartesianExporter extends Exporter {
 
   @Override
   void fillCylinderScreenMad(short colix, byte endcaps, int mad,
-                             Point3f screenA, Point3f screenB) {
+                             P3 screenA, P3 screenB) {
     float radius = mad / 2000f;
     setTempPoints(screenA, screenB, false);
     outputCylinder(null, tempP1, tempP2, colix, endcaps, radius, null, null, true);
@@ -275,7 +275,7 @@ abstract public class CartesianExporter extends Exporter {
 
   @Override
   void fillCylinderScreen(short colix, byte endcaps, int screenDiameter,
-                          Point3f screenA, Point3f screenB, Point3f ptA, Point3f ptB, float radius) {
+                          P3 screenA, P3 screenB, P3 ptA, P3 ptB, float radius) {
     if (ptA != null) {
       drawCylinder(ptA, ptB, colix, colix, endcaps, Math.round(radius * 2000f), -1);
       return;
@@ -288,21 +288,21 @@ abstract public class CartesianExporter extends Exporter {
   }
 
   @Override
-  void fillEllipsoid(Point3f center, Point3f[] points, short colix, int x,
+  void fillEllipsoid(P3 center, P3[] points, short colix, int x,
                      int y, int z, int diameter, Matrix3f toEllipsoidal,
-                     double[] coef, Matrix4f deriv, Point3i[] octantPoints) {
+                     double[] coef, Matrix4f deriv, P3i[] octantPoints) {
     outputEllipsoid(center, points, colix);
   }
 
   @Override
-  void fillSphere(short colix, int diameter, Point3f pt) {
+  void fillSphere(short colix, int diameter, P3 pt) {
     viewer.unTransformPoint(pt, tempP1);
     outputSphere(tempP1, viewer.unscaleToScreen(pt.z, diameter) / 2, colix, true);
   }
 
   @Override
-  protected void fillTriangle(short colix, Point3f ptA, Point3f ptB,
-                              Point3f ptC, boolean twoSided, boolean isCartesian) {
+  protected void fillTriangle(short colix, P3 ptA, P3 ptB,
+                              P3 ptC, boolean twoSided, boolean isCartesian) {
     if (isCartesian) {
       tempP1.setT(ptA); 
       tempP2.setT(ptB); 

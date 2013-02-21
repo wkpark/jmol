@@ -43,11 +43,11 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Bond.BondSet;
-import org.jmol.script.ScriptVariable;
+import org.jmol.script.SV;
 import org.jmol.script.ScriptVariableInt;
-import org.jmol.script.Token;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.script.T;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
@@ -55,11 +55,11 @@ import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 /**
  * 
@@ -229,27 +229,27 @@ public class PropertyManager implements JmolPropertyManager {
     propertyName = TextFormat.simpleReplace(propertyName, "  ", " ");
     String[] names = TextFormat.splitChars(TextFormat.trim(propertyName, " "),
         " ");
-    ScriptVariable[] args = new ScriptVariable[names.length];
+    SV[] args = new SV[names.length];
     propertyName = names[0];
     int n;
     for (int i = 1; i < names.length; i++) {
       if ((n = Parser.parseInt(names[i])) != Integer.MIN_VALUE)
         args[i] = new ScriptVariableInt(n);
       else
-        args[i] = ScriptVariable.newVariable(Token.string, names[i]);
+        args[i] = SV.newVariable(T.string, names[i]);
     }
     return extractProperty(getProperty(null, propertyName, propertyValue),
         args, 1);
   }
 
   @SuppressWarnings("unchecked")
-  public Object extractProperty(Object property, ScriptVariable[] args, int ptr) {
+  public Object extractProperty(Object property, SV[] args, int ptr) {
     if (ptr >= args.length)
       return property;
     int pt;
-    ScriptVariable arg = args[ptr++];
+    SV arg = args[ptr++];
     switch (arg.tok) {
-    case Token.integer:
+    case T.integer:
       pt = arg.asInt() - 1; //one-based, as for array selectors
       if (property instanceof List<?>) {
         List<Object> v = (List<Object>) property;
@@ -321,7 +321,7 @@ public class PropertyManager implements JmolPropertyManager {
       }
       break;
 
-    case Token.string:
+    case T.string:
       String key = arg.asString();
       if (property instanceof Map<?, ?>) {
         Map<String, Object> h = (Map<String, Object>) property;
@@ -387,7 +387,7 @@ public class PropertyManager implements JmolPropertyManager {
                                      String returnType) {
     //Logger.debug("getPropertyAsObject(\"" + infoType+"\", \"" + paramInfo + "\")");
     if (infoType.equals("tokenList")) {
-      return Token.getTokensLike((String) paramInfo);
+      return T.getTokensLike((String) paramInfo);
     }
     int id = getPropertyNumber(infoType);
     boolean iHaveParameter = (paramInfo != null && paramInfo.toString()
@@ -454,9 +454,9 @@ public class PropertyManager implements JmolPropertyManager {
       return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1,
           width, height, null, null);
     case PROP_ISOSURFACE_INFO:
-      return viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getInfo");
+      return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getInfo");
     case PROP_ISOSURFACE_DATA:
-      return viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getData");
+      return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getData");
     case PROP_JMOL_STATUS:
       return viewer.getStatusChanged(myParam.toString());
     case PROP_JMOL_VIEWER:
@@ -502,7 +502,7 @@ public class PropertyManager implements JmolPropertyManager {
                   + getDefaultPropertyParam(i) : "") : ""));
     }
     Arrays.sort(data);
-    StringXBuilder info = new StringXBuilder();
+    SB info = new SB();
     info.append("getProperty ERROR\n").append(infoType).append(
         "?\nOptions include:\n");
     for (int i = 0; i < PROP_COUNT; i++)
@@ -522,7 +522,7 @@ public class PropertyManager implements JmolPropertyManager {
     }
     String[] lines = TextFormat.split((String) objHeader, '\n');
     String keyLast = "";
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     if (haveType)
       type = type.toUpperCase();
     String key = "";
@@ -540,7 +540,7 @@ public class PropertyManager implements JmolPropertyManager {
           return sb.toString();
         if (!haveType) {
           ht.put(keyLast, sb.toString());
-          sb = new StringXBuilder();
+          sb = new SB();
         }
         keyLast = key;
       }
@@ -559,14 +559,14 @@ public class PropertyManager implements JmolPropertyManager {
 
   public List<Map<String, Object>> getMoleculeInfo(ModelSet modelSet,
                                                    Object atomExpression) {
-    BitSet bsAtoms = viewer.getAtomBitSet(atomExpression);
+    BS bsAtoms = viewer.getAtomBitSet(atomExpression);
     if (modelSet.moleculeCount == 0) {
       modelSet.getMolecules();
     }
     List<Map<String, Object>> V = new ArrayList<Map<String, Object>>();
-    BitSet bsTemp = new BitSet();
+    BS bsTemp = new BS();
     for (int i = 0; i < modelSet.moleculeCount; i++) {
-      bsTemp = BitSetUtil.copy(bsAtoms);
+      bsTemp = BSUtil.copy(bsAtoms);
       JmolMolecule m = modelSet.molecules[i];
       bsTemp.and(m.atomList);
       if (bsTemp.length() > 0) {
@@ -585,7 +585,7 @@ public class PropertyManager implements JmolPropertyManager {
 
   public Map<String, Object> getModelInfo(Object atomExpression) {
 
-    BitSet bsModels = viewer.getModelBitSet(viewer
+    BS bsModels = viewer.getModelBitSet(viewer
         .getAtomBitSet(atomExpression), false);
 
     ModelSet m = viewer.getModelSet();
@@ -599,7 +599,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (m.modelSetProperties != null) {
       info.put("modelSetProperties", m.modelSetProperties);
     }
-    info.put("modelCountSelected", Integer.valueOf(BitSetUtil
+    info.put("modelCountSelected", Integer.valueOf(BSUtil
         .cardinalityOf(bsModels)));
     info.put("modelsSelected", bsModels);
     List<Map<String, Object>> vModels = new ArrayList<Map<String, Object>>();
@@ -644,19 +644,19 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   public Map<String, Object> getLigandInfo(Object atomExpression) {
-    BitSet bsAtoms = viewer.getAtomBitSet(atomExpression);
-    BitSet bsSolvent = viewer.getAtomBitSet("solvent");
+    BS bsAtoms = viewer.getAtomBitSet(atomExpression);
+    BS bsSolvent = viewer.getAtomBitSet("solvent");
     Map<String, Object> info = new Hashtable<String, Object>();
     List<Map<String, Object>> ligands = new ArrayList<Map<String, Object>>();
     info.put("ligands", ligands);
     ModelSet ms = viewer.modelSet;
-    BitSet bsExclude = BitSetUtil.copyInvert(bsAtoms, ms.atomCount);
+    BS bsExclude = BSUtil.copyInvert(bsAtoms, ms.atomCount);
     bsExclude.or(bsSolvent);
     Atom[] atoms = ms.atoms;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
       if (atoms[i].isProtein() || atoms[i].isNucleic())
         bsExclude.set(i);
-    BitSet[] bsModelAtoms = new BitSet[ms.modelCount];
+    BS[] bsModelAtoms = new BS[ms.modelCount];
     for (int i = ms.modelCount; --i >= 0;) {
       bsModelAtoms[i] = viewer.getModelUndeletedAtomsBitSet(i);
       bsModelAtoms[i].andNot(bsExclude);
@@ -664,10 +664,10 @@ public class PropertyManager implements JmolPropertyManager {
     JmolMolecule[] molList = JmolMolecule.getMolecules(atoms, bsModelAtoms,
         null, bsExclude);
     for (int i = 0; i < molList.length; i++) {
-      BitSet bs = molList[i].atomList;
+      BS bs = molList[i].atomList;
       Map<String, Object> ligand = new Hashtable<String, Object>();
       ligands.add(ligand);
-      ligand.put("atoms", Escape.escape(bs));
+      ligand.put("atoms", Escape.e(bs));
       String names = "";
       String sep = "";
       Group lastGroup = null;
@@ -707,8 +707,8 @@ public class PropertyManager implements JmolPropertyManager {
     return info;
   }
 
-  public Object getSymmetryInfo(BitSet bsAtoms, String xyz, int op, Point3f pt,
-                                Point3f pt2, String id, int type) {
+  public Object getSymmetryInfo(BS bsAtoms, String xyz, int op, P3 pt,
+                                P3 pt2, String id, int type) {
     int iModel = -1;
     if (bsAtoms == null) {
       iModel = viewer.getCurrentModelIndex();
@@ -728,13 +728,13 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   
-  public String getModelExtract(BitSet bs, boolean doTransform,
+  public String getModelExtract(BS bs, boolean doTransform,
                                 boolean isModelKit, String type) {
     boolean asV3000 = type.equalsIgnoreCase("V3000");
     boolean asSDF = type.equalsIgnoreCase("SDF");
     boolean asXYZVIB = type.equalsIgnoreCase("XYZVIB");
     boolean asChemDoodle = type.equalsIgnoreCase("CD");
-    StringXBuilder mol = new StringXBuilder();
+    SB mol = new SB();
     ModelSet ms = viewer.modelSet;
     if (!asXYZVIB && !asChemDoodle) {
       mol.append(isModelKit ? "Jmol Model Kit" : viewer.getFullPathName()
@@ -770,26 +770,26 @@ public class PropertyManager implements JmolPropertyManager {
       //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
       //  A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6->
       mol.append("\nJmol version ").append(Viewer.getJmolVersion()).append(
-          " EXTRACT: ").append(Escape.escape(bs)).append("\n");
+          " EXTRACT: ").append(Escape.e(bs)).append("\n");
     }
-    BitSet bsAtoms = BitSetUtil.copy(bs);
+    BS bsAtoms = BSUtil.copy(bs);
     Atom[] atoms = ms.atoms;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
       if (doTransform && atoms[i].isDeleted())
         bsAtoms.clear(i);
-    BitSet bsBonds = getCovalentBondsForAtoms(ms.bonds, ms.bondCount, bsAtoms);
+    BS bsBonds = getCovalentBondsForAtoms(ms.bonds, ms.bondCount, bsAtoms);
     if (!asXYZVIB && bsAtoms.cardinality() == 0)
       return "";
     boolean isOK = true;
     Quaternion q = (doTransform ? viewer.getRotationQuaternion() : null);
     if (asSDF) {
       String header = mol.toString();
-      mol = new StringXBuilder();
-      BitSet bsModels = viewer.getModelBitSet(bsAtoms, true);
+      mol = new SB();
+      BS bsModels = viewer.getModelBitSet(bsAtoms, true);
       for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
           .nextSetBit(i + 1)) {
         mol.append(header);
-        BitSet bsTemp = BitSetUtil.copy(bsAtoms);
+        BS bsTemp = BSUtil.copy(bsAtoms);
         bsTemp.and(ms.getModelAtomBitSetIncludingDeleted(i, false));
         bsBonds = getCovalentBondsForAtoms(ms.bonds, ms.bondCount, bsTemp);
         if (!(isOK = addMolFile(mol, bsTemp, bsBonds, false, false, q)))
@@ -801,10 +801,10 @@ public class PropertyManager implements JmolPropertyManager {
           "%-2e %10.5x %10.5y %10.5z %10.5vx %10.5vy %10.5vz\n", '\0', null);
       LabelToken[] tokens2 = LabelToken.compile(viewer,
           "%-2e %10.5x %10.5y %10.5z\n", '\0', null);
-      BitSet bsModels = viewer.getModelBitSet(bsAtoms, true);
+      BS bsModels = viewer.getModelBitSet(bsAtoms, true);
       for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels
           .nextSetBit(i + 1)) {
-        BitSet bsTemp = BitSetUtil.copy(bsAtoms);
+        BS bsTemp = BSUtil.copy(bsAtoms);
         bsTemp.and(ms.getModelAtomBitSetIncludingDeleted(i, false));
         if (bsTemp.cardinality() == 0)
           continue;
@@ -816,7 +816,7 @@ public class PropertyManager implements JmolPropertyManager {
         } else if (props == null) {
           mol.append("Jmol " + Viewer.getJmolVersion());
         } else {
-          StringXBuilder sb = new StringXBuilder();
+          SB sb = new SB();
           Enumeration<?> e = props.propertyNames();
           String path = null;
           while (e.hasMoreElements()) {
@@ -845,7 +845,7 @@ public class PropertyManager implements JmolPropertyManager {
         : "ERROR: Too many atoms or bonds -- use V3000 format.");
   }
 
-  private boolean addMolFile(StringXBuilder mol, BitSet bsAtoms, BitSet bsBonds,
+  private boolean addMolFile(SB mol, BS bsAtoms, BS bsBonds,
                              boolean asV3000, boolean asChemDoodle, Quaternion q) {
     int nAtoms = bsAtoms.cardinality();
     int nBonds = bsBonds.cardinality();
@@ -853,7 +853,7 @@ public class PropertyManager implements JmolPropertyManager {
       return false;
     ModelSet ms = viewer.modelSet;
     int[] atomMap = new int[ms.atomCount];
-    Point3f pTemp = new Point3f();
+    P3 pTemp = new P3();
     if (asV3000) {
       mol.append("  0  0  0  0  0  0            999 V3000");
     } else if (asChemDoodle) {
@@ -870,7 +870,7 @@ public class PropertyManager implements JmolPropertyManager {
           .append(" ").appendI(nBonds).append(" 0 0 0\n").append(
               "M  V30 BEGIN ATOM\n");
     }
-    Point3f ptTemp = new Point3f();
+    P3 ptTemp = new P3();
     for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
         .nextSetBit(i + 1))
       getAtomRecordMOL(ms, mol, atomMap[i] = ++n, ms.atoms[i], q, pTemp, ptTemp, asV3000,
@@ -905,8 +905,8 @@ public class PropertyManager implements JmolPropertyManager {
     return true;
   }
 
-  private static BitSet getCovalentBondsForAtoms(Bond[] bonds, int bondCount, BitSet bsAtoms) {
-    BitSet bsBonds = new BitSet();
+  private static BS getCovalentBondsForAtoms(Bond[] bonds, int bondCount, BS bsAtoms) {
+    BS bsBonds = new BS();
     for (int i = 0; i < bondCount; i++) {
       Bond bond = bonds[i];
       if (bsAtoms.get(bond.atom1.index) && bsAtoms.get(bond.atom2.index)
@@ -942,8 +942,8 @@ public class PropertyManager implements JmolPropertyManager {
   M  END
    */
 
-  private void getAtomRecordMOL(ModelSet ms, StringXBuilder mol, int n, Atom a, Quaternion q,
-                                Point3f pTemp, Point3f ptTemp, boolean asV3000,
+  private void getAtomRecordMOL(ModelSet ms, SB mol, int n, Atom a, Quaternion q,
+                                P3 pTemp, P3 ptTemp, boolean asV3000,
                                 boolean asChemDoodle) {
     //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
     //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
@@ -997,7 +997,7 @@ public class PropertyManager implements JmolPropertyManager {
     }
   }
 
-  private void getBondRecordMOL(StringXBuilder mol, int n, Bond b, int[] atomMap,
+  private void getBondRecordMOL(SB mol, int n, Bond b, int[] atomMap,
                                 boolean asV3000, boolean asChemDoodle) {
     //  1  2  1  0
     int a1 = atomMap[b.atom1.index];
@@ -1039,22 +1039,22 @@ public class PropertyManager implements JmolPropertyManager {
     }
   }
 
-  public String getChimeInfo(int tok, BitSet bs) {
+  public String getChimeInfo(int tok, BS bs) {
     switch (tok) {
-    case Token.info:
+    case T.info:
       break;
-    case Token.basepair:
+    case T.basepair:
       return getBasePairInfo(bs);
     default:
       return getChimeInfoA(viewer.modelSet.atoms, tok, bs);
     }
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     viewer.modelSet.models[0].getChimeInfo(sb, 0);
     return sb.appendC('\n').toString().substring(1);
   }
 
-  private String getChimeInfoA(Atom[] atoms, int tok, BitSet bs) {
-    StringXBuilder info = new StringXBuilder();
+  private String getChimeInfoA(Atom[] atoms, int tok, BS bs) {
+    SB info = new SB();
     info.append("\n");
     char id;
     String s = "";
@@ -1067,22 +1067,22 @@ public class PropertyManager implements JmolPropertyManager {
         id = atoms[i].getChainID();
         s = (id == '\0' ? " " : "" + id);
         switch (tok) {
-        case Token.chain:
+        case T.chain:
           break;
-        case Token.selected:
+        case T.selected:
           s = atoms[i].getInfo();
           break;
-        case Token.atoms:
+        case T.atoms:
           s = "" + atoms[i].getAtomNumber();
           break;
-        case Token.group:
+        case T.group:
           s = atoms[i].getGroup3(false);
           break;
-        case Token.residue:
+        case T.residue:
           s = "[" + atoms[i].getGroup3(false) + "]"
               + atoms[i].getSeqcodeString() + ":" + s;
           break;
-        case Token.sequence:
+        case T.sequence:
           if (atoms[i].getModelIndex() != modelLast) {
             info.appendC('\n');
             n = 0;
@@ -1113,29 +1113,29 @@ public class PropertyManager implements JmolPropertyManager {
         if (info.indexOf("\n" + s + "\n") < 0)
           info.append(s).appendC('\n');
       }
-    if (tok == Token.sequence)
+    if (tok == T.sequence)
       info.appendC('\n');
     return info.toString().substring(1);
   }
 
-  public String getModelFileInfo(BitSet frames) {
+  public String getModelFileInfo(BS frames) {
     ModelSet ms = viewer.modelSet;
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     for (int i = 0; i < ms.modelCount; ++i) {
       if (frames != null && !frames.get(i))
         continue;
       String s = "[\"" + ms.getModelNumberDotted(i) + "\"] = ";
-      sb.append("\n\nfile").append(s).append(Escape.escapeStr(ms.getModelFileName(i)));
+      sb.append("\n\nfile").append(s).append(Escape.eS(ms.getModelFileName(i)));
       String id = (String) ms.getModelAuxiliaryInfoValue(i, "modelID");
       if (id != null)
-        sb.append("\nid").append(s).append(Escape.escapeStr(id));
-      sb.append("\ntitle").append(s).append(Escape.escapeStr(ms.getModelTitle(i)));
-      sb.append("\nname").append(s).append(Escape.escapeStr(ms.getModelName(i)));
+        sb.append("\nid").append(s).append(Escape.eS(id));
+      sb.append("\ntitle").append(s).append(Escape.eS(ms.getModelTitle(i)));
+      sb.append("\nname").append(s).append(Escape.eS(ms.getModelName(i)));
     }
     return sb.toString();
   }
 
-  public List<Map<String, Object>> getAllAtomInfo(BitSet bs) {
+  public List<Map<String, Object>> getAllAtomInfo(BS bs) {
     List<Map<String, Object>> V = new ArrayList<Map<String, Object>>();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       V.add(getAtomInfoLong(i));
@@ -1162,14 +1162,14 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("x", Float.valueOf(atom.x));
     info.put("y", Float.valueOf(atom.y));
     info.put("z", Float.valueOf(atom.z));
-    info.put("coord", Point3f.newP(atom));
+    info.put("coord", P3.newP(atom));
     if (ms.vibrationVectors != null && ms.vibrationVectors[i] != null) {
-      info.put("vibVector", Vector3f.newV(ms.vibrationVectors[i]));
+      info.put("vibVector", V3.newV(ms.vibrationVectors[i]));
     }
     info.put("bondCount", Integer.valueOf(atom.getCovalentBondCount()));
     info.put("radius", Float.valueOf((float) (atom.getRasMolRadius() / 120.0)));
     info.put("model", atom.getModelNumberForLabel());
-    info.put("shape", Atom.atomPropertyString(viewer, atom, Token.shape));
+    info.put("shape", Atom.atomPropertyString(viewer, atom, T.shape));
     info.put("visible", Boolean.valueOf(atom.isVisible(0)));
     info.put("clickabilityFlags", Integer.valueOf(atom.clickabilityFlags));
     info.put("visibilityFlags", Integer.valueOf(atom.shapeVisibilityFlags));
@@ -1212,7 +1212,7 @@ public class PropertyManager implements JmolPropertyManager {
     return info;
   }
 
-  public List<Map<String, Object>> getAllBondInfo(BitSet bs) {
+  public List<Map<String, Object>> getAllBondInfo(BS bs) {
     List<Map<String, Object>> v = new ArrayList<Map<String, Object>>();
     ModelSet ms = viewer.modelSet;
     int bondCount = ms.bondCount;
@@ -1259,7 +1259,7 @@ public class PropertyManager implements JmolPropertyManager {
     return info;
   }
 
-  public Map<String, List<Map<String, Object>>> getAllChainInfo(BitSet bs) {
+  public Map<String, List<Map<String, Object>>> getAllChainInfo(BS bs) {
     Map<String, List<Map<String, Object>>> finalInfo = new Hashtable<String, List<Map<String, Object>>>();
     List<Map<String, Object>> modelVector = new ArrayList<Map<String, Object>>();
     int modelCount = viewer.modelSet.modelCount;
@@ -1278,7 +1278,7 @@ public class PropertyManager implements JmolPropertyManager {
 
   private List<Map<String, List<Map<String, Object>>>> getChainInfo(
                                                                     int modelIndex,
-                                                                    BitSet bs) {
+                                                                    BS bs) {
     Model model = viewer.modelSet.models[modelIndex];
     int nChains = model.getChainCount(true);
     List<Map<String, List<Map<String, Object>>>> infoChains = new ArrayList<Map<String, List<Map<String, Object>>>>();
@@ -1300,7 +1300,7 @@ public class PropertyManager implements JmolPropertyManager {
     return infoChains;
   }
 
-  public Map<String, List<Map<String, Object>>> getAllPolymerInfo(BitSet bs) {
+  public Map<String, List<Map<String, Object>>> getAllPolymerInfo(BS bs) {
     Map<String, List<Map<String, Object>>> finalInfo = new Hashtable<String, List<Map<String, Object>>>();
     List<Map<String, Object>> modelVector = new ArrayList<Map<String, Object>>();
     int modelCount = viewer.modelSet.modelCount;
@@ -1312,8 +1312,8 @@ public class PropertyManager implements JmolPropertyManager {
     return finalInfo;
   }
 
-  private String getBasePairInfo(BitSet bs) {
-    StringXBuilder info = new StringXBuilder();
+  private String getBasePairInfo(BS bs) {
+    SB info = new SB();
     List<Bond> vHBonds = new ArrayList<Bond>();
     viewer.modelSet.calcRasmolHydrogenBonds(bs, bs, vHBonds, true, 1, false, null);
     for (int i = vHBonds.size(); --i >= 0;) {
@@ -1326,7 +1326,7 @@ public class PropertyManager implements JmolPropertyManager {
     return info.toString();
   }
 
-  private static void getAtomResidueInfo(StringXBuilder info, Atom atom) {
+  private static void getAtomResidueInfo(SB info, Atom atom) {
     info.append("[").append(atom.getGroup3(false)).append("]").append(
         atom.getSeqcodeString()).append(":");
     char id = atom.getChainID();

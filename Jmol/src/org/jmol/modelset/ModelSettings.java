@@ -29,12 +29,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
-import org.jmol.script.Token;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.script.T;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 
 /**
@@ -44,10 +44,10 @@ import org.jmol.viewer.ShapeManager;
  * More direct than a script.
  * 
  */
-public class ShapeSettings {
+public class ModelSettings {
 
   private int id;
-  private BitSet bsAtoms;
+  private BS bsAtoms;
   private Object info;
   
   private int size = -1;
@@ -65,7 +65,7 @@ public class ShapeSettings {
    * @param bsAtoms
    * @param info     optional additional information for the shape
    */
-  public ShapeSettings(int id, BitSet bsAtoms, Object info) {
+  public ModelSettings(int id, BS bsAtoms, Object info) {
     this.id = id;
     this.bsAtoms = bsAtoms;
     this.info = info;
@@ -75,24 +75,34 @@ public class ShapeSettings {
    * offset is carried out in ModelLoader when the "script" is processed to move
    * the bits to skip the base atom index.
    * 
-   * @param offset
+   * @param modelOffset
+   * @param atomOffset 
    */
   @SuppressWarnings("unchecked")
-  public void offset(int offset) {
-    if (offset <= 0)
+  public void offset(int modelOffset, int atomOffset) {
+    if (atomOffset <= 0)
       return;
+    if (id == T.movie) {
+      Map<String, Object> movie = (Map<String, Object>) info;
+      movie.put("baseModel", Integer.valueOf(modelOffset));
+      List<BS> aStates = (List<BS>)movie.get("states");
+      for (int i = aStates.size(); --i >= 0;)
+        BSUtil.offset(aStates.get(i), 0, atomOffset);
+      return;
+    }
+    if (id == T.define) {
+      List<BS> defs = (List<BS>)info;
+      for (int i = defs.size(); --i >= 0;)
+        BSUtil.offset(defs.get(i), 0, atomOffset);
+      return;
+    }
     if (bsAtoms != null)
-      BitSetUtil.offset(bsAtoms, 0, offset);
+      BSUtil.offset(bsAtoms, 0, atomOffset);
     if (colixes != null) {
-      short[] c = new short[colixes.length + offset];
-      System.arraycopy(colixes, 0, c, offset, colixes.length);
+      short[] c = new short[colixes.length + atomOffset];
+      System.arraycopy(colixes, 0, c, atomOffset, colixes.length);
       colixes = c;
     }
-    if (id == Token.movie) {
-      List<BitSet> aStates = (List<BitSet>)((Map<String, Object>) info).get("states");
-      for (int i = aStates.size(); --i >= 0;)
-        BitSetUtil.offset(aStates.get(i), 0, offset);
-    }  
   }
 
   @SuppressWarnings("unchecked")
@@ -100,10 +110,10 @@ public class ShapeSettings {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
     switch (id) {
-    case Token.movie:
+    case T.movie:
       sm.viewer.setMovie((Map<String, Object>) info);
       return;
-    case Token.frame:
+    case T.frame:
       int frame = ((Integer) info).intValue();
       if (frame > 0)
         sm.viewer.setCurrentModelIndex(frame + modelIndex - 1);
@@ -112,29 +122,32 @@ public class ShapeSettings {
         sm.viewer.setCurrentModelIndex(-1);
       }
       return;
-    case Token.hidden:
+    case T.hidden:
       sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
       return;
-    case JmolConstants.SHAPE_ISOSURFACE:
+    case T.define:
+      sm.viewer.defineAtomSets((Map<String, Object>) info);
+      return;
+    case JC.SHAPE_ISOSURFACE:
       if (modelIndex < 0)
         return;
-      sm.setShapePropertyBs(JmolConstants.SHAPE_BALLS, "colors", colors,
+      sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors,
           bsAtoms);
       String s = info.toString().replace('\'', '_').replace('"', '_');
       s = "script('isosurface ID \"" + s + "\"  model "
           + m.models[modelIndex].getModelNumberDotted() + " select "
-          + Escape.escape(bsAtoms) + " solvent " + (size / 1000f)
+          + Escape.e(bsAtoms) + " solvent " + (size / 1000f)
           + " map property color')";
       if (translucency > 0)
         s += " translucent " + translucency;
-      System.out.println("shapeSettings: " + s);
+      //System.out.println("shapeSettings: " + s);
       sm.viewer.evaluateExpression(s);
       return;
-    case JmolConstants.SHAPE_LABELS:
+    case JC.SHAPE_LABELS:
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "labels", info, bsAtoms);
       return;
-    case JmolConstants.SHAPE_MEASURES:
+    case JC.SHAPE_MEASURES:
       if (modelIndex < 0)
         return;
       sm.loadShape(id);

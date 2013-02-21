@@ -25,7 +25,7 @@ package org.jmol.quantum;
 
 
 import org.jmol.modelset.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 
 /*
@@ -42,8 +42,8 @@ public class MlpCalculation extends MepCalculation {
 
   @Override
   public void assignPotentials(Atom[] atoms, float[] potentials,
-                               BitSet bsAromatic, BitSet bsCarbonyl,
-                               BitSet bsIgnore, String data) {
+                               BS bsAromatic, BS bsCarbonyl,
+                               BS bsIgnore, String data) {
     getAtomicPotentials(data, "atomicLipophilicity.txt");
     for (int i = 0; i < atoms.length; i++) {
       float f = Math.abs(atoms[i].getFormalCharge());

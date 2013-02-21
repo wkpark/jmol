@@ -28,12 +28,12 @@ import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.viewer.ActionManager;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -53,8 +53,8 @@ public class Labels extends AtomShape {
 
   private Map<Integer, float[]> labelBoxes;
 
-  public BitSet bsFontSet;
-  public BitSet bsBgColixSet;
+  public BS bsFontSet;
+  public BS bsBgColixSet;
 
   public int defaultOffset;
   public int defaultAlignment;
@@ -64,8 +64,8 @@ public class Labels extends AtomShape {
   public short defaultBgcolix;
   public byte defaultPaletteID;
   public int defaultPointer;
-  public static int zeroOffset = (JmolConstants.LABEL_DEFAULT_X_OFFSET << 8)
-      | JmolConstants.LABEL_DEFAULT_Y_OFFSET;
+  public static int zeroOffset = (JC.LABEL_DEFAULT_X_OFFSET << 8)
+      | JC.LABEL_DEFAULT_Y_OFFSET;
 
   public byte zeroFontId;
 
@@ -77,8 +77,8 @@ public class Labels extends AtomShape {
   @Override
   public void initShape() {
     super.initShape();
-    defaultFontId = zeroFontId = gdata.getFont3DFSS(JmolConstants.DEFAULT_FONTFACE,
-        JmolConstants.DEFAULT_FONTSTYLE, JmolConstants.LABEL_DEFAULT_FONTSIZE).fid;
+    defaultFontId = zeroFontId = gdata.getFont3DFSS(JC.DEFAULT_FONTFACE,
+        JC.DEFAULT_FONTSTYLE, JC.LABEL_DEFAULT_FONTSIZE).fid;
     defaultColix = 0; //"none" -- inherit from atom
     defaultBgcolix = 0; //"none" -- off
     defaultOffset = zeroOffset;
@@ -88,7 +88,7 @@ public class Labels extends AtomShape {
 
   @SuppressWarnings("unchecked")
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  public void setProperty(String propertyName, Object value, BS bsSelected) {
     isActive = true;
 
     //System.out.println(propertyName + " Labels " + value);
@@ -100,7 +100,7 @@ public class Labels extends AtomShape {
 
     if ("color" == propertyName) {
       byte pid = EnumPalette.pidOf(value);
-      short colix = Colix.getColixO(value);
+      short colix = C.getColixO(value);
       if (!setDefaults)
         for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
             .nextSetBit(i + 1))
@@ -170,8 +170,8 @@ public class Labels extends AtomShape {
     if ("bgcolor" == propertyName) {
       isActive = true;
       if (bsBgColixSet == null)
-        bsBgColixSet = new BitSet();
-      short bgcolix = Colix.getColixO(value);
+        bsBgColixSet = new BS();
+      short bgcolix = C.getColixO(value);
       if (!setDefaults)
         for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
             .nextSetBit(i + 1))
@@ -184,7 +184,7 @@ public class Labels extends AtomShape {
     // the rest require bsFontSet setting
 
     if (bsFontSet == null)
-      bsFontSet = new BitSet();
+      bsFontSet = new BS();
 
     if ("fontsize" == propertyName) {
       int fontsize = ((Integer) value).intValue();
@@ -302,7 +302,7 @@ public class Labels extends AtomShape {
           mads[i] = (short) (mode == 0 && mads[i] < 0 || mode == 1 ? 1 : -1);
         } else {
           if (bsSizeSet == null)
-            bsSizeSet = new BitSet();
+            bsSizeSet = new BS();
           strings = ArrayUtil.ensureLengthS(strings, i + 1);
           if (atom.getGroup3(false).equals("UNK")) {
             if (strLabelUNK == null) {
@@ -357,8 +357,8 @@ public class Labels extends AtomShape {
           nAtomsDeleted);
       strings = (String[]) ArrayUtil.deleteElements(strings, firstAtomDeleted,
           nAtomsDeleted);
-      BitSetUtil.deleteBits(bsFontSet, bsSelected);
-      BitSetUtil.deleteBits(bsBgColixSet, bsSelected);
+      BSUtil.deleteBits(bsFontSet, bsSelected);
+      BSUtil.deleteBits(bsBgColixSet, bsSelected);
       // pass to super
     }
 
@@ -373,7 +373,7 @@ public class Labels extends AtomShape {
   private void setScaling() {
     isActive = true;
     if (bsSizeSet == null)
-      bsSizeSet = new BitSet();
+      bsSizeSet = new BS();
     isScaled = viewer.getFontScaling();
     scalePixelsPerMicron = (isScaled ? viewer
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
@@ -596,7 +596,7 @@ public class Labels extends AtomShape {
   @Override
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
                                                  int y, int modifiers,
-                                                 BitSet bsVisible) {
+                                                 BS bsVisible) {
     if (viewer.getPickingMode() != ActionManager.PICKING_LABEL || labelBoxes == null)
       return false;
     // mouse down ?

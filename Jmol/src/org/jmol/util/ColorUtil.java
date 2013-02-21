@@ -441,19 +441,19 @@ public class ColorUtil {
     return 0xFF000000 | (red << 16) | (grn << 8) | blu;
   }
 
-  public final static Point3f colorPointFromString(String colorName, Point3f pt) {
+  public final static P3 colorPointFromString(String colorName, P3 pt) {
     return colorPointFromInt(getArgbFromString(colorName), pt);
   }
 
-  public final static Point3f colorPointFromInt2(int color) {
-    return Point3f.new3((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
+  public final static P3 colorPointFromInt2(int color) {
+    return P3.new3((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
   }
 
-  public static int colorPtToInt(Point3f pt) {
+  public static int colorPtToInt(P3 pt) {
     return colorTriadToInt(pt.x, pt.y, pt.z);
   }
 
-  public final static Point3f colorPointFromInt(int color, Point3f pt) {
+  public final static P3 colorPointFromInt(int color, P3 pt) {
     pt.z = color & 0xFF;
     pt.y = (color >> 8) & 0xFF;
     pt.x = (color >> 16) & 0xFF;
@@ -477,8 +477,8 @@ public class ColorUtil {
   }
 
   public static short getBgContrast(int argb) {
-    return ((calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? Colix.WHITE
-        : Colix.BLACK);
+    return ((calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? C.WHITE
+        : C.BLACK);
   }
 
 }

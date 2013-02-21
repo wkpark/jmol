@@ -26,11 +26,11 @@
 package org.jmol.thread;
 
 import java.util.List;
-import org.jmol.script.Token;
-import org.jmol.util.BitSet;
+import org.jmol.script.T;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.P3;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
@@ -40,9 +40,9 @@ public class SpinThread extends JmolThread {
    */
   private final TransformManager transformManager;
   private float endDegrees;
-  private List<Point3f> endPositions;
+  private List<P3> endPositions;
   private float nDegrees;
-  private BitSet bsAtoms;
+  private BS bsAtoms;
   private boolean isNav;
   private boolean isGesture;
   private float myFps;
@@ -55,7 +55,7 @@ public class SpinThread extends JmolThread {
     return isGesture;
   }
   
-  public SpinThread(TransformManager transformManager, Viewer viewer, float endDegrees, List<Point3f> endPositions, BitSet bsAtoms, boolean isNav, boolean isGesture) {
+  public SpinThread(TransformManager transformManager, Viewer viewer, float endDegrees, List<P3> endPositions, BS bsAtoms, boolean isNav, boolean isGesture) {
     super();
     setViewer(viewer, "SpinThread");
     this.transformManager = transformManager;
@@ -85,7 +85,7 @@ public class SpinThread extends JmolThread {
       switch (mode) {
       case INIT:
         myFps = (isNav ? transformManager.navFps : transformManager.spinFps);
-        viewer.getGlobalSettings().setParamB(
+        viewer.getGlobalSettings().setB(
             isNav ? "_navigating" : "_spinning", true);
         viewer.startHoverWatcher(false);
         mode = MAIN;
@@ -165,7 +165,7 @@ public class SpinThread extends JmolThread {
         if (bsAtoms != null && endPositions != null) {
           // when the standard deviations of the end points was
           // exact, we know that we want EXACTLY those final positions
-          viewer.setAtomCoord(bsAtoms, Token.xyz, endPositions);
+          viewer.setAtomCoord(bsAtoms, T.xyz, endPositions);
           bsAtoms = null;
           endPositions = null;
         }
@@ -196,15 +196,15 @@ public class SpinThread extends JmolThread {
     } else { // old way: Rx * Ry * Rz
       if (transformManager.spinX != 0) {
         transformManager.rotateXRadians(transformManager.spinX
-            * JmolConstants.radiansPerDegree / myFps, null);
+            * JC.radiansPerDegree / myFps, null);
       }
       if (transformManager.spinY != 0) {
         transformManager.rotateYRadians(transformManager.spinY
-            * JmolConstants.radiansPerDegree / myFps, null);
+            * JC.radiansPerDegree / myFps, null);
       }
       if (transformManager.spinZ != 0) {
         transformManager.rotateZRadians(transformManager.spinZ
-            * JmolConstants.radiansPerDegree / myFps);
+            * JC.radiansPerDegree / myFps);
       }
     }
   }

@@ -53,17 +53,16 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolFileInterface;
-import org.jmol.api.JmolViewer;
 import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
 import org.jmol.io.JmolBinary;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 public class ZipUtil implements JmolZipUtility {
@@ -109,7 +108,7 @@ public class ZipUtil implements JmolZipUtility {
                             String binaryFileList, Map<String, String> fileData) {
     ZipInputStream zis = (ZipInputStream) newZIS(is);
     ZipEntry ze;
-    StringXBuilder listing = new StringXBuilder();
+    SB listing = new SB();
     binaryFileList = "|" + binaryFileList + "|";
     String prefix = TextFormat.join(subfileList, '/', 1);
     String prefixd = null;
@@ -146,7 +145,7 @@ public class ZipUtil implements JmolZipUtility {
   }
 
   private static String getBinaryStringForBytes(byte[] bytes) {
-    StringXBuilder ret = new StringXBuilder();
+    SB ret = new SB();
     for (int i = 0; i < bytes.length; i++)
       ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
     return ret.toString();
@@ -167,7 +166,7 @@ public class ZipUtil implements JmolZipUtility {
    */
   public Object getZipFileContents(BufferedInputStream bis, String[] list,
                                    int listPtr, boolean asBufferedInputStream) {
-    StringXBuilder ret;
+    SB ret;
     if (list == null || listPtr >= list.length)
       return getZipDirectoryAsStringAndClose(bis);
     String fileName = list[listPtr];
@@ -177,7 +176,7 @@ public class ZipUtil implements JmolZipUtility {
     try {
       boolean isAll = (fileName.equals("."));
       if (isAll || fileName.lastIndexOf("/") == fileName.length() - 1) {
-        ret = new StringXBuilder();
+        ret = new SB();
         while ((ze = zis.getNextEntry()) != null) {
           String name = ze.getName();
           if (isAll || name.startsWith(fileName))
@@ -206,7 +205,7 @@ public class ZipUtil implements JmolZipUtility {
         if (asBufferedInputStream)
           return new BufferedInputStream(new ByteArrayInputStream(bytes));
         if (asBinaryString) {
-          ret = new StringXBuilder();
+          ret = new SB();
           for (int i = 0; i < bytes.length; i++)
             ret.append(Integer.toHexString(bytes[i] & 0xFF)).appendC(' ');
           return ret.toString();
@@ -243,7 +242,7 @@ public class ZipUtil implements JmolZipUtility {
   }
 
   public String getZipDirectoryAsStringAndClose(BufferedInputStream bis) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     String[] s = new String[0];
     try {
       s = getZipDirectoryOrErrorAndClose(bis, false);
@@ -309,7 +308,7 @@ public class ZipUtil implements JmolZipUtility {
                                  Map<String, byte[]> cache) {
     ZipInputStream zis = (ZipInputStream) newZipInputStream(bis);
     ZipEntry ze;
-    StringXBuilder listing = new StringXBuilder();
+    SB listing = new SB();
     long n = 0;
     try {
       while ((ze = zis.getNextEntry()) != null) {
@@ -489,8 +488,8 @@ public class ZipUtil implements JmolZipUtility {
     // extract scenes based on "pause scene ..." commands
     int iSceneLast = 0;
     int iScene = 0;
-    StringXBuilder sceneScript = new StringXBuilder().append(SCENE_TAG).append(
-        " Jmol ").append(JmolViewer.getJmolVersion()).append(
+    SB sceneScript = new SB().append(SCENE_TAG).append(
+        " Jmol ").append(Viewer.getJmolVersion()).append(
         "\n{\nsceneScripts={");
     for (int i = 1; i < scenes.length; i++) {
       scenes[i - 1] = TextFormat.trim(scenes[i - 1], "\t\n\r ");
@@ -504,8 +503,8 @@ public class ZipUtil implements JmolZipUtility {
       htScenes.put(key, scenes[i - 1]);
       if (i > 1)
         sceneScript.append(",");
-      sceneScript.appendC('\n').append(Escape.escapeStr(key)).append(": ")
-          .append(Escape.escapeStr(scenes[i - 1]));
+      sceneScript.appendC('\n').append(Escape.eS(key)).append(": ")
+          .append(Escape.eS(scenes[i - 1]));
       iSceneLast = iScene;
     }
     sceneScript.append("\n}\n");
@@ -572,7 +571,7 @@ public class ZipUtil implements JmolZipUtility {
     }
     boolean haveScripts = (!haveSceneScript && scripts != null && scripts.length > 0);
     if (haveScripts) {
-      script = wrapPathForAllFiles("script " + Escape.escapeStr(scripts[0]), "");
+      script = wrapPathForAllFiles("script " + Escape.eS(scripts[0]), "");
       for (int i = 0; i < scripts.length; i++)
         fileNames.add(scripts[i]);
     }
@@ -649,7 +648,7 @@ public class ZipUtil implements JmolZipUtility {
     v.add(new byte[0]);
     if (fileRoot != null) {
       Object bytes = viewer.getImageAsWithComment("PNG", -1, -1, -1, null,
-          null, null, JmolConstants.embedScript(script));
+          null, null, JC.embedScript(script));
       if (Escape.isAB(bytes)) {
         v.add("preview.png");
         v.add(null);
@@ -723,7 +722,7 @@ public class ZipUtil implements JmolZipUtility {
     Object ret = checkSpecialData(is, zipDirectory);
     if (ret instanceof String)
       return ret;
-    StringXBuilder data = (StringXBuilder) ret;
+    SB data = (SB) ret;
     try {
       if (data != null) {
         BufferedReader reader = new BufferedReader(new StringReader(data
@@ -900,7 +899,7 @@ public class ZipUtil implements JmolZipUtility {
    * @param zipDirectory
    * @return String data for processing
    */  
-  private static StringXBuilder checkSpecialData(InputStream is, String[] zipDirectory) {
+  private static SB checkSpecialData(InputStream is, String[] zipDirectory) {
     boolean isSpartan = false;
     // 0 entry is not used here
     for (int i = 1; i < zipDirectory.length; i++) {
@@ -912,7 +911,7 @@ public class ZipUtil implements JmolZipUtility {
     }
     if (!isSpartan)
       return null;
-    StringXBuilder data = new StringXBuilder();
+    SB data = new SB();
     data.append("Zip File Directory: ").append("\n").append(
         Escape.escapeStrA(zipDirectory, true)).append("\n");
     Map<String, String> fileData = new Hashtable<String, String>();

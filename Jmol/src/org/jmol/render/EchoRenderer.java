@@ -30,14 +30,14 @@ import org.jmol.modelset.Atom;
 import org.jmol.shape.Echo;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
-import org.jmol.util.Colix;
-import org.jmol.util.Point3i;
+import org.jmol.util.C;
+import org.jmol.util.P3i;
 
 public class EchoRenderer extends ShapeRenderer {
 
   float imageFontScaling;
   Atom ptAtom;
-  Point3i pt = new Point3i();
+  P3i pt = new P3i();
 
   @Override
   protected boolean render() {
@@ -63,7 +63,7 @@ public class EchoRenderer extends ShapeRenderer {
       }
       TextRenderer.render(t, g3d, scalePixelsPerMicron, imageFontScaling,
           false, null);
-      if (Colix.isColixTranslucent(t.bgcolix) || Colix.isColixTranslucent(t.colix))
+      if (C.isColixTranslucent(t.bgcolix) || C.isColixTranslucent(t.colix))
         haveTranslucent = true;
     }
     if (!isExport) {

@@ -25,18 +25,18 @@
 package org.jmol.shapespecial;
 
 import org.jmol.shape.Shape;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BSUtil;
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
-import org.jmol.script.Token;
+import org.jmol.util.V3;
+import org.jmol.script.T;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -59,8 +59,8 @@ public class Dipoles extends Shape {
 
   private Dipole currentDipole;
   private Dipole tempDipole;
-  private Point3f startCoord = new Point3f();
-  private Point3f endCoord = new Point3f();
+  private P3 startCoord = new P3();
+  private P3 endCoord = new P3();
   private float dipoleValue;
   private boolean isUserValue;
   private boolean isBond;
@@ -68,12 +68,12 @@ public class Dipoles extends Shape {
   private int atomIndex1;
   private int atomIndex2;
   private short colix;
-  private Vector3f calculatedDipole;
+  private V3 calculatedDipole;
   private String wildID;
   
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
 
     if ("init" == propertyName) {
       tempDipole = new Dipole();
@@ -111,7 +111,7 @@ public class Dipoles extends Shape {
       Logger.debug("current dipole now " + currentDipole.thisID);
       tempDipole = currentDipole;
       if (thisID.equals("molecular")) {
-        Vector3f v = calculatedDipole;
+        V3 v = calculatedDipole;
         if (v == null) {
           v = viewer.getModelDipole();
           Logger.info("file molecular dipole = " + v + " "
@@ -122,9 +122,9 @@ public class Dipoles extends Shape {
         if (v == null) {
           Logger
               .warn("No molecular dipole found for this model; setting to {0 0 0}");
-          v = new Vector3f();
+          v = new V3();
         }
-        tempDipole.set(Point3f.new3(0, 0, 0), Vector3f.new3(-v.x, -v.y, -v.z));
+        tempDipole.set(P3.new3(0, 0, 0), V3.new3(-v.x, -v.y, -v.z));
         tempDipole.type = Dipole.DIPOLE_TYPE_MOLECULAR;
         tempDipole.thisID = "molecular";
         setDipole();
@@ -143,12 +143,12 @@ public class Dipoles extends Shape {
     }
 
     if ("on" == propertyName) {
-      setProperty(Token.on, isBond, 0, 0);
+      setProperty(T.on, isBond, 0, 0);
       return;
     }
 
     if ("off" == propertyName) {
-      setProperty(Token.off, isBond, 0, 0);
+      setProperty(T.off, isBond, 0, 0);
       return;
     }
 
@@ -157,21 +157,21 @@ public class Dipoles extends Shape {
         clear(false);
         return;
       }
-      setProperty(Token.delete, isBond, 0, 0);
+      setProperty(T.delete, isBond, 0, 0);
       return;
     }
 
     if ("width" == propertyName) {
       short mad = tempDipole.mad = (short) (((Float) value).floatValue() * 1000);
       if (currentDipole == null)
-        setProperty(Token.wireframe, isBond, mad, 0);  //
+        setProperty(T.wireframe, isBond, mad, 0);  //
       return;
     }
 
     if ("offset" == propertyName) {
       float offset = tempDipole.offsetAngstroms = ((Float) value).floatValue();
       if (currentDipole == null)
-        setProperty(Token.axes, isBond, 0, offset);
+        setProperty(T.axes, isBond, 0, offset);
       return;
     }
 
@@ -181,33 +181,33 @@ public class Dipoles extends Shape {
         tempDipole.offsetAngstroms = offsetPercent / 100f
             * tempDipole.dipoleValue;
       if (currentDipole == null)
-        setProperty(Token.percent, isBond, 0, offsetPercent / 100f);
+        setProperty(T.percent, isBond, 0, offsetPercent / 100f);
       return;
     }
 
     if ("offsetSide" == propertyName) {
       float offsetSide = ((Float) value).floatValue();
-      setProperty(Token.sidechain, isBond, 0, offsetSide);
+      setProperty(T.sidechain, isBond, 0, offsetSide);
       return;
     }
 
     if ("cross" == propertyName) {
-      setProperty(Token.cross, isBond, (((Boolean) value).booleanValue() ? 1 : 0), 0);
+      setProperty(T.cross, isBond, (((Boolean) value).booleanValue() ? 1 : 0), 0);
       return;
     }
 
     if ("color" == propertyName) {
-      colix = Colix.getColixO(value);
+      colix = C.getColixO(value);
       if (isBond) {
         setColixDipole(colix, JmolEdge.BOND_COVALENT_MASK, bs);
       } else if (value != null) {
-        setProperty(Token.color, false, 0, 0);
+        setProperty(T.color, false, 0, 0);
       }
       return;
     }
 
     if ("translucency" == propertyName) {
-      setProperty(Token.translucent, isBond, (value.equals("translucent") ? 1 : 0), 0);
+      setProperty(T.translucent, isBond, (value.equals("translucent") ? 1 : 0), 0);
       return;
     }
 
@@ -221,16 +221,16 @@ public class Dipoles extends Shape {
     }
 
     if ("startSet" == propertyName) {
-      BitSet atomset = (BitSet) value;
+      BS atomset = (BS) value;
       startCoord = viewer.getAtomSetCenter(atomset);
-      tempDipole.set(startCoord, Point3f.new3(0, 0, 0), dipoleValue);
-      if (BitSetUtil.cardinalityOf(atomset) == 1)
+      tempDipole.set(startCoord, P3.new3(0, 0, 0), dipoleValue);
+      if (BSUtil.cardinalityOf(atomset) == 1)
         atomIndex1 = atomset.nextSetBit(0);
       return;
     }
 
     if ("atomBitset" == propertyName) {
-      BitSet atomset = (BitSet) value;
+      BS atomset = (BS) value;
       atomIndex1 = atomset.nextSetBit(0);
       startCoord = modelSet.atoms[atomIndex1];
       atomset.clear(atomIndex1);
@@ -240,8 +240,8 @@ public class Dipoles extends Shape {
 
     if ("endSet" == propertyName) {
       iHaveTwoEnds = true;
-      BitSet atomset = (BitSet) value;
-      if (atomIndex1 >= 0 && BitSetUtil.cardinalityOf(atomset) == 1) {
+      BS atomset = (BS) value;
+      if (atomIndex1 >= 0 && BSUtil.cardinalityOf(atomset) == 1) {
         atomIndex2 = atomset.nextSetBit(0);
         tempDipole.set(modelSet.atoms[atomIndex1], modelSet.atoms[atomIndex2],
             1);
@@ -261,14 +261,14 @@ public class Dipoles extends Shape {
     }
 
     if ("startCoord" == propertyName) {
-      startCoord.setT((Point3f) value);
-      tempDipole.set(startCoord, Point3f.new3(0, 0, 0), dipoleValue);
+      startCoord.setT((P3) value);
+      tempDipole.set(startCoord, P3.new3(0, 0, 0), dipoleValue);
       return;
     }
 
     if ("endCoord" == propertyName) {
       iHaveTwoEnds = true;
-      endCoord.setT((Point3f) value);
+      endCoord.setT((P3) value);
       tempDipole.set(startCoord, endCoord, dipoleValue);
       dumpDipoles("endCoord");
       return;
@@ -324,38 +324,38 @@ public class Dipoles extends Shape {
 
   private void setProperty(int tok, Dipole dipole, int iValue, float fValue) {
     switch (tok) {
-    case Token.on:
+    case T.on:
       dipole.visible = true;
       return;
-    case Token.off:
+    case T.off:
       dipole.visible = false;       
       return;
-    case Token.delete:
+    case T.delete:
       deleteDipole(dipole);
       return;
-    case Token.wireframe:
+    case T.wireframe:
       dipole.mad = tempDipole.mad = (short) iValue;
       return;
-    case Token.axes:
+    case T.axes:
       dipole.offsetAngstroms = fValue;
       return;
-    case Token.percent:
+    case T.percent:
       dipole.offsetAngstroms = fValue * dipole.dipoleValue;
       return;
-    case Token.sidechain:
+    case T.sidechain:
       dipole.offsetSide = fValue;
       return;
-    case Token.cross:
+    case T.cross:
       dipole.noCross = (iValue == 0);
       return;
-    case Token.color:
+    case T.color:
       dipole.colix = colix;
       return;
-    case Token.translucent:
+    case T.translucent:
       dipole.setTranslucent(iValue == 1, translucentLevel);
       return;
     }
-    Logger.error("Unkown dipole property! " + Token.nameOf(tok));
+    Logger.error("Unkown dipole property! " + T.nameOf(tok));
   }
 
 //  @SuppressWarnings("unchecked")
@@ -417,8 +417,8 @@ public class Dipoles extends Shape {
     return (dipoles[i].isBondType());
   }
 
-  private void setColixDipole(short colix, int bondTypeMask, BitSet bs) {
-    if (colix == Colix.USE_PALETTE)
+  private void setColixDipole(short colix, int bondTypeMask, BS bs) {
+    if (colix == C.USE_PALETTE)
       return; // not implemented
     BondIterator iter = modelSet.getBondIteratorForType(bondTypeMask, bs);
     while (iter.hasNext()) {
@@ -611,7 +611,7 @@ public class Dipoles extends Shape {
   }
 
   @Override
-  public void setVisibilityFlags(BitSet bs) {
+  public void setVisibilityFlags(BS bs) {
     /*
      * set all fixed objects visible; others based on model being displayed
      * 
@@ -634,7 +634,7 @@ public class Dipoles extends Shape {
   public String getShapeState() {
     if (dipoleCount == 0)
       return "";
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     int thisModel = -1;
     int modelCount = viewer.getModelCount();
     for (int i = 0; i < dipoleCount; i++) {

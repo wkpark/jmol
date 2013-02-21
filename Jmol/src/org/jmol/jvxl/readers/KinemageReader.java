@@ -29,7 +29,7 @@ import java.io.BufferedReader;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 /*
  * 
@@ -191,7 +191,7 @@ class KinemageReader extends PmeshReader {
     }
     retColor[0] = getColor(tokens[0]);
     tokens = Parser.getTokens(tokens[i].replace(',', ' '));
-    Point3f pt = Point3f.new3(Parser.parseFloatStr(tokens[0]), Parser
+    P3 pt = P3.new3(Parser.parseFloatStr(tokens[0]), Parser
         .parseFloatStr(tokens[1]), Parser.parseFloatStr(tokens[2]));
     if (isAnisotropic)
       setVertexAnisotropy(pt);

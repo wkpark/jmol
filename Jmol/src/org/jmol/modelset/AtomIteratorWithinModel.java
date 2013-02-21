@@ -32,8 +32,8 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 import org.jmol.viewer.Viewer;
 
 public class AtomIteratorWithinModel implements AtomIndexIterator {
@@ -49,7 +49,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   private int zeroBase;
   private float distanceSquared;
 
-  private BitSet bsSelected;
+  private BS bsSelected;
   private boolean isGreaterOnly;
   private boolean checkGreater;
 
@@ -71,7 +71,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
    * 
    */
 
-  void initialize(Bspf bspf, BitSet bsSelected, boolean isGreaterOnly, 
+  void initialize(Bspf bspf, BS bsSelected, boolean isGreaterOnly, 
                   boolean isZeroBased, boolean hemisphereOnly, boolean threadSafe) {
     this.bspf = bspf;
     this.bsSelected = bsSelected;
@@ -89,7 +89,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   private Viewer viewer;
   
   
-  public void setModel(ModelCollection modelSet, int modelIndex, int firstModelAtom, int atomIndex, Point3f center, float distance, RadiusData rd) {
+  public void setModel(ModelCollection modelSet, int modelIndex, int firstModelAtom, int atomIndex, P3 center, float distance, RadiusData rd) {
     if (threadSafe)
       modelIndex = -1 - modelIndex; // no caching
     if (modelIndex != this.modelIndex || cubeIterator == null) {
@@ -113,7 +113,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     setCenter(center, distance);
   }
 
-  public void setCenter(Point3f center, float distance) {
+  public void setCenter(P3 center, float distance) {
     if (cubeIterator == null)
       return;
     cubeIterator.initialize(center, distance, hemisphereOnly);
@@ -156,7 +156,7 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
    * 
    */
   @SuppressWarnings("incomplete-switch")
-  public void addAtoms(BitSet bsResult) {
+  public void addAtoms(BS bsResult) {
     int iAtom;
     while (hasNext())
       if ((iAtom = next()) >= 0) {

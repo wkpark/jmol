@@ -26,7 +26,7 @@
 package org.jmol.io2;
 
 import org.jmol.io.JmolBinary;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 
 public class ZipData {
@@ -53,7 +53,7 @@ public class ZipData {
     return nBytesRemaining - nToAdd;
   }    
 
-  public void addTo(StringXBuilder data) {
+  public void addTo(SB data) {
     data.append(ZipUtil.staticGetGzippedBytesAsString(buf));
   }
   

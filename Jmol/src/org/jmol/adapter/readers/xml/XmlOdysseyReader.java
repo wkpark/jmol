@@ -27,7 +27,7 @@ package org.jmol.adapter.readers.xml;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 /**
  * An Odyssey xodydata reader
@@ -100,7 +100,7 @@ public class XmlOdysseyReader extends XmlReader {
       parent.setUnitCellItem(3, 90);
       parent.setUnitCellItem(4, 90);
       parent.setUnitCellItem(5, 90);
-      Point3f pt = Point3f.new3(-x / 2, -y / 2, -z / 2);
+      P3 pt = P3.new3(-x / 2, -y / 2, -z / 2);
       atomSetCollection.setAtomSetAuxiliaryInfo("periodicOriginXyz", pt);
       Atom[] atoms = atomSetCollection.getAtoms();
       for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {

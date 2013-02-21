@@ -31,13 +31,13 @@ import java.util.List;
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -161,7 +161,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     textureCode = (useTexDef ? textures.getDef("t" + rgb + opacity) : null);
     if (useTexDef && textureCode.startsWith(" "))
       return;
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append(lighting);
     sb.append(" Opacity " + opacity);
     sb.append(phong);
@@ -183,7 +183,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     outputRing(x, y, z, tempV1, radius, colix, doFill);
   }
 
-  private void outputRing(int x, int y, int z, Vector3f tempV1, float radius,
+  private void outputRing(int x, int y, int z, V3 tempV1, float radius,
                           short colix, boolean doFill) {
     outputTexture(colix, true);
     output("Ring Center ");
@@ -195,7 +195,7 @@ public class _TachyonExporter extends __RayTracerExporter {
   }
 
   @Override
-  protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
+  protected void outputCone(P3 screenBase, P3 screenTip, float radius,
                             short colix, boolean isBarb) {
     
     // as mesh, which uses Cartesian coordinates
@@ -208,7 +208,7 @@ public class _TachyonExporter extends __RayTracerExporter {
   }
 
   @Override
-  protected void outputCylinder(Point3f screenA, Point3f screenB,
+  protected void outputCylinder(P3 screenA, P3 screenB,
                                       float radius, short colix, boolean withCaps) {
     outputTexture(colix, true);
     output("FCylinder Base ");
@@ -226,7 +226,7 @@ public class _TachyonExporter extends __RayTracerExporter {
   }  
   
   @Override
-  protected void fillConicalCylinder(Point3f screenA, Point3f screenB,
+  protected void fillConicalCylinder(P3 screenA, P3 screenB,
                                      int madBond, short colix, byte endcaps) {
     // conic sections not implemented in Tachyon
     int diameter = viewer.scaleToScreen((int) ((screenA.z + screenB.z)/2f), madBond);
@@ -235,25 +235,25 @@ public class _TachyonExporter extends __RayTracerExporter {
 
 
   @Override
-  protected void outputCylinderConical(Point3f screenA, Point3f screenB,
+  protected void outputCylinderConical(P3 screenA, P3 screenB,
                                        float radius1, float radius2, short colix) {
     //not applicable
   }
 
   @Override
-  protected void outputEllipsoid(Point3f center, float radius, double[] coef, short colix) {
+  protected void outputEllipsoid(P3 center, float radius, double[] coef, short colix) {
     viewer.transformPt3f(center, tempP1);
     // no support for ellipsoids -- just draw ball
     outputSphere(tempP1.x, tempP1.y, tempP1.z, radius, colix);
   }
 
   @Override
-  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(P3[] vertices, V3[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes, int nVertices,
-                               int nPolygons, int nFaces, BitSet bsPolygons,
+                               int nPolygons, int nFaces, BS bsPolygons,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
+                               List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
     if (polygonColixes != null) {
       boolean isAll = (bsPolygons == null);
       int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
@@ -321,7 +321,7 @@ public class _TachyonExporter extends __RayTracerExporter {
   }
   
   @Override
-  protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix) {
+  protected void outputTriangle(P3 ptA, P3 ptB, P3 ptC, short colix) {
     outputTexture(colix, true);
     output("TRI");
     output(" V0 " + triad(ptA));

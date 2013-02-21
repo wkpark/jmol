@@ -26,7 +26,7 @@ package org.jmol.shape;
 
 
 import org.jmol.modelset.TickInfo;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 public abstract class FontLineShape extends FontShape {
 
@@ -35,7 +35,7 @@ public abstract class FontLineShape extends FontShape {
   public TickInfo[] tickInfos = new TickInfo[4];
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
 
     if ("tickInfo" == propertyName) {
       TickInfo t = (TickInfo) value;

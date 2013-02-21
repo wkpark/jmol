@@ -6,8 +6,8 @@ import java.io.OutputStream;
 import org.jmol.api.JmolDocument;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.shapesurface.IsosurfaceMesh;
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 
 public interface MeshDataServer extends VertexDataServer {
   
@@ -35,7 +35,7 @@ public interface MeshDataServer extends VertexDataServer {
   public abstract void fillMeshData(MeshData meshData, int mode, IsosurfaceMesh mesh);
   public abstract void notifySurfaceGenerationCompleted();
   public abstract void notifySurfaceMappingCompleted();
-  public abstract Point3f[] calculateGeodesicSurface(BitSet bsSelected, float envelopeRadius);
+  public abstract P3[] calculateGeodesicSurface(BS bsSelected, float envelopeRadius);
   public abstract void addRequiredFile(String fileName);
   public abstract void setOutputStream(JmolDocument binaryDoc, OutputStream os);
 }

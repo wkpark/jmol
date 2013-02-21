@@ -29,7 +29,7 @@ import java.io.DataInputStream;
 import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 
 class Dsn6BinaryReader extends MapFileReader {
@@ -204,7 +204,7 @@ class Dsn6BinaryReader extends MapFileReader {
     brickLayerByteCount = brickRowByteCount * nBrickY;
     brickLayer = new byte[brickLayerByteCount];
     
-    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer = new SB();
     jvxlFileHeaderBuffer.append("DNS6/O progressive brick data reader\n");
     jvxlFileHeaderBuffer
         .append("see http://www.uoxray.uoregon.edu/tnt/manual/node104.html\n");

@@ -39,7 +39,7 @@ import java.util.Map;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 class SpartanArchive {
   
@@ -396,7 +396,7 @@ class SpartanArchive {
   private void setDipole(String[] tokens) {
     if (tokens.length != 3)
       return;
-    Vector3f dipole = Vector3f.new3(parseFloat(tokens[0]),
+    V3 dipole = V3.new3(parseFloat(tokens[0]),
         parseFloat(tokens[1]), parseFloat(tokens[2]));
     r.atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);
   }

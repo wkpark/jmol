@@ -33,7 +33,7 @@ import org.jmol.constant.EnumQuantumShell;
 import org.jmol.modelset.Group;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 /****************************************************************
  * The JmolAdapter interface defines the API used by the JmolViewer to
@@ -83,7 +83,7 @@ public abstract class JmolAdapter {
   public final static int        SHELL_F_SPHERICAL = EnumQuantumShell.F_SPHERICAL.id;
   public final static int        SHELL_F_CARTESIAN = EnumQuantumShell.F_CARTESIAN.id;
   public static final String SUPPORTED_BASIS_FUNCTIONS = EnumQuantumShell.SUPPORTED_BASIS_FUNCTIONS;
-  public static final String NOTE_SCRIPT_FILE = JmolConstants.NOTE_SCRIPT_FILE;
+  public static final String NOTE_SCRIPT_FILE = JC.NOTE_SCRIPT_FILE;
   
   public static String getElementSymbol(int elementNumber) {
     return Elements.elementSymbolFromNumber(elementNumber);
@@ -98,7 +98,7 @@ public abstract class JmolAdapter {
   }
 
   public static boolean isHetero(String group3) {
-    return JmolConstants.isHetero(group3);
+    return JC.isHetero(group3);
   }
   
   public static int getQuantumShellTagID(String tag) {

@@ -27,21 +27,21 @@ package org.jmol.modelset;
 
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 
 public class AtomIteratorWithinModelSet extends AtomIteratorWithinModel {
-  private BitSet bsModels;
+  private BS bsModels;
 
-  public AtomIteratorWithinModelSet(BitSet bsModels) {
+  public AtomIteratorWithinModelSet(BS bsModels) {
     this.bsModels = bsModels;
   }
 
-  private Point3f center;
+  private P3 center;
   private float distance;
 
   @Override
-  public void setCenter(Point3f center, float distance) {
+  public void setCenter(P3 center, float distance) {
     this.center = center;
     this.distance = distance;
     set(0);

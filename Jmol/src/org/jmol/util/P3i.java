@@ -30,10 +30,10 @@ package org.jmol.util;
  *         constructor and method names for the optimization of compiled
  *         JavaScript using Java2Script
  */
-public class Point3i extends Tuple3i {
+public class P3i extends Tuple3i {
 
-  public static Point3i new3(int x, int y, int z) {
-    Point3i pt = new Point3i();
+  public static P3i new3(int x, int y, int z) {
+    P3i pt = new P3i();
     pt.x = x;
     pt.y = y;
     pt.z = z;

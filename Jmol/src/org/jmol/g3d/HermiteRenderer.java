@@ -30,10 +30,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
-import org.jmol.util.Point3i;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3i;
+import org.jmol.util.V3;
 
 
 /**
@@ -58,8 +58,8 @@ import org.jmol.util.Vector3f;
  */
 public class HermiteRenderer {
 
-  private static Vector3f vAB = new Vector3f();
-  private static Vector3f vAC = new Vector3f();
+  private static V3 vAB = new V3();
+  private static V3 vAC = new V3();
 
   /* really a private class to g3d and export3d */
 
@@ -70,31 +70,31 @@ public class HermiteRenderer {
     this.g3d = g3d;
   }
 
-  private final Point3i[] pLeft = new Point3i[16];
-  private final Point3i[] pRight = new Point3i[16];
+  private final P3i[] pLeft = new P3i[16];
+  private final P3i[] pRight = new P3i[16];
 
   private final float[] sLeft = new float[16];
   private final float[] sRight = new float[16];
 
-  private final Point3f[] pTopLeft = new Point3f[16];
-  private final Point3f[] pTopRight = new Point3f[16];
-  private final Point3f[] pBotLeft = new Point3f[16];
-  private final Point3f[] pBotRight = new Point3f[16];
+  private final P3[] pTopLeft = new P3[16];
+  private final P3[] pTopRight = new P3[16];
+  private final P3[] pBotLeft = new P3[16];
+  private final P3[] pBotRight = new P3[16];
   {
     for (int i = 16; --i >= 0; ) {
-      pLeft[i] = new Point3i();
-      pRight[i] = new Point3i();
+      pLeft[i] = new P3i();
+      pRight[i] = new P3i();
 
-      pTopLeft[i] = new Point3f();
-      pTopRight[i] = new Point3f();
-      pBotLeft[i] = new Point3f();
-      pBotRight[i] = new Point3f();
+      pTopLeft[i] = new P3();
+      pTopRight[i] = new P3();
+      pBotLeft[i] = new P3();
+      pBotRight[i] = new P3();
     }
   }
 
   public void renderHermiteRope(boolean fill, int tension,
                      int diameterBeg, int diameterMid, int diameterEnd,
-                     Point3i p0, Point3i p1, Point3i p2, Point3i p3) {
+                     P3i p0, P3i p1, P3i p2, P3i p3) {
     if (p0.z == 1 ||p1.z == 1 ||p2.z == 1 ||p3.z == 1)
       return;
     if (g3d.isClippedZ(p1.z) || g3d.isClippedZ(p2.z))
@@ -120,8 +120,8 @@ public class HermiteRenderer {
       dDiameterSecondHalf = 2 * (diameterEnd - diameterMid);
     }
     do {
-      Point3i a = pLeft[sp];
-      Point3i b = pRight[sp];
+      P3i a = pLeft[sp];
+      P3i b = pRight[sp];
       int dx = b.x - a.x;
       if (dx >= -1 && dx <= 1) {
         int dy = b.y - a.y;
@@ -152,7 +152,7 @@ public class HermiteRenderer {
       double h4 = s3 - s2;
       if (sp >= 15)
         break;
-      Point3i pMid = pRight[sp+1];
+      P3i pMid = pRight[sp+1];
       pMid.x = (int) (h1*x1 + h2*x2 + h3*xT1 + h4*xT2);
       pMid.y = (int) (h1*y1 + h2*y2 + h3*yT1 + h4*yT2);
       pMid.z = (int) (h1*z1 + h2*z2 + h3*zT1 + h4*zT2);
@@ -166,15 +166,15 @@ public class HermiteRenderer {
     } while (sp >= 0);
   }
 
-  private final Point3f a1 = new Point3f();
-  private final Point3f a2 = new Point3f();
-  private final Point3f b1 = new Point3f();
-  private final Point3f b2 = new Point3f();
-  private final Point3f c1 = new Point3f();
-  private final Point3f c2 = new Point3f();
-  private final Point3f d1 = new Point3f();
-  private final Point3f d2 = new Point3f();
-  private final Vector3f depth1 = new Vector3f();
+  private final P3 a1 = new P3();
+  private final P3 a2 = new P3();
+  private final P3 b1 = new P3();
+  private final P3 b2 = new P3();
+  private final P3 c1 = new P3();
+  private final P3 c2 = new P3();
+  private final P3 d1 = new P3();
+  private final P3 d2 = new P3();
+  private final V3 depth1 = new V3();
   private final boolean[] needToFill = new boolean[16];
 
   /**
@@ -196,18 +196,22 @@ public class HermiteRenderer {
   public void renderHermiteRibbon(boolean fill, boolean border,
                                   int tension,
                                   //top strand segment
-                                  Point3i p0, Point3i p1, Point3i p2,
-                                  Point3i p3,
+                                  P3i p0, P3i p1, P3i p2,
+                                  P3i p3,
                                   //bottom strand segment
-                                  Point3i p4, Point3i p5, Point3i p6,
-                                  Point3i p7, int aspectRatio, int fillType) {
+                                  P3i p4, P3i p5, P3i p6,
+                                  P3i p7, int aspectRatio, int fillType) {
     if (p0.z == 1 || p1.z == 1 || p2.z == 1 || p3.z == 1 || p4.z == 1
         || p5.z == 1 || p6.z == 1 || p7.z == 1)
       return;
     if (!fill) {
+      tension = Math.abs(tension);
       renderParallelPair(fill, tension, p0, p1, p2, p3, p4, p5, p6, p7);
       return;
     }
+    boolean isRev = (tension < 0);
+    if (isRev)
+      tension = -tension;
     float ratio = 1f / aspectRatio;
     int x1 = p1.x, y1 = p1.y, z1 = p1.z;
     int x2 = p2.x, y2 = p2.y, z2 = p2.z;
@@ -237,16 +241,16 @@ public class HermiteRenderer {
     int sp = 0;
     boolean closeEnd = false;
     do {
-      Point3f a = pTopLeft[sp];
-      Point3f b = pTopRight[sp];
+      P3 a = pTopLeft[sp];
+      P3 b = pTopRight[sp];
       double dxTop = b.x - a.x;
       double dxTop2 = dxTop * dxTop;
       if (dxTop2 < 10) {
         double dyTop = b.y - a.y;
         double dyTop2 = dyTop * dyTop;
         if (dyTop2 < 10) {
-          Point3f c = pBotLeft[sp];
-          Point3f d = pBotRight[sp];
+          P3 c = pBotLeft[sp];
+          P3 d = pBotRight[sp];
           double dxBot = d.x - c.x;
           double dxBot2 = dxBot * dxBot;
           if (dxBot2 < 8) {
@@ -276,12 +280,23 @@ public class HermiteRenderer {
                   closeEnd = true;
                 } else {
                   if (fillType == 0) {
-                    g3d.fillQuadrilateral(a, b, d, c);
+                    if (isRev)
+                      g3d.fillQuadrilateral(c, d, b, a);
+                    else
+                      g3d.fillQuadrilateral(a, b, d, c);
+
                   } else {
-                    if (fillType == isFront(a, b, d))
-                      g3d.fillTriangle3f(a, b, d, false);
-                    if (fillType == isFront(a, d, c))
-                      g3d.fillTriangle3f(a, d, c, false);
+                    if (isRev) {
+                      if (fillType != isFront(a, b, d))
+                        g3d.fillTriangle3f(a, b, d, false);
+                      if (fillType != isFront(a, d, c))
+                        g3d.fillTriangle3f(a, d, c, false);
+                    } else {
+                      if (fillType == isFront(a, b, d))
+                        g3d.fillTriangle3f(a, b, d, false);
+                      if (fillType == isFront(a, d, c))
+                        g3d.fillTriangle3f(a, d, c, false);
+                    }
                   }
                 }
                 needToFill[sp] = false;
@@ -305,11 +320,11 @@ public class HermiteRenderer {
       if (sp >= 15)
         break;
       int spNext = sp + 1;
-      Point3f pMidTop = pTopRight[spNext];
+      P3 pMidTop = pTopRight[spNext];
       pMidTop.x = (float) (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);
       pMidTop.y = (float) (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
       pMidTop.z = (float) (h1 * z1 + h2 * z2 + h3 * zT1 + h4 * zT2);
-      Point3f pMidBot = pBotRight[spNext];
+      P3 pMidBot = pBotRight[spNext];
       pMidBot.x = (float) (h1 * x5 + h2 * x6 + h3 * xT5 + h4 * xT6);
       pMidBot.y = (float) (h1 * y5 + h2 * y6 + h3 * yT5 + h4 * yT6);
       pMidBot.z = (float) (h1 * z5 + h2 * z6 + h3 * zT5 + h4 * zT6);
@@ -336,7 +351,7 @@ public class HermiteRenderer {
     }
   }
  
-  private static int isFront(Point3f a, Point3f b, Point3f c) {
+  private static int isFront(P3 a, P3 b, P3 c) {
     vAB.sub2(b, a);
     vAC.sub2(c, a);
     vAB.cross(vAB, vAC);
@@ -358,14 +373,14 @@ public class HermiteRenderer {
    */
   private void renderParallelPair(boolean fill, int tension,
                 //top strand segment
-                Point3i p0, Point3i p1, Point3i p2, Point3i p3,
+                P3i p0, P3i p1, P3i p2, P3i p3,
                 //bottom strand segment
-                Point3i p4, Point3i p5, Point3i p6, Point3i p7) {
+                P3i p4, P3i p5, P3i p6, P3i p7) {
     
     // only used for meshRibbon, so fill = false 
-    Point3i[] endPoints = {p2, p1, p6, p5};
+    P3i[] endPoints = {p2, p1, p6, p5};
     // stores all points for top+bottom strands of 1 segment
-    List<Point3i> points = new ArrayList<Point3i>(10);
+    List<P3i> points = new ArrayList<P3i>(10);
     int whichPoint = 0;
 
     int numTopStrandPoints = 2; //first and last points automatically included
@@ -411,8 +426,8 @@ public class HermiteRenderer {
        points.add(endPoints[whichPoint++]);
        currentInt = interval;
        do {
-         Point3i a = pLeft[sp];
-         Point3i b = pRight[sp];
+         P3i a = pLeft[sp];
+         P3i b = pRight[sp];
          int dx = b.x - a.x;
          int dy = b.y - a.y;
          int dist2 = dx * dx + dy * dy;
@@ -426,7 +441,7 @@ public class HermiteRenderer {
            //draw outside edges of mesh
 
            if (s < 1.0f - currentInt) { //if first point over the interval
-             Point3i temp = new Point3i();
+             P3i temp = new P3i();
              temp.setT(a);
              points.add(temp); //store it
              currentInt += interval; // increase to next interval
@@ -446,7 +461,7 @@ public class HermiteRenderer {
            double h4 = s3 - s2;
            if (sp >= 15)
              break;
-           Point3i pMid = pRight[sp + 1];
+           P3i pMid = pRight[sp + 1];
            pMid.x = (int) (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);
            pMid.y = (int) (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
            pMid.z = (int) (h1 * z1 + h2 * z2 + h3 * zT1 + h4 * zT2);
@@ -495,9 +510,9 @@ public class HermiteRenderer {
 
   }
 
-  private final Vector3f T1 = new Vector3f();
-  private final Vector3f T2 = new Vector3f();
-  private void setDepth(Vector3f depth, Point3f c, Point3f a, Point3f b, float ratio) {
+  private final V3 T1 = new V3();
+  private final V3 T2 = new V3();
+  private void setDepth(V3 depth, P3 c, P3 a, P3 b, float ratio) {
     T1.sub2(a, c);
     T1.scale(ratio);
     T2.sub2(a, b);
@@ -505,7 +520,7 @@ public class HermiteRenderer {
     depth.scale(T1.length() / depth.length());
   }
   
-  private static void setPoint(Point3f a1, Point3f a, Vector3f depth, int direction) {
+  private static void setPoint(P3 a1, P3 a, V3 depth, int direction) {
     a1.setT(a);
     if (direction == 1)
       a1.add(depth);

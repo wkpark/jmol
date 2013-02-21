@@ -27,14 +27,14 @@ import java.util.Date;
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.ContactPair;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 import org.jmol.util.TextFormat;
 
@@ -66,7 +66,7 @@ abstract class AtomDataReader extends VolumeDataReader {
 
   protected AtomData atomData = new AtomData();
 
-  protected Point3f[] atomXyz;
+  protected P3[] atomXyz;
   protected float[] atomRadius;
   protected float[] atomProp;
   protected int[] atomNo;
@@ -76,9 +76,9 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected int myAtomCount;
   protected int nearbyAtomCount;
   protected int firstNearbyAtom;
-  protected BitSet bsMySelected = new BitSet();
-  protected BitSet  bsMyIgnored = new BitSet();
-  protected BitSet bsNearby;
+  protected BS bsMySelected = new BS();
+  protected BS  bsMyIgnored = new BS();
+  protected BS bsNearby;
 
   protected boolean doAddHydrogens;
   protected boolean havePlane;
@@ -107,7 +107,7 @@ abstract class AtomDataReader extends VolumeDataReader {
       volumeData.setPlaneParameters(params.thePlane);
   }
 
-  protected void markPlaneVoxels(Point3f p, float r) {
+  protected void markPlaneVoxels(P3 p, float r) {
     for (int i = 0, pt = thisX * yzCount, pt1 = pt + yzCount; pt < pt1; pt++, i++) {
       volumeData.getPoint(pt, ptXyzTemp);
       thisPlane[i] = ptXyzTemp.distance(p) - r;
@@ -116,16 +116,16 @@ abstract class AtomDataReader extends VolumeDataReader {
 
   protected void setVolumeForPlane() {
     if (useOriginStepsPoints) {
-      xyzMin = Point3f.newP(params.origin);
-      xyzMax = Point3f.newP(params.origin);
+      xyzMin = P3.newP(params.origin);
+      xyzMax = P3.newP(params.origin);
       xyzMax.x += (params.points.x - 1) * params.steps.x;
       xyzMax.y += (params.points.y - 1) * params.steps.y;
       xyzMax.z += (params.points.z - 1) * params.steps.z;
     } else {
       getAtoms(params.bsSelected, false, true, false, false, false, false, params.mep_marginAngstroms);
       if (xyzMin == null) {
-        xyzMin = Point3f.new3(-10,-10,-10);
-        xyzMax = Point3f.new3(10, 10, 10);
+        xyzMin = P3.new3(-10,-10,-10);
+        xyzMax = P3.new3(10, 10, 10);
       }
     }
     setRanges(params.plane_ptsPerAngstrom, params.plane_gridMax, 0); 
@@ -148,7 +148,7 @@ abstract class AtomDataReader extends VolumeDataReader {
    *        TODO
    * @param marginAtoms
    */
-  protected void getAtoms(BitSet bsSelected, boolean doAddHydrogens,
+  protected void getAtoms(BS bsSelected, boolean doAddHydrogens,
                           boolean getRadii, boolean getMolecules,
                           boolean getAllModels, boolean addNearbyAtoms,
                           boolean getAtomMinMax, float marginAtoms) {
@@ -196,18 +196,18 @@ abstract class AtomDataReader extends VolumeDataReader {
 
     float rH = (getRadii && doAddHydrogens ? getWorkingRadius(-1, marginAtoms)
         : 0);
-    myAtomCount = BitSetUtil.cardinalityOf(bsMySelected);
-    BitSet atomSet = BitSetUtil.copy(bsMySelected);
+    myAtomCount = BSUtil.cardinalityOf(bsMySelected);
+    BS atomSet = BSUtil.copy(bsMySelected);
     int nH = 0;
     atomProp = null;
     float[] props = params.theProperty;
     if (myAtomCount > 0) {
-      Point3f[] hAtoms = null;
+      P3[] hAtoms = null;
       if (doAddHydrogens) {
         atomData.bsSelected = atomSet;
         atomDataServer.fillAtomData(atomData,
             AtomData.MODE_GET_ATTACHED_HYDROGENS);
-        hAtoms = new Point3f[nH = atomData.hydrogenAtomCount];
+        hAtoms = new P3[nH = atomData.hydrogenAtomCount];
         for (int i = 0; i < atomData.hAtoms.length; i++)
           if (atomData.hAtoms[i] != null)
             for (int j = atomData.hAtoms[i].length; --j >= 0;)
@@ -218,7 +218,7 @@ abstract class AtomDataReader extends VolumeDataReader {
       int n = nH + myAtomCount;
       if (getRadii)
         atomRadius = new float[n];
-      atomXyz = new Point3f[n];
+      atomXyz = new P3[n];
       if (params.theProperty != null)
         atomProp = new float[n];
       atomNo = new int[n];
@@ -254,13 +254,13 @@ abstract class AtomDataReader extends VolumeDataReader {
     Logger.info(myAtomCount + " atoms will be used in the surface calculation");
 
     if (myAtomCount == 0) {
-      setBoundingBox(Point3f.new3(10, 10, 10), 0);
-      setBoundingBox(Point3f.new3(-10, -10, -10), 0);
+      setBoundingBox(P3.new3(10, 10, 10), 0);
+      setBoundingBox(P3.new3(-10, -10, -10), 0);
     }
     for (int i = 0; i < myAtomCount; i++)
       setBoundingBox(atomXyz[i], getRadii ? atomRadius[i] + 0.5f : 0);
     if (!Float.isNaN(params.scale)) {
-      Vector3f v = Vector3f.newV(xyzMax);
+      V3 v = V3.newV(xyzMax);
       v.sub(xyzMin);
       v.scale(0.5f);
       xyzMin.add(v);
@@ -274,9 +274,9 @@ abstract class AtomDataReader extends VolumeDataReader {
 
     if (!addNearbyAtoms || myAtomCount == 0)
       return;
-    Point3f pt = new Point3f();
+    P3 pt = new P3();
 
-    bsNearby = new BitSet();
+    bsNearby = new BS();
     for (int i = 0; i < atomCount; i++) {
       if (atomSet.get(i) || bsMyIgnored.get(i))
         continue;
@@ -298,7 +298,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     if (nearbyAtomCount != 0) {
       nAtoms += nearbyAtomCount;
       atomRadius = ArrayUtil.arrayCopyF(atomRadius, nAtoms);
-      atomXyz = (Point3f[]) ArrayUtil.arrayCopyObject(atomXyz, nAtoms);
+      atomXyz = (P3[]) ArrayUtil.arrayCopyObject(atomXyz, nAtoms);
       if (atomIndex != null)
         atomIndex = ArrayUtil.arrayCopyI(atomIndex, nAtoms);
 
@@ -322,7 +322,7 @@ abstract class AtomDataReader extends VolumeDataReader {
   }
 
   protected void setHeader(String calcType, String line2) {
-    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer = new SB();
     if (atomData.programInfo != null)
       jvxlFileHeaderBuffer.append("#created by ").append(atomData.programInfo)
           .append(" on ").append("" + new Date()).append("\n");
@@ -386,7 +386,7 @@ abstract class AtomDataReader extends VolumeDataReader {
   }
 
   protected float[] thisPlane;
-  protected BitSet thisAtomSet;
+  protected BS thisAtomSet;
   protected int thisX;
   
   private float getVoxel(int i, int j, int k, int ipt) {
@@ -409,8 +409,8 @@ abstract class AtomDataReader extends VolumeDataReader {
 
   protected float margin;
 
-  protected void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0,
-                                      Point3i pt1) {
+  protected void setGridLimitsForAtom(P3 ptA, float rA, P3i pt0,
+                                      P3i pt1) {
     rA += margin; // to span corner-to-corner possibility
     volumeData.xyzToVoxelPt(ptA.x, ptA.y, ptA.z, pt0);
     int x = (int) Math.floor(rA / volumeData.volumetricVectorLengths[0]);
@@ -428,13 +428,13 @@ abstract class AtomDataReader extends VolumeDataReader {
 
   // for isoSolventReader and isoIntersectReader
 
-  protected BitSet bsSurfaceVoxels;
-  protected BitSet validSpheres, noFaceSpheres;
+  protected BS bsSurfaceVoxels;
+  protected BS validSpheres, noFaceSpheres;
   protected int[] voxelSource;
 
-  protected void getAtomMinMax(BitSet bs, BitSet[] bsAtomMinMax) {
+  protected void getAtomMinMax(BS bs, BS[] bsAtomMinMax) {
     for (int i = 0; i < nPointsX; i++)
-      bsAtomMinMax[i] = new BitSet();
+      bsAtomMinMax[i] = new BS();
     for (int iAtom = myAtomCount; --iAtom >= 0;) {
       if (bs != null && !bs.get(iAtom))
         continue;
@@ -446,11 +446,11 @@ abstract class AtomDataReader extends VolumeDataReader {
   }
 
 
-  protected final Point3f ptY0 = new Point3f();
-  protected final Point3f ptZ0 = new Point3f();
-  protected final Point3i pt0 = new Point3i();
-  protected final Point3i pt1 = new Point3i();
-  protected final Point3f ptXyzTemp = new Point3f();
+  protected final P3 ptY0 = new P3();
+  protected final P3 ptZ0 = new P3();
+  protected final P3i pt0 = new P3i();
+  protected final P3i pt1 = new P3i();
+  protected final P3 ptXyzTemp = new P3();
 
   protected void markSphereVoxels(float r0, float distance) {
     boolean isWithin = (distance != Float.MAX_VALUE && point != null);
@@ -459,7 +459,7 @@ abstract class AtomDataReader extends VolumeDataReader {
         continue;
       boolean isSurface = (noFaceSpheres != null && noFaceSpheres.get(iAtom));
       boolean isNearby = (iAtom >= firstNearbyAtom);
-      Point3f ptA = atomXyz[iAtom];
+      P3 ptA = atomXyz[iAtom];
       float rA = atomRadius[iAtom];
       if (isWithin && ptA.distance(point) > distance + rA + 0.5)
         continue;

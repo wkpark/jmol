@@ -25,13 +25,13 @@
 package org.jmol.geodesic;
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Geodesic;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Normix;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
@@ -137,15 +137,15 @@ import org.jmol.atomdata.RadiusData.EnumType;
 public final class EnvelopeCalculation {
 
   
-  private BitSet geodesicMap;
-  private BitSet mapT;
+  private BS geodesicMap;
+  private BS mapT;
 
   //Viewer viewer;
   private short[] mads;
   private AtomData atomData = new AtomData();
   private AtomDataServer viewer;
   private int atomCount;
-  private static BitSet EMPTY_SET;
+  private static BS EMPTY_SET;
   
   /**
    * 
@@ -158,9 +158,9 @@ public final class EnvelopeCalculation {
     this.atomCount = atomCount; //preliminary, for setFromBits()
     this.mads = mads;
     geodesicCount = Geodesic.getVertexCount(MAX_LEVEL);    
-    geodesicMap = BitSetUtil.newBitSet(geodesicCount);
-    mapT = BitSetUtil.newBitSet(geodesicCount);
-    EMPTY_SET = BitSetUtil.emptySet;
+    geodesicMap = BSUtil.newBitSet(geodesicCount);
+    mapT = BSUtil.newBitSet(geodesicCount);
+    EMPTY_SET = BSUtil.emptySet;
 
 }
    
@@ -171,11 +171,11 @@ public final class EnvelopeCalculation {
   private float maxRadius = 0;
   private boolean modelZeroBased;
   private boolean disregardNeighbors = false;
-  private BitSet bsMySelected;
+  private BS bsMySelected;
   
 
-  private BitSet[] dotsConvexMaps;
-  public BitSet[] getDotsConvexMaps() {
+  private BS[] dotsConvexMaps;
+  public BS[] getDotsConvexMaps() {
     return dotsConvexMaps;
   }
   
@@ -189,32 +189,32 @@ public final class EnvelopeCalculation {
     if (dotsConvexMax >= max)
       return;
     dotsConvexMax = max;
-    dotsConvexMaps = new BitSet[max];
+    dotsConvexMaps = new BS[max];
   }
   
   private int geodesicCount;
-  private BitSet bsSurface;
+  private BS bsSurface;
   
-  public BitSet getBsSurfaceClone() {
-    return BitSetUtil.copy(bsSurface);
+  public BS getBsSurfaceClone() {
+    return BSUtil.copy(bsSurface);
   }
   
   public void setMads(short[] mads) {
     this.mads = mads;
   }
   
-  public void setFromBits(int index, BitSet bs) {
+  public void setFromBits(int index, BS bs) {
     geodesicMap.setBits(0, geodesicCount);
     for (int iDot = geodesicCount; --iDot >= 0;)
       if (!bs.get(iDot))
         geodesicMap.clear(iDot);
     if (dotsConvexMaps == null)
-      dotsConvexMaps = new BitSet[atomCount];
-    BitSet map;
+      dotsConvexMaps = new BS[atomCount];
+    BS map;
     if (geodesicMap.isEmpty())
       map = EMPTY_SET;
     else
-      map = BitSetUtil.copy(geodesicMap);
+      map = BSUtil.copy(geodesicMap);
     if (index >= dotsConvexMaps.length)
       return;
     dotsConvexMaps[index] = map;
@@ -230,7 +230,7 @@ public final class EnvelopeCalculation {
     mads = null;
   }
 
-  private BitSet bsTemp;
+  private BS bsTemp;
   
   /**
    * problem prior to 12.3.18 was that dots once on the deodesic were not being moved.
@@ -241,7 +241,7 @@ public final class EnvelopeCalculation {
    * @param bs
    * @param m
    */
-  public void reCalculate(BitSet bs, Matrix3f m) {
+  public void reCalculate(BS bs, Matrix3f m) {
     if (atomData.radiusData != null) {    
       calculate(null, maxRadius, bs, bsIgnore, disregardNeighbors,
           onlySelectedDots, isSurface, multiModel);
@@ -249,16 +249,16 @@ public final class EnvelopeCalculation {
     }
     if (dotsConvexMaps == null || dotsConvexMax == 0)
       return;
-    Vector3f pt = new Vector3f();
+    V3 pt = new V3();
     if (bsTemp == null)
       bsTemp = Normix.newVertexBitSet();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (i >= dotsConvexMax)
         return;
-      BitSet map = dotsConvexMaps[i];
+      BS map = dotsConvexMaps[i];
       if (map == null || map.isEmpty())
         continue;
-      BitSet bsNew = new BitSet();
+      BS bsNew = new BS();
       for (int j = map.nextSetBit(0); j >= 0; j = map.nextSetBit(j + 1)) {
         pt.setT(Geodesic.getVertexVector(j));
         m.transform(pt);
@@ -270,7 +270,7 @@ public final class EnvelopeCalculation {
   }  
 
   
-  private BitSet bsIgnore;
+  private BS bsIgnore;
   private boolean onlySelectedDots;
   private boolean isSurface;
   private boolean multiModel;
@@ -286,8 +286,8 @@ public final class EnvelopeCalculation {
    * @param isSurface
    * @param multiModel
    */
-  public void calculate(RadiusData rd, float maxRadius, BitSet bsSelected,
-                        BitSet bsIgnore, boolean disregardNeighbors,
+  public void calculate(RadiusData rd, float maxRadius, BS bsSelected,
+                        BS bsIgnore, boolean disregardNeighbors,
                         boolean onlySelectedDots, boolean isSurface,
                         boolean multiModel) {
     // was: this.setRadius = (setRadius == Float.MAX_VALUE &&
@@ -316,13 +316,13 @@ public final class EnvelopeCalculation {
       for (int i = 0; i < atomCount; i++)
         atomData.atomRadius[i] = mads[i] / 1000f;
 
-    bsMySelected = (onlySelectedDots && bsSelected != null ? BitSetUtil
-        .copy(bsSelected) : bsIgnore != null ? BitSetUtil.setAll(atomCount)
+    bsMySelected = (onlySelectedDots && bsSelected != null ? BSUtil
+        .copy(bsSelected) : bsIgnore != null ? BSUtil.setAll(atomCount)
         : null);
-    BitSetUtil.andNot(bsMySelected, bsIgnore);
+    BSUtil.andNot(bsMySelected, bsIgnore);
     this.disregardNeighbors = disregardNeighbors;
     this.maxRadius = maxRadius;
-    bsSurface = new BitSet();
+    bsSurface = new BS();
     // now, calculate surface for selected atoms
     boolean isAll = (bsSelected == null);
     AtomIndexIterator iter = viewer.getSelectedAtomIterator(bsMySelected,
@@ -344,9 +344,9 @@ public final class EnvelopeCalculation {
     return atomData.atomRadius[atomIndex];
   }
     
-  private Point3f[] currentPoints;
+  private P3[] currentPoints;
   
-  public Point3f[] getPoints() {
+  public P3[] getPoints() {
     if (dotsConvexMaps == null) {
       calculate(new RadiusData(null, SURFACE_DISTANCE_FOR_CALCULATION, EnumType.ABSOLUTE, null),
           Float.MAX_VALUE, bsMySelected, null, false, false, false, false);
@@ -358,7 +358,7 @@ public final class EnvelopeCalculation {
     for (int i = dotsConvexMax; --i >= 0;)
       if (dotsConvexMaps[i] != null)
         nPoints += dotsConvexMaps[i].cardinalityN(dotCount);
-    Point3f[] points = new Point3f[nPoints];
+    P3[] points = new P3[nPoints];
     if (nPoints == 0)
       return points;
     nPoints = 0;
@@ -369,7 +369,7 @@ public final class EnvelopeCalculation {
           iDot = dotCount;
         while (--iDot >= 0)
           if (dotsConvexMaps[i].get(iDot)) {
-            Point3f pt = new Point3f();
+            P3 pt = new P3();
             pt.scaleAdd2(atomData.atomRadius[i], Geodesic.getVertexVector(iDot), atomData.atomXyz[i]);
             points[nPoints++] = pt;
           }
@@ -401,10 +401,10 @@ public final class EnvelopeCalculation {
   }
 
   private int indexI;
-  private Point3f centerI;
+  private P3 centerI;
   private float radiusI;
   private float radiiIP2;
-  private final Point3f pointT = new Point3f();
+  private final P3 pointT = new P3();
 
   private void setAtomI(int indexI) {
     this.indexI = indexI;
@@ -416,9 +416,9 @@ public final class EnvelopeCalculation {
   
   private void calcConvexMap(boolean isSurface) {
     if (dotsConvexMaps == null)
-      dotsConvexMaps = new BitSet[atomCount];
+      dotsConvexMaps = new BS[atomCount];
     calcConvexBits();
-    BitSet map;
+    BS map;
     if (geodesicMap.isEmpty())
       map = EMPTY_SET;
     else {
@@ -427,12 +427,12 @@ public final class EnvelopeCalculation {
         addIncompleteFaces(geodesicMap);
         addIncompleteFaces(geodesicMap);
       }
-      map = BitSetUtil.copy(geodesicMap);
+      map = BSUtil.copy(geodesicMap);
     }
     dotsConvexMaps[indexI] = map;
   }
   
-  private void addIncompleteFaces(BitSet points) {
+  private void addIncompleteFaces(BS points) {
     mapT.clearAll();
     short[] faces = Geodesic.getFaceVertexes(MAX_LEVEL);
     int len = faces.length;
@@ -470,13 +470,13 @@ public final class EnvelopeCalculation {
     }
   }
 
-  private Point3f centerT;
+  private P3 centerT;
   
   //level = 3 for both
-  private final Point3f[] vertexTest = new Point3f[12];
+  private final P3[] vertexTest = new P3[12];
   {
     for(int i = 0; i < 12; i++)
-      vertexTest[i] = new Point3f();
+      vertexTest[i] = new P3();
   }
 
   private static int[] power4 = {1, 4, 16, 64, 256};
@@ -551,7 +551,7 @@ public final class EnvelopeCalculation {
 
   private int neighborCount;
   private int[] neighborIndices = new int[16];
-  private Point3f[] neighborCenters = new Point3f[16];
+  private P3[] neighborCenters = new P3[16];
   private float[] neighborPlusProbeRadii2 = new float[16];
   private float[] neighborRadii2 = new float[16];
   
@@ -568,7 +568,7 @@ public final class EnvelopeCalculation {
         continue;
       if (neighborCount == neighborIndices.length) {
         neighborIndices = ArrayUtil.doubleLengthI(neighborIndices);
-        neighborCenters = (Point3f[]) ArrayUtil.doubleLength(neighborCenters);
+        neighborCenters = (P3[]) ArrayUtil.doubleLength(neighborCenters);
         neighborPlusProbeRadii2 = ArrayUtil
             .doubleLengthF(neighborPlusProbeRadii2);
         neighborRadii2 = ArrayUtil.doubleLengthF(neighborRadii2);
@@ -589,12 +589,12 @@ public final class EnvelopeCalculation {
    * @param nAtomsDeleted
    */
   public void deleteAtoms(int firstAtomDeleted, int nAtomsDeleted) {
-    dotsConvexMaps = (BitSet[]) ArrayUtil.deleteElements(dotsConvexMaps, firstAtomDeleted, nAtomsDeleted);
+    dotsConvexMaps = (BS[]) ArrayUtil.deleteElements(dotsConvexMaps, firstAtomDeleted, nAtomsDeleted);
     dotsConvexMax = dotsConvexMaps.length;
     if (mads != null)
       mads = (short[]) ArrayUtil.deleteElements(mads, firstAtomDeleted, nAtomsDeleted);
     atomData.atomRadius = (float[]) ArrayUtil.deleteElements(atomData.atomRadius, firstAtomDeleted, nAtomsDeleted);
-    atomData.atomXyz = (Point3f[]) ArrayUtil.deleteElements(atomData.atomXyz, firstAtomDeleted, nAtomsDeleted);
+    atomData.atomXyz = (P3[]) ArrayUtil.deleteElements(atomData.atomXyz, firstAtomDeleted, nAtomsDeleted);
     atomData.atomCount -= nAtomsDeleted;
     atomCount = atomData.atomCount;
     

@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 
 
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 class ApbsReader extends VolumeFileReader {
 
@@ -49,7 +49,7 @@ class ApbsReader extends VolumeFileReader {
   
   @Override
   protected void readParameters() throws Exception {
-    jvxlFileHeaderBuffer = StringXBuilder.newS(skipComments(false));
+    jvxlFileHeaderBuffer = SB.newS(skipComments(false));
     while (line != null && line.length() == 0)
       readLine();
     jvxlFileHeaderBuffer.append("APBS OpenDx DATA ").append(line).append("\n");

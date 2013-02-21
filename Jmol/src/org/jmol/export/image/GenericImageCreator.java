@@ -45,7 +45,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
   private double privateKey;
   
   public GenericImageCreator() {
-    // can set viewer later
+    // by reflection
   }
   
   public JmolImageCreatorInterface setViewer(JmolViewer viewer, double privateKey) {
@@ -264,7 +264,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
     return null;
   }
   
-  public String clipImage(String text) {
+  public String clipImage(JmolViewer viewer, String text) {
     // Java only
     return null;
   }

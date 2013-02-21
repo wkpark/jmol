@@ -33,8 +33,8 @@ import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Util;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.BS;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Vector3d;
 
@@ -109,7 +109,7 @@ abstract class Calculations {
     silent = TF;
   }
 
-  StringXBuilder logData = new StringXBuilder();
+  SB logData = new SB();
 
   public String getLogData() {
     return logData.toString();
@@ -125,7 +125,7 @@ abstract class Calculations {
   void setLoggingEnabled(boolean TF) {
     loggingEnabled = TF;
     if (loggingEnabled)
-      logData = new StringXBuilder();
+      logData = new SB();
   }
 
   void setPreliminary(boolean TF) {
@@ -141,7 +141,7 @@ abstract class Calculations {
   protected void pairSearch(List<Object[]> calc1, PairCalc pc1, 
                             List<Object[]> calc2, PairCalc pc2) {
     for (int i = 0; i < atomCount - 1; i++) {
-      BitSet bsVdw = minAtoms[i].bsVdw;
+      BS bsVdw = minAtoms[i].bsVdw;
       for (int j = bsVdw.nextSetBit(0); j >= 0; j = bsVdw.nextSetBit(j + 1)) {
         pc1.setData(calc1, i, j);
         if (pc2 != null)
@@ -368,7 +368,7 @@ abstract class Calculations {
     String trailer =
           "----------------------------------------"
           + "-------------------------------------------------------\n";  
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append("\n" + title + "\n\n"
         + " ATOM    X        Y        Z    TYPE     GRADX    GRADY    GRADZ  "
         + "---------BONDED ATOMS--------\n"

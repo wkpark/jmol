@@ -95,6 +95,7 @@ abstract public class JmolThread extends Thread {
   
   protected void oops(Exception e) {
     System.out.println(name + " exception " + e);
+    e.printStackTrace();
     viewer.queueOnHold = false;
   }
 

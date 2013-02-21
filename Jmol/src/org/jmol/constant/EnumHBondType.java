@@ -28,7 +28,7 @@ package org.jmol.constant;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 /**
  * Enum for hydrogen bonding donor/acceptor type
@@ -59,18 +59,18 @@ public enum EnumHBondType {
     case 7:
       if (atom == group.getNitrogenAtom())
         return DONOR;
-      if (groupID == JmolConstants.GROUPID_HISTIDINE)
+      if (groupID == JC.GROUPID_HISTIDINE)
         return UNKNOWN;
       if (atom.getCovalentHydrogenCount() > 0)
         return DONOR;
       if (considerHydrogens)
         return ACCEPTOR;
       switch (groupID) {
-      case JmolConstants.GROUPID_ARGININE:
-      case JmolConstants.GROUPID_ASPARAGINE:
-      case JmolConstants.GROUPID_LYSINE:
-      case JmolConstants.GROUPID_GLUTAMINE:
-      case JmolConstants.GROUPID_TRYPTOPHAN:
+      case JC.GROUPID_ARGININE:
+      case JC.GROUPID_ASPARAGINE:
+      case JC.GROUPID_LYSINE:
+      case JC.GROUPID_GLUTAMINE:
+      case JC.GROUPID_TRYPTOPHAN:
         return DONOR;
       }
       return UNKNOWN;
@@ -82,8 +82,8 @@ public enum EnumHBondType {
       if (considerHydrogens)
         return ACCEPTOR;       
       switch (groupID) {
-      case JmolConstants.GROUPID_ASPARTATE:
-      case JmolConstants.GROUPID_GLUTAMATE:
+      case JC.GROUPID_ASPARTATE:
+      case JC.GROUPID_GLUTAMATE:
         return ACCEPTOR;
       }
       return UNKNOWN;

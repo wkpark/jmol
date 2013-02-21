@@ -30,12 +30,12 @@ import java.util.List;
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -345,7 +345,7 @@ public class _PovrayExporter extends __RayTracerExporter {
   }
 
   @Override
-  protected void outputCone(Point3f screenBase, Point3f screenTip,
+  protected void outputCone(P3 screenBase, P3 screenTip,
                             float radius, short colix, boolean isBarb) {
     if (isBarb) {
       if (!haveMacros)
@@ -364,7 +364,7 @@ public class _PovrayExporter extends __RayTracerExporter {
   }
 
   @Override
-  protected void outputCylinder(Point3f screenA, Point3f screenB, float radius,
+  protected void outputCylinder(P3 screenA, P3 screenB, float radius,
                               short colix, boolean withCaps) {
     String color = color4(colix);
     output((withCaps ? "b(" : "c(") 
@@ -373,14 +373,14 @@ public class _PovrayExporter extends __RayTracerExporter {
   }
   
   @Override
-  protected void outputCylinderConical(Point3f screenA, Point3f screenB,
+  protected void outputCylinderConical(P3 screenA, P3 screenB,
                                        float radius1, float radius2, short colix) {
     output("b(" + getTriad(screenA) + "," + radius1 + "," + getTriad(screenB) + ","
         + radius2 + "," + color4(colix) + ")\n");
   }
 
   @Override
-  protected void outputEllipsoid(Point3f center, float radius, double[] coef, short colix) {
+  protected void outputEllipsoid(P3 center, float radius, double[] coef, short colix) {
     // no quadrant cut-out here
     String s = coef[0] + "," + coef[1] + "," + coef[2] + "," + coef[3] + ","
         + coef[4] + "," + coef[5] + "," + coef[6] + "," + coef[7] + ","
@@ -389,12 +389,12 @@ public class _PovrayExporter extends __RayTracerExporter {
   }
 
   @Override
-  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(P3[] vertices, V3[] normals,
                                   short[] colixes, int[][] indices, 
                                   short[] polygonColixes,
-                                  int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
+                                  int nVertices, int nPolygons, int nFaces, BS bsPolygons,
                                   int faceVertexMax, short colix,
-                                  List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
+                                  List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
     if (polygonColixes != null) {
       boolean isAll = (bsPolygons == null);
       int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
@@ -525,7 +525,7 @@ public class _PovrayExporter extends __RayTracerExporter {
   }
   
   @Override
-  protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix) {
+  protected void outputTriangle(P3 ptA, P3 ptB, P3 ptC, short colix) {
     if (!haveMacros)
       writeMacros2();
     //cartoons, mesh, isosurface

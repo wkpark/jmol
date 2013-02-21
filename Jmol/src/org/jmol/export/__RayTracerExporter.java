@@ -30,9 +30,9 @@ import org.jmol.modelset.Atom;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.V3;
 
 /*
  * for PovRay and related ray tracers that use screen coordinates
@@ -51,7 +51,7 @@ abstract class __RayTracerExporter extends ___Exporter {
   }
 
   @Override
-  protected void outputVertex(Point3f pt, Point3f offset) {
+  protected void outputVertex(P3 pt, P3 offset) {
     setTempVertex(pt, offset, tempP1);
     viewer.transformPt3f(tempP1, tempP1);
     output(tempP1);
@@ -60,26 +60,26 @@ abstract class __RayTracerExporter extends ___Exporter {
   abstract protected void outputCircle(int x, int y, int z, float radius, short colix,
                                        boolean doFill);
 
-  abstract protected void outputCylinder(Point3f screenA, Point3f screenB, float radius,
+  abstract protected void outputCylinder(P3 screenA, P3 screenB, float radius,
                                          short colix, boolean withCaps);
              
-  abstract protected void outputCylinderConical(Point3f screenA,
-                                                Point3f screenB, float radius1,
+  abstract protected void outputCylinderConical(P3 screenA,
+                                                P3 screenB, float radius1,
                                                 float radius2, short colix);
 
-  abstract protected void outputEllipsoid(Point3f center, float radius, double[] coef, short colix);
+  abstract protected void outputEllipsoid(P3 center, float radius, double[] coef, short colix);
   
   abstract protected void outputSphere(float x, float y, float z, float radius,
                                     short colix);
   
   abstract protected void outputTextPixel(int x, int y, int z, int argb);
 
-  abstract protected void outputTriangle(Point3f ptA, Point3f ptB, Point3f ptC, short colix);
+  abstract protected void outputTriangle(P3 ptA, P3 ptB, P3 ptC, short colix);
 
-  abstract protected void outputCone(Point3f screenBase, Point3f screenTip, float radius,
+  abstract protected void outputCone(P3 screenBase, P3 screenTip, float radius,
                                      short colix, boolean isBarb);
 
-  protected Point3f getScreenNormal(Point3f pt, Vector3f normal, float factor) {
+  protected P3 getScreenNormal(P3 pt, V3 normal, float factor) {
     if (Float.isNaN(normal.x)) {
       tempP3.set(0, 0, 0);
       return tempP3;
@@ -118,7 +118,7 @@ abstract class __RayTracerExporter extends ___Exporter {
   }
 
   @Override
-  boolean drawEllipse(Point3f ptAtom, Point3f ptX, Point3f ptY,
+  boolean drawEllipse(P3 ptAtom, P3 ptX, P3 ptY,
                       short colix, boolean doFill) {
     // IDTF only for now
     return false;
@@ -136,13 +136,13 @@ abstract class __RayTracerExporter extends ___Exporter {
   }
     
   @Override
-  void fillConeScreen(short colix, byte endcap, int screenDiameter, Point3f screenBase,
-                Point3f screenTip, boolean isBarb) {
+  void fillConeScreen(short colix, byte endcap, int screenDiameter, P3 screenBase,
+                P3 screenTip, boolean isBarb) {
     outputCone(screenBase, screenTip, screenDiameter / 2f, colix, isBarb);
   }
 
   @Override
-  void drawCylinder(Point3f screenA, Point3f screenB, short colix1,
+  void drawCylinder(P3 screenA, P3 screenB, short colix1,
                            short colix2, byte endcaps, int madBond,
                            int bondOrder) {
     // from drawBond and fillCylinder here
@@ -178,7 +178,7 @@ abstract class __RayTracerExporter extends ___Exporter {
    * @param colix
    * @param endcaps
    */
-  protected void fillConicalCylinder(Point3f screenA, Point3f screenB,
+  protected void fillConicalCylinder(P3 screenA, P3 screenB,
                                     int madBond, short colix, 
                                     byte endcaps) {
     float radius1 = viewer.scaleToScreen((int) screenA.z, madBond) / 2f;
@@ -200,7 +200,7 @@ abstract class __RayTracerExporter extends ___Exporter {
 
   @Override
   void fillCylinderScreenMad(short colix, byte endcaps, int diameter, 
-                               Point3f screenA, Point3f screenB) {
+                               P3 screenA, P3 screenB) {
     float radius = diameter / 2f;
     if (radius == 0)
       return;
@@ -219,26 +219,26 @@ abstract class __RayTracerExporter extends ___Exporter {
   }
 
   @Override
-  void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, Point3f screenA, 
-                                 Point3f screenB) {
+  void fillCylinderScreen(short colix, byte endcaps, int screenDiameter, P3 screenA, 
+                                 P3 screenB) {
           // vectors, polyhedra
     fillCylinderScreenMad(colix, endcaps, screenDiameter, screenA, screenB);
   }
 
   @Override
-  void fillSphere(short colix, int diameter, Point3f pt) {
+  void fillSphere(short colix, int diameter, P3 pt) {
     outputSphere(pt.x, pt.y, pt.z, diameter / 2f, colix);
   }
   
   @Override
-  protected void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC, boolean twoSided) {
+  protected void fillTriangle(short colix, P3 ptA, P3 ptB, P3 ptC, boolean twoSided) {
     outputTriangle(ptA, ptB, ptC, colix);
   }
 
   @Override
-  void fillEllipsoid(Point3f center, Point3f[] points, short colix, int x,
+  void fillEllipsoid(P3 center, P3[] points, short colix, int x,
                        int y, int z, int diameter, Matrix3f toEllipsoidal,
-                       double[] coef, Matrix4f deriv, Point3i[] octantPoints) {
+                       double[] coef, Matrix4f deriv, P3i[] octantPoints) {
     float radius = diameter / 2f;
     if (radius == 0)
       return;

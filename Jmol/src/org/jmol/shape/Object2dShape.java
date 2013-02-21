@@ -5,12 +5,12 @@ import java.util.Iterator;
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 public abstract class Object2dShape extends Shape {
 
@@ -29,7 +29,7 @@ public abstract class Object2dShape extends Shape {
   boolean isAll;
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  public void setProperty(String propertyName, Object value, BS bsSelected) {
 
     if ("allOff" == propertyName) {
       currentObject = null;
@@ -195,7 +195,7 @@ public abstract class Object2dShape extends Shape {
 
 
   @Override
-  public void setVisibilityFlags(BitSet bs) {
+  public void setVisibilityFlags(BS bs) {
     if (isHover) {
       return;
     }
@@ -207,7 +207,7 @@ public abstract class Object2dShape extends Shape {
   }
 
   @Override
-  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible) {
     if (isHover || modifiers == 0)
       return null;
     Iterator<Text> e = objects.values().iterator();
@@ -219,7 +219,7 @@ public abstract class Object2dShape extends Shape {
           viewer.evalStringQuiet(s);
         }
         Map<String, Object> map = new Hashtable<String, Object>();
-        map.put("pt", (obj.xyz == null ? new Point3f() : obj.xyz));
+        map.put("pt", (obj.xyz == null ? new P3() : obj.xyz));
         int modelIndex = obj.modelIndex;
         if (modelIndex < 0)
           modelIndex = 0;
@@ -234,7 +234,7 @@ public abstract class Object2dShape extends Shape {
   }
 
   @Override
-  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+  public boolean checkObjectHovered(int x, int y, BS bsVisible) {
     if (isHover)
       return false;
     Iterator<Text> e = objects.values().iterator();
@@ -245,13 +245,13 @@ public abstract class Object2dShape extends Shape {
       if (s != null) {
         haveScripts = true;
         if (obj.checkObjectClicked(x, y, bsVisible)) {
-          viewer.setCursor(JmolConstants.CURSOR_HAND);
+          viewer.setCursor(JC.CURSOR_HAND);
           return true;
         }
       }
     }
     if (haveScripts)
-      viewer.setCursor(JmolConstants.CURSOR_DEFAULT);
+      viewer.setCursor(JC.CURSOR_DEFAULT);
     return false;
   }
 

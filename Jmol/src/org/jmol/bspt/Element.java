@@ -23,8 +23,8 @@
 package org.jmol.bspt;
 
 
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 
 /**
  * the internal tree is made up of elements ... either Node or Leaf
@@ -34,9 +34,9 @@ import org.jmol.util.StringXBuilder;
 abstract class Element {
   Bspt bspt;
   int count;
-  abstract Element addTuple(int level, Point3f tuple);
+  abstract Element addTuple(int level, P3 tuple);
   
-  abstract void dump(int level, StringXBuilder sb);
+  abstract void dump(int level, SB sb);
   
 }
 

@@ -188,13 +188,13 @@ public class GData implements JmolGraphicsInterface {
     if (id >= changeableColixMap.length)
       changeableColixMap = ArrayUtil.arrayCopyShort(changeableColixMap, id + 16);
     if (changeableColixMap[id] == 0)
-      changeableColixMap[id] = Colix.getColix(argb);
-    return (short) (id | Colix.CHANGEABLE_MASK);
+      changeableColixMap[id] = C.getColix(argb);
+    return (short) (id | C.CHANGEABLE_MASK);
   }
 
   public void changeColixArgb(short id, int argb) {
     if (id < changeableColixMap.length && changeableColixMap[id] != 0)
-      changeableColixMap[id] = Colix.getColix(argb);
+      changeableColixMap[id] = C.getColix(argb);
   }
 
   public short[] getBgColixes(short[] bgcolixes) {
@@ -203,13 +203,13 @@ public class GData implements JmolGraphicsInterface {
 
   public int getColorArgbOrGray(short colix) {
     if (colix < 0)
-      colix = changeableColixMap[colix & Colix.UNMASK_CHANGEABLE_TRANSLUCENT];
-    return (inGreyscaleMode ? Colix.getArgbGreyscale(colix) : Colix.getArgb(colix));
+      colix = changeableColixMap[colix & C.UNMASK_CHANGEABLE_TRANSLUCENT];
+    return (inGreyscaleMode ? C.getArgbGreyscale(colix) : C.getArgb(colix));
   }
 
   public int[] getShades(short colix) {
     if (colix < 0)
-      colix = changeableColixMap[colix & Colix.UNMASK_CHANGEABLE_TRANSLUCENT];
+      colix = changeableColixMap[colix & C.UNMASK_CHANGEABLE_TRANSLUCENT];
     return (inGreyscaleMode ? shader.getShadesG(colix) : shader
         .getShades(colix));
   }
@@ -355,7 +355,7 @@ public class GData implements JmolGraphicsInterface {
     return shader.getCelOn();
   }
 
-  public Vector3f getLightSource() {
+  public V3 getLightSource() {
     return shader.lightSource;
   }
 
@@ -630,7 +630,7 @@ public class GData implements JmolGraphicsInterface {
     return true;
   }
 
-  public Vector3f[] getTransformedVertexVectors() {
+  public V3[] getTransformedVertexVectors() {
     return null;
   }
 
@@ -639,8 +639,8 @@ public class GData implements JmolGraphicsInterface {
    * @param pointB  
    * @param pointC  
    */
-  public void setNoisySurfaceShade(Point3i pointA, Point3i pointB,
-                                   Point3i pointC) {
+  public void setNoisySurfaceShade(P3i pointA, P3i pointB,
+                                   P3i pointC) {
   }
 
   /**

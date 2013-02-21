@@ -208,10 +208,10 @@ final public class ArrayUtil {
     return t;
   }
 
-  public static Point3f[] arrayCopyPt(Point3f[] array, int newLength) {
+  public static P3[] arrayCopyPt(P3[] array, int newLength) {
     if (newLength < 0)
       newLength = array.length;
-    Point3f[] t = new Point3f[newLength];
+    P3[] t = new P3[newLength];
     if (array != null) {
       int oldLength = array.length;
       System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength

@@ -42,7 +42,7 @@ import org.openscience.jmol.app.jsonkiosk.KioskFrame;
 import org.openscience.jmol.app.surfacetool.SurfaceTool;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.Jmol;
 import org.openscience.jmol.app.JmolApp;
@@ -617,7 +617,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       System.exit(0);
     } else {
       numWindows--;
-      viewer.setModeMouse(JmolConstants.MOUSE_NONE);
+      viewer.setModeMouse(JC.MOUSE_NONE);
       try {
         f.dispose();
       } catch (Exception e) {
@@ -1103,7 +1103,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      (new AwtImageCreator(viewer)).clipImage(null);
+      (new AwtImageCreator()).clipImage(viewer, null);
     }
   }
 
@@ -1114,7 +1114,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      (new AwtImageCreator(viewer)).clipImage((String) viewer.getProperty(
+      (new AwtImageCreator()).clipImage(viewer, (String) viewer.getProperty(
           "string", "stateInfo", null));
     }
   }
@@ -1555,7 +1555,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     if (bannerFrame != null) {
       viewer.scriptWait("delay 2");
       bannerFrame.dispose();
-      viewer.setModeMouse(JmolConstants.MOUSE_NONE);
+      viewer.setModeMouse(JC.MOUSE_NONE);
       // would not nec. have to close this....
       System.exit(0);
     }

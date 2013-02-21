@@ -28,19 +28,19 @@ import org.jmol.api.AtomIndexIterator;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 
 import org.jmol.util.Measure;
@@ -54,7 +54,7 @@ public class Polyhedra extends AtomShape {
   public final static int EDGES_FRONT = 2;
   private final static int MAX_VERTICES = 150;
   private final static int FACE_COUNT_MAX = MAX_VERTICES - 3;
-  private Point3f[] otherAtoms = new Point3f[MAX_VERTICES + 1];
+  private P3[] otherAtoms = new P3[MAX_VERTICES + 1];
 
   public int polyhedronCount;
   public Polyhedron[] polyhedrons = new Polyhedron[32];
@@ -71,12 +71,12 @@ public class Polyhedra extends AtomShape {
   private boolean bondedOnly;
   private boolean haveBitSetVertices;
 
-  private BitSet centers;
-  private BitSet bsVertices;
-  private BitSet bsVertexCount;
+  private BS centers;
+  private BS bsVertices;
+  private BS bsVertexCount;
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
 
     if ("init" == propertyName) {
       faceCenterOffset = DEFAULT_FACECENTEROFFSET;
@@ -85,7 +85,7 @@ public class Polyhedra extends AtomShape {
       nVertices = 0;
       bsVertices = null;
       centers = null;
-      bsVertexCount = new BitSet();
+      bsVertexCount = new BS();
       bondedOnly = isCollapsed = iHaveCenterBitSet = false;
       drawEdges = EDGES_NONE;
       haveBitSetVertices = false;
@@ -114,18 +114,18 @@ public class Polyhedra extends AtomShape {
     }
 
     if ("centers" == propertyName) {
-      centers = (BitSet) value;
+      centers = (BS) value;
       iHaveCenterBitSet = true;
       return;
     }
 
     if ("to" == propertyName) {
-      bsVertices = (BitSet) value;
+      bsVertices = (BS) value;
       return;
     }
 
     if ("toBitSet" == propertyName) {
-      bsVertices = (BitSet) value;
+      bsVertices = (BS) value;
       haveBitSetVertices = true;
       return;
     }
@@ -194,7 +194,7 @@ public class Polyhedra extends AtomShape {
     }
 
     if ("token" == propertyName) {
-      setLighting(((Integer) value).intValue() == Token.fullylit, bs);
+      setLighting(((Integer) value).intValue() == T.fullylit, bs);
       return;
     }
     
@@ -219,7 +219,7 @@ public class Polyhedra extends AtomShape {
     super.setProperty(propertyName, value, bs);
   }
 
-  private void setLighting(boolean isFullyLit, BitSet bs) {
+  private void setLighting(boolean isFullyLit, BS bs) {
     for (int i = polyhedronCount; --i >= 0;)
       if (bs.get(polyhedrons[i].centralAtom.getIndex())) {
         short[] normixes = polyhedrons[i].normixes;
@@ -231,8 +231,8 @@ public class Polyhedra extends AtomShape {
       }
   }
 
-  private BitSet andBitSet(BitSet bs) {
-    BitSet bsCenters = new BitSet();
+  private BS andBitSet(BS bs) {
+    BS bsCenters = new BS();
     for (int i = polyhedronCount; --i >= 0;)
       bsCenters.set(polyhedrons[i].centralAtom.getIndex());
     bsCenters.and(bs);
@@ -246,7 +246,7 @@ public class Polyhedra extends AtomShape {
       Polyhedron p = polyhedrons[i];
       int iAtom = p.centralAtom.getIndex();
       if (centers.get(iAtom))
-        setColixAndPalette(Colix.INHERIT_ALL, pid, iAtom);
+        setColixAndPalette(C.INHERIT_ALL, pid, iAtom);
       else
         polyhedrons[newCount++] = p;
     }
@@ -337,13 +337,13 @@ public class Polyhedra extends AtomShape {
 
   private short[] normixesT = new short[MAX_VERTICES];
   private byte[] planesT = new byte[MAX_VERTICES * 3];
-  private final static Point3f randomPoint = Point3f.new3(3141f, 2718f, 1414f);
+  private final static P3 randomPoint = P3.new3(3141f, 2718f, 1414f);
 
-  private BitSet bsTemp;
+  private BS bsTemp;
 
   private Polyhedron validatePolyhedronNew(Atom centralAtom, int vertexCount,
-                                   Point3f[] otherAtoms) {
-    Vector3f normal = new Vector3f();
+                                   P3[] otherAtoms) {
+    V3 normal = new V3();
     int planeCount = 0;
     int ipt = 0;
     int ptCenter = vertexCount;
@@ -351,7 +351,7 @@ public class Polyhedra extends AtomShape {
     float distMax = 0;
     float dAverage = 0;
 
-    Point3f[] points = new Point3f[MAX_VERTICES * 3];
+    P3[] points = new P3[MAX_VERTICES * 3];
     points[ptCenter] = otherAtoms[ptCenter] = centralAtom;
     for (int i = 0; i < ptCenter; i++) {
       points[i] = otherAtoms[i];
@@ -359,7 +359,7 @@ public class Polyhedra extends AtomShape {
     }
     dAverage = dAverage / ptCenter;
     float factor = distanceFactor;
-    BitSet bs = BitSetUtil.newBitSet(ptCenter);
+    BS bs = BSUtil.newBitSet(ptCenter);
     boolean isOK = (dAverage == 0);
 
     // here we are assuring that at least ONE face is drawn to 
@@ -426,7 +426,7 @@ public class Polyhedra extends AtomShape {
         if (isAligned(points[j], points[k], points[ptCenter]))
           facetCatalog += faceId(j, k, -1);
       }
-    Point3f ptRef = new Point3f();
+    P3 ptRef = new P3();
     // this next check for distance allows for bond AND distance constraints
     if (bsTemp == null)
       bsTemp = Normix.newVertexBitSet();
@@ -466,7 +466,7 @@ public class Polyhedra extends AtomShape {
           int nRef = nPoints;
           ptRef.setT(points[ptCenter]);
           if (isCollapsed && !isFlat) {
-            points[nPoints] = Point3f.newP(points[ptCenter]);
+            points[nPoints] = P3.newP(points[ptCenter]);
             points[nPoints].add(normal);
             otherAtoms[nPoints] = points[nPoints];
           } else if (isFlat) {
@@ -526,32 +526,32 @@ public class Polyhedra extends AtomShape {
   }
 
   private String faceId(int i, int j, int k) {
-    return (Point3i.new3(i, j, k)).toString();
+    return (P3i.new3(i, j, k)).toString();
   }
 
-  private Vector3f align1 = new Vector3f();
-  private Vector3f align2 = new Vector3f();
+  private V3 align1 = new V3();
+  private V3 align2 = new V3();
 
-  private boolean isAligned(Point3f pt1, Point3f pt2, Point3f pt3) {
+  private boolean isAligned(P3 pt1, P3 pt2, P3 pt3) {
     align1.sub2(pt1, pt3);
     align2.sub2(pt2, pt3);
     float angle = align1.angle(align2);
     return (angle < 0.01f || angle > 3.13f);
   }
 
-  private final Vector3f vAB = new Vector3f();
-  private final Vector3f vAC = new Vector3f();
+  private final V3 vAB = new V3();
+  private final V3 vAC = new V3();
 
   private static float minDistanceForPlanarity = 0.1f;
 
-  private boolean isPlanar(Point3f pt1, Point3f pt2, Point3f pt3, Point3f ptX) {
+  private boolean isPlanar(P3 pt1, P3 pt2, P3 pt3, P3 ptX) {
     /*
      * what is the quickest way to find out if four points are planar? 
      * here we determine the plane through three and then the distance to that plane
      * of the fourth
      * 
      */
-    Vector3f norm = new Vector3f();
+    V3 norm = new V3();
     float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB, vAC);
     float d = Measure.distanceToPlane(norm, w, ptX);
     return (Math.abs(d) < minDistanceForPlanarity);
@@ -560,7 +560,7 @@ public class Polyhedra extends AtomShape {
   public class Polyhedron {
     int modelIndex;
     public final Atom centralAtom;
-    public final Point3f[] vertices;
+    public final P3[] vertices;
     int ptCenter;
     boolean visible;
     public final short[] normixes;
@@ -572,12 +572,12 @@ public class Polyhedra extends AtomShape {
     boolean isFullyLit;
 
     Polyhedron(Atom centralAtom, int ptCenter, int nPoints, int planeCount,
-        Point3f[] otherAtoms, short[] normixes, byte[] planes) {
+        P3[] otherAtoms, short[] normixes, byte[] planes) {
       this.collapsed = isCollapsed;
       this.centralAtom = centralAtom;
       modelIndex = centralAtom.getModelIndex();
       this.ptCenter = ptCenter;
-      this.vertices = new Point3f[nPoints];
+      this.vertices = new P3[nPoints];
       this.visible = true;
       this.normixes = new short[planeCount];
       //this.planeCount = planeCount;
@@ -593,7 +593,7 @@ public class Polyhedra extends AtomShape {
     }
 
     protected String getState() {
-      BitSet bs = new BitSet();
+      BS bs = new BS();
       for (int i = 0; i < ptCenter; i++)
         bs.set(((Atom) vertices[i]).getIndex());
       return "  polyhedra ({" + centralAtom.getIndex() + "}) "
@@ -601,14 +601,14 @@ public class Polyhedra extends AtomShape {
               : " distanceFactor " + myDistanceFactor)
           + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
               : " faceCenterOffset " + myFaceCenterOffset) + " to "
-          + Escape.escape(bs) + (collapsed ? " collapsed" : "") 
+          + Escape.e(bs) + (collapsed ? " collapsed" : "") 
           + (isFullyLit ? " fullyLit" : "" ) + ";"
           + (visible ? "" : "polyhedra off;") + "\n";
     }
   }
 
   @Override
-  public void setVisibilityFlags(BitSet bs) {
+  public void setVisibilityFlags(BS bs) {
     /*
      * set all fixed objects visible; others based on model being displayed note
      * that this is NOT done with atoms and bonds, because they have mads. When
@@ -626,7 +626,7 @@ public class Polyhedra extends AtomShape {
   public String getShapeState() {
     if (polyhedronCount == 0)
       return "";
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     for (int i = 0; i < polyhedronCount; i++)
       s.append(polyhedrons[i].getState());
     if (drawEdges == EDGES_FRONT)

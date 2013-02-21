@@ -25,8 +25,8 @@
 package org.jmol.api;
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 import org.jmol.util.Quadric;
 
 public abstract class JmolAdapterAtomIterator {
@@ -36,7 +36,7 @@ public abstract class JmolAdapterAtomIterator {
 		return 0;
 	}
 
-	public BitSet getAtomSymmetry() {
+	public BS getAtomSymmetry() {
 		return null;
 	}
 
@@ -76,7 +76,7 @@ public abstract class JmolAdapterAtomIterator {
 
 	abstract public float getZ();
 
-	abstract public Point3f getXYZ();
+	abstract public P3 getXYZ();
 
 	public float getVectorX() {
 		return Float.NaN;

@@ -990,8 +990,8 @@ public class Elements {
     (53 << 4) + (-1 + 4), 2200, // "I-1"
   };
 
-  private final static BitSet bsCations = new BitSet();
-  private final static BitSet bsAnions = new BitSet();
+  private final static BS bsCations = new BS();
+  private final static BS bsAnions = new BS();
 
   static {
     for (int i = 0; i < anionLookupTable.length; i+=2)

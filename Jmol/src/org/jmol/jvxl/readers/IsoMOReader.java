@@ -32,9 +32,9 @@ import java.util.List;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.api.Interface;
 import org.jmol.api.QuantumCalculationInterface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
@@ -114,11 +114,11 @@ class IsoMOReader extends AtomDataReader {
     }
     volumeData.sr = null;
     if (isMapData && !isElectronDensityCalc && !haveVolumeData) {
-      volumeData.sr = this;
       volumeData.doIterate = false;
       volumeData.setVoxelDataAsArray(voxelData = new float[1][1][1]);
-      points = new Point3f[1];
-      points[0] = new Point3f();
+      volumeData.sr = this;
+      points = new P3[1];
+      points[0] = new P3();
       if (!setupCalculation())
         q = null;
     } else if (params.psi_monteCarloCount > 0) {
@@ -212,11 +212,11 @@ class IsoMOReader extends AtomDataReader {
     }
     if (points != null)
       return; // already done
-    points = new Point3f[1000];
+    points = new P3[1000];
     for (int j = 0; j < 1000; j++)
-      points[j] = new Point3f();
+      points[j] = new P3();
     if (params.thePlane != null)
-      vTemp = new Vector3f();
+      vTemp = new V3();
     // presumes orthogonal
     for (int i = 0; i < 3; i++)
       vDist[i] = volumeData.volumetricVectorLengths[i]
@@ -267,7 +267,7 @@ class IsoMOReader extends AtomDataReader {
   }
 
   @Override
-  public float getValueAtPoint(Point3f pt) {
+  public float getValueAtPoint(P3 pt) {
     return (q == null ? 0 : q.process(pt));
   }
   
@@ -286,8 +286,8 @@ class IsoMOReader extends AtomDataReader {
     createOrbital();
   }
 
-  private Point3f[] points;
-  private Vector3f vTemp;
+  private P3[] points;
+  private V3 vTemp;
   QuantumCalculationInterface q;
   List<Map<String, Object>> mos;
   boolean isNci;
@@ -362,10 +362,10 @@ class IsoMOReader extends AtomDataReader {
   protected float getSurfacePointAndFraction(float cutoff,
                                              boolean isCutoffAbsolute,
                                              float valueA, float valueB,
-                                             Point3f pointA,
-                                             Vector3f edgeVector, int x, int y,
+                                             P3 pointA,
+                                             V3 edgeVector, int x, int y,
                                              int z, int vA, int vB,
-                                             float[] fReturn, Point3f ptReturn) {
+                                             float[] fReturn, P3 ptReturn) {
       
       float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);

@@ -25,15 +25,15 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.StringXBuilder;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.SB;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
@@ -101,8 +101,8 @@ public abstract class Shape {
   protected float translucentLevel;
   public boolean translucentAllowed = true;
   public boolean isBioShape;
-  public BitSet bsSizeSet;
-  public BitSet bsColixSet;
+  public BS bsSizeSet;
+  public BS bsColixSet;
   
   public Viewer getViewer() {
     return viewer;
@@ -113,7 +113,7 @@ public abstract class Shape {
     this.viewer = viewer;
     this.gdata = g3d;
     this.shapeID = shapeID;
-    this.myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(shapeID);
+    this.myVisibilityFlag = JC.getShapeVisibilityFlag(shapeID);
     setModelSet(modelSet);
     initShape();
     //System.out.println("Shape " + shapeID + " " + this + " initialized");
@@ -160,7 +160,7 @@ public abstract class Shape {
     // shape-dependent Jmol 12.0.RC6
   }
   
-  public void setShapeSizeRD(int size, RadiusData rd, BitSet bsSelected) {
+  public void setShapeSizeRD(int size, RadiusData rd, BS bsSelected) {
     if (rd == null)
       setSize(size, bsSelected);
     else
@@ -172,7 +172,7 @@ public abstract class Shape {
    * @param size
    * @param bsSelected
    */
-  protected void setSize(int size, BitSet bsSelected) {
+  protected void setSize(int size, BS bsSelected) {
     // not for atoms except to turn off -- size = 0
   }
 
@@ -181,7 +181,7 @@ public abstract class Shape {
    * @param rd
    * @param bsSelected
    */
-  protected void setSizeRD(RadiusData rd, BitSet bsSelected) {
+  protected void setSizeRD(RadiusData rd, BS bsSelected) {
     // balls, dots, other atomshapes
   }
 
@@ -203,7 +203,7 @@ public abstract class Shape {
    * @param bsSelected
    */
   @SuppressWarnings("unchecked")
-  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  public void setProperty(String propertyName, Object value, BS bsSelected) {
     if (propertyName == "setProperties") {
       if (bsSelected == null)
         bsSelected = viewer.getSelectionSet(false);
@@ -223,7 +223,7 @@ public abstract class Shape {
       return;
     }
 
-    Logger.warn("unassigned " + JmolConstants.shapeClassBases[shapeID] + " + shape setProperty:" + propertyName + ":" + value);
+    Logger.warn("unassigned " + JC.shapeClassBases[shapeID] + " + shape setProperty:" + propertyName + ":" + value);
   }
 
   /**
@@ -262,7 +262,7 @@ public abstract class Shape {
    * @param closest
    * @param bsNot
    */
-  public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BitSet bsNot) {
+  public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BS bsNot) {
   }
 
   /**
@@ -270,7 +270,7 @@ public abstract class Shape {
    * @param pointMin
    * @param pointMax
    */
-  public void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {
+  public void checkBoundsMinMax(P3 pointMin, P3 pointMax) {
   }
 
   public void setModelClickability() {
@@ -284,7 +284,7 @@ public abstract class Shape {
    * @param bsVisible
    * @return Hashtable containing information about pt clicked
    */
-  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BitSet bsVisible) {
+  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible) {
     return null;
   }
 
@@ -295,7 +295,7 @@ public abstract class Shape {
    * @param bsVisible
    * @return T/F
    */
-  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+  public boolean checkObjectHovered(int x, int y, BS bsVisible) {
     return false;
   }
 
@@ -310,11 +310,11 @@ public abstract class Shape {
    * @return T/F
    */
   public boolean checkObjectDragged(int prevX, int prevY, int x, int y,
-                             int modifiers, BitSet bsVisible) {
+                             int modifiers, BS bsVisible) {
     return false;
   }
 
-  protected int coordinateInRange(int x, int y, Point3f vertex, int dmin2, Point3i ptXY) {
+  protected int coordinateInRange(int x, int y, P3 vertex, int dmin2, P3i ptXY) {
     viewer.transformPtScr(vertex, ptXY);
     int d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);
     return (d2 < dmin2 ? d2 : -1);
@@ -325,12 +325,12 @@ public abstract class Shape {
   }
 
   protected short getColixA(short colix, byte paletteID, Atom atom) {
-    return (colix == Colix.USE_PALETTE ? viewer.getColixAtomPalette(atom,
+    return (colix == C.USE_PALETTE ? viewer.getColixAtomPalette(atom,
         paletteID) : colix);
   }
 
   protected short getColixB(short colix, int pid, Bond bond) {
-    return (colix == Colix.USE_PALETTE ? viewer.getColixBondPalette(bond,
+    return (colix == C.USE_PALETTE ? viewer.getColixBondPalette(bond,
         pid) : colix);
   }
 
@@ -342,12 +342,12 @@ public abstract class Shape {
    * 
    * @param bs
    */
-  public void setVisibilityFlags(BitSet bs) {
+  public void setVisibilityFlags(BS bs) {
   }
 
   public static short getColix(short[] colixes, int i, Atom atom) {
-    return Colix.getColixInherited(
-        (colixes == null || i >= colixes.length ? Colix.INHERIT_ALL
+    return C.getColixInherited(
+        (colixes == null || i >= colixes.length ? C.INHERIT_ALL
             : colixes[i]), atom.getColix());
   }
   
@@ -366,9 +366,9 @@ public abstract class Shape {
 
   public static String getColorCommand(String type, byte pid, short colix,
                                        boolean translucentAllowed) {
-    if (pid == EnumPalette.UNKNOWN.id && colix == Colix.INHERIT_ALL)
+    if (pid == EnumPalette.UNKNOWN.id && colix == C.INHERIT_ALL)
       return "";
-    String s = (pid == EnumPalette.UNKNOWN.id && colix == Colix.INHERIT_ALL ? ""
+    String s = (pid == EnumPalette.UNKNOWN.id && colix == C.INHERIT_ALL ? ""
         : (translucentAllowed ? getTranslucentLabel(colix) + " " : "")
             + (pid != EnumPalette.UNKNOWN.id
                 && !EnumPalette.isPaletteVariable(pid) ? EnumPalette
@@ -378,17 +378,17 @@ public abstract class Shape {
 
   public static String encodeColor(short colix) {
     // used also by labels for background state (no translucent issues there?)
-    return (Colix.isColixColorInherited(colix) ? "none" : Colix
+    return (C.isColixColorInherited(colix) ? "none" : C
         .getHexCode(colix));
   }
 
   public static String getTranslucentLabel(short colix) {
-    return (Colix.isColixTranslucent(colix) ? "translucent "
-        + Colix.getColixTranslucencyFractional(colix): "opaque");
+    return (C.isColixTranslucent(colix) ? "translucent "
+        + C.getColixTranslucencyFractional(colix): "opaque");
   }
 
   
-  protected static void appendCmd(StringXBuilder s, String cmd) {
+  protected static void appendCmd(SB s, String cmd) {
     if (cmd.length() == 0)
       return;
     s.append("  ").append(cmd).append(";\n");

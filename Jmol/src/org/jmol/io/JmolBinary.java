@@ -42,10 +42,10 @@ import org.jmol.api.ZInputStream;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 
@@ -339,7 +339,7 @@ public class JmolBinary {
   public static String getEmbeddedScript(String script) {
     if (script == null)
       return script;
-    int pt = script.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG);
+    int pt = script.indexOf(JC.EMBEDDED_SCRIPT_TAG);
     if (pt < 0)
       return script;
     int pt1 = script.lastIndexOf("/*", pt);
@@ -347,7 +347,7 @@ public class JmolBinary {
         pt);
     if (pt1 >= 0 && pt2 >= pt)
       script = script.substring(
-          pt + JmolConstants.EMBEDDED_SCRIPT_TAG.length(), pt2)
+          pt + JC.EMBEDDED_SCRIPT_TAG.length(), pt2)
           + "\n";
     while ((pt1 = script.indexOf(JPEG_CONTINUE_STRING)) >= 0)
       script = script.substring(0, pt1)
@@ -465,11 +465,11 @@ public class JmolBinary {
     return fixUTF((byte[]) ret);
   }
 
-  public static boolean isBase64(StringXBuilder sb) {
+  public static boolean isBase64(SB sb) {
     return (sb.indexOf(";base64,") == 0);
   }
 
-  public static BufferedInputStream getBISForStringXBuilder(StringXBuilder sb) {
+  public static BufferedInputStream getBISForStringXBuilder(SB sb) {
     byte[] bytes;
     if (isBase64(sb)) {
       bytes = Base64.decodeBase64(sb.substring(8));
@@ -605,15 +605,15 @@ public class JmolBinary {
     if (name == null)
       return null;
     int i = name.lastIndexOf(".");
-    if (i < 0 || (i = JmolConstants.binaryExtensions.indexOf(";" + name.substring(i + 1) + "=")) < 0)
+    if (i < 0 || (i = JC.binaryExtensions.indexOf(";" + name.substring(i + 1) + "=")) < 0)
         return null;
-    i = JmolConstants.binaryExtensions.indexOf("=", i);
-    name = JmolConstants.binaryExtensions.substring(i + 1);
+    i = JC.binaryExtensions.indexOf("=", i);
+    name = JC.binaryExtensions.substring(i + 1);
     return name.substring(0, name.indexOf(";"));
   }
 
   public static boolean checkBinaryType(String fileTypeIn) {
-    return (JmolConstants.binaryExtensions.indexOf("=" + fileTypeIn + ";") >= 0);
+    return (JC.binaryExtensions.indexOf("=" + fileTypeIn + ";") >= 0);
   }
 
 }

@@ -57,7 +57,7 @@ import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 import org.openscience.jmol.app.jmolpanel.HelpDialog;
 
@@ -500,7 +500,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
       } else {
         viewer.script(strCommand
             + (strCommand.indexOf("\1##") >= 0 ? ""
-                : JmolConstants.SCRIPT_EDITOR_IGNORE));
+                : JC.SCRIPT_EDITOR_IGNORE));
       }
     }
     if (strCommand.indexOf("\1##") < 0)

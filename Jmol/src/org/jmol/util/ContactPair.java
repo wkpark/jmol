@@ -2,13 +2,13 @@ package org.jmol.util;
 
 
 import org.jmol.modelset.Atom;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 
 public class ContactPair {
   public float[] radii = new float[2];
   public float[] vdws = new float[2];
   public Atom[] myAtoms = new Atom[2];
-  public Point3f pt;
+  public P3 pt;
   public double volume = 0;
   public double vdwVolume = 0; 
   public float score;
@@ -37,7 +37,7 @@ public class ContactPair {
     // r is not necessarily VDW(B). That's certainly true for clashes,
     // for attractive Van der Waals forces R and r will be larger
     
-    Vector3f v = Vector3f.newV(myAtoms[1]);
+    V3 v = V3.newV(myAtoms[1]);
     v.sub(myAtoms[0]);
     d = v.length();
     
@@ -46,7 +46,7 @@ public class ContactPair {
     // as that would be for truly planar section, but it is not quite planar
 
     float f = (R - r + d) / (2 * d);
-    pt = new Point3f();
+    pt = new P3();
     pt.scaleAdd2(f, v, myAtoms[0]);
 
     // http://mathworld.wolfram.com/Sphere-SphereIntersection.html
@@ -57,7 +57,7 @@ public class ContactPair {
     // score < 0 when two atoms are in contact (clash or hydrogen bond).
     // lower score --> more contact. 
     score = d - vdwA - vdwB;
-    contactType = (score < 0 ? Token.clash : Token.vanderwaals);
+    contactType = (score < 0 ? T.clash : T.vanderwaals);
     if (score < 0) {
       radii[0] = R = vdwA;
       radii[1] = r = vdwB;
@@ -84,7 +84,7 @@ public class ContactPair {
       return false;
     if (isVdw) {
       oldType  = contactType;
-      contactType = Token.vanderwaals;
+      contactType = T.vanderwaals;
       radii[0] = vdws[0] + xVdwClash;
       radii[1] = vdws[1] + xVdwClash;
     } else {
@@ -110,7 +110,7 @@ public class ContactPair {
   
   @Override
   public String toString() {
-    return "type=" + Token.nameOf(contactType) + " " + myAtoms[0] + " " + myAtoms[1] + " dAB=" + d + " score=" +  score + " chord=" + chord + " volume=" + volume;
+    return "type=" + T.nameOf(contactType) + " " + myAtoms[0] + " " + myAtoms[1] + " dAB=" + d + " score=" +  score + " chord=" + chord + " volume=" + volume;
   }
 
 }

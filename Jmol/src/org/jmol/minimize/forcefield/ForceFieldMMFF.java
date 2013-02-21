@@ -40,8 +40,8 @@ import org.jmol.minimize.Minimizer;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
@@ -224,7 +224,7 @@ public class ForceFieldMMFF extends ForceField {
    * vRings[2] list of all 5-membered rings
    * vRings[3] list of aromatic 5-membered and 6-membered rings
    */
-  private List<BitSet>[] vRings;
+  private List<BS>[] vRings;
   
   public ForceFieldMMFF(Minimizer m) {
     this.minimizer = m;
@@ -240,7 +240,7 @@ public class ForceFieldMMFF extends ForceField {
   }
 
   @Override
-  public boolean setModel(BitSet bsElements, int elemnoMax) {
+  public boolean setModel(BS bsElements, int elemnoMax) {
     getMinimizationParameters();
     Minimizer m = minimizer;
     if (!setArrays(m.atoms, m.bsAtoms, m.bonds, m.rawBondCount, false, false))
@@ -253,7 +253,7 @@ public class ForceFieldMMFF extends ForceField {
     return calc.setupCalculations();
   }
 
-  public boolean setArrays(Atom[] atoms, BitSet bsAtoms, Bond[] bonds,
+  public boolean setArrays(Atom[] atoms, BS bsAtoms, Bond[] bonds,
                         int rawBondCount, boolean doRound, boolean allowUnknowns) {
     Minimizer m = minimizer;
     // these are original atom-index-based, not minAtom-index based. 
@@ -441,7 +441,7 @@ public class ForceFieldMMFF extends ForceField {
         Integer key = MinObject.getKey(type, a1, a2, a3, a4);
         data.put(key, value);
         if (Logger.debugging)
-          Logger.info(MinObject.decodeKey(key) + " " + Escape.escape(value));
+          Logger.info(MinObject.decodeKey(key) + " " + Escape.e(value));
       }
       br.close();
     } catch (Exception e) {
@@ -654,7 +654,7 @@ public class ForceFieldMMFF extends ForceField {
    * @return   full array of partial charges
    */
   public static float[] getPartialCharges(Bond[] bonds, int[] bTypes, Atom[] atoms,
-                                          int[] aTypes, BitSet bsAtoms, boolean doRound) {
+                                          int[] aTypes, BS bsAtoms, boolean doRound) {
 
     // start with formal charges specified by MMFF94 (not what is in file!)
 
@@ -767,7 +767,7 @@ public class ForceFieldMMFF extends ForceField {
   private boolean isAromaticBond(int a1, int a2) {
     if (vRings[R56] != null)
       for (int i = vRings[R56].size(); --i >= 0;) {
-        BitSet bsRing = vRings[R56].get(i);
+        BS bsRing = vRings[R56].get(i);
         if (bsRing.get(a1) && bsRing.get(a2))
           return true;
       }
@@ -801,15 +801,15 @@ public class ForceFieldMMFF extends ForceField {
    * @param allowUnknowns
    * @return array of indexes into AtomTypes or, for H, negative of mmType
    */
-  private static int[] setAtomTypes(Atom[] atoms, BitSet bsAtoms,
+  private static int[] setAtomTypes(Atom[] atoms, BS bsAtoms,
                                     SmilesMatcherInterface smartsMatcher,
-                                    List<BitSet>[] vRings, boolean allowUnknowns) {
-    List<BitSet> bitSets = new ArrayList<BitSet>();
+                                    List<BS>[] vRings, boolean allowUnknowns) {
+    List<BS> bitSets = new ArrayList<BS>();
     String[] smarts = new String[atomTypes.size()];
     int[] types = new int[atoms.length];
-    BitSet bsElements = new BitSet();
-    BitSet bsHydrogen = new BitSet();
-    BitSet bsConnected = BitSetUtil.copy(bsAtoms);
+    BS bsElements = new BS();
+    BS bsHydrogen = new BS();
+    BS bsConnected = BSUtil.copy(bsAtoms);
 
     // It may be important to include all attached atoms
 
@@ -855,9 +855,9 @@ public class ForceFieldMMFF extends ForceField {
     smartsMatcher.getSubstructureSets(smarts, atoms, atoms.length,
         JmolEdge.FLAG_AROMATIC_STRICT | JmolEdge.FLAG_AROMATIC_DOUBLE,
         bsConnected, bitSets, vRings);
-    BitSet bsDone = new BitSet();
+    BS bsDone = new BS();
     for (int j = 0; j < bitSets.size(); j++) {
-      BitSet bs = bitSets.get(j);
+      BS bs = bitSets.get(j);
       if (bs == null)
         continue;
       // This is a one-pass system. We first exclude
@@ -898,7 +898,7 @@ public class ForceFieldMMFF extends ForceField {
     return types;
   }
 
-  private int[] setBondTypes(Bond[] bonds, int bondCount, BitSet bsAtoms) {
+  private int[] setBondTypes(Bond[] bonds, int bondCount, BS bsAtoms) {
      int[] bTypes = new int[bondCount];
      for (int i = bondCount; --i >= 0;) {
        Atom a1 = bonds[i].getAtom1();
@@ -1011,10 +1011,10 @@ public class ForceFieldMMFF extends ForceField {
     return minAtoms[iAtom].ffType;
   }
   
-  private boolean checkRings(List<BitSet> v, int[] minlist, int n) {
+  private boolean checkRings(List<BS> v, int[] minlist, int n) {
     if (v != null)
       for (int i = v.size(); --i >= 0;) {
-        BitSet bs = v.get(i);
+        BS bs = v.get(i);
         if (bs.get(minAtoms[minlist[0]].atom.index)
             && bs.get(minAtoms[minlist[1]].atom.index)
             && (n < 3 || bs.get(minAtoms[minlist[2]].atom.index))

@@ -28,7 +28,7 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.ModelSet;
 import org.jmol.shape.Shape;
 import org.jmol.util.GData;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 public abstract class ShapeRenderer {
@@ -57,7 +57,7 @@ public abstract class ShapeRenderer {
   public final void setViewerG3dShapeID(Viewer viewer, int shapeID) {
     this.viewer = viewer;
     this.shapeID = shapeID;
-    myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(shapeID);
+    myVisibilityFlag = JC.getShapeVisibilityFlag(shapeID);
     initRenderer();
   }
 

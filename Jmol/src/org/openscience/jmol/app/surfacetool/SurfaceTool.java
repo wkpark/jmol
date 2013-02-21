@@ -33,17 +33,17 @@ import javax.swing.JOptionPane;
 import org.jmol.api.JmolViewer;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Escape;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 
 /**
  * 
@@ -53,10 +53,10 @@ public class SurfaceTool {
   private SurfaceToolGUI gui;
   boolean useGUI;
   protected JmolViewer viewer;
-  private final Point3f negCorner = new Point3f();
-  private final Point3f posCorner = new Point3f();
-  private final Point3f center = new Point3f();
-  private final Vector3f boxVec = new Vector3f();
+  private final P3 negCorner = new P3();
+  private final P3 posCorner = new P3();
+  private final P3 center = new P3();
+  private final V3 boxVec = new V3();
   //surface specific parameters
   private final List<SurfaceStatus> surfaces = new ArrayList<SurfaceStatus>();
 
@@ -109,9 +109,9 @@ public class SurfaceTool {
         "getShapes");
     //now iterate through all the shapes and get their XYZmin and XYZmax.  Expand
     //Boundbox used by SurfaceTool to encompass these.
-    box = checkMeshBB(shapes, JmolConstants.SHAPE_ISOSURFACE, box);
-    box = checkMeshBB(shapes, JmolConstants.SHAPE_PMESH, box);
-    box = checkMeshBB(shapes, JmolConstants.SHAPE_MO, box);
+    box = checkMeshBB(shapes, JC.SHAPE_ISOSURFACE, box);
+    box = checkMeshBB(shapes, JC.SHAPE_PMESH, box);
+    box = checkMeshBB(shapes, JC.SHAPE_MO, box);
     if (box != null) {
       center.setT(box.getBoundBoxCenter());
       negCorner.sub2(center, box.getBoundBoxCornerVector());
@@ -131,7 +131,7 @@ public class SurfaceTool {
       if (m.thisID.equalsIgnoreCase("_slicerleft")
           || m.thisID.equalsIgnoreCase("_slicerright"))
         continue;
-      Point3f[] bb = m.getBoundingBox();
+      P3[] bb = m.getBoundingBox();
       if (bb == null)
         continue;
       box.addBoundBoxPoint(bb[0]);
@@ -149,7 +149,7 @@ public class SurfaceTool {
       //set positionMin to minimum of BBoxCornerMin.x .y or .z or if all are 
       //negative -1* distance from origin. PositionMax similarly.
       if (negCorner.x < 0 && negCorner.y < 0 && negCorner.z < 0) {
-        positionMin = -1 * negCorner.distance(Point3f.new3(0, 0, 0));
+        positionMin = -1 * negCorner.distance(P3.new3(0, 0, 0));
       } else {
         positionMin = Math.min(negCorner.x, negCorner.y);
         positionMin = Math.min(negCorner.z, positionMin);
@@ -164,9 +164,9 @@ public class SurfaceTool {
     Shape[] shapes = (Shape[]) viewer.getProperty("DATA_API", "shapeManager",
         "getShapes");
     setSyncStarting();
-    updateMeshInfo(shapes, JmolConstants.SHAPE_ISOSURFACE);
-    updateMeshInfo(shapes, JmolConstants.SHAPE_PMESH);
-    updateMeshInfo(shapes, JmolConstants.SHAPE_MO);
+    updateMeshInfo(shapes, JC.SHAPE_ISOSURFACE);
+    updateMeshInfo(shapes, JC.SHAPE_PMESH);
+    updateMeshInfo(shapes, JC.SHAPE_MO);
     syncDone();
   }
 
@@ -248,11 +248,11 @@ public class SurfaceTool {
     angleUnits = units;
   }
 
-  Point3f getNegCorner() {
+  P3 getNegCorner() {
     return negCorner;
   }
 
-  Point3f getPosCorner() {
+  P3 getPosCorner() {
     return posCorner;
   }
 
@@ -286,9 +286,9 @@ public class SurfaceTool {
 
   void showSliceBoundaryPlanes(boolean onOrOff) {
     leftOn = rightOn = onOrOff;
-    StringXBuilder cmd = new StringXBuilder();
-    drawSlicePlane(cmd, Token.left, onOrOff);
-    drawSlicePlane(cmd, Token.right, onOrOff);
+    SB cmd = new SB();
+    drawSlicePlane(cmd, T.left, onOrOff);
+    drawSlicePlane(cmd, T.right, onOrOff);
     viewer.evalStringQuiet(cmd.toString());
   }
 
@@ -414,53 +414,53 @@ public class SurfaceTool {
     String slabCapStr = (capOn ? " cap " : " slab ");
     String ghostStr = (ghostOn ? "translucent 0.8 mesh " : "");
     switch (kind) {
-    case JmolConstants.SHAPE_ISOSURFACE:
+    case JC.SHAPE_ISOSURFACE:
       cmdStart = "isosurface";
       break;
-    case JmolConstants.SHAPE_PMESH:
+    case JC.SHAPE_PMESH:
       cmdStart = "pmesh";
       break;
-    case JmolConstants.SHAPE_MO:
+    case JC.SHAPE_MO:
       cmdStart = "mo";
       idStr = "";//since mo command does not take IDs
       slabCapStr = " slab ";
       break;
     }
-    StringXBuilder cmd = new StringXBuilder();
+    SB cmd = new SB();
     //planes on or off as appropriate
-    drawSlicePlane(cmd, Token.left, leftOn);
-    drawSlicePlane(cmd, Token.right, rightOn);
+    drawSlicePlane(cmd, T.left, leftOn);
+    drawSlicePlane(cmd, T.right, rightOn);
     //now handle the surface
     cmd.append(cmdStart).append(idStr).append(" slab none;");
     cmd.append(cmdStart).append(idStr);
     cmd.append(slabCapStr).append(ghostStr).append("-")
-        .append(Escape.escape(slice.leftPlane));
+        .append(Escape.e(slice.leftPlane));
     cmd.append(";").append(cmdStart).append(idStr);
     cmd.append(slabCapStr).append(ghostStr)
-        .append(Escape.escape(slice.rightPlane));
+        .append(Escape.e(slice.rightPlane));
     cmd.append(";");
     viewer.evalStringQuiet(cmd.toString());
     return;
   }
 
-  private void drawSlicePlane(StringXBuilder cmd, int side, boolean on) {
+  private void drawSlicePlane(SB cmd, int side, boolean on) {
     String color;
-    String name = Token.nameOf(side);
+    String name = T.nameOf(side);
     Point4f plane;
     switch (side) {
     default:
-    case Token.left:
+    case T.left:
       plane = slice.leftPlane;
       color = "magenta";
       break;
-    case Token.right:
+    case T.right:
       plane = slice.rightPlane;
       color = "cyan";
       break;
     }
     cmd.append("isosurface _slicer").append(name);
     if (on) {
-      cmd.append(" plane ").append(Escape.escape(plane))
+      cmd.append(" plane ").append(Escape.e(plane))
           .append(" translucent 0.7 ").append(color).append(";");
     } else {
       cmd.append(" off;");
@@ -511,11 +511,11 @@ public class SurfaceTool {
     return thicknessMax;
   }
 
-  Point3f getCenter() {
+  P3 getCenter() {
     return center;
   }
 
-  Vector3f getBoxVec() {
+  V3 getBoxVec() {
     return boxVec;
   }
 

@@ -26,21 +26,21 @@ package org.jmol.util;
 import java.util.Map;
 
 
-final public class BitSetUtil {
+final public class BSUtil {
 
-  public final static BitSet emptySet = new BitSet();
+  public final static BS emptySet = new BS();
 
-  public static BitSet newAndSetBit(int i) {
-    BitSet bs = newBitSet(i + 1);
+  public static BS newAndSetBit(int i) {
+    BS bs = newBitSet(i + 1);
     bs.set(i);
     return bs;
   }
   
-  public static boolean areEqual(BitSet a, BitSet b) {
+  public static boolean areEqual(BS a, BS b) {
     return (a == null || b == null ? a == null && b == null : a.equals(b));
   }
 
-  public static boolean haveCommon(BitSet a, BitSet b) {
+  public static boolean haveCommon(BS a, BS b) {
     return (a == null || b == null ? false : a.intersects(b));
   }
 
@@ -49,33 +49,33 @@ final public class BitSetUtil {
    * @param bs
    * @return number of set bits
    */
-  public static int cardinalityOf(BitSet bs) {
+  public static int cardinalityOf(BS bs) {
     return (bs == null ? 0 : bs.cardinality());
   }
 
-  public static BitSet newBitSet2(int i0, int i1) {
-    BitSet bs = newBitSet(i1);
+  public static BS newBitSet2(int i0, int i1) {
+    BS bs = newBitSet(i1);
     bs.setBits(i0, i1);
     return bs;
   }
   
-  public static BitSet setAll(int n) {
-    BitSet bs = newBitSet(n);
+  public static BS setAll(int n) {
+    BS bs = newBitSet(n);
     bs.setBits(0, n);
     return bs;
   }
 
-  public static BitSet andNot(BitSet a, BitSet b) {
+  public static BS andNot(BS a, BS b) {
     if (b != null && a != null)
       a.andNot(b);
     return a;
   }
 
-  public static BitSet copy(BitSet bs) {
-    return bs == null ? null : (BitSet) bs.clone();
+  public static BS copy(BS bs) {
+    return bs == null ? null : (BS) bs.clone();
   }
 
-  public static BitSet copy2(BitSet a, BitSet b) {
+  public static BS copy2(BS a, BS b) {
     if (a == null || b == null)
       return null;
     b.clearAll();
@@ -83,7 +83,7 @@ final public class BitSetUtil {
     return b;
   }
   
-  public static BitSet copyInvert(BitSet bs, int n) {
+  public static BS copyInvert(BS bs, int n) {
     return (bs == null ? null : andNot(setAll(n), bs));
   }
   
@@ -95,7 +95,7 @@ final public class BitSetUtil {
    * @param n
    * @return  pointer to original bitset, now inverted
    */
-  public static BitSet invertInPlace(BitSet bs, int n) {
+  public static BS invertInPlace(BS bs, int n) {
     return copy2(copyInvert(bs, n), bs);
   }
 
@@ -125,7 +125,7 @@ final public class BitSetUtil {
    * @param b
    * @return a handy pointer to the working set, a
    */
-  public static BitSet toggleInPlace(BitSet a, BitSet b) {
+  public static BS toggleInPlace(BS a, BS b) {
     if (a.equals(b)) {
       // all on -- toggle all off
       a.clearAll();
@@ -151,7 +151,7 @@ final public class BitSetUtil {
    * @param bsDelete
    * @return             shorter bitset
    */
-  public static BitSet deleteBits(BitSet bs, BitSet bsDelete) {
+  public static BS deleteBits(BS bs, BS bsDelete) {
     if (bs == null || bsDelete == null)
       return bs;
     int ipt = bsDelete.nextSetBit(0);
@@ -169,8 +169,8 @@ final public class BitSetUtil {
     return bs;
   }
 
-  public static BitSet newBitSet(int nFree) {
-    return BitSet.newN(nFree);
+  public static BS newBitSet(int nFree) {
+    return BS.newN(nFree);
   }
   
   /**
@@ -181,21 +181,21 @@ final public class BitSetUtil {
    * @param pos    starting position; no change before this
    * @param offset
    */
-  public static void offset(BitSet bs0, int pos, int offset) {
+  public static void offset(BS bs0, int pos, int offset) {
     if (bs0 == null)
       return;
-      BitSet bsTemp = BitSet.newN(bs0.length() + offset);
+      BS bsTemp = BS.newN(bs0.length() + offset);
     for (int i = bs0.nextSetBit(0); i >= pos; i = bs0.nextSetBit(i + 1))
       bsTemp.set(i + offset);
     copy2(bsTemp, bs0);
   }
 
-  public static void setMapBitSet(Map<String, BitSet> ht, int i1, int i2, String key) {
-    BitSet bs;
+  public static void setMapBitSet(Map<String, BS> ht, int i1, int i2, String key) {
+    BS bs;
     if (ht.containsKey(key))
       bs = ht.get(key);
     else
-      ht.put(key, bs = new BitSet());
+      ht.put(key, bs = new BS());
     bs.setBits(i1, i2 + 1);
   }
 

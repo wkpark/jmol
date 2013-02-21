@@ -35,11 +35,11 @@ import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.shape.AtomShape;
 import org.jmol.shape.Mesh;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.Logger;
-import org.jmol.util.Vector3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 
 public class BioShape extends AtomShape {
 
@@ -62,7 +62,7 @@ public class BioShape extends AtomShape {
     return monomers;
   }
 
-  public Vector3f[] wingVectors;
+  public V3[] wingVectors;
   int[] leadAtomIndices;
 
   BioShape(BioShapeCollection shape, int modelIndex, BioPolymer bioPolymer) {
@@ -70,7 +70,7 @@ public class BioShape extends AtomShape {
     this.modelIndex = modelIndex;
     this.bioPolymer = bioPolymer;
     isActive = shape.isActive;
-    bsSizeDefault = new BitSet();
+    bsSizeDefault = new BS();
     monomerCount = bioPolymer.monomerCount;
     if (monomerCount > 0) {
       colixes = new short[monomerCount];
@@ -91,10 +91,10 @@ public class BioShape extends AtomShape {
   float floatRange;
   public final static int ALPHA_CARBON_VISIBILITY_FLAG 
   = NucleicMonomer.CARTOON_VISIBILITY_FLAG | Atom.BACKBONE_VISIBILITY_FLAG
-  | JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_TRACE)
-  | JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_STRANDS)
-  | JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_MESHRIBBON)
-  | JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_RIBBONS);
+  | JC.getShapeVisibilityFlag(JC.SHAPE_TRACE)
+  | JC.getShapeVisibilityFlag(JC.SHAPE_STRANDS)
+  | JC.getShapeVisibilityFlag(JC.SHAPE_MESHRIBBON)
+  | JC.getShapeVisibilityFlag(JC.SHAPE_RIBBONS);
 
   void calcBfactorRange() {
     bfactorMin = bfactorMax =
@@ -183,17 +183,17 @@ public class BioShape extends AtomShape {
   }
 
   @Override
-  public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BitSet bsNot) {
+  public void findNearestAtomIndex(int xMouse, int yMouse, Atom[] closest, BS bsNot) {
     bioPolymer.findNearestAtomIndex(xMouse, yMouse, closest, mads,
         shape.myVisibilityFlag, bsNot);
   }
   
-  void setMad(short mad, BitSet bsSelected, float[] values) {
+  void setMad(short mad, BS bsSelected, float[] values) {
     if (monomerCount < 2)
       return;
     isActive = true;
     if (bsSizeSet == null)
-      bsSizeSet = new BitSet();
+      bsSizeSet = new BS();
     int flag = shape.myVisibilityFlag;
     for (int i = monomerCount; --i >= 0; ) {
       int leadAtomIndex = leadAtomIndices[i];
@@ -275,10 +275,10 @@ public class BioShape extends AtomShape {
       meshReady[index + 1] = false;
   }    
 
-  void setColixBS(short colix, byte pid, BitSet bsSelected) {
+  void setColixBS(short colix, byte pid, BS bsSelected) {
     isActive = true;
     if (bsColixSet == null)
-      bsColixSet = new BitSet();
+      bsColixSet = new BS();
     for (int i = monomerCount; --i >= 0;) {
       int atomIndex = leadAtomIndices[i];
       if (bsSelected.get(atomIndex)) {
@@ -286,15 +286,15 @@ public class BioShape extends AtomShape {
         if (colixesBack != null && colixesBack.length > i)
           colixesBack[i] = 0;
         paletteIDs[i] = pid;
-        bsColixSet.setBitTo(i, colixes[i] != Colix.INHERIT_ALL);
+        bsColixSet.setBitTo(i, colixes[i] != C.INHERIT_ALL);
       }
     }
   }
   
-  void setColixes(short[] colixes, BitSet bsSelected) {
+  void setColixes(short[] colixes, BS bsSelected) {
     isActive = true;
     if (bsColixSet == null)
-      bsColixSet = new BitSet();
+      bsColixSet = new BS();
     for (int i = monomerCount; --i >= 0;) {
       int atomIndex = leadAtomIndices[i];
       if (bsSelected.get(atomIndex)) {
@@ -307,7 +307,7 @@ public class BioShape extends AtomShape {
     }
   }
   
-  void setColixBack(short colix, BitSet bsSelected) {
+  void setColixBack(short colix, BS bsSelected) {
     for (int i = monomerCount; --i >= 0;) {
       int atomIndex = leadAtomIndices[i];
       if (bsSelected.get(atomIndex)) {
@@ -320,16 +320,16 @@ public class BioShape extends AtomShape {
     }
   }
   
-  void setTranslucent(boolean isTranslucent, BitSet bsSelected, float translucentLevel) {
+  void setTranslucent(boolean isTranslucent, BS bsSelected, float translucentLevel) {
     isActive = true;
     if (bsColixSet == null)
-      bsColixSet = new BitSet();
+      bsColixSet = new BS();
     for (int i = monomerCount; --i >= 0; )
       if (bsSelected.get(leadAtomIndices[i])) {
-        colixes[i] = Colix.getColixTranslucent3(colixes[i], isTranslucent, translucentLevel);
+        colixes[i] = C.getColixTranslucent3(colixes[i], isTranslucent, translucentLevel);
         if (colixesBack != null && colixesBack.length > i)
-          colixesBack[i] = Colix.getColixTranslucent3(colixesBack[i], isTranslucent, translucentLevel);
-        bsColixSet.setBitTo(i, colixes[i] != Colix.INHERIT_ALL);
+          colixesBack[i] = C.getColixTranslucent3(colixesBack[i], isTranslucent, translucentLevel);
+        bsColixSet.setBitTo(i, colixes[i] != C.INHERIT_ALL);
     }
   }
 

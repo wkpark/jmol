@@ -23,7 +23,7 @@
  */
 package org.jmol.shape;
 
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 public class Uccage extends FontLineShape {
 
@@ -35,7 +35,7 @@ public class Uccage extends FontLineShape {
   @Override
   public void initShape() {
     super.initShape();
-    font3d = gdata.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
+    font3d = gdata.getFont3D(JC.AXES_DEFAULT_FONTSIZE);
     myType = "unitcell";
   }
 }

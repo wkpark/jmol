@@ -23,10 +23,10 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
@@ -67,7 +67,7 @@ class ColorManager {
     this.viewer = viewer;
     g3d = gdata;
     argbsCpk = EnumPalette.argbsCpk;
-    altArgbsCpk = ArrayUtil.arrayCopyRangeI(JmolConstants.altArgbsCpk, 0, -1);
+    altArgbsCpk = ArrayUtil.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
   }
 
   void clear() {
@@ -92,20 +92,20 @@ class ColorManager {
       isDefaultColorRasmol = false;
       argbsCpk = EnumPalette.argbsCpk;
     }
-    altArgbsCpk = ArrayUtil.arrayCopyRangeI(JmolConstants.altArgbsCpk, 0, -1);
+    altArgbsCpk = ArrayUtil.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
     propertyColorEncoder.createColorScheme((isRasmol ? "Rasmol="
         : "Jmol="), true, true);
     for (int i = EnumPalette.argbsCpk.length; --i >= 0;)
       g3d.changeColixArgb((short) i, argbsCpk[i]);
-    for (int i = JmolConstants.altArgbsCpk.length; --i >= 0;)
+    for (int i = JC.altArgbsCpk.length; --i >= 0;)
       g3d.changeColixArgb((short) (Elements.elementNumberMax + i),
           altArgbsCpk[i]);
   }
 
-  short colixRubberband = Colix.HOTPINK;
+  short colixRubberband = C.HOTPINK;
 
   void setRubberbandArgb(int argb) {
-    colixRubberband = (argb == 0 ? 0 : Colix.getColix(argb));
+    colixRubberband = (argb == 0 ? 0 : C.getColix(argb));
   }
 
   /*
@@ -127,7 +127,7 @@ class ColorManager {
       return propertyColorEncoder.getColorIndexFromPalette(bond.getEnergy(),
           -2.5f, -0.5f, ColorEncoder.BWR, false);
     }
-    return (argb == 0 ? Colix.RED : Colix.getColix(argb));
+    return (argb == 0 ? C.RED : C.getColix(argb));
   }
 
   short getColixAtomPalette(Atom atom, byte pid) {
@@ -141,7 +141,7 @@ class ColorManager {
     switch (pid) {
     case StaticConstants.PALETTE_PROPERTY:
       return (colorData == null || atom.index >= colorData.length
-          ? Colix.GRAY : getColixForPropertyValue(colorData[atom.index]));
+          ? C.GRAY : getColixForPropertyValue(colorData[atom.index]));
     case StaticConstants.PALETTE_NONE:
     case StaticConstants.PALETTE_CPK:
       // Note that CPK colors can be changed based upon user preference
@@ -155,15 +155,15 @@ class ColorManager {
     case StaticConstants.PALETTE_PARTIAL_CHARGE:
       // This code assumes that the range of partial charges is [-1, 1].
       index = ColorEncoder.quantize(atom.getPartialCharge(), -1, 1,
-          JmolConstants.PARTIAL_CHARGE_RANGE_SIZE);
+          JC.PARTIAL_CHARGE_RANGE_SIZE);
       return g3d.getChangeableColix(
-          (short) (JmolConstants.PARTIAL_CHARGE_COLIX_RED + index),
-          JmolConstants.argbsRwbScale[index]);
+          (short) (JC.PARTIAL_CHARGE_COLIX_RED + index),
+          JC.argbsRwbScale[index]);
     case StaticConstants.PALETTE_FORMAL_CHARGE:
       index = atom.getFormalCharge() - Elements.FORMAL_CHARGE_MIN;
       return g3d.getChangeableColix(
-          (short) (JmolConstants.FORMAL_CHARGE_COLIX_RED + index),
-          JmolConstants.argbsFormalCharge[index]);
+          (short) (JC.FORMAL_CHARGE_COLIX_RED + index),
+          JC.argbsFormalCharge[index]);
     case StaticConstants.PALETTE_TEMP:
     case StaticConstants.PALETTE_FIXEDTEMP:
       if (pid == StaticConstants.PALETTE_TEMP) {
@@ -178,7 +178,7 @@ class ColorManager {
           atom.getBfactor100(), lo, hi, ColorEncoder.BWR, false);
     case StaticConstants.PALETTE_STRAIGHTNESS:
       return propertyColorEncoder.getColorIndexFromPalette(atom
-          .getGroupParameter(Token.straightness), -1, 1, ColorEncoder.BWR,
+          .getGroupParameter(T.straightness), -1, 1, ColorEncoder.BWR,
           false);
     case StaticConstants.PALETTE_SURFACE:
       hi = viewer.getSurfaceDistanceMax();
@@ -235,11 +235,11 @@ class ColorManager {
           false);
     case StaticConstants.PALETTE_JMOL:
       id = atom.getAtomicAndIsotopeNumber();
-      argb = getJmolOrRasmolArgb(id, Token.jmol);
+      argb = getJmolOrRasmolArgb(id, T.jmol);
       break;
     case StaticConstants.PALETTE_RASMOL:
       id = atom.getAtomicAndIsotopeNumber();
-      argb = getJmolOrRasmolArgb(id, Token.rasmol);
+      argb = getJmolOrRasmolArgb(id, T.rasmol);
       break;
     case StaticConstants.PALETTE_STRUCTURE:
       argb = atom.getProteinStructureSubType().getColor();
@@ -248,23 +248,23 @@ class ColorManager {
       int chain = atom.getChainID() & 0x1F;
       if (chain < 0)
         chain = 0;
-      if (chain >= JmolConstants.argbsChainAtom.length)
-        chain = chain % JmolConstants.argbsChainAtom.length;
-      argb = (atom.isHetero() ? JmolConstants.argbsChainHetero
-          : JmolConstants.argbsChainAtom)[chain];
+      if (chain >= JC.argbsChainAtom.length)
+        chain = chain % JC.argbsChainAtom.length;
+      argb = (atom.isHetero() ? JC.argbsChainHetero
+          : JC.argbsChainAtom)[chain];
       break;
     }
-    return (argb == 0 ? Colix.HOTPINK : Colix.getColix(argb));
+    return (argb == 0 ? C.HOTPINK : C.getColix(argb));
   }
 
   private int getJmolOrRasmolArgb(int id, int argb) {
     switch (argb) {
-    case Token.jmol:
+    case T.jmol:
       if (id >= Elements.elementNumberMax)
         break;
       return propertyColorEncoder.getArgbFromPalette(id, 0, 0,
           ColorEncoder.JMOL);
-    case Token.rasmol:
+    case T.rasmol:
       if (id >= Elements.elementNumberMax)
         break;
       return propertyColorEncoder.getArgbFromPalette(id, 0, 0,
@@ -272,16 +272,16 @@ class ColorManager {
     default:
       return argb;
     }
-    return JmolConstants.altArgbsCpk[Elements.altElementIndexFromNumber(id)];
+    return JC.altArgbsCpk[Elements.altElementIndexFromNumber(id)];
   }
 
   void setElementArgb(int id, int argb) {
-    if (argb == Token.jmol && argbsCpk == EnumPalette.argbsCpk)
+    if (argb == T.jmol && argbsCpk == EnumPalette.argbsCpk)
       return;
     argb = getJmolOrRasmolArgb(id, argb);
     if (argbsCpk == EnumPalette.argbsCpk) {
       argbsCpk = ArrayUtil.arrayCopyRangeI(EnumPalette.argbsCpk, 0, -1);
-      altArgbsCpk = ArrayUtil.arrayCopyRangeI(JmolConstants.altArgbsCpk, 0, -1);
+      altArgbsCpk = ArrayUtil.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
     }
     if (id < Elements.elementNumberMax) {
       argbsCpk[id] = argb;
@@ -301,7 +301,7 @@ class ColorManager {
     return new float[] { propertyColorEncoder.lo, propertyColorEncoder.hi };
   }
 
-  void setPropertyColorRangeData(float[] data, BitSet bs, String colorScheme) {
+  void setPropertyColorRangeData(float[] data, BS bs, String colorScheme) {
     colorData = data;
     propertyColorEncoder.currentPalette = propertyColorEncoder.createColorScheme(
         colorScheme, true, false);

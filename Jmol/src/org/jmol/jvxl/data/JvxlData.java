@@ -67,10 +67,10 @@ import java.util.List;
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 
 /*
@@ -92,7 +92,7 @@ public class JvxlData {
   public String jvxlEdgeData;
   public String jvxlColorData;
   public String jvxlVolumeDataXml;
-  public BitSet[] jvxlExcluded = new BitSet[4];
+  public BS[] jvxlExcluded = new BS[4];
   
   public Point4f jvxlPlane;
 
@@ -145,7 +145,7 @@ public class JvxlData {
 
   public String[] title;
   public String version;
-  public Point3f[] boundingBox;
+  public P3[] boundingBox;
   public int excludedTriangleCount;
   public int excludedVertexCount;
   public boolean colorDensity;
@@ -154,7 +154,7 @@ public class JvxlData {
   public int saveVertexCount;
   
   // added Jmol 12.1.50
-  public Map<String, BitSet> vertexColorMap; // from color isosurface {atom subset} red 
+  public Map<String, BS> vertexColorMap; // from color isosurface {atom subset} red 
   public int nVertexColors;
   public String color;
   public String meshColor;
@@ -167,7 +167,7 @@ public class JvxlData {
   public String slabInfo;
   public boolean allowVolumeRender;
   public float voxelVolume;
-  public Point3f mapLattice;
+  public P3 mapLattice;
 
   public void clear() {
     allowVolumeRender = true;
@@ -197,7 +197,7 @@ public class JvxlData {
     voxelVolume = 0;
   }
 
-  public void setSurfaceInfo(Point4f thePlane, Point3f mapLattice, int nSurfaceInts, String surfaceData) {
+  public void setSurfaceInfo(Point4f thePlane, P3 mapLattice, int nSurfaceInts, String surfaceData) {
     jvxlSurfaceData = surfaceData;
     if (jvxlSurfaceData.indexOf("--") == 0)
       jvxlSurfaceData = jvxlSurfaceData.substring(2);
@@ -206,11 +206,11 @@ public class JvxlData {
     this.nSurfaceInts = nSurfaceInts;
   }
 
-  public void setSurfaceInfoFromBitSet(BitSet bs, Point4f thePlane) {
+  public void setSurfaceInfoFromBitSet(BS bs, Point4f thePlane) {
     setSurfaceInfoFromBitSetPts(bs, thePlane, null);
   }
-  public void setSurfaceInfoFromBitSetPts(BitSet bs, Point4f thePlane, Point3f mapLattice) {
-    StringXBuilder sb = new StringXBuilder();
+  public void setSurfaceInfoFromBitSetPts(BS bs, Point4f thePlane, P3 mapLattice) {
+    SB sb = new SB();
     int nSurfaceInts = (thePlane != null ? 0 : JvxlCoder.jvxlEncodeBitSetBuffer(bs,
         nPointsX * nPointsY * nPointsZ, sb));
     setSurfaceInfo(thePlane, mapLattice, nSurfaceInts, sb.toString());

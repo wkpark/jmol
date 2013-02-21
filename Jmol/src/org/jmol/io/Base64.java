@@ -17,7 +17,7 @@ package org.jmol.io;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 public class Base64 {
 
@@ -43,7 +43,7 @@ public class Base64 {
   };
     
   public static void write(byte[] bytes, OutputStream os) throws IOException {
-    StringXBuilder sb = getBase64(bytes);
+    SB sb = getBase64(bytes);
     int len = sb.length();
     byte[] b = new byte[1];
     for (int i = 0; i < len; i++) {
@@ -56,9 +56,9 @@ public class Base64 {
     return getBase64(bytes).toBytes(0, -1);
   }
 
-  public static StringXBuilder getBase64(byte[] bytes) {
+  public static SB getBase64(byte[] bytes) {
     long nBytes = bytes.length;
-    StringXBuilder sout = new StringXBuilder();
+    SB sout = new SB();
     if (nBytes == 0)
       return sout;
     for (int i = 0, nPad = 0; i < nBytes && nPad == 0;) {

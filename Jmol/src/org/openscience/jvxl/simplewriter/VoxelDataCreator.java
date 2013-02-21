@@ -2,7 +2,7 @@ package org.openscience.jvxl.simplewriter;
 
 
 import org.jmol.jvxl.data.VolumeData;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 public class VoxelDataCreator {
 
@@ -39,7 +39,7 @@ public class VoxelDataCreator {
           }
     }    
 
-    Point3f pt = new Point3f();
+    P3 pt = new P3();
 
     public float getValue(int x, int y, int z) {
       volumeData.voxelPtToXYZ(x, y, z, pt);

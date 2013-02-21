@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.viewer.Viewer;
 
 class XplorReader extends MapFileReader {
@@ -111,7 +111,7 @@ MRC header: mapc,mapr,maps: 2,1,3
   @Override
   protected void readParameters() throws Exception {
 
-    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer = new SB();
     int nLines = parseIntStr(getLine());
     for (int i = nLines; --i >= 0; ) {
       line = br.readLine().trim();

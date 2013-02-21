@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 
 /* a simple compound document reader. 
@@ -112,9 +112,9 @@ public class CompoundDocument extends BinaryDocument{
     return str;
   }
 
-  StringXBuilder data;
+  SB data;
   
-  public StringXBuilder getAllData() {
+  public SB getAllData() {
     return getAllDataFiles(null, null);
   }
 
@@ -145,7 +145,7 @@ public class CompoundDocument extends BinaryDocument{
         boolean isBinary = (binaryFileList.indexOf("|" + name + "|") >= 0);
         if (isBinary)
           name += ":asBinaryString";
-        StringXBuilder data = new StringXBuilder();
+        SB data = new SB();
         data.append("BEGIN Directory Entry ").append(name).append("\n"); 
         data.appendSB(getEntryAsString(thisEntry, isBinary));
         data.append("\nEND Directory Entry ").append(name).append("\n");
@@ -156,7 +156,7 @@ public class CompoundDocument extends BinaryDocument{
   }
 
   @Override
-  public StringXBuilder getAllDataFiles(String binaryFileList, String firstFile) {
+  public SB getAllDataFiles(String binaryFileList, String firstFile) {
     if (firstFile != null) {
       for (int i = 0; i < directory.size(); i++) {
         CompoundDocDirEntry thisEntry = directory.get(i);
@@ -167,7 +167,7 @@ public class CompoundDocument extends BinaryDocument{
         }
       }
     }
-    data = new StringXBuilder();
+    data = new SB();
     data.append("Compound Document File Directory: ");
     data.append(getDirectoryListing("|"));
     data.append("\n");
@@ -189,13 +189,13 @@ public class CompoundDocument extends BinaryDocument{
     return data;
   }
 
-  public StringXBuilder getFileAsString(String entryName) {
+  public SB getFileAsString(String entryName) {
     for (int i = 0; i < directory.size(); i++) {
       CompoundDocDirEntry thisEntry = directory.get(i);
       if (thisEntry.entryName.equals(entryName))
         return getEntryAsString(thisEntry, false);
     }
-    return new StringXBuilder();
+    return new SB();
   }
 
   private long getOffset(int SID) {
@@ -310,17 +310,17 @@ public class CompoundDocument extends BinaryDocument{
         + getDirectoryListing("\n"));
   }
 
-  private StringXBuilder getEntryAsString(CompoundDocDirEntry thisEntry, boolean asBinaryString) {
+  private SB getEntryAsString(CompoundDocDirEntry thisEntry, boolean asBinaryString) {
     if(thisEntry.isEmpty)
-      return new StringXBuilder();
+      return new SB();
     //System.out.println(thisEntry.entryName + " " + thisEntry.entryType + " " + thisEntry.lenStream + " " + thisEntry.isStandard + " " + thisEntry.SIDfirstSector);
     return (thisEntry.isStandard ? getStandardStringData(
             thisEntry.SIDfirstSector, thisEntry.lenStream, asBinaryString)
             : getShortStringData(thisEntry.SIDfirstSector, thisEntry.lenStream, asBinaryString));
   }
-  private StringXBuilder getStandardStringData(int thisSID, int nBytes,
+  private SB getStandardStringData(int thisSID, int nBytes,
                                              boolean asBinaryString) {
-    StringXBuilder data = new StringXBuilder();
+    SB data = new SB();
     byte[] byteBuf = new byte[sectorSize];
     ZipData gzipData = new ZipData(nBytes);
     try {
@@ -330,7 +330,7 @@ public class CompoundDocument extends BinaryDocument{
         thisSID = SAT[thisSID];
       }
       if (nBytes == -9999)
-        return new StringXBuilder();
+        return new SB();
     } catch (Exception e) {
       Logger.errorEx(null, e);
     }
@@ -339,7 +339,7 @@ public class CompoundDocument extends BinaryDocument{
     return data;
   }
 
-  private int getSectorData(StringXBuilder data, byte[] byteBuf,
+  private int getSectorData(SB data, byte[] byteBuf,
                             int nSectorBytes, int nBytes, 
                             boolean asBinaryString, ZipData gzipData)
       throws Exception {
@@ -365,8 +365,8 @@ public class CompoundDocument extends BinaryDocument{
     return nBytes;
   }
 
-  private StringXBuilder getShortStringData(int shortSID, int nBytes, boolean asBinaryString) {
-    StringXBuilder data = new StringXBuilder();
+  private SB getShortStringData(int shortSID, int nBytes, boolean asBinaryString) {
+    SB data = new SB();
     if (rootEntry == null)
       return data;
     int thisSID = rootEntry.SIDfirstSector;

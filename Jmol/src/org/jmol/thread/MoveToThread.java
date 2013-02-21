@@ -29,8 +29,8 @@ package org.jmol.thread;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
@@ -50,8 +50,8 @@ public class MoveToThread extends JmolThread {
     this.transformManager = transformManager;
   }
 
-  private final Vector3f aaStepCenter = new Vector3f();
-  private final Vector3f aaStepNavCenter = new Vector3f();
+  private final V3 aaStepCenter = new V3();
+  private final V3 aaStepNavCenter = new V3();
   private final AxisAngle4f aaStep = new AxisAngle4f();
   private final AxisAngle4f aaTotal = new AxisAngle4f();
   private final Matrix3f matrixStart = new Matrix3f();
@@ -59,15 +59,15 @@ public class MoveToThread extends JmolThread {
   private final Matrix3f matrixStep = new Matrix3f();
   private final Matrix3f matrixEnd = new Matrix3f();
 
-  private Point3f center;
+  private P3 center;
   private float zoom; 
   private float xTrans;
   private float yTrans;
-  private Point3f navCenter;
+  private P3 navCenter;
   private float xNav;
   private float yNav;
   private float navDepth;
-  private Point3f ptMoveToCenter;
+  private P3 ptMoveToCenter;
   private float startRotationRadius;
   private float targetPixelScale;
   private int totalSteps;
@@ -94,9 +94,9 @@ public class MoveToThread extends JmolThread {
   private boolean doEndMove;
   private float floatSecondsTotal;
   
-  public int set(float floatSecondsTotal, Point3f center, Matrix3f end,
+  public int set(float floatSecondsTotal, P3 center, Matrix3f end,
                  float zoom, float xTrans, float yTrans,
-                 float newRotationRadius, Point3f navCenter, float xNav,
+                 float newRotationRadius, P3 navCenter, float xNav,
                  float yNav, float navDepth) {
     this.center = center;
     matrixEnd.setM(end);
@@ -238,7 +238,7 @@ public class MoveToThread extends JmolThread {
       transformManager.fixedRotationCenter.add(aaStepCenter);
     if (navCenter != null
         && transformManager.mode == TransformManager.MODE_NAVIGATION) {
-      Point3f pt = Point3f.newP(transformManager.navigationCenter);
+      P3 pt = P3.newP(transformManager.navigationCenter);
       pt.add(aaStepNavCenter);
       transformManager.setNavigatePt(pt);
       if (!Float.isNaN(xNav) && !Float.isNaN(yNav))

@@ -34,7 +34,7 @@ import java.util.Map;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Logger;
 
@@ -195,7 +195,7 @@ public class SmilesParser {
 
   private String parseVariableLength(String pattern)
       throws InvalidSmilesException {
-    StringXBuilder sout = new StringXBuilder();
+    SB sout = new SB();
     // fix internal ||
     int len = pattern.length() - 1;
     int nParen = 0;
@@ -295,7 +295,7 @@ public class SmilesParser {
         if (repeat.indexOf("|") >= 0)
           repeat = "[$(" + repeat + ")]";
         for (int i = min; i <= max; i++) {
-          StringXBuilder sb = new StringXBuilder();
+          SB sb = new SB();
           sb.append("||").append(pattern.substring(0, pt0));
           for (int j = 0; j < i; j++)
             sb.append(repeat);
@@ -1276,7 +1276,7 @@ public class SmilesParser {
         if (bond != null && pt < 0) {
           // bonds are simpler, because they have only one character
           if (len > 1) {
-            StringXBuilder sNew = new StringXBuilder();
+            SB sNew = new SB();
             for (int i = 0; i < len;) {
               char ch = pattern.charAt(i++);
               sNew.appendC(ch);

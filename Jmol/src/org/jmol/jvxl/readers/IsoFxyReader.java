@@ -25,9 +25,9 @@ package org.jmol.jvxl.readers;
 
 
 import org.jmol.jvxl.data.JvxlCoder;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 class IsoFxyReader extends AtomDataReader {
   
@@ -59,7 +59,7 @@ class IsoFxyReader extends AtomDataReader {
   protected void setup(String type) {
     func = (Object[]) params.func;
     String functionName = (String) params.functionInfo.get(0);
-    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer = new SB();
     jvxlFileHeaderBuffer.append(type).append("\n").append(functionName).append("\n");
     if (params.thePlane != null || data == null && !useOriginStepsPoints)
       setVolumeForPlane();
@@ -76,7 +76,7 @@ class IsoFxyReader extends AtomDataReader {
       super.setVolumeData(); 
       return;
     }
-    volumetricOrigin.setT((Point3f) params.functionInfo.get(1));
+    volumetricOrigin.setT((P3) params.functionInfo.get(1));
     for (int i = 0; i < 3; i++) {
       Point4f info = (Point4f) params.functionInfo.get(i + 2);
       voxelCounts[i] = Math.abs((int) info.x);
@@ -121,7 +121,7 @@ class IsoFxyReader extends AtomDataReader {
 
   
   @Override
-  public float getValueAtPoint(Point3f pt) {
+  public float getValueAtPoint(P3 pt) {
     if (params.func == null)
       return 0;
     values[0] = pt.x;

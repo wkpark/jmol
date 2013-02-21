@@ -28,8 +28,8 @@ package org.jmol.render;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.shape.Uccage;
 import org.jmol.util.BoxInfo;
-import org.jmol.util.Colix;
-import org.jmol.util.Point3f;
+import org.jmol.util.C;
+import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.StateManager;
@@ -45,10 +45,10 @@ public class UccageRenderer extends CageRenderer {
     tickEdges = BoxInfo.uccageTickEdges;    
   }
 
-  private final Point3f[] verticesT = new Point3f[8];  
+  private final P3[] verticesT = new P3[8];  
   {
     for (int i = 8; --i >= 0; ) {
-      verticesT[i] = new Point3f();
+      verticesT[i] = new P3();
     }
   }
 
@@ -67,7 +67,7 @@ public class UccageRenderer extends CageRenderer {
         && viewer.getNavigationPeriodic())
       return false;
     colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
-    boolean needTranslucent = Colix.isColixTranslucent(colix);
+    boolean needTranslucent = C.isColixTranslucent(colix);
     if (!isExport && needTranslucent != g3d.isPass2())
       return needTranslucent;
     //doLocalize = viewer.getUseNumberLocalization();
@@ -75,11 +75,11 @@ public class UccageRenderer extends CageRenderer {
     return false;
   }
 
-  private Point3f fset0 = Point3f.new3(555,555,1);
-  private Point3f cell0 = new Point3f();
-  private Point3f cell1 = new Point3f();
-  private Point3f offset = new Point3f();
-  private Point3f offsetT = new Point3f();
+  private P3 fset0 = P3.new3(555,555,1);
+  private P3 cell0 = new P3();
+  private P3 cell1 = new P3();
+  private P3 offset = new P3();
+  private P3 offsetT = new P3();
   
   private void render1(int mad) {
     g3d.setColix(colix);
@@ -88,9 +88,9 @@ public class UccageRenderer extends CageRenderer {
       return;
     isPolymer = unitcell.isPolymer();
     isSlab = unitcell.isSlab();
-    Point3f[] vertices = unitcell.getUnitCellVertices();
+    P3[] vertices = unitcell.getUnitCellVertices();
     offset.setT(unitcell.getCartesianOffset());
-    Point3f fset = unitcell.getUnitCellMultiplier();
+    P3 fset = unitcell.getUnitCellMultiplier();
     boolean haveMultiple = (fset != null);
     if (!haveMultiple) 
       fset = fset0;
@@ -102,10 +102,10 @@ public class UccageRenderer extends CageRenderer {
       cell0.scale (-1/fset.z);
       cell1.scale (-1/fset.z);
     }
-    Point3f[] axisPoints = viewer.getAxisPoints();
+    P3[] axisPoints = viewer.getAxisPoints();
     boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0
         || viewer.getAxesScale() < 2 || axisPoints == null);
-    Point3f[] aPoints = axisPoints;
+    P3[] aPoints = axisPoints;
     for (int x = (int) cell0.x; x < cell1.x; x++) {
       for (int y = (int) cell0.y; y < cell1.y; y++) {
         for (int z = (int) cell0.z; z < cell1.z; z++) {

@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 
 /**
@@ -151,8 +151,8 @@ public class MoldenReader extends MopacSlaterReader {
     }    
   }
   
-  private BitSet bsAtomOK = new BitSet();
-  private BitSet bsBadIndex = new BitSet();
+  private BS bsAtomOK = new BS();
+  private BS bsBadIndex = new BS();
   private int[] nSPDF;
   
   private boolean readGaussianBasis() throws Exception {

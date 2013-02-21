@@ -57,7 +57,7 @@ public interface JmolNode {
   public char getChainID();
   public int getOffsetResidueAtom(String name, int offset);
   public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn);
-  public void getGroupBits(BitSet bs);
+  public void getGroupBits(BS bs);
   public boolean isLeadAtom();
   public boolean isCrossLinked(JmolNode node);
   public boolean isProtein();
@@ -68,5 +68,5 @@ public interface JmolNode {
   public boolean isPyrimidine();
   public boolean isDeleted();
   public String getAtomType();
-  public BitSet findAtomsLike(String substring);
+  public BS findAtomsLike(String substring);
 }

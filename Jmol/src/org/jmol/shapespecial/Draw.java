@@ -31,23 +31,23 @@ import java.util.Map;
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Point4f;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.ActionManager;
-import org.jmol.viewer.JmolConstants;
-import org.jmol.script.Token;
+import org.jmol.viewer.JC;
+import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 
@@ -77,7 +77,7 @@ public class Draw extends MeshCollection {
       htObjects.put(thisID.toUpperCase(), currentMesh);
   }
 
-  void setPropertySuper(String propertyName, Object value, BitSet bs) {
+  void setPropertySuper(String propertyName, Object value, BS bs) {
     currentMesh = thisMesh;
     super.setProperty(propertyName, value, bs);
     thisMesh = (DrawMesh)currentMesh;  
@@ -89,8 +89,8 @@ public void initShape() {
     myType = "draw";
   }
   
-  private Point3f[] ptList;
-  private Vector3f offset = new Vector3f();
+  private P3[] ptList;
+  private V3 offset = new V3();
   private int nPoints;
   private int diameter;
   private float width;
@@ -118,14 +118,14 @@ public void initShape() {
   private int nidentifiers;
   private int nbitsets;
   private Point4f plane;
-  private BitSet bsAllModels;
+  private BS bsAllModels;
   private List<Object> polygon;
   
   private List<Object[]> vData;
   private String intersectID;
-  private Point3f[] boundBox;
+  private P3[] boundBox;
   
-  private List<Point3f[]> lineData;
+  private List<P3[]> lineData;
   private final static int PT_COORD = 1;
   private final static int PT_IDENTIFIER = 2;
   private final static int PT_BITSET = 3;
@@ -134,10 +134,10 @@ public void initShape() {
 
   @SuppressWarnings("unchecked")
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
 
     if ("init" == propertyName) {
-      colix = Colix.ORANGE;
+      colix = C.ORANGE;
       color = 0xFFFFFFFF;
       newScale = 0;
       isFixed = isReversed = isRotated45 = isCrossed = noHead = isBarb = false;
@@ -177,7 +177,7 @@ public void initShape() {
       if (value instanceof String)
         intersectID = (String) value;
       else
-        boundBox = (Point3f[]) value;
+        boundBox = (P3[]) value;
       return;
     }
     
@@ -196,15 +196,15 @@ public void initShape() {
     }
     
     if ("lineData" == propertyName) {
-      lineData = new ArrayList<Point3f[]>();
+      lineData = new ArrayList<P3[]>();
       if (indicatedModelIndex < 0)
         indicatedModelIndex = viewer.getCurrentModelIndex();
       float[] fdata = (float[]) value;
       int n = fdata.length / 6;
       for (int i = 0, pt = 0; i < n; i++)
-        lineData.add(new Point3f[] {
-            Point3f.new3(fdata[pt++], fdata[pt++], fdata[pt++]),
-            Point3f.new3(fdata[pt++], fdata[pt++], fdata[pt++])
+        lineData.add(new P3[] {
+            P3.new3(fdata[pt++], fdata[pt++], fdata[pt++]),
+            P3.new3(fdata[pt++], fdata[pt++], fdata[pt++])
             });
       return;
     }
@@ -225,7 +225,7 @@ public void initShape() {
         return;
      if (isCircle || isArc)
         isPlane = true;
-      vData.add(new Object[] { Integer.valueOf(PT_COORD), Point3f.new3(Float.NaN, Float.NaN, Float.NaN) });
+      vData.add(new Object[] { Integer.valueOf(PT_COORD), P3.new3(Float.NaN, Float.NaN, Float.NaN) });
       return;
     }
 
@@ -325,7 +325,7 @@ public void initShape() {
       if (thisMesh != null) {
         // no points in this script statement
         scaleDrawing(thisMesh, newScale);
-        thisMesh.initialize(Token.fullylit, null, null);
+        thisMesh.initialize(T.fullylit, null, null);
       }
       return;
     }
@@ -370,16 +370,16 @@ public void initShape() {
     }
 
     if ("offset" == propertyName) {
-      offset = Vector3f.newV((Point3f) value);
+      offset = V3.newV((P3) value);
       if (thisMesh != null)
         thisMesh.offset(offset);
       return;
     }
 
     if ("atomSet" == propertyName) {
-      if (BitSetUtil.cardinalityOf((BitSet) value) == 0)
+      if (BSUtil.cardinalityOf((BS) value) == 0)
         return;
-      BitSet bsAtoms = (BitSet) value;
+      BS bsAtoms = (BS) value;
       vData.add(new Object[] { Integer.valueOf(PT_BITSET), bsAtoms });
       nbitsets++;
       if (isCircle && diameter == 0 && width == 0)
@@ -404,7 +404,7 @@ public void initShape() {
             && newScale == 1)
           newScale = length;
         scaleDrawing(thisMesh, newScale);
-        thisMesh.initialize(Token.fullylit, null, null);
+        thisMesh.initialize(T.fullylit, null, null);
         setAxes(thisMesh);
         thisMesh.title = title;
         thisMesh.visible = true;
@@ -483,7 +483,7 @@ public void initShape() {
     return super.getProperty(property, index);
   }
 
-  private Point3f getSpinCenter(String axisID, int vertexIndex, int modelIndex) {
+  private P3 getSpinCenter(String axisID, int vertexIndex, int modelIndex) {
     String id;
     int pt = axisID.indexOf("[");
     int pt2;
@@ -506,7 +506,7 @@ public void initShape() {
     // < 0 and no ptCenters or modelIndex < 0 -- center point
     // < 0 center for modelIndex
     if (vertexIndex == Integer.MAX_VALUE)
-      return Point3f.new3(m.index + 1, meshCount, m.vertexCount);
+      return P3.new3(m.index + 1, meshCount, m.vertexCount);
     if (vertexIndex != Integer.MIN_VALUE) 
       vertexIndex = m.getVertexIndexFromNumber(vertexIndex);
     return (vertexIndex >= 0 ? m.vertices[vertexIndex] : m.ptCenters == null
@@ -514,7 +514,7 @@ public void initShape() {
         ? m.ptCenter : m.ptCenters[modelIndex]);
   }
    
-  private Vector3f getSpinAxis(String axisID, int modelIndex) {
+  private V3 getSpinAxis(String axisID, int modelIndex) {
     DrawMesh m = (DrawMesh) getMesh(axisID);
     return (m == null || m.vertices == null ? null 
         : m.ptCenters == null || modelIndex < 0 ? m.axis : m.axes[modelIndex]);
@@ -554,7 +554,7 @@ public void initShape() {
         if (polygon.size() == 0)
           return false;
         thisMesh.isTriangleSet = true;
-        thisMesh.vertices = (Point3f[]) polygon.get(0);
+        thisMesh.vertices = (P3[]) polygon.get(0);
         thisMesh.polygonIndexes = (int[][]) polygon.get(1);          
         thisMesh.drawVertexCount = thisMesh.vertexCount = thisMesh.vertices.length;
         thisMesh.polygonCount = thisMesh.polygonIndexes.length;
@@ -577,8 +577,8 @@ public void initShape() {
       // multiple copies, one for each model involved
       thisMesh.modelIndex = -1;
       thisMesh.setPolygonCount(modelCount);
-      thisMesh.ptCenters = new Point3f[modelCount];
-      thisMesh.modelFlags = new BitSet();
+      thisMesh.ptCenters = new P3[modelCount];
+      thisMesh.modelFlags = new BS();
       thisMesh.drawTypes = new EnumDrawType[modelCount];
       thisMesh.drawVertexCounts = new int[modelCount];
       thisMesh.vertexCount = 0;
@@ -589,7 +589,7 @@ public void initShape() {
         thisMesh.modelFlags.set(indicatedModelIndex);
         indicatedModelIndex = -1;
       } else {
-        BitSet bsModels = viewer.getVisibleFramesBitSet();
+        BS bsModels = viewer.getVisibleFramesBitSet();
         for (int iModel = 0; iModel < modelCount; iModel++) {
           if (bsModels.get(iModel) && setPoints(iModel, -1)) {
             setPoints(iModel, nPoints);
@@ -637,9 +637,9 @@ public void initShape() {
         
       }
     } else if (plane != null && intersectID != null) {
-      List<Point3f[]> vData = new ArrayList<Point3f[]>();
+      List<P3[]> vData = new ArrayList<P3[]>();
       Object[] data = new Object[] { intersectID, plane, vData, null };
-      viewer.getShapePropertyData(JmolConstants.SHAPE_ISOSURFACE, "intersectPlane",
+      viewer.getShapePropertyData(JC.SHAPE_ISOSURFACE, "intersectPlane",
           data);
       if (vData.size() == 0)
         return;
@@ -652,19 +652,19 @@ public void initShape() {
   
   private void setSlabData() {
     if (plane != null) {
-      slabData.getIntersection(0, plane, null, null, null, null, null, false, true, Token.plane, false);
+      slabData.getIntersection(0, plane, null, null, null, null, null, false, true, T.plane, false);
       polygon = new ArrayList<Object>();
       polygon.add(slabData.vertices);
       polygon.add(slabData.polygonIndexes);
     }
   }
 
-  private void addPoint(Point3f newPt, int iModel) {
+  private void addPoint(P3 newPt, int iModel) {
     boolean isOK = (iModel < 0 || bsAllModels.get(iModel));
     if (makePoints) {
       if (!isOK)
         return;
-      ptList[nPoints] = Point3f.newP(newPt);
+      ptList[nPoints] = P3.newP(newPt);
       if (newPt.z == Float.MAX_VALUE || newPt.z == -Float.MAX_VALUE)
         thisMesh.haveXyPoints = true;
     } else if (iModel >= 0) {
@@ -686,15 +686,15 @@ public void initShape() {
     // we also provide a flag CROSSED to uncross them
     this.makePoints = (n >= 0);
     if (makePoints) {
-      ptList = new Point3f[Math.max(5,n)];
+      ptList = new P3[Math.max(5,n)];
       if (bsAllModels == null)
         bsAllModels = viewer.getVisibleFramesBitSet();
     }
     nPoints = 0;
     int nData = vData.size();
     int modelIndex = 0;
-    BitSet bs;
-    BitSet bsModel = (iModel < 0 ? null : viewer.getModelUndeletedAtomsBitSet(iModel));
+    BS bs;
+    BS bsModel = (iModel < 0 ? null : viewer.getModelUndeletedAtomsBitSet(iModel));
     for (int i = 0; i < nData; i++) {
       Object[] info = vData.get(i);
       switch (((Integer) info[0]).intValue()) {
@@ -709,7 +709,7 @@ public void initShape() {
           int[] p = thisMesh.polygonIndexes[modelIndex] = new int[nVertices];
           for (int j = 0; j < nPoints; j++) {
             info = vData.get(++i);
-            p[j] = thisMesh.addVertexCopy((Point3f) info[1]);
+            p[j] = thisMesh.addVertexCopy((P3) info[1]);
           }
           for (int j = nPoints; j < 3; j++) {
             p[j] = n0 + nPoints - 1;
@@ -720,13 +720,13 @@ public void initShape() {
         }
         break;
       case PT_COORD:
-        addPoint((Point3f) info[1], (makePoints ? iModel : -1));
+        addPoint((P3) info[1], (makePoints ? iModel : -1));
         break;
       case PT_BITSET:
         // (atom set) references must be filtered for relevant model
         // note that if a model doesn't have a relevant point, one may
         // get a line instead of a plane, a point instead of a line, etc.
-        bs = BitSetUtil.copy((BitSet) info[1]);
+        bs = BSUtil.copy((BS) info[1]);
         if (bsModel != null)
           bs.and(bsModel);
         if (bs.length() > 0)
@@ -740,7 +740,7 @@ public void initShape() {
         if (m.modelIndex > 0 && m.modelIndex != iModel)
           return false;
         if (bsAllModels == null)
-          bsAllModels = new BitSet();
+          bsAllModels = new BS();
         if (isPlane && !isCircle || isPerpendicular || isVertices) {
           if (isReversed) {
             if (iModel < 0 || iModel >= m.polygonCount)
@@ -768,15 +768,15 @@ public void initShape() {
         // from list variables
         String[] modelBasedPoints = (String[]) info[1];
         if (bsAllModels == null)
-          bsAllModels = new BitSet();
+          bsAllModels = new BS();
         for (int j = 0; j < modelBasedPoints.length; j++)
           if (iModel < 0 || j == iModel) {
             Object point = Escape.unescapePointOrBitsetOrMatrixOrArray(modelBasedPoints[j]);
             bsAllModels.set(j);
-            if (point instanceof Point3f) {
-              addPoint((Point3f) point, j);
-            } else if (point instanceof BitSet) {
-              bs = (BitSet) point;
+            if (point instanceof P3) {
+              addPoint((P3) point, j);
+            } else if (point instanceof BS) {
+              bs = (BS) point;
               if (bsModel != null)
                 bs.and(bsModel);
               if (bs.length() > 0)
@@ -787,15 +787,15 @@ public void initShape() {
       }
     }
     if (makePoints && isCrossed && nPoints == 4) {
-      Point3f pt = ptList[1];
+      P3 pt = ptList[1];
       ptList[1] = ptList[2];
       ptList[2] = pt;
     }
     return (nPoints > 0);
   }
 
-  private final Vector3f vAB = new Vector3f();
-  private final Vector3f vAC = new Vector3f();
+  private final V3 vAB = new V3();
+  private final V3 vAC = new V3();
 
   private void setPolygon(int nPoly) {
     int nVertices = nPoints;
@@ -851,7 +851,7 @@ public void initShape() {
           vAC.scale(2);
         }
         vAC.add(ptList[0]);
-        ptList[1] = Point3f.newP(vAC);
+        ptList[1] = P3.newP(vAC);
         drawType = (isArrow ? EnumDrawType.ARROW
             : isArc ? EnumDrawType.ARC : EnumDrawType.CIRCULARPLANE);
       }
@@ -862,14 +862,14 @@ public void initShape() {
           // fractionalAxisOffset}
         } else if (nVertices == 3) {
           // draw arc {center} {pt2} {angleOffset theta fractionalAxisOffset}
-          ptList[3] = Point3f.newP(ptList[2]);
+          ptList[3] = P3.newP(ptList[2]);
           ptList[2] = randomPoint();
         } else {
           if (nVertices == 2) {
             // draw arc {center} {pt2}
             ptList[2] = randomPoint();
           }
-          ptList[3] = Point3f.new3(0, 360, 0);
+          ptList[3] = P3.new3(0, 360, 0);
         }
         if (plane != null)
           ptList[3].z *= dist;
@@ -877,12 +877,12 @@ public void initShape() {
       }
       plane = null;
     } else if (drawType == EnumDrawType.POINT) {
-      Point3f pt;
-      Point3f center = new Point3f();
-      Vector3f normal = new Vector3f();
+      P3 pt;
+      P3 center = new P3();
+      V3 normal = new V3();
       if (nVertices == 2 && plane != null) {
-        ptList[1] = Point3f.newP(ptList[0]);
-        Vector3f vTemp = new Vector3f();
+        ptList[1] = P3.newP(ptList[0]);
+        V3 vTemp = new V3();
         Measure.getPlaneProjection(ptList[1], plane, ptList[1], vTemp);
         nVertices = -2;
         if (isArrow)
@@ -891,10 +891,10 @@ public void initShape() {
       }
       if (nVertices == 3 && isPlane && !isPerpendicular) {
         // three points define a plane
-        pt = Point3f.newP(ptList[1]);
+        pt = P3.newP(ptList[1]);
         pt.sub(ptList[0]);
         pt.scale(0.5f);
-        ptList[3] = Point3f.newP(ptList[2]);
+        ptList[3] = P3.newP(ptList[2]);
         ptList[2].add(pt);
         ptList[3].sub(pt);
         nVertices = 4;
@@ -902,7 +902,7 @@ public void initShape() {
         // normal to plane
         Measure.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal,
             vAB, vAC);
-        center = new Point3f();
+        center = new P3();
         Measure.calcAveragePointN(ptList, nVertices, center);
         dist = (length == Float.MAX_VALUE ? ptList[0].distance(center) : length);
         normal.scale(dist);
@@ -921,9 +921,9 @@ public void initShape() {
         Measure.getNormalToLine(ptList[0], ptList[1], normal);
         normal.scale(dist);
         if (isPlane) {
-          ptList[2] = Point3f.newP(center);
+          ptList[2] = P3.newP(center);
           ptList[2].sub(normal);
-          pt = Point3f.newP(center);
+          pt = P3.newP(center);
           pt.add(normal);
           // pt
           // |
@@ -933,7 +933,7 @@ public void initShape() {
           Measure.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal,
               vAB, vAC);
           normal.scale(dist);
-          ptList[3] = Point3f.newP(center);
+          ptList[3] = P3.newP(center);
           ptList[3].add(normal);
           ptList[1].setT(center);
           ptList[1].sub(normal);
@@ -1023,11 +1023,11 @@ public void initShape() {
     mesh.scale = newScale;
     if (mesh.haveXyPoints || mesh.drawType == EnumDrawType.ARC || mesh.drawType == EnumDrawType.CIRCLE || mesh.drawType == EnumDrawType.CIRCULARPLANE)
       return; // done in renderer
-    Vector3f diff = new Vector3f();
+    V3 diff = new V3();
     int iptlast = -1;
     int ipt = 0;
     for (int i = mesh.polygonCount; --i >= 0;) {
-      Point3f center = (mesh.isVector ? mesh.vertices[0] 
+      P3 center = (mesh.isVector ? mesh.vertices[0] 
           : mesh.ptCenters == null ? mesh.ptCenter
           : mesh.ptCenters[i]);
       if (center == null)
@@ -1049,14 +1049,14 @@ public void initShape() {
   }
 
   private final static void setAxes(DrawMesh m) {
-    m.axis = Vector3f.new3(0, 0, 0);
-    m.axes = new Vector3f[m.polygonCount > 0 ? m.polygonCount : 1];
+    m.axis = V3.new3(0, 0, 0);
+    m.axes = new V3[m.polygonCount > 0 ? m.polygonCount : 1];
     if (m.vertices == null)
       return;
     int n = 0;
     for (int i = m.polygonCount; --i >= 0;) {
       int[] p = m.polygonIndexes[i];
-      m.axes[i] = new Vector3f();
+      m.axes[i] = new V3();
       if (p == null || p.length == 0) {
       } else if (m.drawVertexCount == 2 || m.drawVertexCount < 0
           && m.drawVertexCounts[i] == 2) {
@@ -1077,7 +1077,7 @@ public void initShape() {
   }
 
   @Override
-  public void setVisibilityFlags(BitSet bs) {
+  public void setVisibilityFlags(BS bs) {
     /*
      * set all fixed objects visible; others based on model being displayed note
      * that this is NOT done with atoms and bonds, because they have mads. When
@@ -1090,7 +1090,7 @@ public void initShape() {
       }
       m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);
       if (m.modelIndex >= 0 && !bs.get(m.modelIndex) || m.modelFlags != null
-          && !BitSetUtil.haveCommon(bs, m.modelFlags)) {
+          && !BSUtil.haveCommon(bs, m.modelFlags)) {
         m.visibilityFlags = 0;
       } else if (m.modelFlags != null) {
         m.bsMeshesVisible.clearAll();
@@ -1103,22 +1103,22 @@ public void initShape() {
   
   private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
 
-  private final Point3i ptXY = new Point3i();
+  private final P3i ptXY = new P3i();
   
   @Override
-  public Map<String, Object> checkObjectClicked(int x, int y, int action, BitSet bsVisible) {
+  public Map<String, Object> checkObjectClicked(int x, int y, int action, BS bsVisible) {
     boolean isPickingMode = (viewer.getPickingMode() == ActionManager.PICKING_DRAW);
     boolean isSpinMode = (viewer.getPickingMode() == ActionManager.PICKING_SPIN);
     boolean isDrawPicking = viewer.getDrawPicking();
     if (!isPickingMode && !isDrawPicking && !isSpinMode
-        || Colix.isColixTranslucent(colix))
+        || C.isColixTranslucent(colix))
       return null;
     if (!findPickedObject(x, y, false, bsVisible))
       return null;
-    Point3f v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
+    P3 v = pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][pickedVertex]];
     int modelIndex = pickedMesh.modelIndex;
-    BitSet bs = ((DrawMesh) pickedMesh).modelFlags;
-    if (modelIndex < 0 && bs != null && BitSetUtil.cardinalityOf(bs) == 1)
+    BS bs = ((DrawMesh) pickedMesh).modelFlags;
+    if (modelIndex < 0 && bs != null && BSUtil.cardinalityOf(bs) == 1)
       modelIndex = bs.nextSetBit(0);
     if (isDrawPicking && !isPickingMode) {
       if (action != 0) // not mouseMove
@@ -1144,10 +1144,10 @@ public void initShape() {
   }
 
   @Override
-  public boolean checkObjectHovered(int x, int y, BitSet bsVisible) {
+  public boolean checkObjectHovered(int x, int y, BS bsVisible) {
     if (!viewer.getDrawHover())
       return false;
-    if (Colix.isColixTranslucent(colix))
+    if (C.isColixTranslucent(colix))
       return false;
     if (!findPickedObject(x, y, false, bsVisible))
       return false;
@@ -1167,7 +1167,7 @@ public void initShape() {
   @Override
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
                                                  int y, int action,
-                                                 BitSet bsVisible) {
+                                                 BS bsVisible) {
     //TODO -- can dispense with this first check:
     if (viewer.getPickingMode() != ActionManager.PICKING_DRAW)
       return false;
@@ -1203,11 +1203,11 @@ public void initShape() {
       x <<= 1;
       y <<= 1;
     }
-    Point3f pt = new Point3f();
+    P3 pt = new P3();
     int ptVertex = vertexes[iVertex];
-    Point3f coord = Point3f.newP(mesh.vertices[ptVertex]);
-    Point3f newcoord = new Point3f();
-    Vector3f move = new Vector3f();
+    P3 coord = P3.newP(mesh.vertices[ptVertex]);
+    P3 newcoord = new P3();
+    V3 move = new V3();
     viewer.transformPt3f(coord, pt);
     pt.x = x;
     pt.y = y;
@@ -1219,7 +1219,7 @@ public void initShape() {
                           // one for this model
     int n = (!moveAll ? iVertex + 1 
         : mesh.isTriangleSet ? mesh.vertices.length : vertexes.length);
-    BitSet bsMoved = new BitSet();
+    BS bsMoved = new BS();
     for (int i = (moveAll ? 0 : iVertex); i < n; i++)
       if (moveAll || i == iVertex) {
         int k = (mesh.isTriangleSet ? i : vertexes[i]);
@@ -1243,7 +1243,7 @@ public void initShape() {
    * @return true if found
    */
   private boolean findPickedObject(int x, int y, boolean isPicking,
-                                   BitSet bsVisible) {
+                                   BS bsVisible) {
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     if (gdata.isAntialiased()) {
       x <<= 1;
@@ -1268,7 +1268,7 @@ public void initShape() {
           for (int iVertex = (m.isTriangleSet ? 3
               : m.polygonIndexes[iModel].length); --iVertex >= 0;) {
             try {
-              Point3f pt = m.vertices[m.polygonIndexes[iModel][iVertex]];
+              P3 pt = m.vertices[m.polygonIndexes[iModel][iVertex]];
               int d2 = coordinateInRange(x, y, pt, dmin2, ptXY);
               if (d2 >= 0) {
                 pickedMesh = m;
@@ -1291,7 +1291,7 @@ public void initShape() {
     if (mesh != null)
       return getDrawCommand(mesh, mesh.modelIndex);
     
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     String key = (explicitID && previousMeshID != null
         && TextFormat.isWild(previousMeshID) ? previousMeshID.toUpperCase()
         : null);
@@ -1311,11 +1311,11 @@ public void initShape() {
         && mesh.lineData == null
         && mesh.drawVertexCount == 0 && mesh.drawVertexCounts == null)
       return "";
-    StringXBuilder str = new StringXBuilder();
+    SB str = new SB();
     int modelCount = viewer.getModelCount();
     if (!mesh.isFixed && iModel >= 0 && modelCount > 1)
       appendCmd(str, "frame " + viewer.getModelNumberDotted(iModel));
-    str.append("  draw ID ").append(Escape.escapeStr(mesh.thisID));
+    str.append("  draw ID ").append(Escape.eS(mesh.thisID));
     if (mesh.isFixed)
       str.append(" fixed");
     if (iModel < 0)
@@ -1338,10 +1338,10 @@ public void initShape() {
       str.append("  lineData [");
       int n = mesh.lineData.size();
       for (int j = 0; j < n;) {
-        Point3f[] pts = mesh.lineData.get(j);
-        str.append(Escape.escapePt(pts[0]));
+        P3[] pts = mesh.lineData.get(j);
+        str.append(Escape.eP(pts[0]));
         str.append(" ");
-        str.append(Escape.escapePt(pts[1]));
+        str.append(Escape.eP(pts[1]));
         if (++j < n)
           str.append(", ");
       }
@@ -1369,7 +1369,7 @@ public void initShape() {
       case ARROW:
         str.append(mesh.isVector ? " VECTOR" : " ARROW");
         if (mesh.connections != null)
-          str.append(" connect ").append(Escape.escape(mesh.connections));
+          str.append(" connect ").append(Escape.e(mesh.connections));
         break;
       case CIRCLE:
         str.append(" CIRCLE");
@@ -1402,7 +1402,7 @@ public void initShape() {
           }
       } else if (mesh.drawType == EnumDrawType.POLYGON) {
         for (int i = 0; i < mesh.vertexCount; i++)
-          str.append(" ").append(Escape.escapePt(mesh.vertices[i]));
+          str.append(" ").append(Escape.eP(mesh.vertices[i]));
         str.append(" ").appendI(mesh.polygonCount);
         for (int i = 0; i < mesh.polygonCount; i++)
           if (mesh.polygonIndexes[i] == null)
@@ -1417,15 +1417,15 @@ public void initShape() {
       }
     }
     if (mesh.mat4 != null) {
-      Vector3f v = new Vector3f();
+      V3 v = new V3();
       mesh.mat4.get(v);
-      str.append(" offset ").append(Escape.escapePt(v));
+      str.append(" offset ").append(Escape.eP(v));
     }
     if (mesh.title != null) {
       String s = "";
       for (int i = 0; i < mesh.title.length; i++)
         s += "|" + mesh.title[i];
-      str.append(Escape.escapeStr(s.substring(1)));
+      str.append(Escape.eS(s.substring(1)));
     }
     str.append(";\n");
     appendCmd(str, mesh.getState("draw"));
@@ -1446,15 +1446,15 @@ public void initShape() {
         iModel = 0; // arrows and curves may not have multiple model representations
       boolean adjustPt = (mesh.isVector && mesh.drawType != EnumDrawType.ARC);
       for (int i = 0; i < nVertices; i++) {
-        Point3f pt = mesh.vertices[mesh.polygonIndexes[iModel][i]];
+        P3 pt = mesh.vertices[mesh.polygonIndexes[iModel][i]];
         if (pt.z == Float.MAX_VALUE || pt.z == -Float.MAX_VALUE) {
           str += (i == 0 ? " " : " ,") + "[" + (int) pt.x + " " + (int) pt.y + (pt.z < 0 ? " %]" : "]");
         } else if (adjustPt && i == 1){
-          Point3f pt1 = Point3f.newP(pt);
+          P3 pt1 = P3.newP(pt);
           pt1.sub(mesh.vertices[mesh.polygonIndexes[iModel][0]]);
-          str += " " + Escape.escapePt(pt1);
+          str += " " + Escape.eP(pt1);
         } else {
-          str += " " + Escape.escapePt(pt);
+          str += " " + Escape.eP(pt);
         }
       }
     } catch (Exception e) {
@@ -1493,7 +1493,7 @@ public void initShape() {
           mInfo.put("vertexCount", Integer.valueOf(nPoints));
           if (nPoints > 1)
             mInfo.put("axis", mesh.axes[k]);
-          List<Point3f> v = new ArrayList<Point3f>();
+          List<P3> v = new ArrayList<P3>();
           for (int ipt = 0; ipt < nPoints; ipt++)
             v.add(mesh.vertices[mesh.polygonIndexes[k][ipt]]);
           mInfo.put("vertices", v);
@@ -1510,7 +1510,7 @@ public void initShape() {
         info.put("center", mesh.ptCenter);
         if (mesh.drawVertexCount > 1)
           info.put("axis", mesh.axis);
-        List<Point3f> v = new ArrayList<Point3f>();
+        List<P3> v = new ArrayList<P3>();
         for (int j = 0; j < mesh.vertexCount; j++)
           v.add(mesh.vertices[j]);
         info.put("vertices", v);
@@ -1525,7 +1525,7 @@ public void initShape() {
 
   @Override
   public String getShapeState() {
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     s.append("\n");
     appendCmd(s, "draw delete");
     for (int i = 0; i < meshCount; i++) {
@@ -1539,8 +1539,8 @@ public void initShape() {
     return s.toString();
   }
 
-  public static Point3f randomPoint() {
-    return Point3f.new3((float) Math.random(), (float) Math.random(), (float) Math.random());
+  public static P3 randomPoint() {
+    return P3.new3((float) Math.random(), (float) Math.random(), (float) Math.random());
   }
 
   public enum EnumDrawType {

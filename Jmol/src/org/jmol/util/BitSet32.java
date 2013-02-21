@@ -967,7 +967,7 @@ public class BitSet32 implements Cloneable {
 
 		int numBits = (wordsInUse > 128) ? cardinality() : wordsInUse
 				* BITS_PER_WORD;
-		StringXBuilder b = StringXBuilder.newN(6 * numBits + 2);
+		SB b = SB.newN(6 * numBits + 2);
 		b.appendC('{');
 
 		int i = nextSetBit(0);

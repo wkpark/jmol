@@ -30,15 +30,15 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.MeasurementPending;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Point3fi;
 import org.jmol.modelset.TickInfo;
-import org.jmol.viewer.JmolConstants;
-import org.jmol.script.Token;
+import org.jmol.viewer.JC;
+import org.jmol.script.T;
 
 import java.util.ArrayList;
 
@@ -49,7 +49,7 @@ import java.util.Map;
 
 public class Measures extends AtomShape implements JmolMeasurementClient {
 
-  private BitSet bsSelected;
+  private BS bsSelected;
   private String strFormat;
   private boolean mustBeConnected = false;
   private boolean mustNotBeConnected = false;
@@ -79,16 +79,16 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   
   @Override
   public void initShape() {
-    font3d = gdata.getFont3D(JmolConstants.MEASURE_DEFAULT_FONTSIZE);
+    font3d = gdata.getFont3D(JC.MEASURE_DEFAULT_FONTSIZE);
   }
 
   @Override
-  protected void setSize(int size, BitSet bsSelected) {
+  protected void setSize(int size, BS bsSelected) {
     mad = (short)size;
   }
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bsIgnored) {
+  public void setProperty(String propertyName, Object value, BS bsIgnored) {
     // the following can be used with "select measures ({bitset})"
     
     Measurement mt;
@@ -99,7 +99,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
     
     if ("color" == propertyName) {
-      setColor(value == null ? Colix.INHERIT_ALL : Colix.getColixO(value));
+      setColor(value == null ? C.INHERIT_ALL : C.getColixO(value));
       return;
     } 
 
@@ -135,11 +135,11 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     } 
 
     if ("select" == propertyName) {
-      BitSet bs = (BitSet) value;
-      if (bs == null || BitSetUtil.cardinalityOf(bs) == 0) {
+      BS bs = (BS) value;
+      if (bs == null || BSUtil.cardinalityOf(bs) == 0) {
         bsSelected = null;
       } else {
-        bsSelected = new BitSet();
+        bsSelected = new BS();
         bsSelected.or(bs);
       }
       return;
@@ -179,30 +179,30 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       strFormat = md.strFormat;
       if (md.isAll) {
         if (tickInfo != null)
-          define(md, Token.delete);
+          define(md, T.delete);
         define(md, md.tokAction);
         setIndices();
         return;
       }
       Measurement pt = setSingleItem(md.points);
       switch (md.tokAction) {
-      case Token.delete:
+      case T.delete:
         defineAll(Integer.MIN_VALUE, pt, true, false, false);
         setIndices();
         break;
-      case Token.on:
+      case T.on:
         showHideM(pt, false);          
         break;
-      case Token.off:
+      case T.off:
         showHideM(pt, true);
         break;
-      case Token.define:
+      case T.define:
         deleteM(pt);
         if (md.colix != 0)
           pt.colix = md.colix;
         toggle(pt);        
         break;
-      case Token.opToggle:
+      case T.opToggle:
         toggle(pt);        
       }
       return;
@@ -277,8 +277,8 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     indices[0] = vector.size();
     for (int i = vector.size(); --i >= 0; ) {
       Object value = vector.get(i);
-      if (value instanceof BitSet) {
-        int atomIndex = ((BitSet) value).nextSetBit(0);
+      if (value instanceof BS) {
+        int atomIndex = ((BS) value).nextSetBit(0);
         if (atomIndex < 0)
           return null;
         indices[i + 1] = atomIndex;
@@ -320,14 +320,14 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
 
   private void setColor(short colix) {
     if (bsColixSet == null)
-      bsColixSet = new BitSet();
+      bsColixSet = new BS();
       if (bsSelected == null)
         this.colix = colix;
     Measurement mt;
     for (int i = measurements.size(); --i >= 0; )
       if ((mt = measurements.get(i)) != null
           && (bsSelected != null && bsSelected.get(i) || bsSelected == null
-              && (colix == Colix.INHERIT_ALL || mt.colix == Colix.INHERIT_ALL))) {
+              && (colix == C.INHERIT_ALL || mt.colix == C.INHERIT_ALL))) {
         mt.colix = colix;
         bsColixSet.set(i);
       }
@@ -368,7 +368,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   private void toggleOn(int[] indices) {
     radiusData = null;
     //toggling one that is hidden should be interpreted as DEFINE
-    bsSelected = new BitSet();
+    bsSelected = new BS();
     defineAll(Integer.MIN_VALUE, new Measurement(modelSet, indices, null, defaultTickInfo), false, true, true);
     setIndices();
     reformatDistances();
@@ -415,13 +415,13 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     int nPoints = m.getCount();
     for (int i = 1; i <= nPoints; i++) {
       int atomIndex = m.getAtomIndex(i);
-      points.add(atomIndex >= 0 ? (Object) viewer.getAtomBits(Token.atomno,
+      points.add(atomIndex >= 0 ? (Object) viewer.getAtomBits(T.atomno,
           Integer.valueOf(atoms[atomIndex].getAtomNumber())) : (Object) m
           .getAtom(i));
     }
     define((new MeasurementData(viewer, points)).set(tokAction, radiusData, strFormat, null, tickInfo,
         mustBeConnected, mustNotBeConnected, intramolecular, true),
-        (isDelete ? Token.delete : Token.define));
+        (isDelete ? T.delete : T.define));
   }
 
   private int find(Measurement m) {
@@ -445,15 +445,15 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     // all atom bitsets have been iterated
     int iThis = find(m);
     if (iThis >= 0) {
-      if (tokAction == Token.delete) {
+      if (tokAction == T.delete) {
         deleteI(iThis);
       } else if (strFormat != null) {
         measurements.get(iThis).formatMeasurementAs(strFormat,
             null, true);
       } else {
-        measurements.get(iThis).isHidden = (tokAction == Token.off);
+        measurements.get(iThis).isHidden = (tokAction == T.off);
       }
-    } else if (tokAction == Token.define || tokAction == Token.opToggle) {
+    } else if (tokAction == T.define || tokAction == T.opToggle) {
       m.tickInfo = (tickInfo == null ? defaultTickInfo : tickInfo);
       defineMeasurement(-1, m, true);
     }
@@ -540,7 +540,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       Map<String, Object> atomInfo = new Hashtable<String, Object>();
       int atomIndex = m.getAtomIndex(i);
       atomInfo.put("_ipt", Integer.valueOf(atomIndex));
-      atomInfo.put("coord", Escape.escapePt(m.getAtom(i)));
+      atomInfo.put("coord", Escape.eP(m.getAtom(i)));
       atomInfo.put("atomno", Integer.valueOf(atomIndex < 0 ? -1 : atoms[atomIndex].getAtomNumber()));
       atomInfo.put("info", (atomIndex < 0 ? "<point>" : atoms[atomIndex].getInfo()));
       atomsInfo.add(atomInfo);
@@ -555,7 +555,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   }
   
   public void setVisibilityInfo() {
-    BitSet bsModels = viewer.getVisibleFramesBitSet();
+    BS bsModels = viewer.getVisibleFramesBitSet();
     out:
     for (int i = measurementCount; --i >= 0; ) {
       Measurement m = measurements.get(i);

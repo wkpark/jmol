@@ -26,13 +26,13 @@ package org.jmol.popup;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.i18n.GT;
 import org.jmol.i18n.Language;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 import java.util.ArrayList;
@@ -144,7 +144,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
       String type = title.substring(pt);
       title = title.substring(0, pt);
       if (type.indexOf("current") >= 0) {
-        StringXBuilder sb = new StringXBuilder();
+        SB sb = new SB();
         Object menu = htMenus.get(menuName);
         menuGetAsText(sb, 0, menu, "PopupMenu");
         return sb.toString();
@@ -228,7 +228,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     }
   }
 
-  static protected void addItemText(StringXBuilder sb, char type, int level,
+  static protected void addItemText(SB sb, char type, int level,
                                     String name, String label, String script,
                                     String flags) {
     sb.appendC(type).appendI(level).appendC('\t').append(name);
@@ -624,7 +624,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
         .getSelectionCount()));
   }
 
-  private void updateElementsComputedMenu(BitSet elementsPresentBitSet) {
+  private void updateElementsComputedMenu(BS elementsPresentBitSet) {
     Object menu = htMenus.get("elementsComputedMenu");
     if (menu == null)
       return;
@@ -791,8 +791,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
       return;
     //next is correct as "<=" because it includes "UNK"
     int nItems = 0;
-    for (int i = 1; i < JmolConstants.GROUPID_AMINO_MAX; ++i)
-      nItems += updateGroup3List(menu, JmolConstants.predefinedGroup3Names[i]);
+    for (int i = 1; i < JC.GROUPID_AMINO_MAX; ++i)
+      nItems += updateGroup3List(menu, JC.predefinedGroup3Names[i]);
     nItems += augmentGroup3List(menu, "p>", true);
     menuEnable(menu, (nItems > 0));
     menuEnable(htMenus.get("PDBproteinMenu"), (nItems > 0));
@@ -823,7 +823,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
   }
 
   private int augmentGroup3List(Object menu, String type, boolean addSeparator) {
-    int pt = JmolConstants.GROUPID_AMINO_MAX * 6 - 6;
+    int pt = JC.GROUPID_AMINO_MAX * 6 - 6;
     // ...... p>AFN]o>ODH]n>+T ]
     int nItems = 0;
     while (true) {
@@ -1086,11 +1086,11 @@ abstract public class GenericPopup implements JmolPopupInterface,
     htMenus.put("modelSetMenu", subMenu);
     updateModelSetComputedMenu();
 
-    subMenu = menuNewSubMenu("Jmol " + JmolConstants.version
+    subMenu = menuNewSubMenu("Jmol " + JC.version
         + (isSigned ? " (signed)" : ""), "aboutJmolMenu");
     menuAddSubMenu(menu, subMenu);
     htMenus.put("aboutJmolMenu", subMenu);
-    addMenuItem(subMenu, JmolConstants.date);
+    addMenuItem(subMenu, JC.date);
     menuCreateItem(subMenu, "http://www.jmol.org",
         "show url \"http://www.jmol.org\"", null);
     menuCreateItem(subMenu, GT._("Mouse Manual"),

@@ -39,16 +39,16 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.api.JmolBioResolver;
@@ -98,7 +98,7 @@ public final class Resolver implements JmolBioResolver {
     int distinguishingBits = 0;
 
     // clear previous specialAtomIndexes
-    for (int i = JmolConstants.ATOMID_MAX; --i >= 0;)
+    for (int i = JC.ATOMID_MAX; --i >= 0;)
       specialAtomIndexes[i] = Integer.MIN_VALUE;
 
     // go last to first so that FIRST confirmation is default
@@ -106,7 +106,7 @@ public final class Resolver implements JmolBioResolver {
       int specialAtomID = atoms[i].getAtomID();
       if (specialAtomID <= 0)
         continue;
-      if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX) {
+      if (specialAtomID < JC.ATOMID_DISTINGUISHING_ATOM_MAX) {
         /*
          * save for future option -- turns out the 1jsa bug was in relation to
          * an author using the same group number for two different groups
@@ -127,19 +127,19 @@ public final class Resolver implements JmolBioResolver {
       throw new NullPointerException();
 
     Monomer m = null;
-    if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) == JmolConstants.ATOMID_PROTEIN_MASK)
+    if ((distinguishingBits & JC.ATOMID_PROTEIN_MASK) == JC.ATOMID_PROTEIN_MASK)
       m = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK)
+    else if (distinguishingBits == JC.ATOMID_ALPHA_ONLY_MASK)
       m = AlphaMonomer.validateAndAllocateA(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes);
-    else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) == JmolConstants.ATOMID_NUCLEIC_MASK))
+    else if (((distinguishingBits & JC.ATOMID_NUCLEIC_MASK) == JC.ATOMID_NUCLEIC_MASK))
       m = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes);
-    else if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK)
+    else if (distinguishingBits == JC.ATOMID_PHOSPHORUS_ONLY_MASK)
       m = PhosphorusMonomer.validateAndAllocateP(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes);
-    else if (JmolConstants.checkCarbohydrate(group3))
+    else if (JC.checkCarbohydrate(group3))
       m = CarbohydrateMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex);
     return ( m != null && m.leadAtomIndex >= 0 ? m : null);
@@ -164,8 +164,8 @@ public final class Resolver implements JmolBioResolver {
    */
   private ModelLoader modelLoader;
   private ModelSet modelSet;
-  private BitSet bsAddedHydrogens;
-  private BitSet bsAtomsForHs;
+  private BS bsAddedHydrogens;
+  private BS bsAtomsForHs;
   private Map<String, String>htBondMap;
   private Map<String, Boolean>htGroupBonds;
   private String[] hNames;
@@ -178,9 +178,9 @@ public final class Resolver implements JmolBioResolver {
     haveHsAlready = b;
   }
 
-  private Vector3f vAB;
-  private Vector3f vAC;
-  private Vector3f vNorm;
+  private V3 vAB;
+  private V3 vAC;
+  private V3 vNorm;
   private Point4f plane;
 
   public void initialize(ModelSet modelSet) {
@@ -189,14 +189,14 @@ public final class Resolver implements JmolBioResolver {
   public void initializeHydrogenAddition(ModelLoader modelLoader, int bondCount) {
     this.modelLoader = modelLoader;
     baseBondIndex = bondCount;
-    bsAddedHydrogens = new BitSet();
-    bsAtomsForHs = new BitSet();
+    bsAddedHydrogens = new BS();
+    bsAtomsForHs = new BS();
     htBondMap = new Hashtable<String, String>();
     htGroupBonds = new Hashtable<String, Boolean>();
     hNames = new String[3];
-    vAB = new Vector3f();
-    vAC = new Vector3f();
-    vNorm = new Vector3f();
+    vAB = new V3();
+    vAC = new V3();
+    vNorm = new V3();
     plane = new Point4f();
   }
   
@@ -204,7 +204,7 @@ public final class Resolver implements JmolBioResolver {
     String group3 = modelLoader.getGroup3(iGroup);
     int nH;
     if (haveHsAlready || group3 == null
-        || (nH = JmolConstants.getStandardPdbHydrogenCount(Group
+        || (nH = JC.getStandardPdbHydrogenCount(Group
         .lookupGroupID(group3))) == 0)
       return;
     Object model = null;
@@ -263,7 +263,7 @@ public final class Resolver implements JmolBioResolver {
    */
   private String[][] getLigandBondInfo(JmolAdapter adapter, Object model, String group3) {
     String[][] dataIn = adapter.getBondList(model);
-    Map<String, Point3f> htAtoms = new Hashtable<String, Point3f>();
+    Map<String, P3> htAtoms = new Hashtable<String, P3>();
     JmolAdapterAtomIterator iterAtom = adapter.getAtomIterator(model);
     while (iterAtom.hasNext())
       htAtoms.put(iterAtom.getAtomName(), iterAtom.getXYZ());      
@@ -346,7 +346,7 @@ public final class Resolver implements JmolBioResolver {
     if (bsAddedHydrogens.nextSetBit(0) >= 0) {
       finalizePdbCharges();
       int[] nTotal = new int[1];
-      Point3f[][] pts = modelSet.calculateHydrogens(bsAtomsForHs, nTotal, true,
+      P3[][] pts = modelSet.calculateHydrogens(bsAtomsForHs, nTotal, true,
           false, null);
       Group groupLast = null;
       int ipt = 0;
@@ -453,7 +453,7 @@ public final class Resolver implements JmolBioResolver {
    * 
    */
   private void deleteUnneededAtoms() {
-    BitSet bsBondsDeleted = new BitSet();
+    BS bsBondsDeleted = new BS();
     for (int i = bsAtomsForHs.nextSetBit(0); i >= 0; i = bsAtomsForHs
         .nextSetBit(i + 1)) {
       Atom atom = modelSet.atoms[i];
@@ -514,7 +514,7 @@ public final class Resolver implements JmolBioResolver {
       Group g = a1.getGroup();
       if (g != a2.getGroup())
         continue;
-      StringXBuilder key = new StringXBuilder().append(g.getGroup3());
+      SB key = new SB().append(g.getGroup3());
       key.append(":");
       String n1 = a1.getAtomName();
       String n2 = a2.getAtomName();
@@ -566,7 +566,7 @@ public final class Resolver implements JmolBioResolver {
     }
   }
 
-  private void setHydrogen(int iTo, int iAtom, String name, Point3f pt) {
+  private void setHydrogen(int iTo, int iAtom, String name, P3 pt) {
     if (!bsAddedHydrogens.get(iAtom))
       return;
     Atom[] atoms = modelSet.atoms;
@@ -583,7 +583,7 @@ public final class Resolver implements JmolBioResolver {
         modelSet.getDefaultMadFromOrder(JmolEdge.BOND_COVALENT_SINGLE), null, 0, true, false);
   }
 
-  public String fixPropertyValue(BitSet bsAtoms, String data) {
+  public String fixPropertyValue(BS bsAtoms, String data) {
     String[] aData = TextFormat.split(data, '\n');
     Atom[] atoms = modelSet.atoms;
     String[] newData = new String[bsAtoms.cardinality()];

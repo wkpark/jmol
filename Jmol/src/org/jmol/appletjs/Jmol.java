@@ -32,12 +32,12 @@ import org.jmol.api.JmolSyncInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.i18n.GT;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
 
@@ -75,7 +75,7 @@ public class Jmol implements JmolSyncInterface {
   protected String htmlName;
   protected String fullName;
   protected String syncId;
-  protected StringXBuilder outputBuffer;
+  protected SB outputBuffer;
 
   protected Object gRight;
   protected JmolViewer viewer;
@@ -103,7 +103,7 @@ public class Jmol implements JmolSyncInterface {
   public void destroy() {
     gRight = null;
     JmolAppletRegistry.checkOut(fullName);
-    viewer.setModeMouse(JmolConstants.MOUSE_NONE);
+    viewer.setModeMouse(JC.MOUSE_NONE);
     viewer.getBooleanProperty("__appletDestroyed");
     viewer = null;
     System.out.println("Jmol applet " + fullName + " destroyed");
@@ -348,7 +348,7 @@ public class Jmol implements JmolSyncInterface {
   public String scriptWaitOutput(String script) {
     if (script == null || script.length() == 0)
       return "";
-    outputBuffer = new StringXBuilder();
+    outputBuffer = new SB();
     viewer.scriptWaitStatus(script, "");
     String str = (outputBuffer == null ? "" : outputBuffer.toString());
     outputBuffer = null;
@@ -363,15 +363,15 @@ public class Jmol implements JmolSyncInterface {
     return GT
         ._(
             "Jmol Applet version {0} {1}.\n\nAn OpenScience project.\n\nSee http://www.jmol.org for more information",
-            new Object[] { JmolConstants.version, JmolConstants.date })
+            new Object[] { JC.version, JC.date })
         + "\nhtmlName = "
-        + Escape.escapeStr(htmlName)
+        + Escape.eS(htmlName)
         + "\nsyncId = "
-        + Escape.escapeStr(syncId)
+        + Escape.eS(syncId)
         + "\ndocumentBase = "
-        + Escape.escapeStr("" + getProperty("documentBase"))
+        + Escape.eS("" + getProperty("documentBase"))
         + "\ncodeBase = "
-        + Escape.escapeStr("" + getProperty("codeBase"));
+        + Escape.eS("" + getProperty("codeBase"));
   }
 
   public Object getProperty(String infoType) {
@@ -837,7 +837,7 @@ public class Jmol implements JmolSyncInterface {
           Logger.error(fullName + " couldn't find applet " + appletName);
         return "";
       }
-      StringXBuilder sb = (isSync ? null : new StringXBuilder());
+      SB sb = (isSync ? null : new SB());
       boolean getGraphics = (isSync && script.equals(Viewer.SYNC_GRAPHICS_MESSAGE));
       boolean setNoGraphics = (isSync && script.equals(Viewer.SYNC_NO_GRAPHICS_MESSAGE));
       if (getGraphics)

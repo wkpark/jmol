@@ -27,9 +27,9 @@ package org.jmol.render;
 
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Halos;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.BS;
+import org.jmol.util.C;
+import org.jmol.viewer.JC;
 
 
 public class HalosRenderer extends ShapeRenderer {
@@ -45,31 +45,31 @@ public class HalosRenderer extends ShapeRenderer {
       return false;
     isAntialiased = g3d.isAntialiased();
     Atom[] atoms = modelSet.atoms;
-    BitSet bsSelected = (selectDisplayTrue ? viewer.getSelectionSet(false) : null);
+    BS bsSelected = (selectDisplayTrue ? viewer.getSelectionSet(false) : null);
     boolean needTranslucent = false;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_FRAME) == 0)
+      if ((atom.getShapeVisibilityFlags() & JC.ATOM_IN_FRAME) == 0)
         continue;
       boolean isHidden = modelSet.isAtomHidden(i);
       mad = (halos.mads == null ? 0 : halos.mads[i]);
-      colix = (halos.colixes == null || i >= halos.colixes.length ? Colix.INHERIT_ALL
+      colix = (halos.colixes == null || i >= halos.colixes.length ? C.INHERIT_ALL
           : halos.colixes[i]);
       if (selectDisplayTrue && bsSelected.get(i)) {
         if (isHidden && !showHiddenSelections)
           continue;
         if (mad == 0)
           mad = -1; // unsized
-        if (colix == Colix.INHERIT_ALL)
+        if (colix == C.INHERIT_ALL)
           colix = halos.colixSelection;
-        if (colix == Colix.USE_PALETTE)
-          colix = Colix.GOLD;
-        else if (colix == Colix.INHERIT_ALL)
-          colix = Colix.getColixInherited(colix, atom.getColix());
+        if (colix == C.USE_PALETTE)
+          colix = C.GOLD;
+        else if (colix == C.INHERIT_ALL)
+          colix = C.getColixInherited(colix, atom.getColix());
       } else if (isHidden) {
         continue;
       } else {
-        colix = Colix.getColixInherited(colix, atom.getColix());
+        colix = C.getColixInherited(colix, atom.getColix());
       }
       if (mad != 0) {
         if (render1(atom))
@@ -86,7 +86,7 @@ public class HalosRenderer extends ShapeRenderer {
   }
 
   boolean render1(Atom atom) {
-    short colixFill = (mad == -2 ? 0 : Colix.getColixTranslucent3(colix, true, 0.5f));
+    short colixFill = (mad == -2 ? 0 : C.getColixTranslucent3(colix, true, 0.5f));
     boolean needTranslucent = (mad != -2);
     if (!g3d.setColix(colix)) {
       needTranslucent = true;

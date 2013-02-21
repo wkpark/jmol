@@ -1,9 +1,9 @@
 package org.jmol.g3d;
 
 import org.jmol.util.JmolFont;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3i;
 
-class TextString extends Point3i {
+class TextString extends P3i {
   
   String text;
   JmolFont font;

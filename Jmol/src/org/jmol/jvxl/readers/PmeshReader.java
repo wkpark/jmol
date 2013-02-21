@@ -29,7 +29,7 @@ import java.io.BufferedReader;
 import org.jmol.io.JmolBinary;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 /*
  * 
@@ -189,7 +189,7 @@ class PmeshReader extends PolygonFileReader {
       return false;
     }
     pmeshError = type + " ERROR: invalid vertex list";
-    Point3f pt = new Point3f();
+    P3 pt = new P3();
     vertexMap = new int[nVertices];
     for (int i = 0; i < nVertices; i++) {
       pt.set(getFloat(), getFloat(), getFloat());

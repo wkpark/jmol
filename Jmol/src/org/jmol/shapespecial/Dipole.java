@@ -27,11 +27,11 @@ package org.jmol.shapespecial;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 public class Dipole {
   
@@ -40,9 +40,9 @@ public class Dipole {
   public short colix = 0;
   short type;
 
-  public Point3f origin;
-  public Point3f center;
-  public Vector3f vector;
+  public P3 origin;
+  public P3 center;
+  public V3 vector;
 
   String dipoleInfo = "";
   public float dipoleValue;
@@ -60,7 +60,7 @@ public class Dipole {
   boolean isValid;
 
   public Atom[] atoms = new Atom[2]; //for reference only
-  Point3f[] coords = new Point3f[2]; //for reference only
+  P3[] coords = new P3[2]; //for reference only
   public Bond bond;
 
   final static short DIPOLE_TYPE_UNKNOWN = 0;
@@ -85,11 +85,11 @@ public class Dipole {
   }
 
   void setTranslucent(boolean isTranslucent, float translucentLevel) {
-    colix = Colix.getColixTranslucent3(colix, isTranslucent, translucentLevel);
+    colix = C.getColixTranslucent3(colix, isTranslucent, translucentLevel);
   }
 
   void set(String thisID, String dipoleInfo, Atom[] atoms, float dipoleValue,
-           short mad, float offsetAngstroms, int offsetPercent, float offsetSide, Point3f origin, Vector3f vector) {
+           short mad, float offsetAngstroms, int offsetPercent, float offsetSide, P3 origin, V3 vector) {
     this.thisID = thisID;
     this.dipoleInfo = dipoleInfo;
     this.dipoleValue = dipoleValue;
@@ -97,8 +97,8 @@ public class Dipole {
     this.offsetAngstroms = offsetAngstroms;
     this.offsetPercent = offsetPercent;
     this.offsetSide = offsetSide;
-    this.vector = Vector3f.newV(vector);
-    this.origin = Point3f.newP(origin);
+    this.vector = V3.newV(vector);
+    this.origin = P3.newP(origin);
     this.haveAtoms = (atoms[0] != null);
     if (haveAtoms) {
       this.atoms[0] = atoms[0];
@@ -109,18 +109,18 @@ public class Dipole {
     }
   }
 
-  private void set(Point3f pt1, Point3f pt2) {
-    coords[0] = Point3f.newP(pt1);
-    coords[1] = Point3f.newP(pt2);
+  private void set(P3 pt1, P3 pt2) {
+    coords[0] = P3.newP(pt1);
+    coords[1] = P3.newP(pt2);
     isValid = (coords[0].distance(coords[1]) > 0.1f);
     
     if (dipoleValue < 0) { 
-      origin = Point3f.newP(pt2);
-      vector = Vector3f.newV(pt1);
+      origin = P3.newP(pt2);
+      vector = V3.newV(pt1);
       dipoleValue = -dipoleValue;
     } else {
-      origin = Point3f.newP(pt1);
-      vector = Vector3f.newV(pt2);
+      origin = P3.newP(pt1);
+      vector = V3.newV(pt2);
     }
     dipoleInfo = "" + origin + vector;
     vector.sub(origin);
@@ -143,15 +143,15 @@ public class Dipole {
       origin.sub(vector);
   }
 
-  void set(Point3f pt1, Point3f pt2, float value) {
+  void set(P3 pt1, P3 pt2, float value) {
     dipoleValue = value;
     atoms[0] = null;
     set(pt1, pt2);
   }
 
-  void set(Point3f pt1, Vector3f dipole) {
+  void set(P3 pt1, V3 dipole) {
     set(dipole.length());
-    Point3f pt2 = Point3f.newP(pt1);
+    P3 pt2 = P3.newP(pt1);
     pt2.add(dipole);
     set(pt1, pt2);
     type = DIPOLE_TYPE_POINTVECTOR;
@@ -176,7 +176,7 @@ public class Dipole {
     float f = atoms[0].distance(atoms[1]) / (2 * dipoleValue)
         - 0.5f;
     origin.scaleAdd2(f, vector, atoms[0]);
-    center = new Point3f();
+    center = new P3();
     center.scaleAdd2(0.5f, vector, origin);
     bond = atoms[0].getBond(atoms[1]);
     type = (bond == null ? Dipole.DIPOLE_TYPE_ATOMS : Dipole.DIPOLE_TYPE_BOND);
@@ -189,7 +189,7 @@ public class Dipole {
  public String getShapeState() {
     if (!isValid)
       return "";
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     s.append("dipole ID ").append(thisID);
     if (haveAtoms)
       s.append(" ({").appendI(atoms[0].getIndex()).append(" ").
@@ -197,8 +197,8 @@ public class Dipole {
     else if (coords[0] == null)
       return "";
     else
-      s.append(" ").append(Escape.escapePt(coords[0])).
-        append(" ").append(Escape.escapePt(coords[1]));
+      s.append(" ").append(Escape.eP(coords[0])).
+        append(" ").append(Escape.eP(coords[1]));
     if (isUserValue)
       s.append(" value ").appendF(dipoleValue);
     if (mad != Dipoles.DEFAULT_MAD)

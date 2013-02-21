@@ -24,8 +24,8 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.TextFormat;
 
 import java.util.Iterator;
@@ -45,7 +45,7 @@ public class Echo extends TextShape {
 
   private final static String FONTFACE = "Serif";
   private final static int FONTSIZE = 20;
-  private final static short COLOR = Colix.RED;
+  private final static short COLOR = C.RED;
     
   @Override
   public void initShape() {
@@ -54,7 +54,7 @@ public class Echo extends TextShape {
   }
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
 
     if ("scalereference" == propertyName) {
       if (currentObject != null) {

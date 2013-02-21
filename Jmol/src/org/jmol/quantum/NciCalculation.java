@@ -26,12 +26,12 @@ package org.jmol.quantum;
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 
 import java.util.List;
@@ -121,24 +121,24 @@ public class NciCalculation extends QuantumCalculation implements
   private int type;
   private int nMolecules;
   private boolean isPromolecular;
-  private BitSet bsOK;
+  private BS bsOK;
   private boolean noValuesAtAll;
   private boolean useAbsolute;
 
   public boolean setupCalculation(VolumeDataInterface volumeData,
-                                  BitSet bsSelected, BitSet bsExcluded,
-                                  BitSet[] bsMolecules, String calculationType,
-                                  Point3f[] atomCoordAngstroms,
+                                  BS bsSelected, BS bsExcluded,
+                                  BS[] bsMolecules, String calculationType,
+                                  P3[] atomCoordAngstroms,
                                   int firstAtomOffset, List<int[]> shells,
                                   float[][] gaussians, int[][] dfCoefMaps,
                                   Object slaters, float[] moCoefficients,
                                   float[] linearCombination, boolean isSquaredLinear,
                                   float[][] coefs,
                                   float[] partialCharges, boolean isDensityOnly,
-                                  Point3f[] points, float[] parameters, int testFlags) {
+                                  P3[] points, float[] parameters, int testFlags) {
     useAbsolute = (testFlags == 2);
     this.bsExcluded = bsExcluded;
-    BitSet bsLigand = new BitSet();
+    BS bsLigand = new BS();
     bsLigand.or(bsSelected);
     if (bsExcluded != null) {
       bsLigand.andNot(bsExcluded);
@@ -147,7 +147,7 @@ public class NciCalculation extends QuantumCalculation implements
     havePoints = (points != null);
     isReducedDensity = isDensityOnly;
     if (parameters != null)
-      Logger.info("NCI calculation parameters = " + Escape.escape(parameters));
+      Logger.info("NCI calculation parameters = " + Escape.e(parameters));
     // parameters[0] is the cutoff.
     type = (int) getParameter(parameters, 1, TYPE_ALL, "type");
     if (type != TYPE_ALL && bsMolecules == null)
@@ -217,7 +217,7 @@ public class NciCalculation extends QuantumCalculation implements
       nMolecules = 0;
       if (type != TYPE_ALL) {
         for (int i = 0; i < bsMolecules.length; i++) {
-          BitSet bs = BitSetUtil.copy(bsMolecules[i]);
+          BS bs = BSUtil.copy(bsMolecules[i]);
           bs.and(bsSelected);
           if (bs.nextSetBit(0) < 0)
             continue;
@@ -225,7 +225,7 @@ public class NciCalculation extends QuantumCalculation implements
             qmAtoms[qmMap[j]].iMolecule = nMolecules;
           nMolecules++;
           Logger.info("Molecule " + (nMolecules) + " ("
-              + bs.cardinality() + " atoms): " + Escape.escape(bs));
+              + bs.cardinality() + " atoms): " + Escape.e(bs));
         }
         rhoMolecules = new double[nMolecules];
       }
@@ -260,7 +260,7 @@ public class NciCalculation extends QuantumCalculation implements
   private void getBsOK() {
     if (noValuesAtAll || nMolecules == 1)
       return;
-    bsOK = BitSetUtil.newBitSet(nX * nY * nZ);
+    bsOK = BSUtil.newBitSet(nX * nY * nZ);
     setXYZBohr(null);
     for (int ix = 0, index = 0; ix < countsXYZ[0]; ix++)
       for (int iy = 0; iy < countsXYZ[1]; iy++)

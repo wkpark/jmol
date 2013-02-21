@@ -45,8 +45,8 @@ package org.jmol.g3d;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.Shader;
@@ -61,7 +61,7 @@ final class LineRenderer {
     shader = g3d.shader;
   }
 
-  private BitSet lineBits;
+  private BS lineBits;
   private float slope;
   private boolean lineTypeX;
   //int lineDirection;
@@ -69,7 +69,7 @@ final class LineRenderer {
   private int nCached = 0;
   private int nFound = 0;
   //int test = 5;
-  private Map<Float, BitSet> lineCache = new Hashtable<Float, BitSet>();
+  private Map<Float, BS> lineCache = new Hashtable<Float, BS>();
   private Float slopeKey;
   
   void setLineBits(float dx, float dy) { 
@@ -80,7 +80,7 @@ final class LineRenderer {
     if (getCachedLine())
       return;
     nBits = (lineTypeX ? g3d.getRenderWidth() : g3d.getRenderHeight());
-    lineBits = BitSetUtil.newBitSet(nBits);
+    lineBits = BSUtil.newBitSet(nBits);
     dy = Math.abs(dy);
     dx = Math.abs(dx);
     if (dy > dx) {

@@ -24,7 +24,7 @@
 package org.jmol.popup;
 
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -241,7 +241,7 @@ abstract public class SwingPopup extends GenericPopup {
     }
   }
 
-  public void menuGetAsText(StringXBuilder sb, int level, Object menu,
+  public void menuGetAsText(SB sb, int level, Object menu,
                             String menuName) {
     String name = menuName;
     Component[] subMenus = (menu instanceof JPopupMenu ? ((JPopupMenu) menu)

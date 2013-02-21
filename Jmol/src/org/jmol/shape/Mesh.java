@@ -29,23 +29,23 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Normix;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
 import org.jmol.util.Quaternion;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.api.SymmetryInterface;
 
 //import javax.vecmath.Matrix3f;
@@ -58,22 +58,22 @@ public class Mesh extends MeshSurface {
   
   public short meshColix;
   public short[] normixes;
-  public List<Point3f[]> lineData;
+  public List<P3[]> lineData;
   public String thisID;
   public boolean isValid = true;
   public String scriptCommand;
   public String colorCommand;
-  public Point3f lattice;
+  public P3 lattice;
   public boolean visible = true;
-  public int lighting = Token.frontlit;
+  public int lighting = T.frontlit;
 
   public float scale = 1;
   public boolean haveXyPoints;
   public int diameter;
   public float width;
-  public Point3f ptCenter = Point3f.new3(0,0,0);
+  public P3 ptCenter = P3.new3(0,0,0);
   public Mesh linkedMesh; //for lcaoOrbitals
-  public Map<String, BitSet> vertexColorMap;
+  public Map<String, BS> vertexColorMap;
   
   public int color;
   public SymmetryInterface unitCell;
@@ -126,7 +126,7 @@ public class Mesh extends MeshSurface {
     bsSlabDisplay = null;
     bsSlabGhost = null;
     cappingObject = null;
-    colix = Colix.GOLD;
+    colix = C.GOLD;
     colorDensity = false;
     connections = null;
     diameter = 0;
@@ -156,20 +156,20 @@ public class Mesh extends MeshSurface {
     this.meshType = meshType;
   }
 
-  private BitSet bsTemp;
+  private BS bsTemp;
   
-  public void initialize(int lighting, Point3f[] vertices, Point4f plane) {
+  public void initialize(int lighting, P3[] vertices, Point4f plane) {
     if (vertices == null)
       vertices = this.vertices;
-    Vector3f[] normals = getNormals(vertices, plane);
+    V3[] normals = getNormals(vertices, plane);
     setNormixes(normals);
-    this.lighting = Token.frontlit;
+    this.lighting = T.frontlit;
     if (insideOut)
       invertNormixes();
     setLighting(lighting);
   }
 
-  public void setNormixes(Vector3f[] normals) {
+  public void setNormixes(V3[] normals) {
     normixes = new short[normixCount];
     if (bsTemp == null)
       bsTemp = Normix.newVertexBitSet();
@@ -181,15 +181,15 @@ public class Mesh extends MeshSurface {
         normixes[i] = Normix.getNormixV(normals[i], bsTemp);
   }
 
-  public Vector3f[] getNormals(Point3f[] vertices, Point4f plane) {
+  public V3[] getNormals(P3[] vertices, Point4f plane) {
     normixCount = (isTriangleSet ? polygonCount : vertexCount);
-    Vector3f[] normals = new Vector3f[normixCount];
+    V3[] normals = new V3[normixCount];
     for (int i = normixCount; --i >= 0;)
-      normals[i] = new Vector3f();
+      normals[i] = new V3();
     if (plane == null) {
       sumVertexNormals(vertices, normals);
     }else {
-      Vector3f normal = Vector3f.new3(plane.x, plane.y, plane.z); 
+      V3 normal = V3.new3(plane.x, plane.y, plane.z); 
       for (int i = normixCount; --i >= 0;)
         normals[i] = normal;
     }
@@ -201,7 +201,7 @@ public class Mesh extends MeshSurface {
   }
   
   public void setLighting(int lighting) {
-    isTwoSided = (lighting == Token.fullylit);
+    isTwoSided = (lighting == T.fullylit);
     if (lighting == this.lighting)
       return;
     flipLighting(this.lighting);
@@ -209,10 +209,10 @@ public class Mesh extends MeshSurface {
   }
   
   private void flipLighting(int lighting) {
-    if (lighting == Token.fullylit) // this will not be a WebGL option
+    if (lighting == T.fullylit) // this will not be a WebGL option
       for (int i = normixCount; --i >= 0;)
         normixes[i] = (short)~normixes[i];
-    else if ((lighting == Token.frontlit) == insideOut)
+    else if ((lighting == T.frontlit) == insideOut)
       invertNormixes();
   }
 
@@ -223,12 +223,12 @@ public class Mesh extends MeshSurface {
   }
 
   public void setTranslucent(boolean isTranslucent, float iLevel) {
-    colix = Colix.getColixTranslucent3(colix, isTranslucent, iLevel);
+    colix = C.getColixTranslucent3(colix, isTranslucent, iLevel);
   }
 
-  public final Vector3f vAB = new Vector3f();
-  public final Vector3f vAC = new Vector3f();
-  public final Vector3f vTemp = new Vector3f();
+  public final V3 vAB = new V3();
+  public final V3 vAC = new V3();
+  public final V3 vTemp = new V3();
 
   //public Vector data1;
   //public Vector data2;
@@ -241,7 +241,7 @@ public class Mesh extends MeshSurface {
 
   public boolean recalcAltVertices;
   
-  protected void sumVertexNormals(Point3f[] vertices, Vector3f[] normals) {
+  protected void sumVertexNormals(P3[] vertices, V3[] normals) {
     // subclassed in IsosurfaceMesh
     int adjustment = checkByteCount;
     float min = getMinDistance2ForVertexGrouping();
@@ -249,9 +249,9 @@ public class Mesh extends MeshSurface {
       try {
         if (!setABC(i))
           continue;
-        Point3f vA = vertices[iA];
-        Point3f vB = vertices[iB];
-        Point3f vC = vertices[iC];
+        P3 vA = vertices[iA];
+        P3 vB = vertices[iB];
+        P3 vC = vertices[iC];
         // no skinny triangles
         if (vA.distanceSquared(vB) < min || vB.distanceSquared(vC) < min
             || vA.distanceSquared(vC) < min)
@@ -279,30 +279,30 @@ public class Mesh extends MeshSurface {
 
   public String getState(String type) {
     //String sxml = null; // problem here is that it can be WAY to large. Shape.getXmlPropertyString(xmlProperties, type);
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     //if (sxml != null)
       //s.append("/** XML ** ").append(sxml).append(" ** XML **/\n");
     s.append(type);
     if (!type.equals("mo"))
-      s.append(" ID ").append(Escape.escapeStr(thisID));
+      s.append(" ID ").append(Escape.eS(thisID));
     if (lattice != null)
-      s.append(" lattice ").append(Escape.escapePt(lattice));
+      s.append(" lattice ").append(Escape.eP(lattice));
     if (meshColix != 0)
-      s.append(" color mesh ").append(Colix.getHexCode(meshColix));
+      s.append(" color mesh ").append(C.getHexCode(meshColix));
     s.append(getRendering());
     if (!visible)
       s.append(" hidden");
     if (bsDisplay != null) {
       s.append(";\n  ").append(type);
       if (!type.equals("mo"))
-        s.append(" ID ").append(Escape.escapeStr(thisID));
-      s.append(" display " + Escape.escape(bsDisplay));
+        s.append(" ID ").append(Escape.eS(thisID));
+      s.append(" display " + Escape.e(bsDisplay));
     }
     return s.toString();
   }
 
   protected String getRendering() {
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     s.append(fillTriangles ? " fill" : " noFill");
     s.append(drawTriangles ? " mesh" : " noMesh");
     s.append(showPoints ? " dots" : " noDots");
@@ -311,20 +311,20 @@ public class Mesh extends MeshSurface {
       s.append(" contourlines");
     if (showTriangles)
       s.append(" triangles");
-    s.append(" ").append(Token.nameOf(lighting));
+    s.append(" ").append(T.nameOf(lighting));
     return s.toString();
   }
 
-  public Point3f[] getOffsetVertices(Point4f thePlane) {
+  public P3[] getOffsetVertices(Point4f thePlane) {
     if (altVertices != null && !recalcAltVertices)
-      return (Point3f[]) altVertices;
-    altVertices = new Point3f[vertexCount];
+      return (P3[]) altVertices;
+    altVertices = new P3[vertexCount];
     for (int i = 0; i < vertexCount; i++)
-      altVertices[i] = Point3f.newP(vertices[i]);
-    Vector3f normal = null;
+      altVertices[i] = P3.newP(vertices[i]);
+    V3 normal = null;
     float val = 0;
     if (scale3d != 0 && vertexValues != null && thePlane != null) {
-        normal = Vector3f.new3(thePlane.x, thePlane.y, thePlane.z);
+        normal = V3.new3(thePlane.x, thePlane.y, thePlane.z);
         normal.normalize();
         normal.scale(scale3d);
         if (mat4 != null) {
@@ -337,15 +337,15 @@ public class Mesh extends MeshSurface {
       if (vertexValues != null && Float.isNaN(val = vertexValues[i]))
         continue;
       if (mat4 != null)
-        mat4.transform((Point3f) altVertices[i]);
-      Point3f pt = (Point3f) altVertices[i];
+        mat4.transform((P3) altVertices[i]);
+      P3 pt = (P3) altVertices[i];
       if (normal != null && val != 0)
         pt.scaleAdd2(val, normal, pt);
     }
     
-    initialize(lighting, (Point3f[]) altVertices, null);
+    initialize(lighting, (P3[]) altVertices, null);
     recalcAltVertices = false;
-    return (Point3f[]) altVertices;
+    return (P3[]) altVertices;
   }
 
   /**
@@ -354,19 +354,19 @@ public class Mesh extends MeshSurface {
    * @param showWithinDistance2
    * @param isWithinNot
    */
-  public void setShowWithin(List<Point3f> showWithinPoints,
+  public void setShowWithin(List<P3> showWithinPoints,
                             float showWithinDistance2, boolean isWithinNot) {
     if (showWithinPoints.size() == 0) {
-      bsDisplay = (isWithinNot ? BitSetUtil.newBitSet2(0, vertexCount) : null);
+      bsDisplay = (isWithinNot ? BSUtil.newBitSet2(0, vertexCount) : null);
       return;
     }
-    bsDisplay = new BitSet();
+    bsDisplay = new BS();
     for (int i = 0; i < vertexCount; i++)
       if (checkWithin(vertices[i], showWithinPoints, showWithinDistance2, isWithinNot))
         bsDisplay.set(i);
   }
 
-  public static boolean checkWithin(Point3f pti, List<Point3f> withinPoints,
+  public static boolean checkWithin(P3 pti, List<P3> withinPoints,
                                     float withinDistance2, boolean isWithinNot) {
     if (withinPoints.size() != 0)
       for (int i = withinPoints.size(); --i >= 0;)
@@ -382,10 +382,10 @@ public class Mesh extends MeshSurface {
         : vertexIndex < 0 ? 0 : vertexIndex);
   }
 
-  public BitSet getVisibleVertexBitSet() {
-    BitSet bs = new BitSet();
+  public BS getVisibleVertexBitSet() {
+    BS bs = new BS();
     if (polygonCount == 0 && bsSlabDisplay != null)
-      BitSetUtil.copy2(bsSlabDisplay, bs);
+      BSUtil.copy2(bsSlabDisplay, bs);
     else
       for (int i = polygonCount; --i >= 0;)
         if (bsSlabDisplay == null || bsSlabDisplay.get(i)) {
@@ -399,10 +399,10 @@ public class Mesh extends MeshSurface {
     return bs;
   }
 
-  BitSet getVisibleGhostBitSet() {
-    BitSet bs = new BitSet();
+  BS getVisibleGhostBitSet() {
+    BS bs = new BS();
     if (polygonCount == 0 && bsSlabGhost != null)
-      BitSetUtil.copy2(bsSlabGhost, bs);
+      BSUtil.copy2(bsSlabGhost, bs);
     else
       for (int i = polygonCount; --i >= 0;)
         if (bsSlabGhost == null || bsSlabGhost.get(i)) {
@@ -418,34 +418,34 @@ public class Mesh extends MeshSurface {
 
   public void setTokenProperty(int tokProp, boolean bProp) {
     switch (tokProp) {
-    case Token.notfrontonly:
-    case Token.frontonly:
-      frontOnly = (tokProp == Token.frontonly ? bProp : !bProp);
+    case T.notfrontonly:
+    case T.frontonly:
+      frontOnly = (tokProp == T.frontonly ? bProp : !bProp);
       return;
-    case Token.frontlit:
-    case Token.backlit:
-    case Token.fullylit:
+    case T.frontlit:
+    case T.backlit:
+    case T.fullylit:
       setLighting(tokProp);
       return;
-    case Token.nodots:
-    case Token.dots:
-      showPoints =  (tokProp == Token.dots ? bProp : !bProp);
+    case T.nodots:
+    case T.dots:
+      showPoints =  (tokProp == T.dots ? bProp : !bProp);
       return;
-    case Token.nomesh:
-    case Token.mesh:
-      drawTriangles =  (tokProp == Token.mesh ? bProp : !bProp);
+    case T.nomesh:
+    case T.mesh:
+      drawTriangles =  (tokProp == T.mesh ? bProp : !bProp);
       return;
-    case Token.nofill:
-    case Token.fill:
-      fillTriangles =  (tokProp == Token.fill ? bProp : !bProp);
+    case T.nofill:
+    case T.fill:
+      fillTriangles =  (tokProp == T.fill ? bProp : !bProp);
       return;
-    case Token.notriangles:
-    case Token.triangles:
-      showTriangles =  (tokProp == Token.triangles ? bProp : !bProp);
+    case T.notriangles:
+    case T.triangles:
+      showTriangles =  (tokProp == T.triangles ? bProp : !bProp);
       return;
-    case Token.nocontourlines:
-    case Token.contourlines:
-      showContourLines =  (tokProp == Token.contourlines ? bProp : !bProp);
+    case T.nocontourlines:
+    case T.contourlines:
+      showContourLines =  (tokProp == T.contourlines ? bProp : !bProp);
       return;
     }
   }
@@ -466,7 +466,7 @@ public class Mesh extends MeshSurface {
     return info;
   }
 
-  public Point3f[] getBoundingBox() {
+  public P3[] getBoundingBox() {
     return null;
   }
 
@@ -481,7 +481,7 @@ public class Mesh extends MeshSurface {
       return;
     }
     Matrix3f m3 = new Matrix3f();
-    Vector3f v = new Vector3f();
+    V3 v = new V3();
     if (mat4 == null) {
       mat4 = new Matrix4f();
       mat4.setIdentity();
@@ -500,7 +500,7 @@ public class Mesh extends MeshSurface {
     recalcAltVertices = true;
   }
 
-  public Vector3f[] getNormalsTemp() {
+  public V3[] getNormalsTemp() {
     return (normalsTemp == null ? (normalsTemp = getNormals(vertices, null))
         : normalsTemp);
   }

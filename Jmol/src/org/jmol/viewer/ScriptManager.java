@@ -32,9 +32,9 @@ import org.jmol.api.JmolScriptManager;
 import org.jmol.script.ScriptContext;
 import org.jmol.thread.CommandWatcherThread;
 import org.jmol.thread.ScriptQueueThread;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
 public class ScriptManager implements JmolScriptManager {
@@ -294,8 +294,8 @@ public class ScriptManager implements JmolScriptManager {
     String str = checkScriptExecution(strScript, false);
     if (str != null)
       return str;
-    StringXBuilder outputBuffer = (statusList == null
-        || statusList.equals("output") ? new StringXBuilder() : null);
+    SB outputBuffer = (statusList == null
+        || statusList.equals("output") ? new SB() : null);
 
     // typically request:
     // "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated"
@@ -412,7 +412,7 @@ public class ScriptManager implements JmolScriptManager {
     }
     viewer.insertedCommand = "";
     if (isQuiet)
-      strScript += JmolConstants.SCRIPT_EDITOR_IGNORE;
+      strScript += JC.SCRIPT_EDITOR_IGNORE;
     return addScript(strScript, false, isQuiet
         && !viewer.getMessageStyleChime());
   }
@@ -457,7 +457,7 @@ public class ScriptManager implements JmolScriptManager {
     return exitScript;
   }
 
-  public BitSet getAtomBitSetEval(JmolScriptEvaluator eval,
+  public BS getAtomBitSetEval(JmolScriptEvaluator eval,
                                   Object atomExpression) {
     if (eval == null) {
       eval = evalTemp;

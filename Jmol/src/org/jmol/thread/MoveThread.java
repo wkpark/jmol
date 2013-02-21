@@ -26,7 +26,7 @@
 package org.jmol.thread;
 
 
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
@@ -40,8 +40,8 @@ public class MoveThread extends JmolThread {
   private float radiansXStep;
   private float radiansYStep;
   private float radiansZStep;
-  private Vector3f dRot;
-  private Vector3f dTrans;
+  private V3 dRot;
+  private V3 dTrans;
   private float dZoom;
   private float dSlab;
   private float zoomPercent0;
@@ -61,7 +61,7 @@ public class MoveThread extends JmolThread {
   }
 
   
-  public void set(Vector3f dRot, float dZoom, Vector3f dTrans, float dSlab,
+  public void set(V3 dRot, float dZoom, V3 dTrans, float dSlab,
                  float floatSecondsTotal, int fps) {
     this.dRot = dRot;
     this.dTrans = dTrans;

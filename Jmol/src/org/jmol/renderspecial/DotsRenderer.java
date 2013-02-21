@@ -27,10 +27,10 @@ package org.jmol.renderspecial;
 import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
 import org.jmol.shapespecial.Dots;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.Geodesic;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 
 
@@ -38,7 +38,7 @@ public class DotsRenderer extends ShapeRenderer {
 
   public boolean iShowSolid;
   
-  Vector3f[] verticesTransformed;
+  V3[] verticesTransformed;
   public int screenLevel;
   public int screenDotCount;
   public int[] screenCoordinates;
@@ -50,9 +50,9 @@ public class DotsRenderer extends ShapeRenderer {
   protected void initRenderer() {
     screenLevel = Dots.MAX_LEVEL;
     screenDotCount = Geodesic.getVertexCount(Dots.MAX_LEVEL);
-    verticesTransformed = new Vector3f[screenDotCount];
+    verticesTransformed = new V3[screenDotCount];
     for (int i = screenDotCount; --i >= 0; )
-      verticesTransformed[i] = new Vector3f();
+      verticesTransformed[i] = new V3();
     screenCoordinates = new int[3 * screenDotCount];
   }
 
@@ -67,7 +67,7 @@ public class DotsRenderer extends ShapeRenderer {
   
   protected void render1(Dots dots) {
     //dots.timeBeginExecution = System.currentTimeMillis();
-    if (!iShowSolid && !g3d.setColix(Colix.BLACK)) // no translucent for dots
+    if (!iShowSolid && !g3d.setColix(C.BLACK)) // no translucent for dots
       return;
     int sppa = (int) viewer.getScalePixelsPerAngstrom(true);
     screenLevel = (iShowSolid || sppa > 20 ? 3 : sppa > 10 ? 2 : sppa > 5 ? 1
@@ -80,10 +80,10 @@ public class DotsRenderer extends ShapeRenderer {
     for (int i = screenDotCount; --i >= 0;)
       viewer.transformVector(Geodesic.getVertexVector(i),
           verticesTransformed[i]);
-    BitSet[] maps = dots.ec.getDotsConvexMaps();
+    BS[] maps = dots.ec.getDotsConvexMaps();
     for (int i = dots.ec.getDotsConvexMax(); --i >= 0;) {
       Atom atom = modelSet.atoms[i];
-      BitSet map = maps[i];
+      BS map = maps[i];
       if (map == null || !atom.isVisible(myVisibilityFlag)
           || !g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
@@ -91,7 +91,7 @@ public class DotsRenderer extends ShapeRenderer {
         int nPoints = calcScreenPoints(map, dots.ec.getAppropriateRadius(i) + testRadiusAdjust,
             atom.screenX, atom.screenY, atom.screenZ);
         if (nPoints != 0)
-          renderConvex(Colix.getColixInherited(dots.colixes[i],
+          renderConvex(C.getColixInherited(dots.colixes[i],
               atom.getColix()), map, nPoints);
       } catch (Exception e) {
         System.out.println("Dots rendering error");
@@ -113,7 +113,7 @@ public class DotsRenderer extends ShapeRenderer {
    * @param z
    * @return number of points
    */
-  private int calcScreenPoints(BitSet visibilityMap, float radius, int x, int y, int z) {
+  private int calcScreenPoints(BS visibilityMap, float radius, int x, int y, int z) {
     int nPoints = 0;
     int i = 0;
     float scaledRadius = viewer.scaleToPerspective(z, radius);
@@ -121,7 +121,7 @@ public class DotsRenderer extends ShapeRenderer {
     while (--iDot >= 0) {
       if (!visibilityMap.get(iDot))
         continue;
-      Vector3f vertex = verticesTransformed[iDot];
+      V3 vertex = verticesTransformed[iDot];
       if (faceMap != null)
         faceMap[iDot] = i;
       screenCoordinates[i++] = x
@@ -142,8 +142,8 @@ public class DotsRenderer extends ShapeRenderer {
    * @param map
    * @param nPoints
    */
-  protected void renderConvex(short colix, BitSet map, int nPoints) {
-    this.colix = Colix.getColixTranslucent3(colix, false, 0);
+  protected void renderConvex(short colix, BS map, int nPoints) {
+    this.colix = C.getColixTranslucent3(colix, false, 0);
     renderDots(nPoints);
   }
 

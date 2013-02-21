@@ -4,19 +4,19 @@ import java.io.BufferedInputStream;
 
 
 import org.jmol.api.AtomIndexIterator;
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 
 
 
 public interface AtomDataServer {
-  public AtomIndexIterator getSelectedAtomIterator(BitSet bsSelected,
+  public AtomIndexIterator getSelectedAtomIterator(BS bsSelected,
                                                     boolean isGreaterOnly,
                                                     boolean modelZeroBased, boolean isMultiModel);
 
   public void setIteratorForAtom(AtomIndexIterator iterator, int atomIndex, float distance);
 
-  public void setIteratorForPoint(AtomIndexIterator iter, int modelIndex, Point3f pt,
+  public void setIteratorForPoint(AtomIndexIterator iter, int modelIndex, P3 pt,
                                   float maxDistance);
 
   public void fillAtomData(AtomData atomData, int mode);

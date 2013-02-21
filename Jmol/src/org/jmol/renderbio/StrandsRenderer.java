@@ -27,7 +27,7 @@ package org.jmol.renderbio;
 
 import org.jmol.shapebio.BioShape;
 import org.jmol.shapebio.Strands;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3i;
 
 public class StrandsRenderer extends BioShapeRenderer {
 
@@ -53,7 +53,7 @@ public class StrandsRenderer extends BioShapeRenderer {
   }
 
   protected void render1() {
-    Point3i[] screens;
+    P3i[] screens;
     for (int i = strandCount >> 1; --i >= 0;) {
       float f = (i * strandSeparation) + baseOffset;
       screens = calcScreens(f);
@@ -70,7 +70,7 @@ public class StrandsRenderer extends BioShapeRenderer {
     }
   }
 
-  private void render1Strand(Point3i[] screens) {
+  private void render1Strand(P3i[] screens) {
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1))
       renderHermiteCylinder(screens, i);
   }

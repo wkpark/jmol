@@ -38,7 +38,7 @@ import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Minimizer;
 import org.jmol.minimize.Util;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;
@@ -89,12 +89,12 @@ abstract public class ForceField {
   MinBond[] minBonds;
   MinAngle[] minAngles;
   MinTorsion[] minTorsions;
-  BitSet bsFixed;
+  BS bsFixed;
   
   Minimizer minimizer;
 
   abstract public void clear();
-  abstract public boolean setModel(BitSet bsElements, int elemnoMax);
+  abstract public boolean setModel(BS bsElements, int elemnoMax);
   
   protected void setModelFields() {   
     this.minAtoms = minimizer.minAtoms;

@@ -27,16 +27,16 @@ package org.jmol.modelset;
 
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 public class Bond extends JmolEdge {
 
-  public static class BondSet extends BitSet {
+  public static class BondSet extends BS {
 
     public BondSet() {
     }
@@ -47,11 +47,11 @@ public class Bond extends JmolEdge {
       return associatedAtoms;
     }
 
-    public BondSet(BitSet bs) {
-      BitSetUtil.copy2(bs, this);
+    public BondSet(BS bs) {
+      BSUtil.copy2(bs, this);
     }
 
-    public BondSet(BitSet bs, int[] atoms) {
+    public BondSet(BS bs, int[] atoms) {
       this(bs);
       associatedAtoms = atoms;
     }
@@ -100,7 +100,7 @@ public class Bond extends JmolEdge {
   }
             
   
-  public final static int myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_STICKS);
+  public final static int myVisibilityFlag = JC.getShapeVisibilityFlag(JC.SHAPE_STICKS);
 
   public String getIdentity() {
     return (index + 1) + " "+ getOrderNumberAsString() + " " + atom1.getInfo() + " -- "
@@ -165,11 +165,11 @@ public class Bond extends JmolEdge {
   }
 
   public void setTranslucent(boolean isTranslucent, float translucentLevel) {
-    colix = Colix.getColixTranslucent3(colix, isTranslucent, translucentLevel);
+    colix = C.getColixTranslucent3(colix, isTranslucent, translucentLevel);
   }
   
   public boolean isTranslucent() {
-    return Colix.isColixTranslucent(colix);
+    return C.isColixTranslucent(colix);
     //but may show up translucent anyway!
   }
 
@@ -217,11 +217,11 @@ public class Bond extends JmolEdge {
   }
 
   short getColix1() {
-    return Colix.getColixInherited(colix, atom1.colixAtom);
+    return C.getColixInherited(colix, atom1.colixAtom);
   }
 
   short getColix2() {
-    return Colix.getColixInherited(colix, atom2.colixAtom);
+    return C.getColixInherited(colix, atom2.colixAtom);
   }
 
   public Atom getOtherAtom(Atom thisAtom) {

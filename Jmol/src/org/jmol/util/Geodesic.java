@@ -174,7 +174,7 @@ public class Geodesic {
   public final static int standardLevel = 3;
   private final static int maxLevel = 3;
   private static short[] vertexCounts;
-  private static Vector3f[] vertexVectors;
+  private static V3[] vertexVectors;
   private static short[][] faceVertexesArrays;
   private static short[][] neighborVertexesArrays;
   private static int currentLevel;
@@ -193,13 +193,13 @@ public class Geodesic {
 
   // these next all require preliminary call to getVertexCount()
   
-  static public Vector3f[] getVertexVectors() {
+  static public V3[] getVertexVectors() {
     if (vertexCounts == null)
       createGeodesic(maxLevel);
     return vertexVectors;
   }
 
-  static public Vector3f getVertexVector(int i) {
+  static public V3 getVertexVector(int i) {
     return vertexVectors[i];
   }
 
@@ -218,15 +218,15 @@ public class Geodesic {
     short[] v = new short[lvl + 1];
     neighborVertexesArrays = ArrayUtil.newShort2(lvl + 1);
     faceVertexesArrays = ArrayUtil.newShort2(lvl + 1);
-    vertexVectors = new Vector3f[12];
-    vertexVectors[0] = Vector3f.new3(0, 0, halfRoot5);
+    vertexVectors = new V3[12];
+    vertexVectors[0] = V3.new3(0, 0, halfRoot5);
     for (int i = 0; i < 5; ++i) {
-      vertexVectors[i + 1] = Vector3f.new3((float) Math.cos(i * oneFifth),
+      vertexVectors[i + 1] = V3.new3((float) Math.cos(i * oneFifth),
           (float) Math.sin(i * oneFifth), 0.5f);
-      vertexVectors[i + 6] = Vector3f.new3((float) Math.cos(i * oneFifth
+      vertexVectors[i + 6] = V3.new3((float) Math.cos(i * oneFifth
           + oneTenth), (float) Math.sin(i * oneFifth + oneTenth), -0.5f);
     }
-    vertexVectors[11] = Vector3f.new3(0, 0, -halfRoot5);
+    vertexVectors[11] = V3.new3(0, 0, -halfRoot5);
     for (int i = 12; --i >= 0;)
       vertexVectors[i].normalize();
     faceVertexesArrays[0] = faceVertexesIcosahedron;
@@ -271,7 +271,7 @@ public class Geodesic {
     int oldEdgesCount = oldVertexCount + oldFaceCount - 2;
     int newVertexCount = oldVertexCount + oldEdgesCount;
     int newFaceCount = 4 * oldFaceCount;
-    vertexVectors = (Vector3f[]) ArrayUtil.arrayCopyObject(vertexVectors, newVertexCount);
+    vertexVectors = (V3[]) ArrayUtil.arrayCopyObject(vertexVectors, newVertexCount);
 
     short[] newFacesVertexes = new short[3 * newFaceCount];
     faceVertexesArrays[level + 1] = newFacesVertexes;
@@ -404,7 +404,7 @@ public class Geodesic {
     if (iv != null) {
       return iv.shortValue();
     }
-    Vector3f newVertexVector = Vector3f.newV(vertexVectors[v1]);
+    V3 newVertexVector = V3.newV(vertexVectors[v1]);
     vertexVectors[vertexNext] = newVertexVector;
     newVertexVector.add(vertexVectors[v2]);
     newVertexVector.scale(0.5f);

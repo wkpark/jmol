@@ -25,7 +25,7 @@
 
 package org.jmol.io;
 
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
 //import java.util.ArrayList;
@@ -40,24 +40,24 @@ public class XmlUtil {
 
   // / simple Xml parser/generator ///
 
-  public static void openDocument(StringXBuilder data) {
+  public static void openDocument(SB data) {
     data.append("<?xml version=\"1.0\"?>\n");
   }
 
-  public static void openTag(StringXBuilder sb, String name) {
+  public static void openTag(SB sb, String name) {
     sb.append("<").append(name).append(">\n");
   }
 
-  public static void openTagAttr(StringXBuilder sb, String name, Object[] attributes) {
+  public static void openTagAttr(SB sb, String name, Object[] attributes) {
     appendTagAll(sb, name, attributes, null, false, false);
     sb.append("\n");
   }
 
-  public static void closeTag(StringXBuilder sb, String name) {
+  public static void closeTag(SB sb, String name) {
     sb.append("</").append(name).append(">\n");
   }
 
-  public static void appendTagAll(StringXBuilder sb, String name,
+  public static void appendTagAll(SB sb, String name,
                                Object[] attributes, Object data,
                                boolean isCdata, boolean doClose) {
     String closer = ">";
@@ -120,7 +120,7 @@ public class XmlUtil {
    * @param attributes
    * @param data
    */
-  public static void appendTagObj(StringXBuilder sb, String name,
+  public static void appendTagObj(SB sb, String name,
                                Object[] attributes, Object data) {
     appendTagAll(sb, name, attributes, data, false, true);
   }
@@ -133,7 +133,7 @@ public class XmlUtil {
    * @param name
    * @param data
    */
-  public static void appendTag(StringXBuilder sb, String name, Object data) {
+  public static void appendTag(SB sb, String name, Object data) {
     if (data instanceof Object[])
       appendTagAll(sb, name, (Object[]) data, null, false, true);
     else
@@ -150,7 +150,7 @@ public class XmlUtil {
    * @param attributes 
    * @param data
    */
-  public static void appendCdata(StringXBuilder sb, String name, 
+  public static void appendCdata(SB sb, String name, 
                                  Object[] attributes, String data) {
     appendTagAll(sb, name, attributes, data, true, true);
   }
@@ -161,7 +161,7 @@ public class XmlUtil {
    * @param name
    * @param value
    */
-  public static void appendAttrib(StringXBuilder sb, Object name, Object value) {
+  public static void appendAttrib(SB sb, Object name, Object value) {
     if (value == null)
       return;
     

@@ -27,7 +27,7 @@ package org.jmol.adapter.readers.simple;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 
 /**
@@ -40,7 +40,7 @@ public class AmpacReader extends AtomSetCollectionReader {
   private int atomCount;
   private int freqAtom0 = -1;
   private float[] partialCharges;
-  private Point3f[] atomPositions;
+  private P3[] atomPositions;
     
   @Override
   protected boolean checkLine() throws Exception {
@@ -83,7 +83,7 @@ public class AmpacReader extends AtomSetCollectionReader {
      */
     boolean haveFreq = (freqAtom0 >= 0);
     if (haveFreq) {
-      atomPositions = new Point3f[atomCount];
+      atomPositions = new P3[atomCount];
     } else {
       atomSetCollection.newAtomSet();
     }
@@ -94,7 +94,7 @@ public class AmpacReader extends AtomSetCollectionReader {
       if (tokens.length < 5)
         break;
       if (haveFreq) {
-        atomPositions[atomCount] = Point3f.new3(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]), parseFloatStr(tokens[4]));
+        atomPositions[atomCount] = P3.new3(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]), parseFloatStr(tokens[4]));
       } else {
         String symbol = tokens[1];
         Atom atom = atomSetCollection.addNewAtom();

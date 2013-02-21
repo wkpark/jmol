@@ -33,16 +33,16 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
-import org.jmol.script.ScriptVariable;
-import org.jmol.script.Token;
+import org.jmol.script.SV;
+import org.jmol.script.T;
 import org.jmol.util.Escape;
 
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
 import java.util.Arrays;
@@ -73,16 +73,16 @@ public class StateManager {
   public final static int OBJ_MAX = 8;
   private final static String objectNameList = "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
 
-  public static String getVariableList(Map<String, ScriptVariable> htVariables, int nMax,
+  public static String getVariableList(Map<String, SV> htVariables, int nMax,
                                        boolean withSites, boolean definedOnly) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     // user variables only:
     int n = 0;
 
     String[] list = new String[htVariables.size()];
-    for (Map.Entry<String, ScriptVariable> entry : htVariables.entrySet()) {
+    for (Map.Entry<String, SV> entry : htVariables.entrySet()) {
       String key = entry.getKey();
-      ScriptVariable var = entry.getValue();
+      SV var = entry.getValue();
       if ((withSites || !key.startsWith("site_")) && (!definedOnly || key.charAt(0) == '@'))
         list[n++] = key
             + (key.charAt(0) == '@' ? " " + var.asString() : " = "
@@ -146,9 +146,9 @@ public class StateManager {
   private void setCommonDefaults() {
     viewer.setBooleanProperty("perspectiveDepth", true);
     viewer.setFloatProperty("bondTolerance",
-        JmolConstants.DEFAULT_BOND_TOLERANCE);
+        JC.DEFAULT_BOND_TOLERANCE);
     viewer.setFloatProperty("minBondDistance",
-        JmolConstants.DEFAULT_MIN_BOND_DISTANCE);
+        JC.DEFAULT_MIN_BOND_DISTANCE);
   }
 
   void setJmolDefaults() {
@@ -157,9 +157,9 @@ public class StateManager {
     viewer.setBooleanProperty("axesOrientationRasmol", false);
     viewer.setBooleanProperty("zeroBasedXyzRasmol", false);
     viewer.setIntProperty("percentVdwAtom",
-        JmolConstants.DEFAULT_PERCENT_VDW_ATOM);
+        JC.DEFAULT_PERCENT_VDW_ATOM);
     viewer.setIntProperty("bondRadiusMilliAngstroms",
-        JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
+        JC.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
     viewer.setDefaultVdw("auto");
   }
 
@@ -196,21 +196,21 @@ public class StateManager {
     saved.remove(name);
   }
   
-  void saveSelection(String saveName, BitSet bsSelected) {
+  void saveSelection(String saveName, BS bsSelected) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Selected_");
       return;
     }
     saveName = lastSelected = "Selected_" + saveName;
-    saved.put(saveName, BitSetUtil.copy(bsSelected));
+    saved.put(saveName, BSUtil.copy(bsSelected));
   }
 
   boolean restoreSelection(String saveName) {
     String name = (saveName.length() > 0 ? "Selected_" + saveName
         : lastSelected);
-    BitSet bsSelected = (BitSet) saved.get(name);
+    BS bsSelected = (BS) saved.get(name);
     if (bsSelected == null) {
-      viewer.select(new BitSet(), false, null, false);
+      viewer.select(new BS(), false, null, false);
       return false;
     }
     viewer.select(bsSelected, false, null, false);
@@ -259,7 +259,7 @@ public class StateManager {
     return (script == null ? "" : script);
   }
 
-  void saveCoordinates(String saveName, BitSet bsSelected) {
+  void saveCoordinates(String saveName, BS bsSelected) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Coordinates_");
       return;
@@ -285,7 +285,7 @@ public class StateManager {
       o = getOrientation(saveName);
       return (o == null ? "" : o.getMoveToText(true));      
     } 
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     Iterator<String> e = saved.keySet().iterator();
     while (e.hasNext()) {
        String name = e.next();
@@ -330,8 +330,8 @@ public class StateManager {
     Matrix3f rotationMatrix = new Matrix3f();
     float xTrans, yTrans;
     float zoom, rotationRadius;
-    Point3f center = new Point3f();
-    Point3f navCenter = new Point3f();
+    P3 center = new P3();
+    P3 navCenter = new P3();
     float xNav = Float.NaN;
     float yNav = Float.NaN;
     float navDepth = Float.NaN;
@@ -365,7 +365,7 @@ public class StateManager {
         xNav = viewer.getNavigationOffsetPercent('X');
         yNav = viewer.getNavigationOffsetPercent('Y');
         navDepth = viewer.getNavigationDepthPercent();
-        navCenter = Point3f.newP(viewer.getNavigationCenter());
+        navCenter = P3.newP(viewer.getNavigationCenter());
       }
     }
 
@@ -445,7 +445,7 @@ public class StateManager {
       }
       for (int i = bondCount; --i >= 0;)
         modelSet.getBondAt(i).setIndex(i);
-      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reportAll", null);
+      viewer.setShapeProperty(JC.SHAPE_STICKS, "reportAll", null);
     }
   }
 
@@ -514,7 +514,7 @@ public class StateManager {
 
   protected static int getJmolVersionInt() {
     // 11.9.999 --> 1109999
-    String s = JmolConstants.version;
+    String s = JC.version;
     int version = -1;
 
     try {
@@ -556,7 +556,7 @@ public class StateManager {
     Map<String, Object> htNonbooleanParameterValues;
     Map<String, Boolean> htBooleanParameterFlags;
     Map<String, Boolean> htPropertyFlagsRemoved;
-    Map<String, ScriptVariable> htUserVariables = new Hashtable<String, ScriptVariable>();
+    Map<String, SV> htUserVariables = new Hashtable<String, SV>();
     Map<String, String> databases;
 
     /*
@@ -584,12 +584,12 @@ public class StateManager {
 
       // PER-zap settings made
       setPicked(-1);
-      setParamI("_atomhovered", -1);
-      setParamS("_pickinfo", "");
-      setParamB("selectionhalos", false);
-      setParamB("hidenotselected", false); // to synchronize with selectionManager
-      setParamB("measurementlabels", measurementLabels = true);
-      setParamB("drawHover", drawHover = false);
+      setI("_atomhovered", -1);
+      setS("_pickinfo", "");
+      setB("selectionhalos", false);
+      setB("hidenotselected", false); // to synchronize with selectionManager
+      setB("measurementlabels", measurementLabels = true);
+      setB("drawHover", drawHover = false);
       
 
     }
@@ -617,7 +617,7 @@ public class StateManager {
       }    
       if (databases == null) {
         databases = new Hashtable<String, String>();
-        getDataBaseList(JmolConstants.databases);
+        getDataBaseList(JC.databases);
         loadFormat = databases.get("pdb");
         loadLigandFormat = databases.get("ligand");
         nmrUrlFormat = databases.get("nmr");
@@ -633,7 +633,7 @@ public class StateManager {
     for (EnumCallback item : EnumCallback.values())        
         resetValue(item.name() + "Callback", g);        
 
-      setParamI("historyLevel", 0); //deprecated ? doesn't do anything
+      setI("historyLevel", 0); //deprecated ? doesn't do anything
 
       // These next are just placeholders so that the math processor
       // knows they are Jmol variables. They are held by other managers.
@@ -646,51 +646,51 @@ public class StateManager {
       // we really just have to make sure that all these values are definitely
       // also initialized within the managers. 
 
-      setParamI("depth", 0);                 // maintained by TransformManager
-      setParamF("gestureSwipeFactor", ActionManager.DEFAULT_GESTURE_SWIPE_FACTOR);
-      setParamB("hideNotSelected", false); //maintained by the selectionManager
-      setParamS("hoverLabel", ""); // maintained by the Hover shape
-      setParamB("isKiosk", viewer.isKiosk()); // maintained by Viewer
-      setParamS("logFile", viewer.getLogFile()); // maintained by Viewer
-      setParamI("logLevel", Logger.getLogLevel());
-      setParamF("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
-      setParamF("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
-      setParamI("navFps", TransformManager.DEFAULT_NAV_FPS); 
-      setParamI("navigationDepth", 0);   // maintained by TransformManager
-      setParamI("navigationSlab", 0);    // maintained by TransformManager
-      setParamI("navX", 0);              // maintained by TransformManager
-      setParamI("navY", 0);              // maintained by TransformManager
-      setParamI("navZ", 0);              // maintained by TransformManager
-      setParamS("pathForAllFiles", "");
-      setParamI("perspectiveModel", TransformManager.DEFAULT_PERSPECTIVE_MODEL);
-      setParamS("picking", "identify");      // maintained by ActionManager
-      setParamS("pickingStyle", "toggle");   // maintained by ActionManager
-      setParamB("refreshing", true);         // maintained by Viewer
-      setParamI("rotationRadius", 0);        // maintained by TransformManager
-      setParamI("scaleAngstromsPerInch", 0); // maintained by TransformManager
-      setParamI("scriptReportingLevel", 0);  // maintained by ScriptEvaluator
-      setParamB("selectionHalos", false);    // maintained by ModelSet
-      setParamB("showaxes", false);          // maintained by Axes
-      setParamB("showboundbox", false);      // maintained by Bbcage
-      setParamB("showfrank", false);         // maintained by Viewer
-      setParamB("showUnitcell", false);      // maintained by Uccage
-      setParamI("slab", 100);                // maintained by TransformManager
-      setParamB("slabEnabled", false);       // maintained by TransformManager     
-      setParamF("slabrange", 0f);            // maintained by TransformManager
-      setParamI("spinX", 0);                 // maintained by TransformManager
-      setParamI("spinY", TransformManager.DEFAULT_SPIN_Y);
-      setParamI("spinZ", 0);                 // maintained by TransformManager
-      setParamI("spinFps", TransformManager.DEFAULT_SPIN_FPS);
-      setParamI("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES); 
-      setParamI("stateversion", 0); // only set by a saved state being recalled
-      setParamB("syncScript", viewer.getStatusManager().syncingScripts);
-      setParamB("syncMouse", viewer.getStatusManager().syncingMouse);
-      setParamB("syncStereo", viewer.getStatusManager().stereoSync);
-      setParamB("windowCentered", true); // maintained by TransformManager
-      setParamB("zoomEnabled", true);    // maintained by TransformManager
-      setParamI("zDepth", 0);            // maintained by TransformManager
-      setParamB("zShade", false);        // maintained by TransformManager
-      setParamI("zSlab", 50);            // maintained by TransformManager
+      setI("depth", 0);                 // maintained by TransformManager
+      setF("gestureSwipeFactor", ActionManager.DEFAULT_GESTURE_SWIPE_FACTOR);
+      setB("hideNotSelected", false); //maintained by the selectionManager
+      setS("hoverLabel", ""); // maintained by the Hover shape
+      setB("isKiosk", viewer.isKiosk()); // maintained by Viewer
+      setS("logFile", viewer.getLogFile()); // maintained by Viewer
+      setI("logLevel", Logger.getLogLevel());
+      setF("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
+      setF("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
+      setI("navFps", TransformManager.DEFAULT_NAV_FPS); 
+      setI("navigationDepth", 0);   // maintained by TransformManager
+      setI("navigationSlab", 0);    // maintained by TransformManager
+      setI("navX", 0);              // maintained by TransformManager
+      setI("navY", 0);              // maintained by TransformManager
+      setI("navZ", 0);              // maintained by TransformManager
+      setS("pathForAllFiles", "");
+      setI("perspectiveModel", TransformManager.DEFAULT_PERSPECTIVE_MODEL);
+      setS("picking", "identify");      // maintained by ActionManager
+      setS("pickingStyle", "toggle");   // maintained by ActionManager
+      setB("refreshing", true);         // maintained by Viewer
+      setI("rotationRadius", 0);        // maintained by TransformManager
+      setI("scaleAngstromsPerInch", 0); // maintained by TransformManager
+      setI("scriptReportingLevel", 0);  // maintained by ScriptEvaluator
+      setB("selectionHalos", false);    // maintained by ModelSet
+      setB("showaxes", false);          // maintained by Axes
+      setB("showboundbox", false);      // maintained by Bbcage
+      setB("showfrank", false);         // maintained by Viewer
+      setB("showUnitcell", false);      // maintained by Uccage
+      setI("slab", 100);                // maintained by TransformManager
+      setB("slabEnabled", false);       // maintained by TransformManager     
+      setF("slabrange", 0f);            // maintained by TransformManager
+      setI("spinX", 0);                 // maintained by TransformManager
+      setI("spinY", TransformManager.DEFAULT_SPIN_Y);
+      setI("spinZ", 0);                 // maintained by TransformManager
+      setI("spinFps", TransformManager.DEFAULT_SPIN_FPS);
+      setI("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES); 
+      setI("stateversion", 0); // only set by a saved state being recalled
+      setB("syncScript", viewer.getStatusManager().syncingScripts);
+      setB("syncMouse", viewer.getStatusManager().syncingMouse);
+      setB("syncStereo", viewer.getStatusManager().stereoSync);
+      setB("windowCentered", true); // maintained by TransformManager
+      setB("zoomEnabled", true);    // maintained by TransformManager
+      setI("zDepth", 0);            // maintained by TransformManager
+      setB("zShade", false);        // maintained by TransformManager
+      setI("zSlab", 50);            // maintained by TransformManager
       
 
       // These next values have no other place than the global Hashtables.
@@ -699,230 +699,231 @@ public class StateManager {
       // It's just an issue of speed of access. Generally, these should only be
       // accessed by the user. 
       
-      setParamI("_version", getJmolVersionInt());
+      setI("_version", getJmolVersionInt());
 
-      setParamB("axesWindow", true);
-      setParamB("axesMolecular", false);
-      setParamB("axesPosition", false);
-      setParamB("axesUnitcell", false);
-      setParamI("backgroundModel", 0);
-      setParamB("colorRasmol", false);
-      setParamS("currentLocalPath", "");
-      setParamS("defaultLattice", "{0 0 0}");
-      setParamS("defaultColorScheme", "Jmol");
-      setParamS("defaultDirectoryLocal", "");
-      setParamS("defaults", "Jmol");
-      setParamS("defaultVDW", "Jmol");
-      setParamS("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
-      setParamI("propertyAtomNumberColumnCount", 0);
-      setParamI("propertyAtomNumberField", 0);
-      setParamI("propertyDataColumnCount", 0);
-      setParamI("propertyDataField", 0);
-      setParamB("undo", true);
+      setB("axesWindow", true);
+      setB("axesMolecular", false);
+      setB("axesPosition", false);
+      setB("axesUnitcell", false);
+      setI("backgroundModel", 0);
+      setB("colorRasmol", false);
+      setS("currentLocalPath", "");
+      setS("defaultLattice", "{0 0 0}");
+      setS("defaultColorScheme", "Jmol");
+      setS("defaultDirectoryLocal", "");
+      setS("defaults", "Jmol");
+      setS("defaultVDW", "Jmol");
+      setS("exportDrivers", JC.EXPORT_DRIVER_LIST);
+      setI("propertyAtomNumberColumnCount", 0);
+      setI("propertyAtomNumberField", 0);
+      setI("propertyDataColumnCount", 0);
+      setI("propertyDataField", 0);
+      setB("undo", true);
 
       // OK, all of the rest of these are maintained here as global values (below)
 
-      setParamB("allowEmbeddedScripts", allowEmbeddedScripts);
-      setParamB("allowGestures", allowGestures);
-      setParamB("allowKeyStrokes", allowKeyStrokes);
-      setParamB("allowModelkit", allowModelkit);
-      setParamB("allowMultiTouch", allowMultiTouch);
-      setParamB("allowRotateSelected", allowRotateSelected);
-      setParamB("allowMoveAtoms", allowMoveAtoms);
-      setParamI("ambientPercent", ambientPercent);
-      setParamI("animationFps", animationFps);
-      setParamB("antialiasImages", antialiasImages);
-      setParamB("antialiasDisplay", antialiasDisplay);
-      setParamB("antialiasTranslucent", antialiasTranslucent);
-      setParamB("appendNew", appendNew);
-      setParamS("appletProxy", appletProxy);
-      setParamB("applySymmetryToBonds", applySymmetryToBonds);
-      setParamB("atomPicking", atomPicking);
-      setParamS("atomTypes", atomTypes);
-      setParamB("autoBond", autoBond);
-      setParamB("autoFps", autoFps);
+      setB("allowEmbeddedScripts", allowEmbeddedScripts);
+      setB("allowGestures", allowGestures);
+      setB("allowKeyStrokes", allowKeyStrokes);
+      setB("allowModelkit", allowModelkit);
+      setB("allowMultiTouch", allowMultiTouch);
+      setB("allowRotateSelected", allowRotateSelected);
+      setB("allowMoveAtoms", allowMoveAtoms);
+      setI("ambientPercent", ambientPercent);
+      setI("animationFps", animationFps);
+      setB("antialiasImages", antialiasImages);
+      setB("antialiasDisplay", antialiasDisplay);
+      setB("antialiasTranslucent", antialiasTranslucent);
+      setB("appendNew", appendNew);
+      setS("appletProxy", appletProxy);
+      setB("applySymmetryToBonds", applySymmetryToBonds);
+      setB("atomPicking", atomPicking);
+      setS("atomTypes", atomTypes);
+      setB("autoBond", autoBond);
+      setB("autoFps", autoFps);
 //      setParameterValue("autoLoadOrientation", autoLoadOrientation);
-      setParamI("axesMode", axesMode.getCode());
-      setParamF("axesScale", axesScale);
-      setParamB("axesOrientationRasmol", axesOrientationRasmol);
-      setParamB("bondModeOr", bondModeOr);
-      setParamB("bondPicking", bondPicking);
-      setParamI("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
-      setParamF("bondTolerance", bondTolerance);
-      setParamF("cameraDepth", cameraDepth);
-      setParamB("cartoonBaseEdges", cartoonBaseEdges);
-      setParamB("cartoonFancy", cartoonFancy);
-      setParamB("cartoonRockets", cartoonRockets);
-      setParamB("chainCaseSensitive", chainCaseSensitive);
-      setParamB("celShading", celShading);
-      setParamS("dataSeparator", dataSeparator);
-      setParamB("debugScript", debugScript);
-      setParamS("defaultAngleLabel", defaultAngleLabel);
-      setParamF("defaultDrawArrowScale", defaultDrawArrowScale);
-      setParamS("defaultDirectory", defaultDirectory);
-      setParamS("defaultDistanceLabel", defaultDistanceLabel);
-      setParamS("defaultDropScript", defaultDropScript);
-      setParamS("defaultLabelPDB", defaultLabelPDB);
-      setParamS("defaultLabelXYZ", defaultLabelXYZ);
-      setParamS("defaultLoadFilter", defaultLoadFilter);
-      setParamS("defaultLoadScript", defaultLoadScript);
-      setParamB("defaultStructureDSSP", defaultStructureDSSP);
-      setParamS("defaultTorsionLabel", defaultTorsionLabel);
-      setParamF("defaultTranslucent", defaultTranslucent);
-      setParamI("delayMaximumMs", delayMaximumMs);
-      setParamI("diffusePercent", diffusePercent);
-      setParamF("dipoleScale", dipoleScale);
-      setParamB("disablePopupMenu", disablePopupMenu);
-      setParamB("displayCellParameters", displayCellParameters);
-      setParamI("dotDensity", dotDensity);
-      setParamI("dotScale", dotScale);
-      setParamB("dotsSelectedOnly", dotsSelectedOnly);
-      setParamB("dotSurface", dotSurface);
-      setParamB("dragSelected", dragSelected);
-      setParamB("drawHover", drawHover);
-      setParamB("drawPicking", drawPicking);
-      setParamB("dsspCalculateHydrogenAlways", dsspCalcHydrogen);
-      setParamB("dynamicMeasurements", dynamicMeasurements);
-      setParamS("edsUrlFormat", edsUrlFormat);
+      setI("axesMode", axesMode.getCode());
+      setF("axesScale", axesScale);
+      setB("axesOrientationRasmol", axesOrientationRasmol);
+      setB("bondModeOr", bondModeOr);
+      setB("bondPicking", bondPicking);
+      setI("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
+      setF("bondTolerance", bondTolerance);
+      setF("cameraDepth", cameraDepth);
+      setB("cartoonBaseEdges", cartoonBaseEdges);
+      setB("cartoonFancy", cartoonFancy);
+      setB("cartoonRockets", cartoonRockets);
+      setB("chainCaseSensitive", chainCaseSensitive);
+      setB("celShading", celShading);
+      setS("dataSeparator", dataSeparator);
+      setB("debugScript", debugScript);
+      setS("defaultAngleLabel", defaultAngleLabel);
+      setF("defaultDrawArrowScale", defaultDrawArrowScale);
+      setS("defaultDirectory", defaultDirectory);
+      setS("defaultDistanceLabel", defaultDistanceLabel);
+      setS("defaultDropScript", defaultDropScript);
+      setS("defaultLabelPDB", defaultLabelPDB);
+      setS("defaultLabelXYZ", defaultLabelXYZ);
+      setS("defaultLoadFilter", defaultLoadFilter);
+      setS("defaultLoadScript", defaultLoadScript);
+      setB("defaultStructureDSSP", defaultStructureDSSP);
+      setS("defaultTorsionLabel", defaultTorsionLabel);
+      setF("defaultTranslucent", defaultTranslucent);
+      setI("delayMaximumMs", delayMaximumMs);
+      setI("diffusePercent", diffusePercent);
+      setF("dipoleScale", dipoleScale);
+      setB("disablePopupMenu", disablePopupMenu);
+      setB("displayCellParameters", displayCellParameters);
+      setI("dotDensity", dotDensity);
+      setI("dotScale", dotScale);
+      setB("dotsSelectedOnly", dotsSelectedOnly);
+      setB("dotSurface", dotSurface);
+      setB("dragSelected", dragSelected);
+      setB("drawHover", drawHover);
+      setB("drawPicking", drawPicking);
+      setB("dsspCalculateHydrogenAlways", dsspCalcHydrogen);
+      setB("dynamicMeasurements", dynamicMeasurements);
+      setS("edsUrlFormat", edsUrlFormat);
       //setParameterValue("edsUrlOptions", edsUrlOptions);
-      setParamS("edsUrlCutoff", edsUrlCutoff);
-      setParamB("ellipsoidArcs", ellipsoidArcs);
-      setParamB("ellipsoidAxes", ellipsoidAxes);
-      setParamF("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
-      setParamB("ellipsoidBall", ellipsoidBall);
-      setParamI("ellipsoidDotCount", ellipsoidDotCount);
-      setParamB("ellipsoidDots", ellipsoidDots);
-      setParamB("ellipsoidFill", ellipsoidFill);
-      setParamS("energyUnits", energyUnits);
+      setS("edsUrlCutoff", edsUrlCutoff);
+      setB("ellipsoidArcs", ellipsoidArcs);
+      setB("ellipsoidAxes", ellipsoidAxes);
+      setF("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
+      setB("ellipsoidBall", ellipsoidBall);
+      setI("ellipsoidDotCount", ellipsoidDotCount);
+      setB("ellipsoidDots", ellipsoidDots);
+      setB("ellipsoidFill", ellipsoidFill);
+      setS("energyUnits", energyUnits);
 //      setParameterValue("_fileCaching", _fileCaching);
 //      setParameterValue("_fileCache", _fileCache);
-      setParamB("fontScaling", fontScaling);
-      setParamB("fontCaching", fontCaching);
-      setParamB("forceAutoBond", forceAutoBond);
-      setParamS("forceField", forceField);
-      setParamB("fractionalRelative", fractionalRelative);
-      setParamB("greyscaleRendering", greyscaleRendering);
-      setParamF("hbondsAngleMinimum", hbondsAngleMinimum);
-      setParamF("hbondsDistanceMaximum", hbondsDistanceMaximum);
-      setParamB("hbondsBackbone", hbondsBackbone);
-      setParamB("hbondsRasmol", hbondsRasmol);
-      setParamB("hbondsSolid", hbondsSolid);
-      setParamI("helixStep", helixStep);
-      setParamS("helpPath", helpPath);
-      setParamI("hermiteLevel", hermiteLevel);
-      setParamB("hideNameInPopup", hideNameInPopup);
-      setParamB("hideNavigationPoint", hideNavigationPoint);
-      setParamB("highResolution", highResolutionFlag);
-      setParamF("hoverDelay", hoverDelayMs / 1000f);
-      setParamB("imageState", imageState);
-      setParamB("isosurfaceKey", isosurfaceKey);
-      setParamB("isosurfacePropertySmoothing",
+      setB("fontScaling", fontScaling);
+      setB("fontCaching", fontCaching);
+      setB("forceAutoBond", forceAutoBond);
+      setS("forceField", forceField);
+      setB("fractionalRelative", fractionalRelative);
+      setB("greyscaleRendering", greyscaleRendering);
+      setF("hbondsAngleMinimum", hbondsAngleMinimum);
+      setF("hbondsDistanceMaximum", hbondsDistanceMaximum);
+      setB("hbondsBackbone", hbondsBackbone);
+      setB("hbondsRasmol", hbondsRasmol);
+      setB("hbondsSolid", hbondsSolid);
+      setI("helixStep", helixStep);
+      setS("helpPath", helpPath);
+      setI("hermiteLevel", hermiteLevel);
+      setB("hideNameInPopup", hideNameInPopup);
+      setB("hideNavigationPoint", hideNavigationPoint);
+      setB("highResolution", highResolutionFlag);
+      setF("hoverDelay", hoverDelayMs / 1000f);
+      setB("imageState", imageState);
+      setB("isosurfaceKey", isosurfaceKey);
+      setB("isosurfacePropertySmoothing",
           isosurfacePropertySmoothing);
-      setParamI("isosurfacePropertySmoothingPower",
+      setI("isosurfacePropertySmoothingPower",
           isosurfacePropertySmoothingPower);
-      setParamB("justifyMeasurements", justifyMeasurements);
-      setParamB("legacyAutoBonding", legacyAutoBonding);
-      setParamF("loadAtomDataTolerance", loadAtomDataTolerance);
-      setParamS("loadFormat", loadFormat);
-      setParamS("loadLigandFormat", loadLigandFormat);
-      setParamB("logCommands", logCommands);
-      setParamB("logGestures", logGestures);
-      setParamB("measureAllModels", measureAllModels);
-      setParamB("measurementLabels", measurementLabels);
-      setParamS("measurementUnits", measureDistanceUnits);
-      setParamI("meshScale", meshScale);
-      setParamB("messageStyleChime", messageStyleChime);
-      setParamF("minBondDistance", minBondDistance);
-      setParamI("minPixelSelRadius", minPixelSelRadius);
-      setParamI("minimizationSteps", minimizationSteps);
-      setParamB("minimizationRefresh", minimizationRefresh);
-      setParamB("minimizationSilent", minimizationSilent);
-      setParamF("minimizationCriterion", minimizationCriterion);
-      setParamB("modelKitMode", modelKitMode);
-      setParamB("monitorEnergy", monitorEnergy);
-      setParamF("multipleBondRadiusFactor", multipleBondRadiusFactor);
-      setParamF("multipleBondSpacing", multipleBondSpacing);
-      setParamB("multiProcessor", multiProcessor && (Viewer.nProcessors > 1));
-      setParamB("navigationMode", navigationMode);
+      setB("justifyMeasurements", justifyMeasurements);
+      setB("legacyAutoBonding", legacyAutoBonding);
+      setF("loadAtomDataTolerance", loadAtomDataTolerance);
+      setS("loadFormat", loadFormat);
+      setS("loadLigandFormat", loadLigandFormat);
+      setB("logCommands", logCommands);
+      setB("logGestures", logGestures);
+      setB("measureAllModels", measureAllModels);
+      setB("measurementLabels", measurementLabels);
+      setS("measurementUnits", measureDistanceUnits);
+      setI("meshScale", meshScale);
+      setB("messageStyleChime", messageStyleChime);
+      setF("minBondDistance", minBondDistance);
+      setI("minPixelSelRadius", minPixelSelRadius);
+      setI("minimizationSteps", minimizationSteps);
+      setB("minimizationRefresh", minimizationRefresh);
+      setB("minimizationSilent", minimizationSilent);
+      setF("minimizationCriterion", minimizationCriterion);
+      setB("modelKitMode", modelKitMode);
+      setB("monitorEnergy", monitorEnergy);
+      setF("multipleBondRadiusFactor", multipleBondRadiusFactor);
+      setF("multipleBondSpacing", multipleBondSpacing);
+      setB("multiProcessor", multiProcessor && (Viewer.nProcessors > 1));
+      setB("navigationMode", navigationMode);
       //setParamB("navigateSurface", navigateSurface);
-      setParamB("navigationPeriodic", navigationPeriodic);
-      setParamF("navigationSpeed", navigationSpeed);
-      setParamS("nmrUrlFormat", nmrUrlFormat);
-      setParamB("partialDots", partialDots);
-      setParamB("pdbAddHydrogens", pdbAddHydrogens); // new 12.1.51
-      setParamB("pdbGetHeader", pdbGetHeader); // new 11.5.39
-      setParamB("pdbSequential", pdbSequential); // new 11.5.39
-      setParamB("perspectiveDepth", perspectiveDepth);
-      setParamI("percentVdwAtom", percentVdwAtom);
-      setParamI("phongExponent", phongExponent);
-      setParamI("pickingSpinRate", pickingSpinRate);
-      setParamS("pickLabel", pickLabel);
-      setParamF("pointGroupLinearTolerance", pointGroupLinearTolerance);
-      setParamF("pointGroupDistanceTolerance", pointGroupDistanceTolerance);
-      setParamB("preserveState", preserveState);
-      setParamS("propertyColorScheme", propertyColorScheme);
-      setParamS("quaternionFrame", quaternionFrame);
-      setParamB("rangeSelected", rangeSelected);
-      setParamI("repaintWaitMs", repaintWaitMs);
-      setParamI("ribbonAspectRatio", ribbonAspectRatio);
-      setParamB("ribbonBorder", ribbonBorder);
-      setParamB("rocketBarrels", rocketBarrels);
-      setParamB("saveProteinStructureState", saveProteinStructureState);
-      setParamB("scriptqueue", useScriptQueue);
-      setParamB("selectAllModels", selectAllModels);
-      setParamB("selectHetero", rasmolHeteroSetting);
-      setParamB("selectHydrogen", rasmolHydrogenSetting);
-      setParamF("sheetSmoothing", sheetSmoothing);
-      setParamB("showHiddenSelectionHalos", showHiddenSelectionHalos);
-      setParamB("showHydrogens", showHydrogens);
-      setParamB("showKeyStrokes", showKeyStrokes);
-      setParamB("showMeasurements", showMeasurements);
-      setParamB("showMultipleBonds", showMultipleBonds);
-      setParamB("showNavigationPointAlways", showNavigationPointAlways);
-      setParamI("showScript", scriptDelay);
-      setParamB("showtiming", showTiming);
-      setParamB("slabByMolecule", slabByMolecule);
-      setParamB("slabByAtom", slabByAtom);
-      setParamB("smartAromatic", smartAromatic);
-      setParamI("smallMoleculeMaxAtoms", smallMoleculeMaxAtoms);
-      setParamS("smilesUrlFormat", smilesUrlFormat);
-      setParamS("nihResolverFormat", nihResolverFormat);
-      setParamS("pubChemFormat", pubChemFormat);
-      setParamB("solventProbe", solventOn);
-      setParamF("solventProbeRadius", solventProbeRadius);
-      setParamB("specular", specular);
-      setParamI("specularExponent", specularExponent);
-      setParamI("specularPercent", specularPercent);
-      setParamI("specularPower", specularPower);
-      setParamB("ssbondsBackbone", ssbondsBackbone);
-      setParamB("statusReporting", statusReporting);
-      setParamI("strandCount", strandCountForStrands);
-      setParamI("strandCountForStrands", strandCountForStrands);
-      setParamI("strandCountForMeshRibbon", strandCountForMeshRibbon);
-      setParamF("strutDefaultRadius", strutDefaultRadius);
-      setParamF("strutLengthMaximum", strutLengthMaximum);
-      setParamI("strutSpacing", strutSpacing);
-      setParamB("strutsMultiple", strutsMultiple);
-      setParamB("testFlag1", testFlag1);
-      setParamB("testFlag2", testFlag2);
-      setParamB("testFlag3", testFlag3);
-      setParamB("testFlag4", testFlag4);
-      setParamB("traceAlpha", traceAlpha);
-      setParamB("useArcBall", useArcBall);
-      setParamB("useMinimizationThread", useMinimizationThread);
-      setParamB("useNumberLocalization", useNumberLocalization);
-      setParamF("vectorScale", vectorScale);
-      setParamB("vectorSymmetry", vectorSymmetry);
-      setParamF("vibrationPeriod", vibrationPeriod);
-      setParamF("vibrationScale", vibrationScale);
-      setParamF("visualRange", visualRange);
-      setParamB("waitForMoveTo", waitForMoveTo);
-      setParamB("wireframeRotation", wireframeRotation);
-      setParamI("zDepth", zDepth);
-      setParamB("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
-      setParamB("zoomLarge", zoomLarge);
-      setParamI("zShadePower", zShadePower);
-      setParamI("zSlab", zSlab);  
+      setB("navigationPeriodic", navigationPeriodic);
+      setF("navigationSpeed", navigationSpeed);
+      setS("nmrUrlFormat", nmrUrlFormat);
+      setB("partialDots", partialDots);
+      setB("pdbAddHydrogens", pdbAddHydrogens); // new 12.1.51
+      setB("pdbGetHeader", pdbGetHeader); // new 11.5.39
+      setB("pdbSequential", pdbSequential); // new 11.5.39
+      setB("perspectiveDepth", perspectiveDepth);
+      setI("percentVdwAtom", percentVdwAtom);
+      setI("phongExponent", phongExponent);
+      setI("pickingSpinRate", pickingSpinRate);
+      setS("pickLabel", pickLabel);
+      setF("pointGroupLinearTolerance", pointGroupLinearTolerance);
+      setF("pointGroupDistanceTolerance", pointGroupDistanceTolerance);
+      setB("preserveState", preserveState);
+      setS("propertyColorScheme", propertyColorScheme);
+      setS("quaternionFrame", quaternionFrame);
+      setB("rangeSelected", rangeSelected);
+      setI("repaintWaitMs", repaintWaitMs);
+      setI("ribbonAspectRatio", ribbonAspectRatio);
+      setB("ribbonBorder", ribbonBorder);
+      setB("rocketBarrels", rocketBarrels);
+      setB("saveProteinStructureState", saveProteinStructureState);
+      setB("scriptqueue", useScriptQueue);
+      setB("selectAllModels", selectAllModels);
+      setB("selectHetero", rasmolHeteroSetting);
+      setB("selectHydrogen", rasmolHydrogenSetting);
+      setF("sheetSmoothing", sheetSmoothing);
+      setB("showHiddenSelectionHalos", showHiddenSelectionHalos);
+      setB("showHydrogens", showHydrogens);
+      setB("showKeyStrokes", showKeyStrokes);
+      setB("showMeasurements", showMeasurements);
+      setB("showMultipleBonds", showMultipleBonds);
+      setB("showNavigationPointAlways", showNavigationPointAlways);
+      setI("showScript", scriptDelay);
+      setB("showtiming", showTiming);
+      setB("slabByMolecule", slabByMolecule);
+      setB("slabByAtom", slabByAtom);
+      setB("smartAromatic", smartAromatic);
+      setI("smallMoleculeMaxAtoms", smallMoleculeMaxAtoms);
+      setS("smilesUrlFormat", smilesUrlFormat);
+      setS("nihResolverFormat", nihResolverFormat);
+      setS("pubChemFormat", pubChemFormat);
+      setB("solventProbe", solventOn);
+      setF("solventProbeRadius", solventProbeRadius);
+      setB("specular", specular);
+      setI("specularExponent", specularExponent);
+      setI("specularPercent", specularPercent);
+      setI("specularPower", specularPower);
+      setB("ssbondsBackbone", ssbondsBackbone);
+      setB("statusReporting", statusReporting);
+      setI("strandCount", strandCountForStrands);
+      setI("strandCountForStrands", strandCountForStrands);
+      setI("strandCountForMeshRibbon", strandCountForMeshRibbon);
+      setF("strutDefaultRadius", strutDefaultRadius);
+      setF("strutLengthMaximum", strutLengthMaximum);
+      setI("strutSpacing", strutSpacing);
+      setB("strutsMultiple", strutsMultiple);
+      setB("testFlag1", testFlag1);
+      setB("testFlag2", testFlag2);
+      setB("testFlag3", testFlag3);
+      setB("testFlag4", testFlag4);
+      setB("traceAlpha", traceAlpha);
+      setB("twistedSheets", twistedSheets);
+      setB("useArcBall", useArcBall);
+      setB("useMinimizationThread", useMinimizationThread);
+      setB("useNumberLocalization", useNumberLocalization);
+      setF("vectorScale", vectorScale);
+      setB("vectorSymmetry", vectorSymmetry);
+      setF("vibrationPeriod", vibrationPeriod);
+      setF("vibrationScale", vibrationScale);
+      setF("visualRange", visualRange);
+      setB("waitForMoveTo", waitForMoveTo);
+      setB("wireframeRotation", wireframeRotation);
+      setI("zDepth", zDepth);
+      setB("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
+      setB("zoomLarge", zoomLarge);
+      setI("zShadePower", zShadePower);
+      setI("zSlab", zSlab);  
     }
 
     //lighting (see GData.Shade3D
@@ -953,11 +954,11 @@ public class StateManager {
        // starting with Jmol 12.0.RC10, this setting is ignored, and FILTER "NoOrient" is required if the file
        // is to be loaded without reference to the orientation saved in the file.
     boolean axesOrientationRasmol = false;
-    short bondRadiusMilliAngstroms = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
-    float bondTolerance = JmolConstants.DEFAULT_BOND_TOLERANCE;
+    short bondRadiusMilliAngstroms = JC.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
+    float bondTolerance = JC.DEFAULT_BOND_TOLERANCE;
     String defaultDirectory = "";
     boolean defaultStructureDSSP = true; // Jmol 12.1.15
-    final Point3f ptDefaultLattice = new Point3f();
+    final P3 ptDefaultLattice = new P3();
     String defaultLoadScript = "";
     String defaultLoadFilter = "";
     String defaultDropScript = "zap; load SYNC %FILE;if (%ALLOWCARTOONS && _loadScript == '' && defaultLoadScript == '' && _filetype == 'Pdb') {if ({(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex){select protein or nucleic;cartoons only;}if ({visible}){color structure}else{wireframe -0.1};if (!{visible}){spacefill 23%};select *}";
@@ -971,22 +972,22 @@ public class StateManager {
     String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
     String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";
     String edsUrlOptions = "within 2.0 {*}";
-    float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
+    float minBondDistance = JC.DEFAULT_MIN_BOND_DISTANCE;
     int minPixelSelRadius = 6;
     boolean pdbAddHydrogens = false; // true to add hydrogen atoms
     boolean pdbGetHeader = false; // true to get PDB header in auxiliary info
     boolean pdbSequential = false; // true for no bonding check
-    int percentVdwAtom = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
+    int percentVdwAtom = JC.DEFAULT_PERCENT_VDW_ATOM;
     int smallMoleculeMaxAtoms = 40000;
     boolean smartAromatic = true;
     boolean zeroBasedXyzRasmol = false;
     boolean legacyAutoBonding = false;
 
-    void setDefaultLattice(Point3f ptLattice) {
+    void setDefaultLattice(P3 ptLattice) {
       ptDefaultLattice.setT(ptLattice);
     }
 
-    Point3f getDefaultLattice() {
+    P3 getDefaultLattice() {
       return ptDefaultLattice;
     }
 
@@ -1050,7 +1051,7 @@ public class StateManager {
     float hbondsDistanceMaximum = 3.25f;
     boolean hbondsRasmol = true; // 12.0.RC3
     boolean hbondsSolid = false;
-    byte modeMultipleBond = JmolConstants.MULTIBOND_NOTSMALL;
+    byte modeMultipleBond = JC.MULTIBOND_NOTSMALL;
     boolean showHydrogens = true;
     boolean showMultipleBonds = true;
     boolean ssbondsBackbone = false;
@@ -1073,6 +1074,7 @@ public class StateManager {
     boolean rocketBarrels = false;
     float sheetSmoothing = 1; // 0: traceAlpha on alphas for helix, 1 on midpoints
     boolean traceAlpha = true;
+    boolean twistedSheets = false;
 
     //misc
 
@@ -1102,7 +1104,7 @@ public class StateManager {
     boolean drawPicking = false;
     boolean dsspCalcHydrogen = true;
     String energyUnits = "kJ";
-    String helpPath = JmolConstants.DEFAULT_HELP_PATH;
+    String helpPath = JC.DEFAULT_HELP_PATH;
     boolean fontScaling = false;
     boolean fontCaching = true;
     String forceField = "MMFF";
@@ -1133,7 +1135,7 @@ public class StateManager {
     int strandCountForMeshRibbon = 7;
     int strutSpacing = 6;
     float strutLengthMaximum = 7.0f;
-    float strutDefaultRadius = JmolConstants.DEFAULT_STRUT_RADIUS;
+    float strutDefaultRadius = JC.DEFAULT_STRUT_RADIUS;
     boolean strutsMultiple = false; //on a single position    
     boolean useArcBall = false;
     boolean useMinimizationThread = true;
@@ -1201,9 +1203,9 @@ public class StateManager {
       else if (units.equalsIgnoreCase("kcal"))
         energyUnits = "kcal";
       if (!mu.equalsIgnoreCase(measureDistanceUnits))
-        setParamS("measurementUnits", measureDistanceUnits);
+        setS("measurementUnits", measureDistanceUnits);
       else if (!eu.equalsIgnoreCase(energyUnits)) 
-        setParamS("energyUnits", energyUnits);
+        setS("energyUnits", energyUnits);
     }
 
     boolean isJmolVariable(String key) {
@@ -1214,24 +1216,24 @@ public class StateManager {
     }
 
     private void resetValue(String name, GlobalSettings g) {
-      setParamS(name, g == null ? "" : (String) g.getParameter(name));
+      setS(name, g == null ? "" : (String) g.getParameter(name));
     }
     
-    public void setParamB(String name, boolean value) {
+    public void setB(String name, boolean value) {
       name = name.toLowerCase();
       if (htNonbooleanParameterValues.containsKey(name))
         return; // don't allow setting boolean of a numeric
       htBooleanParameterFlags.put(name, value ? Boolean.TRUE : Boolean.FALSE);
     }
 
-    void setParamI(String name, int value) {
+    void setI(String name, int value) {
       name = name.toLowerCase();
       if (htBooleanParameterFlags.containsKey(name))
         return; // don't allow setting numeric of a boolean
       htNonbooleanParameterValues.put(name, Integer.valueOf(value));
     }
 
-    public void setParamF(String name, float value) {
+    public void setF(String name, float value) {
       if (Float.isNaN(value))
         return;
       name = name.toLowerCase();
@@ -1240,7 +1242,7 @@ public class StateManager {
       htNonbooleanParameterValues.put(name, new Float(value));
     }
 
-    void setParamS(String name, String value) {
+    void setS(String name, String value) {
       name = name.toLowerCase();
       if (value == null || htBooleanParameterFlags.containsKey(name))
         return; // don't allow setting string of a boolean
@@ -1266,7 +1268,7 @@ public class StateManager {
         htNonbooleanParameterValues.remove(key);
     }
 
-    ScriptVariable setUserVariable(String key, ScriptVariable var) {
+    SV setUserVariable(String key, SV var) {
       if (var == null) 
         return null;
 //      System.out.println("stateman setting user variable " + key );
@@ -1289,7 +1291,7 @@ public class StateManager {
       htUserVariables.remove(key);
     }
 
-    ScriptVariable getUserVariable(String name) {
+    SV getUserVariable(String name) {
       if (name == null)
         return null;
       name = name.toLowerCase();
@@ -1300,7 +1302,7 @@ public class StateManager {
       name = name.toLowerCase();
       if (htNonbooleanParameterValues.containsKey(name)) {
         Object v = htNonbooleanParameterValues.get(name);
-        return varClip(name, Escape.escape(v), nMax);
+        return varClip(name, Escape.e(v), nMax);
       }
       if (htBooleanParameterFlags.containsKey(name))
         return htBooleanParameterFlags.get(name).toString();
@@ -1331,13 +1333,13 @@ public class StateManager {
      * @return     a new variable if possible, but null if "_xxx"
      * 
      */
-    ScriptVariable getOrSetNewVariable(String name, boolean doSet) {
+    SV getOrSetNewVariable(String name, boolean doSet) {
       if (name == null || name.length() == 0)
         name = "x";
       Object v = getParam(name, true);
       return (v == null && doSet && name.charAt(0) != '_' ?
-        setUserVariable(name, ScriptVariable.newVariable(Token.string, ""))
-         : ScriptVariable.getVariable(v));
+        setUserVariable(name, SV.newVariable(T.string, ""))
+         : SV.getVariable(v));
     }
 
     Object getParam(String name, boolean asVariable) {
@@ -1363,8 +1365,8 @@ public class StateManager {
       if (htPropertyFlagsRemoved.containsKey(name))
         return Boolean.FALSE;
       if (htUserVariables.containsKey(name)) {
-        ScriptVariable v = htUserVariables.get(name);
-        return (asVariable ? v : ScriptVariable.oValue(v));
+        SV v = htUserVariables.get(name);
+        return (asVariable ? v : SV.oValue(v));
       }
       return null;
     }
@@ -1406,17 +1408,17 @@ public class StateManager {
     }
 
     void setPicked(int atomIndex) {
-      ScriptVariable pickedSet = null;
+      SV pickedSet = null;
       if (atomIndex >= 0) {
-        setParamI("_atompicked", atomIndex);
-        pickedSet = (ScriptVariable) getParam("picked", true);
+        setI("_atompicked", atomIndex);
+        pickedSet = (SV) getParam("picked", true);
       }
-      if (pickedSet == null || pickedSet.tok != Token.bitset) {
-        pickedSet = ScriptVariable.newVariable(Token.bitset, new BitSet());
+      if (pickedSet == null || pickedSet.tok != T.bitset) {
+        pickedSet = SV.newVariable(T.bitset, new BS());
         setUserVariable("picked", pickedSet);
       }
       if (atomIndex >= 0)
-        ScriptVariable.getBitSet(pickedSet, false).set(atomIndex);
+        SV.getBitSet(pickedSet, false).set(atomIndex);
     }
 
     public String resolveDataBase(String database, String id) {

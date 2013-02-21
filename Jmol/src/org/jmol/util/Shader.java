@@ -62,7 +62,7 @@ public class Shader {
     setLightSource(-1f, -1f, 2.5f); 
   }
   
-  Vector3f lightSource = new Vector3f();
+  V3 lightSource = new V3();
   
   private void setLightSource(float x, float y, float z) {
     lightSource.set(x, y, z);
@@ -105,7 +105,7 @@ public class Shader {
   private int rgbContrast;
 
   public void setCel(boolean celOn, int argb) {
-    argb = Colix.getArgb(ColorUtil.getBgContrast(argb));
+    argb = C.getArgb(ColorUtil.getBgContrast(argb));
     if (argb == 0xFF000000)
       argb = 0xFF040404; // problem here is with antialiasDisplay on white background
     if (this.celOn == celOn && rgbContrast == argb)
@@ -125,45 +125,45 @@ public class Shader {
   }
   
   public void setLastColix(int argb, boolean asGrey) {
-    Colix.allocateColix(argb);
+    C.allocateColix(argb);
     checkShades();
     if (asGrey)
-      Colix.setLastGrey(argb);
-    ashades[Colix.LAST_AVAILABLE_COLIX] = getShades2(argb, false);
+      C.setLastGrey(argb);
+    ashades[C.LAST_AVAILABLE_COLIX] = getShades2(argb, false);
   }
 
   public int[] getShades(short colix) {
     checkShades();
-    colix &= Colix.OPAQUE_MASK;
+    colix &= C.OPAQUE_MASK;
     int[] shades = ashades[colix];
     if (shades == null)
-      shades = ashades[colix] = getShades2(Colix.argbs[colix], false);
+      shades = ashades[colix] = getShades2(C.argbs[colix], false);
     return shades;
   }
 
   public int[] getShadesG(short colix) {
     checkShades();
-    colix &= Colix.OPAQUE_MASK;
+    colix &= C.OPAQUE_MASK;
     if (ashadesGreyscale == null)
       ashadesGreyscale = ArrayUtil.newInt2(ashades.length);
     int[] shadesGreyscale = ashadesGreyscale[colix];
     if (shadesGreyscale == null)
       shadesGreyscale = ashadesGreyscale[colix] =
-        getShades2(Colix.argbs[colix], true);
+        getShades2(C.argbs[colix], true);
     return shadesGreyscale;
   }
 
   private void checkShades() {
-    if (ashades != null && ashades.length == Colix.colixMax)
+    if (ashades != null && ashades.length == C.colixMax)
       return;
-    ashades = ArrayUtil.arrayCopyII(ashades, Colix.colixMax);
+    ashades = ArrayUtil.arrayCopyII(ashades, C.colixMax);
     if (ashadesGreyscale != null)
-      ashadesGreyscale = ArrayUtil.arrayCopyII(ashadesGreyscale, Colix.colixMax);
+      ashadesGreyscale = ArrayUtil.arrayCopyII(ashadesGreyscale, C.colixMax);
   }
   
   public void flushShades() {
     checkShades();
-    for (int i = Colix.colixMax; --i >= 0; )
+    for (int i = C.colixMax; --i >= 0; )
       ashades[i] = null;
     sphereShadingCalculated = false;
   }

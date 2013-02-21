@@ -25,23 +25,23 @@ package org.jmol.modelset;
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.J2SRequireImport;
-import org.jmol.util.Vector3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 import org.jmol.constant.EnumStructure;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 
-@J2SRequireImport({java.lang.Short.class,org.jmol.viewer.JmolConstants.class})
+@J2SRequireImport({java.lang.Short.class,org.jmol.viewer.JC.class})
 public class Group {
 
   protected int groupIndex;
@@ -88,22 +88,22 @@ public class Group {
   
   public void setGroupParameter(int tok, float f) {
     switch (tok) {
-    case Token.phi:
+    case T.phi:
       phi = f;
       break;
-    case Token.psi:
+    case T.psi:
       psi = f;
       break;
-    case Token.omega:
+    case T.omega:
       omega = f;
       break;
-    case Token.eta:
+    case T.eta:
       mu = f;
       break;
-    case Token.theta:
+    case T.theta:
       theta = f;
       break;
-    case Token.straightness:
+    case T.straightness:
       straightness = f;
       break;
     }
@@ -113,17 +113,17 @@ public class Group {
     if (!haveParameters())
       calcBioParameters();
     switch (tok) {
-    case Token.omega:
+    case T.omega:
       return omega;
-    case Token.phi:
+    case T.phi:
       return phi;
-    case Token.psi:
+    case T.psi:
       return psi;
-    case Token.eta:
+    case T.eta:
       return mu;
-    case Token.theta:
+    case T.theta:
       return theta;
-    case Token.straightness:
+    case T.straightness:
       return straightness;
     }
     return Float.NaN;
@@ -137,7 +137,7 @@ public class Group {
     if (group3 == null)
       group3 = "";
     groupID = getGroupID(group3);
-    isProtein = (groupID >= 1 && groupID < JmolConstants.GROUPID_AMINO_MAX); 
+    isProtein = (groupID >= 1 && groupID < JC.GROUPID_AMINO_MAX); 
 
     this.firstAtomIndex = firstAtomIndex;
     this.lastAtomIndex = lastAtomIndex;
@@ -164,9 +164,9 @@ public class Group {
   }
 
   public final char getGroup1() {
-    if (groupID >= JmolConstants.predefinedGroup1Names.length)
+    if (groupID >= JC.predefinedGroup1Names.length)
       return '?';
-    return JmolConstants.predefinedGroup1Names[groupID];
+    return JC.predefinedGroup1Names[groupID];
   }
 
   public final short getGroupID() {
@@ -221,8 +221,8 @@ public class Group {
   }
   
   public boolean isNucleic() { 
-    return (groupID >= JmolConstants.GROUPID_AMINO_MAX 
-        && groupID < JmolConstants.GROUPID_NUCLEIC_MAX); 
+    return (groupID >= JC.GROUPID_AMINO_MAX 
+        && groupID < JC.GROUPID_NUCLEIC_MAX); 
   }
   public boolean isDna() { return false; }
   public boolean isRna() { return false; }
@@ -240,8 +240,8 @@ public class Group {
   static short group3NameCount = 0;
   
   static {
-    for (int i = 0; i < JmolConstants.predefinedGroup3Names.length; ++i) {
-      addGroup3Name(JmolConstants.predefinedGroup3Names[i]);
+    for (int i = 0; i < JC.predefinedGroup3Names.length; ++i) {
+      addGroup3Name(JC.predefinedGroup3Names[i]);
     }
   }
   
@@ -353,7 +353,7 @@ public class Group {
     return (char)(seqcode & INSERTION_CODE_MASK);
   }
   
-  private BitSet bsAdded;
+  private BS bsAdded;
   
   public boolean isAdded(int atomIndex) {
     return bsAdded != null && bsAdded.get(atomIndex);
@@ -361,18 +361,18 @@ public class Group {
   
   public void addAtoms(int atomIndex) {
     if (bsAdded == null)
-      bsAdded = new BitSet();
+      bsAdded = new BS();
     bsAdded.set(atomIndex);
   }
   
-  public int selectAtoms(BitSet bs) {
+  public int selectAtoms(BS bs) {
     bs.setBits(firstAtomIndex, lastAtomIndex + 1);
     if (bsAdded != null)
       bs.or(bsAdded);
     return lastAtomIndex;
   }
 
-  public boolean isSelected(BitSet bs) {
+  public boolean isSelected(BS bs) {
     int pt = bs.nextSetBit(firstAtomIndex);
     return (pt >= 0 && pt <= lastAtomIndex 
         || bsAdded != null &&  bsAdded.intersects(bs));
@@ -476,15 +476,15 @@ public class Group {
    */
   public Object getHelixData(int tokType, char qType, int mStep) {
         switch (tokType) {
-        case Token.point:
-          return new Point3f();
-        case Token.axis:
-        case Token.radius:
-          return new Vector3f();
-        case Token.angle:
+        case T.point:
+          return new P3();
+        case T.axis:
+        case T.radius:
+          return new V3();
+        case T.angle:
           return new Float(Float.NaN);
-        case Token.array:
-        case Token.list:
+        case T.array:
+        case T.list:
           return new String[] {};
         }
     return "";
@@ -541,12 +541,12 @@ public class Group {
     return null;
   }
 
-  public void fixIndices(int atomsDeleted, BitSet bsDeleted) {
+  public void fixIndices(int atomsDeleted, BS bsDeleted) {
     firstAtomIndex -= atomsDeleted;
     leadAtomIndex -= atomsDeleted;
     lastAtomIndex -= atomsDeleted;
     if (bsAdded != null)
-      BitSetUtil.deleteBits(bsAdded, bsDeleted);
+      BSUtil.deleteBits(bsAdded, bsDeleted);
   }
 
   public Map<String, Object> getGroupInfo(int igroup) {

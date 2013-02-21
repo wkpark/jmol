@@ -28,9 +28,10 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
+import org.jmol.io2.BinaryDocument;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 /*
  * Spartan SMOL and .spartan compound document reader and .spartan06 zip files
@@ -160,90 +161,11 @@ public class SpartanSmolReader extends SpartanInputReader {
     for (int i = 0; i < tokens.length; i++)
       bytes[i] = (byte) Parser.parseIntRadix(tokens[i], 16);
     mat = new float[16];
-    for (int i = 16, j = bytes.length; --i >= 0; j -= 8)
-      mat[i] = bytesToDoubleToFloat(bytes, j);
+    for (int i = 16, j = bytes.length - 8; --i >= 0; j -= 8)
+      mat[i] = BinaryDocument.bytesToDoubleToFloat(bytes, j, false);
     setTransform(mat[0], mat[1], mat[2], mat[4], mat[5], mat[6], mat[8],
         mat[9], mat[10]);
   }
-
-  /**
-   * not concerning ourselves with very small or very large numbers and getting
-   * this exactly right. Just want to get the transform matrix.
-   * 
-   * @param bytes
-   * @param j
-   * @return float
-   */
-  private static float bytesToDoubleToFloat(byte[] bytes, int j) {
-    {
-      // IEEE754: sign (1 bit), exponent (11 bits), fraction (52 bits).
-      // seeeeeee eeeeffff ffffffff ffffffff ffffffff xxxxxxxx xxxxxxxx xxxxxxxx
-      //     b1      b2       b3       b4       b5    ---------float ignores----
-
-      /**
-       * @j2sNative
-       *       var o = org.jmol.adapter.readers.quantum.SpartanSmolReader;
-       *       if (o.fracIEEE == null);
-       *         o.setFracIEEE();
-       *       var b1 = bytes[--j] & 0xFF;
-       *       var b2 = bytes[--j] & 0xFF;
-       *       var b3 = bytes[--j] & 0xFF;
-       *       var b4 = bytes[--j] & 0xFF;
-       *       var b5 = bytes[--j] & 0xFF;
-       *       var s = ((b1 & 0x80) == 0 ? 1 : -1);
-       *       var e = ((b1 & 0x7F) << 4 | (b2 >> 4)) - 1026;
-       *       b2 = (b2 & 0xF) | 0x10;
-       *       return s * (o.shiftIEEE(b2, e) + o.shiftIEEE(b3, e - 8) + o.shiftIEEE(b4, e - 16)
-       *         + o.shiftIEEE(b5, e - 24));
-       */
-      {
-        double d = Double.longBitsToDouble((((long) bytes[--j]) & 0xff) << 56
-            | (((long) bytes[--j]) & 0xff) << 48
-            | (((long) bytes[--j]) & 0xff) << 40
-            | (((long) bytes[--j]) & 0xff) << 32
-            | (((long) bytes[--j]) & 0xff) << 24
-            | (((long) bytes[--j]) & 0xff) << 16
-            | (((long) bytes[--j]) & 0xff) << 8 | (((long) bytes[--j]) & 0xff));
-        return (float) d;
-      }
-
-    }
-  }
-
-  static void setFracIEEE() {
-    fracIEEE = new float[270];
-    for (int i = 0; i < 270; i++)
-      fracIEEE[i] = (float) Math.pow(2, i - 141);
-    //    System.out.println(fracIEEE[0] + "  " + Float.MIN_VALUE);
-    //    System.out.println(fracIEEE[269] + "  " + Float.MAX_VALUE);
-  }
-
-  private static float[] fracIEEE;
-
-  /**
-   * only concerned about reasonable float values here
-   * 
-   * @param f
-   * @param i
-   * @return f * 2^i
-   */
-  static double shiftIEEE(double f, int i) {
-    if (f == 0 || i < -140)
-      return 0;
-    if (i > 128)
-      return Float.MAX_VALUE;
-    return f * fracIEEE[i + 140];
-  }
-
-  //  static {
-  //    byte[] b = new byte[8];
-  //    for (int i = 0; i < 100; i++) {
-  //      for (int j = 0; j < 8; j++) {
-  //        b[j] = (j < -1 ? 0 : (byte) (Math.random() * 0xFFFFF));
-  //      }
-  //      bytesToDoubleToFloat(b, 8);    
-  //    }
-  //  }
 
   private String endCheck = "END Directory Entry ";
   private String title;
@@ -254,7 +176,7 @@ public class SpartanSmolReader extends SpartanInputReader {
 
   private void readOutput() throws Exception {
     titles = new Hashtable<String, String>();
-    StringXBuilder header = new StringXBuilder();
+    SB header = new SB();
     int pt;
     while (readLine() != null && !line.startsWith("END ")) {
       header.append(line).append("\n");

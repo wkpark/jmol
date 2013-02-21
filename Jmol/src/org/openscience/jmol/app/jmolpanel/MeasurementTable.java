@@ -25,7 +25,7 @@ package org.openscience.jmol.app.jmolpanel;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
@@ -124,7 +124,7 @@ public class MeasurementTable extends JDialog {
     deleteButton = new JButton(GT._("Delete"));
     deleteButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          viewer.script("measures delete " + (selectedMeasurementRow + 1) + JmolConstants.SCRIPT_EDITOR_IGNORE);
+          viewer.script("measures delete " + (selectedMeasurementRow + 1) + JC.SCRIPT_EDITOR_IGNORE);
           updateMeasurementTableData();
         }
       });
@@ -133,7 +133,7 @@ public class MeasurementTable extends JDialog {
     deleteAllButton = new JButton(GT._("DeleteAll"));
     deleteAllButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          viewer.script("measures delete" + JmolConstants.SCRIPT_EDITOR_IGNORE);
+          viewer.script("measures delete" + JC.SCRIPT_EDITOR_IGNORE);
           updateMeasurementTableData();
         }
       });

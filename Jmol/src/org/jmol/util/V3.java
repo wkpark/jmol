@@ -30,18 +30,18 @@ package org.jmol.util;
  * for unique constructor and method names
  * for the optimization of compiled JavaScript using Java2Script
  */
-public class Vector3f extends Tuple3f {
+public class V3 extends Tuple3f {
 
-  public static Vector3f newV(Tuple3f t) {
-    Vector3f v = new Vector3f();
+  public static V3 newV(Tuple3f t) {
+    V3 v = new V3();
     v.x = t.x;
     v.y = t.y;
     v.z = t.z;
     return v;
   }
 
-  public static Vector3f new3(float x, float y, float z) {
-    Vector3f v = new Vector3f();
+  public static V3 new3(float x, float y, float z) {
+    V3 v = new V3();
     v.x = x;
     v.y = y;
     v.z = z;
@@ -74,7 +74,7 @@ public class Vector3f extends Tuple3f {
    * @param v2
    *        the second vector
    */
-  public final void cross(Vector3f v1, Vector3f v2) {
+  public final void cross(V3 v1, V3 v2) {
     set(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y
         - v1.y * v2.x);
   }
@@ -86,7 +86,7 @@ public class Vector3f extends Tuple3f {
    *        the other vector
    * @return this.dot.v
    */
-  public final float dot(Vector3f v) {
+  public final float dot(V3 v) {
     return x * v.x + y * v.y + z * v.z;
   }
 
@@ -110,7 +110,7 @@ public class Vector3f extends Tuple3f {
    *        the other vector
    * @return the angle in radians in the range [0,PI]
    */
-  public final float angle(Vector3f v1) {
+  public final float angle(V3 v1) {
     // return (double)Math.acos(dot(v1)/v1.length()/v.length());
     // Numerically, near 0 and PI are very bad condition for acos.
     // In 3-space, |atan2(sin,cos)| is much stable.

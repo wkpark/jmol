@@ -31,9 +31,9 @@ import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 
 public abstract class AtomShape extends Shape {
 
@@ -48,7 +48,7 @@ public abstract class AtomShape extends Shape {
   public boolean isActive;
   
   public int monomerCount;
-  public BitSet bsSizeDefault;
+  public BS bsSizeDefault;
   
   public Group[] getMonomers() {
     return null;
@@ -73,7 +73,7 @@ public abstract class AtomShape extends Shape {
   }
   
   @Override
-  protected void setSize(int size, BitSet bsSelected) {
+  protected void setSize(int size, BS bsSelected) {
     if (size == 0)
       setSizeRD(null, bsSelected);
     else
@@ -81,13 +81,13 @@ public abstract class AtomShape extends Shape {
   }
 
   @Override
-  protected void setSizeRD(RadiusData rd, BitSet bsSelected) {
+  protected void setSizeRD(RadiusData rd, BS bsSelected) {
     // Halos Stars Vectors Ellipsoids
     if (atoms == null)  // vector values are ignored if there are none for a model 
       return;
     isActive = true;
     if (bsSizeSet == null)
-      bsSizeSet = new BitSet();
+      bsSizeSet = new BS();
     boolean isVisible = (rd != null && rd.value != 0);
     boolean isAll = (bsSelected == null);
     int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
@@ -104,13 +104,13 @@ public abstract class AtomShape extends Shape {
   }
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
     if ("color" == propertyName) {
       isActive = true;
-      short colix = Colix.getColixO(value);
+      short colix = C.getColixO(value);
       byte pid = EnumPalette.pidOf(value);
       if (bsColixSet == null)
-        bsColixSet = new BitSet();
+        bsColixSet = new BS();
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         setColixAndPalette(colix, pid, i);
       return;
@@ -121,11 +121,11 @@ public abstract class AtomShape extends Shape {
       short[] colixes = (short[]) data[0];
       float translucency  = ((Float) data[1]).floatValue();
       if (bsColixSet == null)
-        bsColixSet = new BitSet();
+        bsColixSet = new BS();
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         short colix = colixes[i];
         if (translucency > 0.01f)
-          colix = Colix.getColixTranslucent3(colix, true, translucency);
+          colix = C.getColixTranslucent3(colix, true, translucency);
         setColixAndPalette(colix, EnumPalette.UNKNOWN.id, i);
       }
       return;
@@ -134,13 +134,13 @@ public abstract class AtomShape extends Shape {
       isActive = true;
       boolean isTranslucent = (value.equals("translucent"));
       if (bsColixSet == null)
-        bsColixSet = new BitSet();
+        bsColixSet = new BS();
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         if (colixes == null) {
           colixes = new short[atomCount];
           paletteIDs = new byte[atomCount];
         }
-        colixes[i] = Colix.getColixTranslucent3(colixes[i], isTranslucent,
+        colixes[i] = C.getColixTranslucent3(colixes[i], isTranslucent,
             translucentLevel);
         if (isTranslucent)
           bsColixSet.set(i);
@@ -159,8 +159,8 @@ public abstract class AtomShape extends Shape {
           nAtomsDeleted);
       paletteIDs = (byte[]) ArrayUtil.deleteElements(paletteIDs,
           firstAtomDeleted, nAtomsDeleted);
-      BitSetUtil.deleteBits(bsSizeSet, bs);
-      BitSetUtil.deleteBits(bsColixSet, bs);
+      BSUtil.deleteBits(bsSizeSet, bs);
+      BSUtil.deleteBits(bsColixSet, bs);
       return;
     }
     super.setProperty(propertyName, value, bs);
@@ -168,15 +168,15 @@ public abstract class AtomShape extends Shape {
 
   protected void setColixAndPalette(short colix, byte paletteID, int atomIndex) {
     if (colixes == null || atomIndex >= colixes.length) {
-      if (colix == Colix.INHERIT_ALL)
+      if (colix == C.INHERIT_ALL)
         return;
       colixes = ArrayUtil.ensureLengthShort(colixes, atomIndex + 1);
       paletteIDs = ArrayUtil.ensureLengthByte(paletteIDs, atomIndex + 1);
     }
     if (bsColixSet == null)
-      bsColixSet = BitSet.newN(atomCount);
+      bsColixSet = BS.newN(atomCount);
     colixes[atomIndex] = colix = getColixI(colix, paletteID, atomIndex);
-    bsColixSet.setBitTo(atomIndex, colix != Colix.INHERIT_ALL);
+    bsColixSet.setBitTo(atomIndex, colix != C.INHERIT_ALL);
     paletteIDs[atomIndex] = paletteID;
   }
 

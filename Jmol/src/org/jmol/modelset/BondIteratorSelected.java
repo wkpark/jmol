@@ -26,7 +26,7 @@
 package org.jmol.modelset;
 
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.JmolEdge;
 
 class BondIteratorSelected implements BondIterator {
@@ -35,11 +35,11 @@ class BondIteratorSelected implements BondIterator {
   private int bondCount;
   private int bondType;
   private int iBond;
-  private BitSet bsSelected;
+  private BS bsSelected;
   private boolean bondSelectionModeOr;
 
   BondIteratorSelected(Bond[] bonds, int bondCount, int bondType,
-      BitSet bsSelected, boolean bondSelectionModeOr) {
+      BS bsSelected, boolean bondSelectionModeOr) {
     this.bonds = bonds;
     this.bondCount = bondCount;
     this.bondType = bondType;

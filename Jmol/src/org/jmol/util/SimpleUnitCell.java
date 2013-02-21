@@ -91,9 +91,9 @@ public class SimpleUnitCell {
 
     if (a <= 0) {
       // must calculate a, b, c alpha beta gamma from vectors;
-      Vector3f va = Vector3f.new3(parameters[6], parameters[7], parameters[8]);
-      Vector3f vb = Vector3f.new3(parameters[9], parameters[10], parameters[11]);
-      Vector3f vc = Vector3f.new3(parameters[12], parameters[13], parameters[14]);
+      V3 va = V3.new3(parameters[6], parameters[7], parameters[8]);
+      V3 vb = V3.new3(parameters[9], parameters[10], parameters[11]);
+      V3 vc = V3.new3(parameters[12], parameters[13], parameters[14]);
       a = va.length();
       b = vb.length();
       c = vc.length();
@@ -231,20 +231,20 @@ public class SimpleUnitCell {
    * @param fpt
    * @return adjusted fpt
    */
-  public Point3f toSupercell(Point3f fpt) {
+  public P3 toSupercell(P3 fpt) {
     fpt.x /= na;
     fpt.y /= nb;
     fpt.z /= nc;
     return fpt;
   }
 
-  public final void toCartesian(Point3f pt, boolean isAbsolute) {
+  public final void toCartesian(P3 pt, boolean isAbsolute) {
     if (matrixFractionalToCartesian != null)
       (isAbsolute ? matrixFtoCAbsolute : matrixFractionalToCartesian)
           .transform(pt);
   }
 
-  public final void toFractional(Point3f pt, boolean isAbsolute) {
+  public final void toFractional(P3 pt, boolean isAbsolute) {
     if (matrixCartesianToFractional == null)
       return;
     (isAbsolute ? matrixCtoFAbsolute : matrixCartesianToFractional)
@@ -300,7 +300,7 @@ public class SimpleUnitCell {
     return Float.NaN;
   }
 
-  public static void ijkToPoint3f(int nnn, Point3f cell, int c) {
+  public static void ijkToPoint3f(int nnn, P3 cell, int c) {
     c -= 5;
     cell.x = nnn / 100 + c;
     cell.y = (nnn % 100) / 10 + c;

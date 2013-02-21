@@ -115,7 +115,7 @@ package org.jmol.atomdata;
 
 
 import org.jmol.constant.EnumVdw;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 public class RadiusData {
   public String info;
@@ -147,7 +147,7 @@ public class RadiusData {
   public String toString() {
     if (Float.isNaN(value))
       return "";
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     switch (factorType) {
     case ABSOLUTE:
       sb.appendF(value);

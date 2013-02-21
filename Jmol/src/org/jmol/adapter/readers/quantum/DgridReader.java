@@ -27,7 +27,7 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -147,7 +147,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       String symmetry = line.substring(4, 10).trim();
       if (symmetry.indexOf("_FC") >= 0)
         break;
-      StringXBuilder data = new StringXBuilder();
+      SB data = new SB();
       data.append(line.substring(15));
       while (readLine() != null && line.length() >= 15)
         data.append(line);
@@ -174,7 +174,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
       while (line != null && line.length() >= 20) {
         int iOrb = parseIntRange(line, 0, 10);
         float energy = parseFloatRange(line, 10, 20);
-        StringXBuilder cData = new StringXBuilder();
+        SB cData = new SB();
         cData.append(line.substring(20));
         while (readLine() != null && line.length() >= 10) {
           if (line.charAt(3) != ' ')

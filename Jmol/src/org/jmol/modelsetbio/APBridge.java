@@ -50,7 +50,7 @@ class APBridge {
 
   @Override
   public String toString() {
-    return (isAntiparallel ? "a " : "p ") + a + " - " + b + "\t" + Escape.escape(ladder);
+    return (isAntiparallel ? "a " : "p ") + a + " - " + b + "\t" + Escape.e(ladder);
   }
   protected boolean addBridge(APBridge bridge,  Map<int[][], Boolean> htLadders) {
     if (bridge == null || bridge.isAntiparallel != isAntiparallel

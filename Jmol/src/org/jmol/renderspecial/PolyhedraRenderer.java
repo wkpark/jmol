@@ -27,17 +27,17 @@ package org.jmol.renderspecial;
 import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
 import org.jmol.shapespecial.Polyhedra;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 
 public class PolyhedraRenderer extends ShapeRenderer {
 
   private int drawEdges;
   private boolean isAll;
   private boolean frontOnly;
-  private Point3i[] screens;
+  private P3i[] screens;
 
   @Override
   protected boolean render() {
@@ -49,7 +49,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
     for (int i = polyhedra.polyhedronCount; --i >= 0;) {
       int iAtom = polyhedrons[i].centralAtom.getIndex();
       short colix = (colixes == null || iAtom >= colixes.length ? 
-          Colix.INHERIT_ALL : polyhedra.colixes[iAtom]);
+          C.INHERIT_ALL : polyhedra.colixes[iAtom]);
       if (render1(polyhedrons[i], colix))
         needTranslucent = true;
     }
@@ -59,19 +59,19 @@ public class PolyhedraRenderer extends ShapeRenderer {
   private boolean render1(Polyhedra.Polyhedron p, short colix) {
     if (p.visibilityFlags == 0)
       return false;
-    colix = Colix.getColixInherited(colix, p.centralAtom.getColix());
+    colix = C.getColixInherited(colix, p.centralAtom.getColix());
     boolean needTranslucent = false;
-    if (Colix.isColixTranslucent(colix)) {
+    if (C.isColixTranslucent(colix)) {
       needTranslucent = true;
     } else if (!g3d.setColix(colix)) {
       return false;
     }
-    Point3f[] vertices = p.vertices;
+    P3[] vertices = p.vertices;
     byte[] planes;
     if (screens == null || screens.length < vertices.length) {
-      screens = new Point3i[vertices.length];
+      screens = new P3i[vertices.length];
       for (int i = vertices.length; --i >= 0;)
-        screens[i] = new Point3i();
+        screens[i] = new P3i();
     }
     planes = p.planes;
     for (int i = vertices.length; --i >= 0;) {
@@ -91,14 +91,14 @@ public class PolyhedraRenderer extends ShapeRenderer {
         fillFace(p.normixes[i++], screens[planes[j++]], screens[planes[j++]],
             screens[planes[j++]]);
     // edges are not drawn translucently ever
-    if (g3d.setColix(Colix.getColixTranslucent3(colix, false, 0)))
+    if (g3d.setColix(C.getColixTranslucent3(colix, false, 0)))
     for (int i = 0, j = 0; j < planes.length;)
       drawFace(p.normixes[i++], screens[planes[j++]],
           screens[planes[j++]], screens[planes[j++]]);
     return needTranslucent;
   }
 
-  private void drawFace(short normix, Point3i A, Point3i B, Point3i C) {
+  private void drawFace(short normix, P3i A, P3i B, P3i C) {
     if (isAll || frontOnly && g3d.isDirectedTowardsCamera(normix)) {
       drawCylinderTriangle(A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
     }
@@ -112,7 +112,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
     g3d.fillCylinderScreen(GData.ENDCAPS_SPHERICAL, 3, xA, yA, zA, xC, yC, zC);
   }
 
-  private void fillFace(short normix, Point3i A, Point3i B, Point3i C) {
+  private void fillFace(short normix, P3i A, P3i B, P3i C) {
     g3d.fillTriangleTwoSided(normix, A.x, A.y, A.z, B.x, B.y, B.z, C.x, C.y, C.z);
   }
 }

@@ -56,7 +56,7 @@ import org.jmol.constant.EnumPalette;
  * @author Miguel, miguel@jmol.org 
  */
 
-public class Colix {
+public class C {
 
   /* ***************************************************************
    * color indexes -- colix
@@ -156,7 +156,7 @@ public class Colix {
   public final static short HOTPINK = 22;
   public final static short GOLD = 23;
   
-  public Colix() {
+  public C() {
   }
   
   public static short getColix(int argb) {
@@ -436,7 +436,7 @@ public class Colix {
   public static String getHexCodes(short[] colixes) {
     if (colixes == null)
       return null;
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     for (int i = 0; i < colixes.length; i++)
       s.append(i == 0 ? "" : " ").append(getHexCode(colixes[i]));
     return s.toString();

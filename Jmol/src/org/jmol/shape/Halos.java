@@ -25,17 +25,17 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Logger;
 
 public class Halos extends AtomShape {
 
-  public short colixSelection = Colix.USE_PALETTE;
+  public short colixSelection = C.USE_PALETTE;
 
-  public BitSet bsHighlight;
-  public short colixHighlight = Colix.RED;
+  public BS bsHighlight;
+  public short colixHighlight = C.RED;
 
   void initState() {
     Logger.debug("init halos");
@@ -43,24 +43,24 @@ public class Halos extends AtomShape {
   }
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
     if ("translucency" == propertyName)
       return;
     if ("argbSelection" == propertyName) {
-      colixSelection = Colix.getColix(((Integer) value).intValue());
+      colixSelection = C.getColix(((Integer) value).intValue());
       return;
     }
     if ("argbHighlight" == propertyName) {
-      colixHighlight = Colix.getColix(((Integer) value).intValue());
+      colixHighlight = C.getColix(((Integer) value).intValue());
       return;
     }
     if ("highlight" == propertyName) {
-      bsHighlight = (BitSet) value;
+      bsHighlight = (BS) value;
       return;
     }
 
     if (propertyName == "deleteModelAtoms") {
-      BitSetUtil.deleteBits(bsHighlight, bs);
+      BSUtil.deleteBits(bsHighlight, bs);
       // pass through to AtomShape
     }
 
@@ -68,8 +68,8 @@ public class Halos extends AtomShape {
   }
 
   @Override
-  public void setVisibilityFlags(BitSet bs) {
-    BitSet bsSelected = (viewer.getSelectionHaloEnabled(false) ? viewer
+  public void setVisibilityFlags(BS bs) {
+    BS bsSelected = (viewer.getSelectionHaloEnabled(false) ? viewer
         .getSelectionSet(false) : null);
     for (int i = atomCount; --i >= 0;) {
       boolean isVisible = bsSelected != null && bsSelected.get(i)

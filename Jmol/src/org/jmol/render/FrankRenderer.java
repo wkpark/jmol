@@ -23,7 +23,7 @@
  */
 package org.jmol.render;
 import org.jmol.shape.Frank;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 
 public class FrankRenderer extends ShapeRenderer {
 
@@ -37,11 +37,11 @@ public class FrankRenderer extends ShapeRenderer {
     Frank frank = (Frank) shape;
     boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");
     boolean modelKitMode = viewer.isModelKitMode();
-    colix = (modelKitMode ? Colix.MAGENTA 
-        : viewer.isSignedApplet() ? (allowKeys || viewer.isJS2D? Colix.ORANGE : Colix.RED) : allowKeys ? Colix.BLUE : Colix.GRAY);
+    colix = (modelKitMode ? C.MAGENTA 
+        : viewer.isSignedApplet() ? (allowKeys || viewer.isJS2D? C.ORANGE : C.RED) : allowKeys ? C.BLUE : C.GRAY);
     if (isExport || !viewer.getShowFrank())
       return false;
-    if (!g3d.setColix(Colix.getColixTranslucent3(colix,
+    if (!g3d.setColix(C.getColixTranslucent3(colix,
             g3d.haveTranslucentObjects(), 0.5f)))
       return true;
     float imageFontScaling = viewer.getImageFontScaling();

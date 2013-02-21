@@ -26,9 +26,9 @@ package org.jmol.quantum;
 import org.jmol.api.QuantumCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.constant.EnumQuantumShell;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 
 import java.util.List;
@@ -125,15 +125,15 @@ public class MOCalculation extends QuantumCalculation implements
   public MOCalculation() {
   }
 
-  public boolean setupCalculation(VolumeDataInterface volumeData, BitSet bsSelected,
-                        BitSet bsExclude, BitSet[] bsMolecules,
-                        String calculationType, Point3f[] atomCoordAngstroms,
+  public boolean setupCalculation(VolumeDataInterface volumeData, BS bsSelected,
+                        BS bsExclude, BS[] bsMolecules,
+                        String calculationType, P3[] atomCoordAngstroms,
                         int firstAtomOffset, List<int[]> shells,
                         float[][] gaussians,
                         int[][] dfCoefMaps, Object slaters, float[] moCoefficients,
                         float[] linearCombination, boolean isSquaredLinear, 
                         float[][] coefs, float[] partialCharges, 
-                        boolean doNormalize, Point3f[] points, 
+                        boolean doNormalize, P3[] points, 
                         float[] parameters, int testFlags) {
     havePoints = (points != null);
     this.calculationType = calculationType;
@@ -161,7 +161,7 @@ public class MOCalculation extends QuantumCalculation implements
   }  
   
   @Override
-  protected void initialize(int nX, int nY, int nZ, Point3f[] points) {
+  protected void initialize(int nX, int nY, int nZ, P3[] points) {
     super.initialize(nX, nY, nZ, points);
     CX = new double[this.nX];
     CY = new double[this.nY];

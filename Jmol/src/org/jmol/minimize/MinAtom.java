@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.jmol.minimize.forcefield.AtomType;
 import org.jmol.modelset.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 public class MinAtom {
 
@@ -45,8 +45,8 @@ public class MinAtom {
   public int nBonds;
   public int hCount;
   public double partialCharge;
-  public BitSet bsVdw = new BitSet();
-  public BitSet bs14 = new BitSet();
+  public BS bsVdw = new BS();
+  public BS bs14 = new BS();
 
   int[] bondedAtoms;
 

@@ -53,6 +53,7 @@ class PixelatorShaded extends Pixelator {
       pB = g.zShadeB + (int) (f * (pB - g.zShadeB));        
       p = (pB << 16) | (pG << 8) | pR | pA;
     }
-    super.addPixel(offset, z, p);
+    // important not to go directly to addPixel here for JavaScript avoidance of Java2Script SAEM method
+    addPixel1(offset, z, p);
   }
 }

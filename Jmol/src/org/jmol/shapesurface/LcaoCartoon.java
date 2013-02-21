@@ -27,12 +27,12 @@ package org.jmol.shapesurface;
 
 
 import org.jmol.shape.Shape;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 public class LcaoCartoon extends Isosurface {
 
@@ -49,9 +49,9 @@ public class LcaoCartoon extends Isosurface {
   private String thisType;
   private int myColorPt;
   private String lcaoID;
-  private BitSet thisSet;
+  private BS thisSet;
   private boolean isMolecular;
-  private Vector3f rotationAxis;
+  private V3 rotationAxis;
 
   //persistent
   private Float lcaoScale;
@@ -66,7 +66,7 @@ public class LcaoCartoon extends Isosurface {
   private String fullCommand;
 
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
 
     // in the case of molecular orbitals, we just cache the information and
     // then send it all at once. 
@@ -105,7 +105,7 @@ public class LcaoCartoon extends Isosurface {
     }
 
     if ("rotationAxis" == propertyName) {
-      rotationAxis = (Vector3f) value;
+      rotationAxis = (V3) value;
       return;
     }
 
@@ -122,7 +122,7 @@ public class LcaoCartoon extends Isosurface {
     }
 
     if ("select" == propertyName) {
-      thisSet = (BitSet) value;
+      thisSet = (BS) value;
       //pass through
     }
 
@@ -287,8 +287,8 @@ public class LcaoCartoon extends Isosurface {
       super.setProperty("cap", cappingObject, null);
     super.setProperty("lcaoType", thisType, null);
     super.setProperty("atomIndex", Integer.valueOf(iAtom), null);
-    Vector3f[] axes = { new Vector3f(), new Vector3f(),
-        Vector3f.newV(modelSet.atoms[iAtom]), new Vector3f() };
+    V3[] axes = { new V3(), new V3(),
+        V3.newV(modelSet.atoms[iAtom]), new V3() };
     if (rotationAxis != null)
       axes[3].setT(rotationAxis);
     if (isMolecular) {
@@ -312,8 +312,8 @@ public class LcaoCartoon extends Isosurface {
     }
     if (isCpk) {
       short colix = viewer.getModelSet().getAtomColix(iAtom);
-      if (Colix.isColixTranslucent(colix)) {
-        super.setProperty("translucentLevel", new Float(Colix.getColixTranslucencyLevel(colix)), null);
+      if (C.isColixTranslucent(colix)) {
+        super.setProperty("translucentLevel", new Float(C.getColixTranslucencyLevel(colix)), null);
         super.setProperty("translucency", "translucent", null);
       }
     } else if (isTranslucent)
@@ -333,7 +333,7 @@ public class LcaoCartoon extends Isosurface {
 
   @Override
   public String getShapeState() {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     if (lcaoScale != null)
       appendCmd(sb, "lcaoCartoon scale " + lcaoScale.floatValue());
     if (lcaoColorNeg != null)

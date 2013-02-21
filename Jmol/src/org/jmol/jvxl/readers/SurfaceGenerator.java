@@ -134,16 +134,16 @@ import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.calc.MarchingSquares;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 public class SurfaceGenerator {
 
@@ -246,11 +246,11 @@ public class SurfaceGenerator {
     return params.title;
   }
   
-  public BitSet getBsSelected() {
+  public BS getBsSelected() {
     return params.bsSelected;
   }
   
-  public BitSet getBsIgnore() {
+  public BS getBsIgnore() {
     return params.bsIgnore;
   }
   
@@ -329,7 +329,7 @@ public class SurfaceGenerator {
    * @return TRUE if done processing
    */
   @SuppressWarnings("unchecked")
-  public boolean setParameter(String propertyName, Object value, BitSet bs) {
+  public boolean setParameter(String propertyName, Object value, BS bs) {
 
     if ("debug" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();
@@ -384,14 +384,14 @@ public class SurfaceGenerator {
     }
 
     if ("withinPoints" == propertyName) {
-      params.boundingBox = (Point3f[]) ((Object[]) value)[1];
+      params.boundingBox = (P3[]) ((Object[]) value)[1];
       return true;
     }
 
     if ("boundingBox" == propertyName) {
-      Point3f[] pts = (Point3f[]) value;
-      params.boundingBox = new Point3f[] { Point3f.newP(pts[0]),
-          Point3f.newP(pts[pts.length - 1]) };
+      P3[] pts = (P3[]) value;
+      params.boundingBox = new P3[] { P3.newP(pts[0]),
+          P3.newP(pts[pts.length - 1]) };
       return true;
     }
 
@@ -401,22 +401,22 @@ public class SurfaceGenerator {
     }
 
     if ("intersection" == propertyName) {
-      params.intersection = (BitSet[]) value;
+      params.intersection = (BS[]) value;
       return true;
     }
 
     if ("bsSolvent" == propertyName) {
-      params.bsSolvent = (BitSet) value;
+      params.bsSolvent = (BS) value;
       return true;
     }
 
     if ("select" == propertyName) {
-      params.bsSelected = (BitSet) value;
+      params.bsSelected = (BS) value;
       return true;
     }
 
     if ("ignore" == propertyName) {
-      params.bsIgnore = (BitSet) value;
+      params.bsIgnore = (BS) value;
       return true;
     }
 
@@ -512,7 +512,7 @@ public class SurfaceGenerator {
 
     if ("anisotropy" == propertyName) {
       if ((params.dataType & Parameters.NO_ANISOTROPY) == 0)
-        params.setAnisotropy((Point3f) value);
+        params.setAnisotropy((P3) value);
       return true;
     }
 
@@ -616,7 +616,7 @@ public class SurfaceGenerator {
     }
 
     if ("center" == propertyName) {
-      params.center.setT((Point3f) value);
+      params.center.setT((P3) value);
       return true;
     }
     
@@ -627,17 +627,17 @@ public class SurfaceGenerator {
       
 
     if ("origin" == propertyName) {
-      params.origin = (Point3f) value;
+      params.origin = (P3) value;
       return true;
     }
 
     if ("step" == propertyName) {
-      params.steps = (Point3f) value;
+      params.steps = (P3) value;
       return true;
     }
 
     if ("point" == propertyName) {
-      params.points = (Point3f) value;
+      params.points = (P3) value;
       return true;
     }
 
@@ -647,7 +647,7 @@ public class SurfaceGenerator {
     }
 
     if ("withinPoint" == propertyName) {
-      params.point = (Point3f) value;
+      params.point = (P3) value;
       return true;
     }
 
@@ -743,8 +743,8 @@ public class SurfaceGenerator {
         // discrete values
         params.contoursDiscrete = (float[]) value;
         params.nContours = params.contoursDiscrete.length;
-      } else if (value instanceof Point3f) {
-        Point3f pt = params.contourIncrements = (Point3f) value;
+      } else if (value instanceof P3) {
+        P3 pt = params.contourIncrements = (P3) value;
         float from = pt.x;
         float to = pt.y;
         float step = pt.z;
@@ -795,7 +795,7 @@ public class SurfaceGenerator {
     }
     
     if ("mapLattice" == propertyName) {
-      params.mapLattice = (Point3f) value;
+      params.mapLattice = (P3) value;
       return true;
     }
 
@@ -910,7 +910,7 @@ public class SurfaceGenerator {
       if (++params.state != Parameters.STATE_DATA_READ)
         return true;
       if (params.center.x == Float.MAX_VALUE)
-        params.center.setT((Vector3f) value);
+        params.center.setT((V3) value);
       return false;
     }
 
@@ -1335,21 +1335,21 @@ public class SurfaceGenerator {
   }
 
   private void getFunctionZfromXY() {
-    Point3f origin = (Point3f) params.functionInfo.get(1);
+    P3 origin = (P3) params.functionInfo.get(1);
     int[] counts = new int[3];
     int[] nearest = new int[3];
-    Vector3f[] vectors = new Vector3f[3];
+    V3[] vectors = new V3[3];
     for (int i = 0; i < 3; i++) {
       Point4f info = (Point4f) params.functionInfo.get(i + 2);
       counts[i] = Math.abs((int) info.x);
-      vectors[i] = Vector3f.new3(info.y, info.z, info.w);
+      vectors[i] = V3.new3(info.y, info.z, info.w);
     }
     int nx = counts[0];
     int ny = counts[1];
-    Point3f pt = new Point3f();
-    Point3f pta = new Point3f();
-    Point3f ptb = new Point3f();
-    Point3f ptc = new Point3f();
+    P3 pt = new P3();
+    P3 pta = new P3();
+    P3 ptb = new P3();
+    P3 ptc = new P3();
 
     float[][] data = (float[][]) params.functionInfo.get(5);
     float[][] data2 = new float[nx][ny];
@@ -1376,13 +1376,13 @@ public class SurfaceGenerator {
     params.functionInfo.set(5, data2);
   }
 
-  final Vector3f vAC = new Vector3f();
-  final Vector3f vAB = new Vector3f();
-  final Vector3f vNorm = new Vector3f();
-  final Point3f ptRef = Point3f.new3(0, 0, 1e15f);
+  final V3 vAC = new V3();
+  final V3 vAB = new V3();
+  final V3 vNorm = new V3();
+  final P3 ptRef = P3.new3(0, 0, 1e15f);
   
-  private float distanceVerticalToPlane(float x, float y, Point3f pta,
-                                              Point3f ptb, Point3f ptc) {
+  private float distanceVerticalToPlane(float x, float y, P3 pta,
+                                              P3 ptb, P3 ptc) {
     // ax + by + cz + d = 0
 
     float d = Measure.getDirectedNormalThroughPoints(pta, ptb, ptc, ptRef, vNorm, vAB, vAC);
@@ -1444,9 +1444,9 @@ public class SurfaceGenerator {
     return (params.thePlane != null || params.fullyLit);
   }
 
-  BitSet bsVdw;
+  BS bsVdw;
   
-  public BitSet geVdwBitSet() {
+  public BS geVdwBitSet() {
     return bsVdw;
   }
   
@@ -1454,13 +1454,13 @@ public class SurfaceGenerator {
     if ((mode & AtomData.MODE_FILL_RADII) != 0 
         && atomData.bsSelected != null) {
       if (bsVdw == null)
-        bsVdw = new BitSet();
+        bsVdw = new BS();
       bsVdw.or(atomData.bsSelected);
     }
     atomDataServer.fillAtomData(atomData, mode);
   }
 
-  public Vector3f[] getSpanningVectors() {
+  public V3[] getSpanningVectors() {
     return surfaceReader.getSpanningVectors();
   }
 

@@ -2,9 +2,9 @@ package org.jmol.jvxl.api;
 
 
 
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.V3;
 
 public interface VertexDataServer {
   
@@ -66,10 +66,10 @@ public interface VertexDataServer {
    */
   public abstract int getSurfacePointIndexAndFraction(float cutoff,
                                            boolean isCutoffAbsolute, int x,
-                                           int y, int z, Point3i offset,
+                                           int y, int z, P3i offset,
                                            int vertexA, int vertexB, 
                                            float valueA, float valueB,
-                                           Point3f pointA, Vector3f edgeVector,
+                                           P3 pointA, V3 edgeVector,
                                            boolean isContourType, float[] fReturn);
 
   /**
@@ -86,7 +86,7 @@ public interface VertexDataServer {
    * @return                  new vertex index
    * 
    */
-  public abstract int addVertexCopy(Point3f vertexXYZ, float value, int assocVertex);
+  public abstract int addVertexCopy(P3 vertexXYZ, float value, int assocVertex);
 
   /**
    * addTriangleCheck adds a triangle along with a 3-bit check indicating

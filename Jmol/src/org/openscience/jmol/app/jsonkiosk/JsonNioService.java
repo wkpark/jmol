@@ -37,11 +37,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.JmolViewer;
-import org.jmol.script.ScriptVariable;
+import org.jmol.script.SV;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;
 
@@ -541,7 +541,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       JSONObject contentJSON = null;
       try {
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
-        StringXBuilder sb = StringXBuilder.newN(8192);
+        SB sb = SB.newN(8192);
         String line;
         while ((line = br.readLine()) != null)
           sb.append(line).appendC('\n');
@@ -644,7 +644,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         break;
       // raw touch event
       jmolViewer.processEvent(0, json.getInt("eventType"), json
-          .getInt("touchID"), json.getInt("iData"), Point3f.new3((float) json
+          .getInt("touchID"), json.getInt("iData"), P3.new3((float) json
           .getDouble("x"), (float) json.getDouble("y"), (float) json
           .getDouble("z")), json.getLong("time"));
       break;
@@ -719,7 +719,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
 
     @SuppressWarnings("unchecked")
     JSONObject(String msg) throws Exception {
-      ScriptVariable o = ((Viewer) jmolViewer).evaluateExpressionAsVariable(msg);
+      SV o = ((Viewer) jmolViewer).evaluateExpressionAsVariable(msg);
       if (!(o.value instanceof Map<?,?>)) 
         throw new Exception("invalid JSON: " + msg);
       putAll((Map<String, Object>) o.value);
@@ -738,7 +738,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       if (!has(key))
         throw new Exception("JSON key not found:" + key);
       List<JSONObject> list = new ArrayList<JSONObject>();
-      List<ScriptVariable> svlist = ((ScriptVariable) get(key)).getList();
+      List<SV> svlist = ((SV) get(key)).getList();
       for (int i = 0; i < svlist.size(); i++)
         list.add(new JSONObject(Escape.escapeMap((Map<String, Object>)(svlist.get(i).value))));
       return list;

@@ -1,10 +1,10 @@
 package org.jmol.api;
 
 
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Point4f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 public interface VolumeDataInterface {
 
@@ -30,15 +30,15 @@ public interface VolumeDataInterface {
 
   public abstract float calcVoxelPlaneDistance(int x, int y, int z);
 
-  public abstract float distancePointToPlane(Point3f pt);
+  public abstract float distancePointToPlane(P3 pt);
 
-  public abstract void transform(Vector3f v1, Vector3f v2);
+  public abstract void transform(V3 v1, V3 v2);
 
-  public abstract void voxelPtToXYZ(int x, int y, int z, Point3f pt);
+  public abstract void voxelPtToXYZ(int x, int y, int z, P3 pt);
 
-  public abstract void xyzToVoxelPt(float x, float y, float z, Point3i pt3i);
+  public abstract void xyzToVoxelPt(float x, float y, float z, P3i pt3i);
 
-  public abstract float lookupInterpolatedVoxelValue(Point3f point);
+  public abstract float lookupInterpolatedVoxelValue(P3 point);
 
   public abstract void filterData(boolean isSquared, float invertCutoff);
 

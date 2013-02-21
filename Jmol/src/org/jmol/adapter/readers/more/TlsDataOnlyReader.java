@@ -34,8 +34,8 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 
 /*
  * TLS output reader -- data only; no atoms
@@ -45,7 +45,7 @@ import org.jmol.util.StringXBuilder;
 public class TlsDataOnlyReader extends AtomSetCollectionReader {
 
   private List<Map<String, Object>> vTlsModels;
-  private StringXBuilder sbTlsErrors;
+  private SB sbTlsErrors;
   private int tlsGroupID;
 
   @Override
@@ -103,7 +103,7 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
         /*
         ORIGIN    11.6283   8.2746  10.6813
         */
-        Point3f origin = new Point3f();
+        P3 origin = new P3();
         tlsGroup.put("origin", origin);
         origin.set(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
             parseFloatStr(tokens[3]));
@@ -150,7 +150,7 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
 
   private void tlsAddError(String error) {
     if (sbTlsErrors == null)
-      sbTlsErrors = new StringXBuilder();
+      sbTlsErrors = new SB();
     sbTlsErrors.append(fileName).appendC('\t').append("TLS group ").appendI(
         tlsGroupID).appendC('\t').append(error).appendC('\n');
   }

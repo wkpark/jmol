@@ -27,11 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jmol.api.JmolMeasurementClient;
-import org.jmol.api.JmolViewer;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.script.Token;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.script.T;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.Viewer;
 
@@ -50,7 +49,7 @@ public class MeasurementData implements JmolMeasurementClient {
   public boolean mustBeConnected;
   public boolean mustNotBeConnected;
   public TickInfo tickInfo;
-  public int tokAction = Token.define;
+  public int tokAction = T.define;
   public RadiusData radiusData;
   public String strFormat;
   public String note;
@@ -63,8 +62,8 @@ public class MeasurementData implements JmolMeasurementClient {
   private float[] minArray;
   private ModelSet modelSet;
   
-  public MeasurementData(JmolViewer viewer, List<Object> points) {
-    this.viewer = (Viewer) viewer;
+  public MeasurementData(Viewer viewer, List<Object> points) {
+    this.viewer = viewer;
     this.points = points;
   }
   
@@ -82,10 +81,10 @@ public class MeasurementData implements JmolMeasurementClient {
                  Boolean intramolecular, boolean isAll) {
     this.modelSet = viewer.getModelSet();
     this.tokAction = tokAction;
-    if (points.size() >= 2 && points.get(0) instanceof BitSet && points.get(1) instanceof BitSet) {
-      justOneModel = BitSetUtil.haveCommon(
-          viewer.getModelBitSet((BitSet) points.get(0), false),
-          viewer.getModelBitSet((BitSet) points.get(1), false)); 
+    if (points.size() >= 2 && points.get(0) instanceof BS && points.get(1) instanceof BS) {
+      justOneModel = BSUtil.haveCommon(
+          viewer.getModelBitSet((BS) points.get(0), false),
+          viewer.getModelBitSet((BS) points.get(1), false)); 
     }
     //this.rangeMinMax = rangeMinMax;
     this.radiusData = radiusData;
@@ -134,7 +133,7 @@ public class MeasurementData implements JmolMeasurementClient {
    */
   public Object getMeasurements(boolean asMinArray) {
     if (asMinArray) {
-      minArray = new float[((BitSet) points.get(0)).cardinality()];
+      minArray = new float[((BS) points.get(0)).cardinality()];
       for (int i = 0; i < minArray.length; i++)
         minArray[i] = -0f;
       define(null, modelSet);
@@ -180,8 +179,8 @@ public class MeasurementData implements JmolMeasurementClient {
     int ptLastAtom = -1;
     for (int i = 0; i < nPoints; i++) {
       Object obj = points.get(i);
-      if (obj instanceof BitSet) {
-        BitSet bs = (BitSet) obj;
+      if (obj instanceof BS) {
+        BS bs = (BS) obj;
         int nAtoms = bs.cardinality(); 
         if (nAtoms == 0)
           return;
@@ -217,7 +216,7 @@ public class MeasurementData implements JmolMeasurementClient {
         client.processNextMeasure(m);
       return;
     }
-    BitSet bs = (BitSet) points.get(thispt);
+    BS bs = (BS) points.get(thispt);
     int[] indices = m.getCountPlusIndices();
     int thisAtomIndex = (thispt == 0 ? Integer.MAX_VALUE : indices[thispt]);
     if (thisAtomIndex < 0) {

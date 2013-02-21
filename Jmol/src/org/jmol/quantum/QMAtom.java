@@ -27,9 +27,9 @@ package org.jmol.quantum;
 
 import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
-class QMAtom extends Point3f {
+class QMAtom extends P3 {
 
   // grid coordinates relative to orbital center in Bohr 
   private float[] myX, myY, myZ;

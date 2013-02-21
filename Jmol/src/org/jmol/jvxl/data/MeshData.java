@@ -118,10 +118,10 @@ import java.util.Comparator;
 
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 
 public class MeshData extends MeshSurface {
   
@@ -135,19 +135,19 @@ public class MeshData extends MeshSurface {
 
   public String polygonColorData;
 
-  public int addVertexCopy(Point3f vertex, float value, int assocVertex) {
+  public int addVertexCopy(P3 vertex, float value, int assocVertex) {
     if (assocVertex < 0)
       vertexIncrement = -assocVertex;  //3 in some cases
     return addVertexCopyVal(vertex, value);
   }
 
-  public BitSet[] getSurfaceSet() {
+  public BS[] getSurfaceSet() {
     return (surfaceSet == null ? getSurfaceSetForLevel(0) : surfaceSet);
   }
   
-  public BitSet[] getSurfaceSetForLevel(int level) {
+  public BS[] getSurfaceSetForLevel(int level) {
     if (level == 0) {
-      surfaceSet = new BitSet[100];
+      surfaceSet = new BS[100];
       nSets = 0;
     }
     setsSuccessful = true;
@@ -188,7 +188,7 @@ public class MeshData extends MeshSurface {
     for (int i = 0; i < nSets; i++)
       if (surfaceSet[i] != null)
         n++;
-    BitSet[] temp = new BitSet[surfaceSet.length];
+    BS[] temp = new BS[surfaceSet.length];
     n = 0;
     for (int i = 0; i < nSets; i++)
       if (surfaceSet[i] != null)
@@ -205,10 +205,10 @@ public class MeshData extends MeshSurface {
   }
 
   private class SSet {
-    BitSet bs;
+    BS bs;
     int n;
     
-    protected SSet (BitSet bs) {
+    protected SSet (BS bs) {
       this.bs = bs;
       n = bs.cardinality();
     }
@@ -241,7 +241,7 @@ public class MeshData extends MeshSurface {
         nNull++;
     }
     if (nNull > 0) {
-      BitSet[] bsNew = new BitSet[nSets - nNull];
+      BS[] bsNew = new BS[nSets - nNull];
       for (int i = 0, n = 0; i < nSets; i++)
         if (surfaceSet[i] != null)
           bsNew[n++] = surfaceSet[i];
@@ -270,8 +270,8 @@ public class MeshData extends MeshSurface {
       if (surfaceSet[i] == null)
         break;
     if (i == surfaceSet.length)
-      surfaceSet = (BitSet[]) ArrayUtil.ensureLength(surfaceSet, surfaceSet.length + 100);
-    surfaceSet[i] = new BitSet();
+      surfaceSet = (BS[]) ArrayUtil.ensureLength(surfaceSet, surfaceSet.length + 100);
+    surfaceSet[i] = new BS();
     surfaceSet[i].set(v1);
     surfaceSet[i].set(v2);
     surfaceSet[i].set(v3);
@@ -311,9 +311,9 @@ public class MeshData extends MeshSurface {
     boolean justOne = (nSets == 0 || thisSet >= 0);
     int n = (justOne ? 1 : nSets);
     double[] v = new double[n];
-    Vector3f vAB = new Vector3f();
-    Vector3f vAC = new Vector3f();
-    Vector3f vTemp = new Vector3f();
+    V3 vAB = new V3();
+    V3 vAC = new V3();
+    V3 vTemp = new V3();
     for (int i = polygonCount; --i >= 0;) {
       if (!setABC(i))
         continue;
@@ -342,14 +342,14 @@ public class MeshData extends MeshSurface {
     return v;
   }
 
-  public void updateInvalidatedVertices(BitSet bs) {
+  public void updateInvalidatedVertices(BS bs) {
     bs.clearAll();
     for (int i = 0, ipt = 0; i < vertexCount; i += vertexIncrement, ipt++)
       if (Float.isNaN(vertexValues[i]))
         bs.set(i);
   }
 
-  public void invalidateVertices(BitSet bsInvalid) {
+  public void invalidateVertices(BS bsInvalid) {
     for (int i = bsInvalid.nextSetBit(0); i >= 0; i = bsInvalid.nextSetBit(i + 1))
       vertexValues[i] = Float.NaN;
   }

@@ -30,16 +30,16 @@ import java.util.List;
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Point4f;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.jvxl.data.MeshData;
@@ -137,30 +137,30 @@ class IsoSolventReader extends AtomDataReader {
 
   private float cavityRadius;
   private float envelopeRadius;
-  private Point3f[] dots;
+  private P3[] dots;
 
   private boolean doCalculateTroughs;
   private boolean isCavity, isPocket;
   protected float solventRadius;
   private AtomIndexIterator iter;
-  private BitSet bsSurfacePoints, bsSurfaceDone;
-  private BitSet[] bsLocale;
+  private BS bsSurfacePoints, bsSurfaceDone;
+  private BS[] bsLocale;
   private Map<String, Edge> htEdges;
   private List<Edge> vEdges;
   private Edge[] aEdges;
   private List<Face> vFaces;
-  protected Vector3f vTemp = new Vector3f();
+  protected V3 vTemp = new V3();
   protected Point4f plane = new Point4f();
 
-  protected Point3f ptTemp2 = new Point3f();
-  private Point3f ptS1 = new Point3f();
-  private Point3f ptS2 = new Point3f();
-  protected Vector3f vTemp2 = new Vector3f();
-  private Vector3f vTemp3 = new Vector3f();
+  protected P3 ptTemp2 = new P3();
+  private P3 ptS1 = new P3();
+  private P3 ptS2 = new P3();
+  protected V3 vTemp2 = new V3();
+  private V3 vTemp3 = new V3();
   private float dPX;
-  final protected Point3f p = new Point3f();
+  final protected P3 p = new P3();
   private float maxRadius;
-  private BitSet[] bsAtomMinMax;
+  private BS[] bsAtomMinMax;
 
   @Override
   protected boolean readVolumeParameters(boolean isMapData) {
@@ -169,7 +169,7 @@ class IsoSolventReader extends AtomDataReader {
     if (isProgressive) {
       volumeData.setUnitVectors();
       volumeData.getYzCount();
-      bsAtomMinMax = new BitSet[nPointsX];
+      bsAtomMinMax = new BS[nPointsX];
       getAtomMinMax(null, bsAtomMinMax);
       voxelSource = new int[volumeData.nPoints];
     }
@@ -218,7 +218,7 @@ class IsoSolventReader extends AtomDataReader {
       }
     }
     if (thisAtomSet == null)
-      thisAtomSet = BitSetUtil.setAll(myAtomCount);
+      thisAtomSet = BSUtil.setAll(myAtomCount);
       
 
   }
@@ -332,10 +332,10 @@ class IsoSolventReader extends AtomDataReader {
   protected float getSurfacePointAndFraction(float cutoff,
                                              boolean isCutoffAbsolute,
                                              float valueA, float valueB,
-                                             Point3f pointA,
-                                             Vector3f edgeVector, int x, int y,
+                                             P3 pointA,
+                                             V3 edgeVector, int x, int y,
                                              int z, int vA0, int vB0,
-                                             float[] fReturn, Point3f ptReturn) {
+                                             float[] fReturn, P3 ptReturn) {
 
     // nonlinear Marching Cubes -- hansonr@stolaf.edu 12/31/2010
 
@@ -395,7 +395,7 @@ class IsoSolventReader extends AtomDataReader {
   }
 
   @Override
-  public int addVertexCopy(Point3f vertexXYZ, float value, int assocVertex) {
+  public int addVertexCopy(P3 vertexXYZ, float value, int assocVertex) {
     // Boolean isSurfacePoint has been set in getSurfacePointAndFraction.
     // We use it to identify all points derived from (a) all +F and (b)
     // all -S voxels for atoms that are not related to a face. 
@@ -414,7 +414,7 @@ class IsoSolventReader extends AtomDataReader {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     //mark VERTICES for proximity to surface
-    Point3f[] v = meshData.vertices;
+    P3[] v = meshData.vertices;
     int nVertices = meshData.vertexCount;
     float[] vv = meshData.vertexValues;
     int nDots = dots.length;
@@ -428,8 +428,8 @@ class IsoSolventReader extends AtomDataReader {
     }
     meshData.getSurfaceSet();
     int nSets = meshData.nSets;
-    BitSet pocketSet = BitSetUtil.newBitSet(nSets);
-    BitSet ss;
+    BS pocketSet = BSUtil.newBitSet(nSets);
+    BS ss;
     for (int i = 0; i < nSets; i++)
       if ((ss = meshData.surfaceSet[i]) != null)
         for (int j = ss.nextSetBit(0); j >= 0; j = ss.nextSetBit(j + 1))
@@ -459,21 +459,21 @@ class IsoSolventReader extends AtomDataReader {
     // created when the toroidal surfaces are split by faces.
     setVertexSource();
     if (doCalculateTroughs && bsSurfacePoints != null) {
-      BitSet bsAll = new BitSet();
-      BitSet[] bsSurfaces = meshData.getSurfaceSet();
-      BitSet[] bsSources = null;
+      BS bsAll = new BS();
+      BS[] bsSurfaces = meshData.getSurfaceSet();
+      BS[] bsSources = null;
       double[] volumes = (double[]) (isPocket ? null : meshData
           .calculateVolumeOrArea(-1, false, false));
       float minVolume = (float)(1.5 * Math.PI * Math.pow(solventRadius, 3));
       for (int i = 0; i < meshData.nSets; i++) {
-        BitSet bss = bsSurfaces[i];
+        BS bss = bsSurfaces[i];
         if (bss.intersects(bsSurfacePoints)) {
           if (volumes == null || Math.abs(volumes[i]) > minVolume) // roughly 4/3 PI r^3
             //doesn't allow for cavities, but doCalculateTroughs takes care of that 
             if (params.vertexSource != null) {
-              BitSet bs = new BitSet();
+              BS bs = new BS();
               if (bsSources == null)
-                bsSources = new BitSet[bsSurfaces.length];
+                bsSources = new BS[bsSurfaces.length];
               // don't allow two surfaces to involve the same atom.
               for (int j = bss.nextSetBit(0); j >= 0; j = bss.nextSetBit(j + 1)) {
                 int iatom = params.vertexSource[j];
@@ -508,7 +508,7 @@ class IsoSolventReader extends AtomDataReader {
     //1) identify which voxelData points are > 0 and within this volume
     //2) turn these voxel points into atoms with given radii
     //3) rerun the calculation to mark a solvent around these!
-    BitSet bs = BitSetUtil.newBitSet(nPointsX * nPointsY * nPointsZ);
+    BS bs = BSUtil.newBitSet(nPointsX * nPointsY * nPointsZ);
     int i = 0;
     int nDots = dots.length;
     int n = 0;
@@ -530,16 +530,16 @@ class IsoSolventReader extends AtomDataReader {
       }
     Logger.info("cavities include " + n + " voxel points");
     atomRadius = new float[n];
-    atomXyz = new Point3f[n];
+    atomXyz = new P3[n];
     for (int x = 0, ipt = 0, apt = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y)
         for (int z = 0; z < nPointsZ; ++z)
           if (bs.get(ipt++)) {
-            volumeData.voxelPtToXYZ(x, y, z, (atomXyz[apt] = new Point3f()));
+            volumeData.voxelPtToXYZ(x, y, z, (atomXyz[apt] = new P3()));
             atomRadius[apt++] = voxelData[x][y][z];
           }
     myAtomCount = firstNearbyAtom = n;
-    thisAtomSet = BitSetUtil.setAll(myAtomCount);
+    thisAtomSet = BSUtil.setAll(myAtomCount);
   }
 
   
@@ -682,9 +682,9 @@ class IsoSolventReader extends AtomDataReader {
     if (dataType == Parameters.SURFACE_NOMAP)
       return;
     params.vertexSource = new int[volumeData.nPoints]; // overkill?
-    bsSurfaceDone = new BitSet();
-    bsSurfaceVoxels = new BitSet();
-    bsSurfacePoints = new BitSet();
+    bsSurfaceDone = new BS();
+    bsSurfaceVoxels = new BS();
+    bsSurfacePoints = new BS();
 
     if (doCalculateTroughs) {
 
@@ -696,7 +696,7 @@ class IsoSolventReader extends AtomDataReader {
 
       // 1) -- same as MSMS -- get edges
       vEdges = new ArrayList<Edge>();
-      bsLocale = new BitSet[myAtomCount];
+      bsLocale = new BS[myAtomCount];
       htEdges = new Hashtable<String, Edge>();
       getEdges();
       Logger.info(vEdges.size() + " edges");
@@ -761,10 +761,10 @@ class IsoSolventReader extends AtomDataReader {
      * 
      */
     for (int iatomA = 0; iatomA < myAtomCount; iatomA++)
-      bsLocale[iatomA] = new BitSet();
+      bsLocale[iatomA] = new BS();
     float dist2 = solventRadius + maxRadius;
     for (int iatomA = 0; iatomA < myAtomCount; iatomA++) {
-      Point3f ptA = atomXyz[iatomA];
+      P3 ptA = atomXyz[iatomA];
       float rA = atomRadius[iatomA] + solventRadius;
       atomDataServer.setIteratorForAtom(iter, atomIndex[iatomA], rA + dist2);
       while (iter.hasNext()) {
@@ -772,7 +772,7 @@ class IsoSolventReader extends AtomDataReader {
         int iatomB = myIndex[iB];
         if (iatomA >= firstNearbyAtom && iatomB >= firstNearbyAtom)
           continue;
-        Point3f ptB = atomXyz[iatomB];
+        P3 ptB = atomXyz[iatomB];
         float rB = atomRadius[iatomB] + solventRadius;
         float dAB = ptA.distance(ptB);
         if (dAB >= rA + rB)
@@ -836,14 +836,14 @@ class IsoSolventReader extends AtomDataReader {
   private class Face {
     int ia, ib, ic;
     boolean isValid;
-    Point3f pS; // solvent position
+    P3 pS; // solvent position
     Edge[] edges = new Edge[3];
 
-    Face(int ia, int ib, int ic, Edge edgeAB, Point3f pS) {
+    Face(int ia, int ib, int ic, Edge edgeAB, P3 pS) {
       this.ia = ia;
       this.ib = ib;
       this.ic = ic;
-      this.pS = Point3f.newP(pS);
+      this.pS = P3.newP(pS);
       edges[0] = edgeAB;
     }
 
@@ -886,9 +886,9 @@ class IsoSolventReader extends AtomDataReader {
      *     use Marching Cubes. 
      *      
      */
-    BitSet bs = new BitSet();
-    validSpheres = new BitSet();
-    noFaceSpheres = BitSetUtil.setAll(myAtomCount);
+    BS bs = new BS();
+    validSpheres = new BS();
+    noFaceSpheres = BSUtil.setAll(myAtomCount);
     for (int i = vEdges.size(); --i >= 0;) {
       Edge edge = vEdges.get(i);
       int ia = edge.ia;
@@ -916,7 +916,7 @@ class IsoSolventReader extends AtomDataReader {
         }
       }
     }
-    BitSet bsOK = new BitSet();
+    BS bsOK = new BS();
     for (int i = vEdges.size(); --i >= 0;)
       if (vEdges.get(i).getType() >= 0)
         bsOK.set(i);
@@ -950,7 +950,7 @@ class IsoSolventReader extends AtomDataReader {
      */
 
     double dPS = getPointP(ia, ib);
-    Point3f ptC = atomXyz[ic];
+    P3 ptC = atomXyz[ic];
     float rCS = atomRadius[ic] + solventRadius;
     float dCT = Measure.distanceToPlane(plane, ptC);
     if (Math.abs(dCT) >= rCS)
@@ -962,7 +962,7 @@ class IsoSolventReader extends AtomDataReader {
     double cosTheta = (dsp2 + dpT * dpT - dST * dST) / (2 * dPS * dpT);
     if (Math.abs(cosTheta) >= 1)
       return false;
-    Vector3f vXS = vTemp2;
+    V3 vXS = vTemp2;
     vXS.setT(ptTemp);
     vXS.sub(p);
     vXS.normalize();
@@ -1036,17 +1036,17 @@ class IsoSolventReader extends AtomDataReader {
      * In the second pass we are marking inside (-) voxels.
      * 
      */
-    BitSet bsThisPass = new BitSet();
+    BS bsThisPass = new BS();
     for (int fi = vFaces.size(); --fi >= 0;) {
       Face f = vFaces.get(fi);
       if (!f.isValid)
         continue;
       setGridLimitsForAtom(f.pS, solventRadius, pt0, pt1);
       volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
-      Point3f ptA = atomXyz[f.ia];
-      Point3f ptB = atomXyz[f.ib];
-      Point3f ptC = atomXyz[f.ic];
-      Point3f ptS = f.pS;
+      P3 ptA = atomXyz[f.ia];
+      P3 ptB = atomXyz[f.ib];
+      P3 ptC = atomXyz[f.ic];
+      P3 ptS = f.pS;
       if (Logger.debugging) {
         f.dump();
       }
@@ -1092,17 +1092,17 @@ class IsoSolventReader extends AtomDataReader {
   }
 
   private void markToroidVoxels() {
-    Point3i ptA0 = new Point3i();
-    Point3i ptB0 = new Point3i();
-    Point3i ptA1 = new Point3i();
-    Point3i ptB1 = new Point3i();
+    P3i ptA0 = new P3i();
+    P3i ptB0 = new P3i();
+    P3i ptA1 = new P3i();
+    P3i ptB1 = new P3i();
 
     for (int ei = 0; ei < aEdges.length; ei++) {
       Edge edge = aEdges[ei];
       int ia = edge.ia;
       int ib = edge.ib;
-      Point3f ptA = atomXyz[ia];
-      Point3f ptB = atomXyz[ib];
+      P3 ptA = atomXyz[ia];
+      P3 ptB = atomXyz[ib];
       float rAS = atomRadius[ia] + solventRadius;
       float rBS = atomRadius[ib] + solventRadius;
       float dAB = ptB.distance(ptA);
@@ -1174,8 +1174,8 @@ class IsoSolventReader extends AtomDataReader {
     }
   }
 
-  private static void mergeLimits(Point3i ptA, Point3i ptB, Point3i pt0,
-                                  Point3i pt1) {
+  private static void mergeLimits(P3i ptA, P3i ptB, P3i pt0,
+                                  P3i pt1) {
     if (pt0 != null) {
       pt0.x = Math.min(ptA.x, ptB.x);
       pt0.y = Math.min(ptA.y, ptB.y);
@@ -1188,8 +1188,8 @@ class IsoSolventReader extends AtomDataReader {
     }
   }
 
-  private float checkSpecialVoxel(Point3f ptA, float rAS, Point3f ptB,
-                                  float rBS, float dAB, Point3f ptV) {
+  private float checkSpecialVoxel(P3 ptA, float rAS, P3 ptB,
+                                  float rBS, float dAB, P3 ptV) {
     /*
      * Checking here for voxels that are in the situation:
      * 
@@ -1309,8 +1309,8 @@ class IsoSolventReader extends AtomDataReader {
   }
 
   protected double getPointP(int ia, int ib) {
-    Point3f ptA = atomXyz[ia];
-    Point3f ptB = atomXyz[ib];
+    P3 ptA = atomXyz[ia];
+    P3 ptB = atomXyz[ib];
     float rAS = atomRadius[ia] + solventRadius;
     float rBS = atomRadius[ib] + solventRadius;
     vTemp.setT(ptB);
@@ -1330,32 +1330,32 @@ class IsoSolventReader extends AtomDataReader {
 
   protected int nTest;
 
-  void dumpLine(Point3f pt1, Tuple3f pt2, String label, String color) {
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + Point3f.newP(pt1)
-        + "} @{point" + Point3f.newP(pt2) + "} color " + color);
+  void dumpLine(P3 pt1, Tuple3f pt2, String label, String color) {
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + P3.newP(pt1)
+        + "} @{point" + P3.newP(pt2) + "} color " + color);
   }
 
-  void dumpLine2(Point3f pt1, Point3f pt2, String label, float d,
+  void dumpLine2(P3 pt1, P3 pt2, String label, float d,
                  String color1, String color2) {
-    Vector3f pt = new Vector3f();
+    V3 pt = new V3();
     pt.setT(pt2);
     pt.sub(pt1);
     pt.normalize();
     pt.scale(d);
     pt.add(pt1);
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + Point3f.newP(pt1)
-        + "} @{point" + Point3f.newP(pt) + "} color " + color1);
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + Point3f.newP(pt)
-        + "} @{point" + Point3f.newP(pt2) + "} color " + color2);
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + P3.newP(pt1)
+        + "} @{point" + P3.newP(pt) + "} color " + color1);
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + P3.newP(pt)
+        + "} @{point" + P3.newP(pt2) + "} color " + color2);
   }
 
-  void dumpPoint(Point3f pt, String label, String color) {
-    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + Point3f.newP(pt)
+  void dumpPoint(P3 pt, String label, String color) {
+    sg.log("draw ID \"" + label + (nTest++) + "\" @{point" + P3.newP(pt)
         + "} color " + color);
   }
 
   @Override
-  public float getValueAtPoint(Point3f pt) {
+  public float getValueAtPoint(P3 pt) {
     // mapping sasurface/vdw
     if (contactPair != null)
       return pt.distance(contactPair.myAtoms[1]) - contactPair.radii[1];

@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 
 class CubeReader extends VolumeFileReader {
@@ -41,7 +41,7 @@ class CubeReader extends VolumeFileReader {
   
   @Override
   protected void readParameters() throws Exception {
-    jvxlFileHeaderBuffer = new StringXBuilder();
+    jvxlFileHeaderBuffer = new SB();
     jvxlFileHeaderBuffer.append(readLine()).appendC('\n');
     jvxlFileHeaderBuffer.append(readLine()).appendC('\n');
     String atomLine = readLine();

@@ -314,23 +314,23 @@ public class Quaternion {
     q3 *= -1;
   }
 
-  public static final Quaternion getQuaternionFrame(Point3f center, Tuple3f x, Tuple3f xy) {
-    Vector3f vA = Vector3f.newV(x);
+  public static final Quaternion getQuaternionFrame(P3 center, Tuple3f x, Tuple3f xy) {
+    V3 vA = V3.newV(x);
     vA.sub(center);
-    Vector3f vB = Vector3f.newV(xy);
+    V3 vB = V3.newV(xy);
     vB.sub(center);
     return getQuaternionFrameV(vA, vB, null, false);
   }
   
-  public static final Quaternion getQuaternionFrameV(Vector3f vA, Vector3f vB,
-                                                    Vector3f vC, boolean yBased) {
+  public static final Quaternion getQuaternionFrameV(V3 vA, V3 vB,
+                                                    V3 vC, boolean yBased) {
     if (vC == null) {
-      vC = new Vector3f();
+      vC = new V3();
       vC.cross(vA, vB);
       if (yBased)
         vA.cross(vB, vC);
     }
-    Vector3f vBprime = new Vector3f();
+    V3 vBprime = new V3();
     vBprime.cross(vC, vA);
     vA.normalize();
     vBprime.normalize();
@@ -457,18 +457,18 @@ public class Quaternion {
         q0 == 0 && (q1 < 0 || q1 == 0 && (q2 < 0 || q2 == 0 && q3 < 0)) ? -1 : 1);
   }
   
-  public Vector3f getVector(int i) {
+  public V3 getVector(int i) {
     return getVectorS(i, 1f);
   }
 
-  private Vector3f getVectorS(int i, float scale) {
+  private V3 getVectorS(int i, float scale) {
     if (i == -1) {
       scale *= getFixFactor();
-      return Vector3f.new3(q1 * scale, q2 * scale, q3 * scale);
+      return V3.new3(q1 * scale, q2 * scale, q3 * scale);
     }
     if (mat == null)
       setMatrix();
-    Vector3f v = new Vector3f();
+    V3 v = new V3();
     mat.getColumnV(i, v);
     if (scale != 1f)
       v.scale(scale);
@@ -479,16 +479,16 @@ public class Quaternion {
    * 
    * @return  vector such that 0 <= angle <= 180
    */
-  public Vector3f getNormal() {
-    Vector3f v = getRawNormal(this);
+  public V3 getNormal() {
+    V3 v = getRawNormal(this);
     v.scale(getFixFactor());
     return v;
   }
 
-  private static Vector3f getRawNormal(Quaternion q) {
-    Vector3f v = Vector3f.new3(q.q1, q.q2, q.q3);
+  private static V3 getRawNormal(Quaternion q) {
+    V3 v = V3.new3(q.q1, q.q2, q.q3);
     if (v.length() == 0)
-      return Vector3f.new3(0, 0, 1);
+      return V3.new3(0, 0, 1);
     v.normalize();
     return v;
   }
@@ -511,15 +511,15 @@ public class Quaternion {
    * @return    vector option closest to v0
    * 
    */
-  public Vector3f getNormalDirected(Vector3f v0) {
-    Vector3f v = getNormal();
+  public V3 getNormalDirected(V3 v0) {
+    V3 v = getNormal();
     if (v.x * v0.x + v.y * v0.y + v.z * v0.z < 0) {
       v.scale(-1);
     }
     return v;
   }
 
-  public Vector3f get3dProjection(Vector3f v3d) {
+  public V3 get3dProjection(V3 v3d) {
     v3d.set(q1, q2, q3);
     return v3d;
   }
@@ -532,7 +532,7 @@ public class Quaternion {
   public Point4f getThetaDirected(Point4f axisAngle) {
     //fills in .w;
     float theta = getTheta();
-    Vector3f v = getNormal();
+    V3 v = getNormal();
     if (axisAngle.x * q1 + axisAngle.y * q2 + axisAngle.z * q3 < 0) {
       v.scale(-1);
       theta = -theta;
@@ -546,10 +546,10 @@ public class Quaternion {
    * @param vector  a vector, same as for getNormalDirected
    * @return   return theta 
    */
-  public float getThetaDirectedV(Vector3f vector) {
+  public float getThetaDirectedV(V3 vector) {
     //fills in .w;
     float theta = getTheta();
-    Vector3f v = getNormal();
+    V3 v = getNormal();
     if (vector.x * q1 + vector.y * q2 + vector.z * q3 < 0) {
       v.scale(-1);
       theta = -theta;
@@ -573,7 +573,7 @@ public class Quaternion {
   public AxisAngle4f toAxisAngle4f() {
     double theta = 2 * Math.acos(Math.abs(q0));
     double sinTheta2 = Math.sin(theta/2);
-    Vector3f v = getNormal();
+    V3 v = getNormal();
     if (sinTheta2 < 0) {
       v.scale(-1);
       theta = Math.PI - theta;
@@ -581,10 +581,10 @@ public class Quaternion {
     return AxisAngle4f.newVA(v, (float) theta);
   }
 
-  public Point3f transformPt(Point3f pt) {
+  public P3 transformPt(P3 pt) {
     if (mat == null)
       setMatrix();
-    Point3f ptNew = Point3f.newP(pt);
+    P3 ptNew = P3.newP(pt);
     mat.transform(ptNew);
     return ptNew;
   }
@@ -595,10 +595,10 @@ public class Quaternion {
     mat.transform2(pt, ptNew);
   }
 
-  public Vector3f transform(Vector3f v) {
+  public V3 transform(V3 v) {
     if (mat == null)
       setMatrix();
-    Vector3f vNew = Vector3f.newV(v);
+    V3 vNew = V3.newV(v);
     mat.transform(vNew);
     return vNew;
   }
@@ -622,17 +622,17 @@ public class Quaternion {
             (float) (axis.angle * 180 / Math.PI), axis.x, axis.y, axis.z } });
   }
 
-  public String draw(String prefix, String id, Point3f ptCenter, 
+  public String draw(String prefix, String id, P3 ptCenter, 
                      float scale) {
-    String strV = " VECTOR " + Escape.escapePt(ptCenter) + " ";
+    String strV = " VECTOR " + Escape.eP(ptCenter) + " ";
     if (scale == 0)
       scale = 1f;
     return "draw " + prefix + "x" + id + strV
-        + Escape.escapePt(getVectorS(0, scale)) + " color red\n"
+        + Escape.eP(getVectorS(0, scale)) + " color red\n"
         + "draw " + prefix + "y" + id + strV
-        + Escape.escapePt(getVectorS(1, scale)) + " color green\n"
+        + Escape.eP(getVectorS(1, scale)) + " color green\n"
         + "draw " + prefix + "z" + id + strV
-        + Escape.escapePt(getVectorS(2, scale)) + " color blue\n";
+        + Escape.eP(getVectorS(2, scale)) + " color blue\n";
   }
 
   /**
@@ -709,10 +709,10 @@ public class Quaternion {
    * @return approximate average
    */
   private static Quaternion simpleAverage(Quaternion[] ndata) {
-    Vector3f mean = Vector3f.new3(0, 0, 1);
+    V3 mean = V3.new3(0, 0, 1);
     // using the directed normal ensures that the mean is 
     // continually added to and never subtracted from 
-    Vector3f v = ndata[0].getNormal();
+    V3 v = ndata[0].getNormal();
     mean.add(v);
     for (int i = ndata.length; --i >= 0;)
       mean.add(ndata[i].getNormalDirected(mean));
@@ -760,8 +760,8 @@ public class Quaternion {
      *  This is officially an "exponential" or "hyperbolic" projection.
      *  
      */
-    Vector3f sum = new Vector3f();
-    Vector3f v;
+    V3 sum = new V3();
+    V3 v;
     Quaternion q, dq;
     //System.out.println("newMean mean " + mean);
     for (int i = data.length; --i >= 0;) {

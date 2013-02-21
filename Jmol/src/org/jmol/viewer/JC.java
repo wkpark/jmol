@@ -24,13 +24,13 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.util.Elements;
 import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -39,8 +39,8 @@ import java.util.Map;
 import java.util.Properties;
 
 
-@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,org.jmol.util.StringXBuilder.class})
-public class JmolConstants {
+@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,org.jmol.util.SB.class})
+public class JC {
 
   // axes mode constants --> org.jmol.constant.EnumAxesMode
   // callback constants --> org.jmol.constant.EnumCallback
@@ -66,7 +66,7 @@ public class JmolConstants {
        *            tmpVersion = ___JmolVersion; tmpDate = ___JmolDate;
        */
       {
-        is = JmolConstants.class.getClassLoader().getResourceAsStream(
+        is = JC.class.getClassLoader().getResourceAsStream(
             "org/jmol/viewer/Jmol.properties");
         bis = new BufferedInputStream(is);
         Properties props = new Properties();
@@ -132,14 +132,14 @@ public class JmolConstants {
   //do not capitalize any other letter in the word. Separate by semicolon.
   public final static String EXPORT_DRIVER_LIST = "Idtf;Maya;Povray;Vrml;X3d;Tachyon;Obj"; 
 
-  public final static Vector3f center = Vector3f.new3(0, 0, 0);
-  public final static Vector3f axisX = Vector3f.new3(1, 0, 0);
-  public final static Vector3f axisY = Vector3f.new3(0, 1, 0);
-  public final static Vector3f axisZ = Vector3f.new3(0, 0, 1);
-  public final static Vector3f axisNX = Vector3f.new3(-1, 0, 0);
-  public final static Vector3f axisNY = Vector3f.new3(0, -1, 0);
-  public final static Vector3f axisNZ = Vector3f.new3(0, 0, -1);
-  public final static Vector3f[] unitAxisVectors = {
+  public final static V3 center = V3.new3(0, 0, 0);
+  public final static V3 axisX = V3.new3(1, 0, 0);
+  public final static V3 axisY = V3.new3(0, 1, 0);
+  public final static V3 axisZ = V3.new3(0, 0, 1);
+  public final static V3 axisNX = V3.new3(-1, 0, 0);
+  public final static V3 axisNY = V3.new3(0, -1, 0);
+  public final static V3 axisNZ = V3.new3(0, 0, -1);
+  public final static V3[] unitAxisVectors = {
     axisX, axisY, axisZ, axisNX, axisNY, axisNZ };
 
   public final static int XY_ZTOP = 100; // Z value for [x y] positioned echos and axis origin
@@ -1094,7 +1094,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public static String getGroup3List() {
     if (group3List != null)
       return group3List;
-    StringXBuilder s = new StringXBuilder();
+    SB s = new SB();
     //for menu presentation order
     for (int i = 1; i < GROUPID_WATER; i++)
       s.append(",[").append((predefinedGroup3Names[i]+"   ").substring(0,3)+"]");
@@ -1109,7 +1109,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   private static int getGroup3Pt(String group3) {
     getGroup3List();
-    StringXBuilder sb = new StringXBuilder().append("[");
+    SB sb = new SB().append("[");
     sb.append(group3);
     switch (group3.length()){
     case 1:
@@ -1397,7 +1397,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_MAX        = SHAPE_FRANK + 1;
 
   public final static boolean isShapeSecondary(int i ) {
-    return i >= JmolConstants.SHAPE_MIN_SECONDARY && i < JmolConstants.SHAPE_MAX_SECONDARY;
+    return i >= JC.SHAPE_MIN_SECONDARY && i < JC.SHAPE_MAX_SECONDARY;
   }
   
   // note that these next two arrays *MUST* be in the same sequence 
@@ -1420,77 +1420,77 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static int shapeTokenIndex(int tok) {
     switch (tok) {
-    case Token.atoms:
+    case T.atoms:
       return SHAPE_BALLS;
-    case Token.bonds:
-    case Token.wireframe:
+    case T.bonds:
+    case T.wireframe:
       return SHAPE_STICKS;
-    case Token.hbond:
+    case T.hbond:
       return SHAPE_HSTICKS;
-    case Token.ssbond:
+    case T.ssbond:
       return SHAPE_SSSTICKS;
-    case Token.struts:
+    case T.struts:
       return SHAPE_STRUTS;
-    case Token.label:
+    case T.label:
       return SHAPE_LABELS;
-    case Token.measure:
-    case Token.measurements:
+    case T.measure:
+    case T.measurements:
       return SHAPE_MEASURES;
-    case Token.star:
+    case T.star:
       return SHAPE_STARS;
-    case Token.halo:
+    case T.halo:
       return SHAPE_HALOS;
-    case Token.backbone:
+    case T.backbone:
       return SHAPE_BACKBONE;
-    case Token.trace:
+    case T.trace:
       return SHAPE_TRACE;
-    case Token.cartoon:
+    case T.cartoon:
       return SHAPE_CARTOON;
-    case Token.strands:
+    case T.strands:
       return SHAPE_STRANDS;
-    case Token.meshRibbon:
+    case T.meshRibbon:
       return SHAPE_MESHRIBBON;
-    case Token.ribbon:
+    case T.ribbon:
       return SHAPE_RIBBONS;
-    case Token.rocket:
+    case T.rocket:
       return SHAPE_ROCKETS;
-    case Token.dots:
+    case T.dots:
       return SHAPE_DOTS;
-    case Token.dipole:
+    case T.dipole:
       return SHAPE_DIPOLES;
-    case Token.vector:
+    case T.vector:
       return SHAPE_VECTORS;
-    case Token.geosurface:
+    case T.geosurface:
       return SHAPE_GEOSURFACE;
-    case Token.ellipsoid:
+    case T.ellipsoid:
       return SHAPE_ELLIPSOIDS;
-    case Token.polyhedra:
+    case T.polyhedra:
       return SHAPE_POLYHEDRA;
-    case Token.draw:
+    case T.draw:
       return SHAPE_DRAW;
-    case Token.isosurface:
+    case T.isosurface:
       return SHAPE_ISOSURFACE;
-    case Token.contact:
+    case T.contact:
       return SHAPE_CONTACT;
-    case Token.lcaocartoon:
+    case T.lcaocartoon:
       return SHAPE_LCAOCARTOON;
-    case Token.mo:
+    case T.mo:
       return SHAPE_MO;
-    case Token.pmesh:
+    case T.pmesh:
       return SHAPE_PMESH;
-    case Token.plot3d:
+    case T.plot3d:
       return SHAPE_PLOT3D;
-    case Token.echo:
+    case T.echo:
       return SHAPE_ECHO;
-    case Token.axes:
+    case T.axes:
       return SHAPE_AXES;
-    case Token.boundbox:
+    case T.boundbox:
       return SHAPE_BBCAGE;
-    case Token.unitcell:
+    case T.unitcell:
       return SHAPE_UCCAGE;
-    case Token.hover:
+    case T.hover:
       return SHAPE_HOVER;
-    case Token.frank:
+    case T.frank:
       return SHAPE_FRANK;
     }
     return -1;

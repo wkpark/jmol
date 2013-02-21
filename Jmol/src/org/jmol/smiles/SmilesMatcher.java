@@ -28,8 +28,8 @@ import java.util.List;
 
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.JmolNode;
 import org.jmol.util.TextFormat;
 
@@ -129,7 +129,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     }
   }
 
-  public String getSmiles(JmolNode[] atoms, int atomCount, BitSet bsSelected,
+  public String getSmiles(JmolNode[] atoms, int atomCount, BS bsSelected,
                           boolean asBioSmiles, boolean allowUnmatchedRings, boolean addCrossLinks, String comment) {    
     InvalidSmilesException.setLastError(null);
     try {
@@ -145,7 +145,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   public int areEqual(String smiles1, String smiles2) {
-    BitSet[] result = find(smiles1, smiles2, false, false);
+    BS[] result = find(smiles1, smiles2, false, false);
     return (result == null ? -1 : result.length);
   }
 
@@ -157,7 +157,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @return        true only if the SMILES strings match and there are no errors
    */
   public boolean areEqual(String smiles, SmilesSearch molecule) {
-    BitSet[] ret = find(smiles, molecule, false, true, true);
+    BS[] ret = find(smiles, molecule, false, true, true);
     return (ret != null && ret.length == 1);
   }
 
@@ -174,7 +174,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param firstMatchOnly 
    * @return number of occurances of pattern within smiles
    */
-  public BitSet[] find(String pattern, String smiles, boolean isSmarts,
+  public BS[] find(String pattern, String smiles, boolean isSmarts,
                        boolean firstMatchOnly) {
 
     InvalidSmilesException.setLastError(null);
@@ -248,16 +248,16 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @return BitSet indicating which atoms match the pattern.
    */
 
-  public BitSet getSubstructureSet(String pattern, JmolNode[] atoms,
-                                   int atomCount, BitSet bsSelected,
+  public BS getSubstructureSet(String pattern, JmolNode[] atoms,
+                                   int atomCount, BS bsSelected,
                                    boolean isSmarts, boolean firstMatchOnly) {
-    return (BitSet) match(pattern, atoms, atomCount, bsSelected, null, isSmarts,
+    return (BS) match(pattern, atoms, atomCount, bsSelected, null, isSmarts,
         false, firstMatchOnly, MODE_BITSET);
   }
 
   public void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
-                                  int flags, BitSet bsSelected, List<BitSet> ret, 
-                                  List<BitSet>[] vRings) {
+                                  int flags, BS bsSelected, List<BS> ret, 
+                                  List<BS>[] vRings) {
     InvalidSmilesException.setLastError(null);
     SmilesParser sp = new SmilesParser(true);
     SmilesSearch search = null;
@@ -275,7 +275,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     } catch (InvalidSmilesException e) {
       // I think this is impossible.
     }
-    BitSet bsDone = new BitSet();
+    BS bsDone = new BS();
     
     for (int i = 0; i < smarts.length; i++) {
       if (smarts[i] == null || smarts[i].length() == 0 || smarts[i].startsWith("#")) {
@@ -286,7 +286,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         search.clear();
         SmilesSearch ss = sp.getSearch(search, SmilesParser.cleanPattern(smarts[i]), flags);
         search.subSearches[0] = ss;
-        BitSet bs = BitSetUtil.copy((BitSet) search.search(false));//.subsearch(ss, false, false));
+        BS bs = BSUtil.copy((BS) search.search(false));//.subsearch(ss, false, false));
         //System.out.println(i + " " + bs);
         ret.add(bs);
         bsDone.or(bs);
@@ -316,11 +316,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * @param firstMatchOnly
    * @return BitSet Array indicating which atoms match the pattern.
    */
-  public BitSet[] getSubstructureSetArray(String pattern, JmolNode[] atoms,
-                                          int atomCount, BitSet bsSelected,
-                                          BitSet bsAromatic, boolean isSmarts,
+  public BS[] getSubstructureSetArray(String pattern, JmolNode[] atoms,
+                                          int atomCount, BS bsSelected,
+                                          BS bsAromatic, boolean isSmarts,
                                           boolean firstMatchOnly) {
-    return (BitSet[]) match(pattern, atoms, atomCount, bsSelected, bsAromatic,
+    return (BS[]) match(pattern, atoms, atomCount, bsSelected, bsAromatic,
         isSmarts, false, firstMatchOnly, MODE_ARRAY);
   }
 
@@ -340,7 +340,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
    * 
    */
   public int[][] getCorrelationMaps(String pattern, JmolNode[] atoms,
-                                    int atomCount, BitSet bsSelected,
+                                    int atomCount, BS bsSelected,
                                     boolean isSmarts, boolean firstMatchOnly) {
     return (int[][]) match(pattern, atoms, atomCount, bsSelected, null, isSmarts,
         false, firstMatchOnly, MODE_MAP);
@@ -349,21 +349,21 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   
   /////////////// private methods ////////////////
   
-  private BitSet[] find(String pattern, SmilesSearch search, boolean isSmarts,
+  private BS[] find(String pattern, SmilesSearch search, boolean isSmarts,
                         boolean matchAllAtoms, boolean firstMatchOnly) {
     // create a topological model set from smiles
     // do not worry about stereochemistry -- this
     // will be handled by SmilesSearch.setSmilesCoordinates
-    BitSet bsAromatic = new BitSet();
+    BS bsAromatic = new BS();
     search.createTopoMap(bsAromatic);
-    return (BitSet[]) match(pattern, search.jmolAtoms,
+    return (BS[]) match(pattern, search.jmolAtoms,
         -search.jmolAtoms.length, null, bsAromatic, isSmarts, matchAllAtoms,
         firstMatchOnly, MODE_ARRAY);
   }
 
   @SuppressWarnings({ "unchecked" })
   private Object match(String pattern, JmolNode[] atoms, int atomCount,
-                       BitSet bsSelected, BitSet bsAromatic, boolean isSmarts,
+                       BS bsSelected, BS bsAromatic, boolean isSmarts,
                        boolean matchAllAtoms, boolean firstMatchOnly,
                        int mode) {
     InvalidSmilesException.setLastError(null);
@@ -385,8 +385,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         return search.search(false);
       case MODE_ARRAY:
         search.asVector = true;
-        List<BitSet> vb = (List<BitSet>) search.search(false);
-        return vb.toArray(new BitSet[vb.size()]);
+        List<BS> vb = (List<BS>) search.search(false);
+        return vb.toArray(new BS[vb.size()]);
       case MODE_MAP:
         search.getMaps = true;
         List<int[]> vl = (List<int[]>) search.search(false);

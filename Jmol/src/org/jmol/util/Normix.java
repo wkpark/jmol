@@ -48,12 +48,12 @@ public class Normix {
     return normixCount;
   }
   
-  public static BitSet newVertexBitSet() {
-    return BitSet.newN(getNormixCount());
+  public static BS newVertexBitSet() {
+    return BS.newN(getNormixCount());
   }
 
-  private static Vector3f[] vertexVectors;
-  public static Vector3f[] getVertexVectors() {
+  private static V3[] vertexVectors;
+  public static V3[] getVertexVectors() {
     // Graphics3D, isosurfaceRenderer normals, below
     if (vertexVectors == null)
       vertexVectors = Geodesic.getVertexVectors();
@@ -70,9 +70,9 @@ public class Normix {
     getVertexVectors();
     inverseNormixes = new short[normixCount];    // level 0 1 2 3
     // vertices 12, 42, 162, 642
-    BitSet bsTemp = new BitSet();
+    BS bsTemp = new BS();
     for (int n = normixCount; --n >= 0;) {
-      Vector3f v = vertexVectors[n];
+      V3 v = vertexVectors[n];
       inverseNormixes[n] = getNormix(-v.x, -v.y, -v.z, NORMIX_GEODESIC_LEVEL,
           bsTemp);
     }
@@ -93,17 +93,17 @@ public class Normix {
   public static final short NORMIX_NULL = 9999;
      // graphics3D, Mesh
   
-  public static short getNormixV(Vector3f v, BitSet bsTemp) {
+  public static short getNormixV(V3 v, BS bsTemp) {
     // envelope, mesh, polyhedra only
     return getNormix(v.x, v.y, v.z, NORMIX_GEODESIC_LEVEL, bsTemp);
   }
 
-  public static short get2SidedNormix(Vector3f v, BitSet bsTemp) {
+  public static short get2SidedNormix(V3 v, BS bsTemp) {
     // ellipsoid arc and polyhedra only
     return (short)~getNormix(v.x, v.y, v.z, Normix.NORMIX_GEODESIC_LEVEL, bsTemp);
   }
 
-  private static short getNormix(double x, double y, double z, int geodesicLevel, BitSet bsConsidered) {
+  private static short getNormix(double x, double y, double z, int geodesicLevel, BS bsConsidered) {
     // envelope, mesh, polyhedra, ellipsoid
     short champion;
     double t;
@@ -128,7 +128,7 @@ public class Normix {
         if (bsConsidered.get(challenger))
             continue;
         bsConsidered.set(challenger);
-        Vector3f v = vertexVectors[challenger];
+        V3 v = vertexVectors[challenger];
         double d;
         d = v.x - x;
         double d2 = d * d;

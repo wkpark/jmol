@@ -32,20 +32,20 @@ import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
-import org.jmol.script.Token;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.script.T;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Point3fi;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 import java.util.List;
@@ -67,7 +67,7 @@ final public class Atom extends Point3fi implements JmolNode {
   byte valence;
   
   private short atomicAndIsotopeNumber;
-  private BitSet atomSymmetry;
+  private BS atomSymmetry;
   private byte formalChargeAndFlags;
 
   public byte getAtomID() {
@@ -103,11 +103,11 @@ final public class Atom extends Point3fi implements JmolNode {
   
   public int clickabilityFlags;
   public int shapeVisibilityFlags;
-  public static final int BACKBONE_VISIBILITY_FLAG = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_BACKBONE);
+  public static final int BACKBONE_VISIBILITY_FLAG = JC.getShapeVisibilityFlag(JC.SHAPE_BACKBONE);
 
   public Atom(int modelIndex, int atomIndex,
         float x, float y, float z, float radius,
-        BitSet atomSymmetry, int atomSite,
+        BS atomSymmetry, int atomSite,
         short atomicAndIsotopeNumber, int formalCharge, 
         boolean isHetero) {
     this.modelIndex = (short)modelIndex;
@@ -323,11 +323,11 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public void setTranslucent(boolean isTranslucent, float translucentLevel) {
-    colixAtom = Colix.getColixTranslucent3(colixAtom, isTranslucent, translucentLevel);    
+    colixAtom = C.getColixTranslucent3(colixAtom, isTranslucent, translucentLevel);    
   }
 
   public boolean isTranslucent() {
-    return Colix.isColixTranslucent(colixAtom);
+    return C.isColixTranslucent(colixAtom);
   }
 
   public short getElementNumber() {
@@ -419,7 +419,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return !Float.isNaN(userDefinedVanDerWaalRadius = (radius > 0 ? radius : Float.NaN));  
   }
   
-  public void delete(BitSet bsBonds) {
+  public void delete(BS bsBonds) {
     valence = -1;
     if (bonds != null)
       for (int i = bonds.length; --i >= 0; ) {
@@ -576,11 +576,11 @@ final public class Atom extends Point3fi implements JmolNode {
     return atomSite;
   }
 
-  public void setAtomSymmetry(BitSet bsSymmetry) {
+  public void setAtomSymmetry(BS bsSymmetry) {
     atomSymmetry = bsSymmetry;
   }
 
-  public BitSet getAtomSymmetry() {
+  public BS getAtomSymmetry() {
     return atomSymmetry;
   }
 
@@ -592,12 +592,12 @@ final public class Atom extends Point3fi implements JmolNode {
      return group;
    }
    
-   public void getGroupBits(BitSet bs) {
+   public void getGroupBits(BS bs) {
      group.selectAtoms(bs);
    }
    
    public String getAtomName() {
-     return (atomID > 0 ? JmolConstants.getSpecialAtomName(atomID) 
+     return (atomID > 0 ? JC.getSpecialAtomName(atomID) 
          : group.chain.model.modelSet.atomNames[index]);
    }
    
@@ -615,7 +615,7 @@ final public class Atom extends Point3fi implements JmolNode {
    }
 
    public boolean isInFrame() {
-     return ((shapeVisibilityFlags & JmolConstants.ATOM_IN_FRAME) != 0);
+     return ((shapeVisibilityFlags & JC.ATOM_IN_FRAME) != 0);
    }
 
    public int getShapeVisibilityFlags() {
@@ -728,30 +728,30 @@ final public class Atom extends Point3fi implements JmolNode {
   }
    
   private float getFractionalCoord(char ch, boolean asAbsolute) {
-    Point3f pt = getFractionalCoordPt(asAbsolute);
+    P3 pt = getFractionalCoordPt(asAbsolute);
     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
   }
     
-  private Point3f getFractionalCoordPt(boolean asAbsolute) {
+  private P3 getFractionalCoordPt(boolean asAbsolute) {
     // asAbsolute TRUE uses the original unshifted matrix
     SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c == null) 
       return this;
-    Point3f pt = Point3f.newP(this);
+    P3 pt = P3.newP(this);
     c.toFractional(pt, asAbsolute);
     return pt;
   }
   
   private float getFractionalUnitCoord(char ch) {
-    Point3f pt = getFractionalUnitCoordPt(false);
+    P3 pt = getFractionalUnitCoordPt(false);
     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
   }
 
-  Point3f getFractionalUnitCoordPt(boolean asCartesian) {
+  P3 getFractionalUnitCoordPt(boolean asCartesian) {
     SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c == null)
       return this;
-    Point3f pt = Point3f.newP(this);
+    P3 pt = P3.newP(this);
     if (group.chain.model.isJmolDataFrame) {
       c.toFractional(pt, false);
       if (asCartesian)
@@ -764,7 +764,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return pt;
   }
   
-  float getFractionalUnitDistance(Point3f pt, Point3f ptTemp1, Point3f ptTemp2) {
+  float getFractionalUnitDistance(P3 pt, P3 ptTemp1, P3 ptTemp2) {
     SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c == null) 
       return distance(pt);
@@ -785,16 +785,16 @@ final public class Atom extends Point3fi implements JmolNode {
     if (c != null)
       c.toFractional(this, asAbsolute);
     switch (tok) {
-    case Token.fux:
-    case Token.fracx:
+    case T.fux:
+    case T.fracx:
       x = fValue;
       break;
-    case Token.fuy:
-    case Token.fracy:
+    case T.fuy:
+    case T.fracy:
       y = fValue;
       break;
-    case Token.fuz:
-    case Token.fracz:
+    case T.fuz:
+    case T.fracz:
       z = fValue;
       break;
     }
@@ -802,11 +802,11 @@ final public class Atom extends Point3fi implements JmolNode {
       c.toCartesian(this, asAbsolute);
   }
   
-  void setFractionalCoordTo(Point3f ptNew, boolean asAbsolute) {
+  void setFractionalCoordTo(P3 ptNew, boolean asAbsolute) {
     setFractionalCoordPt(this, ptNew, asAbsolute);
   }
   
-  public void setFractionalCoordPt(Point3f pt, Point3f ptNew, boolean asAbsolute) {
+  public void setFractionalCoordPt(P3 pt, P3 ptNew, boolean asAbsolute) {
     pt.setT(ptNew);
     SymmetryInterface c = group.chain.model.modelSet.getUnitCell(modelIndex);
     if (c != null)
@@ -861,7 +861,7 @@ final public class Atom extends Point3fi implements JmolNode {
     if (useChimeFormat) {
       String group3 = getGroup3(true);
       char chainID = getChainID();
-      Point3f pt = getFractionalCoordPt(true);
+      P3 pt = getFractionalCoordPt(true);
       return "Atom: " + (group3 == null ? getElementSymbol() : getAtomName()) + " " + getAtomNumber() 
           + (group3 != null && group3.length() > 0 ? 
               (isHetero() ? " Hetero: " : " Group: ") + group3 + " " + getResno() 
@@ -875,12 +875,12 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   String getIdentityXYZ(boolean allInfo) {
-    Point3f pt = (group.chain.model.isJmolDataFrame ? getFractionalCoordPt(false) : this);
+    P3 pt = (group.chain.model.isJmolDataFrame ? getFractionalCoordPt(false) : this);
     return getIdentity(allInfo) + " " + pt.x + " " + pt.y + " " + pt.z;  
   }
   
   String getIdentity(boolean allInfo) {
-    StringXBuilder info = new StringXBuilder();
+    SB info = new SB();
     String group3 = getGroup3(true);
     if (group3 != null && group3.length() > 0) {
       info.append("[");
@@ -1010,7 +1010,7 @@ final public class Atom extends Point3fi implements JmolNode {
     // We know that (flags & AIM), so now we must remove that flag
     // and check to see if any others are remaining.
     // Only then is the atom considered visible.
-    return ((flags & ~JmolConstants.ATOM_IN_FRAME) != 0);
+    return ((flags & ~JC.ATOM_IN_FRAME) != 0);
   }
 
   public boolean isLeadAtom() {
@@ -1029,7 +1029,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.chain.model.modelSet.getSurfaceDistance100(index);
   }
 
-  public Vector3f getVibrationVector() {
+  public V3 getVibrationVector() {
     return group.chain.model.modelSet.getVibrationVector(index, false);
   }
 
@@ -1161,60 +1161,60 @@ final public class Atom extends Point3fi implements JmolNode {
    */
   public static int atomPropertyInt(Atom atom, int tokWhat) {
     switch (tokWhat) {
-    case Token.atomno:
+    case T.atomno:
       return atom.getAtomNumber();
-    case Token.atomid:
+    case T.atomid:
       return atom.atomID;
-    case Token.atomindex:
+    case T.atomindex:
       return atom.getIndex();
-    case Token.bondcount:
+    case T.bondcount:
       return atom.getCovalentBondCount();
-    case Token.color:
+    case T.color:
       return atom.group.chain.model.modelSet.viewer.getColorArgbOrGray(atom.getColix());
-    case Token.element:
-    case Token.elemno:
+    case T.element:
+    case T.elemno:
       return atom.getElementNumber();
-    case Token.elemisono:
+    case T.elemisono:
       return atom.atomicAndIsotopeNumber;
-    case Token.file:
+    case T.file:
       return atom.getModelFileIndex() + 1;
-    case Token.formalcharge:
+    case T.formalcharge:
       return atom.getFormalCharge();
-    case Token.groupid:
+    case T.groupid:
       return atom.getGroupID(); //-1 if no group
-    case Token.groupindex:
+    case T.groupindex:
       return atom.group.getGroupIndex();
-    case Token.model:
+    case T.model:
       //integer model number -- could be PDB/sequential adapter number
       //or it could be a sequential model in file number when multiple files
       return atom.getModelNumber();
-    case -Token.model:
+    case -T.model:
       //float is handled differently
       return atom.getModelFileNumber();
-    case Token.modelindex:
+    case T.modelindex:
       return atom.modelIndex;
-    case Token.molecule:
+    case T.molecule:
       return atom.getMoleculeNumber(true);
-    case Token.occupancy:
+    case T.occupancy:
       return atom.getOccupancy100();
-    case Token.polymer:
+    case T.polymer:
       return atom.getGroup().getBioPolymerIndexInModel() + 1;
-    case Token.polymerlength:
+    case T.polymerlength:
       return atom.getPolymerLength();
-    case Token.radius:
+    case T.radius:
       // the comparator uses rasmol radius, unfortunately, for integers
       return atom.getRasMolRadius();        
-    case Token.resno:
+    case T.resno:
       return atom.getResno();
-    case Token.site:
+    case T.site:
       return atom.getAtomSite();
-    case Token.structure:
+    case T.structure:
       return atom.getProteinStructureType().getId();
-    case Token.substructure:
+    case T.substructure:
       return atom.getProteinStructureSubType().getId();
-    case Token.strucno:
+    case T.strucno:
       return atom.getStrucNo();
-    case Token.valence:
+    case T.valence:
       return atom.getValence();
     }
     return 0;      
@@ -1234,76 +1234,76 @@ final public class Atom extends Point3fi implements JmolNode {
    */
   public static float atomPropertyFloat(Viewer viewer, Atom atom, int tokWhat) {
     switch (tokWhat) {
-    case Token.radius:
+    case T.radius:
       return atom.getRadius();
-    case Token.selected:
+    case T.selected:
       return (viewer.isAtomSelected(atom.index) ? 1 : 0);
-    case Token.surfacedistance:
+    case T.surfacedistance:
       atom.group.chain.model.modelSet.getSurfaceDistanceMax();
       return atom.getSurfaceDistance100() / 100f;
-    case Token.temperature: // 0 - 9999
+    case T.temperature: // 0 - 9999
       return atom.getBfactor100() / 100f;
-    case Token.hydrophobic:
+    case T.hydrophobic:
       return atom.getHydrophobicity();
-    case Token.volume:
+    case T.volume:
       return atom.getVolume(viewer, EnumVdw.AUTO);
 
       // these next have to be multiplied by 100 if being compared
       // note that spacefill here is slightly different than radius -- no integer option
 
-    case Token.adpmax:
+    case T.adpmax:
       return atom.getADPMinMax(true);
-    case Token.adpmin:
+    case T.adpmin:
       return atom.getADPMinMax(false);
-    case Token.atomx:
-    case Token.x:
+    case T.atomx:
+    case T.x:
       return atom.x;
-    case Token.atomy:
-    case Token.y:
+    case T.atomy:
+    case T.y:
       return atom.y;
-    case Token.atomz:
-    case Token.z:
+    case T.atomz:
+    case T.z:
       return atom.z;
-    case Token.covalent:
+    case T.covalent:
       return atom.getCovalentRadiusFloat();
-    case Token.fracx:
+    case T.fracx:
       return atom.getFractionalCoord('X', true);
-    case Token.fracy:
+    case T.fracy:
       return atom.getFractionalCoord('Y', true);
-    case Token.fracz:
+    case T.fracz:
       return atom.getFractionalCoord('Z', true);
-    case Token.fux:
+    case T.fux:
       return atom.getFractionalCoord('X', false);
-    case Token.fuy:
+    case T.fuy:
       return atom.getFractionalCoord('Y', false);
-    case Token.fuz:
+    case T.fuz:
       return atom.getFractionalCoord('Z', false);
-    case Token.screenx:
+    case T.screenx:
       return atom.screenX;
-    case Token.screeny:
+    case T.screeny:
       return atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.screenY;
-    case Token.screenz:
+    case T.screenz:
       return atom.screenZ;
-    case Token.ionic:
+    case T.ionic:
       return atom.getBondingRadiusFloat();
-    case Token.mass:
+    case T.mass:
       return atom.getMass();
-    case Token.occupancy:
+    case T.occupancy:
       return atom.getOccupancy100() / 100f;
-    case Token.partialcharge:
+    case T.partialcharge:
       return atom.getPartialCharge();
-    case Token.phi:
-    case Token.psi:
-    case Token.omega:
+    case T.phi:
+    case T.psi:
+    case T.omega:
       if (atom.group.chain.model.isJmolDataFrame
           && atom.group.chain.model.jmolFrameType
               .startsWith("plot ramachandran")) {
         switch (tokWhat) {
-        case Token.phi:
+        case T.phi:
           return atom.getFractionalCoord('X', false);
-        case Token.psi:
+        case T.psi:
           return atom.getFractionalCoord('Y', false);
-        case Token.omega:
+        case T.omega:
           if (atom.group.chain.model.isJmolDataFrame
               && atom.group.chain.model.jmolFrameType
                   .equals("plot ramachandran")) {
@@ -1313,41 +1313,41 @@ final public class Atom extends Point3fi implements JmolNode {
         }
       }
       return atom.getGroupParameter(tokWhat);
-    case Token.eta:
-    case Token.theta:
-    case Token.straightness:
+    case T.eta:
+    case T.theta:
+    case T.straightness:
       return atom.getGroupParameter(tokWhat);
-    case Token.spacefill:
+    case T.spacefill:
       return atom.getRadius();
-    case Token.backbone:
-    case Token.cartoon:
-    case Token.dots:
-    case Token.ellipsoid:
-    case Token.geosurface:
-    case Token.halo:
-    case Token.meshRibbon:
-    case Token.ribbon:
-    case Token.rocket:
-    case Token.star:
-    case Token.strands:
-    case Token.trace:
+    case T.backbone:
+    case T.cartoon:
+    case T.dots:
+    case T.ellipsoid:
+    case T.geosurface:
+    case T.halo:
+    case T.meshRibbon:
+    case T.ribbon:
+    case T.rocket:
+    case T.star:
+    case T.strands:
+    case T.trace:
       return viewer.getAtomShapeValue(tokWhat, atom.group, atom.index);
-    case Token.unitx:
+    case T.unitx:
       return atom.getFractionalUnitCoord('X');
-    case Token.unity:
+    case T.unity:
       return atom.getFractionalUnitCoord('Y');
-    case Token.unitz:
+    case T.unitz:
       return atom.getFractionalUnitCoord('Z');
-    case Token.vanderwaals:
+    case T.vanderwaals:
       return atom.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
-    case Token.vibx:
+    case T.vibx:
       return atom.getVibrationCoord('X');
-    case Token.viby:
+    case T.viby:
       return atom.getVibrationCoord('Y');
-    case Token.vibz:
+    case T.vibz:
       return atom.getVibrationCoord('Z');
-    case Token.vectorscale:
-      Vector3f v = atom.getVibrationVector();
+    case T.vectorscale:
+      V3 v = atom.getVibrationVector();
       return (v == null ? 0 : v.length() * viewer.getVectorScale());
 
     }
@@ -1362,46 +1362,46 @@ final public class Atom extends Point3fi implements JmolNode {
   public static String atomPropertyString(Viewer viewer, Atom atom, int tokWhat) {
     char ch;
     switch (tokWhat) {
-    case Token.altloc:
+    case T.altloc:
       ch = atom.getAlternateLocationID();
       return (ch == '\0' ? "" : "" + ch);
-    case Token.atomname:
+    case T.atomname:
       return atom.getAtomName();
-    case Token.atomtype:
+    case T.atomtype:
       return atom.getAtomType();
-    case Token.chain:
+    case T.chain:
       ch = atom.getChainID();
       return (ch == '\0' ? "" : "" + ch);
-    case Token.sequence:
+    case T.sequence:
       return atom.getGroup1('?');
-    case Token.group1:
+    case T.group1:
       return atom.getGroup1('\0');
-    case Token.group:
+    case T.group:
       return atom.getGroup3(false);
-    case Token.element:
+    case T.element:
       return atom.getElementSymbolIso(true);
-    case Token.identify:
+    case T.identify:
       return atom.getIdentity(true);
-    case Token.insertion:
+    case T.insertion:
       ch = atom.getInsertionCode();
       return (ch == '\0' ? "" : "" + ch);
-    case Token.label:
-    case Token.format:
+    case T.label:
+    case T.format:
       String s = atom.group.chain.model.modelSet.getAtomLabel(atom.getIndex());
       if (s == null)
         s = "";
       return s;
-    case Token.structure:
+    case T.structure:
       return atom.getProteinStructureType().getBioStructureTypeName(false);
-    case Token.substructure:
+    case T.substructure:
       return atom.getProteinStructureSubType().getBioStructureTypeName(false);
-    case Token.strucid:
+    case T.strucid:
       return atom.getStructureId();
-    case Token.shape:
+    case T.shape:
       return viewer.getHybridizationAndAxes(atom.index, null, null, "d");
-    case Token.symbol:
+    case T.symbol:
       return atom.getElementSymbolIso(false);
-    case Token.symmetry:
+    case T.symmetry:
       return atom.getSymmetryOperatorList();
     }
     return ""; 
@@ -1409,23 +1409,23 @@ final public class Atom extends Point3fi implements JmolNode {
 
   public static Tuple3f atomPropertyTuple(Atom atom, int tok) {
     switch (tok) {
-    case Token.fracxyz:
+    case T.fracxyz:
       return atom.getFractionalCoordPt(!atom.group.chain.model.isJmolDataFrame);
-    case Token.fuxyz:
+    case T.fuxyz:
       return atom.getFractionalCoordPt(false);
-    case Token.unitxyz:
+    case T.unitxyz:
       return (atom.group.chain.model.isJmolDataFrame ? atom.getFractionalCoordPt(false) 
           : atom.getFractionalUnitCoordPt(false));
-    case Token.screenxyz:
-      return Point3f.new3(atom.screenX, atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.screenY, atom.screenZ);
-    case Token.vibxyz:
-      Vector3f v = atom.getVibrationVector();
+    case T.screenxyz:
+      return P3.new3(atom.screenX, atom.group.chain.model.modelSet.viewer.getScreenHeight() - atom.screenY, atom.screenZ);
+    case T.vibxyz:
+      V3 v = atom.getVibrationVector();
       if (v == null)
-        v = new Vector3f();
+        v = new V3();
       return v;
-    case Token.xyz:
+    case T.xyz:
       return atom;
-    case Token.color:
+    case T.color:
       return ColorUtil.colorPointFromInt2(
           atom.group.chain.model.modelSet.viewer.getColorArgbOrGray(atom.getColix())
           );
@@ -1471,7 +1471,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return false;
   }
 
-  public BitSet findAtomsLike(String atomExpression) {
+  public BS findAtomsLike(String atomExpression) {
     // for SMARTS searching
     return group.chain.model.modelSet.viewer.getAtomBitSet(atomExpression);
   }

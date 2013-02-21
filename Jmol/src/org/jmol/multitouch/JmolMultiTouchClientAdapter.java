@@ -25,7 +25,7 @@ package org.jmol.multitouch;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.viewer.Viewer;
 
 public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapter {
@@ -58,7 +58,7 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
     //System.out.println("mouseMove " + x + " " + y);
   }
 
-  protected Point3f ptTemp = new Point3f();
+  protected P3 ptTemp = new P3();
   protected void fixXY(float x, float y, boolean isAbsolute) {
     ptTemp.set(x * screen[0], y * screen[1], Float.NaN);
     if (isAbsolute)

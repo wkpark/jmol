@@ -33,7 +33,7 @@ import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.export.JmolFileDropper;
 import org.jmol.i18n.GT;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -232,7 +232,7 @@ public class Jmol implements WrappedApplet {
   public void destroy() {
     gRight = null;
     JmolAppletRegistry.checkOut(fullName);
-    viewer.setModeMouse(JmolConstants.MOUSE_NONE);
+    viewer.setModeMouse(JC.MOUSE_NONE);
     viewer.getBooleanProperty("__appletDestroyed");
     viewer = null;
     if (dropper != null) {
@@ -709,15 +709,15 @@ public class Jmol implements WrappedApplet {
     return GT
         ._(
             "Jmol Applet version {0} {1}.\n\nAn OpenScience project.\n\nSee http://www.jmol.org for more information",
-            new Object[] { JmolConstants.version, JmolConstants.date })
+            new Object[] { JC.version, JC.date })
         + "\nhtmlName = "
-        + Escape.escapeStr(htmlName)
+        + Escape.eS(htmlName)
         + "\nsyncId = "
-        + Escape.escapeStr(syncId)
+        + Escape.eS(syncId)
         + "\ndocumentBase = "
-        + Escape.escapeStr("" + appletWrapper.getDocumentBase())
+        + Escape.eS("" + appletWrapper.getDocumentBase())
         + "\ncodeBase = "
-        + Escape.escapeStr("" + appletWrapper.getCodeBase());
+        + Escape.eS("" + appletWrapper.getCodeBase());
   }
 
   public Object getProperty(String infoType) {
@@ -1326,7 +1326,7 @@ public class Jmol implements WrappedApplet {
     System.out.println(callback);
     if (callback.indexOf(".") > 0) {
       String[] mods = TextFormat.split(callback, '.');
-      System.out.println(Escape.escape(mods));
+      System.out.println(Escape.e(mods));
       for (int i = 0; i < mods.length - 1; i++) {
         System.out.println(jso);
         jso = (JSObject) jso.getMember(mods[i]);

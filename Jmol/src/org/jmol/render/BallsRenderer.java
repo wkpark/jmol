@@ -27,7 +27,7 @@ package org.jmol.render;
 
 
 import org.jmol.modelset.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 public class BallsRenderer extends ShapeRenderer {
 
@@ -36,7 +36,7 @@ public class BallsRenderer extends ShapeRenderer {
     boolean needTranslucent = false;
     if (!viewer.getWireframeRotation() || !viewer.getInMotion()) {
       Atom[] atoms = modelSet.atoms;
-      BitSet bsOK = viewer.getRenderableBitSet();
+      BS bsOK = viewer.getRenderableBitSet();
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         if (atom.screenDiameter > 0

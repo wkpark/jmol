@@ -25,7 +25,7 @@
 package org.jmol.api;
 
 import org.jmol.constant.EnumStructure;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 public abstract class JmolAdapterStructureIterator {
 	public abstract boolean hasNext();
@@ -54,6 +54,6 @@ public abstract class JmolAdapterStructureIterator {
 
 	public abstract char getEndInsertionCode();
 
-  public abstract BitSet getStructuredModels();
+  public abstract BS getStructuredModels();
 
 }

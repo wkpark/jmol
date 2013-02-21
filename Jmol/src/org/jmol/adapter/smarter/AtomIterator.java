@@ -26,8 +26,8 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 import org.jmol.util.Quadric;
 
 /* **************************************************************
@@ -38,7 +38,7 @@ class AtomIterator extends JmolAdapterAtomIterator {
 	private Atom atom;
 	private int atomCount;
 	private Atom[] atoms;
-	private BitSet bsAtoms;
+	private BS bsAtoms;
 
 	AtomIterator(AtomSetCollection atomSetCollection) {
 		atomCount = atomSetCollection.getAtomCount();
@@ -65,7 +65,7 @@ class AtomIterator extends JmolAdapterAtomIterator {
 	}
 
 	@Override
-	public BitSet getAtomSymmetry() {
+	public BS getAtomSymmetry() {
 		return atom.bsSymmetry;
 	}
 
@@ -187,7 +187,7 @@ class AtomIterator extends JmolAdapterAtomIterator {
 	}
 
 	@Override
-	public Point3f getXYZ() {
+	public P3 getXYZ() {
 		return atom;
 	}
 

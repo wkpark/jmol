@@ -48,7 +48,7 @@ import org.jmol.console.KeyJCheckBoxMenuItem;
 import org.jmol.console.KeyJRadioButtonMenuItem;
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 
 public class GuiMap {
 
@@ -377,7 +377,7 @@ public class GuiMap {
         "GT_script_button_template2.html_MORE", GT.escapeHTML(GT._("Insert more information for {0} here.", "@NAME@")),
         
         "About.html#weblinks", 
-    "<p><b>Jmol " + JmolConstants.version + " (" + JmolConstants.date + ")</b></p>"
+    "<p><b>Jmol " + JC.version + " (" + JC.date + ")</b></p>"
   + "<ul>"
   + "<li><a href=\"http://sourceforge.net/projects/jmol\">SourceForge</a> (sourceforge.net/projects/jmol)</li>"
   + "<li><a href=\"http://jmol.sourceforge.net\">Jmol Wiki</a> (jmol.sourceforge.net)</li>"

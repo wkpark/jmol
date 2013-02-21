@@ -27,10 +27,10 @@ package org.jmol.modelsetbio;
 import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.Vector3f;
-import org.jmol.viewer.JmolConstants;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 
 public class PhosphorusMonomer extends Monomer {
 
@@ -52,7 +52,7 @@ public class PhosphorusMonomer extends Monomer {
                         int[] specialAtomIndexes) {
     //Logger.debug("PhosphorusMonomer.validateAndAllocate");
     if (firstIndex != lastIndex ||
-        specialAtomIndexes[JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS]
+        specialAtomIndexes[JC.ATOMID_NUCLEIC_PHOSPHORUS]
         != firstIndex)
       return null;
     return new PhosphorusMonomer(chain, group3, seqcode,
@@ -117,21 +117,21 @@ public class PhosphorusMonomer extends Monomer {
     int i = monomerIndex;
     if (i == 0 || i >= bioPolymer.monomerCount - 1)
       return null;
-    Point3f ptP = bioPolymer.monomers[i].getAtomFromOffsetIndex(P);
-    Point3f ptA, ptB;
+    P3 ptP = bioPolymer.monomers[i].getAtomFromOffsetIndex(P);
+    P3 ptA, ptB;
     ptA = bioPolymer.monomers[i + 1].getAtomFromOffsetIndex(P);
     ptB = bioPolymer.monomers[i - 1].getAtomFromOffsetIndex(P);
     if (ptP == null || ptA == null || ptB == null)
       return null;
-    Vector3f vA = new Vector3f();
-    Vector3f vB = new Vector3f();
+    V3 vA = new V3();
+    V3 vB = new V3();
     vA.sub2(ptA, ptP);
     vB.sub2(ptB, ptP);
     return Quaternion.getQuaternionFrameV(vA, vB, null, false);
   }
   
   @Override
-  Point3f getQuaternionFrameCenter(char qType) {
+  P3 getQuaternionFrameCenter(char qType) {
     return getAtomFromOffsetIndex(P);
   }
   

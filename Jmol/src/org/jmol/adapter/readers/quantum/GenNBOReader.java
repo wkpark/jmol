@@ -28,7 +28,7 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -362,13 +362,13 @@ public class GenNBOReader extends MOReader {
     }
     if (!ntype.equals("AO"))
       discardLinesUntilContains(ntype.equals("MO") ? "NBO" : ntype);
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     while (readLine() != null && line.indexOf("O    ") < 0 && line.indexOf("ALPHA") < 0 && line.indexOf("BETA") < 0)
       sb.append(line);
     sb.appendC(' ');
     String data = sb.toString();
     int n = data.length() - 1;
-    sb = new StringXBuilder();
+    sb = new SB();
     for (int i = 0; i < n; i++) {
       char c = data.charAt(i);
       switch (c) {

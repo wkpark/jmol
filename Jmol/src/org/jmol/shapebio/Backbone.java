@@ -28,11 +28,11 @@ package org.jmol.shapebio;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.modelset.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 public class Backbone extends BioShapeCollection {
 
-  BitSet bsSelected;
+  BS bsSelected;
   
   @Override
   public void initShape() {
@@ -45,16 +45,16 @@ public class Backbone extends BioShapeCollection {
   }
   
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  public void setProperty(String propertyName, Object value, BS bsSelected) {
     if ("bitset" == propertyName) {
-      this.bsSelected = (BitSet) value;
+      this.bsSelected = (BS) value;
       return;
     }
     super.setProperty(propertyName, value, bsSelected);
   }
 
   @Override
-  public void setShapeSizeRD(int size, RadiusData rd, BitSet bsSelected) {
+  public void setShapeSizeRD(int size, RadiusData rd, BS bsSelected) {
     short mad = (short) size;
     initialize();
     boolean useThisBsSelected = (this.bsSelected != null);
@@ -71,7 +71,7 @@ public class Backbone extends BioShapeCollection {
       // but it is picked up within the loop by looking at i+1
       boolean isVisible = (mad != 0);
       if (bioShape.bsSizeSet == null)
-        bioShape.bsSizeSet = new BitSet();
+        bioShape.bsSizeSet = new BS();
       bioShape.isActive = true;
       for (int i = bioShape.monomerCount - 1; --i >= 0;) {
         int index1 = atomIndices[i];

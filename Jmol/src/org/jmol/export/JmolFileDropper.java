@@ -113,7 +113,7 @@ public class JmolFileDropper implements DropTargetListener {
       fname = fname.replace('\\', '/').trim();
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
       sb.append("load ").append(i == 0 ? "" : "APPEND ")
-          .append(Escape.escapeStr(fname)).append(";\n");        
+          .append(Escape.eS(fname)).append(";\n");        
     }
     sb.append("frame *;reset;");
     viewer.script(sb.toString());

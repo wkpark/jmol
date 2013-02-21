@@ -29,18 +29,18 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.Model;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 //import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
 
 //import java.util.ArrayList;
@@ -117,33 +117,33 @@ public class AminoPolymer extends AlphaPolymer {
      * proline itself but the one prior to it.
      * 
      */
-    Point3f nitrogen1 = residue1.getNitrogenAtom();
-    Point3f alphacarbon1 = residue1.getLeadAtom();
-    Point3f carbon1 = residue1.getCarbonylCarbonAtom();
-    Point3f nitrogen2 = residue2.getNitrogenAtom();
-    Point3f alphacarbon2 = residue2.getLeadAtom();
-    Point3f carbon2 = residue2.getCarbonylCarbonAtom();
+    P3 nitrogen1 = residue1.getNitrogenAtom();
+    P3 alphacarbon1 = residue1.getLeadAtom();
+    P3 carbon1 = residue1.getCarbonylCarbonAtom();
+    P3 nitrogen2 = residue2.getNitrogenAtom();
+    P3 alphacarbon2 = residue2.getLeadAtom();
+    P3 carbon2 = residue2.getCarbonylCarbonAtom();
 
-    residue2.setGroupParameter(Token.phi, Measure.computeTorsion(carbon1,
+    residue2.setGroupParameter(T.phi, Measure.computeTorsion(carbon1,
         nitrogen2, alphacarbon2, carbon2, true));
-    residue1.setGroupParameter(Token.psi, Measure.computeTorsion(nitrogen1,
+    residue1.setGroupParameter(T.psi, Measure.computeTorsion(nitrogen1,
         alphacarbon1, carbon1, nitrogen2, true));
     // to offset omega so cis-prolines show up off the plane, 
     // we would have to use residue2 here:
-    residue1.setGroupParameter(Token.omega, Measure.computeTorsion(
+    residue1.setGroupParameter(T.omega, Measure.computeTorsion(
         alphacarbon1, carbon1, nitrogen2, alphacarbon2, true));
   }
 
   @Override
   protected float calculateRamachandranHelixAngle(int m, char qtype) {
     float psiLast = (m == 0 ? Float.NaN : monomers[m - 1]
-        .getGroupParameter(Token.psi));
-    float psi = monomers[m].getGroupParameter(Token.psi);
-    float phi = monomers[m].getGroupParameter(Token.phi);
+        .getGroupParameter(T.psi));
+    float psi = monomers[m].getGroupParameter(T.psi);
+    float phi = monomers[m].getGroupParameter(T.phi);
     float phiNext = (m == monomerCount - 1 ? Float.NaN : monomers[m + 1]
-        .getGroupParameter(Token.phi));
+        .getGroupParameter(T.phi));
     float psiNext = (m == monomerCount - 1 ? Float.NaN : monomers[m + 1]
-        .getGroupParameter(Token.psi));
+        .getGroupParameter(T.psi));
     switch (qtype) {
     default:
     case 'p':
@@ -195,7 +195,7 @@ public class AminoPolymer extends AlphaPolymer {
   //////////////////////////////////////////////////
   
   @Override
-  public void calcRasmolHydrogenBonds(BioPolymer polymer, BitSet bsA, BitSet bsB,
+  public void calcRasmolHydrogenBonds(BioPolymer polymer, BS bsA, BS bsB,
                                       List<Bond> vHBonds, int nMaxPerResidue,
                                       int[][][] min, boolean checkDistances, 
                                       boolean dsspIgnoreHydrogens) {
@@ -203,8 +203,8 @@ public class AminoPolymer extends AlphaPolymer {
       polymer = this;
     if (!(polymer instanceof AminoPolymer))
       return;
-    Point3f pt = new Point3f();
-    Vector3f vNH = new Vector3f();
+    P3 pt = new P3();
+    V3 vNH = new V3();
     AminoMonomer source;
     int[][] min1 = (min == null ? new int[2][3] : null);
     for (int i = 1; i < monomerCount; ++i) { //not first N
@@ -237,11 +237,11 @@ public class AminoPolymer extends AlphaPolymer {
   private final static float minimumHbondDistance2 = 0.5f * 0.5f; 
 
   private void checkRasmolHydrogenBond(AminoMonomer source, BioPolymer polymer,
-                                       int indexDonor, Point3f hydrogenPoint,
-                                       BitSet bsB, List<Bond> vHBonds,
+                                       int indexDonor, P3 hydrogenPoint,
+                                       BS bsB, List<Bond> vHBonds,
                                        int[][] min, boolean checkDistances) {
-    Point3f sourceAlphaPoint = source.getLeadAtom();
-    Point3f sourceNitrogenPoint = source.getNitrogenAtom();
+    P3 sourceAlphaPoint = source.getLeadAtom();
+    P3 sourceNitrogenPoint = source.getNitrogenAtom();
     Atom nitrogen = source.getNitrogenAtom();
     int[] m;
     for (int i = polymer.monomerCount; --i >= 0;) {
@@ -253,7 +253,7 @@ public class AminoPolymer extends AlphaPolymer {
       Atom oxygen = target.getCarbonylOxygenAtom();
       if (oxygen == null || bsB != null && !bsB.get(oxygen.index))
         continue;
-      Point3f targetAlphaPoint = target.getLeadAtom();
+      P3 targetAlphaPoint = target.getLeadAtom();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
       if (dist2 >= maxHbondAlphaDistance2)
         continue;
@@ -306,9 +306,9 @@ public class AminoPolymer extends AlphaPolymer {
    * @param checkDistances
    * @return               energy in cal/mol or 0 (none)
    */
-  private int calcHbondEnergy(Point3f nitrogenPoint, Point3f hydrogenPoint,
+  private int calcHbondEnergy(P3 nitrogenPoint, P3 hydrogenPoint,
                               AminoMonomer target, boolean checkDistances) {
-    Point3f targetOxygenPoint = target.getCarbonylOxygenAtom();
+    P3 targetOxygenPoint = target.getCarbonylOxygenAtom();
 
     if (targetOxygenPoint == null)
       return 0;
@@ -320,7 +320,7 @@ public class AminoPolymer extends AlphaPolymer {
     if (distOH2 < minimumHbondDistance2)
       return 0;
 
-    Point3f targetCarbonPoint = target.getCarbonylCarbonAtom();
+    P3 targetCarbonPoint = target.getCarbonylCarbonAtom();
     float distCH2 = targetCarbonPoint.distanceSquared(hydrogenPoint);
     if (distCH2 < minimumHbondDistance2)
       return 0;
@@ -532,7 +532,7 @@ public class AminoPolymer extends AlphaPolymer {
       return "";
 
     Model m = bioPolymers[0].model;
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append("Jmol ").append(Viewer.getJmolVersion()).append(
         " DSSP analysis for model ").append(m.getModelNumberDotted()).append(
         " - ").append(m.getModelTitle()).append("\n");
@@ -560,8 +560,8 @@ public class AminoPolymer extends AlphaPolymer {
     // (3) an atom-bitset to indicate we have a bad residue (no carbonyl O)
 
     char[][] labels = new char[bioPolymerCount][];
-    BitSet[] bsDone = new BitSet[bioPolymerCount];
-    BitSet bsBad = new BitSet();
+    BS[] bsDone = new BS[bioPolymerCount];
+    BS bsBad = new BS();
     boolean haveWarned = false;
 
     for (int i = 0; i < bioPolymerCount; i++) {
@@ -586,7 +586,7 @@ public class AminoPolymer extends AlphaPolymer {
       }
       bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
       labels[i] = new char[bioPolymers[i].monomerCount];
-      bsDone[i] = new BitSet();
+      bsDone[i] = new BS();
       // lacking a C=O counts as done or "chain break"
       for (int j = 0; j < ap.monomerCount; j++)
         if (((AminoMonomer) ap.monomers[j]).getCarbonylOxygenAtom() == null)
@@ -632,7 +632,7 @@ public class AminoPolymer extends AlphaPolymer {
     // Done!
 
     if (doReport) {
-      StringXBuilder sbSummary = new StringXBuilder();
+      SB sbSummary = new SB();
       sb.append("\n------------------------------\n");
       for (int i = 0; i < bioPolymerCount; i++)
         if (labels[i] != null) {
@@ -735,15 +735,15 @@ public class AminoPolymer extends AlphaPolymer {
    * @param bsBad 
    * @return             string label
    */
-  private String findHelixes(int[][][] min, int iPolymer, BitSet bsDone,
+  private String findHelixes(int[][][] min, int iPolymer, BS bsDone,
                              char[] labels, boolean doReport, boolean setStructure,
-                             List<Bond> vHBonds, BitSet bsBad) {
+                             List<Bond> vHBonds, BS bsBad) {
     if (Logger.debugging)
       for (int j = 0; j < monomerCount; j++)
         Logger.debug(iPolymer + "." + monomers[j].getResno() + "\t"
-            + Escape.escape(min[j]));
+            + Escape.e(min[j]));
 
-    BitSet bsTurn = new BitSet();
+    BS bsTurn = new BS();
 
     String line4 = findHelixes2(4, min, iPolymer,
         EnumStructure.HELIXALPHA, JmolEdge.BOND_H_PLUS_4, bsDone,
@@ -771,20 +771,20 @@ public class AminoPolymer extends AlphaPolymer {
   }
 
   private String findHelixes2(int pitch, int[][][] min, int thisIndex,
-                             EnumStructure subtype, int type, BitSet bsDone,
-                             BitSet bsTurn, char[] labels, 
+                             EnumStructure subtype, int type, BS bsDone,
+                             BS bsTurn, char[] labels, 
                              boolean doReport, boolean setStructure,
-                             List<Bond> vHBonds, BitSet bsBad) {
+                             List<Bond> vHBonds, BS bsBad) {
 
     // The idea here is to run down the polymer setting bit sets
     // that identify start, stop, N, and X codes: >, <, 3, 4, 5, and X
     // In addition, we create a bit set that will identify G H or I.
 
-    BitSet bsStart = new BitSet();
-    BitSet bsNNN = new BitSet();
-    BitSet bsX = new BitSet();
-    BitSet bsStop = new BitSet();
-    BitSet bsHelix = new BitSet();
+    BS bsStart = new BS();
+    BS bsNNN = new BS();
+    BS bsX = new BS();
+    BS bsStop = new BS();
+    BS bsHelix = new BS();
     
     String warning = "";
 
@@ -902,8 +902,8 @@ public class AminoPolymer extends AlphaPolymer {
   private static void getBridges(BioPolymer[] bioPolymers, int[][][][] min,
                                  List<APBridge> bridgesA, List<APBridge> bridgesP,
                                  Map<String, APBridge> htBridges,
-                                 Map<int[][], Boolean> htLadders, BitSet bsBad,
-                                 List<Bond> vHBonds, BitSet[] bsDone) {
+                                 Map<int[][], Boolean> htLadders, BS bsBad,
+                                 List<Bond> vHBonds, BS[] bsDone) {
     // ooooooh! It IS possible to have 3 bridges to the same residue. (3A5F) 
     // 
     Atom[] atoms = bioPolymers[0].model.getModelSet().atoms;
@@ -1013,7 +1013,7 @@ public class AminoPolymer extends AlphaPolymer {
                                          List<APBridge> bridgesP,
                                          Map<String, APBridge> htBridges,
                                          Map<int[][], Boolean> htLadders, char[][] labels, 
-                                         BitSet[] bsDone,
+                                         BS[] bsDone,
                                          boolean doReport, 
                                          boolean setStructure) {
 
@@ -1024,8 +1024,8 @@ public class AminoPolymer extends AlphaPolymer {
     createLadders(bridgesA, htBridges, htLadders, true);
     createLadders(bridgesP, htBridges, htLadders, false);
 
-    BitSet bsEEE = new BitSet();
-    BitSet bsB = new BitSet();
+    BS bsEEE = new BS();
+    BS bsB = new BS();
     Iterator<int[][]> e = htLadders.keySet().iterator();
     while (e.hasNext()) {
       int[][] ladder = e.next();
@@ -1039,8 +1039,8 @@ public class AminoPolymer extends AlphaPolymer {
     }
     // add Jmol structures and set sheet labels to "E"
     
-    BitSet bsSheet = new BitSet();
-    BitSet bsBridge = new BitSet();
+    BS bsSheet = new BS();
+    BS bsBridge = new BS();
 
     for (int i = bioPolymers.length; --i >= 0;) {
       if (!(bioPolymers[i] instanceof AminoPolymer))
@@ -1134,7 +1134,7 @@ public class AminoPolymer extends AlphaPolymer {
       }
   }
 
-  private void setStructure(BitSet bs, EnumStructure type) {
+  private void setStructure(BS bs, EnumStructure type) {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       int i2 = bs.nextClearBit(i);
       if (i2 < 0)
@@ -1159,7 +1159,7 @@ public class AminoPolymer extends AlphaPolymer {
             : null);
   }
 
-  private void setTag(char[] tags, BitSet bs, char ch) {
+  private void setTag(char[] tags, BS bs, char ch) {
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
       tags[i] = ch;
   }
@@ -1167,7 +1167,7 @@ public class AminoPolymer extends AlphaPolymer {
   private String dumpSummary(char[] labels) {
     char id = monomers[0].getLeadAtom().getChainID();
     String prefix = (id == '\0' ? "" : String.valueOf(id) + ":");
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     char lastChar = '\0';
     char insCode1 = '\0';
     char insCode2 = '\0';
@@ -1192,17 +1192,17 @@ public class AminoPolymer extends AlphaPolymer {
     return sb.toString();
   }
 
-  private String dumpTags(String lines, BitSet bsBad, int mode) {
+  private String dumpTags(String lines, BS bsBad, int mode) {
     String prefix = monomers[0].getLeadAtom().getChainID() 
     + "." + (bioPolymerIndexInModel + 1);
     lines = TextFormat.simpleReplace(lines, "$", prefix);
     int iFirst = monomers[0].getResno();
     String pre = "\n" + prefix;
-    StringXBuilder sb = new StringXBuilder();
-    StringXBuilder sb0 = new StringXBuilder().append(pre + ".8: ");
-    StringXBuilder sb1 = new StringXBuilder().append(pre + ".7: ");
-    StringXBuilder sb2 = new StringXBuilder().append(pre + ".6: ");
-    StringXBuilder sb3 = new StringXBuilder().append(pre + ".0: ");
+    SB sb = new SB();
+    SB sb0 = new SB().append(pre + ".8: ");
+    SB sb1 = new SB().append(pre + ".7: ");
+    SB sb2 = new SB().append(pre + ".6: ");
+    SB sb3 = new SB().append(pre + ".0: ");
     int i = iFirst;
     for (int ii = 0; ii < monomerCount; ii++) {
       i = monomers[ii].getResno();
@@ -1247,8 +1247,8 @@ public class AminoPolymer extends AlphaPolymer {
     for (int i = 0; i < monomerCount - 1; ++i) {
       AminoMonomer leadingResidue = (AminoMonomer) monomers[i];
       AminoMonomer trailingResidue = (AminoMonomer) monomers[i + 1];
-      float phi = trailingResidue.getGroupParameter(Token.phi);
-      float psi = leadingResidue.getGroupParameter(Token.psi);
+      float phi = trailingResidue.getGroupParameter(T.phi);
+      float psi = leadingResidue.getGroupParameter(T.psi);
       if (isHelix(psi, phi)) {
         //this next is just Bob's attempt to separate different helices
         //it is CONSERVATIVE -- it displays fewer helices than before
@@ -1265,8 +1265,8 @@ public class AminoPolymer extends AlphaPolymer {
 
       if (Logger.debugging)
         Logger.debug((0 + this.monomers[0].getChainID()) + " aminopolymer:" + i
-            + " " + trailingResidue.getGroupParameter(Token.phi) + ","
-            + leadingResidue.getGroupParameter(Token.psi) + " "
+            + " " + trailingResidue.getGroupParameter(T.phi) + ","
+            + leadingResidue.getGroupParameter(T.psi) + " "
             + structureTags[i]);
     }
 

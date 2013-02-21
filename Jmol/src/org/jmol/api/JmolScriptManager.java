@@ -2,7 +2,7 @@ package org.jmol.api;
 
 import java.util.List;
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.viewer.Viewer;
 
 public interface JmolScriptManager {
@@ -37,7 +37,7 @@ public interface JmolScriptManager {
 
   boolean checkHalt(String str, boolean isInsert);
 
-  BitSet getAtomBitSetEval(JmolScriptEvaluator eval, Object atomExpression);
+  BS getAtomBitSetEval(JmolScriptEvaluator eval, Object atomExpression);
 
   Object scriptCheckRet(String strScript, boolean returnContext);
 

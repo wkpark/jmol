@@ -25,17 +25,17 @@ package org.jmol.modelset;
 
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.Escape;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Measure;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.TickInfo;
 
-import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 
@@ -131,9 +131,9 @@ public class Measurement {
     return aa;
   }
   
-  private Point3f pointArc;
+  private P3 pointArc;
 
-  public Point3f getPointArc() {
+  public P3 getPointArc() {
     return pointArc;
   }
   
@@ -222,16 +222,16 @@ public class Measurement {
         aa = null;
         pointArc = null;
       } else {
-        Vector3f vectorBA = new Vector3f();
-        Vector3f vectorBC = new Vector3f();        
+        V3 vectorBA = new V3();
+        V3 vectorBC = new V3();        
         float radians = Measure.computeAngle(getAtom(1), getAtom(2), getAtom(3), vectorBA, vectorBC, false);
-        Vector3f vectorAxis = new Vector3f();
+        V3 vectorAxis = new V3();
         vectorAxis.cross(vectorBA, vectorBC);
         aa = AxisAngle4f.new4(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
 
         vectorBA.normalize();
         vectorBA.scale(0.5f);
-        pointArc = Point3f.newP(vectorBA);
+        pointArc = P3.newP(vectorBA);
       }
       //$FALL-THROUGH$
     case 4:
@@ -303,7 +303,7 @@ public class Measurement {
       if (units.equals("pm"))
         return (andRound? Math.round (dist * 1000) / 10f : dist * 100);
       if (units.equals("au"))
-        return (andRound ? Math.round (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000) / 1000f : dist / JmolConstants.ANGSTROMS_PER_BOHR);
+        return (andRound ? Math.round (dist / JC.ANGSTROMS_PER_BOHR * 1000) / 1000f : dist / JC.ANGSTROMS_PER_BOHR);
     }
     return (andRound ? Math.round(dist * 100) / 100f : dist);
   }
@@ -422,7 +422,7 @@ public class Measurement {
     //  draw symop({3}), which the compiler will interpret as symop()
     return (atomIndex < 0 
         ? (withModelIndex ? "modelIndex " + getAtom(i).modelIndex + " " : "")
-            + Escape.escapePt(getAtom(i))
+            + Escape.eP(getAtom(i))
         : asBitSet ? "(({" + atomIndex + "}))"
         : viewer.getAtomInfo(atomIndex));
   }
@@ -466,7 +466,7 @@ public class Measurement {
 
   public String getInfoAsString(String units) {
     float f = fixValue(units, true);
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
     sb.append(" \t").appendF(f);
     sb.append(" \t").append(getString());

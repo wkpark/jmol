@@ -26,8 +26,8 @@ package org.jmol.script;
 import java.util.Hashtable;
 import java.util.Map;
 
-class ContextToken extends Token {
-  Map<String, ScriptVariable> contextVariables;
+class ContextToken extends T {
+  Map<String, SV> contextVariables;
 
   ContextToken(int tok, int intValue, Object value) {
     super(tok);
@@ -38,15 +38,15 @@ class ContextToken extends Token {
   ContextToken(int tok, Object value) {
     super(tok);
     this.value = value;
-    if (tok == Token.switchcmd)
+    if (tok == T.switchcmd)
       addName("_var");      
   }
 
   String name0 = null;
   void addName(String name) {
     if (contextVariables == null)
-      contextVariables = new Hashtable<String, ScriptVariable>();
-    contextVariables.put(name, ScriptVariable.newVariable(Token.string, "").setName(name));
+      contextVariables = new Hashtable<String, SV>();
+    contextVariables.put(name, SV.newVariable(T.string, "").setName(name));
   }
   
 }

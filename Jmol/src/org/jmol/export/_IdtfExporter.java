@@ -38,17 +38,17 @@ import java.util.Map;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BitSet;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Geodesic;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
 
 public class _IdtfExporter extends __CartesianExporter {
@@ -225,14 +225,14 @@ public class _IdtfExporter extends __CartesianExporter {
     output(pt, sbTemp, true);
   }
 
-  private void output(Tuple3f pt, StringXBuilder sb, boolean checkpt) {
+  private void output(Tuple3f pt, SB sb, boolean checkpt) {
     if (checkpt)
       checkPoint(pt);
     sb.append(round(pt.x)).append(" ").append(round(pt.y)).append(" ").append(round(pt.z)).append(" ");
   }
   
-  private Point3f ptMin = Point3f.new3(1e10f,1e10f,1e10f);
-  private Point3f ptMax = Point3f.new3(-1e10f,-1e10f,-1e10f);
+  private P3 ptMin = P3.new3(1e10f,1e10f,1e10f);
+  private P3 ptMax = P3.new3(-1e10f,-1e10f,-1e10f);
   
   private void checkPoint(Tuple3f pt) {
     if (pt.x < ptMin.x)
@@ -254,9 +254,9 @@ public class _IdtfExporter extends __CartesianExporter {
   
   final private Matrix4f m = new Matrix4f();
 
-  final private StringXBuilder models = new StringXBuilder();
-  final private StringXBuilder resources = new StringXBuilder();
-  final private StringXBuilder modifiers = new StringXBuilder();
+  final private SB models = new SB();
+  final private SB resources = new SB();
+  final private SB modifiers = new SB();
 
   @Override
   protected void outputHeader() {
@@ -352,7 +352,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
 
   private String getParentItem(String name, Matrix4f m) {
-    StringXBuilder sb= new StringXBuilder();
+    SB sb= new SB();
     sb.append("PARENT_NAME \"" + name + "\"\n");
     sb.append("PARENT_TM {\n");
     sb.append(m.m00 + " " + m.m10 + " " + m.m20 + " 0.0\n");
@@ -510,7 +510,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   @Override
-  protected void outputEllipsoid(Point3f center, Point3f[] points, short colix) {
+  protected void outputEllipsoid(P3 center, P3[] points, short colix) {
     //Hey, hey -- quaternions to the rescue!
     // Just send three points to Quaternion to define a plane and return
     // the AxisAngle required to rotate to that position. That's all there is to it.
@@ -525,7 +525,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
   private Matrix4f cylinderMatrix = new Matrix4f();
 
-  private void outputEllipsoid(Point3f center, Matrix4f sphereMatrix, short colix) {
+  private void outputEllipsoid(P3 center, Matrix4f sphereMatrix, short colix) {
     if (!haveSphere) {
       models.append(getSphereResource());
       haveSphere = true;
@@ -543,7 +543,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   private String getSphereResource() {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     sb.append("RESOURCE_LIST \"MODEL\" {\n")
     .append("RESOURCE_COUNT 1\n")
     .append("RESOURCE 0 {\n")
@@ -557,7 +557,7 @@ public class _IdtfExporter extends __CartesianExporter {
     int fpt = -1;
     for (int i = 0; i < nFaces; i++)
       faces[i] = new int[] { f[++fpt], f[++fpt], f[++fpt] };
-    Vector3f[] vertexes = new Vector3f[vertexCount];
+    V3[] vertexes = new V3[vertexCount];
     for (int i = 0; i < vertexCount;i++)
       vertexes[i] = Geodesic.getVertexVector(i);
     return getMeshData("Sphere", faces, vertexes, vertexes);
@@ -567,9 +567,9 @@ public class _IdtfExporter extends __CartesianExporter {
     int nFaces = indices.length;
     int vertexCount = vertexes.length;
     int normalCount = normals.length;
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     getMeshHeader(type, nFaces, vertexCount, normalCount, 0, sb);
-    StringXBuilder sb1 = new StringXBuilder();
+    SB sb1 = new SB();
     for (int i = 0; i < indices.length; i++) {
       sb1.appendI(indices[i][0]).append(" ");
       sb1.appendI(indices[i][1]).append(" ");
@@ -597,7 +597,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   private void getMeshHeader(String type, int nFaces, int vertexCount, int normalCount,
-                             int colorCount, StringXBuilder sb) {
+                             int colorCount, SB sb) {
     sb.append("RESOURCE_LIST \"MODEL\" {\n")
         .append("RESOURCE_COUNT 1\n")
         .append("RESOURCE 0 {\n")
@@ -619,9 +619,9 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   @Override
-  protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
+  protected boolean outputCylinder(P3 ptCenter, P3 pt1, P3 pt2,
                                    short colix, byte endcaps, float radius,
-                                   Point3f ptX, Point3f ptY, boolean checkRadius) {
+                                   P3 ptX, P3 ptY, boolean checkRadius) {
     if (ptX != null) {
       if (endcaps == GData.ENDCAPS_FLAT) {
         outputEllipse(ptCenter, pt1, ptX, ptY, colix);
@@ -674,7 +674,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   @Override
-  protected void outputCircle(Point3f pt1, Point3f pt2, float radius,
+  protected void outputCircle(P3 pt1, P3 pt2, float radius,
                               short colix, boolean doFill) {
     if (doFill) {
       outputCircle(pt1, pt2, colix, radius);
@@ -696,7 +696,7 @@ public class _IdtfExporter extends __CartesianExporter {
     */
   }
 
-  private boolean outputEllipse(Point3f ptCenter, Point3f ptZ, Point3f ptX, Point3f ptY,
+  private boolean outputEllipse(P3 ptCenter, P3 ptZ, P3 ptX, P3 ptY,
                         short colix) {
     if (!haveCircle) {
       models.append(getCircleResource());
@@ -721,7 +721,7 @@ public class _IdtfExporter extends __CartesianExporter {
     return true;
   }
 
-  private void outputCircle(Point3f ptCenter, Point3f ptPerp, short colix, float radius) {
+  private void outputCircle(P3 ptCenter, P3 ptPerp, short colix, float radius) {
     if (!haveCircle) {
       models.append(getCircleResource());
       haveCircle = true;
@@ -765,18 +765,18 @@ public class _IdtfExporter extends __CartesianExporter {
         faces[++fpt] = new int[] { (i + 1) % n, (i + 1) % n + n, i + n };
       }
     }
-    Point3f[] vertexes = new Point3f[vertexCount];
-    Point3f[] normals = new Point3f[vertexCount];
+    P3[] vertexes = new P3[vertexCount];
+    P3[] normals = new P3[vertexCount];
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * ndeg / 180. * Math.PI)); 
       float y = (float) (Math.sin(i * ndeg / 180. * Math.PI)); 
-      vertexes[i] = Point3f.new3(x, y, 0);
-      normals[i] =  Point3f.new3(x, y, 0);
+      vertexes[i] = P3.new3(x, y, 0);
+      normals[i] =  P3.new3(x, y, 0);
     }
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos((i + 0.5) * ndeg / 180 * Math.PI)); 
       float y = (float) (Math.sin((i + 0.5) * ndeg / 180 * Math.PI)); 
-      vertexes[i + n] = Point3f.new3(x, y, 1);
+      vertexes[i + n] = P3.new3(x, y, 1);
       normals[i + n] = normals[i];
     }
     if (inSide)
@@ -786,7 +786,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
 
-  private StringXBuilder sbTemp;
+  private SB sbTemp;
   
   @Override
   protected void outputFace(int[] face, int[] map, int faceVertexMax) {
@@ -799,13 +799,13 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   @Override
-  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(P3[] vertices, V3[] normals,
                                short[] colixes, int[][] indices,
                                short[] polygonColixes, int nVertices,
-                               int nPolygons, int nFaces, BitSet bsPolygons,
+                               int nPolygons, int nFaces, BS bsPolygons,
                                int faceVertexMax, short colix,
                                List<Short> colorList, Map<Short, Integer> htColixes,
-                               Point3f offset) {
+                               P3 offset) {
     addColix(colix, polygonColixes != null || colixes != null);
     if (polygonColixes != null) {
       // output(" colorPerVertex='FALSE'\n");
@@ -814,14 +814,14 @@ public class _IdtfExporter extends __CartesianExporter {
 
     // coordinates, part 1
 
-    StringXBuilder sbFaceCoordIndices = sbTemp = new StringXBuilder();
+    SB sbFaceCoordIndices = sbTemp = new SB();
     int[] map = new int[nVertices];
     int nCoord = getCoordinateMap(vertices, map, null);
     outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
 
     // normals, part 1
 
-    StringXBuilder sbFaceNormalIndices = sbTemp = new StringXBuilder();
+    SB sbFaceNormalIndices = sbTemp = new SB();
     List<String> vNormals = null;
     if (normals != null) {
       vNormals = new ArrayList<String>();
@@ -833,7 +833,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
     // colors, part 1
 
-    StringXBuilder sbColorIndexes = new StringXBuilder();
+    SB sbColorIndexes = new SB();
     if (colorList != null) {
       boolean isAll = (bsPolygons == null);
       int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
@@ -857,12 +857,12 @@ public class _IdtfExporter extends __CartesianExporter {
 
     // coordinates, part 2
 
-    StringXBuilder sbCoords = sbTemp = new StringXBuilder();
+    SB sbCoords = sbTemp = new SB();
     outputVertices(vertices, nVertices, offset);
 
     // normals, part 2
 
-    StringXBuilder sbNormals = new StringXBuilder();
+    SB sbNormals = new SB();
     int nNormals = 0;
     if (normals != null) {
       nNormals = vNormals.size();
@@ -873,7 +873,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
     // colors, part 2
 
-    StringXBuilder sbColors = new StringXBuilder();
+    SB sbColors = new SB();
     int nColors = 0;
     if (colorList != null) {
       nColors = colorList.size();
@@ -894,12 +894,12 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   private void addMeshData(String key, int nFaces, int nCoord, int nNormals, int nColors, 
-                           StringXBuilder sbFaceCoordIndices,
-                           StringXBuilder sbFaceNormalIndices,
-                           StringXBuilder sbColorIndices, 
-                           StringXBuilder sbCoords,
-                           StringXBuilder sbNormals, 
-                           StringXBuilder sbColors) {
+                           SB sbFaceCoordIndices,
+                           SB sbFaceNormalIndices,
+                           SB sbColorIndices, 
+                           SB sbCoords,
+                           SB sbNormals, 
+                           SB sbColors) {
     getMeshHeader(key, nFaces, nCoord, nNormals, nColors, models);
     models.append("MESH_FACE_POSITION_LIST { ")
       .appendSB(sbFaceCoordIndices).append(" }\n")
@@ -924,7 +924,7 @@ public class _IdtfExporter extends __CartesianExporter {
   }
 
   @Override
-  protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
+  protected void outputCone(P3 ptBase, P3 ptTip, float radius,
                             short colix) {
     if (!haveCone) {
       models.append(getConeResource());
@@ -960,33 +960,33 @@ public class _IdtfExporter extends __CartesianExporter {
     int[][] faces = ArrayUtil.newInt2(n);
     for (int i = 0; i < n; i++)
       faces[i] = new int[] { i, (i + 1) % n, n };
-    Point3f[] vertexes = new Point3f[vertexCount];
-    Point3f[] normals = new Point3f[vertexCount];
+    P3[] vertexes = new P3[vertexCount];
+    P3[] normals = new P3[vertexCount];
     for (int i = 0; i < n; i++) {
       float x = (float) (Math.cos(i * ndeg / 180. * Math.PI));
       float y = (float) (Math.sin(i * ndeg / 180. * Math.PI));
-      vertexes[i] = Point3f.new3(x, y, 0);
-      normals[i] = Point3f.new3(0, 0, 1);
+      vertexes[i] = P3.new3(x, y, 0);
+      normals[i] = P3.new3(0, 0, 1);
     }
-    vertexes[n] = Point3f.new3(0, 0, 0);
-    normals[n] = Point3f.new3(0, 0, 1);
+    vertexes[n] = P3.new3(0, 0, 0);
+    normals[n] = P3.new3(0, 0, 1);
     return getMeshData("Circle", faces, vertexes, normals);
   }
   
   @Override
-  protected void outputSphere(Point3f center, float radius, short colix, boolean checkRadius) {
+  protected void outputSphere(P3 center, float radius, short colix, boolean checkRadius) {
     setSphereMatrix(center, radius, radius, radius, null, sphereMatrix);
     outputEllipsoid(center, sphereMatrix, colix);
   }
 
   @Override
-  protected void outputTextPixel(Point3f pt, int argb) {    
-    short colix = Colix.getColix(argb); 
+  protected void outputTextPixel(P3 pt, int argb) {    
+    short colix = C.getColix(argb); 
     outputSphere(pt, 0.02f, colix, true);
   }
 
   @Override
-  protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3, short colix) {
+  protected void outputTriangle(P3 pt1, P3 pt2, P3 pt3, short colix) {
     addColix(colix, false);
     String key = "T" + (++iObj);
     models.append(getTriangleResource(key, pt1, pt2, pt3));
@@ -1004,16 +1004,16 @@ public class _IdtfExporter extends __CartesianExporter {
     triangleFace[0] = new int[] { 0, 1, 2 };
   }
   
-  private String getTriangleResource(String key, Point3f pt1,
-                                     Point3f pt2, Point3f pt3) {
-    Point3f[] vertexes = new Point3f[] { pt1, pt2, pt3 };
+  private String getTriangleResource(String key, P3 pt1,
+                                     P3 pt2, P3 pt3) {
+    P3[] vertexes = new P3[] { pt1, pt2, pt3 };
     tempV1.setT(pt3);
     tempV1.sub(pt1);
     tempV2.setT(pt2);
     tempV2.sub(pt1);
     tempV2.cross(tempV2, tempV1);
     tempV2.normalize();
-    Vector3f[] normals = new Vector3f[] { tempV2, tempV2, tempV2 };
+    V3[] normals = new V3[] { tempV2, tempV2, tempV2 };
     return getMeshData(key, triangleFace, vertexes, normals);
   }
 }

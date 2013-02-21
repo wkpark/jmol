@@ -24,21 +24,21 @@
 package org.jmol.modelset;
 
 
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 public class TickInfo {
   
-  public TickInfo(Point3f ticks) {
+  public TickInfo(P3 ticks) {
     this.ticks = ticks;
   }
 
   public String id = "";
   public String type = " ";
-  public Point3f ticks;
+  public P3 ticks;
   public String[] tickLabelFormats;
-  public Point3f scale;
+  public P3 scale;
   public float first; 
   public float signFactor = 1;
-  public Point3f reference;
+  public P3 reference;
 }
 

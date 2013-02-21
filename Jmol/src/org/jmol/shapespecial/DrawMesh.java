@@ -29,10 +29,10 @@ package org.jmol.shapespecial;
 import org.jmol.shape.Mesh;
 import org.jmol.shapespecial.Draw.EnumDrawType;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 
 
 public class DrawMesh extends Mesh {
@@ -41,13 +41,13 @@ public class DrawMesh extends Mesh {
     super(thisID, colix, index);
   }
 
-  public BitSet modelFlags;
+  public BS modelFlags;
   
   public EnumDrawType drawType = EnumDrawType.NONE;
   EnumDrawType[] drawTypes;
-  Point3f ptCenters[];
-  Vector3f axis = Vector3f.new3(1,0,0);
-  Vector3f axes[];
+  P3 ptCenters[];
+  V3 axis = V3.new3(1,0,0);
+  V3 axes[];
   int drawVertexCount;
   int[] drawVertexCounts;
   boolean isFixed;
@@ -57,7 +57,7 @@ public class DrawMesh extends Mesh {
   public boolean isBarb;
   
 
-  public BitSet bsMeshesVisible = new BitSet();
+  public BS bsMeshesVisible = new BS();
 
   void setCenters() {
     if (ptCenters == null)
@@ -68,7 +68,7 @@ public class DrawMesh extends Mesh {
   }
 
   final void setCenter(int iModel) {
-    Point3f center = Point3f.new3(0, 0, 0);
+    P3 center = P3.new3(0, 0, 0);
     int iptlast = -1;
     int ipt = 0;
     int n = 0;
@@ -99,7 +99,7 @@ public class DrawMesh extends Mesh {
     }
   }
 
-  void offset(Vector3f offset) {
+  void offset(V3 offset) {
     rotateTranslate(null, offset, false);
     setCenters();
   }
@@ -111,10 +111,10 @@ public class DrawMesh extends Mesh {
     polygonIndexes = (int[][]) ArrayUtil.deleteElements(polygonIndexes, modelIndex, 1);
     drawTypes = (EnumDrawType[]) ArrayUtil.deleteElements(drawTypes, modelIndex, 1);
     drawVertexCounts = (int[]) ArrayUtil.deleteElements(drawVertexCounts, modelIndex, 1);
-    ptCenters = (Point3f[]) ArrayUtil.deleteElements(ptCenters, modelIndex, 1);
-    axes = (Vector3f[]) ArrayUtil.deleteElements(axes, modelIndex, 1);
-    BitSet bs = BitSetUtil.newAndSetBit(modelIndex);
-    BitSetUtil.deleteBits(modelFlags, bs);
+    ptCenters = (P3[]) ArrayUtil.deleteElements(ptCenters, modelIndex, 1);
+    axes = (V3[]) ArrayUtil.deleteElements(axes, modelIndex, 1);
+    BS bs = BSUtil.newAndSetBit(modelIndex);
+    BSUtil.deleteBits(modelFlags, bs);
     //no! title = (String[]) ArrayUtil.deleteElements(title, modelIndex, 1);
   }
 

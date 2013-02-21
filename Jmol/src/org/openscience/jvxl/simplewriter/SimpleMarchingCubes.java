@@ -31,8 +31,8 @@ import org.jmol.jvxl.calc.MarchingCubes;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 
 //import org.jmol.util.Logger;
 
@@ -55,13 +55,13 @@ public class SimpleMarchingCubes extends MarchingCubes {
   private boolean doSaveSurfacePoints;
   private float calculatedArea = Float.NaN;
   private float calculatedVolume = Float.NaN;
-  private List<Point3f> surfacePoints;  
+  private List<P3> surfacePoints;  
   private VoxelDataCreator vdc;
 
 
   public SimpleMarchingCubes(VoxelDataCreator vdc, VolumeData volumeData,
       Parameters params, JvxlData jvxlData, 
-      List<Point3f> surfacePointsReturn, float[] areaVolumeReturn) {
+      List<P3> surfacePointsReturn, float[] areaVolumeReturn) {
 
     // when just creating a JVXL file all you really need are:
     //
@@ -83,7 +83,7 @@ public class SimpleMarchingCubes extends MarchingCubes {
     doCalcArea = (areaVolumeReturn != null);
     surfacePoints = surfacePointsReturn;
     if (surfacePoints == null && doCalcArea)
-      surfacePoints = new ArrayList<Point3f>();
+      surfacePoints = new ArrayList<P3>();
     doSaveSurfacePoints = (surfacePoints != null);
     jvxlData.jvxlEdgeData = getEdgeData();
     jvxlData.nPointsX = volumeData.voxelCounts[0];
@@ -111,12 +111,12 @@ public class SimpleMarchingCubes extends MarchingCubes {
     return value;
   }
 
-  protected int newVertex(Point3f pointA, Vector3f edgeVector, float f) {
+  protected int newVertex(P3 pointA, V3 edgeVector, float f) {
     // you could do something with this point if you wanted to
     // here we save it for the surface area/volume calculation
 
     if (doSaveSurfacePoints) {
-      Point3f pt = new Point3f();
+      P3 pt = new P3();
       pt.scaleAdd2(f, edgeVector, pointA);
       surfacePoints.add(pt);
     }
@@ -129,9 +129,9 @@ public class SimpleMarchingCubes extends MarchingCubes {
       super.processTriangles(insideMask);
   }
 
-  private Vector3f vTemp = new Vector3f();
-  private Vector3f vAC = new Vector3f();
-  private Vector3f vAB = new Vector3f();
+  private V3 vTemp = new V3();
+  private V3 vAC = new V3();
+  private V3 vAB = new V3();
 
   @Override
   protected void addTriangle(int ia, int ib, int ic, int edgeType) {
@@ -140,9 +140,9 @@ public class SimpleMarchingCubes extends MarchingCubes {
     // you would do it here.    
     // In this example we are just computing the area and volume
    
-    Point3f pta = surfacePoints.get(edgePointIndexes[ia]);
-    Point3f ptb = surfacePoints.get(edgePointIndexes[ib]);
-    Point3f ptc = surfacePoints.get(edgePointIndexes[ic]);
+    P3 pta = surfacePoints.get(edgePointIndexes[ia]);
+    P3 ptb = surfacePoints.get(edgePointIndexes[ib]);
+    P3 ptc = surfacePoints.get(edgePointIndexes[ic]);
     
     vAB.sub2(ptb, pta);
     vAC.sub2(ptc, pta);

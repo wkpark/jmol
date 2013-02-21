@@ -25,15 +25,15 @@
 package org.jmol.adapter.smarter;
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 import org.jmol.util.Quadric;
 
 
-public class Atom extends Point3f implements Cloneable {
+public class Atom extends P3 implements Cloneable {
   public int atomSetIndex;
   public int atomIndex;
-  public BitSet bsSymmetry;
+  public BS bsSymmetry;
   public int atomSite;
   public String elementSymbol;
   public short elementNumber = -1;

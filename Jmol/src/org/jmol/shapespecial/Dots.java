@@ -25,14 +25,14 @@
 package org.jmol.shapespecial;
 
 import org.jmol.shape.AtomShape;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
-import org.jmol.util.Colix;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 import org.jmol.api.JmolStateCreator;
 import org.jmol.atomdata.RadiusData;
@@ -53,8 +53,8 @@ public class Dots extends AtomShape {
 
   final static float SURFACE_DISTANCE_FOR_CALCULATION = 10f;
 
-  BitSet bsOn = new BitSet();
-  private BitSet bsSelected, bsIgnore;
+  BS bsOn = new BS();
+  private BS bsSelected, bsIgnore;
 
   public static int MAX_LEVEL = EnvelopeCalculation.MAX_LEVEL;
 
@@ -78,7 +78,7 @@ public class Dots extends AtomShape {
   }
   
   @Override
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BS bs) {
 
     if ("init" == propertyName) {
       initialize();
@@ -91,12 +91,12 @@ public class Dots extends AtomShape {
     }
 
     if ("ignore" == propertyName) {
-      bsIgnore = (BitSet) value;
+      bsIgnore = (BS) value;
       return;
     }
 
     if ("select" == propertyName) {
-      bsSelected = (BitSet) value;
+      bsSelected = (BS) value;
       return;
     }
 
@@ -123,7 +123,7 @@ public class Dots extends AtomShape {
       if (thisAtom >= atoms.length)
         return;
       isActive = true;
-      ec.setFromBits(thisAtom, (BitSet) value);
+      ec.setFromBits(thisAtom, (BS) value);
       atoms[thisAtom].setShapeVisibility(myVisibilityFlag, true);
       if (mads == null) {
         ec.setMads(null);
@@ -143,14 +143,14 @@ public class Dots extends AtomShape {
         colixes = new short[atomCount];
         paletteIDs = new byte[atomCount];
       }
-      colixes[thisAtom] = Colix.getColix(thisArgb);
+      colixes[thisAtom] = C.getColix(thisArgb);
       bsOn.set(thisAtom);
       //all done!
       return;
     }
 
     if ("refreshTrajectories" == propertyName) {
-      bs = (BitSet) ((Object[]) value)[1];
+      bs = (BS) ((Object[]) value)[1];
       Matrix4f m4 = (Matrix4f) ((Object[]) value)[2];
       if (m4 == null) // end of compare command
         return;
@@ -163,7 +163,7 @@ public class Dots extends AtomShape {
     if (propertyName == "deleteModelAtoms") {
       int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
       int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
-      BitSetUtil.deleteBits(bsOn, bs);
+      BSUtil.deleteBits(bsOn, bs);
       ec.deleteAtoms(firstAtomDeleted, nAtomsDeleted);
       // pass to AtomShape via super
     }
@@ -180,7 +180,7 @@ public class Dots extends AtomShape {
   }
 
   @Override
-  protected void setSizeRD(RadiusData rd, BitSet bsSelected) {
+  protected void setSizeRD(RadiusData rd, BS bsSelected) {
     if (rd == null)
       rd = new RadiusData(null, 0, EnumType.ABSOLUTE, null);
     if (this.bsSelected != null)
@@ -264,7 +264,7 @@ public class Dots extends AtomShape {
     }
 
     // always delete old surfaces for selected atoms
-    BitSet[] dotsConvexMaps = ec.getDotsConvexMaps();
+    BS[] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps != null) {
       for (int i = atomCount; --i >= 0;)
         if (bsOn.get(i)) {
@@ -297,26 +297,26 @@ public class Dots extends AtomShape {
 
   @Override
   public String getShapeState() {
-    BitSet[] dotsConvexMaps = ec.getDotsConvexMaps();
+    BS[] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)
       return "";
     JmolStateCreator sc = viewer.getStateCreator();
     if (sc == null)
       return "";
-    StringXBuilder s = new StringXBuilder();
-    Map<String, BitSet> temp = new Hashtable<String, BitSet>();
+    SB s = new SB();
+    Map<String, BS> temp = new Hashtable<String, BS>();
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");
     for (int i = 0; i < atomCount; i++) {
       if (!bsOn.get(i) || dotsConvexMaps[i] == null)
         continue;
       if (bsColixSet != null && bsColixSet.get(i))
-        BitSetUtil.setMapBitSet(temp, i, i, getColorCommand(type, paletteIDs[i], colixes[i], translucentAllowed));
-      BitSet bs = dotsConvexMaps[i];
+        BSUtil.setMapBitSet(temp, i, i, getColorCommand(type, paletteIDs[i], colixes[i], translucentAllowed));
+      BS bs = dotsConvexMaps[i];
       if (!bs.isEmpty()) {
         float r = ec.getAppropriateRadius(i);
         appendCmd(s, type + i + " radius " + r + " "
-            + Escape.escape(bs));
+            + Escape.e(bs));
       }
     }
     return s.append(sc.getCommands(temp, null, "select")).toString();

@@ -25,7 +25,7 @@
 
 package org.jmol.constant;
 
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 
 
 /**
@@ -130,7 +130,7 @@ public enum EnumQuantumShell {
   }
 
   final public static String getMOString(float[] lc) {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     if (lc.length == 2)
       return "" + (int)(lc[0] < 0 ? -lc[1] : lc[1]);
     sb.appendC('[');

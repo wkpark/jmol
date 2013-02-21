@@ -35,10 +35,10 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.P3;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 /*
  * 
@@ -136,7 +136,7 @@ class SpaceGroup {
    
   SymmetryOperation[] finalOperations;
   
-  void setFinalOperations(Point3f[] atoms, int atomIndex, int count,
+  void setFinalOperations(P3[] atoms, int atomIndex, int count,
                           boolean doNormalize) {
     //from AtomSetCollection.applySymmetry only
     if (hallInfo == null && latticeParameter != 0) {
@@ -158,8 +158,8 @@ class SpaceGroup {
       // NO operation for (x,y,z). This requires REDEFINING ATOM LOCATIONS
       finalOperations[0] = new SymmetryOperation(operations[0], atoms,
           atomIndex, count, true);
-      Point3f atom = atoms[atomIndex];
-      Point3f c = Point3f.newP(atom);
+      P3 atom = atoms[atomIndex];
+      P3 c = P3.newP(atom);
       finalOperations[0].transform(c);
       if (c.distance(atom) > 0.0001) // not cartesian, but this is OK here
         for (int i = 0; i < count; i++) {
@@ -187,14 +187,14 @@ class SpaceGroup {
     return finalOperations[i].getXyz(doNormalize);
   }
 
-  void newPoint(int i, Point3f atom1, Point3f atom2,
+  void newPoint(int i, P3 atom1, P3 atom2,
                        int transX, int transY, int transZ) {
     finalOperations[i].newPoint(atom1, atom2, transX, transY, transZ);
   }
     
-  Object rotateEllipsoid(int i, Point3f ptTemp, Vector3f[] axes,
-                                UnitCell unitCell, Point3f ptTemp1,
-                                Point3f ptTemp2) {
+  Object rotateEllipsoid(int i, P3 ptTemp, V3[] axes,
+                                UnitCell unitCell, P3 ptTemp1,
+                                P3 ptTemp2) {
     return finalOperations[i].rotateEllipsoid(ptTemp, axes, unitCell, ptTemp1,
         ptTemp2);
   }
@@ -216,7 +216,7 @@ class SpaceGroup {
       if (sg == null) {
         sg = SpaceGroup.createSpaceGroupN(spaceGroup);
       } else {
-        StringXBuilder sb = new StringXBuilder();
+        SB sb = new SB();
         while (sg != null) {
           sb.append(sg.dumpInfo(null));
           sg = SpaceGroup.determineSpaceGroupNS(spaceGroup, sg);
@@ -236,7 +236,7 @@ class SpaceGroup {
     Object info  = dumpCanonicalSeitzList();
     if (info instanceof SpaceGroup)
       return ((SpaceGroup)info).dumpInfo(null);
-    StringXBuilder sb = new StringXBuilder().append("\nHermann-Mauguin symbol: ");
+    SB sb = new SB().append("\nHermann-Mauguin symbol: ");
     sb.append(hmSymbol).append(hmSymbolExt.length() > 0 ? ":" + hmSymbolExt : "")
         .append("\ninternational table number: ").append(intlTableNumber)
         .append(intlTableNumberExt.length() > 0 ? ":" + intlTableNumberExt : "")
@@ -322,7 +322,7 @@ class SpaceGroup {
     for (int i = 0; i < operationCount; i++)
       list[i] = SymmetryOperation.dumpCanonicalSeitz(operations[i]);
     Arrays.sort(list, 0, operationCount);
-    StringXBuilder sb = new StringXBuilder().append("\n[");
+    SB sb = new SB().append("\n[");
     for (int i = 0; i < operationCount; i++)
       sb.append(list[i].replace('\t',' ').replace('\n',' ')).append("; ");
     sb.append("]");
@@ -343,14 +343,14 @@ class SpaceGroup {
   }
 
   private final static String dumpAll() {
-   StringXBuilder sb = new StringXBuilder();
+   SB sb = new SB();
    for (int i = 0; i < spaceGroupDefinitions.length; i++)
      sb.append("\n----------------------\n" + spaceGroupDefinitions[i].dumpInfo(null));
    return sb.toString();
   }
   
   private final static String dumpAllSeitz() {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     for (int i = 0; i < spaceGroupDefinitions.length; i++)
       sb.append("\n").appendO(spaceGroupDefinitions[i].dumpCanonicalSeitzList());
     return sb.toString();

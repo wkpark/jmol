@@ -31,19 +31,19 @@ import org.jmol.render.ShapeRenderer;
 import org.jmol.shape.Shape;
 import org.jmol.shapespecial.Vectors;
 import org.jmol.util.GData;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
+import org.jmol.util.V3;
 
 public class VectorsRenderer extends ShapeRenderer {
 
   private final static float arrowHeadOffset = -0.2f;
-  private final Vector3f vector2 = new Vector3f();
-  private final Point3f pointVectorEnd = new Point3f();
-  private final Point3f pointArrowHead = new Point3f();
-  private final Point3i screenVectorEnd = new Point3i();
-  private final Point3i screenArrowHead = new Point3i();
-  private final Vector3f headOffsetVector = new Vector3f();
+  private final V3 vector2 = new V3();
+  private final P3 pointVectorEnd = new P3();
+  private final P3 pointArrowHead = new P3();
+  private final P3i screenVectorEnd = new P3i();
+  private final P3i screenArrowHead = new P3i();
+  private final V3 headOffsetVector = new V3();
   
   private int diameter;
   //float headWidthAngstroms;
@@ -69,7 +69,7 @@ public class VectorsRenderer extends ShapeRenderer {
       Atom atom = atoms[i];
       if (!atom.isVisible(myVisibilityFlag))
         continue;
-      Vector3f vibrationVector = viewer.getVibrationVector(i);
+      V3 vibrationVector = viewer.getVibrationVector(i);
       if (vibrationVector == null)
         continue;
       vectorScale = viewer.getVectorScale();
@@ -91,7 +91,7 @@ public class VectorsRenderer extends ShapeRenderer {
     return needTranslucent;
   }
 
-  private boolean transform(short mad, Atom atom, Vector3f vibrationVector) {
+  private boolean transform(short mad, Atom atom, V3 vibrationVector) {
     float len = vibrationVector.length();
     // to have the vectors move when vibration is turned on
     if (Math.abs(len * vectorScale) < 0.01)

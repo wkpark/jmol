@@ -26,7 +26,7 @@ package org.jmol.adapter.readers.simple;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -223,7 +223,7 @@ void processAtomicCharges() throws Exception {
    */
   private void readFrequencies() throws Exception {
     
-    BitSet bsOK = new BitSet();
+    BS bsOK = new BS();
     int n0 = atomSetCollection.getCurrentAtomSetIndex() + 1;
     String[] tokens;
 

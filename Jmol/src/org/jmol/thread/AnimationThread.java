@@ -82,7 +82,7 @@ public class AnimationThread extends JmolThread {
           mode = FINISH;
           break;
         }
-        if (animationManager.getCurrentFrame() == framePointer) {
+        if (animationManager.currentFrameIs(framePointer)) {
           targetTime += animationManager.firstFrameDelayMs;
           sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
           if (!runSleep(sleepTime, CHECK1))
@@ -91,7 +91,7 @@ public class AnimationThread extends JmolThread {
         mode = CHECK1;
         break;
       case CHECK1:
-        if (animationManager.getCurrentFrame() == framePointer2) {
+        if (animationManager.currentFrameIs(framePointer2)) {
           targetTime += animationManager.lastFrameDelayMs;
           sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
           if (!runSleep(sleepTime, CHECK2))
@@ -126,7 +126,7 @@ public class AnimationThread extends JmolThread {
         break;
       case FINISH:
         Logger.debug("animation thread " + intThread + " exiting");
-        animationManager.setAnimationOff(false);
+        animationManager.stopThread(false);
         return;
       }
   }

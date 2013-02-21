@@ -28,7 +28,7 @@ import java.io.BufferedReader;
 
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 /*
  * A simple EFVET file reader -- vertices and triangles only
@@ -103,7 +103,7 @@ class EfvetReader extends PolygonFileReader {
   }
   
   private void getVertices() throws Exception {
-    Point3f pt = new Point3f();
+    P3 pt = new P3();
     float value = 0;
     skipTo("<vertices", "count");
     jvxlData.vertexCount = nVertices = parseInt(); 

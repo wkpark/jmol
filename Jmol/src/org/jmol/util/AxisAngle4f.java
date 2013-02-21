@@ -108,7 +108,7 @@ public class AxisAngle4f implements Serializable {
    *        the angle
    * @return a
    */
-  public static AxisAngle4f newVA(Vector3f axis, float angle) {
+  public static AxisAngle4f newVA(V3 axis, float angle) {
     AxisAngle4f a = new AxisAngle4f();
     a.setVA(axis, angle);
     return a;
@@ -123,7 +123,7 @@ public class AxisAngle4f implements Serializable {
    *        the angle
    * @since Java 3D 1.2
    */
-  public final void setVA(Vector3f axis, float angle) {
+  public final void setVA(V3 axis, float angle) {
     x = axis.x;
     y = axis.y;
     z = axis.z;

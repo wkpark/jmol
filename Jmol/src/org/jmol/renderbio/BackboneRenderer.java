@@ -27,7 +27,7 @@ package org.jmol.renderbio;
 
 import org.jmol.modelset.Atom;
 import org.jmol.shapebio.BioShape;
-import org.jmol.util.Colix;
+import org.jmol.util.C;
 import org.jmol.util.GData;
 
 public class BackboneRenderer extends BioShapeRenderer {
@@ -45,11 +45,11 @@ public class BackboneRenderer extends BioShapeRenderer {
         continue;
       if (!isDataFrame && atomA.distance(atomB) > 10)
         continue;
-      short colixA = Colix.getColixInherited(colixes[i], atomA.getColix());
-      short colixB = Colix.getColixInherited(colixes[i + 1], atomB.getColix());
+      short colixA = C.getColixInherited(colixes[i], atomA.getColix());
+      short colixB = C.getColixInherited(colixes[i + 1], atomB.getColix());
       if (!isExport && !isPass2) {
-        boolean doA = !Colix.isColixTranslucent(colixA);
-        boolean doB = !Colix.isColixTranslucent(colixB);
+        boolean doA = !C.isColixTranslucent(colixA);
+        boolean doB = !C.isColixTranslucent(colixB);
         if (!doA || !doB) {
           if (!doA && !doB)
             continue;

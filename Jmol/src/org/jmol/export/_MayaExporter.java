@@ -30,10 +30,10 @@ import java.util.List;
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
-import org.jmol.util.Point3f;
+import org.jmol.util.BS;
+import org.jmol.util.P3;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 
 public class _MayaExporter extends __CartesianExporter {
@@ -103,8 +103,8 @@ public class _MayaExporter extends __CartesianExporter {
   }
 
   @Override
-  protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2, short colix,
-                      byte endcaps, float radius, Point3f ptX, Point3f ptY, boolean checkRadius) {
+  protected boolean outputCylinder(P3 ptCenter, P3 pt1, P3 pt2, short colix,
+                      byte endcaps, float radius, P3 ptX, P3 ptY, boolean checkRadius) {
     if (ptX != null)
       return false;
     nCyl++;
@@ -139,7 +139,7 @@ public class _MayaExporter extends __CartesianExporter {
   }
 
   @Override
-  protected void outputSphere(Point3f pt, float radius, short colix, boolean checkRadius) {
+  protected void outputSphere(P3 pt, float radius, short colix, boolean checkRadius) {
     //String color = rgbFromColix(colix);
     nBalls++;
     name = "nurbsSphere" + nBalls;
@@ -166,41 +166,41 @@ public class _MayaExporter extends __CartesianExporter {
   }
 
   @Override
-  protected void outputTextPixel(Point3f pt, int argb) {
+  protected void outputTextPixel(P3 pt, int argb) {
   }
   
   @Override
-  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(P3[] vertices, V3[] normals,
                                   short[] colixes, int[][] indices,
                                   short[] polygonColixes,
-                                  int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
+                                  int nVertices, int nPolygons, int nFaces, BS bsPolygons,
                                   int faceVertexMax, short colix,
-                                  List<Short> colorList, Map<Short, Integer> htColixes, Point3f offset) {
+                                  List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
   }
 
   @Override
-  protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
+  protected void outputTriangle(P3 pt1, P3 pt2, P3 pt3,
                                 short colix) {
     // TODO
     
   }
 
   @Override
-  protected void outputCircle(Point3f pt1, Point3f pt2, float radius,
+  protected void outputCircle(P3 pt1, P3 pt2, float radius,
                               short colix, boolean doFill) {
     // TODO
     
   }
 
   @Override
-  protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
+  protected void outputCone(P3 ptBase, P3 ptTip, float radius,
                             short colix) {
     // TODO
     
   }
 
   @Override
-  protected void outputEllipsoid(Point3f center, Point3f[] points, short colix) {
+  protected void outputEllipsoid(P3 center, P3[] points, short colix) {
     // TODO
     
   }

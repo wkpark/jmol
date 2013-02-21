@@ -25,7 +25,7 @@ package org.jmol.console;
 
 import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolViewer;
-import org.jmol.script.Token;
+import org.jmol.script.T;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -190,7 +190,7 @@ public class AppletConsole extends JmolConsole {
 
   private void addHelpItems(JMenu m0, String key, String attr) {
     JMenu m = new KeyJMenu(key, getLabel(key), menuMap);
-    String[] commands = Token.getTokensLike(attr);
+    String[] commands = T.getTokensLike(attr);
     m0.add(m);
     JMenu m2 = null;
     String firstCommand = null;

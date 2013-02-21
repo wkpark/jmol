@@ -25,7 +25,7 @@ package org.jmol.jvxl.readers;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
@@ -146,7 +146,7 @@ class AtomPropertyMapper extends AtomDataReader {
   }
   
   @Override
-  public float getValueAtPoint(Point3f pt) {
+  public float getValueAtPoint(P3 pt) {
     float dmin = Float.MAX_VALUE;
     float dminNearby = Float.MAX_VALUE;
     float value = (doSmoothProperty ? 0 : Float.NaN);
@@ -157,7 +157,7 @@ class AtomPropertyMapper extends AtomDataReader {
       int ia = iter.next();
       int iAtom = myIndex[ia];
       boolean isNearby = (iAtom >= firstNearbyAtom);
-      Point3f ptA = atomXyz[iAtom];
+      P3 ptA = atomXyz[iAtom];
       float p = atomProp[iAtom];
       //System.out.println(iAtom + " " + ia + ptA + " " + isNearby + " " + p);
       if (Float.isNaN(p))

@@ -9,7 +9,7 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 
 public interface JmolBioResolver {
 
@@ -28,7 +28,7 @@ public interface JmolBioResolver {
 
   public void initialize(ModelSet modelSet);
 
-  public String fixPropertyValue(BitSet bsAtoms, String data);
+  public String fixPropertyValue(BS bsAtoms, String data);
 
   public Model getBioModel(ModelSet modelSet, int modelIndex,
                         int trajectoryBaseIndex, String jmolData,

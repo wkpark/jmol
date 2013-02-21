@@ -25,7 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer.ACCESS;
 
@@ -250,7 +250,7 @@ public class FileManager {
   }
 
   Object createAtomSetCollectionFromString(String strModel,
-                                           StringXBuilder loadScript,
+                                           SB loadScript,
                                            Map<String, Object> htParams,
                                            boolean isAppend,
                                            boolean isLoadVariable) {
@@ -258,7 +258,7 @@ public class FileManager {
       DataManager.getInlineData(loadScript, strModel, isAppend, viewer
           .getDefaultLoadFilter());
     setLoadState(htParams);
-    boolean isAddH = (strModel.indexOf(JmolConstants.ADD_HYDROGEN_TITLE) >= 0);
+    boolean isAddH = (strModel.indexOf(JC.ADD_HYDROGEN_TITLE) >= 0);
     String[] fnames = (isAddH ? getFileInfo() : null);
     FileReader fileReader = new FileReader(this, viewer, "string", "string", "string", null,
         JmolBinary.getBufferedReaderForString(strModel), htParams, isAppend);
@@ -267,20 +267,20 @@ public class FileManager {
       setFileInfo(fnames);
     if (!isAppend && !(fileReader.getAtomSetCollection() instanceof String)) {
       viewer.zap(false, true, false);
-      fullPathName = fileName = (strModel == JmolConstants.MODELKIT_ZAP_STRING ? JmolConstants.MODELKIT_ZAP_TITLE
+      fullPathName = fileName = (strModel == JC.MODELKIT_ZAP_STRING ? JC.MODELKIT_ZAP_TITLE
           : "string");
     }
     return fileReader.getAtomSetCollection();
   }
 
   Object createAtomSeCollectionFromStrings(String[] arrayModels,
-                                           StringXBuilder loadScript,
+                                           SB loadScript,
                                            Map<String, Object> htParams,
                                            boolean isAppend) {
     if (!htParams.containsKey("isData")) {
       String oldSep = "\"" + viewer.getDataSeparator() + "\"";
       String tag = "\"" + (isAppend ? "append" : "model") + " inline\"";
-      StringXBuilder sb = new StringXBuilder();
+      SB sb = new SB();
       sb.append("set dataSeparator \"~~~next file~~~\";\ndata ").append(tag);
       for (int i = 0; i < arrayModels.length; i++) {
         if (i > 0)
@@ -408,7 +408,7 @@ public class FileManager {
             outputBytes = (byte[]) o;
             name = TextFormat.simpleReplace(name, "?_", "=_");
           } else {
-            name = new StringXBuilder().append(name).append("=").appendSB(
+            name = new SB().append(name).append("=").appendSB(
                 Base64.getBase64((byte[]) o)).toString();
           }
         }
@@ -433,8 +433,8 @@ public class FileManager {
           if (showMsg && name.toLowerCase().indexOf("password") < 0)
             Logger.info("FileManager opening " + name);
           ret = fai.getBufferedURLInputStream(url, outputBytes, post);
-          if (ret instanceof StringXBuilder) {
-            StringXBuilder sb = (StringXBuilder) ret;
+          if (ret instanceof SB) {
+            SB sb = (SB) ret;
             if (allowReader && !JmolBinary.isBase64(sb))
               return JmolBinary.getBufferedReaderForString(sb.toString());
             ret = JmolBinary.getBISForStringXBuilder(sb);
@@ -526,7 +526,7 @@ public class FileManager {
     dir = getZipDirectory(fileName, false);
     if (dir.length == 0) {
       String state = viewer.getFileAsStringBin(fileName, Integer.MAX_VALUE, false, true);
-      return (state.indexOf(JmolConstants.EMBEDDED_SCRIPT_TAG) < 0 ? ""
+      return (state.indexOf(JC.EMBEDDED_SCRIPT_TAG) < 0 ? ""
           : JmolBinary.getEmbeddedScript(state));
     }
     for (int i = 0; i < dir.length; i++)
@@ -567,7 +567,7 @@ public class FileManager {
           }
         }
         // load each file individually, but return files IN ORDER
-        StringXBuilder sb = new StringXBuilder();
+        SB sb = new SB();
         if (fileData.get("OUTPUT") != null)
           sb.append(fileData.get(fileData.get("OUTPUT")));
         String s;
@@ -680,7 +680,7 @@ public class FileManager {
       asBinaryString = true;
       name = name.substring(0, name.indexOf(":asBinaryString"));
     }
-    StringXBuilder sb = null;
+    SB sb = null;
     if (fileData.containsKey(name0))
       return name0;
     if (name.indexOf("#JMOL_MODEL ") >= 0) {
@@ -714,7 +714,7 @@ public class FileManager {
         JmolDocument bd = (JmolDocument) Interface
             .getOptionInterface("io2.BinaryDocument");
         bd.setStream(bis, false);
-        sb = new StringXBuilder();
+        sb = new SB();
         //note -- these headers must match those in ZipUtil.getAllData and CompoundDocument.getAllData
         if (header != null)
           sb.append("BEGIN Directory Entry " + name0 + "\n");
@@ -731,7 +731,7 @@ public class FileManager {
         BufferedReader br = JmolBinary.getBufferedReader(
             JmolBinary.isGzipS(bis) ? new BufferedInputStream(JmolBinary.newGZIPInputStream(bis)) : bis, null);
         String line;
-        sb = new StringXBuilder();
+        sb = new SB();
         if (header != null)
           sb.append("BEGIN Directory Entry " + name0 + "\n");
         while ((line = br.readLine()) != null) {
@@ -824,7 +824,7 @@ public class FileManager {
     }
     try {
       BufferedReader br = (BufferedReader) t;
-      StringXBuilder sb = StringXBuilder.newN(8192);
+      SB sb = SB.newN(8192);
       String line;
       if (nBytesMax == Integer.MAX_VALUE) {
         line = br.readLine();

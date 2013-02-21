@@ -31,8 +31,8 @@ import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.P3;
+import org.jmol.util.V3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -273,13 +273,17 @@ public class SmarterJmolAdapter extends JmolAdapter {
       result = asc[0];
       try {
         result.finalizeTrajectoryAs(
-            (List<Point3f[]>) htParams.get("trajectorySteps"),
-            (List<Vector3f[]>) htParams.get("vibrationSteps"));
+            (List<P3[]>) htParams.get("trajectorySteps"),
+            (List<V3[]>) htParams.get("vibrationSteps"));
       } catch (Exception e) {
         if (result.errorMessage == null)
           result.errorMessage = "" + e;
       }
-    } else { 
+    } else if (asc[0].isTrajectory){ 
+      result = asc[0];
+      for (int i = 1; i < asc.length; i++)
+        asc[0].mergeTrajectories(asc[i]);
+    } else {
       result = new AtomSetCollection("Array", null, asc, null);
     }
     return (result.errorMessage == null ? result : result.errorMessage);

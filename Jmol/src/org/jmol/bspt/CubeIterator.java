@@ -22,7 +22,7 @@
  */
 package org.jmol.bspt;
 
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 /**
  * Iterator used for finding all points within a box or a hemi-box
@@ -69,7 +69,7 @@ public class CubeIterator {
    * @param radius
    * @param hemisphereOnly 
    */
-  public void initialize(Point3f center, float radius, boolean hemisphereOnly) {
+  public void initialize(P3 center, float radius, boolean hemisphereOnly) {
     //this.center = center;
     this.radius = radius;
     tHemisphere = false;
@@ -110,7 +110,7 @@ public class CubeIterator {
    *
    * @return Tuple
    */
-  public Point3f nextElement() {
+  public P3 nextElement() {
     return leaf.tuples[leafIndex++];
   }
 
@@ -173,7 +173,7 @@ public class CubeIterator {
    * @param t
    * @return boolean
    */
-  private boolean isWithinRadius(Point3f t) {
+  private boolean isWithinRadius(P3 t) {
     dx = t.x - cx;
     return ((!tHemisphere || dx >= 0)        
         && (dx = Math.abs(dx)) <= radius

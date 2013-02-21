@@ -32,7 +32,7 @@ import java.util.Map;
 
 import org.jmol.api.JmolDocument;
 import org.jmol.util.Logger;
-import org.jmol.util.StringXBuilder;
+import org.jmol.util.SB;
 import org.jmol.viewer.Viewer;
 
 
@@ -261,21 +261,30 @@ public class BinaryDocument implements JmolDocument {
   }
 
   public float readFloat() throws Exception {
+    int x = readInt();
     /**
+     * see http://en.wikipedia.org/wiki/Binary32
+     * 
+     * [sign]      [8 bits power] [23 bits fraction]
+     * 0x80000000  0x7F800000      0x7FFFFF
+     * 
+     * (untested)
+     * 
      * @j2sNative
      * 
-     * var x = this.readInt();
-     * var m = ((x & 0x3FA00000) >> 24) - 90
-     * return  (x & 0x80000000 == 0 ? 1 : -1) * ((x & 0x7FFFFF) | 0x800000)*Math.pow(2, m);
+     *       if (x == 0) return 0;
+     *       var o = org.jmol.io2.BinaryDocument;
+     *       if (o.fracIEEE == null);
+     *         o.setFracIEEE();
+     *       var m = ((x & 0x7F800000) >> 23);
+     *       return ((x & 0x80000000) == 0 ? 1 : -1) * o.shiftIEEE((x & 0x7FFFFF) | 0x800000, m - 149);
      *  
      */
     {
-    nBytes += 4;
-    return (isBigEndian ? ioReadFloat() 
-        : Float.intBitsToFloat(readLEInt()));
+    return Float.intBitsToFloat(x);
     }
   }
-  
+
   private int readLEInt() throws Exception {
     return ((ioReadByte() & 0xff)
           | (ioReadByte() & 0xff) << 8
@@ -283,18 +292,135 @@ public class BinaryDocument implements JmolDocument {
           | (ioReadByte() & 0xff) << 24);
   }
 
-  private float ioReadFloat() throws Exception {
-    float f = stream.readFloat();
-    if (os != null)
-      writeInt(Float.floatToIntBits(f));
-    return f;
+  byte[] t8 = new byte[8];
+  
+  public double readDouble() throws Exception {
+    /**
+     * 
+     * reading the float equivalent here in JavaScript
+     * 
+     * @j2sNative
+     * 
+     * this.readByteArray(this.t8, 0, 8);
+     * return org.jmol.io2.BinaryDocument.bytesToDoubleToFloat(this.t8, 0, this.isBigEndian);
+     *  
+     */
+    {
+      nBytes += 8;
+      return (isBigEndian ? ioReadDouble() : Double.longBitsToDouble(readLELong()));  
+    }
+  }
+  
+
+  /**
+   * see http://en.wikipedia.org/wiki/Binary64
+   *  
+   * not concerning ourselves with very small or very large numbers and getting
+   * this exactly right. Just need a float here.
+   * 
+   * @param bytes
+   * @param j
+   * @param isBigEndian
+   * @return float
+   */
+  public static float bytesToDoubleToFloat(byte[] bytes, int j, boolean isBigEndian) {
+    {
+      // IEEE754: sign (1 bit), exponent (11 bits), fraction (52 bits).
+      // seeeeeee eeeeffff ffffffff ffffffff ffffffff xxxxxxxx xxxxxxxx xxxxxxxx
+      //     b1      b2       b3       b4       b5    ---------float ignores----
+
+        if (fracIEEE == null)
+           setFracIEEE();
+        
+      /**
+       * @j2sNative
+       *       var o = org.jmol.io2.BinaryDocument;
+       *       var b1, b2, b3, b4, b5;
+       *       
+       *       if (isBigEndian) {
+       *       b1 = bytes[j] & 0xFF;
+       *       b2 = bytes[j + 1] & 0xFF;
+       *       b3 = bytes[j + 2] & 0xFF;
+       *       b4 = bytes[j + 3] & 0xFF;
+       *       b5 = bytes[j + 4] & 0xFF;
+       *       } else {
+       *       b1 = bytes[j + 7] & 0xFF;
+       *       b2 = bytes[j + 6] & 0xFF;
+       *       b3 = bytes[j + 5] & 0xFF;
+       *       b4 = bytes[j + 4] & 0xFF;
+       *       b5 = bytes[j + 3] & 0xFF;
+       *       }
+       *       var s = ((b1 & 0x80) == 0 ? 1 : -1);
+       *       var e = (((b1 & 0x7F) << 4) | (b2 >> 4)) - 1026;
+       *       b2 = (b2 & 0xF) | 0x10;
+       *       return s * (o.shiftIEEE(b2, e) + o.shiftIEEE(b3, e - 8) + o.shiftIEEE(b4, e - 16)
+       *         + o.shiftIEEE(b5, e - 24));
+       */
+      {
+        double d;
+        
+        if (isBigEndian)
+          d = Double.longBitsToDouble((((long) bytes[j]) & 0xff) << 56
+             | (((long) bytes[j + 1]) & 0xff) << 48
+             | (((long) bytes[j + 2]) & 0xff) << 40
+             | (((long) bytes[j + 3]) & 0xff) << 32
+             | (((long) bytes[j + 4]) & 0xff) << 24
+             | (((long) bytes[j + 5]) & 0xff) << 16
+             | (((long) bytes[j + 6]) & 0xff) << 8 
+             | (((long) bytes[7]) & 0xff));
+        else
+          d = Double.longBitsToDouble((((long) bytes[j + 7]) & 0xff) << 56
+             | (((long) bytes[j + 6]) & 0xff) << 48
+             | (((long) bytes[j + 5]) & 0xff) << 40
+             | (((long) bytes[j + 4]) & 0xff) << 32
+             | (((long) bytes[j + 3]) & 0xff) << 24
+             | (((long) bytes[j + 2]) & 0xff) << 16
+             | (((long) bytes[j + 1]) & 0xff) << 8 
+             | (((long) bytes[j]) & 0xff));
+        return (float) d;
+      }
+
+    }
   }
 
-  public double readDouble() throws Exception {
-    nBytes += 8;
-    return (isBigEndian ? ioReadDouble() : Double.longBitsToDouble(readLELong()));  
+  private static float[] fracIEEE;
+
+  static void setFracIEEE() {
+    fracIEEE = new float[270];
+    for (int i = 0; i < 270; i++)
+      fracIEEE[i] = (float) Math.pow(2, i - 141);
+    //    System.out.println(fracIEEE[0] + "  " + Float.MIN_VALUE);
+    //    System.out.println(fracIEEE[269] + "  " + Float.MAX_VALUE);
   }
-    
+
+  /**
+   * only concerned about reasonable float values here
+   * 
+   * @param f
+   * @param i
+   * @return f * 2^i
+   */
+  static double shiftIEEE(double f, int i) {
+    if (f == 0 || i < -140)
+      return 0;
+    if (i > 128)
+      return Float.MAX_VALUE;
+    return f * fracIEEE[i + 140];
+  }
+
+//  static {
+//    setFracIEEE();
+//    for (int i = -50; i < 50; i++) {
+//      float f = i * (float) (Math.random() * Math.pow(2, Math.random() * 100 - 50));
+//      int x = Float.floatToIntBits(f);
+//      int m = ((x & 0x7F800000) >> 23);
+//      float f1 = (float) (f == 0 ? 0 : ((x & 0x80000000) == 0 ? 1 : -1) * shiftIEEE((x & 0x7FFFFF) | 0x800000, m - 149));
+//      System.out.println(f + "  " + f1);
+//    }
+//    System.out.println("binarydo");
+//  }
+
+
   private double ioReadDouble() throws Exception {
     double d = stream.readDouble();
     if (os != null)
@@ -343,7 +469,7 @@ public class BinaryDocument implements JmolDocument {
       this.os = os;
   }
 
-  public StringXBuilder getAllDataFiles(String binaryFileList, String firstFile) {
+  public SB getAllDataFiles(String binaryFileList, String firstFile) {
     return null;
   }
 

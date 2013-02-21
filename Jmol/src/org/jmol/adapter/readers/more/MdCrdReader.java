@@ -26,7 +26,7 @@ package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 
 /**
@@ -59,7 +59,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
     int floatCount = templateAtomCount * 3 + (isPeriodic ? 3 : 0);
     while (true)
       if (doGetModel(++modelNumber, null)) {
-        Point3f[] trajectoryStep = new Point3f[atomCount];
+        P3[] trajectoryStep = new P3[atomCount];
         if (!getTrajectoryStep(trajectoryStep, isPeriodic))
           return;
         trajectorySteps.add(trajectoryStep);
@@ -85,19 +85,19 @@ public class MdCrdReader extends AtomSetCollectionReader {
     return parseFloatRange(line, ptFloat - 8, ptFloat);
   }
 
-  private Point3f getPoint() throws Exception {
+  private P3 getPoint() throws Exception {
     float x = getFloat();
     float y = getFloat();
     float z = getFloat();
-    return (Float.isNaN(z) ? null : Point3f.new3(x, y, z));
+    return (Float.isNaN(z) ? null : P3.new3(x, y, z));
   }
 
-  private boolean getTrajectoryStep(Point3f[] trajectoryStep, boolean isPeriodic)
+  private boolean getTrajectoryStep(P3[] trajectoryStep, boolean isPeriodic)
       throws Exception {
     int atomCount = trajectoryStep.length;
     int n = -1;
     for (int i = 0; i < templateAtomCount; i++) {
-      Point3f pt = getPoint();
+      P3 pt = getPoint();
       if (pt == null)
         return false;
       if (bsFilter == null || bsFilter.get(i)) {

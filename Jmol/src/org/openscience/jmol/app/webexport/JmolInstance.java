@@ -34,8 +34,8 @@ import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.util.BitSet;
-import org.jmol.util.BitSetUtil;
+import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 
 class JmolInstance {
   String name;
@@ -46,7 +46,7 @@ class JmolInstance {
   int bgColor;
   boolean spinOn;
   String pictFile;
-  BitSet whichWidgets;//true bits are selected widgets
+  BS whichWidgets;//true bits are selected widgets
   boolean pictIsScratchFile;
   JmolViewer viewer;
 
@@ -70,7 +70,7 @@ class JmolInstance {
     }
     bgColor = viewer.getBackgroundArgb();
     javaname = name.replaceAll("[^a-zA-Z_0-9-]", "_"); //escape filename characters
-    whichWidgets=BitSetUtil.newBitSet(nWidgets);
+    whichWidgets=BSUtil.newBitSet(nWidgets);
     FileSystemView Directories = FileSystemView.getFileSystemView();
     File homedir = Directories.getHomeDirectory();
     String homedirpath = homedir.getPath();

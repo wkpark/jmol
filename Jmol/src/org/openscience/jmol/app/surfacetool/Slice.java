@@ -27,9 +27,9 @@ package org.openscience.jmol.app.surfacetool;
 
 
 import org.jmol.util.Measure;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 class Slice {
 
@@ -40,9 +40,9 @@ class Slice {
   float anglefromZ;// 0<=anglefromZ < PI/2 radians
   float position; // distance of slice middle from origin
   float thickness; // thickness of slice
-  final Point3f boundBoxNegCorner = new Point3f();
-  final Point3f boundBoxPosCorner = new Point3f();
-  final Point3f boundBoxCenter = new Point3f();
+  final P3 boundBoxNegCorner = new P3();
+  final P3 boundBoxPosCorner = new P3();
+  final P3 boundBoxCenter = new P3();
   float diagonal;
 
   /**
@@ -87,7 +87,7 @@ class Slice {
    *        the viewed object.
    */
   void setSlice(float angleXY, float anglefromZ, float position,
-                float thickness, Point3f boundBoxCenter, Vector3f boundBoxVec,
+                float thickness, P3 boundBoxCenter, V3 boundBoxVec,
                 boolean useMolecular) {
     if (angleXY >= 0 && angleXY < Math.PI) {
       this.angleXY = angleXY;
@@ -110,9 +110,9 @@ class Slice {
     makePlane(position, angleXY, anglefromZ, middle);
     if (!useMolecular) {
       //correct for the offset between the boundbox center and the origin
-      Point3f pt = Point3f.new3(middle.x, middle.y, middle.z);
+      P3 pt = P3.new3(middle.x, middle.y, middle.z);
       pt.scaleAdd2(-middle.w, pt, boundBoxCenter);
-      Measure.getPlaneThroughPoint(pt, Vector3f.new3(middle.x, middle.y,
+      Measure.getPlaneThroughPoint(pt, V3.new3(middle.x, middle.y,
           middle.z), middle);
     }
     leftPlane.set(middle.x, middle.y, middle.z, middle.w);

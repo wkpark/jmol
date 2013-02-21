@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.minimize.Minimizer;
-import org.jmol.script.Token;
-import org.jmol.util.BitSet;
+import org.jmol.script.T;
+import org.jmol.util.BS;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -42,7 +42,7 @@ public class ForceFieldUFF extends ForceField {
 
   private static List<String[]> atomTypes;
   private static Map<Object, FFParam> ffParams;
-  private BitSet bsAromatic;
+  private BS bsAromatic;
   
   public ForceFieldUFF(Minimizer minimizer) {
     this.minimizer = minimizer;
@@ -55,7 +55,7 @@ public class ForceFieldUFF extends ForceField {
   }
  
   @Override
-  public boolean setModel(BitSet bsElements, int elemnoMax) {
+  public boolean setModel(BS bsElements, int elemnoMax) {
     setModelFields();
     Logger.info("minimize: setting atom types...");
     if (atomTypes == null && (atomTypes = getAtomTypes()) == null)
@@ -68,7 +68,7 @@ public class ForceFieldUFF extends ForceField {
     return calc.setupCalculations();
   }
   
-  private void setAtomTypes(BitSet bsElements, int elemnoMax) {
+  private void setAtomTypes(BS bsElements, int elemnoMax) {
     int nTypes = atomTypes.size();
     bsElements.clear(0);
     for (int i = 0; i < nTypes; i++) {
@@ -76,7 +76,7 @@ public class ForceFieldUFF extends ForceField {
       String smarts = data[0];
       if (smarts == null)
         continue;
-      BitSet search = getSearch(smarts, elemnoMax, bsElements);
+      BS search = getSearch(smarts, elemnoMax, bsElements);
       // if the 0 bit in bsElements gets set, then the element is not present,
       // and there is no need to search for it;
       // if search is null, then we are done -- max elemno exceeded
@@ -107,7 +107,7 @@ public class ForceFieldUFF extends ForceField {
         Token[keyword(0x880001) value=")"]
         Token[keyword(0x80065) value="expressionEnd"]
   */
-  private BitSet getSearch(String smarts, int elemnoMax, BitSet bsElements) {
+  private BS getSearch(String smarts, int elemnoMax, BS bsElements) {
     /*
      * 
      * only a few possibilities --
@@ -119,7 +119,7 @@ public class ForceFieldUFF extends ForceField {
      * 
      */
 
-    Token[] search = null;
+    T[] search = null;
 
     int len = smarts.length();
     search = tokenTypes[TOKEN_ELEMENT_ONLY];
@@ -166,12 +166,12 @@ public class ForceFieldUFF extends ForceField {
     } 
     search[PT_ELEMENT].intValue = elemNo;
     Object v = minimizer.viewer.evaluateExpression(search);
-    if (!(v instanceof BitSet))
+    if (!(v instanceof BS))
       return null;
-    BitSet bs = (BitSet) v;
+    BS bs = (BS) v;
     if (isAromatic && bs.cardinality() > 0) {
       if (bsAromatic == null)
-        bsAromatic = (BitSet) minimizer.viewer.evaluateExpression(tokenTypes[TOKEN_AROMATIC]);
+        bsAromatic = (BS) minimizer.viewer.evaluateExpression(tokenTypes[TOKEN_AROMATIC]);
       bs.and(bsAromatic);
     }
     if (Logger.debugging && bs.cardinality() > 0)
@@ -305,85 +305,85 @@ Token[keyword(0x880001) value=")"]
   private final static int PT_CHARGE = 5;
   private final static int PT_CONNECT = 6;
   
-  private final static Token[][] tokenTypes = new Token[][] {
-         /*0*/  new Token[]{
-       Token.tokenExpressionBegin,
-       Token.newToken(Token.opEQ, Token.elemno), 
-       Token.intToken(0), //2
-       Token.tokenExpressionEnd},
-         /*1*/  new Token[]{
-       Token.tokenExpressionBegin,
-       Token.newToken(Token.opEQ, Token.elemno), 
-       Token.intToken(0), //2
-       Token.tokenAnd, 
-       Token.newToken(Token.opEQ, Token.formalcharge),
-       Token.intToken(0), //5
-       Token.tokenExpressionEnd},
-         /*2*/  new Token[]{
-       Token.tokenExpressionBegin,
-       Token.newToken(Token.opEQ, Token.elemno), 
-       Token.intToken(0)  ,  // 2
-       Token.tokenAnd, 
-       Token.tokenConnected,
-       Token.tokenLeftParen,
-       Token.intToken(0),   // 6
-       Token.tokenRightParen,
-       Token.tokenExpressionEnd},
-         /*3*/  new Token[]{     // not used this way
-       Token.tokenExpressionBegin,
-       Token.newTokenObj(Token.identifier, "flatring"),
-       Token.tokenExpressionEnd},
-         /*4*/  new Token[]{ //sp == connected(1,"triple") or connected(2, "double")
-       Token.tokenExpressionBegin,
-       Token.newToken(Token.opEQ, Token.elemno), 
-       Token.intToken(0)  ,  // 2
-       Token.tokenAnd, 
-       Token.tokenLeftParen,
-       Token.tokenConnected,
-       Token.tokenLeftParen,
-       Token.intToken(1),
-       Token.tokenComma,
-       Token.newTokenObj(Token.string, "triple"),
-       Token.tokenRightParen,
-       Token.tokenOr,
-       Token.tokenConnected,
-       Token.tokenLeftParen,
-       Token.intToken(2),
-       Token.tokenComma,
-       Token.newTokenObj(Token.string, "double"),
-       Token.tokenRightParen,
-       Token.tokenRightParen,
-       Token.tokenExpressionEnd},
-         /*5*/  new Token[]{  // sp2 == connected(1, double)
-       Token.tokenExpressionBegin,
-       Token.newToken(Token.opEQ, Token.elemno), 
-       Token.intToken(0)  ,  // 2
-       Token.tokenAnd, 
-       Token.newTokenObj(Token.connected, "connected"),
-       Token.tokenLeftParen,
-       Token.intToken(1),
-       Token.tokenComma,
-       Token.newTokenObj(Token.string, "double"),
-       Token.tokenRightParen,
-       Token.tokenExpressionEnd},
-       /*6*/  new Token[]{ //Nv vinylic == connected(3) && connected(connected("double"))
-       Token.tokenExpressionBegin,
-       Token.newToken(Token.opEQ, Token.elemno), 
-       Token.intToken(0)  ,  // 2
-       Token.tokenAnd, 
-       Token.tokenConnected,
-       Token.tokenLeftParen,
-       Token.intToken(3),
-       Token.tokenRightParen,
-       Token.tokenAnd, 
-       Token.tokenConnected,
-       Token.tokenLeftParen,
-       Token.tokenConnected,
-       Token.tokenLeftParen,
-       Token.newTokenObj(Token.string, "double"),
-       Token.tokenRightParen,
-       Token.tokenRightParen,
-       Token.tokenExpressionEnd},
+  private final static T[][] tokenTypes = new T[][] {
+         /*0*/  new T[]{
+       T.tokenExpressionBegin,
+       T.n(T.opEQ, T.elemno), 
+       T.i(0), //2
+       T.tokenExpressionEnd},
+         /*1*/  new T[]{
+       T.tokenExpressionBegin,
+       T.n(T.opEQ, T.elemno), 
+       T.i(0), //2
+       T.tokenAnd, 
+       T.n(T.opEQ, T.formalcharge),
+       T.i(0), //5
+       T.tokenExpressionEnd},
+         /*2*/  new T[]{
+       T.tokenExpressionBegin,
+       T.n(T.opEQ, T.elemno), 
+       T.i(0)  ,  // 2
+       T.tokenAnd, 
+       T.tokenConnected,
+       T.tokenLeftParen,
+       T.i(0),   // 6
+       T.tokenRightParen,
+       T.tokenExpressionEnd},
+         /*3*/  new T[]{     // not used this way
+       T.tokenExpressionBegin,
+       T.o(T.identifier, "flatring"),
+       T.tokenExpressionEnd},
+         /*4*/  new T[]{ //sp == connected(1,"triple") or connected(2, "double")
+       T.tokenExpressionBegin,
+       T.n(T.opEQ, T.elemno), 
+       T.i(0)  ,  // 2
+       T.tokenAnd, 
+       T.tokenLeftParen,
+       T.tokenConnected,
+       T.tokenLeftParen,
+       T.i(1),
+       T.tokenComma,
+       T.o(T.string, "triple"),
+       T.tokenRightParen,
+       T.tokenOr,
+       T.tokenConnected,
+       T.tokenLeftParen,
+       T.i(2),
+       T.tokenComma,
+       T.o(T.string, "double"),
+       T.tokenRightParen,
+       T.tokenRightParen,
+       T.tokenExpressionEnd},
+         /*5*/  new T[]{  // sp2 == connected(1, double)
+       T.tokenExpressionBegin,
+       T.n(T.opEQ, T.elemno), 
+       T.i(0)  ,  // 2
+       T.tokenAnd, 
+       T.o(T.connected, "connected"),
+       T.tokenLeftParen,
+       T.i(1),
+       T.tokenComma,
+       T.o(T.string, "double"),
+       T.tokenRightParen,
+       T.tokenExpressionEnd},
+       /*6*/  new T[]{ //Nv vinylic == connected(3) && connected(connected("double"))
+       T.tokenExpressionBegin,
+       T.n(T.opEQ, T.elemno), 
+       T.i(0)  ,  // 2
+       T.tokenAnd, 
+       T.tokenConnected,
+       T.tokenLeftParen,
+       T.i(3),
+       T.tokenRightParen,
+       T.tokenAnd, 
+       T.tokenConnected,
+       T.tokenLeftParen,
+       T.tokenConnected,
+       T.tokenLeftParen,
+       T.o(T.string, "double"),
+       T.tokenRightParen,
+       T.tokenRightParen,
+       T.tokenExpressionEnd},
   };
 
 }

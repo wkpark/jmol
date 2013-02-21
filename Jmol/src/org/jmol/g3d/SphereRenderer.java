@@ -27,8 +27,8 @@ package org.jmol.g3d;
 //import javax.vecmath.Vector4f;  !NO -- requires Vector4d in applet
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Point3f;
-import org.jmol.util.Point3i;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 import org.jmol.util.Quadric;
 import org.jmol.util.Shader;
 
@@ -78,7 +78,7 @@ public class SphereRenderer {
   private double[] coef;
   private Matrix4f mDeriv;
   private int selectedOctant;
-  private Point3i[] octantPoints;
+  private P3i[] octantPoints;
   private int planeShade;
   private int[] zbuf;
   private int width;
@@ -90,7 +90,7 @@ public class SphereRenderer {
 
   void render(int[] shades, boolean tScreened, int diameter, int x, int y,
               int z, Matrix3f mat, double[] coef, Matrix4f mDeriv,
-              int selectedOctant, Point3i[] octantPoints, boolean addAllPixels) {
+              int selectedOctant, P3i[] octantPoints, boolean addAllPixels) {
     if (z == 1)
       return;
     width = g3d.width;
@@ -446,7 +446,7 @@ public class SphereRenderer {
     }
   }
 
-  private final Point3f ptTemp = new Point3f();
+  private final P3 ptTemp = new P3();
   private final int[] planeShades = new int[3];
   private final float[][] dxyz = new float[3][3];
   private int z0;

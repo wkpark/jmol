@@ -50,9 +50,9 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 
 /**
@@ -88,15 +88,15 @@ public class CastepReader extends AtomSetCollectionReader {
   private boolean isCell;
 
   private float a, b, c, alpha, beta, gamma;
-  private Vector3f[] abc = new Vector3f[3];
+  private V3[] abc = new V3[3];
   
   private int atomCount;
-  private Point3f[] atomPts;
+  private P3[] atomPts;
 
   private boolean havePhonons = false;
   private String lastQPt;
   private int qpt2;
-  private Vector3f desiredQpt;
+  private V3 desiredQpt;
   private String desiredQ;
 
   private String chargeType = "MULL";
@@ -119,7 +119,7 @@ public class CastepReader extends AtomSetCollectionReader {
   }
 
   private void setDesiredQpt(String s) {
-    desiredQpt = new Vector3f();
+    desiredQpt = new V3();
     desiredQ = "";
     float num = 1;
     float denom = 1;
@@ -405,7 +405,7 @@ public class CastepReader extends AtomSetCollectionReader {
         x = parseFloatStr(tokens[0]) * factor;
         y = parseFloatStr(tokens[1]) * factor;
         z = parseFloatStr(tokens[2]) * factor;
-        abc[i] = Vector3f.new3(x, y, z);
+        abc[i] = V3.new3(x, y, z);
       } else {
         Logger.warn("error reading coordinates of lattice vector "
             + Integer.toString(i + 1)
@@ -530,7 +530,7 @@ public class CastepReader extends AtomSetCollectionReader {
     double[][] a = new double[3][3];
     fillFloatArray(line0, 0, data);
     Logger.info("tensor " +  atom.atomName 
-        + "\t" +Escape.escape(data)); 
+        + "\t" +Escape.e(data)); 
     for (int p = 0, i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         a[i][j] = data[p++];
@@ -644,10 +644,10 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     atomCount = atomSetCollection.getAtomCount();
     // we collect the atom points, because any supercell business
     // will trash those, and we need the originals
-    atomPts = new Point3f[atomCount];
+    atomPts = new P3[atomCount];
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = 0; i < atomCount; i++)
-      atomPts[i] = Point3f.newP(atoms[i]);
+      atomPts[i] = P3.newP(atoms[i]);
   }
 
   /*
@@ -676,8 +676,8 @@ Species   Ion     s      p      d      f     Total  Charge (e)
 
   private void readPhononFrequencies() throws Exception {
     tokens = getTokens();
-    Vector3f v = new Vector3f();
-    Vector3f qvec = Vector3f.new3(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
+    V3 v = new V3();
+    V3 qvec = V3.new3(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
         parseFloatStr(tokens[4]));
     String fcoord = getFractionalCoord(qvec);
     String qtoks = "{" + tokens[2] + " " + tokens[3] + " " + tokens[4] + "}";
@@ -743,7 +743,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     readLine();
     int frequencyCount = freqs.size();
     float[] data = new float[8];
-    Vector3f t = new Vector3f();
+    V3 t = new V3();
     atomSetCollection.setCollectionName(qname);
     for (int i = 0; i < frequencyCount; i++) {
       if (!doGetVibration(++vibrationNumber)) {
@@ -785,7 +785,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     }
   }
 
-  private String getFractionalCoord(Vector3f qvec) {
+  private String getFractionalCoord(V3 qvec) {
     return (isInt(qvec.x * 12) && isInt(qvec.y * 12) && isInt(qvec.z * 12) ? getSymmetry()
         .fcoord(qvec)
         : null);
@@ -811,8 +811,8 @@ Species   Ion     s      p      d      f     Total  Charge (e)
    * @param v
    *        return vector
    */
-  private void setPhononVector(float[] data, Atom atom, Vector3f rTrans,
-                               Vector3f qvec, Vector3f v) {
+  private void setPhononVector(float[] data, Atom atom, V3 rTrans,
+                               V3 qvec, V3 v) {
     // complex[r/i] vx = data[2/3], vy = data[4/5], vz = data[6/7]
     if (qvec == null) {
       v.set(data[2], data[4], data[6]);

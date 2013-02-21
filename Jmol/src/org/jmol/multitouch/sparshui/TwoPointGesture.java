@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.jmol.multitouch.ActionManagerMT;
 import org.jmol.util.Logger;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 import com.sparshui.common.Event;
 import com.sparshui.common.Location;
@@ -194,7 +194,7 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
       break;
     case ActionManagerMT.MULTI_POINT_DRAG_GESTURE:
       if (locationLast != null) {
-        Vector3f dxy = locationLast.getVector(location);
+        V3 dxy = locationLast.getVector(location);
         event = new DragEvent(dxy.x, dxy.y, 2, time);
       }
       break;
@@ -232,11 +232,11 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
   private void checkType() {
     Location loc10 = _traces1.get(0);
     Location loc11 = _traces1.get(_traces1.size() - 1);
-    Vector3f v1 = loc10.getVector(loc11);
+    V3 v1 = loc10.getVector(loc11);
     float d1 = v1.length();
     Location loc20 = _traces2.get(0);
     Location loc21 = _traces2.get(_traces2.size() - 1);
-    Vector3f v2 = loc20.getVector(loc21);
+    V3 v2 = loc20.getVector(loc21);
     float d2 = v2.length();
     // rooted finger --> zoom (at this position, perhaps?)
     if (d1 < 3 || d2 < 3)
@@ -273,14 +273,14 @@ public class TwoPointGesture implements Gesture /*extends StandardDynamicGesture
     float d12 = loc11.getDistance(loc21);
     if (d1 < 2 && d2 < 2)
       return false;
-    Vector3f v00 = loc10.getVector(loc20);
+    V3 v00 = loc10.getVector(loc20);
     float d00 = v00.length();
     v00.normalize();
     switch (_myType) {
     case ActionManagerMT.ROTATE_GESTURE:
       _offsetCentroid = Location.getCenter(loc10, loc20);
-      Vector3f v1;
-      Vector3f v2;
+      V3 v1;
+      V3 v2;
       if (d2 < 2) {
         v1 = loc20.getVector(loc10);
         v2 = loc20.getVector(loc11);

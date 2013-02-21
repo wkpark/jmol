@@ -25,7 +25,7 @@
 
 package org.jmol.parallel;
 
-import org.jmol.script.Token;
+import org.jmol.script.T;
 import org.jmol.util.Logger;
 import org.jmol.viewer.ShapeManager;
 
@@ -62,7 +62,7 @@ public class ScriptProcessRunnable implements Runnable {
           Logger.debug("Process " + process.processName + " complete");
       }
     } catch (Exception e) {
-      if (this.parallelProcessor.getTok() != Token.trycmd)
+      if (this.parallelProcessor.getTok() != T.trycmd)
         e.printStackTrace();
     } catch (Error er) {
       this.parallelProcessor.clearShapeManager(er);

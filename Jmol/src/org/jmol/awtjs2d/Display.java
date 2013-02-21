@@ -2,7 +2,7 @@ package org.jmol.awtjs2d;
 
 
 import org.jmol.api.JmolViewer;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 /**
  * methods required by Jmol that access java.awt.Component
@@ -109,7 +109,7 @@ class Display {
     return "null";
   }
 
-  public static void convertPointFromScreen(Object canvas, Point3f ptTemp) {
+  public static void convertPointFromScreen(Object canvas, P3 ptTemp) {
     /**
      * @j2sNative
      * 

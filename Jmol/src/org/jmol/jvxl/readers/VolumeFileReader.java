@@ -30,13 +30,13 @@ import org.jmol.api.Interface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Point4f;
-import org.jmol.util.StringXBuilder;
-import org.jmol.util.Vector3f;
+import org.jmol.util.SB;
+import org.jmol.util.V3;
 
 
 abstract class VolumeFileReader extends SurfaceFileReader {
@@ -165,7 +165,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   // generally useful:
 
   protected String skipComments(boolean allowBlankLines) throws Exception {
-    StringXBuilder sb = new StringXBuilder();
+    SB sb = new SB();
     while (readLine() != null
         && (allowBlankLines && line.length() == 0 || line.indexOf("#") == 0))
       sb.append(line).appendC('\n');
@@ -174,7 +174,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
 
   protected void readVoxelVector(int voxelVectorIndex) throws Exception {
     readLine();
-    Vector3f voxelVector = volumetricVectors[voxelVectorIndex];
+    V3 voxelVector = volumetricVectors[voxelVectorIndex];
     if ((voxelCounts[voxelVectorIndex] = parseIntStr(line)) == Integer.MIN_VALUE) //unreadable
       next[0] = line.indexOf(" ");
     voxelVector.set(parseFloat(), parseFloat(), parseFloat());
@@ -406,7 +406,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     }
   }
 
-  protected Point3f[] boundingBox;
+  protected P3[] boundingBox;
 
   @Override
   public float getValue(int x, int y, int z, int ptyz) {
@@ -435,7 +435,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
    * @return JVXL bitset
    * @throws Exception
    */
-  protected BitSet getVoxelBitSet(int nPoints) throws Exception {
+  protected BS getVoxelBitSet(int nPoints) throws Exception {
     // jvxlReader will use this to read the surface voxel data
     return null;
   }
@@ -517,7 +517,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected static boolean checkAtomLine(boolean isXLowToHigh,
                                          boolean isAngstroms,
                                          String strAtomCount, String atomLine,
-                                         StringXBuilder bs) {
+                                         SB bs) {
     if (atomLine.indexOf("ANGSTROMS") >= 0)
       isAngstroms = true;
     int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : Parser
@@ -552,10 +552,10 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected float getSurfacePointAndFraction(float cutoff,
                                              boolean isCutoffAbsolute,
                                              float valueA, float valueB,
-                                             Point3f pointA,
-                                             Vector3f edgeVector, int x, int y,
+                                             P3 pointA,
+                                             V3 edgeVector, int x, int y,
                                              int z, int vA, int vB,
-                                             float[] fReturn, Point3f ptReturn) {
+                                             float[] fReturn, P3 ptReturn) {
 
     float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute,
         valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);

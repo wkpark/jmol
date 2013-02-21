@@ -30,13 +30,13 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-import org.jmol.util.BitSet;
+import org.jmol.util.BS;
 import org.jmol.util.GData;
 import org.jmol.util.J2SRequireImport;
 import org.jmol.util.JmolFont;
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 import org.jmol.util.Tuple3f;
-import org.jmol.util.Vector3f;
+import org.jmol.util.V3;
 
 @J2SRequireImport( { org.jmol.exportjs.Exporter.class,
     org.jmol.exportjs.CartesianExporter.class,
@@ -94,12 +94,12 @@ public class JSExporter extends CartesianExporter {
     useTable = null;
   }
 
-  private void jsSphere(Object applet, String id, boolean isNew, Point3f pt, Object[] o) {
+  private void jsSphere(Object applet, String id, boolean isNew, P3 pt, Object[] o) {
     // implemented in JavaScript only
     System.out.println(applet + " " + id + " " + isNew + " " + pt + " " + o);
   }
 
-  private void jsCylinder(Object applet, String id, boolean isNew, Point3f pt1, Point3f pt2,
+  private void jsCylinder(Object applet, String id, boolean isNew, P3 pt1, P3 pt2,
                            Object[] o) {
     // implemented in JavaScript only
     System.out.println(applet + " " + id + " " + isNew + " " + pt1 + " " + pt2 + " " + o);
@@ -112,12 +112,12 @@ public class JSExporter extends CartesianExporter {
    * @param pt2 
    * @param pt3 
    */
-  void jsTriangle(Object applet, int color, Point3f pt1, Point3f pt2, Point3f pt3) {
+  void jsTriangle(Object applet, int color, P3 pt1, P3 pt2, P3 pt3) {
     System.out.println("jsTriangle ");
   }
 
   @Override
-  protected void outputSphere(Point3f ptCenter, float radius, short colix,
+  protected void outputSphere(P3 ptCenter, float radius, short colix,
                               boolean checkRadius) {
     int iRad = Math.round(radius * 100);
     String check = round(ptCenter) + (checkRadius ? " " + iRad : "");
@@ -137,9 +137,9 @@ public class JSExporter extends CartesianExporter {
   private String[] ret = new String[1];
 
   @Override
-  protected boolean outputCylinder(Point3f ptCenter, Point3f pt1, Point3f pt2,
+  protected boolean outputCylinder(P3 ptCenter, P3 pt1, P3 pt2,
                                    short colix, byte endcaps, float radius,
-                                   Point3f ptX, Point3f ptY, boolean checkRadius) {
+                                   P3 ptX, P3 ptY, boolean checkRadius) {
     // ptX and ptY are ellipse major and minor axes
     // not implemented yet
     if (ptX != null)
@@ -158,20 +158,20 @@ public class JSExporter extends CartesianExporter {
   }
 
   @Override
-  protected void outputCircle(Point3f pt1, Point3f pt2, float radius,
+  protected void outputCircle(P3 pt1, P3 pt2, float radius,
                               short colix, boolean doFill) {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  protected void outputCone(Point3f ptBase, Point3f ptTip, float radius,
+  protected void outputCone(P3 ptBase, P3 ptTip, float radius,
                             short colix) {
     outputCylinder(null, ptBase, ptTip, colix, GData.ENDCAPS_NONE, radius, null, null, false);
   }
 
   @Override
-  protected void outputEllipsoid(Point3f center, Point3f[] points, short colix) {
+  protected void outputEllipsoid(P3 center, P3[] points, short colix) {
     // TODO Auto-generated method stub
 
   }
@@ -181,11 +181,11 @@ public class JSExporter extends CartesianExporter {
   }
 
   @Override
-  protected void outputSurface(Point3f[] vertices, Vector3f[] normals,
+  protected void outputSurface(P3[] vertices, V3[] normals,
                                short[] vertexColixes, int[][] indices,
                                short[] polygonColixes,
-                               int nVertices, int nPolygons, int nFaces, BitSet bsPolygons,
-                               int faceVertexMax, short colix, Point3f offset) {
+                               int nVertices, int nPolygons, int nFaces, BS bsPolygons,
+                               int faceVertexMax, short colix, P3 offset) {
     int[] vertexColors = getColors(vertexColixes);
     int[] polygonColors = getColors(polygonColixes);
     jsSurface(applet, vertices, normals, indices, nVertices, nPolygons, nFaces, bsPolygons, 
@@ -206,9 +206,9 @@ public class JSExporter extends CartesianExporter {
    * @param vertexColors 
    * @param polygonColors 
    */
-  protected void jsSurface(Object applet, Point3f[] vertices, Vector3f[] normals,
+  protected void jsSurface(Object applet, P3[] vertices, V3[] normals,
                          int[][] indices, int nVertices, int nPolygons,
-                         int nFaces, BitSet bsPolygons, int faceVertexMax,
+                         int nFaces, BS bsPolygons, int faceVertexMax,
                          int color, int[] vertexColors, int[] polygonColors) {
       System.out.println("jsSurface -- nV=" + nVertices + " nPoly=" + nPolygons + " nFaces=" + nFaces + " faceVertexMax=" + faceVertexMax);
     // JavaScript only    
@@ -225,7 +225,7 @@ public class JSExporter extends CartesianExporter {
   }
 
   @Override
-  protected void outputTriangle(Point3f pt1, Point3f pt2, Point3f pt3,
+  protected void outputTriangle(P3 pt1, P3 pt2, P3 pt3,
                                 short colix) {
     jsTriangle(applet, g3d.getColorArgbOrGray(colix), pt1, pt2, pt3);
   }

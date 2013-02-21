@@ -73,9 +73,9 @@ public class Hermite {
       float y = (float) (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
       float z = (float) (h1 * z1 + h2 * z2 + h3 * zT1 + h4 * zT2);
       if (isPt)
-        list[index0 + i] = Point3f.new3(x, y, z);
+        list[index0 + i] = P3.new3(x, y, z);
       else
-        list[index0 + i] = Vector3f.new3(x, y, z);
+        list[index0 + i] = V3.new3(x, y, z);
     }
   }
 

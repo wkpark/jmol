@@ -2200,7 +2200,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   /**
    * An "implied string" is a parameter that is not quoted but because of its
    * position in a command is implied to be a string. First we must exclude
-   * @xxxx. Then we consume the entire math syntax @{......} or any set of
+   * the  @xxxx. Then we consume the entire math syntax @{......} or any set of
    * characters not involving white space. echo, hover, label, message, pause
    * are odd-valued; no initial parsing of variables for them.
    * 

@@ -46,6 +46,11 @@ import org.jmol.util.P3;
 import org.jmol.util.P3i;
 import org.jmol.util.V3;
 
+/**
+   * @author Alexander Rose
+   * @author Bob Hanson
+   * 
+ */
 abstract class BioShapeRenderer extends MeshRenderer {
 
   //ultimately this renderer calls MeshRenderer.render1(mesh)
@@ -707,9 +712,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
    * Matches normals for adjacent mesh sections to create a seamless overall
    * mesh. We use temporary normals here. We will convert normals to normixes
    * later.
-   * 
-   * @author Alexander Rose
-   * @author Bob Hanson
    * 
    * @param i
    * @param nPer

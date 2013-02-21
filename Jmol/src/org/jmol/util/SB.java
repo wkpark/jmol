@@ -294,7 +294,6 @@ public class SB {
   /**
    * simple byte conversion not allowing for unicode.
    * Used for base64 conversion and allows for offset
-   * @author Bob Hanson
    * @param off 
    * @param len or -1 for full length (then off must = 0)
    * @return byte[]

@@ -4,6 +4,7 @@ org/jmol/adapter/readers/cifpdb/*.java
 org/jmol/adapter/readers/molxyz/*.java
 org/jmol/adapter/readers/more/*.java
 org/jmol/adapter/readers/quantum/*.java
+org/jmol/adapter/readers/pymol/*.java
 org/jmol/adapter/readers/simple/*.java
 org/jmol/adapter/readers/xml/*.java
 org/jmol/adapter/readers/xtal/*.java

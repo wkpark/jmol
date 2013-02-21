@@ -682,6 +682,12 @@ all support for previous versions removed
       </fileset>
     </jar>
 
+    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersPyMOL.jar" manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/adapter/readers/pymol/**" />
+      </fileset>
+    </jar>
+
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/more/**" />
@@ -797,6 +803,7 @@ all support for previous versions removed
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersQuantum.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersPyMOL.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersSimple.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXtal.jar" />
@@ -924,7 +931,12 @@ all support for previous versions removed
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
   	
-    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersSimple.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersPyMOL.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersPyMOL.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+
+  	<signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersSimple.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersSimple.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
@@ -1024,6 +1036,7 @@ all support for previous versions removed
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMore.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersQuantum.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersPyMOL.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersSimple.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXtal.jar" /> 
@@ -1046,57 +1059,6 @@ all support for previous versions removed
          we cannot simply rename the jar file, because the index has
          the old name (JmolApplet?.jar) inside it -->
   	
- <!--  testing core separation
-    <jar destfile="${jmol.applet.build.dir}/JmolAppletSigned1.jar"
-         manifest="manifest/applet0.txt"
-         index="true">
-      <fileset dir="${appletjars.dir}" includes="**/*"/>
-      <fileset dir="${applet.classes.dir}">
-        <include name="JmolApplet*.class" />
-        <include name="jmol75x29x8.gif" />
-  		<include name="org/jmol/api/**" />
-  		<include name="org/jmol/applet/**" />
-		<include name="org/jmol/atomdata/**" />
-        <include name="org/jmol/awt/**" />		
-		<include name="org/jmol/bspt/**" />
-        <include name="org/jmol/constant/**" />
-   		<include name="org/jmol/export/**" />
-        <include name="org/jmol/geodesic/**" />
-        <include name="org/jmol/i18n/**" />
-      </fileset>    	
-      <indexjars>
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_1b.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_1c.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_1d.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_1e.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_1f.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Console.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_MultiTouch.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Navigate.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Parallel.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCifPdb.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMore.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersQuantum.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersSimple.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar" /> 
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXtal.jar" /> 
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSurface.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Smiles.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Spectrum.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Symmetry.jar" />
-        <fileset dir="${jmol.applet.build.dir}" includes="JmolAppletSigned0_i18n_*.jar" />
-      </indexjars>
-    </jar>
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletSigned1.jar"
-             keystore="selfSignedCertificate/selfSignedCertificate.store"
-             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
-             
-             -->
     <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
   	<!-- huh? Why this? 
@@ -1165,7 +1127,13 @@ all support for previous versions removed
         <include name="org/jmol/quantum/**" />
       </fileset>
     </jar>
-
+  	
+    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersPyMOL.jar" manifest="manifest/applet.txt">
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/adapter/readers/pymol/**" />
+      </fileset>
+    </jar>
+  	
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/more/**" />
@@ -1274,6 +1242,7 @@ all support for previous versions removed
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersQuantum.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersPyMOL.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersSimple.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXtal.jar" />

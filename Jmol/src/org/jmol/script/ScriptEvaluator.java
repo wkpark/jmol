@@ -10157,12 +10157,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     setShapeProperty(JC.SHAPE_STICKS, "type", Integer
         .valueOf(JmolEdge.BOND_COVALENT_MASK));
     // also need to turn off backbones, ribbons, strands, cartoons
-    for (int shapeType = JC.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --shapeType >= 0;)
-      if (shapeType != JC.SHAPE_MEASURES)
-        setShapeSizeBs(shapeType, 0, null);
-    setShapeProperty(JC.SHAPE_POLYHEDRA, "delete", null);
-    sm.setLabel(null, viewer.getSelectionSet(true));
-
+    BS bs = viewer.getSelectionSet(false);
+    for (int iShape = JC.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --iShape >= 0;)
+      if (iShape != JC.SHAPE_MEASURES && sm.getShape(iShape) != null)
+        setShapeSizeBs(iShape, 0, bs);
+    if (sm.getShape(JC.SHAPE_POLYHEDRA) != null)
+      setShapeProperty(JC.SHAPE_POLYHEDRA, "delete", bs);
+    sm.setLabel(null, bs);
     if (!isBond)
       setBooleanProperty("bondModeOr", bondmode);
     viewer.select(bsSelected, false, null, true);

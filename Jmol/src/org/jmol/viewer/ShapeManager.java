@@ -189,7 +189,10 @@ public class ShapeManager {
   }
 
   public void setLabel(String strLabel, BS bsSelection) {
-    if (strLabel != null) { // force the class to load and display
+    if (strLabel == null) {
+      if (shapes[JC.SHAPE_LABELS] == null)
+        return;
+    } else {// force the class to load and display
       loadShape(JC.SHAPE_LABELS);
       setShapeSizeBs(JC.SHAPE_LABELS, 0, null, bsSelection);
     }

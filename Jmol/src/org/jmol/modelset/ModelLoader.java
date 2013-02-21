@@ -175,16 +175,17 @@ public final class ModelLoader {
     modelSet.trajectorySteps = (List<P3[]>) modelSet
         .getModelSetAuxiliaryInfoValue("trajectorySteps");
     isTrajectory = (modelSet.trajectorySteps != null);
-    if (isTrajectory) {
-      info.remove("trajectorySteps");
-      modelSet.vibrationSteps = (List<V3[]>) info.remove("vibrationSteps");
-    }
     doAddHydrogens = (jbr != null && !isTrajectory
         && modelSet.getModelSetAuxiliaryInfoValue("pdbNoHydrogens") == null
         && viewer.getBooleanProperty("pdbAddHydrogens"));
     if (info != null) {
       info.remove("pdbNoHydrogens");
-      shapes = (List<ModelSettings>) info.remove("shapes");    
+      info.remove("trajectorySteps");
+      shapes = (List<ModelSettings>) info.remove("shapes");
+      if (shapes != null)
+        doAddHydrogens = false;
+      if (isTrajectory)
+        modelSet.vibrationSteps = (List<V3[]>) info.remove("vibrationSteps");
     }
     noAutoBond = modelSet.getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = modelSet.getModelSetAuxiliaryInfoBoolean("is2D");

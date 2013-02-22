@@ -614,24 +614,23 @@ public class StateManager {
         useScriptQueue = g.useScriptQueue;
         useArcBall = g.useArcBall;
         databases = g.databases;
-      }    
+      }
       if (databases == null) {
         databases = new Hashtable<String, String>();
         getDataBaseList(JC.databases);
-        loadFormat = databases.get("pdb");
-        loadLigandFormat = databases.get("ligand");
-        nmrUrlFormat = databases.get("nmr");
-        smilesUrlFormat = databases.get("nci") + "/file?format=sdf&get3d=True";
-        nihResolverFormat = databases.get("nci");
-        pubChemFormat = databases.get("pubchem");
-        
-        // beyond these six, they are just in the form load =xxx/id
-        
         getDataBaseList(userDatabases);
       }
+      loadFormat = databases.get("pdb");
+      loadLigandFormat = databases.get("ligand");
+      nmrUrlFormat = databases.get("nmr");
+      smilesUrlFormat = databases.get("nci") + "/file?format=sdf&get3d=True";
+      nihResolverFormat = databases.get("nci");
+      pubChemFormat = databases.get("pubchem");
 
-    for (EnumCallback item : EnumCallback.values())        
-        resetValue(item.name() + "Callback", g);        
+      // beyond these six, they are just in the form load =xxx/id
+
+      for (EnumCallback item : EnumCallback.values())
+        resetValue(item.name() + "Callback", g);
 
       setI("historyLevel", 0); //deprecated ? doesn't do anything
 
@@ -646,7 +645,7 @@ public class StateManager {
       // we really just have to make sure that all these values are definitely
       // also initialized within the managers. 
 
-      setI("depth", 0);                 // maintained by TransformManager
+      setI("depth", 0); // maintained by TransformManager
       setF("gestureSwipeFactor", ActionManager.DEFAULT_GESTURE_SWIPE_FACTOR);
       setB("hideNotSelected", false); //maintained by the selectionManager
       setS("hoverLabel", ""); // maintained by the Hover shape
@@ -655,50 +654,49 @@ public class StateManager {
       setI("logLevel", Logger.getLogLevel());
       setF("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
       setF("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);
-      setI("navFps", TransformManager.DEFAULT_NAV_FPS); 
-      setI("navigationDepth", 0);   // maintained by TransformManager
-      setI("navigationSlab", 0);    // maintained by TransformManager
-      setI("navX", 0);              // maintained by TransformManager
-      setI("navY", 0);              // maintained by TransformManager
-      setI("navZ", 0);              // maintained by TransformManager
+      setI("navFps", TransformManager.DEFAULT_NAV_FPS);
+      setI("navigationDepth", 0); // maintained by TransformManager
+      setI("navigationSlab", 0); // maintained by TransformManager
+      setI("navX", 0); // maintained by TransformManager
+      setI("navY", 0); // maintained by TransformManager
+      setI("navZ", 0); // maintained by TransformManager
       setS("pathForAllFiles", "");
       setI("perspectiveModel", TransformManager.DEFAULT_PERSPECTIVE_MODEL);
-      setS("picking", "identify");      // maintained by ActionManager
-      setS("pickingStyle", "toggle");   // maintained by ActionManager
-      setB("refreshing", true);         // maintained by Viewer
-      setI("rotationRadius", 0);        // maintained by TransformManager
+      setS("picking", "identify"); // maintained by ActionManager
+      setS("pickingStyle", "toggle"); // maintained by ActionManager
+      setB("refreshing", true); // maintained by Viewer
+      setI("rotationRadius", 0); // maintained by TransformManager
       setI("scaleAngstromsPerInch", 0); // maintained by TransformManager
-      setI("scriptReportingLevel", 0);  // maintained by ScriptEvaluator
-      setB("selectionHalos", false);    // maintained by ModelSet
-      setB("showaxes", false);          // maintained by Axes
-      setB("showboundbox", false);      // maintained by Bbcage
-      setB("showfrank", false);         // maintained by Viewer
-      setB("showUnitcell", false);      // maintained by Uccage
-      setI("slab", 100);                // maintained by TransformManager
-      setB("slabEnabled", false);       // maintained by TransformManager     
-      setF("slabrange", 0f);            // maintained by TransformManager
-      setI("spinX", 0);                 // maintained by TransformManager
+      setI("scriptReportingLevel", 0); // maintained by ScriptEvaluator
+      setB("selectionHalos", false); // maintained by ModelSet
+      setB("showaxes", false); // maintained by Axes
+      setB("showboundbox", false); // maintained by Bbcage
+      setB("showfrank", false); // maintained by Viewer
+      setB("showUnitcell", false); // maintained by Uccage
+      setI("slab", 100); // maintained by TransformManager
+      setB("slabEnabled", false); // maintained by TransformManager     
+      setF("slabrange", 0f); // maintained by TransformManager
+      setI("spinX", 0); // maintained by TransformManager
       setI("spinY", TransformManager.DEFAULT_SPIN_Y);
-      setI("spinZ", 0);                 // maintained by TransformManager
+      setI("spinZ", 0); // maintained by TransformManager
       setI("spinFps", TransformManager.DEFAULT_SPIN_FPS);
-      setI("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES); 
+      setI("stereoDegrees", EnumStereoMode.DEFAULT_STEREO_DEGREES);
       setI("stateversion", 0); // only set by a saved state being recalled
       setB("syncScript", viewer.getStatusManager().syncingScripts);
       setB("syncMouse", viewer.getStatusManager().syncingMouse);
       setB("syncStereo", viewer.getStatusManager().stereoSync);
       setB("windowCentered", true); // maintained by TransformManager
-      setB("zoomEnabled", true);    // maintained by TransformManager
-      setI("zDepth", 0);            // maintained by TransformManager
-      setB("zShade", false);        // maintained by TransformManager
-      setI("zSlab", 50);            // maintained by TransformManager
-      
+      setB("zoomEnabled", true); // maintained by TransformManager
+      setI("zDepth", 0); // maintained by TransformManager
+      setB("zShade", false); // maintained by TransformManager
+      setI("zSlab", 50); // maintained by TransformManager
 
       // These next values have no other place than the global Hashtables.
       // This just means that a call to viewer.getXxxxProperty() is necessary.
       // Otherwise, it's the same as if they had a global variable. 
       // It's just an issue of speed of access. Generally, these should only be
       // accessed by the user. 
-      
+
       setI("_version", getJmolVersionInt());
 
       setB("axesWindow", true);
@@ -741,7 +739,7 @@ public class StateManager {
       setS("atomTypes", atomTypes);
       setB("autoBond", autoBond);
       setB("autoFps", autoFps);
-//      setParameterValue("autoLoadOrientation", autoLoadOrientation);
+      //      setParameterValue("autoLoadOrientation", autoLoadOrientation);
       setI("axesMode", axesMode.getCode());
       setF("axesScale", axesScale);
       setB("axesOrientationRasmol", axesOrientationRasmol);
@@ -794,8 +792,8 @@ public class StateManager {
       setB("ellipsoidDots", ellipsoidDots);
       setB("ellipsoidFill", ellipsoidFill);
       setS("energyUnits", energyUnits);
-//      setParameterValue("_fileCaching", _fileCaching);
-//      setParameterValue("_fileCache", _fileCache);
+      //      setParameterValue("_fileCaching", _fileCaching);
+      //      setParameterValue("_fileCache", _fileCache);
       setB("fontScaling", fontScaling);
       setB("fontCaching", fontCaching);
       setB("forceAutoBond", forceAutoBond);
@@ -816,10 +814,8 @@ public class StateManager {
       setF("hoverDelay", hoverDelayMs / 1000f);
       setB("imageState", imageState);
       setB("isosurfaceKey", isosurfaceKey);
-      setB("isosurfacePropertySmoothing",
-          isosurfacePropertySmoothing);
-      setI("isosurfacePropertySmoothingPower",
-          isosurfacePropertySmoothingPower);
+      setB("isosurfacePropertySmoothing", isosurfacePropertySmoothing);
+      setI("isosurfacePropertySmoothingPower", isosurfacePropertySmoothingPower);
       setB("justifyMeasurements", justifyMeasurements);
       setB("legacyAutoBonding", legacyAutoBonding);
       setF("loadAtomDataTolerance", loadAtomDataTolerance);
@@ -923,7 +919,7 @@ public class StateManager {
       setB("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
       setB("zoomLarge", zoomLarge);
       setI("zShadePower", zShadePower);
-      setI("zSlab", zSlab);  
+      setI("zSlab", zSlab);
     }
 
     //lighting (see GData.Shade3D

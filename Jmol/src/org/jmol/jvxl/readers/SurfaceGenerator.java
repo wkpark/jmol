@@ -1293,7 +1293,7 @@ public class SurfaceGenerator {
     
     readerData = new Object[] { params.fileName, data };
 
-    if ("Mrc DelPhi Dsn6".indexOf(fileType.toUpperCase()) >= 0) {
+    if ("MRC DELPHI DSN6".indexOf(fileType.toUpperCase()) >= 0) {
       try {
         br.close();
       } catch (IOException e) {

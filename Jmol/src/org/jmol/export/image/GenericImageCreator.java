@@ -185,8 +185,9 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
           else if (quality > 9)
             quality = 9;
           int bgcolor = (type.equals("PNGT") ? viewer.getBackgroundArgb() : 0);
+          int[] ptJmol = new int[1];
           bytes = GenericPngEncoder.getBytesType(viewer.apiPlatform, image, quality,
-              bgcolor, type);
+              bgcolor, type, ptJmol);
           byte[] b = null;
           if (includeState) {
             int nPNG = bytes.length;
@@ -198,7 +199,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
             bytes = (Escape.isAB(ret) ? (byte[]) ret : ((String) ret)
                 .getBytes());
             int nState = bytes.length;
-            GenericPngEncoder.setJmolTypeText(b, nPNG, nState, type);
+            GenericPngEncoder.setJmolTypeText(ptJmol[0], b, nPNG, nState, type);
           }
           if (!asBytes) {
             if (b != null)

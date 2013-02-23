@@ -82,20 +82,19 @@ public class GenericPngEncoder extends GenericCRCEncoder {
   private Integer transparentColor;
 
   private ApiPlatform apiPlatform;
-  private static int ptJmolByteText;
 
   //private int hdrPos, dataPos, endPos;
   //private byte[] priorRow;
   //private byte[] leftBytes;
 
   public static byte[] getBytesType(ApiPlatform apiPlatform, Object image,
-                                    int quality, int bgcolor, String type) {
+                                    int quality, int bgcolor, String type, int[] ptJmol) {
     GenericPngEncoder pg = new GenericPngEncoder(apiPlatform, image, false,
         GenericPngEncoder.FILTER_NONE, quality);
     pg.type = (type + "0000").substring(0, 4);
     if (bgcolor != 0)
       pg.transparentColor = Integer.valueOf(bgcolor);
-    return pg.pngEncode();
+    return pg.pngEncode(ptJmol);
   }
 
   /**
@@ -131,9 +130,12 @@ public class GenericPngEncoder extends GenericCRCEncoder {
    * Creates an array of bytes that is the PNG equivalent of the current image,
    * specifying whether to encode alpha or not.
    * 
-   * @return an array of bytes, or null if there was a problem
+   * @param ptJmol
+   * 
+   * @return an array of bytes, or null if there was a problem and sets
+   *         ptJmol[0] to the position in the file where the PNGJ byte sequence is located.
    */
-  private byte[] pngEncode() {
+  private byte[] pngEncode(int[] ptJmol) {
 
     byte[] pngIdBytes = { -119, 80, 78, 71, 13, 10, 26, 10 };
 
@@ -148,7 +150,7 @@ public class GenericPngEncoder extends GenericCRCEncoder {
     writeHeader();
 
     // new Jmol 12.3.7; checksum fixed in Jmol 12.3.30 (6/11/2012)
-    ptJmolByteText = bytePos + 4;
+    ptJmol[0] = bytePos + 4;
     writeText(getJmolTypeText(type, 0, 0));
 
     writeText("Software\0Jmol " + Viewer.getJmolVersion());
@@ -169,13 +171,14 @@ public class GenericPngEncoder extends GenericCRCEncoder {
    * 
    * This was corrected for Jmol 12.3.30. Between 12.3.7 and 12.3.29, PNG files
    * created by Jmol have incorrect checksums.
+   * @param ptJmolByteText 
    * 
    * @param b
    * @param nPNG
    * @param nState
    * @param type
    */
-  public static void setJmolTypeText(byte[] b, int nPNG, int nState, String type) {
+  public static void setJmolTypeText(int ptJmolByteText, byte[] b, int nPNG, int nState, String type) {
     String s = "iTXt" + getJmolTypeText(type, nPNG, nState);
     GenericCRCEncoder encoder = new GenericCRCEncoder();
     encoder.setData(b, ptJmolByteText);

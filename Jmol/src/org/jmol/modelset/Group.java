@@ -482,7 +482,7 @@ public class Group {
         case T.radius:
           return new V3();
         case T.angle:
-          return new Float(Float.NaN);
+          return Float.valueOf(Float.NaN);
         case T.array:
         case T.list:
           return new String[] {};

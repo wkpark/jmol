@@ -1235,7 +1235,7 @@ public class StateManager {
       name = name.toLowerCase();
       if (htBooleanParameterFlags.containsKey(name))
         return; // don't allow setting numeric of a boolean
-      htNonbooleanParameterValues.put(name, new Float(value));
+      htNonbooleanParameterValues.put(name, Float.valueOf(value));
     }
 
     void setS(String name, String value) {

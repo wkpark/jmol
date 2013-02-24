@@ -23,10 +23,16 @@
  */
 package org.jmol.shape;
 
+import org.jmol.util.BS;
 import org.jmol.viewer.JC;
 
 public class Uccage extends FontLineShape {
 
+  @Override
+  public void setProperty(String propertyName, Object value, BS bs) {
+    setPropFLS(propertyName, value);
+  }
+  
   @Override
   public String getShapeState() {
     return (modelSet.haveUnitCells ? super.getShapeState() : "");

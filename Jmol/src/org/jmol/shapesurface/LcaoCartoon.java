@@ -82,7 +82,7 @@ public class LcaoCartoon extends Isosurface {
       rotationAxis = null;
       fullCommand = (String) value;
       // overide bitset selection
-      super.setProperty("init", null, null);
+      setPropI("init", null, null);
       return;
     }
 
@@ -203,7 +203,7 @@ public class LcaoCartoon extends Isosurface {
       getCapSlabInfo(fullCommand);
     }
 
-    super.setProperty(propertyName, value, bs);
+    setPropI(propertyName, value, bs);
     
     //from the state:
     if (setInfo || "lobe" == propertyName || "sphere" == propertyName) {
@@ -270,23 +270,23 @@ public class LcaoCartoon extends Isosurface {
     for (int i = meshCount; --i >= 0;)
       if (meshes[i].thisID.indexOf(id) == 0)
         deleteMeshI(i);
-    super.setProperty("init", null, null);
-    super.setProperty("thisID", id, null);
+    setPropI("init", null, null);
+    setPropI("thisID", id, null);
     //System.out.println("lcaocartoon: " + id);
     if (lcaoScale != null)
-      super.setProperty("scale", lcaoScale, null);
+      setPropI("scale", lcaoScale, null);
     if (isCpk) {
-      super.setProperty("colorRGB", Integer.valueOf(viewer.getAtomArgb(iAtom)), null);
+      setPropI("colorRGB", Integer.valueOf(viewer.getAtomArgb(iAtom)), null);
     } else if (lcaoColorNeg != null) {
-      super.setProperty("colorRGB", lcaoColorNeg, null);
-      super.setProperty("colorRGB", lcaoColorPos, null);
+      setPropI("colorRGB", lcaoColorNeg, null);
+      setPropI("colorRGB", lcaoColorPos, null);
     }
     if (slabbingObject != null)
-      super.setProperty("slab", slabbingObject, null);
+      setPropI("slab", slabbingObject, null);
     if (cappingObject != null)
-      super.setProperty("cap", cappingObject, null);
-    super.setProperty("lcaoType", thisType, null);
-    super.setProperty("atomIndex", Integer.valueOf(iAtom), null);
+      setPropI("cap", cappingObject, null);
+    setPropI("lcaoType", thisType, null);
+    setPropI("atomIndex", Integer.valueOf(iAtom), null);
     V3[] axes = { new V3(), new V3(),
         V3.newV(modelSet.atoms[iAtom]), new V3() };
     if (rotationAxis != null)
@@ -308,13 +308,13 @@ public class LcaoCartoon extends Isosurface {
     if (isMolecular || isCpk
         || thisType.equalsIgnoreCase("s")
         || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType) != null) {
-      super.setProperty((isRadical ? "radical" : isLonePair ? "lonePair" : "lcaoCartoon"), axes, null);
+      setPropI((isRadical ? "radical" : isLonePair ? "lonePair" : "lcaoCartoon"), axes, null);
     }
     if (isCpk) {
       short colix = viewer.getModelSet().getAtomColix(iAtom);
       if (C.isColixTranslucent(colix)) {
-        super.setProperty("translucentLevel", new Float(C.getColixTranslucencyLevel(colix)), null);
-        super.setProperty("translucency", "translucent", null);
+        setPropI("translucentLevel", Float.valueOf(C.getColixTranslucencyLevel(colix)), null);
+        setPropI("translucency", "translucent", null);
       }
     } else if (isTranslucent)
       for (int i = meshCount; --i >= 0;)

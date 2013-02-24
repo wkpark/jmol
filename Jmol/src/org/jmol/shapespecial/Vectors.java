@@ -41,14 +41,14 @@ protected void initModelSet() {
 public void setProperty(String propertyName, Object value, BS bsSelected) {
     if (!isActive)
       return;
-    super.setProperty(propertyName, value, bsSelected);
+    setPropAS(propertyName, value, bsSelected);
   }
   
  @Override
 public Object getProperty(String propertyName, int param) {
    if (propertyName == "mad")
      return Integer.valueOf(mads == null || param < 0 || mads.length <= param ? 0 : mads[param]);
-   return super.getProperty(propertyName, param);
+   return null;
  }
 
 }

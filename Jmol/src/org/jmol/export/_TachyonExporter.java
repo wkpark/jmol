@@ -62,7 +62,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     //wasPerspectiveDepth = viewer.getPerspectiveDepth();
     //viewer.setPerspectiveDepth(false);
     getLightingInfo();
-    return super.initializeOutput(viewer, privateKey, g3d, output);    
+    return initOutput(viewer, privateKey, g3d, output);    
   }
   
   private void getLightingInfo() {
@@ -82,7 +82,7 @@ public class _TachyonExporter extends __RayTracerExporter {
 
   @Override
   protected void outputHeader() {
-    super.outputHeader();
+    initVars();
     output("# ******************************************************\n");
     output("# Created by Jmol " + Viewer.getJmolVersion() + "\n");
     output("#\n");

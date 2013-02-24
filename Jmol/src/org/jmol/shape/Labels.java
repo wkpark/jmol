@@ -362,7 +362,7 @@ public class Labels extends AtomShape {
       // pass to super
     }
 
-    super.setProperty(propertyName, value, bsSelected);
+    setPropAS(propertyName, value, bsSelected);
 
   }
 

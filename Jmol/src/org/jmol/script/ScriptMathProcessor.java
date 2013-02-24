@@ -261,7 +261,7 @@ class ScriptMathProcessor {
         float f = ((Float) x.value).floatValue();
         if (f < 0 || f == 0 && 1 / f == Float.NEGATIVE_INFINITY) {
           addOp(T.tokenMinus);
-          x = SV.newVariable(T.decimal, new Float(-f));
+          x = SV.newVariable(T.decimal, Float.valueOf(-f));
         }
         break;
       }
@@ -3685,7 +3685,7 @@ class ScriptMathProcessor {
       case T.average:
         return result;
       case T.stddev:
-        return new Float(retStddev[0]);
+        return Float.valueOf(retStddev[0]);
       }
       break;
     }

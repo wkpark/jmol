@@ -634,19 +634,19 @@ public class TransformManager {
     info.put("rotationMatrix", matrixRotate);
     info.put("rotateZYZ", getRotateZyzText(false));
     info.put("rotateXYZ", getRotateXyzText());
-    info.put("transXPercent", new Float(getTranslationXPercent()));
-    info.put("transYPercent", new Float(getTranslationYPercent()));
-    info.put("zoom", new Float(zoomPercent));
-    info.put("modelRadius", new Float(modelRadius));
+    info.put("transXPercent", Float.valueOf(getTranslationXPercent()));
+    info.put("transYPercent", Float.valueOf(getTranslationYPercent()));
+    info.put("zoom", Float.valueOf(zoomPercent));
+    info.put("modelRadius", Float.valueOf(modelRadius));
     if (mode == MODE_NAVIGATION) {
       info.put("navigationCenter", "navigate center "
           + Escape.eP(navigationCenter));
-      info.put("navigationOffsetXPercent", new Float(
+      info.put("navigationOffsetXPercent", Float.valueOf(
           getNavigationOffsetPercent('X')));
-      info.put("navigationOffsetYPercent", new Float(
+      info.put("navigationOffsetYPercent", Float.valueOf(
           getNavigationOffsetPercent('Y')));
       info
-          .put("navigationDepthPercent", new Float(getNavigationDepthPercent()));
+          .put("navigationDepthPercent", Float.valueOf(getNavigationDepthPercent()));
     }
     return info;
   }

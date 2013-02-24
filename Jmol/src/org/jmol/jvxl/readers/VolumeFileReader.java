@@ -309,7 +309,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       initPlanes();
     if (preProcessPlanes)
       return getPlaneProcessed(x);
-    float[] plane = super.getPlane(x);
+    float[] plane = getPlane2(x);
     if (qpc == null)
       getPlane(plane, true);
     return plane;
@@ -420,7 +420,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
           || ptTemp.z < boundingBox[0].z || ptTemp.z > boundingBox[1].z)
         return Float.NaN;
     }
-    return super.getValue(x, y, z, ptyz);
+    return getValue2(x, y, z, ptyz);
   }
 
   private void skipVoxels(int n) throws Exception {
@@ -556,8 +556,14 @@ abstract class VolumeFileReader extends SurfaceFileReader {
                                              V3 edgeVector, int x, int y,
                                              int z, int vA, int vB,
                                              float[] fReturn, P3 ptReturn) {
-
-    float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute,
+    return getSPFv(cutoff, isCutoffAbsolute,
+        valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
+  }
+  
+  protected float getSPFv(float cutoff, boolean isCutoffAbsolute, float valueA,
+                          float valueB, P3 pointA, V3 edgeVector, int x, int y,
+                          int z, int vA, int vB, float[] fReturn, P3 ptReturn) {
+    float zero = getSPF(cutoff, isCutoffAbsolute,
         valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
     if (qpc == null || Float.isNaN(zero) || !hasColorData)
       return zero;
@@ -571,7 +577,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     vB = marchingCubes.getLinearOffset(x, y, z, vB);
     return qpc.process(vA, vB, fReturn[0]);
   }
-  
+
   private boolean isScaledAlready;
   private void scaleIsosurface(float scale) {
     if (isScaledAlready)

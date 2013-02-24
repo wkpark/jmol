@@ -580,7 +580,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         continue;
       if (atomTypes == null)
         atomTypes = new Hashtable<String, Float>();
-      atomTypes.put(atomTypeSymbol, new Float(oxidationNumber));
+      atomTypes.put(atomTypeSymbol, Float.valueOf(oxidationNumber));
     }
   }
 
@@ -1332,7 +1332,7 @@ _pdbx_struct_oper_list.vector[3]
       if (atomIndex1 < 0 || atomIndex2 < 0)
         continue;
       if (distance > 0) 
-        bondTypes.add(new Object[] { name1, name2, new Float(distance), new Float(dx) });
+        bondTypes.add(new Object[] { name1, name2, Float.valueOf(distance), Float.valueOf(dx) });
     }
   }
   

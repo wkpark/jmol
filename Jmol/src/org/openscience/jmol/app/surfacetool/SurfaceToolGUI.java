@@ -440,7 +440,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
 
   private void updateAngleSliders() {
     Hashtable<Integer, JLabel> angleLabels = new Hashtable<Integer, JLabel>();
-    angleLabels.put(new Integer(0), new JLabel("0"));
+    angleLabels.put(Integer.valueOf(0), new JLabel("0"));
     switch (slicer.getAngleUnits()) {
     case SurfaceTool.DEGREES:
       angleLabels.put(Integer.valueOf(30), new JLabel("30"));

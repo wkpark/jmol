@@ -99,7 +99,7 @@ public class Axes extends FontLineShape {
       return;
     }
     
-    super.setProperty(propertyName, value, bs);
+    setPropFLS(propertyName, value);
   }
 
   @Override

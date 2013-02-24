@@ -721,7 +721,7 @@ abstract class ScriptCompilationTokenParser {
             + theToken.value);
       }
     if (key == null)
-      addTokenToPostfix(T.decimal, new Float(distance));
+      addTokenToPostfix(T.decimal, Float.valueOf(distance));
     else if (key.length() > 0)
       addTokenToPostfix(T.string, key);
     boolean done = false;

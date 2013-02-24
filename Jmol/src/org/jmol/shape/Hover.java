@@ -118,7 +118,7 @@ public class Hover extends TextShape {
       return;
     }
     
-    super.setProperty(propertyName, value, null);
+    setPropTS(propertyName, value, null);
 
   }
 

@@ -671,7 +671,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
           break;
         }
         pt.add2(pt1, wingT);
-        mesh.addVertexCopy(pt);
+        mesh.addV(pt);
       }
       if (p > 0) {
         int nLast = (isFlatMesh ? nPer - 1 : nPer);

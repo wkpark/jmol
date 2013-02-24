@@ -134,7 +134,7 @@ import netscape.javascript.JSObject;
  * This is because the signed applet was having trouble finding _jmol in 
  * Protein Explorer
  * 
- * see JmolConstants for callback types.
+ * see org.jmol.viewer.JC for callback types.
  * 
  * The use of jmolButtons is fully deprecated and NOT recommended.
  * 

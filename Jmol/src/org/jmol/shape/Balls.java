@@ -115,7 +115,7 @@ public class Balls extends AtomShape {
       }
       return;
     }
-    super.setProperty(propertyName, value, bs);
+    setPropAS(propertyName, value, bs);
   }
 
  @Override

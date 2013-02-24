@@ -226,7 +226,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
       Logger.info("[GestureServer] processTouchPoint id=" + id + " state=" + state + " " + location
           + " " + time);
     }
-    Integer iid = new Integer(id);
+    Integer iid = Integer.valueOf(id);
     if (inputDeviceTouchPoints.containsKey(iid)) {
       TouchPoint touchPoint = inputDeviceTouchPoints.get(iid);
       if (!touchPoint.isClaimed())

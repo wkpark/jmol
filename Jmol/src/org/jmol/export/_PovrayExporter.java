@@ -53,13 +53,13 @@ public class _PovrayExporter extends __RayTracerExporter {
 
   @Override
   String finalizeOutput() {
-    super.finalizeOutput();
+    finalizeOutput2();
     return getAuxiliaryFileData();
   }
 
   @Override
   protected void outputHeader() {
-    super.outputHeader();
+    initVars();
     output("// ******************************************************\n");
     output("// Created by Jmol " + Viewer.getJmolVersion() + "\n");
     output("//\n");

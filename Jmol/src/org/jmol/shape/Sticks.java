@@ -172,7 +172,7 @@ public class Sticks extends Shape {
       return;
     }
     
-    super.setProperty(propertyName, value, bs);
+    setPropS(propertyName, value, bs);
   }
 
   @Override

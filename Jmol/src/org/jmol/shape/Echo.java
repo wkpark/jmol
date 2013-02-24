@@ -166,7 +166,7 @@ public class Echo extends TextShape {
         return;
       }
     }
-    super.setProperty(propertyName, value, null);
+    setPropTS(propertyName, value, null);
   }
 
   @Override
@@ -188,7 +188,7 @@ public class Echo extends TextShape {
       }
       return false;
     }
-    return super.getPropertyData(property, data);
+    return false;
   }
 
   @Override

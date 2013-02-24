@@ -199,7 +199,7 @@ public class GamessUKReader extends GamessReader {
      while (readLine() != null && line.indexOf("====") < 0) {
        String[] tokens = getTokensStr(line.substring(20));
        symmetries.add(tokens[0] + " " + tokens[1]);
-       occupancies.add(new Float(parseFloatStr(tokens[5])));
+       occupancies.add(Float.valueOf(parseFloatStr(tokens[5])));
      }
    }
 

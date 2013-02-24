@@ -90,7 +90,6 @@ public class AppletConsole extends JmolConsole {
     jf.setSize(600, 400);
     this.externalContainer = jf;
     setLabels();
-    //System.out.println("AppletConsole.setupOutput " + input);
     JTextArea ta = (JTextArea) input;
     ta.setLineWrap(true);
     ta.setWrapStyleWord(true);
@@ -101,7 +100,6 @@ public class AppletConsole extends JmolConsole {
     KeyStroke shiftA = KeyStroke.getKeyStroke(KeyEvent.VK_A,
         InputEvent.SHIFT_MASK);
     map.removeKeyStrokeBinding(shiftA);
-    //System.out.println("AppletConsole.setupOutput " + output);
     ((JTextPane) output).setEditable(false);
     ((JTextPane) output).setDragEnabled(true);
     //    output.setLineWrap(true);
@@ -131,9 +129,6 @@ public class AppletConsole extends JmolConsole {
     jscrollOutput.setMinimumSize(new Dimension(2, 100));
     Container c = getPane();
     c.setLayout(new BoxLayout(c, BoxLayout.Y_AXIS));
-
-    //System.out.println("Console " + this + " set(2)");
-
     JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, jscrollOutput,
         jscrollInput);
     jsp.setResizeWeight(.9);
@@ -154,13 +149,12 @@ public class AppletConsole extends JmolConsole {
     add(c2, stateButton);
     c2.add(Box.createGlue());
     c.add(c2);
-    ((JLabel) label1).setAlignmentX(Component.CENTER_ALIGNMENT);
-    c.add((JLabel) label1);
+    if (label1 != null) {
+      ((JLabel) label1).setAlignmentX(Component.CENTER_ALIGNMENT);
+      c.add((JLabel) label1);
+    }
     if (externalContainer instanceof JFrame)
       ((JFrame) externalContainer).setJMenuBar(createMenubar());
-
-    //System.out.println("Console " + this + " set(3)");
-
   }
 
   private void add(Container c2, JmolAbstractButton b) {

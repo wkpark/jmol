@@ -100,7 +100,11 @@ public abstract class BioShapeCollection extends Shape {
 
   @Override
   public void setProperty(String propertyName, Object value, BS bsSelected) {
+    setPropBSC(propertyName, value, bsSelected);
+  }
 
+  protected void setPropBSC(String propertyName, Object value, BS bsSelected) {
+    
     if (propertyName == "refreshTrajectories") {
       int modelIndex = ((Integer)((Object[]) value)[0]).intValue();
       for (int i = bioShapes.length; --i >= 0; ){
@@ -176,7 +180,7 @@ public abstract class BioShapeCollection extends Shape {
       return;
     }
     
-    super.setProperty(propertyName, value, bsSelected);
+    setPropS(propertyName, value, bsSelected);
   }
 
   @Override

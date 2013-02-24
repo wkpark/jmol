@@ -399,7 +399,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       jvxlData.jvxlFileTitle = s.substring(0, i);
     }
     if (params.contactPair == null)
-      setBoundingBox();
+      setBBoxAll();
     if (!params.isSilent)
       Logger.info("boundbox corners " + Escape.eP(xyzMin) + " "
           + Escape.eP(xyzMax));
@@ -528,6 +528,10 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected QuantumPlaneCalculationInterface qpc;
   
   public float[] getPlane(int x) {
+    return getPlane2(x);
+  }
+
+  protected float[] getPlane2(int x) {
     if (yzCount == 0)
       initPlanes();
     if (qpc != null)
@@ -545,9 +549,11 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   public float getValue(int x, int y, int z, int ptyz) {
-    if (yzPlanes == null)
-      return voxelData[x][y][z];
-    return yzPlanes[x % 2][ptyz];
+    return getValue2(x, y, z, ptyz);
+  }
+
+  protected float getValue2(int x, int y, int z, int ptyz) {
+    return (yzPlanes == null ? voxelData[x][y][z] : yzPlanes[x % 2][ptyz]);
   }
 
   private void generateSurfaceData() {
@@ -631,6 +637,15 @@ public abstract class SurfaceReader implements VertexDataServer {
     return n;
   }
 
+  protected float getSurfacePointAndFraction(float cutoff, boolean isCutoffAbsolute,
+                                   float valueA, float valueB, P3 pointA,
+                                   V3 edgeVector, int x,
+                                   int y, int z, int vA, int vB, float[] fReturn, P3 ptReturn) {
+    // will be subclassed in many cases.
+    // JavaScript optimization: DO NOT CALL THIS method from subclassed method of the same name!
+    return getSPF(cutoff, isCutoffAbsolute, valueA, valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
+  }
+
   /**
    * 
    * @param cutoff
@@ -648,10 +663,9 @@ public abstract class SurfaceReader implements VertexDataServer {
    * @param ptReturn
    * @return          fractional distance from A to B
    */
-  protected float getSurfacePointAndFraction(float cutoff, boolean isCutoffAbsolute,
-                                   float valueA, float valueB, P3 pointA,
-                                   V3 edgeVector, int x,
-                                   int y, int z, int vA, int vB, float[] fReturn, P3 ptReturn) {
+  protected float getSPF(float cutoff, boolean isCutoffAbsolute, float valueA,
+                     float valueB, P3 pointA, V3 edgeVector, int x, int y,
+                     int z, int vA, int vB, float[] fReturn, P3 ptReturn) {
 
     //JvxlReader may or may not call this
     //IsoSolventReader overrides this for nonlinear Marching Cubes (12.1.29)
@@ -672,6 +686,10 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   public int addVertexCopy(P3 vertexXYZ, float value, int assocVertex) {
+    return addVC(vertexXYZ, value, assocVertex);
+  }
+
+  protected int addVC(P3 vertexXYZ, float value, int assocVertex) {
     if (Float.isNaN(value) && assocVertex != MarchingSquares.EDGE_POINT)
       return -1;
     if (meshDataServer == null)
@@ -1048,18 +1066,18 @@ public abstract class SurfaceReader implements VertexDataServer {
     volumetricOrigin.setT(center);
   }
 
-  private void setBoundingBox() {
+  private void setBBoxAll() {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     xyzMin = null;
     for (int i = 0; i < meshData.vertexCount; i++) {
       P3 p = meshData.vertices[i];
       if (!Float.isNaN(p.x))
-        setBoundingBox(p, 0);
+        setBBox(p, 0);
     }
   }
 
-  protected void setBoundingBox(P3 pt, float margin) {
+  protected void setBBox(P3 pt, float margin) {
     if (xyzMin == null) {
       xyzMin = P3.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
       xyzMax = P3.new3(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);

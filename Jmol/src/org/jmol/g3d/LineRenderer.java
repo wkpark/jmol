@@ -210,7 +210,7 @@ final class LineRenderer {
   }
 
   private boolean getCachedLine() {
-    slopeKey = new Float(slope);
+    slopeKey = Float.valueOf(slope);
     if (!lineCache.containsKey(slopeKey))
       return false;
     lineBits = lineCache.get(slopeKey);

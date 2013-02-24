@@ -440,7 +440,7 @@ public class _ObjExporter extends __CartesianExporter {
   boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
     debugPrint("initializeOutput: + output");
     // Call the super method
-    boolean retVal = super.initializeOutput(viewer, privateKey, g3d, output);
+    boolean retVal = initOutput(viewer, privateKey, g3d, output);
     if (!retVal) {
       debugPrint("End initializeOutput (error in super):");
       return false;
@@ -484,7 +484,7 @@ public class _ObjExporter extends __CartesianExporter {
   // TODO should be protected in __Exporter
   String finalizeOutput() {
     debugPrint("finalizeOutput");
-    String retVal = super.finalizeOutput();
+    String retVal = finalizeOutput2();
 
     // Close the writer and stream
     try {

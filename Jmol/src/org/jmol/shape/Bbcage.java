@@ -31,6 +31,11 @@ import org.jmol.viewer.StateManager;
 public class Bbcage extends FontLineShape {
 
   @Override
+  public void setProperty(String propertyName, Object value, BS bs) {
+    setPropFLS(propertyName, value);
+  }
+  
+  @Override
   public void initShape() {
     super.initShape();
     font3d = gdata.getFont3D(JC.AXES_DEFAULT_FONTSIZE);

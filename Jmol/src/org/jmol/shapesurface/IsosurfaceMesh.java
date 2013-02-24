@@ -121,7 +121,7 @@ public class IsosurfaceMesh extends Mesh {
 
   int addVertexCopy(P3 vertex, float value, int assocVertex,
                     boolean associateNormals) {
-    int vPt = addVertexCopyVal(vertex, value);
+    int vPt = addVCVal(vertex, value);
     switch (assocVertex) {
     case MarchingSquares.CONTOUR_POINT:
       if (firstRealVertex < 0)
@@ -168,7 +168,7 @@ public class IsosurfaceMesh extends Mesh {
 
   @Override
   protected void sumVertexNormals(P3[] vertices, V3[] vectorSums) {
-    super.sumVertexNormals(vertices, vectorSums);
+    sumVertexNormals2(vertices, vectorSums);
     /* 
      * OK, so if there is an associated grid point (because the 
      * point is so close to one), we now declare that associated
@@ -302,7 +302,7 @@ public class IsosurfaceMesh extends Mesh {
                                       short colix, int color, SB fData) {
     v.add(JvxlCoder.CONTOUR_NPOLYGONS, Integer.valueOf(nPolygons));
     v.add(JvxlCoder.CONTOUR_BITSET, bsContour);
-    v.add(JvxlCoder.CONTOUR_VALUE, new Float(value));
+    v.add(JvxlCoder.CONTOUR_VALUE, Float.valueOf(value));
     v.add(JvxlCoder.CONTOUR_COLIX, new short[] { colix });
     v.add(JvxlCoder.CONTOUR_COLOR, new int[] { color });
     v.add(JvxlCoder.CONTOUR_FDATA, fData);
@@ -1005,7 +1005,7 @@ public class IsosurfaceMesh extends Mesh {
 
   @Override
   public BS getVisibleVertexBitSet() {
-    BS bs = super.getVisibleVertexBitSet();
+    BS bs = getVisibleVBS();
     if (jvxlData.thisSet >= 0)
       for (int i = 0; i < vertexCount; i++)
         if (vertexSets[i] != jvxlData.thisSet)

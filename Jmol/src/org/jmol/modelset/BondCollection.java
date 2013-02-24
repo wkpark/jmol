@@ -276,7 +276,7 @@ abstract public class BondCollection extends AtomCollection {
     return true;
   }
 
-  protected void deleteAllBonds() {
+  protected void deleteAllBonds2() {
     viewer.setShapeProperty(JC.SHAPE_STICKS, "reset", null);
     for (int i = bondCount; --i >= 0;) {
       bonds[i].deleteAtomReferences();
@@ -354,11 +354,11 @@ abstract public class BondCollection extends AtomCollection {
         }
     }
     if (nDeleted > 0)
-      deleteBonds(bsDelete, false);
+      dBb(bsDelete, false);
     return new int[] { 0, nDeleted };
   }
 
-  public void deleteBonds(BS bsBond, boolean isFullModel) {
+  protected void dBb(BS bsBond, boolean isFullModel) {
     int iDst = bsBond.nextSetBit(0);
     if (iDst < 0)
       return;
@@ -721,20 +721,11 @@ abstract public class BondCollection extends AtomCollection {
       }
   }
 
-  @Override
-  protected BS getAtomBitsMaybeDeleted(int tokType, Object specInfo) {
+  protected BS getAtomBitsMDb(int tokType, Object specInfo) {
     BS bs;
     switch (tokType) {
     default:
-      return super.getAtomBitsMaybeDeleted(tokType, specInfo);
-    case T.isaromatic:
-      bs = new BS();
-      for (int i = bondCount; --i >= 0;)
-        if (bonds[i].isAromatic()) {
-          bs.set(bonds[i].atom1.index);
-          bs.set(bonds[i].atom2.index);
-        }
-      return bs;
+      return getAtomBitsMDa(tokType, specInfo);
     case T.bonds:
       bs = new BS();
       BS bsBonds = (BS) specInfo;
@@ -742,6 +733,14 @@ abstract public class BondCollection extends AtomCollection {
         bs.set(bonds[i].atom1.index);
         bs.set(bonds[i].atom2.index);
       }
+      return bs;
+    case T.isaromatic:
+      bs = new BS();
+      for (int i = bondCount; --i >= 0;)
+        if (bonds[i].isAromatic()) {
+          bs.set(bonds[i].atom1.index);
+          bs.set(bonds[i].atom2.index);
+        }
       return bs;
     }
   }
@@ -775,7 +774,7 @@ abstract public class BondCollection extends AtomCollection {
         bs.set(bond.index);
         bsAtoms.set(bond.getAtomIndex1());
         bsAtoms.set(bond.getAtomIndex2());
-        deleteBonds(bs, false);
+        dBb(bs, false);
         return bsAtoms;
       }
       bond.setOrder(bondOrder | JmolEdge.BOND_NEW);
@@ -804,7 +803,7 @@ abstract public class BondCollection extends AtomCollection {
         bsBonds.set(bonds[i].index);
       }
     if (bsBonds.nextSetBit(0) >= 0)
-      deleteBonds(bsBonds, false);
+      dBb(bsBonds, false);
     if (deleteAtom)
       bs.set(atom.index);
     if (bs.nextSetBit(0) >= 0)

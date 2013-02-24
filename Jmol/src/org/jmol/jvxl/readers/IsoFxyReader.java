@@ -95,12 +95,12 @@ class IsoFxyReader extends AtomDataReader {
 
   @Override
   public float[] getPlane(int x) {
-    float[] plane = super.getPlane(x);
-    getPlane(x, plane);
+    float[] plane = getPlane2(x);
+    setPlane(x, plane);
     return plane;
   }
 
-  private void getPlane(int x, float[] plane) {
+  private void setPlane(int x, float[] plane) {
       for (int y = 0, ptyz = 0; y < nPointsY; ++y)
         for (int z = 0; z < nPointsZ; ++z)
           plane[ptyz++] = getValue(x, y, z);

@@ -216,7 +216,7 @@ public class XmlUtil {
 //        }
 //        if (atts == null)
 //          atts = new ArrayList<Object[]>();
-//        atts.add(new Object[] { "count", new Integer(n) });
+//        atts.add(new Object[] { "count", Integer.valueOf(n) });
 //        value = sb.toString();
 //      } else if (type.startsWith("[")) {
 //        if (value instanceof float[]) {
@@ -224,18 +224,18 @@ public class XmlUtil {
 //          sb = new StringXBuilder().append("\n");
 //          if (atts == null)
 //            atts = new ArrayList<Object[]>();
-//          atts.add(new Object[] { "count", new Integer(f.length) });
+//          atts.add(new Object[] { "count", Integer.valueOf(f.length) });
 //          for (int i = 0; i < f.length; i++)
-//            sb.appendO(escape(null, null, new Float(f[i]), true, indent + "  "));
+//            sb.appendO(escape(null, null, Float.valueOf(f[i]), true, indent + "  "));
 //          value = sb.toString();
 //        } else if (value instanceof int[]) {
 //          int[] iv = (int[]) value;
 //          sb = new StringXBuilder().append("\n");
 //          if (atts == null)
 //            atts = new ArrayList<Object[]>();
-//          atts.add(new Object[] { "count", new Integer(iv.length) });
+//          atts.add(new Object[] { "count", Integer.valueOf(iv.length) });
 //          for (int i = 0; i < iv.length; i++)
-//            sb.appendO(escape(null, null, new Integer(iv[i]), true, indent + "  "));
+//            sb.appendO(escape(null, null, Integer.valueOf(iv[i]), true, indent + "  "));
 //          value = sb.toString();
 //          
 //        } else if (value instanceof Object[]) {
@@ -243,7 +243,7 @@ public class XmlUtil {
 //          sb = new StringXBuilder().append("\n");
 //          if (atts == null)
 //            atts = new ArrayList<Object[]>();
-//          atts.add(new Object[] { "count", new Integer(o.length) });
+//          atts.add(new Object[] { "count", Integer.valueOf(o.length) });
 //          for (int i = 0; i < o.length; i++)
 //            sb.appendO(escape(null, null, o[i], true, indent + "  "));
 //          value = sb.toString();

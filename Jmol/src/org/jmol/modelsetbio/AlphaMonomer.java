@@ -178,6 +178,10 @@ public class AlphaMonomer extends Monomer {
   
   @Override
   P3 getQuaternionFrameCenter(char qType) {
+    return getQuaternionFrameCenterAlpha(qType);
+  }
+
+  protected P3 getQuaternionFrameCenterAlpha(char qType) {
     switch (qType) {
     case 'b':
     case 'c':
@@ -201,6 +205,10 @@ public class AlphaMonomer extends Monomer {
   
   @Override
   public Quaternion getQuaternion(char qType) {
+    return getQuaternionAlpha(qType);
+  }
+
+  protected Quaternion getQuaternionAlpha(char qType) {
     /*
      * also NucleicMonomer, AminoMonomer
      * 

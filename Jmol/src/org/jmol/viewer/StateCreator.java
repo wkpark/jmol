@@ -851,8 +851,8 @@ public class StateCreator implements JmolStateCreator {
         .getModelName(am.currentModelIndex) : ""));
     info.put("animationFps", Integer.valueOf(am.animationFps));
     info.put("animationReplayMode", am.animationReplayMode.name());
-    info.put("firstFrameDelay", new Float(am.firstFrameDelay));
-    info.put("lastFrameDelay", new Float(am.lastFrameDelay));
+    info.put("firstFrameDelay", Float.valueOf(am.firstFrameDelay));
+    info.put("lastFrameDelay", Float.valueOf(am.lastFrameDelay));
     info.put("animationOn", Boolean.valueOf(am.animationOn));
     info.put("animationPaused", Boolean.valueOf(am.animationPaused));
     return info;

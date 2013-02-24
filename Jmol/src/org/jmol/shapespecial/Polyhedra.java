@@ -216,7 +216,7 @@ public class Polyhedra extends AtomShape {
       //pass on to AtomShape
     }
 
-    super.setProperty(propertyName, value, bs);
+    setPropAS(propertyName, value, bs);
   }
 
   private void setLighting(boolean isFullyLit, BS bs) {
@@ -553,7 +553,7 @@ public class Polyhedra extends AtomShape {
      */
     V3 norm = new V3();
     float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB, vAC);
-    float d = Measure.distanceToPlane(norm, w, ptX);
+    float d = Measure.distanceToPlaneV(norm, w, ptX);
     return (Math.abs(d) < minDistanceForPlanarity);
   }
 

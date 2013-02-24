@@ -632,9 +632,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     clearHistory = Boolean.getBoolean("clearHistory");
 
     minBondDistance =
-      new Float(currentProperties.getProperty("minBondDistance")).floatValue();
+      Float.valueOf(currentProperties.getProperty("minBondDistance")).floatValue();
     bondTolerance =
-      new Float(currentProperties.getProperty("bondTolerance")).floatValue();
+      Float.valueOf(currentProperties.getProperty("bondTolerance")).floatValue();
     marBond = Short.parseShort(currentProperties.getProperty("marBond"));
     percentVdwAtom =
       Integer.parseInt(currentProperties.getProperty("percentVdwAtom"));

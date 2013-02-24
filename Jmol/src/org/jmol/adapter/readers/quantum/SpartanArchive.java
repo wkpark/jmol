@@ -107,7 +107,7 @@ class SpartanArchive {
   private void readEnergy() throws Exception {
     String[] tokens = getTokens(readLine());
     float value = parseFloat(tokens[0]);
-    r.atomSetCollection.setAtomSetAuxiliaryInfo("energy", new Float(value));
+    r.atomSetCollection.setAtomSetAuxiliaryInfo("energy", Float.valueOf(value));
     if (r instanceof SpartanSmolReader) {
       String prefix = ((SpartanSmolReader)r).constraints;
       r.atomSetCollection.setAtomSetName(prefix + (prefix.length() == 0 ? "" : " ") + "Energy=" + value + " KJ");
@@ -364,7 +364,7 @@ class SpartanArchive {
     for (int i = 0; i < moCount; i++) {
       Map<String, Object> mo = new Hashtable<String, Object>();
       mo.put("energy", Float.valueOf(energies[i]));
-      //mo.put("occupancy", new Float(-1));
+      //mo.put("occupancy", Float.valueOf(-1));
       mo.put("coefficients", coefficients[i]);
       r.setMO(mo);
     }
@@ -415,7 +415,7 @@ class SpartanArchive {
       if (isString) {
         value = getQuotedString(tokens[4].substring(0, 1));
       } else {
-        value = new Float(parseFloat(tokens[4]));
+        value = Float.valueOf(parseFloat(tokens[4]));
       }
     } else if (tokens[tokens.length - 1].equals("BEGIN")) {
       int nValues = parseInt(tokens[tokens.length - 2]);
@@ -483,7 +483,7 @@ class SpartanArchive {
       readLine();
       Map<String, Object> info = new Hashtable<String, Object>();
       float freq = parseFloat(line);
-      info.put("freq", new Float(freq));
+      info.put("freq", Float.valueOf(freq));
       if (line.length() > 15
           && !(label = line.substring(15, line.length())).equals("???"))
         info.put("label", label);

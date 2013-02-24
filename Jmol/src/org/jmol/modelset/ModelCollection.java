@@ -506,13 +506,16 @@ abstract public class ModelCollection extends BondCollection {
     return ptCenter;
   }
 
-  @Override
-  public void setAtomProperty(BS bs, int tok, int iValue, float fValue,
+  protected void setAPm(BS bs, int tok, int iValue, float fValue,
                               String sValue, float[] values, String[] list) {
-    super.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
-    if ((tok == T.valence || tok == T.formalcharge)
-        && viewer.getSmartAromatic())
-      assignAromaticBonds();
+    setAPa(bs, tok, iValue, fValue, sValue, values, list);
+    switch (tok) {
+    case T.valence:
+    case T.formalcharge:
+      if (viewer.getSmartAromatic())
+        assignAromaticBonds();
+      break;
+    }
   }
 
   public List<StateScript> stateScripts = new ArrayList<StateScript>();
@@ -736,7 +739,7 @@ abstract public class ModelCollection extends BondCollection {
           if (!models[i].getPdbConformation(bsConformation, conformationIndex))
             for (int c = nAltLocs; --c >= 0;)
               if (c != conformationIndex)
-                bsConformation.andNot(getAtomBitsMaybeDeleted(
+                bsConformation.andNot(getAtomBitsMDa(
                     T.spec_alternate, altLocs.substring(c, c + 1)));
         }
         if (bsConformation.nextSetBit(0) >= 0) {
@@ -891,7 +894,6 @@ abstract public class ModelCollection extends BondCollection {
     return bs;
   }
 
-  @Override
   public void fillAtomData(AtomData atomData, int mode) {
     if ((mode & AtomData.MODE_FILL_MOLECULES) != 0) {
       getMolecules();
@@ -921,7 +923,7 @@ abstract public class ModelCollection extends BondCollection {
     atomData.lastModelIndex = atomData.firstModelIndex = (atomCount == 0 ? 0
         : atoms[atomData.firstAtomIndex].modelIndex);
     atomData.modelName = getModelNumberDotted(atomData.firstModelIndex);
-    super.fillAtomData(atomData, mode);
+    fillADa(atomData, mode);
   }
 
   public String getModelNumberDotted(int modelIndex) {
@@ -1814,7 +1816,7 @@ abstract public class ModelCollection extends BondCollection {
    */
   public int calculateStruts(BS bs1, BS bs2) {
     // select only ONE model
-    makeConnections(0, Float.MAX_VALUE, JmolEdge.BOND_STRUT, T.delete, bs1,
+    makeConnections2(0, Float.MAX_VALUE, JmolEdge.BOND_STRUT, T.delete, bs1,
         bs2, null, false, false, 0);
     int iAtom = bs1.nextSetBit(0);
     if (iAtom < 0)
@@ -1869,27 +1871,16 @@ abstract public class ModelCollection extends BondCollection {
     return (asCopy ? BSUtil.copy(bs) : bs);
   }
 
-  /**
-   * general unqualified lookup of atom set type
-   * 
-   * @param tokType
-   * @param specInfo
-   * @return BitSet; or null if we mess up the type
-   */
-
-  public BS getAtomBits(int tokType, Object specInfo) {
-    return BSUtil.andNot(getAtomBitsMaybeDeleted(tokType, specInfo), viewer
-        .getDeletedAtoms());
-  }
-
-  @Override
   protected BS getAtomBitsMaybeDeleted(int tokType, Object specInfo) {
     int[] info;
     BS bs;
     P3 pt;
     switch (tokType) {
     default:
-      return super.getAtomBitsMaybeDeleted(tokType, specInfo);
+      return getAtomBitsMDa(tokType, specInfo);
+    case T.bonds:
+    case T.isaromatic:
+      return getAtomBitsMDb(tokType, specInfo);
     case T.basepair:
       return getBasePairBits((String) specInfo);
     case T.boundbox:
@@ -1899,6 +1890,18 @@ abstract public class ModelCollection extends BondCollection {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         if (!boxInfo.isWithin(atoms[i]))
           bs.clear(i);
+      return bs;
+    case T.cell:
+      // select cell=555 (an absolute quantity)
+      bs = new BS();
+      info = (int[]) specInfo;
+      P3 ptcell = P3.new3(info[0] / 1000f, info[1] / 1000f,
+          info[2] / 1000f);
+      pt = new P3();
+      boolean isAbsolute = !viewer.getFractionalRelative();
+      for (int i = atomCount; --i >= 0;)
+        if (isInLatticeCell(i, ptcell, pt, isAbsolute))
+          bs.set(i);
       return bs;
     case T.molecule:
       return getMoleculeBitSet((BS) specInfo);
@@ -1960,18 +1963,6 @@ abstract public class ModelCollection extends BondCollection {
       pt = new P3();
       for (int i = atomCount; --i >= 0;)
         if (isInLatticeCell(i, cell, pt, false)) 
-          bs.set(i);
-      return bs;
-    case T.cell:
-      // select cell=555 (an absolute quantity)
-      bs = new BS();
-      info = (int[]) specInfo;
-      P3 ptcell = P3.new3(info[0] / 1000f, info[1] / 1000f,
-          info[2] / 1000f);
-      pt = new P3();
-      boolean isAbsolute = !viewer.getFractionalRelative();
-      for (int i = atomCount; --i >= 0;)
-        if (isInLatticeCell(i, ptcell, pt, isAbsolute))
           bs.set(i);
       return bs;
     }
@@ -2118,7 +2109,7 @@ abstract public class ModelCollection extends BondCollection {
       bsAtoms.set(b.atom1.index);
       bsAtoms.set(b.atom2.index);
     }
-    return super.getAtomBitsMaybeDeleted(T.group, bsAtoms);
+    return getAtomBitsMDb(T.group, bsAtoms);
   }
 
   public BS getSequenceBits(String specInfo, BS bs) {
@@ -2134,7 +2125,6 @@ abstract public class ModelCollection extends BondCollection {
 
   // ////////// Bonding methods ////////////
 
-  @Override
   public void deleteBonds(BS bsBonds, boolean isFullModel) {
     if (!isFullModel) {
       BS bsA = new BS();
@@ -2150,10 +2140,10 @@ abstract public class ModelCollection extends BondCollection {
         addStateScript("connect ", null, bsA, bsB, "delete", false, true);
       }
     }
-    super.deleteBonds(bsBonds, isFullModel);
+    dBb(bsBonds, isFullModel);
   }
 
-  protected int[] makeConnections(float minDistance, float maxDistance,
+  protected int[] makeConnections2(float minDistance, float maxDistance,
                                   int order, int connectOperation, BS bsA,
                                   BS bsB, BS bsBonds, boolean isBonds,
                                   boolean addGroup, float energy) {
@@ -2905,7 +2895,7 @@ abstract public class ModelCollection extends BondCollection {
     boolean isDelete = false;
     if (atomicNumber > 0) {
       setElement(atom, atomicNumber);
-      viewer.setShapeSize(JC.SHAPE_BALLS, viewer
+      viewer.setShapeSizeRD(JC.SHAPE_BALLS, viewer
           .getDefaultRadiusData(), BSUtil.newAndSetBit(atomIndex));
       setAtomName(atomIndex, type + atom.getAtomNumber());
       if (!models[atom.modelIndex].isModelKit)
@@ -2956,8 +2946,8 @@ abstract public class ModelCollection extends BondCollection {
       // 5) attach nearby non-hydrogen atoms (rings)
 
       bs = viewer.getModelUndeletedAtomsBitSet(atom.modelIndex);
-      bs.andNot(getAtomBitsMaybeDeleted(T.hydrogen, null));
-      makeConnections(0.1f, 1.8f, 1, T.create, bsA, bs, null, false, false,
+      bs.andNot(getAtomBitsMDa(T.hydrogen, null));
+      makeConnections2(0.1f, 1.8f, 1, T.create, bsA, bs, null, false, false,
           0);
 
       // 6) add hydrogen atoms

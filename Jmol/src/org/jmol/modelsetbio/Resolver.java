@@ -44,6 +44,7 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.P3;
+import org.jmol.util.Parser;
 import org.jmol.util.Point4f;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
@@ -527,7 +528,7 @@ public final class Resolver implements JmolBioResolver {
       if (type == null)
         continue;
       htKeysUsed.put(skey, Boolean.TRUE);
-      bonds[i].setOrder(Integer.valueOf(type).intValue());
+      bonds[i].setOrder(Parser.parseInt(type));
     }
 
     for (String key : htBondMap.keySet()) {
@@ -561,7 +562,7 @@ public final class Resolver implements JmolBioResolver {
       if ((value = htKeysBad.get(a1.getGroup3(false) + ":" + a1.getAtomName())) == null
           && ((value = htKeysBad.get(a2.getGroup3(false) + ":" + a2.getAtomName())) == null))
         continue;
-      bonds[i].setOrder(Integer.valueOf(value).intValue());
+      bonds[i].setOrder(Parser.parseInt(value));
       Logger.info("assigning order " + bonds[i].order + " to bond " + bonds[i]);
     }
   }

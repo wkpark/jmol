@@ -377,7 +377,7 @@ public class SV extends T {
       intValue += n;
       break;
     case decimal:
-      value = new Float(((Float) value).floatValue() + n);
+      value = Float.valueOf(((Float) value).floatValue() + n);
       break;
     default:
       value = nValue(this);
@@ -450,7 +450,7 @@ public class SV extends T {
       break;
     case string:
       if (((String) x.value).indexOf(".") >= 0)
-        return new Float(toFloat((String) x.value));
+        return Float.valueOf(toFloat((String) x.value));
       iValue = (int) toFloat((String) x.value);
       break;
     default:
@@ -823,9 +823,9 @@ public class SV extends T {
         int row = (i1 - col) / 10;
         if (col > 0 && col <= len && row <= len) {
           if (tokenIn.tok == matrix3f)
-            return newVariable(decimal, new Float(
+            return newVariable(decimal, Float.valueOf(
                 ((Matrix3f) tokenIn.value).getElement(row - 1, col - 1)));
-          return newVariable(decimal, new Float(
+          return newVariable(decimal, Float.valueOf(
               ((Matrix4f) tokenIn.value).getElement(row - 1, col - 1)));
         }
         return newVariable(string, "");
@@ -848,7 +848,7 @@ public class SV extends T {
         return getVariableAF(data);
       if (i2 < 1 || i2 > len)
         return newVariable(string, "");
-      return newVariable(decimal, new Float(data[i2 - 1]));
+      return newVariable(decimal, Float.valueOf(data[i2 - 1]));
     }
 
     // "testing"[0] gives "g"

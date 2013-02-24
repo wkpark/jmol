@@ -49,7 +49,7 @@ public class MolecularOrbital extends Isosurface {
   public void initShape() {
     super.initShape();
     myType = "mo";
-    super.setProperty("thisID", "mo", null);
+    setPropI("thisID", "mo", null);
   }
 
   // these are globals, stored here and only passed on when the they are needed. 
@@ -94,8 +94,8 @@ public class MolecularOrbital extends Isosurface {
       strID = getId(modelIndex);
       //Logger.info("MO init " + strID);
       // overide bitset selection
-      super.setProperty("init", null, null);
-      super.setProperty("modelIndex", Integer.valueOf(modelIndex), null);
+      setPropI("init", null, null);
+      setPropI("modelIndex", Integer.valueOf(modelIndex), null);
       if (htModels == null)
         htModels = new Hashtable<String, Map<String, Object>>();
       if (!htModels.containsKey(strID))
@@ -171,7 +171,7 @@ public class MolecularOrbital extends Isosurface {
       if (!(value instanceof Integer))
         return;
       thisModel.remove("moTranslucency");
-      super.setProperty("color", value, bs);
+      setPropI("color", value, bs);
       propertyName = "colorRGB";
       myColorPt = 0;
       //$FALL-THROUGH$
@@ -306,7 +306,7 @@ public class MolecularOrbital extends Isosurface {
       htModels = htModelsNew;
       return;
     }
-    super.setProperty(propertyName, value, bs);
+    setPropI(propertyName, value, bs);
   }
 
   private String getId(int modelIndex) {
@@ -317,9 +317,9 @@ public class MolecularOrbital extends Isosurface {
   @Override
   public Object getProperty(String propertyName, int param) {
     if (propertyName.equals("list")) {
-      String s = (String) super.getProperty("list", param);
+      String s = (String) getPropI("list");
       if (s.length() > 1)
-        s += "cutoff = " + super.getProperty("cutoff", 0) + "\n";
+        s += "cutoff = " + getPropI("cutoff") + "\n";
       return viewer.getMoInfo(-1) + "\n" + s;
     }
     if (propertyName == "moNumber")
@@ -348,7 +348,7 @@ public class MolecularOrbital extends Isosurface {
         if (thisMO == 0 || thisMO == i || !doOneMo && i == currentMO) {
           if (!doOneMo) {
             Parameters params = sg.getParams();
-            super.setProperty("init", params, null);
+            setPropI("init", params, null);
             setOrbital(i, null);
           }
           jvxlData.moleculeXml = viewer.getModelCml(viewer.getModelUndeletedAtomsBitSet(thisMesh.modelIndex), 100, true);
@@ -361,7 +361,7 @@ public class MolecularOrbital extends Isosurface {
               null, false, 1, thisMesh.getState("mo"),
               (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand)));
           if (!doOneMo)
-            super.setProperty("delete", "mo_show", null);
+            setPropI("delete", "mo_show", null);
           if (nTotal == 1)
             break;
         }
@@ -369,7 +369,7 @@ public class MolecularOrbital extends Isosurface {
           0, null, null));
       return str.toString();
     }
-    return super.getProperty(propertyName, param);
+    return getPropI(propertyName);
   }
 
   @Override
@@ -392,9 +392,9 @@ public class MolecularOrbital extends Isosurface {
     if (moCutoff == null)
       moCutoff = (Float) sg.getMoData().get("defaultCutoff");
     if (moCutoff == null) {
-      moCutoff = new Float(Parameters.defaultQMOrbitalCutoff);
+      moCutoff = Float.valueOf(Parameters.defaultQMOrbitalCutoff);
     }
-    thisModel.put("moCutoff", new Float(moCutoff.floatValue()));
+    thisModel.put("moCutoff", Float.valueOf(moCutoff.floatValue()));
     moResolution = (Float) thisModel.get("moResolution");
     moScale = (Float) thisModel.get("moScale");
     moColorPos = (Integer) thisModel.get("moColorPos");
@@ -416,57 +416,57 @@ public class MolecularOrbital extends Isosurface {
   }
 
   private void setOrbital(int moNumber, float[] linearCombination) {
-    super.setProperty("reset", strID, null);
+    setPropI("reset", strID, null);
     if (moDebug)
-      super.setProperty("debug", Boolean.TRUE, null);
+      setPropI("debug", Boolean.TRUE, null);
     getSettings(strID);
     if (moScale != null)
-      super.setProperty("scale", moScale, null);
+      setPropI("scale", moScale, null);
     if (moResolution != null)
-      super.setProperty("resolution", moResolution, null);
+      setPropI("resolution", moResolution, null);
     if (moPlane != null) {
-      super.setProperty("plane", moPlane, null);
+      setPropI("plane", moPlane, null);
       if (moCutoff != null) {
-        super.setProperty("red", new Float(-moCutoff.floatValue()), null);
-        super.setProperty("blue", moCutoff, null);
+        setPropI("red", Float.valueOf(-moCutoff.floatValue()), null);
+        setPropI("blue", moCutoff, null);
       }
     } else {
       if (moCutoff != null)
-        super.setProperty((moIsPositiveOnly ? "cutoffPositive" : "cutoff"),
+        setPropI((moIsPositiveOnly ? "cutoffPositive" : "cutoff"),
             moCutoff, null);
       if (moColorNeg != null)
-        super.setProperty("colorRGB", moColorNeg, null);
+        setPropI("colorRGB", moColorNeg, null);
       if (moColorPos != null)
-        super.setProperty("colorRGB", moColorPos, null);
+        setPropI("colorRGB", moColorPos, null);
       if (moMonteCarloCount != null) {
-        super.setProperty("randomSeed", moRandomSeed, null);
-        super.setProperty("monteCarloCount", moMonteCarloCount, null);
+        setPropI("randomSeed", moRandomSeed, null);
+        setPropI("monteCarloCount", moMonteCarloCount, null);
       }
     }
-    super.setProperty("squareData", moSquareData, null);
-    super.setProperty("squareLinear", moSquareLinear, null);
-    super.setProperty("title", moTitleFormat, null);
-    super.setProperty("fileName", viewer.getFileName(), null);
-    super.setProperty("molecularOrbital", linearCombination == null ? Integer
+    setPropI("squareData", moSquareData, null);
+    setPropI("squareLinear", moSquareLinear, null);
+    setPropI("title", moTitleFormat, null);
+    setPropI("fileName", viewer.getFileName(), null);
+    setPropI("molecularOrbital", linearCombination == null ? Integer
         .valueOf(moNumber) : linearCombination, null);
     if (moPlane != null && moColorNeg != null)
-      super.setProperty("colorRGB", moColorNeg, null);
+      setPropI("colorRGB", moColorNeg, null);
     if (moPlane != null && moColorPos != null)
-      super.setProperty("colorRGB", moColorPos, null);
+      setPropI("colorRGB", moColorPos, null);
     currentMesh.isColorSolid = false;
     if (moSlabValue != null)
-      super.setProperty("slab", moSlabValue, null);
+      setPropI("slab", moSlabValue, null);
     if (moSlab != null)
       for (int i = 0; i < moSlab.size(); i++)
-        super.setProperty("slab", moSlab.get(i), null);
+        setPropI("slab", moSlab.get(i), null);
     if (moTranslucentLevel != null)
-      super.setProperty("translucenctLevel", moTranslucentLevel, null);
+      setPropI("translucenctLevel", moTranslucentLevel, null);
     if (moTranslucency != null)
-      super.setProperty("translucency", moTranslucency, null);
-    super.setProperty("token", Integer.valueOf(moFill), null);
-    super.setProperty("token", Integer.valueOf(moMesh), null);
-    super.setProperty("token", Integer.valueOf(moDots), null);
-    super.setProperty("token", Integer.valueOf(moFrontOnly), null);
+      setPropI("translucency", moTranslucency, null);
+    setPropI("token", Integer.valueOf(moFill), null);
+    setPropI("token", Integer.valueOf(moMesh), null);
+    setPropI("token", Integer.valueOf(moDots), null);
+    setPropI("token", Integer.valueOf(moFrontOnly), null);
     
     thisModel.put("mesh", currentMesh);
     return;

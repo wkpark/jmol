@@ -200,16 +200,16 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     if (groupID != this.groupID || !viewer.allowMultiTouch())
       return null;
     List<GestureType> list = new ArrayList<GestureType>();
-    //list.add(new Integer(DRAG_GESTURE));
-    //list.add(new Integer(MULTI_POINT_DRAG_GESTURE));
-    //list.add(new Integer(SPIN_GESTURE));
-    //list.add(new Integer(DBLCLK_GESTURE));
+    //list.add(Integer.valueOf(DRAG_GESTURE));
+    //list.add(Integer.valueOf(MULTI_POINT_DRAG_GESTURE));
+    //list.add(Integer.valueOf(SPIN_GESTURE));
+    //list.add(Integer.valueOf(DBLCLK_GESTURE));
     list.add(TWO_POINT_GESTURE);
     //if (simulator == null)
     list.add(SINGLE_POINT_GESTURE);
-    //list.add(new Integer(ZOOM_GESTURE));
-    //list.add(new Integer(FLICK_GESTURE));
-    //list.add(new Integer(RELATIVE_DRAG_GESTURE));    
+    //list.add(Integer.valueOf(ZOOM_GESTURE));
+    //list.add(Integer.valueOf(FLICK_GESTURE));
+    //list.add(Integer.valueOf(RELATIVE_DRAG_GESTURE));    
     return list;
   }
 

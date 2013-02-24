@@ -53,7 +53,7 @@ public class JmolApplet extends AppletWrapper implements
   }
 
   private final static String[] preloadClasses = { 
-    "org.jmol.viewer.JmolConstants",                // 1b 
+    "org.jmol.viewer.JC",                           // 1b 
     "org.jmol.g3d.Graphics3D",                      // 1c
     "org.jmol.modelset.Atom",                       // 1d
     "org.jmol.util.Escape",                         // 1e

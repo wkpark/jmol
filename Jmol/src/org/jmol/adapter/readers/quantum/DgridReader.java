@@ -191,7 +191,7 @@ sym: A1                 1 1s            2 1s            3 1s            4 1s    
           list[pt] = parseFloatStr(tokens[i]);
         }
         Map<String, Object> mo = new Hashtable<String, Object>();
-        mo.put("energy", new Float(energy));
+        mo.put("energy", Float.valueOf(energy));
         mo.put("coefficients", list);
         mo.put("symmetry", symmetry + "_" + iOrb);
         setMO(mo);

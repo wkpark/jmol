@@ -478,7 +478,7 @@ abstract public class MOReader extends BasisFunctionReader {
       String s = moTypes.get(i % moTypes.size());
       i++;
       mo.put("type", s);
-      mo.put("occupancy", new Float(s.indexOf("*") >= 0 ? 0 : 2));
+      mo.put("occupancy", Float.valueOf(s.indexOf("*") >= 0 ? 0 : 2));
     } else if (alphaBeta.length() > 0) {
       mo.put("type", alphaBeta);
     } 
@@ -494,7 +494,7 @@ abstract public class MOReader extends BasisFunctionReader {
       return;
     case HEADER_GAMESS_UK_MO:
       for (int i = 0; i < nThisLine; i++)
-        mos[i].put("energy", new Float(tokens[i]));
+        mos[i].put("energy", Float.valueOf(tokens[i]));
       readLines(5);
       return;
     case HEADER_GAMESS_ORIGINAL:
@@ -503,7 +503,7 @@ abstract public class MOReader extends BasisFunctionReader {
       if (tokens.length == 0)
         tokens = getTokensStr(readLine());
       for (int i = 0; i < nThisLine; i++) {
-        mos[i].put("energy", new Float(tokens[i]));
+        mos[i].put("energy", Float.valueOf(tokens[i]));
       }
       readLine();
       break;
@@ -512,7 +512,7 @@ abstract public class MOReader extends BasisFunctionReader {
       boolean haveSymmetry = (line.length() > 0 || readLine() != null);
       tokens = getTokens();
       for (int i = 0; i < nThisLine; i++)
-        mos[i].put("occupancy", new Float(tokens[i].charAt(0) == '-' ? 2.0f
+        mos[i].put("occupancy", Float.valueOf(tokens[i].charAt(0) == '-' ? 2.0f
             : parseFloatStr(tokens[i])));
       readLine(); // blank or symmetry
       if (!haveSymmetry)
@@ -577,8 +577,7 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff
     Hashtable<String, Integer> ht = new Hashtable<String, Integer>();
     for (int i = moTypes.size(); --i >= 0;)
       ht.put(TextFormat.simpleReplace(moTypes.get(i).substring(10), " ", ""),
-          new Integer(i + iMo0));
-
+          Integer.valueOf(i + iMo0));
     List<String[]> strSecondOrderData = new ArrayList<String[]>();
     readLines(5);
     while (readLine() != null && line.indexOf("NBO") < 0) {

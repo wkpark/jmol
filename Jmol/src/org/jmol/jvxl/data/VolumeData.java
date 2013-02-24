@@ -397,7 +397,7 @@ public class VolumeData implements VolumeDataInterface {
   public float getVoxelValue(int x, int y, int z) {
     if (voxelMap == null)
       return voxelData[x][y][z];
-    Float f = voxelMap.get(new Integer(getPointIndex(x, y, z)));
+    Float f = voxelMap.get(Integer.valueOf(getPointIndex(x, y, z)));
     return (f == null ? Float.NaN : f.floatValue());
   }
 
@@ -529,7 +529,7 @@ public class VolumeData implements VolumeDataInterface {
   public void setVoxelMapValue(int x, int y, int z, float v) {
     if (voxelMap == null)
       return;
-    voxelMap.put(new Integer(getPointIndex(x, y, z)), Float.valueOf(v));    
+    voxelMap.put(Integer.valueOf(getPointIndex(x, y, z)), Float.valueOf(v));    
   }
 
   private final V3 edgeVector = new V3();

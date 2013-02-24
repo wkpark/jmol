@@ -407,7 +407,7 @@ Orbital energies (a.u.):
         }
         tokens = getStrings(readLine().substring(21), nThisLine, 10);
         for (int i = 0; i < nThisLine; i++) {
-          mos[i].put("energy", new Float(tokens[i]));
+          mos[i].put("energy", Float.valueOf(tokens[i]));
         }
         continue;
       }

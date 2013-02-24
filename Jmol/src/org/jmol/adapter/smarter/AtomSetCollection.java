@@ -525,7 +525,7 @@ public class AtomSetCollection {
   }
   
   Atom newCloneAtom(Atom atom) throws Exception {
-    Atom clone = atom.clone();
+    Atom clone = atom.getClone();
     addAtom(clone);
     return clone;
   }
@@ -798,7 +798,7 @@ public class AtomSetCollection {
   private boolean centroidPacked;
   void setSymmetryRange(float factor) {
     symmetryRange = factor;
-    setAtomSetCollectionAuxiliaryInfo("symmetryRange", new Float(factor));
+    setAtomSetCollectionAuxiliaryInfo("symmetryRange", Float.valueOf(factor));
   }
   
   void setLatticeCells(int[] latticeCells, boolean applySymmetryToBonds, 
@@ -1906,7 +1906,7 @@ public class AtomSetCollection {
     if (currentAtomSetIndex < 0)
       return;
     setAtomSetAuxiliaryInfo("EnergyString", energyString);
-    setAtomSetAuxiliaryInfo("Energy", new Float(value));
+    setAtomSetAuxiliaryInfo("Energy", Float.valueOf(value));
     setAtomSetModelProperty("Energy", "" + value);
   }
 

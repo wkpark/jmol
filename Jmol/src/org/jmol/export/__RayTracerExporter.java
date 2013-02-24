@@ -93,12 +93,10 @@ abstract class __RayTracerExporter extends ___Exporter {
     return tempP3;
   }
 
-  @Override
-  protected void outputHeader() {
+  protected void initVars() {
     nBytes = 0;
     isSlabEnabled = viewer.getSlabEnabled();
     minScreenDimension = Math.min(screenWidth, screenHeight);
-    // more specific next in PovRay and Tachyon
   }
 
   // called by Export3D:

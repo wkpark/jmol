@@ -1080,7 +1080,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     float value;
     if (!Float.isNaN(value = lookingAtExponential())) {
-      addTokenToPrefix(T.o(T.decimal, new Float(value)));
+      addTokenToPrefix(T.o(T.decimal, Float.valueOf(value)));
       return CONTINUE;
     }
     if (lookingAtObjectID(nTokens == 1)) {
@@ -1094,7 +1094,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           .floatValue();
       int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(ichToken,
           ichToken + cchToken)));
-      addTokenToPrefix(T.t(T.decimal, intValue, new Float(value)));
+      addTokenToPrefix(T.t(T.decimal, intValue, Float.valueOf(value)));
       return CONTINUE;
     }
     if (lookingAtSeqcode()) {

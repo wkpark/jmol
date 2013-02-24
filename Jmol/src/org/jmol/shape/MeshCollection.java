@@ -148,8 +148,7 @@ public abstract class MeshCollection extends Shape {
   }
   
  @SuppressWarnings("unchecked")
- @Override
- public void setProperty(String propertyName, Object value, BS bs) {
+ protected void setPropMC(String propertyName, Object value, BS bs) {
 
 //   if (propertyName == "setXml") {
 //     if (currentMesh != null)
@@ -307,7 +306,7 @@ public abstract class MeshCollection extends Shape {
           setTokenProperty(tok2, test, true);
       return;
     }
-    super.setProperty(propertyName, value, bs);
+    setPropS(propertyName, value, bs);
   }
 
   protected void checkExplicit(String id) {
@@ -362,8 +361,7 @@ public abstract class MeshCollection extends Shape {
   }
 
   @SuppressWarnings("unchecked")
-  @Override
-  public boolean getPropertyData(String property, Object[] data) {
+  protected boolean getPropDataMC(String property, Object[] data) {
     if (property == "getNames") {
       Map<String, T> map = (Map<String, T>) data[0];
       boolean withDollar = ((Boolean) data[1]).booleanValue();
@@ -409,8 +407,7 @@ public abstract class MeshCollection extends Shape {
     return false;
   }
 
-  @Override
-  public Object getProperty(String property, int index) {
+  protected Object getPropMC(String property) {
     Mesh m;
     if (property == "count") {
       int n = 0;

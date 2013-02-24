@@ -200,9 +200,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   //private boolean allowContourLines;
   boolean allowMesh = true;
 
-  @SuppressWarnings("unchecked")
   @Override
   public void setProperty(String propertyName, Object value, BS bs) {
+    setPropI(propertyName, value, bs);
+  }  
+
+  @SuppressWarnings("unchecked")
+  protected void setPropI(String propertyName, Object value, BS bs) {
 
     //System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + Token.nameOf(((Integer)value).intValue()) : ""));
 
@@ -252,7 +256,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           if (colix != 0) {
             thisMesh.colorCommand = "color isosurface "
                 + C.getHexCode(colix);
-            setProperty("color", new Integer(C.getArgb(colix)), null);
+            setProperty("color", Integer.valueOf(C.getArgb(colix)), null);
           }
         }
         thisMesh.colorAtoms(C.getColixO(value), bs);
@@ -668,7 +672,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     // processing by meshCollection:
     setPropertySuper(propertyName, value, bs);
-  }  
+  }
 
   protected void slabPolygons(Object[] slabInfo) {
     thisMesh.slabPolygons(slabInfo, false);
@@ -682,7 +686,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
     currentMesh = thisMesh;
-    super.setProperty(propertyName, value, bs);
+    setPropMC(propertyName, value, bs);
     thisMesh = (IsosurfaceMesh) currentMesh;
     jvxlData = (thisMesh == null ? null : thisMesh.jvxlData);
     if (sg != null)
@@ -749,12 +753,16 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       // continue to super
     }
 
-    return super.getPropertyData(property, data);
+    return getPropDataMC(property, data);
   }
 
   @Override
   public Object getProperty(String property, int index) {
-    Object ret = super.getProperty(property, index);
+    return getPropI(property);
+  }
+
+  protected Object getPropI(String property) {
+    Object ret = getPropMC(property);
     if (ret != null)
       return ret;
     if (property == "dataRange")
@@ -772,13 +780,13 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (property == "nSets")
       return Integer.valueOf(thisMesh == null ? 0 : thisMesh.nSets);
     if (property == "area")
-      return (thisMesh == null ? new Float(Float.NaN) : calculateVolumeOrArea(true));
+      return (thisMesh == null ? Float.valueOf(Float.NaN) : calculateVolumeOrArea(true));
     if (property == "volume")
-      return (thisMesh == null ? new Float(Float.NaN) : calculateVolumeOrArea(false));
+      return (thisMesh == null ? Float.valueOf(Float.NaN) : calculateVolumeOrArea(false));
     if (thisMesh == null)
       return null;//"no current isosurface";
     if (property == "cutoff")
-      return new Float(jvxlData.cutoff);
+      return Float.valueOf(jvxlData.cutoff);
     if (property == "minMaxInfo")
       return new float[] { jvxlData.dataMin, jvxlData.dataMax };
     if (property == "plane")
@@ -1207,7 +1215,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       Logger.debug("creating isosurface ID " + thisMesh.thisID);
     }
     if (lobeAxis == null) {
-      setProperty("sphere", new Float(factor / 2f), null);
+      setProperty("sphere", Float.valueOf(factor / 2f), null);
     } else {
       lcaoDir.x = lobeAxis.x * factor;
       lcaoDir.y = lobeAxis.y * factor;
@@ -1466,7 +1474,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (mesh.mat4 != null)
       info.put("mat4", mesh.mat4);
     if (mesh.scale3d != 0)
-      info.put("scale3d", new Float(mesh.scale3d));
+      info.put("scale3d", Float.valueOf(mesh.scale3d));
     info.put("xyzMin", mesh.jvxlData.boundingBox[0]);
     info.put("xyzMax", mesh.jvxlData.boundingBox[1]);
     String s = JvxlCoder.jvxlGetInfo(mesh.jvxlData);

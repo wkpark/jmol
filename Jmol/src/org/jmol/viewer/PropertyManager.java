@@ -284,7 +284,7 @@ public class PropertyManager implements JmolPropertyManager {
         if (pt < 0)
           pt += flist.length;
         if (pt >= 0 && pt < flist.length)
-          return new Float(flist[pt]);
+          return Float.valueOf(flist[pt]);
         return "";
       }
       if (Escape.isAII(property)) {

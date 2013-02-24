@@ -345,7 +345,7 @@ public class JaguarReader extends MOReader {
         float[] coefs = new float[moCount];
         Map<String, Object> mo = new Hashtable<String, Object>();
         float energy = parseFloatStr(eigenValues[iOrb + 1]);
-        mo.put("energy", new Float(energy));
+        mo.put("energy", Float.valueOf(energy));
         if (Math.abs(energy - lumoEnergy) < 0.0001) {
           moData.put("HOMO", Integer.valueOf(nMo));
           lumoEnergy = Float.MAX_VALUE;

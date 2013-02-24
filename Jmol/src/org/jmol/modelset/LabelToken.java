@@ -264,8 +264,8 @@ public class LabelToken {
     htValues.put("#", "");
     htValues.put("ORDER", "");
     htValues.put("TYPE", "");
-    htValues.put("LENGTH", new Float(0));
-    htValues.put("ENERGY", new Float(0));
+    htValues.put("LENGTH", Float.valueOf(0));
+    htValues.put("ENERGY", Float.valueOf(0));
     return htValues;
   }
 
@@ -275,8 +275,8 @@ public class LabelToken {
     values.put("#", "" + (bond.index + 1));
     values.put("ORDER", "" + bond.getOrderNumberAsString());
     values.put("TYPE", bond.getOrderName());
-    values.put("LENGTH", new Float(bond.atom1.distance(bond.atom2)));
-    values.put("ENERGY", new Float(bond.getEnergy()));
+    values.put("LENGTH", Float.valueOf(bond.atom1.distance(bond.atom2)));
+    values.put("ENERGY", Float.valueOf(bond.getEnergy()));
     setValues(tokens, values);
     formatLabelAtomArray(viewer, bond.atom1, tokens, '1', indices);
     formatLabelAtomArray(viewer, bond.atom2, tokens, '2', indices);
@@ -287,7 +287,7 @@ public class LabelToken {
                                    String label, float value, String units) {
     Map<String, Object> htValues = new Hashtable<String, Object>();
     htValues.put("#", "" + (m.index + 1));
-    htValues.put("VALUE", new Float(value));
+    htValues.put("VALUE", Float.valueOf(value));
     htValues.put("UNITS", units);
     LabelToken[] tokens = compile(viewer, label, '\1', htValues);
     setValues(tokens, htValues);

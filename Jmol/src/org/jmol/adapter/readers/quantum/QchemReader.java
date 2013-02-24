@@ -674,13 +674,13 @@ $end
       // we have all the info we need 
       for (int i = 0; i < nMO; i++) {
         MOInfo moInfo = moInfos[moid[i]];
-        mos[i].put("energy", new Float(energy[i]));
+        mos[i].put("energy", Float.valueOf(energy[i]));
         mos[i].put("coefficients", mocoef[i]);
         String label = alphaBeta;
         int ne = moInfo.ne;
         if (restricted)
           ne = alphas[moid[i]].ne + betas[moid[i]].ne;
-        mos[i].put("occupancy", new Float(ne));
+        mos[i].put("occupancy", Float.valueOf(ne));
         switch (ne) {
         case 2:
           label = "AB";

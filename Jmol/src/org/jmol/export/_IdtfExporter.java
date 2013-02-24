@@ -299,7 +299,7 @@ public class _IdtfExporter extends __CartesianExporter {
 
   @Override
   String finalizeOutput() {
-    super.finalizeOutput();
+    finalizeOutput2();
     return getAuxiliaryFileData();
   }
 

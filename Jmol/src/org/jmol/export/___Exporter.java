@@ -207,6 +207,11 @@ public abstract class ___Exporter {
   }
   
   boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
+    return initOutput(viewer, privateKey, g3d, output);
+  }
+
+  protected boolean initOutput(Viewer viewer, double privateKey, GData g3d,
+                             Object output) {
     this.viewer = viewer;
     this.g3d = g3d;
     this.privateKey = privateKey;
@@ -325,6 +330,10 @@ public abstract class ___Exporter {
   }
 
   String finalizeOutput() {
+    return finalizeOutput2();
+  }
+  
+  protected String finalizeOutput2() {
     outputFooter();
     if (!isToFile)
       return (output == null ? "" : output.toString());

@@ -105,7 +105,7 @@ class ClientConnection {
 		if (groupID == 0)
 			return null;
 		Group group = null;
-		Integer gid = new Integer(groupID);
+		Integer gid = Integer.valueOf(groupID);
 		if (_groups.containsKey(gid)) {
 			group = _groups.get(gid);
 		} else {

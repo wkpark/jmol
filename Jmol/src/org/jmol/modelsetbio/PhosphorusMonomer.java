@@ -101,6 +101,10 @@ public class PhosphorusMonomer extends Monomer {
 
   @Override
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
+    return isCA2(possiblyPreviousMonomer);
+  }
+  
+  protected boolean isCA2(Monomer possiblyPreviousMonomer) {
     if (possiblyPreviousMonomer == null)
       return true;
     // 1PN8 73:d and 74:d are 7.001 angstroms apart
@@ -109,9 +113,13 @@ public class PhosphorusMonomer extends Monomer {
       getLeadAtom().distance(possiblyPreviousMonomer.getLeadAtom());
     return distance <= MAX_ADJACENT_PHOSPHORUS_DISTANCE;
   }
-  
+
   @Override
   public Quaternion getQuaternion(char qType) {
+    return getQuaternionP();
+  }
+  
+  protected Quaternion getQuaternionP() {
     //vA = ptP(i+1) - ptP
     //vB = ptP(i-1) - ptP
     int i = monomerIndex;
@@ -129,7 +137,7 @@ public class PhosphorusMonomer extends Monomer {
     vB.sub2(ptB, ptP);
     return Quaternion.getQuaternionFrameV(vA, vB, null, false);
   }
-  
+
   @Override
   P3 getQuaternionFrameCenter(char qType) {
     return getAtomFromOffsetIndex(P);

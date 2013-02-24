@@ -168,7 +168,7 @@ public class Dots extends AtomShape {
       // pass to AtomShape via super
     }
 
-    super.setProperty(propertyName, value, bs);
+    setPropAS(propertyName, value, bs);
   }
 
   void initialize() {

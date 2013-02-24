@@ -112,13 +112,13 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
   protected void drawTicks(Point3fi pt1, Point3fi pt2, int diameter, boolean withLabels) {
     if (Float.isNaN(tickInfo.first))
       tickInfo.first = 0;
-    drawTicks(pt1, pt2, tickInfo.ticks.x, 8, diameter, (!withLabels ? null : tickInfo.tickLabelFormats == null ? 
+    drawTicks2(pt1, pt2, tickInfo.ticks.x, 8, diameter, (!withLabels ? null : tickInfo.tickLabelFormats == null ? 
             new String[] { "%0.2f" } : tickInfo.tickLabelFormats));
-    drawTicks(pt1, pt2, tickInfo.ticks.y, 4, diameter, null);
-    drawTicks(pt1, pt2, tickInfo.ticks.z, 2, diameter, null);
+    drawTicks2(pt1, pt2, tickInfo.ticks.y, 4, diameter, null);
+    drawTicks2(pt1, pt2, tickInfo.ticks.z, 2, diameter, null);
   }
 
-  private void drawTicks(Point3fi ptA, Point3fi ptB, float dx, int length,
+  private void drawTicks2(Point3fi ptA, Point3fi ptB, float dx, int length,
                          int diameter, String[] formats) {
 
     if (dx == 0)
@@ -207,7 +207,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
             (x = (int) Math.floor(pointT2.x + vectorT2.x)),
             (y = (int) Math.floor(pointT2.y + vectorT2.y)), (int) z, diameter);
         if (drawLabel && (draw000 || p != 0)) {
-          val[0] = new Float((p == 0 ? 0 : p * signFactor));
+          val[0] = Float.valueOf((p == 0 ? 0 : p * signFactor));
           String s = TextFormat.sprintf(formats[i % formats.length], "f", val);
           drawString(x, y, (int) z, 4, rightJustify, centerX, centerY,
               (int) Math.floor(pointT2.y), s);
@@ -222,6 +222,10 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
 
   protected int drawLine(int x1, int y1, int z1, int x2, int y2, int z2,
                          int diameter) {
+    return drawLine2(x1, y1, z1, x2, y2, z2, diameter);
+  }
+
+  protected int drawLine2(int x1, int y1, int z1, int x2, int y2, int z2, int diameter) {
     pt0.set(x1, y1, z1);
     pt1.set(x2, y2, z2);
     if (diameter < 0) {

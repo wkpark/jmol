@@ -420,7 +420,7 @@ public final class ModelLoader {
           value = jbr.fixPropertyValue(bs, value);
         key = "property_" + key.toLowerCase();
         Logger.info("creating " + key + " for model " + modelSet.getModelName(i));
-        viewer.setData(key, new Object[] { key, value, bs, new Integer(0) }, modelSet.atomCount, 0,
+        viewer.setData(key, new Object[] { key, value, bs, Integer.valueOf(0) }, modelSet.atomCount, 0,
             0, Integer.MAX_VALUE, 0);
       }
     }

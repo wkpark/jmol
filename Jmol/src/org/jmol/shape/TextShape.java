@@ -35,7 +35,10 @@ public abstract class TextShape extends Object2dShape {
   
   @Override
   public void setProperty(String propertyName, Object value, BS bsSelected) {
+    setPropTS(propertyName, value, bsSelected);
+  }
 
+  protected void setPropTS(String propertyName, Object value, BS bsSelected) {
     if ("text" == propertyName) {
       String text = (String) value;
       if (currentObject == null) {
@@ -67,7 +70,8 @@ public abstract class TextShape extends Object2dShape {
       return;
     }
     
-    super.setProperty(propertyName, value, bsSelected);
+    setPropOS(propertyName, value, bsSelected);
   }
+  
 }
 

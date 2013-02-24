@@ -281,7 +281,7 @@ public abstract class Monomer extends Group {
   }
   
   public Map<String, Object> getMyInfo() {
-    Map<String, Object> info = super.getGroupInfo(groupIndex);
+    Map<String, Object> info = getGroupInfo(groupIndex);
     char chainID = chain.chainID;
     info.put("chain", (chainID == '\0' ? "" : "" + chainID));
     int seqNum = getSeqNumber();
@@ -292,16 +292,16 @@ public abstract class Monomer extends Group {
       info.put("insertionCode","" + insCode);
     float f = getGroupParameter(T.phi);
     if (!Float.isNaN(f))
-      info.put("phi", new Float(f));
+      info.put("phi", Float.valueOf(f));
     f = getGroupParameter(T.psi);
     if (!Float.isNaN(f))
-      info.put("psi", new Float(f));
+      info.put("psi", Float.valueOf(f));
     f = getGroupParameter(T.eta);
     if (!Float.isNaN(f))
-      info.put("mu", new Float(f));
+      info.put("mu", Float.valueOf(f));
     f = getGroupParameter(T.theta);
     if (!Float.isNaN(f))
-      info.put("theta", new Float(f));
+      info.put("theta", Float.valueOf(f));
     ProteinStructure structure = getProteinStructure();
     if(structure != null) {
       info.put("structureId", Integer.valueOf(structure.strucNo));
@@ -388,7 +388,7 @@ public abstract class Monomer extends Group {
   }
     
   final void getMonomerSequenceAtoms(BS bsInclude, BS bsResult) {
-    super.selectAtoms(bsResult);
+    selectAtoms(bsResult);
     bsResult.and(bsInclude);
   }
   
@@ -419,11 +419,11 @@ public abstract class Monomer extends Group {
     Quaternion q1 = (mStep < 1 ? Quaternion.getQuaternionFrameV(JC.axisX, JC.axisY, JC.axisZ, false) 
         : prev == null ? null : prev.getQuaternion(qType));
     if (q1 == null || q2 == null)
-      return super.getHelixData(tokType, qType, mStep);
+      return getHelixData(tokType, qType, mStep);
     P3 a = (mStep < 1 ? P3.new3(0, 0, 0) : prev.getQuaternionFrameCenter(qType));
     P3 b = getQuaternionFrameCenter(qType);
     if (a == null || b == null)
-      return super.getHelixData(tokType, qType, mStep);
+      return getHelixData(tokType, qType, mStep);
     return Measure.computeHelicalAxis(tokType == T.draw ? "helixaxis" + getUniqueID() : null, 
         tokType, a, b, q2.div(q1));
   }

@@ -397,7 +397,7 @@ public class GenNBOReader extends MOReader {
       String type = tokens[i];
       mo.put("type", moType + " " + type);
       // TODO: does not account for SOMO
-      mo.put("occupancy", new Float(type.indexOf("*") >= 0 ? 0 : 2));
+      mo.put("occupancy", Float.valueOf(type.indexOf("*") >= 0 ? 0 : 2));
     }
     return true;
   }

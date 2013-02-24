@@ -463,7 +463,7 @@ class IsoShapeReader extends VolumeDataReader {
           continue;
       }
       rave += ptPsi.distance(center);
-      addVertexCopy(ptPsi, value, 0);
+      addVC(ptPsi, value, 0);
       i++;
     }
     if (params.distance == 0)
@@ -484,8 +484,8 @@ class IsoShapeReader extends VolumeDataReader {
       ptPsi.set(0, 0, eccentricityScale / 2);
       eccentricityMatrixInverse.transform(ptPsi);
       ptPsi.add(center);
-      addVertexCopy(center, 0, 0);
-      addVertexCopy(ptPsi, 0, 0);
+      addVC(center, 0, 0);
+      addVC(ptPsi, 0, 0);
       addTriangleCheck(0, 0, 0, 0, 0, false, 0);
       return;
     case Parameters.SURFACE_GEODESIC:
@@ -504,7 +504,7 @@ class IsoShapeReader extends VolumeDataReader {
       P3 pt = P3.newP(pts[i]);
       pt.scale(params.distance);
       pt.add(center);
-      addVertexCopy(pt, 0, i);
+      addVC(pt, 0, i);
     }
     int[][] faces = ms.polygonIndexes;
     for (int i = 0; i < faces.length; i++) {

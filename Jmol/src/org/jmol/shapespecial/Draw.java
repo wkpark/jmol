@@ -79,7 +79,7 @@ public class Draw extends MeshCollection {
 
   void setPropertySuper(String propertyName, Object value, BS bs) {
     currentMesh = thisMesh;
-    super.setProperty(propertyName, value, bs);
+    setPropMC(propertyName, value, bs);
     thisMesh = (DrawMesh)currentMesh;  
   }
   
@@ -471,7 +471,7 @@ public void initShape() {
       data[2] =  getSpinAxis(id, index);
       return (data[2] != null);
     }
-    return super.getPropertyData(property, data);
+    return getPropDataMC(property, data);
   }
 
   @Override
@@ -480,7 +480,7 @@ public void initShape() {
       return getDrawCommand(thisMesh);
     if (property == "type")
       return Integer.valueOf(thisMesh == null ? EnumDrawType.NONE.id : thisMesh.drawType.id);
-    return super.getProperty(property, index);
+    return getPropMC(property);
   }
 
   private P3 getSpinCenter(String axisID, int vertexIndex, int modelIndex) {
@@ -709,7 +709,7 @@ public void initShape() {
           int[] p = thisMesh.polygonIndexes[modelIndex] = new int[nVertices];
           for (int j = 0; j < nPoints; j++) {
             info = vData.get(++i);
-            p[j] = thisMesh.addVertexCopy((P3) info[1]);
+            p[j] = thisMesh.addV((P3) info[1]);
           }
           for (int j = nPoints; j < 3; j++) {
             p[j] = n0 + nPoints - 1;
@@ -999,7 +999,7 @@ public void initShape() {
       return;
     int nVertices0 = thisMesh.vertexCount;
     for (int i = 0; i < nVertices; i++) {
-      thisMesh.addVertexCopy(ptList[i]);
+      thisMesh.addV(ptList[i]);
     }
     int npoints = (nVertices < 3 ? 3 : nVertices);
     thisMesh.setPolygonCount(nPoly + 1);
@@ -1477,8 +1477,8 @@ public void initShape() {
       if (mesh.diameter > 0)
         info.put("diameter", Integer.valueOf(mesh.diameter));
       if (mesh.width != 0)
-        info.put("width", new Float(mesh.width));
-      info.put("scale", new Float(mesh.scale));
+        info.put("width", Float.valueOf(mesh.width));
+      info.put("scale", Float.valueOf(mesh.scale));
       if (mesh.drawType == EnumDrawType.MULTIPLE) {
         List<Map<String, Object>> m = new ArrayList<Map<String,Object>>();
         int modelCount = viewer.getModelCount();
@@ -1500,7 +1500,7 @@ public void initShape() {
           if (mesh.drawTypes[k] == EnumDrawType.LINE) {
             float d = mesh.vertices[mesh.polygonIndexes[k][0]]
                 .distance(mesh.vertices[mesh.polygonIndexes[k][1]]);
-            mInfo.put("length_Ang", new Float(d));
+            mInfo.put("length_Ang", Float.valueOf(d));
           }
           m.add(mInfo);
         }
@@ -1515,7 +1515,7 @@ public void initShape() {
           v.add(mesh.vertices[j]);
         info.put("vertices", v);
         if (mesh.drawType == EnumDrawType.LINE)
-          info.put("length_Ang", new Float(mesh.vertices[0]
+          info.put("length_Ang", Float.valueOf(mesh.vertices[0]
               .distance(mesh.vertices[1])));
       }
       V.add(info);

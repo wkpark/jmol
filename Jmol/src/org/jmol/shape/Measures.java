@@ -524,7 +524,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         : "dihedral"));
     info.put("strMeasurement", m.getString());
     info.put("count", Integer.valueOf(count));
-    info.put("value", new Float(m.getValue()));
+    info.put("value", Float.valueOf(m.getValue()));
     TickInfo tickInfo = m.getTickInfo();
     if (tickInfo != null) {
       info.put("ticks", tickInfo.ticks);
@@ -533,7 +533,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       if (tickInfo.tickLabelFormats != null)
         info.put("tickLabelFormats", tickInfo.tickLabelFormats);
       if (!Float.isNaN(tickInfo.first))
-        info.put("tickStart", new Float(tickInfo.first));
+        info.put("tickStart", Float.valueOf(tickInfo.first));
     }
     List<Map<String, Object>> atomsInfo = new ArrayList<Map<String,Object>>();
     for (int i = 1; i <= count; i++) {

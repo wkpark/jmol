@@ -43,6 +43,12 @@ import org.jmol.viewer.JC;
 
 public class BioShape extends AtomShape {
 
+  @Override
+  public void setProperty(String propertyName, Object value, BS bsSelected) {
+    setPropAS(propertyName, value, bsSelected);
+    
+  }
+
   public int modelIndex;
   public int modelVisibilityFlags = 0;
 

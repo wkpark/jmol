@@ -202,8 +202,10 @@ public abstract class Shape {
    * @param value
    * @param bsSelected
    */
+  abstract public void setProperty(String propertyName, Object value, BS bsSelected);
+
   @SuppressWarnings("unchecked")
-  public void setProperty(String propertyName, Object value, BS bsSelected) {
+  protected void setPropS(String propertyName, Object value, BS bsSelected) {
     if (propertyName == "setProperties") {
       if (bsSelected == null)
         bsSelected = viewer.getSelectionSet(false);

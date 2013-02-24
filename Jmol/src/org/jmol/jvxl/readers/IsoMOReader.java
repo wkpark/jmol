@@ -239,7 +239,7 @@ class IsoMOReader extends AtomDataReader {
         float absValue = Math.abs(value);
         if (absValue <= getRnd(f))
           continue;
-        addVertexCopy(points[j], value, 0);
+        addVC(points[j], value, 0);
         if (++i == params.psi_monteCarloCount)
           break;
       }
@@ -325,7 +325,7 @@ class IsoMOReader extends AtomDataReader {
   public float[] getPlane(int x) {
     if (!qSetupDone) 
       setupCalculation();
-    return super.getPlane(x); 
+    return getPlane2(x); 
   }
 
   private boolean qSetupDone;
@@ -366,8 +366,7 @@ class IsoMOReader extends AtomDataReader {
                                              V3 edgeVector, int x, int y,
                                              int z, int vA, int vB,
                                              float[] fReturn, P3 ptReturn) {
-      
-      float zero = super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
+      float zero = getSPF(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
       if (q != null && !Float.isNaN(zero)) {
       zero = q.process(ptReturn);

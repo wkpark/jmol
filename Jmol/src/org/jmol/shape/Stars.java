@@ -25,7 +25,15 @@
 
 package org.jmol.shape;
 
+import org.jmol.util.BS;
+
 
 public class Stars extends AtomShape {
   // differences are in renderer
+  
+  @Override
+  public void setProperty(String propertyName, Object value, BS bs) {
+    setPropAS(propertyName, value, bs);
+  }
+  
 }

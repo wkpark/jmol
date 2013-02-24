@@ -259,7 +259,7 @@ public class AminoMonomer extends AlphaMonomer {
     case 'b':
     case 'c':
     case 'C':
-      return super.getQuaternionFrameCenter(qType);
+      return getQuaternionFrameCenterAlpha(qType);
     case 'n':
       return getNitrogenAtom();
     case 'p':
@@ -345,7 +345,7 @@ public class AminoMonomer extends AlphaMonomer {
       vA.cross(vB, vC);
       break;
     case 'b': // backbone
-      return super.getQuaternion('b');
+      return getQuaternionAlpha('b');
     case 'c':
       //vA = ptC - ptCa
       //vB = ptN - ptCa

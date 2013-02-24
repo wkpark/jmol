@@ -49,7 +49,7 @@ public class XmlMolproReader extends XmlCmlReader {
   public void processStartElement(String localName) {
     if (!processing)
       return;
-    super.processStartElement(localName);
+    processStart2(localName);
     if (localName.equalsIgnoreCase("normalCoordinate")) {
       keepChars = false;
       if (!parent.doGetVibration(++vibrationNumber))
@@ -98,7 +98,7 @@ public class XmlMolproReader extends XmlCmlReader {
         );
       }
     }
-    super.processEndElement(localName);
+    processEnd2(localName);
   }
 
 }

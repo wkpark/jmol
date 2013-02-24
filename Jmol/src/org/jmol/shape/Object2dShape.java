@@ -28,9 +28,7 @@ public abstract class Object2dShape extends Shape {
   boolean isHover;
   boolean isAll;
 
-  @Override
-  public void setProperty(String propertyName, Object value, BS bsSelected) {
-
+  protected void setPropOS(String propertyName, Object value, BS bsSelected) {
     if ("allOff" == propertyName) {
       currentObject = null;
       isAll = true;
@@ -184,7 +182,7 @@ public abstract class Object2dShape extends Shape {
       return;
     }
 
-    super.setProperty(propertyName, value, bsSelected);
+    setPropS(propertyName, value, bsSelected);
   }
 
   @Override

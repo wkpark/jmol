@@ -566,8 +566,8 @@ public class CsfReader extends MopacSlaterReader {
         if (Math.abs(list[iMo][i]) < MIN_COEF)
           list[iMo][i] = 0;
       Map<String, Object> mo = new Hashtable<String, Object>();
-      mo.put("energy", new Float(energy[iMo]));
-      mo.put("occupancy", new Float(occupancy[iMo]));
+      mo.put("energy", Float.valueOf(energy[iMo]));
+      mo.put("occupancy", Float.valueOf(occupancy[iMo]));
       mo.put("coefficients", list[iMo]);
       /*      
        System.out.print("MO " + iMo + " : ");

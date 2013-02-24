@@ -500,14 +500,14 @@ public class GaussianReader extends MOReader {
           String sym;
           if (isNOtype) {
             mos[i]
-                .put("occupancy", new Float(Parser.parseFloatStr(tokens[i + 2])));
+                .put("occupancy", Float.valueOf(Parser.parseFloatStr(tokens[i + 2])));
           } else {
             sym = tokens[i];
             mos[i].put("symmetry", sym);
             if (sym.indexOf("O") >= 0)
-              mos[i].put("occupancy", new Float(2));
+              mos[i].put("occupancy", Float.valueOf(2));
             else if (sym.indexOf("V") >= 0)
-              mos[i].put("occupancy", new Float(0));
+              mos[i].put("occupancy", Float.valueOf(0));
           }
         }
         if (isNOtype)
@@ -517,7 +517,7 @@ public class GaussianReader extends MOReader {
         if (tokens.length != nThisLine)
           tokens = getStrings(line, nThisLine, 10);
         for (int i = 0; i < nThisLine; i++)
-          mos[i].put("energy", new Float(tokens[i]));
+          mos[i].put("energy", Float.valueOf(tokens[i]));
         continue;
       } else if (line.length() < 21
           || (line.charAt(5) != ' ' && !Character.isDigit(line.charAt(5)))) {

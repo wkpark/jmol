@@ -318,7 +318,6 @@ import java.util.Map;
    * @param specInfo  
    * @return bitset; null only if we mess up with name
    */
-  @Override
   public BS getAtomBits(int tokType, Object specInfo) {
     switch (tokType) {
     case T.spec_model:
@@ -327,7 +326,8 @@ import java.util.Map;
       return (modelIndex < 0 && modelNumber > 0 ? new BS()
           : viewer.getModelUndeletedAtomsBitSet(modelIndex));
     }
-    return super.getAtomBits(tokType, specInfo);
+    return BSUtil.andNot(getAtomBitsMaybeDeleted(tokType, specInfo), viewer
+        .getDeletedAtoms());
   }
 
   public String getAtomLabel(int i) {
@@ -344,7 +344,7 @@ import java.util.Map;
       x <<= 1;
       y <<= 1;
     }
-    findNearestAtomIndex(x, y, closest, bsNot);
+    findNearest2(x, y, closest, bsNot);
     shapeManager.findNearestShapeAtomIndex(x, y, closest, bsNot);
     int closestIndex = (closest[0] == null ? -1 : closest[0].index);
     closest[0] = null;
@@ -471,7 +471,7 @@ import java.util.Map;
   
   
   protected void assignAromaticBonds(boolean isUserCalculation) {
-    super.assignAromaticBondsBs(isUserCalculation, null);
+    assignAromaticBondsBs(isUserCalculation, null);
     // send a message to STICKS indicating that these bonds
     // should be part of the state of the model. They will 
     // appear in the state as bondOrder commands.
@@ -480,7 +480,6 @@ import java.util.Map;
       shapeManager.setShapeSizeBs(JC.SHAPE_STICKS, Integer.MIN_VALUE, null, bsAromatic);
   }
 
-  @Override
   public int[] makeConnections(float minDistance, float maxDistance, int order,
                                int connectOperation, BS bsA, BS bsB,
                                BS bsBonds, boolean isBonds, boolean addGroup, float energy) {
@@ -495,7 +494,7 @@ import java.util.Map;
           (isBonds ? null : bsA), (isBonds ? null : bsB), " auto", false, true);
     }
     moleculeCount = 0;
-    return super.makeConnections(minDistance, maxDistance, order,
+    return makeConnections2(minDistance, maxDistance, order,
         connectOperation, bsA, bsB, bsBonds, isBonds, addGroup, energy);
   }
   
@@ -542,7 +541,6 @@ import java.util.Map;
     }
   }
   
-  @Override
   public void deleteAllBonds() {
     moleculeCount = 0;
     for (int i = stateScripts.size(); --i >= 0;) { 
@@ -550,7 +548,7 @@ import java.util.Map;
         stateScripts.remove(i);
       }
     }
-    super.deleteAllBonds();
+    deleteAllBonds2();
   }
 
   /* ******************************************************
@@ -663,7 +661,6 @@ import java.util.Map;
     return bsDeleted;
   }
 
-  @Override
   public void setAtomProperty(BS bs, int tok, int iValue, float fValue,
                               String sValue, float[] values, String[] list) {
     switch (tok) {
@@ -694,7 +691,7 @@ import java.util.Map;
           .setShapeSizeBs(JC.shapeTokenIndex(tok), mar, rd, bs);
       return;
     }
-    super.setAtomProperty(bs, tok, iValue, fValue, sValue, values, list);
+    setAPm(bs, tok, iValue, fValue, sValue, values, list);
   }
   
   @SuppressWarnings("unchecked")
@@ -768,9 +765,8 @@ import java.util.Map;
     recalculatePositionDependentQuantities(bs, mat4);
   }
 
-  @Override
   public void setAtomCoord(BS bs, int tokType, Object xyzValues) {
-    super.setAtomCoord(bs, tokType, xyzValues);
+    setAtomCoord2(bs, tokType, xyzValues);
     switch(tokType) {
     case T.vibx:
     case T.viby:

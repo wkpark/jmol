@@ -286,10 +286,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
     Atom myPhosphorusAtom = getAtomFromOffsetIndex(NP);
     if (myPhosphorusAtom == null)
       return false;
-    NucleicMonomer other = (NucleicMonomer)possiblyPreviousMonomer;
-    if (other.getAtomFromOffsetIndex(O3Pr).isBonded(myPhosphorusAtom))
-      return true;
-    return super.isConnectedAfter(possiblyPreviousMonomer);
+    return (((NucleicMonomer) possiblyPreviousMonomer).getAtomFromOffsetIndex(
+        O3Pr).isBonded(myPhosphorusAtom) || isCA2(possiblyPreviousMonomer));
   }
 
   ////////////////////////////////////////////////////////////////
@@ -398,7 +396,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
       ptB = getC4P();
       break;
     case 'b': // phosphorus backbone
-      return super.getQuaternion(qType);
+      return getQuaternionP();
     case 'c': // Sarver-defined, with Y in the C1'-N1/9 direction, x toward C2 (W-C edge) 
     case 'n': // same, just different quaternion center
       // N0 = (purine N9, pyrimidine N1): 

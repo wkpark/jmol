@@ -306,9 +306,9 @@ public class MoldenReader extends MopacSlaterReader {
       if (filterMO()) {
         mo.put("coefficients", coefs);
         if (!Float.isNaN(energy))
-          mo.put("energy", new Float(energy));
+          mo.put("energy", Float.valueOf(energy));
         if (!Float.isNaN(occupancy))
-          mo.put("occupancy", new Float(occupancy));
+          mo.put("occupancy", Float.valueOf(occupancy));
         if (symmetry != null)
           mo.put("symmetry", symmetry);
         if (alphaBeta.length() > 0)

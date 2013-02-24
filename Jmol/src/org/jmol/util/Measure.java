@@ -159,7 +159,7 @@ final public class Measure {
     if (Float.isNaN(theta) || r.length() < 0.0001f)
       theta = dq.getThetaDirectedV(n); // allow for r = 0
     if (tokType == T.angle)
-      return new Float(theta);
+      return Float.valueOf(theta);
     /*
     System.out.println("draw ID test VECTOR " + Escape.escape(pt_a_prime)
           + " " + Escape.escape(n) + " color "
@@ -214,7 +214,7 @@ final public class Measure {
         * pt.y + plane.z * pt.z + plane.w) / d);
   }
 
-  public static float distanceToPlane(V3 norm, float w, P3 pt) {
+  public static float distanceToPlaneV(V3 norm, float w, P3 pt) {
     return (norm == null ? Float.NaN 
         : (norm.x * pt.x + norm.y * pt.y + norm.z * pt.z + w)
         / (float) Math.sqrt(norm.x * norm.x + norm.y * norm.y + norm.z
@@ -283,7 +283,7 @@ final public class Measure {
     V3 vAB = new V3();
     V3 vAC = new V3();
     float d = getNormalThroughPoints(ptA, ptB, ptC, normal, vAB, vAC);
-    boolean isReversed = (distanceToPlane(normal, d, ptCenter) > 0);
+    boolean isReversed = (distanceToPlaneV(normal, d, ptCenter) > 0);
     if (isReversed == isOutward)
       normal.scale(-1f);
     //System.out.println("Draw v vector scale 2.0 " + Escape.escape(ptCenter) + Escape.escape(normal));

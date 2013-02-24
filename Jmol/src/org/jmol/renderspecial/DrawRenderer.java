@@ -97,7 +97,7 @@ public class DrawRenderer extends MeshRenderer {
       }
       mesh.recalcAltVertices = true;
     }
-    return super.renderMesh(mesh);
+    return renderMesh2(mesh);
   }
 
   @Override
@@ -146,12 +146,12 @@ public class DrawRenderer extends MeshRenderer {
     int tension = 5;
     switch (drawType) {
     default:
-      super.render2(false);
+      render2b(false);
       break;
     case CIRCULARPLANE:
       if (dmesh.scale > 0)
         width *= dmesh.scale;
-      super.render2(false);
+      render2b(false);
       break;
     case CIRCLE:
       viewer.transformPtScr(vertices[0], pt1i);

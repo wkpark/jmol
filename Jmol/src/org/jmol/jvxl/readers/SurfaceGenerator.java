@@ -811,7 +811,7 @@ public class SurfaceGenerator {
     // these next four set the reader themselves.
     if ("sphere" == propertyName) {
       params.setSphere(((Float) value).floatValue(), false);
-      readerData = new Float(params.distance);
+      readerData = Float.valueOf(params.distance);
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
@@ -820,7 +820,7 @@ public class SurfaceGenerator {
     // these next four set the reader themselves.
     if ("geodesic" == propertyName) {
       params.setSphere(((Float) value).floatValue(), true);
-      readerData = new Float(params.distance);
+      readerData = Float.valueOf(params.distance);
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
@@ -833,7 +833,7 @@ public class SurfaceGenerator {
         params.setEllipsoid((float[]) value);
       else
         return true;
-      readerData = new Float(params.distance);
+      readerData = Float.valueOf(params.distance);
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
@@ -841,7 +841,7 @@ public class SurfaceGenerator {
 
     if ("ellipsoid3" == propertyName) {
       params.setEllipsoid((float[]) value);
-      readerData = new Float(params.distance);
+      readerData = Float.valueOf(params.distance);
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;

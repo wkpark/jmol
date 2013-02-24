@@ -50,7 +50,7 @@ public class Backbone extends BioShapeCollection {
       this.bsSelected = (BS) value;
       return;
     }
-    super.setProperty(propertyName, value, bsSelected);
+    setPropBSC(propertyName, value, bsSelected);
   }
 
   @Override

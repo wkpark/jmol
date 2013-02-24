@@ -252,7 +252,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   @Override
   public void setWindowParameters(int width, int height, boolean antialias) {
-    super.setWindowParameters(width, height, antialias);
+    setWinParams(width, height, antialias);
     if (currentlyRendering)
       endRendering();
   }

@@ -485,7 +485,7 @@ public class JvxlXmlReader extends VolumeFileReader {
                                              V3 edgeVector,
                                              int x, int y, int z, int vA, int vB, float[] fReturn, P3 ptReturn) {
     if (edgeDataCount <= 0)
-      return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
+      return getSPFv(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
     ptReturn.scaleAdd2(fReturn[0] = jvxlGetNextFraction(edgeFractionBase,
         edgeFractionRange, 0.5f), edgeVector, pointA);

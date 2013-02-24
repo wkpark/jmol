@@ -1054,14 +1054,14 @@ class PointGroup {
       return textInfo;
     }
     info.put("name", name);
-    info.put("nAtoms", new Integer(nAtoms));
-    info.put("nTotal", new Integer(nTotal));
-    info.put("nCi", new Integer(haveInversionCenter ? 1 : 0));
-    info.put("nCs", new Integer(nAxes[0]));
-    info.put("nCn", new Integer(nType[OPERATION_PROPER_AXIS][0]));
-    info.put("nSn", new Integer(nType[OPERATION_IMPROPER_AXIS][0]));
-    info.put("distanceTolerance", new Float(distanceTolerance));
-    info.put("linearTolerance", new Float(linearTolerance));
+    info.put("nAtoms", Integer.valueOf(nAtoms));
+    info.put("nTotal", Integer.valueOf(nTotal));
+    info.put("nCi", Integer.valueOf(haveInversionCenter ? 1 : 0));
+    info.put("nCs", Integer.valueOf(nAxes[0]));
+    info.put("nCn", Integer.valueOf(nType[OPERATION_PROPER_AXIS][0]));
+    info.put("nSn", Integer.valueOf(nType[OPERATION_IMPROPER_AXIS][0]));
+    info.put("distanceTolerance", Float.valueOf(distanceTolerance));
+    info.put("linearTolerance", Float.valueOf(linearTolerance));
     info.put("detail", sb.toString().replace('\n', ';'));
     if (principalAxis != null && principalAxis.index > 0)
       info.put("principalAxis", principalAxis.normalOrAxis);

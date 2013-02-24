@@ -26,7 +26,6 @@ package org.jmol.shape;
 
 
 import org.jmol.modelset.TickInfo;
-import org.jmol.util.BS;
 
 public abstract class FontLineShape extends FontShape {
 
@@ -34,8 +33,7 @@ public abstract class FontLineShape extends FontShape {
   
   public TickInfo[] tickInfos = new TickInfo[4];
 
-  @Override
-  public void setProperty(String propertyName, Object value, BS bs) {
+  protected void setPropFLS(String propertyName, Object value) {
 
     if ("tickInfo" == propertyName) {
       TickInfo t = (TickInfo) value;
@@ -50,8 +48,7 @@ public abstract class FontLineShape extends FontShape {
       tickInfos["xyz".indexOf(t.type) + 1] = t;
       return;
     }
-
-    super.setProperty(propertyName, value, bs);
+    setPropFS(propertyName, value);
   }
 
   @Override

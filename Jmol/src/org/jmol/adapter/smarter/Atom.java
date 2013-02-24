@@ -71,12 +71,10 @@ public class Atom extends P3 implements Cloneable {
    set(Float.NaN, Float.NaN, Float.NaN);
   }
 
-  @Override
-  public Atom clone() throws CloneNotSupportedException {
-    Atom a = (Atom)super.clone();
+  public Atom getClone() throws CloneNotSupportedException {
     // note that anisoBorU and ellipsoid are not copied
     // we consider them "final" in a sense
-    return a;
+    return (Atom)clone();
   }
 
   public String getElementSymbol() {

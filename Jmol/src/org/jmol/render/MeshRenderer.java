@@ -84,6 +84,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
   
   // draw, isosurface, molecular orbitals
   public boolean renderMesh(Mesh mesh) { // used by mps renderer
+    return renderMesh2(mesh);
+  }
+
+  protected boolean renderMesh2(Mesh mesh) {
     this.mesh = mesh;
     if (!setVariables())
       return false;
@@ -199,6 +203,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   //isosurface,meshRenderer::render1 (just about everything)
   protected void render2(boolean generateSet) {
+    render2b(generateSet);
+  }
+  
+  protected void render2b(boolean generateSet) {
     if (!g3d.setColix(haveBsSlabGhost ? mesh.slabColix : colix))
       return;
     if (mesh.showPoints || mesh.polygonCount == 0)
@@ -208,7 +216,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (haveBsSlabGhost ? mesh.slabMeshType == T.fill : mesh.fillTriangles)
       renderTriangles(true, mesh.showTriangles, generateSet);
   }
-  
+
   protected void renderPoints() {
     if (mesh.isTriangleSet) {
       int[][] polygonIndexes = mesh.polygonIndexes;

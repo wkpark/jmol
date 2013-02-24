@@ -271,7 +271,7 @@ public class Jvxl {
     if (blockData)
       sg.setParameter("blockData", Boolean.TRUE);
     if (!Float.isNaN(cutoff))
-      sg.setParameter(isPositiveOnly ? "cutoffPositive" : "cutoff", new Float(
+      sg.setParameter(isPositiveOnly ? "cutoffPositive" : "cutoff", Float.valueOf(
           cutoff));
     if (bicolor)
       sg.setParameter("sign", null);
@@ -313,9 +313,9 @@ public class Jvxl {
      // sg.setParameter("colorScheme", ce);
    // }
     if (!Float.isNaN(min))
-      sg.setParameter("red", new Float(min));
+      sg.setParameter("red", Float.valueOf(min));
     if (!Float.isNaN(max))
-      sg.setParameter("blue", new Float(max));
+      sg.setParameter("blue", Float.valueOf(max));
     if (mapFile != null) {
       Object t = FileReader
       .getBufferedReaderOrErrorMessageFromName(mapFile);

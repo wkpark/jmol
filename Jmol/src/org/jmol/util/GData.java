@@ -481,6 +481,10 @@ public class GData implements JmolGraphicsInterface {
   }
 
   public void setWindowParameters(int width, int height, boolean antialias) {
+    setWinParams(width, height, antialias);
+  }
+
+  protected void setWinParams(int width, int height, boolean antialias) {
     newWindowWidth = width;
     newWindowHeight = height;
     newAntialiasing = antialias;    

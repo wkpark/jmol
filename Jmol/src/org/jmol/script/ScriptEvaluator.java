@@ -2184,7 +2184,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     try {
       List<SV> p = (List<SV>) params;
       for (int i = 0; i < values.length; i++)
-        p.get(i).value = new Float(values[i]);
+        p.get(i).value = Float.valueOf(values[i]);
       ScriptFunction f = (ScriptFunction) func;
       return SV
           .fValue(runFunctionRet(f, f.name, p, null, true, false, false));
@@ -3832,13 +3832,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.spec_chain:
         rpn
             .addXBs(getAtomBits(instruction.tok,
-                new Integer(instruction.intValue)));
+                Integer.valueOf(instruction.intValue)));
         break;
       case T.spec_seqcode:
         if (isInMath)
           rpn.addXNum(new ScriptVariableInt(instruction.intValue));
         else
-          rpn.addXBs(getAtomBits(T.spec_seqcode, new Integer(
+          rpn.addXBs(getAtomBits(T.spec_seqcode, Integer.valueOf(
               getSeqCode(instruction))));
         break;
       case T.spec_seqcode_range:
@@ -8398,7 +8398,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
           if (isProperty)
             viewer.setData(property2,
-                new Object[] { property2, dataOut, bsOut, new Integer(0) }, viewer
+                new Object[] { property2, dataOut, bsOut, Integer.valueOf(0) }, viewer
                     .getAtomCount(), 0, 0, Integer.MAX_VALUE, 0);
           else
             viewer.setAtomProperty(bsOut, tokProp2, 0, 0, null, dataOut, null);
@@ -8484,7 +8484,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       for (int ie = 1; ie <= n; ie++)
         eArray[ie] = ie;
       data[2] = eArray;
-      data[3] = new Integer(0);
+      data[3] = Integer.valueOf(0);
       viewer.setData("element_vdw", data, n, 0, 0, 0, 0);
       return;
     }
@@ -8501,7 +8501,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // data2d_someName
       data[0] = dataLabel;
       data[1] = Parser.parseFloatArray2d(dataString);
-      data[3] = new Integer(2);
+      data[3] = Integer.valueOf(2);
       viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
       return;
     }
@@ -8509,7 +8509,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // data3d_someName
       data[0] = dataLabel;
       data[1] = Parser.parseFloatArray3d(dataString);
-      data[3] = new Integer(3);
+      data[3] = Integer.valueOf(3);
       viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
       return;
     }
@@ -8566,7 +8566,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         data[2] = BSUtil.copy(bs);
       }
       data[1] = dataString;
-      data[3] = new Integer(0);
+      data[3] = Integer.valueOf(0);
       viewer.setData(dataType, data, atomCount, atomNumberField,
           atomNumberFieldColumnCount, propertyField, propertyFieldColumnCount);
       return;
@@ -8580,7 +8580,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // this is just information to be stored.
     data[0] = dataLabel;
     data[1] = dataString;
-    data[3] = new Integer(0);
+    data[3] = Integer.valueOf(0);
     viewer.setData(dataType, data, 0, 0, 0, 0, 0);
   }
 
@@ -13960,7 +13960,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         viewer.setData(propertyName, new Object[] {
             propertyName,
             (tv.tok == T.varray ? SV.flistValue(tv,((List<?>)tv.value).size() == bs.cardinality() ? bs.cardinality() : viewer.getAtomCount()) : tv.asString()), 
-             BSUtil.copy(bs), new Integer(tv.tok == T.varray ? 1 : 0) }, 
+             BSUtil.copy(bs), Integer.valueOf(tv.tok == T.varray ? 1 : 0) }, 
              viewer.getAtomCount(), 0, 0, tv.tok == T.varray ? Integer.MAX_VALUE
             : Integer.MIN_VALUE, 0);
         return;
@@ -13980,7 +13980,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (tv.tok == T.varray)
         vv = tv.asString();
       viewer.setData(key, new Object[] { key, "" + vv,
-          BSUtil.copy(viewer.getSelectionSet(false)), new Integer(0) }, 
+          BSUtil.copy(viewer.getSelectionSet(false)), Integer.valueOf(0) }, 
           viewer.getAtomCount(), 0, 0,
           Integer.MIN_VALUE, 0);
       return;
@@ -16545,7 +16545,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       break;
     case T.off:
       iToken = i + 1;
-      return new Integer(Integer.MIN_VALUE);
+      return Integer.valueOf(Integer.MIN_VALUE);
     case T.none:
       iToken = i + 1;
       break;
@@ -16643,7 +16643,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!isLcaoCartoon && isSlab && isFloatParameter(i + 1)) {
         d = floatParameter(++i);
         if (!isFloatParameter(i + 1))
-          return new Integer((int) d);
+          return Integer.valueOf((int) d);
         d2 = floatParameter(++i);
         data = new Object[] { Float.valueOf(d), Float.valueOf(d2) };
         tok = T.range;

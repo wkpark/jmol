@@ -436,8 +436,8 @@ OR
 
   private void addMo(SymmetryData sd, int moPt, float occ, float energy) {
     Map<String, Object> mo = sd.mos[moPt - 1];
-    mo.put("occupancy", new Float(occ));
-    mo.put("energy", new Float(energy)); //eV
+    mo.put("occupancy", Float.valueOf(occ));
+    mo.put("energy", Float.valueOf(energy)); //eV
     mo.put("symmetry", sd.sym + "_" + moPt);
     setMO(mo);
   }  

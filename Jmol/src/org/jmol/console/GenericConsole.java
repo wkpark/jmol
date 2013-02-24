@@ -135,6 +135,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   protected void displayConsole() {
     layoutWindow(null);
     outputMsg(defaultMessage);
+    System.out.println("AppConsole displayConsole");
   }
 
   protected String defaultMessage;

@@ -37,7 +37,7 @@ public class Text extends Object2d {
   @Override
   public void setScalePixelsPerMicron(float scalePixelsPerMicron) {    
     fontScale = 0;//fontScale * this.scalePixelsPerMicron / scalePixelsPerMicron;
-    super.setScalePixelsPerMicron(scalePixelsPerMicron);    
+    this.scalePixelsPerMicron = scalePixelsPerMicron;    
   }
   
   public float fontScale;

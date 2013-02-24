@@ -171,6 +171,10 @@ public class XmlCmlReader extends XmlReader {
   public void processStartElement(String name) {
     if (!processing)
       return;
+    processStart2(name);
+  }
+
+  protected void processStart2(String name) {
     switch (state) {
     case START:
       if (name.equals("molecule")) {
@@ -424,6 +428,10 @@ public class XmlCmlReader extends XmlReader {
     //System.out.println("END: " + name);
     if (!processing)
       return;
+    processEnd2(name);
+  }
+  
+  public void processEnd2(String name) {
     switch (state) {
     case START:
       if (name.equals("module")) {
@@ -585,7 +593,7 @@ public class XmlCmlReader extends XmlReader {
       break;
     }
   }
-  
+
   private void addNewBond(String a1, String a2, int order) {
     parent.applySymmetryToBonds = true;
     //System.out.println("atomsetcollection addnewbond " + a1 + " " + a2);

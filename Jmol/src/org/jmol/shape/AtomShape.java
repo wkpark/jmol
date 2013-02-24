@@ -74,10 +74,12 @@ public abstract class AtomShape extends Shape {
   
   @Override
   protected void setSize(int size, BS bsSelected) {
-    if (size == 0)
-      setSizeRD(null, bsSelected);
-    else
-      setSizeRD(new RadiusData(null, size, EnumType.SCREEN, null), bsSelected);
+    setSize2(size, bsSelected);
+  }
+
+  protected void setSize2(int size, BS bsSelected) {
+    setSizeRD(size == 0 ? null : new RadiusData(null, size, EnumType.SCREEN,
+        null), bsSelected);
   }
 
   @Override
@@ -103,8 +105,7 @@ public abstract class AtomShape extends Shape {
     }
   }
 
-  @Override
-  public void setProperty(String propertyName, Object value, BS bs) {
+  protected void setPropAS(String propertyName, Object value, BS bs) {
     if ("color" == propertyName) {
       isActive = true;
       short colix = C.getColixO(value);
@@ -163,7 +164,7 @@ public abstract class AtomShape extends Shape {
       BSUtil.deleteBits(bsColixSet, bs);
       return;
     }
-    super.setProperty(propertyName, value, bs);
+    setPropS(propertyName, value, bs);
   }
 
   protected void setColixAndPalette(short colix, byte paletteID, int atomIndex) {

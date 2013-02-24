@@ -223,12 +223,12 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
           && viewer.getDebugScript()) {
         jmolCallbackListener.notifyCallback(EnumCallback.SCRIPT,
             new Object[] { null, "script <exiting>", statusMessage,
-                new Integer(-1), strErrorMessageUntranslated });
+                Integer.valueOf(-1), strErrorMessageUntranslated });
         strStatus = "Jmol script completed.";
       }
       jmolCallbackListener.notifyCallback(EnumCallback.SCRIPT,
           new Object[] { sJmol, strStatus, statusMessage,
-              new Integer(isScriptCompletion ? -1 : msWalltime),
+              Integer.valueOf(isScriptCompletion ? -1 : msWalltime),
               strErrorMessageUntranslated });
    */
   

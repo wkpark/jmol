@@ -242,6 +242,10 @@ public class Mesh extends MeshSurface {
   public boolean recalcAltVertices;
   
   protected void sumVertexNormals(P3[] vertices, V3[] normals) {
+    sumVertexNormals2(vertices, normals);
+  }
+
+  protected void sumVertexNormals2(P3[] vertices, V3[] normals) {
     // subclassed in IsosurfaceMesh
     int adjustment = checkByteCount;
     float min = getMinDistance2ForVertexGrouping();
@@ -383,6 +387,10 @@ public class Mesh extends MeshSurface {
   }
 
   public BS getVisibleVertexBitSet() {
+    return getVisibleVBS();
+  }
+
+  protected BS getVisibleVBS() {
     BS bs = new BS();
     if (polygonCount == 0 && bsSlabDisplay != null)
       BSUtil.copy2(bsSlabDisplay, bs);

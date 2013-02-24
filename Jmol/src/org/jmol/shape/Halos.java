@@ -64,7 +64,7 @@ public class Halos extends AtomShape {
       // pass through to AtomShape
     }
 
-    super.setProperty(propertyName, value, bs);
+    setPropAS(propertyName, value, bs);
   }
 
   @Override

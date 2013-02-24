@@ -370,7 +370,7 @@ class IsoSolventReader extends AtomDataReader {
         .get(vB)));
     if (testLinear || voxelSource == null || voxelSource[vA] == 0
         || voxelSource[vA] != voxelSource[vB])
-      return super.getSurfacePointAndFraction(cutoff, isCutoffAbsolute, valueA,
+      return getSPF(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
     int iAtom = Math.abs(valueA < valueB ? voxelSource[vA] : voxelSource[vB]);
     //if (iAtom < 1 || iAtom -   1 >= atomIndex.length)
@@ -399,7 +399,7 @@ class IsoSolventReader extends AtomDataReader {
     // Boolean isSurfacePoint has been set in getSurfacePointAndFraction.
     // We use it to identify all points derived from (a) all +F and (b)
     // all -S voxels for atoms that are not related to a face. 
-    int i = super.addVertexCopy(vertexXYZ, value, assocVertex);
+    int i = addVC(vertexXYZ, value, assocVertex);
     if (i < 0)
       return i;
     if (isSurfacePoint)

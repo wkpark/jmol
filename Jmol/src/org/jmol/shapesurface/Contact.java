@@ -74,7 +74,7 @@ public class Contact extends Isosurface {
       translucentLevel = 0;
     }
 
-    super.setProperty(propertyName, value, bs);
+    setPropI(propertyName, value, bs);
   }
     
   protected Atom[] atoms;
@@ -134,7 +134,7 @@ public class Contact extends Isosurface {
       Logger.info("Contacts to " + bsB.cardinality() + ": "
           + Escape.e(bsB));
     }
-    super.setProperty("newObject", null, null);
+    setPropI("newObject", null, null);
     thisMesh.setMerged(true);
     thisMesh.nSets = 0;
     thisMesh.info = null;
@@ -165,7 +165,7 @@ public class Contact extends Isosurface {
       params.bsSelected = bs;
       params.bsSolvent = bsB;
       sg.setParameter("parameters", parameters);
-      super.setProperty("nci", Boolean.TRUE, null);
+      setPropI("nci", Boolean.TRUE, null);
       break;
     case T.sasurface:
     case T.surface:
@@ -224,11 +224,11 @@ public class Contact extends Isosurface {
       thisMesh.bsVdw.or(bsA);
       thisMesh.bsVdw.or(bsB);
     }
-    super.setProperty("finalize", command, null);
+    setPropI("finalize", command, null);
     if (colorDensity) {
-      super.setProperty("pointSize", Float.valueOf(ptSize), null);
+      setPropI("pointSize", Float.valueOf(ptSize), null);
     } else {
-      super.setProperty("token", Integer.valueOf(T.fullylit), null);
+      setPropI("token", Integer.valueOf(T.fullylit), null);
     }
     if (thisMesh.slabOptions != null) {
       thisMesh.slabOptions = null;
@@ -252,7 +252,7 @@ public class Contact extends Isosurface {
       ce = viewer.getColorEncoder("rwb");
       ce.setRange(-0.5f, 0.5f, false);
     } else if (defaultColor != null) {
-      super.setProperty("color", Integer.valueOf(ColorUtil
+      setPropI("color", Integer.valueOf(ColorUtil
           .getArgbFromString(defaultColor)), null);
     } else if (displayType == T.nci) {
       ce = viewer.getColorEncoder("bgr");
@@ -513,7 +513,7 @@ public class Contact extends Isosurface {
       }
       params.colorDensity = isColorDensity;
       if (isColorDensity) {
-        super.setProperty("cutoffRange", new float[] { -100f, 0f }, null);
+        setPropI("cutoffRange", new float[] { -100f, 0f }, null);
       }
       if (cp == null) {
         params.atomRadiusData = rdA;
@@ -522,15 +522,15 @@ public class Contact extends Isosurface {
         params.bsSolvent = null;
       }
       params.volumeData = volumeData;
-      super.setProperty("sasurface", Float.valueOf(sasurfaceRadius), null);
-      super.setProperty("map", Boolean.TRUE, null);
+      setPropI("sasurface", Float.valueOf(sasurfaceRadius), null);
+      setPropI("map", Boolean.TRUE, null);
       if (cp == null) {
         params.atomRadiusData = rdB;
         params.bsIgnore = BSUtil.copyInvert(bs2, atomCount);
         params.bsSelected = bs2;
       }
       params.volumeData = volumeData;
-      super.setProperty("sasurface", Float.valueOf(sasurfaceRadius), null);
+      setPropI("sasurface", Float.valueOf(sasurfaceRadius), null);
       switch (displayType) {
       case T.full:
       case T.trim:
@@ -559,12 +559,12 @@ public class Contact extends Isosurface {
       params.volumeData = volumeData;
       params.colorDensity = isColorDensity;
       if (isColorDensity)
-        super.setProperty("cutoffRange", new float[] { -5f, 0f }, null);
-      super.setProperty("sasurface", Float.valueOf(0), null);
+        setPropI("cutoffRange", new float[] { -5f, 0f }, null);
+      setPropI("sasurface", Float.valueOf(0), null);
       // mapping
-      super.setProperty("map", Boolean.TRUE, null);
+      setPropI("map", Boolean.TRUE, null);
       params.volumeData = volumeData;
-      super.setProperty("sasurface", Float.valueOf(0), null);
+      setPropI("sasurface", Float.valueOf(0), null);
       if (displayType != T.connect)
         iSlab0 = -100;
     }

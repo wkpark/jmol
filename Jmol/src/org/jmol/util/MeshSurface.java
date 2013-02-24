@@ -99,7 +99,7 @@ public class MeshSurface {
     this.colixBack = colix;
   }
 
-  public int addVertexCopy(P3 vertex) { //used by mps and surfaceGenerator
+  public int addV(P3 vertex) { //used by mps and surfaceGenerator
     if (vertexCount == 0)
       vertices = new P3[SEED_COUNT];
     else if (vertexCount == vertices.length)
@@ -125,13 +125,13 @@ public class MeshSurface {
       polygonIndexes = ArrayUtil.newInt2(polygonCount);
   }
 
-  public int addVertexCopyVal(P3 vertex, float value) {
+  public int addVCVal(P3 vertex, float value) {
     if (vertexCount == 0)
       vertexValues = new float[SEED_COUNT];
     else if (vertexCount >= vertexValues.length)
       vertexValues = ArrayUtil.doubleLengthF(vertexValues);
     vertexValues[vertexCount] = value;
-    return addVertexCopy(vertex);
+    return addV(vertex);
   } 
 
   public int addTriangleCheck(int vertexA, int vertexB, int vertexC, int check,
@@ -462,22 +462,11 @@ public class MeshSurface {
         vertexSets = ArrayUtil.doubleLengthI(vertexSets);
       vertexSets[vertexCount] = set;
     }
-    int i = addVertexCopy(vertex, value, true, -4);
+    int i = addVCVal(vertex, value);
+    //int i = addVertexCopy(vertex, value, -4, true);
     mapEdge.put(key, Integer.valueOf(i));
     return i;    
   } 
-
-  /**
-   * @param vertex 
-   * @param value 
-   * @param assocNormals  
-   * @param iNormal 
-   * @return   new vertex index
-   */
-  protected int addVertexCopy(P3 vertex, float value, boolean assocNormals, int iNormal) {
-    // isosurface only
-    return addVertexCopyVal(vertex, value);
-  }
 
   private boolean doClear;
   private boolean doGhost;

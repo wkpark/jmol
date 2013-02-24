@@ -152,7 +152,7 @@ public class JSExporter extends CartesianExporter {
       o = htObjects.get(ret[0]);
     else
       htObjects.put(ret[0], o = new Object[] { getColor(colix),
-          new Float(length), new Float(radius) });
+          Float.valueOf(length), Float.valueOf(radius) });
     jsCylinder(applet, ret[0], !found, pt1, pt2, o);
     return true;
   }

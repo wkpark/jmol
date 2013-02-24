@@ -4604,11 +4604,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   /**
-   * Jmol will either specify a type  or look for it in the first character,
-   * making sure it is found using isDatabaseCode() first. Starting with 
-   * Jmol 13.1.13, we allow a generalized search using =xxx= where xxx is
-   * a known or user-specified database designation.
-   *  
+   * Jmol will either specify a type or look for it in the first character,
+   * making sure it is found using isDatabaseCode() first. Starting with Jmol
+   * 13.1.13, we allow a generalized search using =xxx= where xxx is a known or
+   * user-specified database designation.
+   * 
    * @param name
    * @param type
    * @param withPrefix
@@ -4622,8 +4622,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (name.startsWith("==")) {
         f = f.substring(1);
         type = '#';
-      } else
-      if (f.indexOf("/") > 0) {
+      } else if (f.indexOf("/") > 0) {
         // =xxxx/....
         try {
           int pt = f.indexOf("/");
@@ -4640,16 +4639,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (f.indexOf(".") > 0 && s.indexOf("%FILE.") >= 0)
         s = s.substring(0, s.indexOf("%FILE") + 5);
       return TextFormat.formatStringS(s, "FILE", f);
-      
+
     case ':': // PubChem
       format = global.pubChemFormat;
       String fl = f.toLowerCase();
-      try {
-        f = "cid/" + String.valueOf(Integer.valueOf(f).intValue());
-      } catch (Exception e) {
+      int fi = Parser.parseInt(f);
+      if (fi == Integer.MIN_VALUE) {
+        f = "cid/" + fi;
+      } else {
         if (fl.startsWith("smiles:")) {
           format += "?POST?smiles=" + f.substring(7);
-          f = "smiles";          
+          f = "smiles";
         } else if (fl.startsWith("cid:")) {
           f = "cid/" + f.substring(4);
         } else {
@@ -4665,7 +4665,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (name.startsWith("$$")) {
         // 2D version
         f = f.substring(1);
-        format = TextFormat.simpleReplace(global.smilesUrlFormat, "&get3d=True", "");
+        format = TextFormat.simpleReplace(global.smilesUrlFormat,
+            "&get3d=True", "");
         return TextFormat.formatStringS(format, "FILE", Escape.escapeUrl(f));
       }
       //$FALL-THROUGH$
@@ -6114,7 +6115,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     default:
       if (!global.htNonbooleanParameterValues.containsKey(key.toLowerCase())) {
         global.setUserVariable(key, SV.newVariable(T.decimal,
-            new Float(value)));
+            Float.valueOf(value)));
         return;
       }
     }
@@ -7428,7 +7429,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     rd.value = value / 100f;
     rd.factorType = EnumType.FACTOR;
     rd.vdwType = EnumVdw.AUTO;
-    setShapeSize(JC.SHAPE_BALLS, rd, null);
+    setShapeSizeRD(JC.SHAPE_BALLS, rd, null);
   }
 
   @Override
@@ -7618,7 +7619,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setDefaults() {
-    setShapeSize(JC.SHAPE_BALLS, rd,
+    setShapeSizeRD(JC.SHAPE_BALLS, rd,
         getModelUndeletedAtomsBitSet(-1));
   }
 
@@ -8013,7 +8014,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // change y to 0 at bottom
     int modifiers = Binding.getModifiers(action);
     int clickCount = Binding.getClickCount(action);
-    //System.out.println(action + " " + clickCount + " " + modifiers + " " + mode);
     global.setI("_mouseX", x);
     global.setI("_mouseY", dimScreen.height - y);
     global.setI("_mouseAction", action);
@@ -8602,7 +8602,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void addCommand(String command) {
     if (autoExit || !haveDisplay || !getPreserveState())
       return;
-    //System.out.println("addCommand " + command);
     commandHistory.addCommand(TextFormat.replaceAllCharacters(command,
         "\r\n\t", " "));
   }
@@ -8613,7 +8612,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return command removed
    */
   public String removeCommand() {
-    //System.out.println("removeCommand");
     return commandHistory.removeCommand();
   }
 
@@ -8628,7 +8626,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   @Override
   public String getSetHistory(int howFarBack) {
-    //System.out.println("getSetHistory " +  howFarBack);
     return commandHistory.getSetHistory(howFarBack);
   }
 
@@ -9470,7 +9467,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.setShapeSizeBs(shapeID, mad, null, bsSelected);
   }
 
-  public void setShapeSize(int shapeID, RadiusData rd, BS bsAtoms) {
+  public void setShapeSizeRD(int shapeID, RadiusData rd, BS bsAtoms) {
     shapeManager.setShapeSizeBs(shapeID, 0, rd, bsAtoms);
   }
 
@@ -9759,20 +9756,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setStateScriptVersion(String version) {
     if (version != null) {
+      String[] tokens = Parser.getTokens(version.replace('.', ' ').replace('_',
+          ' '));
       try {
-        String[] tokens = Parser.getTokens(version.replace('.', ' ').replace(
-            '_', ' '));
-        int main = Integer.valueOf(tokens[0]).intValue(); //11
-        int sub = Integer.valueOf(tokens[1]).intValue(); //9
-        int minor = Integer.valueOf(tokens[2]).intValue(); //24
+        int main = Parser.parseInt(tokens[0]); //11
+        int sub = Parser.parseInt(tokens[1]); //9
+        int minor = Parser.parseInt(tokens[2]); //24
         if (minor == Integer.MIN_VALUE) // RCxxx
           minor = 0;
-        stateScriptVersionInt = main * 10000 + sub * 100 + minor;
-        // here's why:
-        global.legacyAutoBonding = (stateScriptVersionInt < 110924);
-        return;
+        if (main != Integer.MIN_VALUE && sub != Integer.MIN_VALUE) {
+          stateScriptVersionInt = main * 10000 + sub * 100 + minor;
+          // here's why:
+          global.legacyAutoBonding = (stateScriptVersionInt < 110924);
+          return;
+        }
       } catch (Exception e) {
-        //
+        // ignore
       }
     }
     setBooleanProperty("legacyautobonding", false);

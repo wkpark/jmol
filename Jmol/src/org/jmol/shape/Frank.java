@@ -55,6 +55,11 @@ public class Frank extends FontShape {
   }
 
   @Override
+  public void setProperty(String propertyName, Object value, BS bs) {
+    setPropFS(propertyName, value);
+  }
+  
+  @Override
   public boolean wasClicked(int x, int y) {
     int width = viewer.getScreenWidth();
     int height = viewer.getScreenHeight();

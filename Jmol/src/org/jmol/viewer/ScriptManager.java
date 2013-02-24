@@ -89,10 +89,10 @@ public class ScriptManager implements JmolScriptManager {
 
   public String addScript(String strScript, boolean isScriptFile,
                           boolean isQuiet) {
-    return (String) addScript("String", strScript, "", isScriptFile, isQuiet);
+    return (String) addScr("String", strScript, "", isScriptFile, isQuiet);
   }
 
-  private Object addScript(String returnType, String strScript,
+  private Object addScr(String returnType, String strScript,
                           String statusList, boolean isScriptFile,
                           boolean isQuiet) {
     /**
@@ -110,7 +110,7 @@ public class ScriptManager implements JmolScriptManager {
     if (commandWatcherThread != null && strScript.indexOf("/*SPLIT*/") >= 0) {
       String[] scripts = TextFormat.splitChars(strScript, "/*SPLIT*/");
       for (int i = 0; i < scripts.length; i++)
-        addScript(returnType, scripts[i], statusList, isScriptFile, isQuiet);
+        addScr(returnType, scripts[i], statusList, isScriptFile, isQuiet);
       return "split into " + scripts.length + " sections for processing";
     }
     boolean useCommandThread = (commandWatcherThread != null && 

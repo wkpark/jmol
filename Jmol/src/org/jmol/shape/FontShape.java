@@ -24,7 +24,6 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
 
 
@@ -40,8 +39,7 @@ public abstract class FontShape extends Shape {
     translucentAllowed = false;
   }
 
-  @Override
-  public void setProperty(String propertyName, Object value, BS bs) {
+  public void setPropFS(String propertyName, Object value) {
     if ("font" == propertyName) {
       font3d = (JmolFont) value;
       return;

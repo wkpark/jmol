@@ -123,7 +123,7 @@ class EfvetReader extends PolygonFileReader {
         value = parseFloat();
       if (isAnisotropic)
         setVertexAnisotropy(pt);
-      addVertexCopy(pt, value, i);
+      addVC(pt, value, i);
     }
   }
   

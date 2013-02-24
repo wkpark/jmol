@@ -31,7 +31,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
 
-class VolumeDataReader extends SurfaceReader {
+abstract class VolumeDataReader extends SurfaceReader {
 
   /*        (requires AtomDataServer)
    *                |-- IsoSolventReader

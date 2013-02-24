@@ -114,14 +114,22 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
   }
 
   public void setCenter(P3 center, float distance) {
+    setCenter2(center, distance);
+  }
+  
+  protected void setCenter2(P3 center, float distance) {
     if (cubeIterator == null)
       return;
     cubeIterator.initialize(center, distance, hemisphereOnly);
     distanceSquared = distance * distance;
   }
-  
+
   private int iNext;
   public boolean hasNext() {
+    return hasNext2();
+  }
+  
+  protected boolean hasNext2() {
     if (atomIndex >= 0)
       while (cubeIterator.hasMoreElements()) {
         Atom a = (Atom) cubeIterator.nextElement();
@@ -139,7 +147,8 @@ public class AtomIteratorWithinModel implements AtomIndexIterator {
     iNext = -1;
     return false;
   }
-  
+
+
   public int next() {
     return iNext - zeroBase;
   }

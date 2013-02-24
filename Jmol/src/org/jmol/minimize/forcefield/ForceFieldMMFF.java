@@ -46,6 +46,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 /**
  * MMFF94 implementation 5/14/2012
@@ -367,21 +368,21 @@ public class ForceFieldMMFF extends ForceField {
         switch (dataType) {
         case TYPE_OOP:
         case TYPE_TORSION: 
-          a4 = Integer.valueOf(line.substring(18,20).trim()).intValue();
+          a4 = Parser.parseInt(line.substring(18,20).trim());
           //$FALL-THROUGH$
         case TYPE_ANGLE:
         case TYPE_SB:
         case TYPE_SBDEF:
-          a3 = Integer.valueOf(line.substring(13,15).trim()).intValue();
+          a3 = Parser.parseInt(line.substring(13,15).trim());
           //$FALL-THROUGH$
         case TYPE_BNDK:
         case TYPE_BOND:
         case TYPE_CHRG:
-          a2 = Integer.valueOf(line.substring(8,10).trim()).intValue();
+          a2 = Parser.parseInt(line.substring(8,10).trim());
           //$FALL-THROUGH$
         case TYPE_PBCI:
         case TYPE_VDW:
-          a1 = Integer.valueOf(line.substring(3,5).trim()).intValue();
+          a1 = Parser.parseInt(line.substring(3,5).trim());
           break;
         }
         switch (dataType) {
@@ -470,11 +471,11 @@ public class ForceFieldMMFF extends ForceField {
         //0123456789012345678901234567890123456789012345678901234567890123456789
         //Mg 12 99  0  24  0 DIPOSITIVE MAGNESIUM CATI [MgD0]
         //#AtSym ElemNo mmType HType formalCharge*12 val Desc Smiles
-        int elemNo = Integer.valueOf(line.substring(3,5).trim()).intValue();
-        int mmType = Integer.valueOf(line.substring(6,8).trim()).intValue();
-        int hType = Integer.valueOf(line.substring(9,11).trim()).intValue();
+        int elemNo = Parser.parseInt(line.substring(3,5).trim());
+        int mmType = Parser.parseInt(line.substring(6,8).trim());
+        int hType = Parser.parseInt(line.substring(9,11).trim());
         float formalCharge = Float.valueOf(line.substring(12,15).trim()).floatValue()/12;
-        int val = Integer.valueOf(line.substring(16,18).trim()).intValue();
+        int val = Parser.parseInt(line.substring(16,18).trim());
         String desc = line.substring(19,44).trim();
         String smarts = line.substring(45).trim();
         types.add(at = new AtomType(elemNo, mmType, hType, formalCharge, val, desc, smarts));

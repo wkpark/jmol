@@ -431,7 +431,7 @@ abstract public class AtomCollection {
   }
 
   @SuppressWarnings("unchecked")
-  public void setAtomCoord(BS bs, int tokType, Object xyzValues) {
+  protected void setAtomCoord2(BS bs, int tokType, Object xyzValues) {
     P3 xyz = null;
     P3[] values = null;
     List<P3> v = null;
@@ -516,7 +516,7 @@ abstract public class AtomCollection {
         setAtomCoordRelative(i, x, y, z);
   }
 
-  public void setAtomProperty(BS bs, int tok, int iValue, float fValue,
+  protected void setAPa(BS bs, int tok, int iValue, float fValue,
                               String sValue, float[] values, String[] list) {
     int n = 0;
 
@@ -866,7 +866,7 @@ abstract public class AtomCollection {
         taintAtom(atomIndex, (byte) type);
       }
       if (type == TAINT_MAX && n > 0)
-        viewer.setData(name, new Object[] {name, fData, bs, new Integer(1)}, 0, 0, 0, 0, 0);
+        viewer.setData(name, new Object[] {name, fData, bs, Integer.valueOf(1)}, 0, 0, 0, 0, 0);
         
     } catch (Exception e) {
       Logger.error("AtomCollection.loadData error: " + e);
@@ -1044,7 +1044,7 @@ abstract public class AtomCollection {
    * A more general algorithm of recording which object drew
    * which pixel would be very expensive and not worth the trouble
    */
-  protected void findNearestAtomIndex(int x, int y, Atom[] closest, BS bsNot) {
+  protected void findNearest2(int x, int y, Atom[] closest, BS bsNot) {
     Atom champion = null;
     int min = viewer.getMinPixelSelRadius();
     for (int i = atomCount; --i >= 0;) {
@@ -1091,7 +1091,7 @@ abstract public class AtomCollection {
     return bsFoundRectangle;
   }
 
-  protected void fillAtomData(AtomData atomData, int mode) {
+  protected void fillADa(AtomData atomData, int mode) {
     atomData.atomXyz = atoms;
     atomData.atomCount = atomCount;
     atomData.atomicNumber = new int[atomCount];
@@ -2020,7 +2020,7 @@ abstract public class AtomCollection {
    * @param specInfo
    * @return BitSet; or null if we mess up the type
    */
-  protected BS getAtomBitsMaybeDeleted(int tokType, Object specInfo) {
+  protected BS getAtomBitsMDa(int tokType, Object specInfo) {
     BS bs = new BS()  ;
     BS bsInfo;
     BS bsTemp;

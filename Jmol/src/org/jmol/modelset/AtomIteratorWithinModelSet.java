@@ -51,13 +51,13 @@ public class AtomIteratorWithinModelSet extends AtomIteratorWithinModel {
     if ((modelIndex = bsModels.nextSetBit(iModel)) < 0
         || (cubeIterator = bspf.getCubeIterator(modelIndex)) == null)
       return false;
-    super.setCenter(center, distance);
+    setCenter2(center, distance);
     return true;
   }
 
   @Override
   public boolean hasNext() {
-    if (super.hasNext())
+    if (hasNext2())
       return true;
     if (!set(modelIndex + 1))
       return false;

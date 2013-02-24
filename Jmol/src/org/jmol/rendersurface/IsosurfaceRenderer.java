@@ -194,7 +194,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       return;
     }
     isBicolorMap = imesh.jvxlData.isBicolorMap;
-    super.render2(isExport);
+    render2b(isExport);
     if (!g3d.setColix(C.BLACK)) // must be 1st pass
       return;
     if (imesh.showContourLines)

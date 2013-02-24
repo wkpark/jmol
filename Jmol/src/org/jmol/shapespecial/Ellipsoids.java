@@ -76,11 +76,6 @@ public class Ellipsoids extends AtomShape {
   }
 
   @Override
-  public boolean getPropertyData(String property, Object[] data) {
-    return super.getPropertyData(property, data);
-  }
-
-  @Override
   public int getIndexFromName(String thisID) {
     return ((ellipsoid = htEllipsoids.get(thisID)) == null ? -1 : 1);
   }
@@ -90,7 +85,7 @@ public class Ellipsoids extends AtomShape {
 
   @Override
   protected void setSize(int size, BS bsSelected) {
-    super.setSize(size, bsSelected);
+    setSize2(size, bsSelected);
     checkSets();
     madset[iSelect] = mads;
     for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
@@ -212,7 +207,7 @@ public class Ellipsoids extends AtomShape {
         return;
       }
       if ("translucentLevel" == propertyName) {
-        super.setProperty(propertyName, value, bs);
+        setPropAS(propertyName, value, bs);
         return;
       }
       if ("translucency" == propertyName) {
@@ -232,7 +227,7 @@ public class Ellipsoids extends AtomShape {
       return;
     }
 
-    super.setProperty(propertyName, value, bs);
+    setPropAS(propertyName, value, bs);
 
     if (colixset != null) {
       if ("color" == propertyName || "translucency" == propertyName

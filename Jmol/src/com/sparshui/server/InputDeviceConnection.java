@@ -81,7 +81,7 @@ public class InputDeviceConnection implements Runnable {
 	 * @param id
 	 */
 	private void flagTouchPointForRemoval(int id) {
-		_flaggedids.add(new Integer(id));
+		_flaggedids.add(Integer.valueOf(id));
 	}
 	
 	/**

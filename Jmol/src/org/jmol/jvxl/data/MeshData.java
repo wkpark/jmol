@@ -138,7 +138,7 @@ public class MeshData extends MeshSurface {
   public int addVertexCopy(P3 vertex, float value, int assocVertex) {
     if (assocVertex < 0)
       vertexIncrement = -assocVertex;  //3 in some cases
-    return addVertexCopyVal(vertex, value);
+    return addVCVal(vertex, value);
   }
 
   public BS[] getSurfaceSet() {

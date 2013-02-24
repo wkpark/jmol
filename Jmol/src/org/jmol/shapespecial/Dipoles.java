@@ -596,7 +596,7 @@ public class Dipoles extends Shape {
         viewer.getAtomIdentityInfo(dipole.atoms[1].getIndex(), atomInfo);
         atoms.add(atomInfo);
         info.put("atoms", atoms);
-        info.put("magnitude", new Float(dipole.vector.length()));
+        info.put("magnitude", Float.valueOf(dipole.vector.length()));
       }
       V.add(info);
     }

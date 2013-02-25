@@ -6110,9 +6110,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return isForCheck;
     case T.loop:
       // back to the beginning of this script
-      delay();
       if (!chk)
         pc = -1;
+      delay();
+      // JavaScript will not get here
       return isForCheck;
     }
     int pt = st[0].intValue;

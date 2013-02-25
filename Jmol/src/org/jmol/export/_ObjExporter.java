@@ -16,6 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jmol.util.TextFormat;
+
 
 import org.jmol.export.image.GenericImageCreator;
 import org.jmol.modelset.Atom;
@@ -779,11 +781,11 @@ public class _ObjExporter extends __CartesianExporter {
   private void outputEllipsoid1(P3 center, float rx, float ry, float rz,
                                 AxisAngle4f a, short colix) {
     MeshSurface data = MeshSurface.getSphereData(3);
-    addTexture(colix, null);
+    addTexture(colix, null);  
     String name;
     if (center instanceof Atom) {
       Atom atom = (Atom) center;
-      name = atom.getAtomName().replaceAll("\\s", "") + "_Atom";
+      name = TextFormat.replaceAllCharacters(atom.getAtomName(), " \t", "") + "_Atom";
     } else if (rx == ry && rx == rz) {
       // Is a sphere
       name = "Sphere" + sphereNum++;

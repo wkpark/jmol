@@ -1382,13 +1382,14 @@ public class SmilesParser {
    * @return  comments and white space removed, also ^^ to '
    */
   static String cleanPattern(String pattern) {
-    pattern = pattern.replaceAll("\\s", "").replaceAll("\\^\\^","'");
+    pattern = TextFormat.replaceAllCharacters(pattern, " \t\n\r", "");
+    pattern = TextFormat.simpleReplace(pattern, "^^", "'");
     int i = 0;
     int i2 = 0;
     while ((i = pattern.indexOf("//*")) >= 0
         && (i2 = pattern.indexOf("*//")) >= i)
       pattern = pattern.substring(0, i) + pattern.substring(i2 + 3);
-    pattern = pattern.replaceAll("//", "");
+    pattern = TextFormat.simpleReplace(pattern, "//", "");
     return pattern;
   }
 

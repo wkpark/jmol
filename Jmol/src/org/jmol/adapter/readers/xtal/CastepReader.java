@@ -81,6 +81,8 @@ import org.jmol.util.V3;
 
 public class CastepReader extends AtomSetCollectionReader {
 
+  private static final float RAD_TO_DEG = (float) (180.0 / Math.PI);
+
   private String[] tokens;
 
   private boolean isPhonon;
@@ -418,9 +420,9 @@ public class CastepReader extends AtomSetCollectionReader {
     a = abc[0].length();
     b = abc[1].length();
     c = abc[2].length();
-    alpha = (float) Math.toDegrees(abc[1].angle(abc[2]));
-    beta = (float) Math.toDegrees(abc[2].angle(abc[0]));
-    gamma = (float) Math.toDegrees(abc[0].angle(abc[1]));
+    alpha = (abc[1].angle(abc[2]) * RAD_TO_DEG);
+    beta = (abc[2].angle(abc[0]) * RAD_TO_DEG);
+    gamma = (abc[0].angle(abc[1]) * RAD_TO_DEG);
   }
 
   private void readPositionsFrac() throws Exception {

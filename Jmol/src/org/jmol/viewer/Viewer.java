@@ -4644,7 +4644,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       format = global.pubChemFormat;
       String fl = f.toLowerCase();
       int fi = Parser.parseInt(f);
-      if (fi == Integer.MIN_VALUE) {
+      if (fi != Integer.MIN_VALUE) {
         f = "cid/" + fi;
       } else {
         if (fl.startsWith("smiles:")) {

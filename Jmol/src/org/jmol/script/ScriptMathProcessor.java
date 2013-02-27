@@ -2183,7 +2183,7 @@ class ScriptMathProcessor {
     String file = SV.sValue(args[0]);
     int nBytesMax = (args.length == 2 ? args[1].asInt()
         : Integer.MAX_VALUE);
-    return addXStr(tok == T.load ? viewer.getFileAsStringBin(file, nBytesMax,
+    return addXStr(tok == T.load ? viewer.getFileAsString4(file, nBytesMax,
         false, false) : viewer.getFilePath(file, false));
   }
 

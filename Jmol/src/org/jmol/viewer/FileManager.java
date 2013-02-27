@@ -525,7 +525,7 @@ public class FileManager {
     String[] dir = null;
     dir = getZipDirectory(fileName, false);
     if (dir.length == 0) {
-      String state = viewer.getFileAsStringBin(fileName, Integer.MAX_VALUE, false, true);
+      String state = viewer.getFileAsString4(fileName, Integer.MAX_VALUE, false, true);
       return (state.indexOf(JC.EMBEDDED_SCRIPT_TAG) < 0 ? ""
           : JmolBinary.getEmbeddedScript(state));
     }

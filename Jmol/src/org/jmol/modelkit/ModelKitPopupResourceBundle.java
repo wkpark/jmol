@@ -96,7 +96,7 @@ public class ModelKitPopupResourceBundle extends PopupResource {
         "assignAtom_XxP!CB" , GT._("drag to bond"),
         "dragAtomP!CB" , GT._("drag atom"),
         "dragMinimizeP!CB" , GT._("drag atom (and minimize)"),
-        "dragMoleculeP!CB" , GT._("drag molecule (SHIFT to rotate)"),
+        "dragMoleculeP!CB" , GT._("drag molecule (ALT to rotate)"),
         "dragMinimizeMoleculeP!CB" , GT._("drag and minimize molecule (docking)"),
         "assignAtom_CP!CB" , "C",
         "assignAtom_HP!CB" , "H",

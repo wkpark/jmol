@@ -2588,7 +2588,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String pathName = modelManager.getModelSetPathName();
     if (pathName == null)
       return null;
-    return getFileAsStringBin(pathName, Integer.MAX_VALUE, true, false);
+    return getFileAsString4(pathName, Integer.MAX_VALUE, true, false);
   }
 
   public String getFullPathName() {
@@ -2611,10 +2611,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public String getFileAsString(String name) {
-    return getFileAsStringBin(name, Integer.MAX_VALUE, false, false);
+    return getFileAsString4(name, Integer.MAX_VALUE, false, false);
   }
 
-  public String getFileAsStringBin(String name, int nBytesMax,
+  public String getFileAsString4(String name, int nBytesMax,
                                 boolean doSpecialLoad, boolean allowBinary) {
     if (name == null)
       return getCurrentFileAsString();
@@ -8577,7 +8577,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String s = (String) setLoadFormat("_" + smiles, type, false);
     if (type == '/')
       s += TextFormat.simpleReplace(info, " ", "%20");
-    return getFileAsStringBin(s, Integer.MAX_VALUE, false, false);
+    return getFileAsString4(s, Integer.MAX_VALUE, false, false);
   }
 
   // ///////////////////////////////////////////////////////////////

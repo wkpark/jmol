@@ -2238,16 +2238,15 @@ public class StateCreator implements JmolStateCreator {
     fileName = fileName.replace('\\', '/');
     if (viewer.isApplet && fileName.indexOf("://") < 0)
       fileName = "file://" + (fileName.startsWith("/") ? "" : "/") + fileName;
-
+    if (fileName.endsWith(".pse")) {
+      viewer.evalString("zap;load SYNC " + Escape.eS(fileName)
+          + " filter 'DORESIZE'");
+      return;
+    }
     String cmd = null;
     if (fileName.endsWith("jvxl")) {
       cmd = "isosurface ";
-    } else if (fileName.endsWith(".pse")) {
-      cmd = "zap;load SYNC " + Escape.eS(fileName)
-          + " filter 'DORESIZE'";
-      return;
-    }
-    if (!fileName.endsWith(".spt")) {
+    } else if (!fileName.endsWith(".spt")) {
       String type = viewer.fileManager.getFileTypeName(fileName);
       if (type == null) {
         type = JmolBinary.determineSurfaceTypeIs(viewer

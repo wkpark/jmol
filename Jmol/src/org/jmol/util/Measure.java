@@ -564,20 +564,22 @@ final public class Measure {
   }
 
   public static float getRmsd(P3[][] centerAndPoints, Quaternion q) {
-    double sum = 0;
     double sum2 = 0;
-    int n = centerAndPoints[0].length - 1;
+    P3[] ptsA = centerAndPoints[0];
+    P3[] ptsB = centerAndPoints[1];
+    P3 cA = ptsA[0];
+    P3 cB = ptsB[0];
+    int n = ptsA.length - 1;
     P3 ptAnew = new P3();
+    
     for (int i = n + 1; --i >= 1;) {
-      ptAnew.setT(centerAndPoints[0][i]);
-      ptAnew.sub(centerAndPoints[0][0]);
+      ptAnew.setT(ptsA[i]);
+      ptAnew.sub(cA);
       q.transformP2(ptAnew, ptAnew);
-      ptAnew.add(centerAndPoints[1][0]);
-      double d = ptAnew.distance(centerAndPoints[1][i]);
-      sum += d;
-      sum2 += d * d;
+      ptAnew.add(cB);
+      sum2 += ptAnew.distanceSquared(ptsB[i]);
     }
-    return (float) Math.sqrt((sum2 - sum * sum / n) / (n - 1));
+    return (float) Math.sqrt(sum2 / n);
   }
 
   public static List<P3> transformPoints(List<P3> vPts, Matrix4f m4, P3 center) {

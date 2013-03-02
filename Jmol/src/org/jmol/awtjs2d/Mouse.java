@@ -69,33 +69,33 @@ public class Mouse implements JmolMouseInterface {
       modifiers = applyLeftMouse(modifiers);
     switch (id) {
     case -1: // JavaScript
-      mouseWheel(time, x, modifiers | Binding.WHEEL);
+      wheeled(time, x, modifiers | Binding.WHEEL);
       break;
     case Event.MOUSE_DOWN:
       xWhenPressed = x;
       yWhenPressed = y;
       modifiersWhenPressed10 = modifiers;
-      mousePressed(time, x, y, modifiers, false);
+      pressed(time, x, y, modifiers, false);
       break;
     case Event.MOUSE_DRAG:
-      mouseDragged(time, x, y, modifiers);
+      dragged(time, x, y, modifiers);
       break;
     case Event.MOUSE_ENTER:
-      mouseEntered(time, x, y);
+      entered(time, x, y);
       break;
     case Event.MOUSE_EXIT:
-      mouseExited(time, x, y);
+      exited(time, x, y);
       break;
     case Event.MOUSE_MOVE:
-      mouseMoved(time, x, y, modifiers);
+      moved(time, x, y, modifiers);
       break;
     case Event.MOUSE_UP:
-      mouseReleased(time, x, y, modifiers);
+      released(time, x, y, modifiers);
       // simulate a mouseClicked event for us
       if (x == xWhenPressed && y == yWhenPressed
           && modifiers == modifiersWhenPressed10) {
         // the underlying code will turn this into dbl clicks for us
-        mouseClicked(time, x, y, modifiers, 1);
+        clicked(time, x, y, modifiers, 1);
       }
       break;
     default:
@@ -158,30 +158,30 @@ public class Mouse implements JmolMouseInterface {
       v1 = V3.new3(x20 - x10, y20 - y10, 0);
       v2 = V3.new3(x21 - x11, y21 - y11, 0);
       float dx = v2.length() - v1.length();
-      mouseWheel(System.currentTimeMillis(), dx < 0 ? -1 : 1, Binding.WHEEL);
+      wheeled(System.currentTimeMillis(), dx < 0 ? -1 : 1, Binding.WHEEL);
     }
   }
   
   public void mouseClicked(MouseEvent e) {
-    mouseClicked(e.getWhen(), e.getX(), e.getY(), e.getModifiers(), e
+    clicked(e.getWhen(), e.getX(), e.getY(), e.getModifiers(), e
         .getClickCount());
   }
 
   public void mouseEntered(MouseEvent e) {
-    mouseEntered(e.getWhen(), e.getX(), e.getY());
+    entered(e.getWhen(), e.getX(), e.getY());
   }
 
   public void mouseExited(MouseEvent e) {
-    mouseExited(e.getWhen(), e.getX(), e.getY());
+    exited(e.getWhen(), e.getX(), e.getY());
   }
 
   public void mousePressed(MouseEvent e) {
-    mousePressed(e.getWhen(), e.getX(), e.getY(), e.getModifiers(), e
+    pressed(e.getWhen(), e.getX(), e.getY(), e.getModifiers(), e
         .isPopupTrigger());
   }
 
   public void mouseReleased(MouseEvent e) {
-    mouseReleased(e.getWhen(), e.getX(), e.getY(), e.getModifiers());
+    released(e.getWhen(), e.getX(), e.getY(), e.getModifiers());
   }
 
   public void mouseDragged(MouseEvent e) {
@@ -193,16 +193,16 @@ public class Mouse implements JmolMouseInterface {
     if ((modifiers & Binding.LEFT_MIDDLE_RIGHT) == 0)
       modifiers |= Binding.LEFT;
     /****************************************************************/
-    mouseDragged(e.getWhen(), e.getX(), e.getY(), modifiers);
+    dragged(e.getWhen(), e.getX(), e.getY(), modifiers);
   }
 
   public void mouseMoved(MouseEvent e) {
-    mouseMoved(e.getWhen(), e.getX(), e.getY(), e.getModifiers());
+    moved(e.getWhen(), e.getX(), e.getY(), e.getModifiers());
   }
 
   public void mouseWheelMoved(MouseWheelEvent e) {
     e.consume();
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers()
+    wheeled(e.getWhen(), e.getWheelRotation(), e.getModifiers()
         | Binding.WHEEL);
   }
 
@@ -318,11 +318,11 @@ public class Mouse implements JmolMouseInterface {
     viewer.script(kb);
   }
 
-  private void mouseEntered(long time, int x, int y) {
+  private void entered(long time, int x, int y) {
     actionManager.mouseEntered(time, x, y);
   }
 
-  private void mouseExited(long time, int x, int y) {
+  private void exited(long time, int x, int y) {
     actionManager.mouseExited(time, x, y);
   }
   /**
@@ -333,7 +333,7 @@ public class Mouse implements JmolMouseInterface {
    * @param modifiers
    * @param clickCount
    */
-  private void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
+  private void clicked(long time, int x, int y, int modifiers, int clickCount) {
     clearKeyBuffer();
     // clickedCount is not reliable on some platforms
     // so we will just deal with it ourselves
@@ -342,7 +342,7 @@ public class Mouse implements JmolMouseInterface {
 
   private boolean isMouseDown; // Macintosh may not recognize CTRL-SHIFT-LEFT as drag, only move
   
-  private void mouseMoved(long time, int x, int y, int modifiers) {
+  private void moved(long time, int x, int y, int modifiers) {
     clearKeyBuffer();
     if (isMouseDown)
       actionManager.mouseAction(Binding.DRAGGED, time, x, y, 0, applyLeftMouse(modifiers));
@@ -350,7 +350,7 @@ public class Mouse implements JmolMouseInterface {
       actionManager.mouseAction(Binding.MOVED, time, x, y, 0, modifiers);
   }
 
-  private void mouseWheel(long time, int rotation, int modifiers) {
+  private void wheeled(long time, int rotation, int modifiers) {
     clearKeyBuffer();
     actionManager.mouseAction(Binding.WHEELED, time, 0, rotation, 0, modifiers);
   }
@@ -363,19 +363,19 @@ public class Mouse implements JmolMouseInterface {
    * @param modifiers
    * @param isPopupTrigger
    */
-  private void mousePressed(long time, int x, int y, int modifiers,
+  private void pressed(long time, int x, int y, int modifiers,
                     boolean isPopupTrigger) {
     clearKeyBuffer();
     isMouseDown = true;
     actionManager.mouseAction(Binding.PRESSED, time, x, y, 0, modifiers);
   }
 
-  private void mouseReleased(long time, int x, int y, int modifiers) {
+  private void released(long time, int x, int y, int modifiers) {
     isMouseDown = false;
     actionManager.mouseAction(Binding.RELEASED, time, x, y, 0, modifiers);
   }
 
-  private void mouseDragged(long time, int x, int y, int modifiers) {
+  private void dragged(long time, int x, int y, int modifiers) {
     if ((modifiers & Binding.MAC_COMMAND) == Binding.MAC_COMMAND)
       modifiers = modifiers & ~Binding.RIGHT | Binding.CTRL; 
     actionManager.mouseAction(Binding.DRAGGED, time, x, y, 0, modifiers);

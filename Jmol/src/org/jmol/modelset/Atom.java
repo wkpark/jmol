@@ -105,6 +105,22 @@ final public class Atom extends Point3fi implements JmolNode {
   public int shapeVisibilityFlags;
   public static final int BACKBONE_VISIBILITY_FLAG = JC.getShapeVisibilityFlag(JC.SHAPE_BACKBONE);
 
+  /**
+   * @j2sIgnoreSuperConstructor
+   * @j2sIgnoreParameters
+   * 
+   * @param modelIndex
+   * @param atomIndex
+   * @param x
+   * @param y
+   * @param z
+   * @param radius
+   * @param atomSymmetry
+   * @param atomSite
+   * @param atomicAndIsotopeNumber
+   * @param formalCharge
+   * @param isHetero
+   */
   public Atom(int modelIndex, int atomIndex,
         float x, float y, float z, float radius,
         BS atomSymmetry, int atomSite,

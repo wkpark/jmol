@@ -114,10 +114,10 @@ public class Bond extends JmolEdge {
 
   @Override
   public boolean isHydrogen() {
-    return isHydrogen(order);
+    return isOrderH(order);
   }
 
-  public static boolean isHydrogen(int order) {
+  public static boolean isOrderH(int order) {
     return (order & BOND_HYDROGEN_MASK) != 0;
   }
 

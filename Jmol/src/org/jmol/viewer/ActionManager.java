@@ -312,7 +312,7 @@ public class ActionManager {
    */
   public void setViewer(Viewer viewer, String commandOptions) {
     this.viewer = viewer;
-    setBinding(jmolBinding = new JmolBinding());   
+    setBinding(jmolBinding = new JmolBinding("toggle"));   
   }
 
   /**
@@ -342,18 +342,18 @@ public class ActionManager {
   void bindAction(String desc, String name, P3 range1,
                          P3 range2) {
     int jmolAction = getActionFromName(name);
-    int mouseAction = Binding.getMouseAction(desc);
+    int mouseAction = Binding.getMouseActionStr(desc);
     if (mouseAction == 0)
       return;
     if (jmolAction >= 0) {
-      binding.bind(mouseAction, jmolAction);
+      binding.bindAction(mouseAction, jmolAction);
     } else {
-      binding.bind(mouseAction, name);
+      binding.bindName(mouseAction, name);
     }
   }
 
   protected void clearBindings() {
-    setBinding(jmolBinding = new JmolBinding());
+    setBinding(jmolBinding = new JmolBinding("toggle"));
     pfaatBinding = null;
     dragBinding = null;
     rasmolBinding = null; 
@@ -365,11 +365,11 @@ public class ActionManager {
       return;
     }
     int jmolAction = getActionFromName(name);
-    int mouseAction = Binding.getMouseAction(desc);
+    int mouseAction = Binding.getMouseActionStr(desc);
     if (jmolAction >= 0)
-      binding.unbind(mouseAction, jmolAction);
+      binding.unbindAction(mouseAction, jmolAction);
     else if (mouseAction != 0)
-      binding.unbind(mouseAction, name);
+      binding.unbindName(mouseAction, name);
     if (name == null)
       binding.unbindUserAction(desc);    
   }
@@ -1161,23 +1161,23 @@ public class ActionManager {
     rubberbandSelectionMode = false;
     switch (pickingStyleSelect) {
     case PICKINGSTYLE_SELECT_PFAAT:
-      if (binding.getName() != "extendedSelect") 
-        setBinding(pfaatBinding = (pfaatBinding == null ? Binding.newBinding("Pfaat") : pfaatBinding));
+      if (!binding.getName().equals("extendedSelect")) 
+        setBinding(pfaatBinding == null ? pfaatBinding = Binding.newBinding("Pfaat") : pfaatBinding);
       break;
     case PICKINGSTYLE_SELECT_DRAG:
-      if (binding.getName() != "drag")
-        setBinding(dragBinding = (dragBinding == null ? Binding.newBinding("Drag") : dragBinding));
+      if (!binding.getName().equals("drag"))
+        setBinding(dragBinding == null ? dragBinding = Binding.newBinding("Drag") : dragBinding);
       rubberbandSelectionMode = true;
       break;
     case PICKINGSTYLE_SELECT_RASMOL:
-      if (binding.getName() != "selectOrToggle")
-        setBinding(rasmolBinding = (rasmolBinding == null ? Binding.newBinding("Rasmol") : rasmolBinding));
+      if (!binding.getName().equals("selectOrToggle"))
+        setBinding(rasmolBinding == null ? rasmolBinding = Binding.newBinding("Rasmol") : rasmolBinding);
       break;
     default:
       if (binding != jmolBinding)
         setBinding(jmolBinding);
     }
-    if (binding.getName() != "drag")
+    if (!binding.getName().equals("drag"))
       predragBinding = binding;
   }
 
@@ -1491,7 +1491,7 @@ public class ActionManager {
       boolean isRbAction = isRubberBandSelect(action);
       if (isRbAction)
         selectRb(action);
-      rubberbandSelectionMode = (binding.getName() == "drag");
+      rubberbandSelectionMode = (binding.getName().equals("drag"));
       rectRubber.x = Integer.MAX_VALUE;
       if (dragRelease) {
         viewer.notifyMouseClicked(x, y,

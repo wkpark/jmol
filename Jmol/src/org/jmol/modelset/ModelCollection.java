@@ -2153,7 +2153,7 @@ abstract public class ModelCollection extends BondCollection {
     boolean matchNull = (order == JmolEdge.BOND_ORDER_NULL);
     if (matchNull)
       order = JmolEdge.BOND_COVALENT_SINGLE; //default for setting
-    boolean matchHbond = Bond.isHydrogen(order);
+    boolean matchHbond = Bond.isOrderH(order);
     boolean identifyOnly = false;
     boolean modifyOnly = false;
     boolean createOnly = false;
@@ -3271,7 +3271,7 @@ abstract public class ModelCollection extends BondCollection {
       if (order < 0)
         order &= 0xFFFF; // 12.0.1 was saving struts as negative numbers
       short mad = (f.length > 3 ? (short) (1000f * connections[i][3]) : getDefaultMadFromOrder(order));
-      if (order == 0 || mad == 0 && order != JmolEdge.BOND_STRUT && !Bond.isHydrogen(order)) {
+      if (order == 0 || mad == 0 && order != JmolEdge.BOND_STRUT && !Bond.isOrderH(order)) {
         Bond b = atoms[index1].getBond(atoms[index2]);
         if (b != null)
           bsDelete.set(b.index);

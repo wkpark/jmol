@@ -176,7 +176,7 @@ abstract public class BondCollection extends AtomCollection {
 
   protected Bond bondMutually(Atom atom, Atom atomOther, int order, short mad, float energy) {
     Bond bond;
-    if (Bond.isHydrogen(order)) {
+    if (Bond.isOrderH(order)) {
       bond = new HBond(atom, atomOther, order, mad, (short) 0, energy);
     } else {
       bond = new Bond(atom, atomOther, order, mad, (short) 0);
@@ -295,7 +295,7 @@ abstract public class BondCollection extends AtomCollection {
    * @return if hydrogen bond, default to 1; otherwise 0 (general default)
    */
   public short getDefaultMadFromOrder(int order) {
-    return (short) (Bond.isHydrogen(order) ? 1
+    return (short) (Bond.isOrderH(order) ? 1
         : (order & JmolEdge.BOND_STRUT) != 0 ? (int) Math.floor(viewer
             .getStrutDefaultRadius() * 2000) : defaultCovalentMad);
   }
@@ -316,7 +316,7 @@ abstract public class BondCollection extends AtomCollection {
     BS bsDelete = new BS();
     int nDeleted = 0;
     int newOrder = order |= JmolEdge.BOND_NEW;
-    if (!matchNull && Bond.isHydrogen(order))
+    if (!matchNull && Bond.isOrderH(order))
       order = JmolEdge.BOND_HYDROGEN_MASK;
     BS bsBonds;
     if (isBonds) {

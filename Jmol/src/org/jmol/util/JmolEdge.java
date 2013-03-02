@@ -133,7 +133,7 @@ public abstract class JmolEdge {
     order &= ~BOND_NEW;
     if (order == BOND_ORDER_NULL || order == BOND_ORDER_ANY)
       return "0"; // I don't think this is possible
-    if (Bond.isHydrogen(order) || (order & BOND_SULFUR_MASK) != 0)
+    if (Bond.isOrderH(order) || (order & BOND_SULFUR_MASK) != 0)
       return EnumBondOrder.SINGLE.number;
     if ((order & BOND_PARTIAL_MASK) != 0)
       return (order >> 5) + "." + (order & 0x1F);
@@ -176,7 +176,7 @@ public abstract class JmolEdge {
     }
     if ((order & BOND_PARTIAL_MASK) != 0)
       return "partial " + getBondOrderNumberFromOrder(order);
-    if (Bond.isHydrogen(order))
+    if (Bond.isOrderH(order))
       return EnumBondOrder.H_REGULAR.name;
     if ((order & BOND_SULFUR_MASK) != 0)
       return EnumBondOrder.SINGLE.name;

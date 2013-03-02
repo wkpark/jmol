@@ -67,6 +67,11 @@ public class Atom extends P3 implements Cloneable {
   
   public boolean ignoreSymmetry; // CIF _atom_site_disorder_group -1
 
+  /**
+   * @j2sIgnoreSuperConstructor
+   * @j2sIgnoreParameters
+   * 
+   */
   public Atom() {
    set(Float.NaN, Float.NaN, Float.NaN);
   }

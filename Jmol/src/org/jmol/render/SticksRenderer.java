@@ -139,7 +139,7 @@ public class SticksRenderer extends ShapeRenderer {
 
         atomA = atomA.getGroup().getLeadAtomOr(atomA);
         atomB = atomB.getGroup().getLeadAtomOr(atomB);
-      } else if (hbondsBackbone && Bond.isHydrogen(order)) {
+      } else if (hbondsBackbone && Bond.isOrderH(order)) {
         atomA = atomA.getGroup().getLeadAtomOr(atomA);
         atomB = atomB.getGroup().getLeadAtomOr(atomB);
       }
@@ -226,7 +226,7 @@ public class SticksRenderer extends ShapeRenderer {
       if ((bondOrder & JmolEdge.BOND_PARTIAL_MASK) != 0) {
         bondOrder = JmolEdge.getPartialBondOrder(order);
         mask = JmolEdge.getPartialBondDotted(order);
-      } else if (Bond.isHydrogen(bondOrder)) {
+      } else if (Bond.isOrderH(bondOrder)) {
         bondOrder = 1;
         if (!hbondsSolid)
           mask = -1;

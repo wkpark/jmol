@@ -941,7 +941,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     Arrays.sort(strings, sort);
     for (int i = 0; i < stringCount; i++) {
       TextString ts = strings[i];
-      plotText(ts.x, ts.y, ts.z, ts.argb, ts.bgargb, ts.text, ts.font, (JmolRendererInterface) jmolRenderer);
+      plotText(ts.x, ts.y, ts.z, ts.argb, ts.bgargb, ts.text, ts.font,
+          (JmolRendererInterface) jmolRenderer);
     }
     strings = null;
     stringCount = 0;

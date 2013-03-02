@@ -6,12 +6,12 @@ public class RasmolBinding extends JmolBinding {
 
   public RasmolBinding() {
     super("selectOrToggle");
-    setSelectBindings();
   }
     
-  private void setSelectBindings() {
-    bind(SINGLE_CLICK+LEFT, ActionManager.ACTION_select);
-    bind(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_selectToggle);
+  @Override
+  protected void setSelectBindings() {
+    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_select);
+    bindAction(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_selectToggle);
   }
 
 }

@@ -542,7 +542,8 @@ public class PyMOLReader extends PdbReader {
     BS bs = ssMapSeq.get(ss);
     if (bs == null)
       ssMapSeq.put(ss, bs = new BS());
-    if (seqNo >= MIN_RESNO)
+    if (seqNo >= MIN_RESNO 
+        && (!ss.equals(" ") || name.equals("CA")))
       bs.set(seqNo - MIN_RESNO);
     if (ssMapAtom.get(ss) == null)
       ssMapAtom.put(ss, new BS());
@@ -589,10 +590,12 @@ public class PyMOLReader extends PdbReader {
     processSS(ssMapSeq.get("H"), ssMapAtom.get("H"), EnumStructure.HELIX, 0);
     processSS(ssMapSeq.get("S"), ssMapAtom.get("S"), EnumStructure.SHEET, 1);
     processSS(ssMapSeq.get("L"), ssMapAtom.get("L"), EnumStructure.TURN, 0);
+    processSS(ssMapSeq.get(" "), ssMapAtom.get(" "), EnumStructure.NONE, 0);
     ssMapSeq = new Hashtable<String, BS>();
   }
 
-  private void processSS(BS bsSeq, BS bsAtom, EnumStructure type, int strandCount) {
+  private void processSS(BS bsSeq, BS bsAtom, EnumStructure type,
+                         int strandCount) {
     if (bsSeq == null)
       return;
     int istart = -1;
@@ -621,14 +624,16 @@ public class PyMOLReader extends PdbReader {
       } else {
         inew = -1;
       }
-      Structure structure = new Structure(imodel, type, type, type.toString(),
-          ++strucNo, strandCount);
-      Atom a = atoms[istart];
-      Atom b = atoms[iend];
+      if (type != EnumStructure.NONE) {
+        Structure structure = new Structure(imodel, type, type,
+            type.toString(), ++strucNo, strandCount);
+        Atom a = atoms[istart];
+        Atom b = atoms[iend];
+        structure.set(a.chainID, a.sequenceNumber, a.insertionCode, b.chainID,
+            b.sequenceNumber, b.insertionCode);
+        atomSetCollection.addStructure(structure);
+      }
       bsAtom.setBits(istart, iend + 1);
-      structure.set(a.chainID, a.sequenceNumber, a.insertionCode, b.chainID,
-          b.sequenceNumber, b.insertionCode);
-      atomSetCollection.addStructure(structure);
       istart = iend = inew;
     }
   }
@@ -794,6 +799,7 @@ public class PyMOLReader extends PdbReader {
       setCartoon("H", PyMOL.cartoon_oval_length, 2);
       setCartoon("S", PyMOL.cartoon_rect_length, 2);
       setCartoon("L", PyMOL.cartoon_loop_radius, 2);
+      setCartoon(" ", PyMOL.cartoon_loop_radius, 2);
       break;
     case REP_SURFACE: //   = 2;
       // must be done for each model

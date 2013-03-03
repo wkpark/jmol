@@ -25,8 +25,8 @@ package org.jmol.jvxl.data;
 
 
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 import java.util.Map;
 
 import org.jmol.io.XmlUtil;
@@ -254,7 +254,7 @@ public class JvxlCoder {
   public static String jvxlGetInfoData(JvxlData jvxlData, boolean vertexDataOnly) {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
-    List<String[]> attribs = new ArrayList<String[]>();
+    JmolList<String[]> attribs = new  JmolList<String[]>();
      
     int nSurfaceInts = jvxlData.nSurfaceInts;// jvxlData.jvxlSurfaceData.length();
     int bytesUncompressedEdgeData = (vertexDataOnly ? 0
@@ -383,7 +383,7 @@ public class JvxlCoder {
     return info.toString();
   }
   
-  private static void addAttrib(List<String[]> attribs, String name, String value) {
+  private static void addAttrib(JmolList<String[]> attribs, String name, String value) {
     attribs.add(new String[] { name, value });
   }
 
@@ -426,7 +426,7 @@ public class JvxlCoder {
    * @param contours
    * @param sb
    */
-  private static void jvxlEncodeContourData(List<Object>[] contours, SB sb) {
+  private static void jvxlEncodeContourData(JmolList<Object>[] contours, SB sb) {
     XmlUtil.openTagAttr(sb, "jvxlContourData", new String[] { "count", "" + contours.length });
     for (int i = 0; i < contours.length; i++) {
       if (contours[i].size() < CONTOUR_POINTS) {
@@ -460,7 +460,7 @@ public class JvxlCoder {
    * @param polygonIndexes
    * @param vertices
    */
-  public static void set3dContourVector(List<Object> v, int[][] polygonIndexes, P3[] vertices) {
+  public static void set3dContourVector(JmolList<Object> v, int[][] polygonIndexes, P3[] vertices) {
     // we must add points only after the MarchingCubes process has completed.
     if (v.size() < CONTOUR_POINTS)
       return;

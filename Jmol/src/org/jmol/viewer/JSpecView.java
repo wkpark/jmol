@@ -1,11 +1,12 @@
 package org.jmol.viewer;
 
 import java.util.Hashtable;
-import java.util.List;
+
 
 import org.jmol.api.JmolJSpecView;
 import org.jmol.modelset.Atom;
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
@@ -38,7 +39,7 @@ public class JSpecView implements JmolJSpecView {
     default:
       return null;
     }
-    List<String> peaks = (List<String>) viewer.getModelAuxiliaryInfoValue(iModel,
+    JmolList<String> peaks = (JmolList<String>) viewer.getModelAuxiliaryInfoValue(iModel,
         "jdxAtomSelect_" + type);
     if (peaks == null)
       return null;

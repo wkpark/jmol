@@ -27,9 +27,9 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.Interface;
 import org.jmol.api.VolumeDataInterface;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.util.Logger;
@@ -40,7 +40,7 @@ import org.jmol.util.Logger;
 
 public class XmlChem3dReader extends XmlReader {
 
-  private List<Map<String, Object>> orbitals = new ArrayList<Map<String, Object>>();
+  private JmolList<Map<String, Object>> orbitals = new  JmolList<Map<String, Object>>();
 
   XmlChem3dReader() {
   }
@@ -161,12 +161,12 @@ public class XmlChem3dReader extends XmlReader {
         moData.put("defaultCutoff", Float.valueOf((float) 0.01));
         moData.put("haveVolumeData", Boolean.TRUE);
         moData.put("calculationType", "Chem3D");
-        orbitals = new ArrayList<Map<String, Object>>();
+        orbitals = new  JmolList<Map<String, Object>>();
         moData.put("mos", orbitals);
       }
       Map<String, Object> mo = new Hashtable<String, Object>();
       mo.put("volumeData", vd);
-      orbitals.add(mo);
+      orbitals.addLast(mo);
       Logger
           .info("Chem3D molecular orbital data displayable using ISOSURFACE MO "
               + orbitals.size());

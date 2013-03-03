@@ -534,13 +534,13 @@ public class Resolver {
         return false;
       Integer.parseInt(tokens2.nextToken());
       for (int i = 3; --i >= 0; )
-        Float.valueOf(tokens2.nextToken());
+        Parser.fVal(tokens2.nextToken());
       StringTokenizer tokens3 = new StringTokenizer(lines[3]);
       if (tokens3.countTokens() != 4)
         return false;
       Integer.parseInt(tokens3.nextToken());
       for (int i = 3; --i >= 0; )
-        if ((Float.valueOf(tokens3.nextToken())).floatValue() < 0)
+        if (Parser.fVal(tokens3.nextToken()) < 0)
           return false;
       return true;
     } catch (NumberFormatException nfe) {

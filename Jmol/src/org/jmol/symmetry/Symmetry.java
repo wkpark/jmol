@@ -114,7 +114,7 @@ public class Symmetry implements SymmetryInterface {
   
   public void setSpaceGroup(boolean doNormalize) {
     if (spaceGroup == null)
-      spaceGroup = new SpaceGroup(doNormalize);
+      spaceGroup = (new SpaceGroup(null)).set(doNormalize);
   }
 
   public int addSpaceGroupOperation(String xyz, int opId) {

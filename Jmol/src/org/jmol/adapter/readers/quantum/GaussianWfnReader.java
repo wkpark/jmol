@@ -35,7 +35,7 @@ public class GaussianWfnReader extends AtomSetCollectionReader {
 //  int shellCount = 0;
 //  int gaussianCount = 0;
 //  Hashtable moData = new Hashtable();
-//  List orbitals = new ArrayList();
+//  List orbitals = new JmolList();
 
   
   /* I thought perhaps this would be enough, but now I'm not so sure.
@@ -131,8 +131,8 @@ EXPONENTS  0.2068882D+04 0.3106496D+03 0.7068303D+02 0.1986108D+02 0.6299305D+01
   }
   
   private void readBasis() throws Exception {
-    List sdata = new ArrayList();
-    List gdata = new ArrayList();
+    List sdata = new JmolList();
+    List gdata = new JmolList();
     gaussianCount = 0;
     shellCount = 0;
     int[] centers = getIntArray(nPrimitive, 2);

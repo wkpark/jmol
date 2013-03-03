@@ -27,8 +27,8 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 import java.util.Map;
 
 public class GamessUKReader extends GamessReader {
@@ -56,7 +56,7 @@ public class GamessUKReader extends GamessReader {
     if (line.indexOf("molecular geometry") >= 0) {
       if (!doGetModel(++modelNumber, null))
         return checkLastModel();
-      atomNames = new ArrayList<String>();
+      atomNames = new  JmolList<String>();
       readAtomsInBohrCoordinates();
       return true;
     }
@@ -118,7 +118,7 @@ public class GamessUKReader extends GamessReader {
       atom.atomName = atomName;
       setAtomCoordXYZ(atom, x * ANGSTROMS_PER_BOHR, y * ANGSTROMS_PER_BOHR, z * ANGSTROMS_PER_BOHR);
       atom.elementSymbol = AtomSetCollectionReader.getElementSymbol(atomicNumber);
-      atomNames.add(atomName);
+      atomNames.addLast(atomName);
     }
   }
 
@@ -189,17 +189,17 @@ public class GamessUKReader extends GamessReader {
    ======================================================================================
 
    */
-  private List<String> symmetries;
-  private List<Float> occupancies;
+  private JmolList<String> symmetries;
+  private JmolList<Float> occupancies;
    
    private void readOrbitalSymmetryAndOccupancy() throws Exception {
      readLines(4);
-     symmetries = new ArrayList<String>();
-     occupancies = new ArrayList<Float>();
+     symmetries = new  JmolList<String>();
+     occupancies = new  JmolList<Float>();
      while (readLine() != null && line.indexOf("====") < 0) {
        String[] tokens = getTokensStr(line.substring(20));
-       symmetries.add(tokens[0] + " " + tokens[1]);
-       occupancies.add(Float.valueOf(parseFloatStr(tokens[5])));
+       symmetries.addLast(tokens[0] + " " + tokens[1]);
+       occupancies.addLast(Float.valueOf(parseFloatStr(tokens[5])));
      }
    }
 

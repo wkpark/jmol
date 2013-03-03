@@ -39,8 +39,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -134,7 +134,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
 
   private class FileChecker implements FilenameFilter {
     private String stub;
-    private List<String> v = new ArrayList<String>();
+    private JmolList<String> v = new  JmolList<String>();
     
     protected FileChecker(String stub) {
       this.stub = stub.toLowerCase();
@@ -143,7 +143,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
     public boolean accept(File dir, String name) {
       if (!name.toLowerCase().startsWith(stub))
         return false;
-      v.add(name); 
+      v.addLast(name); 
       return true;
     }
     

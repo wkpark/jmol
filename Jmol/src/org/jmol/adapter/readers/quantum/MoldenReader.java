@@ -2,15 +2,16 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.Atom;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 /**
  * A molecular structure and orbital reader for MolDen files.
@@ -172,8 +173,8 @@ public class MoldenReader extends MopacSlaterReader {
        0.1285000000D+00  0.2384999379D-02
       s   10 1.00
      */
-    shells = new ArrayList<int[]>();
-    List<float[]> gdata = new ArrayList<float[]>();
+    shells = new  JmolList<int[]>();
+    JmolList<float[]> gdata = new  JmolList<float[]>();
     int atomIndex = 0;
     int gaussianPtr = 0;
     nCoef = 0;
@@ -214,10 +215,10 @@ public class MoldenReader extends MopacSlaterReader {
 
           for (int d = 0; d < nTokens; d++)
             orbData[d] = parseFloatStr(primTokens[d]);
-          gdata.add(orbData);
+          gdata.addLast(orbData);
           gaussianPtr++;
         }
-        shells.add(slater);
+        shells.addLast(slater);
       }
       // Next atom
     }
@@ -267,7 +268,7 @@ public class MoldenReader extends MopacSlaterReader {
     String[] tokens = getMoTokens(line);
     while (tokens != null && tokens[0].indexOf('[') < 0) {
       Map<String, Object> mo = new Hashtable<String, Object>();
-      List<String> data = new ArrayList<String>();
+      JmolList<String> data = new  JmolList<String>();
       float energy = Float.NaN;
       float occupancy = Float.NaN;
       String symmetry = null;      
@@ -288,7 +289,7 @@ public class MoldenReader extends MopacSlaterReader {
         if (tokens.length != 2)
           throw new Exception("invalid MO coefficient specification");
         // tokens[0] is the function number, and tokens[1] is the coefficient
-        data.add(tokens[1]);
+        data.addLast(tokens[1]);
         tokens = getMoTokens(null);
       }
       
@@ -350,13 +351,13 @@ public class MoldenReader extends MopacSlaterReader {
 
   private boolean readFreqsAndModes() throws Exception {
     String[] tokens;
-    List<String> frequencies = new ArrayList<String>();
+    JmolList<String> frequencies = new  JmolList<String>();
  //   BitSet bsOK = new BitSet();
  //   int iFreq = 0;
     while (readLine() != null && line.indexOf('[') < 0) {
       String f = getTokens()[0];
 //      bsOK.set(iFreq++, parseFloatStr(f) != 0);
-      frequencies.add(f);
+      frequencies.addLast(f);
     }
     int nFreqs = frequencies.size();
     skipTo("[FR-COORD]");
@@ -373,7 +374,7 @@ public class MoldenReader extends MopacSlaterReader {
       if (haveVib)
         atomSetCollection.cloneLastAtomSet();
       haveVib = true;
-      atomSetCollection.setAtomSetFrequency(null, null, Double.valueOf(frequencies.get(nFreq)).toString(), null);
+      atomSetCollection.setAtomSetFrequency(null, null, "" + Parser.dVal(frequencies.get(nFreq)), null);
       int i0 = atomSetCollection.getLastAtomSetAtomIndex();
       for (int i = 0; i < modelAtomCount; i++) {
         tokens = getTokensStr(readLine());
@@ -411,11 +412,11 @@ max-force
 
   */
   private boolean readGeometryOptimization() throws Exception {
-    List<String> energies = new ArrayList<String>();
+    JmolList<String> energies = new  JmolList<String>();
     readLine(); // energy
     while (readLine() != null 
         && line.indexOf("force") < 0)
-      energies.add(Double.valueOf(line.trim()).toString());
+      energies.addLast("" + Parser.dVal(line.trim()));
     skipTo("[GEOMETRIES] XYZ");
     int nGeom = energies.size();
     int firstModel = (optOnly || desiredModelNumber >= 0 ? 0 : 1);

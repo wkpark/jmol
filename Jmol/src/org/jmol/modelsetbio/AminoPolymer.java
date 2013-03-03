@@ -43,11 +43,11 @@ import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
 
-//import java.util.ArrayList;
-import java.util.ArrayList;
+//import org.jmol.util.JmolList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -196,7 +196,7 @@ public class AminoPolymer extends AlphaPolymer {
   
   @Override
   public void calcRasmolHydrogenBonds(BioPolymer polymer, BS bsA, BS bsB,
-                                      List<Bond> vHBonds, int nMaxPerResidue,
+                                      JmolList<Bond> vHBonds, int nMaxPerResidue,
                                       int[][][] min, boolean checkDistances, 
                                       boolean dsspIgnoreHydrogens) {
     if (polymer == null)
@@ -238,7 +238,7 @@ public class AminoPolymer extends AlphaPolymer {
 
   private void checkRasmolHydrogenBond(AminoMonomer source, BioPolymer polymer,
                                        int indexDonor, P3 hydrogenPoint,
-                                       BS bsB, List<Bond> vHBonds,
+                                       BS bsB, JmolList<Bond> vHBonds,
                                        int[][] min, boolean checkDistances) {
     P3 sourceAlphaPoint = source.getLeadAtom();
     P3 sourceNitrogenPoint = source.getNitrogenAtom();
@@ -344,7 +344,7 @@ public class AminoPolymer extends AlphaPolymer {
   private void addResidueHydrogenBond(Atom nitrogen, Atom oxygen,
                                       int indexAminoGroup,
                                       int indexCarbonylGroup, float energy,
-                                      List<Bond> vHBonds) {
+                                      JmolList<Bond> vHBonds) {
     int order;
     switch (indexAminoGroup - indexCarbonylGroup) {
     case 2:
@@ -368,7 +368,7 @@ public class AminoPolymer extends AlphaPolymer {
     default:
       order = JmolEdge.BOND_H_CALC;
     }
-    vHBonds.add(new HBond(nitrogen, oxygen, order, (short) 1, (short) 0, energy));
+    vHBonds.addLast(new HBond(nitrogen, oxygen, order, (short) 1, (short) 0, energy));
   }
 
   ////////////////////// DSSP /////////////////////
@@ -524,13 +524,19 @@ public class AminoPolymer extends AlphaPolymer {
 
   protected static String calculateStructuresDssp(BioPolymer[] bioPolymers,
                                                   int bioPolymerCount,
-                                                  List<Bond> vHBonds,
+                                                  JmolList<Bond> vHBonds,
                                                   boolean doReport,
                                                   boolean dsspIgnoreHydrogens,
                                                   boolean setStructure) {
-    if (bioPolymerCount == 0)
+    boolean haveAmino = false;
+    for (int i = 0; i < bioPolymerCount; i++)
+      if (bioPolymers[i] instanceof AminoPolymer) {
+        haveAmino = true;
+        break;
+      }
+    if (!haveAmino)
       return "";
-
+ 
     Model m = bioPolymers[0].model;
     SB sb = new SB();
     sb.append("Jmol ").append(Viewer.getJmolVersion()).append(
@@ -608,8 +614,8 @@ public class AminoPolymer extends AlphaPolymer {
 
     // Step 2: Find the bridges and mark them all as "B".
 
-    List<APBridge> bridgesA = new ArrayList<APBridge>();
-    List<APBridge> bridgesP = new ArrayList<APBridge>();
+    JmolList<APBridge> bridgesA = new  JmolList<APBridge>();
+    JmolList<APBridge> bridgesP = new  JmolList<APBridge>();
     Map<String, APBridge> htBridges = new Hashtable<String, APBridge>();
     Map<int[][], Boolean> htLadders = new Hashtable<int[][], Boolean>();
     getBridges(bioPolymers, min, bridgesA, bridgesP, htBridges, htLadders,
@@ -737,7 +743,7 @@ public class AminoPolymer extends AlphaPolymer {
    */
   private String findHelixes(int[][][] min, int iPolymer, BS bsDone,
                              char[] labels, boolean doReport, boolean setStructure,
-                             List<Bond> vHBonds, BS bsBad) {
+                             JmolList<Bond> vHBonds, BS bsBad) {
     if (Logger.debugging)
       for (int j = 0; j < monomerCount; j++)
         Logger.debug(iPolymer + "." + monomers[j].getResno() + "\t"
@@ -774,7 +780,7 @@ public class AminoPolymer extends AlphaPolymer {
                              EnumStructure subtype, int type, BS bsDone,
                              BS bsTurn, char[] labels, 
                              boolean doReport, boolean setStructure,
-                             List<Bond> vHBonds, BS bsBad) {
+                             JmolList<Bond> vHBonds, BS bsBad) {
 
     // The idea here is to run down the polymer setting bit sets
     // that identify start, stop, N, and X codes: >, <, 3, 4, 5, and X
@@ -900,10 +906,10 @@ public class AminoPolymer extends AlphaPolymer {
    * @param bsDone
    */
   private static void getBridges(BioPolymer[] bioPolymers, int[][][][] min,
-                                 List<APBridge> bridgesA, List<APBridge> bridgesP,
+                                 JmolList<APBridge> bridgesA, JmolList<APBridge> bridgesP,
                                  Map<String, APBridge> htBridges,
                                  Map<int[][], Boolean> htLadders, BS bsBad,
-                                 List<Bond> vHBonds, BS[] bsDone) {
+                                 JmolList<Bond> vHBonds, BS[] bsDone) {
     // ooooooh! It IS possible to have 3 bridges to the same residue. (3A5F) 
     // 
     Atom[] atoms = bioPolymers[0].model.getModelSet().atoms;
@@ -952,9 +958,9 @@ public class AminoPolymer extends AlphaPolymer {
   };
   
   private static APBridge getBridge(int[][][][] min, int p1, int a, int p2, int b,
-                                 List<APBridge> bridges, Atom atom1, Atom atom2,
+                                 JmolList<APBridge> bridges, Atom atom1, Atom atom2,
                                  AminoPolymer ap1, AminoPolymer ap2,
-                                 List<Bond> vHBonds,
+                                 JmolList<Bond> vHBonds,
                                  Map<String, Boolean> htTemp,
                                  boolean isAntiparallel, 
                                  Map<int[][], Boolean> htLadders) {
@@ -967,7 +973,7 @@ public class AminoPolymer extends AlphaPolymer {
         || (b1 = isHbonded(a + offsets[ipt = 4], b + offsets[5], p1, p2, min)) != null
         && (b2 = isHbonded(b + offsets[6], a + offsets[7], p2, p1, min)) != null) {
       APBridge bridge = new APBridge(atom1, atom2, htLadders);
-      bridges.add(bridge);
+      bridges.addLast(bridge);
       if (vHBonds != null) {
         int type = (isAntiparallel ? JmolEdge.BOND_H_MINUS_3
             : JmolEdge.BOND_H_PLUS_2);
@@ -981,7 +987,7 @@ public class AminoPolymer extends AlphaPolymer {
     return null;
   }
 
-  private static void addHbond(List<Bond> vHBonds, Monomer donor,
+  private static void addHbond(JmolList<Bond> vHBonds, Monomer donor,
                                Monomer acceptor, int iEnergy, int type, Map<String, Boolean> htTemp) {
     Atom nitrogen = ((AminoMonomer)donor).getNitrogenAtom();
     Atom oxygen = ((AminoMonomer) acceptor).getCarbonylOxygenAtom();
@@ -1009,8 +1015,8 @@ public class AminoPolymer extends AlphaPolymer {
    * @param setStructure 
    */
   private static void getSheetStructures(BioPolymer[] bioPolymers,
-                                         List<APBridge> bridgesA,
-                                         List<APBridge> bridgesP,
+                                         JmolList<APBridge> bridgesA,
+                                         JmolList<APBridge> bridgesP,
                                          Map<String, APBridge> htBridges,
                                          Map<int[][], Boolean> htLadders, char[][] labels, 
                                          BS[] bsDone,
@@ -1090,7 +1096,7 @@ public class AminoPolymer extends AlphaPolymer {
    * @param isAntiparallel 
    *  
    */
-  private static void createLadders(List<APBridge> bridges,
+  private static void createLadders(JmolList<APBridge> bridges,
                                  Map<String, APBridge> htBridges, 
                                  Map<int[][], Boolean> htLadders,
                                  boolean isAntiparallel) {

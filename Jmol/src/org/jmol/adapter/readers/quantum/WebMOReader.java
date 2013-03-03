@@ -28,9 +28,9 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Atom;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
@@ -254,8 +254,8 @@ public class WebMOReader extends MopacSlaterReader {
 
      */
 
-    List<int[]> sdata = new ArrayList<int[]>();
-    List<float[]> gdata = new ArrayList<float[]>();
+    JmolList<int[]> sdata = new  JmolList<int[]>();
+    JmolList<float[]> gdata = new  JmolList<float[]>();
     int atomIndex = 0;
     int gaussianPtr = 0;
 
@@ -280,10 +280,10 @@ public class WebMOReader extends MopacSlaterReader {
         for (int d = 0; d < nData; d++) {
           data[d] = parseFloatStr(strData[d]);
         }
-        gdata.add(data);
+        gdata.addLast(data);
         gaussianPtr++;
       }
-      sdata.add(slater);
+      sdata.addLast(slater);
     }
     float[][] garray = ArrayUtil.newFloat2(gaussianPtr);
     for (int i = 0; i < gaussianPtr; i++) {
@@ -333,7 +333,7 @@ public class WebMOReader extends MopacSlaterReader {
       return;
     }
     Map<String, Object> mo = new Hashtable<String, Object>();
-    List<String> data = new ArrayList<String>();
+    JmolList<String> data = new  JmolList<String>();
     float energy = parseFloatStr(readLine());
     float occupancy = parseFloatStr(readLine());
     while (getLine()) {
@@ -341,7 +341,7 @@ public class WebMOReader extends MopacSlaterReader {
       if (tokens.length == 0) {
         continue;
       }
-      data.add(tokens[1]);
+      data.addLast(tokens[1]);
     }
     float[] coefs = new float[data.size()];
     for (int i = data.size(); --i >= 0;) {
@@ -350,7 +350,7 @@ public class WebMOReader extends MopacSlaterReader {
     mo.put("energy", Float.valueOf(energy));
     mo.put("occupancy", Float.valueOf(occupancy));
     mo.put("coefficients", coefs);
-    orbitals.add(mo);
+    orbitals.addLast(mo);
     nOrbitals++;
     if (occupancy > 0)
       moData.put("HOMO", Integer.valueOf(nOrbitals));

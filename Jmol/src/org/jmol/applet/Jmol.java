@@ -47,7 +47,7 @@ import java.awt.Event;
 import java.awt.Graphics;
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -1273,7 +1273,7 @@ public class Jmol implements WrappedApplet {
           return "";
       }
 
-      java.util.List<String> apps = new ArrayList<String>();
+      JmolList<String> apps = new JmolList<String>();
       JmolAppletRegistry.findApplets(appletName, syncId, fullName, apps);
       int nApplets = apps.size();
       if (nApplets == 0) {

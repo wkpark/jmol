@@ -23,12 +23,12 @@
  */
 package org.jmol.script;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -121,7 +121,7 @@ class ScriptMathProcessor {
       isOK = operate();
     if (isOK) {
       if (asVector) {
-        List<SV> result = new ArrayList<SV>();
+        JmolList<SV> result = new  JmolList<SV>();
         for (int i = 0; i <= xPt; i++)
           result.add(SV.selectItemVar(xStack[i]));
         return SV.newVariable(T.vector, result);
@@ -134,7 +134,7 @@ class ScriptMathProcessor {
           x = SV.selectItemVar(x);
         if (asBitSet && x.tok == 
           T.varray)
-          x = SV.newVariable(T.bitset, SV.unEscapeBitSetArray((ArrayList<SV>)x.value, false));
+          x = SV.newVariable(T.bitset, SV.unEscapeBitSetArray((JmolList<SV>)x.value, false));
         return x;
       }
     }
@@ -203,7 +203,7 @@ class ScriptMathProcessor {
     return wasX = true;
   }
 
-  private boolean addXList(List<?> x) {
+  private boolean addXList(JmolList<?> x) {
     putX(SV.getVariableList(x));
     return wasX = true;
   }
@@ -855,7 +855,7 @@ class ScriptMathProcessor {
     String smiles2 = (bs2 == null ? SV.sValue(args[1]) : "");
     Matrix4f m = new Matrix4f();
     stddev = Float.NaN;
-    List<P3> ptsA, ptsB;
+    JmolList<P3> ptsA, ptsB;
     if (isSmiles) {
       if (bs1 == null || bs2 == null)
         return false;
@@ -921,8 +921,8 @@ class ScriptMathProcessor {
       return addXStr(stddev < 0.2f ? "IDENTICAL"
           : "IDENTICAL or CONFORMATIONAL ISOMERS (RMSD=" + stddev + ")");
     } else if (isSmiles) {
-      ptsA = new ArrayList<P3>();
-      ptsB = new ArrayList<P3>();
+      ptsA = new  JmolList<P3>();
+      ptsB = new  JmolList<P3>();
       sOpt = SV.sValue(args[2]);
       boolean isMap = sOpt.equalsIgnoreCase("MAP");
       isSmiles = (sOpt.equalsIgnoreCase("SMILES"));
@@ -938,7 +938,7 @@ class ScriptMathProcessor {
         if (nAtoms == 0)
           return addXStr("");
         int nMatch = ptsB.size() / nAtoms;
-        List<int[][]> ret = new ArrayList<int[][]>();
+        JmolList<int[][]> ret = new  JmolList<int[][]>();
         for (int i = 0, pt = 0; i < nMatch; i++) {
           int[][] a = ArrayUtil.newInt2(nAtoms);
           ret.add(a);
@@ -989,10 +989,10 @@ class ScriptMathProcessor {
       }
       return addXInt(n);
     }
-    List<SV> counts = new ArrayList<SV>();
+    JmolList<SV> counts = new  JmolList<SV>();
     SV last = null;
     SV count = null;
-    List<SV> xList = SV.getVariable(x.value)
+    JmolList<SV> xList = SV.getVariable(x.value)
         .sortOrReverse(0).getList();
     if (xList == null)
       return (match == null ? addXStr("") : addXInt(0));
@@ -1004,7 +1004,7 @@ class ScriptMathProcessor {
         count.intValue++;
         continue;
       } else if (last != null) {
-        List<SV> y = new ArrayList<SV>();
+        JmolList<SV> y = new  JmolList<SV>();
         y.add(last);
         y.add(count);
         counts.add(SV.getVariableList(y));
@@ -1087,7 +1087,7 @@ class ScriptMathProcessor {
     if (isListf) {
       data = (float[]) x1.value;
     } else {
-      List<SV> list = x1.getList();
+      JmolList<SV> list = x1.getList();
       data = new float[list.size()];
       for (int i = list.size(); --i >= 0; )
         data[i] = SV.fValue(list.get(i));
@@ -1263,7 +1263,7 @@ class ScriptMathProcessor {
       // measure({a},{b}, min, max, format, units)
       // measure({a},{b},{c},{d}, min, max, format, units)
       // measure({a} {b} "minArray") -- returns array of minimum distance values
-      List<Object> points = new ArrayList<Object>();
+      JmolList<Object> points = new  JmolList<Object>();
       float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
       String strFormat = null;
       String units = null;
@@ -1362,7 +1362,7 @@ class ScriptMathProcessor {
         return false;
     }
     wasX = false;
-    List<SV> params = new ArrayList<SV>();
+    JmolList<SV> params = new  JmolList<SV>();
     for (int i = 0; i < args.length; i++) {
       params.add(args[i]);
     }
@@ -1451,7 +1451,7 @@ class ScriptMathProcessor {
       int ipt = 0;
       int n = 0;
       Matcher matcher = null;
-      List<String> v = (asMatch ? new ArrayList<String>() : null);
+      JmolList<String> v = (asMatch ? new  JmolList<String>() : null);
       for (int i = 0; i < list.length; i++) {
         String what = list[i];
         matcher = pattern.matcher(what);
@@ -1527,7 +1527,7 @@ class ScriptMathProcessor {
       if (args[0].tok == T.bitset) {
         BS bs = SV.getBitSet(args[0], false);
         if (bs.cardinality() == 3) {
-          List<P3> pts = viewer.getAtomPointVector(bs);
+          JmolList<P3> pts = viewer.getAtomPointVector(bs);
           V3 vNorm = new V3();
           V3 vAB = new V3();
           V3 vAC = new V3();
@@ -1552,7 +1552,7 @@ class ScriptMathProcessor {
 
         plane = (Point4f) args[1].value;
         if (args[0].tok == T.point4f) {
-          List<Object> list = Measure.getIntersectionPP((Point4f) args[0].value,
+          JmolList<Object> list = Measure.getIntersectionPP((Point4f) args[0].value,
               plane);
           if (list == null)
             return addXStr("");
@@ -1814,8 +1814,8 @@ class ScriptMathProcessor {
 
     float[] list1 = null;
     float[] list2 = null;
-    List<SV> alist1 = x1.getList();
-    List<SV> alist2 = x2.getList();
+    JmolList<SV> alist1 = x1.getList();
+    JmolList<SV> alist2 = x2.getList();
 
     if (x1.tok == T.varray) {
       len = alist1.size();
@@ -1945,7 +1945,7 @@ class ScriptMathProcessor {
         float[] m = new float[len * len];
         int pt = 0;
         for (int i = 0; i < len && isMatrix; i++) {
-          List<SV> list = args[i].getList();
+          JmolList<SV> list = args[i].getList();
           for (int j = 0; j < len; j++) {
             float x = SV.fValue(list.get(j));
             if (Float.isNaN(x)) {
@@ -2144,7 +2144,7 @@ class ScriptMathProcessor {
     }
     if (qs != null) {
       if (nMax != Integer.MAX_VALUE) {
-        List<Point4f> list = new ArrayList<Point4f>();
+        JmolList<Point4f> list = new  JmolList<Point4f>();
         for (int i = 0; i < qs.length; i++)
           list.add(qs[i].toPoint4f());
         return addXList(list);
@@ -2854,7 +2854,7 @@ class ScriptMathProcessor {
           bs.set(x);
           return addXBs(bs);
         case T.varray:
-          List<SV> sv = (ArrayList<SV>) x2.value;
+          JmolList<SV> sv = (JmolList<SV>) x2.value;
           for (int i = sv.size(); --i >= 0;) {
             int b = sv.get(i).asInt();
             if (b >= 0)
@@ -3361,7 +3361,7 @@ class ScriptMathProcessor {
     if (isSyntaxCheck)
       return addXStr("");
     BS bs = SV.bsSelectVar(x2);
-    List<T> tokens;
+    JmolList<T> tokens;
     int n = bs.cardinality();
     if (n == 0
         || (tokens = T.getAtomPropertiesLike(abbr.substring(0, abbr
@@ -3397,7 +3397,7 @@ class ScriptMathProcessor {
       return addXStr("");
     BoxInfo b = viewer.getBoxInfo(SV.bsSelectVar(x2), 1);
     P3[] pts = b.getBoundBoxPoints(true);
-    List<P3> list = new ArrayList<P3>();
+    JmolList<P3> list = new  JmolList<P3>();
     for (int i = 0; i < 4; i++)
       list.add(pts[i]);
     return addXList(list);
@@ -3510,7 +3510,7 @@ class ScriptMathProcessor {
   @SuppressWarnings("unchecked")
   private static Object getMinMax(Object floatOrSVArray, int tok) {
     float[] data = null;
-    List<SV> sv = null;
+    JmolList<SV> sv = null;
     int ndata = 0;
     while (true) {
       if (Escape.isAF(floatOrSVArray)) {
@@ -3518,8 +3518,8 @@ class ScriptMathProcessor {
         ndata = data.length;
         if (ndata == 0)
           break;
-      } else if (floatOrSVArray instanceof List<?>) {
-        sv = (ArrayList<SV>) floatOrSVArray;
+      } else if (floatOrSVArray instanceof JmolList<?>) {
+        sv = (JmolList<SV>) floatOrSVArray;
         ndata = sv.size();
         if (ndata == 0)
           break;
@@ -3606,13 +3606,13 @@ class ScriptMathProcessor {
   @SuppressWarnings("unchecked")
   private static Object getMinMaxPoint(Object pointOrSVArray, int tok) {
     P3[] data = null;
-    List<SV> sv = null;
+    JmolList<SV> sv = null;
     int ndata = 0;
     if (pointOrSVArray instanceof Quaternion[]) {
       data = (P3[]) pointOrSVArray;
       ndata = data.length;
-    } else if (pointOrSVArray instanceof List<?>) {
-      sv = (ArrayList<SV>) pointOrSVArray;
+    } else if (pointOrSVArray instanceof JmolList<?>) {
+      sv = (JmolList<SV>) pointOrSVArray;
       ndata = sv.size();
     }
     if (sv != null || data != null) {
@@ -3663,7 +3663,7 @@ class ScriptMathProcessor {
     return "NaN";
   }
 
-  private static Object getMinMaxQuaternion(List<SV> svData, int tok) {
+  private static Object getMinMaxQuaternion(JmolList<SV> svData, int tok) {
     Quaternion[] data;
     switch (tok) {
     case T.min:
@@ -3706,7 +3706,7 @@ class ScriptMathProcessor {
         data[i] = Quaternion.newP4(pts[i]);
       break;
     case T.list:
-      List<SV> sv = (ArrayList<SV>) quaternionOrSVData;
+      JmolList<SV> sv = (JmolList<SV>) quaternionOrSVData;
       data = new Quaternion[sv.size()];
       for (int i = 0; i < sv.size(); i++) {
         Point4f pt = SV.pt4Value(sv.get(i));

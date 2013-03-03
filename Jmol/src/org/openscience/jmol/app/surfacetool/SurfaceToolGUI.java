@@ -38,7 +38,7 @@ import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
 import java.net.URL;
 import java.util.Hashtable;
-import java.util.List;
+
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -65,6 +65,7 @@ import javax.swing.event.ListSelectionListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
+import org.jmol.util.JmolList;
 
 /**
  * GUI for the Jmol surfaceTool
@@ -357,7 +358,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
     int[] selected = whichList.getSelectedIndices();
     if (selected != null) {
       int lastIndex = selected[(selected.length - 1)];
-      List<SurfaceStatus> surfaces = slicer.getSurfaces();
+      JmolList<SurfaceStatus> surfaces = slicer.getSurfaces();
       SurfaceStatus lastSurface = surfaces.get(lastIndex);
       if (lastSurface.beenSliced) {
         slicer.setSlice(lastSurface.slice.angleXY,
@@ -382,7 +383,7 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
     if (whichSelected == null || whichSelected.length == 0)
       return;
     for (int i = 0; i < whichSelected.length; i++) {
-      List<SurfaceStatus> surfaces = slicer.getSurfaces();
+      JmolList<SurfaceStatus> surfaces = slicer.getSurfaces();
       int k = whichSelected[i];
       slicer.sliceObject(surfaces.get(k).id, surfaces.get(k).kind);
       surfaces.get(k).beenSliced = true;

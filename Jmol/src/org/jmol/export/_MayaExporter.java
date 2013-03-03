@@ -26,11 +26,12 @@
 package org.jmol.export;
 
 
-import java.util.List;
+
 import java.util.Map;
 
 
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
@@ -175,7 +176,7 @@ public class _MayaExporter extends __CartesianExporter {
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BS bsPolygons,
                                   int faceVertexMax, short colix,
-                                  List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
+                                  JmolList<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
   }
 
   @Override

@@ -1,6 +1,6 @@
 package org.jmol.api;
 
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.modelset.Atom;
@@ -9,6 +9,7 @@ import org.jmol.script.ScriptException;
 import org.jmol.script.ScriptContext;
 import org.jmol.script.SV;
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
 import org.jmol.viewer.ShapeManager;
@@ -34,7 +35,7 @@ public interface JmolScriptEvaluator {
 
   void notifyResumeStatus();
 
-  List<Integer> getAtomBitSetVector(int atomCount, Object atomExpression);
+  JmolList<Integer> getAtomBitSetVector(int atomCount, Object atomExpression);
 
   boolean isPaused();
 
@@ -84,7 +85,7 @@ public interface JmolScriptEvaluator {
 
   void setException(ScriptException sx, String msg, String untranslated);
 
-  BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts) throws Exception;
+  BS addHydrogensInline(BS bsAtoms, JmolList<Atom> vConnections, P3[] pts) throws Exception;
 
   void evaluateCompiledScript(boolean isSyntaxCheck,
                               boolean isSyntaxAndFileCheck,

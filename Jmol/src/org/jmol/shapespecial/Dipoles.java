@@ -42,9 +42,9 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -578,8 +578,8 @@ public class Dipoles extends Shape {
   }
 
   @Override
-  public List<Map<String, Object>> getShapeDetail() {
-    List<Map<String, Object>> V = new ArrayList<Map<String,Object>>();
+  public JmolList<Map<String, Object>> getShapeDetail() {
+    JmolList<Map<String, Object>> V = new  JmolList<Map<String,Object>>();
     Map<String, Object> atomInfo;
     for (int i = 0; i < dipoleCount; i++) {
       Map<String, Object> info = new Hashtable<String, Object>();
@@ -590,15 +590,15 @@ public class Dipoles extends Shape {
       if (dipole.atoms[0] != null) {
         atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[0].getIndex(), atomInfo);
-        List<Map<String, Object>> atoms = new ArrayList<Map<String,Object>>();
-        atoms.add(atomInfo);
+        JmolList<Map<String, Object>> atoms = new  JmolList<Map<String,Object>>();
+        atoms.addLast(atomInfo);
         atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[1].getIndex(), atomInfo);
-        atoms.add(atomInfo);
+        atoms.addLast(atomInfo);
         info.put("atoms", atoms);
         info.put("magnitude", Float.valueOf(dipole.vector.length()));
       }
-      V.add(info);
+      V.addLast(info);
     }
     return V;
   }

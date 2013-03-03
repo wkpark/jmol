@@ -32,7 +32,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.Interface;
@@ -40,6 +40,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SB;
@@ -441,7 +442,7 @@ public class JmolBinary {
    * @return msg bytes filename or errorMessage or byte[]
    */
   public static Object writeZipFile(FileManager fm, Viewer viewer, String outFileName,
-                              List<Object> fileNamesAndByteArrays,
+                              JmolList<Object> fileNamesAndByteArrays,
                               String msg) {
     return getJzu().writeZipFile(fm, viewer, outFileName, fileNamesAndByteArrays, msg);
   }
@@ -483,7 +484,7 @@ public class JmolBinary {
     return new BufferedReader(new StringReader(string));
   }
 
-  public static String getSceneScript(String[] scenes, Map<String, String> htScenes, List<Integer> list) {
+  public static String getSceneScript(String[] scenes, Map<String, String> htScenes, JmolList<Integer> list) {
     return getJzu().getSceneScript(scenes, htScenes, list);
   }
 
@@ -520,7 +521,7 @@ public class JmolBinary {
     return getJzu().spartanFileList(name, zipDirectory);
   }
 
-  public static void getFileReferences(String script, List<String> fileList) {
+  public static void getFileReferences(String script, JmolList<String> fileList) {
     for (int ipt = 0; ipt < FileManager.scriptFilePrefixes.length; ipt++) {
       String tag = FileManager.scriptFilePrefixes[ipt];
       int i = -1;
@@ -528,7 +529,7 @@ public class JmolBinary {
         String s = Parser.getQuotedStringAt(script, i);
         if (s.indexOf("::") >= 0)
           s = TextFormat.splitChars(s, "::")[1];
-        fileList.add(s);
+        fileList.addLast(s);
       }
     }
   }

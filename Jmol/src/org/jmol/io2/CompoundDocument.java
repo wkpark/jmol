@@ -26,8 +26,8 @@ package org.jmol.io2;
 
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 import java.util.Map;
 
 import org.jmol.util.Logger;
@@ -52,7 +52,7 @@ public class CompoundDocument extends BinaryDocument{
 
 //  RandomAccessFile file;
   CompoundDocHeader header = new CompoundDocHeader(this);
-  List<CompoundDocDirEntry> directory = new ArrayList<CompoundDocDirEntry>();
+  JmolList<CompoundDocDirEntry> directory = new  JmolList<CompoundDocDirEntry>();
   CompoundDocDirEntry rootEntry;
 
   int[] SAT;
@@ -91,7 +91,7 @@ public class CompoundDocument extends BinaryDocument{
     getDirectoryTable();
   }
 
-  public List<CompoundDocDirEntry> getDirectory() {
+  public JmolList<CompoundDocDirEntry> getDirectory() {
     return directory;
   }
 
@@ -294,7 +294,7 @@ public class CompoundDocument extends BinaryDocument{
           thisEntry = new CompoundDocDirEntry(this);
           thisEntry.readData();
           if (thisEntry.lenStream > 0) {
-            directory.add(thisEntry);
+            directory.addLast(thisEntry);
             //System.out.println(thisEntry.entryName);
           }
           if (thisEntry.entryType == 5)

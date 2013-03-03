@@ -24,9 +24,9 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
@@ -36,12 +36,12 @@ import org.jmol.util.TextFormat;
 
 abstract public class GamessReader extends MOReader {
 
-  protected List<String> atomNames;
+  protected JmolList<String> atomNames;
 
   abstract protected void readAtomsInBohrCoordinates() throws Exception;  
  
   protected void readGaussianBasis(String initiator, String terminator) throws Exception {
-    List<String[]> gdata = new ArrayList<String[]>();
+    JmolList<String[]> gdata = new  JmolList<String[]>();
     gaussianCount = 0;
     int nGaussians = 0;
     shellCount = 0;
@@ -50,8 +50,8 @@ abstract public class GamessReader extends MOReader {
     discardLinesUntilContains(initiator);
     readLine();
     int[] slater = null;
-    Map<String, List<int[]>> shellsByAtomType = new Hashtable<String, List<int[]>>();
-    List<int[]> slatersByAtomType = new ArrayList<int[]>();
+    Map<String, JmolList<int[]>> shellsByAtomType = new Hashtable<String, JmolList<int[]>>();
+    JmolList<int[]> slatersByAtomType = new  JmolList<int[]>();
     String atomType = null;
     
     while (readLine() != null && line.indexOf(terminator) < 0) {
@@ -64,12 +64,12 @@ abstract public class GamessReader extends MOReader {
         if (atomType != null) {
           if (slater != null) {
             slater[2] = nGaussians;
-            slatersByAtomType.add(slater);
+            slatersByAtomType.addLast(slater);
             slater = null;
           }
           shellsByAtomType.put(atomType, slatersByAtomType);
         }
-        slatersByAtomType = new ArrayList<int[]>();
+        slatersByAtomType = new  JmolList<int[]>();
         atomType = tokens[0];
         break;
       case 0:
@@ -78,7 +78,7 @@ abstract public class GamessReader extends MOReader {
         if (!tokens[0].equals(thisShell)) {
           if (slater != null) {
             slater[2] = nGaussians;
-            slatersByAtomType.add(slater);
+            slatersByAtomType.addLast(slater);
           }
           thisShell = tokens[0];
           shellCount++;
@@ -89,12 +89,12 @@ abstract public class GamessReader extends MOReader {
         }
         ++nGaussians;
         ++gaussianCount;
-        gdata.add(tokens);
+        gdata.addLast(tokens);
       }
     }
     if (slater != null) {
       slater[2] = nGaussians;
-      slatersByAtomType.add(slater);
+      slatersByAtomType.addLast(slater);
     }
     if (atomType != null)
       shellsByAtomType.put(atomType, slatersByAtomType);
@@ -107,10 +107,10 @@ abstract public class GamessReader extends MOReader {
     }
     int atomCount = atomNames.size();
     if (shells == null && atomCount > 0) {
-      shells = new ArrayList<int[]>();
+      shells = new  JmolList<int[]>();
       for (int i = 0; i < atomCount; i++) {
         atomType = atomNames.get(i);
-        List<int[]> slaters = shellsByAtomType.get(atomType);
+        JmolList<int[]> slaters = shellsByAtomType.get(atomType);
         if (slaters == null) {
           Logger.error("slater for atom " + i + " atomType " + atomType
               + " was not found in listing. Ignoring molecular orbitals");
@@ -118,7 +118,7 @@ abstract public class GamessReader extends MOReader {
         }
         for (int j = 0; j < slaters.size(); j++) {
           slater = slaters.get(j);
-          shells.add(new int[] { i, slater[0], slater[1], slater[2] });
+          shells.addLast(new int[] { i, slater[0], slater[1], slater[2] });
         }
       }
     }

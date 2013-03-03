@@ -25,9 +25,9 @@
 
 package org.jmol.shapesurface;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -208,7 +208,7 @@ public class Contact extends Isosurface {
                   EnumVdw.AUTO);
       */
       float volume = 0;
-      List<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode, doEditCpList);
+      JmolList<ContactPair> pairs = getPairs(bsA, bsB, rd, intramolecularMode, doEditCpList);
       thisMesh.info = pairs;
       volume += combineSurfaces(pairs, contactType, displayType, parameters,
           func, colorDensity, colorByType);
@@ -278,7 +278,7 @@ public class Contact extends Isosurface {
    * @param colorByType  
    * @return               volume
    */
-  private float combineSurfaces(List<ContactPair> pairs, int contactType,
+  private float combineSurfaces(JmolList<ContactPair> pairs, int contactType,
                                 int displayType, float[] parameters,
                                 Object func, boolean isColorDensity,
                                 boolean colorByType) {
@@ -356,9 +356,9 @@ public class Contact extends Isosurface {
    * @param doEditCpList 
    * @return a list of pairs of atoms to process
    */
-  private List<ContactPair> getPairs(BS bsA, BS bsB, RadiusData rd,
+  private JmolList<ContactPair> getPairs(BS bsA, BS bsB, RadiusData rd,
                                      int intramolecularMode, boolean doEditCpList) {
-    List<ContactPair> list = new ArrayList<ContactPair>();
+    JmolList<ContactPair> list = new  JmolList<ContactPair>();
     AtomData ad = new AtomData();
     ad.radiusData = rd;
     BS bs = BSUtil.copy(bsA);
@@ -428,7 +428,7 @@ public class Contact extends Isosurface {
           isHBond = false;
         if (isHBond && cp.score < 0)
           cp.contactType = T.hbond;
-        list.add(cp);
+        list.addLast(cp);
       }
     }
     iter.release();
@@ -654,12 +654,12 @@ public class Contact extends Isosurface {
   protected void addMeshInfo(IsosurfaceMesh mesh, Map<String, Object> info) {
     if (mesh.info == null)
       return;
-    List<Map<String, Object>> pairInfo = new ArrayList<Map<String, Object>>();
+    JmolList<Map<String, Object>> pairInfo = new  JmolList<Map<String, Object>>();
     info.put("pairInfo", pairInfo);
-    List<ContactPair> list = (List<ContactPair>) mesh.info;
+    JmolList<ContactPair> list = (JmolList<ContactPair>) mesh.info;
     for (int i = 0; i < list.size(); i++) {
       Map<String, Object> cpInfo = new Hashtable<String, Object>();
-      pairInfo.add(cpInfo);
+      pairInfo.addLast(cpInfo);
       ContactPair cp = list.get(i);
       cpInfo.put("type", T.nameOf(cp.contactType));
       cpInfo.put("volume", Double.valueOf(cp.volume));

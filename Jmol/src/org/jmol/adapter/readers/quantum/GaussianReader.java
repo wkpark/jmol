@@ -28,9 +28,9 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -361,8 +361,8 @@ public class GaussianReader extends MOReader {
    */
 
   private void readBasis() throws Exception {
-    shells = new ArrayList<int[]>();
-    List<String[]> gdata = new ArrayList<String[]>();
+    shells = new  JmolList<int[]>();
+    JmolList<String[]> gdata = new  JmolList<String[]>();
     int atomCount = 0;
     gaussianCount = 0;
     shellCount = 0;
@@ -395,7 +395,7 @@ public class GaussianReader extends MOReader {
           slater[3] = nGaussians;
           if (Logger.debugging)
             Logger.info("Slater " + shells.size() + " " + Escape.e(slater));
-          shells.add(slater);
+          shells.addLast(slater);
           gaussianCount += nGaussians;
           for (int i = 0; i < nGaussians; i++) {
             readLine();
@@ -403,7 +403,7 @@ public class GaussianReader extends MOReader {
             tokens = getTokens();
             if (Logger.debugging)
               Logger.info("Gaussians " + (i + 1) + " " + Escape.e(tokens));
-            gdata.add(tokens);
+            gdata.addLast(tokens);
           }
         }
       }
@@ -426,10 +426,10 @@ public class GaussianReader extends MOReader {
         int nGaussians = parseIntStr(tokens[5]);
         slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
         slater[3] = nGaussians;
-        shells.add(slater);
+        shells.addLast(slater);
         gaussianCount += nGaussians;
         for (int i = 0; i < nGaussians; i++) {
-          gdata.add(getTokensStr(readLine()));
+          gdata.addLast(getTokensStr(readLine()));
         }
       }
     }
@@ -479,7 +479,7 @@ public class GaussianReader extends MOReader {
     if (shells == null)
       return;
     Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(5);
-    List<String>[] data = ArrayUtil.createArrayOfArrayList(5);
+    JmolList<String>[] data = ArrayUtil.createArrayOfArrayList(5);
     int nThisLine = 0;
     boolean isNOtype = line.contains("Natural Orbital"); //gfprint pop(full,NO)
     while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {
@@ -496,7 +496,7 @@ public class GaussianReader extends MOReader {
         }
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
-          data[i] = new ArrayList<String>();
+          data[i] = new  JmolList<String>();
           String sym;
           if (isNOtype) {
             mos[i]
@@ -517,7 +517,7 @@ public class GaussianReader extends MOReader {
         if (tokens.length != nThisLine)
           tokens = getStrings(line, nThisLine, 10);
         for (int i = 0; i < nThisLine; i++)
-          mos[i].put("energy", Float.valueOf(tokens[i]));
+          mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
         continue;
       } else if (line.length() < 21
           || (line.charAt(5) != ' ' && !Character.isDigit(line.charAt(5)))) {
@@ -538,7 +538,7 @@ public class GaussianReader extends MOReader {
         tokens = getStrings(line.substring(line.length() - 10 * nThisLine),
             nThisLine, 10);
         for (int i = 0; i < nThisLine; i++)
-          data[i].add(tokens[i]);
+          data[i].addLast(tokens[i]);
       } catch (Exception e) {
         Logger.error("Error reading Gaussian file Molecular Orbitals at line: "
             + line);

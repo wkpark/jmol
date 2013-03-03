@@ -24,12 +24,13 @@
 
 package org.jmol.smiles;
 
-import java.util.List;
+
 
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.JmolList;
 import org.jmol.util.JmolNode;
 import org.jmol.util.TextFormat;
 
@@ -256,8 +257,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   public void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
-                                  int flags, BS bsSelected, List<BS> ret, 
-                                  List<BS>[] vRings) {
+                                  int flags, BS bsSelected, JmolList<BS> ret, 
+                                  JmolList<BS>[] vRings) {
     InvalidSmilesException.setLastError(null);
     SmilesParser sp = new SmilesParser(true);
     SmilesSearch search = null;
@@ -279,7 +280,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     
     for (int i = 0; i < smarts.length; i++) {
       if (smarts[i] == null || smarts[i].length() == 0 || smarts[i].startsWith("#")) {
-        ret.add(null);
+        ret.addLast(null);
         continue;
       }
       try {
@@ -288,7 +289,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         search.subSearches[0] = ss;
         BS bs = BSUtil.copy((BS) search.search(false));//.subsearch(ss, false, false));
         //System.out.println(i + " " + bs);
-        ret.add(bs);
+        ret.addLast(bs);
         bsDone.or(bs);
         if (bsDone.cardinality() == atomCount)
           return;
@@ -385,11 +386,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         return search.search(false);
       case MODE_ARRAY:
         search.asVector = true;
-        List<BS> vb = (List<BS>) search.search(false);
+        JmolList<BS> vb = (JmolList<BS>) search.search(false);
         return vb.toArray(new BS[vb.size()]);
       case MODE_MAP:
         search.getMaps = true;
-        List<int[]> vl = (List<int[]>) search.search(false);
+        JmolList<int[]> vl = (JmolList<int[]>) search.search(false);
         return vl.toArray(ArrayUtil.newInt2(vl.size()));
       }
     } catch (Exception e) {

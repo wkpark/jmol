@@ -26,9 +26,9 @@ package org.jmol.adapter.readers.more;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
-import java.util.List;
+
 
 import org.jmol.util.TextFormat;
 
@@ -99,7 +99,7 @@ public class JcampdxReader extends MolReader {
   private String modelID;
   private AtomSetCollection models;
   private String modelIdList = "";
-  private List<String> peakData = new ArrayList<String>();
+  private  JmolList<String> peakData = new  JmolList<String>();
   private String lastModel = "";
   private int selectedModel;
   private int[] peakIndex;
@@ -324,7 +324,7 @@ public class JcampdxReader extends MolReader {
       type = "13CNMR";
     while (readLine() != null && !(line = line.trim()).startsWith("</Peaks>"))
       if (line.startsWith("<PeakData"))
-        peakData.add("<PeakData file=" + peakFilePath + " index=\"" + (++peakIndex[0]) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());
+        peakData.addLast("<PeakData file=" + peakFilePath + " index=\"" + (++peakIndex[0]) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());
     return true;
   }
 
@@ -353,12 +353,12 @@ public class JcampdxReader extends MolReader {
       bsModels.set(i);      
       String s;
       if (getAttribute(line, "atoms").length() != 0) {
-        List<String> peaks = (List<String>) atomSetCollection
+        JmolList<String> peaks = (JmolList<String>) atomSetCollection
             .getAtomSetAuxiliaryInfoValue(i, key);
         if (peaks == null)
           atomSetCollection.setAtomSetAuxiliaryInfoForSet(key,
-              peaks = new ArrayList<String>(), i);
-        peaks.add(line);
+              peaks = new  JmolList<String>(), i);
+        peaks.addLast(line);
         s = type + ": ";
       } else if (atomSetCollection.getAtomSetAuxiliaryInfoValue(i, "jdxModelSelect") == null) {
         // assign name and jdxModelSelect ONLY if first found.

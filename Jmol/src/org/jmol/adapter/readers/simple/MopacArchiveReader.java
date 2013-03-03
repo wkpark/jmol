@@ -106,7 +106,7 @@ MERS=(1,2,2)   GNORM=4
     String sym = null;
     setFractionalCoordinates(false);
     while (readLine() != null && line.length() >= 50) {
-      vAtoms.add(atom = new Atom());
+      vAtoms.addLast(atom = new Atom());
       atom.x = parseFloatRange(line, 5, 18);
       atom.y = parseFloatRange(line, 21, 34);
       atom.z = parseFloatRange(line, 37, 50);
@@ -145,7 +145,7 @@ MERS=(1,2,2)   GNORM=4
       setSpaceGroupName("P1");
       int nTv = vAtoms.size() - atomCount;
       for (int i = nTv; i < 3; i++)
-        vAtoms.add(new Atom()); 
+        vAtoms.addLast(new Atom()); 
       float[] xyz = new float[9];
       for (int i = 0; i < 3; i++) {
         int j = i * 3;

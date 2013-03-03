@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
@@ -39,7 +39,7 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
   private JScrollPane logScrollPane;
   private JFileChooser chooser;
   private File oldDir;
-  private List<File> pages;
+  private JmolList<File> pages;
   private int nDir;
   private int nFiles;
   //private int nControls;
@@ -140,7 +140,7 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
 
   void getFileList() {
     logArea.setText("");
-    pages = new ArrayList<File>();
+    pages = new  JmolList<File>();
     String dir = chimePath.getText();
     dir = dir.replace('\\', '/');
     while (dir.endsWith("/"))
@@ -272,7 +272,7 @@ public class ChimePanel extends JPanel implements ItemListener, ActionListener {
     String name = f1.getName().toLowerCase();
     if (name.endsWith(".htm") || name.endsWith(".html")) {
       if (justChecking) {
-        pages.add(f1);
+        pages.addLast(f1);
         log(f1.getAbsolutePath());
         return true;
       }

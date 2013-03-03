@@ -42,8 +42,8 @@
 
 package org.jmol.adapter.readers.xtal;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
@@ -737,10 +737,10 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     applySymmetryAndSetTrajectory();
     if (isGammaPoint)
       qvec = null;
-    List<Float> freqs = new ArrayList<Float>();
+    JmolList<Float> freqs = new  JmolList<Float>();
     while (readLine() != null && line.indexOf("Phonon") < 0) {
       tokens = getTokens();
-      freqs.add(Float.valueOf(parseFloatStr(tokens[1])));
+      freqs.addLast(Float.valueOf(parseFloatStr(tokens[1])));
     }
     readLine();
     int frequencyCount = freqs.size();

@@ -25,10 +25,10 @@ package org.jmol.script;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -280,7 +280,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     try {
       e.compileScript(null, "function " + fname + "(" + xyz + ") { return "
           + ret + "}", false);
-      List<SV> params = new ArrayList<SV>();
+      JmolList<SV> params = new  JmolList<SV>();
       for (int i = 0; i < xyz.length(); i += 2)
         params.add(SV.newVariable(T.decimal, Float.valueOf(0f)).setName(
             xyz.substring(i, i + 1)));
@@ -747,8 +747,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @param atomExpression
    * @return vector list of selected atoms
    */
-  public List<Integer> getAtomBitSetVector(int atomCount, Object atomExpression) {
-    List<Integer> V = new ArrayList<Integer>();
+  public JmolList<Integer> getAtomBitSetVector(int atomCount, Object atomExpression) {
+    JmolList<Integer> V = new  JmolList<Integer>();
     BS bs = getAtomBitSet(atomExpression);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       V.add(Integer.valueOf(i));
@@ -757,10 +757,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   @SuppressWarnings("unchecked")
-  private List<SV> parameterExpressionList(int pt, int ptAtom,
+  private JmolList<SV> parameterExpressionList(int pt, int ptAtom,
                                                        boolean isArrayItem)
       throws ScriptException {
-    return (List<SV>) parameterExpression(pt, -1, null, true, true,
+    return (JmolList<SV>) parameterExpression(pt, -1, null, true, true,
         ptAtom, isArrayItem, null, null);
   }
 
@@ -778,7 +778,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private SV parameterExpressionToken(int pt)
       throws ScriptException {
-    List<SV> result = parameterExpressionList(pt, -1, false);
+    JmolList<SV> result = parameterExpressionList(pt, -1, false);
     return (result.size() > 0 ? result.get(0) : SV.newVariable(T.string, ""));
   }
 
@@ -976,9 +976,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                 ignoreComma, isFor, j, false, localVars, isFunctionOfX ? null
                     : dummy);
             if (isFor) {
-              if (res == null || ((List<?>) res).size() == 0)
+              if (res == null || ((JmolList<?>) res).size() == 0)
                 error(ERROR_invalidArgument);
-              sout[p++] = ((SV) ((List<?>) res).get(0)).asString();
+              sout[p++] = ((SV) ((JmolList<?>) res).get(0)).asString();
             } else if (((Boolean) res).booleanValue()) {
               bsSelect.set(j);
             }
@@ -1238,7 +1238,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       String key = stringParameter(i++);
       if (tokAt(i++) != T.colon)
         error(ERROR_invalidArgument);
-      List<SV> v = (List<SV>) parameterExpression(i, 0,
+      JmolList<SV> v = (JmolList<SV>) parameterExpression(i, 0,
           null, false, true, -1, false, null, null);
       ht.put(key, v.get(0));
       i = iToken;
@@ -1251,8 +1251,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return ht;
   }
 
-  List<SV> bitsetVariableVector(Object v) {
-    List<SV> resx = new ArrayList<SV>();
+  JmolList<SV> bitsetVariableVector(Object v) {
+    JmolList<SV> resx = new  JmolList<SV>();
     if (v instanceof BS) {
       resx.add(SV.newVariable(T.bitset, v));
     }
@@ -1418,11 +1418,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (isExplicitlyAll || isString && !haveIndex
         && minmaxtype != T.allfloat && minmaxtype != T.min)
       minmaxtype = T.all;
-    List<Object> vout = (minmaxtype == T.all ? new ArrayList<Object>()
+    JmolList<Object> vout = (minmaxtype == T.all ? new  JmolList<Object>()
         : null);
     BS bsNew = null;
     String userFunction = null;
-    List<SV> params = null;
+    JmolList<SV> params = null;
     BS bsAtom = null;
     SV tokenAtom = null;
     P3 ptT = null;
@@ -1465,7 +1465,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return "";
     case T.function:
       userFunction = (String) ((Object[]) opValue)[0];
-      params = (List<SV>) ((Object[]) opValue)[1];
+      params = (JmolList<SV>) ((Object[]) opValue)[1];
       bsAtom = BSUtil.newBitSet(atomCount);
       tokenAtom = SV.newVariable(T.bitset, bsAtom);
       break;
@@ -1837,7 +1837,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String sValue = null;
     float[] fvalues = null;
     P3 pt;
-    List<SV> sv = null;
+    JmolList<SV> sv = null;
     int nValues = 0;
     boolean isStrProperty = T.tokAttr(tok, T.strproperty);
     if (tokenValue.tok == T.varray) {
@@ -2109,9 +2109,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.variable:
       return SV.getVariable(v);
     case T.string:
-      if (!(v instanceof List<?>))
+      if (!(v instanceof JmolList<?>))
         break;
-      List<SV> sv = (ArrayList<SV>) v;
+      JmolList<SV> sv = (JmolList<SV>) v;
       SB sb = new SB();
       for (int i = 0; i < sv.size(); i++)
         sb.append(sv.get(i).asString()).appendC('\n');
@@ -2182,7 +2182,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   @SuppressWarnings("unchecked")
   public float evalFunctionFloat(Object func, Object params, float[] values) {
     try {
-      List<SV> p = (List<SV>) params;
+      JmolList<SV> p = (JmolList<SV>) params;
       for (int i = 0; i < values.length; i++)
         p.get(i).value = Float.valueOf(values[i]);
       ScriptFunction f = (ScriptFunction) func;
@@ -2197,7 +2197,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   static int tryPt;
   
   SV runFunctionRet(JmolScriptFunction function, String name,
-                                List<SV> params,
+                                JmolList<SV> params,
                                 SV tokenAtom, boolean getReturn,
                                 boolean setContextPath, boolean allowThreads)
       throws ScriptException {
@@ -2299,7 +2299,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @throws ScriptException
    */
   private void restoreFunction(JmolScriptFunction f,
-                           List<SV> params, 
+                           JmolList<SV> params, 
                            SV tokenAtom)
       throws ScriptException {
     ScriptFunction function = (ScriptFunction) f;
@@ -2647,8 +2647,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           fixed[j] = SV.newVariable(T.matrix4f, v);
         } else if (v instanceof Map<?, ?>) {
           fixed[j] = SV.newVariable(T.hash, v);
-        } else if (v instanceof List<?>) {
-          List<SV> sv = (ArrayList<SV>) v;
+        } else if (v instanceof JmolList<?>) {
+          JmolList<SV> sv = (JmolList<SV>) v;
           BS bs = null;
           for (int k = 0; k < sv.size(); k++) {
             SV svk = sv.get(k);
@@ -2945,32 +2945,32 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   void errorAt(int iError, int i) throws ScriptException {
     iToken = i;
-    error(iError, null, null, null, false);
+    errorOrWarn(iError, null, null, null, false);
   }
 
   void error(int iError) throws ScriptException {
-    error(iError, null, null, null, false);
+    errorOrWarn(iError, null, null, null, false);
   }
 
   void errorStr(int iError, String value) throws ScriptException {
-    error(iError, value, null, null, false);
+    errorOrWarn(iError, value, null, null, false);
   }
 
   void errorStr2(int iError, String value, String more) throws ScriptException {
-    error(iError, value, more, null, false);
+    errorOrWarn(iError, value, more, null, false);
   }
 
   void errorMore(int iError, String value, String more, String more2)
       throws ScriptException {
-    error(iError, value, more, more2, false);
+    errorOrWarn(iError, value, more, more2, false);
   }
 
   private void warning(int iError, String value, String more)
       throws ScriptException {
-    error(iError, value, more, null, true);
+    errorOrWarn(iError, value, more, null, true);
   }
 
-  void error(int iError, String value, String more, String more2,
+  void errorOrWarn(int iError, String value, String more, String more2,
              boolean warningOnly) throws ScriptException {
     String strError = ignoreError ? null : errorString(iError, value, more,
         more2, true);
@@ -3503,7 +3503,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return sm.getShapePropertyIndex(shapeType, propertyName, index);
   }
 
-  private void addShapeProperty(List<Object[]> propertyList, String key,
+  private void addShapeProperty(JmolList<Object[]> propertyList, String key,
                                 Object value) {
     if (chk)
       return;
@@ -4039,9 +4039,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         if (val instanceof String)
           val = getStringObjectAsVariable((String) val, null);
-        if (val instanceof List<?>) {
+        if (val instanceof JmolList<?>) {
           BS bs = SV.unEscapeBitSetArray(
-              (ArrayList<SV>) val, true);
+              (JmolList<SV>) val, true);
           if (bs == null)
             val = value;
           else
@@ -4346,7 +4346,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private static int getSeqCode(T instruction) {
-    return (instruction.intValue != Integer.MAX_VALUE ? Group.getSeqcode(
+    return (instruction.intValue != Integer.MAX_VALUE ? Group.getSeqcodeFor(
         instruction.intValue, ' ') : ((Integer) instruction.value).intValue());
   }
 
@@ -4523,7 +4523,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean haveBrace = (tok == T.leftbrace);
     boolean haveSquare = (tok == T.leftsquare);
     float[] fparams = null;
-    List<Float> v = new ArrayList<Float>();
+    JmolList<Float> v = new  JmolList<Float>();
     int n = 0;
     if (haveBrace || haveSquare)
       i++;
@@ -4605,11 +4605,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private P3[] getPointArray(int i, int nPoints) throws ScriptException {
     P3[] points = (nPoints < 0 ? null : new P3[nPoints]);
-    List<P3> vp = (nPoints < 0 ? new ArrayList<P3>() : null);
+    JmolList<P3> vp = (nPoints < 0 ? new  JmolList<P3>() : null);
     int tok = (i < 0 ? T.varray : getToken(i++).tok);
     switch (tok) {
     case T.varray:
-      List<SV> v = ((SV) theToken).getList();
+      JmolList<SV> v = ((SV) theToken).getList();
       if (nPoints >= 0 && v.size() != nPoints)
         error(ERROR_invalidArgument);
       nPoints = v.size();
@@ -4755,7 +4755,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       error(ERROR_invalidArgument);
     }
     int tok;
-    List<String> v = new ArrayList<String>();
+    JmolList<String> v = new  JmolList<String>();
     while ((tok = tokAt(i)) != T.rightsquare) {
       switch (tok) {
       case T.comma:
@@ -5481,7 +5481,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void commandLoop() throws ScriptException {
     String lastCommand = "";
     boolean isForCheck = false; // indicates the stage of the for command loop
-    List<T[]> vProcess = null;
+    JmolList<T[]> vProcess = null;
     long lastTime = System.currentTimeMillis();
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
       if (!chk && isJS && allowJSThreads) {
@@ -5758,7 +5758,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.process:
           pushContext((ContextToken) theToken);
           if (parallelProcessor != null)
-            vProcess = new ArrayList<T[]>();
+            vProcess = new  JmolList<T[]>();
           break;
         case T.prompt:
           prompt();
@@ -6101,7 +6101,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
   }
 
-  private boolean flowControl(int tok, boolean isForCheck, List<T[]> vProcess)
+  private boolean flowControl(int tok, boolean isForCheck, JmolList<T[]> vProcess)
       throws ScriptException {
     ContextToken ct;
     switch (tok) {
@@ -6223,7 +6223,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             if (isBondSet)
               bsOrList = new BondSet((BS) bsOrList);
           } else {
-            List<SV> what = parameterExpressionList(-i, 1, false);
+            JmolList<SV> what = parameterExpressionList(-i, 1, false);
             if (what == null || what.size() < 1)
               error(ERROR_invalidArgument);
             SV vl = what.get(0);
@@ -6438,7 +6438,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   static int iProcess;
 
-  private void addProcess(List<T[]> vProcess, int pc, int pt) {
+  private void addProcess(JmolList<T[]> vProcess, int pc, int pt) {
     if (parallelProcessor == null)
       return;
     T[][] statements = new T[pt][];
@@ -6767,7 +6767,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     }
     V3 rotAxis = V3.new3(0, 1, 0);
-    List<Object[]> list = new ArrayList<Object[]>();
+    JmolList<Object[]> list = new  JmolList<Object[]>();
     P3 pt;
     if (slen == 2) {
       switch (getToken(1).tok) {
@@ -6884,7 +6884,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         continue;
       case T.trace:
         P3[][] pathGuide;
-        List<P3[]> vp = new ArrayList<P3[]>();
+        JmolList<P3[]> vp = new  JmolList<P3[]>();
         BS bs = atomExpressionAt(++i);
         i = iToken;
         if (chk)
@@ -6925,7 +6925,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             //viewer.navigatePath(timeSec, path, theta, indexStart, indexEnd);
           continue;
         }
-        List<P3> v = new ArrayList<P3>();
+        JmolList<P3> v = new  JmolList<P3>();
         while (isCenterParameter(i + 1)) {
           v.add(centerParameter(++i));
           i = iToken;
@@ -7090,8 +7090,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     float nSeconds = Float.NaN;
     Quaternion[] data1 = null, data2 = null;
     BS bsAtoms1 = null, bsAtoms2 = null;
-    List<BS[]> vAtomSets = null;
-    List<Object[]> vQuatSets = null;
+    JmolList<BS[]> vAtomSets = null;
+    JmolList<Object[]> vQuatSets = null;
     BS bsFrom = (tokAt(1) == T.subset ? null : atomExpressionAt(1));
     BS bsTo = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
     if (bsFrom == null || bsTo == null)
@@ -7140,7 +7140,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         bsAtoms2.and(bsTo);
         if (vAtomSets == null)
-          vAtomSets = new ArrayList<BS[]>();
+          vAtomSets = new  JmolList<BS[]>();
         vAtomSets.add(new BS[] { bsAtoms1, bsAtoms2 });
         i = iToken;
         break;
@@ -7154,7 +7154,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         data2 = ScriptMathProcessor
             .getQuaternionArray(((SV) theToken).getList(), T.list);
         if (vQuatSets == null)
-          vQuatSets = new ArrayList<Object[]>();
+          vQuatSets = new  JmolList<Object[]>();
         vQuatSets.add(new Object[] { data1, data2 });
         break;
       case T.orientation:
@@ -7205,7 +7205,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         bsAtoms1.and(bsFrom);
         bsAtoms2.and(bsTo);
       }
-      vAtomSets = new ArrayList<BS[]>();
+      vAtomSets = new  JmolList<BS[]>();
       vAtomSets.add(new BS[] { bsAtoms1, bsAtoms2 });
     }
 
@@ -7222,9 +7222,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       bsFrom = bsFrames[iFrame];
       float[] retStddev = new float[2]; // [0] final, [1] initial for atoms
       Quaternion q = null;
-      List<Quaternion> vQ = new ArrayList<Quaternion>();
+      JmolList<Quaternion> vQ = new  JmolList<Quaternion>();
       P3[][] centerAndPoints = null;
-      List<BS[]> vAtomSets2 = (isFrames ? new ArrayList<BS[]>()
+      JmolList<BS[]> vAtomSets2 = (isFrames ? new  JmolList<BS[]>()
           : vAtomSets);
       for (int i = 0; i < vAtomSets.size(); ++i) {
         BS[] bss = vAtomSets.get(i);
@@ -7265,7 +7265,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // SMILES
         /* not sure why this was like this:
         if (vAtomSets == null) {
-          vAtomSets = new ArrayList<BitSet[]>();
+          vAtomSets = new  JmolList<BitSet[]>();
         }
         bsAtoms1 = BitSetUtil.copy(bsFrom);
         bsAtoms2 = BitSetUtil.copy(bsTo);
@@ -7302,9 +7302,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       if (Float.isNaN(endDegrees) || Float.isNaN(pt1.x))
         continue;
-      List<P3> ptsB = null;
+      JmolList<P3> ptsB = null;
       if (doRotate && doTranslate && nSeconds != 0) {
-        List<P3> ptsA = viewer.getAtomPointVector(bsFrom);
+        JmolList<P3> ptsA = viewer.getAtomPointVector(bsFrom);
         Matrix4f m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(),
             translation);
         ptsB = Measure.transformPoints(ptsA, m4, centerAndPoints[0][0]);
@@ -7319,15 +7319,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   float getSmilesCorrelation(BS bsA, BS bsB, String smiles,
-                             List<P3> ptsA, List<P3> ptsB,
-                             Matrix4f m, List<BS> vReturn, 
+                             JmolList<P3> ptsA, JmolList<P3> ptsB,
+                             Matrix4f m, JmolList<BS> vReturn, 
                              boolean isSmarts, boolean asMap)
       throws ScriptException {
     float tolerance = 0.1f; // TODO
     try {
       if (ptsA == null) {
-        ptsA = new ArrayList<P3>();
-        ptsB = new ArrayList<P3>();
+        ptsA = new  JmolList<P3>();
+        ptsB = new  JmolList<P3>();
       }
       if (m == null)
         m = new Matrix4f();
@@ -7429,7 +7429,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       // getting a correlation
 
-      List<BS> vReturn = new ArrayList<BS>();
+      JmolList<BS> vReturn = new  JmolList<BS>();
       float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern, null,
           null, null, vReturn, isSmarts, false);
       if (Float.isNaN(stddev)) {
@@ -8714,7 +8714,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int i = (tokAt(0) == T.data ? 0 : 1);
     boolean appendNew = viewer.getAppendNew();
     String filter = null;
-    List<Object> firstLastSteps = null;
+    JmolList<Object> firstLastSteps = null;
     int modelCount0 = viewer.getModelCount()
         - (viewer.getFileName().equals("zapped") ? 1 : 0);
     int atomCount0 = viewer.getAtomCount();
@@ -9224,7 +9224,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       P3 pt = null;
       BS bs = null;
-      List<String> fNames = new ArrayList<String>();
+      JmolList<String> fNames = new  JmolList<String>();
       while (i < slen) {
         switch (tokAt(i)) {
         case T.filter:
@@ -9234,7 +9234,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.coord:
           htParams.remove("isTrajectory");
           if (firstLastSteps == null) {
-            firstLastSteps = new ArrayList<Object>();
+            firstLastSteps = new  JmolList<Object>();
             pt = P3.new3(0, -1, 1);
           }
           if (isPoint3f(++i)) {
@@ -9424,7 +9424,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           .getModelAuxiliaryInfoValue(i, "moData");
       if (moData == null)
         continue;
-      sb.appendI(((List<Map<String, Object>>) moData.get("mos")).size()).append(
+      sb.appendI(((JmolList<Map<String, Object>>) moData.get("mos")).size()).append(
           " molecular orbitals in model ").append(
           viewer.getModelNumberDotted(i)).append("\n");
     }
@@ -9511,7 +9511,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     Boolean intramolecular = null;
     int tokAction = T.opToggle;
     String strFormat = null;
-    List<Object> points = new ArrayList<Object>();
+    JmolList<Object> points = new  JmolList<Object>();
     BS bs = new BS();
     Object value = null;
     TickInfo tickInfo = null;
@@ -10249,7 +10249,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     float endDegrees = Float.MAX_VALUE;
     boolean isMolecular = false;
     boolean haveRotation = false;
-    List<P3> ptsA = null;
+    JmolList<P3> ptsA = null;
     P3[] points = new P3[2];
     V3 rotAxis = V3.new3(0, 1, 0);
     V3 translation = null;
@@ -10259,7 +10259,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int tok;
     Quaternion q = null;
     boolean helicalPath = false;
-    List<P3> ptsB = null;
+    JmolList<P3> ptsB = null;
     BS bsCompare = null;
     P3 invPoint = null;
     Point4f invPlane = null;
@@ -10585,7 +10585,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private Quaternion getQuaternionParameter(int i) throws ScriptException {
     if (tokAt(i) == T.varray) {
-      List<SV> sv = ((SV) getToken(i)).getList();
+      JmolList<SV> sv = ((SV) getToken(i)).getList();
       Point4f p4 = null;
       if (sv.size() == 0 || (p4 = SV.pt4Value(sv.get(0))) == null)
         error(ERROR_invalidArgument);
@@ -10594,14 +10594,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return Quaternion.newP4(getPoint4f(i));
   }
 
-  List<P3> getPointVector(T t, int i) throws ScriptException {
+  JmolList<P3> getPointVector(T t, int i) throws ScriptException {
     switch (t.tok) {
     case T.bitset:
       return viewer.getAtomPointVector((BS) t.value);
     case T.varray:
-      List<P3> data = new ArrayList<P3>();
+      JmolList<P3> data = new  JmolList<P3>();
       P3 pt;
-      List<SV> pts = ((SV) t).getList();
+      JmolList<SV> pts = ((SV) t).getList();
       for (int j = 0; j < pts.size(); j++)
         if ((pt = SV.ptValue(pts.get(j))) != null)
           data.add(pt);
@@ -10655,7 +10655,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String localPath = null;
     String remotePath = null;
     String scriptPath = null;
-    List<SV> params = null;
+    JmolList<SV> params = null;
     
     if (tok == T.javascript) {
       checkLength(2);
@@ -10793,7 +10793,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String name = (String) getToken(0).value;
     if (!viewer.isFunction(name))
       error(ERROR_commandExpected);
-    List<SV> params = (slen == 1 || slen == 3
+    JmolList<SV> params = (slen == 1 || slen == 3
         && tokAt(1) == T.leftparen && tokAt(2) == T.rightparen ? null
         : parameterExpressionList(1, -1, false));
     if (chk)
@@ -13808,7 +13808,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void setUserColors() throws ScriptException {
-    List<Integer> v = new ArrayList<Integer>();
+    JmolList<Integer> v = new  JmolList<Integer>();
     for (int i = 2; i < slen; i++) {
       int argb = getArgbParam(i);
       v.add(Integer.valueOf(argb));
@@ -13864,7 +13864,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     // get value
 
-    List<SV> v = (List<SV>) parameterExpression(pt,
+    JmolList<SV> v = (JmolList<SV>) parameterExpression(pt,
         ptMax, key, true, true, -1, isArrayItem, null, null);
     int nv = v.size();
     if (nv == 0 || !isArrayItem && nv > 1 || isArrayItem
@@ -13915,7 +13915,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             t = SV.selectItemVar(t);
           switch (t.tok) {
           case T.varray:
-            List<SV> list = t.getList();
+            JmolList<SV> list = t.getList();
             if (ipt > list.size() || isLast)
               break;
             if (ipt <= 0)
@@ -13960,7 +13960,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (propertyName.startsWith("property_")) {
         viewer.setData(propertyName, new Object[] {
             propertyName,
-            (tv.tok == T.varray ? SV.flistValue(tv,((List<?>)tv.value).size() == bs.cardinality() ? bs.cardinality() : viewer.getAtomCount()) : tv.asString()), 
+            (tv.tok == T.varray ? SV.flistValue(tv,((JmolList<?>)tv.value).size() == bs.cardinality() ? bs.cardinality() : viewer.getAtomCount()) : tv.asString()), 
              BSUtil.copy(bs), Integer.valueOf(tv.tok == T.varray ? 1 : 0) }, 
              viewer.getAtomCount(), 0, 0, tv.tok == T.varray ? Integer.MAX_VALUE
             : Integer.MIN_VALUE, 0);
@@ -15420,7 +15420,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.boundbox:
         if (chk)
           break;
-        List<Object> vp = viewer.getPlaneIntersection(theTok, null,
+        JmolList<Object> vp = viewer.getPlaneIntersection(theTok, null,
             intScale / 100f, 0);
         intScale = 0;
         propertyName = "polygon";
@@ -15483,11 +15483,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.polygon:
         propertyName = "polygon";
         havePoints = true;
-        List<Object> v = new ArrayList<Object>();
+        JmolList<Object> v = new  JmolList<Object>();
         int nVertices = 0;
         int nTriangles = 0;
         P3[] points = null;
-        List<SV> vpolygons = null;
+        JmolList<SV> vpolygons = null;
         if (isArrayParameter(++i)) {
           points = getPointArray(i, -1);
           nVertices = points.length;
@@ -15610,7 +15610,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (tokIntersect != 0) {
           if (chk)
             break;
-          List<Object> vpc = viewer.getPlaneIntersection(tokIntersect, plane,
+          JmolList<Object> vpc = viewer.getPlaneIntersection(tokIntersect, plane,
               intScale / 100f, 0);
           intScale = 0;
           propertyName = "polygon";
@@ -16668,7 +16668,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int offset = Integer.MAX_VALUE;
     boolean isNegOffset = false;
     BS bsModels = viewer.getVisibleFramesBitSet();
-    List<Object[]> propertyList = new ArrayList<Object[]>();
+    JmolList<Object[]> propertyList = new  JmolList<Object[]>();
     int i0 = 1;
     if (tokAt(1) == T.model || tokAt(1) == T.frame) {
       i0 = modelNumberParameter(2);
@@ -16826,7 +16826,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return true;
   }
 
-  private float[] moCombo(List<Object[]> propertyList) {
+  private float[] moCombo(JmolList<Object[]> propertyList) {
     if (tokAt(iToken + 1) != T.squared)
       return null;
     addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
@@ -16848,7 +16848,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   @SuppressWarnings("unchecked")
-  private void setMoData(List<Object[]> propertyList, int moNumber, float[] lc,
+  private void setMoData(JmolList<Object[]> propertyList, int moNumber, float[] lc,
                          int offset, boolean isNegOffset, int modelIndex,
                          String title) throws ScriptException {
     if (chk)
@@ -16859,7 +16859,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         errorStr(ERROR_multipleModelsDisplayedNotOK, "MO isosurfaces");
     }
     Map moData = (Map) viewer.getModelAuxiliaryInfoValue(modelIndex, "moData");
-    List<Map<String, Object>> mos = null;
+    JmolList<Map<String, Object>> mos = null;
     Map<String, Object> mo;
     Float f;
     int nOrb = 0;
@@ -16877,7 +16877,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         moNumber = lastMoNumber - 1;
       else if (moNumber == T.next)
         moNumber = lastMoNumber + lastMoCount;
-      mos = (List<Map<String, Object>>) (moData.get("mos"));
+      mos = (JmolList<Map<String, Object>>) (moData.get("mos"));
       nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0)
         error(ERROR_moCoefficients);
@@ -17062,7 +17062,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String colorScheme = null;
     String mepOrMlp = null;
     short[] discreteColixes = null;
-    List<Object[]> propertyList = new ArrayList<Object[]>();
+    JmolList<Object[]> propertyList = new  JmolList<Object[]>();
     boolean defaultMesh = false;
     if (isPmesh || isPlot3d)
       addShapeProperty(propertyList, "fileType", "Pmesh");
@@ -17923,7 +17923,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // isosurface origin.. step... count... functionXY[Z] = "x + y + z"
         boolean isFxyz = (theTok == T.functionxyz);
         propertyName = "" + theToken.value;
-        List<Object> vxy = new ArrayList<Object>();
+        JmolList<Object> vxy = new  JmolList<Object>();
         propertyValue = vxy;
         isFxy = surfaceObjectSeen = true;
         //if (surfaceObjectSeen)
@@ -18680,10 +18680,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private static Object testData; // for isosurface
   private static Object testData2; // for isosurface
 
-  private void getWithinDistanceVector(List<Object[]> propertyList,
+  private void getWithinDistanceVector(JmolList<Object[]> propertyList,
                                        float distance, P3 ptc, BS bs,
                                        boolean isShow) {
-    List<P3> v = new ArrayList<P3>();
+    JmolList<P3> v = new  JmolList<P3>();
     P3[] pts = new P3[2];
     if (bs == null) {
       P3 pt1 = P3.new3(distance, distance, distance);
@@ -18936,7 +18936,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return getPartialBondOrderFromFloatEncodedInt(getFloatEncodedInt(s));
   }
 
-  public BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections, P3[] pts) throws Exception {
+  public BS addHydrogensInline(BS bsAtoms, JmolList<Atom> vConnections, P3[] pts) throws Exception {
     int modelIndex = viewer.getAtomModelIndex(bsAtoms.nextSetBit(0));
     if (modelIndex != viewer.modelSet.modelCount - 1)
       return new BS();

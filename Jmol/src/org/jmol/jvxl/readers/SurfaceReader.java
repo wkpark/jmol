@@ -25,7 +25,7 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 import java.io.OutputStream;
-import java.util.List;
+
 
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
@@ -43,6 +43,7 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.P3;
@@ -1028,7 +1029,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
   }
   
-  public void slabIsosurface(List<Object[]> slabInfo) {
+  public void slabIsosurface(JmolList<Object[]> slabInfo) {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     meshData.slabPolygonsList(slabInfo, true);

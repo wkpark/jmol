@@ -30,11 +30,12 @@ import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 
 
-import java.util.List;
+
 
 /*
  * promolecular and discrete SCF NCIPLOT implemented in Jmol 12.1.49
@@ -129,7 +130,7 @@ public class NciCalculation extends QuantumCalculation implements
                                   BS bsSelected, BS bsExcluded,
                                   BS[] bsMolecules, String calculationType,
                                   P3[] atomCoordAngstroms,
-                                  int firstAtomOffset, List<int[]> shells,
+                                  int firstAtomOffset, JmolList<int[]> shells,
                                   float[][] gaussians, int[][] dfCoefMaps,
                                   Object slaters, float[] moCoefficients,
                                   float[] linearCombination, boolean isSquaredLinear,

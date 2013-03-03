@@ -29,6 +29,7 @@ import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
@@ -43,7 +44,7 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelSet;
 
 
-import java.util.List;
+
 import java.util.Map;
 
 /**
@@ -209,7 +210,7 @@ public abstract class Shape {
     if (propertyName == "setProperties") {
       if (bsSelected == null)
         bsSelected = viewer.getSelectionSet(false);
-      List<Object[]> propertyList = (List<Object[]>) value;
+      JmolList<Object[]> propertyList = (JmolList<Object[]>) value;
       while (propertyList.size() > 0) {
         Object[] data = propertyList.remove(0);
         setProperty(((String) data[0]).intern(), data[1], bsSelected);
@@ -336,7 +337,7 @@ public abstract class Shape {
         pid) : colix);
   }
 
-  public List<Map<String, Object>> getShapeDetail() {
+  public JmolList<Map<String, Object>> getShapeDetail() {
     return null;
   }
 

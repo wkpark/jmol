@@ -27,7 +27,7 @@ package org.jmol.exportjs;
 
 //import java.awt.Image;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -36,6 +36,7 @@ import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
+import org.jmol.util.JmolList;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
@@ -123,7 +124,7 @@ abstract public class CartesianExporter extends Exporter {
   }
 
   protected int[] getNormalMap(Tuple3f[] normals, int nNormals,
-                               BS bsValid, List<String> vNormals) {
+                               BS bsValid, JmolList<String> vNormals) {
     Map<String, Integer> htNormals = new Hashtable<String, Integer>();
     int[] normalMap = new int[nNormals];
     for (int i = 0; i < nNormals; i++) {
@@ -138,7 +139,7 @@ abstract public class CartesianExporter extends Exporter {
         normalMap[i] = htNormals.get(s).intValue();
       } else {
         normalMap[i] = vNormals.size();
-        vNormals.add(s);
+        vNormals.addLast(s);
         htNormals.put(s, Integer.valueOf(normalMap[i]));
       }
     }

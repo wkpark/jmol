@@ -25,7 +25,7 @@
 
 package org.jmol.navigate;
 
-import java.util.List;
+
 
 import org.jmol.api.Event;
 import org.jmol.api.JmolNavigatorInterface;
@@ -34,6 +34,7 @@ import org.jmol.script.T;
 import org.jmol.thread.JmolThread;
 import org.jmol.util.Escape;
 import org.jmol.util.Hermite;
+import org.jmol.util.JmolList;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.P3;
 import org.jmol.util.V3;
@@ -91,13 +92,13 @@ public final class Navigator extends JmolThread implements
 
   private int iStep;
 
-  private List<Object[]> navigationList;
+  private JmolList<Object[]> navigationList;
 
   private int iList;
 
   private boolean isStep;
 
-  public void navigateList(JmolScriptEvaluator eval, List<Object[]> list) {
+  public void navigateList(JmolScriptEvaluator eval, JmolList<Object[]> list) {
     // needs testing in Jmol/Java
     // still not correct for JS
     setEval(eval);

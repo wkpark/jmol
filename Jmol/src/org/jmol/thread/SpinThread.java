@@ -25,9 +25,10 @@
 
 package org.jmol.thread;
 
-import java.util.List;
+
 import org.jmol.script.T;
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.viewer.JC;
@@ -40,7 +41,7 @@ public class SpinThread extends JmolThread {
    */
   private final TransformManager transformManager;
   private float endDegrees;
-  private List<P3> endPositions;
+  private JmolList<P3> endPositions;
   private float nDegrees;
   private BS bsAtoms;
   private boolean isNav;
@@ -55,7 +56,7 @@ public class SpinThread extends JmolThread {
     return isGesture;
   }
   
-  public SpinThread(TransformManager transformManager, Viewer viewer, float endDegrees, List<P3> endPositions, BS bsAtoms, boolean isNav, boolean isGesture) {
+  public SpinThread(TransformManager transformManager, Viewer viewer, float endDegrees, JmolList<P3> endPositions, BS bsAtoms, boolean isNav, boolean isGesture) {
     super();
     setViewer(viewer, "SpinThread");
     this.transformManager = transformManager;

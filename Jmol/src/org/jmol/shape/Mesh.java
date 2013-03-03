@@ -26,7 +26,7 @@ package org.jmol.shape;
 
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.script.T;
@@ -35,6 +35,7 @@ import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Measure;
@@ -58,7 +59,7 @@ public class Mesh extends MeshSurface {
   
   public short meshColix;
   public short[] normixes;
-  public List<P3[]> lineData;
+  public JmolList<P3[]> lineData;
   public String thisID;
   public boolean isValid = true;
   public String scriptCommand;
@@ -232,7 +233,7 @@ public class Mesh extends MeshSurface {
 
   //public Vector data1;
   //public Vector data2;
-  //public List<Object> xmlProperties;
+  //public JmolList<Object> xmlProperties;
   public boolean colorDensity;
   public Object cappingObject;
   public Object slabbingObject;
@@ -358,7 +359,7 @@ public class Mesh extends MeshSurface {
    * @param showWithinDistance2
    * @param isWithinNot
    */
-  public void setShowWithin(List<P3> showWithinPoints,
+  public void setShowWithin(JmolList<P3> showWithinPoints,
                             float showWithinDistance2, boolean isWithinNot) {
     if (showWithinPoints.size() == 0) {
       bsDisplay = (isWithinNot ? BSUtil.newBitSet2(0, vertexCount) : null);
@@ -370,7 +371,7 @@ public class Mesh extends MeshSurface {
         bsDisplay.set(i);
   }
 
-  public static boolean checkWithin(P3 pti, List<P3> withinPoints,
+  public static boolean checkWithin(P3 pti, JmolList<P3> withinPoints,
                                     float withinDistance2, boolean isWithinNot) {
     if (withinPoints.size() != 0)
       for (int i = withinPoints.size(); --i >= 0;)

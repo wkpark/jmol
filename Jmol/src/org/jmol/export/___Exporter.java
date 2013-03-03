@@ -34,11 +34,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -407,16 +407,16 @@ public abstract class ___Exporter {
    * @param htColixes
    * @return Vector and HashTable
    */
-  protected List<Short> getColorList(int i00, short[] colixes, int nVertices,
+  protected JmolList<Short> getColorList(int i00, short[] colixes, int nVertices,
                                 BS bsSelected, Map<Short, Integer> htColixes) {
     int nColix = 0;
-    List<Short> list = new ArrayList<Short>();
+    JmolList<Short> list = new  JmolList<Short>();
     boolean isAll = (bsSelected == null);
     int i0 = (isAll ? nVertices - 1 : bsSelected.nextSetBit(0));
     for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
       Short color = Short.valueOf(colixes[i]);
       if (!htColixes.containsKey(color)) {
-        list.add(color);
+        list.addLast(color);
         htColixes.put(color, Integer.valueOf(i00 + nColix++));
       }
     }
@@ -521,7 +521,7 @@ public abstract class ___Exporter {
     short[] colixes = (colorSolid ? null : meshSurface.vertexColixes);
     short[] polygonColixes = (colorSolid ? meshSurface.polygonColixes : null);
     Map<Short, Integer> htColixes = new Hashtable<Short, Integer>();
-    List<Short> colorList = null;
+    JmolList<Short> colorList = null;
     if (polygonColixes != null)
       colorList = getColorList(0, polygonColixes, nPolygons, bsPolygons,
           htColixes);
@@ -557,7 +557,7 @@ public abstract class ___Exporter {
                                 short[] colixes, int[][] indices,
                                 short[] polygonColixes,
                                 int nVertices, int nPolygons, int nFaces, BS bsPolygons,
-                                int faceVertexMax, short colix, List<Short> colorList,
+                                int faceVertexMax, short colix, JmolList<Short> colorList,
                                 Map<Short, Integer> htColixes, P3 offset) {
     // not implemented in _ObjExporter
   }

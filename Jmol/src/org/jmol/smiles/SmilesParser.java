@@ -25,8 +25,8 @@
 package org.jmol.smiles;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -645,7 +645,7 @@ public class SmilesParser {
           s = strMeasure.substring(pt2 + 1);
           float max = (s.length() == 0 ? Float.MAX_VALUE : Float.parseFloat(s));
           m = new SmilesMeasure(molecule, index, type, min, max, isNot);
-          molecule.measures.add(m);
+          molecule.measures.addLast(m);
           if (index > 0)
             htMeasures.put(id, m);
           else if (index == 0 && Logger.debugging)
@@ -709,8 +709,8 @@ public class SmilesParser {
   }
 
   private String parseVariables(String pattern) throws InvalidSmilesException {
-    List<String> keys = new ArrayList<String>();
-    List<String> values = new ArrayList<String>();
+    JmolList<String> keys = new  JmolList<String>();
+    JmolList<String> values = new  JmolList<String>();
     int index;
     int ipt = 0;
     int iptLast = -1;
@@ -724,8 +724,8 @@ public class SmilesParser {
       if (key.lastIndexOf('$') > 0 || key.indexOf(']') > 0)
         throw new InvalidSmilesException("Invalid variable name: " + key);
       String s = getSubPattern(pattern, ipt + 1, '\"');
-      keys.add("[" + key + "]");
-      values.add(s);
+      keys.addLast("[" + key + "]");
+      values.addLast(s);
       ipt += s.length() + 2;
       ipt = skipTo(pattern, ipt, ';');
       iptLast = ++ipt;

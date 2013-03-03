@@ -118,7 +118,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -137,6 +137,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
@@ -884,7 +885,7 @@ public class SurfaceGenerator {
     }
 
     if ("functionXY" == propertyName) {
-      params.setFunctionXY((List<Object>) value);
+      params.setFunctionXY((JmolList<Object>) value);
       if (params.isContoured)
         volumeData.setPlaneParameters(Point4f.new4(0, 0, 1, 0)); // xy plane
       // through
@@ -896,7 +897,7 @@ public class SurfaceGenerator {
     }
 
     if ("functionXYZ" == propertyName) {
-      params.setFunctionXYZ((List<Object>) value);
+      params.setFunctionXYZ((JmolList<Object>) value);
       processState();
       return true;
     }
@@ -1218,7 +1219,7 @@ public class SurfaceGenerator {
     surfaceReader = null;
   }
 
-  public List<Object[]> getSlabInfo() {
+  public JmolList<Object[]> getSlabInfo() {
     return params.slabInfo;
   }
   

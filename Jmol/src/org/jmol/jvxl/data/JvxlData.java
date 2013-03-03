@@ -63,11 +63,12 @@ package org.jmol.jvxl.data;
 
 
 
-import java.util.List;
+
 import java.util.Map;
 
 
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Point4f;
 import org.jmol.util.SB;
@@ -133,7 +134,7 @@ public class JvxlData {
   // sometimes it comes from the file or marching squares
   // directly. 
   
-  public List<Object>[] vContours;
+  public JmolList<Object>[] vContours;
   public short[] contourColixes;
   public String contourColors;
   public float[] contourValues;

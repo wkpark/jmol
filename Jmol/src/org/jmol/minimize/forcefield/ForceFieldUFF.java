@@ -25,9 +25,9 @@
 package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.minimize.Minimizer;
@@ -40,7 +40,7 @@ import org.jmol.util.Parser;
 
 public class ForceFieldUFF extends ForceField {
 
-  private static List<String[]> atomTypes;
+  private static JmolList<String[]> atomTypes;
   private static Map<Object, FFParam> ffParams;
   private BS bsAromatic;
   
@@ -255,8 +255,8 @@ public class ForceFieldUFF extends ForceField {
     return temp;
   }
 
-  private List<String[]> getAtomTypes() {
-    List<String[]> types = new ArrayList<String[]>(); //!< external atom type rules
+  private JmolList<String[]> getAtomTypes() {
+    JmolList<String[]> types = new  JmolList<String[]>(); //!< external atom type rules
     String fileName = "UFF.txt";
     try {
       BufferedReader br = getBufferedReader(fileName);
@@ -265,7 +265,7 @@ public class ForceFieldUFF extends ForceField {
         if (line.length() > 4 && line.substring(0, 4).equals("atom")) {
           String[] vs = Parser.getTokens(line);
           String[] info = new String[] { vs[1], vs[2] };
-          types.add(info);
+          types.addLast(info);
         }
       }
 

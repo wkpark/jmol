@@ -24,9 +24,9 @@
 
 package org.jmol.jvxl.readers;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -146,9 +146,9 @@ class IsoSolventReader extends AtomDataReader {
   private BS bsSurfacePoints, bsSurfaceDone;
   private BS[] bsLocale;
   private Map<String, Edge> htEdges;
-  private List<Edge> vEdges;
+  private JmolList<Edge> vEdges;
   private Edge[] aEdges;
-  private List<Face> vFaces;
+  private JmolList<Face> vFaces;
   protected V3 vTemp = new V3();
   protected Point4f plane = new Point4f();
 
@@ -248,7 +248,7 @@ class IsoSolventReader extends AtomDataReader {
     }
     unsetVoxelData();
     // apply cap here
-    List<Object[]> info = params.slabInfo;
+    JmolList<Object[]> info = params.slabInfo;
     if (info != null)
       for (int i = 0; i < info.size(); i++)
         if (((Boolean) info.get(i)[2]).booleanValue()
@@ -695,7 +695,7 @@ class IsoSolventReader extends AtomDataReader {
       // PHASE I: Construction of the surface edge and face data
 
       // 1) -- same as MSMS -- get edges
-      vEdges = new ArrayList<Edge>();
+      vEdges = new  JmolList<Edge>();
       bsLocale = new BS[myAtomCount];
       htEdges = new Hashtable<String, Edge>();
       getEdges();
@@ -703,7 +703,7 @@ class IsoSolventReader extends AtomDataReader {
 
       // 2) -- as in MSMS BUT get two faces for each atom triple
       // 3) -- check for interference of solvent position with other atoms
-      vFaces = new ArrayList<Face>();
+      vFaces = new  JmolList<Face>();
       getFaces();
       Logger.info(vFaces.size() + " faces");
       vEdges = null;
@@ -778,7 +778,7 @@ class IsoSolventReader extends AtomDataReader {
         if (dAB >= rA + rB)
           continue;
         Edge edge = new Edge(iatomA, iatomB);
-        vEdges.add(edge);
+        vEdges.addLast(edge);
         bsLocale[iatomA].set(iatomB);
         bsLocale[iatomB].set(iatomA);
         htEdges.put(edge.toString(), edge);
@@ -796,14 +796,14 @@ class IsoSolventReader extends AtomDataReader {
       this.ib = Math.max(ia, ib);
     }
 
-//    private List<Face> aFaces;
+//    private JmolList<Face> aFaces;
     void addFace(Face f) {
       if (f == null) {
         nInvalid++;
         return;
       }
   //    if (aFaces == null)
-    //    aFaces = new ArrayList<Face>();
+    //    aFaces = new  JmolList<Face>();
       //aFaces.add(f);
       nFaces++;
     }
@@ -901,11 +901,11 @@ class IsoSolventReader extends AtomDataReader {
           Face f;
           boolean isOK = false;
           if (validateFace(f = new Face(ia, ib, ic, edge, ptS1))) {
-            vFaces.add(f);
+            vFaces.addLast(f);
             isOK = true;
           }
           if (validateFace(f = new Face(ia, ib, ic, edge, ptS2))) {
-            vFaces.add(f);
+            vFaces.addLast(f);
             isOK = true;
           }
           if (isOK) {
@@ -1140,7 +1140,7 @@ class IsoSolventReader extends AtomDataReader {
   @Override
   protected void unsetVoxelData() {
     if (!havePlane) {
-      super.unsetVoxelData();
+      unsetVoxelData2();
       return;
     } 
     

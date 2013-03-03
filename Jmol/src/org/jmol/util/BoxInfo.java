@@ -26,9 +26,9 @@
 package org.jmol.util;
 
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -78,9 +78,9 @@ public class BoxInfo {
    * @return    a set of points
    * 
    */
-  public List<Object> intersectPlane(Point4f plane, float scale, int flags) {
-    List<Object> v = new ArrayList<Object>();
-    v.add(getCanonicalCopy(scale));
+  public JmolList<Object> intersectPlane(Point4f plane, float scale, int flags) {
+    JmolList<Object> v = new  JmolList<Object>();
+    v.addLast(getCanonicalCopy(scale));
     return TriangleData.intersectPlane(plane, v, flags);
   }
 

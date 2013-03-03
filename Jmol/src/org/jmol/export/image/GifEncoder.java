@@ -43,7 +43,7 @@
  */
 package org.jmol.export.image;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -133,7 +133,7 @@ public class GifEncoder extends ImageEncoder {
     }
   }
 
-  static class ColorVector extends ArrayList<ColorItem> {
+  static class ColorVector extends JmolList<ColorItem> {
     void sort() {
       CountComparator comparator = new CountComparator();
       Collections.sort(this, comparator);
@@ -228,7 +228,7 @@ public class GifEncoder extends ImageEncoder {
           item = new ColorItem(rgb, 1, index, isTransparent);
           ++index;
           ciHash.put(srgb, item);
-          colorVector.add(item);
+          colorVector.addLast(item);
         } else
           ++item.count;
       }

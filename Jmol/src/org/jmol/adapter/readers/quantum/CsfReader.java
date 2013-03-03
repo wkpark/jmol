@@ -27,9 +27,9 @@ import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.util.ArrayUtil;
@@ -637,8 +637,8 @@ public class CsfReader extends MopacSlaterReader {
       }
     }
     if (isGaussian) {
-      List<int[]> sdata = new ArrayList<int[]>();
-      List<float[]> gdata = new ArrayList<float[]>();
+      JmolList<int[]> sdata = new  JmolList<int[]>();
+      JmolList<float[]> gdata = new  JmolList<float[]>();
       int iShell = 0;
       int gaussianCount = 0;
       for (int ipt = 0; ipt < nGaussians; ipt++) {
@@ -655,10 +655,10 @@ public class CsfReader extends MopacSlaterReader {
           }
           slater[2] = gaussianCount; //pointer
           slater[3] = nZ;
-          sdata.add(slater);
+          sdata.addLast(slater);
           gaussianCount += nZ;
           for (int i = 0; i < nZ; i++)
-            gdata.add(new float[] { zetas[ipt][i], contractionCoefs[ipt][i] });
+            gdata.addLast(new float[] { zetas[ipt][i], contractionCoefs[ipt][i] });
         }
       }
       float[][] garray = ArrayUtil.newFloat2(gaussianCount);

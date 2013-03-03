@@ -23,12 +23,13 @@
  */
 package org.jmol.viewer;
 
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.thread.AnimationThread;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.JmolList;
 
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.modelset.ModelSet;
@@ -108,7 +109,7 @@ public class AnimationManager {
     if (iState < 0)
       return;
     setModelIndex(iState, true);
-    List<BS> states = (List<BS>) movie.get("states");
+    JmolList<BS> states = (JmolList<BS>) movie.get("states");
     if (states == null || iState < 0 || iState >= states.size())
       return;
     BS bs = states.get(iState);
@@ -122,7 +123,7 @@ public class AnimationManager {
 
   @SuppressWarnings("unchecked")
   private int getMovieState(int frameIndex) {
-    List<Object> frames = (List<Object>) movie.get("frames");
+    JmolList<Object> frames = (JmolList<Object>) movie.get("frames");
     //System.out.println(frames);
     return (frames == null || frameIndex >= frames.size() ? -1
         : ((Integer) frames.get(frameIndex)).intValue());

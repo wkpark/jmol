@@ -32,7 +32,7 @@ import org.jmol.util.SB;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -251,7 +251,7 @@ public class GenNBOReader extends MOReader {
     }
 
     // read basis functions
-    shells = new ArrayList<int[]>();
+    shells = new  JmolList<int[]>();
     gaussians = ArrayUtil.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++)
       gaussians[i] = new float[6];
@@ -301,7 +301,7 @@ public class GenNBOReader extends MOReader {
       }
       slater[2] = parseIntStr(tokens[2]) - 1; // gaussian list pointer
       slater[3] = parseIntStr(tokens[3]);     // number of gaussians
-      shells.add(slater);
+      shells.addLast(slater);
     }
 
     // get alphas and exponents

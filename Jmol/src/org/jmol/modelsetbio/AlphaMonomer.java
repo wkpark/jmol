@@ -45,22 +45,20 @@ public class AlphaMonomer extends Monomer {
     validateAndAllocateA(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex,
                         int[] specialAtomIndexes) {
-    if (firstIndex != lastIndex ||
-        specialAtomIndexes[JC.ATOMID_ALPHA_CARBON] != firstIndex)
-      return null;
-    return new AlphaMonomer(chain, group3, seqcode,
-                            firstIndex, lastIndex, alphaOffsets);
+    return (firstIndex != lastIndex ||
+        specialAtomIndexes[JC.ATOMID_ALPHA_CARBON] != firstIndex ? null : 
+          new AlphaMonomer().set2(chain, group3, seqcode,
+                            firstIndex, lastIndex, alphaOffsets));
   }
   
   ////////////////////////////////////////////////////////////////
 
-  AlphaMonomer(Chain chain, String group3, int seqcode,
-               int firstAtomIndex, int lastAtomIndex,
-               byte[] offsets) {
-    super(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, offsets);
-  }
-
+  /**
+   * @j2sIgnoreSuperConstructor
+   * 
+   */
+  protected AlphaMonomer () {}
+  
   boolean isAlphaMonomer() { return true; }
 
   protected ProteinStructure proteinStructure;

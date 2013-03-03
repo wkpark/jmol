@@ -23,8 +23,8 @@
  */
 package org.jmol.modelset;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 
 import org.jmol.api.JmolMeasurementClient;
 import org.jmol.atomdata.RadiusData;
@@ -43,9 +43,9 @@ public class MeasurementData implements JmolMeasurementClient {
    */
   
   private JmolMeasurementClient client;
-  private List<String> measurementStrings;
+  private JmolList<String> measurementStrings;
 
-  public List<Object> points;
+  public JmolList<Object> points;
   public boolean mustBeConnected;
   public boolean mustNotBeConnected;
   public TickInfo tickInfo;
@@ -62,7 +62,7 @@ public class MeasurementData implements JmolMeasurementClient {
   private float[] minArray;
   private ModelSet modelSet;
   
-  public MeasurementData(Viewer viewer, List<Object> points) {
+  public MeasurementData(Viewer viewer, JmolList<Object> points) {
     this.viewer = viewer;
     this.points = points;
   }
@@ -119,7 +119,7 @@ public class MeasurementData implements JmolMeasurementClient {
       return;
     }
     
-    measurementStrings.add(m.getStringUsing(viewer, strFormat, units));
+    measurementStrings.addLast(m.getStringUsing(viewer, strFormat, units));
    
   }
 
@@ -140,7 +140,7 @@ public class MeasurementData implements JmolMeasurementClient {
       return minArray;      
     }
       
-    measurementStrings = new ArrayList<String>();
+    measurementStrings = new  JmolList<String>();
     define(null, modelSet);
     return measurementStrings;
   }

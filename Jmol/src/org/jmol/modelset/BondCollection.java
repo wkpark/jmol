@@ -241,7 +241,7 @@ abstract public class BondCollection extends AtomCollection {
         energy)).index;
   }
 
-  protected static short getBondOrder(float bondingRadiusA,
+  protected static short getBondOrderFull(float bondingRadiusA,
                              float bondingRadiusB, float distance2,
                              float minBondDistance2, float bondTolerance) {
     if (bondingRadiusA == 0 || bondingRadiusB == 0 || distance2 < minBondDistance2)

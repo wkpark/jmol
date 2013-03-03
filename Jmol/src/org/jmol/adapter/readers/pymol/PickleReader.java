@@ -1,8 +1,8 @@
 package org.jmol.adapter.readers.pymol;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.JmolDocument;
@@ -19,9 +19,9 @@ import org.jmol.viewer.Viewer;
 class PickleReader {
 
   private JmolDocument binaryDoc;
-  private List<Object> list = new ArrayList<Object>();
-  private List<Integer> marks = new ArrayList<Integer>();
-  private List<Object> build = new ArrayList<Object>();
+  private JmolList<Object> list = new  JmolList<Object>();
+  private JmolList<Integer> marks = new  JmolList<Integer>();
+  private JmolList<Object> build = new  JmolList<Object>();
   private boolean logging;
   private Viewer viewer;
 
@@ -89,7 +89,7 @@ class PickleReader {
     Object o;
     byte[] a;
     Map<String, Object> map;
-    List<Object> l;
+    JmolList<Object> l;
     boolean going = true;
 
     while (going) {
@@ -100,11 +100,11 @@ class PickleReader {
         break;
       case APPEND:
         o = pop();
-        ((List<Object>) peek()).add(o);
+        ((JmolList<Object>) peek()).add(o);
         break;
       case APPENDS:
         l = getObjects(getMark());
-        ((List<Object>) peek()).addAll(l);
+        ((JmolList<Object>) peek()).addAll(l);
         break;
       case BINFLOAT:
         d = binaryDoc.readDouble();
@@ -152,7 +152,7 @@ class PickleReader {
         push(s);
         break;
       case EMPTY_LIST:
-        push(new ArrayList<Object>());
+        push(new  JmolList<Object>());
         break;
       case GLOBAL:
         module = readString();
@@ -161,14 +161,14 @@ class PickleReader {
         break;
       case BUILD:
         o = pop();
-        build.add(o);
+        build.addLast(o);
         //System.out.println("build");
         break;
       case MARK:
         i = list.size();
         if (logging)
           log("\n " + Integer.toHexString((int) binaryDoc.getPosition()) + " [");
-        marks.add(Integer.valueOf(i));
+        marks.addLast(Integer.valueOf(i));
         break;
       case NONE:
         push(null);
@@ -302,11 +302,11 @@ class PickleReader {
     return (Map<String, Object>) list.remove(0);
   }
   
-  private List<Object> getObjects(int mark) {
+  private JmolList<Object> getObjects(int mark) {
     int n = list.size() - mark;
-    List<Object> args = new ArrayList<Object>();
+    JmolList<Object> args = new  JmolList<Object>();
     for (int j = 0; j < n; j++)
-      args.add(null);
+      args.addLast(null);
     for (int j = n, i = list.size(); --i >= mark;)
       args.set(--j, list.remove(i));
     return args;
@@ -336,7 +336,7 @@ class PickleReader {
     if (logging
         && (o instanceof String || o instanceof Double || o instanceof Integer))
       log((o instanceof String ? "'" + o + "'" : o) + ", ");
-    list.add(o);
+    list.addLast(o);
   }
 
   private Object peek() {

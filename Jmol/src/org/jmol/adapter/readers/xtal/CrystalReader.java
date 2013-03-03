@@ -40,9 +40,9 @@ import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
-import java.util.List;
+
 
 
 
@@ -111,7 +111,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private int[] atomFrag;
   private int[] primitiveToIndex;
   private float[] nuclearCharges;
-  private List<String> vInputCoords;
+  private JmolList<String> vInputCoords;
 
   private Double energy;
   private P3 ptOriginShift = new P3();
@@ -720,9 +720,9 @@ public class CrystalReader extends AtomSetCollectionReader {
     // we only store them, because we may want to delete some
     readLine();
     readLine();
-    vInputCoords = new ArrayList<String>();
+    vInputCoords = new  JmolList<String>();
     while (readLine() != null && line.length() > 0)
-      vInputCoords.add(line);
+      vInputCoords.addLast(line);
   }
 
   private void processInputCoords() throws Exception {
@@ -894,7 +894,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     // This line is always there
     boolean haveIntensities = (line.indexOf("INTENS") >= 0);
     readLine();
-    List<String[]> vData = new ArrayList<String[]>();
+    JmolList<String[]> vData = new  JmolList<String[]>();
     int freqAtomCount = atomCount;
     while (readLine() != null && line.length() > 0) {
       int i0 = parseIntRange(line, 1, 5);
@@ -912,7 +912,7 @@ public class CrystalReader extends AtomSetCollectionReader {
 
       String[] data = new String[] { irrep, intens, irActivity, ramanActivity };
       for (int i = i0; i <= i1; i++)
-        vData.add(data);
+        vData.addLast(data);
     }
     discardLinesUntilContains(isLongMode ? "LO MODES FOR IRREP"
         : isVersion3 ? "THE CORRESPONDING MODES"

@@ -59,21 +59,26 @@ public class AminoMonomer extends AlphaMonomer {
 //    ~JmolConstants.ATOMID_SG,               // 6 CYS SG
   };
 
-  static Monomer
-    validateAndAllocate(Chain chain, String group3, int seqcode,
-                        int firstAtomIndex, int lastAtomIndex,
-                        int[] specialAtomIndexes, Atom[] atoms) {
+  /**
+   * @j2sIgnoreSuperConstructor
+   * 
+   */
+  protected AminoMonomer() {
+  }
+
+  static Monomer validateAndAllocate(Chain chain, String group3, int seqcode,
+                                     int firstAtomIndex, int lastAtomIndex,
+                                     int[] specialAtomIndexes, Atom[] atoms) {
     byte[] offsets = scanForOffsets(firstAtomIndex, specialAtomIndexes,
-                                    interestingAminoAtomIDs);
+        interestingAminoAtomIDs);
     if (offsets == null)
       return null;
     checkOptional(offsets, O, firstAtomIndex, specialAtomIndexes[JC.ATOMID_O1]);
-    if (atoms[firstAtomIndex].isHetero() && !isBondedCorrectly(firstAtomIndex, offsets, atoms)) 
+    if (atoms[firstAtomIndex].isHetero()
+        && !isBondedCorrectly(firstAtomIndex, offsets, atoms))
       return null;
-    AminoMonomer aminoMonomer =
-      new AminoMonomer(chain, group3, seqcode,
-                       firstAtomIndex, lastAtomIndex, offsets);
-    return aminoMonomer;
+    return new AminoMonomer().set2(chain, group3, seqcode, firstAtomIndex,
+        lastAtomIndex, offsets);
   }
 
   private static boolean isBondedCorrectlyRange(int offset1, int offset2,
@@ -98,13 +103,6 @@ public class AminoMonomer extends AlphaMonomer {
   }
   
   ////////////////////////////////////////////////////////////////
-
-  private AminoMonomer(Chain chain, String group3, int seqcode,
-               int firstAtomIndex, int lastAtomIndex,
-               byte[] offsets) {
-    super(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, offsets);
-  }
 
   boolean isAminoMonomer() { return true; }
 

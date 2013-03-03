@@ -23,13 +23,13 @@
  */
 package org.jmol.viewer;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -251,8 +251,8 @@ public class PropertyManager implements JmolPropertyManager {
     switch (arg.tok) {
     case T.integer:
       pt = arg.asInt() - 1; //one-based, as for array selectors
-      if (property instanceof List<?>) {
-        List<Object> v = (List<Object>) property;
+      if (property instanceof JmolList<?>) {
+        JmolList<Object> v = (JmolList<Object>) property;
         if (pt < 0)
           pt += v.size();
         if (pt >= 0 && pt < v.size())
@@ -326,7 +326,7 @@ public class PropertyManager implements JmolPropertyManager {
       if (property instanceof Map<?, ?>) {
         Map<String, Object> h = (Map<String, Object>) property;
         if (key.equalsIgnoreCase("keys")) {
-          List<Object> keys = new ArrayList<Object>();
+          JmolList<Object> keys = new  JmolList<Object>();
           Iterator<String> e = h.keySet().iterator();
           while (e.hasNext())
             keys.add(e.next());
@@ -345,10 +345,10 @@ public class PropertyManager implements JmolPropertyManager {
           return extractProperty(h.get(key), args, ptr);
         return "";
       }
-      if (property instanceof List<?>) {
+      if (property instanceof JmolList<?>) {
         // drill down into vectors for this key
-        List<Object> v = (List<Object>) property;
-        List<Object> v2 = new ArrayList<Object>();
+        JmolList<Object> v = (JmolList<Object>) property;
+        JmolList<Object> v2 = new  JmolList<Object>();
         ptr--;
         for (pt = 0; pt < v.size(); pt++) {
           Object o = v.get(pt);
@@ -557,13 +557,13 @@ public class PropertyManager implements JmolPropertyManager {
 
   /// info ///
 
-  public List<Map<String, Object>> getMoleculeInfo(ModelSet modelSet,
+  public JmolList<Map<String, Object>> getMoleculeInfo(ModelSet modelSet,
                                                    Object atomExpression) {
     BS bsAtoms = viewer.getAtomBitSet(atomExpression);
     if (modelSet.moleculeCount == 0) {
       modelSet.getMolecules();
     }
-    List<Map<String, Object>> V = new ArrayList<Map<String, Object>>();
+    JmolList<Map<String, Object>> V = new  JmolList<Map<String, Object>>();
     BS bsTemp = new BS();
     for (int i = 0; i < modelSet.moleculeCount; i++) {
       bsTemp = BSUtil.copy(bsAtoms);
@@ -602,7 +602,7 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("modelCountSelected", Integer.valueOf(BSUtil
         .cardinalityOf(bsModels)));
     info.put("modelsSelected", bsModels);
-    List<Map<String, Object>> vModels = new ArrayList<Map<String, Object>>();
+    JmolList<Map<String, Object>> vModels = new  JmolList<Map<String, Object>>();
     m.getMolecules();
 
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
@@ -647,7 +647,7 @@ public class PropertyManager implements JmolPropertyManager {
     BS bsAtoms = viewer.getAtomBitSet(atomExpression);
     BS bsSolvent = viewer.getAtomBitSet("solvent");
     Map<String, Object> info = new Hashtable<String, Object>();
-    List<Map<String, Object>> ligands = new ArrayList<Map<String, Object>>();
+    JmolList<Map<String, Object>> ligands = new  JmolList<Map<String, Object>>();
     info.put("ligands", ligands);
     ModelSet ms = viewer.modelSet;
     BS bsExclude = BSUtil.copyInvert(bsAtoms, ms.atomCount);
@@ -1135,8 +1135,8 @@ public class PropertyManager implements JmolPropertyManager {
     return sb.toString();
   }
 
-  public List<Map<String, Object>> getAllAtomInfo(BS bs) {
-    List<Map<String, Object>> V = new ArrayList<Map<String, Object>>();
+  public JmolList<Map<String, Object>> getAllAtomInfo(BS bs) {
+    JmolList<Map<String, Object>> V = new  JmolList<Map<String, Object>>();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       V.add(getAtomInfoLong(i));
     }
@@ -1212,8 +1212,8 @@ public class PropertyManager implements JmolPropertyManager {
     return info;
   }
 
-  public List<Map<String, Object>> getAllBondInfo(BS bs) {
-    List<Map<String, Object>> v = new ArrayList<Map<String, Object>>();
+  public JmolList<Map<String, Object>> getAllBondInfo(BS bs) {
+    JmolList<Map<String, Object>> v = new  JmolList<Map<String, Object>>();
     ModelSet ms = viewer.modelSet;
     int bondCount = ms.bondCount;
     if (bs instanceof BondSet) {
@@ -1244,8 +1244,8 @@ public class PropertyManager implements JmolPropertyManager {
     getAtomIdentityInfo(atom2.index, infoB);
     info.put("atom1", infoA);
     info.put("atom2", infoB);
-    info.put("order", Float.valueOf(JmolEdge
-        .getBondOrderNumberFromOrder(bond.order)));
+    info.put("order", Float.valueOf(Parser.fVal(JmolEdge
+        .getBondOrderNumberFromOrder(bond.order))));
     info.put("radius", Float.valueOf((float) (bond.mad / 2000.)));
     info.put("length_Ang", Float.valueOf(atom1.distance(atom2)));
     info.put("visible", Boolean.valueOf(bond.shapeVisibilityFlags != 0));
@@ -1259,13 +1259,13 @@ public class PropertyManager implements JmolPropertyManager {
     return info;
   }
 
-  public Map<String, List<Map<String, Object>>> getAllChainInfo(BS bs) {
-    Map<String, List<Map<String, Object>>> finalInfo = new Hashtable<String, List<Map<String, Object>>>();
-    List<Map<String, Object>> modelVector = new ArrayList<Map<String, Object>>();
+  public Map<String, JmolList<Map<String, Object>>> getAllChainInfo(BS bs) {
+    Map<String, JmolList<Map<String, Object>>> finalInfo = new Hashtable<String, JmolList<Map<String, Object>>>();
+    JmolList<Map<String, Object>> modelVector = new  JmolList<Map<String, Object>>();
     int modelCount = viewer.modelSet.modelCount;
     for (int i = 0; i < modelCount; ++i) {
       Map<String, Object> modelInfo = new Hashtable<String, Object>();
-      List<Map<String, List<Map<String, Object>>>> info = getChainInfo(i, bs);
+      JmolList<Map<String, JmolList<Map<String, Object>>>> info = getChainInfo(i, bs);
       if (info.size() > 0) {
         modelInfo.put("modelIndex", Integer.valueOf(i));
         modelInfo.put("chains", info);
@@ -1276,17 +1276,17 @@ public class PropertyManager implements JmolPropertyManager {
     return finalInfo;
   }
 
-  private List<Map<String, List<Map<String, Object>>>> getChainInfo(
+  private JmolList<Map<String, JmolList<Map<String, Object>>>> getChainInfo(
                                                                     int modelIndex,
                                                                     BS bs) {
     Model model = viewer.modelSet.models[modelIndex];
     int nChains = model.getChainCount(true);
-    List<Map<String, List<Map<String, Object>>>> infoChains = new ArrayList<Map<String, List<Map<String, Object>>>>();
+    JmolList<Map<String, JmolList<Map<String, Object>>>> infoChains = new  JmolList<Map<String, JmolList<Map<String, Object>>>>();
     for (int i = 0; i < nChains; i++) {
       Chain chain = model.getChainAt(i);
-      List<Map<String, Object>> infoChain = new ArrayList<Map<String, Object>>();
+      JmolList<Map<String, Object>> infoChain = new  JmolList<Map<String, Object>>();
       int nGroups = chain.getGroupCount();
-      Map<String, List<Map<String, Object>>> arrayName = new Hashtable<String, List<Map<String, Object>>>();
+      Map<String, JmolList<Map<String, Object>>> arrayName = new Hashtable<String, JmolList<Map<String, Object>>>();
       for (int igroup = 0; igroup < nGroups; igroup++) {
         Group group = chain.getGroup(igroup);
         if (bs.get(group.firstAtomIndex))
@@ -1300,9 +1300,9 @@ public class PropertyManager implements JmolPropertyManager {
     return infoChains;
   }
 
-  public Map<String, List<Map<String, Object>>> getAllPolymerInfo(BS bs) {
-    Map<String, List<Map<String, Object>>> finalInfo = new Hashtable<String, List<Map<String, Object>>>();
-    List<Map<String, Object>> modelVector = new ArrayList<Map<String, Object>>();
+  public Map<String, JmolList<Map<String, Object>>> getAllPolymerInfo(BS bs) {
+    Map<String, JmolList<Map<String, Object>>> finalInfo = new Hashtable<String, JmolList<Map<String, Object>>>();
+    JmolList<Map<String, Object>> modelVector = new  JmolList<Map<String, Object>>();
     int modelCount = viewer.modelSet.modelCount;
     Model[] models = viewer.modelSet.models;
     for (int i = 0; i < modelCount; ++i)
@@ -1314,7 +1314,7 @@ public class PropertyManager implements JmolPropertyManager {
 
   private String getBasePairInfo(BS bs) {
     SB info = new SB();
-    List<Bond> vHBonds = new ArrayList<Bond>();
+    JmolList<Bond> vHBonds = new  JmolList<Bond>();
     viewer.modelSet.calcRasmolHydrogenBonds(bs, bs, vHBonds, true, 1, false, null);
     for (int i = vHBonds.size(); --i >= 0;) {
       Bond b = vHBonds.get(i);

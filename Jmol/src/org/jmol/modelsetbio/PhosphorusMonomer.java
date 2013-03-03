@@ -46,25 +46,28 @@ public class PhosphorusMonomer extends Monomer {
   @Override
   public final boolean isNucleic() {return true;}
 
-  static Monomer
-    validateAndAllocateP(Chain chain, String group3, int seqcode,
-                        int firstIndex, int lastIndex,
-                        int[] specialAtomIndexes) {
+  /**
+   * @j2sIgnoreSuperConstructor
+   * 
+   */
+  protected PhosphorusMonomer() {}
+  
+  static Monomer validateAndAllocateP(Chain chain, String group3, int seqcode,
+                                      int firstIndex, int lastIndex,
+                                      int[] specialAtomIndexes) {
     //Logger.debug("PhosphorusMonomer.validateAndAllocate");
-    if (firstIndex != lastIndex ||
-        specialAtomIndexes[JC.ATOMID_NUCLEIC_PHOSPHORUS]
-        != firstIndex)
-      return null;
-    return new PhosphorusMonomer(chain, group3, seqcode,
-                            firstIndex, lastIndex, phosphorusOffsets);
+    return (firstIndex != lastIndex
+        || specialAtomIndexes[JC.ATOMID_NUCLEIC_PHOSPHORUS] != firstIndex ? null
+        : new PhosphorusMonomer().set3(chain, group3, seqcode, firstIndex,
+            lastIndex, phosphorusOffsets));
   }
   
   ////////////////////////////////////////////////////////////////
 
-  protected PhosphorusMonomer(Chain chain, String group3, int seqcode,
+  protected PhosphorusMonomer set3(Chain chain, String group3, int seqcode,
                int firstAtomIndex, int lastAtomIndex,
                byte[] offsets) {
-    super(chain, group3, seqcode,
+    set2(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
     if (group3.indexOf('T') >= 0)
       chain.isDna = true;
@@ -72,6 +75,7 @@ public class PhosphorusMonomer extends Monomer {
         chain.isRna = true;
     isPurine = (group3.indexOf('A') + group3.indexOf('G') + group3.indexOf('I') > -3);
     isPyrimidine = (group3.indexOf('T') + group3.indexOf('C') + group3.indexOf('U') > -3);
+    return this;
   }
 
   Atom getP() {

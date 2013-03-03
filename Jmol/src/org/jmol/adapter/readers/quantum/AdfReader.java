@@ -31,9 +31,9 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 //import org.jmol.util.Escape;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 /**
@@ -69,7 +69,7 @@ public class AdfReader extends SlaterReader {
 
   
   private Map<String, SymmetryData> htSymmetries;
-  private List<SymmetryData> vSymmetries;
+  private JmolList<SymmetryData> vSymmetries;
   private String energy = null;
   private int nXX = 0;
   private String symLine;
@@ -231,7 +231,7 @@ OR
  B1
  B2
      */
-    vSymmetries = new ArrayList<SymmetryData>();
+    vSymmetries = new  JmolList<SymmetryData>();
     htSymmetries = new Hashtable<String, SymmetryData>();
     readLine();
     int index = 0;
@@ -242,7 +242,7 @@ OR
     for (int i = 0; i < tokens.length; i++) {
       SymmetryData sd = new SymmetryData(index++, tokens[i]);
       htSymmetries.put(tokens[i], sd);
-      vSymmetries.add(sd);
+      vSymmetries.addLast(sd);
     }
   }
 

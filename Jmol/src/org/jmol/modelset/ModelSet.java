@@ -47,9 +47,9 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -503,7 +503,7 @@ import java.util.Map;
                                   BS bsExclude) {
     short mad = viewer.getMadBond();
     for (int i = baseModelIndex; i < modelCount; i++) {
-      List<int[]> vConnect = (List<int[]>) getModelAuxiliaryInfoValue(i, "PDB_CONECT_bonds");
+      JmolList<int[]> vConnect = (JmolList<int[]>) getModelAuxiliaryInfoValue(i, "PDB_CONECT_bonds");
       if (vConnect == null)
         continue;
       int nConnect = vConnect.size();
@@ -731,7 +731,7 @@ import java.util.Map;
    * @param pts
    * @return            BitSet of new atoms
    */
-  public BS addHydrogens(List<Atom> vConnections, P3[] pts) {
+  public BS addHydrogens(JmolList<Atom> vConnections, P3[] pts) {
     int modelIndex = modelCount - 1;
     BS bs = new BS();
     if (isTrajectory(modelIndex) || models[modelIndex].getGroupCount() > 1) {
@@ -811,14 +811,14 @@ import java.util.Map;
       if (bonds == null)
         return;
       BS bsAtoms = new BS();
-      List<P3> vNot = new ArrayList<P3>();
+      JmolList<P3> vNot = new  JmolList<P3>();
       BS bsModel = viewer.getModelUndeletedAtomsBitSet(thisAtom.modelIndex);
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);
         if (invAtoms.get(a.index)) {
             bsAtoms.or(JmolMolecule.getBranchBitSet(atoms, a.index, bsModel, null, iAtom, true, true));
         } else {
-          vNot.add(a);
+          vNot.addLast(a);
         }
       }
       if (vNot.size() == 0)

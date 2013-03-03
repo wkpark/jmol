@@ -25,10 +25,10 @@
 
 package org.jmol.shapesurface;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -114,15 +114,15 @@ public class MolecularOrbital extends Isosurface {
       } else {
         Object[] slabInfo = (Object[]) value;
         int tok = ((Integer) slabInfo[0]).intValue();
-        moSlab = (List<Object>) thisModel.get("slab");
+        moSlab = (JmolList<Object>) thisModel.get("slab");
         if (moSlab == null)
-          thisModel.put("slab", moSlab = new ArrayList<Object>());
+          thisModel.put("slab", moSlab = new  JmolList<Object>());
         if (tok == T.none) {
           moSlab = null;
           thisModel.remove("slab");
           return;
         }
-        moSlab.add(value);
+        moSlab.addLast(value);
       }
       return;
     }
@@ -328,7 +328,7 @@ public class MolecularOrbital extends Isosurface {
       return moLinearCombination;
     if (propertyName == "showMO") {
       SB str = new SB();
-      List<Map<String, Object>> mos = (List<Map<String, Object>>) (sg.getMoData().get("mos"));
+      JmolList<Map<String, Object>> mos = (JmolList<Map<String, Object>>) (sg.getMoData().get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       int thisMO = param;
       int currentMO = moNumber;
@@ -377,7 +377,7 @@ public class MolecularOrbital extends Isosurface {
     //sg = null; // not Molecular Orbitals
   }
 
-  private List<Object> moSlab;
+  private JmolList<Object> moSlab;
   private Integer moSlabValue;
   
   @SuppressWarnings("unchecked")
@@ -404,7 +404,7 @@ public class MolecularOrbital extends Isosurface {
     moMonteCarloCount = (Integer) thisModel.get("monteCarloCount");
     moRandomSeed = (Integer) thisModel.get("randomSeed");
     moSlabValue = (Integer)  thisModel.get("slabValue");
-    moSlab = (List<Object>) thisModel.get("slab");
+    moSlab = (JmolList<Object>) thisModel.get("slab");
     if (moRandomSeed == null)
       thisModel.put("randomSeed", moRandomSeed = Integer.valueOf(
           ((int) -System.currentTimeMillis())% 10000));

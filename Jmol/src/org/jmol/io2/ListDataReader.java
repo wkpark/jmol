@@ -1,9 +1,10 @@
 package org.jmol.io2;
 
 import java.io.IOException;
-import java.util.List;
+
 
 import org.jmol.io.DataReader;
+import org.jmol.util.JmolList;
 
 
 
@@ -16,7 +17,7 @@ import org.jmol.io.DataReader;
  */
 
 public class ListDataReader extends DataReader {
-  private List<String> data;
+  private JmolList<String> data;
   private int pt;
   private int len;
 
@@ -27,7 +28,7 @@ public class ListDataReader extends DataReader {
   @SuppressWarnings("unchecked")
   @Override
   public DataReader setData(Object data) {
-    this.data = (List<String>) data;
+    this.data = (JmolList<String>) data;
     len = this.data.size();
     return this;
   }

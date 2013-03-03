@@ -24,9 +24,9 @@
 
 package org.jmol.adapter.readers.simple;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -189,11 +189,11 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
    */
 
   protected int atomCount;
-  protected List<Atom> vAtoms = new ArrayList<Atom>();
+  protected JmolList<Atom> vAtoms = new JmolList<Atom>();
   private Map<String, Integer> atomMap = new Hashtable<String, Integer>();
   private String[] tokens;
   private boolean isJmolZformat;
-  private List<String[]> lineBuffer = new ArrayList<String[]>();
+  private JmolList<String[]> lineBuffer = new JmolList<String[]>();
   private Map<String, Float> symbolicMap = new Hashtable<String, Float>();
   private boolean isMopac;
   private boolean isHeader = true;
@@ -220,7 +220,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
       getSymbolic();
       return true;
     }
-    lineBuffer.add(tokens);
+    lineBuffer.addLast(tokens);
     return true;
   }
 
@@ -339,7 +339,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     }
     if (atom == null)
       throw new Exception("bad Z-Matrix line");
-    vAtoms.add(atom);
+    vAtoms.addLast(atom);
     atomMap.put(atom.atomName, Integer.valueOf(atomCount));
     atomCount++;
     if (element.startsWith("X") && JmolAdapter.getElementNumber(element) < 1) {
@@ -438,7 +438,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
           v1, plane1);
       Measure.getPlaneThroughPoint(setAtom(atom, ia, ic, ib, -d, theta2, 0),
           v1, plane2);
-      List<Object> list = Measure.getIntersectionPP(plane1, plane2);
+      JmolList<Object> list = Measure.getIntersectionPP(plane1, plane2);
       if (list.size() == 0)
         return null;
       pt0.setT((P3) list.get(0));

@@ -1,10 +1,11 @@
 package org.jmol.api;
 
 
-import java.util.List;
+
 
 
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 
 
@@ -14,7 +15,7 @@ public interface QuantumCalculationInterface {
                                  BS bsExclude,
                                  BS[] bsMolecules,
                                  String calculationType, P3[] atomCoordAngstroms,
-                                 int firstAtomOffset, List<int[]> shells,
+                                 int firstAtomOffset, JmolList<int[]> shells,
                                  float[][] gaussians,
                                  int[][] dfCoefMaps, 
                                  Object slaters, float[] moCoefficients,

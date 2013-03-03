@@ -29,23 +29,23 @@ import org.jmol.modelset.Chain;
 
 public class CarbohydrateMonomer extends Monomer {
 
+  /**
+   * @j2sIgnoreSuperConstructor
+   * 
+   */
+  private CarbohydrateMonomer() {
+  }
+  
   final static byte[] alphaOffsets = { 0 };
 
   static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex) {
-    return new CarbohydrateMonomer(chain, group3, seqcode,
+    return new CarbohydrateMonomer().set2(chain, group3, seqcode,
                             firstIndex, lastIndex, alphaOffsets);
   }
   
   ////////////////////////////////////////////////////////////////
-
-  private CarbohydrateMonomer(Chain chain, String group3, int seqcode,
-               int firstAtomIndex, int lastAtomIndex,
-               byte[] offsets) {
-    super(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, offsets);
-  }
 
   @Override
   public boolean isCarbohydrate() { return true; }

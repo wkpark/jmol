@@ -28,9 +28,9 @@ package org.jmol.io;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
-//import java.util.ArrayList;
+//import org.jmol.util.JmolList;
 //import java.util.Iterator;
-//import java.util.List;
+//
 //import java.util.Map;
 
 //import org.jmol.script.Token;
@@ -170,7 +170,7 @@ public class XmlUtil {
     sb.append(" ").appendO(name).append("=\"").appendO(value).append("\"");
   }
 
-//  public static void toXml(StringXBuilder sb, String name, List<Object[]> properties) {
+//  public static void toXml(StringXBuilder sb, String name, JmolList<Object[]> properties) {
 //    for (int i = 0; i < properties.size(); i++) {
 //      Object[] o = properties.get(i);
 //      appendTagObj(sb, name, (Object[]) o[0], o[1]);
@@ -178,7 +178,7 @@ public class XmlUtil {
 //  }
 
 //  @SuppressWarnings("unchecked")
-//  public static Object escape(String name, List<Object[]> atts, Object value,
+//  public static Object escape(String name, JmolList<Object[]> atts, Object value,
 //                              boolean asString, String indent) {
 //
 //    StringXBuilder sb;
@@ -194,10 +194,10 @@ public class XmlUtil {
 //      } else if (value instanceof BitSet) {
 //        value = Escape.escape(value);
 //      } else if (value instanceof List) {
-//        List<Object> v = (List<Object>) value;
+//        JmolList<Object> v = (JmolList<Object>) value;
 //        sb = new StringXBuilder().append("\n");
 //        if (atts == null)
-//          atts = new ArrayList<Object[]>();
+//          atts = new  JmolList<Object[]>();
 //        atts.add(new Object[] { "count", Integer.valueOf(v.size()) });
 //        for (int i = 0; i < v.size(); i++)
 //          sb.appendO(
@@ -215,7 +215,7 @@ public class XmlUtil {
 //              escape(name2, null, ht.get(name2), true, indent + "  "));
 //        }
 //        if (atts == null)
-//          atts = new ArrayList<Object[]>();
+//          atts = new  JmolList<Object[]>();
 //        atts.add(new Object[] { "count", Integer.valueOf(n) });
 //        value = sb.toString();
 //      } else if (type.startsWith("[")) {
@@ -223,7 +223,7 @@ public class XmlUtil {
 //          float[] f = (float[]) value;
 //          sb = new StringXBuilder().append("\n");
 //          if (atts == null)
-//            atts = new ArrayList<Object[]>();
+//            atts = new  JmolList<Object[]>();
 //          atts.add(new Object[] { "count", Integer.valueOf(f.length) });
 //          for (int i = 0; i < f.length; i++)
 //            sb.appendO(escape(null, null, Float.valueOf(f[i]), true, indent + "  "));
@@ -232,7 +232,7 @@ public class XmlUtil {
 //          int[] iv = (int[]) value;
 //          sb = new StringXBuilder().append("\n");
 //          if (atts == null)
-//            atts = new ArrayList<Object[]>();
+//            atts = new  JmolList<Object[]>();
 //          atts.add(new Object[] { "count", Integer.valueOf(iv.length) });
 //          for (int i = 0; i < iv.length; i++)
 //            sb.appendO(escape(null, null, Integer.valueOf(iv[i]), true, indent + "  "));
@@ -242,7 +242,7 @@ public class XmlUtil {
 //          Object[] o = (Object[]) value;
 //          sb = new StringXBuilder().append("\n");
 //          if (atts == null)
-//            atts = new ArrayList<Object[]>();
+//            atts = new  JmolList<Object[]>();
 //          atts.add(new Object[] { "count", Integer.valueOf(o.length) });
 //          for (int i = 0; i < o.length; i++)
 //            sb.appendO(escape(null, null, o[i], true, indent + "  "));
@@ -254,7 +254,7 @@ public class XmlUtil {
 //          
 //      }
 //    }
-//    List<Object[]> attributes = new ArrayList<Object[]>();
+//    JmolList<Object[]> attributes = new  JmolList<Object[]>();
 //    attributes.add(new Object[] { "name", name });
 //    attributes.add(new Object[] { "type", type });
 //    if (atts != null)

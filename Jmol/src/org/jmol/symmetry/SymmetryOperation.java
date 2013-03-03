@@ -24,8 +24,8 @@
 
 package org.jmol.symmetry;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 
 
 import org.jmol.util.TextFormat;
@@ -1043,8 +1043,8 @@ class SymmetryOperation extends Matrix4f {
         // so if a point is in the plane, then N dot X = -d
         float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
         Point4f plane = Point4f.new4(vtemp.x, vtemp.y, vtemp.z, w);
-        List<Object> v = new ArrayList<Object>();
-        v.add(uc.getCanonicalCopy(1.05f));
+        JmolList<Object> v = new  JmolList<Object>();
+        v.addLast(uc.getCanonicalCopy(1.05f));
         TriangleData.intersectPlane(plane, v, 3);
 
         // returns triangles and lines

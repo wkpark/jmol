@@ -25,10 +25,11 @@
 package org.jmol.appletjs;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.JmolSyncInterface;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -55,7 +56,7 @@ final class JmolAppletRegistry {
   }
 
   synchronized static void findApplets(String appletName, String mySyncId,
-                                       String excludeName, List<String> apps) {
+                                       String excludeName, JmolList<String> apps) {
     if (appletName != null && appletName.indexOf(",") >= 0) {
       String[] names = TextFormat.split(appletName, ',');
       for (int i = 0; i < names.length; i++)
@@ -66,7 +67,7 @@ final class JmolAppletRegistry {
     if (appletName == null || appletName.equals("*") || appletName.equals(">")) {
       for (String appletName2 : htRegistry.keySet()) {
         if (!appletName2.equals(excludeName) && appletName2.indexOf(ext) > 0) {
-          apps.add(appletName2);
+          apps.addLast(appletName2);
         }
       }
       return;
@@ -76,7 +77,7 @@ final class JmolAppletRegistry {
     if (!htRegistry.containsKey(appletName))
       appletName = "jmolApplet" + appletName;
     if (!appletName.equals(excludeName) && htRegistry.containsKey(appletName)) {
-      apps.add(appletName);
+      apps.addLast(appletName);
     }
   }
 

@@ -28,11 +28,12 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 /**
@@ -88,7 +89,7 @@ abstract public class MOReader extends BasisFunctionReader {
   protected float[][] gaussians;
   protected String energyUnits = "";
   
-  protected List<String> moTypes;
+  protected JmolList<String> moTypes;
   private boolean getNBOs;
   private boolean getNBOCharges;
   protected boolean haveNboCharges;
@@ -201,7 +202,7 @@ abstract public class MOReader extends BasisFunctionReader {
 
    */
   protected void getNboTypes() throws Exception {
-    moTypes = new ArrayList<String>();
+    moTypes = new  JmolList<String>();
     iMo0 = (orbitals == null ? 0 : orbitals.size()) + 1;
     readLine();
     readLine();
@@ -295,13 +296,13 @@ abstract public class MOReader extends BasisFunctionReader {
     // and these will replace previous results. 
     // we still need atom positions and bases functions.
     if (haveNboOrbitals) {
-      orbitals = new ArrayList<Map<String,Object>>();
+      orbitals = new  JmolList<Map<String,Object>>();
       alphaBeta = "";
     }
     haveNboOrbitals = true;
     orbitalsRead = true;
     Map<String, Object>[] mos = null;
-    List<String>[] data = null;
+    JmolList<String>[] data = null;
     String dCoeffLabels = "";
     String fCoeffLabels = "";
     String pCoeffLabels = "";
@@ -414,7 +415,7 @@ abstract public class MOReader extends BasisFunctionReader {
         }
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
-          data[i] = new ArrayList<String>();
+          data[i] = new  JmolList<String>();
         }
         getMOHeader(headerType, tokens, mos, nThisLine);
         continue;
@@ -455,11 +456,11 @@ abstract public class MOReader extends BasisFunctionReader {
       if (isQuantumBasisSupported(ch)) {
         if (ptOffset < 0) {
           for (int i = 0; i < nThisLine; i++)
-            data[i].add(tokens[i + nSkip]);
+            data[i].addLast(tokens[i + nSkip]);
         } else {
           int pt = ptOffset;
           for (int i = 0; i < nThisLine; i++, pt += fieldSize)
-            data[i].add(line.substring(pt, pt + fieldSize).trim());
+            data[i].addLast(line.substring(pt, pt + fieldSize).trim());
         }
       }
       line = "";
@@ -494,7 +495,7 @@ abstract public class MOReader extends BasisFunctionReader {
       return;
     case HEADER_GAMESS_UK_MO:
       for (int i = 0; i < nThisLine; i++)
-        mos[i].put("energy", Float.valueOf(tokens[i]));
+        mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
       readLines(5);
       return;
     case HEADER_GAMESS_ORIGINAL:
@@ -503,7 +504,7 @@ abstract public class MOReader extends BasisFunctionReader {
       if (tokens.length == 0)
         tokens = getTokensStr(readLine());
       for (int i = 0; i < nThisLine; i++) {
-        mos[i].put("energy", Float.valueOf(tokens[i]));
+        mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
       }
       readLine();
       break;
@@ -527,7 +528,7 @@ abstract public class MOReader extends BasisFunctionReader {
     }
   }
 
-  protected void addMOData(int nColumns, List<String>[] data, Map<String, Object>[] mos) {
+  protected void addMOData(int nColumns, JmolList<String>[] data, Map<String, Object>[] mos) {
     for (int i = 0; i < nColumns; i++) {
       float[] coefs = new float[data[i].size()];
       for (int j = coefs.length; --j >= 0;)
@@ -549,7 +550,7 @@ abstract public class MOReader extends BasisFunctionReader {
       setMOData(lastMoData = moData);
     }
     if (clearOrbitals) {
-      orbitals = new ArrayList<Map<String, Object>>();
+      orbitals = new  JmolList<Map<String, Object>>();
       moData = new Hashtable<String, Object>();
       alphaBeta = "";
     }
@@ -578,12 +579,12 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff
     for (int i = moTypes.size(); --i >= 0;)
       ht.put(TextFormat.simpleReplace(moTypes.get(i).substring(10), " ", ""),
           Integer.valueOf(i + iMo0));
-    List<String[]> strSecondOrderData = new ArrayList<String[]>();
+    JmolList<String[]> strSecondOrderData = new  JmolList<String[]>();
     readLines(5);
     while (readLine() != null && line.indexOf("NBO") < 0) {
       if (line.length() < 5 || line.charAt(4) != '.')
         continue;
-      strSecondOrderData.add(new String[] {
+      strSecondOrderData.addLast(new String[] {
           TextFormat.simpleReplace(line.substring(5, 27).trim(), " ", ""),
           TextFormat.simpleReplace(line.substring(32, 54).trim(), " ", ""),
           line.substring(55, 62).trim(), line.substring(71).trim() });

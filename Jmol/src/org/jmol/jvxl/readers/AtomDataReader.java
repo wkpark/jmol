@@ -394,6 +394,10 @@ abstract class AtomDataReader extends VolumeDataReader {
   }
 
   protected void unsetVoxelData() {
+    unsetVoxelData2();
+  }
+
+  protected void unsetVoxelData2() {
     if (isProgressive)
       for (int i = 0; i < yzCount; i++) {
         if (thisPlane[i] == Float.MAX_VALUE)

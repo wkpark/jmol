@@ -33,8 +33,9 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
+
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 
 /**
@@ -137,7 +138,7 @@ public class ImageSelection implements Transferable {
         if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
         result = (String) contents.getTransferData(DataFlavor.stringFlavor);
         } else if (contents.isDataFlavorSupported(DataFlavor.javaFileListFlavor)){
-          List<File> fileList = (List<File>) contents.getTransferData(DataFlavor.javaFileListFlavor);
+          JmolList<File> fileList = (JmolList<File>) contents.getTransferData(DataFlavor.javaFileListFlavor);
           final int length = fileList.size();
           if (length == 0)
             return null;

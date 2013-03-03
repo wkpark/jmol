@@ -23,9 +23,9 @@
 
 package org.jmol.script;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.JmolScriptFunction;
@@ -56,7 +56,7 @@ public class ScriptFunction implements JmolScriptFunction {
   protected String typeName;
   String name;
   int nParameters;
-  List<String> names = new ArrayList<String>();
+  JmolList<String> names = new  JmolList<String>();
   int tok;
 
   Map<String, String> variables = new Hashtable<String, String>();
@@ -84,7 +84,7 @@ public class ScriptFunction implements JmolScriptFunction {
     this.tok = tok;
   }
 
-  void setVariables(Map<String, SV> contextVariables, List<SV> params) {
+  void setVariables(Map<String, SV> contextVariables, JmolList<SV> params) {
     int nParams = (params == null ? 0 : params.size());
     for (int i = names.size(); --i >= 0;) {
       String name = names.get(i).toLowerCase();
@@ -97,7 +97,7 @@ public class ScriptFunction implements JmolScriptFunction {
     contextVariables.put("_retval", new ScriptVariableInt(tok == T.trycmd ? Integer.MAX_VALUE : 0));
   }
 
-  void unsetVariables(Map<String, SV> contextVariables, List<SV> params) {
+  void unsetVariables(Map<String, SV> contextVariables, JmolList<SV> params) {
     // note: this method is never called.
     // set list values in case they have changed.
     int nParams = (params == null ? 0 : params.size());
@@ -117,14 +117,14 @@ public class ScriptFunction implements JmolScriptFunction {
 
   void addVariable(String name, boolean isParameter) {
     variables.put(name, name);
-    names.add(name);
+    names.addLast(name);
     if (isParameter)
       nParameters++;
   }
 
   static void setFunction(ScriptFunction function, String script,
                           int ichCurrentCommand, int pt, short[] lineNumbers,
-                          int[][] lineIndices, List<T[]> lltoken) {
+                          int[][] lineIndices, JmolList<T[]> lltoken) {
     int cmdpt0 = function.cmdpt0;
     int chpt0 = function.chpt0;
     int nCommands = pt - cmdpt0;

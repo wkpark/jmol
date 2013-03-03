@@ -24,10 +24,10 @@
 
 package org.jmol.symmetry;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -1014,14 +1014,14 @@ class PointGroup {
         n *= nAxes[i];
         nTotal += n;
         nType[axes[i][0].type][1] += n;
-        List<V3> vinfo = (info == null ? null : new ArrayList<V3>());
+        JmolList<V3> vinfo = (info == null ? null : new  JmolList<V3>());
         for (int j = 0; j < nAxes[i]; j++) {
           //axes[i][j].typeIndex = j + 1;
           if (vinfo == null)
             sb.append("\n").append(name).append("\t").append(label).append("_").appendI(j + 1).append("\t"
                ).appendO(axes[i][j].normalOrAxis);
           else
-            vinfo.add(axes[i][j].normalOrAxis);
+            vinfo.addLast(axes[i][j].normalOrAxis);
         }
         if (info != null)
           info.put(label, vinfo);

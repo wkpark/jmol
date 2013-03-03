@@ -25,9 +25,9 @@
 
 package org.jmol.util;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -73,8 +73,8 @@ public class Escape {
   public static String e(Object x) {
     if (x instanceof String)
       return eS((String) x);
-    if (x instanceof List<?>)
-      return eV((ArrayList<SV>) x);
+    if (x instanceof JmolList<?>)
+      return eV((JmolList<SV>) x);
     if (x instanceof BS) 
       return eB((BS) x, true);
     if (x instanceof Matrix3f) 
@@ -267,7 +267,7 @@ public class Escape {
     return "\\u" + s.substring(s.length() - 4);
   }
 
-  public static String eV(ArrayList<SV> list) {
+  public static String eV(JmolList<SV> list) {
     if (list == null)
       return eS("");
     SB s = new SB();
@@ -718,11 +718,11 @@ public class Escape {
       sb.append("]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof List) {
+    if (info instanceof JmolList) {
       sb.append("[ ");
-      int imax = ((List<?>) info).size();
+      int imax = ((JmolList<?>) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toJSON(null, ((List<?>) info).get(i)));
+        sb.append(sep).append(toJSON(null, ((JmolList<?>) info).get(i)));
         sep = ",";
       }
       sb.append(" ]");
@@ -873,10 +873,10 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "float[][]", sb);
     }
-    if (info instanceof List<?>) {
-      int imax = ((List<?>) info).size();
+    if (info instanceof JmolList<?>) {
+      int imax = ((JmolList<?>) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(toReadable(name + "[" + (i + 1) + "]", ((List<?>) info).get(i)));
+        sb.append(toReadable(name + "[" + (i + 1) + "]", ((JmolList<?>) info).get(i)));
       }
       return packageReadableSb(name, "List[" + imax + "]", sb);
     }
@@ -979,7 +979,7 @@ public class Escape {
     //TODO -- should recognize '..' as well as "..." ?
     if (data == null || !data.startsWith("[") || !data.endsWith("]"))
       return null;
-    List<String> v = new ArrayList<String>();
+    JmolList<String> v = new  JmolList<String>();
     int[] next = new int[1];
     next[0] = 1;
     while (next[0] < data.length()) {

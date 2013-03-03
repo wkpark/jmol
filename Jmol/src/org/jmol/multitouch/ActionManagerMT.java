@@ -23,8 +23,10 @@
  */
 package org.jmol.multitouch;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.jmol.util.JmolList;
+
 
 
 import org.jmol.api.Interface;
@@ -199,14 +201,14 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     //System.out.println("ActionManagerMT getAllowedGestures " + groupID);
     if (groupID != this.groupID || !viewer.allowMultiTouch())
       return null;
-    List<GestureType> list = new ArrayList<GestureType>();
+    JmolList<GestureType> list = new  JmolList<GestureType>();
     //list.add(Integer.valueOf(DRAG_GESTURE));
     //list.add(Integer.valueOf(MULTI_POINT_DRAG_GESTURE));
     //list.add(Integer.valueOf(SPIN_GESTURE));
     //list.add(Integer.valueOf(DBLCLK_GESTURE));
-    list.add(TWO_POINT_GESTURE);
+    list.addLast(TWO_POINT_GESTURE);
     //if (simulator == null)
-    list.add(SINGLE_POINT_GESTURE);
+    list.addLast(SINGLE_POINT_GESTURE);
     //list.add(Integer.valueOf(ZOOM_GESTURE));
     //list.add(Integer.valueOf(FLICK_GESTURE));
     //list.add(Integer.valueOf(RELATIVE_DRAG_GESTURE));    

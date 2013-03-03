@@ -1,9 +1,9 @@
 package org.jmol.io;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.JmolLineReader;
@@ -111,12 +111,12 @@ public class CifDataReader {
     line = "";
     String key;
     allData = new Hashtable<String, Object>();
-    List<Map<String, Object>> models = new ArrayList<Map<String,Object>>();
+    JmolList<Map<String, Object>> models = new  JmolList<Map<String,Object>>();
     allData.put("models", models);
     try {
       while ((key = getNextToken()) != null) {
         if (key.startsWith("global_") || key.startsWith("data_")) {
-          models.add(data = new Hashtable<String, Object>());
+          models.addLast(data = new Hashtable<String, Object>());
           data.put("name", key);
           continue;
         }
@@ -409,11 +409,11 @@ public class CifDataReader {
   @SuppressWarnings("unchecked")
   private void getCifLoopData() throws Exception {
     String str;
-    List<String> keyWords = new ArrayList<String>();
+    JmolList<String> keyWords = new  JmolList<String>();
     while ((str = peekToken()) != null && str.charAt(0) == '_') {
       str  = getTokenPeeked();
-      keyWords.add(str);
-      data.put(str, new ArrayList<String>());
+      keyWords.addLast(str);
+      data.put(str, new  JmolList<String>());
     }
     fieldCount = keyWords.size();
     if (fieldCount == 0)
@@ -421,7 +421,7 @@ public class CifDataReader {
     loopData = new String[fieldCount];
     while (getData()) {
       for (int i = 0; i < fieldCount; i++) {
-        ((List<String>)data.get(keyWords.get(i))).add(loopData[i]);
+        ((JmolList<String>)data.get(keyWords.get(i))).add(loopData[i]);
       }
     }
   }  

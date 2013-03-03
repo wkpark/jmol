@@ -41,10 +41,10 @@ import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Bond.BondSet;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
 
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -194,9 +194,9 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   }
   
   private ScriptFlowContext flowContext;
-  private List<T> ltoken;
-  private List<T[]> lltoken;
-  private List<T> vBraces;
+  private JmolList<T> ltoken;
+  private JmolList<T[]> lltoken;
+  private JmolList<T> vBraces;
 
 
   private int ichBrace;
@@ -223,7 +223,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   private void addTokenToPrefix(T token) {
     if (logMessages)
       Logger.info("addTokenToPrefix" + token);
-    ltoken.add(token);
+    ltoken.addLast(token);
     if (token.tok != T.nada)
       lastToken = token;
   }
@@ -237,10 +237,10 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   private int tokLastMath;
   private boolean checkImpliedScriptCmd;
   
-  private List<ScriptFunction> vFunctionStack;
+  private JmolList<ScriptFunction> vFunctionStack;
   
   private boolean compile0(boolean isFull) {
-    vFunctionStack = new ArrayList<ScriptFunction>();
+    vFunctionStack = new  JmolList<ScriptFunction>();
     htUserFunctions = new Hashtable<String, Boolean>();
     script = cleanScriptComments(script);
     ichToken = script.indexOf(JC.STATE_VERSION_STAMP);
@@ -274,8 +274,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     iCommand = 0;
     tokLastMath = 0;
     lastToken = T.tokenOff;
-    vBraces = new ArrayList<T>();
-    vPush = new ArrayList<T>();
+    vBraces = new  JmolList<T>();
+    vPush = new  JmolList<T>();
     pushCount = 0;
     iBrace = 0;
     braceCount = 0;
@@ -290,8 +290,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     isShowScriptOutput = false;    
     iHaveQuotedString = false;
     checkImpliedScriptCmd = false;
-    lltoken = new ArrayList<T[]>();
-    ltoken = new ArrayList<T>();
+    lltoken = new  JmolList<T[]>();
+    ltoken = new  JmolList<T>();
     tokCommand = T.nada;
     lastFlowCommand = null;
     tokenAndEquals = null;
@@ -638,8 +638,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           T t = new ContextToken(T.push, 0, "{");
           addTokenToPrefix(setCommand(t));
           pushCount++;
-          vPush.add(t);
-          vBraces.add(tokenCommand);
+          vPush.addLast(t);
+          vBraces.addLast(tokenCommand);
         } else {
           parenCount = setBraceCount = 0;
           setCommand(lastFlowCommand);
@@ -690,7 +690,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           lineIndices[iCommand][0] = ichCurrentCommand;
           lineIndices[iCommand][1] = Math.max(ichCurrentCommand, Math.min(
               cchScript, ichEnd == ichCurrentCommand ? ichToken : ichEnd));
-          lltoken.add(atokenInfix);
+          lltoken.addLast(atokenInfix);
           iCommand = lltoken.size();
         }
         if (tokCommand == T.set)
@@ -1090,8 +1090,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       return CONTINUE;
     }
     if (lookingAtDecimal()) {
-      value =  Float.valueOf(script.substring(ichToken, ichToken + cchToken))
-          .floatValue();
+      value =  Parser.fVal(script.substring(ichToken, ichToken + cchToken));
       int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(ichToken,
           ichToken + cchToken)));
       addTokenToPrefix(T.t(T.decimal, intValue, Float.valueOf(value)));
@@ -1109,7 +1108,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           seqNum = -seqNum;
           addTokenToPrefix(T.tokenMinus);
         }
-        int seqcode = Group.getSeqcode(seqNum, insertionCode);
+        int seqcode = Group.getSeqcodeFor(seqNum, insertionCode);
         addTokenToPrefix(T.t(T.seqcode, seqcode, "seqcode"));
         return CONTINUE;
       } catch (NumberFormatException nfe) {
@@ -1328,7 +1327,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         } else {
           braceCount = parenCount = nSemiSkip = 0;
           if (theToken.tok != T.casecmd && theToken.tok != T.defaultcmd)
-            vBraces.add(theToken);
+            vBraces.addLast(theToken);
           iBrace++;
           isEndOfCommand = true;
           ichEnd = ichToken;
@@ -1436,7 +1435,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (theTok == T.rightbrace) {
         // if }, just push onto vBrace, but NOT onto ltoken
-        vBraces.add(tokenCommand);
+        vBraces.addLast(tokenCommand);
         iBrace++;
         tokCommand = T.nada;
         return CONTINUE;
@@ -1774,7 +1773,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     if (atEnd) {
       if (tokenCommand.tok != T.casecmd && tokenCommand.tok != T.defaultcmd) {
         iBrace++;
-        vBraces.add(tokenCommand);
+        vBraces.addLast(tokenCommand);
         lastFlowCommand = null;
       }
       parenCount = braceCount = 0;
@@ -1782,7 +1781,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return true;
   }
 
-  List<T> vPush = new ArrayList<T>();
+  JmolList<T> vPush = new  JmolList<T>();
   int pushCount;
   
   private int checkFlowEndBrace() {
@@ -1952,7 +1951,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         thisFunction = newScriptParallelProcessor("", tokCommand);
         flowContext.setFunction(thisFunction);
         pushCount++;
-        vPush.add(ct);
+        vPush.addLast(ct);
         break;
       case T.elsecmd:
       case T.elseif:
@@ -1968,7 +1967,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       case T.whilecmd:
       case T.catchcmd:
         pushCount++;
-        vPush.add(ct);
+        vPush.addLast(ct);
         //$FALL-THROUGH$
       case T.ifcmd:
       case T.switchcmd:
@@ -2335,7 +2334,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     if (!isOK)
       return Float.NaN;
     cchToken = ichT - ichToken;
-    return (float) Double.valueOf(script.substring(pt0, ichT)).doubleValue();
+    return (float) Parser.dVal(script.substring(pt0, ichT));
   }
 
   private boolean lookingAtDecimal() {

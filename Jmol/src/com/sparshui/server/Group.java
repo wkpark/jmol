@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jmol.util.JmolList;
+
 import com.sparshui.GestureType;
 import com.sparshui.common.Event;
 import com.sparshui.common.TouchState;
@@ -19,9 +21,9 @@ import com.sparshui.gestures.Gesture;
 public class Group {
 
 	private int _id;
-	private List<GestureType> _gestureTypes;
-	private List<Gesture> _gestures;
-	private List<TouchPoint> _touchPoints;
+	private JmolList<GestureType> _gestureTypes;
+	private JmolList<Gesture> _gestures;
+	private JmolList<TouchPoint> _touchPoints;
 	private ServerToClientProtocol _clientProtocol;
 
 	/**
@@ -36,12 +38,12 @@ public class Group {
 	 * @param clientProtocol
 	 * 		Represents the connection to the client.
 	 */
-	public Group(int id, List<GestureType> gestureTypes,
+	public Group(int id, JmolList<GestureType> gestureTypes,
 			ServerToClientProtocol clientProtocol) {
 		_id = id;
 		_gestureTypes = gestureTypes;
-		_gestures = new ArrayList<Gesture>();
-		_touchPoints = new ArrayList<TouchPoint>();
+		_gestures = new JmolList<Gesture>();
+		_touchPoints = new JmolList<TouchPoint>();
 		_clientProtocol = clientProtocol;
 		for (int i = 0; i < _gestureTypes.size(); i++) {
 		  Gesture gesture = GestureFactory.createGesture(_gestureTypes.get(i));

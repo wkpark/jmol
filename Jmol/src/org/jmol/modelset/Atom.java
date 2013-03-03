@@ -37,6 +37,7 @@ import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
@@ -48,7 +49,7 @@ import org.jmol.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
-import java.util.List;
+
 
 
 final public class Atom extends Point3fi implements JmolNode {
@@ -1461,7 +1462,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.isCrossLinked(((Atom) node).getGroup());
   }
 
-  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn) {
+  public boolean getCrossLinkLeadAtomIndexes(JmolList<Integer> vReturn) {
     return group.getCrossLinkLead(vReturn);
   }
   

@@ -28,12 +28,12 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.JmolImageCreatorInterface;
@@ -982,7 +982,7 @@ public class StateCreator implements JmolStateCreator {
     }
   }
 
-  public String getMeasurementState(AtomShape as, List<Measurement> mList,
+  public String getMeasurementState(AtomShape as, JmolList<Measurement> mList,
                                     int measurementCount, JmolFont font3d,
                                     TickInfo ti) {
     SB commands = new SB();
@@ -1580,8 +1580,8 @@ public class StateCreator implements JmolStateCreator {
       // CTRL-Y: type = -1 REDO
       viewer.stopMinimization();
       String s = "";
-      List<String> list1;
-      List<String> list2;
+      JmolList<String> list1;
+      JmolList<String> list2;
       switch (type) {
       default:
       case T.undomove:
@@ -1719,7 +1719,7 @@ public class StateCreator implements JmolStateCreator {
     String fileExt = type.toLowerCase();
     String[] scenes = TextFormat.splitChars(script0, "pause scene ");
     Map<String, String> htScenes = new Hashtable<String, String>();
-    List<Integer> list = new ArrayList<Integer>();
+    JmolList<Integer> list = new  JmolList<Integer>();
     String script = JmolBinary.getSceneScript(scenes, htScenes, list);
     Logger.debug(script);
     script0 = TextFormat.simpleReplace(script0, "pause scene", "delay "

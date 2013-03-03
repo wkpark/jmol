@@ -120,10 +120,11 @@ import org.jmol.util.TextFormat;
 import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.viewer.binding.Binding;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+
 import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
@@ -994,7 +995,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getMoveToText(timespan, false);
   }
 
-  public void navigateList(JmolScriptEvaluator eval, List<Object[]> list) {
+  public void navigateList(JmolScriptEvaluator eval, JmolList<Object[]> list) {
     if (isJmolDataFrame())
       return;
     transformManager.navigateList(eval, list);
@@ -2910,7 +2911,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getSymTemp(true).getSpaceGroupInfo(modelSet, -1, spaceGroup, 0, null, null, null);
   }
 
-  public void getPolymerPointsAndVectors(BS bs, List<P3[]> vList) {
+  public void getPolymerPointsAndVectors(BS bs, JmolList<P3[]> vList) {
     modelSet.getPolymerPointsAndVectors(bs, vList);
   }
 
@@ -3464,15 +3465,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         getAtomBitSet(atomExpression), false));
   }
 
-  List<Map<String, Object>> getAllAtomInfo(Object atomExpression) {
+  JmolList<Map<String, Object>> getAllAtomInfo(Object atomExpression) {
     return getPropertyManager().getAllAtomInfo(getAtomBitSet(atomExpression));
   }
 
-  List<Map<String, Object>> getAllBondInfo(Object atomExpression) {
+  JmolList<Map<String, Object>> getAllBondInfo(Object atomExpression) {
     return getPropertyManager().getAllBondInfo(getAtomBitSet(atomExpression));
   }
 
-  List<Map<String, Object>> getMoleculeInfo(Object atomExpression) {
+  JmolList<Map<String, Object>> getMoleculeInfo(Object atomExpression) {
     return getPropertyManager().getMoleculeInfo(modelSet, atomExpression);
   }
 
@@ -3480,12 +3481,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getPropertyManager().getChimeInfo(tok, getSelectionSet(true));
   }
 
-  public Map<String, List<Map<String, Object>>> getAllChainInfo(
+  public Map<String, JmolList<Map<String, Object>>> getAllChainInfo(
                                                                 Object atomExpression) {
     return getPropertyManager().getAllChainInfo(getAtomBitSet(atomExpression));
   }
 
-  public Map<String, List<Map<String, Object>>> getAllPolymerInfo(
+  public Map<String, JmolList<Map<String, Object>>> getAllPolymerInfo(
                                                                   Object atomExpression) {
     return getPropertyManager().getAllChainInfo(getAtomBitSet(atomExpression));
   }
@@ -3654,8 +3655,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @SuppressWarnings("unchecked")
-  List<Map<String, Object>> getMeasurementInfo() {
-    return (List<Map<String, Object>>) getShapeProperty(
+  JmolList<Map<String, Object>> getMeasurementInfo() {
+    return (JmolList<Map<String, Object>>) getShapeProperty(
         JC.SHAPE_MEASURES, "info");
   }
 
@@ -4748,7 +4749,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public P3[] getAdditionalHydrogens(BS bsAtoms, boolean doAll,
                                           boolean justCarbon,
-                                          List<Atom> vConnections) {
+                                          JmolList<Atom> vConnections) {
     if (bsAtoms == null)
       bsAtoms = getSelectionSet(false);
     int[] nTotal = new int[1];
@@ -4998,12 +4999,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setJmolStatusListener(jmolStatusListener, null);
   }
 
-  public Map<String, List<List<Object>>> getMessageQueue() {
+  public Map<String, JmolList<JmolList<Object>>> getMessageQueue() {
     // called by PropertyManager.getPropertyAsObject for "messageQueue"
     return statusManager.getMessageQueue();
   }
 
-  List<List<List<Object>>> getStatusChanged(String statusNameList) {
+  List<JmolList<JmolList<Object>>> getStatusChanged(String statusNameList) {
     return statusManager.getStatusChanged(statusNameList);
   }
 
@@ -7756,7 +7757,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.atoms[i];
   }
 
-  public List<P3> getAtomPointVector(BS bs) {
+  public JmolList<P3> getAtomPointVector(BS bs) {
     return modelSet.getAtomPointVector(bs);
   }
 
@@ -8071,7 +8072,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                         float endDegrees, boolean isSpin,
                                         BS bsSelected,
                                         V3 translation,
-                                        List<P3> finalPoints) {
+                                        JmolList<P3> finalPoints) {
     // Eval: rotate INTERNAL
     boolean isOK = transformManager.rotateAboutPointsInternal(eval, point1, point2,
         degreesPerSecond, endDegrees, false, isSpin, bsSelected, false,
@@ -9130,7 +9131,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getFrontPlane();
   }
 
-  public List<Object> getPlaneIntersection(int type, Point4f plane,
+  public JmolList<Object> getPlaneIntersection(int type, Point4f plane,
                                            float scale, int flags) {
     return modelSet.getPlaneIntersection(type, plane, scale, flags,
         animationManager.currentModelIndex);
@@ -9385,7 +9386,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     getStateCreator().getAtomicPropertyStateBuffer(commands, type, bs, name, data);
   }
 
-  public P3[][] getCenterAndPoints(List<BS[]> atomSets,
+  public P3[][] getCenterAndPoints(JmolList<BS[]> atomSets,
                                         boolean addCenter) {
     return modelSet.getCenterAndPoints(atomSets, addCenter);
   }
@@ -9562,8 +9563,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       actionManager.setBondPickingOption(option);
   }
 
-  final List<String> actionStates = new ArrayList<String>();
-  final List<String> actionStatesRedo = new ArrayList<String>();
+  final JmolList<String> actionStates = new  JmolList<String>();
+  final JmolList<String> actionStatesRedo = new  JmolList<String>();
   
   void undoClear() {
     actionStates.clear();
@@ -9617,8 +9618,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Atom atom = modelSet.atoms[atomIndex];
     BS bs = BSUtil.newAndSetBit(atomIndex);
     P3[] pts = new P3[] { pt };
-    List<Atom> vConnections = new ArrayList<Atom>();
-    vConnections.add(atom);
+    JmolList<Atom> vConnections = new  JmolList<Atom>();
+    vConnections.addLast(atom);
     try {
       bs = addHydrogensInline(bs, vConnections, pts);
       atomIndex = bs.nextSetBit(0);
@@ -10029,7 +10030,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     
   }
 
-  public String getMeasurementState(AtomShape as, List<Measurement> mList,
+  public String getMeasurementState(AtomShape as, JmolList<Measurement> mList,
                                     int measurementCount, JmolFont font3d, TickInfo ti) {
     return getStateCreator().getMeasurementState(as, mList, measurementCount, font3d, ti);
   }
@@ -10078,7 +10079,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int modelIndex = modelSet.atoms[bsAtoms.nextSetBit(0)].modelIndex;
     if (modelIndex != modelSet.modelCount - 1)
       return bsB;
-    List<Atom> vConnections = new ArrayList<Atom>();
+    JmolList<Atom> vConnections = new  JmolList<Atom>();
     P3[] pts = getAdditionalHydrogens(bsAtoms, doAll, false, vConnections);
     boolean wasAppendNew = false;
     wasAppendNew = getAppendNew();
@@ -10099,7 +10100,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return bsB;
   }
 
-  private BS addHydrogensInline(BS bsAtoms, List<Atom> vConnections,
+  private BS addHydrogensInline(BS bsAtoms, JmolList<Atom> vConnections,
                                     P3[] pts) throws Exception {
     if (getScriptManager() == null)
       return null;
@@ -10145,7 +10146,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getAtomBitSetEval(eval, atomExpression);
   }
 
-  List<Integer> getAtomBitSetVector(Object atomExpression) {
+  JmolList<Integer> getAtomBitSetVector(Object atomExpression) {
     if (getScriptManager() == null)
       return null;
     return eval.getAtomBitSetVector(getAtomCount(), atomExpression);

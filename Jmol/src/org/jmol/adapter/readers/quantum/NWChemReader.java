@@ -24,9 +24,9 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.adapter.smarter.Atom;
@@ -86,7 +86,7 @@ public class NWChemReader extends MOReader {
   private boolean haveAt;
   private boolean inInput;
 
-  private List<String> atomTypes;
+  private JmolList<String> atomTypes;
   private boolean readROHFonly;
 
   @Override
@@ -305,14 +305,14 @@ public class NWChemReader extends MOReader {
         + taskNumber
         + (inInput ? SmarterJmolAdapter.PATH_SEPARATOR + "Input"
             : SmarterJmolAdapter.PATH_SEPARATOR + "Geometry"));
-    atomTypes = new ArrayList<String>();
+    atomTypes = new  JmolList<String>();
     while (readLine() != null && line.length() > 0) {
       tokens = getTokens(); // get the tokens in the line
       if (tokens.length < 6)
         break; // if don't have enough of them: done
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
-      atomTypes.add(atom.atomName);
+      atomTypes.addLast(atom.atomName);
       setAtomCoordXYZ(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
           parseFloatStr(tokens[5]));
     }
@@ -695,15 +695,15 @@ public class NWChemReader extends MOReader {
       getDFMap(DS_LIST, JmolAdapter.SHELL_D_SPHERICAL, CANONICAL_DS_LIST, 2);
       getDFMap(FS_LIST, JmolAdapter.SHELL_F_SPHERICAL, CANONICAL_FS_LIST, 2);
     }
-    shells = new ArrayList<int[]>();
-    Map<String, List<List<Object[]>>> atomInfo = new Hashtable<String, List<List<Object[]>>>();
+    shells = new  JmolList<int[]>();
+    Map<String, JmolList<JmolList<Object[]>>> atomInfo = new Hashtable<String, JmolList<JmolList<Object[]>>>();
     String atomSym = null;
-    List<List<Object[]>> atomData = null;
-    List<Object[]> shellData = null;
+    JmolList<JmolList<Object[]>> atomData = null;
+    JmolList<Object[]> shellData = null;
     while (line != null) {
       int nBlankLines = 0;
       while (line.length() < 3 || line.charAt(2) == ' ') {
-        shellData = new ArrayList<Object[]>();
+        shellData = new  JmolList<Object[]>();
         readLine();
         if (line.length() < 3)
           nBlankLines++;
@@ -713,7 +713,7 @@ public class NWChemReader extends MOReader {
       if (parseIntStr(line) == Integer.MIN_VALUE) {
         // next atom type
         atomSym = getTokens()[0];
-        atomData = new ArrayList<List<Object[]>>();
+        atomData = new  JmolList<JmolList<Object[]>>();
         atomInfo.put(atomSym, atomData);
         readLine();
         readLine();
@@ -723,15 +723,15 @@ public class NWChemReader extends MOReader {
         String[] tokens = getTokens();
         Object[] o = new Object[] { tokens[1],
             new float[] { parseFloatStr(tokens[2]), parseFloatStr(tokens[3]) } };
-        shellData.add(o);
+        shellData.addLast(o);
         readLine();
       }
-      atomData.add(shellData);
+      atomData.addLast(shellData);
     }
 
     int nD = (isD6F10 ? 6 : 5);
     int nF = (isD6F10 ? 10 : 7);
-    List<float[]> gdata = new ArrayList<float[]>();
+    JmolList<float[]> gdata = new  JmolList<float[]>();
     for (int i = 0; i < atomTypes.size(); i++) {
       atomData = atomInfo.get(atomTypes.get(i));
       int nShells = atomData.size();
@@ -760,9 +760,9 @@ public class NWChemReader extends MOReader {
             : JmolAdapter.getQuantumShellTagIDSpherical(type));
         slater[2] = gaussianCount;
         slater[3] = nGaussians;
-        shells.add(slater);
+        shells.addLast(slater);
         for (int ifunc = 0; ifunc < nGaussians; ifunc++)
-          gdata.add((float[]) shellData.get(ifunc)[1]);
+          gdata.addLast((float[]) shellData.get(ifunc)[1]);
         gaussianCount += nGaussians;
       }
     }
@@ -901,7 +901,7 @@ public class NWChemReader extends MOReader {
     if (shells == null)
       return true;
     Map<String, Object>[] mos = null;
-    List<String>[] data = null;
+    JmolList<String>[] data = null;
     int moCount = 0;
     int iListed = 0;
     int ptOffset = -1;
@@ -935,12 +935,12 @@ public class NWChemReader extends MOReader {
       data = ArrayUtil.createArrayOfArrayList(nThisLine);
       for (int i = 0; i < nThisLine; i++) {
         mos[i] = new Hashtable<String, Object>();
-        data[i] = new ArrayList<String>();
+        data[i] = new  JmolList<String>();
       }
 
       while (readLine() != null && line.length() > 0)
         for (int i = 0, pt = ptOffset; i < nThisLine; i++, pt += fieldSize)
-          data[i].add(line.substring(pt, pt + fieldSize).trim());
+          data[i].addLast(line.substring(pt, pt + fieldSize).trim());
 
       for (int iMo = 0; iMo < nThisLine; iMo++) {
         float[] coefs = new float[data[iMo].size()];

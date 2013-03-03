@@ -41,9 +41,8 @@ import org.jmol.util.V3;
 import java.io.BufferedReader;
 import java.io.OutputStream;
 
-import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 
 import org.jmol.util.TextFormat;
@@ -140,7 +139,7 @@ public abstract class AtomSetCollectionReader {
   protected JmolDocument doc;
   protected String readerName;
   public Map<String, Object> htParams;
-  public List<P3[]> trajectorySteps;
+  public JmolList<P3[]> trajectorySteps;
 
   //protected String parameterData;
 
@@ -319,9 +318,9 @@ public abstract class AtomSetCollectionReader {
   protected void initializeTrajectoryFile() {
     // add a dummy atom, just so not "no atoms found"
     atomSetCollection.addAtom(new Atom());
-    trajectorySteps = (List<P3[]>) htParams.get("trajectorySteps");
+    trajectorySteps = (JmolList<P3[]>) htParams.get("trajectorySteps");
     if (trajectorySteps == null)
-      htParams.put("trajectorySteps", trajectorySteps = new ArrayList<P3[]>());
+      htParams.put("trajectorySteps", trajectorySteps = new  JmolList<P3[]>());
   }
 
   protected void finalizeReader() throws Exception {
@@ -439,7 +438,7 @@ public abstract class AtomSetCollectionReader {
         .get("ptFile")).intValue() : -1);
     isTrajectory = htParams.containsKey("isTrajectory");
     if (ptFile > 0 && htParams.containsKey("firstLastSteps")) {
-      Object val = ((List<Object>) htParams.get("firstLastSteps"))
+      Object val = ((JmolList<Object>) htParams.get("firstLastSteps"))
           .get(ptFile - 1);
       if (val instanceof BS) {
         bsModels = (BS) val;
@@ -1027,7 +1026,7 @@ public abstract class AtomSetCollectionReader {
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     if (moData == null)
       return;
-    List<Map<String, Object>> orbitals = (List<Map<String, Object>>) moData
+    JmolList<Map<String, Object>> orbitals = (JmolList<Map<String, Object>>) moData
         .get("mos");
     if (orbitals != null)
       Logger.info(orbitals.size() + " molecular orbitals read in model "
@@ -1464,8 +1463,8 @@ public abstract class AtomSetCollectionReader {
    * @param s
    * @return Vector of integers
    */
-  protected static ArrayList<Integer> getFortranFormatLengths(String s) {
-    ArrayList<Integer> vdata = new ArrayList<Integer>();
+  protected static JmolList<Integer> getFortranFormatLengths(String s) {
+    JmolList<Integer> vdata = new  JmolList<Integer>();
     int n = 0;
     int c = 0;
     int factor = 1;
@@ -1480,7 +1479,7 @@ public abstract class AtomSetCollectionReader {
         continue;
       case ',':
         for (int j = 0; j < c; j++)
-          vdata.add(Integer.valueOf(n * factor));
+          vdata.addLast(Integer.valueOf(n * factor));
         inN = false;
         inCount = true;
         c = 0;

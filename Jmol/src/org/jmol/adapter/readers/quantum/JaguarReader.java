@@ -29,9 +29,9 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 /**
@@ -175,7 +175,7 @@ public class JaguarReader extends MOReader {
     String lastAtom = "";
     int iAtom = -1;
     int[][] sdata = new int[moCount][4];
-    List<float[]>[] sgdata = ArrayUtil.createArrayOfArrayList(moCount);
+    JmolList<float[]>[] sgdata = ArrayUtil.createArrayOfArrayList(moCount);
     String[] tokens;
     gaussianCount = 0;
 
@@ -197,22 +197,22 @@ public class JaguarReader extends MOReader {
           sdata[iFunc][1] = iType;
           sdata[iFunc][2] = 0; //pointer
           sdata[iFunc][3] = 0; //count
-          sgdata[iFunc] = new ArrayList<float[]>();
+          sgdata[iFunc] = new  JmolList<float[]>();
         }
         float factor = 1;//(iType == 3 ? 1.73205080756887729f : 1);
         //System.out.println("slater: " + iAtom + " " + iType + " " + gaussianCount + " " + nGaussians);
-        sgdata[iFunc].add(new float[] { parseFloatStr(tokens[6]),
+        sgdata[iFunc].addLast(new float[] { parseFloatStr(tokens[6]),
             parseFloatStr(tokens[8]) * factor });
         gaussianCount += jCont;
         for (int i = jCont - 1; --i >= 0;) {
           tokens = getTokensStr(readLine());
-          sgdata[iFunc].add(new float[] { parseFloatStr(tokens[6]),
+          sgdata[iFunc].addLast(new float[] { parseFloatStr(tokens[6]),
               parseFloatStr(tokens[8]) * factor });
         }
       }
     }
     float[][] garray = ArrayUtil.newFloat2(gaussianCount);
-    List<int[]> sarray = new ArrayList<int[]>();
+    JmolList<int[]> sarray = new  JmolList<int[]>();
     gaussianCount = 0;
     for (int i = 0; i < moCount; i++)
       if (sgdata[i] != null) {
@@ -222,7 +222,7 @@ public class JaguarReader extends MOReader {
         for (int j = 0; j < n; j++) {
           garray[gaussianCount++] = sgdata[i].get(j);
         }
-        sarray.add(sdata[i]);
+        sarray.addLast(sdata[i]);
       }
     moData.put("shells", sarray);
     moData.put("gaussians", garray);
@@ -263,8 +263,8 @@ public class JaguarReader extends MOReader {
     String id;
     int iFunc = 0;
     int iFuncLast = -1;
-    List<int[]> sarray = new ArrayList<int[]>();
-    List<float[]> gdata = new ArrayList<float[]>();
+    JmolList<int[]> sarray = new  JmolList<int[]>();
+    JmolList<float[]> gdata = new  JmolList<float[]>();
     gaussianCount = 0;
     int[] sdata = null;
     discardLinesUntilContains("--------");
@@ -283,7 +283,7 @@ public class JaguarReader extends MOReader {
       if (iFunc == iFuncLast) {
       } else {
         sdata = new int[] { iAtom, iType, gaussianCount, 0 };
-        sarray.add(sdata);
+        sarray.addLast(sdata);
         iFuncLast = iFunc;
       }
       gaussianCount++;
@@ -292,7 +292,7 @@ public class JaguarReader extends MOReader {
       float rCoef = parseFloatStr(tokens[5]);
       if (id.equals("XX"))
         rCoef *= ROOT3;
-      gdata.add(new float[] { z, rCoef });
+      gdata.addLast(new float[] { z, rCoef });
     }
 
     float[][] garray = ArrayUtil.newFloat2(gaussianCount);

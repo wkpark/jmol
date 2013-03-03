@@ -25,10 +25,10 @@ package org.jmol.jvxl.readers;
 
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 import java.util.Hashtable;
-import java.util.List;
+
 
 
 import org.jmol.io.XmlReader;
@@ -803,7 +803,7 @@ public class JvxlXmlReader extends VolumeFileReader {
 
   protected void jvxlDecodeContourData(JvxlData jvxlData, String data)
       throws Exception {
-    List<List<Object>> vs = new ArrayList<List<Object>>();
+    JmolList<JmolList<Object>> vs = new  JmolList<JmolList<Object>>();
     SB values = new SB();
     SB colors = new SB();
     int pt = -1;
@@ -811,7 +811,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     if (data == null)
       return;
     while ((pt = data.indexOf("<jvxlContour", pt + 1)) >= 0) {
-      List<Object> v = new ArrayList<Object>();
+      JmolList<Object> v = new  JmolList<Object>();
       String s = xr.getXmlData("jvxlContour", data.substring(pt), true, false);
       float value = parseFloatStr(XmlReader.getXmlAttrib(s, "value"));
       values.append(" ").appendF(value);
@@ -826,7 +826,7 @@ public class JvxlXmlReader extends VolumeFileReader {
       int n = bs.length();
       IsosurfaceMesh.setContourVector(v, n, bs, value, colix, color,
           SB.newS(fData));
-      vs.add(v);
+      vs.addLast(v);
     }
     int n = vs.size();
     if (n > 0) {

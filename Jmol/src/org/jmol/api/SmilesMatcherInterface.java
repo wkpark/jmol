@@ -1,8 +1,9 @@
 package org.jmol.api;
 
-import java.util.List;
+
 
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.JmolNode;
 
 public interface SmilesMatcherInterface {
@@ -44,5 +45,5 @@ public interface SmilesMatcherInterface {
 
   public abstract void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
                                            int flags,
-                         BS bsSelected, List<BS> bitSets, List<BS>[] vRings);
+                         BS bsSelected, JmolList<BS> bitSets, JmolList<BS>[] vRings);
 }

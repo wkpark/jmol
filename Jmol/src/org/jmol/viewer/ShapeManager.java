@@ -25,7 +25,7 @@ package org.jmol.viewer;
 
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -39,6 +39,7 @@ import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.util.BS;
 import org.jmol.util.GData;
+import org.jmol.util.JmolList;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
@@ -329,7 +330,7 @@ public class ShapeManager {
         Shape shape = shapes[i];
         if (shape != null) {
           String shapeType = JC.shapeClassBases[i];
-          List<Map<String, Object>> shapeDetail = shape.getShapeDetail();
+          JmolList<Map<String, Object>> shapeDetail = shape.getShapeDetail();
           if (shapeDetail != null)
             info.put(shapeType, shapeDetail);
         }

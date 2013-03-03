@@ -1,7 +1,7 @@
 package org.jmol.api;
 
 import java.io.OutputStream;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.modelset.Group;
@@ -11,6 +11,7 @@ import org.jmol.shape.AtomShape;
 import org.jmol.shape.Shape;
 import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
+import org.jmol.util.JmolList;
 import org.jmol.util.SB;
 import org.jmol.viewer.Viewer;
 
@@ -41,7 +42,7 @@ public interface JmolStateCreator {
   void getShapeSetState(AtomShape atomShape, Shape shape, int monomerCount, Group[] monomers,
                      BS bsSizeDefault, Map<String, BS> temp, Map<String, BS> temp2);
 
-  String getMeasurementState(AtomShape as, List<Measurement> mList, int measurementCount,
+  String getMeasurementState(AtomShape as, JmolList<Measurement> mList, int measurementCount,
                              JmolFont font3d, TickInfo tickInfo);
 
   String getBondState(Shape shape, BS bsOrderSet, boolean reportAll);

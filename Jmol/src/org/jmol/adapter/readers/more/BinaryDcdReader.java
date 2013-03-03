@@ -176,7 +176,7 @@ ICNTRL(20)=VERNUM ! version number
         P3[] trajectoryStep = new P3[atomCount];
         if (!getTrajectoryStep(trajectoryStep))
           return;
-        trajectorySteps.add(trajectoryStep);
+        trajectorySteps.addLast(trajectoryStep);
         if (isLastModel(modelNumber))
           return;
       } else {

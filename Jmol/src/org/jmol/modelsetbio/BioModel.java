@@ -23,9 +23,9 @@
  */
 package org.jmol.modelsetbio;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -194,7 +194,7 @@ public final class BioModel extends Model{
   public int calculateStruts(ModelSet modelSet, BS bs1, BS bs2) {
 
     // only check the atoms in THIS model
-    List<Atom> vCA = new ArrayList<Atom>();
+    JmolList<Atom> vCA = new  JmolList<Atom>();
     Atom a1 = null;
     BS bsCheck;
     if (bs1.equals(bs2)) {
@@ -210,14 +210,14 @@ public final class BioModel extends Model{
       if (atoms[i].isVisible(0)
           && atoms[i].atomID == JC.ATOMID_ALPHA_CARBON
           && atoms[i].getGroupID() != JC.GROUPID_CYSTEINE)
-        vCA.add((a1 = atoms[i]));
+        vCA.addLast((a1 = atoms[i]));
     if (vCA.size() == 0)
       return 0;    
     float thresh = viewer.getStrutLengthMaximum();
     short mad = (short) (viewer.getStrutDefaultRadius() * 2000);
     int delta = viewer.getStrutSpacingMinimum();
     boolean strutsMultiple = viewer.getStrutsMultiple();
-    List<Atom[]> struts = getBioPolymer(a1.getPolymerIndexInModel())
+    JmolList<Atom[]> struts = getBioPolymer(a1.getPolymerIndexInModel())
         .calculateStruts(modelSet, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
       Atom[] o = struts.get(i);
@@ -243,7 +243,7 @@ public final class BioModel extends Model{
   
   
   @Override
-  public void getPolymerPointsAndVectors(BS bs, List<P3[]> vList,
+  public void getPolymerPointsAndVectors(BS bs, JmolList<P3[]> vList,
                                          boolean isTraceAlpha,
                                          float sheetSmoothing) {
     int last = Integer.MAX_VALUE - 1;
@@ -265,7 +265,7 @@ public final class BioModel extends Model{
 
   
   @Override
-  public List<BS> getBioBranches(List<BS> biobranches) {
+  public JmolList<BS> getBioBranches(JmolList<BS> biobranches) {
     // scan through biopolymers quickly -- 
     BS bsBranch;
     for (int j = 0; j < bioPolymerCount; j++) {
@@ -274,7 +274,7 @@ public final class BioModel extends Model{
       int iAtom = bsBranch.nextSetBit(0);
       if (iAtom >= 0) {
         if (biobranches == null)
-          biobranches = new ArrayList<BS>();
+          biobranches = new  JmolList<BS>();
         biobranches.add(bsBranch);
       }
     }
@@ -311,12 +311,12 @@ public final class BioModel extends Model{
 
   @Override
   public void getRasmolHydrogenBonds(BS bsA, BS bsB,
-                                     List<Bond> vHBonds, boolean nucleicOnly,
+                                     JmolList<Bond> vHBonds, boolean nucleicOnly,
                                      int nMax, boolean dsspIgnoreHydrogens,
                                      BS bsHBonds) {    
     boolean doAdd = (vHBonds == null);
     if (doAdd)
-      vHBonds = new ArrayList<Bond>();
+      vHBonds = new  JmolList<Bond>();
     if (nMax < 0)
       nMax = Integer.MAX_VALUE;
     boolean asDSSP = (bsB == null);
@@ -438,19 +438,19 @@ public final class BioModel extends Model{
   @Override
   public void getAllPolymerInfo(
                                 BS bs,
-                                Map<String, List<Map<String, Object>>> finalInfo,
-                                List<Map<String, Object>> modelVector) {
+                                Map<String, JmolList<Map<String, Object>>> finalInfo,
+                                JmolList<Map<String, Object>> modelVector) {
     Map<String, Object> modelInfo = new Hashtable<String, Object>();
-    List<Map<String, Object>> info = new ArrayList<Map<String, Object>>();
+    JmolList<Map<String, Object>> info = new  JmolList<Map<String, Object>>();
     for (int ip = 0; ip < bioPolymerCount; ip++) {
       Map<String, Object> polyInfo = bioPolymers[ip].getPolymerInfo(bs); 
       if (!polyInfo.isEmpty())
-        info.add(polyInfo);
+        info.addLast(polyInfo);
     }
     if (info.size() > 0) {
       modelInfo.put("modelIndex", Integer.valueOf(modelIndex));
       modelInfo.put("polymers", info);
-      modelVector.add(modelInfo);
+      modelVector.addLast(modelInfo);
     }
   }
   

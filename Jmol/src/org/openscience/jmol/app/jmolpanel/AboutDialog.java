@@ -53,7 +53,7 @@ class AboutDialog extends JDialog implements HyperlinkListener {
   
 /*  
   private JButton backButton;
-  private List<URL> history = new ArrayList<URL>();
+  private JmolList<URL> history = new  JmolList<URL>();
   private URL thisURL;
 
   private void addToHistory(URL url) {

@@ -27,6 +27,7 @@ import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 import org.jmol.viewer.JC;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
@@ -632,9 +633,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     clearHistory = Boolean.getBoolean("clearHistory");
 
     minBondDistance =
-      Float.valueOf(currentProperties.getProperty("minBondDistance")).floatValue();
+      Parser.fVal(currentProperties.getProperty("minBondDistance"));
     bondTolerance =
-      Float.valueOf(currentProperties.getProperty("bondTolerance")).floatValue();
+      Parser.fVal(currentProperties.getProperty("bondTolerance"));
     marBond = Short.parseShort(currentProperties.getProperty("marBond"));
     percentVdwAtom =
       Integer.parseInt(currentProperties.getProperty("percentVdwAtom"));

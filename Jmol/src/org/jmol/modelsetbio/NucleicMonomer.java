@@ -25,13 +25,14 @@
 package org.jmol.modelsetbio;
 
 
-import java.util.List;
+
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Chain;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.V3;
@@ -126,6 +127,12 @@ public class NucleicMonomer extends PhosphorusMonomer {
     
   };
 
+  /**
+   * @j2sIgnoreSuperConstructor
+   * 
+   */
+  private NucleicMonomer() {}
+  
   public static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstAtomIndex, int lastAtomIndex,
@@ -150,20 +157,18 @@ public class NucleicMonomer extends PhosphorusMonomer {
     checkOptional(offsets, O2P, firstAtomIndex, 
         specialAtomIndexes[JC.ATOMID_OP2]);
 
-    NucleicMonomer nucleicMonomer =
-      new NucleicMonomer(chain, group3, seqcode,
+    return (new NucleicMonomer()).set4(chain, group3, seqcode,
                          firstAtomIndex, lastAtomIndex, offsets);
-    return nucleicMonomer;
   }
 
   ////////////////////////////////////////////////////////////////
 
   private boolean hasRnaO2Prime;
 
-  NucleicMonomer(Chain chain, String group3, int seqcode,
+  private NucleicMonomer set4(Chain chain, String group3, int seqcode,
                  int firstAtomIndex, int lastAtomIndex,
                  byte[] offsets) {
-    super(chain, group3, seqcode,
+    set3(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
     if (!have(offsets, NP)) {
       offsets[0] = offsets[O5Pr];
@@ -174,6 +179,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     this.hasRnaO2Prime = have(offsets, O2Pr);
     this.isPyrimidine = have(offsets, O2);
     this.isPurine = have(offsets, N7) && have(offsets, C8) && have(offsets, N9);
+    return this;
   }
 
   public boolean isNucleicMonomer() { return true; }
@@ -479,7 +485,7 @@ public boolean isCrossLinked(Group g) {
   }
  
   @Override
-  public boolean getCrossLinkLead(List<Integer> vReturn) {
+  public boolean getCrossLinkLead(JmolList<Integer> vReturn) {
     Atom N = (isPurine ? getN1() : getN3());
     //System.out.println(N.getInfo());
     Bond[] bonds = N.getBonds();

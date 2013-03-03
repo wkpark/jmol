@@ -24,10 +24,10 @@
 
 package org.jmol.shapesurface;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -238,7 +238,7 @@ public class IsosurfaceMesh extends Mesh {
    */
   @SuppressWarnings("unchecked")
   public
-  List<Object>[] getContours() {
+  JmolList<Object>[] getContours() {
     int n = jvxlData.nContours;
     if (n == 0 || polygonIndexes == null)
       return null;
@@ -247,7 +247,7 @@ public class IsosurfaceMesh extends Mesh {
       return null; // not necessary; 
     if (n < 0)
       n = -1 - n;
-    List<Object>[] vContours = jvxlData.vContours;
+    JmolList<Object>[] vContours = jvxlData.vContours;
     if (vContours != null) {
       for (int i = 0; i < n; i++) {
         if (vContours[i].size() > JvxlCoder.CONTOUR_POINTS)
@@ -258,9 +258,9 @@ public class IsosurfaceMesh extends Mesh {
       return jvxlData.vContours;
     }
     //dumpData();
-    vContours = new List[n];
+    vContours = new JmolList[n];
     for (int i = 0; i < n; i++) {
-      vContours[i] = new ArrayList<Object>();
+      vContours[i] = new  JmolList<Object>();
     }
     if (jvxlData.contourValuesUsed == null) {
       float dv = (jvxlData.valueMappedToBlue - jvxlData.valueMappedToRed)
@@ -286,7 +286,7 @@ public class IsosurfaceMesh extends Mesh {
     return jvxlData.vContours = vContours;
   }
 
-  private void get3dContour(List<Object> v, float value, short colix) {
+  private void get3dContour(JmolList<Object> v, float value, short colix) {
     BS bsContour = BSUtil.newBitSet(polygonCount);
     SB fData = new SB();
     int color = C.getArgb(colix);
@@ -297,7 +297,7 @@ public class IsosurfaceMesh extends Mesh {
             iB, iC, value);
   }
 
-  public static void setContourVector(List<Object> v, int nPolygons,
+  public static void setContourVector(JmolList<Object> v, int nPolygons,
                                       BS bsContour, float value,
                                       short colix, int color, SB fData) {
     v.add(JvxlCoder.CONTOUR_NPOLYGONS, Integer.valueOf(nPolygons));
@@ -308,7 +308,7 @@ public class IsosurfaceMesh extends Mesh {
     v.add(JvxlCoder.CONTOUR_FDATA, fData);
   }
 
-  public static void addContourPoints(List<Object> v, BS bsContour, int i,
+  public static void addContourPoints(JmolList<Object> v, BS bsContour, int i,
                                       SB fData, P3[] vertices,
                                       float[] vertexValues, int iA, int iB,
                                       int iC, float value) {
@@ -472,11 +472,11 @@ public class IsosurfaceMesh extends Mesh {
     ht.put("values",
         (jvxlData.contourValuesUsed == null ? jvxlData.contourValues
             : jvxlData.contourValuesUsed));
-    List<P3> colors = new ArrayList<P3>();
+    JmolList<P3> colors = new  JmolList<P3>();
     if (jvxlData.contourColixes != null) {
       // set in SurfaceReader.colorData()
       for (int i = 0; i < jvxlData.contourColixes.length; i++) {
-        colors.add(ColorUtil.colorPointFromInt2(C
+        colors.addLast(ColorUtil.colorPointFromInt2(C
             .getArgb(jvxlData.contourColixes[i])));
       }
       ht.put("colors", colors);
@@ -756,7 +756,7 @@ public class IsosurfaceMesh extends Mesh {
       vertexColixes[i] = ce.getColorIndex(vertexValues[i]);
     setTranslucent(isTranslucent, translucentLevel);
     colorEncoder = ce;
-    List<Object>[] contours = getContours();
+    JmolList<Object>[] contours = getContours();
     if (contours != null) {
       for (int i = contours.length; --i >= 0;) {
         float value = ((Float) contours[i].get(JvxlCoder.CONTOUR_VALUE))

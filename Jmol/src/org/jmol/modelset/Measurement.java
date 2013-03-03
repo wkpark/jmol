@@ -39,8 +39,8 @@ import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 
 public class Measurement {
 
@@ -381,11 +381,11 @@ public class Measurement {
     return sameAsIJ(countPlusIndices, pts, i, j);
   }
 
-  public List<String> toVector(boolean asBitSet) {
-    List<String> V = new ArrayList<String>();
+  public JmolList<String> toVector(boolean asBitSet) {
+    JmolList<String> V = new  JmolList<String>();
     for (int i = 1; i <= count; i++ )
-      V.add(getLabel(i, asBitSet, false));
-    V.add(strMeasurement);
+      V.addLast(getLabel(i, asBitSet, false));
+    V.addLast(strMeasurement);
     return V;  
   }
   
@@ -441,7 +441,7 @@ public class Measurement {
     return !(sameAs(1,2) || count > 2 && sameAs(1,3) || count == 4 && sameAs(2,4));
   }
 
-  public static int find(List<Measurement> measurements, Measurement m) {
+  public static int find(JmolList<Measurement> measurements, Measurement m) {
     int[] indices = m.getCountPlusIndices();
     Point3fi[] points = m.getPoints();
     for (int i = measurements.size(); --i >= 0; )

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.JmolGestureServerInterface;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 
 import com.sparshui.common.ConnectionType;
@@ -32,7 +33,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   ServerSocket _clientSocket;
   ServerSocket _deviceSocket;
   ServerSocket _mySocket;
-  private List<ClientConnection> _clients = new ArrayList<ClientConnection>();
+  private JmolList<ClientConnection> _clients = new JmolList<ClientConnection>();
   private int port;
 
   InputDeviceConnection ic = null;

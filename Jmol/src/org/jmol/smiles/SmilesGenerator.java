@@ -24,10 +24,10 @@
 
 package org.jmol.smiles;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -107,7 +107,7 @@ public class SmilesGenerator {
     BS bsIgnore = new BS();
     String lastComponent = null;
     String s;
-    List<Integer> vLinks = new ArrayList<Integer>();
+    JmolList<Integer> vLinks = new  JmolList<Integer>();
     try {
       int len = 0;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -441,7 +441,7 @@ public class SmilesGenerator {
     int nSp2Atoms = 0;
     int atomicNumber = atom.getElementNumber();
     int nH = 0;
-    List<JmolEdge> v = new ArrayList<JmolEdge>();
+    JmolList<JmolEdge> v = new  JmolList<JmolEdge>();
     JmolEdge bond0 = null;
     JmolEdge bondPrev = null;
     JmolEdge[] bonds = atom.getEdges();
@@ -481,7 +481,7 @@ public class SmilesGenerator {
           if (nH > 1)
             stereoFlag = 10;
         } else {
-          v.add(bonds[i]);
+          v.addLast(bonds[i]);
         }
       }
 
@@ -689,11 +689,11 @@ public class SmilesGenerator {
    * @param v
    * @return  "@" or "@@" or ""
    */
-  private String sortInorganic(JmolNode atom, List<JmolEdge> v) {
+  private String sortInorganic(JmolNode atom, JmolList<JmolEdge> v) {
     int atomIndex = atom.getIndex();
     int n = v.size();
-    List<JmolEdge[]> axialPairs = new ArrayList<JmolEdge[]>();
-    List<JmolEdge> bonds = new ArrayList<JmolEdge>();
+    JmolList<JmolEdge[]> axialPairs = new  JmolList<JmolEdge[]>();
+    JmolList<JmolEdge> bonds = new  JmolList<JmolEdge>();
     JmolNode a1, a2;
     JmolEdge bond1, bond2;
     BS bsDone = new BS();
@@ -718,14 +718,14 @@ public class SmilesGenerator {
         bond2 = v.get(j);
         a2 = bond2.getOtherAtomNode(atom);
         if (SmilesSearch.isDiaxial(atom, atom, a1, a2, vTemp, -0.95f)) {
-          axialPairs.add(new JmolEdge[] { bond1, bond2 });
+          axialPairs.addLast(new JmolEdge[] { bond1, bond2 });
           isAxial = true;
           bsDone.set(j);
           break;
         }
       }
       if (!isAxial)
-        bonds.add(bond1);
+        bonds.addLast(bond1);
     }
     int nPairs = axialPairs.size();
 
@@ -742,21 +742,21 @@ public class SmilesGenerator {
     // now sort them into the ligand vector in the proper order
     
     v.clear();
-    v.add(bond1);
+    v.addLast(bond1);
     if (nPairs > 1)
-      bonds.add(axialPairs.get(1)[0]);
+      bonds.addLast(axialPairs.get(1)[0]);
     if (nPairs == 3)
-      bonds.add(axialPairs.get(2)[0]);
+      bonds.addLast(axialPairs.get(2)[0]);
     if (nPairs > 1)
-      bonds.add(axialPairs.get(1)[1]);
+      bonds.addLast(axialPairs.get(1)[1]);
     if (nPairs == 3)
-      bonds.add(axialPairs.get(2)[1]);
+      bonds.addLast(axialPairs.get(2)[1]);
     for (int i = 0; i < bonds.size(); i++) {
       bond1 = bonds.get(i);
-      v.add(bond1);
+      v.addLast(bond1);
       stereo[i + 1] = bond1.getOtherAtomNode(atom);
     }
-    v.add(pair0[1]);
+    v.addLast(pair0[1]);
     
     // now deterimine the stereochemistry
     

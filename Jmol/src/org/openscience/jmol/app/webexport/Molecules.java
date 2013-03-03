@@ -142,7 +142,7 @@ class Molecules extends JPanel {//implements ActionListener {
 //
 //    //Create the list and list view to handle the list of 
 //    //orbital files.
-//    ArrayListTransferHandler arrayListHandler = new ArrayListTransferHandler(
+//    ArrayListTransferHandler arrayListHandler = new JmolListTransferHandler(
 //        null);
 //    DefaultListModel Molecfilelist = new DefaultListModel();
 //    MolecList = new JList(Molecfilelist);

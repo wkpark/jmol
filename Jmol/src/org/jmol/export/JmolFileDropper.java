@@ -40,11 +40,12 @@ import java.beans.PropertyChangeSupport;
 
 import java.io.File;
 
-import java.util.List;
+
 
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 
 
@@ -105,7 +106,7 @@ public class JmolFileDropper implements DropTargetListener {
     viewer.openFileAsyncPDB(fname, true);
   }
 
-  private void loadFiles(List<File> fileList) {
+  private void loadFiles(JmolList<File> fileList) {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < fileList.size(); ++ i) {
       File f = fileList.get(i);
@@ -166,8 +167,8 @@ public class JmolFileDropper implements DropTargetListener {
           Logger.error("transfer failed");
         }
         // if o is still null we had an exception
-        if (o instanceof List) {
-          List<File> fileList = (List<File>) o;
+        if (o instanceof JmolList) {
+          JmolList<File> fileList = (JmolList<File>) o;
           final int length = fileList.size();
           if (length == 1) {
             String fileName = fileList.get(0).getAbsolutePath().trim();

@@ -23,8 +23,8 @@
  */
 package org.openscience.jvxl.simplewriter;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 
 
 import org.jmol.jvxl.calc.MarchingCubes;
@@ -55,13 +55,13 @@ public class SimpleMarchingCubes extends MarchingCubes {
   private boolean doSaveSurfacePoints;
   private float calculatedArea = Float.NaN;
   private float calculatedVolume = Float.NaN;
-  private List<P3> surfacePoints;  
+  private JmolList<P3> surfacePoints;  
   private VoxelDataCreator vdc;
 
 
   public SimpleMarchingCubes(VoxelDataCreator vdc, VolumeData volumeData,
       Parameters params, JvxlData jvxlData, 
-      List<P3> surfacePointsReturn, float[] areaVolumeReturn) {
+      JmolList<P3> surfacePointsReturn, float[] areaVolumeReturn) {
 
     // when just creating a JVXL file all you really need are:
     //
@@ -83,7 +83,7 @@ public class SimpleMarchingCubes extends MarchingCubes {
     doCalcArea = (areaVolumeReturn != null);
     surfacePoints = surfacePointsReturn;
     if (surfacePoints == null && doCalcArea)
-      surfacePoints = new ArrayList<P3>();
+      surfacePoints = new  JmolList<P3>();
     doSaveSurfacePoints = (surfacePoints != null);
     jvxlData.jvxlEdgeData = getEdgeData();
     jvxlData.nPointsX = volumeData.voxelCounts[0];
@@ -118,7 +118,7 @@ public class SimpleMarchingCubes extends MarchingCubes {
     if (doSaveSurfacePoints) {
       P3 pt = new P3();
       pt.scaleAdd2(f, edgeVector, pointA);
-      surfacePoints.add(pt);
+      surfacePoints.addLast(pt);
     }
     return edgeCount++;
   }

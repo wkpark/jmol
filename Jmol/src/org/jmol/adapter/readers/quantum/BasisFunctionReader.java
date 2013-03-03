@@ -27,10 +27,10 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -40,10 +40,10 @@ import java.util.Map;
  */
 abstract class BasisFunctionReader extends AtomSetCollectionReader {
 
-  protected List<int[]> shells;
+  protected JmolList<int[]> shells;
 
   protected Map<String, Object> moData = new Hashtable<String, Object>();
-  protected List<Map<String, Object>> orbitals = new ArrayList<Map<String, Object>>();
+  protected JmolList<Map<String, Object>> orbitals = new  JmolList<Map<String, Object>>();
   protected int nOrbitals = 0;
   protected boolean ignoreMOs = false;
   protected String alphaBeta = "";
@@ -86,7 +86,7 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
   protected void setMO(Map<String, Object> mo) {
     if (dfCoefMaps != null)
       mo.put("dfCoefMaps", dfCoefMaps);
-    orbitals.add(mo);
+    orbitals.addLast(mo);
   }
   
   // Jmol's ordering is based on GAUSSIAN

@@ -24,10 +24,10 @@
 
 package org.jmol.script;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 //import javax.vecmath.Point3f;
@@ -82,7 +82,7 @@ public class T {
   
   final static int seqcode    =  5;
   final static int hash       =  6;  // associative array; Hashtable
-  final static int varray     =  7;  // List<ScriptVariable>
+  final static int varray     =  7;  // JmolList<ScriptVariable>
   final static int point3f    =  8;
   final static int point4f    =  9;  
   public final static int bitset     =  10;
@@ -1404,9 +1404,9 @@ public class T {
     return cmds;
   }
   
-  public static List<T> getAtomPropertiesLike(String type) {
+  public static JmolList<T> getAtomPropertiesLike(String type) {
     type = type.toLowerCase();
-    List<T> v = new ArrayList<T>();
+    JmolList<T> v = new  JmolList<T>();
     boolean isAll = (type.length() == 0);
     for (Map.Entry<String, T> entry : tokenMap.entrySet()) {
       String name = entry.getKey();
@@ -1416,7 +1416,7 @@ public class T {
       if (tokAttr(token.tok, atomproperty) && (isAll || name.toLowerCase().startsWith(type))) {
         if (isAll || !((String) token.value).toLowerCase().startsWith(type))
           token = o(token.tok, name);
-        v.add(token);
+        v.addLast(token);
       }
     }
     return (v.size() == 0 ? null : v);
@@ -1427,12 +1427,12 @@ public class T {
         : type.equals("misc") ? misc 
         : type.equals("mathfunc") ? mathfunc : scriptCommand);
     int notattr = (attr == setparam ? deprecatedparam : nada);
-    List<String> v = new ArrayList<String>();
+    JmolList<String> v = new  JmolList<String>();
     for (Map.Entry<String, T> entry : tokenMap.entrySet()) {
       String name = entry.getKey();
       T token = entry.getValue();
       if (tokAttr(token.tok, attr) && (notattr == nada || !tokAttr(token.tok, notattr)))
-        v.add(name);
+        v.addLast(name);
     }
     String[] a = v.toArray(new String[v.size()]);
     Arrays.sort(a);
@@ -1452,7 +1452,7 @@ public class T {
       map = tokenMap;
     else
       asCommand = false;
-    List<String> v = new ArrayList<String>();
+    JmolList<String> v = new  JmolList<String>();
     str = str.toLowerCase();
     for (String name : map.keySet()) {
       if (!name.startsWith(str))
@@ -1461,7 +1461,7 @@ public class T {
       if (asCommand ? tokAttr(tok, scriptCommand) 
           : isSet ? tokAttr(tok, setparam) && !tokAttr(tok, deprecatedparam) 
           : true)
-        v.add(name);
+        v.addLast(name);
     }
     return ArrayUtil.sortedItem(v, n);
   }

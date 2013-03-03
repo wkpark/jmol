@@ -24,7 +24,7 @@
 package org.jmol.modelset;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -35,6 +35,7 @@ import org.jmol.io.OutputStringBuilder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
 
@@ -320,7 +321,7 @@ public class Model {
    * @param bioBranches 
    * @return  updated bioBranches 
    */
-  public List<BS> getBioBranches(List<BS> bioBranches) {
+  public JmolList<BS> getBioBranches(JmolList<BS> bioBranches) {
     return bioBranches;
   }
 
@@ -350,7 +351,7 @@ public class Model {
    * @param bsHBonds 
    */
   public void getRasmolHydrogenBonds(BS bsA, BS bsB,
-                                     List<Bond> vHBonds, boolean nucleicOnly,
+                                     JmolList<Bond> vHBonds, boolean nucleicOnly,
                                      int nMax, boolean dsspIgnoreHydrogens,
                                      BS bsHBonds) {
   }
@@ -389,8 +390,8 @@ public class Model {
    */
   public void getAllPolymerInfo(
                                 BS bs,
-                                Map<String, List<Map<String, Object>>> finalInfo,
-                                List<Map<String, Object>> modelVector) {
+                                Map<String, JmolList<Map<String, Object>>> finalInfo,
+                                JmolList<Map<String, Object>> modelVector) {
   }
 
   public int getBioPolymerCount() {
@@ -403,7 +404,7 @@ public class Model {
    * @param isTraceAlpha 
    * @param sheetSmoothing 
    */
-  public void getPolymerPointsAndVectors(BS bs, List<P3[]> vList,
+  public void getPolymerPointsAndVectors(BS bs, JmolList<P3[]> vList,
                                          boolean isTraceAlpha,
                                          float sheetSmoothing) {
   }

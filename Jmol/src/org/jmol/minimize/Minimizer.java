@@ -24,9 +24,9 @@
 
 package org.jmol.minimize;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.MinimizerInterface;
@@ -78,7 +78,7 @@ public class Minimizer implements MinimizerInterface {
   private BS bsFixedDefault;
   private BS bsFixed;
   
-  public List<Object[]> constraints;
+  public JmolList<Object[]> constraints;
   
   private boolean isSilent;
   
@@ -142,7 +142,7 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (constraints == null) {
-      constraints = new ArrayList<Object[]>();
+      constraints = new  JmolList<Object[]>();
       constraintMap = new Hashtable<String, Object[]>();
     }
     if (atoms[1] > atoms[nAtoms]) {
@@ -157,7 +157,7 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     constraintMap.put(id, c);
-    constraints.add(c);
+    constraints.addLast(c);
   }
     
   private void clear() {
@@ -341,7 +341,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   private void getBonds() {
-    List<MinBond> bondInfo = new ArrayList<MinBond>();
+    JmolList<MinBond> bondInfo = new  JmolList<MinBond>();
     bondCount = 0;
     int i1, i2;
     for (int i = 0; i < rawBondCount; i++) {
@@ -366,7 +366,7 @@ public class Minimizer implements MinimizerInterface {
       default:
         bondOrder = 1;
       }
-      bondInfo.add(new MinBond(i, bondCount++, atomMap[i1], atomMap[i2], bondOrder, 0, null));
+      bondInfo.addLast(new MinBond(i, bondCount++, atomMap[i1], atomMap[i2], bondOrder, 0, null));
     }
     minBonds = new MinBond[bondCount];
     for (int i = 0; i < bondCount; i++) {
@@ -381,7 +381,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void getAngles() {
-    List<MinAngle> vAngles = new ArrayList<MinAngle>();
+    JmolList<MinAngle> vAngles = new  JmolList<MinAngle>();
     int[] atomList;
     int ic;
     for (int i = 0; i < bondCount; i++) {
@@ -392,7 +392,7 @@ public class Minimizer implements MinimizerInterface {
         atomList = minAtoms[ib].getBondedAtomIndexes();
         for (int j = atomList.length; --j >= 0;)
           if ((ic = atomList[j]) > ia) {
-            vAngles.add(new MinAngle(new int[] { ia, ib, ic, i,
+            vAngles.addLast(new MinAngle(new int[] { ia, ib, ic, i,
                 minAtoms[ib].getBondIndex(j)}));
             minAtoms[ia].bsVdw.clear(ic);
 /*            System.out.println (" " 
@@ -407,7 +407,7 @@ public class Minimizer implements MinimizerInterface {
         for (int j = atomList.length; --j >= 0;)
           if ((ic = atomList[j]) < ib && ic > ia) {
             vAngles
-                .add(new MinAngle(new int[] { ic, ia, ib, minAtoms[ia].getBondIndex(j),
+                .addLast(new MinAngle(new int[] { ic, ia, ib, minAtoms[ia].getBondIndex(j),
                     i}));
             minAtoms[ic].bsVdw.clear(ib);
 /*
@@ -424,7 +424,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void getTorsions() {
-    List<MinTorsion> vTorsions = new ArrayList<MinTorsion>();
+    JmolList<MinTorsion> vTorsions = new  JmolList<MinTorsion>();
     int id;
     // extend all angles a-b-c by one, but only
     // when when c > b or a > b
@@ -439,7 +439,7 @@ public class Minimizer implements MinimizerInterface {
         for (int j = 0; j < atomList.length; j++) {
           id = atomList[j];
           if (id != ia && id != ib) {
-            vTorsions.add(new MinTorsion(new int[] { ia, ib, ic, id, 
+            vTorsions.addLast(new MinTorsion(new int[] { ia, ib, ic, id, 
                 angle[ForceField.ABI_IJ], angle[ForceField.ABI_JK],
                 minAtoms[ic].getBondIndex(j) }));
               minAtoms[Math.min(ia, id)].bs14.set(Math.max(ia, id));
@@ -456,7 +456,7 @@ public class Minimizer implements MinimizerInterface {
         for (int j = 0; j < atomList.length; j++) {
           id = atomList[j];
           if (id != ic && id != ib) {
-            vTorsions.add(new MinTorsion(new int[] { ic, ib, ia, id, 
+            vTorsions.addLast(new MinTorsion(new int[] { ic, ib, ia, id, 
                 angle[ForceField.ABI_JK], angle[ForceField.ABI_IJ],
                 minAtoms[ia].getBondIndex(j) }));
             minAtoms[Math.min(ic, id)].bs14.set(Math.max(ic, id));

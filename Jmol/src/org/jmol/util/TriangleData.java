@@ -1,7 +1,7 @@
 package org.jmol.util;
 
 
-import java.util.List;
+
 
 
 public class TriangleData {
@@ -306,9 +306,9 @@ public class TriangleData {
    */
 
 
-  public static List<Object> intersectPlane(Point4f plane, List<Object> v, int flags) {
+  public static JmolList<Object> intersectPlane(Point4f plane, JmolList<Object> v, int flags) {
     if (plane == null) {
-      v.add(fullCubePolygon);
+      v.addLast(fullCubePolygon);
       return v;
     }
     P3[] vertices = (P3[]) v.get(0);
@@ -350,7 +350,7 @@ public class TriangleData {
       //System.out.println();
       int nPoints = BSUtil.cardinalityOf(bsPoints);
       P3[] pts = new P3[nPoints];
-      v.add(pts);
+      v.addLast(pts);
       int[]list = new int[12];
       int ptList = 0;
       for (int i = 0; i < triangles.length; i++) {
@@ -365,7 +365,7 @@ public class TriangleData {
       }
       
       int[][]polygons = ArrayUtil.newInt2(triangles.length >> 2);
-      v.add(polygons);
+      v.addLast(polygons);
       for (int i = 0; i < triangles.length; i++)
           polygons[i >> 2] = new int[] { list[triangles[i++]], 
               list[triangles[i++]], list[triangles[i++]], triangles[i] };
@@ -376,15 +376,15 @@ public class TriangleData {
       P3 pt2 = edgePoints[triangles[i++]];
       P3 pt3 = edgePoints[triangles[i++]];
       if ((flags & 1) == 1)
-        v.add(new P3[] { pt1, pt2, pt3 });
+        v.addLast(new P3[] { pt1, pt2, pt3 });
       if ((flags & 2) == 2) {
         byte b = triangles[i];
         if ((b & 1) == 1)
-          v.add(new P3[] { pt1, pt2 });
+          v.addLast(new P3[] { pt1, pt2 });
         if ((b & 2) == 2)
-          v.add(new P3[] { pt2, pt3 });
+          v.addLast(new P3[] { pt2, pt3 });
         if ((b & 4) == 4)
-          v.add(new P3[] { pt1, pt3 });
+          v.addLast(new P3[] { pt1, pt3 });
       }
     }
     return v;

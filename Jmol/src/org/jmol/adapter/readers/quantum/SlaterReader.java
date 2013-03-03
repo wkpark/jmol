@@ -27,10 +27,10 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
+
 import java.util.Map;
 
 /**
@@ -46,7 +46,7 @@ abstract class SlaterReader extends BasisFunctionReader {
    * 
    */
 
-  protected final List<SlaterData> slaters = new ArrayList<SlaterData>();
+  protected final JmolList<SlaterData> slaters = new  JmolList<SlaterData>();
   protected SlaterData[] slaterArray;
   
   /**
@@ -74,12 +74,12 @@ abstract class SlaterReader extends BasisFunctionReader {
   protected final void addSlater(int iAtom, int a, int b, int c, int d, 
                         double zeta, float coef) {
     //System.out.println ("SlaterReader " + slaters.size() + ": " + iAtom + " " + a + " " + b +  " " + c + " " + d + " " + zeta + " " + coef);
-    slaters.add(new SlaterData(iAtom, a, b, c, d, zeta, coef));
+    slaters.addLast(new SlaterData(iAtom, a, b, c, d, zeta, coef));
   }
 
   protected void addSlater(SlaterData sd, int n) {
     sd.index = n;
-    slaters.add(sd);    
+    slaters.addLast(sd);    
   }
 
   /**
@@ -159,7 +159,7 @@ abstract class SlaterReader extends BasisFunctionReader {
     Arrays.sort(array, new OrbitalSorter());
     orbitals.clear();
     for (int i = 0; i < array.length; i++)
-      orbitals.add(array[i]);    
+      orbitals.addLast(array[i]);    
   }
   
   class OrbitalSorter implements Comparator<Map<String, Object>> {

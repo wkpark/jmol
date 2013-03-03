@@ -1,9 +1,9 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2009-09-20 18:53:37 -0500 (Sun, 20 Sep 2009) $
- * $Revision: 11558 $
+ * $Date: 2007-04-26 16:57:51 -0500 (Thu, 26 Apr 2007) $
+ * $Revision: 7502 $
  *
- * Copyright (C) 2002-2005  The Jmol Development Team
+ * Copyright (C) 2005  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -22,27 +22,48 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.multitouch;
+package org.jmol.util;
 
+import java.util.ArrayList;
 
+/**
+ * created to remove ambiguities in add and remove
+ * 
+ * @param <V>
+ */
+public class JmolList<V> extends ArrayList<V> {
 
-import java.util.List;
-import org.jmol.util.P3;
-
-import com.sparshui.GestureType;
-
-public interface JmolMultiTouchClient {
+  //needed?
+  public JmolList() {
+    super();  
+  }
   
-  /*
-   * An interface that involves only Java 1.4-compliant classes.
-   * 
-   * ActionManagerMT implements this interface.
-   * It is connected to the SparshUI code (com.sparshui.client) 
-   * within org.jmol.multitouch.sparshui.SparshClient
-   * 
-   */
-  public int getGroupID(int x, int y);
-  public List<GestureType> getAllowedGestures(int groupID);
-  public void processEvent(int groupID, int eventType, int touchID, 
-                           int iData, P3 pt, long time);
+  public boolean addLast(V v) {
+    /**
+     * no overloading of add(Object) in JavaScript
+     * 
+     * @j2sNative
+     * 
+     * return this.add1(v);
+     *  
+     */
+    {
+      return super.add(v);
+    }
+  }
+  
+  public boolean removeObj(Object v) {
+    /**
+     * no overloading of add(Object) in JavaScript
+     * 
+     * @j2sNative
+     * 
+     * return this.removeObject(v);
+     *  
+     */
+    {
+      return super.remove(v);
+    }
+  }
+  
 }

@@ -25,10 +25,10 @@
 
 package org.jmol.modelset;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
+
 
 
 import org.jmol.atomdata.AtomData;
@@ -117,8 +117,8 @@ abstract public class AtomCollection {
   public Atom[] atoms;
   public int atomCount;
 
-  public List<P3> getAtomPointVector(BS bs) {
-    List<P3> v = new ArrayList<P3>();
+  public JmolList<P3> getAtomPointVector(BS bs) {
+    JmolList<P3> v = new  JmolList<P3>();
     if (bs != null) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
         v.add(atoms[i]);
@@ -434,13 +434,13 @@ abstract public class AtomCollection {
   protected void setAtomCoord2(BS bs, int tokType, Object xyzValues) {
     P3 xyz = null;
     P3[] values = null;
-    List<P3> v = null;
+    JmolList<P3> v = null;
     int type = 0;
     int nValues = 1;
     if (xyzValues instanceof P3) {
       xyz = (P3) xyzValues;
-    } else if (xyzValues instanceof List<?>) {
-      v = (List<P3>) xyzValues;
+    } else if (xyzValues instanceof JmolList<?>) {
+      v = (JmolList<P3>) xyzValues;
       if ((nValues = v.size()) == 0)
         return;
       type = 1;
@@ -1162,7 +1162,7 @@ abstract public class AtomCollection {
    */
   public P3[][] calculateHydrogens(BS bs, int[] nTotal,
                                             boolean doAll, boolean justCarbon,
-                                            List<Atom> vConnect) {
+                                            JmolList<Atom> vConnect) {
     V3 z = new V3();
     V3 x = new V3();
     P3[][] hAtoms = new P3[atomCount][];
@@ -2302,7 +2302,7 @@ abstract public class AtomCollection {
     if (pt < len && identifier.charAt(pt) == '^')
       if (++pt < len)
         insertionCode = identifier.charAt(pt);
-    int seqcode = Group.getSeqcode(seqNumber, insertionCode);
+    int seqcode = Group.getSeqcodeFor(seqNumber, insertionCode);
     BS bsInsert = getSeqcodeBits(seqcode, false);
     if (bsInsert == null) {
       if (insertionCode != ' ')

@@ -602,5 +602,33 @@ public class Parser {
     return Math.round (f * n) / n;
   }
 
-  
+  public static double dVal(String s) throws NumberFormatException {
+    /**
+     * @j2sNative
+     * 
+     * if(s==null){
+     *   throw new NumberFormatException("null");
+     * }
+     * var d=parseFloat(s);
+     * if(isNaN(d))
+     *  throw new NumberFormatException("Not a Number : "+s);
+     * return d 
+     * 
+     */
+    {
+      return Double.valueOf(s).doubleValue();
+    }
+  }
+
+  public static float fVal(String s) throws NumberFormatException {
+    /**
+     * @j2sNative
+     * 
+     * return dVal(s);
+     */
+    {
+      return Float.valueOf(s).floatValue();
+    }
+  }
+
 }

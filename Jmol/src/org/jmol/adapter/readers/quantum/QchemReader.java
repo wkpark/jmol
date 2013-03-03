@@ -30,11 +30,12 @@ import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 /**
@@ -275,8 +276,8 @@ $end
     int shellCount = 0;
     int gaussianCount = 0;
     // local variables
-    shells = new ArrayList<int[]>();
-    List<String[]> gdata = new ArrayList<String[]>();
+    shells = new  JmolList<int[]>();
+    JmolList<String[]> gdata = new  JmolList<String[]>();
     String[] tokens;
 
     discardLinesUntilStartsWith("$basis");
@@ -295,10 +296,10 @@ $end
       slater[2] = gaussianCount;
       int nGaussians = parseIntStr(tokens[1]);
       slater[3] = nGaussians;
-      shells.add(slater);
+      shells.addLast(slater);
       gaussianCount += nGaussians;
       for (int i = 0; i < nGaussians; i++) {
-        gdata.add(getTokensStr(readLine()));
+        gdata.addLast(getTokensStr(readLine()));
       }
     }
     // now rearrange the gaussians (direct copy from GaussianReader)
@@ -674,7 +675,7 @@ $end
       // we have all the info we need 
       for (int i = 0; i < nMO; i++) {
         MOInfo moInfo = moInfos[moid[i]];
-        mos[i].put("energy", Float.valueOf(energy[i]));
+        mos[i].put("energy", Float.valueOf(Parser.fVal(energy[i])));
         mos[i].put("coefficients", mocoef[i]);
         String label = alphaBeta;
         int ne = moInfo.ne;
@@ -696,7 +697,7 @@ $end
         }
         mos[i].put("symmetry", moInfo.moSymmetry + label + "("
             + (moid[i] + 1) + ")");
-        orbitals.add(mos[i]);
+        orbitals.addLast(mos[i]);
       }
       nMOs += nMO;
     }

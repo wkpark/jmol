@@ -62,7 +62,7 @@ public class MdCrdReader extends AtomSetCollectionReader {
         P3[] trajectoryStep = new P3[atomCount];
         if (!getTrajectoryStep(trajectoryStep, isPeriodic))
           return;
-        trajectorySteps.add(trajectoryStep);
+        trajectorySteps.addLast(trajectoryStep);
         if (isLastModel(modelNumber))
           return;
       } else {

@@ -48,9 +48,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.Interface;
@@ -339,7 +340,7 @@ public class FileManager {
   private DataReader newDataReader(Object data) {
     String reader = (data instanceof String ? "String"
         : Escape.isAS(data) ? "Array" 
-        : data instanceof List<?> ? "List" : null);
+        : data instanceof JmolList<?> ? "List" : null);
     if (reader == null)
       return null;
     DataReader dr = (DataReader) Interface.getOptionInterface("io2." + reader + "DataReader");
@@ -1197,10 +1198,10 @@ public class FileManager {
     if (dataPath == null)
       return script;
     boolean noPath = (dataPath.length() == 0);
-    List<String> fileNames = new ArrayList<String>();
+    JmolList<String> fileNames = new  JmolList<String>();
     JmolBinary.getFileReferences(script, fileNames);
-    List<String> oldFileNames = new ArrayList<String>();
-    List<String> newFileNames = new ArrayList<String>();
+    JmolList<String> oldFileNames = new  JmolList<String>();
+    JmolList<String> newFileNames = new  JmolList<String>();
     int nFiles = fileNames.size();
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name0 = fileNames.get(iFile);

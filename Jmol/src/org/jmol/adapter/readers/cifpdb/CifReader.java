@@ -34,9 +34,8 @@ import org.jmol.io.CifDataReader;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 
@@ -97,8 +96,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private boolean filterAssembly;
   
 
-  private List<Matrix4f> vBiomts;
-  private List<Map<String, Object>> vBiomolecules;
+  private  JmolList<Matrix4f> vBiomts;
+  private  JmolList<Map<String, Object>> vBiomolecules;
   private Map<String,Matrix4f> htBiomts;
 
   private Map<String, BS> assemblyIdAtoms;
@@ -258,13 +257,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       Map<String, Object> biomolecule = vBiomolecules.get(i);
       String[] ops = TextFormat.split((String) biomolecule.get("operators"), ',');
       String assemblies = (String) biomolecule.get("assemblies");
-      vBiomts = new ArrayList<Matrix4f>();
+      vBiomts = new  JmolList<Matrix4f>();
       biomolecule.put("biomts", vBiomts);
-      vBiomts.add(mident);
+      vBiomts.addLast(mident);
       for (int j = 0; j < ops.length; j++) {
         Matrix4f m = htBiomts.get(ops[j]);
         if (m != null && !m.equals(mident))
-          vBiomts.add(m);
+          vBiomts.addLast(m);
       }
       if (vBiomts.size() < 2)
         return;
@@ -533,7 +532,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
 
   private Map<String, Float> atomTypes;
-  private List<Object[]> bondTypes = new ArrayList<Object[]>();
+  private  JmolList<Object[]> bondTypes = new  JmolList<Object[]>();
 
   private String disorderAssembly = ".";
   private String lastDisorderAssembly;
@@ -1130,15 +1129,15 @@ _pdbx_struct_oper_list.vector[3]
     if (!checkFilterKey("ASSEMBLY " + iMolecule + ";"))
       return;
     if (vBiomolecules == null) {
-      vBiomolecules = new ArrayList<Map<String,Object>>();
+      vBiomolecules = new  JmolList<Map<String,Object>>();
     }
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("molecule", Integer.valueOf(iMolecule));
     info.put("assemblies", "$" + assem[ASSEM_LIST].replace(',', '$'));
     info.put("operators", assem[ASSEM_OPERS]);
-    info.put("biomts", new ArrayList<Matrix4f>());
+    info.put("biomts", new  JmolList<Matrix4f>());
     Logger.info("assembly " + iMolecule + " operators " + assem[ASSEM_OPERS] + " ASYM_IDs " + assem[ASSEM_LIST]);
-    vBiomolecules.add(info);
+    vBiomolecules.addLast(info);
     assem = null;
   }
 
@@ -1332,7 +1331,7 @@ _pdbx_struct_oper_list.vector[3]
       if (atomIndex1 < 0 || atomIndex2 < 0)
         continue;
       if (distance > 0) 
-        bondTypes.add(new Object[] { name1, name2, Float.valueOf(distance), Float.valueOf(dx) });
+        bondTypes.addLast(new Object[] { name1, name2, Float.valueOf(distance), Float.valueOf(dx) });
     }
   }
   

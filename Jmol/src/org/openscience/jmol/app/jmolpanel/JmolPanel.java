@@ -72,10 +72,10 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -557,7 +557,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
    */
   public Action[] getActions() {
 
-    List<Action> actions = new ArrayList<Action>();
+    JmolList<Action> actions = new  JmolList<Action>();
     actions.addAll(Arrays.asList(defaultActions));
     actions.addAll(Arrays.asList(display.getActions()));
     actions.addAll(Arrays.asList(preferencesDialog.getActions()));
@@ -811,10 +811,10 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
    * @return Strings chopped on whitespace boundaries
    */
   protected String[] tokenize(String input) {
-    List<String> v = new ArrayList<String>();
+    JmolList<String> v = new  JmolList<String>();
     StringTokenizer t = new StringTokenizer(input);
     while (t.hasMoreTokens())
-      v.add(t.nextToken());
+      v.addLast(t.nextToken());
     return v.toArray(new String[v.size()]);
   }
 

@@ -1,8 +1,8 @@
 package org.jmol.util;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -289,7 +289,7 @@ public class MeshSurface {
 
 
   
-  public void slabPolygonsList(List<Object[]> slabInfo, boolean allowCap) {
+  public void slabPolygonsList(JmolList<Object[]> slabInfo, boolean allowCap) {
     for (int i = 0; i < slabInfo.size(); i++)
       if (!slabPolygons(slabInfo.get(i), allowCap))
           break;
@@ -492,7 +492,7 @@ public class MeshSurface {
    * @param isGhost       translucent slab, so we mark slabbed triangles
    */
   public void getIntersection(float distance, Point4f plane,
-                              P3[] ptCenters, List<P3[]> vData,
+                              P3[] ptCenters, JmolList<P3[]> vData,
                               float[] fData, BS bsSource,
                               MeshSurface meshSurface, boolean andCap, boolean doClean,
                               int tokType, boolean isGhost) {
@@ -529,7 +529,7 @@ public class MeshSurface {
     double absD = Math.abs(distance);
     float d1, d2, d3, valA, valB, valC;
     int sourceA = 0, sourceB = 0, sourceC = 0, setA = 0;
-    List<int[]> iPts = (andCap ? new ArrayList<int[]>() : null);
+    JmolList<int[]> iPts = (andCap ? new  JmolList<int[]>() : null);
     if (polygonCount == 0) {
       for (int i = mergeVertexCount0; i < vertexCount; i++) {
         if (Float.isNaN(fData[i])
@@ -787,10 +787,10 @@ public class MeshSurface {
             bsSlabGhost.set(i);
         }
         if (doCap) {
-          iPts.add(new int[] { iD, iE });
+          iPts.addLast(new int[] { iD, iE });
         }
       } else if (pts != null) {
-        vData.add(pts);
+        vData.addLast(pts);
       }
     }
     if (andCap && iPts.size() > 0) {

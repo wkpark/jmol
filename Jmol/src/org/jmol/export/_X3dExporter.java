@@ -30,8 +30,8 @@
 package org.jmol.export;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 import java.util.Map;
 
 
@@ -294,7 +294,7 @@ public class _X3dExporter extends _VrmlExporter {
                                short[] polygonColixes,
                                int nVertices, int nPolygons, int nFaces, BS bsPolygons,
                                int faceVertexMax, short colix,
-                               List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
+                               JmolList<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
     output("<Shape>\n");
     outputAppearance(colix, false);
     output("<IndexedFaceSet \n");
@@ -312,9 +312,9 @@ public class _X3dExporter extends _VrmlExporter {
 
     // normals, part 1  
     
-    List<String> vNormals = null;
+    JmolList<String> vNormals = null;
     if (normals != null) {
-      vNormals = new ArrayList<String>();
+      vNormals = new  JmolList<String>();
       map = getNormalMap(normals, nVertices, null, vNormals);
       output("  solid='false'\n  normalPerVertex='true'\n  normalIndex='\n");
       outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);

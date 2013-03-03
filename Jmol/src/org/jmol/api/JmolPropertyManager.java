@@ -1,11 +1,12 @@
 package org.jmol.api;
 
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.SV;
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.viewer.Viewer;
 
@@ -23,7 +24,7 @@ public interface JmolPropertyManager {
 
   Object extractProperty(Object property, SV[] args, int pt);
 
-  List<Map<String, Object>> getMoleculeInfo(ModelSet modelSet,
+  JmolList<Map<String, Object>> getMoleculeInfo(ModelSet modelSet,
                                             Object atomExpression);
 
   Map<String, Object> getModelInfo(Object atomExpression);
@@ -37,11 +38,11 @@ public interface JmolPropertyManager {
 
   String getChimeInfo(int tok, BS selectionSet);
 
-  Map<String, List<Map<String, Object>>> getAllChainInfo(BS atomBitSet);
+  Map<String, JmolList<Map<String, Object>>> getAllChainInfo(BS atomBitSet);
 
-  List<Map<String, Object>> getAllAtomInfo(BS atomBitSet);
+  JmolList<Map<String, Object>> getAllAtomInfo(BS atomBitSet);
 
-  List<Map<String, Object>> getAllBondInfo(BS atomBitSet);
+  JmolList<Map<String, Object>> getAllBondInfo(BS atomBitSet);
 
   void getAtomIdentityInfo(int atomIndex, Map<String, Object> info);
 

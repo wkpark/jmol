@@ -1,7 +1,8 @@
 package org.jmol.api;
 
-import java.util.List;
 
+
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.V3;
 import org.jmol.viewer.TransformManager;
@@ -25,7 +26,7 @@ public interface JmolNavigatorInterface extends Runnable {
 
   void navigateKey(int keyCode, int modifiers);
 
-  void navigateList(JmolScriptEvaluator eval, List<Object[]> list);
+  void navigateList(JmolScriptEvaluator eval, JmolList<Object[]> list);
 
   void navigateAxis(V3 rotAxis, float degrees);
 

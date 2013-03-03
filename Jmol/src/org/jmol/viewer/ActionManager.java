@@ -23,10 +23,10 @@
  */
 package org.jmol.viewer;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -268,7 +268,7 @@ public class ActionManager {
 
   public Map<String, Object> getMouseInfo() {
     Map<String, Object> info = new Hashtable<String, Object>();
-    List<Object> vb = new ArrayList<Object>();
+    JmolList<Object> vb = new  JmolList<Object>();
     Iterator<Object> e = binding.getBindings().values().iterator();
     while (e.hasNext()) {
       Object obj = e.next();
@@ -279,7 +279,7 @@ public class ActionManager {
         obj = new String[] { Binding.getMouseActionName(binding[0], false),
             getActionName(binding[1]) };
       }
-      vb.add(obj);
+      vb.addLast(obj);
     }
     info.put("bindings", vb);
     info.put("bindingName", binding.getName());

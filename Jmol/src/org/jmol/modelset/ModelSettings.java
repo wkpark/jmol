@@ -25,7 +25,7 @@
 
 package org.jmol.modelset;
 
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
@@ -33,6 +33,7 @@ import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
@@ -85,13 +86,13 @@ public class ModelSettings {
     if (id == T.movie) {
       Map<String, Object> movie = (Map<String, Object>) info;
       movie.put("baseModel", Integer.valueOf(modelOffset));
-      List<BS> aStates = (List<BS>)movie.get("states");
+      JmolList<BS> aStates = (JmolList<BS>)movie.get("states");
       for (int i = aStates.size(); --i >= 0;)
         BSUtil.offset(aStates.get(i), 0, atomOffset);
       return;
     }
     if (id == T.define) {
-      List<BS> defs = (List<BS>)info;
+      JmolList<BS> defs = (JmolList<BS>)info;
       for (int i = defs.size(); --i >= 0;)
         BSUtil.offset(defs.get(i), 0, atomOffset);
       return;
@@ -153,7 +154,7 @@ public class ModelSettings {
       sm.loadShape(id);
       MeasurementData md = (MeasurementData) info;
       md.setModelSet(m);
-      List<Object> points = md.points;
+      JmolList<Object> points = md.points;
       for (int i = points.size(); --i >= 0;)
         ((Point3fi) points.get(i)).modelIndex = (short) modelIndex;
       sm.setShapePropertyBs(id, "measure", md, bsAtoms);

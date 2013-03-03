@@ -10,10 +10,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 //import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 import java.util.HashSet;
-import java.util.List;
+
 import java.util.Set;
 
 import org.jmol.util.TextFormat;
@@ -86,7 +86,7 @@ public class _ObjExporter extends __CartesianExporter {
   /** HashSet for textures. */
   Set<Short> textures = new HashSet<Short>();
   /** List of texture files created. */
-  List<String> textureFiles;
+  JmolList<String> textureFiles;
 
   /** Number for the next mesh of this type. */
   private int sphereNum = 1;
@@ -408,7 +408,7 @@ public class _ObjExporter extends __CartesianExporter {
       File file = createTextureFile(name, data, dim);
       if (file == null) {
         System.out.println("Error creating texture file: " + name);
-        textureFiles.add("Error creating texture file: " + name);
+        textureFiles.addLast("Error creating texture file: " + name);
         return;
       }
       String error = "";
@@ -418,7 +418,7 @@ public class _ObjExporter extends __CartesianExporter {
         error = " [Empty]";
       }
       
-      textureFiles.add(file.length() + " (" + width + "x" + height + ") "
+      textureFiles.addLast(file.length() + " (" + width + "x" + height + ") "
           + file.getPath() + error);
       // Add the texture file to the material
       outputMtl(" map_Kd " + file.getName() + "\n");
@@ -474,7 +474,7 @@ public class _ObjExporter extends __CartesianExporter {
     output("\nmtllib " + mtlFile.getName() + "\n");
 
     // Keep a list of texture files created
-    textureFiles = new ArrayList<String>();
+    textureFiles = new  JmolList<String>();
     debugPrint("End initializeOutput:");
     return true;
   }
@@ -946,9 +946,9 @@ public class _ObjExporter extends __CartesianExporter {
     Tuple3f[] normals = data.normals;
     int nNormals = data.normalCount;
     int[] map2 = null;
-    List<String> vNormals = null;
+    JmolList<String> vNormals = null;
     if (normals != null) {
-      vNormals = new ArrayList<String>();
+      vNormals = new  JmolList<String>();
       map2 = getNormalMap(normals, nNormals, bsValid, vNormals);
       nNormals = vNormals.size();
       output("# Number of normals: " + nNormals + "\n");

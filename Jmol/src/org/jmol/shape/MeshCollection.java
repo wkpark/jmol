@@ -30,7 +30,7 @@ import org.jmol.script.T;
 
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -38,6 +38,7 @@ import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
@@ -61,7 +62,7 @@ public abstract class MeshCollection extends Shape {
 
   protected float displayWithinDistance2;
   protected boolean isDisplayWithinNot;
-  protected List<P3> displayWithinPoints;
+  protected JmolList<P3> displayWithinPoints;
   protected BS bsDisplay;
 
   public String[] title;

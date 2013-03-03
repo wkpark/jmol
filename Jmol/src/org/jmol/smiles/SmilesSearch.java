@@ -24,11 +24,11 @@
 
 package org.jmol.smiles;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -89,7 +89,7 @@ public class SmilesSearch extends JmolMolecule {
   boolean needAromatic = true; // we just have to always consider aromatic, except in the case of bioSequences.
   boolean needRingMemberships;
   int ringDataMax = Integer.MIN_VALUE;
-  List<SmilesMeasure> measures = new ArrayList<SmilesMeasure>();
+  JmolList<SmilesMeasure> measures = new  JmolList<SmilesMeasure>();
   
   int flags;
   SB ringSets;
@@ -116,7 +116,7 @@ public class SmilesSearch extends JmolMolecule {
   private int nNested;
   private SmilesBond nestedBond;
 
-  private List<Object> vReturn;
+  private JmolList<Object> vReturn;
   BS bsReturn = new BS();
   private boolean ignoreStereochemistry;
   private boolean noAromatic;
@@ -188,7 +188,7 @@ public class SmilesSearch extends JmolMolecule {
   }
 
   @SuppressWarnings("unchecked")
-  void getRingData(boolean needRingData, int flags, List<BS>[] vRings)
+  void getRingData(boolean needRingData, int flags, JmolList<BS>[] vRings)
       throws InvalidSmilesException {
     boolean aromaticStrict = ((flags & JmolEdge.FLAG_AROMATIC_STRICT) != 0);
     boolean aromaticDefined = ((flags & JmolEdge.FLAG_AROMATIC_DEFINED) != 0);
@@ -214,17 +214,17 @@ public class SmilesSearch extends JmolMolecule {
     while (s.length() < ringDataMax)
       s += s;
 
-    List<Object> v5 = null;
+    JmolList<Object> v5 = null;
     for (int i = 3; i <= ringDataMax; i++) {
       if (i > jmolAtomCount)
         continue;
       String smarts = "*1" + s.substring(0, i - 2) + "*1";
       SmilesSearch search = SmilesParser.getMolecule(smarts, true);
-      List<Object> vR = (List<Object>) subsearch(search, false, true);
+      JmolList<Object> vR = (JmolList<Object>) subsearch(search, false, true);
       if (vRings != null && i <= 5) {
-        List<BS> v = new ArrayList<BS>();
+        JmolList<BS> v = new  JmolList<BS>();
         for (int j = vR.size(); --j >= 0; )
-          v.add((BS) vR.get(j));
+          v.addLast((BS) vR.get(j));
         vRings[i-3] = v;
       }
       if (needAromatic) {
@@ -247,7 +247,7 @@ public class SmilesSearch extends JmolMolecule {
                   bsAromatic);
             else
               SmilesAromatic.checkAromaticStrict(jmolAtoms, bsAromatic, v5, vR);
-            vRings[3] = new ArrayList<BS>();
+            vRings[3] = new  JmolList<BS>();
             setAromatic56(v5, bsAromatic5, 5, vRings[3]);
             setAromatic56(vR, bsAromatic6, 6, vRings[3]);
             break;
@@ -277,7 +277,7 @@ public class SmilesSearch extends JmolMolecule {
     }
   }
 
-  private void setAromatic56(List<Object> vRings, BS bs56, int n56, List<BS> vAromatic56) {
+  private void setAromatic56(JmolList<Object> vRings, BS bs56, int n56, JmolList<BS> vAromatic56) {
     for (int k = 0; k < vRings.size(); k++) {
       BS r = (BS) vRings.get(k);
       v.bsTemp.clearAll();
@@ -286,7 +286,7 @@ public class SmilesSearch extends JmolMolecule {
       if (v.bsTemp.cardinality() == n56) {
         bs56.or(r);
         if (vAromatic56 != null)
-          vAromatic56.add(r);
+          vAromatic56.addLast(r);
       }
     }
   }
@@ -390,7 +390,7 @@ public class SmilesSearch extends JmolMolecule {
       Logger.debug("SmilesSearch processing " + pattern);
 
     if (vReturn == null && (asVector || getMaps))
-      vReturn = new ArrayList<Object>();
+      vReturn = new  JmolList<Object>();
     if (bsSelected == null) {
       bsSelected = BSUtil.newBitSet(jmolAtomCount);
       bsSelected.setBits(0, jmolAtomCount);
@@ -642,7 +642,7 @@ public class SmilesSearch extends JmolMolecule {
         }
         return true;
       case SmilesBond.TYPE_BIO_PAIR:
-        List<Integer> vLinks = new ArrayList<Integer>();
+        JmolList<Integer> vLinks = new  JmolList<Integer>();
         jmolAtom.getCrossLinkLeadAtomIndexes(vLinks);
         BS bs = BSUtil.copy(bsFound);
         jmolAtom.getGroupBits(bsFound);
@@ -735,7 +735,7 @@ public class SmilesSearch extends JmolMolecule {
           continue;
         map[nn++] = patternAtoms[j].getMatchingAtom();
       }
-      vReturn.add(map);
+      vReturn.addLast(map);
       return !firstMatchOnly;
     }
 
@@ -745,7 +745,7 @@ public class SmilesSearch extends JmolMolecule {
         isOK = !(((BS) vReturn.get(j)).equals(bs));
       if (!isOK)
         return true;
-      vReturn.add(bs);
+      vReturn.addLast(bs);
     }
 
     if (isRingCheck) {

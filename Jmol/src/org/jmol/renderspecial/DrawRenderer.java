@@ -23,7 +23,7 @@
  */
 package org.jmol.renderspecial;
 
-import java.util.List;
+
 
 
 import org.jmol.render.MeshRenderer;
@@ -36,6 +36,7 @@ import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Hermite;
+import org.jmol.util.JmolList;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Measure;
 import org.jmol.util.P3;
@@ -335,7 +336,7 @@ public class DrawRenderer extends MeshRenderer {
     }
   }
 
-  private void drawLineData(List<P3[]> lineData) {
+  private void drawLineData(JmolList<P3[]> lineData) {
     if (diameter == 0)
       diameter = 3;
     for (int i = lineData.size(); --i >= 0;) {

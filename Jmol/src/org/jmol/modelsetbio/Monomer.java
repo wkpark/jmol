@@ -31,6 +31,7 @@ import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
 
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.P3;
@@ -38,7 +39,7 @@ import org.jmol.util.Quaternion;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
 
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -46,20 +47,20 @@ public abstract class Monomer extends Group {
 
   BioPolymer bioPolymer;
 
-  protected final byte[] offsets;
+  protected byte[] offsets;
 
   protected static boolean have(byte[] offsets, byte n) {
     return (offsets[n] & 0xFF) != 0xFF;
   }
 
-  protected Monomer(Chain chain, String group3, int seqcode,
-          int firstAtomIndex, int lastAtomIndex,
-          byte[] interestingAtomOffsets) {
-    super(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
+  protected Monomer set2(Chain chain, String group3, int seqcode,
+                    int firstAtomIndex, int lastAtomIndex, byte[] interestingAtomOffsets) {
+    setGroup(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
     offsets = interestingAtomOffsets;
     int offset = offsets[0] & 0xFF;
     if (offset != 255)
       leadAtomIndex = firstAtomIndex + offset;
+    return this;
   }
 
   int monomerIndex;
@@ -448,18 +449,18 @@ public abstract class Monomer extends Group {
   }
  
   @Override
-  public boolean getCrossLinkLead(List<Integer> vReturn) {    
+  public boolean getCrossLinkLead(JmolList<Integer> vReturn) {    
    for (int i = firstAtomIndex; i <= lastAtomIndex; i++)
       if (getCrossLink(i, vReturn) && vReturn == null)
           return true;
     return false;
   }  
 
-  protected boolean getCrossLink(int i, List<Integer> vReturn) {
+  protected boolean getCrossLink(int i, JmolList<Integer> vReturn) {
     return getCrossLinkGroup(i, vReturn, null);
   }
   
-  private boolean getCrossLinkGroup(int i, List<Integer> vReturn, Group group) {
+  private boolean getCrossLinkGroup(int i, JmolList<Integer> vReturn, Group group) {
     // vReturn null --> just checking for connection to previous group
     // not obvious from PDB file for carbohydrates
     Atom atom = chain.getAtom(i);
@@ -485,7 +486,7 @@ public abstract class Monomer extends Group {
         haveCrossLink = true;
         if (group != null)
           break;
-        vReturn.add(Integer.valueOf(g.leadAtomIndex));
+        vReturn.addLast(Integer.valueOf(g.leadAtomIndex));
       }
     }
     return haveCrossLink;

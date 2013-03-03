@@ -99,20 +99,23 @@ class SpaceGroup {
   int operationCount;
   boolean doNormalize = true;
 
-  SpaceGroup(boolean doNormalize) {
-    this.doNormalize = doNormalize;
-    addSymmetry("x,y,z", 0);
+  SpaceGroup(String cifLine) {
     index = ++sgIndex;
-  }
-  
-  private SpaceGroup(String cifLine) {
-    buildSpaceGroup(cifLine);
+    if (cifLine == null) {
+      addSymmetry("x,y,z", 0);
+    } else {
+      buildSpaceGroup(cifLine);
+    }
   }
 
+  SpaceGroup set(boolean doNormalize) {
+    this.doNormalize = doNormalize;
+    return this;
+  }
+  
   static SpaceGroup createSpaceGroup(int desiredSpaceGroupIndex,
                                                   String name,
                                                   float[] notionalUnitcell) {
-
     SpaceGroup sg = null;
     if (desiredSpaceGroupIndex >= 0) {
       sg = spaceGroupDefinitions[desiredSpaceGroupIndex];
@@ -692,7 +695,6 @@ class SpaceGroup {
   private static String lastInfo = "";
   
   private void buildSpaceGroup(String cifLine) {
-    index = ++sgIndex;
     String[] terms = TextFormat.splitChars(cifLine.toLowerCase(), ";");
     String[] parts;
 

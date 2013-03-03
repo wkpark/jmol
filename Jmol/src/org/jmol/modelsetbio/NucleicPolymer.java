@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 
-import java.util.List;
+
 
 
 import org.jmol.io.OutputStringBuilder;
@@ -35,6 +35,7 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolList;
 import org.jmol.util.Measure;
 import org.jmol.util.P3;
 import org.jmol.util.Point4f;
@@ -91,7 +92,7 @@ public class NucleicPolymer extends BioPolymer {
   
   @Override
   public void calcRasmolHydrogenBonds(BioPolymer polymer, BS bsA, 
-                                      BS bsB, List<Bond> vAtoms,
+                                      BS bsB, JmolList<Bond> vAtoms,
                                       int nMaxPerResidue, int[][][] min, 
                                       boolean checkDistances, boolean dsspIgnoreHydrogens) {
     NucleicPolymer other = (NucleicPolymer) polymer;
@@ -153,7 +154,7 @@ public class NucleicPolymer extends BioPolymer {
     }
   }
 
-  static protected int addHydrogenBond(List<Bond> vAtoms, Atom atom1, Atom atom2) {
+  static protected int addHydrogenBond(JmolList<Bond> vAtoms, Atom atom1, Atom atom2) {
     if (atom1 == null || atom2 == null)
       return 0;
     vAtoms.add(new HBond(atom1, atom2, JmolEdge.BOND_H_NUCLEOTIDE, (short) 1, (short) 0, 0));

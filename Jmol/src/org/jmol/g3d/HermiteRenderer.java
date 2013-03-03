@@ -26,8 +26,8 @@ package org.jmol.g3d;
 
 
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.util.P3;
@@ -380,7 +380,7 @@ public class HermiteRenderer {
     // only used for meshRibbon, so fill = false 
     P3i[] endPoints = {p2, p1, p6, p5};
     // stores all points for top+bottom strands of 1 segment
-    List<P3i> points = new ArrayList<P3i>(10);
+    JmolList<P3i> points = new JmolList<P3i>();
     int whichPoint = 0;
 
     int numTopStrandPoints = 2; //first and last points automatically included
@@ -423,7 +423,7 @@ public class HermiteRenderer {
          sp = 0;
        }
 
-       points.add(endPoints[whichPoint++]);
+       points.addLast(endPoints[whichPoint++]);
        currentInt = interval;
        do {
          P3i a = pLeft[sp];
@@ -443,7 +443,7 @@ public class HermiteRenderer {
            if (s < 1.0f - currentInt) { //if first point over the interval
              P3i temp = new P3i();
              temp.setT(a);
-             points.add(temp); //store it
+             points.addLast(temp); //store it
              currentInt += interval; // increase to next interval
              if (strands == 2) {
                numTopStrandPoints++;
@@ -474,7 +474,7 @@ public class HermiteRenderer {
            sLeft[sp] = (float) s;
          }
        } while (sp >= 0);
-       points.add(endPoints[whichPoint++]);
+       points.addLast(endPoints[whichPoint++]);
      } //end of for loop - processed top and bottom strands
      int size = points.size();
    /*  

@@ -27,6 +27,7 @@ package org.jmol.modelset;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
@@ -37,7 +38,7 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.script.T;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -78,6 +79,23 @@ public class Group {
   private float mu = Float.NaN;
   private float theta = Float.NaN;
   
+  public Group() {}
+  
+  public Group setGroup(Chain chain, String group3, int seqcode,
+        int firstAtomIndex, int lastAtomIndex) {
+    this.chain = chain;
+    this.seqcode = seqcode;
+    
+    if (group3 == null)
+      group3 = "";
+    groupID = getGroupIdFor(group3);
+    isProtein = (groupID >= 1 && groupID < JC.GROUPID_AMINO_MAX); 
+
+    this.firstAtomIndex = firstAtomIndex;
+    this.lastAtomIndex = lastAtomIndex;
+    return this;
+  }
+
   protected boolean calcBioParameters() {
     return false;
   }
@@ -127,20 +145,6 @@ public class Group {
       return straightness;
     }
     return Float.NaN;
-  }
-
-  public Group(Chain chain, String group3, int seqcode,
-        int firstAtomIndex, int lastAtomIndex) {
-    this.chain = chain;
-    this.seqcode = seqcode;
-    
-    if (group3 == null)
-      group3 = "";
-    groupID = getGroupID(group3);
-    isProtein = (groupID >= 1 && groupID < JC.GROUPID_AMINO_MAX); 
-
-    this.firstAtomIndex = firstAtomIndex;
-    this.lastAtomIndex = lastAtomIndex;
   }
 
   public void setModelSet(ModelSet modelSet) {
@@ -254,7 +258,7 @@ public class Group {
     return groupID;
   }
 
-  public static short getGroupID(String group3) {
+  public static short getGroupIdFor(String group3) {
     if (group3 == null)
       return -1;
     short groupID = lookupGroupID(group3);
@@ -303,23 +307,20 @@ public class Group {
     return getSeqcodeString(seqcode);
   }
 
-  public static int getSeqcode(int sequenceNumber, char insertionCode) {
-    return getSeqcode2(sequenceNumber, insertionCode);
-  }
-  public static int getSeqcode2(int sequenceNumber, char insertionCode) {
-    if (sequenceNumber == Integer.MIN_VALUE)
-      return sequenceNumber;
-    if (! ((insertionCode >= 'A' && insertionCode <= 'Z') ||
-           (insertionCode >= 'a' && insertionCode <= 'z') ||
-           (insertionCode >= '0' && insertionCode <= '9') ||
-           insertionCode == '?' || insertionCode == '*')) {
-      if (insertionCode != ' ' && insertionCode != '\0')
-        Logger.warn("unrecognized insertionCode:" + insertionCode);
-      insertionCode = '\0';
+  public static int getSeqcodeFor(int seqNo, char insCode) {
+    if (seqNo == Integer.MIN_VALUE)
+      return seqNo;
+    if (! ((insCode >= 'A' && insCode <= 'Z') ||
+           (insCode >= 'a' && insCode <= 'z') ||
+           (insCode >= '0' && insCode <= '9') ||
+           insCode == '?' || insCode == '*')) {
+      if (insCode != ' ' && insCode != '\0')
+        Logger.warn("unrecognized insertionCode:" + insCode);
+      insCode = '\0';
     }
-    return ((sequenceNumber == Integer.MAX_VALUE ? 0 
-        : (sequenceNumber << SEQUENCE_NUMBER_SHIFT) | SEQUENCE_NUMBER_FLAG))
-        + insertionCode;
+    return ((seqNo == Integer.MAX_VALUE ? 0 
+        : (seqNo << SEQUENCE_NUMBER_SHIFT) | SEQUENCE_NUMBER_FLAG))
+        + insCode;
   }
 
   public static String getSeqcodeString(int seqcode) {
@@ -515,7 +516,7 @@ public class Group {
    * @param vReturn
    * @return T/F
    */
-  public boolean getCrossLinkLead(List<Integer> vReturn) {
+  public boolean getCrossLinkLead(JmolList<Integer> vReturn) {
     return false;
   }
 

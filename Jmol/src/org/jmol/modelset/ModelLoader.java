@@ -54,11 +54,11 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -172,7 +172,7 @@ public final class ModelLoader {
     }
     jmolData = (String) modelSet.getModelSetAuxiliaryInfoValue("jmolData");
     fileHeader = (String) modelSet.getModelSetAuxiliaryInfoValue("fileHeader");
-    modelSet.trajectorySteps = (List<P3[]>) modelSet
+    modelSet.trajectorySteps = (JmolList<P3[]>) modelSet
         .getModelSetAuxiliaryInfoValue("trajectorySteps");
     isTrajectory = (modelSet.trajectorySteps != null);
     doAddHydrogens = (jbr != null && !isTrajectory
@@ -181,11 +181,11 @@ public final class ModelLoader {
     if (info != null) {
       info.remove("pdbNoHydrogens");
       info.remove("trajectorySteps");
-      shapes = (List<ModelSettings>) info.remove("shapes");
+      shapes = (JmolList<ModelSettings>) info.remove("shapes");
       if (shapes != null)
         doAddHydrogens = false;
       if (isTrajectory)
-        modelSet.vibrationSteps = (List<V3[]>) info.remove("vibrationSteps");
+        modelSet.vibrationSteps = (JmolList<V3[]>) info.remove("vibrationSteps");
     }
     noAutoBond = modelSet.getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = modelSet.getModelSetAuxiliaryInfoBoolean("is2D");
@@ -256,7 +256,7 @@ public final class ModelLoader {
   private int adapterTrajectoryCount = 0;
   private boolean noAutoBond;
   private boolean is2D;
-  private List<ModelSettings> shapes;
+  private JmolList<ModelSettings> shapes;
   
   public ModelSet getModelSet() {
     return modelSet;
@@ -293,13 +293,13 @@ public final class ModelLoader {
       if (baseTrajectoryCount > 0) {
         if (isTrajectory) {
           if (mergeModelSet.vibrationSteps == null) {
-            mergeModelSet.vibrationSteps = new ArrayList<V3[]>();
+            mergeModelSet.vibrationSteps = new  JmolList<V3[]>();
             for (int i = mergeModelSet.trajectorySteps.size(); --i >= 0; )
-              mergeModelSet.vibrationSteps.add(null);
+              mergeModelSet.vibrationSteps.addLast(null);
           }
           for (int i = 0; i < modelSet.trajectorySteps.size(); i++) {
-            mergeModelSet.trajectorySteps.add(modelSet.trajectorySteps.get(i));
-            mergeModelSet.vibrationSteps.add(modelSet.vibrationSteps == null ? null  : modelSet.vibrationSteps.get(i));
+            mergeModelSet.trajectorySteps.addLast(modelSet.trajectorySteps.get(i));
+            mergeModelSet.vibrationSteps.addLast(modelSet.vibrationSteps == null ? null  : modelSet.vibrationSteps.get(i));
           }
         }
         modelSet.trajectorySteps = mergeModelSet.trajectorySteps;
@@ -742,7 +742,7 @@ public final class ModelLoader {
     int nRead = 0;
     Model[] models = modelSet.models;
     if (modelSet.modelCount > 0)
-      nullGroup = new Group(new Chain(modelSet.models[baseModelIndex], ' '), "",
+      nullGroup = new Group().setGroup(new Chain(modelSet.models[baseModelIndex], ' '), "",
           0, -1, -1);
     while (iterAtom.hasNext()) {
       nRead++;
@@ -872,7 +872,7 @@ public final class ModelLoader {
       firstAtomIndexes[groupCount] = modelSet.atomCount;
       chainOf[groupCount] = currentChain;
       group3Of[groupCount] = group3;
-      seqcodes[groupCount] = Group.getSeqcode(groupSequenceNumber,
+      seqcodes[groupCount] = Group.getSeqcodeFor(groupSequenceNumber,
           groupInsertionCode);
       ++groupCount;      
     }
@@ -907,7 +907,7 @@ public final class ModelLoader {
     modelSet.defaultCovalentMad = mad;
   }
   
-  private List<Bond> vStereo;
+  private JmolList<Bond> vStereo;
   private void bondAtoms(Object atomUid1, Object atomUid2, short order) {
     Atom atom1 = htAtomMap.get(atomUid1);
     if (atom1 == null) {
@@ -930,9 +930,9 @@ public final class ModelLoader {
     if (isNear || isFar) {
       bond = modelSet.bondMutually(atom1, atom2, (is2D ? order : 1), modelSet.getDefaultMadFromOrder(1), 0);
       if (vStereo == null) {
-        vStereo = new ArrayList<Bond>();
+        vStereo = new  JmolList<Bond>();
       }
-      vStereo.add(bond);
+      vStereo.addLast(bond);
     } else {
       bond = modelSet.bondMutually(atom1, atom2, order, modelSet.getDefaultMadFromOrder(order), 0);
       if (bond.isAromatic()) {
@@ -1002,8 +1002,8 @@ public final class ModelLoader {
                                char startInsertionCode, char endChainID,
                                int endSequenceNumber, char endInsertionCode) {
     EnumStructure type = (subType == EnumStructure.NOT ? EnumStructure.NONE : subType);
-    int startSeqCode = Group.getSeqcode(startSequenceNumber, startInsertionCode);
-    int endSeqCode = Group.getSeqcode(endSequenceNumber, endInsertionCode);
+    int startSeqCode = Group.getSeqcodeFor(startSequenceNumber, startInsertionCode);
+    int endSeqCode = Group.getSeqcodeFor(endSequenceNumber, endInsertionCode);
     Model[] models = modelSet.models;
     if (modelIndex >= 0 || isTrajectory) { //from PDB file
       if (isTrajectory)
@@ -1217,7 +1217,7 @@ public final class ModelLoader {
     }
     String key;
     if (group == null) {
-      group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
+      group = new Group().setGroup(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
       key = "o>";
     } else {
       key = (group.isProtein() ? "p>" : group.isNucleic() ? "n>" : group
@@ -1420,7 +1420,7 @@ public final class ModelLoader {
 
   ///////////////  shapes  ///////////////
   
-  private void finalizeShapes(List<ModelSettings> shapeSettings) {
+  private void finalizeShapes(JmolList<ModelSettings> shapeSettings) {
     modelSet.shapeManager = viewer.getShapeManager();
     modelSet.shapeManager.setModelSet(modelSet);
     modelSet.setBsHidden(viewer.getHiddenSet());

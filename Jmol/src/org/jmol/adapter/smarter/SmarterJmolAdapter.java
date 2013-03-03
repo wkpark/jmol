@@ -30,13 +30,14 @@ import org.jmol.api.JmolAdapterBondIterator;
 import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolFilesReaderInterface;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.V3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -273,8 +274,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
       result = asc[0];
       try {
         result.finalizeTrajectoryAs(
-            (List<P3[]>) htParams.get("trajectorySteps"),
-            (List<V3[]>) htParams.get("vibrationSteps"));
+            (JmolList<P3[]>) htParams.get("trajectorySteps"),
+            (JmolList<V3[]>) htParams.get("vibrationSteps"));
       } catch (Exception e) {
         if (result.errorMessage == null)
           result.errorMessage = "" + e;

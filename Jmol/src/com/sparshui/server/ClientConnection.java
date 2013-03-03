@@ -3,8 +3,9 @@ package com.sparshui.server;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
+
+import org.jmol.util.JmolList;
 
 import com.sparshui.GestureType;
 
@@ -81,7 +82,7 @@ class ClientConnection {
 	 * @return Vector
 	 * @throws IOException
 	 */
-	private List<GestureType> getGestures(int groupID) throws IOException {
+	private JmolList<GestureType> getGestures(int groupID) throws IOException {
 		return _protocol.getGestures(groupID);
 	}
 
@@ -114,7 +115,7 @@ class ClientConnection {
 			//System.out.println("[ClientConnection] Getting Group Gestures ID:
 			// " + groupID);
 		  // gestureID may be a string indicating a user-defined class to load.
-			List<GestureType> gestureTypes = getGestures(groupID);
+			JmolList<GestureType> gestureTypes = getGestures(groupID);
 			group = new Group(groupID, gestureTypes, _protocol);
 			_groups.put(gid, group);
 		}

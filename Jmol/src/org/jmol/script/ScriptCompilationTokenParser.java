@@ -23,8 +23,8 @@
 
 package org.jmol.script;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.jmol.util.JmolList;
+
 import java.util.Map;
 
 import org.jmol.util.JmolEdge;
@@ -89,7 +89,7 @@ abstract class ScriptCompilationTokenParser {
   protected boolean isMathExpressionCommand;
   protected boolean isSetOrDefine;
 
-  private List<T> ltokenPostfix;
+  private JmolList<T> ltokenPostfix;
 
   protected boolean isEmbeddedExpression;
   protected boolean isCommaAsOrAllowed;
@@ -147,7 +147,7 @@ abstract class ScriptCompilationTokenParser {
 
   protected boolean compileExpression() {
     int firstToken = (isSetOrDefine && !isSetBrace ? 2 : 1);
-    ltokenPostfix = new ArrayList<T>();
+    ltokenPostfix = new  JmolList<T>();
     itokenInfix = 0;
     T tokenBegin = null;
     int tok = tokAt(1);
@@ -346,7 +346,7 @@ abstract class ScriptCompilationTokenParser {
       return false;
     if (logMessages)
         Logger.info("addTokenToPostfix" + token);
-    ltokenPostfix.add(token);
+    ltokenPostfix.addLast(token);
     lastToken = token;
     return true;
   }

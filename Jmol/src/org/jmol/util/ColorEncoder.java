@@ -23,9 +23,9 @@
  */
 package org.jmol.util;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 
@@ -494,7 +494,7 @@ import org.jmol.constant.EnumPalette;
   public Map<String, Object> getColorKey() {
     Map<String, Object> info = new Hashtable<String, Object>();
     int segmentCount = getPaletteColorCount(currentPalette);
-    List<P3> colors = new ArrayList<P3>(segmentCount);
+    JmolList<P3> colors = new  JmolList<P3>();//segmentCount);
 /*    
     boolean isReverse = isReversed;
     
@@ -512,7 +512,7 @@ import org.jmol.constant.EnumPalette;
 
     for (int i = 0; i < segmentCount; i++) {
       values[i] = (isReversed ? hi - i * quantum : lo + i * quantum);
-      colors.add(ColorUtil.colorPointFromInt2(getArgb(values[i] + f)));
+      colors.addLast(ColorUtil.colorPointFromInt2(getArgb(values[i] + f)));
     }
     values[segmentCount] = (isReversed ? lo : hi);
     info.put("values", values);

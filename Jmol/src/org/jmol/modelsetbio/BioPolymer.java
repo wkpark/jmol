@@ -44,9 +44,9 @@ import org.jmol.viewer.Viewer;
 import org.jmol.script.T;
 
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 public abstract class BioPolymer {
@@ -382,7 +382,7 @@ public abstract class BioPolymer {
   }
 
   public int getPolymerPointsAndVectors(int last, BS bs,
-                                        List<P3[]> vList,
+                                        JmolList<P3[]> vList,
                                         boolean isTraceAlpha,
                                         float sheetSmoothing) {
     P3[] points = getControlPoints(isTraceAlpha, sheetSmoothing, false);
@@ -390,14 +390,14 @@ public abstract class BioPolymer {
     int count = monomerCount;
     for (int j = 0; j < count; j++)
       if (bs.get(monomers[j].leadAtomIndex)) {
-        vList.add(new P3[] { points[j], P3.newP(vectors[j]) });
+        vList.addLast(new P3[] { points[j], P3.newP(vectors[j]) });
         last = j;
       } else if (last != Integer.MAX_VALUE - 1) {
-        vList.add(new P3[] { points[j], P3.newP(vectors[j]) });
+        vList.addLast(new P3[] { points[j], P3.newP(vectors[j]) });
         last = Integer.MAX_VALUE - 1;
       }
     if (last + 1 < count)
-      vList.add(new P3[] { points[last + 1],
+      vList.addLast(new P3[] { points[last + 1],
           P3.newP(vectors[last + 1]) });
     return last;
   }
@@ -411,8 +411,8 @@ public abstract class BioPolymer {
 
   public Map<String, Object> getPolymerInfo(BS bs) {
     Map<String, Object> returnInfo = new Hashtable<String, Object>();
-    List<Map<String, Object>> info = new ArrayList<Map<String, Object>>();
-    List<Map<String, Object>> structureInfo = null;
+    JmolList<Map<String, Object>> info = new  JmolList<Map<String, Object>>();
+    JmolList<Map<String, Object>> structureInfo = null;
     ProteinStructure ps;
     ProteinStructure psLast = null;
     int n = 0;
@@ -420,15 +420,15 @@ public abstract class BioPolymer {
       if (bs.get(monomers[i].leadAtomIndex)) {
         Map<String, Object> monomerInfo = monomers[i].getMyInfo();
         monomerInfo.put("monomerIndex", Integer.valueOf(i));
-        info.add(monomerInfo);
+        info.addLast(monomerInfo);
         if ((ps = getProteinStructure(i)) != null && ps != psLast) {
           Map<String, Object> psInfo = new Hashtable<String, Object>();
           (psLast = ps).getInfo(psInfo);
           if (structureInfo == null) {
-            structureInfo = new ArrayList<Map<String, Object>>();
+            structureInfo = new  JmolList<Map<String, Object>>();
           }
           psInfo.put("index", Integer.valueOf(n++));
-          structureInfo.add(psInfo);
+          structureInfo.addLast(psInfo);
         }
       }
     }
@@ -987,7 +987,7 @@ public abstract class BioPolymer {
   }
 
   public String calculateDssp(BioPolymer[] bioPolymers,
-                                    int bioPolymerCount, List<Bond> vHBonds,
+                                    int bioPolymerCount, JmolList<Bond> vHBonds,
                                     boolean doReport,
                                     boolean dsspIgnoreHydrogens,
                                     boolean setStructure) {
@@ -1034,7 +1034,7 @@ public abstract class BioPolymer {
    * @param dsspIgnoreHydrogens
    */
   public void calcRasmolHydrogenBonds(BioPolymer polymer, BS bsA,
-                                      BS bsB, List<Bond> vHBonds,
+                                      BS bsB, JmolList<Bond> vHBonds,
                                       int nMaxPerResidue, int[][][] min,
                                       boolean checkDistances,
                                       boolean dsspIgnoreHydrogens) {
@@ -1088,8 +1088,8 @@ public abstract class BioPolymer {
    * @param allowMultiple
    * @return List [ {atom1, atom2}, {atom1, atom2}...]
    */
-  public List<Atom[]> calculateStruts(ModelSet modelSet, BS bs1,
-                                      BS bs2, List<Atom> vCA, float thresh,
+  public JmolList<Atom[]> calculateStruts(ModelSet modelSet, BS bs1,
+                                      BS bs2, JmolList<Atom> vCA, float thresh,
                                       int delta, boolean allowMultiple) {
     return null;
   }

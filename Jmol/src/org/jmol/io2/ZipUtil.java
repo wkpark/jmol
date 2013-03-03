@@ -36,10 +36,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader; //import java.net.URL;
 //import java.net.URLConnection;
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPInputStream;
@@ -271,7 +271,7 @@ public class ZipUtil implements JmolZipUtility {
                                                   boolean addManifest)
       throws IOException {
     bis = JmolBinary.checkPngZipStream(bis);
-    List<String> v = new ArrayList<String>();
+    JmolList<String> v = new  JmolList<String>();
     ZipInputStream zis = new ZipInputStream(bis);
     ZipEntry ze;
     String manifest = null;
@@ -369,7 +369,7 @@ public class ZipUtil implements JmolZipUtility {
   private String addPngFileBytes(String name, byte[] ret, int iFile,
                                 Hashtable<Object, String> crcMap,
                                 boolean isSparDir, String newName, int ptSlash,
-                                List<Object> v) {
+                                JmolList<Object> v) {
     CRC32 crc = new CRC32();
     crc.update(ret, 0, ret.length);
     Long crcValue = Long.valueOf(crc.getValue());
@@ -399,7 +399,7 @@ public class ZipUtil implements JmolZipUtility {
   }
 
   public Object writeZipFile(FileManager fm, Viewer viewer, String outFileName,
-                             List<Object> fileNamesAndByteArrays, String msg) {
+                             JmolList<Object> fileNamesAndByteArrays, String msg) {
     byte[] buf = new byte[1024];
     long nBytesOut = 0;
     long nBytes = 0;
@@ -482,7 +482,7 @@ public class ZipUtil implements JmolZipUtility {
   }
 
   public String getSceneScript(String[] scenes, Map<String, String> htScenes,
-                               List<Integer> list) {
+                               JmolList<Integer> list) {
     // no ".spt.png" -- that's for the sceneScript-only version
     // that we will create here.
     // extract scenes based on "pause scene ..." commands
@@ -558,8 +558,8 @@ public class ZipUtil implements JmolZipUtility {
   public Object createZipSet(FileManager fm, Viewer viewer, String fileName,
                              String script, String[] scripts,
                              boolean includeRemoteFiles) {
-    List<Object> v = new ArrayList<Object>();
-    List<String> fileNames = new ArrayList<String>();
+    JmolList<Object> v = new  JmolList<Object>();
+    JmolList<String> fileNames = new  JmolList<String>();
     Hashtable<Object, String> crcMap = new Hashtable<Object, String>();
     boolean haveSceneScript = (scripts != null && scripts.length == 3 && scripts[1]
         .startsWith(SCENE_TAG));
@@ -584,7 +584,7 @@ public class ZipUtil implements JmolZipUtility {
       if (fileRoot.indexOf(".") >= 0)
         fileRoot = fileRoot.substring(0, fileRoot.indexOf("."));
     }
-    List<String> newFileNames = new ArrayList<String>();
+    JmolList<String> newFileNames = new  JmolList<String>();
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name = fileNames.get(iFile);
       boolean isLocal = !viewer.isJS && FileManager.isLocal(name);
@@ -708,7 +708,7 @@ public class ZipUtil implements JmolZipUtility {
       if (path != null)
         return JmolAdapter.NOTE_SCRIPT_FILE + fileName + path + "\n";
     }
-    List<Object> vCollections = new ArrayList<Object>();
+    JmolList<Object> vCollections = new  JmolList<Object>();
     Map<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>()
         : null);
     int nFiles = 0;
@@ -780,7 +780,7 @@ public class ZipUtil implements JmolZipUtility {
               continue;
             return atomSetCollections;
           } else if (atomSetCollections instanceof AtomSetCollection
-              || atomSetCollections instanceof List<?>) {
+              || atomSetCollections instanceof JmolList<?>) {
             if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, atomSetCollections);
             else
@@ -986,7 +986,7 @@ public class ZipUtil implements JmolZipUtility {
         || outputFileData.startsWith("FILE NOT FOUND")
         || outputFileData.indexOf("<html") >= 0)
       return new String[] { "M0001" };
-    List<String> v = new ArrayList<String>();
+    JmolList<String> v = new  JmolList<String>();
     String token;
     String lasttoken = "";
     try {

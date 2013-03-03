@@ -25,13 +25,13 @@
 
 package org.jmol.modelset;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -156,7 +156,7 @@ abstract public class ModelCollection extends BondCollection {
    *        1 -- edges only 2 -- triangles only 3 -- both
    * @return Vector
    */
-  public List<Object> getPlaneIntersection(int type, Point4f plane,
+  public JmolList<Object> getPlaneIntersection(int type, Point4f plane,
                                            float scale, int flags,
                                            int modelIndex) {
     P3[] pts = null;
@@ -171,8 +171,8 @@ abstract public class ModelCollection extends BondCollection {
       pts = boxInfo.getCanonicalCopy(scale);
       break;
     }
-    List<Object> v = new ArrayList<Object>();
-    v.add(pts);
+    JmolList<Object> v = new  JmolList<Object>();
+    v.addLast(pts);
     return TriangleData.intersectPlane(plane, v, flags);
   }
 
@@ -454,7 +454,7 @@ abstract public class ModelCollection extends BondCollection {
    * @return array of two lists of points, centers first if desired
    */
 
-  public P3[][] getCenterAndPoints(List<BS[]> vAtomSets,
+  public P3[][] getCenterAndPoints(JmolList<BS[]> vAtomSets,
                                         boolean addCenters) {
     BS bsAtoms1, bsAtoms2;
     int n = (addCenters ? 1 : 0);
@@ -518,7 +518,7 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  public List<StateScript> stateScripts = new ArrayList<StateScript>();
+  public JmolList<StateScript> stateScripts = new  JmolList<StateScript>();
   /*
    * stateScripts are connect commands that must be executed in sequence.
    * 
@@ -546,7 +546,7 @@ abstract public class ModelCollection extends BondCollection {
     StateScript stateScript = new StateScript(thisStateModel, script1, bsBonds,
         bsAtoms1, bsAtoms2, script2, postDefinitions);
     if (stateScript.isValid()) {
-      stateScripts.add(stateScript);
+      stateScripts.addLast(stateScript);
     }
     return stateScript;
   }
@@ -807,17 +807,17 @@ abstract public class ModelCollection extends BondCollection {
     }
   */
 
-  public List<P3[]> trajectorySteps;
-  protected List<V3[]> vibrationSteps;
+  public JmolList<P3[]> trajectorySteps;
+  protected JmolList<V3[]> vibrationSteps;
 
   protected int mergeTrajectories(boolean isTrajectory) {
     if (trajectorySteps == null) {
       if (!isTrajectory)
         return 0;
-      trajectorySteps = new ArrayList<P3[]>();
+      trajectorySteps = new  JmolList<P3[]>();
     }
     for (int i = trajectorySteps.size(); i < modelCount; i++)
-      trajectorySteps.add(null);
+      trajectorySteps.addLast(null);
     return modelCount;
   }
 
@@ -1032,7 +1032,7 @@ abstract public class ModelCollection extends BondCollection {
             .getBioPolymerCount());
   }
 
-  public void getPolymerPointsAndVectors(BS bs, List<P3[]> vList) {
+  public void getPolymerPointsAndVectors(BS bs, JmolList<P3[]> vList) {
     boolean isTraceAlpha = viewer.getTraceAlpha();
     float sheetSmoothing = viewer.getSheetSmoothing();
     for (int i = 0; i < modelCount; ++i)
@@ -1099,7 +1099,7 @@ abstract public class ModelCollection extends BondCollection {
    */
 
   public void calcRasmolHydrogenBonds(BS bsA, BS bsB,
-                                      List<Bond> vHBonds, boolean nucleicOnly,
+                                      JmolList<Bond> vHBonds, boolean nucleicOnly,
                                       int nMax, boolean dsspIgnoreHydrogens,
                                       BS bsHBonds) {
     boolean isSame = (bsB == null || bsA.equals(bsB));
@@ -1134,7 +1134,7 @@ abstract public class ModelCollection extends BondCollection {
     // go ahead and take first three atoms
     // for PDB files, do not include NON-protein groups.
     int n = 0;
-    List<Quaternion> v = new ArrayList<Quaternion>();
+    JmolList<Quaternion> v = new  JmolList<Quaternion>();
     for (int i = bsAtoms.nextSetBit(0); i >= 0 && n < nMax; i = bsAtoms
         .nextSetBit(i + 1)) {
       Group g = atoms[i].group;
@@ -1146,7 +1146,7 @@ abstract public class ModelCollection extends BondCollection {
           continue;
       }
       n++;
-      v.add(q);
+      v.addLast(q);
       i = g.lastAtomIndex;
     }
     return v.toArray(new Quaternion[v.size()]);
@@ -1674,7 +1674,7 @@ abstract public class ModelCollection extends BondCollection {
     moleculeCount = 0;
     Model m = null;
     BS[] bsModelAtoms = new BS[modelCount];
-    List<BS> biobranches = null;
+    JmolList<BS> biobranches = null;
     for (int i = 0; i < modelCount; i++) {
       // TODO: Trajectories?
       bsModelAtoms[i] = viewer.getModelUndeletedAtomsBitSet(i);
@@ -2088,7 +2088,7 @@ abstract public class ModelCollection extends BondCollection {
       return bs;
     BS bsA = null;
     BS bsB = null;
-    List<Bond> vHBonds = new ArrayList<Bond>();
+    JmolList<Bond> vHBonds = new  JmolList<Bond>();
     if (specInfo.length() == 0) {
       bsA = bsB = viewer.getModelUndeletedAtomsBitSet(-1);
       calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false, null);
@@ -2343,7 +2343,7 @@ abstract public class ModelCollection extends BondCollection {
             || !(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA)
             || isFirstExcluded && bsExclude.get(atomIndexNear))
           continue;
-        short order = getBondOrder(myBondingRadius, atomNear
+        short order = getBondOrderFull(myBondingRadius, atomNear
             .getBondingRadiusFloat(), iter.foundDistance2(), minBondDistance2,
             bondTolerance);
         if (order > 0
@@ -2426,7 +2426,7 @@ abstract public class ModelCollection extends BondCollection {
           continue;
         if (!(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA))
           continue;
-        short order = getBondOrder(myBondingRadius, atomNear
+        short order = getBondOrderFull(myBondingRadius, atomNear
             .getBondingRadiusFloat(), iter.foundDistance2(), minBondDistance2,
             bondTolerance);
         if (order > 0) {
@@ -2835,7 +2835,7 @@ abstract public class ModelCollection extends BondCollection {
       if (moData == null) {
         continue;
       }
-      List<Map<String, Object>> mos = (List<Map<String, Object>>) (moData
+      JmolList<Map<String, Object>> mos = (JmolList<Map<String, Object>>) (moData
           .get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0) {
@@ -3333,13 +3333,13 @@ abstract public class ModelCollection extends BondCollection {
     Map<String, Object> info = modelSetAuxiliaryInfo;
     if (info == null)
       return null;
-    List<Map<String, Object>> models = new ArrayList<Map<String, Object>>();
+    JmolList<Map<String, Object>> models = new  JmolList<Map<String, Object>>();
     for (int i = 0; i < modelCount; ++i) {
       if (bsModels != null && !bsModels.get(i)) {
         continue;
       }
       Map<String, Object> modelinfo = getModelAuxiliaryInfo(i);
-      models.add(modelinfo);
+      models.addLast(modelinfo);
     }
     info.put("models", models);
     return info;

@@ -32,11 +32,12 @@ import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
+import org.jmol.util.JmolList;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
 
 import java.util.Hashtable;
-import java.util.List;
+
 
 import java.util.Map;
 
@@ -146,7 +147,7 @@ public class Labels extends AtomShape {
 
     if ("labels" == propertyName) {
       setScaling();
-      List<String> labels = (List<String>) value;
+      JmolList<String> labels = (JmolList<String>) value;
       for (int i = bsSelected.nextSetBit(0), pt = 0; i >= 0 && i < atomCount; i = bsSelected
           .nextSetBit(i + 1)) {
         String strLabel = labels.get(pt++);

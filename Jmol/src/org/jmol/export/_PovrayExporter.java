@@ -26,11 +26,12 @@
 package org.jmol.export;
 
 
-import java.util.List;
+
 import java.util.Map;
 
 
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.Measure;
 import org.jmol.util.P3;
 import org.jmol.util.Point4f;
@@ -394,7 +395,7 @@ public class _PovrayExporter extends __RayTracerExporter {
                                   short[] polygonColixes,
                                   int nVertices, int nPolygons, int nFaces, BS bsPolygons,
                                   int faceVertexMax, short colix,
-                                  List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
+                                  JmolList<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
     if (polygonColixes != null) {
       boolean isAll = (bsPolygons == null);
       int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));

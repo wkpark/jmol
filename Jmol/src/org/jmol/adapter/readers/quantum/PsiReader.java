@@ -27,14 +27,15 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.Atom;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 /**
  * Reader for Psi3 output files. -- http://www.psicode.org/
@@ -131,7 +132,7 @@ public class PsiReader extends MOReader {
    1.0   0.0000000000  -1.3972759189   0.9709968388
    */
 
-  List<String> atomNames = new ArrayList<String>();
+  JmolList<String> atomNames = new  JmolList<String>();
   private void readAtoms(boolean isInitial) throws Exception {
     if (isInitial) {
       atomSetCollection.newAtomSet();
@@ -144,7 +145,7 @@ public class PsiReader extends MOReader {
       Atom atom = (isInitial ? atomSetCollection.addNewAtom()
           : atomSetCollection.getAtom(atomPt++));
       if (isInitial) {
-        atomNames.add(tokens[0]);
+        atomNames.addLast(tokens[0]);
         if (tokens[0].length() <= 2)
           atom.elementNumber = JmolAdapter.getElementNumber(tokens[0]);
       } else {
@@ -191,18 +192,18 @@ public class PsiReader extends MOReader {
    */
 
   
-  List<List<int[]>> shellsByUniqueAtom = new ArrayList<List<int[]>>();
+  JmolList<JmolList<int[]>> shellsByUniqueAtom = new  JmolList<JmolList<int[]>>();
   void readBasis() throws Exception {
-    List<String[]> gdata = new ArrayList<String[]>();
+    JmolList<String[]> gdata = new  JmolList<String[]>();
     //atomCount = -1;
     gaussianCount = 0;
     shellCount = 0;
     String[] tokens;
     int[] slater = null;
-    List<int[]> slatersByUniqueAtom = null;
+    JmolList<int[]> slatersByUniqueAtom = null;
     readLine();
     while (readLine() != null && line.startsWith("   -Basis set on")) {
-      slatersByUniqueAtom = new ArrayList<int[]>();
+      slatersByUniqueAtom = new  JmolList<int[]>();
       int nGaussians = 0;
       while (readLine() != null && !line.startsWith("       )")) {
         line = line.replace('(', ' ').replace(')',' ');
@@ -211,7 +212,7 @@ public class PsiReader extends MOReader {
         switch (tokens.length) {
         case 3:
           if (slater != null) {
-            slatersByUniqueAtom.add(slater);
+            slatersByUniqueAtom.addLast(slater);
           }
           ipt = 1;
           slater = new int[3];
@@ -223,13 +224,13 @@ public class PsiReader extends MOReader {
           break;
         }
         nGaussians++;
-        gdata.add(new String[] { tokens[ipt], tokens[ipt + 1] });
+        gdata.addLast(new String[] { tokens[ipt], tokens[ipt + 1] });
         slater[2] = nGaussians;
       }
       if (slater != null) {
-        slatersByUniqueAtom.add(slater);
+        slatersByUniqueAtom.addLast(slater);
       }
-      shellsByUniqueAtom.add(slatersByUniqueAtom);
+      shellsByUniqueAtom.addLast(slatersByUniqueAtom);
       gaussianCount += nGaussians;
       readLine();
     }
@@ -257,7 +258,7 @@ public class PsiReader extends MOReader {
   
   Map<String, Integer> uniqueAtomMap = new Hashtable<String, Integer>();
   private void readUniqueAtoms() throws Exception {
-    List<int[]> sdata = new ArrayList<int[]>();
+    JmolList<int[]> sdata = new  JmolList<int[]>();
     discardLinesUntilContains("----");
     int n = 0;
     while (readLine() != null && line.length() > 0) {
@@ -268,7 +269,7 @@ public class PsiReader extends MOReader {
     for (int i = 0; i < atomCount; i++) {
       String atomType = atomNames.get(i);
       int iUnique = uniqueAtomMap.get(atomType).intValue();
-      List<int[]> slaters = shellsByUniqueAtom.get(iUnique);
+      JmolList<int[]> slaters = shellsByUniqueAtom.get(iUnique);
       if (slaters == null) {
         Logger.error("slater for atom " + i + " atomType " + atomType
             + " was not found in listing. Ignoring molecular orbitals");
@@ -276,7 +277,7 @@ public class PsiReader extends MOReader {
       }
       for (int j = 0; j < slaters.size(); j++) {
         int[] slater = slaters.get(j);
-        sdata.add(new int[] { i, slater[0], slater[1], slater[2] });
+        sdata.addLast(new int[] { i, slater[0], slater[1], slater[2] });
         //System.out.println(atomType + " " + i + " " + slater[0] + " " + slater[1] + " "+ slater[2]);
           
       }
@@ -391,7 +392,7 @@ Orbital energies (a.u.):
     //TODO: No way to check order
     
     Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(5);
-    List<String>[] data = ArrayUtil.createArrayOfArrayList(5);
+    JmolList<String>[] data = ArrayUtil.createArrayOfArrayList(5);
     int nThisLine = 0;
     while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {
       String[] tokens = getTokens();
@@ -402,18 +403,18 @@ Orbital energies (a.u.):
         tokens = getTokensStr(readLine());
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
-          data[i] = new ArrayList<String>();
+          data[i] = new  JmolList<String>();
           mos[i].put("symmetry", tokens[i]);
         }
         tokens = getStrings(readLine().substring(21), nThisLine, 10);
         for (int i = 0; i < nThisLine; i++) {
-          mos[i].put("energy", Float.valueOf(tokens[i]));
+          mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
         }
         continue;
       }
       try {
         for (int i = 0; i < nThisLine; i++) {
-          data[i].add(tokens[i + ptData]);
+          data[i].addLast(tokens[i + ptData]);
         }
       } catch (Exception e) {
         Logger.error("Error reading Psi3 file molecular orbitals at line: "

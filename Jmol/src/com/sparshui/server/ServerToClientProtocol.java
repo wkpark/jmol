@@ -4,8 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
+
+import org.jmol.util.JmolList;
 
 import com.sparshui.GestureType;
 import com.sparshui.common.ClientProtocol;
@@ -49,8 +50,8 @@ public class ServerToClientProtocol extends ClientProtocol {
    * @throws IOException
    *           If an error occurs while communication with the client.
    */
-  public List<GestureType> getGestures(int groupID) throws IOException {
-    List<GestureType> gestures = new ArrayList<GestureType>();
+  public JmolList<GestureType> getGestures(int groupID) throws IOException {
+    JmolList<GestureType> gestures = new JmolList<GestureType>();
     _bufferOut.writeInt(groupID);
     sendBuffer(MessageType.GET_ALLOWED_GESTURES);
 

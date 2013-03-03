@@ -41,6 +41,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import org.jmol.util.JmolList;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
@@ -654,18 +656,18 @@ abstract class WebPanel extends JPanel implements ActionListener,
         } catch (IOException IOe) {
           throw IOe;
         }
-        List<String> filesToCopy = new ArrayList<String>();
+        JmolList<String> filesToCopy = new  JmolList<String>();
         String localPath = localAppletPath.getText();
         if (localPath.equals(".") || remoteAppletPath.getText().equals(".")) {
-          filesToCopy.add(localPath + "/Jmol.js");
-          filesToCopy.add(localPath + "/JmolApplet.jar");
+          filesToCopy.addLast(localPath + "/Jmol.js");
+          filesToCopy.addLast(localPath + "/JmolApplet.jar");
         }
         JmolBinary.getFileReferences(script, filesToCopy);
-        List<String> copiedFileNames = new ArrayList<String>();
+        JmolList<String> copiedFileNames = new  JmolList<String>();
         int nFiles = filesToCopy.size();
         for (int iFile = 0; iFile < nFiles; iFile++) {
           String newName = copyBinaryFile(filesToCopy.get(iFile), datadirPath);
-          copiedFileNames.add(newName.substring(newName.lastIndexOf('/') + 1));
+          copiedFileNames.addLast(newName.substring(newName.lastIndexOf('/') + 1));
         }
         script = TextFormat.replaceQuotedStrings(script, filesToCopy, copiedFileNames);
         LogPanel.log("      ..." + GT._("adding {0}", javaname + ".spt"));
@@ -901,7 +903,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
 class ArrayListTransferHandler extends TransferHandler {
   DataFlavor localArrayListFlavor, serialArrayListFlavor;
   String localArrayListType = DataFlavor.javaJVMLocalObjectMimeType
-      + ";class=java.util.ArrayList";
+      + ";class=org.jmol.util.JmolList";
   JList<?> source = null;
   int[] sourceIndices = null;
   int addIndex = -1; // Location where items were added
@@ -926,13 +928,13 @@ class ArrayListTransferHandler extends TransferHandler {
       return false;
     }
     JList<?> target = null;
-    List<?> alist = null;
+    JmolList<?> alist = null;
     try {
       target = (JList<?>) c;
       if (hasLocalArrayListFlavor(t.getTransferDataFlavors())) {
-        alist = (List<?>) t.getTransferData(localArrayListFlavor);
+        alist = (JmolList<?>) t.getTransferData(localArrayListFlavor);
       } else if (hasSerialArrayListFlavor(t.getTransferDataFlavors())) {
-        alist = (List<?>) t.getTransferData(serialArrayListFlavor);
+        alist = (JmolList<?>) t.getTransferData(serialArrayListFlavor);
       } else {
         return false;
       }

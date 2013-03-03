@@ -1,10 +1,10 @@
 package org.jmol.viewer.binding;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Map;
 
 import org.jmol.api.Event;
@@ -196,10 +196,10 @@ abstract public class Binding {
     SB sb = new SB();
     String qlow = (qualifiers == null || qualifiers.equalsIgnoreCase("all") ? null
         : qualifiers.toLowerCase());
-    List<String>[] names = new ArrayList[actionNames.length];
+    JmolList<String>[] names = new JmolList[actionNames.length];
     for (int i = 0; i < actionNames.length; i++)
       names[i] = (qlow == null
-          || actionNames[i].toLowerCase().indexOf(qlow) >= 0 ? new ArrayList<String>()
+          || actionNames[i].toLowerCase().indexOf(qlow) >= 0 ? new  JmolList<String>()
           : null);
     Iterator<String> e = bindings.keySet().iterator();
     while (e.hasNext()) {
@@ -210,7 +210,7 @@ abstract public class Binding {
       int i = info[1];
       if (names[i] == null)
         continue;
-      names[i].add(getMouseActionName(info[0], true));
+      names[i].addLast(getMouseActionName(info[0], true));
     }
     for (int i = 0; i < actionNames.length; i++) {
       int n;

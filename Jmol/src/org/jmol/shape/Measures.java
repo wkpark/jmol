@@ -40,9 +40,9 @@ import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
 
-import java.util.ArrayList;
+import org.jmol.util.JmolList;
 
-import java.util.List;
+
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -57,7 +57,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   private Boolean intramolecular;
 
   public int measurementCount = 0;
-  public final List<Measurement> measurements = new ArrayList<Measurement>();
+  public final JmolList<Measurement> measurements = new  JmolList<Measurement>();
   public MeasurementPending measurementPending;
   
   public short colix; // default to none in order to contrast with background
@@ -271,7 +271,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     
   }
 
-  private Measurement setSingleItem(List<Object> vector) {
+  private Measurement setSingleItem(JmolList<Object> vector) {
     Point3fi[] points = new Point3fi[4];
     int[] indices = new int[5];
     indices[0] = vector.size();
@@ -411,11 +411,11 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
     // we create a set of atoms involving all atoms with the
     // same atom number in each model
-    List<Object> points = new ArrayList<Object>();
+    JmolList<Object> points = new  JmolList<Object>();
     int nPoints = m.getCount();
     for (int i = 1; i <= nPoints; i++) {
       int atomIndex = m.getAtomIndex(i);
-      points.add(atomIndex >= 0 ? (Object) viewer.getAtomBits(T.atomno,
+      points.addLast(atomIndex >= 0 ? (Object) viewer.getAtomBits(T.atomno,
           Integer.valueOf(atoms[atomIndex].getAtomNumber())) : (Object) m
           .getAtom(i));
     }
@@ -473,7 +473,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
     Measurement measureNew = new Measurement(modelSet, m, value, (m.colix == 0 ? colix : m.colix),
         strFormat, measurementCount);
-    measurements.add(measureNew);
+    measurements.addLast(measureNew);
     viewer.setStatusMeasuring("measureCompleted", measurementCount++,
         measureNew.toVector(false).toString(), measureNew.getValue());
   }
@@ -499,10 +499,10 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       measurements.get(i).reformatDistanceIfSelected();    
   }
   
-  private List<Map<String, Object>> getAllInfo() {
-    List<Map<String, Object>> info = new ArrayList<Map<String,Object>>();
+  private JmolList<Map<String, Object>> getAllInfo() {
+    JmolList<Map<String, Object>> info = new  JmolList<Map<String,Object>>();
     for (int i = 0; i< measurementCount; i++) {
-      info.add(getInfo(i));
+      info.addLast(getInfo(i));
     }
     return info;
   }
@@ -535,7 +535,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       if (!Float.isNaN(tickInfo.first))
         info.put("tickStart", Float.valueOf(tickInfo.first));
     }
-    List<Map<String, Object>> atomsInfo = new ArrayList<Map<String,Object>>();
+    JmolList<Map<String, Object>> atomsInfo = new  JmolList<Map<String,Object>>();
     for (int i = 1; i <= count; i++) {
       Map<String, Object> atomInfo = new Hashtable<String, Object>();
       int atomIndex = m.getAtomIndex(i);
@@ -543,7 +543,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       atomInfo.put("coord", Escape.eP(m.getAtom(i)));
       atomInfo.put("atomno", Integer.valueOf(atomIndex < 0 ? -1 : atoms[atomIndex].getAtomNumber()));
       atomInfo.put("info", (atomIndex < 0 ? "<point>" : atoms[atomIndex].getInfo()));
-      atomsInfo.add(atomInfo);
+      atomsInfo.addLast(atomInfo);
     }
     info.put("atoms", atomsInfo);
     return info;

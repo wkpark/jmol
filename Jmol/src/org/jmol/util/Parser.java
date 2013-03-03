@@ -624,7 +624,7 @@ public class Parser {
     /**
      * @j2sNative
      * 
-     * return dVal(s);
+     * return this.dVal(s);
      */
     {
       return Float.valueOf(s).floatValue();

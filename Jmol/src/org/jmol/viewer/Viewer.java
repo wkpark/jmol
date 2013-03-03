@@ -4999,12 +4999,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setJmolStatusListener(jmolStatusListener, null);
   }
 
-  public Map<String, JmolList<JmolList<Object>>> getMessageQueue() {
+  public Map<String, List<List<Object>>> getMessageQueue() {
     // called by PropertyManager.getPropertyAsObject for "messageQueue"
     return statusManager.getMessageQueue();
   }
 
-  List<JmolList<JmolList<Object>>> getStatusChanged(String statusNameList) {
+  List<List<List<Object>>> getStatusChanged(String statusNameList) {
     return statusManager.getStatusChanged(statusNameList);
   }
 

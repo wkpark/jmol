@@ -28,8 +28,12 @@ import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
 
-import org.jmol.util.JmolList;
+//import org.jmol.util.List;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -181,8 +185,8 @@ class StatusManager {
    * 
    */
   
-  private Map<String, JmolList<JmolList<Object>>> messageQueue = new Hashtable<String, JmolList<JmolList<Object>>>();
-  Map<String, JmolList<JmolList<Object>>> getMessageQueue() {
+  private Map<String, List<List<Object>>> messageQueue = new Hashtable<String, List<List<Object>>>();
+  Map<String, List<List<Object>>> getMessageQueue() {
     return messageQueue;
   }
   
@@ -200,20 +204,21 @@ class StatusManager {
       int intInfo, Object statusInfo, boolean isReplace) {
     if (!recordStatus(statusName))
       return;
-    JmolList<Object> msgRecord = new  JmolList<Object>();
-    msgRecord.addLast(Integer.valueOf(++statusPtr));
-    msgRecord.addLast(statusName);
-    msgRecord.addLast(Integer.valueOf(intInfo));
-    msgRecord.addLast(statusInfo);
-    JmolList<JmolList<Object>> statusRecordSet = (isReplace ? null : messageQueue.get(statusName));
+    List<Object> msgRecord = new  ArrayList<Object>();
+    msgRecord.add(Integer.valueOf(++statusPtr));
+    msgRecord.add(statusName);
+    msgRecord.add(Integer.valueOf(intInfo));
+    msgRecord.add(statusInfo);
+    List<List<Object>> statusRecordSet = (isReplace ? null : messageQueue.get(statusName));
     if (statusRecordSet == null)
-      messageQueue.put(statusName, statusRecordSet = new  JmolList<JmolList<Object>>());
+      messageQueue.put(statusName, statusRecordSet = new  ArrayList<List<Object>>());
     else if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
       statusRecordSet.remove(0);    
-    statusRecordSet.addLast(msgRecord);
+    statusRecordSet.add(msgRecord);
   }
   
-  synchronized List<JmolList<JmolList<Object>>> getStatusChanged(String newStatusList) {
+  synchronized List<List<List<Object>>> getStatusChanged(
+                                                                 String newStatusList) {
     /*
      * returns a Vector of statusRecordSets, one per status type,
      * where each statusRecordSet is itself a vector of vectors:
@@ -243,9 +248,10 @@ class StatusManager {
           Logger.debug("StatusManager messageQueue = " + statusList);
       }
     }
-    List<JmolList<JmolList<Object>>> msgList = (getList ? Collections.list(Collections
-        .enumeration(messageQueue.values()))
-        : new  JmolList<JmolList<JmolList<Object>>>());
+    Collection<List<List<Object>>> m = messageQueue.values();
+    Enumeration<List<List<Object>>> e = Collections.enumeration(m);
+    List<List<List<Object>>> msgList = (getList ? Collections.list(e)
+        : new ArrayList<List<List<Object>>>());
     messageQueue.clear();
     statusPtr = 0;
     return msgList;

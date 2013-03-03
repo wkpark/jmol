@@ -54,7 +54,7 @@ public class JmolList<V> extends ArrayList<V> {
   
   public boolean removeObj(Object v) {
     /**
-     * no overloading of add(Object) in JavaScript
+     * no overloading of remove(Object) in JavaScript
      * 
      * @j2sNative
      * 

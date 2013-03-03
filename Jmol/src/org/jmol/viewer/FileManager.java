@@ -1220,8 +1220,8 @@ public class FileManager {
         }
       }
       Logger.info("FileManager substituting " + name0 + " --> " + name);
-      oldFileNames.add("\"" + name0 + "\"");
-      newFileNames.add("\1\"" + name + "\"");
+      oldFileNames.addLast("\"" + name0 + "\"");
+      newFileNames.addLast("\1\"" + name + "\"");
     }
     return TextFormat.replaceStrings(script, oldFileNames, newFileNames);
   }

@@ -48,7 +48,7 @@ public class Group {
 		for (int i = 0; i < _gestureTypes.size(); i++) {
 		  Gesture gesture = GestureFactory.createGesture(_gestureTypes.get(i));
 		  if (gesture != null)
-  			_gestures.add(gesture);
+  			_gestures.addLast(gesture);
 		}
 	}
 
@@ -73,7 +73,7 @@ public class Group {
     int state = changedPoint.getState();
 
     if (state == TouchState.BIRTH)
-      _touchPoints.add(changedPoint);
+      _touchPoints.addLast(changedPoint);
 
     /*
     System.out.print("Group _touchPoints ");

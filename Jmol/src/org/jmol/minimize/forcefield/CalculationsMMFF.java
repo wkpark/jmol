@@ -205,7 +205,7 @@ class CalculationsMMFF extends Calculations {
       Object data = getParameterObj(bond);
       if (data == null)
         return;
-      calc.add(new Object[] { new int[] { ia, ib },  data });
+      calc.addLast(new Object[] { new int[] { ia, ib },  data });
     }
 
     @Override
@@ -239,7 +239,7 @@ class CalculationsMMFF extends Calculations {
       Object data = getParameterObj(angle);
       if (data == null)
         return;
-      calc.add(new Object[] { angle.data, data, angle.key });      
+      calc.addLast(new Object[] { angle.data, data, angle.key });      
     }
 
     final static double CB = -0.4 * DEG_TO_RAD;
@@ -293,8 +293,8 @@ class CalculationsMMFF extends Calculations {
       double theta0 = datakat0[1];
       double r0ij = dataij[1];
       double r0jk = datajk[1];
-      calc.add(new Object[] { angle.data, new double[] { data[0], theta0, r0ij } });
-      calc.add(new Object[] { new int[] {angle.data[2], angle.data[1], angle.data[0]}, 
+      calc.addLast(new Object[] { angle.data, new double[] { data[0], theta0, r0ij } });
+      calc.addLast(new Object[] { new int[] {angle.data[2], angle.data[1], angle.data[0]}, 
           new double[] { data[1], theta0, r0jk } });
     }
 
@@ -335,7 +335,7 @@ class CalculationsMMFF extends Calculations {
       Object data = getParameterObj(t);
       if (data == null)
         return;
-      calc.add(new Object[] { t.data, data, t.key });
+      calc.addLast(new Object[] { t.data, data, t.key });
     }
     
     @Override
@@ -404,9 +404,9 @@ class CalculationsMMFF extends Calculations {
       if (koop == 0)
         return;
       double[] dk = new double[] { koop };
-      calc.add(new Object[] { new int[] { indices[0], i, indices[1], indices[2] },  dk });
-      calc.add(new Object[] { new int[] { indices[1], i, indices[2], indices[0] },  dk });
-      calc.add(new Object[] { new int[] { indices[2], i, indices[0], indices[1] },  dk });
+      calc.addLast(new Object[] { new int[] { indices[0], i, indices[1], indices[2] },  dk });
+      calc.addLast(new Object[] { new int[] { indices[1], i, indices[2], indices[0] },  dk });
+      calc.addLast(new Object[] { new int[] { indices[2], i, indices[0], indices[1] },  dk });
     }
 
     @Override
@@ -466,7 +466,7 @@ class CalculationsMMFF extends Calculations {
         rs *= 0.8;
         eps *= 0.5;
       }
-      calc.add(new Object[] { new int[] {ia, ib}, new double[] { rs, eps } });
+      calc.addLast(new Object[] { new int[] {ia, ib}, new double[] { rs, eps } });
     }
 
     @Override
@@ -509,7 +509,7 @@ class CalculationsMMFF extends Calculations {
     void setData(JmolList<Object[]> calc, int ia, int ib) {
       if (minAtoms[ia].partialCharge == 0 || minAtoms[ib].partialCharge == 0)
         return;
-      calc.add(new Object[] { new int[] { ia, ib }, new double[] {
+      calc.addLast(new Object[] { new int[] { ia, ib }, new double[] {
            minAtoms[ia].partialCharge, minAtoms[ib].partialCharge, 
            (minAtoms[ia].bs14.get(ib) ? 249.0537 : 332.0716) }
       });

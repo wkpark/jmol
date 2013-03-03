@@ -275,7 +275,7 @@ public final class BioModel extends Model{
       if (iAtom >= 0) {
         if (biobranches == null)
           biobranches = new  JmolList<BS>();
-        biobranches.add(bsBranch);
+        biobranches.addLast(bsBranch);
       }
     }
     return biobranches;

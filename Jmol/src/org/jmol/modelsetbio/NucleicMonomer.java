@@ -503,7 +503,7 @@ public boolean isCrossLinked(Group g) {
         if ((isPurine ? m.getN3() : m.getN1()) == N2) {
           if (vReturn == null)
             return true;
-          vReturn.add(Integer.valueOf(m.leadAtomIndex));
+          vReturn.addLast(Integer.valueOf(m.leadAtomIndex));
           haveCrossLinks = true;
         }
       }

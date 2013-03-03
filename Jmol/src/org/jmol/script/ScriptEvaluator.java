@@ -282,7 +282,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           + ret + "}", false);
       JmolList<SV> params = new  JmolList<SV>();
       for (int i = 0; i < xyz.length(); i += 2)
-        params.add(SV.newVariable(T.decimal, Float.valueOf(0f)).setName(
+        params.addLast(SV.newVariable(T.decimal, Float.valueOf(0f)).setName(
             xyz.substring(i, i + 1)));
       return new Object[] { e.aatoken[0][1].value, params };
     } catch (Exception ex) {
@@ -751,7 +751,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     JmolList<Integer> V = new  JmolList<Integer>();
     BS bs = getAtomBitSet(atomExpression);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      V.add(Integer.valueOf(i));
+      V.addLast(Integer.valueOf(i));
     }
     return V;
   }
@@ -1254,7 +1254,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   JmolList<SV> bitsetVariableVector(Object v) {
     JmolList<SV> resx = new  JmolList<SV>();
     if (v instanceof BS) {
-      resx.add(SV.newVariable(T.bitset, v));
+      resx.addLast(SV.newVariable(T.bitset, v));
     }
     return resx;
   }
@@ -1563,7 +1563,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             fout[i] = fv;
             break;
           case T.all:
-            vout.add(Float.valueOf(fv));
+            vout.addLast(Float.valueOf(fv));
             break;
           case T.sum2:
           case T.stddev:
@@ -1636,7 +1636,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             fout[i] = iv;
             break;
           case T.all:
-            vout.add(Integer.valueOf(iv));
+            vout.addLast(Integer.valueOf(iv));
             break;
           case T.sum2:
           case T.stddev:
@@ -1656,7 +1656,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           default:
             if (vout == null)
               return s;
-            vout.add(s);
+            vout.addLast(s);
           }
           break;
         case 3: // isPt
@@ -1668,7 +1668,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             fout[i] = (float) Math.sqrt(t.x * t.x + t.y * t.y + t.z * t.z);
             break;
           case T.all:
-            vout.add(P3.newP(t));
+            vout.addLast(P3.newP(t));
             break;
           default:
             pt.add(t);
@@ -1699,7 +1699,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               fvMinMax = fv;
             break;
           case T.all:
-            vout.add(Float.valueOf(fv));
+            vout.addLast(Float.valueOf(fv));
             break;
           case T.sum2:
           case T.stddev:
@@ -1716,7 +1716,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             pt.setT(bond.getAtom1());
             pt.add(bond.getAtom2());
             pt.scale(0.5f);
-            vout.add(P3.newP(pt));
+            vout.addLast(P3.newP(pt));
             break;
           default:
             pt.add(bond.getAtom1());
@@ -1729,7 +1729,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               .colix), ptT);
           switch (minmaxtype) {
           case T.all:
-            vout.add(P3.newP(ptT));
+            vout.addLast(P3.newP(ptT));
             break;
           default:
             pt.add(ptT);
@@ -3508,7 +3508,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (chk)
       return;
     //System.out.println("addshapeprop " + key + " " + value);
-    propertyList.add(new Object[] { key, value });
+    propertyList.addLast(new Object[] { key, value });
   }
 
   private void setObjectMad(int iShape, String name, int mad) {
@@ -4555,21 +4555,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           break;
         case T.point3f:
           pt = getPoint3f(i, false);
-          v.add(Float.valueOf(pt.x));
-          v.add(Float.valueOf(pt.y));
-          v.add(Float.valueOf(pt.z));
+          v.addLast(Float.valueOf(pt.x));
+          v.addLast(Float.valueOf(pt.y));
+          v.addLast(Float.valueOf(pt.z));
           n += 3;
           break;
         case T.point4f:
           Point4f pt4 = getPoint4f(i);
-          v.add(Float.valueOf(pt4.x));
-          v.add(Float.valueOf(pt4.y));
-          v.add(Float.valueOf(pt4.z));
-          v.add(Float.valueOf(pt4.w));
+          v.addLast(Float.valueOf(pt4.x));
+          v.addLast(Float.valueOf(pt4.y));
+          v.addLast(Float.valueOf(pt4.z));
+          v.addLast(Float.valueOf(pt4.w));
           n += 4;
           break;
         default:
-          v.add(Float.valueOf(floatParameter(i)));
+          v.addLast(Float.valueOf(floatParameter(i)));
           n++;
           if (n == nMax && haveSquare && tokAt(i + 1) == T.rightbrace)
             i++;
@@ -4642,7 +4642,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         P3 pt = getPoint3f(i, true);
         if (points == null)
-          vp.add(pt);
+          vp.addLast(pt);
         else
           points[n] = pt;
         n++;
@@ -4761,7 +4761,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.comma:
         break;
       case T.string:
-        v.add(stringParameter(i));
+        v.addLast(stringParameter(i));
         break;
       default:
       case T.nada:
@@ -5535,7 +5535,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       if (vProcess != null
           && (theTok != T.end || slen < 2 || st[1].tok != T.process)) {
-        vProcess.add(st);
+        vProcess.addLast(st);
         continue;
       }
       if (chk) {
@@ -6814,14 +6814,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.depth:
         float depth = floatParameter(++i);
         if (!chk)
-          list.add(new Object[] { Integer.valueOf(T.depth), Float.valueOf(timeSec), Float.valueOf(depth)});
+          list.addLast(new Object[] { Integer.valueOf(T.depth), Float.valueOf(timeSec), Float.valueOf(depth)});
           //viewer.setNavigationDepthPercent(timeSec, depth);
         continue;
       case T.center:
         pt = centerParameter(++i);
         i = iToken;
         if (!chk)
-          list.add(new Object[] { Integer.valueOf(T.point), Float.valueOf(timeSec), pt});
+          list.addLast(new Object[] { Integer.valueOf(T.point), Float.valueOf(timeSec), pt});
           //viewer.navigatePt(timeSec, pt);
         continue;
       case T.rotate:
@@ -6849,7 +6849,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         float degrees = floatParameter(i);
         if (!chk)
-          list.add(new Object[] { Integer.valueOf(T.rotate), Float.valueOf(timeSec), rotAxis, Float.valueOf(degrees)});
+          list.addLast(new Object[] { Integer.valueOf(T.rotate), Float.valueOf(timeSec), rotAxis, Float.valueOf(degrees)});
 //          viewer.navigateAxis(timeSec, rotAxis, degrees);
         continue;
       case T.translate:
@@ -6870,13 +6870,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             pt = centerParameter(i);
             i = iToken;
             if (!chk)
-              list.add(new Object[] { Integer.valueOf(T.translate), Float.valueOf(timeSec), pt});
+              list.addLast(new Object[] { Integer.valueOf(T.translate), Float.valueOf(timeSec), pt});
               //viewer.navTranslate(timeSec, pt);
             continue;
           }
         }
         if (!chk)
-          list.add(new Object[] { Integer.valueOf(T.percent), Float.valueOf(timeSec), 
+          list.addLast(new Object[] { Integer.valueOf(T.percent), Float.valueOf(timeSec), 
               Float.valueOf(x), Float.valueOf(y) });
           //viewer.navTranslatePercent(timeSec, x, y);
         continue;
@@ -6896,7 +6896,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           for (int j = 0; j < n; j++) {
             pathGuide[j] = vp.get(j);
           }
-          list.add(new Object[] { Integer.valueOf(T.trace), Float.valueOf(timeSec), pathGuide});
+          list.addLast(new Object[] { Integer.valueOf(T.trace), Float.valueOf(timeSec), pathGuide});
           //viewer.navigateGuide(timeSec, pathGuide);
           continue;
         }
@@ -6921,19 +6921,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           int indexEnd = (int) (isFloatParameter(i + 1) ? floatParameter(++i)
               : Integer.MAX_VALUE);
           if (!chk)
-            list.add(new Object[] {Integer.valueOf(T.path), Float.valueOf(timeSec), path, theta, new int[] {indexStart, indexEnd}});
+            list.addLast(new Object[] {Integer.valueOf(T.path), Float.valueOf(timeSec), path, theta, new int[] {indexStart, indexEnd}});
             //viewer.navigatePath(timeSec, path, theta, indexStart, indexEnd);
           continue;
         }
         JmolList<P3> v = new  JmolList<P3>();
         while (isCenterParameter(i + 1)) {
-          v.add(centerParameter(++i));
+          v.addLast(centerParameter(++i));
           i = iToken;
         }
         if (v.size() > 0) {
           path = v.toArray(new P3[v.size()]);
           if (!chk)
-            list.add(new Object[] {Integer.valueOf(T.path), Float.valueOf(timeSec), path, theta, new int[] {0, Integer.MAX_VALUE}});
+            list.addLast(new Object[] {Integer.valueOf(T.path), Float.valueOf(timeSec), path, theta, new int[] {0, Integer.MAX_VALUE}});
             //viewer.navigatePath(timeSec, path, theta, 0, Integer.MAX_VALUE);
           continue;
         }
@@ -7141,7 +7141,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         bsAtoms2.and(bsTo);
         if (vAtomSets == null)
           vAtomSets = new  JmolList<BS[]>();
-        vAtomSets.add(new BS[] { bsAtoms1, bsAtoms2 });
+        vAtomSets.addLast(new BS[] { bsAtoms1, bsAtoms2 });
         i = iToken;
         break;
       case T.varray:
@@ -7155,7 +7155,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             .getQuaternionArray(((SV) theToken).getList(), T.list);
         if (vQuatSets == null)
           vQuatSets = new  JmolList<Object[]>();
-        vQuatSets.add(new Object[] { data1, data2 });
+        vQuatSets.addLast(new Object[] { data1, data2 });
         break;
       case T.orientation:
         isQuaternion = true;
@@ -7206,7 +7206,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         bsAtoms2.and(bsTo);
       }
       vAtomSets = new  JmolList<BS[]>();
-      vAtomSets.add(new BS[] { bsAtoms1, bsAtoms2 });
+      vAtomSets.addLast(new BS[] { bsAtoms1, bsAtoms2 });
     }
 
     BS[] bsFrames;
@@ -7230,7 +7230,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         BS[] bss = vAtomSets.get(i);
         if (isFrames)
           vAtomSets2
-              .add(bss = new BS[] { BSUtil.copy(bss[0]), bss[1] });
+              .addLast(bss = new BS[] { BSUtil.copy(bss[0]), bss[1] });
         bss[0].and(bsFrom);
       }
       if (isAtoms) {
@@ -7249,12 +7249,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             data1 = viewer.getAtomGroupQuaternions(bss[0], Integer.MAX_VALUE);
             data2 = viewer.getAtomGroupQuaternions(bss[1], Integer.MAX_VALUE);
             for (int j = 0; j < data1.length && j < data2.length; j++) {
-              vQ.add(data2[j].div(data1[j]));
+              vQ.addLast(data2[j].div(data1[j]));
             }
           }
         } else {
           for (int j = 0; j < data1.length && j < data2.length; j++) {
-            vQ.add(data2[j].div(data1[j]));
+            vQ.addLast(data2[j].div(data1[j]));
           }
         }
         retStddev[0] = 0;
@@ -7341,7 +7341,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (maps.length == 0)
         return Float.NaN;
       for (int i = 0; i < maps[0].length; i++)
-        ptsA.add(atoms[maps[0][i]]);
+        ptsA.addLast(atoms[maps[0][i]]);
       maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles, atoms,
           atomCount, bsB, isSmarts, false);
       if (maps == null)
@@ -7351,7 +7351,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (asMap) {
         for (int i = 0; i < maps.length; i++)
           for (int j = 0; j < maps[i].length; j++)
-            ptsB.add(atoms[maps[i][j]]);
+            ptsB.addLast(atoms[maps[i][j]]);
         return 0;
       }
       float lowestStdDev = Float.MAX_VALUE;
@@ -7359,7 +7359,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       for (int i = 0; i < maps.length; i++) {
         ptsB.clear();
         for (int j = 0; j < maps[i].length; j++)
-          ptsB.add(atoms[maps[i][j]]);
+          ptsB.addLast(atoms[maps[i][j]]);
         float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
         Logger.info("getSmilesCorrelation stddev=" + stddev);
         if (vReturn != null) {
@@ -7367,7 +7367,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             BS bs = new BS();
             for (int j = 0; j < maps[i].length; j++)
               bs.set(maps[i][j]);
-            vReturn.add(bs);
+            vReturn.addLast(bs);
           }
         }
         if (stddev < lowestStdDev) {
@@ -7376,7 +7376,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
       }
       for (int i = 0; i < mapB.length; i++)
-        ptsB.add(atoms[mapB[i]]);
+        ptsB.addLast(atoms[mapB[i]]);
       return lowestStdDev;
     } catch (Exception e) {
       //System.out.println(e.getMessage());
@@ -9249,12 +9249,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.identifier:
           error(ERROR_invalidArgument);
         }
-        fNames.add(filename = parameterAsString(i++));
+        fNames.addLast(filename = parameterAsString(i++));
         if (pt != null) {
-          firstLastSteps.add(new int[] { (int) pt.x, (int) pt.y, (int) pt.z });
+          firstLastSteps.addLast(new int[] { (int) pt.x, (int) pt.y, (int) pt.z });
           loadScript.append(" COORD " + Escape.eP(pt));
         } else if (bs != null) {
-          firstLastSteps.add(bs);
+          firstLastSteps.addLast(bs);
           loadScript.append(" COORD " + Escape.e(bs));
         }
         loadScript.append(" /*file*/$FILENAME" + fNames.size() + "$");
@@ -9608,7 +9608,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           BS bs2 = BSUtil.copy(bs);
           BSUtil.invertInPlace(bs2, viewer.getAtomCount());
           bs2.and(viewer.getAtomsWithinRadius(5, bs, false, null));
-          points.add(bs2);
+          points.addLast(bs2);
         }
         break;
       case T.bitset:
@@ -9636,7 +9636,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if ((nAtoms = ++expressionCount) > 4)
           error(ERROR_badArgumentCount);
         i = iToken;
-        points.add(value);
+        points.addLast(value);
         break;
       case T.string:
         // measures "%a1 %a2 %v %u"
@@ -10604,7 +10604,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       JmolList<SV> pts = ((SV) t).getList();
       for (int j = 0; j < pts.size(); j++)
         if ((pt = SV.ptValue(pts.get(j))) != null)
-          data.add(pt);
+          data.addLast(pt);
         else
           return null;
       return data;
@@ -13811,7 +13811,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     JmolList<Integer> v = new  JmolList<Integer>();
     for (int i = 2; i < slen; i++) {
       int argb = getArgbParam(i);
-      v.add(Integer.valueOf(argb));
+      v.addLast(Integer.valueOf(argb));
       i = iToken;
     }
     if (chk)
@@ -15522,8 +15522,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               (f.length == 3 ? 7 : (int) f[3]) };
         }
         if (nVertices > 0) {
-          v.add(points);
-          v.add(polygons);
+          v.addLast(points);
+          v.addLast(polygons);
         } else {
           v = null;
         }
@@ -17935,7 +17935,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           name = parameterAsString(++i);
           //if (surfaceObjectSeen)
           sbCommand.append(" ").append(Escape.eS(name));
-          vxy.add(name);
+          vxy.addLast(name);
           if (!chk)
             addShapeProperty(propertyList, "func", createFunction("__iso__",
                 "x,y,z", name));
@@ -17954,23 +17954,23 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isInline = name.equals("inline");
         //if (!surfaceObjectSeen)
         sbCommand.append(" inline");
-        vxy.add(name); // (0) = name
+        vxy.addLast(name); // (0) = name
         P3 pt3 = getPoint3f(++i, false);
         //if (!surfaceObjectSeen)
         sbCommand.append(" ").append(Escape.eP(pt3));
-        vxy.add(pt3); // (1) = {origin}
+        vxy.addLast(pt3); // (1) = {origin}
         Point4f pt4;
         ptX = ++iToken;
-        vxy.add(pt4 = getPoint4f(ptX)); // (2) = {ni ix iy iz}
+        vxy.addLast(pt4 = getPoint4f(ptX)); // (2) = {ni ix iy iz}
         //if (!surfaceObjectSeen)
         sbCommand.append(" ").append(Escape.e(pt4));
         nX = (int) pt4.x;
         ptY = ++iToken;
-        vxy.add(pt4 = getPoint4f(ptY)); // (3) = {nj jx jy jz}
+        vxy.addLast(pt4 = getPoint4f(ptY)); // (3) = {nj jx jy jz}
         //if (!surfaceObjectSeen)
         sbCommand.append(" ").append(Escape.e(pt4));
         nY = (int) pt4.x;
-        vxy.add(pt4 = getPoint4f(++iToken)); // (4) = {nk kx ky kz}
+        vxy.addLast(pt4 = getPoint4f(++iToken)); // (4) = {nk kx ky kz}
         //if (!surfaceObjectSeen)
         sbCommand.append(" ").append(Escape.e(pt4));
         nZ = (int) pt4.x;
@@ -18005,7 +18005,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                   + xyzdata[0].length + "][" + xyzdata[0][0].length
                   + "] is not of size [" + nX + "][" + nY + "][" + nZ + "]");
             }
-            vxy.add(xyzdata); // (5) = float[][][] data
+            vxy.addLast(xyzdata); // (5) = float[][][] data
             //if (!surfaceObjectSeen)
             sbCommand.append(" ").append(Escape.e(xyzdata));
           } else {
@@ -18043,7 +18043,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                     + nY + ".");
               }
             }
-            vxy.add(fdata); // (5) = float[][] data
+            vxy.addLast(fdata); // (5) = float[][] data
             //if (!surfaceObjectSeen)
             sbCommand.append(" ").append(Escape.e(fdata));
           }
@@ -18692,13 +18692,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       pt1.add(ptc);
       pts[0] = pt0;
       pts[1] = pt1;
-      v.add(ptc);
+      v.addLast(ptc);
     } else {
       BoxInfo bbox = viewer.getBoxInfo(bs, -Math.abs(distance));
       pts[0] = bbox.getBboxVertices()[0];
       pts[1] = bbox.getBboxVertices()[7];
       if (bs.cardinality() == 1)
-        v.add(viewer.getAtomPoint3f(bs.nextSetBit(0)));
+        v.addLast(viewer.getAtomPoint3f(bs.nextSetBit(0)));
     }
     if (v.size() == 1 && !isShow) {
       addShapeProperty(propertyList, "withinDistance", Float.valueOf(distance));

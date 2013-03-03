@@ -384,7 +384,7 @@ public class JvxlCoder {
   }
   
   private static void addAttrib(JmolList<String[]> attribs, String name, String value) {
-    attribs.add(new String[] { name, value });
+    attribs.addLast(new String[] { name, value });
   }
 
   public static final int CONTOUR_NPOLYGONS = 0;
@@ -509,8 +509,8 @@ public class JvxlCoder {
           i4 = i1;          
         }
       }
-      v.add(getContourPoint(vertices, i1, i2, f1));
-      v.add(getContourPoint(vertices, i3, i4, f2));
+      v.addLast(getContourPoint(vertices, i1, i2, f1));
+      v.addLast(getContourPoint(vertices, i3, i4, f2));
     }
   }
 

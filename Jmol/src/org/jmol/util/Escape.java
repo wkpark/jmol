@@ -986,7 +986,7 @@ public class Escape {
       String s = Parser.getQuotedStringNext(data, next);
       if (s == null)
         return null;
-      v.add(s);
+      v.addLast(s);
       while (next[0] < data.length() && data.charAt(next[0]) != '"')
         next[0]++;
     }    

@@ -359,8 +359,8 @@ public class IsosurfaceMesh extends Mesh {
     }
     bsContour.set(i);
     JvxlCoder.appendContourTriangleIntersection(type, f1, f2, fData);
-    v.add(pt1);
-    v.add(pt2);
+    v.addLast(pt1);
+    v.addLast(pt2);
   }
 
   /**

@@ -177,7 +177,7 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void setDefinitions() {
-    modelSettings.add(new ModelSettings(T.define, null, names));
+    modelSettings.addLast(new ModelSettings(T.define, null, names));
     appendLoadNote(viewer.getAtomDefs(names));
   }
 
@@ -338,7 +338,7 @@ public class PyMOLReader extends PdbReader {
     JmolList<Object> list = getList(measure, pt);
     JmolList<Object> points = new  JmolList<Object>();
     for (int i = 0, p = 0; i < nCoord; i++, p += 3)
-      points.add(getPoint(list, p, new Point3fi()));
+      points.addLast(getPoint(list, p, new Point3fi()));
     BS bs = BSUtil.newAndSetBit(0);
     MeasurementData md = new MeasurementData(viewer, points);
     md.note = branchName;
@@ -362,7 +362,7 @@ public class PyMOLReader extends PdbReader {
     ModelSettings ms = new ModelSettings(JC.SHAPE_MEASURES, bs, md);
     //int n = -(int) (getFloatSetting(PyMOL.dash_width) + 0.5);
     //ss.setSize(0.2f); probably good, but this will set it to be not dashed. Should implement that in Jmol
-    modelSettings.add(ms);
+    modelSettings.addLast(ms);
   }
 
   private void processBranchModels(JmolList<Object> deepBranch) {
@@ -387,8 +387,8 @@ public class PyMOLReader extends PdbReader {
       bsState = BS.newN(n);
       if (lstTrajectories.size() == 0) {
         for (int i = ns; --i >= 0;) {
-          lstTrajectories.add(new P3[totalAtomCount]);
-          lstStates.add(new BS());
+          lstTrajectories.addLast(new P3[totalAtomCount]);
+          lstStates.addLast(new BS());
         }
       }
       for (int i = ns; --i >= 0;) {
@@ -436,7 +436,7 @@ public class PyMOLReader extends PdbReader {
           currentFrame = (int) getFloatSetting(PyMOL.frame);
           if (lstStates.size() < ns)
             for (int j = lstStates.size(); j < ns; j++)
-              lstStates.add(new BS());
+              lstStates.addLast(new BS());
           bsState = lstStates.get(i);
         } else {
           bsAtoms = BS.newN(atomCount0 + pymolAtoms.size());
@@ -557,7 +557,7 @@ public class PyMOLReader extends PdbReader {
       if (label.equals(" "))
         reps[REP_LABELS].clear(atomCount);
       else
-        labels.add(label);
+        labels.addLast(label);
     }
     bsHidden.setBitTo(atomCount, isHidden);
     bsModelAtoms.set(atomCount);
@@ -573,7 +573,7 @@ public class PyMOLReader extends PdbReader {
     //System.out.println(chainID +  " " + fileAtomIndex + " " + serNo + " " + x  + " " + y + " " + z);
     processAtom2(atom, serNo, x, y, z, charge);
     int color = PyMOL.getRGB(getInt(a, 21));
-    colixList.add(Integer.valueOf(C.getColixO(Integer.valueOf(color))));
+    colixList.addLast(Integer.valueOf(C.getColixO(Integer.valueOf(color))));
     return true;
   }
 
@@ -725,14 +725,14 @@ public class PyMOLReader extends PdbReader {
     ms = new ModelSettings(JC.SHAPE_BALLS, bs, null);
     ms.setSize(0);
     ms.setColors(colixes, 0);
-    modelSettings.add(ms);
+    modelSettings.addLast(ms);
     ms = new ModelSettings(JC.SHAPE_STICKS, bs, null);
     ms.setSize(0);
-    modelSettings.add(ms);
+    modelSettings.addLast(ms);
     for (int i = 0; i < REP_MAX; i++)
       setShape(i);
     if (!bsHidden.isEmpty())
-      modelSettings.add(new ModelSettings(T.hidden, bsHidden, null));
+      modelSettings.addLast(new ModelSettings(T.hidden, bsHidden, null));
   }
 
   private void setShape(int shapeID) {
@@ -762,7 +762,7 @@ public class PyMOLReader extends PdbReader {
         ss.rd = new RadiusData(null, f, RadiusData.EnumType.FACTOR,
             EnumVdw.AUTO);
         ss.setColors(colixes, 0);
-        modelSettings.add(ss);
+        modelSettings.addLast(ss);
       }
       bs1.clearAll();
       bs1.or(bs);
@@ -772,7 +772,7 @@ public class PyMOLReader extends PdbReader {
         ss.rd = new RadiusData(null, 0.25f, RadiusData.EnumType.ABSOLUTE,
             EnumVdw.AUTO);
         ss.setColors(colixes, 0);
-        modelSettings.add(ss);
+        modelSettings.addLast(ss);
       }
       break;
     case REP_NBSPHERES:
@@ -781,19 +781,19 @@ public class PyMOLReader extends PdbReader {
       ss = new ModelSettings(JC.SHAPE_BALLS, bs, null);
       ss.rd = new RadiusData(null, f, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
       ss.setColors(colixes, 0);
-      modelSettings.add(ss);
+      modelSettings.addLast(ss);
       break;
     case REP_STICKS:
       f = getFloatSetting(PyMOL.stick_radius) * 2;
       ss = new ModelSettings(JC.SHAPE_STICKS, bs, null);
       ss.setSize(f);
-      modelSettings.add(ss);
+      modelSettings.addLast(ss);
       break;
     case REP_LINES:
       f = getFloatSetting(PyMOL.line_width) * 8 / 1000;
       ss = new ModelSettings(JC.SHAPE_STICKS, bs, null);
       ss.setSize(f);
-      modelSettings.add(ss);
+      modelSettings.addLast(ss);
       break;
     case REP_CARTOON:
       setCartoon("H", PyMOL.cartoon_oval_length, 2);
@@ -806,7 +806,7 @@ public class PyMOLReader extends PdbReader {
       break;
     case REP_LABELS: //   = 3;
       ss = new ModelSettings(JC.SHAPE_LABELS, bs, labels);
-      modelSettings.add(ss);
+      modelSettings.addLast(ss);
       break;
     case REP_BACKBONE: //   = 6;
     case REP_MESH: //   = 8;
@@ -827,7 +827,7 @@ public class PyMOLReader extends PdbReader {
     ss.translucency = getFloatSetting(PyMOL.transparency);
     setColixes();
     ss.setColors(colixes, 0);
-    modelSettings.add(ss);
+    modelSettings.addLast(ss);
   }
 
   private void setCartoon(String key, int sizeID, float factor) {
@@ -840,15 +840,15 @@ public class PyMOLReader extends PdbReader {
     ModelSettings ss = new ModelSettings(JC.SHAPE_CARTOON, bs, null);
     ss.setColors(colixes, cartoonTranslucency);
     ss.setSize(getFloatSetting(sizeID) * factor);
-    modelSettings.add(ss);
+    modelSettings.addLast(ss);
   }
 
   private void setFrame() {
     BS bs = BSUtil.newAndSetBit(0);
     if (!allStates && pymol.containsKey("movie")) {
-      modelSettings.add(new ModelSettings(T.movie, bs, pymol.get("movie")));
+      modelSettings.addLast(new ModelSettings(T.movie, bs, pymol.get("movie")));
     } else {
-      modelSettings.add(new ModelSettings(T.frame, bs, Integer
+      modelSettings.addLast(new ModelSettings(T.frame, bs, Integer
           .valueOf(currentFrame)));
     }
   }

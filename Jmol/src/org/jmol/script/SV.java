@@ -259,63 +259,63 @@ public class SV extends T {
       return newVariable(varray, v);
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < len; i++)
-      objects.add(getVariable(v.get(i)));
+      objects.addLast(getVariable(v.get(i)));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAV(SV[] v) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < v.length; i++)
-      objects.add(v[i]);
+      objects.addLast(v[i]);
     return newVariable(varray, objects);
   }
 
   static SV getVariableAD(double[] f) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < f.length; i++)
-      objects.add(newVariable(decimal, Float.valueOf((float) f[i])));
+      objects.addLast(newVariable(decimal, Float.valueOf((float) f[i])));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAS(String[] s) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < s.length; i++)
-      objects.add(newVariable(string, s[i]));
+      objects.addLast(newVariable(string, s[i]));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAP(P3[] p) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < p.length; i++)
-      objects.add(newVariable(point3f, p[i]));
+      objects.addLast(newVariable(point3f, p[i]));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAFF(float[][] fx) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < fx.length; i++)
-      objects.add(getVariableAF(fx[i]));
+      objects.addLast(getVariableAF(fx[i]));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAII(int[][] ix) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < ix.length; i++)
-      objects.add(getVariableAI(ix[i]));
+      objects.addLast(getVariableAI(ix[i]));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAF(float[] f) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < f.length; i++)
-      objects.add(newVariable(decimal, Float.valueOf(f[i])));
+      objects.addLast(newVariable(decimal, Float.valueOf(f[i])));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAI(int[] ix) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < ix.length; i++)
-      objects.add(newVariable(integer, Integer.valueOf(ix[i])));
+      objects.addLast(newVariable(integer, Integer.valueOf(ix[i])));
     return newVariable(varray, objects);
   }
 
@@ -346,7 +346,7 @@ public class SV extends T {
         JmolList<SV> o2 = new  JmolList<SV>();
         JmolList<SV> o1 = v.getList();
         for (int i = 0; i < o1.size(); i++)
-          o2.add(o1.get(i));
+          o2.addLast(o1.get(i));
         value = o2;
         break;
       }
@@ -701,24 +701,24 @@ public class SV extends T {
     JmolList<SV> v2 = x2.getList();
     if (!asNew) {
       if (v2 == null)
-        v1.add(newScriptVariableToken(x2));
+        v1.addLast(newScriptVariableToken(x2));
       else
         for (int i = 0; i < v2.size(); i++)
-          v1.add(v2.get(i));
+          v1.addLast(v2.get(i));
       return x1;
     }
     JmolList<SV> vlist = new JmolList<SV>();
     //(v1 == null ? 1 : v1.size()) + (v2 == null ? 1 : v2.size())
     if (v1 == null)
-      vlist.add(x1);
+      vlist.addLast(x1);
     else
       for (int i = 0; i < v1.size(); i++)
-        vlist.add(v1.get(i));
+        vlist.addLast(v1.get(i));
     if (v2 == null)
-      vlist.add(x2);
+      vlist.addLast(x2);
     else
       for (int i = 0; i < v2.size(); i++)
-        vlist.add(v2.get(i));
+        vlist.addLast(v2.get(i));
     return getVariableList(vlist);
   }
 
@@ -898,7 +898,7 @@ public class SV extends T {
       JmolList<SV> o1 = ((SV) tokenIn).getList();
       n = i2 - i1 + 1;
       for (int i = 0; i < n; i++)
-        o2.add(newScriptVariableToken(o1.get(i + i1 - 1)));
+        o2.addLast(newScriptVariableToken(o1.get(i + i1 - 1)));
       tokenOut.value = o2;
       break;
     }
@@ -966,7 +966,7 @@ public class SV extends T {
         selector = 0;
       if (len <= selector) {
         for (int i = len; i <= selector; i++)
-          getList().add(newVariable(string, ""));
+          getList().addLast(newVariable(string, ""));
       }
       getList().set(selector, var);
       return true;

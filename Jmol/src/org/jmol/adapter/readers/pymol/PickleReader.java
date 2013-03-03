@@ -100,7 +100,7 @@ class PickleReader {
         break;
       case APPEND:
         o = pop();
-        ((JmolList<Object>) peek()).add(o);
+        ((JmolList<Object>) peek()).addLast(o);
         break;
       case APPENDS:
         l = getObjects(getMark());

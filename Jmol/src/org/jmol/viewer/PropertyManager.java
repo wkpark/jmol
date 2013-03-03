@@ -329,7 +329,7 @@ public class PropertyManager implements JmolPropertyManager {
           JmolList<Object> keys = new  JmolList<Object>();
           Iterator<String> e = h.keySet().iterator();
           while (e.hasNext())
-            keys.add(e.next());
+            keys.addLast(e.next());
           return extractProperty(keys, args, ptr);
         }
         if (!h.containsKey(key)) {
@@ -353,7 +353,7 @@ public class PropertyManager implements JmolPropertyManager {
         for (pt = 0; pt < v.size(); pt++) {
           Object o = v.get(pt);
           if (o instanceof Map<?, ?>)
-            v2.add(extractProperty(o, args, ptr));
+            v2.addLast(extractProperty(o, args, ptr));
         }
         return v2;
       }
@@ -577,7 +577,7 @@ public class PropertyManager implements JmolPropertyManager {
         info.put("numberInModel", Integer.valueOf(m.indexInModel + 1));
         info.put("nAtoms", Integer.valueOf(m.atomCount));
         info.put("nElements", Integer.valueOf(m.nElements));
-        V.add(info);
+        V.addLast(info);
       }
     }
     return V;
@@ -637,7 +637,7 @@ public class PropertyManager implements JmolPropertyManager {
         model.put("energy", energy);
       }
       model.put("atomCount", Integer.valueOf(mi.atomCount));
-      vModels.add(model);
+      vModels.addLast(model);
     }
     info.put("models", vModels);
     return info;
@@ -666,7 +666,7 @@ public class PropertyManager implements JmolPropertyManager {
     for (int i = 0; i < molList.length; i++) {
       BS bs = molList[i].atomList;
       Map<String, Object> ligand = new Hashtable<String, Object>();
-      ligands.add(ligand);
+      ligands.addLast(ligand);
       ligand.put("atoms", Escape.e(bs));
       String names = "";
       String sep = "";
@@ -1138,7 +1138,7 @@ public class PropertyManager implements JmolPropertyManager {
   public JmolList<Map<String, Object>> getAllAtomInfo(BS bs) {
     JmolList<Map<String, Object>> V = new  JmolList<Map<String, Object>>();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      V.add(getAtomInfoLong(i));
+      V.addLast(getAtomInfoLong(i));
     }
     return V;
   }
@@ -1218,7 +1218,7 @@ public class PropertyManager implements JmolPropertyManager {
     int bondCount = ms.bondCount;
     if (bs instanceof BondSet) {
       for (int i = bs.nextSetBit(0); i >= 0 && i < bondCount; i = bs.nextSetBit(i + 1))
-        v.add(getBondInfo(i));
+        v.addLast(getBondInfo(i));
       return v;
     }
     int thisAtom = (bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
@@ -1226,7 +1226,7 @@ public class PropertyManager implements JmolPropertyManager {
     for (int i = 0; i < bondCount; i++) {
       if (thisAtom >= 0 ? (bonds[i].atom1.index == thisAtom || bonds[i].atom2.index == thisAtom)
           : bs.get(bonds[i].atom1.index) && bs.get(bonds[i].atom2.index)) {
-        v.add(getBondInfo(i));
+        v.addLast(getBondInfo(i));
       }
     }
     return v;
@@ -1269,7 +1269,7 @@ public class PropertyManager implements JmolPropertyManager {
       if (info.size() > 0) {
         modelInfo.put("modelIndex", Integer.valueOf(i));
         modelInfo.put("chains", info);
-        modelVector.add(modelInfo);
+        modelVector.addLast(modelInfo);
       }
     }
     finalInfo.put("models", modelVector);
@@ -1290,11 +1290,11 @@ public class PropertyManager implements JmolPropertyManager {
       for (int igroup = 0; igroup < nGroups; igroup++) {
         Group group = chain.getGroup(igroup);
         if (bs.get(group.firstAtomIndex))
-          infoChain.add(group.getGroupInfo(igroup));
+          infoChain.addLast(group.getGroupInfo(igroup));
       }
       if (!infoChain.isEmpty()) {
         arrayName.put("residues", infoChain);
-        infoChains.add(arrayName);
+        infoChains.addLast(arrayName);
       }
     }
     return infoChains;

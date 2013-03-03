@@ -207,7 +207,7 @@ class CalculationsUFF extends Calculations {
       // Otherwise, this is equation 6 from the UFF paper.
 
       kb = KCAL332 * parA.dVal[PAR_Z] * parB.dVal[PAR_Z] / (r0 * r0 * r0);
-      calc.add(new Object[] { new int[] { ia, ib },
+      calc.addLast(new Object[] { new int[] { ia, ib },
           new double[] { r0, kb, bondOrder } });
     }
 
@@ -293,7 +293,7 @@ class CalculationsUFF extends Calculations {
       // Note that 1/(rij * rjk) cancels with rij*rjk in eqn. 13
       double ka = (KCAL644) * (zi * zk / (Math.pow(rac, 5.0)))
           * (3.0 * rab * rbc * (1.0 - cosT0 * cosT0) - rac * rac * cosT0);
-      calc.add(new Object[] {
+      calc.addLast(new Object[] {
           new int[] { ia, ib, ic, coordination },
           new double[] { ka, theta0 * RAD_TO_DEG, c0 - c2, c1, 2 * c2, preliminaryMagnification * ka } });
     }
@@ -458,7 +458,7 @@ class CalculationsUFF extends Calculations {
       if (Util.isNearZero(V)) // don't bother calcuating this torsion
         return;
 
-      calc.add(new Object[] { new int[] { ia, ib, ic, id, n },
+      calc.addLast(new Object[] { new int[] { ia, ib, ic, id, n },
           new double[] { V, cosNPhi0 } });
     }
 
@@ -664,15 +664,15 @@ class CalculationsUFF extends Calculations {
       koop /= 3.0;
 
       // A-BCD 
-      calc.add(new Object[] { new int[] { ia, ib, ic, id },
+      calc.addLast(new Object[] { new int[] { ia, ib, ic, id },
           new double[] { koop, a0, a1, a2, koop * 10 } });
 
       // C-BDA
-      calc.add(new Object[] { new int[] { ic, ib, id, ia },
+      calc.addLast(new Object[] { new int[] { ic, ib, id, ia },
           new double[] { koop, a0, a1, a2, koop * 10 } });
 
       // D-BAC
-      calc.add(new Object[] { new int[] { id, ib, ia, ic },
+      calc.addLast(new Object[] { new int[] { id, ib, ia, ic },
           new double[] { koop, a0, a1, a2, koop * 10 } });
     }
 
@@ -736,7 +736,7 @@ class CalculationsUFF extends Calculations {
 
       // Xab is xij in equation 20 -- the expected vdw distance
       double Xab = Math.sqrt(Xa * Xb);
-      calc.add(new Object[] {
+      calc.addLast(new Object[] {
           new int[] { ia, ib },
           new double[] { Xab, Dab } });
     }

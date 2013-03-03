@@ -157,7 +157,7 @@ public class NucleicPolymer extends BioPolymer {
   static protected int addHydrogenBond(JmolList<Bond> vAtoms, Atom atom1, Atom atom2) {
     if (atom1 == null || atom2 == null)
       return 0;
-    vAtoms.add(new HBond(atom1, atom2, JmolEdge.BOND_H_NUCLEOTIDE, (short) 1, (short) 0, 0));
+    vAtoms.addLast(new HBond(atom1, atom2, JmolEdge.BOND_H_NUCLEOTIDE, (short) 1, (short) 0, 0));
     return 1;
   }
 

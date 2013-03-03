@@ -421,7 +421,7 @@ public class CifDataReader {
     loopData = new String[fieldCount];
     while (getData()) {
       for (int i = 0; i < fieldCount; i++) {
-        ((JmolList<String>)data.get(keyWords.get(i))).add(loopData[i]);
+        ((JmolList<String>)data.get(keyWords.get(i))).addLast(loopData[i]);
       }
     }
   }  

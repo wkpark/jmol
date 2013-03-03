@@ -280,7 +280,7 @@ public class ZipUtil implements JmolZipUtility {
       if (addManifest && isJmolManifest(fileName))
         manifest = getZipEntryAsString(zis);
       else if (!fileName.startsWith("__MACOS")) // resource fork not nec.
-        v.add(fileName);
+        v.addLast(fileName);
     }
     zis.close();
     if (addManifest)
@@ -390,9 +390,9 @@ public class ZipUtil implements JmolZipUtility {
         else
           newName = newName + "[" + iFile + "]";
       }
-      v.add(name);
-      v.add(newName);
-      v.add(ret);
+      v.addLast(name);
+      v.addLast(newName);
+      v.addLast(ret);
       crcMap.put(crcValue, newName);
     }
     return newName;
@@ -498,7 +498,7 @@ public class ZipUtil implements JmolZipUtility {
       if (iScene == Integer.MIN_VALUE)
         return "bad scene ID: " + iScene;
       scenes[i] = scenes[i].substring(pt[0]);
-      list.add(Integer.valueOf(iScene));
+      list.addLast(Integer.valueOf(iScene));
       String key = iSceneLast + "-" + iScene;
       htScenes.put(key, scenes[i - 1]);
       if (i > 1)
@@ -573,7 +573,7 @@ public class ZipUtil implements JmolZipUtility {
     if (haveScripts) {
       script = wrapPathForAllFiles("script " + Escape.eS(scripts[0]), "");
       for (int i = 0; i < scripts.length; i++)
-        fileNames.add(scripts[i]);
+        fileNames.addLast(scripts[i]);
     }
     int nFiles = fileNames.size();
     if (fileName != null)
@@ -600,9 +600,9 @@ public class ZipUtil implements JmolZipUtility {
         boolean isSparDir = (fm.spardirCache != null && fm.spardirCache
             .containsKey(name));
         if (isLocal && name.indexOf("|") < 0 && !isSparDir) {
-          v.add(name);
-          v.add(newName);
-          v.add(null); // data will be gotten from disk
+          v.addLast(name);
+          v.addLast(newName);
+          v.addLast(null); // data will be gotten from disk
         } else {
           // all remote files, and any file that was opened from a ZIP collection
           Object ret = (isSparDir ? fm.spardirCache.get(name) : fm
@@ -615,44 +615,44 @@ public class ZipUtil implements JmolZipUtility {
         name = "$SCRIPT_PATH$" + newName;
       }
       crcMap.put(newName, newName);
-      newFileNames.add(name);
+      newFileNames.addLast(name);
     }
     if (!sceneScriptOnly) {
       script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
-      v.add("state.spt");
-      v.add(null);
-      v.add(script.getBytes());
+      v.addLast("state.spt");
+      v.addLast(null);
+      v.addLast(script.getBytes());
     }
     if (haveSceneScript) {
       if (scripts[0] != null) {
-        v.add("animate.spt");
-        v.add(null);
-        v.add(scripts[0].getBytes());
+        v.addLast("animate.spt");
+        v.addLast(null);
+        v.addLast(scripts[0].getBytes());
       }
-      v.add("scene.spt");
-      v.add(null);
+      v.addLast("scene.spt");
+      v.addLast(null);
       script = TextFormat.replaceQuotedStrings(scripts[1], fileNames,
           newFileNames);
-      v.add(script.getBytes());
+      v.addLast(script.getBytes());
     }
     String sname = (haveSceneScript ? "scene.spt" : "state.spt");
-    v.add("JmolManifest.txt");
-    v.add(null);
+    v.addLast("JmolManifest.txt");
+    v.addLast(null);
     String sinfo = "# Jmol Manifest Zip Format 1.1\n" + "# Created "
         + (new Date()) + "\n" + "# JmolVersion " + Viewer.getJmolVersion()
         + "\n" + sname;
-    v.add(sinfo.getBytes());
-    v.add("Jmol_version_"
+    v.addLast(sinfo.getBytes());
+    v.addLast("Jmol_version_"
         + Viewer.getJmolVersion().replace(' ', '_').replace(':', '.'));
-    v.add(null);
-    v.add(new byte[0]);
+    v.addLast(null);
+    v.addLast(new byte[0]);
     if (fileRoot != null) {
       Object bytes = viewer.getImageAsWithComment("PNG", -1, -1, -1, null,
           null, null, JC.embedScript(script));
       if (Escape.isAB(bytes)) {
-        v.add("preview.png");
-        v.add(null);
-        v.add(bytes);
+        v.addLast("preview.png");
+        v.addLast(null);
+        v.addLast(bytes);
       }
     }
     return JmolBinary.writeZipFile(fm, viewer, fileName, v, "OK JMOL");
@@ -784,7 +784,7 @@ public class ZipUtil implements JmolZipUtility {
             if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, atomSetCollections);
             else
-              vCollections.add(atomSetCollections);
+              vCollections.addLast(atomSetCollections);
           } else if (atomSetCollections instanceof BufferedReader) {
             if (doCombine)
               zis.close();
@@ -836,7 +836,7 @@ public class ZipUtil implements JmolZipUtility {
           if (haveManifest && !exceptFiles)
             htCollections.put(thisEntry, ret);
           else
-            vCollections.add(ret);
+            vCollections.addLast(ret);
           AtomSetCollection a = (AtomSetCollection) ret;
           if (a.errorMessage != null) {
             if (ignoreErrors)
@@ -859,7 +859,7 @@ public class ZipUtil implements JmolZipUtility {
           if (file.length() == 0 || file.indexOf("#") == 0)
             continue;
           if (htCollections.containsKey(file))
-            vCollections.add(htCollections.get(file));
+            vCollections.addLast(htCollections.get(file));
           else if (Logger.debugging)
             Logger.info("manifested file " + file + " was not found in "
                 + fileName);
@@ -1014,9 +1014,9 @@ public class ZipUtil implements JmolZipUtility {
          * Mechanics Wall Time: 12:31.54
          */
         if ((token = tokens.nextToken()).equals(")"))
-          v.add(lasttoken);
+          v.addLast(lasttoken);
         else if (token.equals("Start-") && tokens.nextToken().equals("Molecule"))
-          v.add(TextFormat.split(tokens.nextToken(), '"')[1]);
+          v.addLast(TextFormat.split(tokens.nextToken(), '"')[1]);
         lasttoken = token;
       }
     } catch (Exception e) {

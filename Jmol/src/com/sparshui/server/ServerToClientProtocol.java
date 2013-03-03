@@ -61,10 +61,10 @@ public class ServerToClientProtocol extends ClientProtocol {
         // this is a string descriptor for a class
         byte[] bytes = new byte[-gestureID];
         _in.read(bytes);
-        gestures.add(new GestureType(Converter.byteArrayToString(bytes)));
+        gestures.addLast(new GestureType(Converter.byteArrayToString(bytes)));
         length -= bytes.length;
       } else {
-        gestures.add(new GestureType(gestureID));
+        gestures.addLast(new GestureType(gestureID));
       }
     }
     return gestures;

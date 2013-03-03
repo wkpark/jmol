@@ -123,7 +123,7 @@ class ScriptMathProcessor {
       if (asVector) {
         JmolList<SV> result = new  JmolList<SV>();
         for (int i = 0; i <= xPt; i++)
-          result.add(SV.selectItemVar(xStack[i]));
+          result.addLast(SV.selectItemVar(xStack[i]));
         return SV.newVariable(T.vector, result);
       }
       if (xPt == 0) {
@@ -941,7 +941,7 @@ class ScriptMathProcessor {
         JmolList<int[][]> ret = new  JmolList<int[][]>();
         for (int i = 0, pt = 0; i < nMatch; i++) {
           int[][] a = ArrayUtil.newInt2(nAtoms);
-          ret.add(a);
+          ret.addLast(a);
           for (int j = 0; j < nAtoms; j++, pt++)
             a[j] = new int[] { ((Atom)ptsA.get(j)).index, ((Atom)ptsB.get(pt)).index};
         }
@@ -1005,9 +1005,9 @@ class ScriptMathProcessor {
         continue;
       } else if (last != null) {
         JmolList<SV> y = new  JmolList<SV>();
-        y.add(last);
-        y.add(count);
-        counts.add(SV.getVariableList(y));
+        y.addLast(last);
+        y.addLast(count);
+        counts.addLast(SV.getVariableList(y));
       }
       count = new ScriptVariableInt(1);
       last = a; 
@@ -1281,14 +1281,14 @@ class ScriptMathProcessor {
           BS bs = (BS) args[i].value;
           if (bs.length() == 0)
             isNull = true;
-          points.add(bs);
+          points.addLast(bs);
           nPoints++;
           nBitSets++;
           break;
         case T.point3f:
           Point3fi v = new Point3fi();
           v.setT((P3) args[i].value);
-          points.add(v);
+          points.addLast(v);
           nPoints++;
           break;
         case T.integer:
@@ -1364,7 +1364,7 @@ class ScriptMathProcessor {
     wasX = false;
     JmolList<SV> params = new  JmolList<SV>();
     for (int i = 0; i < args.length; i++) {
-      params.add(args[i]);
+      params.addLast(args[i]);
     }
     if (isSelector) {
       return addXObj(eval.getBitsetProperty(SV.bsSelectVar(x1), tok,
@@ -1461,7 +1461,7 @@ class ScriptMathProcessor {
           ipt = i;
           bs.set(i);
           if (asMatch)
-            v.add(isReverse ? what.substring(0, matcher.start())
+            v.addLast(isReverse ? what.substring(0, matcher.start())
                 + what.substring(matcher.end()) : matcher.group());
         }
       }
@@ -2146,7 +2146,7 @@ class ScriptMathProcessor {
       if (nMax != Integer.MAX_VALUE) {
         JmolList<Point4f> list = new  JmolList<Point4f>();
         for (int i = 0; i < qs.length; i++)
-          list.add(qs[i].toPoint4f());
+          list.addLast(qs[i].toPoint4f());
         return addXList(list);
       }
       q = (qs.length > 0 ? qs[0] : null);
@@ -3399,7 +3399,7 @@ class ScriptMathProcessor {
     P3[] pts = b.getBoundBoxPoints(true);
     JmolList<P3> list = new  JmolList<P3>();
     for (int i = 0; i < 4; i++)
-      list.add(pts[i]);
+      list.addLast(pts[i]);
     return addXList(list);
   }
 

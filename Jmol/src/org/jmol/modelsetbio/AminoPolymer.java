@@ -997,7 +997,7 @@ public class AminoPolymer extends AlphaPolymer {
         return;
       htTemp.put(key, Boolean.TRUE);
     }
-    vHBonds.add(new HBond(nitrogen, oxygen, type, (short) 1, (short) 0, iEnergy / 1000f));
+    vHBonds.addLast(new HBond(nitrogen, oxygen, type, (short) 1, (short) 0, iEnergy / 1000f));
   }
 
   /**

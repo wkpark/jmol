@@ -177,7 +177,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   private void acceptClientConnection(Socket socket) throws IOException {
     Logger.info("[GestureServer] Client connection accepted");
     ClientConnection cc = new ClientConnection(socket);
-    main._clients.add(cc);
+    main._clients.addLast(cc);
     if (main.ic == null) {
       cc.processError(EventType.DRIVER_NONE);
     } else {

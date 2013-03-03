@@ -121,7 +121,7 @@ abstract public class AtomCollection {
     JmolList<P3> v = new  JmolList<P3>();
     if (bs != null) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
-        v.add(atoms[i]);
+        v.addLast(atoms[i]);
       }
     }
     return v;
@@ -1208,7 +1208,7 @@ abstract public class AtomCollection {
             pt.add(atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
-              vConnect.add(atom);
+              vConnect.addLast(atom);
             //$FALL-THROUGH$
           case 3:
             z.set(-0.635f, -0.635f, 0.635f);
@@ -1216,7 +1216,7 @@ abstract public class AtomCollection {
             pt.add(atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
-              vConnect.add(atom);
+              vConnect.addLast(atom);
             //$FALL-THROUGH$
           case 2:
             z.set(-0.635f, 0.635f, -0.635f);
@@ -1224,7 +1224,7 @@ abstract public class AtomCollection {
             pt.add(atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
-              vConnect.add(atom);
+              vConnect.addLast(atom);
             //$FALL-THROUGH$
           case 1:
             z.set(0.635f, -0.635f, -0.635f);
@@ -1232,7 +1232,7 @@ abstract public class AtomCollection {
             pt.add(atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
-              vConnect.add(atom);
+              vConnect.addLast(atom);
           }
         } else {
           switch (n) {
@@ -1244,19 +1244,19 @@ abstract public class AtomCollection {
             pt.scaleAdd2(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
-              vConnect.add(atom);
+              vConnect.addLast(atom);
             getHybridizationAndAxes(i, atomicNumber, z, x, "sp3c", false, true);
             pt = new P3();
             pt.scaleAdd2(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
-              vConnect.add(atom);
+              vConnect.addLast(atom);
             getHybridizationAndAxes(i, atomicNumber, z, x, "sp3d", false, true);
             pt = new P3();
             pt.scaleAdd2(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
-              vConnect.add(atom);
+              vConnect.addLast(atom);
             break;
           case 2:
             // 2 bonds needed R2C or R-N or R2C=C or O
@@ -1269,14 +1269,14 @@ abstract public class AtomCollection {
             pt.scaleAdd2(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
-              vConnect.add(atom);
+              vConnect.addLast(atom);
             getHybridizationAndAxes(i, atomicNumber, z, x, (isEne ? "sp2c"
                 : targetValence == 3 ? "sp3d" : "lpb"), false, true);
             pt = P3.newP(z);
             pt.scaleAdd2(dHX, z, atom);
             hAtoms[i][hPt++] = pt;
             if (vConnect != null)
-              vConnect.add(atom);
+              vConnect.addLast(atom);
             break;
           case 1:
             // one bond needed R2B, R3C, R-N-R, R-O R=C-R R=N R-3-C
@@ -1300,7 +1300,7 @@ abstract public class AtomCollection {
                 pt.scaleAdd2(dHX, z, atom);
                 hAtoms[i][hPt++] = pt;
                 if (vConnect != null)
-                  vConnect.add(atom);
+                  vConnect.addLast(atom);
               } else {
                 hAtoms[i] = new P3[0];
               }
@@ -1313,7 +1313,7 @@ abstract public class AtomCollection {
               pt.scaleAdd2(dHX, z, atom);
               hAtoms[i][hPt++] = pt;
               if (vConnect != null)
-                vConnect.add(atom);
+                vConnect.addLast(atom);
               break;
             case 3:
               // sp
@@ -1322,7 +1322,7 @@ abstract public class AtomCollection {
               pt.scaleAdd2(dHX, z, atom);
               hAtoms[i][hPt++] = pt;
               if (vConnect != null)
-                vConnect.add(atom);
+                vConnect.addLast(atom);
               break;
             }
           }

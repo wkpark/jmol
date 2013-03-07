@@ -192,7 +192,7 @@ public class _ObjExporter extends __CartesianExporter {
     // Ignore ptX and pyY as they are passed null from __CartesianExporter.draw
     if (debug) {
       debugPrint("outputCylinder: colix="
-          + String.format("%04x", new Short(colix)));
+          + String.format("%04x", Short.valueOf(colix)));
       debugPrint("  ptCenter=" + ptCenter);
       debugPrint("  pt1=" + pt1);
       debugPrint("  endcaps=" + endcaps + " NONE=" + GData.ENDCAPS_NONE
@@ -236,7 +236,7 @@ public class _ObjExporter extends __CartesianExporter {
   protected void outputEllipsoid(P3 center, P3[] points, short colix) {
     if (debug) {
       debugPrint("outputEllipsoid: colix="
-          + String.format("%04x", new Short(colix)));
+          + String.format("%04x", Short.valueOf(colix)));
       debugPrint("  center=" + center);
       debugPrint("  points[0]=" + points[0]);
       debugPrint("  points[1]=" + points[1]);
@@ -265,7 +265,7 @@ public class _ObjExporter extends __CartesianExporter {
     // Atom extends Point3fi extends Point3f, so this may be passed an Atom
     if (debug) {
       debugPrint("outputSphere: colix="
-          + String.format("%04x", new Short(colix)));
+          + String.format("%04x", Short.valueOf(colix)));
       debugPrint("  center.getClass().getName()=" + center.getClass().getName());
       debugPrint("  center=" + center);
       debugPrint("  center.x=" + center.x);
@@ -860,7 +860,7 @@ public class _ObjExporter extends __CartesianExporter {
    * @param name TODO
    */
   private void addTexture(short colix, String name) {
-    Short scolix = new Short(colix);
+    Short scolix = Short.valueOf(colix);
     if (name == null && textures.contains(scolix)) {
       return;
     }

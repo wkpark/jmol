@@ -602,6 +602,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     stateManager.setJmolDefaults();
   }
 
+  public void setDisplay(Object canvas) {
+    // used in JavaScript when a canvas is resized
+    display = canvas;
+    apiPlatform.setViewer(this, canvas);
+  }
+
   private JmolScriptManager getScriptManager() {
     if (allowScripting && scriptManager == null) {
       scriptManager = (JmolScriptManager) Interface.getOptionInterface("viewer.ScriptManager");
@@ -4999,12 +5005,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setJmolStatusListener(jmolStatusListener, null);
   }
 
-  public Map<String, List<List<Object>>> getMessageQueue() {
+  public Map<String, JmolList<JmolList<Object>>> getMessageQueue() {
     // called by PropertyManager.getPropertyAsObject for "messageQueue"
     return statusManager.getMessageQueue();
   }
 
-  List<List<List<Object>>> getStatusChanged(String statusNameList) {
+  List<JmolList<JmolList<Object>>> getStatusChanged(String statusNameList) {
     return statusManager.getStatusChanged(statusNameList);
   }
 

@@ -603,7 +603,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setDisplay(Object canvas) {
-    // used in JavaScript when a canvas is resized
+    // used by JSmol/HTML5 when a canvas is resized
     display = canvas;
     apiPlatform.setViewer(this, canvas);
   }

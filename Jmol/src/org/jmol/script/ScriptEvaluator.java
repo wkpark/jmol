@@ -275,7 +275,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @return [ ScriptFunction, Params ]
    */
   private Object[] createFunction(String fname, String xyz, String ret) {
-    ScriptEvaluator e = new ScriptEvaluator();
+    ScriptEvaluator e = (new ScriptEvaluator());
     e.setViewer(viewer);
     try {
       e.compileScript(null, "function " + fname + "(" + xyz + ") { return "
@@ -303,7 +303,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void executeCommands(boolean isTry) {
     boolean haveError = false;
     try {
-      if (!dispatchCommands(false))
+      if (!dispatchCommands(false, false))
         return;
     } catch (Error er) {
       viewer.handleError(er, false);
@@ -428,7 +428,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     this.outputBuffer = outputBuffer;
     allowJSThreads = false;
     if (compileScript(null, script + JC.SCRIPT_EDITOR_IGNORE, false))
-      dispatchCommands(false);
+      dispatchCommands(false, false);
     popContext(false, false);
   }
 
@@ -450,7 +450,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     isCmdLine_c_or_C_Option = isCmdLine_C_Option = false;
     pc = 0;
     try {
-      dispatchCommands(false);
+      dispatchCommands(false, false);
     } catch (ScriptException e) {
       setErrorMessage(e.toString());
       sc = getScriptContext();
@@ -653,6 +653,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     try {
       // disallow end-of-script message and JavaScript script queuing
       e.pushContext(null);
+      e.allowJSThreads = false;
     } catch (ScriptException e1) {
       //ignore
     }
@@ -701,7 +702,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       //       within a TRY/CATCH block in JavaScript, and
       //       the code will block. 
       e.allowJSThreads = false;
-      e.dispatchCommands(false);
+      e.dispatchCommands(false, false);
     } catch (Exception ex) {
       viewer.setStringProperty("_errormessage", "" + ex);
       if (e.thisContext == null) {
@@ -2214,12 +2215,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     pushContext(null);
-    allowJSThreads = allowThreads;
+    if (allowJSThreads)
+      allowJSThreads = allowThreads;
     boolean isTry = (function.getTok() == T.trycmd);
     thisContext.isTryCatch = isTry;
     thisContext.isFunction = !isTry;
     functionName = name;
-    if (function.getTok() == T.trycmd) {
+    if (isTry) {
       viewer.resetError();
       thisContext.displayLoadErrorsSave = viewer.displayLoadErrors;
       thisContext.tryPt = ++tryPt;
@@ -2241,13 +2243,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       {
         parallelProcessor = (JmolParallelProcessor) function;
         restoreFunction(function, params, tokenAtom);
-        dispatchCommands(false); // to load the processes
+        dispatchCommands(false, true); // to load the processes
         ((JmolParallelProcessor) function).runAllProcesses(viewer);
       }
     } else {
       restoreFunction(function, params, tokenAtom);
-      dispatchCommands(false);
-      //JavaScript will not return here after DELAY
+      dispatchCommands(false, true);
+      //JavaScript will not return here after DELAY or after what???
     }
     SV v = (getReturn ? getContextVariableAsVariable("_retval")
         : null);
@@ -5435,10 +5437,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   /**
    * 
    * @param isSpt
+   * @param fromFunc TODO
    * @return false only when still working through resumeEval
    * @throws ScriptException
    */
-  private boolean dispatchCommands(boolean isSpt)
+  private boolean dispatchCommands(boolean isSpt, boolean fromFunc)
       throws ScriptException {
     long timeBegin = 0;
     if (sm == null)
@@ -5457,7 +5460,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       lineEnd = Integer.MAX_VALUE;
     if (aatoken == null)
       return true;
-    commandLoop();
+    commandLoop(fromFunc);
     if (chk)
       return true;
     String script = viewer.getInsertedCommand();
@@ -5467,7 +5470,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // specifically for ProteinExplorer
       viewer.scriptStatus("script <exiting>");
     }
-    if (!isJS || !allowJSThreads)
+    if (!isJS || !allowJSThreads || fromFunc)
       return true;
     if (mustResumeEval || thisContext == null) {
       boolean done = (thisContext == null);
@@ -5478,13 +5481,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return true;
   }
 
-  private void commandLoop() throws ScriptException {
+  private void commandLoop(boolean fromFunc) throws ScriptException {
     String lastCommand = "";
     boolean isForCheck = false; // indicates the stage of the for command loop
     JmolList<T[]> vProcess = null;
     long lastTime = System.currentTimeMillis();
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
-      if (!chk && isJS && allowJSThreads) {
+      if (!chk && isJS && allowJSThreads && !fromFunc) {
         // every 100-ms check for interruptions
         if (!executionPaused && System.currentTimeMillis() - lastTime > 100) {
           pc--;
@@ -10770,7 +10773,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       
       if (isCheck)
         listCommands = true;
-      dispatchCommands(false);
+      dispatchCommands(false, false);
       isCmdLine_C_Option = saveLoadCheck;
       popContext(false, false);
     } else {

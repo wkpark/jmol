@@ -1390,7 +1390,7 @@ abstract public class AtomCollection {
         .substring(1)
         : lcaoTypeRaw);
 
-    if (lcaoTypeRaw.indexOf("d") >= 0 && !lcaoTypeRaw.equals("sp3d"))
+    if (lcaoTypeRaw.indexOf("d") >= 0 && !lcaoTypeRaw.endsWith("sp3d"))
       return getHybridizationAndAxesD(atomIndex, z, x, lcaoType);
 
     Atom atom = atoms[atomIndex];

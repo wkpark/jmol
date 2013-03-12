@@ -208,7 +208,7 @@ public class RepaintManager implements JmolRepaintManager {
           msg = "rendering " + JC.getShapeClassName(i, false);
           Logger.startTimer(msg);
         }
-        if((isFirstPass || bsTranslucent.get(i)) && getRenderer(i).render(g3d, modelSet, shape))
+        if((isFirstPass || bsTranslucent.get(i)) && getRenderer(i).renderShape(g3d, modelSet, shape))
           bsTranslucent.set(i);
         if (logTime)
           Logger.checkTimer(msg, false);
@@ -245,7 +245,7 @@ public class RepaintManager implements JmolRepaintManager {
           msg = "rendering " + JC.getShapeClassName(i, false);
           Logger.startTimer(msg);
         }
-        getRenderer(i).render(g3dExport, modelSet, shape);
+        getRenderer(i).renderShape(g3dExport, modelSet, shape);
         if (logTime)
           Logger.checkTimer(msg, false);
     }

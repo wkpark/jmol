@@ -64,7 +64,7 @@ public abstract class ShapeRenderer {
   protected void initRenderer() {
   }
 
-  public boolean render(JmolRendererInterface g3d, ModelSet modelSet, Shape shape) {
+  public boolean renderShape(JmolRendererInterface g3d, ModelSet modelSet, Shape shape) {
     this.g3d = g3d;
     this.modelSet = modelSet;
     this.shape = shape;

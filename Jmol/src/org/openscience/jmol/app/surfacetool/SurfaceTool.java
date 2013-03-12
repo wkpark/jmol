@@ -25,7 +25,8 @@
 
 package org.openscience.jmol.app.surfacetool;
 
-import org.jmol.util.JmolList;
+import java.util.ArrayList;
+import java.util.List;
 
 
 import javax.swing.JOptionPane;
@@ -58,7 +59,7 @@ public class SurfaceTool {
   private final P3 center = new P3();
   private final V3 boxVec = new V3();
   //surface specific parameters
-  private final JmolList<SurfaceStatus> surfaces = new  JmolList<SurfaceStatus>();
+  private final List<SurfaceStatus> surfaces = new  ArrayList<SurfaceStatus>();
 
   final static int DEGREES = 0;
   final static int RADIANS = 1;
@@ -227,7 +228,7 @@ public class SurfaceTool {
         }
         for (int i = 0; i < meshIndexList.length; i++) {
           if (meshIndexList[i] == -1)
-            surfaces.addLast(new SurfaceStatus(mc.meshes[i], kind));
+            surfaces.add(new SurfaceStatus(mc.meshes[i], kind));
         }
       }
     }
@@ -535,7 +536,7 @@ public class SurfaceTool {
     capOn = b;
   }
 
-  public JmolList<SurfaceStatus> getSurfaces() {
+  public List<SurfaceStatus> getSurfaces() {
     return surfaces;
   }
 }

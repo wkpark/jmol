@@ -55,7 +55,6 @@ import org.jmol.awt.Platform;
 import org.jmol.console.JmolConsole;
 import org.jmol.i18n.GT;
 import org.jmol.util.CommandHistory;
-import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
@@ -469,16 +468,16 @@ public class AppConsole extends JmolConsole implements EnterListener {
           .scriptWaitStatus(strCommand.substring(5),
               "+fileLoaded,+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated");
       if (o instanceof List) {
-        List<JmolList<JmolList<Object>>> info = (List<JmolList<JmolList<Object>>>) o;
+        List<List<List<Object>>> info = (List<List<List<Object>>>) o;
         /*
          * info = [ statusRecortSet0, statusRecortSet1, statusRecortSet2, ...]
          * statusRecordSet = [ statusRecord0, statusRecord1, statusRecord2, ...]
          * statusRecord = [int msgPtr, String statusName, int intInfo, String msg]    
          */
         for (int i = 0; i < info.size(); i++) {
-          JmolList<JmolList<Object>> statusRecordSet = info.get(i);
+          List<List<Object>> statusRecordSet = info.get(i);
           for (int j = 0; j < statusRecordSet.size(); j++) {
-            JmolList<Object> statusRecord = statusRecordSet.get(j);
+            List<Object> statusRecord = statusRecordSet.get(j);
             Logger.info("msg#=" + statusRecord.get(0) + " "
                 + statusRecord.get(1) + " intInfo=" + statusRecord.get(2)
                 + " stringInfo=" + statusRecord.get(3));

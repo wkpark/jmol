@@ -31,7 +31,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
-import org.jmol.util.JmolList;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -554,7 +555,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       String script = null;
       if (contentJSON.has("scripts")) {
         //TODO -- this is not implemented, because JSONObject.getJSONArray is not implemented
-        JmolList<JSONObject> scripts = contentJSON.getJSONArray("scripts");
+        List<JSONObject> scripts = contentJSON.getJSONArray("scripts");
         for (int i = scripts.size(); --i >= 0;) {
           JSONObject scriptInfo = scripts.get(i);
           if (scriptInfo.getString("startup").equals("yes")) {
@@ -734,13 +735,13 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     }
     
     @SuppressWarnings("unchecked")
-    public JmolList<JSONObject> getJSONArray(String key) throws Exception {
+    public List<JSONObject> getJSONArray(String key) throws Exception {
       if (!has(key))
         throw new Exception("JSON key not found:" + key);
-      JmolList<JSONObject> list = new  JmolList<JSONObject>();
-      JmolList<SV> svlist = ((SV) get(key)).getList();
+      List<JSONObject> list = new  ArrayList<JSONObject>();
+      List<SV> svlist = ((SV) get(key)).getList();
       for (int i = 0; i < svlist.size(); i++)
-        list.addLast(new JSONObject(Escape.escapeMap((Map<String, Object>)(svlist.get(i).value))));
+        list.add(new JSONObject(Escape.escapeMap((Map<String, Object>)(svlist.get(i).value))));
       return list;
     }
 

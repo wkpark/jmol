@@ -72,10 +72,11 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Hashtable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -285,9 +286,9 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     say(GT._("Building Command Hooks..."));
     commands = new Hashtable<String, Action>();
     if (display != null) {
-      Action[] actions = getActions();
-      for (int i = 0; i < actions.length; i++) {
-        Action a = actions[i];
+      List<Action> actions = getActions();
+      for (int i = 0; i < actions.size(); i++) {
+        Action a = actions.get(i);
         commands.put(a.getValue(Action.NAME).toString(), a);
       }
     }
@@ -555,13 +556,13 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
    * @return A list of Actions that is understood by the upper level
    * application
    */
-  public Action[] getActions() {
+  public List<Action> getActions() {
 
-    JmolList<Action> actions = new  JmolList<Action>();
+    List<Action> actions = new  ArrayList<Action>();
     actions.addAll(Arrays.asList(defaultActions));
     actions.addAll(Arrays.asList(display.getActions()));
     actions.addAll(Arrays.asList(preferencesDialog.getActions()));
-    return actions.toArray(new Action[0]);
+    return actions;
   }
 
   /**
@@ -811,10 +812,10 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
    * @return Strings chopped on whitespace boundaries
    */
   protected String[] tokenize(String input) {
-    JmolList<String> v = new  JmolList<String>();
+    List<String> v = new  ArrayList<String>();
     StringTokenizer t = new StringTokenizer(input);
     while (t.hasMoreTokens())
-      v.addLast(t.nextToken());
+      v.add(t.nextToken());
     return v.toArray(new String[v.size()]);
   }
 

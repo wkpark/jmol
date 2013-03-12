@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
+import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.Interface;
@@ -521,7 +522,7 @@ public class JmolBinary {
     return getJzu().spartanFileList(name, zipDirectory);
   }
 
-  public static void getFileReferences(String script, JmolList<String> fileList) {
+  public static void getFileReferences(String script, List<String> fileList) {
     for (int ipt = 0; ipt < FileManager.scriptFilePrefixes.length; ipt++) {
       String tag = FileManager.scriptFilePrefixes[ipt];
       int i = -1;
@@ -529,7 +530,7 @@ public class JmolBinary {
         String s = Parser.getQuotedStringAt(script, i);
         if (s.indexOf("::") >= 0)
           s = TextFormat.splitChars(s, "::")[1];
-        fileList.addLast(s);
+        fileList.add(s);
       }
     }
   }

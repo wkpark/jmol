@@ -25,6 +25,8 @@
 
 package org.jmol.util;
 
+import java.util.List;
+
 
 
 //import java.text.DecimalFormat;
@@ -700,8 +702,8 @@ public class TextFormat {
     return sb.toString();
   }
 
-  public static String replaceQuotedStrings(String s, JmolList<String> list,
-                                            JmolList<String> newList) {
+  public static String replaceQuotedStrings(String s, List<String> list,
+                                            List<String> newList) {
     int n = list.size();
     for (int i = 0; i < n; i++) {
       String name = list.get(i);
@@ -713,8 +715,8 @@ public class TextFormat {
     return s;
   }
 
-  public static String replaceStrings(String s, JmolList<String> list,
-                                      JmolList<String> newList) {
+  public static String replaceStrings(String s, List<String> list,
+                                      List<String> newList) {
     int n = list.size();
     for (int i = 0; i < n; i++) {
       String name = list.get(i);

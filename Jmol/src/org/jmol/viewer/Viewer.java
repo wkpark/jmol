@@ -9025,7 +9025,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setCursor(JC.CURSOR_DEFAULT);
       setBooleanProperty("refreshing", true);
       fileManager.setPathForAllFiles("");
-      Logger.error("viewer handling error condition: " + er);
+      Logger.error("viewer handling error condition: " + er + "  ");
+      //er.printStackTrace();
       notifyError("Error", "doClear=" + doClear + "; " + er, "" + er);
     } catch (Throwable e1) {
       try {

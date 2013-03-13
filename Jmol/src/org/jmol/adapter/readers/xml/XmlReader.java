@@ -296,7 +296,7 @@ public class XmlReader extends AtomSetCollectionReader {
       return;
     }
     attribs[0] = jsObjectGetMember(domObj, "attributes");
-    getDOMAttributes(attribs);
+    getDOMAttributesA(attribs);
     processStartElement(localName);
     boolean haveChildren;
     /**
@@ -322,7 +322,7 @@ public class XmlReader extends AtomSetCollectionReader {
     processEndElement(localName);
   }
 
-  private void getDOMAttributes(Object[] attributes) {
+  private void getDOMAttributesA(Object[] attributes) {
     atts.clear();
     if (attributes == null) {
       return;

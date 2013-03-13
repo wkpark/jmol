@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 
 import org.jmol.modelset.Bond.BondSet;
@@ -605,14 +606,15 @@ public class SV extends T {
       }
       map.put(vx, Boolean.TRUE);
       Map<String, SV> ht = (Map<String, SV>) vx.value;
-      Object[] keys = ht.keySet().toArray();
+      Set<String> keyset = ht.keySet();
+      String[] keys = ht.keySet().toArray(new String[keyset.size()]);
       Arrays.sort(keys);
 
       if (isEscaped) {
         sb.append("{ ");
         String sep = "";
         for (int i = 0; i < keys.length; i++) {
-          String key = (String) keys[i];
+          String key = keys[i];
           sb.append(sep).append(Escape.eS(key)).appendC(':');
           sValueArray(sb, ht.get(key), map, level + 1, true);
           sep = ", ";
@@ -621,7 +623,7 @@ public class SV extends T {
         break;
       }
       for (int i = 0; i < keys.length; i++) {
-        sb.append((String) keys[i]).append("\t:");
+        sb.append(keys[i]).append("\t:");
         SV v = ht.get(keys[i]);
         SB sb2 = new SB();
         sValueArray(sb2, v, map, level + 1, isEscaped);

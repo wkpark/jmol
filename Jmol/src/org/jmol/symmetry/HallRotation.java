@@ -60,9 +60,6 @@ class HallRotation {
   Matrix4f seitzMatrix = new Matrix4f();
   Matrix4f seitzMatrixInv = new Matrix4f();
   
-  HallRotation () {
-  }
-  
   private HallRotation (String code, String matrixData) {
     rotCode = code;
     //order = code.charAt(0) - '0';

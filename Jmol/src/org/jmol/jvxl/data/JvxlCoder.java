@@ -378,7 +378,7 @@ public class JvxlCoder {
     addAttrib(attribs, "\n  jmolVersion", jvxlData.version);
     
     SB info = new SB();
-    XmlUtil.openTagAttr(info, "jvxlSurfaceInfo", attribs.toArray());
+    XmlUtil.openTagAttr(info, "jvxlSurfaceInfo", attribs.toArray(new Object[attribs.size()]));
     XmlUtil.closeTag(info, "jvxlSurfaceInfo");
     return info.toString();
   }

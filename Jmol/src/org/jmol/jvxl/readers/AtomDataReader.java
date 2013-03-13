@@ -94,7 +94,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     if (params.bsIgnore != null)
       bsMyIgnored = params.bsIgnore;
     if (params.volumeData != null) {
-      setVolumeData(params.volumeData);
+      setVolumeDataV(params.volumeData);
       setBBox(volumeData.volumetricOrigin, 0);
       ptXyzTemp.setT(volumeData.volumetricOrigin);
       for (int i = 0; i < 3; i++)

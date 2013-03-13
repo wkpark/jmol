@@ -139,7 +139,7 @@ class IsoIntersectReader extends AtomDataReader {
     for (int i = 0; i < yzCount; i++) {
       float va = thisPlane[i];
       float vb = thisPlaneB[i];
-      float v = getValue2(va, vb);
+      float v = getValueAB(va, vb);
       if (Float.isNaN(v))
         return false;
       thisPlane[i] = v;
@@ -149,7 +149,7 @@ class IsoIntersectReader extends AtomDataReader {
 
   private final float[] values = new float[2];
   
-  private float getValue2(float va, float vb) {
+  private float getValueAB(float va, float vb) {
     if (va == Float.MAX_VALUE || vb == Float.MAX_VALUE
         || Float.isNaN(va) || Float.isNaN(vb))
       return Float.MAX_VALUE;
@@ -171,7 +171,7 @@ class IsoIntersectReader extends AtomDataReader {
   @Override
   public float getValueAtPoint(P3 pt) {
     // mapping sasurface/vdw 
-    return getValue2(getValueAtPoint2(pt, myBsA), getValueAtPoint2(pt, myBsB));
+    return getValueAB(getValueAtPoint2(pt, myBsA), getValueAtPoint2(pt, myBsB));
   }
   
   private float getValueAtPoint2(P3 pt, BS bs) {

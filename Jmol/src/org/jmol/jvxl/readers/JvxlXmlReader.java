@@ -406,7 +406,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     } 
     if (params.thePlane != null) {
       volumeData.setDataDistanceToPlane(params.thePlane);
-      setVolumeData(volumeData);
+      setVolumeDataV(volumeData);
       params.cutoff = 0f;
       jvxlData.setSurfaceInfo(params.thePlane, params.mapLattice, 0, "");
       jvxlData.scale3d = params.scale3d;

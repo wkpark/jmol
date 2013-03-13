@@ -216,13 +216,13 @@ abstract public class Binding {
       int n;
       if (names[i] == null || (n = names[i].size()) == 0)
         continue;
-      Object[] list = names[i].toArray();
+      String[] list = names[i].toArray(new String[n]);
       Arrays.sort(list);
       sb.append(actionNames[i]).append("\t");
       String sep = "";
       for (int j = 0; j < n; j++) {
         sb.append(sep);
-        sb.append(((String) list[j]).substring(7));
+        sb.append(list[j].substring(7));
         sep = ", ";
       }
       sb.appendC('\n');

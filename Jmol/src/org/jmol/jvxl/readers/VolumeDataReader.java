@@ -126,7 +126,7 @@ abstract class VolumeDataReader extends SurfaceReader {
   
   protected boolean setVolumeDataParams() {
     if (params.volumeData != null) {
-      setVolumeData(params.volumeData);
+      setVolumeDataV(params.volumeData);
       return true;
     }
     if (!useOriginStepsPoints) {

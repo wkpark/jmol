@@ -28,6 +28,7 @@ import java.util.Arrays;
 
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Set;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -2756,13 +2757,10 @@ class ScriptMathProcessor {
       case T.keys:
         if (x2.tok != T.hash)
           return addXStr("");
-        Object[] keys = ((Map<String, SV>) x2.value).keySet()
-            .toArray();
+        Set<String> keyset = ((Map<String, SV>) x2.value).keySet();
+        String[] keys = keyset.toArray(new String[keyset.size()]);
         Arrays.sort(keys);
-        String[] ret = new String[keys.length];
-        for (int i = 0; i < keys.length; i++)
-          ret[i] = (String) keys[i];
-        return addXAS(ret);
+        return addXAS(keys);
       case T.lines:
         switch (x2.tok) {
         case T.matrix3f:

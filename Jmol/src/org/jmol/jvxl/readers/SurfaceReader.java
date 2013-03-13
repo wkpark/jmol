@@ -255,7 +255,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     eccentricityRatio = params.eccentricityRatio;
     meshData = sg.getMeshData();
     jvxlData = sg.getJvxlData();
-    setVolumeData(sg.getVolumeData());
+    setVolumeDataV(sg.getVolumeData());
     meshDataServer = sg.getMeshDataServer();
     cJvxlEdgeNaN = (char) (JvxlCoder.defaultEdgeFractionBase + JvxlCoder.defaultEdgeFractionRange);
   }
@@ -286,7 +286,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     volumeData.setVoxelDataAsArray(voxelData = new float[nPointsX][nPointsY][nPointsZ]);
   }
 
-  protected void setVolumeData(VolumeData v) {
+  protected void setVolumeDataV(VolumeData v) {
     nBytes = 0;
     volumetricOrigin = v.volumetricOrigin;
     volumetricVectors = v.volumetricVectors;
@@ -481,7 +481,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];
     nPointsZ = voxelCounts[2];
-    setVolumeData(volumeData);
+    setVolumeDataV(volumeData);
   }
 
   // this needs to be specific for each reader

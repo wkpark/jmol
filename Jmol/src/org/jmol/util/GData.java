@@ -119,14 +119,17 @@ public class GData implements JmolGraphicsInterface {
    * @param zPower 
    */
   public void setZShade(boolean zShade, int zSlab, int zDepth, int zPower) {
-    if (zShade) {
-      zShadeR = bgcolor & 0xFF;
-      zShadeG = (bgcolor & 0xFF00) >> 8;
-      zShadeB = (bgcolor & 0xFF0000) >> 16;
-      this.zSlab = zSlab < 0 ? 0 : zSlab;
-      this.zDepth = zDepth < 0 ? 0 : zDepth;
-      this.zShadePower = zPower;
-    }
+    if (zShade)
+      setZShade2(zSlab, zDepth, zPower);
+  }
+
+  protected void setZShade2(int zSlab, int zDepth, int zPower) {
+    zShadeR = bgcolor & 0xFF;
+    zShadeG = (bgcolor & 0xFF00) >> 8;
+    zShadeB = (bgcolor & 0xFF0000) >> 16;
+    this.zSlab = zSlab < 0 ? 0 : zSlab;
+    this.zDepth = zDepth < 0 ? 0 : zDepth;
+    this.zShadePower = zPower;
   }
 
   /**

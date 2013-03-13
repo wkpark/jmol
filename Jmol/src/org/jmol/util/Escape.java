@@ -83,8 +83,8 @@ public class Escape {
       return TextFormat.simpleReplace(((Matrix4f) x).toString(), "\t", ",\t");
     if (x instanceof Tuple3f)
       return eP((Tuple3f) x);
-    if (x instanceof Point4f) {
-      Point4f xyzw = (Point4f) x;
+    if (x instanceof P4) {
+      P4 xyzw = (P4) x;
       return "{" + xyzw.x + " " + xyzw.y + " " + xyzw.z + " " + xyzw.w + "}";
     }
     if (x instanceof AxisAngle4f) {
@@ -461,7 +461,7 @@ public class Escape {
     if (nPoints == 3)
       return P3.new3(points[0], points[1], points[2]);
     if (nPoints == 4)
-      return Point4f.new4(points[0], points[1], points[2], points[3]);
+      return P4.new4(points[0], points[1], points[2], points[3]);
     return strPoint;
   }
 
@@ -766,12 +766,12 @@ public class Escape {
       .appendF((float)(((AxisAngle4f) info).angle * 180d/Math.PI)).append("]");
     return packageJSONSb(infoType, sb);
     }
-    if (info instanceof Point4f) {
+    if (info instanceof P4) {
       sb.append("[")
-        .appendF(((Point4f) info).x).append(",")
-        .appendF(((Point4f) info).y).append(",")
-        .appendF(((Point4f) info).z).append(",")
-        .appendF(((Point4f) info).w).append("]");
+        .appendF(((P4) info).x).append(",")
+        .appendF(((P4) info).y).append(",")
+        .appendF(((P4) info).z).append(",")
+        .appendF(((P4) info).w).append("]");
       return packageJSONSb(infoType, sb);
     }
     if (info instanceof Map) {
@@ -882,7 +882,7 @@ public class Escape {
     }
     if (info instanceof Matrix3f
         || info instanceof Tuple3f
-        || info instanceof Point4f
+        || info instanceof P4
         || info instanceof AxisAngle4f) {
       sb.append(e(info));
       return packageReadableSb(name, null, sb);

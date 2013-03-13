@@ -350,7 +350,7 @@ class HallInfo {
         m2.m13 = -vector12ths.y;
         m2.m23 = -vector12ths.z;
         seitzMatrix12ths.mul2(m1, seitzMatrix12ths);
-        seitzMatrix12ths.mul(m2);
+        seitzMatrix12ths.mulM4(m2);
       }
       if (Logger.debugging) {
         Logger.debug("code = " + code + "; primitive code =" + primitiveCode

@@ -34,7 +34,7 @@ import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.Measure;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
@@ -351,7 +351,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     if (isBarb) {
       if (!haveMacros)
         writeMacros2();
-      Point4f plane = new Point4f();
+      P4 plane = new P4();
       tempP1.set(screenBase.x, screenTip.y, 12345.6789f);
       Measure.getPlaneThroughPoints(screenBase, screenTip, tempP1, tempV1,
           tempV2, tempV3, plane);

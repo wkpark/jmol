@@ -45,7 +45,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
 
@@ -254,7 +254,7 @@ public class JvxlXmlReader extends VolumeFileReader {
       params.thePlane = null;
       params.mapLattice = null;
       try {
-        params.thePlane = (Point4f) Escape.uP(s);
+        params.thePlane = (P4) Escape.uP(s);
         s = XmlReader.getXmlAttrib(data, "maplattice");
         Logger.info("JVXL read: plane " + params.thePlane);
         if (s.indexOf("{") >= 0) {
@@ -269,7 +269,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         if (params.thePlane == null) {
           Logger
               .error("JVXL Error reading plane definition -- setting to 0 0 1 0  (z=0)");
-          params.thePlane = Point4f.new4(0, 0, 1, 0);
+          params.thePlane = P4.new4(0, 0, 1, 0);
         } else {
           Logger
           .error("JVXL Error reading mapLattice definition -- ignored");

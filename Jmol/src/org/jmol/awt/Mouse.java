@@ -147,6 +147,7 @@ class Mouse implements MouseWheelListener, MouseListener,
      ****************************************************************/
     if ((modifiers & Binding.LEFT_MIDDLE_RIGHT) == 0)
       modifiers |= Binding.LEFT;
+    
     /****************************************************************/
     mouseDragged(e.getWhen(), e.getX(), e.getY(), modifiers);
   }

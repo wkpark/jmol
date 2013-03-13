@@ -274,7 +274,7 @@ public class TextFormat {
                 true);
             break;
           case 'q':
-            Point4f qVal = (Point4f) values[o];
+            P4 qVal = (P4) values[o];
             strFormat = formatString(strFormat, "q", null, qVal.x, Double.NaN,
                 true);
             strFormat = formatString(strFormat, "q", null, qVal.y, Double.NaN,

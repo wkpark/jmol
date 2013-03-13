@@ -57,7 +57,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
@@ -199,7 +199,7 @@ class ScriptMathProcessor {
 
   private boolean addXInt(int x) {
     // no check for unary minus
-    putX(new ScriptVariableInt(x));
+    putX(SV.newScriptVariableInt(x));
     return wasX = true;
   }
 
@@ -241,7 +241,7 @@ class ScriptMathProcessor {
     return wasX = true;
   }
 
-  boolean addXPt4(Point4f pt) {
+  boolean addXPt4(P4 pt) {
     putX(SV.newVariable(T.point4f, pt));
     return wasX = true;
   }
@@ -254,7 +254,7 @@ class ScriptMathProcessor {
       case T.integer:
         if (x.intValue < 0) {
           addOp(T.tokenMinus);
-          x = new ScriptVariableInt(-x.intValue);
+          x = SV.newScriptVariableInt(-x.intValue);
         }
         break;
       case T.decimal:
@@ -1009,7 +1009,7 @@ class ScriptMathProcessor {
         y.addLast(count);
         counts.addLast(SV.getVariableList(y));
       }
-      count = new ScriptVariableInt(1);
+      count = SV.newScriptVariableInt(1);
       last = a; 
     }
     if (match == null)
@@ -1126,7 +1126,7 @@ class ScriptMathProcessor {
       P3 ptb = ptValue(args[1], true);
       if (args[2].tok != T.point4f)
         return false;
-      Quaternion dq = Quaternion.newP4((Point4f) args[2].value);
+      Quaternion dq = Quaternion.newP4((P4) args[2].value);
       switch (tok) {
       case T.nada:
         break;
@@ -1179,12 +1179,12 @@ class ScriptMathProcessor {
     SV x1 = getX();
     SV x2 = args[0];
     P3 pt2 = ptValue(x2, true);
-    Point4f plane2 = planeValue(x2);
+    P4 plane2 = planeValue(x2);
     if (x1.tok == T.bitset && tok != T.dot)
       return addXObj(eval.getBitsetProperty(SV.bsSelectVar(x1),
           T.distance, pt2, plane2, x1.value, null, false, x1.index, false));
     P3 pt1 = ptValue(x1, true);
-    Point4f plane1 = planeValue(x1);
+    P4 plane1 = planeValue(x1);
     if (tok == T.dot) {
       if (plane1 != null && plane2 != null)
         // q1.dot(q2) assume quaternions
@@ -1234,16 +1234,16 @@ class ScriptMathProcessor {
     return P3.new3(f, f, f);
   }
 
-  private Point4f planeValue(T x) {
+  private P4 planeValue(T x) {
     if (isSyntaxCheck)
-      return new Point4f();
+      return new P4();
     switch (x.tok) {
     case T.point4f:
-      return (Point4f) x.value;
+      return (P4) x.value;
     case T.varray:
     case T.string:
       Object pt = Escape.uP(SV.sValue(x));
-      return (pt instanceof Point4f ? (Point4f) pt : null);
+      return (pt instanceof P4 ? (P4) pt : null);
     case T.bitset:
       // ooooh, wouldn't THIS be nice!
       break;
@@ -1519,7 +1519,7 @@ class ScriptMathProcessor {
         || args.length == 0 || args.length > 4)
       return false;
     P3 pt1, pt2, pt3;
-    Point4f plane;
+    P4 plane;
     V3 norm, vTemp;
 
     switch (args.length) {
@@ -1531,14 +1531,14 @@ class ScriptMathProcessor {
           V3 vNorm = new V3();
           V3 vAB = new V3();
           V3 vAC = new V3();
-          plane = new Point4f();
+          plane = new P4();
           Measure.getPlaneThroughPoints(pts.get(0), pts.get(1), pts.get(2), vNorm , vAB, vAC, plane);
           return addXPt4(plane);
         }
       }
       Object pt = Escape.uP(SV.sValue(args[0]));
-      if (pt instanceof Point4f)
-        return addXPt4((Point4f)pt);
+      if (pt instanceof P4)
+        return addXPt4((P4)pt);
       return addXStr("" + pt);
     case 2:
       if (tok == T.intersection) {
@@ -1550,9 +1550,9 @@ class ScriptMathProcessor {
         norm = new V3();
         vTemp = new V3();
 
-        plane = (Point4f) args[1].value;
+        plane = (P4) args[1].value;
         if (args[0].tok == T.point4f) {
-          JmolList<Object> list = Measure.getIntersectionPP((Point4f) args[0].value,
+          JmolList<Object> list = Measure.getIntersectionPP((P4) args[0].value,
               plane);
           if (list == null)
             return addXStr("");
@@ -1584,7 +1584,7 @@ class ScriptMathProcessor {
           pt3 = new P3();
           norm = new V3();
           vTemp = new V3();
-          pt1 = Measure.getIntersection(pt1, vLine, (Point4f) args[2].value, pt3, norm, vTemp);
+          pt1 = Measure.getIntersection(pt1, vLine, (P4) args[2].value, pt3, norm, vTemp);
           if (pt1 == null)
             return addXStr("");
           return addXPt(pt1);
@@ -1616,7 +1616,7 @@ class ScriptMathProcessor {
           q.getMatrix().transform(norm);
           pt2.setT(norm);
           pt2.scale(r);
-          plane = new Point4f();
+          plane = new P4();
           Measure.getPlaneThroughPoint(pt2, norm, plane);
           return addXPt4(plane);          
         }
@@ -1633,7 +1633,7 @@ class ScriptMathProcessor {
             : null);
         norm = V3.newV(pt2);
         if (pt3 == null) {
-          plane = new Point4f();
+          plane = new P4();
           if (args.length == 2 || !args[2].asBoolean()) {
             // plane(<point1>,<point2>) or 
             // plane(<point1>,<point2>,false)
@@ -1655,7 +1655,7 @@ class ScriptMathProcessor {
         V3 vAC = new V3();
         float nd = Measure.getDirectedNormalThroughPoints(pt1, pt2, pt3,
             (args.length == 4 ? ptValue(args[3], true) : null), norm, vAB, vAC);
-        return addXPt4(Point4f.new4(norm.x, norm.y, norm.z, nd));
+        return addXPt4(P4.new4(norm.x, norm.y, norm.z, nd));
       }
     }
     if (args.length != 4)
@@ -1664,7 +1664,7 @@ class ScriptMathProcessor {
     float y = SV.fValue(args[1]);
     float z = SV.fValue(args[2]);
     float w = SV.fValue(args[3]);
-    return addXPt4(Point4f.new4(x, y, z, w));
+    return addXPt4(P4.new4(x, y, z, w));
   }
 
   private boolean evaluatePoint(SV[] args) {
@@ -1684,7 +1684,7 @@ class ScriptMathProcessor {
     case 3:
       return addXPt(P3.new3(args[0].asFloat(), args[1].asFloat(), args[2].asFloat()));
     case 4:
-      return addXPt4(Point4f.new4(args[0].asFloat(), args[1].asFloat(), args[2].asFloat(), args[3].asFloat()));
+      return addXPt4(P4.new4(args[0].asFloat(), args[1].asFloat(), args[2].asFloat(), args[3].asFloat()));
     }
     return false;
   }
@@ -2068,7 +2068,7 @@ class ScriptMathProcessor {
     }
     Quaternion q = null;
     Quaternion[] qs = null;
-    Point4f p4 = null;
+    P4 p4 = null;
     switch (nArgs) {
     case 0:
       return addXPt4(Quaternion.newQ(viewer.getRotationQuaternion()).toPoint4f());
@@ -2084,12 +2084,12 @@ class ScriptMathProcessor {
       } else if (args[0].tok == T.matrix3f) {
         q = Quaternion.newM((Matrix3f) args[0].value);
       } else if (args[0].tok == T.point4f) {
-        p4 = (Point4f) args[0].value;
+        p4 = (P4) args[0].value;
       } else {
         Object v = Escape.uP(SV.sValue(args[0]));
-        if (!(v instanceof Point4f))
+        if (!(v instanceof P4))
           return false;
-        p4 = (Point4f) v;
+        p4 = (P4) v;
       }
       if (tok == T.axisangle)
         q = Quaternion.newVA(P3.new3(p4.x, p4.y, p4.z), p4.w);
@@ -2122,7 +2122,7 @@ class ScriptMathProcessor {
       if (args[0].tok == T.point4f) {
         P3 pt = (args[2].tok == T.point3f ? (P3) args[2].value
             : viewer.getAtomSetCenter((BS) args[2].value));
-        return addXStr((Quaternion.newP4((Point4f) args[0].value)).draw("q",
+        return addXStr((Quaternion.newP4((P4) args[0].value)).draw("q",
             SV.sValue(args[1]), pt, 1f));
       }
       P3[] pts = new P3[3];
@@ -2133,7 +2133,7 @@ class ScriptMathProcessor {
       break;
     case 4:
       if (tok == T.quaternion)
-        p4 = Point4f.new4(SV.fValue(args[1]), SV
+        p4 = P4.new4(SV.fValue(args[1]), SV
             .fValue(args[2]), SV.fValue(args[3]), SV
             .fValue(args[0]));
       else
@@ -2144,7 +2144,7 @@ class ScriptMathProcessor {
     }
     if (qs != null) {
       if (nMax != Integer.MAX_VALUE) {
-        JmolList<Point4f> list = new  JmolList<Point4f>();
+        JmolList<P4> list = new  JmolList<P4>();
         for (int i = 0; i < qs.length; i++)
           list.addLast(qs[i].toPoint4f());
         return addXList(list);
@@ -2394,7 +2394,7 @@ class ScriptMathProcessor {
       return false;
     }
     P3 pt = null;
-    Point4f plane = null;
+    P4 plane = null;
     switch (i) {
     case 1:
       // within (sheet)
@@ -2450,8 +2450,8 @@ class ScriptMathProcessor {
       break;
     }
     i = args.length - 1;
-    if (args[i].value instanceof Point4f) {
-      plane = (Point4f) args[i].value;
+    if (args[i].value instanceof P4) {
+      plane = (P4) args[i].value;
     } else if (args[i].value instanceof P3) {
       pt = (P3) args[i].value;
       if (SV.sValue(args[1]).equalsIgnoreCase("hkl"))
@@ -2686,7 +2686,7 @@ class ScriptMathProcessor {
 
     T op = oStack[oPt--];
     P3 pt;
-    Point4f pt4;
+    P4 pt4;
     Matrix3f m;
     String s;
     float f;
@@ -2723,7 +2723,7 @@ class ScriptMathProcessor {
         return addXBool(true);
       switch (x2.tok) {
       case T.point4f: // quaternion
-        return addXPt4((Quaternion.newP4((Point4f) x2.value)).inv().toPoint4f());
+        return addXPt4((Quaternion.newP4((P4) x2.value)).inv().toPoint4f());
       case T.matrix3f:
         m = Matrix3f.newM((Matrix3f) x2.value);
         m.invert();
@@ -2914,12 +2914,12 @@ class ScriptMathProcessor {
         return addXVar(SV.newVariable(T.string,
             SV.sValue(x1) + SV.sValue(x2)));
       case T.point4f:
-        Quaternion q1 = Quaternion.newP4((Point4f) x1.value);
+        Quaternion q1 = Quaternion.newP4((P4) x1.value);
         switch (x2.tok) {
         default:
           return addXPt4(q1.add(x2.asFloat()).toPoint4f());
         case T.point4f:
-          return addXPt4(q1.mulQ(Quaternion.newP4((Point4f) x2.value))
+          return addXPt4(q1.mulQ(Quaternion.newP4((P4) x2.value))
               .toPoint4f());
         }
       case T.point3f:
@@ -2930,7 +2930,7 @@ class ScriptMathProcessor {
           return addXPt(pt);
         case T.point4f:
           // extract {xyz}
-          pt4 = (Point4f) x2.value;
+          pt4 = (P4) x2.value;
           pt.add(P3.new3(pt4.x, pt4.y, pt4.z));
           return addXPt(pt);
         default:
@@ -3000,17 +3000,17 @@ class ScriptMathProcessor {
           return addXPt(pt);
         case T.point4f:
           // extract {xyz}
-          pt4 = (Point4f) x2.value;
+          pt4 = (P4) x2.value;
           pt.sub(P3.new3(pt4.x, pt4.y, pt4.z));
           return addXPt(pt);
         }
       case T.point4f:
-        Quaternion q1 = Quaternion.newP4((Point4f) x1.value);
+        Quaternion q1 = Quaternion.newP4((P4) x1.value);
         switch (x2.tok) {
         default:
           return addXPt4(q1.add(-x2.asFloat()).toPoint4f());
         case T.point4f:
-          Quaternion q2 = Quaternion.newP4((Point4f) x2.value);
+          Quaternion q2 = Quaternion.newP4((P4) x2.value);
           return addXPt4(q2.mulQ(q1.inv()).toPoint4f());
         }
       }
@@ -3025,7 +3025,7 @@ class ScriptMathProcessor {
         pt.scale(-1f);
         return addXPt(pt);
       case T.point4f:
-        pt4 = Point4f.newPt((Point4f) x2.value);
+        pt4 = P4.newPt((P4) x2.value);
         pt4.scale(-1f);
         return addXPt4(pt4);
       case T.matrix3f:
@@ -3103,7 +3103,7 @@ class ScriptMathProcessor {
         case T.point4f:
           // m * q
           return addXM3(Quaternion.newM(m3).mulQ(
-              Quaternion.newP4((Point4f) x2.value)).getMatrix());
+              Quaternion.newP4((P4) x2.value)).getMatrix());
         default:
           f = x2.asFloat();
           AxisAngle4f aa = new AxisAngle4f();
@@ -3153,10 +3153,10 @@ class ScriptMathProcessor {
           // quaternion multiplication
           // note that Point4f is {x,y,z,w} so we use that for
           // quaternion notation as well here.
-          return addXPt4(Quaternion.newP4((Point4f) x1.value)
-              .mulQ(Quaternion.newP4((Point4f) x2.value)).toPoint4f());
+          return addXPt4(Quaternion.newP4((P4) x1.value)
+              .mulQ(Quaternion.newP4((P4) x2.value)).toPoint4f());
         }
-        return addXPt4(Quaternion.newP4((Point4f) x1.value).mul(
+        return addXPt4(Quaternion.newP4((P4) x1.value).mul(
             x2.asFloat()).toPoint4f());
       }
     case T.percent:
@@ -3216,11 +3216,11 @@ class ScriptMathProcessor {
         viewer.toUnitCell(pt, P3.new3(n, n, n));
         return addXPt(pt);
       case T.point4f:
-        pt4 = (Point4f) x1.value;
+        pt4 = (P4) x1.value;
         if (x2.tok == T.point3f)
           return addXPt((Quaternion.newP4(pt4)).transformPt((P3) x2.value));
         if (x2.tok == T.point4f) {
-          Point4f v4 = Point4f.newPt((Point4f) x2.value);
+          P4 v4 = P4.newPt((P4) x2.value);
           (Quaternion.newP4(pt4)).getThetaDirected(v4);
           return addXPt4(v4);
         }
@@ -3259,7 +3259,7 @@ class ScriptMathProcessor {
           return addXPt(P3.newP((Quaternion.newP4(pt4)).getVector(2)));
         case -6:
           AxisAngle4f ax = (Quaternion.newP4(pt4)).toAxisAngle4f();
-          return addXPt4(Point4f.new4(ax.x, ax.y, ax.z,
+          return addXPt4(P4.new4(ax.x, ax.y, ax.z,
               (float) (ax.angle * 180 / Math.PI)));
         case -9:
           return addXM3((Quaternion.newP4(pt4)).getMatrix());
@@ -3299,12 +3299,12 @@ class ScriptMathProcessor {
         return addXPt(P3.new3(pt.x / f2, pt.y / f2, pt.z / f2));
       case T.point4f:
         if (x2.tok == T.point4f)
-          return addXPt4(Quaternion.newP4((Point4f) x1.value).div(
-              Quaternion.newP4((Point4f) x2.value)).toPoint4f());
+          return addXPt4(Quaternion.newP4((P4) x1.value).div(
+              Quaternion.newP4((P4) x2.value)).toPoint4f());
         if (f2 == 0)
-          return addXPt4(Point4f.new4(Float.NaN, Float.NaN, Float.NaN,
+          return addXPt4(P4.new4(Float.NaN, Float.NaN, Float.NaN,
               Float.NaN));
-        return addXPt4(Quaternion.newP4((Point4f) x1.value).mul(1 / f2)
+        return addXPt4(Quaternion.newP4((P4) x1.value).mul(1 / f2)
             .toPoint4f());
       }
     case T.leftdivide:
@@ -3315,12 +3315,12 @@ class ScriptMathProcessor {
             : (int) Math.floor(x1.asFloat() / x2.asFloat()));
       case T.point4f:
         if (f == 0)
-          return addXPt4(Point4f.new4(Float.NaN, Float.NaN, Float.NaN,
+          return addXPt4(P4.new4(Float.NaN, Float.NaN, Float.NaN,
               Float.NaN));
         if (x2.tok == T.point4f)
-          return addXPt4(Quaternion.newP4((Point4f) x1.value).divLeft(
-              Quaternion.newP4((Point4f) x2.value)).toPoint4f());
-        return addXPt4(Quaternion.newP4((Point4f) x1.value).mul(1 / f)
+          return addXPt4(Quaternion.newP4((P4) x1.value).divLeft(
+              Quaternion.newP4((P4) x2.value)).toPoint4f());
+        return addXPt4(Quaternion.newP4((P4) x1.value).mul(1 / f)
             .toPoint4f());
       }
     case T.timestimes:
@@ -3480,15 +3480,15 @@ class ScriptMathProcessor {
       switch (op.intValue) {
       case T.atomx:
       case T.x:
-        return addXFloat(((Point4f) x2.value).x);
+        return addXFloat(((P4) x2.value).x);
       case T.atomy:
       case T.y:
-        return addXFloat(((Point4f) x2.value).y);
+        return addXFloat(((P4) x2.value).y);
       case T.atomz:
       case T.z:
-        return addXFloat(((Point4f) x2.value).z);
+        return addXFloat(((P4) x2.value).z);
       case T.w:
-        return addXFloat(((Point4f) x2.value).w);
+        return addXFloat(((P4) x2.value).w);
       }
       break;
     case T.bitset:
@@ -3528,7 +3528,7 @@ class ScriptMathProcessor {
           Object pt = SV.ptValue(sv0);
           if (pt instanceof P3)
             return getMinMaxPoint(sv, tok);
-          if (pt instanceof Point4f)
+          if (pt instanceof P4)
             return getMinMaxQuaternion(sv, tok);
           break;
         }
@@ -3700,7 +3700,7 @@ class ScriptMathProcessor {
       data = (Quaternion[]) quaternionOrSVData;
       break;
     case T.point4f:
-      Point4f[] pts = (Point4f[]) quaternionOrSVData;
+      P4[] pts = (P4[]) quaternionOrSVData;
       data = new Quaternion[pts.length];
       for (int i = 0; i < pts.length; i++)
         data[i] = Quaternion.newP4(pts[i]);
@@ -3709,7 +3709,7 @@ class ScriptMathProcessor {
       JmolList<SV> sv = (JmolList<SV>) quaternionOrSVData;
       data = new Quaternion[sv.size()];
       for (int i = 0; i < sv.size(); i++) {
-        Point4f pt = SV.pt4Value(sv.get(i));
+        P4 pt = SV.pt4Value(sv.get(i));
         if (pt == null)
           return null;
         data[i] = Quaternion.newP4(pt);

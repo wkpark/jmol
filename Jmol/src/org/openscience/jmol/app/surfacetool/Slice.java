@@ -28,14 +28,14 @@ package org.openscience.jmol.app.surfacetool;
 
 import org.jmol.util.Measure;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.V3;
 
 class Slice {
 
-  final Point4f leftPlane = new Point4f(); // definition of the left plane, using Jmol format
-  final Point4f middle = new Point4f();//plane representing center of slice.
-  final Point4f rightPlane = new Point4f(); // definition of the left plane
+  final P4 leftPlane = new P4(); // definition of the left plane, using Jmol format
+  final P4 middle = new P4();//plane representing center of slice.
+  final P4 rightPlane = new P4(); // definition of the left plane
   float angleXY; // 0<=anglexy< PI/2 radians
   float anglefromZ;// 0<=anglefromZ < PI/2 radians
   float position; // distance of slice middle from origin
@@ -56,7 +56,7 @@ class Slice {
    *        (Point4f) meeting the Jmol definition of a plane.
    */
   static void makePlane(float length, float angleXY, float anglefromZ,
-                        Point4f result) {
+                        P4 result) {
     result.set((float) (Math.cos(angleXY) * Math.sin(anglefromZ)),
         (float) (Math.sin(angleXY) * Math.sin(anglefromZ)),
         (float) (Math.cos(anglefromZ)), -length);
@@ -158,7 +158,7 @@ class Slice {
     return this;
   }
 
-  Point4f getMiddle() {
+  P4 getMiddle() {
     return middle;
   }
 

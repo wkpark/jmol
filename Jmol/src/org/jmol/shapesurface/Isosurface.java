@@ -111,7 +111,7 @@ import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
@@ -407,7 +407,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("rotate" == propertyName) {
-      Point4f pt4 = (Point4f) value;
+      P4 pt4 = (P4) value;
       if (thisMesh != null) {
         thisMesh.rotateTranslate(Quaternion.newP4(pt4), null, true);
         thisMesh.altVertices = null;
@@ -707,7 +707,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (mesh == null)
         return false;
       data[3] = Integer.valueOf(mesh.modelIndex);
-      mesh.getIntersection(0, (Point4f) data[1], null, (JmolList<P3[]>) data[2], null, null, null, false, false, T.plane, false);
+      mesh.getIntersection(0, (P4) data[1], null, (JmolList<P3[]>) data[2], null, null, null, false, false, T.plane, false);
       return true;
     }
     if (property == "getBoundingBox") {
@@ -1207,7 +1207,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     return;
   }
 
-  private Point4f lcaoDir = new Point4f();
+  private P4 lcaoDir = new P4();
 
   private void createLcaoLobe(V3 lobeAxis, float factor, int nElectrons) {
     initState();

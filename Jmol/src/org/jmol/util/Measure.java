@@ -193,23 +193,23 @@ final public class Measure {
   public static void getPlaneThroughPoints(P3 pointA,
                                               P3 pointB,
                                               P3 pointC, V3 vNorm,
-                                              V3 vAB, V3 vAC, Point4f plane) {
+                                              V3 vAB, V3 vAC, P4 plane) {
     float w = getNormalThroughPoints(pointA, pointB, pointC, vNorm, vAB, vAC);
     plane.set(vNorm.x, vNorm.y, vNorm.z, w);
   }
   
-  public static void getPlaneThroughPoint(P3 pt, V3 normal, Point4f plane) {
+  public static void getPlaneThroughPoint(P3 pt, V3 normal, P4 plane) {
     plane.set(normal.x, normal.y, normal.z, -normal.dot(V3.newV(pt)));
   }
   
-  public static float distanceToPlane(Point4f plane, P3 pt) {
+  public static float distanceToPlane(P4 plane, P3 pt) {
     return (plane == null ? Float.NaN 
         : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w)
         / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
             * plane.z));
   }
 
-  public static float distanceToPlaneD(Point4f plane, float d, P3 pt) {
+  public static float distanceToPlaneD(P4 plane, float d, P3 pt) {
     return (plane == null ? Float.NaN : (plane.x * pt.x + plane.y
         * pt.y + plane.z * pt.z + plane.w) / d);
   }
@@ -258,7 +258,7 @@ final public class Measure {
     return -vAB.dot(vNorm);
   }
 
-  public static void getPlaneProjection(P3 pt, Point4f plane, P3 ptProj, V3 vNorm) {
+  public static void getPlaneProjection(P3 pt, P4 plane, P3 ptProj, V3 vNorm) {
     float dist = distanceToPlane(plane, pt);
     vNorm.set(plane.x, plane.y, plane.z);
     vNorm.normalize();
@@ -301,7 +301,7 @@ final public class Measure {
   }
   
   public static void getBisectingPlane(P3 pointA, V3 vAB,
-                                                 P3 ptTemp, V3 vTemp, Point4f plane) {
+                                                 P3 ptTemp, V3 vTemp, P4 plane) {
     ptTemp.scaleAdd2(0.5f, vAB, pointA);
     vTemp.setT(vAB);
     vTemp.normalize();
@@ -557,7 +557,7 @@ final public class Measure {
     Eigen eigen = Eigen.newM(N);
  
     float[] v = eigen.getEigenvectorsFloatTransposed()[3];
-    q = Quaternion.newP4(Point4f.new4(v[1], v[2], v[3], v[0]));
+    q = Quaternion.newP4(P4.new4(v[1], v[2], v[3], v[0]));
     retStddev[1] = getRmsd(centerAndPoints, q);
     //System.out.println("Measure" + q.getInfo());
     return q;
@@ -596,7 +596,7 @@ final public class Measure {
 
   public static boolean isInTetrahedron(P3 pt, P3 ptA, P3 ptB,
                                         P3 ptC, P3 ptD,
-                                        Point4f plane, V3 vTemp,
+                                        P4 plane, V3 vTemp,
                                         V3 vTemp2, V3 vTemp3, boolean fullyEnclosed) {
     getPlaneThroughPoints(ptC, ptD, ptA, vTemp, vTemp2, vTemp3, plane);
     boolean b = (distanceToPlane(plane, pt) >= 0);
@@ -621,7 +621,7 @@ final public class Measure {
    * @param plane2
    * @return       [ point, vector ] or []
    */
-  public static JmolList<Object> getIntersectionPP(Point4f plane1, Point4f plane2) {
+  public static JmolList<Object> getIntersectionPP(P4 plane1, P4 plane2) {
     float a1 = plane1.x;
     float b1 = plane1.y;
     float c1 = plane1.z;
@@ -680,7 +680,7 @@ final public class Measure {
    * @return       ptRte
    */
   public static P3 getIntersection(P3 pt1, V3 v,
-                                               Point4f plane, P3 ptRet, V3 tempNorm, V3 vTemp) {
+                                               P4 plane, P3 ptRet, V3 tempNorm, V3 vTemp) {
     getPlaneProjection(pt1, plane, ptRet, tempNorm);
     tempNorm.set(plane.x, plane.y, plane.z);
     tempNorm.normalize();

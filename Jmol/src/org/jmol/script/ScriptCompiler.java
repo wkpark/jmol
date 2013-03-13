@@ -635,7 +635,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           parenCount = setBraceCount = braceCount = 0;
           ltoken.remove(0);
           iBrace++;
-          T t = new ContextToken(T.push, 0, "{");
+          T t = ContextToken.newContext(false);
           addTokenToPrefix(setCommand(t));
           pushCount++;
           vPush.addLast(t);
@@ -859,7 +859,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       // allocate a new Token with the original character preserved
       if ((theToken = T.getTokenFromName(ident)) == null
           && (theToken = T.getTokenFromName(identLC)) != null)
-        theToken = T.t(theToken.tok, theToken.intValue, ident);
+        theToken = T.tv(theToken.tok, theToken.intValue, ident);
     } else {
       ident = identLC;
       theToken = T.getTokenFromName(ident);
@@ -1093,7 +1093,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       value =  Parser.fVal(script.substring(ichToken, ichToken + cchToken));
       int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(ichToken,
           ichToken + cchToken)));
-      addTokenToPrefix(T.t(T.decimal, intValue, Float.valueOf(value)));
+      addTokenToPrefix(T.tv(T.decimal, intValue, Float.valueOf(value)));
       return CONTINUE;
     }
     if (lookingAtSeqcode()) {
@@ -1109,7 +1109,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           addTokenToPrefix(T.tokenMinus);
         }
         int seqcode = Group.getSeqcodeFor(seqNum, insertionCode);
-        addTokenToPrefix(T.t(T.seqcode, seqcode, "seqcode"));
+        addTokenToPrefix(T.tv(T.seqcode, seqcode, "seqcode"));
         return CONTINUE;
       } catch (NumberFormatException nfe) {
         return ERROR(ERROR_invalidExpressionToken, "" + ch);
@@ -1129,7 +1129,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (val == 0 && intString.equals("-0"))
         addTokenToPrefix(T.tokenMinus);
-      addTokenToPrefix(T.t(T.integer, val, intString));
+      addTokenToPrefix(T.tv(T.integer, val, intString));
       return CONTINUE;
     }
     if (!isMathExpressionCommand && parenCount == 0
@@ -1561,7 +1561,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (nTokens != 1 || theTok != T.ifcmd && theTok != T.leftbrace)
         return ERROR(ERROR_badArgumentCount);
-      replaceCommand(flowContext.token = new ContextToken(T.elseif, "elseif"));
+      replaceCommand(flowContext.token = ContextToken.newCmd(T.elseif, "elseif"));
       tokCommand = T.elseif;
       return CONTINUE;
     case T.var:
@@ -1636,7 +1636,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         T token = tokenAt(0);
         if (theTok == T.leftparen || isUserFunction(token.value.toString())) {
           // mysub(xxx,xxx,xxx)
-          ltoken.set(0, setCommand(T.t(T.identifier, 0, token.value)));
+          ltoken.set(0, setCommand(T.tv(T.identifier, 0, token.value)));
           setBraceCount = 0;
           break;
         }
@@ -1798,7 +1798,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     }
     if (token.tok == T.push) {
       vPush.remove(--pushCount);
-      addTokenToPrefix(setCommand(new ContextToken(T.pop, 0, "}")));
+      addTokenToPrefix(setCommand(ContextToken.newContext(true)));
       isEndOfCommand = true;
       return CONTINUE;
     }
@@ -1872,7 +1872,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       isEnd = true;
       if (flowContext.token.tok != T.function && flowContext.token.tok != T.parallel
           && flowContext.token.tok != T.trycmd)
-        setCommand(T.t(tokCommand, (flowContext.ptDefault > 0 ? flowContext.ptDefault : -flowContext.pt0), ident)); //copy
+        setCommand(T.tv(tokCommand, (flowContext.ptDefault > 0 ? flowContext.ptDefault : -flowContext.pt0), ident)); //copy
       break;
     case T.trycmd:
     case T.catchcmd:
@@ -1907,7 +1907,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           f = f.getParent();
       if (f == null)
         return errorStr(ERROR_badContext, ident);
-      setCommand( T.t(tokCommand, f.pt0, ident)); //copy
+      setCommand( T.tv(tokCommand, f.pt0, ident)); //copy
       break;
     case T.defaultcmd:
       if (flowContext == null 
@@ -1941,7 +1941,9 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         
       }
     } else if (isNew) {
-      ContextToken ct = new ContextToken(tokCommand, tokenCommand.value);
+      ContextToken ct = ContextToken.newCmd(tokCommand, tokenCommand.value);
+      if (tokCommand == T.switchcmd)
+        ct.addName("_var");
       setCommand(ct); //copy
       switch (tokCommand) {
       case T.trycmd:

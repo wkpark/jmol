@@ -435,8 +435,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   @Override
   public void setZShade(boolean zShade, int zSlab, int zDepth, int zShadePower) {
-    super.setZShade(zShade, zSlab, zDepth, zShadePower);
     if (zShade) {
+      setZShade2(zSlab, zDepth, zShadePower);
       pixel = new PixelatorShaded(this);
     } else {
       pixel = new Pixelator(this);

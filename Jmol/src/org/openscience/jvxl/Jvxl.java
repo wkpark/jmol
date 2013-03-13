@@ -46,7 +46,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.jmol.jvxl.readers.SurfaceGenerator;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 
 public class Jvxl {
 
@@ -62,7 +62,7 @@ public class Jvxl {
     float cutoff = Float.NaN;
     boolean isPositiveOnly = false;
 
-    Point4f plane = null;
+    P4 plane = null;
 
     boolean bicolor = false;
     boolean reverseColor = false;
@@ -349,26 +349,26 @@ public class Jvxl {
     }
   }
   
-  static Point4f getPlane(String str) {
+  static P4 getPlane(String str) {
     if (str.equalsIgnoreCase("xy"))
-      return Point4f.new4(0, 0, 1, 0);
+      return P4.new4(0, 0, 1, 0);
     if (str.equalsIgnoreCase("xz"))
-      return Point4f.new4(0, 1, 0, 0);
+      return P4.new4(0, 1, 0, 0);
     if (str.equalsIgnoreCase("yz"))
-      return Point4f.new4(1, 0, 0, 0);
+      return P4.new4(1, 0, 0, 0);
     if (str.indexOf("x=") == 0) {
-      return Point4f.new4(1, 0, 0, -Parser.parseFloatStr(str.substring(2)));
+      return P4.new4(1, 0, 0, -Parser.parseFloatStr(str.substring(2)));
     }
     if (str.indexOf("y=") == 0) {
-      return Point4f.new4(0, 1, 0, -Parser.parseFloatStr(str.substring(2)));
+      return P4.new4(0, 1, 0, -Parser.parseFloatStr(str.substring(2)));
     }
     if (str.indexOf("z=") == 0) {
-      return Point4f.new4(0, 0, 1, -Parser.parseFloatStr(str.substring(2)));
+      return P4.new4(0, 0, 1, -Parser.parseFloatStr(str.substring(2)));
     }
     if (str.indexOf("{") == 0) {
       str = str.replace(',', ' ');
       int[] next = new int[1];
-      return Point4f.new4(Parser.parseFloatNext(str, next), Parser.parseFloatNext(str,
+      return P4.new4(Parser.parseFloatNext(str, next), Parser.parseFloatNext(str,
           next), Parser.parseFloatNext(str, next), Parser.parseFloatNext(str, next));
     }
     return null;

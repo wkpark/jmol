@@ -142,7 +142,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
 
@@ -259,7 +259,7 @@ public class SurfaceGenerator {
     return volumeData;
   }
 
-  public Point4f getPlane() {
+  public P4 getPlane() {
     return params.thePlane;
   }
   
@@ -518,7 +518,7 @@ public class SurfaceGenerator {
     }
 
     if ("eccentricity" == propertyName) {
-      params.setEccentricity((Point4f) value);
+      params.setEccentricity((P4) value);
       return true;
     }
 
@@ -733,7 +733,7 @@ public class SurfaceGenerator {
     }
 
     if ("plane" == propertyName) {
-      params.setPlane((Point4f) value);
+      params.setPlane((P4) value);
       return true;
     }
 
@@ -828,8 +828,8 @@ public class SurfaceGenerator {
     }
 
     if ("ellipsoid" == propertyName) {
-      if (value instanceof Point4f)
-        params.setEllipsoid((Point4f) value);
+      if (value instanceof P4)
+        params.setEllipsoid((P4) value);
       else if (Escape.isAF(value))
         params.setEllipsoid((float[]) value);
       else
@@ -849,7 +849,7 @@ public class SurfaceGenerator {
     }
 
     if ("lp" == propertyName) {
-      params.setLp((Point4f) value);
+      params.setLp((P4) value);
       readerData = new float[] {3, 2, 0, 15, 0};
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
@@ -857,7 +857,7 @@ public class SurfaceGenerator {
     }
 
     if ("rad" == propertyName) {
-      params.setRadical((Point4f) value);
+      params.setRadical((P4) value);
       readerData = new float[] {3, 2, 0, 15, 0};
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
@@ -865,7 +865,7 @@ public class SurfaceGenerator {
     }
 
     if ("lobe" == propertyName) {
-      params.setLobe((Point4f) value);
+      params.setLobe((P4) value);
       readerData = new float[] {3, 2, 0, 15, 0};
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
@@ -887,7 +887,7 @@ public class SurfaceGenerator {
     if ("functionXY" == propertyName) {
       params.setFunctionXY((JmolList<Object>) value);
       if (params.isContoured)
-        volumeData.setPlaneParameters(Point4f.new4(0, 0, 1, 0)); // xy plane
+        volumeData.setPlaneParameters(P4.new4(0, 0, 1, 0)); // xy plane
       // through
       // origin
       if (((String) params.functionInfo.get(0)).indexOf("_xyz") >= 0)
@@ -1341,7 +1341,7 @@ public class SurfaceGenerator {
     int[] nearest = new int[3];
     V3[] vectors = new V3[3];
     for (int i = 0; i < 3; i++) {
-      Point4f info = (Point4f) params.functionInfo.get(i + 2);
+      P4 info = (P4) params.functionInfo.get(i + 2);
       counts[i] = Math.abs((int) info.x);
       vectors[i] = V3.new3(info.y, info.z, info.w);
     }

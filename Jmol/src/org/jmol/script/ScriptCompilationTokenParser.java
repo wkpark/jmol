@@ -133,7 +133,7 @@ abstract class ScriptCompilationTokenParser {
     size -= nDefined;
     if (isNewSet) {
       if (size == 1) {
-        atokenInfix[0] = T.t(T.function, 0, atokenInfix[0].value);
+        atokenInfix[0] = T.tv(T.function, 0, atokenInfix[0].value);
         isNewSet = false;
       }
     }
@@ -338,7 +338,7 @@ abstract class ScriptCompilationTokenParser {
   }
 
   private boolean addTokenToPostfixInt(int tok, int intValue, Object value) {
-    return addTokenToPostfixToken(T.t(tok, intValue, value));
+    return addTokenToPostfixToken(T.tv(tok, intValue, value));
   }
 
   private boolean addTokenToPostfixToken(T token) {
@@ -1155,7 +1155,7 @@ abstract class ScriptCompilationTokenParser {
       // can have open-ended range  
       // select 3-
     }
-    return T.t(T.spec_seqcode, seqvalue, Integer.valueOf(seqcode));
+    return T.tv(T.spec_seqcode, seqvalue, Integer.valueOf(seqcode));
   }
 
   private boolean clauseChainSpec(int tok) {
@@ -1163,7 +1163,7 @@ abstract class ScriptCompilationTokenParser {
       tokenNext();
       tok = tokPeek();
       if (isSpecTerminator(tok))
-        return generateResidueSpecCode(T.t(T.spec_chain, '\0',
+        return generateResidueSpecCode(T.tv(T.spec_chain, '\0',
             "spec_chain"));
     }
     char chain;
@@ -1186,7 +1186,7 @@ abstract class ScriptCompilationTokenParser {
         return true;
       break;
     }
-    return generateResidueSpecCode(T.t(T.spec_chain, chain,
+    return generateResidueSpecCode(T.tv(T.spec_chain, chain,
         "spec_chain"));
   }
 
@@ -1236,7 +1236,7 @@ abstract class ScriptCompilationTokenParser {
       return generateResidueSpecCode(T.o(T.spec_model, Integer
           .valueOf(getToken().intValue)));
     case T.decimal:
-      return generateResidueSpecCode(T.t(T.spec_model, fixModelSpec(getToken()), theValue));
+      return generateResidueSpecCode(T.tv(T.spec_model, fixModelSpec(getToken()), theValue));
     case T.comma:
     case T.rightbrace:
     case T.nada:
@@ -1289,7 +1289,7 @@ abstract class ScriptCompilationTokenParser {
       atomSpec += "'";
     }
     int atomID = JC.lookupSpecialAtomID(atomSpec.toUpperCase());
-    return generateResidueSpecCode(T.t(T.spec_atom, atomID, atomSpec));
+    return generateResidueSpecCode(T.tv(T.spec_atom, atomID, atomSpec));
   }
   
 //----------------------------------------------------------------------------------------

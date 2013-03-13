@@ -29,7 +29,7 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.jvxl.data.JvxlCoder;
 
@@ -186,12 +186,12 @@ public class JvxlReader extends JvxlXmlReader {
     if (param1 == -1) {
       // a plane is defined
       try {
-        params.thePlane = Point4f.new4(parseFloat(), parseFloat(), parseFloat(),
+        params.thePlane = P4.new4(parseFloat(), parseFloat(), parseFloat(),
             parseFloat());
       } catch (Exception e) {
         Logger
             .error("Error reading 4 floats for PLANE definition -- setting to 0 0 1 0  (z=0)");
-        params.thePlane = Point4f.new4(0, 0, 1, 0);
+        params.thePlane = P4.new4(0, 0, 1, 0);
       }
       Logger.info("JVXL read: plane " + params.thePlane);
       if (param2 == -1 && param3 < 0)

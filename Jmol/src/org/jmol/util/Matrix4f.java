@@ -974,7 +974,7 @@ public class Matrix4f implements Serializable {
    * @param m1
    *        the other matrix
    */
-  public final void mul(Matrix4f m1) {
+  public final void mulM4(Matrix4f m1) {
     mul2(this, m1);
   }
 

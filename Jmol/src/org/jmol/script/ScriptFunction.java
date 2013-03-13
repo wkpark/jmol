@@ -94,7 +94,7 @@ public class ScriptFunction implements JmolScriptFunction {
       contextVariables.put(name, (var == null ? 
           SV.newVariable(T.string, "").setName(name) : var));
     }
-    contextVariables.put("_retval", new ScriptVariableInt(tok == T.trycmd ? Integer.MAX_VALUE : 0));
+    contextVariables.put("_retval", SV.newScriptVariableInt(tok == T.trycmd ? Integer.MAX_VALUE : 0));
   }
 
   void unsetVariables(Map<String, SV> contextVariables, JmolList<SV> params) {

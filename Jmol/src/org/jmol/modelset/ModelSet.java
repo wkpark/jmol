@@ -33,7 +33,7 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Measure;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
@@ -778,7 +778,7 @@ import java.util.Map;
     }
   }
 
-  public void invertSelected(P3 pt, Point4f plane, int iAtom,
+  public void invertSelected(P3 pt, P4 plane, int iAtom,
                              BS invAtoms, BS bs) {
     if (pt != null) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -854,11 +854,11 @@ import java.util.Map;
       mat4.setIdentity();
       mat4.setTranslation(vTemp);
       mat4t.setM3(matTemp);
-      mat4.mul(mat4t);
+      mat4.mulM4(mat4t);
       mat4t.setIdentity();
       vTemp.scale(-1);
       mat4t.setTranslation(vTemp);
-      mat4.mul(mat4t);
+      mat4.mulM4(mat4t);
     } else {
       mat4.setM3(matTemp);
     }

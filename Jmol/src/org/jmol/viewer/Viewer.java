@@ -25,7 +25,6 @@ package org.jmol.viewer;
 
 import org.jmol.script.ScriptContext;
 import org.jmol.script.SV;
-import org.jmol.script.ScriptVariableInt;
 import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
 import org.jmol.shape.Shape;
@@ -107,7 +106,7 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Rectangle;
 import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
@@ -1273,7 +1272,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(3, "slabDepthByPixels");
   }
 
-  public void slabInternal(Point4f plane, boolean isDepth) {
+  public void slabInternal(P4 plane, boolean isDepth) {
     transformManager.slabInternal(plane, isDepth);
   }
 
@@ -3381,7 +3380,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAtomsWithinBs(distance, points, bsInclude);
   }
 
-  public BS getAtomsNearPlane(float distance, Point4f plane) {
+  public BS getAtomsNearPlane(float distance, P4 plane) {
     return modelSet.getAtomsWithin(distance, plane);
   }
 
@@ -6313,7 +6312,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     default:
       // stateversion is not tokenized
       if (!global.htNonbooleanParameterValues.containsKey(key)) {
-        global.setUserVariable(key, new ScriptVariableInt(value));
+        global.setUserVariable(key, SV.newScriptVariableInt(value));
         return;
       }
     }
@@ -8291,13 +8290,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setStatusAtomMoved(bs);
   }
 
-  public void invertAtomCoordPlane(Point4f plane, BS bs) {
+  public void invertAtomCoordPlane(P4 plane, BS bs) {
     modelSet.invertSelected(null, plane, -1, null, bs);
     checkMinimization();
     statusManager.setStatusAtomMoved(bs);
   }
 
-  public void invertSelected(P3 pt, Point4f plane, int iAtom,
+  public void invertSelected(P3 pt, P4 plane, int iAtom,
                              BS invAtoms) {
     // Eval
     BS bs = getSelectionSet(false);
@@ -9138,7 +9137,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getFrontPlane();
   }
 
-  public JmolList<Object> getPlaneIntersection(int type, Point4f plane,
+  public JmolList<Object> getPlaneIntersection(int type, P4 plane,
                                            float scale, int flags) {
     return modelSet.getPlaneIntersection(type, plane, scale, flags,
         animationManager.currentModelIndex);
@@ -10172,6 +10171,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public String getAtomDefs(Map<String, Object> names) {
     return getStateCreator().getAtomDefs(names);
+    
   } 
  
 }

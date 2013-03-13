@@ -32,7 +32,7 @@ import org.jmol.jvxl.readers.Parameters;
 import org.jmol.util.BS;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.util.TriangleData;
 import org.jmol.util.V3;
@@ -207,7 +207,7 @@ public class MarchingCubes extends TriangleData {
     return plane;
   }
 
-  private Point4f mappingPlane;
+  private P4 mappingPlane;
   private boolean allInside;
   private boolean isInside;
   private P3i offset;

@@ -45,7 +45,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.P3;
 import org.jmol.util.Parser;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
@@ -182,7 +182,7 @@ public final class Resolver implements JmolBioResolver {
   private V3 vAB;
   private V3 vAC;
   private V3 vNorm;
-  private Point4f plane;
+  private P4 plane;
 
   public void initialize(ModelSet modelSet) {
     this.modelSet = modelSet;
@@ -198,7 +198,7 @@ public final class Resolver implements JmolBioResolver {
     vAB = new V3();
     vAC = new V3();
     vNorm = new V3();
-    plane = new Point4f();
+    plane = new P4();
   }
   
   public void addImplicitHydrogenAtoms(JmolAdapter adapter, int iGroup) {

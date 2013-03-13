@@ -44,7 +44,6 @@ import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.SV;
-import org.jmol.script.ScriptVariableInt;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
@@ -234,7 +233,7 @@ public class PropertyManager implements JmolPropertyManager {
     int n;
     for (int i = 1; i < names.length; i++) {
       if ((n = Parser.parseInt(names[i])) != Integer.MIN_VALUE)
-        args[i] = new ScriptVariableInt(n);
+        args[i] = SV.newScriptVariableInt(n);
       else
         args[i] = SV.newVariable(T.string, names[i]);
     }

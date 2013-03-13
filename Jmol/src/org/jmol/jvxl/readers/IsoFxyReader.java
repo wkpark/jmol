@@ -26,7 +26,7 @@ package org.jmol.jvxl.readers;
 
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 
 class IsoFxyReader extends AtomDataReader {
@@ -78,7 +78,7 @@ class IsoFxyReader extends AtomDataReader {
     }
     volumetricOrigin.setT((P3) params.functionInfo.get(1));
     for (int i = 0; i < 3; i++) {
-      Point4f info = (Point4f) params.functionInfo.get(i + 2);
+      P4 info = (P4) params.functionInfo.get(i + 2);
       voxelCounts[i] = Math.abs((int) info.x);
       volumetricVectors[i].set(info.y, info.z, info.w);      
     }

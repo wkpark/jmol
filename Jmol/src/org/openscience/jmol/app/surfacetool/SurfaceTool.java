@@ -41,7 +41,7 @@ import org.jmol.shape.Shape;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Escape;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
 import org.jmol.viewer.JC;
@@ -447,7 +447,7 @@ public class SurfaceTool {
   private void drawSlicePlane(SB cmd, int side, boolean on) {
     String color;
     String name = T.nameOf(side);
-    Point4f plane;
+    P4 plane;
     switch (side) {
     default:
     case T.left:
@@ -520,7 +520,7 @@ public class SurfaceTool {
     return boxVec;
   }
 
-  Point4f getSliceMiddle() {
+  P4 getSliceMiddle() {
     return slice.getMiddle();
   }
 

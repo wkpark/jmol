@@ -70,7 +70,7 @@ import java.util.Map;
 import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 
 
@@ -95,7 +95,7 @@ public class JvxlData {
   public String jvxlVolumeDataXml;
   public BS[] jvxlExcluded = new BS[4];
   
-  public Point4f jvxlPlane;
+  public P4 jvxlPlane;
 
   public boolean isJvxlPrecisionColor;
   public boolean jvxlDataIsColorMapped;
@@ -198,7 +198,7 @@ public class JvxlData {
     voxelVolume = 0;
   }
 
-  public void setSurfaceInfo(Point4f thePlane, P3 mapLattice, int nSurfaceInts, String surfaceData) {
+  public void setSurfaceInfo(P4 thePlane, P3 mapLattice, int nSurfaceInts, String surfaceData) {
     jvxlSurfaceData = surfaceData;
     if (jvxlSurfaceData.indexOf("--") == 0)
       jvxlSurfaceData = jvxlSurfaceData.substring(2);
@@ -207,10 +207,10 @@ public class JvxlData {
     this.nSurfaceInts = nSurfaceInts;
   }
 
-  public void setSurfaceInfoFromBitSet(BS bs, Point4f thePlane) {
+  public void setSurfaceInfoFromBitSet(BS bs, P4 thePlane) {
     setSurfaceInfoFromBitSetPts(bs, thePlane, null);
   }
-  public void setSurfaceInfoFromBitSetPts(BS bs, Point4f thePlane, P3 mapLattice) {
+  public void setSurfaceInfoFromBitSetPts(BS bs, P4 thePlane, P3 mapLattice) {
     SB sb = new SB();
     int nSurfaceInts = (thePlane != null ? 0 : JvxlCoder.jvxlEncodeBitSetBuffer(bs,
         nPointsX * nPointsY * nPointsZ, sb));

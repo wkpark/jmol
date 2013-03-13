@@ -81,7 +81,7 @@ import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.SB;
@@ -1001,7 +1001,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.spec_seqcode:
       case T.integer:
-        rpn.addXNum(new ScriptVariableInt(theToken.intValue));
+        rpn.addXNum(SV.newScriptVariableInt(theToken.intValue));
         break;
       // these next are for the within() command
       case T.plane:
@@ -1363,7 +1363,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   @SuppressWarnings("unchecked")
   protected Object getBitsetProperty(BS bs, int tok, P3 ptRef,
-                                     Point4f planeRef, Object tokenValue,
+                                     P4 planeRef, Object tokenValue,
                                      Object opValue, boolean useAtomMap,
                                      int index, boolean asVectorIfAll)
       throws ScriptException {
@@ -2228,7 +2228,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.displayLoadErrors = false;
       restoreFunction(function, params, tokenAtom);
       contextVariables.put("_breakval",
-          new ScriptVariableInt(Integer.MAX_VALUE));
+          SV.newScriptVariableInt(Integer.MAX_VALUE));
       contextVariables.put("_errorval", SV.newVariable(
           T.string, ""));
       Map<String, SV> cv = contextVariables;
@@ -2587,10 +2587,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           // && (var_set = getParameter(var + "_set", false)) != null)
           // fixed[j] = new Token(Token.define, "" + var_set);
           // else
-          fixed[j] = T.t(T.integer, ((Integer) v).intValue(), v);
+          fixed[j] = T.tv(T.integer, ((Integer) v).intValue(), v);
 
         } else if (v instanceof Float) {
-          fixed[j] = T.t(T.decimal, getFloatEncodedInt("" + v), v);
+          fixed[j] = T.tv(T.decimal, getFloatEncodedInt("" + v), v);
         } else if (v instanceof String) {
           if (!forceString) {
             if ((tok != T.set || j > 1 && st[1].tok != T.echo)
@@ -2641,7 +2641,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           fixed[j] = SV.newVariable(T.bitset, v);
         } else if (v instanceof P3) {
           fixed[j] = SV.newVariable(T.point3f, v);
-        } else if (v instanceof Point4f) {
+        } else if (v instanceof P4) {
           fixed[j] = SV.newVariable(T.point4f, v);
         } else if (v instanceof Matrix3f) {
           fixed[j] = SV.newVariable(T.matrix3f, v);
@@ -3838,17 +3838,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.spec_seqcode:
         if (isInMath)
-          rpn.addXNum(new ScriptVariableInt(instruction.intValue));
+          rpn.addXNum(SV.newScriptVariableInt(instruction.intValue));
         else
           rpn.addXBs(getAtomBits(T.spec_seqcode, Integer.valueOf(
               getSeqCode(instruction))));
         break;
       case T.spec_seqcode_range:
         if (isInMath) {
-          rpn.addXNum(new ScriptVariableInt(instruction.intValue));
+          rpn.addXNum(SV.newScriptVariableInt(instruction.intValue));
           // TODO -- in 13.0 had addXObj this adds a "-" to the X stack. 
           rpn.addOp(T.tokenMinus);
-          rpn.addXNum(new ScriptVariableInt(code[++pc].intValue));
+          rpn.addXNum(SV.newScriptVariableInt(code[++pc].intValue));
           break;
         }
         int chainID = (pc + 3 < code.length && code[pc + 2].tok == T.opAND
@@ -4563,7 +4563,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           n += 3;
           break;
         case T.point4f:
-          Point4f pt4 = getPoint4f(i);
+          P4 pt4 = getPoint4f(i);
           v.addLast(Float.valueOf(pt4.x));
           v.addLast(Float.valueOf(pt4.y));
           v.addLast(Float.valueOf(pt4.z));
@@ -4867,22 +4867,22 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return center;
   }
 
-  private Point4f planeParameter(int i) throws ScriptException {
+  private P4 planeParameter(int i) throws ScriptException {
     V3 vAB = new V3();
     V3 vAC = new V3();
-    Point4f plane = null;
+    P4 plane = null;
     boolean isNegated = (tokAt(i) == T.minus);
     if (isNegated)
       i++;
     if (i < slen)
       switch (getToken(i).tok) {
       case T.point4f:
-        plane = Point4f.newPt((Point4f) theToken.value);
+        plane = P4.newPt((P4) theToken.value);
         break;
       case T.dollarsign:
         String id = objectNameParameter(++i);
         if (chk)
-          return new Point4f();
+          return new P4();
         int shapeType = sm.getShapeIdFromObjectName(id);
         switch (shapeType) {
         case JC.SHAPE_DRAW:
@@ -4893,11 +4893,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               || points[1] == null || points[2] == null)
             break;
           Measure.getPlaneThroughPoints(points[0], points[1], points[2],
-              new V3(), vAB, vAC, plane = new Point4f());
+              new V3(), vAB, vAC, plane = new P4());
           break;
         case JC.SHAPE_ISOSURFACE:
           setShapeProperty(JC.SHAPE_ISOSURFACE, "thisID", id);
-          plane = (Point4f) getShapeProperty(JC.SHAPE_ISOSURFACE,
+          plane = (P4) getShapeProperty(JC.SHAPE_ISOSURFACE,
               "plane");
           break;
         }
@@ -4905,27 +4905,27 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.x:
         if (!checkToken(++i) || getToken(i++).tok != T.opEQ)
           evalError("x=?", null);
-        plane = Point4f.new4(1, 0, 0, -floatParameter(i));
+        plane = P4.new4(1, 0, 0, -floatParameter(i));
         break;
       case T.y:
         if (!checkToken(++i) || getToken(i++).tok != T.opEQ)
           evalError("y=?", null);
-        plane = Point4f.new4(0, 1, 0, -floatParameter(i));
+        plane = P4.new4(0, 1, 0, -floatParameter(i));
         break;
       case T.z:
         if (!checkToken(++i) || getToken(i++).tok != T.opEQ)
           evalError("z=?", null);
-        plane = Point4f.new4(0, 0, 1, -floatParameter(i));
+        plane = P4.new4(0, 0, 1, -floatParameter(i));
         break;
       case T.identifier:
       case T.string:
         String str = parameterAsString(i);
         if (str.equalsIgnoreCase("xy"))
-          return Point4f.new4(0, 0, 1, 0);
+          return P4.new4(0, 0, 1, 0);
         if (str.equalsIgnoreCase("xz"))
-          return Point4f.new4(0, 1, 0, 0);
+          return P4.new4(0, 1, 0, 0);
         if (str.equalsIgnoreCase("yz"))
-          return Point4f.new4(1, 0, 0, 0);
+          return P4.new4(1, 0, 0, 0);
         iToken += 2;
         break;
       case T.leftbrace:
@@ -4946,7 +4946,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i = iToken;
         V3 norm = new V3();
         float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB, vAC);
-        plane = new Point4f();
+        plane = new P4();
         plane.set(norm.x, norm.y, norm.z, w);
         if (!chk && Logger.debugging)
           Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: "
@@ -4961,11 +4961,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return plane;
   }
 
-  private Point4f hklParameter(int i) throws ScriptException {
+  private P4 hklParameter(int i) throws ScriptException {
     if (!chk && viewer.getCurrentUnitCell() == null)
       error(ERROR_noUnitCell);
     P3 pt = (P3) getPointOrPlane(i, false, true, false, true, 3, 3);
-    Point4f p = getHklPlane(pt);
+    P4 p = getHklPlane(pt);
     if (p == null)
       error(ERROR_badMillerIndices);
     if (!chk && Logger.debugging)
@@ -4973,7 +4973,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return p;
   }
 
-  protected Point4f getHklPlane(P3 pt) {
+  protected P4 getHklPlane(P3 pt) {
     V3 vAB = new V3();
     V3 vAC = new V3();
     P3 pt1 = P3.new3(pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
@@ -5004,7 +5004,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     viewer.toCartesian(pt3, false);
     V3 plane = new V3();
     float w = Measure.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
-    Point4f pt4 = new Point4f();
+    P4 pt4 = new P4();
     pt4.set(plane.x, plane.y, plane.z, w);
     return pt4;
   }
@@ -5208,8 +5208,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         3);
   }
 
-  private Point4f getPoint4f(int i) throws ScriptException {
-    return (Point4f) getPointOrPlane(i, false, false, false, false, 4, 4);
+  private P4 getPoint4f(int i) throws ScriptException {
+    return (P4) getPointOrPlane(i, false, false, false, false, 4, 4);
   }
 
   private P3 fractionalPoint;
@@ -5304,7 +5304,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (coordinatesAreFractional) // no fractional coordinates for planes (how
         // to convert?)
         error(ERROR_invalidArgument);
-      Point4f plane = Point4f.new4(coord[0], coord[1], coord[2], coord[3]);
+      P4 plane = P4.new4(coord[0], coord[1], coord[2], coord[3]);
       return plane;
     }
     return coord;
@@ -6496,7 +6496,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (chk)
       return;
     if (tv == null)
-      tv = (v == null ? new ScriptVariableInt(0) : v);
+      tv = (v == null ? SV.newScriptVariableInt(0) : v);
     t.value = tv.value;
     t.intValue = tv.intValue;
     t.tok = tv.tok;
@@ -6626,7 +6626,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i = iToken + 1;
         degrees = floatParameter(i++);
       } else {
-        Point4f pt4 = getPoint4f(i);
+        P4 pt4 = getPoint4f(i);
         i = iToken + 1;
         axis.set(pt4.x, pt4.y, pt4.z);
         degrees = (pt4.x == 0 && pt4.y == 0 && pt4.z == 0 ? Float.NaN : pt4.w);
@@ -10265,7 +10265,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     JmolList<P3> ptsB = null;
     BS bsCompare = null;
     P3 invPoint = null;
-    Point4f invPlane = null;
+    P4 invPlane = null;
     boolean axesOrientationRasmol = viewer.getAxesOrientationRasmol();
     for (int i = 1; i < slen; ++i) {
       switch (tok = getToken(i).tok) {
@@ -10370,7 +10370,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           rotAxis.setT(centerParameter(i));
           break;
         }
-        Point4f p4 = getPoint4f(i);
+        P4 p4 = getPoint4f(i);
         rotAxis.set(p4.x, p4.y, p4.z);
         endDegrees = p4.w;
         q = Quaternion.newVA(rotAxis, endDegrees);
@@ -10423,7 +10423,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           // glide plane
           rotAxis.normalize();
           Measure.getPlaneThroughPoint(points[0], rotAxis,
-              invPlane = new Point4f());
+              invPlane = new P4());
         }
         q = Quaternion.newVA(rotAxis, endDegrees);
         nPoints = (points[0] == null ? 0 : 1);
@@ -10589,7 +10589,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private Quaternion getQuaternionParameter(int i) throws ScriptException {
     if (tokAt(i) == T.varray) {
       JmolList<SV> sv = ((SV) getToken(i)).getList();
-      Point4f p4 = null;
+      P4 p4 = null;
       if (sv.size() == 0 || (p4 = SV.pt4Value(sv.get(0))) == null)
         error(ERROR_invalidArgument);
       return Quaternion.newP4(p4);
@@ -11106,7 +11106,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // invertSelected HKL
     // invertSelected STEREO {sp3Atom} {one or two groups)
     P3 pt = null;
-    Point4f plane = null;
+    P4 plane = null;
     BS bs = null;
     int iAtom = Integer.MIN_VALUE;
     switch (tokAt(1)) {
@@ -11390,7 +11390,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void slab(boolean isDepth) throws ScriptException {
     boolean TF = false;
-    Point4f plane = null;
+    P4 plane = null;
     String str;
     if (isCenterParameter(1) || tokAt(1) == T.point4f)
       plane = planeParameter(1);
@@ -12427,7 +12427,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int index2 = -1;
     String type = null;
     if (index < 0)
-      error(ERROR_invalidArgument);
+      return;
     if (atomsOrBonds == T.connect) {
       index2 = atomExpressionAt(++iToken).nextSetBit(0);
     } else {
@@ -12438,6 +12438,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     switch (atomsOrBonds) {
     case T.atoms:
+      clearDefinedVariableAtomSets();
       viewer.assignAtom(index, pt, type);
       break;
     case T.bonds:
@@ -14001,7 +14002,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     } else if (vv instanceof BondSet) {
       setStringProperty(key, Escape.eB((BS) vv, false));
     } else if (vv instanceof BS || vv instanceof P3
-        || vv instanceof Point4f) {
+        || vv instanceof P4) {
       setStringProperty(key, Escape.e(vv));
     } else {
       Logger.error("ERROR -- return from propertyExpression was " + vv);
@@ -15402,7 +15403,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isTranslucent = false;
     boolean isIntersect = false;
     boolean isFrame = false;
-    Point4f plane;
+    P4 plane;
     int tokIntersect = 0;
     float translucentLevel = Float.MAX_VALUE;
     int colorArgb = Integer.MIN_VALUE;
@@ -15584,7 +15585,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (isFrame) {
             checkLast(iToken);
             if (!chk)
-              runScript((Quaternion.newP4((Point4f) propertyValue)).draw(
+              runScript((Quaternion.newP4((P4) propertyValue)).draw(
                   (thisId == null ? "frame" : thisId), " " + swidth,
                   (center == null ? new P3() : center), intScale / 100f));
             return;
@@ -16510,7 +16511,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int tok0 = tokAt(i);
     boolean isSlab = (tok0 == T.slab);
     int tok = tokAt(i + 1);
-    Point4f plane = null;
+    P4 plane = null;
     P3[] pts = null;
     float d, d2;
     BS bs = null;
@@ -17050,7 +17051,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     BS bsIgnore = null;
     SB sbCommand = new SB();
     P3 pt;
-    Point4f plane = null;
+    P4 plane = null;
     P3 lattice = null;
     P3[] pts;
     String str = null;
@@ -17962,7 +17963,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         //if (!surfaceObjectSeen)
         sbCommand.append(" ").append(Escape.eP(pt3));
         vxy.addLast(pt3); // (1) = {origin}
-        Point4f pt4;
+        P4 pt4;
         ptX = ++iToken;
         vxy.addLast(pt4 = getPoint4f(ptX)); // (2) = {ni ix iy iz}
         //if (!surfaceObjectSeen)
@@ -18106,7 +18107,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           addShapeProperty(propertyList, "sasurface", Float.valueOf(0));
         }
         if (sbCommand.length() == 0) {
-          plane = (Point4f) getShapeProperty(JC.SHAPE_ISOSURFACE,
+          plane = (P4) getShapeProperty(JC.SHAPE_ISOSURFACE,
               "plane");
           if (plane == null) {
             if (getShapeProperty(JC.SHAPE_ISOSURFACE, "contours") != null) {

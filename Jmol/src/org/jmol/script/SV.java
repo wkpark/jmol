@@ -24,15 +24,12 @@
 
 package org.jmol.script;
 
-import org.jmol.util.JmolList;
 import java.util.Arrays;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
-
 import java.util.Map;
 
 
@@ -40,17 +37,18 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
+import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
+import org.jmol.util.Quaternion;
+import org.jmol.util.TextFormat;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
 
-import org.jmol.util.Measure;
-import org.jmol.util.Quaternion;
-import org.jmol.util.TextFormat;
 
 public class SV extends T {
 
@@ -65,35 +63,34 @@ public class SV extends T {
   private int flags = ~FLAG_CANINCREMENT & FLAG_LOCALVAR;
   private String myName;
 
-  SV(int tok) {
-    super(tok);
-  }
-
   public static SV newVariable(int tok, Object value) {
-    SV sv = new SV(tok);
+    SV sv = new SV();
+    sv.tok = tok;
     sv.value = value;
     return sv;
   }
 
+  public static SV newScriptVariableInt(int i) {
+    SV sv = new SV();
+    sv.tok = integer;
+    sv.intValue = i;
+    return sv;
+  }
+  
   static SV newScriptVariableBs(BS bs, int index) {
-    SV sv = new SV(bitset);
-    sv.value = bs;
+    SV sv = newVariable(bitset, bs);
     if (index >= 0)
       sv.index = index;
     return sv;
   }
 
   static SV newScriptVariableToken(T x) {
-    SV sv = new SV(x.tok);
-    sv.intValue = x.intValue;
-    sv.value = x.value;
-    return sv;
+    return newScriptVariableIntValue(x.tok, x.intValue, x.value);
   }
-  
+
   static SV newScriptVariableIntValue(int tok, int intValue, Object value) {
-    SV sv = new SV(tok);
+    SV sv = newVariable(tok, value);
     sv.intValue = intValue;
-    sv.value = value;
     return sv;
   }
 
@@ -137,7 +134,7 @@ public class SV extends T {
         || x instanceof Integer
         || x instanceof P3    // stored as point3f
         || x instanceof V3   // stored as point3f
-        || x instanceof Point4f    // stored as point4f
+        || x instanceof P4    // stored as point4f
         || x instanceof Quaternion // stored as point4f
         || x instanceof String
         || x instanceof Map<?, ?>  // stored as Map<String, ScriptVariable>
@@ -176,7 +173,7 @@ public class SV extends T {
     if (x instanceof Boolean)
       return getBoolean(((Boolean) x).booleanValue());
     if (x instanceof Integer)
-      return new ScriptVariableInt(((Integer) x).intValue());
+      return newScriptVariableInt(((Integer) x).intValue());
     if (x instanceof Float)
       return newVariable(decimal, x);
     if (x instanceof String) {
@@ -191,7 +188,7 @@ public class SV extends T {
       return newVariable(point3f, P3.newP((V3) x));
     if (x instanceof BS)
       return newVariable(bitset, x);
-    if (x instanceof Point4f)
+    if (x instanceof P4)
       return newVariable(point4f, x);
     // note: for quaternions, we save them {q1, q2, q3, q0} 
     // While this may seem odd, it is so that for any point4 -- 
@@ -533,7 +530,7 @@ public class SV extends T {
     case point3f:
       return ((P3) x.value).distance(pt0);
     case point4f:
-      return Measure.distanceToPlane((Point4f) x.value, pt0);
+      return Measure.distanceToPlane((P4) x.value, pt0);
     case matrix3f:
       P3 pt = new P3();
       ((Matrix3f) x.value).transform(pt);
@@ -674,15 +671,15 @@ public class SV extends T {
     return null;
   }  
 
-  static Point4f pt4Value(SV x) {
+  static P4 pt4Value(SV x) {
     switch (x.tok) {
     case point4f:
-      return (Point4f) x.value;
+      return (P4) x.value;
     case string:
       Object o = Escape.uP((String) x.value);
-      if (!(o instanceof Point4f))
+      if (!(o instanceof P4))
         break;
-      return (Point4f) o;
+      return (P4) o;
     }
     return null;
   }
@@ -1020,7 +1017,7 @@ public class SV extends T {
       v = Escape.unescapePointOrBitsetOrMatrixOrArray(s);
     if (v instanceof P3)
       return (newVariable(point3f, v));
-    if (v instanceof Point4f)
+    if (v instanceof P4)
       return newVariable(point4f, v);
     if (v instanceof BS) {
       if (s != null && s.indexOf("[{") == 0)
@@ -1135,7 +1132,7 @@ public class SV extends T {
     if (x1.tok == point3f && x2.tok == point3f)
       return (((P3) x1.value).distance((P3) x2.value) < 0.000001);
     if (x1.tok == point4f && x2.tok == point4f)
-      return (((Point4f) x1.value).distance((Point4f) x2.value) < 0.000001);
+      return (((P4) x1.value).distance((P4) x2.value) < 0.000001);
     return (Math.abs(fValue(x1)
         - fValue(x2)) < 0.000001);
   }

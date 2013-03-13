@@ -42,7 +42,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Normix;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
@@ -159,7 +159,7 @@ public class Mesh extends MeshSurface {
 
   private BS bsTemp;
   
-  public void initialize(int lighting, P3[] vertices, Point4f plane) {
+  public void initialize(int lighting, P3[] vertices, P4 plane) {
     if (vertices == null)
       vertices = this.vertices;
     V3[] normals = getNormals(vertices, plane);
@@ -182,7 +182,7 @@ public class Mesh extends MeshSurface {
         normixes[i] = Normix.getNormixV(normals[i], bsTemp);
   }
 
-  public V3[] getNormals(P3[] vertices, Point4f plane) {
+  public V3[] getNormals(P3[] vertices, P4 plane) {
     normixCount = (isTriangleSet ? polygonCount : vertexCount);
     V3[] normals = new V3[normixCount];
     for (int i = normixCount; --i >= 0;)
@@ -320,7 +320,7 @@ public class Mesh extends MeshSurface {
     return s.toString();
   }
 
-  public P3[] getOffsetVertices(Point4f thePlane) {
+  public P3[] getOffsetVertices(P4 thePlane) {
     if (altVertices != null && !recalcAltVertices)
       return (P3[]) altVertices;
     altVertices = new P3[vertexCount];

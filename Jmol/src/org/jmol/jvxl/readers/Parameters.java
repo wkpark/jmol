@@ -128,7 +128,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.V3;
 
 import org.jmol.viewer.JC;
@@ -372,7 +372,7 @@ public class Parameters {
   float eccentricityRatio;
   float[] aniosU;
 
-  void setEccentricity(Point4f info) {
+  void setEccentricity(P4 info) {
     /*
      * {cx cy cz fab/c}
      * 
@@ -408,7 +408,7 @@ public class Parameters {
       center.set(0, 0, 0);
   }
 
-  void setPlane(Point4f plane) {
+  void setPlane(P4 plane) {
     thePlane = plane;
     if (thePlane.x == 0 && thePlane.y == 0
         && thePlane.z == 0)
@@ -419,14 +419,14 @@ public class Parameters {
   void setSphere(float radius, boolean isGeodesic) {
     dataType = (isGeodesic ? SURFACE_GEODESIC : SURFACE_SPHERE);
     distance = radius;
-    setEccentricity(Point4f.new4(0, 0, 1, 1));
+    setEccentricity(P4.new4(0, 0, 1, 1));
     cutoff = Float.MIN_VALUE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
     script = getScriptParams() + " SPHERE " + radius + ";";
   }
   
-  void setEllipsoid(Point4f v) {
+  void setEllipsoid(P4 v) {
     dataType = SURFACE_ELLIPSOID2;
     distance = 1f;
     setEccentricity(v);
@@ -456,7 +456,7 @@ public class Parameters {
         //+ " " + bList[1] + " " + bList[2] + " " + bList[3] + " " + bList[4] + " " + bList[5] + "};";
   }
 
-  void setLobe(Point4f v) {
+  void setLobe(P4 v) {
     dataType = SURFACE_LOBE;
     setEccentricity(v);
     if (cutoff == Float.MAX_VALUE) {
@@ -474,7 +474,7 @@ public class Parameters {
         + Escape.eP(center) + (Float.isNaN(scale) ? "" : " scale " + scale);
   }
 
-  void setLp(Point4f v) {
+  void setLp(P4 v) {
     dataType = SURFACE_LONEPAIR;
     setEccentricity(v);
     if (cutoff == Float.MAX_VALUE) {
@@ -488,7 +488,7 @@ public class Parameters {
         + v.y + " " + v.z + " " + v.w + "};";
   }
   
-  void setRadical(Point4f v) {
+  void setRadical(P4 v) {
     dataType = SURFACE_RADICAL;
     setEccentricity(v);
     if (cutoff == Float.MAX_VALUE) {
@@ -594,7 +594,7 @@ public class Parameters {
 
   boolean setAtomicOrbital(float[] nlmZprs) {
     dataType = SURFACE_ATOMICORBITAL;
-    setEccentricity(Point4f.new4(0, 0, 1, 1));
+    setEccentricity(P4.new4(0, 0, 1, 1));
     psi_n = (int) nlmZprs[0];
     psi_l = (int) nlmZprs[1];
     psi_m = (int) nlmZprs[2];
@@ -784,7 +784,7 @@ public class Parameters {
   public boolean isSquared;
   public boolean isSquaredLinear;
 
-  public Point4f thePlane;
+  public P4 thePlane;
   public boolean isContoured;
   
   int nContours;

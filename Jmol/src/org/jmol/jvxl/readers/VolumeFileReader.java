@@ -34,7 +34,7 @@ import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
 
@@ -110,7 +110,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     return true;
   }
 
-  Point4f thePlane;
+  P4 thePlane;
 
   @Override
   protected boolean readVolumeData(boolean isMapData) {

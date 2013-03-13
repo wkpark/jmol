@@ -39,7 +39,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
 
@@ -117,7 +117,7 @@ public void initShape() {
   private boolean makePoints;
   private int nidentifiers;
   private int nbitsets;
-  private Point4f plane;
+  private P4 plane;
   private BS bsAllModels;
   private JmolList<Object> polygon;
   
@@ -220,7 +220,7 @@ public void initShape() {
     }
 
     if ("planedef" == propertyName) {
-      plane = (Point4f) value;
+      plane = (P4) value;
       if (intersectID != null || boundBox != null || slabData != null)
         return;
      if (isCircle || isArc)

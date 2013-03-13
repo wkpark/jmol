@@ -41,7 +41,7 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
@@ -824,8 +824,8 @@ public class TransformManager {
     viewer.getGlobalSettings().setB("zoomEnabled", zoomEnabled);
   }
 
-  Point4f slabPlane = null;
-  Point4f depthPlane = null;
+  P4 slabPlane = null;
+  P4 depthPlane = null;
 
   void slabReset() {
     slabToPercent(100);
@@ -901,7 +901,7 @@ public class TransformManager {
       zSlabPercentSetting = percentDepth;
   }
 
-  void slabInternal(Point4f plane, boolean isDepth) {
+  void slabInternal(P4 plane, boolean isDepth) {
     //also from viewer
     if (isDepth) {
       depthPlane = plane;
@@ -926,7 +926,7 @@ public class TransformManager {
     slabInternal(getSlabDepthPlane(isDepth), isDepth);
   }
 
-  Point4f getSlabDepthPlane(boolean isDepth) {
+  P4 getSlabDepthPlane(boolean isDepth) {
     // the third row of the matrix defines the Z coordinate, which is all we need
     // and, in fact, it defines the plane. How convenient!
     // eval "slab set"
@@ -938,7 +938,7 @@ public class TransformManager {
         return slabPlane;
     }
     Matrix4f m = matrixTransform;
-    return Point4f.new4(-m.m20, -m.m21, -m.m22, -m.m23
+    return P4.new4(-m.m20, -m.m21, -m.m22, -m.m23
         + (isDepth ? depthValue : slabValue));
   }
 

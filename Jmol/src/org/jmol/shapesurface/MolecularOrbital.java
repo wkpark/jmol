@@ -35,7 +35,7 @@ import java.util.Map;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.Escape;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;
@@ -56,7 +56,7 @@ public class MolecularOrbital extends Isosurface {
 
   private String moTranslucency;
   private Float moTranslucentLevel;
-  private Point4f moPlane;
+  private P4 moPlane;
   private Float moCutoff;
   private Float moResolution;
   private Float moScale;
@@ -387,7 +387,7 @@ public class MolecularOrbital extends Isosurface {
       return false;
     moTranslucency = (String) thisModel.get("moTranslucency");
     moTranslucentLevel = (Float) thisModel.get("moTranslucentLevel");
-    moPlane = (Point4f) thisModel.get("moPlane");
+    moPlane = (P4) thisModel.get("moPlane");
     moCutoff = (Float) thisModel.get("moCutoff");
     if (moCutoff == null)
       moCutoff = (Float) sg.getMoData().get("defaultCutoff");

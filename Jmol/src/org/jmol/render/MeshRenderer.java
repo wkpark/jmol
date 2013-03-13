@@ -35,7 +35,7 @@ import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.V3;
 
 public abstract class MeshRenderer extends ShapeRenderer {
@@ -60,7 +60,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected boolean haveBsSlabDisplay;
   protected boolean haveBsSlabGhost;
 
-  protected Point4f thePlane;
+  protected P4 thePlane;
   protected P3 latticeOffset = new P3();
 
   protected final P3 pt1f = new P3();

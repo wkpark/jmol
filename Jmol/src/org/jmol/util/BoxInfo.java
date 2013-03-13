@@ -78,7 +78,7 @@ public class BoxInfo {
    * @return    a set of points
    * 
    */
-  public JmolList<Object> intersectPlane(Point4f plane, float scale, int flags) {
+  public JmolList<Object> intersectPlane(P4 plane, float scale, int flags) {
     JmolList<Object> v = new  JmolList<Object>();
     v.addLast(getCanonicalCopy(scale));
     return TriangleData.intersectPlane(plane, v, flags);
@@ -112,8 +112,8 @@ public class BoxInfo {
     }
   }
 
-  public static Point4f[] getFacesFromCriticalPoints(P3[] points) {
-    Point4f[] faces = new Point4f[6];
+  public static P4[] getFacesFromCriticalPoints(P3[] points) {
+    P4[] faces = new P4[6];
     V3 vNorm = new V3();
     V3 vAB = new V3();
     V3 vAC = new V3();
@@ -136,7 +136,7 @@ public class BoxInfo {
       va.setT(vertices[facePoints[i].x]);
       vb.setT(vertices[facePoints[i].y]);
       vc.setT(vertices[facePoints[i].z]);
-      Measure.getPlaneThroughPoints(va, vb, vc, vNorm, vAB, vAC, faces[i] = new Point4f());
+      Measure.getPlaneThroughPoints(va, vb, vc, vNorm, vAB, vAC, faces[i] = new P4());
     }
     return faces;
   }

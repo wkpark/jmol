@@ -124,7 +124,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
 
@@ -158,7 +158,7 @@ public class VolumeData implements VolumeDataInterface {
   public final V3[] unitVolumetricVectors = new V3[3];
   private final Matrix3f volumetricMatrix = new Matrix3f();
   private final Matrix3f inverseMatrix = new Matrix3f();
-  private Point4f thePlane;
+  private P4 thePlane;
 
   public boolean hasPlane() {
     return (thePlane != null);
@@ -177,10 +177,10 @@ public class VolumeData implements VolumeDataInterface {
     unitVolumetricVectors[2] = new V3();
   }
 
-  public Point4f mappingPlane;
+  public P4 mappingPlane;
   float mappingPlaneNormalMag;
   
-  public void setMappingPlane(Point4f plane) {
+  public void setMappingPlane(P4 plane) {
     //if(true)return;
     mappingPlane = plane;
     if (plane == null)
@@ -298,7 +298,7 @@ public class VolumeData implements VolumeDataInterface {
     volumetricMatrix.transform2(v1, v2);
   }
 
-  public void setPlaneParameters(Point4f plane) {
+  public void setPlaneParameters(P4 plane) {
     thePlane = plane;
     thePlaneNormalMag = (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z * plane.z);
   }
@@ -446,7 +446,7 @@ public class VolumeData implements VolumeDataInterface {
     volumetricOrigin.sub2(center, pt);
   }
 
-  public void setDataDistanceToPlane(Point4f plane) {
+  public void setDataDistanceToPlane(P4 plane) {
     //TODO REMOVE THIS METHOD.
     setPlaneParameters(plane);
     int nx = voxelCounts[0];
@@ -481,7 +481,7 @@ public class VolumeData implements VolumeDataInterface {
             voxelData[x][y][z] = invertCutoff - voxelData[x][y][z];
   }
 
-  public void capData(Point4f plane, float cutoff) {
+  public void capData(P4 plane, float cutoff) {
     if (voxelData == null)
       return;
     int nx = voxelCounts[0];

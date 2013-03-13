@@ -38,7 +38,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.V3;
 
@@ -409,8 +409,8 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
   private final P3 pt0 = new P3();
   private final V3 v1 = new V3();
   private final V3 v2 = new V3();
-  private final Point4f plane1 = new Point4f();
-  private final Point4f plane2 = new Point4f();
+  private final P4 plane1 = new P4();
+  private final P4 plane2 = new P4();
   
   protected Atom setAtom(Atom atom, int ia, int ib, int ic, float d,
                        float theta1, float theta2) {

@@ -32,7 +32,7 @@ import org.jmol.jvxl.data.VolumeData;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 
 public class MarchingSquares {
 
@@ -75,7 +75,7 @@ public class MarchingSquares {
    * @param contourFromZero
    */
   public MarchingSquares(VertexDataServer surfaceReader, VolumeData volumeData,
-      Point4f thePlane, float[] contoursDiscrete, int nContours,
+      P4 thePlane, float[] contoursDiscrete, int nContours,
       int thisContour, boolean contourFromZero) {
     this.surfaceReader = surfaceReader;
     this.volumeData = volumeData;

@@ -37,7 +37,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 
@@ -150,7 +150,7 @@ class IsoSolventReader extends AtomDataReader {
   private Edge[] aEdges;
   private JmolList<Face> vFaces;
   protected V3 vTemp = new V3();
-  protected Point4f plane = new Point4f();
+  protected P4 plane = new P4();
 
   protected P3 ptTemp2 = new P3();
   private P3 ptS1 = new P3();
@@ -252,8 +252,8 @@ class IsoSolventReader extends AtomDataReader {
     if (info != null)
       for (int i = 0; i < info.size(); i++)
         if (((Boolean) info.get(i)[2]).booleanValue()
-            && info.get(i)[0] instanceof Point4f) {
-          volumeData.capData((Point4f) info.get(i)[0], params.cutoff);
+            && info.get(i)[0] instanceof P4) {
+          volumeData.capData((P4) info.get(i)[0], params.cutoff);
           info.remove(i--);
         }
   }

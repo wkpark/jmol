@@ -47,7 +47,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
@@ -215,8 +215,8 @@ public class IsosurfaceMesh extends Mesh {
     return centers;
   }
 
-  Point4f getFacePlane(int i, V3 vNorm) {
-    Point4f plane = new Point4f();
+  P4 getFacePlane(int i, V3 vNorm) {
+    P4 plane = new P4();
     Measure.getPlaneThroughPoints(vertices[polygonIndexes[i][0]],
         vertices[polygonIndexes[i][1]], vertices[polygonIndexes[i][2]], vNorm,
         vAB, vAC, plane);
@@ -915,7 +915,7 @@ public class IsosurfaceMesh extends Mesh {
         + Escape.eP(spanningVectors[3]));
     
     P3 ptTemp = new P3();
-    Point4f planeGammaK = new Point4f();
+    P4 planeGammaK = new P4();
     V3 vGammaToKPoint = new V3();
     V3 vTemp = new V3();
     BS bsMoved = new BS();

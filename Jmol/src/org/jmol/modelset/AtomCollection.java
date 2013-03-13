@@ -47,7 +47,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Quadric;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
@@ -2432,7 +2432,7 @@ abstract public class AtomCollection {
     return indices;
   }
 
-  public BS getAtomsWithin(float distance, Point4f plane) {
+  public BS getAtomsWithin(float distance, P4 plane) {
     BS bsResult = new BS();
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];

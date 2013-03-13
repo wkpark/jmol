@@ -37,7 +37,7 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.TriangleData;
@@ -1042,7 +1042,7 @@ class SymmetryOperation extends Matrix4f {
         // ax + by + cz + d = 0
         // so if a point is in the plane, then N dot X = -d
         float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
-        Point4f plane = Point4f.new4(vtemp.x, vtemp.y, vtemp.z, w);
+        P4 plane = P4.new4(vtemp.x, vtemp.y, vtemp.z, w);
         JmolList<Object> v = new  JmolList<Object>();
         v.addLast(uc.getCanonicalCopy(1.05f));
         TriangleData.intersectPlane(plane, v, 3);

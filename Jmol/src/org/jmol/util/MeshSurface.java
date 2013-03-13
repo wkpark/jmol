@@ -278,7 +278,7 @@ public class MeshSurface {
             (P3) Escape.uP(pts[3]) }, isCap, null);
       }
       Object plane = Escape.uP(s);
-      if (plane instanceof Point4f)
+      if (plane instanceof P4)
         return getSlabObject(T.plane, plane, isCap, null);
     } catch (Exception e) {
       //
@@ -362,7 +362,7 @@ public class MeshSurface {
           false, T.decimal, isGhost);
       break;
     case T.plane:
-      Point4f plane = (Point4f) slabbingObject;
+      P4 plane = (P4) slabbingObject;
       sb.append(Escape.e(plane));
       getIntersection(0, plane, null, null, null, null, null, andCap,
           false, T.plane, isGhost);
@@ -371,7 +371,7 @@ public class MeshSurface {
     case T.boundbox:
       P3[] box = (P3[]) slabbingObject;
       sb.append("within ").append(Escape.e(box));
-      Point4f[] faces = BoxInfo.getFacesFromCriticalPoints(box);
+      P4[] faces = BoxInfo.getFacesFromCriticalPoints(box);
       for (int i = 0; i < faces.length; i++) {
         getIntersection(0, faces[i], null, null, null, null, null, andCap,
             false, T.plane, isGhost);
@@ -491,7 +491,7 @@ public class MeshSurface {
    * @param tokType       type of slab
    * @param isGhost       translucent slab, so we mark slabbed triangles
    */
-  public void getIntersection(float distance, Point4f plane,
+  public void getIntersection(float distance, P4 plane,
                               P3[] ptCenters, JmolList<P3[]> vData,
                               float[] fData, BS bsSource,
                               MeshSurface meshSurface, boolean andCap, boolean doClean,
@@ -891,7 +891,7 @@ public class MeshSurface {
   }            
 
   private static float checkSlab(int tokType, P3 v, float val, float distance,
-                          Point4f plane, P3[] ptCenters, BS bs) {
+                          P4 plane, P3[] ptCenters, BS bs) {
     float d;
     switch (tokType) {
     case T.decimal:

@@ -3,7 +3,7 @@ package org.jmol.api;
 
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.V3;
 
 public interface VolumeDataInterface {
@@ -24,9 +24,9 @@ public interface VolumeDataInterface {
 
   public abstract float[] getOriginFloat();
 
-  public abstract void setDataDistanceToPlane(Point4f plane);
+  public abstract void setDataDistanceToPlane(P4 plane);
 
-  public abstract void setPlaneParameters(Point4f plane);
+  public abstract void setPlaneParameters(P4 plane);
 
   public abstract float calcVoxelPlaneDistance(int x, int y, int z);
 
@@ -42,6 +42,6 @@ public interface VolumeDataInterface {
 
   public abstract void filterData(boolean isSquared, float invertCutoff);
 
-  public abstract void capData(Point4f plane, float cutoff);
+  public abstract void capData(P4 plane, float cutoff);
 
 }

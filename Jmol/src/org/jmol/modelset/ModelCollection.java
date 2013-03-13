@@ -54,7 +54,7 @@ import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
 import org.jmol.util.P3;
-import org.jmol.util.Point4f;
+import org.jmol.util.P4;
 import org.jmol.util.Quadric;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
@@ -156,7 +156,7 @@ abstract public class ModelCollection extends BondCollection {
    *        1 -- edges only 2 -- triangles only 3 -- both
    * @return Vector
    */
-  public JmolList<Object> getPlaneIntersection(int type, Point4f plane,
+  public JmolList<Object> getPlaneIntersection(int type, P4 plane,
                                            float scale, int flags,
                                            int modelIndex) {
     P3[] pts = null;

@@ -306,7 +306,7 @@ public class TriangleData {
    */
 
 
-  public static JmolList<Object> intersectPlane(Point4f plane, JmolList<Object> v, int flags) {
+  public static JmolList<Object> intersectPlane(P4 plane, JmolList<Object> v, int flags) {
     if (plane == null) {
       v.addLast(fullCubePolygon);
       return v;

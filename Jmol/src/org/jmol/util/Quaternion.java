@@ -47,7 +47,7 @@ public class Quaternion {
   public float q0, q1, q2, q3;
   private Matrix3f mat;
 
-  private final static Point4f qZero = new Point4f();
+  private final static P4 qZero = new P4();
   
   public Quaternion() {
     q0 = 1;
@@ -77,7 +77,7 @@ public class Quaternion {
     return q;
   }
 
-  public static Quaternion newP4(Point4f pt) {
+  public static Quaternion newP4(P4 pt) {
     Quaternion q = new Quaternion();
     q.setP4(pt);
     return q;
@@ -113,7 +113,7 @@ public class Quaternion {
    * 
    * @param pt
    */
-  private void setP4(Point4f pt) {
+  private void setP4(P4 pt) {
     float factor = (pt == null ? 0 : pt.distance(qZero));
     if (factor == 0) {
       q0 = 1;
@@ -529,7 +529,7 @@ public class Quaternion {
    * @param axisAngle
    * @return   fill in theta of axisAngle such that 
    */
-  public Point4f getThetaDirected(Point4f axisAngle) {
+  public P4 getThetaDirected(P4 axisAngle) {
     //fills in .w;
     float theta = getTheta();
     V3 v = getNormal();
@@ -557,7 +557,7 @@ public class Quaternion {
     return theta;
   }
 
-  public Point4f toPoint4f() {
+  public P4 toPoint4f() {
     // NO q0 normalization here
 
     // note: for quaternions, we save them {q1, q2, q3, q0} 
@@ -567,7 +567,7 @@ public class Quaternion {
     // the fourth then gives us offset to {0,0,0} (plane), 
     // rotation angle (axisangle), and cos(theta/2) (quaternion).
     
-    return Point4f.new4(q1, q2, q3, q0);
+    return P4.new4(q1, q2, q3, q0);
   }
 
   public AxisAngle4f toAxisAngle4f() {
@@ -729,7 +729,7 @@ public class Quaternion {
     f = (float) Math.sqrt(1 - mean.lengthSquared());
     if (Float.isNaN(f))
       f = 0;
-    return newP4(Point4f.new4(mean.x, mean.y, mean.z, f));
+    return newP4(P4.new4(mean.x, mean.y, mean.z, f));
   }
 
   private static Quaternion newMean(Quaternion[] data, Quaternion mean) {

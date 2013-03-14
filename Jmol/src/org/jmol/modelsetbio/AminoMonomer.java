@@ -61,6 +61,7 @@ public class AminoMonomer extends AlphaMonomer {
 
   /**
    * @j2sIgnoreSuperConstructor
+   * @j2sOverride
    * 
    */
   protected AminoMonomer() {

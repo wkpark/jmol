@@ -206,9 +206,25 @@ abstract public class GenericPopup implements JmolPopupInterface,
    * @return Object
    */
   protected Object getEntryIcon(String[] ret) {
+    String entry = ret[0];
+    if (!entry.startsWith("<"))
+      return null;
+    int pt = entry.indexOf(">");
+    ret[0] = entry.substring(pt + 1);
+    String fileName = entry.substring(1, pt);
+    return getImageIcon(fileName);
+  }
+
+  /**
+   * modelkit menu only
+   * 
+   * @param fileName  
+   * @return ImageIcon or null
+   */
+  protected Object getImageIcon(String fileName) {
     return null;
   }
-    
+
   protected void checkMenuFocus(String name, String cmd, boolean isFocus) {
     if (name.indexOf("Focus") < 0)
       return;

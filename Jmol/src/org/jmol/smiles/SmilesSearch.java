@@ -1209,7 +1209,7 @@ public class SmilesSearch extends JmolMolecule {
             getX(sAtom, jn, 1, true, false);
           if (jn[3] == null)
             getX(sAtom2, jn, 3, true, false);
-          if (!checkStereochemistryCkass(sAtom.not, atom0, chiralClass, order,
+          if (!checkStereochemistryAll(sAtom.not, atom0, chiralClass, order,
               jn[0], jn[1], jn[2], jn[3], null, null, v))
             return false;
           continue;
@@ -1251,7 +1251,7 @@ public class SmilesSearch extends JmolMolecule {
                   atom1, atom2, atom3, atom4, atom5, atom6 }))
             return false;
             //System.out.println(order + ":" + sAtom + "/" + atom0 + ":" + atom1 + "," + atom2 + "," + atom3 + "," + atom4);
-          if (!checkStereochemistryCkass(sAtom.not, atom0, chiralClass, order,
+          if (!checkStereochemistryAll(sAtom.not, atom0, chiralClass, order,
               atom1, atom2, atom3, atom4, atom5, atom6, v))
             return false;
             //System.out.println("OK");
@@ -1417,7 +1417,7 @@ public class SmilesSearch extends JmolMolecule {
     }
   }
   
-  static boolean checkStereochemistryCkass(boolean isNot, JmolNode atom0, int chiralClass, int order, 
+  static boolean checkStereochemistryAll(boolean isNot, JmolNode atom0, int chiralClass, int order, 
                                 JmolNode atom1, JmolNode atom2, JmolNode atom3, JmolNode atom4, JmolNode atom5, JmolNode atom6, VTemp v) {
     
     switch (chiralClass) {

@@ -48,6 +48,7 @@ public class PhosphorusMonomer extends Monomer {
 
   /**
    * @j2sIgnoreSuperConstructor
+   * @j2sOverride
    * 
    */
   protected PhosphorusMonomer() {}

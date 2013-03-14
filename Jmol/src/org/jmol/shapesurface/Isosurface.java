@@ -323,7 +323,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     if ("fixed" == propertyName) {
       isFixed = ((Boolean) value).booleanValue();
-      setMesh();
+      setMeshI();
       return;
     }
 
@@ -1041,7 +1041,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     //TODO   need to pass assocCutoff to sg
   }
 
-  private void setMesh() {
+  private void setMeshI() {
     thisMesh.visible = true;
     if ((thisMesh.atomIndex = atomIndex) >= 0)
       thisMesh.modelIndex = viewer.getAtomModelIndex(atomIndex);
@@ -1314,7 +1314,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   public void notifySurfaceGenerationCompleted() {
-    setMesh();
+    setMeshI();
     setBsVdw();
     thisMesh.insideOut = sg.isInsideOut();
     thisMesh.vertexSource = sg.getVertexSource();

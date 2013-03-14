@@ -77,15 +77,10 @@ public class ModelKitPopup extends SwingPopup {
     }
     super.checkMenuClick(source, script);  
   }
-  
+
   @Override
-  protected Object getEntryIcon(String[] ret) {
-    String entry = ret[0];
-    if (!entry.startsWith("<"))
-      return null;
-    int pt = entry.indexOf(">");
-    ret[0] = entry.substring(pt + 1);
-    String imageName = "org/jmol/modelkit/images/" + entry.substring(1, pt);
+  protected Object getImageIcon(String fileName) {
+    String imageName = "org/jmol/modelkit/images/" + fileName;
     URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
     return (imageUrl == null ? null : new ImageIcon(imageUrl));
   }

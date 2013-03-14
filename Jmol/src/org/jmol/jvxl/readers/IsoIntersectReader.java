@@ -69,7 +69,7 @@ class IsoIntersectReader extends AtomDataReader {
   
   @Override
   protected void setup(boolean isMapData) {
-    super.setup(isMapData);
+    setup2(isMapData);
     params.fullyLit = true;
     point = params.point;
     if (params.func instanceof String) {

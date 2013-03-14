@@ -66,9 +66,10 @@ abstract public class JSPopup extends GenericPopup {
     /**
      * @j2sNative
      * 
-     *            if (icon != null) b.setIcon(icon); if (entry != null)
-     *            b.setText(entry); if (script != null)
-     *            b.setActionCommand(script); this.thisPopup.tainted = true;
+     *            if (icon != null) b.setIcon(icon); 
+     *            if (entry != null) b.setText(entry); 
+     *            if (script != null) b.setActionCommand(script); 
+     *            this.thisPopup.tainted = true;
      * 
      */
     {

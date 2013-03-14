@@ -234,7 +234,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   @Override
   public void initialize(ApiPlatform apiPlatform) {
-    super.initialize(apiPlatform);
+    this.apiPlatform = apiPlatform;
     platform = new Platform3D(apiPlatform);
     graphicsForMetrics = platform.getGraphicsForMetrics();
     

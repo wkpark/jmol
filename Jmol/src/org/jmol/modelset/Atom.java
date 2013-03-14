@@ -108,7 +108,7 @@ final public class Atom extends Point3fi implements JmolNode {
 
   /**
    * @j2sIgnoreSuperConstructor
-   * @j2sIgnoreParameters
+   * @j2sOverride
    * 
    * @param modelIndex
    * @param atomIndex

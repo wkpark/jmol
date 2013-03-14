@@ -417,9 +417,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (info.containsKey("debug") || commandOptions.indexOf("-debug") >= 0)
       Logger.setLogLevel(Logger.LEVEL_DEBUG);
 
-    isSignedApplet = checkOption("signedApplet", "-signed");
-    isApplet = isSignedApplet || checkOption("applet", "-applet");
-    allowScripting = !checkOption("noscripting", "-noscripting");
+    isSignedApplet = checkOption2("signedApplet", "-signed");
+    isApplet = isSignedApplet || checkOption2("applet", "-applet");
+    allowScripting = !checkOption2("noscripting", "-noscripting");
     int i = fullName.indexOf("__");
     htmlName = (i < 0 ? fullName : fullName.substring(0, i));
     syncId = (i < 0 ? "" : fullName.substring(i + 2, fullName.length() - 2));
@@ -437,12 +437,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (info.containsKey("maximumSize"))
         setMaximumSize(((Integer) info.get("maximumSize")).intValue());
     }
-    access = (checkOption("access:READSPT", "-r") ? ACCESS.READSPT
-        : checkOption("access:NONE", "-R") ? ACCESS.NONE : ACCESS.ALL);
+    access = (checkOption2("access:READSPT", "-r") ? ACCESS.READSPT
+        : checkOption2("access:NONE", "-R") ? ACCESS.NONE : ACCESS.ALL);
     isPreviewOnly = info.containsKey("previewOnly");
     if (isPreviewOnly)
       info.remove("previewOnly"); // see FilePreviewPanel
-    isPrintOnly = checkOption("printOnly", "-p");
+    isPrintOnly = checkOption2("printOnly", "-p");
 
     o = info.get("platform");
     String platform = "unknown";
@@ -462,12 +462,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     apiPlatform = (ApiPlatform) o;
     display = info.get("display");
     isSingleThreaded = apiPlatform.isSingleThreaded();
-    noGraphicsAllowed = (display == null && checkOption("noGraphics", "-n"));
-    haveDisplay = (!noGraphicsAllowed && !isHeadless() && !checkOption(
+    noGraphicsAllowed = (display == null && checkOption2("noGraphics", "-n"));
+    haveDisplay = (!noGraphicsAllowed && !isHeadless() && !checkOption2(
         "isDataOnly", "\0"));
     if (haveDisplay) {
       mustRender = true;
-      multiTouch = checkOption("multiTouch", "-multitouch");
+      multiTouch = checkOption2("multiTouch", "-multitouch");
       /**
        * @j2sNative
        * 
@@ -498,7 +498,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       actionManager.setViewer(this, commandOptions + "-multitouch-"
           + info.get("multiTouch"));
       mouse = apiPlatform.getMouseManager(this, actionManager);
-      if (multiTouch && !checkOption("-simulated", "-simulated"))
+      if (multiTouch && !checkOption2("-simulated", "-simulated"))
         apiPlatform.setTransparentCursor(display);
     }
     modelManager = new ModelManager(this);
@@ -545,15 +545,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } else {
       // not an applet -- used to pass along command line options
       gdata
-          .setBackgroundTransparent(checkOption("backgroundTransparent", "-b"));
-      isSilent = checkOption("silent", "-i");
+          .setBackgroundTransparent(checkOption2("backgroundTransparent", "-b"));
+      isSilent = checkOption2("silent", "-i");
       if (isSilent)
         Logger.setLogLevel(Logger.LEVEL_WARN); // no info, but warnings and
       // errors
-      isSyntaxAndFileCheck = checkOption("checkLoad", "-C");
-      isSyntaxCheck = isSyntaxAndFileCheck || checkOption("check", "-c");
-      listCommands = checkOption("listCommands", "-l");
-      autoExit = checkOption("exit", "-x");
+      isSyntaxAndFileCheck = checkOption2("checkLoad", "-C");
+      isSyntaxCheck = isSyntaxAndFileCheck || checkOption2("check", "-c");
+      listCommands = checkOption2("listCommands", "-l");
+      autoExit = checkOption2("exit", "-x");
       cd(".");
       if (isHeadless()) {
         headlessImage = (Object[]) info.get("headlessImage");
@@ -564,7 +564,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
     }
     useCommandThread = !isHeadless()
-        && checkOption("useCommandThread", "-threaded");
+        && checkOption2("useCommandThread", "-threaded");
     setStartupBooleans();
     setIntProperty("_nProcessors", nProcessors);
     o = info.get("menuFile");
@@ -618,7 +618,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return scriptManager;
   }
   
-  private boolean checkOption(String key1, String key2) {
+  private boolean checkOption2(String key1, String key2) {
     return (viewerOptions.containsKey(key1) || commandOptions.indexOf(key2) >= 0);
   }
 

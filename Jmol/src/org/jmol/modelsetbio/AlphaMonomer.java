@@ -55,6 +55,7 @@ public class AlphaMonomer extends Monomer {
 
   /**
    * @j2sIgnoreSuperConstructor
+   * @j2sOverride
    * 
    */
   protected AlphaMonomer () {}

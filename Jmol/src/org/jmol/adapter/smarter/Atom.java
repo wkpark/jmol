@@ -69,7 +69,7 @@ public class Atom extends P3 implements Cloneable {
 
   /**
    * @j2sIgnoreSuperConstructor
-   * @j2sIgnoreParameters
+   * @j2sOverride
    * 
    */
   public Atom() {

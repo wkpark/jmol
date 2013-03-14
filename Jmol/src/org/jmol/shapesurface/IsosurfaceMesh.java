@@ -147,7 +147,7 @@ public class IsosurfaceMesh extends Mesh {
 
   @Override
   public void setTranslucent(boolean isTranslucent, float iLevel) {
-    super.setTranslucent(isTranslucent, iLevel);
+    colix = C.getColixTranslucent3(colix, isTranslucent, iLevel);
     if (vertexColixes != null)
       for (int i = vertexCount; --i >= 0;)
         vertexColixes[i] = C.getColixTranslucent3(vertexColixes[i],

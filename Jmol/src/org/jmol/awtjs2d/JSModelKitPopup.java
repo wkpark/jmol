@@ -79,6 +79,7 @@ public class JSModelKitPopup extends JSPopup {
      * element = prompt(element, "");
      * 
      */
+    {}
     if (element == null || Elements.elementNumberFromSymbol(element, true) == 0)
       return null;
     updateButton(item, element, "assignAtom_" + element + "P!:??");
@@ -86,13 +87,8 @@ public class JSModelKitPopup extends JSPopup {
   }
 
   @Override
-  protected Object getEntryIcon(String[] ret) {
-    String entry = ret[0];
-    if (!entry.startsWith("<"))
-      return null;
-    int pt = entry.indexOf(">");
-    ret[0] = entry.substring(pt + 1);
-    return "org/jmol/modelkit/images/" + entry.substring(1, pt);
+  protected Object getImageIcon(String fileName) {
+    return "org/jmol/modelkit/images/" + fileName;
   }
 
 }

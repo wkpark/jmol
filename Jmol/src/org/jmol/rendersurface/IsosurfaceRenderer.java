@@ -79,13 +79,13 @@ public class IsosurfaceRenderer extends MeshRenderer {
       if (imesh.connections != null && !viewer.getModelSet().atoms[imesh.connections[0]].isVisible(0))
         continue;
       hasColorRange = false;
-      if (renderMesh(mySlabValue, slabValue)) {
+      if (renderMeshSlab(mySlabValue, slabValue)) {
         //System.out.println("render isossurface " + i + " " + isosurface.meshCount);
         if (!isExport)
           renderInfo();
         if (isExport && haveBsSlabGhost) {
           exportPass = 1;
-          renderMesh(mySlabValue, slabValue);
+          renderMeshSlab(mySlabValue, slabValue);
           exportPass = 2;
         }
       }
@@ -150,7 +150,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     isosurface.keyXy[1] = (y + dy) / factor;
   }
   
-  private boolean renderMesh(int mySlabValue, int slabValue) {
+  private boolean renderMeshSlab(int mySlabValue, int slabValue) {
     volumeRender = (imesh.jvxlData.colorDensity && imesh.jvxlData.allowVolumeRender);
     if (!isNavigationMode) {
       int meshSlabValue = imesh.jvxlData.slabValue;

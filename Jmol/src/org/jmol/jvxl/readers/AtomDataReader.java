@@ -85,8 +85,15 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected boolean doUseIterator;
   private float minPtsPerAng;
 
+  /**
+   * @param isMapData  
+   */
   @Override
   protected void setup(boolean isMapData) {
+    setup2();
+  }
+
+  protected void setup2() {
     //CANNOT BE IN HERE IF atomDataServer is not valid
     contactPair = params.contactPair;
     doAddHydrogens = (sg.getAtomDataServer() != null && params.addHydrogens); //Jvxl cannot do this on its own

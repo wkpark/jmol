@@ -135,7 +135,7 @@ public class SmilesAtom extends P3 implements JmolNode {
       atomsOr = new SmilesAtom[2];
     if (nAtomsOr >= atomsOr.length)
       atomsOr = (SmilesAtom[]) ArrayUtil.doubleLength(atomsOr);
-    SmilesAtom sAtom = new SmilesAtom(index);
+    SmilesAtom sAtom = new SmilesAtom().setIndex(index);
     sAtom.parent = this;
     atomsOr[nAtomsOr] = sAtom;
     nAtomsOr++;
@@ -150,7 +150,7 @@ public class SmilesAtom extends P3 implements JmolNode {
       System.arraycopy(primitives, 0, tmp, 0, primitives.length);
       primitives = tmp;
     }
-    SmilesAtom sAtom = new SmilesAtom(index);
+    SmilesAtom sAtom = new SmilesAtom().setIndex(index);
     sAtom.parent = this;
     primitives[nPrimitives] = sAtom;
     setSymbol("*");
@@ -181,9 +181,11 @@ public class SmilesAtom extends P3 implements JmolNode {
    * Constructs a <code>SmilesAtom</code>.
    * 
    * @param index Atom number in the molecule. 
+   * @return this
    */
-  public SmilesAtom(int index) {
+  public SmilesAtom setIndex(int index) {
     this.index = index;
+    return this;
   }
 
   int component;
@@ -196,13 +198,14 @@ public class SmilesAtom extends P3 implements JmolNode {
   int ringSize = Integer.MIN_VALUE;
   int ringConnectivity = -1;
 
-  public SmilesAtom(int iComponent, int ptAtom, int flags, short atomicNumber,
+  public SmilesAtom setAll(int iComponent, int ptAtom, int flags, short atomicNumber,
       int charge) {
     component = iComponent;
     index = ptAtom;
     this.atomSite = flags;
     this.elementNumber = atomicNumber;
     this.charge = charge;
+    return this;
   }
 
   /**

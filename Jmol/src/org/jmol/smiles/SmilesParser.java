@@ -549,7 +549,7 @@ public class SmilesParser {
                 bond, ch == '[', false, isBranchAtom);
             if (bond.order != SmilesBond.TYPE_UNKNOWN
                 && bond.order != SmilesBond.TYPE_NONE)
-              bond.set(null, currentAtom);
+              bond.set2a(null, currentAtom);
             break;
           default:
             // [atomType]
@@ -1010,7 +1010,7 @@ public class SmilesParser {
             : isSmarts || currentAtom.isAromatic() && newAtom.isAromatic() ? SmilesBond.TYPE_ANY
                 : SmilesBond.TYPE_SINGLE);
       if (!isBracketed)
-        bond.set(null, newAtom);
+        bond.set2a(null, newAtom);
       if (branchLevel == 0 && 
           (bond.order == SmilesBond.TYPE_AROMATIC 
               || bond.order == SmilesBond.TYPE_BIO_PAIR))
@@ -1169,7 +1169,7 @@ public class SmilesParser {
       if (bond != null || bondSet != null)
         throw new InvalidSmilesException("invalid '.'");
       isBioSequence = (getChar(pattern, 1) == '~');
-      return new SmilesBond(SmilesBond.TYPE_NONE, false);
+      return new SmilesBond(null, null, SmilesBond.TYPE_NONE, false);
     }
     if (ch == '+' && bondSet != null)
       throw new InvalidSmilesException("invalid '+'");
@@ -1222,11 +1222,11 @@ public class SmilesParser {
           molecule.top.needRingData = true;
         break;
       }
-      newBond.set(bondType, isBondNot);
+      newBond.set2(bondType, isBondNot);
       // in the case of a bioSequence, we also mark the 
       // parent bond, especially if NOT
       if (isBioSequence && bondSet != null) 
-        bondSet.set(bondType, isBondNot);
+        bondSet.set2(bondType, isBondNot);
     }
     return newBond;
   }

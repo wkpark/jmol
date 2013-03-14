@@ -50,7 +50,7 @@ public class Util {
     return (dx * dx + dy * dy + dz * dz);
   }
   
-  public static double distance2(Vector3d a, Vector3d b) {
+  public static double distance2V(Vector3d a, Vector3d b) {
     double dx = a.x - b.x;
     double dy = a.y - b.y;
     double dz = a.z - b.z;
@@ -65,12 +65,12 @@ public class Util {
     double ab2 = distance2(a, b);
     double bc2 = distance2(b, c);
     double ac2 = distance2(a, c);
-    return (isNearZero(ab2, 1e-3) || isNearZero(bc2, 1e-3) ? 0 :
+    return (isNearZero2(ab2, 1e-3) || isNearZero2(bc2, 1e-3) ? 0 :
         Math.acos((ab2 + bc2 - ac2 ) / 2 / Math.sqrt(ab2 * bc2)));
   }
   
   public static boolean isApprox(Vector3d a, Vector3d b, double precision) {
-    return (distance2(a, b) <= precision * precision
+    return (distance2V(a, b) <= precision * precision
         * Math.min(a.lengthSquared(), b.lengthSquared()));
   }
 
@@ -84,29 +84,29 @@ public class Util {
   }
 
   public static boolean isNegligible(double a, double b) {
-    return isNegligible(a, b, 1e-11);
+    return isNegligible3(a, b, 1e-11);
   }
 
   public static boolean isFinite(double a) {
     return !Double.isInfinite(a) && !Double.isNaN(a);
   }
 
-  public static boolean isNegligible(double a, double b, double precision) {
+  public static boolean isNegligible3(double a, double b, double precision) {
     return (Math.abs(a) <= precision * Math.abs(b));
   }
 
   public static boolean isNear(double a, double b) {
-    return isNear(a, b, 2e-6);
+    return isNear3(a, b, 2e-6);
   }
 
-  public static boolean isNear(double a, double b, double epsilon) {
+  public static boolean isNear3(double a, double b, double epsilon) {
     return (Math.abs(a - b) < epsilon);
   }
   public static boolean isNearZero(double a) {
-    return isNearZero(a, 2e-6);
+    return isNearZero2(a, 2e-6);
   }
 
-  public static boolean isNearZero(double a, double epsilon) {
+  public static boolean isNearZero2(double a, double epsilon) {
     return (Math.abs(a) < epsilon);
   }
 

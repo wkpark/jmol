@@ -801,7 +801,7 @@ public class SmilesGenerator {
     case 5:
     case 6:
       // like tetrahedral
-      return (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
+      return (SmilesSearch.checkStereochemistryCkass(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
     case 2: // allene
     case 4: // tetrahedral, square planar
       if (atom3 == null || atom4 == null)
@@ -809,14 +809,14 @@ public class SmilesGenerator {
       float d = SmilesAromatic.getNormalThroughPoints(atom1, atom2, atom3, v.vTemp, v.vA, v.vB);
       if (Math.abs(SmilesSearch.distanceToPlane(v.vTemp, d, (P3) atom4)) < 0.2f) {
         chiralClass = SmilesAtom.STEREOCHEMISTRY_SQUARE_PLANAR;
-        if (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v))
+        if (SmilesSearch.checkStereochemistryCkass(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v))
           return "@SP1";
-        if (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 2, atom1, atom2, atom3, atom4, atom5, atom6, v))
+        if (SmilesSearch.checkStereochemistryCkass(false, atom0, chiralClass, 2, atom1, atom2, atom3, atom4, atom5, atom6, v))
           return "@SP2";
-        if (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 3, atom1, atom2, atom3, atom4, atom5, atom6, v))
+        if (SmilesSearch.checkStereochemistryCkass(false, atom0, chiralClass, 3, atom1, atom2, atom3, atom4, atom5, atom6, v))
           return "@SP3";       
       } else {
-        return (SmilesSearch.checkStereochemistry(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
+        return (SmilesSearch.checkStereochemistryCkass(false, atom0, chiralClass, 1, atom1, atom2, atom3, atom4, atom5, atom6, v)? "@" : "@@");
       }       
     }
     return "";

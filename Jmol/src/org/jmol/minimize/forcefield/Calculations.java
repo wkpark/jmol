@@ -537,7 +537,7 @@ abstract class Calculations {
     } else {
       c.rab = Math.sqrt(Util.distance2(minAtoms[c.ia].coord, minAtoms[c.ib].coord));
     }
-    if (Util.isNearZero(c.rab, 1.0e-3))
+    if (Util.isNearZero2(c.rab, 1.0e-3))
       c.rab = 1.0e-3;
   }
   

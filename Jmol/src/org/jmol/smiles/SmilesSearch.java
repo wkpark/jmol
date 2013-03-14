@@ -132,7 +132,7 @@ public class SmilesSearch extends JmolMolecule {
   SmilesAtom addAtom() {
     if (atomCount >= patternAtoms.length)
       patternAtoms = (SmilesAtom[]) ArrayUtil.doubleLength(patternAtoms);
-    SmilesAtom sAtom = new SmilesAtom(atomCount);
+    SmilesAtom sAtom = new SmilesAtom().setIndex(atomCount);
     patternAtoms[atomCount] = sAtom;
     atomCount++;
     return sAtom;
@@ -1169,7 +1169,7 @@ public class SmilesSearch extends JmolMolecule {
             sAtom = sAtom1;
           }
           jn = new JmolNode[6];
-          jn[4] = new SmilesAtom(604);
+          jn[4] = new SmilesAtom().setIndex(604);
           int nBonds = sAtom.getBondCount();
           for (int k = 0; k < nBonds; k++) {
             sAtom1 = sAtom.bonds[k].getOtherAtom(sAtom);
@@ -1209,7 +1209,7 @@ public class SmilesSearch extends JmolMolecule {
             getX(sAtom, jn, 1, true, false);
           if (jn[3] == null)
             getX(sAtom2, jn, 3, true, false);
-          if (!checkStereochemistry(sAtom.not, atom0, chiralClass, order,
+          if (!checkStereochemistryCkass(sAtom.not, atom0, chiralClass, order,
               jn[0], jn[1], jn[2], jn[3], null, null, v))
             return false;
           continue;
@@ -1251,7 +1251,7 @@ public class SmilesSearch extends JmolMolecule {
                   atom1, atom2, atom3, atom4, atom5, atom6 }))
             return false;
             //System.out.println(order + ":" + sAtom + "/" + atom0 + ":" + atom1 + "," + atom2 + "," + atom3 + "," + atom4);
-          if (!checkStereochemistry(sAtom.not, atom0, chiralClass, order,
+          if (!checkStereochemistryCkass(sAtom.not, atom0, chiralClass, order,
               atom1, atom2, atom3, atom4, atom5, atom6, v))
             return false;
             //System.out.println("OK");
@@ -1394,7 +1394,7 @@ public class SmilesSearch extends JmolMolecule {
           v.scaleAdd2(n + 1,(P3) getJmolAtom(sAtom.getMatchingAtom()), v);
           doSwitch = isSmilesFind || doSwitch ;
         }
-        jn[pt] = new SmilesAtom(-1);
+        jn[pt] = new SmilesAtom().setIndex(-1);
         ((P3) jn[pt]).setT(v);
       }
     }
@@ -1417,7 +1417,7 @@ public class SmilesSearch extends JmolMolecule {
     }
   }
   
-  static boolean checkStereochemistry(boolean isNot, JmolNode atom0, int chiralClass, int order, 
+  static boolean checkStereochemistryCkass(boolean isNot, JmolNode atom0, int chiralClass, int order, 
                                 JmolNode atom1, JmolNode atom2, JmolNode atom3, JmolNode atom4, JmolNode atom5, JmolNode atom6, VTemp v) {
     
     switch (chiralClass) {
@@ -1811,7 +1811,7 @@ public class SmilesSearch extends JmolMolecule {
       // create a Jmol atom for this pattern atom
       // we co-opt atom.matchingAtom here
       // because this search will never actually be run
-      SmilesAtom atom = atoms[ptAtom] = new SmilesAtom(0, ptAtom,
+      SmilesAtom atom = atoms[ptAtom] = new SmilesAtom().setAll(0, ptAtom,
           cclass == Integer.MIN_VALUE ? cclass : (cclass << 8)
               + sAtom.getChiralOrder(), sAtom.elementNumber, sAtom.getCharge());
       atom.atomName = sAtom.atomName;
@@ -1840,7 +1840,7 @@ public class SmilesSearch extends JmolMolecule {
       SmilesBond[] bonds = new SmilesBond[sAtom.getBondCount() + n];
       atom.setBonds(bonds);
       while (--n >= 0) {
-        SmilesAtom atomH = atoms[ptAtom] = new SmilesAtom(0, ptAtom, 0,
+        SmilesAtom atomH = atoms[ptAtom] = new SmilesAtom().setAll(0, ptAtom, 0,
             (short) 1, 0);
         //System.out.println(atomH);
         ptAtom++;

@@ -92,7 +92,7 @@ public class SmilesBond extends JmolEdge {
       System.arraycopy(bondsOr, 0, tmp, 0, bondsOr.length);
       bondsOr = tmp;
     }
-    SmilesBond sBond = new SmilesBond(TYPE_UNKNOWN, false);
+    SmilesBond sBond = new SmilesBond(null, null, TYPE_UNKNOWN, false);
     bondsOr[nBondsOr] = sBond;
     nBondsOr++;
     return sBond;
@@ -106,7 +106,7 @@ public class SmilesBond extends JmolEdge {
       System.arraycopy(primitives, 0, tmp, 0, primitives.length);
       primitives = tmp;
     }
-    SmilesBond sBond = new SmilesBond(TYPE_UNKNOWN, false);
+    SmilesBond sBond = new SmilesBond(null, null, TYPE_UNKNOWN, false);
     primitives[nPrimitives] = sBond;
     nPrimitives++;
     return sBond;
@@ -127,20 +127,16 @@ public class SmilesBond extends JmolEdge {
    */
   public SmilesBond(SmilesAtom atom1, SmilesAtom atom2, int bondType,
       boolean isNot) {
-    set(atom1, atom2);
-    set(bondType, isNot);
+    set2(bondType, isNot);
+    set2a(atom1, atom2);
   }
 
-  SmilesBond(int bondType, boolean isNot) {
-    set(bondType, isNot);
-  }
-
-  void set(int bondType, boolean isNot) {
+  void set2(int bondType, boolean isNot) {
     this.order = bondType;
     this.isNot = isNot;
   }
 
-  void set(SmilesAtom atom1, SmilesAtom atom2) {
+  void set2a(SmilesAtom atom1, SmilesAtom atom2) {
     if (atom1 != null) {
       this.atom1 = atom1;
       atom1.addBond(this);

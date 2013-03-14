@@ -244,12 +244,12 @@ public class SmilesAromatic {
     for (int i = v5.size(); --i >= 0; ) {
       BS bs = (BS) v5.get(i);
       if (isAromaticRing(bsAromatic, bsTest, bs, 5))
-        checkAromaticStrict(jmolAtoms, bsStrict, v5, v6, bs, true);
+        checkAromaticStrict2(jmolAtoms, bsStrict, v5, v6, bs, true);
     }
     for (int i = v6.size(); --i >= 0; ) {
       BS bs = (BS) v6.get(i);
       if (isAromaticRing(bsAromatic, bsTest, bs, 6))
-        checkAromaticStrict(jmolAtoms, bsStrict, v5, v6, bs, false);
+        checkAromaticStrict2(jmolAtoms, bsStrict, v5, v6, bs, false);
     }
     bsAromatic.clearAll();
     bsAromatic.or(bsStrict);
@@ -273,7 +273,7 @@ public class SmilesAromatic {
    * @param bsRing  this ring's atoms
    * @param is5
    */
-  private static void checkAromaticStrict(JmolNode[] jmolAtoms,
+  private static void checkAromaticStrict2(JmolNode[] jmolAtoms,
                                           BS bsStrict, JmolList<Object> v5,
                                           JmolList<Object> v6, BS bsRing,
                                           boolean is5) {

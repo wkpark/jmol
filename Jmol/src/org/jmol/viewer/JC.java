@@ -453,7 +453,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // All entries from 64 on are backbone entries
     ////////////////////////////////////////////////////////////////
     null, // 0
-    
+
     // protein backbone
     //
     "N",   //  1 - amino nitrogen        SPINE
@@ -668,9 +668,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_S4 = 48;
   public final static byte ATOMID_C7 = 49;
   
-  private final static int ATOMID_BACKBONE_MIN = 64;
-
   public final static byte ATOMID_TERMINATING_OXT = 64;
+  
   public final static byte ATOMID_H5T_TERMINUS    = 72;
   public final static byte ATOMID_O5T_TERMINUS    = 73;
   public final static byte ATOMID_O1P             = 74;
@@ -1286,8 +1285,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // structure related
     //
     "@alpha _a=2", // rasmol doc says "approximately *.CA" - whatever?
-    "@backbone (protein,nucleic) & (_a>0 & _a<14 || _a>="+ATOMID_BACKBONE_MIN+") | _H & protein & connected(*.N)",
-    "@spine protein & _a>0 & _a<= 3 || nucleic & (_a >= 6 & _a <= 10 || _a=" + ATOMID_NUCLEIC_PHOSPHORUS + ")",
+    "@backbone protein&(_a>=1&_a<6|_a>=64&_a<72)|nucleic&(_a>=6&_a<14|_a>=72)",    
+    "@spine protein&_a>=1&_a<4|nucleic&_a>=6&_a<14&_a!=12",
     "@sidechain (protein,nucleic) & !backbone",
     "@base nucleic & !backbone",
     "@dynamic_flatring search('[a]')"

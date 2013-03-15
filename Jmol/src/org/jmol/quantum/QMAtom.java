@@ -43,6 +43,20 @@ class QMAtom extends P3 {
   int iMolecule;
   boolean isExcluded;
 
+  /**
+   * @j2sOverrideSuperConstructor
+   * 
+   * @param i
+   * @param atom
+   * @param X
+   * @param Y
+   * @param Z
+   * @param X2
+   * @param Y2
+   * @param Z2
+   * @param isExcluded
+   * @param unitFactor
+   */
   QMAtom(int i, Atom atom, float[] X, float[] Y, float[] Z, 
       float[] X2, float[] Y2, float[] Z2, 
       boolean isExcluded, float unitFactor) {

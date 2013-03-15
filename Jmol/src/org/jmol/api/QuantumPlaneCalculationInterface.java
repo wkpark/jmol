@@ -5,7 +5,7 @@ package org.jmol.api;
  * Used by Noncovalent Interaction Calculation for progressive readers
  */
 
-public interface QuantumPlaneCalculationInterface extends QuantumCalculationInterface {
+public interface QuantumPlaneCalculationInterface extends MOCalculationInterface {
  
   /**
    * Planes to use for holding raw file data. These will be managed by

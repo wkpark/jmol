@@ -23,7 +23,7 @@
  */
 package org.jmol.quantum;
 
-import org.jmol.api.QuantumCalculationInterface;
+import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.constant.EnumQuantumShell;
 import org.jmol.util.BS;
@@ -90,7 +90,7 @@ import org.jmol.util.P3;
  */
 
 public class MOCalculation extends QuantumCalculation implements
-    QuantumCalculationInterface {
+    MOCalculationInterface {
 
   private final static double CUT = -50;
   
@@ -163,7 +163,7 @@ public class MOCalculation extends QuantumCalculation implements
   
   @Override
   protected void initialize(int nX, int nY, int nZ, P3[] points) {
-    super.initialize(nX, nY, nZ, points);
+    initialize0(nX, nY, nZ, points);
     CX = new double[this.nX];
     CY = new double[this.nY];
     CZ = new double[this.nZ];

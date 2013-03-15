@@ -37,7 +37,7 @@ import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
 import org.jmol.api.Interface;
-import org.jmol.api.QuantumCalculationInterface;
+import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.constant.EnumQuantumShell;
 import org.jmol.jvxl.data.VolumeData;
@@ -90,14 +90,14 @@ class IsoMOReader extends AtomDataReader {
         : "quantum.MOCalculation");
     if (haveVolumeData) {
       for (int i = params.title.length; --i >= 0;)
-        fixTitleLine(i, mo);
+        fixTitleLine2(i, mo);
     } else {
-      q = (QuantumCalculationInterface) Interface.getOptionInterface(className);
+      q = (MOCalculationInterface) Interface.getOptionInterface(className);
       if (isNci) {
         qpc = (QuantumPlaneCalculationInterface) q;
       } else if (linearCombination == null) {
         for (int i = params.title.length; --i >= 0;)
-          fixTitleLine(i, mo);
+          fixTitleLine2(i, mo);
         coef = (float[]) mo.get("coefficients");
         dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
       } else {
@@ -109,7 +109,7 @@ class IsoMOReader extends AtomDataReader {
           coefs[j - 1] = (float[]) mos.get(j - 1).get("coefficients");
         }
         for (int i = params.title.length; --i >= 0;)
-          fixTitleLine(i, null);
+          fixTitleLine2(i, null);
       }
       isElectronDensityCalc = (coef == null && linearCombination == null && !isNci);
     }
@@ -136,7 +136,7 @@ class IsoMOReader extends AtomDataReader {
     return true;
   }
 
-  private void fixTitleLine(int iLine, Map<String, Object> mo) {
+  private void fixTitleLine2(int iLine, Map<String, Object> mo) {
     // see Parameters.Java for defaults here. 
     if (!fixTitleLine(iLine))
       return;
@@ -208,7 +208,7 @@ class IsoMOReader extends AtomDataReader {
     if (volumeData.sr != null)
       return;
     if (params.psi_monteCarloCount <= 0) {
-      super.readSurfaceData(isMapData);
+      readSurfaceDataVDR(isMapData);
       return;
     }
     if (points != null)
@@ -269,7 +269,7 @@ class IsoMOReader extends AtomDataReader {
 
   @Override
   public float getValueAtPoint(P3 pt) {
-    return (q == null ? 0 : q.process(pt));
+    return (q == null ? 0 : q.processPt(pt));
   }
   
 
@@ -289,7 +289,7 @@ class IsoMOReader extends AtomDataReader {
 
   private P3[] points;
   private V3 vTemp;
-  QuantumCalculationInterface q;
+  MOCalculationInterface q;
   JmolList<Map<String, Object>> mos;
   boolean isNci;
   float[] coef; 
@@ -370,10 +370,11 @@ class IsoMOReader extends AtomDataReader {
       float zero = getSPF(cutoff, isCutoffAbsolute, valueA,
           valueB, pointA, edgeVector, x, y, z, vA, vB, fReturn, ptReturn);
       if (q != null && !Float.isNaN(zero)) {
-      zero = q.process(ptReturn);
+      zero = q.processPt(ptReturn);
       if (params.isSquared)
         zero *= zero;
       }
       return zero;
   }
+  
 }

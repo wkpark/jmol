@@ -249,5 +249,9 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     }
   }
 
+  public void createCube() {
+    // TODO
+    
+  }
 
 }

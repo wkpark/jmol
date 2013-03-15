@@ -239,6 +239,10 @@ abstract class VolumeDataReader extends SurfaceReader {
 
   @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
+    readSurfaceDataVDR(isMapData);
+  }
+  
+  protected void readSurfaceDataVDR(boolean isMapData) throws Exception {
     //precalculated -- just creating the JVXL equivalent
     if (isProgressive && !isMapData) {
       nDataPoints = volumeData.setVoxelCounts(nPointsX, nPointsY, nPointsZ);
@@ -250,7 +254,7 @@ abstract class VolumeDataReader extends SurfaceReader {
     else
       readVoxelDataIndividually(isMapData);
   }
-  
+
   protected void generateCube() {
     Logger.info("data type: user volumeData");
     Logger.info("voxel grid origin:" + volumetricOrigin);

@@ -90,7 +90,7 @@ class IsoFxyReader extends AtomDataReader {
   protected void readSurfaceData(boolean isMapData) throws Exception {
     if (volumeData.sr != null)
       return;
-    super.readSurfaceData(isMapData);
+    readSurfaceDataVDR(isMapData);
   }
 
   @Override

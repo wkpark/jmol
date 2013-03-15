@@ -75,6 +75,10 @@ abstract class QuantumCalculation {
   protected float unitFactor = bohr_per_angstrom;
 
   protected void initialize(int nX, int nY, int nZ, P3[] points) {
+    initialize0(nX, nY ,nZ, points);
+  }
+
+  protected void initialize0(int nX, int nY, int nZ, P3[] points) {
     if (points != null) {
       this.points = points;
       nX = nY = nZ = points.length;
@@ -146,7 +150,9 @@ abstract class QuantumCalculation {
     }
   }
 
-  public float process(P3 pt) {
+  public float processPt(P3 pt) {
+    // implementation from QuantumCalculationInterface for NCI and MO calculations
+    // it IS called.
     doDebug = false;
     if (points == null || nX != 1)
       initializeOnePoint();
@@ -157,6 +163,7 @@ abstract class QuantumCalculation {
     //System.out.println("qc pt=" + pt + " " + voxelData[0][0][0]);
     return voxelData[0][0][0];
   }
+
 
   protected void processPoints() {
     process();
@@ -178,12 +185,12 @@ abstract class QuantumCalculation {
   protected abstract void process();
   
   protected void setXYZBohr(P3[] points) {
-    setXYZBohr(xBohr, 0, nX, points);
-    setXYZBohr(yBohr, 1, nY, points);
-    setXYZBohr(zBohr, 2, nZ, points);
+    setXYZBohrI(xBohr, 0, nX, points);
+    setXYZBohrI(yBohr, 1, nY, points);
+    setXYZBohrI(zBohr, 2, nZ, points);
   }
 
-  private void setXYZBohr(float[] bohr, int i, int n, P3[] points) {
+  private void setXYZBohrI(float[] bohr, int i, int n, P3[] points) {
     if (points != null) {
       float x = 0;
       for (int j = 0; j < n; j++) {

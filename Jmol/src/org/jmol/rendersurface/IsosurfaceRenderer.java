@@ -57,6 +57,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   @Override
   protected boolean render() {
+    return renderIso();
+  }
+
+  protected boolean renderIso() {
     needTranslucent = false;
     iShowNormals = viewer.getTestFlag(4);
     showNumbers = viewer.getTestFlag(3);

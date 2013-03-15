@@ -494,7 +494,7 @@ class IsoShapeReader extends VolumeDataReader {
         return;
       }
     }
-    super.readSurfaceData(isMapData);
+    readSurfaceDataVDR(isMapData);
   }
 
   private void createGeodesic() {

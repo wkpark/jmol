@@ -934,11 +934,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   @Override
   public void renderAllStrings(Object jmolRenderer) {
-    if (strings == null || stringCount < 2)
+    if (strings == null)
       return;
-    if (sort == null)
-      sort = new TextSorter();
-    Arrays.sort(strings, sort);
+    if (stringCount >= 2) {
+      if (sort == null)
+        sort = new TextSorter();
+      Arrays.sort(strings, sort);
+    }
     for (int i = 0; i < stringCount; i++) {
       TextString ts = strings[i];
       plotText(ts.x, ts.y, ts.z, ts.argb, ts.bgargb, ts.text, ts.font,

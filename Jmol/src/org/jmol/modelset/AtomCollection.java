@@ -2376,17 +2376,17 @@ abstract public class AtomCollection {
   
   protected BS getSeqcodeBits(int seqcode, boolean returnEmpty) {
     BS bs = new BS();
-    int seqNum = Group.getSequenceNumber(seqcode);
+    int seqNum = Group.getSeqNumberFor(seqcode);
     boolean haveSeqNumber = (seqNum != Integer.MAX_VALUE);
     boolean isEmpty = true;
-    char insCode = Group.getInsertionCode(seqcode);
+    char insCode = Group.getInsertionCodeChar(seqcode);
     switch (insCode) {
     case '?':
       for (int i = atomCount; --i >= 0;) {
         int atomSeqcode = atoms[i].getSeqcode();
         if (!haveSeqNumber 
-            || seqNum == Group.getSequenceNumber(atomSeqcode)
-            && Group.getInsertionCodeValue(atomSeqcode) != 0) {
+            || seqNum == Group.getSeqNumberFor(atomSeqcode)
+            && Group.getInsertionCodeFor(atomSeqcode) != 0) {
           bs.set(i);
           isEmpty = false;
         }
@@ -2396,8 +2396,8 @@ abstract public class AtomCollection {
       for (int i = atomCount; --i >= 0;) {
         int atomSeqcode = atoms[i].getSeqcode();
         if (seqcode == atomSeqcode || 
-            !haveSeqNumber && seqcode == Group.getInsertionCodeValue(atomSeqcode) 
-            || insCode == '*' && seqNum == Group.getSequenceNumber(atomSeqcode)) {
+            !haveSeqNumber && seqcode == Group.getInsertionCodeFor(atomSeqcode) 
+            || insCode == '*' && seqNum == Group.getSeqNumberFor(atomSeqcode)) {
           bs.set(i);
           isEmpty = false;
         }

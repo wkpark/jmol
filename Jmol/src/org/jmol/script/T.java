@@ -1351,16 +1351,20 @@ public class T {
    
   @Override
   public String toString() {
-    return "Token["
-        + astrType[tok < keyword ? tok : keyword]
-        + "("+(tok%(1<<9))+"/0x" + Integer.toHexString(tok) + ")"
-        + ((intValue == Integer.MAX_VALUE) ? "" : " intValue=" + intValue
-            + "(0x" + Integer.toHexString(intValue) + ")")
-        + ((value == null) ? "" : value instanceof String ? " value=\"" + value
-            + "\"" : " value=" + value) + "]";
+    return toString2();
   }
   
   ////////command sets ///////
+
+  protected String toString2() {
+    return "Token["
+    + astrType[tok < keyword ? tok : keyword]
+    + "("+(tok%(1<<9))+"/0x" + Integer.toHexString(tok) + ")"
+    + ((intValue == Integer.MAX_VALUE) ? "" : " intValue=" + intValue
+        + "(0x" + Integer.toHexString(intValue) + ")")
+    + ((value == null) ? "" : value instanceof String ? " value=\"" + value
+        + "\"" : " value=" + value) + "]";
+  }
 
   /**
    * retrieves an unsorted list of viable commands that could be

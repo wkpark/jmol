@@ -166,7 +166,7 @@ public class SpinThread extends JmolThread {
         if (bsAtoms != null && endPositions != null) {
           // when the standard deviations of the end points was
           // exact, we know that we want EXACTLY those final positions
-          viewer.setAtomCoord(bsAtoms, T.xyz, endPositions);
+          viewer.setAtomCoords(bsAtoms, T.xyz, endPositions);
           bsAtoms = null;
           endPositions = null;
         }

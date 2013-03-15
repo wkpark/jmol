@@ -456,7 +456,7 @@ class ScriptMathProcessor {
         if (isSyntaxCheck)
           return true;
         SV x = xStack[xPt];
-        xStack[xPt] = SV.newVariable(T.string, "").set(x, false);
+        xStack[xPt] = SV.newVariable(T.string, "").setv(x, false);
         return x.increment(incrementX);
       }
       break;

@@ -757,7 +757,7 @@ import java.util.Map;
     return bs;
   }
 
-  public void setAtomCoordRelative(Tuple3f offset, BS bs) {
+  public void setAtomCoordsRelative(Tuple3f offset, BS bs) {
     setAtomsCoordRelative(bs, offset.x, offset.y, offset.z);
     mat4.setIdentity();
     vTemp.setT(offset);
@@ -765,7 +765,7 @@ import java.util.Map;
     recalculatePositionDependentQuantities(bs, mat4);
   }
 
-  public void setAtomCoord(BS bs, int tokType, Object xyzValues) {
+  public void setAtomCoords(BS bs, int tokType, Object xyzValues) {
     setAtomCoord2(bs, tokType, xyzValues);
     switch(tokType) {
     case T.vibx:

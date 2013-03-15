@@ -32,7 +32,7 @@ import org.jmol.util.V3;
 public class Helix extends ProteinStructure {
 
   Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount, EnumStructure subtype) {
-    super(apolymer, EnumStructure.HELIX, monomerIndex,
+    setupPS(apolymer, EnumStructure.HELIX, monomerIndex,
         monomerCount);
     this.subtype = subtype;
   }

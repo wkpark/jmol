@@ -1165,9 +1165,9 @@ public class FileManager {
                                                String remotePath,
                                                String scriptPath) {
     if (localPath != null)
-      script = setScriptFileReferences(script, localPath, true);
+      script = setScriptFileRefs(script, localPath, true);
     if (remotePath != null)
-      script = setScriptFileReferences(script, remotePath, false);
+      script = setScriptFileRefs(script, remotePath, false);
     script = TextFormat.simpleReplace(script, "\1\"", "\"");
     if (scriptPath != null) {
       while (scriptPath.endsWith("/"))
@@ -1193,7 +1193,7 @@ public class FileManager {
    * @param isLocal 
    * @return revised script
    */
-  private static String setScriptFileReferences(String script, String dataPath,
+  private static String setScriptFileRefs(String script, String dataPath,
                                                 boolean isLocal) {
     if (dataPath == null)
       return script;

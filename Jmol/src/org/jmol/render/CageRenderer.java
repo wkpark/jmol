@@ -53,7 +53,7 @@ abstract class CageRenderer extends FontLineShapeRenderer {
   }
   
   private P3 pt = new P3();
-  protected void render(int mad, P3[] vertices, P3[] axisPoints,
+  protected void renderCage(int mad, P3[] vertices, P3[] axisPoints,
                         int firstLine, int allowedEdges0, int allowedEdges1,
                         float scale) {
     //clearBox();

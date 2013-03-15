@@ -35,21 +35,23 @@ import org.jmol.util.Logger;
 
 public abstract class ProteinStructure {
 
-  static int globalStrucNo = 1000;
-  AlphaPolymer apolymer;
   EnumStructure type;
   EnumStructure subtype;
-  int monomerIndexFirst;
-  int monomerIndexLast;
-  int monomerCount;
-  P3 axisA, axisB;
-  V3 axisUnitVector;
-  final V3 vectorProjection = new V3();
-  P3[] segments;
-  int strucNo;
   String structureID;
+  int strucNo;
   int serialID;
   int strandCount;
+
+  protected AlphaPolymer apolymer;
+  protected int monomerIndexFirst;
+  protected int monomerCount;
+  protected P3 axisA, axisB;
+  protected V3 axisUnitVector;
+  protected final V3 vectorProjection = new V3();
+
+  private static int globalStrucNo = 1000;
+  private int monomerIndexLast;
+  private P3[] segments;
   
   /**
    * 
@@ -58,8 +60,8 @@ public abstract class ProteinStructure {
    * @param monomerIndex
    * @param monomerCount
    */
-  ProteinStructure(AlphaPolymer apolymer, EnumStructure type,
-                   int monomerIndex, int monomerCount) {
+  protected void setupPS(AlphaPolymer apolymer, EnumStructure type,
+                       int monomerIndex, int monomerCount) {
     strucNo = ++globalStrucNo;
     this.apolymer = apolymer;
     this.type = type;    
@@ -73,7 +75,7 @@ public abstract class ProteinStructure {
           + " from " + monomerIndexFirst + " through "+ monomerIndexLast
           + " in polymer " + apolymer);
   }
-  
+
   /**
    * Note that this method does not check to see 
    * that there are no overlapping protein structures.

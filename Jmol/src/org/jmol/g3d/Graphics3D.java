@@ -934,7 +934,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   @Override
   public void renderAllStrings(Object jmolRenderer) {
-    if (strings == null)
+    if (strings == null || stringCount < 2)
       return;
     if (sort == null)
       sort = new TextSorter();

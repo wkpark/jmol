@@ -1853,11 +1853,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.vibxyz:
       switch (tokenValue.tok) {
       case T.point3f:
-        viewer.setAtomCoord(bs, tok, tokenValue.value);
+        viewer.setAtomCoords(bs, tok, tokenValue.value);
         break;
       case T.varray:
         theToken = tokenValue;
-        viewer.setAtomCoord(bs, tok, getPointArray(-1, nValues));
+        viewer.setAtomCoords(bs, tok, getPointArray(-1, nValues));
         break;
       }
       return;
@@ -3403,7 +3403,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (token.intValue != Integer.MAX_VALUE)
           sb.appendI(token.intValue);
         else
-          sb.append(Group.getSeqcodeString(getSeqCode(token)));
+          sb.append(Group.getSeqcodeStringFor(getSeqCode(token)));
         token = statement[++i];
         sb.appendC(' ');
         // if (token.intValue == Integer.MAX_VALUE)
@@ -3413,7 +3413,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (token.intValue != Integer.MAX_VALUE)
           sb.appendI(token.intValue);
         else
-          sb.append(Group.getSeqcodeString(getSeqCode(token)));
+          sb.append(Group.getSeqcodeStringFor(getSeqCode(token)));
         continue;
       case T.spec_chain:
         sb.append("*:");
@@ -3437,7 +3437,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         continue;
       case T.spec_resid:
         sb.appendC('[');
-        sb.append(Group.getGroup3((short) token.intValue));
+        sb.append(Group.getGroup3For((short) token.intValue));
         sb.appendC(']');
         continue;
       case T.spec_name_pattern:
@@ -4005,7 +4005,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             .getDataFloat(property) : null);
         rpn.addXBs(isIntProperty ? compareInt(tokWhat, tokOperator,
             comparisonValue) : isStringProperty ? compareString(tokWhat,
-            tokOperator, (String) val) : compareFloat(tokWhat, data,
+            tokOperator, (String) val) : compareFloatData(tokWhat, data,
             tokOperator, comparisonFloat));
         break;
       case T.decimal:
@@ -4086,7 +4086,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return bs;
   }
 
-  private BS compareFloat(int tokWhat, float[] data, int tokOperator,
+  /**
+   * 
+   * @param tokWhat
+   * @param data
+   * @param tokOperator
+   * @param comparisonFloat
+   * @return BitSet
+   */
+  private BS compareFloatData(int tokWhat, float[] data, int tokOperator,
                               float comparisonFloat) {
     BS bs = new BS();
     int atomCount = viewer.getAtomCount();
@@ -6289,7 +6297,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               // someone messed with this variable -- do not continue!
               isOK = false;
             } else {
-              v.set(SV.getVariable(bsOrList), false);
+              v.setv(SV.getVariable(bsOrList), false);
               v.intValue = 1;
             }
           } else {
@@ -6303,7 +6311,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             SV t = getContextVariableAsVariable(key);
             if (t == null)
               t = viewer.getOrSetNewVariable(key, true);
-            t.set(v, false);
+            t.setv(v, false);
           }
         }
       }
@@ -10576,7 +10584,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       ptsB = Measure.transformPoints(ptsA, m4, points[0]);
     }
     if (bsAtoms != null && !isSpin && ptsB != null) {
-      viewer.setAtomCoord(bsAtoms, T.xyz, ptsB);
+      viewer.setAtomCoords(bsAtoms, T.xyz, ptsB);
     } else {
       if (!useThreads())
         return;
@@ -11162,7 +11170,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           : null);
       checkLast(iToken);
       if (!chk)
-        viewer.setAtomCoordRelative(pt, bs);
+        viewer.setAtomCoordsRelative(pt, bs);
       return;
     }
     char xyz = parameterAsString(i).toLowerCase().charAt(0);
@@ -13894,7 +13902,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     if (isArrayItem) {
-      SV tnew = (SV.newVariable(T.string, "")).set(tv, false);
+      SV tnew = (SV.newVariable(T.string, "")).setv(tv, false);
       int nParam = v.size() / 2;
       for (int i = 0; i < nParam; i++) {
         boolean isLast = (i + 1 == nParam);
@@ -13975,7 +13983,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     if (isUserVariable) {
-      t.set(tv, false);
+      t.setv(tv, false);
       return;
     }
 
@@ -14762,7 +14770,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else if (data == "SPT") {
           if (isCoord) {
             BS tainted = viewer.getTaintedAtoms(AtomCollection.TAINT_COORD);
-            viewer.setAtomCoordRelative(P3.new3(0, 0, 0), null);
+            viewer.setAtomCoordsRelative(P3.new3(0, 0, 0), null);
             data = viewer.getStateInfo();
             viewer.setTaintedAtoms(tainted, AtomCollection.TAINT_COORD);
           } else {

@@ -319,7 +319,7 @@ public class SurfaceGenerator {
    */
 
   public boolean setParameter(String propertyName, Object value) {
-    return setParameter(propertyName, value, null);
+    return setProp(propertyName, value, null);
   }
 
   /**
@@ -330,7 +330,7 @@ public class SurfaceGenerator {
    * @return TRUE if done processing
    */
   @SuppressWarnings("unchecked")
-  public boolean setParameter(String propertyName, Object value, BS bs) {
+  public boolean setProp(String propertyName, Object value, BS bs) {
 
     if ("debug" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();

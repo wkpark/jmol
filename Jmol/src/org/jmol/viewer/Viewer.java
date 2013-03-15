@@ -3386,7 +3386,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public BS getAtomsWithinRadius(float distance, BS bs,
                                boolean withinAllModels, RadiusData rd) {
-    return modelSet.getAtomsWithinBs(distance, bs, withinAllModels, rd);
+    return modelSet.getAtomsWithinRD(distance, bs, withinAllModels, rd);
   }
 
   public BS getAtomsConnected(float min, float max, int intType, BS bs) {
@@ -8260,21 +8260,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // not included in setStatusAtomMoved
   }
 
-  public void setAtomCoord(BS bs, int tokType, Object xyzValues) {
+  public void setAtomCoords(BS bs, int tokType, Object xyzValues) {
     if (bs.cardinality() == 0)
       return;
-    modelSet.setAtomCoord(bs, tokType, xyzValues);
+    modelSet.setAtomCoords(bs, tokType, xyzValues);
     checkMinimization();
     statusManager.setStatusAtomMoved(bs);
   }
 
-  public void setAtomCoordRelative(Tuple3f offset, BS bs) {
+  public void setAtomCoordsRelative(Tuple3f offset, BS bs) {
     // Eval
     if (bs == null)
       bs = getSelectionSet(false);
     if (bs.cardinality() == 0)
       return;
-    modelSet.setAtomCoordRelative(offset, bs);
+    modelSet.setAtomCoordsRelative(offset, bs);
     checkMinimization();
     statusManager.setStatusAtomMoved(bs);
   }
@@ -8371,7 +8371,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           unTransformPoint(ptScreenNew, ptNew);
           // script("draw ID 'pt" + Math.random() + "' " + Escape.escape(ptNew));
           ptNew.sub(ptCenter);
-          setAtomCoordRelative(ptNew, bsSelected);
+          setAtomCoordsRelative(ptNew, bsSelected);
         } else {
           transformManager.rotateXYBy(deltaX, deltaY, bsSelected);
         }

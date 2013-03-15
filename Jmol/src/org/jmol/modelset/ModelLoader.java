@@ -1564,7 +1564,7 @@ public final class ModelLoader {
         v.set(vx, vy, vz);
         if (Logger.debugging)
           Logger.info("xyz: " + pt + " vib: " + v);
-        modelSet.setAtomCoord(bs, T.vibxyz, v);
+        modelSet.setAtomCoords(bs, T.vibxyz, v);
         break;
       case T.occupancy:
         // [0 to 100], default 100

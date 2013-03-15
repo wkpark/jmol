@@ -2001,7 +2001,7 @@ abstract public class ModelCollection extends BondCollection {
    * @param rd
    * @return the set of atoms
    */
-  public BS getAtomsWithinBs(float distance, BS bs,
+  public BS getAtomsWithinRD(float distance, BS bs,
                                boolean withinAllModels, RadiusData rd) {
     BS bsResult = new BS();
     BS bsCheck = getIterativeModels(false);
@@ -2938,7 +2938,7 @@ abstract public class ModelCollection extends BondCollection {
 
       // 4) clear out all atoms within 1.0 angstrom
       validateBspf(false);
-      bs = getAtomsWithinBs(1.0f, bsA, false, null);
+      bs = getAtomsWithinRD(1.0f, bsA, false, null);
       bs.andNot(bsA);
       if (bs.nextSetBit(0) >= 0)
         viewer.deleteAtoms(bs, false);

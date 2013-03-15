@@ -126,7 +126,7 @@ public class UccageRenderer extends CageRenderer {
           }
           for (int i = 8; --i >= 0;)
             verticesT[i].add2(vertices[i], offsetT);
-          render(mad, verticesT, aPoints, firstLine, allow0, allow1, Math.abs(fset.z));
+          renderCage(mad, verticesT, aPoints, firstLine, allow0, allow1, Math.abs(fset.z));
         }
       }
     }

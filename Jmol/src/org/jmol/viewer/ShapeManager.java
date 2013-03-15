@@ -411,7 +411,7 @@ public class ShapeManager {
       pt.add(ptOffset);
       viewer.unTransformPoint(pt, pt);
       pt.sub(ptCenter);
-      viewer.setAtomCoordRelative(pt, bsAtoms);
+      viewer.setAtomCoordsRelative(pt, bsAtoms);
       ptOffset.set(0, 0, 0);
     }
     bsRenderableAtoms.clearAll();

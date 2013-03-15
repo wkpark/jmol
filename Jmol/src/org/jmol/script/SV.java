@@ -317,7 +317,11 @@ public class SV extends T {
     return newVariable(varray, objects);
   }
 
+  @SuppressWarnings("unchecked")
   /**
+   * 
+   * @j2sOverride
+   * 
    * creates a NEW version of the variable
    * 
    * 
@@ -326,8 +330,7 @@ public class SV extends T {
    *                for an array; copies an associative array 
    * @return  new ScriptVariable
    */
-  @SuppressWarnings("unchecked")
-  SV set(SV v, boolean asCopy) {
+  SV setv(SV v, boolean asCopy) {
     // note: bitset, point3f ,point4f will not be copied
     //       because they are essentially immutable here
     index = v.index;
@@ -1105,12 +1108,11 @@ public class SV extends T {
   
   @Override
   public String toString() {
-    return super.toString() + "[" + myName + " index =" + index + " intValue=" + intValue + "]";
+    return toString2() + "[" + myName + " index =" + index + " intValue=" + intValue + "]";
   }
 
   @SuppressWarnings("unchecked")
-  public
-  static BS getBitSet(SV x, boolean allowNull) {
+  public static BS getBitSet(SV x, boolean allowNull) {
     switch (x.tok) {
     case bitset:
       return bsSelectVar(x);

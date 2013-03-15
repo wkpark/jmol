@@ -34,7 +34,7 @@ public class Sheet extends ProteinStructure {
   AlphaPolymer alphaPolymer;
 
   Sheet(AlphaPolymer alphaPolymer, int monomerIndex, int monomerCount, EnumStructure subtype) {
-    super(alphaPolymer, EnumStructure.SHEET, monomerIndex,
+    setupPS(alphaPolymer, EnumStructure.SHEET, monomerIndex,
         monomerCount);
     this.alphaPolymer = alphaPolymer;
     this.subtype = subtype;

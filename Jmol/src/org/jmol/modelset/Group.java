@@ -163,7 +163,7 @@ public class Group {
     return group3Names[groupID];
   }
 
-  public static String getGroup3(short groupID) {
+  public static String getGroup3For(short groupID) {
     return group3Names[groupID];
   }
 
@@ -290,13 +290,9 @@ public class Group {
     return seqcode >> SEQUENCE_NUMBER_SHIFT;
   }
 
-  public final static int getSequenceNumber(int seqcode) {
+  public final static int getSeqNumberFor(int seqcode) {
     return (haveSequenceNumber(seqcode)? seqcode >> SEQUENCE_NUMBER_SHIFT 
         : Integer.MAX_VALUE);
-  }
-  
-  public final static int getInsertionCodeValue(int seqcode) {
-    return (seqcode & INSERTION_CODE_MASK);
   }
   
   public final static boolean haveSequenceNumber(int seqcode) {
@@ -304,7 +300,7 @@ public class Group {
   }
 
   public final String getSeqcodeString() {
-    return getSeqcodeString(seqcode);
+    return getSeqcodeStringFor(seqcode);
   }
 
   public static int getSeqcodeFor(int seqNo, char insCode) {
@@ -323,7 +319,7 @@ public class Group {
         + insCode;
   }
 
-  public static String getSeqcodeString(int seqcode) {
+  public static String getSeqcodeStringFor(int seqcode) {
     if (seqcode == Integer.MIN_VALUE)
       return null;
     return (seqcode & INSERTION_CODE_MASK) == 0
@@ -338,10 +334,12 @@ public class Group {
     return (char)(seqcode & INSERTION_CODE_MASK);
   }
   
-  public static char getInsertionCode(int seqcode) {
-    if (seqcode == Integer.MIN_VALUE)
-      return '\0';
-    return (char)(seqcode & INSERTION_CODE_MASK);
+  public static int getInsertionCodeFor(int seqcode) {
+    return (seqcode & INSERTION_CODE_MASK);
+  }
+  
+  public static char getInsertionCodeChar(int seqcode) {
+    return (seqcode == Integer.MIN_VALUE ? '\0' : (char)(seqcode & INSERTION_CODE_MASK));
   }
   
   private BS bsAdded;

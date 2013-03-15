@@ -520,6 +520,14 @@ public class PropertyManager implements JmolPropertyManager {
       return (haveType ? ((Map<?, ?>) objHeader).get(type) : objHeader);
     }
     String[] lines = TextFormat.split((String) objHeader, '\n');
+    // this is meant to be for PDB files only
+   if (lines.length == 0 
+       || lines[0].length() < 6 
+       || lines[0].charAt(6) != ' ' 
+       || !lines[0].substring(0, 6).equals(lines[0].substring(0, 6).toUpperCase())) {
+      ht.put("fileHeader", (String) objHeader);
+      return ht;
+    }
     String keyLast = "";
     SB sb = new SB();
     if (haveType)

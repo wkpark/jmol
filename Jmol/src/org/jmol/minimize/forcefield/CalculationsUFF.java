@@ -815,7 +815,7 @@ class CalculationsUFF extends Calculations {
       return  "Universal Force Field -- " +
           "Rappe, A. K., et. al.; J. Am. Chem. Soc. (1992) 114(25) p. 10024-10035\n";
     default:
-      return super.getDebugHeader(iType);
+      return getDebugHeader2(iType);
     }
   }
 

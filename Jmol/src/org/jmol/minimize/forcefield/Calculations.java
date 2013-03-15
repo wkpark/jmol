@@ -395,7 +395,9 @@ abstract class Calculations {
     return sb.toString();
   }
 
-  String getDebugHeader(int iType) {
+  abstract String getDebugHeader(int iType);
+
+  protected String getDebugHeader2(int iType) {
     switch (iType){
     case -1:
       //Override to give reference

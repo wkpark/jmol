@@ -46,8 +46,6 @@ public class Measurement {
    * a class to contain a single measurement.
    * 
    */
-  private Viewer viewer;
-
   public ModelSet modelSet;
   public int index;
   public boolean isVisible = true;
@@ -55,12 +53,56 @@ public class Measurement {
   public boolean isDynamic = false;
   public boolean isTrajectory = false;
   public short colix;
-
+  public TickInfo tickInfo;
   public int traceX = Integer.MIN_VALUE, traceY;
 
   protected int count;
   protected int[] countPlusIndices = new int[5];
   protected Point3fi[] pts;
+  protected float value;
+
+  private Viewer viewer;
+  private String strFormat;
+  private String strMeasurement;
+  private AxisAngle4f aa;
+  private P3 pointArc;
+
+  public Measurement setM(ModelSet modelSet, Measurement m, float value, short colix,
+                          String strFormat, int index) {
+    //value Float.isNaN ==> pending
+    this.modelSet = modelSet;
+    this.index = index;
+    this.viewer = modelSet.viewer;
+    this.colix = colix;
+    this.strFormat = strFormat;
+    if (m != null) {
+      this.tickInfo = m.tickInfo;
+      this.pts = m.pts;
+    }
+    if (pts == null)
+      pts = new Point3fi[4];
+    int[] indices = (m == null ? null : m.countPlusIndices);
+    count = (indices == null ? 0 : indices[0]);
+    if (count > 0) {
+      System.arraycopy(indices, 0, countPlusIndices, 0, count + 1);
+      isTrajectory = modelSet.isTrajectoryMeasurement(countPlusIndices);
+    }
+    this.value = (Float.isNaN(value) || isTrajectory ? getMeasurement() : value);
+    formatMeasurement(null);
+    return this;
+  }
+
+  public Measurement setPoints(ModelSet modelSet, int[] indices, Point3fi[] points,
+      TickInfo tickInfo) {
+    // temporary holding structure only; -- no viewer
+    this.modelSet = modelSet;
+    countPlusIndices = indices;
+    count = indices[0];
+    this.pts = (points == null ? new Point3fi[4] : points);
+    viewer = modelSet.viewer;
+    this.tickInfo = tickInfo;
+    return this;
+  }
 
   public int getCount() {
     return count;
@@ -91,8 +133,6 @@ public class Measurement {
     return (count > 0 ? countPlusIndices[count] : -1);
   }
 
-  private String strMeasurement;
-
   public String getString() {
     return strMeasurement;
   }
@@ -111,73 +151,20 @@ public class Measurement {
         + getMeasurementScript(" - ", false) + " : " + value;
   }
 
-  private String strFormat;
-
   public String getStrFormat() {
     return strFormat;
   }
-
-  protected float value;
 
   public float getValue() {
     return value;
   }
 
-  private AxisAngle4f aa;
-
   public AxisAngle4f getAxisAngle() {
     return aa;
   }
 
-  private P3 pointArc;
-
   public P3 getPointArc() {
     return pointArc;
-  }
-
-  public TickInfo tickInfo;
-
-  public TickInfo getTickInfo() {
-    return tickInfo;
-  }
-
-  public Measurement(ModelSet modelSet) {
-    this.modelSet = modelSet;
-  }
-
-  public Measurement setM(Measurement m, float value, short colix,
-                          String strFormat, int index) {
-    //value Float.isNaN ==> pending
-    this.index = index;
-    this.viewer = modelSet.viewer;
-    this.colix = colix;
-    this.strFormat = strFormat;
-    if (m != null) {
-      this.tickInfo = m.tickInfo;
-      this.pts = m.pts;
-    }
-    if (pts == null)
-      pts = new Point3fi[4];
-    int[] indices = (m == null ? null : m.countPlusIndices);
-    count = (indices == null ? 0 : indices[0]);
-    if (count > 0) {
-      System.arraycopy(indices, 0, countPlusIndices, 0, count + 1);
-      isTrajectory = modelSet.isTrajectoryMeasurement(countPlusIndices);
-    }
-    this.value = (Float.isNaN(value) || isTrajectory ? getMeasurement() : value);
-    formatMeasurement(null);
-    return this;
-  }
-
-  public Measurement(ModelSet modelSet, int[] indices, Point3fi[] points,
-      TickInfo tickInfo) {
-    // temporary holding structure only; -- no viewer
-    countPlusIndices = indices;
-    count = indices[0];
-    this.pts = (points == null ? new Point3fi[4] : points);
-    this.modelSet = modelSet;
-    viewer = modelSet.viewer;
-    this.tickInfo = tickInfo;
   }
 
   public void refresh() {

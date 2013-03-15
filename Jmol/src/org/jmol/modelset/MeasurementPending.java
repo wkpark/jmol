@@ -49,8 +49,9 @@ public class MeasurementPending extends Measurement {
     return numSet;
   }
 
-  public MeasurementPending(ModelSet modelSet) {
-    super(modelSet, null, Float.NaN, (short) 0, null, 0);
+  public static MeasurementPending getMP(ModelSet modelSet) {
+    return (MeasurementPending) new MeasurementPending().setM(modelSet, null,
+        Float.NaN, (short) 0, null, 0);
   }
 
   private boolean checkPoint(Point3fi ptClicked) {

@@ -174,7 +174,7 @@ public class MeasurementData implements JmolMeasurementClient {
     int modelIndex = -1;
     Point3fi[] pts = new Point3fi[4];
     int[] indices = new int[5];
-    Measurement m = new Measurement(modelSet, indices, pts, null);
+    Measurement m = new Measurement().setPoints(modelSet, indices, pts, null);
     m.setCount(nPoints);
     int ptLastAtom = -1;
     for (int i = 0; i < nPoints; i++) {

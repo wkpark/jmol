@@ -550,7 +550,7 @@ class CalculationsMMFF extends Calculations {
            +"  I   J   K   L   I     J     K     L      ANGLE       V1       V2       V3     ENERGY\n"
            +"--------------------------------------------------------------------------------------\n";
     default:
-      return super.getDebugHeader(iType);
+      return getDebugHeader2(iType);
     }
   }
 

@@ -1030,8 +1030,8 @@ public class ActionManager {
     viewer.setPicked(-1);
     viewer.setPicked(iAtom);
     viewer.setCursor(JC.CURSOR_CROSSHAIR);
-    viewer.setPendingMeasurement(measurementPending = new MeasurementPending(
-        viewer.getModelSet()));
+    viewer.setPendingMeasurement(measurementPending = MeasurementPending
+        .getMP(viewer.getModelSet()));
     measurementQueued = measurementPending;
   }
 
@@ -1066,7 +1066,7 @@ public class ActionManager {
     // doesn't reset the measurement that is being picked using
     // double-click, just the one using set picking measure.
     exitMeasurementMode();
-    measurementQueued = new MeasurementPending(viewer.getModelSet());    
+    measurementQueued = MeasurementPending.getMP(viewer.getModelSet());    
   }
 
   private int pickingStyle;
@@ -1256,7 +1256,7 @@ public class ActionManager {
     }
     
     public long getTimeDifference(int nPoints) {
-      nPoints = getPointCount(nPoints, 0);
+      nPoints = getPointCount2(nPoints, 0);
       if (nPoints < 2)
         return 0;
       MotionPoint mp1 = getNode(ptNext - 1);
@@ -1265,7 +1265,7 @@ public class ActionManager {
     }
 
     public float getSpeedPixelsPerMillisecond(int nPoints, int nPointsPrevious) {
-      nPoints = getPointCount(nPoints, nPointsPrevious);
+      nPoints = getPointCount2(nPoints, nPointsPrevious);
       if (nPoints < 2)
         return 0;
       MotionPoint mp1 = getNode(ptNext - 1 - nPointsPrevious);
@@ -1276,7 +1276,7 @@ public class ActionManager {
     }
 
     int getDX(int nPoints, int nPointsPrevious) {
-      nPoints = getPointCount(nPoints, nPointsPrevious);
+      nPoints = getPointCount2(nPoints, nPointsPrevious);
       if (nPoints < 2)
         return 0;
       MotionPoint mp1 = getNode(ptNext - 1 - nPointsPrevious);
@@ -1285,7 +1285,7 @@ public class ActionManager {
     }
 
     int getDY(int nPoints, int nPointsPrevious) {
-      nPoints = getPointCount(nPoints, nPointsPrevious);
+      nPoints = getPointCount2(nPoints, nPointsPrevious);
       if (nPoints < 2)
         return 0;
       MotionPoint mp1 = getNode(ptNext - 1 - nPointsPrevious);
@@ -1297,7 +1297,7 @@ public class ActionManager {
       return ptNext;
     }
     
-    int getPointCount(int nPoints, int nPointsPrevious) {
+    int getPointCount2(int nPoints, int nPointsPrevious) {
       if (nPoints > nodes.length - nPointsPrevious)
         nPoints = nodes.length - nPointsPrevious;
       int n = nPoints + 1;

@@ -265,7 +265,7 @@ public class ForceFieldMMFF extends ForceField {
     if (rawAtomTypes == null)
       return false;
     rawBondTypes = setBondTypes(bonds, rawBondCount, bsAtoms);
-    rawMMFF94Charges = getPartialCharges(bonds, rawBondTypes, atoms,
+    rawMMFF94Charges = calculatePartialCharges(bonds, rawBondTypes, atoms,
         rawAtomTypes, bsAtoms, doRound);
     return true;
   }
@@ -654,7 +654,7 @@ public class ForceFieldMMFF extends ForceField {
    * @param doRound 
    * @return   full array of partial charges
    */
-  public static float[] getPartialCharges(Bond[] bonds, int[] bTypes, Atom[] atoms,
+  public static float[] calculatePartialCharges(Bond[] bonds, int[] bTypes, Atom[] atoms,
                                           int[] aTypes, BS bsAtoms, boolean doRound) {
 
     // start with formal charges specified by MMFF94 (not what is in file!)

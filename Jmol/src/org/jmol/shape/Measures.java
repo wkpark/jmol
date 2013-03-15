@@ -245,7 +245,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
 
     if ("hide" == propertyName) {
-      showHideM(new Measurement(modelSet, (int[]) value, null, null), true);
+      showHideM(new Measurement().setPoints(modelSet, (int[]) value, null, null), true);
       return;
     }
     
@@ -255,12 +255,12 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
     
     if ("show" == propertyName) {
-      showHideM(new Measurement(modelSet, (int[]) value, null, null), false);
+      showHideM(new Measurement().setPoints(modelSet, (int[]) value, null, null), false);
       return;
     }
     
     if ("toggle" == propertyName) {
-      toggle(new Measurement(modelSet, (int[]) value, null, null));
+      toggle(new Measurement().setPoints(modelSet, (int[]) value, null, null));
       return;
     }
     
@@ -287,7 +287,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         indices[i + 1] = -2 - i;
       }
     }
-    return new Measurement(modelSet, indices, points, tickInfo == null ? defaultTickInfo : tickInfo);
+    return new Measurement().setPoints(modelSet, indices, points, tickInfo == null ? defaultTickInfo : tickInfo);
   }
 
   @Override
@@ -369,7 +369,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     radiusData = null;
     //toggling one that is hidden should be interpreted as DEFINE
     bsSelected = new BS();
-    defineAll(Integer.MIN_VALUE, new Measurement(modelSet, indices, null, defaultTickInfo), false, true, true);
+    defineAll(Integer.MIN_VALUE, new Measurement().setPoints(modelSet, indices, null, defaultTickInfo), false, true, true);
     setIndices();
     reformatDistances();
   }
@@ -387,7 +387,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     if ((value instanceof Integer)) {
       deleteI(((Integer)value).intValue());
     } else if (Escape.isAI(value)) {
-      defineAll(Integer.MIN_VALUE, new Measurement(modelSet, (int[])value, null, null), true, false, false);
+      defineAll(Integer.MIN_VALUE, new Measurement().setPoints(modelSet, (int[])value, null, null), true, false, false);
     }
   }
 
@@ -471,7 +471,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         bsSelected.set(i);
       return;
     }
-    Measurement measureNew = new Measurement(modelSet, m, value, (m.colix == 0 ? colix : m.colix),
+    Measurement measureNew = new Measurement().setM(modelSet, m, value, (m.colix == 0 ? colix : m.colix),
         strFormat, measurementCount);
     measurements.addLast(measureNew);
     viewer.setStatusMeasuring("measureCompleted", measurementCount++,
@@ -525,7 +525,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     info.put("strMeasurement", m.getString());
     info.put("count", Integer.valueOf(count));
     info.put("value", Float.valueOf(m.getValue()));
-    TickInfo tickInfo = m.getTickInfo();
+    TickInfo tickInfo = m.tickInfo;
     if (tickInfo != null) {
       info.put("ticks", tickInfo.ticks);
       if (tickInfo.scale != null)

@@ -119,12 +119,11 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   }
 
   void renderDistance(boolean renderLabel) {
-    tickInfo = measurement.getTickInfo();
+    tickInfo = measurement.tickInfo;
     if (tickInfo != null) {
-      drawLine(atomA.screenX, atomA.screenY, atomA.screenZ, 
-          atomB.screenX, atomB.screenY, atomB.screenZ, mad);
-      if (tickInfo != null)
-        drawTicks(atomA, atomB, mad, renderLabel);
+      drawLine(atomA.screenX, atomA.screenY, atomA.screenZ, atomB.screenX,
+          atomB.screenY, atomB.screenZ, mad);
+      drawTicks(atomA, atomB, mad, renderLabel);
       return;
     }
     int zA = atomA.screenZ - atomA.screenDiameter - 10;

@@ -5,6 +5,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+import org.jmol.util.SB;
+
 /**
  * 
  * A method to allow a JavaScript AJAX adapter to 
@@ -24,5 +26,28 @@ public class AjaxURLStreamHandler extends URLStreamHandler {
 		return new JmolURLConnection(url);
 	}
 
+
+  @Override
+  protected String toExternalForm(URL u) {
+    SB result = new SB();
+    result.append(u.getProtocol());
+    result.append(":");
+    if (u.getAuthority() != null && u.getAuthority().length() > 0) {
+      result.append("//");
+      result.append(u.getAuthority());
+    }
+    if (u.getPath() != null) {
+      result.append(u.getPath());
+    }
+    if (u.getQuery() != null) {
+      result.append("?");
+      result.append(u.getQuery());
+    }
+    if (u.getRef() != null) {
+      result.append("#");
+      result.append(u.getRef());
+    }
+    return result.toString();
+  }
 
 }

@@ -566,7 +566,7 @@ abstract public class AtomCollection {
       case T.vibx:
       case T.viby:
       case T.vibz:
-        setVibrationVector(i, tok, fValue);
+        setVibrationVector2(i, tok, fValue);
         break;
       case T.fracx:
       case T.fracy:
@@ -682,7 +682,7 @@ abstract public class AtomCollection {
     atoms[atomIndex].setVibrationVector();
   }
 
-  private void setVibrationVector(int atomIndex, int tok, float fValue) {
+  private void setVibrationVector2(int atomIndex, int tok, float fValue) {
     V3 v = getVibrationVector(atomIndex, true);
     if (v == null)
       v = new V3();

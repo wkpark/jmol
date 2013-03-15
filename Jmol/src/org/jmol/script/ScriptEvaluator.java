@@ -13768,7 +13768,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         str = "measure";
       break;
     }
-    if (ActionManager.getPickingStyle(str) < 0)
+    if (ActionManager.getPickingStyleIndex(str) < 0)
       errorStr2(ERROR_unrecognizedParameter, "SET PICKINGSTYLE " + type, str);
     setStringProperty("pickingStyle", str);
   }

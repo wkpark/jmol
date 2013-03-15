@@ -56,11 +56,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
   
 
   @Override
-  protected void initRenderer() {
-    super.initRenderer();
-  }
-
-  @Override
   protected boolean render() {
     needTranslucent = false;
     iShowNormals = viewer.getTestFlag(4);

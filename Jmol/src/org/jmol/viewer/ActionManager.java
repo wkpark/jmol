@@ -259,7 +259,7 @@ public class ActionManager {
         : pickingStyleNames[pickingStyle]);
   }
   
-  public final static int getPickingStyle(String str) {
+  public final static int getPickingStyleIndex(String str) {
     for (int i = pickingStyleNames.length; --i >= 0; )
       if (str.equalsIgnoreCase(pickingStyleNames[i]))
         return i;

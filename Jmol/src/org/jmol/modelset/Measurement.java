@@ -38,9 +38,7 @@ import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
-
 import org.jmol.util.JmolList;
-
 
 public class Measurement {
 
@@ -57,17 +55,17 @@ public class Measurement {
   public boolean isDynamic = false;
   public boolean isTrajectory = false;
   public short colix;
-  
+
   public int traceX = Integer.MIN_VALUE, traceY;
-  
+
   protected int count;
   protected int[] countPlusIndices = new int[5];
   protected Point3fi[] pts;
-  
+
   public int getCount() {
     return count;
   }
-  
+
   public void setCount(int count) {
     this.count = countPlusIndices[0] = count;
   }
@@ -75,7 +73,7 @@ public class Measurement {
   public int[] getCountPlusIndices() {
     return countPlusIndices;
   }
-  
+
   public Point3fi[] getPoints() {
     return pts;
   }
@@ -83,7 +81,7 @@ public class Measurement {
   public int getAtomIndex(int n) {
     return (n > 0 && n <= count ? countPlusIndices[n] : -1);
   }
-  
+
   public Point3fi getAtom(int i) {
     int pt = countPlusIndices[i];
     return (pt < -1 ? pts[-2 - pt] : modelSet.atoms[pt]);
@@ -92,13 +90,13 @@ public class Measurement {
   public int getLastIndex() {
     return (count > 0 ? countPlusIndices[count] : -1);
   }
-  
+
   private String strMeasurement;
-  
+
   public String getString() {
     return strMeasurement;
   }
-  
+
   public String getStringUsing(Viewer viewer, String strFormat, String units) {
     this.viewer = viewer;
     value = getMeasurement();
@@ -110,45 +108,47 @@ public class Measurement {
 
   public String getStringDetail() {
     return (count == 2 ? "Distance" : count == 3 ? "Angle" : "Torsion")
-        + getMeasurementScript(" - ", false) + " : " + value;  
+        + getMeasurementScript(" - ", false) + " : " + value;
   }
-  
+
   private String strFormat;
-  
+
   public String getStrFormat() {
     return strFormat;
   }
-  
+
   protected float value;
-  
+
   public float getValue() {
     return value;
   }
-    
+
   private AxisAngle4f aa;
-  
+
   public AxisAngle4f getAxisAngle() {
     return aa;
   }
-  
+
   private P3 pointArc;
 
   public P3 getPointArc() {
     return pointArc;
   }
-  
+
   public TickInfo tickInfo;
 
   public TickInfo getTickInfo() {
     return tickInfo;
   }
-  
-  public Measurement(ModelSet modelSet, Measurement m,
-                     float value, short colix, 
-                     String strFormat, int index) {
+
+  public Measurement(ModelSet modelSet) {
+    this.modelSet = modelSet;
+  }
+
+  public Measurement setM(Measurement m, float value, short colix,
+                          String strFormat, int index) {
     //value Float.isNaN ==> pending
     this.index = index;
-    this.modelSet = modelSet;
     this.viewer = modelSet.viewer;
     this.colix = colix;
     this.strFormat = strFormat;
@@ -166,7 +166,8 @@ public class Measurement {
     }
     this.value = (Float.isNaN(value) || isTrajectory ? getMeasurement() : value);
     formatMeasurement(null);
-  }   
+    return this;
+  }
 
   public Measurement(ModelSet modelSet, int[] indices, Point3fi[] points,
       TickInfo tickInfo) {
@@ -184,11 +185,12 @@ public class Measurement {
     isTrajectory = modelSet.isTrajectoryMeasurement(countPlusIndices);
     formatMeasurement(null);
   }
-  
+
   /**
    * Used by MouseManager and Picking Manager to build the script
+   * 
    * @param sep
-   * @param withModelIndex 
+   * @param withModelIndex
    * @return measure (atomIndex=1) (atomIndex=2)....
    */
   public String getMeasurementScript(String sep, boolean withModelIndex) {
@@ -196,16 +198,18 @@ public class Measurement {
     // extra () are needed because of the possible context  symop({1}) ({2})
     boolean asScript = (sep.equals(" "));
     for (int i = 1; i <= count; i++)
-      str += (i > 1 ? sep : " ") + getLabel(i, asScript, withModelIndex); 
-    return str;  
+      str += (i > 1 ? sep : " ") + getLabel(i, asScript, withModelIndex);
+    return str;
   }
-  
-  public void formatMeasurementAs(String strFormat, String units, boolean useDefault) {
+
+  public void formatMeasurementAs(String strFormat, String units,
+                                  boolean useDefault) {
     if (strFormat != null && strFormat.length() == 0)
       strFormat = null;
-    if (!useDefault && strFormat != null && strFormat.indexOf(countPlusIndices[0]+":")!=0)
+    if (!useDefault && strFormat != null
+        && strFormat.indexOf(countPlusIndices[0] + ":") != 0)
       return;
-    this.strFormat = strFormat; 
+    this.strFormat = strFormat;
     formatMeasurement(units);
   }
 
@@ -223,11 +227,13 @@ public class Measurement {
         pointArc = null;
       } else {
         V3 vectorBA = new V3();
-        V3 vectorBC = new V3();        
-        float radians = Measure.computeAngle(getAtom(1), getAtom(2), getAtom(3), vectorBA, vectorBC, false);
+        V3 vectorBC = new V3();
+        float radians = Measure.computeAngle(getAtom(1), getAtom(2),
+            getAtom(3), vectorBA, vectorBC, false);
         V3 vectorAxis = new V3();
         vectorAxis.cross(vectorBA, vectorBC);
-        aa = AxisAngle4f.new4(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
+        aa = AxisAngle4f
+            .new4(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
 
         vectorBA.normalize();
         vectorBA.scale(0.5f);
@@ -239,12 +245,12 @@ public class Measurement {
       return;
     }
   }
-  
+
   public void reformatDistanceIfSelected() {
     if (count != 2)
       return;
-    if (viewer.isSelected(countPlusIndices[1]) &&
-        viewer.isSelected(countPlusIndices[2]))
+    if (viewer.isSelected(countPlusIndices[1])
+        && viewer.isSelected(countPlusIndices[2]))
       formatMeasurement(null);
   }
 
@@ -253,7 +259,7 @@ public class Measurement {
     if (label == null)
       return "";
     if (units == null) {
-      int pt = strFormat.indexOf("//"); 
+      int pt = strFormat.indexOf("//");
       if (pt >= 0) {
         units = strFormat.substring(pt + 2);
       } else {
@@ -262,7 +268,7 @@ public class Measurement {
       }
     }
     units = fixUnits(units);
-    int pt = label.indexOf("//"); 
+    int pt = label.indexOf("//");
     if (pt >= 0)
       label = label.substring(0, pt);
     float f = fixValue(units, (label.indexOf("%V") >= 0));
@@ -280,7 +286,7 @@ public class Measurement {
       return "%";
     return units;
   }
-  
+
   public float fixValue(String units, boolean andRound) {
     if (count != 2)
       return value;
@@ -289,25 +295,28 @@ public class Measurement {
       if (units.equals("%")) {
         int i1 = getAtomIndex(1);
         int i2 = getAtomIndex(2);
-        if (i1 >= 0 && i2 >=0) {
-          float vdw = ((Atom) getAtom(1)).getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)
-          + ((Atom) getAtom(2)).getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO);
+        if (i1 >= 0 && i2 >= 0) {
+          float vdw = ((Atom) getAtom(1)).getVanderwaalsRadiusFloat(viewer,
+              EnumVdw.AUTO)
+              + ((Atom) getAtom(2)).getVanderwaalsRadiusFloat(viewer,
+                  EnumVdw.AUTO);
           dist /= vdw;
-          return (andRound ? Math.round (dist * 1000)/10f : dist * 100);
+          return (andRound ? Math.round(dist * 1000) / 10f : dist * 100);
         }
         units = "ang";
       }
-        
+
       if (units.equals("nm"))
-        return (andRound ? Math.round (dist * 100) / 1000f : dist / 10);
+        return (andRound ? Math.round(dist * 100) / 1000f : dist / 10);
       if (units.equals("pm"))
-        return (andRound? Math.round (dist * 1000) / 10f : dist * 100);
+        return (andRound ? Math.round(dist * 1000) / 10f : dist * 100);
       if (units.equals("au"))
-        return (andRound ? Math.round (dist / JC.ANGSTROMS_PER_BOHR * 1000) / 1000f : dist / JC.ANGSTROMS_PER_BOHR);
+        return (andRound ? Math.round(dist / JC.ANGSTROMS_PER_BOHR * 1000) / 1000f
+            : dist / JC.ANGSTROMS_PER_BOHR);
     }
     return (andRound ? Math.round(dist * 100) / 100f : dist);
   }
-  
+
   private String formatAngle(float angle) {
     String label = getLabelString();
     if (label.indexOf("%V") >= 0)
@@ -321,14 +330,14 @@ public class Measurement {
     if (strFormat != null) {
       if (strFormat.length() == 0)
         return null;
-      label = (strFormat.length() > 2 
-        && strFormat.indexOf(s)==0? strFormat : null);
+      label = (strFormat.length() > 2 && strFormat.indexOf(s) == 0 ? strFormat
+          : null);
     }
     if (label == null) {
       strFormat = null;
       label = viewer.getDefaultMeasurementLabel(countPlusIndices[0]);
     }
-    if (label.indexOf(s)==0)
+    if (label.indexOf(s) == 0)
       label = label.substring(2);
     if (strFormat == null)
       strFormat = s + label;
@@ -340,7 +349,7 @@ public class Measurement {
   }
 
   public boolean sameAsPoints(int[] indices, Point3fi[] points) {
-    if (count != indices[0]) 
+    if (count != indices[0])
       return false;
     boolean isSame = true;
     for (int i = 1; i <= count && isSame; i++)
@@ -348,7 +357,7 @@ public class Measurement {
     if (isSame)
       for (int i = 0; i < count && isSame; i++) {
         if (points[i] != null)
-          isSame = (this.pts[i].distance(points[i]) < 0.01); 
+          isSame = (this.pts[i].distance(points[i]) < 0.01);
       }
     if (isSame)
       return true;
@@ -356,25 +365,21 @@ public class Measurement {
     default:
       return true;
     case 2:
-      return sameAsIJ(indices, points, 1, 2) 
-          && sameAsIJ(indices, points, 2, 1);
+      return sameAsIJ(indices, points, 1, 2) && sameAsIJ(indices, points, 2, 1);
     case 3:
-      return sameAsIJ(indices, points, 1, 3)
-          && sameAsIJ(indices, points, 2, 2)
+      return sameAsIJ(indices, points, 1, 3) && sameAsIJ(indices, points, 2, 2)
           && sameAsIJ(indices, points, 3, 1);
-    case 4:  
-      return  sameAsIJ(indices, points, 1, 4)
-          && sameAsIJ(indices, points, 2, 3) 
-          && sameAsIJ(indices, points, 3, 2)
-          && sameAsIJ(indices, points, 4, 1);
-    } 
+    case 4:
+      return sameAsIJ(indices, points, 1, 4) && sameAsIJ(indices, points, 2, 3)
+          && sameAsIJ(indices, points, 3, 2) && sameAsIJ(indices, points, 4, 1);
+    }
   }
 
   private boolean sameAsIJ(int[] atoms, Point3fi[] points, int i, int j) {
     int ipt = countPlusIndices[i];
     int jpt = atoms[j];
-    return (ipt >= 0 || jpt >= 0 ? ipt == jpt 
-        : this.pts[-2 - ipt].distance(points[-2 - jpt]) < 0.01);
+    return (ipt >= 0 || jpt >= 0 ? ipt == jpt : this.pts[-2 - ipt]
+        .distance(points[-2 - jpt]) < 0.01);
   }
 
   public boolean sameAs(int i, int j) {
@@ -382,13 +387,13 @@ public class Measurement {
   }
 
   public JmolList<String> toVector(boolean asBitSet) {
-    JmolList<String> V = new  JmolList<String>();
-    for (int i = 1; i <= count; i++ )
+    JmolList<String> V = new JmolList<String>();
+    for (int i = 1; i <= count; i++)
       V.addLast(getLabel(i, asBitSet, false));
     V.addLast(strMeasurement);
-    return V;  
+    return V;
   }
-  
+
   public float getMeasurement() {
     if (countPlusIndices == null)
       return Float.NaN;
@@ -420,11 +425,10 @@ public class Measurement {
     int atomIndex = countPlusIndices[i];
     // double parens here because of situations like
     //  draw symop({3}), which the compiler will interpret as symop()
-    return (atomIndex < 0 
-        ? (withModelIndex ? "modelIndex " + getAtom(i).modelIndex + " " : "")
-            + Escape.eP(getAtom(i))
-        : asBitSet ? "(({" + atomIndex + "}))"
-        : viewer.getAtomInfo(atomIndex));
+    return (atomIndex < 0 ? (withModelIndex ? "modelIndex "
+        + getAtom(i).modelIndex + " " : "")
+        + Escape.eP(getAtom(i)) : asBitSet ? "(({" + atomIndex + "}))" : viewer
+        .getAtomInfo(atomIndex));
   }
 
   public void setModelIndex(short modelIndex) {
@@ -438,18 +442,19 @@ public class Measurement {
 
   public boolean isValid() {
     // valid: no A-A, A-B-A, A-B-C-B
-    return !(sameAs(1,2) || count > 2 && sameAs(1,3) || count == 4 && sameAs(2,4));
+    return !(sameAs(1, 2) || count > 2 && sameAs(1, 3) || count == 4
+        && sameAs(2, 4));
   }
 
   public static int find(JmolList<Measurement> measurements, Measurement m) {
     int[] indices = m.getCountPlusIndices();
     Point3fi[] points = m.getPoints();
-    for (int i = measurements.size(); --i >= 0; )
+    for (int i = measurements.size(); --i >= 0;)
       if (measurements.get(i).sameAsPoints(indices, points))
         return i;
     return -1;
   }
-  
+
   public boolean isConnected(Atom[] atoms, int count) {
     int atomIndexLast = -1;
     for (int i = 1; i <= count; i++) {
@@ -479,12 +484,13 @@ public class Measurement {
     if (radiusData.factorType == EnumType.FACTOR) {
       Atom atom1 = (Atom) getAtom(1);
       Atom atom2 = (Atom) getAtom(2);
-      float d = (atom1.getVanderwaalsRadiusFloat(viewer, radiusData.vdwType)
-       + atom2.getVanderwaalsRadiusFloat(viewer, radiusData.vdwType)) * radiusData.value;
-      return (value <= d);      
+      float d = (atom1.getVanderwaalsRadiusFloat(viewer, radiusData.vdwType) + atom2
+          .getVanderwaalsRadiusFloat(viewer, radiusData.vdwType))
+          * radiusData.value;
+      return (value <= d);
     }
-    return (radiusData.values[0] == Float.MAX_VALUE 
-        || value >= radiusData.values[0] && value <= radiusData.values[1]);
+    return (radiusData.values[0] == Float.MAX_VALUE || value >= radiusData.values[0]
+        && value <= radiusData.values[1]);
   }
 
   public boolean isIntramolecular(Atom[] atoms, int count) {
@@ -502,7 +508,4 @@ public class Measurement {
     return true;
   }
 
-
 }
-
-

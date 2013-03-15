@@ -267,13 +267,13 @@ class PmeshReader extends PolygonFileReader {
     return true;
   }
 
-  @Override
-  public int addTriangleCheck(int iA, int iB, int iC, int check,
-                               int check2, boolean isAbsolute, int color) {
-    if (Logger.debugging)
-      Logger.debug("tri: " + iA + " " + iB + " " + iC);
-    return super.addTriangleCheck(iA, iB, iC, check, check2, isAbsolute, color); 
-  }
+//  @Override
+//  public int addTriangleCheck(int iA, int iB, int iC, int check,
+//                               int check2, boolean isAbsolute, int color) {
+//    if (Logger.debugging)
+//      Logger.debug("tri: " + iA + " " + iB + " " + iC);
+//    return super.addTriangleCheck(iA, iB, iC, check, check2, isAbsolute, color); 
+//  }
 
   //////////// file reading
 

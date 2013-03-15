@@ -42,15 +42,8 @@ abstract class CageRenderer extends FontLineShapeRenderer {
 
   protected char[] tickEdges;
   
-  abstract protected void setEdges();
-  
   protected boolean isSlab;
   protected boolean isPolymer;
-  
-  @Override
-  protected void initRenderer() {
-    setEdges();
-  }
   
   private P3 pt = new P3();
   protected void renderCage(int mad, P3[] vertices, P3[] axisPoints,

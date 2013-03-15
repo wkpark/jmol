@@ -4962,7 +4962,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!haveDisplay)
       return;
     if (style != null)
-      pickingStyle = ActionManager.getPickingStyle(style);
+      pickingStyle = ActionManager.getPickingStyleIndex(style);
     if (pickingStyle < 0)
       pickingStyle = ActionManager.PICKINGSTYLE_SELECT_JMOL;
     actionManager.setPickingStyle(pickingStyle);

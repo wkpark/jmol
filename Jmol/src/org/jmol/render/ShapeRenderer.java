@@ -54,14 +54,15 @@ public abstract class ShapeRenderer {
   protected int exportType;
   protected boolean isExport;
 
+  protected void initRenderer() {}
+
+  abstract protected boolean render();
+
   public final void setViewerG3dShapeID(Viewer viewer, int shapeID) {
     this.viewer = viewer;
     this.shapeID = shapeID;
     myVisibilityFlag = JC.getShapeVisibilityFlag(shapeID);
     initRenderer();
-  }
-
-  protected void initRenderer() {
   }
 
   public boolean renderShape(JmolRendererInterface g3d, ModelSet modelSet, Shape shape) {
@@ -76,7 +77,6 @@ public abstract class ShapeRenderer {
     return needsTranslucent;
   }
 
-  abstract protected boolean render();
  
 }
 

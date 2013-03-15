@@ -30,7 +30,7 @@ import org.jmol.viewer.StateManager;
 public class BbcageRenderer extends CageRenderer {
 
   @Override
-  protected void setEdges() {
+  protected void initRenderer() {
     tickEdges = BoxInfo.bbcageTickEdges; 
   }
   

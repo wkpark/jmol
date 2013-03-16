@@ -247,7 +247,6 @@ public class AminoMonomer extends AlphaMonomer {
     return true;
   }
 
-  final private P3 ptTemp = new P3();
   final private static float beta = (float) (17 * Math.PI/180);
   
   @Override
@@ -274,6 +273,8 @@ public class AminoMonomer extends AlphaMonomer {
       return pt;
     }
   }
+
+  private P3 ptTemp;
 
   @Override
   public Quaternion getQuaternion(char qType) {
@@ -335,6 +336,8 @@ public class AminoMonomer extends AlphaMonomer {
       if (monomerIndex == 0 || groupID == JC.GROUPID_PROLINE)
         return null;
       vC = new V3();
+      if (ptTemp == null)
+        ptTemp = new P3();
       getNHPoint(ptTemp, vC, true, false);
       vB.sub2(ptCa, getNitrogenAtom());
       vB.cross(vC, vB);

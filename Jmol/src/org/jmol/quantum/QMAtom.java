@@ -41,10 +41,11 @@ class QMAtom extends P3 {
   int index;
   int znuc;
   int iMolecule;
-  boolean isExcluded;
+  //boolean isExcluded; -- not implemented?
 
   /**
-   * @j2sOverrideSuperConstructor
+   * @j2sIgnoreSuperConstructor
+   * @j2sOverride
    * 
    * @param i
    * @param atom
@@ -54,12 +55,10 @@ class QMAtom extends P3 {
    * @param X2
    * @param Y2
    * @param Z2
-   * @param isExcluded
    * @param unitFactor
    */
   QMAtom(int i, Atom atom, float[] X, float[] Y, float[] Z, 
-      float[] X2, float[] Y2, float[] Z2, 
-      boolean isExcluded, float unitFactor) {
+      float[] X2, float[] Y2, float[] Z2, float unitFactor) {
     index = i;
     myX = X;
     myY = Y;
@@ -69,7 +68,7 @@ class QMAtom extends P3 {
     myZ2 = Z2;
     this.atom = atom;
     
-    this.isExcluded = isExcluded;
+    //this.isExcluded = isExcluded;
     setT(atom);
     scale(unitFactor);
     znuc = atom.getElementNumber();

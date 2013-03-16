@@ -72,7 +72,7 @@ public class Mesh extends MeshSurface {
   public boolean haveXyPoints;
   public int diameter;
   public float width;
-  public P3 ptCenter = P3.new3(0,0,0);
+  public final P3 ptCenter = P3.new3(0,0,0);
   public Mesh linkedMesh; //for lcaoOrbitals
   public Map<String, BS> vertexColorMap;
   

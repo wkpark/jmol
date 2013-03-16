@@ -93,7 +93,7 @@ public class DrawMesh extends Mesh {
       }
     }
     if (iModel < 0){
-      ptCenter = center;
+      ptCenter.setT(center);
     } else {
       ptCenters[iModel] = center;
     }

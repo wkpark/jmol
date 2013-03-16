@@ -68,6 +68,11 @@ class SymmetryOperation extends Matrix4f {
   boolean isFinalized;
   int opId;
 
+  private P3 atomTest;
+  private P3 temp3;
+  
+
+
   /**
    * @j2sIgnoreSuperConstructor
    * @j2sOverride
@@ -109,10 +114,10 @@ class SymmetryOperation extends Matrix4f {
     return (normalized || xyzOriginal == null ? xyz : xyzOriginal);
   }
 
-  private final static P3 temp3 = new P3();
-  
   void newPoint(P3 atom1, P3 atom2,
                        int transX, int transY, int transZ) {
+    if (temp3 == null)
+      temp3 = new P3();
     temp3.setT(atom1);
     transform2(temp3, temp3);
     atom2.set(temp3.x + transX, temp3.y + transY, temp3.z + transZ);
@@ -439,8 +444,6 @@ class SymmetryOperation extends Matrix4f {
     return (s.charAt(0) == '0' ? "" : n12ths > 0 ? "+" + s : s);
   }
 
-  final static P3 atomTest = new P3();
-
   private void setOffset(P3[] atoms, int atomIndex, int count) {
     /*
      * the center of mass of the full set of atoms is moved into the cell with this
@@ -451,6 +454,8 @@ class SymmetryOperation extends Matrix4f {
     float x = 0;
     float y = 0;
     float z = 0;
+    if (atomTest == null)
+      atomTest = new P3();
     for (int i = i1; i < i2; i++) {
       newPoint(atoms[i], atomTest, 0, 0, 0);
       x += atomTest.x;

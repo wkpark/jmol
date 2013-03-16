@@ -530,7 +530,18 @@ public class JmolBinary {
         String s = Parser.getQuotedStringAt(script, i);
         if (s.indexOf("::") >= 0)
           s = TextFormat.splitChars(s, "::")[1];
-        fileList.add(s);
+        /**
+         * we have to use List and not JmolList here to interface with WebPanel,
+         * but JmolList does not implement add() in order to avoid ambiguities
+         *  
+         * @j2sNative
+         * 
+         * fileList.addLast(s);
+         * 
+         */
+        {
+          fileList.add(s);
+        }
       }
     }
   }

@@ -1963,6 +1963,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   /**
+   * 
+   * @j2sIgnore
+   * 
    * for JmolSimpleViewer -- external applications only
    * 
    * @param fileName
@@ -2080,7 +2083,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (loadScript == null)
         loadScript = new SB().append("load /*file*/$FILENAME$");
 
-      atomSetCollection = openFile(fileName, isAppend, htParams,
+      atomSetCollection = openFileFull(fileName, isAppend, htParams,
           loadScript);
 
     } else if (reader instanceof Reader) {
@@ -2215,7 +2218,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *        only necessary for string reading
    * @return an AtomSetCollection or a String (error)
    */
-  private Object openFile(String fileName, boolean isAppend,
+  private Object openFileFull(String fileName, boolean isAppend,
                                       Map<String, Object> htParams,
                                       SB loadScript) {
     if (fileName == null)

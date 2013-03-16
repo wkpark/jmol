@@ -145,8 +145,7 @@ abstract class QuantumCalculation {
       for (int i = i0, j = 0; i >= 0; i = (isAll ? i - 1 : bsSelected
           .nextSetBit(i + 1)))
         qmAtoms[renumber ? j++ : i] = new QMAtom(i, (Atom) atomCoordAngstroms[i],
-            X, Y, Z, X2, Y2, Z2, 
-            (bsExcluded != null && bsExcluded.get(i)), unitFactor);
+            X, Y, Z, X2, Y2, Z2, unitFactor);
     }
   }
 

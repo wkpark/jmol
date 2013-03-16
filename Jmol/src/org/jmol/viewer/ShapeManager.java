@@ -55,6 +55,12 @@ public class ShapeManager {
   Shape[] shapes;
   public Viewer viewer;
 
+  /**
+   * @j2sIgnore
+   * 
+   * @param viewer
+   * @param modelSet
+   */
   public ShapeManager(Viewer viewer, ModelSet modelSet) {
     // from ParallelProcessor
     this(viewer);

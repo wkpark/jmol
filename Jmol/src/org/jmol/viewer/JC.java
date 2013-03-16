@@ -76,7 +76,7 @@ public class JC {
       }
       if (tmpDate != null) {
         tmpDate = tmpDate.substring(8, 24);
-        // NOTE : date is update in the properties by SVN, and is in the format
+        // NOTE : date is updated in the properties by SVN, and is in the format
         // "$Date$"
         // 0         1         2
         // 012345678901234567890123456789

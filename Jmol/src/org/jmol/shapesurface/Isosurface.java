@@ -329,7 +329,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("newObject" == propertyName) {
       if (thisMesh != null)
-        thisMesh.clear(thisMesh.meshType, false);
+        thisMesh.clearType(thisMesh.meshType, false);
       return;
     }
 
@@ -1245,7 +1245,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (thisMesh == null)
         allocMesh(null, null);
       if (!thisMesh.isMerged)
-        thisMesh.clear(myType, sg.getIAddGridPoints());
+        thisMesh.clearType(myType, sg.getIAddGridPoints());
       thisMesh.connections = connections;
       thisMesh.colix = getDefaultColix();
       thisMesh.meshColix = meshColix;

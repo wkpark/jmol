@@ -123,7 +123,7 @@ class HallInfo {
   }
 */
   private String getLatticeDesignation() {    
-    return HallTranslation.getLatticeDesignation(latticeCode, isCentrosymmetric);
+    return HallTranslation.getLatticeDesignation2(latticeCode, isCentrosymmetric);
   }  
    
   private String extractLatticeInfo(String name) {
@@ -182,9 +182,6 @@ class HallInfo {
   
   class RotationTerm {
     
-    RotationTerm() {      
-    }
-    
     String inputCode;
     String primitiveCode;
     String lookupCode;
@@ -197,37 +194,9 @@ class HallInfo {
     char axisType = '\0';
     char diagonalReferenceAxis = '\0';
     
-    RotationTerm(String code, int prevOrder, char prevAxisType) {
-      getRotationInfo(code, prevOrder, prevAxisType);
-    }
-    
     boolean allPositive = true; //for now
     
-    String dumpInfo() {
-      SB sb= new SB();
-      sb.append("\ninput code: ")
-           .append(inputCode).append("; primitive code: ").append(primitiveCode)
-           .append("\norder: ").appendI(order).append(isImproper ? " (improper axis)" : "");
-      if (axisType != '_') {
-        sb.append("; axisType: ").appendC(axisType);
-        if (diagonalReferenceAxis != '\0')
-          sb.appendC(diagonalReferenceAxis);
-      }
-      if (translationString.length() > 0)
-        sb.append("; translation: ").append(translationString);
-      if (vectorCode.length() > 0)
-        sb.append("; vector offset:").append(vectorCode);
-      if (rotation != null)
-        sb.append("\noperator: ").append(getXYZ(allPositive)).append("\nSeitz matrix:\n")
-            .append(SymmetryOperation.dumpSeitz(seitzMatrix12ths));
-      return sb.toString();
-    }
-    
-   String getXYZ(boolean allPositive) {
-     return SymmetryOperation.getXYZFromMatrix(seitzMatrix12ths, true, allPositive, true);
-   }
-   
-   private void getRotationInfo(String code, int prevOrder, char prevAxisType) {
+    RotationTerm(String code, int prevOrder, char prevAxisType) {
       this.inputCode = code;
       code += "   ";
       if (code.charAt(0) == '-') {
@@ -301,12 +270,12 @@ class HallInfo {
       // primitive notation. This made coding FAR simpler -- all lattice
       // operations indicated by one to three 1xxx or -1 extensions.
 
-      translation = new HallTranslation();
+      translation = new HallTranslation('\0', null);
       translationString = "";
       int len = code.length();
       for (int i = ptr; i < len; i++) {
         char translationCode = code.charAt(i);
-        HallTranslation t = new HallTranslation(translationCode, order);
+        HallTranslation t = new HallTranslation(translationCode, P3i.new3(order, -1, -1));
         if (t.translationCode != '\0') {
           translationString += "" + t.translationCode;
           translation.rotationShift12ths += t.rotationShift12ths;
@@ -357,6 +326,31 @@ class HallInfo {
             + "\n Seitz Matrix(12ths):" + seitzMatrix12ths);
       }
     }
+
+    String dumpInfo() {
+      SB sb= new SB();
+      sb.append("\ninput code: ")
+           .append(inputCode).append("; primitive code: ").append(primitiveCode)
+           .append("\norder: ").appendI(order).append(isImproper ? " (improper axis)" : "");
+      if (axisType != '_') {
+        sb.append("; axisType: ").appendC(axisType);
+        if (diagonalReferenceAxis != '\0')
+          sb.appendC(diagonalReferenceAxis);
+      }
+      if (translationString.length() > 0)
+        sb.append("; translation: ").append(translationString);
+      if (vectorCode.length() > 0)
+        sb.append("; vector offset:").append(vectorCode);
+      if (rotation != null)
+        sb.append("\noperator: ").append(getXYZ(allPositive)).append("\nSeitz matrix:\n")
+            .append(SymmetryOperation.dumpSeitz(seitzMatrix12ths));
+      return sb.toString();
+    }
+    
+   String getXYZ(boolean allPositive) {
+     return SymmetryOperation.getXYZFromMatrix(seitzMatrix12ths, true, allPositive, true);
+   }
+   
   }  
 }
 

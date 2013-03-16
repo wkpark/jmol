@@ -470,16 +470,6 @@ import java.util.Map;
   ///// super-overloaded methods ///////
   
   
-  protected void assignAromaticBonds(boolean isUserCalculation) {
-    assignAromaticBondsBs(isUserCalculation, null);
-    // send a message to STICKS indicating that these bonds
-    // should be part of the state of the model. They will 
-    // appear in the state as bondOrder commands.
-    
-    if (isUserCalculation)
-      shapeManager.setShapeSizeBs(JC.SHAPE_STICKS, Integer.MIN_VALUE, null, bsAromatic);
-  }
-
   public int[] makeConnections(float minDistance, float maxDistance, int order,
                                int connectOperation, BS bsA, BS bsB,
                                BS bsBonds, boolean isBonds, boolean addGroup, float energy) {

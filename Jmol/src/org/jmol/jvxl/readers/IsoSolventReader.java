@@ -178,7 +178,7 @@ class IsoSolventReader extends AtomDataReader {
 
   @Override
   protected void setup(boolean isMapData) {
-    super.setup(isMapData);
+    setup2();
     if (contactPair == null) {
       cavityRadius = params.cavityRadius;
       envelopeRadius = params.envelopeRadius;

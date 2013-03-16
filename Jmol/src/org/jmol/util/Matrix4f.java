@@ -113,9 +113,6 @@ public class Matrix4f implements Serializable {
    */
   public float m33;
 
-  public Matrix4f() {
-  }
-
   /**
    * Constructs and initializes a Matrix4f from the specified 16 element array.
    * this.m00 =v[0], this.m01=v[1], etc.

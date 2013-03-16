@@ -1427,8 +1427,8 @@ public final class ModelLoader {
     if (!merging)
       modelSet.shapeManager.resetShapes();
     modelSet.shapeManager.loadDefaultShapes(modelSet);
-    if (modelSet.someModelsHaveAromaticBonds && viewer.getSmartAromatic())
-      modelSet.assignAromaticBonds(false);
+    if (modelSet.someModelsHaveAromaticBonds && viewer.getSmartAromatic())      
+      modelSet.assignAromaticBondsBs(false, null);
     if (merging && baseModelCount == 1)
         modelSet.shapeManager.setShapePropertyBs(JC.SHAPE_MEASURES, "clearModelIndex", null, null);
     if (shapeSettings != null) {

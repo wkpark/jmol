@@ -97,13 +97,13 @@ class UnitCell extends SimpleUnitCell {
       matrixCartesianToFractional.transform(pt);
       switch (dimension) {
       case 3:
-        pt.z = toFractional(pt.z);  
+        pt.z = toFractionalX(pt.z);  
         //$FALL-THROUGH$
       case 2:
-        pt.y = toFractional(pt.y);
+        pt.y = toFractionalX(pt.y);
         //$FALL-THROUGH$
       case 1:
-        pt.x = toFractional(pt.x);
+        pt.x = toFractionalX(pt.x);
       }
       matrixFractionalToCartesian.transform(pt);
     } else {
@@ -111,13 +111,13 @@ class UnitCell extends SimpleUnitCell {
       matrixCtoFAbsolute.transform(pt);
       switch (dimension) {
       case 3:
-        pt.z = toFractional(pt.z);  
+        pt.z = toFractionalX(pt.z);  
         //$FALL-THROUGH$
       case 2:
-        pt.y = toFractional(pt.y);
+        pt.y = toFractionalX(pt.y);
         //$FALL-THROUGH$
       case 1:
-        pt.x = toFractional(pt.x);
+        pt.x = toFractionalX(pt.x);
       }
       pt.add(offset);      
       matrixFtoCAbsolute.transform(pt);
@@ -296,7 +296,7 @@ class UnitCell extends SimpleUnitCell {
     if (parBorU[0] == 0) { // this is iso
       float[] lengths = new float[3];
       lengths[0] = lengths[1] = lengths[2] = (float) Math.sqrt(parBorU[7]);
-      return new Quadric(null, lengths, true);
+      return new Quadric().fromVectors(null, lengths, true);
     }
 
     double[] Bcart = new double[6];
@@ -356,7 +356,7 @@ class UnitCell extends SimpleUnitCell {
 
     //System.out.println("UnitCell Bcart=" + Bcart[0] + " " + Bcart[1] + " "
       //  + Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
-    return new Quadric(Bcart);
+    return new Quadric().fromBCart(Bcart);
   }
   
   P3[] getCanonicalCopy(float scale) {
@@ -372,7 +372,7 @@ class UnitCell extends SimpleUnitCell {
   /// private methods
   
   
-  private static float toFractional(float x) {
+  private static float toFractionalX(float x) {
     // introduced in Jmol 11.7.36
     x = (float) (x - Math.floor(x));
     if (x > 0.9999f || x < 0.0001f) 

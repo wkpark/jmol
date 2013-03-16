@@ -398,7 +398,7 @@ class SpaceGroup {
     if (xyzList.containsKey(xyz0))
       return xyzList.get(xyz0).intValue();
 
-    SymmetryOperation symmetryOperation = new SymmetryOperation(doNormalize, opId);
+    SymmetryOperation symmetryOperation = new SymmetryOperation(null, null, 0, opId, doNormalize);
     if (!symmetryOperation.setMatrixFromXYZ(xyz0)) {
       Logger.error("couldn't interpret symmetry operation: " + xyz0);      
       return -1;

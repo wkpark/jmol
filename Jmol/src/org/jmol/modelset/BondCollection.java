@@ -544,7 +544,19 @@ abstract public class BondCollection extends AtomCollection {
     assignAromaticNandO(bsBonds);
 
     bsAromaticSingle = null;
-    bsAromaticDouble = null;    
+    bsAromaticDouble = null;
+    
+    ///////
+    // This was in the former method in ModelSet, which was not accessible:
+    //
+    // send a message to STICKS indicating that these bonds
+    // should be part of the state of the model. They will 
+    // appear in the state as bondOrder commands.    
+    //if (isUserCalculation)
+      //shapeManager.setShapeSizeBs(JC.SHAPE_STICKS, Integer.MIN_VALUE, null, bsAromatic);
+    ///////
+
+    
   }
 
   /**

@@ -53,7 +53,7 @@ class AtomPropertyMapper extends AtomDataReader {
   
   @Override
   protected void setup(boolean isMapData) {
-    super.setup(isMapData);
+    setup2();
     // MAP only
     haveSurfaceAtoms = true;
     volumeData.sr = this;

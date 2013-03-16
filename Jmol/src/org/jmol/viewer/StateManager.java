@@ -282,7 +282,7 @@ public class StateManager {
   String getSavedOrientationText(String saveName) {
     Orientation o;
     if (saveName != null) {
-      o = getOrientation(saveName);
+      o = getOrientationFor(saveName);
       return (o == null ? "" : o.getMoveToText(true));      
     } 
     SB sb = new SB();
@@ -309,7 +309,7 @@ public class StateManager {
   }
   
   boolean restoreOrientation(String saveName, float timeSeconds, boolean isAll) {
-    Orientation o = getOrientation(saveName);
+    Orientation o = getOrientationFor(saveName);
     if (o == null)
       return false;
     o.restore(timeSeconds, isAll);
@@ -317,7 +317,7 @@ public class StateManager {
     return true;
   }
 
-  private Orientation getOrientation(String saveName) {
+  private Orientation getOrientationFor(String saveName) {
     String name = (saveName.length() > 0 ? "Orientation_" + saveName
         : lastOrientation);    
     return (Orientation) saved.get(name);

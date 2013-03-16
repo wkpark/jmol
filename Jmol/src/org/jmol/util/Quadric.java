@@ -46,10 +46,11 @@ public class Quadric {
       + vectors[2] + "\t" + lengths[2] + "\n");
   }
   
-  public Quadric(V3[] vectors, float[] lengths, boolean isThermal) {
+  public Quadric fromVectors(V3[] vectors, float[] lengths, boolean isThermal) {
     this.vectors = vectors;
     this.lengths = lengths;
     isThermalEllipsoid = isThermal;
+    return this;
   }
   
   //////////  Ellipsoid Code ///////////
@@ -63,7 +64,7 @@ public class Quadric {
   //////////////////////////////////////
 
   private static float ONE_OVER_ROOT2_PI = (float) (Math.sqrt(0.5) / Math.PI);
-  public Quadric(double[] bcart) {
+  public Quadric fromBCart(double[] bcart) {
     isThermalEllipsoid = true;
     lengths = new float[3];
     vectors = new V3[3];
@@ -71,6 +72,7 @@ public class Quadric {
 
     for (int i = 0; i < 3; i++)
       lengths[i] *= ONE_OVER_ROOT2_PI;
+    return this;
   }
 
   public void rotate(Matrix4f mat) {

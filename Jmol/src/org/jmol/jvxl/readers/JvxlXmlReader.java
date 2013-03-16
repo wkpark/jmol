@@ -83,7 +83,7 @@ public class JvxlXmlReader extends VolumeFileReader {
 
   @Override
   protected boolean readVolumeData(boolean isMapData) {
-    if (!super.readVolumeData(isMapData))
+    if (!readVolumeDataVFR(isMapData))
       return false;
     strFractionTemp = jvxlEdgeDataRead;
     fractionPtr = 0;
@@ -388,7 +388,7 @@ public class JvxlXmlReader extends VolumeFileReader {
   @Override
   protected void readSurfaceData(boolean isMapDataIgnored) throws Exception {
     thisInside = !params.isContoured;
-    if (readSurfaceData())
+    if (readSurfaceDataXML())
       return;
     tempDataXml = xr.getXmlData("jvxlEdgeData", null, true, false);
     bsVoxelBitSet = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlEdgeData",
@@ -399,7 +399,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     readVolumeFileSurfaceData();
   }
 
-  protected boolean readSurfaceData() throws Exception {
+  protected boolean readSurfaceDataXML() throws Exception {
     if (vertexDataOnly) {
       getEncodedVertexData();
       return true;

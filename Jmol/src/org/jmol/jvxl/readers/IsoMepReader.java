@@ -42,7 +42,7 @@ class IsoMepReader extends AtomDataReader {
 
   @Override
   protected void setup(boolean isMapData) {
-    super.setup(isMapData);
+    setup2();
     doAddHydrogens = false;
     getAtoms(params.bsSelected, doAddHydrogens, true, false, false, false, false, params.mep_marginAngstroms);
     setHeader("MEP", "");

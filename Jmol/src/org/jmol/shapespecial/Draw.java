@@ -1289,7 +1289,7 @@ public void initShape() {
 
   private String getDrawCommand(DrawMesh mesh) {
     if (mesh != null)
-      return getDrawCommand(mesh, mesh.modelIndex);
+      return getDrawCommand2(mesh, mesh.modelIndex);
     
     SB sb = new SB();
     String key = (explicitID && previousMeshID != null
@@ -1301,12 +1301,12 @@ public void initShape() {
       DrawMesh m = (DrawMesh) meshes[i];
       if (key == null
           || TextFormat.isMatch(m.thisID.toUpperCase(), key, true, true))
-        sb.append(getDrawCommand(m, m.modelIndex));
+        sb.append(getDrawCommand2(m, m.modelIndex));
     }
     return sb.toString();
   }
 
-  private String getDrawCommand(DrawMesh mesh, int iModel) {
+  private String getDrawCommand2(DrawMesh mesh, int iModel) {
     if (mesh.drawType == EnumDrawType.NONE  
         && mesh.lineData == null
         && mesh.drawVertexCount == 0 && mesh.drawVertexCounts == null)
@@ -1487,7 +1487,7 @@ public void initShape() {
             continue;
           Map<String, Object> mInfo = new Hashtable<String, Object>();
           mInfo.put("modelIndex", Integer.valueOf(k));
-          mInfo.put("command", getDrawCommand(mesh, k));
+          mInfo.put("command", getDrawCommand2(mesh, k));
           mInfo.put("center", mesh.ptCenters[k]);
           int nPoints = mesh.drawVertexCounts[k];
           mInfo.put("vertexCount", Integer.valueOf(nPoints));
@@ -1532,7 +1532,7 @@ public void initShape() {
       DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0 && mesh.lineData == null)
         continue;
-      s.append(getDrawCommand(mesh, mesh.modelIndex));
+      s.append(getDrawCommand2(mesh, mesh.modelIndex));
       if (!mesh.visible)
         s.append(" draw " + mesh.thisID + " off;\n");
     }

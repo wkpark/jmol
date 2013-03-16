@@ -78,11 +78,9 @@ public class IsosurfaceMesh extends Mesh {
     jvxlData.version = Viewer.getJmolVersion();
   }
 
-  void clear(String meshType, boolean iAddGridPoints) {
-    super.clear(meshType);
-
+  void clearType(String meshType, boolean iAddGridPoints) {
+    clear(meshType);
     jvxlData.clear();
-
     assocGridPointMap = null;
     assocGridPointNormals = null;
     bsVdw = null;
@@ -498,7 +496,7 @@ public class IsosurfaceMesh extends Mesh {
    * @param bs
    */
   void colorAtoms(short colix, BS bs) {
-    colorVertices(colix, bs, true);
+    colorVertices2(colix, bs, true);
   }
 
   /**
@@ -508,7 +506,7 @@ public class IsosurfaceMesh extends Mesh {
    * @param bs
    */
   void colorVertices(short colix, BS bs) {
-    colorVertices(colix, bs, false);
+    colorVertices2(colix, bs, false);
   }
 
   /**
@@ -518,7 +516,7 @@ public class IsosurfaceMesh extends Mesh {
    * @param bs
    * @param isAtoms
    */
-  private void colorVertices(short colix, BS bs, boolean isAtoms) {
+  private void colorVertices2(short colix, BS bs, boolean isAtoms) {
     if (vertexSource == null)
       return;
     colix = C.copyColixTranslucency(this.colix, colix);

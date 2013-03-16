@@ -53,10 +53,10 @@ class IsoFxyReader extends AtomDataReader {
   protected void setup(boolean isMapData) {
     if (params.functionInfo.size() > 5)
       data = (float[][]) params.functionInfo.get(5);
-    setup("functionXY");
+    setupType("functionXY");
   }
 
-  protected void setup(String type) {
+  protected void setupType(String type) {
     func = (Object[]) params.func;
     String functionName = (String) params.functionInfo.get(0);
     jvxlFileHeaderBuffer = new SB();

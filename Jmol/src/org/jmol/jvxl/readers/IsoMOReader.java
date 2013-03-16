@@ -74,7 +74,7 @@ class IsoMOReader extends AtomDataReader {
     boolean haveVolumeData = params.moData.containsKey("haveVolumeData");
     if (haveVolumeData && mo != null)
       params.volumeData = (VolumeData) mo.get("volumeData");
-    super.setup(isMapData);
+    setup2();
     doAddHydrogens = false;
     getAtoms(params.bsSelected, doAddHydrogens, !isNci, isNci, isNci, false,
         false, params.qm_marginAngstroms);

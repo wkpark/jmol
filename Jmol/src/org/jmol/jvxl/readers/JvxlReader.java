@@ -265,7 +265,7 @@ public class JvxlReader extends JvxlXmlReader {
   @Override
   protected void readSurfaceData(boolean isMapDataIgnored) throws Exception {
     thisInside = !params.isContoured;
-    if (readSurfaceData())
+    if (readSurfaceDataXML())
       return;
     readVolumeFileSurfaceData();
   }

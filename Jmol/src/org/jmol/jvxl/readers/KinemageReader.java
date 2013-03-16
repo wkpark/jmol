@@ -71,20 +71,13 @@ class KinemageReader extends PmeshReader {
 
   @Override
   protected boolean readVolumeParameters(boolean isMapData) {
-    setup(isMapData);
-    return super.readVolumeParameters(isMapData);
-  }
-
-  /**
-   * @param isMapData
-   */
-  private void setup(boolean isMapData) {
     if (params.parameters != null && params.parameters.length >= 2) {
       vMin = params.parameters[1];
       vMax = (params.parameters.length >= 3 ? params.parameters[2] : vMin);
       pointType = (params.parameters.length >= 4 ? (int) params.parameters[3] : POINTS_ALL);
       findString = params.calculationType;
     }
+    return true;
   }
 
   @Override

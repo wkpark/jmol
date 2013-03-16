@@ -35,7 +35,7 @@ class IsoPlaneReader extends AtomDataReader {
 
   @Override
   protected void setup(boolean isMapData) {
-    super.setup(isMapData);
+    setup2();
     setHeader("PLANE", params.thePlane.toString());
     params.cutoff = 0;
     setVolumeForPlane();

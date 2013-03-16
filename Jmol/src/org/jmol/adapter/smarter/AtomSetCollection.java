@@ -1354,7 +1354,7 @@ public class AtomSetCollection {
                 axes = symmetry.rotateEllipsoid(iSym, ptTemp, axes, ptTemp1,
                     ptTemp2);
               }
-              atom1.ellipsoid[j] = new Quadric(axes, lengths, e.isThermalEllipsoid);
+              atom1.ellipsoid[j] = new Quadric().fromVectors(axes, lengths, e.isThermalEllipsoid);
             }
           }
         }
@@ -1377,7 +1377,7 @@ public class AtomSetCollection {
     return pt;
   }
   
-  public void applySymmetry(JmolList<Matrix4f> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
+  public void applySymmetryBio(JmolList<Matrix4f> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
     if (latticeCells != null && latticeCells[0] != 0) {
       Logger.error("Cannot apply biomolecule when lattice cells are indicated");
       return;

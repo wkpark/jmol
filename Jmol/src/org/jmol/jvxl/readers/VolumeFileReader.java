@@ -34,7 +34,6 @@ import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
 
@@ -49,6 +48,9 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected boolean canDownsample;
   private int[] downsampleRemainders;
   private boolean preProcessPlanes;
+  private int nData;
+  private boolean readerClosed;
+
 
   VolumeFileReader() {}
   
@@ -65,8 +67,6 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     }
   }
 
-  private int nData;
-
   protected float recordData(float value) {
     if (Float.isNaN(value))
       return value;
@@ -78,8 +78,6 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     nData++;
     return value;
   }
-
-  boolean readerClosed;
 
   @Override
   protected void closeReader() {
@@ -110,10 +108,12 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     return true;
   }
 
-  P4 thePlane;
-
   @Override
   protected boolean readVolumeData(boolean isMapData) {
+    return readVolumeDataVFR(isMapData);
+  }
+
+  protected boolean readVolumeDataVFR(boolean isMapData) {
     if (!gotoAndReadVoxelData(isMapData))
       return false;
     if (!vertexDataOnly)

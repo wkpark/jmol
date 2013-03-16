@@ -348,7 +348,7 @@ public class PdbReader extends AtomSetCollectionReader {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
       setBiomoleculeAtomCounts();
       if (vBiomts != null && applySymmetry) {
-        atomSetCollection.applySymmetry(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
+        atomSetCollection.applySymmetryBio(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
         vTlsModels = null; // for now, no TLS groups for biomolecules
       }
     }

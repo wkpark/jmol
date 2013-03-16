@@ -38,7 +38,7 @@ class IsoFxyzReader extends IsoFxyReader {
   protected void setup(boolean isMapData) {
     if (params.functionInfo.size() > 5)
       data = (float[][][]) params.functionInfo.get(5);
-    setup("functionXYZ");
+    setupType("functionXYZ");
   }
 
   @Override

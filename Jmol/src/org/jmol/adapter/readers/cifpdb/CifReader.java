@@ -238,7 +238,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
       setBiomolecules();
       if (vBiomts != null && vBiomts.size() > 1) {
-        atomSetCollection.applySymmetry(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
+        atomSetCollection.applySymmetryBio(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
       }
     }
     super.finalizeReader();

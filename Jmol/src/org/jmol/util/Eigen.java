@@ -1089,7 +1089,7 @@ public class Eigen {
     float[] lengths = new float[3];
     eigen.set(unitVectors, lengths);
     sort(unitVectors, lengths);
-    return new Quadric(unitVectors, lengths, false);
+    return new Quadric().fromVectors(unitVectors, lengths, false);
   }
 
   public static Quadric getEllipsoid(V3[] vectors, float[] lengths, boolean isThermal) {
@@ -1098,7 +1098,7 @@ public class Eigen {
     for (int i = vectors.length; --i >= 0;)
       unitVectors[i] = V3.newV(vectors[i]);
     sort(unitVectors, lengths);
-    return new Quadric(unitVectors, lengths, isThermal);
+    return new Quadric().fromVectors(unitVectors, lengths, isThermal);
   }
 
   /**

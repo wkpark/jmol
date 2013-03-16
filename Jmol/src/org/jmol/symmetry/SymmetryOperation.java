@@ -60,6 +60,7 @@ import org.jmol.script.T;
  *
  */
 
+
 class SymmetryOperation extends Matrix4f {
   String xyzOriginal;
   String xyz;
@@ -67,28 +68,34 @@ class SymmetryOperation extends Matrix4f {
   boolean isFinalized;
   int opId;
 
-  SymmetryOperation() {
-  }
-
-  SymmetryOperation(boolean doNormalize, int opId) {
-    this.doNormalize = doNormalize;
-    this.opId = opId;
-  }
-
+  /**
+   * @j2sIgnoreSuperConstructor
+   * @j2sOverride
+   * 
+   * @param op
+   * @param atoms
+   * @param atomIndex
+   * @param countOrId
+   * @param doNormalize
+   */
   SymmetryOperation(SymmetryOperation op, P3[] atoms,
-                           int atomIndex, int count, boolean doNormalize) {
+                           int atomIndex, int countOrId, boolean doNormalize) {
+    this.doNormalize = doNormalize;
+    if (op == null) {
+      opId = countOrId;
+      return;
+    }
     /*
      * externalizes and transforms an operation for use in atom reader
      * 
      */
-    this.doNormalize = doNormalize;
     xyzOriginal = op.xyzOriginal;
     xyz = op.xyz;
     this.opId = op.opId;
     setM(op); // sets the underlying Matrix4f
     doFinalize();
     if (doNormalize)
-      setOffset(atoms, atomIndex, count);
+      setOffset(atoms, atomIndex, countOrId);
   }
 
   void doFinalize() {
@@ -102,7 +109,8 @@ class SymmetryOperation extends Matrix4f {
     return (normalized || xyzOriginal == null ? xyz : xyzOriginal);
   }
 
-  private P3 temp3 = new P3();
+  private final static P3 temp3 = new P3();
+  
   void newPoint(P3 atom1, P3 atom2,
                        int transX, int transY, int transZ) {
     temp3.setT(atom1);
@@ -431,7 +439,7 @@ class SymmetryOperation extends Matrix4f {
     return (s.charAt(0) == '0' ? "" : n12ths > 0 ? "+" + s : s);
   }
 
-  P3 atomTest = new P3();
+  final static P3 atomTest = new P3();
 
   private void setOffset(P3[] atoms, int atomIndex, int count) {
     /*
@@ -614,7 +622,7 @@ class SymmetryOperation extends Matrix4f {
     P3 pa1 = (P3) info[0];
     V3 ax1 = (V3) info[1];
     int ang1 = (int) Math.abs(Parser.approx(((P3) info[3]).x, 1));
-    float pitch1 = approx(((P3) info[3]).y);
+    float pitch1 = approxF(((P3) info[3]).y);
 
     if (haveinversion) {
 
@@ -776,13 +784,13 @@ class SymmetryOperation extends Matrix4f {
 
       ptemp.setT(trans);
       uc.toFractional(ptemp, false);
-      if (approx(ptemp.x) == 1) {
+      if (approxF(ptemp.x) == 1) {
         ptemp.x = 0;
       }
-      if (approx(ptemp.y) == 1) {
+      if (approxF(ptemp.y) == 1) {
         ptemp.y = 0;
       }
-      if (approx(ptemp.z) == 1) {
+      if (approxF(ptemp.z) == 1) {
         ptemp.z = 0;
       }
       ftrans.setT(ptemp);
@@ -856,9 +864,9 @@ class SymmetryOperation extends Matrix4f {
       if (istranslation) {
         info1 = "translation:" + s;
       } else if (ismirrorplane) {
-        float fx = approx(ftrans.x);
-        float fy = approx(ftrans.y);
-        float fz = approx(ftrans.z);
+        float fx = approxF(ftrans.x);
+        float fy = approxF(ftrans.y);
+        float fz = approxF(ftrans.z);
         s = " " + fcoord(ftrans);
         if (fx != 0 && fy != 0 && fz != 0)
           info1 = "d-";
@@ -1190,7 +1198,7 @@ class SymmetryOperation extends Matrix4f {
 
   private static String fc(float x) {
     float xabs = Math.abs(x);
-    int x24 = (int) approx(xabs * 24);
+    int x24 = (int) approxF(xabs * 24);
     String m = (x < 0 ? "-" : "");
     if (x24%8 != 0)
       return m + twelfthsOf(x24 >> 1);
@@ -1211,14 +1219,14 @@ class SymmetryOperation extends Matrix4f {
   
   private static Tuple3f approx(Tuple3f pt) {
     if (pt != null) {
-      pt.x = approx(pt.x);
-      pt.y = approx(pt.y);
-      pt.z = approx(pt.z);
+      pt.x = approxF(pt.x);
+      pt.y = approxF(pt.y);
+      pt.z = approxF(pt.z);
     }
     return pt;
   }
   
-  private static float approx(float f) {
+  private static float approxF(float f) {
     return Parser.approx(f, 100);
   }
 

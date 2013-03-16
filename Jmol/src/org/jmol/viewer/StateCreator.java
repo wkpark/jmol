@@ -1874,8 +1874,19 @@ public class StateCreator implements JmolStateCreator {
      * Note: this method is the gateway to all file writing for the applet.
      */
 
-    if (type.equals("JMOL"))
-      type = "ZIPALL";
+    Object ret = null;
+    String localName = null;
+    boolean isClip = (fileName == null);
+    if (!isClip) {
+      if (doCheck)
+        fileName = getOutputFileNameFromDialog(fileName, quality);
+      if (fileName == null)
+        return null;
+      if (!viewer.isJS && FileManager.isLocal(fileName))
+        localName = fileName;
+      if (fullPath != null)
+        fullPath[0] = fileName;
+    }
     int saveWidth = viewer.dimScreen.width;
     int saveHeight = viewer.dimScreen.height;
     viewer.creatingImage = true;
@@ -1884,61 +1895,51 @@ public class StateCreator implements JmolStateCreator {
       viewer.resizeImage(width, height, true, false, false);
       viewer.setModelVisibility();
     }
-    Object err = null;
-
     try {
-      if (fileName == null) {
-        err = viewer.clipImage(text);
+      if (isClip) {
+        ret = viewer.clipImage(text);
       } else {
-        if (doCheck)
-          fileName = getOutputFileNameFromDialog(fileName, quality);
-        if (fullPath != null)
-          fullPath[0] = fileName;
-        String localName = (!viewer.isJS && FileManager.isLocal(fileName) ? fileName
-            : null);
-        if (fileName == null) {
-          err = "CANCELED";
-        } else if (type.equals("ZIP") || type.equals("ZIPALL")) {
+        if (type.equals("JMOL"))
+          type = "ZIPALL";
+        if (type.equals("ZIP") || type.equals("ZIPALL")) {
           if (scripts != null && type.equals("ZIP"))
             type = "ZIPALL";
-          err = JmolBinary.createZipSet(viewer.fileManager, viewer, localName,
+          ret = JmolBinary.createZipSet(viewer.fileManager, viewer, localName,
               text, scripts, type.equals("ZIPALL"));
         } else if (type.equals("SCENE")) {
-          err = (viewer.isJS ? "ERROR: Not Available" : createSceneSet(
+          ret = (viewer.isJS ? "ERROR: Not Available" : createSceneSet(
               fileName, text, width, height));
         } else {
           // see if application wants to do it (returns non-null String)
           // both Jmol application and applet return null
           if (!type.equals("OutputStream"))
-            err = viewer.statusManager.createImage(fileName, type, text, bytes,
+            ret = viewer.statusManager.createImage(fileName, type, text, bytes,
                 quality);
-          if (err == null) {
+          if (ret == null) {
             // application can do it itself or allow Jmol to do it here
             JmolImageCreatorInterface c = viewer.getImageCreator();
-            err = c.createImage(localName, type, text, bytes, scripts, null,
+            ret = c.createImage(localName, type, text, bytes, scripts, null,
                 quality);
-            if (err instanceof String)
+            if (ret instanceof String)
               // report error status (text_or_bytes == null)
-              viewer.statusManager.createImage((String) err, type, null, null,
+              viewer.statusManager.createImage((String) ret, type, null, null,
                   quality);
           }
         }
-        if (err instanceof byte[]) {
-          err = JmolBinary.postByteArray(viewer.fileManager, fileName,
-              (byte[]) err);
-          err = "OK " + err;
-        }
+        if (ret instanceof byte[])
+          ret = "OK " + JmolBinary.postByteArray(viewer.fileManager, fileName,
+              (byte[]) ret);
       }
     } catch (Throwable er) {
       //er.printStackTrace();
       Logger.error(viewer.setErrorMessage(
-          (String) (err = "ERROR creating image??: " + er), null));
+          (String) (ret = "ERROR creating image??: " + er), null));
     }
     viewer.creatingImage = false;
     if (quality != Integer.MIN_VALUE) {
       viewer.resizeImage(saveWidth, saveHeight, true, false, true);
     }
-    return ("CANCELED".equals(err) ? null : err);
+    return ret;
   }
 
   public void syncScript(String script, String applet, int port) {

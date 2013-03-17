@@ -76,31 +76,31 @@ class Platform3D {
     pBufferT = new int[bufferSizeT];    
   }
   
-  void allocateBuffers(int width, int height, boolean antialias) {
+  /**
+   * @param width 
+   * @param height 
+   * @param antialias 
+   * @param isImageWrite  
+   */
+  void allocateBuffers(int width, int height, boolean antialias, boolean isImageWrite) {
     windowWidth = width;
     windowHeight = height;
     windowSize = width * height;
     if (antialias) {
-      bufferWidth = width * 2;
-      bufferHeight = height * 2;
-    } else {
-      bufferWidth = width;
-      bufferHeight = height;
+      width *= 2;
+      height *= 2;
     }
+    bufferWidth = width;
+    bufferHeight = height;
     
     bufferSize = bufferWidth * bufferHeight;
     zBuffer = new int[bufferSize];
     pBuffer = new int[bufferSize];
     // original thought was that there is
-    // no need for any antialiasing on a translucent buffer
+    // no nebed for any antialiasing on a translucent buffer
     // but that's simply not true.
     // bufferSizeT = windowSize;
-    bufferedImage = apiPlatform.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent);
-
-    /*
-    Logger.debug("  width:" + width + " bufferWidth=" + bufferWidth +
-                       "\nheight:" + height + " bufferHeight=" + bufferHeight);
-    */
+    bufferedImage = apiPlatform.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent, isImageWrite);
   }
   
   void releaseBuffers() {
@@ -144,9 +144,9 @@ class Platform3D {
     }
   }
   
-  final void obtainScreenBuffer() {
+  final void clearBuffer() {
     if (useClearingThread) {
-      clearingThread.obtainBufferForClient();
+      clearingThread.clearClientBuffer();
     } else {
       clearScreenBuffer();
     }
@@ -202,7 +202,7 @@ class Platform3D {
       // for now do nothing
     }
 
-    synchronized void obtainBufferForClient() {
+    synchronized void clearClientBuffer() {
       //Logger.debug("obtainBufferForClient()");
       while (! bufferHasBeenCleared)
         try { wait(); } catch (InterruptedException ie) {}

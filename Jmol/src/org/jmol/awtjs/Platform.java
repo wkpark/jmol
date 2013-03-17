@@ -16,7 +16,7 @@ public class Platform extends org.jmol.awtjs2d.Platform {
 
   @Override
 	public Object allocateRgbImage(int windowWidth, int windowHeight,
-			int[] pBuffer, int windowSize, boolean backgroundTransparent) {
+			int[] pBuffer, int windowSize, boolean backgroundTransparent, boolean isImageWrite) {
 		return Image.allocateRgbImage(windowWidth, windowHeight, pBuffer,
 				windowSize, backgroundTransparent);
 	}

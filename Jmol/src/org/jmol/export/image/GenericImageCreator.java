@@ -141,7 +141,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
     boolean isOsTemp = (os == null && fileName != null && !isPDF);
     boolean asBytes = (os == null && fileName == null && !isPDF);
     boolean isImage = (objImage != null);
-    Object image = (isImage ? objImage : viewer.getScreenImageBuffer(null));
+    Object image = (isImage ? objImage : viewer.getScreenImageBuffer(null, true));
     try {
       if (image == null) {
         errMsg = viewer.getErrorMessage();

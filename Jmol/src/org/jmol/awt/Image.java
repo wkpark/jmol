@@ -96,7 +96,7 @@ class Image {
 
   static Object getJpgImage(ApiPlatform apiPlatform, Viewer viewer,
                             int quality, String comment) {
-    BufferedImage eImage = (BufferedImage) viewer.getScreenImageBuffer(null);
+    BufferedImage eImage = (BufferedImage) viewer.getScreenImageBuffer(null, true);
     if (eImage == null)
       return null;
     if (quality < 0)

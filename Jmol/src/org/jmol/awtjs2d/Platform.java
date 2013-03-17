@@ -164,9 +164,9 @@ public class Platform implements ApiPlatform {
 	// //// Image
 
 	public Object allocateRgbImage(int windowWidth, int windowHeight,
-			int[] pBuffer, int windowSize, boolean backgroundTransparent) {
+			int[] pBuffer, int windowSize, boolean backgroundTransparent, boolean isImageWrite) {
 		return Image.allocateRgbImage(windowWidth, windowHeight, pBuffer,
-				windowSize, backgroundTransparent, canvas);
+				windowSize, backgroundTransparent, (isImageWrite ? null : canvas));
 	}
 
   public void notifyEndOfRendering() {
@@ -192,6 +192,9 @@ public class Platform implements ApiPlatform {
 	  // from PNG and JPG image creators, also g3d.ImageRenderer.plotImage via drawImageToBuffer
 	  
 	  /**
+	   * 
+	   * (might be just an object with buf32 defined -- WRITE IMAGE)
+	   * 
 	   * @j2sNative
 	   * 
 	   *     if (canvas.image && (width != canvas.width || height != canvas.height))

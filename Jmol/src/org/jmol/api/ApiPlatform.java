@@ -49,7 +49,7 @@ public interface ApiPlatform {
   ///// core Image handling
   
   Object allocateRgbImage(int windowWidth, int windowHeight, int[] pBuffer,
-                          int windowSize, boolean backgroundTransparent);
+                          int windowSize, boolean backgroundTransparent, boolean isImageWrite);
 
   void disposeGraphics(Object graphicForText);
 

@@ -45,7 +45,7 @@ public class AwtImageCreator extends GenericImageCreator {
     String msg;
     try {
       if (text == null) {
-        Image image = (Image) viewer.getScreenImageBuffer(null);
+        Image image = (Image) viewer.getScreenImageBuffer(null, true);
         ImageSelection.setClipboard(image);
         msg = "OK image to clipboard: "
             + (image.getWidth(null) * image.getHeight(null));

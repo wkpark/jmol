@@ -4203,10 +4203,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // creatingImage);
     if (updateWindow(width, height)) {
       if (gRight == null) {
-        getScreenImageBuffer(gLeft);
+        getScreenImageBuffer(gLeft, false);
       } else {
-        render1(gRight, getImage(true), 0, 0);
-        render1(gLeft, getImage(false), 0, 0);
+        render1(gRight, getImage(true, false), 0, 0);
+        render1(gLeft, getImage(false, false), 0, 0);
       }
       //System.out.println(Thread.currentThread() +
       // "notifying repaintManager repaint is done");
@@ -4264,11 +4264,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /**
    * 
    * @param isDouble
+   * @param isImageWrite TODO
    * @return a java.awt.Image in the case of standard Jmol; 
    *           an int[] in the case of Jmol-Android
    *           a canvas in the case of JSmol
    */
-  private Object getImage(boolean isDouble) {
+  private Object getImage(boolean isDouble, boolean isImageWrite) {
     /**
      * @j2sNative
      * 
@@ -4279,11 +4280,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     
     Object image = null;
     try {
-      gdata.beginRendering(transformManager.getStereoRotationMatrix(isDouble));
+      gdata.beginRendering(transformManager.getStereoRotationMatrix(isDouble), isImageWrite);
       render();
       gdata.endRendering();
-      image = gdata.getScreenImage();
+      image = gdata.getScreenImage(isImageWrite);
     } catch (Error er) {
+      gdata.getScreenImage(isImageWrite);
       handleError(er, false);
       setErrorMessage("Error during rendering: " + er, null);
     }
@@ -4323,18 +4325,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
-  private Object getStereoImage(EnumStereoMode stereoMode) {
-    gdata.beginRendering(transformManager.getStereoRotationMatrix(true));
-    render();
-    gdata.endRendering();
-    gdata.snapshotAnaglyphChannelBytes();
-    gdata.beginRendering(transformManager.getStereoRotationMatrix(false));
-    render();
-    gdata.endRendering();
-    gdata.applyAnaglygh(stereoMode, transformManager.stereoColors);
-    return gdata.getScreenImage();
-  }
-
   private void render1(Object graphic, Object img, int x, int y) {
     if (graphic != null && img != null) {
       apiPlatform.drawImage(graphic, img, x, y, dimScreen.width,
@@ -4347,7 +4337,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * Image.getJpgImage, ImageCreator.clipImage, getImageBytes, Viewer.renderScreenImageStereo
    */
   @Override
-  public Object getScreenImageBuffer(Object graphic) {
+  public Object getScreenImageBuffer(Object graphic, boolean isImageWrite) {
     /**
      * 
      * will be a canvas for JSmol HTML5 only
@@ -4360,8 +4350,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     {}
     {
       boolean mergeImages = (graphic == null && isStereoDouble());
-      Object imageBuffer = (transformManager.stereoMode.isBiColor() ? getStereoImage(transformManager.stereoMode)
-          : getImage(isStereoDouble()));
+      Object imageBuffer;
+      if (transformManager.stereoMode.isBiColor()) {
+        gdata.beginRendering(transformManager.getStereoRotationMatrix(true), isImageWrite);
+        render();
+        gdata.endRendering();
+        gdata.snapshotAnaglyphChannelBytes();
+        gdata.beginRendering(transformManager.getStereoRotationMatrix(false), isImageWrite);
+        render();
+        gdata.endRendering();
+        gdata.applyAnaglygh(transformManager.stereoMode, transformManager.stereoColors);
+        imageBuffer = gdata.getScreenImage(isImageWrite);
+      } else {
+        imageBuffer = getImage(isStereoDouble(), isImageWrite);
+      }
       Object imageBuffer2 = null;
       if (mergeImages) {
         imageBuffer2 = apiPlatform.newBufferedImage(imageBuffer, dimScreen.width << 1,
@@ -4371,7 +4373,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (graphic != null) {
         if (isStereoDouble()) {
           render1(graphic, imageBuffer, dimScreen.width, 0);
-          imageBuffer = getImage(false);
+          imageBuffer = getImage(false, false);
         }
         render1(graphic, imageBuffer, 0, 0);
       }

@@ -264,7 +264,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
   
   @Override
-  public void beginRendering(Matrix3f rotationMatrix) {
+  public void beginRendering(Matrix3f rotationMatrix, boolean isImageWrite) {
     if (currentlyRendering)
       endRendering();
     if (windowWidth != newWindowWidth || windowHeight != newWindowHeight
@@ -288,12 +288,12 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     addAllPixels = true;
     if (pbuf == null) {
       platform.allocateBuffers(windowWidth, windowHeight,
-                              antialiasThisFrame);
+                              antialiasThisFrame, isImageWrite);
       pbuf = platform.pBuffer;
       zbuf = platform.zBuffer;
     }
     setWidthHeight(antialiasThisFrame);
-    platform.obtainScreenBuffer();
+    platform.clearBuffer();
     if (backgroundImage != null)
       plotImage(Integer.MIN_VALUE, 0, Integer.MIN_VALUE, backgroundImage, null, (short) 0, 0, 0);
   }
@@ -348,6 +348,19 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     currentlyRendering = false;
   }
 
+  @Override
+  public Object getScreenImage(boolean isImageWrite) {
+    /**
+     * @j2sNative
+     * var obj = this.platform.bufferedImage;
+     * if (isImageWrite) { this.releaseBuffers(); }
+     * return obj;
+     * 
+     */
+    {
+      return platform.bufferedImage;
+    }
+  }
   @Override
   public void applyAnaglygh(EnumStereoMode stereoMode, int[] stereoColors) {
     switch (stereoMode) {
@@ -415,11 +428,6 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     }
   }
   
-  @Override
-  public Object getScreenImage() {
-    return platform.bufferedImage;
-  }
-
   @Override
   public void releaseScreenImage() {
     platform.clearScreenBufferThreaded();

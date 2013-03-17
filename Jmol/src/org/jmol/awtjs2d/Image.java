@@ -43,6 +43,7 @@ class Image {
    */
   static int getWidth(Object canvas) {
     /**
+     * could also be a simple object with width defined (WRITE IMAGE)
      * @j2sNative
      * 
      *            return (canvas.imageWidth ? canvas.imageWidth : canvas.width);
@@ -87,7 +88,7 @@ class Image {
   static int[] grabPixels(Object context, int width, int height) {
     /**
      * @j2sNative
-     * 
+     *            if (context._buf32) return context._buf32; // non-canvas internal buffer for image writing
      *            var data = context.getImageData(0, 0, width, height).data;
      *            return this.toIntARGB(data);
      */
@@ -166,8 +167,13 @@ class Image {
                                  int[] pBuffer, int windowSize,
                                  boolean backgroundTransparent, Object canvas) {
     /**
+     * 
+     * null canvas indicates we are just creating a buffer for image writing
+     * 
      * @j2sNative 
      * 
+     * if (canvas == null) 
+     *   canvas = {width:windowWidth,height:windowHeight};
      * canvas.buf32 = pBuffer; 
      * return canvas;
      * 

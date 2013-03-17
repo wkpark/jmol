@@ -100,7 +100,7 @@ public class Platform implements ApiPlatform {
 
   public Object allocateRgbImage(int windowWidth, int windowHeight,
                                  int[] pBuffer, int windowSize,
-                                 boolean backgroundTransparent) {
+                                 boolean backgroundTransparent, boolean isImageWrite) {
     return Image.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent);
   }
 

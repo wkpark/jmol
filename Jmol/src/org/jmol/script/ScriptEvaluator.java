@@ -14572,9 +14572,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // evalError(GT._("The {0} command is not available for the applet.",
         // "WRITE CLIPBOARD"));
       } else if (Parser.isOneOf(val.toLowerCase(),
-          "png;pngj;pngt;jpg;jpeg;jpg64;jpeg64")
-          && tokAtArray(pt + 1, args) == T.integer) {
-        quality = SV.iValue(tokenAt(++pt, args));
+          "png;pngj;pngt;jpg;jpeg;jpg64;jpeg64")) {
+        if (tokAtArray(pt + 1, args) == T.integer && tokAtArray(pt + 2, args) == T.integer) {
+          width = SV.iValue(tokenAt(++pt, args));
+          height = SV.iValue(tokenAt(++pt, args));
+        }
+        if (tokAtArray(pt + 1, args) == T.integer)
+          quality = SV.iValue(tokenAt(++pt, args));
       } else if (Parser.isOneOf(val.toLowerCase(),
           "xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;cd;pdb;pqr;cml")) {
         type = val.toUpperCase();

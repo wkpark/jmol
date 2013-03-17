@@ -517,8 +517,9 @@ public class GData implements JmolGraphicsInterface {
 
   /**
    * @param stereoRotationMatrix  
+   * @param isImageWrite TODO
    */
-  public void beginRendering(Matrix3f stereoRotationMatrix) {
+  public void beginRendering(Matrix3f stereoRotationMatrix, boolean isImageWrite) {
   }
 
   public void endRendering() {
@@ -527,7 +528,11 @@ public class GData implements JmolGraphicsInterface {
   public void snapshotAnaglyphChannelBytes() {
   }
 
-  public Object getScreenImage() {
+  /**
+   * @param isImageWrite  
+   * @return image object
+   */
+  public Object getScreenImage(boolean isImageWrite) {
     return null;
   }
 

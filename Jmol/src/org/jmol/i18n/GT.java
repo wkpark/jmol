@@ -27,7 +27,6 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jmol.io.JmolResource;
 import org.jmol.util.Logger;
 
 public class GT {
@@ -44,7 +43,7 @@ public class GT {
   private static GT getTextWrapper;
   private static Language[] languageList;
 
-  private JmolResource[] resources = null;
+  private Resource[] resources = null;
   private int resourceCount = 0;
 
   private boolean doTranslate = true;
@@ -61,7 +60,7 @@ public class GT {
     if ("none".equals(language))
       language = null;
     if (language == null)
-      language = JmolResource.getLanguage();
+      language = Resource.getLanguage();
     if (language == null)
       language = "en";
 
@@ -240,10 +239,10 @@ public class GT {
   }
 
   private void addBundle(String className, String name) {
-    JmolResource resource = JmolResource.getResource(className, name);    
+    Resource resource = Resource.getResource(className, name);    
     if (resource != null) {
       if (resources == null) {
-        resources = new JmolResource[8];
+        resources = new Resource[8];
         resourceCount = 0;
       }
       resources[resourceCount] = resource;

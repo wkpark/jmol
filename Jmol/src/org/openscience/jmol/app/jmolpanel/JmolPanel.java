@@ -28,6 +28,8 @@ import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.awt.Platform;
+import org.jmol.console.JmolButton;
+import org.jmol.console.JmolToggleButton;
 import org.jmol.export.JmolFileDropper;
 import org.jmol.export.dialog.Dialog;
 import org.jmol.export.history.HistoryFile;
@@ -96,7 +98,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -750,12 +751,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     ImageIcon ii = JmolResourceHandler.getIconX(key + "Image");
     boolean isHoldButton = (key.startsWith("animatePrev") || key.startsWith("animateNext"));
-    AbstractButton b = (isHoldButton ? new AnimButton(ii, JmolResourceHandler.getStringX(key)) : new JButton(ii));
+    AbstractButton b = (isHoldButton ? new AnimButton(ii, JmolResourceHandler.getStringX(key)) : new JmolButton(ii));
     String isToggleString = JmolResourceHandler.getStringX(key + "Toggle");
     if (isToggleString != null) {
       boolean isToggle = Boolean.valueOf(isToggleString).booleanValue();
       if (isToggle) {
-        b = new JToggleButton(ii);
+        b = new JmolToggleButton(ii);
         if (key.equals("rotateScript")) {
           display.buttonRotate = b;
         }
@@ -1619,7 +1620,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
         .getApplicationInterface("jsonkiosk.JsonNioService");
   }
 
-  private class AnimButton extends JButton implements MouseListener {
+  private class AnimButton extends JmolButton implements MouseListener {
 
     private String script;
 

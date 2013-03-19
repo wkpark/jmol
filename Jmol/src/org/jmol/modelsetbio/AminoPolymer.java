@@ -528,13 +528,11 @@ public class AminoPolymer extends AlphaPolymer {
                                                   boolean doReport,
                                                   boolean dsspIgnoreHydrogens,
                                                   boolean setStructure) {
-    boolean haveAmino = false;
+    BS bsAmino = new BS();
     for (int i = 0; i < bioPolymerCount; i++)
-      if (bioPolymers[i] instanceof AminoPolymer) {
-        haveAmino = true;
-        break;
-      }
-    if (!haveAmino)
+      if (bioPolymers[i] instanceof AminoPolymer)
+        bsAmino.set(i);
+    if (bsAmino.isEmpty())
       return "";
  
     Model m = bioPolymers[0].model;
@@ -570,9 +568,7 @@ public class AminoPolymer extends AlphaPolymer {
     BS bsBad = new BS();
     boolean haveWarned = false;
 
-    for (int i = 0; i < bioPolymerCount; i++) {
-      if (!(bioPolymers[i] instanceof AminoPolymer))
-        continue;
+    for (int i = bsAmino.nextSetBit(0); i >= 0; i = bsAmino.nextSetBit(i + 1)) {
       AminoPolymer ap = (AminoPolymer) bioPolymers[i];
       if (!haveWarned
           && ((AminoMonomer) ap.monomers[0]).getExplicitNH() != null) {
@@ -630,7 +626,7 @@ public class AminoPolymer extends AlphaPolymer {
     //         mark remaining turn residues as "T", and add the helix and turn structures.
 
     String[] reports = new String[bioPolymerCount];
-    for (int i = 0; i < bioPolymerCount; i++)
+    for (int i = bsAmino.nextSetBit(0); i >= 0; i = bsAmino.nextSetBit(i + 1))
       if (min[i] != null)
         reports[i] = ((AminoPolymer) bioPolymers[i]).findHelixes(min[i], i,
             bsDone[i], labels[i], doReport, setStructure, vHBonds, bsBad);
@@ -640,7 +636,7 @@ public class AminoPolymer extends AlphaPolymer {
     if (doReport) {
       SB sbSummary = new SB();
       sb.append("\n------------------------------\n");
-      for (int i = 0; i < bioPolymerCount; i++)
+      for (int i = bsAmino.nextSetBit(0); i >= 0; i = bsAmino.nextSetBit(i + 1))
         if (labels[i] != null) {
           AminoPolymer ap = (AminoPolymer) bioPolymers[i];
           sbSummary.append(ap.dumpSummary(labels[i]));

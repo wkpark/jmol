@@ -162,15 +162,13 @@ public class Jmol implements JmolSyncInterface {
       setValue(item.name() + "Callback", null);
     }
     loading = false;
-    /*
-    			language = getParameter("language");
-    			if (language != null) {
-    				System.out.print("requested language=" + language + "; ");
-    				new GT(language);
-    			}
-    			doTranslate = (!"none".equals(language) && getBooleanValue("doTranslate",
-    					true));
-    */
+    language = getParameter("language");
+    if (language != null) {
+      System.out.println("requested language=" + language);
+      new GT(language);
+    }
+    doTranslate = (!"none".equals(language) && getBooleanValue("doTranslate",
+        true));
     language = GT.getLanguage();
     System.out.println("language=" + language);
 
@@ -187,26 +185,26 @@ public class Jmol implements JmolSyncInterface {
     //		Logger
     //				.warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
     //}
-    //if (callbacks.get(EnumCallback.SCRIPT) == null
-    //		&& callbacks.get(EnumCallback.ERROR) == null)
-    //	if (callbacks.get(EnumCallback.MESSAGE) != null /* || statusForm != null
-    //			|| statusText != null */) {
-    //		if (doTranslate && (getValue("doTranslate", null) == null)) {
-    //			doTranslate = false;
-    //			Logger
-    //					.warn("Note -- Presence of message callback disables translation;"
-    //							+ " to enable message translation use jmolSetTranslation(true) prior to jmolApplet()");
-    //		}
-    //		if (doTranslate)
-    //			Logger
-    //					.warn("Note -- Automatic language translation may affect parsing of message callbacks"
-    //							+ " messages; use scriptCallback or errorCallback to process errors");
-    //	}
+    if (callbacks.get(EnumCallback.SCRIPT) == null
+    		&& callbacks.get(EnumCallback.ERROR) == null)
+    	if (callbacks.get(EnumCallback.MESSAGE) != null /* || statusForm != null
+    			|| statusText != null */) {
+    		if (doTranslate && (getValue("doTranslate", null) == null)) {
+    			doTranslate = false;
+    			Logger
+    					.warn("Note -- Presence of message callback disables translation;"
+    							+ " to enable message translation use jmolSetTranslation(true) prior to jmolApplet()");
+    		}
+    		if (doTranslate)
+    			Logger
+    					.warn("Note -- Automatic language translation may affect parsing of message callbacks"
+    							+ " messages; use scriptCallback or errorCallback to process errors");
+    	}
 
-    //if (!doTranslate) {
-    //	GT.setDoTranslate(false);
-    //	Logger.warn("Note -- language translation disabled");
-    //}
+    if (!doTranslate) {
+    	GT.setDoTranslate(false);
+    	Logger.warn("Note -- language translation disabled");
+    }
 
     //statusForm = getValue("StatusForm", null);
     //statusText = getValue("StatusText", null); // text
@@ -218,8 +216,8 @@ public class Jmol implements JmolSyncInterface {
     //}
 
     // should the popupMenu be loaded ?
-    //if (!getBooleanValue("popupMenu", true))
-    //	viewer.getProperty("DATA_API", "disablePopupMenu", null);
+    if (!getBooleanValue("popupMenu", true))
+    	viewer.getProperty("DATA_API", "disablePopupMenu", null);
 
     String scriptParam = getValue("script", "");
     viewer.popHoldRepaint();

@@ -123,7 +123,6 @@ public class AppConsole extends JmolConsole implements EnterListener {
    * 
    */
 
-
   @Override
   public void sendConsoleEcho(String strEcho) {
     if (strEcho == null)  // new language

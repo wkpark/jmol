@@ -25,11 +25,9 @@ package org.jmol.i18n;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
+import org.jmol.io.JmolResource;
 import org.jmol.util.Logger;
 
 public class GT {
@@ -37,13 +35,16 @@ public class GT {
   /**
    * 
    * The language list is now in org.jmol.i18n.Language -- Bob Hanson, 12/16/12
+   * 
+   * implementing translations in JavaScript
+   * 
    */
 
   private static boolean ignoreApplicationBundle = false;
   private static GT getTextWrapper;
   private static Language[] languageList;
 
-  private ResourceBundle[] resources = null;
+  private JmolResource[] resources = null;
   private int resourceCount = 0;
 
   private boolean doTranslate = true;
@@ -59,15 +60,8 @@ public class GT {
       language = langCode;
     if ("none".equals(language))
       language = null;
-    Locale locale = (language == null ? Locale.getDefault() : null);
-    if (locale != null) {
-      language = locale.getLanguage();
-      if (locale.getCountry() != null) {
-        language += "_" + locale.getCountry();
-        if (locale.getVariant() != null && locale.getVariant().length() > 0)
-          language += "_" + locale.getVariant();
-      }
-    }
+    if (language == null)
+      language = JmolResource.getLanguage();
     if (language == null)
       language = "en";
 
@@ -246,47 +240,25 @@ public class GT {
   }
 
   private void addBundle(String className, String name) {
-    Class<?> bundleClass = null;
-    className += name + ".Messages_" + name;
-    //    if (languagePath != null
-    //      && !ZipUtil.isZipFile(languagePath + "_i18n_" + name + ".jar"))
-    //  return;
-    try {
-      bundleClass = Class.forName(className);
-    } catch (Throwable e) {
-      Logger.error("GT could not find the class " + className);
-    }
-    if (bundleClass == null
-        || !ResourceBundle.class.isAssignableFrom(bundleClass))
-      return;
-    try {
-      ResourceBundle myBundle = (ResourceBundle) bundleClass.newInstance();
-      if (myBundle != null) {
-        if (resources == null) {
-          resources = new ResourceBundle[8];
-          resourceCount = 0;
-        }
-        resources[resourceCount] = myBundle;
-        resourceCount++;
-        Logger.debug("GT adding " + className);
+    JmolResource resource = JmolResource.getResource(className, name);    
+    if (resource != null) {
+      if (resources == null) {
+        resources = new JmolResource[8];
+        resourceCount = 0;
       }
-    } catch (IllegalAccessException e) {
-      Logger.warn("Illegal Access Exception: " + e.toString());
-    } catch (InstantiationException e) {
-      Logger.warn("Instantiation Exception: " + e.toString());
+      resources[resourceCount] = resource;
+      resourceCount++;
+      Logger.debug("GT adding " + className);
     }
   }
 
   private String getString(String string, Object[] objects) {
     String trans = null;
     if (doTranslate) {
-      for (int bundle = resourceCount; --bundle >= 0;)
-        try {
-          trans = resources[bundle].getString(string);
-          break;
-        } catch (MissingResourceException e) {
-          // Normal
-        }
+      for (int bundle = resourceCount; --bundle >= 0;) {
+        trans = resources[bundle].getString(string);
+        break;
+      }
       if (trans == null) {
         if (resourceCount > 0 && Logger.debugging)
           Logger.debug("No trans, using default: " + string);

@@ -3,17 +3,13 @@ package org.jmol.console;
 import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import javax.swing.JToggleButton;
 
 import org.jmol.api.JmolAbstractButton;
 
-public class JmolButton extends JButton implements JmolAbstractButton {
+public class JmolToggleButton extends JToggleButton implements JmolAbstractButton {
 
-  public JmolButton(String text) {
-    super(text);
-  }
-
-  public JmolButton(ImageIcon ii) {
+  public JmolToggleButton(ImageIcon ii) {
     super(ii);
   }
 

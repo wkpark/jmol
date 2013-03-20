@@ -126,7 +126,7 @@ class Resource {
      *            org.jmol.i18n.fix(line); } else if (mode == 1) { msgid +=
      *            org.jmol.i18n.fix(line); } else if (mode == 2) { msgstr +=
      *            org.jmol.i18n.fix(line); } }
-     *            } catch (e) { //ignore } return (map == null || map.size() ==
+     *            } catch (e) { } return (map == null || map.size() ==
      *            0 ? null : new org.jmol.i18n.Resource(map));
      */
     {

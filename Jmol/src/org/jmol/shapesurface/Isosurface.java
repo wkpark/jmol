@@ -779,9 +779,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return moLinearCombination;
     if (property == "nSets")
       return Integer.valueOf(thisMesh == null ? 0 : thisMesh.nSets);
-    if (property == "area")
+    if (property == "area") // could be Float or double[]
       return (thisMesh == null ? Float.valueOf(Float.NaN) : calculateVolumeOrArea(true));
-    if (property == "volume")
+    if (property == "volume") // could be Float or double[]
       return (thisMesh == null ? Float.valueOf(Float.NaN) : calculateVolumeOrArea(false));
     if (thisMesh == null)
       return null;//"no current isosurface";
@@ -903,7 +903,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (pt >= 0)
       cmd = cmd.substring(0, pt);
     if (imesh.connections != null)
-      cmd += " connect " + Escape.e(imesh.connections);
+      cmd += " connect " + Escape.eAI(imesh.connections);
     cmd = TextFormat.trim(cmd, ";");
     if (imesh.linkedMesh != null)
       cmd += " LINK"; // for lcaoCartoon state
@@ -939,7 +939,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         for (Map.Entry<String, BS> entry : imesh.vertexColorMap.entrySet()) {
           BS bs = entry.getValue();
           if (!bs.isEmpty())
-            appendCmd(sb, "color " + myType + " " + Escape.eB(bs, true)
+            appendCmd(sb, "color " + myType + " " + Escape.eBS(bs)
                 + " " + entry.getKey());
         }
     }

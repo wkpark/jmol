@@ -363,14 +363,14 @@ public class MeshSurface {
       break;
     case T.plane:
       P4 plane = (P4) slabbingObject;
-      sb.append(Escape.e(plane));
+      sb.append(Escape.eP4(plane));
       getIntersection(0, plane, null, null, null, null, null, andCap,
           false, T.plane, isGhost);
       break;
     case T.unitcell:
     case T.boundbox:
       P3[] box = (P3[]) slabbingObject;
-      sb.append("within ").append(Escape.e(box));
+      sb.append("within ").append(Escape.eAP(box));
       P4[] faces = BoxInfo.getFacesFromCriticalPoints(box);
       for (int i = 0; i < faces.length; i++) {
         getIntersection(0, faces[i], null, null, null, null, null, andCap,

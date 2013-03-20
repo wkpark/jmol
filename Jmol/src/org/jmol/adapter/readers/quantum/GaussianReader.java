@@ -394,7 +394,7 @@ public class GaussianReader extends MOReader {
           slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
           slater[3] = nGaussians;
           if (Logger.debugging)
-            Logger.info("Slater " + shells.size() + " " + Escape.e(slater));
+            Logger.info("Slater " + shells.size() + " " + Escape.eAI(slater));
           shells.addLast(slater);
           gaussianCount += nGaussians;
           for (int i = 0; i < nGaussians; i++) {
@@ -402,7 +402,7 @@ public class GaussianReader extends MOReader {
             line = TextFormat.simpleReplace(line, "D ", "D+");
             tokens = getTokens();
             if (Logger.debugging)
-              Logger.info("Gaussians " + (i + 1) + " " + Escape.e(tokens));
+              Logger.info("Gaussians " + (i + 1) + " " + Escape.eAS(tokens, true));
             gdata.addLast(tokens);
           }
         }

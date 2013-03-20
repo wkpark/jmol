@@ -178,7 +178,7 @@ public class Sticks extends Shape {
   @Override
   public Object getProperty(String property, int index) {
     if (property.equals("selectionState"))
-      return (selectedBonds != null ? "select BONDS " + Escape.e(selectedBonds) + "\n":"");
+      return (selectedBonds != null ? "select BONDS " + Escape.eBS(selectedBonds) + "\n":"");
     if (property.equals("sets"))
       return new BS[] { bsOrderSet, bsSizeSet, bsColixSet };
     return null;

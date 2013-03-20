@@ -336,7 +336,7 @@ abstract public class ModelCollection extends BondCollection {
 
   public String getBoundBoxCommand(boolean withOptions) {
     if (!withOptions && bboxAtoms != null)
-      return "boundbox " + Escape.e(bboxAtoms);
+      return "boundbox " + Escape.eBS(bboxAtoms);
     ptTemp.setT(boxInfo.getBoundBoxCenter());
     V3 bbVector = boxInfo.getBoundBoxCornerVector();
     String s = (withOptions ? "boundbox " + Escape.eP(ptTemp) + " "
@@ -586,11 +586,11 @@ abstract public class ModelCollection extends BondCollection {
       
       SB sb = SB.newS(script1);
       if (bsBonds != null)
-        sb.append(" ").append(Escape.eB(bsBonds, false));
+        sb.append(" ").append(Escape.eBond(bsBonds));
       if (bsAtoms1 != null)
-        sb.append(" ").append(Escape.e(bsAtoms1));
+        sb.append(" ").append(Escape.eBS(bsAtoms1));
       if (bsAtoms2 != null)
-        sb.append(" ").append(Escape.e(bsAtoms2));
+        sb.append(" ").append(Escape.eBS(bsAtoms2));
       if (script2 != null)
         sb.append(" ").append(script2);
       String s = sb.toString();
@@ -2690,7 +2690,7 @@ abstract public class ModelCollection extends BondCollection {
           .append("\" id=").append(Escape.eS("" + getModelAuxiliaryInfoValue(i, "modelID")));
           int ib = viewer.getJDXBaseModelIndex(i);
           if (ib != i)
-            sb.append(" baseModelId=").append(Escape.e(getModelAuxiliaryInfoValue(ib, "jdxModelID")));
+            sb.append(" baseModelId=").append(Escape.eS((String) getModelAuxiliaryInfoValue(ib, "jdxModelID")));
           sb.append(" name=").append(Escape.eS(getModelName(i)))
           .append(" title=").append(Escape.eS(
               getModelTitle(i)))

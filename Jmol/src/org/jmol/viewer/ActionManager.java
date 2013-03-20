@@ -1546,7 +1546,7 @@ public class ActionManager {
   private void selectRb(int action) {
     BS bs = viewer.findAtomsInRectangle(rectRubber);
     if (bs.length() > 0) {
-      String s = Escape.e(bs);
+      String s = Escape.eBS(bs);
       if (isBound(action, ACTION_selectOr))
         runScript("selectionHalos on;select selected or " + s);
       else if (isBound(action, ACTION_selectAndNot))
@@ -1886,14 +1886,14 @@ public class ActionManager {
         }
         viewer.undoMoveActionClear(atomIndex, AtomCollection.TAINT_COORD, true);
         viewer.invertSelected(null, null, atomIndex, bs);
-        viewer.setStatusAtomPicked(atomIndex, "inverted: " + Escape.e(bs));
+        viewer.setStatusAtomPicked(atomIndex, "inverted: " + Escape.eBS(bs));
       }
       return;
     case PICKING_DELETE_ATOM:
       if (isBound(action, ACTION_deleteAtom)) {
         bs = BSUtil.newAndSetBit(atomIndex);
         viewer.deleteAtoms(bs, false);
-        viewer.setStatusAtomPicked(atomIndex, "deleted: " + Escape.e(bs));
+        viewer.setStatusAtomPicked(atomIndex, "deleted: " + Escape.eBS(bs));
       }
       return;
     }

@@ -78,7 +78,7 @@ class Resource {
     /**
      * @j2sNative
      * 
-     *            language = (navigator.language || navigator.userLanguage);
+     *            language = (navigator.language || navigator.userLanguage || "en-US").replace(/-/g,'_');
      * 
      */
     {

@@ -150,7 +150,7 @@ public class Minimizer implements MinimizerInterface {
         if (nAtoms == 4)
           ArrayUtil.swapInt(atoms, 2, 3);
     }
-    String id = Escape.e(atoms);
+    String id = Escape.eAI(atoms);
     Object[] c1 = constraintMap.get(id);
     if (c1 != null) {
       c1[2] = c[2]; // just set target value

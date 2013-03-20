@@ -68,43 +68,48 @@ public class Escape {
   public static String matrixToScript(Object m) {
     return TextFormat.replaceAllCharacters(m.toString(), "\n\r ","").replace('\t',' ');
   }
+
+  public static String eP4(P4 x) {
+    return "{" + x.x + " " + x.y + " " + x.z + " " + x.w + "}";
+  }
   
   @SuppressWarnings("unchecked")
   public static String e(Object x) {
+    if (x == null)
+      return "null";
     if (x instanceof String)
       return eS((String) x);
     if (x instanceof JmolList<?>)
       return eV((JmolList<SV>) x);
     if (x instanceof BS) 
-      return eB((BS) x, true);
+      return eBS((BS) x);
+    if (x instanceof Tuple3f)
+      return eP((Tuple3f) x);
+    if (x instanceof P4)
+      return eP4((P4) x);
+    if (isAS(x))
+      return eAS((String[]) x, true);
+    if (isAI(x))
+      return eAI((int[]) x);
+    if (isAF(x))
+      return eAF((float[]) x);
+    if (isAD(x))
+      return eAD((double[]) x);
+    if (isAP(x))
+      return eAP((P3[]) x);
     if (x instanceof Matrix3f) 
       return TextFormat.simpleReplace(((Matrix3f) x).toString(), "\t", ",\t");
     if (x instanceof Matrix4f) 
       return TextFormat.simpleReplace(((Matrix4f) x).toString(), "\t", ",\t");
-    if (x instanceof Tuple3f)
-      return eP((Tuple3f) x);
-    if (x instanceof P4) {
-      P4 xyzw = (P4) x;
-      return "{" + xyzw.x + " " + xyzw.y + " " + xyzw.z + " " + xyzw.w + "}";
-    }
     if (x instanceof AxisAngle4f) {
       AxisAngle4f a = (AxisAngle4f) x;
       return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";
     }    
     if (x instanceof Map)
       return escapeMap((Map<String, Object>) x);
-    if (isAS(x))
-      return escapeStrA((String[]) x, true);
-    if (isAP(x))
-      return escapeAP(x);
-    if (x instanceof int[] 
-          || x instanceof int[][]
-          || x instanceof float[]
-          || x instanceof double[]
-          || x instanceof float[][]
-          || x instanceof float[][][]) 
+    if (isAII(x) || isAFF(x) || isAFFF(x)) 
       return toJSON(null, x);
-    return (x == null ? "null" : x.toString());
+    return x.toString();
   }
 
   // only remaining instanceof in code are a few Object[], Token[], Quaternion[] references
@@ -211,7 +216,7 @@ public class Escape {
      *  return Clazz.isAFF(x);
      */
     {
-    return (x instanceof float[][]);
+    return x instanceof float[][];
     }
   }
 
@@ -221,7 +226,7 @@ public class Escape {
      *  return Clazz.isAFFF(x);
      */
     {
-    return (x instanceof float[][][]);
+    return x instanceof float[][][];
     }
   }
 
@@ -232,7 +237,7 @@ public class Escape {
   private final static String escapable = "\\\\\tt\rr\nn\"\""; 
 
   public static String eS(String str) {
-    if (str == null)
+    if (str == null || str.length() == 0)
       return "\"\"";
     boolean haveEscape = false;
     int i = 0;
@@ -357,7 +362,7 @@ public class Escape {
    * @param nicely TODO
    * @return serialized array
    */
-  public static String escapeStrA(String[] list, boolean nicely) {
+  public static String eAS(String[] list, boolean nicely) {
     if (list == null)
       return eS("");
     SB s = new SB();
@@ -371,48 +376,56 @@ public class Escape {
     return s.toString();
   }
 
-  public static String escapeAI(Object x) {
-    // from isosurface area or volume calc
-    if (x == null)
+  public static String eAI(int[] ilist) {
+    if (ilist == null)
       return eS("");
     SB s = new SB();
     s.append("[");
-      int[] ilist = (int[]) x;
-      for (int i = 0; i < ilist.length; i++) {
-        if (i > 0)
-          s.append(", ");
-        s.appendI(ilist[i]);
-      }
+    for (int i = 0; i < ilist.length; i++) {
+      if (i > 0)
+        s.append(", ");
+      s.appendI(ilist[i]);
+    }
     return s.append("]").toString();
   }
 
-  public static String escapeAF(Object x) {
+  public static String eAD(double[] dlist) {
     // from isosurface area or volume calc
-    if (x == null)
+    if (dlist == null)
       return eS("");
     SB s = new SB();
     s.append("[");
-      float[] flist = (float[]) x;
-      for (int i = 0; i < flist.length; i++) {
-        if (i > 0)
-          s.append(", ");
-        s.appendF(flist[i]);
-      }
+    for (int i = 0; i < dlist.length; i++) {
+      if (i > 0)
+        s.append(", ");
+      s.appendD(dlist[i]);
+    }
     return s.append("]").toString();
   }
 
-  public static String escapeAP(Object x) {
-    // from isosurface area or volume calc
-    if (x == null)
+  public static String eAF(float[] flist) {
+    if (flist == null)
       return eS("");
     SB s = new SB();
     s.append("[");
-      P3[] plist = (P3[]) x;
-      for (int i = 0; i < plist.length; i++) {
-        if (i > 0)
-          s.append(", ");
-        s.append(eP(plist[i]));
-      }
+    for (int i = 0; i < flist.length; i++) {
+      if (i > 0)
+        s.append(", ");
+      s.appendF(flist[i]);
+    }
+    return s.append("]").toString();
+  }
+
+  public static String eAP(P3[] plist) {
+    if (plist == null)
+      return eS("");
+    SB s = new SB();
+    s.append("[");
+    for (int i = 0; i < plist.length; i++) {
+      if (i > 0)
+        s.append(", ");
+      s.append(eP(plist[i]));
+    }
     return s.append("]").toString();
   }
 
@@ -564,9 +577,15 @@ public class Escape {
     return points;
   }
 */
-  public static String eB(BS bs, boolean isAtoms) {
-    char chOpen = (isAtoms ? '(' : '[');
-    char chClose = (isAtoms ? ')' : ']');
+  public static String eBS(BS bs) {
+    return eB(bs, '(', ')');
+  }
+  
+  public static String eBond(BS bs) {
+    return eB(bs, '[', ']');
+  }
+  
+  private static String eB(BS bs, char chOpen, char chClose) {
     if (bs == null)
       return chOpen + "{}" + chClose;
     SB s = new SB();

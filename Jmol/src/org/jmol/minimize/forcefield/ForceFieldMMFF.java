@@ -442,7 +442,7 @@ public class ForceFieldMMFF extends ForceField {
         Integer key = MinObject.getKey(type, a1, a2, a3, a4);
         data.put(key, value);
         if (Logger.debugging)
-          Logger.info(MinObject.decodeKey(key) + " " + Escape.e(value));
+          Logger.info(MinObject.decodeKey(key) + " " + (value instanceof Float ? value : Escape.eAD((double[])value)));
       }
       br.close();
     } catch (Exception e) {

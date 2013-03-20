@@ -433,9 +433,9 @@ public abstract class MeshCollection extends Shape {
             "; vertices:" + m.vertexCount).append(
             "; polygons:" + m.polygonCount)
             .append("; visible:" + m.visible);
-        Object range = getProperty("dataRange", 0);
+        float[] range = (float[]) getProperty("dataRange", 0);
         if (range != null)
-            sb.append("; dataRange:").append(Escape.e(range));
+            sb.append("; dataRange:").append(Escape.eAF(range));
         if (m.title != null) {
           String s = "";
           for (int j = 0; j < m.title.length; j++)

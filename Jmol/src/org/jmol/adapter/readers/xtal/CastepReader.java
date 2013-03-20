@@ -532,7 +532,7 @@ public class CastepReader extends AtomSetCollectionReader {
     double[][] a = new double[3][3];
     fillFloatArray(line0, 0, data);
     Logger.info("tensor " +  atom.atomName 
-        + "\t" +Escape.e(data)); 
+        + "\t" +Escape.eAF(data)); 
     for (int p = 0, i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         a[i][j] = data[p++];

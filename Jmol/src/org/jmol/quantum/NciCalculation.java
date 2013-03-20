@@ -148,7 +148,7 @@ public class NciCalculation extends QuantumCalculation implements
     havePoints = (points != null);
     isReducedDensity = isDensityOnly;
     if (parameters != null)
-      Logger.info("NCI calculation parameters = " + Escape.e(parameters));
+      Logger.info("NCI calculation parameters = " + Escape.eAF(parameters));
     // parameters[0] is the cutoff.
     type = (int) getParameter(parameters, 1, TYPE_ALL, "type");
     if (type != TYPE_ALL && bsMolecules == null)
@@ -226,7 +226,7 @@ public class NciCalculation extends QuantumCalculation implements
             qmAtoms[qmMap[j]].iMolecule = nMolecules;
           nMolecules++;
           Logger.info("Molecule " + (nMolecules) + " ("
-              + bs.cardinality() + " atoms): " + Escape.e(bs));
+              + bs.cardinality() + " atoms): " + Escape.eBS(bs));
         }
         rhoMolecules = new double[nMolecules];
       }

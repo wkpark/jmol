@@ -130,9 +130,9 @@ public class Contact extends Isosurface {
     if (Logger.debugging) {
       Logger.info("Contact intramolecularMode " + intramolecularMode);
       Logger.info("Contacts for " + bsA.cardinality() + ": "
-          + Escape.e(bsA));
+          + Escape.eBS(bsA));
       Logger.info("Contacts to " + bsB.cardinality() + ": "
-          + Escape.e(bsB));
+          + Escape.eBS(bsB));
     }
     setPropI("newObject", null, null);
     thisMesh.setMerged(true);

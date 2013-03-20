@@ -34,7 +34,7 @@ public interface JmolNavigatorInterface extends Runnable {
 
   String getNavigationState();
 
-  void navTranslatePercent(float seconds, float x, float y);
+  void navTranslatePercentOrTo(float seconds, float x, float y);
 
   void interrupt();
 

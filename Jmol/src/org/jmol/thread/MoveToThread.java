@@ -243,7 +243,7 @@ public class MoveToThread extends JmolThread {
       transformManager.setNavigatePt(pt);
       if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
         transformManager
-            .navTranslatePercent(0, xNavTransStart + xNavTransDelta * fStep,
+            .navTranslatePercentOrTo(0, xNavTransStart + xNavTransDelta * fStep,
                 yNavTransStart + yNavTransDelta * fStep);
       if (!Float.isNaN(navDepth))
         transformManager.setNavigationDepthPercent(navDepthStart
@@ -267,7 +267,7 @@ public class MoveToThread extends JmolThread {
         && transformManager.mode == TransformManager.MODE_NAVIGATION) {
       transformManager.navigationCenter.setT(navCenter);
       if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
-        transformManager.navTranslatePercent(0, xNav, yNav);
+        transformManager.navTranslatePercentOrTo(0, xNav, yNav);
       if (!Float.isNaN(navDepth))
         transformManager.setNavigationDepthPercent(navDepth);
     }

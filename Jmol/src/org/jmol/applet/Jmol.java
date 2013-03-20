@@ -1326,7 +1326,7 @@ public class Jmol implements WrappedApplet {
     System.out.println(callback);
     if (callback.indexOf(".") > 0) {
       String[] mods = TextFormat.split(callback, '.');
-      System.out.println(Escape.e(mods));
+      System.out.println(Escape.eAS(mods, true));
       for (int i = 0; i < mods.length - 1; i++) {
         System.out.println(jso);
         jso = (JSObject) jso.getMember(mods[i]);

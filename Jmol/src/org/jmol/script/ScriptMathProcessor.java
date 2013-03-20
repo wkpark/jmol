@@ -209,7 +209,7 @@ class ScriptMathProcessor {
     return wasX = true;
   }
 
-  private boolean addXMap(Object x) {
+  private boolean addXMap(Map<String, ?> x) {
     putX(SV.getVariableMap(x));
     return wasX = true;
   }
@@ -1743,7 +1743,7 @@ class ScriptMathProcessor {
           s += (i == 0 ? "" : "\n");
           BS bs = viewer.getModelUndeletedAtomsBitSet(i);
           bs.and(bsSelected);
-          s += Escape.e(bs);
+          s += Escape.eBS(bs);
         }
       }
       return addXAS(TextFormat.splitChars(s, sArg));

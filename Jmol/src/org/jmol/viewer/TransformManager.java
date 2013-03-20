@@ -1416,9 +1416,9 @@ public class TransformManager {
     }
 
     viewer.getGlobalSettings().setS("_slabPlane",
-        Escape.e(getSlabDepthPlane(false)));
+        Escape.eP4(getSlabDepthPlane(false)));
     viewer.getGlobalSettings().setS("_depthPlane",
-        Escape.e(getSlabDepthPlane(true)));
+        Escape.eP4(getSlabDepthPlane(true)));
     if (slabEnabled)
       return;
     slabValue = 0;
@@ -2497,7 +2497,7 @@ public class TransformManager {
         resetSlab, resetZoom);
     if (pt != null) {
       navigationCenter.setT(pt);
-      navTranslatePercent(-1, ptoff.x * width, ptoff.y * height);
+      navTranslatePercentOrTo(-1, ptoff.x * width, ptoff.y * height);
       setNavigatePt(pt);
     }
   }
@@ -2575,15 +2575,15 @@ public class TransformManager {
   }
 
   /**
-   * scripted entry point for navigation
+   * seconds < 0 means "to (x,y)"; >= 0 mean "to (x%, y%)"
    * 
    * @param seconds
    * @param x
    * @param y
    */
-  public void navTranslatePercent(float seconds, float x, float y) {
+  public void navTranslatePercentOrTo(float seconds, float x, float y) {
     if (getNav())
-      nav.navTranslatePercent(seconds, x, y);
+      nav.navTranslatePercentOrTo(seconds, x, y);
   }
 
   /**

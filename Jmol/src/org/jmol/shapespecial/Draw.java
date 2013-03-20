@@ -1369,7 +1369,7 @@ public void initShape() {
       case ARROW:
         str.append(mesh.isVector ? " VECTOR" : " ARROW");
         if (mesh.connections != null)
-          str.append(" connect ").append(Escape.e(mesh.connections));
+          str.append(" connect ").append(Escape.eAI(mesh.connections));
         break;
       case CIRCLE:
         str.append(" CIRCLE");
@@ -1408,7 +1408,7 @@ public void initShape() {
           if (mesh.polygonIndexes[i] == null)
             str.append(" [0 0 0 0]");
           else
-            str.append(" ").append(Escape.escapeAI(mesh.polygonIndexes[i]));
+            str.append(" ").append(Escape.eAI(mesh.polygonIndexes[i]));
       } else {
         String s = getVertexList(mesh, iModel, nVertices);
         if (s.indexOf("NaN") >= 0)

@@ -83,7 +83,7 @@ class Leaf extends Element {
       P3 t = tuples[i];
       for (int j = 0; j < level; ++j)
         sb.append(".");
-      sb.append(Escape.e(t)).append("Leaf ").appendI(i).append(": ").append(((Atom) t).getInfo());
+      sb.append(Escape.eP(t)).append("Leaf ").appendI(i).append(": ").append(((Atom) t).getInfo());
     }
   }
 

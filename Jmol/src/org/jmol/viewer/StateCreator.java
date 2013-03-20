@@ -288,7 +288,7 @@ public class StateCreator implements JmolStateCreator {
       if (bs.isEmpty())
         ms.haveHiddenBonds = false;
       else
-        commands.append("  hide ").append(Escape.eB(bs, false)).append(
+        commands.append("  hide ").append(Escape.eBond(bs)).append(
             ";\n");
     }
 
@@ -330,7 +330,7 @@ public class StateCreator implements JmolStateCreator {
               models[i].frameDelay / 1000f).append(";\n");
         if (models[i].simpleCage != null) {
           commands.append(fcmd).append("; unitcell ").append(
-              Escape.e(models[i].simpleCage.getUnitCellVectors())).append(
+              Escape.eAP(models[i].simpleCage.getUnitCellVectors())).append(
               ";\n");
           getShapeState(commands, isAll, JC.SHAPE_UCCAGE);
         }
@@ -552,7 +552,7 @@ public class StateCreator implements JmolStateCreator {
           + viewer.getModelNumberDotted(am.backgroundModelIndex));
     BS bs = viewer.getFrameOffsets();
     if (bs != null)
-      appendCmd(commands, "frame align " + Escape.e(bs));
+      appendCmd(commands, "frame align " + Escape.eBS(bs));
     appendCmd(commands, "frame RANGE "
         + am.getModelNumber(-1) + " "
         + am.getModelNumber(1));
@@ -649,11 +649,11 @@ public class StateCreator implements JmolStateCreator {
     if (global.haveSetStructureList) {
       Map<EnumStructure, float[]> slist = global.structureList;
       commands.append("struture HELIX set "
-          + Escape.e(slist.get(EnumStructure.HELIX)));
+          + Escape.eAF(slist.get(EnumStructure.HELIX)));
       commands.append("struture SHEET set "
-          + Escape.e(slist.get(EnumStructure.SHEET)));
+          + Escape.eAF(slist.get(EnumStructure.SHEET)));
       commands.append("struture TURN set "
-          + Escape.e(slist.get(EnumStructure.TURN)));
+          + Escape.eAF(slist.get(EnumStructure.TURN)));
     }
     if (sfunc != null)
       commands.append("\n}\n\n");
@@ -776,10 +776,10 @@ public class StateCreator implements JmolStateCreator {
       // don't care
     }
     if (tm.slabPlane != null)
-      commands.append("  slab plane ").append(Escape.e(tm.slabPlane))
+      commands.append("  slab plane ").append(Escape.eP4(tm.slabPlane))
           .append(";\n");
     if (tm.depthPlane != null)
-      commands.append("  depth plane ").append(Escape.e(tm.depthPlane))
+      commands.append("  depth plane ").append(Escape.eP4(tm.depthPlane))
           .append(";\n");
     commands.append(getSpinState(true)).append("\n");
     if (viewer.modelSetHasVibrationVectors() && tm.vibrationOn)
@@ -813,7 +813,7 @@ public class StateCreator implements JmolStateCreator {
     if (!tm.spinOn)
       return s;
     String prefix = (tm.isSpinSelected ? "\n  select "
-        + Escape.e(viewer.getSelectionSet(false)) + ";\n  rotateSelected"
+        + Escape.eBS(viewer.getSelectionSet(false)) + ";\n  rotateSelected"
         : "\n ");
     if (tm.isSpinInternal) {
       P3 pt = P3.newP(tm.internalRotationCenter);
@@ -875,7 +875,7 @@ public class StateCreator implements JmolStateCreator {
       return "";
     for (Map.Entry<String, BS> entry : ht.entrySet()) {
       String key = entry.getKey();
-      String set = Escape.e(entry.getValue());
+      String set = Escape.eBS(entry.getValue());
       if (set.length() < 5) // nothing selected
         continue;
       set = selectCmd + " " + set;
@@ -897,7 +897,7 @@ public class StateCreator implements JmolStateCreator {
   private static void addBs(SB sb, String key, BS bs) {
     if (bs == null || bs.length() == 0)
       return;
-    appendCmd(sb, key + Escape.e(bs));
+    appendCmd(sb, key + Escape.eBS(bs));
   }
 
   public String getFontState(String myType, JmolFont font3d) {
@@ -948,7 +948,7 @@ public class StateCreator implements JmolStateCreator {
       sb.append(" UNITCELL");
     if (tickInfo.tickLabelFormats != null)
       sb.append(" format ").append(
-          Escape.escapeStrA(tickInfo.tickLabelFormats, false));
+          Escape.eAS(tickInfo.tickLabelFormats, false));
     if (!isUnitCell && tickInfo.scale != null)
       sb.append(" scale ").append(Escape.eP(tickInfo.scale));
     if (addFirst && !Float.isNaN(tickInfo.first) && tickInfo.first != 0)
@@ -1140,7 +1140,7 @@ public class StateCreator implements JmolStateCreator {
                       + ";\n");
       if (hs.bsHighlight != null)
         s += "  set highlight "
-            + Escape.e(hs.bsHighlight)
+            + Escape.eBS(hs.bsHighlight)
             + "; "
             + Shape.getColorCommandUnk("highlight", hs.colixHighlight,
                 hs.translucentAllowed) + ";\n";
@@ -1635,7 +1635,7 @@ public class StateCreator implements JmolStateCreator {
       } else {
         bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
         sb.append("zap ");
-        sb.append(Escape.e(bs)).append(";");
+        sb.append(Escape.eBS(bs)).append(";");
         DataManager.getInlineData(sb, viewer.getModelExtract(bs, false, true,
             "MOL"), true, null);
         sb.append("set refreshing false;").append(

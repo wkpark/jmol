@@ -168,18 +168,18 @@ public final class BioModel extends Model{
           bioPolymers[i].getRange(bs2);
     }
     if (bs2.nextSetBit(0) >= 0)
-      sb.append("select ").append(Escape.e(bs2)).append(";backbone only;");
+      sb.append("select ").append(Escape.eBS(bs2)).append(";backbone only;");
     if (atomCount <= maxAtoms)
       return;
     // ...and it's a large model, to wireframe:
-      sb.append("select ").append(Escape.e(bs)).append(" & connected; wireframe only;");
+      sb.append("select ").append(Escape.eBS(bs)).append(" & connected; wireframe only;");
     // ... and all non-biopolymer and not connected to stars...
     if (bs != bsAtoms) {
       bs2.clearAll();
       bs2.or(bsAtoms);
       bs2.andNot(bs);
       if (bs2.nextSetBit(0) >= 0)
-        sb.append("select " + Escape.e(bs2) + " & !connected;stars 0.5;");
+        sb.append("select " + Escape.eBS(bs2) + " & !connected;stars 0.5;");
     }
   }
   
@@ -572,13 +572,13 @@ public final class BioModel extends Model{
                 if (iLastModel != iModel) {
                   iLastModel = iModel;
                     cmd.append("  structure none ").append(
-                        Escape.e(modelSet.getModelAtomBitSetIncludingDeleted(
+                        Escape.eBS(modelSet.getModelAtomBitSetIncludingDeleted(
                             iModel, false))).append(comment).append(";\n");
                 }
                 comment += " & (" + res1 + " - " + res2 + ")";
                 String stype = subtype.getBioStructureTypeName(false);
                   cmd.append("  structure ").append(stype).append(" ").append(
-                      Escape.e(bs)).append(comment).append(";\n");
+                      Escape.eBS(bs)).append(comment).append(";\n");
               } else {
                 String str;
                 int nx;

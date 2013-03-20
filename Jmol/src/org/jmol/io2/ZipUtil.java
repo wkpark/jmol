@@ -913,7 +913,7 @@ public class ZipUtil implements JmolZipUtility {
       return null;
     SB data = new SB();
     data.append("Zip File Directory: ").append("\n").append(
-        Escape.escapeStrA(zipDirectory, true)).append("\n");
+        Escape.eAS(zipDirectory, true)).append("\n");
     Map<String, String> fileData = new Hashtable<String, String>();
     getAllZipDataStatic(is, new String[] {}, "", "Molecule", fileData);
     String prefix = "|";

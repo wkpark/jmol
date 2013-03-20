@@ -133,24 +133,16 @@ public class SV extends T {
         || x instanceof Boolean
         || x instanceof Float
         || x instanceof Integer
+        || x instanceof String
         || x instanceof P3    // stored as point3f
         || x instanceof V3   // stored as point3f
         || x instanceof P4    // stored as point4f
         || x instanceof Quaternion // stored as point4f
-        || x instanceof String
         || x instanceof Map<?, ?>  // stored as Map<String, ScriptVariable>
-        || x instanceof JmolList<?>    // stored as list
-    // in JavaScript, all these will be "Array" which is fine
-        || x instanceof SV[] // stored as list
-        || x instanceof double[]   // stored as list
-        || x instanceof float[]    // stored as list
-        || x instanceof float[][]  // stored as list
-        || x instanceof Float[]    // stored as list
-        || x instanceof int[]      // stored as list
-        || x instanceof int[][]    // stored as list
-        || x instanceof P3[]  // stored as list
-        || x instanceof String[]); // stored as list
+    // in JavaScript, all these will be "Array" which is fine;
+        || isArray(x)); // stored as list
   }
+
 
   /**
    * @param x
@@ -203,33 +195,53 @@ public class SV extends T {
       return newVariable(matrix3f, x);
     if (x instanceof Matrix4f)
       return newVariable(matrix4f, x);
-    if (Escape.isAFloat(x))
-      return newVariable(listf, x);
     if (x instanceof Map)
-      return getVariableMap(x);
+      return getVariableMap((Map<String, ?>)x);
     if (x instanceof JmolList)
       return getVariableList((JmolList) x);
+    if (Escape.isAV(x))
+      return getVariableAV((SV[]) x);
     if (Escape.isAI(x))
       return getVariableAI((int[]) x);
     if (Escape.isAF(x))
       return getVariableAF((float[]) x);
     if (Escape.isAD(x))
       return getVariableAD((double[]) x);
+    if (Escape.isAS(x))
+      return getVariableAS((String[]) x);
+    if (Escape.isAP(x))
+      return getVariableAP((P3[]) x);
     if (Escape.isAII(x))
       return getVariableAII((int[][]) x);
     if (Escape.isAFF(x))
       return getVariableAFF((float[][]) x);
-    if (Escape.isAS(x))
-      return getVariableAS((String[]) x);
-    if (Escape.isAV(x))
-      return getVariableAV((SV[]) x);
-    if (Escape.isAP(x))
-      return getVariableAP((P3[]) x);
+    if (Escape.isAFloat(x))
+      return newVariable(listf, x);
     return newVariable(string, Escape.toReadable(null, x));
   }
 
+  private static boolean isArray(Object x) {
+    /**
+     * @j2sNative
+     * 
+     *            return Clazz.instanceOf(x, Array);
+     */
+    {
+       return x instanceof JmolList<?>
+          || x instanceof SV[] 
+          || x instanceof int[] 
+          || x instanceof float[]
+          || x instanceof double[] 
+          || x instanceof String[]
+          || x instanceof P3[]
+          || x instanceof int[][] 
+          || x instanceof float[][] 
+          || x instanceof Float[];
+    }
+  }
+
   @SuppressWarnings("unchecked")
-  static SV getVariableMap(Object x) {
+  static SV getVariableMap(Map<String, ?> x) {
     Map<String, Object> ht = (Map<String, Object>) x;
     Iterator<String> e = ht.keySet().iterator();
     while (e.hasNext()) {
@@ -562,7 +574,8 @@ public class SV extends T {
     case integer:
       return "" + x.intValue;
     case bitset:
-      return Escape.eB(bsSelectToken(x), !(x.value instanceof BondSet));
+      BS bs = bsSelectToken(x);
+      return (x.value instanceof BondSet ? Escape.eBond(bs) : Escape.eBS(bs));
     case varray:
       JmolList<SV> sv = ((SV) x).getList();
       i = x.intValue;
@@ -587,7 +600,9 @@ public class SV extends T {
         return "";
       return "" + s.charAt(i - 1);
     case point3f:
+      return Escape.eP((P3) x.value);
     case point4f:
+      return Escape.eP4((P4) x.value);
     case matrix3f:
     case matrix4f:
       return Escape.e(x.value);
@@ -979,7 +994,7 @@ public class SV extends T {
   public String escape() {
     switch (tok) {
     case string:
-      return Escape.e(value);
+      return Escape.eS((String) value);
     case varray:
     case hash:
       SB sb = new SB();
@@ -1131,14 +1146,12 @@ public class SV extends T {
     if (x1 == null || x2 == null)
       return false;
     if (x1.tok == string && x2.tok == string)
-      return sValue(x1).equalsIgnoreCase(
-          sValue(x2));
+      return sValue(x1).equalsIgnoreCase(sValue(x2));
     if (x1.tok == point3f && x2.tok == point3f)
       return (((P3) x1.value).distance((P3) x2.value) < 0.000001);
     if (x1.tok == point4f && x2.tok == point4f)
       return (((P4) x1.value).distance((P4) x2.value) < 0.000001);
-    return (Math.abs(fValue(x1)
-        - fValue(x2)) < 0.000001);
+    return (Math.abs(fValue(x1) - fValue(x2)) < 0.000001);
   }
 
   protected class Sort implements Comparator<SV> {
@@ -1285,8 +1298,7 @@ public class SV extends T {
   }
 
   @SuppressWarnings("unchecked")
-  public
-  JmolList<SV> getList() {
+  public JmolList<SV> getList() {
     return (tok == varray ? (JmolList<SV>) value : null);
   }
 

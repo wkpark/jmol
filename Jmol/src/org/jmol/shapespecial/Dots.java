@@ -316,7 +316,7 @@ public class Dots extends AtomShape {
       if (!bs.isEmpty()) {
         float r = ec.getAppropriateRadius(i);
         appendCmd(s, type + i + " radius " + r + " "
-            + Escape.e(bs));
+            + Escape.eBS(bs));
       }
     }
     return s.append(sc.getCommands(temp, null, "select")).toString();

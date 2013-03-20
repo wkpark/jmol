@@ -124,10 +124,10 @@ abstract class QuantumCalculation {
         volume *= stepBohr[i];
       }
       Logger.info("QuantumCalculation:"
-          + "\n origin = " + Escape.e(originXYZ) 
-          + "\n steps = " + Escape.e(stepsXYZ)
-          + "\n origin(Bohr)= " + Escape.e(originBohr) 
-          + "\n steps(Bohr)= " + Escape.e(stepBohr)
+          + "\n origin = " + Escape.eAF(originXYZ) 
+          + "\n steps = " + Escape.eAF(stepsXYZ)
+          + "\n origin(Bohr)= " + Escape.eAF(originBohr) 
+          + "\n steps(Bohr)= " + Escape.eAF(stepBohr)
           + "\n counts= " + nX + " " + nY + " " + nZ);
     }
 

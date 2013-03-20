@@ -674,7 +674,7 @@ public class PropertyManager implements JmolPropertyManager {
       BS bs = molList[i].atomList;
       Map<String, Object> ligand = new Hashtable<String, Object>();
       ligands.addLast(ligand);
-      ligand.put("atoms", Escape.e(bs));
+      ligand.put("atoms", Escape.eBS(bs));
       String names = "";
       String sep = "";
       Group lastGroup = null;
@@ -777,7 +777,7 @@ public class PropertyManager implements JmolPropertyManager {
       //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
       //  A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6->
       mol.append("\nJmol version ").append(Viewer.getJmolVersion()).append(
-          " EXTRACT: ").append(Escape.e(bs)).append("\n");
+          " EXTRACT: ").append(Escape.eBS(bs)).append("\n");
     }
     BS bsAtoms = BSUtil.copy(bs);
     Atom[] atoms = ms.atoms;

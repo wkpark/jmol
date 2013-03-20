@@ -301,7 +301,7 @@ public class Mesh extends MeshSurface {
       s.append(";\n  ").append(type);
       if (!type.equals("mo"))
         s.append(" ID ").append(Escape.eS(thisID));
-      s.append(" display " + Escape.e(bsDisplay));
+      s.append(" display " + Escape.eBS(bsDisplay));
     }
     return s.toString();
   }

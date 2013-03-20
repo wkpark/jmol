@@ -135,8 +135,8 @@ public class JvxlCoder {
     sb = new SB();
     
     XmlUtil.openTagAttr(sb, "jvxlSurfaceData", (vertexDataOnly || jvxlData.jvxlPlane == null ? null :
-      jvxlData.mapLattice == null ? new String[] { "plane", Escape.e(jvxlData.jvxlPlane) }
-      :  new String[] { "plane", Escape.e(jvxlData.jvxlPlane),  "maplattice", Escape.eP(jvxlData.mapLattice)  }));
+      jvxlData.mapLattice == null ? new String[] { "plane", Escape.eP4(jvxlData.jvxlPlane) }
+      :  new String[] { "plane", Escape.eP4(jvxlData.jvxlPlane),  "maplattice", Escape.eP(jvxlData.mapLattice)  }));
     if (vertexDataOnly) {
       appendXmlVertexOnlyData(sb, jvxlData, meshData, true);
     } else if (jvxlData.jvxlPlane == null) {
@@ -319,7 +319,7 @@ public class JvxlCoder {
         addAttrib(attribs, "\n  scale3d", "" + jvxlData.scale3d);
       if (nColorData > 0)
         addAttrib(attribs, "\n  colorMapped", "true");
-      addAttrib(attribs, "\n  plane", Escape.e(jvxlData.jvxlPlane));
+      addAttrib(attribs, "\n  plane", Escape.eP4(jvxlData.jvxlPlane));
     }
     if (jvxlData.color != null && jvxlData.color.indexOf("null") < 0)
       addAttrib(attribs, "\n  color", jvxlData.color);
@@ -358,7 +358,7 @@ public class JvxlCoder {
         if (jvxlData.jvxlPlane != null)
           addAttrib(attribs, "\n  contoured", "true");
         addAttrib(attribs, "\n  nContours", "" + jvxlData.contourValues.length);
-        addAttrib(attribs, "\n  contourValues", Escape.escapeAF(jvxlData.contourValuesUsed == null ? jvxlData.contourValues : jvxlData.contourValuesUsed));
+        addAttrib(attribs, "\n  contourValues", Escape.eAF(jvxlData.contourValuesUsed == null ? jvxlData.contourValues : jvxlData.contourValuesUsed));
         addAttrib(attribs, "\n  contourColors", jvxlData.contourColors);
       }
     }

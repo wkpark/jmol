@@ -149,7 +149,7 @@ ICNTRL(20)=VERNUM ! version number
       for (int i = 0; i < nFree; i++)
         bsFree.set(binaryDoc.readInt() - 1);
       n = binaryDoc.readInt() / 4; // TRAILER
-      Logger.info("free: " + bsFree.cardinality() + " " + Escape.e(bsFree));
+      Logger.info("free: " + bsFree.cardinality() + " " + Escape.eBS(bsFree));
     }
     
     readCoordinates();

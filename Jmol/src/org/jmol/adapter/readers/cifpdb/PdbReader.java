@@ -418,10 +418,10 @@ public class PdbReader extends AtomSetCollectionReader {
        
        // check for equal: 
        
-       System.out.println("TLS-U:  " + Escape.e(anisou));
+       System.out.println("TLS-U:  " + Escape.eAF(anisou));
        anisou = (entry.getKey().anisoBorU);
        if (anisou != null)
-         System.out.println("ANISOU: " + Escape.e(anisou));       
+         System.out.println("ANISOU: " + Escape.eAF(anisou));       
      }
      tlsU = null;
   }

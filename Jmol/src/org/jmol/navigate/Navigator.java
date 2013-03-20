@@ -108,11 +108,11 @@ public final class Navigator extends JmolThread implements
     run();
   }
 
-  private void nextList(int i) {
-    P3 pt1;
+  private void nextList(int i, P3 ptTemp) {
     Object[] o = navigationList.get(i);
     float seconds = ((Float) o[1]).floatValue();
-    switch (((Integer) o[0]).intValue()) {
+    int tok = ((Integer) o[0]).intValue();
+    switch (tok) {
     case T.point:
       P3 pt = (P3) o[2];
       if (seconds == 0) {
@@ -148,36 +148,40 @@ public final class Navigator extends JmolThread implements
           Float.NaN);
       break;
     case T.translate:
-      pt1 = new P3();
-      pt = (P3) o[2];
-      tm.transformPoint2(pt, pt1);
-      navigateTo(seconds, null, Float.NaN, null, Float.NaN, pt1.x, pt1.y);
-      break;
-    case T.percent:
+    case T.percent: 
+      if (tok == T.translate) {
+        tm.transformPoint2((P3) o[2], ptTemp);        
+      } else {
+        ptTemp.x = ((Float) o[2]).floatValue();
+        ptTemp.y = ((Float) o[3]).floatValue();
+        setNavPercent(ptTemp);
+      }
       if (seconds == 0) {
-        pt1 = new P3();
-        pt = (P3) o[2];
-        tm.transformPoint2(pt, pt1);
-        tm.navTranslatePercent(0, pt1.x, pt1.y);
+        navTranslatePercentOrTo(-1, ptTemp.x, ptTemp.y);
         viewer.moveUpdate(0);
         return;
       }
-      tm.transformPoint2(tm.navigationCenter, tm.navigationOffset);
-      float x = ((Float) o[2]).floatValue();
-      float y = ((Float) o[3]).floatValue();
-      if (!Float.isNaN(x))
-        x = tm.width * x / 100f
-            + (Float.isNaN(y) ? tm.navigationOffset.x : (tm.width / 2f));
-      if (!Float.isNaN(y))
-        y = tm.height * y / 100f
-            + (Float.isNaN(x) ? tm.navigationOffset.y : tm.getNavPtHeight());
-      navigateTo(seconds, null, Float.NaN, null, Float.NaN, x, y);
+      navigateTo(seconds, null, Float.NaN, null, Float.NaN, ptTemp.x, ptTemp.y);
       break;
     case T.depth:
       float percent = ((Float) o[2]).floatValue();
       navigateTo(seconds, null, Float.NaN, null, percent, Float.NaN, Float.NaN);
       break;
     }
+  }
+
+  private void setNavPercent(P3 pt1) {
+    tm.transformPoint2(tm.navigationCenter, tm.navigationOffset);
+    float x = pt1.x;
+    float y = pt1.y;
+    if (!Float.isNaN(x))
+      x = tm.width * x / 100f
+          + (Float.isNaN(y) ? tm.navigationOffset.x : (tm.width / 2f));
+    if (!Float.isNaN(y))
+      y = tm.height * y / 100f
+          + (Float.isNaN(x) ? tm.navigationOffset.y : tm.getNavPtHeight());
+    pt1.x = x;
+    pt1.y = y;
   }
 
   public void navigateTo(float seconds, V3 axis, float degrees,
@@ -216,6 +220,7 @@ public final class Navigator extends JmolThread implements
 
   @Override
   protected void run1(int mode) throws InterruptedException {
+    P3 ptTemp = new P3();
     while (isJS || viewer.isScriptExecuting())
       switch (mode) {
       case INIT:
@@ -228,7 +233,7 @@ public final class Navigator extends JmolThread implements
         mode = CHECK2;
         break;
       case CHECK2:
-        nextList(iList);
+        nextList(iList, ptTemp);
         return;
       case MAIN:
         if (stopped || iStep >= totalSteps) {
@@ -252,7 +257,7 @@ public final class Navigator extends JmolThread implements
           // if (center != null)
           // navigate(0, center);
           if (!Float.isNaN(xTrans) || !Float.isNaN(yTrans))
-            tm.navTranslatePercent(-1, xTrans, yTrans);
+            navTranslatePercentOrTo(-1, xTrans, yTrans);
           if (!Float.isNaN(depthPercent))
             setNavigationDepthPercent(depthPercent);
         }
@@ -277,7 +282,7 @@ public final class Navigator extends JmolThread implements
       return;
     }
     tm.navigating = true;
-    float fStep = (iStep + 1) / totalSteps;
+    float fStep = (iStep + 1f) / totalSteps;
     if (!Float.isNaN(degrees))
       tm.navigateAxis(this.axis, degreeStep);
     if (center != null) {
@@ -291,7 +296,7 @@ public final class Navigator extends JmolThread implements
         x = xTransStart + xTransDelta * fStep;
       if (!Float.isNaN(yTrans))
         y = yTransStart + yTransDelta * fStep;
-      tm.navTranslatePercent(-1, x, y);
+      navTranslatePercentOrTo(-1, x, y);
     }
 
     if (!Float.isNaN(depthPercent)) {
@@ -803,22 +808,18 @@ public final class Navigator extends JmolThread implements
     tm.navigating = false;
   }
 
-  public void navTranslatePercent(float seconds, float x, float y) {
+  public void navTranslatePercentOrTo(float seconds, float x, float y) {
     // from MoveToThread and Viewer
     // if either is Float.NaN, then the other is RELATIVE to current
-    tm.transformPoint2(tm.navigationCenter, tm.navigationOffset);
-    if (seconds >= 0) {
-      if (!Float.isNaN(x))
-        x = tm.width * x / 100f
-            + (Float.isNaN(y) ? tm.navigationOffset.x : (tm.width / 2f));
-      if (!Float.isNaN(y))
-        y = tm.height * y / 100f
-            + (Float.isNaN(x) ? tm.navigationOffset.y : tm.getNavPtHeight());
-    }
-    if (!Float.isNaN(x))
-      tm.navigationOffset.x = x;
-    if (!Float.isNaN(y))
-      tm.navigationOffset.y = y;
+    // seconds < 0 means "to (x,y)"; >= 0 mean "to (x%, y%)"
+
+    P3 pt1 = P3.new3(x, y, 0);
+    if (seconds >= 0)
+      setNavPercent(pt1);
+    if (!Float.isNaN(pt1.x))
+      tm.navigationOffset.x = pt1.x;
+    if (!Float.isNaN(pt1.y))
+      tm.navigationOffset.y = pt1.y;
     tm.navMode = TransformManager.NAV_MODE_NEWXY;
     tm.navigating = true;
     tm.finalizeTransformParameters();

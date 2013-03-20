@@ -1021,7 +1021,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void navTranslatePercent(float x, float y) {
     if (isJmolDataFrame())
       return;
-    transformManager.navTranslatePercent(0, x, y);
+    transformManager.navTranslatePercentOrTo(0, x, y);
     setSync();
   }
 

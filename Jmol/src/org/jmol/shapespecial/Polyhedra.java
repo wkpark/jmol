@@ -601,7 +601,7 @@ public class Polyhedra extends AtomShape {
               : " distanceFactor " + myDistanceFactor)
           + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
               : " faceCenterOffset " + myFaceCenterOffset) + " to "
-          + Escape.e(bs) + (collapsed ? " collapsed" : "") 
+          + Escape.eBS(bs) + (collapsed ? " collapsed" : "") 
           + (isFullyLit ? " fullyLit" : "" ) + ";"
           + (visible ? "" : "polyhedra off;") + "\n";
     }

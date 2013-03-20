@@ -213,7 +213,7 @@ public class JvxlXmlReader extends VolumeFileReader {
         s = XmlReader.getXmlAttrib(data, "contourValues");
         if (s.length() > 0) {
           jvxlData.contourValues = params.contoursDiscrete = parseFloatArrayStr(s);
-          Logger.info("JVXL read: contourValues " + Escape.escapeAF(jvxlData.contourValues));            
+          Logger.info("JVXL read: contourValues " + Escape.eAF(jvxlData.contourValues));            
         }
         s = XmlReader.getXmlAttrib(data, "contourColors");
         if (s.length() > 0) {

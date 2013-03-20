@@ -192,7 +192,7 @@ class DataManager {
     if (dataValues == null)
       return null;
     Object[] data = getData(label);
-    if (data == null || ((Integer)data[3]).intValue() != 1)//!(data[1] instanceof float[]))
+    if (data == null || ((Integer)data[3]).intValue() != 1)
       return null;
     return (float[]) data[1];
   }

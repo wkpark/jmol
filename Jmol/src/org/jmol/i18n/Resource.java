@@ -113,21 +113,27 @@ class Resource {
     /**
      * @j2sNative
      * 
-     *            if (bytes == null || bytes.length == 0) return null; var map =
-     *            null; try { var lines =
-     *            org.jmol.util.TextFormat.split(String.instantialize(bytes,
-     *            "UTF-8"), '\n'); map = new org.jmol.util.Hashtable(); var mode
-     *            = 0; var msgstr = ""; var msgid = ""; for (var i = 0; i <
-     *            lines.length; i++) { var line = lines[i]; if (line.length <=
-     *            2) { if (mode == 2 && msgstr.length != 0 && msgid.length != 0)
-     *            map.put(msgid, msgstr); } else if (line.indexOf("msgid") == 0)
-     *            { mode = 1; msgid = org.jmol.i18n.fix(line); } else if
-     *            (line.indexOf("msgstr") == 0) { mode = 2; msgstr =
-     *            org.jmol.i18n.fix(line); } else if (mode == 1) { msgid +=
-     *            org.jmol.i18n.fix(line); } else if (mode == 2) { msgstr +=
-     *            org.jmol.i18n.fix(line); } }
-     *            } catch (e) { } return (map == null || map.size() ==
-     *            0 ? null : new org.jmol.i18n.Resource(map));
+     *            if (bytes == null || bytes.length == 0) return null; 
+     *            var map = null; try { 
+     *              var lines = org.jmol.util.TextFormat.split(String.instantialize(bytes, "UTF-8"), '\n'); 
+     *              map = new java.util.Hashtable(); 
+     *              var mode = 0; var msgstr = ""; var msgid = ""; 
+     *              for (var i = 0; i < lines.length; i++) { 
+     *                var line = lines[i]; 
+     *                if (line.length <= 2) { 
+     *                  if (mode == 2 && msgstr.length != 0 && msgid.length != 0) map.put(msgid, msgstr); 
+     *                } else if (line.indexOf("msgid") == 0) { 
+     *                  mode = 1; msgid = org.jmol.i18n.Resource.fix(line); 
+     *                } else if (line.indexOf("msgstr") == 0) { 
+     *                  mode = 2; msgstr = org.jmol.i18n.Resource.fix(line); 
+     *                } else if (mode == 1) { 
+     *                  msgid += org.jmol.i18n.Resource.fix(line); 
+     *                } else if (mode == 2) { 
+     *                  msgstr += org.jmol.i18n.Resource.fix(line); 
+     *                } 
+     *              }
+     *            } catch (e) { } 
+     *            return (map == null || map.size() == 0 ? null : new org.jmol.i18n.Resource(map));
      */
     {
       return null;

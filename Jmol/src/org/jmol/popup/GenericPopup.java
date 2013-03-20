@@ -1163,7 +1163,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     String language = GT.getLanguage();
     String id = menuGetId(menu);
     Language[] languages = GT.getLanguageList(null);
-    for (int i = 0; i < languages.length; i++) {
+    for (int i = 0, p = 0; i < languages.length; i++) {
       if (language.equals(languages[i].code))
         languages[i].display = true;
       if (languages[i].display) {
@@ -1174,6 +1174,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
         if ((nativeName != null) && (!nativeName.equals(GT._(name)))) {
           menuLabel += " - " + nativeName;
         }
+        if (p++ > 0 && (p % 4 == 1))
+          menuAddSeparator(menu);
         menuCreateCheckboxItem(menu, menuLabel, "language = \"" + code
             + "\" ##" + name, id + "." + code, language.equals(code), false);
       }

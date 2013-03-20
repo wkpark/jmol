@@ -24,10 +24,11 @@
 package org.jmol.i18n;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
+//import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.Logger;
+import org.jmol.util.Logger; 
 
 public class GT {
 
@@ -48,8 +49,22 @@ public class GT {
 
   private boolean doTranslate = true;
   private String language;
+  private static boolean allowDebug = false;
 
+  public GT() {
+   // testing here  
+  }
+  
+  
   public GT(String langCode) {
+    /**
+     * @j2sIgnore
+     * 
+     */
+    {
+      allowDebug = true;      
+    }
+    
     resources = null;
     resourceCount = 0;
     getTextWrapper = this;
@@ -94,7 +109,7 @@ public class GT {
         && (language = getSupported(la_co)) == null
         && (language = getSupported(la)) == null) {
       language = "en";
-      Logger.debug(language + " not supported -- using en");
+      System.out.println(language + " not supported -- using en");
       return;
     }
     la_co_va = null;
@@ -129,7 +144,7 @@ public class GT {
       la_co = null;
     if ("en_US".equals(la_co))
       return;
-    if (Logger.debugging)
+    if (allowDebug && Logger.debugging)
       Logger.debug("Instantiating gettext wrapper for " + language
           + " using files for language:" + la + " country:" + la_co
           + " variant:" + la_co_va);
@@ -210,15 +225,16 @@ public class GT {
     doTranslate = wasTranslating;
   }
 
-  private static Map<String, String> htLanguages = new HashMap<String, String>();
+  private static Map<String, String> htLanguages = new Hashtable<String, String>();
 
   private String getSupported(String code) {
     if (code == null)
       return null;
-    if (htLanguages.containsKey(code))
-      return htLanguages.get(code); //may be null
-    String s = Language.getSupported(getLanguageList(this), code);
-    htLanguages.put(code, s);
+    String s = htLanguages.get(code);
+    if (s != null)
+      return (s.length() == 0 ? null : s);
+    s = Language.getSupported(getLanguageList(this), code);
+    htLanguages.put(code, (s == null ? "" : s));
     return s;
   }
 
@@ -232,7 +248,8 @@ public class GT {
       if (la != null)
         addBundle(className, la);
     } catch (Exception exception) {
-      Logger.errorEx("Some exception occurred!", exception);
+      if (allowDebug)
+        Logger.errorEx("Some exception occurred!", exception);
       resources = null;
       resourceCount = 0;
     }
@@ -247,7 +264,7 @@ public class GT {
       }
       resources[resourceCount] = resource;
       resourceCount++;
-      Logger.debug("GT adding " + className);
+      if (allowDebug)Logger.debug("GT adding " + className);
     }
   }
 
@@ -259,7 +276,7 @@ public class GT {
         break;
       }
       if (trans == null) {
-        if (resourceCount > 0 && Logger.debugging)
+        if (resourceCount > 0 && allowDebug && Logger.debugging)
           Logger.debug("No trans, using default: " + string);
       } else {
         string = trans;

@@ -32,8 +32,11 @@ import java.util.Map;
 /**
  * Logger mechanism.
  */
+@J2SIgnoreImport({Runtime.class})
 public final class Logger {
 
+  private Logger(){}
+  
   private static LoggerInterface _logger = new DefaultLogger();
 
   public final static int LEVEL_FATAL = 1;
@@ -314,13 +317,15 @@ public final class Logger {
   
   public static void checkMemory() {
     long bTotal = 0, bFree = 0, bMax = 0;
-    try {
+    /**
+     * @j2sIgnore
+     */
+    {
       Runtime runtime = Runtime.getRuntime();
       runtime.gc();
       bTotal = runtime.totalMemory();
       bFree = runtime.freeMemory();
       bMax = runtime.maxMemory();
-    } catch (Throwable e) {
     }
     info("Memory: Total-Free="+ (bTotal - bFree)+"; Total=" +  bTotal + "; Free=" + bFree 
         + "; Max=" + bMax);

@@ -97,6 +97,7 @@ import org.jmol.util.CommandHistory;
 import org.jmol.util.Dimension;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
+import org.jmol.util.J2SIgnoreImport;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
@@ -180,6 +181,7 @@ import java.io.StringReader;
  * ****************************************************************
  */
 
+@J2SIgnoreImport({Runtime.class})
 public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
@@ -9429,11 +9431,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private Object executor;
   public static int nProcessors = 1;
   static {
-    try {
+    /**
+     * @j2sIgnore
+     * 
+     */
+    {
       nProcessors = Runtime.getRuntime().availableProcessors();
-    } catch (Throwable e) {
-      // Runtime absent (JavaScript)
     }
+    
   }
 
   public Object getExecutor() {

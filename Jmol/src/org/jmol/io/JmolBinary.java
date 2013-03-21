@@ -471,14 +471,12 @@ public class JmolBinary {
     return (sb.indexOf(";base64,") == 0);
   }
 
+  public static byte[] getBytesFromSB(SB sb) {
+    return (isBase64(sb) ? Base64.decodeBase64(sb.substring(8)) : sb.toBytes(0, -1));    
+  }
+  
   public static BufferedInputStream getBISForStringXBuilder(SB sb) {
-    byte[] bytes;
-    if (isBase64(sb)) {
-      bytes = Base64.decodeBase64(sb.substring(8));
-    } else {
-      bytes = sb.toBytes(0, -1);
-    }
-    return new BufferedInputStream(new ByteArrayInputStream(bytes));
+    return new BufferedInputStream(new ByteArrayInputStream(getBytesFromSB(sb)));
   }
 
   public static BufferedReader getBufferedReaderForString(String string) {

@@ -17,7 +17,9 @@ class Resource {
     this.resource = resource;
   }
 
+  @SuppressWarnings("null")
   static Resource getResource(String className, String name) {
+    String poData = null;
     /**
      * 
      * poData will be returned as byte[] only if it is read properly
@@ -25,36 +27,34 @@ class Resource {
      * @j2sNative
      * 
      *            var base = ClazzLoader.fastGetJ2SLibBase(); var fname = base +
-     *            "/trans/" + name + ".po"; var poData = Jmol._doAjax(fname,
-     *            null, null); return (poData == null || !(Clazz.instanceOf
-     *            (poData, Array)) ? null :
-     *            org.jmol.i18n.Resource.getResourceFromPO (poData));
+     *            "/trans/" + name + ".po"; poData = Jmol._doAjax(fname, null,
+     *            null); if (!poData) return null;
+     *            poData = poData.toString();
      * 
      */
-    { 
+    {
       Class<?> bundleClass = null;
       className += name + ".Messages_" + name;
-      //    if (languagePath != null
-      //      && !ZipUtil.isZipFile(languagePath + "_i18n_" + name + ".jar"))
-        //  return;
       try {
         bundleClass = Class.forName(className);
       } catch (Throwable e) {
         Logger.error("GT could not find the class " + className);
       }
-      if (bundleClass == null
-          || !ResourceBundle.class.isAssignableFrom(bundleClass))
-        return null;
       try {
-        ResourceBundle resource = (ResourceBundle) bundleClass.newInstance();
-        return new Resource(resource);
+        return (bundleClass == null
+            || !ResourceBundle.class.isAssignableFrom(bundleClass) ? null
+            : new Resource(bundleClass.newInstance()));
       } catch (IllegalAccessException e) {
         Logger.warn("Illegal Access Exception: " + e.toString());
       } catch (InstantiationException e) {
         Logger.warn("Instantiation Exception: " + e.toString());
       }
     }
-    return null;
+    try {
+      return (poData == null ? null : getResourceFromPO(poData));
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   String getString(String string) {
@@ -78,7 +78,7 @@ class Resource {
     /**
      * @j2sNative
      * 
-     *            language = (navigator.language || navigator.userLanguage || "en-US").replace(/-/g,'_');
+     *            language = Jmol.featureDetection.getDefaultLanguage().replace(/-/g,'_');
      * 
      */
     {
@@ -98,11 +98,11 @@ class Resource {
   /**
    * 
    * JavaScript only
-   * @param bytes 
+   * @param data 
    * @return JmolResource
    * 
    */
-  static Resource getResourceFromPO(byte[] bytes) {
+  static Resource getResourceFromPO(String data) {
     /*
     #: org/jmol/console/GenericConsole.java:94
     msgid "press CTRL-ENTER for new line or paste model data and press Load"
@@ -113,9 +113,9 @@ class Resource {
     /**
      * @j2sNative
      * 
-     *            if (bytes == null || bytes.length == 0) return null; 
+     *            if (data == null || data.length == 0) return null; 
      *            var map = null; try { 
-     *              var lines = org.jmol.util.TextFormat.split(String.instantialize(bytes, "UTF-8"), '\n'); 
+     *              var lines = org.jmol.util.TextFormat.split(data, '\n'); 
      *              map = new java.util.Hashtable(); 
      *              var mode = 0; var msgstr = ""; var msgid = ""; 
      *              for (var i = 0; i < lines.length; i++) { 

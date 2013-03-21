@@ -132,7 +132,8 @@ public class Jmol implements JmolSyncInterface {
     fullName = htmlName + "__" + syncId + "__";
     System.out.println("Jmol JavaScript applet " + fullName + " initializing");
     setLogging();
-  	viewerOptions.remove("debug");
+    GT.ignoreApplicationBundle();
+    viewerOptions.remove("debug");
   	viewerOptions.put("fullName", fullName);
 
     mayScript = true;

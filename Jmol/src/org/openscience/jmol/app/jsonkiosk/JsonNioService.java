@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.script.SV;
@@ -726,6 +727,10 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       putAll((Map<String, Object>) o.value);
     }
 
+    public JSONObject(Map<String, Object> map) {
+      putAll(map);
+    }
+
     boolean has(String key) {
       return containsKey(key);
     }
@@ -741,10 +746,15 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       List<JSONObject> list = new  ArrayList<JSONObject>();
       List<SV> svlist = ((SV) get(key)).getList();
       for (int i = 0; i < svlist.size(); i++)
-        list.add(new JSONObject(Escape.escapeMap((Map<String, Object>)(svlist.get(i).value))));
+        list.add(new JSONObject((Map<String, Object>)(svlist.get(i).value)));
       return list;
     }
 
+    public Object get(String key) {
+      Object o = super.get(key);
+      return (o instanceof SV ? ((SV) o).value : o);
+    }
+    
     public long getLong(String key) throws Exception {
       if (!has(key))
         throw new Exception("JSON key not found:" + key);
@@ -763,6 +773,17 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       return Double.parseDouble(get(key).toString());
     }
 
+    @Override
+    public synchronized String toString() {
+      SB sb = new SB();
+      sb.append("{");
+      String sep = "";
+      for (Entry<String, Object>e : entrySet()) {
+        sb.append(sep).append(Escape.eS(e.getKey())).append(":").append(Escape.e(e.getValue()));
+        sep = ",";
+      }      
+      return sb.append("}").toString(); 
+    }
     
   }
 }

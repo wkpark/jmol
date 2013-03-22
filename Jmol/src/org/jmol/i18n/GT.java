@@ -28,8 +28,10 @@ import java.text.MessageFormat;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger; 
 
+@J2SRequireImport({org.jmol.i18n.Resource.class, org.jmol.i18n.Language.class})
 public class GT {
 
   /**

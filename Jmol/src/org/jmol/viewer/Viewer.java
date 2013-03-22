@@ -2378,7 +2378,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return openStringInlineParams(strModel, htParams, isAppend);
   }
 
-  public String fixInlineString(String strModel, char newLine) {
+  public static String fixInlineString(String strModel, char newLine) {
     // only if first character is "|" do we consider "|" to be new line
     int i;
     if (strModel.indexOf("\\/n") >= 0) {

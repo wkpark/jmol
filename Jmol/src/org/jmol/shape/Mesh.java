@@ -102,18 +102,20 @@ public class Mesh extends MeshSurface {
   public boolean havePlanarContours = false;
   
   /**
-   * 
-   * @param thisID
-   * @param colix
-   * @param index
+   * always use Mesh().mesh1(thisID, colix, index)
    */
-  public Mesh(String thisID, short colix, int index) {
+  public Mesh() {
+  }
+  
+  public Mesh mesh1(String thisID, short colix, int index) {
+    // prevents JavaScript 
     if (PREVIOUS_MESH_ID.equals(thisID))
       thisID = null;
     this.thisID = thisID;
     this.colix = colix;
     this.index = index;
     //System.out.println("Mesh " + this + " constructed");
+    return this;
   }
 
   //public void finalize() {

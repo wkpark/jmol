@@ -38,7 +38,12 @@ public class JmolList<V> extends ArrayList<V> {
     super();  
   }
   
+  /**
+   * @j2sIgnore
+   * 
+   */
   @Override
+  @Deprecated
   public boolean add(V v) {
     throw new NullPointerException("use addLast(value), not add(value) in JmolList for JavaScript compatibility");
   }

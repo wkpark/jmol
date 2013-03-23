@@ -8800,7 +8800,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         String strModel = (key.indexOf("@") >= 0 ? ""
             + getParameter(key.substring(key.indexOf("@") + 1), T.string)
             : parameterAsString(++i));
-        strModel = viewer.fixInlineString(strModel, viewer.getInlineChar());
+        strModel = Viewer.fixInlineString(strModel, viewer.getInlineChar());
         htParams.put("fileData", strModel);
         htParams.put("isData", Boolean.TRUE);
         //note: ScriptCompiler will remove an initial \n if present

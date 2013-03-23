@@ -108,7 +108,7 @@ public abstract class MeshCollection extends Shape {
     // isosurface and draw both have overriding methods
     int index = meshCount++;
     meshes = (Mesh[])ArrayUtil.ensureLength(meshes, meshCount * 2);
-    currentMesh = meshes[index] = (m == null ? new Mesh(thisID, colix, index) : m);
+    currentMesh = meshes[index] = (m == null ? new Mesh().mesh1(thisID, colix, index) : m);
     currentMesh.color = color;
     currentMesh.index = index;
     if (thisID != null && htObjects != null)

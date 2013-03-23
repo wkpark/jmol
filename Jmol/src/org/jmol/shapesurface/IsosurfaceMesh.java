@@ -73,7 +73,7 @@ public class IsosurfaceMesh extends Mesh {
   
 
   IsosurfaceMesh(String thisID, short colix, int index) {
-    super(thisID, colix, index);
+    mesh1(thisID, colix, index);
     checkByteCount = 2;
     jvxlData.version = Viewer.getJmolVersion();
   }

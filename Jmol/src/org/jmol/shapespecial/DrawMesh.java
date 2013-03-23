@@ -38,7 +38,7 @@ import org.jmol.util.V3;
 public class DrawMesh extends Mesh {
   
   DrawMesh(String thisID, short colix, int index) {
-    super(thisID, colix, index);
+    mesh1(thisID, colix, index);
   }
 
   public BS modelFlags;

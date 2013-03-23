@@ -506,7 +506,8 @@ abstract public class ForceField {
      *  
      *      if (this.base == null)
      *         this.base = this.minimizer.viewer.viewerOptions.get("codeBase");
-     *      return new java.net.URL(this.base + "org/jmol/minimize/forcefield/" + fileName);       
+     *      fileName = this.base + "org/jmol/minimize/forcefield/" + fileName;
+     *      return new java.net.URL(null, fileName, null);       
      *
      */
     { 

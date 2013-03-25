@@ -540,7 +540,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     /**
      * @j2sNative
      *
-     * return (key.indexOf("JAVA") < 0 && !(key.indexOf("NOGL") && this.viewer.isJS3D));
+     * return (key.indexOf("JAVA") < 0 && !(key.indexOf("NOGL") && this.viewer.isWebGL));
      * 
      */
     {

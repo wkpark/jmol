@@ -195,7 +195,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean autoExit = false;
   public boolean haveDisplay = false;
-  public boolean isJS, isJS2D, isJS3D;
+  public boolean isJS, isWebGL;
   public boolean isSingleThreaded;
   public boolean queueOnHold = false;
 
@@ -456,9 +456,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (o instanceof String) {
       platform = (String) o;
-      isJS3D = (platform.indexOf(".awtjs.") >= 0);
-      isJS2D = (platform.indexOf("2d") >= 0);
-      isJS = (isJS2D || isJS3D);
+      isWebGL = (platform.indexOf(".awtjs.") >= 0);
+      isJS = isWebGL || (platform.indexOf(".awtjs2d.") >= 0);
       o = Interface.getInterface(platform);
     }
     apiPlatform = (ApiPlatform) o;
@@ -473,7 +472,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       /**
        * @j2sNative
        * 
-       *            if (this.isJS2D) this.display =
+       *            if (!this.isWebGL) this.display =
        *            document.getElementById(this.display);
        */
       {
@@ -483,7 +482,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     apiPlatform.setViewer(this, display);
     o = info.get("graphicsAdapter");
-    if (o == null && !isJS3D)
+    if (o == null && !isWebGL)
       o = Interface.getInterface("org.jmol.g3d.Graphics3D");
     gdata = (o == null ? new GData() : (GData) o);
     gdata.initialize(apiPlatform);
@@ -728,7 +727,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     info.put("version", JC.version);
     info.put("date", JC.date);
     info.put("javaVendor", strJavaVendor);
-    info.put("javaVersion", strJavaVersion);
+    info.put("javaVersion", strJavaVersion + (!isJS ? "" : isWebGL ? "(WebGL)" : "(HTML5)"));
     info.put("operatingSystem", strOSName);
     return info;
   }
@@ -743,7 +742,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setI("_width", dimScreen.width);
     global.setI("_height", dimScreen.height);
     if (haveDisplay) {
-      global.setB("_is2D", isJS2D);
+      global.setB("_is2D", isJS && !isWebGL);
       global.setB("_multiTouchClient", actionManager.isMTClient());
       global.setB("_multiTouchServer", actionManager.isMTServer());
     }
@@ -4037,7 +4036,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * @j2sNative
      * 
      * if (typeof Jmol == "undefined") return;
-     * if (this.isJS2D) {
+     * if (!this.isWebGL) {
      *   if (mode == 7)return;
      *   if (mode > 0) this.repaintManager.repaintIfReady();
      * } else if (mode == 2 || mode == 7) {
@@ -4226,7 +4225,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     /**
      * @j2sNative
      * 
-     *            if (this.isJS2D) { 
+     *            if (!this.isWebGL) { 
      *              this.renderScreenImageStereo(this.apiPlatform.context, null, width, height);
      *              return; 
      *            } 
@@ -4275,7 +4274,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     /**
      * @j2sNative
      * 
-     * if (!this.isJS2D)return null;
+     * if (this.isWebGL)return null;
      * 
      */
     {}
@@ -4313,7 +4312,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     /**
      * @j2sNative
      * 
-     *            if (!this.isJS2D) { this.repaintManager.renderExport("JS",
+     *            if (this.isWebGL) { this.repaintManager.renderExport("JS",
      *            this.gdata, this.modelSet, null);
      *            this.notifyViewerRepaintDone(); return; }
      * 
@@ -4346,7 +4345,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * 
      * @j2sNative
      * 
-     * if (!this.isJS2D)return null
+     * if (this.isWebGL)return null
      * 
      */
     {}
@@ -4389,7 +4388,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     /**
      * @j2sNative
      * 
-     * if (!this.isJS2D)return null
+     * if (this.isWebGL)return null
      * 
      */
     {}
@@ -4413,7 +4412,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     /**
      * @j2sNative
      * 
-     * if (!this.isJS2D)return null
+     * if (this.isWebGL)return null
      * 
      */
     {}
@@ -5016,7 +5015,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return statusManager.getMessageQueue();
   }
 
-  List<JmolList<JmolList<Object>>> getStatusChanged(String statusNameList) {
+  JmolList<JmolList<JmolList<Object>>> getStatusChanged(String statusNameList) {
     return statusManager.getStatusChanged(statusNameList);
   }
 
@@ -7863,7 +7862,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public String getOperatingSystemName() {
-    return strOSName;
+    return strOSName + (!isJS ? "" : isWebGL ? "(WebGL)" : "(HTML5)");
   }
 
   @Override
@@ -8723,7 +8722,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   JmolImageCreatorInterface getImageCreator() {
    return ((JmolImageCreatorInterface) Interface
-    .getOptionInterface(isJS2D ? "exportjs.JSImageCreator" : "export.image.AwtImageCreator")).setViewer(this, privateKey);
+    .getOptionInterface(isJS && !isWebGL ? "exportjs.JSImageCreator" : "export.image.AwtImageCreator")).setViewer(this, privateKey);
   }
 
   private void setSyncTarget(int mode, boolean TF) {

@@ -30,12 +30,7 @@ import org.jmol.util.TextFormat;
 
 import org.jmol.util.JmolList;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
-//import java.util.List;
 
 import java.util.Map;
 
@@ -217,7 +212,7 @@ class StatusManager {
     statusRecordSet.addLast(msgRecord);
   }
   
-  synchronized List<JmolList<JmolList<Object>>> getStatusChanged(
+  synchronized JmolList<JmolList<JmolList<Object>>> getStatusChanged(
                                                                  String newStatusList) {
     /*
      * returns a Vector of statusRecordSets, one per status type,
@@ -248,13 +243,13 @@ class StatusManager {
           Logger.debug("StatusManager messageQueue = " + statusList);
       }
     }
-    Collection<JmolList<JmolList<Object>>> m = messageQueue.values();
-    Enumeration<JmolList<JmolList<Object>>> e = Collections.enumeration(m);
-    List<JmolList<JmolList<Object>>> msgList = (getList ? Collections.list(e)
-        : new JmolList<JmolList<JmolList<Object>>>());
+    JmolList<JmolList<JmolList<Object>>> list = new JmolList<JmolList<JmolList<Object>>>();
+    if (getList)
+      for (Map.Entry<String, JmolList<JmolList<Object>>> e: messageQueue.entrySet())
+        list.addLast(e.getValue());
     messageQueue.clear();
     statusPtr = 0;
-    return msgList;
+    return list;
   }
 
   synchronized void setJmolStatusListener(JmolStatusListener jmolStatusListener, JmolCallbackListener jmolCallbackListener) {

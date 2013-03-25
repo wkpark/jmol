@@ -10054,7 +10054,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // msg);
       // return;
     }
-    if (viewer.autoExit || !viewer.haveDisplay && !viewer.isJS3D)
+    if (viewer.autoExit || !viewer.haveDisplay && !viewer.isWebGL)
       return false;
     if (scriptLevel == 0 && pc == aatoken.length - 1) {
       viewer.scriptStatus("nothing to pause: " + msg);

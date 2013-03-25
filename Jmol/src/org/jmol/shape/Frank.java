@@ -82,7 +82,7 @@ public class Frank extends FontShape {
   }
   
   void calcMetrics() {
-    if (viewer.isJS2D || viewer.isJS3D)
+    if (viewer.isJS)
       frankString = "JSmol";
     else if (viewer.isSignedApplet())
       frankString = "Jmol_S";

@@ -157,6 +157,7 @@ public class JvxlData {
   // added Jmol 12.1.50
   public Map<String, BS> vertexColorMap; // from color isosurface {atom subset} red 
   public int nVertexColors;
+  public int[] vertexColors;
   public String color;
   public String meshColor;
   public float translucency;

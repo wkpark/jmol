@@ -423,6 +423,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         colixA = vertexColixes[iA];
         colixB = vertexColixes[iB];
         colixC = vertexColixes[iC];
+//        System.out.println(iA + " " + iB + " " + iC + " " + colixA + " " + colixB + " " + colixC + " " + vertices[iA] + " " + vertices[iB] + " " + vertices[iC]);
         if (isBicolorMap) {
           if (colixA != colixB || colixB != colixC)
             continue;

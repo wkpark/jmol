@@ -760,7 +760,7 @@ public class Parameters {
   String[] title;
   boolean blockCubeData;
   boolean readAllData;
-  int fileIndex; //one-based
+  int fileIndex = -1; //one-based, although efvet reader uses 0 for "indicated color"
   String fileName;
   int modelIndex = -1; // zero-based
   public boolean isXLowToHigh;

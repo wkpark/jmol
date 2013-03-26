@@ -657,7 +657,7 @@ public class IsosurfaceMesh extends Mesh {
       meshColix = C.getColixS(jvxlData.meshColor);
     setJvxlDataRendering();
       
-    isColorSolid = !jvxlData.isBicolorMap;
+    isColorSolid = !jvxlData.isBicolorMap && jvxlData.vertexColors == null;
     if (colorEncoder != null) {
       // bicolor map will be taken care of with params.isBicolorMap
       if (jvxlData.colorScheme != null) {

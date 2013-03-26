@@ -25,19 +25,32 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
+import jspecview.util.ColorUtil;
+
 
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
-
 /*
  * A simple EFVET file reader -- vertices and triangles only
+ * 
+ * an integer after the file name indicates which data set to map:
+ * 
+ * 0 = indicated color
+ * 1 = electrostatic_potential
+ * 2 = hydrophobicity
+ * 3 = temperature_factor
+ * 4 = minimum_curvature
+ * 5 = maximum_curvature   
+ * 
  * http://ef-site.hgc.jp/eF-site/about.html
  * 
  */
 class EfvetReader extends PolygonFileReader {
 
   EfvetReader(){}
+  
+  private int[] vertexMap;
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
@@ -49,8 +62,6 @@ class EfvetReader extends PolygonFileReader {
 
   /*
    *
-   * 
-   * 
    * 
 <efvet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://pdbj.protein.osaka-u.ac.jp/eF-site http://ef-site.hgc.jp/eF-site/schema/efvet30.xsd"
@@ -106,7 +117,14 @@ class EfvetReader extends PolygonFileReader {
     P3 pt = new P3();
     float value = 0;
     skipTo("<vertices", "count");
-    jvxlData.vertexCount = nVertices = parseInt(); 
+    jvxlData.vertexCount = nVertices = parseInt();
+    vertexMap = new int[nVertices + 1];
+    jvxlData.vertexColors = null;
+    if (params.fileIndex == 0) {
+      jvxlData.vertexColors = new int[nVertices];
+      jvxlData.nVertexColors = 0;
+    }
+    float[] values = new float[jvxlData.vertexColors == null ? 3 : 9];
     skipTo("property=", null);
     line = line.replace('"',' ');
     String[] tokens = getTokens();
@@ -117,13 +135,18 @@ class EfvetReader extends PolygonFileReader {
       Logger.info(line);
     for (int i = 0; i < nVertices; i++) {
       skipTo("<vertex", "image");
-      pt.set(parseFloat(), parseFloat(), parseFloat());
+      parseFloatArray(values, null, ">");
+      pt.set(values[0], values[1], values[2]);
       skipTo(null, "property");
       for(int j = 0; j < dataIndex; j++)
         value = parseFloat();
       if (isAnisotropic)
         setVertexAnisotropy(pt);
-      addVC(pt, value, i);
+      int v = vertexMap[i + 1] = addVC(pt, value, i);
+      if (v >= 0 && jvxlData.vertexColors != null) {
+        jvxlData.vertexColors[v] = ColorUtil.colorTriadToInt(values[6], values[7], values[8]);
+        jvxlData.nVertexColors++;
+      }
     }
   }
   
@@ -132,8 +155,16 @@ class EfvetReader extends PolygonFileReader {
     nTriangles = parseInt();
     for (int i = 0; i < nTriangles; i++) {
       skipTo("<triangle", "vertex");
-      addTriangleCheck(parseInt() - 1, parseInt() - 1, parseInt() - 1, 7, 0, false, 0);
+      int a = getInt();
+      int b = getInt();
+      int c = getInt();
+      if (a >= 0 && b >= 0 && c >= 0)
+        addTriangleCheck(a, b, c, 7, 0, false, 0);
     }
+  }
+
+  private int getInt() {
+    return vertexMap[parseInt()];
   }
 
 }

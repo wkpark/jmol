@@ -119,11 +119,11 @@ abstract class SurfaceFileReader extends SurfaceReader {
 
   protected float[] parseFloatArrayStr(String s) {
     next[0] = 0;
-    return Parser.parseFloatArrayNext(s, next);
+    return Parser.parseFloatArrayNext(s, next, null, null, null);
   }
 
-  protected float[] parseFloatArray() {
-    return Parser.parseFloatArrayNext(line, next);
+  protected float[] parseFloatArray(float[] a, String strStart, String strEnd) {
+    return Parser.parseFloatArrayNext(line, next, a, strStart, strEnd);
   }
 
   protected String getQuotedStringNext() {

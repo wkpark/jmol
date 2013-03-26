@@ -373,27 +373,93 @@ public class Jmol implements JmolSyncInterface {
         + Escape.eS("" + getProperty("codeBase"));
   }
 
+  /**
+   * @j2sIgnore
+   * @param infoType 
+   * @return value 
+   * 
+   */
   public Object getProperty(String infoType) {
     return viewer.getProperty(null, infoType, "");
   }
 
+  /**
+   * @j2sOverride
+   * 
+   * @param infoType 
+   * @param paramInfo 
+   * @return value
+   * 
+   * 
+   */
+
   public Object getProperty(String infoType, String paramInfo) {
+    /**
+     * @j2sNative
+     * 
+     * paramInfo || (paramInfo = "");
+     * 
+     */
     return viewer.getProperty(null, infoType, paramInfo);
   }
 
+  /**
+   * @j2sIgnore
+   * @param infoType 
+   * @return value 
+   * 
+   */
   public String getPropertyAsString(String infoType) {
     return viewer.getProperty("readable", infoType, "").toString();
   }
 
+  /**
+   * @j2sOverride
+   * 
+   * @param infoType 
+   * @param paramInfo 
+   * @return value
+   * 
+   * 
+   */
+
   public String getPropertyAsString(String infoType, String paramInfo) {
+    /**
+     * @j2sNative
+     * 
+     * paramInfo || (paramInfo = "");
+     * 
+     */
     return viewer.getProperty("readable", infoType, paramInfo).toString();
   }
 
+  /**
+   * @j2sIgnore
+   * @param infoType 
+   * @return value 
+   * 
+   */
   public String getPropertyAsJSON(String infoType) {
     return viewer.getProperty("JSON", infoType, "").toString();
   }
 
+  /**
+   * @j2sOverride
+   * 
+   * @param infoType 
+   * @param paramInfo 
+   * @return value
+   * 
+   * 
+   */
+
   public String getPropertyAsJSON(String infoType, String paramInfo) {
+    /**
+     * @j2sNative
+     * 
+     * paramInfo || (paramInfo = "");
+     * 
+     */
     return viewer.getProperty("JSON", infoType, paramInfo).toString();
   }
 

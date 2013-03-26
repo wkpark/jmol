@@ -555,6 +555,8 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
 
   boolean haveReadColorData;
+
+  private String jvxlColorEncodingRead;
   
   @Override
   protected String readColorData() {
@@ -577,6 +579,17 @@ public class JvxlXmlReader extends VolumeFileReader {
       return "";
     }
     */
+    
+    if ("none".equals(jvxlColorEncodingRead)) {
+      String[] tokens = Parser.getTokens(jvxlColorDataRead);
+      jvxlData.vertexColors = new int[vertexCount];
+      int n = Math.min(tokens.length, vertexCount);
+      for (int i = 0; i < n; i++) {
+        colixes[i] = C.getColix(jvxlData.vertexColors[i] = Parser.parseInt(tokens[i]));
+        System.out.println(C.getHexCode(colixes[i]));
+      }
+      return "-";
+    }    
     if (params.colorEncoder == null)
       params.colorEncoder = new ColorEncoder(null);
     params.colorEncoder.setColorScheme(null, false);
@@ -657,8 +670,10 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlDecodeTriangleData(tData, edgeData, polygonColorData);
     Logger.info("Checking for vertex values");
     data = xr.getXmlData("jvxlColorData", data, true, false);
-    jvxlData.isJvxlPrecisionColor = XmlReader.getXmlAttrib(data, "encoding").endsWith("2");
-    jvxlColorDataRead = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(data, "data"));
+    jvxlColorEncodingRead = XmlReader.getXmlAttrib(data, "encoding");
+    jvxlData.isJvxlPrecisionColor = jvxlColorEncodingRead.endsWith("2");
+    String cData = XmlReader.getXmlAttrib(data, "data");
+    jvxlColorDataRead = (jvxlColorEncodingRead.equals("none") ? cData : JvxlCoder.jvxlUncompressString(cData));
     if (jvxlColorDataRead.length() == 0)
       jvxlColorDataRead = xr.getXmlData("jvxlColorData", data, false, false);
     jvxlDataIsColorMapped = ((params.colorRgb == Integer.MIN_VALUE || params.colorRgb == Integer.MAX_VALUE) && jvxlColorDataRead.length() > 0);

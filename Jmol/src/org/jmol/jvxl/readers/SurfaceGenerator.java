@@ -373,8 +373,8 @@ public class SurfaceGenerator {
 
     if ("fileIndex" == propertyName) {
       params.fileIndex = ((Integer) value).intValue();
-      if (params.fileIndex < 1)
-        params.fileIndex = 1;
+      if (params.fileIndex < 0)
+        params.fileIndex = 0;// 0 used in efvet reader for "current color"
       params.readAllData = false;
       return true;
     }

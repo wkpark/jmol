@@ -512,8 +512,18 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   protected String readColorData() {
-    //jvxl only -- overloaded
-    return "";
+    if (jvxlData.vertexColors == null)
+      return "";
+    int vertexCount = jvxlData.vertexCount;
+    short[] colixes = meshData.vertexColixes;
+    float[] vertexValues = meshData.vertexValues;
+    if (colixes == null || colixes.length < vertexCount)
+      meshData.vertexColixes = colixes = new short[vertexCount];
+    if (vertexValues == null || vertexValues.length < vertexCount)
+      meshData.vertexValues = vertexValues = new float[vertexCount];
+    for (int i = 0; i < vertexCount; i++)
+      colixes[i] = C.getColix(jvxlData.vertexColors[i]);
+    return "-";
   }
 
   ////////////////////////////////////////////////////////////////
@@ -835,7 +845,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.mappedDataMax = params.mappedDataMax;
     jvxlData.valueMappedToRed = params.valueMappedToRed;
     jvxlData.valueMappedToBlue = params.valueMappedToBlue;
-    if (params.contactPair == null)
+    if (params.contactPair == null && jvxlData.vertexColors == null)
       colorData();
     
     JvxlCoder.jvxlCreateColorData(jvxlData,

@@ -586,7 +586,6 @@ public class JvxlXmlReader extends VolumeFileReader {
       int n = Math.min(tokens.length, vertexCount);
       for (int i = 0; i < n; i++) {
         colixes[i] = C.getColix(jvxlData.vertexColors[i] = Parser.parseInt(tokens[i]));
-        System.out.println(C.getHexCode(colixes[i]));
       }
       return "-";
     }    

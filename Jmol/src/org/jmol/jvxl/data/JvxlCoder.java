@@ -826,15 +826,20 @@ public class JvxlCoder {
     list1 = new SB();
     list2 = new SB();
     if (vertexColors == null) {
-      for (int i = 0; i < vertexCount; i++) {
-        float value = vertexValues[polygonCount == 0 ? i : vertexIdOld[i]];
-        jvxlAppendCharacter2(value, jvxlData.mappedDataMin,
-            jvxlData.mappedDataMax, colorFractionBase, colorFractionRange,
-            list1, list2);
-      }
-    } else {
       for (int i = 0; i < vertexCount; i++)
-        list1.appendI(vertexColors[polygonCount == 0 ? i : vertexIdOld[i]]).append(" ");
+        if (!removeSlabbed || bsSlabDisplay.get(i)) {
+          float value = vertexValues[polygonCount == 0 ? i : vertexIdOld[i]];
+          jvxlAppendCharacter2(value, jvxlData.mappedDataMin,
+              jvxlData.mappedDataMax, colorFractionBase, colorFractionRange,
+              list1, list2);
+        }
+    } else {
+      list1.appendI(n).append(" ");
+      for (int i = 0; i < vertexCount; i++)
+        if (!removeSlabbed || bsSlabDisplay.get(i)) {
+          list1.appendI(vertexColors[polygonCount == 0 ? i : vertexIdOld[i]])
+              .append(" ");
+        }
     }
     appendXmlColorData(sb, "jvxlColorData", list1.appendSB(list2).append("\n")
         .toString(), (vertexColors == null), true, jvxlData.valueMappedToRed,

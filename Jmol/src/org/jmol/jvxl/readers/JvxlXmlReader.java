@@ -581,12 +581,12 @@ public class JvxlXmlReader extends VolumeFileReader {
     */
     
     if ("none".equals(jvxlColorEncodingRead)) {
-      String[] tokens = Parser.getTokens(jvxlColorDataRead);
       jvxlData.vertexColors = new int[vertexCount];
-      int n = Math.min(tokens.length, vertexCount);
-      for (int i = 0; i < n; i++) {
-        colixes[i] = C.getColix(jvxlData.vertexColors[i] = Parser.parseInt(tokens[i]));
-      }
+      int[] nextc = new int[1];
+      int n = Parser.parseIntNext(jvxlColorDataRead, nextc);
+      n = Math.min(n, vertexCount);
+      for (int i = 0; i < n; i++)
+        colixes[i] = C.getColix(jvxlData.vertexColors[i] = Parser.parseIntNext(jvxlColorDataRead, nextc));
       return "-";
     }    
     if (params.colorEncoder == null)
@@ -681,16 +681,19 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
 
   /**
-   * decode vertex data found within <jvxlVertexData> element
-   * as created by jvxlEncodeVertexData (see above)
+   * decode vertex data found within <jvxlVertexData> element as created by
+   * jvxlEncodeVertexData (see above)
    * 
-   * @param data      tag and contents 
-   * @param asArray   or just addVertexCopy    
-   * @return          Point3f[] if desired 
-   * @throws Exception 
-   *    
+   * @param data
+   *        tag and contents
+   * @param asArray
+   *        or just addVertexCopy
+   * @return Point3f[] if desired
+   * @throws Exception
+   * 
    */
-  public P3[] jvxlDecodeVertexData(String data, boolean asArray) throws Exception {
+  public P3[] jvxlDecodeVertexData(String data, boolean asArray)
+      throws Exception {
     int vertexCount = parseIntStr(XmlReader.getXmlAttrib(data, "count"));
     if (!asArray)
       Logger.info("Reading " + vertexCount + " vertices");
@@ -703,23 +706,37 @@ public class JvxlXmlReader extends VolumeFileReader {
     P3[] vertices = (asArray ? new P3[vertexCount] : null);
     P3 p = (asArray ? null : new P3());
     float fraction;
-    String s = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(data, "data"));
-    if (s.length() == 0)
-      s = xr.getXmlData("jvxlVertexData", data, false, false); 
-    for (int i = 0, pt = -1; i < vertexCount; i++) {
-      if (asArray)
-        p = vertices[i] = new P3();
-      fraction = JvxlCoder.jvxlFractionFromCharacter2(s.charAt(++pt), s.charAt(pt
-          + ptCount), colorFractionBase, colorFractionRange);
-      p.x = min.x + fraction * range.x;
-      fraction = JvxlCoder.jvxlFractionFromCharacter2(s.charAt(++pt), s.charAt(pt
-          + ptCount), colorFractionBase, colorFractionRange);
-      p.y = min.y + fraction * range.y;
-      fraction = JvxlCoder.jvxlFractionFromCharacter2(s.charAt(++pt), s.charAt(pt
-          + ptCount), colorFractionBase, colorFractionRange);
-      p.z = min.z + fraction * range.z;
-      if (!asArray)
-        addVertexCopy(p, 0, i);
+    String vData = XmlReader.getXmlAttrib(data, "data");
+    String encoding = XmlReader.getXmlAttrib(data, "encoding");
+    if ("none".equals(encoding)) {
+      float[] fdata = Parser.parseFloatArray(data);
+      // first point is count
+      for (int i = 0, pt = 1; i < vertexCount; i++) {
+        p = P3.new3(fdata[pt++], fdata[pt++], fdata[pt++]);
+        if (asArray)
+          vertices[i] = p;
+        else
+          addVertexCopy(p, 0, i);
+      }
+    } else {
+      String s = JvxlCoder.jvxlUncompressString(vData);
+      if (s.length() == 0)
+        s = xr.getXmlData("jvxlVertexData", data, false, false);
+      for (int i = 0, pt = -1; i < vertexCount; i++) {
+        if (asArray)
+          p = vertices[i] = new P3();
+        fraction = JvxlCoder.jvxlFractionFromCharacter2(s.charAt(++pt), s
+            .charAt(pt + ptCount), colorFractionBase, colorFractionRange);
+        p.x = min.x + fraction * range.x;
+        fraction = JvxlCoder.jvxlFractionFromCharacter2(s.charAt(++pt), s
+            .charAt(pt + ptCount), colorFractionBase, colorFractionRange);
+        p.y = min.y + fraction * range.y;
+        fraction = JvxlCoder.jvxlFractionFromCharacter2(s.charAt(++pt), s
+            .charAt(pt + ptCount), colorFractionBase, colorFractionRange);
+        p.z = min.z + fraction * range.z;
+        if (!asArray)
+          addVertexCopy(p, 0, i);
+      }
     }
     return vertices;
   }
@@ -729,90 +746,104 @@ public class JvxlXmlReader extends VolumeFileReader {
    * with jvxlEncodeTriangleData (see above)
    * 
    * @param data
-   *          tag and contents
-   * @param edgeData 
+   *        tag and contents
+   * @param edgeData
    * @param colorData
-   * @return int[][] if desired
    * @throws Exception
    */
-  int[][] jvxlDecodeTriangleData(String data, String edgeData, String colorData)
+  void jvxlDecodeTriangleData(String data, String edgeData, String colorData)
       throws Exception {
-    int nColors = (colorData == null ? -1 : 0);
+    int[] nextc = new int[1];
+    int nColors = (colorData == null ? -1 : Parser.parseIntNext(colorData,
+        nextc));
     int color = 0;
     int nData = parseIntStr(XmlReader.getXmlAttrib(data, "count"));
     if (nData < 0)
-      return null;
+      return;
     Logger.info("Reading " + nData + " triangles");
-    int[][] triangles = null;
-    int[] triangle = new int[3];
-    String s = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(data, "data"));
-    if (s.length() == 0)
-      s = xr.getXmlData("jvxlTriangleData", data, false, false);
-    String sEdge = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(edgeData, "data")).trim();
+    String encoding = XmlReader.getXmlAttrib(data, "encoding");
+    String tdata = XmlReader.getXmlAttrib(data, "data");
+    if (tdata.length() == 0)
+      tdata = xr.getXmlData("jvxlTriangleData", data, false, false);
+    String edata = XmlReader.getXmlAttrib(edgeData, "data");
+    int[] vertex = new int[3];
     int[] nextp = new int[1];
-    int[] nextc = new int[1];
+    int[] nexte = null;
     int edgeMask = 7;
-    boolean haveEdgeInfo = (sEdge.length() == nData);
-    int ilast = 0;
-    int p = 0;
-    int b0 = '\\';
-    for (int i = 0, pt = -1; i < nData;) {
-      char ch = s.charAt(++pt);
-      int idiff;
-      switch (ch) {
-      case '!':
-        idiff = 0;
-        break;
-      case '+':
-      case '.':
-      case ' ':
-      case '\n':
-      case '\r':
-      case '\t':
-      case ',':
-        continue;
-      case '-':
-      case '0':
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-        nextp[0] = pt;
-        idiff = Parser.parseIntNext(s, nextp);
-        pt = nextp[0] - 1;
-        break;
-      default:
-        idiff = ch - b0;
+    boolean haveEdgeInfo;
+    boolean haveEncoding = !"none".equals(encoding);
+    if (haveEncoding) {
+      tdata = JvxlCoder.jvxlUncompressString(tdata);
+      edata = JvxlCoder.jvxlUncompressString(edata).trim();
+      haveEdgeInfo = (edata.length() == nData);
+    } else {
+      Parser.parseIntNext(tdata, nextp); // throw away count
+      haveEdgeInfo = (edata.length() > 0);
+      if (haveEdgeInfo) {
+        nexte = new int[1];
+        Parser.parseIntNext(edata, nexte); // throw away count
       }
-      ilast += idiff;
-      triangle[p] = ilast;
-      if (++p % 3 == 0) {
-        if(haveEdgeInfo) {
-          edgeMask = sEdge.charAt(i) - '0';
+    }
+    for (int i = 0, v = 0, p = 0, pt = -1; i < nData;) {
+      if (haveEncoding) {
+        char ch = tdata.charAt(++pt);
+        int diff;
+        switch (ch) {
+        case '!':
+          diff = 0;
+          break;
+        case '+':
+        case '.':
+        case ' ':
+        case '\n':
+        case '\r':
+        case '\t':
+        case ',':
+          continue;
+        case '-':
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          nextp[0] = pt;
+          diff = Parser.parseIntNext(tdata, nextp);
+          pt = nextp[0] - 1;
+          break;
+        default:
+          diff = ch - 92; // '\' character
+        }
+        v += diff;
+      } else {
+        v = Parser.parseIntNext(tdata, nextp);
+      }
+      vertex[p] = v;
+      if (++p == 3) {
+        p = 0;
+        if (haveEdgeInfo) {
+          edgeMask = (nexte == null ? edata.charAt(i) - '0' : Parser
+              .parseIntNext(edata, nexte));
           if (edgeMask < 0 || edgeMask > 7)
             edgeMask = 7;
         }
-        if (nColors >= 0) {
-          if (nColors == 0) {
-            nColors = Parser.parseIntNext(colorData, nextc);
-            color = Parser.parseIntNext(colorData, nextc);
-            if (color == Integer.MIN_VALUE)
-              color = nColors = 0;
-          }
+        if (nColors > 0) {
+          int c = Parser.parseIntNext(colorData, nextc);
+          if (c == Integer.MIN_VALUE)
+            nColors = 0;
+          else
+            color = c;
           nColors--;
         }
-        addTriangleCheck(triangle[0], triangle[1], triangle[2], edgeMask, 0, false,
+        addTriangleCheck(vertex[0], vertex[1], vertex[2], edgeMask, 0, false,
             color);
         i++;
-        p = 0;
       }
     }
-    return triangles;
   }
 
   protected void jvxlDecodeContourData(JvxlData jvxlData, String data)

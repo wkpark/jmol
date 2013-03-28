@@ -114,12 +114,12 @@ public class JvxlReader extends JvxlXmlReader {
   }
 
   @Override
-  protected String jvxlReadData(String type, int nPoints) {
+  protected String jvxlReadFractionData(String type, int nPoints) {
     String str = "";
     try {
       while (str.length() < nPoints) {
         readLine();
-        str += JvxlCoder.jvxlUncompressString(line);
+        str += JvxlCoder.jvxlDecompressString(line);
       }
     } catch (Exception e) {
       Logger.error("Error reading " + type + " data " + e);
@@ -287,7 +287,7 @@ public class JvxlReader extends JvxlXmlReader {
     int n = 0;
     while (n < nPoints) {
       readLine();
-      n += (isInt ? countData(line) : JvxlCoder.jvxlUncompressString(line).length());
+      n += (isInt ? countData(line) : JvxlCoder.jvxlDecompressString(line).length());
     }
   }
 

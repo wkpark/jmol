@@ -104,11 +104,11 @@ public class JvxlXmlReader extends VolumeFileReader {
       volumeData.setMappingPlane(null);
 
       if (edgeDataCount > 0)
-        jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);
+        jvxlEdgeDataRead = jvxlReadFractionData("edge", edgeDataCount);
       params.bsExcluded = jvxlData.jvxlExcluded = new BS[4];
       hasColorData = (colorDataCount > 0); // for nonXML version of JVXL
       if (hasColorData)
-        jvxlColorDataRead = jvxlReadData("color", colorDataCount);
+        jvxlColorDataRead = jvxlReadFractionData("color", colorDataCount);
       if (excludedVertexCount > 0) {
         jvxlData.jvxlExcluded[0] = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData(
             "jvxlExcludedVertexData", null, false, false));
@@ -421,20 +421,28 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
 
   /**
+   * "edge" data includes two parts -- a compressed bitset indicating exactly which edges, 
+   * in order or processing by Jmol, are crossed by the surface, and a set of fractions
+   * indicating how far along that edge (good to 1 part in 8100) that surface crosses that edge.
+   * We are just reading he fractions here.
+   *  
+   * "color" data comprises the corresponding sequence of data mapping values, again stored to
+   * a precision of 1 part in 8100, relative to a range of values. 
+   *  
    * @param type 
    * @param nPoints  
    * @return data
    */
-  protected String jvxlReadData(String type,
+  protected String jvxlReadFractionData(String type,
                                  int nPoints) {
     String str;
     try {
       if (type.equals("edge")) {
-        str = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(tempDataXml, "data"));
+        str = JvxlCoder.jvxlDecompressString(XmlReader.getXmlAttrib(tempDataXml, "data"));
       } else {
         String data = xr.getXmlData("jvxlColorData", null, true, false);
         jvxlData.isJvxlPrecisionColor = XmlReader.getXmlAttrib(data, "encoding").endsWith("2");
-        str = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(data, "data"));
+        str = JvxlCoder.jvxlDecompressString(XmlReader.getXmlAttrib(data, "data"));
       }
     } catch (Exception e) {
       Logger.error("Error reading " + type + " data " + e);
@@ -585,8 +593,15 @@ public class JvxlXmlReader extends VolumeFileReader {
       int[] nextc = new int[1];
       int n = Parser.parseIntNext(jvxlColorDataRead, nextc);
       n = Math.min(n, vertexCount);
+      String[] tokens = Parser.getTokens(jvxlColorDataRead.substring(nextc[0]));
       for (int i = 0; i < n; i++)
-        colixes[i] = C.getColix(jvxlData.vertexColors[i] = Parser.parseIntNext(jvxlColorDataRead, nextc));
+        // colix will be 50% translucent if A in ARGB is not FF.
+        try{
+          colixes[i] = C.getColix(jvxlData.vertexColors[i] = getColor(tokens[i]));
+        } catch (Exception e) {
+          Logger.info("JvxlXmlReader: Cannot interpret color code: " + tokens[i]);
+          // ignore this color if parsing error
+        }
       return "-";
     }    
     if (params.colorEncoder == null)
@@ -654,6 +669,18 @@ public class JvxlXmlReader extends VolumeFileReader {
     return jvxlColorDataRead + "\n";
   }
 
+  private static int getColor(String c) {
+    if (c.length() == 0)
+      return 0;
+    switch (c.charAt(0)) {
+    case '[':
+      return ColorUtil.getArgbFromString(c);
+    case '0': //0x
+      return Parser.parseIntRadix(c.substring(2), 16);
+    }
+    return Parser.parseIntRadix(c, 10);
+  }
+
   /**
    * retrieve Jvxl 2.0 format vertex/triangle/edge/color data found
    * within <jvxlSurfaceData> element 
@@ -672,7 +699,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlColorEncodingRead = XmlReader.getXmlAttrib(data, "encoding");
     jvxlData.isJvxlPrecisionColor = jvxlColorEncodingRead.endsWith("2");
     String cData = XmlReader.getXmlAttrib(data, "data");
-    jvxlColorDataRead = (jvxlColorEncodingRead.equals("none") ? cData : JvxlCoder.jvxlUncompressString(cData));
+    jvxlColorDataRead = (jvxlColorEncodingRead.equals("none") ? cData : JvxlCoder.jvxlDecompressString(cData));
     if (jvxlColorDataRead.length() == 0)
       jvxlColorDataRead = xr.getXmlData("jvxlColorData", data, false, false);
     jvxlDataIsColorMapped = ((params.colorRgb == Integer.MIN_VALUE || params.colorRgb == Integer.MAX_VALUE) && jvxlColorDataRead.length() > 0);
@@ -697,11 +724,6 @@ public class JvxlXmlReader extends VolumeFileReader {
     int vertexCount = parseIntStr(XmlReader.getXmlAttrib(data, "count"));
     if (!asArray)
       Logger.info("Reading " + vertexCount + " vertices");
-    P3 min = xr.getXmlPoint(data, "min");
-    P3 range = xr.getXmlPoint(data, "max");
-    range.sub(min);
-    int colorFractionBase = jvxlData.colorFractionBase;
-    int colorFractionRange = jvxlData.colorFractionRange;
     int ptCount = vertexCount * 3;
     P3[] vertices = (asArray ? new P3[vertexCount] : null);
     P3 p = (asArray ? null : new P3());
@@ -710,7 +732,9 @@ public class JvxlXmlReader extends VolumeFileReader {
     String encoding = XmlReader.getXmlAttrib(data, "encoding");
     if ("none".equals(encoding)) {
       float[] fdata = Parser.parseFloatArray(data);
-      // first point is count
+      // first point is count -- ignored.
+      if (fdata[0] != vertexCount * 3)
+        Logger.info("JvxlXmlReader: vertexData count=" + ((int)fdata[0]) + "; expected " + (vertexCount * 3));
       for (int i = 0, pt = 1; i < vertexCount; i++) {
         p = P3.new3(fdata[pt++], fdata[pt++], fdata[pt++]);
         if (asArray)
@@ -719,7 +743,12 @@ public class JvxlXmlReader extends VolumeFileReader {
           addVertexCopy(p, 0, i);
       }
     } else {
-      String s = JvxlCoder.jvxlUncompressString(vData);
+      P3 min = xr.getXmlPoint(data, "min");
+      P3 range = xr.getXmlPoint(data, "max");
+      range.sub(min);
+      int colorFractionBase = jvxlData.colorFractionBase;
+      int colorFractionRange = jvxlData.colorFractionRange;
+      String s = JvxlCoder.jvxlDecompressString(vData);
       if (s.length() == 0)
         s = xr.getXmlData("jvxlVertexData", data, false, false);
       for (int i = 0, pt = -1; i < vertexCount; i++) {
@@ -753,13 +782,13 @@ public class JvxlXmlReader extends VolumeFileReader {
    */
   void jvxlDecodeTriangleData(String data, String edgeData, String colorData)
       throws Exception {
+    int nData = parseIntStr(XmlReader.getXmlAttrib(data, "count"));
+    if (nData < 0)
+      return;
     int[] nextc = new int[1];
     int nColors = (colorData == null ? -1 : Parser.parseIntNext(colorData,
         nextc));
     int color = 0;
-    int nData = parseIntStr(XmlReader.getXmlAttrib(data, "count"));
-    if (nData < 0)
-      return;
     Logger.info("Reading " + nData + " triangles");
     String encoding = XmlReader.getXmlAttrib(data, "encoding");
     String tdata = XmlReader.getXmlAttrib(data, "data");
@@ -773,15 +802,17 @@ public class JvxlXmlReader extends VolumeFileReader {
     boolean haveEdgeInfo;
     boolean haveEncoding = !"none".equals(encoding);
     if (haveEncoding) {
-      tdata = JvxlCoder.jvxlUncompressString(tdata);
-      edata = JvxlCoder.jvxlUncompressString(edata).trim();
+      tdata = JvxlCoder.jvxlDecompressString(tdata);
+      edata = JvxlCoder.jvxlDecompressString(edata).trim();
       haveEdgeInfo = (edata.length() == nData);
     } else {
-      Parser.parseIntNext(tdata, nextp); // throw away count
-      haveEdgeInfo = (edata.length() > 0);
+      int n = Parser.parseIntNext(tdata, nextp);
+      haveEdgeInfo = (n == nData);
       if (haveEdgeInfo) {
         nexte = new int[1];
         Parser.parseIntNext(edata, nexte); // throw away count
+      } else if (n > 0) {
+        Logger.info("JvxlXmlReader: jvxlTriangleEdgeData count=" + n + "; expected " + nData);
       }
     }
     for (int i = 0, v = 0, p = 0, pt = -1; i < nData;) {
@@ -860,11 +891,10 @@ public class JvxlXmlReader extends VolumeFileReader {
       String s = xr.getXmlData("jvxlContour", data.substring(pt), true, false);
       float value = parseFloatStr(XmlReader.getXmlAttrib(s, "value"));
       values.append(" ").appendF(value);
-      short colix = C.getColix(ColorUtil.getArgbFromString(XmlReader
-          .getXmlAttrib(s, "color")));
-      int color = C.getArgb(colix);
+      int color = getColor(XmlReader.getXmlAttrib(s, "color"));
+      short colix = C.getColix(color);
       colors.append(" ").append(Escape.escapeColor(color));
-      String fData = JvxlCoder.jvxlUncompressString(XmlReader.getXmlAttrib(s,
+      String fData = JvxlCoder.jvxlDecompressString(XmlReader.getXmlAttrib(s,
           "data"));
       BS bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlContour", s,
           false, false));

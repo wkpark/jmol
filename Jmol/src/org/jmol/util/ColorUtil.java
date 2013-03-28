@@ -383,7 +383,6 @@ public class ColorUtil {
     int len = 0;
     if (strColor == null || (len = strColor.length()) == 0)
       return 0;
-    float red, grn, blu;
     if (strColor.charAt(0) == '[' && strColor.charAt(len - 1) == ']') {
       String check;
       if (strColor.indexOf(",") >= 0) {
@@ -391,9 +390,9 @@ public class ColorUtil {
             .length() - 1), ",");
         if (tokens.length != 3)
           return 0;
-        red = Parser.parseFloatStr(tokens[0]);
-        grn = Parser.parseFloatStr(tokens[1]);
-        blu = Parser.parseFloatStr(tokens[2]);
+        float red = Parser.parseFloatStr(tokens[0]);
+        float grn = Parser.parseFloatStr(tokens[1]);
+        float blu = Parser.parseFloatStr(tokens[2]);
         return colorTriadToInt(red, grn, blu);
       }
       switch (len) {
@@ -413,11 +412,8 @@ public class ColorUtil {
     }
     if (len == 7 && strColor.charAt(0) == '#') {
       try {
-        red = Parser.parseIntRadix(strColor.substring(1, 3), 16);
-        grn = Parser.parseIntRadix(strColor.substring(3, 5), 16);
-        blu = Parser.parseIntRadix(strColor.substring(5, 7), 16);
-        return colorTriadToInt(red, grn, blu);
-      } catch (NumberFormatException e) {
+        return Parser.parseIntRadix(strColor.substring(1, 7), 16) | 0xFF000000;
+      } catch (Exception e) {
         return 0;
       }
     }

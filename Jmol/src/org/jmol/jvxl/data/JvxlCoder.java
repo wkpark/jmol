@@ -1066,7 +1066,7 @@ public class JvxlCoder {
 
   public static BS jvxlDecodeBitSet(String data) {
     if (data.startsWith("-"))
-      return jvxlDecodeBitSetRange(jvxlUncompressString(data.substring(1)), defaultEdgeFractionBase, defaultEdgeFractionRange);
+      return jvxlDecodeBitSetRange(jvxlDecompressString(data.substring(1)), defaultEdgeFractionBase, defaultEdgeFractionRange);
     // nunset nset nunset ...
     BS bs = new BS();
     int dataCount = 0;
@@ -1173,7 +1173,7 @@ public class JvxlCoder {
     return dataOut.toString();
   }
 
-  public static String jvxlUncompressString(String data) {
+  public static String jvxlDecompressString(String data) {
     if (data.indexOf("~") < 0)
       return data;
     SB dataOut = new SB();

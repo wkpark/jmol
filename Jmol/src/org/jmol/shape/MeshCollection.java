@@ -353,7 +353,7 @@ public abstract class MeshCollection extends Shape {
       return;
     case T.translucent:
       m.setTranslucent(bProp, translucentLevel);
-      if (m.bsSlabGhost != null)
+      if (bProp && m.bsSlabGhost != null)
         m.resetSlab();
       return;
     default:

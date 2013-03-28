@@ -1,13 +1,10 @@
 package org.jmol.util;
 
-import org.jmol.util.JmolList;
 import java.util.Hashtable;
-
 import java.util.Map;
 
-
 import org.jmol.script.T;
-
+import org.jmol.util.JmolList;
 
 public class MeshSurface {
 
@@ -348,10 +345,13 @@ public class MeshSurface {
     
     SB sb = new SB();
     sb.append(andCap ? " cap " : " slab ");
-    if (isGhost)
+    if (isGhost) {
       sb.append("translucent ").appendF(
           C.getColixTranslucencyFractional(slabColix)).append(" ")
           .append(C.getHexCode(slabColix)).append(" ");
+      if (slabMeshType == T.mesh)
+        sb.append("mesh ");
+    }
     switch (slabType) {
     case T.brillouin:
       sb.append("brillouin");

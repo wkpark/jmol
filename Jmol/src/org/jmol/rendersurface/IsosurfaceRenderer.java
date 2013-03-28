@@ -79,7 +79,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
         continue;
       hasColorRange = false;
       if (renderMeshSlab(mySlabValue, slabValue)) {
-        //System.out.println("render isossurface " + i + " " + isosurface.meshCount);
         if (!isExport)
           renderInfo();
         if (isExport && haveBsSlabGhost) {
@@ -340,8 +339,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
   @Override
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean isExport) {
-    //System.out.println("isorend mvc=" + imesh.mergeVertexCount0 + " mpc=" + imesh.mergePolygonCount0 + " vc=" + imesh.vertexCount + " pc=" + imesh.polygonCount + " " + imesh);
-    //if (bsSlab != null) System.out.println("isorend bsSlab=" + bsSlab.cardinality() + " " + bsSlab);
     int[][] polygonIndexes = imesh.polygonIndexes;
     colix = (haveBsSlabGhost ? imesh.slabColix
         : !fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);
@@ -388,15 +385,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int iA = polygon[0];
       int iB = polygon[1];
       int iC = polygon[2];
-      
-     //373  386  395
-     //if (iC != 394 )//|| iB != 385)
-     //continue;
-/*
-      int iTest = 6596;
-      if (iA == iTest|| iB == iTest || iC == iTest)
-        System.out.println(iA + " " + iB + " " + iC);
-*/      
       if (imesh.jvxlData.thisSet >= 0 && imesh.vertexSets != null 
           && imesh.vertexSets[iA] != imesh.jvxlData.thisSet)
         continue;
@@ -423,7 +411,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
         colixA = vertexColixes[iA];
         colixB = vertexColixes[iB];
         colixC = vertexColixes[iC];
-//        System.out.println(iA + " " + iB + " " + iC + " " + colixA + " " + colixB + " " + colixC + " " + vertices[iA] + " " + vertices[iB] + " " + vertices[iC]);
         if (isBicolorMap) {
           if (colixA != colixB || colixB != colixC)
             continue;

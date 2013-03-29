@@ -595,14 +595,17 @@ public class Parser {
     return (i < 0 ? null : getQuotedStringAt(info, i));
   }
 
-  public static int parseIntRadix(String s, int i) {
+  public static int parseIntRadix(String s, int i) throws NumberFormatException {
     /**
      * 
      * JavaScript uses parseIntRadix
      * 
      * @j2sNative
      * 
-     *    return parseInt(s, i);
+     *    i = parseInt(s, i);
+     *    if (isNaN(i))
+     *      throw new NumberFormatException("Not a Number : "+s);
+     *    return i;
      */
     {
       return Integer.parseInt(s, i);

@@ -594,14 +594,21 @@ public class JvxlXmlReader extends VolumeFileReader {
       int n = Parser.parseIntNext(jvxlColorDataRead, nextc);
       n = Math.min(n, vertexCount);
       String[] tokens = Parser.getTokens(jvxlColorDataRead.substring(nextc[0]));
+      boolean haveTranslucent = false;
       for (int i = 0; i < n; i++)
-        // colix will be 50% translucent if A in ARGB is not FF.
+        // colix will be one of 8 shades of translucent if A in ARGB is not FF.
         try{
-          colixes[i] = C.getColix(jvxlData.vertexColors[i] = getColor(tokens[i]));
+          colixes[i] = C.getColixTranslucent(jvxlData.vertexColors[i] = getColor(tokens[i]));
+          if (C.isColixTranslucent(colixes[i]))
+            haveTranslucent = true;
         } catch (Exception e) {
           Logger.info("JvxlXmlReader: Cannot interpret color code: " + tokens[i]);
           // ignore this color if parsing error
         }
+      if (haveTranslucent){
+        // set to show in pass2
+        jvxlData.translucency = 0.5f;
+      }
       return "-";
     }    
     if (params.colorEncoder == null)
@@ -670,16 +677,19 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
 
   private static int getColor(String c) {
-    if (c.length() == 0)
+    try {
+      switch (c.charAt(0)) {
+      case '[':
+        return ColorUtil.getArgbFromString(c);
+      case '0': //0x
+        return Parser.parseIntRadix(c.substring(2), 16);
+      }
+      return Parser.parseIntRadix(c, 10);
+    } catch (Exception e) {
       return 0;
-    switch (c.charAt(0)) {
-    case '[':
-      return ColorUtil.getArgbFromString(c);
-    case '0': //0x
-      return Parser.parseIntRadix(c.substring(2), 16);
     }
-    return Parser.parseIntRadix(c, 10);
   }
+  
 
   /**
    * retrieve Jvxl 2.0 format vertex/triangle/edge/color data found

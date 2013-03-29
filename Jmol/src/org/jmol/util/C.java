@@ -132,7 +132,7 @@ public class C {
   public final static int TRANSLUCENT_MASK = 0xF << TRANSLUCENT_SHIFT; //0x7800
   public final static int TRANSLUCENT_SCREENED = TRANSLUCENT_MASK;
   public final static int TRANSPARENT = 8 << TRANSLUCENT_SHIFT; //0x4000
-  public final static int TRANSLUCENT_50 = 4 << TRANSLUCENT_SHIFT; //0x2000
+  //public final static int TRANSLUCENT_50 = 4 << TRANSLUCENT_SHIFT; //0x2000
   public final static short OPAQUE_MASK = ~TRANSLUCENT_MASK;
 
   public final static short BLACK = 4;
@@ -163,10 +163,10 @@ public class C {
     if (argb == 0)
       return 0;
     int translucentFlag = 0;
-    // in JavaScript argb & 0xFF000000 will be a long
+    // in JavaScript argb & 0xFF000000 will be a negative long value
     if ((argb & 0xFF000000) != (0xFF000000 & 0xFF000000)) {
-      argb |= 0xFF000000;
-      translucentFlag = TRANSLUCENT_50;
+      translucentFlag = getTranslucentFlag((argb >> 24) & 0xFF);
+      argb |= 0xFF000000; 
     }
     int c = colixHash.get(argb);
     if ((c & RAW_RGB_INT) == RAW_RGB_INT)
@@ -176,14 +176,14 @@ public class C {
   }
 
   public synchronized static int allocateColix(int argb) {
+    // in JavaScript argb & 0xFF000000 will be a long
+    //if ((argb & 0xFF000000) != (0xFF000000 & 0xFF000000))
+    //  throw new IndexOutOfBoundsException();
     // double-check to make sure that someone else did not allocate
     // something of the same color while we were waiting for the lock
-    // in JavaScript argb & 0xFF000000 will be a long
-    if ((argb & 0xFF000000) != (0xFF000000 & 0xFF000000))
-      throw new IndexOutOfBoundsException();
     for (int i = colixMax; --i >= SPECIAL_COLIX_MAX; )
-      if (argb == argbs[i])
-        return (short)i;
+      if ((argb & 0xFFFFFF) == (argbs[i] & 0xFFFFFF))
+        return i;
     if (colixMax == argbs.length) {
       int oldSize = colixMax;
       int newSize = oldSize * 2;
@@ -301,8 +301,7 @@ public class C {
     return HOTPINK;
   }
 
-  public final static short applyColorTranslucencyLevel(short colix,
-                                                         float translucentLevel) {
+  private static int getTranslucentFlag(float translucentLevel) {
     // 0.0 to 1.0 ==> MORE translucent   
     //                 1/8  1/4 3/8 1/2 5/8 3/4 7/8 8/8
     //     t            32  64  96  128 160 192 224 255 or 256
@@ -311,17 +310,16 @@ public class C {
     // 15 is reserved for screened, so 9-14 just map to 9, "invisible"
   
     if (translucentLevel == 0) //opaque
-      return (short) (colix & ~TRANSLUCENT_MASK);
+      return 0;
     if (translucentLevel < 0) //screened
-      return (short) (colix & ~TRANSLUCENT_MASK | TRANSLUCENT_SCREENED);
+      return TRANSLUCENT_SCREENED;
     if (Float.isNaN(translucentLevel) || translucentLevel >= 255
         || translucentLevel == 1.0)
-      return (short) ((colix & ~TRANSLUCENT_MASK) | TRANSPARENT);
+      return TRANSPARENT;
     int iLevel = (int) Math.floor(translucentLevel < 1 ? translucentLevel * 256
         : translucentLevel <= 9 ? ((int) Math.floor(translucentLevel - 1)) << 5
             : translucentLevel < 15 ? 8 << 5 : translucentLevel);
-    iLevel = (iLevel >> 5) % 16;
-    return (short) (colix & ~TRANSLUCENT_MASK | (iLevel << TRANSLUCENT_SHIFT));
+    return (((iLevel >> 5) & 0xF) << TRANSLUCENT_SHIFT);
   }
 
   public static boolean isColixLastAvailable(short colix) {
@@ -365,12 +363,12 @@ public class C {
   }
 
   public final static short getColixTranslucent3(short colix,
-                                                boolean isTranslucent,
-                                                float translucentLevel) {
+                                                 boolean isTranslucent,
+                                                 float translucentLevel) {
     if (colix == INHERIT_ALL)
       colix = INHERIT_COLOR;
     colix &= ~TRANSLUCENT_MASK;
-    return (isTranslucent ? applyColorTranslucencyLevel(colix, translucentLevel)
+    return (isTranslucent ? (short) (colix | getTranslucentFlag(translucentLevel))
         : colix);
   }
 
@@ -444,9 +442,7 @@ public class C {
 
   public static short getColixTranslucent(int argb) {
     int a = (argb >> 24) & 0xFF;
-    if (a == 0xFF)
-      return getColix(argb);
-    return getColixTranslucent3(getColix(argb), true, a / 255f);
+    return (a == 0xFF ? getColix(argb) : getColixTranslucent3(getColix(argb), true, a / 255f));
   }  
 
 }

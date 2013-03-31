@@ -26,7 +26,7 @@
 package org.jmol.fah;
 
 /**
- * Typesafe enum class for core types
+ * Type safe enum class for core types
  */
 public class CoreType {
 
@@ -140,13 +140,16 @@ public class CoreType {
       if (name.equalsIgnoreCase(A0GROMACS._name)) {
         return A0GROMACS;
       }
-      if (name.equalsIgnoreCase(A3GROMACS._name)) {
+      if (name.equalsIgnoreCase(A3GROMACS._name) ||
+          name.equalsIgnoreCase(A3GROMACS._name2)) {
         return A3GROMACS;
       }
-      if (name.equalsIgnoreCase(A4GROMACS._name)) {
+      if (name.equalsIgnoreCase(A4GROMACS._name) ||
+          name.equalsIgnoreCase(A4GROMACS._name2)) {
         return A4GROMACS;
       }
-      if (name.equalsIgnoreCase(A5GROMACS._name)) {
+      if (name.equalsIgnoreCase(A5GROMACS._name) ||
+          name.equalsIgnoreCase(A5GROMACS._name2)) {
         return A5GROMACS;
       }
       if (name.equalsIgnoreCase(A6GROMACS._name)) {
@@ -252,9 +255,9 @@ public class CoreType {
   // Cores
   static public final CoreType UNKNOWN      = new CoreType(null, null, true);
   static public final CoreType A0GROMACS    = new CoreType("Gromacs33", "A0", true); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType A3GROMACS    = new CoreType("GRO-A3", "A3", false); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType A4GROMACS    = new CoreType("GRO-A4", "A4", false); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType A5GROMACS    = new CoreType("GRO-A5", "A5", false); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType A3GROMACS    = new CoreType("GRO-A3", "GRO_A3", "A3", false); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+  static public final CoreType A4GROMACS    = new CoreType("GRO-A4", "GRO_A4", "A4", false); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+  static public final CoreType A5GROMACS    = new CoreType("GRO-A5", "GRO_A5", "A5", false); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   static public final CoreType A6GROMACS    = new CoreType("GRO-A6", "A6", false); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType AMBER        = new CoreType("Amber", "A", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType ATI_DEV      = new CoreType("ATI-DEV", "AD", false); //$NON-NLS-1$ //$NON-NLS-2$
@@ -274,7 +277,7 @@ public class CoreType {
   static public final CoreType NVIDIA_DEV   = new CoreType("NVIDIA-DEV", "ND", false); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType OPEN_MM_CL   = new CoreType("OpenMM_OpenCL", "OC", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType OPEN_MM_FERMI= new CoreType("OpenMMFermi", "OF", true); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType OPEN_MM_GPU  = new CoreType("OpenMMGPU", "OG", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType OPEN_MM_GPU  = new CoreType("OpenMMGPU", "GPU", "OG", true); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   static public final CoreType PROTO_MOL    = new CoreType("ProtoMol", "PM", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType QMD          = new CoreType("QMD", "Q", true); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType SHARPEN      = new CoreType("Sharpen", "SP", true);   //$NON-NLS-1$//$NON-NLS-2$
@@ -283,6 +286,7 @@ public class CoreType {
 
   // Attributes
   private final String _name;
+  private final String _name2;
   private final String _code;
   private final boolean _hasFile;
 
@@ -294,7 +298,20 @@ public class CoreType {
    * @param hasFile Flag indicating the present of a current.xyz file
    */
   private CoreType(String name, String code, boolean hasFile) {
+    this(name, null, code, hasFile);
+  }
+
+  /**
+   * Constructor for CoreType
+   * 
+   * @param name Name of core
+   * @param name2 Second name of core
+   * @param code Letter code of core
+   * @param hasFile Flag indicating the present of a current.xyz file
+   */
+  private CoreType(String name, String name2, String code, boolean hasFile) {
     this._name = name;
+    this._name2 = name2;
     this._code = code;
     this._hasFile = hasFile;
   }

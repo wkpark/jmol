@@ -731,11 +731,14 @@ public class ProjectInformation {
           info._fciCore = CoreType.A0GROMACS;
         } else if ("GROMACS-SMP".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.GROMACS_SMP;
-        } else if ("GRO-A3".equalsIgnoreCase(core)) {
+        } else if ("GRO-A3".equalsIgnoreCase(core) ||
+                   "GRO_A3".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.A3GROMACS;
-        } else if ("GRO-A4".equalsIgnoreCase(core)) {
+        } else if ("GRO-A4".equalsIgnoreCase(core) ||
+                   "GRO_A4".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.A4GROMACS;
-        } else if ("GRO-A5".equalsIgnoreCase(core)) {
+        } else if ("GRO-A5".equalsIgnoreCase(core) ||
+                   "GRO_A5".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.A5GROMACS;
         } else if ("GRO-A6".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.A6GROMACS;
@@ -751,7 +754,8 @@ public class ProjectInformation {
           info._fciCore = CoreType.NVIDIA_DEV;
         } else if ("OPENMMFERMI".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.OPEN_MM_FERMI;
-        } else if ("OPENMMGPU".equalsIgnoreCase(core)) {
+        } else if ("OPENMMGPU".equalsIgnoreCase(core) ||
+                   "GPU".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.OPEN_MM_GPU;
         } else if ("OPENMM_OPENCL".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.OPEN_MM_CL;
@@ -1679,9 +1683,6 @@ public class ProjectInformation {
       return;
     }
 
-    outputText("Differences for project "); //$NON-NLS-1$
-    outputTextLn(Integer.toString(projectNumber));
-
     // Check for unknown project
     if ((info._staticAtoms == null) &&
         (info._staticContact == null) &&
@@ -1774,6 +1775,9 @@ public class ProjectInformation {
       outputTextLn("/>");
       return;
     }
+
+    outputText("Differences for project "); //$NON-NLS-1$
+    outputTextLn(Integer.toString(projectNumber));
 
     //Print names difference
     boolean nameDifferent = false;

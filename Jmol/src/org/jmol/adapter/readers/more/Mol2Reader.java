@@ -36,6 +36,8 @@ import org.jmol.api.JmolAdapter;
  * http://www.tripos.com/data/support/mol2.pdf 
  * </a>
  * 
+ * see also http://www.tripos.com/mol2/atom_types.html
+ * 
  * PDB note:
  * 
  * Note that mol2 format of PDB files is quite minimal. All we
@@ -43,10 +45,6 @@ import org.jmol.api.JmolAdapter;
  * No chain terminator, not chain designator, no element symbol.
  * 
  * Chains based on numbering reset just labeled A B C D .... Z a b c d .... z
- * Element symbols based on reasoned guess and properties of hetero groups
- * 
- * So this is just a hack -- trying to guess at all of these.
- * 
  * 
  *<p>
  */
@@ -169,9 +167,11 @@ public class Mol2Reader extends ForceFieldReader {
     for (int i = 0; i < atomCount; ++i) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokensStr(readLine());
-      //Logger.debug(tokens.length + " -" + tokens[5] + "- " + line);
       String atomType = tokens[5];
       atom.atomName = tokens[1] + '\0' + atomType;
+      int pt = atomType.indexOf(".");
+      // accepts "." for "no atom type"
+      atom.elementSymbol = (pt == 0 ? atom.atomName : pt > 0 ? atomType.substring(0, pt) : atomType);
       atom.set(parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
           parseFloatStr(tokens[4]));
       // apparently "NO_CHARGES" is not strictly enforced
@@ -194,44 +194,46 @@ public class Mol2Reader extends ForceFieldReader {
           atom.formalCharge = (int) atom.partialCharge;
       }
     }
+
+    // trying to guess if this is a PDB-type file
+
     Atom[] atoms = atomSetCollection.getAtoms();
+
+    // 1. Does the very first atom have a group name?
+
     String g3 = atoms[i0].group3;
     if (g3 == null)
       return;
-    isPDB = false;
+
+    boolean isPDB = false;
+
+    // 2. If so, is there more than one kind of group?
+
     for (int i = atomSetCollection.getAtomCount(); --i >= i0;)
       if (!g3.equals(atoms[atomSetCollection.getAtomCount() - 1].group3)) {
         isPDB = true;
         break;
       }
+
+    // 3. If so, is there an identifiable group name? 
+
     if (isPDB) {
       isPDB = false;
       for (int i = atomSetCollection.getAtomCount(); --i >= i0;) {
         Atom atom = atoms[i];
         if (atom.group3.length() <= 3
             && JmolAdapter.lookupGroupID(atom.group3) >= 0) {
-          isPDB = true;
+          isPDB = this.isPDB = true;
           break;
         }
       }
-      if (isPDB) {
-        for (int i = atomSetCollection.getAtomCount(); --i >= i0;) {
-          Atom atom = atoms[i];
-          atom.isHetero = JmolAdapter.isHetero(atom.group3);
-          String atomType = atom.atomName
-              .substring(atom.atomName.indexOf('\0') + 1);
-          boolean deduceSymbol = !getElementSymbol(atom, atomType);
-          if (deduceSymbol)
-            atom.elementSymbol = deducePdbElementSymbol(atom.isHetero,
-                atomType, atom.group3);
-        } //System.out.print(atom.atomName + "/" + atom.elementSymbol + " " );
-        return;
-      }
     }
-    if (!isPDB) {
-      for (int i = atomSetCollection.getAtomCount(); --i >= i0;)
-       atoms[i].group3 = null;      
-    }
+    
+    for (int i = atomSetCollection.getAtomCount(); --i >= i0;)
+      if (isPDB)
+        atoms[i].isHetero = isPDB && JmolAdapter.isHetero(atoms[i].group3);
+      else
+        atoms[i].group3 = null;
   }
 
   private void readBonds(int bondCount) throws Exception {

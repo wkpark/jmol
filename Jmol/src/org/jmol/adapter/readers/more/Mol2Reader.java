@@ -231,7 +231,7 @@ public class Mol2Reader extends ForceFieldReader {
     
     for (int i = atomSetCollection.getAtomCount(); --i >= i0;)
       if (isPDB)
-        atoms[i].isHetero = isPDB && JmolAdapter.isHetero(atoms[i].group3);
+        atoms[i].isHetero = JmolAdapter.isHetero(atoms[i].group3);
       else
         atoms[i].group3 = null;
   }

@@ -734,6 +734,9 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
 
   private static String getEncoding(String data) {
+    // original JVXL does not include "encoding" 
+    if (XmlReader.getXmlAttrib(data, "len").length() > 0)
+      return "";
     String s = XmlReader.getXmlAttrib(data, "encoding");
     return (s.length() == 0 ? "none" : s);
   }
@@ -883,9 +886,9 @@ public class JvxlXmlReader extends VolumeFileReader {
         }
         v += diff;
       } else {
-        v = Parser.parseIntNext(tdata, nextp);
+        v = Parser.parseIntNext(tdata, nextp) - 1;
       }
-      vertex[p] = v - 1;
+      vertex[p] = v;
       if (++p == 3) {
         p = 0;
         if (haveEdgeInfo) {

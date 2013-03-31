@@ -677,17 +677,23 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
 
   private static int getColor(String c) {
+    int n = 0;
     try {
       switch (c.charAt(0)) {
       case '[':
-        return ColorUtil.getArgbFromString(c);
+        n = ColorUtil.getArgbFromString(c);
+        break;
       case '0': //0x
-        return Parser.parseIntRadix(c.substring(2), 16);
+        n = Parser.parseIntRadix(c.substring(2), 16);
+        break;
+      default:
+        n = Parser.parseIntRadix(c, 10);
       }
-      return Parser.parseIntRadix(c, 10);
+      //if (n < 0x1000000)
+        //n |= 0xFF000000;
     } catch (Exception e) {
-      return 0;
     }
+    return n;
   }
   
 
@@ -741,7 +747,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     String vData = XmlReader.getXmlAttrib(data, "data");
     String encoding = XmlReader.getXmlAttrib(data, "encoding");
     if ("none".equals(encoding)) {
-      float[] fdata = Parser.parseFloatArray(data);
+      float[] fdata = Parser.parseFloatArray(vData);
       // first point is count -- ignored.
       if (fdata[0] != vertexCount * 3)
         Logger.info("JvxlXmlReader: vertexData count=" + ((int)fdata[0]) + "; expected " + (vertexCount * 3));
@@ -817,12 +823,12 @@ public class JvxlXmlReader extends VolumeFileReader {
       haveEdgeInfo = (edata.length() == nData);
     } else {
       int n = Parser.parseIntNext(tdata, nextp);
-      haveEdgeInfo = (n == nData);
+      haveEdgeInfo = (edata.length() > 0);
       if (haveEdgeInfo) {
         nexte = new int[1];
         Parser.parseIntNext(edata, nexte); // throw away count
       } else if (n > 0) {
-        Logger.info("JvxlXmlReader: jvxlTriangleEdgeData count=" + n + "; expected " + nData);
+        Logger.info("JvxlXmlReader: jvxlTriangleEdgeData count=" + n + "; expected " + nData * 3);
       }
     }
     for (int i = 0, v = 0, p = 0, pt = -1; i < nData;) {
@@ -863,7 +869,7 @@ public class JvxlXmlReader extends VolumeFileReader {
       } else {
         v = Parser.parseIntNext(tdata, nextp);
       }
-      vertex[p] = v;
+      vertex[p] = v - 1;
       if (++p == 3) {
         p = 0;
         if (haveEdgeInfo) {

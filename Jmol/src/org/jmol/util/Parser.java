@@ -73,8 +73,7 @@ public class Parser {
           next[0] = p + strStart.length();
       }
       str = str.substring(next[0]);
-      if (strEnd != null)
-        pt = str.indexOf(strEnd);
+      pt = (strEnd == null ? -1 : str.indexOf(strEnd));
       if (pt < 0)
         pt = str.length();
       else

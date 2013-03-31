@@ -1610,6 +1610,9 @@ all support for previous versions removed
       <classpath refid="project.class.path" />
       <link href="http://download.oracle.com/javase/6/docs/api/" />
       <link href="http://download.java.net/media/java3d/javadoc/1.5.0/" />
+      <tag name="j2sIgnore" enabled="false" />
+      <tag name="j2sIgnoreSuperConstructor" enabled="false" />
+      <tag name="j2sOverride" enabled="false" />
     </javadoc>
   </target>
 

@@ -236,8 +236,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       return;
     }
     
-    if (imesh.jvxlData.vertexDataOnly)
-      return;
+    //if (imesh.jvxlData.vertexDataOnly)
+      //return;
     hasColorRange = (imesh.meshColix == 0);
     for (int i = vContours.length; --i >= 0;) {
       JmolList<Object> v = vContours[i];

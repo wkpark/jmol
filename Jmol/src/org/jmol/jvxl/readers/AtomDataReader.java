@@ -128,12 +128,15 @@ abstract class AtomDataReader extends VolumeDataReader {
       xyzMax.x += (params.points.x - 1) * params.steps.x;
       xyzMax.y += (params.points.y - 1) * params.steps.y;
       xyzMax.z += (params.points.z - 1) * params.steps.z;
-    } else {
+    } else if (params.boundingBox == null) {
       getAtoms(params.bsSelected, false, true, false, false, false, false, params.mep_marginAngstroms);
       if (xyzMin == null) {
         xyzMin = P3.new3(-10,-10,-10);
         xyzMax = P3.new3(10, 10, 10);
       }
+    } else {
+      xyzMin = P3.newP(params.boundingBox[0]);
+      xyzMax = P3.newP(params.boundingBox[1]);
     }
     setRanges(params.plane_ptsPerAngstrom, params.plane_gridMax, 0); 
   }

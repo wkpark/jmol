@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2013-02-15 10:24+0100\n"
+"POT-Creation-Date: 2013-03-31 05:59+0200\n"
 "PO-Revision-Date: 2011-12-30 12:15+0000\n"
 "Last-Translator: Hiroshi Kihara <Unknown>\n"
 "Language-Team: Japanese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
-"X-Generator: Launchpad (build 16430)\n"
+"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
+"X-Generator: Launchpad (build 16546)\n"
 "X-Poedit-Country: Japan\n"
 "X-Poedit-Language: Japanese\n"
 
@@ -28,7 +28,7 @@ msgstr "Jmolアプレットを読み込んでいます ..."
 msgid "  {0} seconds"
 msgstr "  {0} 秒"
 
-#: org/jmol/applet/Jmol.java:711 org/jmol/appletjs/Jmol.java:365
+#: org/jmol/applet/Jmol.java:711 org/jmol/appletjs/Jmol.java:364
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -43,7 +43,7 @@ msgstr ""
 "\n"
 "詳しくは http://www.jmol.org を参照してください"
 
-#: org/jmol/applet/Jmol.java:976 org/jmol/appletjs/Jmol.java:532
+#: org/jmol/applet/Jmol.java:976 org/jmol/appletjs/Jmol.java:597
 msgid "File Error:"
 msgstr "ファイルエラー:"
 
@@ -633,7 +633,8 @@ msgid "drag atom (and minimize)"
 msgstr "原子をドラッグ (その後、構造最適化する)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-msgid "drag molecule (SHIFT to rotate)"
+#, fuzzy
+msgid "drag molecule (ALT to rotate)"
 msgstr "分子をドラッグ (SHIFTキーで回転)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
@@ -680,7 +681,7 @@ msgstr "結合を回転させる(SHIFT-ドラッグ)"
 msgid "exit modelkit mode"
 msgstr "モデル組立てモードを終了"
 
-#: org/jmol/modelsetbio/AminoPolymer.java:577
+#: org/jmol/modelsetbio/AminoPolymer.java:579
 #, java-format
 msgid ""
 "NOTE: Backbone amide hydrogen positions are present and will be ignored. "
@@ -693,7 +694,7 @@ msgstr ""
 "この近似を用いないためには {0}を使用してください。\n"
 "\n"
 
-#: org/jmol/modelsetbio/AminoPolymer.java:583
+#: org/jmol/modelsetbio/AminoPolymer.java:585
 #, java-format
 msgid ""
 "NOTE: Backbone amide hydrogen positions are present and will be used. "
@@ -706,17 +707,17 @@ msgstr ""
 "これらの水素の位置を無視するには {0} を使用してください。\n"
 "\n"
 
-#: org/jmol/popup/GenericPopup.java:605
+#: org/jmol/popup/GenericPopup.java:621
 #: org/jmol/popup/MainPopupResourceBundle.java:551
 msgid "No atoms loaded"
 msgstr "何も原子が読み込まれていません"
 
-#: org/jmol/popup/GenericPopup.java:867
+#: org/jmol/popup/GenericPopup.java:883
 #: org/jmol/popup/MainPopupResourceBundle.java:563
 msgid "Space Group"
 msgstr "空間群"
 
-#: org/jmol/popup/GenericPopup.java:933 org/jmol/popup/GenericPopup.java:983
+#: org/jmol/popup/GenericPopup.java:949 org/jmol/popup/GenericPopup.java:999
 #: org/jmol/popup/MainPopupResourceBundle.java:584
 #: org/jmol/popup/MainPopupResourceBundle.java:598
 #: org/jmol/popup/MainPopupResourceBundle.java:607
@@ -724,57 +725,57 @@ msgstr "空間群"
 msgid "All"
 msgstr "すべて"
 
-#: org/jmol/popup/GenericPopup.java:1096
+#: org/jmol/popup/GenericPopup.java:1112
 #: org/jmol/popup/MainPopupResourceBundle.java:966
 msgid "Mouse Manual"
 msgstr "マウスの使い方"
 
-#: org/jmol/popup/GenericPopup.java:1098
+#: org/jmol/popup/GenericPopup.java:1114
 #: org/jmol/popup/MainPopupResourceBundle.java:967
 msgid "Translations"
 msgstr "翻訳"
 
-#: org/jmol/popup/GenericPopup.java:1102
+#: org/jmol/popup/GenericPopup.java:1118
 msgid "System"
 msgstr "システム"
 
-#: org/jmol/popup/GenericPopup.java:1107
+#: org/jmol/popup/GenericPopup.java:1123
 msgid "Java version:"
 msgstr "Java バージョン:"
 
-#: org/jmol/popup/GenericPopup.java:1121
+#: org/jmol/popup/GenericPopup.java:1137
 msgid "1 processor"
 msgstr "1 プロセッサ"
 
-#: org/jmol/popup/GenericPopup.java:1122
+#: org/jmol/popup/GenericPopup.java:1138
 #, java-format
 msgid "{0} processors"
 msgstr "{0} プロセッサ"
 
-#: org/jmol/popup/GenericPopup.java:1124
+#: org/jmol/popup/GenericPopup.java:1140
 msgid "unknown processor count"
 msgstr "プロセッサ数　不明"
 
-#: org/jmol/popup/GenericPopup.java:1125
+#: org/jmol/popup/GenericPopup.java:1141
 msgid "Java memory usage:"
 msgstr "Java メモリ使用量:"
 
-#: org/jmol/popup/GenericPopup.java:1130
+#: org/jmol/popup/GenericPopup.java:1146
 #, java-format
 msgid "{0} MB total"
 msgstr "合計 {0} MB"
 
-#: org/jmol/popup/GenericPopup.java:1132
+#: org/jmol/popup/GenericPopup.java:1148
 #, java-format
 msgid "{0} MB free"
 msgstr "未使用 {0} MB"
 
-#: org/jmol/popup/GenericPopup.java:1135
+#: org/jmol/popup/GenericPopup.java:1151
 #, java-format
 msgid "{0} MB maximum"
 msgstr "最大 {0} MB"
 
-#: org/jmol/popup/GenericPopup.java:1138
+#: org/jmol/popup/GenericPopup.java:1154
 msgid "unknown maximum"
 msgstr "最大値　不明"
 
@@ -1843,7 +1844,7 @@ msgid "About..."
 msgstr "Jmolについて..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1339
-#: org/jmol/script/ScriptEvaluator.java:3082
+#: org/jmol/script/ScriptEvaluator.java:3084
 msgid "bad argument count"
 msgstr "引数の数が誤っています"
 
@@ -1853,7 +1854,7 @@ msgid "invalid context for {0}"
 msgstr "{0} に対して無効なコンテキストです"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1345
-#: org/jmol/script/ScriptEvaluator.java:3109
+#: org/jmol/script/ScriptEvaluator.java:3111
 msgid "command expected"
 msgstr "命令を入力してください"
 
@@ -1862,7 +1863,7 @@ msgid "{ number number number } expected"
 msgstr "{ 数 数 数 } を入力してください"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1351
-#: org/jmol/script/ScriptEvaluator.java:3118
+#: org/jmol/script/ScriptEvaluator.java:3120
 msgid "unexpected end of script command"
 msgstr "スクリプトコマンドが予期せず終了しました"
 
@@ -1897,7 +1898,7 @@ msgid "missing END for {0}"
 msgstr "{0}に対するENDがありません"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1375
-#: org/jmol/script/ScriptEvaluator.java:3185
+#: org/jmol/script/ScriptEvaluator.java:3187
 msgid "number expected"
 msgstr "数値を入力してください"
 
@@ -1925,7 +1926,7 @@ msgid "unrecognized expression token: {0}"
 msgstr "認識できない式のトークン: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1393
-#: org/jmol/script/ScriptEvaluator.java:3234
+#: org/jmol/script/ScriptEvaluator.java:3236
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "認識できない {0} パラメーター"
@@ -1935,146 +1936,146 @@ msgstr "認識できない {0} パラメーター"
 msgid "unrecognized token: {0}"
 msgstr "認識できないトークン: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2598
+#: org/jmol/script/ScriptCompiler.java:2599
 msgid "script compiler ERROR: "
 msgstr "スクリプト・コンパイラ　エラー: "
 
-#: org/jmol/script/ScriptEvaluator.java:2927
-#: org/jmol/script/ScriptEvaluator.java:10765
+#: org/jmol/script/ScriptEvaluator.java:2929
+#: org/jmol/script/ScriptEvaluator.java:10795
 msgid "script ERROR: "
 msgstr "スクリプト エラー: "
 
-#: org/jmol/script/ScriptEvaluator.java:3076
+#: org/jmol/script/ScriptEvaluator.java:3078
 msgid "x y z axis expected"
 msgstr "x y z 軸を指定してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3079
+#: org/jmol/script/ScriptEvaluator.java:3081
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "{0} 背景モデルが表示されている場合は使用できません。"
 
-#: org/jmol/script/ScriptEvaluator.java:3085
+#: org/jmol/script/ScriptEvaluator.java:3087
 msgid "Miller indices cannot all be zero."
 msgstr "ミラー指数はすべて0にはできません"
 
-#: org/jmol/script/ScriptEvaluator.java:3088
+#: org/jmol/script/ScriptEvaluator.java:3090
 msgid "bad [R,G,B] color"
 msgstr "[R,G,B] 色指定が正しくありません"
 
-#: org/jmol/script/ScriptEvaluator.java:3091
+#: org/jmol/script/ScriptEvaluator.java:3093
 msgid "boolean expected"
 msgstr "ブール値を入力してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3094
+#: org/jmol/script/ScriptEvaluator.java:3096
 msgid "boolean or number expected"
 msgstr "ブール値または数値を入力してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3097
+#: org/jmol/script/ScriptEvaluator.java:3099
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "ブール値、数値または{0} を入力してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3100
+#: org/jmol/script/ScriptEvaluator.java:3102
 msgid "cannot set value"
 msgstr ""
 
-#: org/jmol/script/ScriptEvaluator.java:3103
+#: org/jmol/script/ScriptEvaluator.java:3105
 msgid "color expected"
 msgstr "色を指定してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3106
+#: org/jmol/script/ScriptEvaluator.java:3108
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "色またはパレット名 (Jmol, Rasmol)が必要です"
 
-#: org/jmol/script/ScriptEvaluator.java:3112
+#: org/jmol/script/ScriptEvaluator.java:3114
 msgid "{x y z} or $name or (atom expression) required"
 msgstr "{x y z} または$name あるいは（原子式）が必要です"
 
-#: org/jmol/script/ScriptEvaluator.java:3115
+#: org/jmol/script/ScriptEvaluator.java:3117
 msgid "draw object not defined"
 msgstr "描画オブジェクトが定義されていません"
 
-#: org/jmol/script/ScriptEvaluator.java:3121
+#: org/jmol/script/ScriptEvaluator.java:3123
 msgid "valid (atom expression) expected"
 msgstr "正しい (原子式) を入力してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3124
+#: org/jmol/script/ScriptEvaluator.java:3126
 msgid "(atom expression) or integer expected"
 msgstr "(原子式) または整数を入力してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3127
+#: org/jmol/script/ScriptEvaluator.java:3129
 msgid "filename expected"
 msgstr "ファイル名を指定してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3130
+#: org/jmol/script/ScriptEvaluator.java:3132
 msgid "file not found"
 msgstr "ファイルが見つかりません"
 
-#: org/jmol/script/ScriptEvaluator.java:3133
+#: org/jmol/script/ScriptEvaluator.java:3135
 msgid "incompatible arguments"
 msgstr "引数が矛盾しています"
 
-#: org/jmol/script/ScriptEvaluator.java:3136
+#: org/jmol/script/ScriptEvaluator.java:3138
 msgid "insufficient arguments"
 msgstr "引数が足りません"
 
-#: org/jmol/script/ScriptEvaluator.java:3139
+#: org/jmol/script/ScriptEvaluator.java:3141
 msgid "integer expected"
 msgstr "整数を入力してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3142
+#: org/jmol/script/ScriptEvaluator.java:3144
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "整数が ({0} - {1})の範囲を超えています"
 
-#: org/jmol/script/ScriptEvaluator.java:3145
+#: org/jmol/script/ScriptEvaluator.java:3147
 msgid "invalid argument"
 msgstr "引数が不正です"
 
-#: org/jmol/script/ScriptEvaluator.java:3148
+#: org/jmol/script/ScriptEvaluator.java:3150
 msgid "invalid parameter order"
 msgstr "パラメータの順序が不正です"
 
-#: org/jmol/script/ScriptEvaluator.java:3151
+#: org/jmol/script/ScriptEvaluator.java:3153
 msgid "keyword expected"
 msgstr "キーワードを指定してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3154
+#: org/jmol/script/ScriptEvaluator.java:3156
 msgid "no MO coefficient data available"
 msgstr "MOの係数データがありません"
 
-#: org/jmol/script/ScriptEvaluator.java:3157
+#: org/jmol/script/ScriptEvaluator.java:3159
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "分子軌道を1 から {0}の間で指定してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3160
+#: org/jmol/script/ScriptEvaluator.java:3162
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "このフレームに対するMO基底関数/係数データがありません"
 
-#: org/jmol/script/ScriptEvaluator.java:3163
+#: org/jmol/script/ScriptEvaluator.java:3165
 msgid "no MO occupancy data available"
 msgstr "分子軌道の占有電子数データがありません"
 
-#: org/jmol/script/ScriptEvaluator.java:3166
+#: org/jmol/script/ScriptEvaluator.java:3168
 msgid "Only one molecular orbital is available in this file"
 msgstr "このファイルでは一つの分子軌道しか利用できません"
 
-#: org/jmol/script/ScriptEvaluator.java:3169
+#: org/jmol/script/ScriptEvaluator.java:3171
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0} はモデルが1つだけ表示されている必要があります"
 
-#: org/jmol/script/ScriptEvaluator.java:3172
+#: org/jmol/script/ScriptEvaluator.java:3174
 #, java-format
 msgid "{0} requires that only one model be loaded"
 msgstr "{0} はモデルが1つだけ読み込まれている必要があります"
 
-#: org/jmol/script/ScriptEvaluator.java:3175
+#: org/jmol/script/ScriptEvaluator.java:3177
 msgid "No data available"
 msgstr "データがありません"
 
-#: org/jmol/script/ScriptEvaluator.java:3179
+#: org/jmol/script/ScriptEvaluator.java:3181
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -2082,129 +2083,129 @@ msgstr ""
 "JmolでMEPデータを表示するのに必要な部分電荷がファイルから読み込まれていませ"
 "ん。"
 
-#: org/jmol/script/ScriptEvaluator.java:3182
+#: org/jmol/script/ScriptEvaluator.java:3184
 msgid "No unit cell"
 msgstr "単位格子がありません"
 
-#: org/jmol/script/ScriptEvaluator.java:3188
+#: org/jmol/script/ScriptEvaluator.java:3190
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "数は({0} または {1}) でなければなりません"
 
-#: org/jmol/script/ScriptEvaluator.java:3191
+#: org/jmol/script/ScriptEvaluator.java:3193
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "小数点数が ({0} - {1}) の範囲を超えています"
 
-#: org/jmol/script/ScriptEvaluator.java:3194
+#: org/jmol/script/ScriptEvaluator.java:3196
 msgid "object name expected after '$'"
 msgstr "'$' の後にオブジェクトの名前を指定してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3198
+#: org/jmol/script/ScriptEvaluator.java:3200
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
 msgstr "三点、原子式、 {0} 、{1} または {2}のいずれかで平面を指定してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3201
+#: org/jmol/script/ScriptEvaluator.java:3203
 msgid "property name expected"
 msgstr "プロパティの名前を指定してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3204
+#: org/jmol/script/ScriptEvaluator.java:3206
 #, java-format
 msgid "space group {0} was not found."
 msgstr "空間群 {0} が見つかりません"
 
-#: org/jmol/script/ScriptEvaluator.java:3207
+#: org/jmol/script/ScriptEvaluator.java:3209
 msgid "quoted string expected"
 msgstr "文字列を入力してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3210
+#: org/jmol/script/ScriptEvaluator.java:3212
 msgid "quoted string or identifier expected"
 msgstr "文字列をまたは識別子を入力してください"
 
-#: org/jmol/script/ScriptEvaluator.java:3213
+#: org/jmol/script/ScriptEvaluator.java:3215
 msgid "too many rotation points were specified"
 msgstr "回転軸を指定するための点の数が多すぎます"
 
-#: org/jmol/script/ScriptEvaluator.java:3216
+#: org/jmol/script/ScriptEvaluator.java:3218
 msgid "too many script levels"
 msgstr "スクリプトのレベルが多すぎます"
 
-#: org/jmol/script/ScriptEvaluator.java:3219
+#: org/jmol/script/ScriptEvaluator.java:3221
 msgid "unrecognized atom property"
 msgstr "認識できない原子のプロパティ"
 
-#: org/jmol/script/ScriptEvaluator.java:3222
+#: org/jmol/script/ScriptEvaluator.java:3224
 msgid "unrecognized bond property"
 msgstr "認識できない結合のプロパティ"
 
-#: org/jmol/script/ScriptEvaluator.java:3225
+#: org/jmol/script/ScriptEvaluator.java:3227
 msgid "unrecognized command"
 msgstr "認識できない命令"
 
-#: org/jmol/script/ScriptEvaluator.java:3228
+#: org/jmol/script/ScriptEvaluator.java:3230
 msgid "runtime unrecognized expression"
 msgstr "実行時に認識できない表現"
 
-#: org/jmol/script/ScriptEvaluator.java:3231
+#: org/jmol/script/ScriptEvaluator.java:3233
 msgid "unrecognized object"
 msgstr "認識できないオブジェクト"
 
-#: org/jmol/script/ScriptEvaluator.java:3238
+#: org/jmol/script/ScriptEvaluator.java:3240
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr ""
 "Jmol state スクリプトでの認識できない {0} パラメーター (いずれにせよ設定)"
 
-#: org/jmol/script/ScriptEvaluator.java:3241
+#: org/jmol/script/ScriptEvaluator.java:3243
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "認識できないSHOWパラメータ --  use {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:3247
+#: org/jmol/script/ScriptEvaluator.java:3249
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "何を書きますか? {0} または {1} \"ファイル名\""
 
-#: org/jmol/script/ScriptEvaluator.java:7699
+#: org/jmol/script/ScriptEvaluator.java:7728
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} 原子が削除されました"
 
-#: org/jmol/script/ScriptEvaluator.java:7720
+#: org/jmol/script/ScriptEvaluator.java:7749
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "新規結合 {0} ; 変更 {1}"
 
-#: org/jmol/script/ScriptEvaluator.java:9340
+#: org/jmol/script/ScriptEvaluator.java:9369
 #, java-format
 msgid "file {0} created"
 msgstr "ファイル {0} が作成されました"
 
-#: org/jmol/script/ScriptEvaluator.java:10921
-#: org/jmol/script/ScriptEvaluator.java:11189
+#: org/jmol/script/ScriptEvaluator.java:10951
+#: org/jmol/script/ScriptEvaluator.java:11219
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} 原子が削除されました"
 
-#: org/jmol/script/ScriptEvaluator.java:11830
-#: org/jmol/script/ScriptEvaluator.java:12256
+#: org/jmol/script/ScriptEvaluator.java:11860
+#: org/jmol/script/ScriptEvaluator.java:12276
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} 水素結合"
 
-#: org/jmol/script/ScriptEvaluator.java:12209
+#: org/jmol/script/ScriptEvaluator.java:12239
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} ストラットが追加されました"
 
-#: org/jmol/script/ScriptEvaluator.java:16287
+#: org/jmol/script/ScriptEvaluator.java:16331
 msgid "Note: More than one model is involved in this contact!"
 msgstr "注意: 複数のモデルがこの接触に関与しています！"
 
-#: org/jmol/shape/Frank.java:75
+#: org/jmol/shape/Frank.java:80
 msgid "Click for menu..."
 msgstr "クリックしてメニューを表示..."
 
@@ -2462,24 +2463,24 @@ msgstr "{0} 原子が非表示です"
 msgid "{0} atoms selected"
 msgstr "{0} 原子が選択されています"
 
-#: org/jmol/viewer/Viewer.java:4773
+#: org/jmol/viewer/Viewer.java:4816
 msgid "Drag to move label"
 msgstr "ドラッグしてラベルを移動"
 
-#: org/jmol/viewer/Viewer.java:8606
+#: org/jmol/viewer/Viewer.java:8673
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "クリップボードは利用できません -- 署名付きアプレットを利用してください"
 
-#: org/jmol/viewer/Viewer.java:9169
+#: org/jmol/viewer/Viewer.java:9237
 msgid "Cannot set log file path."
 msgstr "ログファイルのパスを設定できません"
 
-#: org/jmol/viewer/Viewer.java:9173
+#: org/jmol/viewer/Viewer.java:9241
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "ログファイルを {0} に設定する"
 
-#: org/jmol/viewer/Viewer.java:10051
+#: org/jmol/viewer/Viewer.java:10114
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} 個の水素が付加されました"

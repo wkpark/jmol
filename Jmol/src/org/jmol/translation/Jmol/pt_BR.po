@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-01-07 07:16+0100\n"
-"PO-Revision-Date: 2012-08-23 21:28+0000\n"
-"Last-Translator: Rafael Neri <Unknown>\n"
+"PO-Revision-Date: 2013-03-08 19:13+0000\n"
+"Last-Translator: Sergio Silva <inonimus@bol.com.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-18 13:21+0000\n"
-"X-Generator: Launchpad (build 16430)\n"
+"X-Launchpad-Export-Date: 2013-03-31 01:22+0000\n"
+"X-Generator: Launchpad (build 16546)\n"
 "X-Poedit-Country: BRAZIL\n"
 "X-Poedit-Language: Portuguese\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -101,7 +101,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:162
 msgid "independent command thread"
-msgstr "Comando ameaça independente"
+msgstr "encadeamento de comando independente"
 
 #: org/openscience/jmol/app/JmolApp.java:164
 msgid "exit after script (implicit with -n)"
@@ -109,7 +109,7 @@ msgstr "sair após o \"script\" (implícito com -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:167
 msgid "port for JSON/MolecularPlayground-style communication"
-msgstr "porta para comunicação JSON/MolecularPlayground-style"
+msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:173
 msgid "script file to execute or '-' for System.in"

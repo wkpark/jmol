@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2013-02-15 10:24+0100\n"
+"POT-Creation-Date: 2013-03-31 05:59+0200\n"
 "PO-Revision-Date: 2012-09-04 04:10+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
-"X-Generator: Launchpad (build 16430)\n"
+"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
+"X-Generator: Launchpad (build 16546)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -26,7 +26,7 @@ msgstr "Memuatkan aplet Jmol ..."
 msgid "  {0} seconds"
 msgstr "  {0} saat"
 
-#: org/jmol/applet/Jmol.java:711 org/jmol/appletjs/Jmol.java:365
+#: org/jmol/applet/Jmol.java:711 org/jmol/appletjs/Jmol.java:364
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -41,7 +41,7 @@ msgstr ""
 "\n"
 "Lihat http://www.jmol.org untuk maklumat lanjut"
 
-#: org/jmol/applet/Jmol.java:976 org/jmol/appletjs/Jmol.java:532
+#: org/jmol/applet/Jmol.java:976 org/jmol/appletjs/Jmol.java:597
 msgid "File Error:"
 msgstr "Ralat Fail:"
 
@@ -630,7 +630,8 @@ msgid "drag atom (and minimize)"
 msgstr "seret atom (dan minimakan)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-msgid "drag molecule (SHIFT to rotate)"
+#, fuzzy
+msgid "drag molecule (ALT to rotate)"
 msgstr "seret molekul (SHIFT untuk putarkan)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
@@ -677,7 +678,7 @@ msgstr "putar ikatan (SHIFT-SERET)"
 msgid "exit modelkit mode"
 msgstr "keluar dari mod kit model"
 
-#: org/jmol/modelsetbio/AminoPolymer.java:577
+#: org/jmol/modelsetbio/AminoPolymer.java:579
 #, java-format
 msgid ""
 "NOTE: Backbone amide hydrogen positions are present and will be ignored. "
@@ -691,7 +692,7 @@ msgstr ""
 "Guna {0} untuk tidak gunakan anggaran ini.\n"
 "\n"
 
-#: org/jmol/modelsetbio/AminoPolymer.java:583
+#: org/jmol/modelsetbio/AminoPolymer.java:585
 #, java-format
 msgid ""
 "NOTE: Backbone amide hydrogen positions are present and will be used. "
@@ -704,17 +705,17 @@ msgstr ""
 "Guna {0} untuk abaikan kedudukan hidrogen ini.\n"
 "\n"
 
-#: org/jmol/popup/GenericPopup.java:605
+#: org/jmol/popup/GenericPopup.java:621
 #: org/jmol/popup/MainPopupResourceBundle.java:551
 msgid "No atoms loaded"
 msgstr "Tiada atom dimuatkan"
 
-#: org/jmol/popup/GenericPopup.java:867
+#: org/jmol/popup/GenericPopup.java:883
 #: org/jmol/popup/MainPopupResourceBundle.java:563
 msgid "Space Group"
 msgstr "Kumpulan Ruang"
 
-#: org/jmol/popup/GenericPopup.java:933 org/jmol/popup/GenericPopup.java:983
+#: org/jmol/popup/GenericPopup.java:949 org/jmol/popup/GenericPopup.java:999
 #: org/jmol/popup/MainPopupResourceBundle.java:584
 #: org/jmol/popup/MainPopupResourceBundle.java:598
 #: org/jmol/popup/MainPopupResourceBundle.java:607
@@ -722,57 +723,57 @@ msgstr "Kumpulan Ruang"
 msgid "All"
 msgstr "Semua"
 
-#: org/jmol/popup/GenericPopup.java:1096
+#: org/jmol/popup/GenericPopup.java:1112
 #: org/jmol/popup/MainPopupResourceBundle.java:966
 msgid "Mouse Manual"
 msgstr "Panduan Tetikus"
 
-#: org/jmol/popup/GenericPopup.java:1098
+#: org/jmol/popup/GenericPopup.java:1114
 #: org/jmol/popup/MainPopupResourceBundle.java:967
 msgid "Translations"
 msgstr "Terjemahan"
 
-#: org/jmol/popup/GenericPopup.java:1102
+#: org/jmol/popup/GenericPopup.java:1118
 msgid "System"
 msgstr "Sistem"
 
-#: org/jmol/popup/GenericPopup.java:1107
+#: org/jmol/popup/GenericPopup.java:1123
 msgid "Java version:"
 msgstr "Versi Java:"
 
-#: org/jmol/popup/GenericPopup.java:1121
+#: org/jmol/popup/GenericPopup.java:1137
 msgid "1 processor"
 msgstr "Pemproses 1"
 
-#: org/jmol/popup/GenericPopup.java:1122
+#: org/jmol/popup/GenericPopup.java:1138
 #, java-format
 msgid "{0} processors"
 msgstr "Pemproses {0}"
 
-#: org/jmol/popup/GenericPopup.java:1124
+#: org/jmol/popup/GenericPopup.java:1140
 msgid "unknown processor count"
 msgstr "kiraan pemproses tidak diketahui"
 
-#: org/jmol/popup/GenericPopup.java:1125
+#: org/jmol/popup/GenericPopup.java:1141
 msgid "Java memory usage:"
 msgstr "Penggunaan ingatan Java"
 
-#: org/jmol/popup/GenericPopup.java:1130
+#: org/jmol/popup/GenericPopup.java:1146
 #, java-format
 msgid "{0} MB total"
 msgstr "{0} MB keseluruhan"
 
-#: org/jmol/popup/GenericPopup.java:1132
+#: org/jmol/popup/GenericPopup.java:1148
 #, java-format
 msgid "{0} MB free"
 msgstr "{0} MB bebas"
 
-#: org/jmol/popup/GenericPopup.java:1135
+#: org/jmol/popup/GenericPopup.java:1151
 #, java-format
 msgid "{0} MB maximum"
 msgstr "{0} MB maksimum"
 
-#: org/jmol/popup/GenericPopup.java:1138
+#: org/jmol/popup/GenericPopup.java:1154
 msgid "unknown maximum"
 msgstr "maximum tidak diketahui"
 
@@ -1841,7 +1842,7 @@ msgid "About..."
 msgstr "Perihal..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1339
-#: org/jmol/script/ScriptEvaluator.java:3082
+#: org/jmol/script/ScriptEvaluator.java:3084
 msgid "bad argument count"
 msgstr "Kiraan argumen teruk"
 
@@ -1851,7 +1852,7 @@ msgid "invalid context for {0}"
 msgstr "konteks tidak sah untuk {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1345
-#: org/jmol/script/ScriptEvaluator.java:3109
+#: org/jmol/script/ScriptEvaluator.java:3111
 msgid "command expected"
 msgstr "perintah dijangka"
 
@@ -1860,7 +1861,7 @@ msgid "{ number number number } expected"
 msgstr "{ number number number } dijangka"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1351
-#: org/jmol/script/ScriptEvaluator.java:3118
+#: org/jmol/script/ScriptEvaluator.java:3120
 msgid "unexpected end of script command"
 msgstr "Pengakhiran perintah skrip tidak dijangka"
 
@@ -1895,7 +1896,7 @@ msgid "missing END for {0}"
 msgstr "hilang END untuk {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1375
-#: org/jmol/script/ScriptEvaluator.java:3185
+#: org/jmol/script/ScriptEvaluator.java:3187
 msgid "number expected"
 msgstr "nombor dijangka"
 
@@ -1923,7 +1924,7 @@ msgid "unrecognized expression token: {0}"
 msgstr "Token ungkapan tidak dikenali: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1393
-#: org/jmol/script/ScriptEvaluator.java:3234
+#: org/jmol/script/ScriptEvaluator.java:3236
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "parameter {0} tidak dikenali"
@@ -1933,171 +1934,171 @@ msgstr "parameter {0} tidak dikenali"
 msgid "unrecognized token: {0}"
 msgstr "Token tidak dikenali: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2598
+#: org/jmol/script/ScriptCompiler.java:2599
 msgid "script compiler ERROR: "
 msgstr "Ralat pengompil skrip: "
 
-#: org/jmol/script/ScriptEvaluator.java:2927
-#: org/jmol/script/ScriptEvaluator.java:10765
+#: org/jmol/script/ScriptEvaluator.java:2929
+#: org/jmol/script/ScriptEvaluator.java:10795
 msgid "script ERROR: "
 msgstr "RALAT skrip: "
 
-#: org/jmol/script/ScriptEvaluator.java:3076
+#: org/jmol/script/ScriptEvaluator.java:3078
 msgid "x y z axis expected"
 msgstr "paksi x y z dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3079
+#: org/jmol/script/ScriptEvaluator.java:3081
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "{0} tidak dibenarkan dengan model latar belakang dipaparkan"
 
-#: org/jmol/script/ScriptEvaluator.java:3085
+#: org/jmol/script/ScriptEvaluator.java:3087
 msgid "Miller indices cannot all be zero."
 msgstr "Indeks Miller tidak boleh semua kosong."
 
-#: org/jmol/script/ScriptEvaluator.java:3088
+#: org/jmol/script/ScriptEvaluator.java:3090
 msgid "bad [R,G,B] color"
 msgstr "warna [R,G,B] teruk"
 
-#: org/jmol/script/ScriptEvaluator.java:3091
+#: org/jmol/script/ScriptEvaluator.java:3093
 msgid "boolean expected"
 msgstr "boolean dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3094
+#: org/jmol/script/ScriptEvaluator.java:3096
 msgid "boolean or number expected"
 msgstr "boolean atau nombor dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3097
+#: org/jmol/script/ScriptEvaluator.java:3099
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "boolean, nombor, atau {0} dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3100
+#: org/jmol/script/ScriptEvaluator.java:3102
 msgid "cannot set value"
 msgstr "tidak dapat tetapkan nilai"
 
-#: org/jmol/script/ScriptEvaluator.java:3103
+#: org/jmol/script/ScriptEvaluator.java:3105
 msgid "color expected"
 msgstr "warna dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3106
+#: org/jmol/script/ScriptEvaluator.java:3108
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "nama palet atau warna (Jmol, Rasmol) diperlukan"
 
-#: org/jmol/script/ScriptEvaluator.java:3112
+#: org/jmol/script/ScriptEvaluator.java:3114
 msgid "{x y z} or $name or (atom expression) required"
 msgstr "{x y z} atai $name atau (ungkapan atom) diperlukan"
 
-#: org/jmol/script/ScriptEvaluator.java:3115
+#: org/jmol/script/ScriptEvaluator.java:3117
 msgid "draw object not defined"
 msgstr "objek lukis tidak ditakrif"
 
-#: org/jmol/script/ScriptEvaluator.java:3121
+#: org/jmol/script/ScriptEvaluator.java:3123
 msgid "valid (atom expression) expected"
 msgstr "(ungkapan atom) sah dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3124
+#: org/jmol/script/ScriptEvaluator.java:3126
 msgid "(atom expression) or integer expected"
 msgstr "(ungkapan atom) atau integer dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3127
+#: org/jmol/script/ScriptEvaluator.java:3129
 msgid "filename expected"
 msgstr "nama fail dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3130
+#: org/jmol/script/ScriptEvaluator.java:3132
 msgid "file not found"
 msgstr "fail tidak ditemui"
 
-#: org/jmol/script/ScriptEvaluator.java:3133
+#: org/jmol/script/ScriptEvaluator.java:3135
 msgid "incompatible arguments"
 msgstr "argumen tidak serasi"
 
-#: org/jmol/script/ScriptEvaluator.java:3136
+#: org/jmol/script/ScriptEvaluator.java:3138
 msgid "insufficient arguments"
 msgstr "argumen tidak mencukupi"
 
-#: org/jmol/script/ScriptEvaluator.java:3139
+#: org/jmol/script/ScriptEvaluator.java:3141
 msgid "integer expected"
 msgstr "integer dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3142
+#: org/jmol/script/ScriptEvaluator.java:3144
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "integer diluar julat ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:3145
+#: org/jmol/script/ScriptEvaluator.java:3147
 msgid "invalid argument"
 msgstr "argumen tidak sah"
 
-#: org/jmol/script/ScriptEvaluator.java:3148
+#: org/jmol/script/ScriptEvaluator.java:3150
 msgid "invalid parameter order"
 msgstr "Tertib parameter tidak sah"
 
-#: org/jmol/script/ScriptEvaluator.java:3151
+#: org/jmol/script/ScriptEvaluator.java:3153
 msgid "keyword expected"
 msgstr "kata kunci dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3154
+#: org/jmol/script/ScriptEvaluator.java:3156
 msgid "no MO coefficient data available"
 msgstr "tiada data pemalar MO tersedia"
 
-#: org/jmol/script/ScriptEvaluator.java:3157
+#: org/jmol/script/ScriptEvaluator.java:3159
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "Indeks MO dari 1 ke {0} diperlukan"
 
-#: org/jmol/script/ScriptEvaluator.java:3160
+#: org/jmol/script/ScriptEvaluator.java:3162
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "tiada data pemalar MO tersedia untuk bingkai ini"
 
-#: org/jmol/script/ScriptEvaluator.java:3163
+#: org/jmol/script/ScriptEvaluator.java:3165
 msgid "no MO occupancy data available"
 msgstr "tiada data kependudukan MO tersedia"
 
-#: org/jmol/script/ScriptEvaluator.java:3166
+#: org/jmol/script/ScriptEvaluator.java:3168
 msgid "Only one molecular orbital is available in this file"
 msgstr "Hanya satu petala molekul tersedia dalam fail ini"
 
-#: org/jmol/script/ScriptEvaluator.java:3169
+#: org/jmol/script/ScriptEvaluator.java:3171
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0} perlukan hanya satu model dipaparkan"
 
-#: org/jmol/script/ScriptEvaluator.java:3172
+#: org/jmol/script/ScriptEvaluator.java:3174
 #, java-format
 msgid "{0} requires that only one model be loaded"
 msgstr "{0} perlukan hanya satu model dimuatkan"
 
-#: org/jmol/script/ScriptEvaluator.java:3175
+#: org/jmol/script/ScriptEvaluator.java:3177
 msgid "No data available"
 msgstr "Tiada data tersedia"
 
-#: org/jmol/script/ScriptEvaluator.java:3179
+#: org/jmol/script/ScriptEvaluator.java:3181
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
 msgstr ""
 "Tiada cas separa dibaca dari fail; Jmol perlukan ini untuk terapkan data MEP."
 
-#: org/jmol/script/ScriptEvaluator.java:3182
+#: org/jmol/script/ScriptEvaluator.java:3184
 msgid "No unit cell"
 msgstr "Tiada sel unit"
 
-#: org/jmol/script/ScriptEvaluator.java:3188
+#: org/jmol/script/ScriptEvaluator.java:3190
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "nombor mesti ({0} atau {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:3191
+#: org/jmol/script/ScriptEvaluator.java:3193
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "bilangan desimal di luar julat ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:3194
+#: org/jmol/script/ScriptEvaluator.java:3196
 msgid "object name expected after '$'"
 msgstr "nama objek dijangka selepas '$'"
 
-#: org/jmol/script/ScriptEvaluator.java:3198
+#: org/jmol/script/ScriptEvaluator.java:3200
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
@@ -2106,103 +2107,103 @@ msgstr ""
 "satah dijangka -- sama ada tiga titik atau ungkapan atom atau {0} atau {1} "
 "atau {2}"
 
-#: org/jmol/script/ScriptEvaluator.java:3201
+#: org/jmol/script/ScriptEvaluator.java:3203
 msgid "property name expected"
 msgstr "nama ciri-ciri dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3204
+#: org/jmol/script/ScriptEvaluator.java:3206
 #, java-format
 msgid "space group {0} was not found."
 msgstr "kumpulan ruang {0} tidak ditemui."
 
-#: org/jmol/script/ScriptEvaluator.java:3207
+#: org/jmol/script/ScriptEvaluator.java:3209
 msgid "quoted string expected"
 msgstr "rentetan terpetik dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3210
+#: org/jmol/script/ScriptEvaluator.java:3212
 msgid "quoted string or identifier expected"
 msgstr "pengecam atau rentetan terpetik dijangka"
 
-#: org/jmol/script/ScriptEvaluator.java:3213
+#: org/jmol/script/ScriptEvaluator.java:3215
 msgid "too many rotation points were specified"
 msgstr "terlalu banyak titik putaran ditentukan"
 
-#: org/jmol/script/ScriptEvaluator.java:3216
+#: org/jmol/script/ScriptEvaluator.java:3218
 msgid "too many script levels"
 msgstr "terlalu banyak aras skrip"
 
-#: org/jmol/script/ScriptEvaluator.java:3219
+#: org/jmol/script/ScriptEvaluator.java:3221
 msgid "unrecognized atom property"
 msgstr "ciri-ciri atom tidak dikenalpasti"
 
-#: org/jmol/script/ScriptEvaluator.java:3222
+#: org/jmol/script/ScriptEvaluator.java:3224
 msgid "unrecognized bond property"
 msgstr "ciri-ciri ikatan tidak dikenalpasti"
 
-#: org/jmol/script/ScriptEvaluator.java:3225
+#: org/jmol/script/ScriptEvaluator.java:3227
 msgid "unrecognized command"
 msgstr "perintah tidak dikenalpasti"
 
-#: org/jmol/script/ScriptEvaluator.java:3228
+#: org/jmol/script/ScriptEvaluator.java:3230
 msgid "runtime unrecognized expression"
 msgstr "ungkapan masa-jalan tidak dikenalpasti"
 
-#: org/jmol/script/ScriptEvaluator.java:3231
+#: org/jmol/script/ScriptEvaluator.java:3233
 msgid "unrecognized object"
 msgstr "objek tidak dikenalpasti"
 
-#: org/jmol/script/ScriptEvaluator.java:3238
+#: org/jmol/script/ScriptEvaluator.java:3240
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr "parameter {0} tidak dikenali didalam skrip keadaan Jmol (tetapkan jua)"
 
-#: org/jmol/script/ScriptEvaluator.java:3241
+#: org/jmol/script/ScriptEvaluator.java:3243
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "Parameter SHOW tidak dikenalpasti -- guna {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:3247
+#: org/jmol/script/ScriptEvaluator.java:3249
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "tulis apa?  \"nama fail\" {0} atau {1}"
 
-#: org/jmol/script/ScriptEvaluator.java:7699
+#: org/jmol/script/ScriptEvaluator.java:7728
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} sambungan dipadam"
 
-#: org/jmol/script/ScriptEvaluator.java:7720
+#: org/jmol/script/ScriptEvaluator.java:7749
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} ikatan baru; {1} diubahsuai"
 
-#: org/jmol/script/ScriptEvaluator.java:9340
+#: org/jmol/script/ScriptEvaluator.java:9369
 #, java-format
 msgid "file {0} created"
 msgstr "fail {0} dicipta"
 
-#: org/jmol/script/ScriptEvaluator.java:10921
-#: org/jmol/script/ScriptEvaluator.java:11189
+#: org/jmol/script/ScriptEvaluator.java:10951
+#: org/jmol/script/ScriptEvaluator.java:11219
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atom dipadam"
 
-#: org/jmol/script/ScriptEvaluator.java:11830
-#: org/jmol/script/ScriptEvaluator.java:12256
+#: org/jmol/script/ScriptEvaluator.java:11860
+#: org/jmol/script/ScriptEvaluator.java:12276
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} ikatan hidrogen"
 
-#: org/jmol/script/ScriptEvaluator.java:12209
+#: org/jmol/script/ScriptEvaluator.java:12239
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} struts ditambah"
 
-#: org/jmol/script/ScriptEvaluator.java:16287
+#: org/jmol/script/ScriptEvaluator.java:16331
 msgid "Note: More than one model is involved in this contact!"
 msgstr "Perhatian: Lebih dari satu model terlibat dalam kenalan ini!"
 
-#: org/jmol/shape/Frank.java:75
+#: org/jmol/shape/Frank.java:80
 msgid "Click for menu..."
 msgstr "Klik pada menu..."
 
@@ -2466,24 +2467,24 @@ msgstr "{0} atom tersembunyi"
 msgid "{0} atoms selected"
 msgstr "{0} atom dipilih"
 
-#: org/jmol/viewer/Viewer.java:4773
+#: org/jmol/viewer/Viewer.java:4816
 msgid "Drag to move label"
 msgstr "Seret untuk alihkan label"
 
-#: org/jmol/viewer/Viewer.java:8606
+#: org/jmol/viewer/Viewer.java:8673
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "papan keratan tidak boleh dicapai -- guna aplet terdaftar"
 
-#: org/jmol/viewer/Viewer.java:9169
+#: org/jmol/viewer/Viewer.java:9237
 msgid "Cannot set log file path."
 msgstr "Tidak dapat tetapkan laluan log fail."
 
-#: org/jmol/viewer/Viewer.java:9173
+#: org/jmol/viewer/Viewer.java:9241
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Tetapkan fail log ke {0}"
 
-#: org/jmol/viewer/Viewer.java:10051
+#: org/jmol/viewer/Viewer.java:10114
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} hidrogen ditambah"

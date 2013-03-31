@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2013-02-15 10:24+0100\n"
+"POT-Creation-Date: 2013-03-31 05:59+0200\n"
 "PO-Revision-Date: 2012-11-09 23:38+0000\n"
 "Last-Translator: Kaki <karsten.r.s@kaki.dk>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-18 13:20+0000\n"
-"X-Generator: Launchpad (build 16430)\n"
+"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
+"X-Generator: Launchpad (build 16546)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -26,7 +26,7 @@ msgstr "Indlæser Jmol-applet..."
 msgid "  {0} seconds"
 msgstr "  {0} sekunder"
 
-#: org/jmol/applet/Jmol.java:711 org/jmol/appletjs/Jmol.java:365
+#: org/jmol/applet/Jmol.java:711 org/jmol/appletjs/Jmol.java:364
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -41,7 +41,7 @@ msgstr ""
 "\n"
 "Se http://www.jmol.org for mere information"
 
-#: org/jmol/applet/Jmol.java:976 org/jmol/appletjs/Jmol.java:532
+#: org/jmol/applet/Jmol.java:976 org/jmol/appletjs/Jmol.java:597
 msgid "File Error:"
 msgstr "Filfejl:"
 
@@ -629,7 +629,8 @@ msgid "drag atom (and minimize)"
 msgstr "træk atom (og minimer)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-msgid "drag molecule (SHIFT to rotate)"
+#, fuzzy
+msgid "drag molecule (ALT to rotate)"
 msgstr "træk molekyle (SKIFT for at rotere)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
@@ -676,7 +677,7 @@ msgstr "roter binding (SKIFT-TRÆK)"
 msgid "exit modelkit mode"
 msgstr "afslut modelkit-tilstand"
 
-#: org/jmol/modelsetbio/AminoPolymer.java:577
+#: org/jmol/modelsetbio/AminoPolymer.java:579
 #, java-format
 msgid ""
 "NOTE: Backbone amide hydrogen positions are present and will be ignored. "
@@ -690,7 +691,7 @@ msgstr ""
 "Brug {0} for at undlade at bruge denne tilnærmelse.\n"
 "\n"
 
-#: org/jmol/modelsetbio/AminoPolymer.java:583
+#: org/jmol/modelsetbio/AminoPolymer.java:585
 #, java-format
 msgid ""
 "NOTE: Backbone amide hydrogen positions are present and will be used. "
@@ -703,17 +704,17 @@ msgstr ""
 "Brug {0} for at ignorere disse hydrogenpositioner.\n"
 "\n"
 
-#: org/jmol/popup/GenericPopup.java:605
+#: org/jmol/popup/GenericPopup.java:621
 #: org/jmol/popup/MainPopupResourceBundle.java:551
 msgid "No atoms loaded"
 msgstr "Ingen atomer indlæst"
 
-#: org/jmol/popup/GenericPopup.java:867
+#: org/jmol/popup/GenericPopup.java:883
 #: org/jmol/popup/MainPopupResourceBundle.java:563
 msgid "Space Group"
 msgstr "Rumgruppe"
 
-#: org/jmol/popup/GenericPopup.java:933 org/jmol/popup/GenericPopup.java:983
+#: org/jmol/popup/GenericPopup.java:949 org/jmol/popup/GenericPopup.java:999
 #: org/jmol/popup/MainPopupResourceBundle.java:584
 #: org/jmol/popup/MainPopupResourceBundle.java:598
 #: org/jmol/popup/MainPopupResourceBundle.java:607
@@ -721,57 +722,57 @@ msgstr "Rumgruppe"
 msgid "All"
 msgstr "Alle"
 
-#: org/jmol/popup/GenericPopup.java:1096
+#: org/jmol/popup/GenericPopup.java:1112
 #: org/jmol/popup/MainPopupResourceBundle.java:966
 msgid "Mouse Manual"
 msgstr "Musemanual"
 
-#: org/jmol/popup/GenericPopup.java:1098
+#: org/jmol/popup/GenericPopup.java:1114
 #: org/jmol/popup/MainPopupResourceBundle.java:967
 msgid "Translations"
 msgstr "Oversættelser"
 
-#: org/jmol/popup/GenericPopup.java:1102
+#: org/jmol/popup/GenericPopup.java:1118
 msgid "System"
 msgstr "System"
 
-#: org/jmol/popup/GenericPopup.java:1107
+#: org/jmol/popup/GenericPopup.java:1123
 msgid "Java version:"
 msgstr "Java-version:"
 
-#: org/jmol/popup/GenericPopup.java:1121
+#: org/jmol/popup/GenericPopup.java:1137
 msgid "1 processor"
 msgstr "1 processor"
 
-#: org/jmol/popup/GenericPopup.java:1122
+#: org/jmol/popup/GenericPopup.java:1138
 #, java-format
 msgid "{0} processors"
 msgstr "{0} processorer"
 
-#: org/jmol/popup/GenericPopup.java:1124
+#: org/jmol/popup/GenericPopup.java:1140
 msgid "unknown processor count"
 msgstr "ukendt antal processorer"
 
-#: org/jmol/popup/GenericPopup.java:1125
+#: org/jmol/popup/GenericPopup.java:1141
 msgid "Java memory usage:"
 msgstr "Java-hukommelsesforbrug:"
 
-#: org/jmol/popup/GenericPopup.java:1130
+#: org/jmol/popup/GenericPopup.java:1146
 #, java-format
 msgid "{0} MB total"
 msgstr "{0} MB i alt"
 
-#: org/jmol/popup/GenericPopup.java:1132
+#: org/jmol/popup/GenericPopup.java:1148
 #, java-format
 msgid "{0} MB free"
 msgstr "{0} MB fri"
 
-#: org/jmol/popup/GenericPopup.java:1135
+#: org/jmol/popup/GenericPopup.java:1151
 #, java-format
 msgid "{0} MB maximum"
 msgstr "{0} MB maksimum"
 
-#: org/jmol/popup/GenericPopup.java:1138
+#: org/jmol/popup/GenericPopup.java:1154
 msgid "unknown maximum"
 msgstr "ukendt maksimum"
 
@@ -1840,7 +1841,7 @@ msgid "About..."
 msgstr "Om..."
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1339
-#: org/jmol/script/ScriptEvaluator.java:3082
+#: org/jmol/script/ScriptEvaluator.java:3084
 msgid "bad argument count"
 msgstr "forkert antal argumenter"
 
@@ -1850,7 +1851,7 @@ msgid "invalid context for {0}"
 msgstr "ugyldig kontekst for {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1345
-#: org/jmol/script/ScriptEvaluator.java:3109
+#: org/jmol/script/ScriptEvaluator.java:3111
 msgid "command expected"
 msgstr "forventede kommando"
 
@@ -1859,7 +1860,7 @@ msgid "{ number number number } expected"
 msgstr "forventede { nummer nummer nummer }"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1351
-#: org/jmol/script/ScriptEvaluator.java:3118
+#: org/jmol/script/ScriptEvaluator.java:3120
 msgid "unexpected end of script command"
 msgstr "uventet afslutning af script-kommando"
 
@@ -1894,7 +1895,7 @@ msgid "missing END for {0}"
 msgstr "mangler END til {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1375
-#: org/jmol/script/ScriptEvaluator.java:3185
+#: org/jmol/script/ScriptEvaluator.java:3187
 msgid "number expected"
 msgstr "nummer forventet"
 
@@ -1922,7 +1923,7 @@ msgid "unrecognized expression token: {0}"
 msgstr "ukendt udtrykssymbol: {0}"
 
 #: org/jmol/script/ScriptCompilationTokenParser.java:1393
-#: org/jmol/script/ScriptEvaluator.java:3234
+#: org/jmol/script/ScriptEvaluator.java:3236
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "ukendt {0}-parameter"
@@ -1932,146 +1933,146 @@ msgstr "ukendt {0}-parameter"
 msgid "unrecognized token: {0}"
 msgstr "ukendt symbol: {0}"
 
-#: org/jmol/script/ScriptCompiler.java:2598
+#: org/jmol/script/ScriptCompiler.java:2599
 msgid "script compiler ERROR: "
 msgstr "scriptkompileringsFEJL: "
 
-#: org/jmol/script/ScriptEvaluator.java:2927
-#: org/jmol/script/ScriptEvaluator.java:10765
+#: org/jmol/script/ScriptEvaluator.java:2929
+#: org/jmol/script/ScriptEvaluator.java:10795
 msgid "script ERROR: "
 msgstr "scriptFEJL: "
 
-#: org/jmol/script/ScriptEvaluator.java:3076
+#: org/jmol/script/ScriptEvaluator.java:3078
 msgid "x y z axis expected"
 msgstr "forventede x y z-akser"
 
-#: org/jmol/script/ScriptEvaluator.java:3079
+#: org/jmol/script/ScriptEvaluator.java:3081
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "{0} er ikke tilladt med baggrundsmodellen vist"
 
-#: org/jmol/script/ScriptEvaluator.java:3085
+#: org/jmol/script/ScriptEvaluator.java:3087
 msgid "Miller indices cannot all be zero."
 msgstr "Miller-indeks kan ikke alle være nul."
 
-#: org/jmol/script/ScriptEvaluator.java:3088
+#: org/jmol/script/ScriptEvaluator.java:3090
 msgid "bad [R,G,B] color"
 msgstr "ugyldig [R,G,B]-farve"
 
-#: org/jmol/script/ScriptEvaluator.java:3091
+#: org/jmol/script/ScriptEvaluator.java:3093
 msgid "boolean expected"
 msgstr "forventede boolesk variabel"
 
-#: org/jmol/script/ScriptEvaluator.java:3094
+#: org/jmol/script/ScriptEvaluator.java:3096
 msgid "boolean or number expected"
 msgstr "forventede boolesk variabel eller tal"
 
-#: org/jmol/script/ScriptEvaluator.java:3097
+#: org/jmol/script/ScriptEvaluator.java:3099
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "forventede boolesk variabel, tal eller {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:3100
+#: org/jmol/script/ScriptEvaluator.java:3102
 msgid "cannot set value"
 msgstr "Kan ikke fastsætte værdi"
 
-#: org/jmol/script/ScriptEvaluator.java:3103
+#: org/jmol/script/ScriptEvaluator.java:3105
 msgid "color expected"
 msgstr "forventede farve"
 
-#: org/jmol/script/ScriptEvaluator.java:3106
+#: org/jmol/script/ScriptEvaluator.java:3108
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "et farve- eller palet-navn (Jmol, Rasmol) er påkrævet"
 
-#: org/jmol/script/ScriptEvaluator.java:3112
+#: org/jmol/script/ScriptEvaluator.java:3114
 msgid "{x y z} or $name or (atom expression) required"
 msgstr "{x y z} eller $name eller (atomudtryk) kræves"
 
-#: org/jmol/script/ScriptEvaluator.java:3115
+#: org/jmol/script/ScriptEvaluator.java:3117
 msgid "draw object not defined"
 msgstr "tegneobjekt ikke defineret"
 
-#: org/jmol/script/ScriptEvaluator.java:3121
+#: org/jmol/script/ScriptEvaluator.java:3123
 msgid "valid (atom expression) expected"
 msgstr "gyldigt (atomudtryk) forventet"
 
-#: org/jmol/script/ScriptEvaluator.java:3124
+#: org/jmol/script/ScriptEvaluator.java:3126
 msgid "(atom expression) or integer expected"
 msgstr "(atomudtryk) eller heltal forventet"
 
-#: org/jmol/script/ScriptEvaluator.java:3127
+#: org/jmol/script/ScriptEvaluator.java:3129
 msgid "filename expected"
 msgstr "forventede filnavn"
 
-#: org/jmol/script/ScriptEvaluator.java:3130
+#: org/jmol/script/ScriptEvaluator.java:3132
 msgid "file not found"
 msgstr "fil ikke fundet"
 
-#: org/jmol/script/ScriptEvaluator.java:3133
+#: org/jmol/script/ScriptEvaluator.java:3135
 msgid "incompatible arguments"
 msgstr "inkompatible argumenter"
 
-#: org/jmol/script/ScriptEvaluator.java:3136
+#: org/jmol/script/ScriptEvaluator.java:3138
 msgid "insufficient arguments"
 msgstr "utilstrækkelige argumenter"
 
-#: org/jmol/script/ScriptEvaluator.java:3139
+#: org/jmol/script/ScriptEvaluator.java:3141
 msgid "integer expected"
 msgstr "heltal forventet"
 
-#: org/jmol/script/ScriptEvaluator.java:3142
+#: org/jmol/script/ScriptEvaluator.java:3144
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "heltal uden for interval ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:3145
+#: org/jmol/script/ScriptEvaluator.java:3147
 msgid "invalid argument"
 msgstr "ugyldigt argument"
 
-#: org/jmol/script/ScriptEvaluator.java:3148
+#: org/jmol/script/ScriptEvaluator.java:3150
 msgid "invalid parameter order"
 msgstr "ugyldig rækkefølge af parametre"
 
-#: org/jmol/script/ScriptEvaluator.java:3151
+#: org/jmol/script/ScriptEvaluator.java:3153
 msgid "keyword expected"
 msgstr "forventede nøgleord"
 
-#: org/jmol/script/ScriptEvaluator.java:3154
+#: org/jmol/script/ScriptEvaluator.java:3156
 msgid "no MO coefficient data available"
 msgstr "ingen tilgængelige data for MO-koefficienter"
 
-#: org/jmol/script/ScriptEvaluator.java:3157
+#: org/jmol/script/ScriptEvaluator.java:3159
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "Der kræves et MO-indeks fra 1 til {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:3160
+#: org/jmol/script/ScriptEvaluator.java:3162
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "ingen tilgængelige data for MO-basis/koefficenter for dette billede"
 
-#: org/jmol/script/ScriptEvaluator.java:3163
+#: org/jmol/script/ScriptEvaluator.java:3165
 msgid "no MO occupancy data available"
 msgstr "ingen tilgængelige MO-okkupationsdata"
 
-#: org/jmol/script/ScriptEvaluator.java:3166
+#: org/jmol/script/ScriptEvaluator.java:3168
 msgid "Only one molecular orbital is available in this file"
 msgstr "Kun en enkelt molekylærbital er tilgængelig i denne fil"
 
-#: org/jmol/script/ScriptEvaluator.java:3169
+#: org/jmol/script/ScriptEvaluator.java:3171
 #, java-format
 msgid "{0} require that only one model be displayed"
 msgstr "{0} kræver at kun en model vises"
 
-#: org/jmol/script/ScriptEvaluator.java:3172
+#: org/jmol/script/ScriptEvaluator.java:3174
 #, java-format
 msgid "{0} requires that only one model be loaded"
 msgstr "{0} kræver at kun en model indlæses"
 
-#: org/jmol/script/ScriptEvaluator.java:3175
+#: org/jmol/script/ScriptEvaluator.java:3177
 msgid "No data available"
 msgstr "Ingen data tilgængelige"
 
-#: org/jmol/script/ScriptEvaluator.java:3179
+#: org/jmol/script/ScriptEvaluator.java:3181
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -2079,25 +2080,25 @@ msgstr ""
 "Ingen delvise ladninger blev læst fra filen; Jmol kræver disse for at tegne "
 "MEP-dataene."
 
-#: org/jmol/script/ScriptEvaluator.java:3182
+#: org/jmol/script/ScriptEvaluator.java:3184
 msgid "No unit cell"
 msgstr "Ingen enhedscelle"
 
-#: org/jmol/script/ScriptEvaluator.java:3188
+#: org/jmol/script/ScriptEvaluator.java:3190
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "nummer skal være ({0} eller {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:3191
+#: org/jmol/script/ScriptEvaluator.java:3193
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "decimaltal uden for interval ({0} - {1})"
 
-#: org/jmol/script/ScriptEvaluator.java:3194
+#: org/jmol/script/ScriptEvaluator.java:3196
 msgid "object name expected after '$'"
 msgstr "objektnavn forventet efter \"$\""
 
-#: org/jmol/script/ScriptEvaluator.java:3198
+#: org/jmol/script/ScriptEvaluator.java:3200
 #, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
@@ -2106,103 +2107,103 @@ msgstr ""
 "plan forventet -- enten tre punkter eller atomudtryk eller {0} eller {1} "
 "eller {2}"
 
-#: org/jmol/script/ScriptEvaluator.java:3201
+#: org/jmol/script/ScriptEvaluator.java:3203
 msgid "property name expected"
 msgstr "egenskabsnavn forventet"
 
-#: org/jmol/script/ScriptEvaluator.java:3204
+#: org/jmol/script/ScriptEvaluator.java:3206
 #, java-format
 msgid "space group {0} was not found."
 msgstr "rumgruppen {0} blev ikke fundet."
 
-#: org/jmol/script/ScriptEvaluator.java:3207
+#: org/jmol/script/ScriptEvaluator.java:3209
 msgid "quoted string expected"
 msgstr "streng i anførselstegn forventet"
 
-#: org/jmol/script/ScriptEvaluator.java:3210
+#: org/jmol/script/ScriptEvaluator.java:3212
 msgid "quoted string or identifier expected"
 msgstr "streng i anførselstegn eller variabelnavn forventet"
 
-#: org/jmol/script/ScriptEvaluator.java:3213
+#: org/jmol/script/ScriptEvaluator.java:3215
 msgid "too many rotation points were specified"
 msgstr "der blev angivet for mange rotationspunkter"
 
-#: org/jmol/script/ScriptEvaluator.java:3216
+#: org/jmol/script/ScriptEvaluator.java:3218
 msgid "too many script levels"
 msgstr "for mange scriptniveauer"
 
-#: org/jmol/script/ScriptEvaluator.java:3219
+#: org/jmol/script/ScriptEvaluator.java:3221
 msgid "unrecognized atom property"
 msgstr "ukendt atomegenskab"
 
-#: org/jmol/script/ScriptEvaluator.java:3222
+#: org/jmol/script/ScriptEvaluator.java:3224
 msgid "unrecognized bond property"
 msgstr "ukendt bindingsegenskab"
 
-#: org/jmol/script/ScriptEvaluator.java:3225
+#: org/jmol/script/ScriptEvaluator.java:3227
 msgid "unrecognized command"
 msgstr "ukendt kommando"
 
-#: org/jmol/script/ScriptEvaluator.java:3228
+#: org/jmol/script/ScriptEvaluator.java:3230
 msgid "runtime unrecognized expression"
 msgstr "ukendt udtryk ved kørsel"
 
-#: org/jmol/script/ScriptEvaluator.java:3231
+#: org/jmol/script/ScriptEvaluator.java:3233
 msgid "unrecognized object"
 msgstr "ukendt objekt"
 
-#: org/jmol/script/ScriptEvaluator.java:3238
+#: org/jmol/script/ScriptEvaluator.java:3240
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
 msgstr "ukendt {0}-parameter i Jmol-tilstandsscript (tildelt alligevel)"
 
-#: org/jmol/script/ScriptEvaluator.java:3241
+#: org/jmol/script/ScriptEvaluator.java:3243
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "ukendt SHOW-parameter -- brug {0}"
 
-#: org/jmol/script/ScriptEvaluator.java:3247
+#: org/jmol/script/ScriptEvaluator.java:3249
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "skriv hvad? {0} eller {1} \"filnavn\""
 
-#: org/jmol/script/ScriptEvaluator.java:7699
+#: org/jmol/script/ScriptEvaluator.java:7728
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} forbindelser slettet"
 
-#: org/jmol/script/ScriptEvaluator.java:7720
+#: org/jmol/script/ScriptEvaluator.java:7749
 #, java-format
 msgid "{0} new bonds; {1} modified"
 msgstr "{0} nye bindinger; {1} ændrede"
 
-#: org/jmol/script/ScriptEvaluator.java:9340
+#: org/jmol/script/ScriptEvaluator.java:9369
 #, java-format
 msgid "file {0} created"
 msgstr "filen {0} dannet"
 
-#: org/jmol/script/ScriptEvaluator.java:10921
-#: org/jmol/script/ScriptEvaluator.java:11189
+#: org/jmol/script/ScriptEvaluator.java:10951
+#: org/jmol/script/ScriptEvaluator.java:11219
 #, java-format
 msgid "{0} atoms deleted"
 msgstr "{0} atomer slettet"
 
-#: org/jmol/script/ScriptEvaluator.java:11830
-#: org/jmol/script/ScriptEvaluator.java:12256
+#: org/jmol/script/ScriptEvaluator.java:11860
+#: org/jmol/script/ScriptEvaluator.java:12276
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} hydrogenbindinger"
 
-#: org/jmol/script/ScriptEvaluator.java:12209
+#: org/jmol/script/ScriptEvaluator.java:12239
 #, java-format
 msgid "{0} struts added"
 msgstr "{0} afstivere tilføjet"
 
-#: org/jmol/script/ScriptEvaluator.java:16287
+#: org/jmol/script/ScriptEvaluator.java:16331
 msgid "Note: More than one model is involved in this contact!"
 msgstr "Bemærk: Der er mere end en model i denne kontakt!"
 
-#: org/jmol/shape/Frank.java:75
+#: org/jmol/shape/Frank.java:80
 msgid "Click for menu..."
 msgstr "Klik for menu..."
 
@@ -2461,24 +2462,24 @@ msgstr "{0} atomer gemt"
 msgid "{0} atoms selected"
 msgstr "{0} atomer valgt"
 
-#: org/jmol/viewer/Viewer.java:4773
+#: org/jmol/viewer/Viewer.java:4816
 msgid "Drag to move label"
 msgstr "Træk for at flytte etiket"
 
-#: org/jmol/viewer/Viewer.java:8606
+#: org/jmol/viewer/Viewer.java:8673
 msgid "clipboard is not accessible -- use signed applet"
 msgstr "udklipsholder er ikke tilgængelig -- brug underskrevet applet"
 
-#: org/jmol/viewer/Viewer.java:9169
+#: org/jmol/viewer/Viewer.java:9237
 msgid "Cannot set log file path."
 msgstr "Kan ikke indstille sti til logfil."
 
-#: org/jmol/viewer/Viewer.java:9173
+#: org/jmol/viewer/Viewer.java:9241
 #, java-format
 msgid "Setting log file to {0}"
 msgstr "Sætter logfil til {0}"
 
-#: org/jmol/viewer/Viewer.java:10051
+#: org/jmol/viewer/Viewer.java:10114
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} hydrogener tilføjet"

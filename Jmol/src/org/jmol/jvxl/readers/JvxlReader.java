@@ -87,13 +87,9 @@ public class JvxlReader extends JvxlXmlReader {
     readVoxelVector(0);
     readVoxelVector(1);
     readVoxelVector(2);
+    for (int i = 0; i < atomCount; ++i)
+      jvxlFileHeaderBuffer.append(readLine() + "\n");    
     skipComments(true);
-    for (int i = 0; i < atomCount; ++i) {
-      jvxlFileHeaderBuffer.append(line + "\n");
-      readLine();
-    }
-    if (line.indexOf("#") == 0)
-      skipComments(true);
     Logger.info("Reading extra JVXL information line: " + line);
     nSurfaces = parseIntStr(line);
     if (!(isJvxl = (nSurfaces < 0)))

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2013-01-07 07:16+0100\n"
+"POT-Creation-Date: 2013-04-01 10:34+0200\n"
 "PO-Revision-Date: 2012-12-28 05:10+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: Launchpad (build 16546)\n"
 "Language: uk\n"
 
-#: org/jmol/appletjs/Jmol.java:365
+#: org/jmol/appletjs/Jmol.java:364
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -33,19 +33,19 @@ msgstr ""
 "\n"
 "Див. http://www.jmol.org для отримання додаткової інформації"
 
-#: org/jmol/appletjs/Jmol.java:532
+#: org/jmol/appletjs/Jmol.java:597
 msgid "File Error:"
 msgstr "Помилка у файлі:"
 
-#: org/jmol/awtjs2d/JSModelKitPopup.java:76
+#: org/jmol/awtjs2d/JSModelKitPopup.java:75
 msgid "Element?"
 msgstr "Елемент?"
 
 #: org/openscience/jmol/app/JmolApp.java:100
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості "
-"«user.home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
+"home»."
 
 #: org/openscience/jmol/app/JmolApp.java:137
 msgid "transparent background"
@@ -918,8 +918,7 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:225
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr ""
-"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:227
 msgid "Click atoms to measure distances"
@@ -940,33 +939,33 @@ msgstr "Відкрити вікно моделювання."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:232
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:70
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:158
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:159
 msgid "Clear"
 msgstr "Спорожнити"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:367
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:366
 #, java-format
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
-"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
+"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
 msgid "Insert the page TITLE here."
 msgstr "Тут ви можете вставити заголовок сторінки."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:370
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
 msgid "Insert the page INTRODUCTION here."
 msgstr "Тут ви можете вставити вступну частину сторінки."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:372
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:371
 #, java-format
 msgid "Insert a caption for {0} here."
 msgstr "Тут ви можете вставити підпис до {0}."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:373
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:372
 #, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
@@ -975,11 +974,11 @@ msgstr ""
 "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде поділено "
 "на частини і розташовано навколо моделі Jmol {0}."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:375
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:374
 msgid "Insert your TITLE and INTRODUCTION here."
 msgstr "Тут ви можете вказати ваш заголовок та вступний текст."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:377
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:376
 #, java-format
 msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
@@ -988,7 +987,7 @@ msgstr ""
 "Кнопку {0} буде показано у розташованому нижче полі. Тут і нижче ви можете "
 "вставити відомості для {0}."
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:378
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:377
 #, java-format
 msgid "Insert more information for {0} here."
 msgstr "Тут ви можете вставити додаткові відомості щодо {0}."
@@ -998,86 +997,91 @@ msgid "Jmol Help"
 msgstr "Довідка з Jmol"
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:95
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:182
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:183
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:89
 msgid "OK"
 msgstr "Гаразд"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:227
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:231
 msgid "Initializing 3D display..."
 msgstr "Ініціалізація просторового показу…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:264
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:270
 msgid "Initializing Script Window..."
 msgstr "Ініціалізація вікна скриптів…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:285
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
 msgid "Building Command Hooks..."
 msgstr "Побудова панелі виклику команд…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:300
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:306
 msgid "Building Menubar..."
 msgstr "Побудова меню…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:315
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:321
 msgid "Starting display..."
 msgstr "Запуск графічного інтерфейсу…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:362
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:368
 msgid "Setting up Drag-and-Drop..."
 msgstr "Налаштування перетягування зі скиданням…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:370
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:376
 msgid "Launching main frame..."
 msgstr "Запуск головного блоку…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:374
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:380
 msgid "Initializing Preferences..."
 msgstr "Ініціалізація параметрів…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:376
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:382
 msgid "Initializing Recent Files..."
 msgstr "Ініціалізація списку нещодавніх файлів…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:450
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:456
 msgid "Jmol Java Console"
 msgstr "Java-консоль Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:470
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:476
 msgid "Could not create ConsoleTextArea: "
 msgstr "Не вдалося створити ConsoleTextArea: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:514
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:520
 msgid "Creating main window..."
 msgstr "Створення головного вікна…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:515
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:521
 msgid "Initializing Swing..."
 msgstr "Ініціалізація Swing…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:526
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:532
 msgid "Initializing Jmol..."
 msgstr "Ініціалізація Jmol…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:615
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
+#, fuzzy
+msgid "Exit Jmol?"
+msgstr "Про Jmol"
+
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:627
 msgid "Closing Jmol..."
 msgstr "Завершення роботи Jmol…"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1169
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1186
 msgid "Open URL"
 msgstr "Відкрити URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1170
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1187
 msgid "Enter URL of molecular model"
 msgstr "Введіть адресу URL моделі молекули"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1194
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1211
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
 "Введіть чотирицифровий ідентифікатор моделі PDB або «=» і трицифровий "
 "ідентифікатор ліганду"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1203
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1220
 msgid ""
 "Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
@@ -1087,11 +1091,11 @@ msgstr ""
 "цим рядком «:», щоб завантажити дані з PubChem; інакше Jmol використає "
 "визначник NCI/NIH."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1376
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1393
 msgid "IO Exception:"
 msgstr "Виключення вводу або виводу."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1514
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1531
 msgid "width height?"
 msgstr "Ширина і висота?"
 
@@ -1252,75 +1256,75 @@ msgstr "Зберегти файл і, за можливості, запусти�
 msgid "Cancel this dialog without saving"
 msgstr "Закрити це діалогове вікно без збереження"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:141
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:142
 msgid "Preferences"
 msgstr "Параметри"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:159
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:160
 msgid "Display"
 msgstr "Показ"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:160
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:161
 msgid "Atoms"
 msgstr "Атоми"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:161
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:162
 msgid "Bonds"
 msgstr "Зв’язки"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:166
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:167
 msgid "Jmol Defaults"
 msgstr "Типові параметри Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:170
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:171
 msgid "RasMol Defaults"
 msgstr "Типові параметри RasMol"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:178
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:179
 msgid "Apply"
 msgstr "Застосувати"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:206
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:207
 msgid "Show All"
 msgstr "Показувати всі"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:305
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:306
 msgid "Default atom size"
 msgstr "Типовий розмір атома"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:306
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:307
 msgid "(percentage of vanDerWaals radius)"
 msgstr "(у відсотках до радіуса Ван-дер-Ваальса)"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:360
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:361
 msgid "Compute Bonds"
 msgstr "Обчислення зв’язків"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:362
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:363
 msgid "Automatically"
 msgstr "Автоматично"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:363
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:364
 msgid "Don't Compute Bonds"
 msgstr "Не обчислювати зв’язки"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:393
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:394
 msgid "Default Bond Radius"
 msgstr "Типовий радіус зв’язку"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:394
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:429
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:470
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:395
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:430
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:471
 msgid "(Angstroms)"
 msgstr "(у ангстремах)"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:428
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:429
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr ""
 "Припустиме відхилення зв’язку — сума двох ковалентних радіусів та цього "
 "значення"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:469
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:470
 msgid "Minimum Bonding Distance"
 msgstr "Мінімальна відстань зв’язку"
 
@@ -1340,51 +1344,51 @@ msgstr "Завантаження…"
 msgid "What's New in Jmol"
 msgstr "Що нового у Jmol?"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:157
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:158
 msgid "Check"
 msgstr "Перевірити"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:159
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:160
 msgid "Close"
 msgstr "Закрити"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:160
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:161
 msgid "Halt"
 msgstr "Перервати"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:161
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:162
 msgid "Help"
 msgstr "Довідка"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:162
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:163
 msgid "Editor"
 msgstr "Редактор"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:163
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:164
 msgid "History"
 msgstr "Журнал"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:164
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:165
 msgid "State"
 msgstr "Стан"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:165
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:166
 msgid "Step"
 msgstr "Крок"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:166
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:167
 msgid "Top"
 msgstr "Вгорі"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:167
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:168
 msgid "Undo"
 msgstr "Вернути"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:168
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:169
 msgid "Redo"
 msgstr "Повторити"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:169
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:170
 msgid "Variables"
 msgstr "Змінні"
 
@@ -1393,119 +1397,119 @@ msgstr "Змінні"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Помилка під час читання з BufferedReader: {0}"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:492
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:494
 msgid "magic"
 msgstr "контрольна сума"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:493
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:495
 msgid "role"
 msgstr "роль"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:512
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:514
 msgid "type"
 msgstr "тип"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:518
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:520
 msgid "text"
 msgstr "текст"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:519
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:521
 msgid "visibility"
 msgstr "видимість"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:524
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:526
 msgid "command"
 msgstr "команда"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:531
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:533
 msgid "id"
 msgstr "ід."
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:560
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:562
 msgid "startup"
 msgstr "запуск"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:561
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:563
 msgid "filename"
 msgstr "назва файла"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:568
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:570
 msgid "startup_script"
 msgstr "скрипт_запуску"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:574
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:576
 msgid "banner"
 msgstr "банер"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:575
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:577
 msgid "banner_text"
 msgstr "текст_банера"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:579
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:581
 msgid "style"
 msgstr "стиль"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:622
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:624
 msgid "x"
 msgstr "⨯"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:623
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:625
 msgid "y"
 msgstr "y"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:640
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:642
 msgid "sync"
 msgstr "синхр."
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Degrees"
 msgstr "Градуси"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Radians"
 msgstr "Радіани"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:72
 msgid "Gradians"
 msgstr "Градіани"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:72
 msgid "Circle Fraction"
 msgstr "Частини кола"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:72
 msgid "Units of Pi"
 msgstr "Одиниці π"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:312
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:366
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:389
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:313
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:367
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:390
 msgid "Percentage scaling not implemented yet!"
 msgstr "Масштабування за коефіцієнтом ще не реалізовано!"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:133
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:135
 msgid "SurfaceTool"
 msgstr "Поверхні"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:154
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:157
 msgid "View Center"
 msgstr "Центр перегляду"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:158
 msgid "Absolute"
 msgstr "Абсолютний"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:164
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:166
 msgid "Origin"
 msgstr "Початок координат"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:167
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:169
 msgid "Cap"
 msgstr "Кінчик"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:172
 msgid ""
 "Caps slice with opaque surfaces.\n"
 "Ignores MOs and surfaces with interior layers."
@@ -1513,43 +1517,43 @@ msgstr ""
 "Перерізи з непрозорими поверхнями.\n"
 "Ігнорує молекулярні орбіталі та поверхні з внутрішніми шарами."
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
 msgid "Slice Planes"
 msgstr "Площини перерізу"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:178
 msgid "Shows planes at slicing surfaces."
 msgstr "Показувати площини на поверхнях перерізів."
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:183
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:185
 msgid "Ghost On"
 msgstr "Слід"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:186
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:188
 msgid "Shows an unsliced \"ghost\"."
 msgstr "Показувати як незрізаний «привид»."
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:206
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:208
 msgid "Angle from X-axis in XY plane"
 msgstr "Кут з віссю X на площині XY"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:217
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:219
 msgid "Angle from Z-axis"
 msgstr "Кут з віссю Z"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:228
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:230
 msgid "Direction vector of normal to slice"
 msgstr "Напрямок вектора, перпендикулярного до перерізу"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:231
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:233
 msgid "Distance of slice from origin"
 msgstr "Відстань перерізу від початку координат"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:243
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:245
 msgid "Thickness of slice"
 msgstr "Товщина перерізу"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:263
 msgid "Select Surface(s)"
 msgstr "Вибір поверхонь"
 
@@ -1630,123 +1634,123 @@ msgstr ""
 msgid "A web page containing Jmol applets"
 msgstr "Веб-сторінка, що містить аплети Jmol"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:180
+#: org/openscience/jmol/app/webexport/WebPanel.java:181
 msgid "click and drag to reorder"
 msgstr "клацніть і перетягніть, щоб змінити порядок"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:185
+#: org/openscience/jmol/app/webexport/WebPanel.java:186
 msgid "Add Present Jmol State as Instance..."
 msgstr "Додати поточний стан Jmol як екземпляр…"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:192
+#: org/openscience/jmol/app/webexport/WebPanel.java:193
 msgid "Delete Selected"
 msgstr "Вилучити позначені"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:224
+#: org/openscience/jmol/app/webexport/WebPanel.java:225
 msgid "Jmol Instances:"
 msgstr "Екземпляри Jmol:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:230
+#: org/openscience/jmol/app/webexport/WebPanel.java:231
 msgid "Select widgets:"
 msgstr "Виберіть віджети:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:333
+#: org/openscience/jmol/app/webexport/WebPanel.java:334
 msgid "Help/Instructions"
 msgstr "Довідка/Настанови"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:340
-#: org/openscience/jmol/app/webexport/WebPanel.java:348
+#: org/openscience/jmol/app/webexport/WebPanel.java:341
+#: org/openscience/jmol/app/webexport/WebPanel.java:349
 msgid "Cartoon of Page"
 msgstr "Макет сторінки"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:354
+#: org/openscience/jmol/app/webexport/WebPanel.java:355
 msgid "Save HTML as..."
 msgstr "Зберегти HTML як…"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:364
+#: org/openscience/jmol/app/webexport/WebPanel.java:365
 msgid "Relative server path to jar files:"
 msgstr "Відносний шлях на сервері для файлів jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:370
+#: org/openscience/jmol/app/webexport/WebPanel.java:371
 msgid "Relative local path to jar files:"
 msgstr "Відносний локальний шлях до файлів jar:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:376
+#: org/openscience/jmol/app/webexport/WebPanel.java:377
 msgid "Author (your name):"
 msgstr "Автор (ваше ім’я):"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:383
+#: org/openscience/jmol/app/webexport/WebPanel.java:384
 msgid "Browser window title for this web page:"
 msgstr "Заголовок вікна переглядача для цієї веб-сторінки:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:469
+#: org/openscience/jmol/app/webexport/WebPanel.java:470
 msgid "Give the occurrence of Jmol a name:"
 msgstr "Надайте об’єкту Jmol назву:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:485
+#: org/openscience/jmol/app/webexport/WebPanel.java:486
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
 "Помилка під час спроби створення нового екземпляра зі скриптами та "
 "зображенням."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:496
+#: org/openscience/jmol/app/webexport/WebPanel.java:497
 #, java-format
 msgid "added Instance {0}"
 msgstr "доданий екземпляр {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:499
+#: org/openscience/jmol/app/webexport/WebPanel.java:500
 #, java-format
 msgid "updated Instance {0}"
 msgstr "оновлений екземпляр {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:536
+#: org/openscience/jmol/app/webexport/WebPanel.java:537
 msgid "Select a directory to create or an HTML file to save"
 msgstr "Вкажіть каталог для створення або файл HTML для збереження"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:556
+#: org/openscience/jmol/app/webexport/WebPanel.java:557
 #, java-format
 msgid "file {0} created"
 msgstr "створено файл {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:558
+#: org/openscience/jmol/app/webexport/WebPanel.java:559
 msgid "Call to FileWriter unsuccessful."
 msgstr "Помилка виклику методу FileWriter."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:562
+#: org/openscience/jmol/app/webexport/WebPanel.java:563
 msgid "Errors occurred during web page creation.  See Log Tab!"
 msgstr ""
 "Під час спроби створення вебсторінки сталися помилки. Дані наведено на "
 "вкладці «Журнал»."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:637
+#: org/openscience/jmol/app/webexport/WebPanel.java:638
 #, java-format
 msgid "Using directory {0}"
 msgstr "Використання каталогу {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:638
-#: org/openscience/jmol/app/webexport/WebPanel.java:650
-#: org/openscience/jmol/app/webexport/WebPanel.java:670
-#: org/openscience/jmol/app/webexport/WebPanel.java:684
-#: org/openscience/jmol/app/webexport/WebPanel.java:712
+#: org/openscience/jmol/app/webexport/WebPanel.java:639
+#: org/openscience/jmol/app/webexport/WebPanel.java:651
+#: org/openscience/jmol/app/webexport/WebPanel.java:671
+#: org/openscience/jmol/app/webexport/WebPanel.java:685
+#: org/openscience/jmol/app/webexport/WebPanel.java:713
 #, java-format
 msgid "adding {0}"
 msgstr "додавання {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:699
+#: org/openscience/jmol/app/webexport/WebPanel.java:700
 #, java-format
 msgid "Unable to load resource {0}"
 msgstr "Не вдалося завантажити ресурс {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:752
+#: org/openscience/jmol/app/webexport/WebPanel.java:753
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr "Засновано на шаблоні A. Herr&#x00E1;ez, зміненому J. Gutow"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:755
+#: org/openscience/jmol/app/webexport/WebPanel.java:756
 #, java-format
 msgid "creating {0}"
 msgstr "створення {0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:791
+#: org/openscience/jmol/app/webexport/WebPanel.java:792
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1759,7 +1763,7 @@ msgstr ""
 "Будь ласка, переконайтеся, що ви користуєтеся Jmol.jar з повного "
 "дистрибутива Jmol."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:796
+#: org/openscience/jmol/app/webexport/WebPanel.java:797
 #, java-format
 msgid ""
 "copying\n"
@@ -1770,7 +1774,7 @@ msgstr ""
 "{0}\n"
 "         до"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:803
+#: org/openscience/jmol/app/webexport/WebPanel.java:804
 msgid "compressing large data file to"
 msgstr "стискання великого файла даних до"
 
@@ -1901,23 +1905,18 @@ msgstr "не реалізовано"
 #~ msgid "atom set"
 #~ msgstr "набір атомів"
 
-#, java-format
 #~ msgid "Go to first {0} in the collection"
 #~ msgstr "Перейти до першого {0} у збірці"
 
-#, java-format
 #~ msgid "Go to previous {0} in the collection"
 #~ msgstr "Перейти до попереднього {0} у збірці"
 
-#, java-format
 #~ msgid "Play the whole collection of {0}'s"
 #~ msgstr "Відтворити усю збірку {0}"
 
-#, java-format
 #~ msgid "Go to next {0} in the collection"
 #~ msgstr "Перейти до наступного {0} у збірці"
 
-#, java-format
 #~ msgid "Jump to last {0} in the collection"
 #~ msgstr "Перейти до останнього {0} у збірці"
 
@@ -1930,15 +1929,12 @@ msgstr "не реалізовано"
 #~ msgid "adding JmolPopIn.js"
 #~ msgstr "додавання JmolPopIn.js"
 
-#, java-format
 #~ msgid "adding {0}.png"
 #~ msgstr "додавання {0}.png"
 
-#, java-format
 #~ msgid "adding {0}.spt"
 #~ msgstr "додавання {0}.spt"
 
-#, java-format
 #~ msgid ""
 #~ "Could not find or open:\n"
 #~ "{0}"
@@ -1949,16 +1945,16 @@ msgstr "не реалізовано"
 #~ msgid "Clear console button (requires restarting Jmol)"
 #~ msgstr "Кнопка спорожнення консолі (потрібен перезапуску Jmol)"
 
-#, java-format
 #~ msgid ""
 #~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
 #~ "model {0}."
 #~ msgstr ""
-#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде поділено "
-#~ "на частини і розташовано навколо моделі Jmol {0}."
+#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде "
+#~ "поділено на частини і розташовано навколо моделі Jmol {0}."
 
 #~ msgid "double-click and drag to reorder"
-#~ msgstr "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
+#~ msgstr ""
+#~ "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
 
 #~ msgid "The -D options are as follows (defaults in parenthesis):"
 #~ msgstr "Параметри -D (типові значення вказано у дужках):"

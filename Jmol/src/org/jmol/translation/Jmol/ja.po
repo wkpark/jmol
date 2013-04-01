@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2013-01-07 07:16+0100\n"
+"POT-Creation-Date: 2013-04-01 10:34+0200\n"
 "PO-Revision-Date: 2012-08-08 08:00+0000\n"
 "Last-Translator: Rubia <Unknown>\n"
 "Language-Team: Japanese <Jmol-developers@lists.sf.net>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "X-Poedit-Country: Japan\n"
 "X-Poedit-Language: Japanese\n"
 
-#: org/jmol/appletjs/Jmol.java:365
+#: org/jmol/appletjs/Jmol.java:364
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -29,11 +29,11 @@ msgid ""
 "See http://www.jmol.org for more information"
 msgstr ""
 
-#: org/jmol/appletjs/Jmol.java:532
+#: org/jmol/appletjs/Jmol.java:597
 msgid "File Error:"
 msgstr ""
 
-#: org/jmol/awtjs2d/JSModelKitPopup.java:76
+#: org/jmol/awtjs2d/JSModelKitPopup.java:75
 msgid "Element?"
 msgstr ""
 
@@ -142,7 +142,8 @@ msgstr "ウインドウサイズ 幅×高さ, 例 {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr "JPG画質（1～100； 既定値 75） または ＰＮＧ画像圧縮率（0～9； 既定値 2）"
+msgstr ""
+"JPG画質（1～100； 既定値 75） または ＰＮＧ画像圧縮率（0～9； 既定値 2）"
 
 #: org/openscience/jmol/app/JmolApp.java:230
 #, java-format
@@ -157,7 +158,9 @@ msgstr "例："
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
-msgstr "- Dオプションは次のとおり（括弧内は既定値）で、'- jar Jmol.jar'の前に呼び出す必要があります。"
+msgstr ""
+"- Dオプションは次のとおり（括弧内は既定値）で、'- jar Jmol.jar'の前に呼び出す"
+"必要があります。"
 
 #: org/openscience/jmol/app/JmolApp.java:502
 msgid "Executing script 1..."
@@ -926,51 +929,55 @@ msgstr "モデルキットを開く"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:232
 #: org/openscience/jmol/app/jmolpanel/RecentFilesDialog.java:70
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:158
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:159
 msgid "Clear"
 msgstr "クリア"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:367
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:366
 #, java-format
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"操作可能な3次元モデルを取得するには、ここ{1}の{0}をクリックしてください。アプレットが最初にロードされる際はダウンロード時間が長くかかることがありま"
-"す。"
+"操作可能な3次元モデルを取得するには、ここ{1}の{0}をクリックしてください。アプ"
+"レットが最初にロードされる際はダウンロード時間が長くかかることがあります。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
 msgid "Insert the page TITLE here."
 msgstr "ここにページタイトルを挿入してください。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:370
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:369
 msgid "Insert the page INTRODUCTION here."
 msgstr "ここにページの紹介を挿入してください。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:372
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:371
 #, java-format
 msgid "Insert a caption for {0} here."
 msgstr "ここに {0} へのキャプションを挿入してください。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:373
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:372
 #, java-format
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
-msgstr "ここに補足説明テキストを挿入してください。長いテキストはJmolのモデル{0}の周りで折り返されます。"
+msgstr ""
+"ここに補足説明テキストを挿入してください。長いテキストはJmolのモデル{0}の周り"
+"で折り返されます。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:375
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:374
 msgid "Insert your TITLE and INTRODUCTION here."
 msgstr "ここにタイトルと紹介を挿入してください。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:377
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:376
 #, java-format
 msgid ""
 "The button {0} will appear in the box below.  Insert information for {0} "
 "here and below."
-msgstr "ボタン{0}が下のボックスに表示されます。 {0}の情報をここから下に挿入してください。"
+msgstr ""
+"ボタン{0}が下のボックスに表示されます。 {0}の情報をここから下に挿入してくださ"
+"い。"
 
-#: org/openscience/jmol/app/jmolpanel/GuiMap.java:378
+#: org/openscience/jmol/app/jmolpanel/GuiMap.java:377
 #, java-format
 msgid "Insert more information for {0} here."
 msgstr "ここに {0} への情報をさらに挿入してください。"
@@ -980,95 +987,100 @@ msgid "Jmol Help"
 msgstr "Jmolヘルプ"
 
 #: org/openscience/jmol/app/jmolpanel/HelpDialog.java:95
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:182
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:183
 #: org/openscience/jmol/app/jmolpanel/WhatsNewDialog.java:89
 msgid "OK"
 msgstr "OK"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:227
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:231
 msgid "Initializing 3D display..."
 msgstr "3次元表示を初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:264
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:270
 msgid "Initializing Script Window..."
 msgstr "スクリプトウィンドウを初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:285
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:291
 msgid "Building Command Hooks..."
 msgstr "コマンドのフックを構築しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:300
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:306
 msgid "Building Menubar..."
 msgstr "メニューバーを構築しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:315
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:321
 msgid "Starting display..."
 msgstr "表示開始..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:362
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:368
 msgid "Setting up Drag-and-Drop..."
 msgstr "ドラッグ&ドロップの設定をしています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:370
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:376
 msgid "Launching main frame..."
 msgstr "主フレームを立ち上げています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:374
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:380
 msgid "Initializing Preferences..."
 msgstr "環境設定を初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:376
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:382
 msgid "Initializing Recent Files..."
 msgstr "最近使ったファイルを初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:450
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:456
 msgid "Jmol Java Console"
 msgstr "Jmol Java コンソール"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:470
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:476
 msgid "Could not create ConsoleTextArea: "
 msgstr "コンソールのテキスト領域を作成できませんでした: "
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:514
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:520
 msgid "Creating main window..."
 msgstr "メインウィンドウを作成しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:515
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:521
 msgid "Initializing Swing..."
 msgstr "Swingを初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:526
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:532
 msgid "Initializing Jmol..."
 msgstr "Jmolを初期化しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:615
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
+#, fuzzy
+msgid "Exit Jmol?"
+msgstr "Jmolについて"
+
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:627
 msgid "Closing Jmol..."
 msgstr "Jmolを終了しています..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1169
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1186
 msgid "Open URL"
 msgstr "URLを開く"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1170
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1187
 msgid "Enter URL of molecular model"
 msgstr "分子モデルのURLを入力してください"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1194
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1211
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1203
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1220
 msgid ""
 "Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1376
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1393
 msgid "IO Exception:"
 msgstr "入出力の例外："
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1514
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1531
 msgid "width height?"
 msgstr "幅　高さ？"
 
@@ -1229,73 +1241,73 @@ msgstr "ファイルを保存し、必要に応じてPOV- Rayを起動してく�
 msgid "Cancel this dialog without saving"
 msgstr "保存せずにこのダイアログをキャンセルする"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:141
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:142
 msgid "Preferences"
 msgstr "環境設定"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:159
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:160
 msgid "Display"
 msgstr "表示"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:160
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:161
 msgid "Atoms"
 msgstr "原子"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:161
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:162
 msgid "Bonds"
 msgstr "結合"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:166
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:167
 msgid "Jmol Defaults"
 msgstr "Jmol の既定値"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:170
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:171
 msgid "RasMol Defaults"
 msgstr "RasMolの既定値"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:178
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:179
 msgid "Apply"
 msgstr "適用"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:206
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:207
 msgid "Show All"
 msgstr "すべてを表示"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:305
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:306
 msgid "Default atom size"
 msgstr "原子サイズの既定値"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:306
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:307
 msgid "(percentage of vanDerWaals radius)"
 msgstr "（van der Waals半径に対する比率）"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:360
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:361
 msgid "Compute Bonds"
 msgstr "結合を計算により決定する"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:362
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:363
 msgid "Automatically"
 msgstr "自動的に"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:363
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:364
 msgid "Don't Compute Bonds"
 msgstr "結合を計算により決定しない"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:393
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:394
 msgid "Default Bond Radius"
 msgstr "結合半径の既定値"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:394
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:429
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:470
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:395
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:430
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:471
 msgid "(Angstroms)"
 msgstr "（オングストローム）"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:428
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:429
 msgid "Bond Tolerance - sum of two covalent radii + this value"
 msgstr "結合許容範囲 - 二つの共有結合半径の和 + この値"
 
-#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:469
+#: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:470
 msgid "Minimum Bonding Distance"
 msgstr "最小結合距離"
 
@@ -1315,51 +1327,51 @@ msgstr "読み込んでいます..."
 msgid "What's New in Jmol"
 msgstr "Jmolの新機能"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:157
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:158
 msgid "Check"
 msgstr "チェック"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:159
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:160
 msgid "Close"
 msgstr "閉じる"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:160
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:161
 msgid "Halt"
 msgstr "終了"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:161
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:162
 msgid "Help"
 msgstr "ヘルプ"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:162
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:163
 msgid "Editor"
 msgstr "エディター"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:163
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:164
 msgid "History"
 msgstr "履歴"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:164
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:165
 msgid "State"
 msgstr "状況"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:165
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:166
 msgid "Step"
 msgstr "ステップ"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:166
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:167
 msgid "Top"
 msgstr "トップ"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:167
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:168
 msgid "Undo"
 msgstr "元に戻す"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:168
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:169
 msgid "Redo"
 msgstr "やり直し"
 
-#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:169
+#: org/openscience/jmol/app/jmolpanel/console/AppConsole.java:170
 msgid "Variables"
 msgstr "変数"
 
@@ -1368,119 +1380,119 @@ msgstr "変数"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "BufferedReader: {0} からの読み取りエラー"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:492
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:494
 msgid "magic"
 msgstr "マジック"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:493
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:495
 msgid "role"
 msgstr "ロール"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:512
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:514
 msgid "type"
 msgstr "タイプ"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:518
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:520
 msgid "text"
 msgstr "テキスト"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:519
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:521
 msgid "visibility"
 msgstr "可視性"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:524
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:526
 msgid "command"
 msgstr "コマンド"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:531
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:533
 msgid "id"
 msgstr "id"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:560
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:562
 msgid "startup"
 msgstr "起動時"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:561
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:563
 msgid "filename"
 msgstr "ファイル名"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:568
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:570
 msgid "startup_script"
 msgstr "起動スクリプト"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:574
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:576
 msgid "banner"
 msgstr "バナー"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:575
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:577
 msgid "banner_text"
 msgstr "バナーテキスト"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:579
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:581
 msgid "style"
 msgstr "スタイル"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:622
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:624
 msgid "x"
 msgstr "x"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:623
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:625
 msgid "y"
 msgstr "y"
 
-#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:640
+#: org/openscience/jmol/app/jsonkiosk/JsonNioService.java:642
 msgid "sync"
 msgstr "同期"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Degrees"
 msgstr "度"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:70
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
 msgid "Radians"
 msgstr "ラジアン"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:72
 msgid "Gradians"
 msgstr "グラード"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:72
 msgid "Circle Fraction"
 msgstr "円の部分"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:71
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:72
 msgid "Units of Pi"
 msgstr "π単位"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:312
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:366
-#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:389
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:313
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:367
+#: org/openscience/jmol/app/surfacetool/SurfaceTool.java:390
 msgid "Percentage scaling not implemented yet!"
 msgstr "パーセント指定による拡大縮小はまだ実装されていません！"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:133
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:135
 msgid "SurfaceTool"
 msgstr "表面ツール"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:152
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:154
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:157
 msgid "View Center"
 msgstr "ビューセンター"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:153
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:156
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:155
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:158
 msgid "Absolute"
 msgstr "絶対"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:164
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:166
 msgid "Origin"
 msgstr "原点"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:167
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:169
 msgid "Cap"
 msgstr "キャップ"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:170
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:172
 msgid ""
 "Caps slice with opaque surfaces.\n"
 "Ignores MOs and surfaces with interior layers."
@@ -1488,43 +1500,43 @@ msgstr ""
 "スライスに不透明な面で蓋をします。\n"
 "分子軌道と内部レイヤーを持つ面を無視します。"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:174
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
 msgid "Slice Planes"
 msgstr "スライス平面"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:176
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:178
 msgid "Shows planes at slicing surfaces."
 msgstr "スライス面での平面を表示する"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:183
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:185
 msgid "Ghost On"
 msgstr "ゴースト　オン"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:186
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:188
 msgid "Shows an unsliced \"ghost\"."
 msgstr "スライスされていない\"ゴースト\"を表示する"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:206
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:208
 msgid "Angle from X-axis in XY plane"
 msgstr "XY平面でのX軸からの角度"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:217
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:219
 msgid "Angle from Z-axis"
 msgstr "Z軸からの角度"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:228
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:230
 msgid "Direction vector of normal to slice"
 msgstr "スライスに対する法線方向ベクトル"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:231
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:233
 msgid "Distance of slice from origin"
 msgstr "スライスの原点からの距離"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:243
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:245
 msgid "Thickness of slice"
 msgstr "スライスの厚さ"
 
-#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:261
+#: org/openscience/jmol/app/surfacetool/SurfaceToolGUI.java:263
 msgid "Select Surface(s)"
 msgstr "面を選択する"
 
@@ -1597,125 +1609,129 @@ msgstr "ログ"
 msgid ""
 "Page skeleton and JavaScript generated by export to web function using {0} "
 "on {1}."
-msgstr "{1}で{0}を使用してWebの関数にエクスポートして生成されたページの骨格とJavaScript"
+msgstr ""
+"{1}で{0}を使用してWebの関数にエクスポートして生成されたページの骨格と"
+"JavaScript"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:155
 msgid "A web page containing Jmol applets"
 msgstr "Jmolのアプレットを含むWebページ"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:180
+#: org/openscience/jmol/app/webexport/WebPanel.java:181
 msgid "click and drag to reorder"
 msgstr "順序を変更するには、クリックしてドラッグしてください"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:185
+#: org/openscience/jmol/app/webexport/WebPanel.java:186
 msgid "Add Present Jmol State as Instance..."
 msgstr "現在のJmolの状態をインスタンスとして追加..."
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:192
+#: org/openscience/jmol/app/webexport/WebPanel.java:193
 msgid "Delete Selected"
 msgstr "選択した項目を削除"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:224
+#: org/openscience/jmol/app/webexport/WebPanel.java:225
 msgid "Jmol Instances:"
 msgstr "Jmolのインスタンス："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:230
+#: org/openscience/jmol/app/webexport/WebPanel.java:231
 msgid "Select widgets:"
 msgstr "ウィジェットを選択してください:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:333
+#: org/openscience/jmol/app/webexport/WebPanel.java:334
 msgid "Help/Instructions"
 msgstr "ヘルプ/説明"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:340
-#: org/openscience/jmol/app/webexport/WebPanel.java:348
+#: org/openscience/jmol/app/webexport/WebPanel.java:341
+#: org/openscience/jmol/app/webexport/WebPanel.java:349
 msgid "Cartoon of Page"
 msgstr "ページのカートゥーン"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:354
+#: org/openscience/jmol/app/webexport/WebPanel.java:355
 msgid "Save HTML as..."
 msgstr "...としてHTMLを保存"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:364
+#: org/openscience/jmol/app/webexport/WebPanel.java:365
 msgid "Relative server path to jar files:"
 msgstr "jarファイルへのサーバの相対パス："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:370
+#: org/openscience/jmol/app/webexport/WebPanel.java:371
 msgid "Relative local path to jar files:"
 msgstr "jarファイルへの相対的なローカルパス："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:376
+#: org/openscience/jmol/app/webexport/WebPanel.java:377
 msgid "Author (your name):"
 msgstr "著者（あなたの名前）："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:383
+#: org/openscience/jmol/app/webexport/WebPanel.java:384
 msgid "Browser window title for this web page:"
 msgstr "ブラウザで表示されるこのWebページのタイトル："
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:469
+#: org/openscience/jmol/app/webexport/WebPanel.java:470
 msgid "Give the occurrence of Jmol a name:"
 msgstr "Jmolの出現に名前をつけてください:"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:485
+#: org/openscience/jmol/app/webexport/WebPanel.java:486
 msgid "Error creating new instance containing script(s) and image."
-msgstr "スクリプトとイメージを含む新しいインスタンスを作成中にエラーが発生しました。"
+msgstr ""
+"スクリプトとイメージを含む新しいインスタンスを作成中にエラーが発生しました。"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:496
+#: org/openscience/jmol/app/webexport/WebPanel.java:497
 #, java-format
 msgid "added Instance {0}"
 msgstr "追加されたインスタンス{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:499
+#: org/openscience/jmol/app/webexport/WebPanel.java:500
 #, java-format
 msgid "updated Instance {0}"
 msgstr "更新されたインスタンス{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:536
+#: org/openscience/jmol/app/webexport/WebPanel.java:537
 msgid "Select a directory to create or an HTML file to save"
 msgstr "作成するディレクトリまたは保存するHTMLファイルを選択してください"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:556
+#: org/openscience/jmol/app/webexport/WebPanel.java:557
 #, java-format
 msgid "file {0} created"
 msgstr "ファイル{0}が作成されました"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:558
+#: org/openscience/jmol/app/webexport/WebPanel.java:559
 msgid "Call to FileWriter unsuccessful."
 msgstr "ファイル書き込み機能の呼び出しが失敗しました"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:562
+#: org/openscience/jmol/app/webexport/WebPanel.java:563
 msgid "Errors occurred during web page creation.  See Log Tab!"
-msgstr "Webページの作成中にエラーが発生しました。ログのタブを参照してください！"
+msgstr ""
+"Webページの作成中にエラーが発生しました。ログのタブを参照してください！"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:637
+#: org/openscience/jmol/app/webexport/WebPanel.java:638
 #, java-format
 msgid "Using directory {0}"
 msgstr "ディレクトリ {0} を使用する"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:638
-#: org/openscience/jmol/app/webexport/WebPanel.java:650
-#: org/openscience/jmol/app/webexport/WebPanel.java:670
-#: org/openscience/jmol/app/webexport/WebPanel.java:684
-#: org/openscience/jmol/app/webexport/WebPanel.java:712
+#: org/openscience/jmol/app/webexport/WebPanel.java:639
+#: org/openscience/jmol/app/webexport/WebPanel.java:651
+#: org/openscience/jmol/app/webexport/WebPanel.java:671
+#: org/openscience/jmol/app/webexport/WebPanel.java:685
+#: org/openscience/jmol/app/webexport/WebPanel.java:713
 #, java-format
 msgid "adding {0}"
 msgstr "追加　{0}"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:699
+#: org/openscience/jmol/app/webexport/WebPanel.java:700
 #, java-format
 msgid "Unable to load resource {0}"
 msgstr "リソース {0} を読み込めません"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:752
+#: org/openscience/jmol/app/webexport/WebPanel.java:753
 msgid "Based on template by A. Herr&#x00E1;ez as modified by J. Gutow"
 msgstr "A. Herr&#x00E1;ez によるテンプレートに基づく（J. Gutowにより修正）"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:755
+#: org/openscience/jmol/app/webexport/WebPanel.java:756
 #, java-format
 msgid "creating {0}"
 msgstr "{0}を作成しています"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:791
+#: org/openscience/jmol/app/webexport/WebPanel.java:792
 #, java-format
 msgid ""
 "Could not find or open:\n"
@@ -1725,9 +1741,10 @@ msgid ""
 msgstr ""
 "{0}\n"
 "を見つけたり開くことができませんでした。\n"
-"Jmolの完全なディストリビューションに含まれるJmol.jarを使用していることを確認してください。"
+"Jmolの完全なディストリビューションに含まれるJmol.jarを使用していることを確認"
+"してください。"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:796
+#: org/openscience/jmol/app/webexport/WebPanel.java:797
 #, java-format
 msgid ""
 "copying\n"
@@ -1738,7 +1755,7 @@ msgstr ""
 " コピーしています\n"
 "         コピー先"
 
-#: org/openscience/jmol/app/webexport/WebPanel.java:803
+#: org/openscience/jmol/app/webexport/WebPanel.java:804
 msgid "compressing large data file to"
 msgstr "大きなデータファイルを圧縮しています"
 

@@ -162,6 +162,7 @@ public class ModelSettings {
         sm.setShapeSizeBs(id, size, null, null);
       return;
     }
+    // cartoon, trace, etc.
     if (size != -1 || rd != null)
       sm.setShapeSizeBs(id, size, rd, bsAtoms);
     if (argb != 0)

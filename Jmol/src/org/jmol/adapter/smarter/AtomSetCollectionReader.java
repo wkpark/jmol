@@ -238,6 +238,7 @@ public abstract class AtomSetCollectionReader {
       }
       finalizeReader();
     } catch (Throwable e) {
+      System.out.println(e);
       setError(e);
     }
     if (reader != null)

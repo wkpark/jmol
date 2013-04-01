@@ -111,7 +111,7 @@ public class PyMOLReader extends PdbReader {
     process(map);
   }
 
-  private BS[] reps = new BS[17];
+  private BS[] reps = new BS[REP_JMOL_MAX];
   private float cartoonTranslucency;
   private Map<String, Object> movie;
   private boolean isMovie;
@@ -127,7 +127,7 @@ public class PyMOLReader extends PdbReader {
   private void process(Map<String, Object> map) {
 
     addColors(getMapList(map, "colors"));
-    for (int i = 0; i < 17; i++)
+    for (int i = 0; i < REP_JMOL_MAX; i++)
       reps[i] = BS.newN(1000);
     settings = getMapList(map, "settings");
     allStates = getBooleanSetting(PyMOL.all_states);
@@ -374,6 +374,7 @@ public class PyMOLReader extends PdbReader {
     JmolList<Object> bonds = getList(deepBranch, 6);
     pymolAtoms = getBranchAoms(deepBranch);
     int ns = states.size();
+    System.out.println(ns + " PyMOL states");
     BS bsState = null;
     BS bsAtoms = BS.newN(atomCount0 + pymolAtoms.size());
     names.put(branchName.toLowerCase(), bsAtoms);
@@ -447,7 +448,8 @@ public class PyMOLReader extends PdbReader {
         model(++nModels);
         for (int idx = 0; idx < n; idx++)
           addAtom(pymolAtoms, getInt(idxToAtm, idx), idx, coords, bsState);
-        bsAtoms.or(bsState);
+        if (bsState != null)
+          bsAtoms.or(bsState);
       }
     }
     Logger.info("read " + (atomCount - atomCount0) + " atoms");
@@ -558,6 +560,35 @@ public class PyMOLReader extends PdbReader {
         reps[REP_LABELS].clear(atomCount);
       else
         labels.addLast(label);
+    }
+    if (reps[REP_CARTOON].get(atomCount)) {
+      int cartoonType= getInt(a, 23);
+      /*
+            -1 => { type=>'skip',       converted=>undef },
+             0 => { type=>'automatic',  converted=>1 },
+             1 => { type=>'loop',       converted=>1 },
+             2 => { type=>'rectangle',  converted=>undef },
+             3 => { type=>'oval',       converted=>undef },
+             4 => { type=>'tube',       converted=>1 },
+             5 => { type=>'arrow',      converted=>undef },
+             6 => { type=>'dumbbell',   converted=>undef },
+             7 => { type=>'putty',      converted=>1 },
+
+       */
+      switch (cartoonType) {
+      case -1:
+        reps[REP_CARTOON].clear(atomCount);
+        break;
+      case 1:
+      case 4:
+      case 7:
+        reps[REP_JMOL_TRACE].set(atomCount);
+        reps[REP_CARTOON].clear(atomCount);
+        break;
+        
+        
+      }
+      
     }
     bsHidden.setBitTo(atomCount, isHidden);
     bsModelAtoms.set(atomCount);
@@ -709,6 +740,10 @@ public class PyMOLReader extends PdbReader {
   private final static int REP_LINES = 7;
   private final static int REP_NONBONDED = 11;
   private final static int REP_MAX = 12;
+  
+  private final static int REP_JMOL_MIN = 13;
+  private final static int REP_JMOL_TRACE = 13;
+  private final static int REP_JMOL_MAX = 14;
 
   //TODO:
 
@@ -729,7 +764,7 @@ public class PyMOLReader extends PdbReader {
     ms = new ModelSettings(JC.SHAPE_STICKS, bs, null);
     ms.setSize(0);
     modelSettings.addLast(ms);
-    for (int i = 0; i < REP_MAX; i++)
+    for (int i = 0; i < REP_JMOL_MAX; i++)
       setShape(i);
     if (!bsHidden.isEmpty())
       modelSettings.addLast(new ModelSettings(T.hidden, bsHidden, null));
@@ -808,12 +843,16 @@ public class PyMOLReader extends PdbReader {
       ss = new ModelSettings(JC.SHAPE_LABELS, bs, labels);
       modelSettings.addLast(ss);
       break;
+    case REP_JMOL_TRACE:      
+      setTrace(bs);
+      break;
     case REP_BACKBONE: //   = 6;
     case REP_MESH: //   = 8;
     case REP_DOTS: //   = 9;
     case REP_DASHES: //   = 10;
     default:
-      System.out.println("Unprocessed representation type " + shapeID);
+      if (shapeID < REP_JMOL_MIN)
+        System.out.println("Unprocessed representation type " + shapeID);
     }
   }
 
@@ -827,6 +866,13 @@ public class PyMOLReader extends PdbReader {
     ss.translucency = getFloatSetting(PyMOL.transparency);
     setColixes();
     ss.setColors(colixes, 0);
+    modelSettings.addLast(ss);
+  }
+
+  private void setTrace(BS bs) {
+    ModelSettings ss = new ModelSettings(JC.SHAPE_TRACE, bs, null);
+    ss.setColors(colixes, cartoonTranslucency);
+    ss.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
     modelSettings.addLast(ss);
   }
 
@@ -845,12 +891,16 @@ public class PyMOLReader extends PdbReader {
 
   private void setFrame() {
     BS bs = BSUtil.newAndSetBit(0);
-    if (!allStates && pymol.containsKey("movie")) {
+    if (!allStates && isMovie) {
       modelSettings.addLast(new ModelSettings(T.movie, bs, pymol.get("movie")));
-    } else {
+    } else if (!allStates || isMovie) {
       modelSettings.addLast(new ModelSettings(T.frame, bs, Integer
           .valueOf(currentFrame)));
+    } else {
+      modelSettings.addLast(new ModelSettings(T.frame, bs, Integer
+          .valueOf(-1)));
     }
+    
   }
 
   private void setView(SB sb, JmolList<Object> view) {

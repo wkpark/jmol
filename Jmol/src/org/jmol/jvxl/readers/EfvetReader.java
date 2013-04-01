@@ -25,9 +25,7 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import jspecview.util.ColorUtil;
-
-
+import org.jmol.util.ColorUtil;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;

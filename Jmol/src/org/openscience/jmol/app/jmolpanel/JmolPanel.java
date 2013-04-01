@@ -155,7 +155,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   private PasteClipboardAction pasteClipboardAction = new PasteClipboardAction();
   private ViewMeasurementTableAction viewMeasurementTableAction = new ViewMeasurementTableAction();
 
-  private Map<String, Object> viewerOptions;
+  Map<String, Object> viewerOptions;
 
   private static int numWindows = 0;
   private static KioskFrame kioskFrame;
@@ -252,6 +252,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
      * 
      */
     display = new DisplayPanel(this);
+    if (viewerOptions == null)
+      viewerOptions = new Hashtable<String, Object>(); 
     viewerOptions.put("display", display);
     myStatusListener = new StatusListener(this, display);
     viewerOptions.put("statusListener", myStatusListener);
@@ -578,18 +580,21 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void windowClosing(WindowEvent e) {
-      doClose(true);
+      doClose(false);
     }
   }
 
-  protected void doClose(boolean ask) {
-    if (ask && numWindows == 1 && JOptionPane.showConfirmDialog(frame, "Exit Jmol?",
+  protected boolean doClose(boolean isExit) {
+    if ((isExit || numWindows == 1) && JOptionPane.showConfirmDialog(frame, GT._("Exit Jmol?"),
         "Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION)
-      return;
+      return false;
+    if (isExit)
+      System.exit(0);
     dispose(frame);
+    return true;
   }
 
-  private void dispose(JFrame f) {
+  void dispose(JFrame f) {
     // Save window positions and status in the history
     if (webExport != null)
       WebExport.cleanUp();
@@ -1009,8 +1014,9 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      frame.setVisible(false);
-      doClose(false);
+      if (!doClose(false)) {
+        viewer.script("zap");
+      }
     }
   }
 
@@ -1071,13 +1077,17 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      JFrame newFrame = new JFrame();
-      new Jmol(jmolApp, null, newFrame, (Jmol) JmolPanel.this, startupWidth, startupHeight, null, null);
-      newFrame.setVisible(true);
+      doNew();
     }
 
   }
 
+  void doNew() {
+    JFrame newFrame = new JFrame();
+    new Jmol(jmolApp, null, newFrame, (Jmol) JmolPanel.this, startupWidth, startupHeight, viewerOptions, null);
+    newFrame.setVisible(true);
+  }
+  
   class UguideAction extends AbstractAction {
 
     public UguideAction() {
@@ -1243,7 +1253,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      doClose(false);
+      doClose(true);
     }
   }
 

@@ -1965,9 +1965,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   /**
    * 
-   * @j2sIgnore
-   * 
-   * for JmolSimpleViewer -- external applications only
+   * for JmolSimpleViewer -- external applications only (and no-script JavaScript)
    * 
    * @param fileName
    * @return null or error

@@ -101,6 +101,7 @@ import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -217,6 +218,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     frame.setTitle("Jmol");
+    frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     frame.getContentPane().setBackground(Color.lightGray);
     frame.getContentPane().setLayout(new BorderLayout());
 
@@ -576,12 +578,15 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void windowClosing(WindowEvent e) {
-      JmolPanel.this.doClose();
+      doClose(true);
     }
   }
 
-  protected void doClose() {
-    dispose(this.frame);
+  protected void doClose(boolean ask) {
+    if (ask && numWindows == 1 && JOptionPane.showConfirmDialog(frame, "Exit Jmol?",
+        "Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION)
+      return;
+    dispose(frame);
   }
 
   private void dispose(JFrame f) {
@@ -1004,8 +1009,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      JmolPanel.this.frame.setVisible(false);
-      JmolPanel.this.doClose();
+      frame.setVisible(false);
+      doClose(false);
     }
   }
 
@@ -1238,7 +1243,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      JmolPanel.this.doClose();
+      doClose(false);
     }
   }
 

@@ -84,7 +84,7 @@ class PickleReader {
     viewer.log(s + "\0");
   }
   
-  private Map<Integer, Object> temp = new Hashtable<Integer, Object>();
+  //private Map<Integer, Object> temp = new Hashtable<Integer, Object>();
   
   @SuppressWarnings("unchecked")
   Map<String, Object> getMap() throws Exception {
@@ -100,6 +100,8 @@ class PickleReader {
 
     while (going) {
       b = binaryDoc.readByte();
+      //if (logging)
+        //log(" " + b);
       switch (b) {
       case EMPTY_DICT: //}
         push(new Hashtable<String, Object>());
@@ -135,7 +137,7 @@ class PickleReader {
         break;
       case LONG_BINPUT:
         i = binaryDoc.readInt();
-        temp.put(Integer.valueOf(i), peek());
+        //temp.put(Integer.valueOf(i), peek());
         //System.out.println("LONG_BINPUT " + i + " " + peek());
         break;
       case BINGET:
@@ -149,9 +151,9 @@ class PickleReader {
         //o = temp.remove(Integer.valueOf(i));
         //System.out.println("LONG_BINGET " + i + " " + o);
         push("LONG_BINGET");
-      break;
+        break;
       case SHORT_BINSTRING:
-        i = binaryDoc.readByte();
+        i = binaryDoc.readByte() & 0xff;
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
         s = new String(a, "UTF-8");
@@ -199,6 +201,8 @@ class PickleReader {
         break;
       case SETITEM:
         o = pop();
+        if (!(peek() instanceof String))
+          System.out.println(peek() + " is not a string");
         s = (String) pop();
         ((Map<String, Object>) peek()).put(s, o);
         break;
@@ -222,11 +226,14 @@ class PickleReader {
         going = false;
         break;
       case TUPLE:
+        // used for view_dict
         l = getObjects(getMark());
+        JmolList<Object> jl = new JmolList<Object>();
         for (i = 0; i < l.size(); i++) { 
           P3 pt = P3.new3(((Double) l.get(i++)).floatValue(), ((Double) l.get(i++)).floatValue(),((Double) l.get(i)).floatValue());
-          push(pt);
+          jl.addLast(pt);
         }
+        push(jl);
         break;
       default:
 

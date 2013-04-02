@@ -596,10 +596,7 @@ public class PyMOLReader extends PdbReader {
         reps[REP_JMOL_TRACE].set(atomCount);
         reps[REP_CARTOON].clear(atomCount);
         break;
-        
-        
-      }
-      
+      }      
     }
     bsHidden.setBitTo(atomCount, isHidden);
     bsModelAtoms.set(atomCount);

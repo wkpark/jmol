@@ -137,11 +137,11 @@ public class ModelSettings {
       String s = info.toString().replace('\'', '_').replace('"', '_');
       s = "script('isosurface ID \"" + s + "\"  model "
           + m.models[modelIndex].getModelNumberDotted() + " select "
-          + Escape.eBS(bsAtoms) + " solvent " + (size / 1000f)
+          + Escape.eBS(bsAtoms) + " only solvent " + (size / 1000f)
           + " map property color')";
       if (translucency > 0)
         s += " translucent " + translucency;
-      //System.out.println("shapeSettings: " + s);
+      System.out.println("shapeSettings: " + s);
       sm.viewer.evaluateExpression(s);
       return;
     case JC.SHAPE_LABELS:

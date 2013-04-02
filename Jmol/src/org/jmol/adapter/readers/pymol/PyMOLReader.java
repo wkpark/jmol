@@ -135,6 +135,8 @@ public class PyMOLReader extends PdbReader {
     for (int i = 0; i < REP_JMOL_MAX; i++)
       reps[i] = BS.newN(1000);
     settings = getMapList(map, "settings");
+    atomSetCollection
+    .setAtomSetCollectionAuxiliaryInfo("settings", settings);
     allStates = getBooleanSetting(PyMOL.all_states);
     JmolList<Object> mov = getMapList(map, "movie");
     ssMapAtom.put("nucleic", new BS());

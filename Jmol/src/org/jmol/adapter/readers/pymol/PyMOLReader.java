@@ -120,7 +120,7 @@ public class PyMOLReader extends PdbReader {
 
   private Map<String, Object> pymol = new Hashtable<String, Object>();
   private JmolList<BS> lstStates = new  JmolList<BS>();
-  private Map<String, Object> names = new Hashtable<String, Object>();
+  private Map<String, Object> htNames = new Hashtable<String, Object>();
   private JmolList<P3[]> lstTrajectories = new  JmolList<P3[]>();
   private int currentFrame = -1;
   private boolean allStates;
@@ -183,8 +183,8 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void setDefinitions() {
-    modelSettings.addLast(new ModelSettings(T.define, null, names));
-    appendLoadNote(viewer.getAtomDefs(names));
+    modelSettings.addLast(new ModelSettings(T.define, null, htNames));
+    appendLoadNote(viewer.getAtomDefs(htNames));
   }
 
   private int getTotalAtomCount(JmolList<Object> names) {
@@ -385,7 +385,7 @@ public class PyMOLReader extends PdbReader {
       allStates = true;
     BS bsState = null;
     BS bsAtoms = BS.newN(atomCount0 + pymolAtoms.size());
-    names.put(branchName.toLowerCase(), bsAtoms);
+    addName(branchName, bsAtoms);
     if (isMovie) {
       // we create only one model and put all atoms into it.
       if (nModels == 0)
@@ -449,7 +449,7 @@ public class PyMOLReader extends PdbReader {
           bsState = lstStates.get(i);
         } else {
           bsAtoms = BS.newN(atomCount0 + pymolAtoms.size());
-          names.put(name, bsAtoms);
+          addName(name, bsAtoms);
         }
         processStructures();
         setSurface();
@@ -464,6 +464,14 @@ public class PyMOLReader extends PdbReader {
     processStructures();
     setSurface();
     processBonds(bonds);
+  }
+
+  private void addName(String name, BS bs) {
+    char[] chars = name.toLowerCase().toCharArray();
+    for (int i = chars.length; --i >= 0;)
+      if (!Character.isLetterOrDigit(chars[i]))
+        chars[i] = '_';
+    htNames.put(String.valueOf(chars), bs);
   }
 
   private static int getBranchType(JmolList<Object> branch) {

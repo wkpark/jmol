@@ -15,6 +15,8 @@ import org.jmol.viewer.Viewer;
  * generic Python Pickle file reader
  * only utilizing records needed for PyMOL.
  * 
+ * Unbelievable! -- doubles are in bigEndian, but integers are littleEndian!
+ * 
  * see http://www.picklingtools.com/
  * 
  * @author Bob Hanson hansonr@stolaf.edu
@@ -119,7 +121,7 @@ class PickleReader {
         push(Double.valueOf(d));
         break;
       case BININT:
-        i = binaryDoc.readInt();
+        i = binaryDoc.readIntLE();
         push(Integer.valueOf(i));
         break;
       case BININT1:
@@ -136,7 +138,7 @@ class PickleReader {
         //System.out.println("BINPUT " + i + " " + peek());
         break;
       case LONG_BINPUT:
-        i = binaryDoc.readInt();
+        i = binaryDoc.readIntLE();
         //temp.put(Integer.valueOf(i), peek());
         //System.out.println("LONG_BINPUT " + i + " " + peek());
         break;
@@ -147,7 +149,7 @@ class PickleReader {
         //push(o);
         break;
       case LONG_BINGET:
-        i = binaryDoc.readInt();
+        i = binaryDoc.readIntLE();
         //o = temp.remove(Integer.valueOf(i));
         //System.out.println("LONG_BINGET " + i + " " + o);
         push("LONG_BINGET");
@@ -160,14 +162,17 @@ class PickleReader {
         push(s);
         break;
       case BINSTRING:
-        i = binaryDoc.readInt();
+        i = binaryDoc.readIntLE();
+        if (i > 100)
+        System.out.println("String length " + i);
+        
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
         s = new String(a, "UTF-8");
         push(s);
         break;
       case BINUNICODE:
-        i = binaryDoc.readInt();
+        i = binaryDoc.readIntLE();
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
         s = new String(a, "UTF-8");

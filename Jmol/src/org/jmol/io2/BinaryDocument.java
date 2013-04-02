@@ -183,6 +183,11 @@ public class BinaryDocument implements JmolDocument {
     }
   }
 
+  public int readIntLE() throws Exception {
+    nBytes += 4;
+    return readLEInt();
+  }
+  
   public int readInt() throws Exception {
     nBytes += 4;
     return (isBigEndian ? ioReadInt() : readLEInt());

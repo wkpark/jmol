@@ -1,6 +1,8 @@
 package org.jmol.adapter.readers.pymol;
 
 import org.jmol.util.JmolList;
+import org.jmol.util.P3;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -12,6 +14,8 @@ import org.jmol.viewer.Viewer;
 /**
  * generic Python Pickle file reader
  * only utilizing records needed for PyMOL.
+ * 
+ * see http://www.picklingtools.com/
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  * 
@@ -48,7 +52,7 @@ class PickleReader {
   final private static byte SHORT_BINSTRING = 85; /* U */
   final private static byte STOP = 46; /* . */
 
-  //  final private static byte BINGET = 104; /* h */
+  final private static byte BINGET = 104; /* h */
   //  final private static byte BINPERSID = 81; /* Q */
   //  final private static byte DICT = 100; /* d */
   //  final private static byte DUP = 50; /* 2 */
@@ -59,14 +63,14 @@ class PickleReader {
   //  final private static byte INT = 73; /* I */
   //  final private static byte LIST = 108; /* l */
   //  final private static byte LONG = 76; /* L */
-  //  final private static byte LONG_BINGET = 106; /* j */
+  final private static byte LONG_BINGET = 106; /* j */
   //  final private static byte PERSID = 80; /* P */
   //  final private static byte POP = 48; /* 0 */
   //  final private static byte POP_MARK = 49; /* 1 */
   //  final private static byte PUT = 112; /* p */
   //  final private static byte REDUCE = 82; /* R */
   //  final private static byte STRING = 83; /* S */
-  //  final private static byte TUPLE = 116; /* t */
+  final private static byte TUPLE = 116; /* t */
   //  final private static byte UNICODE = 86; /* V */
 
   PickleReader(JmolDocument doc, Viewer viewer) {
@@ -79,6 +83,8 @@ class PickleReader {
   private void log(String s) {
     viewer.log(s + "\0");
   }
+  
+  private Map<Integer, Object> temp = new Hashtable<Integer, Object>();
   
   @SuppressWarnings("unchecked")
   Map<String, Object> getMap() throws Exception {
@@ -124,12 +130,26 @@ class PickleReader {
         break;
       case BINPUT:
         i = binaryDoc.readByte();
-        //unnec? temp.put(Integer.valueOf(i), peek());
+        //temp.put(Integer.valueOf(i), peek());
+        //System.out.println("BINPUT " + i + " " + peek());
         break;
       case LONG_BINPUT:
         i = binaryDoc.readInt();
-        //unnec? temp.put(Integer.valueOf(i), peek());
+        temp.put(Integer.valueOf(i), peek());
+        //System.out.println("LONG_BINPUT " + i + " " + peek());
         break;
+      case BINGET:
+        i = binaryDoc.readByte();
+        //o = temp.remove(Integer.valueOf(i));
+        //System.out.println("BINGET " + i + " " + o);
+        //push(o);
+        break;
+      case LONG_BINGET:
+        i = binaryDoc.readInt();
+        //o = temp.remove(Integer.valueOf(i));
+        //System.out.println("LONG_BINGET " + i + " " + o);
+        push("LONG_BINGET");
+      break;
       case SHORT_BINSTRING:
         i = binaryDoc.readByte();
         a = new byte[i];
@@ -185,15 +205,28 @@ class PickleReader {
       case SETITEMS:
         mark = getMark();
         l = getObjects(mark);
-        map = (Map<String, Object>) peek();
+        o = peek();
+        if (o instanceof JmolList) {
+          for (i = 0; i < l.size(); i++)
+            ((JmolList) o).addLast(l.get(i));
+        } else {
+        map = (Map<String, Object>) o;
         for (i = l.size(); --i >= 0;) {
           o = l.get(i);
           s = (String) l.get(--i);
           map.put(s, o);
         }
+        }
         break;
       case STOP:
         going = false;
+        break;
+      case TUPLE:
+        l = getObjects(getMark());
+        for (i = 0; i < l.size(); i++) { 
+          P3 pt = P3.new3(((Double) l.get(i++)).floatValue(), ((Double) l.get(i++)).floatValue(),((Double) l.get(i)).floatValue());
+          push(pt);
+        }
         break;
       default:
 
@@ -202,10 +235,6 @@ class PickleReader {
             + binaryDoc.getPosition());
 
         //        switch (b) {
-        //        case BINGET:
-        //          i = binaryDoc.readByte();
-        //          push(temp.remove(Integer.valueOf(i)));
-        //          break;
         //        case BINPERSID:
         //          s = (String) pop();
         //          push(new Object[] { "persid", s }); // for now
@@ -257,10 +286,6 @@ class PickleReader {
         //          i = (int) binaryDoc.readLong();
         //          push(Long.valueOf(i));
         //          break;
-        //        case LONG_BINGET:
-        //          i = binaryDoc.readInt();
-        //          push(temp.remove(Integer.valueOf(i)));
-        //          break;
         //        case PERSID:
         //          s = readString();
         //          push(new Object[] { "persid", s });
@@ -282,13 +307,6 @@ class PickleReader {
         //          s = readString();
         //          push(Escape.unescapeUnicode(s));
         //          break;
-        //        case TUPLE:
-        //          l = getObjects(getMark());
-        //          Point3f pt = new Point3f();
-        //          pt.x = ((Double) l.get(0)).floatValue();
-        //          pt.y = ((Double) l.get(1)).floatValue();
-        //          pt.z = ((Double) l.get(2)).floatValue();
-        //          break;
         //        case UNICODE:
         //          a = readLineBytes();
         //          s = new String(a, "UTF-8");
@@ -299,7 +317,14 @@ class PickleReader {
     }
     if (logging)
       log("");
-    return (Map<String, Object>) list.remove(0);
+    map = (Map<String, Object>) list.remove(0);
+    if (map.size() == 0)
+      for (i = list.size(); --i >= 0;) {
+        o = list.get(i--);
+        s = (String) list.get(i);
+        map.put(s, o);
+      }
+    return map;
   }
   
   private JmolList<Object> getObjects(int mark) {

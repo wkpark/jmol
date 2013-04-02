@@ -239,6 +239,12 @@ public abstract class AtomSetCollectionReader {
       finalizeReader();
     } catch (Throwable e) {
       System.out.println(e);
+      /**
+       * @j2sNative
+       */
+      {
+      e.printStackTrace();
+      }
       setError(e);
     }
     if (reader != null)

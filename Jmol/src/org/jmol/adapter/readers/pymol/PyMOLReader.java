@@ -83,6 +83,8 @@ public class PyMOLReader extends PdbReader {
   private int height;
 
   private boolean valence;
+  
+  private static String nucleic = " A C G T U ADE THY CYT GUA URI DA DC DG DT DU ";
 
   @Override
   protected void initializeReader() throws Exception {
@@ -126,12 +128,16 @@ public class PyMOLReader extends PdbReader {
 
   private void process(Map<String, Object> map) {
 
+    for (Map.Entry<String, Object>e : map.entrySet()) {
+      System.out.println(e.getKey());
+    }
     addColors(getMapList(map, "colors"));
     for (int i = 0; i < REP_JMOL_MAX; i++)
       reps[i] = BS.newN(1000);
     settings = getMapList(map, "settings");
     allStates = getBooleanSetting(PyMOL.all_states);
     JmolList<Object> mov = getMapList(map, "movie");
+    ssMapAtom.put("nucleic", new BS());
     if (mov != null && !allStates) {
       int frameCount = getInt(mov, 0);
       if (frameCount > 0) {
@@ -268,7 +274,7 @@ public class PyMOLReader extends PdbReader {
     if (!checkBranch(branch))
       return;
     Logger.info("PyMOL model " + (nModels + 1) + " Branch " + branchName
-        + (isHidden ? " (hidden)" : ""));
+        + (isHidden ? " (hidden)" : " (visible)"));
     int type = getBranchType(branch);
     JmolList<Object> deepBranch = getList(branch, 5);
     branchID = 0;
@@ -375,6 +381,8 @@ public class PyMOLReader extends PdbReader {
     pymolAtoms = getBranchAoms(deepBranch);
     int ns = states.size();
     System.out.println(ns + " PyMOL states");
+    if (ns == 1)
+      allStates = true;
     BS bsState = null;
     BS bsAtoms = BS.newN(atomCount0 + pymolAtoms.size());
     names.put(branchName.toLowerCase(), bsAtoms);
@@ -526,6 +534,9 @@ public class PyMOLReader extends PdbReader {
       group3 = group3.substring(0, 3);
     if (group3.equals(" "))
       group3 = "UNK";
+    if (nucleic.indexOf(group3) >= 0) {
+      ssMapAtom.get("nucleic").set(atomCount);
+    }
     String name = getString(a, 6);
     String sym = getString(a, 7);
     if (sym.equals(" "))
@@ -870,7 +881,20 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void setTrace(BS bs) {
-    ModelSettings ss = new ModelSettings(JC.SHAPE_TRACE, bs, null);
+    BS bsNuc = ssMapAtom.get("nucleic");
+    bsNuc.and(bs);
+    ModelSettings ss;
+    if (!bsNuc.isEmpty() && getBooleanSetting(PyMOL.cartoon_ladder_mode)) {
+      // we will just use cartoons for ladder mode
+      ss = new ModelSettings(JC.SHAPE_CARTOON, bsNuc, null);
+      ss.setColors(colixes, cartoonTranslucency);
+      ss.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
+      modelSettings.addLast(ss);
+      bs.andNot(bsNuc);
+      if (bs.isEmpty())
+        return;
+    }
+    ss = new ModelSettings(JC.SHAPE_TRACE, bs, null);
     ss.setColors(colixes, cartoonTranslucency);
     ss.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
     modelSettings.addLast(ss);

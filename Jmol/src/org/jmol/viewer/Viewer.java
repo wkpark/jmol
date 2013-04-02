@@ -4152,9 +4152,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setStatusResized(width, height);
       }
     } else {
-      width = dimScreen.width;
-      height = dimScreen.height;
-    }
+      width = (dimScreen.width == 0 ? dimScreen.width = 500 : dimScreen.width);
+      height = (dimScreen.height == 0 ? dimScreen.height = 500 : dimScreen.height);
+    }  
     transformManager.setScreenParameters(width, height,
         isImageWrite || isReset ? global.zoomLarge : false, antialiasDisplay,
         false, false);
@@ -5014,7 +5014,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   JmolList<JmolList<JmolList<Object>>> getStatusChanged(String statusNameList) {
-    return statusManager.getStatusChanged(statusNameList);
+    return (statusNameList == null ? null : statusManager.getStatusChanged(statusNameList));
   }
 
   public boolean menuEnabled() {
@@ -10028,7 +10028,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void resizeInnerPanel(int width, int height) {
-    statusManager.resizeInnerPanel(width, height);
+    if (autoExit || !haveDisplay) {
+      setScreenDimension(width, height);
+    } else {
+      statusManager.resizeInnerPanel(width, height);
+    }
   }
 
   public String getFontLineShapeState(String s, String myType, TickInfo[] tickInfos) {

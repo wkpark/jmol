@@ -52,9 +52,11 @@ public class AnimationManager {
   int animationDirection = 1;
   int currentDirection = 1;
   public int currentModelIndex;
+  private int currentFrameIndex;
   int firstFrameIndex;
   int lastFrameIndex;
   int frameStep;
+  float currentMorphFrame;
   public int morphCount;
    
   public int firstFrameDelayMs;
@@ -71,9 +73,6 @@ public class AnimationManager {
   float lastFrameDelay = 1;
 
   private Map<String, Object> movie;
-
-  private int currentFrameIndex;
-  float currentMorphFrame;
 
   void clear() {
     setMovie(null);
@@ -499,7 +498,7 @@ public class AnimationManager {
     case 0:
       if (morphCount > 0)
         return "-" + (1 + currentMorphFrame);
-      i = currentFrameIndex;
+      i = getCurrentFrame();
       break;
     case 1:
       i = lastFrameIndex;

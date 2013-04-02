@@ -15,7 +15,7 @@ import org.jmol.viewer.Viewer;
  * generic Python Pickle file reader
  * only utilizing records needed for PyMOL.
  * 
- * Unbelievable! -- doubles are in bigEndian, but integers are littleEndian!
+ * It appears we must read integers littleEndian and doubles bigEndian.
  * 
  * see http://www.picklingtools.com/
  * 
@@ -163,9 +163,6 @@ class PickleReader {
         break;
       case BINSTRING:
         i = binaryDoc.readIntLE();
-        if (i > 100)
-        System.out.println("String length " + i);
-        
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
         s = new String(a, "UTF-8");

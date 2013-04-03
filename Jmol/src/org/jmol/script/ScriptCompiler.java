@@ -91,7 +91,15 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   
   private ScriptFunction thisFunction;
   
-  private ScriptContext parseScript(boolean doFull) {
+  synchronized ScriptContext compile(String filename, String script, boolean isPredefining,
+                  boolean isSilent, boolean debugScript, boolean isCheckOnly) {
+    this.isCheckOnly = isCheckOnly;
+    this.filename = filename;
+    this.isSilent = isSilent;
+    this.script = script;
+    logMessages = (!isSilent && !isPredefining && debugScript);
+    preDefining = (filename == "#predefine");
+    boolean doFull = true;
     boolean isOK = compile0(doFull);
     if (!isOK)
       handleError();
@@ -109,21 +117,12 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     sc.errorMessage = errorMessage;
     sc.errorMessageUntranslated = (errorMessageUntranslated == null 
         ? errorMessage : errorMessageUntranslated);
+    if (allowMissingEnd && sc.errorMessage != null && sc.errorMessageUntranslated.indexOf("missing END") >= 0)
+      sc.errorMessage = sc.errorMessageUntranslated;
     sc.lineIndices = lineIndices;
     sc.lineNumbers = lineNumbers;
     sc.contextVariables = contextVariables;
     return sc;
-  }
-
-  synchronized ScriptContext compile(String filename, String script, boolean isPredefining,
-                  boolean isSilent, boolean debugScript, boolean isCheckOnly) {
-    this.isCheckOnly = isCheckOnly;
-    this.filename = filename;
-    this.isSilent = isSilent;
-    this.script = script;
-    logMessages = (!isSilent && !isPredefining && debugScript);
-    preDefining = (filename == "#predefine");
-    return parseScript(true);
   }
 
   private void addContextVariable(String ident) {
@@ -190,6 +189,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       // these are for jmolConsole and scriptEditor
       scriptExtensions = script.substring(pt + 1);
       script = script.substring(0, pt);
+      allowMissingEnd = (scriptExtensions.indexOf("##noendcheck") >= 0); // when typing
     }
     haveComments = (script.indexOf("#") >= 0); // speeds processing
     return JmolBinary.getEmbeddedScript(script);
@@ -240,6 +240,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   private boolean checkImpliedScriptCmd;
   
   private JmolList<ScriptFunction> vFunctionStack;
+  private boolean allowMissingEnd;
   
   private boolean compile0(boolean isFull) {
     vFunctionStack = new  JmolList<ScriptFunction>();
@@ -349,7 +350,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         if (ichToken < cchScript)
           continue;
         setAaTokenCompiled();
-        return (flowContext == null 
+        return (flowContext == null  
             || errorStr(ERROR_missingEnd, T.nameOf(flowContext.token.tok)));
       }
       
@@ -964,8 +965,9 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       iHaveQuotedString = true;
       if (tokCommand == T.load && lastToken.tok == T.data
           || tokCommand == T.data && str.indexOf("@") < 0) {
-        if (!getData(str))
+        if (!getData(str)) {
           return ERROR(ERROR_missingEnd, "data");
+        }
       } else {
         addTokenToPrefix(T.o(T.string, str));
         if (T.tokAttr(tokCommand, T.implicitStringCommand))

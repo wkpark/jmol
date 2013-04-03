@@ -31,8 +31,8 @@ public class InputScannerThread extends Thread {
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
       say(null);
       while (true) {
-        Thread.sleep(1);
-        if (scanner.hasNext()) {
+        Thread.sleep(100);
+        while (scanner.hasNext()) {
           String s = scanner.next();
           s = s.substring(0, s.length() - 1);
           if (s.toLowerCase().equals("exitjmol"))
@@ -65,14 +65,15 @@ public class InputScannerThread extends Thread {
   }
 
   private boolean checkCommand() {
-    String strCommand = buffer.toString();
-    if (strCommand.length() == 1 || strCommand.charAt(0) == '!'
-        || viewer.isScriptExecuting()
-        || viewer.getBooleanProperty("executionPaused"))
+    String s = buffer.toString();
+    if (s.length() == 1)
       return false;
-    Object ret = viewer.scriptCheck(strCommand);
+    Object ret = viewer.scriptCheck(s);
     if (ret instanceof String) {
-      say((String) ret);
+      s = (String) ret;
+      if (s.indexOf("missing END") >= 0)
+        return true;
+      say(s);
       return false;
     }
     if (ret instanceof ScriptContext) {
@@ -82,7 +83,11 @@ public class InputScannerThread extends Thread {
       }
     }
     buffer = new StringBuilder();
-    viewer.script(strCommand);
+    s += "\1##noendcheck";
+    if (isSilent)
+      viewer.evalStringQuiet(s);
+    else
+      viewer.evalString(s);
     return true;
   }
 }

@@ -2825,6 +2825,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       allowJSThreads = context.allowJSThreads;
     } else {
       error = (context.errorType != null);
+      isComplete = context.isComplete;
       errorMessage = context.errorMessage;
       errorMessageUntranslated = context.errorMessageUntranslated;
       iCommandError = context.iCommandError;
@@ -2904,6 +2905,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   protected String errorMessageUntranslated;
   protected String errorType;
   protected int iCommandError;
+  private boolean isComplete;
 
   public String getErrorMessage() {
     return errorMessage;

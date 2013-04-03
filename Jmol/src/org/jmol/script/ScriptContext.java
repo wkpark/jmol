@@ -70,6 +70,6 @@ public class ScriptContext {
   public boolean allowJSThreads;
   public boolean displayLoadErrorsSave;
   public int tryPt;
-  public boolean isComplete;
+  public boolean isComplete = true;
 
 }

@@ -30,6 +30,7 @@ class PickleReader {
   private JmolList<Object> build = new  JmolList<Object>();
   private boolean logging;
   private Viewer viewer;
+  private int id;
 
 
   final private static byte APPEND = 97; /* a */
@@ -152,7 +153,7 @@ class PickleReader {
         i = binaryDoc.readIntLE();
         //o = temp.remove(Integer.valueOf(i));
         //System.out.println("LONG_BINGET " + i + " " + o);
-        push("LONG_BINGET");
+        push("LONG_BINGET" + (++id));
         break;
       case SHORT_BINSTRING:
         i = binaryDoc.readByte() & 0xff;

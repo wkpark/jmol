@@ -62,6 +62,7 @@ import org.jmol.viewer.JC;
 
 public class PyMOLReader extends PdbReader {
   private JmolList<Object> settings;
+  private int settingCount;
   private int atomCount0;
   private int atomCount;
   private int strucNo;
@@ -109,6 +110,8 @@ public class PyMOLReader extends PdbReader {
   public void processBinaryDocument(JmolDocument doc) throws Exception {
     PickleReader reader = new PickleReader(doc, viewer);
     Map<String, Object> map = reader.getMap();
+    if (viewer.getLogFile().length() > 0)
+      viewer.log("\n" + map.toString().replace('=', '\n'));      
     reader = null;
     process(map);
   }
@@ -135,6 +138,7 @@ public class PyMOLReader extends PdbReader {
     for (int i = 0; i < REP_JMOL_MAX; i++)
       reps[i] = BS.newN(1000);
     settings = getMapList(map, "settings");
+    settingCount = settings.size();
     atomSetCollection
     .setAtomSetCollectionAuxiliaryInfo("settings", settings);
     allStates = getBooleanSetting(PyMOL.all_states);
@@ -250,6 +254,8 @@ public class PyMOLReader extends PdbReader {
   }
 
   private float getFloatSetting(int i) {
+    if (i >= settingCount)
+      return 0;
     float v = ((Number) getList(settings, i).get(2)).floatValue();
     Logger.info("Pymol setting " + i + " = " + v);
     return v;
@@ -335,7 +341,8 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void processBranchMeasure(JmolList<Object> deepBranch) {
-    if (isHidden || branchName.indexOf("measure") < 0)
+    if (isHidden || branchName.indexOf("measure") < 0
+        && !branchName.startsWith("d"))
       return;
     JmolList<Object> measure = getList(getList(deepBranch, 2), 0);
 
@@ -348,33 +355,45 @@ public class PyMOLReader extends PdbReader {
     if (nCoord == 0)
       return;
     JmolList<Object> list = getList(measure, pt);
-    JmolList<Object> points = new  JmolList<Object>();
-    for (int i = 0, p = 0; i < nCoord; i++, p += 3)
-      points.addLast(getPoint(list, p, new Point3fi()));
-    BS bs = BSUtil.newAndSetBit(0);
-    MeasurementData md = new MeasurementData(viewer, points);
-    md.note = branchName;
-    String strFormat = "";
-    int nDigits = -1;
-    switch (nCoord) {
-    case 2:
-      nDigits = (int) getFloatSetting(PyMOL.label_distance_digits);
-      break;
-    case 3:
-      nDigits = (int) getFloatSetting(PyMOL.label_angle_digits);
-      break;
-    case 4:
-      nDigits = (int) getFloatSetting(PyMOL.label_dihedral_digits);
-      break;
+    int len = list.size();
+    int p = 0;
+    float rad = getFloatSetting(PyMOL.dash_width)/1000;
+    if (rad == 0)
+      rad = 0.002f;
+    while (p < len) {
+      JmolList<Object> points = new JmolList<Object>();
+      for (int i = 0; i < nCoord; i++, p += 3)
+        points.addLast(getPoint(list, p, new Point3fi()));
+      BS bs = BSUtil.newAndSetBit(0);
+      MeasurementData md = new MeasurementData(viewer, points);
+      md.note = branchName;
+      String strFormat = "";
+      int nDigits = -1;
+      switch (nCoord) {
+      case 2:
+        nDigits = (int) getFloatSetting(PyMOL.label_distance_digits);
+        break;
+      case 3:
+        nDigits = (int) getFloatSetting(PyMOL.label_angle_digits);
+        break;
+      case 4:
+        nDigits = (int) getFloatSetting(PyMOL.label_dihedral_digits);
+        break;
+      }
+      if (nDigits > 0)
+        strFormat = nCoord + ":%0." + nDigits + "VALUE %UNITS";
+      else
+        strFormat = "";
+      md.strFormat = strFormat;
+      md.colix = C.getColix(PyMOL.getRGB(color));
+      ModelSettings ms = new ModelSettings(JC.SHAPE_MEASURES, bs, md);
+      ms.setSize(rad);
+      //int n = -(int) (getFloatSetting(PyMOL.dash_width) + 0.5);
+      //ss.setSize(0.2f); probably good, but this will set it to be not dashed. Should implement that in Jmol
+      modelSettings.addLast(ms);
+
     }
-    if (nDigits >= 0)
-      strFormat = nCoord + ":%0." + nDigits + "VALUE %UNITS";
-    md.strFormat = strFormat;
-    md.colix = C.getColix(PyMOL.getRGB(color));
-    ModelSettings ms = new ModelSettings(JC.SHAPE_MEASURES, bs, md);
-    //int n = -(int) (getFloatSetting(PyMOL.dash_width) + 0.5);
-    //ss.setSize(0.2f); probably good, but this will set it to be not dashed. Should implement that in Jmol
-    modelSettings.addLast(ms);
+
   }
 
   private void processBranchModels(JmolList<Object> deepBranch) {
@@ -544,6 +563,7 @@ public class PyMOLReader extends PdbReader {
     String chainID = getString(a, 1);
     String altLoc = getString(a, 2);
     String insCode = " "; //?    
+    String name = getString(a, 6);
     String group3 = getString(a, 5);
     if (group3.length() > 3)
       group3 = group3.substring(0, 3);
@@ -552,10 +572,9 @@ public class PyMOLReader extends PdbReader {
     if (nucleic.indexOf(group3) >= 0) {
       ssMapAtom.get("nucleic").set(atomCount);
     }
-    String name = getString(a, 6);
     String sym = getString(a, 7);
-    if (sym.equals(" "))
-      sym = getString(a, 7);
+    if (sym.equals("A"))
+      sym = "C";
     Atom atom = processAtom(name, altLoc.charAt(0), group3, chainID.charAt(0),
         seqNo, insCode.charAt(0), false, sym);
     if (!filterPDBAtom(atom, fileAtomIndex++))
@@ -765,6 +784,7 @@ public class PyMOLReader extends PdbReader {
 
   private final static int REP_STICKS = 0;
   private final static int REP_SPHERES = 1;
+  private final static int REP_LABELS = 3;
   private final static int REP_NBSPHERES = 4;
   private final static int REP_CARTOON = 5;
   private final static int REP_BACKBONE = 6;
@@ -780,7 +800,6 @@ public class PyMOLReader extends PdbReader {
   //TODO:
 
   private final static int REP_SURFACE = 2;
-  private final static int REP_LABELS = 3;
   private final static int REP_MESH = 8;
   private final static int REP_DASHES = 10;
 
@@ -819,18 +838,16 @@ public class PyMOLReader extends PdbReader {
     switch (shapeID) {
     case REP_NONBONDED:
       f = getFloatSetting(PyMOL.nonbonded_size);
-      BS bs1 = new BS();
-      bs1.or(bs);
+      BS bs1 = BSUtil.copy(bs);
       bs1.andNot(bsWater);
       if (!bs1.isEmpty()) {
-        ss = new ModelSettings(JC.SHAPE_BALLS, bs, null);
+        ss = new ModelSettings(JC.SHAPE_BALLS, bs1, null);
         ss.rd = new RadiusData(null, f, RadiusData.EnumType.FACTOR,
             EnumVdw.AUTO);
         ss.setColors(colixes, 0);
         modelSettings.addLast(ss);
       }
-      bs1.clearAll();
-      bs1.or(bs);
+      bs1 = BSUtil.copy(bs);
       bs1.and(bsWater);
       if (!bs1.isEmpty()) {
         ss = new ModelSettings(JC.SHAPE_STARS, bs, null);
@@ -861,7 +878,7 @@ public class PyMOLReader extends PdbReader {
       modelSettings.addLast(ss);
       break;
     case REP_LINES:
-      f = getFloatSetting(PyMOL.line_width) * 8 / 1000;
+      f = getFloatSetting(PyMOL.line_width) / 15;
       ss = new ModelSettings(JC.SHAPE_STICKS, bs, null);
       ss.setSize(f);
       modelSettings.addLast(ss);

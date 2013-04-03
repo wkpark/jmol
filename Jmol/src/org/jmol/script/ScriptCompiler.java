@@ -96,6 +96,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     if (!isOK)
       handleError();
     ScriptContext sc = new ScriptContext();
+    isOK = (iBrace == 0 && parenCount == 0 && braceCount == 0 && bracketCount == 0);
+    sc.isComplete = isOK;
     sc.script = script;
     sc.scriptExtensions = scriptExtensions;
     sc.errorType = errorType;
@@ -635,7 +637,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           parenCount = setBraceCount = braceCount = 0;
           ltoken.remove(0);
           iBrace++;
-          T t = ContextToken.newContext(false);
+          T t = ContextToken.newContext(true);
           addTokenToPrefix(setCommand(t));
           pushCount++;
           vPush.addLast(t);

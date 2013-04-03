@@ -74,6 +74,7 @@ public class JmolApp {
   private String scriptFilename;
   private String script1 = "";
   private String script2 = "";
+  private boolean scanInput;
 
   
   //private JmolViewer viewer;
@@ -144,6 +145,7 @@ public class JmolApp {
         ._("check script syntax only - with file loading"));
     options.addOption("d", "debug", false, GT._("debug"));
     options.addOption("i", "silent", false, GT._("silent startup operation"));
+    options.addOption("I", "input", false, GT._("allow piping of input from System.Input"));
     options.addOption("k", "kiosk", false, GT
         ._("kiosk mode -- no frame"));
     options.addOption("l", "list", false, GT
@@ -452,16 +454,21 @@ public class JmolApp {
     if (GraphicsEnvironment.isHeadless())
         info.put("headlistMaxTimeMs", Integer.valueOf(1000 * (line.hasOption("T") ? Parser.parseInt(line.getOptionValue("T")) : 60)));
 
-    // the next two are coupled -- if the -n command line option is 
-    // given, then the -x is added, but not vice-versa. 
+    // the next three are coupled -- if the -n command line option is 
+    // given, but -I is not, then the -x is added, but not vice-versa. 
     // however, if this is an application-embedded object, then
     // it is ok to have no display and no exit.
     
+    // scanner input
+    if (line.hasOption("I"))
+      scanInput = true;
+    
+
     boolean exitUponCompletion = false;
     if (line.hasOption("n")) {
        // no display (and exit)
       haveDisplay = false;
-      exitUponCompletion = true;
+      exitUponCompletion = !scanInput;
     }
     if (line.hasOption("x"))
       // exit when script completes (or file is read)
@@ -532,7 +539,12 @@ public class JmolApp {
       if (splash != null)
         splash.showStatus(GT._("Executing script 2..."));
       runScript(script2, isJmolData, viewer);
-    }    
+    }
+    
+    // scanner input
+    if (scanInput) {
+      new InputScannerThread(viewer, isSilent);
+    }
   }
 
   private void runScript(String script, boolean outputResults, JmolViewer viewer) {

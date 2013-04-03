@@ -41,7 +41,7 @@ public class Jmol extends JmolPanel {
 
   public static void main(String[] args) {
     JmolApp jmolApp = new JmolApp(args);
-    startJmol(jmolApp);     
+    startJmol(jmolApp);
   }
 
   public static Jmol getJmol(JFrame baseframe, 

@@ -580,16 +580,14 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void windowClosing(WindowEvent e) {
-      doClose(false);
+      doClose();
     }
   }
 
-  protected boolean doClose(boolean isExit) {
-    if ((isExit || numWindows == 1) && JOptionPane.showConfirmDialog(frame, GT._("Exit Jmol?"),
+  protected boolean doClose() {
+    if (numWindows == 1 && JOptionPane.showConfirmDialog(frame, GT._("Exit Jmol?"),
         "Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION)
       return false;
-    if (isExit)
-      System.exit(0);
     dispose(frame);
     return true;
   }
@@ -1014,7 +1012,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      if (!doClose(false)) {
+      if (!doClose()) {
         viewer.script("zap");
       }
     }
@@ -1253,7 +1251,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      doClose(true);
+      System.exit(0);
     }
   }
 

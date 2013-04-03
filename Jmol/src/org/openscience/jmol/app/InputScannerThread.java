@@ -59,7 +59,7 @@ public class InputScannerThread extends Thread {
     if (isSilent)
       return;
     if (msg == null)
-      msg = "Enter: \nexitJmol to exit Jmol\nquit to stop processing and re-initialize input\nexit to stop all script processing\nJmol> ";
+      msg = "Enter: \nquit     to stop processing and re-initialize input\nexit     to stop all script processing\nexitJmol to exit Jmol\nJmol> ";
     System.out.print(msg);
     System.out.flush();
   }

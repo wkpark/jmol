@@ -12316,34 +12316,42 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     float value = Float.NaN;
     EnumType type = EnumType.ABSOLUTE;
     int ipt = 1;
-    switch (getToken(ipt).tok) {
-    case T.only:
-      restrictSelected(false, false);
-      value = 1;
-      type = EnumType.FACTOR;
-      break;
-    case T.on:
-      value = 1;
-      type = EnumType.FACTOR;
-      break;
-    case T.off:
-      value = 0;
-      break;
-    case T.integer:
-      int dotsParam = intParameter(ipt);
-      if (tokAt(ipt + 1) == T.radius) {
-        ipt++;
-        setShapeProperty(iShape, "atom", Integer.valueOf(dotsParam));
-        setShapeProperty(iShape, "radius", Float.valueOf(floatParameter(++ipt)));
-        if (tokAt(++ipt) == T.color) {
-          setShapeProperty(iShape, "colorRGB", Integer
-              .valueOf(getArgbParam(++ipt)));
+    while (true) {
+      switch (getToken(ipt).tok) {
+      case T.only:
+        restrictSelected(false, false);
+        value = 1;
+        type = EnumType.FACTOR;
+        break;
+      case T.on:
+        value = 1;
+        type = EnumType.FACTOR;
+        break;
+      case T.off:
+        value = 0;
+        break;
+      case T.ignore:
+        setShapeProperty(iShape, "ignore", atomExpressionAt(ipt + 1));
+        ipt = iToken + 1;
+        continue;
+      case T.integer:
+        int dotsParam = intParameter(ipt);
+        if (tokAt(ipt + 1) == T.radius) {
           ipt++;
+          setShapeProperty(iShape, "atom", Integer.valueOf(dotsParam));
+          setShapeProperty(iShape, "radius", Float
+              .valueOf(floatParameter(++ipt)));
+          if (tokAt(++ipt) == T.color) {
+            setShapeProperty(iShape, "colorRGB", Integer
+                .valueOf(getArgbParam(++ipt)));
+            ipt++;
+          }
+          if (getToken(ipt).tok != T.bitset)
+            error(ERROR_invalidArgument);
+          setShapeProperty(iShape, "dots", st[ipt].value);
+          return;
         }
-        if (getToken(ipt).tok != T.bitset)
-          error(ERROR_invalidArgument);
-        setShapeProperty(iShape, "dots", st[ipt].value);
-        return;
+        break;
       }
       break;
     }

@@ -160,9 +160,13 @@ public class PyMOLReader extends PdbReader {
         width = getInt(getMapList(map, "main"), 0);
         height = getInt(getMapList(map, "main"), 1);
         if (width > 0 && height > 0) {
+          Logger.info("PyMOL dimensions width=" + width + " height=" + height);
           atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
               "perferredWidthHeight", new int[] { width, height });
           viewer.resizeInnerPanel(width, height);
+          Logger.info("Jmol dimensions width=" + viewer.getScreenWidth() + " height=" + viewer.getScreenHeight());
+        } else {
+          Logger.info("PyMOL -- no width/height record found");
         }
       } catch (Exception e) {
         // ignore
@@ -466,6 +470,7 @@ public class PyMOLReader extends PdbReader {
     processStructures();
     setSurface();
     processBonds(bonds);
+    dumpBranch();
   }
 
   private void addName(String name, BS bs) {
@@ -626,6 +631,13 @@ public class PyMOLReader extends PdbReader {
     return true;
   }
 
+  private void dumpBranch() {
+    for (int i = 0; i < reps.length; i++)
+      if (reps[i].cardinality() > 0)
+        System.out.println("reps[" + i + "]= " + reps[i].cardinality() + " " + reps[i]);
+    System.out.println("----------");
+  }
+
   @Override
   protected void setAdditionalAtomParameters(Atom atom) {
   }
@@ -755,7 +767,9 @@ public class PyMOLReader extends PdbReader {
   private final static int REP_SPHERES = 1;
   private final static int REP_NBSPHERES = 4;
   private final static int REP_CARTOON = 5;
+  private final static int REP_BACKBONE = 6;
   private final static int REP_LINES = 7;
+  private final static int REP_DOTS = 9;
   private final static int REP_NONBONDED = 11;
   private final static int REP_MAX = 12;
   
@@ -767,9 +781,7 @@ public class PyMOLReader extends PdbReader {
 
   private final static int REP_SURFACE = 2;
   private final static int REP_LABELS = 3;
-  private final static int REP_BACKBONE = 6;
   private final static int REP_MESH = 8;
-  private final static int REP_DOTS = 9;
   private final static int REP_DASHES = 10;
 
   private void setShapes() {
@@ -830,8 +842,8 @@ public class PyMOLReader extends PdbReader {
       break;
     case REP_NBSPHERES:
     case REP_SPHERES:
-      f = (shapeID == REP_NBSPHERES ? 1 : getFloatSetting(PyMOL.sphere_scale));
       ss = new ModelSettings(JC.SHAPE_BALLS, bs, null);
+      f = (shapeID == REP_NBSPHERES ? 1 : getFloatSetting(PyMOL.sphere_scale));
       ss.rd = new RadiusData(null, f, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
       ss.setColors(colixes, 0);
       modelSettings.addLast(ss);
@@ -840,6 +852,12 @@ public class PyMOLReader extends PdbReader {
       f = getFloatSetting(PyMOL.stick_radius) * 2;
       ss = new ModelSettings(JC.SHAPE_STICKS, bs, null);
       ss.setSize(f);
+      modelSettings.addLast(ss);
+      break;
+    case REP_DOTS: //   = 9;
+      ss = new ModelSettings(JC.SHAPE_DOTS, bs, null);
+      f = getFloatSetting(PyMOL.sphere_scale);
+      ss.rd = new RadiusData(null, f, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
       modelSettings.addLast(ss);
       break;
     case REP_LINES:
@@ -861,12 +879,13 @@ public class PyMOLReader extends PdbReader {
       ss = new ModelSettings(JC.SHAPE_LABELS, bs, labels);
       modelSettings.addLast(ss);
       break;
-    case REP_JMOL_TRACE:      
-      setTrace(bs);
+    case REP_JMOL_TRACE:
+      setTrace(bs, false);
       break;
     case REP_BACKBONE: //   = 6;
+      setTrace(bs, true);
+      break;
     case REP_MESH: //   = 8;
-    case REP_DOTS: //   = 9;
     case REP_DASHES: //   = 10;
     default:
       if (shapeID < REP_JMOL_MIN)
@@ -887,23 +906,25 @@ public class PyMOLReader extends PdbReader {
     modelSettings.addLast(ss);
   }
 
-  private void setTrace(BS bs) {
-    BS bsNuc = ssMapAtom.get("nucleic");
-    bsNuc.and(bs);
+  private void setTrace(BS bs, boolean isBackbone) {
     ModelSettings ss;
-    if (!bsNuc.isEmpty() && getBooleanSetting(PyMOL.cartoon_ladder_mode)) {
-      // we will just use cartoons for ladder mode
-      ss = new ModelSettings(JC.SHAPE_CARTOON, bsNuc, null);
-      ss.setColors(colixes, cartoonTranslucency);
-      ss.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
-      modelSettings.addLast(ss);
-      bs.andNot(bsNuc);
-      if (bs.isEmpty())
-        return;
+    if (!isBackbone) {
+      BS bsNuc = ssMapAtom.get("nucleic");
+      bsNuc.and(bs);
+      if (!bsNuc.isEmpty() && getBooleanSetting(PyMOL.cartoon_ladder_mode)) {
+        // we will just use cartoons for ladder mode
+        ss = new ModelSettings(JC.SHAPE_CARTOON, bsNuc, null);
+        ss.setColors(colixes, cartoonTranslucency);
+        ss.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
+        modelSettings.addLast(ss);
+        bs.andNot(bsNuc);
+        if (bs.isEmpty())
+          return;
+      }
     }
     ss = new ModelSettings(JC.SHAPE_TRACE, bs, null);
     ss.setColors(colixes, cartoonTranslucency);
-    ss.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
+    ss.setSize(isBackbone ? 0.3f : getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
     modelSettings.addLast(ss);
   }
 

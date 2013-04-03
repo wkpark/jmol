@@ -148,6 +148,10 @@ public class ModelSettings {
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "labels", info, bsAtoms);
       return;
+    case JC.SHAPE_DOTS:
+      sm.loadShape(id);
+      sm.setShapePropertyBs(id, "ignore",BSUtil.copyInvert(bsAtoms, sm.viewer.getAtomCount()), null);
+      break;
     case JC.SHAPE_MEASURES:
       if (modelIndex < 0)
         return;

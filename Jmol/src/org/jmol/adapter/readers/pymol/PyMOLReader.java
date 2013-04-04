@@ -341,8 +341,10 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void processBranchMeasure(JmolList<Object> deepBranch) {
-    if (isHidden || branchName.indexOf("measure") < 0
-        && !branchName.startsWith("d"))
+    Logger.info("PyMOL measure " + branchName);
+    if (isHidden)
+    //if (isHidden || branchName.indexOf("measure") < 0
+      //  && !branchName.startsWith("d"))
       return;
     JmolList<Object> measure = getList(getList(deepBranch, 2), 0);
 
@@ -974,54 +976,80 @@ public class PyMOLReader extends PdbReader {
 
   private void setView(SB sb, JmolList<Object> view) {
 
-    float modelWidth = 2 * getRotationRadius();
+    float w = 2 * getRotationRadius();
 
     // calculate Jmol camera position, which is in screen widths,
     // and is from the front of the screen, not the center.
+    //
+    //     |---------model width------------------|
+    //               |-------o--------| 1 unit
+    //                       |       /
+    //                       |      /
+    //                       |     /
+    //                     d |    /
+    //                       |   /
+    //                       |  /
+    //                       | / angle = fov/2
+    //                       |/
+    //
+
+    P3 ptCenter = getPoint(view, 19, new P3()); // o
+    sb.append("center ").append(Escape.eP(ptCenter)).append(";");
 
     float fov = getFloatSetting(PyMOL.field_of_view);
-    float tan = (float) Math.tan(fov / 2 * Math.PI / 180);
-    float jmolCameraDepth = (0.5f / tan - 0.5f);
-    float pymolCameraToCenter = -getFloatAt(view, 18) / modelWidth;
-    float zoom = (jmolCameraDepth + 0.5f) / pymolCameraToCenter * 100;
 
-    sb.append("set cameraDepth " + jmolCameraDepth + ";");
-    sb.append("zoom " + zoom + ";");
+    float jmolCameraToCenter = (float) (0.5 / Math.tan(fov / 2 * Math.PI / 180)); // d
+    float pymolCameraToCenter = -getFloatAt(view, 18) / w;
+    float jmolCameraDepth = (jmolCameraToCenter - 0.5f);
+    float zoom = jmolCameraToCenter / pymolCameraToCenter * 100;
+    float aspectRatio = viewer.getScreenWidth() * 1.0f
+        / viewer.getScreenHeight();
+    if (aspectRatio < 1)
+      zoom /= aspectRatio;
 
-    Logger.info("set cameraDepth " + jmolCameraDepth);
-    Logger.info("zoom " + zoom);
-
-    //float aspectRatio = viewer.getScreenWidth() * 1.0f
-    //  / viewer.getScreenHeight();
-    //if (aspectRatio < 1)
-    //fov *= aspectRatio;
-
-    P3 center = getPoint(view, 19, new P3());
-
-    sb.append("center ").append(Escape.eP(center)).append(";");
-    sb.append("rotate @{quaternion({")
-        // only the first two rows are needed
-        .appendF(getFloatAt(view, 0)).append(" ").appendF(getFloatAt(view, 1))
-        .append(" ").appendF(getFloatAt(view, 2)).append("}{").appendF(
-            getFloatAt(view, 4)).append(" ").appendF(getFloatAt(view, 5)).append(
-            " ").appendF(getFloatAt(view, 6)).append("})};");
-    sb.append("translate X ").appendF(getFloatAt(view, 16)).append(" angstroms;");
-    sb.append("translate Y ").appendF(-getFloatAt(view, 17))
-        .append(" angstroms;");
-
-    // seems to be something else here -- fog is not always present
-    boolean depthCue = getBooleanSetting(PyMOL.depth_cue); // 84
-    boolean fog = getBooleanSetting(PyMOL.fog); // 88
-    sb.append("set zShade " + (depthCue && fog) + ";");
-    if (depthCue && fog) {
-      float fog_start = getFloatSetting(PyMOL.fog_start); // 192
-      sb.append("set zshadePower 2;set zslab " + (fog_start * 100)
-          + "; set zdepth 0;");
-    }
+    float pymolCameraToSlab = getFloatAt(view, 22) / w;
+    float pymolCameratToDepth = getFloatAt(view, 23) / w;
+    int slab = 50 + (int) ((pymolCameraToCenter - pymolCameraToSlab) * 100);
+    int depth = 50 + (int) ((pymolCameraToCenter - pymolCameratToDepth) * 100);
 
     sb
         .append("set perspectiveDepth " + (!getBooleanSetting(PyMOL.ortho))
             + ";");
+
+    sb.append("set cameraDepth " + jmolCameraDepth + ";");
+    sb.append("zoom " + zoom + "; slab on; slab " + slab + "; depth " + depth
+        + ";");
+
+    sb
+        .append("rotate @{quaternion({")
+        // only the first two rows are needed
+        .appendF(getFloatAt(view, 0)).append(" ").appendF(getFloatAt(view, 1))
+        .append(" ").appendF(getFloatAt(view, 2)).append("}{").appendF(
+            getFloatAt(view, 4)).append(" ").appendF(getFloatAt(view, 5))
+        .append(" ").appendF(getFloatAt(view, 6)).append("})};");
+    sb.append("translate X ").appendF(getFloatAt(view, 16)).append(
+        " angstroms;");
+    sb.append("translate Y ").appendF(-getFloatAt(view, 17)).append(
+        " angstroms;");
+
+    // seems to be something else here -- fog is not always present
+    boolean depthCue = getBooleanSetting(PyMOL.depth_cue); // 84
+    boolean fog = getBooleanSetting(PyMOL.fog); // 88
+
+    // not sure what the real limits of this are
+
+    if (slab < 200 && depth > -200)
+      if (depthCue && fog) {
+        float range = depth - slab;
+        float fog_start = getFloatSetting(PyMOL.fog_start); // 192
+        sb.append("set zShade true; set zshadePower 2;set zslab "
+            + (slab + fog_start * range) + "; set zdepth " + depth + ";");
+      } else if (depthCue) {
+        sb.append("set zShade true; set zshadePower 1;set zslab "
+            + ((slab + depth) / 2f) + "; set zdepth " + depth + ";");
+      } else {
+        sb.append("set zShade false;");
+      }
 
     sb.append("set traceAlpha "
         + getBooleanSetting(PyMOL.cartoon_round_helices) + ";");

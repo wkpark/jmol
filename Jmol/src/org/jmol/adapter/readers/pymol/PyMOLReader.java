@@ -1036,13 +1036,11 @@ public class PyMOLReader extends PdbReader {
     boolean depthCue = getBooleanSetting(PyMOL.depth_cue); // 84
     boolean fog = getBooleanSetting(PyMOL.fog); // 88
 
-    // not sure what the real limits of this are
-
-    if (slab < 200 && depth > -200)
+ 
       if (depthCue && fog) {
         float range = depth - slab;
         float fog_start = getFloatSetting(PyMOL.fog_start); // 192
-        sb.append("set zShade true; set zshadePower 2;set zslab "
+        sb.append("set zShade true; set zshadePower 1;set zslab "
             + (slab + fog_start * range) + "; set zdepth " + depth + ";");
       } else if (depthCue) {
         sb.append("set zShade true; set zshadePower 1;set zslab "

@@ -97,6 +97,8 @@ public class Balls extends AtomShape {
       if (bsColixSet == null)
         bsColixSet = new BS();
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        if (i >= colixes.length)
+          continue;
         atoms[i].setColixAtom(colixes[i]);
         atoms[i].setPaletteID(EnumPalette.UNKNOWN.id);
         bsColixSet.set(i);

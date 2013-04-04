@@ -303,9 +303,9 @@ public class BioShape extends AtomShape {
       bsColixSet = new BS();
     for (int i = monomerCount; --i >= 0;) {
       int atomIndex = leadAtomIndices[i];
-      if (bsSelected.get(atomIndex)) {
+      if (bsSelected.get(atomIndex) && i < colixes.length) {
         colixes[i] = shape.getColixI(colixes[atomIndex], EnumPalette.UNKNOWN.id, atomIndex);
-        if (colixesBack != null && colixesBack.length > i)
+        if (colixesBack != null && i < colixesBack.length)
           colixesBack[i] = 0;
         paletteIDs[i] = EnumPalette.UNKNOWN.id;
         bsColixSet.set(i);

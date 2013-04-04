@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.util.List;
 
 
-import org.jmol.util.JmolList;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 /**
@@ -144,9 +144,15 @@ public class ImageSelection implements Transferable {
           final int length = fileList.size();
           if (length == 0)
             return null;
-          result = "LOAD files ";
-          for (int i = 0; i < length; i++)
-            result += " \"" + (fileList.get(i)).getAbsolutePath().replace('\\','/') + "\"";
+          if (length == 1) {
+            result = "LoAd " + Escape.eS(fileList.get(0).getAbsolutePath().replace('\\','/'));
+            if (result.endsWith(".pse\""))
+              result += " filter 'DORESIZE'";
+          } else {
+            result = "LoAd files ";
+            for (int i = 0; i < length; i++)
+              result += " " + Escape.eS(fileList.get(i).getAbsolutePath().replace('\\','/'));
+          }
         }
       } catch (UnsupportedFlavorException ex) {
         //highly unlikely since we are using a standard DataFlavor

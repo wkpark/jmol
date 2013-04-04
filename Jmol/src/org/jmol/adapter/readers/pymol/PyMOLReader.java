@@ -29,6 +29,8 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
+import jspecview.util.TextFormat;
+
 import org.jmol.adapter.readers.cifpdb.PdbReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Bond;
@@ -105,13 +107,14 @@ public class PyMOLReader extends PdbReader {
   private P3 xyzMin = P3.new3(1e6f, 1e6f, 1e6f);
   private P3 xyzMax = P3.new3(-1e6f, -1e6f, -1e6f);
   private int nModels;
+  
+  private boolean logging;
 
   @Override
   public void processBinaryDocument(JmolDocument doc) throws Exception {
     PickleReader reader = new PickleReader(doc, viewer);
-    Map<String, Object> map = reader.getMap();
-    if (viewer.getLogFile().length() > 0)
-      viewer.log("\n" + map.toString().replace('=', '\n'));      
+    logging = false;
+    Map<String, Object> map = reader.getMap(logging);
     reader = null;
     process(map);
   }
@@ -126,22 +129,42 @@ public class PyMOLReader extends PdbReader {
   private Map<String, Object> htNames = new Hashtable<String, Object>();
   private JmolList<P3[]> lstTrajectories = new  JmolList<P3[]>();
   private int currentFrame = -1;
+  private int pymolFrame;
   private boolean allStates;
   private int totalAtomCount;
 
   private void process(Map<String, Object> map) {
 
-    for (Map.Entry<String, Object>e : map.entrySet()) {
-      System.out.println(e.getKey());
+    logging = (viewer.getLogFile().length() > 0);
+    for (Map.Entry<String, Object> e : map.entrySet()) {
+      String name = e.getKey();
+      System.out.println(name);
+      if (name.equals("names")) {
+        JmolList<Object> names = getMapList(map, "names");
+        for (int i = 1; i < names.size(); i++)
+          System.out.println("  " + getString(getList(names, i), 0));
+      } else if (name.equals("version")) {
+        appendLoadNote("PyMOL version: " + map.get("version").toString());
+      }
+    }
+    if (logging) {
+      String s = map.toString().replace('=', '\n');
+      for (Map.Entry<String, Object> e : map.entrySet()) {
+        String name = e.getKey();
+        s = TextFormat.simpleReplace(s, name, "\n\n" + name + "\n");
+      }
+      s = TextFormat.simpleReplace(s, "[", "\n[");
+      viewer.log("\n");
+      viewer.log(s);
     }
     addColors(getMapList(map, "colors"));
     for (int i = 0; i < REP_JMOL_MAX; i++)
       reps[i] = BS.newN(1000);
     settings = getMapList(map, "settings");
     settingCount = settings.size();
-    atomSetCollection
-    .setAtomSetCollectionAuxiliaryInfo("settings", settings);
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("settings", settings);
     allStates = getBooleanSetting(PyMOL.all_states);
+    pymolFrame = (int) getFloatSetting(PyMOL.frame);
     JmolList<Object> mov = getMapList(map, "movie");
     ssMapAtom.put("nucleic", new BS());
     if (mov != null && !allStates) {
@@ -159,22 +182,24 @@ public class PyMOLReader extends PdbReader {
         pymol.put("movie", movie);
       }
     }
-    if (!isStateScript && filter != null && filter.indexOf("DORESIZE") >= 0)
+    if (!isStateScript && checkFilterKey("DORESIZE")) {
       try {
         width = getInt(getMapList(map, "main"), 0);
         height = getInt(getMapList(map, "main"), 1);
-        if (width > 0 && height > 0) {
-          Logger.info("PyMOL dimensions width=" + width + " height=" + height);
-          atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
-              "perferredWidthHeight", new int[] { width, height });
-          viewer.resizeInnerPanel(width, height);
-          Logger.info("Jmol dimensions width=" + viewer.getScreenWidth() + " height=" + viewer.getScreenHeight());
-        } else {
-          Logger.info("PyMOL -- no width/height record found");
-        }
       } catch (Exception e) {
         // ignore
       }
+      if (width > 0 && height > 0) {
+        appendLoadNote("PyMOL dimensions width=" + width + " height=" + height);
+        atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
+            "perferredWidthHeight", new int[] { width, height });
+        viewer.resizeInnerPanel(width, height);
+        Logger.info("Jmol dimensions width=" + viewer.getScreenWidth()
+            + " height=" + viewer.getScreenHeight());
+      } else {
+        appendLoadNote("PyMOL dimensions unknown");
+      }
+    }
     valence = getBooleanSetting(PyMOL.valence);
     cartoonTranslucency = getFloatSetting(PyMOL.cartoon_transparency);
     JmolList<Object> names = getMapList(map, "names");
@@ -201,8 +226,21 @@ public class PyMOLReader extends PdbReader {
     int n = 0;
     for (int i = 1; i < names.size(); i++) {
       JmolList<Object> branch = getList(names, i);
-      if (checkBranch(branch) && getBranchType(branch) == BRANCH_MOLECULE)
-        n += getBranchAoms(getList(branch, 5)).size();
+      if (checkBranch(branch) && getBranchType(branch) == BRANCH_MOLECULE) {
+        JmolList<Object> deepBranch = getList(branch, 5);
+        if (isMovie) {
+          n += getBranchAoms(deepBranch).size();
+        } else {
+          JmolList<Object> states = getList(deepBranch, 4);
+          int ns = states.size();
+          for (int j = 0; j < ns; j++) {
+            JmolList<Object> state = getList(states, j);
+            JmolList<Object> idxToAtm = getList(state, 3);
+            System.out.println(idxToAtm.size());
+            n += idxToAtm.size();
+          }
+        }
+      }
     }
     return n;
   }
@@ -469,7 +507,7 @@ public class PyMOLReader extends PdbReader {
           continue;
         branchID++;
         if (name.length() == 0) {
-          currentFrame = (int) getFloatSetting(PyMOL.frame);
+          currentFrame = pymolFrame;
           if (lstStates.size() < ns)
             for (int j = lstStates.size(); j < ns; j++)
               lstStates.addLast(new BS());
@@ -487,7 +525,7 @@ public class PyMOLReader extends PdbReader {
           bsAtoms.or(bsState);
       }
     }
-    Logger.info("read " + (atomCount - atomCount0) + " atoms");
+    Logger.info("reading " + (atomCount - atomCount0) + " atoms");
     processStructures();
     setSurface();
     processBonds(bonds);
@@ -499,7 +537,8 @@ public class PyMOLReader extends PdbReader {
     for (int i = chars.length; --i >= 0;)
       if (!Character.isLetterOrDigit(chars[i]))
         chars[i] = '_';
-    htNames.put(String.valueOf(chars), bs);
+    
+    htNames.put("__" + String.valueOf(chars), bs);
   }
 
   private static int getBranchType(JmolList<Object> branch) {
@@ -608,8 +647,15 @@ public class PyMOLReader extends PdbReader {
       else
         labels.addLast(label);
     }
+    boolean isPutty = false;
+    if (!reps[REP_CARTOON].get(atomCount) && reps[REP_LINES].get(atomCount) && reps[REP_NONBONDED].get(atomCount)) {
+      reps[REP_LINES].clear(atomCount);
+      reps[REP_CARTOON].set(atomCount);
+      isPutty = true;
+      // what the heck??!!
+    }
     if (reps[REP_CARTOON].get(atomCount)) {
-      int cartoonType= getInt(a, 23);
+      int cartoonType= (isPutty ? 7 : getInt(a, 23));
       /*
             -1 => { type=>'skip',       converted=>undef },
              0 => { type=>'automatic',  converted=>1 },
@@ -653,9 +699,9 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void dumpBranch() {
-    for (int i = 0; i < reps.length; i++)
-      if (reps[i].cardinality() > 0)
-        System.out.println("reps[" + i + "]= " + reps[i].cardinality() + " " + reps[i]);
+   // for (int i = 0; i < reps.length; i++)
+   //   if (reps[i].cardinality() > 0)
+   //     System.out.println("reps[" + i + "]= " + reps[i].cardinality() + " " + reps[i]);
     System.out.println("----------");
   }
 

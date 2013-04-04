@@ -198,8 +198,10 @@ class Mouse implements MouseWheelListener, MouseListener,
           String ret = AwtImageCreator.getClipboardTextStatic();
           if (ret == null)
             break;
-          if (ret.startsWith("http://") && ret.indexOf("\n") < 0) {
-            viewer.evalString("load " + Escape.eS(ret));
+          if (ret.startsWith("http://") && ret.indexOf("\n") < 0)
+            ret = "LoAd " + Escape.eS(ret);
+          if (ret.startsWith("LoAd ")) {
+            viewer.evalString(ret);
             break;
           }
           ret = viewer.loadInline(ret, false);

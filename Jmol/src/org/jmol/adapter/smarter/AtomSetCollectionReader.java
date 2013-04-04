@@ -317,8 +317,9 @@ public abstract class AtomSetCollectionReader {
     return (desiredModelNumber > 0 || modelNumber >= lastModelNumber);
   }
 
-  protected void appendLoadNote(String info) {
+  protected String appendLoadNote(String info) {
     loadNote.append(info).append("\n");
+    return info;
   }
 
   @SuppressWarnings("unchecked")

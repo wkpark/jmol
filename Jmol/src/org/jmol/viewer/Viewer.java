@@ -2343,10 +2343,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // ScriptEvaluator DATA command uses this, but anyone could.
     if (strModel == null || strModel.length() == 0)
       return null;
-    if (strModel.startsWith("LOAD files")) {
-      script(strModel);
-      return null;
-    }
     strModel = fixInlineString(strModel, newLine);
     if (newLine != 0)
       Logger.info("loading model inline, " + strModel.length()

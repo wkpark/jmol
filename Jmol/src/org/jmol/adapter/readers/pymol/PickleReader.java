@@ -78,9 +78,7 @@ class PickleReader {
 
   PickleReader(JmolDocument doc, Viewer viewer) {
     binaryDoc = doc;
-    logging = (viewer.getLogFile().length() > 0);
-    if (logging)
-      this.viewer = viewer;
+    this.viewer = viewer;
   }
 
   private void log(String s) {
@@ -90,8 +88,9 @@ class PickleReader {
   //private Map<Integer, Object> temp = new Hashtable<Integer, Object>();
   
   @SuppressWarnings("unchecked")
-  Map<String, Object> getMap() throws Exception {
-    String s, module, name;
+  Map<String, Object> getMap(boolean logging) throws Exception {
+    this.logging = logging;
+    String s;
     byte b;
     int i, mark;
     double d;
@@ -180,9 +179,11 @@ class PickleReader {
         push(new  JmolList<Object>());
         break;
       case GLOBAL:
-        module = readString();
-        name = readString();
-        push(new String[] { "global", module, name });
+        l = new JmolList<Object>();
+        l.addLast("global");
+        l.addLast(readString());
+        l.addLast(readString());
+        push(l);
         break;
       case BUILD:
         o = pop();

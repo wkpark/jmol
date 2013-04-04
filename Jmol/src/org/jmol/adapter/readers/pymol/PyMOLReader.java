@@ -63,6 +63,10 @@ import org.jmol.viewer.JC;
  */
 
 public class PyMOLReader extends PdbReader {
+  
+  private boolean allowSurface = true;
+  private boolean doResize;
+
   private JmolList<Object> settings;
   private int settingCount;
   private int atomCount0;
@@ -112,6 +116,9 @@ public class PyMOLReader extends PdbReader {
 
   @Override
   public void processBinaryDocument(JmolDocument doc) throws Exception {
+    doResize =   checkFilterKey("DORESIZE");
+    allowSurface = !checkFilterKey("NOSURFACE");
+    
     PickleReader reader = new PickleReader(doc, viewer);
     logging = false;
     Map<String, Object> map = reader.getMap(logging);
@@ -134,7 +141,6 @@ public class PyMOLReader extends PdbReader {
   private int totalAtomCount;
 
   private void process(Map<String, Object> map) {
-
     logging = (viewer.getLogFile().length() > 0);
     for (Map.Entry<String, Object> e : map.entrySet()) {
       String name = e.getKey();
@@ -182,7 +188,7 @@ public class PyMOLReader extends PdbReader {
         pymol.put("movie", movie);
       }
     }
-    if (!isStateScript && checkFilterKey("DORESIZE")) {
+    if (!isStateScript && doResize) {
       try {
         width = getInt(getMapList(map, "main"), 0);
         height = getInt(getMapList(map, "main"), 1);
@@ -647,15 +653,17 @@ public class PyMOLReader extends PdbReader {
       else
         labels.addLast(label);
     }
-    boolean isPutty = false;
-    if (!reps[REP_CARTOON].get(atomCount) && reps[REP_LINES].get(atomCount) && reps[REP_NONBONDED].get(atomCount)) {
-      reps[REP_LINES].clear(atomCount);
-      reps[REP_CARTOON].set(atomCount);
-      isPutty = true;
+    int cartoonType = getInt(a, 23);
+    boolean isNew = list2.size() >= 19;
+    if (isNew && !reps[REP_CARTOON].get(atomCount) && reps[REP_LINES].get(atomCount) && reps[REP_NONBONDED].get(atomCount)) {
+      if (cartoonType == 0) {
+        reps[REP_LINES].clear(atomCount);
+        reps[REP_CARTOON].set(atomCount);
+        cartoonType = 7;
       // what the heck??!!
+      }
     }
     if (reps[REP_CARTOON].get(atomCount)) {
-      int cartoonType= (isPutty ? 7 : getInt(a, 23));
       /*
             -1 => { type=>'skip',       converted=>undef },
              0 => { type=>'automatic',  converted=>1 },
@@ -960,7 +968,7 @@ public class PyMOLReader extends PdbReader {
 
   private void setSurface() {
     BS bs = reps[REP_SURFACE];
-    if (isStateScript || bsModelAtoms.isEmpty() || bs.isEmpty())
+    if (!allowSurface || isStateScript || bsModelAtoms.isEmpty() || bs.isEmpty())
       return;
     ModelSettings ss = new ModelSettings(JC.SHAPE_ISOSURFACE, bs, branchName
         + "_" + branchID);

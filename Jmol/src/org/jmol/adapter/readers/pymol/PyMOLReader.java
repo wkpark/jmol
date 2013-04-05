@@ -654,7 +654,7 @@ public class PyMOLReader extends PdbReader {
         labels.addLast(label);
     }
     int cartoonType = getInt(a, 23);
-    boolean isNew = list2.size() >= 19;
+    boolean isNew = false;//list2.size() >= 19;
     if (isNew && !reps[REP_CARTOON].get(atomCount) && reps[REP_LINES].get(atomCount) && reps[REP_NONBONDED].get(atomCount)) {
       if (cartoonType == 0) {
         reps[REP_LINES].clear(atomCount);

@@ -345,6 +345,8 @@ class PickleReader {
     }
     if (logging)
       log("");
+    System.out.println("PyMOL Pickle reader cached " + memo.size() + " tokens");
+    memo = null;
     map = (Map<String, Object>) stack.remove(0);
     if (map.size() == 0)
       for (i = stack.size(); --i >= 0;) {
@@ -352,7 +354,6 @@ class PickleReader {
         s = (String) stack.get(i);
         map.put(s, o);
       }
-    System.out.println("PyMOL Pickle reader cached " + memo.size() + " tokens");
     return map;
   }
   

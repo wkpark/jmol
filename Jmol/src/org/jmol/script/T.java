@@ -367,7 +367,8 @@ public class T {
   public final static int axes         = shapeCommand | 2 | deprecatedparam | defaultON;
 //final static int boundbox     see mathproperty
 //final static int contact      see mathfunc
-  public final static int dipole       = shapeCommand | 6;
+  public final static int cgo          = shapeCommand | 6; // PyMOL Compiled Graphical Object
+  public final static int dipole       = shapeCommand | 7;
   public final static int draw         = shapeCommand | 8;
   public final static int frank        = shapeCommand | 10 | deprecatedparam | defaultON;
   public final static int isosurface   = shapeCommand | 12;
@@ -1541,6 +1542,7 @@ public class T {
       "center",            T.t(center),
       "centre",            null,
       "centerat",          T.t(centerAt),
+      "cgo",               T.t(cgo),
       "color",             T.t(color),
       "colour",            null,
       "compare",           T.t(compare),

@@ -5929,6 +5929,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.cartoon:
       iShape = JC.SHAPE_CARTOON;
       break;
+    case T.cgo:
+      iShape = JC.SHAPE_CGO;
+      break;
     case T.contact:
       iShape = JC.SHAPE_CONTACT;
       break;
@@ -6080,6 +6083,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     case T.boundbox:
       boundbox(1);
+      return;
+    case T.cgo:
+      cgo();
       return;
     case T.contact:
       contact();
@@ -15417,6 +15423,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return (String) getShapePropertyIndex(JC.SHAPE_MO, "showMO", ptMO);
   }
 
+  private void cgo() throws ScriptException {
+    System.out.println("CGO command not implemented");
+  }
+  
   private void draw() throws ScriptException {
     sm.loadShape(JC.SHAPE_DRAW);
     switch (tokAt(1)) {

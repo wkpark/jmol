@@ -9240,7 +9240,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void log(String data) {
     if (data != null)
-      getStateCreator().log(data);
+      getStateCreator().logToFile(data);
   }
 
   boolean isKiosk;

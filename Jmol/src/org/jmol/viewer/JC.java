@@ -1368,31 +1368,32 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_MIN_MESH_COLLECTION = 22; //////////
   
     public final static int SHAPE_DRAW        = 22;
+    public final static int SHAPE_CGO         = 23;
   
-  public final static int SHAPE_MAX_SPECIAL = 23; //////////
-  public final static int SHAPE_MIN_SURFACE = 23; //////////
+  public final static int SHAPE_MAX_SPECIAL = 24; //////////
+  public final static int SHAPE_MIN_SURFACE = 24; //////////
 
-    public final static int SHAPE_ISOSURFACE  = 23;
-    public final static int SHAPE_CONTACT     = 24;
-    public final static int SHAPE_LCAOCARTOON = 25;
-    public final static int SHAPE_MO          = 26;  //but no ID for MO
-    public final static int SHAPE_PMESH       = 27;
-    public final static int SHAPE_PLOT3D      = 28;
+    public final static int SHAPE_ISOSURFACE  = 24;
+    public final static int SHAPE_CONTACT     = 25;
+    public final static int SHAPE_LCAOCARTOON = 26;
+    public final static int SHAPE_MO          = 27;  //but no ID for MO
+    public final static int SHAPE_PMESH       = 28;
+    public final static int SHAPE_PLOT3D      = 29;
 
   public final static int SHAPE_MAX_SURFACE         = 29; //////////
   public final static int SHAPE_MAX_MESH_COLLECTION = 29; //////////
   
-    public final static int SHAPE_ECHO       = 29;
+    public final static int SHAPE_ECHO       = 30;
   
-  public final static int SHAPE_MAX_HAS_ID = 30;
+  public final static int SHAPE_MAX_HAS_ID = 31;
   
-  public final static int SHAPE_AXES       = 30;
-  public final static int SHAPE_BBCAGE     = 31;
-  public final static int SHAPE_UCCAGE     = 32;
-  public final static int SHAPE_HOVER      = 33;
+  public final static int SHAPE_AXES       = 31;
+  public final static int SHAPE_BBCAGE     = 32;
+  public final static int SHAPE_UCCAGE     = 33;
+  public final static int SHAPE_HOVER      = 34;
   
   // last should be frank:
-  public final static int SHAPE_FRANK      = 34;
+  public final static int SHAPE_FRANK      = 35;
   public final static int SHAPE_MAX        = SHAPE_FRANK + 1;
 
   public final static boolean isShapeSecondary(int i ) {
@@ -1408,7 +1409,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Labels", "Measures", "Stars", "Halos",
     "Backbone", "Trace", "Cartoon", "Strands", "MeshRibbon", "Ribbons", "Rockets", 
     "Dots", "Dipoles", "Vectors", "GeoSurface", "Ellipsoids", "Polyhedra", 
-    "Draw", "Isosurface", "Contact", "LcaoCartoon", "MolecularOrbital", "Pmesh", "Plot3D", 
+    "Draw", "CGO", "Isosurface", "Contact", "LcaoCartoon", "MolecularOrbital", "Pmesh", "Plot3D", 
     "Echo", "Axes", "Bbcage", "Uccage", "Hover", 
     "Frank"
      };
@@ -1465,6 +1466,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       return SHAPE_ELLIPSOIDS;
     case T.polyhedra:
       return SHAPE_POLYHEDRA;
+    case T.cgo:
+      return SHAPE_CGO;
     case T.draw:
       return SHAPE_DRAW;
     case T.isosurface:

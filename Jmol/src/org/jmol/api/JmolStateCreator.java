@@ -100,7 +100,7 @@ public interface JmolStateCreator {
 
   void showEditor(String[] file_text);
 
-  void log(String data);
+  void logToFile(String data);
   
   void quickScript(String script);
 

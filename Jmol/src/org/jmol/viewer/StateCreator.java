@@ -2297,7 +2297,7 @@ public class StateCreator implements JmolStateCreator {
     scriptEditor.setVisible(true);
   }
 
-  public void log(String data) {
+  public void logToFile(String data) {
     try {
       boolean doClear = (data.equals("$CLEAR$"));
       if (data.indexOf("$NOW$") >= 0)

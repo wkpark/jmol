@@ -143,14 +143,14 @@ public class PyMOLReader extends PdbReader {
   private boolean allStates;
   private int totalAtomCount;
   
-
+  @SuppressWarnings("unchecked")
   private void process(Map<String, Object> map) {
     logging = (viewer.getLogFile().length() > 0);
+    JmolList<Object> names = getMapList(map, "names");
     for (Map.Entry<String, Object> e : map.entrySet()) {
       String name = e.getKey();
       System.out.println(name);
       if (name.equals("names")) {
-        JmolList<Object> names = getMapList(map, "names");
         for (int i = 1; i < names.size(); i++)
           System.out.println("  " + getString(getList(names, i), 0));
       } else if (name.equals("version")) {
@@ -158,14 +158,22 @@ public class PyMOLReader extends PdbReader {
       }
     }
     if (logging) {
-      String s = map.toString();//.replace('=', '\n');
+      if (logging)
+        viewer.log("$CLEAR$");
+      //String s = map.toString();//.replace('=', '\n');
       for (Map.Entry<String, Object> e : map.entrySet()) {
         String name = e.getKey();
-        s = TextFormat.simpleReplace(s, ", " + name +"=", ",\n\n" + name + "#\n");        
+        if (!"names".equals(name)) {
+          viewer.log("\n===" + name + "===");
+          viewer.log(TextFormat.simpleReplace(e.getValue().toString(), "[", "\n["));
+        }
       }
-      s = TextFormat.simpleReplace(s, "[", "\n[");
-      viewer.log("\n");
-      viewer.log(s);
+      viewer.log("\n===names===");
+      for (int i = 1; i < names.size(); i++) {
+        viewer.log("");
+        JmolList<Object> list = (JmolList<Object>) names.get(i);
+        viewer.log(TextFormat.simpleReplace(list.toString(), "[", "\n["));
+      }
     }
     addColors(getMapList(map, "colors"));
     settings = getMapList(map, "settings");
@@ -210,7 +218,6 @@ public class PyMOLReader extends PdbReader {
         appendLoadNote("PyMOL dimensions unknown");
       }
     }
-    JmolList<Object> names = getMapList(map, "names");
     totalAtomCount = getTotalAtomCount(names);
     Logger.info("PyMOL total atom count = " + totalAtomCount);
     for (int i = 1; i < names.size(); i++)

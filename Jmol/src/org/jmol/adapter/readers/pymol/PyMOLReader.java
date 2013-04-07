@@ -1026,10 +1026,10 @@ public class PyMOLReader extends PdbReader {
       modelSettings.addLast(ss);
       break;
     case REP_JMOL_TRACE:
-      setTrace(bs, false);
+      setTrace(bs);
       break;
-    case REP_BACKBONE: //   = 6;
-      setTrace(bs, true);
+    case REP_BACKBONE: //   = 6; // ribbon
+      setRibbon(bs);
       break;
     case REP_MESH: //   = 8;
     case REP_DASHES: //   = 10;
@@ -1081,25 +1081,31 @@ public class PyMOLReader extends PdbReader {
     modelSettings.addLast(ss);
   }
 
-  private void setTrace(BS bs, boolean isBackbone) {
+  private void setTrace(BS bs) {
     ModelSettings ss;
-    if (!isBackbone) {
-      BS bsNuc = BSUtil.copy(ssMapAtom.get("nucleic"));
-      bsNuc.and(bs);
-      if (!bsNuc.isEmpty() && cartoonLadderMode) {
-        // we will just use cartoons for ladder mode
-        ss = new ModelSettings(JC.SHAPE_CARTOON, bsNuc, null);
-        ss.setColors(colixes, cartoonTranslucency);
-        ss.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
-        modelSettings.addLast(ss);
-        bs.andNot(bsNuc);
-        if (bs.isEmpty())
-          return;
-      }
+    BS bsNuc = BSUtil.copy(ssMapAtom.get("nucleic"));
+    bsNuc.and(bs);
+    if (!bsNuc.isEmpty() && cartoonLadderMode) {
+      // we will just use cartoons for ladder mode
+      ss = new ModelSettings(JC.SHAPE_CARTOON, bsNuc, null);
+      ss.setColors(colixes, cartoonTranslucency);
+      ss.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
+      modelSettings.addLast(ss);
+      bs.andNot(bsNuc);
+      if (bs.isEmpty())
+        return;
     }
     ss = new ModelSettings(JC.SHAPE_TRACE, bs, null);
     ss.setColors(colixes, cartoonTranslucency);
-    ss.setSize(isBackbone ? 0.3f : getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
+    ss.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
+    modelSettings.addLast(ss);
+  }
+
+  private void setRibbon(BS bs) {
+    ModelSettings ss;
+    ss = new ModelSettings(JC.SHAPE_BACKBONE, bs, null);
+    ss.setColors(colixes, 0); // no translucency
+    ss.setSize(getFloatSetting(PyMOL.ribbon_width) * 0.02f);
     modelSettings.addLast(ss);
   }
 

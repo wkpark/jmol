@@ -1021,6 +1021,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     explicitContours = false;
     atomIndex = -1;
     colix = C.ORANGE;
+    translucentLevel = 0;
     defaultColix = meshColix = 0;
     isPhaseColored = isColorExplicit = false;
     //allowContourLines = true; //but not for f(x,y) or plane, which use mesh

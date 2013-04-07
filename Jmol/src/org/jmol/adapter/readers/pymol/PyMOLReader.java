@@ -528,6 +528,7 @@ public class PyMOLReader extends PdbReader {
       processStructures(atomCount0);
       setBranchShapes(atomCount - atomCount0);
     } else {
+      ns = 1; // I guess I don't understand what the second set is for in each of these.
       for (int i = 0; i < ns; i++) {
         JmolList<Object> state = getList(states, i);
         JmolList<Object> coords = getList(state, 2);
@@ -550,8 +551,9 @@ public class PyMOLReader extends PdbReader {
         model(++nModels);
         for (int idx = 0; idx < n; idx++)
           addAtom(pymolAtoms, getInt(idxToAtm, idx), idx, coords, bsState);
-        if (bsState != null)
+        if (bsState != null) {
           bsAtoms.or(bsState);
+        }
         processStructures(atomCount - n);
         setBranchShapes(n);
       }
@@ -607,7 +609,7 @@ public class PyMOLReader extends PdbReader {
   }
 
   private static JmolList<Object> getBranchAoms(JmolList<Object> deepBranch) {
-    return getList(deepBranch, 7);
+    return getList(deepBranch, 7);  
   }
 
   @Override

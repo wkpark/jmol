@@ -12525,6 +12525,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.setCurrentModelIndex(viewer.getModelBitSet(bsa, false).nextSetBit(
           0));
       return;
+    case T.create:
+      iToken = 1;
+      int n = (tokAt(2) == T.integer ? intParameter(++iToken) : 1);
+      checkLength(iToken + 1);
+      if (!chk && n > 0)
+        viewer.createModels(n);
+      return;
     case T.id:
       checkLength(3);
       String id = stringParameter(2);

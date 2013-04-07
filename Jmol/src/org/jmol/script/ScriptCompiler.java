@@ -601,7 +601,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         String s = (nTokens == 2 ? lastToken.value.toString().toUpperCase() : null);
         if (nTokens > 2 
             && !(tokAt(2) == T.leftparen && ltoken.get(1).value.toString().endsWith(".spt")) 
-            || s != null && (s.endsWith(".SORT") || s.endsWith(".REVERSE"))) {
+            || s != null && (s.endsWith(".SORT") || s.endsWith(".REVERSE") 
+                || s.indexOf(".SORT(") >= 0 || s.indexOf(".REVERSE(") >= 0)) {
           // check for improperly parsed implied script command:
           // only two tokens:
           //   [implied script] xxx.SORT

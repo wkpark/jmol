@@ -10179,6 +10179,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String getAtomDefs(Map<String, Object> names) {
     return getStateCreator().getAtomDefs(names);
     
+  }
+
+  public void createModels(int n) {
+    modelSet.createModels(n);
   } 
  
 }

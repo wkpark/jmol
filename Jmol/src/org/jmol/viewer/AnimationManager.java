@@ -467,6 +467,7 @@ public class AnimationManager {
 
   public void setMovie(Map<String, Object> info) {
     movie = info;
+    viewer.setBooleanProperty("_ismovie", movie != null);
     if (movie == null) {
       bsDisplay = null;
       currentMorphFrame = morphCount = 0;

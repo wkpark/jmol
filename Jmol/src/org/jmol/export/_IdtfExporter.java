@@ -490,6 +490,7 @@ public class _IdtfExporter extends __CartesianExporter {
       JmolList<String> v = entry.getValue();
       output("NODE \"MODEL\" {\n");
       output("NODE_NAME \"" + key + "\"\n");
+      System.out.println("output idtf " + key);
       int n = v.size();
       output("PARENT_LIST {\nPARENT_COUNT " + n + "\n"); 
       for (int i = 0; i < n; i++) {

@@ -2760,6 +2760,42 @@ abstract public class ModelCollection extends BondCollection {
     return symTemp;
   }
 
+  public void createModels(int n) {
+    int newModelCount = modelCount + n;
+    Model[] newModels = (Model[]) ArrayUtil.arrayCopyObject(models,
+        newModelCount);
+    validateBspf(false);
+    modelNumbers = ArrayUtil.arrayCopyI(modelNumbers, newModelCount);
+    modelFileNumbers = ArrayUtil.arrayCopyI(modelFileNumbers, newModelCount);
+    modelNumbersForAtomLabel = ArrayUtil.arrayCopyS(modelNumbersForAtomLabel,
+        newModelCount);
+    modelNames = ArrayUtil.arrayCopyS(modelNames, newModelCount);
+    frameTitles = ArrayUtil.arrayCopyS(frameTitles, newModelCount);
+    int f = getModelFileNumber(modelCount - 1) / 1000000 + 1;
+    for (int i = modelCount, pt = 0; i < newModelCount; i++) {
+      modelNumbers[i] = i + modelCount;
+      modelFileNumbers[i] = f * 1000000 + (++pt);
+      modelNumbersForAtomLabel[i] = modelNames[i] = f + "." + pt;
+    }    
+    thisStateModel = -1;
+    String[] group3Lists = (String[]) getModelSetAuxiliaryInfoValue("group3Lists");
+    if (group3Lists != null) {
+      int[][] group3Counts = (int[][]) getModelSetAuxiliaryInfoValue("group3Counts");
+      group3Lists = ArrayUtil.arrayCopyS(group3Lists, newModelCount);
+      group3Counts = ArrayUtil.arrayCopyII(group3Counts, newModelCount);
+      modelSetAuxiliaryInfo.put("group3Lists", group3Lists);
+      modelSetAuxiliaryInfo.put("group3Counts", group3Counts);
+    }
+    unitCells = (SymmetryInterface[]) ArrayUtil.arrayCopyObject(unitCells,
+        newModelCount);
+    for (int i = modelCount; i < newModelCount; i++) {
+      newModels[i] = new Model((ModelSet) this, i, -1, null, null, null);
+      newModels[i].loadState = " model create #" + i + ";";
+    }
+    models = newModels;
+    modelCount = newModelCount;
+  }
+
   protected void deleteModel(int modelIndex, int firstAtomIndex, int nAtoms,
                              BS bsAtoms, BS bsBonds) {
     /*

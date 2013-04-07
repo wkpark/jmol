@@ -108,8 +108,6 @@ public class PyMOLReader extends PdbReader {
     super.initializeReader();
   }
 
-  //  private Map<Object, Object> temp  = new Hashtable<Object, Object>();
-
   private P3 xyzMin = P3.new3(1e6f, 1e6f, 1e6f);
   private P3 xyzMax = P3.new3(-1e6f, -1e6f, -1e6f);
   private int nModels;
@@ -130,6 +128,9 @@ public class PyMOLReader extends PdbReader {
 
   private BS[] reps = new BS[REP_JMOL_MAX];
   private float cartoonTranslucency;
+  private float sphereTranslucency;
+  private float stickTranslucency;
+  private boolean cartoonLadderMode;
   private Map<String, Object> movie;
   private boolean isMovie;
 
@@ -157,10 +158,10 @@ public class PyMOLReader extends PdbReader {
       }
     }
     if (logging) {
-      String s = map.toString().replace('=', '\n');
+      String s = map.toString();//.replace('=', '\n');
       for (Map.Entry<String, Object> e : map.entrySet()) {
         String name = e.getKey();
-        s = TextFormat.simpleReplace(s, name, "\n\n" + name + "\n");
+        s = TextFormat.simpleReplace(s, ", " + name +"=", ",\n\n" + name + "#\n");        
       }
       s = TextFormat.simpleReplace(s, "[", "\n[");
       viewer.log("\n");
@@ -172,10 +173,9 @@ public class PyMOLReader extends PdbReader {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("settings", settings);
     allStates = getBooleanSetting(PyMOL.all_states);
     pymolFrame = (int) getFloatSetting(PyMOL.frame);
-    nonBondedSize = getFloatSetting(PyMOL.nonbonded_size);
-    sphereScale = getFloatSetting(PyMOL.sphere_scale);      
+    //nonBondedSize = getFloatSetting(PyMOL.nonbonded_size);
+    //sphereScale = getFloatSetting(PyMOL.sphere_scale);      
     JmolList<Object> mov = getMapList(map, "movie");
-    ssMapAtom.put("nucleic", new BS());
     if (mov != null && !allStates) {
       int frameCount = getInt(mov, 0);
       if (frameCount > 0) {
@@ -210,16 +210,16 @@ public class PyMOLReader extends PdbReader {
         appendLoadNote("PyMOL dimensions unknown");
       }
     }
-    valence = getBooleanSetting(PyMOL.valence);
-    cartoonTranslucency = getFloatSetting(PyMOL.cartoon_transparency);
     JmolList<Object> names = getMapList(map, "names");
     totalAtomCount = getTotalAtomCount(names);
     Logger.info("PyMOL total atom count = " + totalAtomCount);
     for (int i = 1; i < names.size(); i++)
       processBranch(getList(names, i));
 
-    if (isMovie)
+    if (isMovie) {
+      appendLoadNote("PyMOL trajectories read: " + lstTrajectories.size());
       atomSetCollection.finalizeTrajectoryAs(lstTrajectories, null);
+    }
 
     // we are done if this is a state script
 
@@ -569,15 +569,21 @@ public class PyMOLReader extends PdbReader {
   @SuppressWarnings("unchecked")
   private void setLocalSettings(JmolList<Object> list) {
     localSettings = new Hashtable<Integer, JmolList<Object>>();
-    if (list == null || list.size() == 0)
-      return;    
-    System.out.println(list);
-    for (int i = list.size(); --i >= 0;) {
-      JmolList<Object>setting = (JmolList<Object>) list.get(i);
-      localSettings.put((Integer) setting.get(0), setting);
+    if (list != null && list.size() != 0) {
+      System.out.println(list);
+      for (int i = list.size(); --i >= 0;) {
+        JmolList<Object> setting = (JmolList<Object>) list.get(i);
+        localSettings.put((Integer) setting.get(0), setting);
+      }
     }
     nonBondedSize = getFloatSetting(PyMOL.nonbonded_size);
-    sphereScale = getFloatSetting(PyMOL.sphere_scale);      
+    sphereScale = getFloatSetting(PyMOL.sphere_scale);
+    valence = getBooleanSetting(PyMOL.valence);
+    cartoonTranslucency = getFloatSetting(PyMOL.cartoon_transparency);
+    stickTranslucency = getFloatSetting(PyMOL.stick_transparency);
+    sphereTranslucency = getFloatSetting(PyMOL.sphere_transparency);
+    cartoonLadderMode = getBooleanSetting(PyMOL.cartoon_ladder_mode);
+    ssMapAtom.put("nucleic", new BS());
   }
 
   private void addName(String name, BS bs) {
@@ -695,6 +701,8 @@ public class PyMOLReader extends PdbReader {
         labels.addLast(label);
     }
     if (reps[REP_NONBONDED].get(atomCount) && isWater(group3)) {
+      reps[REP_NBSPHERES].clear(atomCount);
+      reps[REP_SPHERES].clear(atomCount);
       reps[REP_NONBONDED].clear(atomCount);
       reps[REP_JMOL_STARS].set(atomCount);
     }
@@ -937,6 +945,8 @@ public class PyMOLReader extends PdbReader {
     for (int i = 0; i < REP_JMOL_MAX; i++)
       setShape(i);
     setSurface();
+    ssMapAtom = new Hashtable<String, BS>();
+    ssMapAtom.put("nucleic", new BS());
   }
 
   
@@ -966,18 +976,21 @@ public class PyMOLReader extends PdbReader {
     case REP_NONBONDED:
       ss = new ModelSettings(JC.SHAPE_BALLS, bs, null);
       ss.setColors(colixes, 0);
+      ss.translucency = sphereTranslucency;
       modelSettings.addLast(ss);
       break;
     case REP_NBSPHERES:
     case REP_SPHERES:
       ss = new ModelSettings(JC.SHAPE_BALLS, bs, null);
       ss.setColors(colixes, 0);
+      ss.translucency = sphereTranslucency;
       modelSettings.addLast(ss);
       break;
     case REP_STICKS:
       f = getFloatSetting(PyMOL.stick_radius) * 2;
       ss = new ModelSettings(JC.SHAPE_STICKS, bs, null);
       ss.setSize(f);
+      ss.translucency = stickTranslucency;
       modelSettings.addLast(ss);
       break;
     case REP_DOTS: //   = 9;
@@ -1066,7 +1079,7 @@ public class PyMOLReader extends PdbReader {
     if (!isBackbone) {
       BS bsNuc = BSUtil.copy(ssMapAtom.get("nucleic"));
       bsNuc.and(bs);
-      if (!bsNuc.isEmpty() && getBooleanSetting(PyMOL.cartoon_ladder_mode)) {
+      if (!bsNuc.isEmpty() && cartoonLadderMode) {
         // we will just use cartoons for ladder mode
         ss = new ModelSettings(JC.SHAPE_CARTOON, bsNuc, null);
         ss.setColors(colixes, cartoonTranslucency);
@@ -1174,7 +1187,7 @@ public class PyMOLReader extends PdbReader {
     float fov = getFloatSetting(PyMOL.field_of_view);
 
     float jmolCameraToCenter = (float) (0.5 / Math.tan(fov / 2 * Math.PI / 180)); // d
-    float pymolCameraToCenter = -getFloatAt(view, 18) / w;
+    float pymolCameraToCenter   = -getFloatAt(view, 18) / w;
     float jmolCameraDepth = (jmolCameraToCenter - 0.5f);
     float zoom = jmolCameraToCenter / pymolCameraToCenter * 100;
     float aspectRatio = viewer.getScreenWidth() * 1.0f

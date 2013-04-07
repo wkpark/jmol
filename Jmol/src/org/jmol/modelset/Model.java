@@ -28,7 +28,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.io.OutputStringBuilder;
@@ -41,7 +40,6 @@ import org.jmol.util.SB;
 
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
-
 
 public class Model {
 
@@ -78,12 +76,12 @@ public class Model {
    * in ModelCollection.
    *  
    */
-  
+
   public ModelSet modelSet;
- 
+
   /**
-   * BE CAREFUL: FAILURE TO NULL REFERENCES TO modelSet WILL PREVENT FINALIZATION
-   * AND CREATE A MEMORY LEAK.
+   * BE CAREFUL: FAILURE TO NULL REFERENCES TO modelSet WILL PREVENT
+   * FINALIZATION AND CREATE A MEMORY LEAK.
    * 
    * @return associated ModelSet
    */
@@ -91,56 +89,57 @@ public class Model {
     return modelSet;
   }
 
-  public int modelIndex;   // our 0-based reference
-  int fileIndex;   // 0-based file reference
+  public int modelIndex; // our 0-based reference
+  int fileIndex; // 0-based file reference
 
   public int hydrogenCount;
   public boolean isBioModel;
   public boolean isPdbWithMultipleBonds;
   protected boolean hasRasmolHBonds;
-  
+
   public String loadState = "";
   public SB loadScript = new SB();
 
   public boolean isModelKit;
+
   public boolean isModelkit() {
     return isModelKit;
   }
-  
+
   Map<String, Integer> dataFrames;
   int dataSourceFrame = -1;
   String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   String jmolFrameType;
-  
+
   // set in ModelLoader phase:
-  public int firstAtomIndex;  
+  public int firstAtomIndex;
   public int atomCount = 0; // includes deleted atoms
   protected final BS bsAtoms = new BS();
   final BS bsAtomsDeleted = new BS();
+
   // this one is variable and calculated only if necessary:
   public int getTrueAtomCount() {
     return bsAtoms.cardinality() - bsAtomsDeleted.cardinality();
   }
-  
+
   public int trajectoryBaseIndex;
   public boolean isTrajectory;
   private int selectedTrajectory = -1;
-  
+
   void setSelectedTrajectory(int i) {
     selectedTrajectory = i;
   }
-  
+
   public int getSelectedTrajectory() {
     return selectedTrajectory;
   }
-  
-  
+
   private int bondCount = -1;
 
   public void resetBoundCount() {
-    bondCount = -1;    
+    bondCount = -1;
   }
-  
+
   public int getBondCount() {
     if (bondCount >= 0)
       return bondCount;
@@ -151,13 +150,13 @@ public class Model {
         bondCount++;
     return bondCount;
   }
-  
+
   int firstMoleculeIndex;
   public int moleculeCount;
-  
+
   public int nAltLocs;
   int nInsertions;
-  
+
   int groupCount = -1;
 
   protected int chainCount = 0;
@@ -172,7 +171,7 @@ public class Model {
 
   public Orientation orientation;
 
-  public Model(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex, 
+  public Model(ModelSet modelSet, int modelIndex, int trajectoryBaseIndex,
       String jmolData, Properties properties, Map<String, Object> auxiliaryInfo) {
     this.modelSet = modelSet;
     dataSourceFrame = this.modelIndex = modelIndex;
@@ -183,7 +182,8 @@ public class Model {
     }
     this.auxiliaryInfo = auxiliaryInfo;
     if (auxiliaryInfo.containsKey("biosymmetryCount"))
-      biosymmetryCount = ((Integer)auxiliaryInfo.get("biosymmetryCount")).intValue();
+      biosymmetryCount = ((Integer) auxiliaryInfo.get("biosymmetryCount"))
+          .intValue();
     this.properties = properties;
     if (jmolData == null) {
       jmolFrameType = "modelSet";
@@ -193,24 +193,23 @@ public class Model {
       auxiliaryInfo.put("jmolData", jmolData);
       auxiliaryInfo.put("title", jmolData);
       jmolFrameType = (jmolData.indexOf("ramachandran") >= 0 ? "ramachandran"
-          : jmolData.indexOf("quaternion") >= 0 ? "quaternion" 
-          : "data");
+          : jmolData.indexOf("quaternion") >= 0 ? "quaternion" : "data");
     }
   }
 
   void setNAltLocs(int nAltLocs) {
-    this.nAltLocs = nAltLocs;  
+    this.nAltLocs = nAltLocs;
   }
-  
+
   void setNInsertions(int nInsertions) {
-    this.nInsertions = nInsertions;  
+    this.nInsertions = nInsertions;
   }
-  
+
   protected boolean structureTainted;
   public boolean isJmolDataFrame;
   public long frameDelay;
   public SymmetryInterface simpleCage;
-  
+
   public String getModelNumberDotted() {
     return modelSet.getModelNumberDotted(modelIndex);
   }
@@ -218,11 +217,11 @@ public class Model {
   public String getModelTitle() {
     return modelSet.getModelTitle(modelIndex);
   }
-    
+
   public boolean isStructureTainted() {
     return structureTainted;
   }
-  
+
   public Chain[] getChains() {
     return chains;
   }
@@ -243,9 +242,9 @@ public class Model {
           n++;
     return n;
   }
-  
+
   void calcSelectedGroupsCount(BS bsSelected) {
-    for (int i = chainCount; --i >= 0; )
+    for (int i = chainCount; --i >= 0;)
       chains[i].calcSelectedGroupsCount(bsSelected);
   }
 
@@ -263,7 +262,7 @@ public class Model {
   }
 
   Chain getChain(char chainID) {
-    for (int i = chainCount; --i >= 0; ) {
+    for (int i = chainCount; --i >= 0;) {
       Chain chain = chains[i];
       if (chain.chainID == chainID)
         return chain;
@@ -284,109 +283,107 @@ public class Model {
   }
 
   public void freeze() {
-    chains = (Chain[])ArrayUtil.arrayCopyObject(chains, chainCount);
+    chains = (Chain[]) ArrayUtil.arrayCopyObject(chains, chainCount);
     groupCount = -1;
-    getGroupCount();      
+    getGroupCount();
     for (int i = 0; i < chainCount; ++i)
-      chains[i].groups = (Group[])ArrayUtil.arrayCopyObject(chains[i].groups, chains[i].groupCount);
+      chains[i].groups = (Group[]) ArrayUtil.arrayCopyObject(chains[i].groups,
+          chains[i].groupCount);
   }
-
 
   /////// BioModel only ///////
-  
+
   /**
-   * @param viewer  
-   * @param type 
-   * @param ctype 
-   * @param isDraw 
-   * @param bsSelected 
-   * @param sb 
-   * @param bsWritten 
-   * @param pdbCONECT 
-   * @param tokens 
+   * @param viewer
+   * @param type
+   * @param ctype
+   * @param isDraw
+   * @param bsSelected
+   * @param sb
+   * @param bsWritten
+   * @param pdbCONECT
+   * @param tokens
    */
   public void getPdbData(Viewer viewer, String type, char ctype,
-                         boolean isDraw, BS bsSelected,
-                         OutputStringBuilder sb, LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
+                         boolean isDraw, BS bsSelected, OutputStringBuilder sb,
+                         LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
   }
-  
+
   /**
-   * @param sb  
-   * @param maxAtoms 
+   * @param sb
+   * @param maxAtoms
    */
   public void getDefaultLargePDBRendering(SB sb, int maxAtoms) {
   }
-  
+
   /**
-   * @param bioBranches 
-   * @return  updated bioBranches 
+   * @param bioBranches
+   * @return updated bioBranches
    */
   public JmolList<BS> getBioBranches(JmolList<BS> bioBranches) {
     return bioBranches;
   }
 
   /**
-   * @param nResidues  
-   * @param bs 
-   * @param bsResult 
+   * @param nResidues
+   * @param bs
+   * @param bsResult
    */
   public void getGroupsWithin(int nResidues, BS bs, BS bsResult) {
   }
 
   /**
-   * @param specInfo  
-   * @param bs 
-   * @param bsResult 
+   * @param specInfo
+   * @param bs
+   * @param bsResult
    */
   public void getSequenceBits(String specInfo, BS bs, BS bsResult) {
   }
 
   /**
-   * @param bsA  
-   * @param bsB 
-   * @param vHBonds 
-   * @param nucleicOnly 
-   * @param nMax 
-   * @param dsspIgnoreHydrogens 
-   * @param bsHBonds 
+   * @param bsA
+   * @param bsB
+   * @param vHBonds
+   * @param nucleicOnly
+   * @param nMax
+   * @param dsspIgnoreHydrogens
+   * @param bsHBonds
    */
-  public void getRasmolHydrogenBonds(BS bsA, BS bsB,
-                                     JmolList<Bond> vHBonds, boolean nucleicOnly,
-                                     int nMax, boolean dsspIgnoreHydrogens,
-                                     BS bsHBonds) {
+  public void getRasmolHydrogenBonds(BS bsA, BS bsB, JmolList<Bond> vHBonds,
+                                     boolean nucleicOnly, int nMax,
+                                     boolean dsspIgnoreHydrogens, BS bsHBonds) {
   }
 
   /**
-   * @param bsAtoms   
+   * @param bsAtoms
    */
   public void clearRasmolHydrogenBonds(BS bsAtoms) {
   }
-
 
   public void clearBioPolymers() {
   }
 
   /**
-   * @param bsSelected  
+   * @param bsSelected
    */
   public void calcSelectedMonomersCount(BS bsSelected) {
     // BioModel only
   }
 
   /**
-   * @param groups  
-   * @param groupCount 
-   * @param baseGroupIndex 
-   * @param modelsExcluded 
+   * @param groups
+   * @param groupCount
+   * @param baseGroupIndex
+   * @param modelsExcluded
    */
   public void calculatePolymers(Group[] groups, int groupCount,
                                 int baseGroupIndex, BS modelsExcluded) {
   }
 
   /**
-   * @param bs  
-   * @param finalInfo 
-   * @param modelVector 
+   * @param bs
+   * @param finalInfo
+   * @param modelVector
    */
   public void getAllPolymerInfo(
                                 BS bs,
@@ -399,10 +396,10 @@ public class Model {
   }
 
   /**
-   * @param bs  
-   * @param vList 
-   * @param isTraceAlpha 
-   * @param sheetSmoothing 
+   * @param bs
+   * @param vList
+   * @param isTraceAlpha
+   * @param sheetSmoothing
    */
   public void getPolymerPointsAndVectors(BS bs, JmolList<P3[]> vList,
                                          boolean isTraceAlpha,
@@ -410,7 +407,7 @@ public class Model {
   }
 
   /**
-   * @param iPolymer  
+   * @param iPolymer
    * @return list of points or null
    */
   public P3[] getPolymerLeadMidPoints(int iPolymer) {
@@ -431,28 +428,28 @@ public class Model {
    * @param endChainID
    * @param endSeqcode
    */
-  public void addSecondaryStructure(EnumStructure type, 
-                             String structureID, int serialID, int strandCount,
-                             char startChainID, int startSeqcode,
-                             char endChainID, int endSeqcode) { 
+  public void addSecondaryStructure(EnumStructure type, String structureID,
+                                    int serialID, int strandCount,
+                                    char startChainID, int startSeqcode,
+                                    char endChainID, int endSeqcode) {
   }
 
   /**
-   * @param asDSSP  
-   * @param doReport 
-   * @param dsspIgnoreHydrogen 
-   * @param setStructure 
-   * @param includeAlpha 
+   * @param asDSSP
+   * @param doReport
+   * @param dsspIgnoreHydrogen
+   * @param setStructure
+   * @param includeAlpha
    * @return structure list
    */
-  public String calculateStructures(boolean asDSSP, boolean doReport, 
-                             boolean dsspIgnoreHydrogen, boolean setStructure,
-                             boolean includeAlpha) {
+  public String calculateStructures(boolean asDSSP, boolean doReport,
+                                    boolean dsspIgnoreHydrogen,
+                                    boolean setStructure, boolean includeAlpha) {
     return "";
   }
 
   /**
-   * @param structureList  
+   * @param structureList
    */
   public void setStructureList(Map<EnumStructure, float[]> structureList) {
   }
@@ -466,9 +463,9 @@ public class Model {
   }
 
   /**
-   * @param modelSet  
-   * @param bs1 
-   * @param bs2 
+   * @param modelSet
+   * @param bs1
+   * @param bs2
    * @return number of struts
    */
   public int calculateStruts(ModelSet modelSet, BS bs1, BS bs2) {
@@ -476,36 +473,36 @@ public class Model {
   }
 
   /**
-   * @param viewer  
-   * @param ctype 
-   * @param qtype 
-   * @param mStep 
+   * @param viewer
+   * @param ctype
+   * @param qtype
+   * @param mStep
    */
   public void calculateStraightness(Viewer viewer, char ctype, char qtype,
                                     int mStep) {
   }
 
   /**
-   * @param seqcodeA  
-   * @param seqcodeB 
-   * @param chainID 
-   * @param bs 
-   * @param caseSensitive 
+   * @param seqcodeA
+   * @param seqcodeB
+   * @param chainID
+   * @param bs
+   * @param caseSensitive
    */
-  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID, BS bs,
-                                 boolean caseSensitive) {
+  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID,
+                                 BS bs, boolean caseSensitive) {
   }
 
   /**
-   * @param bsConformation  
+   * @param bsConformation
    */
   public void setConformation(BS bsConformation) {
     //
   }
 
   /**
-   * @param bsConformation  
-   * @param conformationIndex 
+   * @param bsConformation
+   * @param conformationIndex
    * @return true for BioModel
    */
   public boolean getPdbConformation(BS bsConformation, int conformationIndex) {
@@ -513,11 +510,11 @@ public class Model {
   }
 
   /**
-   * @param bsAtoms  
-   * @param taintedOnly 
-   * @param needPhiPsi 
-   * @param mode 
-   * @return     only for BioModel
+   * @param bsAtoms
+   * @param taintedOnly
+   * @param needPhiPsi
+   * @param mode
+   * @return only for BioModel
    */
   public String getProteinStructureState(BS bsAtoms, boolean taintedOnly,
                                          boolean needPhiPsi, int mode) {

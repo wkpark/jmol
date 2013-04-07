@@ -85,7 +85,7 @@ public class SticksRenderer extends ShapeRenderer {
     if (!isPass2)
       bsForPass2.clearAll();
     slabbing = viewer.getSlabEnabled();
-    slabByAtom = viewer.getSlabByAtom();          
+    slabByAtom = viewer.getSlabByAtom();
     endcaps = GData.ENDCAPS_SPHERICAL;
     dashDots = (viewer.getPartialDots() ? sixdots : dashes);
     multipleBondSpacing = viewer.getMultipleBondSpacing();
@@ -93,7 +93,8 @@ public class SticksRenderer extends ShapeRenderer {
     if (multipleBondSpacing == 0 && isCartesianExport)
       multipleBondSpacing = 0.2f;
     multipleBondRadiusFactor = viewer.getMultipleBondRadiusFactor();
-    showMultipleBonds = multipleBondSpacing != 0 && viewer.getShowMultipleBonds();
+    showMultipleBonds = multipleBondSpacing != 0
+        && viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
     renderWireframe = viewer.getInMotion() && viewer.getWireframeRotation();
     ssbondsBackbone = viewer.getSsbondsBackbone();
@@ -103,19 +104,21 @@ public class SticksRenderer extends ShapeRenderer {
     isAntialiased = g3d.isAntialiased();
     Bond[] bonds = modelSet.bonds;
     boolean needTranslucent = false;
-    if (isPass2)
-      for (int i = bsForPass2.nextSetBit(0); i >= 0; i = bsForPass2.nextSetBit(i + 1)) {
+    if (!isExport && isPass2)
+      for (int i = bsForPass2.nextSetBit(0); i >= 0; i = bsForPass2
+          .nextSetBit(i + 1)) {
         bond = bonds[i];
         renderBond();
       }
     else
-    for (int i = modelSet.bondCount; --i >= 0; ) {
-      bond = bonds[i];
-      if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) != 0 && renderBond()) {
-        needTranslucent = true;
-        bsForPass2.set(i);
+      for (int i = modelSet.bondCount; --i >= 0;) {
+        bond = bonds[i];
+        if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) != 0
+            && renderBond()) {
+          needTranslucent = true;
+          bsForPass2.set(i);
+        }
       }
-    }
     return needTranslucent;
   }
 

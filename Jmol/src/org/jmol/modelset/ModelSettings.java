@@ -57,7 +57,7 @@ public class ModelSettings {
   private Object[] colors;
 
   public int argb;
-  public float translucency;
+  public float translucency = 0;
   public RadiusData rd;
 
   /**
@@ -138,9 +138,10 @@ public class ModelSettings {
       s = "script('isosurface ID \"" + s + "\"  model "
           + m.models[modelIndex].getModelNumberDotted() + " select ("
           + Escape.eBS(bsAtoms) + " and not solvent) only solvent " + (size / 1000f)
-          + " map property color')";
+          + " map property color";
       if (translucency > 0)
         s += " translucent " + translucency;
+      s += "')";
       System.out.println("shapeSettings: " + s);
       sm.viewer.evaluateExpression(s);
       return;
@@ -169,6 +170,10 @@ public class ModelSettings {
     // cartoon, trace, etc.
     if (size != -1 || rd != null)
       sm.setShapeSizeBs(id, size, rd, bsAtoms);
+    if (translucency > 0) {
+      sm.setShapePropertyBs(id, "translucentLevel", Float.valueOf(translucency), bsAtoms);
+      sm.setShapePropertyBs(id, "translucency", "translucent", bsAtoms);
+    }
     if (argb != 0)
       sm.setShapePropertyBs(id, "color", Integer.valueOf(argb), bsAtoms);
     else if (colors != null)

@@ -29,6 +29,7 @@ package org.jmol.modelset;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.constant.EnumVdw;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
@@ -129,16 +130,17 @@ public class ModelSettings {
     case T.define:
       sm.viewer.defineAtomSets((Map<String, Object>) info);
       return;
+    case T.bonds:
+      break;
     case JC.SHAPE_ISOSURFACE:
       if (modelIndex < 0)
         return;
-      sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors,
-          bsAtoms);
+      sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
       String s = info.toString().replace('\'', '_').replace('"', '_');
       s = "script('isosurface ID \"" + s + "\"  model "
           + m.models[modelIndex].getModelNumberDotted() + " select ("
-          + Escape.eBS(bsAtoms) + " and not solvent) only solvent " + (size / 1000f)
-          + " map property color";
+          + Escape.eBS(bsAtoms) + " and not solvent) only solvent "
+          + (size / 1000f) + " map property color";
       if (translucency > 0)
         s += " translucent " + translucency;
       s += "')";
@@ -149,10 +151,6 @@ public class ModelSettings {
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "labels", info, bsAtoms);
       return;
-    case JC.SHAPE_DOTS:
-      sm.loadShape(id);
-      sm.setShapePropertyBs(id, "ignore",BSUtil.copyInvert(bsAtoms, sm.viewer.getAtomCount()), null);
-      break;
     case JC.SHAPE_MEASURES:
       if (modelIndex < 0)
         return;
@@ -166,12 +164,45 @@ public class ModelSettings {
       if (size != -1)
         sm.setShapeSizeBs(id, size, null, null);
       return;
+    case JC.SHAPE_DOTS:
+      sm.loadShape(id);
+      sm.setShapePropertyBs(id, "ignore", BSUtil.copyInvert(bsAtoms, sm.viewer
+          .getAtomCount()), null);
+      break;
+    case JC.SHAPE_MESHRIBBON: // PyMOL putty
+      id = JC.SHAPE_TRACE;
+      float[] data = new float[bsAtoms.length()];
+      rd = new RadiusData(data, 0, RadiusData.EnumType.ABSOLUTE, EnumVdw.AUTO);
+      /*
+         getFloatSetting(PyMOL.cartoon_putty_quality),
+         getFloatSetting(PyMOL.cartoon_putty_radius),
+         getFloatSetting(PyMOL.cartoon_putty_range),
+         getFloatSetting(PyMOL.cartoon_putty_scale_min),
+         getFloatSetting(PyMOL.cartoon_putty_scale_max),
+         getFloatSetting(PyMOL.cartoon_putty_scale_power)        
+       */
+      float rad = ((float[]) info)[1] / 5;
+      float min = ((float[]) info)[3] / 2;
+      float max = ((float[]) info)[4] / 2;
+      float power = ((float[]) info)[5];
+      float dataRange = max - min;
+      Atom[] atoms = sm.viewer.modelSet.atoms;
+      for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
+          .nextSetBit(i + 1), pt++) {
+        float r = Atom.atomPropertyFloat(null, atoms[i], T.temperature) * rad;
+        r = (r - min) / dataRange;
+        if (r > 0)
+          r = (float) Math.pow(r, power);
+        data[i] = Math.max(0, Math.min(dataRange, r * rad)) + min;
+      }
+      break;
     }
     // cartoon, trace, etc.
     if (size != -1 || rd != null)
       sm.setShapeSizeBs(id, size, rd, bsAtoms);
     if (translucency > 0) {
-      sm.setShapePropertyBs(id, "translucentLevel", Float.valueOf(translucency), bsAtoms);
+      sm.setShapePropertyBs(id, "translucentLevel",
+          Float.valueOf(translucency), bsAtoms);
       sm.setShapePropertyBs(id, "translucency", "translucent", bsAtoms);
     }
     if (argb != 0)
@@ -195,5 +226,5 @@ public class ModelSettings {
   public void setSize(float size) {
     this.size = (int) (size * 1000);
   }
-    
+
 }

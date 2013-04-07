@@ -204,7 +204,7 @@ public class BioShape extends AtomShape {
     for (int i = monomerCount; --i >= 0; ) {
       int leadAtomIndex = leadAtomIndices[i];
       if (bsSelected.get(leadAtomIndex)) {
-        if (values != null) {
+        if (values != null && leadAtomIndex < values.length) {
           if (Float.isNaN(values[leadAtomIndex]))
             continue;
           mad = (short) (values[leadAtomIndex] * 2000);

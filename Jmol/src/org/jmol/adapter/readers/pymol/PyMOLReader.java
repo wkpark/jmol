@@ -754,8 +754,11 @@ public class PyMOLReader extends PdbReader {
         break;
       case 1:
       case 4:
-      case 7:
         reps[REP_JMOL_TRACE].set(atomCount);
+        break;
+      case 7:
+        reps[REP_CARTOON].clear(atomCount);
+        reps[REP_JMOL_PUTTY].set(atomCount);
         break;
       }      
     }
@@ -921,8 +924,9 @@ public class PyMOLReader extends PdbReader {
   
   private final static int REP_JMOL_MIN = 13;
   private final static int REP_JMOL_TRACE = 13;
-  private final static int REP_JMOL_STARS = 14;
-   private final static int REP_JMOL_MAX = 15;
+  private final static int REP_JMOL_PUTTY = 14;
+  private final static int REP_JMOL_STARS = 15;
+   private final static int REP_JMOL_MAX = 16;
 
   //TODO:
 
@@ -949,6 +953,8 @@ public class PyMOLReader extends PdbReader {
     cleanSingletonCartoons(reps[REP_CARTOON]);
     reps[REP_JMOL_TRACE].and(reps[REP_CARTOON]);
     reps[REP_CARTOON].andNot(reps[REP_JMOL_TRACE]);
+    //reps[REP_JMOL_PUTTY].and(reps[REP_CARTOON]);
+   // reps[REP_CARTOON].andNot(reps[REP_JMOL_PUTTY]);
     for (int i = 0; i < REP_JMOL_MAX; i++)
       setShape(i);
     setSurface();
@@ -1025,6 +1031,9 @@ public class PyMOLReader extends PdbReader {
       ss = new ModelSettings(JC.SHAPE_LABELS, bs, labels);
       modelSettings.addLast(ss);
       break;
+    case REP_JMOL_PUTTY:
+      setPutty(bs);
+      break;
     case REP_JMOL_TRACE:
       setTrace(bs);
       break;
@@ -1098,6 +1107,22 @@ public class PyMOLReader extends PdbReader {
     ss = new ModelSettings(JC.SHAPE_TRACE, bs, null);
     ss.setColors(colixes, cartoonTranslucency);
     ss.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
+    modelSettings.addLast(ss);
+  }
+
+  private void setPutty(BS bs) {
+    ModelSettings ss;
+    float[] info = new float[] {
+        getFloatSetting(PyMOL.cartoon_putty_quality),
+        getFloatSetting(PyMOL.cartoon_putty_radius),
+        getFloatSetting(PyMOL.cartoon_putty_range),
+        getFloatSetting(PyMOL.cartoon_putty_scale_min),
+        getFloatSetting(PyMOL.cartoon_putty_scale_max),
+        getFloatSetting(PyMOL.cartoon_putty_scale_power)        
+    };
+ 
+    ss = new ModelSettings(JC.SHAPE_MESHRIBBON, bs, info);
+    ss.setColors(colixes, cartoonTranslucency);
     modelSettings.addLast(ss);
   }
 

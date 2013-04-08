@@ -663,6 +663,13 @@ import java.util.Map;
     case T.trace:
       if (fValue > Shape.RADIUS_MAX)
         fValue = Shape.RADIUS_MAX;
+      if (values != null) {
+        // convert to atom indices
+        float[] newValues = new float[atomCount];
+        for (int i = bs.nextSetBit(0), ii = 0; i >= 0; i = bs.nextSetBit(i + 1))
+          newValues[i] = values[ii++];
+        values = newValues;
+      }
       //$FALL-THROUGH$
     case T.halo:
     case T.star:

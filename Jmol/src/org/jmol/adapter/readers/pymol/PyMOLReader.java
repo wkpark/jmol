@@ -50,6 +50,7 @@ import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
+import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.SB;
 import org.jmol.viewer.JC;
@@ -673,7 +674,8 @@ public class PyMOLReader extends PdbReader {
       group3 = group3.substring(0, 3);
     if (group3.equals(" "))
       group3 = "UNK";
-    if (nucleic.indexOf(group3) >= 0) {
+    boolean isNucleic = (nucleic.indexOf(group3) >= 0);
+    if (isNucleic) {
       ssMapAtom.get("nucleic").set(atomCount);
     }
     String sym = getString(a, 7);
@@ -755,8 +757,11 @@ public class PyMOLReader extends PdbReader {
         reps[REP_CARTOON].clear(atomCount);
         break;
       case 1:
-      case 4:
         reps[REP_JMOL_TRACE].set(atomCount);
+        break;
+      case 4:
+        if (!isNucleic)
+          reps[REP_JMOL_TRACE].set(atomCount);
         break;
       case 7:
         reps[REP_CARTOON].clear(atomCount);
@@ -783,7 +788,7 @@ public class PyMOLReader extends PdbReader {
   }
 
   private boolean isWater(String group3) {
-    return group3.equals("HOH");
+    return Parser.isOneOf(group3, "HOH;WAT;H2O");
   }
 
   private void dumpBranch() {
@@ -983,7 +988,7 @@ public class PyMOLReader extends PdbReader {
     switch (shapeID) {
     case REP_JMOL_STARS:
       ss = new ModelSettings(JC.SHAPE_STARS, bs, null);
-      ss.rd = new RadiusData(null, 0.25f, RadiusData.EnumType.ABSOLUTE,
+      ss.rd = new RadiusData(null, getFloatSetting(PyMOL.nonbonded_size), RadiusData.EnumType.FACTOR,
           EnumVdw.AUTO);
       ss.setColors(colixes, 0);
       modelSettings.addLast(ss);
@@ -1130,9 +1135,10 @@ public class PyMOLReader extends PdbReader {
 
   private void setRibbon(BS bs) {
     ModelSettings ss;
-    ss = new ModelSettings(JC.SHAPE_BACKBONE, bs, null);
+    ss = new ModelSettings((getBooleanSetting(PyMOL.ribbon_smooth) ? JC.SHAPE_TRACE
+        : JC.SHAPE_BACKBONE), bs, null);
     ss.setColors(colixes, 0); // no translucency
-    ss.setSize(getFloatSetting(PyMOL.ribbon_width) * 0.02f);
+    ss.setSize(getFloatSetting(PyMOL.ribbon_width) * 0.1f);
     modelSettings.addLast(ss);
   }
 

@@ -62,7 +62,7 @@ public class Backbone extends BioShapeCollection {
       bsSelected = this.bsSelected;
     for (int iShape = bioShapes.length; --iShape >= 0;) {
       BioShape bioShape = bioShapes[iShape];
-      if (bioShape.monomerCount ==0)
+      if (bioShape.monomerCount == 0)
         continue;
       boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
       int[] atomIndices = bioShape.bioPolymer.getLeadAtomIndices();
@@ -84,9 +84,10 @@ public class Backbone extends BioShapeCollection {
           bioShape.monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
           Atom atomA = modelSet.atoms[index1];
           if (rd != null) {
-            if (Float.isNaN(rd.values[i]))
+            if (Float.isNaN(rd.values[index1]) || Float.isNaN(rd.values[index2]))
               continue;
-            mad = (short) (rd.values[i] * 2000);
+            mad = (short) ((rd.values[index1] + rd.values[index2]) * 1000); // average
+            isVisible = (mad != 0);
           }
           Atom atomB = modelSet.atoms[index2];
           boolean wasVisible = (bioShape.mads[i] != 0); 

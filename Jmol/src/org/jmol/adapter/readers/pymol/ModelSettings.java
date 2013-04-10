@@ -154,9 +154,14 @@ public class ModelSettings {
       String s = ((String[]) info)[0].toString().replace('\'', '_').replace(
           '"', '_');
       String lighting = ((String[]) info)[1];
+      String resolution = "";
+      if (lighting == null) {
+        lighting = "mesh nofill";
+        resolution = " resolution 1.5";
+      }
       s = "script('isosurface ID \"" + s + "\"" +
       		" model " + m.models[modelIndex].getModelNumberDotted()
-      		+ " select (" + Escape.eBS(bsAtoms)
+      		+ resolution + " select (" + Escape.eBS(bsAtoms)
       		+ ") only solvent " + (size / 1000f)
       		+ " map property color";
       s += " " + lighting;

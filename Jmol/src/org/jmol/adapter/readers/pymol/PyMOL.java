@@ -37,24 +37,41 @@ import java.util.Map;
 
 class PyMOL {
 
-  /* FLAG 24 - don't surface these atoms (waters, ligands, etc.) */
-  static int cAtomFlag_exfoliate     = 0x01000000;
-  /* FLAG 25 - ignore atoms altogether when surfacing */
-  static int  cAtomFlag_ignore        = 0x02000000;
-  
-  static int NOSURFACE = cAtomFlag_ignore | cAtomFlag_exfoliate;
-  
-  /* FLAG 26 - disable cartoon smoothing for these atoms */
-  static int  cAtomFlag_no_smooth     = 0x04000000;
-  /* FLAG 27 - polymer */
-  static int  cAtomFlag_polymer       = 0x08000000;
-  /* FLAG 28 - waters */
-  static int  cAtomFlag_solvent       = 0x10000000;
-  /* FLAG 29 - organics */
-  static int  cAtomFlag_organic       = 0x20000000;
-  /* FLAG 30 - inorganics */
-  static int  cAtomFlag_inorganic     = 0x40000000;
+  final static int REP_STICKS = 0;
+  final static int REP_SPHERES = 1;
+  final static int REP_SURFACE = 2;
+  final static int REP_LABELS = 3;
+  final static int REP_NBSPHERES = 4;
+  final static int REP_CARTOON = 5;
+  final static int REP_BACKBONE = 6;
+  final static int REP_LINES = 7;
+  final static int REP_DOTS = 9;
+  final static int REP_MESH = 8;
+  final static int REP_DASHES = 10;  // ??
+  final static int REP_NONBONDED = 11;
+  final static int REP_MAX = 12;
 
+  // flag 24: 
+  
+  // a[24] - don't surface these atoms (waters, ligands, etc.) 
+  static int FLAG_exfoliate     = 0x01000000;
+  // a[24] - ignore atoms altogether when surfacing 
+  static int  FLAG_ignore        = 0x02000000;
+  // a[24] - disable cartoon smoothing for these atoms 
+  static int  FLAG_no_smooth     = 0x04000000;
+  // a[24] - polymer 
+  static int  FLAG_polymer       = 0x08000000;
+  // a[24] - waters 
+  static int  FLAG_solvent       = 0x10000000;
+  // a[24] - organics 
+  static int  FLAG_organic       = 0x20000000;
+  // a[24] - inorganics 
+  static int  FLAG_inorganic     = 0x40000000;
+  
+  static int FLAG_NOSURFACE = FLAG_ignore | FLAG_exfoliate;
+  
+  // settings: There are 711 of these...
+  
   final static int active_selections                     = 351;
   final static int alignment_as_cylinders                = 692;
   final static int all_states                            =  49;
@@ -6172,5 +6189,5 @@ class PyMOL {
   static void addColor(Integer id, int value) {
     moreColors.put(id, Integer.valueOf(value));
   }
-  
+
 }

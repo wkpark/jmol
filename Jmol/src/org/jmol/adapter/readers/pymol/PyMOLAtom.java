@@ -8,4 +8,5 @@ class PyMOLAtom extends Atom {
   BS bsReps;
   int cartoonType;
   int flags;
+  boolean bonded;
 }

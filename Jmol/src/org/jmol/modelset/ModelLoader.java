@@ -354,6 +354,7 @@ public final class ModelLoader {
       iterateOverAllNewStructures(adapter, atomSetCollection);
     }
 
+    
     setDefaultRendering(viewer.getSmallMoleculeMaxAtoms());
 
     RadiusData rd = viewer.getDefaultRadiusData();
@@ -379,16 +380,19 @@ public final class ModelLoader {
   }
 
   private void setDefaultRendering(int maxAtoms) {
+    if (modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL"))
+      return;
     SB sb = new SB();
     int modelCount = modelSet.modelCount;
     Model[] models = modelSet.models;
-    for (int i = baseModelIndex; i < modelCount; i++)
-      if (models[i].isBioModel)
-        models[i].getDefaultLargePDBRendering(sb, maxAtoms);
+      for (int i = baseModelIndex; i < modelCount; i++)
+        if (models[i].isBioModel)
+          models[i].getDefaultLargePDBRendering(sb, maxAtoms);
     if (sb.length() == 0)
       return;
     sb.append("select *;");
-    String script = (String) modelSet.getModelSetAuxiliaryInfoValue("jmolscript");
+    String script = (String) modelSet
+        .getModelSetAuxiliaryInfoValue("jmolscript");
     if (script == null)
       script = "";
     sb.append(script);

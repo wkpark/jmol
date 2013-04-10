@@ -762,7 +762,7 @@ REMARK 290 REMARK: NULL
   //01234567890123456789012345678901234567890123456789012345678901234567890123456789
   //aaaaaauuuuu ssss sss cnnnnc   xxxxxxxxxxyyyyyyyyyyzzzzzzzzzzccccccccrrrrrrrr
  
-  protected Atom processAtom(
+  protected Atom processAtom(Atom atom,
         String name, 
         char altID, 
         String group3, 
@@ -772,7 +772,6 @@ REMARK 290 REMARK: NULL
         boolean isHetero,
         String sym
         ) {
-    Atom atom = new Atom();
     atom.atomName = name;
     char ch = altID;
     if (ch != ' ')
@@ -829,7 +828,7 @@ REMARK 290 REMARK: NULL
 
   private void atom() {
     boolean isHetero = line.startsWith("HETATM");
-    Atom atom = processAtom(
+    Atom atom = processAtom(new Atom(),
         line.substring(12, 16).trim(), 
         line.charAt(16),
         parseTokenRange(line, 17, 20),

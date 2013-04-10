@@ -154,13 +154,14 @@ public class ModelSettings {
       String s = ((String[]) info)[0].toString().replace('\'', '_').replace(
           '"', '_');
       String lighting = ((String[]) info)[1];
-      s = "script('isosurface ID \"" + s + "\"  model "
-          + m.models[modelIndex].getModelNumberDotted() + " select ("
-          + Escape.eBS(bsAtoms) + " and not solvent) only solvent "
-          + (size / 1000f) + " map property color";
+      s = "script('isosurface ID \"" + s + "\"" +
+      		" model " + m.models[modelIndex].getModelNumberDotted()
+      		+ " select (" + Escape.eBS(bsAtoms)
+      		+ ") only solvent " + (size / 1000f)
+      		+ " map property color";
+      s += " " + lighting;
       if (translucency > 0)
         s += " translucent " + translucency;
-      s += " " + lighting;
       s += "')";
       System.out.println("shapeSettings: " + s);
       sm.viewer.evaluateExpression(s);

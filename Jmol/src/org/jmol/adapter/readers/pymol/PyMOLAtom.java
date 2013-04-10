@@ -7,4 +7,5 @@ class PyMOLAtom extends Atom {
   String label;
   BS bsReps;
   int cartoonType;
+  int flags;
 }

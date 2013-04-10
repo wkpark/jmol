@@ -37,6 +37,24 @@ import java.util.Map;
 
 class PyMOL {
 
+  /* FLAG 24 - don't surface these atoms (waters, ligands, etc.) */
+  static int cAtomFlag_exfoliate     = 0x01000000;
+  /* FLAG 25 - ignore atoms altogether when surfacing */
+  static int  cAtomFlag_ignore        = 0x02000000;
+  
+  static int NOSURFACE = cAtomFlag_ignore | cAtomFlag_exfoliate;
+  
+  /* FLAG 26 - disable cartoon smoothing for these atoms */
+  static int  cAtomFlag_no_smooth     = 0x04000000;
+  /* FLAG 27 - polymer */
+  static int  cAtomFlag_polymer       = 0x08000000;
+  /* FLAG 28 - waters */
+  static int  cAtomFlag_solvent       = 0x10000000;
+  /* FLAG 29 - organics */
+  static int  cAtomFlag_organic       = 0x20000000;
+  /* FLAG 30 - inorganics */
+  static int  cAtomFlag_inorganic     = 0x40000000;
+
   final static int active_selections                     = 351;
   final static int alignment_as_cylinders                = 692;
   final static int all_states                            =  49;

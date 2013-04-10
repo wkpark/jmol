@@ -80,6 +80,8 @@ public class PyMOLReader extends PdbReader {
   private BS bsBondedJmol = new BS();
   private BS bsHidden = new BS();
   private BS bsNucleic = new BS();
+  private BS bsNoSurface = new BS();
+  
   private int[] atomMap;
   private Map<Float, BS> htSpheres = new Hashtable<Float, BS>();
   private Map<String, int[]> htAtomMap = new Hashtable<String, int[]>();
@@ -221,9 +223,10 @@ public class PyMOLReader extends PdbReader {
     }
     totalAtomCount = getTotalAtomCount(names);
     Logger.info("PyMOL total atom count = " + totalAtomCount);
+    selections = new JmolList<JmolList<Object>>();    
     for (int i = 1; i < names.size(); i++)
       processBranch(getList(names, i));
-
+    processSelections();
     if (isMovie) {
       appendLoadNote("PyMOL trajectories read: " + lstTrajectories.size());
       atomSetCollection.finalizeTrajectoryAs(lstTrajectories, null);
@@ -248,7 +251,7 @@ public class PyMOLReader extends PdbReader {
       if (type == BRANCH_MOLECULE && checkBranch(branch, type, true)) {
         JmolList<Object> deepBranch = getList(branch, 5);
         if (isMovie) {
-          n += getBranchAoms(deepBranch).size();
+          n += getBranchAtoms(deepBranch).size();
         } else {
           JmolList<Object> states = getList(deepBranch, 4);
           int ns = states.size();
@@ -346,7 +349,9 @@ public class PyMOLReader extends PdbReader {
   private int branchID;
   private float nonBondedSize;
   private float sphereScale;
+  private JmolList<JmolList<Object>> selections;
 
+  
   private void processBranch(JmolList<Object> branch) {
     int type = getBranchType(branch);
     if (!checkBranch(branch, type, false))
@@ -357,7 +362,7 @@ public class PyMOLReader extends PdbReader {
     branchID = 0;
     switch (type) {
     case BRANCH_SELECTION:
-      processBranchSelection(deepBranch);
+      selections.addLast(branch);
       break;
     case BRANCH_MOLECULE:
       processBranchModels(deepBranch);
@@ -372,6 +377,14 @@ public class PyMOLReader extends PdbReader {
     case BRANCH_GROUP:
       System.out.println("Unprocessed branch type " + type);
       break;
+    }
+  }
+
+  private void processSelections() {
+    for (int i = selections.size(); --i >= 0;) {      
+      JmolList<Object> branch = selections.get(i);
+      checkBranch(branch, BRANCH_SELECTION, false);
+      processBranchSelection(getList(branch, 5));
     }
   }
 
@@ -397,7 +410,8 @@ public class PyMOLReader extends PdbReader {
           bs.set(ia);
       }
     }
-    addName(branchName, bs);
+    if (!bs.isEmpty())
+      addName(branchName, bs);
   }
 
   //  ['measure01', 0, 1, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 4, 
@@ -431,15 +445,13 @@ public class PyMOLReader extends PdbReader {
     Logger.info(branchName + " " + type + " " + isHidden);
     if (branchName.indexOf("_") == 0)
       return false;
-    return (visibleOnly ? !isHidden : true);
+    return true;//(visibleOnly ? !isHidden : true);
   }
 
   private void processBranchMeasure(JmolList<Object> deepBranch) {
-    Logger.info("PyMOL measure " + branchName);
     if (isHidden)
-    //if (isHidden || branchName.indexOf("measure") < 0
-      //  && !branchName.startsWith("d"))
       return;
+    Logger.info("PyMOL measure " + branchName);
     JmolList<Object> measure = getList(getList(deepBranch, 2), 0);
 
     int color = getInt(getList(deepBranch, 0), 2);
@@ -501,9 +513,10 @@ public class PyMOLReader extends PdbReader {
     }
     atomCount = atomCount0 = atomSetCollection.getAtomCount();
     atomMap = new int[getInt(deepBranch, 3)];
+    htAtomMap.put(branchName, atomMap);
     JmolList<Object> states = getList(deepBranch, 4);
     JmolList<Bond> bonds = processBonds(getList(deepBranch, 6));
-    pymolAtoms = getBranchAoms(deepBranch);
+    pymolAtoms = getBranchAtoms(deepBranch);
     int ns = states.size();
     if (ns > 1)
       System.out.println(ns + " PyMOL states");
@@ -588,7 +601,6 @@ public class PyMOLReader extends PdbReader {
         if (bsState != null) {
           bsAtoms.or(bsState);
         }
-        htAtomMap.put(branchName, atomMap);
         processStructures(atomCount - n);
         setBranchShapes(BSUtil.newBitSet2(atomCount - n, atomCount));
       }
@@ -706,7 +718,7 @@ public class PyMOLReader extends PdbReader {
     return getInt(branch, 4);
   }
 
-  private static JmolList<Object> getBranchAoms(JmolList<Object> deepBranch) {
+  private static JmolList<Object> getBranchAtoms(JmolList<Object> deepBranch) {
     return getList(deepBranch, 7);  
   }
 
@@ -799,6 +811,11 @@ public class PyMOLReader extends PdbReader {
     colixList.addLast(Integer.valueOf(C.getColixO(Integer.valueOf(PyMOL.getRGB(getInt(a, 21))))));
     int serNo = getInt(a, 22);
     atom.cartoonType = getInt(a, 23);
+    atom.flags = getInt(a, 24);
+    if ((atom.flags & PyMOL.NOSURFACE) != 0) {
+      //System.out.println(atom.atomName + " " + atom.group3 + " " + Integer.toHexString(atom.flags));
+      bsNoSurface.set(atomCount);
+    }
     bsHidden.setBitTo(atomCount, isHidden);
     bsModelAtoms.set(atomCount);
     if (bsState != null)
@@ -1120,6 +1137,7 @@ public class PyMOLReader extends PdbReader {
 
   private void setSurface() {
     BS bs = reps[REP_SURFACE];
+    BSUtil.andNot(bs, bsNoSurface);
     if (!allowSurface || isStateScript || bsModelAtoms.isEmpty() || bs.isEmpty())
       return;
     ModelSettings ss = new ModelSettings(JC.SHAPE_ISOSURFACE, bs, new String[] {branchName

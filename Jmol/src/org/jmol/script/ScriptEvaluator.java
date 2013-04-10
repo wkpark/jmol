@@ -2825,7 +2825,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       allowJSThreads = context.allowJSThreads;
     } else {
       error = (context.errorType != null);
-      isComplete = context.isComplete;
+      //isComplete = context.isComplete;
       errorMessage = context.errorMessage;
       errorMessageUntranslated = context.errorMessageUntranslated;
       iCommandError = context.iCommandError;
@@ -2905,8 +2905,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   protected String errorMessageUntranslated;
   protected String errorType;
   protected int iCommandError;
-  private boolean isComplete;
-
+  
   public String getErrorMessage() {
     return errorMessage;
   }
@@ -15423,7 +15422,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return (String) getShapePropertyIndex(JC.SHAPE_MO, "showMO", ptMO);
   }
 
-  private void cgo() throws ScriptException {
+  private void cgo() {
     System.out.println("CGO command not implemented");
   }
   
@@ -16268,6 +16267,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     if (bsA != null) {
       // bond mode, intramolec set here
+      if (contactType == T.vanderwaals && rd == null)
+        rd = new RadiusData(null, 0, EnumType.OFFSET, EnumVdw.AUTO);
       RadiusData rd1 = (rd == null ? new RadiusData(null,
           0.26f, EnumType.OFFSET, EnumVdw.AUTO) : rd);
       if (displayType == T.nci && bsB == null && intramolecular != null
@@ -17329,7 +17330,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             case T.elemno:
             case T.color:
             case T.resno:
-            case T.temperature:
               allowSmoothing = false;
               break;
             }

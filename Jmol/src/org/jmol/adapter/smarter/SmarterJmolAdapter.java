@@ -30,6 +30,7 @@ import org.jmol.api.JmolAdapterBondIterator;
 import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolFilesReaderInterface;
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
@@ -320,8 +321,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
   
   @Override
-  public void finish(Object atomSetCollection) {
-    ((AtomSetCollection)atomSetCollection).finish();
+  public void finish(Object atomSetCollection, ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {
+    ((AtomSetCollection)atomSetCollection).finish(modelSet, baseModelIndex, baseAtomIndex);
   }
 
   ////////////////////////// post processing ////////////////////////////

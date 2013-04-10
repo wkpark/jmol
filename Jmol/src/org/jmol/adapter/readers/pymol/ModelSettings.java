@@ -23,13 +23,16 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.modelset;
+package org.jmol.adapter.readers.pymol;
 
 
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumVdw;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.MeasurementData;
+import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
@@ -48,6 +51,17 @@ import org.jmol.viewer.ShapeManager;
  */
 public class ModelSettings {
 
+  static final int cPuttyTransformNormalizedNonlinear = 0;
+  static final int cPuttyTransformRelativeNonlinear   = 1;
+  static final int cPuttyTransformScaledNonlinear     = 2;
+  static final int cPuttyTransformAbsoluteNonlinear   = 3;
+  static final int cPuttyTransformNormalizedLinear    = 4;
+  static final int cPuttyTransformRelativeLinear      = 5;
+  static final int cPuttyTransformScaledLinear        = 6;
+  static final int cPuttyTransformAbsoluteLinear      = 7;
+  static final int cPuttyTransformImpliedRMS          = 8;
+
+  
   private int id;
   private BS bsAtoms;
   private Object info;
@@ -136,13 +150,16 @@ public class ModelSettings {
       if (modelIndex < 0)
         return;
       sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-      String s = info.toString().replace('\'', '_').replace('"', '_');
+      String s = ((String[]) info)[0].toString().replace('\'', '_').replace(
+          '"', '_');
+      String lighting = ((String[]) info)[1];
       s = "script('isosurface ID \"" + s + "\"  model "
           + m.models[modelIndex].getModelNumberDotted() + " select ("
           + Escape.eBS(bsAtoms) + " and not solvent) only solvent "
           + (size / 1000f) + " map property color";
       if (translucency > 0)
         s += " translucent " + translucency;
+      s += " " + lighting;
       s += "')";
       System.out.println("shapeSettings: " + s);
       sm.viewer.evaluateExpression(s);
@@ -173,27 +190,87 @@ public class ModelSettings {
       id = JC.SHAPE_TRACE;
       float[] data = new float[bsAtoms.length()];
       rd = new RadiusData(data, 0, RadiusData.EnumType.ABSOLUTE, EnumVdw.AUTO);
-      /*
-         getFloatSetting(PyMOL.cartoon_putty_quality),
-         getFloatSetting(PyMOL.cartoon_putty_radius),
-         getFloatSetting(PyMOL.cartoon_putty_range),
-         getFloatSetting(PyMOL.cartoon_putty_scale_min),
-         getFloatSetting(PyMOL.cartoon_putty_scale_max),
-         getFloatSetting(PyMOL.cartoon_putty_scale_power)        
-       */
-      float rad = ((float[]) info)[1] / 5;
-      float min = ((float[]) info)[3] / 2;
-      float max = ((float[]) info)[4] / 2;
-      float power = ((float[]) info)[5];
-      float dataRange = max - min;
       Atom[] atoms = sm.viewer.modelSet.atoms;
+
+      double sum = 0.0,
+      sumsq = 0.0;
+      float min = Float.MAX_VALUE;
+      float max = 0;
+      int n = bsAtoms.cardinality();
+      for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
+        float value = Atom.atomPropertyFloat(null, atoms[i], T.temperature);
+        sum += value;
+        sumsq += (value * value);
+        if (value < min)
+          min = value;
+        if (value > max)
+          max = value;
+      }
+      float mean = (float) (sum / n);
+      float stdev = (float) Math.sqrt((sumsq - (sum * sum / n)) / n);
+
+      /*
+      getFloatSetting(PyMOL.cartoon_putty_quality),
+      getFloatSetting(PyMOL.cartoon_putty_radius),
+      getFloatSetting(PyMOL.cartoon_putty_range),
+      getFloatSetting(PyMOL.cartoon_putty_scale_min),
+      getFloatSetting(PyMOL.cartoon_putty_scale_max),
+      getFloatSetting(PyMOL.cartoon_putty_scale_power),        
+      getFloatSetting(PyMOL.cartoon_putty_transform),
+      */
+      float rad = ((float[]) info)[1];
+      float range = ((float[]) info)[2];
+      float scale_min = ((float[]) info)[3];
+      float scale_max = ((float[]) info)[4];
+      float power = ((float[]) info)[5];
+      
+      int transform = (int) ((float[]) info)[6];
+      float data_range = max - min;
+      boolean nonlinear = false;
+      switch (transform) {
+      case cPuttyTransformNormalizedNonlinear:
+      case cPuttyTransformRelativeNonlinear:
+      case cPuttyTransformScaledNonlinear:
+      case cPuttyTransformAbsoluteNonlinear:
+        nonlinear = true;
+        break;
+      }
       for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
           .nextSetBit(i + 1), pt++) {
-        float r = Atom.atomPropertyFloat(null, atoms[i], T.temperature) * rad;
-        r = (r - min) / dataRange;
-        if (r > 0)
-          r = (float) Math.pow(r, power);
-        data[i] = Math.max(0, Math.min(dataRange, r * rad)) + min;
+        float scale = Atom.atomPropertyFloat(null, atoms[i], T.temperature);
+        switch (transform) {
+        case cPuttyTransformAbsoluteNonlinear:
+        case cPuttyTransformAbsoluteLinear:
+        default:
+          break;
+        case cPuttyTransformNormalizedNonlinear:
+        case cPuttyTransformNormalizedLinear:
+          /* normalized by Z-score, with the range affecting the distribution width */
+          scale = 1 + (scale - mean) / range / stdev;
+          break;
+        case cPuttyTransformRelativeNonlinear:
+        case cPuttyTransformRelativeLinear:
+          scale = (scale - min) / data_range / range;
+          break;
+        case cPuttyTransformScaledNonlinear:
+        case cPuttyTransformScaledLinear:
+          scale /= range;
+          break;
+        case cPuttyTransformImpliedRMS:
+          if (scale < 0.0F)
+            scale = 0.0F;
+          scale = (float) (Math.sqrt(scale / 8.0) / Math.PI);
+          break;
+        }
+        if (scale < 0.0F)
+          scale = 0.0F;
+        if (nonlinear)
+          scale = (float) Math.pow(scale, power);
+        if ((scale < scale_min) && (scale_min >= 0.0))
+          scale = scale_min;
+        if ((scale > scale_max) && (scale_max >= 0.0))
+          scale = scale_max;
+        data[i] = scale * rad;
       }
       break;
     }

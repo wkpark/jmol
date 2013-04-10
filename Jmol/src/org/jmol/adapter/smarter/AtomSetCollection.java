@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.JmolList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -190,15 +191,17 @@ public class AtomSetCollection {
   // expands to 22 for cartesianToFractional matrix as array (PDB)
 
   public boolean allowMultiple;
+  AtomSetCollectionReader reader;
   
   public AtomSetCollection(String fileTypeName,
-      AtomSetCollectionReader atomSetCollectionReader, 
+      AtomSetCollectionReader reader, 
       AtomSetCollection[] array, JmolList<?> list) {
     
     // merging files
     
     this.fileTypeName = fileTypeName;
-    allowMultiple = (atomSetCollectionReader == null || atomSetCollectionReader.desiredVibrationNumber < 0);
+    this.reader = reader;
+    allowMultiple = (reader == null || reader.desiredVibrationNumber < 0);
     // set the default PATH properties as defined in the SmarterJmolAdapter
     Properties p = new Properties();
     p.put("PATH_KEY", SmarterJmolAdapter.PATH_KEY);
@@ -445,7 +448,8 @@ public class AtomSetCollection {
         setAtomSetAuxiliaryInfoForSet(type, lists[i], i);
   }
 
-  void finish() {
+  void finish(ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {
+    reader.finalizeModelSet(modelSet, baseModelIndex, baseAtomIndex);
     atoms = null;
     atomSetAtomCounts = new int[16];
     atomSetAuxiliaryInfo = new Hashtable[16];

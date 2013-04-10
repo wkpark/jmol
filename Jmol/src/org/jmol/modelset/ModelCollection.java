@@ -1832,7 +1832,7 @@ abstract public class ModelCollection extends BondCollection {
 
   protected BS bsAll;
 
-  protected ShapeManager shapeManager;
+  public ShapeManager shapeManager;
 
   /**
    * note -- this method returns ALL atoms, including deleted.

@@ -31,6 +31,7 @@ import java.util.Map;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.constant.EnumQuantumShell;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.viewer.JC;
@@ -240,8 +241,11 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
 
   /**
    * @param atomSetCollection  
+   * @param modelSet 
+   * @param baseAtomIndex 
+   * @param baseModelIndex 
    */
-  public void finish(Object atomSetCollection) {}
+  public void finish(Object atomSetCollection, ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {}
 
   /**
    * Get the type of this file or molecular model, if known.

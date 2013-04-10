@@ -181,9 +181,6 @@ public final class ModelLoader {
     if (info != null) {
       info.remove("pdbNoHydrogens");
       info.remove("trajectorySteps");
-      shapes = (JmolList<ModelSettings>) info.remove("shapes");
-      if (shapes != null)
-        doAddHydrogens = false;
       if (isTrajectory)
         modelSet.vibrationSteps = (JmolList<V3[]>) info.remove("vibrationSteps");
     }
@@ -256,7 +253,6 @@ public final class ModelLoader {
   private int adapterTrajectoryCount = 0;
   private boolean noAutoBond;
   private boolean is2D;
-  private JmolList<ModelSettings> shapes;
   
   public ModelSet getModelSet() {
     return modelSet;
@@ -356,7 +352,6 @@ public final class ModelLoader {
     if (adapter != null) {
       modelSet.calculatePolymers(groups, groupCount, baseGroupIndex, null);
       iterateOverAllNewStructures(adapter, atomSetCollection);
-      adapter.finish(atomSetCollection);
     }
 
     setDefaultRendering(viewer.getSmallMoleculeMaxAtoms());
@@ -374,7 +369,9 @@ public final class ModelLoader {
 
     freeze();
 
-    finalizeShapes(shapes);
+    finalizeShapes();
+    if (adapter != null)
+      adapter.finish(atomSetCollection, modelSet, baseModelIndex, baseAtomIndex);    
     if (mergeModelSet != null) {
       mergeModelSet.releaseModelSet();
     }
@@ -1420,7 +1417,7 @@ public final class ModelLoader {
 
   ///////////////  shapes  ///////////////
   
-  private void finalizeShapes(JmolList<ModelSettings> shapeSettings) {
+  private void finalizeShapes() {
     modelSet.shapeManager = viewer.getShapeManager();
     modelSet.shapeManager.setModelSet(modelSet);
     modelSet.setBsHidden(viewer.getHiddenSet());
@@ -1431,14 +1428,6 @@ public final class ModelLoader {
       modelSet.assignAromaticBondsBs(false, null);
     if (merging && baseModelCount == 1)
         modelSet.shapeManager.setShapePropertyBs(JC.SHAPE_MEASURES, "clearModelIndex", null, null);
-    if (shapeSettings != null) {
-      for (int i = 0; i < shapeSettings.size(); i++) {
-        ModelSettings ss = shapeSettings.get(i);
-        ss.offset(baseModelIndex, baseAtomIndex);
-        ss.createShape(modelSet);
-      }
-    }
-    
   }
 
   /**

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2013-04-01 10:34+0200\n"
+"POT-Creation-Date: 2013-04-10 17:59+0200\n"
 "PO-Revision-Date: 2012-08-24 11:14+0000\n"
 "Last-Translator: Wang Dianjin <Unknown>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
@@ -35,137 +35,141 @@ msgstr ""
 msgid "Element?"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:100
+#: org/openscience/jmol/app/JmolApp.java:101
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "启动 Jmol 出错：未定义参数“user.home”"
 
-#: org/openscience/jmol/app/JmolApp.java:137
+#: org/openscience/jmol/app/JmolApp.java:138
 msgid "transparent background"
 msgstr "透明背景"
 
-#: org/openscience/jmol/app/JmolApp.java:138
+#: org/openscience/jmol/app/JmolApp.java:139
 msgid "give this help page"
 msgstr "显示此帮助页面"
 
-#: org/openscience/jmol/app/JmolApp.java:140
+#: org/openscience/jmol/app/JmolApp.java:141
 msgid "no display (and also exit when done)"
 msgstr "无显示（并在完成后退出）"
 
-#: org/openscience/jmol/app/JmolApp.java:142
+#: org/openscience/jmol/app/JmolApp.java:143
 msgid "check script syntax only - no file loading"
 msgstr "仅检查脚本语法 - 不载入文件"
 
-#: org/openscience/jmol/app/JmolApp.java:144
+#: org/openscience/jmol/app/JmolApp.java:145
 msgid "check script syntax only - with file loading"
 msgstr "仅检查脚本语法 - 载入文件"
 
-#: org/openscience/jmol/app/JmolApp.java:145
+#: org/openscience/jmol/app/JmolApp.java:146
 msgid "debug"
 msgstr "调试"
 
-#: org/openscience/jmol/app/JmolApp.java:146
+#: org/openscience/jmol/app/JmolApp.java:147
 msgid "silent startup operation"
 msgstr "静音启动"
 
 #: org/openscience/jmol/app/JmolApp.java:148
+msgid "allow piping of input from System.Input"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:150
 msgid "kiosk mode -- no frame"
 msgstr "kiosk模式 -- 无框架"
 
-#: org/openscience/jmol/app/JmolApp.java:150
+#: org/openscience/jmol/app/JmolApp.java:152
 msgid "list commands during script execution"
 msgstr "脚本执行时列出命令"
 
-#: org/openscience/jmol/app/JmolApp.java:152
+#: org/openscience/jmol/app/JmolApp.java:154
 msgid "start with no splash screen"
 msgstr "启动时不显示版权页"
 
-#: org/openscience/jmol/app/JmolApp.java:154
+#: org/openscience/jmol/app/JmolApp.java:156
 msgid "no console -- all output to sysout"
 msgstr "无控制台-全部输出到系统输出"
 
-#: org/openscience/jmol/app/JmolApp.java:156
+#: org/openscience/jmol/app/JmolApp.java:158
 msgid "send only output from print messages to console (implies -i)"
 msgstr "只把打印信息输出发送到控制台（隐含 -i 参数）"
 
-#: org/openscience/jmol/app/JmolApp.java:158
+#: org/openscience/jmol/app/JmolApp.java:160
 msgid "restrict local file access"
 msgstr "限制本地文件访问"
 
-#: org/openscience/jmol/app/JmolApp.java:160
+#: org/openscience/jmol/app/JmolApp.java:162
 msgid "restrict local file access (allow reading of SPT files)"
 msgstr "限制本地文件访问(允许读取 SPT 文件)"
 
-#: org/openscience/jmol/app/JmolApp.java:162
+#: org/openscience/jmol/app/JmolApp.java:164
 msgid "independent command thread"
 msgstr "独立命令线程"
 
-#: org/openscience/jmol/app/JmolApp.java:164
+#: org/openscience/jmol/app/JmolApp.java:166
 msgid "exit after script (implicit with -n)"
 msgstr "执行脚本后退出（隐含 -n 参数）"
 
-#: org/openscience/jmol/app/JmolApp.java:167
+#: org/openscience/jmol/app/JmolApp.java:169
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr "JSON 端口号/分子运动场-风格通讯"
 
-#: org/openscience/jmol/app/JmolApp.java:173
+#: org/openscience/jmol/app/JmolApp.java:175
 msgid "script file to execute or '-' for System.in"
 msgstr "需执行的脚本文件，或“-”表示使用system.in"
 
-#: org/openscience/jmol/app/JmolApp.java:179
+#: org/openscience/jmol/app/JmolApp.java:181
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr "使用多点触控(multitouch)界面（需要“sparshui”参数）"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:188
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "在 -s 选项之前运行的Jmol脚本"
 
-#: org/openscience/jmol/app/JmolApp.java:192
+#: org/openscience/jmol/app/JmolApp.java:194
 msgid "Jmol script to execute AFTER -s option"
 msgstr "在 -s 选项之后运行的Jmol脚本"
 
-#: org/openscience/jmol/app/JmolApp.java:206
+#: org/openscience/jmol/app/JmolApp.java:208
 msgid "property=value"
 msgstr "属性=值"
 
-#: org/openscience/jmol/app/JmolApp.java:209
+#: org/openscience/jmol/app/JmolApp.java:211
 msgid "supported options are given below"
 msgstr "所支持的选项列出如下"
 
-#: org/openscience/jmol/app/JmolApp.java:215
+#: org/openscience/jmol/app/JmolApp.java:217
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "窗口宽度×高度，例如 {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:225
+#: org/openscience/jmol/app/JmolApp.java:227
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr "JPG图像质量(1-100; 默认75)或PNG图像压缩率(0-9; 默认2，最大压缩率9)"
 
-#: org/openscience/jmol/app/JmolApp.java:230
+#: org/openscience/jmol/app/JmolApp.java:232
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} 或 {1}:文件名"
 
-#: org/openscience/jmol/app/JmolApp.java:244
+#: org/openscience/jmol/app/JmolApp.java:246
 msgid "For example:"
 msgstr "例如:"
 
-#: org/openscience/jmol/app/JmolApp.java:250
+#: org/openscience/jmol/app/JmolApp.java:252
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr "-D 选项如下(默认在圆括号中)且必须在'-jar Jmol.jar'之前调用:"
 
-#: org/openscience/jmol/app/JmolApp.java:502
+#: org/openscience/jmol/app/JmolApp.java:509
 msgid "Executing script 1..."
 msgstr "执行脚本1..."
 
-#: org/openscience/jmol/app/JmolApp.java:512
+#: org/openscience/jmol/app/JmolApp.java:519
 msgid "Executing script file..."
 msgstr "执行脚本文件"
 
-#: org/openscience/jmol/app/JmolApp.java:533
+#: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 2..."
 msgstr "执行脚本2..."
 
@@ -1044,23 +1048,23 @@ msgstr "启动Jmol..."
 msgid "Exit Jmol?"
 msgstr "关于 Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:627
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
 msgstr "关闭 Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1186
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1184
 msgid "Open URL"
 msgstr "打开网址(URL)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1187
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1185
 msgid "Enter URL of molecular model"
 msgstr "输入分子模型的网址(URL)"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1211
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1209
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr "输入四字母的 PDB 模型 ID 或 \"=\" 和 一个三位数配合基 ID"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1220
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1218
 msgid ""
 "Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
@@ -1069,11 +1073,11 @@ msgstr ""
 "输入一个化合物的名字或ID (SMILES, InChl, CAS). 前言带“:”从PubChem导入;不然 "
 "Jmol 将会用 NCI/NIH 分解器"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1393
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1391
 msgid "IO Exception:"
 msgstr "IO异常"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1531
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1529
 msgid "width height?"
 msgstr "宽度或高度？"
 

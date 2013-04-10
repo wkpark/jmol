@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2013-04-01 10:34+0200\n"
+"POT-Creation-Date: 2013-04-10 17:59+0200\n"
 "PO-Revision-Date: 2011-06-04 05:49+0000\n"
 "Last-Translator: Won-Kyu Park <wkpark@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -34,108 +34,112 @@ msgstr ""
 msgid "Element?"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:100
+#: org/openscience/jmol/app/JmolApp.java:101
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Jmol 시작 오류: 'user.home'이 정의되지 않았습니다."
 
-#: org/openscience/jmol/app/JmolApp.java:137
+#: org/openscience/jmol/app/JmolApp.java:138
 msgid "transparent background"
 msgstr "투명한 배경화면"
 
-#: org/openscience/jmol/app/JmolApp.java:138
+#: org/openscience/jmol/app/JmolApp.java:139
 msgid "give this help page"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:140
+#: org/openscience/jmol/app/JmolApp.java:141
 msgid "no display (and also exit when done)"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:142
+#: org/openscience/jmol/app/JmolApp.java:143
 msgid "check script syntax only - no file loading"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:144
+#: org/openscience/jmol/app/JmolApp.java:145
 msgid "check script syntax only - with file loading"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:145
+#: org/openscience/jmol/app/JmolApp.java:146
 msgid "debug"
 msgstr "디버그"
 
-#: org/openscience/jmol/app/JmolApp.java:146
+#: org/openscience/jmol/app/JmolApp.java:147
 msgid "silent startup operation"
 msgstr "조용히 시작하기"
 
 #: org/openscience/jmol/app/JmolApp.java:148
-msgid "kiosk mode -- no frame"
+msgid "allow piping of input from System.Input"
 msgstr ""
 
 #: org/openscience/jmol/app/JmolApp.java:150
+msgid "kiosk mode -- no frame"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:152
 msgid "list commands during script execution"
 msgstr "스크립트 실행중 명령 목록"
 
-#: org/openscience/jmol/app/JmolApp.java:152
+#: org/openscience/jmol/app/JmolApp.java:154
 msgid "start with no splash screen"
 msgstr "스플래쉬 화면 없이 시작"
 
-#: org/openscience/jmol/app/JmolApp.java:154
+#: org/openscience/jmol/app/JmolApp.java:156
 msgid "no console -- all output to sysout"
 msgstr "콘솔 없음 -- 모든 출력은 sysout으로"
 
-#: org/openscience/jmol/app/JmolApp.java:156
+#: org/openscience/jmol/app/JmolApp.java:158
 msgid "send only output from print messages to console (implies -i)"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:158
+#: org/openscience/jmol/app/JmolApp.java:160
 msgid "restrict local file access"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:160
+#: org/openscience/jmol/app/JmolApp.java:162
 msgid "restrict local file access (allow reading of SPT files)"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:162
+#: org/openscience/jmol/app/JmolApp.java:164
 msgid "independent command thread"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:164
+#: org/openscience/jmol/app/JmolApp.java:166
 msgid "exit after script (implicit with -n)"
 msgstr "스크립트 실행후 끝내기 (-n을 내포함)"
 
-#: org/openscience/jmol/app/JmolApp.java:167
+#: org/openscience/jmol/app/JmolApp.java:169
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:173
+#: org/openscience/jmol/app/JmolApp.java:175
 msgid "script file to execute or '-' for System.in"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:179
+#: org/openscience/jmol/app/JmolApp.java:181
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:188
 msgid "Jmol script to execute BEFORE -s option"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:192
+#: org/openscience/jmol/app/JmolApp.java:194
 msgid "Jmol script to execute AFTER -s option"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:206
+#: org/openscience/jmol/app/JmolApp.java:208
 msgid "property=value"
 msgstr "속성=값"
 
-#: org/openscience/jmol/app/JmolApp.java:209
+#: org/openscience/jmol/app/JmolApp.java:211
 msgid "supported options are given below"
 msgstr "지원되는 옵션은 아래에 주어져있음"
 
-#: org/openscience/jmol/app/JmolApp.java:215
+#: org/openscience/jmol/app/JmolApp.java:217
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "창 너비 x 높이, 예) . {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:225
+#: org/openscience/jmol/app/JmolApp.java:227
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -143,30 +147,30 @@ msgstr ""
 "JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최"
 "대 압축률 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:230
+#: org/openscience/jmol/app/JmolApp.java:232
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} 또는 {1}:파일 이름"
 
-#: org/openscience/jmol/app/JmolApp.java:244
+#: org/openscience/jmol/app/JmolApp.java:246
 msgid "For example:"
 msgstr "예:"
 
-#: org/openscience/jmol/app/JmolApp.java:250
+#: org/openscience/jmol/app/JmolApp.java:252
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
 msgstr ""
 
-#: org/openscience/jmol/app/JmolApp.java:502
+#: org/openscience/jmol/app/JmolApp.java:509
 msgid "Executing script 1..."
 msgstr "스크립트 1 실행 중..."
 
-#: org/openscience/jmol/app/JmolApp.java:512
+#: org/openscience/jmol/app/JmolApp.java:519
 msgid "Executing script file..."
 msgstr "스크립트 파일 실행 중..."
 
-#: org/openscience/jmol/app/JmolApp.java:533
+#: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 2..."
 msgstr "스크립트  2 실행 중..."
 
@@ -1043,34 +1047,34 @@ msgstr "Jmol 초기화..."
 msgid "Exit Jmol?"
 msgstr "정보"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:627
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
 msgstr "Jmol 닫기..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1186
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1184
 msgid "Open URL"
 msgstr "URL 열기"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1187
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1185
 msgid "Enter URL of molecular model"
 msgstr "분자 모델의 URL을 넣으세요"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1211
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1209
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1220
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1218
 msgid ""
 "Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1393
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1391
 msgid "IO Exception:"
 msgstr "IO 예외"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1531
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1529
 msgid "width height?"
 msgstr ""
 

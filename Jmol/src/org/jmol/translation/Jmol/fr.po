@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2013-04-01 10:34+0200\n"
+"POT-Creation-Date: 2013-04-10 17:59+0200\n"
 "PO-Revision-Date: 2013-01-06 21:39+0000\n"
 "Last-Translator: Guillaume F <marsguo@wanadoo.fr>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
@@ -43,112 +43,116 @@ msgstr "Erreur de Fichier:"
 msgid "Element?"
 msgstr "Élément ?"
 
-#: org/openscience/jmol/app/JmolApp.java:100
+#: org/openscience/jmol/app/JmolApp.java:101
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
 "Impossible de démarrer le Jmol: le «user.home» n'est pas défini correctement."
 
-#: org/openscience/jmol/app/JmolApp.java:137
+#: org/openscience/jmol/app/JmolApp.java:138
 msgid "transparent background"
 msgstr "arrière-plan transparent"
 
-#: org/openscience/jmol/app/JmolApp.java:138
+#: org/openscience/jmol/app/JmolApp.java:139
 msgid "give this help page"
 msgstr "donner à cette page d'aide"
 
-#: org/openscience/jmol/app/JmolApp.java:140
+#: org/openscience/jmol/app/JmolApp.java:141
 msgid "no display (and also exit when done)"
 msgstr "pas d'affichage (et également quitter lorsque vous avez terminé)"
 
-#: org/openscience/jmol/app/JmolApp.java:142
+#: org/openscience/jmol/app/JmolApp.java:143
 msgid "check script syntax only - no file loading"
 msgstr "vérifier la syntaxe de script seulement - pas de chargement de fichier"
 
-#: org/openscience/jmol/app/JmolApp.java:144
+#: org/openscience/jmol/app/JmolApp.java:145
 msgid "check script syntax only - with file loading"
 msgstr "vérifier la syntaxe de script seulement - avec chargement du fichier"
 
-#: org/openscience/jmol/app/JmolApp.java:145
+#: org/openscience/jmol/app/JmolApp.java:146
 msgid "debug"
 msgstr "déboguer"
 
-#: org/openscience/jmol/app/JmolApp.java:146
+#: org/openscience/jmol/app/JmolApp.java:147
 msgid "silent startup operation"
 msgstr "lancement silencieux"
 
 #: org/openscience/jmol/app/JmolApp.java:148
+msgid "allow piping of input from System.Input"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:150
 msgid "kiosk mode -- no frame"
 msgstr "mode kiosque - pas de cadre"
 
-#: org/openscience/jmol/app/JmolApp.java:150
+#: org/openscience/jmol/app/JmolApp.java:152
 msgid "list commands during script execution"
 msgstr "liste les commandes pendant l’exécution du script"
 
-#: org/openscience/jmol/app/JmolApp.java:152
+#: org/openscience/jmol/app/JmolApp.java:154
 msgid "start with no splash screen"
 msgstr "démarrer sans écran de démarrage"
 
-#: org/openscience/jmol/app/JmolApp.java:154
+#: org/openscience/jmol/app/JmolApp.java:156
 msgid "no console -- all output to sysout"
 msgstr "sans console -- redirection intégrale vers sortie standard"
 
-#: org/openscience/jmol/app/JmolApp.java:156
+#: org/openscience/jmol/app/JmolApp.java:158
 msgid "send only output from print messages to console (implies -i)"
 msgstr ""
 "envoyer uniquement la sortie des messages affichés vers la console (implique "
 "-i)"
 
-#: org/openscience/jmol/app/JmolApp.java:158
+#: org/openscience/jmol/app/JmolApp.java:160
 msgid "restrict local file access"
 msgstr "restreindre l'accès au fichier local"
 
-#: org/openscience/jmol/app/JmolApp.java:160
+#: org/openscience/jmol/app/JmolApp.java:162
 msgid "restrict local file access (allow reading of SPT files)"
 msgstr ""
 "Restreindre l'accès aux fichiers locaux (permet de lire les fichiers SPT)"
 
-#: org/openscience/jmol/app/JmolApp.java:162
+#: org/openscience/jmol/app/JmolApp.java:164
 msgid "independent command thread"
 msgstr "commande de thread indépendante"
 
-#: org/openscience/jmol/app/JmolApp.java:164
+#: org/openscience/jmol/app/JmolApp.java:166
 msgid "exit after script (implicit with -n)"
 msgstr "quitter après le script (implicite avec -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:167
+#: org/openscience/jmol/app/JmolApp.java:169
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr "port pour JSON / MolecularPlayground style de communication"
 
-#: org/openscience/jmol/app/JmolApp.java:173
+#: org/openscience/jmol/app/JmolApp.java:175
 msgid "script file to execute or '-' for System.in"
 msgstr "fichier de script à exécuter ou '-' pour System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:179
+#: org/openscience/jmol/app/JmolApp.java:181
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr "utiliser l’interface multitouch (requiert le paramètre « sparshui »)"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:188
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "script Jmol à exécuter AVANT l’option -s"
 
-#: org/openscience/jmol/app/JmolApp.java:192
+#: org/openscience/jmol/app/JmolApp.java:194
 msgid "Jmol script to execute AFTER -s option"
 msgstr "script Jmol à exécuter APRÈS l’option -s"
 
-#: org/openscience/jmol/app/JmolApp.java:206
+#: org/openscience/jmol/app/JmolApp.java:208
 msgid "property=value"
 msgstr "propriété=valeur"
 
-#: org/openscience/jmol/app/JmolApp.java:209
+#: org/openscience/jmol/app/JmolApp.java:211
 msgid "supported options are given below"
 msgstr "les options supportées sont données ci-dessous"
 
-#: org/openscience/jmol/app/JmolApp.java:215
+#: org/openscience/jmol/app/JmolApp.java:217
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "taille de la fenêtre (largeur x hauteur), par exemple {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:225
+#: org/openscience/jmol/app/JmolApp.java:227
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -156,16 +160,16 @@ msgstr ""
 "qualité d’image JPG (1-100; 75 par défaut) ou compression d’image PNG (0-9; "
 "2 par défaut, compression maximale 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:230
+#: org/openscience/jmol/app/JmolApp.java:232
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} ou {1} :nomFichier"
 
-#: org/openscience/jmol/app/JmolApp.java:244
+#: org/openscience/jmol/app/JmolApp.java:246
 msgid "For example:"
 msgstr "Par exemple :"
 
-#: org/openscience/jmol/app/JmolApp.java:250
+#: org/openscience/jmol/app/JmolApp.java:252
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
@@ -173,15 +177,15 @@ msgstr ""
 "Les options -D sont comme suit (valeurs par défaut entre parenthèses), et "
 "doivent être toujours précédées de « -jar Jmol.jar » :"
 
-#: org/openscience/jmol/app/JmolApp.java:502
+#: org/openscience/jmol/app/JmolApp.java:509
 msgid "Executing script 1..."
 msgstr "Script 1 en cours d’exécution..."
 
-#: org/openscience/jmol/app/JmolApp.java:512
+#: org/openscience/jmol/app/JmolApp.java:519
 msgid "Executing script file..."
 msgstr "Fichier de script en cours d’exécution..."
 
-#: org/openscience/jmol/app/JmolApp.java:533
+#: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 2..."
 msgstr "Script 2 en cours d’exécution..."
 
@@ -1066,25 +1070,25 @@ msgstr "Initialisation de Jmol..."
 msgid "Exit Jmol?"
 msgstr "À propos de Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:627
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
 msgstr "Fermeture de Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1186
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1184
 msgid "Open URL"
 msgstr "Ouvrir une URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1187
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1185
 msgid "Enter URL of molecular model"
 msgstr "Saisissez l’URL d’un modèle moléculaire"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1211
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1209
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
 "Saisir un identifiant de modèle PDB à 4 chiffres ou  « = » et un identifiant "
 "de liant à 3 chiffres"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1220
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1218
 msgid ""
 "Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
@@ -1094,11 +1098,11 @@ msgstr ""
 "avec \":\" à charger à partir de PubChem ; sinon Jmol utilise le résolveur "
 "NCI/NIH."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1393
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1391
 msgid "IO Exception:"
 msgstr "Exception E/S!"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1531
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1529
 msgid "width height?"
 msgstr "largeur hauteur ?"
 

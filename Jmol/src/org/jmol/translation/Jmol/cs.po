@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2013-04-01 10:34+0200\n"
+"POT-Creation-Date: 2013-04-10 17:59+0200\n"
 "PO-Revision-Date: 2013-01-13 09:41+0000\n"
 "Last-Translator: Zdeněk Chalupský <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -43,108 +43,112 @@ msgstr "Chyba souboru:"
 msgid "Element?"
 msgstr "Prvek?"
 
-#: org/openscience/jmol/app/JmolApp.java:100
+#: org/openscience/jmol/app/JmolApp.java:101
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Chyba při spouštění Jmolu: vlastnost 'user.home' není definována."
 
-#: org/openscience/jmol/app/JmolApp.java:137
+#: org/openscience/jmol/app/JmolApp.java:138
 msgid "transparent background"
 msgstr "průhledné pozadí"
 
-#: org/openscience/jmol/app/JmolApp.java:138
+#: org/openscience/jmol/app/JmolApp.java:139
 msgid "give this help page"
 msgstr "zobrazí tuto stránku nápovědy"
 
-#: org/openscience/jmol/app/JmolApp.java:140
+#: org/openscience/jmol/app/JmolApp.java:141
 msgid "no display (and also exit when done)"
 msgstr "bez zobrazení (následně skončí po vykonání)"
 
-#: org/openscience/jmol/app/JmolApp.java:142
+#: org/openscience/jmol/app/JmolApp.java:143
 msgid "check script syntax only - no file loading"
 msgstr "zkontrolovat pouze syntaxi skriptu - bez nahrání souboru"
 
-#: org/openscience/jmol/app/JmolApp.java:144
+#: org/openscience/jmol/app/JmolApp.java:145
 msgid "check script syntax only - with file loading"
 msgstr "zkontrolovat pouze syntaxi skriptu - s nahráním souboru"
 
-#: org/openscience/jmol/app/JmolApp.java:145
+#: org/openscience/jmol/app/JmolApp.java:146
 msgid "debug"
 msgstr "ladit"
 
-#: org/openscience/jmol/app/JmolApp.java:146
+#: org/openscience/jmol/app/JmolApp.java:147
 msgid "silent startup operation"
 msgstr "tichý start"
 
 #: org/openscience/jmol/app/JmolApp.java:148
+msgid "allow piping of input from System.Input"
+msgstr ""
+
+#: org/openscience/jmol/app/JmolApp.java:150
 msgid "kiosk mode -- no frame"
 msgstr "kiosk mód -- bez rámu"
 
-#: org/openscience/jmol/app/JmolApp.java:150
+#: org/openscience/jmol/app/JmolApp.java:152
 msgid "list commands during script execution"
 msgstr "Vypsat příkazy během provádění skriptu"
 
-#: org/openscience/jmol/app/JmolApp.java:152
+#: org/openscience/jmol/app/JmolApp.java:154
 msgid "start with no splash screen"
 msgstr "startovat bez úvodní obrazovky"
 
-#: org/openscience/jmol/app/JmolApp.java:154
+#: org/openscience/jmol/app/JmolApp.java:156
 msgid "no console -- all output to sysout"
 msgstr "bez konzole -- všechen výstup na sysout"
 
-#: org/openscience/jmol/app/JmolApp.java:156
+#: org/openscience/jmol/app/JmolApp.java:158
 msgid "send only output from print messages to console (implies -i)"
 msgstr "poslat pouze výstup příkazů print na konzoli (předpokládá -i)"
 
-#: org/openscience/jmol/app/JmolApp.java:158
+#: org/openscience/jmol/app/JmolApp.java:160
 msgid "restrict local file access"
 msgstr "omezit přístup k lokálním souborům"
 
-#: org/openscience/jmol/app/JmolApp.java:160
+#: org/openscience/jmol/app/JmolApp.java:162
 msgid "restrict local file access (allow reading of SPT files)"
 msgstr "omezit přístup k lokálním souborům (povolit čtení SPT souborů)"
 
-#: org/openscience/jmol/app/JmolApp.java:162
+#: org/openscience/jmol/app/JmolApp.java:164
 msgid "independent command thread"
 msgstr "nezávislé vlákno příkazů"
 
-#: org/openscience/jmol/app/JmolApp.java:164
+#: org/openscience/jmol/app/JmolApp.java:166
 msgid "exit after script (implicit with -n)"
 msgstr "konec po skriptu (implicitně s -n)"
 
-#: org/openscience/jmol/app/JmolApp.java:167
+#: org/openscience/jmol/app/JmolApp.java:169
 msgid "port for JSON/MolecularPlayground-style communication"
 msgstr "port pro JSON / MolecularPlayground - styl komunikace"
 
-#: org/openscience/jmol/app/JmolApp.java:173
+#: org/openscience/jmol/app/JmolApp.java:175
 msgid "script file to execute or '-' for System.in"
 msgstr "soubor skriptu pro spuštění nebo  '-' pro System.in"
 
-#: org/openscience/jmol/app/JmolApp.java:179
+#: org/openscience/jmol/app/JmolApp.java:181
 msgid "use multitouch interface (requires \"sparshui\" parameter"
 msgstr "využití multitouch rozhraní (vyžaduje \"sparshui\" parametr"
 
-#: org/openscience/jmol/app/JmolApp.java:186
+#: org/openscience/jmol/app/JmolApp.java:188
 msgid "Jmol script to execute BEFORE -s option"
 msgstr "Jmol skript pro spuštění s volbou BEFORE -s"
 
-#: org/openscience/jmol/app/JmolApp.java:192
+#: org/openscience/jmol/app/JmolApp.java:194
 msgid "Jmol script to execute AFTER -s option"
 msgstr "Jmol skript pro spuštění s volbou AFTER -s"
 
-#: org/openscience/jmol/app/JmolApp.java:206
+#: org/openscience/jmol/app/JmolApp.java:208
 msgid "property=value"
 msgstr "vlastnost = hodnota"
 
-#: org/openscience/jmol/app/JmolApp.java:209
+#: org/openscience/jmol/app/JmolApp.java:211
 msgid "supported options are given below"
 msgstr "podporované možnosti: viz níže"
 
-#: org/openscience/jmol/app/JmolApp.java:215
+#: org/openscience/jmol/app/JmolApp.java:217
 #, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "šířka x výška okna, např. {0}"
 
-#: org/openscience/jmol/app/JmolApp.java:225
+#: org/openscience/jmol/app/JmolApp.java:227
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
@@ -152,16 +156,16 @@ msgstr ""
 "kvalita JPG obrázku (1-100; standardně 75) nebo komprese PNG obrázku (0-9; "
 "standardně 2, maximálně 9)"
 
-#: org/openscience/jmol/app/JmolApp.java:230
+#: org/openscience/jmol/app/JmolApp.java:232
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} nebo {1}: název souboru"
 
-#: org/openscience/jmol/app/JmolApp.java:244
+#: org/openscience/jmol/app/JmolApp.java:246
 msgid "For example:"
 msgstr "Například:"
 
-#: org/openscience/jmol/app/JmolApp.java:250
+#: org/openscience/jmol/app/JmolApp.java:252
 msgid ""
 "The -D options are as follows (defaults in parenthesis) and must be called "
 "preceding '-jar Jmol.jar':"
@@ -169,15 +173,15 @@ msgstr ""
 "D-volby jsou následující (výchozí hodnoty v závorce) a musí být před názvem "
 "'-jar Jmol.jar':"
 
-#: org/openscience/jmol/app/JmolApp.java:502
+#: org/openscience/jmol/app/JmolApp.java:509
 msgid "Executing script 1..."
 msgstr "Provádím skript 1..."
 
-#: org/openscience/jmol/app/JmolApp.java:512
+#: org/openscience/jmol/app/JmolApp.java:519
 msgid "Executing script file..."
 msgstr "Spouštím soubor skriptu"
 
-#: org/openscience/jmol/app/JmolApp.java:533
+#: org/openscience/jmol/app/JmolApp.java:540
 msgid "Executing script 2..."
 msgstr "Provádím skript 2..."
 
@@ -1060,25 +1064,25 @@ msgstr "Inicializuji Jmol..."
 msgid "Exit Jmol?"
 msgstr "O programu Jmol"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:627
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
 msgstr "Ukončuji Jmol..."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1186
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1184
 msgid "Open URL"
 msgstr "Otevřít URL"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1187
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1185
 msgid "Enter URL of molecular model"
 msgstr "Zadat URL molekulárního modelu"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1211
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1209
 msgid "Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID"
 msgstr ""
 "Zadej čtyřčíselný  identifikátor PDB modelu nebo \"=\" a tříčíselný "
 "identifikátor ligandu"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1220
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1218
 msgid ""
 "Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface "
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
@@ -1087,11 +1091,11 @@ msgstr ""
 "Zadej jméno nebo identifikátor (SMILES, InChI, CAS) sloučeniny. Předřaď \":"
 "\" pro nahrání z PubChem; jinak Jmol použije NCI/NIH Resolver."
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1393
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1391
 msgid "IO Exception:"
 msgstr "IO výjimka:"
 
-#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1531
+#: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1529
 msgid "width height?"
 msgstr "šířka výška?"
 

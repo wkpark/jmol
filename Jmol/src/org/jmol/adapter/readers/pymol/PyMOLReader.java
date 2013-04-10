@@ -244,7 +244,8 @@ public class PyMOLReader extends PdbReader {
     int n = 0;
     for (int i = 1; i < names.size(); i++) {
       JmolList<Object> branch = getList(names, i);
-      if (checkBranch(branch, true)) {
+      int type = getBranchType(branch);
+      if (type == BRANCH_MOLECULE && checkBranch(branch, type, true)) {
         JmolList<Object> deepBranch = getList(branch, 5);
         if (isMovie) {
           n += getBranchAoms(deepBranch).size();
@@ -347,11 +348,11 @@ public class PyMOLReader extends PdbReader {
   private float sphereScale;
 
   private void processBranch(JmolList<Object> branch) {
-    if (!checkBranch(branch, false))
+    int type = getBranchType(branch);
+    if (!checkBranch(branch, type, false))
       return;
     Logger.info("PyMOL model " + (nModels + 1) + " Branch " + branchName
         + (isHidden ? " (hidden)" : " (visible)"));
-    int type = getBranchType(branch);
     JmolList<Object> deepBranch = getList(branch, 5);
     branchID = 0;
     switch (type) {
@@ -424,14 +425,13 @@ public class PyMOLReader extends PdbReader {
   //      6 => { type => 'torsion',     atoms => 4,    specifier=>'%0.%digits%VALUE',  digits=>'label_dihedral_digits', extra=>6 },
   // };
 
-  private boolean checkBranch(JmolList<Object> branch, boolean moleculesOnly) {
+  private boolean checkBranch(JmolList<Object> branch, int type, boolean visibleOnly) {
     branchName = getString(branch, 0);
-    int type = getInt(branch, 1);
     isHidden = (getInt(branch, 2) != 1);
     Logger.info(branchName + " " + type + " " + isHidden);
-    if (branchName.indexOf("_") == 0 || (moleculesOnly && type != 0))
+    if (branchName.indexOf("_") == 0)
       return false;
-    return !isHidden || !moleculesOnly;
+    return (visibleOnly ? !isHidden : true);
   }
 
   private void processBranchMeasure(JmolList<Object> deepBranch) {

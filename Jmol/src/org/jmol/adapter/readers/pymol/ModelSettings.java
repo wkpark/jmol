@@ -164,7 +164,7 @@ public class ModelSettings {
       		+ resolution + " select (" + Escape.eBS(bsAtoms)
       		+ ") only solvent " + (size / 1000f)
       		+ " map property color";
-      s += " " + lighting;
+      s += " frontOnly " + lighting;
       if (translucency > 0)
         s += " translucent " + translucency;
       s += "')";

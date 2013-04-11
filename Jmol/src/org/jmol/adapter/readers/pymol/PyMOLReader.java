@@ -625,14 +625,15 @@ public class PyMOLReader extends PdbReader {
       else
         labels.addLast(atom.label);
     }
-    if (!solventAsSpheres && reps[PyMOL.REP_NONBONDED].get(iAtom) && !atom.bonded) {
+    boolean isSphere = reps[PyMOL.REP_SPHERES].get(iAtom);
+    if (!isSphere && !solventAsSpheres && reps[PyMOL.REP_NONBONDED].get(iAtom) && !atom.bonded) {
       reps[PyMOL.REP_NBSPHERES].clear(iAtom);
-      reps[PyMOL.REP_SPHERES].clear(iAtom);
+      //reps[PyMOL.REP_SPHERES].clear(iAtom);
       reps[PyMOL.REP_NONBONDED].clear(iAtom);
       reps[REP_JMOL_STARS].set(iAtom);
     }
     float rad = 0;
-    if (reps[PyMOL.REP_SPHERES].get(iAtom)) {
+    if (isSphere) {
       rad = atom.radius * sphereScale;
     } else if (reps[PyMOL.REP_NONBONDED].get(iAtom)) {
       rad = -atom.radius * nonBondedSize;
@@ -1035,7 +1036,7 @@ public class PyMOLReader extends PdbReader {
     switch (shapeID) {
     case REP_JMOL_STARS:
       ss = new ModelSettings(JC.SHAPE_STARS, bs, null);
-      ss.rd = new RadiusData(null, getFloatSetting(PyMOL.nonbonded_size), RadiusData.EnumType.FACTOR,
+      ss.rd = new RadiusData(null, getFloatSetting(PyMOL.nonbonded_size)/2, RadiusData.EnumType.FACTOR,
           EnumVdw.AUTO);
       ss.setColors(colixes, 0);
       modelSettings.addLast(ss);

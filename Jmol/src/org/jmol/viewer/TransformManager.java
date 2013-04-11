@@ -800,7 +800,7 @@ public class TransformManager {
   int zDepthValue;
 
   int getZShadeStart() {
-    return (zShadeEnabled ? zSlabValue : 0);
+    return (zShadeEnabled ? zDepthValue : 0);
   }
 
   float slabRange = 0f;

@@ -548,7 +548,7 @@ public class PyMOLReader extends PdbReader {
         JmolList<Object> state = getList(states, i);
         JmolList<Object> idxToAtm = getList(state, 3);
         for (int j = idxToAtm.size(); --j >= 0;)
-          bsState.set(j);
+          bsState.set(getInt(idxToAtm, j));
       }
       for (int i = bsState.nextSetBit(0); i >= 0; i = bsState.nextSetBit(i + 1))
         if (!addAtom(pymolAtoms, i, -1, null, bsAtoms))
@@ -1357,7 +1357,7 @@ public class PyMOLReader extends PdbReader {
     sb.append("set ribbonBorder "
         + getBooleanSetting(PyMOL.cartoon_fancy_helices) + ";");
     sb.append("set cartoonFancy "
-        + !getBooleanSetting(PyMOL.cartoon_fancy_helices) + ";"); // for now
+        + (!isMovie && !getBooleanSetting(PyMOL.cartoon_fancy_helices)) + ";"); // for now
 
     //{ command => 'set hermiteLevel -4',                                                       comment => 'so that SS reps have some thickness' },
     //{ command => 'set ribbonAspectRatio 8',                                                   comment => 'degree of W/H ratio, but somehow not tied directly to actual width parameter...' },
@@ -1409,5 +1409,6 @@ public class PyMOLReader extends PdbReader {
         ss.createShape(modelSet);
       }
     }
+    viewer.setTrajectoryBs(BSUtil.newBitSet2(baseModelIndex, modelSet.modelCount));
   }
 }

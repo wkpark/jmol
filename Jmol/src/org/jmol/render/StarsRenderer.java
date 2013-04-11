@@ -62,7 +62,7 @@ public class StarsRenderer extends ShapeRenderer {
     g3d.drawLineXYZ(x, y - r, z, x, y - r + d, z);
     g3d.drawLineXYZ(x, y, z - r, x, y, z - r + d);
     // added to strengthen:
-    g3d.drawLineXYZ(x - r - 1, y - 1, z, x - r - 1 + d, y - 1, z);
+    g3d.drawLineXYZ(x - r - 1, y + 1, z, x - r - 1 + d, y + 1, z);
     g3d.drawLineXYZ(x + 1, y + 1 - r, z, x + 1, y + 1 - r + d, z);
     
   }

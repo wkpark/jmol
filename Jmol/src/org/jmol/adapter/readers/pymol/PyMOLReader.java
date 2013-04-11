@@ -81,6 +81,7 @@ public class PyMOLReader extends PdbReader {
   private BS bsHidden = new BS();
   private BS bsNucleic = new BS();
   private BS bsNoSurface = new BS();
+  private boolean haveTraceOrBackbone;
   
   private int[] atomMap;
   private Map<Float, BS> htSpheres = new Hashtable<Float, BS>();
@@ -1091,12 +1092,16 @@ public class PyMOLReader extends PdbReader {
       setPutty(bs);
       break;
     case REP_JMOL_TRACE:
+      haveTraceOrBackbone = true;
       setTrace(bs);
       break;
     case PyMOL.REP_BACKBONE: //   = 6; // ribbon
+      haveTraceOrBackbone = true;
       setRibbon(bs);
       break;
     case PyMOL.REP_DASHES: //   = 10;
+      // backbone dashes? Maybe an old setting
+      break;
     default:
       if (shapeID < REP_JMOL_MIN)
         System.out.println("Unprocessed representation type " + shapeID);
@@ -1203,7 +1208,8 @@ public class PyMOLReader extends PdbReader {
 
   private void setRibbon(BS bs) {
     ModelSettings ss;
-    ss = new ModelSettings((getBooleanSetting(PyMOL.ribbon_smooth) ? JC.SHAPE_TRACE
+    ss = new ModelSettings((getFloatSetting(PyMOL.ribbon_smooth) >= 0 
+        || getFloatSetting(PyMOL.ribbon_sampling) > 1? JC.SHAPE_TRACE
         : JC.SHAPE_BACKBONE), bs, null);
     ss.setColors(colixes, 0); // no translucency
     ss.setSize(getFloatSetting(PyMOL.ribbon_width) * 0.1f);
@@ -1403,11 +1409,12 @@ public class PyMOLReader extends PdbReader {
 
   @Override
   public void finalizeModelSet(ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {
+    BS bsCarb = (haveTraceOrBackbone ? modelSet.getAtomBits(T.carbohydrate, null) : null);
     if (modelSettings != null) {
       for (int i = 0; i < modelSettings.size(); i++) {
         ModelSettings ss = modelSettings.get(i);
         ss.offset(baseModelIndex, baseAtomIndex);
-        ss.createShape(modelSet);
+        ss.createShape(modelSet, bsCarb);
       }
     }
     viewer.setTrajectoryBs(BSUtil.newBitSet2(baseModelIndex, modelSet.modelCount));

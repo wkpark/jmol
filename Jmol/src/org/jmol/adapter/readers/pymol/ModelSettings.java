@@ -122,7 +122,7 @@ public class ModelSettings {
   }
 
   @SuppressWarnings("unchecked")
-  public void createShape(ModelSet m) {
+  public void createShape(ModelSet m, BS bsCarb) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
     switch (id) {
@@ -188,6 +188,10 @@ public class ModelSettings {
       if (size != -1)
         sm.setShapeSizeBs(id, size, null, null);
       return;
+    case JC.SHAPE_TRACE:
+    case JC.SHAPE_BACKBONE:
+      BSUtil.andNot(bsAtoms, bsCarb);
+      break;
     case JC.SHAPE_DOTS:
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "ignore", BSUtil.copyInvert(bsAtoms, sm.viewer

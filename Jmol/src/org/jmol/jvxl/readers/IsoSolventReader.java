@@ -38,7 +38,6 @@ import org.jmol.util.MeshSurface;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
 import org.jmol.util.P4;
-import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 
 import org.jmol.api.AtomIndexIterator;

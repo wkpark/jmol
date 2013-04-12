@@ -27,8 +27,10 @@ public class Bond extends AtomSetObject {
   public int atomIndex1;
   public int atomIndex2;
   public int order;
+  public float radius = -1;
+  public int color = Integer.MIN_VALUE;
 
-  public Bond(int atomIndex1, int atomIndex2, int order) {
+  public Bond (int atomIndex1, int atomIndex2, int order) {
     this.atomIndex1 = atomIndex1;
     this.atomIndex2 = atomIndex2;
     this.order = order;

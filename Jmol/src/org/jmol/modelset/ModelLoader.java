@@ -28,6 +28,7 @@ package org.jmol.modelset;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Elements;
 import org.jmol.util.P3;
 import org.jmol.util.Quadric;
@@ -899,9 +900,17 @@ public final class ModelLoader {
     boolean haveMultipleBonds = false;
     while (iterBond.hasNext()) {
       order = (short) iterBond.getEncodedOrder();
-      bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(), order);
+      Bond b = bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(), order);
+      if (b != null) {
       if (order > 1 && order != JmolEdge.BOND_STEREO_NEAR && order != JmolEdge.BOND_STEREO_FAR)
-        haveMultipleBonds = true; 
+        haveMultipleBonds = true;
+        float radius = iterBond.getRadius();
+        if (radius > 0)
+          b.setMad((short) (radius * 2000));
+        int color = iterBond.getColor();
+        if (color != Integer.MIN_VALUE)
+          b.setColix(C.getColix(color));
+      }
     }
     if (haveMultipleBonds && modelSet.someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds())
       Logger.info("ModelSet: use \"set appletSymmetryToBonds TRUE \" to apply the file-based multiple bonds to symmetry-generated atoms.");
@@ -909,22 +918,22 @@ public final class ModelLoader {
   }
   
   private JmolList<Bond> vStereo;
-  private void bondAtoms(Object atomUid1, Object atomUid2, short order) {
+  private Bond bondAtoms(Object atomUid1, Object atomUid2, short order) {
     Atom atom1 = htAtomMap.get(atomUid1);
     if (atom1 == null) {
       Logger.error("bondAtoms cannot find atomUid1?:" + atomUid1);
-      return;
+      return null;
     }
     Atom atom2 = htAtomMap.get(atomUid2);
     if (atom2 == null) {
       Logger.error("bondAtoms cannot find atomUid2?:" + atomUid2);
-      return;
+      return null;
     }
     
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
     if (atom1.isBonded(atom2))
-      return;
+      return null;
     boolean isNear = (order == JmolEdge.BOND_STEREO_NEAR);
     boolean isFar = (order == JmolEdge.BOND_STEREO_FAR);
     Bond bond;
@@ -944,6 +953,7 @@ public final class ModelLoader {
       modelSet.bonds = (Bond[]) ArrayUtil.arrayCopyObject(modelSet.bonds, modelSet.bondCount + BondCollection.BOND_GROWTH_INCREMENT);
     }
     modelSet.setBond(modelSet.bondCount++, bond);
+    return bond;
   }
 
   /**

@@ -32,5 +32,9 @@ public abstract class JmolAdapterBondIterator {
 	public abstract Object getAtomUniqueID2();
 
 	public abstract int getEncodedOrder();
+
+  public abstract float getRadius();
+  
+  public abstract int getColor();
 }
 

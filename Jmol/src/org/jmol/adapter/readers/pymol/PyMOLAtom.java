@@ -9,4 +9,5 @@ class PyMOLAtom extends Atom {
   int cartoonType;
   int flags;
   boolean bonded;
+  int uniqueID = -1;
 }

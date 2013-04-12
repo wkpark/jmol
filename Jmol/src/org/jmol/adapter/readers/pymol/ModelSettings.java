@@ -145,6 +145,7 @@ public class ModelSettings {
       sm.viewer.defineAtomSets((Map<String, Object>) info);
       return;
     case T.bonds:
+      break;
     case JC.SHAPE_BALLS:
       break;
     case JC.SHAPE_ISOSURFACE:

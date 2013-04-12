@@ -67,4 +67,15 @@ class BondIterator extends JmolAdapterBondIterator {
 	public int getEncodedOrder() {
 		return bond.order;
 	}
+	
+	@Override
+  public float getRadius() {
+    return bond.radius;
+  }
+
+  @Override
+  public int getColor() {
+    return bond.color;
+  }
+
 }

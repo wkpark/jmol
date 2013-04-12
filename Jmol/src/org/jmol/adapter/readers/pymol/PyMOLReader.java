@@ -50,7 +50,6 @@ import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
-import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.SB;
 import org.jmol.viewer.JC;
@@ -1207,9 +1206,22 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void setRibbon(BS bs) {
-    ModelSettings ss;
-    ss = new ModelSettings((getFloatSetting(PyMOL.ribbon_smooth) >= 0 
-        || getFloatSetting(PyMOL.ribbon_sampling) > 1? JC.SHAPE_TRACE
+    // 2ace: 0, 1 ==> backbone
+    // fig8: 0, 1 ==> backbone
+    // casp: 0, 1 ==> backbone
+    // NLG3_AchE: 0, 1 ==> backbone
+    // NLG3_HuAChE: 0, 10 ==> trace
+    // tach: 0, 10 ==> trace
+    // tah-lev: 0, 10 ==> trace
+    // 496: -1, 1 ==> backbone
+    // kinases: -1, 1 ==> backbone
+    // 443_D1: -1, 1 ==> backbone
+    // 476Rainbow_New: 10, 8 ==> trace
+    
+    //float smoothing = getFloatSetting(PyMOL.ribbon_smooth);
+    float sampling = getFloatSetting(PyMOL.ribbon_sampling);
+    ModelSettings ss = new ModelSettings((//smoothing > 0 || 
+        sampling > 1? JC.SHAPE_TRACE
         : JC.SHAPE_BACKBONE), bs, null);
     ss.setColors(colixes, 0); // no translucency
     ss.setSize(getFloatSetting(PyMOL.ribbon_width) * 0.1f);

@@ -39,12 +39,15 @@ import org.jmol.util.TextFormat;
 class MsmsReader extends PmeshReader {
 
   private String fileName;
+  
   MsmsReader(){}
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
-    fileName = (String)( (Object[]) sg.getReaderData())[0];
+    superInit2(sg, br);
+    fileName = (String) ((Object[])sg.getReaderData())[0];
+    if (fileName == null)
+      return;
     type = "msms";
     onePerLine = true;
     fixedCount = 3;
@@ -64,8 +67,8 @@ class MsmsReader extends PmeshReader {
     fileName = TextFormat.simpleReplace(fileName, ".vert", ".face");
     Logger.info("reading from file " + fileName);
     try {
-    br = JmolBinary.getBufferedReader(sg.getAtomDataServer().getBufferedInputStream(
-        fileName), null);
+      br = JmolBinary.getBufferedReader(sg.getAtomDataServer()
+          .getBufferedInputStream(fileName), null);
     } catch (Exception e) {
       Logger.info("Note: file " + fileName + " was not found");
       br = null;

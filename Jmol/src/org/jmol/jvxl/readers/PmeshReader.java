@@ -94,7 +94,8 @@ class PmeshReader extends PolygonFileReader {
   protected int fixedCount;
   protected boolean onePerLine;
   protected int vertexBase;
-  
+
+
   PmeshReader(){}
   
   @Override
@@ -107,6 +108,10 @@ class PmeshReader extends PolygonFileReader {
     setHeader();
     isBinary = checkBinary(fileName);
     isClosedFace = !isBinary;
+  }
+  
+  protected void superInit2(SurfaceGenerator sg, BufferedReader br) {
+    super.init2(sg, br);
   }
 
   protected void setHeader() {

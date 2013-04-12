@@ -35,6 +35,6 @@ public abstract class JmolAdapterBondIterator {
 
   public abstract float getRadius();
   
-  public abstract int getColor();
+  public abstract short getColix();
 }
 

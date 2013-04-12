@@ -449,6 +449,7 @@ public class PyMOLReader extends PdbReader {
 
   private boolean checkBranch(JmolList<Object> branch) {
     branchName = getString(branch, 0);
+    //if (!branchName.equals("aricept_docked")) return  false;
     isHidden = (getInt(branch, 2) != 1);
     return (branchName.indexOf("_") != 0);
   }
@@ -564,6 +565,8 @@ public class PyMOLReader extends PdbReader {
         JmolList<Object> state = getList(states, i);
         JmolList<Object> coords = getList(state, 2);
         JmolList<Object> idxToAtm = getList(state, 3);
+        if (idxToAtm == null)
+          continue;
         P3[] trajectory = lstTrajectories.get(i);
         BS bs = lstStates.get(i);
         for (int j = idxToAtm.size(); --j >= 0;) {
@@ -850,8 +853,9 @@ public class PyMOLReader extends PdbReader {
     if (sym.equals("A"))
       sym = "C";
     boolean isHetero = (getInt(a, 19) != 0);
-    PyMOLAtom atom = (PyMOLAtom) processAtom(new PyMOLAtom(), name, altLoc.charAt(0), group3, chainID.charAt(0),
-        seqNo, insCode.charAt(0), isHetero, sym);
+    PyMOLAtom atom = (PyMOLAtom) processAtom(new PyMOLAtom(), name, altLoc
+        .charAt(0), group3, chainID.charAt(0), seqNo, insCode.charAt(0),
+        isHetero, sym);
     if (!filterPDBAtom(atom, fileAtomIndex++))
       return false;
     atom.label = getString(a, 9);
@@ -859,8 +863,7 @@ public class PyMOLReader extends PdbReader {
     BS bs = ssMapSeq.get(ss);
     if (bs == null)
       ssMapSeq.put(ss, bs = new BS());
-    if (seqNo >= MIN_RESNO 
-        && (!ss.equals(" ") || name.equals("CA")))
+    if (seqNo >= MIN_RESNO && (!ss.equals(" ") || name.equals("CA")))
       bs.set(seqNo - MIN_RESNO);
     if (ssMapAtom.get(ss) == null)
       ssMapAtom.put(ss, new BS());
@@ -870,17 +873,22 @@ public class PyMOLReader extends PdbReader {
     atom.partialCharge = getFloatAt(a, 17);
     int formalCharge = getInt(a, 18);
     atom.bsReps = getBsReps(getList(a, 20));
-    colixList.addLast(Integer.valueOf(C.getColixO(Integer.valueOf(PyMOL.getRGB(getInt(a, 21))))));
     int serNo = getInt(a, 22);
     atom.cartoonType = getInt(a, 23);
     atom.flags = getInt(a, 24);
     atom.bonded = getInt(a, 25) != 0;
     if (a.size() > 40 && getInt(a, 40) == 1)
-      atom.uniqueID = getInt(a, 32);    
+      atom.uniqueID = getInt(a, 32);
     if ((atom.flags & PyMOL.FLAG_NOSURFACE) != 0) {
       //System.out.println(atom.atomName + " " + atom.group3 + " " + Integer.toHexString(atom.flags));
       bsNoSurface.set(atomCount);
     }
+    int colorIndex = getInt(a, 21);
+    float translucency = getUniqueFloat(atom.uniqueID,
+        PyMOL.sphere_transparency, sphereTranslucency);
+    colixList.addLast(Integer.valueOf(C.getColixTranslucent3(C
+        .getColixO(Integer.valueOf(PyMOL.getRGB(colorIndex))),
+        translucency > 0, translucency)));
     bsHidden.setBitTo(atomCount, isHidden);
     bsModelAtoms.set(atomCount);
     if (bsState != null)
@@ -891,7 +899,7 @@ public class PyMOLReader extends PdbReader {
     float z = getFloatAt(coords, ++cpt);
     BoxInfo.addPointXYZ(x, y, z, xyzMin, xyzMax, 0);
     processAtom2(atom, serNo, x, y, z, formalCharge);
-    if (a.size() >= 47) {
+    if (a.size() > 46) {
       float[] data = new float[7];
       for (int i = 0; i < 6; i++)
         data[i] = getFloatAt(a, i + 41);
@@ -978,7 +986,11 @@ public class PyMOLReader extends PdbReader {
   private JmolList<Bond>  processBonds(JmolList<Object> bonds) {
     JmolList<Bond> bondList = new JmolList<Bond>();
     bsBondedPyMOL.clear(totalAtomCount); // sets length
-    for (int i = 0; i < bonds.size(); i++) {
+    int color = (int) getFloatSetting(PyMOL.stick_color);
+    float radius = getFloatSetting(PyMOL.stick_radius) / 2;
+    float translucency = getFloatSetting(PyMOL.stick_transparency);
+    int n = bonds.size();
+    for (int i = 0; i < n; i++) {
       JmolList<Object> b = getList(bonds, i);
       int order = (valence ? getInt(b, 2) : 1);
       if (order < 1 || order > 3)
@@ -990,14 +1002,22 @@ public class PyMOLReader extends PdbReader {
       bsBondedPyMOL.set(ib);
       Bond bond = new Bond(ia, ib, order);
       bondList.addLast(bond);
+      int c;
+      float rad, t;
       boolean hasID = (b.size() > 6 && getInt(b, 6) != 0);
       if (hasID) {
         int id = getInt(b, 5);
-        bond.radius = getUniqueFloat(id, PyMOL.stick_radius, 0) / 2;
-        int c = (int) getUniqueFloat(id, PyMOL.stick_color, -1);
-        if (c >= 0)
-          bond.color = PyMOL.getRGB(c);
+        rad = getUniqueFloat(id, PyMOL.stick_radius, radius) / 2;
+        c = (int) getUniqueFloat(id, PyMOL.stick_color, color);
+        t = getUniqueFloat(id, PyMOL.stick_transparency, translucency);
+      } else {
+        rad = radius;
+        c = color;
+        t = translucency;
       }
+      bond.radius = rad;      
+      if (c >= 0)
+        bond.colix = C.getColixTranslucent3(C.getColix(PyMOL.getRGB(c)), t > 0, t);
     }
     return bondList;
   }
@@ -1052,11 +1072,10 @@ public class PyMOLReader extends PdbReader {
   private void setBranchShapes(BS bs) {
     if (isStateScript)
       return;
+    ModelSettings ms = new ModelSettings(JC.SHAPE_BALLS, bs, null);
     colixes = new short[colixList.size()];
     for (int i = colixes.length; --i >= 0;)
       colixes[i] = (short) colixList.get(i).intValue();
-    ModelSettings ms;
-    ms = new ModelSettings(JC.SHAPE_BALLS, bs, null);
     ms.setSize(0);
     ms.setColors(colixes, 0);
     modelSettings.addLast(ms);

@@ -28,7 +28,6 @@ package org.jmol.modelset;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
-import org.jmol.util.C;
 import org.jmol.util.Elements;
 import org.jmol.util.P3;
 import org.jmol.util.Quadric;
@@ -907,9 +906,9 @@ public final class ModelLoader {
         float radius = iterBond.getRadius();
         if (radius > 0)
           b.setMad((short) (radius * 2000));
-        int color = iterBond.getColor();
-        if (color != Integer.MIN_VALUE)
-          b.setColix(C.getColix(color));
+        short colix = iterBond.getColix();
+        if (colix >= 0)
+          b.setColix(colix);
       }
     }
     if (haveMultipleBonds && modelSet.someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds())

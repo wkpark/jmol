@@ -74,8 +74,8 @@ class BondIterator extends JmolAdapterBondIterator {
   }
 
   @Override
-  public int getColor() {
-    return bond.color;
+  public short getColix() {
+    return bond.colix;
   }
 
 }

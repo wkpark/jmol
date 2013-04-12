@@ -144,7 +144,7 @@ public class ModelSettings {
     case T.define:
       sm.viewer.defineAtomSets((Map<String, Object>) info);
       return;
-    case T.bonds:
+    case JC.SHAPE_STICKS:
       break;
     case JC.SHAPE_BALLS:
       break;

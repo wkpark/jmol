@@ -723,8 +723,10 @@ public class PyMOLReader extends PdbReader {
         int id = getInt(atomSettings, 0);
         JmolList<Object> mySettings = (JmolList<Object>) atomSettings.get(1);
         for (int j = mySettings.size(); --j >= 0;) {
-          JmolList<Object> setting = (JmolList<Object>) mySettings.get(j); 
-          uniqueSettings.put(Integer.valueOf(id * 1000 + getInt(setting, 0)), setting);          
+          JmolList<Object> setting = (JmolList<Object>) mySettings.get(j);
+          int uid = id * 1000 + getInt(setting, 0);
+          uniqueSettings.put(Integer.valueOf(uid), setting);
+          System.out.println("PyMOL unique setting " + id + " " + setting);
         }
       }
     }
@@ -873,7 +875,7 @@ public class PyMOLReader extends PdbReader {
     atom.cartoonType = getInt(a, 23);
     atom.flags = getInt(a, 24);
     atom.bonded = getInt(a, 25) != 0;
-    if (getInt(a, 40) == 1)
+    if (a.size() > 40 && getInt(a, 40) == 1)
       atom.uniqueID = getInt(a, 32);    
     if ((atom.flags & PyMOL.FLAG_NOSURFACE) != 0) {
       //System.out.println(atom.atomName + " " + atom.group3 + " " + Integer.toHexString(atom.flags));
@@ -988,7 +990,7 @@ public class PyMOLReader extends PdbReader {
       bsBondedPyMOL.set(ib);
       Bond bond = new Bond(ia, ib, order);
       bondList.addLast(bond);
-      boolean hasID = (getInt(b, 6) != 0);
+      boolean hasID = (b.size() > 6 && getInt(b, 6) != 0);
       if (hasID) {
         int id = getInt(b, 5);
         bond.radius = getUniqueFloat(id, PyMOL.stick_radius, 0) / 2;

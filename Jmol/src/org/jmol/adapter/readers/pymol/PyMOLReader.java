@@ -1373,8 +1373,6 @@ public class PyMOLReader extends PdbReader {
 
   private void setView(SB sb, JmolList<Object> view) {
 
-    float w = 2 * getRotationRadius();
-
     // calculate Jmol camera position, which is in screen widths,
     // and is from the front of the screen, not the center.
     //
@@ -1391,114 +1389,114 @@ public class PyMOLReader extends PdbReader {
     //
 
     P3 ptCenter = getPoint(view, 19, new P3()); // o
-    sb.append("center ").append(Escape.eP(ptCenter)).append(";");
+    sb.append(";center ").append(Escape.eP(ptCenter));
 
     float fov = getFloatSetting(PyMOL.field_of_view);
-    float pymolDistanceToCenter = -getFloatAt(view, 18);
-
     float tan = (float) Math.tan(fov / 2 * Math.PI / 180);
     float jmolCameraToCenter = (0.5f / tan); // d
-    float pymolCameraToCenter   = pymolDistanceToCenter / w;
     float jmolCameraDepth = (jmolCameraToCenter - 0.5f);
+
+    float pymolDistanceToCenter = -getFloatAt(view, 18);
+    
+    //float w = 2 * getRotationRadius();
+    float w = pymolDistanceToCenter * tan * 2;
+    
+    float pymolCameraToCenter = pymolDistanceToCenter / w;
+
+    float zoom = jmolCameraToCenter / pymolCameraToCenter * 100;
     float aspectRatio = viewer.getScreenWidth() * 1.0f
         / viewer.getScreenHeight();
-    float zoom = jmolCameraToCenter / pymolCameraToCenter * 100;
     if (aspectRatio < 1)
-      zoom /= aspectRatio * aspectRatio;
-    else
-      zoom *= 1;///= aspectRatio; // was necessary for Fig8
+      zoom /= aspectRatio;
 
     float pymolCameraToSlab = getFloatAt(view, 22) / w;
     float pymolCameratToDepth = getFloatAt(view, 23) / w;
     int slab = 50 + (int) ((pymolCameraToCenter - pymolCameraToSlab) * 100);
     int depth = 50 + (int) ((pymolCameraToCenter - pymolCameratToDepth) * 100);
 
-    sb
-        .append("set perspectiveDepth " + (!getBooleanSetting(PyMOL.ortho))
-            + ";");
-
-    sb.append("set cameraDepth " + jmolCameraDepth + "; set rotationRadius " + (w / 2) + ";");
-    sb.append("zoom " + zoom + "; slab on; slab " + slab + "; depth " + depth
-        + ";");
+    sb.append(";set perspectiveDepth " + (!getBooleanSetting(PyMOL.ortho)));
+    sb.append(";set cameraDepth " + jmolCameraDepth);
+    sb.append(";set rotationRadius " + (w / 2));
+    sb.append(";zoom " + zoom + "; slab on; slab " + slab + "; depth " + depth);
 
     sb
-        .append("rotate @{quaternion({")
+        .append(";rotate @{quaternion({")
         // only the first two rows are needed
         .appendF(getFloatAt(view, 0)).append(" ").appendF(getFloatAt(view, 1))
         .append(" ").appendF(getFloatAt(view, 2)).append("}{").appendF(
             getFloatAt(view, 4)).append(" ").appendF(getFloatAt(view, 5))
-        .append(" ").appendF(getFloatAt(view, 6)).append("})};");
-    sb.append("translate X ").appendF(getFloatAt(view, 16)).append(
+        .append(" ").appendF(getFloatAt(view, 6)).append("})}");
+    sb.append(";translate X ").appendF(getFloatAt(view, 16)).append(
         " angstroms;");
-    sb.append("translate Y ").appendF(-getFloatAt(view, 17)).append(
-        " angstroms;");
+    sb.append(";translate Y ").appendF(-getFloatAt(view, 17)).append(
+        " angstroms");
 
     // seems to be something else here -- fog is not always present
     boolean depthCue = getBooleanSetting(PyMOL.depth_cue); // 84
     boolean fog = getBooleanSetting(PyMOL.fog); // 88
 
- 
-      if (depthCue && fog) {
-        float range = depth - slab;
-        float fog_start = getFloatSetting(PyMOL.fog_start); // 192
-        sb.append("set zShade true; set zshadePower 1;set zslab "
-            + (slab + fog_start * range) + "; set zdepth " + depth + ";");
-      } else if (depthCue) {
-        sb.append("set zShade true; set zshadePower 1;set zslab "
-            + ((slab + depth) / 2f) + "; set zdepth " + depth + ";");
-      } else {
-        sb.append("set zShade false;");
-      }
+    if (depthCue && fog) {
+      float range = depth - slab;
+      float fog_start = getFloatSetting(PyMOL.fog_start); // 192
+      sb.append(";set zShade true; set zshadePower 1;set zslab "
+          + (slab + fog_start * range) + "; set zdepth " + depth);
+    } else if (depthCue) {
+      sb.append(";set zShade true; set zshadePower 1;set zslab "
+          + ((slab + depth) / 2f) + "; set zdepth " + depth);
+    } else {
+      sb.append(";set zShade false");
+    }
 
-    sb.append("set traceAlpha "
-        + getBooleanSetting(PyMOL.cartoon_round_helices) + ";");
-    sb.append("set cartoonRockets "
-        + getBooleanSetting(PyMOL.cartoon_cylindrical_helices) + ";");
-    sb.append("set ribbonBorder "
-        + getBooleanSetting(PyMOL.cartoon_fancy_helices) + ";");
-    sb.append("set cartoonFancy "
-        + (!isMovie && !getBooleanSetting(PyMOL.cartoon_fancy_helices)) + ";"); // for now
+    sb.append(";set traceAlpha "
+        + getBooleanSetting(PyMOL.cartoon_round_helices));
+    sb.append(";set cartoonRockets "
+        + getBooleanSetting(PyMOL.cartoon_cylindrical_helices));
+    sb.append(";set ribbonBorder "
+        + getBooleanSetting(PyMOL.cartoon_fancy_helices));
+    sb.append(";set cartoonFancy "
+        + (!isMovie && !getBooleanSetting(PyMOL.cartoon_fancy_helices))); // for now
 
     //{ command => 'set hermiteLevel -4',                                                       comment => 'so that SS reps have some thickness' },
     //{ command => 'set ribbonAspectRatio 8',                                                   comment => 'degree of W/H ratio, but somehow not tied directly to actual width parameter...' },
-    sb.append("background " + getList(settings, PyMOL.bg_rgb).get(2) + ";");
+    sb.append(";background " + getList(settings, PyMOL.bg_rgb).get(2));
     if (isMovie)
-      sb.append("animation mode loop;");
+      sb.append(";animation mode loop");
+    sb.append(";");
   }
 
-  private float getRotationRadius() {
-    P3 center = P3.new3((xyzMax.x + xyzMin.x) / 2, (xyzMax.y + xyzMin.y) / 2,
-        (xyzMax.z + xyzMin.z) / 2);
-    float d2max = 0;
-    Atom[] atoms = atomSetCollection.getAtoms();
-    if (isMovie)
-      for (int i = lstTrajectories.size(); --i >= 0;) {
-        P3[] pts = lstTrajectories.get(i);
-        for (int j = pts.length; --j >= 0;) {
-          P3 pt = pts[j];
-          if (pt != null)
-            d2max = maxRadius(d2max, pt.x, pt.y, pt.z, center);
-        }
-      }
-    else
-      for (int i = 0; i < atomCount; i++) {
-        Atom a = atoms[i];
-        d2max = maxRadius(d2max, a.x, a.y, a.z, center);
-      }
-    // 1 is approximate -- for atom radius
-    return (float) Math.pow(d2max, 0.5f) + 1;
-  }
+//  private float getRotationRadius() {
+//    P3 center = P3.new3((xyzMax.x + xyzMin.x) / 2, (xyzMax.y + xyzMin.y) / 2,
+//        (xyzMax.z + xyzMin.z) / 2);
+//    float d2max = 0;
+//    Atom[] atoms = atomSetCollection.getAtoms();
+//    if (isMovie)
+//      for (int i = lstTrajectories.size(); --i >= 0;) {
+//        P3[] pts = lstTrajectories.get(i);
+//        for (int j = pts.length; --j >= 0;) {
+//          P3 pt = pts[j];
+//          if (pt != null)
+//            d2max = maxRadius(d2max, pt.x, pt.y, pt.z, center);
+//        }
+//      }
+//    else
+//      for (int i = 0; i < atomCount; i++) {
+//        Atom a = atoms[i];
+//        d2max = maxRadius(d2max, a.x, a.y, a.z, center);
+//      }
+//    // 1 is approximate -- for atom radius
+//    return (float) Math.pow(d2max, 0.5f) + 1;
+//  }
 
-  private static float maxRadius(float d2max, float x, float y, float z,
-                                 P3 center) {
-    float dx = (x - center.x);
-    float dy = (y - center.y);
-    float dz = (z - center.z);
-    float d2 = dx * dx + dy * dy + dz * dz;
-    if (d2 > d2max)
-      d2max = d2;
-    return d2max;
-  }
+//  private static float maxRadius(float d2max, float x, float y, float z,
+//                                 P3 center) {
+//    float dx = (x - center.x);
+//    float dy = (y - center.y);
+//    float dz = (z - center.z);
+//    float d2 = dx * dx + dy * dy + dz * dz;
+//    if (d2 > d2max)
+//      d2max = d2;
+//    return d2max;
+//  }
 
   @Override
   public void finalizeModelSet(ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {

@@ -1394,15 +1394,19 @@ public class PyMOLReader extends PdbReader {
     sb.append("center ").append(Escape.eP(ptCenter)).append(";");
 
     float fov = getFloatSetting(PyMOL.field_of_view);
+    float pymolDistanceToCenter = -getFloatAt(view, 18);
 
-    float jmolCameraToCenter = (float) (0.5 / Math.tan(fov / 2 * Math.PI / 180)); // d
-    float pymolCameraToCenter   = -getFloatAt(view, 18) / w;
+    float tan = (float) Math.tan(fov / 2 * Math.PI / 180);
+    float jmolCameraToCenter = (0.5f / tan); // d
+    float pymolCameraToCenter   = pymolDistanceToCenter / w;
     float jmolCameraDepth = (jmolCameraToCenter - 0.5f);
-    float zoom = jmolCameraToCenter / pymolCameraToCenter * 100;
     float aspectRatio = viewer.getScreenWidth() * 1.0f
         / viewer.getScreenHeight();
+    float zoom = jmolCameraToCenter / pymolCameraToCenter * 100;
     if (aspectRatio < 1)
-      zoom /= aspectRatio;
+      zoom /= aspectRatio * aspectRatio;
+    else
+      zoom *= 1;///= aspectRatio; // was necessary for Fig8
 
     float pymolCameraToSlab = getFloatAt(view, 22) / w;
     float pymolCameratToDepth = getFloatAt(view, 23) / w;
@@ -1413,7 +1417,7 @@ public class PyMOLReader extends PdbReader {
         .append("set perspectiveDepth " + (!getBooleanSetting(PyMOL.ortho))
             + ";");
 
-    sb.append("set cameraDepth " + jmolCameraDepth + ";");
+    sb.append("set cameraDepth " + jmolCameraDepth + "; set rotationRadius " + (w / 2) + ";");
     sb.append("zoom " + zoom + "; slab on; slab " + slab + "; depth " + depth
         + ";");
 

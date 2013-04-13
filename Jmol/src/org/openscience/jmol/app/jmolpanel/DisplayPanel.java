@@ -396,6 +396,12 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  public void setJmolSize(Dimension d) {
+    dimSize.width = d.width;
+    dimSize.height = d.height;
+    setPreferredSize(d);
+  }
+
 }
 
 

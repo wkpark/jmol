@@ -4117,6 +4117,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       width = (width + 1) / 2;
     if (dimScreen.width == width && dimScreen.height == height)
       return;
+    //System.out.println("HMM " + width +  " " + height + " " + maximumSize);
     resizeImage(width, height, false, false, true);
   }
 
@@ -4230,6 +4231,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     {}
   }
   private boolean updateWindow(int width, int height) {
+    //System.out.println("Viewer updateWindow " + width + " " + height);
     if (!refreshing || creatingImage)
       return false;
     if (isTainted || getSlabEnabled())
@@ -4244,6 +4246,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void renderScreenImage(Object g, int width, int height) {
+    //System.out.println("Viewer renderscreenimage " + width + " " + height + " " + ((JPanel) display).getSize().width  + " " + ((JPanel) display).getSize().height);
     /*
      * Jmol repaint/update system:
      * 
@@ -10023,12 +10026,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public void resizeInnerPanel(int width, int height) {
+  public Dimension resizeInnerPanel(int width, int height) {
     if (autoExit || !haveDisplay) {
       setScreenDimension(width, height);
-    } else {
-      statusManager.resizeInnerPanel(width, height);
+      return dimScreen;
     }
+    return statusManager.resizeInnerPanel(width, height);
   }
 
   public String getFontLineShapeState(String s, String myType, TickInfo[] tickInfos) {

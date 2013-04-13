@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.BS;
+import org.jmol.util.Dimension;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
@@ -697,9 +698,9 @@ class StatusManager {
             + (myParam == null || myParam.length() == 0 ? "" : ":" + myParam)));
   }
 
-  public void resizeInnerPanel(int width, int height) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.resizeInnerPanel("preferredWidthHeight " + width + " " + height + ";");    
+  public Dimension resizeInnerPanel(int width, int height) {
+   return (jmolStatusListener == null ? new Dimension().set(width, height) :
+      jmolStatusListener.resizeInnerPanel("preferredWidthHeight " + width + " " + height + ";"));    
   }
 
 }

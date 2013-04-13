@@ -31,6 +31,7 @@ import org.jmol.api.JmolSyncInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.export.dialog.Dialog;
+import org.jmol.util.Dimension;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;
@@ -354,8 +355,8 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     return null;
   }
 
-  public void resizeInnerPanel(String data) {
-    jmol.resizeInnerPanel(data);
+  public Dimension resizeInnerPanel(String data) {
+    return jmol.resizeInnerPanel(data);
   }
 
   public void setJSpecView(String peaks) {

@@ -37,6 +37,7 @@ import java.util.Properties;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
+import org.jmol.util.Dimension;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.V3;
@@ -619,7 +620,7 @@ abstract public class JmolViewer {
 
   abstract public Object evaluateExpression(Object expression);
 
-  abstract public void resizeInnerPanel(int width, int height);
+  abstract public Dimension resizeInnerPanel(int width, int height);
 
   abstract public String getAtomDefs(Map<String, Object> names);
 

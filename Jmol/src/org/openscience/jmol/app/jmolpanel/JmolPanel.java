@@ -1514,8 +1514,11 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     } 
   }
   
-  void resizeInnerPanel(String data) {
-    String info = viewer.getScreenWidth() + " " + viewer.getScreenHeight();
+  org.jmol.util.Dimension resizeInnerPanel(String data) {
+    int width = viewer.getScreenWidth();
+    int height = viewer.getScreenHeight();
+    String info = width + " " + height;
+    org.jmol.util.Dimension d = new org.jmol.util.Dimension();
     if (data == null) {
       data = info;
    } else {
@@ -1524,25 +1527,30 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
      if (pt >= 0 && pt2 > pt)
        data = data.substring(pt + 21, pt2).trim();
      if (data.equals(info))
-       return;
+       return d.set(width, height);
    }
     info = JOptionPane.showInputDialog(GT._("width height?"), data);
     if (info == null)
-      return;
+      return d.set(width, height);
     float[] dims = new float[2];
     int n = Parser.parseStringInfestedFloatArray(info, null, dims);
     if (n < 2)
-      return;
+      return d.set(width, height);
+    System.out.println("JmolPanel requesting display "+ info + " " +dims[0] + " " + dims[1]);
     resizeDisplay((int) dims[0], (int) dims[1]);
+    return d.set((int) dims[0], (int) dims[1]);
   }
 
   void resizeDisplay(int width, int height) {
     Dimension d = new Dimension(width, height);
-    display.setPreferredSize(d);
+    //display.setSize(width, height);
+    display.setJmolSize(d);
     d = new Dimension(width, 30);
     status.setPreferredSize(d);
     toolbar.setPreferredSize(d);
     Platform.getWindow(this).pack();
+    d = new Dimension(width, height);
+    System.out.println("resizeDisplay " + display.getSize(d).width);
   }
 
   void updateLabels() {

@@ -866,8 +866,8 @@ public class Jmol implements WrappedApplet {
       return JmolAppletRegistry.htRegistry;
     }
 
-    public void resizeInnerPanel(String data) {
-      // application only?
+    public org.jmol.util.Dimension resizeInnerPanel(String data) {
+      return new org.jmol.util.Dimension().set(0, 0);
     }
 
     public boolean notifyEnabled(EnumCallback type) {
@@ -877,7 +877,7 @@ public class Jmol implements WrappedApplet {
       case ERROR:
       case EVAL:
       case LOADSTRUCT:
-      case MEASURE:
+      case MEASURE: 
       case MESSAGE:
       case PICK:
       case SYNC:

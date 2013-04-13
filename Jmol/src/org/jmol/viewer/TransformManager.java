@@ -2103,8 +2103,10 @@ public class TransformManager {
   }
 
   public float setRotationRadius(float angstroms, boolean doAll) {
+    //System.out.println("tm setRotationRadius1 " + angstroms);
     angstroms = (modelRadius = (angstroms <= 0 ? viewer
         .calcRotationRadius(fixedRotationCenter) : angstroms));
+    //System.out.println("tm setRotationRadius2 " + angstroms);
     if (doAll)
       viewer.setRotationRadius(angstroms, false);
     return angstroms;
@@ -2263,10 +2265,10 @@ public class TransformManager {
     // model center offset for zoom 100
     float offset100 = (2 * modelRadius) / visualRange * referencePlaneOffset; // (s)
 
-    //System.out.println("sppA " + scalePixelsPerAngstrom + " pD " +
-    // perspectiveDepth
-    // + " spC " + screenPixelCount + " vR " + visualRange
-    // + " sDPPA " + scaleDefaultPixelsPerAngstrom);
+//    System.out.println("sppA " + scalePixelsPerAngstrom + " pD " +
+//     perspectiveDepth + " s3dspi " + scale3DAngstromsPerInch + " " 
+//     + " spC " + screenPixelCount + " vR " + visualRange
+//     + " sDPPA " + scaleDefaultPixelsPerAngstrom);
 
     if (mode == MODE_NAVIGATION) {
       calcNavCameraFactors(offset100);
@@ -2287,8 +2289,10 @@ public class TransformManager {
     // so that's sppa = (spc / vR) * rPO * (vR / 2) / mR * rPO = spc/2/mR
 
     modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; // (s)
-    //System.out.println("transformman scalppa modelrad " +
-    // scalePixelsPerAngstrom + " " + modelRadiusPixels + " " + visualRange);
+//    System.out.println("transformman zoom scalppa modelrad " + zoomPercent + " " +
+//     scalePixelsPerAngstrom + " " + modelRadiusPixels + " " + visualRange 
+//     + " -- "+ viewer.dimScreen.width+ "  "+ viewer.dimScreen.height);
+//    System.out.println("modelCenterOffset " + modelCenterOffset + " " + modelRadius);
   }
 
   private void calcNavCameraFactors(float offset100) {

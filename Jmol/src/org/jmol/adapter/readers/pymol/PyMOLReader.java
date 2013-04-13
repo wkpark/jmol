@@ -47,6 +47,7 @@ import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
+import org.jmol.util.Dimension;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
@@ -220,9 +221,10 @@ public class PyMOLReader extends PdbReader {
         appendLoadNote("PyMOL dimensions width=" + width + " height=" + height);
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
             "perferredWidthHeight", new int[] { width, height });
-        viewer.resizeInnerPanel(width, height);
-        Logger.info("Jmol dimensions width=" + viewer.getScreenWidth()
-            + " height=" + viewer.getScreenHeight());
+        Dimension d = viewer.resizeInnerPanel(width, height);
+        width = d.width;
+        height = d.height;
+        //viewer.setScreenDimension(width, height);
       } else {
         appendLoadNote("PyMOL dimensions unknown");
       }
@@ -613,8 +615,8 @@ public class PyMOLReader extends PdbReader {
         if (bsState != null) {
           bsAtoms.or(bsState);
         }
-        processStructures(atomCount - n);
-        setBranchShapes(BSUtil.newBitSet2(atomCount - n, atomCount));
+        processStructures(atomCount0);
+        setBranchShapes(BSUtil.newBitSet2(atomCount0, atomCount));
       }
     }
     setBonds(bonds);
@@ -860,13 +862,19 @@ public class PyMOLReader extends PdbReader {
       return false;
     atom.label = getString(a, 9);
     String ss = getString(a, 10);
-    BS bs = ssMapSeq.get(ss);
-    if (bs == null)
-      ssMapSeq.put(ss, bs = new BS());
-    if (seqNo >= MIN_RESNO && (!ss.equals(" ") || name.equals("CA")))
+    if (seqNo >= MIN_RESNO && (!ss.equals(" ") || name.equals("CA"))) {
+      if (ssMapAtom.get(ss) == null)
+        ssMapAtom.put(ss, new BS());
+      BS bs = ssMapSeq.get(ss);
+      if (bs == null)
+        ssMapSeq.put(ss, bs = new BS());
       bs.set(seqNo - MIN_RESNO);
-    if (ssMapAtom.get(ss) == null)
-      ssMapAtom.put(ss, new BS());
+      ss += chainID;
+      bs = ssMapSeq.get(ss);
+      if (bs == null)
+        ssMapSeq.put(ss, bs = new BS());
+      bs.set(seqNo - MIN_RESNO);
+    }
     atom.bfactor = getFloatAt(a, 14);
     atom.occupancy = (int) (getFloatAt(a, 15) * 100);
     atom.radius = getFloatAt(a, 16);
@@ -932,46 +940,54 @@ public class PyMOLReader extends PdbReader {
     atomSetCollection.bsStructuredModels.set(Math.max(atomSetCollection
         .getCurrentAtomSetIndex(), 0));
 
-    processSS(i0, ssMapSeq.get("H"), ssMapAtom.get("H"), EnumStructure.HELIX, 0);
-    processSS(i0, ssMapSeq.get("S"), ssMapAtom.get("S"), EnumStructure.SHEET, 1);
-    processSS(i0, ssMapSeq.get("L"), ssMapAtom.get("L"), EnumStructure.TURN, 0);
-    processSS(i0, ssMapSeq.get(" "), ssMapAtom.get(" "), EnumStructure.NONE, 0);
+    processSS(i0, "H", ssMapAtom.get("H"), EnumStructure.HELIX, 0);
+    processSS(i0, "S", ssMapAtom.get("S"), EnumStructure.SHEET, 1);
+    processSS(i0, "L", ssMapAtom.get("L"), EnumStructure.TURN, 0);
+    processSS(i0, " ", ssMapAtom.get(" "), EnumStructure.NONE, 0);
     ssMapSeq = new Hashtable<String, BS>();
   }
 
-  private void processSS(int atomCount0, BS bsSeq, BS bsAtom, EnumStructure type,
-                         int strandCount) {
-    if (bsSeq == null)
+  private void processSS(int atomCount0, String ssType, BS bsAtom,
+                         EnumStructure type, int strandCount) {
+    if (ssMapSeq.get(ssType) == null)
       return;
     int istart = -1;
     int iend = -1;
-    int inew = -1;
-    int imodel = -1;
-    int thismodel = -1;
+    char ichain = '\0';
     Atom[] atoms = atomSetCollection.getAtoms();
-    for (int i = atomCount0; i < atomCount; i++) {
-      thismodel = atoms[i].atomSetIndex;
-      int seqNo = atoms[i].sequenceNumber;
-      if (seqNo >= MIN_RESNO && bsSeq.get(seqNo - MIN_RESNO)) {
-        if (istart >= 0) {
-          if (imodel == thismodel) {
-            iend = i;
-            continue;
-          }
-          inew = i;
-        } else {
-          istart = iend = i;
-          imodel = thismodel;
+    BS bsSeq = null;
+    int n = atomCount + 1;
+    int seqNo = -1;
+    char thischain = '\0';
+    int imodel = -1;
+    int thismodel = -1; 
+    for (int i = atomCount0; i < n; i++) {
+      if (i == atomCount) {
+        thischain = '\0';
+      } else {
+        seqNo = atoms[i].sequenceNumber;
+        thischain = atoms[i].chainID;
+        thismodel = atoms[i].atomSetIndex;
+      }
+      if (thischain != ichain || thismodel != imodel) {
+        ichain = thischain;
+        imodel = thismodel;
+        bsSeq = ssMapSeq.get(ssType + thischain);
+        --i; // replay this one
+        if (istart < 0)
           continue;
-        }
+      } else if (bsSeq != null && seqNo >= MIN_RESNO
+          && bsSeq.get(seqNo - MIN_RESNO)) {
+        iend = i;
+        if (istart < 0)
+          istart = i;
+        continue;
       } else if (istart < 0) {
         continue;
-      } else {
-        inew = -1;
       }
       if (type != EnumStructure.NONE) {
-        Structure structure = new Structure(imodel, type, type,
-            type.toString(), ++strucNo, strandCount);
+        Structure structure = new Structure(imodel, type, type, type
+            .toString(), ++strucNo, strandCount);
         Atom a = atoms[istart];
         Atom b = atoms[iend];
         structure.set(a.chainID, a.sequenceNumber, a.insertionCode, b.chainID,
@@ -979,7 +995,7 @@ public class PyMOLReader extends PdbReader {
         atomSetCollection.addStructure(structure);
       }
       bsAtom.setBits(istart, iend + 1);
-      istart = iend = inew;
+      istart = -1;
     }
   }
 
@@ -1376,8 +1392,8 @@ public class PyMOLReader extends PdbReader {
     // calculate Jmol camera position, which is in screen widths,
     // and is from the front of the screen, not the center.
     //
-    //     |---------model width------------------|
-    //               |-------o--------| 1 unit
+    //               |-------w--------| 1 unit
+    //                       o
     //                       |       /
     //                       |      /
     //                       |     /
@@ -1393,22 +1409,25 @@ public class PyMOLReader extends PdbReader {
 
     float fov = getFloatSetting(PyMOL.field_of_view);
     float tan = (float) Math.tan(fov / 2 * Math.PI / 180);
-    float jmolCameraToCenter = (0.5f / tan); // d
+    float jmolCameraToCenter = 0.5f / tan; // d
     float jmolCameraDepth = (jmolCameraToCenter - 0.5f);
-
+    String szoom = "100";//"; = 100;//jmolCameraToCenter / pymolCameraToCenter * 100;
     float pymolDistanceToCenter = -getFloatAt(view, 18);
-    
-    //float w = 2 * getRotationRadius();
     float w = pymolDistanceToCenter * tan * 2;
-    
-    float pymolCameraToCenter = pymolDistanceToCenter / w;
-
-    float zoom = jmolCameraToCenter / pymolCameraToCenter * 100;
-    float aspectRatio = viewer.getScreenWidth() * 1.0f
-        / viewer.getScreenHeight();
+    boolean noDims = (width == 0 || height == 0);
+    if (noDims) {
+      width = viewer.getScreenWidth();
+      height = viewer.getScreenHeight();
+      //w = 2 * getRotationRadius();
+      //szoom = "{visible} 0";
+    } else {
+    }
+    float aspectRatio = (width * 1.0f / height);
     if (aspectRatio < 1)
-      zoom /= aspectRatio;
+      szoom = "" + (100 / aspectRatio);
+    //System.out.println("aspect " + aspectRatio + " " +  width + " " + height);
 
+    float pymolCameraToCenter = pymolDistanceToCenter / w;
     float pymolCameraToSlab = getFloatAt(view, 22) / w;
     float pymolCameratToDepth = getFloatAt(view, 23) / w;
     int slab = 50 + (int) ((pymolCameraToCenter - pymolCameraToSlab) * 100);
@@ -1417,7 +1436,9 @@ public class PyMOLReader extends PdbReader {
     sb.append(";set perspectiveDepth " + (!getBooleanSetting(PyMOL.ortho)));
     sb.append(";set cameraDepth " + jmolCameraDepth);
     sb.append(";set rotationRadius " + (w / 2));
-    sb.append(";zoom " + zoom + "; slab on; slab " + slab + "; depth " + depth);
+    sb
+        .append(";zoom " + szoom + "; slab on; slab " + slab + "; depth "
+            + depth);
 
     sb
         .append(";rotate @{quaternion({")
@@ -1464,39 +1485,39 @@ public class PyMOLReader extends PdbReader {
     sb.append(";");
   }
 
-//  private float getRotationRadius() {
-//    P3 center = P3.new3((xyzMax.x + xyzMin.x) / 2, (xyzMax.y + xyzMin.y) / 2,
-//        (xyzMax.z + xyzMin.z) / 2);
-//    float d2max = 0;
-//    Atom[] atoms = atomSetCollection.getAtoms();
-//    if (isMovie)
-//      for (int i = lstTrajectories.size(); --i >= 0;) {
-//        P3[] pts = lstTrajectories.get(i);
-//        for (int j = pts.length; --j >= 0;) {
-//          P3 pt = pts[j];
-//          if (pt != null)
-//            d2max = maxRadius(d2max, pt.x, pt.y, pt.z, center);
-//        }
-//      }
-//    else
-//      for (int i = 0; i < atomCount; i++) {
-//        Atom a = atoms[i];
-//        d2max = maxRadius(d2max, a.x, a.y, a.z, center);
-//      }
-//    // 1 is approximate -- for atom radius
-//    return (float) Math.pow(d2max, 0.5f) + 1;
-//  }
+  private float getRotationRadius() {
+    P3 center = P3.new3((xyzMax.x + xyzMin.x) / 2, (xyzMax.y + xyzMin.y) / 2,
+        (xyzMax.z + xyzMin.z) / 2);
+    float d2max = 0;
+    Atom[] atoms = atomSetCollection.getAtoms();
+    if (isMovie)
+      for (int i = lstTrajectories.size(); --i >= 0;) {
+        P3[] pts = lstTrajectories.get(i);
+        for (int j = pts.length; --j >= 0;) {
+          P3 pt = pts[j];
+          if (pt != null)
+            d2max = maxRadius(d2max, pt.x, pt.y, pt.z, center);
+        }
+      }
+    else
+      for (int i = 0; i < atomCount; i++) {
+        Atom a = atoms[i];
+        d2max = maxRadius(d2max, a.x, a.y, a.z, center);
+      }
+    // 1 is approximate -- for atom radius
+    return (float) Math.pow(d2max, 0.5f) + 1;
+  }
 
-//  private static float maxRadius(float d2max, float x, float y, float z,
-//                                 P3 center) {
-//    float dx = (x - center.x);
-//    float dy = (y - center.y);
-//    float dz = (z - center.z);
-//    float d2 = dx * dx + dy * dy + dz * dz;
-//    if (d2 > d2max)
-//      d2max = d2;
-//    return d2max;
-//  }
+  private static float maxRadius(float d2max, float x, float y, float z,
+                                 P3 center) {
+    float dx = (x - center.x);
+    float dy = (y - center.y);
+    float dz = (z - center.z);
+    float d2 = dx * dx + dy * dy + dz * dz;
+    if (d2 > d2max)
+      d2max = d2;
+    return d2max;
+  }
 
   @Override
   public void finalizeModelSet(ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {

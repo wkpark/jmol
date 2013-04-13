@@ -34,6 +34,7 @@ import org.jmol.constant.EnumCallback;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
+import org.jmol.util.Dimension;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -487,8 +488,8 @@ public class Jmol implements JmolSyncInterface {
       return JmolAppletRegistry.htRegistry;
     }
 
-    public void resizeInnerPanel(String data) {
-      // application only?
+    public Dimension resizeInnerPanel(String data) {
+      return new Dimension().set(0, 0);
     }
 
     public boolean notifyEnabled(EnumCallback type) {

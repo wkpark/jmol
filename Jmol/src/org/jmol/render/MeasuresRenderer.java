@@ -26,6 +26,7 @@ package org.jmol.render;
 
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
+import org.jmol.script.T;
 import org.jmol.shape.Measures;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.C;
@@ -45,17 +46,17 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     if (!g3d.checkTranslucent(false))
       return false;
     Measures measures = (Measures) shape;
-    doJustify = viewer.getJustifyMeasurements();
+    doJustify = viewer.getBoolean(T.justifymeasurements);
     mad = measures.mad;
     // note that this COULD be screen pixels if <= 20. 
     imageFontScaling = viewer.getImageFontScaling();
     font3d = g3d.getFont3DScaled(measures.font3d, imageFontScaling);
     renderPendingMeasurement(measures.measurementPending);
-    if (!viewer.getShowMeasurements())
+    if (!viewer.getBoolean(T.showmeasurements))
       return false;
     //clearBox();
-    boolean showMeasurementLabels = viewer.getShowMeasurementLabels();
-    boolean dynamicMeasurements = viewer.getDynamicMeasurements();
+    boolean showMeasurementLabels = viewer.getBoolean(T.measurementlabels);
+    boolean dynamicMeasurements = viewer.getBoolean(T.dynamicmeasurements);
     measures.setVisibilityInfo();
     for (int i = measures.measurementCount; --i >= 0;) {
       Measurement m = measures.measurements.get(i);

@@ -25,6 +25,7 @@ package org.jmol.multitouch;
 
 import java.util.List;
 
+import org.jmol.script.T;
 import org.jmol.util.JmolList;
 
 
@@ -199,7 +200,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   
   public List<GestureType> getAllowedGestures(int groupID) {
     //System.out.println("ActionManagerMT getAllowedGestures " + groupID);
-    if (groupID != this.groupID || !viewer.allowMultiTouch())
+    if (groupID != this.groupID || !viewer.getBoolean(T.allowmultitouch))
       return null;
     JmolList<GestureType> list = new  JmolList<GestureType>();
     //list.add(Integer.valueOf(DRAG_GESTURE));
@@ -301,7 +302,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
 
   private void logEvent(String type, P3 pt) {
-    if (!viewer.getLogGestures())
+    if (!viewer.global.logGestures)
       return;
     long time = System.currentTimeMillis(); 
     // at most every 10 seconds

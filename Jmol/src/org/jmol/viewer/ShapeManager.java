@@ -234,18 +234,19 @@ public class ShapeManager {
   
   private static int clickableMax = hoverable.length - 1;
   
-  Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible) {
+  Map<String, Object> checkObjectClicked(int x, int y, int modifiers,
+                                         BS bsVisible, boolean drawPicking) {
     Shape shape;
     Map<String, Object> map = null;
     if (modifiers != 0
         && viewer.getBondPicking()
-        && (map = shapes[JC.SHAPE_STICKS].checkObjectClicked(x, y,
-            modifiers, bsVisible)) != null)
+        && (map = shapes[JC.SHAPE_STICKS].checkObjectClicked(x, y, modifiers,
+            bsVisible, drawPicking)) != null)
       return map;
-
     for (int i = 0; i < clickableMax; i++)
       if ((shape = shapes[hoverable[i]]) != null
-          && (map = shape.checkObjectClicked(x, y, modifiers, bsVisible)) != null)
+          && (map = shape.checkObjectClicked(x, y, modifiers, bsVisible,
+              drawPicking)) != null)
         return map;
     return null;
   }
@@ -448,8 +449,8 @@ public class ShapeManager {
           .abs(atom.madAtom));
     }
     if (viewer.getSlabEnabled()) {
-      boolean slabByMolecule = viewer.getSlabByMolecule();
-      boolean slabByAtom = viewer.getSlabByAtom();
+      boolean slabByMolecule = viewer.getBoolean(T.slabbymolecule);
+      boolean slabByAtom = viewer.getBoolean(T.slabbyatom);
       int minZ = gdata.getSlab();
       int maxZ = gdata.getDepth();
       if (slabByMolecule) {

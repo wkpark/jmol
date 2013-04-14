@@ -132,15 +132,15 @@ public class SelectionManager {
   void select(BS bs, Boolean addRemove, boolean isQuiet) {
     if (bs == null) {
       selectAll(true);
-      if (!viewer.getRasmolSetting(T.hydrogen))
+      if (!viewer.getBoolean(T.hydrogen))
         excludeSelectionSet(viewer.getAtomBits(T.hydrogen, null));
-      if (!viewer.getRasmolSetting(T.hetero))
+      if (!viewer.getBoolean(T.hetero))
         excludeSelectionSet(viewer.getAtomBits(T.hetero, null));
       selectionChanged(false);
     } else {
       setSelectionSet(bs, addRemove);
     }
-    boolean reportChime = viewer.getMessageStyleChime();
+    boolean reportChime = viewer.getBoolean(T.messagestylechime);
     if (!reportChime && isQuiet)
       return;
     int n = getSelectionCount();

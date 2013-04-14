@@ -34,6 +34,8 @@ import org.jmol.io.CifDataReader;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+
+import org.jmol.script.T;
 import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.Map;
@@ -2058,7 +2060,7 @@ _pdbx_struct_oper_list.vector[3]
     // not overlaying another atom -- if that happens
     // go ahead and move it, but mark it as excluded.
     
-    float bondTolerance = viewer.getBondTolerance();
+    float bondTolerance = viewer.getFloat(T.bondtolerance);
     BS bsBranch = new BS();
     P3 cart1 = new P3();
     P3 cart2 = new P3();

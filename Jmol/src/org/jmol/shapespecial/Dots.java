@@ -24,6 +24,7 @@
 
 package org.jmol.shapespecial;
 
+import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
@@ -277,8 +278,8 @@ public class Dots extends AtomShape {
       colixes = new short[atomCount];
       paletteIDs = new byte[atomCount];
     }
-    ec.calculate(rd, maxRadius, bsOn, bsIgnore, !viewer.getDotSurfaceFlag(),
-        viewer.getDotsSelectedOnlyFlag(), isSurface, true);
+    ec.calculate(rd, maxRadius, bsOn, bsIgnore, !viewer.getBoolean(T.dotsurface),
+        viewer.getBoolean(T.dotsselectedonly), isSurface, true);
 
     rdLast = rd;
 

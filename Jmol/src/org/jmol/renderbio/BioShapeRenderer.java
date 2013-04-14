@@ -101,12 +101,12 @@ abstract class BioShapeRenderer extends MeshRenderer {
     isPass2 = g3d.isPass2();
     invalidateMesh = false;
     needTranslucent = false;
-    boolean TF = isExport || viewer.getHighResolution();
+    boolean TF = (isExport || viewer.getBoolean(T.highresolution));
     if (TF != isHighRes)
       invalidateMesh = true;
     isHighRes = TF;
 
-    boolean v = viewer.getCartoonFlag(T.cartoonfancy);
+    boolean v = viewer.getBoolean(T.cartoonfancy);
     if (cartoonFancy != v) {
       invalidateMesh = true;
       cartoonFancy = v;
@@ -121,7 +121,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       invalidateMesh = true;
     hermiteLevel = Math.min(val1, 8);
 
-    int val = viewer.getRibbonAspectRatio();
+    int val = viewer.getInt(T.ribbonaspectratio);
     val = Math.min(Math.max(0, val), 20);
     if (cartoonFancy && val >= 16)
       val = 4; // at most 4 for elliptical cartoonFancy
@@ -133,13 +133,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
     aspectRatio = val;
 
 
-    TF = (viewer.getTraceAlpha());
+    TF = viewer.getBoolean(T.tracealpha);
     if (TF != isTraceAlpha)
       invalidateMesh = true;
     isTraceAlpha = TF;
 
     invalidateSheets = false;
-    float fval = viewer.getSheetSmoothing();
+    float fval = viewer.getFloat(T.sheetsmoothing);
     if (fval != sheetSmoothing && isTraceAlpha) {
       sheetSmoothing = fval;
       invalidateMesh = true;
@@ -203,7 +203,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     }
     if (!haveVisible)
       return false;
-    ribbonBorder = viewer.getRibbonBorder();
+    ribbonBorder = viewer.getBoolean(T.ribbonborder);
 
     // note that we are not treating a PhosphorusPolymer
     // as nucleic because we are not calculating the wing

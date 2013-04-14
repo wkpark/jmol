@@ -26,6 +26,7 @@
 package org.jmol.render;
 
 import org.jmol.modelset.Atom;
+import org.jmol.script.T;
 import org.jmol.shape.Halos;
 import org.jmol.util.BS;
 import org.jmol.util.C;
@@ -39,8 +40,7 @@ public class HalosRenderer extends ShapeRenderer {
   protected boolean render() {
     Halos halos = (Halos) shape;
     boolean selectDisplayTrue = viewer.getSelectionHaloEnabled(true);
-    boolean showHiddenSelections = (selectDisplayTrue && viewer
-        .getShowHiddenSelectionHalos());
+    boolean showHiddenSelections = (selectDisplayTrue && viewer.getBoolean(T.showhiddenselectionhalos));
     if (halos.mads == null && halos.bsHighlight == null && !selectDisplayTrue)
       return false;
     isAntialiased = g3d.isAntialiased();

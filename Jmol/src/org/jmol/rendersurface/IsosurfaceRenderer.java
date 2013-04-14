@@ -29,6 +29,7 @@ package org.jmol.rendersurface;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;
 import org.jmol.render.MeshRenderer;
+import org.jmol.script.T;
 import org.jmol.shapesurface.Isosurface;
 import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.C;
@@ -53,6 +54,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   private boolean showNumbers;
   private Boolean showKey;
   private boolean hasColorRange;
+  private int meshScale = -1;
   
 
   @Override
@@ -66,13 +68,14 @@ public class IsosurfaceRenderer extends MeshRenderer {
     showNumbers = viewer.getTestFlag(3);
     isosurface = (Isosurface) shape;
     exportPass = (isExport ? 2 : 0);
-    isNavigationMode = viewer.getNavigationMode();
+    isNavigationMode = viewer.getBoolean(T.navigationmode);
     int mySlabValue = Integer.MAX_VALUE;
     int slabValue = g3d.getSlab();
-    showKey = (viewer.getIsosurfaceKey() ? Boolean.TRUE : null);
+    showKey = (viewer.getBoolean(T.isosurfacekey) ? Boolean.TRUE : null);
     if (isNavigationMode)
       mySlabValue = (int) viewer.getNavigationOffset().z;
     isosurface.keyXy = null;
+    meshScale = -1;
     for (int i = isosurface.meshCount; --i >= 0;) {
       imesh = (IsosurfaceMesh) isosurface.meshes[i];
       if (imesh.connections != null && !viewer.getModelSet().atoms[imesh.connections[0]].isVisible(0))
@@ -274,7 +277,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int incr = imesh.vertexIncrement;
       int diam;
       if (imesh.diameter <= 0) {
-        diam = viewer.getDotScale();
+        diam = viewer.getInt(T.dotscale);
         frontOnly = false;
       } else {
         diam = viewer.getScreenDim() / (volumeRender ? 50 : 100);        
@@ -421,7 +424,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       }
       if (diam == Integer.MIN_VALUE) {
         if (imesh.diameter <= 0) {
-          diam = viewer.getMeshScale();
+          diam = (meshScale  < 0 ? meshScale = viewer.getInt(T.meshscale) : meshScale);
         } else {
           diam = viewer.getScreenDim() / 100;
         }

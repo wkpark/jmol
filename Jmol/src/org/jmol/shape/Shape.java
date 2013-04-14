@@ -285,9 +285,10 @@ public abstract class Shape {
    * @param y
    * @param modifiers
    * @param bsVisible
+   * @param drawPicking TODO
    * @return Hashtable containing information about pt clicked
    */
-  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible) {
+  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible, boolean drawPicking) {
     return null;
   }
 

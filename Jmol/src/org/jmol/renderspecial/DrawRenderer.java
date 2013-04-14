@@ -27,6 +27,7 @@ package org.jmol.renderspecial;
 
 
 import org.jmol.render.MeshRenderer;
+import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shapespecial.Draw;
 import org.jmol.shapespecial.DrawMesh;
@@ -380,7 +381,7 @@ public class DrawRenderer extends MeshRenderer {
       return;
     float fScale = dmesh.drawArrowScale;
     if (fScale == 0)
-      fScale = viewer.getDefaultDrawArrowScale() * (dmesh.connections == null ? 1f : 0.5f);
+      fScale = viewer.getFloat(T.defaultdrawarrowscale) * (dmesh.connections == null ? 1f : 0.5f);
     if (fScale <= 0)
       fScale = 0.5f;
     if (isTransformed)

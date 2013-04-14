@@ -25,6 +25,7 @@ package org.jmol.render;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumAxesMode;
+import org.jmol.script.T;
 import org.jmol.shape.Axes;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
@@ -63,7 +64,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     if (mad == 0 || !g3d.checkTranslucent(false))
       return false;
     boolean isXY = (axes.axisXY.z != 0);
-    if (!isXY && viewer.isNavigating() && viewer.getNavigationPeriodic())
+    if (!isXY && viewer.isNavigating() && viewer.getBoolean(T.navigationperiodic))
       return false;
     EnumAxesMode axesMode = viewer.getAxesMode();
     imageFontScaling = viewer.getImageFontScaling();
@@ -94,7 +95,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
       labelPtr = 9;
     } else if (axesMode == EnumAxesMode.BOUNDBOX) {
       nPoints = 6;
-      labelPtr = (viewer.getAxesOrientationRasmol() ? 15 : 9);
+      labelPtr = (viewer.getBoolean(T.axesorientationrasmol) ? 15 : 9);
     }
     if (axes.labels != null) {
       if (nPoints != 3)

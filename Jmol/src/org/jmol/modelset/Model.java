@@ -375,9 +375,11 @@ public class Model {
    * @param groupCount
    * @param baseGroupIndex
    * @param modelsExcluded
+   * @param checkConnections
    */
   public void calculatePolymers(Group[] groups, int groupCount,
-                                int baseGroupIndex, BS modelsExcluded) {
+                                int baseGroupIndex, BS modelsExcluded,
+                                boolean checkConnections) {
   }
 
   /**

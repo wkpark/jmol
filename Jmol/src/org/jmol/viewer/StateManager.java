@@ -359,8 +359,8 @@ public class StateManager {
       zoom = viewer.getZoomSetting();
       center.setT(viewer.getRotationCenter());
       windowCenteredFlag = viewer.isWindowCentered();
-      rotationRadius = viewer.getRotationRadius();
-      navigationMode = viewer.getNavigationMode();
+      rotationRadius = viewer.getFloat(T.rotationradius);
+      navigationMode = viewer.getBoolean(T.navigationmode);
       //navigateSurface = viewer.getNavigateSurface();
       moveToText = viewer.getMoveToText(-1);
       if (navigationMode) {
@@ -752,6 +752,7 @@ public class StateManager {
       setF("cameraDepth", cameraDepth);
       setB("cartoonBaseEdges", cartoonBaseEdges);
       setB("cartoonFancy", cartoonFancy);
+      setB("cartoonLadder", cartoonLadder);
       setB("cartoonRockets", cartoonRockets);
       setB("chainCaseSensitive", chainCaseSensitive);
       setB("celShading", celShading);
@@ -893,6 +894,7 @@ public class StateManager {
       setI("specularPercent", specularPercent);
       setI("specularPower", specularPower);
       setB("ssbondsBackbone", ssbondsBackbone);
+      setF("starScale", starScale);
       setB("statusReporting", statusReporting);
       setI("strandCount", strandCountForStrands);
       setI("strandCountForStrands", strandCountForStrands);
@@ -1032,11 +1034,11 @@ public class StateManager {
     boolean isosurfaceKey = false;
     boolean isosurfacePropertySmoothing = true;
     int isosurfacePropertySmoothingPower = 7;
-    int repaintWaitMs = 1000;
+    public int repaintWaitMs = 1000;
     boolean showHiddenSelectionHalos = false;
     boolean showKeyStrokes = true;
     boolean showMeasurements = true;
-    boolean showTiming = false;
+    public boolean showTiming = false;
     boolean zoomLarge = true; //false would be like Chime
     String backgroundImageFileName;
     
@@ -1061,10 +1063,11 @@ public class StateManager {
     boolean cartoonBaseEdges = false;
     boolean cartoonRockets = false;
     boolean cartoonFancy = false;
+    boolean cartoonLadder = false;
     boolean chainCaseSensitive = false;
     int hermiteLevel = 0;
     boolean highResolutionFlag = false;
-    boolean rangeSelected = false;
+    public boolean rangeSelected = false;
     boolean rasmolHydrogenSetting = true;
     boolean rasmolHeteroSetting = true;
     int ribbonAspectRatio = 16;
@@ -1085,6 +1088,7 @@ public class StateManager {
     boolean autoFps = false;
     EnumAxesMode axesMode = EnumAxesMode.BOUNDBOX;
     float axesScale = 2;
+    float starScale = 0.05f;
     boolean bondPicking = false;
     float cameraDepth = 3.0f;
     boolean celShading = false;
@@ -1110,8 +1114,8 @@ public class StateManager {
     boolean hideNameInPopup = false;
     int hoverDelayMs = 500;
     float loadAtomDataTolerance = 0.01f;
-    boolean logCommands = false;
-    boolean logGestures = false;
+    public boolean logCommands = false;
+    public boolean logGestures = false;
     String measureDistanceUnits = "nanometers";
     boolean measurementLabels = true;
     boolean messageStyleChime = false;
@@ -1138,8 +1142,8 @@ public class StateManager {
     boolean useArcBall = false;
     boolean useMinimizationThread = true;
     boolean useNumberLocalization = true;
-    boolean useScriptQueue = true;
-    boolean waitForMoveTo = true; // Jmol 11.9.24
+    public boolean useScriptQueue = true;
+    public boolean waitForMoveTo = true; // Jmol 11.9.24
     float vectorScale = 1f;
     boolean vectorSymmetry = false; // Jmol 12.3.2
     float vibrationPeriod = 1f;

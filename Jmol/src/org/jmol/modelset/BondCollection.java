@@ -66,7 +66,7 @@ abstract public class BondCollection extends AtomCollection {
   public BondIterator getBondIteratorForType(int bondType, BS bsAtoms) {
     //Dipoles, Sticks
     return new BondIteratorSelected(bonds, bondCount, bondType, bsAtoms, 
-        viewer.getBondSelectionModeOr());
+        viewer.getBoolean(T.bondmodeor));
   }
 
   public BondIterator getBondIterator(BS bsBonds) {
@@ -297,7 +297,7 @@ abstract public class BondCollection extends AtomCollection {
   public short getDefaultMadFromOrder(int order) {
     return (short) (Bond.isOrderH(order) ? 1
         : (order & JmolEdge.BOND_STRUT) != 0 ? (int) Math.floor(viewer
-            .getStrutDefaultRadius() * 2000) : defaultCovalentMad);
+            .getFloat(T.strutdefaultradius) * 2000) : defaultCovalentMad);
   }
 
   protected int[] deleteConnections(float minDistance, float maxDistance,

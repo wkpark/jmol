@@ -253,7 +253,7 @@ abstract public class AtomCollection {
     int iAtom = bs.nextSetBit(0);
     return (iAtom < 0 ? "null"
         : atoms[iAtom].group.getHelixData(tokType, 
-        viewer.getQuaternionFrame(), viewer.getHelixStep()));
+        viewer.getQuaternionFrame(), viewer.getInt(T.helixstep)));
   }
   
   public int getAtomIndexFromAtomNumber(int atomNumber, BS bsVisibleFrames) {
@@ -344,7 +344,7 @@ abstract public class AtomCollection {
   public int getBfactor100Lo() {
     //ColorManager
     if (!hasBfactorRange) {
-      if (viewer.isRangeSelected()) {
+      if (viewer.global.rangeSelected) {
         calcBfactorRange(viewer.getSelectionSet(false));
       } else {
         calcBfactorRange(null);
@@ -1044,9 +1044,8 @@ abstract public class AtomCollection {
    * A more general algorithm of recording which object drew
    * which pixel would be very expensive and not worth the trouble
    */
-  protected void findNearest2(int x, int y, Atom[] closest, BS bsNot) {
+  protected void findNearest2(int x, int y, Atom[] closest, BS bsNot, int min) {
     Atom champion = null;
-    int min = viewer.getMinPixelSelRadius();
     for (int i = atomCount; --i >= 0;) {
       if (bsNot != null && bsNot.get(i))
         continue;
@@ -2407,7 +2406,7 @@ abstract public class AtomCollection {
   }
 
   protected BS getChainBits(char chainId) {
-    boolean caseSensitive = viewer.getChainCaseSensitive();
+    boolean caseSensitive = viewer.getBoolean(T.chaincasesensitive);
     if (!caseSensitive)
       chainId = Character.toUpperCase(chainId);
     BS bs = new BS();

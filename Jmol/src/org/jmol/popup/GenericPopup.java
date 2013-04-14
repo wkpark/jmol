@@ -1078,7 +1078,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
         }
       }
     }
-    if (isApplet && viewer.showModelSetDownload()
+    if (isApplet
         && !viewer.getBooleanProperty("hideNameInPopup")) {
       menuAddSeparator(menu);
       menuCreateItem(menu, GT._(getMenuText("viewMenuText"), modelSetFileName),

@@ -27,6 +27,7 @@ package org.jmol.shape;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
+import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
@@ -375,7 +376,7 @@ public class Labels extends AtomShape {
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BS();
-    isScaled = viewer.getFontScaling();
+    isScaled = viewer.getBoolean(T.fontscaling);
     scalePixelsPerMicron = (isScaled ? viewer
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
   }

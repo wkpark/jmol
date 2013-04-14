@@ -1365,7 +1365,7 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getVibrationCoord('Z');
     case T.vectorscale:
       V3 v = atom.getVibrationVector();
-      return (v == null ? 0 : v.length() * viewer.getVectorScale());
+      return (v == null ? 0 : v.length() * viewer.getFloat(T.vectorscale));
 
     }
     return atomPropertyInt(atom, tokWhat);

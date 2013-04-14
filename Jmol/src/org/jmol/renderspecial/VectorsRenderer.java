@@ -28,6 +28,7 @@ package org.jmol.renderspecial;
 
 import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
+import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.shapespecial.Vectors;
 import org.jmol.util.GData;
@@ -65,6 +66,9 @@ public class VectorsRenderer extends ShapeRenderer {
     Atom[] atoms = vectors.atoms;
     short[] colixes = vectors.colixes;
     boolean needTranslucent = false;
+    vectorScale = viewer.getFloat(T.vectorscale);
+    vectorSymmetry = viewer.getBoolean(T.vectorsymmetry);
+    
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
       if (!atom.isVisible(myVisibilityFlag))
@@ -72,8 +76,6 @@ public class VectorsRenderer extends ShapeRenderer {
       V3 vibrationVector = viewer.getVibrationVector(i);
       if (vibrationVector == null)
         continue;
-      vectorScale = viewer.getVectorScale();
-      vectorSymmetry = viewer.getVectorSymmetry();
       if (!transform(mads[i], atom, vibrationVector))
         continue;
       if (!g3d.setColix(Shape.getColix(colixes, i, atom))) {

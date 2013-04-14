@@ -26,6 +26,7 @@
 package org.jmol.thread;
 
 import org.jmol.api.JmolScriptEvaluator;
+import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 
 public class ScriptDelayThread extends JmolThread {
@@ -60,7 +61,7 @@ public class ScriptDelayThread extends JmolThread {
         isPauseDelay = (millis == PAUSE_DELAY);
         if (!doPopPush)
           millis = -millis;
-        else if ((delayMax = viewer.getDelayMaximum()) > 0 && millis > delayMax)
+        else if ((delayMax = viewer.getDelayMaximumMs()) > 0 && millis > delayMax)
           millis = delayMax;
         millis -= System.currentTimeMillis() - startTime;
         if (isJS) {

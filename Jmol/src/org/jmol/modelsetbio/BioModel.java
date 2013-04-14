@@ -213,10 +213,10 @@ public final class BioModel extends Model{
         vCA.addLast((a1 = atoms[i]));
     if (vCA.size() == 0)
       return 0;    
-    float thresh = viewer.getStrutLengthMaximum();
-    short mad = (short) (viewer.getStrutDefaultRadius() * 2000);
-    int delta = viewer.getStrutSpacingMinimum();
-    boolean strutsMultiple = viewer.getStrutsMultiple();
+    float thresh = viewer.getFloat(T.strutlengthmaximum);
+    short mad = (short) (viewer.getFloat(T.strutdefaultradius) * 2000);
+    int delta = viewer.getInt(T.strutspacing);
+    boolean strutsMultiple = viewer.getBoolean(T.strutsmultiple);
     JmolList<Atom[]> struts = getBioPolymer(a1.getPolymerIndexInModel())
         .calculateStruts(modelSet, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
@@ -388,7 +388,8 @@ public final class BioModel extends Model{
 
   @Override
   public void calculatePolymers(Group[] groups, int groupCount,
-                                int baseGroupIndex, BS modelsExcluded) {
+                                int baseGroupIndex, BS modelsExcluded, 
+                                boolean checkConnections) {
     if (groups == null) {
       groups = modelSet.getGroups();
       groupCount = groups.length;
@@ -403,13 +404,12 @@ public final class BioModel extends Model{
             monomer.setBioPolymer(null, -1);
         }
       }
-    boolean checkPolymerConnections = !modelSet.viewer.isPdbSequential();
     for (int i = baseGroupIndex; i < groupCount; ++i) {
       Group g = groups[i];
       Model model = g.getModel();
       if (!model.isBioModel || ! (g instanceof Monomer))
         continue;
-      boolean doCheck = checkPolymerConnections 
+      boolean doCheck = checkConnections 
         && !modelSet.isJmolDataFrameForModel(modelSet.atoms[g.firstAtomIndex].modelIndex);
       BioPolymer bp = (((Monomer) g).getBioPolymer() == null ?
           Resolver.allocateBioPolymer(groups, i, doCheck) : null);
@@ -723,7 +723,7 @@ public final class BioModel extends Model{
         && type.indexOf("ramachandran ") >= 0 ? type.charAt(13) : 'R');
     if (qtype == 'r')
       qtype = viewer.getQuaternionFrame();
-    int mStep = viewer.getHelixStep();
+    int mStep = viewer.getInt(T.helixstep);
     int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1
         : 2);
     if (!isDraw) {

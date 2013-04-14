@@ -28,6 +28,7 @@ package org.jmol.shape;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
+import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.viewer.JC;
@@ -135,7 +136,7 @@ public void setModelClickability() {
   
  @Override
 public void setVisibilityFlags(BS bs) {
-    boolean showHydrogens = viewer.getShowHydrogens();
+    boolean showHydrogens = viewer.getBoolean(T.showhydrogens);
     BS bsDeleted = viewer.getDeletedAtoms();
     for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];

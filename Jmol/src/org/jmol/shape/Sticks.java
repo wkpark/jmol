@@ -216,7 +216,7 @@ public class Sticks extends Shape {
 
   @Override
   public Map<String, Object> checkObjectClicked(int x, int y, int modifiers,
-                                    BS bsVisible) {
+                                    BS bsVisible, boolean drawPicking) {
     P3 pt = new P3();
     Bond bond = findPickedBond(x, y, bsVisible, pt);
     if (bond == null)

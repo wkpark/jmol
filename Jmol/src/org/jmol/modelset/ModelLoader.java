@@ -104,7 +104,7 @@ public final class ModelLoader {
       viewer.resetShapes(false);
     }
     modelSet.preserveState = viewer.getPreserveState();
-    modelSet.showRebondTimes = viewer.getShowTiming();
+    modelSet.showRebondTimes = viewer.global.showTiming;
     if (bsNew == null) {
       initializeInfo(modelSetName, null);
       createModelSet(null, null, null);
@@ -271,7 +271,7 @@ public final class ModelLoader {
         .getAtomSetCount(atomSetCollection));
     // cannot append a trajectory into a previous model
     appendNew = (!merging || adapter == null || adapterModelCount > 1
-        || isTrajectory || viewer.getAppendNew());
+        || isTrajectory || viewer.getBoolean(T.appendnew));
     htAtomMap.clear();
     chainOf = new Chain[defaultGroupCount];
     group3Of = new String[defaultGroupCount];
@@ -355,7 +355,7 @@ public final class ModelLoader {
     }
 
     
-    setDefaultRendering(viewer.getSmallMoleculeMaxAtoms());
+    setDefaultRendering(viewer.getInt(T.smallmoleculemaxatoms));
 
     RadiusData rd = viewer.getDefaultRadiusData();
     int atomCount = modelSet.atomCount;
@@ -911,7 +911,7 @@ public final class ModelLoader {
           b.setColix(colix);
       }
     }
-    if (haveMultipleBonds && modelSet.someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds())
+    if (haveMultipleBonds && modelSet.someModelsHaveSymmetry && !viewer.getBoolean(T.applysymmetrytobonds))
       Logger.info("ModelSet: use \"set appletSymmetryToBonds TRUE \" to apply the file-based multiple bonds to symmetry-generated atoms.");
     modelSet.defaultCovalentMad = mad;
   }
@@ -1108,7 +1108,8 @@ public final class ModelLoader {
     // 1. apply CONECT records and set bsExclude to omit them
     // 2. apply stereochemistry from JME
 
-    BS bsExclude = (modelSet.getModelSetAuxiliaryInfoValue("someModelsHaveCONECT") == null ? null
+    BS bsExclude = (modelSet
+        .getModelSetAuxiliaryInfoValue("someModelsHaveCONECT") == null ? null
         : new BS());
     if (bsExclude != null)
       modelSet.setPdbConectBonding(baseAtomIndex, baseModelIndex, bsExclude);
@@ -1116,9 +1117,9 @@ public final class ModelLoader {
     // 2. for each model in the collection,
     int atomIndex = baseAtomIndex;
     int modelAtomCount = 0;
-    boolean symmetryAlreadyAppliedToBonds = viewer.getApplySymmetryToBonds();
-    boolean doAutoBond = viewer.getAutoBond();
-    boolean forceAutoBond = viewer.getForceAutoBond();
+    boolean symmetryAlreadyAppliedToBonds = viewer.getBoolean(T.applysymmetrytobonds);
+    boolean doAutoBond = viewer.getBoolean(T.autobond);
+    boolean forceAutoBond = viewer.getBoolean(T.forceautobond);
     BS bs = null;
     boolean autoBonding = false;
     int modelCount = modelSet.modelCount;
@@ -1126,8 +1127,9 @@ public final class ModelLoader {
     if (!noAutoBond)
       for (int i = baseModelIndex; i < modelCount; atomIndex += modelAtomCount, i++) {
         modelAtomCount = models[i].bsAtoms.cardinality();
-        int modelBondCount = modelSet.getModelAuxiliaryInfoInt(i, "initialBondCount");
-        
+        int modelBondCount = modelSet.getModelAuxiliaryInfoInt(i,
+            "initialBondCount");
+
         boolean modelIsPDB = models[i].isBioModel;
         if (modelBondCount < 0) {
           modelBondCount = modelSet.bondCount;
@@ -1143,14 +1145,14 @@ public final class ModelLoader {
         // use ATOM, so that's a problem. Those atoms would not be excluded from
         // the
         // automatic bonding, and additional bonds might be made.
-        boolean doBond = (forceAutoBond || doAutoBond && (
-                modelBondCount == 0
-                || modelIsPDB && jmolData == null 
-                  && (modelSet.getModelSetAuxiliaryInfoBoolean("havePDBHeaderName") 
-                      || modelBondCount < modelAtomCount / 2) 
-                || modelHasSymmetry && !symmetryAlreadyAppliedToBonds 
-                  && !modelSet.getModelAuxiliaryInfoBoolean(i, "hasBonds")
-                ));
+        boolean doBond = (forceAutoBond || doAutoBond
+            && (modelBondCount == 0
+                || modelIsPDB
+                && jmolData == null
+                && (modelSet
+                    .getModelSetAuxiliaryInfoBoolean("havePDBHeaderName") || modelBondCount < modelAtomCount / 2) || modelHasSymmetry
+                && !symmetryAlreadyAppliedToBonds
+                && !modelSet.getModelAuxiliaryInfoBoolean(i, "hasBonds")));
         if (!doBond)
           continue;
         autoBonding = true;
@@ -1162,7 +1164,8 @@ public final class ModelLoader {
         }
       }
     if (autoBonding) {
-      modelSet.autoBondBs4(bs, bs, bsExclude, null, modelSet.defaultCovalentMad, viewer.checkAutoBondLegacy());
+      modelSet.autoBondBs4(bs, bs, bsExclude, null,
+          modelSet.defaultCovalentMad, viewer.getBoolean(T.legacyautobonding));
       Logger
           .info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
     } else {
@@ -1306,7 +1309,7 @@ public final class ModelLoader {
       modelSet.freezeModels();
       return;
     }
-    boolean asDSSP = viewer.getDefaultStructureDSSP();
+    boolean asDSSP = viewer.getBoolean(T.defaultstructuredssp);
     String ret = modelSet.calculateStructuresAllExcept(structuresDefinedInFile, 
           asDSSP, 
           false, true, true, asDSSP); // now DSSP
@@ -1437,7 +1440,7 @@ public final class ModelLoader {
     if (!merging)
       modelSet.shapeManager.resetShapes();
     modelSet.shapeManager.loadDefaultShapes(modelSet);
-    if (modelSet.someModelsHaveAromaticBonds && viewer.getSmartAromatic())      
+    if (modelSet.someModelsHaveAromaticBonds && viewer.getBoolean(T.smartaromatic))      
       modelSet.assignAromaticBondsBs(false, null);
     if (merging && baseModelCount == 1)
         modelSet.shapeManager.setShapePropertyBs(JC.SHAPE_MEASURES, "clearModelIndex", null, null);
@@ -1510,7 +1513,7 @@ public final class ModelLoader {
     P3 pt = new P3();
     P3 v = new P3();
     Atom[] atoms = modelSet.atoms;
-    float tolerance = viewer.getLoadAtomDataTolerance();
+    float tolerance = viewer.getFloat(T.loadatomdatatolerance);
     if (modelSet.unitCells != null)
       for (int i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected
           .nextSetBit(i + 1))

@@ -22,6 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.render;
+import org.jmol.script.T;
 import org.jmol.shape.Frank;
 import org.jmol.util.C;
 
@@ -36,7 +37,7 @@ public class FrankRenderer extends ShapeRenderer {
   protected boolean render() {
     Frank frank = (Frank) shape;
     boolean allowKeys = viewer.getBooleanProperty("allowKeyStrokes");
-    boolean modelKitMode = viewer.isModelKitMode();
+    boolean modelKitMode = viewer.getBoolean(T.modelkitmode);
     colix = (modelKitMode ? C.MAGENTA 
         : viewer.isSignedApplet() ? (allowKeys || viewer.isJS && !viewer.isWebGL ? C.ORANGE : C.RED) : allowKeys ? C.BLUE : C.GRAY);
     if (isExport || !viewer.getShowFrank())

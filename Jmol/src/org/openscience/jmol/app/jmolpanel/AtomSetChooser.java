@@ -65,6 +65,7 @@ import java.util.Enumeration;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.script.T;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
@@ -280,7 +281,7 @@ ActionListener, ChangeListener, Runnable {
     // fps slider
     JPanel fpsPanel = new JPanel();
     row.add(fpsPanel);
-    int fps = viewer.getAnimationFps();
+    int fps = viewer.getInt(T.animationfps);
     if (fps > FPS_MAX)
       fps = FPS_MAX;
     fpsPanel.setLayout(new BorderLayout());
@@ -805,7 +806,7 @@ ActionListener, ChangeListener, Runnable {
           // sleep for the amount of time required for the fps setting
           // NB the viewer's fps setting is never 0, so I could
           // set it directly, but just in case this behavior changes later...
-          int fps = viewer.getAnimationFps();
+          int fps = viewer.getInt(T.animationfps);
           Thread.sleep((int) (1000.0/(fps==0?1:fps)));
         } catch (InterruptedException e) {
           Logger.errorEx(null, e);

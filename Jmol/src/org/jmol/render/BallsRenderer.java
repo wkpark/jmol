@@ -27,6 +27,7 @@ package org.jmol.render;
 
 
 import org.jmol.modelset.Atom;
+import org.jmol.script.T;
 import org.jmol.util.BS;
 
 public class BallsRenderer extends ShapeRenderer {
@@ -34,7 +35,7 @@ public class BallsRenderer extends ShapeRenderer {
   @Override
   protected boolean render() {
     boolean needTranslucent = false;
-    if (!viewer.getWireframeRotation() || !viewer.getInMotion()) {
+    if (!viewer.getBoolean(T.wireframerotation) || !viewer.getInMotion()) {
       Atom[] atoms = modelSet.atoms;
       BS bsOK = viewer.getRenderableBitSet();
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {

@@ -205,7 +205,7 @@ public abstract class Object2dShape extends Shape {
   }
 
   @Override
-  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible) {
+  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible, boolean drawPicking) {
     if (isHover || modifiers == 0)
       return null;
     Iterator<Text> e = objects.values().iterator();

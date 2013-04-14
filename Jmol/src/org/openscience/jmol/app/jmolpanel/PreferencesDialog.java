@@ -26,6 +26,7 @@ package org.openscience.jmol.app.jmolpanel;
 import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
+import org.jmol.script.T;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JC;
@@ -206,10 +207,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showPanel.setLayout(new GridLayout(1, 3));
     showPanel.setBorder(new TitledBorder(GT._("Show All")));
     cH = guimap.newJCheckBox("Prefs.showHydrogens",
-                             viewer.getShowHydrogens());
+                             viewer.getBoolean(T.showhydrogens));
     cH.addItemListener(checkBoxListener);
     cM = guimap.newJCheckBox("Prefs.showMeasurements",
-                             viewer.getShowMeasurements());
+                             viewer.getBoolean(T.showmeasurements));
     cM.addItemListener(checkBoxListener);
     showPanel.add(cH);
     showPanel.add(cM);
@@ -252,7 +253,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     cbAxesOrientationRasmol =
         guimap.newJCheckBox("Prefs.axesOrientationRasmol",
-                            viewer.getAxesOrientationRasmol());
+                            viewer.getBoolean(T.axesorientationrasmol));
     cbAxesOrientationRasmol.addItemListener(checkBoxListener);
     axesPanel.add(cbAxesOrientationRasmol);
 
@@ -308,7 +309,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
                                 SwingConstants.CENTER);
     sfPanel.add(sfLabel, BorderLayout.NORTH);
     vdwPercentSlider =
-      new JSlider(SwingConstants.HORIZONTAL, 0, 100, viewer.getPercentVdwAtom());
+      new JSlider(SwingConstants.HORIZONTAL, 0, 100, viewer.getInt(T.percentvdwatom));
     vdwPercentSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     vdwPercentSlider.setPaintTicks(true);
     vdwPercentSlider.setMajorTickSpacing(20);
@@ -367,7 +368,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     autobondPanel.add(abYes);
     autobondPanel.add(abNo);
     autobondPanel.add(Box.createVerticalGlue());
-    abYes.setSelected(viewer.getAutoBond());
+    abYes.setSelected(viewer.getBoolean(T.autobond));
     abYes.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -376,7 +377,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       }
     });
 
-    abNo.setSelected(!viewer.getAutoBond());
+    abNo.setSelected(!viewer.getBoolean(T.autobond));
     abNo.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -431,7 +432,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     btPanel.add(btLabel, BorderLayout.NORTH);
 
     btSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100,
-        (int) (100 * viewer.getBondTolerance()));
+        (int) (100 * viewer.getFloat(T.bondtolerance)));
     btSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     btSlider.setPaintTicks(true);
     btSlider.setMajorTickSpacing(20);
@@ -472,7 +473,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bdPanel.add(bdLabel, BorderLayout.NORTH);
 
     bdSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100,
-        (int) (100 * viewer.getMinBondDistance()));
+        (int) (100 * viewer.getFloat(T.minbonddistance)));
     bdSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bdSlider.setPaintTicks(true);
     bdSlider.setMajorTickSpacing(20);
@@ -531,26 +532,26 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private void updateComponents() {
     // Display panel
-    cH.setSelected(viewer.getShowHydrogens());
-    cM.setSelected(viewer.getShowMeasurements());
+    cH.setSelected(viewer.getBoolean(T.showhydrogens));
+    cM.setSelected(viewer.getBoolean(T.showmeasurements));
 
     cbPerspectiveDepth.setSelected(viewer.getPerspectiveDepth());
     cbShowAxes.setSelected(viewer.getShowAxes());
     cbShowBoundingBox.setSelected(viewer.getShowBbcage());
 
-    cbAxesOrientationRasmol.setSelected(viewer.getAxesOrientationRasmol());
+    cbAxesOrientationRasmol.setSelected(viewer.getBoolean(T.axesorientationrasmol));
     
     cbOpenFilePreview.setSelected(openFilePreview);
     cbClearHistory.setSelected(clearHistory);
 
     // Atom panel controls: 
-    vdwPercentSlider.setValue(viewer.getPercentVdwAtom());
+    vdwPercentSlider.setValue(viewer.getInt(T.percentvdwatom));
 
     // Bond panel controls:
-    abYes.setSelected(viewer.getAutoBond());
+    abYes.setSelected(viewer.getBoolean(T.autobond));
     bwSlider.setValue(viewer.getMadBond()/2);
-    bdSlider.setValue((int) (100 * viewer.getMinBondDistance()));
-    btSlider.setValue((int) (100 * viewer.getBondTolerance()));
+    bdSlider.setValue((int) (100 * viewer.getFloat(T.minbonddistance)));
+    btSlider.setValue((int) (100 * viewer.getFloat(T.bondtolerance)));
 
   }
 

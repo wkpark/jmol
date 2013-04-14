@@ -27,6 +27,7 @@ package org.jmol.renderspecial;
 
 
 import org.jmol.render.ShapeRenderer;
+import org.jmol.script.T;
 import org.jmol.shapespecial.Dipole;
 import org.jmol.shapespecial.Dipoles;
 import org.jmol.util.C;
@@ -42,7 +43,7 @@ public class DipolesRenderer extends ShapeRenderer {
   @Override
   protected boolean render() {
     Dipoles dipoles = (Dipoles) shape;
-    dipoleVectorScale = viewer.getDipoleScale();
+    dipoleVectorScale = viewer.getFloat(T.dipolescale);
     boolean needTranslucent = false;
     for (int i = dipoles.dipoleCount; --i >= 0;) {
       Dipole dipole = dipoles.dipoles[i];

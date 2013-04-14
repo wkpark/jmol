@@ -222,7 +222,7 @@ public class AnimationManager {
     viewer.setTainted(true);
     setFrameRangeVisible();
     viewer.setStatusFrameChanged(false);
-    if (viewer.modelSet != null && !viewer.getSelectAllModels())
+    if (viewer.modelSet != null && !viewer.global.selectAllModels)
         viewer.setSelectionSubset(viewer.getModelUndeletedAtomsBitSet(currentModelIndex));
   }
 

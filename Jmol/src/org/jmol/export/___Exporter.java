@@ -316,7 +316,7 @@ public abstract class ___Exporter {
     sb.append("\n").append(commentChar).append("light source: " + lightSource);
     sb.append("\n").append(commentChar).append("lighting: " + viewer.getSpecularState().replace('\n', ' '));
     sb.append("\n").append(commentChar).append("center: " + center);
-    sb.append("\n").append(commentChar).append("rotationRadius: " + viewer.getRotationRadius());
+    sb.append("\n").append(commentChar).append("rotationRadius: " + viewer.getFloat(T.rotationradius));
     sb.append("\n").append(commentChar).append("boundboxCenter: " + viewer.getBoundBoxCenter());
     sb.append("\n").append(commentChar).append("translationOffset: " + viewer.getTranslationScript());
     sb.append("\n").append(commentChar).append("zoom: " + viewer.getZoomPercentFloat());

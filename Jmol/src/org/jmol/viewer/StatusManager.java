@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.Dimension;
 import org.jmol.util.Logger;
@@ -474,8 +475,8 @@ class StatusManager {
     }
 
     Object[] data;
-    if (isScriptCompletion && viewer.getMessageStyleChime()
-        && viewer.getDebugScript()) {
+    if (isScriptCompletion && viewer.getBoolean(T.messagestylechime)
+        && viewer.getBoolean(T.debugscript)) {
       data = new Object[] { null, "script <exiting>", statusMessage,
           Integer.valueOf(-1), strErrorMessageUntranslated };
       if (notifyEnabled(EnumCallback.SCRIPT))

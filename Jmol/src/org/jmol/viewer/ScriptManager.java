@@ -30,6 +30,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.api.JmolScriptManager;
 import org.jmol.script.ScriptContext;
+import org.jmol.script.T;
 import org.jmol.thread.CommandWatcherThread;
 import org.jmol.thread.ScriptQueueThread;
 import org.jmol.util.BS;
@@ -101,7 +102,7 @@ public class ScriptManager implements JmolScriptManager {
      */
     {}
         
-    if (!viewer.usingScriptQueue()) {
+    if (!viewer.global.useScriptQueue) {
       clearQueue();
       viewer.haltScriptExecution();
     }
@@ -414,7 +415,7 @@ public class ScriptManager implements JmolScriptManager {
     if (isQuiet)
       strScript += JC.SCRIPT_EDITOR_IGNORE;
     return addScript(strScript, false, isQuiet
-        && !viewer.getMessageStyleChime());
+        && !viewer.getBoolean(T.messagestylechime));
   }
 
   public boolean checkHalt(String str, boolean isInsert) {
@@ -447,7 +448,7 @@ public class ScriptManager implements JmolScriptManager {
       viewer.clearThreads();
       viewer.queueOnHold = false;
     }
-    if (isInsert || viewer.waitForMoveTo()) {
+    if (isInsert || viewer.global.waitForMoveTo) {
       viewer.stopMotion();
     }
     Logger.info(viewer.isSyntaxCheck ? haltType

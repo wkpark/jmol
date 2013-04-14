@@ -47,7 +47,7 @@ public class RocketsRenderer extends BioShapeRenderer {
   protected void renderBioShape(BioShape bioShape) {
     if (!(bioShape.bioPolymer instanceof AminoPolymer))
       return;
-    boolean val = !viewer.getCartoonFlag(T.rocketbarrels);
+    boolean val = !viewer.getBoolean(T.rocketbarrels);
     if (renderArrowHeads != val) {
       bioShape.falsifyMesh();
       renderArrowHeads = val;

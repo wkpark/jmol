@@ -336,7 +336,7 @@ import java.util.Map;
   
   protected final Atom[] closest = new Atom[1];
 
-  public int findNearestAtomIndex(int x, int y, BS bsNot) {
+  public int findNearestAtomIndex(int x, int y, BS bsNot, int min) {
     if (atomCount == 0)
       return -1;
     closest[0] = null;
@@ -344,7 +344,7 @@ import java.util.Map;
       x <<= 1;
       y <<= 1;
     }
-    findNearest2(x, y, closest, bsNot);
+    findNearest2(x, y, closest, bsNot, min);
     shapeManager.findNearestShapeAtomIndex(x, y, closest, bsNot);
     int closestIndex = (closest[0] == null ? -1 : closest[0].index);
     closest[0] = null;
@@ -431,7 +431,7 @@ import java.util.Map;
     SymmetryInterface symmetry = (SymmetryInterface) Interface
         .getOptionInterface("symmetry.Symmetry");
     pointGroup = symmetry.setPointGroup(pointGroup, atoms, bs, haveVibration,
-        viewer.getPointGroupTolerance(0), viewer.getPointGroupTolerance(1));
+        viewer.getFloat(T.pointgroupdistancetolerance), viewer.getFloat(T.pointgrouplineartolerance));
     if (!doAll && !asInfo)
       return pointGroup.getPointGroupName();
     Object ret = pointGroup.getPointGroupInfo(modelIndex, asDraw, asInfo, type,
@@ -441,7 +441,7 @@ import java.util.Map;
     return (modelCount > 1 ? "frame " + getModelNumberDotted(modelIndex) + "; "
         : "") + ret;
   }
-
+  
   private BS modelsOf(BS bsAtoms, BS bsAllAtoms) {
     BS bsModels = BSUtil.newBitSet(modelCount);
     boolean isAll = (bsAtoms == null);

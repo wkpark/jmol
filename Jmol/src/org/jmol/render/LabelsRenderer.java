@@ -26,6 +26,7 @@ package org.jmol.render;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
+import org.jmol.script.T;
 import org.jmol.shape.Labels;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
@@ -61,7 +62,7 @@ public class LabelsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
-    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer
+    float scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? viewer
         .getScalePixelsPerAngstrom(true) * 10000f : 0);
     float imageFontScaling = viewer.getImageFontScaling();
     int iGroup = -1;

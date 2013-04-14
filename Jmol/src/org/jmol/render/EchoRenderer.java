@@ -27,6 +27,7 @@ import java.util.Iterator;
 
 
 import org.jmol.modelset.Atom;
+import org.jmol.script.T;
 import org.jmol.shape.Echo;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
@@ -45,7 +46,7 @@ public class EchoRenderer extends ShapeRenderer {
       return false;
     Echo echo = (Echo) shape;
     Iterator<Text> e = echo.objects.values().iterator();
-    float scalePixelsPerMicron = (viewer.getFontScaling() ? viewer
+    float scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? viewer
         .getScalePixelsPerAngstrom(true) * 10000 : 0);
     imageFontScaling = viewer.getImageFontScaling();
     boolean haveTranslucent = false;

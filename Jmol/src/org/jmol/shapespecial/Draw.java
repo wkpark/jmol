@@ -1106,11 +1106,12 @@ public void initShape() {
   private final P3i ptXY = new P3i();
   
   @Override
-  public Map<String, Object> checkObjectClicked(int x, int y, int action, BS bsVisible) {
+  public Map<String, Object> checkObjectClicked(int x, int y, int action,
+                                                BS bsVisible,
+                                                boolean drawPicking) {
     boolean isPickingMode = (viewer.getPickingMode() == ActionManager.PICKING_DRAW);
     boolean isSpinMode = (viewer.getPickingMode() == ActionManager.PICKING_SPIN);
-    boolean isDrawPicking = viewer.getDrawPicking();
-    if (!isPickingMode && !isDrawPicking && !isSpinMode
+    if (!isPickingMode && !drawPicking && !isSpinMode
         || C.isColixTranslucent(colix))
       return null;
     if (!findPickedObject(x, y, false, bsVisible))
@@ -1120,15 +1121,17 @@ public void initShape() {
     BS bs = ((DrawMesh) pickedMesh).modelFlags;
     if (modelIndex < 0 && bs != null && BSUtil.cardinalityOf(bs) == 1)
       modelIndex = bs.nextSetBit(0);
-    if (isDrawPicking && !isPickingMode) {
+    if (drawPicking && !isPickingMode) {
       if (action != 0) // not mouseMove
         setStatusPicked(-2, v);
       return getPickedPoint(v, modelIndex);
     }
-    if (action == 0 || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1]) {
-      return (action == 0 ? getPickedPoint(v, modelIndex) : null); 
+    if (action == 0
+        || pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1]) {
+      return (action == 0 ? getPickedPoint(v, modelIndex) : null);
     }
-    boolean isClockwise = viewer.isBound(action, ActionManager.ACTION_spinDrawObjectCW);
+    boolean isClockwise = viewer.isBound(action,
+        ActionManager.ACTION_spinDrawObjectCW);
     if (pickedVertex == 0) {
       viewer.startSpinningAxis(
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],

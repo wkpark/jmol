@@ -273,7 +273,7 @@ public abstract class BioPolymer {
       reversed = BS.newN(monomerCount);
     else
       reversed.clearAll();
-    twistedSheets = model.modelSet.viewer.getCartoonFlag(T.twistedsheets);
+    twistedSheets = model.modelSet.viewer.getBoolean(T.twistedsheets);
     V3 vectorA = new V3();
     V3 vectorB = new V3();
     V3 vectorC = new V3();

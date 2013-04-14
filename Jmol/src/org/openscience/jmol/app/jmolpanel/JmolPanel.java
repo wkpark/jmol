@@ -42,6 +42,7 @@ import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
 import org.openscience.jmol.app.jsonkiosk.JsonNioServer;
 import org.openscience.jmol.app.jsonkiosk.KioskFrame;
 import org.openscience.jmol.app.surfacetool.SurfaceTool;
+import org.jmol.script.T;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JC;
@@ -961,8 +962,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   void setMenuState() {
     guimap.setSelected("perspectiveCheck", viewer.getPerspectiveDepth());
-    guimap.setSelected("hydrogensCheck", viewer.getShowHydrogens());
-    guimap.setSelected("measurementsCheck", viewer.getShowMeasurements());
+    guimap.setSelected("hydrogensCheck", viewer.getBoolean(T.showhydrogens));
+    guimap.setSelected("measurementsCheck", viewer.getBoolean(T.showmeasurements));
     guimap.setSelected("axesCheck", viewer.getShowAxes());
     guimap.setSelected("boundboxCheck", viewer.getShowBbcage());
     guimap.setEnabled("openJSpecViewScript", display.isRotateMode());

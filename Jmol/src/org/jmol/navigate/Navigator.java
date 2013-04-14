@@ -506,7 +506,7 @@ public final class Navigator extends JmolThread implements
       break;
     }
     tm.matrixTransform.transform2(tm.navigationCenter, tm.navigationShiftXY);
-    if (viewer.getNavigationPeriodic()) {
+    if (viewer.getBoolean(T.navigationperiodic)) {
       // TODO
       // but if periodic, then the navigationCenter may have to be moved back a
       // notch
@@ -631,7 +631,7 @@ public final class Navigator extends JmolThread implements
     boolean isShiftKey = ((modifiers & Event.SHIFT_MASK) > 0);
     boolean isAltKey = ((modifiers & Event.ALT_MASK) > 0);
     boolean isCtrlKey = ((modifiers & Event.CTRL_MASK) > 0);
-    float speed = viewer.getNavigationSpeed() * (isCtrlKey ? 10 : 1);
+    float speed = viewer.getFloat(T.navigationspeed) * (isCtrlKey ? 10 : 1);
     // race condition viewer.cancelRendering();
     switch (keyCode) {
     case Event.VK_PERIOD:
@@ -672,7 +672,7 @@ public final class Navigator extends JmolThread implements
         break;
       }
       tm.modelCenterOffset -= speed
-          * (viewer.getNavigationPeriodic() ? 1 : multiplier);
+          * (viewer.getBoolean(T.navigationperiodic) ? 1 : multiplier);
       tm.navMode = TransformManager.NAV_MODE_NEWZ;
       break;
     case Event.VK_DOWN:
@@ -704,7 +704,7 @@ public final class Navigator extends JmolThread implements
         break;
       }
       tm.modelCenterOffset += speed
-          * (viewer.getNavigationPeriodic() ? 1 : multiplier);
+          * (viewer.getBoolean(T.navigationperiodic) ? 1 : multiplier);
       tm.navMode = TransformManager.NAV_MODE_NEWZ;
       break;
     case Event.VK_LEFT:

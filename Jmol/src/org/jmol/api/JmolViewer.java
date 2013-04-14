@@ -44,15 +44,29 @@ import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
 
 /**
- * This is the high-level API for the JmolViewer for simple access.
- * <p>
- * We will implement a low-level API at some point
- * 
+ * JmolViewer is the main API for the Viewer class.
+ * (Mosty) we try to not change this (much), whereas the varius 
+ * "public" methods of Viewer, ModelSet, and other classes are public
+ * only for internal cross-package access, not for external use.
  *
  **/
 
 abstract public class JmolViewer {
 
+  // several; methods were deprecated and removed in 13.1.15. All are accessible via "getXxxx" methods:
+  
+  abstract public float getFloat(int tok);
+  abstract public int getInt(int tok);
+  abstract public boolean getBoolean(int tok);
+
+  //abstract public int getAnimationFps();  see getInt(T.animationFps)
+  //abstract public boolean getShowHydrogens(); see getBoolean(T.showhydrogens)
+  //abstract public boolean getShowMeasurements(); see getBoolean(T.showmeasurements)
+  //abstract public boolean getAxesOrientationRasmol(); see getBoolean(T.axesorientationrasmol)
+  //abstract public int getPercentVdwAtom(); see getInt(T.percentvdwatom)
+  //abstract public boolean getAutoBond(); see getBoolean(T.autobond))
+  //abstract public boolean showModelSetDownload(); deprecated -- was just "true"
+  
   /**
    * This is the older main access point for creating an application or applet viewer.
    * 
@@ -300,8 +314,6 @@ abstract public class JmolViewer {
 
   abstract public BS getElementsPresentBitSet(int modelIndex);
 
-  abstract public int getAnimationFps();
-
   abstract public int findNearestAtomIndex(int x, int y);
 
   abstract public String script(String script);
@@ -376,16 +388,12 @@ abstract public class JmolViewer {
 
 
   abstract public boolean getPerspectiveDepth();
-  abstract public boolean getShowHydrogens();
-  abstract public boolean getShowMeasurements();
-  abstract public boolean getShowAxes();
+  abstract public boolean getShowAxes(); 
   abstract public boolean getShowBbcage();
 
   abstract public int getAtomNumber(int atomIndex);
   abstract public String getAtomName(int atomIndex);
   abstract public String getAtomInfo(int atomIndex); // also gets measurement information for points
-
-  abstract public float getRotationRadius();
 
   abstract public int getZoomPercent(); //deprecated
   abstract public float getZoomPercentFloat();
@@ -408,23 +416,12 @@ abstract public class JmolViewer {
 
   abstract public P3[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex);
   
-  abstract public boolean getAxesOrientationRasmol();
-  abstract public int getPercentVdwAtom();
-
-  abstract public boolean getAutoBond();
-
   abstract public short getMadBond();
-
-  abstract public float getBondTolerance();
 
   abstract public void rebond();
 
-  abstract public float getMinBondDistance();
-
   abstract public void refresh(int isOrientationChange, String strWhy);
 
-  abstract public boolean showModelSetDownload();
-  
   abstract public void notifyViewerRepaintDone();
 
   abstract public boolean getBooleanProperty(String propertyName);

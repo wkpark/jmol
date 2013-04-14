@@ -115,14 +115,14 @@ public class TransformManager {
       matrixRotate.setM(m);
     //}
     setZoomEnabled(true);
-    zoomToPercent(viewer.isModelKitMode() ? 50 : 100);
+    zoomToPercent(viewer.global.modelKitMode ? 50 : 100);
     zoomPercent = zoomPercentSetting;
     slabReset();
     resetFitToScreen(true);
     if (viewer.isJmolDataFrame()) {
       fixedRotationCenter.set(0, 0, 0);
     } else {
-      if (viewer.getAxesOrientationRasmol())
+      if (viewer.global.axesOrientationRasmol)
         rotateX((float) Math.PI);
     }
     viewer.saveOrientation("default");
@@ -1267,7 +1267,7 @@ public class TransformManager {
   }
 
   private void resetFitToScreen(boolean andCenter) {
-    scaleFitToScreen(andCenter, viewer.getZoomLarge(), true, true);
+    scaleFitToScreen(andCenter, viewer.global.zoomLarge, true, true);
   }
 
   void scaleFitToScreen(boolean andCenter, boolean zoomLarge,
@@ -1365,7 +1365,7 @@ public class TransformManager {
     float newZoom = getZoomSetting();
     if (zoomPercent != newZoom) {
       zoomPercent = newZoom;
-      if (!viewer.getFontCaching())
+      if (!viewer.global.fontCaching)
         viewer.getGraphicsData().clearFontCache();
     }
     calcCameraFactors();
@@ -1666,7 +1666,7 @@ public class TransformManager {
         motion = new MoveToThread(this, viewer);
       int nSteps = motion.set(floatSecondsTotal, center, matrixEnd, zoom,
           xTrans, yTrans, newRotationRadius, navCenter, xNav, yNav, navDepth);
-      if (nSteps <= 0 || viewer.waitForMoveTo()) {
+      if (nSteps <= 0 || viewer.global.waitForMoveTo) {
         if (nSteps > 0)
           motion.setEval(eval);
         motion.run();
@@ -2010,7 +2010,7 @@ public class TransformManager {
   public void setVibrationT(float t) {
     vibrationRadians = (float) (t * twoPI);
     if (vibrationScale == 0)
-      vibrationScale = viewer.getVibrationScale();
+      vibrationScale = viewer.global.vibrationScale;
     vibrationAmplitude = (float) Math.cos(vibrationRadians) * vibrationScale;
   }
 

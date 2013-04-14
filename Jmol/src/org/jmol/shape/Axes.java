@@ -27,6 +27,7 @@ package org.jmol.shape;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumAxesMode;
+import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.P3;
@@ -123,7 +124,7 @@ public class Axes extends FontLineShape {
         } else {
           offset = fixedOrigin;
         }
-        scale = viewer.getAxesScale() / 2f;
+        scale = viewer.getFloat(T.axesscale) / 2f;
         // We must divide by 2 because that is the default for ALL axis types.
         // Not great, but it will have to do.
         axisPoints[0].scaleAdd2(scale, vectors[4], offset);
@@ -135,7 +136,7 @@ public class Axes extends FontLineShape {
       if (fixedOrigin == null)
         originPoint.setT(viewer.getBoundBoxCenter());
     }
-    setScale(viewer.getAxesScale() / 2f);
+    setScale(viewer.getFloat(T.axesscale) / 2f);
   }
   
   @Override
@@ -179,7 +180,7 @@ public class Axes extends FontLineShape {
  @Override
 public String getShapeState() {
     SB sb = new SB();
-    sb.append("  axes scale ").appendF(viewer.getAxesScale()).append(";\n"); 
+    sb.append("  axes scale ").appendF(viewer.getFloat(T.axesscale)).append(";\n"); 
     if (fixedOrigin != null)
       sb.append("  axes center ")
           .append(Escape.eP(fixedOrigin)).append(";\n");

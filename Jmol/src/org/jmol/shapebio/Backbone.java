@@ -28,6 +28,7 @@ package org.jmol.shapebio;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.modelset.Atom;
+import org.jmol.script.T;
 import org.jmol.util.BS;
 
 public class Backbone extends BioShapeCollection {
@@ -64,7 +65,7 @@ public class Backbone extends BioShapeCollection {
       BioShape bioShape = bioShapes[iShape];
       if (bioShape.monomerCount == 0)
         continue;
-      boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
+      boolean bondSelectionModeOr = viewer.getBoolean(T.bondmodeor);
       int[] atomIndices = bioShape.bioPolymer.getLeadAtomIndices();
       // note that i is initialized to monomerCount - 1
       // in order to skip the last atom

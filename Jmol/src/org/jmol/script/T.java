@@ -861,6 +861,7 @@ public class T {
   public final static int spinx                          = floatparam | 54;
   public final static int spiny                          = floatparam | 56;
   public final static int spinz                          = floatparam | 58;
+  public final static int starscale                      = floatparam | 59; // Jmol 13.1.15
   public final static int stereodegrees                  = floatparam | 60;
   public final static int strutdefaultradius             = floatparam | 62;
   public final static int strutlengthmaximum             = floatparam | 64;
@@ -931,9 +932,10 @@ public class T {
   public final static int bondmodeor                     = booleanparam | 36;
   public final static int bondpicking                    = booleanparam | 38;
 // set mathproperty  public final static int bonds                          = booleanparam | 40;
-  public final static int cartoonbaseedges               = booleanparam | 42;
-  public final static int cartoonrockets                 = booleanparam | 43;
-  public final static int cartoonfancy                   = booleanparam | 44;
+  public final static int cartoonbaseedges               = booleanparam | 41;
+  public final static int cartoonrockets                 = booleanparam | 42;
+  public final static int cartoonfancy                   = booleanparam | 43;
+  public final static int cartoonladder                  = booleanparam | 44;
   public final static int celshading                     = booleanparam | 45;
   public final static int chaincasesensitive             = booleanparam | 46;
   public final static int colorrasmol                    = booleanparam | 47;
@@ -1948,6 +1950,7 @@ public class T {
       "specialPosition", T.t(specialposition),
       "sqrt",            T.t(sqrt),
       "split",           T.t(split),
+      "starScale",       T.t(starscale),
       "stddev",          T.t(stddev),
       "straightness",    T.t(straightness),
       "structureId",     T.t(strucid),
@@ -2321,6 +2324,7 @@ public class T {
       "bond",                                     null, 
       "cartoonBaseEdges",                         T.t(cartoonbaseedges),
       "cartoonFancy",                             T.t(cartoonfancy),
+      "cartoonLadder",                            T.t(cartoonladder),
       "cartoonRockets",                           T.t(cartoonrockets),
       "chainCaseSensitive",                       T.t(chaincasesensitive),
       "colorRasmol",                              T.t(colorrasmol),

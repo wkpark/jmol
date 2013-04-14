@@ -39,6 +39,7 @@ import org.jmol.util.Quadric;
 import org.jmol.util.V3;
 import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
+import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.shapespecial.Ellipsoids;
 import org.jmol.shapespecial.Ellipsoids.Ellipsoid;
@@ -146,7 +147,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
  
   private boolean setGlobals() {
-    wireframeOnly = (viewer.getWireframeRotation() && viewer.getInMotion());
+    wireframeOnly = (viewer.getBoolean(T.wireframerotation) && viewer.getInMotion());
     drawAxes = viewer.getBooleanProperty("ellipsoidAxes");
     drawArcs = viewer.getBooleanProperty("ellipsoidArcs");
     drawBall = viewer.getBooleanProperty("ellipsoidBall") && !wireframeOnly;
@@ -174,7 +175,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     if (drawDots) {
       drawArcs = false;
       drawFill = false;
-      dotScale = viewer.getDotScale();
+      dotScale = viewer.getInt(T.dotscale);
     }
 
     if (drawDots) {

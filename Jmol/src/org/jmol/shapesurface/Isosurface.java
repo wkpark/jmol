@@ -167,7 +167,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   protected void newSg() {
     sg = new SurfaceGenerator(viewer, this, null, jvxlData = new JvxlData());
-    sg.getParams().showTiming = viewer.getShowTiming();
+    sg.getParams().showTiming = viewer.global.showTiming;
     sg.setVersion("Jmol " + Viewer.getJmolVersion());
   }
   
@@ -1562,8 +1562,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   public int[] keyXy;
 
   @Override
-  public Map<String, Object> checkObjectClicked(int x, int y, int action, BS bsVisible) {
-    if (!(viewer.getDrawPicking()))// || viewer.getNavigationMode() && viewer.getNavigateSurface())) 
+  public Map<String, Object> checkObjectClicked(int x, int y, int action, BS bsVisible, boolean drawPicking) {
+    if (!drawPicking)// || viewer.getNavigationMode() && viewer.getNavigateSurface())) 
        return null;
     if (!viewer.isBound(action, ActionManager.ACTION_pickIsosurface))
       return null;
@@ -1578,7 +1578,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int jminz = -1;
     int maxz = Integer.MIN_VALUE;
     int minz = Integer.MAX_VALUE;
-    boolean pickFront = viewer.getDrawPicking(); // which must be true now
+    boolean pickFront = true;
     for (int i = 0; i < meshCount; i++) {
       IsosurfaceMesh m = isomeshes[i];
       if (!isPickable(m, bsVisible))

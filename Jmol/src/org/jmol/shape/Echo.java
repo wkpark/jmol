@@ -24,6 +24,7 @@
 
 package org.jmol.shape;
 
+import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.TextFormat;
@@ -65,7 +66,7 @@ public class Echo extends TextShape {
     }
 
     if ("xyz" == propertyName) {
-      if (currentObject != null && viewer.getFontScaling())
+      if (currentObject != null && viewer.getBoolean(T.fontscaling))
         currentObject.setScalePixelsPerMicron(viewer
             .getScalePixelsPerAngstrom(false) * 10000f);
       // continue on to Object2d setting

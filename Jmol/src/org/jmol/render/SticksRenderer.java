@@ -29,6 +29,7 @@ package org.jmol.render;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
@@ -85,22 +86,22 @@ public class SticksRenderer extends ShapeRenderer {
     if (!isPass2)
       bsForPass2.clearAll();
     slabbing = viewer.getSlabEnabled();
-    slabByAtom = viewer.getSlabByAtom();
+    slabByAtom = viewer.getBoolean(T.slabbyatom);
     endcaps = GData.ENDCAPS_SPHERICAL;
-    dashDots = (viewer.getPartialDots() ? sixdots : dashes);
-    multipleBondSpacing = viewer.getMultipleBondSpacing();
+    dashDots = (viewer.getBoolean(T.partialdots) ? sixdots : dashes);
+    multipleBondSpacing = viewer.getFloat(T.multiplebondspacing);
     isCartesianExport = (exportType == GData.EXPORT_CARTESIAN);
     if (multipleBondSpacing == 0 && isCartesianExport)
       multipleBondSpacing = 0.2f;
-    multipleBondRadiusFactor = viewer.getMultipleBondRadiusFactor();
+    multipleBondRadiusFactor = viewer.getFloat(T.multiplebondradiusfactor);
     showMultipleBonds = multipleBondSpacing != 0
-        && viewer.getShowMultipleBonds();
+        && viewer.getBoolean(T.showmultiplebonds);
     modeMultipleBond = viewer.getModeMultipleBond();
-    renderWireframe = viewer.getInMotion() && viewer.getWireframeRotation();
-    ssbondsBackbone = viewer.getSsbondsBackbone();
-    hbondsBackbone = viewer.getHbondsBackbone();
+    renderWireframe = viewer.getInMotion() && viewer.getBoolean(T.wireframerotation);
+    ssbondsBackbone = viewer.getBoolean(T.ssbondsbackbone);
+    hbondsBackbone = viewer.getBoolean(T.hbondsbackbone);
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
-    hbondsSolid = viewer.getHbondsSolid();
+    hbondsSolid = viewer.getBoolean(T.hbondssolid);
     isAntialiased = g3d.isAntialiased();
     Bond[] bonds = modelSet.bonds;
     boolean needTranslucent = false;

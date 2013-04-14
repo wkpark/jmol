@@ -55,6 +55,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   private boolean mustNotBeConnected = false;
   private RadiusData radiusData;
   private Boolean intramolecular;
+  private boolean measureAllModels;
 
   public int measurementCount = 0;
   public final JmolList<Measurement> measurements = new  JmolList<Measurement>();
@@ -90,50 +91,50 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   @Override
   public void setProperty(String propertyName, Object value, BS bsIgnored) {
     // the following can be used with "select measures ({bitset})"
-    
+
     Measurement mt;
     if ("clearModelIndex" == propertyName) {
       for (int i = 0; i < measurementCount; i++)
         measurements.get(i).setModelIndex((short) 0);
       return;
     }
-    
+
     if ("color" == propertyName) {
       setColor(value == null ? C.INHERIT_ALL : C.getColixO(value));
       return;
-    } 
+    }
 
-    if ("delete" == propertyName) {
-      deleteO(value);
-      setIndices();
-      return;
-    } 
-    
     if ("font" == propertyName) {
       font3d = (JmolFont) value;
       return;
     }
-    
+
     if ("hideAll" == propertyName) {
       showHide(((Boolean) value).booleanValue());
       return;
     }
-    
+
     if ("pending" == propertyName) {
-      pending((MeasurementPending) value);
+      this.measurementPending = (MeasurementPending) value;
+      if (measurementPending == null)
+        return;
+      if (measurementPending.getCount() > 1)
+        viewer.setStatusMeasuring("measurePending", measurementPending
+            .getCount(), measurementPending.toVector(false).toString(),
+            measurementPending.getValue());
       return;
     }
-    
+
     boolean isRefresh;
-    if ((isRefresh = ("refresh" == propertyName)) 
+    if ((isRefresh = ("refresh" == propertyName))
         || "refreshTrajectories" == propertyName) {
       for (int i = measurements.size(); --i >= 0;)
-        if ((mt = measurements.get(i)) != null 
+        if ((mt = measurements.get(i)) != null
             && (isRefresh || mt.isTrajectory))
           mt.refresh();
       return;
-    } 
-
+    }
+    
     if ("select" == propertyName) {
       BS bs = (BS) value;
       if (bs == null || BSUtil.cardinalityOf(bs) == 0) {
@@ -144,21 +145,30 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       }
       return;
     }
-    
+
     if ("setFormats" == propertyName) {
       setFormats((String) value);
       return;
     }
 
-    //any one of the following clears the "select measures" business
+    // most of the following need defineAll, which needs measureAllModels
+    measureAllModels = viewer.getBoolean(T.measureallmodels);
     
+    if ("delete" == propertyName) {
+      deleteO(value);
+      setIndices();
+      return;
+    }
+
+    //any one of the following clears the "select measures" business
+
     bsSelected = null;
 
     if ("maps" == propertyName) {
       int[][] maps = (int[][]) value;
       for (int i = 0; i < maps.length; i++) {
         int len = maps[i].length;
-        if (len < 2 || len > 4) 
+        if (len < 2 || len > 4)
           continue;
         int[] v = new int[len + 1];
         v[0] = len;
@@ -191,7 +201,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         setIndices();
         break;
       case T.on:
-        showHideM(pt, false);          
+        showHideM(pt, false);
         break;
       case T.off:
         showHideM(pt, true);
@@ -200,24 +210,24 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         deleteM(pt);
         if (md.colix != 0)
           pt.colix = md.colix;
-        toggle(pt);        
+        toggle(pt);
         break;
       case T.opToggle:
-        toggle(pt);        
+        toggle(pt);
       }
       return;
     }
-    
+
     if ("clear" == propertyName) {
       clear();
       return;
     }
-    
+
     if ("deleteModelAtoms" == propertyName) {
-      atoms = (Atom[])((Object[])value)[1];
+      atoms = (Atom[]) ((Object[]) value)[1];
       int modelIndex = ((int[]) ((Object[]) value)[2])[0];
-      int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
-      int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
+      int firstAtomDeleted = ((int[]) ((Object[]) value)[2])[1];
+      int nAtomsDeleted = ((int[]) ((Object[]) value)[2])[2];
       int atomMax = firstAtomDeleted + nAtomsDeleted;
       for (int i = measurementCount; --i >= 0;) {
         mt = measurements.get(i);
@@ -245,30 +255,32 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
 
     if ("hide" == propertyName) {
-      showHideM(new Measurement().setPoints(modelSet, (int[]) value, null, null), true);
+      showHideM(new Measurement()
+          .setPoints(modelSet, (int[]) value, null, null), true);
       return;
     }
-    
+
     if ("reformatDistances" == propertyName) {
       reformatDistances();
       return;
     }
-    
+
     if ("show" == propertyName) {
-      showHideM(new Measurement().setPoints(modelSet, (int[]) value, null, null), false);
+      showHideM(new Measurement()
+          .setPoints(modelSet, (int[]) value, null, null), false);
       return;
     }
-    
+
     if ("toggle" == propertyName) {
       toggle(new Measurement().setPoints(modelSet, (int[]) value, null, null));
       return;
     }
-    
+
     if ("toggleOn" == propertyName) {
       toggleOn((int[]) value);
       return;
     }
-    
+
   }
 
   private Measurement setSingleItem(JmolList<Object> vector) {
@@ -393,7 +405,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
 
   private void defineAll(int iPt, Measurement m, boolean isDelete,
                          boolean isShow, boolean doSelect) {
-    if (!viewer.getMeasureAllModelsFlag()) {
+    if (!measureAllModels) {
       if (isDelete) {
         if (iPt == Integer.MIN_VALUE)
           iPt = find(m);
@@ -483,15 +495,6 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     measurements.remove(i);
     measurementCount--;
     viewer.setStatusMeasuring("measureDeleted", i, msg, 0);
-  }
-
-  private void pending(MeasurementPending measurementPending) {
-    this.measurementPending = measurementPending;
-    if (measurementPending == null)
-      return;
-    if (measurementPending.getCount() > 1)
-      viewer.setStatusMeasuring("measurePending",
-          measurementPending.getCount(), measurementPending.toVector(false).toString(), measurementPending.getValue());
   }
 
   private void reformatDistances() {

@@ -560,7 +560,7 @@ public class ActionManager {
     int action = Binding.LEFT+Binding.SINGLE_CLICK+moved.modifiers;
     if(!labelMode && !binding.isUserAction(action) && !isSelectAction(action))
       checkMotionRotateZoom(action, current.x, 0, 0, false);
-    if (viewer.getNavigationMode()) {
+    if (viewer.getBoolean(T.navigationmode)) {
       // if (viewer.getBooleanProperty("showKeyStrokes", false))
       // viewer.evalStringQuiet("!set echo bottom left;echo "
       // + (i == 0 ? "" : i + " " + m));
@@ -594,7 +594,7 @@ public class ActionManager {
     }
     if (moved.modifiers == 0)
       viewer.setCursor(JC.CURSOR_DEFAULT);
-    if (!viewer.getNavigationMode())
+    if (!viewer.getBoolean(T.navigationmode))
       return;
     //if (viewer.getBooleanProperty("showKeyStrokes", false))
       //viewer.evalStringQuiet("!set echo bottom left;echo;");
@@ -710,7 +710,7 @@ public class ActionManager {
       case PICKING_DRAG_SELECTED:
         checkMotion(JC.CURSOR_MOVE);
         if (isBound(action, ACTION_rotateSelected)
-            && viewer.allowRotateSelected()) {
+            && viewer.getBoolean(T.allowrotateselected)) {
           viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
               null);
         } else {
@@ -806,7 +806,7 @@ public class ActionManager {
             Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
       checkMotion(JC.CURSOR_MOVE);
       if (isBound(action, ACTION_rotateSelected)
-          && viewer.allowRotateSelected())
+          && viewer.getBoolean(T.allowrotateselected))
         viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
             null);
       else
@@ -834,7 +834,7 @@ public class ActionManager {
     if (isBound(action, ACTION_rotate)) {
       float degX = getDegrees(deltaX, 0);
       float degY = getDegrees(deltaY, 1);
-      if (viewer.useArcBall())
+      if (viewer.global.useArcBall)
         viewer.rotateArcBall(x, y, mouseDragFactor);
       else
         viewer.rotateXYBy(degX, degY);
@@ -1082,7 +1082,7 @@ public class ActionManager {
   public String getPickingState() {
     // the pickingMode is not reported in the state. But when we do an UNDO,
     // we want to restore this.
-    String script = ";set modelkitMode " + viewer.getModelkitMode()
+    String script = ";set modelkitMode " + viewer.getBoolean(T.modelkitmode)
         + ";set picking " + getPickingModeName(atomPickingMode);
     if (atomPickingMode == PICKING_ASSIGN_ATOM)
       script += "_" + pickAtomAssignType;
@@ -1438,7 +1438,7 @@ public class ActionManager {
       }
       if (isBound(action, ACTION_popupMenu)) {
         char type = 'j';
-        if (viewer.getModelkitMode()) {
+        if (viewer.getBoolean(T.modelkitmode)) {
           Map<String, Object> t = viewer.checkObjectClicked(x, y, Binding.getMouseAction(1,
               Binding.LEFT));
           type = (t != null && "bond".equals(t.get("type")) ? 'b' : viewer
@@ -1460,7 +1460,7 @@ public class ActionManager {
               Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
         return;
       }
-      if (viewer.useArcBall())
+      if (viewer.global.useArcBall)
         viewer.rotateArcBall(x, y, 0);
       checkMotionRotateZoom(action, x, 0, 0, true);
       return;
@@ -1512,13 +1512,13 @@ public class ActionManager {
       if (dragRelease && checkUserAction(action, x, y, 0, 0, time, Binding.RELEASED))
         return;
 
-      if (viewer.getAllowGestures()) {
+      if (viewer.getBoolean(T.allowgestures)) {
         if (isBound(action, ACTION_swipe)) {
           float speed = getExitRate();
           if (speed > 0)
             viewer.spinXYBy(dragGesture.getDX(4, 2), dragGesture.getDY(4, 2),
                 speed * 30 * gestureSwipeFactor);
-          if (viewer.getLogGestures())
+          if (viewer.global.logGestures)
             viewer.log("$NOW$ swipe " + dragGesture + " " + speed);
           return;
         }
@@ -1657,7 +1657,7 @@ public class ActionManager {
       // continue checking --- no need to exit here
     }
 
-    if (viewer.getNavigationMode() && atomPickingMode == PICKING_NAVIGATE
+    if (viewer.getBoolean(T.navigationmode) && atomPickingMode == PICKING_NAVIGATE
         && isBound(action, ACTION_pickNavigate)) {
       viewer.navTranslatePercent(x * 100f / viewer.getScreenWidth() - 50f,
           y * 100f / viewer.getScreenHeight() - 50f);
@@ -1972,7 +1972,7 @@ public class ActionManager {
     }
     String s = measurementQueued.getMeasurementScript(" ", false);
     if (isSpin)
-      runScript("spin" + s + " " + viewer.getPickingSpinRate());
+      runScript("spin" + s + " " + viewer.getInt(T.pickingspinrate));
     else  
       runScript("draw symop" + s + ";show symop" + s);
   }

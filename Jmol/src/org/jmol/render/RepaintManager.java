@@ -89,7 +89,7 @@ public class RepaintManager implements JmolRepaintManager {
       try {
         repaintNow();
         //System.out.println("repaintManager requestRepaintAndWait I am waiting for a repaint: thread=" + Thread.currentThread().getName());
-        wait(viewer.getRepaintWait()); // more than a second probably means we are locked up here
+        wait(viewer.global.repaintWaitMs); // more than a second probably means we are locked up here
         if (repaintPending) {
           Logger.error("repaintManager requestRepaintAndWait timeout");
           repaintDone();
@@ -183,7 +183,7 @@ public class RepaintManager implements JmolRepaintManager {
   /////////// actual rendering ///////////
   
   public void render(GData gdata, ModelSet modelSet, boolean isFirstPass, int[] minMax) {
-    boolean logTime = viewer.getShowTiming();
+    boolean logTime = viewer.global.showTiming;
     try {
       JmolRendererInterface g3d = (JmolRendererInterface) gdata;
       g3d.renderBackground(null);
@@ -223,7 +223,7 @@ public class RepaintManager implements JmolRepaintManager {
   public String renderExport(String type, GData gdata, ModelSet modelSet,
                       String fileName) {
     boolean isOK;
-    boolean logTime = viewer.getShowTiming();
+    boolean logTime = viewer.global.showTiming;
     viewer.finalizeTransformParameters();
     shapeManager.finalizeAtoms(null, null);
     shapeManager.transformAtoms();

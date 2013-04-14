@@ -39,6 +39,7 @@ public class CartoonRenderer extends RocketsRenderer {
   private boolean newRockets = true;
   private boolean renderAsRockets;
   private boolean renderEdges;
+  private boolean ladderOnly;
   
   @Override
   protected void renderBioShape(BioShape bioShape) {
@@ -49,12 +50,12 @@ public class CartoonRenderer extends RocketsRenderer {
       renderNucleic();
       return;
     }
-    boolean val = viewer.getCartoonFlag(T.cartoonrockets);
+    boolean val = viewer.getBoolean(T.cartoonrockets);
     if (renderAsRockets != val) {
       bioShape.falsifyMesh();
       renderAsRockets = val;
     }
-    val = !viewer.getCartoonFlag(T.rocketbarrels);
+    val = !viewer.getBoolean(T.rocketbarrels);
     if (renderArrowHeads != val) {
       bioShape.falsifyMesh();
       renderArrowHeads = val;
@@ -75,8 +76,9 @@ public class CartoonRenderer extends RocketsRenderer {
   P3i ptConnectScr = new P3i();
   P3 ptConnect = new P3();
   void renderNucleic() {
-    renderEdges = viewer.getCartoonFlag(T.cartoonbaseedges);
-    boolean isTraceAlpha = viewer.getTraceAlpha();
+    renderEdges = viewer.getBoolean(T.cartoonbaseedges);
+    ladderOnly = viewer.getBoolean(T.cartoonladder);
+    boolean isTraceAlpha = viewer.getBoolean(T.tracealpha);
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1)) {
       if (isTraceAlpha) {
@@ -187,20 +189,29 @@ public class CartoonRenderer extends RocketsRenderer {
     boolean hasRing5 = nucleotide.maybeGetBaseRing5Points(ring5Points);
     P3i stepScreen;
     P3 stepPt;
+    int pt;
     if (hasRing5) {
       viewer.transformPoints(ring5Points, ring5Screens);
       renderRing5();
-      stepScreen = ring5Screens[3];//was 2
-      stepPt = ring5Points[3];
+      if (ladderOnly) {
+        stepScreen = ring6Screens[2];//was 1
+        stepPt = ring6Points[2];
+      } else {
+        stepScreen = ring5Screens[3];//was 2
+        stepPt = ring5Points[3];
+      }
     } else {
-      stepScreen = ring6Screens[2];//was 1
-      stepPt = ring6Points[2];
+      pt = (ladderOnly ? 4 : 2);
+      stepScreen = ring6Screens[pt];//was 1
+      stepPt = ring6Points[pt];
     }
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
     g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL,
                      viewer.scaleToScreen(backboneScreen.z,
                                           mad),
                      backboneScreen, stepScreen, ptConnect, stepPt, mad / 2000f);
+    if (ladderOnly)
+      return;
     --ring6Screens[5].z;
     for (int i = 5; --i >= 0; ) {
       --ring6Screens[i].z;
@@ -262,6 +273,8 @@ public class CartoonRenderer extends RocketsRenderer {
   }
 
   private void renderRing6() {
+    if (ladderOnly)
+      return;
     g3d.setNoisySurfaceShade(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
     g3d.fillTriangle3i(ring6Screens[0], ring6Screens[2], ring6Screens[4], ring6Points[0], ring6Points[2], ring6Points[4]);
     g3d.fillTriangle3i(ring6Screens[0], ring6Screens[1], ring6Screens[2], ring6Points[0], ring6Points[1], ring6Points[2]);
@@ -270,6 +283,8 @@ public class CartoonRenderer extends RocketsRenderer {
   }
 
   private void renderRing5() {
+    if (ladderOnly)
+      return;
     // shade was calculated previously by renderRing6();
     g3d.fillTriangle3i(ring5Screens[0], ring5Screens[2], ring5Screens[3], ring5Points[0], ring5Points[2], ring5Points[3]);
     g3d.fillTriangle3i(ring5Screens[0], ring5Screens[1], ring5Screens[2], ring5Points[0], ring5Points[1], ring5Points[2]);

@@ -26,10 +26,15 @@
 package org.jmol.render;
 
 import org.jmol.modelset.Atom;
+import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.shape.Stars;
+import org.jmol.util.GData;
 
 public class StarsRenderer extends ShapeRenderer {
+
+  private int mar; // milliangstrom radius
+  private short width;
 
   @Override
   protected boolean render() {
@@ -37,6 +42,9 @@ public class StarsRenderer extends ShapeRenderer {
     if (stars.mads == null)
       return false;
     boolean needTranslucent = false;
+    mar = (int) (viewer.getFloat(T.starscale) * 1000);
+    if (mar == 0 && (g3d.isAntialiased() || isExport))
+      mar = 50;
     Atom[] atoms = modelSet.atoms;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
@@ -58,13 +66,26 @@ public class StarsRenderer extends ShapeRenderer {
     int d = viewer.scaleToScreen(z, mad);
     d -= (d & 1) ^ 1; // round down to odd value
     int r = d / 2;
-    g3d.drawLineXYZ(x - r, y, z, x - r + d, y, z);
-    g3d.drawLineXYZ(x, y - r, z, x, y - r + d, z);
-    g3d.drawLineXYZ(x, y, z - r, x, y, z - r + d);
-    // added to strengthen:
-    g3d.drawLineXYZ(x - r - 1, y + 1, z, x - r - 1 + d, y + 1, z);
-    g3d.drawLineXYZ(x + 1, y + 1 - r, z, x + 1, y + 1 - r + d, z);
-    
+    if (r < 3)
+      return;
+    if (mar > 0) {
+      width = viewer.scaleToScreen(z, mar);
+    } else {
+      // added to strengthen:
+      drawLine(x - r - 1, y + 1, z, x - r - 1 + d, y + 1, z);
+      drawLine(x + 1, y + 1 - r, z, x + 1, y + 1 - r + d, z);
+    }
+    drawLine(x - r, y, z, x - r + d, y, z);
+    drawLine(x, y - r, z, x, y - r + d, z);
+    drawLine(x, y, z - r, x, y, z - r + d);
+  }
+
+  private void drawLine(int xA, int yA, int zA, int xB, int yB, int zB) {
+    if (mar > 0)
+      g3d.fillCylinderXYZ(colix, colix, GData.ENDCAPS_FLAT, width, xA, yA, zA,
+          xB, yB, zB);
+    else
+      g3d.drawLineXYZ(xA, yA, zA, xB, yB, zB);
   }
 
 }

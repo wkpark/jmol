@@ -949,15 +949,17 @@ class IsoSolventReader extends AtomDataReader {
     P3 ptC = atomXyz[ic];
     float rCS = atomRadius[ic] + solventRadius;
     float dCT = Measure.distanceToPlane(plane, ptC);
-    if (Math.abs(dCT) >= rCS)
+    if (Math.abs(dCT) >= rCS * 0.9f) 
+      // need a fudge factor here to avoid extremely 
+      // flat situations (1bna isosurface solvent 1.4)
       return false; // out of range
     double dST = Math.sqrt(rCS * rCS - dCT * dCT);
     ptTemp.scaleAdd2(-dCT, vTemp, ptC);
     double dpT = p.distance(ptTemp);
     float dsp2 = (float) (dPS * dPS);
     double cosTheta = (dsp2 + dpT * dpT - dST * dST) / (2 * dPS * dpT);
-    if (Math.abs(cosTheta) >= 0.94) // 0.95 is too high
-      return false; // very close to all points A, B, P, S, T, and C all in same plane (see 1bna)
+    if (Math.abs(cosTheta) >= 0.99) 
+      return false; // very close to all points A, B, P, S, T, and C all in same plane
     V3 vXS = vTemp2;
     vXS.setT(ptTemp);
     vXS.sub(p);

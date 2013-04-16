@@ -587,8 +587,9 @@ public class IsosurfaceMesh extends Mesh {
     jvxlData.rendering = getRendering().substring(1);
     jvxlData.colorScheme = (colorEncoder == null ? null : colorEncoder
         .getColorScheme());
-    jvxlData.nVertexColors = (vertexColorMap == null ? 0 : vertexColorMap
-        .size());
+    if (jvxlData.vertexColors == null)
+      jvxlData.nVertexColors = (vertexColorMap == null ? 0 : vertexColorMap
+          .size());
     if (vertexColorMap == null || vertexSource == null || !isAll)
       return;
     if (jvxlData.vertexColorMap == null)
@@ -718,12 +719,15 @@ public class IsosurfaceMesh extends Mesh {
     if (vertexColixes == null || vertexColixes.length != vertexCount)
       vertexColixes = new short[vertexCount];
     if (inherit) {
+      jvxlData.vertexDataOnly = true;
+      jvxlData.vertexColors = new int[vertexCount];
+      jvxlData.nVertexColors = vertexCount;
       Atom[] atoms = viewer.getModelSet().atoms;
       for (int i = mergeVertexCount0; i < vertexCount; i++) {
         int pt = vertexSource[i];
         if (pt < atoms.length)
-          vertexColixes[i] = C.copyColixTranslucency(colix,
-            atoms[pt].getColix());
+          jvxlData.vertexColors[i] = C.getArgb(vertexColixes[i] = C.copyColixTranslucency(colix,
+            atoms[pt].getColix()));
       }
       return;
     }

@@ -196,6 +196,7 @@ public class JvxlData {
     translucency = 0;
     vContours = null;
     vertexColorMap = null;
+    vertexColors = null;
     voxelVolume = 0;
   }
 

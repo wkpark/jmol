@@ -247,6 +247,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
 
     if ("atomcolor" == propertyName) {
+      // color $id red ({0:30 ....})  (atoms)
+      // color $id red [{0:30 ....}]  (vertices)
       if (thisMesh != null) {
         if (thisMesh.vertexSource == null) {
           short colix = (!thisMesh.isColorSolid ? 0 : thisMesh.colix);

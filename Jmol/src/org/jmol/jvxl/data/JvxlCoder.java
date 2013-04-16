@@ -145,11 +145,11 @@ public class JvxlCoder {
       if (jvxlData.jvxlEdgeData == null)
         return "";
       appendXmlEdgeData(sb, jvxlData);
-      appendXmlColorData(sb, "jvxlColorData", jvxlData.jvxlColorData,
+      appendXmlColorData(sb, jvxlData.jvxlColorData,
           true, jvxlData.isJvxlPrecisionColor, jvxlData.valueMappedToRed,
           jvxlData.valueMappedToBlue);
     } else {
-      appendXmlColorData(sb, "jvxlColorData", jvxlData.jvxlColorData,
+      appendXmlColorData(sb, jvxlData.jvxlColorData,
           true, jvxlData.isJvxlPrecisionColor, jvxlData.valueMappedToRed,
           jvxlData.valueMappedToBlue);
     }
@@ -230,7 +230,7 @@ public class JvxlCoder {
     }
   }
 
-  private static void appendXmlColorData(SB sb, String key, 
+  private static void appendXmlColorData(SB sb,  
                                          String data,
                                          boolean isEncoded,
                                          boolean isPrecisionColor,
@@ -241,7 +241,7 @@ public class JvxlCoder {
       return;
     if (isPrecisionColor)
       n /= 2;
-    XmlUtil.appendTagObj(sb, key, new String[] {
+    XmlUtil.appendTagObj(sb, "jvxlColorData", new String[] {
         "count", "" + n, 
         "encoding", (isEncoded ? "base90f" + (isPrecisionColor ? "2" : "1") : "none"),
         "min", "" + value1,
@@ -841,7 +841,7 @@ public class JvxlCoder {
               .append(" ");
         }
     }
-    appendXmlColorData(sb, "jvxlColorData", list1.appendSB(list2).append("\n")
+    appendXmlColorData(sb, list1.appendSB(list2).append("\n")
         .toString(), (vertexColors == null), true, jvxlData.valueMappedToRed,
         jvxlData.valueMappedToBlue);
   }

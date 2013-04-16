@@ -5663,7 +5663,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.cartoonBaseEdges;
     case T.cartoonfancy:
       return global.cartoonFancy;
-    case T.cartoonladder:
+    case T.cartoonladders:
       return global.cartoonLadder;
     case T.cartoonrockets:
       return global.cartoonRockets;
@@ -6476,7 +6476,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
-    case T.cartoonladder:
+    case T.cartoonladders:
       // 13.1.15
       global.cartoonLadder = value;
       break;

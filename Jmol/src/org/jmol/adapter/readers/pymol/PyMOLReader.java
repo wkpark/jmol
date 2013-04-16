@@ -1488,7 +1488,7 @@ public class PyMOLReader extends PdbReader {
         + getBooleanSetting(PyMOL.cartoon_round_helices));
     sb.append(";set cartoonRockets "
         + getBooleanSetting(PyMOL.cartoon_cylindrical_helices));
-    sb.append(";set cartoonLadder " + haveNucleicLadder);
+    sb.append(";set cartoonLadders " + haveNucleicLadder);
     sb.append(";set ribbonBorder "
         + getBooleanSetting(PyMOL.cartoon_fancy_helices));
     sb.append(";set cartoonFancy "

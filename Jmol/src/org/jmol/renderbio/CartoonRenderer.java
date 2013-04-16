@@ -77,7 +77,7 @@ public class CartoonRenderer extends RocketsRenderer {
   P3 ptConnect = new P3();
   void renderNucleic() {
     renderEdges = viewer.getBoolean(T.cartoonbaseedges);
-    ladderOnly = viewer.getBoolean(T.cartoonladder);
+    ladderOnly = viewer.getBoolean(T.cartoonladders);
     boolean isTraceAlpha = viewer.getBoolean(T.tracealpha);
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1)) {

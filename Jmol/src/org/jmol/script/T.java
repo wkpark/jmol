@@ -935,7 +935,7 @@ public class T {
   public final static int cartoonbaseedges               = booleanparam | 41;
   public final static int cartoonrockets                 = booleanparam | 42;
   public final static int cartoonfancy                   = booleanparam | 43;
-  public final static int cartoonladder                  = booleanparam | 44;
+  public final static int cartoonladders                  = booleanparam | 44;
   public final static int celshading                     = booleanparam | 45;
   public final static int chaincasesensitive             = booleanparam | 46;
   public final static int colorrasmol                    = booleanparam | 47;
@@ -2324,7 +2324,8 @@ public class T {
       "bond",                                     null, 
       "cartoonBaseEdges",                         T.t(cartoonbaseedges),
       "cartoonFancy",                             T.t(cartoonfancy),
-      "cartoonLadder",                            T.t(cartoonladder),
+      "cartoonsFancy",                            null,
+      "cartoonLadders",                           T.t(cartoonladders),
       "cartoonRockets",                           T.t(cartoonrockets),
       "chainCaseSensitive",                       T.t(chaincasesensitive),
       "colorRasmol",                              T.t(colorrasmol),

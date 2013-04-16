@@ -557,12 +557,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
     // parameters:
 
-    int hermiteLevel = Math.max(this.hermiteLevel, 5);
+    int hermiteLevel = (cartoonFancy ? Math.max(this.hermiteLevel, 5) : this.hermiteLevel);
     int nHermites = (hermiteLevel + 1) * 2 + 1; // 4 for hermiteLevel = 1; 13 for hermitelevel 5
     int nPer = (isFlatMesh ? 4 : (hermiteLevel + 1) * 4 - 2); // 6 for hermiteLevel 1; 22 for hermiteLevel 5
     float angle = (float) ((isFlatMesh ? Math.PI / (nPer - 1) : 2 * Math.PI
         / nPer));
-    Mesh mesh = meshes[i] = new Mesh().mesh1("mesh_" + shapeID + "_" + i, (short) 0, i);
+    Mesh mesh = meshes[i] = new Mesh().mesh1("mesh_" + shapeID + "_" + i,
+        (short) 0, i);
     boolean variableRadius = (madBeg != madMid || madMid != madEnd);
 
     // control points and vectors:
@@ -691,13 +692,25 @@ abstract class BioShapeRenderer extends MeshRenderer {
       nPoints += nPer;
     }
     if (!isFlatMesh) {
-      if (doCap0)
+      int nPointsPreCap = nPoints;
+      // copying vertices here so that the caps are not connected to the rest of
+      // the mesh preventing light leaking around the sharp edges
+      if (doCap0) {
+        for (int l = 0; l < nPer; l++)
+          mesh.addV(mesh.vertices[l]);
+        nPoints += nPer;
         for (int k = hermiteLevel * 2; --k >= 0;)
-          mesh.addQuad(k + 2, k + 1, (nPer - k) % nPer, nPer - k - 1);
-      if (doCap1)
+          mesh.addQuad(nPoints - nPer + k + 2, nPoints - nPer + k + 1, nPoints
+              - nPer + (nPer - k) % nPer, nPoints - k - 1);
+      }
+      if (doCap1) {
+        for (int l = 0; l < nPer; l++)
+          mesh.addV(mesh.vertices[nPointsPreCap - nPer + l]);
+        nPoints += nPer;
         for (int k = hermiteLevel * 2; --k >= 0;)
           mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,
               nPoints - nPer + k + 1, nPoints - nPer + k + 2);
+      }
     }
     meshReady[i] = true;
     adjustCartoonSeamNormals(i, nPer);

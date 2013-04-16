@@ -64,7 +64,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private float aspectRatio;
   private int hermiteLevel;
   private float sheetSmoothing;
-  protected boolean cartoonFancy;
+  protected boolean cartoonsFancy;
 
 
   private Mesh[] meshes;
@@ -106,14 +106,14 @@ abstract class BioShapeRenderer extends MeshRenderer {
       invalidateMesh = true;
     isHighRes = TF;
 
-    boolean v = viewer.getBoolean(T.cartoonfancy);
-    if (cartoonFancy != v) {
+    boolean v = viewer.getBoolean(T.cartoonsfancy);
+    if (cartoonsFancy != v) {
       invalidateMesh = true;
-      cartoonFancy = v;
+      cartoonsFancy = v;
     }
     int val1 = viewer.getHermiteLevel();
     val1 = (val1 <= 0 ? -val1 : viewer.getInMotion() ? 0 : val1);
-    if (cartoonFancy)
+    if (cartoonsFancy)
       val1 = Math.max(val1, 3); // at least HermiteLevel 3 for "cartoonFancy"
     //else if (val1 == 0 && exportType == GData.EXPORT_CARTESIAN)
       //val1 = 5; // forces hermite for 3D exporters
@@ -123,7 +123,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
     int val = viewer.getInt(T.ribbonaspectratio);
     val = Math.min(Math.max(0, val), 20);
-    if (cartoonFancy && val >= 16)
+    if (cartoonsFancy && val >= 16)
       val = 4; // at most 4 for elliptical cartoonFancy
     if (hermiteLevel == 0)
       val = 0;
@@ -553,11 +553,11 @@ abstract class BioShapeRenderer extends MeshRenderer {
     // isFlatMesh == using mesh even for hermiteLevel = 0 (for exporters)
     boolean isFlatMesh = (aspectRatio == 0);
     // isElliptical == newer cartoonFancy business
-    boolean isElliptical = (cartoonFancy || this.hermiteLevel >= 6);
+    boolean isElliptical = (cartoonsFancy || this.hermiteLevel >= 6);
 
     // parameters:
 
-    int hermiteLevel = (cartoonFancy ? Math.max(this.hermiteLevel, 5) : this.hermiteLevel);
+    int hermiteLevel = (cartoonsFancy ? Math.max(this.hermiteLevel, 5) : this.hermiteLevel);
     int nHermites = (hermiteLevel + 1) * 2 + 1; // 4 for hermiteLevel = 1; 13 for hermitelevel 5
     int nPer = (isFlatMesh ? 4 : (hermiteLevel + 1) * 4 - 2); // 6 for hermiteLevel 1; 22 for hermiteLevel 5
     float angle = (float) ((isFlatMesh ? Math.PI / (nPer - 1) : 2 * Math.PI

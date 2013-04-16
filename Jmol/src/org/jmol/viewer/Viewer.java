@@ -5661,7 +5661,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.bondModeOr;
     case T.cartoonbaseedges:
       return global.cartoonBaseEdges;
-    case T.cartoonfancy:
+    case T.cartoonsfancy:
       return global.cartoonFancy;
     case T.cartoonladders:
       return global.cartoonLadder;
@@ -6491,7 +6491,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.celShading = value;
       gdata.setCel(value);
       break;
-    case T.cartoonfancy:
+    case T.cartoonsfancy:
       // 12.3.7
       global.cartoonFancy = value;
       break;

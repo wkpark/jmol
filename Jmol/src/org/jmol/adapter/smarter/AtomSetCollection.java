@@ -449,7 +449,8 @@ public class AtomSetCollection {
   }
 
   void finish(ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {
-    reader.finalizeModelSet(modelSet, baseModelIndex, baseAtomIndex);
+    if (reader != null)
+      reader.finalizeModelSet(modelSet, baseModelIndex, baseAtomIndex);
     atoms = null;
     atomSetAtomCounts = new int[16];
     atomSetAuxiliaryInfo = new Hashtable[16];

@@ -29,6 +29,7 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
+import jspecview.util.ArrayUtil;
 import jspecview.util.TextFormat;
 
 import org.jmol.adapter.readers.cifpdb.PdbReader;
@@ -89,7 +90,7 @@ public class PyMOLReader extends PdbReader {
   private Map<String, int[]> htAtomMap = new Hashtable<String, int[]>();
   private Map<String, BS> ssMapSeq = new Hashtable<String, BS>();
   private Map<String, BS> ssMapAtom = new Hashtable<String, BS>();
-  private JmolList<Integer> colixList = new  JmolList<Integer>();
+  private JmolList<Integer> atomColorList = new  JmolList<Integer>();
   private JmolList<String> labels = new  JmolList<String>();
 
   private JmolList<ModelSettings> modelSettings = new  JmolList<ModelSettings>();
@@ -586,8 +587,8 @@ public class PyMOLReader extends PdbReader {
           BoxInfo.addPointXYZ(x, y, z, xyzMin, xyzMax, 0);
         }
       }
-      processStructures(atomCount0);
-      setBranchShapes( BSUtil.newBitSet2(atomCount0, atomCount));
+      processStructures();
+      setBranchShapes();
     } else {
       ns = 1; // I guess I don't understand what the second set is for in each of these.
       lstStates.clear();
@@ -616,8 +617,8 @@ public class PyMOLReader extends PdbReader {
         if (bsState != null) {
           bsAtoms.or(bsState);
         }
-        processStructures(atomCount0);
-        setBranchShapes(BSUtil.newBitSet2(atomCount0, atomCount));
+        processStructures();
+        setBranchShapes();
       }
     }
     setBonds(bonds);
@@ -892,12 +893,10 @@ public class PyMOLReader extends PdbReader {
       //System.out.println(atom.atomName + " " + atom.group3 + " " + Integer.toHexString(atom.flags));
       bsNoSurface.set(atomCount);
     }
-    int colorIndex = getInt(a, 21);
     float translucency = getUniqueFloat(atom.uniqueID,
         PyMOL.sphere_transparency, sphereTranslucency);
-    colixList.addLast(Integer.valueOf(C.getColixTranslucent3(C
-        .getColixO(Integer.valueOf(PyMOL.getRGB(colorIndex))),
-        translucency > 0, translucency)));
+    int atomColor = getInt(a, 21);
+    atomColorList.addLast(getColix(atomColor, translucency));
     bsHidden.setBitTo(atomCount, isHidden);
     bsModelAtoms.set(atomCount);
     if (bsState != null)
@@ -919,6 +918,12 @@ public class PyMOLReader extends PdbReader {
     return true;
   }
 
+  private Integer getColix(int colorIndex, float translucency) {
+    return Integer.valueOf(C.getColixTranslucent3(C
+        .getColixO(Integer.valueOf(PyMOL.getRGB(colorIndex))),
+        translucency > 0, translucency));
+  }
+
   private BS getBsReps(JmolList<Object> list) {
     BS bsReps = new BS();
     for (int i = 0; i < PyMOL.REP_MAX; i++)
@@ -935,20 +940,20 @@ public class PyMOLReader extends PdbReader {
   protected void setAdditionalAtomParameters(Atom atom) {
   }
 
-  private void processStructures(int i0) {
+  private void processStructures() {
     if (atomSetCollection.bsStructuredModels == null)
       atomSetCollection.bsStructuredModels = new BS();
     atomSetCollection.bsStructuredModels.set(Math.max(atomSetCollection
         .getCurrentAtomSetIndex(), 0));
 
-    processSS(i0, "H", ssMapAtom.get("H"), EnumStructure.HELIX, 0);
-    processSS(i0, "S", ssMapAtom.get("S"), EnumStructure.SHEET, 1);
-    processSS(i0, "L", ssMapAtom.get("L"), EnumStructure.TURN, 0);
-    processSS(i0, " ", ssMapAtom.get(" "), EnumStructure.NONE, 0);
+    processSS("H", ssMapAtom.get("H"), EnumStructure.HELIX, 0);
+    processSS("S", ssMapAtom.get("S"), EnumStructure.SHEET, 1);
+    processSS("L", ssMapAtom.get("L"), EnumStructure.TURN, 0);
+    processSS(" ", ssMapAtom.get(" "), EnumStructure.NONE, 0);
     ssMapSeq = new Hashtable<String, BS>();
   }
 
-  private void processSS(int atomCount0, String ssType, BS bsAtom,
+  private void processSS(String ssType, BS bsAtom,
                          EnumStructure type, int strandCount) {
     if (ssMapSeq.get(ssType) == null)
       return;
@@ -1086,13 +1091,12 @@ public class PyMOLReader extends PdbReader {
   private final static int REP_JMOL_STARS = 15;
    private final static int REP_JMOL_MAX = 16;
 
-  private void setBranchShapes(BS bs) {
+  private void setBranchShapes() {
     if (isStateScript)
       return;
+    BS bs = BSUtil.newBitSet2(atomCount0, atomCount);
     ModelSettings ms = new ModelSettings(JC.SHAPE_BALLS, bs, null);
-    colixes = new short[colixList.size()];
-    for (int i = colixes.length; --i >= 0;)
-      colixes[i] = (short) colixList.get(i).intValue();
+    colixes = setColors(colixes, atomColorList);
     ms.setSize(0);
     ms.setColors(colixes, 0);
     modelSettings.addLast(ms);
@@ -1104,14 +1108,24 @@ public class PyMOLReader extends PdbReader {
     reps[REP_JMOL_TRACE].and(reps[PyMOL.REP_CARTOON]);
     reps[PyMOL.REP_CARTOON].andNot(reps[REP_JMOL_TRACE]);
     //reps[REP_JMOL_PUTTY].and(reps[REP_CARTOON]);
-   // reps[REP_CARTOON].andNot(reps[REP_JMOL_PUTTY]);
+    // reps[REP_CARTOON].andNot(reps[REP_JMOL_PUTTY]);
     for (int i = 0; i < REP_JMOL_MAX; i++)
       setShape(i);
     setSurface();
     ssMapAtom = new Hashtable<String, BS>();
   }
-
   
+  private short[] setColors(short[] colixes,
+                            JmolList<Integer> colorList) {
+    if (colixes == null) 
+      colixes = new short[atomCount];
+    else
+      colixes = ArrayUtil.ensureLength(colixes, atomCount);
+    for (int i = atomCount; --i >= atomCount0;)
+      colixes[i] = (short) colorList.get(i).intValue();
+    return colixes;
+  }
+
   private void setShape(int shapeID) {
     // add more to implement
     BS bs = reps[shapeID];

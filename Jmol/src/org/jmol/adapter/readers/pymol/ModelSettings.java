@@ -125,6 +125,7 @@ public class ModelSettings {
   public void createShape(ModelSet m, BS bsCarb) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
+    Atom[] atoms;
     switch (id) {
     case T.movie:
       sm.viewer.setMovie((Map<String, Object>) info);
@@ -202,7 +203,7 @@ public class ModelSettings {
       id = JC.SHAPE_TRACE;
       float[] data = new float[bsAtoms.length()];
       rd = new RadiusData(data, 0, RadiusData.EnumType.ABSOLUTE, EnumVdw.AUTO);
-      Atom[] atoms = sm.viewer.modelSet.atoms;
+      atoms = sm.viewer.modelSet.atoms;
 
       double sum = 0.0,
       sumsq = 0.0;
@@ -309,7 +310,7 @@ public class ModelSettings {
 
   public void setColors(short[] colixes, float translucency) {
     this.colixes = colixes;
-    this.colors = new Object[] {colixes, Float.valueOf(translucency) };
+    colors = new Object[] {colixes, Float.valueOf(translucency) };
   }
   
   public void setSize(float size) {

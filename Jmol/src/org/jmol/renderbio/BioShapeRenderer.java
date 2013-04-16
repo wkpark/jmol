@@ -557,8 +557,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
 
     // parameters:
 
-    int hermiteLevel = (cartoonsFancy ? Math.max(this.hermiteLevel, 5) : this.hermiteLevel);
-    int nHermites = (hermiteLevel + 1) * 2 + 1; // 4 for hermiteLevel = 1; 13 for hermitelevel 5
+    int nHermites = (hermiteLevel + 1) * 2 + 1; // 5 for hermiteLevel = 1; 13 for hermitelevel 5
     int nPer = (isFlatMesh ? 4 : (hermiteLevel + 1) * 4 - 2); // 6 for hermiteLevel 1; 22 for hermiteLevel 5
     float angle = (float) ((isFlatMesh ? Math.PI / (nPer - 1) : 2 * Math.PI
         / nPer));
@@ -739,6 +738,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         V3[] normals2 = meshes[iNext].getNormalsTemp();
         V3[] normals = meshes[i].getNormalsTemp();
         int normixCount = normals.length;
+        if (doCap0) normixCount -= nPer;
         for (int j = 1; j <= nPer; ++j) {
           norml.add2(normals[normixCount - j], normals2[nPer - j]);
           norml.normalize();

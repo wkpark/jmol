@@ -29,8 +29,6 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
-import jspecview.util.ArrayUtil;
-import jspecview.util.TextFormat;
 
 import org.jmol.adapter.readers.cifpdb.PdbReader;
 import org.jmol.adapter.smarter.Atom;
@@ -43,6 +41,7 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BoxInfo; //import org.jmol.util.Escape;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
@@ -54,6 +53,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
 import org.jmol.util.SB;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JC;
 
 /**
@@ -1120,7 +1120,7 @@ public class PyMOLReader extends PdbReader {
     if (colixes == null) 
       colixes = new short[atomCount];
     else
-      colixes = ArrayUtil.ensureLength(colixes, atomCount);
+      colixes = ArrayUtil.ensureLengthShort(colixes, atomCount);
     for (int i = atomCount; --i >= atomCount0;)
       colixes[i] = (short) colorList.get(i).intValue();
     return colixes;

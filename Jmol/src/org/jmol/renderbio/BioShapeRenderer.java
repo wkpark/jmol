@@ -553,7 +553,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     // isFlatMesh == using mesh even for hermiteLevel = 0 (for exporters)
     boolean isFlatMesh = (aspectRatio == 0);
     // isElliptical == newer cartoonFancy business
-    boolean isElliptical = (cartoonsFancy || this.hermiteLevel >= 6);
+    boolean isElliptical = (cartoonsFancy || hermiteLevel >= 6);
 
     // parameters:
 

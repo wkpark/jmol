@@ -850,9 +850,6 @@ public class PyMOLReader extends PdbReader {
       group3 = group3.substring(0, 3);
     if (group3.equals(" "))
       group3 = "UNK";
-    boolean isNucleic = (nucleic.indexOf(group3) >= 0);
-    if (isNucleic)
-      bsNucleic.set(atomCount);
     String sym = getString(a, 7);
     if (sym.equals("A"))
       sym = "C";
@@ -862,9 +859,12 @@ public class PyMOLReader extends PdbReader {
         isHetero, sym);
     if (!filterPDBAtom(atom, fileAtomIndex++))
       return false;
+    boolean isNucleic = (nucleic.indexOf(group3) >= 0);
+    if (isNucleic)
+      bsNucleic.set(atomCount);
     atom.label = getString(a, 9);
     String ss = getString(a, 10);
-    if (seqNo >= MIN_RESNO && (!ss.equals(" ") || name.equals("CA"))) {
+    if (seqNo >= MIN_RESNO && (!ss.equals(" ") || name.equals("CA") || isNucleic)) {
       if (ssMapAtom.get(ss) == null)
         ssMapAtom.put(ss, new BS());
       BS bs = ssMapSeq.get(ss);
@@ -1347,6 +1347,7 @@ public class PyMOLReader extends PdbReader {
     ModelSettings ss = new ModelSettings(JC.SHAPE_CARTOON, bs, null);
     ss.setColors(colixes, cartoonTranslucency);
     ss.setSize(getFloatSetting(sizeID) * factor);
+    System.out.println(key +  " " + sizeID + " " + factor + " " + cartoonTranslucency + " " + bs);
     modelSettings.addLast(ss);
   }
 

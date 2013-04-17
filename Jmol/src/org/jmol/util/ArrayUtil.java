@@ -415,6 +415,18 @@ final public class ArrayUtil {
     }
   }
 
+  public static int[][][] newInt3(int nx, int ny) {
+    /**
+     * @j2sNative
+     * 
+     * return Clazz.newArray(nx, null);
+     * 
+     */
+    {
+      return (ny < 0 ? new int[nx][][] : new int[nx][ny][]);
+    }
+  }
+
   public static float[][][] newFloat3(int nx, int ny) {
     /**
      * @j2sNative
@@ -462,5 +474,18 @@ final public class ArrayUtil {
     return new byte[n][];
     }
   }
+
+  public static double[][] newDouble2(int n) {
+    /**
+     * @j2sNative
+     * 
+     * return Clazz.newArray(n, null);
+     * 
+     */
+    {
+    return new double[n][];
+    }
+  }
+
 
 }

@@ -157,7 +157,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
           os = new FileOutputStream(fileName);
         if (type.equals("JPEG") || type.equals("JPG")) {
           if (quality <= 0)
-            quality = 75;
+            quality = 100; // high quality
           if (asBytes) {
             bytes = JpegEncoder.getBytes(viewer.apiPlatform, image, quality,
                 Viewer.getJmolVersion());

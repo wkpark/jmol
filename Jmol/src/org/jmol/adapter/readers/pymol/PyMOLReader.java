@@ -219,8 +219,9 @@ public class PyMOLReader extends PdbReader {
       } catch (Exception e) {
         // ignore
       }
+      String note;
       if (width > 0 && height > 0) {
-        appendLoadNote("PyMOL dimensions width=" + width + " height=" + height);
+        note = "PyMOL dimensions width=" + width + " height=" + height;
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
             "perferredWidthHeight", new int[] { width, height });
         Dimension d = viewer.resizeInnerPanel(width, height);
@@ -228,8 +229,10 @@ public class PyMOLReader extends PdbReader {
         height = d.height;
         //viewer.setScreenDimension(width, height);
       } else {
-        appendLoadNote("PyMOL dimensions unknown");
+        note = "PyMOL dimensions?";
       }
+      appendLoadNote(note);
+      System.out.println(note); 
     }
     totalAtomCount = getTotalAtomCount(names);
     Logger.info("PyMOL total atom count = " + totalAtomCount);

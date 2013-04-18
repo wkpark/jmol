@@ -572,7 +572,7 @@ public class Symmetry implements SymmetryInterface {
     try {
       BS bsDelete = new BS();
       JmolMolecule[] molecules = modelSet.getMolecules();
-      int moleculeCount = modelSet.moleculeCount;
+      int moleculeCount = molecules.length;
       Atom[] atoms = modelSet.atoms;
 
       boolean isOneMolecule = (molecules[moleculeCount - 1].firstAtomIndex == modelSet

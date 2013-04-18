@@ -1666,7 +1666,7 @@ abstract public class ModelCollection extends BondCollection {
     uc.setCentroid((ModelSet) this, iAtom0, iAtom1, minmax);
   }
 
-  public JmolMolecule[] getMolecules() {
+   public JmolMolecule[] getMolecules() {
     if (moleculeCount > 0)
       return molecules;
     if (molecules == null)

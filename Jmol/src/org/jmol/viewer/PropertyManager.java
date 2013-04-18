@@ -567,14 +567,12 @@ public class PropertyManager implements JmolPropertyManager {
   public JmolList<Map<String, Object>> getMoleculeInfo(ModelSet modelSet,
                                                    Object atomExpression) {
     BS bsAtoms = viewer.getAtomBitSet(atomExpression);
-    if (modelSet.moleculeCount == 0) {
-      modelSet.getMolecules();
-    }
+    JmolMolecule[] molecules = viewer.modelSet.getMolecules();
     JmolList<Map<String, Object>> V = new  JmolList<Map<String, Object>>();
     BS bsTemp = new BS();
-    for (int i = 0; i < modelSet.moleculeCount; i++) {
+    for (int i = 0; i < molecules.length; i++) {
       bsTemp = BSUtil.copy(bsAtoms);
-      JmolMolecule m = modelSet.molecules[i];
+      JmolMolecule m = molecules[i];
       bsTemp.and(m.atomList);
       if (bsTemp.length() > 0) {
         Map<String, Object> info = new Hashtable<String, Object>();

@@ -47,7 +47,7 @@ public class Resolver {
                  "WebMO;",
     "pymol.", ";PyMOL;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;", 
-    "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;MagRes;Shelx;Siesta;VaspOutcar;Wien2k;"
+    "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;MagRes;Shelx;Siesta;VaspOutcar;VaspPoscar;Wien2k;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -337,27 +337,28 @@ public class Resolver {
   private final static int SPECIAL_CASTEP             = 10;
   private final static int SPECIAL_AIMS               = 11;
   private final static int SPECIAL_CRYSTAL            = 12;
-  private final static int SPECIAL_GROMACS            = 13;
-  private final static int SPECIAL_GENNBO             = 14;
+  private final static int SPECIAL_VASPPOSCAR         = 13;
+  private final static int SPECIAL_GROMACS            = 14;
+  private final static int SPECIAL_GENNBO             = 15;
   
   // these next are needed by the XML reader
   
-  public final static int SPECIAL_ARGUS_XML   = 15;
-  public final static int SPECIAL_CML_XML     = 16;
-  public final static int SPECIAL_CHEM3D_XML  = 17;
-  public final static int SPECIAL_MOLPRO_XML  = 18;
-  public final static int SPECIAL_ODYSSEY_XML = 19;
-  public final static int SPECIAL_XSD_XML     = 20;
-  public final static int SPECIAL_VASP_XML    = 21; 
-  public final static int SPECIAL_QE_XML      = 22; 
+  public final static int SPECIAL_ARGUS_XML   = 16;
+  public final static int SPECIAL_CML_XML     = 17;
+  public final static int SPECIAL_CHEM3D_XML  = 18;
+  public final static int SPECIAL_MOLPRO_XML  = 19;
+  public final static int SPECIAL_ODYSSEY_XML = 20;
+  public final static int SPECIAL_XSD_XML     = 21;
+  public final static int SPECIAL_VASP_XML    = 22; 
+  public final static int SPECIAL_QE_XML      = 23; 
  
-  public final static int SPECIAL_ARGUS_DOM   = 23;
-  public final static int SPECIAL_CML_DOM     = 24;
-  public final static int SPECIAL_CHEM3D_DOM  = 25;
-  public final static int SPECIAL_MOLPRO_DOM  = 26;
-  public final static int SPECIAL_ODYSSEY_DOM = 27;
-  public final static int SPECIAL_XSD_DOM     = 28; // not implemented
-  public final static int SPECIAL_VASP_DOM    = 29; 
+  public final static int SPECIAL_ARGUS_DOM   = 24;
+  public final static int SPECIAL_CML_DOM     = 25;
+  public final static int SPECIAL_CHEM3D_DOM  = 26;
+  public final static int SPECIAL_MOLPRO_DOM  = 27;
+  public final static int SPECIAL_ODYSSEY_DOM = 28;
+  public final static int SPECIAL_XSD_DOM     = 29; // not implemented
+  public final static int SPECIAL_VASP_DOM    = 30; 
   
   public final static String[][] specialTags = {
     { "Jme" },
@@ -375,6 +376,7 @@ public class Resolver {
     { "Castep" },
     { "Aims" },  
     { "Crystal" },  
+    { "VaspPoscar"}, 
 
     { "Gromacs" },
     { "GenNBO" },
@@ -434,6 +436,8 @@ public class Resolver {
         return specialTags[SPECIAL_CRYSTAL][0];
       if (checkCastep(lines))
         return specialTags[SPECIAL_CASTEP][0];
+      if (checkVaspposcar(lines))
+        return specialTags[SPECIAL_VASPPOSCAR][0];
     } else {
       if (nLines == 1 && lines[0].length() > 0
           && Character.isDigit(lines[0].charAt(0)))
@@ -513,6 +517,17 @@ public class Resolver {
     return false;
   }
 
+  private static boolean checkVaspposcar(String[] lines) {
+    String select = lines[8].trim().toLowerCase();
+    if (select.contains("direct") || select.contains("cartesian")
+        || select.contains("selective"))
+      return true;
+    String normal = lines[7].trim().toLowerCase();
+    if (normal.contains("direct") || normal.contains("cartesian"))
+      return true;
+    return false;
+  }
+  
   private static boolean checkCrystal(String[] lines) {
     String s = lines[1].trim();
     if (s.equals("SLAB") ||s.equals("MOLECULE")

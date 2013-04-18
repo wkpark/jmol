@@ -66,6 +66,26 @@ import org.jmol.viewer.JC;
 
 public class PyMOLReader extends PdbReader {
   
+
+  private final static int BRANCH_SELECTION = -1;
+  private final static int BRANCH_MOLECULE = 1;
+  private final static int BRANCH_MAPSURFACE = 2;
+  private final static int BRANCH_MAPMESH = 3;
+  private final static int BRANCH_MEASURE = 4;
+  private final static int BRANCH_CGO = 6; // compiled graphics object
+  private final static int BRANCH_SURFACE = 7;
+  private final static int BRANCH_GROUP = 12;
+  
+  private static final int MIN_RESNO = -1000; // minimum allowed residue number
+
+  //  #cf. \pymol\layer1\PyMOLObject.h
+  //  #define cObjectCallback     5
+  //  #define cObjectGadget       8
+  //  #define cObjectCalculator   9
+  //  #define cObjectSlice        10
+  //  #define cObjectAlignment    11
+
+
   private boolean allowSurface = true;
   private boolean doResize;
 
@@ -338,24 +358,6 @@ public class PyMOLReader extends PdbReader {
     Logger.info("Pymol setting " + i + " = " + v);
     return v;
   }
-
-  private final static int BRANCH_SELECTION = -1;
-  private final static int BRANCH_MOLECULE = 1;
-  private final static int BRANCH_MAPSURFACE = 2;
-  private final static int BRANCH_MAPMESH = 3;
-  private final static int BRANCH_MEASURE = 4;
-  private final static int BRANCH_CGO = 6; // compiled graphics object
-  private final static int BRANCH_SURFACE = 7;
-  private final static int BRANCH_GROUP = 12;
-  
-  private static final int MIN_RESNO = -1000; // minimum allowed residue number
-
-  //  #cf. \pymol\layer1\PyMOLObject.h
-  //  #define cObjectCallback     5
-  //  #define cObjectGadget       8
-  //  #define cObjectCalculator   9
-  //  #define cObjectSlice        10
-  //  #define cObjectAlignment    11
 
   private String branchName;
   private BS bsModelAtoms = BS.newN(1000);
@@ -1092,7 +1094,7 @@ public class PyMOLReader extends PdbReader {
   private final static int REP_JMOL_TRACE = 13;
   private final static int REP_JMOL_PUTTY = 14;
   private final static int REP_JMOL_STARS = 15;
-   private final static int REP_JMOL_MAX = 16;
+  private final static int REP_JMOL_MAX = 16;
 
   private void setBranchShapes() {
     if (isStateScript)

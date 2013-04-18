@@ -462,10 +462,24 @@ class IsoSolventReader extends AtomDataReader {
       double[] volumes = (double[]) (isPocket ? null : meshData
           .calculateVolumeOrArea(-1, false, false));
       float minVolume = (float)(1.5 * Math.PI * Math.pow(solventRadius, 3));
+      double maxVolume = 0;
+      boolean maxIsNegative = false;
+      if (volumes != null && !isCavity)
+      for (int i = 0; i < meshData.nSets; i++) {
+        double v = volumes[i];
+        if (Math.abs(v) > maxVolume) {
+          maxVolume = Math.abs(v);
+          maxIsNegative = (v < 0);
+        }
+      }
+      double factor = (maxIsNegative ? -1 : 1);
+      // added this factor business to account for situations where
+      // the first volume recorded is negative, but later, larger volumes,
+      // are positive.
       for (int i = 0; i < meshData.nSets; i++) {
         BS bss = bsSurfaces[i];
         if (bss.intersects(bsSurfacePoints)) {
-          if (volumes == null || Math.abs(volumes[i]) > minVolume) // roughly 4/3 PI r^3
+          if (volumes == null || volumes[i] * factor > minVolume) // roughly 4/3 PI r^3
             //doesn't allow for cavities, but doCalculateTroughs takes care of that 
             if (params.vertexSource != null) {
               BS bs = new BS();

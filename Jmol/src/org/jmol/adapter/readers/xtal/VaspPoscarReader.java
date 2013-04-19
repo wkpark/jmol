@@ -35,9 +35,10 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
     readCoordinate();
   }
 
+  private String title ;
   private void readTitle() throws Exception {
     // Read job title
-    atomSetCollection.setAtomSetName(readLine().trim());
+    title = readLine().trim();
   }
 
   private void readScfactor() throws Exception {
@@ -72,12 +73,11 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
   }
 
   private void readElementstring() throws Exception {
-    readLine();
     // Read Type of atoms and number of atoms
     //   H    C    O    Be   C    H
     String elementLabel[] = getTokensStr(readLine());
     //   6    24    18     6     6    24
-    String atomWeight[] = getTokensStr(line);
+    String atomWeight[] = getTokensStr(readLine());
     for (int i = 0; i < atomWeight.length; i++) {
       nAtom += Integer.parseInt(atomWeight[i]);
     }
@@ -120,7 +120,7 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
       setAtomCoordXYZ(atom, x, y, z);
       counter++;
     }
-    atomSetCollection.setAtomSetName("Initial Coordinates");
+   atomSetCollection.setAtomSetName(title);
   }
 
 }

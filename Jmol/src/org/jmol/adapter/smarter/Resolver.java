@@ -47,7 +47,7 @@ public class Resolver {
                  "WebMO;",
     "pymol.", ";PyMOL;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;", 
-    "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;MagRes;Shelx;Siesta;VaspOutcar;VaspPoscar;Wien2k;"
+    "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;MagRes;Shelx;Siesta;VaspOutcar;VaspPoscar;Wien2k;Xcrysden;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -781,7 +781,7 @@ public class Resolver {
 
   private final static String[] vaspOutcarLineStartRecords = 
   { "VaspOutcar", " vasp.", " INCAR:" };
-  
+
   private final static String[][] lineStartsWithRecords =
   { cifLineStartRecords, pqrLineStartRecords, p2nLineStartRecords,
     pdbLineStartRecords, shelxLineStartRecords, 
@@ -791,8 +791,7 @@ public class Resolver {
     vaspOutcarLineStartRecords
     };
 
-  
-
+ 
   ////////////////////////////////////////////////////////////////
   // contains formats
   ////////////////////////////////////////////////////////////////
@@ -862,9 +861,14 @@ public class Resolver {
   private final static String[] siestaContainsRecords =
   { "Siesta", "MD.TypeOfRun", "SolutionMethod", "MeshCutoff", 
     "WELCOME TO SIESTA" };
+  
+  private final static String[] xcrysDenContainsRecords = 
+  { "Xcrysden", "PRIMVEC", "CONVVEC", "PRIMCOORD" };
 
   private final static String[] mopacArchiveContainsRecords =
   { "MopacArchive", "SUMMARY OF PM" };
+  
+  
   
   
   private final static String[][] headerContainsRecords =
@@ -873,7 +877,7 @@ public class Resolver {
     gamessUKContainsRecords, gamessUSContainsRecords,
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
     nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords, crystalContainsRecords, 
-    dmolContainsRecords, gulpContainsRecords, espressoContainsRecords, siestaContainsRecords,
+    dmolContainsRecords, gulpContainsRecords, espressoContainsRecords, siestaContainsRecords,xcrysDenContainsRecords,
     mopacArchiveContainsRecords
   };
 }

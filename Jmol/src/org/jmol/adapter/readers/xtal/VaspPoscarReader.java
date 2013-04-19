@@ -35,7 +35,8 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
     readCoordinate();
   }
 
-  private String title ;
+  private String title;
+
   private void readTitle() throws Exception {
     // Read job title
     title = readLine().trim();
@@ -120,7 +121,7 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
       setAtomCoordXYZ(atom, x, y, z);
       counter++;
     }
-   atomSetCollection.setAtomSetName(title);
+    atomSetCollection.setAtomSetName(title);
   }
 
 }

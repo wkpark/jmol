@@ -42,6 +42,7 @@ public class LabelsRenderer extends ShapeRenderer {
   protected int descent;
   final int[] minZ = new int[1];
   private int zCutoff;
+  protected float[] xy = new float[3];
 
   @Override
   protected boolean render() {
@@ -62,8 +63,8 @@ public class LabelsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
-    float scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? viewer
-        .getScalePixelsPerAngstrom(true) * 10000f : 0);
+    float sppm = viewer.getScalePixelsPerAngstrom(true);
+    float scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? sppm * 10000f : 0);
     float imageFontScaling = viewer.getImageFontScaling();
     int iGroup = -1;
     minZ[0] = Integer.MAX_VALUE;
@@ -73,7 +74,6 @@ public class LabelsRenderer extends ShapeRenderer {
       if (!atom.isVisible(myVisibilityFlag))
         continue;
       String label = labelStrings[i];
-      //System.out.println("labelsren " + label);
       if (label == null || label.length() == 0 || labels.mads != null
           && labels.mads[i] < 0)
         continue;
@@ -123,8 +123,12 @@ public class LabelsRenderer extends ShapeRenderer {
         if (text.font == null)
           text.setFontFromFid(fid);
         text.setXYZs(atom.screenX, atom.screenY, zBox, zSlab);
-        text.setColix(colix);
-        text.setBgColix(bgcolix);
+        if (text.windowOffsetAngstroms == null) { 
+          text.setColix(colix);
+          text.setBgColix(bgcolix);          
+        } else {
+          text.setScalePixelsPerMicron(sppm);
+        }
       } else {
         boolean isLeft = (textAlign == Object2d.ALIGN_LEFT || textAlign == Object2d.ALIGN_NONE);
         if (fid != fidPrevious || ascent == 0) {
@@ -152,16 +156,16 @@ public class LabelsRenderer extends ShapeRenderer {
           atom = null;
         } else {
           text = Text.newLabel(g3d.getGData(), font3d, label, colix, bgcolix, atom.screenX,
-              atom.screenY, zBox, zSlab, textAlign, 0);
+              atom.screenY, zBox, zSlab, textAlign, 0, null);
           labels.putLabel(i, text);
         }
       }
       if (atom != null) {
         text.setOffset(offset);
-        if (textAlign != Object2d.ALIGN_NONE)
+        if (textAlign != Object2d.ALIGN_NONE && text.windowOffsetAngstroms == null)
           text.setAlignment(textAlign);
         text.setPointer(pointer);
-        TextRenderer.render(text, g3d, scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
+        TextRenderer.render(text, viewer, g3d, scalePixelsPerMicron, imageFontScaling, isExact, boxXY, xy);
       }
       if (isAntialiased) {
         boxXY[0] /= 2;

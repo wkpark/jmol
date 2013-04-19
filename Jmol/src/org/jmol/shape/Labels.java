@@ -125,8 +125,7 @@ public class Labels extends AtomShape {
           continue;
         text = getLabel(i);
         if (text == null) {
-          text = Text.newLabel(gdata, null, strings[i], (short) 0, (short) 0,
-              0, 0, 0, 0, 0, scalePixelsPerMicron);
+          text = Text.newLabel(gdata, null, strings[i], (short) 0, (short) 0, 0, 0, 0, 0, 0, scalePixelsPerMicron, null);
           putLabel(i, text);
         } else {
           text.setScalePixelsPerMicron(scalePixelsPerMicron);
@@ -156,6 +155,15 @@ public class Labels extends AtomShape {
             : new LabelToken[][] { null });
         setLabel(tokens, strLabel, i);
       }
+      return;
+    }
+
+    if ("textLabels" == propertyName) {
+      setScaling();
+      JmolList<Text> labels = (JmolList<Text>) value;
+      for (int i = bsSelected.nextSetBit(0), pt = 0; i >= 0 && i < atomCount; i = bsSelected
+          .nextSetBit(i + 1))
+        setTextLabel(i, labels.get(pt++));
       return;
     }
 
@@ -381,26 +389,25 @@ public class Labels extends AtomShape {
         .getScalePixelsPerAngstrom(false) * 10000f : 0);
   }
   
+  private void setTextLabel(int i, Text t) {
+    String label = t.getText();
+    addString(atoms[i], i, label, label);
+    Atom atom = atoms[i];
+    atom.setShapeVisibility(myVisibilityFlag, true);
+    putLabel(i, t);
+  }
+
   private void setLabel(LabelToken[][] temp, String strLabel, int i) {
     Atom atom = atoms[i];
     LabelToken[] tokens = temp[0];
     if (tokens == null)
       tokens = temp[0] = LabelToken.compile(viewer, strLabel, '\0', null);
-    String label = (tokens == null ? null : LabelToken.formatLabelAtomArray(viewer,
-        atom, tokens, '\0', null));
-    atom.setShapeVisibility(myVisibilityFlag, label != null);
-    if (strings == null || i >= strings.length)
-      strings = ArrayUtil.ensureLengthS(strings, i + 1);
-    if (formats == null || i >= formats.length)
-      formats = ArrayUtil.ensureLengthS(formats, i + 1);
-    strings[i] = label;
-    formats[i] = (strLabel != null && strLabel.indexOf("%{") >= 0 ? label
-        : strLabel);
-    bsSizeSet.setBitTo(i, (strLabel != null));
+    String label = (tokens == null ? null : LabelToken.formatLabelAtomArray(
+        viewer, atom, tokens, '\0', null));
+    addString(atom, i, label, strLabel);
     text = getLabel(i);
     if (isScaled) {
-      text = Text.newLabel(gdata, null, label, (short) 0, (short) 0, 0, 0, 0, 0, 0,
-          scalePixelsPerMicron);
+      text = Text.newLabel(gdata, null, label, (short) 0, (short) 0, 0, 0, 0, 0, 0, scalePixelsPerMicron, null);
       putLabel(i, text);
     } else if (text != null) {
       text.setText(label);
@@ -421,6 +428,18 @@ public class Labels extends AtomShape {
       setBgcolix(i, defaultBgcolix);
     if (defaultFontId != zeroFontId)
       setFont(i, defaultFontId);
+  }
+
+  private void addString(Atom atom, int i, String label, String strLabel) {
+    atom.setShapeVisibility(myVisibilityFlag, label != null);
+    if (strings == null || i >= strings.length)
+      strings = ArrayUtil.ensureLengthS(strings, i + 1);
+    if (formats == null || i >= formats.length)
+      formats = ArrayUtil.ensureLengthS(formats, i + 1);
+    strings[i] = label;
+    formats[i] = (strLabel != null && strLabel.indexOf("%{") >= 0 ? label
+        : strLabel);
+    bsSizeSet.setBitTo(i, (strLabel != null));
   }
 
   @Override

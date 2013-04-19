@@ -70,6 +70,7 @@ public abstract class Object2d {
   public float[] boxXY = new float[5];
   
   protected float scalePixelsPerMicron;
+  public P3 windowOffsetAngstroms;
 
   public float getScalePixelsPerMicron() {
     return scalePixelsPerMicron;
@@ -269,7 +270,7 @@ public abstract class Object2d {
   public void setWindow(int width, int height, float scalePixelsPerMicron) {
     windowWidth = width;
     windowHeight = height;
-    if (this.scalePixelsPerMicron < 0 && scalePixelsPerMicron != 0)
+    if (windowOffsetAngstroms == null && this.scalePixelsPerMicron < 0 && scalePixelsPerMicron != 0)
       this.scalePixelsPerMicron = scalePixelsPerMicron;
   }
 

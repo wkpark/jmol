@@ -41,6 +41,7 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
+import org.jmol.shape.Text;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BoxInfo; //import org.jmol.util.Escape;
 import org.jmol.util.BS;
@@ -111,7 +112,7 @@ public class PyMOLReader extends PdbReader {
   private Map<String, BS> ssMapSeq = new Hashtable<String, BS>();
   private Map<String, BS> ssMapAtom = new Hashtable<String, BS>();
   private JmolList<Integer> atomColorList = new  JmolList<Integer>();
-  private JmolList<String> labels = new  JmolList<String>();
+  private JmolList<Text> labels = new  JmolList<Text>();
 
   private JmolList<ModelSettings> modelSettings = new  JmolList<ModelSettings>();
   private short[] colixes;
@@ -359,6 +360,22 @@ public class PyMOLReader extends PdbReader {
     return v;
   }
 
+  @SuppressWarnings("unchecked")
+  private P3 getPointSetting(int i) {
+    P3 p = new P3();
+    if (i >= settingCount)
+      return p;
+    JmolList<Object> setting = null;
+    if (localSettings != null) {
+      setting = localSettings.get(Integer.valueOf(i));
+    }
+    if (setting == null)
+      setting = getList(settings, i);
+    getPoint((JmolList) setting.get(2), 0, p);
+    Logger.info("Pymol setting " + i + " = " + p);
+    return p;
+  }
+
   private String branchName;
   private BS bsModelAtoms = BS.newN(1000);
   private int branchID;
@@ -366,8 +383,8 @@ public class PyMOLReader extends PdbReader {
   private float sphereScale;
   private JmolList<JmolList<Object>> selections;
   private Hashtable<Integer, JmolList<Object>> uniqueSettings;
-  
-
+  private P3 labelPosition;
+  private float labelColor, labelSize;
   
   private void processBranch(JmolList<Object> branch) {
     int type = getBranchType(branch);
@@ -595,6 +612,7 @@ public class PyMOLReader extends PdbReader {
       processStructures();
       setBranchShapes();
     } else {
+      allStates |= (ns > 1); // testing
       ns = 1; // I guess I don't understand what the second set is for in each of these.
       lstStates.clear();
       for (int i = 0; i < ns; i++) {
@@ -632,20 +650,28 @@ public class PyMOLReader extends PdbReader {
     dumpBranch();
   }
 
-  private void setAtomReps(int iAtom) {
+  private void setAtomReps(int iAtom, int atomColor) {
     PyMOLAtom atom = (PyMOLAtom) atomSetCollection.getAtom(iAtom);
-    
+
     for (int i = 0; i < PyMOL.REP_MAX; i++)
       if (atom.bsReps.get(i))
         reps[i].set(iAtom);
     if (reps[PyMOL.REP_LABELS].get(iAtom)) {
       if (atom.label.equals(" "))
         reps[PyMOL.REP_LABELS].clear(iAtom);
-      else
-        labels.addLast(atom.label);
+      else {
+        int icolor = (int) getUniqueFloat(atom.uniqueID, PyMOL.label_color, labelColor);
+        if (icolor < 0)
+          icolor = atomColor;
+        labels.addLast(newTextLabel(atom.label, 
+            getUniquePoint(atom.uniqueID, PyMOL.label_position, labelPosition), 
+            getColix(icolor, 0),
+            getUniqueFloat(atom.uniqueID, PyMOL.label_size, labelSize)));
+      }
     }
     boolean isSphere = reps[PyMOL.REP_SPHERES].get(iAtom);
-    if (!isSphere && !solventAsSpheres && reps[PyMOL.REP_NONBONDED].get(iAtom) && !atom.bonded) {
+    if (!isSphere && !solventAsSpheres && reps[PyMOL.REP_NONBONDED].get(iAtom)
+        && !atom.bonded) {
       reps[PyMOL.REP_NBSPHERES].clear(iAtom);
       //reps[PyMOL.REP_SPHERES].clear(iAtom);
       reps[PyMOL.REP_NONBONDED].clear(iAtom);
@@ -653,12 +679,15 @@ public class PyMOLReader extends PdbReader {
     }
     float rad = 0;
     if (isSphere) {
-      float mySphereSize = getUniqueFloat(atom.uniqueID, PyMOL.sphere_scale, sphereScale);
+      float mySphereSize = getUniqueFloat(atom.uniqueID, PyMOL.sphere_scale,
+          sphereScale);
       // nl1_nl2 -- stumped!
       rad = atom.radius * mySphereSize;
-    } else if (reps[PyMOL.REP_NONBONDED].get(iAtom) || reps[PyMOL.REP_NBSPHERES].get(iAtom)) {
+    } else if (reps[PyMOL.REP_NONBONDED].get(iAtom)
+        || reps[PyMOL.REP_NBSPHERES].get(iAtom)) {
       // Penta_vs_mutants calcium
-      float myNonBondedSize = getUniqueFloat(atom.uniqueID, PyMOL.nonbonded_size, nonBondedSize);
+      float myNonBondedSize = getUniqueFloat(atom.uniqueID,
+          PyMOL.nonbonded_size, nonBondedSize);
       rad = -atom.radius * myNonBondedSize;
     }
     if (rad != 0)
@@ -690,10 +719,18 @@ public class PyMOLReader extends PdbReader {
         reps[PyMOL.REP_CARTOON].clear(iAtom);
         reps[REP_JMOL_PUTTY].set(iAtom);
         break;
-      }      
+      }
     }
   }
   
+  private Text newTextLabel(String label, P3 windowOffset, short colix, float fontSize) {
+    Text t = Text.newLabel(viewer.getGraphicsData(), null, label, colix, (short) 0, 0, 0, 0, 0, 0, 0, 
+        windowOffset);
+    byte fid = viewer.getGraphicsData().getFontFid(fontSize);
+    t.setFontFromFid(fid);
+    return t;
+  }
+
   private void setBonds(JmolList<Bond> bonds) {
     int n = bonds.size();
     for (int i = 0; i < n; i++) {
@@ -723,6 +760,9 @@ public class PyMOLReader extends PdbReader {
     sphereTranslucency = getFloatSetting(PyMOL.sphere_transparency);
     cartoonLadderMode = getBooleanSetting(PyMOL.cartoon_ladder_mode);
     solventAsSpheres = getBooleanSetting(PyMOL.sphere_solvent);
+    labelPosition = getPointSetting(PyMOL.label_position);
+    labelColor = getFloatSetting(PyMOL.label_color);
+    labelSize = getFloatSetting(PyMOL.label_size);
   }
 
   @SuppressWarnings("unchecked")
@@ -753,6 +793,19 @@ public class PyMOLReader extends PdbReader {
     Logger.info("Pymol unique setting for " + id + ": " + key + " = " + v);
     return v;
   }
+  
+  @SuppressWarnings("unchecked")
+  private P3 getUniquePoint(int id, int key, P3 pt) {
+    JmolList<Object> setting;
+    if (id < 0
+        || (setting = uniqueSettings.get(Integer.valueOf(id * 1000 + key))) == null)
+      return pt;
+    pt = new P3();
+    getPoint((JmolList) setting.get(2), 0, pt);
+    Logger.info("Pymol unique setting for " + id + ": " + key + " = " + pt);
+    return pt;
+  }  
+
   private void addName(String name, BS bs) {
     htNames.put(fixName(name), bs);
   }
@@ -894,14 +947,12 @@ public class PyMOLReader extends PdbReader {
     atom.bonded = getInt(a, 25) != 0;
     if (a.size() > 40 && getInt(a, 40) == 1)
       atom.uniqueID = getInt(a, 32);
-    if ((atom.flags & PyMOL.FLAG_NOSURFACE) != 0) {
-      //System.out.println(atom.atomName + " " + atom.group3 + " " + Integer.toHexString(atom.flags));
+    if ((atom.flags & PyMOL.FLAG_NOSURFACE) != 0)
       bsNoSurface.set(atomCount);
-    }
     float translucency = getUniqueFloat(atom.uniqueID,
         PyMOL.sphere_transparency, sphereTranslucency);
     int atomColor = getInt(a, 21);
-    atomColorList.addLast(getColix(atomColor, translucency));
+    atomColorList.addLast(Integer.valueOf(getColix(atomColor, translucency)));
     bsHidden.setBitTo(atomCount, isHidden);
     bsModelAtoms.set(atomCount);
     if (bsState != null)
@@ -918,15 +969,14 @@ public class PyMOLReader extends PdbReader {
         data[i] = getFloatAt(a, i + 41);
       atomSetCollection.setAnisoBorU(atom, data, 12);
     }
-    setAtomReps(atomCount);
+    setAtomReps(atomCount, atomColor);
     atomMap[apt] = atomCount++;
     return true;
   }
 
-  private Integer getColix(int colorIndex, float translucency) {
-    return Integer.valueOf(C.getColixTranslucent3(C
-        .getColixO(Integer.valueOf(PyMOL.getRGB(colorIndex))),
-        translucency > 0, translucency));
+  private short getColix(int colorIndex, float translucency) {
+    return C.getColixTranslucent3(C.getColixO(Integer.valueOf(PyMOL
+        .getRGB(colorIndex))), translucency > 0, translucency);
   }
 
   private BS getBsReps(JmolList<Object> list) {
@@ -1197,7 +1247,11 @@ public class PyMOLReader extends PdbReader {
       // must be done for each model
       break;
     case PyMOL.REP_LABELS: //   = 3;
-      ss = new ModelSettings(JC.SHAPE_LABELS, bs, labels);
+      JmolList<Text> myLabels = new  JmolList<Text>();
+      for (int i = 0; i < labels.size(); i++)
+        myLabels.addLast(labels.get(i));
+      labels.clear();
+      ss = new ModelSettings(JC.SHAPE_LABELS, bs, myLabels);
       modelSettings.addLast(ss);
       break;
     case REP_JMOL_PUTTY:
@@ -1352,7 +1406,6 @@ public class PyMOLReader extends PdbReader {
     ModelSettings ss = new ModelSettings(JC.SHAPE_CARTOON, bs, null);
     ss.setColors(colixes, cartoonTranslucency);
     ss.setSize(getFloatSetting(sizeID) * factor);
-    System.out.println(key +  " " + sizeID + " " + factor + " " + cartoonTranslucency + " " + bs);
     modelSettings.addLast(ss);
   }
 
@@ -1447,8 +1500,7 @@ public class PyMOLReader extends PdbReader {
     float aspectRatio = (width * 1.0f / height);
     if (aspectRatio < 1)
       szoom = "" + (100 / aspectRatio);
-    //System.out.println("aspect " + aspectRatio + " " +  width + " " + height);
-
+    
     float pymolCameraToCenter = pymolDistanceToCenter / w;
     float pymolCameraToSlab = getFloatAt(view, 22) / w;
     float pymolCameratToDepth = getFloatAt(view, 23) / w;

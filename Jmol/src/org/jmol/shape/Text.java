@@ -24,10 +24,12 @@
 package org.jmol.shape;
 
 
+import org.jmol.api.JmolRendererInterface;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+import org.jmol.util.P3;
 import org.jmol.util.SB;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.TextFormat;
@@ -43,6 +45,11 @@ public class Text extends Object2d {
   public float fontScale;
 
   private String text, textUnformatted;
+  
+  public String getText() {
+    return text;
+  }
+
   public boolean doFormatText;
 
   public String[] lines;
@@ -63,10 +70,10 @@ public class Text extends Object2d {
 
   static public Text newLabel(GData gdata, JmolFont font, String text,
                               short colix, short bgcolix, int x, int y, int z,
-                              int zSlab, int align, float scalePixelsPerMicron) {
+                              int zSlab, int align, float scalePixelsPerMicron, P3 windowOffsetAngstroms) {
     // for labels and hover
     Text t = new Text();
-    t.set(gdata, font, colix, align, true, scalePixelsPerMicron);
+    t.set(gdata, font, colix, align, true, scalePixelsPerMicron, windowOffsetAngstroms);
     t.setText(text);
     t.bgcolix = bgcolix;
     t.setXYZs(x, y, z, zSlab);
@@ -78,7 +85,7 @@ public class Text extends Object2d {
                       float scalePixelsPerMicron) {
     // for echo
     Text t = new Text();
-    t.set(gdata, font, colix, align, false, scalePixelsPerMicron);
+    t.set(gdata, font, colix, align, false, scalePixelsPerMicron, null);
     t.viewer = viewer;
     t.target = target;
     if (target.equals("error"))
@@ -90,12 +97,13 @@ public class Text extends Object2d {
   }
 
   private void set(GData gdata, JmolFont font, short colix, int align, boolean isLabelOrHover,
-                   float scalePixelsPerMicron) {
+                   float scalePixelsPerMicron, P3 windowOffsetAngstroms) {
     this.scalePixelsPerMicron = scalePixelsPerMicron;
     this.gdata = gdata;
     this.isLabelOrHover = isLabelOrHover;
     this.colix = colix;
     this.align = align;
+    this.windowOffsetAngstroms = windowOffsetAngstroms;
     this.setFont(font, isLabelOrHover);
   }
 
@@ -202,8 +210,11 @@ public class Text extends Object2d {
   }
 
 
-  public void setPosition(int width, int height, float scalePixelsPerMicron, float imageFontScaling,
+  public void setPosition(Viewer viewer, JmolRendererInterface g3d, float scalePixelsPerMicron, float imageFontScaling,
                           boolean isExact, float[] boxXY) {
+    
+    int width = g3d.getRenderWidth();
+    int height = g3d.getRenderHeight();
     if (boxXY == null)
       boxXY = this.boxXY;
     else
@@ -215,12 +226,22 @@ public class Text extends Object2d {
       setFontScale(imageFontScaling);
     if (doFormatText)
       formatText();
-
+    float dx = offsetX * imageFontScaling;
+    float dy = offsetY * imageFontScaling;
     if (isLabelOrHover) {
       boxXY[0] = movableX;
       boxXY[1] = movableY;
-      setBoxXY(boxWidth, boxHeight, offsetX * imageFontScaling, offsetY
-          * imageFontScaling, boxXY, isExact);
+      if (windowOffsetAngstroms != null) {
+        float pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
+        z -= (int) (windowOffsetAngstroms.z * pixelsPerAngstrom);
+        pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
+        dx = windowOffsetAngstroms.x * pixelsPerAngstrom;
+        dy = -windowOffsetAngstroms.y * pixelsPerAngstrom;
+        isExact = (dx != 0 || dy != 0);
+        if (isExact)
+          dy += boxHeight/2;
+      }
+      setBoxXY(boxWidth, boxHeight, dx, dy, boxXY, isExact);
     } else {
       setPos(fontScale);
     }

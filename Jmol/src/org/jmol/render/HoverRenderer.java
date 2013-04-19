@@ -28,7 +28,7 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.shape.Hover;
 import org.jmol.shape.Text;
 
-public class HoverRenderer extends ShapeRenderer {
+public class HoverRenderer extends LabelsRenderer {
   @Override
   protected boolean render() {
     // hover rendering always involves translucent pass
@@ -57,7 +57,7 @@ public class HoverRenderer extends ShapeRenderer {
     } else {
       return true;
     }
-    TextRenderer.render(text, g3d, 0, antialias ? 2 : 1, false, null);
+    TextRenderer.render(text, viewer, g3d, 0, antialias ? 2 : 1, false, null, xy);
     return true;
   }
   

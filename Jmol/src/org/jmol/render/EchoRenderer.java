@@ -34,7 +34,7 @@ import org.jmol.shape.Text;
 import org.jmol.util.C;
 import org.jmol.util.P3i;
 
-public class EchoRenderer extends ShapeRenderer {
+public class EchoRenderer extends LabelsRenderer {
 
   float imageFontScaling;
   Atom ptAtom;
@@ -62,8 +62,8 @@ public class EchoRenderer extends ShapeRenderer {
         int z = viewer.zValueFromPercent(t.movableZPercent);
         t.setZs(z, z);
       }
-      TextRenderer.render(t, g3d, scalePixelsPerMicron, imageFontScaling,
-          false, null);
+      TextRenderer.render(t, viewer, g3d, scalePixelsPerMicron, imageFontScaling,
+          false, null, xy);
       if (C.isColixTranslucent(t.bgcolix) || C.isColixTranslucent(t.colix))
         haveTranslucent = true;
     }

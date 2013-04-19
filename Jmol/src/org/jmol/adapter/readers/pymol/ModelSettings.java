@@ -175,7 +175,7 @@ public class ModelSettings {
       return;
     case JC.SHAPE_LABELS:
       sm.loadShape(id);
-      sm.setShapePropertyBs(id, "labels", info, bsAtoms);
+      sm.setShapePropertyBs(id, "textLabels", info, bsAtoms);
       return;
     case JC.SHAPE_MEASURES:
       if (modelIndex < 0)

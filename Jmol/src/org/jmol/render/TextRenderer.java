@@ -29,16 +29,16 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
 import org.jmol.util.JmolFont;
+import org.jmol.viewer.Viewer;
 
 public class TextRenderer {
   
-  public static void render(Text text, JmolRendererInterface g3d,
+  public static void render(Text text, Viewer viewer, JmolRendererInterface g3d,
                             float scalePixelsPerMicron, float imageFontScaling,
-                            boolean isExact, float[] boxXY) {
+                            boolean isExact, float[] boxXY, float[] xy) {
     if (text == null || text.image == null && text.lines == null)
       return;
-    text.setPosition(g3d.getRenderWidth(), g3d.getRenderHeight(),
-        scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
+    text.setPosition(viewer, g3d, scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
     // draw the box if necessary
     if (text.image == null && text.bgcolix != 0) {
       if (g3d.setColix(text.bgcolix))
@@ -51,7 +51,6 @@ public class TextRenderer {
       // now set x and y positions for text from (new?) box position
       if (text.image == null) {
         // now write properly aligned text
-        float[] xy = new float[3];
         for (int i = 0; i < text.lines.length; i++) {
           text.setXYA(xy, i);
           g3d.drawString(text.lines[i], text.font, (int) xy[0], (int) xy[1],

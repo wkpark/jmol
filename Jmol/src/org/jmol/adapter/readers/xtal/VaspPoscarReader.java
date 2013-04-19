@@ -77,7 +77,7 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
     //   H    C    O    Be   C    H
     String elementLabel[] = getTokensStr(readLine());
     //   6    24    18     6     6    24
-    String atomWeight[] = getTokensStr(readLine());
+    String atomWeight[] = getTokensStr(line);
     for (int i = 0; i < atomWeight.length; i++) {
       nAtom += Integer.parseInt(atomWeight[i]);
     }
@@ -96,9 +96,9 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
   private void readTypeCoord() throws Exception {
     //Read type of coordinates
     // If Selective is there skip a line 
+    readLine();
     if (line.toLowerCase().contains("selective"))
       readLine();
-
     if (line.toLowerCase().contains("cartesian")) {
       setFractionalCoordinates(false);
     } else if (line.toLowerCase().contains("direct")) {

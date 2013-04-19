@@ -36,13 +36,13 @@ import org.jmol.util.P3i;
 
 public class CartoonRenderer extends RocketsRenderer {
 
-  private boolean newRockets = true;
   private boolean renderAsRockets;
   private boolean renderEdges;
   private boolean ladderOnly;
   
   @Override
   protected void renderBioShape(BioShape bioShape) {
+    newRockets = true;
     if (bioShape.wingVectors == null || isCarbohydrate)
       return;
     getScreenControlPoints();

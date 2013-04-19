@@ -41,6 +41,7 @@ public class RocketsRenderer extends BioShapeRenderer {
 
   private final static float MIN_CONE_HEIGHT = 0.05f;
 
+  protected boolean newRockets = false;
   protected boolean renderArrowHeads;
 
   @Override
@@ -52,7 +53,7 @@ public class RocketsRenderer extends BioShapeRenderer {
       bioShape.falsifyMesh();
       renderArrowHeads = val;
     }
-    calcRopeMidPoints(false);    
+    calcRopeMidPoints(newRockets);    
     calcScreenControlPoints(cordMidPoints);
     controlPoints = cordMidPoints;
     render1();
@@ -154,22 +155,23 @@ public class RocketsRenderer extends BioShapeRenderer {
   private P3 screenA = new P3();
   private P3 screenB = new P3();
   private P3 screenC = new P3();
+  private V3 vtemp = new V3();
 
   private void renderPendingRocketSegment(int i, P3 pointStart,
-                                          P3 pointBeforeEnd,
-                                          P3 pointEnd, boolean tEnd) {
+                                          P3 pointBeforeEnd, P3 pointEnd,
+                                          boolean tEnd) {
     viewer.transformPt3f(pointStart, screenA);
     viewer.transformPt3f(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
     int diameter = viewer.scaleToScreen(zMid, mad);
-    if (tEnd && renderArrowHeads) {
-      viewer.transformPt3f(pointBeforeEnd, screenC);
-      if (g3d.setColix(colix)) {
-        if (pointBeforeEnd.distance(pointEnd) <= MIN_CONE_HEIGHT)
-          g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenB,
-              screenC);
-        else
-          renderCone(i, pointBeforeEnd, pointEnd, screenC, screenB);
+    g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenA, screenB);
+    if (g3d.setColix(colix)) {
+      if (tEnd && renderArrowHeads) {
+        vtemp.sub2(pointEnd, pointStart);
+        vtemp.normalize();
+        screenA.scaleAdd2(4.0f, vtemp, pointEnd);
+        viewer.transformPt3f(screenA, screenC);
+        renderCone(i, pointEnd, screenA, screenB, screenC);
       }
       if (startIndexPending == endIndexPending)
         return;
@@ -177,8 +179,27 @@ public class RocketsRenderer extends BioShapeRenderer {
       screenB = screenC;
       screenC = t;
     }
-    if (g3d.setColix(colix))
-      g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenA, screenB);
+  }
+
+  //  rockets --not satisfactory yet
+  /**
+   * @param i
+   *        IGNORED
+   * @param pointBegin
+   *        IGNORED
+   * @param pointEnd
+   *        IGNORED
+   * @param screenPtBegin
+   * @param screenPtEnd
+   * 
+   */
+  protected void renderCone(int i, P3 pointBegin, P3 pointEnd,
+                            P3 screenPtBegin, P3 screenPtEnd) {
+    int coneDiameter = (mad << 1) - (mad >> 1);
+    coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
+        coneDiameter);
+    g3d.fillConeSceen3f(GData.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
+        screenPtEnd);
   }
 
   private void renderPendingSheet(P3 pointStart, P3 pointBeforeEnd,

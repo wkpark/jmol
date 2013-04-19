@@ -481,27 +481,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
     }
   }
 
-  //  rockets --not satisfactory yet
-  /**
-   * @param i
-   *        IGNORED
-   * @param pointBegin
-   *        IGNORED
-   * @param pointEnd
-   *        IGNORED
-   * @param screenPtBegin
-   * @param screenPtEnd
-   * 
-   */
-  protected void renderCone(int i, P3 pointBegin, P3 pointEnd,
-                            P3 screenPtBegin, P3 screenPtEnd) {
-    int coneDiameter = mad + (mad >> 2);
-    coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
-        coneDiameter);
-    g3d.fillConeSceen3f(GData.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
-        screenPtEnd);
-  }
-
   //////////////////////////// mesh 
 
   // Bob Hanson 11/04/2006 - mesh rendering of secondary structure.

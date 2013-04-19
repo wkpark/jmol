@@ -159,6 +159,7 @@ public class PyMOLReader extends PdbReader {
   private float sphereTranslucency;
   private float stickTranslucency;
   private boolean cartoonLadderMode;
+  private boolean  cartoonRockets;
   private boolean solventAsSpheres;
   private Map<String, Object> movie;
   private boolean isMovie;
@@ -726,7 +727,7 @@ public class PyMOLReader extends PdbReader {
   private Text newTextLabel(String label, P3 windowOffset, short colix, float fontSize) {
     Text t = Text.newLabel(viewer.getGraphicsData(), null, label, colix, (short) 0, 0, 0, 0, 0, 0, 0, 
         windowOffset);
-    byte fid = viewer.getGraphicsData().getFontFid(fontSize);
+    byte fid = viewer.getGraphicsData().getFontFid(fontSize == 0 ? 12 : fontSize);
     t.setFontFromFid(fid);
     return t;
   }
@@ -759,6 +760,7 @@ public class PyMOLReader extends PdbReader {
     stickTranslucency = getFloatSetting(PyMOL.stick_transparency);
     sphereTranslucency = getFloatSetting(PyMOL.sphere_transparency);
     cartoonLadderMode = getBooleanSetting(PyMOL.cartoon_ladder_mode);
+    cartoonRockets = getBooleanSetting(PyMOL.cartoon_cylindrical_helices);
     solventAsSpheres = getBooleanSetting(PyMOL.sphere_solvent);
     labelPosition = getPointSetting(PyMOL.label_position);
     labelColor = getFloatSetting(PyMOL.label_color);
@@ -1237,7 +1239,10 @@ public class PyMOLReader extends PdbReader {
       modelSettings.addLast(ss);
       break;
     case PyMOL.REP_CARTOON:
-      setCartoon("H", PyMOL.cartoon_oval_length, 2);
+      if (cartoonRockets)
+        setCartoon("H", PyMOL.cartoon_helix_radius, 2);
+      else
+        setCartoon("H", PyMOL.cartoon_oval_length, 2);
       setCartoon("S", PyMOL.cartoon_rect_length, 2);
       setCartoon("L", PyMOL.cartoon_loop_radius, 2);
       setCartoon(" ", PyMOL.cartoon_loop_radius, 2);
@@ -1544,8 +1549,9 @@ public class PyMOLReader extends PdbReader {
 
     sb.append(";set traceAlpha "
         + getBooleanSetting(PyMOL.cartoon_round_helices));
-    sb.append(";set cartoonRockets "
-        + getBooleanSetting(PyMOL.cartoon_cylindrical_helices));
+    sb.append(";set cartoonRockets " + cartoonRockets);
+    if (cartoonRockets)
+      sb.append(";set rocketBarrels " + cartoonRockets);
     sb.append(";set cartoonLadders " + haveNucleicLadder);
     sb.append(";set ribbonBorder "
         + getBooleanSetting(PyMOL.cartoon_fancy_helices));

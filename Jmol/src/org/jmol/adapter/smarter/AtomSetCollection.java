@@ -330,6 +330,8 @@ public class AtomSetCollection {
   }
   
   void freeze(boolean reverseModels) {
+    if (atomSetCount == 1 && collectionName == null)
+      collectionName = (String) getAtomSetAuxiliaryInfoValue(0, "name");
     //Logger.debug("AtomSetCollection.freeze; atomCount = " + atomCount);
     if (reverseModels)
       reverseAtomSets();
@@ -449,7 +451,7 @@ public class AtomSetCollection {
   }
 
   void finish(ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {
-    if (reader != null)
+    if (reader != null) 
       reader.finalizeModelSet(modelSet, baseModelIndex, baseAtomIndex);
     atoms = null;
     atomSetAtomCounts = new int[16];

@@ -123,7 +123,7 @@ public class LabelsRenderer extends ShapeRenderer {
         if (text.font == null)
           text.setFontFromFid(fid);
         text.setXYZs(atom.screenX, atom.screenY, zBox, zSlab);
-        if (text.windowOffsetAngstroms == null) { 
+        if (text.pymolOffset == null) { 
           text.setColix(colix);
           text.setBgColix(bgcolix);          
         } else {
@@ -162,7 +162,7 @@ public class LabelsRenderer extends ShapeRenderer {
       }
       if (atom != null) {
         text.setOffset(offset);
-        if (textAlign != Object2d.ALIGN_NONE && text.windowOffsetAngstroms == null)
+        if (textAlign != Object2d.ALIGN_NONE && text.pymolOffset == null)
           text.setAlignment(textAlign);
         text.setPointer(pointer);
         TextRenderer.render(text, viewer, g3d, scalePixelsPerMicron, imageFontScaling, isExact, boxXY, xy);

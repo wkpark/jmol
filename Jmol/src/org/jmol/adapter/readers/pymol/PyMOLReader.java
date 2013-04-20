@@ -50,6 +50,7 @@ import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Dimension;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
@@ -92,7 +93,6 @@ public class PyMOLReader extends PdbReader {
 
   private JmolList<Object> settings;
   private Map<Integer,JmolList<Object>> localSettings;
-  private int settingCount;
   private int atomCount0;
   private int atomCount;
   private int strucNo;
@@ -161,6 +161,8 @@ public class PyMOLReader extends PdbReader {
   private boolean cartoonLadderMode;
   private boolean  cartoonRockets;
   private boolean solventAsSpheres;
+  private int labelFontId;
+  
   private Map<String, Object> movie;
   private boolean isMovie;
 
@@ -172,6 +174,7 @@ public class PyMOLReader extends PdbReader {
   private int pymolFrame;
   private boolean allStates;
   private int totalAtomCount;
+  private int pymolVersion;
   
   @SuppressWarnings("unchecked")
   private void process(Map<String, Object> map) {
@@ -183,8 +186,6 @@ public class PyMOLReader extends PdbReader {
       if (name.equals("names")) {
         for (int i = 1; i < names.size(); i++)
           Logger.info("  " + getString(getList(names, i), 0));
-      } else if (name.equals("version")) {
-        appendLoadNote("PyMOL version: " + map.get("version").toString());
       }
     }
     if (logging) {
@@ -211,8 +212,10 @@ public class PyMOLReader extends PdbReader {
       }
     }
     addColors(getMapList(map, "colors"));
-    settings = getMapList(map, "settings");
-    settingCount = settings.size();
+    settings = getMapList(map, "settings"); 
+    pymolVersion = ((Integer) map.get("version")).intValue();
+    appendLoadNote("PyMOL version: " + pymolVersion);
+    setVersionSettings();
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("settings", settings);
     setUniqueSettings(getMapList(map, "unique_settings"));
     allStates = getBooleanSetting(PyMOL.all_states);
@@ -271,6 +274,38 @@ public class PyMOLReader extends PdbReader {
 
     setDefinitions();
     setRendering(getMapList(map, "view"));
+  }
+
+  private void setVersionSettings() {
+    if (pymolVersion < 100) {
+      addSetting(PyMOL.movie_fps, 2, Integer.valueOf(0));
+      addSetting(PyMOL.label_digits, 2, Integer.valueOf(2));
+      addSetting(PyMOL.label_position, 4, new double[] { 1, 1, 0 });
+      if (pymolVersion < 99) {
+        addSetting(PyMOL.cartoon_ladder_mode, 2, Integer.valueOf(0));
+        addSetting(PyMOL.cartoon_tube_cap, 2, Integer.valueOf(0));
+        addSetting(PyMOL.cartoon_nucleic_acid_mode, 2, Integer.valueOf(1));
+      }
+    }
+  }
+
+  private void addSetting(int key, int type, Object val) {
+    int settingCount = settings.size();
+    if (settingCount <= key)
+    for (int i = key + 1; --i >= settingCount;)
+      settings.addLast(null);
+    if (type == 4) {
+      double[] d = (double[]) val;
+      JmolList<Object> list;
+      val = list = new JmolList<Object>();
+      for (int i = 0; i < 3; i++)
+        list.addLast(Double.valueOf(d[i]));
+    }    
+    JmolList<Object> setting = new JmolList<Object>();
+    setting.addLast(Integer.valueOf(key));
+    setting.addLast(Integer.valueOf(type));
+    setting.addLast(val);    
+    settings.set(key, setting);
   }
 
   private void setDefinitions() {
@@ -348,32 +383,39 @@ public class PyMOLReader extends PdbReader {
   }
 
   private float getFloatSetting(int i) {
-    if (i >= settingCount)
-      return 0;
-    JmolList<Object> setting = null;
-    if (localSettings != null) {
-      setting = localSettings.get(Integer.valueOf(i));
+    float v = 0;
+    try {
+      JmolList<Object> setting = null;
+      if (localSettings != null)
+        setting = localSettings.get(Integer.valueOf(i));
+      if (setting == null)
+        setting = getList(settings, i);
+      if (settings == null)
+        return 0;
+      v = ((Number) setting.get(2)).floatValue();
+      Logger.info("Pymol setting " + i + " = " + v);
+    } catch (Exception e) {
+      System.out.println("PyMOL version " + pymolVersion
+          + " does not have setting " + i);
     }
-    if (setting == null)
-      setting = getList(settings, i);
-    float v = ((Number) setting.get(2)).floatValue();
-    Logger.info("Pymol setting " + i + " = " + v);
     return v;
   }
 
   @SuppressWarnings("unchecked")
   private P3 getPointSetting(int i) {
     P3 p = new P3();
-    if (i >= settingCount)
-      return p;
-    JmolList<Object> setting = null;
-    if (localSettings != null) {
-      setting = localSettings.get(Integer.valueOf(i));
+    try {
+      JmolList<Object> setting = null;
+      if (localSettings != null)
+        setting = localSettings.get(Integer.valueOf(i));
+      if (setting == null)
+        setting = getList(settings, i);
+      getPoint((JmolList) setting.get(2), 0, p);
+      Logger.info("Pymol setting " + i + " = " + p);
+    } catch (Exception e) {
+      System.out.println("PyMOL version " + pymolVersion
+          + " does not have setting " + i);
     }
-    if (setting == null)
-      setting = getList(settings, i);
-    getPoint((JmolList) setting.get(2), 0, p);
-    Logger.info("Pymol setting " + i + " = " + p);
     return p;
   }
 
@@ -667,6 +709,7 @@ public class PyMOLReader extends PdbReader {
         labels.addLast(newTextLabel(atom.label, 
             getUniquePoint(atom.uniqueID, PyMOL.label_position, labelPosition), 
             getColix(icolor, 0),
+            (int) getUniqueFloat(atom.uniqueID, PyMOL.label_font_id, labelFontId),
             getUniqueFloat(atom.uniqueID, PyMOL.label_size, labelSize)));
       }
     }
@@ -724,11 +767,72 @@ public class PyMOLReader extends PdbReader {
     }
   }
   
-  private Text newTextLabel(String label, P3 windowOffset, short colix, float fontSize) {
-    Text t = Text.newLabel(viewer.getGraphicsData(), null, label, colix, (short) 0, 0, 0, 0, 0, 0, 0, 
-        windowOffset);
-    byte fid = viewer.getGraphicsData().getFontFid(fontSize == 0 ? 12 : fontSize);
-    t.setFontFromFid(fid);
+  private Text newTextLabel(String label, P3 windowOffset, short colix,
+                            int fontID, float fontSize) {
+    // 0 GLUT 8x13 
+    // 1 GLUT 9x15 
+    // 2 GLUT Helvetica10 
+    // 3 GLUT Helvetica12 
+    // 4 GLUT Helvetica18 
+    // 5 DejaVuSans
+    // 6 DejaVuSans_Oblique
+    // 7 DejaVuSans_Bold
+    // 8 DejaVuSans_BoldOblique
+    // 9 DejaVuSerif
+    // 10 DejaVuSerif_Bold
+    // 11 DejaVuSansMono
+    // 12 DejaVuSansMono_Oblique
+    // 13 DejaVuSansMono_Bold
+    // 14 DejaVuSansMono_BoldOblique
+    // 15 GenR102
+    // 16 GenI102
+    // 17 DejaVuSerif_Oblique
+    // 18 DejaVuSerif_BoldOblique
+
+    String face;
+    switch (fontID) {
+    default:
+      // Jmol doesn't support sansserif mono -- just using sans here
+      face = "sans";
+      break;
+    case 0:
+    case 1:
+      face = "Monospaced";
+      break;
+    case 9:
+    case 10:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+      face = "Serif";
+      break;
+    }
+    String style;
+    switch (fontID) {
+    default:
+      style = "Plain";
+      break;
+    case 6:
+    case 12:
+    case 16:
+    case 17:
+      style = "Italic";
+      break;
+    case 7:
+    case 10:
+    case 13:
+      style = "Bold";
+      break;
+    case 8:
+    case 14:
+    case 18:
+      style = "BoldItalic";
+      break;
+    }
+    JmolFont font = viewer.getFont3D(face, style, fontSize == 0 ? 12 : fontSize);
+    Text t = Text.newLabel(viewer.getGraphicsData(), font, label, colix,
+        (short) 0, 0, 0, 0, 0, 0, 0, windowOffset);
     return t;
   }
 
@@ -765,6 +869,7 @@ public class PyMOLReader extends PdbReader {
     labelPosition = getPointSetting(PyMOL.label_position);
     labelColor = getFloatSetting(PyMOL.label_color);
     labelSize = getFloatSetting(PyMOL.label_size);
+    labelFontId = (int) getFloatSetting(PyMOL.label_font_id);
   }
 
   @SuppressWarnings("unchecked")

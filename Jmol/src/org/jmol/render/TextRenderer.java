@@ -33,36 +33,43 @@ import org.jmol.viewer.Viewer;
 
 public class TextRenderer {
   
-  public static void render(Text text, Viewer viewer, JmolRendererInterface g3d,
+  public static void render(Text text, Viewer viewer,
+                            JmolRendererInterface g3d,
                             float scalePixelsPerMicron, float imageFontScaling,
                             boolean isExact, float[] boxXY, float[] xy) {
     if (text == null || text.image == null && text.lines == null)
       return;
-    text.setPosition(viewer, g3d, scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
-    // draw the box if necessary
+    boolean showText = g3d.setColix(text.colix); 
+    if (!showText
+        && (text.image == null && (text.bgcolix == 0 || !g3d
+            .setColix(text.bgcolix))))
+      return;
+    text.setPosition(viewer, g3d, scalePixelsPerMicron, imageFontScaling,
+        isExact, boxXY);
+    // draw the box if necessary; colix has been set
     if (text.image == null && text.bgcolix != 0) {
-      if (g3d.setColix(text.bgcolix))
-        showBox(g3d, text.colix, (int) text.boxX, (int) text.boxY, text.z + 2,
-            text.zSlab, (int) text.boxWidth, (int) text.boxHeight,
-            text.fontScale, text.isLabelOrHover);
+      if (showText)
+        g3d.setColix(text.bgcolix);
+      showBox(g3d, text.colix, (int) text.boxX, (int) text.boxY, text.z + 2,
+          text.zSlab, (int) text.boxWidth, (int) text.boxHeight,
+          text.fontScale, text.isLabelOrHover);
+      if (!showText)
+        return;
     }
-    if (g3d.setColix(text.colix)) {
-      // text colix will be opaque, but we need to render it in translucent pass 
-      // now set x and y positions for text from (new?) box position
-      if (text.image == null) {
-        // now write properly aligned text
-        for (int i = 0; i < text.lines.length; i++) {
-          text.setXYA(xy, i);
-          g3d.drawString(text.lines[i], text.font, (int) xy[0], (int) xy[1],
-              text.z, text.zSlab, text.bgcolix);
-        }
-      } else {
-        g3d.drawImage(text.image, (int) text.boxX, (int) text.boxY, text.z,
-                text.zSlab, text.bgcolix, (int) text.boxWidth,
-                (int) text.boxHeight);
+    // text colix will be opaque, but we need to render it in translucent pass 
+    // now set x and y positions for text from (new?) box position
+    if (text.image == null) {
+      // now write properly aligned text
+      for (int i = 0; i < text.lines.length; i++) {
+        text.setXYA(xy, i);
+        g3d.drawString(text.lines[i], text.font, (int) xy[0], (int) xy[1],
+            text.z, text.zSlab, text.bgcolix);
       }
-      drawPointer(text, g3d);
+    } else {
+      g3d.drawImage(text.image, (int) text.boxX, (int) text.boxY, text.z,
+          text.zSlab, text.bgcolix, (int) text.boxWidth, (int) text.boxHeight);
     }
+    drawPointer(text, g3d);
     return;
   }
 

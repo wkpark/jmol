@@ -103,7 +103,7 @@ public class Text extends Object2d {
     this.isLabelOrHover = isLabelOrHover;
     this.colix = colix;
     this.align = align;
-    this.windowOffsetAngstroms = windowOffsetAngstroms;
+    this.pymolOffset = windowOffsetAngstroms;
     this.setFont(font, isLabelOrHover);
   }
 
@@ -228,18 +228,36 @@ public class Text extends Object2d {
       formatText();
     float dx = offsetX * imageFontScaling;
     float dy = offsetY * imageFontScaling;
+    xAdj = (fontScale >= 2 ? 8 : 4);
+    yAdj = ascent - lineHeight + xAdj;
     if (isLabelOrHover) {
       boxXY[0] = movableX;
       boxXY[1] = movableY;
-      if (windowOffsetAngstroms != null) {
+      if (pymolOffset != null) {
         float pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
-        z -= (int) (windowOffsetAngstroms.z * pixelsPerAngstrom);
+        z -= (int) (pymolOffset.z * pixelsPerAngstrom);
         pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
-        dx = windowOffsetAngstroms.x * pixelsPerAngstrom;
-        dy = -windowOffsetAngstroms.y * pixelsPerAngstrom;
-        isExact = (dx != 0 || dy != 0);
-        if (isExact)
-          dy += boxHeight/2;
+        boolean isOld = (pymolOffset.x >= -1 && pymolOffset.x <= 1 && pymolOffset.y >= -1 && pymolOffset.y <= 1);
+        if (isOld) {
+          // PyMOL 0.98
+          // 1: left
+          // 0: center
+          // -1: right
+          dx = textWidth * (pymolOffset.x - 1) / 2;
+          dy = -textHeight * ((pymolOffset.y - 1) / 2);
+          dy += descent;
+        } else {
+          dx = pymolOffset.x * pixelsPerAngstrom;
+          dy = -pymolOffset.y * pixelsPerAngstrom;
+          // empirical fudge here; probably a bit off.
+          dx += textHeight / 2;
+          dy += textHeight / 2;
+        }
+        xAdj = (fontScale >= 2 ? 8 : 4);
+        yAdj = 0;
+        boxXY[0] = movableX - xAdj;
+        boxXY[1] = movableY - yAdj;
+        isExact = true;
       }
       setBoxXY(boxWidth, boxHeight, dx, dy, boxXY, isExact);
     } else {
@@ -448,22 +466,23 @@ public class Text extends Object2d {
     return w;
   }
 
+  private float xAdj, yAdj;
+
   public void setXYA(float[] xy, int i) {
     if (i == 0) {
-      int adj = (fontScale >= 2 ? 8 : 4);
       xy[2] = boxX;
       switch (align) {
       case ALIGN_CENTER:
         xy[2] += boxWidth / 2;
         break;
       case ALIGN_RIGHT:
-        xy[2] += boxWidth - adj;
+        xy[2] += boxWidth - xAdj;
         break;
       default:
-        xy[2] += adj;
+        xy[2] += xAdj;
       }
       xy[0] = xy[2];
-      xy[1] = boxY + ascent - lineHeight + adj;
+      xy[1] = boxY + yAdj;
     }
     switch (align) {
     case ALIGN_CENTER:

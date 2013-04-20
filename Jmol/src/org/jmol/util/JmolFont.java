@@ -129,11 +129,9 @@ final public class JmolFont {
   {"Plain", "Bold", "Italic", "BoldItalic"};
   
   public static int getFontFaceID(String fontface) {
-    if ("Monospaced".equalsIgnoreCase(fontface))
-      return FONT_FACE_MONO;
-    if ("Serif".equalsIgnoreCase(fontface))
-      return FONT_FACE_SERIF;
-    return FONT_FACE_SANS;
+    return ("Monospaced".equalsIgnoreCase(fontface) ? FONT_FACE_MONO 
+        : "Serif".equalsIgnoreCase(fontface) ? FONT_FACE_SERIF 
+        : FONT_FACE_SANS);
   }
 
   public static int getFontStyleID(String fontstyle) {

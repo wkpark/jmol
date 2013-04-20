@@ -252,6 +252,8 @@ public class CastepReader extends AtomSetCollectionReader {
         readOutputCharges();
       } else if (doProcessLines && line.contains("Born Effective Charges")) {
         readOutputBornChargeTensors();
+      } else if (line.contains("Final energy")) {
+        readEnergy();
       }
       return true;
     }
@@ -310,8 +312,19 @@ public class CastepReader extends AtomSetCollectionReader {
       setAtomCoordXYZ(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
           parseFloatStr(tokens[5]));
     }
+    
+    
   }
 
+  private void readEnergy() throws Exception {
+    tokens = getTokens();
+    Double energy = Double.valueOf(Double.parseDouble(tokens[4]));
+    
+    atomSetCollection.setAtomSetName("Energy = " + energy + " eV");
+    atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
+    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
+  }
+  
   private void readPhononTrajectories() throws Exception {
     isTrajectory = (desiredVibrationNumber <= 0);
     doApplySymmetry = true;

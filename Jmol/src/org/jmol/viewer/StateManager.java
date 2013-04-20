@@ -752,7 +752,7 @@ public class StateManager {
       setF("cameraDepth", cameraDepth);
       setB("cartoonBaseEdges", cartoonBaseEdges);
       setB("cartoonFancy", cartoonFancy);
-      setB("cartoonLadder", cartoonLadder);
+      setB("cartoonLadders", cartoonLadders);
       setB("cartoonRockets", cartoonRockets);
       setB("chainCaseSensitive", chainCaseSensitive);
       setB("celShading", celShading);
@@ -1063,7 +1063,7 @@ public class StateManager {
     boolean cartoonBaseEdges = false;
     boolean cartoonRockets = false;
     boolean cartoonFancy = false;
-    boolean cartoonLadder = false;
+    boolean cartoonLadders = false;
     boolean chainCaseSensitive = false;
     int hermiteLevel = 0;
     boolean highResolutionFlag = false;

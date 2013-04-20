@@ -13522,8 +13522,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private boolean setLabel(String str) throws ScriptException {
     sm.loadShape(JC.SHAPE_LABELS);
     Object propertyValue = null;
-    setShapeProperty(JC.SHAPE_LABELS, "setDefaults", viewer
-        .getNoneSelected());
+    setShapeProperty(JC.SHAPE_LABELS, "setDefaults", viewer.getNoneSelected());
     while (true) {
       if (str.equals("scalereference")) {
         float scaleAngstromsPerPixel = floatParameter(2);
@@ -13535,9 +13534,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       }
       if (str.equals("offset") || str.equals("offsetexact")) {
-        int xOffset = intParameterRange(2, -127, 127);
-        int yOffset = intParameterRange(3, -127, 127);
-        propertyValue = Integer.valueOf(Object2d.getOffset(xOffset, yOffset));
+        if (isPoint3f(2)) {
+          // PyMOL offsets -- {x, y, z} in angstroms
+          propertyValue = getPoint3f(2, false);
+        } else {
+          int xOffset = intParameterRange(2, -127, 127);
+          int yOffset = intParameterRange(3, -127, 127);
+          propertyValue = Integer.valueOf(Object2d.getOffset(xOffset, yOffset));
+        }
         break;
       }
       if (str.equals("alignment")) {

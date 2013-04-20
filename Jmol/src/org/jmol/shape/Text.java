@@ -70,10 +70,10 @@ public class Text extends Object2d {
 
   static public Text newLabel(GData gdata, JmolFont font, String text,
                               short colix, short bgcolix, int x, int y, int z,
-                              int zSlab, int align, float scalePixelsPerMicron, P3 windowOffsetAngstroms) {
+                              int zSlab, int align, float scalePixelsPerMicron, P3 pymolOffsetAngstroms) {
     // for labels and hover
     Text t = new Text();
-    t.set(gdata, font, colix, align, true, scalePixelsPerMicron, windowOffsetAngstroms);
+    t.set(gdata, font, colix, align, true, scalePixelsPerMicron, pymolOffsetAngstroms);
     t.setText(text);
     t.bgcolix = bgcolix;
     t.setXYZs(x, y, z, zSlab);
@@ -97,13 +97,13 @@ public class Text extends Object2d {
   }
 
   private void set(GData gdata, JmolFont font, short colix, int align, boolean isLabelOrHover,
-                   float scalePixelsPerMicron, P3 windowOffsetAngstroms) {
+                   float scalePixelsPerMicron, P3 pymolOffsetAngstroms) {
     this.scalePixelsPerMicron = scalePixelsPerMicron;
     this.gdata = gdata;
     this.isLabelOrHover = isLabelOrHover;
     this.colix = colix;
     this.align = align;
-    this.pymolOffset = windowOffsetAngstroms;
+    this.pymolOffset = pymolOffsetAngstroms;
     this.setFont(font, isLabelOrHover);
   }
 
@@ -492,6 +492,15 @@ public class Text extends Object2d {
       xy[0] = xy[2] - widths[i];
     }
     xy[1] += lineHeight;
+  }
+
+  public String getCommand() {
+    SB cmd = new SB();
+    cmd.append("label ").append(Escape.eS(textUnformatted));
+    if (pymolOffset == null)
+      return cmd.toString();
+    cmd.append(";set labelOffset ").append(Escape.eP(pymolOffset));
+    return cmd.toString();
   }
 
 }

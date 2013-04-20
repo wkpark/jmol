@@ -1160,8 +1160,11 @@ public class StateCreator implements JmolStateCreator {
       Labels l = (Labels) shape;
       for (int i = l.bsSizeSet.nextSetBit(0); i >= 0; i = l.bsSizeSet
           .nextSetBit(i + 1)) {
-        BSUtil.setMapBitSet(temp, i, i, "label "
-            + Escape.eS(l.formats[i]));
+        Text t = l.getLabel(i);
+        String cmd = (t == null ? null : t.getCommand());
+        if (cmd == null)
+          cmd = "label " + Escape.eS(l.formats[i]);
+        BSUtil.setMapBitSet(temp, i, i, cmd);
         if (l.bsColixSet != null && l.bsColixSet.get(i))
           BSUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand("label",
               l.paletteIDs[i], l.colixes[i], l.translucentAllowed));
@@ -1175,12 +1178,7 @@ public class StateCreator implements JmolStateCreator {
               + (10000f / sppm));
         if (l.offsets != null && l.offsets.length > i) {
           int offsetFull = l.offsets[i];
-          BSUtil
-              .setMapBitSet(
-                  temp2,
-                  i,
-                  i,
-                  "set "
+          BSUtil.setMapBitSet(temp2, i, i, "set "
                       + ((offsetFull & Labels.EXACT_OFFSET_FLAG) == Labels.EXACT_OFFSET_FLAG ? "labelOffsetExact "
                           : "labelOffset ")
                       + Object2d.getXOffset(offsetFull >> Labels.FLAG_OFFSET)
@@ -1199,6 +1197,7 @@ public class StateCreator implements JmolStateCreator {
           if (align.length() > 0)
             BSUtil.setMapBitSet(temp3, i, i, "set labelAlignment " + align);
         }
+        
         if (l.mads != null && l.mads[i] < 0)
           BSUtil.setMapBitSet(temp2, i, i, "set toggleLabel");
         if (l.bsFontSet != null && l.bsFontSet.get(i))

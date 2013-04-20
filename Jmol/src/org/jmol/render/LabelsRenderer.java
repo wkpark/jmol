@@ -77,12 +77,8 @@ public class LabelsRenderer extends ShapeRenderer {
       if (label == null || label.length() == 0 || labels.mads != null
           && labels.mads[i] < 0)
         continue;
-      short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
-      colix = C.getColixInherited(colix, atom.getColix());
-      if (C.isColixTranslucent(colix))
-        colix = C.getColixTranslucent3(colix, false, 0);
-      short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0
-          : bgcolixes[i];
+      short colix = labels.getColix2(i, atom, false);
+      short bgcolix = labels.getColix2(i, atom, true);
       if (bgcolix == 0 && g3d.getColorArgbOrGray(colix) == backgroundColor)
         colix = backgroundColixContrast;
       byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId

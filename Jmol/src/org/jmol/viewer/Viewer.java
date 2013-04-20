@@ -5664,7 +5664,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case T.cartoonsfancy:
       return global.cartoonFancy;
     case T.cartoonladders:
-      return global.cartoonLadder;
+      return global.cartoonLadders;
     case T.cartoonrockets:
       return global.cartoonRockets;
     case T.chaincasesensitive:
@@ -6478,7 +6478,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     switch (tok) {
     case T.cartoonladders:
       // 13.1.15
-      global.cartoonLadder = value;
+      global.cartoonLadders = value;
       break;
     case T.twistedsheets:
       boolean b = global.twistedSheets;

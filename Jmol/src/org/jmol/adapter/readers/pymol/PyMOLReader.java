@@ -261,6 +261,7 @@ public class PyMOLReader extends PdbReader {
     }
     totalAtomCount = getTotalAtomCount(names);
     Logger.info("PyMOL total atom count = " + totalAtomCount);
+    getPoint((JmolList<Object>) getList(settings, PyMOL.label_position).get(2), 0, labelPosition0);
     selections = new JmolList<JmolList<Object>>();    
     for (int i = 1; i < names.size(); i++)
       processBranch(getList(names, i));
@@ -401,24 +402,6 @@ public class PyMOLReader extends PdbReader {
     return v;
   }
 
-  @SuppressWarnings("unchecked")
-  private P3 getPointSetting(int i) {
-    P3 p = new P3();
-    try {
-      JmolList<Object> setting = null;
-      if (localSettings != null)
-        setting = localSettings.get(Integer.valueOf(i));
-      if (setting == null)
-        setting = getList(settings, i);
-      getPoint((JmolList) setting.get(2), 0, p);
-      Logger.info("Pymol setting " + i + " = " + p);
-    } catch (Exception e) {
-      System.out.println("PyMOL version " + pymolVersion
-          + " does not have setting " + i);
-    }
-    return p;
-  }
-
   private String branchName;
   private BS bsModelAtoms = BS.newN(1000);
   private int branchID;
@@ -428,6 +411,7 @@ public class PyMOLReader extends PdbReader {
   private Hashtable<Integer, JmolList<Object>> uniqueSettings;
   private P3 labelPosition;
   private float labelColor, labelSize;
+  private P3 labelPosition0 = new P3();
   
   private void processBranch(JmolList<Object> branch) {
     int type = getBranchType(branch);
@@ -706,8 +690,12 @@ public class PyMOLReader extends PdbReader {
         int icolor = (int) getUniqueFloat(atom.uniqueID, PyMOL.label_color, labelColor);
         if (icolor < 0)
           icolor = atomColor;
-        labels.addLast(newTextLabel(atom.label, 
-            getUniquePoint(atom.uniqueID, PyMOL.label_position, labelPosition), 
+        P3 offset = getUniquePoint(atom.uniqueID, PyMOL.label_position, null);
+        if (offset == null)
+          offset = labelPosition;
+        else 
+          offset.add(labelPosition);
+        labels.addLast(newTextLabel(atom.label, offset, 
             getColix(icolor, 0),
             (int) getUniqueFloat(atom.uniqueID, PyMOL.label_font_id, labelFontId),
             getUniqueFloat(atom.uniqueID, PyMOL.label_size, labelSize)));
@@ -767,7 +755,7 @@ public class PyMOLReader extends PdbReader {
     }
   }
   
-  private Text newTextLabel(String label, P3 windowOffset, short colix,
+  private Text newTextLabel(String label, P3 labelOffset, short colix,
                             int fontID, float fontSize) {
     // 0 GLUT 8x13 
     // 1 GLUT 9x15 
@@ -837,7 +825,7 @@ public class PyMOLReader extends PdbReader {
     }
     JmolFont font = viewer.getFont3D(face, style, fontSize == 0 ? 12 : fontSize * factor);
     Text t = Text.newLabel(viewer.getGraphicsData(), font, label, colix,
-        (short) 0, 0, 0, 0, 0, 0, 0, windowOffset);
+        (short) 0, 0, 0, 0, 0, 0, 0, labelOffset);
     return t;
   }
 
@@ -871,7 +859,14 @@ public class PyMOLReader extends PdbReader {
     cartoonLadderMode = getBooleanSetting(PyMOL.cartoon_ladder_mode);
     cartoonRockets = getBooleanSetting(PyMOL.cartoon_cylindrical_helices);
     solventAsSpheres = getBooleanSetting(PyMOL.sphere_solvent);
-    labelPosition = getPointSetting(PyMOL.label_position);
+    labelPosition = new P3();
+    try {
+      JmolList<Object> setting = localSettings.get(Integer.valueOf(PyMOL.label_position));      
+      getPoint((JmolList) setting.get(2), 0, labelPosition);
+    } catch (Exception e) {
+      // no problem.
+    }
+    labelPosition.add(labelPosition0);
     labelColor = getFloatSetting(PyMOL.label_color);
     labelSize = getFloatSetting(PyMOL.label_size);
     labelFontId = (int) getFloatSetting(PyMOL.label_font_id);

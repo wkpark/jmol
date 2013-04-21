@@ -235,7 +235,7 @@ public class Text extends Object2d {
       boxXY[1] = movableY;
       if (pymolOffset != null) {
         float pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
-        z -= (int) ((pymolOffset.z + 1.75f)* pixelsPerAngstrom);
+        z -= (int) (pymolOffset.z* pixelsPerAngstrom);
         pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
         boolean isOld = (pymolOffset.x >= -1 && pymolOffset.x <= 1 && pymolOffset.y >= -1 && pymolOffset.y <= 1);
         if (isOld) {

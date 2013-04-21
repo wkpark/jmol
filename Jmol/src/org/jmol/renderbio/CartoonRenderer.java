@@ -207,7 +207,7 @@ public class CartoonRenderer extends RocketsRenderer {
     }
     mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
     g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL,
-                     viewer.scaleToScreen(backboneScreen.z,
+                     (int) viewer.scaleToScreen(backboneScreen.z,
                                           mad),
                      backboneScreen, stepScreen, ptConnect, stepPt, mad / 2000f);
     if (ladderOnly)

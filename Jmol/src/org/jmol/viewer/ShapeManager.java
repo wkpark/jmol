@@ -445,7 +445,7 @@ public class ShapeManager {
       atom.screenX = screen.x;
       atom.screenY = screen.y;
       atom.screenZ = screen.z;
-      atom.screenDiameter = viewer.scaleToScreen(screen.z, Math
+      atom.screenDiameter = (short) viewer.scaleToScreen(screen.z, Math
           .abs(atom.madAtom));
     }
     if (viewer.getSlabEnabled()) {

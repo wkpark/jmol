@@ -230,7 +230,7 @@ public class _TachyonExporter extends __RayTracerExporter {
   protected void fillConicalCylinder(P3 screenA, P3 screenB,
                                      int madBond, short colix, byte endcaps) {
     // conic sections not implemented in Tachyon
-    int diameter = viewer.scaleToScreen((int) ((screenA.z + screenB.z)/2f), madBond);
+    int diameter = (int) viewer.scaleToScreen((int) ((screenA.z + screenB.z)/2f), madBond);
     fillCylinderScreenMad(colix, endcaps, diameter, screenA, screenB);
    }
 

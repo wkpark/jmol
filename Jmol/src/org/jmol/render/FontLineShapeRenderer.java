@@ -77,7 +77,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     default:
       if (isMad) {
         // mad
-        diameter = viewer.scaleToScreen(z, madOrPixels); 
+        diameter = (int) viewer.scaleToScreen(z, madOrPixels); 
       } else {
         // pixels, and that's what we want
         if (g3d.isAntialiased())

@@ -790,6 +790,7 @@ public class PyMOLReader extends PdbReader {
     // 18 DejaVuSerif_BoldOblique
 
     String face;
+    float factor = 1.1f;
     switch (fontID) {
     default:
       // Jmol doesn't support sansserif mono -- just using sans here
@@ -830,7 +831,7 @@ public class PyMOLReader extends PdbReader {
       style = "BoldItalic";
       break;
     }
-    JmolFont font = viewer.getFont3D(face, style, fontSize == 0 ? 12 : fontSize);
+    JmolFont font = viewer.getFont3D(face, style, fontSize == 0 ? 12 : fontSize * factor);
     Text t = Text.newLabel(viewer.getGraphicsData(), font, label, colix,
         (short) 0, 0, 0, 0, 0, 0, 0, windowOffset);
     return t;

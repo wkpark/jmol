@@ -159,14 +159,14 @@ public class AminoMonomer extends AlphaMonomer {
       marBegin = 1200;
     if (nitrogen.screenZ == 0)
       return;
-    int radiusBegin = scaleToScreen(nitrogen.screenZ, marBegin);
+    int radiusBegin = (int) scaleToScreen(nitrogen.screenZ, marBegin);
     if (radiusBegin < 4)
       radiusBegin = 4;
     Atom ccarbon = getCarbonylCarbonAtom();
     short marEnd = (short) (madEnd / 2);
     if (marEnd < 1200)
       marEnd = 1200;
-    int radiusEnd = scaleToScreen(nitrogen.screenZ, marEnd);
+    int radiusEnd = (int) scaleToScreen(nitrogen.screenZ, marEnd);
     if (radiusEnd < 4)
       radiusEnd = 4;
     Atom alpha = getLeadAtom();

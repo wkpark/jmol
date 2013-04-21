@@ -95,22 +95,21 @@ public class HalosRenderer extends ShapeRenderer {
         return needTranslucent;      
     }
     int z = atom.screenZ;
-    int diameter = mad;
-    if (diameter < 0) { //unsized selection
-      diameter = atom.screenDiameter;
-      if (diameter == 0) {
+    float d = mad;
+    if (d < 0) { //unsized selection
+      d = atom.screenDiameter;
+      if (d == 0) {
         float ellipsemax = atom.getADPMinMax(true);
         if (ellipsemax > 0)
-          diameter = viewer.scaleToScreen(z, (int) Math.floor(ellipsemax * 2000));
-        if (diameter == 0) {
-          diameter = viewer.scaleToScreen(z, mad == -2 ? 250 : 500);
+          d = viewer.scaleToScreen(z, (int) Math.floor(ellipsemax * 2000));
+        if (d == 0) {
+          d = (int) viewer.scaleToScreen(z, mad == -2 ? 250 : 500);
         }
       }
     } else {
-      diameter = viewer.scaleToScreen(z, mad);
+      d = viewer.scaleToScreen(z, mad);
     }
-    float d = diameter;
-//    System.out.println(atom + "scaleToScreen(" + z + "," + mad +")=" + diameter);
+//    System.out.println(atom + "scaleToScreen(" + z + "," + mad +")=" + d);
     if (isAntialiased)
       d /= 2;
     float more = (d / 2);

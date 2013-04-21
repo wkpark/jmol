@@ -26,7 +26,6 @@
 package org.jmol.thread;
 
 import org.jmol.api.JmolScriptEvaluator;
-import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 
 public class ScriptDelayThread extends JmolThread {

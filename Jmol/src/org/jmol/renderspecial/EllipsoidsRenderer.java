@@ -249,7 +249,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
 
   private void renderOne(int screenZ, boolean isOK) {
-    diameter = viewer.scaleToScreen(screenZ, wireframeOnly ? 1 : diameter0);
+    diameter = (int) viewer.scaleToScreen(screenZ, wireframeOnly ? 1 : diameter0);
     if (!isOK || drawBall) {
       renderBall();
       if (!isOK)
@@ -304,7 +304,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       screens[i].set(Math.round (s0.x + pt1.x * perspectiveFactor),
           Math.round (s0.y + pt1.y * perspectiveFactor), Math.round(pt1.z + s0.z));
     }
-    dx = 2 + viewer.scaleToScreen(s0.z, 
+    dx = 2 + (int) viewer.scaleToScreen(s0.z, 
         Math.round((Float.isNaN(factoredLengths[2]) ? 1.0f : factoredLengths[2]) * 1000));
   }
 

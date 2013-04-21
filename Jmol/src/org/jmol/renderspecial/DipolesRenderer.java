@@ -130,8 +130,9 @@ public class DipolesRenderer extends ShapeRenderer {
     viewer.transformPt3f(points[cross], cross0);
     viewer.transformPt3f(points[crossEnd], cross1);
     mad = dipole.mad;
-    diameter = viewer.scaleToScreen(screens[center].z, mad);
-    headWidthPixels = (int) Math.floor(diameter * arrowHeadWidthFactor);
+    float d = viewer.scaleToScreen(screens[center].z, mad);
+    diameter = (int) d;
+    headWidthPixels = (int) Math.floor(d * arrowHeadWidthFactor);
     if (headWidthPixels < diameter + 5)
       headWidthPixels = diameter + 5;
     crossWidthPixels = headWidthPixels;

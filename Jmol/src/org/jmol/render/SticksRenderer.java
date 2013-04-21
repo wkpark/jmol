@@ -251,7 +251,7 @@ public class SticksRenderer extends ShapeRenderer {
       mad *= multipleBondRadiusFactor;
     dx = xB - xA;
     dy = yB - yA;
-    width = viewer.scaleToScreen((zA + zB) / 2, mad);
+    width = (int) viewer.scaleToScreen((zA + zB) / 2, mad);
     if (renderWireframe && width > 0)
       width = 1;
     if (!isCartesianExport) {

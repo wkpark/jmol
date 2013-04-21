@@ -377,7 +377,7 @@ public class Group {
     return "[" + getGroup3() + "-" + getSeqcodeString() + "]";
   }
 
-  protected int scaleToScreen(int Z, int mar) {
+  protected float scaleToScreen(int Z, int mar) {
     return chain.model.modelSet.viewer.scaleToScreen(Z, mar);
   }
   

@@ -414,7 +414,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       pt1f.scale(1f / 2f);
       viewer.transformPtScr(pt1f, pt1i);
       int mad = (int) Math.floor(Math.abs(width) * 1000); 
-      diameter = (exportType == GData.EXPORT_CARTESIAN ? mad 
+      diameter = (int) (exportType == GData.EXPORT_CARTESIAN ? mad 
           : viewer.scaleToScreen(pt1i.z, mad));
       if (diameter == 0)
         diameter = 1;

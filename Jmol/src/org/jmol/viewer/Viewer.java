@@ -1346,7 +1346,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         * (asAntialiased || !antialiasDisplay ? 1f : 0.5f);
   }
 
-  public short scaleToScreen(int z, int milliAngstroms) {
+  public float scaleToScreen(int z, int milliAngstroms) {
     // all shapes
     return transformManager.scaleToScreen(z, milliAngstroms);
   }

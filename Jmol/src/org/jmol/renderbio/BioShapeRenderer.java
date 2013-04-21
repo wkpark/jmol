@@ -335,10 +335,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
       if (!thisTypeOnly || structureTypes[i] == structureTypes[iNext])
         madEnd = (short) (((mads[iNext] == 0 ? madMid : mads[iNext]) + madMid) >> 1);
     }
-    diameterBeg = viewer.scaleToScreen(controlPointScreens[i].z, madBeg);
-    diameterMid = viewer.scaleToScreen(monomers[i].getLeadAtom().screenZ,
+    diameterBeg = (int) viewer.scaleToScreen(controlPointScreens[i].z, madBeg);
+    diameterMid = (int) viewer.scaleToScreen(monomers[i].getLeadAtom().screenZ,
         madMid);
-    diameterEnd = viewer.scaleToScreen(controlPointScreens[iNext].z, madEnd);
+    diameterEnd = (int) viewer.scaleToScreen(controlPointScreens[iNext].z, madEnd);
     doCap0 = (i == iPrev || thisTypeOnly
         && structureTypes[i] != structureTypes[iPrev]);
     doCap1 = (iNext == iNext2 || thisTypeOnly

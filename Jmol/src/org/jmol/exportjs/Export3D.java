@@ -258,18 +258,33 @@ final public class Export3D implements JmolRendererInterface {
       drawVLine(xRight, y, z, h);
   }
 
+  /**
+   * @param x  
+   * @param y 
+   * @param z 
+   * @param w 
+   */
+
   private void drawHLine(int x, int y, int z, int w) {
     // hover, labels only
-    int argbCurrent = g3d.getColorArgbOrGray(colix);
-/*    if (w < 0) {
+    /*
+   int argbCurrent = g3d.getColorArgbOrGray(colix);
+   if (w < 0) {
       x += w;
       w = -w;
     }
     for (int i = 0; i <= w; i++) {
       exporter.drawTextPixel(argbCurrent, x + i, y, z);
     }
-*/  }
+    */
+  }
 
+  /**
+   * @param x  
+   * @param y 
+   * @param z 
+   * @param h 
+   */
   private void drawVLine(int x, int y, int z, int h) {
     // hover, labels only
 /*    int argbCurrent = g3d.getColorArgbOrGray(colix);
@@ -280,7 +295,8 @@ final public class Export3D implements JmolRendererInterface {
     for (int i = 0; i <= h; i++) {
       exporter.drawTextPixel(argbCurrent, x, y + i, z);
     }
-*/  }
+*/ 
+  }
 
   /**
    * fills background rectangle for label
@@ -327,6 +343,7 @@ final public class Export3D implements JmolRendererInterface {
    *          baseline z
    * @param zSlab
    *          z for slab calculation
+   * @param bgcolix 
    */
 
   public void drawString(String str, JmolFont font3d, int xBaseline,
@@ -353,6 +370,7 @@ final public class Export3D implements JmolRendererInterface {
    *          baseline y
    * @param z
    *          baseline z
+   * @param bgColix 
    */
 
   public void drawStringNoSlab(String str, JmolFont font3d, int xBaseline,

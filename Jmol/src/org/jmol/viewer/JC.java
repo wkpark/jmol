@@ -1072,7 +1072,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   // this form is used for counting groups in ModelSet
   private final static String allCarbohydrates = 
-    ",[AHR],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]" +
+    ",[AHR],[ALL],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]" +
     ",[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC]" +
     ",[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS]" +
     ",[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]" +

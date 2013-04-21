@@ -1297,12 +1297,12 @@ public class TransformManager {
     scaleDefaultPixelsPerAngstrom = defaultScaleToScreen(modelRadius);
   }
 
-  short scaleToScreen(int z, int milliAngstroms) {
+  float scaleToScreen(int z, int milliAngstroms) {
     if (milliAngstroms == 0 || z < 2)
       return 0;
-    int pixelSize = (int) scaleToPerspective(z, milliAngstroms
+    float pixelSize = scaleToPerspective(z, milliAngstroms
         * scalePixelsPerAngstrom / 1000);
-    return (short) (pixelSize > 0 ? pixelSize : 1);
+    return (pixelSize > 0 ? pixelSize : 1);
   }
 
   float unscaleToScreen(float z, float screenDistance) {

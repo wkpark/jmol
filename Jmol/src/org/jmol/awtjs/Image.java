@@ -26,9 +26,7 @@
 package org.jmol.awtjs;
 
 
-import org.jmol.api.ApiPlatform;
 import org.jmol.util.JmolFont;
-import org.jmol.viewer.Viewer;
 
 /**
  * methods required by Jmol that access java.awt.Image

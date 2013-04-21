@@ -81,7 +81,7 @@ public class CarbohydrateMonomer extends Monomer {
       marBegin = 1200;
     if (anomericO.screenZ == 0)
       return;
-    int radiusBegin = scaleToScreen(anomericO.screenZ, marBegin);
+    int radiusBegin = (int) scaleToScreen(anomericO.screenZ, marBegin);
     if (radiusBegin < 4)
       radiusBegin = 4;
     if (isCursorOnTopOf(anomericO, x, y, radiusBegin, competitor))

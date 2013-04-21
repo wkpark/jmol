@@ -247,11 +247,13 @@ public class Text extends Object2d {
           dy = -textHeight * ((pymolOffset.y - 1) / 2);
           dy += descent;
         } else {
+          if (pymolOffset.y == 0)
+            System.out.println(text + " " + pixelsPerAngstrom + " " + textHeight + " " + descent + " " + fontScale + " " + movableX + " " + movableY);
           dx = pymolOffset.x * pixelsPerAngstrom;
           dy = -pymolOffset.y * pixelsPerAngstrom;
           // empirical fudge here; probably a bit off.
-          dx += textHeight / 2;
-          dy += textHeight / 2;
+          dy *= 1.05f;
+          dy += textHeight * 0.66f;
         }
         xAdj = (fontScale >= 2 ? 8 : 4);
         yAdj = 0;

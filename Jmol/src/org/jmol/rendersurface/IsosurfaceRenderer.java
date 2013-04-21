@@ -162,7 +162,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         pt2f.add(points[1]);
         pt2f.scale(0.5f); // center
         viewer.transformPt3f(pt2f, pt2f);
-        int r = viewer.scaleToScreen((int)pt2f.z, Math.round(points[0].distance(points[1]) * 500f));
+        float r = viewer.scaleToScreen((int)pt2f.z, Math.round(points[0].distance(points[1]) * 500f));
         mySlabValue = Math.round(pt2f.z + r * (1 - meshSlabValue / 50f));
       }
     }
@@ -206,7 +206,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   private void renderLonePair(boolean isRadical) {
     pt2f.setT(vertices[1]);
     viewer.transformPt3f(pt2f, pt2f);
-    int r = viewer.scaleToScreen((int)pt2f.z, 100);
+    int r = (int) viewer.scaleToScreen((int)pt2f.z, 100);
     if (r < 1)
       r = 1;
     if (!isRadical) {
@@ -309,7 +309,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
               screens[i].z - 30, (short) 0);
         }
         if (volumeRender) {
-          diam = viewer.scaleToScreen(screens[i].z, ptSize);
+          diam = (int) viewer.scaleToScreen(screens[i].z, ptSize);
           g3d.volumeRender4(diam, screens[i].x, screens[i].y, screens[i].z);
         } else {
           g3d.fillSphereI(diam, screens[i]);

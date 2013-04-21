@@ -39,7 +39,7 @@ import org.jmol.util.V3;
 
 public class RocketsRenderer extends BioShapeRenderer {
 
-  private final static float MIN_CONE_HEIGHT = 0.05f;
+  //private final static float MIN_CONE_HEIGHT = 0.05f;
 
   protected boolean newRockets = false;
   protected boolean renderArrowHeads;
@@ -157,13 +157,20 @@ public class RocketsRenderer extends BioShapeRenderer {
   private P3 screenC = new P3();
   private V3 vtemp = new V3();
 
+  /**
+   * @param i 
+   * @param pointStart 
+   * @param pointBeforeEnd  ignored now that arrow heads protrude beyond end of rocket  
+   * @param pointEnd 
+   * @param tEnd 
+   */
   private void renderPendingRocketSegment(int i, P3 pointStart,
                                           P3 pointBeforeEnd, P3 pointEnd,
                                           boolean tEnd) {
     viewer.transformPt3f(pointStart, screenA);
     viewer.transformPt3f(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
-    int diameter = viewer.scaleToScreen(zMid, mad);
+    int diameter = (int) viewer.scaleToScreen(zMid, mad);
     g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenA, screenB);
     if (g3d.setColix(colix)) {
       if (tEnd && renderArrowHeads) {
@@ -196,7 +203,7 @@ public class RocketsRenderer extends BioShapeRenderer {
   protected void renderCone(int i, P3 pointBegin, P3 pointEnd,
                             P3 screenPtBegin, P3 screenPtEnd) {
     int coneDiameter = (mad << 1) - (mad >> 1);
-    coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
+    coneDiameter = (int) viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
         coneDiameter);
     g3d.fillConeSceen3f(GData.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
         screenPtEnd);

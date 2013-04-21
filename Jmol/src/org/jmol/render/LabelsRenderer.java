@@ -30,7 +30,6 @@ import org.jmol.script.T;
 import org.jmol.shape.Labels;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
-import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 
 public class LabelsRenderer extends ShapeRenderer {
@@ -43,7 +42,7 @@ public class LabelsRenderer extends ShapeRenderer {
   final int[] minZ = new int[1];
   private int zCutoff;
   protected float[] xy = new float[3];
-
+  
   @Override
   protected boolean render() {
     fidPrevious = 0;
@@ -52,7 +51,6 @@ public class LabelsRenderer extends ShapeRenderer {
     Labels labels = (Labels) shape;
 
     String[] labelStrings = labels.strings;
-    short[] colixes = labels.colixes;
     short[] bgcolixes = labels.bgcolixes;
     if (isExport)
       bgcolixes = g3d.getBgColixes(bgcolixes);

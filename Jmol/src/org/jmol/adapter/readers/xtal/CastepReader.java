@@ -287,7 +287,7 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private void readOutputUnitCell() throws Exception {
     applySymmetryAndSetTrajectory();
-    atomSetCollection.newAtomSet();
+    //atomSetCollection.newAtomSet();
     setFractionalCoordinates(true);
     abc = read3Vectors(false);
     setLatticeVectors();
@@ -312,15 +312,6 @@ public class CastepReader extends AtomSetCollectionReader {
       setAtomCoordXYZ(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
           parseFloatStr(tokens[5]));
     }
-    /*    
-    is better to do this also here
-    in case the output is only a 
-    geometry optimization and not 
-    both volume and geometry
-     */
-    applySymmetryAndSetTrajectory();
-    atomSetCollection.newAtomSet();
-    setLatticeVectors();
 
   }
 
@@ -331,6 +322,15 @@ public class CastepReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetName("Energy = " + energy + " eV");
     atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
+    /*    
+    is better to do this also here
+    in case the output is only a 
+    geometry optimization and not 
+    both volume and geometry
+     */
+    applySymmetryAndSetTrajectory();
+    atomSetCollection.newAtomSet();
+    setLatticeVectors();
   }
   
   private void readPhononTrajectories() throws Exception {

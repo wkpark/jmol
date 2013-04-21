@@ -793,8 +793,12 @@ public class PyMOLReader extends PdbReader {
     float factor = 1f;
     switch (fontID) {
     default:
-      // Jmol doesn't support sansserif mono -- just using sans here
-      face = "sans";
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+      // 11-14: Jmol doesn't support sansserif mono -- just using SansSerif here
+      face = "SansSerif";
       break;
     case 0:
     case 1:

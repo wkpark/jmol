@@ -312,8 +312,16 @@ public class CastepReader extends AtomSetCollectionReader {
       setAtomCoordXYZ(atom, parseFloatStr(tokens[3]), parseFloatStr(tokens[4]),
           parseFloatStr(tokens[5]));
     }
-    
-    
+    /*    
+    is better to do this also here
+    in case the output is only a 
+    geometry optimization and not 
+    both volume and geometry
+     */
+    applySymmetryAndSetTrajectory();
+    atomSetCollection.newAtomSet();
+    setLatticeVectors();
+
   }
 
   private void readEnergy() throws Exception {

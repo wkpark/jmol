@@ -235,7 +235,7 @@ public class Text extends Object2d {
       boxXY[1] = movableY;
       if (pymolOffset != null) {
         float pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
-        z -= (int) (pymolOffset.z * pixelsPerAngstrom);
+        z -= (int) ((pymolOffset.z + 1.75f)* pixelsPerAngstrom);
         pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
         boolean isOld = (pymolOffset.x >= -1 && pymolOffset.x <= 1 && pymolOffset.y >= -1 && pymolOffset.y <= 1);
         if (isOld) {
@@ -247,8 +247,6 @@ public class Text extends Object2d {
           dy = -textHeight * ((pymolOffset.y - 1) / 2);
           dy += descent;
         } else {
-          if (pymolOffset.y == 0)
-            System.out.println(text + " " + pixelsPerAngstrom + " " + textHeight + " " + descent + " " + fontScale + " " + movableX + " " + movableY);
           dx = pymolOffset.x * pixelsPerAngstrom;
           dy = -pymolOffset.y * pixelsPerAngstrom;
           // empirical fudge here; probably a bit off.

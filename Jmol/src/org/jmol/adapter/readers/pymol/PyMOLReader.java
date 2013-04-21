@@ -790,7 +790,7 @@ public class PyMOLReader extends PdbReader {
     // 18 DejaVuSerif_BoldOblique
 
     String face;
-    float factor = 1.1f;
+    float factor = 1f;
     switch (fontID) {
     default:
       // Jmol doesn't support sansserif mono -- just using sans here
@@ -1666,7 +1666,13 @@ public class PyMOLReader extends PdbReader {
 
     //{ command => 'set hermiteLevel -4',                                                       comment => 'so that SS reps have some thickness' },
     //{ command => 'set ribbonAspectRatio 8',                                                   comment => 'degree of W/H ratio, but somehow not tied directly to actual width parameter...' },
-    sb.append(";background " + getList(settings, PyMOL.bg_rgb).get(2));
+    JmolList<Object> bg = getList(settings, PyMOL.bg_rgb);
+    Object o = bg.get(2);
+    if (bg.get(1).equals(Integer.valueOf(5))) {
+      String s = "000000" + Integer.toHexString(((Integer) o).intValue());
+      o = "[x" + s.substring(s.length() - 6) + "]";
+    }
+    sb.append(";background " + o);
     if (isMovie)
       sb.append(";animation mode loop");
     sb.append(";");

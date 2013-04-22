@@ -17408,11 +17408,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         propertyValue = data;
         break;
+      case T.modelindex:
       case T.model:
         if (surfaceObjectSeen)
           error(ERROR_invalidArgument);
-        modelIndex = modelNumberParameter(++i);
-        sbCommand.append(" model " + modelIndex);
+        modelIndex = (theTok == T.modelindex ? intParameter(++i) : modelNumberParameter(++i));
+        sbCommand.append(" modelIndex " + modelIndex);
         if (modelIndex < 0) {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;

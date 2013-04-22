@@ -74,18 +74,16 @@ public class PyMOLReader extends PdbReader {
   private final static int BRANCH_MAPSURFACE = 2;
   private final static int BRANCH_MAPMESH = 3;
   private final static int BRANCH_MEASURE = 4;
+  private final static int BRANCH_CALLBACK = 5;
   private final static int BRANCH_CGO = 6; // compiled graphics object
   private final static int BRANCH_SURFACE = 7;
+  private final static int BRANCH_GADGET = 8;
+  private final static int BRANCH_CALCULATOR = 9;
+  private final static int BRANCH_SLICE = 10;
+  private final static int BRANCH_ALIGNMENT = 11;
   private final static int BRANCH_GROUP = 12;
   
   private static final int MIN_RESNO = -1000; // minimum allowed residue number
-
-  //  #cf. \pymol\layer1\PyMOLObject.h
-  //  #define cObjectCallback     5
-  //  #define cObjectGadget       8
-  //  #define cObjectCalculator   9
-  //  #define cObjectSlice        10
-  //  #define cObjectAlignment    11
 
 
   private boolean allowSurface = true;
@@ -182,6 +180,13 @@ public class PyMOLReader extends PdbReader {
     String s = "PyMOL version: " + pymolVersion;
     Logger.info(s);
     appendLoadNote(s);
+    settings = getMapList(map, "settings");
+    JmolList<Object> file = getList(settings, PyMOL.session_file);
+    if (file != null)
+      Logger.info("PyMOL session file: " + file.get(2)); 
+    setVersionSettings();
+    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("settings", settings);
+    setUniqueSettings(getMapList(map, "unique_settings"));
     logging = (viewer.getLogFile().length() > 0);
     JmolList<Object> names = getMapList(map, "names");
     for (Map.Entry<String, Object> e : map.entrySet()) {
@@ -216,10 +221,6 @@ public class PyMOLReader extends PdbReader {
       }
     }
     addColors(getMapList(map, "colors"));
-    settings = getMapList(map, "settings"); 
-    setVersionSettings();
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("settings", settings);
-    setUniqueSettings(getMapList(map, "unique_settings"));
     allStates = getBooleanSetting(PyMOL.all_states);
     pymolFrame = (int) getFloatSetting(PyMOL.frame);
     JmolList<Object> mov = getMapList(map, "movie");
@@ -423,24 +424,51 @@ public class PyMOLReader extends PdbReader {
         + (isHidden ? " (hidden)" : " (visible)"));
     JmolList<Object> deepBranch = getList(branch, 5);
     branchID = 0;
+    String msg = "" + type;
     switch (type) {
     case BRANCH_SELECTION:
       selections.addLast(branch);
-      break;
+      return;
     case BRANCH_MOLECULE:
       processBranchModels(deepBranch);
-      break;
+      return;
     case BRANCH_MEASURE:
       processBranchMeasure(deepBranch);
+      return;
+      
+      
+    case BRANCH_ALIGNMENT:
+      msg = "ALIGNEMENT";
       break;
-    case BRANCH_MAPSURFACE: // 2
-    case BRANCH_MAPMESH:    // 3
-    case BRANCH_CGO:        // 6
-    case BRANCH_SURFACE:    // 7
-    case BRANCH_GROUP:      //12 
-      Logger.error("Unprocessed branch type " + type);
+    case BRANCH_CALCULATOR:
+      msg = "CALCULATOR";
       break;
-    }
+    case BRANCH_CALLBACK:
+      msg = "CALLBACK";
+      break;
+    case BRANCH_CGO:    
+      msg = "CGO";
+      break;
+    case BRANCH_GADGET:
+      msg = "GADGET";
+      break;
+    case BRANCH_GROUP:
+      msg = "GROUP";
+      break;
+    case BRANCH_MAPMESH:
+      msg = "MAPMESH";
+      break;
+    case BRANCH_MAPSURFACE:
+      msg = "MAPSURFACE";
+      break;
+    case BRANCH_SLICE:
+      msg = "SLICE";
+      break;
+    case BRANCH_SURFACE:
+      msg = "SURFACE";
+      break;
+    }    
+    Logger.error("Unprocessed branch type " + msg);
   }
 
   private void processSelections() {
@@ -511,7 +539,7 @@ public class PyMOLReader extends PdbReader {
 
   private void processBranchMeasure(JmolList<Object> deepBranch) {
     if (isHidden)
-      return;
+      return; // will have to reconsider this if there is a movie, though
     Logger.info("PyMOL measure " + branchName);
     JmolList<Object> measure = getList(getList(deepBranch, 2), 0);
 
@@ -1421,6 +1449,8 @@ public class PyMOLReader extends PdbReader {
   private void setSurface() {
     if (!allowSurface || isStateScript || bsModelAtoms.isEmpty())
       return;
+    if (isHidden)
+      return; // will have to reconsider this if there is a movie, though
     BS bs = reps[PyMOL.REP_SURFACE];
     BSUtil.andNot(bs, bsNoSurface);
     if (!bs.isEmpty()) {

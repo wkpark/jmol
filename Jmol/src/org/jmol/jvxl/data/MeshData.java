@@ -119,6 +119,7 @@ import java.util.Comparator;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
+import org.jmol.util.Escape;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.P3;
 import org.jmol.util.V3;
@@ -145,7 +146,7 @@ public class MeshData extends MeshSurface {
     return (surfaceSet == null ? getSurfaceSetForLevel(0) : surfaceSet);
   }
   
-  public BS[] getSurfaceSetForLevel(int level) {
+  private BS[] getSurfaceSetForLevel(int level) {
     if (level == 0) {
       surfaceSet = new BS[100];
       nSets = 0;
@@ -339,6 +340,7 @@ public class MeshData extends MeshSurface {
       v[i] /= factor;
     if (justOne && thisSet != Integer.MIN_VALUE)
       return Float.valueOf((float) v[0]);
+    System.out.println("MeshData calcVolume " + Escape.e(v));
     return v;
   }
 

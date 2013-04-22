@@ -175,6 +175,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   private boolean initializePolymer(BioShape bioShape) {
+    BS bsDeleted = viewer.getDeletedAtoms();
     if (viewer.isJmolDataFrameForModel(bioShape.modelIndex)) {
       controlPoints = bioShape.bioPolymer.getControlPoints(true, 0, false);
     } else {
@@ -193,7 +194,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       bioShape.falsifyMesh();
     for (int i = monomerCount; --i >= 0;) {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || modelSet.isAtomHidden(leadAtomIndices[i]))
+          || modelSet.isAtomHidden(leadAtomIndices[i]) || bsDeleted != null && bsDeleted.get(leadAtomIndices[i]))
         continue;
       Atom lead = modelSet.atoms[leadAtomIndices[i]];
       if (!g3d.isInDisplayRange(lead.screenX, lead.screenY))

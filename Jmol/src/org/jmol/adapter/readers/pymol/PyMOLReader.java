@@ -752,6 +752,7 @@ public class PyMOLReader extends PdbReader {
           PyMOL.nonbonded_size, nonBondedSize);
       rad = -atom.radius * myNonBondedSize;
     }
+    atom.radius = Float.NaN; // sorry, can't use these for surfaces
     if (rad != 0)
       addSpacefill(iAtom, rad);
     if (reps[PyMOL.REP_CARTOON].get(iAtom)) {

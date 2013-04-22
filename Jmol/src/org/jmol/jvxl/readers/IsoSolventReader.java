@@ -963,7 +963,7 @@ class IsoSolventReader extends AtomDataReader {
     P3 ptC = atomXyz[ic];
     float rCS = atomRadius[ic] + solventRadius;
     float dCT = Measure.distanceToPlane(plane, ptC);
-    if (Math.abs(dCT) >= rCS)// * 0.9f) 
+    if (Math.abs(dCT) >= rCS * 0.9f) 
       // need a fudge factor here to avoid extremely 
       // flat situations (1bna isosurface solvent 1.4)
       return false; // out of range

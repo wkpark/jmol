@@ -162,7 +162,6 @@ abstract class AtomDataReader extends VolumeDataReader {
                           boolean getRadii, boolean getMolecules,
                           boolean getAllModels, boolean addNearbyAtoms,
                           boolean getAtomMinMax, float marginAtoms) {
-
     if (addNearbyAtoms)
       getRadii = true;
     // set atomRadiusData to 100% if it has not been set already

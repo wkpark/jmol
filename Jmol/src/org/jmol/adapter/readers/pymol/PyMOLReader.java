@@ -178,6 +178,10 @@ public class PyMOLReader extends PdbReader {
   
   @SuppressWarnings("unchecked")
   private void process(Map<String, Object> map) {
+    pymolVersion = ((Integer) map.get("version")).intValue();
+    String s = "PyMOL version: " + pymolVersion;
+    Logger.info(s);
+    appendLoadNote(s);
     logging = (viewer.getLogFile().length() > 0);
     JmolList<Object> names = getMapList(map, "names");
     for (Map.Entry<String, Object> e : map.entrySet()) {
@@ -213,8 +217,6 @@ public class PyMOLReader extends PdbReader {
     }
     addColors(getMapList(map, "colors"));
     settings = getMapList(map, "settings"); 
-    pymolVersion = ((Integer) map.get("version")).intValue();
-    appendLoadNote("PyMOL version: " + pymolVersion);
     setVersionSettings();
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("settings", settings);
     setUniqueSettings(getMapList(map, "unique_settings"));
@@ -257,7 +259,7 @@ public class PyMOLReader extends PdbReader {
         note = "PyMOL dimensions?";
       }
       appendLoadNote(note);
-      System.out.println(note); 
+      Logger.info(note); 
     }
     totalAtomCount = getTotalAtomCount(names);
     Logger.info("PyMOL total atom count = " + totalAtomCount);
@@ -396,7 +398,7 @@ public class PyMOLReader extends PdbReader {
       v = ((Number) setting.get(2)).floatValue();
       Logger.info("Pymol setting " + i + " = " + v);
     } catch (Exception e) {
-      System.out.println("PyMOL version " + pymolVersion
+      Logger.info("PyMOL " + pymolVersion
           + " does not have setting " + i);
     }
     return v;
@@ -436,7 +438,7 @@ public class PyMOLReader extends PdbReader {
     case BRANCH_CGO:        // 6
     case BRANCH_SURFACE:    // 7
     case BRANCH_GROUP:      //12 
-      System.out.println("Unprocessed branch type " + type);
+      Logger.error("Unprocessed branch type " + type);
       break;
     }
   }
@@ -578,7 +580,7 @@ public class PyMOLReader extends PdbReader {
     pymolAtoms = getBranchAtoms(deepBranch);
     int ns = states.size();
     if (ns > 1)
-      System.out.println(ns + " PyMOL states");
+      Logger.info(ns + " PyMOL states");
     if (ns == 1)
       allStates = true;
     BS bsState = null;
@@ -605,7 +607,7 @@ public class PyMOLReader extends PdbReader {
         JmolList<Object> state = getList(states, i);
         JmolList<Object> idxToAtm = getList(state, 3);
         if (idxToAtm == null) {
-          System.out.println("movie error: no idxToAtm");
+          Logger.error("movie error: no idxToAtm");
           continue;
         }
         for (int j = idxToAtm.size(); --j >= 0;)
@@ -876,7 +878,6 @@ public class PyMOLReader extends PdbReader {
   private void setUniqueSettings(JmolList<Object> list) {
     uniqueSettings = new Hashtable<Integer, JmolList<Object>>();
     if (list != null && list.size() != 0) {
-      //Logger.info(list.toString());
       for (int i = list.size(); --i >= 0;) {
         JmolList<Object> atomSettings = (JmolList<Object>) list.get(i);
         int id = getInt(atomSettings, 0);
@@ -885,7 +886,7 @@ public class PyMOLReader extends PdbReader {
           JmolList<Object> setting = (JmolList<Object>) mySettings.get(j);
           int uid = id * 1000 + getInt(setting, 0);
           uniqueSettings.put(Integer.valueOf(uid), setting);
-          System.out.println("PyMOL unique setting " + id + " " + setting);
+          Logger.info("PyMOL unique setting " + id + " " + setting);
         }
       }
     }
@@ -1380,7 +1381,7 @@ public class PyMOLReader extends PdbReader {
       break;
     default:
       if (shapeID < REP_JMOL_MIN)
-        System.out.println("Unprocessed representation type " + shapeID);
+        Logger.error("Unprocessed representation type " + shapeID);
     }
   }
 

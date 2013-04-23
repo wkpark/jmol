@@ -1532,7 +1532,10 @@ public class AtomSetCollection {
   }
   
   public void setAtomSetCollectionAuxiliaryInfo(String key, Object value) {
-    atomSetCollectionAuxiliaryInfo.put(key, value);
+    if (value == null)
+      atomSetCollectionAuxiliaryInfo.remove(key);
+    else
+      atomSetCollectionAuxiliaryInfo.put(key, value);
   }
   
   /**

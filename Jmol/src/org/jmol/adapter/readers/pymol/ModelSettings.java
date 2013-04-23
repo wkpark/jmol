@@ -36,9 +36,12 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
+import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
+import org.jmol.util.SB;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 
@@ -125,6 +128,7 @@ public class ModelSettings {
   public void createShape(ModelSet m, BS bsCarb) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
+    String s;
     Atom[] atoms;
     switch (id) {
     case T.movie:
@@ -149,11 +153,38 @@ public class ModelSettings {
       break;
     case JC.SHAPE_BALLS:
       break;
+    case T.mesh:
+      modelIndex = sm.viewer.getCurrentModelIndex();
+      JmolList<Object> mesh = (JmolList<Object>) info;
+      String sid = mesh.get(mesh.size() - 2).toString();
+      SB sb = new SB();
+      sb.append("script('isosurface ID ").append(Escape.eS(sid))
+      .append(" model ").append(m.models[modelIndex].getModelNumberDotted())
+      .append(" color ").append(Escape.escapeColor(argb))
+      .append(" \"\" ").append(Escape.eS(sid)).append(" mesh nofill frontonly"); 
+      float within = PyMOLReader.getFloatAt(
+          PyMOLReader.getList(PyMOLReader.getList(mesh, 2), 0), 11);
+      JmolList<Object> list = PyMOLReader.getList(PyMOLReader.getList(PyMOLReader.getList(mesh, 2), 0), 12); 
+      if (within > 0) {
+        P3 pt = new P3();
+        sb.append(";isosurface slab within ").appendF(within).append(" [ ");
+        for (int j = list.size() - 3; j >= 0; j -= 3) {
+           PyMOLReader.getPoint(list, j, pt);
+           sb.append(Escape.eP(pt));
+        }        
+        sb.append(" ]");
+      }
+      sb.append(";set meshScale ").appendI(size/1000 + 1);
+      sb.append("');");
+      s = sb.toString();
+      System.out.println("shapeSettings: " + s);
+      sm.viewer.evaluateExpression(s);
+      return;
     case JC.SHAPE_ISOSURFACE:
       if (modelIndex < 0)
         return;
       sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-      String s = ((String[]) info)[0].toString().replace('\'', '_').replace(
+      s = ((String[]) info)[0].toString().replace('\'', '_').replace(
           '"', '_');
       String lighting = ((String[]) info)[1];
       String resolution = "";

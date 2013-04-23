@@ -216,12 +216,8 @@ Jmol origin in slow-to-fast system: (19.333334, -6.9282017, -21.666666)
   
   protected void setCutoffAutomatic() {
     if (params.thePlane == null && params.cutoffAutomatic) {
-      params.cutoff = (boundingBox == null ? 3.0f : 1.6f);
-      if (dmin != Float.MAX_VALUE) {
-        if (params.cutoff > dmax)
-          params.cutoff = dmax / 4; // just a guess
-      }
-      Logger.info("DNS6Reader: setting cutoff to default value of "
+      params.cutoff = -1f;
+      Logger.info("MapReader: setting cutoff to default value of "
           + params.cutoff
           + (boundingBox == null ? " (no BOUNDBOX parameter)\n" : "\n"));
     }

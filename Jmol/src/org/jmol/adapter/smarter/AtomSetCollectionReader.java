@@ -320,6 +320,7 @@ public abstract class AtomSetCollectionReader {
 
   protected String appendLoadNote(String info) {
     loadNote.append(info).append("\n");
+    Logger.info(info);
     return info;
   }
 

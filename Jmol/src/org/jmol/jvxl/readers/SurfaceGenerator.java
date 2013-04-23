@@ -1250,8 +1250,14 @@ public class SurfaceGenerator {
       return newReader("VolumeDataReader");
     }
     if (value instanceof Map) {
-      volumeData = (VolumeData) ((Map<String, Object>) value).get("volumeData");
+      Map<String, Object> map = (Map<String, Object>) value;
+      if (map.containsKey("__pymolSurfaceData__")) {
+        readerData = map;
+        return newReaderBr("PyMOLMeshReader", null);
+      }
+      volumeData = (VolumeData) map.get("volumeData");
       return newReader("VolumeDataReader");
+      
     }
     String data = null;
     if (value instanceof String) {

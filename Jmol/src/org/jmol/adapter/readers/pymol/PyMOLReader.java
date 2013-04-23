@@ -85,9 +85,12 @@ public class PyMOLReader extends PdbReader {
   
   private static final int MIN_RESNO = -1000; // minimum allowed residue number
 
+  private static String nucleic = " A C G T U ADE THY CYT GUA URI DA DC DG DT DU ";
 
+
+  private boolean usePymolRadii = true;
   private boolean allowSurface = true;
-  private boolean doResize;
+  private boolean doResize = false;
 
   private JmolList<Object> settings;
   private Map<Integer,JmolList<Object>> localSettings;
@@ -120,8 +123,6 @@ public class PyMOLReader extends PdbReader {
 
   private boolean valence;
   
-  private static String nucleic = " A C G T U ADE THY CYT GUA URI DA DC DG DT DU ";
-
   @Override
   protected void initializeReader() throws Exception {
     isBinary = true;
@@ -177,9 +178,7 @@ public class PyMOLReader extends PdbReader {
   @SuppressWarnings("unchecked")
   private void process(Map<String, Object> map) {
     pymolVersion = ((Integer) map.get("version")).intValue();
-    String s = "PyMOL version: " + pymolVersion;
-    Logger.info(s);
-    appendLoadNote(s);
+    appendLoadNote("PyMOL version: " + pymolVersion);
     settings = getMapList(map, "settings");
     JmolList<Object> file = getList(settings, PyMOL.session_file);
     if (file != null)
@@ -260,7 +259,6 @@ public class PyMOLReader extends PdbReader {
         note = "PyMOL dimensions?";
       }
       appendLoadNote(note);
-      Logger.info(note); 
     }
     totalAtomCount = getTotalAtomCount(names);
     Logger.info("PyMOL total atom count = " + totalAtomCount);
@@ -269,6 +267,7 @@ public class PyMOLReader extends PdbReader {
     for (int i = 1; i < names.size(); i++)
       processBranch(getList(names, i));
     processSelections();
+    proecssMeshes();
     if (isMovie) {
       appendLoadNote("PyMOL trajectories read: " + lstTrajectories.size());
       atomSetCollection.finalizeTrajectoryAs(lstTrajectories, null);
@@ -278,6 +277,32 @@ public class PyMOLReader extends PdbReader {
 
     setDefinitions();
     setRendering(getMapList(map, "view"));
+  }
+
+  /**
+   * add a 
+   */
+  @SuppressWarnings("unchecked")
+  private void proecssMeshes() {
+    if (meshes == null)
+      return;
+    for (int i = meshes.size(); --i >= 0;) {
+      JmolList<Object> mesh = meshes.get(i);
+      String surfaceName = getString((JmolList<Object>)getList(mesh, 2).get(0), 1);
+      JmolList<Object> surface = surfaces.get(surfaceName);
+      if (surface == null)
+        continue;
+      String meshName = mesh.get(mesh.size() - 1).toString();
+      mesh.addLast(surfaceName);
+      appendLoadNote("PyMOL mesh " + meshName + " references surface " + surfaceName);
+      surfaces.put(meshName, mesh);
+      surfaces.put("__pymolSurfaceData__", mesh);
+      atomSetCollection.setAtomSetAuxiliaryInfo("jmolSurfaceInfo", surfaces);        
+      ModelSettings ms = new ModelSettings(T.mesh, null, mesh);
+      modelSettings.addLast(ms);
+      ms.setSize(getFloatSetting(PyMOL.mesh_width));
+      ms.argb = PyMOL.getRGB(getInt(getList(mesh, 0), 2));
+    }
   }
 
   private void setVersionSettings() {
@@ -360,17 +385,17 @@ public class PyMOLReader extends PdbReader {
     return ((Integer) list.get(i)).intValue();
   }
 
-  private static float getFloatAt(JmolList<Object> list, int i) {
-    return (list == null ? 0 : ((Double) list.get(i)).floatValue());
+  static float getFloatAt(JmolList<Object> list, int i) {
+    return (list == null ? 0 : ((Number) list.get(i)).floatValue());
   }
 
-  private P3 getPoint(JmolList<Object> list, int i, P3 pt) {
+  static P3 getPoint(JmolList<Object> list, int i, P3 pt) {
     pt.set(getFloatAt(list, i++), getFloatAt(list, i++), getFloatAt(list, i));
     return pt;
   }
 
   @SuppressWarnings("unchecked")
-  private static JmolList<Object> getList(JmolList<Object> list, int i) {
+  static JmolList<Object> getList(JmolList<Object> list, int i) {
     if (list == null || list.size() <= i)
       return null;
     Object o = list.get(i);
@@ -415,6 +440,8 @@ public class PyMOLReader extends PdbReader {
   private P3 labelPosition;
   private float labelColor, labelSize;
   private P3 labelPosition0 = new P3();
+  private Hashtable<String, JmolList<Object>> surfaces;
+  private JmolList<JmolList<Object>> meshes;
   
   private void processBranch(JmolList<Object> branch) {
     int type = getBranchType(branch);
@@ -435,8 +462,12 @@ public class PyMOLReader extends PdbReader {
     case BRANCH_MEASURE:
       processBranchMeasure(deepBranch);
       return;
-      
-      
+    case BRANCH_MAPMESH:
+      processMap(deepBranch, true);
+      return;
+    case BRANCH_MAPSURFACE:
+      processMap(deepBranch, false);
+      return;
     case BRANCH_ALIGNMENT:
       msg = "ALIGNEMENT";
       break;
@@ -446,7 +477,7 @@ public class PyMOLReader extends PdbReader {
     case BRANCH_CALLBACK:
       msg = "CALLBACK";
       break;
-    case BRANCH_CGO:    
+    case BRANCH_CGO:
       msg = "CGO";
       break;
     case BRANCH_GADGET:
@@ -455,20 +486,29 @@ public class PyMOLReader extends PdbReader {
     case BRANCH_GROUP:
       msg = "GROUP";
       break;
-    case BRANCH_MAPMESH:
-      msg = "MAPMESH";
-      break;
-    case BRANCH_MAPSURFACE:
-      msg = "MAPSURFACE";
-      break;
     case BRANCH_SLICE:
       msg = "SLICE";
       break;
     case BRANCH_SURFACE:
       msg = "SURFACE";
       break;
-    }    
+    }
     Logger.error("Unprocessed branch type " + msg);
+  }
+
+  private void processMap(JmolList<Object> deepBranch, boolean isMesh) {
+    if (isMesh) {
+      if (isHidden)
+        return; // for now
+      if (meshes == null)
+        meshes = new JmolList<JmolList<Object>>();
+      meshes.addLast(deepBranch);
+    } else {
+      if (surfaces == null)
+        surfaces = new Hashtable<String, JmolList<Object>>();
+      surfaces.put(branchName, deepBranch);
+    }
+    deepBranch.addLast(branchName);
   }
 
   private void processSelections() {
@@ -752,7 +792,8 @@ public class PyMOLReader extends PdbReader {
           PyMOL.nonbonded_size, nonBondedSize);
       rad = -atom.radius * myNonBondedSize;
     }
-    atom.radius = Float.NaN; // sorry, can't use these for surfaces
+    if (!usePymolRadii)
+      atom.radius = Float.NaN; // sorry, can't use these for surfaces
     if (rad != 0)
       addSpacefill(iAtom, rad);
     if (reps[PyMOL.REP_CARTOON].get(iAtom)) {
@@ -1645,9 +1686,9 @@ public class PyMOLReader extends PdbReader {
     
     float pymolCameraToCenter = pymolDistanceToCenter / w;
     float pymolCameraToSlab = getFloatAt(view, 22) / w;
-    float pymolCameratToDepth = getFloatAt(view, 23) / w;
+    float pymolCameraToDepth = getFloatAt(view, 23) / w;
     int slab = 50 + (int) ((pymolCameraToCenter - pymolCameraToSlab) * 100);
-    int depth = 50 + (int) ((pymolCameraToCenter - pymolCameratToDepth) * 100);
+    int depth = 50 + (int) ((pymolCameraToCenter - pymolCameraToDepth) * 100);
 
     sb.append(";set perspectiveDepth " + (!getBooleanSetting(PyMOL.ortho)));
     sb.append(";set cameraDepth " + jmolCameraDepth);
@@ -1676,7 +1717,7 @@ public class PyMOLReader extends PdbReader {
       float range = depth - slab;
       float fog_start = getFloatSetting(PyMOL.fog_start); // 192
       sb.append(";set zShade true; set zshadePower 1;set zslab "
-          + (slab + fog_start * range) + "; set zdepth " + depth);
+          + Math.min(100, slab + fog_start * range) + "; set zdepth " + Math.max(0, depth));
     } else if (depthCue) {
       sb.append(";set zShade true; set zshadePower 1;set zslab "
           + ((slab + depth) / 2f) + "; set zdepth " + depth);

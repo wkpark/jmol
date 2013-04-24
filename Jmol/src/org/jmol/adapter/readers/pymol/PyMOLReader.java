@@ -1743,7 +1743,7 @@ public class PyMOLReader extends PdbReader {
       float range = depth - slab;
       float fog_start = getFloatSetting(PyMOL.fog_start); // 192
       sb.append(";set zShade true; set zshadePower 1;set zslab "
-          + Math.min(100, slab + fog_start * range) + "; set zdepth " + Math.max(0, depth));
+          + Math.min(100, slab + fog_start * range) + "; set zdepth " + Math.max(depth, depth));
     } else if (depthCue) {
       sb.append(";set zShade true; set zshadePower 1;set zslab "
           + ((slab + depth) / 2f) + "; set zdepth " + depth);

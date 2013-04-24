@@ -425,6 +425,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
       if (diam == Integer.MIN_VALUE) {
         if (imesh.diameter <= 0) {
           diam = (meshScale  < 0 ? meshScale = viewer.getInt(T.meshscale) : meshScale);
+          if (g3d.isAntialiased())
+            diam *= 2;
         } else {
           diam = viewer.getScreenDim() / 100;
         }

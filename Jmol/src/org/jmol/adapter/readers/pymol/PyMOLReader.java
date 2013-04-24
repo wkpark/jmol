@@ -71,7 +71,7 @@ public class PyMOLReader extends PdbReader {
 
   private final static int BRANCH_SELECTION = -1;
   private final static int BRANCH_MOLECULE = 1;
-  private final static int BRANCH_MAPSURFACE = 2;
+  private final static int BRANCH_MAPDATA = 2;
   private final static int BRANCH_MAPMESH = 3;
   private final static int BRANCH_MEASURE = 4;
   private final static int BRANCH_CALLBACK = 5;
@@ -279,30 +279,46 @@ public class PyMOLReader extends PdbReader {
     setRendering(getMapList(map, "view"));
   }
 
-  /**
-   * add a 
-   */
-  @SuppressWarnings("unchecked")
   private void proecssMeshes() {
-    if (meshes == null)
+    if (mapObjects == null)
       return;
-    for (int i = meshes.size(); --i >= 0;) {
-      JmolList<Object> mesh = meshes.get(i);
-      String surfaceName = getString((JmolList<Object>)getList(mesh, 2).get(0), 1);
-      JmolList<Object> surface = surfaces.get(surfaceName);
+    for (int i = mapObjects.size(); --i >= 0;) {
+      JmolList<Object> obj = mapObjects.get(i);
+      String objName = obj.get(obj.size() - 1).toString();
+      boolean isMep = objName.endsWith("_e_pot"); 
+      String mapName;
+      int tok;
+      if (isMep) {
+        // a hack? for electrostatics2.pse
+        // _e_chg (surface), _e_map (volume data), _e_pot (gadget)
+        tok = T.mep;
+        String root = objName.substring(0, objName.length() - 3);
+        mapName = root + "map";
+        String isosurfaceName = branchIDs.get(root + "chg");
+        if (isosurfaceName == null)
+          continue;
+        obj.addLast(isosurfaceName);
+      } else {
+        tok = T.mesh;
+        mapName = getString(getList(getList(obj, 2), 0), 1);
+      }
+      JmolList<Object> surface = volumeData.get(mapName);
       if (surface == null)
         continue;
-      String meshName = mesh.get(mesh.size() - 1).toString();
-      mesh.addLast(surfaceName);
-      appendLoadNote("PyMOL mesh " + meshName + " references surface " + surfaceName);
-      surfaces.put(meshName, mesh);
-      surfaces.put("__pymolSurfaceData__", mesh);
-      atomSetCollection.setAtomSetAuxiliaryInfo("jmolSurfaceInfo", surfaces);        
-      ModelSettings ms = new ModelSettings(T.mesh, null, mesh);
+      obj.addLast(mapName);
+      appendLoadNote("PyMOL object " + objName + " references map " + mapName);
+      volumeData.put(objName, obj);
+      volumeData.put("__pymolSurfaceData__", obj);
+      ModelSettings ms = new ModelSettings(tok, null, obj);
       modelSettings.addLast(ms);
-      ms.setSize(getFloatSetting(PyMOL.mesh_width));
-      ms.argb = PyMOL.getRGB(getInt(getList(mesh, 0), 2));
+      if (isMep) {
+      } else {
+        ms.setSize(getFloatSetting(PyMOL.mesh_width));
+        ms.argb = PyMOL.getRGB(getInt(getList(obj, 0), 2));
+      }
     }
+    for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;)
+      atomSetCollection.setAtomSetAuxiliaryInfoForSet("jmolSurfaceInfo", volumeData, i);
   }
 
   private void setVersionSettings() {
@@ -377,7 +393,7 @@ public class PyMOLReader extends PdbReader {
   }
 
   private static String getString(JmolList<Object> list, int i) {
-    String s = (String) list.get(i);
+    String s = list.get(i).toString();
     return (s.length() == 0 ? " " : s);
   }
 
@@ -440,8 +456,10 @@ public class PyMOLReader extends PdbReader {
   private P3 labelPosition;
   private float labelColor, labelSize;
   private P3 labelPosition0 = new P3();
-  private Hashtable<String, JmolList<Object>> surfaces;
-  private JmolList<JmolList<Object>> meshes;
+  private Hashtable<String, JmolList<Object>> volumeData;
+  private JmolList<JmolList<Object>> mapObjects;
+  private String branchNameID;
+  private Map<String, String> branchIDs = new Hashtable<String, String>();
   
   private void processBranch(JmolList<Object> branch) {
     int type = getBranchType(branch);
@@ -465,9 +483,14 @@ public class PyMOLReader extends PdbReader {
     case BRANCH_MAPMESH:
       processMap(deepBranch, true);
       return;
-    case BRANCH_MAPSURFACE:
+    case BRANCH_MAPDATA:
       processMap(deepBranch, false);
       return;
+    case BRANCH_GADGET:
+      processGadget(deepBranch);
+      return;
+ 
+      
     case BRANCH_ALIGNMENT:
       msg = "ALIGNEMENT";
       break;
@@ -479,9 +502,6 @@ public class PyMOLReader extends PdbReader {
       break;
     case BRANCH_CGO:
       msg = "CGO";
-      break;
-    case BRANCH_GADGET:
-      msg = "GADGET";
       break;
     case BRANCH_GROUP:
       msg = "GROUP";
@@ -496,17 +516,23 @@ public class PyMOLReader extends PdbReader {
     Logger.error("Unprocessed branch type " + msg);
   }
 
-  private void processMap(JmolList<Object> deepBranch, boolean isMesh) {
-    if (isMesh) {
+  private void processGadget(JmolList<Object> deepBranch) {
+    if (branchName.endsWith("_e_pot")) {
+      processMap(deepBranch, true);
+    }
+  }
+
+  private void processMap(JmolList<Object> deepBranch, boolean isObject) {
+    if (isObject) {
       if (isHidden)
         return; // for now
-      if (meshes == null)
-        meshes = new JmolList<JmolList<Object>>();
-      meshes.addLast(deepBranch);
+      if (mapObjects == null)
+        mapObjects = new JmolList<JmolList<Object>>();
+      mapObjects.addLast(deepBranch);
     } else {
-      if (surfaces == null)
-        surfaces = new Hashtable<String, JmolList<Object>>();
-      surfaces.put(branchName, deepBranch);
+      if (volumeData == null)
+        volumeData = new Hashtable<String, JmolList<Object>>();
+      volumeData.put(branchName, deepBranch);
     }
     deepBranch.addLast(branchName);
   }
@@ -720,7 +746,8 @@ public class PyMOLReader extends PdbReader {
         String name = getString(state, 5).trim();
         if (n == 0)
           continue;
-        branchID++;
+        branchNameID = branchName + "_" + (++branchID);
+        branchIDs.put(branchName, branchNameID);
         if (name.length() == 0) {
           currentFrame = pymolFrame;
           if (lstStates.size() < ns)
@@ -1497,8 +1524,7 @@ public class PyMOLReader extends PdbReader {
     BSUtil.andNot(bs, bsNoSurface);
     if (!bs.isEmpty()) {
       ModelSettings ss = new ModelSettings(JC.SHAPE_ISOSURFACE, bs,
-          new String[] {
-              branchName + "_" + branchID,
+          new String[] { branchNameID,
               getBooleanSetting(PyMOL.two_sided_lighting) ? "FULLYLIT"
                   : "FRONTLIT" });
       ss.setSize(getFloatSetting(PyMOL.solvent_radius));
@@ -1510,7 +1536,7 @@ public class PyMOLReader extends PdbReader {
     BSUtil.andNot(bs, bsNoSurface);
     if (!bs.isEmpty()) {
       ModelSettings ss = new ModelSettings(JC.SHAPE_ISOSURFACE, bs,
-          new String[] { branchName + "_" + branchID, null });
+          new String[] { branchNameID, null });
       ss.setSize(getFloatSetting(PyMOL.solvent_radius));
       ss.translucency = getFloatSetting(PyMOL.transparency);
       ss.setColors(colixes, 0);

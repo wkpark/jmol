@@ -44,7 +44,7 @@ abstract class MapFileReader extends VolumeFileReader {
     super.init2(sg, br);
     isAngstroms = true;
     adjustment = sg.getParams().center;
-    if (adjustment.x == Float.MAX_VALUE)
+    if (adjustment == null || adjustment.x == Float.MAX_VALUE)
       adjustment = new P3();
   }
 

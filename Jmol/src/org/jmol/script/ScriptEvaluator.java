@@ -18301,7 +18301,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             addShapeProperty(propertyList, "calculationType", sType);
         }
         boolean firstPass = (!surfaceObjectSeen && !planeSeen);
-        propertyName = (firstPass ? "readFile" : "mapColor");
+        propertyName = (firstPass && !isMapped ? "readFile" : "mapColor");
         if (isInline) {
           if (sType == null)
             error(ERROR_invalidArgument);

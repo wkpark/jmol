@@ -1168,7 +1168,7 @@ public class T {
   final static int manifest       = misc  | 186;
   final static int maxset         = misc  | 190;
   final static int menu           = misc  | 191;
-  final static int mep            = misc  | 192;
+  public final static int mep            = misc  | 192;
   public final static int mesh    = misc  | 194;
   final static int middle         = misc  | 195;
   final static int minset         = misc  | 196;

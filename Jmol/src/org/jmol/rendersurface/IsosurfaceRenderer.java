@@ -146,7 +146,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         g3d.setColor(colors[i]);
         break;
       }
-      g3d.fillRect(x, y, 5, 5, dx, dy);
+      g3d.fillRect(x, y, 5, Integer.MIN_VALUE, dx, dy);
     }
     isosurface.keyXy[1] = (y + dy) / factor;
   }

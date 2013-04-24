@@ -49,7 +49,7 @@ import org.jmol.viewer.ShapeManager;
  * a class to store rendering information prior to finishing file loading,
  * specifically designed for reading PyMOL PSE files.
  * 
- * More direct than a script.
+ * More direct than a script
  * 
  */
 public class ModelSettings {
@@ -128,8 +128,10 @@ public class ModelSettings {
   public void createShape(ModelSet m, BS bsCarb) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
-    String s;
+    String s, sID;
     Atom[] atoms;
+    SB sb;
+    float min, max;
     switch (id) {
     case T.movie:
       sm.viewer.setMovie((Map<String, Object>) info);
@@ -153,15 +155,32 @@ public class ModelSettings {
       break;
     case JC.SHAPE_BALLS:
       break;
+    case T.mep:
+      JmolList<Object> mep = (JmolList<Object>) info;
+      sID = mep.get(mep.size() - 2).toString();
+      String mapID = mep.get(mep.size() - 1).toString();
+      min = PyMOLReader.getFloatAt(PyMOLReader.getList(mep, 3), 0);
+      max = PyMOLReader.getFloatAt(PyMOLReader.getList(mep, 3), 2);
+      sb = new SB();
+      sb.append("script('");
+      sb.append("set isosurfacekey true;isosurface ID ").append(Escape.eS(sID))
+      .append(" map \"\" ").append(Escape.eS(mapID))
+      .append(";color isosurface range " + min + " " + max + ";isosurface colorscheme rwb");
+      sb.append("');");
+      s = sb.toString();
+      System.out.println("shapeSettings: " + s);
+      sm.viewer.evaluateExpression(s);
+      return;
     case T.mesh:
       modelIndex = sm.viewer.getCurrentModelIndex();
       JmolList<Object> mesh = (JmolList<Object>) info;
-      String sid = mesh.get(mesh.size() - 2).toString();
-      SB sb = new SB();
-      sb.append("script('isosurface ID ").append(Escape.eS(sid))
+      sID = mesh.get(mesh.size() - 2).toString();
+      sb = new SB();
+      sb.append("script('");
+      sb.append("isosurface ID ").append(Escape.eS(sID))
       .append(" model ").append(m.models[modelIndex].getModelNumberDotted())
       .append(" color ").append(Escape.escapeColor(argb))
-      .append(" \"\" ").append(Escape.eS(sid)).append(" mesh nofill frontonly"); 
+      .append(" \"\" ").append(Escape.eS(sID)).append(" mesh nofill frontonly"); 
       float within = PyMOLReader.getFloatAt(
           PyMOLReader.getList(PyMOLReader.getList(mesh, 2), 0), 11);
       JmolList<Object> list = PyMOLReader.getList(PyMOLReader.getList(PyMOLReader.getList(mesh, 2), 0), 12); 
@@ -238,8 +257,8 @@ public class ModelSettings {
 
       double sum = 0.0,
       sumsq = 0.0;
-      float min = Float.MAX_VALUE;
-      float max = 0;
+      min = Float.MAX_VALUE;
+      max = 0;
       int n = bsAtoms.cardinality();
       for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
         float value = Atom.atomPropertyFloat(null, atoms[i], T.temperature);

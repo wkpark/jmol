@@ -72,7 +72,7 @@ class PyMOLMeshReader extends MapFileReader {
         params.cutoffAutomatic = false;
       }
     } else {
-      surfaceList = data;
+      surfaceList = getList(getList(data, 2), 0);
       surfaceName = (String) data.get(data.size() - 1);
     }
     voxelList = getList(getList(getList(surfaceList, 14), 2), 6);
@@ -106,13 +106,12 @@ class PyMOLMeshReader extends MapFileReader {
     // origin
     t = getList(surfaceList, 7);    
     origin.set(getFloat(t, 0), getFloat(t, 1), getFloat(t, 2));
-    
+      
     // unit cell vectors in grid counts
     t = getList(surfaceList, 10);
     na = (int) getFloat(t, 0);
     nb = (int) getFloat(t, 1);
     nc = (int) getFloat(t, 2);
-    
     // data block start and extents in grid units
     t = getList(surfaceList, 11);
     nxyzStart[0] = (int) getFloat(t, 0);
@@ -125,6 +124,17 @@ class PyMOLMeshReader extends MapFileReader {
     nz = (int) getFloat(t, 0);
     ny = (int) getFloat(t, 1);
     nx = (int) getFloat(t, 2);
+
+    if (na < 0 || nb < 0 || nc < 0) {
+      na = nz - 1;
+      nb = ny - 1;
+      nc = nx - 1;
+      t = getList(surfaceList, 8);
+      a = getFloat(t, 0) - origin.x;
+      b = getFloat(t, 1) - origin.y;
+      c = getFloat(t, 2) - origin.z;
+    }
+    
     
     mapc = 3; // fastest
     mapr = 2;

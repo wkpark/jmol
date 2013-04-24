@@ -146,7 +146,9 @@ class AtomPropertyMapper extends AtomDataReader {
   }
   
   @Override
-  public float getValueAtPoint(P3 pt) {
+  public float getValueAtPoint(P3 pt, boolean getSource) {
+    if (haveOneProperty && !getSource)
+      return theProperty;
     float dmin = Float.MAX_VALUE;
     float dminNearby = Float.MAX_VALUE;
     float value = (doSmoothProperty ? 0 : Float.NaN);
@@ -173,7 +175,7 @@ class AtomPropertyMapper extends AtomDataReader {
         }
       } else if (d2 < dmin) {
         dmin = d2;
-        iAtomSurface = iAtom;
+        iAtomSurface = ia;
         if (!doSmoothProperty)
           value = p;
       }

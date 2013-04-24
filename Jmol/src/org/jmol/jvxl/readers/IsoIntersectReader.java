@@ -169,7 +169,7 @@ class IsoIntersectReader extends AtomDataReader {
   }
   
   @Override
-  public float getValueAtPoint(P3 pt) {
+  public float getValueAtPoint(P3 pt, boolean getSource) {
     // mapping sasurface/vdw 
     return getValueAB(getValueAtPoint2(pt, myBsA), getValueAtPoint2(pt, myBsB));
   }

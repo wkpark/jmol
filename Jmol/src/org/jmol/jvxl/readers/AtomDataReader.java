@@ -83,6 +83,8 @@ abstract class AtomDataReader extends VolumeDataReader {
   protected boolean doAddHydrogens;
   protected boolean havePlane;
   protected boolean doUseIterator;
+  protected float theProperty;
+  protected boolean haveOneProperty;
   private float minPtsPerAng;
 
   /**
@@ -209,6 +211,8 @@ abstract class AtomDataReader extends VolumeDataReader {
     BS atomSet = BSUtil.copy(bsMySelected);
     int nH = 0;
     atomProp = null;
+    theProperty = Float.MAX_VALUE;
+    haveOneProperty = false;
     float[] props = params.theProperty;
     if (myAtomCount > 0) {
       P3[] hAtoms = null;
@@ -240,7 +244,7 @@ abstract class AtomDataReader extends VolumeDataReader {
         atomXyz[i] = hAtoms[i];
         atomNo[i] = -1;
         if (atomProp != null)
-          atomProp[i] = Float.NaN;
+          addAtomProp(i, Float.NaN);
         // if (params.logMessages)
         // Logger.debug("draw {" + hAtoms[i].x + " " + hAtoms[i].y + " "
         // + hAtoms[i].z + "};");
@@ -248,8 +252,8 @@ abstract class AtomDataReader extends VolumeDataReader {
       myAtomCount = nH;
       for (int i = atomSet.nextSetBit(0); i >= 0; i = atomSet.nextSetBit(i + 1)) {
         if (atomProp != null)
-          atomProp[myAtomCount] = (props != null && i < props.length ? props[i]
-              : Float.NaN);
+          addAtomProp(myAtomCount,(props != null && i < props.length ? props[i]
+              : Float.NaN));
         atomXyz[myAtomCount] = atomData.atomXyz[i];
         atomNo[myAtomCount] = atomData.atomicNumber[i];
         atomIndex[myAtomCount] = i;
@@ -316,13 +320,22 @@ abstract class AtomDataReader extends VolumeDataReader {
       for (int i = bsNearby.nextSetBit(0); i >= 0; i = bsNearby
           .nextSetBit(i + 1)) {
         if (props != null)
-          atomProp[myAtomCount] = props[i];
+          addAtomProp(myAtomCount, props[i]);
         myIndex[i] = myAtomCount;
         atomIndex[myAtomCount] = i;
         atomXyz[myAtomCount] = atomData.atomXyz[i];
         atomRadius[myAtomCount++] = atomData.atomRadius[i];
       }
     }
+    haveOneProperty = (!Float.isNaN(theProperty));
+    System.out.println("AtomDataR theProperty=" + theProperty);
+  }
+
+  private void addAtomProp(int i, float f) {
+    atomProp[i] = f;
+    if (!Float.isNaN(theProperty))
+      if (f != theProperty)
+        theProperty = (theProperty == Float.MAX_VALUE ? f : Float.NaN);
   }
 
   private float getWorkingRadius(int i, float marginAtoms) {

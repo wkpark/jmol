@@ -268,7 +268,7 @@ class IsoMOReader extends AtomDataReader {
   }
 
   @Override
-  public float getValueAtPoint(P3 pt) {
+  public float getValueAtPoint(P3 pt, boolean getSource) {
     return (q == null ? 0 : q.processPt(pt));
   }
   

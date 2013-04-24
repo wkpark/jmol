@@ -163,8 +163,9 @@ public class ModelSettings {
       sb = new SB();
       sb.append("script('");
       sb.append("set isosurfacekey true;isosurface ID ").append(Escape.eS(sID))
-      .append(" map \"\" ").append(Escape.eS(mapID))
-      .append(";color isosurface range " + min + " " + max + ";isosurface colorscheme rwb");
+          .append(" map \"\" ").append(Escape.eS(mapID)).append(
+              ";color isosurface range " + min + " " + max
+                  + ";isosurface colorscheme rwb");
       sb.append("');");
       s = sb.toString();
       System.out.println("shapeSettings: " + s);
@@ -176,23 +177,24 @@ public class ModelSettings {
       sID = mesh.get(mesh.size() - 2).toString();
       sb = new SB();
       sb.append("script('");
-      sb.append("isosurface ID ").append(Escape.eS(sID))
-      .append(" model ").append(m.models[modelIndex].getModelNumberDotted())
-      .append(" color ").append(Escape.escapeColor(argb))
-      .append(" \"\" ").append(Escape.eS(sID)).append(" mesh nofill frontonly"); 
-      float within = PyMOLReader.getFloatAt(
-          PyMOLReader.getList(PyMOLReader.getList(mesh, 2), 0), 11);
-      JmolList<Object> list = PyMOLReader.getList(PyMOLReader.getList(PyMOLReader.getList(mesh, 2), 0), 12); 
+      sb.append("isosurface ID ").append(Escape.eS(sID)).append(" model ")
+          .append(m.models[modelIndex].getModelNumberDotted())
+          .append(" color ").append(Escape.escapeColor(argb)).append(" \"\" ")
+          .append(Escape.eS(sID)).append(" mesh nofill frontonly");
+      float within = PyMOLReader.getFloatAt(PyMOLReader.getList(PyMOLReader
+          .getList(mesh, 2), 0), 11);
+      JmolList<Object> list = PyMOLReader.getList(PyMOLReader.getList(
+          PyMOLReader.getList(mesh, 2), 0), 12);
       if (within > 0) {
         P3 pt = new P3();
         sb.append(";isosurface slab within ").appendF(within).append(" [ ");
         for (int j = list.size() - 3; j >= 0; j -= 3) {
-           PyMOLReader.getPoint(list, j, pt);
-           sb.append(Escape.eP(pt));
-        }        
+          PyMOLReader.getPoint(list, j, pt);
+          sb.append(Escape.eP(pt));
+        }
         sb.append(" ]");
       }
-      sb.append(";set meshScale ").appendI(size/500 );
+      sb.append(";set meshScale ").appendI(size / 500);
       sb.append("');");
       s = sb.toString();
       System.out.println("shapeSettings: " + s);
@@ -201,20 +203,23 @@ public class ModelSettings {
     case JC.SHAPE_ISOSURFACE:
       if (modelIndex < 0)
         return;
-      sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-      s = ((String[]) info)[0].toString().replace('\'', '_').replace(
-          '"', '_');
+      if (argb == 0)
+        sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
+      s = ((String[]) info)[0].toString().replace('\'', '_').replace('"', '_');
       String lighting = ((String[]) info)[1];
       String resolution = "";
       if (lighting == null) {
         lighting = "mesh nofill";
         resolution = " resolution 1.5";
       }
-      s = "script('isosurface ID \"" + s + "\"" +
-      		" model " + m.models[modelIndex].getModelNumberDotted()
-      		+ resolution + " select (" + Escape.eBS(bsAtoms)
-      		+ ") only solvent " + (size / 1000f)
-      		+ " map property color";
+      s = "script('isosurface ID \"" + s + "\"" + " model "
+          + m.models[modelIndex].getModelNumberDotted() + resolution
+          + " select (" + Escape.eBS(bsAtoms) + ") only solvent "
+          + (size / 1000f);
+      if (argb == 0)
+        s += " map property color";
+      else
+        s += " color " + Escape.escapeColor(argb);
       s += " frontOnly " + lighting;
       if (translucency > 0)
         s += " translucent " + translucency;
@@ -285,7 +290,7 @@ public class ModelSettings {
       float scale_min = ((float[]) info)[3];
       float scale_max = ((float[]) info)[4];
       float power = ((float[]) info)[5];
-      
+
       int transform = (int) ((float[]) info)[6];
       float data_range = max - min;
       boolean nonlinear = false;

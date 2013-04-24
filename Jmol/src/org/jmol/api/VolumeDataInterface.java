@@ -38,7 +38,7 @@ public interface VolumeDataInterface {
 
   public abstract void xyzToVoxelPt(float x, float y, float z, P3i pt3i);
 
-  public abstract float lookupInterpolatedVoxelValue(P3 point);
+  public abstract float lookupInterpolatedVoxelValue(P3 point, boolean getSource);
 
   public abstract void filterData(boolean isSquared, float invertCutoff);
 

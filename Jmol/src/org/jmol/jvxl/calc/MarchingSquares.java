@@ -294,7 +294,7 @@ public class MarchingSquares {
       if (haveData) {
         value = c.value;
       } else {
-        value = volumeData.lookupInterpolatedVoxelValue(c);
+        value = volumeData.lookupInterpolatedVoxelValue(c, false);
         c.setValue(value);
       }
       if (value < contourPlaneMinimumValue)

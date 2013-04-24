@@ -825,9 +825,10 @@ public abstract class SurfaceReader implements VertexDataServer {
         //marchingSquares
         //    .getInterpolatedPixelValue(meshData.vertices[i]);
         } else {
-          value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i]);
+          boolean needSource = (haveSurfaceAtoms && meshData.vertexSource[i] < 0);
+          value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i], needSource);
           //System.out.println(i + " " + meshData.vertices[i] + " " + value);
-          if (haveSurfaceAtoms)
+          if (needSource)
             meshData.vertexSource[i] = getSurfaceAtomIndex();
         }
         if (value < min)
@@ -978,7 +979,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       if (useVertexValue)
         v = meshData.vertexValues[i];
       else
-        v = volumeData.lookupInterpolatedVoxelValue(vertexes[i]);
+        v = volumeData.lookupInterpolatedVoxelValue(vertexes[i], false);
       if (v < min)
         min = v;
       if (v > max && v != Float.MAX_VALUE)
@@ -1099,9 +1100,10 @@ public abstract class SurfaceReader implements VertexDataServer {
   /**
    * 
    * @param pt
+   * @param getSource TODO
    * @return   value
    */
-  public float getValueAtPoint(P3 pt) {
+  public float getValueAtPoint(P3 pt, boolean getSource) {
     // only for readers that can support it (IsoShapeReader, AtomPropertyMapper)
     return 0;
   }

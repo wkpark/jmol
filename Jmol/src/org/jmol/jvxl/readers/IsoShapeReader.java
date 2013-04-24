@@ -158,11 +158,11 @@ class IsoShapeReader extends VolumeDataReader {
   @Override
   public float getValue(int x, int y, int z, int ptyz) {
     volumeData.voxelPtToXYZ(x, y, z, ptPsi);    
-    return getValueAtPoint(ptPsi);
+    return getValueAtPoint(ptPsi, false);
   }
 
   @Override
-  public float getValueAtPoint(P3 pt) {
+  public float getValueAtPoint(P3 pt, boolean getSource) {
     ptTemp.setT(pt);
     ptTemp.sub(center);
     if (isEccentric)
@@ -451,14 +451,14 @@ class IsoShapeReader extends VolumeDataReader {
         //x = r; y = r2R2/aoMax2 * 10; z = 0;
         ptPsi.set((float) x, (float) y, (float) z);
         ptPsi.add(center);
-        value = getValueAtPoint(ptPsi);
+        value = getValueAtPoint(ptPsi, false);
       } else {
         ptPsi.setT(planeU);
         ptPsi.scale(random.nextFloat() * planeRadius * 2 - planeRadius);
         ptPsi.scaleAdd2(random.nextFloat() * planeRadius * 2 - planeRadius,
             planeV, ptPsi);
         ptPsi.add(planeCenter);
-        value = getValueAtPoint(ptPsi);
+        value = getValueAtPoint(ptPsi, false);
         if (value * value <= aoMax2 * random.nextFloat())
           continue;
       }

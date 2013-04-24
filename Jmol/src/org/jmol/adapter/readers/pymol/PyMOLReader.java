@@ -160,6 +160,8 @@ public class PyMOLReader extends PdbReader {
   private boolean cartoonLadderMode;
   private boolean  cartoonRockets;
   private boolean solventAsSpheres;
+  private int surfaceMode;
+  private int surfaceColor;
   private int labelFontId;
   
   private Map<String, Object> movie;
@@ -252,6 +254,8 @@ public class PyMOLReader extends PdbReader {
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
             "perferredWidthHeight", new int[] { width, height });
         Dimension d = viewer.resizeInnerPanel(width, height);
+        if (d.width == Integer.MIN_VALUE)
+          throw new NullPointerException("canceled");
         width = d.width;
         height = d.height;
         //viewer.setScreenDimension(width, height);
@@ -599,7 +603,6 @@ public class PyMOLReader extends PdbReader {
 
   private boolean checkBranch(JmolList<Object> branch) {
     branchName = getString(branch, 0);
-    //if (!branchName.equals("aricept_docked")) return  false;
     isHidden = (getInt(branch, 2) != 1);
     return (branchName.indexOf("_") != 0);
   }
@@ -957,6 +960,8 @@ public class PyMOLReader extends PdbReader {
     cartoonLadderMode = getBooleanSetting(PyMOL.cartoon_ladder_mode);
     cartoonRockets = getBooleanSetting(PyMOL.cartoon_cylindrical_helices);
     solventAsSpheres = getBooleanSetting(PyMOL.sphere_solvent);
+    surfaceMode = (int) getFloatSetting(PyMOL.surface_mode);
+    surfaceColor = (int) getFloatSetting(PyMOL.surface_color);
     labelPosition = new P3();
     try {
       JmolList<Object> setting = localSettings.get(Integer.valueOf(PyMOL.label_position));      
@@ -1145,13 +1150,36 @@ public class PyMOLReader extends PdbReader {
     atom.partialCharge = getFloatAt(a, 17);
     int formalCharge = getInt(a, 18);
     atom.bsReps = getBsReps(getList(a, 20));
+    boolean isVisible = !atom.bsReps.isEmpty();
     int serNo = getInt(a, 22);
     atom.cartoonType = getInt(a, 23);
     atom.flags = getInt(a, 24);
     atom.bonded = getInt(a, 25) != 0;
     if (a.size() > 40 && getInt(a, 40) == 1)
       atom.uniqueID = getInt(a, 32);
-    if ((atom.flags & PyMOL.FLAG_NOSURFACE) != 0)
+    boolean surfaceAtom = true;
+//    #define cRepSurface_by_flags       0
+//    #define cRepSurface_all            1
+//    #define cRepSurface_heavy_atoms    2
+//    #define cRepSurface_vis_only       3
+//    #define cRepSurface_vis_heavy_only 4
+    switch (surfaceMode) {
+    case 0:
+      surfaceAtom = ((atom.flags & PyMOL.FLAG_NOSURFACE) == 0);
+      break;
+    case 1:
+      break;
+    case 2:
+      surfaceAtom = !sym.equals("H");
+      break;
+    case 3:
+      surfaceAtom = isVisible;
+      break;
+    case 4:
+      surfaceAtom = isVisible && !sym.equals("H");
+      break;
+    }
+    if (surfaceAtom)
       bsNoSurface.set(atomCount);
     float translucency = getUniqueFloat(atom.uniqueID,
         PyMOL.sphere_transparency, sphereTranslucency);
@@ -1528,7 +1556,10 @@ public class PyMOLReader extends PdbReader {
                   : "FRONTLIT" });
       ss.setSize(getFloatSetting(PyMOL.solvent_radius));
       ss.translucency = getFloatSetting(PyMOL.transparency);
-      ss.setColors(colixes, 0);
+      if (surfaceColor < 0)
+        ss.setColors(colixes, 0);
+      else
+        ss.argb = PyMOL.getRGB(surfaceColor);
       modelSettings.addLast(ss);
     }
     bs = reps[PyMOL.REP_MESH];

@@ -1367,7 +1367,7 @@ class IsoSolventReader extends AtomDataReader {
 //  }
 
   @Override
-  public float getValueAtPoint(P3 pt) {
+  public float getValueAtPoint(P3 pt, boolean getSource) {
     // mapping sasurface/vdw
     if (contactPair != null)
       return pt.distance(contactPair.myAtoms[1]) - contactPair.radii[1];

@@ -121,7 +121,7 @@ class IsoFxyReader extends AtomDataReader {
 
   
   @Override
-  public float getValueAtPoint(P3 pt) {
+  public float getValueAtPoint(P3 pt, boolean getSource) {
     if (params.func == null)
       return 0;
     values[0] = pt.x;
@@ -132,6 +132,6 @@ class IsoFxyReader extends AtomDataReader {
 
   protected float evaluateValue(int x, int y, int z) {
     volumeData.voxelPtToXYZ(x, y, z, ptTemp);
-    return getValueAtPoint(ptTemp);
+    return getValueAtPoint(ptTemp, false);
   }
 }

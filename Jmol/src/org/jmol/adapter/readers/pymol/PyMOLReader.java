@@ -468,7 +468,8 @@ public class PyMOLReader extends PdbReader {
     Logger.info("PyMOL model " + (nModels + 1) + " Branch " + branchName
         + (isHidden ? " (hidden)" : " (visible)"));
     JmolList<Object> deepBranch = getList(branch, 5);
-    branchID = 0;
+    branchNameID = branchName + "_" + (++branchID);
+    branchIDs.put(branchName, branchNameID);
     String msg = "" + type;
     switch (type) {
     case BRANCH_SELECTION:
@@ -746,8 +747,6 @@ public class PyMOLReader extends PdbReader {
         String name = getString(state, 5).trim();
         if (n == 0)
           continue;
-        branchNameID = branchName + "_" + (++branchID);
-        branchIDs.put(branchName, branchNameID);
         if (name.length() == 0) {
           currentFrame = pymolFrame;
           if (lstStates.size() < ns)

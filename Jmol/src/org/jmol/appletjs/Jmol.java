@@ -137,7 +137,8 @@ public class Jmol implements JmolSyncInterface {
     viewerOptions.remove("debug");
   	viewerOptions.put("fullName", fullName);
 
-    mayScript = true;
+    haveDocumentAccess = "true".equalsIgnoreCase("" + getValue("allowjavascript", "true"));
+     
     JmolAppletRegistry.checkIn(fullName, this);
     initWindows();
     initApplication();
@@ -653,7 +654,7 @@ public class Jmol implements JmolSyncInterface {
           sendJsTextareaStatus(strInfo);
         }
       }
-      if (!doCallback || !mayScript)
+      if (!doCallback || !mayScript || callback == null || !haveDocumentAccess && !callback.startsWith("Jmol."))
         return;
       try {
           sendCallback(strInfo, callback, data);
@@ -678,7 +679,7 @@ public class Jmol implements JmolSyncInterface {
 
 		private String notifySync(String info, String appletName) {
 			String syncCallback = callbacks.get(EnumCallback.SYNC);
-			if (!mayScript || syncCallback == null)
+			if (!mayScript || syncCallback == null || !haveDocumentAccess && !syncCallback.startsWith("Jmol."))
 				return info;
 			try {
 				/**
@@ -726,6 +727,8 @@ public class Jmol implements JmolSyncInterface {
       if (pt >= 0)
         return sendScript(strEval.substring(pt + 1), strEval.substring(0, pt),
             false, false);
+      if (!haveDocumentAccess)
+        return "NO EVAL ALLOWED";
       if (callbacks.get(EnumCallback.EVAL) != null) {
         notifyCallback(EnumCallback.EVAL, new Object[] { null, strEval });
         return "";
@@ -766,7 +769,7 @@ public class Jmol implements JmolSyncInterface {
 
       //System.out.println("functionXY" + nX + " " + nY  + " " + functionName);
       float[][] fxy = new float[Math.abs(nX)][Math.abs(nY)];
-      if (!mayScript || nX == 0 || nY == 0)
+      if (!mayScript || !haveDocumentAccess || nX == 0 || nY == 0)
         return fxy;
       try {
         if (nX > 0 && nY > 0) { // fill with individual function calls (slow)
@@ -823,7 +826,7 @@ public class Jmol implements JmolSyncInterface {
 
     public float[][][] functionXYZ(String functionName, int nX, int nY, int nZ) {
       float[][][] fxyz = new float[Math.abs(nX)][Math.abs(nY)][Math.abs(nZ)];
-      if (!mayScript || nX == 0 || nY == 0 || nZ == 0)
+      if (!mayScript  || !haveDocumentAccess || nX == 0 || nY == 0 || nZ == 0)
         return fxyz;
       try {
       	/**

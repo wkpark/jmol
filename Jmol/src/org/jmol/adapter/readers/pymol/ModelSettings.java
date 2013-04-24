@@ -36,7 +36,6 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
-import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
 import org.jmol.util.P3;

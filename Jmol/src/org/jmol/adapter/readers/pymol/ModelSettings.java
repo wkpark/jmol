@@ -192,7 +192,7 @@ public class ModelSettings {
         }        
         sb.append(" ]");
       }
-      sb.append(";set meshScale ").appendI(size/1000 + 1);
+      sb.append(";set meshScale ").appendI(size/500 );
       sb.append("');");
       s = sb.toString();
       System.out.println("shapeSettings: " + s);

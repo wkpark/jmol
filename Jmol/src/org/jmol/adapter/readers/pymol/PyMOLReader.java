@@ -486,15 +486,17 @@ public class PyMOLReader extends PdbReader {
       processBranchMeasure(deepBranch);
       return;
     case BRANCH_MAPMESH:
-      processMap(deepBranch, true);
-      return;
     case BRANCH_MAPDATA:
-      processMap(deepBranch, false);
+      processMap(deepBranch, type == BRANCH_MAPMESH);
       return;
     case BRANCH_GADGET:
       processGadget(deepBranch);
       return;
- 
+    case BRANCH_CGO:
+      msg = "CGO";
+      processCGO(deepBranch);
+      //return;
+      break;
       
     case BRANCH_ALIGNMENT:
       msg = "ALIGNEMENT";
@@ -504,9 +506,6 @@ public class PyMOLReader extends PdbReader {
       break;
     case BRANCH_CALLBACK:
       msg = "CALLBACK";
-      break;
-    case BRANCH_CGO:
-      msg = "CGO";
       break;
     case BRANCH_GROUP:
       msg = "GROUP";
@@ -519,6 +518,15 @@ public class PyMOLReader extends PdbReader {
       break;
     }
     Logger.error("Unprocessed branch type " + msg);
+  }
+
+  private void processCGO(JmolList<Object> deepBranch) {
+    if (isHidden)
+      return;
+    JmolList<Object> data = getList(getList(getList(getList(deepBranch, 2), 0), 0), 1);
+    data.addLast(branchName);
+    ModelSettings ms = new ModelSettings(T.cgo, null, data);
+    modelSettings.addLast(ms);
   }
 
   private void processGadget(JmolList<Object> deepBranch) {
@@ -1179,7 +1187,7 @@ public class PyMOLReader extends PdbReader {
       surfaceAtom = isVisible && !sym.equals("H");
       break;
     }
-    if (surfaceAtom)
+    if (!surfaceAtom)
       bsNoSurface.set(atomCount);
     float translucency = getUniqueFloat(atom.uniqueID,
         PyMOL.sphere_transparency, sphereTranslucency);

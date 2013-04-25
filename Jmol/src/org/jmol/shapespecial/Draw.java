@@ -61,7 +61,7 @@ public class Draw extends MeshCollection {
   }
 
   DrawMesh[] dmeshes = new DrawMesh[4];
-  DrawMesh thisMesh;
+  protected DrawMesh thisMesh;
   
   @Override
   public void allocMesh(String thisID, Mesh m) {
@@ -77,7 +77,7 @@ public class Draw extends MeshCollection {
       htObjects.put(thisID.toUpperCase(), currentMesh);
   }
 
-  void setPropertySuper(String propertyName, Object value, BS bs) {
+  protected void setPropertySuper(String propertyName, Object value, BS bs) {
     currentMesh = thisMesh;
     setPropMC(propertyName, value, bs);
     thisMesh = (DrawMesh)currentMesh;  
@@ -94,7 +94,7 @@ public void initShape() {
   private int nPoints;
   private int diameter;
   private float width;
-  private float newScale;
+  protected float newScale;
   private float length;
   private boolean isCurve;
   private boolean isArc;
@@ -137,28 +137,7 @@ public void initShape() {
   public void setProperty(String propertyName, Object value, BS bs) {
 
     if ("init" == propertyName) {
-      colix = C.ORANGE;
-      color = 0xFFFFFFFF;
-      newScale = 0;
-      isFixed = isReversed = isRotated45 = isCrossed = noHead = isBarb = false;
-      isCurve = isArc = isArrow = isPlane = isCircle = isCylinder = isLine = false;
-      isVertices = isPerpendicular = isVector = false;
-      isValid = true;
-      length = Float.MAX_VALUE;
-      diameter = 0;
-      width = 0;
-      indicatedModelIndex = -1;
-      offset = null;
-      plane = null;
-      polygon = null;
-      nidentifiers = nbitsets = 0;
-      vData = new  JmolList<Object[]>();
-      bsAllModels = null;
-      intersectID = null;
-      slabData = null;
-      boundBox = null;
-      explicitID = false;
-      setPropertySuper("thisID", MeshCollection.PREVIOUS_MESH_ID, null);
+      initDraw();
       setPropertySuper("init", value, bs);
       return;
     }
@@ -324,7 +303,7 @@ public void initShape() {
         newScale = 0.01f; // very tiny but still sizable;
       if (thisMesh != null) {
         // no points in this script statement
-        scaleDrawing(thisMesh, newScale);
+        scale(thisMesh, newScale);
         thisMesh.initialize(T.fullylit, null, null);
       }
       return;
@@ -403,7 +382,7 @@ public void initShape() {
         if (thisMesh.vertexCount > 2 && length != Float.MAX_VALUE
             && newScale == 1)
           newScale = length;
-        scaleDrawing(thisMesh, newScale);
+        scale(thisMesh, newScale);
         thisMesh.initialize(T.fullylit, null, null);
         setAxes(thisMesh);
         thisMesh.title = title;
@@ -447,7 +426,32 @@ public void initShape() {
     setPropertySuper(propertyName, value, bs);
   }
 
- private void resetObjects() {
+ private void initDraw() {
+   colix = C.ORANGE;
+   color = 0xFFFFFFFF;
+   newScale = 0;
+   isFixed = isReversed = isRotated45 = isCrossed = noHead = isBarb = false;
+   isCurve = isArc = isArrow = isPlane = isCircle = isCylinder = isLine = false;
+   isVertices = isPerpendicular = isVector = false;
+   isValid = true;
+   length = Float.MAX_VALUE;
+   diameter = 0;
+   width = 0;
+   indicatedModelIndex = -1;
+   offset = null;
+   plane = null;
+   polygon = null;
+   nidentifiers = nbitsets = 0;
+   vData = new  JmolList<Object[]>();
+   bsAllModels = null;
+   intersectID = null;
+   slabData = null;
+   boundBox = null;
+   explicitID = false;
+   setPropertySuper("thisID", MeshCollection.PREVIOUS_MESH_ID, null);
+  }
+
+protected void resetObjects() {
     htObjects.clear();
     for (int i = 0; i < meshCount; i++) {
       Mesh m = meshes[i];
@@ -477,7 +481,7 @@ public void initShape() {
   @Override
   public Object getProperty(String property, int index) {
     if (property == "command")
-      return getDrawCommand(thisMesh);
+      return getCommand(thisMesh);
     if (property == "type")
       return Integer.valueOf(thisMesh == null ? EnumDrawType.NONE.id : thisMesh.drawType.id);
     return getPropMC(property);
@@ -1011,39 +1015,40 @@ public void initShape() {
     return;
   }
 
-  private static void scaleDrawing(DrawMesh mesh, float newScale) {
+  protected void scale(Mesh mesh, float newScale) {
+    DrawMesh dmesh = (DrawMesh) mesh;
     /*
      * allows for Draw to scale object
      * have to watch out for double-listed vertices
      * 
      */
-    if (newScale == 0 || mesh.vertexCount == 0 || mesh.scale == newScale)
+    if (newScale == 0 || dmesh.vertexCount == 0 || dmesh.scale == newScale)
       return;
-    float f = newScale / mesh.scale;
-    mesh.scale = newScale;
-    if (mesh.haveXyPoints || mesh.drawType == EnumDrawType.ARC || mesh.drawType == EnumDrawType.CIRCLE || mesh.drawType == EnumDrawType.CIRCULARPLANE)
+    float f = newScale / dmesh.scale;
+    dmesh.scale = newScale;
+    if (dmesh.haveXyPoints || dmesh.drawType == EnumDrawType.ARC || dmesh.drawType == EnumDrawType.CIRCLE || dmesh.drawType == EnumDrawType.CIRCULARPLANE)
       return; // done in renderer
     V3 diff = new V3();
     int iptlast = -1;
     int ipt = 0;
-    for (int i = mesh.polygonCount; --i >= 0;) {
-      P3 center = (mesh.isVector ? mesh.vertices[0] 
-          : mesh.ptCenters == null ? mesh.ptCenter
-          : mesh.ptCenters[i]);
+    for (int i = dmesh.polygonCount; --i >= 0;) {
+      P3 center = (dmesh.isVector ? dmesh.vertices[0] 
+          : dmesh.ptCenters == null ? dmesh.ptCenter
+          : dmesh.ptCenters[i]);
       if (center == null)
         return;
-      if (mesh.polygonIndexes[i] == null)
+      if (dmesh.polygonIndexes[i] == null)
         continue;
       iptlast = -1;
-      for (int iV = mesh.polygonIndexes[i].length; --iV >= 0;) {
-        ipt = mesh.polygonIndexes[i][iV];
+      for (int iV = dmesh.polygonIndexes[i].length; --iV >= 0;) {
+        ipt = dmesh.polygonIndexes[i][iV];
         if (ipt == iptlast)
           continue;
         iptlast = ipt;
-        diff.sub2(mesh.vertices[ipt], center);
+        diff.sub2(dmesh.vertices[ipt], center);
         diff.scale(f);
         diff.add(center);
-        mesh.vertices[ipt].setT(diff);
+        dmesh.vertices[ipt].setT(diff);
       }
     }
   }
@@ -1290,9 +1295,9 @@ public void initShape() {
     return (pickedMesh != null);
   }
 
-  private String getDrawCommand(DrawMesh mesh) {
+  protected String getCommand(Mesh mesh) {
     if (mesh != null)
-      return getDrawCommand2(mesh, mesh.modelIndex);
+      return getCommand2(mesh, mesh.modelIndex);
     
     SB sb = new SB();
     String key = (explicitID && previousMeshID != null
@@ -1301,47 +1306,48 @@ public void initShape() {
     if (key != null && key.length() == 0)
       key = null;
     for (int i = 0; i < meshCount; i++) {
-      DrawMesh m = (DrawMesh) meshes[i];
+      Mesh m = meshes[i];
       if (key == null
           || TextFormat.isMatch(m.thisID.toUpperCase(), key, true, true))
-        sb.append(getDrawCommand2(m, m.modelIndex));
+        sb.append(getCommand2(m, m.modelIndex));
     }
     return sb.toString();
   }
 
-  private String getDrawCommand2(DrawMesh mesh, int iModel) {
-    if (mesh.drawType == EnumDrawType.NONE  
-        && mesh.lineData == null
-        && mesh.drawVertexCount == 0 && mesh.drawVertexCounts == null)
+  protected String getCommand2(Mesh mesh, int iModel) {
+    DrawMesh dmesh = (DrawMesh) mesh;
+    if (dmesh.drawType == EnumDrawType.NONE  
+        && dmesh.lineData == null
+        && dmesh.drawVertexCount == 0 && dmesh.drawVertexCounts == null)
       return "";
     SB str = new SB();
     int modelCount = viewer.getModelCount();
-    if (!mesh.isFixed && iModel >= 0 && modelCount > 1)
+    if (!dmesh.isFixed && iModel >= 0 && modelCount > 1)
       appendCmd(str, "frame " + viewer.getModelNumberDotted(iModel));
-    str.append("  draw ID ").append(Escape.eS(mesh.thisID));
-    if (mesh.isFixed)
+    str.append("  draw ID ").append(Escape.eS(dmesh.thisID));
+    if (dmesh.isFixed)
       str.append(" fixed");
     if (iModel < 0)
       iModel = 0;
-    if (mesh.noHead)
+    if (dmesh.noHead)
       str.append(" noHead");
-    else if (mesh.isBarb)
+    else if (dmesh.isBarb)
       str.append(" barb");
-    if (mesh.scale != 1
-        && (mesh.haveXyPoints || mesh.drawType == EnumDrawType.CIRCLE || mesh.drawType == EnumDrawType.ARC))
-      str.append(" scale ").appendF(mesh.scale);
-    if (mesh.width != 0)
+    if (dmesh.scale != 1
+        && (dmesh.haveXyPoints || dmesh.drawType == EnumDrawType.CIRCLE || dmesh.drawType == EnumDrawType.ARC))
+      str.append(" scale ").appendF(dmesh.scale);
+    if (dmesh.width != 0)
       str.append(" diameter ").appendF(
-          (mesh.drawType == EnumDrawType.CYLINDER ? Math.abs(mesh.width)
-              : mesh.drawType == EnumDrawType.CIRCULARPLANE ? Math
-                  .abs(mesh.width * mesh.scale) : mesh.width));
-    else if (mesh.diameter > 0)
-      str.append(" diameter ").appendI(mesh.diameter);
-    if (mesh.lineData != null) {
+          (dmesh.drawType == EnumDrawType.CYLINDER ? Math.abs(dmesh.width)
+              : dmesh.drawType == EnumDrawType.CIRCULARPLANE ? Math
+                  .abs(dmesh.width * dmesh.scale) : dmesh.width));
+    else if (dmesh.diameter > 0)
+      str.append(" diameter ").appendI(dmesh.diameter);
+    if (dmesh.lineData != null) {
       str.append("  lineData [");
-      int n = mesh.lineData.size();
+      int n = dmesh.lineData.size();
       for (int j = 0; j < n;) {
-        P3[] pts = mesh.lineData.get(j);
+        P3[] pts = dmesh.lineData.get(j);
         str.append(Escape.eP(pts[0]));
         str.append(" ");
         str.append(Escape.eP(pts[1]));
@@ -1350,9 +1356,9 @@ public void initShape() {
       }
       str.append("]");
     } else {
-      int nVertices = mesh.drawVertexCount > 0  || mesh.drawVertexCounts == null ? mesh.drawVertexCount
-          : mesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
-      switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
+      int nVertices = dmesh.drawVertexCount > 0  || dmesh.drawVertexCounts == null ? dmesh.drawVertexCount
+          : dmesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
+      switch (dmesh.drawTypes == null ? dmesh.drawType : dmesh.drawTypes[iModel]) {
       case NONE:
       case MULTIPLE:
         break;
@@ -1367,12 +1373,12 @@ public void initShape() {
         str.append(" LINE");
         break;
       case ARC:
-        str.append(mesh.isVector ? " ARROW ARC" : " ARC");
+        str.append(dmesh.isVector ? " ARROW ARC" : " ARC");
         break;
       case ARROW:
-        str.append(mesh.isVector ? " VECTOR" : " ARROW");
-        if (mesh.connections != null)
-          str.append(" connect ").append(Escape.eAI(mesh.connections));
+        str.append(dmesh.isVector ? " VECTOR" : " ARROW");
+        if (dmesh.connections != null)
+          str.append(" connect ").append(Escape.eAI(dmesh.connections));
         break;
       case CIRCLE:
         str.append(" CIRCLE");
@@ -1391,48 +1397,48 @@ public void initShape() {
         nVertices = 2; // because this might be multiple lines
         break;
       }
-      if (mesh.modelIndex < 0 && !mesh.isFixed) {
+      if (dmesh.modelIndex < 0 && !dmesh.isFixed) {
         for (int i = 0; i < modelCount; i++)
-          if (isPolygonDisplayable(mesh, i)) {
+          if (isPolygonDisplayable(dmesh, i)) {
             if (nVertices == 0)
-              nVertices = mesh.drawVertexCounts[i];
+              nVertices = dmesh.drawVertexCounts[i];
             str.append(" [ " + i);
-            String s = getVertexList(mesh, i, nVertices);
+            String s = getVertexList(dmesh, i, nVertices);
             if (s.indexOf("NaN") >= 0)
               return "";
             str.append(s);
             str.append(" ] ");
           }
-      } else if (mesh.drawType == EnumDrawType.POLYGON) {
-        for (int i = 0; i < mesh.vertexCount; i++)
-          str.append(" ").append(Escape.eP(mesh.vertices[i]));
-        str.append(" ").appendI(mesh.polygonCount);
-        for (int i = 0; i < mesh.polygonCount; i++)
-          if (mesh.polygonIndexes[i] == null)
+      } else if (dmesh.drawType == EnumDrawType.POLYGON) {
+        for (int i = 0; i < dmesh.vertexCount; i++)
+          str.append(" ").append(Escape.eP(dmesh.vertices[i]));
+        str.append(" ").appendI(dmesh.polygonCount);
+        for (int i = 0; i < dmesh.polygonCount; i++)
+          if (dmesh.polygonIndexes[i] == null)
             str.append(" [0 0 0 0]");
           else
-            str.append(" ").append(Escape.eAI(mesh.polygonIndexes[i]));
+            str.append(" ").append(Escape.eAI(dmesh.polygonIndexes[i]));
       } else {
-        String s = getVertexList(mesh, iModel, nVertices);
+        String s = getVertexList(dmesh, iModel, nVertices);
         if (s.indexOf("NaN") >= 0)
           return "";
         str.append(s);
       }
     }
-    if (mesh.mat4 != null) {
+    if (dmesh.mat4 != null) {
       V3 v = new V3();
-      mesh.mat4.get(v);
+      dmesh.mat4.get(v);
       str.append(" offset ").append(Escape.eP(v));
     }
-    if (mesh.title != null) {
+    if (dmesh.title != null) {
       String s = "";
-      for (int i = 0; i < mesh.title.length; i++)
-        s += "|" + mesh.title[i];
+      for (int i = 0; i < dmesh.title.length; i++)
+        s += "|" + dmesh.title[i];
       str.append(Escape.eS(s.substring(1)));
     }
     str.append(";\n");
-    appendCmd(str, mesh.getState("draw"));
-    appendCmd(str, getColorCommandUnk("draw", mesh.colix, translucentAllowed));
+    appendCmd(str, dmesh.getState("draw"));
+    appendCmd(str, getColorCommandUnk("draw", dmesh.colix, translucentAllowed));
     return str.toString();
   }
 
@@ -1490,7 +1496,7 @@ public void initShape() {
             continue;
           Map<String, Object> mInfo = new Hashtable<String, Object>();
           mInfo.put("modelIndex", Integer.valueOf(k));
-          mInfo.put("command", getDrawCommand2(mesh, k));
+          mInfo.put("command", getCommand2(mesh, k));
           mInfo.put("center", mesh.ptCenters[k]);
           int nPoints = mesh.drawVertexCounts[k];
           mInfo.put("vertexCount", Integer.valueOf(nPoints));
@@ -1509,7 +1515,7 @@ public void initShape() {
         }
         info.put("models", m);
       } else {
-        info.put("command", getDrawCommand(mesh));
+        info.put("command", getCommand(mesh));
         info.put("center", mesh.ptCenter);
         if (mesh.drawVertexCount > 1)
           info.put("axis", mesh.axis);
@@ -1535,7 +1541,7 @@ public void initShape() {
       DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0 && mesh.lineData == null)
         continue;
-      s.append(getDrawCommand2(mesh, mesh.modelIndex));
+      s.append(getCommand2(mesh, mesh.modelIndex));
       if (!mesh.visible)
         s.append(" draw " + mesh.thisID + " off;\n");
     }

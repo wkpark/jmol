@@ -9938,5 +9938,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void createModels(int n) {
     modelSet.createModels(n);
   }
+
+
+
+
+  public void setCGO(JmolList<Object> info) {
+    shapeManager.loadShape(JC.SHAPE_CGO);
+    shapeManager.setShapePropertyBs(JC.SHAPE_CGO, "setCGO", info, null);    
+  }
   
 }

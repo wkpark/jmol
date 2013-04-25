@@ -1368,9 +1368,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_MIN_MESH_COLLECTION = 22; //////////
   
     public final static int SHAPE_DRAW        = 22;
-    public final static int SHAPE_CGO         = 23;
   
-  public final static int SHAPE_MAX_SPECIAL = 24; //////////
+  public final static int SHAPE_MAX_SPECIAL = 23; //////////
+
+  public final static int SHAPE_CGO         = 23;
+
   public final static int SHAPE_MIN_SURFACE = 24; //////////
 
     public final static int SHAPE_ISOSURFACE  = 24;
@@ -1505,9 +1507,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         + (shapeID >= SHAPE_MIN_SECONDARY && shapeID < SHAPE_MAX_SECONDARY 
             ? "bio."
         : shapeID >= SHAPE_MIN_SPECIAL && shapeID < SHAPE_MAX_SPECIAL 
-            ? "special." 
+            ? "special."        
         : shapeID >= SHAPE_MIN_SURFACE && shapeID < SHAPE_MAX_SURFACE 
             ? "surface." 
+        : shapeID == SHAPE_CGO 
+            ? "cgo." 
         : ".") + shapeClassBases[shapeID];
   }
 

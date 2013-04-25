@@ -1,11 +1,11 @@
 /* $RCSfile$
  * $Author: hansonr $
- * $Date: 2006-02-25 17:19:14 -0600 (Sat, 25 Feb 2006) $
- * $Revision: 4529 $
+ * $Date: 2006-02-25 11:44:18 -0600 (Sat, 25 Feb 2006) $
+ * $Revision: 4528 $
  *
- * Copyright (C) 2002-2005  The Jmol Development Team
+ * Copyright (C) 2005  Miguel, Jmol Development
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: jmol-developers@lists.sf.net, jmol-developers@lists.sourceforge.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -21,8 +21,16 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+package org.jmol.rendercgo;
 
-package org.jmol.shapespecial;
 
-public class CGO extends Draw {
+import org.jmol.renderspecial.DrawRenderer;
+
+public class CGORenderer extends DrawRenderer {
+
+  @Override
+  protected boolean render() {
+    return super.render();
+  }
+  
 }

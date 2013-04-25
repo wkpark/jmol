@@ -15426,10 +15426,124 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return (String) getShapePropertyIndex(JC.SHAPE_MO, "showMO", ptMO);
   }
 
-  private void cgo() {
-    System.out.println("CGO command not implemented");
+  private void cgo() throws ScriptException {
+    sm.loadShape(JC.SHAPE_CGO);
+    if (tokAt(1) == T.list && listIsosurface(JC.SHAPE_CGO))
+      return;
+    int iptDisplayProperty = 0;
+    String thisId = initIsosurface(JC.SHAPE_CGO);
+    boolean idSeen = (thisId != null);
+    boolean isWild = (idSeen && getShapeProperty(JC.SHAPE_CGO, "ID") == null);
+    boolean isTranslucent = false;
+    boolean isInitialized = false;
+    float[] data = null;
+    float translucentLevel = Float.MAX_VALUE;
+    int colorArgb = Integer.MIN_VALUE;
+    int intScale = 0;
+    for (int i = iToken; i < slen; ++i) {
+      String propertyName = null;
+      Object propertyValue = null;
+      switch (getToken(i).tok) {
+      case T.varray:
+      case T.leftsquare:
+      case T.spacebeforesquare:
+        if (data != null || isWild)
+          error(ERROR_invalidArgument);
+        data = floatParameterSet(i, 2, Integer.MAX_VALUE);
+        i = iToken;
+        continue;
+      case T.scale:
+        if (++i >= slen)
+          error(ERROR_numberExpected);
+        switch (getToken(i).tok) {
+        case T.integer:
+          intScale = intParameter(i);
+          continue;
+        case T.decimal:
+          intScale = Math.round(floatParameter(i) * 100);
+          continue;
+        }
+        error(ERROR_numberExpected);
+        break;
+      case T.color:
+      case T.translucent:
+      case T.opaque:
+        if (theTok != T.color)
+          --i;
+        if (tokAt(i + 1) == T.translucent) {
+          i++;
+          isTranslucent = true;
+          if (isFloatParameter(i + 1))
+            translucentLevel = getTranslucentLevel(++i);
+        } else if (tokAt(i + 1) == T.opaque) {
+          i++;
+          isTranslucent = true;
+          translucentLevel = 0;
+        }
+        if (isColorParam(i + 1)) {
+          colorArgb = getArgbParam(++i);
+          i = iToken;
+        } else if (!isTranslucent) {
+          error(ERROR_invalidArgument);
+        }
+        idSeen = true;
+        continue;
+      case T.id:
+        thisId = setShapeId(JC.SHAPE_CGO, ++i, idSeen);
+        isWild = (getShapeProperty(JC.SHAPE_CGO, "ID") == null);
+        i = iToken;
+        break;
+      default:
+        if (!setMeshDisplayProperty(JC.SHAPE_CGO, 0, theTok)) {
+          if (theTok == T.times || T.tokAttr(theTok, T.identifier)) {
+            thisId = setShapeId(JC.SHAPE_CGO, i, idSeen);
+            i = iToken;
+            break;
+          }
+          error(ERROR_invalidArgument);
+        }
+        if (iptDisplayProperty == 0)
+          iptDisplayProperty = i;
+        i = iToken;
+        continue;
+      }
+      idSeen = (theTok != T.delete);
+      if (data != null && !isInitialized) {
+        propertyName = "points";
+        propertyValue = Integer.valueOf(intScale);
+        isInitialized = true;
+        intScale = 0;
+      }
+      if (propertyName != null)
+        setShapeProperty(JC.SHAPE_CGO, propertyName, propertyValue);
+    }
+    finalizeObject(JC.SHAPE_CGO, colorArgb, isTranslucent ? translucentLevel
+        : Float.NaN, intScale, data, iptDisplayProperty);
   }
   
+  private void finalizeObject(int shapeID, int colorArgb,
+                              float translucentLevel, int intScale,
+                              Object data, int iptDisplayProperty) throws ScriptException {
+    if (colorArgb != Integer.MIN_VALUE)
+      setShapeProperty(shapeID, "color", Integer
+          .valueOf(colorArgb));
+    if (translucentLevel != Float.MAX_VALUE)
+      setShapeTranslucency(shapeID, "", "translucent",
+          translucentLevel, null);
+    if (intScale != 0) {
+      setShapeProperty(shapeID, "scale", Integer
+          .valueOf(intScale));
+    }
+    if (data != null) {
+      setShapeProperty(shapeID, "set", data);
+    }
+    if (iptDisplayProperty > 0) {
+      if (!setMeshDisplayProperty(shapeID, iptDisplayProperty,
+          0))
+        error(ERROR_invalidArgument);
+    }
+  }
+
   private void draw() throws ScriptException {
     sm.loadShape(JC.SHAPE_DRAW);
     switch (tokAt(1)) {
@@ -15896,24 +16010,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (propertyName != null)
         setShapeProperty(JC.SHAPE_DRAW, propertyName, propertyValue);
     }
-    if (havePoints) {
-      setShapeProperty(JC.SHAPE_DRAW, "set", connections);
-    }
-    if (colorArgb != Integer.MIN_VALUE)
-      setShapeProperty(JC.SHAPE_DRAW, "color", Integer
-          .valueOf(colorArgb));
-    if (isTranslucent)
-      setShapeTranslucency(JC.SHAPE_DRAW, "", "translucent",
-          translucentLevel, null);
-    if (intScale != 0) {
-      setShapeProperty(JC.SHAPE_DRAW, "scale", Integer
-          .valueOf(intScale));
-    }
-    if (iptDisplayProperty > 0) {
-      if (!setMeshDisplayProperty(JC.SHAPE_DRAW, iptDisplayProperty,
-          0))
-        error(ERROR_invalidArgument);
-    }
+    finalizeObject(JC.SHAPE_DRAW, colorArgb, isTranslucent ? translucentLevel : Float.NaN, 
+        intScale, havePoints ? connections : null, iptDisplayProperty);
   }
 
   private void polyhedra() throws ScriptException {

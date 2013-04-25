@@ -132,6 +132,9 @@ public class ModelSettings {
     SB sb;
     float min, max;
     switch (id) {
+    case T.cgo:
+      sm.viewer.setCGO((JmolList<Object>)info);
+      return;
     case T.movie:
       sm.viewer.setMovie((Map<String, Object>) info);
       return;
@@ -168,7 +171,7 @@ public class ModelSettings {
                   + ";isosurface colorscheme rwb");
       sb.append("');");
       s = sb.toString();
-      System.out.println("shapeSettings: " + s);
+      //System.out.println("shapeSettings: " + s);
       sm.viewer.evaluateExpression(s);
       return;
     case T.mesh:
@@ -197,7 +200,7 @@ public class ModelSettings {
       sb.append(";set meshScale ").appendI(size / 500);
       sb.append("');");
       s = sb.toString();
-      System.out.println("shapeSettings: " + s);
+      //System.out.println("shapeSettings: " + s);
       sm.viewer.evaluateExpression(s);
       return;
     case JC.SHAPE_ISOSURFACE:
@@ -224,7 +227,7 @@ public class ModelSettings {
       if (translucency > 0)
         s += " translucent " + translucency;
       s += "')";
-      System.out.println("shapeSettings: " + s);
+      //System.out.println("shapeSettings: " + s);
       sm.viewer.evaluateExpression(s);
       return;
     case JC.SHAPE_LABELS:

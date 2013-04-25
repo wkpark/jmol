@@ -96,22 +96,28 @@ public class CGOMesh extends DrawMesh {
   @SuppressWarnings("unchecked")
   boolean set(JmolList<Object> list) {
     // vertices will be in list.get(0). normals?
-    JmolList<Object> cmds = (JmolList<Object>) list.get(list.size() - 1);
-    cmds = (JmolList<Object>) cmds.get(1);
-    int n = cmds.size();
-    for (int i = 0; i < n; i++) {
-      int type = ((Number)cmds.get(i)).intValue();
-      if (type == 0)
-        break;
-      int len = getSize(type);
-      if (len < 0) {
-        Logger.error("CGO unknown type: " + type);
-        return false; 
+    try {
+      JmolList<Object> cmds = (JmolList<Object>) list.get(list.size() - 2);
+      if (cmds == null)
+        cmds = (JmolList<Object>) list.get(list.size() - 3);
+      cmds = (JmolList<Object>) cmds.get(1);
+      int n = cmds.size();
+      for (int i = 0; i < n; i++) {
+        int type = ((Number) cmds.get(i)).intValue();
+        if (type == 0)
+          break;
+        int len = getSize(type);
+        if (len < 0) {
+          Logger.error("CGO unknown type: " + type);
+          return false;
+        }
+        Logger.info("CGO " + thisID + " type " + type);
+        i += len;
       }
-      Logger.info("CGO " + thisID + " type " + type);
-      i += len;
+      return true;
+    } catch (Exception e) {
+      Logger.error("CGOMesh error: " + e);
+      return false;
     }
-    return true;   
   }
-
 }

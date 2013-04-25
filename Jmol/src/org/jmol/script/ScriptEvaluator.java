@@ -15518,12 +15518,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         setShapeProperty(JC.SHAPE_CGO, propertyName, propertyValue);
     }
     finalizeObject(JC.SHAPE_CGO, colorArgb, isTranslucent ? translucentLevel
-        : Float.NaN, intScale, data, iptDisplayProperty);
+        : Float.MAX_VALUE, intScale, true, data, iptDisplayProperty);
   }
   
   private void finalizeObject(int shapeID, int colorArgb,
                               float translucentLevel, int intScale,
-                              Object data, int iptDisplayProperty) throws ScriptException {
+                              boolean havePoints, Object data, int iptDisplayProperty) throws ScriptException {
+    if (havePoints) {
+      setShapeProperty(shapeID, "set", data);
+    }
     if (colorArgb != Integer.MIN_VALUE)
       setShapeProperty(shapeID, "color", Integer
           .valueOf(colorArgb));
@@ -15533,9 +15536,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (intScale != 0) {
       setShapeProperty(shapeID, "scale", Integer
           .valueOf(intScale));
-    }
-    if (data != null) {
-      setShapeProperty(shapeID, "set", data);
     }
     if (iptDisplayProperty > 0) {
       if (!setMeshDisplayProperty(shapeID, iptDisplayProperty,
@@ -16010,8 +16010,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (propertyName != null)
         setShapeProperty(JC.SHAPE_DRAW, propertyName, propertyValue);
     }
-    finalizeObject(JC.SHAPE_DRAW, colorArgb, isTranslucent ? translucentLevel : Float.NaN, 
-        intScale, havePoints ? connections : null, iptDisplayProperty);
+    finalizeObject(JC.SHAPE_DRAW, colorArgb, isTranslucent ? translucentLevel : Float.MAX_VALUE, 
+        intScale, havePoints, connections, iptDisplayProperty);
   }
 
   private void polyhedra() throws ScriptException {

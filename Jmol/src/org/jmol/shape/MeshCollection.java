@@ -230,8 +230,9 @@ public abstract class MeshCollection extends Shape {
         return;
       colix = C.getColixO(value);
       color = ((Integer) value).intValue();
-      if (currentMesh != null)
+      if (currentMesh != null) {
         currentMesh.color = color;
+      }
       setTokenProperty(T.color, false, false);
       return;
     }

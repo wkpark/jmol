@@ -26,9 +26,10 @@ package org.jmol.shapecgo;
 
 
 
-import jspecview.util.Logger;
 
 import org.jmol.shapespecial.DrawMesh;
+import org.jmol.util.JmolList;
+import org.jmol.util.Logger;
 
 /*
  * Compiled Graphical Object -- ala PyMOL
@@ -92,9 +93,14 @@ public class CGOMesh extends DrawMesh {
   public static int RESET_NORMAL        = 28;
   public static int PICK_COLOR          = 29;
 
-  boolean set(float[] data) {
-    for (int i = 0; i < data.length; i++) {
-      int type = (int) data[i];
+  @SuppressWarnings("unchecked")
+  boolean set(JmolList<Object> list) {
+    // vertices will be in list.get(0). normals?
+    JmolList<Object> cmds = (JmolList<Object>) list.get(list.size() - 1);
+    cmds = (JmolList<Object>) cmds.get(1);
+    int n = cmds.size();
+    for (int i = 0; i < n; i++) {
+      int type = ((Number)cmds.get(i)).intValue();
       if (type == 0)
         break;
       int len = getSize(type);

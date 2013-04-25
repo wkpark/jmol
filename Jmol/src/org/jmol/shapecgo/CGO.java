@@ -76,11 +76,8 @@ public class CGO extends Draw {
       setProperty("init", null, null);
       int n = list.size() - 1;
       setProperty("thisID", list.get(n), null);
-      float[] data = new float[n];
-      for (int i = n; --i >= 0;)
-        data[i] = ((Number) list.get(i)).floatValue();
       propertyName = "set";
-      setProperty("set", data, null);
+      setProperty("set", value, null);
       return;
     }
     
@@ -90,7 +87,7 @@ public class CGO extends Draw {
         cgoMesh.colix = colix;
         cgoMesh.color = color;
       }
-      cgoMesh.isValid = setCGO((float[]) value);
+      cgoMesh.isValid = setCGO((JmolList<Object>) value);
       if (cgoMesh.isValid) {
         scale(cgoMesh, newScale);
         cgoMesh.initialize(T.fullylit, null, null);
@@ -132,7 +129,7 @@ public class CGO extends Draw {
     setPropertySuper(propertyName, value, bs);
   }
 
-  private boolean setCGO(float[] data) {
+  private boolean setCGO(JmolList<Object> data) {
     if (cgoMesh == null)
       allocMesh(null, null);
     cgoMesh.clear("cgo");

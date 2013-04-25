@@ -527,7 +527,7 @@ public class PyMOLReader extends PdbReader {
   private void processCGO(JmolList<Object> deepBranch) {
     if (isHidden)
       return;
-    JmolList<Object> data = getList(getList(getList(getList(deepBranch, 2), 0), 0), 1);
+    JmolList<Object> data = getList(getList(deepBranch, 2), 0);
     data.addLast(branchName);
     ModelSettings ms = new ModelSettings(T.cgo, null, data);
     modelSettings.addLast(ms);

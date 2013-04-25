@@ -37,7 +37,6 @@ class PickleReader {
   private Viewer viewer;
   private int id;
 
-
   final private static byte APPEND = 97; /* a */
   final private static byte APPENDS = 101; /* e */
   final private static byte BINFLOAT = 71; /* G */
@@ -59,27 +58,28 @@ class PickleReader {
   final private static byte SETITEMS = 117; /* u */
   final private static byte SHORT_BINSTRING = 85; /* U */
   final private static byte STOP = 46; /* . */
-
   final private static byte BINGET = 104; /* h */
-  //  final private static byte BINPERSID = 81; /* Q */
-  //  final private static byte DICT = 100; /* d */
-  //  final private static byte DUP = 50; /* 2 */
-  //  final private static byte EMPTY_TUPLE = 41; /* ) */
-  //  final private static byte FLOAT = 70; /* F */
-  //  final private static byte GET = 103; /* g */
-  //  final private static byte INST = 105; /* i */
-  //  final private static byte INT = 73; /* I */
-  //  final private static byte LIST = 108; /* l */
-  //  final private static byte LONG = 76; /* L */
   final private static byte LONG_BINGET = 106; /* j */
-  //  final private static byte PERSID = 80; /* P */
-  //  final private static byte POP = 48; /* 0 */
-  //  final private static byte POP_MARK = 49; /* 1 */
-  //  final private static byte PUT = 112; /* p */
-  //  final private static byte REDUCE = 82; /* R */
-  //  final private static byte STRING = 83; /* S */
   final private static byte TUPLE = 116; /* t */
-  //  final private static byte UNICODE = 86; /* V */
+  final private static byte INT = 73; /* I */
+
+
+//  final private static byte BINPERSID = 81; /* Q */
+//  final private static byte DICT = 100; /* d */
+//  final private static byte DUP = 50; /* 2 */
+//  final private static byte EMPTY_TUPLE = 41; /* ) */
+//  final private static byte FLOAT = 70; /* F */
+//  final private static byte GET = 103; /* g */
+//  final private static byte INST = 105; /* i */
+//  final private static byte LIST = 108; /* l */
+//  final private static byte LONG = 76; /* L */
+//  final private static byte PERSID = 80; /* P */
+//  final private static byte POP = 48; /* 0 */
+//  final private static byte POP_MARK = 49; /* 1 */
+//  final private static byte PUT = 112; /* p */
+//  final private static byte REDUCE = 82; /* R */
+//  final private static byte STRING = 83; /* S */
+//  final private static byte UNICODE = 86; /* V */
 
   PickleReader(JmolDocument doc, Viewer viewer) {
     binaryDoc = doc;
@@ -256,10 +256,22 @@ class PickleReader {
         // used for view_dict
         push(getObjects(getMark()));
         break;
+      case INT:
+        /// 0x88000000 for instance
+        s = readString();
+        try {
+          push(Integer.valueOf(Integer.parseInt(s)));
+        } catch (Exception e) {
+          long ll = Long.parseLong(s);
+          push(Integer.valueOf((int) (ll & 0xFFFFFFFF)));
+          System.out.println("INT too large: " + s + " @ " + binaryDoc.getPosition());
+          push(Integer.valueOf(Integer.MAX_VALUE));
+        }
+        break;
       default:
 
         // not used?
-        System.out.println("PyMOL reader error: " + b + " "
+        System.out.println("Pickle reader error: " + b + " "
             + binaryDoc.getPosition());
 
         //        switch (b) {
@@ -297,15 +309,6 @@ class PickleReader {
         //          module = readString();
         //          name = readString();
         //          push(new Object[] { "inst", module, name, l });
-        //          break;
-        //        case INT:
-        //          s = readString();
-        //          try {
-        //            push(Integer.valueOf(Integer.parseInt(s)));
-        //          } catch (Exception e) {
-        //            System.out.println("INT too large: " + s + " @ " + binaryDoc.getPosition());
-        //            push(Integer.valueOf(Integer.MAX_VALUE));
-        //          }
         //          break;
         //        case LIST:
         //          push(getObjects(getMark()));

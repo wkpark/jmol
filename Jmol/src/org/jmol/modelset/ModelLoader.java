@@ -267,6 +267,10 @@ public final class ModelLoader {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
     if (nAtoms > 0)
       Logger.info("reading " + nAtoms + " atoms");
+    if (nAtoms == 0 && adapter != null) {
+      Logger.error("no atoms found -- ignoring all data");
+      adapter = null;
+    }
     adapterModelCount = (adapter == null ? 1 : adapter
         .getAtomSetCount(atomSetCollection));
     // cannot append a trajectory into a previous model

@@ -281,6 +281,8 @@ public class PyMOLReader extends PdbReader {
 
     setDefinitions();
     setRendering(getMapList(map, "view"));
+    if (atomCount == 0)
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("dataOnly", Boolean.TRUE);
   }
 
   private void proecssMeshes() {
@@ -402,6 +404,8 @@ public class PyMOLReader extends PdbReader {
   }
 
   private static int getInt(JmolList<Object> list, int i) {
+    if (list.get(i) instanceof Double)
+      System.out.println("OHOH");
     return ((Integer) list.get(i)).intValue();
   }
 

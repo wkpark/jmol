@@ -385,7 +385,7 @@ public abstract class AtomSetCollectionReader {
           + "\ntype " + name;
     if ((atomSetCollection.bsAtoms == null ? atomSetCollection.getAtomCount()
         : atomSetCollection.bsAtoms.cardinality()) == 0
-        && fileType.indexOf("DataOnly") < 0)
+        && fileType.indexOf("DataOnly") < 0 && atomSetCollection.getAtomSetCollectionAuxiliaryInfo("dataOnly") == null)
       return "No atoms found\nfor file " + filePath + "\ntype " + name;
     return atomSetCollection;
   }

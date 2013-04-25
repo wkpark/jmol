@@ -157,10 +157,10 @@ class AtomPropertyMapper extends AtomDataReader {
     iAtomSurface = -1;
     while (iter.hasNext()) {
       int ia = iter.next();
-      int iAtom = myIndex[ia];
-      boolean isNearby = (iAtom >= firstNearbyAtom);
-      P3 ptA = atomXyz[iAtom];
-      float p = atomProp[iAtom];
+      int myAtom = myIndex[ia];
+      boolean isNearby = (myAtom >= firstNearbyAtom);
+      P3 ptA = atomXyz[myAtom];
+      float p = atomProp[myAtom];
       //System.out.println(iAtom + " " + ia + ptA + " " + isNearby + " " + p);
       if (Float.isNaN(p))
         continue;

@@ -825,7 +825,7 @@ public abstract class SurfaceReader implements VertexDataServer {
         //marchingSquares
         //    .getInterpolatedPixelValue(meshData.vertices[i]);
         } else {
-          boolean needSource = (haveSurfaceAtoms && meshData.vertexSource[i] < 0);
+          boolean needSource = haveSurfaceAtoms;//(haveSurfaceAtoms && meshData.vertexSource[i] < 0);
           value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i], needSource);
           //System.out.println(i + " " + meshData.vertices[i] + " " + value);
           if (needSource)

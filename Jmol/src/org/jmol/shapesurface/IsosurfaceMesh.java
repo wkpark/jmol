@@ -726,7 +726,7 @@ public class IsosurfaceMesh extends Mesh {
       for (int i = mergeVertexCount0; i < vertexCount; i++) {
         int pt = vertexSource[i];
         if (pt < atoms.length)
-          jvxlData.vertexColors[i] = C.getArgb(vertexColixes[i] = C.copyColixTranslucency(colix,
+          jvxlData.vertexColors[i] = viewer.getColorArgbOrGray(vertexColixes[i] = C.copyColixTranslucency(colix,
             atoms[pt].getColix()));
       }
       return;

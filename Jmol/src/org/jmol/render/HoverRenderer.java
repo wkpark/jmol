@@ -48,12 +48,10 @@ public class HoverRenderer extends LabelsRenderer {
       if (label == null)
         return false;
       text.setText(label);
-      text.setMovableX(atom.screenX);
-      text.setMovableY(atom.screenY);
+      text.setXYZs(atom.screenX, atom.screenY, 1, Integer.MIN_VALUE);
     } else if (hover.text != null) {
       text.setText(hover.text);
-      text.setMovableX(hover.xy.x);
-      text.setMovableY(hover.xy.y);
+      text.setXYZs(hover.xy.x, hover.xy.y, 1, Integer.MIN_VALUE);
     } else {
       return true;
     }

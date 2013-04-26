@@ -31,6 +31,8 @@ import org.jmol.shape.Labels;
 import org.jmol.shape.Object2d;
 import org.jmol.shape.Text;
 import org.jmol.util.JmolFont;
+import org.jmol.util.P3;
+import org.jmol.util.P3i;
 
 public class LabelsRenderer extends ShapeRenderer {
 
@@ -42,6 +44,8 @@ public class LabelsRenderer extends ShapeRenderer {
   final int[] minZ = new int[1];
   private int zCutoff;
   protected float[] xy = new float[3];
+  private P3 pTemp = new P3();
+  private P3i screen = new P3i();
   
   @Override
   protected boolean render() {
@@ -116,7 +120,19 @@ public class LabelsRenderer extends ShapeRenderer {
       if (text != null) {
         if (text.font == null)
           text.setFontFromFid(fid);
-        text.setXYZs(atom.screenX, atom.screenY, zBox, zSlab);
+        if (text.pymolOffset == null) {
+          text.setXYZs(atom.screenX, atom.screenY, zBox, zSlab);          
+        } else {
+          if (text.pymolOffset[0] == 1)
+            pTemp.setT(atom);
+          else
+            pTemp.set(0, 0, 0);
+          pTemp.x += text.pymolOffset[4];
+          pTemp.y += text.pymolOffset[5];
+          pTemp.z += text.pymolOffset[6];
+          viewer.transformPtScr(pTemp, screen);
+          text.setXYZs(screen.x, screen.y, screen.z, zSlab);          
+        }
         if (text.pymolOffset == null) { 
           text.setColix(colix);
           text.setBgColix(bgcolix);          
@@ -149,8 +165,9 @@ public class LabelsRenderer extends ShapeRenderer {
               pointerColix, isExact);
           atom = null;
         } else {
-          text = Text.newLabel(g3d.getGData(), font3d, label, colix, bgcolix, atom.screenX,
-              atom.screenY, zBox, zSlab, textAlign, 0, null);
+          text = Text.newLabel(g3d.getGData(), font3d, label, colix, bgcolix, textAlign,
+              0, null);
+          text.setXYZs(atom.screenX, atom.screenY, zBox, zSlab);
           labels.putLabel(i, text);
         }
       }

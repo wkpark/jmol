@@ -420,7 +420,7 @@ public class PyMOLReader extends PdbReader {
 
   @SuppressWarnings("unchecked")
   static JmolList<Object> getList(JmolList<Object> list, int i) {
-    if (list == null || list.size() <= i)
+    if (list == null || i >= list.size())
       return null;
     Object o = list.get(i);
     return (o instanceof JmolList<?> ? (JmolList<Object>) o : null);
@@ -724,7 +724,7 @@ public class PyMOLReader extends PdbReader {
           bsState.set(getInt(idxToAtm, j));
       }
       for (int i = bsState.nextSetBit(0); i >= 0; i = bsState.nextSetBit(i + 1))
-        if (!addAtom(pymolAtoms, i, -1, null, bsAtoms))
+        if (!addAtom(pymolAtoms, i, -1, null, null, bsAtoms))
           bsState.clear(i);
       for (int i = 0; i < ns; i++) {
         JmolList<Object> state = getList(states, i);
@@ -758,6 +758,7 @@ public class PyMOLReader extends PdbReader {
         JmolList<Object> state = getList(states, i);
         JmolList<Object> coords = getList(state, 2);
         JmolList<Object> idxToAtm = getList(state, 3);
+        JmolList<Object> labelPositions = getList(state, 8);
         int n = idxToAtm.size();
         String name = getString(state, 5).trim();
         if (n == 0)
@@ -774,7 +775,7 @@ public class PyMOLReader extends PdbReader {
         }
         model(++nModels);
         for (int idx = 0; idx < n; idx++)
-          addAtom(pymolAtoms, getInt(idxToAtm, idx), idx, coords, bsState);
+          addAtom(pymolAtoms, getInt(idxToAtm, idx), idx, coords, labelPositions, bsState);
         if (bsState != null) {
           bsAtoms.or(bsState);
         }
@@ -786,160 +787,6 @@ public class PyMOLReader extends PdbReader {
     
     Logger.info("reading " + (atomCount - atomCount0) + " atoms");
     dumpBranch();
-  }
-
-  private void setAtomReps(int iAtom, int atomColor) {
-    PyMOLAtom atom = (PyMOLAtom) atomSetCollection.getAtom(iAtom);
-
-    for (int i = 0; i < PyMOL.REP_MAX; i++)
-      if (atom.bsReps.get(i))
-        reps[i].set(iAtom);
-    if (reps[PyMOL.REP_LABELS].get(iAtom)) {
-      if (atom.label.equals(" "))
-        reps[PyMOL.REP_LABELS].clear(iAtom);
-      else {
-        int icolor = (int) getUniqueFloat(atom.uniqueID, PyMOL.label_color, labelColor);
-        if (icolor < 0)
-          icolor = atomColor;
-        P3 offset = getUniquePoint(atom.uniqueID, PyMOL.label_position, null);
-        if (offset == null)
-          offset = labelPosition;
-        else 
-          offset.add(labelPosition);
-        labels.addLast(newTextLabel(atom.label, offset, 
-            getColix(icolor, 0),
-            (int) getUniqueFloat(atom.uniqueID, PyMOL.label_font_id, labelFontId),
-            getUniqueFloat(atom.uniqueID, PyMOL.label_size, labelSize)));
-      }
-    }
-    boolean isSphere = reps[PyMOL.REP_SPHERES].get(iAtom);
-    if (!isSphere && !solventAsSpheres && reps[PyMOL.REP_NONBONDED].get(iAtom)
-        && !atom.bonded) {
-      reps[PyMOL.REP_NBSPHERES].clear(iAtom);
-      //reps[PyMOL.REP_SPHERES].clear(iAtom);
-      reps[PyMOL.REP_NONBONDED].clear(iAtom);
-      reps[REP_JMOL_STARS].set(iAtom);
-    }
-    float rad = 0;
-    if (isSphere) {
-      float mySphereSize = getUniqueFloat(atom.uniqueID, PyMOL.sphere_scale,
-          sphereScale);
-      // nl1_nl2 -- stumped!
-      rad = atom.radius * mySphereSize;
-    } else if (reps[PyMOL.REP_NONBONDED].get(iAtom)
-        || reps[PyMOL.REP_NBSPHERES].get(iAtom)) {
-      // Penta_vs_mutants calcium
-      float myNonBondedSize = getUniqueFloat(atom.uniqueID,
-          PyMOL.nonbonded_size, nonBondedSize);
-      rad = -atom.radius * myNonBondedSize;
-    }
-    if (!usePymolRadii)
-      atom.radius = Float.NaN; // sorry, can't use these for surfaces
-    if (rad != 0)
-      addSpacefill(iAtom, rad);
-    if (reps[PyMOL.REP_CARTOON].get(iAtom)) {
-      /*
-            -1 => { type=>'skip',       converted=>undef },
-             0 => { type=>'automatic',  converted=>1 },
-             1 => { type=>'loop',       converted=>1 },
-             2 => { type=>'rectangle',  converted=>undef },
-             3 => { type=>'oval',       converted=>undef },
-             4 => { type=>'tube',       converted=>1 },
-             5 => { type=>'arrow',      converted=>undef },
-             6 => { type=>'dumbbell',   converted=>undef },
-             7 => { type=>'putty',      converted=>1 },
-
-       */
-      switch (atom.cartoonType) {
-      case -1:
-        reps[PyMOL.REP_CARTOON].clear(iAtom);
-        break;
-      case 1:
-        reps[REP_JMOL_TRACE].set(iAtom);
-        break;
-      case 4:
-        reps[REP_JMOL_TRACE].set(iAtom);
-        break;
-      case 7:
-        reps[PyMOL.REP_CARTOON].clear(iAtom);
-        reps[REP_JMOL_PUTTY].set(iAtom);
-        break;
-      }
-    }
-  }
-  
-  private Text newTextLabel(String label, P3 labelOffset, short colix,
-                            int fontID, float fontSize) {
-    // 0 GLUT 8x13 
-    // 1 GLUT 9x15 
-    // 2 GLUT Helvetica10 
-    // 3 GLUT Helvetica12 
-    // 4 GLUT Helvetica18 
-    // 5 DejaVuSans
-    // 6 DejaVuSans_Oblique
-    // 7 DejaVuSans_Bold
-    // 8 DejaVuSans_BoldOblique
-    // 9 DejaVuSerif
-    // 10 DejaVuSerif_Bold
-    // 11 DejaVuSansMono
-    // 12 DejaVuSansMono_Oblique
-    // 13 DejaVuSansMono_Bold
-    // 14 DejaVuSansMono_BoldOblique
-    // 15 GenR102
-    // 16 GenI102
-    // 17 DejaVuSerif_Oblique
-    // 18 DejaVuSerif_BoldOblique
-
-    String face;
-    float factor = 1f;
-    switch (fontID) {
-    default:
-    case 11:
-    case 12:
-    case 13:
-    case 14:
-      // 11-14: Jmol doesn't support sansserif mono -- just using SansSerif here
-      face = "SansSerif";
-      break;
-    case 0:
-    case 1:
-      face = "Monospaced";
-      break;
-    case 9:
-    case 10:
-    case 15:
-    case 16:
-    case 17:
-    case 18:
-      face = "Serif";
-      break;
-    }
-    String style;
-    switch (fontID) {
-    default:
-      style = "Plain";
-      break;
-    case 6:
-    case 12:
-    case 16:
-    case 17:
-      style = "Italic";
-      break;
-    case 7:
-    case 10:
-    case 13:
-      style = "Bold";
-      break;
-    case 8:
-    case 14:
-    case 18:
-      style = "BoldItalic";
-      break;
-    }
-    JmolFont font = viewer.getFont3D(face, style, fontSize == 0 ? 12 : fontSize * factor);
-    Text t = Text.newLabel(viewer.getGraphicsData(), font, label, colix,
-        (short) 0, 0, 0, 0, 0, 0, 0, labelOffset);
-    return t;
   }
 
   private void setBonds(JmolList<Bond> bonds) {
@@ -1110,13 +957,15 @@ public class PyMOLReader extends PdbReader {
    *        array pointer into coords (/3)
    * @param coords
    *        coordinates array
+   * @param labelPositions 
    * @param bsState
    *        this state -- Jmol atomIndex
    * @return true if successful
    * 
    */
   private boolean addAtom(JmolList<Object> pymolAtoms, int apt, int icoord,
-                          JmolList<Object> coords, BS bsState) {
+                          JmolList<Object> coords, 
+                          JmolList<Object> labelPositions, BS bsState) {
     atomMap[apt] = -1;
     JmolList<Object> a = getList(pymolAtoms, apt);
     int seqNo = getInt(a, 0); // may be negative
@@ -1213,9 +1062,174 @@ public class PyMOLReader extends PdbReader {
         data[i] = getFloatAt(a, i + 41);
       atomSetCollection.setAnisoBorU(atom, data, 12);
     }
-    setAtomReps(atomCount, atomColor);
+    setAtomReps(apt, atomCount, atomColor, labelPositions);
     atomMap[apt] = atomCount++;
     return true;
+  }
+
+  private void setAtomReps(int apt, int iAtom, int atomColor, JmolList<Object> labelPositions) {
+    PyMOLAtom atom = (PyMOLAtom) atomSetCollection.getAtom(iAtom);
+
+    for (int i = 0; i < PyMOL.REP_MAX; i++)
+      if (atom.bsReps.get(i))
+        reps[i].set(iAtom);
+    if (reps[PyMOL.REP_LABELS].get(iAtom)) {
+      if (atom.label.equals(" "))
+        reps[PyMOL.REP_LABELS].clear(iAtom);
+      else {
+        int icolor = (int) getUniqueFloat(atom.uniqueID, PyMOL.label_color, labelColor);
+        if (icolor < 0)
+          icolor = atomColor;
+        float[] labelPos = new float[7];
+        JmolList<Object> labelOffset = getList(labelPositions, apt);
+        if (labelOffset == null) {
+          P3 offset = getUniquePoint(atom.uniqueID, PyMOL.label_position, null);
+          if (offset == null)
+            offset = labelPosition;
+          else 
+            offset.add(labelPosition);
+          labelPos[0] = 1;
+          labelPos[1] = offset.x;
+          labelPos[2] = offset.y;
+          labelPos[3] = offset.z;
+        } else {
+          for (int i = 0; i < 7; i++)
+            labelPos[i] = getFloatAt(labelOffset, i);
+        }
+        labels.addLast(newTextLabel(atom.label, labelPos, 
+            getColix(icolor, 0),
+            (int) getUniqueFloat(atom.uniqueID, PyMOL.label_font_id, labelFontId),
+            getUniqueFloat(atom.uniqueID, PyMOL.label_size, labelSize)));
+      }
+    }
+    boolean isSphere = reps[PyMOL.REP_SPHERES].get(iAtom);
+    if (!isSphere && !solventAsSpheres && reps[PyMOL.REP_NONBONDED].get(iAtom)
+        && !atom.bonded) {
+      reps[PyMOL.REP_NBSPHERES].clear(iAtom);
+      //reps[PyMOL.REP_SPHERES].clear(iAtom);
+      reps[PyMOL.REP_NONBONDED].clear(iAtom);
+      reps[REP_JMOL_STARS].set(iAtom);
+    }
+    float rad = 0;
+    if (isSphere) {
+      float mySphereSize = getUniqueFloat(atom.uniqueID, PyMOL.sphere_scale,
+          sphereScale);
+      // nl1_nl2 -- stumped!
+      rad = atom.radius * mySphereSize;
+    } else if (reps[PyMOL.REP_NONBONDED].get(iAtom)
+        || reps[PyMOL.REP_NBSPHERES].get(iAtom)) {
+      // Penta_vs_mutants calcium
+      float myNonBondedSize = getUniqueFloat(atom.uniqueID,
+          PyMOL.nonbonded_size, nonBondedSize);
+      rad = -atom.radius * myNonBondedSize;
+    }
+    if (!usePymolRadii)
+      atom.radius = Float.NaN; // sorry, can't use these for surfaces
+    if (rad != 0)
+      addSpacefill(iAtom, rad);
+    if (reps[PyMOL.REP_CARTOON].get(iAtom)) {
+      /*
+            -1 => { type=>'skip',       converted=>undef },
+             0 => { type=>'automatic',  converted=>1 },
+             1 => { type=>'loop',       converted=>1 },
+             2 => { type=>'rectangle',  converted=>undef },
+             3 => { type=>'oval',       converted=>undef },
+             4 => { type=>'tube',       converted=>1 },
+             5 => { type=>'arrow',      converted=>undef },
+             6 => { type=>'dumbbell',   converted=>undef },
+             7 => { type=>'putty',      converted=>1 },
+
+       */
+      switch (atom.cartoonType) {
+      case -1:
+        reps[PyMOL.REP_CARTOON].clear(iAtom);
+        break;
+      case 1:
+        reps[REP_JMOL_TRACE].set(iAtom);
+        break;
+      case 4:
+        reps[REP_JMOL_TRACE].set(iAtom);
+        break;
+      case 7:
+        reps[PyMOL.REP_CARTOON].clear(iAtom);
+        reps[REP_JMOL_PUTTY].set(iAtom);
+        break;
+      }
+    }
+  }
+  
+  private Text newTextLabel(String label, float[] labelOffset, short colix,
+                            int fontID, float fontSize) {
+    // 0 GLUT 8x13 
+    // 1 GLUT 9x15 
+    // 2 GLUT Helvetica10 
+    // 3 GLUT Helvetica12 
+    // 4 GLUT Helvetica18 
+    // 5 DejaVuSans
+    // 6 DejaVuSans_Oblique
+    // 7 DejaVuSans_Bold
+    // 8 DejaVuSans_BoldOblique
+    // 9 DejaVuSerif
+    // 10 DejaVuSerif_Bold
+    // 11 DejaVuSansMono
+    // 12 DejaVuSansMono_Oblique
+    // 13 DejaVuSansMono_Bold
+    // 14 DejaVuSansMono_BoldOblique
+    // 15 GenR102
+    // 16 GenI102
+    // 17 DejaVuSerif_Oblique
+    // 18 DejaVuSerif_BoldOblique
+
+    String face;
+    float factor = 1f;
+    switch (fontID) {
+    default:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+      // 11-14: Jmol doesn't support sansserif mono -- just using SansSerif here
+      face = "SansSerif";
+      break;
+    case 0:
+    case 1:
+      face = "Monospaced";
+      break;
+    case 9:
+    case 10:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+      face = "Serif";
+      break;
+    }
+    String style;
+    switch (fontID) {
+    default:
+      style = "Plain";
+      break;
+    case 6:
+    case 12:
+    case 16:
+    case 17:
+      style = "Italic";
+      break;
+    case 7:
+    case 10:
+    case 13:
+      style = "Bold";
+      break;
+    case 8:
+    case 14:
+    case 18:
+      style = "BoldItalic";
+      break;
+    }
+    JmolFont font = viewer.getFont3D(face, style, fontSize == 0 ? 12 : fontSize * factor);
+    Text t = Text.newLabel(viewer.getGraphicsData(), font, label, colix,
+        (short) 0, 0, 0, labelOffset);
+    return t;
   }
 
   private short getColix(int colorIndex, float translucency) {
@@ -1692,7 +1706,7 @@ public class PyMOLReader extends PdbReader {
   }
 
   private boolean isSequential(int i, int iPrev) {
-    if (i != iPrev + 1)
+    if (i == 0 || iPrev < 0)
       return false;
     Atom a = atomSetCollection.getAtom(iPrev);
     Atom b = atomSetCollection.getAtom(i);

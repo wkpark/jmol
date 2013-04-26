@@ -51,10 +51,16 @@ public abstract class Object2d {
   protected int movableXPercent = Integer.MAX_VALUE;
   protected int movableYPercent = Integer.MAX_VALUE;
   public int movableZPercent = Integer.MAX_VALUE;
+  
   protected int offsetX;
   protected int offsetY;
-  public int z;
-  public int zSlab; // z for slabbing purposes -- may be near an atom
+  public int z = 1; // front plane
+  public int zSlab = Integer.MIN_VALUE; // z for slabbing purposes -- may be near an atom
+  
+  // PyMOL-type offset
+  // [mode, screenoffsetx,y,z (applied after tranform), positionOffsetx,y,z (applied before transform)]
+  public float[] pymolOffset;
+
   protected int windowWidth;
   protected int windowHeight;
   protected boolean adjustForWindow;
@@ -70,7 +76,6 @@ public abstract class Object2d {
   public float[] boxXY = new float[5];
   
   protected float scalePixelsPerMicron;
-  public P3 pymolOffset;
 
   public float getScalePixelsPerMicron() {
     return scalePixelsPerMicron;
@@ -126,24 +131,24 @@ public abstract class Object2d {
     bgcolix = (value == null ? (short) 0 : C.getColixO(value));
   }
 
-  public void setMovableX(int x) {
+  private void setMovableX(int x) {
     valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);
     movableX = x;
     movableXPercent = Integer.MAX_VALUE;
   }
 
-  public void setMovableY(int y) {
+  private void setMovableY(int y) {
     valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);
     movableY = y;
     movableYPercent = Integer.MAX_VALUE;
   }
 
-  public void setMovableZ(int z) {
-    if (valign != VALIGN_XYZ)
-      valign = VALIGN_XY;
-    movableZ = z;
-    movableZPercent = Integer.MAX_VALUE;
-  }
+//  public void setMovableZ(int z) {
+//    if (valign != VALIGN_XYZ)
+//      valign = VALIGN_XY;
+//    movableZ = z;
+//    movableZPercent = Integer.MAX_VALUE;
+//  }
 
   public void setMovableXPercent(int x) {
     valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);

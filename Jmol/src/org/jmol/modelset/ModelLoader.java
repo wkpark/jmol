@@ -90,13 +90,11 @@ public final class ModelLoader {
   private String[] group3Lists;
   private int[][] group3Counts;
   private final int[] specialAtomIndexes = new int[JC.ATOMID_MAX];
-  private String fileName;
   
-  public ModelLoader(Viewer viewer, String fullPathName, String modelSetName,
+  public ModelLoader(Viewer viewer, String modelSetName,
       SB loadScript, Object atomSetCollection, ModelSet mergeModelSet,
       BS bsNew) {
     this.viewer = viewer;
-    this.fileName = fullPathName;
     modelSet = new ModelSet(viewer, modelSetName);
     JmolAdapter adapter = viewer.getModelAdapter();
     this.mergeModelSet = mergeModelSet;
@@ -188,11 +186,6 @@ public final class ModelLoader {
     if (info != null) {
       info.remove("pdbNoHydrogens");
       info.remove("trajectorySteps");
-      Object surfaceInfo = info.get("jmolSurfaceInfo");
-      // cache surface data from a PyMOL session file and remove it
-      if (surfaceInfo != null)
-        viewer.cachePut(fileName + "#jmolSurfaceInfo", surfaceInfo);
-      info.remove("jmolSurfaceInfo");
       if (isTrajectory)
         modelSet.vibrationSteps = (JmolList<V3[]>) info.remove("vibrationSteps");
     }

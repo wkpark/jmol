@@ -792,9 +792,8 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public boolean getModelSetAuxiliaryInfoBoolean(String keyName) {
-    Map<String, Object> info = modelSetAuxiliaryInfo;
-    return (info != null && info.containsKey(keyName) && ((Boolean) info
-        .get(keyName)).booleanValue());    
+    Object val = getModelSetAuxiliaryInfoValue(keyName);
+    return (val instanceof Boolean && ((Boolean) val).booleanValue());
   }
 
   /*

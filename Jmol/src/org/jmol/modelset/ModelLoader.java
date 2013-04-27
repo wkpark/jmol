@@ -84,16 +84,19 @@ public final class ModelLoader {
   private ModelSet mergeModelSet;
 
   private boolean merging;
+  private boolean appendNew;
 
   private String jmolData; // from a PDB remark "Jmol PDB-encoded data"
   private String[] group3Lists;
   private int[][] group3Counts;
   private final int[] specialAtomIndexes = new int[JC.ATOMID_MAX];
+  private String fileName;
   
-  public ModelLoader(Viewer viewer, String modelSetName,
+  public ModelLoader(Viewer viewer, String fullPathName, String modelSetName,
       SB loadScript, Object atomSetCollection, ModelSet mergeModelSet,
       BS bsNew) {
     this.viewer = viewer;
+    this.fileName = fullPathName;
     modelSet = new ModelSet(viewer, modelSetName);
     JmolAdapter adapter = viewer.getModelAdapter();
     this.mergeModelSet = mergeModelSet;
@@ -138,13 +141,16 @@ public final class ModelLoader {
 */
 
   private boolean someModelsHaveUnitcells;
+  private boolean is2D;
+  private boolean isPDB;
   private boolean isTrajectory; 
+  private boolean isPyMOLsession;
   private boolean doMinimize;
   private boolean doAddHydrogens;
   private boolean doRemoveAddedHydrogens;
+
   private String fileHeader;
   private JmolBioResolver jbr;
-  private boolean isPDB;
   private Group[] groups;
   private int groupCount;
   
@@ -175,12 +181,18 @@ public final class ModelLoader {
     modelSet.trajectorySteps = (JmolList<P3[]>) modelSet
         .getModelSetAuxiliaryInfoValue("trajectorySteps");
     isTrajectory = (modelSet.trajectorySteps != null);
-    doAddHydrogens = (jbr != null && !isTrajectory
-        && modelSet.getModelSetAuxiliaryInfoValue("pdbNoHydrogens") == null
+    isPyMOLsession  = modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL");
+    doAddHydrogens = (jbr != null && !isTrajectory && !isPyMOLsession
+        && !modelSet.getModelSetAuxiliaryInfoBoolean("pdbNoHydrogens")
         && viewer.getBooleanProperty("pdbAddHydrogens"));
     if (info != null) {
       info.remove("pdbNoHydrogens");
       info.remove("trajectorySteps");
+      Object surfaceInfo = info.get("jmolSurfaceInfo");
+      // cache surface data from a PyMOL session file and remove it
+      if (surfaceInfo != null)
+        viewer.cachePut(fileName + "#jmolSurfaceInfo", surfaceInfo);
+      info.remove("jmolSurfaceInfo");
       if (isTrajectory)
         modelSet.vibrationSteps = (JmolList<V3[]>) info.remove("vibrationSteps");
     }
@@ -248,11 +260,9 @@ public final class ModelLoader {
   private int baseGroupIndex = 0;
 
   private int baseTrajectoryCount = 0;
-  private boolean appendNew;
   private int adapterModelCount = 0;
   private int adapterTrajectoryCount = 0;
   private boolean noAutoBond;
-  private boolean is2D;
   
   public ModelSet getModelSet() {
     return modelSet;
@@ -384,7 +394,7 @@ public final class ModelLoader {
   }
 
   private void setDefaultRendering(int maxAtoms) {
-    if (modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL"))
+    if (isPyMOLsession)
       return;
     SB sb = new SB();
     int modelCount = modelSet.modelCount;

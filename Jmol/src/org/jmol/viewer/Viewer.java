@@ -1983,6 +1983,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return loadModelFromFile("?", "?", null, DOMNode, false, null, null, 0);
   }
 
+
   /**
    * Used by the ScriptEvaluator LOAD command to open one or more files. Now
    * necessary for EVERY load of a file, as loadScript must be passed to the
@@ -9619,16 +9620,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setPicked(iAtom);
   }
 
-  public boolean runScriptImmediately(String script) {
+  @Override
+  public String runScript(String script) {
     // from isosurface reading JVXL file with slab
+    SB outputBuffer = new SB();
     try {
       if (getScriptManager() == null)
-        return false;
-      eval.runScript(script);
+        return null;
+      eval.runScriptBuffer(script, outputBuffer);
     } catch (Exception e) {
-      return false;
+      return eval.getErrorMessage();
     }
-    return true;
+    return outputBuffer.toString();
   }
 
   public boolean allowSpecAtom() {
@@ -9696,7 +9699,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager.cachePut(key, data);
   }
 
+  public Object cacheGet(String key) {
+    return fileManager.cacheGet(key, false);
+  }
+
   public void cacheClear() {
+    // script: reset cache
     fileManager.cacheClear();
     fileManager.clearPngjCache(null);
   }
@@ -9946,5 +9954,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.loadShape(JC.SHAPE_CGO);
     shapeManager.setShapePropertyBs(JC.SHAPE_CGO, "setCGO", info, null);    
   }
-  
+
 }

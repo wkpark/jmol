@@ -44,7 +44,7 @@ class ModelManager {
 
   ModelSet zap() {
     modelSetPathName = fileName = null;
-    return (modelSet = (new ModelLoader(viewer, viewer.getZapName(), null, null, null, null)).getModelSet());
+    return (modelSet = (new ModelLoader(viewer, null, viewer.getZapName(), null, null, null, null)).getModelSet());
   }
   
   String getModelSetFileName() {
@@ -83,7 +83,7 @@ class ModelManager {
         if (modelSetName == null)
           modelSetName = reduceFilename(fileName);
       }
-      modelSet = (new ModelLoader(viewer, modelSetName, loadScript,
+      modelSet = (new ModelLoader(viewer, fullPathName, modelSetName, loadScript,
           atomSetCollection, (isAppend ? modelSet : null), bsNew)).getModelSet();
     }
     if (modelSet.getAtomCount() == 0)

@@ -1,6 +1,7 @@
 package org.jmol.adapter.readers.pymol;
 
 import org.jmol.util.JmolList;
+import org.jmol.util.Logger;
 
 import java.util.Hashtable;
 
@@ -30,9 +31,9 @@ import org.jmol.viewer.Viewer;
 class PickleReader {
 
   private JmolDocument binaryDoc;
-  private JmolList<Object> stack = new  JmolList<Object>();
-  private JmolList<Integer> marks = new  JmolList<Integer>();
-  private JmolList<Object> build = new  JmolList<Object>();
+  private JmolList<Object> stack = new JmolList<Object>();
+  private JmolList<Integer> marks = new JmolList<Integer>();
+  private JmolList<Object> build = new JmolList<Object>();
   private boolean logging;
   private Viewer viewer;
   private int id;
@@ -271,7 +272,7 @@ class PickleReader {
       default:
 
         // not used?
-        System.out.println("Pickle reader error: " + b + " "
+        Logger.error("Pickle reader error: " + b + " "
             + binaryDoc.getPosition());
 
         //        switch (b) {

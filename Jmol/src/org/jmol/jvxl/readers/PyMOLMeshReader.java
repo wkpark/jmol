@@ -41,7 +41,7 @@ class PyMOLMeshReader extends MapFileReader {
   private String surfaceName;
   private int pymolType;
   private boolean isMesh;
-  private float cutoff = Float.NaN;
+  //private float cutoff = Float.NaN;
 
   /*
    * PyMOL surface/mesh reader. 

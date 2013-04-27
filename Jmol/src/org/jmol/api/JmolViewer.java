@@ -621,5 +621,14 @@ abstract public class JmolViewer {
 
   abstract public String getAtomDefs(Map<String, Object> names);
 
+  /**
+   * run a script immediately and return output buffer string
+   * Jmol 13.1.15
+   * 
+   * @param script
+   * @return string from ScriptEvaluator#outputBuffer
+   */
+  abstract public String runScript(String script);
+
 }
 

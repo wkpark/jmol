@@ -1301,7 +1301,7 @@ public class StateCreator implements JmolStateCreator {
     appendCmd(
         str,
         "set pdbAddHydrogens "
-            + (htParams != null && htParams.get("pdbNoHydrogens") == null ? g.pdbAddHydrogens
+            + (htParams != null && htParams.get("pdbNoHydrogens") != Boolean.TRUE ? g.pdbAddHydrogens
                 : false));
     appendCmd(str, "set pdbGetHeader " + g.pdbGetHeader);
     appendCmd(str, "set pdbSequential " + g.pdbSequential);

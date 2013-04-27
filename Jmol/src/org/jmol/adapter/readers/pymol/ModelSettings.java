@@ -127,7 +127,7 @@ public class ModelSettings {
   public void createShape(ModelSet m, BS bsCarb) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
-    String s, sID;
+    String script = null, sID;
     Atom[] atoms;
     SB sb;
     float min, max;
@@ -153,83 +153,6 @@ public class ModelSettings {
     case T.define:
       sm.viewer.defineAtomSets((Map<String, Object>) info);
       return;
-    case JC.SHAPE_STICKS:
-      break;
-    case JC.SHAPE_BALLS:
-      break;
-    case T.mep:
-      JmolList<Object> mep = (JmolList<Object>) info;
-      sID = mep.get(mep.size() - 2).toString();
-      String mapID = mep.get(mep.size() - 1).toString();
-      min = PyMOLReader.getFloatAt(PyMOLReader.getList(mep, 3), 0);
-      max = PyMOLReader.getFloatAt(PyMOLReader.getList(mep, 3), 2);
-      sb = new SB();
-      sb.append("script('");
-      sb.append("set isosurfacekey true;isosurface ID ").append(Escape.eS(sID))
-          .append(" map \"\" ").append(Escape.eS(mapID)).append(
-              ";color isosurface range " + min + " " + max
-                  + ";isosurface colorscheme rwb");
-      sb.append("');");
-      s = sb.toString();
-      //System.out.println("shapeSettings: " + s);
-      sm.viewer.evaluateExpression(s);
-      return;
-    case T.mesh:
-      modelIndex = sm.viewer.getCurrentModelIndex();
-      JmolList<Object> mesh = (JmolList<Object>) info;
-      sID = mesh.get(mesh.size() - 2).toString();
-      sb = new SB();
-      sb.append("script('");
-      sb.append("isosurface ID ").append(Escape.eS(sID)).append(" model ")
-          .append(m.models[modelIndex].getModelNumberDotted())
-          .append(" color ").append(Escape.escapeColor(argb)).append(" \"\" ")
-          .append(Escape.eS(sID)).append(" mesh nofill frontonly");
-      float within = PyMOLReader.getFloatAt(PyMOLReader.getList(PyMOLReader
-          .getList(mesh, 2), 0), 11);
-      JmolList<Object> list = PyMOLReader.getList(PyMOLReader.getList(
-          PyMOLReader.getList(mesh, 2), 0), 12);
-      if (within > 0) {
-        P3 pt = new P3();
-        sb.append(";isosurface slab within ").appendF(within).append(" [ ");
-        for (int j = list.size() - 3; j >= 0; j -= 3) {
-          PyMOLReader.getPoint(list, j, pt);
-          sb.append(Escape.eP(pt));
-        }
-        sb.append(" ]");
-      }
-      sb.append(";set meshScale ").appendI(size / 500);
-      sb.append("');");
-      s = sb.toString();
-      //System.out.println("shapeSettings: " + s);
-      sm.viewer.evaluateExpression(s);
-      return;
-    case JC.SHAPE_ISOSURFACE:
-      if (modelIndex < 0)
-        return;
-      if (argb == 0)
-        sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-      s = ((String[]) info)[0].toString().replace('\'', '_').replace('"', '_');
-      String lighting = ((String[]) info)[1];
-      String resolution = "";
-      if (lighting == null) {
-        lighting = "mesh nofill";
-        resolution = " resolution 1.5";
-      }
-      s = "script('isosurface ID \"" + s + "\"" + " model "
-          + m.models[modelIndex].getModelNumberDotted() + resolution
-          + " select (" + Escape.eBS(bsAtoms) + ") only solvent "
-          + (size / 1000f);
-      if (argb == 0)
-        s += " map property color";
-      else
-        s += " color " + Escape.escapeColor(argb);
-      s += " frontOnly " + lighting;
-      if (translucency > 0)
-        s += " translucent " + translucency;
-      s += "')";
-      //System.out.println("shapeSettings: " + s);
-      sm.viewer.evaluateExpression(s);
-      return;
     case JC.SHAPE_LABELS:
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "textLabels", info, bsAtoms);
@@ -247,6 +170,73 @@ public class ModelSettings {
       if (size != -1)
         sm.setShapeSizeBs(id, size, null, null);
       return;
+
+    case JC.SHAPE_STICKS:
+      break;
+    case JC.SHAPE_BALLS:
+      break;
+    case T.mep:
+      JmolList<Object> mep = (JmolList<Object>) info;
+      sID = mep.get(mep.size() - 2).toString();
+      String mapID = mep.get(mep.size() - 1).toString();
+      min = PyMOLReader.floatAt(PyMOLReader.listAt(mep, 3), 0);
+      max = PyMOLReader.floatAt(PyMOLReader.listAt(mep, 3), 2);
+      sb = new SB();
+      sb.append("set isosurfacekey true;isosurface ID ").append(Escape.eS(sID))
+          .append(" map \"\" ").append(Escape.eS(mapID)).append(
+              ";color isosurface range " + min + " " + max
+                  + ";isosurface colorscheme rwb");
+      script = sb.toString();
+      break;
+    case T.mesh:
+      modelIndex = sm.viewer.getCurrentModelIndex();
+      JmolList<Object> mesh = (JmolList<Object>) info;
+      sID = mesh.get(mesh.size() - 2).toString();
+      sb = new SB();
+      sb.append("isosurface ID ").append(Escape.eS(sID)).append(" model ")
+          .append(m.models[modelIndex].getModelNumberDotted())
+          .append(" color ").append(Escape.escapeColor(argb)).append(" \"\" ")
+          .append(Escape.eS(sID)).append(" mesh nofill frontonly");
+      float within = PyMOLReader.floatAt(PyMOLReader.listAt(PyMOLReader
+          .listAt(mesh, 2), 0), 11);
+      JmolList<Object> list = PyMOLReader.listAt(PyMOLReader.listAt(
+          PyMOLReader.listAt(mesh, 2), 0), 12);
+      if (within > 0) {
+        P3 pt = new P3();
+        sb.append(";isosurface slab within ").appendF(within).append(" [ ");
+        for (int j = list.size() - 3; j >= 0; j -= 3) {
+          PyMOLReader.pointAt(list, j, pt);
+          sb.append(Escape.eP(pt));
+        }
+        sb.append(" ]");
+      }
+      sb.append(";set meshScale ").appendI(size / 500);
+      script = sb.toString();
+      break;
+    case JC.SHAPE_ISOSURFACE:
+      if (modelIndex < 0)
+        return;
+      if (argb == 0)
+        sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
+      script = ((String[]) info)[0].toString().replace('\'', '_').replace('"', '_');
+      String lighting = ((String[]) info)[1];
+      String resolution = "";
+      if (lighting == null) {
+        lighting = "mesh nofill";
+        resolution = " resolution 1.5";
+      }
+      script = "isosurface ID \"" + script + "\"" + " model "
+          + m.models[modelIndex].getModelNumberDotted() + resolution
+          + " select (" + Escape.eBS(bsAtoms) + ") only solvent "
+          + (size / 1000f);
+      if (argb == 0)
+        script += " map property color";
+      else
+        script += " color " + Escape.escapeColor(argb);
+      script += " frontOnly " + lighting;
+      if (translucency > 0)
+        script += " translucent " + translucency;
+      break;
     case JC.SHAPE_TRACE:
     case JC.SHAPE_BACKBONE:
       BSUtil.andNot(bsAtoms, bsCarb);
@@ -261,7 +251,6 @@ public class ModelSettings {
       float[] data = new float[bsAtoms.length()];
       rd = new RadiusData(data, 0, RadiusData.EnumType.ABSOLUTE, EnumVdw.AUTO);
       atoms = sm.viewer.modelSet.atoms;
-
       double sum = 0.0,
       sumsq = 0.0;
       min = Float.MAX_VALUE;
@@ -343,6 +332,10 @@ public class ModelSettings {
         data[i] = scale * rad;
       }
       break;
+    }
+    if (script != null) {
+      sm.viewer.runScript(script);
+      return;
     }
     // cartoon, trace, etc.
     if (size != -1 || rd != null)

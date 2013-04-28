@@ -135,7 +135,6 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   protected void displayConsole() {
     layoutWindow(null);
     outputMsg(defaultMessage);
-    System.out.println("AppConsole displayConsole");
   }
 
   protected String defaultMessage;
@@ -206,7 +205,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
       // problem here is that in some browsers, you cannot clip from
       // the editor.
       //viewer.getProperty("DATA_API","scriptEditor", new String[] { "current state" , viewer.getStateInfo() });
-    } else     //System.out.println("AppletConsole.actionPerformed" +  source);
+    } else     
       if (source == clearInButton) {
         input.setText("");
         return;
@@ -346,7 +345,6 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
   }
 
   protected void clearContent(String text) {
-    //System.out.println("AppletConsole.clearContent()");
     output.setText(text);
   }
   

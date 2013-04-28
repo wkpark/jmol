@@ -268,6 +268,8 @@ public class PyMOLReader extends PdbReader {
     }
     totalAtomCount = getTotalAtomCount(names);
     Logger.info("PyMOL total atom count = " + totalAtomCount);
+    if (totalAtomCount == 0)
+      atomSetCollection.newAtomSet();
     pointAt((JmolList<Object>) listAt(settings, PyMOL.label_position)
         .get(2), 0, labelPosition0);
     selections = new JmolList<JmolList<Object>>();

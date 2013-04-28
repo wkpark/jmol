@@ -4059,7 +4059,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setShapeProperty(JC.SHAPE_LABELS, "clearBoxes", null);
     antialiasDisplay = (isReset ? global.antialiasDisplay : isImageWrite
         && !isExport ? global.antialiasImages : false);
-    //System.out.println("antialiasd = " + antialiasDisplay);
     imageFontScaling = (isReset || width <= 0 ? 1
         : (global.zoomLarge == (height > width) ? height : width)
             / getScreenDim())
@@ -9598,9 +9597,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.calcAtomsMinMax(bs, boxInfo);
   }
 
+  /**
+   * used in autocompletion in console using TAB
+   * @param map
+   * @param c
+   */
   @SuppressWarnings("unchecked")
   public void getObjectMap(Map<String, ?> map, char c) {
-    System.out.println(c);
     switch (c) {
     case '{':
       if (getScriptManager() != null) {

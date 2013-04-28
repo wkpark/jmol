@@ -472,7 +472,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     display = info.get("display");
     isSingleThreaded = apiPlatform.isSingleThreaded();
     noGraphicsAllowed = (display == null && checkOption2("noGraphics", "-n"));
-    haveDisplay = (!noGraphicsAllowed && !isHeadless() && !checkOption2(
+    haveDisplay = (display != null && !noGraphicsAllowed && !isHeadless() && !checkOption2(
         "isDataOnly", "\0"));
     if (haveDisplay) {
       mustRender = true;

@@ -294,7 +294,7 @@ public class PyMOLReader extends PdbReader {
   private void proecssMeshes() {
     if (mapObjects == null)
       return;
-    viewer.cachePut(fileName + "#jmolSurfaceInfo", volumeData);
+    viewer.cachePut(filePath + "#jmolSurfaceInfo", volumeData);
     for (int i = mapObjects.size(); --i >= 0;) {
       JmolList<Object> obj = mapObjects.get(i);
       String objName = obj.get(obj.size() - 1).toString();

@@ -340,7 +340,7 @@ public class MeshData extends MeshSurface {
       v[i] /= factor;
     if (justOne && thisSet != Integer.MIN_VALUE)
       return Float.valueOf((float) v[0]);
-    System.out.println("MeshData calcVolume " + Escape.e(v));
+    //System.out.println("MeshData calcVolume " + Escape.e(v));
     return v;
   }
 

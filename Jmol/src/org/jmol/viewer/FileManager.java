@@ -1278,7 +1278,7 @@ public class FileManager {
     cache.clear();
   }
 
-  public int cacheFileByName(String fileName, boolean isAdd) {
+  public int cacheFileByNameAdd(String fileName, boolean isAdd) {
     if (fileName == null || !isAdd && fileName.equalsIgnoreCase("")) {
       cacheClear();
       return -1;

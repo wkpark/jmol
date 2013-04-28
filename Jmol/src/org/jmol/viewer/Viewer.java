@@ -9752,7 +9752,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int cacheFileByName(String fileName, boolean isAdd) {
-    return fileManager.cacheFileByName(fileName, isAdd);
+    return fileManager.cacheFileByNameAdd(fileName, isAdd);
   }
 
   public Map<String, Integer> cacheList() {

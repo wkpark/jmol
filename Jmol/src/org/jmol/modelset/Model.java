@@ -430,10 +430,8 @@ public class Model {
    * @param endChainID
    * @param endSeqcode
    * @param istart TODO
-   * @param istart 
    * @param iend TODO
    * @param bsAssigned TODO
-   * @param  
    */
   public void addSecondaryStructure(EnumStructure type, String structureID,
                                     int serialID, int strandCount,

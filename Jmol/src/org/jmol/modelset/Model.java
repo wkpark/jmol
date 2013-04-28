@@ -420,7 +420,9 @@ public class Model {
   }
 
   /**
-   * 
+   *  create a new structure, being careful to not
+   *  overwrite existing structure. 
+   *
    * @param type
    * @param structureID
    * @param serialID
@@ -429,9 +431,9 @@ public class Model {
    * @param startSeqcode
    * @param endChainID
    * @param endSeqcode
-   * @param istart TODO
-   * @param iend TODO
-   * @param bsAssigned TODO
+   * @param istart     starting atom index
+   * @param iend       ending atom index
+   * @param bsAssigned already assigned
    */
   public void addSecondaryStructure(EnumStructure type, String structureID,
                                     int serialID, int strandCount,

@@ -328,7 +328,7 @@ abstract class AtomDataReader extends VolumeDataReader {
       }
     }
     haveOneProperty = (!Float.isNaN(theProperty));
-    System.out.println("AtomDataR theProperty=" + theProperty);
+    //System.out.println("AtomDataR theProperty=" + theProperty);
   }
 
   private void addAtomProp(int i, float f) {

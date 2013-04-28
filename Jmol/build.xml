@@ -820,7 +820,7 @@ all support for previous versions removed
     <!-- changes to this must be replicated below for the signed applet -->
     <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
-    <echo message="creating JmolLib.jar" />
+    <echo message="creating JmolLib.jar" level="info" />
     <jar destfile="${jmol.applet.build.dir}/JmolLib.jar"
          manifest="manifest/jmolLib.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >

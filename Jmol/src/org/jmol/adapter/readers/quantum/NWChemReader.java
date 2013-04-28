@@ -497,7 +497,7 @@ public class NWChemReader extends MOReader {
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       if (firstTime)
         iAtom0 -= atomCount;
-      System.out.println("freq "+ firstTime + " " + iAtom0 + " " + atomCount);
+      //System.out.println("freq "+ firstTime + " " + iAtom0 + " " + atomCount);
       boolean[] ignore = new boolean[frequencyCount];
       // clone the last atom set nFreq-1 times the first time, later nFreq times.
 
@@ -902,7 +902,6 @@ public class NWChemReader extends MOReader {
       return true;
     Map<String, Object>[] mos = null;
     JmolList<String>[] data = null;
-    int moCount = 0;
     int iListed = 0;
     int ptOffset = -1;
     int fieldSize = 0;

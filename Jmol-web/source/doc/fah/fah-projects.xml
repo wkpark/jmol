@@ -9492,9 +9492,12 @@
   <fah_proj number="7516" name="nmc-lig" public="n"
     server="128.143.199.97" atoms="80128" preferred="3.5" deadline="5.9"
     credit="732.0" frames="100" code="A3" contact="kasson" kfactor="2.99"/>
-  <fah_proj number="7520" name="ctx-mut" public="n"
+  <fah_proj number="7520" name="ctx-mut" public="y"
     server="128.143.199.97" atoms="97484" preferred="3.3" deadline="6"
     credit="850.0" frames="100" code="A4" contact="kasson" kfactor="3.7"/>
+  <fah_proj number="7521" name="sfc" public="n"
+    server="128.143.199.97" atoms="97484" preferred="3.8" deadline="6"
+    credit="850.0" frames="100" code="A4" contact="kasson" kfactor="4.12"/>
 
   <!-- Projects 7600 to 7699 -->
   <fah_proj number="7600" name="p7600" public="y" file="xyz"
@@ -9587,6 +9590,9 @@
   <fah_proj number="7662" name="p7662" public="n"
     server="171.67.108.149" atoms="22000" preferred="4.3" deadline="5.5"
     credit="1600.0" frames="100" code="null" contact="yutong.zhao@stanford.edu" kfactor="0.75"/>
+  <fah_proj number="7663" name="p7663" public="n"
+    server="171.64.65.68" atoms="22000" preferred="4.3" deadline="5.5"
+    credit="0.0" frames="100" contact="yutong.zhao@stanford.edu" kfactor="0.75"/>
   <fah_proj number="7698" name="p7698" public="n"
     server="171.64.65.105" atoms="21443" preferred="13" deadline="18"
     credit="6094.0" frames="100" code="OG" contact="tjlane" kfactor="0.0"/>
@@ -9911,17 +9917,32 @@
     server="171.67.108.60" atoms="37000" preferred="4.4" deadline="9.5"
     credit="240.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
   <fah_proj number="8085" name="p8085" public="n"
-    server="171.64.65.156" atoms="38000" preferred="5" deadline="5"
-    credit="10.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+    server="171.64.65.156" atoms="38000" preferred="5" deadline="6"
+    credit="5.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
   <fah_proj number="8086" name="p8086" public="n"
-    server="171.64.65.156" atoms="38000" preferred="5" deadline="5"
-    credit="10.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+    server="171.64.65.156" atoms="38000" preferred="5" deadline="6"
+    credit="5.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
   <fah_proj number="8087" name="p8087" public="n"
-    server="171.64.65.156" atoms="38000" preferred="5" deadline="5"
-    credit="10.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
-  <fah_proj number="8089" name="p8089" public="n"
+    server="171.64.65.156" atoms="38000" preferred="5" deadline="6"
+    credit="5.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8088" name="p8088" public="n"
+    server="171.64.65.156" atoms="38000" preferred="5" deadline="6"
+    credit="5.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8089" name="p8089" public="y"
     server="171.67.108.60" atoms="39000" preferred="4.4" deadline="9.5"
     credit="236.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8090" name="p8090" public="y"
+    server="171.67.108.60" atoms="39000" preferred="17.6" deadline="38"
+    credit="925.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8092" name="p8092" public="n"
+    server="171.64.65.157" atoms="38000" preferred="5" deadline="6"
+    credit="5.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8093" name="p8093" public="n"
+    server="171.64.65.157" atoms="38000" preferred="5" deadline="6"
+    credit="5.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8094" name="p8094" public="n"
+    server="171.64.65.157" atoms="38000" preferred="5" deadline="6"
+    credit="5.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
 
   <!-- Projects 8100 to 8199 -->
   <fah_proj number="8101" name="ha_formarta" public="y"
@@ -9933,9 +9954,12 @@
   <fah_proj number="8103" name="ha_spawn75" public="y"
     server="128.143.231.201" atoms="1340422" preferred="2.4" deadline="4"
     credit="22607.0" frames="100" code="A5" contact="kasson" kfactor="49.43"/>
-  <fah_proj number="8104" name="ha_spawnvar" public="n"
+  <fah_proj number="8104" name="ha_spawnvar" public="y"
+    server="128.143.231.201" atoms="1340422" preferred="1.8" deadline="3"
+    credit="17153.0" frames="100" code="A5" contact="kasson" kfactor="50"/>
+  <fah_proj number="8105" name="ha_spawnvar" public="n"
     server="128.143.231.201" atoms="1340422" preferred="2.4" deadline="4"
-    credit="22607.0" frames="100" contact="kasson" kfactor="49.43"/>
+    credit="22606.0" frames="100" code="A5" contact="kasson" kfactor="47.15"/>
 
   <!-- Projects 8400 to 8499 -->
   <fah_proj number="8400" name="p8400" public="n"

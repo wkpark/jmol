@@ -28,8 +28,10 @@ import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shapespecial.Draw;
+import org.jmol.shapespecial.DrawMesh;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.JmolList;
 import org.jmol.util.SB;
 
@@ -129,18 +131,18 @@ public class CGO extends Draw {
     setPropertySuper(propertyName, value, bs);
   }
 
-  private boolean setCGO(JmolList<Object> data) {
-    if (cgoMesh == null)
-      allocMesh(null, null);
-    cgoMesh.clear("cgo");
-    return cgoMesh.set(data);
-  }
-
   @Override
   protected void setPropertySuper(String propertyName, Object value, BS bs) {
     currentMesh = cgoMesh;
     setPropMC(propertyName, value, bs);
     cgoMesh = (CGOMesh)currentMesh;  
+  }
+
+  private boolean setCGO(JmolList<Object> data) {
+    if (cgoMesh == null)
+      allocMesh(null, null);
+    cgoMesh.clear("cgo");
+    return cgoMesh.set(data);
   }
 
   @Override
@@ -159,4 +161,5 @@ public class CGO extends Draw {
     SB s = new SB();
     return s.toString();
   }
+  
 }

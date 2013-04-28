@@ -242,10 +242,10 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   /**
    * @param atomSetCollection  
    * @param modelSet 
-   * @param baseAtomIndex 
    * @param baseModelIndex 
+   * @param baseAtomIndex 
    */
-  public void finish(Object atomSetCollection, ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {}
+  abstract public void finish(Object atomSetCollection, ModelSet modelSet, int baseModelIndex, int baseAtomIndex);
 
   /**
    * Get the type of this file or molecular model, if known.

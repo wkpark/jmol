@@ -39,12 +39,14 @@ import org.jmol.util.Logger;
 
 public class CGOMesh extends DrawMesh {
   
+  public JmolList<Object> cmds;
+
   CGOMesh(String thisID, short colix, int index) {
     super(thisID, colix, index);
   }
   
 
-  private static int[] sizes = new int[] {
+  private final static int[] sizes = new int[] {
      0,  0,  1,  0,  3,
      3,  3,  4, 27, 13,
      1,  1,  1,  1, 13,
@@ -53,53 +55,55 @@ public class CGOMesh extends DrawMesh {
      1, 14, 16,  1,  2
   };
   
-  private static int getSize(int i) {
+  public static int getSize(int i) {
     return (i >= 0 && i < sizes.length ? sizes[i] : -1);
   }
   
-  public static int STOP                = 0;
-  public static int NULL                = 1;
-  public static int BEGIN               = 2;
-  public static int END                 = 3;
-  public static int VERTEX              = 4;
+  public final static int STOP                = 0;
+  public final static int NULL                = 1;
+  public final static int BEGIN               = 2;
+  public final static int END                 = 3;
+  public final static int VERTEX              = 4;
  
-  public static int NORMAL              = 5;
-  public static int COLOR               = 6;
-  public static int SPHERE              = 7;
-  public static int TRIANGLE            = 8;
-  public static int CYLINDER            = 9;
+  public final static int NORMAL              = 5;
+  public final static int COLOR               = 6;
+  public final static int SPHERE              = 7;
+  public final static int TRIANGLE            = 8;
+  public final static int CYLINDER            = 9;
   
-  public static int LINEWIDTH           = 10;
-  public static int WIDTHSCALE          = 11;
-  public static int ENABLE              = 12;
-  public static int DISABLE             = 13;
-  public static int SAUSAGE             = 14;
+  public final static int LINEWIDTH           = 10;
+  public final static int WIDTHSCALE          = 11;
+  public final static int ENABLE              = 12;
+  public final static int DISABLE             = 13;
+  public final static int SAUSAGE             = 14;
 
-  public static int CUSTOM_CYLINDER     = 15;
-  public static int DOTWIDTH            = 16;
-  public static int ALPHA_TRIANGLE      = 17;
-  public static int ELLIPSOID           = 18;
-  public static int FONT                = 19;
+  public final static int CUSTOM_CYLINDER     = 15;
+  public final static int DOTWIDTH            = 16;
+  public final static int ALPHA_TRIANGLE      = 17;
+  public final static int ELLIPSOID           = 18;
+  public final static int FONT                = 19;
 
-  public static int FONT_SCALE          = 20;
-  public static int FONT_VERTEX         = 21;
-  public static int FONT_AXES           = 22;
-  public static int CHAR                = 23;
-  public static int INDENT              = 24;
+  public final static int FONT_SCALE          = 20;
+  public final static int FONT_VERTEX         = 21;
+  public final static int FONT_AXES           = 22;
+  public final static int CHAR                = 23;
+  public final static int INDENT              = 24;
 
-  public static int ALPHA               = 25;
-  public static int QUADRIC             = 26;
-  public static int CONE                = 27;
-  public static int RESET_NORMAL        = 28;
-  public static int PICK_COLOR          = 29;
+  public final static int ALPHA               = 25;
+  public final static int QUADRIC             = 26;
+  public final static int CONE                = 27;
+  public final static int RESET_NORMAL        = 28;
+  public final static int PICK_COLOR          = 29;
 
   @SuppressWarnings("unchecked")
   boolean set(JmolList<Object> list) {
     // vertices will be in list.get(0). normals?
+    width = 200;
+    diameter = 0;//200;
     try {
-      JmolList<Object> cmds = (JmolList<Object>) list.get(list.size() - 2);
+      cmds = (JmolList<Object>) list.get(1);
       if (cmds == null)
-        cmds = (JmolList<Object>) list.get(list.size() - 3);
+        cmds = (JmolList<Object>) list.get(0);
       cmds = (JmolList<Object>) cmds.get(1);
       int n = cmds.size();
       for (int i = 0; i < n; i++) {
@@ -111,12 +115,13 @@ public class CGOMesh extends DrawMesh {
           Logger.error("CGO unknown type: " + type);
           return false;
         }
-        Logger.info("CGO " + thisID + " type " + type);
+        Logger.info("CGO " + thisID + " type " + type + " len " + len);
         i += len;
       }
       return true;
     } catch (Exception e) {
       Logger.error("CGOMesh error: " + e);
+      cmds = null;
       return false;
     }
   }

@@ -1951,6 +1951,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   protected Viewer viewer;
   protected ScriptCompiler compiler;
   private Map<String, Object> definedAtomSets;
+  public Map<String, Object> getDefinedAtomSets() {
+    return definedAtomSets;
+  }
   private SB outputBuffer;
 
   private String contextPath = "";

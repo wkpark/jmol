@@ -97,11 +97,14 @@ public class PyMOLReader extends PdbReader {
   private int strucNo;
   private boolean isHidden;
   private JmolList<Object> pymolAtoms;
+  
   private BS bsBondedPyMOL = new BS();
   private BS bsBondedJmol = new BS();
   private BS bsHidden = new BS();
   private BS bsNucleic = new BS();
   private BS bsNoSurface = new BS();
+  private BS bsStructureDefined = new BS();
+  
   private boolean haveTraceOrBackbone;
   private boolean haveNucleicLadder;
 
@@ -450,6 +453,15 @@ public class PyMOLReader extends PdbReader {
       Logger.info("Pymol setting " + i + " = " + v);
     } catch (Exception e) {
       Logger.info("PyMOL " + pymolVersion + " does not have setting " + i);
+      switch (i) {
+      case PyMOL.stick_color:
+        return -1;
+      case PyMOL.label_size:
+        return 14;
+      default:
+        Logger.error("PyMOL rendering missing setting " + i);
+        break;
+      }
     }
     return v;
   }
@@ -529,9 +541,11 @@ public class PyMOLReader extends PdbReader {
       return;
     if (isHidden)
       return;
+    int color = intAt(listAt(deepBranch, 0), 2);
     JmolList<Object> data = listAt(listAt(deepBranch, 2), 0);
     data.addLast(branchName);
-    ModelSettings ms = new ModelSettings(T.cgo, null, data);
+    ModelSettings ms = new ModelSettings(JC.SHAPE_CGO, null, data);
+    ms.argb = PyMOL.getRGB(color);
     modelSettings.addLast(ms);
   }
 
@@ -699,10 +713,10 @@ public class PyMOLReader extends PdbReader {
       allStates = true;
     BS bsState = null;
     BS bsAtoms = BS.newN(atomCount0 + pymolAtoms.size());
+    Logger.info("PyMOL molecule " + branchName);
     addName(branchName, bsAtoms);
     for (int i = 0; i < REP_JMOL_MAX; i++)
       reps[i] = BS.newN(1000);
-    Logger.info("PyMOL molecule " + branchName);
     if (isMovie) {
       // we create only one model and put all atoms into it.
       if (nModels == 0)
@@ -1315,12 +1329,16 @@ public class PyMOLReader extends PdbReader {
         continue;
       }
       if (type != EnumStructure.NONE) {
+        int pt = bsStructureDefined.nextSetBit(istart);
+        if (pt >= 0 && pt <= iend)
+          continue;
+        bsStructureDefined.setBits(istart, iend + 1);
         Structure structure = new Structure(imodel, type, type,
             type.toString(), ++strucNo, strandCount);
         Atom a = atoms[istart];
         Atom b = atoms[iend];
         structure.set(a.chainID, a.sequenceNumber, a.insertionCode, b.chainID,
-            b.sequenceNumber, b.insertionCode);
+            b.sequenceNumber, b.insertionCode, istart, iend);
         atomSetCollection.addStructure(structure);
       }
       bsAtom.setBits(istart, iend + 1);
@@ -1724,7 +1742,7 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void setFrame() {
-    BS bs = BSUtil.newAndSetBit(0);
+    BS bs = (totalAtomCount > 0 ? BSUtil.newAndSetBit(0) : null);
     if (!allStates && isMovie) {
       modelSettings.addLast(new ModelSettings(T.movie, bs, pymol.get("movie")));
     } else if (!allStates || isMovie) {
@@ -1884,9 +1902,13 @@ public class PyMOLReader extends PdbReader {
         null) : null);
     if (modelSettings != null) {
       for (int i = 0; i < modelSettings.size(); i++) {
-        ModelSettings ss = modelSettings.get(i);
-        ss.offset(baseModelIndex, baseAtomIndex);
-        ss.createShape(modelSet, bsCarb);
+        try {
+          ModelSettings ss = modelSettings.get(i);
+          ss.offset(baseModelIndex, baseAtomIndex);
+          ss.createShape(modelSet, bsCarb);
+        } catch (Exception e) {
+          System.out.println(e);
+        }
       }
     }
     viewer.setTrajectoryBs(BSUtil.newBitSet2(baseModelIndex,

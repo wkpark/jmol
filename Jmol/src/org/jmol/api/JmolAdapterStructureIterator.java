@@ -56,4 +56,7 @@ public abstract class JmolAdapterStructureIterator {
 
   public abstract BS getStructuredModels();
 
+  public abstract int getStartIndex();
+
+  public abstract int getEndIndex();
 }

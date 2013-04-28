@@ -132,9 +132,6 @@ public class ModelSettings {
     SB sb;
     float min, max;
     switch (id) {
-    case T.cgo:
-      sm.viewer.setCGO((JmolList<Object>)info);
-      return;
     case T.movie:
       sm.viewer.setMovie((Map<String, Object>) info);
       return;
@@ -174,6 +171,9 @@ public class ModelSettings {
     case JC.SHAPE_STICKS:
       break;
     case JC.SHAPE_BALLS:
+      break;
+    case JC.SHAPE_CGO:
+      sm.viewer.setCGO((JmolList<Object>)info);
       break;
     case T.mep:
       JmolList<Object> mep = (JmolList<Object>) info;

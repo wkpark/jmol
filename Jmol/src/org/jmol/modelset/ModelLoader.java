@@ -270,10 +270,6 @@ public final class ModelLoader {
     int nAtoms = (adapter == null ? 0 : adapter.getAtomCount(atomSetCollection));
     if (nAtoms > 0)
       Logger.info("reading " + nAtoms + " atoms");
-    if (nAtoms == 0 && adapter != null) {
-      Logger.error("no atoms found -- ignoring all data");
-      adapter = null;
-    }
     adapterModelCount = (adapter == null ? 1 : adapter
         .getAtomSetCount(atomSetCollection));
     // cannot append a trajectory into a previous model
@@ -924,6 +920,7 @@ public final class ModelLoader {
   }
   
   private JmolList<Bond> vStereo;
+  private BS bsAssigned;
   private Bond bondAtoms(Object atomUid1, Object atomUid2, short order) {
     Atom atom1 = htAtomMap.get(atomUid1);
     if (atom1 == null) {
@@ -995,19 +992,23 @@ public final class ModelLoader {
         setStructure(iterStructure);
     }
   }
-  
+
   private void setStructure(JmolAdapterStructureIterator iterStructure) {
     int i = iterStructure.getModelIndex();
     EnumStructure t = iterStructure.getSubstructureType();
     String id = iterStructure.getStructureID();
     int serID = iterStructure.getSerialID();
     int count = iterStructure.getStrandCount();
+    int istart = iterStructure.getStartIndex() + baseAtomIndex;
+    int iend = iterStructure.getEndIndex() + baseAtomIndex;
+    if (bsAssigned == null)
+      bsAssigned = new BS();
     iterStructure.getSerialID();
     defineStructure(i, t, id, serID, count, iterStructure.getStartChainID(),
           iterStructure.getStartSequenceNumber(), iterStructure
               .getStartInsertionCode(), iterStructure.getEndChainID(),
           iterStructure.getEndSequenceNumber(), iterStructure
-              .getEndInsertionCode());
+              .getEndInsertionCode(), istart, iend, bsAssigned);
   }
 
   private BS structuresDefinedInFile = new BS();
@@ -1017,7 +1018,8 @@ public final class ModelLoader {
                                int strandCount, char startChainID,
                                int startSequenceNumber,
                                char startInsertionCode, char endChainID,
-                               int endSequenceNumber, char endInsertionCode) {
+                               int endSequenceNumber, char endInsertionCode,
+                               int istart, int iend, BS bsAssigned) {
     EnumStructure type = (subType == EnumStructure.NOT ? EnumStructure.NONE : subType);
     int startSeqCode = Group.getSeqcodeFor(startSequenceNumber, startInsertionCode);
     int endSeqCode = Group.getSeqcodeFor(endSequenceNumber, endInsertionCode);
@@ -1029,14 +1031,14 @@ public final class ModelLoader {
       structuresDefinedInFile.set(modelIndex);
       models[modelIndex].addSecondaryStructure(type,
           structureID, serialID, strandCount,
-          startChainID, startSeqCode, endChainID, endSeqCode);
+          startChainID, startSeqCode, endChainID, endSeqCode, istart, iend, bsAssigned);
       return;
     }
     for (int i = baseModelIndex; i < modelSet.modelCount; i++) {
       structuresDefinedInFile.set(i);
       models[i].addSecondaryStructure(type,
           structureID, serialID, strandCount,
-          startChainID, startSeqCode, endChainID, endSeqCode);
+          startChainID, startSeqCode, endChainID, endSeqCode, istart, iend, bsAssigned);
     }
   }
   

@@ -92,4 +92,6 @@ public interface JmolScriptEvaluator {
                               boolean historyDisabled, boolean listCommands,
                               SB outputBuffer, boolean allowThreads);
 
+  Map<String, Object> getDefinedAtomSets();
+
 }

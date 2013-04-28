@@ -45,7 +45,6 @@ public class AlphaPolymer extends BioPolymer {
 
   AlphaPolymer(Monomer[] monomers) {
     super(monomers);
-    //System.out.println("new AlphaPolymer " + monomers[0].getChainID() + " " + monomers[0].getSeqcodeString() + " " + monomers[monomers.length - 1].getSeqcodeString());
   }
 
   @Override
@@ -72,13 +71,21 @@ public class AlphaPolymer extends BioPolymer {
   @Override
   public void addStructure(EnumStructure type, String structureID,
                            int serialID, int strandCount, char startChainID,
-                           int startSeqcode, char endChainID, int endSeqcode) {
+                           int startSeqcode, char endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
+    if (istart >= 0 && (monomers[0].firstAtomIndex > iend || monomers[monomerCount - 1].lastAtomIndex < istart))
+      return;
     int indexStart, indexEnd;
       if ((indexStart = getIndex(startChainID, startSeqcode)) == -1
           || (indexEnd = getIndex(endChainID, endSeqcode)) == -1)
         return;
-    //System.out.println("AlphaPolymer addSecStr " + type + " " + indexStart + " " + indexEnd);
+    if (istart >= 0 && bsAssigned != null) {
+      int pt = bsAssigned.nextSetBit(monomers[indexStart].firstAtomIndex);
+      if (pt >= 0 && pt < monomers[indexEnd].lastAtomIndex)
+        return;
+    }
     addStructureProtected(type, structureID, serialID, strandCount, indexStart, indexEnd);
+    if (istart >= 0)
+      bsAssigned.setBits(istart, iend + 1);
   }
 
   protected void addStructureProtected(EnumStructure type, 
@@ -94,8 +101,6 @@ public class AlphaPolymer extends BioPolymer {
     }
     int structureCount = indexEnd - indexStart + 1;
     ProteinStructure proteinstructure = null;
-    if (type == null)
-      System.out.println("alhapoly null type");
     switch(type) {
     case HELIX:
     case HELIXALPHA:
@@ -116,8 +121,9 @@ public class AlphaPolymer extends BioPolymer {
     proteinstructure.structureID = structureID;
     proteinstructure.serialID = serialID;
     proteinstructure.strandCount = strandCount;
-    for (int i = indexStart; i <= indexEnd; ++i)
+    for (int i = indexStart; i <= indexEnd; ++i) {
       monomers[i].setStructure(proteinstructure);
+    }
   }
 
   ///////////////////////////////////////////////////////////

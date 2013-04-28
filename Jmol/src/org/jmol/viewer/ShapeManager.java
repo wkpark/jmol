@@ -304,7 +304,7 @@ public class ShapeManager {
     return mad / 2000f;
   }
 
-  void getObjectMap(Map<String, T> map, boolean withDollar) {
+  void getObjectMap(Map<String, ?> map, boolean withDollar) {
     if (shapes == null)
       return;
     Boolean bDollar = Boolean.valueOf(withDollar);

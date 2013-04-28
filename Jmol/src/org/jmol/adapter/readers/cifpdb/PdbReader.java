@@ -1161,7 +1161,7 @@ Polyproline 10
     Structure structure = new Structure(-1, structureType, substructureType,
         structureID, serialID, strandCount);
     structure.set(startChainID, startSequenceNumber,
-        startInsertionCode, endChainID, endSequenceNumber, endInsertionCode);
+        startInsertionCode, endChainID, endSequenceNumber, endInsertionCode, -1, -1);
     atomSetCollection.addStructure(structure);
   }
 

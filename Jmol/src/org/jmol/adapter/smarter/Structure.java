@@ -40,6 +40,8 @@ public class Structure extends AtomSetObject {
   public char endInsertionCode = '\0';
   public int startSequenceNumber;
   public int endSequenceNumber;
+  public int istart = Integer.MIN_VALUE;
+  public int iend = Integer.MIN_VALUE;
 
   public static EnumStructure getHelixType(int type) {
     switch (type) {
@@ -67,13 +69,15 @@ public class Structure extends AtomSetObject {
   
   
   public void set(char startChainID, int startSequenceNumber, char startInsertionCode,
-            char endChainID, int endSequenceNumber, char endInsertionCode) {
+            char endChainID, int endSequenceNumber, char endInsertionCode, int istart, int iend) {
     this.startChainID = startChainID;
     this.startSequenceNumber = startSequenceNumber;
     this.startInsertionCode = startInsertionCode;
     this.endChainID = endChainID;
     this.endSequenceNumber = endSequenceNumber;
     this.endInsertionCode = endInsertionCode;
+    this.istart = istart;
+    this.iend = iend;
   }
 
 }

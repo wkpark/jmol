@@ -429,11 +429,16 @@ public class Model {
    * @param startSeqcode
    * @param endChainID
    * @param endSeqcode
+   * @param istart TODO
+   * @param istart 
+   * @param iend TODO
+   * @param bsAssigned TODO
+   * @param  
    */
   public void addSecondaryStructure(EnumStructure type, String structureID,
                                     int serialID, int strandCount,
                                     char startChainID, int startSeqcode,
-                                    char endChainID, int endSeqcode) {
+                                    char endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
   }
 
   /**

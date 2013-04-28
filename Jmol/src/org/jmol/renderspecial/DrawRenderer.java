@@ -51,11 +51,11 @@ public class DrawRenderer extends MeshRenderer {
   private DrawMesh dmesh;
 
   private P3[] controlHermites;
-  private final P3 vpt0 = new P3();
-  private final P3 vpt1 = new P3();
-  private final P3 vpt2 = new P3();
-  private final V3 vTemp = new V3();
-  private final V3 vTemp2 = new V3();
+  protected P3 vpt0 = new P3();
+  protected P3 vpt1 = new P3();
+  protected final P3 vpt2 = new P3();
+  protected final V3 vTemp = new V3();
+  protected final V3 vTemp2 = new V3();
 
   @Override
   protected boolean render() {
@@ -372,7 +372,8 @@ public class DrawRenderer extends MeshRenderer {
   }
 
   private final P3 pt0f = new P3();
-  private final P3i pt0i = new P3i();
+  protected P3i pt0i = new P3i();
+  protected P3i pt1i = new P3i();
 
   private void renderArrowHead(P3 pt1, P3 pt2, float factor2,
                                boolean isTransformed, boolean withShaft,

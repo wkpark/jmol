@@ -86,7 +86,7 @@ class ModelManager {
       modelSet = (new ModelLoader(viewer, modelSetName, loadScript,
           atomSetCollection, (isAppend ? modelSet : null), bsNew)).getModelSet();
     }
-    if (modelSet.getAtomCount() == 0)
+    if (modelSet.getAtomCount() == 0 && !modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL"))
       zap();
     return modelSet;
   }

@@ -1712,7 +1712,7 @@ abstract public class ModelCollection extends BondCollection {
       // important that we go backward here, because we are going to 
       // use System.arrayCopy to expand the array ONCE only
       Atom atom = atoms[i];
-      if (!atom.isDeleted()) {
+      if (!atom.isDeleted() && !isTrajectorySubFrame(atom.modelIndex)) {
         bspf.addTuple(models[atom.modelIndex].trajectoryBaseIndex, atom);
         bsNew.set(atom.modelIndex);
       }

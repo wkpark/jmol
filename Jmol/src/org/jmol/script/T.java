@@ -27,6 +27,7 @@ package org.jmol.script;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jmol.util.JmolList;
 import org.jmol.util.ArrayUtil;
@@ -192,7 +193,7 @@ public class T {
   
   // the command assumes an atom expression as the first parameter
   // -- center, define, delete, display, hide, restrict, select, subset, zap
-  final static int atomExpressionCommand  = (1 << 13) | scriptCommand;
+  public final static int atomExpressionCommand  = (1 << 13) | scriptCommand;
   
   // this implicitString flag indicates that then entire command is an implied quoted string  
   // -- ODD echo, hover, label, message, pause  -- do NOT parse variables the same way
@@ -218,7 +219,7 @@ public class T {
   final static int defaultON      = (1 << 19);
   
   final static int expression           = (1 << 20);
-  final static int predefinedset        = (1 << 21) | expression;
+  public final static int predefinedset = (1 << 21) | expression;
   
   public final static int atomproperty  = (1 << 22) | expression | misc; 
   // all atom properties are either a member of one of the next three groups,
@@ -1445,7 +1446,7 @@ public class T {
           && !tokAttr(tok, mathproperty) ? tok : nada);
   }
 
-  public static String completeCommand(Map<String, T> map, boolean isSet, 
+  public static String completeCommand(Map<String, ?> map, boolean isSet, 
                                        boolean asCommand, 
                                        String str, int n) {
     if (map == null)
@@ -2474,6 +2475,33 @@ public class T {
     if (!tokAttr(tok, setparam))
       return nada;
     return tok & paramTypes;
+  }
+  
+  public static void getTokensType(Map<String, Object> map, int attr) {
+    for (Entry<String, T> e: tokenMap.entrySet()) {
+      T t = e.getValue();
+      if (tokAttr(t.tok, attr))
+        map.put(e.getKey(), e.getValue());
+    }
+  }
+
+  /**
+   * commands that allow implicit ID as first parameter
+   * 
+   * @param cmdtok
+   * @return true or false 
+   */
+  public static boolean isIDcmd(int cmdtok) {
+    switch (cmdtok) {
+    case T.isosurface:
+    case T.draw:
+    case T.cgo:
+    case T.pmesh:
+    case T.contact:
+      return true;
+    default:
+      return false;
+    }
   }
 
 }

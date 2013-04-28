@@ -1008,11 +1008,14 @@ public abstract class BioPolymer {
    * @param startSeqcode
    * @param endChainID
    * @param endSeqcode
+   * @param istart TODO
+   * @param iend TODO
+   * @param bsAssigned TODO
    */
   public void addStructure(EnumStructure type, String structureID,
                                     int serialID, int strandCount,
                                     char startChainID, int startSeqcode,
-                                    char endChainID, int endSeqcode) {
+                                    char endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
     // overridden by each subclass
   }
 

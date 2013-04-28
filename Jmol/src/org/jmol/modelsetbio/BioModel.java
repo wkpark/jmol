@@ -93,10 +93,10 @@ public final class BioModel extends Model{
   public void addSecondaryStructure(EnumStructure type, 
                              String structureID, int serialID, int strandCount,
                              char startChainID, int startSeqcode,
-                             char endChainID, int endSeqcode) {
+                             char endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
     for (int i = bioPolymerCount; --i >= 0; )
       bioPolymers[i].addStructure(type, structureID, serialID, strandCount, startChainID, startSeqcode,
-                                    endChainID, endSeqcode);
+                                    endChainID, endSeqcode, istart, iend, bsAssigned);
   }
 
   @Override

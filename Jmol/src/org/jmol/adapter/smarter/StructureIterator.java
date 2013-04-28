@@ -115,4 +115,15 @@ public class StructureIterator extends JmolAdapterStructureIterator {
   public BS getStructuredModels() {
     return bsModelsDefined;
   }
+  
+  @Override
+  public int getStartIndex() {
+    return structure.istart;
+  }
+    
+  @Override
+  public int getEndIndex() {
+    return structure.iend;
+  }
+
 }

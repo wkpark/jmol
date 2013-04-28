@@ -32,9 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-
-
-import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Dimension;
@@ -534,15 +531,6 @@ abstract public class JmolViewer {
   
   public String menuStructure;
 
-  /**
-   * retrieves list of draw/isosurface objects
-   * 
-   * @param map 
-   * @param b 
-   * 
-   */
-  abstract public void getObjectMap(Map<String, T> map, boolean b);
-  
   abstract public void processEvent(int groupID, int eventType, int touchID, int iData,
                            P3 pt, long time);
 

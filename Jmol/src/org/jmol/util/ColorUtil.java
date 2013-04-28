@@ -445,7 +445,7 @@ public class ColorUtil {
     return P3.new3((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
   }
 
-  public static int colorPtToInt(P3 pt) {
+  public static int colorPtToInt(Tuple3f pt) {
     return colorTriadToInt(pt.x, pt.y, pt.z);
   }
 

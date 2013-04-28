@@ -155,15 +155,19 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     String strCommand = (nTab <= 0 || incompleteCmd == null ? thisCmd
         : incompleteCmd);
     incompleteCmd = strCommand;
-    String[] splitCmd = TextFormat.splitCommandLine(thisCmd);
+    String[] splitCmd = GenericConsole.splitCommandLine(thisCmd);
     if (splitCmd == null)
       return null;
     boolean asCommand = splitCmd[2] == null;
+    boolean inBrace = (splitCmd[3] != null);
     String notThis = splitCmd[asCommand ? 1 : 2];
     String s = splitCmd[1];
     if (notThis.length() == 0)
       return null;
-    splitCmd = TextFormat.splitCommandLine(strCommand);
+    T token = T.getTokenFromName(s.trim());
+    int cmdtok = (token == null ? 0 : token.tok);
+    boolean isSelect = T.tokAttr(cmdtok, T.atomExpressionCommand);
+    splitCmd = GenericConsole.splitCommandLine(strCommand);
     String cmd = null;
     if (!asCommand && (notThis.charAt(0) == '"' || notThis.charAt(0) == '\'')) {
       char q = notThis.charAt(0);
@@ -173,17 +177,13 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
       if (cmd != null)
         cmd = splitCmd[0] + splitCmd[1] + q + cmd + q;
     } else {
-      Map<String, T> map = null;
+      Map<String, Object> map = null;
       if (!asCommand) {
-        //System.out.println(" tsting " + splitCmd[0] + "///" + splitCmd[1] + "///" + splitCmd[2]);
         notThis = s;
-        if (splitCmd[2].startsWith("$") 
-            || s.equalsIgnoreCase("isosurface ")
-            || s.equalsIgnoreCase("contact ")
-            || s.equalsIgnoreCase("draw ")
-         ) {
-          map = new Hashtable<String, T>();
-          viewer.getObjectMap(map, splitCmd[2].startsWith("$"));
+        if (inBrace || splitCmd[2].startsWith("$") 
+            || T.isIDcmd(cmdtok) || isSelect) {
+          map = new Hashtable<String, Object>();
+          viewer.getObjectMap(map, inBrace || isSelect ? '{' : splitCmd[2].startsWith("$") ? '$' : '0');
         }
       }
       cmd = T.completeCommand(map, s.equalsIgnoreCase("set "), asCommand, asCommand ? splitCmd[1]
@@ -441,6 +441,82 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
       break;
     }
     return mode | 2;
+  }
+  
+  /**
+   * separate a command line into three sections:
+   * 
+   * prefix....;cmd ........ token
+   * 
+   * where token can be a just-finished single or double quote or
+   * a string of characters
+   * 
+   * @param cmd
+   * @return String[] {prefix, cmd..... token}
+   */
+  private static String[] splitCommandLine(String cmd) {
+    String[] sout = new String[4];
+    boolean isEscaped1 = false;
+    boolean isEscaped2 = false;
+    boolean isEscaped = false;
+    if (cmd.length() == 0)
+      return null;
+    int ptQ = -1;
+    int ptCmd = 0;
+    int ptToken = 0;
+    int nBrace = 0;
+    char ch;
+    for (int i = 0; i < cmd.length(); i++) {
+      switch(ch = cmd.charAt(i)) {
+      case '"':
+        if (!isEscaped && !isEscaped1) {
+          isEscaped2 = !isEscaped2;
+          if (isEscaped2)
+            ptQ = ptToken = i;
+        }
+        break;
+      case '\'':
+        if (!isEscaped && !isEscaped2) {
+          isEscaped1 = !isEscaped1;
+          if (isEscaped1)
+            ptQ = ptToken = i;
+        }
+        break;
+      case '\\':
+        isEscaped = !isEscaped;
+        continue;
+      case ' ':
+        if (!isEscaped && !isEscaped1 && !isEscaped2) {
+          ptToken = i + 1;
+          ptQ = -1;
+        }
+        break;
+      case ';':
+        if (!isEscaped1 && !isEscaped2) {
+          ptCmd = ptToken = i + 1;
+          ptQ = -1;
+          nBrace = 0;
+        }
+        break;
+      case '{':
+      case '}':
+        if (!isEscaped1 && !isEscaped2) {
+          nBrace += (ch == '{' ? 1 : -1);
+          ptToken = i + 1;
+          ptQ = -1;
+        }
+        break;
+      default:
+        if (!isEscaped1 && !isEscaped2)
+          ptQ = -1;
+      }
+      isEscaped = false;        
+     }
+    sout[0] = cmd.substring(0, ptCmd);
+    sout[1] = (ptToken == ptCmd ? cmd.substring(ptCmd) : cmd.substring(ptCmd, (ptToken > ptQ ? ptToken : ptQ)));
+    sout[2] = (ptToken == ptCmd ? null : cmd.substring(ptToken));
+    sout[3] = (nBrace > 0 ? "{" : null);
+    return sout;
   }
 
 

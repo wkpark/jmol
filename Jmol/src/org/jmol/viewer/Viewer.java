@@ -9598,9 +9598,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelSet.calcAtomsMinMax(bs, boxInfo);
   }
 
-  @Override
-  public void getObjectMap(Map<String, T> map, boolean withDollar) {
-    shapeManager.getObjectMap(map, withDollar);
+  @SuppressWarnings("unchecked")
+  public void getObjectMap(Map<String, ?> map, char c) {
+    System.out.println(c);
+    switch (c) {
+    case '{':
+      if (getScriptManager() != null) {
+        Map<String, Object> m = (Map<String, Object>) map;
+        Map<String, Object> sets = eval.getDefinedAtomSets();
+        if (sets != null)
+          m.putAll(sets);
+        T.getTokensType(m, T.predefinedset);
+      }
+      return;
+    case '$':
+    case '0':
+      shapeManager.getObjectMap(map, c == '$');
+      return;
+    }
   }
 
   Map<String, String[][]> htPdbBondInfo;
@@ -9946,9 +9961,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void createModels(int n) {
     modelSet.createModels(n);
   }
-
-
-
 
   public void setCGO(JmolList<Object> info) {
     shapeManager.loadShape(JC.SHAPE_CGO);

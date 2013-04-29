@@ -159,7 +159,7 @@ public class Mesh extends MeshSurface {
     this.meshType = meshType;
   }
 
-  private BS bsTemp;
+  protected BS bsTemp;
   
   public void initialize(int lighting, P3[] vertices, P4 plane) {
     if (vertices == null)

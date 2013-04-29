@@ -27,9 +27,17 @@ package org.jmol.shapecgo;
 
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jmol.shapespecial.DrawMesh;
+import org.jmol.util.BS;
+import org.jmol.util.C;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
+import org.jmol.util.Normix;
+import org.jmol.util.Tuple3f;
 
 /*
  * Compiled Graphical Object -- ala PyMOL
@@ -44,6 +52,14 @@ public class CGOMesh extends DrawMesh {
   CGOMesh(String thisID, short colix, int index) {
     super(thisID, colix, index);
   }
+  
+  public final static int GL_POINTS = 0;
+  public final static int GL_LINES = 1;
+  public final static int GL_LINE_LOOP = 2;
+  public final static int GL_LINE_STRIP = 3;
+  public final static int GL_TRIANGLES = 4;
+  public final static int GL_TRIANGLE_STRIP = 5;
+  public final static int GL_TRIANGLE_FAN = 6;
   
 
   private final static int[] sizes = new int[] {
@@ -95,11 +111,30 @@ public class CGOMesh extends DrawMesh {
   public final static int RESET_NORMAL        = 28;
   public final static int PICK_COLOR          = 29;
 
+  
+  public JmolList<Short> nList = new JmolList<Short>();
+  public JmolList<Short> cList = new JmolList<Short>();
+  
+  public int getPoint(int i, Tuple3f pt) {
+    pt.set(getFloat(i++), getFloat(i++), getFloat(i));
+    return i;
+  }
+
+  public int getInt(int i) {
+    return ((Number) cmds.get(i)).intValue();
+  }
+
+  public float getFloat(int i) {
+    return ((Number) cmds.get(i)).floatValue();
+  }
+  
+
   @SuppressWarnings("unchecked")
   boolean set(JmolList<Object> list) {
     // vertices will be in list.get(0). normals?
     width = 200;
     diameter = 0;//200;
+    bsTemp = new BS();
     try {
       cmds = (JmolList<Object>) list.get(1);
       if (cmds == null)
@@ -108,8 +143,18 @@ public class CGOMesh extends DrawMesh {
       int n = cmds.size();
       for (int i = 0; i < n; i++) {
         int type = ((Number) cmds.get(i)).intValue();
-        if (type == 0)
+        switch(type) {
+        case STOP:
+          return true;
+        case NORMAL:
+          getPoint(i + 1, vTemp);
+          nList.addLast(Short.valueOf(Normix.get2SidedNormix(vTemp, bsTemp)));
           break;
+        case COLOR:
+          getPoint(i + 1, vTemp);
+          cList.addLast(Short.valueOf(C.getColix(ColorUtil.colorPtToInt(vTemp))));
+          break;
+        }        
         int len = getSize(type);
         if (len < 0) {
           Logger.error("CGO unknown type: " + type);

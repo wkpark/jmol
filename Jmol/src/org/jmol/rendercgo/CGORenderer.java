@@ -24,19 +24,16 @@
 package org.jmol.rendercgo;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.jmol.renderspecial.DrawRenderer;
 import org.jmol.shape.Mesh;
 import org.jmol.shapecgo.CGO;
 import org.jmol.shapecgo.CGOMesh;
+import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 
 public class CGORenderer extends DrawRenderer {
@@ -95,7 +92,7 @@ public class CGORenderer extends DrawRenderer {
         nPts = 0;
         break;
       case CGOMesh.COLOR:
-        g3d.setColix(colix = cgoMesh.cList.get(ptColor++).shortValue());
+        g3d.setColix(colix = C.copyColixTranslucency(cgoMesh.colix, cgoMesh.cList.get(ptColor++).shortValue()));
         break;
       case CGOMesh.NORMAL:
         normix = cgoMesh.nList.get(ptNormal++).shortValue();

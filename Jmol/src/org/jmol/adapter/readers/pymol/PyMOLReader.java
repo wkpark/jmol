@@ -158,6 +158,7 @@ public class PyMOLReader extends PdbReader {
   private float cartoonTranslucency;
   private float sphereTranslucency;
   private float stickTranslucency;
+  private float cgoTranslucency;
   private boolean cartoonLadderMode;
   private boolean cartoonRockets;
   private boolean solventAsSpheres;
@@ -493,6 +494,8 @@ public class PyMOLReader extends PdbReader {
     branchNameID = branchName + "_" + (++branchID);
     branchIDs.put(branchName, branchNameID);
     String msg = "" + type;
+    JmolList<Object> branchInfo = listAt(deepBranch, 0);
+    setLocalSettings(listAt(branchInfo, 8));
     switch (type) {
     case BRANCH_SELECTION:
       selections.addLast(branch);
@@ -548,6 +551,8 @@ public class PyMOLReader extends PdbReader {
     data.addLast(branchName);
     ModelSettings ms = new ModelSettings(JC.SHAPE_CGO, null, data);
     ms.argb = PyMOL.getRGB(color);
+    ms.translucency = getFloatSetting(PyMOL.cgo_transparency);
+    
     modelSettings.addLast(ms);
   }
 
@@ -695,9 +700,6 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void processBranchModels(JmolList<Object> deepBranch) {
-
-    JmolList<Object> branchInfo = listAt(deepBranch, 0);
-    setLocalSettings(listAt(branchInfo, 8));
     if (isMovie) {
     } else {
       processCryst(listAt(deepBranch, 10));
@@ -1103,7 +1105,9 @@ public class PyMOLReader extends PdbReader {
       else {
         int icolor = (int) getUniqueFloat(atom.uniqueID, PyMOL.label_color,
             labelColor);
-        if (icolor < 0)
+        if (icolor == -6)
+          icolor = 0;// FRONT??
+        else if (icolor < 0)
           icolor = atomColor;
         float[] labelPos = new float[7];
         JmolList<Object> labelOffset = listAt(labelPositions, apt);

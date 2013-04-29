@@ -173,7 +173,9 @@ public class ModelSettings {
     case JC.SHAPE_BALLS:
       break;
     case JC.SHAPE_CGO:
-      sm.viewer.setCGO((JmolList<Object>)info);
+      JmolList<Object> cgo = (JmolList<Object>)info;
+      sID = (String) cgo.get(cgo.size() - 1); 
+      sm.viewer.setCGO(cgo);
       break;
     case T.mep:
       JmolList<Object> mep = (JmolList<Object>) info;
@@ -340,13 +342,13 @@ public class ModelSettings {
     // cartoon, trace, etc.
     if (size != -1 || rd != null)
       sm.setShapeSizeBs(id, size, rd, bsAtoms);
+    if (argb != 0)
+      sm.setShapePropertyBs(id, "color", Integer.valueOf(argb), bsAtoms);
     if (translucency > 0) {
       sm.setShapePropertyBs(id, "translucentLevel",
           Float.valueOf(translucency), bsAtoms);
       sm.setShapePropertyBs(id, "translucency", "translucent", bsAtoms);
     }
-    if (argb != 0)
-      sm.setShapePropertyBs(id, "color", Integer.valueOf(argb), bsAtoms);
     else if (colors != null)
       sm.setShapePropertyBs(id, "colors", colors, bsAtoms);
   }

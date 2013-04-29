@@ -33,7 +33,7 @@ import java.util.Map;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.Measure;
+import org.jmol.util.Measure; 
 import org.jmol.util.MeshSurface;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
@@ -146,7 +146,6 @@ class IsoSolventReader extends AtomDataReader {
   private BS[] bsLocale;
   private Map<String, Edge> htEdges;
   private JmolList<Edge> vEdges;
-  private Edge[] aEdges;
   private JmolList<Face> vFaces;
   protected V3 vTemp = new V3();
   protected P4 plane = new P4();
@@ -460,7 +459,7 @@ class IsoSolventReader extends AtomDataReader {
       BS[] bsSurfaces = meshData.getSurfaceSet();
       BS[] bsSources = null;
       double[] volumes = (double[]) (isPocket ? null : meshData
-          .calculateVolumeOrArea(-1, false, false));
+          .calculateVolumeOrArea(Integer.MIN_VALUE, false, false));
       float minVolume = (float)(1.5 * Math.PI * Math.pow(solventRadius, 3));
       double maxVolume = 0;
       boolean maxIsNegative = false;
@@ -717,7 +716,6 @@ class IsoSolventReader extends AtomDataReader {
       vFaces = new  JmolList<Face>();
       getFaces();
       Logger.info(vFaces.size() + " faces");
-      vEdges = null;
       bsLocale = null;
       htEdges = null;
 
@@ -748,7 +746,7 @@ class IsoSolventReader extends AtomDataReader {
       //       they will be discarded in post-processing of the surface
       //       fragment sets.
       markToroidVoxels();
-      aEdges = null;
+      vEdges = null;
 
       // 3) -- Third pass is to mark "-F" voxels (just below the surface)
       markFaceVoxels(false);
@@ -801,6 +799,7 @@ class IsoSolventReader extends AtomDataReader {
     int ia, ib;
     int nFaces;
     int nInvalid;
+    //int type; // > 0 nFaces; < 0 -nInvalid; otherwise 0;
 
     Edge(int ia, int ib) {
       this.ia = Math.min(ia, ib);
@@ -819,9 +818,9 @@ class IsoSolventReader extends AtomDataReader {
       nFaces++;
     }
 
-    int getType() {
-      return (nFaces > 0 ? nFaces : nInvalid > 0 ? -nInvalid : 0);
-    }
+    //void setType() {
+      //type = (nFaces > 0 ? nFaces : nInvalid > 0 ? -nInvalid : 0);
+   // }
 
 //    
 //        void dump() {
@@ -926,13 +925,8 @@ class IsoSolventReader extends AtomDataReader {
         }
       }
     }
-    BS bsOK = new BS();
-    for (int i = vEdges.size(); --i >= 0;)
-      if (vEdges.get(i).getType() >= 0)
-        bsOK.set(i);
-    aEdges = new Edge[bsOK.cardinality()];
-    for (int i = bsOK.nextSetBit(0), j = 0; i >= 0; i = bsOK.nextSetBit(i + 1))
-      aEdges[j++] = vEdges.get(i);
+    //for (int i = vEdges.size(); --i >= 0;)
+      //vEdges.get(i).setType();
   }
 
   private boolean getSolventPoints(int ia, int ib, int ic) {
@@ -1109,8 +1103,10 @@ class IsoSolventReader extends AtomDataReader {
     P3i ptA1 = new P3i();
     P3i ptB1 = new P3i();
 
-    for (int ei = 0; ei < aEdges.length; ei++) {
-      Edge edge = aEdges[ei];
+    for (int ei = vEdges.size(); --ei >= 0;) {
+      Edge edge = vEdges.get(ei);
+      //if (edge.type < 0)
+        //continue;
       int ia = edge.ia;
       int ib = edge.ib;
       P3 ptA = atomXyz[ia];

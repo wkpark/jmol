@@ -119,7 +119,7 @@ import java.util.Comparator;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
-import org.jmol.util.Escape;
+//import org.jmol.util.Escape;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.P3;
 import org.jmol.util.V3;
@@ -306,11 +306,19 @@ public class MeshData extends MeshSurface {
         || val1 <= 0 && val2 <= 0 && val3 <= 0);
   }
 
+  /**
+   * 
+   * @param thisSet set to Integer.MIN_VALUE to ensure an array.
+   *        If a set has been selected, we return a Float 
+   * @param isArea
+   * @param getSets
+   * @return Float or double[]
+   */
   public Object calculateVolumeOrArea(int thisSet, boolean isArea, boolean getSets) {
-    if (getSets)
+    if (getSets || nSets == 0)
       getSurfaceSet();
-    boolean justOne = (nSets == 0 || thisSet >= 0);
-    int n = (justOne ? 1 : nSets);
+    boolean justOne = (thisSet >= -1);
+    int n = (justOne || nSets == 0 ? 1 : nSets);
     double[] v = new double[n];
     V3 vAB = new V3();
     V3 vAC = new V3();
@@ -338,7 +346,7 @@ public class MeshData extends MeshSurface {
     double factor = (isArea ? 2 : 6);
     for (int i = 0; i < n; i++)
       v[i] /= factor;
-    if (justOne && thisSet != Integer.MIN_VALUE)
+    if (justOne)
       return Float.valueOf((float) v[0]);
     //System.out.println("MeshData calcVolume " + Escape.e(v));
     return v;

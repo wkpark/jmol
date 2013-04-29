@@ -17194,7 +17194,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean haveIntersection = false;
     float[] data = null;
     String cmd = null;
-    int thisSetNumber = -1;
+    int thisSetNumber = Integer.MIN_VALUE;
     int nFiles = 0;
     int nX, nY, nZ, ptX, ptY;
     float sigma = Float.NaN;
@@ -18599,7 +18599,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         addShapeProperty(propertyList, "nomap", Float.valueOf(0));
         surfaceObjectSeen = true;
       }
-      if (thisSetNumber >= 0)
+      if (thisSetNumber >= -1)
         addShapeProperty(propertyList, "getSurfaceSets", Integer
             .valueOf(thisSetNumber - 1));
       if (discreteColixes != null) {

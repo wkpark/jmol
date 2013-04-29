@@ -3426,7 +3426,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getChimeInfo(int tok) {
-    return getPropertyManager().getChimeInfo(tok, getSelectionSet(true));
+    return getPropertyManager().getChimeInfo(tok, getSelectionSet(false));
   }
 
   public Map<String, JmolList<Map<String, Object>>> getAllChainInfo(

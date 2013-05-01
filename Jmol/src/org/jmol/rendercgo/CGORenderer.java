@@ -29,19 +29,20 @@ import org.jmol.shape.Mesh;
 import org.jmol.shapecgo.CGO;
 import org.jmol.shapecgo.CGOMesh;
 import org.jmol.util.C;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.V3;
 
 public class CGORenderer extends DrawRenderer {
 
   private CGOMesh cgoMesh;
   private JmolList<Object> cmds;
-  private V3 vTemp1 = new V3();
-  private short normix;
+  private P3 pt3 = new P3();
+  private short colix0, colix1, colix2, normix0, normix1, normix2, normix;
+  private boolean doColor;
+  private int ptNormal;
+  private int ptColor;
 
   
   @Override
@@ -60,14 +61,15 @@ public class CGORenderer extends DrawRenderer {
     this.mesh = mesh;
     cmds = cgoMesh.cmds;
     int n = cmds.size();
-    int mode = -1;
+    int glMode = -1;
     int nPts = 0;
-    int ptNormal = 0;
-    int ptColor = 0;
-    if (!g3d.setColix(cgoMesh.colix)) {
-      needTranslucent = true;
-      return true;
-    }
+    ptNormal = 0;
+    ptColor = 0;
+    doColor = !mesh.useColix;
+    P3 pt;
+    P3i spt;
+    if (!g3d.setColix(cgoMesh.colix))
+      return needTranslucent = true;
     for (int i = 0; i < n; i++) {
       int type = cgoMesh.getInt(i);
       if (type == CGOMesh.STOP)
@@ -77,116 +79,188 @@ public class CGORenderer extends DrawRenderer {
         Logger.error("CGO unknown type: " + type);
         return false;
       }
-      switch(type) {
+      switch (type) {
       default:
         System.out.println("CGO ? " + type);
-        //$FALL-THROUGH$
-      case CGOMesh.RESET_NORMAL:
         break;
-      case CGOMesh.NULL:
-        continue;
+      case CGOMesh.RESET_NORMAL: // use?
+        break;
+      case CGOMesh.SIMPLE_LINE:
+        // what are the first two parameters? 
+        // width and number of points?
+        getPoint(i + 2, pt0, pt0i);
+        getPoint(i + 5, pt1, pt1i);
+        drawLine(1, 2, false, pt0, pt1, pt0i, pt1i);
+        len = 8;
+        break;
       case CGOMesh.BEGIN:
-        mode = cgoMesh.getInt(i + 1);
-        //$FALL-THROUGH$
-      case CGOMesh.END:
+        glMode = cgoMesh.getInt(i + 1);
         nPts = 0;
         break;
+      case CGOMesh.END:
+        if (glMode == CGOMesh.GL_LINE_LOOP && nPts >= 3)
+          drawLine(1, 2, false, pt1, pt3, pt1i, pt3i);
+        nPts = 0;
+        break;
+      case CGOMesh.LINEWIDTH:
+        //diameter = cgoMesh.getInt(i + 1);
+        break;
       case CGOMesh.COLOR:
-        g3d.setColix(colix = C.copyColixTranslucency(cgoMesh.colix, cgoMesh.cList.get(ptColor++).shortValue()));
+        getColix(true);
         break;
       case CGOMesh.NORMAL:
-        normix = cgoMesh.nList.get(ptNormal++).shortValue();
+        normix = getNormix();
         break;
       case CGOMesh.VERTEX:
-        if (nPts++ == 0) {
-          cgoMesh.getPoint(i + 1, vpt0);
-          viewer.transformPtScr(vpt0, pt0i);
-        }
-        switch (mode) {
+        if (nPts++ == 0)
+          getPoint(i, pt0, pt0i);
+        switch (glMode) {
         case -1:
           break;
         case CGOMesh.GL_POINTS:
-          drawLine(1, 1, false, vpt0, vpt0, pt0i, pt0i);
+          drawLine(1, 1, false, pt0, pt0, pt0i, pt0i);
           break;
+        case CGOMesh.GL_LINES:
+          if (nPts == 2) {
+            getPoint(i, pt1, pt1i);
+            drawLine(1, 2, false, pt0, pt0, pt1i, pt1i);
+            nPts = 0;
+          }
+          break;
+        case CGOMesh.GL_LINE_LOOP:
         case CGOMesh.GL_LINE_STRIP:
-          if (nPts < 2)
+          if (nPts == 1) {
+            if (glMode == CGOMesh.GL_LINE_LOOP) {
+              vTemp.setT(pt0);
+              pt3i.setT(pt0i);
+            }
             break;
-          cgoMesh.getPoint(i + 1, vpt1);
-          viewer.transformPtScr(vpt1, pt1i);
-          P3 pt = vpt0;
-          vpt0 = vpt1;
-          vpt1 = pt;
-          P3i spt = pt0i;
+          }
+          getPoint(i, pt1, pt1i);
+          pt = pt0;
+          pt0 = pt1;
+          pt1 = pt;
+          spt = pt0i;
           pt0i = pt1i;
           pt1i = spt;
-          drawLine(1, 2, false, vpt0, vpt1, pt0i, pt1i);
+          drawLine(1, 2, false, pt0, pt1, pt0i, pt1i);
           break;
         case CGOMesh.GL_TRIANGLES:
-          if (nPts < 2)
-            break;
           switch (nPts) {
           case 1:
+            normix1 = normix2 = normix0 = normix;
+            colix1 = colix2 = colix0 = colix;
             break;
           case 2:
-            cgoMesh.getPoint(i + 1, vpt1);
-            viewer.transformPtScr(vpt1, pt1i);
+            getPoint(i, pt1, pt1i);
             break;
           case 3:
-            cgoMesh.getPoint(i + 1, vpt2);
-            viewer.transformPtScr(vpt2, pt2i);
-            if (isExport) {
-              g3d.fillTriangle3CN(pt2i, colix, normix, pt1i, colix,
-                  normix, pt0i, colix, normix);
-            } else {
-              g3d.fillTriangle3CN(pt0i, colix, normix, pt1i, colix,
-                  normix, pt2i, colix, normix);
-            }
+            getPoint(i, pt2, pt2i);
+            fillTriangle();
             nPts = 0;
             break;
-          }          
+          }
+          break;
+        case CGOMesh.GL_TRIANGLE_STRIP:
+          // v0 v1 v2   v2 v1 v3   v2 v3 v4   v4 v3 v5 ...
+          switch (nPts) {
+          case 1:
+            normix1 = normix2 = normix0 = normix;
+            colix1 = colix2 = colix0 = colix;
+            break;
+          case 2:
+            getPoint(i, pt2, pt2i);
+            break;
+          default:
+            if (nPts % 2 == 0) {
+              pt = pt0;
+              pt0 = pt2;
+              spt = pt0i;
+              pt0i = pt2i;
+            } else {
+              pt = pt1;
+              pt1 = pt2;
+              spt = pt1i;
+              pt1i = pt2i;
+            }
+            pt2 = pt;
+            pt2i = spt;
+            getPoint(i, pt2, pt2i);
+            fillTriangle();
+            break;
+          }
+          break;
+        case CGOMesh.GL_TRIANGLE_FAN:
+          // v2 v0 v1   v3 v0 v2   v4 v0 v3  ...
+          switch (nPts) {
+          case 1:
+            normix1 = normix2 = normix0 = normix;
+            colix1 = colix2 = colix0 = colix;
+            pt1.setT(pt0);
+            pt1i.setT(pt0i);
+            break;
+          case 2:
+            getPoint(i, pt0, pt0i);
+            break;
+          default:
+            pt2.setT(pt0);
+            pt2i.setT(pt0i);
+            getPoint(i, pt0, pt0i);
+            fillTriangle();
+            break;
+          }
+          break;
         }
         break;
-      case CGOMesh.LINEWIDTH:
-        diameter = cgoMesh.getInt(i + 1);
-        break;
       case CGOMesh.SAUSAGE:
-        i = cgoMesh.getPoint(++i, vpt0);
-        viewer.transformPtScr(vpt0, pt0i);
-        i = cgoMesh.getPoint(++i, vpt1);
-        viewer.transformPtScr(vpt1, pt1i);
-        i = cgoMesh.getPoint(++i, vTemp); // color1
-        i = cgoMesh.getPoint(++i, vTemp2); // color2
-        g3d.setColor(ColorUtil.colorPtToInt(vTemp));
-        drawLine(1, 2, false, vpt0, vpt1, pt0i, pt1i);
-        continue;
-      case CGOMesh.TRIANGLE:
-        i = cgoMesh.getPoint(++i, vpt0);
-        viewer.transformPtScr(vpt0, pt0i);
-        i = cgoMesh.getPoint(++i, vpt1);
-        viewer.transformPtScr(vpt1, pt1i);
-        i = cgoMesh.getPoint(++i, vpt2);
-        viewer.transformPtScr(vpt2, pt2i);
-        i = cgoMesh.getPoint(++i, vTemp);  // normal1
-        i = cgoMesh.getPoint(++i, vTemp);  // normal2
-        i = cgoMesh.getPoint(++i, vTemp);  // normal3
-        i = cgoMesh.getPoint(++i, vTemp);  // color1
-        i = cgoMesh.getPoint(++i, vTemp1); // color2
-        i = cgoMesh.getPoint(++i, vTemp2); // color3
-        g3d.setColor(ColorUtil.colorPtToInt(vTemp));
-        drawLine(1, 2, false, vpt0, vpt1, pt0i, pt1i);
-        g3d.setColor(ColorUtil.colorPtToInt(vTemp1));
-        drawLine(1, 2, false, vpt1, vpt2, pt1i, pt2i);
-        g3d.setColor(ColorUtil.colorPtToInt(vTemp2));
-        drawLine(1, 2, false, vpt2, vpt0, pt2i, pt0i);
-        //drawTriangleRGB(pt0i, pt1i, pt2i, 
-          //  ColorUtil.colorPtToInt(vTemp),
-            //ColorUtil.colorPtToInt(vTemp),
-            //ColorUtil.colorPtToInt(vTemp));        
-        continue;
-      }      
-      i+= len;
+        getPoint(i, pt0, pt0i);
+        getPoint(i + 3, pt1, pt1i);
+        getColix(true);
+        getColix(false); // for now -- ignore second color
+        drawLine(1, 2, false, pt0, pt1, pt0i, pt1i);
+        break;
+      case CGOMesh.TRICOLOR_TRIANGLE:
+        getPoint(i, pt0, pt0i);
+        getPoint(i + 3, pt1, pt1i);
+        getPoint(i + 6, pt2, pt2i);
+        normix0 = getNormix();
+        normix1 = getNormix();
+        normix2 = getNormix();
+        colix0 = getColix(false);
+        colix1 = getColix(false);
+        colix2 = getColix(false);
+        fillTriangle();
+        break;
+      }
+      i += len;
     }
     return true;
+  }
+
+  private short getNormix() {
+    return cgoMesh.nList.get(ptNormal++).shortValue();
+  }
+
+  private short getColix(boolean doSet) {
+    if (doColor) {
+      colix = C.copyColixTranslucency(cgoMesh.colix, cgoMesh.cList.get(
+          ptColor++).shortValue());
+      if (doSet)
+        g3d.setColix(colix);
+    }
+    return colix;
+  }
+
+
+  private void getPoint(int i, P3 pt, P3i pti) {
+    cgoMesh.getPoint(i, pt);
+    viewer.transformPtScr(pt, pti);
+  }
+
+
+  private void fillTriangle() {
+    g3d.fillTriangle3CN(pt0i, colix0, normix0, pt1i, colix1, normix1, pt2i,
+        colix2, normix2);
   }
 
 //  private void drawTriangleRGB(P3i s1, P3i s2, P3i s3, int c1,

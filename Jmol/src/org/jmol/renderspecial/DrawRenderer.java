@@ -51,9 +51,9 @@ public class DrawRenderer extends MeshRenderer {
   private DrawMesh dmesh;
 
   private P3[] controlHermites;
-  protected P3 vpt0 = new P3();
-  protected P3 vpt1 = new P3();
-  protected final P3 vpt2 = new P3();
+  protected P3 pt0 = new P3();
+  protected P3 pt1 = new P3();
+  protected P3 pt2 = new P3();
   protected final V3 vTemp = new V3();
   protected final V3 vTemp2 = new V3();
 
@@ -212,18 +212,18 @@ public class DrawRenderer extends MeshRenderer {
       int iBase = nPoints - (dmesh.scale < 2 ? 3 : 3);
       for (int i = 0; i < nPoints; i++) {
         if (i == iBase)
-          vpt0.setT(vpt1);
-        vpt1.scaleAdd2(1, vTemp2, pt1f);
+          pt0.setT(pt1);
+        pt1.scaleAdd2(1, vTemp2, pt1f);
         if (i == 0)
-          vpt2.setT(vpt1);
-        viewer.transformPtScr(vpt1, screens[i]);
+          pt2.setT(pt1);
+        viewer.transformPtScr(pt1, screens[i]);
         mat.transform(vTemp2);
       }
       if (dmesh.isVector && !dmesh.noHead) {
-        renderArrowHead(vpt0, vpt1, 0.3f, false, false, dmesh.isBarb);
+        renderArrowHead(pt0, pt1, 0.3f, false, false, dmesh.isBarb);
         viewer.transformPtScr(pt1f, screens[nPoints - 1]);
       }
-      pt1f.setT(vpt2);
+      pt1f.setT(pt2);
       break;
     case ARROW:
       if (vertexCount == 2) {
@@ -281,21 +281,21 @@ public class DrawRenderer extends MeshRenderer {
           j0 = j;
         }
       }
-    vpt0.setT(vertices[0]);
-    vpt0.add(vertices[1]);
-    vpt0.scale(0.5f);
-    vpt2.setT(vertices[2]);
-    vpt2.add(vertices[3]);
-    vpt2.scale(0.5f);
-    vpt1.setT(vpt0);
-    vpt1.add(vpt2);
-    vpt1.scale(0.5f);
+    pt0.setT(vertices[0]);
+    pt0.add(vertices[1]);
+    pt0.scale(0.5f);
+    pt2.setT(vertices[2]);
+    pt2.add(vertices[3]);
+    pt2.scale(0.5f);
+    pt1.setT(pt0);
+    pt1.add(pt2);
+    pt1.scale(0.5f);
     vertices[3] = P3.newP(vertices[i0]);
     vertices[3].add(vertices[j0]);
     vertices[3].scale(0.5f);
-    vertices[1] = P3.newP(vpt1); 
-    vertices[0] = P3.newP(vpt0);
-    vertices[2] = P3.newP(vpt2);
+    vertices[1] = P3.newP(pt1); 
+    vertices[0] = P3.newP(pt0);
+    vertices[2] = P3.newP(pt2);
 
     for (int i = 0; i < 4; i++)
       viewer.transformPtScr(vertices[i], screens[i]);
@@ -304,20 +304,20 @@ public class DrawRenderer extends MeshRenderer {
     float endoffset = 0.2f;
     float offsetside = 10 * width;
     
-    vpt0.set(screens[0].x, screens[0].y, screens[0].z);
-    vpt1.set(screens[1].x, screens[1].y, screens[1].z);
-    vpt2.set(screens[3].x, screens[3].y, screens[3].z);
+    pt0.set(screens[0].x, screens[0].y, screens[0].z);
+    pt1.set(screens[1].x, screens[1].y, screens[1].z);
+    pt2.set(screens[3].x, screens[3].y, screens[3].z);
     float dx = (screens[1].x - screens[0].x) * f;
     float dy = (screens[1].y - screens[0].y) * f;
     
-    if (dmax == 0 || Measure.computeTorsion(vpt2, vpt0, P3.new3(vpt0.x, vpt0.y, 10000f), vpt1, false) > 0) {
+    if (dmax == 0 || Measure.computeTorsion(pt2, pt0, P3.new3(pt0.x, pt0.y, 10000f), pt1, false) > 0) {
       dx = -dx;
       dy = -dy;
     }
-    vpt2.set(dy, -dx, 0);
-    vpt1.add(vpt2);
-    viewer.unTransformPoint(vpt1, vertices[1]);
-    vpt2.scale(offsetside);
+    pt2.set(dy, -dx, 0);
+    pt1.add(pt2);
+    viewer.unTransformPoint(pt1, vertices[1]);
+    pt2.scale(offsetside);
     vTemp.setT(vertices[1]);
     vTemp.sub(vertices[0]);
     vTemp.scale(endoffset); 
@@ -329,10 +329,10 @@ public class DrawRenderer extends MeshRenderer {
     for (int i = 0; i < 3; i++) {
       viewer.transformPtScr(vertices[i], screens[i]);
       if (offsetside != 0) {
-        screens[i].x += Math.round(vpt2.x);
-        screens[i].y += Math.round(vpt2.y);
-        vpt1.set(screens[i].x, screens[i].y, screens[i].z);
-        viewer.unTransformPoint(vpt1 , vertices[i]);
+        screens[i].x += Math.round(pt2.x);
+        screens[i].y += Math.round(pt2.y);
+        pt1.set(screens[i].x, screens[i].y, screens[i].z);
+        viewer.unTransformPoint(pt1 , vertices[i]);
       }
     }
   }
@@ -351,24 +351,24 @@ public class DrawRenderer extends MeshRenderer {
   private void renderXyArrow(int ptXY) {
     int ptXYZ = 1 - ptXY;
     P3[] arrowPt = new P3[2];
-    arrowPt[ptXYZ] = vpt1;
-    arrowPt[ptXY] = vpt0;
+    arrowPt[ptXYZ] = pt1;
+    arrowPt[ptXY] = pt0;
     // set up (0,0,0) to ptXYZ in real and screen coordinates
-    vpt0.set(screens[ptXY].x, screens[ptXY].y, screens[ptXY].z);
-    viewer.rotatePoint(vertices[ptXYZ], vpt1);
-    vpt1.z *= -1;
+    pt0.set(screens[ptXY].x, screens[ptXY].y, screens[ptXY].z);
+    viewer.rotatePoint(vertices[ptXYZ], pt1);
+    pt1.z *= -1;
     float zoomDimension = viewer.getScreenDim();
     float scaleFactor = zoomDimension / 20f;
-    vpt1.scaleAdd2(dmesh.scale * scaleFactor, vpt1, vpt0);
+    pt1.scaleAdd2(dmesh.scale * scaleFactor, pt1, pt0);
     if (diameter == 0)
       diameter = 1;
-    pt1i.set(Math.round(vpt0.x), Math.round(vpt0.y),Math.round(vpt0.z));
-    pt2i.set(Math.round(vpt1.x), Math.round(vpt1.y), Math.round(vpt1.z));
+    pt1i.set(Math.round(pt0.x), Math.round(pt0.y),Math.round(pt0.z));
+    pt2i.set(Math.round(pt1.x), Math.round(pt1.y), Math.round(pt1.z));
     if (diameter < 0)
       g3d.drawDottedLine(pt1i, pt2i);
     else
       g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, pt1i, pt2i);
-    renderArrowHead(vpt0, vpt1, 0, true, false, false);
+    renderArrowHead(pt0, pt1, 0, true, false, false);
   }
 
   private final P3 pt0f = new P3();

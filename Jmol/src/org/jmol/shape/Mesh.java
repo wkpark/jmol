@@ -77,6 +77,7 @@ public class Mesh extends MeshSurface {
   public Map<String, BS> vertexColorMap;
   
   public int color;
+  public boolean useColix = true;
   public SymmetryInterface unitCell;
   
   public float scale3d = 0;
@@ -130,6 +131,7 @@ public class Mesh extends MeshSurface {
     bsSlabGhost = null;
     cappingObject = null;
     colix = C.GOLD;
+    useColix = true;
     colorDensity = false;
     connections = null;
     diameter = 0;

@@ -37,7 +37,8 @@ public class CGO extends Draw {
   
   CGOMesh[] cmeshes = new CGOMesh[4];
   private CGOMesh cgoMesh;
-
+  private boolean useColix;
+  
   public CGO() {
     super();
   }
@@ -56,6 +57,7 @@ public class CGO extends Draw {
         colix, index) : (CGOMesh) m);
     currentMesh.color = color;
     currentMesh.index = index;
+    currentMesh.useColix = useColix;
     if (thisID != null && thisID != MeshCollection.PREVIOUS_MESH_ID
         && htObjects != null)
       htObjects.put(thisID.toUpperCase(), currentMesh);
@@ -86,6 +88,7 @@ public class CGO extends Draw {
         allocMesh(null, null);
         cgoMesh.colix = colix;
         cgoMesh.color = color;
+        cgoMesh.useColix = useColix;
       }
       cgoMesh.isValid = setCGO((JmolList<Object>) value);
       if (cgoMesh.isValid) {

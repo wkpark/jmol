@@ -158,7 +158,6 @@ public class PyMOLReader extends PdbReader {
   private float cartoonTranslucency;
   private float sphereTranslucency;
   private float stickTranslucency;
-  private float cgoTranslucency;
   private boolean cartoonLadderMode;
   private boolean cartoonRockets;
   private boolean solventAsSpheres;

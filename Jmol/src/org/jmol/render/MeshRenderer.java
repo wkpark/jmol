@@ -67,7 +67,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected final P3 pt2f = new P3();
 
   protected final P3i pt1i = new P3i();
-  protected final P3i pt2i = new P3i();
+  protected P3i pt2i = new P3i();
   protected final P3i pt3i = new P3i();
   protected int exportPass;
   protected boolean needTranslucent;
@@ -282,10 +282,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
         if (!g3d.isDirectedTowardsCamera(normix))
           continue;
         if (fill) {
-          if (isExport) {
+          /*if (isExport) { this cannot be right....
             g3d.fillTriangle3CN(screens[iC], colix, normix, screens[iB], colix,
                 normix, screens[iA], colix, normix);
-          } else if (iShowTriangles) {
+          } else */ if (iShowTriangles) {
             g3d.fillTriangle(screens[iA], colix, normix, screens[iB], colix,
                 normix, screens[iC], colix, normix, 0.1f);
           } else {

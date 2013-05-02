@@ -298,6 +298,8 @@ public class JvxlCoder {
       addAttrib(attribs, "\n  precisionColor", "true");
     if (jvxlData.colorDensity)
       addAttrib(attribs, "\n  colorDensity", "true");
+    if (!Float.isNaN(jvxlData.pointSize))
+      addAttrib(attribs, "\n  pointSize", "" + jvxlData.pointSize);
     else if (jvxlData.diameter != 0)
       addAttrib(attribs, "\n  diameter", "" + jvxlData.diameter);
     if (!jvxlData.allowVolumeRender)

@@ -253,6 +253,7 @@ public class Parameters {
     modelIndex = -1;
     nContours = 0;
     pocket = null;
+    pointSize = Float.NaN;
     propertyDistanceMax = Integer.MAX_VALUE;
     propertySmoothing = false;
     propertySmoothingPower = 4;
@@ -819,6 +820,7 @@ public class Parameters {
   public P3 mapLattice;
   public boolean isMapped;
   public boolean showTiming;
+  public float pointSize;
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)

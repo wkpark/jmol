@@ -634,6 +634,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("colorDensity" == propertyName) {
+      if (value != null && currentMesh != null)
+        currentMesh.volumeRenderPointSize = ((Float) value).floatValue();
+      return;
+    }
     /*
      * if ("background" == propertyName) { boolean doHide = !((Boolean)
      * value).booleanValue(); if (thisMesh != null) thisMesh.hideBackground =
@@ -1014,27 +1019,28 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     //System.out.println("isosurface initializing " + thisMesh);
     if (!iHaveModelIndex)
       modelIndex = viewer.getCurrentModelIndex();
+    atomIndex = -1;
+    //allowContourLines = true; //but not for f(x,y) or plane, which use mesh
+    bsDisplay = null;
+    center = P3.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    colix = C.ORANGE;
+    connections = null;
+    cutoffRange = null;
+    defaultColix = meshColix = 0;
+    displayWithinPoints = null;
+    explicitContours = false;
     isFixed = (modelIndex < 0);
+    isPhaseColored = isColorExplicit = false;
+    linkedMesh = null;
     if (modelIndex < 0)
-      modelIndex = 0; // but note that modelIndex = -1
+      modelIndex = 0; 
+    // but note that modelIndex = -1
     // is critical for surfaceGenerator. Setting this equal to 
     // 0 indicates only surfaces for model 0.
-    title = null;
-    explicitContours = false;
-    atomIndex = -1;
-    colix = C.ORANGE;
-    translucentLevel = 0;
-    defaultColix = meshColix = 0;
-    isPhaseColored = isColorExplicit = false;
-    //allowContourLines = true; //but not for f(x,y) or plane, which use mesh
-    center = P3.new3(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     scale3d = 0;
+    title = null;
+    translucentLevel = 0;
     withinPoints = null;
-    cutoffRange = null;
-    displayWithinPoints = null;
-    bsDisplay = null;
-    linkedMesh = null;
-    connections = null;
     initState();
   }
 
@@ -1350,6 +1356,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     setBsVdw();
     thisMesh.isColorSolid = false;
     thisMesh.colorDensity = jvxlData.colorDensity;
+    thisMesh.volumeRenderPointSize = jvxlData.pointSize;
     thisMesh.colorEncoder = sg.getColorEncoder();
     thisMesh.getContours();
     if (thisMesh.jvxlData.nContours != 0 && thisMesh.jvxlData.nContours != -1)

@@ -355,7 +355,7 @@ public class SurfaceGenerator {
     }
 
     if ("map" == propertyName) {
-      params.resetForMapping(((Boolean)value).booleanValue());
+      params.resetForMapping(((Boolean) value).booleanValue());
       if (surfaceReader != null)
         surfaceReader.minMax = null;
       return true;
@@ -471,7 +471,7 @@ public class SurfaceGenerator {
         params.cutoff = params.parameters[0];
       return true;
     }
-    
+
     if ("cutoffPositive" == propertyName) {
       params.cutoff = ((Float) value).floatValue();
       params.isPositiveOnly = true;
@@ -528,12 +528,14 @@ public class SurfaceGenerator {
     }
 
     if ("squareData" == propertyName) {
-      params.isSquared = (value == null ? false : ((Boolean) value).booleanValue());
+      params.isSquared = (value == null ? false : ((Boolean) value)
+          .booleanValue());
       return true;
     }
 
     if ("squareLinear" == propertyName) {
-      params.isSquaredLinear = (value == null ? false : ((Boolean) value).booleanValue());
+      params.isSquaredLinear = (value == null ? false : ((Boolean) value)
+          .booleanValue());
       return true;
     }
 
@@ -620,12 +622,11 @@ public class SurfaceGenerator {
       params.center.setT((P3) value);
       return true;
     }
-    
+
     if ("volumeData" == propertyName) {
       params.volumeData = (VolumeData) value;
       return true;
     }
-      
 
     if ("origin" == propertyName) {
       params.origin = (P3) value;
@@ -779,7 +780,9 @@ public class SurfaceGenerator {
 
     if ("colorDensity" == propertyName) {
       params.colorDensity = true;
-      return true;
+      if (value != null)
+        params.pointSize = ((Float) value).floatValue();
+      return false;
     }
     if ("fullPlane" == propertyName) {
       // fullPlane == true --> params.contourFromZero is false
@@ -794,7 +797,7 @@ public class SurfaceGenerator {
       params.contourFromZero = !((Boolean) value).booleanValue();
       return true;
     }
-    
+
     if ("mapLattice" == propertyName) {
       params.mapLattice = (P3) value;
       return true;
@@ -850,7 +853,7 @@ public class SurfaceGenerator {
 
     if ("lp" == propertyName) {
       params.setLp((P4) value);
-      readerData = new float[] {3, 2, 0, 15, 0};
+      readerData = new float[] { 3, 2, 0, 15, 0 };
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
@@ -858,7 +861,7 @@ public class SurfaceGenerator {
 
     if ("rad" == propertyName) {
       params.setRadical((P4) value);
-      readerData = new float[] {3, 2, 0, 15, 0};
+      readerData = new float[] { 3, 2, 0, 15, 0 };
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
@@ -866,7 +869,7 @@ public class SurfaceGenerator {
 
     if ("lobe" == propertyName) {
       params.setLobe((P4) value);
-      readerData = new float[] {3, 2, 0, 15, 0};
+      readerData = new float[] { 3, 2, 0, 15, 0 };
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();
       return true;
@@ -877,8 +880,8 @@ public class SurfaceGenerator {
         isValid = false;
         return true;
       }
-      readerData = new float[] {params.psi_n, params.psi_l,
-          params.psi_m, params.psi_Znuc, params.psi_monteCarloCount};
+      readerData = new float[] { params.psi_n, params.psi_l, params.psi_m,
+          params.psi_Znuc, params.psi_monteCarloCount };
       surfaceReader = newReader("IsoShapeReader");
       processState();
       return true;
@@ -947,13 +950,13 @@ public class SurfaceGenerator {
     }
 
     if ("nci" == propertyName) {
-      boolean isPromolecular = ((Boolean) value).booleanValue(); 
+      boolean isPromolecular = ((Boolean) value).booleanValue();
       params.setNci(isPromolecular);
       if (isPromolecular)
         processState();
       return true;
     }
-    
+
     if ("calculationType" == propertyName) {
       params.calculationType = (String) value;
       return true;
@@ -970,7 +973,7 @@ public class SurfaceGenerator {
       params.randomSeed = ((Integer) value).intValue();
       return true;
     }
-    
+
     if ("molecularOrbital" == propertyName) {
       int iMo = 0;
       float[] linearCombination = null;

@@ -50,6 +50,7 @@ import org.jmol.viewer.JC;
 import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
+import org.jmol.shapecgo.CGOMesh;
 
 
 public class Draw extends MeshCollection {
@@ -395,38 +396,45 @@ public void initShape() {
     }
     
     if (propertyName == "deleteModelAtoms") {
-      int modelIndex = ((int[]) ((Object[]) value)[2])[0];
-      //int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
-      //int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
-      for (int i = meshCount; --i >= 0;) {
-        DrawMesh m = dmeshes[i];
-        if (m == null)
-          continue;
-        boolean deleteMesh = (m.modelIndex == modelIndex);
-        if (m.modelFlags != null) {
-          m.deleteAtoms(modelIndex);
-          deleteMesh = (m.modelFlags.length() == 0);
-          if (!deleteMesh)
-            continue;
-        } 
-        if (deleteMesh) {
-          meshCount--;
-          if (meshes[i] == currentMesh)
-            currentMesh = thisMesh = null;
-          meshes = dmeshes = (DrawMesh[]) ArrayUtil
-              .deleteElements(meshes, i, 1);
-        } else if (meshes[i].modelIndex > modelIndex) {
-          meshes[i].modelIndex--;
-        }
-      }
-      resetObjects();
+      deleteModels(((int[]) ((Object[]) value)[2])[0]);
       return;
     }
 
     setPropertySuper(propertyName, value, bs);
   }
 
- private void initDraw() {
+ protected void deleteModels(int modelIndex) {
+   //int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
+   //int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
+   for (int i = meshCount; --i >= 0;) {
+     DrawMesh m = dmeshes[i];
+     if (m == null)
+       continue;
+     boolean deleteMesh = (m.modelIndex == modelIndex);
+     if (m.modelFlags != null) {
+       m.deleteAtoms(modelIndex);
+       deleteMesh = (m.modelFlags.length() == 0);
+       if (!deleteMesh)
+         continue;
+     } 
+     if (deleteMesh) {
+       meshCount--;
+       deleteMeshElement(i);
+     } else if (meshes[i].modelIndex > modelIndex) {
+       meshes[i].modelIndex--;
+     }
+   }
+   resetObjects();
+  }
+
+ protected void deleteMeshElement(int i) {
+   if (meshes[i] == currentMesh)
+     currentMesh = thisMesh = null;
+   meshes = dmeshes = (CGOMesh[]) ArrayUtil
+       .deleteElements(meshes, i, 1);
+}
+
+private void initDraw() {
    colix = C.ORANGE;
    color = 0xFFFFFFFF;
    newScale = 0;
@@ -1536,14 +1544,14 @@ protected void resetObjects() {
   public String getShapeState() {
     SB s = new SB();
     s.append("\n");
-    appendCmd(s, "draw delete");
+    appendCmd(s, myType + " delete");
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0 && mesh.lineData == null)
         continue;
       s.append(getCommand2(mesh, mesh.modelIndex));
       if (!mesh.visible)
-        s.append(" draw " + mesh.thisID + " off;\n");
+        s.append(" " + myType + " ID " + Escape.eS(mesh.thisID) + " off;\n");
     }
     return s.toString();
   }

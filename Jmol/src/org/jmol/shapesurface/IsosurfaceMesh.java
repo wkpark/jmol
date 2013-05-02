@@ -102,7 +102,6 @@ public class IsosurfaceMesh extends Mesh {
     vertexIncrement = 1;
     vertexSets = null;
     vertexValues = null;
-    volumeRenderPointSize = 0.15f;
   }
 
   void allocVertexColixes() {
@@ -410,7 +409,6 @@ public class IsosurfaceMesh extends Mesh {
   short[] contourColixes;
   public ColorEncoder colorEncoder;
   
-  public float volumeRenderPointSize = 0.15f;
   BS bsVdw;
   public boolean colorPhased;
 

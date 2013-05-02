@@ -76,7 +76,8 @@ class PyMOLMeshReader extends MapFileReader {
       surfaceName = (String) data.get(data.size() - 1);
     }
     voxelList = getList(getList(getList(surfaceList, 14), 2), 6);
-    System.out.println("Number of grid points = " + voxelList.size());
+    System.out.println("Number of grid points = " + voxelList.size() + " " + params.sigma);
+    allowSigma = true;
   }
 
   @SuppressWarnings("unchecked")
@@ -161,16 +162,37 @@ class PyMOLMeshReader extends MapFileReader {
   
   @Override
   protected void setCutoffAutomatic() {
-    if (params.thePlane == null && params.cutoffAutomatic) {
+    if (params.thePlane != null)
+      return;
+    if (Float.isNaN(params.sigma)) {
+      if (!params.cutoffAutomatic)
+        return;
       params.cutoff = (boundingBox == null ? 3.0f : 1.6f);
       if (dmin != Float.MAX_VALUE) {
         if (params.cutoff > dmax)
           params.cutoff = dmax / 4; // just a guess
       }
-      Logger.info("MapReader: setting cutoff to default value of "
-          + params.cutoff
-          + (boundingBox == null ? " (no BOUNDBOX parameter)\n" : "\n"));
+    } else {
+      params.cutoff = calculateCutoff();
     }
+    Logger.info("MapReader: setting cutoff to default value of "
+        + params.cutoff
+        + (boundingBox == null ? " (no BOUNDBOX parameter)\n" : "\n"));
+  }
+
+  private float calculateCutoff() {
+    int n = voxelList.size();
+    float sum = 0;
+    float sum2 = 0;
+    for (int i = 0; i < n; i++) {
+      float v = getFloat(voxelList, i);
+      sum += v;
+      sum2 += v * v;
+    }
+    float mean = sum / n;
+    float rmsd = (float) Math.sqrt(sum2 / n);
+    Logger.info("PyMOLMeshReader rmsd=" + rmsd + " mean=" + mean);
+    return params.sigma * rmsd + mean;
   }
 
 }

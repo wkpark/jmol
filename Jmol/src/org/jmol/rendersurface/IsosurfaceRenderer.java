@@ -282,7 +282,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       } else {
         diam = viewer.getScreenDim() / (volumeRender ? 50 : 100);        
       }
-      int ptSize = Math.round(imesh.volumeRenderPointSize * 1000);
+      int ptSize = Math.round(Float.isNaN(imesh.volumeRenderPointSize) ? 150 : imesh.volumeRenderPointSize * 1000);
       if (diam < 1)
         diam = 1;
       int cX = (showNumbers ? viewer.getScreenWidth() / 2 : 0);
@@ -310,6 +310,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         }
         if (volumeRender) {
           diam = (int) viewer.scaleToScreen(screens[i].z, ptSize);
+          if (diam < 1)
+            diam = 1;
           g3d.volumeRender4(diam, screens[i].x, screens[i].y, screens[i].z);
         } else {
           g3d.fillSphereI(diam, screens[i]);

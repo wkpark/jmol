@@ -245,9 +245,14 @@ public class JvxlXmlReader extends VolumeFileReader {
     jvxlDataIsColorMapped = 
       ((params.colorRgb == Integer.MIN_VALUE || params.colorRgb == Integer.MAX_VALUE)
     && (params.isBicolorMap || XmlReader.getXmlAttrib(data, "colorMapped").equals("true")));
-    //next is for information only -- will be superceded by encoding attribute of jvxlColorData
+    //isJvxlPrecisionColor is for information only -- will be superceded by encoding attribute of jvxlColorData
     jvxlData.isJvxlPrecisionColor = XmlReader.getXmlAttrib(data, "precisionColor").equals("true");
     jvxlData.jvxlDataIsColorDensity = params.colorDensity = (params.colorRgb == Integer.MIN_VALUE && XmlReader.getXmlAttrib(data, "colorDensity").equals("true"));
+    if (jvxlData.jvxlDataIsColorDensity && Float.isNaN(params.pointSize)) {
+      s = XmlReader.getXmlAttrib(data, "pointSize");
+      if (s.length() > 0)
+        jvxlData.pointSize = params.pointSize = parseFloatStr(s);
+    }
     s = XmlReader.getXmlAttrib(data, "allowVolumeRender");
       jvxlData.allowVolumeRender = params.allowVolumeRender = (s.length() == 0 || s.equalsIgnoreCase("true"));
     s = XmlReader.getXmlAttrib(data, "plane");

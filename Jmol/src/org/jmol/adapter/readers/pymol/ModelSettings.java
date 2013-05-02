@@ -127,11 +127,15 @@ public class ModelSettings {
   public void createShape(ModelSet m, BS bsCarb) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
-    String script = null, sID;
+    String sID;
     Atom[] atoms;
-    SB sb;
+    SB sb = null;
     float min, max;
     switch (id) {
+    case T.define:
+      // executed even for states
+      sm.viewer.defineAtomSets((Map<String, Object>) info);
+      return;
     case T.movie:
       sm.viewer.setMovie((Map<String, Object>) info);
       return;
@@ -146,9 +150,6 @@ public class ModelSettings {
       return;
     case T.hidden:
       sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
-      return;
-    case T.define:
-      sm.viewer.defineAtomSets((Map<String, Object>) info);
       return;
     case JC.SHAPE_LABELS:
       sm.loadShape(id);
@@ -188,7 +189,6 @@ public class ModelSettings {
           .append(" map \"\" ").append(Escape.eS(mapID)).append(
               ";color isosurface range " + min + " " + max
                   + ";isosurface colorscheme rwb");
-      script = sb.toString();
       break;
     case T.mesh:
       modelIndex = sm.viewer.getCurrentModelIndex();
@@ -213,31 +213,43 @@ public class ModelSettings {
         sb.append(" ]");
       }
       sb.append(";set meshScale ").appendI(size / 500);
-      script = sb.toString();
       break;
     case JC.SHAPE_ISOSURFACE:
+      sID = (info instanceof String ? (String) info : ((String[]) info)[0].toString()).replace('\'', '_').replace('"', '_');
+      if (info instanceof String) {
+        // point display of map 
+        modelIndex = sm.viewer.getCurrentModelIndex();
+        sb = new SB();
+        sb.append("isosurface ID ")
+        .append(Escape.eS(sID)).append(" model ").append(m.models[modelIndex].getModelNumberDotted())
+        .append(" color density sigma 1.0")
+        .append(" \"\" ")
+        .append(Escape.eS(sID));
+        break;
+      }
       if (modelIndex < 0)
         return;
       if (argb == 0)
         sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-      script = ((String[]) info)[0].toString().replace('\'', '_').replace('"', '_');
       String lighting = ((String[]) info)[1];
       String resolution = "";
       if (lighting == null) {
         lighting = "mesh nofill";
         resolution = " resolution 1.5";
       }
-      script = "isosurface ID \"" + script + "\"" + " model "
-          + m.models[modelIndex].getModelNumberDotted() + resolution
-          + " select (" + Escape.eBS(bsAtoms) + ") only solvent "
-          + (size / 1000f);
+      sb = new SB();
+      sb.append("isosurface ID ").append(Escape.eS(sID))
+          .append(" model ").append(m.models[modelIndex].getModelNumberDotted())
+          .append(resolution)
+          .append(" select ").append(Escape.eBS(bsAtoms)).append(" only")
+          .append(" solvent ").appendF(size / 1000f);
       if (argb == 0)
-        script += " map property color";
+        sb.append(" map property color");
       else
-        script += " color " + Escape.escapeColor(argb);
-      script += " frontOnly " + lighting;
+        sb.append(" color ").append(Escape.escapeColor(argb));
+      sb.append(" frontOnly ").append(lighting);
       if (translucency > 0)
-        script += " translucent " + translucency;
+        sb.append(" translucent ").appendF(translucency);
       break;
     case JC.SHAPE_TRACE:
     case JC.SHAPE_BACKBONE:
@@ -335,8 +347,8 @@ public class ModelSettings {
       }
       break;
     }
-    if (script != null) {
-      sm.viewer.runScript(script);
+    if (sb != null) {
+      sm.viewer.runScript(sb.toString());
       return;
     }
     // cartoon, trace, etc.

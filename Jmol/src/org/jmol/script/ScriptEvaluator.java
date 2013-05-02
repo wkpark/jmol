@@ -4519,6 +4519,62 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return 0;
   }
 
+  
+  private JmolList<Object> listParameter(int i, int nMin, int nMax) throws ScriptException {
+    JmolList<Object> v = new JmolList<Object>();
+    P3 pt;
+    int tok = tokAt(i);
+    if (tok == T.spacebeforesquare)
+      tok = tokAt(++i);
+    boolean haveBrace = (tok == T.leftbrace);
+    boolean haveSquare = (tok == T.leftsquare);
+    if (haveBrace || haveSquare)
+      i++;
+    int n = 0;
+    while (n < nMax) {
+      tok = tokAt(i);
+      if (haveBrace && tok == T.rightbrace || haveSquare
+          && tok == T.rightsquare)
+        break;
+      switch (tok) {
+      case T.comma:
+      case T.leftbrace:
+      case T.rightbrace:
+        break;
+      case T.string:
+        break;
+      case T.point3f:
+        pt = getPoint3f(i, false);
+        v.addLast(Float.valueOf(pt.x));
+        v.addLast(Float.valueOf(pt.y));
+        v.addLast(Float.valueOf(pt.z));
+        n += 3;
+        break;
+      case T.point4f:
+        P4 pt4 = getPoint4f(i);
+        v.addLast(Float.valueOf(pt4.x));
+        v.addLast(Float.valueOf(pt4.y));
+        v.addLast(Float.valueOf(pt4.z));
+        v.addLast(Float.valueOf(pt4.w));
+        n += 4;
+        break;
+      default:
+        v.addLast(Float.valueOf(floatParameter(i)));
+        n++;
+        if (n == nMax && haveSquare && tokAt(i + 1) == T.rightbrace)
+          i++;
+      }
+      i++;
+    }
+    if (haveBrace && tokAt(i++) != T.rightbrace || haveSquare
+        && tokAt(i++) != T.rightsquare
+        || n < nMin || n > nMax)
+      error(ERROR_invalidArgument);
+    iToken = i - 1;
+    return v;
+  }
+
+
   /**
    * process a general string or set of parameters as an array of floats,
    * allowing for relatively free form input
@@ -4531,17 +4587,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    */
   private float[] floatParameterSet(int i, int nMin, int nMax)
       throws ScriptException {
-    int tok = tokAt(i);
-    if (tok == T.spacebeforesquare)
-      tok = tokAt(++i);
-    boolean haveBrace = (tok == T.leftbrace);
-    boolean haveSquare = (tok == T.leftsquare);
+    JmolList<Object> v = null;
     float[] fparams = null;
-    JmolList<Float> v = new  JmolList<Float>();
     int n = 0;
-    if (haveBrace || haveSquare)
-      i++;
-    P3 pt;
     String s = null;
     switch (tokAt(i)) {
     case T.string:
@@ -4551,56 +4599,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       n = fparams.length;
       break;
     case T.varray:
-      fparams = SV.flistValue(st[i++], 0);
+      fparams = SV.flistValue(st[i], 0);
       n = fparams.length;
       break;
     default:
-      while (n < nMax) {
-        tok = tokAt(i);
-        if (haveBrace && tok == T.rightbrace || haveSquare
-            && tok == T.rightsquare)
-          break;
-        switch (tok) {
-        case T.comma:
-        case T.leftbrace:
-        case T.rightbrace:
-          break;
-        case T.string:
-          break;
-        case T.point3f:
-          pt = getPoint3f(i, false);
-          v.addLast(Float.valueOf(pt.x));
-          v.addLast(Float.valueOf(pt.y));
-          v.addLast(Float.valueOf(pt.z));
-          n += 3;
-          break;
-        case T.point4f:
-          P4 pt4 = getPoint4f(i);
-          v.addLast(Float.valueOf(pt4.x));
-          v.addLast(Float.valueOf(pt4.y));
-          v.addLast(Float.valueOf(pt4.z));
-          v.addLast(Float.valueOf(pt4.w));
-          n += 4;
-          break;
-        default:
-          v.addLast(Float.valueOf(floatParameter(i)));
-          n++;
-          if (n == nMax && haveSquare && tokAt(i + 1) == T.rightbrace)
-            i++;
-        }
-        i++;
-      }
+      v = listParameter(i, nMin, nMax);
+      n = v.size();
     }
-    if (haveBrace && tokAt(i++) != T.rightbrace || haveSquare
-        && tokAt(i++) != T.rightsquare)
-      error(ERROR_invalidArgument);
-    iToken = i - 1;
     if (n < nMin || n > nMax)
       error(ERROR_invalidArgument);
     if (fparams == null) {
       fparams = new float[n];
       for (int j = 0; j < n; j++)
-        fparams[j] = v.get(j).floatValue();
+        fparams[j] = ((Float) v.get(j)).floatValue();
     }
     return fparams;
   }
@@ -15443,7 +15454,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isWild = (idSeen && getShapeProperty(JC.SHAPE_CGO, "ID") == null);
     boolean isTranslucent = false;
     boolean isInitialized = false;
-    float[] data = null;
+    JmolList<Object> data = null;
     float translucentLevel = Float.MAX_VALUE;
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
@@ -15456,7 +15467,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.spacebeforesquare:
         if (data != null || isWild)
           error(ERROR_invalidArgument);
-        data = floatParameterSet(i, 2, Integer.MAX_VALUE);
+        data = listParameter(i, 2, Integer.MAX_VALUE);
         i = iToken;
         continue;
       case T.scale:
@@ -15525,7 +15536,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         setShapeProperty(JC.SHAPE_CGO, propertyName, propertyValue);
     }
     finalizeObject(JC.SHAPE_CGO, colorArgb, isTranslucent ? translucentLevel
-        : Float.MAX_VALUE, intScale, true, data, iptDisplayProperty);
+        : Float.MAX_VALUE, intScale, data != null, data, iptDisplayProperty);
   }
   
   private void finalizeObject(int shapeID, int colorArgb,
@@ -17570,6 +17581,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             i++;
             propertyName = "colorDensity";
             sbCommand.append(" color density");
+            if (isFloatParameter(i + 1)) {
+              float ptSize = floatParameter(++i);
+              sbCommand.append(" " + ptSize);
+              propertyValue = Float.valueOf(ptSize);
+            }
             break;
           }
           /*

@@ -116,12 +116,18 @@ public class CGOMesh extends DrawMesh {
     // vertices will be in list.get(0). normals?
     width = 200;
     diameter = 0;//200;
+    useColix = true;
     bsTemp = new BS();
     try {
-      cmds = (JmolList<Object>) list.get(1);
-      if (cmds == null)
-        cmds = (JmolList<Object>) list.get(0);
-      cmds = (JmolList<Object>) cmds.get(1);
+      if (list.get(0) instanceof Float) {
+        cmds = list;
+      } else {
+        cmds = (JmolList<Object>) list.get(1);
+        if (cmds == null)
+          cmds = (JmolList<Object>) list.get(0);
+        cmds = (JmolList<Object>) cmds.get(1);
+      }
+
       int n = cmds.size();
       for (int i = 0; i < n; i++) {
         int type = ((Number) cmds.get(i)).intValue();
@@ -130,8 +136,7 @@ public class CGOMesh extends DrawMesh {
           Logger.error("CGO unknown type: " + type);
           return false;
         }
-        Logger.info("CGO " + thisID + " type " + type + " len " + len);
-        switch(type) {
+        switch (type) {
         case SIMPLE_LINE:
           // para_closed_wt-MD-27.9.12.pse
           // total hack.... could be a strip of lines?
@@ -144,6 +149,7 @@ public class CGOMesh extends DrawMesh {
           break;
         case COLOR:
           addColix(i);
+          useColix = false;
           break;
         case CGOMesh.SAUSAGE:
           addColix(i + 6);
@@ -157,7 +163,8 @@ public class CGOMesh extends DrawMesh {
           addColix(i + 21);
           addColix(i + 24);
           break;
-        }        
+        }
+        Logger.info("CGO " + thisID + " type " + type + " len " + len);
         i += len;
       }
       return true;

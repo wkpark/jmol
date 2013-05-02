@@ -416,6 +416,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     jvxlData.isBicolorMap = params.isBicolorMap;
     jvxlData.isContoured = params.isContoured;
     jvxlData.colorDensity = params.colorDensity;
+    jvxlData.pointSize = params.pointSize;
     if (jvxlData.vContours != null)
       params.nContours = jvxlData.vContours.length;
     jvxlData.nContours = (params.contourFromZero ? params.nContours : -1

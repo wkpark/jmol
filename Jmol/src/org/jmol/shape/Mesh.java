@@ -153,11 +153,12 @@ public class Mesh extends MeshSurface {
     showTriangles = false; //as distinct entities
     slabbingObject = null;
     slabOptions = null;
+    spanningVectors = null;    
     title = null;
     unitCell = null;
     vertexCount0 = polygonCount0 = vertexCount = polygonCount = 0;
     vertices = null;
-    spanningVectors = null;    
+    volumeRenderPointSize = 0.15f;
     this.meshType = meshType;
   }
 
@@ -241,6 +242,7 @@ public class Mesh extends MeshSurface {
   public boolean colorDensity;
   public Object cappingObject;
   public Object slabbingObject;
+  public float volumeRenderPointSize = 0.15f;
 
   public int[] connections;
 

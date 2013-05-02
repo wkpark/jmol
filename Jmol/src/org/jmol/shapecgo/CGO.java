@@ -30,9 +30,9 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.shapespecial.Draw;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
+import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
 import org.jmol.util.SB;
-
 public class CGO extends Draw {
   
   CGOMesh[] cmeshes = new CGOMesh[4];
@@ -97,39 +97,19 @@ public class CGO extends Draw {
         cgoMesh.title = title;
         cgoMesh.visible = true;
       }
+      clean();
       return;
     }
     
-    if (propertyName == "deleteModelAtoms") {
-      int modelIndex = ((int[]) ((Object[]) value)[2])[0];
-      //int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
-      //int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
-      for (int i = meshCount; --i >= 0;) {
-        CGOMesh m = cmeshes[i];
-        if (m == null)
-          continue;
-        boolean deleteMesh = (m.modelIndex == modelIndex);
-        if (m.modelFlags != null) {
-          m.deleteAtoms(modelIndex);
-          deleteMesh = (m.modelFlags.length() == 0);
-          if (!deleteMesh)
-            continue;
-        } 
-        if (deleteMesh) {
-          meshCount--;
-          if (meshes[i] == currentMesh)
-            currentMesh = cgoMesh = null;
-          meshes = cmeshes = (CGOMesh[]) ArrayUtil
-              .deleteElements(meshes, i, 1);
-        } else if (meshes[i].modelIndex > modelIndex) {
-          meshes[i].modelIndex--;
-        }
-      }
-      resetObjects();
-      return;
-    }
-
     setPropertySuper(propertyName, value, bs);
+  }
+
+  @Override
+  protected void deleteMeshElement(int i) {
+    if (meshes[i] == currentMesh)
+      currentMesh = cgoMesh = null;
+    meshes = cmeshes = (CGOMesh[]) ArrayUtil
+        .deleteElements(meshes, i, 1);
   }
 
   @Override
@@ -137,6 +117,13 @@ public class CGO extends Draw {
     currentMesh = cgoMesh;
     setPropMC(propertyName, value, bs);
     cgoMesh = (CGOMesh)currentMesh;  
+  }
+
+  @Override
+  protected void clean() {
+    for (int i = meshCount; --i >= 0;)
+      if (meshes[i] == null || cmeshes[i].cmds == null || cmeshes[i].cmds.size() == 0)
+        deleteMeshI(i);
   }
 
   private boolean setCGO(JmolList<Object> data) {
@@ -153,14 +140,38 @@ public class CGO extends Draw {
   }
   
   @Override
-  protected String getCommand2(Mesh mesh, int modelIndex) {
-    return "";
+  public String getShapeState() {
+    SB s = new SB();
+    s.append("\n");
+    appendCmd(s, myType + " delete");
+    for (int i = 0; i < meshCount; i++) {
+      CGOMesh mesh = cmeshes[i];
+      s.append(getCommand2(mesh, mesh.modelIndex));
+      if (!mesh.visible)
+        s.append(" " + myType + " ID " + Escape.eS(mesh.thisID) + " off;\n");
+    }
+    return s.toString();
   }
 
   @Override
-  public String getShapeState() {
-    SB s = new SB();
-    return s.toString();
+  protected String getCommand2(Mesh mesh, int iModel) {
+    CGOMesh cmesh = (CGOMesh) mesh;
+    SB str = new SB();
+    int modelCount = viewer.getModelCount();
+    if (iModel >= 0 && modelCount > 1)
+      appendCmd(str, "frame " + viewer.getModelNumberDotted(iModel));
+    str.append("  CGO ID ").append(Escape.eS(mesh.thisID));
+    if (iModel < 0)
+      iModel = 0;
+    str.append(" [");
+    int n = cmesh.cmds.size();
+    for (int i = 0; i < n; i++)
+      str.append(" " + cmesh.cmds.get(i));
+    str.append(" ];\n");
+    appendCmd(str, cmesh.getState("cgo"));
+    if (cmesh.useColix)
+      appendCmd(str, getColorCommandUnk("cgo", cmesh.colix, translucentAllowed));
+    return str.toString();
   }
   
 }

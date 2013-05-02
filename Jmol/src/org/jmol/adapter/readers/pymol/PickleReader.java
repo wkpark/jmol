@@ -143,7 +143,6 @@ class PickleReader {
         o = peek();
         if (o instanceof String) {
           memo.put(Integer.valueOf(i), peek());
-          //System.out.println("BINPUT " + i + " " + peek());
         }
         break;
       case LONG_BINPUT:
@@ -152,25 +151,19 @@ class PickleReader {
         if (o instanceof String && markCount < 6) {
           if (markCount == 3 && "movie".equals(stack.get(marks.get(1).intValue() - 2)))
             break;
-          //System.out.println("LONG_BINPUT " + i + " " + o + " " + memo.size());
           memo.put(Integer.valueOf(i), peek());
         }
         break;
       case BINGET:
         i = binaryDoc.readByte();
         o = memo.get(Integer.valueOf(i));
-        //System.out.println("BINGET " + i + " " + o);
         push(o == null ? "BINGET" + (++id) : o);
         break;
       case LONG_BINGET:
         i = binaryDoc.readIntLE();
         o = memo.get(Integer.valueOf(i));
-        //if (!(o instanceof String)) {
-          //System.out.println("LONG_BINGET " + i + " " + o);
-         
-        //}
         if (o == null) {
-          System.out.println("did not find memo item for " + i);
+          Logger.error("did not find memo item for " + i);
           push("LONG_BINGET" + (++id));
         } else {
           push(o);
@@ -211,7 +204,6 @@ class PickleReader {
       case BUILD:
         o = pop();
         build.addLast(o);
-        //System.out.println("build");
         break;
       case MARK:
         i = stack.size();
@@ -224,13 +216,12 @@ class PickleReader {
         push(null);
         break;
       case OBJ:
-        //System.out.println("OBJ");
         push(getObjects(getMark()));
         break;
       case SETITEM:
         o = pop();
         if (!(peek() instanceof String))
-          System.out.println(peek() + " is not a string");
+          Logger.error(peek() + " is not a string");
         s = (String) pop();
         ((Map<String, Object>) peek()).put(s, o);
         break;
@@ -265,7 +256,7 @@ class PickleReader {
         } catch (Exception e) {
           long ll = Long.parseLong(s);
           push(Integer.valueOf((int) (ll & 0xFFFFFFFF)));
-          System.out.println("INT too large: " + s + " @ " + binaryDoc.getPosition());
+          //System.out.println("INT too large: " + s + " @ " + binaryDoc.getPosition());
           push(Integer.valueOf(Integer.MAX_VALUE));
         }
         break;
@@ -349,7 +340,7 @@ class PickleReader {
     }
     if (logging)
       log("");
-    System.out.println("PyMOL Pickle reader cached " + memo.size() + " tokens");
+   Logger.info("PyMOL Pickle reader cached " + memo.size() + " tokens");
     memo = null;
     map = (Map<String, Object>) stack.remove(0);
     if (map.size() == 0)

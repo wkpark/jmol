@@ -60,6 +60,8 @@ public class CGORenderer extends DrawRenderer {
   public boolean renderMesh(Mesh mesh) {
     this.mesh = mesh;
     cmds = cgoMesh.cmds;
+    if (cmds == null)
+      return false;
     int n = cmds.size();
     int glMode = -1;
     int nPts = 0;

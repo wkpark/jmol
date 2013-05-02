@@ -150,6 +150,7 @@ public class JvxlData {
   public int excludedTriangleCount;
   public int excludedVertexCount;
   public boolean colorDensity;
+  public float pointSize;
   public String moleculeXml;
   public float dataMin, dataMax;
   public int saveVertexCount;
@@ -180,6 +181,7 @@ public class JvxlData {
     color = null;
     colorScheme = null;
     colorDensity = false;
+    pointSize = Float.NaN;
     contourValues = null;
     contourValuesUsed = null;
     contourColixes = null;

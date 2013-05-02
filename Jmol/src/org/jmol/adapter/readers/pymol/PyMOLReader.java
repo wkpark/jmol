@@ -478,7 +478,7 @@ public class PyMOLReader extends PdbReader {
   private P3 labelPosition;
   private float labelColor, labelSize;
   private P3 labelPosition0 = new P3();
-  private Hashtable<String, JmolList<Object>> volumeData;
+  private Map<String, JmolList<Object>> volumeData;
   private JmolList<JmolList<Object>> mapObjects;
   private String branchNameID;
   private Map<String, String> branchIDs = new Hashtable<String, String>();
@@ -490,7 +490,7 @@ public class PyMOLReader extends PdbReader {
     Logger.info("PyMOL model " + (nModels + 1) + " Branch " + branchName
         + (isHidden ? " (hidden)" : " (visible)"));
     JmolList<Object> deepBranch = listAt(branch, 5);
-    branchNameID = branchName + "_" + (++branchID);
+    branchNameID = fixName(branchName + "_" + (++branchID));
     branchIDs.put(branchName, branchNameID);
     String msg = "" + type;
     JmolList<Object> branchInfo = listAt(deepBranch, 0);
@@ -561,8 +561,11 @@ public class PyMOLReader extends PdbReader {
     }
   }
 
+  
   private void processMap(JmolList<Object> deepBranch, boolean isObject) {
     if (isObject) {
+      if (isStateScript)
+        return;
       if (isHidden)
         return; // for now
       if (mapObjects == null)
@@ -572,6 +575,10 @@ public class PyMOLReader extends PdbReader {
       if (volumeData == null)
         volumeData = new Hashtable<String, JmolList<Object>>();
       volumeData.put(branchName, deepBranch);
+      if (!isHidden && !isStateScript) {
+        ModelSettings ms = new ModelSettings(JC.SHAPE_ISOSURFACE, null, branchName);
+        modelSettings.addLast(ms);
+      }
     }
     deepBranch.addLast(branchName);
   }
@@ -898,7 +905,7 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void addName(String name, BS bs) {
-    htNames.put(fixName(name), bs);
+    htNames.put("__" + fixName(name), bs);
   }
 
   private static String fixName(String name) {
@@ -906,7 +913,7 @@ public class PyMOLReader extends PdbReader {
     for (int i = chars.length; --i >= 0;)
       if (!Character.isLetterOrDigit(chars[i]))
         chars[i] = '_';
-    return "__" + String.valueOf(chars);
+    return String.valueOf(chars);
   }
 
   private static int getBranchType(JmolList<Object> branch) {

@@ -210,11 +210,14 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     if (shells == null)
       return 0;
     nCoef = 0;
+    System.out.println("----");
     for (int i = shells.size(); --i >=0 ;) {
       int[] slater = shells.get(i);
       if (slater[1] == typeOld)
         slater[1] = typeNew;
-      nCoef += getDfCoefMaps()[slater[1]].length;
+      int m = getDfCoefMaps()[slater[1]].length;
+      System.out.println("i=" + i + " nCoef=" + nCoef + " t=" + slater[1] + " m=" + m);
+      nCoef += m;
     }
     return nCoef;
   }

@@ -67,7 +67,13 @@ public enum EnumQuantumShell {
         new int[5], //D5
         new int[6], //D6
         new int[7], //F7 
-        new int[10] //F10
+        new int[10], //F10
+        new int[9],  //G9
+        new int[15]  //G15
+                
+      //          9G: G 0, G+1, G-1, G+2, G-2, G+3, G-3, G+4, G-4
+      //          15G: xxxx yyyy zzzz xxxy xxxz yyyx yyyz zzzx zzzy,
+      //               xxyy xxzz yyzz xxyz yyxz zzxy
     };
   }
 
@@ -79,6 +85,7 @@ public enum EnumQuantumShell {
   }
 
   private static EnumQuantumShell getQuantumShell(String tag) {
+    System.out.println(tag);
     for (EnumQuantumShell item : values())
       if (item.tag.equals(tag) || item.tag2.equals(tag))
         return item;

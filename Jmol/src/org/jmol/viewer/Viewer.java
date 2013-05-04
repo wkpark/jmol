@@ -1536,6 +1536,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setObjectArgb(name, ColorUtil.getArgbFromString(colorName));
   }
 
+
+  public void setObjectVisibility(String name, boolean b) {
+    int objId = StateManager.getObjectIdFromName(name);
+    if (objId >= 0) {
+      setShapeProperty(objId, "display", b ? Boolean.TRUE : Boolean.FALSE); 
+    }
+    
+  }
+
+
   public void setObjectArgb(String name, int argb) {
     int objId = StateManager.getObjectIdFromName(name);
     if (objId < 0) {
@@ -9969,5 +9979,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     shapeManager.loadShape(JC.SHAPE_CGO);
     shapeManager.setShapePropertyBs(JC.SHAPE_CGO, "setCGO", info, null);    
   }
+
+
 
 }

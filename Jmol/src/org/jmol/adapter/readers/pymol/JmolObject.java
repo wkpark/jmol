@@ -26,7 +26,11 @@
 package org.jmol.adapter.readers.pymol;
 
 
+import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumVdw;
@@ -51,17 +55,17 @@ import org.jmol.viewer.ShapeManager;
  * More direct than a script
  * 
  */
-public class ModelSettings {
+class JmolObject {
 
-  static final int cPuttyTransformNormalizedNonlinear = 0;
-  static final int cPuttyTransformRelativeNonlinear   = 1;
-  static final int cPuttyTransformScaledNonlinear     = 2;
-  static final int cPuttyTransformAbsoluteNonlinear   = 3;
-  static final int cPuttyTransformNormalizedLinear    = 4;
-  static final int cPuttyTransformRelativeLinear      = 5;
-  static final int cPuttyTransformScaledLinear        = 6;
-  static final int cPuttyTransformAbsoluteLinear      = 7;
-  static final int cPuttyTransformImpliedRMS          = 8;
+  private static final int cPuttyTransformNormalizedNonlinear = 0;
+  private static final int cPuttyTransformRelativeNonlinear   = 1;
+  private static final int cPuttyTransformScaledNonlinear     = 2;
+  private static final int cPuttyTransformAbsoluteNonlinear   = 3;
+  private static final int cPuttyTransformNormalizedLinear    = 4;
+  private static final int cPuttyTransformRelativeLinear      = 5;
+  private static final int cPuttyTransformScaledLinear        = 6;
+  private static final int cPuttyTransformAbsoluteLinear      = 7;
+  private static final int cPuttyTransformImpliedRMS          = 8;
 
   
   private int id;
@@ -73,9 +77,9 @@ public class ModelSettings {
   private short[] colixes;
   private Object[] colors;
 
-  public int argb;
-  public float translucency = 0;
-  public RadiusData rd;
+  int argb;
+  float translucency = 0;
+  RadiusData rd;
 
   /**
    * 
@@ -83,7 +87,7 @@ public class ModelSettings {
    * @param bsAtoms
    * @param info     optional additional information for the shape
    */
-  public ModelSettings(int id, BS bsAtoms, Object info) {
+  JmolObject(int id, BS bsAtoms, Object info) {
     this.id = id;
     this.bsAtoms = bsAtoms;
     this.info = info;
@@ -97,7 +101,7 @@ public class ModelSettings {
    * @param atomOffset 
    */
   @SuppressWarnings("unchecked")
-  public void offset(int modelOffset, int atomOffset) {
+  void offset(int modelOffset, int atomOffset) {
     if (atomOffset <= 0)
       return;
     if (id == T.movie) {
@@ -109,9 +113,9 @@ public class ModelSettings {
       return;
     }
     if (id == T.define) {
-      JmolList<BS> defs = (JmolList<BS>)info;
-      for (int i = defs.size(); --i >= 0;)
-        BSUtil.offset(defs.get(i), 0, atomOffset);
+      Collection<Object> map = ((Map<String, Object>) info).values();
+      for (Object o: map)
+        BSUtil.offset((BS) o, 0, atomOffset);
       return;
     }
     if (bsAtoms != null)
@@ -124,7 +128,7 @@ public class ModelSettings {
   }
 
   @SuppressWarnings("unchecked")
-  public void createShape(ModelSet m, BS bsCarb) {
+  void createShape(ModelSet m, BS bsCarb) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
     String sID;
@@ -146,6 +150,15 @@ public class ModelSettings {
       else {
         sm.viewer.setAnimationRange(-1, -1);
         sm.viewer.setCurrentModelIndex(-1);
+      }
+      return;
+    case T.group:
+      Set<Entry<String, PyMOLGroup>> groups = ((Hashtable<String, PyMOLGroup>) info).entrySet();
+      for (Entry<String, PyMOLGroup> e : groups){
+        PyMOLGroup g = e.getValue();
+        if (!g.occluded || g.bsAtoms != null )
+          continue;
+        sm.viewer.setObjectVisibility(g.branchNameID, false);
       }
       return;
     case T.hidden:
@@ -372,12 +385,12 @@ public class ModelSettings {
     return (iAtom < 0 ? -1 : m.atoms[iAtom].modelIndex);
   }
 
-  public void setColors(short[] colixes, float translucency) {
+  void setColors(short[] colixes, float translucency) {
     this.colixes = colixes;
     colors = new Object[] {colixes, Float.valueOf(translucency) };
   }
   
-  public void setSize(float size) {
+  void setSize(float size) {
     this.size = (int) (size * 1000);
   }
 

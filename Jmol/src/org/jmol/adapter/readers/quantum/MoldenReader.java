@@ -179,7 +179,8 @@ public class MoldenReader extends MopacSlaterReader {
     int gaussianPtr = 0;
     nCoef = 0;
     nSPDF = new int[12];
-    while (readLine() != null
+    discardLinesUntilNonBlank();
+    while (line != null
         && !((line = line.trim()).length() == 0 || line.charAt(0) == '[')) {
       // First, expect the number of the atomic center
       // The 0 following the atom index is now optional
@@ -193,7 +194,7 @@ public class MoldenReader extends MopacSlaterReader {
         bsAtomOK.set(atomIndex);
       }
       // Next is a sequence of shells and their primitives
-      while (readLine() != null && line.trim().length() > 0) {
+      while (readLine() != null && (line = line.trim()).length() > 0 && line.charAt(0) != '[') {
         // Next line has the shell label and a count of the number of primitives
         tokens = getTokens();
         String shellLabel = tokens[0].toUpperCase();
@@ -220,7 +221,9 @@ public class MoldenReader extends MopacSlaterReader {
         }
         shells.addLast(slater);
       }
-      // Next atom
+      if (line.length() > 0 && line.charAt(0) == '[')
+        break;
+      readLine();
     }
 
     float[][] garray = ArrayUtil.newFloat2(gaussianPtr);
@@ -331,7 +334,7 @@ public class MoldenReader extends MopacSlaterReader {
   }
 
   private boolean checkOrbitalType(String line) {
-    if (line.length() > 3 && "5D 6D 7F 10".indexOf(line.substring(1,3)) >= 0) {
+    if (line.length() > 3 && "5D 6D 7F 10 9G 15".indexOf(line.substring(1,3)) >= 0) {
       orbitalType += line;
       fixOrbitalType();
       return true;
@@ -343,9 +346,14 @@ public class MoldenReader extends MopacSlaterReader {
     if (orbitalType.contains("5D")) {
       fixSlaterTypes(JmolAdapter.SHELL_D_CARTESIAN, JmolAdapter.SHELL_D_SPHERICAL);
       fixSlaterTypes(JmolAdapter.SHELL_F_CARTESIAN, JmolAdapter.SHELL_F_SPHERICAL);
+      fixSlaterTypes(JmolAdapter.SHELL_G_CARTESIAN, JmolAdapter.SHELL_G_SPHERICAL);
     } 
     if (orbitalType.contains("10F")) {
       fixSlaterTypes(JmolAdapter.SHELL_F_SPHERICAL, JmolAdapter.SHELL_F_CARTESIAN);
+      fixSlaterTypes(JmolAdapter.SHELL_G_SPHERICAL, JmolAdapter.SHELL_G_CARTESIAN);
+    } 
+    if (orbitalType.contains("15G")) {
+      fixSlaterTypes(JmolAdapter.SHELL_G_SPHERICAL, JmolAdapter.SHELL_G_CARTESIAN);
     } 
   }
 

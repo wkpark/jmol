@@ -1222,7 +1222,7 @@ public class TransformManager {
   public float scaleDefaultPixelsPerAngstrom;
   float scale3DAngstromsPerInch;
   protected boolean antialias;
-  private boolean useZoomLarge;
+  private boolean useZoomLarge, zoomHeight;
 
   int screenWidth, screenHeight;
 
@@ -1285,7 +1285,10 @@ public class TransformManager {
       // 2005 02 22
       // switch to finding larger screen dimension
       // find smaller screen dimension
+      if (zoomHeight)
+        zoomLarge = (height > width);
       screenPixelCount = (zoomLarge == (height > width) ? height : width);
+      //screenPixelCount = Math.min(height, width, arg1);
     }
     // ensure that rotations don't leave some atoms off the screen
     // note that this radius is to the furthest outside edge of an atom
@@ -2606,6 +2609,11 @@ public class TransformManager {
    */
   protected String getNavigationState() {
     return (mode == MODE_NAVIGATION && getNav() ? nav.getNavigationState() : "");
+  }
+
+  public void setZoomHeight(boolean zoomHeight, boolean zoomLarge) {
+    this.zoomHeight = zoomHeight;
+    scaleFitToScreen(false, zoomLarge, false, true);
   }
 
 }

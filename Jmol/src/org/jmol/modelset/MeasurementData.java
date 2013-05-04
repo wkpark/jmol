@@ -61,10 +61,12 @@ public class MeasurementData implements JmolMeasurementClient {
   private String units;
   private float[] minArray;
   private ModelSet modelSet;
+  public String thisID;
   
-  public MeasurementData(Viewer viewer, JmolList<Object> points) {
+  public MeasurementData(String id, Viewer viewer, JmolList<Object> points) {
     this.viewer = viewer;
     this.points = points;
+    thisID = id;
   }
   
   public MeasurementData setModelSet(ModelSet m) {

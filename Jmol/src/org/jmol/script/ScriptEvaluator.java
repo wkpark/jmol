@@ -9480,7 +9480,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void measure() throws ScriptException {
-    if (tokAt(1) == T.search) {
+    String id = null;
+    int pt = 1;
+    switch (tokAt(1)) {
+    case T.search:
       String smarts = stringParameter(slen == 3 ? 2 : 4);
       if (chk)
         return;
@@ -9494,9 +9497,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     }
     switch (slen) {
-    case 1:
     case 2:
-      switch (getToken(1).tok) {
+      switch (getToken(pt).tok) {
       case T.nada:
       case T.on:
         setShapeProperty(JC.SHAPE_MEASURES, "hideAll", Boolean.FALSE);
@@ -9557,6 +9559,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int nBitSets = 0;
     for (int i = 1; i < slen; ++i) {
       switch (getToken(i).tok) {
+      case T.id:
+        if (i != 1)
+          error(ERROR_invalidArgument);
+        id = optParameterAsString(i++);
+        continue;
       case T.identifier:
         errorStr(ERROR_keywordExpected, "ALL, ALLCONNECTED, DELETE");
         break;
@@ -9710,23 +9717,24 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (value != null && strFormat != null && tokAction == T.opToggle)
         tokAction = T.define;
       setShapeProperty(JC.SHAPE_MEASURES, "measure", 
-          (new MeasurementData(viewer, points)).set(tokAction, rd, strFormat, null, tickInfo,
+          (new MeasurementData(id, viewer, points)).set(tokAction, rd, strFormat, null, tickInfo,
               isAllConnected, isNotConnected, intramolecular, isAll));
       return;
     }
+    Object propertyValue = (id == null ? countPlusIndexes : id);
     switch (tokAction) {
     case T.delete:
-      setShapeProperty(JC.SHAPE_MEASURES, "delete", countPlusIndexes);
+      setShapeProperty(JC.SHAPE_MEASURES, "delete", propertyValue);
       break;
     case T.on:
-      setShapeProperty(JC.SHAPE_MEASURES, "show", countPlusIndexes);
+      setShapeProperty(JC.SHAPE_MEASURES, "show", propertyValue);
       break;
     case T.off:
-      setShapeProperty(JC.SHAPE_MEASURES, "hide", countPlusIndexes);
+      setShapeProperty(JC.SHAPE_MEASURES, "hide", propertyValue);
       break;
     default:
       setShapeProperty(JC.SHAPE_MEASURES,
-          (strFormat == null ? "toggle" : "toggleOn"), countPlusIndexes);
+          (strFormat == null ? "toggle" : "toggleOn"), propertyValue);
       if (strFormat != null)
         setShapeProperty(JC.SHAPE_MEASURES, "setFormats", strFormat);
     }

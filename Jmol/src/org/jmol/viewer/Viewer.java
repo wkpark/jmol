@@ -6831,7 +6831,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case T.zoomlarge:
       global.zoomLarge = value;
-      transformManager.scaleFitToScreen(false, value, false, true);
+      transformManager.setZoomHeight(global.zoomHeight, value);
+      break;
+    case T.zoomheight:
+      global.zoomHeight = value;
+      transformManager.setZoomHeight(value, global.zoomLarge);
       break;
     case T.languagetranslation:
       GT.setDoTranslate(value);

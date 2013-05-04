@@ -50,7 +50,7 @@ public class MeasurementPending extends Measurement {
   }
 
   public static MeasurementPending getMP(ModelSet modelSet) {
-    return (MeasurementPending) new MeasurementPending().setM(modelSet, null,
+    return (MeasurementPending) new MeasurementPending().setM(modelSet, null, null,
         Float.NaN, (short) 0, null, 0);
   }
 

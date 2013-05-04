@@ -991,6 +991,8 @@ public class StateCreator implements JmolStateCreator {
       Measurement m = mList.get(i);
       int count = m.getCount();
       SB sb = new SB().append("measure");
+      if (m.thisID != null)
+        sb.append(" ID ").append(Escape.eS(m.thisID));
       TickInfo tickInfo = m.tickInfo;
       if (tickInfo != null)
         addTickInfo(sb, tickInfo, true);

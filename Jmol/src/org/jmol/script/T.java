@@ -251,7 +251,7 @@ public class T {
   public final static int delete       = 3 | atomExpressionCommand;
   public final static int display      = 4 | atomExpressionCommand | deprecatedparam;
   final static int fixed        = 5 | atomExpressionCommand | expression; // Jmol 12.0.RC15
-  final static int hide         = 6 | atomExpressionCommand;
+  public final static int hide         = 6 | atomExpressionCommand;
   final static int restrict     = 7 | atomExpressionCommand;
 //final static int select       see mathfunc
   final static int subset       = 8 | atomExpressionCommand | predefinedset;
@@ -345,7 +345,7 @@ public class T {
   public final static int save  = scriptCommand | 50;
 //final static int script   see mathfunc
   public final static int selectionhalos = scriptCommand | 51 | deprecatedparam | defaultON;
-  final static int show         = scriptCommand | 52;
+  public final static int show         = scriptCommand | 52;
   public final static int slab  = scriptCommand | 53 | intparam | defaultON;
   final static int spin         = scriptCommand | 55 | deprecatedparam | defaultON;
   public final static int ssbond = scriptCommand | 56 | deprecatedparam | defaultON;
@@ -1047,7 +1047,8 @@ public class T {
   public final static int wireframerotation              = booleanparam | 200;
   public final static int zerobasedxyzrasmol             = booleanparam | 202;
   public final static int zoomenabled                    = booleanparam | 204;
-  public final static int zoomlarge                      = booleanparam | 206;
+  public final static int zoomheight                     = booleanparam | 206;
+  public final static int zoomlarge                      = booleanparam | 207;
   public final static int zshade                         = booleanparam | 208;
 
   
@@ -2445,6 +2446,7 @@ public class T {
       "wireframeRotation",                        T.t(wireframerotation),
       "zeroBasedXyzRasmol",                       T.t(zerobasedxyzrasmol),
       "zoomEnabled",                              T.t(zoomenabled),
+      "zoomHeight",                               T.t(zoomheight),
       "zoomLarge",                                T.t(zoomlarge),
       "zShade",                                   T.t(zshade),
 

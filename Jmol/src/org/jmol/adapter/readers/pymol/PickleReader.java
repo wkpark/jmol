@@ -47,6 +47,7 @@ class PickleReader {
   private boolean inMovie;
   private boolean inNames;
   private String thisName;
+  private int lastMark;
 
   private final static byte APPEND = 97; /* a */
   private final static byte APPENDS = 101; /* e */
@@ -128,13 +129,13 @@ class PickleReader {
         break;
       case APPENDS:
         l = getObjects(getMark());
-        if (inNames && markCount == 2) {
+        if (inNames && markCount == 2){// && l.size() > 0 && l.get(0) == thisName) {
           int pt = (int) binaryDoc.getPosition();
+          System.out.println(" " + thisName + " " + filePt + " " + pt);
           JmolList<Object> l2 = new JmolList<Object>();
           l2.addLast(Integer.valueOf(filePt));
           l2.addLast(Integer.valueOf(pt));
           l.addLast(l2); // [ptr to name string, ptr to byte after ']' ] 
-          System.out.println(" " + thisName + " " + filePt + " " + pt);
         }
         ((JmolList<Object>) peek()).addAll(l);
         break;
@@ -191,7 +192,7 @@ class PickleReader {
         a = new byte[i];
         binaryDoc.readByteArray(a, 0, i);
         s = new String(a, "UTF-8");
-        if (inNames && markCount == 3) {
+        if (inNames && markCount == 3 && lastMark == stack.size()) {
           thisName = s;
           filePt = emptyListPt;
         }
@@ -398,7 +399,7 @@ class PickleReader {
   private void putMark(int i) {
     if (logging)
       log("\n " + Integer.toHexString((int) binaryDoc.getPosition()) + " [");
-    marks.addLast(Integer.valueOf(i));
+    marks.addLast(Integer.valueOf(lastMark = i));
     markCount++;
     switch (markCount) {
     case 2:

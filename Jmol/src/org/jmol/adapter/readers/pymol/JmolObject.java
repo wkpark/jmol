@@ -27,10 +27,7 @@ package org.jmol.adapter.readers.pymol;
 
 
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumVdw;
@@ -71,26 +68,28 @@ class JmolObject {
   private int id;
   private BS bsAtoms;
   private Object info;
-  
-  private int size = -1;
-  
+  private int size = -1;  
   private short[] colixes;
   private Object[] colors;
 
+  String branchNameID;
   int argb;
   float translucency = 0;
+  boolean visible = true;
   RadiusData rd;
 
   /**
    * 
    * @param id   A Token or JmolConstants.SHAPE_XXXX
+   * @param branchNameID
    * @param bsAtoms
    * @param info     optional additional information for the shape
    */
-  JmolObject(int id, BS bsAtoms, Object info) {
+  JmolObject(int id, String branchNameID, BS bsAtoms, Object info) {
     this.id = id;
     this.bsAtoms = bsAtoms;
     this.info = info;
+    this.branchNameID = branchNameID;
   }
   
   /**
@@ -132,9 +131,7 @@ class JmolObject {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
     String sID;
-    Atom[] atoms;
     SB sb = null;
-    float min, max;
     switch (id) {
     case T.define:
       // executed even for states
@@ -153,13 +150,7 @@ class JmolObject {
       }
       return;
     case T.group:
-      Set<Entry<String, PyMOLGroup>> groups = ((Hashtable<String, PyMOLGroup>) info).entrySet();
-      for (Entry<String, PyMOLGroup> e : groups){
-        PyMOLGroup g = e.getValue();
-        if (!g.occluded || g.bsAtoms != null )
-          continue;
-        sm.viewer.setObjectVisibility(g.branchNameID, false);
-      }
+      // if we implement GROUP in Jmol, we need to do something here.
       return;
     case T.hidden:
       sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
@@ -168,6 +159,32 @@ class JmolObject {
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "textLabels", info, bsAtoms);
       return;
+    case JC.SHAPE_STICKS:
+    case JC.SHAPE_BALLS:
+      break;
+    case JC.SHAPE_TRACE:
+    case JC.SHAPE_BACKBONE:
+      BSUtil.andNot(bsAtoms, bsCarb);
+      break;
+    case JC.SHAPE_DOTS:
+      sm.loadShape(id);
+      sm.setShapePropertyBs(id, "ignore", BSUtil.copyInvert(bsAtoms, sm.viewer
+          .getAtomCount()), null);
+      break;
+    case JC.SHAPE_MESHRIBBON: // PyMOL putty
+      setPutty(sm);
+      break;
+    case JC.SHAPE_ISOSURFACE:
+      if (bsAtoms == null? !visible : modelIndex < 0)
+        return;
+      break;
+    default:
+      if (!visible)
+        return; // for now -- could be occluded by a nonvisible group
+      break;
+    }
+
+    switch (id) {
     case JC.SHAPE_MEASURES:
       if (modelIndex < 0)
         return;
@@ -180,23 +197,19 @@ class JmolObject {
       sm.setShapePropertyBs(id, "measure", md, bsAtoms);
       if (size != -1)
         sm.setShapeSizeBs(id, size, null, null);
-      return;
-
-    case JC.SHAPE_STICKS:
-      break;
-    case JC.SHAPE_BALLS:
+      size = -1;
       break;
     case JC.SHAPE_CGO:
-      JmolList<Object> cgo = (JmolList<Object>)info;
-      sID = (String) cgo.get(cgo.size() - 1); 
+      JmolList<Object> cgo = (JmolList<Object>) info;
+      sID = (String) cgo.get(cgo.size() - 1);
       sm.viewer.setCGO(cgo);
       break;
     case T.mep:
       JmolList<Object> mep = (JmolList<Object>) info;
       sID = mep.get(mep.size() - 2).toString();
       String mapID = mep.get(mep.size() - 1).toString();
-      min = PyMOLReader.floatAt(PyMOLReader.listAt(mep, 3), 0);
-      max = PyMOLReader.floatAt(PyMOLReader.listAt(mep, 3), 2);
+      float min = PyMOLReader.floatAt(PyMOLReader.listAt(mep, 3), 0);
+      float max = PyMOLReader.floatAt(PyMOLReader.listAt(mep, 3), 2);
       sb = new SB();
       sb.append("set isosurfacekey true;isosurface ID ").append(Escape.eS(sID))
           .append(" map \"\" ").append(Escape.eS(mapID)).append(
@@ -212,10 +225,10 @@ class JmolObject {
           .append(m.models[modelIndex].getModelNumberDotted())
           .append(" color ").append(Escape.escapeColor(argb)).append(" \"\" ")
           .append(Escape.eS(sID)).append(" mesh nofill frontonly");
-      float within = PyMOLReader.floatAt(PyMOLReader.listAt(PyMOLReader
-          .listAt(mesh, 2), 0), 11);
-      JmolList<Object> list = PyMOLReader.listAt(PyMOLReader.listAt(
-          PyMOLReader.listAt(mesh, 2), 0), 12);
+      float within = PyMOLReader.floatAt(PyMOLReader.listAt(PyMOLReader.listAt(
+          mesh, 2), 0), 11);
+      JmolList<Object> list = PyMOLReader.listAt(PyMOLReader.listAt(PyMOLReader
+          .listAt(mesh, 2), 0), 12);
       if (within > 0) {
         P3 pt = new P3();
         sb.append(";isosurface slab within ").appendF(within).append(" [ ");
@@ -228,34 +241,29 @@ class JmolObject {
       sb.append(";set meshScale ").appendI(size / 500);
       break;
     case JC.SHAPE_ISOSURFACE:
-      sID = (info instanceof String ? (String) info : ((String[]) info)[0].toString()).replace('\'', '_').replace('"', '_');
-      if (info instanceof String) {
+      sID = (bsAtoms == null ? (String) info : branchNameID);
+      sb = new SB();
+      sb.append("isosurface ID ").append(Escape.eS(sID));
+      if (bsAtoms == null) {
         // point display of map 
         modelIndex = sm.viewer.getCurrentModelIndex();
-        sb = new SB();
-        sb.append("isosurface ID ")
-        .append(Escape.eS(sID)).append(" model ").append(m.models[modelIndex].getModelNumberDotted())
-        .append(" color density sigma 1.0")
-        .append(" \"\" ")
-        .append(Escape.eS(sID));
+        sb.append(" model ")
+            .append(m.models[modelIndex].getModelNumberDotted()).append(
+                " color density sigma 1.0").append(" \"\" ").append(
+                Escape.eS(sID));
         break;
       }
-      if (modelIndex < 0)
-        return;
       if (argb == 0)
         sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-      String lighting = ((String[]) info)[1];
+      String lighting = (String) info;
       String resolution = "";
       if (lighting == null) {
         lighting = "mesh nofill";
         resolution = " resolution 1.5";
       }
-      sb = new SB();
-      sb.append("isosurface ID ").append(Escape.eS(sID))
-          .append(" model ").append(m.models[modelIndex].getModelNumberDotted())
-          .append(resolution)
-          .append(" select ").append(Escape.eBS(bsAtoms)).append(" only")
-          .append(" solvent ").appendF(size / 1000f);
+      sb.append(" model ").append(m.models[modelIndex].getModelNumberDotted())
+          .append(resolution).append(" select ").append(Escape.eBS(bsAtoms))
+          .append(" only").append(" solvent ").appendF(size / 1000f);
       if (argb == 0)
         sb.append(" map property color");
       else
@@ -263,101 +271,6 @@ class JmolObject {
       sb.append(" frontOnly ").append(lighting);
       if (translucency > 0)
         sb.append(" translucent ").appendF(translucency);
-      break;
-    case JC.SHAPE_TRACE:
-    case JC.SHAPE_BACKBONE:
-      BSUtil.andNot(bsAtoms, bsCarb);
-      break;
-    case JC.SHAPE_DOTS:
-      sm.loadShape(id);
-      sm.setShapePropertyBs(id, "ignore", BSUtil.copyInvert(bsAtoms, sm.viewer
-          .getAtomCount()), null);
-      break;
-    case JC.SHAPE_MESHRIBBON: // PyMOL putty
-      id = JC.SHAPE_TRACE;
-      float[] data = new float[bsAtoms.length()];
-      rd = new RadiusData(data, 0, RadiusData.EnumType.ABSOLUTE, EnumVdw.AUTO);
-      atoms = sm.viewer.modelSet.atoms;
-      double sum = 0.0,
-      sumsq = 0.0;
-      min = Float.MAX_VALUE;
-      max = 0;
-      int n = bsAtoms.cardinality();
-      for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
-        float value = Atom.atomPropertyFloat(null, atoms[i], T.temperature);
-        sum += value;
-        sumsq += (value * value);
-        if (value < min)
-          min = value;
-        if (value > max)
-          max = value;
-      }
-      float mean = (float) (sum / n);
-      float stdev = (float) Math.sqrt((sumsq - (sum * sum / n)) / n);
-
-      /*
-      getFloatSetting(PyMOL.cartoon_putty_quality),
-      getFloatSetting(PyMOL.cartoon_putty_radius),
-      getFloatSetting(PyMOL.cartoon_putty_range),
-      getFloatSetting(PyMOL.cartoon_putty_scale_min),
-      getFloatSetting(PyMOL.cartoon_putty_scale_max),
-      getFloatSetting(PyMOL.cartoon_putty_scale_power),        
-      getFloatSetting(PyMOL.cartoon_putty_transform),
-      */
-      float rad = ((float[]) info)[1];
-      float range = ((float[]) info)[2];
-      float scale_min = ((float[]) info)[3];
-      float scale_max = ((float[]) info)[4];
-      float power = ((float[]) info)[5];
-
-      int transform = (int) ((float[]) info)[6];
-      float data_range = max - min;
-      boolean nonlinear = false;
-      switch (transform) {
-      case cPuttyTransformNormalizedNonlinear:
-      case cPuttyTransformRelativeNonlinear:
-      case cPuttyTransformScaledNonlinear:
-      case cPuttyTransformAbsoluteNonlinear:
-        nonlinear = true;
-        break;
-      }
-      for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
-          .nextSetBit(i + 1), pt++) {
-        float scale = Atom.atomPropertyFloat(null, atoms[i], T.temperature);
-        switch (transform) {
-        case cPuttyTransformAbsoluteNonlinear:
-        case cPuttyTransformAbsoluteLinear:
-        default:
-          break;
-        case cPuttyTransformNormalizedNonlinear:
-        case cPuttyTransformNormalizedLinear:
-          /* normalized by Z-score, with the range affecting the distribution width */
-          scale = 1 + (scale - mean) / range / stdev;
-          break;
-        case cPuttyTransformRelativeNonlinear:
-        case cPuttyTransformRelativeLinear:
-          scale = (scale - min) / data_range / range;
-          break;
-        case cPuttyTransformScaledNonlinear:
-        case cPuttyTransformScaledLinear:
-          scale /= range;
-          break;
-        case cPuttyTransformImpliedRMS:
-          if (scale < 0.0F)
-            scale = 0.0F;
-          scale = (float) (Math.sqrt(scale / 8.0) / Math.PI);
-          break;
-        }
-        if (scale < 0.0F)
-          scale = 0.0F;
-        if (nonlinear)
-          scale = (float) Math.pow(scale, power);
-        if ((scale < scale_min) && (scale_min >= 0.0))
-          scale = scale_min;
-        if ((scale > scale_max) && (scale_max >= 0.0))
-          scale = scale_max;
-        data[i] = scale * rad;
-      }
       break;
     }
     if (sb != null) {
@@ -373,9 +286,95 @@ class JmolObject {
       sm.setShapePropertyBs(id, "translucentLevel",
           Float.valueOf(translucency), bsAtoms);
       sm.setShapePropertyBs(id, "translucency", "translucent", bsAtoms);
-    }
-    else if (colors != null)
+    } else if (colors != null)
       sm.setShapePropertyBs(id, "colors", colors, bsAtoms);
+  }
+
+  private void setPutty(ShapeManager sm) {
+    id = JC.SHAPE_TRACE;
+    float[] data = new float[bsAtoms.length()];
+    rd = new RadiusData(data, 0, RadiusData.EnumType.ABSOLUTE, EnumVdw.AUTO);
+    Atom[] atoms = sm.viewer.modelSet.atoms;
+    double sum = 0.0,
+    sumsq = 0.0;
+    float min = Float.MAX_VALUE;
+    float max = 0;
+    int n = bsAtoms.cardinality();
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
+      float value = Atom.atomPropertyFloat(null, atoms[i], T.temperature);
+      sum += value;
+      sumsq += (value * value);
+      if (value < min)
+        min = value;
+      if (value > max)
+        max = value;
+    }
+    float mean = (float) (sum / n);
+    float stdev = (float) Math.sqrt((sumsq - (sum * sum / n)) / n);
+
+    /*
+    getFloatSetting(PyMOL.cartoon_putty_quality),
+    getFloatSetting(PyMOL.cartoon_putty_radius),
+    getFloatSetting(PyMOL.cartoon_putty_range),
+    getFloatSetting(PyMOL.cartoon_putty_scale_min),
+    getFloatSetting(PyMOL.cartoon_putty_scale_max),
+    getFloatSetting(PyMOL.cartoon_putty_scale_power),        
+    getFloatSetting(PyMOL.cartoon_putty_transform),
+    */
+    float rad = ((float[]) info)[1];
+    float range = ((float[]) info)[2];
+    float scale_min = ((float[]) info)[3];
+    float scale_max = ((float[]) info)[4];
+    float power = ((float[]) info)[5];
+
+    int transform = (int) ((float[]) info)[6];
+    float data_range = max - min;
+    boolean nonlinear = false;
+    switch (transform) {
+    case cPuttyTransformNormalizedNonlinear:
+    case cPuttyTransformRelativeNonlinear:
+    case cPuttyTransformScaledNonlinear:
+    case cPuttyTransformAbsoluteNonlinear:
+      nonlinear = true;
+      break;
+    }
+    for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
+        .nextSetBit(i + 1), pt++) {
+      float scale = Atom.atomPropertyFloat(null, atoms[i], T.temperature);
+      switch (transform) {
+      case cPuttyTransformAbsoluteNonlinear:
+      case cPuttyTransformAbsoluteLinear:
+      default:
+        break;
+      case cPuttyTransformNormalizedNonlinear:
+      case cPuttyTransformNormalizedLinear:
+        /* normalized by Z-score, with the range affecting the distribution width */
+        scale = 1 + (scale - mean) / range / stdev;
+        break;
+      case cPuttyTransformRelativeNonlinear:
+      case cPuttyTransformRelativeLinear:
+        scale = (scale - min) / data_range / range;
+        break;
+      case cPuttyTransformScaledNonlinear:
+      case cPuttyTransformScaledLinear:
+        scale /= range;
+        break;
+      case cPuttyTransformImpliedRMS:
+        if (scale < 0.0F)
+          scale = 0.0F;
+        scale = (float) (Math.sqrt(scale / 8.0) / Math.PI);
+        break;
+      }
+      if (scale < 0.0F)
+        scale = 0.0F;
+      if (nonlinear)
+        scale = (float) Math.pow(scale, power);
+      if ((scale < scale_min) && (scale_min >= 0.0))
+        scale = scale_min;
+      if ((scale > scale_max) && (scale_max >= 0.0))
+        scale = scale_max;
+      data[i] = scale * rad;
+    }
   }
 
   private int getModelIndex(ModelSet m) {

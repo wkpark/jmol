@@ -134,7 +134,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
           mt.refresh();
       return;
     }
-    
+
     if ("select" == propertyName) {
       BS bs = (BS) value;
       if (bs == null || BSUtil.cardinalityOf(bs) == 0) {
@@ -153,7 +153,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
 
     // most of the following need defineAll, which needs measureAllModels
     measureAllModels = viewer.getBoolean(T.measureallmodels);
-    
+
     if ("delete" == propertyName) {
       deleteO(value);
       setIndices();
@@ -207,7 +207,12 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         showHideM(pt, true);
         break;
       case T.define:
-        deleteM(pt);
+        if (md.thisID == null) {
+          deleteM(pt);
+        } else {
+          deleteO(md.thisID);
+          pt.thisID = md.thisID;
+        }
         if (md.colix != 0)
           pt.colix = md.colix;
         toggle(pt);
@@ -254,30 +259,46 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       return;
     }
 
-    if ("hide" == propertyName) {
-      showHideM(new Measurement()
-          .setPoints(modelSet, (int[]) value, null, null), true);
-      return;
-    }
-
     if ("reformatDistances" == propertyName) {
       reformatDistances();
       return;
     }
 
+    if ("hide" == propertyName) {
+      if (value instanceof String) {
+        doAction((String) value, T.hide);
+      } else {
+        showHideM(new Measurement().setPoints(modelSet, (int[]) value, null,
+            null), true);
+      }
+      return;
+    }
+
     if ("show" == propertyName) {
-      showHideM(new Measurement()
-          .setPoints(modelSet, (int[]) value, null, null), false);
+      if (value instanceof String) {
+        doAction((String) value, T.show);
+      } else {
+        showHideM(new Measurement().setPoints(modelSet, (int[]) value, null,
+            null), false);
+      }
       return;
     }
 
     if ("toggle" == propertyName) {
+      if (value instanceof String) {
+        doAction((String) value, T.opToggle);
+      } else {
       toggle(new Measurement().setPoints(modelSet, (int[]) value, null, null));
+      }
       return;
     }
 
     if ("toggleOn" == propertyName) {
-      toggleOn((int[]) value);
+      if (value instanceof String) {
+        doAction((String) value, T.on);
+      } else {
+        toggleOn((int[]) value);
+      }
       return;
     }
 
@@ -396,8 +417,10 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   }
 
   private void deleteO(Object value) {
-    if ((value instanceof Integer)) {
+    if (value instanceof Integer) {
       deleteI(((Integer)value).intValue());
+    } else if (value instanceof String) {
+      doAction((String) value, T.delete);
     } else if (Escape.isAI(value)) {
       defineAll(Integer.MIN_VALUE, new Measurement().setPoints(modelSet, (int[])value, null, null), true, false, false);
     }
@@ -431,7 +454,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
           Integer.valueOf(atoms[atomIndex].getAtomNumber())) : (Object) m
           .getAtom(i));
     }
-    define((new MeasurementData(viewer, points)).set(tokAction, radiusData, strFormat, null, tickInfo,
+    define((new MeasurementData(null, viewer, points)).set(tokAction, radiusData, strFormat, null, tickInfo,
         mustBeConnected, mustNotBeConnected, intramolecular, true),
         (isDelete ? T.delete : T.define));
   }
@@ -483,7 +506,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         bsSelected.set(i);
       return;
     }
-    Measurement measureNew = new Measurement().setM(modelSet, m, value, (m.colix == 0 ? colix : m.colix),
+    Measurement measureNew = new Measurement().setM(modelSet, m, m.thisID, value, (m.colix == 0 ? colix : m.colix),
         strFormat, measurementCount);
     measurements.addLast(measureNew);
     viewer.setStatusMeasuring("measureCompleted", measurementCount++,
@@ -491,10 +514,40 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   }
 
   private void deleteI(int i) {
+    if (i >= measurements.size() || i < 0)
+      return;
     String msg = measurements.get(i).toVector(true).toString();
     measurements.remove(i);
     measurementCount--;
     viewer.setStatusMeasuring("measureDeleted", i, msg, 0);
+  }
+
+  private void doAction(String s, int tok) {
+    for (int i = measurements.size(); --i >= 0;) {
+      Measurement m = measurements.get(i);
+      if (s.equals(m.thisID)) {
+        switch (tok) {
+        case T.delete:
+          String msg = measurements.get(i).toVector(true).toString();
+          measurements.remove(i);
+          measurementCount--;
+          viewer.setStatusMeasuring("measureDeleted", i, msg, 0);
+          return;
+        case T.show:
+          m.isHidden = false;
+          break;
+        case T.hide:
+          m.isHidden = true;
+          break;
+        case T.opToggle:
+          m.isHidden = !m.isHidden;
+          break;
+        case T.on:
+          m.isHidden = false;
+          break;
+        }
+      }
+    }
   }
 
   private void reformatDistances() {

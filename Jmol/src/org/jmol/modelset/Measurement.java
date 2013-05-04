@@ -46,6 +46,8 @@ public class Measurement {
    * a class to contain a single measurement.
    * 
    */
+  
+  public String thisID;
   public ModelSet modelSet;
   public int index;
   public boolean isVisible = true;
@@ -67,9 +69,10 @@ public class Measurement {
   private AxisAngle4f aa;
   private P3 pointArc;
 
-  public Measurement setM(ModelSet modelSet, Measurement m, float value, short colix,
+  public Measurement setM(ModelSet modelSet, Measurement m, String id, float value, short colix,
                           String strFormat, int index) {
     //value Float.isNaN ==> pending
+    thisID = id;
     this.modelSet = modelSet;
     this.index = index;
     this.viewer = modelSet.viewer;

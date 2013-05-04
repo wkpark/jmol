@@ -921,6 +921,7 @@ public class StateManager {
       setB("wireframeRotation", wireframeRotation);
       setI("zDepth", zDepth);
       setB("zeroBasedXyzRasmol", zeroBasedXyzRasmol);
+      setB("zoomHeight", zoomHeight);
       setB("zoomLarge", zoomLarge);
       setI("zShadePower", zShadePower);
       setI("zSlab", zSlab);
@@ -1040,6 +1041,7 @@ public class StateManager {
     boolean showMeasurements = true;
     public boolean showTiming = false;
     boolean zoomLarge = true; //false would be like Chime
+    boolean zoomHeight = false; // true would be like PyMOL
     String backgroundImageFileName;
     
     //atoms and bonds

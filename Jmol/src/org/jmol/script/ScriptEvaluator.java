@@ -7130,9 +7130,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     BS bsAtoms1 = null, bsAtoms2 = null;
     JmolList<BS[]> vAtomSets = null;
     JmolList<Object[]> vQuatSets = null;
-    iToken = 1;
-    float nSeconds = (isFloatParameter(1) ? floatParameter(iToken++) : Float.NaN);
-    BS bsFrom = (tokAt(iToken) == T.subset ? null : atomExpressionAt(iToken));
+    iToken = 0;
+    float nSeconds = (isFloatParameter(1) ? floatParameter(++iToken) : Float.NaN);
+    BS bsFrom = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
     BS bsTo = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
     if (bsFrom == null || bsTo == null)
       error(ERROR_invalidArgument);

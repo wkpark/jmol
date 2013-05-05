@@ -467,6 +467,8 @@ public class Measurement {
     sb.append(" \t").append(getString());
     for (int i = 1; i <= count; i++)
       sb.append(" \t").append(getLabel(i, false, false));
+    if (thisID != null)
+      sb.append(" \t").append(thisID);
     return sb.toString();
   }
 

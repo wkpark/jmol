@@ -9562,7 +9562,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.id:
         if (i != 1)
           error(ERROR_invalidArgument);
-        id = optParameterAsString(i++);
+        id = optParameterAsString(++i);
         continue;
       case T.identifier:
         errorStr(ERROR_keywordExpected, "ALL, ALLCONNECTED, DELETE");
@@ -9695,8 +9695,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       }
     }
-    if (rd != null && (ptFloat >= 0 || nAtoms != 2) || nAtoms < 2
-        && (tickInfo == null || nAtoms == 1))
+    if (rd != null && (ptFloat >= 0 || nAtoms != 2) || 
+        nAtoms < 2 && id == null && (tickInfo == null || nAtoms == 1))
       error(ERROR_badArgumentCount);
     if (strFormat != null && strFormat.indexOf(nAtoms + ":") != 0)
       strFormat = nAtoms + ":" + strFormat;

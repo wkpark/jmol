@@ -461,14 +461,17 @@ public class PyMOLReader extends PdbReader {
       v = ((Number) setting.get(2)).floatValue();
       //Logger.info("Pymol setting " + i + " = " + v);
     } catch (Exception e) {
-      Logger.info("PyMOL " + pymolVersion + " does not have setting " + i);
       switch (i) {
       case PyMOL.stick_color:
         return -1;
       case PyMOL.label_size:
         return 14;
+      case PyMOL.label_distance_digits:
+      case PyMOL.label_angle_digits:
+      case PyMOL.label_dihedral_digits:
+        return -1;
       default:
-        Logger.error("PyMOL rendering missing setting " + i);
+        Logger.info("PyMOL " + pymolVersion + " does not have setting " + i);
         break;
       }
     }
@@ -491,6 +494,7 @@ public class PyMOLReader extends PdbReader {
   private JmolList<JmolList<Object>> mapObjects;
   private Map<String, String> branchIDs = new Hashtable<String, String>();
   private Hashtable<String, PyMOLGroup> groups;
+  private boolean haveMeasurements;
 
   private void processBranch(JmolList<Object> branch) {
     int type = getBranchType(branch);
@@ -715,12 +719,13 @@ public class PyMOLReader extends PdbReader {
     float rad = getFloatSetting(PyMOL.dash_width) / 1000;
     if (rad == 0)
       rad = 0.002f;
+    int index = 0;
     while (p < len) {
       JmolList<Object> points = new JmolList<Object>();
       for (int i = 0; i < nCoord; i++, p += 3)
         points.addLast(pointAt(list, p, new Point3fi()));
       BS bs = BSUtil.newAndSetBit(0);
-      MeasurementData md = new MeasurementData(fixName(branchNameID), viewer, points);
+      MeasurementData md = new MeasurementData(fixName(branchNameID + "_" + (++index)), viewer, points);
       md.note = branchName;
       String strFormat = "";
       int nDigits = -1;
@@ -743,6 +748,7 @@ public class PyMOLReader extends PdbReader {
       JmolObject ms = addJmolObject(JC.SHAPE_MEASURES, bs, md);
       ms.argb = PyMOL.getRGB(color);
       ms.setSize(rad);
+      haveMeasurements = true;
       //int n = -(int) (getFloatSetting(PyMOL.dash_width) + 0.5);
       //ss.setSize(0.2f); probably good, but this will set it to be not dashed. Should implement that in Jmol
 
@@ -1871,21 +1877,23 @@ public class PyMOLReader extends PdbReader {
     int slab = 50 + (int) ((pymolCameraToCenter - pymolCameraToSlab) * 100);
     int depth = 50 + (int) ((pymolCameraToCenter - pymolCameraToDepth) * 100);
 
+    float xTrans = floatAt(view, 16);
+    float yTrans = -floatAt(view, 17);
+
     sb.append(";set perspectiveDepth " + (!getBooleanSetting(PyMOL.ortho)));
     sb.append(";set cameraDepth " + jmolCameraDepth);
     sb.append(";set rotationRadius " + (w / 2));
     sb.append(";set zoomHeight true; slab on; slab " + slab + "; depth "
-            + depth);
-    sb.append(";rotate @{quaternion({")
+        + depth);
+    sb
+        .append(";rotate @{quaternion({")
         // only the first two rows are needed
         .appendF(floatAt(view, 0)).append(" ").appendF(floatAt(view, 1))
         .append(" ").appendF(floatAt(view, 2)).append("}{").appendF(
-            floatAt(view, 4)).append(" ").appendF(floatAt(view, 5))
-        .append(" ").appendF(floatAt(view, 6)).append("})}");
-    sb.append(";translate X ").appendF(floatAt(view, 16)).append(
-        " angstroms;");
-    sb.append(";translate Y ").appendF(-floatAt(view, 17)).append(
-        " angstroms");
+            floatAt(view, 4)).append(" ").appendF(floatAt(view, 5)).append(" ")
+        .appendF(floatAt(view, 6)).append("})}");
+    sb.append(";translate X ").appendF(xTrans / w * 100);//.append(" angstroms;");
+    sb.append(";translate Y ").appendF(yTrans / w * 100);//.append(" angstroms");
 
     // seems to be something else here -- fog is not always present
     boolean depthCue = getBooleanSetting(PyMOL.depth_cue); // 84
@@ -1946,6 +1954,10 @@ public class PyMOLReader extends PdbReader {
         } catch (Exception e) {
           System.out.println(e);
         }
+      }
+      if (haveMeasurements) {
+        appendLoadNote(viewer.getMeasurementInfoAsString());
+        setLoadNote();
       }
     }
     viewer.setTrajectoryBs(BSUtil.newBitSet2(baseModelIndex,

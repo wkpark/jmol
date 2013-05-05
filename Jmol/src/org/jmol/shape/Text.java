@@ -234,13 +234,8 @@ public class Text extends Object2d {
       if (pymolOffset != null) {
         float pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
         float pz = pymolOffset[3];
-        z -= (int) (pz * pixelsPerAngstrom);
-        pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
-        // 1: left
-        // 0: center
-        // -1: right
-        dx = 0;
-        float f = 0;
+        float dz = (pz < 0 ? -1 : 1) * Math.max(0, Math.abs(pz) - 1) * pixelsPerAngstrom;
+        pixelsPerAngstrom = viewer.scaleToScreen(z - (int) dz, 1000);
         
         /* for whatever reason, Java returns an 
          * ascent that is considerably higher than a capital X
@@ -262,35 +257,8 @@ public class Text extends Object2d {
          *        
          * 
          */
-        float rx = pymolOffset[1];
-        if (rx < 1) {
-          f = (rx - 1) / 2;
-          if (f < -1)
-            f = -1;
-          if (f > 0)
-            f = 0;
-          dx += f * textWidth;
-        }
-        if (rx < -1) {
-          dx += (rx + 1) * pixelsPerAngstrom;
-        } else if (rx > 1) {
-          dx += (rx - 1) * pixelsPerAngstrom;
-        }
-        dy = 0;
-        float ry = -pymolOffset[2];
-        if (ry < 1) {
-          float factor = -(ry - 1) / 2.0f;
-          if (factor > 1)
-            factor = 1;
-          if (factor < 0)
-            factor = 0;
-          dy = factor * (ascent - descent);
-        }
-        if (ry < -1) {
-          dy -= (ry + 1) * pixelsPerAngstrom;
-        } else if (ry > 1) {
-          dy -= (ry - 1) * pixelsPerAngstrom;
-        }
+        dx = getPymolXYOffset(pymolOffset[1], textWidth, pixelsPerAngstrom);
+        dy = -getPymolXYOffset(-pymolOffset[2], ascent - descent, pixelsPerAngstrom);
         xAdj = (fontScale >= 2 ? 8 : 4);
         yAdj = 0;
         dy += descent;
@@ -305,16 +273,20 @@ public class Text extends Object2d {
     }
     boxX = boxXY[0];
     boxY = boxXY[1];
-    if (!isExact)
-      y0 = boxY + yAdj;
-
 
     // adjust positions if necessary
 
     if (adjustForWindow)
       setBoxOffsetsInWindow(/*image == null ? fontScale * 5 :*/0,
           isLabelOrHover ? 16 * fontScale + lineHeight : 0, boxY - textHeight);
+    if (!isExact)
+      y0 = boxY + yAdj;
+  }
 
+  private float getPymolXYOffset(float off, int width, float ppa) {
+    float f = (off < -1 ? -1 : off > 1 ? 0 : (off - 1) / 2);
+    off = (off < -1 || off > 1 ? off + (off < 0 ? 1 : -1) : 0);
+    return f * width + off * ppa;
   }
 
   private void setPos(float scale) {
@@ -383,11 +355,10 @@ public class Text extends Object2d {
       else
         xBoxOffset += xOffset;
     }
-
     if (isExact) {
       yBoxOffset = -yOffset;
     } else if (yOffset < 0) {
-        yBoxOffset = -boxHeight + yOffset;
+      yBoxOffset = -boxHeight + yOffset;
     } else if (yOffset == 0) {
       yBoxOffset = -boxHeight / 2; // - 2; removed in Jmol 11.7.45 06/24/2009
     } else {

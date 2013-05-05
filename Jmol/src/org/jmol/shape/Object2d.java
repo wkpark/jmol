@@ -95,10 +95,12 @@ public abstract class Object2d {
     visible = TF;
   }
 
-  public void setXYZ(P3 xyz) {
-    valign = (xyz == null ? VALIGN_XY : VALIGN_XYZ);
+  public void setXYZ(P3 xyz, boolean doAdjust) {
     this.xyz = xyz;
-    setAdjustForWindow(xyz == null);
+    if (doAdjust) {
+      valign = (xyz == null ? VALIGN_XY : VALIGN_XYZ);
+      setAdjustForWindow(xyz == null);
+    }
   }
 
   public void setAdjustForWindow(boolean TF) {
@@ -333,7 +335,7 @@ public abstract class Object2d {
       if (currentObject == null)
         return true;
       P3 pt = (P3) value;
-      currentObject.setXYZ(null);
+      currentObject.setXYZ(null, true);
       if (pt.z == Float.MAX_VALUE) {
         currentObject.setMovableX((int) pt.x);        
         currentObject.setMovableY((int) pt.y);        
@@ -346,7 +348,7 @@ public abstract class Object2d {
     
     if ("xyz" == propertyName) {
       if (currentObject != null) {
-        currentObject.setXYZ((P3) value);
+        currentObject.setXYZ((P3) value, true);
       }
       return true;
     }

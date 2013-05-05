@@ -194,6 +194,7 @@ class JmolObject {
       JmolList<Object> points = md.points;
       for (int i = points.size(); --i >= 0;)
         ((Point3fi) points.get(i)).modelIndex = (short) modelIndex;
+      System.out.println("PyMOL measurement " + md.thisID);
       sm.setShapePropertyBs(id, "measure", md, bsAtoms);
       if (size != -1)
         sm.setShapeSizeBs(id, size, null, null);

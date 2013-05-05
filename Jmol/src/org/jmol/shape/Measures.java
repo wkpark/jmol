@@ -36,6 +36,7 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Point3fi;
+import org.jmol.util.TextFormat;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
@@ -523,16 +524,20 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   }
 
   private void doAction(String s, int tok) {
+    s = s.toUpperCase().replace('?','*');
+    boolean isWild = TextFormat.isWild(s);
     for (int i = measurements.size(); --i >= 0;) {
       Measurement m = measurements.get(i);
-      if (s.equals(m.thisID)) {
+      if (m.thisID != null
+          && (m.thisID.equalsIgnoreCase(s) || isWild
+              && TextFormat.isMatch(m.thisID.toUpperCase(), s, true, true)))
         switch (tok) {
         case T.delete:
           String msg = measurements.get(i).toVector(true).toString();
           measurements.remove(i);
           measurementCount--;
           viewer.setStatusMeasuring("measureDeleted", i, msg, 0);
-          return;
+          continue;
         case T.show:
           m.isHidden = false;
           break;
@@ -546,7 +551,6 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
           m.isHidden = false;
           break;
         }
-      }
     }
   }
 

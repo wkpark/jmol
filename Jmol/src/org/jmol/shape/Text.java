@@ -207,9 +207,10 @@ public class Text extends Object2d {
   }
 
 
-  public void setPosition(Viewer viewer, JmolRendererInterface g3d, float scalePixelsPerMicron, float imageFontScaling,
+  public void setPosition(Viewer viewer, JmolRendererInterface g3d,
+                          float scalePixelsPerMicron, float imageFontScaling,
                           boolean isExact, float[] boxXY) {
-    
+
     int width = g3d.getRenderWidth();
     int height = g3d.getRenderHeight();
     if (boxXY == null)
@@ -232,28 +233,70 @@ public class Text extends Object2d {
       boxXY[1] = movableY;
       if (pymolOffset != null) {
         float pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
-        z -= (int) (pymolOffset[3] * pixelsPerAngstrom);
+        float pz = pymolOffset[3];
+        z -= (int) (pz * pixelsPerAngstrom);
         pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
-        boolean isOld = (pymolOffset[1] >= -1 && pymolOffset[1] <= 1 && pymolOffset[2] >= -1 && pymolOffset[2] <= 1);
-        if (isOld) {
-          // PyMOL 0.98
-          // 1: left
-          // 0: center
-          // -1: right
-          dx = textWidth * (pymolOffset[1] - 1) / 2;
-          dy = -textHeight * ((pymolOffset[2] - 1) / 2);
-          dy += descent;
-        } else {
-          dx = pymolOffset[1] * pixelsPerAngstrom;
-          dy = -pymolOffset[2] * pixelsPerAngstrom;
-          // empirical fudge here; probably a bit off.
-          dy *= 1.05f;
-          dy += textHeight * 0.66f;
+        // 1: left
+        // 0: center
+        // -1: right
+        dx = 0;
+        float f = 0;
+        
+        /* for whatever reason, Java returns an 
+         * ascent that is considerably higher than a capital X
+         * forget leading!
+         * ______________________________________________
+         *                    leading                      
+         *                   ________
+         *     X X    
+         *      X    ascent
+         * __  X X _________ _________         
+         * _________ descent 
+         *                                   textHeight     
+         * _________
+         *     X X           lineHeight
+         *      X    ascent
+         * __  X X__________ _________        ___________        
+         * _________ descent  
+         *     
+         *        
+         * 
+         */
+        float rx = pymolOffset[1];
+        if (rx < 1) {
+          f = (rx - 1) / 2;
+          if (f < -1)
+            f = -1;
+          if (f > 0)
+            f = 0;
+          dx += f * textWidth;
+        }
+        if (rx < -1) {
+          dx += (rx + 1) * pixelsPerAngstrom;
+        } else if (rx > 1) {
+          dx += (rx - 1) * pixelsPerAngstrom;
+        }
+        dy = 0;
+        float ry = -pymolOffset[2];
+        if (ry < 1) {
+          float factor = -(ry - 1) / 2.0f;
+          if (factor > 1)
+            factor = 1;
+          if (factor < 0)
+            factor = 0;
+          dy = factor * (ascent - descent);
+        }
+        if (ry < -1) {
+          dy -= (ry + 1) * pixelsPerAngstrom;
+        } else if (ry > 1) {
+          dy -= (ry - 1) * pixelsPerAngstrom;
         }
         xAdj = (fontScale >= 2 ? 8 : 4);
         yAdj = 0;
+        dy += descent;
         boxXY[0] = movableX - xAdj;
         boxXY[1] = movableY - yAdj;
+        y0 = movableY - dy - descent;        
         isExact = true;
       }
       setBoxXY(boxWidth, boxHeight, dx, dy, boxXY, isExact);
@@ -262,6 +305,9 @@ public class Text extends Object2d {
     }
     boxX = boxXY[0];
     boxY = boxXY[1];
+    if (!isExact)
+      y0 = boxY + yAdj;
+
 
     // adjust positions if necessary
 
@@ -339,7 +385,7 @@ public class Text extends Object2d {
     }
 
     if (isExact) {
-      yBoxOffset = -boxHeight + yOffset;
+      yBoxOffset = -yOffset;
     } else if (yOffset < 0) {
         yBoxOffset = -boxHeight + yOffset;
     } else if (yOffset == 0) {
@@ -465,6 +511,8 @@ public class Text extends Object2d {
 
   private float xAdj, yAdj;
 
+  private float y0;
+
   public void setXYA(float[] xy, int i) {
     if (i == 0) {
       xy[2] = boxX;
@@ -479,7 +527,7 @@ public class Text extends Object2d {
         xy[2] += xAdj;
       }
       xy[0] = xy[2];
-      xy[1] = boxY + yAdj;
+      xy[1] = y0;
     }
     switch (align) {
     case ALIGN_CENTER:

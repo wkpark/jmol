@@ -398,12 +398,19 @@ public class PyMOLReader extends PdbReader {
     if (colors == null || colors.size() == 0)
       return;
     // note, we are ignoring lookup-table colors
-    P3 pt = new P3();
     for (int i = colors.size(); --i >= 0;) {
       JmolList<Object> c = listAt(colors, i);
-      PyMOL.addColor((Integer) c.get(1), ColorUtil.colorPtToInt(pointAt(
-          listAt(c, 2), 0, pt)));
+      PyMOL.addColor((Integer) c.get(1), colorSetting(c));
     }
+  }
+
+  private final static P3 ptTemp = new P3();
+  
+  @SuppressWarnings("unchecked")
+  private static int colorSetting(JmolList<Object> c) {
+    Object o = c.get(2);
+    return (o instanceof Integer ? ((Integer) o).intValue() : ColorUtil
+        .colorPtToInt(pointAt((JmolList<Object>) o, 0, ptTemp)));
   }
 
   private static int intAt(JmolList<Object> list, int i) {
@@ -896,7 +903,7 @@ public class PyMOLReader extends PdbReader {
     try {
       JmolList<Object> setting = localSettings.get(Integer
           .valueOf(PyMOL.label_position));
-      pointAt((JmolList) setting.get(2), 0, labelPosition);
+      pointAt((JmolList<Object>) setting.get(2), 0, labelPosition);
     } catch (Exception e) {
       // no problem.
     }
@@ -1174,6 +1181,7 @@ public class PyMOLReader extends PdbReader {
           for (int i = 0; i < 7; i++)
             labelPos[i] = floatAt(labelOffset, i);
         }
+        //labelPos[3] += 20000;
         labels.addLast(newTextLabel(atom.label, labelPos, getColix(icolor, 0),
             (int) getUniqueFloat(atom.uniqueID, PyMOL.label_font_id,
                 labelFontId), getUniqueFloat(atom.uniqueID, PyMOL.label_size,
@@ -1910,50 +1918,13 @@ public class PyMOLReader extends PdbReader {
     //{ command => 'set hermiteLevel -4',                                                       comment => 'so that SS reps have some thickness' },
     //{ command => 'set ribbonAspectRatio 8',                                                   comment => 'degree of W/H ratio, but somehow not tied directly to actual width parameter...' },
     JmolList<Object> bg = listAt(settings, PyMOL.bg_rgb);
-    Object o = bg.get(2);
-    if (bg.get(1).equals(Integer.valueOf(5))) {
-      String s = "000000" + Integer.toHexString(((Integer) o).intValue());
-      o = "[x" + s.substring(s.length() - 6) + "]";
-    }
-    sb.append(";background " + o);
+    String s = "000000" + Integer.toHexString(colorSetting(bg));
+    s = "[x" + s.substring(s.length() - 6) + "]";
+    sb.append(";background " + s);
     if (isMovie)
       sb.append(";animation mode loop");
     sb.append(";");
   }
-
-  //  private float getRotationRadius() {
-  //    P3 center = P3.new3((xyzMax.x + xyzMin.x) / 2, (xyzMax.y + xyzMin.y) / 2,
-  //        (xyzMax.z + xyzMin.z) / 2);
-  //    float d2max = 0;
-  //    Atom[] atoms = atomSetCollection.getAtoms();
-  //    if (isMovie)
-  //      for (int i = lstTrajectories.size(); --i >= 0;) {
-  //        P3[] pts = lstTrajectories.get(i);
-  //        for (int j = pts.length; --j >= 0;) {
-  //          P3 pt = pts[j];
-  //          if (pt != null)
-  //            d2max = maxRadius(d2max, pt.x, pt.y, pt.z, center);
-  //        }
-  //      }
-  //    else
-  //      for (int i = 0; i < atomCount; i++) {
-  //        Atom a = atoms[i];
-  //        d2max = maxRadius(d2max, a.x, a.y, a.z, center);
-  //      }
-  //    // 1 is approximate -- for atom radius
-  //    return (float) Math.pow(d2max, 0.5f) + 1;
-  //  }
-  //
-  //  private static float maxRadius(float d2max, float x, float y, float z,
-  //                                 P3 center) {
-  //    float dx = (x - center.x);
-  //    float dy = (y - center.y);
-  //    float dz = (z - center.z);
-  //    float d2 = dx * dx + dy * dy + dz * dz;
-  //    if (d2 > d2max)
-  //      d2max = d2;
-  //    return d2max;
-  //  }
 
   private JmolObject addJmolObject(int id, BS bsAtoms, Object info) {
     JmolObject obj = new JmolObject(id, branchNameID, bsAtoms, info);

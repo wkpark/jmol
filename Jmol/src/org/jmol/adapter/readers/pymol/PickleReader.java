@@ -275,7 +275,7 @@ class PickleReader {
           long ll = Long.parseLong(s);
           push(Integer.valueOf((int) (ll & 0xFFFFFFFF)));
           //System.out.println("INT too large: " + s + " @ " + binaryDoc.getPosition());
-          push(Integer.valueOf(Integer.MAX_VALUE));
+          //push(Integer.valueOf(Integer.MAX_VALUE));
         }
         break;
       default:

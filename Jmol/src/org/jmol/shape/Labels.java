@@ -392,7 +392,7 @@ public class Labels extends AtomShape {
         setFont(i, fid = defaultFontId);
       JmolFont font = JmolFont.getFont3D(fid);
       short colix = getColix2(i, atoms[i], false);
-      text = Text.newLabel(gdata, font, formats[i], colix, getColix2(i, atoms[i], true), 
+      text = Text.newLabel(gdata, font, strings[i], colix, getColix2(i, atoms[i], true), 
           0, scalePixelsPerMicron, value);
       setTextLabel(i, text);
     } else {
@@ -418,7 +418,8 @@ public class Labels extends AtomShape {
     Atom atom = atoms[i];
     addString(atom, i, label, label);
     atom.setShapeVisibility(myVisibilityFlag, true);
-    setLabelColix(i, t.colix, EnumPalette.UNKNOWN.id);
+    if (t.colix >= 0)
+      setLabelColix(i, t.colix, EnumPalette.UNKNOWN.id);
     setFont(i, t.font.fid);
     putLabel(i, t);
   }

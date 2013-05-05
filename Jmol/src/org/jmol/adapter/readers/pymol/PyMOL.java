@@ -8,7 +8,7 @@ import java.util.Map;
  * 
  *  see http://sourceforge.net/projects/pymol/files/pymol/
  *  
- *  Settings: http://sourceforge.net/p/pymol/code/4008/tree/trunk/pymol/layer1/Setting.h
+ *  Settings: http://sourceforge.net/p/pymol/code/4025/tree/trunk/pymol/layer1/Setting.h
  *
  *  Colors: http://sourceforge.net/p/pymol/code/4008/tree/trunk/pymol/layer1/Color.c 
  *  
@@ -70,7 +70,7 @@ class PyMOL {
   
   static int FLAG_NOSURFACE = FLAG_ignore | FLAG_exfoliate;
   
-  // settings: There are 711 of these...
+  // settings: There are 715 of these...
   
   final static int active_selections                     = 351;
   final static int alignment_as_cylinders                = 692;
@@ -113,6 +113,10 @@ class PyMOL {
   final static int backface_cull                         =  75;
   final static int batch_prefix                          = 187;
   final static int bg_gradient                           = 662;
+  final static int bg_image_filename                     = 712;
+  final static int bg_image_mode                         = 713;
+  final static int bg_image_tilesize                     = 714;
+  final static int bg_image_linear                       = 715; 
   final static int bg_rgb                                =   6;
   final static int bg_rgb_bottom                         = 664;
   final static int bg_rgb_top                            = 663;

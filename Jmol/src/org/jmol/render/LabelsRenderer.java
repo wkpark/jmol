@@ -172,7 +172,8 @@ public class LabelsRenderer extends ShapeRenderer {
         }
       }
       if (atom != null) {
-        text.setOffset(offset);
+        if (text.pymolOffset == null)
+          text.setOffset(offset);
         if (textAlign != Object2d.ALIGN_NONE && text.pymolOffset == null)
           text.setAlignment(textAlign);
         text.setPointer(pointer);

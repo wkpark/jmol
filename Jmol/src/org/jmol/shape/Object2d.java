@@ -192,6 +192,7 @@ public abstract class Object2d {
     //Labels only
     offsetX = getXOffset(offset);
     offsetY = getYOffset(offset);
+    pymolOffset = null;
     valign = VALIGN_XY;
   }
 

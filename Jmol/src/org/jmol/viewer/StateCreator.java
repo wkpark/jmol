@@ -995,6 +995,8 @@ public class StateCreator implements JmolStateCreator {
         sb.append(" ID ").append(Escape.eS(m.thisID));
       if (m.mad != 0)
         sb.append(" radius ").appendF(m.mad / 2000f);
+      if (m.colix != 0)
+        sb.append(" color ").append(Escape.escapeColor(C.getArgb(m.colix)));
       TickInfo tickInfo = m.tickInfo;
       if (tickInfo != null)
         addTickInfo(sb, tickInfo, true);

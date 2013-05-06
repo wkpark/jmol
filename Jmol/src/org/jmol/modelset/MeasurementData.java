@@ -81,7 +81,7 @@ public class MeasurementData implements JmolMeasurementClient {
   public MeasurementData set(int tokAction, RadiusData radiusData, String strFormat, String units,
                  TickInfo tickInfo,
                  boolean mustBeConnected, boolean mustNotBeConnected,
-                 Boolean intramolecular, boolean isAll, int mad) {
+                 Boolean intramolecular, boolean isAll, int mad, short colix) {
     this.modelSet = viewer.getModelSet();
     this.tokAction = tokAction;
     if (points.size() >= 2 && points.get(0) instanceof BS && points.get(1) instanceof BS) {
@@ -99,6 +99,7 @@ public class MeasurementData implements JmolMeasurementClient {
     this.intramolecular = intramolecular;    
     this.isAll = isAll;
     this.mad = (short) mad;
+    this.colix = colix;
     return this;
   }
   

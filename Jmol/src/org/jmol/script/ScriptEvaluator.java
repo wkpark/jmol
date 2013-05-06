@@ -9483,6 +9483,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void measure() throws ScriptException {
     String id = null;
     int pt = 1;
+    short colix = 0;
     switch (tokAt(1)) {
     case T.search:
       String smarts = stringParameter(slen == 3 ? 2 : 4);
@@ -9586,6 +9587,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isAll = true;
         if (isAllConnected && isNotConnected)
           error(ERROR_invalidArgument);
+        break;
+      case T.color:
+        colix = C.getColix(getArgbParam(++i));
+        i = iToken;
         break;
       case T.radius:
       case T.diameter:
@@ -9724,7 +9729,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         tokAction = T.define;
       setShapeProperty(JC.SHAPE_MEASURES, "measure", 
           (new MeasurementData(id, viewer, points)).set(tokAction, rd, strFormat, null, tickInfo,
-              isAllConnected, isNotConnected, intramolecular, isAll, mad));
+              isAllConnected, isNotConnected, intramolecular, isAll, mad, colix));
       return;
     }
     Object propertyValue = (id == null ? countPlusIndexes : id);

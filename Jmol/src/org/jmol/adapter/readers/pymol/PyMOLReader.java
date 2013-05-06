@@ -728,7 +728,6 @@ public class PyMOLReader extends PdbReader {
       BS bs = BSUtil.newAndSetBit(0);
       MeasurementData md = new MeasurementData(fixName(branchNameID + "_" + (++index)), viewer, points);
       md.note = branchName;
-      md.colix = colix;
       String strFormat = "";
       int nDigits = -1;
       switch (nCoord) {
@@ -752,7 +751,7 @@ public class PyMOLReader extends PdbReader {
         strFormat = nCoord + ":%0." + nDigits + "VALUE %UNITS";
       else
         strFormat = nCoord + ": ";
-      md.set(T.define, null, strFormat, "angstroms", null, false, false, null, false, (int) (rad * 2000));
+      md.set(T.define, null, strFormat, "angstroms", null, false, false, null, false, (int) (rad * 2000), colix);
       addJmolObject(JC.SHAPE_MEASURES, bs, md);
       haveMeasurements = true;
       //int n = -(int) (getFloatSetting(PyMOL.dash_width) + 0.5);

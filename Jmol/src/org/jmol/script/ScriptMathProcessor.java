@@ -1329,7 +1329,7 @@ class ScriptMathProcessor {
       rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax, 0, null, null)
           : new RadiusData(null, vdw, EnumType.FACTOR, EnumVdw.AUTO));
       return addXObj((new MeasurementData(null, viewer, points)).set(0, rd, strFormat, units, null, isAllConnected,
-          isNotConnected, null, true, 0).getMeasurements(asArray));
+          isNotConnected, null, true, 0, (short) 0).getMeasurements(asArray));
     case T.angle:
       if ((nPoints = args.length) != 3 && nPoints != 4)
         return false;

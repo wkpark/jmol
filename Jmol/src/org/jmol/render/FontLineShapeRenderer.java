@@ -277,7 +277,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
   protected final static int[] dashes =   { 12, 0, 0, 2, 5, 7, 10 };
   protected final static int[] hDashes =  { 10, 7, 6, 1, 3, 4, 6, 7, 9 };
 
-  protected final static int[] eightdots =  { 16, 3, 8, 1, 3, 5, 7, 9, 11, 13, 15 };
+  protected final static int[] ndots =  { 0, 3, 1000 };
   protected final static int[] sixdots =  { 12, 3, 6, 1, 3, 5, 7, 9, 11 };
   protected final static int[] fourdots = { 13, 3, 5, 2, 5, 8, 11 };
   protected final static int[] twodots =  { 12, 3, 4, 3, 9 };
@@ -293,20 +293,28 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     float dx = xB - xA;
     float dy = yB - yA;
     float dz = zB - zA;
-    boolean isDots = (array == sixdots);
+    int n = 0;
+    boolean isNdots = (array == ndots);
+    boolean isDots = (isNdots || array == sixdots);
     if (isDots) {
       float d2 = (dx * dx + dy * dy)  / (width * width);
-      if (d2 < 8)
+      if (isNdots) {
+        f = (float) (Math.sqrt(d2) / 1.5);
+        n = (int) f + 3;
+      } else if (d2 < 8) {
         array = twodots;
-      else if (d2 < 32)
+      } else if (d2 < 32) {
         array = fourdots;
+      }
     }
     int ptS = array[1];
     int ptE = array[2];
     short colixS = colixA;
     short colixE = (ptE == 0 ? colixB : colixA);
-    for (int pt = 3; pt < array.length; pt++) {
-      int i = array[pt];
+    if (n == 0) 
+      n = array.length;
+    for (int i = 0, pt = 3; pt < n; pt++) {
+      i = (isNdots ? i + 1 : array[pt]);
       int xS = (int) Math.floor(xA + dx * i / f);
       int yS = (int) Math.floor(yA + dy * i / f);
       int zS = (int) Math.floor(zA + dz * i / f);

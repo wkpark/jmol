@@ -105,7 +105,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       mad = measurement.mad;
       //dashDots = hDashes;
       dotsOrDashes = true;
-      dashDots = sixdots;
+      dashDots = ndots;
     }
     switch (count) {
     case 1:
@@ -286,7 +286,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     // small numbers refer to pixels already? 
     int diameter = (int) (mad >= 20 && exportType != GData.EXPORT_CARTESIAN ?
       viewer.scaleToScreen((z1 + z2) / 2, mad) : mad);
-    if (dotsOrDashes && dashDots == sixdots)
+    if (dotsOrDashes && dashDots == ndots)
       width = diameter;
     return drawLine2(x1, y1, z1, x2, y2, z2, diameter);
   }

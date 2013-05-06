@@ -1496,6 +1496,7 @@ public class PyMOLReader extends PdbReader {
   }
 
   Map<String, Boolean> occludedBranches = new Hashtable<String, Boolean>();
+  private JmolObject frameObj;
 
   private void setGroups() {
     if (groups == null)
@@ -1835,9 +1836,9 @@ public class PyMOLReader extends PdbReader {
   private void setFrame() {
     BS bs = (totalAtomCount > 0 ? BSUtil.newAndSetBit(0) : null);
     if (!allStates && isMovie) {
-      addJmolObject(T.movie, bs, pymol.get("movie"));
+      frameObj = addJmolObject(T.movie, bs, pymol.get("movie"));
     } else if (!allStates || isMovie) {
-      addJmolObject(T.frame, bs, Integer
+      frameObj = addJmolObject(T.frame, bs, Integer
           .valueOf(currentFrame));
     } else {
       addJmolObject(T.frame, bs, Integer.valueOf(-1));
@@ -1955,7 +1956,7 @@ public class PyMOLReader extends PdbReader {
         try {
           JmolObject obj = jmolObjects.get(i);
           obj.offset(baseModelIndex, baseAtomIndex);
-          obj.createShape(modelSet, bsCarb);
+          obj.finalizeObject(modelSet, bsCarb);
         } catch (Exception e) {
           System.out.println(e);
         }
@@ -1967,5 +1968,9 @@ public class PyMOLReader extends PdbReader {
     }
     viewer.setTrajectoryBs(BSUtil.newBitSet2(baseModelIndex,
         modelSet.modelCount));
+    if (baseModelIndex == 0)
+      viewer.setBooleanProperty("_ismovie", true);
+    if (frameObj != null)
+      frameObj.finalizeObject(modelSet, null);
   }
 }

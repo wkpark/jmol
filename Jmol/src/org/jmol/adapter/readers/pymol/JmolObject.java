@@ -65,7 +65,7 @@ class JmolObject {
   private static final int cPuttyTransformImpliedRMS          = 8;
 
   
-  private int id;
+  int id;
   private BS bsAtoms;
   private Object info;
   private int size = -1;  
@@ -101,6 +101,12 @@ class JmolObject {
    */
   @SuppressWarnings("unchecked")
   void offset(int modelOffset, int atomOffset) {
+    if (id == T.frame) {
+      int i = ((Integer) info).intValue();
+      if (i > 0)
+        info = Integer.valueOf(modelOffset + i - 1);
+      return;
+    }
     if (atomOffset <= 0)
       return;
     if (id == T.movie) {
@@ -127,7 +133,7 @@ class JmolObject {
   }
 
   @SuppressWarnings("unchecked")
-  void createShape(ModelSet m, BS bsCarb) {
+  void finalizeObject(ModelSet m, BS bsCarb) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
     String sID;
@@ -142,9 +148,9 @@ class JmolObject {
       return;
     case T.frame:
       int frame = ((Integer) info).intValue();
-      if (frame > 0)
-        sm.viewer.setCurrentModelIndex(frame + modelIndex - 1);
-      else {
+      if (frame >= 0) {
+        sm.viewer.setCurrentModelIndex(frame);
+      } else {
         sm.viewer.setAnimationRange(-1, -1);
         sm.viewer.setCurrentModelIndex(-1);
       }

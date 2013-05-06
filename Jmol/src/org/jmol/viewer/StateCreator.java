@@ -993,6 +993,8 @@ public class StateCreator implements JmolStateCreator {
       SB sb = new SB().append("measure");
       if (m.thisID != null)
         sb.append(" ID ").append(Escape.eS(m.thisID));
+      if (m.mad != 0)
+        sb.append(" radius ").appendF(m.mad / 2000f);
       TickInfo tickInfo = m.tickInfo;
       if (tickInfo != null)
         addTickInfo(sb, tickInfo, true);

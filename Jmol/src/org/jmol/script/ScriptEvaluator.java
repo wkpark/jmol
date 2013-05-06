@@ -9558,6 +9558,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     Object value = null;
     TickInfo tickInfo = null;
     int nBitSets = 0;
+    int mad = 0;
     for (int i = 1; i < slen; ++i) {
       switch (getToken(i).tok) {
       case T.id:
@@ -9585,6 +9586,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isAll = true;
         if (isAllConnected && isNotConnected)
           error(ERROR_invalidArgument);
+        break;
+      case T.radius:
+      case T.diameter:
+        mad = (int) ((theTok == T.radius ? 2000 : 1000) * floatParameter(++i));
         break;
       case T.decimal:
         if (rd != null)
@@ -9719,7 +9724,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         tokAction = T.define;
       setShapeProperty(JC.SHAPE_MEASURES, "measure", 
           (new MeasurementData(id, viewer, points)).set(tokAction, rd, strFormat, null, tickInfo,
-              isAllConnected, isNotConnected, intramolecular, isAll));
+              isAllConnected, isNotConnected, intramolecular, isAll, mad));
       return;
     }
     Object propertyValue = (id == null ? countPlusIndexes : id);

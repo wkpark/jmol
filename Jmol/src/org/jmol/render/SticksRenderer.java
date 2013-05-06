@@ -35,11 +35,10 @@ import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.P3;
-import org.jmol.util.P3i;
 import org.jmol.util.V3;
 import org.jmol.viewer.JC;
 
-public class SticksRenderer extends ShapeRenderer {
+public class SticksRenderer extends FontLineShapeRenderer {
 
   private boolean showMultipleBonds;
   private float multipleBondSpacing;
@@ -54,29 +53,23 @@ public class SticksRenderer extends ShapeRenderer {
   private boolean bondsBackbone;
   private boolean hbondsSolid;
   
-  private Atom atomA, atomB;
+  private Atom a, b;
   private Bond bond;
   private int xA, yA, zA;
   private int xB, yB, zB;
   private int dx, dy;
   private int mag2d;
-  private short colixA, colixB;
-  private int width;
-  private boolean lineBond;
   private int bondOrder;
   private boolean renderWireframe;
   private boolean isAntialiased;
   private boolean slabbing;
   private boolean slabByAtom;
-  private int[] dashDots;
 
   private final V3 x = new V3();
   private final V3 y = new V3();
   private final V3 z = new V3();
   private final P3 p1 = new P3();
   private final P3 p2 = new P3();
-  private final P3i s1 = new P3i();
-  private final P3i s2 = new P3i();
   private final BS bsForPass2 = BS.newN(64);
   private boolean isPass2;
   
@@ -123,12 +116,11 @@ public class SticksRenderer extends ShapeRenderer {
     return needTranslucent;
   }
 
-  private Atom atomA0;
-  private Atom atomB0;
-  
   private boolean renderBond() {
-    atomA = atomA0 = bond.getAtom1();
-    atomB = atomB0 = bond.getAtom2();
+    Atom atomA0, atomB0;
+    
+    a = atomA0 = bond.getAtom1();
+    b = atomB0 = bond.getAtom2();
 
     int order = bond.order & ~JmolEdge.BOND_NEW;
     if (bondsBackbone) {
@@ -141,30 +133,30 @@ public class SticksRenderer extends ShapeRenderer {
          render(bond, atomA, atomB);
          */
 
-        atomA = atomA.getGroup().getLeadAtomOr(atomA);
-        atomB = atomB.getGroup().getLeadAtomOr(atomB);
+        a = a.getGroup().getLeadAtomOr(a);
+        b = b.getGroup().getLeadAtomOr(b);
       } else if (hbondsBackbone && Bond.isOrderH(order)) {
-        atomA = atomA.getGroup().getLeadAtomOr(atomA);
-        atomB = atomB.getGroup().getLeadAtomOr(atomB);
+        a = a.getGroup().getLeadAtomOr(a);
+        b = b.getGroup().getLeadAtomOr(b);
       }
     }
     if (!isPass2
-        && (!atomA.isInFrame() || !atomB.isInFrame()
-            || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
-            || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)
-            || modelSet.isAtomHidden(atomA.getIndex()) || modelSet
-            .isAtomHidden(atomB.getIndex())))
+        && (!a.isInFrame() || !b.isInFrame()
+            || !g3d.isInDisplayRange(a.screenX, a.screenY)
+            || !g3d.isInDisplayRange(b.screenX, b.screenY)
+            || modelSet.isAtomHidden(a.getIndex()) || modelSet
+            .isAtomHidden(b.getIndex())))
       return false;
 
     if (slabbing) {
-      if (g3d.isClippedZ(atomA.screenZ) && g3d.isClippedZ(atomB.screenZ))
+      if (g3d.isClippedZ(a.screenZ) && g3d.isClippedZ(b.screenZ))
         return false;
       if (slabByAtom
-          && (g3d.isClippedZ(atomA.screenZ) || g3d.isClippedZ(atomB.screenZ)))
+          && (g3d.isClippedZ(a.screenZ) || g3d.isClippedZ(b.screenZ)))
         return false;
     }
-    zA = atomA.screenZ;
-    zB = atomB.screenZ;
+    zA = a.screenZ;
+    zB = b.screenZ;
     if (zA == 1 || zB == 1)
       return false;
     colixA = atomA0.getColix();
@@ -241,10 +233,10 @@ public class SticksRenderer extends ShapeRenderer {
 
     // set the diameter
 
-    xA = atomA.screenX;
-    yA = atomA.screenY;
-    xB = atomB.screenX;
-    yB = atomB.screenY;
+    xA = a.screenX;
+    yA = a.screenY;
+    xB = b.screenX;
+    yB = b.screenY;
 
     mad = bond.mad;
     if (multipleBondRadiusFactor > 0 && bondOrder > 1)
@@ -255,10 +247,10 @@ public class SticksRenderer extends ShapeRenderer {
     if (renderWireframe && width > 0)
       width = 1;
     if (!isCartesianExport) {
-      lineBond = (width <= 1);
-      if (lineBond && (isAntialiased)) {
+      asLineOnly = (width <= 1);
+      if (asLineOnly && (isAntialiased)) {
         width = 3;
-        lineBond = false;
+        asLineOnly = false;
       }
     }
 
@@ -278,15 +270,15 @@ public class SticksRenderer extends ShapeRenderer {
   private void drawBond(int dottedMask) {
     if (isCartesianExport && bondOrder == 1) {
       // bypass screen rendering and just use the atoms themselves
-      g3d.drawBond(atomA, atomB, colixA, colixB, endcaps, mad, -1);
+      g3d.drawBond(a, b, colixA, colixB, endcaps, mad, -1);
       return;
     }
     boolean isEndOn = (dx == 0 && dy == 0);
-    if (isEndOn && lineBond)
+    if (isEndOn && asLineOnly)
       return;
     boolean doFixedSpacing = (bondOrder > 1 && multipleBondSpacing > 0);
-    boolean isPiBonded = doFixedSpacing && (viewer.getHybridizationAndAxes(atomA.index, z, x, "pz") != null || viewer
-            .getHybridizationAndAxes(atomB.index, z, x, "pz") != null) && !Float.isNaN(x.x);
+    boolean isPiBonded = doFixedSpacing && (viewer.getHybridizationAndAxes(a.index, z, x, "pz") != null || viewer
+            .getHybridizationAndAxes(b.index, z, x, "pz") != null) && !Float.isNaN(x.x);
     if (isEndOn && !doFixedSpacing) {
       // end-on view
       int space = width / 8 + 3;
@@ -309,7 +301,7 @@ public class SticksRenderer extends ShapeRenderer {
     if (doFixedSpacing) {
       if (!isPiBonded) // obscure point
         z.set((float) Math.PI, (float) Math.E, (float) (Math.PI * Math.E)); 
-      x.sub2(atomB, atomA);
+      x.sub2(b, a);
       y.cross(x, z);
       y.normalize();
       if (Float.isNaN(y.x)) {
@@ -322,8 +314,8 @@ public class SticksRenderer extends ShapeRenderer {
       y.scale(multipleBondSpacing);
       x.setT(y);
       x.scale((bondOrder - 1) / 2f);
-      p1.sub2(atomA, x);
-      p2.sub2(atomB, x);
+      p1.sub2(a, x);
+      p2.sub2(b, x);
       while (true) {
         if (isCartesianExport && !isDashed) {
           // bypass screen rendering and just use the atoms themselves
@@ -390,73 +382,12 @@ public class SticksRenderer extends ShapeRenderer {
   }
 
   private int getAromaticDottedBondMask() {
-    Atom atomC = atomB.findAromaticNeighbor(atomA.getIndex());
+    Atom atomC = b.findAromaticNeighbor(a.getIndex());
     if (atomC == null)
       return 1;
     int dxAC = atomC.screenX - xA;
     int dyAC = atomC.screenY - yA;
     return ((dx * dyAC - dy * dxAC) < 0 ? 2 : 1);
-  }
-
-  private final static int[] dashes =   { 12, 0, 0, 2, 5, 7, 10 };
-  private final static int[] hDashes =  { 10, 7, 6, 1, 3, 4, 6, 7, 9 };
-  private final static int[] sixdots =  { 12, 3, 6, 1, 3, 5, 7, 9, 11 };
-  private final static int[] fourdots = { 13, 3, 5, 2, 5, 8, 11 };
-  private final static int[] twodots =  { 12, 3, 4, 3, 9 };
-
-  private void drawDashed(int xA, int yA, int zA, int xB, int yB, int zB,
-                          int[] array) {
-    int dx = xB - xA;
-    int dy = yB - yA;
-    int dz = zB - zA;
-    boolean isDots = (array == sixdots);
-    if (isDots) {
-      if (mad * 4 > 1500)
-        array = twodots;
-      else if (mad * 6 > 1500)
-        array = fourdots;
-    }
-    float f = array[0];
-    int ptS = array[1];
-    int ptE = array[2];
-    short colixS = colixA;
-    short colixE = (ptE == 0 ? colixB : colixA);
-    for (int pt = 3; pt < array.length; pt++) {
-      int i = array[pt];
-      int xS = (int) Math.floor(xA + dx * i / f);
-      int yS = (int) Math.floor(yA + dy * i / f);
-      int zS = (int) Math.floor(zA + dz * i / f);
-      if (isDots) {
-        s1.set(xS, yS, zS);
-        if (pt == ptS)
-          g3d.setColix(colixA);
-        else if (pt == ptE)
-          g3d.setColix(colixB);
-        g3d.fillSphereI(width, s1);
-        continue;
-      }
-      if (pt == ptS)
-        colixS = colixB;
-      i = array[++pt];
-      if (pt == ptE)
-        colixE = colixB;
-      int xE = (int) Math.floor(xA + dx * i / f);
-      int yE = (int) Math.floor(yA + dy * i / f);
-      int zE = (int) Math.floor(zA + dz * i / f);
-      fillCylinder(colixS, colixE, GData.ENDCAPS_FLAT, width, xS, yS, zS,
-          xE, yE, zE);
-    }
-  }
-
-  private void fillCylinder(short colixA, short colixB, byte endcaps,
-                              int diameter, int xA, int yA, int zA, int xB,
-                              int yB, int zB) {
-    if (lineBond)
-      g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
-    else
-      g3d.fillCylinderXYZ(colixA, colixB, endcaps, 
-          (!isExport || mad == 1 ? diameter : mad), 
-          xA, yA, zA, xB, yB, zB);
   }
 
 }

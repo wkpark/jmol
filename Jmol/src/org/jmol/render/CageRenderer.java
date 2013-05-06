@@ -108,7 +108,7 @@ abstract class CageRenderer extends FontLineShapeRenderer {
         else
           tickInfo.first = start;
       }
-      renderLine(screens[edge0], screens[edge1], diameter, pt0, pt1,
+      renderLine(screens[edge0], screens[edge1], diameter, pt0i, pt1i,
           drawTicks);
     }
   }

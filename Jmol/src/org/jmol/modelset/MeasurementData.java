@@ -56,6 +56,7 @@ public class MeasurementData implements JmolMeasurementClient {
   public boolean isAll;
   public short colix;
   public Boolean intramolecular;
+  public short mad;
 
   private Atom[] atoms;
   private String units;
@@ -80,7 +81,7 @@ public class MeasurementData implements JmolMeasurementClient {
   public MeasurementData set(int tokAction, RadiusData radiusData, String strFormat, String units,
                  TickInfo tickInfo,
                  boolean mustBeConnected, boolean mustNotBeConnected,
-                 Boolean intramolecular, boolean isAll) {
+                 Boolean intramolecular, boolean isAll, int mad) {
     this.modelSet = viewer.getModelSet();
     this.tokAction = tokAction;
     if (points.size() >= 2 && points.get(0) instanceof BS && points.get(1) instanceof BS) {
@@ -97,6 +98,7 @@ public class MeasurementData implements JmolMeasurementClient {
     this.mustNotBeConnected = mustNotBeConnected;
     this.intramolecular = intramolecular;    
     this.isAll = isAll;
+    this.mad = (short) mad;
     return this;
   }
   
@@ -112,7 +114,6 @@ public class MeasurementData implements JmolMeasurementClient {
     // here's where we check vdw
     if (radiusData != null && !m.isInRange(radiusData, value))
       return;
-    //System.out.println(Escape.escapeArray(m.getCountPlusIndices()));
     if (measurementStrings == null) {
       float f = minArray[iFirstAtom];
       m.value = value;

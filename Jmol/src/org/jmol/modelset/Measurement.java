@@ -55,6 +55,8 @@ public class Measurement {
   public boolean isDynamic = false;
   public boolean isTrajectory = false;
   public short colix;
+  public short labelColix = -1; // use colix
+  public short mad;
   public TickInfo tickInfo;
   public int traceX = Integer.MIN_VALUE, traceY;
 
@@ -62,25 +64,28 @@ public class Measurement {
   protected int[] countPlusIndices = new int[5];
   protected Point3fi[] pts;
   protected float value;
+  public String strFormat;
 
   private Viewer viewer;
-  private String strFormat;
   private String strMeasurement;
   private AxisAngle4f aa;
   private P3 pointArc;
 
-  public Measurement setM(ModelSet modelSet, Measurement m, String id, float value, short colix,
+  public Measurement setM(ModelSet modelSet, Measurement m, float value, short colix,
                           String strFormat, int index) {
     //value Float.isNaN ==> pending
-    thisID = id;
     this.modelSet = modelSet;
     this.index = index;
     this.viewer = modelSet.viewer;
     this.colix = colix;
     this.strFormat = strFormat;
     if (m != null) {
-      this.tickInfo = m.tickInfo;
-      this.pts = m.pts;
+      tickInfo = m.tickInfo;
+      pts = m.pts;
+      mad = m.mad;
+      thisID = m.thisID;
+      if (thisID != null)
+        labelColix = 0;
     }
     if (pts == null)
       pts = new Point3fi[4];

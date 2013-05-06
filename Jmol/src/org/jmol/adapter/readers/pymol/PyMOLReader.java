@@ -716,10 +716,11 @@ public class PyMOLReader extends PdbReader {
     JmolList<Object> list = listAt(measure, pt);
     int len = list.size();
     int p = 0;
-    float rad = getFloatSetting(PyMOL.dash_width) / 1000;
+    float rad = getFloatSetting(PyMOL.dash_width) / 20;
     if (rad == 0)
-      rad = 0.002f;
+      rad = 0.05f;
     int index = 0;
+    short colix = C.getColix(PyMOL.getRGB(color));
     while (p < len) {
       JmolList<Object> points = new JmolList<Object>();
       for (int i = 0; i < nCoord; i++, p += 3)
@@ -727,27 +728,32 @@ public class PyMOLReader extends PdbReader {
       BS bs = BSUtil.newAndSetBit(0);
       MeasurementData md = new MeasurementData(fixName(branchNameID + "_" + (++index)), viewer, points);
       md.note = branchName;
+      md.colix = colix;
       String strFormat = "";
       int nDigits = -1;
       switch (nCoord) {
       case 2:
         nDigits = (int) getFloatSetting(PyMOL.label_distance_digits);
+        if (nDigits < 0)
+          nDigits = 2;
         break;
       case 3:
         nDigits = (int) getFloatSetting(PyMOL.label_angle_digits);
+        if (nDigits < 0)
+          nDigits = 1;
         break;
       case 4:
         nDigits = (int) getFloatSetting(PyMOL.label_dihedral_digits);
+        if (nDigits < 0)
+          nDigits = 1;
         break;
       }
-      if (nDigits > 0)
+      if (measure.size() >= 9 && measure.get(8) != null)
         strFormat = nCoord + ":%0." + nDigits + "VALUE %UNITS";
       else
         strFormat = nCoord + ": ";
-      md.strFormat = strFormat;
-      JmolObject ms = addJmolObject(JC.SHAPE_MEASURES, bs, md);
-      ms.argb = PyMOL.getRGB(color);
-      ms.setSize(rad);
+      md.set(T.define, null, strFormat, "angstroms", null, false, false, null, false, (int) (rad * 2000));
+      addJmolObject(JC.SHAPE_MEASURES, bs, md);
       haveMeasurements = true;
       //int n = -(int) (getFloatSetting(PyMOL.dash_width) + 0.5);
       //ss.setSize(0.2f); probably good, but this will set it to be not dashed. Should implement that in Jmol

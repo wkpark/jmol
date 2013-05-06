@@ -41,15 +41,18 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
 
   private Measurement measurement;
   private boolean doJustify;
+  private short mad0;
+  private short labelColix;
+  
   @Override
   protected boolean render() {
     if (!g3d.checkTranslucent(false))
       return false;
     Measures measures = (Measures) shape;
     doJustify = viewer.getBoolean(T.justifymeasurements);
-    mad = measures.mad;
     // note that this COULD be screen pixels if <= 20. 
     imageFontScaling = viewer.getImageFontScaling();
+    mad0 = measures.mad;
     font3d = g3d.getFont3DScaled(measures.font3d, imageFontScaling);
     renderPendingMeasurement(measures.measurementPending);
     if (!viewer.getBoolean(T.showmeasurements))
@@ -69,7 +72,13 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
         colix = measures.colix;
       if (colix == 0)
         colix = viewer.getColixBackgroundContrast();
+      labelColix = m.labelColix;
+      if (labelColix == 0)
+        labelColix = viewer.getColixBackgroundContrast();
+      else if (labelColix == -1)
+        labelColix = colix;
       g3d.setColix(colix);
+      colixA = colixB = colix;
       renderMeasurement(m.getCount(), m, showMeasurementLabels);
     }
     return false;
@@ -78,10 +87,10 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   private Point3fi getAtom(int i) {
     Point3fi a = measurement.getAtom(i);
     if (a.screenDiameter < 0) {
-      viewer.transformPtScr(a, pt0);
-      a.screenX = pt0.x;
-      a.screenY = pt0.y;
-      a.screenZ = pt0.z;
+      viewer.transformPtScr(a, pt0i);
+      a.screenX = pt0i.x;
+      a.screenY = pt0i.y;
+      a.screenZ = pt0i.z;
     }
     return a;
   }
@@ -89,6 +98,15 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   private void renderMeasurement(int count, Measurement measurement,
                                  boolean renderLabel) {
     this.measurement = measurement;
+    if (measurement.mad == 0) {
+      dotsOrDashes = false;
+      mad = mad0;
+    } else {
+      mad = measurement.mad;
+      //dashDots = hDashes;
+      dotsOrDashes = true;
+      dashDots = sixdots;
+    }
     switch (count) {
     case 1:
       if (measurement.traceX != Integer.MIN_VALUE) {
@@ -143,6 +161,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       z = 1;
     int x = (atomA.screenX + atomB.screenX) / 2;
     int y = (atomA.screenY + atomB.screenY) / 2;
+    g3d.setColix(labelColix);
     drawString(x, y, z, radius, doJustify
         && (x - atomA.screenX) * (y - atomA.screenY) > 0, false, false,
         (doJustify ? 0 : Integer.MAX_VALUE), s);
@@ -168,6 +187,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     AxisAngle4f aa = measurement.getAxisAngle();
     if (aa == null) { // 180 degrees
       int offset = (int) Math.floor(5 * imageFontScaling);
+      g3d.setColix(labelColix);
       drawString(atomB.screenX + offset, atomB.screenY - offset,
                              zB, radius, false, false, false, 
                              (doJustify ? 0 : Integer.MAX_VALUE), 
@@ -199,6 +219,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
         pointT.add(atomB);
         viewer.transformPt(pointT);
         int zLabel = point3iScreenTemp.z - zOffset;
+        g3d.setColix(labelColix);
         drawString(point3iScreenTemp.x, 
             point3iScreenTemp.y, zLabel, radius, 
             point3iScreenTemp.x < atomB.screenX, false,
@@ -219,6 +240,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     if (!renderLabel)
       return;
     radius /= 3;
+    g3d.setColix(labelColix);
     drawString((atomA.screenX + atomB.screenX + atomC.screenX + atomD.screenX) / 4,
                            (atomA.screenY + atomB.screenY + atomC.screenY + atomD.screenY) / 4,
                            (zA + zB + zC + zD) / 4, radius, false, false,
@@ -264,6 +286,8 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     // small numbers refer to pixels already? 
     int diameter = (int) (mad >= 20 && exportType != GData.EXPORT_CARTESIAN ?
       viewer.scaleToScreen((z1 + z2) / 2, mad) : mad);
+    if (dotsOrDashes && dashDots == sixdots)
+      width = diameter;
     return drawLine2(x1, y1, z1, x2, y2, z2, diameter);
   }
 }

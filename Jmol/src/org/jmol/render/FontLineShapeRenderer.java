@@ -37,15 +37,17 @@ import org.jmol.util.V3;
 
 public abstract class FontLineShapeRenderer extends ShapeRenderer {
 
-  // Axes, Bbcage, Measures, Uccage
+  // Axes, Bbcage, Measures, Uccage, also Sticks
 
   protected float imageFontScaling;
   protected Point3fi atomA, atomB, atomC, atomD;
   protected JmolFont font3d;
 
-  final protected P3i pt0 = new P3i();
-  final protected P3i pt1 = new P3i();
-  final protected P3i pt2 = new P3i();
+  final protected P3i pt0i = new P3i();
+  final protected P3i pt1i = new P3i();
+  final protected P3i pt2i = new P3i();
+  protected final P3i s1 = new P3i();
+  protected final P3i s2 = new P3i();
 
   final protected P3 pointT = new P3();
   final protected P3 pointT2 = new P3();
@@ -59,7 +61,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
   protected TickInfo tickInfo;
 
   protected boolean draw000 = true;
-
+  protected int width;
   protected byte endcap = GData.ENDCAPS_SPHERICAL;
 
   //protected void clearBox() {
@@ -184,7 +186,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
     } else {
       pointT3.setT(ptRef);
     }
-    viewer.transformPtScr(pointT3, pt2);
+    viewer.transformPtScr(pointT3, pt2i);
     //too annoying! float tx = vectorT2.x * ((ptA.screenX + ptB.screenX) / 2 - pt2.x);
     //float ty = vectorT2.y * ((ptA.screenY + ptB.screenY) / 2 - pt2.y);
     //if (tx + ty < -0.1)
@@ -226,13 +228,17 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
   }
 
   protected int drawLine2(int x1, int y1, int z1, int x2, int y2, int z2, int diameter) {
-    pt0.set(x1, y1, z1);
-    pt1.set(x2, y2, z2);
+    pt0i.set(x1, y1, z1);
+    pt1i.set(x2, y2, z2);
     if (diameter < 0) {
-      g3d.drawDashedLine(4, 2, pt0, pt1);
+      g3d.drawDashedLine(4, 2, pt0i, pt1i);
       return 1;
     }    
-    g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, pt0, pt1);
+    if (dotsOrDashes) {
+      drawDashed(x1, y1, z1, x2, y2, z2, dashDots);
+    } else {
+      g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, pt0i, pt1i);
+    }
     return (diameter + 1) / 2;
   }
 
@@ -267,5 +273,79 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
    //   box.setBounds(xT, yT, width, height);
    // }
   }
+
+  protected final static int[] dashes =   { 12, 0, 0, 2, 5, 7, 10 };
+  protected final static int[] hDashes =  { 10, 7, 6, 1, 3, 4, 6, 7, 9 };
+
+  protected final static int[] eightdots =  { 16, 3, 8, 1, 3, 5, 7, 9, 11, 13, 15 };
+  protected final static int[] sixdots =  { 12, 3, 6, 1, 3, 5, 7, 9, 11 };
+  protected final static int[] fourdots = { 13, 3, 5, 2, 5, 8, 11 };
+  protected final static int[] twodots =  { 12, 3, 4, 3, 9 };
+
+  protected short colixA, colixB;
+  protected boolean dotsOrDashes;
+  protected int[] dashDots;
+
+  protected void drawDashed(int xA, int yA, int zA, int xB, int yB, int zB,
+                          int[] array) {
+    // for sticks and measures
+    float f = array[0];
+    float dx = xB - xA;
+    float dy = yB - yA;
+    float dz = zB - zA;
+    boolean isDots = (array == sixdots);
+    if (isDots) {
+      float d2 = (dx * dx + dy * dy)  / (width * width);
+      if (d2 < 8)
+        array = twodots;
+      else if (d2 < 32)
+        array = fourdots;
+    }
+    int ptS = array[1];
+    int ptE = array[2];
+    short colixS = colixA;
+    short colixE = (ptE == 0 ? colixB : colixA);
+    for (int pt = 3; pt < array.length; pt++) {
+      int i = array[pt];
+      int xS = (int) Math.floor(xA + dx * i / f);
+      int yS = (int) Math.floor(yA + dy * i / f);
+      int zS = (int) Math.floor(zA + dz * i / f);
+      if (isDots) {
+        s1.set(xS, yS, zS);
+        if (pt == ptS)
+          g3d.setColix(colixA);
+        else if (pt == ptE)
+          g3d.setColix(colixB);
+        g3d.fillSphereI(width, s1);
+        continue;
+      }
+      if (pt == ptS)
+        colixS = colixB;
+      i = array[++pt];
+      if (pt == ptE)
+        colixE = colixB;
+      int xE = (int) Math.floor(xA + dx * i / f);
+      int yE = (int) Math.floor(yA + dy * i / f);
+      int zE = (int) Math.floor(zA + dz * i / f);
+      fillCylinder(colixS, colixE, GData.ENDCAPS_FLAT, width, xS, yS, zS,
+          xE, yE, zE);
+    }
+  }
+  
+  protected boolean asLineOnly;
+
+  protected void fillCylinder(short colixA, short colixB, byte endcaps,
+                              int diameter, int xA, int yA, int zA, int xB,
+                              int yB, int zB) {
+    if (asLineOnly)
+      g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+    else
+      g3d.fillCylinderXYZ(colixA, colixB, endcaps, 
+          (!isExport || mad == 1 ? diameter : mad), 
+          xA, yA, zA, xB, yB, zB);
+  }
+
+
+
 
 }

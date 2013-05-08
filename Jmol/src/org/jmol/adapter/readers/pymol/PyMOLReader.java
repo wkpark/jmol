@@ -160,7 +160,6 @@ public class PyMOLReader extends PdbReader {
   private float stickTranslucency;
   private boolean cartoonLadderMode;
   private boolean cartoonRockets;
-  private boolean solventAsSpheres;
   private int surfaceMode;
   private int surfaceColor;
   private int labelFontId;
@@ -173,7 +172,7 @@ public class PyMOLReader extends PdbReader {
   private Map<String, Object> htNames = new Hashtable<String, Object>();
   private JmolList<P3[]> lstTrajectories = new JmolList<P3[]>();
   private int currentFrame = -1;
-  private int pymolFrame;
+  private int pymolFrame, pymolState;
   private boolean allStates;
   private int totalAtomCount;
   private int pymolVersion;
@@ -223,14 +222,16 @@ public class PyMOLReader extends PdbReader {
         }
       }
     }
-    addColors(getMapList(map, "colors"));
+    addColors(getMapList(map, "colors"), getBooleanSetting(PyMOL.clamp_colors));
     allStates = getBooleanSetting(PyMOL.all_states);
     pymolFrame = (int) getFloatSetting(PyMOL.frame);
+    pymolState = (int) getFloatSetting(PyMOL.state);
+    appendLoadNote("frame=" + pymolFrame + " state=" + pymolState);
     JmolList<Object> mov = getMapList(map, "movie");
     if (mov != null && !allStates) {
       int frameCount = intAt(mov, 0);
       if (frameCount > 0) {
-        currentFrame = (int) getFloatSetting(PyMOL.frame);
+        currentFrame = pymolFrame;
         isMovie = true;
         movie = new Hashtable<String, Object>();
         movie.put("states", lstStates);
@@ -394,21 +395,29 @@ public class PyMOLReader extends PdbReader {
     return n;
   }
 
-  private void addColors(JmolList<Object> colors) {
+  private void addColors(JmolList<Object> colors, boolean isClamped) {
     if (colors == null || colors.size() == 0)
       return;
     // note, we are ignoring lookup-table colors
     for (int i = colors.size(); --i >= 0;) {
       JmolList<Object> c = listAt(colors, i);
-      PyMOL.addColor((Integer) c.get(1), colorSetting(c));
+      PyMOL.addColor((Integer) c.get(1), isClamped ? colorSettingClamped(c)
+          : colorSetting(c));
     }
+  }
+
+  private int colorSettingClamped(JmolList<Object> c) {
+    return (c.size() < 6 ? colorSetting(c) : getColorPt(c.get(5)));    
   }
 
   private final static P3 ptTemp = new P3();
   
-  @SuppressWarnings("unchecked")
   private static int colorSetting(JmolList<Object> c) {
-    Object o = c.get(2);
+    return getColorPt(c.get(2));
+  }
+
+  @SuppressWarnings("unchecked")
+  private static int getColorPt(Object o) {
     return (o instanceof Integer ? ((Integer) o).intValue() : ColorUtil
         .colorPtToInt(pointAt((JmolList<Object>) o, 0, ptTemp)));
   }
@@ -720,7 +729,8 @@ public class PyMOLReader extends PdbReader {
     if (rad == 0)
       rad = 0.05f;
     int index = 0;
-    short colix = C.getColix(PyMOL.getRGB(color));
+    int c = PyMOL.getRGB(color);
+    short colix = C.getColix(c);
     while (p < len) {
       JmolList<Object> points = new JmolList<Object>();
       for (int i = 0; i < nCoord; i++, p += 3)
@@ -839,6 +849,8 @@ public class PyMOLReader extends PdbReader {
       setBranchShapes();
     } else {
       allStates |= (ns > 1); // testing
+      if (ns > 1)
+        System.out.println("ns = " + ns + " but no movie state=" + getFloatSetting(PyMOL.state));
       ns = 1; // I guess I don't understand what the second set is for in each of these.
       lstStates.clear();
       for (int i = 0; i < ns; i++) {
@@ -907,7 +919,7 @@ public class PyMOLReader extends PdbReader {
     sphereTranslucency = getFloatSetting(PyMOL.sphere_transparency);
     cartoonLadderMode = getBooleanSetting(PyMOL.cartoon_ladder_mode);
     cartoonRockets = getBooleanSetting(PyMOL.cartoon_cylindrical_helices);
-    solventAsSpheres = getBooleanSetting(PyMOL.sphere_solvent);
+    //solventAsSpheres = getBooleanSetting(PyMOL.sphere_solvent); - this is for SA-Surfaces
     surfaceMode = (int) getFloatSetting(PyMOL.surface_mode);
     surfaceColor = (int) getFloatSetting(PyMOL.surface_color);
     labelPosition = new P3();
@@ -1100,6 +1112,8 @@ public class PyMOLReader extends PdbReader {
     atom.bfactor = floatAt(a, 14);
     atom.occupancy = (int) (floatAt(a, 15) * 100);
     atom.radius = floatAt(a, 16);
+    if (atom.radius == 0)
+      atom.radius = 1;
     atom.partialCharge = floatAt(a, 17);
     int formalCharge = intAt(a, 18);
     atom.bsReps = getBsReps(listAt(a, 20));
@@ -1200,12 +1214,8 @@ public class PyMOLReader extends PdbReader {
       }
     }
     boolean isSphere = reps[PyMOL.REP_SPHERES].get(iAtom);
-    if (!isSphere && !solventAsSpheres && reps[PyMOL.REP_NONBONDED].get(iAtom)
-        && !atom.bonded) {
-      reps[PyMOL.REP_NBSPHERES].clear(iAtom);
-      //reps[PyMOL.REP_SPHERES].clear(iAtom);
+    if (reps[PyMOL.REP_NONBONDED].get(iAtom) && atom.bonded) {
       reps[PyMOL.REP_NONBONDED].clear(iAtom);
-      reps[REP_JMOL_STARS].set(iAtom);
     }
     float rad = 0;
     if (isSphere) {
@@ -1213,17 +1223,22 @@ public class PyMOLReader extends PdbReader {
           sphereScale);
       // nl1_nl2 -- stumped!
       rad = atom.radius * mySphereSize;
-    } else if (reps[PyMOL.REP_NONBONDED].get(iAtom)
-        || reps[PyMOL.REP_NBSPHERES].get(iAtom)) {
+    } else if (reps[PyMOL.REP_NBSPHERES].get(iAtom)) {
       // Penta_vs_mutants calcium
       float myNonBondedSize = getUniqueFloat(atom.uniqueID,
           PyMOL.nonbonded_size, nonBondedSize);
+      // flag negative for a different bitset map, not really necessary
       rad = -atom.radius * myNonBondedSize;
     }
     if (!usePymolRadii)
       atom.radius = Float.NaN; // sorry, can't use these for surfaces
-    if (rad != 0)
-      addSpacefill(iAtom, rad);
+    if (rad != 0) {
+      Float r = Float.valueOf(rad);
+      BS bsr = htSpacefill.get(r);
+      if (bsr == null)
+        htSpacefill.put(r, bsr = new BS());
+      bsr.set(iAtom);
+    }
     if (reps[PyMOL.REP_CARTOON].get(iAtom)) {
       /*
             -1 => { type=>'skip',       converted=>undef },
@@ -1543,8 +1558,7 @@ public class PyMOLReader extends PdbReader {
   private final static int REP_JMOL_MIN = 13;
   private final static int REP_JMOL_TRACE = 13;
   private final static int REP_JMOL_PUTTY = 14;
-  private final static int REP_JMOL_STARS = 15;
-  private final static int REP_JMOL_MAX = 16;
+  private final static int REP_JMOL_MAX = 15;
 
   private void setBranchShapes() {
     if (isStateScript)
@@ -1594,18 +1608,18 @@ public class PyMOLReader extends PdbReader {
       return;
     JmolObject ss = null;
     switch (shapeID) {
-    case REP_JMOL_STARS:
+    case PyMOL.REP_NONBONDED:
       ss = addJmolObject(JC.SHAPE_STARS, bs, null);
       ss.rd = new RadiusData(null, getFloatSetting(PyMOL.nonbonded_size) / 2,
           RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
       ss.setColors(colixes, 0);
       break;
-    case PyMOL.REP_NONBONDED:
+    case PyMOL.REP_NBSPHERES:
       ss = addJmolObject(JC.SHAPE_BALLS, bs, null);
       ss.setColors(colixes, 0);
       ss.translucency = sphereTranslucency;
+      ss.setSize(getFloatSetting(PyMOL.nonbonded_size)*2);
       break;
-    case PyMOL.REP_NBSPHERES:
     case PyMOL.REP_SPHERES:
       ss = addJmolObject(JC.SHAPE_BALLS, bs, null);
       ss.setColors(colixes, 0);
@@ -1667,14 +1681,6 @@ public class PyMOLReader extends PdbReader {
     }
   }
 
-  private void addSpacefill(int i, float rad) {
-    Float r = Float.valueOf(rad);
-    BS bsr = htSpacefill.get(r);
-    if (bsr == null)
-      htSpacefill.put(r, bsr = new BS());
-    bsr.set(i);
-  }
-
   private void setSpacefill() {
     for (int i = bsBondedPyMOL.nextSetBit(0); i >= 0; i = bsBondedPyMOL
         .nextSetBit(i + 1)) {
@@ -1690,9 +1696,9 @@ public class PyMOLReader extends PdbReader {
       if (r < 0) {
         bs.andNot(bsBondedJmol);
         r = -r;
+        if (bs.isEmpty())
+          continue;
       }
-      if (bs.isEmpty())
-        continue;
       JmolObject ss = addJmolObject(JC.SHAPE_BALLS, bs, null);
       ss.rd = new RadiusData(null, r, RadiusData.EnumType.ABSOLUTE,
           EnumVdw.AUTO);

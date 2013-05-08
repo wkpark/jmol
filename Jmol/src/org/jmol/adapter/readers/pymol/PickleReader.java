@@ -48,6 +48,7 @@ class PickleReader {
   private boolean inNames;
   private String thisName;
   private int lastMark;
+  private int retrieveCount;
 
   private final static byte APPEND = 97; /* a */
   private final static byte APPENDS = 101; /* e */
@@ -131,11 +132,11 @@ class PickleReader {
         l = getObjects(getMark());
         if (inNames && markCount == 2){// && l.size() > 0 && l.get(0) == thisName) {
           int pt = (int) binaryDoc.getPosition();
-          System.out.println(" " + thisName + " " + filePt + " " + pt);
+          System.out.println(" " + thisName + " " + filePt + " " + (pt - filePt));
           JmolList<Object> l2 = new JmolList<Object>();
           l2.addLast(Integer.valueOf(filePt));
-          l2.addLast(Integer.valueOf(pt));
-          l.addLast(l2); // [ptr to name string, ptr to byte after ']' ] 
+          l2.addLast(Integer.valueOf(pt - filePt));
+          l.addLast(l2); // [ptr to start of this PyMOL object, length in bytes ] 
         }
         ((JmolList<Object>) peek()).addAll(l);
         break;
@@ -157,28 +158,20 @@ class PickleReader {
         break;
       case BINPUT:
         i = binaryDoc.readByte();
-        o = peek();
-        if (o instanceof String) {
-          memo.put(Integer.valueOf(i), peek());
-        }
+        putMemo(i, false);
         break;
       case LONG_BINPUT:
         i = binaryDoc.readIntLE();
-        o = peek();
-        if (o instanceof String && markCount < 6) {
-          if (markCount == 3 && inMovie)
-            break;
-          memo.put(Integer.valueOf(i), peek());
-        }
+        putMemo(i, true);
         break;
       case BINGET:
         i = binaryDoc.readByte();
-        o = memo.get(Integer.valueOf(i));
+        o = getMemo(i);
         push(o == null ? "BINGET" + (++id) : o);
         break;
       case LONG_BINGET:
         i = binaryDoc.readIntLE();
-        o = memo.get(Integer.valueOf(i));
+        o = getMemo(i);
         if (o == null) {
           Logger.error("did not find memo item for " + i);
           push("LONG_BINGET" + (++id));
@@ -358,7 +351,7 @@ class PickleReader {
     }
     if (logging)
       log("");
-    Logger.info("PyMOL Pickle reader cached " + memo.size() + " tokens");
+    Logger.info("PyMOL Pickle reader cached " + memo.size() + " tokens; retrieved " + retrieveCount);
     memo = null;
     map = (Map<String, Object>) stack.remove(0);
     if (map.size() == 0)
@@ -370,6 +363,25 @@ class PickleReader {
     return map;
   }
   
+  private void putMemo(int i, boolean doCheck) {
+    Object o = peek();
+    if (o instanceof String) {
+      if (doCheck && markCount >= 6 || markCount == 3 && inMovie)
+        return;
+      memo.put(Integer.valueOf(i), o);
+      System.out.println("caching string " + o + " at " + binaryDoc.getPosition());
+    }
+  }
+
+  private Object getMemo(int i) {
+    Object o = memo.get(Integer.valueOf(i));
+    if (o == null)
+      return o;
+    System.out.println("retrieving string " + o + " at " + binaryDoc.getPosition());
+    retrieveCount++;
+    return o;
+  }
+
   private JmolList<Object> getObjects(int mark) {
     int n = stack.size() - mark;
     JmolList<Object> args = new  JmolList<Object>();

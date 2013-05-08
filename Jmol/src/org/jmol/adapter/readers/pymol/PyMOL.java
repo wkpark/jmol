@@ -6178,13 +6178,14 @@ class PyMOL {
   };
 
   static int getRGB(int color) {
-    if (color < colors.length)
-      return (colors[color]);
     if (moreColors != null) {
-      Integer c = moreColors.get(Integer.valueOf(color));
+      Integer key = Integer.valueOf(color);
+      Integer c = moreColors.get(key);
       if (c != null)
         return c.intValue();
     }
+    if (color < colors.length)
+      return (colors[color]);
     return 0;
   }
   

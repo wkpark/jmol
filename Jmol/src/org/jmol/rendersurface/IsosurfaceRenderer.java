@@ -119,7 +119,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       }
     } else {
       colors = imesh.colorEncoder.getColorSchemeArray(imesh.colorEncoder.currentPalette);
-      n = colors.length;
+      n = (colors == null ? 0  : colors.length);
       type = 2;
     }
     if (n < 2)

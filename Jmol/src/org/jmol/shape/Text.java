@@ -235,7 +235,8 @@ public class Text extends Object2d {
         float pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
         float pz = pymolOffset[3];
         float dz = (pz < 0 ? -1 : 1) * Math.max(0, Math.abs(pz) - 1) * pixelsPerAngstrom;
-        pixelsPerAngstrom = viewer.scaleToScreen(z - (int) dz, 1000);
+        z -= (int) dz;
+        pixelsPerAngstrom = viewer.scaleToScreen(z, 1000);
         
         /* for whatever reason, Java returns an 
          * ascent that is considerably higher than a capital X

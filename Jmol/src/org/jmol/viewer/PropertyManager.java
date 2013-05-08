@@ -401,17 +401,17 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_ATOM_LIST:
       return viewer.getAtomBitSetVector(myParam);
     case PROP_ATOM_INFO:
-      return viewer.getAllAtomInfo(myParam);
+      return getAllAtomInfo(viewer.getAtomBitSet(myParam));
     case PROP_AUXILIARY_INFO:
       return viewer.getAuxiliaryInfo(myParam);
     case PROP_BOND_INFO:
-      return viewer.getAllBondInfo(myParam);
+      return getAllBondInfo(myParam);
     case PROP_BOUNDBOX_INFO:
       return viewer.getBoundBoxInfo();
     case PROP_CENTER_INFO:
       return viewer.getRotationCenter();
     case PROP_CHAIN_INFO:
-      return viewer.getAllChainInfo(myParam);
+      return getAllChainInfo(viewer.getAtomBitSet(myParam));
     case PROP_CONSOLE_TEXT:
       return viewer.getProperty("DATA_API", "consoleText", null);
     case PROP_JSPECVIEW:
@@ -461,7 +461,7 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_JMOL_VIEWER:
       return viewer;
     case PROP_LIGAND_INFO:
-      return viewer.getLigandInfo(myParam);
+      return getLigandInfo(viewer.getAtomBitSet(myParam));
     case PROP_MEASUREMENT_INFO:
       return viewer.getMeasurementInfo();
     case PROP_MENU:
@@ -471,9 +471,9 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_MINIMIZATION_INFO:
       return viewer.getMinimizationInfo();
     case PROP_MODEL_INFO:
-      return viewer.getModelInfo(myParam);
+      return getModelInfo(viewer.getAtomBitSet(myParam));
     case PROP_MOLECULE_INFO:
-      return viewer.getMoleculeInfo(myParam);
+      return getMoleculeInfo(viewer.getAtomBitSet(myParam));
     case PROP_MOUSE_INFO:
       return viewer.getMouseInfo();
     case PROP_ORIENTATION_INFO:
@@ -481,7 +481,7 @@ public class PropertyManager implements JmolPropertyManager {
     case PROP_POINTGROUP_INFO:
       return viewer.getPointGroupInfo(myParam);
     case PROP_POLYMER_INFO:
-      return viewer.getAllPolymerInfo(myParam);
+      return getAllPolymerInfo(viewer.getAtomBitSet(myParam));
     case PROP_SHAPE_INFO:
       return viewer.getShapeInfo();
     case PROP_STATE_INFO:
@@ -564,8 +564,7 @@ public class PropertyManager implements JmolPropertyManager {
 
   /// info ///
 
-  public JmolList<Map<String, Object>> getMoleculeInfo(ModelSet modelSet,
-                                                   Object atomExpression) {
+  public JmolList<Map<String, Object>> getMoleculeInfo(Object atomExpression) {
     BS bsAtoms = viewer.getAtomBitSet(atomExpression);
     JmolMolecule[] molecules = viewer.modelSet.getMolecules();
     JmolList<Map<String, Object>> V = new  JmolList<Map<String, Object>>();
@@ -578,7 +577,7 @@ public class PropertyManager implements JmolPropertyManager {
         Map<String, Object> info = new Hashtable<String, Object>();
         info.put("mf", m.getMolecularFormula(false)); // sets atomCount and nElements
         info.put("number", Integer.valueOf(m.moleculeIndex + 1)); //for now
-        info.put("modelNumber", modelSet.getModelNumberDotted(m.modelIndex));
+        info.put("modelNumber", viewer.modelSet.getModelNumberDotted(m.modelIndex));
         info.put("numberInModel", Integer.valueOf(m.indexInModel + 1));
         info.put("nAtoms", Integer.valueOf(m.atomCount));
         info.put("nElements", Integer.valueOf(m.nElements));
@@ -1148,20 +1147,11 @@ public class PropertyManager implements JmolPropertyManager {
     return V;
   }
 
-  public void getAtomIdentityInfo(int i, Map<String, Object> info) {
-    ModelSet ms = viewer.modelSet;
-    info.put("_ipt", Integer.valueOf(i));
-    info.put("atomIndex", Integer.valueOf(i));
-    info.put("atomno", Integer.valueOf(ms.getAtomNumber(i)));
-    info.put("info", ms.getAtomInfo(i, null));
-    info.put("sym", ms.getElementSymbol(i));
-  }
-
   private Map<String, Object> getAtomInfoLong(int i) {
     ModelSet ms = viewer.modelSet;
     Atom atom = ms.atoms[i];
     Map<String, Object> info = new Hashtable<String, Object>();
-    getAtomIdentityInfo(i, info);
+    viewer.getAtomIdentityInfo(i, info);
     info.put("element", ms.getElementName(i));
     info.put("elemno", Integer.valueOf(ms.getElementNumber(i)));
     info.put("x", Float.valueOf(atom.x));
@@ -1217,21 +1207,33 @@ public class PropertyManager implements JmolPropertyManager {
     return info;
   }
 
-  public JmolList<Map<String, Object>> getAllBondInfo(BS bs) {
-    JmolList<Map<String, Object>> v = new  JmolList<Map<String, Object>>();
+  public JmolList<Map<String, Object>> getAllBondInfo(Object bsOrArray) {
+    JmolList<Map<String, Object>> v = new JmolList<Map<String, Object>>();
     ModelSet ms = viewer.modelSet;
     int bondCount = ms.bondCount;
-    if (bs instanceof BondSet) {
-      for (int i = bs.nextSetBit(0); i >= 0 && i < bondCount; i = bs.nextSetBit(i + 1))
-        v.addLast(getBondInfo(i));
-      return v;
-    }
-    int thisAtom = (bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
     Bond[] bonds = ms.bonds;
-    for (int i = 0; i < bondCount; i++) {
-      if (thisAtom >= 0 ? (bonds[i].atom1.index == thisAtom || bonds[i].atom2.index == thisAtom)
-          : bs.get(bonds[i].atom1.index) && bs.get(bonds[i].atom2.index)) {
+    BS bs1;
+    if (bsOrArray instanceof BS[]) {
+      bs1 = ((BS[]) bsOrArray)[0];
+      BS bs2 = ((BS[]) bsOrArray)[1];
+      for (int i = 0; i < bondCount; i++) {
+        int ia = bonds[i].atom1.index;
+        int ib = bonds[i].atom2.index;
+        if (bs1.get(ia) && bs2.get(ib) || bs2.get(ia) && bs1.get(ib))
+          v.addLast(getBondInfo(i));
+      }
+    } else if (bsOrArray instanceof BondSet) {
+      bs1 = (BS) bsOrArray;
+      for (int i = bs1.nextSetBit(0); i >= 0 && i < bondCount; i = bs1
+          .nextSetBit(i + 1))
         v.addLast(getBondInfo(i));
+    } else {
+      bs1 = (BS) bsOrArray;
+      int thisAtom = (bs1.cardinality() == 1 ? bs1.nextSetBit(0) : -1);
+      for (int i = 0; i < bondCount; i++) {
+        if (thisAtom >= 0 ? (bonds[i].atom1.index == thisAtom || bonds[i].atom2.index == thisAtom)
+            : bs1.get(bonds[i].atom1.index) && bs1.get(bonds[i].atom2.index))
+          v.addLast(getBondInfo(i));
       }
     }
     return v;
@@ -1244,9 +1246,9 @@ public class PropertyManager implements JmolPropertyManager {
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("_bpt", Integer.valueOf(i));
     Map<String, Object> infoA = new Hashtable<String, Object>();
-    getAtomIdentityInfo(atom1.index, infoA);
+    viewer.getAtomIdentityInfo(atom1.index, infoA);
     Map<String, Object> infoB = new Hashtable<String, Object>();
-    getAtomIdentityInfo(atom2.index, infoB);
+    viewer.getAtomIdentityInfo(atom2.index, infoB);
     info.put("atom1", infoA);
     info.put("atom2", infoB);
     info.put("order", Float.valueOf(Parser.fVal(JmolEdge
@@ -1338,7 +1340,4 @@ public class PropertyManager implements JmolPropertyManager {
     info.append(id == '\0' ? " " : "" + id);
   }
 
-  
-  
-  
 }

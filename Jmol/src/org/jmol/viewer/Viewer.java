@@ -3410,43 +3410,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getPDBHeader(animationManager.currentModelIndex);
   }
 
-  public Map<String, Object> getModelInfo(Object atomExpression) {
-    return getPropertyManager().getModelInfo(atomExpression);
-  }
-
-  public Map<String, Object> getLigandInfo(Object atomExpression) {
-    return getPropertyManager().getLigandInfo(atomExpression);
-  }
-
   public Map<String, Object> getAuxiliaryInfo(Object atomExpression) {
     return modelSet.getAuxiliaryInfo(getModelBitSet(
         getAtomBitSet(atomExpression), false));
   }
 
-  JmolList<Map<String, Object>> getAllAtomInfo(Object atomExpression) {
-    return getPropertyManager().getAllAtomInfo(getAtomBitSet(atomExpression));
-  }
-
-  JmolList<Map<String, Object>> getAllBondInfo(Object atomExpression) {
-    return getPropertyManager().getAllBondInfo(getAtomBitSet(atomExpression));
-  }
-
-  JmolList<Map<String, Object>> getMoleculeInfo(Object atomExpression) {
-    return getPropertyManager().getMoleculeInfo(modelSet, atomExpression);
-  }
-
   public String getChimeInfo(int tok) {
     return getPropertyManager().getChimeInfo(tok, getSelectionSet(false));
-  }
-
-  public Map<String, JmolList<Map<String, Object>>> getAllChainInfo(
-                                                                Object atomExpression) {
-    return getPropertyManager().getAllChainInfo(getAtomBitSet(atomExpression));
-  }
-
-  public Map<String, JmolList<Map<String, Object>>> getAllPolymerInfo(
-                                                                  Object atomExpression) {
-    return getPropertyManager().getAllChainInfo(getAtomBitSet(atomExpression));
   }
 
   JmolStateCreator sc;
@@ -7980,7 +7950,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void getAtomIdentityInfo(int atomIndex, Map<String, Object> info) {
-    getPropertyManager().getAtomIdentityInfo(atomIndex, info);
+    modelSet.getAtomIdentityInfo(atomIndex, info);
   }
 
   public void setDefaultLattice(P3 ptLattice) {

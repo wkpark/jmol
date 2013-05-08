@@ -38,7 +38,7 @@ import org.jmol.script.SV;
 public class Escape {
 
   public static String escapeColor(int argb) {
-    return "[x" + getHexColorFromRGB(argb) + "]";
+    return (argb == 0 ? null  :  "[x" + getHexColorFromRGB(argb) + "]");
   }
 
   public static String getHexColorFromRGB(int argb) {

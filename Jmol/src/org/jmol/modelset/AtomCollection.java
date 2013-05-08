@@ -28,6 +28,7 @@ package org.jmol.modelset;
 import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Map;
 
 
 
@@ -2512,5 +2513,13 @@ abstract public class AtomCollection {
     // what about data?
   }
 
+  public void getAtomIdentityInfo(int i, Map<String, Object> info) {
+    info.put("_ipt", Integer.valueOf(i));
+    info.put("atomIndex", Integer.valueOf(i));
+    info.put("atomno", Integer.valueOf(getAtomNumber(i)));
+    info.put("info", getAtomInfo(i, null));
+    info.put("sym", getElementSymbol(i));
+  }
+  
 }
 

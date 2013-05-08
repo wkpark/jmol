@@ -395,7 +395,7 @@ public class PyMOLReader extends PdbReader {
     return n;
   }
 
-  private void addColors(JmolList<Object> colors, boolean isClamped) {
+  private static void addColors(JmolList<Object> colors, boolean isClamped) {
     if (colors == null || colors.size() == 0)
       return;
     // note, we are ignoring lookup-table colors
@@ -406,8 +406,8 @@ public class PyMOLReader extends PdbReader {
     }
   }
 
-  private int colorSettingClamped(JmolList<Object> c) {
-    return (c.size() < 6 ? colorSetting(c) : getColorPt(c.get(5)));    
+  private static int colorSettingClamped(JmolList<Object> c) {
+    return (c.size() < 6 || intAt(c, 4) == 0? colorSetting(c) : getColorPt(c.get(5)));    
   }
 
   private final static P3 ptTemp = new P3();
@@ -758,7 +758,7 @@ public class PyMOLReader extends PdbReader {
         break;
       }
       if (measure.size() >= 9 && measure.get(8) != null)
-        strFormat = nCoord + ":%0." + nDigits + "VALUE %UNITS";
+        strFormat = nCoord + ":%0." + nDigits + "VALUE";
       else
         strFormat = nCoord + ": ";
       md.set(T.define, null, strFormat, "angstroms", null, false, false, null, false, (int) (rad * 2000), colix);
@@ -1576,8 +1576,18 @@ public class PyMOLReader extends PdbReader {
     reps[PyMOL.REP_CARTOON].andNot(reps[REP_JMOL_TRACE]);
     //reps[REP_JMOL_PUTTY].and(reps[REP_CARTOON]);
     // reps[REP_CARTOON].andNot(reps[REP_JMOL_PUTTY]);
+
+    setShape(PyMOL.REP_LINES);
+    setShape(PyMOL.REP_STICKS);
     for (int i = 0; i < REP_JMOL_MAX; i++)
-      setShape(i);
+      switch (i) {
+      case PyMOL.REP_LINES:
+      case PyMOL.REP_STICKS:
+        continue;
+      default:
+        setShape(i);
+        break;
+      }
     setSurface();
     ssMapAtom = new Hashtable<String, BS>();
   }
@@ -1596,14 +1606,6 @@ public class PyMOLReader extends PdbReader {
     // add more to implement
     BS bs = reps[shapeID];
     float f;
-    switch (shapeID) {
-    case PyMOL.REP_NONBONDED:
-    case PyMOL.REP_NBSPHERES:
-      break;
-    case PyMOL.REP_LINES:
-      bs.andNot(reps[PyMOL.REP_STICKS]);
-      break;
-    }
     if (bs.isEmpty())
       return;
     JmolObject ss = null;

@@ -1492,19 +1492,25 @@ class ScriptMathProcessor {
     if (propertyName.startsWith("$")) {
       // TODO
     }
-    Object propertyValue;
+    Object propertyValue = "";
     if (propertyName.equalsIgnoreCase("fileContents") && args.length > 2) {
       String s = SV.sValue(args[1]);
       for (int i = 2; i < args.length; i++)
         s += "|" + SV.sValue(args[i]);
       propertyValue = s;
       pt = args.length;
-    } else {
-      propertyValue = (args.length > pt && args[pt].tok == T.bitset ? (Object) SV
-          .bsSelectVar(args[pt++])
-          : args.length > pt && args[pt].tok == T.string
-              && viewer.checkPropertyParameter(propertyName) ? args[pt++].value
-              : (Object) "");
+    } else if (args.length > pt) {
+      switch (args[pt].tok) {
+      case T.bitset:
+        propertyValue = SV.bsSelectVar(args[pt++]);
+        if (propertyName.equalsIgnoreCase("bondInfo") &&  args.length > pt && args[pt].tok == T.bitset)
+          propertyValue = new BS[] { (BS) propertyValue , SV.bsSelectVar(args[pt]) };
+        break;
+      case T.string:
+        if (viewer.checkPropertyParameter(propertyName))
+          propertyValue = args[pt++].value;
+        break;
+      }
     }
     Object property = viewer.getProperty(null, propertyName, propertyValue);
     if (pt < args.length)

@@ -469,7 +469,7 @@ public class Measurement {
     SB sb = new SB();
     sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
     sb.append(" \t").appendF(f);
-    sb.append(" \t").append(getString());
+    sb.append(" \t").append(Escape.eS(strMeasurement));
     for (int i = 1; i <= count; i++)
       sb.append(" \t").append(getLabel(i, false, false));
     if (thisID != null)

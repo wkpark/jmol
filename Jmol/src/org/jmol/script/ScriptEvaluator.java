@@ -7788,10 +7788,24 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (name.indexOf("[") >= 0)
       name = name.substring(0, name.indexOf("["));
     int propertyID = viewer.getPropertyNumber(name);
-    String param = optParameterAsString(2);
-    int tok = tokAt(2);
-    BS bs = (tok == T.expressionBegin || tok == T.bitset ? atomExpressionAt(2)
-        : null);
+    Object param = "";
+    switch (tokAt(2)) {
+    default:
+      param = optParameterAsString(2);
+      break;
+    case T.expressionBegin:
+    case T.bitset:
+      param = atomExpressionAt(2);
+      if (property.equalsIgnoreCase("bondInfo")) {
+        switch (tokAt(++iToken)) {
+        case T.expressionBegin:
+        case T.bitset:
+          param = new BS[] { (BS) param, atomExpressionAt(iToken) };
+          break;
+        }
+      }
+      break;
+    }
     if (property.length() > 0 && propertyID < 0) {
       // no such property
       property = ""; // produces a list from Property Manager
@@ -7800,14 +7814,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       param = viewer.getDefaultPropertyParam(propertyID);
       if (param.equals("(visible)")) {
         viewer.setModelVisibility();
-        bs = viewer.getVisibleSet();
+        param = viewer.getVisibleSet();
       }
     } else if (propertyID == viewer.getPropertyNumber("fileContents")) {
+      String s = param.toString();
       for (int i = 3; i < slen; i++)
-        param += parameterAsString(i);
+        s += parameterAsString(i);
+      param = s;
     }
-    retValue = (String) viewer.getProperty("readable", property,
-        (bs == null ? (Object) param : (Object) bs));
+    retValue = (String) viewer.getProperty("readable", property, param);
     showString(retValue);
   }
 

@@ -98,8 +98,6 @@ public class PyMOLReader extends PdbReader {
   private boolean isHidden;
   private JmolList<Object> pymolAtoms;
   
-  private BS bsBondedPyMOL = new BS();
-  private BS bsBondedJmol = new BS();
   private BS bsHidden = new BS();
   private BS bsNucleic = new BS();
   private BS bsNoSurface = new BS();
@@ -228,7 +226,10 @@ public class PyMOLReader extends PdbReader {
     pymolState = (int) getFloatSetting(PyMOL.state);
     appendLoadNote("frame=" + pymolFrame + " state=" + pymolState);
     JmolList<Object> mov = getMapList(map, "movie");
-    if (mov != null && !allStates) {
+    totalAtomCount = getTotalAtomCount(names);
+    Logger.info("PyMOL total atom count = " + totalAtomCount);
+    Logger.info("PyMOL state count = " + stateCount);
+    if (false && mov != null && !allStates) {
       int frameCount = intAt(mov, 0);
       if (frameCount > 0) {
         currentFrame = pymolFrame;
@@ -267,17 +268,29 @@ public class PyMOLReader extends PdbReader {
       }
       appendLoadNote(note);
     }
-    totalAtomCount = getTotalAtomCount(names);
-    Logger.info("PyMOL total atom count = " + totalAtomCount);
     if (totalAtomCount == 0)
       atomSetCollection.newAtomSet();
-    pointAt((JmolList<Object>) listAt(settings, PyMOL.label_position)
-        .get(2), 0, labelPosition0);
+    if (stateCount == 1)
+      allStates = true;
+    pointAt((JmolList<Object>) listAt(settings, PyMOL.label_position).get(2),
+        0, labelPosition0);
     selections = new JmolList<JmolList<Object>>();
+    if (isMovie) {
+      model(++nModels);
+      for (int i = 1; i < names.size(); i++)
+        processBranch(listAt(names, i), true, -1);
+    } else {
+      currentFrame = pymolState;
+      for (int j = 0; j < stateCount; j++) {
+        model(++nModels);
+        for (int i = 1; i < names.size(); i++)
+          processBranch(listAt(names, i), true, j);
+      }
+    }
     for (int i = 1; i < names.size(); i++)
-      processBranch(listAt(names, i));
-    processSelections();
-    proecssMeshes();
+      processBranch(listAt(names, i), false, -1);
+    //processSelections();
+    processMeshes();
     if (isMovie) {
       appendLoadNote("PyMOL trajectories read: " + lstTrajectories.size());
       atomSetCollection.finalizeTrajectoryAs(lstTrajectories, null);
@@ -293,7 +306,7 @@ public class PyMOLReader extends PdbReader {
           Boolean.TRUE);
   }
 
-  private void proecssMeshes() {
+  private void processMeshes() {
     if (mapObjects == null)
       return;
     viewer.cachePut(filePath + "#jmolSurfaceInfo", volumeData);
@@ -372,26 +385,33 @@ public class PyMOLReader extends PdbReader {
     appendLoadNote(viewer.getAtomDefs(htNames));
   }
 
+  int stateCount = 0;
   private int getTotalAtomCount(JmolList<Object> names) {
     int n = 0;
+    
     for (int i = 1; i < names.size(); i++) {
       JmolList<Object> branch = listAt(names, i);
       int type = getBranchType(branch);
-      if (type == BRANCH_MOLECULE && checkBranch(branch)) {//, type, true)) {
+      if (!checkBranch(branch))
+        continue;
+      if (type == BRANCH_MOLECULE) {
         JmolList<Object> deepBranch = listAt(branch, 5);
-        if (isMovie) {
-          n += getBranchAtoms(deepBranch).size();
-        } else {
-          JmolList<Object> states = listAt(deepBranch, 4);
-          int ns = states.size();
-          for (int j = 0; j < ns; j++) {
-            JmolList<Object> state = listAt(states, j);
-            JmolList<Object> idxToAtm = listAt(state, 3);
+        JmolList<Object> states = listAt(deepBranch, 4);
+        int ns = states.size();
+        if (ns > stateCount)
+          stateCount= ns;
+        for (int j = 0; j < ns; j++) {
+          JmolList<Object> state = listAt(states, j);
+          JmolList<Object> idxToAtm = listAt(state, 3);
+          if (idxToAtm == null)
+            System.out.println("idxToAtm error " + branchName + " for state " + j);
+          else
             n += idxToAtm.size();
-          }
         }
       }
     }
+    if (stateCount > 1)
+      Logger.info(stateCount + " PyMOL states");
     return n;
   }
 
@@ -489,7 +509,6 @@ public class PyMOLReader extends PdbReader {
 
   private String branchName;
   private String branchNameID;
-  private int branchID;
 
   private BS bsModelAtoms = BS.newN(1000);
   private float nonBondedSize;
@@ -505,14 +524,14 @@ public class PyMOLReader extends PdbReader {
   private Hashtable<String, PyMOLGroup> groups;
   private boolean haveMeasurements;
 
-  private void processBranch(JmolList<Object> branch) {
+  private void processBranch(JmolList<Object> branch, boolean moleculeOnly, int state) {
     int type = getBranchType(branch);
-    if (!checkBranch(branch))//, type, false))
+    if ((type == BRANCH_MOLECULE) != moleculeOnly || !checkBranch(branch))
       return;
     Logger.info("PyMOL model " + (nModels + 1) + " Branch " + branchName
         + (isHidden ? " (hidden)" : " (visible)"));
     JmolList<Object> deepBranch = listAt(branch, 5);
-    branchNameID = fixName(branchName + "_" + (++branchID));
+    branchNameID = fixName(branchName);
     branchIDs.put(branchName, branchNameID);
     String msg = null;
     JmolList<Object> branchInfo = listAt(deepBranch, 0);
@@ -528,7 +547,7 @@ public class PyMOLReader extends PdbReader {
       selections.addLast(branch);
       break;
     case BRANCH_MOLECULE:
-      bsAtoms = processMolecule(deepBranch);
+      bsAtoms = processMolecule(deepBranch, state);
       break;
     case BRANCH_MEASURE:
       processMeasure(deepBranch);
@@ -645,7 +664,7 @@ public class PyMOLReader extends PdbReader {
   private void processSelections() {
     for (int i = selections.size(); --i >= 0;) {
       JmolList<Object> branch = selections.get(i);
-      checkBranch(branch);//, BRANCH_SELECTION, false);
+      checkBranch(branch);
       processBranchSelection(listAt(branch, 5));
     }
   }
@@ -771,123 +790,108 @@ public class PyMOLReader extends PdbReader {
 
   }
 
-  private BS processMolecule(JmolList<Object> deepBranch) {
-    if (isMovie) {
-    } else {
-      processCryst(listAt(deepBranch, 10));
-    }
+  private BS processMolecule(JmolList<Object> deepBranch, int iState) {
     atomCount = atomCount0 = atomSetCollection.getAtomCount();
     int nAtoms = intAt(deepBranch, 3);
     if (nAtoms == 0)
       return null;
     atomMap = new int[nAtoms];
     htAtomMap.put(branchName, atomMap);
-    JmolList<Object> states = listAt(deepBranch, 4);
+    if (iState == 0) {
+      if (!isMovie)
+        processCryst(listAt(deepBranch, 10));
+    }
+
     JmolList<Bond> bonds = processBonds(listAt(deepBranch, 6));
+    JmolList<Object> states = listAt(deepBranch, 4);
     pymolAtoms = getBranchAtoms(deepBranch);
-    int ns = states.size();
-    if (ns > 1)
-      Logger.info(ns + " PyMOL states");
-    if (ns == 1)
-      allStates = true;
-    BS bsState = null;
-    BS bsAtoms = BS.newN(atomCount0 + pymolAtoms.size());
-    Logger.info("PyMOL molecule " + branchName);
-    addName(branchName, bsAtoms);
+    BS bsAtoms = getAtomBS(branchName);
+    if (bsAtoms == null) {
+      bsAtoms = BS.newN(atomCount0 + pymolAtoms.size());
+      Logger.info("PyMOL molecule " + branchName);
+      addName(branchName, bsAtoms);
+    }
     for (int i = 0; i < REP_JMOL_MAX; i++)
       reps[i] = BS.newN(1000);
     if (isMovie) {
-      // we create only one model and put all atoms into it.
-      if (nModels == 0)
-        model(++nModels);
-      int n = pymolAtoms.size();
-      // only pull in referenced atoms 
-      // (could revise this if necessary and pull in all atoms)
-      bsState = BS.newN(n);
-      if (lstTrajectories.size() == 0) {
-        for (int i = ns; --i >= 0;) {
-          lstTrajectories.addLast(new P3[totalAtomCount]);
-          lstStates.addLast(new BS());
-        }
-      }
-      for (int i = ns; --i >= 0;) {
-        JmolList<Object> state = listAt(states, i);
-        JmolList<Object> idxToAtm = listAt(state, 3);
-        if (idxToAtm == null) {
-          Logger.error("movie error: no idxToAtm");
-          continue;
-        }
-        for (int j = idxToAtm.size(); --j >= 0;)
-          bsState.set(intAt(idxToAtm, j));
-      }
-      for (int i = bsState.nextSetBit(0); i >= 0; i = bsState.nextSetBit(i + 1))
-        if (!addAtom(pymolAtoms, i, -1, null, null, bsAtoms))
-          bsState.clear(i);
-      for (int i = 0; i < ns; i++) {
-        JmolList<Object> state = listAt(states, i);
-        JmolList<Object> coords = listAt(state, 2);
-        JmolList<Object> idxToAtm = listAt(state, 3);
-        if (idxToAtm == null)
-          continue;
-        P3[] trajectory = lstTrajectories.get(i);
-        BS bs = lstStates.get(i);
-        for (int j = idxToAtm.size(); --j >= 0;) {
-          int apt = intAt(idxToAtm, j);
-          if (!bsState.get(apt))
-            continue;
-          int ia = atomMap[apt];
-          bs.set(ia);
-          int cpt = j * 3;
-          float x = floatAt(coords, cpt);
-          float y = floatAt(coords, ++cpt);
-          float z = floatAt(coords, ++cpt);
-          trajectory[ia] = P3.new3(x, y, z);
-          BoxInfo.addPointXYZ(x, y, z, xyzMin, xyzMax, 0);
-        }
-      }
+      processMovie(deepBranch, bsAtoms);
+    } else {
+      JmolList<Object> state = listAt(states, iState);
+      JmolList<Object> idxToAtm = listAt(state, 3);
+      if (idxToAtm == null)
+        return bsAtoms;
+      int n = idxToAtm.size();
+      if (n == 0)
+        return bsAtoms;
+      //String name = stringAt(state, 5).trim();
+      JmolList<Object> coords = listAt(state, 2);
+      JmolList<Object> labelPositions = listAt(state, 8);
+      for (int idx = 0; idx < n; idx++)
+        addAtom(pymolAtoms, intAt(idxToAtm, idx), idx, coords, labelPositions,
+            bsAtoms);
       processStructures();
       setBranchShapes();
-    } else {
-      allStates |= (ns > 1); // testing
-      if (ns > 1)
-        System.out.println("ns = " + ns + " but no movie state=" + getFloatSetting(PyMOL.state));
-      ns = 1; // I guess I don't understand what the second set is for in each of these.
-      lstStates.clear();
-      for (int i = 0; i < ns; i++) {
-        JmolList<Object> state = listAt(states, i);
-        JmolList<Object> coords = listAt(state, 2);
-        JmolList<Object> idxToAtm = listAt(state, 3);
-        JmolList<Object> labelPositions = listAt(state, 8);
-        int n = idxToAtm.size();
-        String name = stringAt(state, 5).trim();
-        if (n == 0)
-          continue;
-        if (name.length() == 0) {
-          currentFrame = pymolFrame;
-          if (lstStates.size() < ns)
-            for (int j = lstStates.size(); j < ns; j++)
-              lstStates.addLast(new BS());
-          bsState = lstStates.get(i);
-        } else {
-          bsAtoms = BS.newN(atomCount0 + pymolAtoms.size());
-          addName(name, bsAtoms);
-        }
-        model(++nModels);
-        for (int idx = 0; idx < n; idx++)
-          addAtom(pymolAtoms, intAt(idxToAtm, idx), idx, coords,
-              labelPositions, bsState);
-        if (bsState != null) {
-          bsAtoms.or(bsState);
-        }
-        processStructures();
-        setBranchShapes();
-      }
     }
     setBonds(bonds);
 
     Logger.info("reading " + (atomCount - atomCount0) + " atoms");
     dumpBranch();
     return bsAtoms;
+  }
+
+  private void processMovie(JmolList<Object> deepBranch, BS bsAtoms) {
+    JmolList<Object> states = listAt(deepBranch, 4);
+    int ns = states.size();
+    // we create only one model and put all atoms into it.
+    int n = pymolAtoms.size();
+    // only pull in referenced atoms 
+    // (could revise this if necessary and pull in all atoms)
+    BS bsState = BS.newN(n);
+    if (lstTrajectories.size() == 0) {
+      for (int i = ns; --i >= 0;) {
+        lstTrajectories.addLast(new P3[totalAtomCount]);
+        lstStates.addLast(new BS());
+      }
+    }
+    for (int i = ns; --i >= 0;) {
+      JmolList<Object> state = listAt(states, i);
+      JmolList<Object> idxToAtm = listAt(state, 3);
+      if (idxToAtm == null) {
+        Logger.error("movie error: no idxToAtm");
+        continue;
+      }
+      for (int j = idxToAtm.size(); --j >= 0;)
+        bsState.set(intAt(idxToAtm, j));
+    }
+    for (int i = bsState.nextSetBit(0); i >= 0; i = bsState.nextSetBit(i + 1))
+      if (!addAtom(pymolAtoms, i, -1, null, null, bsAtoms))
+        bsState.clear(i);
+    for (int i = 0; i < stateCount; i++) {
+      JmolList<Object> state = listAt(states, i);
+      if (state == null)
+        break;
+      JmolList<Object> coords = listAt(state, 2);
+      JmolList<Object> idxToAtm = listAt(state, 3);
+      if (idxToAtm == null)
+        continue;
+      P3[] trajectory = lstTrajectories.get(i);
+      BS bs = lstStates.get(i);
+      for (int j = idxToAtm.size(); --j >= 0;) {
+        int apt = intAt(idxToAtm, j);
+        if (!bsState.get(apt))
+          continue;
+        int ia = atomMap[apt];
+        bs.set(ia);
+        int cpt = j * 3;
+        float x = floatAt(coords, cpt);
+        float y = floatAt(coords, ++cpt);
+        float z = floatAt(coords, ++cpt);
+        trajectory[ia] = P3.new3(x, y, z);
+        BoxInfo.addPointXYZ(x, y, z, xyzMin, xyzMax, 0);
+      }
+    }
+    processStructures();
+    setBranchShapes();
   }
 
   private void setBonds(JmolList<Bond> bonds) {
@@ -978,6 +982,11 @@ public class PyMOLReader extends PdbReader {
 
   private void addName(String name, BS bs) {
     htNames.put("__" + fixName(name), bs);
+  }
+  
+  @SuppressWarnings("unused")
+  private BS getAtomBS(String name) {
+    return (BS) htNames.get("__" + fixName(name));
   }
   
 
@@ -1227,8 +1236,7 @@ public class PyMOLReader extends PdbReader {
       // Penta_vs_mutants calcium
       float myNonBondedSize = getUniqueFloat(atom.uniqueID,
           PyMOL.nonbonded_size, nonBondedSize);
-      // flag negative for a different bitset map, not really necessary
-      rad = -atom.radius * myNonBondedSize;
+      rad = atom.radius * myNonBondedSize;
     }
     if (!usePymolRadii)
       atom.radius = Float.NaN; // sorry, can't use these for surfaces
@@ -1437,7 +1445,6 @@ public class PyMOLReader extends PdbReader {
 
   private JmolList<Bond> processBonds(JmolList<Object> bonds) {
     JmolList<Bond> bondList = new JmolList<Bond>();
-    bsBondedPyMOL.clear(totalAtomCount); // sets length
     int color = (int) getFloatSetting(PyMOL.stick_color);
     float radius = getFloatSetting(PyMOL.stick_radius) / 2;
     float translucency = getFloatSetting(PyMOL.stick_transparency);
@@ -1450,8 +1457,6 @@ public class PyMOLReader extends PdbReader {
       // TODO: hydrogen bonds?
       int ia = intAt(b, 0);
       int ib = intAt(b, 1);
-      bsBondedPyMOL.set(ia);
-      bsBondedPyMOL.set(ib);
       Bond bond = new Bond(ia, ib, order);
       bondList.addLast(bond);
       int c;
@@ -1684,23 +1689,9 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void setSpacefill() {
-    for (int i = bsBondedPyMOL.nextSetBit(0); i >= 0; i = bsBondedPyMOL
-        .nextSetBit(i + 1)) {
-      if (i >= atomMap.length)
-        break;
-      int pt = atomMap[i];
-      if (pt >= 0)
-        bsBondedJmol.set(pt);
-    }
     for (Map.Entry<Float, BS> e : htSpacefill.entrySet()) {
       float r = e.getKey().floatValue();
       BS bs = e.getValue();
-      if (r < 0) {
-        bs.andNot(bsBondedJmol);
-        r = -r;
-        if (bs.isEmpty())
-          continue;
-      }
       JmolObject ss = addJmolObject(JC.SHAPE_BALLS, bs, null);
       ss.rd = new RadiusData(null, r, RadiusData.EnumType.ABSOLUTE,
           EnumVdw.AUTO);
@@ -1978,7 +1969,8 @@ public class PyMOLReader extends PdbReader {
         modelSet.modelCount));
     if (baseModelIndex == 0)
       viewer.setBooleanProperty("_ismovie", true);
-    if (frameObj != null)
+    if (frameObj != null) {
       frameObj.finalizeObject(modelSet, null);
+    }
   }
 }

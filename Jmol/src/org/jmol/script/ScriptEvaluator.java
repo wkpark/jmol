@@ -18581,6 +18581,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         i = iToken;
         break;
+      case T.atomindex:
+        propertyName = "atomIndex";
+        propertyValue = Integer.valueOf(intParameter(++i));
+        break;
       case T.link:
         propertyName = "link";
         sbCommand.append(" link");

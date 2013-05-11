@@ -1873,7 +1873,6 @@ abstract public class ModelCollection extends BondCollection {
   protected BS getAtomBitsMaybeDeleted(int tokType, Object specInfo) {
     int[] info;
     BS bs;
-    P3 pt;
     switch (tokType) {
     default:
       return getAtomBitsMDa(tokType, specInfo);
@@ -1894,12 +1893,11 @@ abstract public class ModelCollection extends BondCollection {
       // select cell=555 (an absolute quantity)
       bs = new BS();
       info = (int[]) specInfo;
-      P3 ptcell = P3.new3(info[0] / 1000f, info[1] / 1000f,
+      ptTemp1.set(info[0] / 1000f, info[1] / 1000f,
           info[2] / 1000f);
-      pt = new P3();
       boolean isAbsolute = !viewer.getBoolean(T.fractionalrelative);
       for (int i = atomCount; --i >= 0;)
-        if (isInLatticeCell(i, ptcell, pt, isAbsolute))
+        if (isInLatticeCell(i, ptTemp1, ptTemp2, isAbsolute))
           bs.set(i);
       return bs;
     case T.molecule:
@@ -1958,10 +1956,9 @@ abstract public class ModelCollection extends BondCollection {
       SymmetryInterface unitcell = viewer.getCurrentUnitCell();
       if (unitcell == null)
         return bs;
-      P3 cell = P3.new3(1, 1, 1);
-      pt = new P3();
+      ptTemp1.set(1, 1, 1);
       for (int i = atomCount; --i >= 0;)
-        if (isInLatticeCell(i, cell, pt, false)) 
+        if (isInLatticeCell(i, ptTemp1, ptTemp2, false)) 
           bs.set(i);
       return bs;
     }
@@ -2046,6 +2043,8 @@ abstract public class ModelCollection extends BondCollection {
     return bsResult;
   }
 
+  private final P3 ptTemp1 = new P3();
+  private final P3 ptTemp2 = new P3();
   public BS getAtomsWithin(float distance, P3 coord, BS bsResult,
                                int modelIndex) {
 
@@ -2054,8 +2053,6 @@ abstract public class ModelCollection extends BondCollection {
 
     if (distance < 0) { // check all unitCell distances
       distance = -distance;
-      final P3 ptTemp1 = new P3();
-      final P3 ptTemp2 = new P3();
       for (int i = atomCount; --i >= 0;) {
         Atom atom = atoms[i];
         if (modelIndex >= 0 && atoms[i].modelIndex != modelIndex)
@@ -3380,5 +3377,4 @@ abstract public class ModelCollection extends BondCollection {
     return info;
   }
 
-  
 }

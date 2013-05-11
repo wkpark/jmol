@@ -539,6 +539,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
     } else if ("atomIndex" == propertyName) {
       atomIndex = ((Integer) value).intValue();
+      if (thisMesh != null)
+        thisMesh.atomIndex = atomIndex;
     } else if ("center" == propertyName) {
       center.setT((P3) value);
     } else if ("colorRGB" == propertyName) {
@@ -914,6 +916,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     cmd = TextFormat.trim(cmd, ";");
     if (imesh.linkedMesh != null)
       cmd += " LINK"; // for lcaoCartoon state
+    if (myType == "lcaoCartoon" && imesh.atomIndex >= 0)
+      cmd += " ATOMINDEX " + imesh.atomIndex;
     appendCmd(sb, cmd);
     String id = myType + " ID " + Escape.eS(imesh.thisID);
     if (imesh.jvxlData.thisSet >= 0)

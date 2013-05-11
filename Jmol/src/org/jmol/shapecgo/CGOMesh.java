@@ -152,8 +152,8 @@ public class CGOMesh extends DrawMesh {
           useColix = false;
           break;
         case CGOMesh.SAUSAGE:
-          addColix(i + 6);
-          addColix(i + 9);
+          addColix(i + 7);
+          addColix(i + 10);
           break;
         case CGOMesh.TRICOLOR_TRIANGLE:
           addNormix(i + 9);

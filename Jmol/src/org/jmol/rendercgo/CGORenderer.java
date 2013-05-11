@@ -217,9 +217,11 @@ public class CGORenderer extends DrawRenderer {
       case CGOMesh.SAUSAGE:
         getPoint(i, pt0, pt0i);
         getPoint(i + 3, pt1, pt1i);
+        width = cgoMesh.getFloat(i + 7);
         getColix(true);
         getColix(false); // for now -- ignore second color
         drawLine(1, 2, false, pt0, pt1, pt0i, pt1i);
+        width = 0;
         break;
       case CGOMesh.TRICOLOR_TRIANGLE:
         getPoint(i, pt0, pt0i);

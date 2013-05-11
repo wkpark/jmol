@@ -166,7 +166,6 @@ import java.util.Map;
     // Assign the coordinates and the model index for this set of atoms
     if (atoms[models[modelIndex].firstAtomIndex].modelIndex == modelIndex)
       return;
-    //System.out.println("sett " + modelIndex);
     int baseModelIndex = models[modelIndex].trajectoryBaseIndex;
     models[baseModelIndex].setSelectedTrajectory(modelIndex);
     setAtomPositions(baseModelIndex, modelIndex, trajectorySteps.get(modelIndex),
@@ -189,7 +188,6 @@ import java.util.Map;
       setTrajectory(m2);
       return;
     }
-    //System.out.println("morphing " + m1 + " " + m2 + " " + f);
     int baseModelIndex = models[m1].trajectoryBaseIndex;
     models[baseModelIndex].setSelectedTrajectory(m1);
     setAtomPositions(baseModelIndex, m1, trajectorySteps.get(m1),
@@ -217,7 +215,6 @@ import java.util.Map;
                                 P3[] t1, P3[] t2,
                                 float f, V3[] vibs,
                                 boolean isFractional) {
-    //System.out.println("setAtomPos " + f);
     BS bs = new BS();
     V3 vib = new V3();
     int iFirst = models[baseModelIndex].firstAtomIndex;
@@ -886,58 +883,6 @@ import java.util.Map;
   }
 
   
-  /*
- 
- static {
-
-    Point3f pt = Point3f.new3(-1, 2, 3);
-    Point3f center = Point3f.new3(.2f,.4f,.5f);
-    Matrix3f matTemp = (new Quaternion(.2f, .3f, .4f, .5f)).getMatrix();
-    
-    Matrix4f mat4 = new Matrix4f();
-    Matrix4f mat4t = new Matrix4f();
-    Vector3f vTemp = new Vector3f();
-
-    vTemp.set(center);
-    mat4.setIdentity();
-    mat4.setTranslation(vTemp);
-    mat4t.set(matTemp);
-    mat4.mul(mat4t);
-    mat4t.setIdentity();
-    vTemp.scale(-1);
-    mat4t.setTranslation(vTemp);
-    mat4.mul(mat4t);
-
-    Point3f pt1 = Point3f.new3(pt);
-    System.out.println(pt);    
-    pt1.sub(center);
-    matTemp.transform(pt1);
-    pt1.add(center);
-    System.out.println(pt1);
-    //mat4.transform(pt);
-
-    vTemp.set(2,3,4);
-    pt1.set(pt);
-    mat4.transform(pt1);
-    pt1.add(vTemp);
-    System.out.println(pt1);
-    
-    
-    mat4t.setIdentity();
-    mat4t.setTranslation(vTemp);
-    mat4.mul(mat4t, mat4);
-    pt1.set(pt);
-    mat4.transform(pt1);
-    System.out.println(pt1);
-    
-    
-    
-    
-    // mat4 == (1) rot, then (2) trans
-    
-    System.out.println("HHH MODELSET");
-  }
-*/
   public void recalculatePositionDependentQuantities(BS bs, Matrix4f mat) {
     if (getHaveStraightness())
       calculateStraightness();

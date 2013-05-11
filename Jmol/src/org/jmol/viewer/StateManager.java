@@ -1275,7 +1275,6 @@ public class StateManager {
     SV setUserVariable(String key, SV var) {
       if (var == null) 
         return null;
-//      System.out.println("stateman setting user variable " + key );
       key = key.toLowerCase();
       htUserVariables.put(key, var.setName(key).setGlobal());
       return var;

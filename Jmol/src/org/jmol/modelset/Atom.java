@@ -406,7 +406,6 @@ final public class Atom extends Point3fi implements JmolNode {
   }
   
   public int getFormalCharge() {
-    //System.out.println("Atom " + this + " " + this.formalChargeAndFlags);
     return formalChargeAndFlags >> 2;
   }
 
@@ -1004,7 +1003,7 @@ final public class Atom extends Point3fi implements JmolNode {
   
   /**
    * determine if an atom or its PDB group is visible
-   * @param flags TODO
+   * @param flags
    * @return true if the atom is in the "select visible" set
    */
   public boolean isVisible(int flags) {

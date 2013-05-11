@@ -495,18 +495,33 @@ abstract public class AtomCollection {
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;
-    atoms[atomIndex].x = x;
-    atoms[atomIndex].y = y;
-    atoms[atomIndex].z = z;
+    Atom a = atoms[atomIndex];
+    a.set(x, y, z);
+    fixTrajectory(a);
     taintAtom(atomIndex, TAINT_COORD);
+  }
+
+  private void fixTrajectory(Atom a) {
+    int m = a.modelIndex;
+    ModelCollection mc = (ModelCollection) this;
+    boolean isTraj = mc.isTrajectory(m);
+    if (!isTraj)
+      return;
+    boolean isFrac = mc.unitCells != null && mc.unitCells[m].getCoordinatesAreFractional();
+    P3 pt = mc.trajectorySteps.get(m)[a.index - mc.models[m].firstAtomIndex];
+    pt.set(a.x, a.y, a.z);
+    if (isFrac)
+      mc.unitCells[m].toFractional(pt, true);
   }
 
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;
-    atoms[atomIndex].x += x;
-    atoms[atomIndex].y += y;
-    atoms[atomIndex].z += z;
+    Atom a = atoms[atomIndex];
+    a.x += x;
+    a.y += y;
+    a.z += z;
+    fixTrajectory(a);
     taintAtom(atomIndex, TAINT_COORD);
   }
 
@@ -794,10 +809,11 @@ abstract public class AtomCollection {
 
   // loading data
   
-  public void setAtomData(int type, String name, String dataString, boolean isDefault) {
+  public void setAtomData(int type, String name, String dataString,
+                          boolean isDefault) {
     float[] fData = null;
     BS bs = null;
-    switch (type) {
+    switch(type) {
     case TAINT_COORD:
       loadCoordinates(dataString, false, !isDefault);
       return;
@@ -871,7 +887,7 @@ abstract public class AtomCollection {
         
     } catch (Exception e) {
       Logger.error("AtomCollection.loadData error: " + e);
-    }    
+    }  
   }
   
   private void loadCoordinates(String data, boolean isVibrationVectors, boolean doTaint) {
@@ -1350,7 +1366,7 @@ abstract public class AtomCollection {
   }
 
   private int[] aaRet;
-
+  
   int getImplicitHydrogenCount(Atom atom) {
     int targetValence = atom.getTargetValence();
     int charge = atom.getFormalCharge();
@@ -1731,8 +1747,6 @@ abstract public class AtomCollection {
     x.normalize();
     z.normalize();
 
-    //  System.out.println(atom.getInfo() + " nAttached=" + nAttached + " "
-    //      + hybridization);
     return hybridization;
   }
   

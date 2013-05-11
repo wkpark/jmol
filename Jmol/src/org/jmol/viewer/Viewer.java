@@ -3712,7 +3712,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean isMovie() {
-    return animationManager.isMovie();
+    return false;//animationManager.isMovie();
   }
 
   public int getFrameCount() {

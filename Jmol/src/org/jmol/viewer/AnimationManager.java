@@ -29,7 +29,7 @@ import java.util.Map;
 import org.jmol.thread.AnimationThread;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
-import org.jmol.util.JmolList;
+//import org.jmol.util.JmolList;
 
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.modelset.ModelSet;
@@ -52,7 +52,7 @@ public class AnimationManager {
   int animationDirection = 1;
   int currentDirection = 1;
   public int currentModelIndex;
-  private int currentFrameIndex;
+  //private int currentFrameIndex;
   int firstFrameIndex;
   int lastFrameIndex;
   int frameStep;
@@ -72,7 +72,7 @@ public class AnimationManager {
   private int intAnimThread;
   float lastFrameDelay = 1;
 
-  private Map<String, Object> movie;
+  //private Map<String, Object> movie;
 
   void clear() {
     setMovie(null);
@@ -94,39 +94,38 @@ public class AnimationManager {
    * @param frameIndex 
    * @param isAll  
    */
-  @SuppressWarnings("unchecked")
+  //@SuppressWarnings("unchecked")
   private void setCurrentFrame(int frameIndex, boolean isAll) {
     //System.out.println("currentframe " + frameIndex);
-    if (movie == null) {
+//    if (movie == null) {
       setCurrentModelIndex(frameIndex, true);
-      return;
-    }
-    if (frameIndex == -1)
-      frameIndex = ((Integer) movie.get("currentFrame")).intValue();
-    currentFrameIndex = frameIndex;
-    int iState = getMovieState(frameIndex);
-    if (iState < 0)
-      return;
-    setModelIndex(iState, true);
-    JmolList<BS> states = (JmolList<BS>) movie.get("states");
-    if (states == null || iState < 0 || iState >= states.size())
-      return;
-    BS bs = states.get(iState);
-    if (bsDisplay != null) {
-      bs = BSUtil.copy(bs);
-      bs.and(bsDisplay);
-    }
-    viewer.displayAtoms(bs, true, false, null, true);
-    //setViewer(true);
+//      return;
+//    }
+//    if (frameIndex == -1)
+//      frameIndex = ((Integer) movie.get("currentFrame")).intValue();
+//    currentFrameIndex = frameIndex;
+//    int iState = getMovieState(frameIndex);
+//    if (iState < 0)
+//      return;
+//    setModelIndex(iState, true);
+//    JmolList<BS> states = (JmolList<BS>) movie.get("states");
+//    if (states == null || iState < 0 || iState >= states.size())
+//      return;
+//    BS bs = states.get(iState);
+//    if (bsDisplay != null) {
+//      bs = BSUtil.copy(bs);
+//      bs.and(bsDisplay);
+//    }
+//    viewer.displayAtoms(bs, true, false, null, true);
   }
 
-  @SuppressWarnings("unchecked")
-  private int getMovieState(int frameIndex) {
-    JmolList<Object> frames = (JmolList<Object>) movie.get("frames");
-    //System.out.println(frames);
-    return (frames == null || frameIndex >= frames.size() ? -1
-        : ((Integer) frames.get(frameIndex)).intValue());
-  }
+//  @SuppressWarnings("unchecked")
+//  private int getMovieState(int frameIndex) {
+//    JmolList<Object> frames = (JmolList<Object>) movie.get("frames");
+//    //System.out.println(frames);
+//    return (frames == null || frameIndex >= frames.size() ? -1
+//        : ((Integer) frames.get(frameIndex)).intValue());
+//  }
 
   public void morph(float frame) {
     System.out.println("morph " + frame);
@@ -143,16 +142,16 @@ public class AnimationManager {
       return;
     }
     int m1;
-    if (movie == null) {
+//    if (movie == null) {
       setCurrentModelIndex(m, true);
       m1 = m + 1;
       currentMorphFrame = m + f;
-    } else {
-      setCurrentFrame(m, false);
-      currentMorphFrame = m + f;
-      m = getMovieState(m);
-      m1 = getMovieState(getFrameStep(animationDirection) + getCurrentFrame());
-    }
+//    } else {
+//      setCurrentFrame(m, false);
+//      currentMorphFrame = m + f;
+//      m = getMovieState(m);
+//      m1 = getMovieState(getFrameStep(animationDirection) + getCurrentFrame());
+//    }
     if (m1 == m || m1 < 0 || m < 0)
       return;
     viewer.modelSet.morphTrajectories(m, m1, f);
@@ -161,11 +160,11 @@ public class AnimationManager {
 
 
   void setCurrentModelIndex(int modelIndex, boolean clearBackgroundModel) {
-    if (movie != null) {
-      setFrame(modelIndex);
-      return;
-    }
-    currentFrameIndex = 0;
+    //if (movie != null) {
+    //  setFrame(modelIndex);
+    //  return;
+    //}
+    //currentFrameIndex = 0;
     setModelIndex(modelIndex, clearBackgroundModel);
   }
 
@@ -227,7 +226,7 @@ public class AnimationManager {
   }
 
   private boolean isJmolDataFrameForModel(int i) {
-    return movie == null && viewer.isJmolDataFrameForModel(i);
+    return viewer.isJmolDataFrameForModel(i);
   }
 
   void setBackgroundModelIndex(int modelIndex) {
@@ -243,10 +242,6 @@ public class AnimationManager {
   
   private void setFrameRangeVisible() {
     bsVisibleFrames.clearAll();
-    if (movie != null) {
-      bsVisibleFrames.setBits(0, viewer.getModelCount());
-      return;
-    }
     if (backgroundModelIndex >= 0)
       bsVisibleFrames.set(backgroundModelIndex);
     if (currentModelIndex >= 0) {
@@ -284,7 +279,7 @@ public class AnimationManager {
   }
 
   int getFrameCount() {
-    return (movie == null ? viewer.getModelCount() : ((Integer) movie.get("frameCount")).intValue());
+    return viewer.getModelCount();
   }
 
   void setAnimationDirection(int animationDirection) {
@@ -466,25 +461,21 @@ public class AnimationManager {
   }
 
   public void setMovie(Map<String, Object> info) {
-    movie = info;
-    viewer.setBooleanProperty("_ismovie", movie != null);
-    if (movie == null) {
+//    movie = info;
+//    viewer.setBooleanProperty("_ismovie", movie != null);
+//    if (movie == null) {
       bsDisplay = null;
       currentMorphFrame = morphCount = 0;
-    } else {
-      // this next is important. Without it, not all the atoms get 
-      // assigned coordinates, and the zoom ends up wrong, and the
-      // movie start frame is not shown
-      setFrame(-1);
-    }
+//    } else {
+//      // this next is important. Without it, not all the atoms get 
+//      // assigned coordinates, and the zoom ends up wrong, and the
+//      // movie start frame is not shown
+//      setFrame(-1);
+//    }
   }
 
   public int getCurrentFrame() {
-    return (movie == null ? currentModelIndex : currentFrameIndex);
-  }
-
-  public boolean isMovie() {
-    return (movie != null);
+    return currentModelIndex;
   }
 
   public boolean currentIsLast() {
@@ -505,7 +496,7 @@ public class AnimationManager {
       i = lastFrameIndex;
       break;
     }
-    return (movie == null ? viewer.getModelNumberDotted(i) : "" + (i + 1));
+    return viewer.getModelNumberDotted(i);
   }
 
   public void setDisplay(BS bs) {

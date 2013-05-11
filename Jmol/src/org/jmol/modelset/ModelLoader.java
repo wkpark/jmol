@@ -1314,7 +1314,7 @@ public final class ModelLoader {
 
     // finalize all structures
 
-    if (!isPDB) {
+    if (!isPDB || isPyMOLsession) {
       modelSet.freezeModels();
       return;
     }

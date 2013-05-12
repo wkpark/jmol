@@ -97,29 +97,36 @@ class JmolObject {
    * the bits to skip the base atom index.
    * 
    * @param modelOffset
-   * @param atomOffset 
+   * @param atomOffset
    */
   @SuppressWarnings("unchecked")
   void offset(int modelOffset, int atomOffset) {
-    if (id == T.frame) {
-      int i = ((Integer) info).intValue();
-      if (i > 0)
-        info = Integer.valueOf(modelOffset + i - 1);
-      return;
+    if (modelOffset > 0) {
+      if (id == T.frame) {
+        int i = ((Integer) info).intValue();
+        if (i >= 0)
+          info = Integer.valueOf(modelOffset + i);
+        return;
+      }
+      if (id == T.movie) {
+        Map<String, Object> movie = (Map<String, Object>) info;
+        JmolList<Object> frames = (JmolList<Object>) movie.get("frames");
+        if (frames != null) {
+          for (int i = frames.size(); --i >= 0;)
+            frames.set(i, Integer.valueOf((int) PyMOLReader.floatAt(frames, i)
+                + modelOffset));
+          int i = ((Integer) movie.get("currentFrame")).intValue();
+          if (i >= 0)
+            movie.put("currentFrame", Integer.valueOf(modelOffset + i));
+        }
+        return;
+      }
     }
     if (atomOffset <= 0)
       return;
-    if (id == T.movie) {
-      Map<String, Object> movie = (Map<String, Object>) info;
-      movie.put("baseModel", Integer.valueOf(modelOffset));
-      JmolList<BS> aStates = (JmolList<BS>)movie.get("states");
-      for (int i = aStates.size(); --i >= 0;)
-        BSUtil.offset(aStates.get(i), 0, atomOffset);
-      return;
-    }
     if (id == T.define) {
       Collection<Object> map = ((Map<String, Object>) info).values();
-      for (Object o: map)
+      for (Object o : map)
         BSUtil.offset((BS) o, 0, atomOffset);
       return;
     }

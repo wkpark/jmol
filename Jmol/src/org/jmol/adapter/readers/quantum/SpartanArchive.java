@@ -100,7 +100,7 @@ class SpartanArchive {
       readLine();
     }
     if (haveMOData)
-      r.setMOData(r.moData);
+      r.finalizeMOData(r.moData);
     return atomCount;
   }
 

@@ -424,7 +424,7 @@ Orbital energies (a.u.):
     }
     addMOData(nThisLine, data, mos);
     moData.put("mos", orbitals);
-    setMOData(moData);
+    finalizeMOData(moData);
   }
 
   private void readFrequencies() throws Exception {

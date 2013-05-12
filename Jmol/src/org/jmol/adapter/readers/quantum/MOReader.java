@@ -547,7 +547,7 @@ abstract public class MOReader extends BasisFunctionReader {
       moData.put("shells", shells);
       moData.put("gaussians", gaussians);
       moData.put("mos", orbitals);
-      setMOData(lastMoData = moData);
+      finalizeMOData(lastMoData = moData);
     }
     if (clearOrbitals) {
       orbitals = new  JmolList<Map<String, Object>>();

@@ -363,7 +363,7 @@ public class JaguarReader extends MOReader {
       }
     }
     moData.put("mos", orbitals);
-    setMOData(moData);
+    finalizeMOData(moData);
   }
 
   /* A block without symmetry, looks like:

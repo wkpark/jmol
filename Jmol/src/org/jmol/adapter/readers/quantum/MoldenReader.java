@@ -58,6 +58,8 @@ public class MoldenReader extends MopacSlaterReader {
     if (line.indexOf("[ATOMS]") == 0) {
       readAtoms();
       modelAtomCount = atomSetCollection.getFirstAtomSetAtomCount();
+      if (atomSetCollection.getAtomSetCount() == 1 && moData != null)
+        finalizeMOData(moData);
       return false;
     }
     if (line.indexOf("[GTO]") == 0)
@@ -269,7 +271,7 @@ public class MoldenReader extends MopacSlaterReader {
     // TODO no check here for G orbitals
     
     String[] tokens = getMoTokens(line);
-    while (tokens != null && tokens[0].indexOf('[') < 0) {
+    while (tokens != null && tokens.length > 0 && tokens[0].indexOf('[') < 0) {
       Map<String, Object> mo = new Hashtable<String, Object>();
       JmolList<String> data = new  JmolList<String>();
       float energy = Float.NaN;
@@ -288,7 +290,7 @@ public class MoldenReader extends MopacSlaterReader {
         }
         tokens = getMoTokens(null);
       }
-      while (tokens != null && parseIntStr(tokens[0]) != Integer.MIN_VALUE) {
+      while (tokens != null && tokens.length > 0 && parseIntStr(tokens[0]) != Integer.MIN_VALUE) {
         if (tokens.length != 2)
           throw new Exception("invalid MO coefficient specification");
         // tokens[0] is the function number, and tokens[1] is the coefficient
@@ -433,7 +435,7 @@ max-force
     if (desiredModelNumber == 0 || desiredModelNumber == nGeom)
       desiredModelNumber = nGeom; 
     else
-      setMOData(null);
+      finalizeMOData(null);
     for (int i = 0; i < nGeom; i++) {
       readLines(2);
       if (doGetModel(++modelNumber, null)) {

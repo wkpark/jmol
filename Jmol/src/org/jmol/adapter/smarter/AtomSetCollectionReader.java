@@ -1036,7 +1036,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   @SuppressWarnings("unchecked")
-  public void setMOData(Map<String, Object> moData) {
+  public void finalizeMOData(Map<String, Object> moData) {
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     if (moData == null)
       return;

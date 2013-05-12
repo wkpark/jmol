@@ -123,7 +123,7 @@ abstract class SlaterReader extends BasisFunctionReader {
   protected final void setMOs(String units) {
     moData.put("mos", orbitals);
     moData.put("energyUnits", units);
-    setMOData(moData);
+    finalizeMOData(moData);
   }
 
   /**

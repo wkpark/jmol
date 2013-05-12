@@ -106,6 +106,7 @@ public class PyMOLReader extends PdbReader {
   private Map<Integer, JmolList<Object>> localSettings;
   private int atomCount0;
   private int atomCount;
+  private int stateCount = 0;
   private int strucNo;
   private boolean isHidden;
   private JmolList<Object> pymolAtoms;
@@ -335,7 +336,7 @@ public class PyMOLReader extends PdbReader {
         processBranch(listAt(names, i), true, j);
     }
     for (int i = 1; i < names.size(); i++)
-      processBranch(listAt(names, i), false, -1);
+      processBranch(listAt(names, i), false, 0);
     //processSelections();
     processMeshes();
     if (isTrajectory) {
@@ -429,10 +430,11 @@ public class PyMOLReader extends PdbReader {
 
   private void setDefinitions() {
     addJmolObject(T.define, null, htNames);
-    appendLoadNote(viewer.getAtomDefs(htNames));
+    String s = viewer.getAtomDefs(htNames);
+    if (s.length() > 2)
+      s = s.substring(0, s.length() - 2);
+    appendLoadNote(s);
   }
-
-  int stateCount = 0;
 
   private int getTotalAtomCount(JmolList<Object> names) {
     int n = 0;
@@ -586,7 +588,7 @@ public class PyMOLReader extends PdbReader {
     Logger.info("PyMOL model " + (nModels + 1) + " Branch " + branchName
         + (isHidden ? " (hidden)" : " (visible)"));
     JmolList<Object> deepBranch = listAt(branch, 5);
-    branchNameID = fixName(branchName);
+    branchNameID = fixName(branchName + (moleculeOnly ? "_" + iState : ""));
     branchIDs.put(branchName, branchNameID);
     String msg = null;
     JmolList<Object> branchInfo = listAt(deepBranch, 0);
@@ -689,6 +691,7 @@ public class PyMOLReader extends PdbReader {
     JmolObject ms = addJmolObject(JC.SHAPE_CGO, null, data);
     ms.argb = PyMOL.getRGB(color);
     ms.translucency = getFloatSetting(PyMOL.cgo_transparency);
+    appendLoadNote("CGO " + fixName(branchName));
   }
 
   private void processGadget(JmolList<Object> deepBranch) {
@@ -894,62 +897,6 @@ public class PyMOLReader extends PdbReader {
     return bsAtoms;
   }
 
-  private void processMovie(JmolList<Object> deepBranch, BS bsAtoms) {
-    // OLD -- needs to be completely reworked.
-//    JmolList<Object> states = listAt(deepBranch, 4);
-//    int ns = states.size();
-//    // we create only one model and put all atoms into it.
-//    int n = pymolAtoms.size();
-//    // only pull in referenced atoms 
-//    // (could revise this if necessary and pull in all atoms)
-//    BS bsState = BS.newN(n);
-//    if (lstTrajectories.size() == 0) {
-//      for (int i = ns; --i >= 0;) {
-//        lstTrajectories.addLast(new P3[totalAtomCount]);
-//        //lstStates.addLast(new BS());
-//      }
-//    }
-//    for (int i = ns; --i >= 0;) {
-//      JmolList<Object> state = listAt(states, i);
-//      JmolList<Object> idxToAtm = listAt(state, 3);
-//      if (idxToAtm == null) {
-//        Logger.error("movie error: no idxToAtm");
-//        continue;
-//      }
-//      for (int j = idxToAtm.size(); --j >= 0;)
-//        bsState.set(intAt(idxToAtm, j));
-//    }
-//    for (int i = bsState.nextSetBit(0); i >= 0; i = bsState.nextSetBit(i + 1))
-//      if (!addAtom(pymolAtoms, i, -1, null, null, bsAtoms))
-//        bsState.clear(i);
-//    for (int i = 0; i < stateCount; i++) {
-//      JmolList<Object> state = listAt(states, i);
-//      if (state == null)
-//        break;
-//      JmolList<Object> coords = listAt(state, 2);
-//      JmolList<Object> idxToAtm = listAt(state, 3);
-//      if (idxToAtm == null)
-//        continue;
-//      P3[] trajectory = lstTrajectories.get(i);
-//      //BS bs = lstStates.get(i);
-//      for (int j = idxToAtm.size(); --j >= 0;) {
-//        int apt = intAt(idxToAtm, j);
-//        if (!bsState.get(apt))
-//          continue;
-//        int ia = atomMap[apt];
-//        bs.set(ia);
-//        int cpt = j * 3;
-//        float x = floatAt(coords, cpt);
-//        float y = floatAt(coords, ++cpt);
-//        float z = floatAt(coords, ++cpt);
-//        trajectory[ia] = P3.new3(x, y, z);
-//        BoxInfo.addPointXYZ(x, y, z, xyzMin, xyzMax, 0);
-//      }
-//    }
-//    processStructures();
-//    setBranchShapes();
-  }
-
   private void setBonds(JmolList<Bond> bonds) {
     int n = bonds.size();
     for (int i = 0; i < n; i++) {
@@ -1127,6 +1074,7 @@ public class PyMOLReader extends PdbReader {
    * @param labelPositions
    * @param bsState
    *        this state -- Jmol atomIndex
+   * @param iState 
    * @return true if successful
    * 
    */
@@ -1926,51 +1874,49 @@ public class PyMOLReader extends PdbReader {
     //                       |/
     //
 
-    P3 ptCenter = pointAt(view, 19, new P3()); // o
+    boolean isOrtho = getBooleanSetting(PyMOL.ortho);
+    boolean depthCue = getBooleanSetting(PyMOL.depth_cue); // 84
+    boolean fog = getBooleanSetting(PyMOL.fog); // 88
+    float fov = getFloatSetting(PyMOL.field_of_view);
+    float fog_start = getFloatSetting(PyMOL.fog_start); // 192
+
+    P3 xAxis = P3.new3(floatAt(view, 0), floatAt(view, 1), floatAt(view, 2));
+    P3 yAxis = P3.new3(floatAt(view, 4), floatAt(view, 5), floatAt(view, 6));
+    // third and fourth rows of matrix, [8-15], are redundant
+    
+    float xTrans = floatAt(view, 16);
+    float yTrans = -floatAt(view, 17);
+    float pymolDistanceToCenter = -floatAt(view, 18);
+    P3 ptCenter = pointAt(view, 19, new P3());//{19, 20, 21} 
+    float pymolDistanceToSlab = floatAt(view, 22);
+    float pymolDistanceToDepth = floatAt(view, 23);
+    
+    
     sb.append(";center ").append(Escape.eP(ptCenter));
 
-    float fov = getFloatSetting(PyMOL.field_of_view);
     float tan = (float) Math.tan(fov / 2 * Math.PI / 180);
-    float jmolCameraToCenter = 0.5f / tan; // d
+    float jmolCameraToCenter = 0.5f / tan;
     float jmolCameraDepth = (jmolCameraToCenter - 0.5f);
-    float pymolDistanceToCenter = -floatAt(view, 18);
     float w = pymolDistanceToCenter * tan * 2;
     boolean noDims = (width == 0 || height == 0);
     if (noDims) {
       width = viewer.getScreenWidth();
       height = viewer.getScreenHeight();
     }
-    float pymolCameraToCenter = pymolDistanceToCenter / w;
-    float pymolCameraToSlab = floatAt(view, 22) / w;
-    float pymolCameraToDepth = floatAt(view, 23) / w;
-    int slab = 50 + (int) ((pymolCameraToCenter - pymolCameraToSlab) * 100);
-    int depth = 50 + (int) ((pymolCameraToCenter - pymolCameraToDepth) * 100);
+    int slab = 50 + (int) ((pymolDistanceToCenter - pymolDistanceToSlab) / w * 100);
+    int depth = 50 + (int) ((pymolDistanceToCenter - pymolDistanceToDepth) / w * 100);
 
-    float xTrans = floatAt(view, 16);
-    float yTrans = -floatAt(view, 17);
-
-    sb.append(";set perspectiveDepth " + (!getBooleanSetting(PyMOL.ortho)));
+    sb.append(";set perspectiveDepth " + !isOrtho);
     sb.append(";set cameraDepth " + jmolCameraDepth);
     sb.append(";set rotationRadius " + (w / 2));
     sb.append(";set zoomHeight true; slab on; slab " + slab + "; depth "
         + depth);
-    sb
-        .append(";rotate @{quaternion({")
-        // only the first two rows are needed
-        .appendF(floatAt(view, 0)).append(" ").appendF(floatAt(view, 1))
-        .append(" ").appendF(floatAt(view, 2)).append("}{").appendF(
-            floatAt(view, 4)).append(" ").appendF(floatAt(view, 5)).append(" ")
-        .appendF(floatAt(view, 6)).append("})}");
+    sb.append(";rotate @{quaternion(").append(Escape.eP(xAxis)).append(Escape.eP(yAxis)).append(")}");
     sb.append(";translate X ").appendF(xTrans / w * 100);//.append(" angstroms;");
     sb.append(";translate Y ").appendF(yTrans / w * 100);//.append(" angstroms");
 
-    // seems to be something else here -- fog is not always present
-    boolean depthCue = getBooleanSetting(PyMOL.depth_cue); // 84
-    boolean fog = getBooleanSetting(PyMOL.fog); // 88
-
     if (depthCue && fog) {
       float range = depth - slab;
-      float fog_start = getFloatSetting(PyMOL.fog_start); // 192
       sb.append(";set zShade true; set zshadePower 1;set zslab "
           + Math.min(100, slab + fog_start * range) + "; set zdepth "
           + Math.max(depth, depth));
@@ -1990,7 +1936,7 @@ public class PyMOLReader extends PdbReader {
     sb.append(";set ribbonBorder "
         + getBooleanSetting(PyMOL.cartoon_fancy_helices));
     sb.append(";set cartoonFancy "
-        + (!isMovie && !getBooleanSetting(PyMOL.cartoon_fancy_helices))); // for now
+        + !getBooleanSetting(PyMOL.cartoon_fancy_helices));
 
     //{ command => 'set hermiteLevel -4',                                                       comment => 'so that SS reps have some thickness' },
     //{ command => 'set ribbonAspectRatio 8',                                                   comment => 'degree of W/H ratio, but somehow not tied directly to actual width parameter...' },

@@ -60,8 +60,10 @@ public class CGORenderer extends DrawRenderer {
   public boolean renderMesh(Mesh mesh) {
     this.mesh = mesh;
     cmds = cgoMesh.cmds;
-    if (cmds == null)
+    if (cmds == null || !cgoMesh.visible)
       return false;
+    if (!g3d.setColix(cgoMesh.colix))
+      return needTranslucent = true;
     int n = cmds.size();
     int glMode = -1;
     int nPts = 0;
@@ -70,8 +72,6 @@ public class CGORenderer extends DrawRenderer {
     doColor = !mesh.useColix;
     P3 pt;
     P3i spt;
-    if (!g3d.setColix(cgoMesh.colix))
-      return needTranslucent = true;
     for (int i = 0; i < n; i++) {
       int type = cgoMesh.getInt(i);
       if (type == CGOMesh.STOP)

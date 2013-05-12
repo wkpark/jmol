@@ -164,7 +164,7 @@ public class CGOMesh extends DrawMesh {
           addColix(i + 24);
           break;
         }
-        Logger.info("CGO " + thisID + " type " + type + " len " + len);
+        //Logger.info("CGO " + thisID + " type " + type + " len " + len);
         i += len;
       }
       return true;

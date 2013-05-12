@@ -301,9 +301,7 @@ public class MoldenReader extends MopacSlaterReader {
       float[] coefs = new float[data.size()];
       if (orbitalType.equals("") && coefs.length < nCoef) {
         Logger.info("too few orbital coefficients for 6D");
-        //implicit 5D. Try switching.
-        orbitalType = "[5D]";
-        fixOrbitalType();
+        checkOrbitalType("[5D]");
       }
       for (int i = data.size(); --i >= 0;)
         coefs[i] = parseFloatStr(data.get(i));
@@ -337,7 +335,10 @@ public class MoldenReader extends MopacSlaterReader {
 
   private boolean checkOrbitalType(String line) {
     if (line.length() > 3 && "5D 6D 7F 10 9G 15".indexOf(line.substring(1,3)) >= 0) {
+      if (orbitalType.indexOf(line) >= 0)
+        return true;
       orbitalType += line;
+      Logger.info("Orbital type set to " + orbitalType);
       fixOrbitalType();
       return true;
     }

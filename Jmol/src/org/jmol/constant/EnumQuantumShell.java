@@ -42,8 +42,10 @@ public enum EnumQuantumShell {
   F_CARTESIAN("F","XXX",6,5),
   G_SPHERICAL("9G","9G",7,7),
   G_CARTESIAN("G","XXXX",8,7),
-  H_SPHERICAL("10H","10H",9,9),
-  H_CARTESIAN("H","XXXXX",10,9);
+  H_SPHERICAL("11H","11H",9,9),
+  H_CARTESIAN("H","XXXXX",10,9),
+  I_SPHERICAL("13I","13I",11,11),
+  I_CARTESIAN("I","XXXXXX",12,11);
 
   final public static String SUPPORTED_BASIS_FUNCTIONS = "SPLDF";
   
@@ -61,19 +63,19 @@ public enum EnumQuantumShell {
   
   public static int[][] getNewDfCoefMap() {
     return new int[][] { 
-        new int[1], //S 
-        new int[3], //P
-        new int[4], //SP
-        new int[5], //D5
-        new int[6], //D6
-        new int[7], //F7 
+        new int[1],  //S 
+        new int[3],  //P
+        new int[4],  //SP
+        new int[5],  //D5
+        new int[6],  //D6
+        new int[7],  //F7 
         new int[10], //F10
         new int[9],  //G9
-        new int[15]  //G15
-                
-      //          9G: G 0, G+1, G-1, G+2, G-2, G+3, G-3, G+4, G-4
-      //          15G: xxxx yyyy zzzz xxxy xxxz yyyx yyyz zzzx zzzy,
-      //               xxyy xxzz yyzz xxyz yyxz zzxy
+        new int[15], //G15
+        new int[11], //H11 == 2*5 + 1
+        new int[21], //H21 == (5+1)(5+2)/2
+        new int[13], //I13 == 2*6 + 1
+        new int[28]  //I28 == (6+1)(6+2)/2
     };
   }
 
@@ -85,7 +87,6 @@ public enum EnumQuantumShell {
   }
 
   private static EnumQuantumShell getQuantumShell(String tag) {
-    System.out.println(tag);
     for (EnumQuantumShell item : values())
       if (item.tag.equals(tag) || item.tag2.equals(tag))
         return item;
@@ -125,10 +126,14 @@ public enum EnumQuantumShell {
       return H_SPHERICAL;
     case 10:
       return H_CARTESIAN;
+    case 11:
+      return I_SPHERICAL;
+    case 12:
+      return I_CARTESIAN;
     }
     return null;
   }
-
+  
   final public static String getQuantumShellTag(int id) {
     for (EnumQuantumShell item : values())
       if (item.id == id)

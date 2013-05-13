@@ -3,6 +3,8 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 
 import org.jmol.util.JmolList;
+
+import java.util.Arrays;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -28,6 +30,7 @@ public class MoldenReader extends MopacSlaterReader {
   private boolean loadVibrations;
   private boolean vibOnly;
   private boolean optOnly;
+  private boolean doSort = true;
  
   private String orbitalType = "";
   private int modelAtomCount;
@@ -36,6 +39,7 @@ public class MoldenReader extends MopacSlaterReader {
   protected void initializeReader() {
     vibOnly = checkFilterKey("VIBONLY");
     optOnly = checkFilterKey("OPTONLY");
+    doSort = !checkFilterKey("NOSORT");
     loadGeometries = !vibOnly && desiredVibrationNumber < 0 && !checkFilterKey("NOOPT");
     loadVibrations = !optOnly && desiredModelNumber < 0 && !checkFilterKey("NOVIB");
    
@@ -43,6 +47,8 @@ public class MoldenReader extends MopacSlaterReader {
       filter = "alpha";
     else if (checkFilterKey("BETA"))
       filter = "beta";
+    else if (checkFilterKey("SYM_"))
+      filter = filter.substring(filter.indexOf("SYM_") + 4);
     else
       filter = null;
   }
@@ -157,6 +163,7 @@ public class MoldenReader extends MopacSlaterReader {
   private BS bsAtomOK = new BS();
   private BS bsBadIndex = new BS();
   private int[] nSPDF;
+  private boolean haveEnergy = true;
   
   private boolean readGaussianBasis() throws Exception {
     /* 
@@ -240,7 +247,8 @@ public class MoldenReader extends MopacSlaterReader {
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     return false;
   }
-  
+ 
+
   private boolean readMolecularOrbitals() throws Exception {
     /*
       [MO]
@@ -259,28 +267,27 @@ public class MoldenReader extends MopacSlaterReader {
          2   0.79774685891
          3  -0.01553604903
      */
-    
-    
-    while(checkOrbitalType(readLine())) {
+
+    while (checkOrbitalType(readLine())) {
       //
     }
-      
+
     fixOrbitalType();
     // TODO we are assuming Jmol-canonical order for orbital coefficients.
     // see BasisFunctionReader
     // TODO no check here for G orbitals
-    
+
     String[] tokens = getMoTokens(line);
     while (tokens != null && tokens.length > 0 && tokens[0].indexOf('[') < 0) {
       Map<String, Object> mo = new Hashtable<String, Object>();
-      JmolList<String> data = new  JmolList<String>();
+      JmolList<String> data = new JmolList<String>();
       float energy = Float.NaN;
       float occupancy = Float.NaN;
-      String symmetry = null;      
+      String symmetry = null;
       String key;
       while (parseIntStr(key = tokens[0]) == Integer.MIN_VALUE) {
         if (key.startsWith("Ene")) {
-          energy = parseFloatStr(tokens[1]);          
+          energy = parseFloatStr(tokens[1]);
         } else if (key.startsWith("Occup")) {
           occupancy = parseFloatStr(tokens[1]);
         } else if (key.startsWith("Sym")) {
@@ -290,14 +297,15 @@ public class MoldenReader extends MopacSlaterReader {
         }
         tokens = getMoTokens(null);
       }
-      while (tokens != null && tokens.length > 0 && parseIntStr(tokens[0]) != Integer.MIN_VALUE) {
+      while (tokens != null && tokens.length > 0
+          && parseIntStr(tokens[0]) != Integer.MIN_VALUE) {
         if (tokens.length != 2)
           throw new Exception("invalid MO coefficient specification");
         // tokens[0] is the function number, and tokens[1] is the coefficient
         data.addLast(tokens[1]);
         tokens = getMoTokens(null);
       }
-      
+
       float[] coefs = new float[data.size()];
       if (orbitalType.equals("") && coefs.length < nCoef) {
         Logger.info("too few orbital coefficients for 6D");
@@ -306,11 +314,14 @@ public class MoldenReader extends MopacSlaterReader {
       for (int i = data.size(); --i >= 0;)
         coefs[i] = parseFloatStr(data.get(i));
       String l = line;
-      line = "";
+      line = "" + symmetry;
       if (filterMO()) {
         mo.put("coefficients", coefs);
-        if (!Float.isNaN(energy))
+        if (Float.isNaN(energy)) {
+          haveEnergy = false;
+        } else {
           mo.put("energy", Float.valueOf(energy));
+        }
         if (!Float.isNaN(occupancy))
           mo.put("occupancy", Float.valueOf(occupancy));
         if (symmetry != null)
@@ -319,16 +330,27 @@ public class MoldenReader extends MopacSlaterReader {
           mo.put("type", alphaBeta);
         setMO(mo);
         if (Logger.debugging) {
-          Logger.debug(coefs.length + " coefficients in MO " + orbitals.size() );
+          Logger.debug(coefs.length + " coefficients in MO " + orbitals.size());
         }
       }
       line = l;
     }
     Logger.debug("read " + orbitals.size() + " MOs");
     setMOs("eV");
+    if (haveEnergy && doSort)
+      sortMOs();
     return false;
   }
   
+  @SuppressWarnings("unchecked")
+  private void sortMOs() {
+    Object[] list = orbitals.toArray();
+    Arrays.sort(list, new MOEnergySorter());
+    orbitals.clear();
+    for (int i = 0; i < list.length; i++)
+      orbitals.addLast((Map<String, Object>)list[i]);
+  }
+
   private String[] getMoTokens(String line) throws Exception {
     return (line == null && (line = readLine()) == null ? null : getTokensStr(line.replace('=',' ')));
   }

@@ -1167,10 +1167,11 @@ public class MOCalculation extends QuantumCalculation implements
             + c1);
       }
     String[] so = getShellOrder(shell);
-    for (int i = 0; i < so.length; i++) {
-      double c = coeffs[i];
-        Logger.debug("MO coeff " + so[i] + " "
-            + (map[i] + moCoeff - map.length + i + 1) + "\t" + c + "\t" + thisAtom.atom);
+      for (int i = 0; i < map.length; i++) {
+        double c = coeffs[i];
+          Logger.debug("MO coeff " + (so == null ? "?" : so[i]) + " "
+              + (map[i] + moCoeff - map.length + i + 1) + "\t" + c + "\t" + thisAtom.atom);
+      
     }
   }
   
@@ -1186,7 +1187,7 @@ public class MOCalculation extends QuantumCalculation implements
   };
 
   final private static String[] getShellOrder(int i) {
-    return (i < 0 || i > shellOrder.length ? null : shellOrder[i]);
+    return (i < 0 || i >= shellOrder.length ? null : shellOrder[i]);
   }
   
 

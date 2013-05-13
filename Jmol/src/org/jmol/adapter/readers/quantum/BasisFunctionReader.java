@@ -29,6 +29,7 @@ import org.jmol.util.Logger;
 
 import org.jmol.util.JmolList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -89,6 +90,14 @@ abstract class BasisFunctionReader extends AtomSetCollectionReader {
     orbitals.addLast(mo);
   }
   
+  public class MOEnergySorter implements Comparator<Object>{
+    @SuppressWarnings("unchecked")
+    public int compare(Object a, Object b) {
+      float ea = ((Float) ((Map<String, Object>)a).get("energy")).floatValue();
+      float eb = ((Float) ((Map<String, Object>)b).get("energy")).floatValue();
+      return (ea < eb ? -1 : ea > eb ? 1 : 0);
+    }
+  }
   // Jmol's ordering is based on GAUSSIAN
   
         

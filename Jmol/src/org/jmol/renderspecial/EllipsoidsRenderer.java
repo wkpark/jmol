@@ -147,7 +147,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
  
   private boolean setGlobals() {
-    wireframeOnly = (viewer.getBoolean(T.wireframerotation) && viewer.getInMotion());
+    wireframeOnly = (viewer.getBoolean(T.wireframerotation) && viewer.getInMotion(true));
     drawAxes = viewer.getBooleanProperty("ellipsoidAxes");
     drawArcs = viewer.getBooleanProperty("ellipsoidArcs");
     drawBall = viewer.getBooleanProperty("ellipsoidBall") && !wireframeOnly;

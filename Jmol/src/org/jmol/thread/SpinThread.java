@@ -134,7 +134,7 @@ public class SpinThread extends JmolThread {
           startTime -= sleepTime;
           sleepTime = 0;
         }
-        boolean isInMotion = (bsAtoms == null && viewer.getInMotion());
+        boolean isInMotion = (bsAtoms == null && viewer.getInMotion(false));
         if (isInMotion) {
           if (isGesture) {
             mode = FINISH;

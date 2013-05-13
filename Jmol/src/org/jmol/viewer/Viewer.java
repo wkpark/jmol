@@ -2856,7 +2856,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void startHoverWatcher(boolean tf) {
-    if (haveDisplay && hoverEnabled)
+    if (!haveDisplay)
+      return;
+    if (hoverEnabled || !tf)
       actionManager.startHoverWatcher(tf);
   }
 
@@ -3842,9 +3844,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
-  public boolean getInMotion() {
-    // mps
-    return animationManager.inMotion || animationManager.animationOn;
+  public boolean getInMotion(boolean includeAnim) {
+    return animationManager.inMotion && (!includeAnim || animationManager.animationOn);
   }
 
   private boolean refreshing = true;
@@ -3928,7 +3929,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //            for example, at the end of a script
     if (repaintManager == null || !refreshing)
       return;
-    if (mode == 6 && getInMotion())
+    if (mode == 6 && getInMotion(true))
       return;
     /**
      * @j2sNative
@@ -4660,6 +4661,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     loadShape(JC.SHAPE_HOVER);
     setShapeProperty(JC.SHAPE_HOVER, "label", strLabel);
     hoverEnabled = (strLabel != null);
+    if (!hoverEnabled)
+      startHoverWatcher(false);
   }
 
   void hoverOn(int atomIndex, int action) {
@@ -7094,7 +7097,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!global.navigationMode || !transformManager.canNavigate())
       return false;
     return (isNavigating() && !global.hideNavigationPoint
-        || global.showNavigationPointAlways || getInMotion());
+        || global.showNavigationPointAlways || getInMotion(true));
   }
 
   public float getCurrentSolventProbeRadius() {

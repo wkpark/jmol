@@ -35,7 +35,7 @@ public class BallsRenderer extends ShapeRenderer {
   @Override
   protected boolean render() {
     boolean needTranslucent = false;
-    if (!viewer.getBoolean(T.wireframerotation) || !viewer.getInMotion()) {
+    if (!viewer.getBoolean(T.wireframerotation) || !viewer.getInMotion(true)) {
       Atom[] atoms = modelSet.atoms;
       BS bsOK = viewer.getRenderableBitSet();
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {

@@ -1043,7 +1043,7 @@ public class ActionManager {
   }
 
   public void checkHover() {
-    if (!viewer.getInMotion()
+    if (!viewer.getInMotion(true)
         && !viewer.getSpinOn() && !viewer.getNavOn()
         && !viewer.checkObjectHovered(current.x, current.y)) {
       int atomIndex = viewer.findNearestAtomIndex(current.x, current.y);

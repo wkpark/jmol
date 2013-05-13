@@ -45,7 +45,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
   @Override
   protected boolean render() {
     GeoSurface gs = (GeoSurface) shape;
-    iShowSolid = !(viewer.getInMotion() && gs.ec.getDotsConvexMax() > 100);
+    iShowSolid = !(viewer.getInMotion(true) && gs.ec.getDotsConvexMax() > 100);
     if (!iShowSolid)
       return false;
     if (!g3d.setColix(C.BLACK))

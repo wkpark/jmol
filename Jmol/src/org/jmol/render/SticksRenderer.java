@@ -90,7 +90,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
     showMultipleBonds = multipleBondSpacing != 0
         && viewer.getBoolean(T.showmultiplebonds);
     modeMultipleBond = viewer.getModeMultipleBond();
-    renderWireframe = viewer.getInMotion() && viewer.getBoolean(T.wireframerotation);
+    renderWireframe = viewer.getInMotion(true) && viewer.getBoolean(T.wireframerotation);
     ssbondsBackbone = viewer.getBoolean(T.ssbondsbackbone);
     hbondsBackbone = viewer.getBoolean(T.hbondsbackbone);
     bondsBackbone = hbondsBackbone | ssbondsBackbone;

@@ -47,8 +47,8 @@ public class MoldenReader extends MopacSlaterReader {
       filter = "alpha";
     else if (checkFilterKey("BETA"))
       filter = "beta";
-    else if (checkFilterKey("SYM_"))
-      filter = filter.substring(filter.indexOf("SYM_") + 4);
+    else if (checkFilterKey("SYM="))
+      filter = filter.substring(filter.indexOf("SYM=") + 4);
     else
       filter = null;
   }

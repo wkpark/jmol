@@ -161,7 +161,6 @@ public class PyMOLReader extends PdbReader {
 
   private Map<String, Object> pymol = new Hashtable<String, Object>();
   private Map<String, Object> htNames = new Hashtable<String, Object>();
-  private int currentFrame = -1;
   private int pymolFrame, pymolState;
   private boolean allStates;
   private int totalAtomCount;
@@ -306,7 +305,6 @@ public class PyMOLReader extends PdbReader {
     pointAt((JmolList<Object>) listAt(settings, PyMOL.label_position).get(2),
         0, labelPosition0);
     selections = new JmolList<JmolList<Object>>();
-    currentFrame = pymolState;
 
     if (allStates && desiredModelNumber == Integer.MIN_VALUE) {
       // if all_states and no model number indicated, display all states
@@ -352,7 +350,7 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void processMovie(JmolList<Object> mov, int frameCount) {
-    isMovie = true;
+    //isMovie = true;  for now, no actual movies
     Map<String, Object> movie = new Hashtable<String, Object>();
     movie.put("frameCount", Integer.valueOf(frameCount));
     movie.put("currentFrame", Integer.valueOf(pymolFrame - 1));
@@ -607,7 +605,7 @@ public class PyMOLReader extends PdbReader {
     int type = getBranchType(branch);
     if ((type == BRANCH_MOLECULE) != moleculeOnly || !checkBranch(branch))
       return;
-    Logger.info("PyMOL model " + (nModels + 1) + " Branch " + branchName
+    Logger.info("PyMOL model " + (nModels) + " Branch " + branchName
         + (isHidden ? " (hidden)" : " (visible)"));
     JmolList<Object> deepBranch = listAt(branch, 5);
     branchNameID = fixName(branchName + (moleculeOnly ? "_" + (iState + 1) : ""));
@@ -1867,7 +1865,7 @@ public class PyMOLReader extends PdbReader {
     } else if (isMovie) {
       frameObj = getJmolObject(T.movie, bs, pymol.get("movie"));
     } else {
-      frameObj = getJmolObject(T.frame, bs, Integer.valueOf(currentFrame - 1));
+      frameObj = getJmolObject(T.frame, bs, Integer.valueOf(pymolState - 1));
     }
   }
 

@@ -390,8 +390,11 @@ public class AnimationManager {
 
   void setFrame(int i) {
     try {
-    if (isMovie)
-      i = animationFrames[currentAnimationFrame = i] - 1;
+    if (isMovie) {
+      int iModel = animationFrames[i] - 1;
+      currentAnimationFrame = i;
+      i = iModel;
+    }
     setModel(i, true);
     } catch (Exception e) {
       // ignore

@@ -854,9 +854,8 @@ public class StateCreator implements JmolStateCreator {
     info.put("currentDirection", Integer.valueOf(am.currentDirection));
     info.put("displayModelIndex", Integer.valueOf(am.currentModelIndex));
     if (am.animationFrames != null) {
+      info.put("isMovie", Boolean.TRUE);
       info.put("frames", Escape.eAI(am.animationFrames));
-      info.put("firstModelIndex", Integer.valueOf(am.firstFrameIndex));
-      info.put("lastModelIndex", Integer.valueOf(am.lastFrameIndex));
       info.put("currentAnimationFrame", Integer.valueOf(am.currentAnimationFrame));
     }
     info.put("displayModelNumber", viewer

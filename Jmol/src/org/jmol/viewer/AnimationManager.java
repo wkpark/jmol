@@ -360,6 +360,8 @@ public class AnimationManager {
         isMovie = false;
       } else {
         currentAnimationFrame = ((Integer) info.get("currentFrame")).intValue();
+        if (currentAnimationFrame < 0 || currentAnimationFrame >= animationFrames.length)
+          currentAnimationFrame = 0;
         //movie = info;
       }
     } 
@@ -391,7 +393,7 @@ public class AnimationManager {
   void setFrame(int i) {
     try {
     if (isMovie) {
-      int iModel = animationFrames[i] - 1;
+      int iModel = modelIndexForFrame(i);
       currentAnimationFrame = i;
       i = iModel;
     }

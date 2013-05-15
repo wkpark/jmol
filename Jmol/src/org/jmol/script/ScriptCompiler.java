@@ -91,6 +91,52 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   
   private ScriptFunction thisFunction;
   
+  private ScriptFlowContext flowContext;
+  private JmolList<T> ltoken;
+  private JmolList<T[]> lltoken;
+  private JmolList<T> vBraces;
+
+
+  private int ichBrace;
+  private int cchToken;
+  private int cchScript;
+
+  private int nSemiSkip;
+  private int parenCount;
+  private int braceCount;
+  private int setBraceCount;
+  private int bracketCount;
+  private int ptSemi;
+  private int forPoint3;
+  private int setEqualPt;
+  private int iBrace;
+
+  private boolean iHaveQuotedString;
+  private boolean isEndOfCommand;
+  private boolean needRightParen;
+  private boolean endOfLine;
+
+  private String comment;
+
+  private final static int OK = 0;
+  private final static int OK2 = 1;
+  private final static int CONTINUE = 2;
+  private final static int EOL = 3;
+  private final static int ERROR = 4;
+
+  private int tokLastMath;
+  private boolean checkImpliedScriptCmd;
+  
+  private JmolList<ScriptFunction> vFunctionStack;
+  private boolean allowMissingEnd;
+  
+  private boolean isShowCommand;
+  private boolean isComment;
+  private boolean isUserToken;
+  private boolean implicitString;
+
+  private int tokInitialPlusPlus;
+  
   synchronized ScriptContext compile(String filename, String script, boolean isPredefining,
                   boolean isSilent, boolean debugScript, boolean isCheckOnly) {
     this.isCheckOnly = isCheckOnly;
@@ -195,33 +241,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return JmolBinary.getEmbeddedScript(script);
   }
   
-  private ScriptFlowContext flowContext;
-  private JmolList<T> ltoken;
-  private JmolList<T[]> lltoken;
-  private JmolList<T> vBraces;
-
-
-  private int ichBrace;
-  private int cchToken;
-  private int cchScript;
-
-  private int nSemiSkip;
-  private int parenCount;
-  private int braceCount;
-  private int setBraceCount;
-  private int bracketCount;
-  private int ptSemi;
-  private int forPoint3;
-  private int setEqualPt;
-  private int iBrace;
-
-  private boolean iHaveQuotedString;
-  private boolean isEndOfCommand;
-  private boolean needRightParen;
-  private boolean endOfLine;
-
-  private String comment;
-
   private void addTokenToPrefix(T token) {
     if (logMessages)
       Logger.info("addTokenToPrefix" + token);
@@ -230,18 +249,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       lastToken = token;
   }
 
-  private final static int OK = 0;
-  private final static int OK2 = 1;
-  private final static int CONTINUE = 2;
-  private final static int EOL = 3;
-  private final static int ERROR = 4;
-
-  private int tokLastMath;
-  private boolean checkImpliedScriptCmd;
-  
-  private JmolList<ScriptFunction> vFunctionStack;
-  private boolean allowMissingEnd;
-  
   private boolean compile0(boolean isFull) {
     vFunctionStack = new  JmolList<ScriptFunction>();
     htUserFunctions = new Hashtable<String, Boolean>();
@@ -466,8 +473,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     cchToken = 1;
     return true;
   }
-
-  private boolean isShowCommand;
   
   private int lookingAtComment() {
     char ch = script.charAt(ichToken);
@@ -582,8 +587,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     cchToken = ichT - ichToken;
     return (nTokens == 0 ? OK2 : CONTINUE);
   }
-
-  private boolean isComment;
   
   private int processTokenList(short iLine, boolean doCompile) {
     if (nTokens > 0 || comment != null) {
@@ -818,11 +821,11 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       tokCommand = T.nada;
     } else {
       tokCommand = tokenCommand.tok;
-      isMathExpressionCommand = (tokCommand == T.identifier || T.tokAttr(tokCommand,
-          T.mathExpressionCommand));
+      isMathExpressionCommand = (tokCommand == T.identifier || T.tokAttr(
+          tokCommand, T.mathExpressionCommand));
       isSetOrDefine = (tokCommand == T.set || tokCommand == T.define);
-      isCommaAsOrAllowed = T.tokAttr(tokCommand,
-          T.atomExpressionCommand);
+      isCommaAsOrAllowed = T.tokAttr(tokCommand, T.atomExpressionCommand);
+      implicitString = T.tokAttr(tokCommand, T.implicitStringCommand);
     }
     return token;
   }
@@ -832,9 +835,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     ltoken.add(0, setCommand(token));
   }
 
-  private boolean isUserToken;
-  private int tokInitialPlusPlus;
-  
   private String getPrefixToken() {
     String ident = script.substring(ichToken, ichToken + cchToken);
     String identLC = ident.toLowerCase();
@@ -946,7 +946,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     // and you cannot use '...'. This way the introduction of single quotes 
     // as an equivalent of double quotes cannot break existing scripts. -- BH 06/2009
 
-    if (lookingAtString(!T.tokAttr(tokCommand, T.implicitStringCommand))) {
+    if (lookingAtString(!implicitString)) {
       if (cchToken < 0)
         return ERROR(ERROR_endOfCommandUnexpected);
       String str;
@@ -971,7 +971,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       } else {
         addTokenToPrefix(T.o(T.string, str));
-        if (T.tokAttr(tokCommand, T.implicitStringCommand))
+        if (implicitString)
           isEndOfCommand = true;
       }
       return CONTINUE;
@@ -1072,7 +1072,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       break;
     }
-    if (T.tokAttr(tokCommand, T.implicitStringCommand)
+    if (implicitString
         && !(tokCommand == T.script && iHaveQuotedString)
         && lookingAtImpliedString(true, true, true)) {
       String str = script.substring(ichToken, ichToken + cchToken);
@@ -1407,7 +1407,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       lastToken = T.tokenOff;
       ichCurrentCommand = ichEnd = ichToken;
       setCommand(theToken);
-      
       if (T.tokAttr(tokCommand, T.flowCommand)) {
         lastFlowCommand = tokenCommand;
       }
@@ -1734,6 +1733,11 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       if (parenCount == 0 && bracketCount == 0
           && ".:/\\+-!?".indexOf(ch) >= 0 && !(ch == '-' && ident.equals("=")))
         checkUnquotedFileName();
+      break;
+    case T.show:
+      if (nTokens == 2 && tokAt(1) == T.state && theTok == T.divide)
+        implicitString = true;
+      break;
     }
     return OK;
   }

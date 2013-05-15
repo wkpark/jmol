@@ -3697,7 +3697,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public BS getVisibleFramesBitSet() {
-    return modelSet.selectDisplayedTrajectories(BSUtil.copy(animationManager.bsVisibleFrames));
+    return modelSet.selectDisplayedTrajectories(BSUtil.copy(animationManager.bsVisibleModels));
   }
 
   boolean isAnimationOn() {
@@ -3710,11 +3710,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setAnimMorphCount(int n) {
-    animationManager.morphCount = n;
+    animationManager.setMorphCount(n);
   }
 
   public boolean isMovie() {
-    return false;//animationManager.isMovie();
+    return animationManager.isMovie;
   }
 
   public int getFrameCount() {
@@ -3732,7 +3732,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setAnimDisplay(BS bs) {
     animationManager.setDisplay(bs);
     if (!isAnimationOn())
-      animationManager.morph(animationManager.currentMorphFrame + 1);
+      animationManager.morph(animationManager.currentMorphModel + 1);
   }
 
   public void setCurrentModelIndex(int modelIndex) {
@@ -3744,7 +3744,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setCurrentModelIndexClear(animationManager.currentModelIndex, true);
       return;
     }
-    animationManager.setCurrentModelIndex(modelIndex, true);
+    animationManager.setModel(modelIndex, true);
   }
 
   void setTrajectory(int modelIndex) {
@@ -3787,7 +3787,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setCurrentModelIndexClear(int modelIndex, boolean clearBackground) {
     // Eval
     // initializeModel
-    animationManager.setCurrentModelIndex(modelIndex, clearBackground);
+    animationManager.setModel(modelIndex, clearBackground);
   }
 
   public int getCurrentModelIndex() {
@@ -3813,11 +3813,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setFrameVariables() {
     global.setS("_firstFrame",
-        animationManager.getModelNumber(-1));
+        animationManager.getModelSpecial(-1));
     global.setS("_lastFrame",
-        animationManager.getModelNumber(1));
+        animationManager.getModelSpecial(1));
     global.setF("_animTimeSec", animationManager
         .getAnimRunTimeSeconds());
+    global.setB("_animMovie", animationManager.isMovie);
   }
 
   boolean wasInMotion = false;
@@ -4967,7 +4968,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // force reset (reading vibrations)
       prevFrame = Integer.MIN_VALUE;
     }
-    int frameNo = animationManager.getCurrentFrame();
+    int frameNo = animationManager.getCurrentModelIndex();
     transformManager.setVibrationPeriod(Float.NaN);
     int firstIndex = animationManager.firstFrameIndex;
     int lastIndex = animationManager.lastFrameIndex;
@@ -4977,7 +4978,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (firstIndex == lastIndex && !isMovie)
       modelIndex = firstIndex;
     int frameID = getModelFileNumber(modelIndex);
-    int currentFrame = animationManager.getCurrentFrame();
+    int currentFrame = animationManager.getCurrentModelIndex();
     int fileNo = frameID;
     int modelNo = frameID % 1000000;
     int firstNo = (isMovie ? firstIndex : getModelFileNumber(firstIndex));
@@ -5004,7 +5005,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     global.setI("_currentFrame", currentFrame);
     global.setI("_morphCount", animationManager.morphCount);
-    global.setF("_currentMorphFrame", animationManager.currentMorphFrame);
+    global.setF("_currentMorphFrame", animationManager.currentMorphModel);
     global.setI("_frameID", frameID);
     global.setS("_modelNumber", strModelNo);
     global.setS("_modelName", (modelIndex < 0 ? ""
@@ -5020,7 +5021,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     String entryName;
     if (isMovie) {
-      entryName = "" + (animationManager.getCurrentFrame() + 1);
+      entryName = "" + (animationManager.getCurrentModelIndex() + 1);
     } else {
       entryName = getModelName(frameNo);
       String script = "" + getModelNumberDotted(frameNo);
@@ -9955,6 +9956,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setCGO(JmolList<Object> info) {
     shapeManager.loadShape(JC.SHAPE_CGO);
     shapeManager.setShapePropertyBs(JC.SHAPE_CGO, "setCGO", info, null);    
+  }
+
+
+
+
+  public void setFrame(int i) {
+    animationManager.setFrame(i - 1);
   }
 
 

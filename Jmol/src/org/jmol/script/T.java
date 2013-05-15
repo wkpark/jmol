@@ -290,7 +290,7 @@ public class T {
   final static int defaultcmd   = 13 | flowCommand;
   public final static int trycmd       = 14 | flowCommand | noArgs;
   
-  final static int animation    = scriptCommand | 1;
+  public final static int animation    = scriptCommand | 1;
   final static int assign       = scriptCommand | 2;
   final static int background   = scriptCommand | 3 | deprecatedparam;
   final static int bind         = scriptCommand | 4;

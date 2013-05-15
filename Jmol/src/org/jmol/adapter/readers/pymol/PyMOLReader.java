@@ -159,7 +159,6 @@ public class PyMOLReader extends PdbReader {
 
   private boolean isMovie;
 
-  private Map<String, Object> pymol = new Hashtable<String, Object>();
   private Map<String, Object> htNames = new Hashtable<String, Object>();
   private int pymolFrame, pymolState;
   private boolean allStates;
@@ -187,6 +186,7 @@ public class PyMOLReader extends PdbReader {
   private Map<String, String> branchIDs = new Hashtable<String, String>();
   private Hashtable<String, PyMOLGroup> groups;
   private boolean haveMeasurements;
+  private int[] frames;
 
   
   @Override
@@ -263,6 +263,8 @@ public class PyMOLReader extends PdbReader {
     allStates = getBooleanSetting(PyMOL.all_states);
     pymolFrame = (int) getFloatSetting(PyMOL.frame);
     pymolState = (int) getFloatSetting(PyMOL.state);
+    frameObj = addJmolObject(T.frame, null, (allStates ? Integer.valueOf(-1)
+        : Integer.valueOf(pymolState - 1)));
     appendLoadNote("frame=" + pymolFrame + " state=" + pymolState
         + " all_states=" + allStates);
     JmolList<Object> mov = getMapList(map, "movie");
@@ -309,8 +311,18 @@ public class PyMOLReader extends PdbReader {
     if (allStates && desiredModelNumber == Integer.MIN_VALUE) {
       // if all_states and no model number indicated, display all states
     } else if (isMovie) {
-      // otherwise, if a movie and FILTER "movie", load all states
-      desiredModelNumber = Integer.MIN_VALUE;
+      // otherwise, if a movie, load all states
+      switch (desiredModelNumber) {
+      case Integer.MIN_VALUE:
+        break;
+      default:
+        desiredModelNumber = frames[(desiredModelNumber > 0
+            && desiredModelNumber <= frames.length ? desiredModelNumber
+            : pymolFrame) - 1];
+        frameObj = addJmolObject(T.frame, null, Integer
+            .valueOf(desiredModelNumber - 1));
+        break;
+      }
     } else if (desiredModelNumber == 0) {
       // otherwise if you specify model "0", only load the current PyMOL state
       desiredModelNumber = pymolState;
@@ -350,47 +362,62 @@ public class PyMOLReader extends PdbReader {
   }
 
   private void processMovie(JmolList<Object> mov, int frameCount) {
-    //isMovie = true;  for now, no actual movies
     Map<String, Object> movie = new Hashtable<String, Object>();
     movie.put("frameCount", Integer.valueOf(frameCount));
     movie.put("currentFrame", Integer.valueOf(pymolFrame - 1));
-    JmolList<Object> frames = listAt(mov, 4);
-    for (int i = frames.size(); --i >= 0;)
-      if (intAt(frames, i) != 0) {
+    boolean haveCommands = false, haveViews = false, haveFrames = false;
+    JmolList<Object> list = listAt(mov, 4);
+    for (int i = list.size(); --i >= 0;)
+      if (intAt(list, i) != 0) {
+        frames = new int[list.size()];
+        for (int j = frames.length; --j >= 0;)
+          frames[j] = intAt(list, j) + 1;
         movie.put("frames", frames);
+        haveFrames = true;
         break;
       }
     JmolList<Object> cmds = listAt(mov, 5);
     String cmd;
     for (int i = cmds.size(); --i >= 0;)
-      if ((cmd = stringAt(cmds, i)) != null && cmd.length() != 0) {
+      if ((cmd = stringAt(cmds, i)) != null && cmd.length() > 1) {
         cmds = fixMovieCommands(cmds);
-        if (cmds != null)
+        if (cmds != null) {
           movie.put("commands", cmds);
-        break;
+          haveCommands = true;
+          break;
+        }
       }
     JmolList<Object> views = listAt(mov, 6);
     JmolList<Object> view;
     for (int i = views.size(); --i >= 0;)
       if ((view = listAt(views, i)) != null && view.size() >= 12
           && view.get(1) != null) {
+        haveViews = true;
         views = fixMovieViews(views);
-        if (views != null)
+        if (views != null) {
           movie.put("views", views);
-        break;
+          break;
+        }
       }
-    pymol.put("movie", movie);
-    appendLoadNote("PyMOL movie frameCount = " + frameCount + " (ignored)");
+    appendLoadNote("PyMOL movie frameCount = " + frameCount);
+    if (haveFrames && !haveCommands && !haveViews) {
+      // simple animation
+      isMovie = true;
+      frameObj = getJmolObject(T.movie, null, movie);
+    } else {
+      //isMovie = true;  for now, no scripted movies
+      //pymol.put("movie", movie);
+    }
   }
 
   private JmolList<Object> fixMovieViews(JmolList<Object> views) {
     // TODO -- PyMOL to Jmol views
-    return null;
+    return views;
   }
 
   private JmolList<Object> fixMovieCommands(JmolList<Object> cmds) {
     // TODO -- PyMOL to Jmol commands
-    return null;
+    return cmds;
   }
 
   private void processMeshes() {
@@ -1531,7 +1558,6 @@ public class PyMOLReader extends PdbReader {
     setJmolDefaults();
     SB sb = new SB();
     setView(sb, view);
-    setFrame();
     setGroups();
     if (!bsHidden.isEmpty())
       addJmolObject(T.hidden, bsHidden, null);
@@ -1858,17 +1884,6 @@ public class PyMOLReader extends PdbReader {
     return a.chainID == b.chainID && a.atomSetIndex == b.atomSetIndex;
   }
 
-  private void setFrame() {
-    BS bs = (totalAtomCount > 0 ? BSUtil.newAndSetBit(0) : null);
-    if (allStates) {
-      addJmolObject(T.frame, bs, Integer.valueOf(-1));
-    } else if (isMovie) {
-      frameObj = getJmolObject(T.movie, bs, pymol.get("movie"));
-    } else {
-      frameObj = getJmolObject(T.frame, bs, Integer.valueOf(pymolState - 1));
-    }
-  }
-
   private void setView(SB sb, JmolList<Object> view) {
 
     // calculate Jmol camera position, which is in screen widths,
@@ -1993,7 +2008,7 @@ public class PyMOLReader extends PdbReader {
         modelSet.modelCount));
     //if (baseModelIndex == 0)
       //viewer.setBooleanProperty("_ismovie", true);
-    if (frameObj != null) {
+    if (!isStateScript && frameObj != null) {
       frameObj.finalizeObject(modelSet, null);
     }
   }

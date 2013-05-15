@@ -5711,7 +5711,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           break;
         case T.frame:
         case T.model:
-          frame(1);
+          model(1);
           break;
         case T.parallel: // not actually found 
         case T.function:
@@ -12101,34 +12101,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       setShapeProperty(JC.SHAPE_DIPOLES, "set", null);
   }
 
-  private void animationMode() throws ScriptException {
-    float startDelay = 1, endDelay = 1;
-    if (slen > 5)
-      error(ERROR_badArgumentCount);
-    EnumAnimationMode animationMode = null;
-    switch (getToken(2).tok) {
-    case T.once:
-      animationMode = EnumAnimationMode.ONCE;
-      startDelay = endDelay = 0;
-      break;
-    case T.loop:
-      animationMode = EnumAnimationMode.LOOP;
-      break;
-    case T.palindrome:
-      animationMode = EnumAnimationMode.PALINDROME;
-      break;
-    default:
-      error(ERROR_invalidArgument);
-    }
-    if (slen >= 4) {
-      startDelay = endDelay = floatParameter(3);
-      if (slen == 5)
-        endDelay = floatParameter(4);
-    }
-    if (!chk)
-      viewer.setAnimationReplayMode(animationMode, startDelay, endDelay);
-  }
-
   private void vibration() throws ScriptException {
     checkLength(-3);
     float period = 0;
@@ -12167,31 +12139,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     }
     viewer.setVibrationPeriod(-period);
-  }
-
-  private void animationDirection() throws ScriptException {
-    int i = 2;
-    int direction = 0;
-    switch (tokAt(i)) {
-    case T.minus:
-      direction = -intParameter(++i);
-      break;
-    case T.plus:
-      direction = intParameter(++i);
-      break;
-    case T.integer:
-      direction = intParameter(i);
-      if (direction > 0)
-        direction = 0;
-      break;
-    default:
-      error(ERROR_invalidArgument);
-    }
-    checkLength(++i);
-    if (direction != 1 && direction != -1)
-      errorStr2(ERROR_numberMustBe, "-1", "1");
-    if (!chk)
-      viewer.setAnimationDirection(direction);
   }
 
   private void calculate() throws ScriptException {
@@ -12483,13 +12430,72 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         viewer.setAnimDisplay(bs);
       return;
     case T.frame:
-      frame(2);
+      if (isArrayParameter(2)) {
+        float[] f = floatParameterSet(2, 0, Integer.MAX_VALUE);
+        checkLength(iToken + 1);
+        if (chk)
+          return;
+        int[] frames = new int[f.length];
+        for (int i = f.length; --i >= 0;)
+          frames[i] = (int) f[i];
+        Map<String, Object> movie = new Hashtable<String, Object>();
+        movie.put("frames", frames);
+        movie.put("currentFrame", Integer.valueOf(0));
+        viewer.setMovie(movie);
+      } else {
+        model(2);
+      }
       break;
     case T.mode:
-      animationMode();
+      float startDelay = 1, endDelay = 1;
+      if (slen > 5)
+        error(ERROR_badArgumentCount);
+      EnumAnimationMode animationMode = null;
+      switch (getToken(2).tok) {
+      case T.once:
+        animationMode = EnumAnimationMode.ONCE;
+        startDelay = endDelay = 0;
+        break;
+      case T.loop:
+        animationMode = EnumAnimationMode.LOOP;
+        break;
+      case T.palindrome:
+        animationMode = EnumAnimationMode.PALINDROME;
+        break;
+      default:
+        error(ERROR_invalidArgument);
+      }
+      if (slen >= 4) {
+        startDelay = endDelay = floatParameter(3);
+        if (slen == 5)
+          endDelay = floatParameter(4);
+      }
+      if (!chk)
+        viewer.setAnimationReplayMode(animationMode, startDelay, endDelay);
       break;
     case T.direction:
-      animationDirection();
+      int i = 2;
+      int direction = 0;
+      switch (tokAt(i)) {
+      case T.minus:
+        direction = -intParameter(++i);
+        break;
+      case T.plus:
+        direction = intParameter(++i);
+        break;
+      case T.integer:
+        direction = intParameter(i);
+        if (direction > 0)
+          direction = 0;
+        break;
+      default:
+        error(ERROR_invalidArgument);
+      }
+      checkLength(++i);
+      if (direction != 1 && direction != -1)
+        errorStr2(ERROR_numberMustBe, "-1", "1");
+      if (!chk)
+        viewer.setAnimationDirection(direction);
       break;
     case T.fps:
       setIntProperty("animationFps", intParameter(checkLast(2)));
@@ -12554,10 +12560,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     viewer.setMotionFixedAtoms(bs);
   }
 
-  private void frame(int offset) throws ScriptException {
+  private void model(int offset) throws ScriptException {
+    boolean isFrame = (theTok == T.frame);
     boolean useModelNumber = true;
-    // for now -- as before -- remove to implement
-    // frame/model difference
     if (slen == 1 && offset == 1) {
       int modelIndex = viewer.getCurrentModelIndex();
       int m;
@@ -12567,6 +12572,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     }
     switch (tokAt(1)) {
+    case T.integer:
+      if (isFrame && slen == 2) {
+        // FRAME n
+        if (!chk)
+          viewer.setFrame(intParameter(1));
+        return;
+      }
+      break;
     case T.expressionBegin:
     case T.bitset:
       int i = atomExpressionAt(1).nextSetBit(0);

@@ -543,7 +543,6 @@ public class StateCreator implements JmolStateCreator {
       commands.append("function _setFrameState() {\n");
     }
     commands.append("# frame state;\n");
-
     commands.append("# modelCount ").appendI(modelCount).append(";\n# first ")
         .append(viewer.getModelNumberDotted(0)).append(";\n# last ").append(
             viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
@@ -554,8 +553,8 @@ public class StateCreator implements JmolStateCreator {
     if (bs != null)
       appendCmd(commands, "frame align " + Escape.eBS(bs));
     appendCmd(commands, "frame RANGE "
-        + am.getModelNumber(-1) + " "
-        + am.getModelNumber(1));
+        + am.getModelSpecial(AnimationManager.FRAME_FIRST) + " "
+        + am.getModelSpecial(AnimationManager.FRAME_LAST));
     appendCmd(commands, "animation DIRECTION "
         + (am.animationDirection == 1 ? "+1" : "-1"));
     appendCmd(commands, "animation FPS " + am.animationFps);
@@ -563,8 +562,17 @@ public class StateCreator implements JmolStateCreator {
         + am.firstFrameDelay + " " + am.lastFrameDelay);
     if (am.morphCount > 0)
       appendCmd(commands, "animation MORPH " + am.morphCount);
-    appendCmd(commands, "frame "
-        + am.getModelNumber(0));
+    int[] frames = am.gettAnimationFrames();
+    boolean showModel = true;
+    if (frames != null) {
+      appendCmd(commands, "anim frames " + Escape.eAI(frames));
+      int i = am.getCurrentFrameIndex();
+      appendCmd(commands, "frame " + (i + 1));
+      showModel = (am.getCurrentModelIndex() != am.modelIndexForFrame(i));
+    }
+    if (showModel)
+      appendCmd(commands, "model "
+          + am.getModelSpecial(AnimationManager.MODEL_CURRENT));
     appendCmd(commands, "animation "
         + (!am.animationOn ? "OFF" : am.currentDirection == 1 ? "PLAY"
             : "PLAYREV"));
@@ -845,6 +853,12 @@ public class StateCreator implements JmolStateCreator {
     info.put("animationDirection", Integer.valueOf(am.animationDirection));
     info.put("currentDirection", Integer.valueOf(am.currentDirection));
     info.put("displayModelIndex", Integer.valueOf(am.currentModelIndex));
+    if (am.animationFrames != null) {
+      info.put("frames", Escape.eAI(am.animationFrames));
+      info.put("firstModelIndex", Integer.valueOf(am.firstFrameIndex));
+      info.put("lastModelIndex", Integer.valueOf(am.lastFrameIndex));
+      info.put("currentAnimationFrame", Integer.valueOf(am.currentAnimationFrame));
+    }
     info.put("displayModelNumber", viewer
         .getModelNumberDotted(am.currentModelIndex));
     info.put("displayModelName", (am.currentModelIndex >= 0 ? viewer

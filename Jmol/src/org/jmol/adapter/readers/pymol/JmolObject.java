@@ -102,23 +102,18 @@ class JmolObject {
   @SuppressWarnings("unchecked")
   void offset(int modelOffset, int atomOffset) {
     if (modelOffset > 0) {
-      if (id == T.frame) {
+      switch (id) {
+      case T.frame:
         int i = ((Integer) info).intValue();
         if (i >= 0)
           info = Integer.valueOf(modelOffset + i);
         return;
-      }
-      if (id == T.movie) {
+      case T.movie:
         Map<String, Object> movie = (Map<String, Object>) info;
-        JmolList<Object> frames = (JmolList<Object>) movie.get("frames");
-        if (frames != null) {
-          for (int i = frames.size(); --i >= 0;)
-            frames.set(i, Integer.valueOf((int) PyMOLReader.floatAt(frames, i)
-                + modelOffset));
-          int i = ((Integer) movie.get("currentFrame")).intValue();
-          if (i >= 0)
-            movie.put("currentFrame", Integer.valueOf(modelOffset + i));
-        }
+        // switch now to simple array
+        int[] frames = (int[]) movie.get("frames");
+        for (int j = frames.length; --j >= 0;)
+          frames[j] += modelOffset;
         return;
       }
     }

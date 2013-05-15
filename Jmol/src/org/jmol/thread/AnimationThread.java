@@ -34,17 +34,17 @@ public class AnimationThread extends JmolThread {
    * 
    */
   private final AnimationManager animationManager;
-  private final int framePointer;
+  private final int framePointer1;
   private final int framePointer2;
   private int intThread;
   private boolean isFirst;
   
 
-  public AnimationThread(AnimationManager animationManager, Viewer viewer, int framePointer, int framePointer2, int intAnimThread) {
+  public AnimationThread(AnimationManager animationManager, Viewer viewer, int framePointer1, int framePointer2, int intAnimThread) {
     super();
     setViewer(viewer, "AnimationThread");
     this.animationManager = animationManager;
-    this.framePointer = framePointer;
+    this.framePointer1 = framePointer1;
     this.framePointer2 = framePointer2;
     intThread = intAnimThread;
     viewer.startHoverWatcher(false);
@@ -83,7 +83,7 @@ public class AnimationThread extends JmolThread {
           mode = FINISH;
           break;
         }
-        if (animationManager.currentFrameIs(framePointer)) {
+        if (animationManager.currentFrameIs(framePointer1)) {
           targetTime += animationManager.firstFrameDelayMs;
           sleepTime = (int) (targetTime - (System.currentTimeMillis() - startTime));
           if (!runSleep(sleepTime, CHECK1))
@@ -109,7 +109,7 @@ public class AnimationThread extends JmolThread {
         }
         isFirst = false;
         targetTime += (int) ((1000f / animationManager.animationFps) + viewer
-            .getFrameDelayMs(animationManager.getCurrentFrame()));
+            .getFrameDelayMs(animationManager.getCurrentModelIndex()));
         mode = CHECK3;
         break;
       case CHECK3:

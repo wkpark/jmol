@@ -417,6 +417,10 @@ public class ZipUtil implements JmolZipUtility {
         String fname = (String) fileNamesAndByteArrays.get(i);
         byte[] bytes = null;
         if (fname.indexOf("file:/") == 0) {
+          Object data = fm.cacheGet(fname, false);
+          if (data != null)
+            bytes = (Escape.isAB(data) ? (byte[]) data : ((String) data)
+                .getBytes());
           fname = fname.substring(5);
           if (fname.length() > 2 && fname.charAt(2) == ':') // "/C:..." DOS/Windows
             fname = fname.substring(1);

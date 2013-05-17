@@ -5903,14 +5903,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void cache() throws ScriptException {
-    checkLength(3);
     int tok = tokAt(1);
-    String fileName = parameterAsString(2);
+    String fileName = null;
+    int n = 2;
     switch (tok) {
     case T.add:
     case T.remove:
+      fileName = optParameterAsString(n++);
+      //$FALL-THROUGH$
+    case T.clear:
+      checkLength(n);
       if (!chk) {
-        if (tok == T.remove && tokAt(2) == T.all)
+        if ("all".equals(fileName))
           fileName = null;
         int nBytes = viewer.cacheFileByName(fileName, tok == T.add);
         showString(nBytes < 0 ? "cache cleared" : nBytes + " bytes "
@@ -18373,20 +18377,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         float radius;
         if (theTok == T.molecular) {
           propertyName = "molecular";
-          //if (!surfaceObjectSeen)
           sbCommand.append(" molecular");
-          radius = 1.4f;
+          radius = (isFloatParameter(i + 1) ? floatParameter(++i) : 1.4f);
         } else {
           addShapeProperty(propertyList, "bsSolvent",
               lookupIdentifierValue("solvent"));
           propertyName = (theTok == T.sasurface ? "sasurface" : "solvent");
-          //if (!surfaceObjectSeen)
           sbCommand.append(" ").appendO(theToken.value);
           radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
               .getFloat(T.solventproberadius));
-          //if (!surfaceObjectSeen)
-          sbCommand.append(" ").appendF(radius);
         }
+        sbCommand.append(" ").appendF(radius);
         propertyValue = Float.valueOf(radius);
         if (tokAt(i + 1) == T.full) {
           addShapeProperty(propertyList, "doFullMolecular", null);
@@ -18803,14 +18804,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (translucency != null)
       setShapeProperty(iShape, "translucency", translucency);
     setShapeProperty(iShape, "clear", null);
-    if (toCache) {
-      String id = (String) getShapeProperty(iShape, "ID");
-      viewer.cachePut("cache://isosurface_" + id, getShapeProperty(iShape,
-          "jvxlDataXml"));
-      runScript("isosurface ID \"" + id + "\" delete;isosurface ID \"" + id
-          + "\"" + (modelIndex >= 0 ? " model " + modelIndex : "")
-          + " \"cache://isosurface_" + getShapeProperty(iShape, "ID") + "\"");
-    }
+    if (toCache)
+      setShapeProperty(iShape, "cache", null);
   }
 
   private String setColorOptions(SB sb, int index, int iShape,

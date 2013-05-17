@@ -208,7 +208,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @SuppressWarnings("unchecked")
   protected void setPropI(String propertyName, Object value, BS bs) {
 
-    //System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + Token.nameOf(((Integer)value).intValue()) : ""));
+    //System.out.println("isosurface testing " + propertyName + " " + value + (propertyName == "token" ? " " + T.nameOf(((Integer)value).intValue()) : ""));
 
     //isosurface-only (no calculation required; no calc parameters to set)
 
@@ -216,6 +216,23 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     //      navigate(((Integer) value).intValue());
     //      return;
     //    }
+    if ("cache" == propertyName) {
+      if (currentMesh == null)
+        return;
+      String id = currentMesh.thisID;
+      int imodel = currentMesh.modelIndex;
+      viewer.cachePut("cache://isosurface_" + id, getPropI("jvxlDataXml"));
+      deleteMeshI(currentMesh.index);
+      setPropI("init", null, null);
+      setPropI("thisID", id, null);
+      setPropI("modelIndex", Integer.valueOf(imodel), null);
+      setPropI("fileName", "cache://isosurface_" + id, null);
+      setPropI("readFile", null, null);
+      setPropI("finalize", "isosurface ID " + Escape.eS(id) + (imodel >= 0 ? " modelIndex " + imodel : "")
+          + " /*file*/" + Escape.eS("cache://isosurface_" + id), null);
+      setPropI("clear", null, null);
+      return;
+    }
     if ("delete" == propertyName) {
       setPropertySuper(propertyName, value, bs);
       if (!explicitID)

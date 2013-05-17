@@ -97,9 +97,9 @@ public class PyMOLReader extends PdbReader {
 
   private static String nucleic = " A C G T U ADE THY CYT GUA URI DA DC DG DT DU ";
 
-  private boolean usePymolRadii = true;
   private boolean allowSurface = true;
   private boolean doResize = false;
+  boolean doCache = false;
 
   private JmolList<Object> settings;
   private Map<Integer, JmolList<Object>> localSettings;
@@ -117,6 +117,7 @@ public class PyMOLReader extends PdbReader {
   private BS bsNucleic = new BS();
   private BS bsNoSurface = new BS();
   private BS bsStructureDefined = new BS();
+  private BS bsExcluded;
   
   private boolean haveTraceOrBackbone;
   private boolean haveNucleicLadder;
@@ -187,6 +188,7 @@ public class PyMOLReader extends PdbReader {
   private Hashtable<String, PyMOLGroup> groups;
   private boolean haveMeasurements;
   private int[] frames;
+  BS bsCarb;
 
   
   @Override
@@ -207,6 +209,11 @@ public class PyMOLReader extends PdbReader {
   public void processBinaryDocument(JmolDocument doc) throws Exception {
     doResize = checkFilterKey("DORESIZE");
     allowSurface = !checkFilterKey("NOSURFACE");
+    doCache = checkFilterKey("DOCACHE");
+    if (doCache) {
+      viewer.cacheClear();
+      bsExcluded = new BS();
+    }
     PickleReader reader = new PickleReader(doc, viewer);
     logging = false;
     Map<String, Object> map = reader.getMap(logging);
@@ -628,8 +635,10 @@ public class PyMOLReader extends PdbReader {
     return v;
   }
   
+  @SuppressWarnings("unchecked")
   private void processBranch(JmolList<Object> branch, boolean moleculeOnly, int iState) {
     int type = getBranchType(branch);
+    JmolList<Object> startLen = (JmolList<Object>) branch.get(branch.size() - 1);
     if ((type == BRANCH_MOLECULE) != moleculeOnly || !checkBranch(branch))
       return;
     Logger.info("PyMOL model " + (nModels) + " Branch " + branchName
@@ -643,6 +652,8 @@ public class PyMOLReader extends PdbReader {
     boolean doGroups = !isStateScript;
     String parentGroupName = (!doGroups || branch.size() < 8 ? null : stringAt(branch, 6));
     BS bsAtoms = null;
+    boolean doExclude = (bsExcluded != null);
+
     switch (type) {
     default:
       msg = "" + type;
@@ -652,9 +663,11 @@ public class PyMOLReader extends PdbReader {
       selections.addLast(branch);
       break;
     case BRANCH_MOLECULE:
+      doExclude = false;
       bsAtoms = processMolecule(deepBranch, iState);
       break;
     case BRANCH_MEASURE:
+      doExclude = false;
       processMeasure(deepBranch);
       break;
     case BRANCH_MAPMESH:
@@ -694,6 +707,10 @@ public class PyMOLReader extends PdbReader {
       PyMOLGroup group = addGroup(branch, parentGroupName, type);
       if (bsAtoms != null)
         addGroupAtoms(group, bsAtoms);
+    }
+    if (doExclude) {
+      int i0 = intAt(startLen, 0);
+      bsExcluded.setBits(i0, i0 + intAt(startLen, 1));
     }
     if (msg != null)
       Logger.error("Unprocessed branch type " + msg + " " + branchName);
@@ -1288,8 +1305,6 @@ public class PyMOLReader extends PdbReader {
           PyMOL.nonbonded_size, nonBondedSize);
       rad = atom.radius * myNonBondedSize;
     }
-    if (!usePymolRadii)
-      atom.radius = Float.NaN; // sorry, can't use these for surfaces
     if (rad != 0) {
       Float r = Float.valueOf(rad);
       BS bsr = htSpacefill.get(r);
@@ -1987,14 +2002,14 @@ public class PyMOLReader extends PdbReader {
   @Override
   public void finalizeModelSet(ModelSet modelSet, int baseModelIndex,
                                int baseAtomIndex) {
-    BS bsCarb = (haveTraceOrBackbone ? modelSet.getAtomBits(T.carbohydrate,
+    bsCarb = (haveTraceOrBackbone ? modelSet.getAtomBits(T.carbohydrate,
         null) : null);
     if (jmolObjects != null) {
       for (int i = 0; i < jmolObjects.size(); i++) {
         try {
           JmolObject obj = jmolObjects.get(i);
           obj.offset(baseModelIndex, baseAtomIndex);
-          obj.finalizeObject(modelSet, bsCarb);
+          obj.finalizeObject(modelSet, this);
         } catch (Exception e) {
           System.out.println(e);
         }
@@ -2009,7 +2024,17 @@ public class PyMOLReader extends PdbReader {
     //if (baseModelIndex == 0)
       //viewer.setBooleanProperty("_ismovie", true);
     if (!isStateScript && frameObj != null) {
-      frameObj.finalizeObject(modelSet, null);
+      frameObj.finalizeObject(modelSet, this);
+    }
+    if (bsExcluded != null) {
+      int nExcluded = bsExcluded.cardinality();
+      byte[] bytes0 = (byte[]) viewer.getFileAsBytes(filePath, null);
+      byte[] bytes = new byte[bytes0.length - nExcluded];
+      for (int i = bsExcluded.nextClearBit(0), n = bytes0.length, pt = 0; i < n; i = bsExcluded.nextClearBit(i + 1)) 
+        bytes[pt++] = bytes0[i];
+      bytes0 = null;
+      String fileName = filePath;
+      viewer.cacheFile(fileName, bytes);
     }
   }
 }

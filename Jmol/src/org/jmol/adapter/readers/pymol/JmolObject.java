@@ -135,9 +135,10 @@ class JmolObject {
   }
 
   @SuppressWarnings("unchecked")
-  void finalizeObject(ModelSet m, BS bsCarb) {
+  void finalizeObject(ModelSet m, PyMOLReader reader) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
+    boolean doCache = reader.doCache;
     String sID;
     SB sb = null;
     switch (id) {
@@ -172,7 +173,7 @@ class JmolObject {
       break;
     case JC.SHAPE_TRACE:
     case JC.SHAPE_BACKBONE:
-      BSUtil.andNot(bsAtoms, bsCarb);
+      BSUtil.andNot(bsAtoms, reader.bsCarb);
       break;
     case JC.SHAPE_DOTS:
       sm.loadShape(id);
@@ -183,7 +184,7 @@ class JmolObject {
       setPutty(sm);
       break;
     case JC.SHAPE_ISOSURFACE:
-      if (bsAtoms == null? !visible : modelIndex < 0)
+      if (bsAtoms == null ? !visible : modelIndex < 0)
         return;
       break;
     default:
@@ -220,6 +221,8 @@ class JmolObject {
           .append(" map \"\" ").append(Escape.eS(mapID)).append(
               ";color isosurface range " + min + " " + max
                   + ";isosurface colorscheme rwb");
+      if (doCache)
+        sb.append(";isosurface cache");
       break;
     case T.mesh:
       modelIndex = sm.viewer.getCurrentModelIndex();
@@ -243,12 +246,17 @@ class JmolObject {
         }
         sb.append(" ]");
       }
+      if (doCache)
+        sb.append(";isosurface cache");
       sb.append(";set meshScale ").appendI(size / 500);
       break;
     case JC.SHAPE_ISOSURFACE:
       sID = (bsAtoms == null ? (String) info : branchNameID);
       sb = new SB();
       sb.append("isosurface ID ").append(Escape.eS(sID));
+      if (doCache)
+        sb.append(" cache");
+      String color = "";
       if (bsAtoms == null) {
         // point display of map 
         modelIndex = sm.viewer.getCurrentModelIndex();
@@ -256,26 +264,29 @@ class JmolObject {
             .append(m.models[modelIndex].getModelNumberDotted()).append(
                 " color density sigma 1.0").append(" \"\" ").append(
                 Escape.eS(sID));
-        break;
+      } else {
+        if (argb == 0)
+          sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
+        String lighting = (String) info;
+        String resolution = "";
+        if (lighting == null) {
+          lighting = "mesh nofill";
+          resolution = " resolution 1.5";
+        }
+        sb.append(" model ")
+            .append(m.models[modelIndex].getModelNumberDotted()).append(
+                resolution).append(" select ").append(Escape.eBS(bsAtoms))
+            .append(" only").append(" solvent ").appendF(size / 1000f);
+        if (argb == 0)
+          sb.append(" map property color");
+        else
+          color = ";color isosurface " + Escape.escapeColor(argb);
+        color += ";isosurface frontOnly " + lighting;
+        if (translucency > 0)
+          color += ";color isosurface translucent " + translucency;
       }
-      if (argb == 0)
-        sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-      String lighting = (String) info;
-      String resolution = "";
-      if (lighting == null) {
-        lighting = "mesh nofill";
-        resolution = " resolution 1.5";
-      }
-      sb.append(" model ").append(m.models[modelIndex].getModelNumberDotted())
-          .append(resolution).append(" select ").append(Escape.eBS(bsAtoms))
-          .append(" only").append(" solvent ").appendF(size / 1000f);
-      if (argb == 0)
-        sb.append(" map property color");
-      else
-        sb.append(" color ").append(Escape.escapeColor(argb));
-      sb.append(" frontOnly ").append(lighting);
-      if (translucency > 0)
-        sb.append(" translucent ").appendF(translucency);
+      if (color.length() > 0)
+        sb.append(color);
       break;
     }
     if (sb != null) {

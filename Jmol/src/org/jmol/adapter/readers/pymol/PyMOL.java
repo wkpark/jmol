@@ -3,6 +3,8 @@ package org.jmol.adapter.readers.pymol;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.util.Logger;
+
 /**
  * PyMOL settings and constants. 
  * 
@@ -6193,6 +6195,24 @@ class PyMOL {
   
   static void addColor(Integer id, int value) {
     moreColors.put(id, Integer.valueOf(value));
+  }
+
+  public static float getDefaultSetting(int i, int pymolVersion) {
+    switch (i) {
+    case stick_color:
+      return -1;
+    case label_size:
+      return 14;
+    case label_distance_digits:
+    case label_angle_digits:
+    case label_dihedral_digits:
+      return -1;
+    case ray_pixel_scale:
+      return 1;
+    default:
+      Logger.info("PyMOL " + pymolVersion + " does not have setting " + i);
+      return 0;
+    }
   }
 
 }

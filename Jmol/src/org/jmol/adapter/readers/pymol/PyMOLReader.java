@@ -53,6 +53,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
+import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
@@ -188,6 +189,7 @@ public class PyMOLReader extends PdbReader {
   private Hashtable<String, PyMOLGroup> groups;
   private boolean haveMeasurements;
   private int[] frames;
+  private String mepList = "";
   BS bsCarb;
 
   
@@ -447,6 +449,7 @@ public class PyMOLReader extends PdbReader {
         if (isosurfaceName == null)
           continue;
         obj.addLast(isosurfaceName);
+        mepList += ";" + isosurfaceName + ";";
       } else {
         tok = T.mesh;
         mapName = stringAt(listAt(listAt(obj, 2), 0), 1);
@@ -465,6 +468,7 @@ public class PyMOLReader extends PdbReader {
           ms.setSize(getFloatSetting(PyMOL.mesh_width));
           ms.argb = PyMOL.getRGB(intAt(listAt(obj, 0), 2));
         }
+        ms.translucency = getFloatSetting(PyMOL.transparency);
       }
     }
   }
@@ -604,35 +608,16 @@ public class PyMOLReader extends PdbReader {
   }
 
   private float getFloatSetting(int i) {
-    float v = 0;
     try {
       JmolList<Object> setting = null;
       if (localSettings != null)
         setting = localSettings.get(Integer.valueOf(i));
       if (setting == null)
         setting = listAt(settings, i);
-      if (settings == null)
-        return 0;
-      v = ((Number) setting.get(2)).floatValue();
-      //Logger.info("Pymol setting " + i + " = " + v);
+      return ((Number) setting.get(2)).floatValue();
     } catch (Exception e) {
-      switch (i) {
-      case PyMOL.stick_color:
-        return -1;
-      case PyMOL.label_size:
-        return 14;
-      case PyMOL.label_distance_digits:
-      case PyMOL.label_angle_digits:
-      case PyMOL.label_dihedral_digits:
-        return -1;
-      case PyMOL.ray_pixel_scale:
-        return 1;
-      default:
-        Logger.info("PyMOL " + pymolVersion + " does not have setting " + i);
-        break;
-      }
+      return PyMOL.getDefaultSetting(i, pymolVersion);
     }
-    return v;
   }
   
   @SuppressWarnings("unchecked")
@@ -710,7 +695,9 @@ public class PyMOLReader extends PdbReader {
     }
     if (doExclude) {
       int i0 = intAt(startLen, 0);
-      bsExcluded.setBits(i0, i0 + intAt(startLen, 1));
+      int len = intAt(startLen, 1);
+      bsExcluded.setBits(i0, i0 + len);
+      Logger.info("cached PSE file excludes PyMOL object type " + type + " name=" + branchName + " len=" + len);
     }
     if (msg != null)
       Logger.error("Unprocessed branch type " + msg + " " + branchName);
@@ -2037,4 +2024,9 @@ public class PyMOLReader extends PdbReader {
       viewer.cacheFile(fileName, bytes);
     }
   }
+
+  public boolean haveMep(String sID) {
+    return Parser.isOneOf(sID, mepList);
+  }
+
 }

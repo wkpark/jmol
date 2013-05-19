@@ -601,17 +601,26 @@ public class JvxlXmlReader extends VolumeFileReader {
       n = Math.min(n, vertexCount);
       String[] tokens = Parser.getTokens(jvxlColorDataRead.substring(nextc[0]));
       boolean haveTranslucent = false;
+      float trans = jvxlData.translucency;
+      int lastColor = 0;
       for (int i = 0; i < n; i++)
         // colix will be one of 8 shades of translucent if A in ARGB is not FF.
         try{
-          colixes[i] = C.getColixTranslucent(jvxlData.vertexColors[i] = getColor(tokens[i]));
+          int c = getColor(tokens[i]);
+          if (c == 0)
+            c = lastColor;
+          else
+            lastColor = c;
+          colixes[i] = C.getColixTranslucent(jvxlData.vertexColors[i] = c);
           if (C.isColixTranslucent(colixes[i]))
             haveTranslucent = true;
+          else if (trans != 0)
+            colixes[i] = C.getColixTranslucent3(colixes[i], true, trans);
         } catch (Exception e) {
           Logger.info("JvxlXmlReader: Cannot interpret color code: " + tokens[i]);
           // ignore this color if parsing error
         }
-      if (haveTranslucent){
+      if (haveTranslucent && trans == 0){
         // set to show in pass2
         jvxlData.translucency = 0.5f;
       }

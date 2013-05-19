@@ -836,11 +836,17 @@ public class JvxlCoder {
               list1, list2);
         }
     } else {
+      int lastColor = 0;
       list1.appendI(n).append(" ");
       for (int i = 0; i < vertexCount; i++)
         if (!removeSlabbed || bsSlabDisplay.get(i)) {
-          list1.appendI(vertexColors[polygonCount == 0 ? i : vertexIdOld[i]])
-              .append(" ");
+          int c = vertexColors[polygonCount == 0 ? i : vertexIdOld[i]];
+          if (c == lastColor)
+            c = 0;
+          else
+            lastColor = c;
+          list1.appendI(c);
+          list1.append(" ");
         }
     }
     appendXmlColorData(sb, list1.appendSB(list2).append("\n")

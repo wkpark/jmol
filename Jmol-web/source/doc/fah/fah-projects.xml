@@ -8565,16 +8565,16 @@
   <fah_proj number="6353" name="p6353" public="n"
     server="155.247.166.219" atoms="140" preferred="3.2" deadline="7"
     credit="174.0" frames="100" code="A4" contact="vvoelz" kfactor="0.75"/>
-  <fah_proj number="6354" name="p6354" public="n"
+  <fah_proj number="6354" name="p6354" public="y"
     server="155.247.166.219" atoms="3127" preferred="3" deadline="7"
     credit="199.0" frames="100" code="A4" contact="vvoelz" kfactor="0.75"/>
-  <fah_proj number="6355" name="p6355" public="n"
+  <fah_proj number="6355" name="p6355" public="y"
     server="155.247.166.219" atoms="3127" preferred="3" deadline="7"
     credit="199.0" frames="100" code="A4" contact="vvoelz" kfactor="0.75"/>
-  <fah_proj number="6356" name="p6356" public="n"
+  <fah_proj number="6356" name="p6356" public="y"
     server="155.247.166.219" atoms="3130" preferred="3" deadline="7"
     credit="199.0" frames="100" code="A4" contact="vvoelz" kfactor="0.75"/>
-  <fah_proj number="6357" name="p6357" public="n"
+  <fah_proj number="6357" name="p6357" public="y"
     server="155.247.166.219" atoms="3130" preferred="3" deadline="7"
     credit="199.0" frames="100" code="A4" contact="vvoelz" kfactor="0.75"/>
 
@@ -9833,8 +9833,8 @@
     server="171.67.108.59" atoms="1100" preferred="8.8" deadline="19.1"
     credit="476.8" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
   <fah_proj number="8054" name="p8054" public="y"
-    server="171.67.108.143" atoms="917" preferred="6.9" deadline="9.3"
-    credit="2387.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
+    server="171.67.108.143" atoms="917" preferred="10.43" deadline="13.41"
+    credit="3874.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
   <fah_proj number="8055" name="p8055" public="n"
     server="171.67.108.58" atoms="21376" preferred="3.62" deadline="7.85"
     credit="196.23" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
@@ -9883,7 +9883,7 @@
   <fah_proj number="8073" name="p8073" public="y"
     server="171.67.108.36" atoms="917" preferred="10.43" deadline="13.41"
     credit="3874.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
-  <fah_proj number="8074" name="p8074" public="n"
+  <fah_proj number="8074" name="p8074" public="y"
     server="171.67.108.36" atoms="917" preferred="10.43" deadline="13.41"
     credit="3874.0" frames="100" code="OG" contact="shukla" kfactor="0.0"/>
   <fah_proj number="8075" name="p8075" public="n"
@@ -10231,6 +10231,76 @@
   <fah_proj number="8586" name="hema_insertion" public="n"
     server="128.143.199.96" atoms="167710" preferred="8" deadline="13.4"
     credit="1668.0" frames="100" code="A3" contact="pela3247" kfactor="3.0"/>
+
+  <!-- Projects 8700 to 8799 -->
+  <fah_proj number="8701" name="p8701" public="y"
+    server="171.67.108.34" atoms="24200" preferred="3.7" deadline="8.1"
+    credit="201.6" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8702" name="p8702" public="n"
+    server="171.67.108.35" atoms="43000" preferred="3.6" deadline="7.9"
+    credit="197.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+
+  <!-- Projects 8800 to 8899 -->
+  <fah_proj number="8800" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167297" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8801" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167323" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8802" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167316" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8803" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167338" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8804" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167336" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8805" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167316" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8806" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167273" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8807" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167309" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8808" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167310" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8809" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167316" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8810" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167308" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8811" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167319" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8812" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167335" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8813" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167342" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8814" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167358" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8815" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167312" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8816" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167332" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8817" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167331" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8818" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167335" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
+  <fah_proj number="8819" name="hema_insertion" public="n"
+    server="128.143.199.96" atoms="167332" preferred="7.9" deadline="13.1"
+    credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

@@ -9342,6 +9342,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (filter == null)
       filter = viewer.getDefaultLoadFilter();
     if (filter.length() > 0) {
+      if (filter.toUpperCase().indexOf("DOCACHE") >= 0)
+        viewer.cacheClear();
       htParams.put("filter", filter);
       if (filter.equalsIgnoreCase("2d")) // MOL file hack
         filter = "2D-noMin";

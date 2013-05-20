@@ -1268,13 +1268,14 @@ public class FileManager {
   
   public Object cacheGet(String key, boolean bytesOnly) {
     key = key.replace('\\', '/');
-    if (Logger.debugging && cache.containsKey(key))
-      Logger.info("cacheGet " + key);
+    if (Logger.debugging)
+      Logger.info("cacheGet " + key + " " + cache.containsKey(key));
     Object data = cache.get(key);
     return (bytesOnly && (data instanceof String) ? null : data);
   }
 
   void cacheClear() {
+    Logger.info("cachClear");
     cache.clear();
   }
 

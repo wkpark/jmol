@@ -127,8 +127,8 @@ abstract class VolumeFileReader extends SurfaceFileReader {
       readParameters();
       if (atomCount == Integer.MIN_VALUE)
         return 0;
-
-      Logger.info("voxel grid origin:" + volumetricOrigin);
+      if (!vertexDataOnly)
+        Logger.info("voxel grid origin:" + volumetricOrigin);
       int downsampleFactor = params.downsampleFactor;
       boolean downsampling = (canDownsample && downsampleFactor > 0);
       if (downsampling) {
@@ -143,14 +143,15 @@ abstract class VolumeFileReader extends SurfaceFileReader {
               + voxelCounts[i]);
         }
       }
-      for (int i = 0; i < 3; ++i) {
-        if (!isAngstroms)
-          volumetricVectors[i].scale(ANGSTROMS_PER_BOHR);
-        line = voxelCounts[i] + " " + volumetricVectors[i].x + " "
-            + volumetricVectors[i].y + " " + volumetricVectors[i].z;
-        jvxlFileHeaderBuffer.append(line).appendC('\n');
-        Logger.info("voxel grid count/vector:" + line);
-      }
+      if (!vertexDataOnly)
+        for (int i = 0; i < 3; ++i) {
+          if (!isAngstroms)
+            volumetricVectors[i].scale(ANGSTROMS_PER_BOHR);
+          line = voxelCounts[i] + " " + volumetricVectors[i].x + " "
+              + volumetricVectors[i].y + " " + volumetricVectors[i].z;
+          jvxlFileHeaderBuffer.append(line).appendC('\n');
+          Logger.info("voxel grid count/vector:" + line);
+        }
       scaleIsosurface(params.scale);
       volumeData.setVolumetricXml();
       return nSurfaces;

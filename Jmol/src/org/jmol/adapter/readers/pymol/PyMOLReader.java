@@ -212,10 +212,8 @@ public class PyMOLReader extends PdbReader {
     doResize = checkFilterKey("DORESIZE");
     allowSurface = !checkFilterKey("NOSURFACE");
     doCache = checkFilterKey("DOCACHE");
-    if (doCache) {
-      viewer.cacheClear();
+    if (doCache)
       bsExcluded = new BS();
-    }
     PickleReader reader = new PickleReader(doc, viewer);
     logging = false;
     Map<String, Object> map = reader.getMap(logging);

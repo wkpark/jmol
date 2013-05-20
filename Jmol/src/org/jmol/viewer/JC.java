@@ -1071,9 +1071,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
 
   // this form is used for counting groups in ModelSet
+  // GLX added for 13.1.16
   private final static String allCarbohydrates = 
     ",[AHR],[ALL],[AMU],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]" +
-    ",[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC]" +
+    ",[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLC],[GXL]" +
     ",[GUP],[LXC],[MAN],[RAM],[RIB],[RIP],[XYP],[XYS]" +
     ",[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]" +
     ",[SUC],[TRE],[GCU],[MTL],[NAG],[NDG],[RHA],[SOR],[SOL],[SOE]" +  

@@ -25,7 +25,7 @@
 package org.jmol.renderbio;
 
 import org.jmol.constant.EnumStructure;
-import org.jmol.modelsetbio.AminoPolymer;
+import org.jmol.modelsetbio.AlphaPolymer;
 import org.jmol.modelsetbio.Helix;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.modelsetbio.ProteinStructure;
@@ -46,7 +46,7 @@ public class RocketsRenderer extends BioShapeRenderer {
 
   @Override
   protected void renderBioShape(BioShape bioShape) {
-    if (!(bioShape.bioPolymer instanceof AminoPolymer))
+    if (!(bioShape.bioPolymer instanceof AlphaPolymer))
       return;
     boolean val = !viewer.getBoolean(T.rocketbarrels);
     if (renderArrowHeads != val) {

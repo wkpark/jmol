@@ -219,7 +219,7 @@ public class MainPopupResourceBundle extends PopupResource {
 
 
       {   "surfaceMenu",
-          "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular CHARGEsurfMEP surfMoComputedMenuText - surfOpaque surfTranslucent surfOff" },
+          "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular CHARGEsurf2MEP CHARGEsurfMEP surfMoComputedMenuText - surfOpaque surfTranslucent surfOff" },
 
       {   "FILEUNITMenu",
           "SYMMETRYShowComputedMenu SYMMETRYhide FILEMOLload FILEUNITone FILEUNITnine FILEUNITnineRestricted FILEUNITninePoly" },
@@ -516,6 +516,8 @@ public class MainPopupResourceBundle extends PopupResource {
           "isosurface delete resolution 0 sasurface 1.4 translucent" },
       { "CHARGEsurfMEP",
           "isosurface delete resolution 0 vdw color range all map MEP translucent" },
+      { "CHARGEsurf2MEP",
+          "isosurface delete resolution 0 vdw color range -0.1 0.1 map MEP translucent" },
       { "surfOpaque", "mo opaque;isosurface opaque" },
       { "surfTranslucent", "mo translucent;isosurface translucent" },
       { "surfOff", "mo delete;isosurface delete;select *;dots off" },
@@ -916,7 +918,8 @@ public class MainPopupResourceBundle extends PopupResource {
         "surfSolvent14", GT._("Solvent Surface ({0}-Angstrom probe)", "1.4"),
         "surfSolventAccessible14",
             GT._("Solvent-Accessible Surface (VDW + {0} Angstrom)", "1.4"),
-        "CHARGEsurfMEP", GT._("Molecular Electrostatic Potential"),
+        "CHARGEsurfMEP", GT._("Molecular Electrostatic Potential (range ALL)"),
+        "CHARGEsurf2MEP", GT._("Molecular Electrostatic Potential (range -0.1 0.1)"),
         "surfOpaque", GT._("Make Opaque"),
         "surfTranslucent", GT._("Make Translucent"),
         "surfOff", GT._("Off"),

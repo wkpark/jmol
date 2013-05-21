@@ -471,9 +471,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     apiPlatform = (ApiPlatform) o;
     display = info.get("display");
     isSingleThreaded = apiPlatform.isSingleThreaded();
-    noGraphicsAllowed = (display == null && checkOption2("noGraphics", "-n"));
+    noGraphicsAllowed = checkOption2("noGraphics", "-n");
     haveDisplay = (display != null && !noGraphicsAllowed && !isHeadless() && !checkOption2(
         "isDataOnly", "\0"));
+    noGraphicsAllowed &= (display == null);
     if (haveDisplay) {
       mustRender = true;
       multiTouch = checkOption2("multiTouch", "-multitouch");

@@ -342,7 +342,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           comment = script.substring(ichToken, ichToken + cchToken).trim();
           break;
         }
-        isEndOfCommand = isEndOfCommand || endOfLine || lookingAtEndOfStatement();
+        isEndOfCommand = isEndOfCommand || endOfLine || lookingAtTerminator();
       }
       
       if (isEndOfCommand) {
@@ -410,7 +410,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private boolean lookingAtLeadingWhitespace() {
     int ichT = ichToken;
-    while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
+    while (isSpaceOrTab(charAt(ichT)))
       ++ichT;
     if (isLineContinuation(ichT, true))
       ichT += 1 + nCharNewLine(ichT + 1);
@@ -428,7 +428,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private boolean lookingAtMathContinuation(int ichT) {
     int n;
-    if (ichT >= cchScript || (n = nCharNewLine(ichT)) == 0 || lastToken.tok == T.leftbrace)
+    if ((n = nCharNewLine(ichT)) == 0 || lastToken.tok == T.leftbrace)
       return false;
     if (parenCount > 0 || bracketCount > 0)
       return true;
@@ -437,34 +437,44 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     if (lastToken.tok == tokLastMath)
       return true;
     ichT += n;
-    while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
+    while (isSpaceOrTab(charAt(ichT)))
       ++ichT;
     return (lookingAtLookupToken(ichT) 
         && tokLastMath == 1);
   }
 
+  /**
+   * Look for end of script or a new line. Set ichEnd to this point or end of string;
+   * if found, set cchToken to the number of eol characters;
+   * 
+   * @return true if eol
+   */
   private boolean lookingAtEndOfLine() {
-    int ichT = ichEnd = ichToken;
     if (ichToken >= cchScript) {
       ichEnd = cchScript;
       return true;
     }
-    int n = nCharNewLine(ichT);
-    if (n == 0)
-      return false;
-    ichEnd = ichToken;
-    cchToken = n;
-    return true;    
+    return ((cchToken = nCharNewLine(ichEnd = ichToken)) > 0);
   }
   
+  /**
+   * Check for line ending at this point in script.
+   * 
+   * @param ichT
+   * @return 1 if \n or \r, 2 if \r\n, or 0 otherwise (including end of script)
+   */
   private int nCharNewLine(int ichT) {
     char ch;
-    return (ichT >= cchScript ? 0 
-        : (ch = script.charAt(ichT)) != '\r' ? (ch == '\n' ? 1 : 0) 
-        : ++ichT < cchScript && script.charAt(ichT) == '\n' ? 2 : 1);
+    return ((ch = charAt(ichT)) != '\r' ? (ch == '\n' ? 1 : 0)
+        : charAt(++ichT) == '\n' ? 2 : 1);
   }
 
-  private boolean lookingAtEndOfStatement() {
+  /**
+   * Look for valid terminating semicolon -- one not within for(), for example.
+   * 
+   * @return true if valid semi
+   */
+  private boolean lookingAtTerminator() {
     boolean isSemi = (script.charAt(ichToken) == ';');
     if (isSemi && nTokens > 0)
       ptSemi = nTokens;
@@ -492,7 +502,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     if (ichToken == ichCurrentCommand && ch == '$') {
       isShowScriptOutput = true;
       isShowCommand = true;
-      while (ch != ']' && ichT < cchScript && !eol(ch = script.charAt(ichT)))
+      while (ch != ']' && !eol(ch = charAt(ichT)))
         ++ichT;
       cchToken = ichT - ichToken;
       return CONTINUE;
@@ -507,7 +517,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         break;
       case '*':
         ichEnd = ichT - 1;
-        String terminator = (++ichT < cchScript && (ch = script.charAt(ichT)) == '*' 
+        String terminator = ((ch = charAt(++ichT)) == '*' 
             ? "**/" : "*/");
         ichT = script.indexOf(terminator, ichToken + 2);
         if (ichT < 0) {
@@ -588,6 +598,10 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return (nTokens == 0 ? OK2 : CONTINUE);
   }
   
+  private char charAt(int i) {
+    return (i < cchScript ? script.charAt(i) : '\0');
+  }
+
   private int processTokenList(short iLine, boolean doCompile) {
     if (nTokens > 0 || comment != null) {
       if (nTokens == 0) {
@@ -878,13 +892,50 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return ident;
   }
 
+  /**
+   * 
+   * Check for special parameters, including:
+   * 
+   * +, -, \, *, /, &, |, =, period, or [, single or double quote,
+   * command-specific parameters, $.... identifiers, exponential notation, decimal
+   * numbers, sequence codes, integers, bitsets ({....}) or [{....}], or matrices
+   * 
+   * @return OK, CONTINUE, or ERROR
+   * 
+   */
   private int checkSpecialParameterSyntax() {
+    if (lookingAtString(!implicitString)) {
+      if (cchToken < 0)
+        return ERROR(ERROR_endOfCommandUnexpected);
+      String str = getUnescapedStringLiteral(lastToken != null
+          && !iHaveQuotedString
+          && lastToken.tok != T.inline
+          && (tokCommand == T.set && nTokens == 2
+              && lastToken.tok == T.defaultdirectory || tokCommand == T.load
+              || tokCommand == T.background || tokCommand == T.script));
+      iHaveQuotedString = true;
+      if (tokCommand == T.load && lastToken.tok == T.data
+          || tokCommand == T.data && str.indexOf("@") < 0) {
+        if (!getData(str)) {
+          return ERROR(ERROR_missingEnd, "data");
+        }
+      } else {
+        addTokenToPrefix(T.o(T.string, str));
+        if (implicitString)
+          isEndOfCommand = true;
+      }
+      return CONTINUE;
+    }
+    if (lastToken.tok == T.id && lookingAtImpliedString(false, false, false)) { 
+      addTokenToPrefix(T.o(T.string, script.substring(ichToken, ichToken + cchToken)));
+      return CONTINUE;
+    }
     char ch;
     if (nTokens == ptNewSetModifier) {
       ch = script.charAt(ichToken);
       boolean isAndEquals = ("+-\\*/&|=".indexOf(ch) >= 0);
       boolean isOperation = (isAndEquals || ch == '.' || ch == '[');
-      char ch2 = (ichToken + 1 >= cchScript ? 0 : script.charAt(ichToken + 1));
+      char ch2 = charAt(ichToken + 1);
       if (!isNewSet && isUserToken && isOperation
           && (ch == '=' || ch2 == ch || ch2 == '=')) {
         isNewSet = true;
@@ -894,8 +945,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         // data += what
 
       }
-      if (isNewSet || tokCommand == T.set
-          || T.tokAttr(tokCommand, T.setparam)) {
+      if (isNewSet || tokCommand == T.set || T.tokAttr(tokCommand, T.setparam)) {
         if (ch == '=')
           setEqualPt = ichToken;
 
@@ -909,8 +959,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         if (T.tokAttr(tokCommand, T.setparam) && ch == '='
             || (isNewSet || isSetBrace) && isOperation) {
           setCommand(isAndEquals ? T.tokenSet
-              : ch == '[' && !isSetBrace ? T.tokenSetArray
-                  : T.tokenSetProperty);
+              : ch == '[' && !isSetBrace ? T.tokenSetArray : T.tokenSetProperty);
           ltoken.add(0, tokenCommand);
           cchToken = 1;
           switch (ch) {
@@ -940,51 +989,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       }
     }
-
-    // cd, echo, gotocmd, help, hover, javascript, label, message, and pause
-    // all are implicitly strings. You CAN use "..." but you don't have to,
-    // and you cannot use '...'. This way the introduction of single quotes 
-    // as an equivalent of double quotes cannot break existing scripts. -- BH 06/2009
-
-    if (lookingAtString(!implicitString)) {
-      if (cchToken < 0)
-        return ERROR(ERROR_endOfCommandUnexpected);
-      String str;
-      if ((tokCommand == T.set && nTokens == 2 && lastToken.tok == T.defaultdirectory
-          || tokCommand == T.load || tokCommand == T.background || tokCommand == T.script)
-          && !iHaveQuotedString) {
-        if (lastToken.tok == T.inline) {
-          str = getUnescapedStringLiteral();
-        } else {
-          str = script.substring(ichToken + 1, ichToken + cchToken - 1);
-          if (str.indexOf("\\u") >= 0)
-            str = Escape.unescapeUnicode(str);
-        }
-      } else {
-        str = getUnescapedStringLiteral();
-      }
-      iHaveQuotedString = true;
-      if (tokCommand == T.load && lastToken.tok == T.data
-          || tokCommand == T.data && str.indexOf("@") < 0) {
-        if (!getData(str)) {
-          return ERROR(ERROR_missingEnd, "data");
-        }
-      } else {
-        addTokenToPrefix(T.o(T.string, str));
-        if (implicitString)
-          isEndOfCommand = true;
-      }
-      return CONTINUE;
-    }
-    if (tokCommand == T.sync && nTokens == 1 && charToken()) {
-      String ident = script.substring(ichToken, ichToken + cchToken);
-      int iident = Parser.parseInt(ident);
-      if (iident == Integer.MIN_VALUE || Math.abs(iident) < 1000)
-        addTokenToPrefix(T.o(T.identifier, ident));
-      else
-        addTokenToPrefix(T.i(iident));
-      return CONTINUE;
-    }
     switch (tokCommand) {
     case T.load:
     case T.script:
@@ -994,7 +998,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         return OK;
       }
       if (tokCommand == T.load) {
-        if ((nTokens == 1 || nTokens == 2 && tokAt(1) == T.append) && lookingAtLoadFormat()) {
+        if ((nTokens == 1 || nTokens == 2 && tokAt(1) == T.append)
+            && lookingAtLoadFormat()) {
           String strFormat = script.substring(ichToken, ichToken + cchToken);
           T token = T.getTokenFromName(strFormat.toLowerCase());
           switch (token == null ? T.nada : token.tok) {
@@ -1015,9 +1020,9 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           default:
             // skip entirely if not recognized
             int tok = (strFormat.indexOf("=") == 0
-                || strFormat.indexOf("$") == 0 ? T.string : Parser.isOneOf(
-                strFormat = strFormat.toLowerCase(),
-                JC.LOAD_ATOM_DATA_TYPES) ? T.identifier : 0);
+                || strFormat.indexOf("$") == 0 ? T.string
+                : Parser.isOneOf(strFormat = strFormat.toLowerCase(),
+                    JC.LOAD_ATOM_DATA_TYPES) ? T.identifier : 0);
             if (tok != 0) {
               addTokenToPrefix(T.o(tok, strFormat));
               iHaveQuotedString = (tok == T.string);
@@ -1034,15 +1039,26 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         }
       }
       if (!iHaveQuotedString
-          && lookingAtImpliedString(false, tokCommand == T.load, 
-              nTokens > 1 || tokCommand != T.script)) {
+          && lookingAtImpliedString(false, tokCommand == T.load, nTokens > 1
+              || tokCommand != T.script)) {
         String str = script.substring(ichToken, ichToken + cchToken);
         if (tokCommand == T.script && str.startsWith("javascript:")) {
           lookingAtImpliedString(true, true, true);
           str = script.substring(ichToken, ichToken + cchToken);
         }
-        addTokenToPrefix(T.o(T.string, str));
         iHaveQuotedString = true;
+        addTokenToPrefix(T.o(T.string, str));
+        return CONTINUE;
+      }
+      break;
+    case T.sync:
+      if (nTokens == 1 && lookForSyncID()) {
+        String ident = script.substring(ichToken, ichToken + cchToken);
+        int iident = Parser.parseInt(ident);
+        if (iident == Integer.MIN_VALUE || Math.abs(iident) < 1000)
+          addTokenToPrefix(T.o(T.identifier, ident));
+        else
+          addTokenToPrefix(T.i(iident));
         return CONTINUE;
       }
       break;
@@ -1072,8 +1088,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       break;
     }
-    if (implicitString
-        && !(tokCommand == T.script && iHaveQuotedString)
+    if (implicitString && !(tokCommand == T.script && iHaveQuotedString)
         && lookingAtImpliedString(true, true, true)) {
       String str = script.substring(ichToken, ichToken + cchToken);
       if (tokCommand == T.label
@@ -1083,21 +1098,21 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         addTokenToPrefix(T.o(T.string, str));
       return CONTINUE;
     }
+    if (lookingAtObjectID()) {
+      addTokenToPrefix(T.getTokenFromName("$"));
+      addTokenToPrefix(T.o(T.identifier, script.substring(ichToken, ichToken
+          + cchToken)));
+      return CONTINUE;
+    }
     float value;
     if (!Float.isNaN(value = lookingAtExponential())) {
       addTokenToPrefix(T.o(T.decimal, Float.valueOf(value)));
       return CONTINUE;
     }
-    if (lookingAtObjectID(nTokens == 1)) {
-      addTokenToPrefix(T.getTokenFromName("$"));
-      addTokenToPrefix(T.o(T.identifier, script.substring(ichToken,
-          ichToken + cchToken)));
-      return CONTINUE;
-    }
     if (lookingAtDecimal()) {
-      value =  Parser.fVal(script.substring(ichToken, ichToken + cchToken));
-      int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(ichToken,
-          ichToken + cchToken)));
+      value = Parser.fVal(script.substring(ichToken, ichToken + cchToken));
+      int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(
+          ichToken, ichToken + cchToken)));
       addTokenToPrefix(T.tv(T.decimal, intValue, Float.valueOf(value)));
       return CONTINUE;
     }
@@ -1115,10 +1130,10 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         }
         int seqcode = Group.getSeqcodeFor(seqNum, insertionCode);
         addTokenToPrefix(T.tv(T.seqcode, seqcode, "seqcode"));
-        return CONTINUE;
       } catch (NumberFormatException nfe) {
         return ERROR(ERROR_invalidExpressionToken, "" + ch);
       }
+      return CONTINUE;
     }
     int val = lookingAtInteger();
     if (val != Integer.MAX_VALUE) {
@@ -1138,8 +1153,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       return CONTINUE;
     }
     if (!isMathExpressionCommand && parenCount == 0
-        || lastToken.tok != T.identifier
-        && !tokenAttr(lastToken, T.mathfunc)) {
+        || lastToken.tok != T.identifier && !tokenAttr(lastToken, T.mathfunc)) {
       // here if:
       //   structure helix ({...})
       //   frame align ({...})
@@ -1153,21 +1167,17 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       // bitsets properly: x.distance( ({1 2 3}) )
       boolean isBondOrMatrix = (script.charAt(ichToken) == '[');
       BS bs = lookingAtBitset();
-      if (bs == null) {
-        if (isBondOrMatrix) {
-          Object m = lookingAtMatrix();
-          if (m instanceof Matrix3f || m instanceof Matrix4f) {
-            addTokenToPrefix(T.o((m instanceof Matrix3f ? T.matrix3f
-                : T.matrix4f), m));
-            return CONTINUE;
-          }
-        }
-      } else {
-        if (isBondOrMatrix)
-          addTokenToPrefix(T.o(T.bitset, new BondSet(bs)));
-        else
-          addTokenToPrefix(T.o(T.bitset, bs));
+      if (bs != null) {
+        addTokenToPrefix(T.o(T.bitset, isBondOrMatrix ? new BondSet(bs) : bs));
         return CONTINUE;
+      }
+      if (isBondOrMatrix) {
+        Object m = lookingAtMatrix();
+        if (m instanceof Matrix3f || m instanceof Matrix4f) {
+          addTokenToPrefix(T.o(
+              (m instanceof Matrix3f ? T.matrix3f : T.matrix4f), m));
+          return CONTINUE;
+        }
       }
     }
     return OK;
@@ -1205,7 +1215,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           cchToken = 0;
           return CONTINUE;
         }
-        if (ichToken + cchToken < cchScript && script.charAt(ichToken + cchToken) == '.') {
+        if (charAt(ichToken + cchToken) == '.') {
           addTokenToPrefix(setCommand(T.tokenScript));
           nTokens = 1;
           cchToken = 0;
@@ -1458,7 +1468,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       
       isSetBrace = (theTok == T.leftbrace);
       if (isSetBrace) {
-        if (!lookingAtBraceSyntax()) {
+        if (!lookingAtSetBraceSyntax()) {
           isEndOfCommand = true;
           if (flowContext != null)
             flowContext.forceEndIf = false;
@@ -1729,7 +1739,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     case T.pmesh:
     case T.isosurface:
       // isosurface ... name.xxx
-      char ch = nextChar();
+      char ch = charAt(ichToken + cchToken);
       if (parenCount == 0 && bracketCount == 0
           && ".:/\\+-!?".indexOf(ch) >= 0 && !(ch == '-' && ident.equals("=")))
         checkUnquotedFileName();
@@ -1756,11 +1766,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     setEqualPt = Integer.MAX_VALUE;
     ptNewSetModifier = (isNewSet ? (ident.equals("(") ? 2 : 1) : Integer.MAX_VALUE);
     return ((isSetBrace || theToken.tok == T.plusPlus || theToken.tok == T.minusMinus)? theToken : T.o(T.identifier, ident));
-  }
-
-  private char nextChar() {
-    int ich = ichToken + cchToken;
-    return (ich >= cchScript ? ' ' : script.charAt(ich));
   }
 
   private void checkUnquotedFileName() {
@@ -2041,11 +2046,13 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   private boolean getData(String key) {
     addTokenToPrefix(T.o(T.string, key));
     ichToken += key.length() + 2;
-    if (script.length() > ichToken && script.charAt(ichToken) == '\r') {
-      lineCurrent++;ichToken++;
+    if (charAt(ichToken) == '\r') {
+      lineCurrent++;
+      ichToken++;
     }
-    if (script.length() > ichToken && script.charAt(ichToken) == '\n') {
-      lineCurrent++;ichToken++;
+    if (charAt(ichToken) == '\n') {
+      lineCurrent++;
+      ichToken++;
     }
     int i = script.indexOf(chFirst + key + chFirst, ichToken) - 4;
     if (i < 0 || !script.substring(i, i + 4).equalsIgnoreCase("END "))
@@ -2079,12 +2086,26 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return ch == ' ' || ch == '\t';
   }
 
+  /**
+   * 
+   * look for end-of-line character \r, \n, or ; that is not within
+   * a command such as for (var i=0;i < 10; i++)
+   * 
+   * @param ch
+   * @return true if end of line
+   */
   private boolean eol(char ch) {
-    return (ch == '\r' || ch == '\n' || ch == ';' && nSemiSkip <= 0);  
+    return (ch == '\0' || ch == '\r' || ch == '\n' || ch == ';' && nSemiSkip <= 0);  
   }
 
-  private boolean lookingAtBraceSyntax() {
-    // isSetBrace: {xxx}.yyy =  or {xxx}[xx].
+  /**
+   * 
+   * look for '{' at the start of a command, allowing for 
+   * syntaxes {xxx}.yyy = ... or {xxx}[yy] = ...
+   * 
+   * @return true only if found
+   */
+  private boolean lookingAtSetBraceSyntax() {
     int ichT = ichToken;
     int nParen = 1;
     while (++ichT < cchScript && nParen > 0) {
@@ -2097,7 +2118,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       break;
       }
     }
-    if (ichT < cchScript && script.charAt(ichT) == '[' && ++nParen == 1)
+    if (charAt(ichT) == '[' && ++nParen == 1)
       while (++ichT < cchScript && nParen > 0) {
         switch (script.charAt(ichT)) {
         case '[':
@@ -2108,7 +2129,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         break;
         }
       }
-    if (ichT < cchScript && script.charAt(ichT) == '.' && nParen == 0) {
+    if (charAt(ichT) == '.' && nParen == 0) {
       return true;
     }
     
@@ -2116,8 +2137,21 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   }
 
   private char chFirst = '\0';
+  
+  /**
+   * look for a quoted string, possibly allowing single quotes. 
+   * 
+   * @param allowPrime
+   *        cd, echo, gotocmd, help, hover, javascript, label, message, and
+   *        pause all are implicitly strings. You CAN use "..." but you don't
+   *        have to, and you cannot use '...'. This way the introduction of
+   *        single quotes as an equivalent of double quotes cannot break
+   *        existing scripts. -- BH 06/2009
+   * @return true only if found
+   * 
+   */
   private boolean lookingAtString(boolean allowPrime) {
-    if (ichToken == cchScript)
+    if (ichToken + 2 > cchScript)
       return false;
     chFirst = script.charAt(ichToken);
     if (chFirst != '"' && (!allowPrime || chFirst != '\''))
@@ -2140,9 +2174,24 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return true;
   }
 
-  String getUnescapedStringLiteral() {
-    if (cchToken < 2)
-      return "";
+  /**
+   * lookingAtString returned true, and we need to unescape any t, r, n, ", ', x, u,
+   * or backslash after a backslash
+   * 
+   * @param isFileName
+   *        in certain cases, such as load "c:\temp\myfile.xyz" we only want to
+   *        decode unicode, not other characters.
+   * 
+   * @return quoted string
+   * 
+   */
+  private String getUnescapedStringLiteral(boolean isFileName) {
+    if (isFileName) {
+      String s = script.substring(ichToken + 1, ichToken + cchToken - 1);
+      if (s.indexOf("\\u") >= 0)
+        s = Escape.unescapeUnicode(s);
+      return s;
+    }
     SB sb = SB.newN(cchToken - 2);
     int ichMax = ichToken + cchToken - 1;
     int ich = ichToken + 1;
@@ -2151,9 +2200,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       if (ch == '\\' && ich < ichMax) {
         ch = script.charAt(ich++);
         switch (ch) {
-        case 'b':
-          ch = '\b';
-          break;
         case 'n':
           ch = '\n';
           break;
@@ -2194,10 +2240,9 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     // just allow a simple word or =xxxx or $CCCC
     // old load formats are simple unneeded words like PDB or XYZ -- no numbers
     int ichT = ichToken;
-    char ch = '\0';
-    boolean allchar = (ichT < cchScript && Viewer.isDatabaseCode(ch = script.charAt(ichT)));
-    while (ichT < cchScript
-        && (Character.isLetterOrDigit(ch = script.charAt(ichT))
+    boolean allchar = Viewer.isDatabaseCode(charAt(ichT));
+    char ch;
+    while ((Character.isLetterOrDigit(ch = charAt(ichT))
             && (allchar || Character.isLetter(ch))
             || allchar && (!eol(ch) && !Character.isWhitespace(ch))))
       ++ichT;
@@ -2215,6 +2260,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
    * are odd-valued; no initial parsing of variables for them.
    * 
    * @param allowSpace
+   *        as in commands such as echo
    * @param allowEquals
    *        as in the load command, first parameter load =xxx but NOT any other
    *        command
@@ -2228,21 +2274,22 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
                                          boolean allowSptParen) {
     int ichT = ichToken;
     char ch = script.charAt(ichT);
-    boolean parseVariables = !(T.tokAttr(tokCommand,
-        T.implicitStringCommand) || (tokCommand & 1) == 0);
+    boolean isID = (lastToken.tok == T.id);
+    boolean parseVariables = (isID || !T.tokAttr(tokCommand,
+        T.implicitStringCommand) && (tokCommand & 1) == 1);
     boolean isVariable = (ch == '@');
     boolean isMath = (isVariable && ichT + 3 < cchScript && script
         .charAt(ichT + 1) == '{');
     if (isMath && parseVariables) {
       ichT = TextFormat.ichMathTerminator(script, ichToken + 1, cchScript);
-      return (ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
+      return (!isID && ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
     }
     int ptSpace = -1;
     int ptLastChar = -1;
     // look ahead to \n, \r, terminal ;, or }
     boolean isOK = true;
     int parenpt = 0;
-    while (isOK && ichT < cchScript && !eol(ch = script.charAt(ichT))) {
+    while (isOK && !eol(ch = charAt(ichT))) {
       switch (ch) {
       case '(':
         if (!allowSptParen) {
@@ -2315,13 +2362,13 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       ++ichT;
     boolean isOK = false;
     char ch = 'X';
-    while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
+    while (Character.isDigit(ch = charAt(ichT))) {
       ++ichT;
       isOK = true;
     }
     if (ichT < cchScript && ch == '.')
       ++ichT;
-    while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
+    while (Character.isDigit(ch = charAt(ichT))) {
       ++ichT;
       isOK = true;
     }
@@ -2338,7 +2385,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
 
     if (ch == '-' || ch == '+')
       ichT++;
-    while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
+    while (Character.isDigit(charAt(ichT))) {
       ichT++;
       isOK = true;
     }
@@ -2355,8 +2402,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     if (script.charAt(ichT) == '-')
       ++ichT;
     boolean digitSeen = false;
-    char ch = 'X';
-    while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT++)))
+    char ch;
+    while (Character.isDigit(ch = charAt(ichT++)))
       digitSeen = true;
     if (ch != '.')
       return false;
@@ -2365,16 +2412,15 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     // to support 1.ca, let's check the character after the dot
     // to determine if it is an alpha
     char ch1;
-    if (ichT < cchScript && !eol(ch1 = script.charAt(ichT))) {
+    if (!eol(ch1 = charAt(ichT))) {
       if (Character.isLetter(ch1) || ch1 == '?' || ch1 == '*')
         return false;
       //well, guess what? we also have to look for 86.1Na, so...
       //watch out for moveto..... 56.;refresh...
-      if (ichT + 1 < cchScript
-          && (Character.isLetter(ch1 = script.charAt(ichT + 1)) || ch1 == '?'))
+      if (Character.isLetter(ch1 = charAt(ichT + 1)) || ch1 == '?')
         return false;
     }
-    while (ichT < cchScript && Character.isDigit(script.charAt(ichT))) {
+    while (Character.isDigit(charAt(ichT))) {
       ++ichT;
       digitSeen = true;
     }
@@ -2384,15 +2430,14 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
 
   private boolean lookingAtSeqcode() {
     int ichT = ichToken;
-    char ch = ' ';
-    if (ichT + 1 < cchScript && script.charAt(ichT) == '*'
-        && script.charAt(ichT + 1) == '^') {
+    char ch;
+    if (charAt(ichT + 1) == '^' && script.charAt(ichT) == '*') {
       ch = '^';
       ++ichT;
     } else {
       if (script.charAt(ichT) == '-')
         ++ichT;
-      while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT)))
+      while (Character.isDigit(ch = charAt(ichT)))
         ++ichT;
     }
     if (ch != '^')
@@ -2415,7 +2460,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     if (script.charAt(ichToken) == '-')
       ++ichT;
     int ichBeginDigits = ichT;
-    while (ichT < cchScript && Character.isDigit(script.charAt(ichT)))
+    while (Character.isDigit(charAt(ichT)))
       ++ichT;
     if (ichBeginDigits == ichT)
       return Integer.MAX_VALUE;
@@ -2453,11 +2498,20 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return bs;
   }
   
-  private boolean lookingAtObjectID(boolean allowWildID) {
+  /**
+   * 
+   * Look for a valid $... sequence. This must be alphanumeric or _ or ~ only.
+   * We skip any $"...". That will be handled later.
+   * 
+   * 
+   * @return true only if valid $....
+   */
+  private boolean lookingAtObjectID() {
+    boolean allowWildID = (nTokens == 1);
     int ichT = ichToken;
-    if (ichT == cchScript || script.charAt(ichT) != '$')
+    if (charAt(ichT) != '$')
       return false;
-    if (++ichT != cchScript && script.charAt(ichT) == '"')
+    if (charAt(++ichT) == '"')
       return false;
     while (ichT < cchScript) {
       char ch;
@@ -2502,7 +2556,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           ++ichT;
           if (ch == '-' || ch == '+')
             break;
-          if (ch == '&' && ichT < cchScript && script.charAt(ichT) == ch)
+          if (ch == '&' && charAt(ichT) == ch)
             ++ichT; // &&&
         } else if (script.charAt(ichT) == '=') {
           ++ichT;
@@ -2511,12 +2565,12 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       tokLastMath = 1;
       break;
     case '/':
-      if (ichT < cchScript && script.charAt(ichT) == '/')
+      if (charAt(ichT) == '/')
         break;
       //$FALL-THROUGH$
     case '\\':  // leftdivide
     case '!':
-      if (ichT < cchScript && script.charAt(ichT) == '=')
+      if (charAt(ichT) == '=')
         ++ichT;
       tokLastMath = 1;
       break;
@@ -2543,8 +2597,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     case '<':
     case '=':
     case '>':
-      if (ichT < cchScript
-          && ((ch = script.charAt(ichT)) == '<' || ch == '=' || ch == '>'))
+      if ((ch = script.charAt(ichT)) == '<' || ch == '=' || ch == '>')
         ++ichT;
       tokLastMath = 1;
       break;
@@ -2558,15 +2611,16 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     case '?': // include question marks in identifier for atom expressions
       if (ch == '?')
         tokLastMath = 1;
-      while (ichT < cchScript
-          && (Character.isLetterOrDigit(ch = script.charAt(ichT)) 
-              || ch == '_' || ch == '?' || ch == '~' || ch == '\'')
-          ||
-          // hack for insertion codes embedded in an atom expression :-(
-          // select c3^a
-          (ch == '^' && ichT > ichT0 && Character.isDigit(script
-              .charAt(ichT - 1)))
-          || ch == '\\' && ichT + 1 < cchScript && script.charAt(ichT + 1) == '?')
+      // last is hack for insertion codes embedded in an atom expression :-(
+      // select c3^a
+      while (Character.isLetterOrDigit(ch = charAt(ichT)) 
+              || ch == '_' 
+              || ch == '?' 
+              || ch == '~' 
+              || ch == '\''
+              || ch == '\\' && charAt(ichT + 1) == '?'
+              || ch == '^' && ichT > ichT0 && Character.isDigit(charAt(ichT - 1))
+            )
         ++ichT;
       break;
     }
@@ -2574,12 +2628,19 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     return true;
   }
 
-  private boolean charToken() {
+  /**
+   * Check for a set of characters that does not start with double quote or at-sign
+   * and terminates with #, }, or an end of line. Only used for the SYNC command's 
+   * second character.
+   * 
+   * @return true if ID is found.
+   */
+  private boolean lookForSyncID() {
     char ch;
-    if (ichToken == cchScript || (ch = script.charAt(ichToken)) == '"' || ch == '@')
+    if ((ch = charAt(ichToken)) == '"' || ch == '@' || ch == '\0')
       return false;
     int ichT = ichToken;
-    while (ichT < cchScript && !isSpaceOrTab(ch = script.charAt(ichT)) 
+    while (!isSpaceOrTab(ch = script.charAt(ichT)) 
         && ch != '#' && ch != '}' && !eol(ch))
         ++ichT;
     cchToken = ichT - ichToken;
@@ -2609,7 +2670,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
          + ScriptEvaluator.setErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
     if (!isSilent) {
       ichToken = Math.max(ichEnd, ichToken);
-      while (!lookingAtEndOfLine() && !lookingAtEndOfStatement())
+      while (!lookingAtEndOfLine() && !lookingAtTerminator())
         ichToken++;
       errorLine = script.substring(ichCurrentCommand, ichToken);      
       viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);

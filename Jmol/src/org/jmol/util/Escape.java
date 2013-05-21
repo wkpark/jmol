@@ -231,9 +231,6 @@ public class Escape {
   }
 
 
-  //static String ESCAPE_SET = " ,./;:_+-~=><?'!@#$%^&*";
-//static int nEscape = ESCAPE_SET.length();
-
   private final static String escapable = "\\\\\tt\rr\nn\"\""; 
 
   public static String eS(String str) {

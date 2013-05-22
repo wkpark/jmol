@@ -6552,8 +6552,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void move() throws ScriptException {
-    if (slen > 11)
-      error(ERROR_badArgumentCount);
+    checkLength(-11);
     // rotx roty rotz zoom transx transy transz slab seconds fps
     V3 dRot = V3.new3(floatParameter(1), floatParameter(2),
         floatParameter(3));
@@ -6620,7 +6619,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     float yNav = Float.NaN;
     float navDepth = Float.NaN;
     float cameraDepth = Float.NaN;
-    Matrix3f m3 = null;
+    float[] pymolView = null;
     switch (getToken(i).tok) {
     case T.pymol:
       // 18-element standard PyMOL view matrix 
@@ -6633,80 +6632,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // or 21-element extended matrix (PSE file reading)
       // [18,19] are boolean depth_cue and fog settings
       // [20] is fogStart (usually 0.45)
-      float[] pymolView = floatParameterSet(++i, 18, 21);
+      pymolView = floatParameterSet(++i, 18, 21);
       i = iToken + 1;
-      if (!chk) {
-        // PyMOL matrices are inverted (row-based)
-        m3 = Matrix3f.newA(pymolView);
-        m3.invert();
-        xTrans = pymolView[9];
-        yTrans = -pymolView[10];
-        float pymolDistanceToCenter = -pymolView[11];
-        center = P3.new3(pymolView[12], pymolView[13], pymolView[14]);
-        float pymolDistanceToSlab = pymolView[15]; // <=0 to ignore
-        float pymolDistanceToDepth = pymolView[16];
-        float fov = pymolView[17];
-        boolean isOrtho = (fov >= 0);
-        viewer.setPerspectiveDepth(!isOrtho);
-
-        // note that set zoomHeight is required for proper zooming
-
-        // calculate Jmol camera position, which is in screen widths,
-        // and is from the front of the screen, not the center.
-        //
-        //               |--screen height--| 1 unit
-        //                       |-rotrad -| 
-        //                       o        /
-        //                       |       /
-        //                       |theta /
-        //                       |     /
-        // pymolDistanceToCenter |    /
-        //                       |   /
-        //                       |  /
-        //                       | / theta = fov/2
-        //                       |/
-        //
-
-        // we convert fov to rotation radius
-        float theta = Math.abs(fov) / 2;
-        float tan = (float) Math.tan(theta * Math.PI / 180);
-        rotationRadius = pymolDistanceToCenter * tan;
-
-        // Jmol camera units are fraction of screen size (height in this case)
-        float jmolCameraToCenter = 0.5f / tan;
-        cameraDepth = jmolCameraToCenter - 0.5f;
-
-        // other units are percent; this factor is 100% / (2*rotationRadius)
-        float f = 50 / rotationRadius;
-        xTrans *= f;
-        yTrans *= f;
-        zoom = 100;
-        if (pymolDistanceToSlab > 0) {
-          int slab = 50 + (int) ((pymolDistanceToCenter - pymolDistanceToSlab) * f);
-          int depth = 50 + (int) ((pymolDistanceToCenter - pymolDistanceToDepth) * f);
-          // could animate these? Does PyMOL?
-          viewer.slabToPercent(slab);
-          viewer.depthToPercent(depth);
-          if (pymolView.length == 21) {
-            // from PSE file load only -- 
-            boolean depthCue = (pymolView[18] != 0);
-            boolean fog = (pymolView[19] != 0);
-            float fogStart = pymolView[20];
-            // conversion to Jmol zShade, zSlab, zDepth
-            viewer.setBooleanProperty("zShade", depthCue);
-            if (depthCue) {
-              // not 100% sure of fog calc here
-              if (fog) {
-                viewer.setIntProperty("zSlab", (int) Math.min(100, slab
-                    + fogStart * (depth - slab)));
-              } else {
-                viewer.setIntProperty("zSlab", (int) ((slab + depth) / 2f));
-              }
-              viewer.setIntProperty("zDepth", depth);
-            }
-          }
-        }
-      }
+      if (chk && checkLength(i) > 0) 
+        return;
       break;
     case T.quaternion:
       Quaternion q;
@@ -6795,52 +6724,50 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           floatParameter(i++));
       degrees = floatParameter(i++);
     }
-    if (m3 == null) {
-      if (Float.isNaN(axis.x) || Float.isNaN(axis.y) || Float.isNaN(axis.z))
-        axis.set(0, 0, 0);
-      else if (axis.length() == 0 && degrees == 0)
-        degrees = Float.NaN;
-      isChange = !viewer.isInPosition(axis, degrees);
-      // optional zoom
+    if (pymolView != null) {
+    }
+    if (Float.isNaN(axis.x) || Float.isNaN(axis.y) || Float.isNaN(axis.z))
+      axis.set(0, 0, 0);
+    else if (axis.length() == 0 && degrees == 0)
+      degrees = Float.NaN;
+    isChange = !viewer.isInPosition(axis, degrees);
+    // optional zoom
+    if (isFloatParameter(i))
+      zoom = floatParameter(i++);
+    // optional xTrans yTrans
+    if (isFloatParameter(i) && !isCenterParameter(i)) {
+      xTrans = floatParameter(i++);
+      yTrans = floatParameter(i++);
+      if (!isChange && Math.abs(xTrans - viewer.getTranslationXPercent()) >= 1)
+        isChange = true;
+      if (!isChange && Math.abs(yTrans - viewer.getTranslationYPercent()) >= 1)
+        isChange = true;
+    }
+    if (bsCenter == null && i != slen) {
+      // if any more, required (center)
+      center = centerParameter(i);
+      if (expressionResult instanceof BS)
+        bsCenter = (BS) expressionResult;
+      i = iToken + 1;
+    }
+    if (center != null) {
+      if (!isChange && center.distance(viewer.getRotationCenter()) >= 0.1)
+        isChange = true;
+      // optional {center} rotationRadius
       if (isFloatParameter(i))
-        zoom = floatParameter(i++);
-      // optional xTrans yTrans
-      if (isFloatParameter(i) && !isCenterParameter(i)) {
-        xTrans = floatParameter(i++);
-        yTrans = floatParameter(i++);
-        if (!isChange
-            && Math.abs(xTrans - viewer.getTranslationXPercent()) >= 1)
-          isChange = true;
-        if (!isChange
-            && Math.abs(yTrans - viewer.getTranslationYPercent()) >= 1)
-          isChange = true;
-      }
-      if (bsCenter == null && i != slen) {
-        // if any more, required (center)
-        center = centerParameter(i);
-        if (expressionResult instanceof BS)
-          bsCenter = (BS) expressionResult;
-        i = iToken + 1;
-      }
-      if (center != null) {
-        if (!isChange && center.distance(viewer.getRotationCenter()) >= 0.1)
-          isChange = true;
-        // optional {center} rotationRadius
-        if (isFloatParameter(i))
-          rotationRadius = floatParameter(i++);
-        if (!isCenterParameter(i)) {
-          if ((rotationRadius == 0 || Float.isNaN(rotationRadius))
-              && (zoom == 0 || Float.isNaN(zoom))) {
-            // alternative (atom expression) 0 zoomFactor
-            float newZoom = Math.abs(getZoom(0, i, bsCenter, (zoom == 0 ? 0
-                : zoom0)));
-            i = iToken + 1;
-            zoom = newZoom;
-          } else {
-            if (!isChange
-                && Math.abs(rotationRadius - viewer.getFloat(T.rotationradius)) >= 0.1)
-              isChange = true;
-          }
+        rotationRadius = floatParameter(i++);
+      if (!isCenterParameter(i)) {
+        if ((rotationRadius == 0 || Float.isNaN(rotationRadius))
+            && (zoom == 0 || Float.isNaN(zoom))) {
+          // alternative (atom expression) 0 zoomFactor
+          float newZoom = Math.abs(getZoom(0, i, bsCenter, (zoom == 0 ? 0
+              : zoom0)));
+          i = iToken + 1;
+          zoom = newZoom;
+        } else {
+          if (!isChange
+              && Math.abs(rotationRadius - viewer.getFloat(T.rotationradius)) >= 0.1)
+            isChange = true;
         }
       }
       if (zoom == 0 || Float.isNaN(zoom))
@@ -6861,14 +6788,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         if (i != slen)
           navDepth = floatParameter(i++);
+        if (i != slen)
+          cameraDepth = floatParameter(i++);
       }
-    } else {
-
     }
-
-    if (i != slen)
-      error(ERROR_badArgumentCount);
-
+    checkLength(i);
     if (chk)
       return;
     if (!isChange)
@@ -6877,9 +6801,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       refresh();
     if (!useThreads())
       floatSecondsTotal = 0;
-    viewer.moveTo(this, floatSecondsTotal, center, axis, degrees, m3, zoom,
-        xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth,
-        cameraDepth);
+    if (pymolView != null)
+      viewer.movePyMOL(this, floatSecondsTotal, pymolView);
+    else
+      viewer.moveTo(this, floatSecondsTotal, center, axis, degrees, null, zoom,
+          xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth,
+          cameraDepth);
     if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
       throw new ScriptInterruption(this, "moveTo", 1);
   }
@@ -14483,13 +14410,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (slen > 1) {
       String saveName = optParameterAsString(2);
       switch (tokAt(1)) {
+      case T.orientation:
       case T.rotation:
         if (!chk)
-          viewer.saveOrientation(saveName);
-        return;
-      case T.orientation:
-        if (!chk)
-          viewer.saveOrientation(saveName);
+          viewer.saveOrientation(saveName, null);
         return;
       case T.bonds:
         if (!chk)
@@ -14521,30 +14445,37 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // restore orientation name time
     if (slen > 1) {
       String saveName = optParameterAsString(2);
-      if (getToken(1).tok != T.orientation)
-        checkLength23();
-      float floatSecondsTotal;
-      switch (getToken(1).tok) {
-      case T.rotation:
-        floatSecondsTotal = (slen > 3 ? floatParameter(3) : 0);
-        if (floatSecondsTotal < 0)
-          error(ERROR_invalidArgument);
-        if (!chk) {
-          viewer.restoreRotation(saveName, floatSecondsTotal);
-          if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
-            throw new ScriptInterruption(this, "restoreRotation", 1);
-        }
-        return;
+      int tok = tokAt(1);
+      switch (tok) {
       case T.orientation:
-        floatSecondsTotal = (slen > 3 ? floatParameter(3) : 0);
+      case T.rotation:
+      case T.scene:
+        float floatSecondsTotal = (slen > 3 ? floatParameter(3) : 0);
         if (floatSecondsTotal < 0)
           error(ERROR_invalidArgument);
-        if (!chk) {
+        if (chk)
+          return;
+        String type = "";
+        switch (tok) {
+        case T.orientation:
+          type = "Orientation";
           viewer.restoreOrientation(saveName, floatSecondsTotal);
-          if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
-            throw new ScriptInterruption(this, "restoreOrientation", 1);
+          break;
+        case T.rotation:
+          type = "Rotation";
+          viewer.restoreRotation(saveName, floatSecondsTotal);
+          break;
+        case T.scene:
+          type = "Scene";
+          viewer.restoreScene(saveName, floatSecondsTotal);
+          break;
         }
+        if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
+          throw new ScriptInterruption(this, "restore" + type, 1);
         return;
+      }
+      checkLength(2);
+      switch (tok) {
       case T.bonds:
         if (!chk)
           viewer.restoreBonds(saveName);
@@ -14557,6 +14488,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         runScript(script);
         viewer.checkCoordinatesChanged();
+        return;
+      case T.selection:
+        if (!chk)
+          viewer.restoreSelection(saveName);
         return;
       case T.state:
         if (chk)
@@ -14574,14 +14509,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         runScript(shape);
         return;
-      case T.selection:
-        if (!chk)
-          viewer.restoreSelection(saveName);
-        return;
       }
     }
     errorStr2(ERROR_what, "RESTORE",
-        "bonds? coords? orientation? selection? state? structure?");
+        "bonds? coords? orientation? rotation? scene? selection? state? structure?");
   }
 
   String write(T[] args) throws ScriptException {

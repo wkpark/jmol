@@ -39,6 +39,13 @@ import org.jmol.util.Logger;
 
 class PyMOL {
 
+  final static String[] repList = new String[] { 
+    "lines","sticks","spheres",
+    "dots","surface","mesh",
+    "nonbonded", "nb_spheres",
+    "cartoon","ribbon","labels","slice"};
+
+
   final static int REP_STICKS = 0;
   final static int REP_SPHERES = 1;
   final static int REP_SURFACE = 2;

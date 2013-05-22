@@ -51,6 +51,10 @@ import org.jmol.util.SB;
 import org.jmol.util.V3;
 
 
+/**
+ * ScriptVariable class
+ * 
+ */
 public class SV extends T {
 
   final private static SV vT = newScriptVariableIntValue(on, 1, "true");

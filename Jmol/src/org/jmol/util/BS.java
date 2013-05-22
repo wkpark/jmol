@@ -28,8 +28,8 @@ package org.jmol.util;
 
 /**
  * 
- * a fast 64-bit BitSet optimized for Java2Script -- about 25 times faster than
- * java.util.BitSet in JavaScript
+ * a fast 64-bit BitSet optimized as 32-bit in Java2Script -- about 25 times faster than
+ * java.util.BitSet in JavaScript.
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  * 

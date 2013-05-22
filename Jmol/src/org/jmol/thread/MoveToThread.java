@@ -155,8 +155,8 @@ public class MoveToThread extends JmolThread {
     yNavTransStart = transformManager.getNavigationOffsetPercent('Y');
     yNavTransDelta = yNav - yNavTransStart;
     navDepthStart = transformManager.getNavigationDepthPercent();
-    cameraDepthStart = transformManager.getCameraDepth();
     navDepthDelta = navDepth - navDepthStart;
+    cameraDepthStart = transformManager.getCameraDepth();
     cameraDepthDelta = cameraDepth - cameraDepthStart;
     return totalSteps;
   }

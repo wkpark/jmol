@@ -117,6 +117,7 @@ public class StateManager {
   
   String lastOrientation = "";
   String lastConnections = "";
+  String lastScene = "";
   String lastSelected = "";
   String lastState = "";
   String lastShape = "";
@@ -278,7 +279,7 @@ public class StateManager {
   }
 
   Orientation getOrientation() {
-    return new Orientation(false);
+    return new Orientation(false, null);
   }
 
   String getSavedOrientationText(String saveName) {
@@ -299,24 +300,54 @@ public class StateManager {
     return sb.toString(); 
   }
 
+  public void saveScene(String saveName, Map<String, Object> scene) {
+    if (saveName.equalsIgnoreCase("DELETE")) {
+      deleteSavedType("Scene_");
+      return;
+    }
+    Scene o = new Scene(scene);
+    o.saveName = lastScene = "Scene_" + saveName;
+    saved.put(o.saveName, o);
+  }
 
-  void saveOrientation(String saveName) {
+  public boolean restoreScene(String saveName, float timeSeconds) {
+    Scene o = getSceneFor(saveName);
+    return (o != null && o.restore(timeSeconds));
+  }
+
+  private Scene getSceneFor(String saveName) {
+    String name = (saveName.length() > 0 ? "Scene_" + saveName
+        : lastScene);    
+    return (Scene) saved.get(name);
+  }
+
+  public class Scene {
+    String  saveName;
+    private Map<String, Object> scene;
+    
+    public Scene(Map<String, Object> scene) {
+      this.scene = scene;
+    }
+
+    public boolean restore(float timeSeconds) {
+      float[] pv = (float[]) scene.get("pymolView");
+      return (pv != null && viewer.movePyMOL(viewer.eval, timeSeconds, pv));
+    }
+  }
+
+  void saveOrientation(String saveName, float[] pymolView) {
     if (saveName.equalsIgnoreCase("DELETE")) {
       deleteSavedType("Orientation_");
       return;
     }
-    Orientation o = new Orientation(saveName.equals("default"));
+    Orientation o = new Orientation(saveName.equals("default"), pymolView);
     o.saveName = lastOrientation = "Orientation_" + saveName;
     saved.put(o.saveName, o);
   }
   
   boolean restoreOrientation(String saveName, float timeSeconds, boolean isAll) {
     Orientation o = getOrientationFor(saveName);
-    if (o == null)
-      return false;
-    o.restore(timeSeconds, isAll);
-    //    Logger.info(listSavedStates());
-    return true;
+    return (o != null && o.restore(timeSeconds, isAll));
   }
 
   private Orientation getOrientationFor(String saveName) {
@@ -337,16 +368,23 @@ public class StateManager {
     float xNav = Float.NaN;
     float yNav = Float.NaN;
     float navDepth = Float.NaN;
+    float cameraDepth = Float.NaN;
     boolean windowCenteredFlag;
     boolean navigationMode;
     //boolean navigateSurface;
     String moveToText;
+
+    private float[] pymolView;
     
 
-    Orientation(boolean asDefault) {
+    Orientation(boolean asDefault, float[] pymolView) {
+      if (pymolView != null) {
+        this.pymolView = pymolView;
+        return;
+      } 
       if (asDefault) {
         Matrix3f rotationMatrix = (Matrix3f) viewer
-          .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
+            .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
         if (rotationMatrix == null)
           this.rotationMatrix.setIdentity();
         else
@@ -369,6 +407,7 @@ public class StateManager {
         navDepth = viewer.getNavigationDepthPercent();
         navCenter = P3.newP(viewer.getNavigationCenter());
       }
+      cameraDepth = viewer.getCameraDepth();
     }
 
     public String getMoveToText(boolean asCommand) {
@@ -376,16 +415,20 @@ public class StateManager {
           + saveName.substring(12) + "\";\n" : moveToText);
     }
     
-    public void restore(float timeSeconds, boolean isAll) {
-      if (!isAll) {
+    public boolean restore(float timeSeconds, boolean isAll) {
+      if (isAll) {
+        viewer.setBooleanProperty("windowCentered", windowCenteredFlag);
+        viewer.setBooleanProperty("navigationMode", navigationMode);
+        //viewer.setBooleanProperty("navigateSurface", navigateSurface);
+        if (pymolView == null)
+          viewer.moveTo(viewer.eval, timeSeconds, center, null, Float.NaN, rotationMatrix, zoom, xTrans,
+              yTrans, rotationRadius, navCenter, xNav, yNav, navDepth, cameraDepth);
+        else
+          viewer.movePyMOL(viewer.eval, timeSeconds, pymolView);
+      } else {
         viewer.setRotationMatrix(rotationMatrix);
-        return;
       }
-      viewer.setBooleanProperty("windowCentered", windowCenteredFlag);
-      viewer.setBooleanProperty("navigationMode", navigationMode);
-      //viewer.setBooleanProperty("navigateSurface", navigateSurface);
-      viewer.moveTo(viewer.eval, timeSeconds, center, null, Float.NaN, rotationMatrix, zoom, xTrans,
-          yTrans, rotationRadius, navCenter, xNav, yNav, navDepth, Float.NaN);
+      return true;
     }
   }
 
@@ -403,11 +446,7 @@ public class StateManager {
     String name = (saveName.length() > 0 ? "Bonds_" + saveName
         : lastConnections);
     Connections c = (Connections) saved.get(name);
-    if (c == null)
-      return false;
-    c.restore();
-    //    Logger.info(listSavedStates());
-    return true;
+    return (c != null && c.restore());
   }
 
   class Connections {
@@ -430,10 +469,10 @@ public class StateManager {
       }
     }
 
-    void restore() {
+    boolean restore() {
       ModelSet modelSet = viewer.getModelSet();
       if (modelSet == null)
-        return;
+        return false;
       modelSet.deleteAllBonds();
       for (int i = bondCount; --i >= 0;) {
         Connection c = connections[i];
@@ -448,6 +487,7 @@ public class StateManager {
       for (int i = bondCount; --i >= 0;)
         modelSet.getBondAt(i).setIndex(i);
       viewer.setShapeProperty(JC.SHAPE_STICKS, "reportAll", null);
+      return true;
     }
   }
 
@@ -592,8 +632,7 @@ public class StateManager {
       setB("hidenotselected", false); // to synchronize with selectionManager
       setB("measurementlabels", measurementLabels = true);
       setB("drawHover", drawHover = false);
-      
-
+      saveScene("DELETE",null);
     }
 
     void registerAllValues(GlobalSettings g, boolean clearUserVariables) {

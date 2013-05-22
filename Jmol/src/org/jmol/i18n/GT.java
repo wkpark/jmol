@@ -31,16 +31,16 @@ import java.util.Map;
 import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger; 
 
+/**
+ * 
+ * The language list is now in org.jmol.i18n.Language -- Bob Hanson, 12/16/12
+ * 
+ * implementing translations in JavaScript
+ * 
+ */
+
 @J2SRequireImport({org.jmol.i18n.Resource.class, org.jmol.i18n.Language.class})
 public class GT {
-
-  /**
-   * 
-   * The language list is now in org.jmol.i18n.Language -- Bob Hanson, 12/16/12
-   * 
-   * implementing translations in JavaScript
-   * 
-   */
 
   private static boolean ignoreApplicationBundle = false;
   private static GT getTextWrapper;

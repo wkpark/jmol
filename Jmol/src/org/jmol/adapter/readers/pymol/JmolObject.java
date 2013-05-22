@@ -161,6 +161,10 @@ class JmolObject {
     case T.group:
       // if we implement GROUP in Jmol, we need to do something here.
       return;
+    case T.scene:
+      sm.viewer.saveScene(branchNameID, (Map<String, Object>) info);
+      sm.viewer.saveOrientation(branchNameID, (float[]) ((Map<String, Object>) info).get("pymolView"));
+      return;
     case T.hidden:
       sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
       return;

@@ -125,7 +125,7 @@ public class TransformManager {
       if (viewer.global.axesOrientationRasmol)
         rotateX((float) Math.PI);
     }
-    viewer.saveOrientation("default");
+    viewer.saveOrientation("default", null);
     if (mode == MODE_NAVIGATION)
       setNavigationMode(true);
   }
@@ -1113,7 +1113,7 @@ public class TransformManager {
   protected float cameraDistance = 1000f; // prevent divide by zero on startup
 
   /**
-   * This method returns data needed by the VRML, X3D, and IDTF/U3D exporters It
+   * This method returns data needed by the VRML, X3D, and IDTF/U3D exporters. It
    * also should serve as a valuable resource for anyone adapting Jmol and
    * wanting to know how the Jmol 11+ camera business works.
    * 
@@ -1172,6 +1172,7 @@ public class TransformManager {
     if (this.perspectiveDepth == perspectiveDepth)
       return;
     this.perspectiveDepth = perspectiveDepth;
+    viewer.global.setB("perspectiveDepth", perspectiveDepth);
     resetFitToScreen(false);
   }
 
@@ -1610,6 +1611,7 @@ public class TransformManager {
    * move/moveTo support
    ****************************************************************/
 
+
   void move(JmolScriptEvaluator eval, V3 dRot, float dZoom, V3 dTrans,
             float dSlab, float floatSecondsTotal, int fps) {
 
@@ -1638,6 +1640,81 @@ public class TransformManager {
     return (ptTest3.distance(ptTest2) < 0.1);
   }
 
+  public void movePyMOL(JmolScriptEvaluator eval, float floatSecondsTotal,
+                        float[] pymolView) {
+    // PyMOL matrices are inverted (row-based)
+    Matrix3f m3 = Matrix3f.newA(pymolView);
+    m3.invert();
+    float xTrans = pymolView[9];
+    float yTrans = -pymolView[10];
+    float pymolDistanceToCenter = -pymolView[11];
+    P3 center = P3.new3(pymolView[12], pymolView[13], pymolView[14]);
+    float pymolDistanceToSlab = pymolView[15]; // <=0 to ignore
+    float pymolDistanceToDepth = pymolView[16];
+    float fov = pymolView[17];
+    boolean isOrtho = (fov >= 0);
+    setPerspectiveDepth(!isOrtho);
+
+    // note that set zoomHeight is required for proper zooming
+
+    // calculate Jmol camera position, which is in screen widths,
+    // and is from the front of the screen, not the center.
+    //
+    //               |--screen height--| 1 unit
+    //                       |-rotrad -| 
+    //                       o        /
+    //                       |       /
+    //                       |theta /
+    //                       |     /
+    // pymolDistanceToCenter |    /
+    //                       |   /
+    //                       |  /
+    //                       | / theta = fov/2
+    //                       |/
+    //
+
+    // we convert fov to rotation radius
+    float theta = Math.abs(fov) / 2;
+    float tan = (float) Math.tan(theta * Math.PI / 180);
+    float rotationRadius = pymolDistanceToCenter * tan;
+
+    // Jmol camera units are fraction of screen size (height in this case)
+    float jmolCameraToCenter = 0.5f / tan;
+    float cameraDepth = jmolCameraToCenter - 0.5f;
+
+    // other units are percent; this factor is 100% / (2*rotationRadius)
+    float f = 50 / rotationRadius;
+    xTrans *= f;
+    yTrans *= f;
+    if (pymolDistanceToSlab > 0) {
+      int slab = 50 + (int) ((pymolDistanceToCenter - pymolDistanceToSlab) * f);
+      int depth = 50 + (int) ((pymolDistanceToCenter - pymolDistanceToDepth) * f);
+      // could animate these? Does PyMOL?
+      slabToPercent(slab);
+      depthToPercent(depth);
+      if (pymolView.length == 21) {
+        // from PSE file load only -- 
+        boolean depthCue = (pymolView[18] != 0);
+        boolean fog = (pymolView[19] != 0);
+        float fogStart = pymolView[20];
+        // conversion to Jmol zShade, zSlab, zDepth
+        setPerspectiveDepth(depthCue);
+        if (depthCue) {
+          // not 100% sure of fog calc here
+          if (fog) {
+            viewer.setIntProperty("zSlab", (int) Math.min(100, slab
+                + fogStart * (depth - slab)));
+          } else {
+            viewer.setIntProperty("zSlab", (int) ((slab + depth) / 2f));
+          }
+          viewer.setIntProperty("zDepth", depth);
+        }
+      }
+    }
+    moveTo(eval, floatSecondsTotal, center, null, 0, m3, 100, xTrans, yTrans, rotationRadius, 
+        null, Float.NaN, Float.NaN, Float.NaN, cameraDepth);
+  }
+  
   public MoveToThread motion;
 
   // from Viewer
@@ -1738,6 +1815,7 @@ public class TransformManager {
     sb.append(getCenterText());
     sb.append(" ").appendF(modelRadius);
     sb.append(getNavigationText(addComments));
+    sb.append(" /* cameraDepth */").appendF(cameraDepthSetting);
     sb.append(";");
     return sb.toString();
   }

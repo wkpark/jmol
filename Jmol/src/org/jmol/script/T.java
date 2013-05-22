@@ -33,6 +33,11 @@ import org.jmol.util.JmolList;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 
+/**
+ * 
+ * Script token class.
+ * 
+ */
 public class T {
   public int tok;
   public Object value;
@@ -1247,7 +1252,7 @@ public class T {
   final static int rubberband     = misc  | 310;
   public final static int sasurface      = misc  | 312;
   final static int scale          = misc  | 314;
-  final static int scene          = misc  | 315; // Jmol 12.3.32
+  public final static int scene          = misc  | 315; // Jmol 12.3.32
   final static int selection      = misc  | 316;
   final static int shapely        = misc  | 320;
   final static int sigma          = misc  | 322;

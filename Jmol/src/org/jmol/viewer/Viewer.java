@@ -764,9 +764,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.listSavedStates();
   }
 
-  public void saveOrientation(String saveName) {
+  public void saveOrientation(String saveName, float[] pymolView) {
     // from Eval
-    stateManager.saveOrientation(saveName);
+    stateManager.saveOrientation(saveName, pymolView);
+  }
+
+  public void saveScene(String saveName, Map<String, Object> scene) {
+    stateManager.saveScene(saveName, scene);
+  }
+
+  public void restoreScene(String saveName, float timeSeconds) {
+    stateManager.restoreScene(saveName, timeSeconds);
   }
 
   public boolean restoreOrientation(String saveName, float timeSeconds) {
@@ -7112,7 +7120,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // setBooleanProperty
     // stateManager.setCrystallographicDefaults
     // app preferences dialog
-    global.setB("perspectiveDepth", perspectiveDepth);
     transformManager.setPerspectiveDepth(perspectiveDepth);
   }
 
@@ -7252,6 +7259,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getCameraFactors();
   }
 
+  public float getCameraDepth() {
+    return transformManager.getCameraDepth();
+  }
+  
   String getLoadState(Map<String, Object> htParams) {
     return getStateCreator().getLoadState(htParams);
   }
@@ -9959,6 +9970,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setFrame(int i) {
     animationManager.setFrame(i - 1);
+  }
+
+  public boolean movePyMOL(JmolScriptEvaluator eval,
+                        float floatSecondsTotal, float[] pymolView) {
+    transformManager.movePyMOL(eval, floatSecondsTotal, pymolView);
+    return true;
   }
 
 }

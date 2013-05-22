@@ -385,7 +385,7 @@ public class StateManager {
       viewer.setBooleanProperty("navigationMode", navigationMode);
       //viewer.setBooleanProperty("navigateSurface", navigateSurface);
       viewer.moveTo(viewer.eval, timeSeconds, center, null, Float.NaN, rotationMatrix, zoom, xTrans,
-          yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
+          yTrans, rotationRadius, navCenter, xNav, yNav, navDepth, Float.NaN);
     }
   }
 
@@ -749,7 +749,7 @@ public class StateManager {
       setB("bondPicking", bondPicking);
       setI("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
       setF("bondTolerance", bondTolerance);
-      setF("cameraDepth", cameraDepth);
+      setF("cameraDepth", defaultCameraDepth);
       setB("cartoonBaseEdges", cartoonBaseEdges);
       setB("cartoonFancy", cartoonFancy);
       setB("cartoonLadders", cartoonLadders);
@@ -851,7 +851,7 @@ public class StateManager {
       setB("pdbAddHydrogens", pdbAddHydrogens); // new 12.1.51
       setB("pdbGetHeader", pdbGetHeader); // new 11.5.39
       setB("pdbSequential", pdbSequential); // new 11.5.39
-      setB("perspectiveDepth", perspectiveDepth);
+      setB("perspectiveDepth", defaultPerspectiveDepth);
       setI("percentVdwAtom", percentVdwAtom);
       setI("phongExponent", phongExponent);
       setI("pickingSpinRate", pickingSpinRate);
@@ -996,7 +996,7 @@ public class StateManager {
 
     boolean allowRotateSelected = false;
     boolean allowMoveAtoms = false;
-    boolean perspectiveDepth = true;
+    boolean defaultPerspectiveDepth = true;
     float visualRange = 5f;
 
     //solvent
@@ -1092,7 +1092,7 @@ public class StateManager {
     float axesScale = 2;
     float starScale = 0.05f;
     boolean bondPicking = false;
-    float cameraDepth = 3.0f;
+    float defaultCameraDepth = 3.0f;
     boolean celShading = false;
     String dataSeparator = "~~~";
     boolean debugScript = false;

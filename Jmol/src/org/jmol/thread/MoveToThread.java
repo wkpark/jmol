@@ -67,6 +67,7 @@ public class MoveToThread extends JmolThread {
   private float xNav;
   private float yNav;
   private float navDepth;
+  private float cameraDepth;
   private P3 ptMoveToCenter;
   private float startRotationRadius;
   private float targetPixelScale;
@@ -87,7 +88,9 @@ public class MoveToThread extends JmolThread {
   private float yNavTransDelta;
   private float yNavTransStart;
   private float navDepthStart;
+  private float cameraDepthStart;
   private float navDepthDelta;
+  private float cameraDepthDelta;
   private long frameTimeMillis;
   private int iStep;
   
@@ -97,7 +100,7 @@ public class MoveToThread extends JmolThread {
   public int set(float floatSecondsTotal, P3 center, Matrix3f end,
                  float zoom, float xTrans, float yTrans,
                  float newRotationRadius, P3 navCenter, float xNav,
-                 float yNav, float navDepth) {
+                 float yNav, float navDepth, float cameraDepth) {
     this.center = center;
     matrixEnd.setM(end);
     this.zoom = zoom;
@@ -107,6 +110,7 @@ public class MoveToThread extends JmolThread {
     this.xNav = xNav;
     this.yNav = yNav;
     this.navDepth = navDepth;
+    this.cameraDepth = cameraDepth;
     ptMoveToCenter = (center == null ? transformManager.fixedRotationCenter
         : center);
     startRotationRadius = transformManager.modelRadius;
@@ -150,8 +154,10 @@ public class MoveToThread extends JmolThread {
     xNavTransDelta = xNav - xNavTransStart;
     yNavTransStart = transformManager.getNavigationOffsetPercent('Y');
     yNavTransDelta = yNav - yNavTransStart;
-    float navDepthStart = transformManager.getNavigationDepthPercent();
+    navDepthStart = transformManager.getNavigationDepthPercent();
+    cameraDepthStart = transformManager.getCameraDepth();
     navDepthDelta = navDepth - navDepthStart;
+    cameraDepthDelta = cameraDepth - cameraDepthStart;
     return totalSteps;
   }
          
@@ -248,6 +254,9 @@ public class MoveToThread extends JmolThread {
       if (!Float.isNaN(navDepth))
         transformManager.setNavigationDepthPercent(navDepthStart
             + navDepthDelta * fStep);
+      if (!Float.isNaN(cameraDepth))
+        transformManager.setCameraDepthPercent(cameraDepthStart
+            + cameraDepthDelta * fStep);
     }
   }
 
@@ -271,6 +280,9 @@ public class MoveToThread extends JmolThread {
       if (!Float.isNaN(navDepth))
         transformManager.setNavigationDepthPercent(navDepth);
     }
+    if (!Float.isNaN(cameraDepth))
+      transformManager.setCameraDepthPercent(cameraDepth);
+    
   }
 
   @Override

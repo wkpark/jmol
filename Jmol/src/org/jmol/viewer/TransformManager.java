@@ -1185,15 +1185,19 @@ public class TransformManager {
    * 
    * @param percent
    */
-  void setCameraDepthPercent(float percent) {
+  public void setCameraDepthPercent(float percent) {
     resetNavigationPoint(true);
     float screenMultiples = (percent < 0 ? -percent / 100 : percent);
     if (screenMultiples == 0)
       return;
     cameraDepthSetting = screenMultiples;
+    viewer.global.setF("cameraDepth", cameraDepthSetting);
     cameraDepth = Float.NaN;
   }
 
+  public float getCameraDepth() {
+    return cameraDepthSetting;
+  }
   void setVisualRange(float angstroms) {
     visualRange = angstroms;
   }
@@ -1640,7 +1644,7 @@ public class TransformManager {
   void moveTo(JmolScriptEvaluator eval, float floatSecondsTotal, P3 center,
               Tuple3f rotAxis, float degrees, Matrix3f matrixEnd, float zoom,
               float xTrans, float yTrans, float newRotationRadius,
-              P3 navCenter, float xNav, float yNav, float navDepth) {
+              P3 navCenter, float xNav, float yNav, float navDepth, float cameraDepth) {
     if (matrixEnd == null) {
       matrixEnd = new Matrix3f();
       V3 axis = V3.newV(rotAxis);
@@ -1668,7 +1672,7 @@ public class TransformManager {
       if (motion == null)
         motion = new MoveToThread(this, viewer);
       int nSteps = motion.set(floatSecondsTotal, center, matrixEnd, zoom,
-          xTrans, yTrans, newRotationRadius, navCenter, xNav, yNav, navDepth);
+          xTrans, yTrans, newRotationRadius, navCenter, xNav, yNav, navDepth, cameraDepth);
       if (nSteps <= 0 || viewer.global.waitForMoveTo) {
         if (nSteps > 0)
           motion.setEval(eval);

@@ -6597,8 +6597,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         floatSecondsTotal = 0;
       if (floatSecondsTotal > 0)
         refresh();
-      viewer.moveTo(this, floatSecondsTotal, null, JC.axisZ, 0, null, 100, 0, 0, 0,
-          null, Float.NaN, Float.NaN, Float.NaN);
+      viewer.moveTo(this, floatSecondsTotal, null, JC.axisZ, 0, null, 100, 0,
+          0, 0, null, Float.NaN, Float.NaN, Float.NaN, Float.NaN);
       if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
         throw new ScriptInterruption(this, "moveTo", 1);
       return;
@@ -6609,7 +6609,105 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     floatSecondsTotal = (isFloatParameter(i) ? floatParameter(i++) : 2.0f);
     float degrees = 90;
     BS bsCenter = null;
+    boolean isChange = true;
+    float xTrans = 0;
+    float yTrans = 0;
+    float zoom = Float.NaN;
+    float rotationRadius = Float.NaN;
+    float zoom0 = viewer.getZoomSetting();
+    P3 navCenter = null;
+    float xNav = Float.NaN;
+    float yNav = Float.NaN;
+    float navDepth = Float.NaN;
+    float cameraDepth = Float.NaN;
+    Matrix3f m3 = null;
     switch (getToken(i).tok) {
+    case T.pymol:
+      // 18-element standard PyMOL view matrix 
+      // [0-8] are 3x3 rotation matrix (inverted)
+      // [9,10] are x,y translations (y negative)
+      // [11] is distance from camera to center (negative)
+      // [12-14] are rotation center coords
+      // [15-16] are slab and depth distance from camera (0 to ignore)
+      // [17] is field of view; positive for orthographic projection
+      // or 21-element extended matrix (PSE file reading)
+      // [18,19] are boolean depth_cue and fog settings
+      // [20] is fogStart (usually 0.45)
+      float[] pymolView = floatParameterSet(++i, 18, 21);
+      i = iToken + 1;
+      if (!chk) {
+        // PyMOL matrices are inverted (row-based)
+        m3 = Matrix3f.newA(pymolView);
+        m3.invert();
+        xTrans = pymolView[9];
+        yTrans = -pymolView[10];
+        float pymolDistanceToCenter = -pymolView[11];
+        center = P3.new3(pymolView[12], pymolView[13], pymolView[14]);
+        float pymolDistanceToSlab = pymolView[15]; // <=0 to ignore
+        float pymolDistanceToDepth = pymolView[16];
+        float fov = pymolView[17];
+        boolean isOrtho = (fov >= 0);
+        viewer.setPerspectiveDepth(!isOrtho);
+
+        // note that set zoomHeight is required for proper zooming
+
+        // calculate Jmol camera position, which is in screen widths,
+        // and is from the front of the screen, not the center.
+        //
+        //               |--screen height--| 1 unit
+        //                       |-rotrad -| 
+        //                       o        /
+        //                       |       /
+        //                       |theta /
+        //                       |     /
+        // pymolDistanceToCenter |    /
+        //                       |   /
+        //                       |  /
+        //                       | / theta = fov/2
+        //                       |/
+        //
+
+        // we convert fov to rotation radius
+        float theta = Math.abs(fov) / 2;
+        float tan = (float) Math.tan(theta * Math.PI / 180);
+        rotationRadius = pymolDistanceToCenter * tan;
+
+        // Jmol camera units are fraction of screen size (height in this case)
+        float jmolCameraToCenter = 0.5f / tan;
+        cameraDepth = jmolCameraToCenter - 0.5f;
+
+        // other units are percent; this factor is 100% / (2*rotationRadius)
+        float f = 50 / rotationRadius;
+        xTrans *= f;
+        yTrans *= f;
+        zoom = 100;
+        if (pymolDistanceToSlab > 0) {
+          int slab = 50 + (int) ((pymolDistanceToCenter - pymolDistanceToSlab) * f);
+          int depth = 50 + (int) ((pymolDistanceToCenter - pymolDistanceToDepth) * f);
+          // could animate these? Does PyMOL?
+          viewer.slabToPercent(slab);
+          viewer.depthToPercent(depth);
+          if (pymolView.length == 21) {
+            // from PSE file load only -- 
+            boolean depthCue = (pymolView[18] != 0);
+            boolean fog = (pymolView[19] != 0);
+            float fogStart = pymolView[20];
+            // conversion to Jmol zShade, zSlab, zDepth
+            viewer.setBooleanProperty("zShade", depthCue);
+            if (depthCue) {
+              // not 100% sure of fog calc here
+              if (fog) {
+                viewer.setIntProperty("zSlab", (int) Math.min(100, slab
+                    + fogStart * (depth - slab)));
+              } else {
+                viewer.setIntProperty("zSlab", (int) ((slab + depth) / 2f));
+              }
+              viewer.setIntProperty("zDepth", depth);
+            }
+          }
+        }
+      }
+      break;
     case T.quaternion:
       Quaternion q;
       boolean isMolecular = false;
@@ -6624,8 +6722,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (!(expressionResult instanceof BS))
           error(ERROR_invalidArgument);
         bsCenter = (BS) expressionResult;
-        q = (chk ? new Quaternion() : viewer
-            .getAtomQuaternion(bsCenter.nextSetBit(0)));
+        q = (chk ? new Quaternion() : viewer.getAtomQuaternion(bsCenter
+            .nextSetBit(0)));
       } else {
         q = getQuaternionParameter(i);
       }
@@ -6697,77 +6795,75 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           floatParameter(i++));
       degrees = floatParameter(i++);
     }
-    if (Float.isNaN(axis.x) || Float.isNaN(axis.y) || Float.isNaN(axis.z))
-      axis.set(0, 0, 0);
-    else if (axis.length() == 0 && degrees == 0)
-      degrees = Float.NaN;
-    boolean isChange = !viewer.isInPosition(axis, degrees);
-    // optional zoom
-    float zoom = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);
-    // optional xTrans yTrans
-    float xTrans = 0;
-    float yTrans = 0;
-    if (isFloatParameter(i) && !isCenterParameter(i)) {
-      xTrans = floatParameter(i++);
-      yTrans = floatParameter(i++);
-      if (!isChange && Math.abs(xTrans - viewer.getTranslationXPercent()) >= 1)
-        isChange = true;
-      if (!isChange && Math.abs(yTrans - viewer.getTranslationYPercent()) >= 1)
-        isChange = true;
-    }
-    if (bsCenter == null && i != slen) {
-      // if any more, required (center)
-      center = centerParameter(i);
-      if (expressionResult instanceof BS)
-        bsCenter = (BS) expressionResult;
-      i = iToken + 1;
-    }
-    float rotationRadius = Float.NaN;
-    float zoom0 = viewer.getZoomSetting();
-    if (center != null) {
-      if (!isChange && center.distance(viewer.getRotationCenter()) >= 0.1)
-        isChange = true;
-      // optional {center} rotationRadius
+    if (m3 == null) {
+      if (Float.isNaN(axis.x) || Float.isNaN(axis.y) || Float.isNaN(axis.z))
+        axis.set(0, 0, 0);
+      else if (axis.length() == 0 && degrees == 0)
+        degrees = Float.NaN;
+      isChange = !viewer.isInPosition(axis, degrees);
+      // optional zoom
       if (isFloatParameter(i))
-        rotationRadius = floatParameter(i++);
-      if (!isCenterParameter(i)) {
-        if ((rotationRadius == 0 || Float.isNaN(rotationRadius))
-            && (zoom == 0 || Float.isNaN(zoom))) {
-          // alternative (atom expression) 0 zoomFactor
-          float newZoom = Math
-              .abs(getZoom(0, i, bsCenter, (zoom == 0 ? 0 : zoom0)));
-          i = iToken + 1;
-          zoom = newZoom;
-        } else {
-          if (!isChange
-              && Math.abs(rotationRadius - viewer.getFloat(T.rotationradius)) >= 0.1)
-            isChange = true;
+        zoom = floatParameter(i++);
+      // optional xTrans yTrans
+      if (isFloatParameter(i) && !isCenterParameter(i)) {
+        xTrans = floatParameter(i++);
+        yTrans = floatParameter(i++);
+        if (!isChange
+            && Math.abs(xTrans - viewer.getTranslationXPercent()) >= 1)
+          isChange = true;
+        if (!isChange
+            && Math.abs(yTrans - viewer.getTranslationYPercent()) >= 1)
+          isChange = true;
+      }
+      if (bsCenter == null && i != slen) {
+        // if any more, required (center)
+        center = centerParameter(i);
+        if (expressionResult instanceof BS)
+          bsCenter = (BS) expressionResult;
+        i = iToken + 1;
+      }
+      if (center != null) {
+        if (!isChange && center.distance(viewer.getRotationCenter()) >= 0.1)
+          isChange = true;
+        // optional {center} rotationRadius
+        if (isFloatParameter(i))
+          rotationRadius = floatParameter(i++);
+        if (!isCenterParameter(i)) {
+          if ((rotationRadius == 0 || Float.isNaN(rotationRadius))
+              && (zoom == 0 || Float.isNaN(zoom))) {
+            // alternative (atom expression) 0 zoomFactor
+            float newZoom = Math.abs(getZoom(0, i, bsCenter, (zoom == 0 ? 0
+                : zoom0)));
+            i = iToken + 1;
+            zoom = newZoom;
+          } else {
+            if (!isChange
+                && Math.abs(rotationRadius - viewer.getFloat(T.rotationradius)) >= 0.1)
+              isChange = true;
+          }
         }
       }
-    }
-    if (zoom == 0 || Float.isNaN(zoom))
-      zoom = 100;
-    if (Float.isNaN(rotationRadius))
-      rotationRadius = 0;
+      if (zoom == 0 || Float.isNaN(zoom))
+        zoom = 100;
+      if (Float.isNaN(rotationRadius))
+        rotationRadius = 0;
 
-    if (!isChange && Math.abs(zoom - zoom0) >= 1)
-      isChange = true;
-    // (navCenter) xNav yNav navDepth
+      if (!isChange && Math.abs(zoom - zoom0) >= 1)
+        isChange = true;
+      // (navCenter) xNav yNav navDepth
 
-    P3 navCenter = null;
-    float xNav = Float.NaN;
-    float yNav = Float.NaN;
-    float navDepth = Float.NaN;
-
-    if (i != slen) {
-      navCenter = centerParameter(i);
-      i = iToken + 1;
       if (i != slen) {
-        xNav = floatParameter(i++);
-        yNav = floatParameter(i++);
+        navCenter = centerParameter(i);
+        i = iToken + 1;
+        if (i != slen) {
+          xNav = floatParameter(i++);
+          yNav = floatParameter(i++);
+        }
+        if (i != slen)
+          navDepth = floatParameter(i++);
       }
-      if (i != slen)
-        navDepth = floatParameter(i++);
+    } else {
+
     }
 
     if (i != slen)
@@ -6780,9 +6876,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (floatSecondsTotal > 0)
       refresh();
     if (!useThreads())
-        floatSecondsTotal = 0;
-    viewer.moveTo(this, floatSecondsTotal, center, axis, degrees, null, zoom,
-        xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
+      floatSecondsTotal = 0;
+    viewer.moveTo(this, floatSecondsTotal, center, axis, degrees, m3, zoom,
+        xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth,
+        cameraDepth);
     if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
       throw new ScriptInterruption(this, "moveTo", 1);
   }
@@ -11375,7 +11472,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (isSameAtom && Math.abs(zoom - newZoom) < 1)
       floatSecondsTotal = 0;
     viewer.moveTo(this, floatSecondsTotal, center, JC.center, Float.NaN, null,
-        newZoom, xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN);
+        newZoom, xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN, Float.NaN);
     if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
       throw new ScriptInterruption(this, "zoomTo", 1);
 

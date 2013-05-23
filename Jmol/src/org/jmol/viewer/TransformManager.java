@@ -506,6 +506,7 @@ public class TransformManager {
    ****************************************************************/
   public final P3 fixedTranslation = new P3();
   public final P3 camera = new P3();
+  public final P3 cameraSetting = new P3();
 
   float xTranslationFraction = 0.5f;
   float yTranslationFraction = 0.5f;
@@ -556,9 +557,7 @@ public class TransformManager {
   }
 
   public void setCamera(float x, float y) {
-    camera.x = x;
-    camera.y = y;
-    camera.z = (x == 0 && y == 0 ? 0 : 1);
+    cameraSetting.set(x, y, (x == 0 && y == 0 ? 0 : 1));
   }
 
   public void translateToPercent(char type, float percent) {
@@ -1363,6 +1362,7 @@ public class TransformManager {
   public synchronized void finalizeTransformParameters() {
     haveNotifiedNaN = false;
     fixedRotationOffset.setT(fixedTranslation);
+    camera.setT(cameraSetting);
     internalSlab = slabEnabled && (slabPlane != null || depthPlane != null);
     float newZoom = getZoomSetting();
     if (zoomPercent != newZoom) {
@@ -1638,8 +1638,6 @@ public class TransformManager {
 
     // other units are percent; this factor is 100% / (2*rotationRadius)
     float f = 50 / rotationRadius;
-    float xTrans = cameraX * f / width * screenPixelCount;
-    float yTrans = cameraY * f / height * screenPixelCount;
 
     if (pymolDistanceToSlab > 0) {
       int slab = 50 + (int) ((pymolDistanceToCenter - pymolDistanceToSlab) * f);
@@ -1666,7 +1664,7 @@ public class TransformManager {
         }
       }
     }
-    moveTo(eval, floatSecondsTotal, center, null, 0, m3, 100, xTrans, yTrans,
+    moveTo(eval, floatSecondsTotal, center, null, 0, m3, 100, Float.NaN, Float.NaN,
         rotationRadius, null, Float.NaN, Float.NaN, Float.NaN, cameraDepth, cameraX, cameraY);
   }
 
@@ -1701,6 +1699,10 @@ public class TransformManager {
         matrixEnd.setAA(aaMoveTo);
       }
     }
+    if (!Float.isNaN(cameraX))
+      xTrans = cameraX * 50 / newRotationRadius / width * screenPixelCount;
+    if (!Float.isNaN(cameraY))
+      yTrans = cameraY * 50 / newRotationRadius / height * screenPixelCount;
     try {
       if (motion == null)
         motion = new MoveToThread(this, viewer);
@@ -1775,8 +1777,8 @@ public class TransformManager {
     if (addComments)
       sb.append(" /* cameraDepth, cameraX, cameraY */ ");
     truncate2(sb, cameraDepth);
-    truncate2(sb, camera.x);
-    truncate2(sb, camera.y);
+    truncate2(sb, cameraSetting.x);
+    truncate2(sb, cameraSetting.y);
     sb.append(";");
     return sb.toString();
   }
@@ -2306,8 +2308,8 @@ public class TransformManager {
       mode = (camera.z == 0 ? MODE_STANDARD : MODE_PERSPECTIVE_PYMOL);
     // still not 100% certain why we have to do this, but H115W.PinM.PSE requires it
     perspectiveShiftXY.set(camera.z == 0 ? 0 : camera.x
-        * scalePixelsPerAngstrom / width * 100, camera.z == 0 ? 0 : camera.y
-        * scalePixelsPerAngstrom / height * 100 , 0);
+        * scalePixelsPerAngstrom / screenWidth * 100, camera.z == 0 ? 0 : camera.y
+        * scalePixelsPerAngstrom / screenHeight * 100 , 0);
 
     // model radius in pixels
     modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; // (s)

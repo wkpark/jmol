@@ -6795,16 +6795,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (!isChange && Math.abs(cameraDepth - viewer.getCameraDepth()) >= 0.01f)
             isChange = true;
         }
-        if (i != slen) {
+        if (i + 1 < slen) {
           cameraX = floatParameter(i++);
-        }
-        if (i != slen) {
           cameraY = floatParameter(i++);
+          if (!isChange && Math.abs(cameraX - viewer.getCamera().x) >= 0.01f) 
+            isChange = true;
+          if (!isChange && Math.abs(cameraY - viewer.getCamera().y) >= 0.01f)
+            isChange = true;
         }
-        if (!isChange && Math.abs(cameraX - viewer.getCamera().x) >= 0.01f) 
-          isChange = true;
-        if (!isChange && Math.abs(cameraY - viewer.getCamera().y) >= 0.01f)
-          isChange = true;
       }
     }
     checkLength(i);

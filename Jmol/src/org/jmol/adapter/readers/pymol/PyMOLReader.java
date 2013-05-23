@@ -1866,7 +1866,7 @@ public class PyMOLReader extends PdbReader {
   @SuppressWarnings("unchecked")
   private void processScenes(Map<String, Object> map) {
     JmolList<Object> order = getMapList(map, "scene_order");
-    if (order.size() == 0)
+    if (order == null || order.size() == 0)
       return;
     Map<String, Object> scenes = (Map<String, Object>) map.get("scene_dict");
     //JmolList<Object> names = getMapList(map, "names");

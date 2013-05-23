@@ -37,17 +37,18 @@ import org.jmol.util.Point3fi;
 import org.jmol.util.P3i;
 
 
-public class MeasuresRenderer extends FontLineShapeRenderer {
+public class MeasuresRenderer extends LabelsRenderer {
 
   private Measurement measurement;
   private boolean doJustify;
   private short mad0;
-  private short labelColix;
   
   @Override
   protected boolean render() {
     if (!g3d.checkTranslucent(false))
       return false;
+    if (atomPt == null)
+      atomPt = new Point3fi();
     Measures measures = (Measures) shape;
     doJustify = viewer.getBoolean(T.justifymeasurements);
     // note that this COULD be screen pixels if <= 20. 
@@ -98,11 +99,18 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   private void renderMeasurement(int count, Measurement measurement,
                                  boolean renderLabel) {
     this.measurement = measurement;
+    String s = (renderLabel ? measurement.getString() : null);
+    if (s != null & s.length() == 0)
+      s = null;
+    if (s != null && measurement.text != null) {
+      measurement.text.setText(s);
+      measurement.text.setColix(labelColix);
+    }
     if (measurement.mad == 0) {
       dotsOrDashes = false;
       mad = mad0;
     } else {
-      mad = measurement.mad;
+      mad = (short) measurement.mad;
       //dashDots = hDashes;
       dotsOrDashes = true;
       dashDots = ndots;
@@ -118,41 +126,38 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     case 2:
       atomA = getAtom(1);
       atomB = getAtom(2);
-      renderDistance(renderLabel);
+      renderDistance(s);
       break;
     case 3:
       atomA = getAtom(1);
       atomB = getAtom(2);
       atomC = getAtom(3);
-      renderAngle(renderLabel);
+      renderAngle(s);
       break;
     case 4:
       atomA = getAtom(1);
       atomB = getAtom(2);
       atomC = getAtom(3);
       atomD = getAtom(4);
-      renderTorsion(renderLabel);
+      renderTorsion(s);
       break;
     }
     atomA = atomB = atomC = atomD = null;
   }
 
-  void renderDistance(boolean renderLabel) {
+  void renderDistance(String s) {
     tickInfo = measurement.tickInfo;
     if (tickInfo != null) {
       drawLine(atomA.screenX, atomA.screenY, atomA.screenZ, atomB.screenX,
           atomB.screenY, atomB.screenZ, mad);
-      drawTicks(atomA, atomB, mad, renderLabel);
+      drawTicks(atomA, atomB, mad, s != null);
       return;
     }
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - atomB.screenDiameter - 10;
     int radius = drawLine(atomA.screenX, atomA.screenY, zA, atomB.screenX,
         atomB.screenY, zB, mad);
-    if (!renderLabel)
-      return;
-    String s = measurement.getString();
-    if (s == null || s.length() == 0)
+    if (s == null)
       return;
     if (mad > 0)
       radius <<= 1;
@@ -161,45 +166,53 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       z = 1;
     int x = (atomA.screenX + atomB.screenX) / 2;
     int y = (atomA.screenY + atomB.screenY) / 2;
-    g3d.setColix(labelColix);
-    drawString(x, y, z, radius, doJustify
-        && (x - atomA.screenX) * (y - atomA.screenY) > 0, false, false,
-        (doJustify ? 0 : Integer.MAX_VALUE), s);
+    if (measurement.text == null) {
+      g3d.setColix(labelColix);
+      drawString(x, y, z, radius, doJustify
+          && (x - atomA.screenX) * (y - atomA.screenY) > 0, false, false,
+          (doJustify ? 0 : Integer.MAX_VALUE), s);
+    } else {
+      atomPt.add2(atomA, atomB);
+      atomPt.scale(0.5f);
+      renderLabelOrMeasure(measurement.text, s);
+    }
   }
-                           
-
+                          
   private AxisAngle4f aaT = new AxisAngle4f();
   private Matrix3f matrixT = new Matrix3f();
 
-  private void renderAngle(boolean renderLabel) {
+  private void renderAngle(String s) {
     int zOffset = atomB.screenDiameter + 10;
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - zOffset;
     int zC = atomC.screenZ - atomC.screenDiameter - 10;
-    int radius = drawLine(atomA.screenX, atomA.screenY, zA,
-                             atomB.screenX, atomB.screenY, zB, mad);
-    radius += drawLine(atomB.screenX, atomB.screenY, zB,
-                          atomC.screenX, atomC.screenY, zC, mad);    
-    if (!renderLabel)
+    int radius = drawLine(atomA.screenX, atomA.screenY, zA, atomB.screenX,
+        atomB.screenY, zB, mad);
+    radius += drawLine(atomB.screenX, atomB.screenY, zB, atomC.screenX,
+        atomC.screenY, zC, mad);
+    if (s == null)
       return;
     radius = (radius + 1) / 2;
 
     AxisAngle4f aa = measurement.getAxisAngle();
     if (aa == null) { // 180 degrees
-      int offset = (int) Math.floor(5 * imageFontScaling);
-      g3d.setColix(labelColix);
-      drawString(atomB.screenX + offset, atomB.screenY - offset,
-                             zB, radius, false, false, false, 
-                             (doJustify ? 0 : Integer.MAX_VALUE), 
-                             measurement.getString());
+      if (measurement.text == null) {
+        int offset = (int) Math.floor(5 * imageFontScaling);
+        g3d.setColix(labelColix);
+        drawString(atomB.screenX + offset, atomB.screenY - offset, zB, radius,
+            false, false, false, (doJustify ? 0 : Integer.MAX_VALUE), s);
+      } else {
+        atomPt.setT(atomB);
+        renderLabelOrMeasure(measurement.text, s);
+      }
       return;
     }
-    int dotCount = (int)Math.floor((aa.angle / (2 * Math.PI)) * 64);
+    int dotCount = (int) Math.floor((aa.angle / (2 * Math.PI)) * 64);
     float stepAngle = aa.angle / dotCount;
     aaT.setAA(aa);
     int iMid = dotCount / 2;
     P3 ptArc = measurement.getPointArc();
-    for (int i = dotCount; --i >= 0; ) {
+    for (int i = dotCount; --i >= 0;) {
       aaT.angle = i * stepAngle;
       matrixT.setAA(aaT);
       pointT.setT(ptArc);
@@ -207,46 +220,58 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
       pointT.add(atomB);
       // NOTE! Point3i screen is just a pointer 
       //  to viewer.transformManager.point3iScreenTemp
-      P3i point3iScreenTemp = viewer.transformPt(pointT);
-      int zArc = point3iScreenTemp.z - zOffset;
-      if (zArc < 0) zArc = 0;
-      g3d.drawPixel(point3iScreenTemp.x, point3iScreenTemp.y, zArc);
-      if (i == iMid) {
-        pointT.setT(ptArc);
-        pointT.scale(1.1f);
-        // next line modifies Point3i point3iScreenTemp
-        matrixT.transform(pointT);
-        pointT.add(atomB);
-        viewer.transformPt(pointT);
-        int zLabel = point3iScreenTemp.z - zOffset;
+      P3i p3i = viewer.transformPt(pointT);
+      int zArc = p3i.z - zOffset;
+      if (zArc < 0)
+        zArc = 0;
+      g3d.drawPixel(p3i.x, p3i.y, zArc);
+      if (i != iMid)
+        continue;
+      pointT.setT(ptArc);
+      pointT.scale(1.1f);
+      // next line modifies Point3i point3iScreenTemp
+      matrixT.transform(pointT);
+      pointT.add(atomB);
+      viewer.transformPt(pointT);
+      int zLabel = p3i.z - zOffset;
+      if (measurement.text == null) {
         g3d.setColix(labelColix);
-        drawString(point3iScreenTemp.x, 
-            point3iScreenTemp.y, zLabel, radius, 
-            point3iScreenTemp.x < atomB.screenX, false,
-            false, 
-            (doJustify ? atomB.screenY : Integer.MAX_VALUE), measurement.getString());
+        drawString(p3i.x, p3i.y, zLabel, radius, p3i.x < atomB.screenX, false,
+            false, (doJustify ? atomB.screenY : Integer.MAX_VALUE), s);
+      } else {
+        atomPt.setT(pointT);
+        renderLabelOrMeasure(measurement.text, s);
       }
     }
   }
 
-  private void renderTorsion(boolean renderLabel) {
+  private void renderTorsion(String s) {
     int zA = atomA.screenZ - atomA.screenDiameter - 10;
     int zB = atomB.screenZ - atomB.screenDiameter - 10;
     int zC = atomC.screenZ - atomC.screenDiameter - 10;
     int zD = atomD.screenZ - atomD.screenDiameter - 10;
-    int radius = drawLine(atomA.screenX, atomA.screenY, zA, atomB.screenX, atomB.screenY, zB, mad);
-    radius += drawLine(atomB.screenX, atomB.screenY, zB, atomC.screenX, atomC.screenY, zC, mad);
-    radius += drawLine(atomC.screenX, atomC.screenY, zC, atomD.screenX, atomD.screenY, zD, mad);
-    if (!renderLabel)
+    int radius = drawLine(atomA.screenX, atomA.screenY, zA, atomB.screenX,
+        atomB.screenY, zB, mad);
+    radius += drawLine(atomB.screenX, atomB.screenY, zB, atomC.screenX,
+        atomC.screenY, zC, mad);
+    radius += drawLine(atomC.screenX, atomC.screenY, zC, atomD.screenX,
+        atomD.screenY, zD, mad);
+    if (s == null)
       return;
     radius /= 3;
-    g3d.setColix(labelColix);
-    drawString((atomA.screenX + atomB.screenX + atomC.screenX + atomD.screenX) / 4,
-                           (atomA.screenY + atomB.screenY + atomC.screenY + atomD.screenY) / 4,
-                           (zA + zB + zC + zD) / 4, radius, false, false,
-                           false, 
-                           (doJustify ? 0 : Integer.MAX_VALUE), 
-                           measurement.getString());
+    if (measurement.text == null) {
+      g3d.setColix(labelColix);
+      drawString((atomA.screenX + atomB.screenX + atomC.screenX + atomD.screenX) / 4,
+          (atomA.screenY + atomB.screenY + atomC.screenY + atomD.screenY) / 4,
+          (zA + zB + zC + zD) / 4, radius, false, false, false,
+          (doJustify ? 0 : Integer.MAX_VALUE), s);
+    } else {
+      atomPt.add2(atomA, atomB);
+      atomPt.add(atomC);
+      atomPt.add(atomD);
+      atomPt.scale(0.25f);
+      renderLabelOrMeasure(measurement.text, s);
+    }
   }
 
   private void renderPendingMeasurement(MeasurementPending measurementPending) {

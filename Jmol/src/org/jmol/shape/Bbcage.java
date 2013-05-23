@@ -43,11 +43,10 @@ public class Bbcage extends FontLineShape {
   }
 
   public boolean isVisible;
-  public int mad;
   
   @Override
   public void setVisibilityFlags(BS bs) {
-    isVisible = ((mad = viewer.getObjectMad(StateManager.OBJ_BOUNDBOX)) != 0);
+    isVisible = ((mad = (short) viewer.getObjectMad(StateManager.OBJ_BOUNDBOX)) != 0);
     if (!isVisible)
       return;
     BS bboxModels = viewer.getBoundBoxModels();

@@ -1,62 +1,58 @@
-package org.jmol.shape;
-
-
+package org.jmol.modelset;
 
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.P3;
 import org.jmol.viewer.JC;
-import org.jmol.viewer.Viewer;
 
 public abstract class Object2d {
-  
+
   // Echo, Label
 
   public final static int POINTER_NONE = 0;
   public final static int POINTER_ON = 1;
   public final static int POINTER_BACKGROUND = 2;
 
-  protected final static String[] hAlignNames = { "", "left", "center", "right",
+  public final static String[] hAlignNames = { "", "left", "center", "right",
       "" };
 
   public final static int ALIGN_NONE = 0;
-  final public static int ALIGN_LEFT = 1;
-  final protected static int ALIGN_CENTER = 2;
-  final protected static int ALIGN_RIGHT = 3;
+  public final static int ALIGN_LEFT = 1;
+  public final static int ALIGN_CENTER = 2;
+  public final static int ALIGN_RIGHT = 3;
 
-  final protected static String[] vAlignNames = { "xy", "top", "bottom", "middle" };
+  public final static String[] vAlignNames = { "xy", "top", "bottom", "middle" };
 
   final public static int VALIGN_XY = 0;
-  final protected static int VALIGN_TOP = 1;
-  final protected static int VALIGN_BOTTOM = 2;
-  final protected static int VALIGN_MIDDLE = 3;
+  final public static int VALIGN_TOP = 1;
+  final public static int VALIGN_BOTTOM = 2;
+  final public static int VALIGN_MIDDLE = 3;
   final public static int VALIGN_XYZ = 4;
 
   public boolean isLabelOrHover;
-  protected Viewer viewer;
   protected GData gdata;
   public P3 xyz;
   public String target;
-  protected String script;
+  public String script;
   public short colix;
   public short bgcolix;
   public int pointer;
-  
-  protected int align;
+
+  public int align;
   public int valign;
   public int movableX;
   public int movableY;
   public int movableZ;
-  protected int movableXPercent = Integer.MAX_VALUE;
-  protected int movableYPercent = Integer.MAX_VALUE;
+  public int movableXPercent = Integer.MAX_VALUE;
+  public int movableYPercent = Integer.MAX_VALUE;
   public int movableZPercent = Integer.MAX_VALUE;
-  
+
   protected int offsetX;
   protected int offsetY;
   public int z = 1; // front plane
   public int zSlab = Integer.MIN_VALUE; // z for slabbing purposes -- may be near an atom
-  
+
   // PyMOL-type offset
   // [mode, screenoffsetx,y,z (applied after tranform), positionOffsetx,y,z (applied before transform)]
   public float[] pymolOffset;
@@ -69,25 +65,25 @@ public abstract class Object2d {
   public float boxX;
   public float boxY;
 
-  int modelIndex = -1;
+  public int modelIndex = -1;
   public boolean visible = true;
   public boolean hidden = false;
 
   public float[] boxXY = new float[5];
-  
-  protected float scalePixelsPerMicron;
+
+  public float scalePixelsPerMicron;
 
   public float getScalePixelsPerMicron() {
     return scalePixelsPerMicron;
   }
 
-  public void setScalePixelsPerMicron(float scalePixelsPerMicron) {    
+  public void setScalePixelsPerMicron(float scalePixelsPerMicron) {
     this.scalePixelsPerMicron = scalePixelsPerMicron;
   }
 
   abstract protected void recalc();
 
-  void setModel(int modelIndex) {
+  public void setModel(int modelIndex) {
     this.modelIndex = modelIndex;
   }
 
@@ -111,15 +107,14 @@ public abstract class Object2d {
     this.colix = colix;
   }
 
-  void setColixO(Object value) {
+  public void setColixO(Object value) {
     colix = C.getColixO(value);
   }
 
-  void setTranslucent(float level, boolean isBackground) {
+  public void setTranslucent(float level, boolean isBackground) {
     if (isBackground) {
       if (bgcolix != 0)
-        bgcolix = C.getColixTranslucent3(bgcolix, !Float.isNaN(level),
-            level);
+        bgcolix = C.getColixTranslucent3(bgcolix, !Float.isNaN(level), level);
     } else {
       colix = C.getColixTranslucent3(colix, !Float.isNaN(level), level);
     }
@@ -129,7 +124,7 @@ public abstract class Object2d {
     this.bgcolix = colix;
   }
 
-  void setBgColixO(Object value) {
+  public void setBgColixO(Object value) {
     bgcolix = (value == null ? (short) 0 : C.getColixO(value));
   }
 
@@ -145,12 +140,12 @@ public abstract class Object2d {
     movableYPercent = Integer.MAX_VALUE;
   }
 
-//  public void setMovableZ(int z) {
-//    if (valign != VALIGN_XYZ)
-//      valign = VALIGN_XY;
-//    movableZ = z;
-//    movableZPercent = Integer.MAX_VALUE;
-//  }
+  //  public void setMovableZ(int z) {
+  //    if (valign != VALIGN_XYZ)
+  //      valign = VALIGN_XY;
+  //    movableZ = z;
+  //    movableZPercent = Integer.MAX_VALUE;
+  //  }
 
   public void setMovableXPercent(int x) {
     valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);
@@ -222,7 +217,7 @@ public abstract class Object2d {
     }
   }
 
-  boolean setAlignmentLCR(String align) {
+  public boolean setAlignmentLCR(String align) {
     if ("left".equals(align))
       return setAlignment(ALIGN_LEFT);
     if ("center".equals(align))
@@ -253,7 +248,7 @@ public abstract class Object2d {
         : (pointer & POINTER_BACKGROUND) > 0 ? "background" : "on");
   }
 
-  protected void setBoxOffsetsInWindow(float margin, float vMargin, float vTop) {
+  public void setBoxOffsetsInWindow(float margin, float vMargin, float vTop) {
     // not labels
 
     // these coordinates are (0,0) in top left
@@ -278,23 +273,26 @@ public abstract class Object2d {
   public void setWindow(int width, int height, float scalePixelsPerMicron) {
     windowWidth = width;
     windowHeight = height;
-    if (pymolOffset == null && this.scalePixelsPerMicron < 0 && scalePixelsPerMicron != 0)
+    if (pymolOffset == null && this.scalePixelsPerMicron < 0
+        && scalePixelsPerMicron != 0)
       this.scalePixelsPerMicron = scalePixelsPerMicron;
   }
 
-  public boolean checkObjectClicked(int x, int y, BS bsVisible) {
-    if (modelIndex >= 0 && !bsVisible.get(modelIndex) || hidden)
+  public boolean checkObjectClicked(boolean isAntialiased, int x, int y,
+                                    BS bsVisible) {
+    if (hidden || script == null || modelIndex >= 0 && !bsVisible.get(modelIndex))
       return false;
-    if (gdata.isAntialiased()) {
+    if (isAntialiased) {
       x <<= 1;
       y <<= 1;
     }
-    return (script != null && x >= boxX && x <= boxX + boxWidth 
-        && y >= boxY && y <= boxY + boxHeight);
+    return (x >= boxX && x <= boxX + boxWidth && y >= boxY && y <= boxY
+        + boxHeight);
   }
 
-  public static boolean setProperty(String propertyName, Object value, Object2d currentObject) {
-    
+  public static boolean setProperty(String propertyName, Object value,
+                                    Object2d currentObject) {
+
     if ("script" == propertyName) {
       if (currentObject != null)
         currentObject.setScript((String) value);
@@ -324,35 +322,34 @@ public abstract class Object2d {
         currentObject.setMovableYPercent(((Integer) value).intValue());
       return true;
     }
-    
+
     if ("%zpos" == propertyName) {
       if (currentObject != null)
         currentObject.setMovableZPercent(((Integer) value).intValue());
       return true;
     }
-    
+
     if ("xypos" == propertyName) {
       if (currentObject == null)
         return true;
       P3 pt = (P3) value;
       currentObject.setXYZ(null, true);
       if (pt.z == Float.MAX_VALUE) {
-        currentObject.setMovableX((int) pt.x);        
-        currentObject.setMovableY((int) pt.y);        
+        currentObject.setMovableX((int) pt.x);
+        currentObject.setMovableY((int) pt.y);
       } else {
-        currentObject.setMovableXPercent((int) pt.x);        
-        currentObject.setMovableYPercent((int) pt.y);        
+        currentObject.setMovableXPercent((int) pt.x);
+        currentObject.setMovableYPercent((int) pt.y);
       }
       return true;
     }
-    
+
     if ("xyz" == propertyName) {
       if (currentObject != null) {
         currentObject.setXYZ((P3) value, true);
       }
       return true;
     }
-    
     return false;
   }
 
@@ -361,5 +358,5 @@ public abstract class Object2d {
     yOffset = Math.min(Math.max(yOffset, -127), 127);
     return ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
   }
-  
+
 }

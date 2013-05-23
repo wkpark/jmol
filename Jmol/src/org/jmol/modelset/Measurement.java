@@ -56,7 +56,7 @@ public class Measurement {
   public boolean isTrajectory = false;
   public short colix;
   public short labelColix = -1; // use colix
-  public short mad;
+  public int mad;
   public TickInfo tickInfo;
   public int traceX = Integer.MIN_VALUE, traceY;
 
@@ -70,6 +70,7 @@ public class Measurement {
   private String strMeasurement;
   private AxisAngle4f aa;
   private P3 pointArc;
+  public Text text;
 
   public Measurement setM(ModelSet modelSet, Measurement m, float value, short colix,
                           String strFormat, int index) {
@@ -86,6 +87,7 @@ public class Measurement {
       thisID = m.thisID;
       if (thisID != null)
         labelColix = 0;
+      text = m.text;
     }
     if (pts == null)
       pts = new Point3fi[4];

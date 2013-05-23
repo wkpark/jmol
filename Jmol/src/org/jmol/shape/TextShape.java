@@ -26,6 +26,7 @@ package org.jmol.shape;
 
 import java.util.Iterator;
 
+import org.jmol.modelset.Text;
 import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
 

@@ -40,8 +40,8 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.Text;
 import org.jmol.script.T;
-import org.jmol.shape.Text;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BoxInfo; //import org.jmol.util.Escape;
 import org.jmol.util.BS;
@@ -903,7 +903,7 @@ public class PyMOLReader extends PdbReader {
   /**
    * Create a MEASURE JmolObject.
    * 
-   * @param deepBranch 
+   * @param deepBranch
    */
   private void processMeasure(JmolList<Object> deepBranch) {
     if (isStateScript)
@@ -912,7 +912,6 @@ public class PyMOLReader extends PdbReader {
       return; // will have to reconsider this if there is a movie, though
     Logger.info("PyMOL measure " + branchName);
     JmolList<Object> measure = listAt(listAt(deepBranch, 2), 0);
-
     int color = intAt(listAt(deepBranch, 0), 2);
     int pt;
     int nCoord = (measure.get(pt = 1) instanceof JmolList<?> ? 2 : measure
@@ -921,21 +920,22 @@ public class PyMOLReader extends PdbReader {
     if (nCoord == 0)
       return;
     JmolList<Object> list = listAt(measure, pt);
+    JmolList<Object> offsets = listAt(measure, 8);
     int len = list.size();
-    int p = 0;
     float rad = getFloatSetting(PyMOL.dash_width) / 20;
     if (rad == 0)
       rad = 0.05f;
     int index = 0;
     int c = PyMOL.getRGB(color);
     short colix = C.getColix(c);
-    while (p < len) {
+    for (int p = 0; p < len;) {
       JmolList<Object> points = new JmolList<Object>();
       for (int i = 0; i < nCoord; i++, p += 3)
         points.addLast(pointAt(list, p, new Point3fi()));
       BS bs = BSUtil.newAndSetBit(0);
+      float[] offset = floatsAt(listAt(offsets, index++), 0, new float[7], 7);
       MeasurementData md = new MeasurementData(fixName(branchNameID + "_"
-          + (++index)), viewer, points);
+          + index), viewer, points);
       md.note = branchName;
       String strFormat = "";
       int nDigits = 1;
@@ -950,17 +950,17 @@ public class PyMOLReader extends PdbReader {
         nDigits = (int) getFloatSetting(PyMOL.label_dihedral_digits);
         break;
       }
-      if (measure.size() >= 9 && measure.get(8) != null)
+      if (offsets != null)
         strFormat = nCoord + ":%0." + (nDigits < 0 ? 1 : nDigits) + "VALUE";
       else
         strFormat = nCoord + ": ";
+      Text text = newTextLabel(strFormat, offset, colix,
+          (int) getFloatSetting(PyMOL.label_font_id),
+          getFloatSetting(PyMOL.label_size));
       md.set(T.define, null, strFormat, "angstroms", null, false, false, null,
-          false, (int) (rad * 2000), colix);
-      addJmolObject(T.measure, bs, md);
+          false, (int) (rad * 2000), colix, text);
+      addJmolObject(JC.SHAPE_MEASURES, bs, md);
       haveMeasurements = true;
-      //int n = -(int) (getFloatSetting(PyMOL.dash_width) + 0.5);
-      //ss.setSize(0.2f); probably good, but this will set it to be not dashed. Should implement that in Jmol
-
     }
 
   }
@@ -1222,9 +1222,7 @@ public class PyMOLReader extends PdbReader {
     if (a.size() > 40 && intAt(a, 40) == 1)
       atom.uniqueID = intAt(a, 32);
     if (a.size() > 46) {
-      float[] data = new float[7];
-      for (int i = 0; i < 6; i++)
-        data[i] = floatAt(a, i + 41);
+      float[] data = floatsAt(a, 41, new float[7], 6);
       atomSetCollection.setAnisoBorU(atom, data, 12);
     }
     processAtom2(atom, serNo, x, y, z, formalCharge);    
@@ -1774,7 +1772,6 @@ public class PyMOLReader extends PdbReader {
     //float smoothing = getFloatSetting(PyMOL.ribbon_smooth);
     float sampling = getFloatSetting(PyMOL.ribbon_sampling);
     boolean isTrace = (sampling > 1);
-    //jo.setColors(null, 0); // no translucency
     float r = getFloatSetting(PyMOL.ribbon_radius) * 2;
     float rpc = getFloatSetting(PyMOL.ray_pixel_scale);
     if (r == 0)
@@ -1792,7 +1789,7 @@ public class PyMOLReader extends PdbReader {
     if (bs.isEmpty())
       return;
     JmolObject jo = addJmolObject(JC.SHAPE_CARTOON, bs, null);
-    jo.setColors(null, cartoonTranslucency);
+    jo.translucency = cartoonTranslucency;
     jo.setSize(getFloatSetting(sizeID) * factor);
   }
 
@@ -2141,6 +2138,14 @@ public class PyMOLReader extends PdbReader {
   private static String stringAt(JmolList<Object> list, int i) {
     String s = list.get(i).toString();
     return (s.length() == 0 ? " " : s);
+  }
+
+  private static float[] floatsAt(JmolList<Object> a, int pt, float[] data, int len) {
+    if (a == null)
+      return null;
+    for (int i = 0; i < len; i++)
+      data[i] = floatAt(a, pt++);
+    return data;
   }
 
   @SuppressWarnings("unchecked")

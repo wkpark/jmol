@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 
+import org.jmol.modelset.Object2d;
+import org.jmol.modelset.Text;
 import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
@@ -208,10 +210,11 @@ public abstract class Object2dShape extends Shape {
   public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible, boolean drawPicking) {
     if (isHover || modifiers == 0)
       return null;
+    boolean isAntialiased = viewer.isAntialiased();
     Iterator<Text> e = objects.values().iterator();
     while (e.hasNext()) {
       Object2d obj = e.next();
-      if (obj.checkObjectClicked(x, y, bsVisible)) {
+      if (obj.checkObjectClicked(isAntialiased, x, y, bsVisible)) {
         String s = obj.getScript();
         if (s != null) {
           viewer.evalStringQuiet(s);
@@ -235,14 +238,15 @@ public abstract class Object2dShape extends Shape {
   public boolean checkObjectHovered(int x, int y, BS bsVisible) {
     if (isHover)
       return false;
-    Iterator<Text> e = objects.values().iterator();
     boolean haveScripts = false;
+    boolean isAntialiased = viewer.isAntialiased();
+    Iterator<Text> e = objects.values().iterator();
     while (e.hasNext()) {
       Object2d obj = e.next();
       String s = obj.getScript();
       if (s != null) {
         haveScripts = true;
-        if (obj.checkObjectClicked(x, y, bsVisible)) {
+        if (obj.checkObjectClicked(isAntialiased, x, y, bsVisible)) {
           viewer.setCursor(JC.CURSOR_HAND);
           return true;
         }

@@ -27,6 +27,8 @@ package org.jmol.shape;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
+import org.jmol.modelset.Object2d;
+import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;

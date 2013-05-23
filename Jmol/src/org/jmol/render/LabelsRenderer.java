@@ -26,26 +26,54 @@ package org.jmol.render;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.Object2d;
+import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.shape.Labels;
-import org.jmol.shape.Object2d;
-import org.jmol.shape.Text;
-import org.jmol.util.JmolFont;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
+import org.jmol.util.Point3fi;
 
-public class LabelsRenderer extends ShapeRenderer {
+public class LabelsRenderer extends FontLineShapeRenderer {
 
   // offsets are from the font baseline
-  byte fidPrevious;
-  protected JmolFont font3d;
+
+  final int[] minZ = new int[1];
+
   protected int ascent;
   protected int descent;
-  final int[] minZ = new int[1];
-  private int zCutoff;
+  protected float sppm;
   protected float[] xy = new float[3];
-  private P3 pTemp = new P3();
   private P3i screen = new P3i();
+
+  byte fidPrevious;
+  
+  private int zCutoff;
+  private P3 pTemp = new P3();
+
+  protected short bgcolix;
+  protected short labelColix;
+  
+  private byte fid;
+
+  private Atom atom;
+  protected Point3fi atomPt;
+
+  private boolean isExact;
+
+  private int offset;
+
+  protected int textAlign;
+
+  private int pointer;
+
+  protected int zSlab = Integer.MIN_VALUE;
+
+  private int zBox;
+
+  private float[] boxXY;
+
+  private float scalePixelsPerMicron;
   
   @Override
   protected boolean render() {
@@ -65,39 +93,40 @@ public class LabelsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
-    float sppm = viewer.getScalePixelsPerAngstrom(true);
-    float scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? sppm * 10000f : 0);
-    float imageFontScaling = viewer.getImageFontScaling();
+    sppm = viewer.getScalePixelsPerAngstrom(true);
+    scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? sppm * 10000f
+        : 0);
+    imageFontScaling = viewer.getImageFontScaling();
     int iGroup = -1;
     minZ[0] = Integer.MAX_VALUE;
     boolean isAntialiased = g3d.isAntialiased();
     for (int i = labelStrings.length; --i >= 0;) {
-      Atom atom = atoms[i];
+      atomPt = atom = atoms[i];
       if (!atom.isVisible(myVisibilityFlag))
         continue;
       String label = labelStrings[i];
       if (label == null || label.length() == 0 || labels.mads != null
           && labels.mads[i] < 0)
         continue;
-      short colix = labels.getColix2(i, atom, false);
-      short bgcolix = labels.getColix2(i, atom, true);
-      if (bgcolix == 0 && g3d.getColorArgbOrGray(colix) == backgroundColor)
-        colix = backgroundColixContrast;
-      byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
+      labelColix = labels.getColix2(i, atom, false);
+      bgcolix = labels.getColix2(i, atom, true);
+      if (bgcolix == 0 && g3d.getColorArgbOrGray(labelColix) == backgroundColor)
+        labelColix = backgroundColixContrast;
+      fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
           : fids[i]);
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);
       boolean labelsFront = ((offsetFull & Labels.FRONT_FLAG) != 0);
       boolean labelsGroup = ((offsetFull & Labels.GROUP_FLAG) != 0);
-      boolean isExact = ((offsetFull & Labels.EXACT_OFFSET_FLAG) != 0);
-      int offset = offsetFull >> Labels.FLAG_OFFSET;
-      int textAlign = Labels.getAlignment(offsetFull);
-      int pointer = offsetFull & Labels.POINTER_FLAGS;
-      int zSlab = atom.screenZ - atom.screenDiameter / 2 - 3;
+      isExact = ((offsetFull & Labels.EXACT_OFFSET_FLAG) != 0);
+      offset = offsetFull >> Labels.FLAG_OFFSET;
+      textAlign = Labels.getAlignment(offsetFull);
+      pointer = offsetFull & Labels.POINTER_FLAGS;
+      zSlab = atom.screenZ - atom.screenDiameter / 2 - 3;
       if (zCutoff > 0 && zSlab > zCutoff)
         continue;
       if (zSlab < 1)
         zSlab = 1;
-      int zBox = zSlab;
+      zBox = zSlab;
       if (labelsGroup) {
         Group group = atom.getGroup();
         int ig = group.getGroupIndex();
@@ -113,72 +142,13 @@ public class LabelsRenderer extends ShapeRenderer {
         zBox = 1;
 
       Text text = labels.getLabel(i);
-      float[] boxXY = (!isExport
-          || viewer.creatingImage ? labels.getBox(i) : new float[5]);
+      boxXY = (!isExport || viewer.creatingImage ? labels.getBox(i)
+          : new float[5]);
       if (boxXY == null)
         labels.putBox(i, boxXY = new float[5]);
-      if (text != null) {
-        if (text.font == null)
-          text.setFontFromFid(fid);
-        if (text.pymolOffset == null) {
-          text.setXYZs(atom.screenX, atom.screenY, zBox, zSlab);          
-        } else {
-          if (text.pymolOffset[0] == 1)
-            pTemp.setT(atom);
-          else
-            pTemp.set(0, 0, 0);
-          pTemp.x += text.pymolOffset[4];
-          pTemp.y += text.pymolOffset[5];
-          pTemp.z += text.pymolOffset[6];
-          viewer.transformPtScr(pTemp, screen);
-          text.setXYZs(screen.x, screen.y, screen.z, zSlab);          
-        }
-        if (text.pymolOffset == null) { 
-          text.setColix(colix);
-          text.setBgColix(bgcolix);          
-        } else {
-          text.setScalePixelsPerMicron(sppm);
-        }
-      } else {
-        boolean isLeft = (textAlign == Object2d.ALIGN_LEFT || textAlign == Object2d.ALIGN_NONE);
-        if (fid != fidPrevious || ascent == 0) {
-          g3d.setFontFid(fid);
-          fidPrevious = fid;
-          font3d = g3d.getFont3DCurrent();
-          if (isLeft) {
-            ascent = font3d.getAscent();
-            descent = font3d.getDescent();
-          }
-        }
-        boolean isSimple = isLeft
-            && (imageFontScaling == 1 && scalePixelsPerMicron == 0
-                && label.indexOf("|") < 0 && label.indexOf("<su") < 0);
-        if (isSimple) {
-          boolean doPointer = ((pointer & Object2d.POINTER_ON) != 0);
-          short pointerColix = ((pointer & Object2d.POINTER_BACKGROUND) != 0
-              && bgcolix != 0 ? bgcolix : colix);
-          boxXY[0] = atom.screenX;
-          boxXY[1] = atom.screenY;
-          TextRenderer.renderSimpleLabel(g3d, font3d, label, colix, bgcolix, boxXY,
-              zBox, zSlab, Object2d.getXOffset(offset), Object2d
-                  .getYOffset(offset), ascent, descent, doPointer,
-              pointerColix, isExact);
-          atom = null;
-        } else {
-          text = Text.newLabel(g3d.getGData(), font3d, label, colix, bgcolix, textAlign,
-              0, null);
-          text.setXYZs(atom.screenX, atom.screenY, zBox, zSlab);
-          labels.putLabel(i, text);
-        }
-      }
-      if (atom != null) {
-        if (text.pymolOffset == null)
-          text.setOffset(offset);
-        if (textAlign != Object2d.ALIGN_NONE && text.pymolOffset == null)
-          text.setAlignment(textAlign);
-        text.setPointer(pointer);
-        TextRenderer.render(text, viewer, g3d, scalePixelsPerMicron, imageFontScaling, isExact, boxXY, xy);
-      }
+      text = renderLabelOrMeasure(text, label);
+      if (text != null)
+        labels.putLabel(i, text);
       if (isAntialiased) {
         boxXY[0] /= 2;
         boxXY[1] /= 2;
@@ -186,5 +156,71 @@ public class LabelsRenderer extends ShapeRenderer {
       boxXY[4] = zBox;
     }
     return false;
+  }
+
+  protected Text renderLabelOrMeasure(Text text, String label) {
+    boolean newText = false;
+    if (text != null) {
+      if (text.font == null)
+        text.setFontFromFid(fid);
+      if (text.pymolOffset == null) {
+        text.setXYZs(atomPt.screenX, atomPt.screenY, zBox, zSlab);
+        text.setColix(labelColix);
+        text.setBgColix(bgcolix);
+      } else {
+        if (text.pymolOffset[0] == 1)
+          pTemp.setT(atomPt);
+        else
+          pTemp.set(0, 0, 0);
+        pTemp.x += text.pymolOffset[4];
+        pTemp.y += text.pymolOffset[5];
+        pTemp.z += text.pymolOffset[6];
+        viewer.transformPtScr(pTemp, screen);
+        text.setXYZs(screen.x, screen.y, screen.z, zSlab);
+        text.setScalePixelsPerMicron(sppm);
+      }
+    } else {
+      boolean isLeft = (textAlign == Object2d.ALIGN_LEFT || textAlign == Object2d.ALIGN_NONE);
+      if (fid != fidPrevious || ascent == 0) {
+        g3d.setFontFid(fid);
+        fidPrevious = fid;
+        font3d = g3d.getFont3DCurrent();
+        if (isLeft) {
+          ascent = font3d.getAscent();
+          descent = font3d.getDescent();
+        }
+      }
+      boolean isSimple = isLeft
+          && (imageFontScaling == 1 && scalePixelsPerMicron == 0
+              && label.indexOf("|") < 0 && label.indexOf("<su") < 0);
+      if (isSimple) {
+        boolean doPointer = ((pointer & Object2d.POINTER_ON) != 0);
+        short pointerColix = ((pointer & Object2d.POINTER_BACKGROUND) != 0
+            && bgcolix != 0 ? bgcolix : labelColix);
+        boxXY[0] = atomPt.screenX;
+        boxXY[1] = atomPt.screenY;
+        TextRenderer.renderSimpleLabel(g3d, font3d, label, labelColix, bgcolix,
+            boxXY, zBox, zSlab, Object2d.getXOffset(offset), Object2d
+                .getYOffset(offset), ascent, descent, doPointer, pointerColix,
+            isExact);
+        atomPt = null;
+      } else {
+        text = Text.newLabel(g3d.getGData(), font3d, label, labelColix,
+            bgcolix, textAlign, 0, null);
+        text.setXYZs(atomPt.screenX, atomPt.screenY, zBox, zSlab);
+        newText = true;
+      }
+    }
+    if (atomPt != null) {
+      if (text.pymolOffset == null) {
+        text.setOffset(offset);
+        if (textAlign != Object2d.ALIGN_NONE)
+          text.setAlignment(textAlign);
+      }
+      text.setPointer(pointer);
+      TextRenderer.render(text, viewer, g3d, scalePixelsPerMicron,
+          imageFontScaling, isExact, boxXY, xy);
+    }
+    return (newText ? text : null);
   }
 }

@@ -183,7 +183,7 @@ class JmolObject {
     }
 
     switch (id) {
-    case T.measure:
+    case JC.SHAPE_MEASURES:
       if (modelIndex < 0)
         return;
       sm.loadShape(id);

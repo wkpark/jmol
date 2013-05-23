@@ -5,7 +5,7 @@ import org.jmol.util.JmolFont;
 /**
  * methods required by Jmol that access java.awt.Font
  * 
- * private to org.jmol.awt
+ * private to org.jmol.awtjs
  * 
  */
 

@@ -27,6 +27,7 @@ import org.jmol.script.ScriptContext;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
+import org.jmol.shape.Measures;
 import org.jmol.shape.Shape;
 import org.jmol.thread.JmolThread;
 import org.jmol.thread.ScriptDelayThread;
@@ -4184,7 +4185,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private boolean antialiasDisplay;
 
-  boolean isAntialiased() {
+  public boolean isAntialiased() {
     return antialiasDisplay;
   }
 
@@ -9818,10 +9819,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   }
 
-  public String getMeasurementState(AtomShape as, JmolList<Measurement> mList,
+  public String getMeasurementState(Measures measures, JmolList<Measurement> mList,
                                     int measurementCount, JmolFont font3d,
                                     TickInfo ti) {
-    return getStateCreator().getMeasurementState(as, mList, measurementCount,
+    return getStateCreator().getMeasurementState(measures, mList, measurementCount,
         font3d, ti);
   }
 

@@ -156,5 +156,9 @@ final public class JmolFont {
   public int stringWidth(String text) {
     return apiPlatform.fontStringWidth(this, fontMetrics, text);
   }
+
+  public String getInfo() {
+    return  fontSizeNominal + " " + fontFace + " " + fontStyle;
+  }
 }
 

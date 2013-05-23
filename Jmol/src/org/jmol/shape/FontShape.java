@@ -31,8 +31,9 @@ public abstract class FontShape extends Shape {
 
   // Frank, Axes, Bbcage, Uccage
 
-  public JmolFont font3d;
   protected String myType;
+
+  public JmolFont font3d;
 
   @Override
   public void initShape() {

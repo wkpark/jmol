@@ -21,15 +21,11 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.shape;
+package org.jmol.modelset;
 
 
-import org.jmol.api.JmolRendererInterface;
-import org.jmol.util.C;
-import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
-import org.jmol.util.SB;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.TextFormat;
 
@@ -43,7 +39,9 @@ public class Text extends Object2d {
   
   public float fontScale;
 
-  private String text, textUnformatted;
+  public String text;
+
+  public String textUnformatted;
   
   public String getText() {
     return text;
@@ -64,6 +62,8 @@ public class Text extends Object2d {
 
   private int[] widths;
 
+  private Viewer viewer;
+
   Text() {
   }
 
@@ -77,7 +77,7 @@ public class Text extends Object2d {
     return t;
   }
 
-  static Text newEcho(Viewer viewer, GData gdata, JmolFont font, String target,
+  public static Text newEcho(Viewer viewer, GData gdata, JmolFont font, String target,
                       short colix, int valign, int align,
                       float scalePixelsPerMicron) {
     // for echo
@@ -133,7 +133,7 @@ public class Text extends Object2d {
   }
 
   public Object image;
-  float imageScale = 1;
+  public float imageScale = 1;
   public void setImage(Object image) {
     this.image = image;
     // this.text will be file name
@@ -145,7 +145,7 @@ public class Text extends Object2d {
     recalc();
   }
   
-  void setFont(JmolFont f3d, boolean doAll) {
+  public void setFont(JmolFont f3d, boolean doAll) {
     font = f3d;
     if (font == null)
       return;
@@ -207,12 +207,9 @@ public class Text extends Object2d {
   }
 
 
-  public void setPosition(Viewer viewer, JmolRendererInterface g3d,
+  public void setPosition(Viewer viewer, int width, int height,
                           float scalePixelsPerMicron, float imageFontScaling,
                           boolean isExact, float[] boxXY) {
-
-    int width = g3d.getRenderWidth();
-    int height = g3d.getRenderHeight();
     if (boxXY == null)
       boxXY = this.boxXY;
     else
@@ -371,84 +368,6 @@ public class Text extends Object2d {
     boxXY[3] = boxHeight;
   }
   
-  public String getState() {
-    SB s = new SB();
-    if (text == null || isLabelOrHover || target.equals("error"))
-      return "";
-    //set echo top left
-    //set echo myecho x y
-    //echo .....
-    boolean isImage = (image != null);
-    //    if (isDefine) {
-    String strOff = null;
-    String echoCmd = "set echo ID " + Escape.eS(target);
-    switch (valign) {
-    case VALIGN_XY:
-      if (movableXPercent == Integer.MAX_VALUE
-          || movableYPercent == Integer.MAX_VALUE) {
-        strOff = (movableXPercent == Integer.MAX_VALUE ? movableX + " "
-            : movableXPercent + "% ")
-            + (movableYPercent == Integer.MAX_VALUE ? movableY + ""
-                : movableYPercent + "%");
-      } else {
-        strOff = "[" + movableXPercent + " " + movableYPercent + "%]";
-      }
-      //$FALL-THROUGH$
-    case VALIGN_XYZ:
-      if (strOff == null)
-        strOff = Escape.eP(xyz);
-      s.append("  ").append(echoCmd).append(" ").append(strOff);
-      if (align != ALIGN_LEFT)
-        s.append(";  ").append(echoCmd).append(" ").append(hAlignNames[align]);
-      break;
-    default:
-      s.append("  set echo ").append(vAlignNames[valign]).append(" ").append(
-          hAlignNames[align]);
-    }
-    if (valign == VALIGN_XY && movableZPercent != Integer.MAX_VALUE)
-      s.append(";  ").append(echoCmd).append(" depth ").appendI(movableZPercent);
-    if (isImage)
-      s.append("; ").append(echoCmd).append(" IMAGE /*file*/");
-    else
-      s.append("; echo ");
-    s.append(Escape.eS(text)); // was textUnformatted, but that is not really the STATE
-    s.append(";\n");
-    if (isImage && imageScale != 1)
-      s.append("  ").append(echoCmd).append(" scale ").appendF(imageScale).append(";\n");
-    if (script != null)
-      s.append("  ").append(echoCmd).append(" script ").append(
-          Escape.eS(script)).append(";\n");
-    if (modelIndex >= 0)
-      s.append("  ").append(echoCmd).append(" model ").append(
-          viewer.getModelNumberDotted(modelIndex)).append(";\n");
-    //    }
-    //isDefine and target==top: do all
-    //isDefine and target!=top: just start
-    //!isDefine and target==top: do nothing
-    //!isDefine and target!=top: do just this
-    //fluke because top is defined with default font
-    //in initShape(), so we MUST include its font def here
-    //    if (isDefine != target.equals("top"))
-    //      return s.toString();
-    // these may not change much:
-    s.append("  " + Shape.getFontCommand("echo", font));
-    if (scalePixelsPerMicron > 0)
-      s.append(" " + (10000f / scalePixelsPerMicron)); // Angstroms per pixel
-    s.append("; color echo");
-    if (C.isColixTranslucent(colix))
-      s.append(" translucent " + C.getColixTranslucencyFractional(colix));
-    s.append(" ").append(C.getHexCode(colix));
-    if (bgcolix != 0) {
-      s.append("; color echo background");
-      if (C.isColixTranslucent(bgcolix))
-        s.append(" translucent "
-            + C.getColixTranslucencyFractional(bgcolix));
-      s.append(" ").append(C.getHexCode(bgcolix));
-    }
-    s.append(";\n");
-    return s.toString();
-  }
-
   private int stringWidth(String str) {
     int w = 0;
     int f = 1;
@@ -509,15 +428,6 @@ public class Text extends Object2d {
       xy[0] = xy[2] - widths[i];
     }
     xy[1] += lineHeight;
-  }
-
-  public String getCommand() {
-    SB cmd = new SB();
-    cmd.append("label ").append(Escape.eS(textUnformatted));
-    if (pymolOffset == null)
-      return cmd.toString();
-    cmd.append(";set labelOffset ").append(Escape.eAF(pymolOffset));
-    return cmd.toString();
   }
 
 }

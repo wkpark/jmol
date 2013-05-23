@@ -32,6 +32,7 @@ public abstract class FontLineShape extends FontShape {
   // Axes, Bbcage, Uccage
   
   public TickInfo[] tickInfos = new TickInfo[4];
+  public short mad;
 
   protected void setPropFLS(String propertyName, Object value) {
 

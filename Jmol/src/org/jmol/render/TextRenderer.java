@@ -26,26 +26,26 @@
 package org.jmol.render;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.shape.Object2d;
-import org.jmol.shape.Text;
+import org.jmol.modelset.Object2d;
+import org.jmol.modelset.Text;
 import org.jmol.util.JmolFont;
 import org.jmol.viewer.Viewer;
 
-public class TextRenderer {
+class TextRenderer {
   
-  public static void render(Text text, Viewer viewer,
+  static void render(Text text, Viewer viewer,
                             JmolRendererInterface g3d,
                             float scalePixelsPerMicron, float imageFontScaling,
                             boolean isExact, float[] boxXY, float[] xy) {
     if (text == null || text.image == null && text.lines == null)
       return;
-    boolean showText = g3d.setColix(text.colix); 
+    boolean showText = g3d.setColix(text.colix);
     if (!showText
         && (text.image == null && (text.bgcolix == 0 || !g3d
             .setColix(text.bgcolix))))
       return;
-    text.setPosition(viewer, g3d, scalePixelsPerMicron, imageFontScaling,
-        isExact, boxXY);
+    text.setPosition(viewer, g3d.getRenderWidth(), g3d.getRenderHeight(),
+        scalePixelsPerMicron, imageFontScaling, isExact, boxXY);
     // draw the box if necessary; colix has been set
     if (text.image == null && text.bgcolix != 0) {
       if (showText)
@@ -73,7 +73,7 @@ public class TextRenderer {
     return;
   }
 
-  protected static void drawPointer(Text text, JmolRendererInterface g3d) {
+  static void drawPointer(Text text, JmolRendererInterface g3d) {
     // now draw the pointer, if requested
 
     if ((text.pointer & Object2d.POINTER_ON) != 0) {
@@ -91,23 +91,7 @@ public class TextRenderer {
     }
   }
 
-  private static void showBox(JmolRendererInterface g3d, short colix,
-                              int x, int y, int z, int zSlab,
-                              int boxWidth, int boxHeight,
-                              float imageFontScaling, boolean atomBased) {
-    g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
-    g3d.setColix(colix);
-    if (!atomBased)
-      return;
-    if (imageFontScaling >= 2) {
-      g3d.drawRect(x + 3, y + 3, z - 1, zSlab, boxWidth - 6, boxHeight - 6);
-      //g3d.drawRect(x + 40, y + 4, z - 1, zSlab, boxWidth - 8, boxHeight - 8);
-    } else {
-      g3d.drawRect(x + 1, y + 1, z - 1, zSlab, boxWidth - 2, boxHeight - 2);
-    }
-  }
-
-  public final static void renderSimpleLabel(JmolRendererInterface g3d, JmolFont font,
+  static void renderSimpleLabel(JmolRendererInterface g3d, JmolFont font,
                                  String strLabel, short colix, short bgcolix,
                                  float[] boxXY, int z, int zSlab,
                                  int xOffset, int yOffset, float ascent,
@@ -142,6 +126,22 @@ public class TextRenderer {
       else if (xOffset < 0)
         g3d.drawLineXYZ(x0, y0, zSlab, (int) (x + boxWidth),
             (int) (y + boxHeight / 2), zSlab);
+    }
+  }
+
+  private static void showBox(JmolRendererInterface g3d, short colix,
+                              int x, int y, int z, int zSlab,
+                              int boxWidth, int boxHeight,
+                              float imageFontScaling, boolean atomBased) {
+    g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
+    g3d.setColix(colix);
+    if (!atomBased)
+      return;
+    if (imageFontScaling >= 2) {
+      g3d.drawRect(x + 3, y + 3, z - 1, zSlab, boxWidth - 6, boxHeight - 6);
+      //g3d.drawRect(x + 40, y + 4, z - 1, zSlab, boxWidth - 8, boxHeight - 8);
+    } else {
+      g3d.drawRect(x + 1, y + 1, z - 1, zSlab, boxWidth - 2, boxHeight - 2);
     }
   }
 

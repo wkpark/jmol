@@ -55,6 +55,8 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.Object2d;
+import org.jmol.modelset.Text;
 import org.jmol.modelset.TickInfo;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
@@ -65,9 +67,8 @@ import org.jmol.shape.Echo;
 import org.jmol.shape.Halos;
 import org.jmol.shape.Hover;
 import org.jmol.shape.Labels;
-import org.jmol.shape.Object2d;
+import org.jmol.shape.Measures;
 import org.jmol.shape.Shape;
-import org.jmol.shape.Text;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
@@ -995,7 +996,7 @@ public class StateCreator implements JmolStateCreator {
     }
   }
 
-  public String getMeasurementState(AtomShape as, JmolList<Measurement> mList,
+  public String getMeasurementState(Measures shape, JmolList<Measurement> mList,
                                     int measurementCount, JmolFont font3d,
                                     TickInfo ti) {
     SB commands = new SB();
@@ -1010,12 +1011,17 @@ public class StateCreator implements JmolStateCreator {
         sb.append(" radius ").appendF(m.mad / 2000f);
       if (m.colix != 0)
         sb.append(" color ").append(Escape.escapeColor(C.getArgb(m.colix)));
+      if (m.text != null) {
+        sb.append(" font ").append(m.text.font.getInfo());
+        if (m.text.pymolOffset != null)
+          sb.append(" offset ").append(Escape.eAF(m.text.pymolOffset));
+      }
       TickInfo tickInfo = m.tickInfo;
       if (tickInfo != null)
         addTickInfo(sb, tickInfo, true);
       for (int j = 1; j <= count; j++)
         sb.append(" ").append(m.getLabel(j, true, true));
-      sb.append("; # " + as.getInfoAsString(i));
+      sb.append("; # " + shape.getInfoAsString(i));
       appendCmd(commands, sb.toString());
     }
     appendCmd(commands, "select *; set measures "
@@ -1030,9 +1036,9 @@ public class StateCreator implements JmolStateCreator {
         nHidden++;
         bs.set(i);
       }
-      if (as.bsColixSet != null && as.bsColixSet.get(i))
+      if (shape.bsColixSet != null && shape.bsColixSet.get(i))
         BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("measure",
-            m.colix, as.translucentAllowed));
+            m.colix, shape.translucentAllowed));
       if (m.getStrFormat() != null)
         BSUtil.setMapBitSet(temp, i, i, "measure "
             + Escape.eS(m.getStrFormat()));
@@ -1049,8 +1055,8 @@ public class StateCreator implements JmolStateCreator {
       addTickInfo(commands, ti, true);
       commands.append(";\n");
     }
-    if (as.mad >= 0)
-      commands.append(" set measurements " + (as.mad / 2000f)).append(";\n");
+    if (shape.mad >= 0)
+      commands.append(" set measurements " + (shape.mad / 2000f)).append(";\n");
     String s = getCommands(temp, null, "select measures");
     if (s != null && s.length() != 0) {
       commands.append(s);
@@ -1142,7 +1148,7 @@ public class StateCreator implements JmolStateCreator {
       Iterator<Text> e = es.objects.values().iterator();
       while (e.hasNext()) {
         Text t = e.next();
-        sb.append(t.getState());
+        sb.append(getTextState(t));
         if (t.hidden)
           sb.append("  set echo ID ").append(Escape.eS(t.target))
               .append(" hidden;\n");
@@ -1180,7 +1186,12 @@ public class StateCreator implements JmolStateCreator {
       for (int i = l.bsSizeSet.nextSetBit(0); i >= 0; i = l.bsSizeSet
           .nextSetBit(i + 1)) {
         Text t = l.getLabel(i);
-        String cmd = (t == null ? null : t.getCommand());
+        String cmd = null;
+        if (t != null) {
+          cmd = "label " + Escape.eS(t.textUnformatted);
+          if (t.pymolOffset != null)
+            cmd += ";set labelOffset " + Escape.eAF(t.pymolOffset);
+        }
         if (cmd == null)
           cmd = "label " + Escape.eS(l.formats[i]);
         BSUtil.setMapBitSet(temp, i, i, cmd);
@@ -1252,6 +1263,84 @@ public class StateCreator implements JmolStateCreator {
     }
     clearTemp();
     return s;
+  }
+
+  private String getTextState(Text t) {
+    SB s = new SB();
+    if (t.text == null || t.isLabelOrHover || t.target.equals("error"))
+      return "";
+    //set echo top left
+    //set echo myecho x y
+    //echo .....
+    boolean isImage = (t.image != null);
+    //    if (isDefine) {
+    String strOff = null;
+    String echoCmd = "set echo ID " + Escape.eS(t.target);
+    switch (t.valign) {
+    case Object2d.VALIGN_XY:
+      if (t.movableXPercent == Integer.MAX_VALUE
+          || t.movableYPercent == Integer.MAX_VALUE) {
+        strOff = (t.movableXPercent == Integer.MAX_VALUE ? t.movableX + " "
+            : t.movableXPercent + "% ")
+            + (t.movableYPercent == Integer.MAX_VALUE ? t.movableY + ""
+                : t.movableYPercent + "%");
+      } else {
+        strOff = "[" + t.movableXPercent + " " + t.movableYPercent + "%]";
+      }
+      //$FALL-THROUGH$
+    case Object2d.VALIGN_XYZ:
+      if (strOff == null)
+        strOff = Escape.eP(t.xyz);
+      s.append("  ").append(echoCmd).append(" ").append(strOff);
+      if (t.align != Object2d.ALIGN_LEFT)
+        s.append(";  ").append(echoCmd).append(" ").append(Object2d.hAlignNames[t.align]);
+      break;
+    default:
+      s.append("  set echo ").append(Object2d.vAlignNames[t.align]).append(" ").append(
+          Object2d.hAlignNames[t.align]);
+    }
+    if (t.valign == Object2d.VALIGN_XY && t.movableZPercent != Integer.MAX_VALUE)
+      s.append(";  ").append(echoCmd).append(" depth ").appendI(t.movableZPercent);
+    if (isImage)
+      s.append("; ").append(echoCmd).append(" IMAGE /*file*/");
+    else
+      s.append("; echo ");
+    s.append(Escape.eS(t.text)); // was textUnformatted, but that is not really the STATE
+    s.append(";\n");
+    if (isImage && t.imageScale != 1)
+      s.append("  ").append(echoCmd).append(" scale ").appendF(t.imageScale).append(";\n");
+    if (t.script != null)
+      s.append("  ").append(echoCmd).append(" script ").append(
+          Escape.eS(t.script)).append(";\n");
+    if (t.modelIndex >= 0)
+      s.append("  ").append(echoCmd).append(" model ").append(
+          viewer.getModelNumberDotted(t.modelIndex)).append(";\n");
+    //    }
+    //isDefine and target==top: do all
+    //isDefine and target!=top: just start
+    //!isDefine and target==top: do nothing
+    //!isDefine and target!=top: do just this
+    //fluke because top is defined with default font
+    //in initShape(), so we MUST include its font def here
+    //    if (isDefine != target.equals("top"))
+    //      return s.toString();
+    // these may not change much:
+    s.append("  " + Shape.getFontCommand("echo", t.font));
+    if (t.scalePixelsPerMicron > 0)
+      s.append(" " + (10000f / t.scalePixelsPerMicron)); // Angstroms per pixel
+    s.append("; color echo");
+    if (C.isColixTranslucent(t.colix))
+      s.append(" translucent " + C.getColixTranslucencyFractional(t.colix));
+    s.append(" ").append(C.getHexCode(t.colix));
+    if (t.bgcolix != 0) {
+      s.append("; color echo background");
+      if (C.isColixTranslucent(t.bgcolix))
+        s.append(" translucent "
+            + C.getColixTranslucencyFractional(t.bgcolix));
+      s.append(" ").append(C.getHexCode(t.bgcolix));
+    }
+    s.append(";\n");
+    return s.toString();
   }
 
   /**

@@ -53,10 +53,11 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelset.Object2d;
+import org.jmol.modelset.Text;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 import org.jmol.shape.MeshCollection;
-import org.jmol.shape.Object2d;
 import org.jmol.shape.Shape;
 import org.jmol.thread.ScriptDelayThread;
 import org.jmol.util.BSUtil;
@@ -9542,6 +9543,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String id = null;
     int pt = 1;
     short colix = 0;
+    float[] offset = null;
     switch (tokAt(1)) {
     case T.search:
       String smarts = stringParameter(slen == 3 ? 2 : 4);
@@ -9612,6 +9614,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     Boolean intramolecular = null;
     int tokAction = T.opToggle;
     String strFormat = null;
+    JmolFont font = null;
+    
     JmolList<Object> points = new  JmolList<Object>();
     BS bs = new BS();
     Object value = null;
@@ -9650,6 +9654,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         colix = C.getColix(getArgbParam(++i));
         i = iToken;
         break;
+      case T.offset:
+        if (isPoint3f(++i)) {
+          // PyMOL offsets -- {x, y, z} in angstroms
+          P3 p = getPoint3f(i, false);
+          offset = new float[] {1, p.x, p.y, p.z, 0, 0, 0};
+        } else {
+          offset = floatParameterSet(i, 7, 7);
+        }
+        i = iToken;
+        break;
       case T.radius:
       case T.diameter:
         mad = (int) ((theTok == T.radius ? 2000 : 1000) * floatParameter(++i));
@@ -9666,6 +9680,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (tokAction != T.opToggle)
           error(ERROR_invalidArgument);
         tokAction = T.delete;
+        break;
+      case T.font:
+        float fontsize = floatParameter(++i);
+        String fontface = parameterAsString(++i);
+        String fontstyle = parameterAsString(++i);
+        if (!chk)
+          font = viewer.getFont3D(fontface, fontstyle, fontsize);
         break;
       case T.integer:
         int iParam = intParameter(i);
@@ -9785,9 +9806,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         tickInfo.id = "default";
       if (value != null && strFormat != null && tokAction == T.opToggle)
         tokAction = T.define;
+      Text text = null;
+      if (font != null)
+        text = Text.newLabel(viewer.getGraphicsData(), font, "", colix, (short) 0, 0, 0, null);
+      if (text != null)
+        text.pymolOffset = offset;
       setShapeProperty(JC.SHAPE_MEASURES, "measure", 
           (new MeasurementData(id, viewer, points)).set(tokAction, rd, strFormat, null, tickInfo,
-              isAllConnected, isNotConnected, intramolecular, isAll, mad, colix));
+              isAllConnected, isNotConnected, intramolecular, isAll, mad, colix, text));
       return;
     }
     Object propertyValue = (id == null ? countPlusIndexes : id);

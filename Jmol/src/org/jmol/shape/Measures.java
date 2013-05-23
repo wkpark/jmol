@@ -64,10 +64,9 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   
   public short colix; // default to none in order to contrast with background
   
-  public JmolFont font3d;
-
   TickInfo tickInfo;
   TickInfo defaultTickInfo;
+  public JmolFont font3d;
   
   @Override
   protected void initModelSet() {
@@ -202,6 +201,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         if (md.colix != 0)
           pt.colix = md.colix;
         pt.strFormat = md.strFormat;
+        pt.text = md.text;
       }
       switch (md.tokAction) {
       case T.delete:
@@ -464,7 +464,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
           .getAtom(i));
     }
     define((new MeasurementData(null, viewer, points)).set(tokAction, radiusData, strFormat, null, tickInfo,
-        mustBeConnected, mustNotBeConnected, intramolecular, true, 0, (short) 0),
+        mustBeConnected, mustNotBeConnected, intramolecular, true, 0, (short) 0, null),
         (isDelete ? T.delete : T.define));
   }
 

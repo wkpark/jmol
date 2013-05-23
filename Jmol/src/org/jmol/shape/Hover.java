@@ -24,6 +24,8 @@
 
 package org.jmol.shape;
 
+import org.jmol.modelset.Object2d;
+import org.jmol.modelset.Text;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.C;

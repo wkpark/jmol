@@ -155,7 +155,7 @@ class JmolObject {
     case T.hidden:
       sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
       return;
-    case T.label:
+    case JC.SHAPE_LABELS:
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "textLabels", info, bsAtoms);
       return;

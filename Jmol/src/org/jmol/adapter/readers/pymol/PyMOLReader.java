@@ -1681,7 +1681,7 @@ public class PyMOLReader extends PdbReader {
       for (int i = 0; i < labels.size(); i++)
         myLabels.addLast(labels.get(i));
       labels.clear();
-      jo = addJmolObject(T.label, bs, myLabels);
+      jo = addJmolObject(JC.SHAPE_LABELS, bs, myLabels);
       break;
     case REP_JMOL_PUTTY:
       createPuttyObject(bs);

@@ -967,14 +967,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                      P3 center, V3 rotAxis, float degrees,
                      Matrix3f rotationMatrix, float zoom, float xTrans,
                      float yTrans, float rotationRadius, P3 navCenter,
-                     float xNav, float yNav, float navDepth, float cameraDepth) {
+                     float xNav, float yNav, float navDepth, float cameraDepth,
+                     float cameraX, float cameraY) {
     // from StateManager -- -1 for time --> no repaint
     if (!haveDisplay)
       floatSecondsTotal = 0;
     setTainted(true);
     transformManager.moveTo(eval, floatSecondsTotal, center, rotAxis, degrees,
         rotationMatrix, zoom, xTrans, yTrans, rotationRadius, navCenter, xNav,
-        yNav, navDepth, cameraDepth);
+        yNav, navDepth, cameraDepth, cameraX, cameraY);
   }
 
   public void moveUpdate(float floatSecondsTotal) {
@@ -6174,7 +6175,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       transformManager.setNavigationSlabOffsetPercent(value);
       break;
     case T.cameradepth:
-      transformManager.setCameraDepthPercent(value);
+      transformManager.setCameraDepthPercent(value, false);
       refresh(1, "set cameraDepth");
       // transformManager will set global value for us;
       return;
@@ -7246,7 +7247,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setTransformManagerDefaults() {
-    transformManager.setCameraDepthPercent(global.defaultCameraDepth);
+    transformManager.setCameraDepthPercent(global.defaultCameraDepth, true);
     transformManager.setPerspectiveDepth(global.defaultPerspectiveDepth);
     transformManager.setStereoDegrees(EnumStereoMode.DEFAULT_STEREO_DEGREES);
     transformManager.setVisualRange(global.visualRange);
@@ -9974,8 +9975,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean movePyMOL(JmolScriptEvaluator eval,
                         float floatSecondsTotal, float[] pymolView) {
-    transformManager.movePyMOL(eval, floatSecondsTotal, pymolView);
+    transformManager.moveToPyMOL(eval, floatSecondsTotal, pymolView);
     return true;
+  }
+
+  public P3 getCamera() {
+    return transformManager.camera;
   }
 
 }

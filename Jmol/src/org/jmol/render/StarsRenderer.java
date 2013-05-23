@@ -66,7 +66,7 @@ public class StarsRenderer extends ShapeRenderer {
     int d = (int) viewer.scaleToScreen(z, mad);
     d -= (d & 1) ^ 1; // round down to odd value
     int r = d / 2;
-    if (r < 3)
+    if (r < 1)
       return;
     if (mar > 0) {
       width = (int) viewer.scaleToScreen(z, mar);

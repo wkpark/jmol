@@ -369,6 +369,8 @@ public class StateManager {
     float yNav = Float.NaN;
     float navDepth = Float.NaN;
     float cameraDepth = Float.NaN;
+    float cameraX = Float.NaN;
+    float cameraY = Float.NaN;
     boolean windowCenteredFlag;
     boolean navigationMode;
     //boolean navigateSurface;
@@ -422,7 +424,7 @@ public class StateManager {
         //viewer.setBooleanProperty("navigateSurface", navigateSurface);
         if (pymolView == null)
           viewer.moveTo(viewer.eval, timeSeconds, center, null, Float.NaN, rotationMatrix, zoom, xTrans,
-              yTrans, rotationRadius, navCenter, xNav, yNav, navDepth, cameraDepth);
+              yTrans, rotationRadius, navCenter, xNav, yNav, navDepth, cameraDepth, cameraX, cameraY);
         else
           viewer.movePyMOL(viewer.eval, timeSeconds, pymolView);
       } else {

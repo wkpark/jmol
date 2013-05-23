@@ -60,72 +60,57 @@ public class MoveToThread extends JmolThread {
   private final Matrix3f matrixEnd = new Matrix3f();
 
   private P3 center;
-  private float zoom; 
-  private float xTrans;
-  private float yTrans;
   private P3 navCenter;
-  private float xNav;
-  private float yNav;
-  private float navDepth;
-  private float cameraDepth;
   private P3 ptMoveToCenter;
-  private float startRotationRadius;
-  private float targetPixelScale;
-  private int totalSteps;
-  private float startPixelScale;
-  private float targetRotationRadius;
-  private int fps;
-  private float rotationRadiusDelta;
-  private float pixelScaleDelta;
-  private float zoomStart;
-  private float zoomDelta;
-  private float xTransStart;
-  private float xTransDelta;
-  private float yTransStart;
-  private float yTransDelta;
-  private float xNavTransStart;
-  private float xNavTransDelta;
-  private float yNavTransDelta;
-  private float yNavTransStart;
-  private float navDepthStart;
-  private float cameraDepthStart;
-  private float navDepthDelta;
-  private float cameraDepthDelta;
-  private long frameTimeMillis;
-  private int iStep;
   
+  private Slider zoom; 
+  private Slider xTrans;
+  private Slider yTrans;
+  private Slider xNav;
+  private Slider yNav;
+  private Slider navDepth;
+  private Slider cameraDepth;
+  private Slider cameraX;
+  private Slider cameraY;
+  private Slider rotationRadius;
+  private Slider pixelScale;
+  
+  private int totalSteps;
+  private int fps;
+  private long frameTimeMillis;
+  private int iStep;  
   private boolean doEndMove;
   private float floatSecondsTotal;
   
   public int set(float floatSecondsTotal, P3 center, Matrix3f end,
                  float zoom, float xTrans, float yTrans,
                  float newRotationRadius, P3 navCenter, float xNav,
-                 float yNav, float navDepth, float cameraDepth) {
+                 float yNav, float navDepth, 
+                 float cameraDepth, float cameraX, float cameraY) {
     this.center = center;
-    matrixEnd.setM(end);
-    this.zoom = zoom;
-    this.xTrans = xTrans;
-    this.yTrans = yTrans;
     this.navCenter = navCenter;
-    this.xNav = xNav;
-    this.yNav = yNav;
-    this.navDepth = navDepth;
-    this.cameraDepth = cameraDepth;
     ptMoveToCenter = (center == null ? transformManager.fixedRotationCenter
         : center);
-    startRotationRadius = transformManager.modelRadius;
-    targetRotationRadius = (center == null || Float.isNaN(newRotationRadius) ? transformManager.modelRadius
+    this.rotationRadius = newSlider(transformManager.modelRadius, (center == null || Float.isNaN(newRotationRadius) ? transformManager.modelRadius
         : newRotationRadius <= 0 ? viewer.calcRotationRadius(center)
-            : newRotationRadius);
-    startPixelScale = transformManager.scaleDefaultPixelsPerAngstrom;
-    targetPixelScale = (center == null ? startPixelScale : transformManager
-        .defaultScaleToScreen(targetRotationRadius));
-    if (Float.isNaN(zoom))
-      zoom = transformManager.zoomPercent;
+            : newRotationRadius));
+    this.pixelScale = newSlider(transformManager.scaleDefaultPixelsPerAngstrom, (center == null ? transformManager.scaleDefaultPixelsPerAngstrom : transformManager
+        .defaultScaleToScreen(this.rotationRadius.value)));
+    this.zoom = newSlider(transformManager.zoomPercent, zoom);
+    this.xTrans = newSlider(transformManager.getTranslationXPercent(), xTrans);
+    this.yTrans = newSlider(transformManager.getTranslationYPercent(), yTrans);
+    this.xNav = newSlider(transformManager.getNavigationOffsetPercent('X'), xNav);
+    this.yNav = newSlider(transformManager.getNavigationOffsetPercent('Y'), yNav);
+    this.navDepth = newSlider(transformManager.getNavigationDepthPercent(), navDepth);
+    this.cameraDepth = newSlider(transformManager.getCameraDepth(), cameraDepth);
+    this.cameraX = newSlider(transformManager.camera.x, cameraX);
+    this.cameraY = newSlider(transformManager.camera.y, cameraY);    
+    matrixEnd.setM(end);
     transformManager.getRotation(matrixStart);
     matrixStartInv.invertM(matrixStart);
     matrixStep.mul2(matrixEnd, matrixStartInv);
     aaTotal.setM(matrixStep);
+    
     fps = 30;
     this.floatSecondsTotal = floatSecondsTotal;
     totalSteps = (int) (floatSecondsTotal * fps);
@@ -133,34 +118,22 @@ public class MoveToThread extends JmolThread {
       return 0;
     frameTimeMillis = 1000 / fps;
     targetTime = System.currentTimeMillis();
-    zoomStart = transformManager.zoomPercent;
-    zoomDelta = zoom - zoomStart;
-    xTransStart = transformManager.getTranslationXPercent();
-    xTransDelta = xTrans - xTransStart;
-    yTransStart = transformManager.getTranslationYPercent();
-    yTransDelta = yTrans - yTransStart;
     aaStepCenter.setT(ptMoveToCenter);
     aaStepCenter.sub(transformManager.fixedRotationCenter);
     aaStepCenter.scale(1f / totalSteps);
-    pixelScaleDelta = (targetPixelScale - startPixelScale);
-    rotationRadiusDelta = (targetRotationRadius - startRotationRadius);
     if (navCenter != null
         && transformManager.mode == TransformManager.MODE_NAVIGATION) {
       aaStepNavCenter.setT(navCenter);
       aaStepNavCenter.sub(transformManager.navigationCenter);
       aaStepNavCenter.scale(1f / totalSteps);
     }
-    float xNavTransStart = transformManager.getNavigationOffsetPercent('X');
-    xNavTransDelta = xNav - xNavTransStart;
-    yNavTransStart = transformManager.getNavigationOffsetPercent('Y');
-    yNavTransDelta = yNav - yNavTransStart;
-    navDepthStart = transformManager.getNavigationDepthPercent();
-    navDepthDelta = navDepth - navDepthStart;
-    cameraDepthStart = transformManager.getCameraDepth();
-    cameraDepthDelta = cameraDepth - cameraDepthStart;
     return totalSteps;
   }
          
+  private Slider newSlider(float start, float value) {
+    return (Float.isNaN(value) ? null : new Slider(start, value));
+  }
+
   @Override
   protected void run1(int mode) throws InterruptedException {
     while (true)
@@ -227,19 +200,8 @@ public class MoveToThread extends JmolThread {
         matrixStep.setAA(aaStep);
       matrixStep.mul(matrixStart);
     }
-    float fStep = iStep / (totalSteps - 1f);
-    transformManager.modelRadius = startRotationRadius + rotationRadiusDelta
-        * fStep;
-    transformManager.scaleDefaultPixelsPerAngstrom = startPixelScale
-        + pixelScaleDelta * fStep;
-    if (!Float.isNaN(xTrans)) {
-      transformManager.zoomToPercent(zoomStart + zoomDelta * fStep);
-      transformManager.translateToPercent('x', xTransStart + xTransDelta
-          * fStep);
-      transformManager.translateToPercent('y', yTransStart + yTransDelta
-          * fStep);
-    }
     transformManager.setRotation(matrixStep);
+    float fStep = iStep / (totalSteps - 1f);
     if (center != null)
       transformManager.fixedRotationCenter.add(aaStepCenter);
     if (navCenter != null
@@ -247,42 +209,39 @@ public class MoveToThread extends JmolThread {
       P3 pt = P3.newP(transformManager.navigationCenter);
       pt.add(aaStepNavCenter);
       transformManager.setNavigatePt(pt);
-      if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
-        transformManager
-            .navTranslatePercentOrTo(0, xNavTransStart + xNavTransDelta * fStep,
-                yNavTransStart + yNavTransDelta * fStep);
-      if (!Float.isNaN(navDepth))
-        transformManager.setNavigationDepthPercent(navDepthStart
-            + navDepthDelta * fStep);
-      if (!Float.isNaN(cameraDepth))
-        transformManager.setCameraDepthPercent(cameraDepthStart
-            + cameraDepthDelta * fStep);
     }
+    setValues(fStep);
   }
 
   private void doFinalTransform() {
-    transformManager.setRotationRadius(targetRotationRadius, true);
-    transformManager.scaleDefaultPixelsPerAngstrom = targetPixelScale;
+    transformManager.setRotation(matrixEnd);
     if (center != null)
       transformManager.moveRotationCenter(center,
           !transformManager.windowCentered);
-    if (!Float.isNaN(xTrans)) {
-      transformManager.zoomToPercent(zoom);
-      transformManager.translateToPercent('x', xTrans);
-      transformManager.translateToPercent('y', yTrans);
-    }
-    transformManager.setRotation(matrixEnd);
     if (navCenter != null
-        && transformManager.mode == TransformManager.MODE_NAVIGATION) {
+        && transformManager.mode == TransformManager.MODE_NAVIGATION)
       transformManager.navigationCenter.setT(navCenter);
-      if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
-        transformManager.navTranslatePercentOrTo(0, xNav, yNav);
-      if (!Float.isNaN(navDepth))
-        transformManager.setNavigationDepthPercent(navDepth);
+    setValues(-1);
+  }
+
+  private void setValues(float fStep) {
+    transformManager.modelRadius = rotationRadius.getVal(fStep);
+    transformManager.scaleDefaultPixelsPerAngstrom = pixelScale.getVal(fStep);
+    if (zoom != null)
+      transformManager.zoomToPercent(zoom.getVal(fStep));
+    if (xTrans != null && yTrans != null) {
+      transformManager.translateToPercent('x', xTrans.getVal(fStep));
+      transformManager.translateToPercent('y', yTrans.getVal(fStep));
     }
-    if (!Float.isNaN(cameraDepth))
-      transformManager.setCameraDepthPercent(cameraDepth);
-    
+    if (xNav != null && yNav != null)
+      transformManager.navTranslatePercentOrTo(0, xNav.getVal(fStep), yNav
+          .getVal(fStep));
+    if (navDepth != null)
+      transformManager.setNavigationDepthPercent(navDepth.getVal(fStep));
+    if (cameraDepth != null)
+      transformManager.setCameraDepthPercent(cameraDepth.getVal(fStep), false);
+    if (cameraX != null && cameraY != null)
+      transformManager.setCamera(cameraX.getVal(fStep), cameraY.getVal(fStep));
   }
 
   @Override
@@ -291,6 +250,22 @@ public class MoveToThread extends JmolThread {
     doEndMove = false;
     super.interrupt();
   }
-  
+ 
+  class Slider{
+    float start;
+    float delta;
+    float value;
+    
+    Slider(float start, float value) {
+      this.start = start;
+      this.value = value;
+      this.delta = value - start;
+    }
+    
+    float getVal(float fStep) {
+      return (fStep < 0 ? value : start + fStep * delta);
+    }
+    
+  }
 
 }

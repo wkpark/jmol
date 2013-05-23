@@ -6597,7 +6597,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (floatSecondsTotal > 0)
         refresh();
       viewer.moveTo(this, floatSecondsTotal, null, JC.axisZ, 0, null, 100, 0,
-          0, 0, null, Float.NaN, Float.NaN, Float.NaN, Float.NaN);
+          0, 0, null, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN);
       if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
         throw new ScriptInterruption(this, "moveTo", 1);
       return;
@@ -6619,6 +6619,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     float yNav = Float.NaN;
     float navDepth = Float.NaN;
     float cameraDepth = Float.NaN;
+    float cameraX = Float.NaN;
+    float cameraY = Float.NaN;
     float[] pymolView = null;
     switch (getToken(i).tok) {
     case T.pymol:
@@ -6788,8 +6790,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         if (i != slen)
           navDepth = floatParameter(i++);
-        if (i != slen)
+        if (i != slen) {
           cameraDepth = floatParameter(i++);
+          if (!isChange && Math.abs(cameraDepth - viewer.getCameraDepth()) >= 0.01f)
+            isChange = true;
+        }
+        if (i != slen) {
+          cameraX = floatParameter(i++);
+        }
+        if (i != slen) {
+          cameraY = floatParameter(i++);
+        }
+        if (!isChange && Math.abs(cameraX - viewer.getCamera().x) >= 0.01f) 
+          isChange = true;
+        if (!isChange && Math.abs(cameraY - viewer.getCamera().y) >= 0.01f)
+          isChange = true;
       }
     }
     checkLength(i);
@@ -6806,7 +6821,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     else
       viewer.moveTo(this, floatSecondsTotal, center, axis, degrees, null, zoom,
           xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth,
-          cameraDepth);
+          cameraDepth, cameraX, cameraY);
     if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
       throw new ScriptInterruption(this, "moveTo", 1);
   }
@@ -11392,14 +11407,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (chk)
       return;
-    if (Float.isNaN(xTrans))
-      xTrans = 0;
-    if (Float.isNaN(yTrans))
-      yTrans = 0;
+    //if (Float.isNaN(xTrans))
+      //xTrans = 0;
+    //if (Float.isNaN(yTrans))
+      //yTrans = 0;
     if (isSameAtom && Math.abs(zoom - newZoom) < 1)
       floatSecondsTotal = 0;
     viewer.moveTo(this, floatSecondsTotal, center, JC.center, Float.NaN, null,
-        newZoom, xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN, Float.NaN);
+        newZoom, xTrans, yTrans, Float.NaN, null, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN);
     if (isJS && floatSecondsTotal > 0 && viewer.global.waitForMoveTo)
       throw new ScriptInterruption(this, "zoomTo", 1);
 

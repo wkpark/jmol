@@ -54,12 +54,23 @@ class PyMOL {
   final static int REP_CARTOON = 5;
   final static int REP_BACKBONE = 6;
   final static int REP_LINES = 7;
-  final static int REP_DOTS = 9;
   final static int REP_MESH = 8;
+  final static int REP_DOTS = 9;
   final static int REP_DASHES = 10;  // ??
   final static int REP_NONBONDED = 11;
   final static int REP_MAX = 12;
 
+  // ???
+  final static int REP_CELL = 12;
+  final static int REP_CGO = 13;
+  final static int REP_CALLBACK = 14;
+  final static int REP_EXTENT = 15;
+  final static int REP_SLICE = 16;
+  final static int REP_ANGLES = 17;
+  final static int REP_DIHEDRALS = 18;
+
+
+  
   // flag 24: 
   
   // a[24] - don't surface these atoms (waters, ligands, etc.) 

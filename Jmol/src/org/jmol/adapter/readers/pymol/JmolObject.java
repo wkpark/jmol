@@ -30,8 +30,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
-import org.jmol.constant.EnumVdw;
-import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
@@ -54,17 +52,6 @@ import org.jmol.viewer.ShapeManager;
  */
 class JmolObject {
 
-  private static final int cPuttyTransformNormalizedNonlinear = 0;
-  private static final int cPuttyTransformRelativeNonlinear   = 1;
-  private static final int cPuttyTransformScaledNonlinear     = 2;
-  private static final int cPuttyTransformAbsoluteNonlinear   = 3;
-  private static final int cPuttyTransformNormalizedLinear    = 4;
-  private static final int cPuttyTransformRelativeLinear      = 5;
-  private static final int cPuttyTransformScaledLinear        = 6;
-  private static final int cPuttyTransformAbsoluteLinear      = 7;
-  private static final int cPuttyTransformImpliedRMS          = 8;
-
-  
   int id;
   private BS bsAtoms;
   private Object info;
@@ -168,7 +155,7 @@ class JmolObject {
     case T.hidden:
       sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
       return;
-    case JC.SHAPE_LABELS:
+    case T.label:
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "textLabels", info, bsAtoms);
       return;
@@ -177,6 +164,7 @@ class JmolObject {
       break;
     case JC.SHAPE_TRACE:
     case JC.SHAPE_BACKBONE:
+      sm.loadShape(id);
       BSUtil.andNot(bsAtoms, reader.bsCarb);
       break;
     case JC.SHAPE_DOTS:
@@ -184,10 +172,7 @@ class JmolObject {
       sm.setShapePropertyBs(id, "ignore", BSUtil.copyInvert(bsAtoms, sm.viewer
           .getAtomCount()), null);
       break;
-    case JC.SHAPE_MESHRIBBON: // PyMOL putty
-      setPutty(sm);
-      break;
-    case JC.SHAPE_ISOSURFACE:
+    case T.isosurface:
       if (bsAtoms == null ? !visible : modelIndex < 0)
         return;
       break;
@@ -198,7 +183,7 @@ class JmolObject {
     }
 
     switch (id) {
-    case JC.SHAPE_MEASURES:
+    case T.measure:
       if (modelIndex < 0)
         return;
       sm.loadShape(id);
@@ -209,12 +194,7 @@ class JmolObject {
         ((Point3fi) points.get(i)).modelIndex = (short) modelIndex;
       sm.setShapePropertyBs(id, "measure", md, bsAtoms);
       return;
-    case JC.SHAPE_CGO:
-      JmolList<Object> cgo = (JmolList<Object>) info;
-      sID = (String) cgo.get(cgo.size() - 1);
-      sm.viewer.setCGO(cgo);
-      break;
-    case JC.SHAPE_ISOSURFACE:
+    case T.isosurface:
       sID = (bsAtoms == null ? (String) info : branchNameID);
       sb = new SB();
       sb.append("isosurface ID ").append(Escape.eS(sID));
@@ -228,8 +208,8 @@ class JmolObject {
         if (doCache)
           sb.append(";isosurface cache");
       } else {
-        if (argb == 0)
-          sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
+        //if (argb == 0)
+          //sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
         String lighting = (String) info;
         String resolution = "";
         if (lighting == null) {
@@ -296,6 +276,15 @@ class JmolObject {
         sb.append(";isosurface cache");
       sb.append(";set meshScale ").appendI(size / 500);
       break;
+    case JC.SHAPE_CGO:
+      JmolList<Object> cgo = (JmolList<Object>) info;
+      //sID = (String) cgo.get(cgo.size() - 1);
+      sm.viewer.setCGO(cgo);
+      break;
+    case JC.SHAPE_TRACE:
+      if (info != null)
+        sm.setShapePropertyBs(id, "putty", info, bsAtoms);
+      break;
     }
     if (sb != null) {
       sm.viewer.runScript(sb.toString());
@@ -312,93 +301,6 @@ class JmolObject {
       sm.setShapePropertyBs(id, "translucency", "translucent", bsAtoms);
     } else if (colors != null)
       sm.setShapePropertyBs(id, "colors", colors, bsAtoms);
-  }
-
-  private void setPutty(ShapeManager sm) {
-    id = JC.SHAPE_TRACE;
-    float[] data = new float[bsAtoms.length()];
-    rd = new RadiusData(data, 0, RadiusData.EnumType.ABSOLUTE, EnumVdw.AUTO);
-    Atom[] atoms = sm.viewer.modelSet.atoms;
-    double sum = 0.0,
-    sumsq = 0.0;
-    float min = Float.MAX_VALUE;
-    float max = 0;
-    int n = bsAtoms.cardinality();
-    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
-      float value = Atom.atomPropertyFloat(null, atoms[i], T.temperature);
-      sum += value;
-      sumsq += (value * value);
-      if (value < min)
-        min = value;
-      if (value > max)
-        max = value;
-    }
-    float mean = (float) (sum / n);
-    float stdev = (float) Math.sqrt((sumsq - (sum * sum / n)) / n);
-
-    /*
-    getFloatSetting(PyMOL.cartoon_putty_quality),
-    getFloatSetting(PyMOL.cartoon_putty_radius),
-    getFloatSetting(PyMOL.cartoon_putty_range),
-    getFloatSetting(PyMOL.cartoon_putty_scale_min),
-    getFloatSetting(PyMOL.cartoon_putty_scale_max),
-    getFloatSetting(PyMOL.cartoon_putty_scale_power),        
-    getFloatSetting(PyMOL.cartoon_putty_transform),
-    */
-    float rad = ((float[]) info)[1];
-    float range = ((float[]) info)[2];
-    float scale_min = ((float[]) info)[3];
-    float scale_max = ((float[]) info)[4];
-    float power = ((float[]) info)[5];
-
-    int transform = (int) ((float[]) info)[6];
-    float data_range = max - min;
-    boolean nonlinear = false;
-    switch (transform) {
-    case cPuttyTransformNormalizedNonlinear:
-    case cPuttyTransformRelativeNonlinear:
-    case cPuttyTransformScaledNonlinear:
-    case cPuttyTransformAbsoluteNonlinear:
-      nonlinear = true;
-      break;
-    }
-    for (int i = bsAtoms.nextSetBit(0), pt = 0; i >= 0; i = bsAtoms
-        .nextSetBit(i + 1), pt++) {
-      float scale = Atom.atomPropertyFloat(null, atoms[i], T.temperature);
-      switch (transform) {
-      case cPuttyTransformAbsoluteNonlinear:
-      case cPuttyTransformAbsoluteLinear:
-      default:
-        break;
-      case cPuttyTransformNormalizedNonlinear:
-      case cPuttyTransformNormalizedLinear:
-        /* normalized by Z-score, with the range affecting the distribution width */
-        scale = 1 + (scale - mean) / range / stdev;
-        break;
-      case cPuttyTransformRelativeNonlinear:
-      case cPuttyTransformRelativeLinear:
-        scale = (scale - min) / data_range / range;
-        break;
-      case cPuttyTransformScaledNonlinear:
-      case cPuttyTransformScaledLinear:
-        scale /= range;
-        break;
-      case cPuttyTransformImpliedRMS:
-        if (scale < 0.0F)
-          scale = 0.0F;
-        scale = (float) (Math.sqrt(scale / 8.0) / Math.PI);
-        break;
-      }
-      if (scale < 0.0F)
-        scale = 0.0F;
-      if (nonlinear)
-        scale = (float) Math.pow(scale, power);
-      if ((scale < scale_min) && (scale_min >= 0.0))
-        scale = scale_min;
-      if ((scale > scale_max) && (scale_max >= 0.0))
-        scale = scale_max;
-      data[i] = scale * rad;
-    }
   }
 
   private int getModelIndex(ModelSet m) {

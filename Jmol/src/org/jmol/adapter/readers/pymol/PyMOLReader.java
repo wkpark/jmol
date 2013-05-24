@@ -1569,26 +1569,29 @@ public class PyMOLReader extends PdbReader {
    */
   private static void cleanSingletons(Atom[] atoms, BS bs) {
     BS bsr = new BS();
-    for (int pass = 0; pass < 2; pass++) {
+    int n = bs.length();
+    int pass = 0;
+    while (true) {
       int offset = 1;
       int iPrev = Integer.MIN_VALUE;
       int iSeqLast = Integer.MIN_VALUE;
       int iSeq = Integer.MIN_VALUE;
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        if (!isSequential(atoms, i, iPrev))
+      for (int i = 0; i < n; i++) {
+        if (nextChain(atoms, i, iPrev))
           offset++;
         iSeq = atoms[i].sequenceNumber;
         if (iSeq != iSeqLast) {
           iSeqLast = iSeq;
           offset++;
         }
-        if (pass == 0)
-          bsr.set(offset);
-        else if (!bsr.get(offset))
+        if (pass == 0) {
+          if (bs.get(i))
+            bsr.set(offset);
+        } else if (!bsr.get(offset))
           bs.clear(i);
         iPrev = i;
       }
-      if (pass == 1)
+      if (++pass == 2)
         break;
       BS bsnot = new BS();
       for (int i = bsr.nextSetBit(0); i >= 0; i = bsr.nextSetBit(i + 1))
@@ -1598,12 +1601,12 @@ public class PyMOLReader extends PdbReader {
     }
   }
 
-  private static boolean isSequential(Atom[] atoms, int i, int iPrev) {
+  private static boolean nextChain(Atom[] atoms, int i, int iPrev) {
     if (i == 0 || iPrev < 0)
-      return false;
+      return true;
     Atom a = atoms[iPrev];
     Atom b = atoms[i];
-    return a.chainID == b.chainID && a.atomSetIndex == b.atomSetIndex;
+    return a.chainID != b.chainID;
   }
 
   /**

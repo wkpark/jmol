@@ -67,9 +67,13 @@ public class StarsRenderer extends ShapeRenderer {
     d -= (d & 1) ^ 1; // round down to odd value
     int r = d / 2;
     if (r < 1)
-      return;
+      r = 1;
     if (mar > 0) {
       width = (int) viewer.scaleToScreen(z, mar);
+      if (width == 0)
+        width = 1;
+      if (width == 1 && g3d.isAntialiased())
+        width = 2;
     } else {
       // added to strengthen:
       drawLine(x - r - 1, y + 1, z, x - r - 1 + d, y + 1, z);

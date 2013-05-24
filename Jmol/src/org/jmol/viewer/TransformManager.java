@@ -1643,6 +1643,7 @@ public class TransformManager {
       int slab = 50 + (int) ((pymolDistanceToCenter - pymolDistanceToSlab) * f);
       int depth = 50 + (int) ((pymolDistanceToCenter - pymolDistanceToDepth) * f);
       // could animate these? Does PyMOL?
+      setSlabEnabled(true);
       slabToPercent(slab);
       depthToPercent(depth);
       if (pymolView.length == 21) {
@@ -1651,9 +1652,8 @@ public class TransformManager {
         boolean fog = (pymolView[19] != 0);
         float fogStart = pymolView[20];
         // conversion to Jmol zShade, zSlab, zDepth
-        setPerspectiveDepth(depthCue);
+        setZShadeEnabled(depthCue);
         if (depthCue) {
-          // not 100% sure of fog calc here
           if (fog) {
             viewer.setIntProperty("zSlab", (int) Math.min(100, slab + fogStart
                 * (depth - slab)));
@@ -2512,7 +2512,7 @@ public class TransformManager {
     }
     viewer.setFloatProperty("slabRange", 0);
     if (doResetSlab) {
-      slabEnabled = (mode == MODE_NAVIGATION);
+      setSlabEnabled(mode == MODE_NAVIGATION);
     }
     zoomFactor = Float.MAX_VALUE;
     zoomPercentSetting = zoomPercent;

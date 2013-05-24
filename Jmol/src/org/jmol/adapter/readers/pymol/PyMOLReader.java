@@ -71,7 +71,19 @@ import org.jmol.viewer.JC;
  * PyMOL frame: references (a) a state, (b) a script, and (c) a view
  *
  * using set LOGFILE, we can dump this to a readable form.
- * trajectories are not supported yet
+ * trajectories are not supported yet.
+ * 
+ * Basic idea is as follows: 
+ * 
+ * 1) Pickle file is read into a Hashtable.
+ * 2) Atoms, bonds, and structures are created, as per other readers, from MOLECULE branches
+ * 3) Rendering of atoms and bonds is interpreted as JmolObject objects 
+ * 3) Other objects such as electron density maps, compiled graphical objects, and 
+ *    measures are interpreted, creating more JmolObjects
+ * 3) JmolObjects are finalized after file reading takes place by a call from ModelLoader
+ *    back here to finalizeModelSet(), which runs JmolObject.finalizeObject.
+ * 
+ * 
  *     
  * @author Bob Hanson hansonr@stolaf.edu
  * 
@@ -336,12 +348,12 @@ public class PyMOLReader extends PdbReader {
     
     // set up additional colors
     // not 100% sure what color clamping is, but this seems to work.
-    addColors(getMapList(map, "colors"), getBooleanSetting(PyMOL.clamp_colors));
+    addColors(getMapList(map, "colors"), booleanSetting(PyMOL.clamp_colors));
     
     // set a few global flags
-    allStates = getBooleanSetting(PyMOL.all_states);
-    pymolFrame = (int) getFloatSetting(PyMOL.frame);
-    pymolState = (int) getFloatSetting(PyMOL.state);
+    allStates = booleanSetting(PyMOL.all_states);
+    pymolFrame = (int) floatSetting(PyMOL.frame);
+    pymolState = (int) floatSetting(PyMOL.state);
     frameObj = addJmolObject(T.frame, null, (allStates ? Integer.valueOf(-1)
         : Integer.valueOf(pymolState - 1)));
     appendLoadNote("frame=" + pymolFrame + " state=" + pymolState
@@ -755,17 +767,17 @@ public class PyMOLReader extends PdbReader {
         localSettings.put((Integer) setting.get(0), setting);
       }
     }
-    nonBondedSize = getFloatSetting(PyMOL.nonbonded_size);
-    sphereScale = getFloatSetting(PyMOL.sphere_scale);
-    valence = getBooleanSetting(PyMOL.valence);
-    cartoonTranslucency = getFloatSetting(PyMOL.cartoon_transparency);
-    stickTranslucency = getFloatSetting(PyMOL.stick_transparency);
-    sphereTranslucency = getFloatSetting(PyMOL.sphere_transparency);
-    cartoonLadderMode = getBooleanSetting(PyMOL.cartoon_ladder_mode);
-    cartoonRockets = getBooleanSetting(PyMOL.cartoon_cylindrical_helices);
+    nonBondedSize = floatSetting(PyMOL.nonbonded_size);
+    sphereScale = floatSetting(PyMOL.sphere_scale);
+    valence = booleanSetting(PyMOL.valence);
+    cartoonTranslucency = floatSetting(PyMOL.cartoon_transparency);
+    stickTranslucency = floatSetting(PyMOL.stick_transparency);
+    sphereTranslucency = floatSetting(PyMOL.sphere_transparency);
+    cartoonLadderMode = booleanSetting(PyMOL.cartoon_ladder_mode);
+    cartoonRockets = booleanSetting(PyMOL.cartoon_cylindrical_helices);
     //solventAsSpheres = getBooleanSetting(PyMOL.sphere_solvent); - this is for SA-Surfaces
-    surfaceMode = (int) getFloatSetting(PyMOL.surface_mode);
-    surfaceColor = (int) getFloatSetting(PyMOL.surface_color);
+    surfaceMode = (int) floatSetting(PyMOL.surface_mode);
+    surfaceColor = (int) floatSetting(PyMOL.surface_color);
     labelPosition = new P3();
     try {
       JmolList<Object> setting = localSettings.get(Integer
@@ -775,9 +787,9 @@ public class PyMOLReader extends PdbReader {
       // no problem.
     }
     labelPosition.add(labelPosition0);
-    labelColor = getFloatSetting(PyMOL.label_color);
-    labelSize = getFloatSetting(PyMOL.label_size);
-    labelFontId = (int) getFloatSetting(PyMOL.label_font_id);
+    labelColor = floatSetting(PyMOL.label_color);
+    labelSize = floatSetting(PyMOL.label_size);
+    labelFontId = (int) floatSetting(PyMOL.label_font_id);
   }
 
   /**
@@ -828,7 +840,7 @@ public class PyMOLReader extends PdbReader {
     data.addLast(branchName);
     JmolObject jo = addJmolObject(JC.SHAPE_CGO, null, data);
     jo.argb = PyMOL.getRGB(color);
-    jo.translucency = getFloatSetting(PyMOL.cgo_transparency);
+    jo.translucency = floatSetting(PyMOL.cgo_transparency);
     appendLoadNote("CGO " + fixName(branchName));
   }
 
@@ -900,6 +912,8 @@ public class PyMOLReader extends PdbReader {
   //      addName(branchName, bs);
   //  }
 
+  final static int[] MEAS_DIGITS = { PyMOL.label_distance_digits, PyMOL.label_angle_digits, PyMOL.label_dihedral_digits };
+
   /**
    * Create a MEASURE JmolObject.
    * 
@@ -922,7 +936,7 @@ public class PyMOLReader extends PdbReader {
     JmolList<Object> list = listAt(measure, pt);
     JmolList<Object> offsets = listAt(measure, 8);
     int len = list.size();
-    float rad = getFloatSetting(PyMOL.dash_width) / 20;
+    float rad = floatSetting(PyMOL.dash_width) / 20;
     if (rad == 0)
       rad = 0.05f;
     int index = 0;
@@ -937,32 +951,19 @@ public class PyMOLReader extends PdbReader {
       MeasurementData md = new MeasurementData(fixName(branchNameID + "_"
           + index), viewer, points);
       md.note = branchName;
-      String strFormat = "";
-      int nDigits = 1;
-      switch (nCoord) {
-      case 2:
-        nDigits = (int) getFloatSetting(PyMOL.label_distance_digits);
-        break;
-      case 3:
-        nDigits = (int) getFloatSetting(PyMOL.label_angle_digits);
-        break;
-      case 4:
-        nDigits = (int) getFloatSetting(PyMOL.label_dihedral_digits);
-        break;
-      }
-      if (offsets != null)
-        strFormat = nCoord + ":%0." + (nDigits < 0 ? 1 : nDigits) + "VALUE";
-      else
-        strFormat = nCoord + ": ";
+      int nDigits = (int) floatSetting(MEAS_DIGITS[nCoord - 2]);
+      String strFormat = nCoord + ": "
+          + (offsets == null ? "" : "%0." + (nDigits < 0 ? 1 : nDigits)
+              + "VALUE");
+      //strFormat += " -- " + branchNameID + " " + floatSetting(PyMOL.surface_color) + " " + Integer.toHexString(c);
       Text text = newTextLabel(strFormat, offset, colix,
-          (int) getFloatSetting(PyMOL.label_font_id),
-          getFloatSetting(PyMOL.label_size));
+          (int) floatSetting(PyMOL.label_font_id),
+          floatSetting(PyMOL.label_size));
       md.set(T.define, null, strFormat, "angstroms", null, false, false, null,
           false, (int) (rad * 2000), colix, text);
       addJmolObject(JC.SHAPE_MEASURES, bs, md);
       haveMeasurements = true;
     }
-
   }
 
   /**
@@ -1047,9 +1048,9 @@ public class PyMOLReader extends PdbReader {
    */
   private JmolList<Bond> processMolBonds(JmolList<Object> bonds) {
     JmolList<Bond> bondList = new JmolList<Bond>();
-    int color = (int) getFloatSetting(PyMOL.stick_color);
-    float radius = getFloatSetting(PyMOL.stick_radius) / 2;
-    float translucency = getFloatSetting(PyMOL.stick_transparency);
+    int color = (int) floatSetting(PyMOL.stick_color);
+    float radius = floatSetting(PyMOL.stick_radius) / 2;
+    float translucency = floatSetting(PyMOL.stick_transparency);
     int n = bonds.size();
     for (int i = 0; i < n; i++) {
       JmolList<Object> b = listAt(bonds, i);
@@ -1623,13 +1624,13 @@ public class PyMOLReader extends PdbReader {
     switch (shapeID) {
     case PyMOL.REP_NONBONDED:
       jo = addJmolObject(JC.SHAPE_STARS, bs, null);
-      jo.rd = new RadiusData(null, getFloatSetting(PyMOL.nonbonded_size) / 2,
+      jo.rd = new RadiusData(null, floatSetting(PyMOL.nonbonded_size) / 2,
           RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
       break;
     case PyMOL.REP_NBSPHERES:
       jo = addJmolObject(JC.SHAPE_BALLS, bs, null);
       jo.translucency = sphereTranslucency;
-      jo.setSize(getFloatSetting(PyMOL.nonbonded_size) * 2);
+      jo.setSize(floatSetting(PyMOL.nonbonded_size) * 2);
       break;
     case PyMOL.REP_SPHERES:
       jo = addJmolObject(JC.SHAPE_BALLS, bs, null);
@@ -1637,7 +1638,7 @@ public class PyMOLReader extends PdbReader {
       break;
     case PyMOL.REP_DOTS:
       jo = addJmolObject(JC.SHAPE_DOTS, bs, null);
-      f = getFloatSetting(PyMOL.sphere_scale);
+      f = floatSetting(PyMOL.sphere_scale);
       jo.rd = new RadiusData(null, f, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
       break;
     case PyMOL.REP_CARTOON:
@@ -1655,8 +1656,8 @@ public class PyMOLReader extends PdbReader {
       if (isHidden)
         break; // will have to reconsider this if there is a movie, though
       jo = addJmolObject(T.isosurface, bs, null);
-      jo.setSize(getFloatSetting(PyMOL.solvent_radius));
-      jo.translucency = getFloatSetting(PyMOL.transparency);
+      jo.setSize(floatSetting(PyMOL.solvent_radius));
+      jo.translucency = floatSetting(PyMOL.transparency);
       break;
     case PyMOL.REP_SURFACE: //   = 2;
       if (!allowSurface)
@@ -1665,9 +1666,9 @@ public class PyMOLReader extends PdbReader {
         break; // will have to reconsider this if there is a movie, though
       surfaceCount++;
       jo = addJmolObject(T.isosurface, bs,
-          getBooleanSetting(PyMOL.two_sided_lighting) ? "FULLYLIT" : "FRONTLIT");
-      jo.setSize(getFloatSetting(PyMOL.solvent_radius));
-      jo.translucency = getFloatSetting(PyMOL.transparency);
+          booleanSetting(PyMOL.two_sided_lighting) ? "FULLYLIT" : "FRONTLIT");
+      jo.setSize(floatSetting(PyMOL.solvent_radius));
+      jo.translucency = floatSetting(PyMOL.transparency);
       if (surfaceColor >= 0)
         jo.argb = PyMOL.getRGB(surfaceColor);
       break;
@@ -1690,12 +1691,12 @@ public class PyMOLReader extends PdbReader {
       createRibbonObject(bs);
       break;
     case PyMOL.REP_LINES:
-      f = getFloatSetting(PyMOL.line_width) / 15;
+      f = floatSetting(PyMOL.line_width) / 15;
       jo = addJmolObject(JC.SHAPE_STICKS, bs, null);
       jo.setSize(f);
       break;
     case PyMOL.REP_STICKS:
-      f = getFloatSetting(PyMOL.stick_radius) * 2;
+      f = floatSetting(PyMOL.stick_radius) * 2;
       jo = addJmolObject(JC.SHAPE_STICKS, bs, null);
       jo.setSize(f);
       jo.translucency = stickTranslucency;
@@ -1721,14 +1722,14 @@ public class PyMOLReader extends PdbReader {
       // we will just use cartoons for ladder mode
       jo = addJmolObject(JC.SHAPE_CARTOON, bsNuc, null);
       jo.translucency = cartoonTranslucency;
-      jo.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
+      jo.setSize(floatSetting(PyMOL.cartoon_tube_radius) * 2);
       bs.andNot(bsNuc);
       if (bs.isEmpty())
         return;
     }
     jo = addJmolObject(JC.SHAPE_TRACE, bs, null);
     jo.translucency = cartoonTranslucency;
-    jo.setSize(getFloatSetting(PyMOL.cartoon_tube_radius) * 2);
+    jo.setSize(floatSetting(PyMOL.cartoon_tube_radius) * 2);
   }
 
   /**
@@ -1737,13 +1738,13 @@ public class PyMOLReader extends PdbReader {
    * @param bs
    */
   private void createPuttyObject(BS bs) {
-    float[] info = new float[] { getFloatSetting(PyMOL.cartoon_putty_quality),
-        getFloatSetting(PyMOL.cartoon_putty_radius),
-        getFloatSetting(PyMOL.cartoon_putty_range),
-        getFloatSetting(PyMOL.cartoon_putty_scale_min),
-        getFloatSetting(PyMOL.cartoon_putty_scale_max),
-        getFloatSetting(PyMOL.cartoon_putty_scale_power),
-        getFloatSetting(PyMOL.cartoon_putty_transform) };
+    float[] info = new float[] { floatSetting(PyMOL.cartoon_putty_quality),
+        floatSetting(PyMOL.cartoon_putty_radius),
+        floatSetting(PyMOL.cartoon_putty_range),
+        floatSetting(PyMOL.cartoon_putty_scale_min),
+        floatSetting(PyMOL.cartoon_putty_scale_max),
+        floatSetting(PyMOL.cartoon_putty_scale_power),
+        floatSetting(PyMOL.cartoon_putty_transform) };
     addJmolObject(JC.SHAPE_TRACE, bs, info).translucency = cartoonTranslucency;
   }
 
@@ -1767,12 +1768,12 @@ public class PyMOLReader extends PdbReader {
     // 476Rainbow_New: 10, 8 ==> trace
 
     //float smoothing = getFloatSetting(PyMOL.ribbon_smooth);
-    float sampling = getFloatSetting(PyMOL.ribbon_sampling);
+    float sampling = floatSetting(PyMOL.ribbon_sampling);
     boolean isTrace = (sampling > 1);
-    float r = getFloatSetting(PyMOL.ribbon_radius) * 2;
-    float rpc = getFloatSetting(PyMOL.ray_pixel_scale);
+    float r = floatSetting(PyMOL.ribbon_radius) * 2;
+    float rpc = floatSetting(PyMOL.ray_pixel_scale);
     if (r == 0)
-      r = getFloatSetting(PyMOL.ribbon_width)
+      r = floatSetting(PyMOL.ribbon_width)
           * (isTrace ? 0.1f : (rpc < 1 ? 1 : rpc) * 0.05f);
     addJmolObject((isTrace ? JC.SHAPE_TRACE : JC.SHAPE_BACKBONE), bs, null)
         .setSize(r);
@@ -1787,7 +1788,7 @@ public class PyMOLReader extends PdbReader {
       return;
     JmolObject jo = addJmolObject(JC.SHAPE_CARTOON, bs, null);
     jo.translucency = cartoonTranslucency;
-    jo.setSize(getFloatSetting(sizeID) * factor);
+    jo.setSize(floatSetting(sizeID) * factor);
   }
 
   ////// end of molecule-specific JmolObjects //////
@@ -1834,10 +1835,10 @@ public class PyMOLReader extends PdbReader {
         JmolObject jo = addJmolObject(tok, null, obj);
         if (isMep) {
         } else {
-          jo.setSize(getFloatSetting(PyMOL.mesh_width));
+          jo.setSize(floatSetting(PyMOL.mesh_width));
           jo.argb = PyMOL.getRGB(intAt(listAt(obj, 0), 2));
         }
-        jo.translucency = getFloatSetting(PyMOL.transparency);
+        jo.translucency = floatSetting(PyMOL.transparency);
       }
     }
   }
@@ -1924,11 +1925,11 @@ public class PyMOLReader extends PdbReader {
     viewer.initialize(true);
     viewer.setStringProperty("measurementUnits", "ANGSTROMS");
     viewer.setBooleanProperty("zoomHeight", true);
-    setView(view);
     if (groups != null)
       setGroupVisibilities();
     if (!bsHidden.isEmpty())
       addJmolObject(T.hidden, bsHidden, null);
+    addJmolScript(getViewScript(view).toString());
   }
 
   /**
@@ -1975,26 +1976,26 @@ public class PyMOLReader extends PdbReader {
     }
   }
 
-  private void setView(JmolList<Object> view) {
+  private SB getViewScript(JmolList<Object> view) {
     SB sb = new SB();
     float[] pymolView = getPymolView(view, true);
-    sb.append(";set slabEnabled true;set zshadePower 1;set traceAlpha "
-        + getBooleanSetting(PyMOL.cartoon_round_helices));
+    sb.append(";set zshadePower 1;set traceAlpha "
+        + booleanSetting(PyMOL.cartoon_round_helices));
     sb.append(";set cartoonRockets " + cartoonRockets);
     if (cartoonRockets)
       sb.append(";set rocketBarrels " + cartoonRockets);
     sb.append(";set cartoonLadders " + haveNucleicLadder);
     sb.append(";set ribbonBorder "
-        + getBooleanSetting(PyMOL.cartoon_fancy_helices));
+        + booleanSetting(PyMOL.cartoon_fancy_helices));
     sb.append(";set cartoonFancy "
-        + !getBooleanSetting(PyMOL.cartoon_fancy_helices));
+        + !booleanSetting(PyMOL.cartoon_fancy_helices));
     JmolList<Object> bg = listAt(settings, PyMOL.bg_rgb);
     String s = "000000" + Integer.toHexString(colorSetting(bg));
     s = "[x" + s.substring(s.length() - 6) + "]";
     sb.append(";background " + s);
     sb.append(";moveto 0 PyMOL " + Escape.eAF(pymolView));
     sb.append(";");
-    addJmolScript(sb.toString());
+    return sb;
   }
 
   /**
@@ -2006,9 +2007,9 @@ public class PyMOLReader extends PdbReader {
    */
   private float[] getPymolView(JmolList<Object> view, boolean isViewObj) {
     float[] pymolView = new float[21];
-    boolean depthCue = getBooleanSetting(PyMOL.depth_cue); // 84
-    boolean fog = getBooleanSetting(PyMOL.fog); // 88
-    float fog_start = getFloatSetting(PyMOL.fog_start); // 192
+    boolean depthCue = booleanSetting(PyMOL.depth_cue); // 84
+    boolean fog = booleanSetting(PyMOL.fog); // 88
+    float fog_start = floatSetting(PyMOL.fog_start); // 192
 
     int pt = 0;
     int i = 0;
@@ -2031,8 +2032,8 @@ public class PyMOLReader extends PdbReader {
     for (int j = 0; j < 8; j++)
       pymolView[pt++] = floatAt(view, i++);
 
-    boolean isOrtho = getBooleanSetting(PyMOL.ortho); // 23
-    float fov = getFloatSetting(PyMOL.field_of_view); // 152
+    boolean isOrtho = booleanSetting(PyMOL.ortho); // 23
+    float fov = floatSetting(PyMOL.field_of_view); // 152
 
     pymolView[pt++] = (isOrtho ? fov : -fov);
     pymolView[pt++] = (depthCue ? 1 : 0);
@@ -2057,11 +2058,11 @@ public class PyMOLReader extends PdbReader {
 
   // local and global settings retrieval
   
-  private boolean getBooleanSetting(int i) {
-    return (getFloatSetting(i) != 0);
+  private boolean booleanSetting(int i) {
+    return (floatSetting(i) != 0);
   }
 
-  private float getFloatSetting(int i) {
+  private float floatSetting(int i) {
     try {
       JmolList<Object> setting = null;
       if (localSettings != null)

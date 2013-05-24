@@ -276,6 +276,9 @@ class JmolObject {
         sb.append(";isosurface cache");
       sb.append(";set meshScale ").appendI(size / 500);
       break;
+    case T.script:
+      sb = (SB) info;
+      break;
     case JC.SHAPE_CGO:
       JmolList<Object> cgo = (JmolList<Object>) info;
       //sID = (String) cgo.get(cgo.size() - 1);

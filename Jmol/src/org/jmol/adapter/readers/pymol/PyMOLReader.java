@@ -1563,6 +1563,9 @@ public class PyMOLReader extends PdbReader {
 
   /**
    * PyMOL does not display cartoons or traces for single-residue runs.
+   * This two-pass routine first sets bits in a residue bitset, 
+   * then it clears out all singletons, and in a second pass
+   * all atom bits for not-represented residues are cleared.
    * 
    * @param atoms
    * @param bs
@@ -1572,12 +1575,11 @@ public class PyMOLReader extends PdbReader {
     int n = bs.length();
     int pass = 0;
     while (true) {
-      int offset = 1;
-      int iPrev = Integer.MIN_VALUE;
-      int iSeqLast = Integer.MIN_VALUE;
-      int iSeq = Integer.MIN_VALUE;
-      for (int i = 0; i < n; i++) {
-        if (nextChain(atoms, i, iPrev))
+      for (int i = 0, offset = 0, 
+          iPrev = Integer.MIN_VALUE, 
+          iSeqLast = Integer.MIN_VALUE, 
+          iSeq = Integer.MIN_VALUE; i < n; i++) {
+        if (iPrev < 0 || atoms[iPrev].chainID != atoms[i].chainID)
           offset++;
         iSeq = atoms[i].sequenceNumber;
         if (iSeq != iSeqLast) {
@@ -1599,14 +1601,6 @@ public class PyMOLReader extends PdbReader {
           bsnot.set(i);
       bsr.andNot(bsnot);
     }
-  }
-
-  private static boolean nextChain(Atom[] atoms, int i, int iPrev) {
-    if (i == 0 || iPrev < 0)
-      return true;
-    Atom a = atoms[iPrev];
-    Atom b = atoms[i];
-    return a.chainID != b.chainID;
   }
 
   /**

@@ -85,9 +85,9 @@ public class Measurement {
       pts = m.pts;
       mad = m.mad;
       thisID = m.thisID;
-      if (thisID != null)
-        labelColix = 0;
       text = m.text;
+      if (thisID != null && text != null)
+        labelColix = text.colix;
     }
     if (pts == null)
       pts = new Point3fi[4];

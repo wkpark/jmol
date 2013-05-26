@@ -230,13 +230,14 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
   protected int drawLine2(int x1, int y1, int z1, int x2, int y2, int z2, int diameter) {
     pt0i.set(x1, y1, z1);
     pt1i.set(x2, y2, z2);
-    if (diameter < 0) {
-      g3d.drawDashedLine(4, 2, pt0i, pt1i);
-      return 1;
-    }    
     if (dotsOrDashes) {
-      drawDashed(x1, y1, z1, x2, y2, z2, dashDots);
+      if (dashDots != null)
+        drawDashed(x1, y1, z1, x2, y2, z2, dashDots);
     } else {
+      if (diameter < 0) {
+        g3d.drawDashedLine(4, 2, pt0i, pt1i);
+        return 1;
+      }    
       g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, pt0i, pt1i);
     }
     return (diameter + 1) / 2;
@@ -288,6 +289,8 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
 
   protected void drawDashed(int xA, int yA, int zA, int xB, int yB, int zB,
                           int[] array) {
+    if (array == null || width < 0)
+      return;
     // for sticks and measures
     float f = array[0];
     float dx = xB - xA;

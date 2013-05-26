@@ -1008,7 +1008,7 @@ public class StateCreator implements JmolStateCreator {
       if (m.thisID != null)
         sb.append(" ID ").append(Escape.eS(m.thisID));
       if (m.mad != 0)
-        sb.append(" radius ").appendF(m.mad / 2000f);
+        sb.append(" radius ").appendF(m.thisID == null || m.mad > 0 ? m.mad / 2000f : 0);
       if (m.colix != 0)
         sb.append(" color ").append(Escape.escapeColor(C.getArgb(m.colix)));
       if (m.text != null) {

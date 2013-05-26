@@ -113,7 +113,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       mad = (short) measurement.mad;
       //dashDots = hDashes;
       dotsOrDashes = true;
-      dashDots = ndots;
+      dashDots = (mad < 0 ? null : ndots);
     }
     switch (count) {
     case 1:
@@ -174,6 +174,8 @@ public class MeasuresRenderer extends LabelsRenderer {
     } else {
       atomPt.add2(atomA, atomB);
       atomPt.scale(0.5f);
+      atomPt.screenX = (atomA.screenX + atomB.screenX) / 2;
+      atomPt.screenY = (atomA.screenY + atomB.screenY) / 2;
       renderLabelOrMeasure(measurement.text, s);
     }
   }
@@ -311,7 +313,7 @@ public class MeasuresRenderer extends LabelsRenderer {
     // small numbers refer to pixels already? 
     int diameter = (int) (mad >= 20 && exportType != GData.EXPORT_CARTESIAN ?
       viewer.scaleToScreen((z1 + z2) / 2, mad) : mad);
-    if (dotsOrDashes && dashDots == ndots)
+    if (dotsOrDashes && (dashDots == null || dashDots == ndots))
       width = diameter;
     return drawLine2(x1, y1, z1, x2, y2, z2, diameter);
   }

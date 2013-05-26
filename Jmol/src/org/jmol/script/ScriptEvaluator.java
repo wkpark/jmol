@@ -9667,6 +9667,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.radius:
       case T.diameter:
         mad = (int) ((theTok == T.radius ? 2000 : 1000) * floatParameter(++i));
+        if (id != null && mad <= 0)
+          mad = -1;
         break;
       case T.decimal:
         if (rd != null)

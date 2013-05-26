@@ -808,6 +808,10 @@ class PyMOL {
   final static int wizard_prompt_mode                    = 366;
   final static int wrap_output                           = 191;
   
+  final static int COLOR_FRONT = -6;
+  final static int COLOR_BACK = -7;
+  final static int COLOR_BLACK = 1;
+  
   private final static int[] colors = {
     /* 0     */ 0xFFFFFFFF, 
     /* 1     */ 0xFF000000, 

@@ -88,6 +88,7 @@ public class CastepReader extends AtomSetCollectionReader {
   private boolean isPhonon;
   private boolean isOutput;
   private boolean isCell;
+  private boolean isDispersion;
 
   private float a, b, c, alpha, beta, gamma;
   private V3[] abc = new V3[3];
@@ -240,7 +241,9 @@ public class CastepReader extends AtomSetCollectionReader {
   protected boolean checkLine() throws Exception {
     // only for .phonon, castep output, or other BEGIN HEADER type files
     if (isOutput) {
-      if (line.contains("Real Lattice(A)")) {
+      if (line.contains("DFT+D: Semi-empirical")){
+        isDispersion = true;
+      } else if (line.contains("Real Lattice(A)")) {
         readOutputUnitCell();
       } else if (line.contains("Fractional coordinates of atoms")) {
         if (doGetModel(++modelNumber, null)) {
@@ -317,7 +320,15 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private void readEnergy() throws Exception {
     tokens = getTokens();
-    Double energy = Double.valueOf(Double.parseDouble(tokens[4]));
+    Double energy;
+
+    if (!isDispersion) {
+      energy = Double.valueOf(Double.parseDouble(tokens[3]));
+    } else {
+      discardLinesUntilContains("Dispersion corrected final energy*");
+      tokens = getTokens();
+      energy = Double.valueOf(Double.parseDouble(tokens[5]));
+    }
     
     atomSetCollection.setAtomSetName("Energy = " + energy + " eV");
     atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());

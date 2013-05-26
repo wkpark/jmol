@@ -169,6 +169,7 @@ public class PyMOLReader extends PdbReader {
   private boolean cartoonRockets;
   private int surfaceMode;
   private int surfaceColor;
+  private int bgRgb;
   private int labelFontId;
 
   private boolean isMovie;
@@ -778,6 +779,7 @@ public class PyMOLReader extends PdbReader {
     //solventAsSpheres = getBooleanSetting(PyMOL.sphere_solvent); - this is for SA-Surfaces
     surfaceMode = (int) floatSetting(PyMOL.surface_mode);
     surfaceColor = (int) floatSetting(PyMOL.surface_color);
+    bgRgb = colorSetting(listAt(settings, PyMOL.bg_rgb));
     labelPosition = new P3();
     try {
       JmolList<Object> setting = localSettings.get(Integer
@@ -1294,10 +1296,10 @@ public class PyMOLReader extends PdbReader {
     if (reps[PyMOL.REP_LABELS].get(iAtom)) {
       int icolor = (int) getUniqueFloat(atom.uniqueID, PyMOL.label_color,
           labelColor);
-      if (icolor == PyMOL.COLOR_BACK || icolor == PyMOL.COLOR_FRONT)
-        icolor = PyMOL.COLOR_BLACK;
-      else if (icolor < 0)
+      if (icolor == PyMOL.COLOR_BACK || icolor == PyMOL.COLOR_FRONT) {
+      } else if (icolor < 0) {
         icolor = atomColor;
+      }
       float[] labelPos = new float[7];
       JmolList<Object> labelOffset = listAt(labelPositions, apt);
       if (labelOffset == null) {
@@ -1987,8 +1989,7 @@ public class PyMOLReader extends PdbReader {
         + booleanSetting(PyMOL.cartoon_fancy_helices));
     sb.append(";set cartoonFancy "
         + !booleanSetting(PyMOL.cartoon_fancy_helices));
-    JmolList<Object> bg = listAt(settings, PyMOL.bg_rgb);
-    String s = "000000" + Integer.toHexString(colorSetting(bg));
+    String s = "000000" + Integer.toHexString(bgRgb);
     s = "[x" + s.substring(s.length() - 6) + "]";
     sb.append(";background " + s);
     sb.append(";moveto 0 PyMOL " + Escape.eAF(pymolView));
@@ -2096,11 +2097,16 @@ public class PyMOLReader extends PdbReader {
   }
  
   // generally useful static methods
-  
 
-  private static short getColix(int colorIndex, float translucency) {
-    return C.getColixTranslucent3(C.getColixO(Integer.valueOf(PyMOL
-        .getRGB(colorIndex))), translucency > 0, translucency);
+  private short getColix(int colorIndex, float translucency) {
+    short colix = (
+        colorIndex == PyMOL.COLOR_BACK ? 
+            (ColorUtil.getBgContrast(bgRgb) == C.WHITE ? C.BLACK : C.WHITE)
+        : colorIndex == PyMOL.COLOR_FRONT ? 
+            ColorUtil.getBgContrast(bgRgb) 
+        : C.getColixO(Integer.valueOf(PyMOL.getRGB(colorIndex))));
+
+    return C.getColixTranslucent3(colix, translucency > 0, translucency);
   }
 
   private static int colorSettingClamped(JmolList<Object> c) {

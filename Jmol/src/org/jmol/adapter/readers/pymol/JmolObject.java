@@ -320,6 +320,7 @@ class JmolObject {
   
   void setSize(float size) {
     this.size = (int) (size * 1000);
+    System.out.println("JmolObject " + id + " size=" + size);
   }
 
 }

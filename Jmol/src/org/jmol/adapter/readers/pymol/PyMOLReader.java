@@ -1576,7 +1576,6 @@ public class PyMOLReader extends PdbReader {
     for (Map.Entry<Float, BS> e : htSpacefill.entrySet()) {
       float r = e.getKey().floatValue();
       BS bs = e.getValue();
-      System.out.println(r + " sf " + Escape.eBS(bs));
       addJmolObject(JC.SHAPE_BALLS, bs, null).rd = new RadiusData(null, r,
           RadiusData.EnumType.ABSOLUTE, EnumVdw.AUTO);
     }
@@ -1715,21 +1714,27 @@ public class PyMOLReader extends PdbReader {
    */
   private void createTraceObject(BS bs) {
     JmolObject jo;
+    checkNucleicObject(bs, true);
+    if (bs.isEmpty())
+      return;
+    jo = addJmolObject(JC.SHAPE_TRACE, bs, null);
+    jo.translucency = cartoonTranslucency;
+    jo.setSize(floatSetting(PyMOL.cartoon_tube_radius) * 2);
+  }
+
+  private void checkNucleicObject(BS bs, boolean isTrace) {
+    JmolObject jo;
     BS bsNuc = BSUtil.copy(bsNucleic);
     bsNuc.and(bs);
-    if (cartoonLadderMode && !bsNuc.isEmpty()) {
-      haveNucleicLadder = true;
+    if (!bsNuc.isEmpty()) {
+      if (isTrace && cartoonLadderMode)
+        haveNucleicLadder = true;
       // we will just use cartoons for ladder mode
       jo = addJmolObject(JC.SHAPE_CARTOON, bsNuc, null);
       jo.translucency = cartoonTranslucency;
       jo.setSize(floatSetting(PyMOL.cartoon_tube_radius) * 2);
       bs.andNot(bsNuc);
-      if (bs.isEmpty())
-        return;
     }
-    jo = addJmolObject(JC.SHAPE_TRACE, bs, null);
-    jo.translucency = cartoonTranslucency;
-    jo.setSize(floatSetting(PyMOL.cartoon_tube_radius) * 2);
   }
 
   /**
@@ -1755,14 +1760,14 @@ public class PyMOLReader extends PdbReader {
    * @param bs
    */
   private void createRibbonObject(BS bs) {
-    // 2ace: 0, 1 ==> backbone
-    // fig8: 0, 1 ==> backbone
-    // casp: 0, 1 ==> backbone
-    // NLG3_AchE: 0, 1 ==> backbone
+    // 2ace: 0, 1 ==> backbone  // r rpc w 0.0 1.3 3.0 too small
+    // fig8: 0, 1 ==> backbone // r rpc w 0.0 1.0 3.0  OK
+    // casp: 0, 1 ==> backbone // r rpc w 0.0 1.3 3.0  too small
+    // NLG3_AchE: 0, 1 ==> backbone  //r rpc w 0.0 1.3 4.0 too small 
     // NLG3_HuAChE: 0, 10 ==> trace
     // tach: 0, 10 ==> trace
     // tah-lev: 0, 10 ==> trace
-    // 496: -1, 1 ==> backbone
+    // 496: -1, 1 ==> backbone  // r rpc 0.0 1.3 3.0 too small
     // kinases: -1, 1 ==> backbone
     // 443_D1: -1, 1 ==> backbone
     // 476Rainbow_New: 10, 8 ==> trace
@@ -1772,9 +1777,10 @@ public class PyMOLReader extends PdbReader {
     boolean isTrace = (sampling > 1);
     float r = floatSetting(PyMOL.ribbon_radius) * 2;
     float rpc = floatSetting(PyMOL.ray_pixel_scale);
+    System.out.println("r rpc w " + r + " " + rpc + " " + floatSetting(PyMOL.ribbon_width));
     if (r == 0)
       r = floatSetting(PyMOL.ribbon_width)
-          * (isTrace ? 0.1f : (rpc < 1 ? 1 : rpc) * 0.05f);
+          * (isTrace ? 1 : (rpc <= 1 ? 0.5f : rpc)) * 0.1f;
     addJmolObject((isTrace ? JC.SHAPE_TRACE : JC.SHAPE_BACKBONE), bs, null)
         .setSize(r);
   }
@@ -1786,6 +1792,11 @@ public class PyMOLReader extends PdbReader {
     bs.and(reps[PyMOL.REP_CARTOON]);
     if (bs.isEmpty())
       return;
+    if (key.equals(" ")) {
+      checkNucleicObject(bs, false);
+      if (bs.isEmpty())
+        return;    
+    }
     JmolObject jo = addJmolObject(JC.SHAPE_CARTOON, bs, null);
     jo.translucency = cartoonTranslucency;
     jo.setSize(floatSetting(sizeID) * 2);

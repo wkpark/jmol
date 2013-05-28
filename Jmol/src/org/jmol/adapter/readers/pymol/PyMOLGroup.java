@@ -1,13 +1,16 @@
 package org.jmol.adapter.readers.pymol;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 
 class PyMOLGroup {
   String name;
-  String branchNameID;
-  JmolList<PyMOLGroup> list = new JmolList<PyMOLGroup>();
-  JmolList<Object> branch;
+  String objectNameID;
+  Map<String, PyMOLGroup> list = new Hashtable<String, PyMOLGroup>();
+  JmolList<Object> object;
   boolean visible = true;
   boolean occluded = false;
   BS bsAtoms;
@@ -20,13 +23,20 @@ class PyMOLGroup {
   }
 
   void addList(PyMOLGroup child) {
-    list.addLast(child);
+    PyMOLGroup group = list.get(child.name);
+    if (group != null)
+      return;
+    list.put(child.name, child);
     child.parent = this;
   }
   
   void set() {
     if (parent != null)
-      return;
-    
+      return;    
+  }
+  
+  @Override
+  public String toString() {
+    return this.name;
   }
 }

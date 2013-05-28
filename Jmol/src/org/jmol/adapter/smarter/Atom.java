@@ -40,7 +40,9 @@ public class Atom extends P3 implements Cloneable {
   public String atomName;
   public int formalCharge = Integer.MIN_VALUE;
   public float partialCharge = Float.NaN;
-  float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
+  public float vectorX = Float.NaN;
+  public float vectorY = Float.NaN;
+  public float vectorZ = Float.NaN;
   public float bfactor = Float.NaN;
   public int occupancy = 100;
   public float radius = Float.NaN;

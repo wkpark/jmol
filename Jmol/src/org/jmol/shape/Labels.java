@@ -191,10 +191,10 @@ public class Labels extends AtomShape {
 
     if ("textLabels" == propertyName) {
       setScaling();
-      JmolList<Text> labels = (JmolList<Text>) value;
-      for (int i = bsSelected.nextSetBit(0), pt = 0; i >= 0 && i < atomCount; i = bsSelected
+      Map<Integer, Text> labels = (Map<Integer, Text>) value;
+      for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
           .nextSetBit(i + 1))
-        setTextLabel(i, labels.get(pt++));
+        setTextLabel(i, labels.get(Integer.valueOf(i)));
       return;
     }
 

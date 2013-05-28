@@ -25,7 +25,6 @@
 
 package org.jmol.modelset;
 
-
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;

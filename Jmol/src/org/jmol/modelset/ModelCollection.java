@@ -3166,7 +3166,7 @@ abstract public class ModelCollection extends BondCollection {
         atomSerials = new int[atoms.length];
       atomSerials[atomCount] = atomSerial;
     }
-    if (!Float.isNaN(vectorX))
+    if (!Float.isNaN(vectorZ))
       setVibrationVector(atomCount, vectorX, vectorY, vectorZ);
     atomCount++;
     return atom;

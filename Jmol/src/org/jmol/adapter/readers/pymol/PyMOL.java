@@ -48,24 +48,29 @@ class PyMOL {
 
   final static int REP_STICKS = 0;
   final static int REP_SPHERES = 1;
-  final static int REP_SURFACE = 2;
+  final static int REP_SURFACE = 2; // objSurface
   final static int REP_LABELS = 3;
   final static int REP_NBSPHERES = 4;
   final static int REP_CARTOON = 5;
-  final static int REP_BACKBONE = 6;
-  final static int REP_LINES = 7;
-  final static int REP_MESH = 8;
-  final static int REP_DOTS = 9;
-  final static int REP_DASHES = 10;  // ??
+  final static int REP_RIBBON = 6;
+  final static int REP_LINES = 7; 
+  final static int REP_MESH = 8; // objMesh
+  final static int REP_DOTS = 9; // dots; also used for objMap
+  final static int REP_DASHES = 10;  // for measurements
   final static int REP_NONBONDED = 11;
   final static int REP_MAX = 12;
 
+  // a continuation of PyMOL.REP_xxx
+  final static int REP_JMOL_TRACE = 12;
+  final static int REP_JMOL_PUTTY = 13;
+  final static int REP_JMOL_MAX = 14;
+
   // ???
-  final static int REP_CELL = 12;
-  final static int REP_CGO = 13;
-  final static int REP_CALLBACK = 14;
-  final static int REP_EXTENT = 15;
-  final static int REP_SLICE = 16;
+  final static int REP_CELL = 12; // for objMesh, objSurface
+  final static int REP_CGO = 13; // for sculpt mode, objAlignment, objCGO
+  final static int REP_CALLBACK = 14; // for objCallback
+  final static int REP_EXTENT = 15; // for objMap
+  final static int REP_SLICE = 16; // for objSlice
   final static int REP_ANGLES = 17;
   final static int REP_DIHEDRALS = 18;
 

@@ -38,6 +38,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
 import org.jmol.util.P3;
+import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.SB;
 import org.jmol.viewer.JC;
@@ -59,7 +60,7 @@ class JmolObject {
   private short[] colixes;
   private Object[] colors;
 
-  String branchNameID;
+  String objectNameID;
   int argb;
   float translucency = 0;
   boolean visible = true;
@@ -76,7 +77,7 @@ class JmolObject {
     this.id = id;
     this.bsAtoms = bsAtoms;
     this.info = info;
-    this.branchNameID = branchNameID;
+    this.objectNameID = branchNameID;
   }
   
   /**
@@ -122,10 +123,9 @@ class JmolObject {
   }
 
   @SuppressWarnings("unchecked")
-  void finalizeObject(ModelSet m, PyMOLReader reader) {
+  void finalizeObject(ModelSet m, String mepList, boolean doCache) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
-    boolean doCache = reader.doCache;
     String sID;
     SB sb = null;
     switch (id) {
@@ -149,8 +149,9 @@ class JmolObject {
       // if we implement GROUP in Jmol, we need to do something here.
       return;
     case T.scene:
-      sm.viewer.saveScene(branchNameID, (Map<String, Object>) info);
-      sm.viewer.saveOrientation(branchNameID, (float[]) ((Map<String, Object>) info).get("pymolView"));
+      sm.viewer.saveScene(objectNameID, (Map<String, Object>) info);
+      sm.viewer.saveOrientation(objectNameID,
+          (float[]) ((Map<String, Object>) info).get("pymolView"));
       return;
     case T.hidden:
       sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
@@ -165,7 +166,8 @@ class JmolObject {
     case JC.SHAPE_TRACE:
     case JC.SHAPE_BACKBONE:
       sm.loadShape(id);
-      BSUtil.andNot(bsAtoms, reader.bsCarb);
+      BS bsCarb = sm.viewer.modelSet.getAtomBits(T.carbohydrate, null);
+      BSUtil.andNot(bsAtoms, bsCarb);
       break;
     case JC.SHAPE_DOTS:
       sm.loadShape(id);
@@ -195,7 +197,7 @@ class JmolObject {
       sm.setShapePropertyBs(id, "measure", md, bsAtoms);
       return;
     case T.isosurface:
-      sID = (bsAtoms == null ? (String) info : branchNameID);
+      sID = (bsAtoms == null ? (String) info : objectNameID);
       sb = new SB();
       sb.append("isosurface ID ").append(Escape.eS(sID));
       if (bsAtoms == null) {
@@ -209,14 +211,17 @@ class JmolObject {
           sb.append(";isosurface cache");
       } else {
         //if (argb == 0)
-          //sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-        String lighting = (String) info;
+        //sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
+        String lighting = ((String[]) info)[0];
+        String only = ((String[]) info)[1];
+        // not implementing "not only" yet because if we did that, since we have so
+        // many sets of atoms, we could have real problems here.
         String resolution = "";
         if (lighting == null) {
           lighting = "mesh nofill";
           resolution = " resolution 1.5";
         }
-        boolean haveMep = reader.haveMep(sID);
+        boolean haveMep = Parser.isOneOf(sID, mepList);
         sb.append(" model ")
             .append(m.models[modelIndex].getModelNumberDotted()).append(
                 resolution).append(" select ").append(Escape.eBS(bsAtoms))
@@ -238,11 +243,11 @@ class JmolObject {
       JmolList<Object> mep = (JmolList<Object>) info;
       sID = mep.get(mep.size() - 2).toString();
       String mapID = mep.get(mep.size() - 1).toString();
-      float min = PyMOLReader.floatAt(PyMOLReader.listAt(mep, 3), 0);
-      float max = PyMOLReader.floatAt(PyMOLReader.listAt(mep, 3), 2);
+      float min = PyMOLScene.floatAt(PyMOLScene.listAt(mep, 3), 0);
+      float max = PyMOLScene.floatAt(PyMOLScene.listAt(mep, 3), 2);
       sb = new SB();
-      sb.append(";isosurface ID ").append(Escape.eS(sID))
-          .append(" map \"\" ").append(Escape.eS(mapID)).append(
+      sb.append(";isosurface ID ").append(Escape.eS(sID)).append(" map \"\" ")
+          .append(Escape.eS(mapID)).append(
               ";color isosurface range " + min + " " + max
                   + ";isosurface colorscheme rwb;set isosurfacekey true");
       if (translucency > 0)
@@ -259,20 +264,20 @@ class JmolObject {
           .append(m.models[modelIndex].getModelNumberDotted())
           .append(" color ").append(Escape.escapeColor(argb)).append(" \"\" ")
           .append(Escape.eS(sID)).append(" mesh nofill frontonly");
-      float within = PyMOLReader.floatAt(PyMOLReader.listAt(PyMOLReader.listAt(
-          mesh, 2), 0), 11);
-      JmolList<Object> list = PyMOLReader.listAt(PyMOLReader.listAt(PyMOLReader
-          .listAt(mesh, 2), 0), 12);
+      float within = PyMOLScene.floatAt(PyMOLScene.listAt(PyMOLScene
+          .listAt(mesh, 2), 0), 11);
+      JmolList<Object> list = PyMOLScene.listAt(PyMOLScene.listAt(
+          PyMOLScene.listAt(mesh, 2), 0), 12);
       if (within > 0) {
         P3 pt = new P3();
         sb.append(";isosurface slab within ").appendF(within).append(" [ ");
         for (int j = list.size() - 3; j >= 0; j -= 3) {
-          PyMOLReader.pointAt(list, j, pt);
+          PyMOLScene.pointAt(list, j, pt);
           sb.append(Escape.eP(pt));
         }
         sb.append(" ]");
       }
-      if (doCache && !reader.haveMep(sID))
+      if (doCache && !Parser.isOneOf(sID, mepList))
         sb.append(";isosurface cache");
       sb.append(";set meshScale ").appendI(size / 500);
       break;
@@ -320,7 +325,6 @@ class JmolObject {
   
   void setSize(float size) {
     this.size = (int) (size * 1000);
-    System.out.println("JmolObject " + id + " size=" + size);
   }
 
 }

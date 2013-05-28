@@ -2597,7 +2597,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
     case '<':
     case '=':
     case '>':
-      if ((ch = script.charAt(ichT)) == '<' || ch == '=' || ch == '>')
+      if ((ch = charAt(ichT)) == '<' || ch == '=' || ch == '>')
         ++ichT;
       tokLastMath = 1;
       break;

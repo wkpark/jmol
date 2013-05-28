@@ -354,8 +354,19 @@ abstract public class BondCollection extends AtomCollection {
         }
     }
     if (nDeleted > 0)
-      dBb(bsDelete, false);
+      dBm(bsDelete, false);
     return new int[] { 0, nDeleted };
+  }
+  
+  /**
+   * send request up to ModelCollection level.
+   * Done this way to avoid JavaScript super call
+   * 
+   * @param bsBonds
+   * @param isFullModel
+   */
+  protected void dBm(BS bsBonds, boolean isFullModel) {
+    ((ModelCollection) this).deleteBonds(bsBonds, isFullModel);
   }
 
   protected void dBb(BS bsBond, boolean isFullModel) {
@@ -786,7 +797,7 @@ abstract public class BondCollection extends AtomCollection {
         bs.set(bond.index);
         bsAtoms.set(bond.getAtomIndex1());
         bsAtoms.set(bond.getAtomIndex2());
-        dBb(bs, false);
+        dBm(bs, false);
         return bsAtoms;
       }
       bond.setOrder(bondOrder | JmolEdge.BOND_NEW);
@@ -815,7 +826,7 @@ abstract public class BondCollection extends AtomCollection {
         bsBonds.set(bonds[i].index);
       }
     if (bsBonds.nextSetBit(0) >= 0)
-      dBb(bsBonds, false);
+      dBm(bsBonds, false);
     if (deleteAtom)
       bs.set(atom.index);
     if (bs.nextSetBit(0) >= 0)

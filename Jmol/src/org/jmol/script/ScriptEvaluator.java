@@ -16259,7 +16259,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isDesignParameter = true;
         continue;
       case T.distancefactor:
-        if (!needsGenerating)
+        if (nAtomSets == 0)
           error(ERROR_insufficientArguments);
         decimalPropertyName = "distanceFactor";
         isDesignParameter = true;

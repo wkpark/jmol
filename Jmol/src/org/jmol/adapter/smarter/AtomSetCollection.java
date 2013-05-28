@@ -1488,8 +1488,7 @@ public class AtomSetCollection {
   boolean haveMappedSerials;
 
   public BS bsStructuredModels;
-  void mapMostRecentAtomSerialNumber() {
-    // from ??
+  private void mapMostRecentAtomSerialNumber() {
     if (atomCount == 0)
       return;
     int index = atomCount - 1;

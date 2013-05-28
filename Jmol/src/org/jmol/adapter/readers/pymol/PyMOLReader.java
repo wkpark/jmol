@@ -1460,7 +1460,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   }
 
   public float getVDW(int iAtom) {
-    return (int) atoms[iAtom].radius;
+    return atoms[iAtom].radius;
   }
 
   public int getSequenceNumber(int iAtom) {

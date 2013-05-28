@@ -136,6 +136,7 @@ class PyMOLScene {
     stickTranslucency = floatSetting(PyMOL.stick_transparency);
     sphereTranslucency = floatSetting(PyMOL.sphere_transparency);
     cartoonLadderMode = booleanSetting(PyMOL.cartoon_ladder_mode);
+    cartoonRockets = booleanSetting(PyMOL.cartoon_cylindrical_helices);
     surfaceMode = (int) floatSetting(PyMOL.surface_mode);
     surfaceColor = (int) floatSetting(PyMOL.surface_color);
     //solventAsSpheres = getBooleanSetting(PyMOL.sphere_solvent); - this is for SA-Surfaces

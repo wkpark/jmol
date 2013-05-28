@@ -685,6 +685,8 @@ all support for previous versions removed
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersPyMOL.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/pymol/**" />
+        <include name="org/jmol/rendercgo/**" />
+        <include name="org/jmol/shapecgo/**" />
       </fileset>
     </jar>
 
@@ -1131,6 +1133,8 @@ all support for previous versions removed
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersPyMOL.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/pymol/**" />
+        <include name="org/jmol/rendercgo/**" />
+        <include name="org/jmol/shapecgo/**" />
       </fileset>
     </jar>
   	

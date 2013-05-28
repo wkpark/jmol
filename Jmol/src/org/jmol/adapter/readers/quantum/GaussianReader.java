@@ -77,6 +77,8 @@ public class GaussianReader extends MOReader {
   private int equivalentAtomSets = 0;
   private int stepNumber;
 
+  private int moModelSet = -1;
+
 
   /**
    * Reads a Collection of AtomSets from a BufferedReader.
@@ -516,8 +518,10 @@ public class GaussianReader extends MOReader {
         tokens = getTokens();
         if (tokens.length != nThisLine)
           tokens = getStrings(line, nThisLine, 10);
-        for (int i = 0; i < nThisLine; i++)
+        for (int i = 0; i < nThisLine; i++) {
           mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
+          System.out.println(i + " gaussian energy " + mos[i].get("energy"));
+        }
         continue;
       } else if (line.length() < 21
           || (line.charAt(5) != ' ' && !Character.isDigit(line.charAt(5)))) {
@@ -546,7 +550,8 @@ public class GaussianReader extends MOReader {
       }
     }
     addMOData(nThisLine, data, mos);
-    setMOData(false); // perhaps in the future we might change this to TRUE
+    setMOData(moModelSet  != atomSetCollection.getAtomSetCount()); 
+    moModelSet = atomSetCollection.getAtomSetCount();
   }
 
   /* SAMPLE FREQUENCY OUTPUT */

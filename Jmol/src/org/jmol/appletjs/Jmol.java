@@ -915,7 +915,7 @@ public class Jmol implements JmolSyncInterface {
         String theApplet = apps.get(i);
         JmolSyncInterface app = (JmolSyncInterface) JmolAppletRegistry.htRegistry
             .get(theApplet);
-        boolean isScriptable = (app instanceof JmolScriptInterface);
+        boolean isScriptable = true;//(app instanceof JmolScriptInterface);
         if (Logger.debugging)
           Logger.debug(fullName + " sending to " + theApplet + ": " + script);
         try {

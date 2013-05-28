@@ -38,6 +38,12 @@ final class JmolAppletRegistry {
   static Map<String, Object> htRegistry = new Hashtable<String, Object>();
 
   synchronized static void checkIn(String name, JmolSyncInterface applet) {
+    /**
+     * @j2sNative
+     * 
+     * if (Jmol._htRegistry) {J.appletjs.JmolAppletRegistry.htRegistry = Jmol._htRegistry} else {Jmol._htRegistry = J.appletjs.JmolAppletRegistry.htRegistry};
+     * 
+     */
     cleanRegistry();
     if (name != null) {
       Logger.info("AppletRegistry.checkIn(" + name + ")");
@@ -66,7 +72,7 @@ final class JmolAppletRegistry {
     String ext = "__" + mySyncId + "__";
     if (appletName == null || appletName.equals("*") || appletName.equals(">")) {
       for (String appletName2 : htRegistry.keySet()) {
-        if (!appletName2.equals(excludeName) && appletName2.indexOf(ext) > 0) {
+        if (!appletName2.equals(excludeName)/* && appletName2.indexOf(ext) > 0 unnec. */) {
           apps.addLast(appletName2);
         }
       }

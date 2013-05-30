@@ -233,8 +233,11 @@ class JmolObject {
       } else {
         //if (argb == 0)
         //sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-        String lighting = ((String[]) info)[0];
-        String only = ((String[]) info)[1];
+        String lighting = (String)((Object[]) info)[0];
+        String only = (String)((Object[]) info)[1];
+        only = " only";
+        BS bsCarve = (BS) ((Object[]) info)[2];
+        float carveDistance = ((Float) ((Object[]) info)[3]).floatValue();
         // not implementing "not only" yet because if we did that, since we have so
         // many sets of atoms, we could have real problems here.
         String resolution = "";
@@ -243,10 +246,17 @@ class JmolObject {
           resolution = " resolution 1.5";
         }
         boolean haveMep = Parser.isOneOf(sID, mepList);
+        String model = m.models[modelIndex].getModelNumberDotted();
+//        BS bsIgnore = sm.viewer.getAtomsWithinRadius(0.1f, bsAtoms, true, 
+//            new RadiusData(null, 0.1f, EnumType.ABSOLUTE, null));
+//        bsIgnore.andNot(bsAtoms);
+//        String ignore = " ignore " + Escape.eBS(bsIgnore);
+        String ignore = "";
+        String type = (size < 0 ? " sasurface " : " solvent ");
         sb.append(" model ")
-            .append(m.models[modelIndex].getModelNumberDotted()).append(
+            .append(model).append(
                 resolution).append(" select ").append(Escape.eBS(bsAtoms))
-            .append(" only").append(" solvent ").appendF(size / 1000f);
+            .append(only).append(ignore).append(type).appendF(Math.abs(size / 1000f));
         if (!haveMep) {
           if (argb == 0)
             sb.append(" map property color");
@@ -256,6 +266,9 @@ class JmolObject {
         sb.append(";isosurface frontOnly ").append(lighting);
         if (translucency > 0)
           sb.append(";color isosurface translucent " + translucency);
+        if (bsCarve != null && !bsCarve.isEmpty())
+          sb.append(";isosurface slab within " + carveDistance + " {" + model 
+              + " and " + Escape.eBS(bsCarve) + "}");
         if (doCache && !haveMep)
           sb.append(";isosurface cache");
       }

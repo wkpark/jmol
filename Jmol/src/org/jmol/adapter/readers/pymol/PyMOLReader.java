@@ -116,7 +116,6 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
   private boolean isMovie;
 
-  private Map<String, Object> htNames = new Hashtable<String, Object>();
   private int pymolFrame;
   private boolean allStates;
   private int totalAtomCount;
@@ -382,10 +381,9 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     }
 
     processDefinitions();
-    if (haveScenes)
-      processScenes(map, names);
+    processSelections(map);
     // no need to render if this is a state script
-    pymolScene.setRendering();
+    pymolScene.finalizeEverything();
     if (!isStateScript) {
       // same idea as for a Jmol state -- session reinitializes
       viewer.initialize(true);
@@ -620,7 +618,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       processGadget(pymolObject);
       break;
     case PyMOL.OBJECT_GROUP:
-        pymolScene.addGroup(execObject, null, type);
+        if (parentGroupName == null)
+          parentGroupName = ""; // force creation
       break;
     case PyMOL.OBJECT_CGO:
       msg = "CGO";
@@ -645,10 +644,10 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       msg = "SURFACE";
       break;
     }
-    if (parentGroupName != null) {
+    if (parentGroupName != null || bsAtoms != null) {
       PyMOLGroup group = pymolScene.addGroup(execObject, parentGroupName, type);
       if (bsAtoms != null)
-        pymolScene.addGroupAtoms(group, bsAtoms);
+        bsAtoms = group.addGroupAtoms(bsAtoms);
     }
     if (doExclude) {
       int i0 = intAt(startLen, 0);
@@ -807,17 +806,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
     
     JmolList<Object> pymolAtoms = listAt(pymolObject, 7);
-    String fname = "__" + PyMOLScene.fixName(objectName);
     atomMap = new int[nAtoms];
-    BS bsAtoms = (BS) htNames.get(fname);
-    if (bsAtoms == null) {
-      bsAtoms = BS.newN(atomCount0 + nAtoms);
-      Logger.info("PyMOL molecule " + objectName);
-      htNames.put(fname, bsAtoms);
-      pymolScene.addMolecule(objectName);
-    }
-    if (haveScenes)
-      pymolScene.setAtomMap(atomMap, bsAtoms);
+    BS bsAtoms = pymolScene.setAtomMap(atomMap, atomCount0);
     for (int i = 0; i < PyMOL.REP_JMOL_MAX; i++)
       reps[i] = BS.newN(1000);
 
@@ -1218,40 +1208,40 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * 
    */
   private void processDefinitions() {
-    addJmolObject(T.define, null, htNames);
-    String s = viewer.getAtomDefs(htNames);
+    String s = viewer.getAtomDefs(pymolScene.setAtomDefs());
     if (s.length() > 2)
       s = s.substring(0, s.length() - 2);
     appendLoadNote(s);
   }
 
   /**
-   * A PyMOL scene consists of one or more of:
-   *   view
-   *   frame
-   *   visibilities, by object
-   *   colors, by color
-   *   reps, by type
-   * currently just extracts viewpoint
+   * A PyMOL scene consists of one or more of: view frame visibilities, by
+   * object colors, by color reps, by type currently just extracts viewpoint
    * 
    * @param map
-   * @param names 
    */
   @SuppressWarnings("unchecked")
-  private void processScenes(Map<String, Object> map, JmolList<Object>names) {
-    JmolList<Object> order = getMapList(map, "scene_order");
-    Map<String, Object> scenes = (Map<String, Object>) map.get("scene_dict");
-    finalizeSceneData();
-    Map<String, JmolList<Object>> htObjNames = PyMOLScene.listToMap(names);
-    Map<String, JmolList<Object>> htSecrets = PyMOLScene.listToMap(getMapList(map, "selector_secrets"));
-    for (int i = 0; i < order.size(); i++) {
-      String name = stringAt(order, i);
-      JmolList<Object> thisScene = getMapList(scenes, name);
-      if (thisScene == null)
-        continue;
-      pymolScene.buildScene(name, thisScene, htObjNames, htSecrets);
-     appendLoadNote("scene: " + name);
+  private void processSelections(Map<String, Object> map) {
+    if (!pymolScene.needSelections())
+      return;
+    Map<String, JmolList<Object>> htObjNames = PyMOLScene.listToMap(getMapList(
+        map, "names"));
+    if (haveScenes) {
+      JmolList<Object> order = getMapList(map, "scene_order");
+      Map<String, Object> scenes = (Map<String, Object>) map.get("scene_dict");
+      finalizeSceneData();
+      Map<String, JmolList<Object>> htSecrets = PyMOLScene
+          .listToMap(getMapList(map, "selector_secrets"));
+      for (int i = 0; i < order.size(); i++) {
+        String name = stringAt(order, i);
+        JmolList<Object> thisScene = getMapList(scenes, name);
+        if (thisScene == null)
+          continue;
+        pymolScene.buildScene(name, thisScene, htObjNames, htSecrets);
+        appendLoadNote("scene: " + name);
+      }
     }
+    pymolScene.setCarveSets(htObjNames);
   }
 
   ////////////////// set the rendering ////////////////

@@ -13,7 +13,7 @@ class PyMOLGroup {
   JmolList<Object> object;
   boolean visible = true;
   boolean occluded = false;
-  BS bsAtoms;
+  BS bsAtoms = new BS();
   int type;
 
   PyMOLGroup parent;
@@ -35,8 +35,16 @@ class PyMOLGroup {
       return;    
   }
   
+  BS addGroupAtoms(BS bs) {
+    bsAtoms.or(bs);
+    if (parent != null)
+      parent.addGroupAtoms(bsAtoms);
+    return bsAtoms;
+  }
+
   @Override
   public String toString() {
     return this.name;
   }
+
 }

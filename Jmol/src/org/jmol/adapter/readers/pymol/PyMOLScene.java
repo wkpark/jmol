@@ -45,7 +45,6 @@ class PyMOLScene implements JmolSceneGenerator {
   BS bsLabeled = new BS();
   BS bsHydrogen = new BS();
   BS bsNoSurface = new BS();
-  BS bsCartoon = new BS();
   
   // private -- only needed for file reading
 
@@ -85,6 +84,7 @@ class PyMOLScene implements JmolSceneGenerator {
 
   // private -- needed for processing Scenes
 
+  private BS bsCartoon = new BS();
   private Map<String, Boolean> htHiddenObjects = new Hashtable<String, Boolean>();
   private JmolList<String> moleculeNames = new JmolList<String>();
   private JmolList<JmolObject> jmolObjects = new JmolList<JmolObject>();
@@ -419,8 +419,6 @@ class PyMOLScene implements JmolSceneGenerator {
     String groupName = htObjectGroups.get(objectName);
     objectHidden = (htHiddenObjects.containsKey(name) || groupName != null
         && !groups.get(groupName).visible);
-    if (name.startsWith("1iep"))
-      System.out.println(name + " " + groupName + " " + !objectHidden);
     getObjectSettings();
   }
 
@@ -601,14 +599,9 @@ class PyMOLScene implements JmolSceneGenerator {
     viewer.setStringProperty("measurementUnits", "ANGSTROMS");
     viewer.setBooleanProperty("zoomHeight", true);
     setGroupVisibilities();
-    for (String e: occludedObjects.keySet())
-      System.out.println("occluded " + e);
-
     if (groups != null) {
       for (int i = jmolObjects.size(); --i >= 0;) {
         JmolObject obj = jmolObjects.get(i);
-        if (obj.id == T.isosurface)
-          System.out.println(obj.visible + " " + obj.objectNameID);
         if (obj.objectNameID != null
             && occludedObjects.containsKey(obj.objectNameID))
           obj.visible = false;
@@ -625,7 +618,6 @@ class PyMOLScene implements JmolSceneGenerator {
       for (PyMOLGroup g : list) {
         if (g.parent != null)
           continue;
-        System.out.println("Checking " + g.name + " " + g.visible);
         setGroupVisible(g, true);
       }
     }
@@ -1041,6 +1033,7 @@ class PyMOLScene implements JmolSceneGenerator {
 
   private void fixReps(BS[] reps) {
     htSpacefill.clear();
+    bsCartoon.clearAll();
     for (int iAtom = objectAtoms.nextSetBit(0); iAtom >= 0; iAtom = objectAtoms.nextSetBit(iAtom + 1)) {
       float rad = 0;
       int uniqueID = (reader == null ? uniqueIDs[iAtom] : reader
@@ -1096,10 +1089,13 @@ class PyMOLScene implements JmolSceneGenerator {
         }
       }
     }
-    cleanSingletons(reps[PyMOL.REP_CARTOON]);
+    
+    reps[PyMOL.REP_CARTOON].and(bsCartoon);
+    cleanSingletons(reps[PyMOL.REP_CARTOON]);    
     cleanSingletons(reps[PyMOL.REP_RIBBON]);
     cleanSingletons(reps[PyMOL.REP_JMOL_TRACE]);
     cleanSingletons(reps[PyMOL.REP_JMOL_PUTTY]);
+    bsCartoon.and(reps[PyMOL.REP_CARTOON]);
   }
 
   /**
@@ -1111,6 +1107,9 @@ class PyMOLScene implements JmolSceneGenerator {
    * @param bs
    */
   private void cleanSingletons(BS bs) {
+    if (bs.isEmpty())
+      return;
+    bs.and(objectAtoms);
     BS bsr = new BS();
     int n = bs.length();
     int pass = 0;
@@ -1147,8 +1146,6 @@ class PyMOLScene implements JmolSceneGenerator {
    * 
    * Note that LINES and STICKS are done initially, then all the others are
    * processed.
-   * 
-   * REP_DASHES not implemented yet.
    * 
    * @param shapeID
    * @param bs
@@ -1324,7 +1321,6 @@ class PyMOLScene implements JmolSceneGenerator {
     if (bs == null)
       return;
     bs.and(bsCartoon);
-    bs.and(objectAtoms);
     if (bs.isEmpty())
       return;
     if (key.equals(" ")) {
@@ -1352,7 +1348,6 @@ class PyMOLScene implements JmolSceneGenerator {
     boolean vis = parentVis && g.visible;
     if (vis)
       return;
-    System.out.println("hiding " + g.name + " " + g.objectNameID);
     g.visible = false;
     occludedObjects.put(g.objectNameID, Boolean.TRUE);
     htHiddenObjects.put(g.name, Boolean.TRUE);

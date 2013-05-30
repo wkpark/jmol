@@ -39,11 +39,27 @@ import org.jmol.util.Logger;
 
 class PyMOL {
 
-  final static String[] repList = new String[] { 
-    "lines","sticks","spheres",
-    "dots","surface","mesh",
-    "nonbonded", "nb_spheres",
-    "cartoon","ribbon","labels","slice"};
+
+  final static int OBJECT_SELECTION = -1;
+  final static int OBJECT_MOLECULE = 1;
+  final static int OBJECT_MAPDATA = 2;
+  final static int OBJECT_MAPMESH = 3;
+  final static int OBJECT_MEASURE = 4;
+  final static int OBJECT_CALLBACK = 5;
+  final static int OBJECT_CGO = 6; // compiled graphics object
+  final static int OBJECT_SURFACE = 7;
+  final static int OBJECT_GADGET = 8;
+  final static int OBJECT_CALCULATOR = 9;
+  final static int OBJECT_SLICE = 10;
+  final static int OBJECT_ALIGNMENT = 11;
+  final static int OBJECT_GROUP = 12;
+
+  final static String[] REP_LIST = new String[] { 
+    "sticks","spheres","surface",
+    "labels","nb_spheres",
+    "cartoon","ribbon","lines",
+    "mesh","dots","dashes",
+    "nonbonded"};//',"slice"};
 
 
   final static int REP_STICKS = 0;

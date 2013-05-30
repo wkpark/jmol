@@ -257,10 +257,6 @@ public final class ModelLoader {
   private int adapterTrajectoryCount = 0;
   private boolean noAutoBond;
   
-  public ModelSet getModelSet() {
-    return modelSet;
-  }
-
   public int getAtomCount() {
     return modelSet.atomCount;
   }
@@ -374,8 +370,9 @@ public final class ModelLoader {
     freeze();
 
     finalizeShapes();
+    viewer.setModelSet(modelSet);
     if (adapter != null)
-      adapter.finish(atomSetCollection, modelSet, baseModelIndex, baseAtomIndex);    
+      adapter.finish(atomSetCollection, baseModelIndex, baseAtomIndex);    
     if (mergeModelSet != null) {
       mergeModelSet.releaseModelSet();
     }

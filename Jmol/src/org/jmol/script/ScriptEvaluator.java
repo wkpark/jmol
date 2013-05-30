@@ -3532,16 +3532,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void setShapeProperty(int shapeType, String propertyName,
                                 Object propertyValue) {
-    if (chk)
-      return;
-    sm.setShapePropertyBs(shapeType, propertyName, propertyValue, null);
+    if (!chk)
+      sm.setShapePropertyBs(shapeType, propertyName, propertyValue, null);
   }
 
   private void setShapePropertyBs(int iShape, String propertyName,
                                 Object propertyValue, BS bs) {
-    if (chk)
-      return;
-    sm.setShapePropertyBs(iShape, propertyName, propertyValue, bs);
+    if (!chk)
+      sm.setShapePropertyBs(iShape, propertyName, propertyValue, bs);
   }
 
   private void setShapeSizeBs(int shapeType, int size, BS bs) {
@@ -7905,13 +7903,25 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private String setObjectProperty() throws ScriptException {
-    String s = "";
     String id = getShapeNameParameter(2);
-    Object[] data = new Object[] { id, null };
     if (chk)
       return "";
     int iTok = iToken;
     int tokCommand = tokAt(0);
+    return setObjectProp(id, tokCommand, iTok);
+  }
+
+  public String setObjectPropSafe(String id, int tokCommand, int iTok) {
+    try {
+      return setObjectProp(id, tokCommand, iTok);
+    } catch (ScriptException e) {
+      return null;
+    }
+  }
+  
+  public String setObjectProp(String id, int tokCommand, int iTok) throws ScriptException {
+    Object[] data = new Object[] { id, null };
+    String s = "";
     boolean isWild = TextFormat.isWild(id);
     for (int iShape = JC.SHAPE_DIPOLES;;) {
       if (iShape != JC.SHAPE_MO
@@ -7934,7 +7944,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           s += (String) getShapeProperty(iShape, "command") + "\n";
           break;
         case T.color:
-          colorShape(iShape, iTok + 1, false);
+          if (iTok >= 0)
+            colorShape(iShape, iTok + 1, false);
           break;
         }
         if (!isWild)
@@ -10274,44 +10285,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void restrictSelected(boolean isBond, boolean doInvert) {
-    if (chk)
-      return;
-    BS bsSelected = BSUtil.copy(viewer.getSelectionSet(true));
-    if (doInvert) {
-      viewer.invertSelection();
-      BS bsSubset = viewer.getSelectionSubset();
-      if (bsSubset != null) {
-        bsSelected = BSUtil.copy(viewer.getSelectionSet(true));
-        bsSelected.and(bsSubset);
-        viewer.select(bsSelected, false, null, true);
-        BSUtil.invertInPlace(bsSelected, viewer.getAtomCount());
-        bsSelected.and(bsSubset);
-      }
-    }
-    BSUtil.andNot(bsSelected, viewer.getDeletedAtoms());
-    boolean bondmode = viewer.getBoolean(T.bondmodeor);
-
-    if (!isBond)
-      setBooleanProperty("bondModeOr", true);
-    setShapeSizeBs(JC.SHAPE_STICKS, 0, null);
-    // wireframe will not operate on STRUTS even though they are
-    // a form of bond order (see BondIteratoSelected)
-    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-        .valueOf(JmolEdge.BOND_STRUT));
-    setShapeSizeBs(JC.SHAPE_STICKS, 0, null);
-    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
-        .valueOf(JmolEdge.BOND_COVALENT_MASK));
-    // also need to turn off backbones, ribbons, strands, cartoons
-    BS bs = viewer.getSelectionSet(false);
-    for (int iShape = JC.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --iShape >= 0;)
-      if (iShape != JC.SHAPE_MEASURES && sm.getShape(iShape) != null)
-        setShapeSizeBs(iShape, 0, bs);
-    if (sm.getShape(JC.SHAPE_POLYHEDRA) != null)
-      setShapeProperty(JC.SHAPE_POLYHEDRA, "delete", bs);
-    sm.setLabel(null, bs);
-    if (!isBond)
-      setBooleanProperty("bondModeOr", bondmode);
-    viewer.select(bsSelected, false, null, true);
+    if (!chk)
+      sm.restrictSelected(isBond, doInvert);
   }
 
   private void rotate(boolean isSpin, boolean isSelected)

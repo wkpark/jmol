@@ -94,4 +94,6 @@ public interface JmolScriptEvaluator {
 
   Map<String, Object> getDefinedAtomSets();
 
+  String setObjectPropSafe(String id, int tokCommand, int iTok);
+
 }

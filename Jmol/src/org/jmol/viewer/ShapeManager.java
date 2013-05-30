@@ -38,7 +38,9 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.GData;
+import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolList;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
@@ -121,9 +123,9 @@ public class ShapeManager {
   public void loadDefaultShapes(ModelSet newModelSet) {
     modelSet = newModelSet;
     if (shapes != null)
-    for (int i = 0; i < shapes.length; ++i)
-      if (shapes[i] != null)
-        shapes[i].setModelSet(newModelSet);
+      for (int i = 0; i < shapes.length; ++i)
+        if (shapes[i] != null)
+          shapes[i].setModelSet(newModelSet);
     loadShape(JC.SHAPE_BALLS);
     loadShape(JC.SHAPE_STICKS);
     loadShape(JC.SHAPE_MEASURES);
@@ -530,6 +532,45 @@ public class ShapeManager {
     if (shapes[JC.SHAPE_ISOSURFACE] == null)
       return;
     setShapePropertyBs(JC.SHAPE_ISOSURFACE, "remapInherited", null, null);
+  }
+
+  public void restrictSelected(boolean isBond, boolean doInvert) {
+    BS bsSelected = BSUtil.copy(viewer.getSelectionSet(true));
+    if (doInvert) {
+      viewer.invertSelection();
+      BS bsSubset = viewer.getSelectionSubset();
+      if (bsSubset != null) {
+        bsSelected = BSUtil.copy(viewer.getSelectionSet(true));
+        bsSelected.and(bsSubset);
+        viewer.select(bsSelected, false, null, true);
+        BSUtil.invertInPlace(bsSelected, viewer.getAtomCount());
+        bsSelected.and(bsSubset);
+      }
+    }
+    BSUtil.andNot(bsSelected, viewer.getDeletedAtoms());
+    boolean bondmode = viewer.getBoolean(T.bondmodeor);
+
+    if (!isBond)
+      viewer.setBooleanProperty("bondModeOr", true);
+    setShapeSizeBs(JC.SHAPE_STICKS, 0, null, null);
+    // wireframe will not operate on STRUTS even though they are
+    // a form of bond order (see BondIteratoSelected)
+    setShapePropertyBs(JC.SHAPE_STICKS, "type", Integer
+        .valueOf(JmolEdge.BOND_STRUT), null);
+    setShapeSizeBs(JC.SHAPE_STICKS, 0, null, null);
+    setShapePropertyBs(JC.SHAPE_STICKS, "type", Integer
+        .valueOf(JmolEdge.BOND_COVALENT_MASK), null);
+    // also need to turn off backbones, ribbons, strands, cartoons
+    BS bs = viewer.getSelectionSet(false);
+    for (int iShape = JC.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --iShape >= 0;)
+      if (iShape != JC.SHAPE_MEASURES && getShape(iShape) != null)
+        setShapeSizeBs(iShape, 0, null, bs);
+    if (getShape(JC.SHAPE_POLYHEDRA) != null)
+      setShapePropertyBs(JC.SHAPE_POLYHEDRA, "delete", bs, null);
+    setLabel(null, bs);
+    if (!isBond)
+      viewer.setBooleanProperty("bondModeOr", bondmode);
+    viewer.select(bsSelected, false, null, true);
   }
 
 }

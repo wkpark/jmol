@@ -28,6 +28,7 @@ import org.jmol.i18n.GT;
 import org.jmol.i18n.Language;
 import org.jmol.util.BS;
 import org.jmol.util.Elements;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SB;
@@ -776,6 +777,20 @@ abstract public class GenericPopup implements JmolPopupInterface,
     }
   }
 
+  private void updateSceneComputedMenu() {
+    Object menu = htMenus.get("sceneComputedMenu");
+    if (menu == null)
+      return;
+    menuRemoveAll(menu, 0);
+    menuEnable(menu, false);
+    String[] scenes = viewer.getSceneList();
+    if (scenes == null)
+      return;
+    for (int i = 0; i < scenes.length; i++)
+      menuCreateItem(menu, scenes[i], "restore scene " + Escape.eS(scenes[i]) + " 1.0", null);
+    menuEnable(menu, true);
+  }
+
   private void updatePDBComputedMenus() {
 
     Object menu = htMenus.get("PDBaaResiduesComputedMenu");
@@ -1196,6 +1211,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     updateSelectMenu();
     updateSpectraMenu();
     updateFRAMESbyModelComputedMenu();
+    updateSceneComputedMenu();
     updateModelSetComputedMenu();
     updateAboutSubmenu();
   }

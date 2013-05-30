@@ -60,12 +60,14 @@ public class MainPopupResourceBundle extends PopupResource {
       {   "@AXESCOLOR", "gray salmon maroon olive slateblue gold orchid"},
       
       {   MENU_NAME,
-          "FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu FILEUNITMenu - "
-              + "zoomMenu spinMenu VIBRATIONMenu spectraMenu "
-              + "FRAMESanimateMenu - "
-              + "measureMenu pickingMenu - showConsole showMenu fileMenu computationMenu - "
-              + "languageComputedMenu aboutComputedMenu" },
-              
+          "FRAMESbyModelComputedMenu configurationComputedMenu " +
+          "- selectMenuText viewMenu renderMenu colorMenu " +
+          "- surfaceMenu FILEUNITMenu " +
+          "- sceneComputedMenu zoomMenu spinMenu VIBRATIONMenu spectraMenu FRAMESanimateMenu " +
+          "- measureMenu pickingMenu " +
+          "- showConsole showMenu fileMenu computationMenu " +
+          "- languageComputedMenu aboutComputedMenu" },
+
       {   "selectMenuText",
           "hideNotSelectedCB showSelectionsCB - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYSelectComputedMenu - "
               + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove" },
@@ -596,6 +598,8 @@ public class MainPopupResourceBundle extends PopupResource {
         "bottom", GT._("Bottom"),
         "back", GT._("Back"),
 
+        "sceneComputedMenu" , GT._("Scenes"),
+        
         "PDBproteinMenu", GT._("Protein"),
         "allProtein", GT._("All"),
         "proteinBackbone", GT._("Backbone"),

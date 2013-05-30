@@ -93,9 +93,12 @@ public class SelectionManager {
   }
 
   void display(ModelSet modelSet, BS bs, Boolean addRemove, boolean isQuiet) {
-      BS bsAll = modelSet.getModelAtomBitSetIncludingDeleted(-1, false); 
-        if (bs == null) {
-      bsHidden.clearAll();
+    BS bsAll = modelSet.getModelAtomBitSetIncludingDeleted(-1, false);
+    if (bs == null) {
+      if (Boolean.TRUE == addRemove)
+        bsHidden.clearAll();
+      else
+        bsHidden.or(bsAll);
     } else if (addRemove == null) {
       bsHidden.or(bsAll);
       bsHidden.andNot(bs);

@@ -416,6 +416,8 @@ public class Labels extends AtomShape {
   }
   
   private void setTextLabel(int i, Text t) {
+    if (t == null)
+      return;
     String label = t.getText();
     Atom atom = atoms[i];
     addString(atom, i, label, label);

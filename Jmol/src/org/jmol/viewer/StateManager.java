@@ -27,6 +27,8 @@ package org.jmol.viewer;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.jmol.api.JmolSceneGenerator;
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumCallback;
 import org.jmol.constant.EnumStructure;
@@ -47,6 +49,7 @@ import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
 import java.util.Arrays;
+import java.util.Map.Entry;
 
 @J2SIgnoreImport({Runtime.class})
 public class StateManager {
@@ -176,6 +179,13 @@ public class StateManager {
     viewer.setDefaultVdw("Rasmol");
   }
 
+  private static Object getNoCase(Map<String, Object> saved, String name) {
+    for (Entry<String, Object> e : saved.entrySet())
+      if (e.getKey().equalsIgnoreCase(name))
+        return e.getValue();
+   return null;
+  }
+
   String listSavedStates() {
     String names = "";
     Iterator<String> e = saved.keySet().iterator();
@@ -211,7 +221,7 @@ public class StateManager {
   boolean restoreSelection(String saveName) {
     String name = (saveName.length() > 0 ? "Selected_" + saveName
         : lastSelected);
-    BS bsSelected = (BS) saved.get(name);
+    BS bsSelected = (BS) getNoCase(saved, name);
     if (bsSelected == null) {
       viewer.select(new BS(), false, null, false);
       return false;
@@ -231,7 +241,7 @@ public class StateManager {
 
   String getSavedState(String saveName) {
     String name = (saveName.length() > 0 ? "State_" + saveName : lastState);
-    String script = (String) saved.get(name);
+    String script = (String) getNoCase(saved, name);
     return (script == null ? "" : script);
   }
 
@@ -240,7 +250,7 @@ public class StateManager {
    //not used -- more efficient just to run the script 
    String name = (saveName.length() > 0 ? "State_" + saveName
    : lastState);
-   String script = (String) saved.get(name);
+   String script = (String) getNoCase(saved, name);
    if (script == null)
    return false;
    viewer.script(script + CommandHistory.NOHISTORYATALL_FLAG);
@@ -258,7 +268,7 @@ public class StateManager {
 
   String getSavedStructure(String saveName) {
     String name = (saveName.length() > 0 ? "Shape_" + saveName : lastShape);
-    String script = (String) saved.get(name);
+    String script = (String) getNoCase(saved, name);
     return (script == null ? "" : script);
   }
 
@@ -274,7 +284,7 @@ public class StateManager {
   String getSavedCoordinates(String saveName) {
     String name = (saveName.length() > 0 ? "Coordinates_" + saveName
         : lastCoordinates);
-    String script = (String) saved.get(name);
+    String script = (String) getNoCase(saved, name);
     return (script == null ? "" : script);
   }
 
@@ -286,18 +296,15 @@ public class StateManager {
     Orientation o;
     if (saveName != null) {
       o = getOrientationFor(saveName);
-      return (o == null ? "" : o.getMoveToText(true));      
-    } 
-    SB sb = new SB();
-    Iterator<String> e = saved.keySet().iterator();
-    while (e.hasNext()) {
-       String name = e.next();
-       if (!name.startsWith("Orientation_")) {
-         continue;
-       }
-       sb.append(((Orientation) saved.get(name)).getMoveToText(true));
+      return (o == null ? "" : o.getMoveToText(true));
     }
-    return sb.toString(); 
+    SB sb = new SB();
+    for (Entry<String, Object> e : saved.entrySet()) {
+      String name = e.getKey();
+      if (name.startsWith("Orientation_"))
+        sb.append(((Orientation) e.getValue()).getMoveToText(true));
+    }
+    return sb.toString();
   }
 
   public void saveScene(String saveName, Map<String, Object> scene) {
@@ -318,7 +325,7 @@ public class StateManager {
   private Scene getSceneFor(String saveName) {
     String name = (saveName.length() > 0 ? "Scene_" + saveName
         : lastScene);    
-    return (Scene) saved.get(name);
+    return (Scene) getNoCase(saved, name);
   }
 
   public class Scene {
@@ -330,6 +337,9 @@ public class StateManager {
     }
 
     public boolean restore(float timeSeconds) {
+      JmolSceneGenerator gen = (JmolSceneGenerator) scene.get("generator");
+      if (gen != null)
+        gen.generateScene(scene);
       float[] pv = (float[]) scene.get("pymolView");
       return (pv != null && viewer.movePyMOL(viewer.eval, timeSeconds, pv));
     }
@@ -353,7 +363,7 @@ public class StateManager {
   private Orientation getOrientationFor(String saveName) {
     String name = (saveName.length() > 0 ? "Orientation_" + saveName
         : lastOrientation);    
-    return (Orientation) saved.get(name);
+    return (Orientation) getNoCase(saved, name);
   }
 
   public class Orientation {
@@ -382,6 +392,7 @@ public class StateManager {
     Orientation(boolean asDefault, float[] pymolView) {
       if (pymolView != null) {
         this.pymolView = pymolView;
+        moveToText = "moveTo -1.0 PyMOL " + Escape.eAF(pymolView);
         return;
       } 
       if (asDefault) {
@@ -413,8 +424,8 @@ public class StateManager {
     }
 
     public String getMoveToText(boolean asCommand) {
-      return (asCommand ? "  " + moveToText + "\n  save orientation \"" 
-          + saveName.substring(12) + "\";\n" : moveToText);
+      return (asCommand ? "  " + moveToText + "\n  save orientation " 
+          + Escape.eS(saveName.substring(12)) + ";\n" : moveToText);
     }
     
     public boolean restore(float timeSeconds, boolean isAll) {
@@ -447,7 +458,7 @@ public class StateManager {
   boolean restoreBonds(String saveName) {
     String name = (saveName.length() > 0 ? "Bonds_" + saveName
         : lastConnections);
-    Connections c = (Connections) saved.get(name);
+    Connections c = (Connections) getNoCase(saved, name);
     return (c != null && c.restore());
   }
 

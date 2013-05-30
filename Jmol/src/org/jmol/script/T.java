@@ -257,7 +257,7 @@ public class T {
   public final static int display      = 4 | atomExpressionCommand | deprecatedparam;
   final static int fixed        = 5 | atomExpressionCommand | expression; // Jmol 12.0.RC15
   public final static int hide         = 6 | atomExpressionCommand;
-  final static int restrict     = 7 | atomExpressionCommand;
+  public final static int restrict     = 7 | atomExpressionCommand;
 //final static int select       see mathfunc
   final static int subset       = 8 | atomExpressionCommand | predefinedset;
   final static int zap          = 9 | atomExpressionCommand | expression;
@@ -1262,7 +1262,7 @@ public class T {
   final static int spacegroup     = misc  | 328;
   public final static int sphere  = misc  | 330;
   final static int squared        = misc  | 332;
-  final static int state          = misc  | 334;
+  public final static int state          = misc  | 334;
   final static int stop           = misc  | 338;
   final static int supercell      = misc  | 339;//
   final static int ticks          = misc  | 340; 

@@ -796,10 +796,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.getOrientation();
   }
 
-  public String getSavedOrienationText(String name) {
-    return stateManager.getSavedOrientationText(name);
-  }
-
   void restoreModelOrientation(int modelIndex) {
     StateManager.Orientation o = modelSet.getModelOrientation(modelIndex);
     if (o != null)
@@ -1431,7 +1427,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getOrientationText(int type, String name) {
-    return (name == null ? transformManager.getOrientationText(type)
+    return (name == null && type != T.state ? transformManager.getOrientationText(type)
         : stateManager.getSavedOrientationText(name));
   }
 
@@ -1728,6 +1724,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     definedAtomSets.clear();
   }
 
+  public BS getDefinedAtomSet(String name) {
+    Object o = definedAtomSets.get(name.toLowerCase());
+    return (o instanceof BS ? (BS) o : new BS());
+  }
+  
   @Override
   public void selectAll() {
     // initializeModel
@@ -2457,7 +2458,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setErrorMessage(null, null);
     try {
       BS bsNew = new BS();
-      modelSet = modelManager.createModelSet(fullPathName, fileName,
+      modelManager.createModelSet(fullPathName, fileName,
           loadScript, atomSetCollection, bsNew, isAppend);
       if (bsNew.cardinality() > 0) {
         // is a 2D dataset, as from JME
@@ -2771,7 +2772,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       clearAllMeasurements();
       clearMinimization();
       gdata.clear();
-      modelSet = modelManager.zap();
+      modelManager.zap();
       if (scriptManager != null)
         scriptManager.clear(false);
       if (haveDisplay) {
@@ -2795,7 +2796,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       System.gc();
     } else {
-      modelSet = modelManager.zap();
+      modelManager.zap();
     }
     initializeModel(false);
     if (notify)
@@ -9982,6 +9983,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public P3 getCamera() {
     return transformManager.camera;
+  }
+
+  public void setModelSet(ModelSet modelSet) {
+    this.modelSet = modelManager.modelSet = modelSet;
+  }
+  
+  public String setObjectProp(String id, int tokCommand) {
+    // for PyMOL session scene setting
+    getScriptManager();
+    if (id == null)
+      id = "*";
+    return (eval == null ? null : eval.setObjectPropSafe(id, tokCommand, -1));
+  }
+
+  public String[] getSceneList() {
+    try {
+      return (String[]) getModelSetAuxiliaryInfoValue("scenes");
+    } catch (Exception e) {
+      return null;
+    }
   }
 
 }

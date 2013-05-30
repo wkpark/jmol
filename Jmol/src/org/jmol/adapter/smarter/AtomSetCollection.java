@@ -24,7 +24,6 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.modelset.ModelSet;
 import org.jmol.util.JmolList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -450,9 +449,9 @@ public class AtomSetCollection {
         setAtomSetAuxiliaryInfoForSet(type, lists[i], i);
   }
 
-  void finish(ModelSet modelSet, int baseModelIndex, int baseAtomIndex) {
+  void finish(int baseModelIndex, int baseAtomIndex) {
     if (reader != null) 
-      reader.finalizeModelSet(modelSet, baseModelIndex, baseAtomIndex);
+      reader.finalizeModelSet(baseModelIndex, baseAtomIndex);
     atoms = null;
     atomSetAtomCounts = new int[16];
     atomSetAuxiliaryInfo = new Hashtable[16];

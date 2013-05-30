@@ -1577,12 +1577,11 @@ public abstract class AtomSetCollectionReader {
   }
 
   /**
-   * @param modelSet  
-   * @param baseModelIndex 
-   * @param baseAtomIndex 
+   * @param modelSet
+   * @param baseModelIndex
+   * @param baseAtomIndex
    */
-  public void finalizeModelSet(ModelSet modelSet, int baseModelIndex,
-                               int baseAtomIndex) {
+  public void finalizeModelSet(int baseModelIndex, int baseAtomIndex) {
     // PyMOL reader only
   }
 

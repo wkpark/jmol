@@ -590,7 +590,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     JmolList<Object> objectHeader = listAt(pymolObject, 0);
     String parentGroupName = (execObject.size() < 8 ? null : stringAt(
         execObject, 6));
-    if (parentGroupName.equals(" "))
+    if (" ".equals(parentGroupName))
       parentGroupName = null;
     pymolScene.setObjectInfo(objectName, type, parentGroupName, isHidden, listAt(objectHeader, 8), (moleculeOnly ? "_" + (iState + 1) : ""));
     BS bsAtoms = null;

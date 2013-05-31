@@ -29,7 +29,7 @@ class IsoMlpReader extends IsoMepReader {
   
   @Override
   void init(SurfaceGenerator sg) {
-    super.init(sg);
+    initIMR(sg);
     type = "Mlp";
   }    
 }

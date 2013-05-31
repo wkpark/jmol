@@ -100,7 +100,11 @@ class PmeshReader extends PolygonFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2PR(sg, br);
+  }
+  
+  protected void init2PR(SurfaceGenerator sg, BufferedReader br) {
+    init2PFR(sg, br);
     String fileName = (String) ((Object[])sg.getReaderData())[0];
     if (fileName == null)
       return;
@@ -108,10 +112,6 @@ class PmeshReader extends PolygonFileReader {
     setHeader();
     isBinary = checkBinary(fileName);
     isClosedFace = !isBinary;
-  }
-  
-  protected void superInit2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
   }
 
   protected void setHeader() {

@@ -44,7 +44,7 @@ class MsmsReader extends PmeshReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    superInit2(sg, br);
+    init2PFR(sg, br); // skipping initPR
     fileName = (String) ((Object[])sg.getReaderData())[0];
     if (fileName == null)
       return;

@@ -57,7 +57,7 @@ class NffReader extends PolygonFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2PFR(sg, br);
   }
 
   protected void setHeader() {

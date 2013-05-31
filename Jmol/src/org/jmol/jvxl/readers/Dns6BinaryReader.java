@@ -50,7 +50,7 @@ class Dsn6BinaryReader extends MapFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader brNull) {
-    super.init2(sg, null);
+    init2MFR(sg, br);
     binarydoc = newBinaryDocument();
     Object[] o2 = (Object[]) sg.getReaderData();
     String fileName = (String) o2[0];

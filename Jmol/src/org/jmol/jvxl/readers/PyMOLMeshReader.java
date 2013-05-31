@@ -54,7 +54,7 @@ class PyMOLMeshReader extends MapFileReader {
   @SuppressWarnings("unchecked")
   @Override
   void init2(SurfaceGenerator sg, BufferedReader brNull) {
-    super.init2(sg, null);
+    init2MFR(sg, null);
     map = (Hashtable<String, JmolList<Object>>) sg.getReaderData();    
     nSurfaces = 1;
     data = map.get(params.calculationType);

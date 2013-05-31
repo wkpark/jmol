@@ -41,6 +41,10 @@ abstract class MapFileReader extends VolumeFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
+    init2MFR(sg, br);
+  }
+
+  protected void init2MFR(SurfaceGenerator sg, BufferedReader br) {
     init2VFR(sg, br);
     isAngstroms = true;
     adjustment = sg.getParams().center;

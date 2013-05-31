@@ -78,7 +78,7 @@ class ObjReader extends PmeshReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2PR(sg, br);
     type = "obj";
     setHeader();
   }

@@ -64,7 +64,7 @@ class KinemageReader extends PmeshReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2PR(sg, br);
     type = "kinemage";
     setHeader();
   }

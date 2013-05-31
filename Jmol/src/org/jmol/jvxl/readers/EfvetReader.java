@@ -52,7 +52,7 @@ class EfvetReader extends PolygonFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2PFR(sg, br);
     jvxlFileHeaderBuffer.append("efvet file format\nvertices and triangles only\n");
     JvxlCoder.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
     hasColorData = true;

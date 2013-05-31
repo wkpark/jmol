@@ -100,7 +100,7 @@ MRC header: mapc,mapr,maps: 2,1,3
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2MFR(sg, br);
     if (params.thePlane == null)
       params.insideOut = !params.insideOut;
     nSurfaces = 1;

@@ -62,15 +62,14 @@ abstract class VolumeDataReader extends SurfaceReader {
 
   VolumeDataReader() {}
   
-  @Override
-  void init(SurfaceGenerator sg) {
-    super.init(sg);
+  protected void initVDR(SurfaceGenerator sg) {
+    initSR(sg);
     useOriginStepsPoints = (params.origin != null && params.points != null && params.steps != null);
     dataType = params.dataType;
     precalculateVoxelData = true;
     allowMapData = true;    
   }
-  
+
   /**
    * @param isMapData  
    */

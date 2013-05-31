@@ -32,24 +32,27 @@ import org.jmol.api.Interface;
 import org.jmol.api.MepCalculationInterface;
 import org.jmol.jvxl.data.MeshData;
 
+/**
+ * maps property data
+ * 
+ */
 class AtomPropertyMapper extends AtomDataReader {
 
   private MepCalculationInterface mepCalc;
   private String mepType;
   private int calcType = 0;
+
   AtomPropertyMapper(){}
   
   @Override
   void init(SurfaceGenerator sg) {
-    super.init(sg);
+    initADR(sg);
     mepType = (String) sg.getReaderData();
   }
-  //// maps property data ////
   
   private boolean doSmoothProperty;
   private AtomIndexIterator iter;
   private float smoothingPower;
-
   
   @Override
   protected void setup(boolean isMapData) {

@@ -23,10 +23,7 @@
  */
 package org.jmol.jvxl.readers;
 
-import java.io.BufferedReader;
 import java.io.OutputStream;
-
-
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.jvxl.api.MeshDataServer;
@@ -232,14 +229,13 @@ public abstract class SurfaceReader implements VertexDataServer {
   SurfaceReader() {}
   
   /**
-   * @param surfaceGenerator  
-   * @param br 
+   * implemented in SurfaceFileReader and 
+   * 
+   * @param sg
    */
-  void init2(SurfaceGenerator surfaceGenerator, BufferedReader br) {
-    // nothing here unless it's a file reader
-  }
+  abstract void init(SurfaceGenerator sg);
 
-  void init(SurfaceGenerator sg) {
+  void initSR(SurfaceGenerator sg) {
     this.sg = sg;
     params = sg.getParams();
     marchingSquares = sg.getMarchingSquares();

@@ -46,7 +46,7 @@ class JaguarReader extends VolumeFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2VFR(sg, br);
     nSurfaces = 1;
     // ? params.insideOut = !params.insideOut;
   }

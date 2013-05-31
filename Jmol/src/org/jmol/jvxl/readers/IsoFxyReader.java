@@ -35,7 +35,7 @@ class IsoFxyReader extends AtomDataReader {
   
   @Override
   void init(SurfaceGenerator sg) {
-    super.init(sg);
+    initADR(sg);
     isXLowToHigh = true;
     precalculateVoxelData = false;
     atomDataServer = sg.getAtomDataServer();

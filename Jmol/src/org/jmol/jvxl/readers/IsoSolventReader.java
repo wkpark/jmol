@@ -49,7 +49,7 @@ class IsoSolventReader extends AtomDataReader {
   
   @Override
   void init(SurfaceGenerator sg) {
-    super.init(sg);
+    initADR(sg);
   }
 
   ///// solvent-accessible, solvent-excluded surface //////

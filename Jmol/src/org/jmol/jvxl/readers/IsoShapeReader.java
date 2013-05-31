@@ -49,7 +49,7 @@ class IsoShapeReader extends VolumeDataReader {
   
   @Override
   void init(SurfaceGenerator sg) {
-    super.init(sg);
+    initVDR(sg);
     Object o = sg.getReaderData();
     if (o instanceof Float) {
       sphere_radiusAngstroms = ((Float) o).floatValue();      

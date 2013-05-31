@@ -56,7 +56,11 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2VFR(sg, br);
+  }
+
+  void init2VFR(SurfaceGenerator sg, BufferedReader br) {
+    init2SFR(sg, br);
     canDownsample = isProgressive = isXLowToHigh = true;
     jvxlData.wasCubic = true;
     boundingBox = params.boundingBox;
@@ -212,6 +216,10 @@ abstract class VolumeFileReader extends SurfaceFileReader {
 
   @Override
   protected void readSurfaceData(boolean isMapData) throws Exception {
+    readSurfaceDataVFR(isMapData);
+  }
+
+  protected void readSurfaceDataVFR(boolean isMapData) throws Exception {
     /*
      * possibilities:
      * 

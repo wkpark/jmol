@@ -1044,7 +1044,7 @@ public class SurfaceGenerator {
   }
 
   private SurfaceReader newReaderBr(String name, BufferedReader br) {
-    SurfaceReader sr = (SurfaceReader) getInterface(name);
+    SurfaceFileReader sr = (SurfaceFileReader) getInterface(name);
     if (sr != null)
       sr.init2(this, br);
     return sr;

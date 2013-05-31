@@ -72,7 +72,11 @@ public class JvxlXmlReader extends VolumeFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2JXR(sg, br);
+  }
+
+  void init2JXR(SurfaceGenerator sg, BufferedReader br) {
+    init2VFR(sg, br);
     jvxlData.wasJvxl = isJvxl = true;
     isXLowToHigh = false;
     xr = new XmlReader(br);
@@ -402,7 +406,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     // if (thisInside)
     // bsVoxelBitSet = BitSetUtil.copyInvert(bsVoxelBitSet,
     // bsVoxelBitSet.size());
-    readVolumeFileSurfaceData();
+    readSurfaceDataJXR();
   }
 
   protected boolean readSurfaceDataXML() throws Exception {
@@ -421,8 +425,8 @@ public class JvxlXmlReader extends VolumeFileReader {
     return false;
   }
   
-  protected void readVolumeFileSurfaceData() throws Exception {
-    super.readSurfaceData(false);
+  protected void readSurfaceDataJXR() throws Exception {
+    readSurfaceDataVFR(false);
     volumeData.setMappingPlane(null);
   }
 

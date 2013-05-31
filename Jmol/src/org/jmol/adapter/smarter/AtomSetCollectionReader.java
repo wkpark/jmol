@@ -28,7 +28,6 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
@@ -1577,7 +1576,6 @@ public abstract class AtomSetCollectionReader {
   }
 
   /**
-   * @param modelSet
    * @param baseModelIndex
    * @param baseAtomIndex
    */

@@ -41,7 +41,7 @@ abstract class MapFileReader extends VolumeFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2VFR(sg, br);
     isAngstroms = true;
     adjustment = sg.getParams().center;
     if (adjustment == null || adjustment.x == Float.MAX_VALUE)

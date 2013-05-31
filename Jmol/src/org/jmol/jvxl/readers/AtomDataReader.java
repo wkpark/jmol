@@ -53,9 +53,8 @@ abstract class AtomDataReader extends VolumeDataReader {
 
   AtomDataReader(){}
   
-  @Override
-  void init(SurfaceGenerator sg) {
-    super.init(sg);
+  protected void initADR(SurfaceGenerator sg) {
+    initVDR(sg);
     precalculateVoxelData = true;
     atomDataServer = sg.getAtomDataServer();
   }

@@ -37,7 +37,7 @@ class CastepDensityReader extends VolumeFileReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2VFR(sg, br);
     canDownsample = isProgressive = false;
     isAngstroms = true;
   }

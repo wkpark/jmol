@@ -45,7 +45,7 @@ public class JvxlReader extends JvxlXmlReader {
   
   @Override
   void init2(SurfaceGenerator sg, BufferedReader br) {
-    super.init2(sg, br);
+    init2JXR(sg, br);
     isXmlFile = false;
     JVXL_VERSION = "2.0";
   }
@@ -265,9 +265,8 @@ public class JvxlReader extends JvxlXmlReader {
   @Override
   protected void readSurfaceData(boolean isMapDataIgnored) throws Exception {
     thisInside = !params.isContoured;
-    if (readSurfaceDataXML())
-      return;
-    readVolumeFileSurfaceData();
+    if (!readSurfaceDataXML())
+      readSurfaceDataJXR();
   }
 
   @Override

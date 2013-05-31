@@ -50,8 +50,8 @@ class IsoMOReader extends AtomDataReader {
   
   @Override
   void init(SurfaceGenerator sg) {
-    super.init(sg);
-    isNci = (params.qmOrbitalType == Parameters.QM_TYPE_NCI_PRO);
+    initADR(sg);
+        isNci = (params.qmOrbitalType == Parameters.QM_TYPE_NCI_PRO);
     if (isNci) {
       // NCI analysis org.jmol.quantum.NciCalculation
       // allows for progressive plane reading, which requires

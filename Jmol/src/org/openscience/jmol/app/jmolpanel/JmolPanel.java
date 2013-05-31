@@ -581,38 +581,24 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     @Override
     public void windowClosing(WindowEvent e) {
-      doClose();
+      doClose(false);
     }
   }
 
-  protected boolean doClose() {
+  protected boolean doClose(boolean saveSize) {
     if (numWindows == 1 && viewer.getAtomCount() > 0 && JOptionPane.showConfirmDialog(frame, GT._("Exit Jmol?"),
         "Exit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION)
       return false;
-    dispose(frame);
+    dispose(frame, saveSize);
     return true;
   }
 
-  void dispose(JFrame f) {
+  void dispose(JFrame f, boolean saveSize) {
     // Save window positions and status in the history
     if (webExport != null)
       WebExport.cleanUp();
-    if (historyFile != null) {
-      if (frame != null) {
-        jmolApp.border.x = frame.getWidth() - display.dimSize.width;
-        jmolApp.border.y = frame.getHeight() - display.dimSize.height;
-        historyFile.addWindowInfo("Jmol", frame, jmolApp.border);
-      }
-      //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
-      AppConsole console = (AppConsole) viewer.getProperty("DATA_API","getAppConsole", null);
-      if (console != null && console.jcd != null)
-        historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, console.jcd, null);
-      Component c = (Component) viewer.getProperty("DATA_API","getScriptEditor", null);
-      if (c != null)
-        historyFile.addWindowInfo(EDITOR_WINDOW_NAME, c, null);
-      if (historyFile.getProperty("clearHistory", "false").equals("true"))
-        historyFile.clear();
-    }
+    if (saveSize)
+      saveWindowSizes();
     if (service != null) {
       service.close();
       service = null;
@@ -636,6 +622,27 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
         // ignore
       }
     }
+  }
+
+  void saveWindowSizes() {
+    if (historyFile == null)
+      return;
+    if (frame != null) {
+      jmolApp.border.x = frame.getWidth() - display.dimSize.width;
+      jmolApp.border.y = frame.getHeight() - display.dimSize.height;
+      historyFile.addWindowInfo("Jmol", frame, jmolApp.border);
+    }
+    //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
+    AppConsole console = (AppConsole) viewer.getProperty("DATA_API",
+        "getAppConsole", null);
+    if (console != null && console.jcd != null)
+      historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, console.jcd, null);
+    Component c = (Component) viewer.getProperty("DATA_API", "getScriptEditor",
+        null);
+    if (c != null)
+      historyFile.addWindowInfo(EDITOR_WINDOW_NAME, c, null);
+    if (historyFile.getProperty("clearHistory", "false").equals("true"))
+      historyFile.clear();
   }
 
 //  protected void setupNewFrame(JmolViewer viewer) {
@@ -1013,7 +1020,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      if (!doClose()) {
+      if (!doClose(true)) {
         viewer.script("zap");
       }
     }
@@ -1252,6 +1259,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
+      saveWindowSizes();
       System.exit(0);
     }
   }

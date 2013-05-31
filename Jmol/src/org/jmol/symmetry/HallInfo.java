@@ -93,7 +93,7 @@ class HallInfo {
       }
       primitiveHallSymbol += vectorCode;
     } catch (Exception e) {
-      Logger.error("Invalid Hall symbol");
+      Logger.error("Invalid Hall symbol "  + e);
       nRotations = 0;
     }
   }

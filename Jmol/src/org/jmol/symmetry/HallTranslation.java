@@ -74,20 +74,20 @@ class HallTranslation {
               this.translationCode = translationCode;
               rotationShift12ths = h.rotationShift12ths;
               vectorShift12ths = h.vectorShift12ths;
-              break;
+              return;
             }
           }
         }
-        return;
+      } else {
+        if (params.z >= 0) {
+          // just a shift
+          vectorShift12ths = params;
+          return;
+        }
+        // just a screw axis
+        rotationOrder = params.x;
+        rotationShift12ths = params.y;
       }
-      if (params.z >= 0) {
-        // just a shift
-        vectorShift12ths = params;
-        return;
-      }
-      // just a screw axis
-      rotationOrder = params.x;
-      rotationShift12ths = params.y;
     }
     vectorShift12ths = new P3i();
   }

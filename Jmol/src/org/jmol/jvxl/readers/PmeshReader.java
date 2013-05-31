@@ -184,6 +184,10 @@ class PmeshReader extends PolygonFileReader {
   protected int[] vertexMap;
   
   protected boolean readVertices() throws Exception {
+    return readVerticesPM();
+  }
+  
+  protected boolean readVerticesPM() throws Exception {
     pmeshError = type + " ERROR: vertex count must be positive";
     if (!isBinary)
       nVertices = getInt();
@@ -211,6 +215,10 @@ class PmeshReader extends PolygonFileReader {
   }
 
   protected boolean readPolygons() throws Exception {
+    return readPolygonsPM();
+  }
+  
+  protected boolean readPolygonsPM() throws Exception {
     pmeshError = type  + " ERROR: polygon count must be zero or positive";
     if (!isBinary)
       nPolygons = getInt();

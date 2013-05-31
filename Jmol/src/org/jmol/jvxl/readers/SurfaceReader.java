@@ -467,6 +467,10 @@ public abstract class SurfaceReader implements VertexDataServer {
   }
 
   void discardTempData(boolean discardAll) {
+    discardTempDataSR(discardAll);
+  }
+
+  protected void discardTempDataSR(boolean discardAll) {
     if (!discardAll)
       return;
     voxelData = null;

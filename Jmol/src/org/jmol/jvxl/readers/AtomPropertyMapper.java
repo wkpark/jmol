@@ -112,7 +112,7 @@ class AtomPropertyMapper extends AtomDataReader {
   @Override
   protected void setVolumeData() {
     if (params.thePlane != null)
-      super.setVolumeData();// unnecessary -- point-specific property mapper only    
+      setVolumeDataADR();// unnecessary -- point-specific property mapper only    
   }
 
   @Override

@@ -75,7 +75,7 @@ public class ModelKitPopup extends SwingPopup {
       viewer.evalStringQuiet("set picking assignAtom_C");
       return;
     }
-    super.checkMenuClick(source, script);  
+    checkMenuClickGP(source, script);  
   }
 
   @Override

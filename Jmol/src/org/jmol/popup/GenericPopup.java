@@ -583,6 +583,10 @@ abstract public class GenericPopup implements JmolPopupInterface,
   }
 
   public void checkMenuClick(Object source, String script) {
+    checkMenuClickGP(source, script);
+  }
+
+  protected void checkMenuClickGP(Object source, String script) {
     restorePopupMenu();
     if (script == null || script.length() == 0)
       return;

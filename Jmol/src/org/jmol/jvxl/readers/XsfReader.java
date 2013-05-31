@@ -113,7 +113,7 @@ class XsfReader extends VolumeFileReader {
 
   @Override
   protected void skipData(int nPoints) throws Exception {
-    super.skipData(nPoints);
+    skipDataVFR(nPoints);
     if (isBXSF)
       Logger.info(readLine()); //"BAND: <n>" line
   }

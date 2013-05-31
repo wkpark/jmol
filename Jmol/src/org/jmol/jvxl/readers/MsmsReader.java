@@ -58,7 +58,7 @@ class MsmsReader extends PmeshReader {
   @Override
   protected boolean readVertices() throws Exception {
     skipHeader();
-    return super.readVertices();
+    return readVerticesPM();
   }
 
   @Override
@@ -76,7 +76,7 @@ class MsmsReader extends PmeshReader {
     }
     sg.addRequiredFile(fileName);
     skipHeader();
-    return super.readPolygons();
+    return readPolygonsPM();
   }
 
   private void skipHeader() throws Exception {

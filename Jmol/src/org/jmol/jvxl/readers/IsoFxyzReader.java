@@ -27,11 +27,6 @@ class IsoFxyzReader extends IsoFxyReader {
   
   IsoFxyzReader(){}
   
-  @Override
-  void init(SurfaceGenerator sg) {
-    super.init(sg);
-  }
-
   private float[][][] data;
 
   @Override

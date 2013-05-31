@@ -69,6 +69,10 @@ abstract public class AtomCollection {
   private static final Float MINUSZERO = Float.valueOf(-0.0f);
 
   protected void releaseModelSet() {
+    releaseModelSetAC();
+  }
+
+  protected void releaseModelSetAC() {
     atoms = null;
     viewer = null;
     g3d = null;
@@ -86,7 +90,6 @@ abstract public class AtomCollection {
     partialCharges = null;
     ionicRadii = null;
     ellipsoids = null;
-
   }
 
   protected void mergeAtomArrays(AtomCollection mergeModelSet) {

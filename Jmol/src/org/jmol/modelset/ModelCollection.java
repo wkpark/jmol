@@ -119,7 +119,7 @@ abstract public class ModelCollection extends BondCollection {
     bsSymmetry = null;
     bsAll = null;
     unitCells = null;
-    super.releaseModelSet();
+    releaseModelSetBC();
   }
 
   protected BS bsSymmetry;
@@ -1814,6 +1814,10 @@ abstract public class ModelCollection extends BondCollection {
    * @return number of struts added
    */
   public int calculateStruts(BS bs1, BS bs2) {
+    return calculateStrutsMC(bs1, bs2);
+  }
+
+  protected int calculateStrutsMC(BS bs1, BS bs2) {
     // select only ONE model
     makeConnections2(0, Float.MAX_VALUE, JmolEdge.BOND_STRUT, T.delete, bs1,
         bs2, null, false, false, 0);

@@ -363,6 +363,10 @@ abstract class AtomDataReader extends VolumeDataReader {
 
   @Override
   protected void setVolumeData() {
+    setVolumeDataADR();
+  }
+
+  protected void setVolumeDataADR() {
     if (!setVolumeDataParams()) {
       setVoxelRange(0, xyzMin.x, xyzMax.x, ptsPerAngstrom, maxGrid, minPtsPerAng);
       setVoxelRange(1, xyzMin.y, xyzMax.y, ptsPerAngstrom, maxGrid, minPtsPerAng);

@@ -577,7 +577,7 @@ class CalculationsMMFF extends Calculations {
             new float[] { (float) (c.theta * RAD_TO_DEG), (float) c.dData[0]/*v1*/, (float) c.dData[1]/*v2*/, (float) c.dData[2]/*v3*/, 
               energy } });
       default:
-        return super.getDebugLine(iType, c);
+        return getDebugLineC(iType, c);
     }
   }
 

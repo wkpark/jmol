@@ -282,7 +282,7 @@ public class NciCalculation extends QuantumCalculation implements
     if (eigen == null)
       initializeEigen();
     isReducedDensity = false;
-    super.initializeOnePoint();
+    initializeOnePointQC();
   }
 
   private void initializeEigen() {

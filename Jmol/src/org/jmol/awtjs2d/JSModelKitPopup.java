@@ -67,7 +67,7 @@ public class JSModelKitPopup extends JSPopup {
       viewer.evalStringQuiet("set picking assignAtom_C");
       return;
     }
-    super.checkMenuClick(source, script);  
+    checkMenuClickGP(source, script);  
   }
 
   @Override

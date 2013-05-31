@@ -35,6 +35,10 @@ class IsoFxyReader extends AtomDataReader {
   
   @Override
   void init(SurfaceGenerator sg) {
+    initIFR(sg);
+  }
+
+  protected void initIFR(SurfaceGenerator sg) {
     initADR(sg);
     isXLowToHigh = true;
     precalculateVoxelData = false;
@@ -73,7 +77,7 @@ class IsoFxyReader extends AtomDataReader {
   @Override
   protected void setVolumeData() {
     if (data == null) {
-      super.setVolumeData(); 
+      setVolumeDataADR(); 
       return;
     }
     volumetricOrigin.setT((P3) params.functionInfo.get(1));

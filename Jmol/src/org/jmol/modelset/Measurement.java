@@ -119,6 +119,10 @@ public class Measurement {
   }
 
   public void setCount(int count) {
+    setCountM(count);
+  }
+
+  protected void setCountM(int count) {
     this.count = countPlusIndices[0] = count;
   }
 

@@ -71,6 +71,10 @@ abstract class SurfaceFileReader extends SurfaceReader {
 
   @Override
   protected void closeReader() {
+    closeReaderSFR();
+  }
+
+  protected void closeReaderSFR() {
     if (br != null)
       try {
         br.close();
@@ -91,7 +95,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
   @Override
   void discardTempData(boolean discardAll) {
     closeReader();
-    super.discardTempData(discardAll);
+    discardTempDataSR(discardAll);
   }
 
   protected String line;

@@ -42,9 +42,13 @@ abstract public class BondCollection extends AtomCollection {
 
   @Override
   protected void releaseModelSet() {
+    releaseModelSetBC();
+  }
+
+  protected void releaseModelSetBC() {
     bonds = null;
     freeBonds = null;
-    super.releaseModelSet();
+    releaseModelSetAC();
   }
 
   //note: Molecules is set up to only be calculated WHEN NEEDED

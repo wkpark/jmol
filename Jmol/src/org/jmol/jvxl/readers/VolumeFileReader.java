@@ -88,7 +88,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     if (readerClosed)
       return;
     readerClosed = true;
-    super.closeReader();
+    closeReaderSFR();
     if (nData == 0 || dataMax == -Float.MAX_VALUE)
       return;
     dataMean /= nData;
@@ -491,6 +491,10 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   }
 
   protected void skipData(int nPoints) throws Exception {
+    skipDataVFR(nPoints);
+  }
+
+  protected void skipDataVFR(int nPoints) throws Exception {
     int iV = 0;
     while (iV < nPoints)
       iV += countData(readLine());

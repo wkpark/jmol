@@ -714,7 +714,7 @@ import java.util.Map;
   @Override
   public int calculateStruts(BS bs1, BS bs2) {
     viewer.setModelVisibility();
-    return super.calculateStruts(bs1, bs2);
+    return calculateStrutsMC(bs1, bs2);
   }
 
   /**

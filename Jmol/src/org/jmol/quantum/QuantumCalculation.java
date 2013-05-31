@@ -169,6 +169,10 @@ abstract class QuantumCalculation {
   }
 
   protected void initializeOnePoint() {
+    initializeOnePointQC();
+  }
+
+  protected void initializeOnePointQC() {
     points = new P3[1];
     points[0] = new P3();
     if (voxelData == null || voxelData == voxelDataTemp) {

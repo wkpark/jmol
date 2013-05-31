@@ -85,7 +85,7 @@ public final class BioModel extends Model{
 
   @Override
   public void freeze() {
-    super.freeze();
+    freezeM();
     bioPolymers = (BioPolymer[])ArrayUtil.arrayCopyObject(bioPolymers, bioPolymerCount);
   }
   
@@ -185,7 +185,7 @@ public final class BioModel extends Model{
   
   @Override
   public void fixIndices(int modelIndex, int nAtomsDeleted, BS bsDeleted) {
-    super.fixIndices(modelIndex, nAtomsDeleted, bsDeleted);
+    fixIndicesM(modelIndex, nAtomsDeleted, bsDeleted);
     for (int i = 0; i < bioPolymerCount; i++)
       bioPolymers[i].recalculateLeadMidpointsAndWingVectors();
   }
@@ -481,7 +481,7 @@ public final class BioModel extends Model{
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].isHetero())
         nHetero++;
-    super.getChimeInfo(sb, nHetero);
+    getChimeInfoM(sb, nHetero);
     int nH = 0;
     int nS = 0;
     int nT = 0;

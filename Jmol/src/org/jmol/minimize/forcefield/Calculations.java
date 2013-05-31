@@ -449,6 +449,10 @@ abstract class Calculations {
   }
 
   String getDebugLine(int iType, Calculation c) {
+    return getDebugLineC(iType, c);
+  }
+
+  protected String getDebugLineC(int iType, Calculation c) {
     float energy = ff.toUserUnits(c.energy);
     switch (iType) {
     case CALC_DISTANCE:

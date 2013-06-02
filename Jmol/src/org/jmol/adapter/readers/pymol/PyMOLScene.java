@@ -918,7 +918,7 @@ class PyMOLScene implements JmolSceneGenerator {
         + (globalSetting(PyMOL.cartoon_fancy_helices) != 0));
     sb.append(";set cartoonFancy "
         + (globalSetting(PyMOL.cartoon_fancy_helices) == 0));
-    String s = "000000" + Integer.toHexString(bgRgb);
+    String s = "000000" + Integer.toHexString(bgRgb & 0xFFFFFF);
     s = "[x" + s.substring(s.length() - 6) + "]";
     sb.append(";background " + s);
     sb.append(";moveto 0 PyMOL " + Escape.eAF(pymolView));

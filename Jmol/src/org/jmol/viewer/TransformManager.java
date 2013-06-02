@@ -1757,6 +1757,7 @@ public class TransformManager {
   }
 
   String getMoveToText(float timespan, boolean addComments) {
+    finalizeTransformParameters();
     SB sb = new SB();
     sb.append("moveto ");
     if (addComments)

@@ -274,7 +274,7 @@ public class Dots extends AtomShape {
     }
     // now, calculate surface for selected atoms
 
-    if (dotsConvexMaps == null && colixes.length != atomCount) {
+    if (dotsConvexMaps == null && (colixes == null || colixes.length != atomCount)) {
       colixes = new short[atomCount];
       paletteIDs = new byte[atomCount];
     }

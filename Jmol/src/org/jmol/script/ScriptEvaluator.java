@@ -6813,6 +6813,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       refresh();
     if (!useThreads())
       floatSecondsTotal = 0;
+    if (cameraDepth == 0) {
+      cameraDepth = cameraX = cameraY = Float.NaN;
+    }
     if (pymolView != null)
       viewer.movePyMOL(this, floatSecondsTotal, pymolView);
     else

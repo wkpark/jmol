@@ -922,7 +922,7 @@ class PyMOLScene implements JmolSceneGenerator {
     s = "[x" + s.substring(s.length() - 6) + "]";
     sb.append(";background " + s);
     sb.append(";moveto 0 PyMOL " + Escape.eAF(pymolView));
-    sb.append(";");
+    sb.append(";save orientation 'default';");
     return sb;
   }
 

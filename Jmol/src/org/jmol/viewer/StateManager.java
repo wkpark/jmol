@@ -131,6 +131,7 @@ public class StateManager {
   }
   
   GlobalSettings getGlobalSettings(GlobalSettings gsOld, boolean clearUserVariables) {
+    saved.clear();
     return new GlobalSettings(gsOld, clearUserVariables);
   }
 
@@ -159,7 +160,7 @@ public class StateManager {
 
   void setJmolDefaults() {
     setCommonDefaults();
-    viewer.setStringProperty("defaultColorScheme", "Jmol");
+    viewer.setStringProperty("ColorScheme", "Jmol");
     viewer.setBooleanProperty("axesOrientationRasmol", false);
     viewer.setBooleanProperty("zeroBasedXyzRasmol", false);
     viewer.setIntProperty("percentVdwAtom",
@@ -350,7 +351,7 @@ public class StateManager {
       deleteSavedType("Orientation_");
       return;
     }
-    Orientation o = new Orientation(saveName.equals("default"), pymolView);
+    Orientation o = new Orientation(saveName.equalsIgnoreCase("default"), pymolView);
     o.saveName = lastOrientation = "Orientation_" + saveName;
     saved.put(o.saveName, o);
   }
@@ -395,6 +396,7 @@ public class StateManager {
         moveToText = "moveTo -1.0 PyMOL " + Escape.eAF(pymolView);
         return;
       } 
+      viewer.finalizeTransformParameters();
       if (asDefault) {
         Matrix3f rotationMatrix = (Matrix3f) viewer
             .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
@@ -420,7 +422,11 @@ public class StateManager {
         navDepth = viewer.getNavigationDepthPercent();
         navCenter = P3.newP(viewer.getNavigationCenter());
       }
-      cameraDepth = viewer.getCameraDepth();
+      if (viewer.getCamera().z != 0) { // PyMOL mode
+        cameraDepth = viewer.getCameraDepth();
+        cameraX = viewer.getCamera().x;
+        cameraY = viewer.getCamera().y;
+      }
     }
 
     public String getMoveToText(boolean asCommand) {

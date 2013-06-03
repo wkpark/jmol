@@ -37,7 +37,7 @@ import org.jmol.api.JmolDocument;
 import org.jmol.api.PymolAtomReader;
 import org.jmol.constant.EnumStructure;
 import org.jmol.script.T;
-import org.jmol.util.BoxInfo; //import org.jmol.util.Escape;
+import org.jmol.util.BoxInfo;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
@@ -45,7 +45,6 @@ import org.jmol.util.C;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JC;
 
 /**
  * PyMOL PSE (binary Python session) file reader.
@@ -365,14 +364,14 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     }
     for (int i = 1; i < n; i++)
       processObject(listAt(names, i), false, 0);
-    pymolScene.setObjectInfo(null, 0, null, false, null, null);
+    pymolScene.setObjectInfo(null, 0, null, false, null, null, null);
 
     // not currently generating selections
     //processSelections();
 
     // meshes are special objects that depend upon grid map data
     if (mapObjects != null && allowSurface)
-      processMeshes();
+      processMeshes(); 
 
     // trajectories are not supported yet
     if (isTrajectory) {
@@ -531,7 +530,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     if (haveFrames && !haveCommands && !haveViews) {
       // simple animation
       isMovie = true;
-      pymolScene.setObjectInfo(null, 0, null, false, null, null);
+      pymolScene.setObjectInfo(null, 0, null, false, null, null, null);
       pymolScene.setFrameObject(T.movie, movie);
     } else {
       //isMovie = true;  for now, no scripted movies
@@ -562,8 +561,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   }
   
   /**
-   * The main object processor. 
-   * Not implemented: ALIGNMENT, CALLBACK, SLICE, SURFACE 
+   * The main object processor. Not implemented: ALIGNMENT, CALLBACK, SLICE,
+   * SURFACE
    * 
    * @param execObject
    * @param moleculeOnly
@@ -580,8 +579,17 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     if ((type == PyMOL.OBJECT_MOLECULE) != moleculeOnly || !checkObject(execObject))
       return;
     JmolList<Object> pymolObject = listAt(execObject, 5);
-    if (iState > 0 && (type != PyMOL.OBJECT_MOLECULE || !moleculeHasState(iState, pymolObject)))
+    JmolList<Object> stateSettings = null;
+    if (type == PyMOL.OBJECT_MOLECULE) {
+      JmolList<Object> states = listAt(pymolObject, 4);
+      JmolList<Object> state = listAt(states, iState);
+      JmolList<Object> idxToAtm = listAt(state, 3);
+      if (iState > 0 && (idxToAtm == null || idxToAtm.size() == 0))
         return;
+      stateSettings = listAt(state, 7);
+    } else   if (iState > 0) {
+        return;
+    }
     
     Logger.info("PyMOL model " + (nModels) + " Object " + objectName
         + (isHidden ? " (hidden)" : " (visible)"));
@@ -590,7 +598,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         execObject, 6));
     if (" ".equals(parentGroupName))
       parentGroupName = null;
-    pymolScene.setObjectInfo(objectName, type, parentGroupName, isHidden, listAt(objectHeader, 8), (moleculeOnly ? "_" + (iState + 1) : ""));
+    pymolScene.setObjectInfo(objectName, type, parentGroupName, isHidden, listAt(objectHeader, 8), stateSettings, (moleculeOnly ? "_" + (iState + 1) : ""));
     BS bsAtoms = null;
     boolean doExclude = (bsBytesExcluded != null);
     String msg = null;
@@ -660,13 +668,6 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       Logger.error("Unprocessed object type " + msg + " " + objectName);
   }
 
-  private boolean moleculeHasState(int iState, JmolList<Object> pymolObject) {
-    JmolList<Object> states = listAt(pymolObject, 4);
-    JmolList<Object> state = listAt(states, iState);
-    JmolList<Object> idxToAtm = listAt(state, 3);
-    return (idxToAtm != null && idxToAtm.size() > 0);
-  }
-
   /**
    * Create a CGO JmolObject, just passing on key information. 
    * 
@@ -678,10 +679,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     if (isHidden)
       return;
     JmolList<Object> data = listAt(listAt(pymolObject, 2), 0);
-    data.addLast(objectName);
-    JmolObject jo = addJmolObject(JC.SHAPE_CGO, null, data);
-    jo.argb = PyMOL.getRGB(intAt(listAt(pymolObject, 0), 2));
-    jo.translucency = pymolScene.floatSetting(PyMOL.cgo_transparency);
+    int color = PyMOL.getRGB(intAt(listAt(pymolObject, 0), 2));
+    pymolScene.addCGO(data, color);
     appendLoadNote("CGO " + PyMOLScene.fixName(objectName));
   }
 

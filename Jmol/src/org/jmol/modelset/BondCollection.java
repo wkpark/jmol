@@ -30,6 +30,7 @@ package org.jmol.modelset;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
@@ -846,6 +847,32 @@ abstract public class BondCollection extends AtomCollection {
       if (i < bondCount && bonds[i].mad != 0)
         bonds[i].setShapeVisibility(isDisplay);
   }
+
+  /**
+   * used in PyMOL reader to set unique bond settings
+   * @param modelIndex
+   * @param i
+   * @param rad
+   * @param argb
+   * @param trans
+   */
+  public void setBondParameters(int modelIndex, int i, float rad, int argb, float trans) {
+    if (i < 0 || i >= bondCount)
+      return;
+    Bond b = bonds[i];
+    if (modelIndex >= 0 && b.atom1.modelIndex != modelIndex)
+      return; 
+    if (!Float.isNaN(rad))
+      b.mad = (short) (rad * 2000);
+    short colix = b.colix;
+    if (argb != Integer.MAX_VALUE)
+      colix = C.getColix(argb);
+    if (!Float.isNaN(trans))
+      b.colix = C.getColixTranslucent3(colix, trans != 0, trans);
+    else if (b.colix != colix)
+      b.colix = C.copyColixTranslucency(b.colix, colix);
+  }
+
 
 }
 

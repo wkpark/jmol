@@ -11003,13 +11003,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void display(boolean isDisplay) throws ScriptException {
     BS bs = null;
-    Boolean addRemove = null;
+    int addRemove = 0;
     int i = 1;
     int tok;
     switch (tok = tokAt(1)) {
     case T.add:
     case T.remove:
-      addRemove = Boolean.valueOf(tok == T.add);
+      addRemove = tok;
       tok = tokAt(++i);
       break;
     }
@@ -11144,7 +11144,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void select(int i) throws ScriptException {
     // NOTE this is called by restrict()
     if (slen == 1) {
-      viewer.select(null, false, null, tQuiet
+      viewer.select(null, false, 0, tQuiet
           || scriptLevel > scriptReportingLevel);
       return;
     }
@@ -11171,8 +11171,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       error(ERROR_invalidArgument);
     }
-    BS bs = null;
-    Boolean addRemove = null;
+    BS bs;
+    int addRemove = 0;
     boolean isGroup = false;
     if (getToken(1).intValue == 0) {
       Object v = parameterExpressionToken(0).value;
@@ -11185,7 +11185,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       switch (tok) {
       case T.add:
       case T.remove:
-        addRemove = Boolean.valueOf(tok == T.add);
+        addRemove = tok;
         tok = tokAt(++i);
       }
       isGroup = (tok == T.group);
@@ -11321,7 +11321,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isQuiet = (tQuiet || scriptLevel > scriptReportingLevel);
     if (!isQuiet)
       scriptStatusOrBuffer(GT._("{0} atoms deleted", nDeleted));
-    viewer.select(null, false, null, isQuiet);
+    viewer.select(null, false, 0, isQuiet);
   }
 
   private void zoom(boolean isZoomTo) throws ScriptException {
@@ -12000,7 +12000,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         .valueOf(JmolEdge.BOND_HYDROGEN_MASK));
     setShapeSizeBs(JC.SHAPE_STICKS, 0, bsAtoms);
     viewer.autoHbond(bsAtoms, bsAtoms, true);
-    viewer.select(bsAtoms, false, null, tQuiet);
+    viewer.select(bsAtoms, false, 0, tQuiet);
   }
 
   private void vector() throws ScriptException {

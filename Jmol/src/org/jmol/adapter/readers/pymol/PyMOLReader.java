@@ -40,8 +40,6 @@ import org.jmol.script.T;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
-import org.jmol.util.C;
-//import org.jmol.util.Dimension;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
@@ -72,7 +70,7 @@ import org.jmol.util.TextFormat;
  * 3) JmolObjects are finalized after file reading takes place by a call from ModelLoader
  *    back here to finalizeModelSet(), which runs PyMOLScene.setObjects, which runs JmolObject.finalizeObject.
  * 
- * 
+ *  TODO: Handle discrete objects, DiscreteAtmToIdx? 
  *     
  * @author Bob Hanson hansonr@stolaf.edu
  * 
@@ -136,6 +134,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
   private JmolList<Object> sceneOrder;
 
+  private int bondCount;
+
   @Override
   protected void initializeReader() throws Exception {
     isBinary = true;
@@ -178,8 +178,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   @Override
   public void finalizeModelSet(int baseModelIndex, int baseAtomIndex) {
 
-    pymolScene.setObjects(mepList, doCache, baseModelIndex, baseAtomIndex,
-        haveScenes);
+    pymolScene.setObjects(mepList, doCache, baseModelIndex, baseAtomIndex);
     
     if (haveMeasurements) {
       appendLoadNote(viewer.getMeasurementInfoAsString());
@@ -235,7 +234,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     //atomSetCollection.setAtomSetCollectionAuxiliaryInfo("settings", settings);
     setUniqueSettings(getMapList(map, "unique_settings"));
     pymolScene = new PyMOLScene(this, viewer, settings, uniqueSettings, 
-        pymolVersion);
+        pymolVersion, haveScenes);
 
     // just log and display some information here
 
@@ -399,14 +398,18 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * This will be used later in processing molecule objects.
    * 
    * @param list
+   * @return max id
    */
   @SuppressWarnings("unchecked")
-  private void setUniqueSettings(JmolList<Object> list) {
+  private int setUniqueSettings(JmolList<Object> list) {
     uniqueSettings = new Hashtable<Integer, JmolList<Object>>();
+    int max = 0;
     if (list != null && list.size() != 0) {
       for (int i = list.size(); --i >= 0;) {
         JmolList<Object> atomSettings = (JmolList<Object>) list.get(i);
         int id = intAt(atomSettings, 0);
+        if (id > max)
+          max = id;
         JmolList<Object> mySettings = (JmolList<Object>) atomSettings.get(1);
         for (int j = mySettings.size(); --j >= 0;) {
           JmolList<Object> setting = (JmolList<Object>) mySettings.get(j);
@@ -416,6 +419,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         }
       }
     }
+    return max;
   }
 
   /**
@@ -856,9 +860,6 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    */
   private JmolList<Bond> getBondList(JmolList<Object> bonds) {
     JmolList<Bond> bondList = new JmolList<Bond>();
-    int color = (int) pymolScene.floatSetting(PyMOL.stick_color);
-    float radius = pymolScene.floatSetting(PyMOL.stick_radius);
-    float translucency = pymolScene.floatSetting(PyMOL.stick_transparency);
     boolean valence = pymolScene.booleanSetting(PyMOL.valence);
     int n = bonds.size();
     for (int i = 0; i < n; i++) {
@@ -866,29 +867,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       int order = (valence ? intAt(b, 2) : 1);
       if (order < 1 || order > 3)
         order = 1;
-      // TODO: hydrogen bonds?
       int ia = intAt(b, 0);
       int ib = intAt(b, 1);
       Bond bond = new Bond(ia, ib, order);
+      bond.uniqueID = (b.size() > 6 && intAt(b, 6) != 0 ? intAt(b, 5) : -1);
       bondList.addLast(bond);
-      int c;
-      float rad, t;
-      boolean hasID = (b.size() > 6 && intAt(b, 6) != 0);
-      if (hasID) {
-        int id = intAt(b, 5);
-        rad = pymolScene.getUniqueFloatDef(id, PyMOL.stick_radius, radius);
-        c = (int) pymolScene.getUniqueFloatDef(id, PyMOL.stick_color, color);
-        t = pymolScene.getUniqueFloatDef(id, PyMOL.stick_transparency, translucency);
-      } else {
-        rad = radius;
-        c = color;
-        t = translucency;
-      }
-      // I think rad is being ignored, because later we set it with a script
-      bond.radius = rad;
-      if (c >= 0)
-        bond.colix = C.getColixTranslucent3(C.getColix(PyMOL.getRGB(c)), t > 0,
-            t);
     }
     return bondList;
   }
@@ -1027,6 +1010,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       float[] data = PyMOLScene.floatsAt(a, 41, new float[7], 6);
       atomSetCollection.setAnisoBorU(atom, data, 12);
     }
+    //if (uniqueID > 0)
+      //pymolScene.setUnique(uniqueID, atom);
     pymolScene.setAtomColor(uniqueID, atomColor);
     processAtom2(atom, serNo, x, y, z, formalCharge);
 
@@ -1060,8 +1045,10 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       Bond bond = bonds.get(i);
       bond.atomIndex1 = atomMap[bond.atomIndex1];
       bond.atomIndex2 = atomMap[bond.atomIndex2];
-      if (bond.atomIndex1 >= 0 && bond.atomIndex2 >= 0)
-        atomSetCollection.addBond(bond);
+      if (bond.atomIndex1 < 0 || bond.atomIndex2 < 0)
+        continue;
+      pymolScene.setUniqueBond(bondCount++, bond.uniqueID);
+      atomSetCollection.addBond(bond);
     }
   }
 

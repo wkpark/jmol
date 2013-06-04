@@ -264,7 +264,7 @@ public class T {
 
   final static int print        = 1 | mathExpressionCommand;
   final static int returncmd    = 2 | mathExpressionCommand;
-  final static int set          = 3 | mathExpressionCommand | expression;
+  public final static int set          = 3 | mathExpressionCommand | expression;
   final static int var          = 4 | mathExpressionCommand;
   final static int log          = 5 | mathExpressionCommand;
   //final static int prompt     see mathfunc
@@ -743,7 +743,7 @@ public class T {
   //     distance(a,b)
   //so it can be a math property and it can have up to two parameters
   
-  final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
+  public final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
   public final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
   final static int find         = 4 | 3 << 9 | mathfunc | mathproperty;
   final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
@@ -1241,7 +1241,7 @@ public class T {
   public final static int range   = misc  | 290;
   public final static int rasmol  = misc  | 292;
   final static int reference      = misc  | 294;
-  final static int remove         = misc  | 295;
+  public final static int remove         = misc  | 295;
   public final static int residue = misc  | 296;
   final static int resolution     = misc  | 298;
   final static int reversecolor   = misc  | 300;

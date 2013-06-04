@@ -126,22 +126,30 @@ class JmolObject {
   }
 
   @SuppressWarnings("unchecked")
-  void finalizeObject(ModelSet m, String mepList, boolean doCache) {
+  void finalizeObject(PyMOLScene pymolScene, ModelSet m, String mepList, boolean doCache) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
     String sID;
     SB sb = null;
     switch (id) {
+    case T.hidden:
+      // bsHidden
+      sm.viewer.displayAtoms(bsAtoms, false, false, T.add, true);
+      return;
+    case T.restrict:
+      sm.viewer.select(null, false, 0, true);
+      sm.restrictSelected(false, false);
+      return;
     case T.display:
     case T.hide:
       // from PyMOLScene after restore scene
       if (bsAtoms == null) {
         if (info == null) {
-          sm.viewer.displayAtoms(null, true, false, null, true);
+          sm.viewer.displayAtoms(null, true, false, 0, true);
         }
         sm.viewer.setObjectProp((String) info, id);
       } else {
-        sm.viewer.displayAtoms(bsAtoms, id == T.display, false, Boolean.TRUE,
+        sm.viewer.displayAtoms(bsAtoms, id == T.display, false, T.add,
             true);
       }
       return;
@@ -169,14 +177,21 @@ class JmolObject {
       sm.viewer.saveOrientation(objectNameID,
           (float[]) ((Map<String, Object>) info).get("pymolView"));
       return;
-    case T.hidden:
-      sm.viewer.displayAtoms(bsAtoms, false, false, Boolean.TRUE, true);
-      return;
     case JC.SHAPE_LABELS:
       sm.loadShape(id);
       sm.setShapePropertyBs(id, "textLabels", info, bsAtoms);
       return;
+    case T.bonds:
+      break;
+    case T.wireframe:
     case JC.SHAPE_STICKS:
+      if (size != -1) {
+        sm.setShapeSizeBs(JC.SHAPE_STICKS, size, null, bsAtoms);
+        pymolScene.setUniqueBonds(((BS[])sm.getShapePropertyIndex(JC.SHAPE_STICKS, "sets", 0))[1], id == JC.SHAPE_STICKS);
+        size = -1;
+      }
+      id = JC.SHAPE_STICKS;
+      break;
     case JC.SHAPE_BALLS:
       break;
     case JC.SHAPE_TRACE:
@@ -197,10 +212,6 @@ class JmolObject {
     }
 
     switch (id) {
-    case T.restrict:
-      sm.viewer.select(null, false, null, true);
-      sm.restrictSelected(false, false);
-      return;
     case JC.SHAPE_MEASURES:
       if (modelIndex < 0)
         return;

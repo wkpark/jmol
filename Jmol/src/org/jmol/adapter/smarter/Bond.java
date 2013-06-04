@@ -29,6 +29,7 @@ public class Bond extends AtomSetObject {
   public int order;
   public float radius = -1;
   public short colix = -1;
+  public int uniqueID = -1;
 
   public Bond (int atomIndex1, int atomIndex2, int order) {
     this.atomIndex1 = atomIndex1;

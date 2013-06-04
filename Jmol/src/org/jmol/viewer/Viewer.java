@@ -1661,7 +1661,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to SelectionManager
   // ///////////////////////////////////////////////////////////////
 
-  public void select(BS bs, boolean isGroup, Boolean addRemove, boolean isQuiet) {
+  public void select(BS bs, boolean isGroup, int addRemove, boolean isQuiet) {
     // Eval, ActionManager
     if (isGroup)
       bs = getUndeletedGroupAtomBits(bs);
@@ -1672,7 +1672,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public void setSelectionSet(BS set) {
     // JmolViewer API only -- not used in Jmol 
-    select(set, false, null, true);
+    select(set, false, 0, true);
   }
 
   public void selectBonds(BS bs) {
@@ -1680,7 +1680,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void displayAtoms(BS bs, boolean isDisplay, boolean isGroup,
-                           Boolean addRemove, boolean isQuiet) {
+                           int addRemove, boolean isQuiet) {
     // Eval
     if (isGroup)
       bs = getUndeletedGroupAtomBits(bs);
@@ -10003,6 +10003,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     } catch (Exception e) {
       return null;
     }
+  }
+
+  public void setBondParameters(int modelIndex, int i, float rad, int argb, float trans) {
+    modelSet.setBondParameters(modelIndex, i, rad, argb, trans);
   }
 
 }

@@ -542,7 +542,7 @@ public class ShapeManager {
       if (bsSubset != null) {
         bsSelected = BSUtil.copy(viewer.getSelectionSet(true));
         bsSelected.and(bsSubset);
-        viewer.select(bsSelected, false, null, true);
+        viewer.select(bsSelected, false, 0, true);
         BSUtil.invertInPlace(bsSelected, viewer.getAtomCount());
         bsSelected.and(bsSubset);
       }
@@ -570,7 +570,7 @@ public class ShapeManager {
     setLabel(null, bs);
     if (!isBond)
       viewer.setBooleanProperty("bondModeOr", bondmode);
-    viewer.select(bsSelected, false, null, true);
+    viewer.select(bsSelected, false, 0, true);
   }
 
 }

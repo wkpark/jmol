@@ -739,7 +739,7 @@ public class ActionManager {
           case PICKING_DRAG_MINIMIZE_MOLECULE:
             bs = viewer.getAtomBits(T.molecule, BSUtil
                 .newAndSetBit(dragAtomIndex));
-            viewer.select(bs, false, null, true);
+            viewer.select(bs, false, 0, true);
             break;
           }
           viewer.moveAtomWithHydrogens(dragAtomIndex, deltaX, deltaY, (isBound(
@@ -1995,7 +1995,7 @@ public class ActionManager {
         Logger.debug(s);
       BS bs = getSelectionSet(s);
       if (bs != null) {
-        viewer.select(bs, false, null, false);
+        viewer.select(bs, false, 0, false);
         viewer.refresh(3, "selections set");
       }
     }

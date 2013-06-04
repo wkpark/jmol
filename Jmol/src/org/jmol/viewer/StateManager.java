@@ -224,10 +224,10 @@ public class StateManager {
         : lastSelected);
     BS bsSelected = (BS) getNoCase(saved, name);
     if (bsSelected == null) {
-      viewer.select(new BS(), false, null, false);
+      viewer.select(new BS(), false, 0, false);
       return false;
     }
-    viewer.select(bsSelected, false, null, false);
+    viewer.select(bsSelected, false, 0, false);
     return true;
   }
 

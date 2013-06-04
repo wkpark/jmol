@@ -68,23 +68,36 @@ public class SelectionManager {
 
   void clear() {
     clearSelection(true);
-    hide(null, null, null, true);
+    hide(null, null, 0, true);
     setSelectionSubset(null);
     bsDeleted = null;
     setMotionFixedAtoms(null);
   }
 
-  void hide(ModelSet modelSet, BS bs, Boolean addRemove, boolean isQuiet) {
-    if (bs == null) {
-      bsHidden.clearAll();
-    } else if (addRemove == null) {
-      bsHidden.clearAll();
-      bsHidden.or(bs);
-    } else if (addRemove.booleanValue()) {
-      bsHidden.or(bs);
-    } else {
-      bsHidden.andNot(bs);
+  void display(ModelSet modelSet, BS bs, int addRemove, boolean isQuiet) {
+    switch (addRemove) {
+    default:
+      BS bsAll = modelSet.getModelAtomBitSetIncludingDeleted(-1, false);
+      bsHidden.or(bsAll);
+      //$FALL-THROUGH$
+    case T.add:
+      if (bs != null)
+        bsHidden.andNot(bs);
+      break;
+    case T.remove:
+      if (bs != null)
+        bsHidden.or(bs);
+      break;
     }
+    BSUtil.andNot(bsHidden, bsDeleted);
+    modelSet.setBsHidden(bsHidden);
+    if (!isQuiet)
+      viewer.reportSelection(GT._("{0} atoms hidden", ""
+          + bsHidden.cardinality()));
+  }
+
+  void hide(ModelSet modelSet, BS bs, int addRemove, boolean isQuiet) {
+    setBitSet(bsHidden, bs, addRemove);
     if (modelSet != null)
       modelSet.setBsHidden(bsHidden);
     if (!isQuiet)
@@ -92,26 +105,26 @@ public class SelectionManager {
           + bsHidden.cardinality()));
   }
 
-  void display(ModelSet modelSet, BS bs, Boolean addRemove, boolean isQuiet) {
-    BS bsAll = modelSet.getModelAtomBitSetIncludingDeleted(-1, false);
-    if (bs == null) {
-      if (Boolean.TRUE == addRemove)
-        bsHidden.clearAll();
-      else
-        bsHidden.or(bsAll);
-    } else if (addRemove == null) {
-      bsHidden.or(bsAll);
-      bsHidden.andNot(bs);
-    } else if (addRemove.booleanValue()) {
-      bsHidden.andNot(bs);
-    } else {
-      bsHidden.or(bs);
+  void setSelectionSet(BS set, int addRemove) {
+    setBitSet(bsSelection, set, addRemove);
+    empty = UNKNOWN;
+    selectionChanged(false);
+  }
+
+  private static void setBitSet(BS bsWhat, BS bs, int addRemove) {
+    switch (addRemove) {
+    default:
+      bsWhat.clearAll();
+      //$FALL-THROUGH$
+    case T.add:
+      if (bs != null)
+        bsWhat.or(bs);
+      break;
+    case T.remove:
+      if (bs != null)
+        bsWhat.andNot(bs);
+      break;
     }
-    BSUtil.andNot(bsHidden, bsDeleted);
-    modelSet.setBsHidden(bsHidden);
-    if (!isQuiet)
-      viewer.reportSelection(GT._("{0} atoms hidden", ""
-          + bsHidden.cardinality()));
   }
 
   BS getHiddenSet() {
@@ -132,7 +145,7 @@ public class SelectionManager {
     return (atomIndex >= 0 && bsSelection.get(atomIndex));
   }
 
-  void select(BS bs, Boolean addRemove, boolean isQuiet) {
+  void select(BS bs, int addRemove, boolean isQuiet) {
     if (bs == null) {
       selectAll(true);
       if (!viewer.getBoolean(T.hydrogen))
@@ -191,21 +204,6 @@ public class SelectionManager {
       empty = FALSE;
     else
       empty = UNKNOWN;
-  }
-
-  void setSelectionSet(BS set, Boolean addRemove) {
-    if (set == null) {
-      bsSelection.clearAll();
-    } else if (addRemove == null) {
-      bsSelection.clearAll();
-      bsSelection.or(set);
-    } else if (addRemove.booleanValue()) {
-      bsSelection.or(set);
-    } else {
-      bsSelection.andNot(set);
-    }
-    empty = UNKNOWN;
-    selectionChanged(false);
   }
 
   void setSelectionSubset(BS bs) {
@@ -277,7 +275,7 @@ public class SelectionManager {
 
   private void selectionChanged(boolean isQuiet) {
     if (hideNotSelected)
-      hide(viewer.getModelSet(), BSUtil.copyInvert(bsSelection, viewer.getAtomCount()), null, isQuiet);
+      hide(viewer.getModelSet(), BSUtil.copyInvert(bsSelection, viewer.getAtomCount()), 0, isQuiet);
     if (isQuiet || listeners.length == 0)
       return;
     for (int i = listeners.length; --i >= 0;)
@@ -331,7 +329,7 @@ public class SelectionManager {
     BSUtil.deleteBits(bsHidden, bsAtoms);
     BS bs = BSUtil.copy(bsSelection);
     BSUtil.deleteBits(bs, bsAtoms);
-    setSelectionSet(bs, null);
+    setSelectionSet(bs, 0);
   }
 
   void setMotionFixedAtoms(BS bs) {

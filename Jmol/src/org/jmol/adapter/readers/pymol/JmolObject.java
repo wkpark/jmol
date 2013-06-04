@@ -137,8 +137,11 @@ class JmolObject {
       sm.viewer.displayAtoms(bsAtoms, false, false, T.add, true);
       return;
     case T.restrict:
-      sm.viewer.select(null, false, 0, true);
-      sm.restrictSelected(false, false);
+      // start of generating shapes; argb is modelIndex
+      BS bs = sm.viewer.getModelUndeletedAtomsBitSet(argb);
+      BSUtil.invertInPlace(bs, sm.viewer.getAtomCount());
+      sm.viewer.select(bs, false, 0, true);
+      sm.restrictSelected(false, true);
       return;
     case T.display:
     case T.hide:

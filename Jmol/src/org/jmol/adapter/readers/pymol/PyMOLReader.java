@@ -227,7 +227,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     // create settings and uniqueSettings lists
     JmolList<Object> settings = getMapList(map, "settings");
     sceneOrder = getMapList(map, "scene_order");
-    haveScenes = (sceneOrder != null && sceneOrder.size() != 0);
+    haveScenes = getFrameScenes(map);
     JmolList<Object> file = listAt(settings, PyMOL.session_file);
     if (file != null)
       Logger.info("PyMOL session file: " + file.get(2));
@@ -391,6 +391,25 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     if (atomCount == 0)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("dataOnly",
           Boolean.TRUE);
+  }
+
+  /**
+   * remove all scenes that do not define a frame.
+   * @param map
+   * @return  true if there are scenes that define a frame
+   */
+  @SuppressWarnings("unchecked")
+  private boolean getFrameScenes(Map<String, Object> map) {
+    if (sceneOrder == null)
+      return false;
+    Map<String, Object> scenes = (Map<String, Object>) map.get("scene_dict");
+    for (int i = 0; i < sceneOrder.size(); i++) {
+      String name = stringAt(sceneOrder, i);
+      JmolList<Object> thisScene = getMapList(scenes, name);
+      if (thisScene == null || thisScene.get(2) == null)
+        sceneOrder.remove(i--);
+    }
+    return (sceneOrder != null && sceneOrder.size() != 0);
   }
 
   /**
@@ -1213,13 +1232,12 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     Map<String, JmolList<Object>> htObjNames = PyMOLScene.listToMap(getMapList(
         map, "names"));
     if (haveScenes) {
-      JmolList<Object> order = getMapList(map, "scene_order");
       Map<String, Object> scenes = (Map<String, Object>) map.get("scene_dict");
       finalizeSceneData();
       Map<String, JmolList<Object>> htSecrets = PyMOLScene
           .listToMap(getMapList(map, "selector_secrets"));
-      for (int i = 0; i < order.size(); i++) {
-        String name = stringAt(order, i);
+      for (int i = 0; i < sceneOrder.size(); i++) {
+        String name = stringAt(sceneOrder, i);
         JmolList<Object> thisScene = getMapList(scenes, name);
         if (thisScene == null)
           continue;

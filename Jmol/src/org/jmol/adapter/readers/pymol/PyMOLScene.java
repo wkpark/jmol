@@ -267,6 +267,8 @@ class PyMOLScene implements JmolSceneGenerator {
 
   /**
    * 
+   * frame scenes only here
+   * 
    * @param name
    * @param thisScene
    * @param htObjNames
@@ -277,9 +279,6 @@ class PyMOLScene implements JmolSceneGenerator {
                   Map<String, JmolList<Object>> htObjNames,
                   Map<String, JmolList<Object>> htSecrets) {
     Object frame = thisScene.get(2);
-    if (frame == null)
-      return; // must have frame defined; ignore other scenes
-
     // generator : this
     // name : scene name
     // pymolFrame : specified frame
@@ -389,7 +388,7 @@ class PyMOLScene implements JmolSceneGenerator {
     setObject(name, istate);
     JmolList<Object> atomList = listAt(obj, 1);
     int k0 = (istate == 0 ? 1 : istate);
-    int k1 = (istate == 0 ? stateCount : istate + 1);
+    int k1 = (istate == 0 ? stateCount : istate);
     for (int k = k0; k <= k1; k++) {
       int[] atomMap = htAtomMap.get(fixName(name + "_" + k));
       if (atomMap == null)

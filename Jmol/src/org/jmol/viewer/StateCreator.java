@@ -1267,7 +1267,8 @@ public class StateCreator implements JmolStateCreator {
 
   private String getTextState(Text t) {
     SB s = new SB();
-    if (t.text == null || t.isLabelOrHover || t.target.equals("error"))
+    String text = t.getText();
+    if (text == null || t.isLabelOrHover || t.target.equals("error"))
       return "";
     //set echo top left
     //set echo myecho x y
@@ -1305,7 +1306,7 @@ public class StateCreator implements JmolStateCreator {
       s.append("; ").append(echoCmd).append(" IMAGE /*file*/");
     else
       s.append("; echo ");
-    s.append(Escape.eS(t.text)); // was textUnformatted, but that is not really the STATE
+    s.append(Escape.eS(text)); // was textUnformatted, but that is not really the STATE
     s.append(";\n");
     if (isImage && t.imageScale != 1)
       s.append("  ").append(echoCmd).append(" scale ").appendF(t.imageScale).append(";\n");

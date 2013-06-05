@@ -126,7 +126,8 @@ class JmolObject {
   }
 
   @SuppressWarnings("unchecked")
-  void finalizeObject(PyMOLScene pymolScene, ModelSet m, String mepList, boolean doCache) {
+  void finalizeObject(PyMOLScene pymolScene, ModelSet m, String mepList,
+                      boolean doCache) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
     String sID;
@@ -152,8 +153,7 @@ class JmolObject {
         }
         sm.viewer.setObjectProp((String) info, id);
       } else {
-        sm.viewer.displayAtoms(bsAtoms, id == T.display, false, T.add,
-            true);
+        sm.viewer.displayAtoms(bsAtoms, id == T.display, false, T.add, true);
       }
       return;
     case T.define:
@@ -190,7 +190,9 @@ class JmolObject {
     case JC.SHAPE_STICKS:
       if (size != -1) {
         sm.setShapeSizeBs(JC.SHAPE_STICKS, size, null, bsAtoms);
-        pymolScene.setUniqueBonds(((BS[])sm.getShapePropertyIndex(JC.SHAPE_STICKS, "sets", 0))[1], id == JC.SHAPE_STICKS);
+        BS bsBonds = ((BS[]) sm.getShapePropertyIndex(JC.SHAPE_STICKS, "sets",
+            0))[1];
+        pymolScene.setUniqueBonds(bsBonds, id == JC.SHAPE_STICKS);
         size = -1;
       }
       id = JC.SHAPE_STICKS;
@@ -245,10 +247,8 @@ class JmolObject {
         if (doCache)
           sb.append(";isosurface cache");
       } else {
-        //if (argb == 0)
-        //sm.setShapePropertyBs(JC.SHAPE_BALLS, "colors", colors, bsAtoms);
-        String lighting = (String)((Object[]) info)[0];
-        String only = (String)((Object[]) info)[1];
+        String lighting = (String) ((Object[]) info)[0];
+        String only = (String) ((Object[]) info)[1];
         only = " only";
         BS bsCarve = (BS) ((Object[]) info)[2];
         float carveDistance = ((Float) ((Object[]) info)[3]).floatValue();
@@ -261,16 +261,15 @@ class JmolObject {
         }
         boolean haveMep = Parser.isOneOf(sID, mepList);
         String model = m.models[modelIndex].getModelNumberDotted();
-//        BS bsIgnore = sm.viewer.getAtomsWithinRadius(0.1f, bsAtoms, true, 
-//            new RadiusData(null, 0.1f, EnumType.ABSOLUTE, null));
-//        bsIgnore.andNot(bsAtoms);
-//        String ignore = " ignore " + Escape.eBS(bsIgnore);
+        //        BS bsIgnore = sm.viewer.getAtomsWithinRadius(0.1f, bsAtoms, true, 
+        //            new RadiusData(null, 0.1f, EnumType.ABSOLUTE, null));
+        //        bsIgnore.andNot(bsAtoms);
+        //        String ignore = " ignore " + Escape.eBS(bsIgnore);
         String ignore = "";
         String type = (size < 0 ? " sasurface " : " solvent ");
-        sb.append(" model ")
-            .append(model).append(
-                resolution).append(" select ").append(Escape.eBS(bsAtoms))
-            .append(only).append(ignore).append(type).appendF(Math.abs(size / 1000f));
+        sb.append(" model ").append(model).append(resolution)
+            .append(" select ").append(Escape.eBS(bsAtoms)).append(only)
+            .append(ignore).append(type).appendF(Math.abs(size / 1000f));
         if (!haveMep) {
           if (argb == 0)
             sb.append(" map property color");
@@ -281,7 +280,7 @@ class JmolObject {
         if (translucency > 0)
           sb.append(";color isosurface translucent " + translucency);
         if (bsCarve != null && !bsCarve.isEmpty())
-          sb.append(";isosurface slab within " + carveDistance + " {" + model 
+          sb.append(";isosurface slab within " + carveDistance + " {" + model
               + " and " + Escape.eBS(bsCarve) + "}");
         if (doCache && !haveMep)
           sb.append(";isosurface cache");

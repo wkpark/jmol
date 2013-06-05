@@ -87,10 +87,13 @@ public class SticksRenderer extends FontLineShapeRenderer {
     if (multipleBondSpacing == 0 && isCartesianExport)
       multipleBondSpacing = 0.2f;
     multipleBondRadiusFactor = viewer.getFloat(T.multiplebondradiusfactor);
-    showMultipleBonds = multipleBondSpacing != 0
-        && viewer.getBoolean(T.showmultiplebonds);
     modeMultipleBond = viewer.getModeMultipleBond();
-    renderWireframe = viewer.getInMotion(true) && viewer.getBoolean(T.wireframerotation);
+    showMultipleBonds = (multipleBondSpacing != 0
+        && modeMultipleBond != JC.MULTIBOND_NEVER
+        && viewer.getBoolean(T.showmultiplebonds));
+
+    renderWireframe = viewer.getInMotion(true)
+        && viewer.getBoolean(T.wireframerotation);
     ssbondsBackbone = viewer.getBoolean(T.ssbondsbackbone);
     hbondsBackbone = viewer.getBoolean(T.hbondsbackbone);
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
@@ -192,8 +195,9 @@ public class SticksRenderer extends FontLineShapeRenderer {
         bondOrder &= ~JmolEdge.BOND_SULFUR_MASK;
       if ((bondOrder & JmolEdge.BOND_COVALENT_MASK) != 0) {
         if (!showMultipleBonds
-            || modeMultipleBond == JC.MULTIBOND_NEVER
-            || (modeMultipleBond == JC.MULTIBOND_NOTSMALL && mad > JC.madMultipleBondSmallMaximum)) {
+            || (modeMultipleBond == JC.MULTIBOND_NOTSMALL && mad > JC.madMultipleBondSmallMaximum)
+            || (bondOrder & JmolEdge.BOND_AS_SINGLE) != 0
+            ) {
           bondOrder = 1;
         }
       }

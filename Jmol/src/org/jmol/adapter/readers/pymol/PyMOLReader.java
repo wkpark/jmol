@@ -33,6 +33,7 @@ import org.jmol.adapter.readers.cifpdb.PdbReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Structure;
+import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.PymolAtomReader;
 import org.jmol.constant.EnumStructure;
@@ -703,8 +704,9 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       return;
     JmolList<Object> data = listAt(listAt(pymolObject, 2), 0);
     int color = PyMOL.getRGB(intAt(listAt(pymolObject, 0), 2));
-    pymolScene.addCGO(data, color);
-    appendLoadNote("CGO " + PyMOLScene.fixName(objectName));
+    String name = pymolScene.addCGO(data, color);
+    if (name != null)
+      appendLoadNote("CGO " + name);
   }
 
   /**
@@ -736,7 +738,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         volumeData = new Hashtable<String, JmolList<Object>>();
       volumeData.put(objectName, pymolObject);
       if (!isHidden && !isStateScript)
-        addJmolObject(T.isosurface, null, objectName);
+        pymolScene.addIsosurface(objectName);
     }
     pymolObject.addLast(objectName);
   }
@@ -847,6 +849,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       }
     addBonds(bonds);
     addMolStructures();
+    atoms = atomSetCollection.getAtoms();
     if (!isStateScript)
       createShapeObjects();
     ssMapSeq = null;
@@ -879,11 +882,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    */
   private JmolList<Bond> getBondList(JmolList<Object> bonds) {
     JmolList<Bond> bondList = new JmolList<Bond>();
-    boolean valence = pymolScene.booleanSetting(PyMOL.valence);
+    int asSingle = (pymolScene.booleanSetting(PyMOL.valence) ? 0 : JmolAdapter.ORDER_AS_SINGLE);
     int n = bonds.size();
     for (int i = 0; i < n; i++) {
       JmolList<Object> b = listAt(bonds, i);
-      int order = (valence ? intAt(b, 2) : 1);
+      int order = intAt(b, 2) | asSingle;
       if (order < 1 || order > 3)
         order = 1;
       int ia = intAt(b, 0);
@@ -1151,18 +1154,16 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * 
    */
   private void createShapeObjects() {
-    atoms = atomSetCollection.getAtoms();
     pymolScene.createShapeObjects(reps, allowSurface && !isHidden, atomCount0, atomCount);
   }
 
   ////// end of molecule-specific JmolObjects //////
-  
+
   ///// final processing /////
-  
+
   /**
-   * Create mesh or mep JmolObjects. 
-   * Caching the volumeData, because it will be needed 
-   * by org.jmol.jvxl.readers.PyMOLMeshReader
+   * Create mesh or mep JmolObjects. Caching the volumeData, because it will be
+   * needed by org.jmol.jvxl.readers.PyMOLMeshReader
    * 
    */
   private void processMeshes() {
@@ -1192,18 +1193,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       if (surface == null)
         continue;
       obj.addLast(mapName);
-      appendLoadNote("PyMOL object " + objName + " references map " + mapName);
       volumeData.put(objName, obj);
       volumeData.put("__pymolSurfaceData__", obj);
-      if (!isStateScript) {
-        JmolObject jo = addJmolObject(tok, null, obj);
-        if (isMep) {
-        } else {
-          jo.setSize(pymolScene.globalSetting(PyMOL.mesh_width));
-          jo.argb = PyMOL.getRGB(intAt(listAt(obj, 0), 2));
-        }
-        jo.translucency = pymolScene.globalSetting(PyMOL.transparency);
-      }
+      if (!isStateScript)
+        pymolScene.addMesh(tok, obj, objName, isMep);
+      appendLoadNote("PyMOL object " + objName + " references map " + mapName);
     }
   }
 
@@ -1274,10 +1268,6 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       }
     }
     pymolScene.setAtomInfo(uniqueIDs, cartoonTypes, sequenceNumbers, newChain, radii);    
-  }
-
-  private JmolObject addJmolObject(int id, BS bsAtoms, Object info) {
-    return pymolScene.addJmolObject(id, bsAtoms, info);
   }
 
   // generally useful static methods

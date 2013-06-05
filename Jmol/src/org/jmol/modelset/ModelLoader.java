@@ -889,30 +889,37 @@ public final class ModelLoader {
     return model.chains[model.chainCount++] = new Chain(model, chainID);
   }
 
-  private void iterateOverAllNewBonds(JmolAdapter adapter, Object atomSetCollection) {
-    JmolAdapterBondIterator iterBond = adapter.getBondIterator(atomSetCollection);
+  private void iterateOverAllNewBonds(JmolAdapter adapter,
+                                      Object atomSetCollection) {
+    JmolAdapterBondIterator iterBond = adapter
+        .getBondIterator(atomSetCollection);
     if (iterBond == null)
       return;
     short mad = viewer.getMadBond();
-    short order;
     modelSet.defaultCovalentMad = (jmolData == null ? mad : 0);
     boolean haveMultipleBonds = false;
     while (iterBond.hasNext()) {
-      order = (short) iterBond.getEncodedOrder();
-      Bond b = bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(), order);
+      int iOrder = iterBond.getEncodedOrder();
+      short order = (short) iOrder;
+      Bond b = bondAtoms(iterBond.getAtomUniqueID1(), iterBond
+          .getAtomUniqueID2(), order);
       if (b != null) {
-      if (order > 1 && order != JmolEdge.BOND_STEREO_NEAR && order != JmolEdge.BOND_STEREO_FAR)
-        haveMultipleBonds = true;
+        if (order > 1 && order != JmolEdge.BOND_STEREO_NEAR
+            && order != JmolEdge.BOND_STEREO_FAR)
+          haveMultipleBonds = true;
         float radius = iterBond.getRadius();
         if (radius > 0)
           b.setMad((short) (radius * 2000));
         short colix = iterBond.getColix();
         if (colix >= 0)
           b.setColix(colix);
+        b.order |= (iOrder & JmolEdge.BOND_AS_SINGLE);
       }
     }
-    if (haveMultipleBonds && modelSet.someModelsHaveSymmetry && !viewer.getBoolean(T.applysymmetrytobonds))
-      Logger.info("ModelSet: use \"set appletSymmetryToBonds TRUE \" to apply the file-based multiple bonds to symmetry-generated atoms.");
+    if (haveMultipleBonds && modelSet.someModelsHaveSymmetry
+        && !viewer.getBoolean(T.applysymmetrytobonds))
+      Logger
+          .info("ModelSet: use \"set appletSymmetryToBonds TRUE \" to apply the file-based multiple bonds to symmetry-generated atoms.");
     modelSet.defaultCovalentMad = mad;
   }
   

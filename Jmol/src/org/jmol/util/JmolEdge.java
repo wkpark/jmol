@@ -37,6 +37,7 @@ public abstract class JmolEdge {
   // 11 1111 1100 0000 0000
   // 76 5432 1098 7654 3210
   // | new connection                 1 << 17  0x20000
+  //  | render as single              1 << 16  0x10000
   //    | strut                       1 << 15  0x08000
   //     ||| | Hydrogen bond 0x3800   F << 11
   //          |Stereo 0x400           1 << 10  
@@ -68,10 +69,11 @@ public abstract class JmolEdge {
   public final static int BOND_COVALENT_TRIPLE = 3;
   public final static int BOND_COVALENT_QUADRUPLE = 4;
   public final static int BOND_ORDER_UNSPECIFIED = 0x11;
-  public final static int BOND_ORDER_ANY     = 0xFFFF;
+  public final static int BOND_ORDER_ANY     = 0x0FFFF;
   public final static int BOND_ORDER_NULL    = 0x1FFFF;
+  public static final int BOND_STRUT         = 0x08000;
+  public final static int BOND_AS_SINGLE     = 0x10000;
   public final static int BOND_NEW           = 0x20000;
-  public static final int BOND_STRUT         = 0x8000;
   public final static int BOND_HBOND_SHIFT   = 11;
   public final static int BOND_HYDROGEN_MASK = 0xF << 11;
   public final static int BOND_H_REGULAR     = 1 << 11;

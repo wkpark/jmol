@@ -39,14 +39,8 @@ public class Text extends Object2d {
   
   public float fontScale;
 
-  public String text;
-
   public String textUnformatted;
   
-  public String getText() {
-    return text;
-  }
-
   public boolean doFormatText;
 
   public String[] lines;
@@ -59,6 +53,10 @@ public class Text extends Object2d {
 
   private int textWidth;
   private int textHeight;
+  private String text;
+  public String getText() {
+    return text;
+  }
 
   private int[] widths;
 

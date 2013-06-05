@@ -10005,8 +10005,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
-  public void setBondParameters(int modelIndex, int i, float rad, int argb, float trans) {
-    modelSet.setBondParameters(modelIndex, i, rad, argb, trans);
+  public void setBondParameters(int modelIndex, int i, BS bsBonds, float rad, float pymolValence, int argb, float trans) {
+    modelSet.setBondParametersBS(modelIndex, i, bsBonds, rad, pymolValence, argb, trans);
   }
 
 }

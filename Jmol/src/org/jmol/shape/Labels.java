@@ -440,7 +440,7 @@ public class Labels extends AtomShape {
     if (isScaled) {
       text = Text.newLabel(gdata, null, label, (short) 0, (short) 0, 0, scalePixelsPerMicron, null);
       putLabel(i, text);
-    } else if (text != null) {
+    } else if (text != null && label != null) {
       text.setText(label);
     }
     if (defaultOffset != zeroOffset)

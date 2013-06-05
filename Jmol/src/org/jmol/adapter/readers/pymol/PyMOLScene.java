@@ -434,13 +434,14 @@ class PyMOLScene implements JmolSceneGenerator {
       bs = null;
       String info = objectSelectionName;
       switch (objectType) {
+      case 0: // doesn't have selected state
+      case PyMOL.OBJECT_GROUP:
+        continue;
       case PyMOL.OBJECT_MOLECULE:
         bs = viewer.getDefinedAtomSet(info);
         if (bs.nextSetBit(0) < 0)
           continue;
         break;
-      case PyMOL.OBJECT_GROUP:
-        continue;
       case PyMOL.OBJECT_MEASURE:
         if (tok == T.display) {
           MeasurementData[] mdList = htMeasures.get(name);
@@ -465,7 +466,7 @@ class PyMOLScene implements JmolSceneGenerator {
     objectName = name;
     objectType = getObjectType(name);
     objectSelectionName = getSelectionName(name);
-    objectNameID = (istate == 0 ? getObjectID(name) : objectSelectionName + "_"
+    objectNameID = (istate == 0 && objectType != 0 ? getObjectID(name) : objectSelectionName + "_"
         + istate);
     objectAtoms = htObjectAtoms.get(name);
     objectSettings = htObjectSettings.get(name);
@@ -720,7 +721,8 @@ class PyMOLScene implements JmolSceneGenerator {
         colixes[i] = (short) atomColorList.get(i).intValue();
       jo.setColors(colixes, 0);
       jo.setSize(0);
-      jo = addJmolObject(JC.SHAPE_STICKS, objectAtoms, null);
+      jo = addJmolObject(JC.SHAPE_STICKS, objectAtoms, 
+          Float.valueOf(floatSetting(PyMOL.valence)));
       jo.setSize(0);
     }
     createShapeObject(PyMOL.REP_LINES, reps[PyMOL.REP_LINES]);
@@ -885,11 +887,12 @@ class PyMOLScene implements JmolSceneGenerator {
     return labelPos;
   }
 
-  void addCGO(JmolList<Object> data, int color) {
+  String addCGO(JmolList<Object> data, int color) {
     data.addLast(objectName);
     JmolObject jo = addJmolObject(JC.SHAPE_CGO, null, data);
     jo.argb = color;
     jo.translucency = floatSetting(PyMOL.cgo_transparency);
+    return fixName(objectName);
   }
   
   boolean addMeasurements(MeasurementData[] mdList, int nCoord,
@@ -1002,7 +1005,7 @@ class PyMOLScene implements JmolSceneGenerator {
     frameObj = null;
   }
 
-  static String fixName(String name) {
+  private static String fixName(String name) {
     char[] chars = name.toLowerCase().toCharArray();
     for (int i = chars.length; --i >= 0;)
       if (!Character.isLetterOrDigit(chars[i]))
@@ -1014,8 +1017,9 @@ class PyMOLScene implements JmolSceneGenerator {
     return (String) objectInfo.get(name)[0];
   }
 
-  int getObjectType(String name) {
-    return ((Integer) objectInfo.get(name)[1]).intValue();
+  private int getObjectType(String name) {
+    Object[] o = objectInfo.get(name);
+    return (o == null ? 0 : ((Integer) o[1]).intValue());
   }
 
   BS setAtomMap(int[] atomMap, int atomCount0) {
@@ -1568,9 +1572,24 @@ class PyMOLScene implements JmolSceneGenerator {
       int c = (int) getUniqueFloatDef(id, PyMOL.stick_color, Integer.MAX_VALUE);
       if (c != Integer.MAX_VALUE)
         c =  PyMOL.getRGB(c);
+      float valence = getUniqueFloatDef(id, PyMOL.valence, Float.NaN);
       float t = getUniqueFloatDef(id, PyMOL.stick_transparency, Float.NaN);
-      viewer.setBondParameters(thisState - 1, i, rad, c, t);
+      viewer.setBondParameters(thisState - 1, i, null, rad, valence, c, t);
    }
+  }
+
+  public void addMesh(int tok, JmolList<Object> obj, String objName, boolean isMep) {
+    JmolObject jo = addJmolObject(tok, null, obj);
+    setObject(objName, -1);
+    if (!isMep) {
+      jo.setSize(floatSetting(PyMOL.mesh_width));
+      jo.argb = PyMOL.getRGB(intAt(listAt(obj, 0), 2));
+    }
+    jo.translucency = floatSetting(PyMOL.transparency);
+  }
+
+  public void addIsosurface(String objectName) {
+    addJmolObject(T.isosurface, null, objectName);
   }
 
 }

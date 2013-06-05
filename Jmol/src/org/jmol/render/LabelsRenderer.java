@@ -105,7 +105,8 @@ public class LabelsRenderer extends FontLineShapeRenderer {
       if (!atom.isVisible(myVisibilityFlag))
         continue;
       String label = labelStrings[i];
-      if (label == null || label.length() == 0 || labels.mads != null
+      if (label == null 
+          || label.length() == 0 || labels.mads != null
           && labels.mads[i] < 0)
         continue;
       labelColix = labels.getColix2(i, atom, false);

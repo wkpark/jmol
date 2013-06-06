@@ -64,7 +64,6 @@ final class LineRenderer {
   private BS lineBits;
   private float slope;
   private boolean lineTypeX;
-  //int lineDirection;
   private int nBits;
   private int nCached = 0;
   private int nFound = 0;
@@ -76,7 +75,6 @@ final class LineRenderer {
     // from cylinder
     slope = (dx != 0 ?  dy / dx : dy >= 0 ? Float.MAX_VALUE  : -Float.MAX_VALUE);
     lineTypeX = (slope <=1 && slope >= -1);
-    //lineDirection = (slope < 0 ? -1 : 1);
     nBits = (lineTypeX ? g3d.getRenderWidth() : g3d.getRenderHeight());
     if (getCachedLine())
       return;

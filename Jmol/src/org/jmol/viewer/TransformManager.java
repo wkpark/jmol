@@ -27,7 +27,6 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolNavigatorInterface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.constant.EnumStereoMode;
-import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 import org.jmol.thread.MoveThread;
 import org.jmol.thread.MoveToThread;

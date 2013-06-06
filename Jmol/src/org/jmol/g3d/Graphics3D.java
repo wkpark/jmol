@@ -310,6 +310,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     pbufT = null;
     zbufT = null;
     platform.releaseBuffers();
+    line3d.clearLineCache();
   }
   
   @Override

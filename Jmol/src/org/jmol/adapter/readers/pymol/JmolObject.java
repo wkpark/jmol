@@ -130,6 +130,7 @@ class JmolObject {
                       boolean doCache) {
     ShapeManager sm = m.shapeManager;
     int modelIndex = getModelIndex(m);
+    String color = "color";
     String sID;
     SB sb = null;
     switch (id) {
@@ -197,7 +198,11 @@ class JmolObject {
       }
       id = JC.SHAPE_STICKS;
       break;
+    case T.atoms:
+      id = JC.SHAPE_BALLS;
+      break;
     case JC.SHAPE_BALLS:
+      color = "colorballs";
       break;
     case JC.SHAPE_TRACE:
     case JC.SHAPE_BACKBONE:
@@ -349,7 +354,7 @@ class JmolObject {
     if (size != -1 || rd != null)
       sm.setShapeSizeBs(id, size, rd, bsAtoms);
     if (argb != 0)
-      sm.setShapePropertyBs(id, "color", Integer.valueOf(argb), bsAtoms);
+      sm.setShapePropertyBs(id, color, Integer.valueOf(argb), bsAtoms);
     if (translucency > 0) {
       sm.setShapePropertyBs(id, "translucentLevel",
           Float.valueOf(translucency), bsAtoms);

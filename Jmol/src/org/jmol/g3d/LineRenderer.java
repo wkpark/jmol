@@ -77,9 +77,9 @@ final class LineRenderer {
     slope = (dx != 0 ?  dy / dx : dy >= 0 ? Float.MAX_VALUE  : -Float.MAX_VALUE);
     lineTypeX = (slope <=1 && slope >= -1);
     //lineDirection = (slope < 0 ? -1 : 1);
+    nBits = (lineTypeX ? g3d.getRenderWidth() : g3d.getRenderHeight());
     if (getCachedLine())
       return;
-    nBits = (lineTypeX ? g3d.getRenderWidth() : g3d.getRenderHeight());
     lineBits = BSUtil.newBitSet(nBits);
     dy = Math.abs(dy);
     dx = Math.abs(dx);
@@ -100,6 +100,11 @@ final class LineRenderer {
     lineCache.put(slopeKey, lineBits);
     nCached++;
     //if (--test > 0 || ((100-test) % 100 == 0)) System.out.println(test+" "+dx + " " + dy + " " + lineBits);
+  }
+  
+  void clearLineCache() {
+    lineCache.clear();
+    nCached = 0;
   }
   
   void plotLine(int argbA, boolean tScreenedA, int argbB, boolean tScreenedB,
@@ -214,11 +219,11 @@ final class LineRenderer {
     if (!lineCache.containsKey(slopeKey))
       return false;
     lineBits = lineCache.get(slopeKey);
-    nFound++;
-    if (nFound == 1000000)
-      if (Logger.debugging) {
+    if (Logger.debugging) {
+      nFound++;
+      if (nFound == 1000000)
         Logger.debug("nCached/nFound lines: " + nCached + " " + nFound);
-      }
+    }
     return true;
   }
   
@@ -600,7 +605,10 @@ final class LineRenderer {
       rise = Integer.MAX_VALUE;
       run = 1;
     }
-    int shadeIndexUp = (shadeIndex < Shader.shadeIndexLast ? shadeIndex + 1
+//    if (x != 227 || y != 843)return;
+//System.out.println("plcb " + x + " " + y + " " + z + " " + dx + " " + dy + " " + dz + " " + width);
+
+int shadeIndexUp = (shadeIndex < Shader.shadeIndexLast ? shadeIndex + 1
         : shadeIndex);
     int shadeIndexDn = (shadeIndex > 0 ? shadeIndex - 1 : shadeIndex);
     int argb1 = shades1[shadeIndex];
@@ -674,6 +682,9 @@ final class LineRenderer {
           && runIndex < rise && (!tScreened || (flipflop = !flipflop))) {
         if (zFloat < zbuf[offset]) {
           int rand8 = shader.nextRandom8Bit();
+          
+          //System.out.println(x + " - " + y + " " + i + " " + offset + " " + (offset - width));
+
           g3d.addPixel(offset, (int) zFloat, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
         }
       }

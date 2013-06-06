@@ -1424,6 +1424,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int shapeTokenIndex(int tok) {
     switch (tok) {
     case T.atoms:
+    case T.balls:
       return SHAPE_BALLS;
     case T.bonds:
     case T.wireframe:

@@ -27,6 +27,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolNavigatorInterface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.constant.EnumStereoMode;
+import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 import org.jmol.thread.MoveThread;
 import org.jmol.thread.MoveToThread;
@@ -1098,7 +1099,7 @@ public class TransformManager {
 
   protected boolean perspectiveDepth = true;
   protected boolean scale3D = false;
-  protected float cameraDepth = Float.NaN;
+  protected float cameraDepth = 3f;
   protected float cameraDepthSetting = 3f;
   protected float visualRange; // set in stateManager to 5f;
   protected float cameraDistance = 1000f; // prevent divide by zero on startup
@@ -1184,7 +1185,8 @@ public class TransformManager {
       return;
     cameraDepthSetting = screenMultiples;
     viewer.global.setF("cameraDepth", cameraDepthSetting);
-    cameraDepth = Float.NaN;
+    if (mode == MODE_NAVIGATION)
+      cameraDepth = Float.NaN;
   }
 
   public float getCameraDepth() {
@@ -1497,6 +1499,8 @@ public class TransformManager {
     getTemporaryScreenPoint(pointAngstroms);
     if (internalSlab && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
+    //if (!(pointAngstroms instanceof Atom))
+      //System.out.println("pt=" + pointAngstroms + " " + point3iScreenTemp + " " + Thread.currentThread());
     return point3iScreenTemp;
   }
 

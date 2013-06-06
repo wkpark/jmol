@@ -1249,9 +1249,6 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
   }
   
-  /**
-   * Really lame implementation of an exit command
-   */
   class ExitAction extends AbstractAction {
 
     ExitAction() {

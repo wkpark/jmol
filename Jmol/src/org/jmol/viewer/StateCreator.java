@@ -63,6 +63,7 @@ import org.jmol.modelset.ModelCollection.StateScript;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
+import org.jmol.shape.Balls;
 import org.jmol.shape.Echo;
 import org.jmol.shape.Halos;
 import org.jmol.shape.Hover;
@@ -563,7 +564,7 @@ public class StateCreator implements JmolStateCreator {
         + am.firstFrameDelay + " " + am.lastFrameDelay);
     if (am.morphCount > 0)
       appendCmd(commands, "animation MORPH " + am.morphCount);
-    int[] frames = am.gettAnimationFrames();
+    int[] frames = am.getAnimationFrames();
     boolean showModel = true;
     if (frames != null) {
       appendCmd(commands, "anim frames " + Escape.eAI(frames));
@@ -1241,6 +1242,9 @@ public class StateCreator implements JmolStateCreator {
     case JC.SHAPE_BALLS:
       int atomCount = viewer.getAtomCount();
       Atom[] atoms = viewer.modelSet.atoms;
+      Balls balls = (Balls) shape;
+      short[] colixes = balls.colixes;
+      byte[] pids = balls.paletteIDs;
       float r = 0;
       for (int i = 0; i < atomCount; i++) {
         if (shape.bsSizeSet != null && shape.bsSizeSet.get(i)) {
@@ -1254,9 +1258,12 @@ public class StateCreator implements JmolStateCreator {
           if (pid != EnumPalette.CPK.id || atoms[i].isTranslucent())
             BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommand("atoms",
                 pid, atoms[i].getColix(), shape.translucentAllowed));
+          if (colixes != null && i < colixes.length)
+            BSUtil.setMapBitSet(temp2, i, i, Shape.getColorCommand("balls",
+                pids[i], colixes[i], shape.translucentAllowed));
         }
       }
-      s = getCommands(temp, null, "select");
+      s = getCommands(temp, temp2, "select");
       break;
     default:
       s = "";

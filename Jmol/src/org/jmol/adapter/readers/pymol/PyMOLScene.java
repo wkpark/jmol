@@ -372,7 +372,7 @@ class PyMOLScene implements JmolSceneGenerator {
       int icolor = PyMOL.getRGB(color);
       JmolList<Object> molecules = (JmolList<Object>) item[1];
       BS bs = getSelectionAtoms(molecules, thisState, new BS());
-      addJmolObject(JC.SHAPE_BALLS, bs, null).argb = icolor;
+      addJmolObject(T.atoms, bs, null).argb = icolor;
     }
   }
 
@@ -715,7 +715,7 @@ class PyMOLScene implements JmolSceneGenerator {
       objectAtoms = BSUtil.newBitSet2(atomCount0, atomCount);
       JmolObject jo;
       // from reader
-      jo = addJmolObject(JC.SHAPE_BALLS, objectAtoms, null);
+      jo = addJmolObject(T.atoms, objectAtoms, null);
       colixes = ArrayUtil.ensureLengthShort(colixes, atomCount);
       for (int i = atomCount; --i >= atomCount0;)
         colixes[i] = (short) atomColorList.get(i).intValue();
@@ -1287,6 +1287,9 @@ class PyMOLScene implements JmolSceneGenerator {
     case PyMOL.REP_NBSPHERES:
     case PyMOL.REP_SPHERES:
       jo = addJmolObject(JC.SHAPE_BALLS, bs, null);
+      f = floatSetting(PyMOL.sphere_color);
+      if (f != -1)
+        jo.argb = PyMOL.getRGB((int) f);
       jo.translucency = sphereTranslucency;
       break;
     case PyMOL.REP_DOTS:
@@ -1360,7 +1363,7 @@ class PyMOLScene implements JmolSceneGenerator {
     for (Map.Entry<Float, BS> e : htSpacefill.entrySet()) {
       float r = e.getKey().floatValue();
       BS bs = e.getValue();
-      addJmolObject(JC.SHAPE_BALLS, bs, null).rd = new RadiusData(null, r,
+      addJmolObject(T.atoms, bs, null).rd = new RadiusData(null, r,
           RadiusData.EnumType.ABSOLUTE, EnumVdw.AUTO);
     }
     htSpacefill.clear();

@@ -374,7 +374,7 @@ public class AnimationManager {
     currentMorphModel = morphCount = 0;
   }
 
-  int[] gettAnimationFrames() {
+  int[] getAnimationFrames() {
     return animationFrames;
   }
 

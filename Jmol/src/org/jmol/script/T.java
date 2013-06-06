@@ -1077,7 +1077,8 @@ public class T {
   public final static int axis   = misc  | 30;
   final static int babel         = misc  | 32;
   final static int babel21       = misc  | 34; 
-  final static int back          = misc  | 36;
+  final static int back          = misc  | 35;
+  public final static int balls         = misc  | 36;
   final static int barb          = misc  | 37;
   public final static int backlit = misc  | 38;
   public final static int basepair      = misc  | 40;
@@ -1776,6 +1777,7 @@ public class T {
       "babel21",         T.t(babel21), 
       "back",            T.t(back),
       "backlit",         T.t(backlit),
+      "balls",           T.t(balls),
       "baseModel",       T.t(basemodel), // Jmol 12.3.19
       "bin",             T.t(bin),
       "bondCount",       T.t(bondcount),

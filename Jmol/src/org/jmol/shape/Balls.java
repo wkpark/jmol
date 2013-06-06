@@ -34,7 +34,7 @@ import org.jmol.util.C;
 import org.jmol.viewer.JC;
 
 public class Balls extends AtomShape {
-  
+
   @Override
   protected void setSizeRD(RadiusData rd, BS bsSelected) {
     isActive = true;
@@ -118,38 +118,42 @@ public class Balls extends AtomShape {
       }
       return;
     }
+    if (propertyName.startsWith("ball")) {
+      propertyName = propertyName.substring(4).intern();
+    }
     setPropAS(propertyName, value, bs);
   }
 
- @Override
-public void setModelClickability() {
-   BS bsDeleted = viewer.getDeletedAtoms();
-   for (int i = atomCount; --i >= 0;) {
-     Atom atom = atoms[i];
-     atom.setClickable(0);
-     if (bsDeleted != null && bsDeleted.get(i) || (atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
-         || modelSet.isAtomHidden(i))
-       continue;
-     atom.setClickable(myVisibilityFlag);
-   }
- }
-  
- @Override
-public void setVisibilityFlags(BS bs) {
+  @Override
+  public void setModelClickability() {
+    BS bsDeleted = viewer.getDeletedAtoms();
+    for (int i = atomCount; --i >= 0;) {
+      Atom atom = atoms[i];
+      atom.setClickable(0);
+      if (bsDeleted != null && bsDeleted.get(i)
+          || (atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
+          || modelSet.isAtomHidden(i))
+        continue;
+      atom.setClickable(myVisibilityFlag);
+    }
+  }
+
+  @Override
+  public void setVisibilityFlags(BS bs) {
     boolean showHydrogens = viewer.getBoolean(T.showhydrogens);
     BS bsDeleted = viewer.getDeletedAtoms();
-    for (int i = atomCount; --i >= 0; ) {
+    for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       int flag = atom.getShapeVisibilityFlags();
       flag &= (~JC.ATOM_IN_FRAME & ~myVisibilityFlag);
       atom.setShapeVisibilityFlags(flag);
-      if (bsDeleted != null && bsDeleted.get(i) 
-          || !showHydrogens && atom.getElementNumber() == 1)
+      if (bsDeleted != null && bsDeleted.get(i) || !showHydrogens
+          && atom.getElementNumber() == 1)
         continue;
       int modelIndex = atom.getModelIndex();
-      if (bs.get(modelIndex)) { 
+      if (bs.get(modelIndex)) {
         atom.setShapeVisibility(JC.ATOM_IN_FRAME, true);
-        if (atom.madAtom != 0 &&  !modelSet.isAtomHidden(i))
+        if (atom.madAtom != 0 && !modelSet.isAtomHidden(i))
           atom.setShapeVisibility(myVisibilityFlag, true);
       }
     }
@@ -159,7 +163,7 @@ public void setVisibilityFlags(BS bs) {
   public String getShapeState() {
     return viewer.getShapeState(this);
   }
-  
+
   /*
   boolean checkObjectHovered(int x, int y) {
     //just for debugging

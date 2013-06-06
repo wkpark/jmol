@@ -8144,7 +8144,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     Object colorvalue = null;
     Object colorvalue1 = null;
     BS bs = null;
-    String prefix = "";
+    String prefix = (index == 2 && tokAt(1) == T.balls ? "ball" : "");
     boolean isColor = false;
     boolean isIsosurface = (shapeType == JC.SHAPE_ISOSURFACE || shapeType == JC.SHAPE_CONTACT);
     int typeMask = 0;
@@ -8158,9 +8158,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         shapeType = JC.SHAPE_STICKS;
       }
     }
+    int tok = getToken(index).tok;
     if (isBackground)
       getToken(index);
-    else if ((isBackground = (getToken(index).tok == T.background)) == true)
+    else if ((isBackground = (tok == T.background)) == true)
       getToken(++index);
     if (isBackground)
       prefix = "bg";
@@ -8200,13 +8201,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (isTranslucent && isFloatParameter(index))
         translucentLevel = getTranslucentLevel(index++);
     }
-    int tok = 0;
-    if (index < slen && tokAt(index) != T.on
-        && tokAt(index) != T.off) {
+    tok = 0;
+    if (index < slen && tokAt(index) != T.on && tokAt(index) != T.off) {
       isColor = true;
       tok = getToken(index).tok;
-      if ((!isIsosurface || tokAt(index + 1) != T.to)
-          && isColorParam(index)) {
+      if ((!isIsosurface || tokAt(index + 1) != T.to) && isColorParam(index)) {
         int argb = getArgbParamOrNone(index, false);
         colorvalue = (argb == 0 ? null : Integer.valueOf(argb));
         if (translucency == null && tokAt(index = iToken + 1) != T.nada) {
@@ -8216,9 +8215,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             translucency = parameterAsString(index);
             if (isTranslucent && isFloatParameter(index + 1))
               translucentLevel = getTranslucentLevel(++index);
-          } else if (isColorParam(index)){
+          } else if (isColorParam(index)) {
             argb = getArgbParamOrNone(index, false);
-            colorvalue1 = (argb == 0 ? null : Integer.valueOf(argb));            
+            colorvalue1 = (argb == 0 ? null : Integer.valueOf(argb));
           }
           // checkLength(index + 1);
           // iToken = index;
@@ -8236,8 +8235,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         boolean isColorIndex = (isByElement || name
             .indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
         EnumPalette pal = (isColorIndex || isIsosurface ? EnumPalette.PROPERTY
-            : tok == T.spacefill ? EnumPalette.CPK
-                : EnumPalette.getPalette(name));
+            : tok == T.spacefill ? EnumPalette.CPK : EnumPalette
+                .getPalette(name));
         // color atoms "cpkScheme"
         if (pal == EnumPalette.UNKNOWN
             || (pal == EnumPalette.TYPE || pal == EnumPalette.ENERGY)
@@ -8245,22 +8244,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         Object data = null;
         BS bsSelected = (pal != EnumPalette.PROPERTY
-            && pal != EnumPalette.VARIABLE
-            || !viewer.global.rangeSelected ? null : viewer.getSelectionSet(false));
+            && pal != EnumPalette.VARIABLE || !viewer.global.rangeSelected ? null
+            : viewer.getSelectionSet(false));
         if (pal == EnumPalette.PROPERTY) {
           if (isColorIndex) {
             if (!chk) {
-              data = getBitsetPropertyFloat(
-                  bsSelected,
-                  (isByElement ? T.elemno : T.groupid) | T.allfloat,
-                  Float.NaN, Float.NaN);
+              data = getBitsetPropertyFloat(bsSelected, (isByElement ? T.elemno
+                  : T.groupid)
+                  | T.allfloat, Float.NaN, Float.NaN);
             }
           } else {
             if (!isColorIndex && !isIsosurface)
               index++;
             if (name.equals("property")
-                && T.tokAttr((tok = getToken(index).tok),
-                    T.atomproperty)
+                && T.tokAttr((tok = getToken(index).tok), T.atomproperty)
                 && !T.tokAttr(tok, T.strproperty)) {
               if (!chk) {
                 data = getBitsetPropertyFloat(bsSelected, getToken(index++).tok
@@ -8281,7 +8278,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (tokAt(index) == T.string) {
             scheme = parameterAsString(index++).toLowerCase();
             if (isArrayParameter(index)) {
-              scheme += "=" + SV.sValue(SV.getVariableAS(stringParameterSet(index))).replace('\n',' ');
+              scheme += "="
+                  + SV.sValue(SV.getVariableAS(stringParameterSet(index)))
+                      .replace('\n', ' ');
               index = iToken + 1;
             }
           } else if (isIsosurface && isColorParam(index)) {
@@ -8399,9 +8398,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         viewer.calcSelectedMoleculesCount();
         break;
       }
-      if (colorvalue1 != null 
+      if (colorvalue1 != null
           && (isIsosurface || shapeType == JC.SHAPE_CARTOON || shapeType == JC.SHAPE_RIBBONS))
-        setShapeProperty(shapeType, "colorPhase", new Object[] { colorvalue1, colorvalue });
+        setShapeProperty(shapeType, "colorPhase", new Object[] { colorvalue1,
+            colorvalue });
       else if (bs == null)
         setShapeProperty(shapeType, prefix + "color", colorvalue);
       else

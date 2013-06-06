@@ -28,6 +28,8 @@ package org.jmol.render;
 
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
+import org.jmol.shape.Balls;
+import org.jmol.shape.Shape;
 import org.jmol.util.BS;
 
 public class BallsRenderer extends ShapeRenderer {
@@ -37,12 +39,13 @@ public class BallsRenderer extends ShapeRenderer {
     boolean needTranslucent = false;
     if (!viewer.getBoolean(T.wireframerotation) || !viewer.getInMotion(true)) {
       Atom[] atoms = modelSet.atoms;
+      short[] colixes = ((Balls) shape).colixes;
       BS bsOK = viewer.getRenderableBitSet();
       for (int i = bsOK.nextSetBit(0); i >= 0; i = bsOK.nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         if (atom.screenDiameter > 0
             && (atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0) {
-          if (g3d.setColix(atom.getColix())) {
+          if (g3d.setColix(colixes == null ? atom.getColix() : Shape.getColix(colixes, i, atom))) {
             g3d.drawAtom(atom);
           } else {
             needTranslucent = true;
@@ -52,4 +55,5 @@ public class BallsRenderer extends ShapeRenderer {
     }
     return needTranslucent;
   }
+
 }

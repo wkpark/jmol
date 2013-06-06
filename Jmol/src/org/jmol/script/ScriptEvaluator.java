@@ -14493,7 +14493,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           throw new ScriptInterruption(this, "restore" + type, 1);
         return;
       }
-      checkLength(2);
+      checkLength23();
       switch (tok) {
       case T.bonds:
         if (!chk)
@@ -14682,13 +14682,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         break;
       default:
-      case T.string:
+        tok = T.image;
+        break;
+      }
+      if (tok == T.image) {
         T t = T.getTokenFromName(SV.sValue(args[pt])
             .toLowerCase());
-        if (t != null) {
-          tok = t.tok;
+        if (t != null)
           type = SV.sValue(t).toUpperCase();
-        }
         if (Parser.isOneOf(type, driverList.toUpperCase())) {
           // povray, maya, vrml, idtf
           pt++;
@@ -14697,7 +14698,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           // Povray, Maya, Vrml, Idtf
           isExport = true;
           if (isCommand)
-            fileName = "Jmol." + type;
+            fileName = "Jmol." + type.toLowerCase();
         } else if (type.equals("ZIP")) {
           pt++;
         } else if (type.equals("ZIPALL")) {

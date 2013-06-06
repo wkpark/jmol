@@ -94,6 +94,7 @@ public final class BioModel extends Model{
                              String structureID, int serialID, int strandCount,
                              char startChainID, int startSeqcode,
                              char endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
+    System.out.println("biomodel " + type + " " + structureID + "  " + serialID + " " + istart + " " + iend);
     for (int i = bioPolymerCount; --i >= 0; )
       bioPolymers[i].addStructure(type, structureID, serialID, strandCount, startChainID, startSeqcode,
                                     endChainID, endSeqcode, istart, iend, bsAssigned);

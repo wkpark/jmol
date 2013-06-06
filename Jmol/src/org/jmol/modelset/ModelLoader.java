@@ -1003,8 +1003,12 @@ public final class ModelLoader {
     String id = iterStructure.getStructureID();
     int serID = iterStructure.getSerialID();
     int count = iterStructure.getStrandCount();
-    int istart = iterStructure.getStartIndex() + baseAtomIndex;
-    int iend = iterStructure.getEndIndex() + baseAtomIndex;
+    int istart = iterStructure.getStartIndex();
+    if (istart >= 0)
+      istart += baseAtomIndex;
+    int iend = iterStructure.getEndIndex();
+    if (iend >= 0)
+      iend += baseAtomIndex;
     if (bsAssigned == null)
       bsAssigned = new BS();
     iterStructure.getSerialID();

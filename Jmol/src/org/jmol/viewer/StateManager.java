@@ -180,6 +180,12 @@ public class StateManager {
     viewer.setDefaultVdw("Rasmol");
   }
 
+  public void setPyMOLDefaults() {
+    setCommonDefaults();
+    viewer.setStringProperty("measurementUnits", "ANGSTROMS");
+    viewer.setBooleanProperty("zoomHeight", true);
+  }
+
   private static Object getNoCase(Map<String, Object> saved, String name) {
     for (Entry<String, Object> e : saved.entrySet())
       if (e.getKey().equalsIgnoreCase(name))
@@ -1513,6 +1519,7 @@ public class StateManager {
           + " to view)";
     return sv;
   }
+
 
   ///////// state serialization 
 

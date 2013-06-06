@@ -3277,6 +3277,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // atom coordinates may be moved here 
     //  but this is not included as an atomMovedCallback
     modelSet.setAtomData(type, name, coordinateData, isDefault);
+    if (type == AtomCollection.TAINT_COORD)
+      checkCoordinatesChanged();
     refreshMeasures(true);
   }
 
@@ -6006,7 +6008,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.helpPath = value;
       break;
     case T.defaults:
-      if (!value.equalsIgnoreCase("RasMol"))
+      if (!value.equalsIgnoreCase("RasMol") && !value.equalsIgnoreCase("PyMOL"))
         value = "Jmol";
       setDefaultsType(value);
       break;
@@ -7473,6 +7475,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setDefaultsType(String type) {
     if (type.equalsIgnoreCase("RasMol")) {
       stateManager.setRasMolDefaults();
+      return;
+    }
+    if (type.equalsIgnoreCase("PyMOL")) {
+      stateManager.setPyMOLDefaults();
       return;
     }
     setDefaults();

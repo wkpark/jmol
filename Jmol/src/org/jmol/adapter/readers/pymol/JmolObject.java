@@ -60,7 +60,7 @@ class JmolObject {
   private short[] colixes;
   private Object[] colors;
 
-  String objectNameID;
+  String jmolName;
   int argb;
   float translucency = 0;
   boolean visible = true;
@@ -77,7 +77,7 @@ class JmolObject {
     this.id = id;
     this.bsAtoms = bsAtoms;
     this.info = info;
-    this.objectNameID = branchNameID;
+    this.jmolName = branchNameID;
   }
   
   /**
@@ -173,12 +173,9 @@ class JmolObject {
         sm.viewer.setCurrentModelIndex(-1);
       }
       return;
-    case T.group:
-      // if we implement GROUP in Jmol, we need to do something here.
-      return;
     case T.scene:
-      sm.viewer.saveScene(objectNameID, (Map<String, Object>) info);
-      sm.viewer.saveOrientation(objectNameID,
+      sm.viewer.saveScene(jmolName, (Map<String, Object>) info);
+      sm.viewer.saveOrientation(jmolName,
           (float[]) ((Map<String, Object>) info).get("pymolView"));
       return;
     case JC.SHAPE_LABELS:
@@ -234,7 +231,7 @@ class JmolObject {
       sm.setShapePropertyBs(id, "measure", md, bsAtoms);
       return;
     case T.isosurface:
-      sID = (bsAtoms == null ? (String) info : objectNameID);
+      sID = (bsAtoms == null ? (String) info : jmolName);
       // when getting a scene, ignore creation of this surface
       if (sm.getShapeIdFromObjectName(sID) >= 0) {
         sm.viewer.setObjectProp(sID, T.display);

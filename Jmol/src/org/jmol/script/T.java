@@ -328,7 +328,7 @@ public class T {
   final static int minimize     = scriptCommand | 30;
 //final static int model        see mathfunc
 //final static int measure      see mathfunc
-  final static int move         = scriptCommand | 32;
+  public final static int move         = scriptCommand | 32;
   public final static int moveto = scriptCommand | 34;
   public final static int navigate = scriptCommand | 35;
 //final static int quaternion   see mathfunc

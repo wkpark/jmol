@@ -59,7 +59,8 @@ class PyMOL {
     "labels","nb_spheres",
     "cartoon","ribbon","lines",
     "mesh","dots","dashes",
-    "nonbonded"};//',"slice"};
+    "nonbonded","cell","cgo","callback","extent",
+    "slice","angles","dihedrals","ellipsoid","volume"};
 
 
   final static int REP_STICKS = 0;
@@ -74,14 +75,7 @@ class PyMOL {
   final static int REP_DOTS = 9; // dots; also used for objMap
   final static int REP_DASHES = 10;  // for measurements
   final static int REP_NONBONDED = 11;
-  final static int REP_MAX = 12;
-
-  // a continuation of PyMOL.REP_xxx
-  final static int REP_JMOL_TRACE = 12;
-  final static int REP_JMOL_PUTTY = 13;
-  final static int REP_JMOL_MAX = 14;
-
-  // ???
+  
   final static int REP_CELL = 12; // for objMesh, objSurface
   final static int REP_CGO = 13; // for sculpt mode, objAlignment, objCGO
   final static int REP_CALLBACK = 14; // for objCallback
@@ -89,8 +83,17 @@ class PyMOL {
   final static int REP_SLICE = 16; // for objSlice
   final static int REP_ANGLES = 17;
   final static int REP_DIHEDRALS = 18;
+  final static int REP_ELLIPSOID = 19;
+  final static int REP_VOLUME = 20;
 
+  final static int REP_MAX = 21;
 
+  // a continuation of PyMOL.REP_xxx
+  final static int REP_JMOL_TRACE = 21;
+  final static int REP_JMOL_PUTTY = 22;
+  final static int REP_JMOL_MAX = 23;
+
+  // ???
   
   // flag 24: 
   
@@ -6242,18 +6245,22 @@ class PyMOL {
 
   public static float getDefaultSetting(int i, int pymolVersion) {
     switch (i) {
-    case stick_color:
-      return -1;
     case label_size:
       return 14;
+    case line_color:
+    case stick_color:
     case label_distance_digits:
     case label_angle_digits:
     case label_dihedral_digits:
+    case ellipsoid_color:
       return -1;
     case ray_pixel_scale:
+    case ellipsoid_scale:
       return 1;
     default:
       Logger.info("PyMOL " + pymolVersion + " does not have setting " + i);
+      //$FALL-THROUGH$
+    case ellipsoid_transparency:
       return 0;
     }
   }

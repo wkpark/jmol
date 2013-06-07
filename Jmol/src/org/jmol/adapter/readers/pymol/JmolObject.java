@@ -199,7 +199,6 @@ class JmolObject {
       id = JC.SHAPE_BALLS;
       break;
     case JC.SHAPE_BALLS:
-      color = "colorballs";
       break;
     case JC.SHAPE_TRACE:
     case JC.SHAPE_BACKBONE:
@@ -219,6 +218,16 @@ class JmolObject {
     }
 
     switch (id) {
+    case JC.SHAPE_DOTS:
+    case JC.SHAPE_BALLS:
+    case JC.SHAPE_STARS:
+    case JC.SHAPE_ELLIPSOIDS: // not implemented
+      if (info instanceof Object[]) {
+        sm.loadShape(id);
+        sm.setShapePropertyBs(id, "params", info, bsAtoms);
+        return;        
+      }
+      break;
     case JC.SHAPE_MEASURES:
       if (modelIndex < 0)
         return;

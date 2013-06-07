@@ -4173,8 +4173,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     Object image = null;
     try {
-      gdata.beginRendering(transformManager.getStereoRotationMatrix(isDouble),
-          isImageWrite);
+      beginRendering(isDouble, isImageWrite);
       render();
       gdata.endRendering();
       image = gdata.getScreenImage(isImageWrite);
@@ -4184,6 +4183,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setErrorMessage("Error during rendering: " + er, null);
     }
     return image;
+  }
+
+  private void beginRendering(boolean isDouble, boolean isImageWrite) {
+    gdata.beginRendering(transformManager.getStereoRotationMatrix(isDouble),
+        global.translucent, 
+        isImageWrite);
   }
 
   private boolean antialiasDisplay;
@@ -4249,13 +4254,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       boolean mergeImages = (graphic == null && isStereoDouble());
       Object imageBuffer;
       if (transformManager.stereoMode.isBiColor()) {
-        gdata.beginRendering(transformManager.getStereoRotationMatrix(true),
-            isImageWrite);
+        beginRendering(true, isImageWrite);
         render();
         gdata.endRendering();
         gdata.snapshotAnaglyphChannelBytes();
-        gdata.beginRendering(transformManager.getStereoRotationMatrix(false),
-            isImageWrite);
+        beginRendering(false, isImageWrite);
         render();
         gdata.endRendering();
         gdata.applyAnaglygh(transformManager.stereoMode,
@@ -6459,6 +6462,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.translucent:
+      // 13.1.17 false -> translucent objects are opaque among themselves (Pymol transparency_mode 2)
+      global.translucent = value;
+      break;
     case T.cartoonladders:
       // 13.1.15
       global.cartoonLadders = value;

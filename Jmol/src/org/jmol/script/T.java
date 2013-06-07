@@ -1040,8 +1040,9 @@ public class T {
   public final static int testflag1                      = booleanparam | 184;
   public final static int testflag2                      = booleanparam | 186;
   public final static int testflag3                      = booleanparam | 188;
-  public final static int testflag4                      = booleanparam | 190;
-  public final static int tracealpha                     = booleanparam | 191;
+  public final static int testflag4                      = booleanparam | 189;
+  public final static int tracealpha                     = booleanparam | 190;
+  public final static int translucent                    = booleanparam | 191;
   public final static int twistedsheets                  = booleanparam | 192;
   public final static int usearcball                     = booleanparam | 193;
   public final static int useminimizationthread          = booleanparam | 194;
@@ -1274,7 +1275,6 @@ public class T {
   final static int torsion        = misc  | 350;
   final static int transform      = misc  | 352;
   public final static int translation   = misc  | 354;
-  public final static int translucent   = misc  | 356;
   public final static int triangles     = misc  | 358;
   final static int url             = misc  | 360 | expression;
   final static int user            = misc  | 362;

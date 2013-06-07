@@ -343,4 +343,6 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
                                         P3 navigationOffset,
                                         float navigationDepthPercent);
 
+  public abstract boolean getTranslucentCoverOnly();
+
 }

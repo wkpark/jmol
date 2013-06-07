@@ -13,6 +13,14 @@ public class GData implements JmolGraphicsInterface {
 
   public ApiPlatform apiPlatform;
 
+  public boolean translucentCoverOnly = false;
+  public void setTranslucentCoverOnly(boolean TF) {
+    translucentCoverOnly = TF;
+  }
+  public boolean getTranslucentCoverOnly() {
+    return translucentCoverOnly;
+  }
+
   protected int windowWidth, windowHeight;
   protected int displayMinX, displayMaxX, displayMinY, displayMaxY;
   protected boolean antialiasThisFrame;
@@ -517,9 +525,10 @@ public class GData implements JmolGraphicsInterface {
 
   /**
    * @param stereoRotationMatrix  
-   * @param isImageWrite TODO
+   * @param translucentMode
+   * @param isImageWrite 
    */
-  public void beginRendering(Matrix3f stereoRotationMatrix, boolean isImageWrite) {
+  public void beginRendering(Matrix3f stereoRotationMatrix, boolean translucentMode, boolean isImageWrite) {
   }
 
   public void endRendering() {
@@ -681,4 +690,5 @@ public class GData implements JmolGraphicsInterface {
   public void renderAllStrings(Object jmolRenderer) {
     // only in Graphics3D
   }
+
 }

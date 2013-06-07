@@ -900,5 +900,9 @@ final public class Export3D implements JmolRendererInterface {
     // g3d only
   }
 
+  public boolean getTranslucentCoverOnly() {
+    return g3d.getTranslucentCoverOnly();
+  }
+
 
 }

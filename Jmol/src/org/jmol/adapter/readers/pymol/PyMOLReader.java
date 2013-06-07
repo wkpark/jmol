@@ -1025,6 +1025,9 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     int flags = intAt(a, 24);
     //System.out.println(atomCount + " " + group3 + " " + serNo + " " + Integer.toHexString(flags));
     boolean bonded = (intAt(a, 25) != 0);
+    
+    // repurposing vectorX,Y,Z
+    
     int uniqueID = (a.size() > 40 && intAt(a, 40) == 1 ? intAt(a, 32) : -1);
     atom.vectorX = uniqueID;
     atom.vectorY = cartoonType;
@@ -1034,7 +1037,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     }
     //if (uniqueID > 0)
       //pymolScene.setUnique(uniqueID, atom);
-    pymolScene.setAtomColor(uniqueID, atomColor);
+    pymolScene.setAtomColor(atomColor);
     processAtom2(atom, serNo, x, y, z, formalCharge);
 
     // set pymolScene bit sets and create labels
@@ -1261,13 +1264,15 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       uniqueIDs[i] = getUniqueID(i);
       sequenceNumbers[i] = getSequenceNumber(i);
       radii[i] = getVDW(i);
-      if (lastAtomChain != atoms[i].chainID || lastAtomSet != atoms[i].atomSetIndex) {
+      if (lastAtomChain != atoms[i].chainID
+          || lastAtomSet != atoms[i].atomSetIndex) {
         newChain[i] = true;
         lastAtomChain = atoms[i].chainID;
         lastAtomSet = atoms[i].atomSetIndex;
       }
     }
-    pymolScene.setAtomInfo(uniqueIDs, cartoonTypes, sequenceNumbers, newChain, radii);    
+    pymolScene.setAtomInfo(uniqueIDs, cartoonTypes, sequenceNumbers,
+        newChain, radii);
   }
 
   // generally useful static methods
@@ -1288,9 +1293,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
   private static BS getBsReps(JmolList<Object> list) {
     BS bsReps = new BS();
-    for (int i = 0; i < PyMOL.REP_MAX; i++)
+    int n = Math.min(list.size(), PyMOL.REP_MAX);
+    for (int i = 0; i < n; i++) {
       if (intAt(list, i) == 1)
         bsReps.set(i);
+    }
     return bsReps;
   }
 

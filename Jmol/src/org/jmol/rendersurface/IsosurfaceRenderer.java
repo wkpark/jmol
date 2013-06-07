@@ -166,6 +166,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         mySlabValue = Math.round(pt2f.z + r * (1 - meshSlabValue / 50f));
       }
     }
+    boolean tcover = g3d.getTranslucentCoverOnly();
     g3d.setTranslucentCoverOnly(imesh.frontOnly);
     thePlane = imesh.jvxlData.jvxlPlane;
     vertexValues = imesh.vertexValues;
@@ -177,7 +178,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     } else {
       isOK = renderMesh(imesh);
     }
-    g3d.setTranslucentCoverOnly(false);
+    g3d.setTranslucentCoverOnly(tcover);
     return isOK;
   }
   

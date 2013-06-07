@@ -156,6 +156,7 @@ public class StateManager {
         JC.DEFAULT_BOND_TOLERANCE);
     viewer.setFloatProperty("minBondDistance",
         JC.DEFAULT_MIN_BOND_DISTANCE);
+    viewer.setBooleanProperty("translucent", true);
   }
 
   void setJmolDefaults() {
@@ -972,6 +973,7 @@ public class StateManager {
       setB("testFlag3", testFlag3);
       setB("testFlag4", testFlag4);
       setB("traceAlpha", traceAlpha);
+      setB("translucent", translucent);
       setB("twistedSheets", twistedSheets);
       setB("useArcBall", useArcBall);
       setB("useMinimizationThread", useMinimizationThread);
@@ -1141,6 +1143,7 @@ public class StateManager {
     boolean rocketBarrels = false;
     float sheetSmoothing = 1; // 0: traceAlpha on alphas for helix, 1 on midpoints
     boolean traceAlpha = true;
+    boolean translucent = true;
     boolean twistedSheets = false;
 
     //misc
@@ -1466,7 +1469,7 @@ public class StateManager {
     
     boolean haveSetStructureList;
     private String[] userDatabases;
-   
+    
     public void setStructureList(float[] list, EnumStructure type) {
       haveSetStructureList = true;
       structureList.put(type, list);

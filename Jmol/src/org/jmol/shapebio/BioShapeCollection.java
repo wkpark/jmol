@@ -154,7 +154,7 @@ public abstract class BioShapeCollection extends Shape {
             bioShape.setTranslucent(isTranslucent, bsSelected, translucency);
         }
       }
-      return;
+      return; 
     }
     if ("colorPhase" == propertyName) {
       // cartoons and ribbons only

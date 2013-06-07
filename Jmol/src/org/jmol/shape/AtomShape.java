@@ -78,9 +78,18 @@ public abstract class AtomShape extends Shape {
     setSize2(size, bsSelected);
   }
 
+  private RadiusData rd;
+
   protected void setSize2(int size, BS bsSelected) {
-    setSizeRD(size == 0 ? null : new RadiusData(null, size, EnumType.SCREEN,
-        null), bsSelected);
+    if (size == 0) {
+      setSizeRD(null, bsSelected);
+      return;
+    }
+    if (rd == null)
+      rd = new RadiusData(null, size, EnumType.SCREEN, null);
+    else
+      rd.value = size;
+    setSizeRD(rd, bsSelected);
   }
 
   @Override
@@ -96,12 +105,15 @@ public abstract class AtomShape extends Shape {
     int i0 = (isAll ? atomCount - 1 : bsSelected.nextSetBit(0));
     if (mads == null && i0 >= 0)
       mads = new short[atomCount];
-    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1))) {
-      Atom atom = atoms[i];
-      mads[i] = atom.calculateMad(viewer, rd);
-      bsSizeSet.setBitTo(i, isVisible);
-      atom.setShapeVisibility(myVisibilityFlag, isVisible);
-    }
+    for (int i = i0; i >= 0; i = (isAll ? i - 1 : bsSelected.nextSetBit(i + 1)))
+      setSizeRD2(i, rd, isVisible);
+  }
+
+  protected void setSizeRD2(int i, RadiusData rd, boolean isVisible) {
+    Atom atom = atoms[i];
+    mads[i] = atom.calculateMad(viewer, rd);
+    bsSizeSet.setBitTo(i, isVisible);
+    atom.setShapeVisibility(myVisibilityFlag, isVisible);
   }
 
   protected void setPropAS(String propertyName, Object value, BS bs) {
@@ -138,11 +150,10 @@ public abstract class AtomShape extends Shape {
         if (f > 0.01f)
           colix = C.getColixTranslucent3(colix, true, f);
         setColixAndPalette(colix, EnumPalette.UNKNOWN.id, i);
-        rd.value = sizes[pt];
-        Atom atom = atoms[i];
-        boolean isVisible = ((mads[i] = atom.calculateMad(viewer, rd)) > 0);
-        bsSizeSet.setBitTo(i, isVisible);
-        atom.setShapeVisibility(myVisibilityFlag, isVisible);
+        if (sizes == null)
+          continue;
+        boolean isVisible = ((rd.value = sizes[pt]) > 0);
+        setSizeRD2(i, rd, isVisible);
       }
       return;
     }

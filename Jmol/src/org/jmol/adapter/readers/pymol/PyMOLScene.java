@@ -37,6 +37,7 @@ class PyMOLScene implements JmolSceneGenerator {
   
 //accounted for:
 //
+//  cartoon_color
 //  dot_color
 //  ellipsoid_color
 //  ellipsoid_transparency
@@ -44,17 +45,16 @@ class PyMOLScene implements JmolSceneGenerator {
 //  label_color
 //  label_position
 //  nonbonded_transparency
+//  ribbon_color
 //  sphere_color
 //  sphere_scale
 //  sphere_transparency
 //
-//TODO needed:
+//TODO:
 //    
-//  cartoon_color
 //  mesh_color
-//  ribbon_color
 //  surface_color
-//  transparency (surface only)
+//  transparency (surface)
 //
 //special (probably) PyMOL-only:
 //
@@ -149,10 +149,13 @@ class PyMOLScene implements JmolSceneGenerator {
   private int dotColor;
   private int surfaceMode;
   private int surfaceColor;
+  private int cartoonColor;
+  private int ribbonColor;
   private int sphereColor;
   private int labelFontId;
   private int labelColor;
   private float cartoonTranslucency;
+  private float ribbonTranslucency;
   private float labelSize;
   private float meshWidth;
   private float nonbondedSize;
@@ -266,8 +269,11 @@ class PyMOLScene implements JmolSceneGenerator {
     nonbondedSize = floatSetting(PyMOL.nonbonded_size);
     nonbondedTranslucency = floatSetting(PyMOL.nonbonded_transparency);
     sphereScale = floatSetting(PyMOL.sphere_scale);
+    cartoonColor = (int) floatSetting(PyMOL.cartoon_color);
+    ribbonColor = (int) floatSetting(PyMOL.ribbon_color);
     sphereColor = (int) floatSetting(PyMOL.sphere_color);
     cartoonTranslucency = floatSetting(PyMOL.cartoon_transparency);
+    ribbonTranslucency = floatSetting(PyMOL.ribbon_transparency);
     stickTranslucency = floatSetting(PyMOL.stick_transparency);
     sphereTranslucency = floatSetting(PyMOL.sphere_transparency);
     cartoonLadderMode = booleanSetting(PyMOL.cartoon_ladder_mode);
@@ -1386,7 +1392,7 @@ class PyMOLScene implements JmolSceneGenerator {
       float ellipsoidTranslucency = floatSetting(PyMOL.ellipsoid_transparency);
       int ellipsoidColor = (int) floatSetting(PyMOL.ellipsoid_color);
       float ellipsoidScale = floatSetting(PyMOL.ellipsoid_scale);
-      setUniqueObjects(JC.SHAPE_ELLIPSOIDS, bs, PyMOL.ellipsoid_color, ellipsoidColor, PyMOL.ellipsoid_transparency, ellipsoidTranslucency, PyMOL.ellipsoid_scale, ellipsoidScale, 1);
+      setUniqueObjects(JC.SHAPE_ELLIPSOIDS, bs, PyMOL.ellipsoid_color, ellipsoidColor, PyMOL.ellipsoid_transparency, ellipsoidTranslucency, PyMOL.ellipsoid_scale, ellipsoidScale, 50);
       break;
     case PyMOL.REP_DOTS:
       setUniqueObjects(JC.SHAPE_DOTS, bs, PyMOL.dot_color, dotColor, 0, 0, PyMOL.sphere_scale, sphereScale, 1);
@@ -1450,7 +1456,7 @@ class PyMOLScene implements JmolSceneGenerator {
     }
   }
 
-  private void setUniqueObjects(int shape, BS bs, 
+  private JmolObject setUniqueObjects(int shape, BS bs, 
                                 int setColor, int color,
                                 int setTrans, float trans,
                                 int setSize, float size, float f) {
@@ -1470,7 +1476,7 @@ class PyMOLScene implements JmolSceneGenerator {
       }
       sizes[pt] = getUniqueFloatDef(id, setSize, size) * f;
     }
-    addJmolObject(shape, bs, new Object[] {colixes, atrans, sizes});
+    return addJmolObject(shape, bs, new Object[] {colixes, atrans, sizes});
 
 //      case PyMOL.REP_DOTS:
   //      addJmolObject(JC.SHAPE_DOTS, bs, null).rd = new RadiusData(null,
@@ -1500,13 +1506,14 @@ class PyMOLScene implements JmolSceneGenerator {
    * @param bs
    */
   private void createTraceObject(BS bs) {
-    JmolObject jo;
     checkNucleicObject(bs, true);
     if (bs.isEmpty())
       return;
-    jo = addJmolObject(JC.SHAPE_TRACE, bs, null);
+    float r = floatSetting(PyMOL.cartoon_tube_radius);
+    JmolObject jo = setUniqueObjects(JC.SHAPE_TRACE, bs,
+        PyMOL.cartoon_color, cartoonColor, 0, 0, 0, 0, 0);
+    jo.setSize(r * 2);
     jo.translucency = cartoonTranslucency;
-    jo.setSize(floatSetting(PyMOL.cartoon_tube_radius) * 2);
   }
 
   private void checkNucleicObject(BS bs, boolean isTrace) {
@@ -1537,7 +1544,7 @@ class PyMOLScene implements JmolSceneGenerator {
         floatSetting(PyMOL.cartoon_putty_scale_max),
         floatSetting(PyMOL.cartoon_putty_scale_power),
         floatSetting(PyMOL.cartoon_putty_transform) };
-    addJmolObject(JC.SHAPE_TRACE, bs, info).translucency = cartoonTranslucency;
+    addJmolObject(T.trace, bs, info).translucency = cartoonTranslucency;
   }
 
   /**
@@ -1566,8 +1573,10 @@ class PyMOLScene implements JmolSceneGenerator {
     if (r == 0)
       r = floatSetting(PyMOL.ribbon_width)
           * (isTrace ? 1 : (rayScale <= 1 ? 0.5f : rayScale)) * 0.1f;
-    addJmolObject((isTrace ? JC.SHAPE_TRACE : JC.SHAPE_BACKBONE), bs, null)
-        .setSize(r);
+    JmolObject jo = setUniqueObjects((isTrace ? JC.SHAPE_TRACE : JC.SHAPE_BACKBONE), bs,
+        PyMOL.ribbon_color, ribbonColor, 0, 0, 0, 0, 0);
+    jo.setSize(r);
+    jo.translucency = ribbonTranslucency;
   }
 
   private void createCartoonObject(String key, int sizeID) {
@@ -1582,9 +1591,10 @@ class PyMOLScene implements JmolSceneGenerator {
       if (bs.isEmpty())
         return;
     }
-    JmolObject jo = addJmolObject(JC.SHAPE_CARTOON, bs, null);
-    jo.translucency = cartoonTranslucency;
+    JmolObject jo = setUniqueObjects(JC.SHAPE_CARTOON, bs, PyMOL.cartoon_color, cartoonColor,
+        0, 0, 0, 0, 0);
     jo.setSize(floatSetting(sizeID) * 2);
+    jo.translucency = cartoonTranslucency;
   }
 
   private JmolObject addObject(JmolObject obj) {

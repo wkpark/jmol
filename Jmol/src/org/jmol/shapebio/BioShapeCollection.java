@@ -104,21 +104,21 @@ public abstract class BioShapeCollection extends Shape {
   }
 
   protected void setPropBSC(String propertyName, Object value, BS bsSelected) {
-    
+
     if (propertyName == "refreshTrajectories") {
-      int modelIndex = ((Integer)((Object[]) value)[0]).intValue();
-      for (int i = bioShapes.length; --i >= 0; ){
+      int modelIndex = ((Integer) ((Object[]) value)[0]).intValue();
+      for (int i = bioShapes.length; --i >= 0;) {
         BioShape b = bioShapes[i];
         if (b.modelIndex == modelIndex)
           b.falsifyMesh();
       }
       return;
     }
-    
+
     if (propertyName == "deleteModelAtoms") {
-      atoms = (Atom[])((Object[])value)[1];
-      int modelIndex = ((int[])((Object[])value)[2])[0];
-      for (int i = bioShapes.length; --i >= 0; ){
+      atoms = (Atom[]) ((Object[]) value)[1];
+      int modelIndex = ((int[]) ((Object[]) value)[2])[0];
+      for (int i = bioShapes.length; --i >= 0;) {
         BioShape b = bioShapes[i];
         if (b.modelIndex > modelIndex) {
           b.modelIndex--;
@@ -141,30 +141,21 @@ public abstract class BioShapeCollection extends Shape {
       }
       return;
     }
-    if ("colors" == propertyName) {
-      Object[] data = (Object[]) value;
-      short[] colixes = (short[]) data[0];
-      float translucency  = ((Float) data[1]).floatValue();
-      boolean isTranslucent = (translucency > 0);
-      for (int i = bioShapes.length; --i >= 0;) {
-        BioShape bioShape = bioShapes[i];
-        if (bioShape.monomerCount > 0) {
-          bioShape.setColixes(colixes, bsSelected);
-          if (isTranslucent)
-            bioShape.setTranslucent(isTranslucent, bsSelected, translucency);
-        }
-      }
-      return; 
+    if ("params" == propertyName) {
+      for (int i = bioShapes.length; --i >= 0;)
+        bioShapes[i].setParams((Object[]) value, bsSelected);
+      return;
     }
+    
     if ("colorPhase" == propertyName) {
       // cartoons and ribbons only
-      Object[] twoColors = (Object[]) value; 
+      Object[] twoColors = (Object[]) value;
       short colixBack = C.getColixO(twoColors[0]);
       short colix = C.getColixO(twoColors[1]);
       for (int i = bioShapes.length; --i >= 0;) {
         BioShape bioShape = bioShapes[i];
         if (bioShape.monomerCount > 0) {
-          bioShape.setColixBS(colix, (byte)0, bsSelected);
+          bioShape.setColixBS(colix, (byte) 0, bsSelected);
           bioShape.setColixBack(colixBack, bsSelected);
         }
       }
@@ -179,7 +170,7 @@ public abstract class BioShapeCollection extends Shape {
       }
       return;
     }
-    
+
     setPropS(propertyName, value, bsSelected);
   }
 

@@ -6247,12 +6247,14 @@ class PyMOL {
     switch (i) {
     case label_size:
       return 14;
+    case cartoon_color:
+    case ellipsoid_color:
+    case ribbon_color:
     case line_color:
     case stick_color:
     case label_distance_digits:
     case label_angle_digits:
     case label_dihedral_digits:
-    case ellipsoid_color:
       return -1;
     case ray_pixel_scale:
     case ellipsoid_scale:

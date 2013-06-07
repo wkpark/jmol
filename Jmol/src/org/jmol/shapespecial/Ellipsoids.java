@@ -92,14 +92,15 @@ public class Ellipsoids extends AtomShape {
         .nextSetBit(i + 1)) {
       if (size != 0)
         atoms[i].scaleEllipsoid(size, iSelect);
-      boolean isVisible = (madset[0] != null && madset[0].length > i && madset[0][i] > 0
-          || madset[1] != null && madset[1].length > i && madset[1][i] > 0
-          || madset[2] != null && madset[2].length > i && madset[2][i] > 0);
+      boolean isVisible = (madset[0] != null && madset[0].length > i
+          && madset[0][i] > 0 || madset[1] != null && madset[1].length > i
+          && madset[1][i] > 0 || madset[2] != null && madset[2].length > i
+          && madset[2][i] > 0);
       bsSizeSet.setBitTo(i, isVisible);
       atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
     }
   }
-
+  
   @Override
   public void setProperty(String propertyName, Object value, BS bs) {
     if (propertyName == "thisID") {
@@ -227,8 +228,15 @@ public class Ellipsoids extends AtomShape {
       return;
     }
 
-    setPropAS(propertyName, value, bs);
+    if ("params" == propertyName) {
+      Object[] data = (Object[]) value;
+      data[2] = null;// Jmol does not allow setting sizes this way from PyMOL yet
+      iSelect = 0;
+      setSize(50, bs);
+      // onward...
+    }
 
+    setPropAS(propertyName, value, bs);
     if (colixset != null) {
       if ("color" == propertyName || "translucency" == propertyName
           || "deleteModelAtoms" == propertyName) {
@@ -282,7 +290,6 @@ public class Ellipsoids extends AtomShape {
     ellipsoid.scale = 1;
     updateEquation(ellipsoid);
   }
-
 
   private void setAtoms(BS bs) {
     int n = bs.cardinality();

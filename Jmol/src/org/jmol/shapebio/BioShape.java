@@ -313,6 +313,43 @@ public class BioShape extends AtomShape {
     }
   }
   
+  public void setParams(Object[] data, BS bsSelected) {
+    if (monomerCount == 0)
+      return;
+    // only implemented for simple colixes, really.
+    short[] c = (short[]) data[0];
+    int n = bsSelected.length();
+    int[] atomMap = new int[n];
+    for (int pt = 0, i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1), pt++)
+      atomMap[i] = pt;
+    // would have to do something like this here as well;
+    float[] atrans = (float[]) data[1];
+    //float[] sizes = (float[]) data[2];
+
+    isActive = true;
+    if (bsColixSet == null)
+      bsColixSet = new BS();
+    for (int i = monomerCount; --i >= 0;) {
+      int atomIndex = leadAtomIndices[i];
+      if (bsSelected.get(atomIndex) && i < colixes.length && atomIndex < n) {
+        int pt = atomMap[atomIndex];
+        short colix = (c == null ? 0 : c[pt]);
+        if (colix == 0)
+          colix = C.INHERIT_ALL;
+        float f = (atrans == null ? 0 : atrans[pt]);
+        if (f > 0.01f)
+          colix = C.getColixTranslucent3(colix, true, f);
+        colixes[i] = shape.getColixI(colix, EnumPalette.UNKNOWN.id, atomIndex);
+        if (colixesBack != null && i < colixesBack.length)
+          colixesBack[i] = 0;
+        paletteIDs[i] = EnumPalette.UNKNOWN.id;
+        bsColixSet.set(i);
+      }
+    }    
+  }
+
+
+  
   void setColixBack(short colix, BS bsSelected) {
     for (int i = monomerCount; --i >= 0;) {
       int atomIndex = leadAtomIndices[i];

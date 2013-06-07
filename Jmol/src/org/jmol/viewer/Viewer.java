@@ -6446,7 +6446,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     int tok = T.getTokFromName(key);
     switch (T.getParamType(tok)) {
     case T.strparam:
-      setStringPropertyTok(key, tok, "" + value);
+      setStringPropertyTok(key, tok, "");
       break;
     case T.intparam:
       setIntPropertyTok(key, tok, value ? 1 : 0);

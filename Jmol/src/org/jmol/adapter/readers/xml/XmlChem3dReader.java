@@ -60,7 +60,7 @@ public class XmlChem3dReader extends XmlReader {
   @Override
   protected void processXml(XmlReader parent,
                             Object saxReader) throws Exception {
-    super.processXml(parent, saxReader);
+    PX(parent, saxReader);
     finalizeMOData(moData);
   }
 

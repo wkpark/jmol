@@ -58,7 +58,7 @@ public class XmlQEReader extends XmlReader {
   protected void processXml(XmlReader parent,
                             Object saxReader) throws Exception {
     parent.doProcessLines = true;
-    super.processXml(parent, saxReader);
+    PX(parent, saxReader);
   }
 
   @Override

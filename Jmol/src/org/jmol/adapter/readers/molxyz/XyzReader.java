@@ -85,7 +85,7 @@ public class XyzReader extends AtomSetCollectionReader {
   @Override
   protected void finalizeReader() throws Exception {
     isTrajectory = false;
-    super.finalizeReader();
+    finalizeReaderASCR();
   }
 
   private void skipAtomSet(int modelAtomCount) throws Exception {

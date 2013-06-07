@@ -131,12 +131,17 @@ public class MolReader extends AtomSetCollectionReader {
       }
     }
   }
+
   @Override
   public void finalizeReader() throws Exception {
+    finalizeReaderMR();
+  }
+  
+  protected void finalizeReaderMR() throws Exception {
     if (is2D)
       set2D();
     isTrajectory = false;
-    super.finalizeReader();
+    finalizeReaderASCR();
   }
 
   void processMolSdHeader() throws Exception {

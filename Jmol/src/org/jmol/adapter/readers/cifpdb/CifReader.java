@@ -243,7 +243,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         atomSetCollection.applySymmetryBio(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
       }
     }
-    super.finalizeReader();
+    finalizeReaderASCR();
     String header = tokenizer.getFileHeader();
     if (header.length() > 0)
         atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
@@ -293,7 +293,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     // no atom-centered rotation axes, and no mirror or glide planes. 
     atomSetCollection.setCheckSpecial(!isPDB);
     boolean doCheck = doCheckUnitCell && !isPDB;
-    super.applySymmetryAndSetTrajectory();
+    applySymTrajASCR();
     if (doCheck && (bondTypes.size() > 0 || isMolecular))
       setBondingAndMolecules();
   }

@@ -59,7 +59,7 @@ public class XmlXsdReader extends XmlReader {
   protected void processXml(XmlReader parent,
                             Object saxReader) throws Exception {
     parent.htParams.put("backboneAtoms", bsBackbone);
-    super.processXml(parent, saxReader);
+    PX(parent, saxReader);
     atomSetCollection.clearSymbolicMap(); 
   }
 

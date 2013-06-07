@@ -170,6 +170,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     // override PDBReader settings
   }
 
+  @Override
+  protected void finalizeReader() throws Exception {
+    finalizeReaderPDB();
+    atomSetCollection.setEllipsoids();
+  }
   /**
    * At the end of the day, we need to finalize all the JmolObjects, set the
    * trajectories, and, if filtered with DOCACHE, cache a streamlined binary
@@ -1032,7 +1037,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     atom.vectorX = uniqueID;
     atom.vectorY = cartoonType;
     if (a.size() > 46) {
-      float[] data = PyMOLScene.floatsAt(a, 41, new float[7], 6);
+      float[] data = PyMOLScene.floatsAt(a, 41, new float[8], 6);
       atomSetCollection.setAnisoBorU(atom, data, 12);
     }
     //if (uniqueID > 0)

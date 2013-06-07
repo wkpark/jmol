@@ -320,7 +320,7 @@ public class GulpReader extends AtomSetCollectionReader {
       }
       setModelParameters(false);
     }
-    super.applySymmetryAndSetTrajectory();
+    applySymTrajASCR();
   }
   /*  Fractional coordinates of asymmetric unit :
 

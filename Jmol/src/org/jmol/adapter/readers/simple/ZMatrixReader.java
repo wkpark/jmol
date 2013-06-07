@@ -239,7 +239,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
     for (int i = firstLine; i < lineBuffer.size(); i++)
       if ((tokens = lineBuffer.get(i)).length > 0)
         getAtom();
-    super.finalizeReader();
+    finalizeReaderASCR();
   }
 
   private void getSymbolic() {

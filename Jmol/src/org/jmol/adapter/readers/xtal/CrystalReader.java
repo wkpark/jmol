@@ -293,7 +293,7 @@ public class CrystalReader extends AtomSetCollectionReader {
       processInputCoords();
     if (energy != null)
       setEnergy();
-    super.finalizeReader();
+    finalizeReaderASCR();
   }
 
   /*

@@ -983,13 +983,13 @@ rate(mb/s): 3.96e+02  2.06e+03  0.00e+00* 2.49e+03*
   private boolean purging;
   @Override
   public String readLine() throws Exception {
-    super.readLine();
+    RL();
     if (!purging && line != null && line.startsWith("--")) {
       purging = true;
       discardLinesUntilStartsWith("*");
       readLine();
       purging = false;
-      super.readLine();
+      RL();
     }
     return line;
  }

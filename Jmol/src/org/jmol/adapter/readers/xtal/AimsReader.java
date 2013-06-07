@@ -93,7 +93,7 @@ public class AimsReader extends AtomSetCollectionReader {
                 + "(which is currently neither supported by FHI-aims");
       // note: Jmol DOES support both polymer and slab symmetry.
     }
-    super.finalizeReader();
+    finalizeReaderASCR();
   }
 
   /*

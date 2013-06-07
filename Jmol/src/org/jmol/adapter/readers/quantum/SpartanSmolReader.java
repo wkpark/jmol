@@ -137,7 +137,7 @@ public class SpartanSmolReader extends SpartanInputReader {
 
   @Override
   protected void finalizeReader() throws Exception {
-    super.finalizeReader();
+    finalizeReaderASCR();
     // info out of order -- still a chance, at least for first model
     if (atomCount > 0 && spartanArchive != null
         && atomSetCollection.getBondCount() == 0 && bondData != null)

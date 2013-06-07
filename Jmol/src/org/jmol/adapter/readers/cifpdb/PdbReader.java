@@ -339,6 +339,10 @@ public class PdbReader extends AtomSetCollectionReader {
 
   @Override
   protected void finalizeReader() throws Exception {
+    finalizeReaderPDB();
+  }
+  
+  protected void finalizeReaderPDB() throws Exception {
     checkNotPDB();
     atomSetCollection.connectAll(maxSerial, isConnectStateBug);
     if (atomSetCollection.getStructureCount() > 0)
@@ -373,7 +377,7 @@ public class PdbReader extends AtomSetCollectionReader {
       appendLoadNote(sbTlsErrors.toString());
     }
     
-    super.finalizeReader();
+    finalizeReaderASCR();
     if (vCompnds != null)
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("compoundSource", vCompnds);
     if (htSites != null) { // && atomSetCollection.getAtomSetCount() == 1)
@@ -387,7 +391,7 @@ public class PdbReader extends AtomSetCollectionReader {
       Logger.info(sbIgnored.toString());
     }
   }
-  
+
   private void checkForResidualBFactors(SymmetryInterface symmetry) {
     Atom[] atoms = atomSetCollection.getAtoms();
     boolean isResidual = false;

@@ -373,20 +373,18 @@ public class CastepReader extends AtomSetCollectionReader {
   protected void finalizeReader() throws Exception {
     if (isPhonon || isOutput) {
       isTrajectory = false;
-      super.finalizeReader();
-      return;
+    } else {
+      doApplySymmetry = true;
+      setLatticeVectors();
+      int nAtoms = atomSetCollection.getAtomCount();
+      /*
+       * this needs to be run either way (i.e. even if coordinates are already
+       * fractional) - to satisfy the logic in AtomSetCollectionReader()
+       */
+      for (int i = 0; i < nAtoms; i++)
+        setAtomCoord(atomSetCollection.getAtom(i));
     }
-
-    doApplySymmetry = true;
-    setLatticeVectors();
-    int nAtoms = atomSetCollection.getAtomCount();
-    /*
-     * this needs to be run either way (i.e. even if coordinates are already
-     * fractional) - to satisfy the logic in AtomSetCollectionReader()
-     */
-    for (int i = 0; i < nAtoms; i++)
-      setAtomCoord(atomSetCollection.getAtom(i));
-    super.finalizeReader();
+    finalizeReaderASCR();
   }
 
   private void setLatticeVectors() {

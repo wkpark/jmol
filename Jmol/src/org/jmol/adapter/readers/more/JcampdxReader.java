@@ -159,7 +159,7 @@ public class JcampdxReader extends MolReader {
   @Override
   public void finalizeReader() throws Exception {
     processPeakData();
-    super.finalizeReader();
+    finalizeReaderMR();
   }
   
   private int findModelById(String modelID) {

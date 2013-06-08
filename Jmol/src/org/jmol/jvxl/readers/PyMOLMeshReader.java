@@ -76,7 +76,7 @@ class PyMOLMeshReader extends MapFileReader {
       surfaceName = (String) data.get(data.size() - 1);
     }
     voxelList = getList(getList(getList(surfaceList, 14), 2), 6);
-    System.out.println("Number of grid points = " + voxelList.size() + " " + params.sigma);
+    System.out.println("Number of grid points = " + voxelList.size());
     allowSigma = true;
   }
 
@@ -95,11 +95,15 @@ class PyMOLMeshReader extends MapFileReader {
     jvxlFileHeaderBuffer.append(surfaceName + " (" + params.calculationType + ")\n");
 
     // cell parameters
-    t = getList(getList(surfaceList, 1), 0);
+    JmolList<Object> s = getList(surfaceList, 1);
+    t = getList(s, 0);
+    // change in format between PyMOL versions
+    if (t.size() < 3)
+      t = getList(s = getList(s, 0), 0);
     a = getFloat(t, 0);
     b = getFloat(t, 1);
     c = getFloat(t, 2);
-    t = getList(getList(surfaceList, 1), 1);
+    t = getList(s, 1);
     alpha = getFloat(t, 0);
     beta = getFloat(t, 1);
     gamma = getFloat(t, 2);

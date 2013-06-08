@@ -44,16 +44,16 @@ class PyMOLScene implements JmolSceneGenerator {
 //  ellipsoid_scale
 //  label_color
 //  label_position
+//  mesh_color
 //  nonbonded_transparency
 //  ribbon_color
 //  sphere_color
 //  sphere_scale
 //  sphere_transparency
+//  surface_color
 //
 //TODO:
 //    
-//  mesh_color
-//  surface_color
 //  transparency (surface)
 //
 //special (probably) PyMOL-only:
@@ -900,7 +900,7 @@ class PyMOLScene implements JmolSceneGenerator {
 
   float getUniqueFloatDef(int id, int key, float defaultValue) {
     JmolList<Object> setting;
-    if (id < 0
+    if (id <= 0
         || (setting = uniqueSettings.get(Integer.valueOf((id << 10) + key))) == null)
       return defaultValue;
     float v = ((Number) setting.get(2)).floatValue();
@@ -912,7 +912,7 @@ class PyMOLScene implements JmolSceneGenerator {
   @SuppressWarnings("unchecked")
   P3 getUniquePoint(int id, int key, P3 pt) {
     JmolList<Object> setting;
-    if (id < 0
+    if (id <= 0
         || (setting = uniqueSettings.get(Integer.valueOf((id << 10) + key))) == null)
       return pt;
     pt = new P3();
@@ -1397,6 +1397,25 @@ class PyMOLScene implements JmolSceneGenerator {
     case PyMOL.REP_DOTS:
       setUniqueObjects(JC.SHAPE_DOTS, bs, PyMOL.dot_color, dotColor, 0, 0, PyMOL.sphere_scale, sphereScale, 1);
       break;
+    case PyMOL.REP_SURFACE: //   = 2;
+      // unique translucency here involves creating ghost surfaces 
+      float withinDistance = floatSetting(PyMOL.surface_carve_cutoff);
+      jo = addJmolObject(T.isosurface, bs, new Object[] {
+          booleanSetting(PyMOL.two_sided_lighting) ? "FULLYLIT" : "FRONTLIT",
+          (surfaceMode == 3 || surfaceMode == 4) ? " only" : "", 
+              bsCarve, Float.valueOf(withinDistance)});
+      jo.setSize(floatSetting(PyMOL.solvent_radius) * (solventAccessible ? -1 : 1));
+      jo.translucency = transparency;
+      if (surfaceColor >= 0)
+        jo.argb = PyMOL.getRGB(surfaceColor);
+      setUniqueObjects(JC.SHAPE_ISOSURFACE, bs, PyMOL.surface_color, surfaceColor, PyMOL.transparency, transparency, 0, 0, 0);
+      break;
+    case PyMOL.REP_MESH: //   = 8;
+      jo = addJmolObject(T.isosurface, bs, null);
+      jo.setSize(floatSetting(PyMOL.solvent_radius));
+      jo.translucency = transparency;
+      setUniqueObjects(JC.SHAPE_ISOSURFACE, bs, PyMOL.surface_color, surfaceColor, PyMOL.transparency, transparency, 0, 0, 0);      
+      break;
     case PyMOL.REP_LABELS: //   = 3;
       bs.and(bsLabeled);
       if (bs.isEmpty())
@@ -1434,55 +1453,37 @@ class PyMOLScene implements JmolSceneGenerator {
     case PyMOL.REP_RIBBON: // backbone or trace, depending
       createRibbonObject(bs);
       break;
-    case PyMOL.REP_SURFACE: //   = 2;
-      // unique translucency here involves creating ghost surfaces 
-      float withinDistance = floatSetting(PyMOL.surface_carve_cutoff);
-      jo = addJmolObject(T.isosurface, bs, new Object[] {
-          booleanSetting(PyMOL.two_sided_lighting) ? "FULLYLIT" : "FRONTLIT",
-          (surfaceMode == 3 || surfaceMode == 4) ? " only" : "", 
-              bsCarve, Float.valueOf(withinDistance)});
-      jo.setSize(floatSetting(PyMOL.solvent_radius) * (solventAccessible ? -1 : 1));
-      jo.translucency = transparency;
-      if (surfaceColor >= 0)
-        jo.argb = PyMOL.getRGB(surfaceColor);
-      break;
-    case PyMOL.REP_MESH: //   = 8;
-      jo = addJmolObject(T.isosurface, bs, null);
-      jo.setSize(floatSetting(PyMOL.solvent_radius));
-      jo.translucency = transparency;
-      break;
     default:
       Logger.error("Unprocessed representation type " + shapeID);
     }
   }
 
-  private JmolObject setUniqueObjects(int shape, BS bs, 
-                                int setColor, int color,
-                                int setTrans, float trans,
-                                int setSize, float size, float f) {
+  private JmolObject setUniqueObjects(int shape, BS bs, int setColor,
+                                      int color, int setTrans, float trans,
+                                      int setSize, float size, float f) {
     int n = bs.cardinality();
     short[] colixes = (setColor == 0 ? null : new short[n]);
     float[] atrans = (setTrans == 0 ? null : new float[n]);
     float[] sizes = new float[n];
-    for (int pt=0, i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1), pt++) {
-      int id = (uniqueIDs == null ? -1 : uniqueIDs[i]);
+    for (int pt = 0, i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1), pt++) {
+      int id = (reader == null ? uniqueIDs[i] : reader.getUniqueID(i));
       if (colixes != null) {
         int c = (int) getUniqueFloatDef(id, setColor, color);
         if (c > 0)
           colixes[pt] = getColix(c, 0);
       }
       if (atrans != null) {
-        atrans[pt] = getUniqueFloatDef(id, setTrans, trans);        
+        atrans[pt] = getUniqueFloatDef(id, setTrans, trans);
       }
       sizes[pt] = getUniqueFloatDef(id, setSize, size) * f;
     }
-    return addJmolObject(shape, bs, new Object[] {colixes, atrans, sizes});
+    return addJmolObject(shape, bs, new Object[] { colixes, atrans, sizes });
 
-//      case PyMOL.REP_DOTS:
-  //      addJmolObject(JC.SHAPE_DOTS, bs, null).rd = new RadiusData(null,
+    //      case PyMOL.REP_DOTS:
+    //      addJmolObject(JC.SHAPE_DOTS, bs, null).rd = new RadiusData(null,
     //        value1, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
-//      case PyMOL.REP_NONBONDED:
-  //      addJmolObject(JC.SHAPE_STARS, bs, null).rd = new RadiusData(null,
+    //      case PyMOL.REP_NONBONDED:
+    //      addJmolObject(JC.SHAPE_STARS, bs, null).rd = new RadiusData(null,
     //        f / 2, RadiusData.EnumType.FACTOR, EnumVdw.AUTO);
   }
 
@@ -1701,9 +1702,12 @@ class PyMOLScene implements JmolSceneGenerator {
   public void addMesh(int tok, JmolList<Object> obj, String objName, boolean isMep) {
     JmolObject jo = addJmolObject(tok, null, obj);
     setSceneObject(objName, -1);
+    int meshColor = (int) floatSetting(PyMOL.mesh_color);
+    if (meshColor < 0)
+      meshColor = intAt(listAt(obj, 0), 2);
     if (!isMep) {
       jo.setSize(meshWidth);
-      jo.argb = PyMOL.getRGB(intAt(listAt(obj, 0), 2));
+      jo.argb = PyMOL.getRGB(meshColor);
     }
     jo.translucency = transparency;
   }

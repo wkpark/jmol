@@ -1031,6 +1031,7 @@ public class AtomSetCollection {
   public void setEllipsoids() {
     if (!haveAnisou)
       return;
+    getSymmetry();
     int iAtomFirst = getLastAtomSetAtomIndex();
     for (int i = iAtomFirst; i < atomCount; i++)
       atoms[i].setEllipsoid(symmetry.getEllipsoid(atoms[i].anisoBorU));

@@ -110,7 +110,7 @@ public class C {
      
   */
 
-  public final static short INHERIT_ALL = 0;
+  public final static short INHERIT_ALL = 0; // do not change this from 0; new colix[n] must be this
   public final static short INHERIT_COLOR = 1;
   public final static short USE_PALETTE = 2;
   public final static short RAW_RGB = 3;

@@ -142,8 +142,12 @@ public abstract class BioShapeCollection extends Shape {
       return;
     }
     if ("params" == propertyName) {
+      int n = bsSelected.length();
+      int[] atomMap = new int[n];
+      for (int pt = 0, i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1), pt++)
+        atomMap[i] = pt;
       for (int i = bioShapes.length; --i >= 0;)
-        bioShapes[i].setParams((Object[]) value, bsSelected);
+        bioShapes[i].setParams((Object[]) value, atomMap, bsSelected);
       return;
     }
     

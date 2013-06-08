@@ -6263,6 +6263,8 @@ class PyMOL {
       Logger.info("PyMOL " + pymolVersion + " does not have setting " + i);
       //$FALL-THROUGH$
     case ellipsoid_transparency:
+    case ribbon_transparency:
+    case nonbonded_transparency:
       return 0;
     }
   }

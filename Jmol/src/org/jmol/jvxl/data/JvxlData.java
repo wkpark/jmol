@@ -171,6 +171,7 @@ public class JvxlData {
   public boolean allowVolumeRender;
   public float voxelVolume;
   public P3 mapLattice;
+  public String baseColor;
 
   public void clear() {
     allowVolumeRender = true;

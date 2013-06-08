@@ -92,21 +92,36 @@
 
 package org.jmol.shapesurface;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Hashtable;
+import java.util.Map;
+
+import org.jmol.api.JmolDocument;
+import org.jmol.io.JmolBinary;
+import org.jmol.jvxl.api.MeshDataServer;
+import org.jmol.jvxl.data.JvxlCoder;
+import org.jmol.jvxl.data.JvxlData;
+import org.jmol.jvxl.data.MeshData;
+import org.jmol.jvxl.readers.Parameters;
+import org.jmol.jvxl.readers.SurfaceGenerator;
+import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
 import org.jmol.util.Escape;
-
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.ColorUtil;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-//import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
@@ -118,29 +133,8 @@ import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
-import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
-//import org.jmol.viewer.StateManager.Orientation;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.OutputStream;
-import org.jmol.util.JmolList;
-
-import java.util.Hashtable;
-
-import java.util.Map;
-
-
-import org.jmol.api.JmolDocument;
-import org.jmol.io.JmolBinary;
-import org.jmol.jvxl.api.MeshDataServer;
-import org.jmol.jvxl.data.JvxlCoder;
-import org.jmol.jvxl.data.JvxlData;
-import org.jmol.jvxl.data.MeshData;
-import org.jmol.jvxl.readers.Parameters;
-import org.jmol.jvxl.readers.SurfaceGenerator;
 
 public class Isosurface extends MeshCollection implements MeshDataServer {
 
@@ -228,8 +222,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       setPropI("modelIndex", Integer.valueOf(imodel), null);
       setPropI("fileName", "cache://isosurface_" + id, null);
       setPropI("readFile", null, null);
-      setPropI("finalize", "isosurface ID " + Escape.eS(id) + (imodel >= 0 ? " modelIndex " + imodel : "")
-          + " /*file*/" + Escape.eS("cache://isosurface_" + id), null);
+      setPropI("finalize", "isosurface ID " + Escape.eS(id)
+          + (imodel >= 0 ? " modelIndex " + imodel : "") + " /*file*/"
+          + Escape.eS("cache://isosurface_" + id), null);
       setPropI("clear", null, null);
       return;
     }
@@ -263,39 +258,37 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
+    if ("params" == propertyName) {
+      if (thisMesh != null) {
+        ensureMeshSource();
+        thisMesh.checkAllocColixes();
+        Object[] data = (Object[]) value;
+        short[] colixes = (short[]) data[0];
+        int[] atomMap = null;
+        //float[] atrans = (float[]) data[1];
+        if (colixes != null) {
+          for (int i = 0; i < colixes.length; i++) {
+            short colix = colixes[i];
+            float f = 0;//(atrans == null ? 0 : atrans[pt]);
+            if (f > 0.01f)
+              colix = C.getColixTranslucent3(colix, true, f);
+            colixes[i] = colix;
+          }
+          atomMap = new int[bs.length()];
+          for (int pt = 0, i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1), pt++)
+            atomMap[i] = pt;
+        }
+        thisMesh.setVertexColixesForAtoms(viewer, colixes, atomMap, bs);
+        thisMesh.setVertexColorMap();
+      }
+      return;
+    }
     if ("atomcolor" == propertyName) {
       // color $id red ({0:30 ....})  (atoms)
       // color $id red [{0:30 ....}]  (vertices)
       if (thisMesh != null) {
-        boolean haveColors = (thisMesh.vertexSource != null);
-        if (haveColors)
-          for (int i = thisMesh.vertexCount; --i >= 0;)
-            if (thisMesh.vertexSource[i] < 0) {
-              haveColors = false;
-              break;
-            }
-        if (!haveColors) {
-          int[] source = thisMesh.vertexSource;
-          short[] vertexColixes = thisMesh.vertexColixes;
-          short colix = (!thisMesh.isColorSolid ? 0 : thisMesh.colix);
-          setProperty("init", null, null);
-          setProperty("map", Boolean.FALSE, null);
-          setProperty("property", new float[viewer.getAtomCount()], null);
-          if (source == null) {
-            if (colix != 0) {
-              thisMesh.colorCommand = "color isosurface "
-                  + C.getHexCode(colix);
-              setProperty("color", Integer.valueOf(C.getArgb(colix)), null);
-            }                      
-          } else {
-            for (int i = thisMesh.vertexCount; --i >= 0;)
-              if (source[i] < 0)
-                source[i] = thisMesh.vertexSource[i];
-            thisMesh.vertexSource = source;
-            thisMesh.vertexColixes = vertexColixes;
-          }
-        }
-        thisMesh.colorAtoms(C.getColixO(value), bs);
+        ensureMeshSource();
+        thisMesh.colorVertices(C.getColixO(value), bs, true);
       }
       return;
     }
@@ -309,7 +302,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("vertexcolor" == propertyName) {
       if (thisMesh != null) {
-        thisMesh.colorVertices(C.getColixO(value), bs);
+        thisMesh.colorVertices(C.getColixO(value), bs, false);
       }
       return;
     }
@@ -331,8 +324,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
     if ("color" == propertyName) {
+      String color = C.getHexCode(C.getColixO(value));
       if (thisMesh != null) {
         // thisMesh.vertexColixes = null;
+        thisMesh.jvxlData.baseColor = color;
         thisMesh.isColorSolid = true;
         thisMesh.polygonColixes = null;
         thisMesh.colorEncoder = null;
@@ -340,6 +335,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       } else if (!TextFormat.isWild(previousMeshID)) {
         for (int i = meshCount; --i >= 0;) {
           // isomeshes[i].vertexColixes = null;
+          isomeshes[i].jvxlData.baseColor = color;
           isomeshes[i].isColorSolid = true;
           isomeshes[i].polygonColixes = null;
           isomeshes[i].colorEncoder = null;
@@ -638,7 +634,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         && sg != null) {
       sg.getParams().testFlags = (viewer.getTestFlag(2) ? 2 : 0);
     } else if ("solvent" == propertyName) {
-        sg.getParams().testFlags = (viewer.getTestFlag(1) ? 1 : 0);
+      sg.getParams().testFlags = (viewer.getTestFlag(1) ? 1 : 0);
     }
 
     // surface Export3D only (return TRUE) or shared (return FALSE)
@@ -715,6 +711,36 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     // processing by meshCollection:
     setPropertySuper(propertyName, value, bs);
+  }
+
+  private void ensureMeshSource() {
+    boolean haveColors = (thisMesh.vertexSource != null);
+    if (haveColors)
+      for (int i = thisMesh.vertexCount; --i >= 0;)
+        if (thisMesh.vertexSource[i] < 0) {
+          haveColors = false;
+          break;
+        }
+    if (!haveColors) {
+      int[] source = thisMesh.vertexSource;
+      short[] vertexColixes = thisMesh.vertexColixes;
+      short colix = (thisMesh.isColorSolid ? thisMesh.colix : 0);
+      setProperty("init", null, null);
+      setProperty("map", Boolean.FALSE, null);
+      setProperty("property", new float[viewer.getAtomCount()], null);
+      if (colix != 0) {
+        thisMesh.colorCommand = "color isosurface "
+            + C.getHexCode(colix);
+        setProperty("color", Integer.valueOf(C.getArgb(colix)), null);
+      }                      
+      if (source != null) {
+        for (int i = thisMesh.vertexCount; --i >= 0;)
+          if (source[i] < 0)
+            source[i] = thisMesh.vertexSource[i];
+        thisMesh.vertexSource = source;
+        thisMesh.vertexColixes = vertexColixes;
+      }
+    }
   }
 
   protected void slabPolygons(Object[] slabInfo) {

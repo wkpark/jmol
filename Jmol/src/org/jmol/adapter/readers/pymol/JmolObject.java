@@ -230,6 +230,7 @@ class JmolObject {
     case JC.SHAPE_CARTOON:
     case JC.SHAPE_BACKBONE:
     case JC.SHAPE_TRACE:
+    case JC.SHAPE_ISOSURFACE:
       if (info instanceof Object[]) {
         sm.loadShape(id);
         sm.setShapePropertyBs(id, "params", info, bsAtoms);

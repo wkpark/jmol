@@ -130,10 +130,13 @@ public class JvxlXmlReader extends VolumeFileReader {
       if (haveContourData)
         jvxlDecodeContourData(jvxlData, xr.getXmlData("jvxlContourData", null,
             false, false));
-      if (jvxlData.nVertexColors > 0) {
+      if (jvxlDataIsColorMapped && jvxlData.nVertexColors > 0) {
         jvxlData.vertexColorMap = new Hashtable<String, BS>();
+        String vdata = xr.getXmlData("jvxlVertexColorData", null, true, false);
+        String baseColor = XmlReader.getXmlAttrib(vdata, "baseColor");
+        jvxlData.baseColor = (baseColor.length() > 0 ? baseColor : null);
         for (int i = 0; i < jvxlData.nVertexColors; i++) {
-          String s = xr.getXmlData("jvxlColorMap", null, true, false);
+          String s = xr.getXmlData("jvxlColorMap", vdata, true, false);
           String color = XmlReader.getXmlAttrib(s, "color");
           BS bs = JvxlCoder.jvxlDecodeBitSet(xr.getXmlData("jvxlColorMap",
               s, false, false));
@@ -352,37 +355,37 @@ public class JvxlXmlReader extends VolumeFileReader {
   }
 
   protected void jvxlSetColorRanges(float dataMin, float dataMax, float red,
-                                  float blue, boolean insideOut) {
+                                    float blue, boolean insideOut) {
     if (jvxlDataIsColorMapped) {
-    if (!Float.isNaN(dataMin) && !Float.isNaN(dataMax)) {
-      if (dataMax == 0 && dataMin == 0) {
-        //set standard -1/1; bit of a hack
-        dataMin = -1;
-        dataMax = 1;
-      }
-      params.mappedDataMin = dataMin;
-      params.mappedDataMax = dataMax;
-      Logger.info("JVXL read: data_min/max " + params.mappedDataMin + "/"
-          + params.mappedDataMax);
-    }
-    if (!params.rangeDefined)
-      if (!Float.isNaN(red) && !Float.isNaN(blue)) {
-        if (red == 0 && blue == 0) {
+      if (!Float.isNaN(dataMin) && !Float.isNaN(dataMax)) {
+        if (dataMax == 0 && dataMin == 0) {
           //set standard -1/1; bit of a hack
-          red = -1;
-          blue = 1;
+          dataMin = -1;
+          dataMax = 1;
         }
-        params.valueMappedToRed = Math.min(red, blue);
-        params.valueMappedToBlue = Math.max(red, blue);
-        params.isColorReversed = (red > blue);
-        params.rangeDefined = true;
-      } else {
-        params.valueMappedToRed = 0f;
-        params.valueMappedToBlue = 1f;
-        params.rangeDefined = true;
+        params.mappedDataMin = dataMin;
+        params.mappedDataMax = dataMax;
+        Logger.info("JVXL read: data_min/max " + params.mappedDataMin + "/"
+            + params.mappedDataMax);
       }
-    Logger.info("JVXL read: color red/blue: " + params.valueMappedToRed + "/"
-        + params.valueMappedToBlue);
+      if (!params.rangeDefined)
+        if (!Float.isNaN(red) && !Float.isNaN(blue)) {
+          if (red == 0 && blue == 0) {
+            //set standard -1/1; bit of a hack
+            red = -1;
+            blue = 1;
+          }
+          params.valueMappedToRed = Math.min(red, blue);
+          params.valueMappedToBlue = Math.max(red, blue);
+          params.isColorReversed = (red > blue);
+          params.rangeDefined = true;
+        } else {
+          params.valueMappedToRed = 0f;
+          params.valueMappedToBlue = 1f;
+          params.rangeDefined = true;
+        }
+      Logger.info("JVXL read: color red/blue: " + params.valueMappedToRed + "/"
+          + params.valueMappedToBlue);
     }
     jvxlData.valueMappedToRed = params.valueMappedToRed;
     jvxlData.valueMappedToBlue = params.valueMappedToBlue;
@@ -578,6 +581,8 @@ public class JvxlXmlReader extends VolumeFileReader {
   
   @Override
   protected String readColorData() {
+    if (!jvxlDataIsColorMapped)
+      return "";
     // overloads SurfaceReader
     // standard jvxl file read for color 
 

@@ -369,7 +369,7 @@ class PickleReader {
       if (doCheck && markCount >= 6 || markCount == 3 && inMovie)
         return;
       memo.put(Integer.valueOf(i), o);
-      System.out.println("caching string " + o + " at " + binaryDoc.getPosition());
+      //System.out.println("caching string " + o + " at " + binaryDoc.getPosition());
     }
   }
 

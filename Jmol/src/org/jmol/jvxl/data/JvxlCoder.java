@@ -166,7 +166,10 @@ public class JvxlCoder {
       jvxlEncodeContourData(jvxlData.vContours, data);
     }
     if (jvxlData.vertexColorMap != null) {
-      XmlUtil.openTag(data, "jvxlVertexColorData");
+      if (jvxlData.baseColor == null)
+        XmlUtil.openTag(data, "jvxlVertexColorData");
+      else
+        XmlUtil.openTagAttr(data, "jvxlVertexColorData", new String[] {"baseColor", jvxlData.baseColor});
       for (Map.Entry<String, BS> entry : jvxlData.vertexColorMap.entrySet())
         appendEncodedBitSetTag(data, "jvxlColorMap", entry.getValue(), -1, new Object[] { "color", entry.getKey() });
       jvxlData.vertexColorMap = null;

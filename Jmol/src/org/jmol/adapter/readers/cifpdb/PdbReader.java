@@ -1795,9 +1795,6 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         + L[0][1] * xz - S[1][1] * x + S[2][2] * x + S[0][1] * y - S[0][2] * z;
     anisou[6] = 12; // macromolecular Cartesian
     anisou[7] = bresidual;
-    if (Float.isNaN(bresidual))
-      System.out.println("hmm");
-    
     if (tlsU == null)
       tlsU = new Hashtable<Atom, float[]>();
      tlsU.put(atom, anisou);

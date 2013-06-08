@@ -313,15 +313,11 @@ public class BioShape extends AtomShape {
     }
   }
   
-  public void setParams(Object[] data, BS bsSelected) {
+  public void setParams(Object[] data, int[] atomMap, BS bsSelected) {
     if (monomerCount == 0)
       return;
     // only implemented for simple colixes, really.
     short[] c = (short[]) data[0];
-    int n = bsSelected.length();
-    int[] atomMap = new int[n];
-    for (int pt = 0, i = bsSelected.nextSetBit(0); i >= 0; i = bsSelected.nextSetBit(i + 1), pt++)
-      atomMap[i] = pt;
     // would have to do something like this here as well;
     float[] atrans = (float[]) data[1];
     //float[] sizes = (float[]) data[2];
@@ -329,6 +325,7 @@ public class BioShape extends AtomShape {
     isActive = true;
     if (bsColixSet == null)
       bsColixSet = new BS();
+    int n = atomMap.length;
     for (int i = monomerCount; --i >= 0;) {
       int atomIndex = leadAtomIndices[i];
       if (bsSelected.get(atomIndex) && i < colixes.length && atomIndex < n) {

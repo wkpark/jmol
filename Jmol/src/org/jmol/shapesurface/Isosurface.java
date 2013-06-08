@@ -267,15 +267,32 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       // color $id red ({0:30 ....})  (atoms)
       // color $id red [{0:30 ....}]  (vertices)
       if (thisMesh != null) {
-        if (thisMesh.vertexSource == null) {
+        boolean haveColors = (thisMesh.vertexSource != null);
+        if (haveColors)
+          for (int i = thisMesh.vertexCount; --i >= 0;)
+            if (thisMesh.vertexSource[i] < 0) {
+              haveColors = false;
+              break;
+            }
+        if (!haveColors) {
+          int[] source = thisMesh.vertexSource;
+          short[] vertexColixes = thisMesh.vertexColixes;
           short colix = (!thisMesh.isColorSolid ? 0 : thisMesh.colix);
           setProperty("init", null, null);
           setProperty("map", Boolean.FALSE, null);
           setProperty("property", new float[viewer.getAtomCount()], null);
-          if (colix != 0) {
-            thisMesh.colorCommand = "color isosurface "
-                + C.getHexCode(colix);
-            setProperty("color", Integer.valueOf(C.getArgb(colix)), null);
+          if (source == null) {
+            if (colix != 0) {
+              thisMesh.colorCommand = "color isosurface "
+                  + C.getHexCode(colix);
+              setProperty("color", Integer.valueOf(C.getArgb(colix)), null);
+            }                      
+          } else {
+            for (int i = thisMesh.vertexCount; --i >= 0;)
+              if (source[i] < 0)
+                source[i] = thisMesh.vertexSource[i];
+            thisMesh.vertexSource = source;
+            thisMesh.vertexColixes = vertexColixes;
           }
         }
         thisMesh.colorAtoms(C.getColixO(value), bs);

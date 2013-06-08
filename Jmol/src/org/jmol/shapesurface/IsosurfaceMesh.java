@@ -528,7 +528,10 @@ public class IsosurfaceMesh extends Mesh {
     // TODO: color translucency?
     if (isAtoms)
       for (int i = 0; i < vertexCount; i++) {
-        if (bs.get(vertexSource[i])) {
+        int pt = vertexSource[i]; 
+        if (pt < 0)
+          continue;
+        if (bs.get(pt)) {
           vertexColixes[i] = colix;
           bsVertices.set(i);
         }
@@ -657,27 +660,30 @@ public class IsosurfaceMesh extends Mesh {
       meshColix = C.getColixS(jvxlData.meshColor);
     setJvxlDataRendering();
 
-    isColorSolid = !jvxlData.isBicolorMap && jvxlData.vertexColors == null;
+    isColorSolid = !jvxlData.isBicolorMap && jvxlData.vertexColors == null
+        && jvxlData.vertexColorMap == null;
     if (colorEncoder != null) {
       // bicolor map will be taken care of with params.isBicolorMap
-      if (jvxlData.colorScheme != null) {
-        String colorScheme = jvxlData.colorScheme;
-        boolean isTranslucent = colorScheme.startsWith("translucent ");
-        if (isTranslucent)
-          colorScheme = colorScheme.substring(12);
-        colorEncoder.setColorScheme(colorScheme, isTranslucent);
-        remapColors(null, null, Float.NaN);
-      }
-      if (jvxlData.vertexColorMap != null)
-        for (Map.Entry<String, BS> entry : jvxlData.vertexColorMap
-            .entrySet()) {
+      if (jvxlData.vertexColorMap == null) {
+        if (jvxlData.colorScheme != null) {
+          String colorScheme = jvxlData.colorScheme;
+          boolean isTranslucent = colorScheme.startsWith("translucent ");
+          if (isTranslucent)
+            colorScheme = colorScheme.substring(12);
+          colorEncoder.setColorScheme(colorScheme, isTranslucent);
+          remapColors(null, null, Float.NaN);
+        }
+      } else {
+        for (Map.Entry<String, BS> entry : jvxlData.vertexColorMap.entrySet()) {
           BS bsMap = entry.getValue();
-          short colix = C.copyColixTranslucency(this.colix, C
-              .getColixS(entry.getKey()));
+          short colix = C.copyColixTranslucency(this.colix, C.getColixS(entry
+              .getKey()));
           for (int i = bsMap.nextSetBit(0); i >= 0; i = bsMap.nextSetBit(i + 1))
             vertexColixes[i] = colix;
         }
-    }    
+      }
+    }
+
   }
 
   void setJvxlDataRendering() {

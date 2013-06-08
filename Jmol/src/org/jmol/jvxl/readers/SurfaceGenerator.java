@@ -1169,6 +1169,10 @@ public class SurfaceGenerator {
       params.state = Parameters.STATE_DATA_COLORED;
       surfaceReader.applyColorScale();
     }
+    if (jvxlData.vertexColorMap != null) {
+      jvxlData.vertexColorMap = null;
+      surfaceReader.hasColorData = false;
+    }
     surfaceReader.jvxlUpdateInfo();
     setMarchingSquares(surfaceReader.marchingSquares);
     surfaceReader.discardTempData(false);

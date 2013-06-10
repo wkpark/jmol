@@ -787,18 +787,18 @@ class PyMOLScene implements JmolSceneGenerator {
   }
 
   private void setGroupVisibilities() {
-    if (groups != null) {
-      Collection<PyMOLGroup> list = groups.values();
-      BS bsAll = new BS();
-      for (PyMOLGroup g : list) {
-        bsAll.or(g.bsAtoms);
-        if (g.parent == null) // top
-          setGroupVisible(g, true);
-        else if (g.list.isEmpty()) // bottom
-          g.addGroupAtoms(new BS());
-      }
-      defineAtoms("all", bsAll);
+    if (groups == null)
+      return;
+    Collection<PyMOLGroup> list = groups.values();
+    BS bsAll = new BS();
+    for (PyMOLGroup g : list) {
+      bsAll.or(g.bsAtoms);
+      if (g.parent == null) // top
+        setGroupVisible(g, true);
+      else if (g.list.isEmpty()) // bottom
+        g.addGroupAtoms(new BS());
     }
+    defineAtoms("all", bsAll);
   }
 
   private void defineAtoms(String name, BS bs) {

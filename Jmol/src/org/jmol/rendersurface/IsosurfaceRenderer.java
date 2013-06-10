@@ -167,7 +167,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       }
     }
     boolean tcover = g3d.getTranslucentCoverOnly();
-    g3d.setTranslucentCoverOnly(imesh.frontOnly);
+    g3d.setTranslucentCoverOnly(imesh.frontOnly || !viewer.getBoolean(T.translucent));
     thePlane = imesh.jvxlData.jvxlPlane;
     vertexValues = imesh.vertexValues;
     boolean isOK;

@@ -4554,7 +4554,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case ':': // PubChem
       format = global.pubChemFormat;
       String fl = f.toLowerCase();
-      int fi = Parser.parseInt(f);
+      int fi = Integer.MIN_VALUE;
+      try {
+        fi = Integer.parseInt(f);
+      } catch (Exception e) {
+        //
+      }
       if (fi != Integer.MIN_VALUE) {
         f = "cid/" + fi;
       } else {
@@ -5751,6 +5756,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.strutsMultiple;
     case T.tracealpha:
       return global.traceAlpha;
+    case T.translucent:
+      return global.translucent;
     case T.twistedsheets:
       return global.twistedSheets;
     case T.vectorsymmetry:

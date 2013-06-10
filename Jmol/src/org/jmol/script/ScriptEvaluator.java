@@ -7545,13 +7545,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return matches;
   }
 
+  /**
+   * 
+   * @param index  0 is this is the hbond command
+   * 
+   * @throws ScriptException
+   */
   private void connect(int index) throws ScriptException {
 
     final float[] distances = new float[2];
     BS[] atomSets = new BS[2];
     atomSets[0] = atomSets[1] = viewer.getSelectionSet(false);
     float radius = Float.NaN;
-    int color = Integer.MIN_VALUE;
+    colorArgb[0] = Integer.MIN_VALUE;
     int distanceCount = 0;
     int bondOrder = JmolEdge.BOND_ORDER_NULL;
     int bo;
@@ -7559,7 +7565,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isDelete = false;
     boolean haveType = false;
     boolean haveOperation = false;
-    String translucency = null;
     float translucentLevel = Float.MAX_VALUE;
     boolean isColorOrRadius = false;
     int nAtomSets = 0;
@@ -7634,19 +7639,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         addGroup = true;
         break;
       case T.color:
-        int tok = tokAt(i + 1);
-        if (tok != T.translucent && tok != T.opaque)
-          ptColor = i + 1;
-        continue;
       case T.translucent:
       case T.opaque:
-        if (translucency != null)
-          error(ERROR_invalidArgument);
         isColorOrRadius = true;
-        translucency = parameterAsString(i);
-        if (theTok == T.translucent && isFloatParameter(i + 1))
-          translucentLevel = getTranslucentLevel(++i);
-        ptColor = i + 1;
+        translucentLevel = getColorTrans(i);
+        i = iToken;
         break;
       case T.pdb:
         boolean isAuto = (tokAt(2) == T.auto);
@@ -7671,8 +7668,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.struts:
         if (!isColorOrRadius) {
-          color = 0xFFFFFF;
-          translucency = "translucent";
+          colorArgb[0] = 0xFFFFFF;
           translucentLevel = 0.5f;
           radius = viewer.getFloat(T.strutdefaultradius);
           isColorOrRadius = true;
@@ -7682,16 +7678,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         haveOperation = true;
         //$FALL-THROUGH$
       case T.identifier:
+        if (isColorParam(i)) {
+          ptColor = -i;
+          break;
+        }
+        //$FALL-THROUGH$
       case T.aromatic:
       case T.hbond:
         if (i > 0) {
-          if (ptColor == i)
-            break;
+          // not hbond command
           // I know -- should have required the COLOR keyword
-          if (isColorParam(i)) {
-            ptColor = -i;
-            break;
-          }
         }
         String cmd = parameterAsString(i);
         if ((bo = getBondOrderFromString(cmd)) == JmolEdge.BOND_ORDER_NULL) {
@@ -7742,9 +7738,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // now check for color -- -i means we've already checked
       if (i > 0) {
         if (ptColor == -i || ptColor == i && isColorParam(i)) {
-          color = getArgbParam(i);
-          i = iToken;
           isColorOrRadius = true;
+          colorArgb[0] = getArgbParam(i);
+          i = iToken;
         } else if (ptColor == i) {
           error(ERROR_invalidArgument);
         }
@@ -7758,8 +7754,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       distances[1] = distances[0];
       distances[0] = JC.DEFAULT_MIN_CONNECT_DISTANCE;
     }
-    if (translucency != null || !Float.isNaN(radius)
-        || color != Integer.MIN_VALUE) {
+    if (isColorOrRadius) {
       if (!haveType)
         bondOrder = JmolEdge.BOND_ORDER_ANY;
       if (!haveOperation)
@@ -7798,17 +7793,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.selectBonds(bsBonds);
       if (!Float.isNaN(radius))
         setShapeSizeBs(JC.SHAPE_STICKS, Math.round(radius * 2000), null);
-      if (color != Integer.MIN_VALUE)
-        setShapePropertyBs(JC.SHAPE_STICKS, "color", Integer
-            .valueOf(color), bsBonds);
-      if (translucency != null) {
-        if (translucentLevel == Float.MAX_VALUE)
-          translucentLevel = viewer.getFloat(T.defaulttranslucent);
-        setShapeProperty(JC.SHAPE_STICKS, "translucentLevel", Float
-            .valueOf(translucentLevel));
-        setShapePropertyBs(JC.SHAPE_STICKS, "translucency",
-            translucency, bsBonds);
-      }
+      finalizeObject(JC.SHAPE_STICKS, colorArgb[0], translucentLevel, 0, false, null, 0, bsBonds);
       viewer.selectBonds(null);
     }
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
@@ -8184,10 +8169,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           prefix = "vertex";
         } else {
           bs = atomExpressionAt(index);
-          // don't allow isosurface partial translucency (yet)
           prefix = "atom";
         }
-        translucentLevel = Float.MIN_VALUE;
+        // don't allow isosurface partial translucency (yet)
+        //translucentLevel = Float.MIN_VALUE;
         getToken(index = iToken + 1);
         break;
       }
@@ -11623,6 +11608,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void ellipsoid() throws ScriptException {
     int mad = 0;
     int i = 1;
+    float translucentLevel = Float.MAX_VALUE;
     switch (getToken(1).tok) {
     case T.on:
       mad = 50;
@@ -11648,7 +11634,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       while (++i < slen) {
         String key = parameterAsString(i);
         Object value = null;
-        switch (tokAt(i)) {
+        switch (getToken(i).tok) {
         case T.dollarsign:
           key = "points";
           Object[] data = new Object[3];
@@ -11678,31 +11664,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           i = iToken;
           break;
         case T.color:
-          float translucentLevel = Float.NaN;
-          if (tokAt(i) == T.color)
-            i++;
-          if ((theTok = tokAt(i)) == T.translucent) {
-            value = "translucent";
-            if (isFloatParameter(++i))
-              translucentLevel = getTranslucentLevel(i++);
-            else
-              translucentLevel = viewer.getFloat(T.defaulttranslucent);
-          } else if (theTok == T.opaque) {
-            value = "opaque";
-            i++;
-          }
-          if (isColorParam(i)) {
-            setShapeProperty(JC.SHAPE_ELLIPSOIDS, "color", Integer
-                .valueOf(getArgbParam(i)));
-            i = iToken;
-          }
-          if (value == null)
-            continue;
-          if (!Float.isNaN(translucentLevel))
-            setShapeProperty(JC.SHAPE_ELLIPSOIDS,
-                "translucentLevel", Float.valueOf(translucentLevel));
-          key = "translucency";
-          break;
+        case T.translucent:
+        case T.opaque:
+          translucentLevel = getColorTrans(i);
+          i = iToken;
+          continue;
         case T.delete:
           value = Boolean.TRUE;
           checkLength(3);
@@ -11726,6 +11692,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         setShapeProperty(JC.SHAPE_ELLIPSOIDS, key.toLowerCase(),
             value);
       }
+      finalizeObject(JC.SHAPE_ELLIPSOIDS, colorArgb[0], translucentLevel, 0, false, null, 0, null);
       setShapeProperty(JC.SHAPE_ELLIPSOIDS, "thisID", null);
       return;
     default:
@@ -15546,6 +15513,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return (String) getShapePropertyIndex(JC.SHAPE_MO, "showMO", ptMO);
   }
 
+  private int[] colorArgb = new int[] {Integer.MIN_VALUE};
+  
   private void cgo() throws ScriptException {
     sm.loadShape(JC.SHAPE_CGO);
     if (tokAt(1) == T.list && listIsosurface(JC.SHAPE_CGO))
@@ -15554,11 +15523,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String thisId = initIsosurface(JC.SHAPE_CGO);
     boolean idSeen = (thisId != null);
     boolean isWild = (idSeen && getShapeProperty(JC.SHAPE_CGO, "ID") == null);
-    boolean isTranslucent = false;
     boolean isInitialized = false;
     JmolList<Object> data = null;
     float translucentLevel = Float.MAX_VALUE;
-    int colorArgb = Integer.MIN_VALUE;
+    colorArgb[0] = Integer.MIN_VALUE;
     int intScale = 0;
     for (int i = iToken; i < slen; ++i) {
       String propertyName = null;
@@ -15588,24 +15556,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.color:
       case T.translucent:
       case T.opaque:
-        if (theTok != T.color)
-          --i;
-        if (tokAt(i + 1) == T.translucent) {
-          i++;
-          isTranslucent = true;
-          if (isFloatParameter(i + 1))
-            translucentLevel = getTranslucentLevel(++i);
-        } else if (tokAt(i + 1) == T.opaque) {
-          i++;
-          isTranslucent = true;
-          translucentLevel = 0;
-        }
-        if (isColorParam(i + 1)) {
-          colorArgb = getArgbParam(++i);
-          i = iToken;
-        } else if (!isTranslucent) {
-          error(ERROR_invalidArgument);
-        }
+        translucentLevel = getColorTrans(i);
+        i = iToken;
         idSeen = true;
         continue;
       case T.id:
@@ -15637,22 +15589,56 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (propertyName != null)
         setShapeProperty(JC.SHAPE_CGO, propertyName, propertyValue);
     }
-    finalizeObject(JC.SHAPE_CGO, colorArgb, isTranslucent ? translucentLevel
-        : Float.MAX_VALUE, intScale, data != null, data, iptDisplayProperty);
+    finalizeObject(JC.SHAPE_CGO, colorArgb[0], translucentLevel, intScale, data != null, data, iptDisplayProperty, null);
   }
-  
+
+  /**
+   * Checks color, translucent, opaque parameters.
+   * 
+   * @param i
+   * @return translucentLevel and sets iToken and colorArgb[0]
+   * 
+   * @throws ScriptException
+   */
+  private float getColorTrans(int i) throws ScriptException {
+    float translucentLevel = Float.MAX_VALUE;
+    if (theTok != T.color)
+      --i;
+    switch (tokAt(i + 1)) {
+    case T.translucent:
+      i++;
+      translucentLevel = (isFloatParameter(i + 1) ? getTranslucentLevel(++i)
+          : viewer.getFloat(T.defaulttranslucent));
+      break;
+    case T.opaque:
+      i++;
+      translucentLevel = 0;
+      break;
+    }
+    if (isColorParam(i + 1)) {
+      colorArgb[0] = getArgbParam(++i);
+      i = iToken;
+    } else if (translucentLevel == Float.MAX_VALUE) {
+      error(ERROR_invalidArgument);
+    } else {
+      colorArgb[0] = Integer.MIN_VALUE;
+    }
+    i = iToken;
+    return translucentLevel;
+  }
+
   private void finalizeObject(int shapeID, int colorArgb,
                               float translucentLevel, int intScale,
-                              boolean havePoints, Object data, int iptDisplayProperty) throws ScriptException {
-    if (havePoints) {
+                              boolean doSet, Object data, int iptDisplayProperty, BS bs) throws ScriptException {
+    if (doSet) {
       setShapeProperty(shapeID, "set", data);
     }
     if (colorArgb != Integer.MIN_VALUE)
-      setShapeProperty(shapeID, "color", Integer
-          .valueOf(colorArgb));
+      setShapePropertyBs(shapeID, "color", Integer
+          .valueOf(colorArgb), bs);
     if (translucentLevel != Float.MAX_VALUE)
       setShapeTranslucency(shapeID, "", "translucent",
-          translucentLevel, null);
+          translucentLevel, bs);
     if (intScale != 0) {
       setShapeProperty(shapeID, "scale", Integer
           .valueOf(intScale));
@@ -15683,13 +15669,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean havePoints = false;
     boolean isInitialized = false;
     boolean isSavedState = false;
-    boolean isTranslucent = false;
     boolean isIntersect = false;
     boolean isFrame = false;
     P4 plane;
     int tokIntersect = 0;
     float translucentLevel = Float.MAX_VALUE;
-    int colorArgb = Integer.MIN_VALUE;
+    colorArgb[0] = Integer.MIN_VALUE;
     int intScale = 0;
     String swidth = "";
     int iptDisplayProperty = 0;
@@ -16084,25 +16069,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.color:
       case T.translucent:
       case T.opaque:
-        if (theTok != T.color)
-          --i;
-        if (tokAt(i + 1) == T.translucent) {
-          i++;
-          isTranslucent = true;
-          if (isFloatParameter(i + 1))
-            translucentLevel = getTranslucentLevel(++i);
-        } else if (tokAt(i + 1) == T.opaque) {
-          i++;
-          isTranslucent = true;
-          translucentLevel = 0;
-        }
-        if (isColorParam(i + 1)) {
-          colorArgb = getArgbParam(++i);
-          i = iToken;
-        } else if (!isTranslucent) {
-          error(ERROR_invalidArgument);
-        }
         idSeen = true;
+        translucentLevel = getColorTrans(i);
+        i = iToken;
         continue;
       default:
         if (!setMeshDisplayProperty(JC.SHAPE_DRAW, 0, theTok)) {
@@ -16130,8 +16099,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (propertyName != null)
         setShapeProperty(JC.SHAPE_DRAW, propertyName, propertyValue);
     }
-    finalizeObject(JC.SHAPE_DRAW, colorArgb, isTranslucent ? translucentLevel : Float.MAX_VALUE, 
-        intScale, havePoints, connections, iptDisplayProperty);
+    finalizeObject(JC.SHAPE_DRAW, colorArgb[0], translucentLevel, 
+        intScale, havePoints, connections, iptDisplayProperty, null);
   }
 
   private void polyhedra() throws ScriptException {
@@ -16156,9 +16125,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     setShapeProperty(JC.SHAPE_POLYHEDRA, "init", null);
     String setPropertyName = "centers";
     String decimalPropertyName = "radius_";
-    boolean isTranslucent = false;
     float translucentLevel = Float.MAX_VALUE;
-    int color = Integer.MIN_VALUE;
+    colorArgb[0] = Integer.MIN_VALUE;
     for (int i = 1; i < slen; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -16247,24 +16215,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.color:
       case T.translucent:
       case T.opaque:
-        isTranslucent = false;
-        if (theTok != T.color)
-          --i;
-        if (tokAt(i + 1) == T.translucent) {
-          i++;
-          isTranslucent = true;
-          if (isFloatParameter(i + 1))
-            translucentLevel = getTranslucentLevel(++i);
-        } else if (tokAt(i + 1) == T.opaque) {
-          i++;
-          isTranslucent = true;
-          translucentLevel = 0;
-        }
-        if (isColorParam(i + 1)) {
-          color = getArgbParam(i);
-          i = iToken;
-        } else if (!isTranslucent)
-          error(ERROR_invalidArgument);
+        translucentLevel = getColorTrans(i);
+        i = iToken;
         continue;
       case T.collapsed:
       case T.flat:
@@ -16288,7 +16240,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         continue;
       default:
         if (isColorParam(i)) {
-          color = getArgbParam(i);
+          colorArgb[0] = getArgbParam(i);
           i = iToken;
           continue;
         }
@@ -16303,10 +16255,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       error(ERROR_insufficientArguments);
     if (needsGenerating)
       setShapeProperty(JC.SHAPE_POLYHEDRA, "generate", null);
-    if (color != Integer.MIN_VALUE)
+    if (colorArgb[0] != Integer.MIN_VALUE)
       setShapeProperty(JC.SHAPE_POLYHEDRA, "colorThis", Integer
-          .valueOf(color));
-    if (isTranslucent)
+          .valueOf(colorArgb[0]));
+    if (translucentLevel != Float.MAX_VALUE)
       setShapeTranslucency(JC.SHAPE_POLYHEDRA, "", "translucentThis",
           translucentLevel, null);
     if (lighting != 0)

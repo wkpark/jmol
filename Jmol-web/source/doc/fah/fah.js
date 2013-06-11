@@ -324,6 +324,8 @@ function showProjectInfo(value) {
     document.fahForm.infoCode.value = "Sharpen";
   } else if (code == "T") {
     document.fahForm.infoCode.value = "Tinker";
+  } else if (code == "Z") {
+    document.fahForm.infoCode.value = "Zeta";
   } else {
     document.fahForm.infoCode.value = code;
   }

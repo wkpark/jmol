@@ -283,6 +283,7 @@ public class CoreType {
   static public final CoreType SHARPEN      = new CoreType("Sharpen", "SP", true);   //$NON-NLS-1$//$NON-NLS-2$
   static public final CoreType TINKER       = new CoreType("Tinker", "T", true);   //$NON-NLS-1$//$NON-NLS-2$
   static public final CoreType UNLISTED     = new CoreType("Unlisted", "UL", true);   //$NON-NLS-1$//$NON-NLS-2$
+  static public final CoreType ZETA         = new CoreType("Zeta", "Z", true);   //$NON-NLS-1$//$NON-NLS-2$
 
   // Attributes
   private final String _name;

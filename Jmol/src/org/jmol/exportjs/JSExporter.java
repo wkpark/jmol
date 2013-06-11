@@ -113,6 +113,7 @@ public class JSExporter extends CartesianExporter {
    * @param pt3 
    */
   void jsTriangle(Object applet, int color, P3 pt1, P3 pt2, P3 pt3) {
+    // implemented in JavaScript only
     System.out.println("jsTriangle ");
   }
 
@@ -165,15 +166,21 @@ public class JSExporter extends CartesianExporter {
   }
 
   @Override
-  protected void outputCone(P3 ptBase, P3 ptTip, float radius,
-                            short colix) {
-    outputCylinder(null, ptBase, ptTip, colix, GData.ENDCAPS_NONE, radius, null, null, false);
-  }
-
-  @Override
   protected void outputEllipsoid(P3 center, P3[] points, short colix) {
     // TODO Auto-generated method stub
 
+  }
+
+  @Override
+  protected void output(Tuple3f pt) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  protected void outputCone(P3 ptBase, P3 ptTip, float radius,
+                            short colix) {
+    outputCylinder(null, ptBase, ptTip, colix, GData.ENDCAPS_NONE, radius, null, null, false);
   }
 
   private Integer getColor(short colix) {
@@ -210,7 +217,7 @@ public class JSExporter extends CartesianExporter {
                          int[][] indices, int nVertices, int nPolygons,
                          int nFaces, BS bsPolygons, int faceVertexMax,
                          int color, int[] vertexColors, int[] polygonColors) {
-      System.out.println("jsSurface -- nV=" + nVertices + " nPoly=" + nPolygons + " nFaces=" + nFaces + " faceVertexMax=" + faceVertexMax);
+      //System.out.println("jsSurface -- nV=" + nVertices + " nPoly=" + nPolygons + " nFaces=" + nFaces + " faceVertexMax=" + faceVertexMax);
     // JavaScript only    
   }
 
@@ -228,12 +235,6 @@ public class JSExporter extends CartesianExporter {
   protected void outputTriangle(P3 pt1, P3 pt2, P3 pt3,
                                 short colix) {
     jsTriangle(applet, g3d.getColorArgbOrGray(colix), pt1, pt2, pt3);
-  }
-
-  @Override
-  protected void output(Tuple3f pt) {
-    // TODO Auto-generated method stub
-
   }
 
   @Override

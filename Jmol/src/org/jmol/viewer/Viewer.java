@@ -453,7 +453,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     display = info.get("display");
     isSingleThreaded = apiPlatform.isSingleThreaded();
     noGraphicsAllowed = checkOption2("noGraphics", "-n");
-    haveDisplay = (display != null && !noGraphicsAllowed && !isHeadless() && !checkOption2(
+    haveDisplay = (isWebGL || display != null && !noGraphicsAllowed && !isHeadless() && !checkOption2(
         "isDataOnly", "\0"));
     noGraphicsAllowed &= (display == null);
     if (haveDisplay) {
@@ -9587,7 +9587,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     Object exporter = export3D.initializeExporter(type, this, privateKey,
         gdata, output);
     if (isJS && exporter != null)
-      this.jsExporter3D = export3D;
+      jsExporter3D = export3D;
     return (exporter == null ? null : export3D);
   }
 

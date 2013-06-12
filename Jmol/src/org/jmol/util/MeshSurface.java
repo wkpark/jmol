@@ -20,6 +20,7 @@ public class MeshSurface {
   
   public int polygonCount;
   public int[][] polygonIndexes;
+  public float[] polygonTranslucencies;
   
   public boolean isTriangleSet; // just a set of flat polygons
   public boolean haveQuads;
@@ -215,8 +216,20 @@ public class MeshSurface {
   
   public BS bsSlabDisplay;
   public BS bsSlabGhost;
+  public BS bsTransPolygons;
   public int slabMeshType;
   public short slabColix;
+
+  /**
+   *  Must create bsTransPolygons, polygonTranslucencies, 
+   *  and new triangle set for partially translucent polygons
+   * 
+   * @param bsVertices
+   */
+  public void setTranslucentVertices(BS bsVertices) {
+    //TODO 
+    
+  }
   
   public void setSlab(BS bsDisplay, BS bsGhost, String type,
                       String color, float translucency) {
@@ -249,6 +262,21 @@ public class MeshSurface {
         new Float[] {Float.valueOf(min), Float.valueOf(max)}, Boolean.FALSE, null };
   }
 
+  public void resetTransPolygons() {
+    boolean isTranslucent = C.isColixTranslucent(colix);
+    float translucentLevel = C.getColixTranslucencyFractional(colix);
+    for (int i = 0; i < polygonCount; i++)
+      if (bsTransPolygons.get(i)) {
+        if (!setABC(i))
+          continue;
+        vertexColixes[iA] = C.getColixTranslucent3(vertexColixes[iA], isTranslucent, translucentLevel); 
+        vertexColixes[iB] = C.getColixTranslucent3(vertexColixes[iB], isTranslucent, translucentLevel); 
+        vertexColixes[iC] = C.getColixTranslucent3(vertexColixes[iC], isTranslucent, translucentLevel); 
+      }
+    bsTransPolygons = null;
+    polygonTranslucencies = null;
+  }
+  
   public void resetSlab() {
     slabPolygons(getSlabObject(T.none, null, false, null), false);
   }

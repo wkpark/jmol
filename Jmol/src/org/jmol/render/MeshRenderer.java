@@ -57,8 +57,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected boolean frontOnly;
   protected boolean antialias;
   protected boolean haveBsDisplay;
-  protected boolean haveBsSlabDisplay;
-  protected boolean haveBsSlabGhost;
+  protected boolean selectedPolyOnly;
+  protected boolean isGhostPass;
 
   protected P4 thePlane;
   protected P3 latticeOffset = new P3();
@@ -133,7 +133,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   private boolean doRender;
   protected boolean volumeRender;
-  protected BS bsSlab;
+  protected BS bsPolygons;
   
   
   private boolean setVariables() {
@@ -141,19 +141,20 @@ public abstract class MeshRenderer extends ShapeRenderer {
       return false;
     if (mesh.bsSlabGhost != null)
       g3d.setColix(mesh.slabColix); // forces a second pass
-    haveBsSlabGhost = (mesh.bsSlabGhost != null && (isExport ? exportPass == 2
+    isGhostPass = (mesh.bsSlabGhost != null && (isExport ? exportPass == 2
         : g3d.isPass2()));
-    isTranslucent = haveBsSlabGhost
+    isTranslucent = isGhostPass
         || C.isColixTranslucent(mesh.colix);
     if (isTranslucent || volumeRender || mesh.bsSlabGhost != null)
       needTranslucent = true;
     doRender = (setColix(mesh.colix) || mesh.showContourLines);
-    if (!doRender || haveBsSlabGhost && !(doRender = g3d.setColix(mesh.slabColix))) {
+    if (!doRender || isGhostPass && !(doRender = g3d.setColix(mesh.slabColix))) {
       vertices = mesh.vertices;      
       return true;
     }
     vertices = (mesh.scale3d == 0 && mesh.mat4 == null ? mesh.vertices : mesh.getOffsetVertices(thePlane));
     if (mesh.lineData == null) {
+      // not a draw 
       if ((vertexCount = mesh.vertexCount) == 0)
         return false;
       normixes = mesh.normixes;
@@ -161,13 +162,15 @@ public abstract class MeshRenderer extends ShapeRenderer {
         return false;
       // this can happen when user switches windows
       // during a surface calculation
-
       haveBsDisplay = (mesh.bsDisplay != null);
-      haveBsSlabDisplay = (haveBsSlabGhost || mesh.bsSlabDisplay != null);
-      bsSlab = (haveBsSlabGhost ? mesh.bsSlabGhost
-          : haveBsSlabDisplay ? mesh.bsSlabDisplay : null);
+      // mesh.bsSlabDisplay is a temporary slab effect 
+      // that is reversible; these are the polygons to display
+      selectedPolyOnly = (isGhostPass || mesh.bsSlabDisplay != null);
+      bsPolygons = (isGhostPass ? mesh.bsSlabGhost
+          : selectedPolyOnly ? mesh.bsSlabDisplay : null);
+      
       frontOnly = !viewer.getSlabEnabled() && mesh.frontOnly
-          && !mesh.isTwoSided && !haveBsSlabDisplay;
+          && !mesh.isTwoSided && !selectedPolyOnly;
       screens = viewer.allocTempScreens(vertexCount);
       if (frontOnly)
         transformedVectors = g3d.getTransformedVertexVectors();
@@ -178,7 +181,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
 
   protected boolean setColix(short colix) {
-    if (haveBsSlabGhost)
+    if (isGhostPass)
       return true;
     if (volumeRender && !isTranslucent)
       colix = C.getColixTranslucent3(colix, true, 0.8f);
@@ -207,13 +210,13 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
   
   protected void render2b(boolean generateSet) {
-    if (!g3d.setColix(haveBsSlabGhost ? mesh.slabColix : colix))
+    if (!g3d.setColix(isGhostPass ? mesh.slabColix : colix))
       return;
     if (mesh.showPoints || mesh.polygonCount == 0)
       renderPoints();    
-    if (haveBsSlabGhost ? mesh.slabMeshType == T.mesh : mesh.drawTriangles)
+    if (isGhostPass ? mesh.slabMeshType == T.mesh : mesh.drawTriangles)
       renderTriangles(false, mesh.showTriangles, false);
-    if (haveBsSlabGhost ? mesh.slabMeshType == T.fill : mesh.fillTriangles)
+    if (isGhostPass ? mesh.slabMeshType == T.fill : mesh.fillTriangles)
       renderTriangles(true, mesh.showTriangles, generateSet);
   }
 
@@ -246,18 +249,18 @@ public abstract class MeshRenderer extends ShapeRenderer {
         g3d.fillSphereI(4, screens[i]);
   }
 
-  protected BS bsPolygons = new BS();
+  protected BS bsPolygonsToExport = new BS();
 
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean generateSet) {
     int[][] polygonIndexes = mesh.polygonIndexes;
-    colix = (haveBsSlabGhost ? mesh.slabColix : mesh.colix);
+    colix = (isGhostPass ? mesh.slabColix : mesh.colix);
     // vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh
     g3d.setColix(colix);
     if (generateSet) {
       if (frontOnly && fill)
         frontOnly = false;
-      bsPolygons.clearAll();
+      bsPolygonsToExport.clearAll();
     }
     for (int i = mesh.polygonCount; --i >= 0;) {
       if (!isPolygonDisplayable(i))
@@ -318,7 +321,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       case 3:
         if (fill) {
           if (generateSet) {
-            bsPolygons.set(i);
+            bsPolygonsToExport.set(i);
             continue;
           }
           if (iShowTriangles) {
@@ -339,7 +342,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
           continue;
         if (fill) {
           if (generateSet) {
-            bsPolygons.set(i);
+            bsPolygonsToExport.set(i);
             continue;
           }
           g3d.fillQuadrilateral3i(screens[iA], colix, nA, screens[iB], colix, nB,
@@ -426,7 +429,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
 
   protected void exportSurface(short colix) {
     mesh.normals = mesh.getNormals(vertices, null);
-    mesh.bsPolygons = bsPolygons;
+    mesh.bsPolygons = bsPolygonsToExport;
     mesh.offset = latticeOffset;
     g3d.drawSurface(mesh, colix);
     mesh.normals = null;

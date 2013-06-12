@@ -354,8 +354,12 @@ public abstract class MeshCollection extends Shape {
       return;
     case T.translucent:
       m.setTranslucent(bProp, translucentLevel);
+      // color isosurface translucent clears the slab
       if (bProp && m.bsSlabGhost != null)
         m.resetSlab();
+      // color isosurface translucent or opaque clears all special translucent polygons
+      if (m.bsTransPolygons != null)
+        m.resetTransPolygons();
       return;
     default:
       m.setTokenProperty(tokProp, bProp);

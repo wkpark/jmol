@@ -129,9 +129,9 @@ public class Mesh extends MeshSurface {
     bsDisplay = null;
     bsSlabDisplay = null;
     bsSlabGhost = null;
+    bsTransPolygons = null;
     cappingObject = null;
     colix = C.GOLD;
-    useColix = true;
     colorDensity = false;
     connections = null;
     diameter = 0;
@@ -145,9 +145,10 @@ public class Mesh extends MeshSurface {
     lattice = null;
     mat4 = null;
     normixes = null;
-    scale3d = 0;
     polygonIndexes = null;
+    polygonTranslucencies = null;
     scale = 1;
+    scale3d = 0;
     showContourLines = false;
     showPoints = false;
     showTriangles = false; //as distinct entities
@@ -156,6 +157,7 @@ public class Mesh extends MeshSurface {
     spanningVectors = null;    
     title = null;
     unitCell = null;
+    useColix = true;
     vertexCount0 = polygonCount0 = vertexCount = polygonCount = 0;
     vertices = null;
     volumeRenderPointSize = 0.15f;
@@ -413,23 +415,23 @@ public class Mesh extends MeshSurface {
         }
     return bs;
   }
-
-  BS getVisibleGhostBitSet() {
-    BS bs = new BS();
-    if (polygonCount == 0 && bsSlabGhost != null)
-      BSUtil.copy2(bsSlabGhost, bs);
-    else
-      for (int i = polygonCount; --i >= 0;)
-        if (bsSlabGhost == null || bsSlabGhost.get(i)) {
-          int[] vertexIndexes = polygonIndexes[i];
-          if (vertexIndexes == null)
-            continue;
-          bs.set(vertexIndexes[0]);
-          bs.set(vertexIndexes[1]);
-          bs.set(vertexIndexes[2]);
-        }
-    return bs;
-  }
+//
+//  BS getVisibleGhostBitSet() {
+//    BS bs = new BS();
+//    if (polygonCount == 0 && bsSlabGhost != null)
+//      BSUtil.copy2(bsSlabGhost, bs);
+//    else
+//      for (int i = polygonCount; --i >= 0;)
+//        if (bsSlabGhost == null || bsSlabGhost.get(i)) {
+//          int[] vertexIndexes = polygonIndexes[i];
+//          if (vertexIndexes == null)
+//            continue;
+//          bs.set(vertexIndexes[0]);
+//          bs.set(vertexIndexes[1]);
+//          bs.set(vertexIndexes[2]);
+//        }
+//    return bs;
+//  }
 
   public void setTokenProperty(int tokProp, boolean bProp) {
     switch (tokProp) {

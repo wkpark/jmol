@@ -435,27 +435,28 @@ public void initShape() {
 }
 
 private void initDraw() {
+   boundBox = null;
+   bsAllModels = null;
    colix = C.ORANGE;
    color = 0xFFFFFFFF;
-   newScale = 0;
-   isFixed = isReversed = isRotated45 = isCrossed = noHead = isBarb = false;
+   diameter = 0;
+   explicitID = false;
+   indicatedModelIndex = -1;
+   intersectID = null;
    isCurve = isArc = isArrow = isPlane = isCircle = isCylinder = isLine = false;
-   isVertices = isPerpendicular = isVector = false;
+   isFixed = isReversed = isRotated45 = isCrossed = noHead = isBarb = false;
+   isPerpendicular = isVertices = isVector = false;
    isValid = true;
    length = Float.MAX_VALUE;
-   diameter = 0;
-   width = 0;
-   indicatedModelIndex = -1;
+   lineData = null;
+   newScale = 0;
+   nidentifiers = nbitsets = 0;
    offset = null;
    plane = null;
    polygon = null;
-   nidentifiers = nbitsets = 0;
-   vData = new  JmolList<Object[]>();
-   bsAllModels = null;
-   intersectID = null;
    slabData = null;
-   boundBox = null;
-   explicitID = false;
+   vData = new  JmolList<Object[]>();
+   width = 0;
    setPropertySuper("thisID", MeshCollection.PREVIOUS_MESH_ID, null);
   }
 
@@ -638,7 +639,8 @@ protected void resetObjects() {
   @Override
   protected void clean() {
     for (int i = meshCount; --i >= 0;)
-      if (meshes[i] == null || meshes[i].vertexCount == 0 && meshes[i].connections == null)
+      if (meshes[i] == null || meshes[i].vertexCount == 0 
+          && meshes[i].connections == null && meshes[i].lineData == null)
         deleteMeshI(i);
   }
 
@@ -1356,9 +1358,11 @@ protected void resetObjects() {
       int n = dmesh.lineData.size();
       for (int j = 0; j < n;) {
         P3[] pts = dmesh.lineData.get(j);
-        str.append(Escape.eP(pts[0]));
-        str.append(" ");
-        str.append(Escape.eP(pts[1]));
+        String s = Escape.eP(pts[0]);
+        str.append(s.substring(1, s.length() - 1));
+        str.append(",");
+        s = Escape.eP(pts[1]);
+        str.append(s.substring(1, s.length() - 1));
         if (++j < n)
           str.append(", ");
       }

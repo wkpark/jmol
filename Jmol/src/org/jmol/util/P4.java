@@ -46,7 +46,7 @@ public class P4 extends Tuple4f {
 
   public static P4 newPt(P4 value) {
     P4 pt = new P4();
-    pt.set(value.x, value.y, value.z, value.w);
+    pt.set(value.x, value.y, value.z, value.w);    
     return pt;
   }
 

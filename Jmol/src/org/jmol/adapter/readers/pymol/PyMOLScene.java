@@ -439,7 +439,7 @@ class PyMOLScene implements JmolSceneGenerator {
       finalizeObjects();
     } catch (Exception e) {
       System.out.println("PyMOLScene exception " + e);
-      if (!viewer.isApplet())
+      if (!viewer.isJS())
         e.printStackTrace();
     }
   }
@@ -657,7 +657,7 @@ class PyMOLScene implements JmolSceneGenerator {
         obj.finalizeObject(this, viewer.modelSet, mepList, doCache);
       } catch (Exception e) {
         System.out.println(e);
-        if (!viewer.isApplet())
+        if (!viewer.isJS())
           e.printStackTrace();
       }
     }

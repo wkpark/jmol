@@ -338,6 +338,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return isApplet;
   }
 
+  public boolean isJS() {
+    return isJS;
+  }
+
   public boolean isRestricted(ACCESS a) {
     // disables WRITE, LOAD file:/, set logFile 
     // command line -g and -w options ARE available for final writing of image
@@ -8856,7 +8860,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setBooleanProperty("refreshing", true);
       fileManager.setPathForAllFiles("");
       Logger.error("viewer handling error condition: " + er + "  ");
-      er.printStackTrace();
+      if (!isJS)
+        er.printStackTrace();
       notifyError("Error", "doClear=" + doClear + "; " + er, "" + er);
     } catch (Throwable e1) {
       try {

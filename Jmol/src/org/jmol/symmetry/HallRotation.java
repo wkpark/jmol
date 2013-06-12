@@ -90,36 +90,40 @@ class HallRotation {
   }
   
   final static HallRotation lookup(String code) {
-    for (int i = hallRotationTerms.length; --i >= 0;)
+    for (int i = getHallTerms().length; --i >= 0;)
       if (hallRotationTerms[i].rotCode.equals(code))
         return hallRotationTerms[i];
     return null;
   }
   
-  final static HallRotation[] hallRotationTerms = {
+  private static HallRotation[] hallRotationTerms;
+  
+  private synchronized static HallRotation[] getHallTerms() {
     // in matrix definitions, "+" = 1; "-" = -1;
     // just a compact way of indicating a 3x3
-      new HallRotation("1_"   , "+00 0+0 00+")
-    , new HallRotation("2x"   , "+00 0-0 00-")
-    , new HallRotation("2y"   , "-00 0+0 00-")
-    , new HallRotation("2z"   , "-00 0-0 00+")
-    , new HallRotation("2\'"  , "0-0 -00 00-") //z implied
-    , new HallRotation("2\""  , "0+0 +00 00-") //z implied
-    , new HallRotation("2x\'" , "-00 00- 0-0")
-    , new HallRotation("2x\"" , "-00 00+ 0+0")
-    , new HallRotation("2y\'" , "00- 0-0 -00")
-    , new HallRotation("2y\"" , "00+ 0-0 +00")
-    , new HallRotation("2z\'" , "0-0 -00 00-")
-    , new HallRotation("2z\"" , "0+0 +00 00-")
-    , new HallRotation("3x"   , "+00 00- 0+-")
-    , new HallRotation("3y"   , "-0+ 0+0 -00")
-    , new HallRotation("3z"   , "0-0 +-0 00+")
-    , new HallRotation("3*"   , "00+ +00 0+0")
-    , new HallRotation("4x"   , "+00 00- 0+0")
-    , new HallRotation("4y"   , "00+ 0+0 -00")
-    , new HallRotation("4z"   , "0-0 +00 00+")
-    , new HallRotation("6x"   , "+00 0+- 0+0")
-    , new HallRotation("6y"   , "00+ 0+0 -0+")
-    , new HallRotation("6z"   , "+-0 +00 00+")
-  };    
+    return (hallRotationTerms == null ? hallRotationTerms = new HallRotation[] {
+        new HallRotation("1_"   , "+00 0+0 00+")
+      , new HallRotation("2x"   , "+00 0-0 00-")
+      , new HallRotation("2y"   , "-00 0+0 00-")
+      , new HallRotation("2z"   , "-00 0-0 00+")
+      , new HallRotation("2\'"  , "0-0 -00 00-") //z implied
+      , new HallRotation("2\""  , "0+0 +00 00-") //z implied
+      , new HallRotation("2x\'" , "-00 00- 0-0")
+      , new HallRotation("2x\"" , "-00 00+ 0+0")
+      , new HallRotation("2y\'" , "00- 0-0 -00")
+      , new HallRotation("2y\"" , "00+ 0-0 +00")
+      , new HallRotation("2z\'" , "0-0 -00 00-")
+      , new HallRotation("2z\"" , "0+0 +00 00-")
+      , new HallRotation("3x"   , "+00 00- 0+-")
+      , new HallRotation("3y"   , "-0+ 0+0 -00")
+      , new HallRotation("3z"   , "0-0 +-0 00+")
+      , new HallRotation("3*"   , "00+ +00 0+0")
+      , new HallRotation("4x"   , "+00 00- 0+0")
+      , new HallRotation("4y"   , "00+ 0+0 -00")
+      , new HallRotation("4z"   , "0-0 +00 00+")
+      , new HallRotation("6x"   , "+00 0+- 0+0")
+      , new HallRotation("6y"   , "00+ 0+0 -0+")
+      , new HallRotation("6z"   , "+-0 +00 00+")
+    } : hallRotationTerms);
+  }
 }  

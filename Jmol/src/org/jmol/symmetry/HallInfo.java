@@ -54,7 +54,6 @@ package org.jmol.symmetry;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix4f;
 import org.jmol.util.P3i;
 import org.jmol.util.SB;
 
@@ -66,7 +65,7 @@ class HallInfo {
   String latticeExtension;
   boolean isCentrosymmetric;
   int nRotations;
-  RotationTerm[] rotationTerms = new RotationTerm[16];
+  HallRotationTerm[] rotationTerms = new HallRotationTerm[16];
   P3i vector12ths;
   String vectorCode;
   
@@ -86,7 +85,7 @@ class HallInfo {
       primitiveHallSymbol = "P";
       while (str.length() > 0 && nRotations < 16) {
         str = extractRotationInfo(str, prevOrder, prevAxisType);
-        RotationTerm r = rotationTerms[nRotations - 1];
+        HallRotationTerm r = rotationTerms[nRotations - 1];
         prevOrder = r.order;
         prevAxisType = r.axisType;
         primitiveHallSymbol += " " + r.primitiveCode;
@@ -104,7 +103,7 @@ class HallInfo {
         .append("\nprimitive Hall symbol: ").append(primitiveHallSymbol)
         .append("\nlattice type: ").append(getLatticeDesignation());
     for (int i = 0; i < nRotations; i++) {
-      sb.append("\n\nrotation term ").appendI(i + 1).append(rotationTerms[i].dumpInfo());
+      sb.append("\n\nrotation term ").appendI(i + 1).append(rotationTerms[i].dumpInfo(vectorCode));
     }
     return sb.toString();
   }
@@ -175,182 +174,9 @@ class HallInfo {
       code = name;
       name = "";
     }
-    rotationTerms[nRotations] = new RotationTerm(code, prevOrder, prevAxisType);
+    rotationTerms[nRotations] = new HallRotationTerm(this, code, prevOrder, prevAxisType);
     nRotations++;
     return name;
-  }
-  
-  class RotationTerm {
-    
-    String inputCode;
-    String primitiveCode;
-    String lookupCode;
-    String translationString;
-    HallRotation rotation;
-    HallTranslation translation;
-    Matrix4f seitzMatrix12ths = new Matrix4f();
-    boolean isImproper;
-    int order;
-    char axisType = '\0';
-    char diagonalReferenceAxis = '\0';
-    
-    boolean allPositive = true; //for now
-    
-    RotationTerm(String code, int prevOrder, char prevAxisType) {
-      this.inputCode = code;
-      code += "   ";
-      if (code.charAt(0) == '-') {
-        isImproper = true;
-        code = code.substring(1);
-      }
-      primitiveCode = "";
-      order = code.charAt(0) - '0';
-      diagonalReferenceAxis = '\0';
-      axisType = '\0';
-      int ptr = 2; // pointing to "c" in 2xc
-      char c;
-      switch (c = code.charAt(1)) {
-      case 'x':
-      case 'y':
-      case 'z':
-        switch (code.charAt(2)) {
-        case '\'':
-        case '"':
-          diagonalReferenceAxis = c;
-          c = code.charAt(2);
-          ptr++;
-        }
-        //$FALL-THROUGH$
-      case '*':
-        axisType = c;
-        break;
-      case '\'':
-      case '"':
-        axisType = c;
-        switch (code.charAt(2)) {
-        case 'x':
-        case 'y':
-        case 'z':
-          diagonalReferenceAxis = code.charAt(2);
-          ptr++;
-          break;
-        default:
-          diagonalReferenceAxis = prevAxisType;
-        }
-        break;
-      default:
-        // implicit axis type
-        axisType = (order == 1 ? '_'// no axis for 1
-            : nRotations == 0 ? 'z' // z implied for first rotation
-                : nRotations == 2 ? '*' // 3* implied for third rotation
-                    : prevOrder == 2 || prevOrder == 4 ? 'x' // x implied for 2
-                        // or 4
-                        : '\'' // a-b (') implied for 3 or 6 previous
-        );
-        code = code.substring(0, 1) + axisType + code.substring(1);
-      }
-      primitiveCode += (axisType == '_' ? "1" : code.substring(0, 2));
-      if (diagonalReferenceAxis != '\0') {
-        // 2' needs x or y or z designation
-        code = code.substring(0, 1) + diagonalReferenceAxis + axisType
-            + code.substring(ptr);
-        primitiveCode += diagonalReferenceAxis;
-        ptr = 3;
-      }
-      lookupCode = code.substring(0, ptr);
-      rotation = HallRotation.lookup(lookupCode);
-      if (rotation == null) {
-        Logger.error("Rotation lookup could not find " + inputCode + " ? "
-            + lookupCode);
-        return;
-      }
-
-      // now for translational part 1 2 3 4 5 6 a b c n u v w d r
-      // The "r" is my addition to handle rhombohedral lattice with
-      // primitive notation. This made coding FAR simpler -- all lattice
-      // operations indicated by one to three 1xxx or -1 extensions.
-
-      translation = new HallTranslation('\0', null);
-      translationString = "";
-      int len = code.length();
-      for (int i = ptr; i < len; i++) {
-        char translationCode = code.charAt(i);
-        HallTranslation t = new HallTranslation(translationCode, P3i.new3(order, -1, -1));
-        if (t.translationCode != '\0') {
-          translationString += "" + t.translationCode;
-          translation.rotationShift12ths += t.rotationShift12ths;
-          translation.vectorShift12ths.add(t.vectorShift12ths);
-        }
-      }
-      primitiveCode = (isImproper ? "-" : "") + primitiveCode
-          + translationString;
-
-      // set matrix, including translations and vector adjustment
-
-      if (isImproper) {
-        seitzMatrix12ths.setM(rotation.seitzMatrixInv);
-      } else {
-        seitzMatrix12ths.setM(rotation.seitzMatrix);
-      }
-      seitzMatrix12ths.m03 = translation.vectorShift12ths.x;
-      seitzMatrix12ths.m13 = translation.vectorShift12ths.y;
-      seitzMatrix12ths.m23 = translation.vectorShift12ths.z;
-      switch (axisType) {
-      case 'x':
-        seitzMatrix12ths.m03 += translation.rotationShift12ths;
-        break;
-      case 'y':
-        seitzMatrix12ths.m13 += translation.rotationShift12ths;
-        break;
-      case 'z':
-        seitzMatrix12ths.m23 += translation.rotationShift12ths;
-        break;
-      }
-
-      if (vectorCode.length() > 0) {
-        Matrix4f m1 = new Matrix4f();
-        Matrix4f m2 = new Matrix4f();
-        m1.setIdentity();
-        m2.setIdentity();
-        m1.m03 = vector12ths.x;
-        m1.m13 = vector12ths.y;
-        m1.m23 = vector12ths.z;
-        m2.m03 = -vector12ths.x;
-        m2.m13 = -vector12ths.y;
-        m2.m23 = -vector12ths.z;
-        seitzMatrix12ths.mul2(m1, seitzMatrix12ths);
-        seitzMatrix12ths.mulM4(m2);
-      }
-      if (Logger.debugging) {
-        Logger.debug("code = " + code + "; primitive code =" + primitiveCode
-            + "\n Seitz Matrix(12ths):" + seitzMatrix12ths);
-      }
-    }
-
-    String dumpInfo() {
-      SB sb= new SB();
-      sb.append("\ninput code: ")
-           .append(inputCode).append("; primitive code: ").append(primitiveCode)
-           .append("\norder: ").appendI(order).append(isImproper ? " (improper axis)" : "");
-      if (axisType != '_') {
-        sb.append("; axisType: ").appendC(axisType);
-        if (diagonalReferenceAxis != '\0')
-          sb.appendC(diagonalReferenceAxis);
-      }
-      if (translationString.length() > 0)
-        sb.append("; translation: ").append(translationString);
-      if (vectorCode.length() > 0)
-        sb.append("; vector offset:").append(vectorCode);
-      if (rotation != null)
-        sb.append("\noperator: ").append(getXYZ(allPositive)).append("\nSeitz matrix:\n")
-            .append(SymmetryOperation.dumpSeitz(seitzMatrix12ths));
-      return sb.toString();
-    }
-    
-   String getXYZ(boolean allPositive) {
-     return SymmetryOperation.getXYZFromMatrix(seitzMatrix12ths, true, allPositive, true);
-   }
-   
   }  
 }
 

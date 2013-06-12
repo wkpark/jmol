@@ -64,30 +64,14 @@ class HallTranslation {
   HallTranslation(char translationCode, P3i params) {
     this.translationCode = translationCode;
     if (params != null) {
-      if (params.y < 0) {
-        // just an order
-        int order = params.x;
-        for (int i = 0; i < hallTranslationTerms.length; i++) {
-          HallTranslation h = hallTranslationTerms[i];
-          if (h.translationCode == translationCode) {
-            if (h.rotationOrder == 0 || h.rotationOrder == order) {
-              this.translationCode = translationCode;
-              rotationShift12ths = h.rotationShift12ths;
-              vectorShift12ths = h.vectorShift12ths;
-              return;
-            }
-          }
-        }
-      } else {
-        if (params.z >= 0) {
-          // just a shift
-          vectorShift12ths = params;
-          return;
-        }
-        // just a screw axis
-        rotationOrder = params.x;
-        rotationShift12ths = params.y;
+      if (params.z >= 0) {
+        // just a shift
+        vectorShift12ths = params;
+        return;
       }
+      // just a screw axis
+      rotationOrder = params.x;
+      rotationShift12ths = params.y;
     }
     vectorShift12ths = new P3i();
   }
@@ -172,29 +156,49 @@ class HallTranslation {
   final static int nLatticeTypes = latticeTranslationData.length/3 - 1;
  
 
-  final static HallTranslation[] hallTranslationTerms = {
-    // all units are 12ths
-    new HallTranslation('a', P3i.new3(6, 0, 0))
-    , new HallTranslation('b', P3i.new3(0, 6, 0))
-    , new HallTranslation('c', P3i.new3(0, 0, 6))
-    , new HallTranslation('n', P3i.new3(6, 6, 6))
-    , new HallTranslation('u', P3i.new3(3, 0, 0))
-    , new HallTranslation('v', P3i.new3(0, 3, 0))
-    , new HallTranslation('w', P3i.new3(0, 0, 3))
-    , new HallTranslation('d', P3i.new3(3, 3, 3))
-    , new HallTranslation('1', P3i.new3(2, 6, -1))
-    , new HallTranslation('1', P3i.new3(3, 4, -1))
-    , new HallTranslation('2', P3i.new3(3, 8, -1))
-    , new HallTranslation('1', P3i.new3(4, 3, -1))
-    , new HallTranslation('3', P3i.new3(4, 9, -1))
-    , new HallTranslation('1', P3i.new3(6, 2, -1))
-    , new HallTranslation('2', P3i.new3(6, 4, -1))
-    , new HallTranslation('4', P3i.new3(6, 8, -1))
-    , new HallTranslation('5', P3i.new3(6, 10, -1))
-    // extension to handle rhombohedral lattice as primitive
-    , new HallTranslation('r', P3i.new3(4, 8, 8))
-    , new HallTranslation('s', P3i.new3(8, 8, 4))
-    , new HallTranslation('t', P3i.new3(8, 4, 8))
-  };
+  private static HallTranslation[] hallTranslationTerms;
+  
+  private synchronized static HallTranslation[] getHallTerms() {
+    return (hallTranslationTerms == null ? hallTranslationTerms = new HallTranslation[] {
+      new HallTranslation('a', P3i.new3(6, 0, 0))
+      , new HallTranslation('b', P3i.new3(0, 6, 0))
+      , new HallTranslation('c', P3i.new3(0, 0, 6))
+      , new HallTranslation('n', P3i.new3(6, 6, 6))
+      , new HallTranslation('u', P3i.new3(3, 0, 0))
+      , new HallTranslation('v', P3i.new3(0, 3, 0))
+      , new HallTranslation('w', P3i.new3(0, 0, 3))
+      , new HallTranslation('d', P3i.new3(3, 3, 3))
+      , new HallTranslation('1', P3i.new3(2, 6, -1))
+      , new HallTranslation('1', P3i.new3(3, 4, -1))
+      , new HallTranslation('2', P3i.new3(3, 8, -1))
+      , new HallTranslation('1', P3i.new3(4, 3, -1))
+      , new HallTranslation('3', P3i.new3(4, 9, -1))
+      , new HallTranslation('1', P3i.new3(6, 2, -1))
+      , new HallTranslation('2', P3i.new3(6, 4, -1))
+      , new HallTranslation('4', P3i.new3(6, 8, -1))
+      , new HallTranslation('5', P3i.new3(6, 10, -1))
+      // extension to handle rhombohedral lattice as primitive
+      , new HallTranslation('r', P3i.new3(4, 8, 8))
+      , new HallTranslation('s', P3i.new3(8, 8, 4))
+      , new HallTranslation('t', P3i.new3(8, 4, 8))
+    } : hallTranslationTerms);
+  }
+
+  static HallTranslation getHallTranslation(char translationCode, int order) {
+    HallTranslation ht = null;
+    for (int i = getHallTerms().length; --i >= 0;) {
+      HallTranslation h = hallTranslationTerms[i];
+      if (h.translationCode == translationCode) {
+        if (h.rotationOrder == 0 || h.rotationOrder == order) {
+          ht = new HallTranslation(translationCode, null);
+          ht.translationCode = translationCode;
+          ht.rotationShift12ths = h.rotationShift12ths;
+          ht.vectorShift12ths = h.vectorShift12ths;
+          return ht;
+        }
+      }
+    }
+    return ht;
+  }
 }
 

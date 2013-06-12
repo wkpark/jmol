@@ -708,7 +708,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.setStringProperty("_errormessage", "" + ex);
       if (e.thisContext == null) {
         Logger.error("Error evaluating context " + ex);
-        if (!viewer.isApplet())
+        if (!viewer.isJS())
           ex.printStackTrace();
       }
       return false;

@@ -86,7 +86,7 @@ abstract public class JmolThread extends Thread {
     try {
       run1(INIT);
     } catch (InterruptedException e) {
-      if (Logger.debugging)
+      if (Logger.debugging  && !(this instanceof HoverWatcherThread))
         oops(e);
     } catch (Exception e) {
       oops(e);
@@ -95,7 +95,8 @@ abstract public class JmolThread extends Thread {
   
   protected void oops(Exception e) {
     System.out.println(name + " exception " + e);
-    e.printStackTrace();
+    if (!viewer.isJS())
+      e.printStackTrace();
     viewer.queueOnHold = false;
   }
 

@@ -35,6 +35,7 @@ import org.jmol.io.JmolBinary;
 import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
+import org.jmol.minimize.MinPosition;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Minimizer;
 import org.jmol.minimize.Util;
@@ -89,6 +90,7 @@ abstract public class ForceField {
   MinBond[] minBonds;
   MinAngle[] minAngles;
   MinTorsion[] minTorsions;
+  MinPosition[] minPositions;
   BS bsFixed;
   
   Minimizer minimizer;
@@ -322,6 +324,10 @@ abstract public class ForceField {
 
   double energyOOP(boolean gradients) {
     return calc.energyOOP(gradients); 
+  }
+
+  double energyPosition(boolean gradients) {
+    return calc.energyPos(gradients); 
   }
 
   double energyVDW(boolean gradients) {

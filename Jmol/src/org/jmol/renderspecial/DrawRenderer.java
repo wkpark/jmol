@@ -300,9 +300,9 @@ public class DrawRenderer extends MeshRenderer {
     for (int i = 0; i < 4; i++)
       viewer.transformPtScr(vertices[i], screens[i]);
 
-    float f = 1; // bendiness
+    float f = 4 * getArrowScale(); // bendiness
     float endoffset = 0.2f;
-    float offsetside = 10 * width;
+    float offsetside = (width == 0 ? 0.1f : width);
     
     pt0.set(screens[0].x, screens[0].y, screens[0].z);
     pt1.set(screens[1].x, screens[1].y, screens[1].z);
@@ -380,11 +380,7 @@ public class DrawRenderer extends MeshRenderer {
                                boolean isBarb) {
     if (dmesh.noHead)
       return;
-    float fScale = dmesh.drawArrowScale;
-    if (fScale == 0)
-      fScale = viewer.getFloat(T.defaultdrawarrowscale) * (dmesh.connections == null ? 1f : 0.5f);
-    if (fScale <= 0)
-      fScale = 0.5f;
+    float fScale = getArrowScale();
     if (isTransformed)
       fScale *= 40;
     if (factor2 > 0)
@@ -429,6 +425,15 @@ public class DrawRenderer extends MeshRenderer {
           isBarb);
     if (withShaft)
       g3d.fillCylinderScreen3I(GData.ENDCAPS_OPENEND, diameter, pt0i, pt1i, null, null, mad / 2000f);
+  }
+
+  private float getArrowScale() {
+    float fScale = dmesh.scale;
+    if (fScale == 0)
+      fScale = viewer.getFloat(T.defaultdrawarrowscale) * (dmesh.connections == null ? 1f : 0.5f);
+    if (fScale <= 0)
+      fScale = 0.5f;
+    return fScale;
   }
 
   private final BS bsHandles = new BS();

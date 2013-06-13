@@ -9732,6 +9732,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void cachePut(String key, Object data) {
+    // PyMOL reader and isosurface only
     fileManager.cachePut(key, data);
   }
 
@@ -9766,10 +9767,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   @Override
   public void cacheFile(String fileName, byte[] bytes) {
+    // PyMOL reader only
     fileManager.cachePut(fileName, bytes);
   }
 
   public int cacheFileByName(String fileName, boolean isAdd) {
+    // cache command in script
     return fileManager.cacheFileByNameAdd(fileName, isAdd);
   }
 

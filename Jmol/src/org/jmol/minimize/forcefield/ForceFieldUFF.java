@@ -64,7 +64,7 @@ public class ForceFieldUFF extends ForceField {
       return false;
     setAtomTypes(bsElements, elemnoMax);
     calc = new CalculationsUFF(this, ffParams, minAtoms, minBonds, 
-        minAngles, minTorsions, minimizer.constraints);
+        minAngles, minTorsions, minPositions, minimizer.constraints);
     return calc.setupCalculations();
   }
   

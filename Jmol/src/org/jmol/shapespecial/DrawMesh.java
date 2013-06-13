@@ -118,4 +118,17 @@ public class DrawMesh extends Mesh {
     //no! title = (String[]) ArrayUtil.deleteElements(title, modelIndex, 1);
   }
 
+  public boolean isRenderScalable() {
+    switch (drawType) {
+    case ARROW:
+      return (connections != null);
+    case ARC:
+    case CIRCLE: 
+    case CIRCULARPLANE:
+      return true;
+    default:
+      return haveXyPoints;
+    }
+  }
+
 }

@@ -279,6 +279,7 @@ public class AnimationManager {
     if (framePointer >= frameCount) framePointer = frameCount - 1;
     if (framePointer2 >= frameCount) framePointer2 = frameCount - 1;
     firstFrameIndex = framePointer;
+    currentMorphModel = firstFrameIndex;
     lastFrameIndex = framePointer2;
     frameStep = (framePointer2 < framePointer ? -1 : 1);
     rewindAnimation();
@@ -396,6 +397,8 @@ public class AnimationManager {
       int iModel = modelIndexForFrame(i);
       currentAnimationFrame = i;
       i = iModel;
+    } else {
+      currentAnimationFrame = i;
     }
     setModel(i, true);
     } catch (Exception e) {

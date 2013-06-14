@@ -2849,9 +2849,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void startHoverWatcher(boolean tf) {
-    if (!haveDisplay)
+    if (!haveDisplay || tf && (!hoverEnabled || animationManager.animationOn))
       return;
-    if (hoverEnabled || !tf)
       actionManager.startHoverWatcher(tf);
   }
 

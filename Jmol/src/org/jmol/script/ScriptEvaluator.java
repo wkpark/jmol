@@ -7365,11 +7365,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             null, m4, null, !isSmiles, false, null, center);
         if (Float.isNaN(stddev))
           error(ERROR_invalidArgument);
-        translation = new V3();
-        m4.get(translation);
-        Matrix3f m3 = new Matrix3f();
-        m4.getRotationScale(m3);
-        q = Quaternion.newM(m3);
+        if (doTranslate) {
+          translation = new V3();
+          m4.get(translation);
+        }
+        if (doRotate) {
+          Matrix3f m3 = new Matrix3f();
+          m4.getRotationScale(m3);
+          q = Quaternion.newM(m3);
+        }
+        showString("RMSD = " + stddev + " Angstroms");
       }
       if (centerAndPoints != null)
         center = centerAndPoints[0][0];

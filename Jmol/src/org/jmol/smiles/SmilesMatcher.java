@@ -365,8 +365,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   @SuppressWarnings({ "unchecked" })
   private Object match(String pattern, JmolNode[] atoms, int atomCount,
                        BS bsSelected, BS bsAromatic, boolean isSmarts,
-                       boolean matchAllAtoms, boolean firstMatchOnly,
-                       int mode) {
+                       boolean matchAllAtoms, boolean firstMatchOnly, int mode) {
     InvalidSmilesException.setLastError(null);
     try {
       SmilesSearch search = SmilesParser.getMolecule(pattern, isSmarts);

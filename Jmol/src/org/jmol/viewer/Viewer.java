@@ -3343,12 +3343,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getAtomsConnected(min, max, intType, bs);
   }
 
-  public BS getBranchBitSet(int atomIndex, int atomIndexNot) {
+  public BS getBranchBitSet(int atomIndex, int atomIndexNot, boolean allowCyclic) {
     if (atomIndex < 0 || atomIndex >= getAtomCount())
       return new BS();
     return JmolMolecule.getBranchBitSet(modelSet.atoms, atomIndex,
         getModelUndeletedAtomsBitSet(modelSet.atoms[atomIndex].modelIndex),
-        null, atomIndexNot, true, true);
+        null, atomIndexNot, allowCyclic, true);
   }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {
@@ -7938,11 +7938,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                            P3 point2, float degreesPerSecond,
                                            float endDegrees, boolean isSpin,
                                            BS bsSelected, V3 translation,
-                                           JmolList<P3> finalPoints) {
+                                           JmolList<P3> finalPoints, float[] dihedralList) {
     // Eval: rotate INTERNAL
     boolean isOK = transformManager.rotateAboutPointsInternal(eval, point1,
         point2, degreesPerSecond, endDegrees, false, isSpin, bsSelected, false,
-        translation, finalPoints);
+        translation, finalPoints, dihedralList);
     if (isOK)
       refresh(-1, "rotateAxisAboutPointsInternal");
     return isOK;
@@ -7958,7 +7958,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     transformManager.rotateAboutPointsInternal(null, pt1, pt2,
         global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true, null,
-        false, null, null);
+        false, null, null, null);
   }
 
   public V3 getModelDipole() {
@@ -8154,7 +8154,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setStatusAtomMoved(bs);
   }
 
-  void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate, V3 translation,
+  public void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate, V3 translation,
                  P3 center, boolean isInternal, BS bsAtoms) {
     // from TransformManager exclusively
     if (bsAtoms.cardinality() == 0)
@@ -8294,7 +8294,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (Measure.computeAngleABC(pt, atom1, atom2, true) > 90
           || Measure.computeAngleABC(pt, atom2, atom1, true) > 90) {
-        bsBranch = getBranchBitSet(atom2.index, atom1.index);
+        bsBranch = getBranchBitSet(atom2.index, atom1.index, true);
       }
       if (bsBranch != null)
         for (int n = 0, i = atom1.getBonds().length; --i >= 0;) {
@@ -8323,7 +8323,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     bs.andNot(selectionManager.getMotionFixedAtoms());
 
     rotateAboutPointsInternal(eval, atom1, atom2, 0, degrees, false, bs, null,
-        null);
+        null, null);
   }
 
   public void refreshMeasures(boolean andStopMinimization) {
@@ -10034,6 +10034,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setBondParameters(int modelIndex, int i, BS bsBonds, float rad, float pymolValence, int argb, float trans) {
     modelSet.setBondParametersBS(modelIndex, i, bsBonds, rad, pymolValence, argb, trans);
+  }
+
+  public int[][] getDihedralMap(int[] atoms) {
+    return modelSet.getDihedralMap(atoms);
+  }
+
+  public void setDihedrals(float[] dihedralList, BS[] bsBranches, float rate) {
+    modelSet.setDihedrals(dihedralList, bsBranches, rate);
+  }
+
+  public BS[] getBsBranches(float[] dihedralList) {
+    return modelSet.getBsBranches(dihedralList);
   }
 
 }

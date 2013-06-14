@@ -458,7 +458,7 @@ final public class Measure {
     P3[] cptsB = getCenterAndPoints(ptsB);
     float[] retStddev = new float[2];
     Quaternion q = calculateQuaternionRotation(new P3[][] { cptsA,
-        cptsB }, retStddev, false);
+        cptsB }, retStddev, true); // was false
     V3 v = V3.newV(cptsB[0]);
     v.sub(cptsA[0]);
     m.setMV(q.getMatrix(), v);

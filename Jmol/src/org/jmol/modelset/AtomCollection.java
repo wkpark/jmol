@@ -2537,6 +2537,7 @@ abstract public class AtomCollection {
     info.put("info", getAtomInfo(i, null));
     info.put("sym", getElementSymbol(i));
   }
-  
+
+
 }
 

@@ -25,6 +25,7 @@
 
 package org.jmol.modelset;
 
+import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.JmolEdge;
@@ -40,6 +41,7 @@ import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 
 import org.jmol.viewer.JC;
+import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.script.T;
 import org.jmol.api.Interface;
@@ -50,6 +52,7 @@ import org.jmol.shape.Shape;
 import org.jmol.util.JmolList;
 
 
+import java.util.Hashtable;
 import java.util.Map;
 
 
@@ -831,6 +834,29 @@ import java.util.Map;
   private final Matrix4f mat4t = new Matrix4f();
   private final V3 vTemp = new V3();
 
+  public void setDihedrals(float[] dihedralList, BS[] bsBranches, float f) {
+    int n = dihedralList.length / 6;
+    for (int j = 0, pt = 0; j < n; j++, pt += 6) {
+      BS bs = bsBranches[j];
+      if (bs == null || bs.isEmpty())
+        continue;
+      Atom a1 = atoms[(int) dihedralList[pt + 1]];
+      Atom a2 = atoms[(int) dihedralList[pt + 2]];
+      V3 v = V3.newV(a2);
+      v.sub(a1);
+      float angle = (dihedralList[pt + 5] - dihedralList[pt + 4]) * f;
+      AxisAngle4f aa = AxisAngle4f.newVA(v, (float)(-angle / TransformManager.degreesPerRadian));
+      matTemp.setAA(aa);
+      ptTemp.setT(a1);
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        atoms[i].sub(ptTemp);
+        matTemp.transform(atoms[i]);
+        atoms[i].add(ptTemp);
+        taintAtom(i, TAINT_COORD);
+      }
+    }    
+  }
+
   public void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate,
                         V3 translation, BS bs, P3 center,
                         boolean isInternal) {
@@ -882,7 +908,6 @@ import java.util.Map;
     recalculatePositionDependentQuantities(bs, mat4);
   }
 
-  
   public void recalculatePositionDependentQuantities(BS bs, Matrix4f mat) {
     if (getHaveStraightness())
       calculateStraightness();
@@ -901,5 +926,38 @@ import java.util.Map;
             */
   }
 
+  public BS[] getBsBranches(float[] dihedralList) {
+    int n = dihedralList.length / 6;
+    BS[] bsBranches = new BS[n];
+    Map<String, Boolean> map = new Hashtable<String, Boolean>();
+    for (int i = 0, pt = 0; i < n; i++, pt += 6) {
+      float dv = dihedralList[pt + 5] - dihedralList[pt + 4];
+      if (Math.abs(dv) < 1f)
+        continue;
+      int i0 = (int) dihedralList[pt + 1];
+      int i1 = (int) dihedralList[pt + 2];
+      String s = "" + i0 + "_" + i1;
+      if (map.containsKey(s))
+        continue;
+      map.put(s, Boolean.TRUE);
+      BS bs = viewer.getBranchBitSet(i1, i0, true);
+      Bond[] bonds = atoms[i0].bonds;
+      Atom a0 = atoms[i0];
+      for (int j = 0; j < bonds.length; j++) {
+        Bond b = bonds[j];
+        if (!b.isCovalent())
+          continue;
+        int i2 = b.getOtherAtom(a0).index;
+        if (i2 == i1)
+          continue;
+        if (bs.get(i2)) {
+          bs = null;
+          break;
+        }
+      }
+      bsBranches[i] = bs;
+    }
+    return bsBranches;
+  }
 }
 

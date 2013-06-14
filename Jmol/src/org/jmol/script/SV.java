@@ -329,7 +329,7 @@ public class SV extends T {
   static SV getVariableAI(int[] ix) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < ix.length; i++)
-      objects.addLast(newVariable(integer, Integer.valueOf(ix[i])));
+      objects.addLast(newScriptVariableInt(ix[i]));
     return newVariable(varray, objects);
   }
 
@@ -1254,6 +1254,28 @@ public class SV extends T {
     return list;
   }
 
+  static JmolList<Object> listAny(SV x) {
+    JmolList<Object> list = new JmolList<Object>();
+    JmolList<SV> l = x.getList();
+    for (int i = 0; i < l.size(); i++) {
+      SV v = l.get(i);
+      JmolList<SV> l2 = v.getList();
+      if (l2 == null) {
+        list.addLast(v.value);        
+      } else {
+        JmolList<Object> o = new JmolList<Object>();
+        for (int j = 0; j < l2.size(); j++) {
+          v = l2.get(j);
+          System.out.println(v);
+          
+        }
+        list.addLast(o);
+      }
+      System.out.println(v);
+    }
+    return list;
+    
+  }
   static float[] flistValue(T x, int nMin) {
     if (x.tok != varray)
       return new float[] { fValue(x) };

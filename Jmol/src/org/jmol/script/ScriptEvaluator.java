@@ -4591,6 +4591,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     float[] fparams = null;
     int n = 0;
     String s = null;
+    iToken = i;
     switch (tokAt(i)) {
     case T.string:
       s = SV.sValue(st[i]);
@@ -7358,7 +7359,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
         Matrix4f m4 = new Matrix4f();
         float stddev = getSmilesCorrelation(bsFrom, bsTo, strSmiles, null,
-            null, m4, null, !isSmiles, false);
+            null, m4, null, !isSmiles, false, null);
         if (Float.isNaN(stddev))
           error(ERROR_invalidArgument);
         V3 translation = new V3();
@@ -7396,7 +7397,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!useThreads())
         doAnimate = false;
       viewer.rotateAboutPointsInternal(this, centerAndPoints[0][0], pt1, endDegrees
-          / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB);
+          / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB, null);
       if (doAnimate && isJS)
         throw new ScriptInterruption(this, "compare", 1);
     }
@@ -7404,17 +7405,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   float getSmilesCorrelation(BS bsA, BS bsB, String smiles,
                              JmolList<P3> ptsA, JmolList<P3> ptsB,
-                             Matrix4f m, JmolList<BS> vReturn, 
-                             boolean isSmarts, boolean asMap)
+                             Matrix4f m4, JmolList<BS> vReturn, 
+                             boolean isSmarts, boolean asMap, int[][] mapSet)
       throws ScriptException {
-    float tolerance = 0.1f; // TODO
+    float tolerance = (mapSet == null ? 0.1f : Float.MAX_VALUE);
     try {
       if (ptsA == null) {
         ptsA = new  JmolList<P3>();
         ptsB = new  JmolList<P3>();
       }
-      if (m == null)
-        m = new Matrix4f();
+      Matrix4f m = new Matrix4f();
 
       Atom[] atoms = viewer.modelSet.atoms;
       int atomCount = viewer.getAtomCount();
@@ -7424,8 +7424,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         evalError(viewer.getSmilesMatcher().getLastException(), null);
       if (maps.length == 0)
         return Float.NaN;
-      for (int i = 0; i < maps[0].length; i++)
-        ptsA.addLast(atoms[maps[0][i]]);
+      int[] mapA = maps[0];
+      for (int i = 0; i < mapA.length; i++)
+        ptsA.addLast(atoms[mapA[i]]);
       maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles, atoms,
           atomCount, bsB, isSmarts, false);
       if (maps == null)
@@ -7456,9 +7457,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         if (stddev < lowestStdDev) {
           mapB = maps[i];
+          if (m4 != null)
+            m4.setM(m);
           lowestStdDev = stddev;
         }
       }
+      if (mapSet != null) {
+        mapSet[0] = mapA;
+        mapSet[1] = mapB;
+      }
+      ptsB.clear();
       for (int i = 0; i < mapB.length; i++)
         ptsB.addLast(atoms[mapB[i]]);
       return lowestStdDev;
@@ -7515,7 +7523,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       JmolList<BS> vReturn = new  JmolList<BS>();
       float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern, null,
-          null, null, vReturn, isSmarts, false);
+          null, null, vReturn, isSmarts, false, null);
       if (Float.isNaN(stddev)) {
         if (asOneBitset)
           return new BS();
@@ -10357,6 +10365,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     float endDegrees = Float.MAX_VALUE;
     boolean isMolecular = false;
     boolean haveRotation = false;
+    float[] dihedralList = null;
     JmolList<P3> ptsA = null;
     P3[] points = new P3[2];
     V3 rotAxis = V3.new3(0, 1, 0);
@@ -10393,8 +10402,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // {X, Y, Z}
         // $drawObject[n]
         P3 pt1 = centerParameterForModel(i, viewer.getCurrentModelIndex());
-        if (!chk && tok == T.dollarsign
-            && tokAt(i + 2) != T.leftsquare) {
+        if (!chk && tok == T.dollarsign && tokAt(i + 2) != T.leftsquare) {
           // rotation about an axis such as $line1
           isMolecular = true;
           rotAxis = getDrawObjectAxis(objectNameParameter(++i), viewer
@@ -10419,6 +10427,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (isSpin) {
           // rotate spin ... [degreesPerSecond]
           // rotate spin ... [endDegrees] [degreesPerSecond]
+          // rotate spin BRANCH <DihedralList> [seconds]
           if (degreesPerSecond == Float.MIN_VALUE) {
             degreesPerSecond = floatParameter(i);
             continue;
@@ -10481,17 +10490,23 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         q = Quaternion.newVA(rotAxis, endDegrees);
         break;
       case T.branch:
-        haveRotation = true;
-        int iAtom1 = atomExpressionAt(++i).nextSetBit(0);
-        int iAtom2 = atomExpressionAt(++iToken).nextSetBit(0);
-        if (iAtom1 < 0 || iAtom2 < 0)
-          return;
-        bsAtoms = viewer.getBranchBitSet(iAtom2, iAtom1);
         isSelected = true;
         isMolecular = true;
-        points[0] = viewer.getAtomPoint3f(iAtom1);
-        points[1] = viewer.getAtomPoint3f(iAtom2);
-        nPoints = 2;
+        haveRotation = true;
+        if (isArrayParameter(++i)) {
+          dihedralList = floatParameterSet(i, 6, Integer.MAX_VALUE);
+          i = iToken;
+          isSpin = true;
+        } else {
+          int iAtom1 = atomExpressionAt(i).nextSetBit(0);
+          int iAtom2 = atomExpressionAt(++iToken).nextSetBit(0);
+          if (iAtom1 < 0 || iAtom2 < 0)
+            return;
+          bsAtoms = viewer.getBranchBitSet(iAtom2, iAtom1, true);
+          points[0] = viewer.getAtomPoint3f(iAtom1);
+          points[1] = viewer.getAtomPoint3f(iAtom2);
+          nPoints = 2;
+        }
         break;
 
       // 12.0 options
@@ -10527,8 +10542,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (endDegrees == 0 && points[0] != null) {
           // glide plane
           rotAxis.normalize();
-          Measure.getPlaneThroughPoint(points[0], rotAxis,
-              invPlane = new P4());
+          Measure.getPlaneThroughPoint(points[0], rotAxis, invPlane = new P4());
         }
         q = Quaternion.newVA(rotAxis, endDegrees);
         nPoints = (points[0] == null ? 0 : 1);
@@ -10552,8 +10566,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           m4 = new Matrix4f();
           points[0] = new P3();
           nPoints = 1;
-          float stddev = (chk ? 0 : Measure.getTransformMatrix4(ptsA,
-              ptsB, m4, points[0]));
+          float stddev = (chk ? 0 : Measure.getTransformMatrix4(ptsA, ptsB, m4,
+              points[0]));
           // if the standard deviation is very small, we leave ptsB
           // because it will be used to set the absolute final positions
           if (stddev > 0.001)
@@ -10589,11 +10603,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         bsAtoms = bsCompare;
     }
     float rate = (degreesPerSecond == Float.MIN_VALUE ? 10
-        : endDegrees == Float.MAX_VALUE ? degreesPerSecond 
-        : (degreesPerSecond < 0) == (endDegrees > 0) ?
-        // -n means number of seconds, not degreesPerSecond
-        -endDegrees / degreesPerSecond
-            : degreesPerSecond);
+        : endDegrees == Float.MAX_VALUE ? degreesPerSecond
+            : (degreesPerSecond < 0) == (endDegrees > 0) ?
+            // -n means number of seconds, not degreesPerSecond
+            -endDegrees / degreesPerSecond
+                : degreesPerSecond);
     if (q != null) {
       // only when there is a translation (4x4 matrix or TRANSLATE)
       // do we set the rotation to be the center of the selected atoms or model
@@ -10631,7 +10645,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (rotAxis == null)
         return;
     }
-    if (nPoints < 2) {
+    if (nPoints < 2 && dihedralList == null) {
       if (!isMolecular) {
         // fixed-frame rotation
         // rotate x 10 # Chime-like
@@ -10640,8 +10654,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // rotate x 10 $object # point-centered
         if (isSpin && bsAtoms == null && !useThreads())
           return;
-        if (viewer.rotateAxisAngleAtCenter(this, points[0], rotAxis, rate, endDegrees,
-            isSpin, bsAtoms) && isJS && isSpin && bsAtoms == null)
+        if (viewer.rotateAxisAngleAtCenter(this, points[0], rotAxis, rate,
+            endDegrees, isSpin, bsAtoms)
+            && isJS && isSpin && bsAtoms == null)
           throw new ScriptInterruption(this, "rotate", 1);
         return;
       }
@@ -10685,8 +10700,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     } else {
       if (!useThreads())
         return;
-      if (viewer.rotateAboutPointsInternal(this, points[0], points[1], rate, endDegrees,
-          isSpin, bsAtoms, translation, ptsB) && isJS && isSpin)
+      if (viewer.rotateAboutPointsInternal(this, points[0], points[1], rate,
+          endDegrees, isSpin, bsAtoms, translation, ptsB, dihedralList)
+          && isJS && isSpin)
         throw new ScriptInterruption(this, "rotate", 1);
     }
   }

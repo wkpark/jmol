@@ -870,7 +870,7 @@ class ScriptMathProcessor {
       smiles1 = SV.sValue(args[2]);
       int[][] mapSet = ArrayUtil.newInt2(2);
       eval.getSmilesCorrelation(bs1, bs2, smiles1, null, null,
-          null, null, true, false, mapSet);
+          null, null, true, false, mapSet, null);
       int[][] bondMap1 = viewer.getDihedralMap(mapSet[0]);
       int[][] bondMap2 = (bondMap1 == null ? null : viewer.getDihedralMap(mapSet[1]));
       if (bondMap2 == null || bondMap2.length != bondMap1.length)
@@ -952,7 +952,7 @@ class ScriptMathProcessor {
       if (bs1 == null || bs2 == null)
         return addXStr("IDENTICAL");
       stddev = eval.getSmilesCorrelation(bs1, bs2, smiles1, null, null, null,
-          null, false, false, null);
+          null, false, false, null, null);
       return addXStr(stddev < 0.2f ? "IDENTICAL"
           : "IDENTICAL or CONFORMATIONAL ISOMERS (RMSD=" + stddev + ")");
     } else if (isSmiles) {
@@ -967,7 +967,7 @@ class ScriptMathProcessor {
       if (sOpt == null)
         return false;
       stddev = eval.getSmilesCorrelation(bs1, bs2, sOpt, ptsA, ptsB, m, null,
-          !isSmiles, isMap, null);
+          !isSmiles, isMap, null, null);
       if (isMap) {
         int nAtoms = ptsA.size();
         if (nAtoms == 0)

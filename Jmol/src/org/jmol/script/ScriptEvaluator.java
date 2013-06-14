@@ -7176,7 +7176,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     JmolList<BS[]> vAtomSets = null;
     JmolList<Object[]> vQuatSets = null;
     iToken = 0;
-    float nSeconds = (isFloatParameter(1) ? floatParameter(++iToken) : Float.NaN);
+    float nSeconds = (isFloatParameter(1) ? floatParameter(++iToken)
+        : Float.NaN);
     BS bsFrom = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
     BS bsTo = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
     if (bsFrom == null || bsTo == null)
@@ -7225,7 +7226,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         bsAtoms2.and(bsTo);
         if (vAtomSets == null)
-          vAtomSets = new  JmolList<BS[]>();
+          vAtomSets = new JmolList<BS[]>();
         vAtomSets.addLast(new BS[] { bsAtoms1, bsAtoms2 });
         i = iToken;
         break;
@@ -7233,13 +7234,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (vAtomSets != null)
           error(ERROR_invalidArgument);
         isQuaternion = true;
-        data1 = ScriptMathProcessor
-            .getQuaternionArray(((SV) theToken).getList(), T.list);
+        data1 = ScriptMathProcessor.getQuaternionArray(((SV) theToken)
+            .getList(), T.list);
         getToken(++i);
-        data2 = ScriptMathProcessor
-            .getQuaternionArray(((SV) theToken).getList(), T.list);
+        data2 = ScriptMathProcessor.getQuaternionArray(((SV) theToken)
+            .getList(), T.list);
         if (vQuatSets == null)
-          vQuatSets = new  JmolList<Object[]>();
+          vQuatSets = new JmolList<Object[]>();
         vQuatSets.addLast(new Object[] { data1, data2 });
         break;
       case T.orientation:
@@ -7290,7 +7291,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         bsAtoms1.and(bsFrom);
         bsAtoms2.and(bsTo);
       }
-      vAtomSets = new  JmolList<BS[]>();
+      vAtomSets = new JmolList<BS[]>();
       vAtomSets.addLast(new BS[] { bsAtoms1, bsAtoms2 });
     }
 
@@ -7298,8 +7299,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (isFrames) {
       BS bsModels = viewer.getModelBitSet(bsFrom, false);
       bsFrames = new BS[bsModels.cardinality()];
-      for (int i = 0, iModel = bsModels.nextSetBit(0); iModel >= 0; iModel = bsModels.nextSetBit(iModel + 1), i++)
-        bsFrames[i] = viewer.getModelUndeletedAtomsBitSet(iModel);       
+      for (int i = 0, iModel = bsModels.nextSetBit(0); iModel >= 0; iModel = bsModels
+          .nextSetBit(iModel + 1), i++)
+        bsFrames[i] = viewer.getModelUndeletedAtomsBitSet(iModel);
     } else {
       bsFrames = new BS[] { bsFrom };
     }
@@ -7307,25 +7309,25 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       bsFrom = bsFrames[iFrame];
       float[] retStddev = new float[2]; // [0] final, [1] initial for atoms
       Quaternion q = null;
-      JmolList<Quaternion> vQ = new  JmolList<Quaternion>();
+      JmolList<Quaternion> vQ = new JmolList<Quaternion>();
       P3[][] centerAndPoints = null;
-      JmolList<BS[]> vAtomSets2 = (isFrames ? new  JmolList<BS[]>()
-          : vAtomSets);
+      JmolList<BS[]> vAtomSets2 = (isFrames ? new JmolList<BS[]>() : vAtomSets);
       for (int i = 0; i < vAtomSets.size(); ++i) {
         BS[] bss = vAtomSets.get(i);
         if (isFrames)
-          vAtomSets2
-              .addLast(bss = new BS[] { BSUtil.copy(bss[0]), bss[1] });
+          vAtomSets2.addLast(bss = new BS[] { BSUtil.copy(bss[0]), bss[1] });
         bss[0].and(bsFrom);
       }
+      P3 center = null;
+      V3 translation = null;
       if (isAtoms) {
         centerAndPoints = viewer.getCenterAndPoints(vAtomSets2, true);
         q = Measure.calculateQuaternionRotation(centerAndPoints, retStddev,
             true);
-        float r0 = (Float.isNaN(retStddev[1]) ? Float.NaN
-            : Math.round(retStddev[0] * 100) / 100f);
-        float r1 = (Float.isNaN(retStddev[1]) ? Float.NaN
-            : Math.round(retStddev[1] * 100) / 100f);
+        float r0 = (Float.isNaN(retStddev[1]) ? Float.NaN : Math
+            .round(retStddev[0] * 100) / 100f);
+        float r1 = (Float.isNaN(retStddev[1]) ? Float.NaN : Math
+            .round(retStddev[1] * 100) / 100f);
         showString("RMSD " + r0 + " --> " + r1 + " Angstroms");
       } else if (isQuaternion) {
         if (vQuatSets == null) {
@@ -7358,30 +7360,36 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         */
 
         Matrix4f m4 = new Matrix4f();
+        center = new P3();
         float stddev = getSmilesCorrelation(bsFrom, bsTo, strSmiles, null,
-            null, m4, null, !isSmiles, false, null);
+            null, m4, null, !isSmiles, false, null, center);
         if (Float.isNaN(stddev))
           error(ERROR_invalidArgument);
-        V3 translation = new V3();
+        translation = new V3();
         m4.get(translation);
         Matrix3f m3 = new Matrix3f();
         m4.getRotationScale(m3);
         q = Quaternion.newM(m3);
       }
-      if (centerAndPoints == null)
+      if (centerAndPoints != null)
+        center = centerAndPoints[0][0];
+      if (center == null) {
         centerAndPoints = viewer.getCenterAndPoints(vAtomSets2, true);
+        center = centerAndPoints[0][0];
+      }
       P3 pt1 = new P3();
       float endDegrees = Float.NaN;
-      V3 translation = null;
       if (doTranslate) {
-        translation = V3.newV(centerAndPoints[1][0]);
-        translation.sub(centerAndPoints[0][0]);
+        if (translation == null) {
+          translation = V3.newV(centerAndPoints[1][0]);
+          translation.sub(center);
+        }
         endDegrees = 0;
       }
       if (doRotate) {
         if (q == null)
           evalError("option not implemented", null);
-        pt1.setT(centerAndPoints[0][0]);
+        pt1.setT(center);
         pt1.add(q.getNormal());
         endDegrees = q.getTheta();
       }
@@ -7392,12 +7400,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         JmolList<P3> ptsA = viewer.getAtomPointVector(bsFrom);
         Matrix4f m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(),
             translation);
-        ptsB = Measure.transformPoints(ptsA, m4, centerAndPoints[0][0]);
+        ptsB = Measure.transformPoints(ptsA, m4, center);
       }
       if (!useThreads())
         doAnimate = false;
-      viewer.rotateAboutPointsInternal(this, centerAndPoints[0][0], pt1, endDegrees
-          / nSeconds, endDegrees, doAnimate, bsFrom, translation, ptsB, null);
+      viewer.rotateAboutPointsInternal(this, center, pt1,
+          endDegrees / nSeconds, endDegrees, doAnimate, bsFrom, translation,
+          ptsB, null);
       if (doAnimate && isJS)
         throw new ScriptInterruption(this, "compare", 1);
     }
@@ -7406,7 +7415,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   float getSmilesCorrelation(BS bsA, BS bsB, String smiles,
                              JmolList<P3> ptsA, JmolList<P3> ptsB,
                              Matrix4f m4, JmolList<BS> vReturn, 
-                             boolean isSmarts, boolean asMap, int[][] mapSet)
+                             boolean isSmarts, boolean asMap, int[][] mapSet, P3 center)
       throws ScriptException {
     float tolerance = (mapSet == null ? 0.1f : Float.MAX_VALUE);
     try {
@@ -7415,6 +7424,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         ptsB = new  JmolList<P3>();
       }
       Matrix4f m = new Matrix4f();
+      P3 c = new P3();
 
       Atom[] atoms = viewer.modelSet.atoms;
       int atomCount = viewer.getAtomCount();
@@ -7445,7 +7455,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         ptsB.clear();
         for (int j = 0; j < maps[i].length; j++)
           ptsB.addLast(atoms[maps[i][j]]);
-        float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
+        float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, c);
         Logger.info("getSmilesCorrelation stddev=" + stddev);
         if (vReturn != null) {
           if (stddev < tolerance) {
@@ -7459,6 +7469,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           mapB = maps[i];
           if (m4 != null)
             m4.setM(m);
+          if (center != null)
+            center.setT(c);
           lowestStdDev = stddev;
         }
       }
@@ -7523,7 +7535,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       JmolList<BS> vReturn = new  JmolList<BS>();
       float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern, null,
-          null, null, vReturn, isSmarts, false, null);
+          null, null, vReturn, isSmarts, false, null, null);
       if (Float.isNaN(stddev)) {
         if (asOneBitset)
           return new BS();

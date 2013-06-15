@@ -2615,9 +2615,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               // select @x  where x is "arg", for example
               fixed[j] = T.o(T.bitset, getAtomBitSet(s));
             } else {
-              if (!isExpression) {
-                //print @x
-              }
 
               // bit of a hack here....
               // identifiers cannot have periods; file names can, though

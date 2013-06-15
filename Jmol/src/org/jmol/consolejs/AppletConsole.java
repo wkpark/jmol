@@ -84,6 +84,7 @@ public class AppletConsole extends GenericConsole {
      *   this.jsConsole.setTitle(this.getLabel("title"));
      * 
      */
+    {}
   }
 
   @Override

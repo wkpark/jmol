@@ -44,6 +44,7 @@ final class JmolAppletRegistry {
      * if (Jmol._htRegistry) {J.appletjs.JmolAppletRegistry.htRegistry = Jmol._htRegistry} else {Jmol._htRegistry = J.appletjs.JmolAppletRegistry.htRegistry};
      * 
      */
+    {}
     cleanRegistry();
     if (name != null) {
       Logger.info("AppletRegistry.checkIn(" + name + ")");

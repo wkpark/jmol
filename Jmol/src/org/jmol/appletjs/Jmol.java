@@ -402,6 +402,7 @@ public class Jmol implements JmolSyncInterface {
      * paramInfo || (paramInfo = "");
      * 
      */
+    {}
     return viewer.getProperty(null, infoType, paramInfo);
   }
 
@@ -432,6 +433,7 @@ public class Jmol implements JmolSyncInterface {
      * paramInfo || (paramInfo = "");
      * 
      */
+    {}
     return viewer.getProperty("readable", infoType, paramInfo).toString();
   }
 
@@ -462,6 +464,7 @@ public class Jmol implements JmolSyncInterface {
      * paramInfo || (paramInfo = "");
      * 
      */
+    {}
     return viewer.getProperty("JSON", infoType, paramInfo).toString();
   }
 
@@ -780,9 +783,7 @@ public class Jmol implements JmolSyncInterface {
             	 * 
             	 *   fxy[i][j] = eval(functionName)(this.htmlName, i, j);
             	 */
-            	{
-            		
-            	}
+            	{}
             }
         } else if (nY > 0) { // fill with parsed values from a string (pretty fast)
         	String data;
@@ -810,9 +811,7 @@ public class Jmol implements JmolSyncInterface {
         	 *           	data = eval(functionName)(htmlName, nX, nY, fxy);
         	 *           
         	 */
-        	{
-        		
-        	}
+        	{}
         }
       } catch (Exception e) {
         Logger.error("Exception " + e + " with nX, nY: " + nX

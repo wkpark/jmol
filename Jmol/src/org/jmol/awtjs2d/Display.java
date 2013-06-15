@@ -26,9 +26,7 @@ class Display {
      * widthHeight[1] = canvas.height;
      * 
      */
-    {
-      
-    }
+    {}
   }
   
   static boolean hasFocus(Object canvas) {

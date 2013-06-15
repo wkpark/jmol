@@ -116,6 +116,11 @@ public class Escape {
   // where it should not make any difference
   public static boolean isAS(Object x) {
     /**
+     * 
+     * look also for array with first null element
+     * so untypable -- just call it a String[]
+     * (group3Lists, created in ModelLoader)
+     * 
      * @j2sNative
      *  return Clazz.isAS(x);
      */
@@ -149,7 +154,9 @@ public class Escape {
      * @j2sNative
      *  return Clazz.isAF(x);
      */
+    {
     return x instanceof float[];
+    }
   }
 
 
@@ -158,14 +165,18 @@ public class Escape {
      * @j2sNative
      *  return Clazz.isAFloat(x);
      */
+    {
     return x instanceof Float[];
+    }
   }
   public static boolean isAV(Object x) {
     /**
      * @j2sNative
      *  return Clazz.instanceOf(x[0], org.jmol.script.SV);
      */
+    {
     return x instanceof SV[];
+    }
   }
 
   public static boolean isAD(Object x) {
@@ -173,7 +184,9 @@ public class Escape {
      * @j2sNative
      *  return Clazz.isAF(x);
      */
+    {
     return x instanceof double[];
+    }
   }
 
   public static boolean isAB(Object x) {
@@ -181,7 +194,9 @@ public class Escape {
      * @j2sNative
      *  return Clazz.isAI(x);
      */
+    {
     return x instanceof byte[];
+    }
   }
   
 //  public static boolean isASh(Object x) {
@@ -189,7 +204,9 @@ public class Escape {
 //     * @j2sNative
 //     *  return Clazz.isAI(x);
 //     */
+//     {
 //    return x instanceof short[];
+//     }
 //  }
   
   public static boolean isAI(Object x) {
@@ -197,7 +214,9 @@ public class Escape {
      * @j2sNative
      *  return Clazz.isAI(x);
      */
+    {
     return x instanceof int[];
+    }
   }
 
   public static boolean isAII(Object x) {
@@ -623,6 +642,13 @@ public class Escape {
   }
 
   private static String fixString(String s) {
+    /**
+     * @j2sNative
+     * 
+     * if (typeof s == "undefined") return "null"
+     * 
+     */
+    {}
     if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
       return s;
     s = TextFormat.simpleReplace(s, "\"", "''");

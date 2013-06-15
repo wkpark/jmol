@@ -3394,13 +3394,18 @@ abstract public class ModelCollection extends BondCollection {
             if (k != i && k != j && (ak = atoms[alist[k]]).isBonded(ai))
               for (int l = n; --l >= 0;)
                 if (l != i && l != j && l != k
-                    && (al = atoms[alist[l]]).isBonded(aj))
-                  list.addLast(new int[] { ak.index, ai.index, aj.index,
-                      al.index });
+                    && (al = atoms[alist[l]]).isBonded(aj)) {
+                  int[] a = new int[4];
+                  a[0] = ak.index;
+                  a[1] = ai.index;
+                  a[2] = aj.index;
+                  a[3] = al.index;
+                  list.addLast(a);
+                }
         }
       }
     n = list.size();
-    int[][] ilist = new int[n][];
+    int[][] ilist = ArrayUtil.newInt2(n);
     for (int i = n; --i >= 0;)
       ilist[n - i - 1] = list.get(i);
     return ilist;

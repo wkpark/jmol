@@ -16161,7 +16161,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int lighting = 0;
     int nAtomSets = 0;
     sm.loadShape(JC.SHAPE_POLYHEDRA);
-    setShapeProperty(JC.SHAPE_POLYHEDRA, "init", null);
+    setShapeProperty(JC.SHAPE_POLYHEDRA, "init", Boolean.TRUE);
     String setPropertyName = "centers";
     String decimalPropertyName = "radius_";
     float translucentLevel = Float.MAX_VALUE;
@@ -16302,7 +16302,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           translucentLevel, null);
     if (lighting != 0)
       setShapeProperty(JC.SHAPE_POLYHEDRA, "token", Integer.valueOf(lighting));
-    setShapeProperty(JC.SHAPE_POLYHEDRA, "init", null);
+    setShapeProperty(JC.SHAPE_POLYHEDRA, "init", Boolean.FALSE);
   }
 
   private void contact() throws ScriptException {

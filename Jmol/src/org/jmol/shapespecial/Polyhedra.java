@@ -87,8 +87,9 @@ public class Polyhedra extends AtomShape {
       centers = null;
       bsVertexCount = new BS();
       bondedOnly = isCollapsed = iHaveCenterBitSet = false;
-      drawEdges = EDGES_NONE;
       haveBitSetVertices = false;
+      if (Boolean.TRUE == value)
+        drawEdges = EDGES_NONE;
       return;
     }
 
@@ -596,14 +597,12 @@ public class Polyhedra extends AtomShape {
       BS bs = new BS();
       for (int i = 0; i < ptCenter; i++)
         bs.set(((Atom) vertices[i]).getIndex());
-      return "  polyhedra ({" + centralAtom.getIndex() + "}) "
-          + (myDistanceFactor == DEFAULT_DISTANCE_FACTOR ? ""
-              : " distanceFactor " + myDistanceFactor)
-          + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
-              : " faceCenterOffset " + myFaceCenterOffset) + " to "
-          + Escape.eBS(bs) + (collapsed ? " collapsed" : "") 
-          + (isFullyLit ? " fullyLit" : "" ) + ";"
-          + (visible ? "" : "polyhedra off;") + "\n";
+      return "  polyhedra ({" + centralAtom.getIndex() + "}) to "
+      + Escape.eBS(bs) + (collapsed ? " collapsed" : "") 
+      +  " distanceFactor " + myDistanceFactor
+      +  " faceCenterOffset " + myFaceCenterOffset 
+      + (isFullyLit ? " fullyLit" : "" ) + ";"
+      + (visible ? "" : "polyhedra off;") + "\n";
     }
   }
 

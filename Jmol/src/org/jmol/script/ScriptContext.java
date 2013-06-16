@@ -31,45 +31,49 @@ import org.jmol.api.JmolParallelProcessor;
 import org.jmol.util.SB;
 
 public class ScriptContext {
-  /**
-   * 
-   */
-  public String fullpath = "";
-  public String scriptFileName;
-  public JmolParallelProcessor parallelProcessor;
-  public String functionName;
-  public String script;
-  public short[] lineNumbers;
-  public int[][] lineIndices;
+  
+  private static int contextCount = 0;
+
   public T[][] aatoken;
-  public T[] statement;
-  public int statementLength;
+  public boolean allowJSThreads;
+  boolean chk;
+  public String contextPath = " >> ";
+  Map<String, SV> contextVariables;
+  boolean displayLoadErrorsSave;
+  public String errorMessage;
+  String errorMessageUntranslated;
+  public String errorType;
+  public boolean executionPaused;
+  public boolean executionStepping;
+  public String functionName;
+  public int iCommandError = -1;
+  int id;
+  public boolean isComplete = true;
+  boolean isFunction;
+  public boolean isJSThread;
+  boolean isStateScript;
+  boolean isTryCatch;
+  int iToken;
+  int lineEnd = Integer.MAX_VALUE;
+  public int[][] lineIndices;
+  short[] lineNumbers;
+  public boolean mustResumeEval;
+  public SB outputBuffer;
+  JmolParallelProcessor parallelProcessor;
+  public ScriptContext parentContext;
   public int pc;
   public int pcEnd = Integer.MAX_VALUE;
-  public int lineEnd = Integer.MAX_VALUE;
-  public int iToken;
-  public SB outputBuffer;
-  public Map<String, SV> contextVariables;
-  public boolean isFunction;
-  public boolean isStateScript;
-  public boolean isTryCatch;
-  public String errorMessage;
-  public String errorMessageUntranslated;
-  public int iCommandError = -1;
-  public String errorType;
-  public int scriptLevel;
-  public boolean chk;
-  public boolean executionStepping;
-  public boolean executionPaused;
-  public String scriptExtensions;
-  public String contextPath = " >> ";
-  public ScriptContext parentContext;
-  public ContextToken token;
-  public boolean mustResumeEval;
-  public boolean isJSThread;
-  public boolean allowJSThreads;
-  public boolean displayLoadErrorsSave;
-  public int tryPt;
-  public boolean isComplete = true;
+  public String script;
+  String scriptExtensions;
+  public String scriptFileName;
+  int scriptLevel;
+  T[] statement;
+  int statementLength;
+  ContextToken token;
+  int tryPt;
+  
+  ScriptContext() {
+    id = ++contextCount;
+  }
 
 }

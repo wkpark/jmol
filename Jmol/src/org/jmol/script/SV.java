@@ -1266,15 +1266,11 @@ public class SV extends T {
         JmolList<Object> o = new JmolList<Object>();
         for (int j = 0; j < l2.size(); j++) {
           v = l2.get(j);
-          System.out.println(v);
-          
         }
         list.addLast(o);
       }
-      System.out.println(v);
     }
-    return list;
-    
+    return list;    
   }
   static float[] flistValue(T x, int nMin) {
     if (x.tok != varray)

@@ -766,13 +766,13 @@ class ScriptMathProcessor {
       return evaluateCross(args);
     case T.data:
       return evaluateData(args);
-    case T.angle:
     case T.distance:
     case T.dot:
+      if (op.tok == T.propselector)
+        return evaluateDot(args, tok, op.intValue);
+      //$FALL-THROUGH$
+    case T.angle:
     case T.measure:
-      if ((tok == T.distance || tok == T.dot) 
-          && op.tok == T.propselector)
-        return evaluateDot(args, tok);
       return evaluateMeasure(args, op.tok);
     case T.file:
     case T.load:
@@ -1224,37 +1224,72 @@ class ScriptMathProcessor {
     return false;
   }
 
-  private boolean evaluateDot(SV[] args, int tok)
+  /**
+   * distance, dot
+   * 
+   * @param args
+   * @param tok
+   * @param intValue
+   * @return variable
+   * @throws ScriptException
+   */
+  private boolean evaluateDot(SV[] args, int tok, int intValue)
       throws ScriptException {
     if (args.length != 1)
       return false;
     SV x1 = getX();
     SV x2 = args[0];
-    P3 pt2 = ptValue(x2, true);
+    P3 pt2 = (x2.tok == T.varray ? null : ptValue(x2, false));
     P4 plane2 = planeValue(x2);
-    if (x1.tok == T.bitset && tok != T.dot)
-      return addXObj(eval.getBitsetProperty(SV.bsSelectVar(x1),
-          T.distance, pt2, plane2, x1.value, null, false, x1.index, false));
+    if (tok == T.distance) {
+      int minMax = intValue & T.minmaxmask;
+      switch (x1.tok) {
+      case T.bitset:
+        switch (x2.tok) {
+        case T.bitset:
+          BS bs = SV.bsSelectVar(x1);
+          if (minMax == T.min || minMax == T.max) {
+            BS bs2 = SV.bsSelectVar(x2);
+            float[] data = new float[bs.cardinality()];
+            Atom[] atoms = viewer.modelSet.atoms;
+            for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+              pt2 = atoms[i];
+              data[i] = ((Float) eval.getBitsetProperty(bs2, intValue, pt2,
+                  plane2, x1.value, null, false, x1.index, false)).floatValue();
+            }
+            return addXAF(data);
+          }
+          return addXObj(eval.getBitsetProperty(bs, intValue, pt2, plane2,
+              x1.value, null, false, x1.index, false));
+        }
+      }
+    }
+    return addXFloat(getDistance(x1, x2, tok));
+  }
+
+  private float getDistance(SV x1, SV x2, int tok) throws ScriptException {
     P3 pt1 = ptValue(x1, true);
     P4 plane1 = planeValue(x1);
+    P3 pt2 = ptValue(x2, true);
+    P4 plane2 = planeValue(x2);
     if (tok == T.dot) {
       if (plane1 != null && plane2 != null)
         // q1.dot(q2) assume quaternions
-        return addXFloat(plane1.x * plane2.x + plane1.y * plane2.y + plane1.z
-            * plane2.z + plane1.w * plane2.w);
+        return plane1.x * plane2.x + plane1.y * plane2.y + plane1.z
+            * plane2.z + plane1.w * plane2.w;
       // plane.dot(point) =
       if (plane1 != null)
         pt1 = P3.new3(plane1.x, plane1.y, plane1.z);
       // point.dot(plane)
       if (plane2 != null)
         pt2 = P3.new3(plane2.x, plane2.y, plane2.z);
-      return addXFloat(pt1.x * pt2.x + pt1.y * pt2.y + pt1.z * pt2.z);
+      return pt1.x * pt2.x + pt1.y * pt2.y + pt1.z * pt2.z;
     }
 
     if (plane1 == null)
-      return addXFloat(plane2 == null ? pt2.distance(pt1) : Measure.distanceToPlane(
+      return (plane2 == null ? pt2.distance(pt1) : Measure.distanceToPlane(
           plane2, pt1));
-    return addXFloat(Measure.distanceToPlane(plane1, pt2));
+    return Measure.distanceToPlane(plane1, pt2);
   }
 
   public P3 ptValue(SV x, boolean allowFloat)

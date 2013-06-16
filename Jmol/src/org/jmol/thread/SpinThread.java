@@ -53,8 +53,7 @@ public class SpinThread extends JmolThread {
   private int index;
   //private boolean navigatingSurface;
   private BS[] bsBranches;
-  
-  private int nmove = 0;
+  boolean isDone = false;
   
   public boolean isGesture() {
     return isGesture;
@@ -165,8 +164,10 @@ public class SpinThread extends JmolThread {
         else
           viewer.requestRepaintAndWait();
         //System.out.println(angle * degreesPerRadian + " " + count + " " + nDegrees + " " + endDegrees);
-        if (!isNav && nDegrees >= endDegrees - 0.001)
+        if (!isNav && nDegrees >= endDegrees - 0.001) {
+          isDone = true;
           transformManager.setSpinOff();
+        }
         if (!runSleep(sleepTime, MAIN))
           return;
         mode = MAIN;
@@ -185,7 +186,9 @@ public class SpinThread extends JmolThread {
           transformManager.setSpinOff();
           viewer.startHoverWatcher(true);
         }
+        stopped = !isDone;
         resumeEval();
+        stopped = true;
         return;
       }
   }

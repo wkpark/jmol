@@ -463,7 +463,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   static SB getContextTrace(ScriptContext sc, SB sb, boolean isTop) {
     if (sb == null)
       sb = new SB();
-    sb.append(setErrorLineMessage(sc.functionName, sc.scriptFileName,
+    sb.append(getErrorLineMessage(sc.functionName, sc.scriptFileName,
         sc.lineNumbers[sc.pc], sc.pc, ScriptEvaluator.statementAsString(sc.statement, (isTop ? sc.iToken : 9999), false)));
     if (sc.parentContext != null)
       getContextTrace(sc.parentContext, sb, false);
@@ -548,7 +548,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @return a string indicating the statement
    */
   public String getNextStatement() {
-    return (pc < aatoken.length ? setErrorLineMessage(functionName, scriptFileName,
+    return (pc < aatoken.length ? getErrorLineMessage(functionName, scriptFileName,
         getLinenumber(null), pc, statementAsString(aatoken[pc], -9999,
             logMessages)) : "");
   }
@@ -1124,7 +1124,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           case T.sum:
           case T.sum2:
           case T.average:
-            allowMathFunc = (isUserFunction || tok2 == T.minmaxmask || tok2 == T.selectedfloat);
+            allowMathFunc = (isUserFunction || token.intValue == T.distance || tok2 == T.minmaxmask || tok2 == T.selectedfloat);
             token.intValue |= tok2;
             getToken(iToken + 2);
           }
@@ -2730,11 +2730,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (debugScript || isCmdLine_c_or_C_Option)
       Logger.info("-->>-------------".substring(0, Math
           .max(17, scriptLevel + 5))
-          + scriptLevel + " " + scriptFileName + " " + token + " " + thisContext);
+          + scriptLevel + " " + scriptFileName + " " + token + " " + thisContext.id);
   }
 
   public ScriptContext getScriptContext() {
     ScriptContext context = new ScriptContext();
+    if (debugScript)
+      Logger.info("creating context " + context.id);
     context.scriptLevel = scriptLevel;
     context.parentContext = thisContext;
     context.contextPath = contextPath;
@@ -2787,9 +2789,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           + " "
           + scriptFileName
           + " "
-          + (thisContext == null ? "" : "" + thisContext.token)
-          + " "
-          + thisContext);
+          + (thisContext == null ? "" : "" + thisContext.id));
   }
 
   private void restoreScriptContext(ScriptContext context,
@@ -2798,6 +2798,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     if (context == null)
       return;
+    if (debugScript || isCmdLine_c_or_C_Option)
+      Logger.info("--<<-------------".substring(0, Math
+          .max(17, scriptLevel + 5))
+          + scriptLevel + " " + scriptFileName + " isPop " + isPopContext + " " + context.id);
     if (!isFlowCommand) {
       st = context.statement;
       slen = context.statementLength;
@@ -2846,7 +2850,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               true, false));
         }
       } else {
-        sb.append(setErrorLineMessage(context.functionName, context.scriptFileName,
+        sb.append(getErrorLineMessage(context.functionName, context.scriptFileName,
             getLinenumber(context), context.pc, statementAsString(
                 context.statement, -9999, logMessages)));
       }
@@ -2859,7 +2863,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             false));
       }
     } else {
-      sb.append(setErrorLineMessage(functionName, scriptFileName,
+      sb.append(getErrorLineMessage(functionName, scriptFileName,
           getLinenumber(null), pc, statementAsString(st, -9999,
               logMessages)));
     }
@@ -2875,7 +2879,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String fuName = (context == null ? functionName : "function "
         + context.functionName);
     String fiName = (context == null ? scriptFileName : context.scriptFileName);
-    return "\n# " + fuName + " (file " + fiName + ")\n";
+    return "\n# " + fuName + " (file " + fiName + (context == null ? "" : " context " + context.id)+")\n";
   }
 
   // /////////////// error message support /////////////////
@@ -3269,7 +3273,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return msg;
   }
 
-  static String setErrorLineMessage(String functionName, String filename,
+  static String getErrorLineMessage(String functionName, String filename,
                                     int lineCurrent, int pcCurrent,
                                     String lineInfo) {
     String err = "\n----";
@@ -3756,11 +3760,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.selected:
         rpn.addXBs(BSUtil.copy(viewer.getSelectionSet(false)));
         break;
-      case T.subset:
-        BS bsSubset = viewer.getSelectionSubset();
-        rpn.addXBs(bsSubset == null ? viewer.getModelUndeletedAtomsBitSet(-1)
-            : BSUtil.copy(bsSubset));
-        break;
+      //removed in 13.1.17. Undocumented; unneccessary (same as "all")
+        
+        //case T.subset:
+        //BS bsSubset = viewer.getSelectionSubset();
+        //rpn.addXBs(bsSubset == null ? viewer.getModelUndeletedAtomsBitSet(-1)
+        //    : BSUtil.copy(bsSubset));
+        //break;
       case T.hidden:
         rpn.addXBs(BSUtil.copy(viewer.getHiddenSet()));
         break;
@@ -5520,6 +5526,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       if (lineNumbers[pc] > lineEnd)
         break;
+      if (debugScript && !chk)
+        Logger.info("Command " +  pc);
       theToken = (aatoken[pc].length == 0 ? null : aatoken[pc][0]);
       // when checking scripts, we can't check statments
       // containing @{...}
@@ -7175,10 +7183,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     iToken = 0;
     float nSeconds = (isFloatParameter(1) ? floatParameter(++iToken)
         : Float.NaN);
-    BS bsFrom = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
-    BS bsTo = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
-    if (bsFrom == null || bsTo == null)
-      error(ERROR_invalidArgument);
+    ///BS bsFrom = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
+    //BS bsTo = (tokAt(++iToken) == T.subset ? null : atomExpressionAt(iToken));
+    //if (bsFrom == null || bsTo == null)
+      ///error(ERROR_invalidArgument);
+    BS bsFrom = atomExpressionAt(++iToken);
+    BS bsTo = atomExpressionAt(++iToken);
     BS bsSubset = null;
     boolean isSmiles = false;
     String strSmiles = null;
@@ -7406,10 +7416,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       if (!useThreads())
         doAnimate = false;
-      viewer.rotateAboutPointsInternal(this, center, pt1,
+      if (viewer.rotateAboutPointsInternal(this, center, pt1,
           endDegrees / nSeconds, endDegrees, doAnimate, bsFrom, translation,
-          ptsB, null);
-      if (doAnimate && isJS)
+          ptsB, null) && doAnimate && isJS)
         throw new ScriptInterruption(this, "compare", 1);
     }
   }

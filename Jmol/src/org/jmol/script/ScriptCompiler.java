@@ -2667,7 +2667,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         : errorLine)
         + " <<<<";
     errorMessage = GT._("script compiler ERROR: ") + errorMessage
-         + ScriptEvaluator.setErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
+         + ScriptEvaluator.getErrorLineMessage(null, filename, lineCurrent, iCommand, lineInfo);
     if (!isSilent) {
       ichToken = Math.max(ichEnd, ichToken);
       while (!lookingAtEndOfLine() && !lookingAtTerminator())

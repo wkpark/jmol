@@ -49,6 +49,7 @@ public class JmolSmilesApplet extends Applet {
   @Override
   public void init() {
     System.out.println("JmolSmilesApplet init");
+    //System.out.println(find("C[C@@H]1CCCC[C@@H]1C","C[C@@H]1CCCC[C@@H]1C", false, false));
   }
 
   private static String lastError;

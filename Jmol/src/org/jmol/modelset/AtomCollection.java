@@ -1013,7 +1013,7 @@ abstract public class AtomCollection {
       tainted[type] = BSUtil.newBitSet(atomCount);
     tainted[type].set(atomIndex);
     if (type  == TAINT_COORD)
-      validateBspfForModel(atoms[atomIndex].modelIndex, false);
+      validateBspfForModel(((ModelCollection) this).models[atoms[atomIndex].modelIndex].trajectoryBaseIndex, false);
   }
 
   private void untaint(int atomIndex, byte type) {

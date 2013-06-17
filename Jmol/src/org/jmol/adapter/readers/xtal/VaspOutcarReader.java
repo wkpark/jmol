@@ -110,7 +110,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     while (readLine() != null && line.indexOf("VRHFIN") < 0) {
       int pt = (line.contains("_") ? 2 : 1);
       if (pt == 2)
-        line = line.replace("_", " ");
+        line = line.replace('_', ' ');
       String[] tokens = getTokensStr(line.substring(line.indexOf(":") + 1));
       String sym = tokens[pt];
       String key = ";" + sym + ";";

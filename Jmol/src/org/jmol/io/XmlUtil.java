@@ -109,7 +109,7 @@ public class XmlUtil {
    */
   public static String unwrapCdata(String s) {
     return (s.startsWith("<![CDATA[") && s.endsWith("]]>") ?
-        s.substring(9, s.length()-3).replace("]]]]><![CDATA[>", "]]>") : s);
+        TextFormat.simpleReplace(s.substring(9, s.length()-3),"]]]]><![CDATA[>", "]]>") : s);
   }
   
   /**

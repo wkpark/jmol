@@ -561,39 +561,33 @@ public class TextFormat {
   }
   
   /**
-   * Does a clean replace of strFrom in str with strTo
-   * If strTo contains strFrom, then only a single pass is done.
-   * Otherwise, multiple passes are made until no more replacements can be made.
+   * Does a clean replace of strFrom in str with strTo. 
+   * This method has far faster performance than just String.replace() 
+   * when str does not contain strFrom, but is about 15% slower when it does. 
+   * (Note that String.replace(CharSeq, CharSeq) was introduced in Java 1.5.
+   *  Finally getting around to using it in Jmol!)
    * 
    * @param str
    * @param strFrom
    * @param strTo
-   * @return  replaced string
+   * @return replaced string
    */
   public static String simpleReplace(String str, String strFrom, String strTo) {
-    if (str == null || str.indexOf(strFrom) < 0 || strFrom.equals(strTo))
-      return str;
-    int fromLength = strFrom.length();
-    if (fromLength == 0)
-      return str;
-    boolean isOnce = (strTo.indexOf(strFrom) >= 0);
-    int ipt;
-    while (str.indexOf(strFrom) >= 0) {
-      SB s = new SB();
-      int ipt0 = 0;
-      while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
-        s.append(str.substring(ipt0, ipt)).append(strTo);
-        ipt0 = ipt + fromLength;
-      }
-      s.append(str.substring(ipt0));
-      str = s.toString();
-      if (isOnce)
-        break;
-    }
-
-    return str;
+    return (str == null || strFrom.length() == 0 || str.indexOf(strFrom) < 0
+        ? str : str.replace(strFrom, strTo));
   }
 
+//  static {
+//    long t = System.currentTimeMillis();
+//    for (int i = 0; i < 100000; i++)
+//      simpleReplace("2329823jadf", "a", "b");
+//    System.out.println(System.currentTimeMillis() - t);
+//    t = System.currentTimeMillis();
+//    for (int i = 0; i < 100000; i++)
+//      "2329823jadf".replace("a", "b");
+//    System.out.println(System.currentTimeMillis() - t);
+//  }
+  
   public static String trim(String str, String chars) {
     if (chars.length() == 0)
       return str.trim();

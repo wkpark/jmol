@@ -15546,7 +15546,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (n == null || n.intValue() == 0) {
       setShapeProperty(JC.SHAPE_MO, "init", Integer
           .valueOf(modelIndex));
-    } else if (ptMO == Integer.MAX_VALUE) {
+    //} else if (ptMO == Integer.MAX_VALUE) {
     }
     setShapeProperty(JC.SHAPE_MO, "moData", moData);
     return (String) getShapePropertyIndex(JC.SHAPE_MO, "showMO", ptMO);

@@ -103,7 +103,7 @@ public class Mol2Reader extends ForceFieldReader {
     }
 
     lastSequenceNumber = Integer.MAX_VALUE;
-    chainID = 'A' - 1;
+    chainID = 64; // 'A' - 1;
     readLine();
     line += " 0 0 0 0 0 0";
     atomCount = parseIntStr(line);
@@ -155,7 +155,7 @@ public class Mol2Reader extends ForceFieldReader {
   }
 
   private int lastSequenceNumber = Integer.MAX_VALUE;
-  private char chainID = 'A' - 1;
+  private int chainID = 64; // 'A' - 1
 
   private void readAtoms(int atomCount) throws Exception {
     //     1 Cs       0.0000   4.1230   0.0000   Cs        1 RES1   0.0000
@@ -179,8 +179,8 @@ public class Mol2Reader extends ForceFieldReader {
       if (tokens.length > 6) {
         atom.sequenceNumber = parseIntStr(tokens[6]);
         if (atom.sequenceNumber < lastSequenceNumber) {
-          if (chainID == 'Z')
-            chainID = 'a' - 1;
+          if (chainID == 90) //'Z'
+            chainID = 96;//'a' - 1;
           chainID++;
         }
         lastSequenceNumber = atom.sequenceNumber;

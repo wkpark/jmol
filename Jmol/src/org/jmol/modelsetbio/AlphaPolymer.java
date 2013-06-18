@@ -70,8 +70,8 @@ public class AlphaPolymer extends BioPolymer {
 
   @Override
   public void addStructure(EnumStructure type, String structureID,
-                           int serialID, int strandCount, char startChainID,
-                           int startSeqcode, char endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
+                           int serialID, int strandCount, int startChainID,
+                           int startSeqcode, int endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
     if (istart >= 0 && (monomers[0].firstAtomIndex > iend || monomers[monomerCount - 1].lastAtomIndex < istart))
       return;
     int indexStart, indexEnd;

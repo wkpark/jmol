@@ -871,8 +871,10 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       
       ident = identLC;
       theToken = null;
-    } else if (ident.length() == 1) {
+    } else if (ident.length() == 1 || lastToken.tok == T.colon) {
       // hack to support case sensitive alternate locations and chains
+      // but now with reading of multicharacter chains, how does that
+      // work? 
       // if an identifier is a single character long, then
       // allocate a new Token with the original character preserved
       if ((theToken = T.getTokenFromName(ident)) == null

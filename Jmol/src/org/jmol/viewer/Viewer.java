@@ -2786,6 +2786,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       stateManager.clear(global);
       tempArray.clear();
+      chainMap.clear();
+      chainList.clear();
       colorManager.clear();
       definedAtomSets.clear();
       dataManager.clear();
@@ -5662,7 +5664,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case T.cartoonrockets:
       return global.cartoonRockets;
     case T.chaincasesensitive:
-      return global.chainCaseSensitive;
+      return global.chainCaseSensitive || chainList.size() > 0;
     case T.debugscript:
       return global.debugScript;
     case T.defaultstructuredssp:
@@ -7648,17 +7650,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return gdata.getColorArgbOrGray(modelSet.getAtomColix(i));
   }
 
-  String getAtomChain(int i) {
-    return modelSet.getAtomChain(i);
-  }
-
   @Override
   public int getAtomModelIndex(int i) {
     return modelSet.atoms[i].modelIndex;
-  }
-
-  String getAtomSequenceCode(int i) {
-    return modelSet.atoms[i].getSeqcodeString();
   }
 
   @Override
@@ -10048,4 +10042,36 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBsBranches(dihedralList);
   }
 
+  /**
+   * Create a unique integer for any chain string. 
+   * Note that if there are any chains that are more than
+   * a single character, chainCaseSensitive is automatically set TRUE
+   * 
+   * 
+   * @param id  < 256 is just the character of a single-character
+   *                  chain id; >= 256 indicates a list pointer into 
+   *                  chainList.
+   * @return i
+   */
+  public int getChainID(String id) {
+    Integer iboxed = (Integer) chainMap.get(id);
+    if (iboxed != null)
+      return iboxed.intValue();
+    int i = id.charAt(0);
+    if (id.length() > 1) {
+      i = 256 + chainList.size();
+      chainList.addLast(id);
+    }
+    iboxed = Integer.valueOf(i);
+    chainMap.put(iboxed, id);
+    chainMap.put(id, iboxed);
+    return i;
+  }
+
+  public String getChainIDStr(int id) {
+    return (String) chainMap.get(Integer.valueOf(id));
+  }
+  
+  public Map<Object, Object> chainMap = new Hashtable<Object, Object>();
+  public JmolList<String> chainList = new JmolList<String>();
 }

@@ -42,13 +42,13 @@ public abstract class JmolAdapterStructureIterator {
 
 	public abstract int getStrandCount();
 
-	public abstract char getStartChainID();
+	public abstract int getStartChainID();
 
 	public abstract int getStartSequenceNumber();
 
 	public abstract char getStartInsertionCode();
 
-	public abstract char getEndChainID();
+	public abstract int getEndChainID();
 
 	public abstract int getEndSequenceNumber();
 

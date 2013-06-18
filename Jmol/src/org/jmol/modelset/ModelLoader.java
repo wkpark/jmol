@@ -239,7 +239,7 @@ public final class ModelLoader {
   
   private int currentModelIndex;
   private Model currentModel;
-  private char currentChainID = '\0';
+  private int currentChainID = 0;
   private Chain currentChain;
   private int currentGroupSequenceNumber;
   private char currentGroupInsertionCode = '\0';
@@ -843,7 +843,7 @@ public final class ModelLoader {
     htAtomMap.put(atomUid, atom);
   }
 
-  private void checkNewGroup(JmolAdapter adapter, char chainID,
+  private void checkNewGroup(JmolAdapter adapter, int chainID,
                              String group3, int groupSequenceNumber,
                              char groupInsertionCode, boolean addH) {
     String group3i = (group3 == null ? null : group3.intern());
@@ -879,7 +879,7 @@ public final class ModelLoader {
     }
   }
 
-  private Chain getOrAllocateChain(Model model, char chainID) {
+  private Chain getOrAllocateChain(Model model, int chainID) {
     //Logger.debug("chainID=" + chainID + " -> " + (chainID + 0));
     Chain chain = model.getChain(chainID);
     if (chain != null)
@@ -1023,9 +1023,9 @@ public final class ModelLoader {
 
   private void defineStructure(int modelIndex, EnumStructure subType,
                                String structureID, int serialID,
-                               int strandCount, char startChainID,
+                               int strandCount, int startChainID,
                                int startSequenceNumber,
-                               char startInsertionCode, char endChainID,
+                               char startInsertionCode, int endChainID,
                                int endSequenceNumber, char endInsertionCode,
                                int istart, int iend, BS bsAssigned) {
     EnumStructure type = (subType == EnumStructure.NOT ? EnumStructure.NONE : subType);
@@ -1240,14 +1240,13 @@ public final class ModelLoader {
       throw new NullPointerException();
     int modelIndex = modelSet.atoms[firstAtomIndex].modelIndex;
 
-    Group group = null;
-    if (group3 != null && jbr != null) {
-      group = jbr.distinguishAndPropagateGroup(chain, group3, seqcode,
-          firstAtomIndex, maxAtomIndex, modelIndex, specialAtomIndexes, modelSet.atoms);
-    }
+    Group group = (group3 == null || jbr == null ? null : jbr
+        .distinguishAndPropagateGroup(chain, group3, seqcode, firstAtomIndex,
+            maxAtomIndex, modelIndex, specialAtomIndexes, modelSet.atoms));
     String key;
     if (group == null) {
-      group = new Group().setGroup(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
+      group = new Group().setGroup(chain, group3, seqcode, firstAtomIndex,
+          lastAtomIndex);
       key = "o>";
     } else {
       key = (group.isProtein() ? "p>" : group.isNucleic() ? "n>" : group

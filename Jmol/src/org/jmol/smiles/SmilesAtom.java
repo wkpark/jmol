@@ -709,8 +709,12 @@ public class SmilesAtom extends P3 implements JmolNode {
     return 0;
   }
 
-  public char getChainID() {
-    return '\0';
+  public int getChainID() {
+    return 0;
+  }
+
+  public String getChainIDStr() {
+    return "";
   }
 
   static String getAtomLabel(int atomicNumber, int isotopeNumber, int valence,

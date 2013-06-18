@@ -177,7 +177,7 @@ public class Group {
     return groupID;
   }
 
-  public final char getChainID() {
+  public final int getChainID() {
     return chain.chainID;
   }
 

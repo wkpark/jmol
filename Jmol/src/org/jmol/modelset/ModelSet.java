@@ -320,14 +320,15 @@ import java.util.Map;
    */
   public BS getAtomBits(int tokType, Object specInfo) {
     switch (tokType) {
+    default:
+      return BSUtil.andNot(getAtomBitsMaybeDeleted(tokType, specInfo), viewer
+          .getDeletedAtoms());
     case T.spec_model:
       int modelNumber = ((Integer) specInfo).intValue();
       int modelIndex = getModelNumberIndex(modelNumber, true, true);
       return (modelIndex < 0 && modelNumber > 0 ? new BS()
           : viewer.getModelUndeletedAtomsBitSet(modelIndex));
     }
-    return BSUtil.andNot(getAtomBitsMaybeDeleted(tokType, specInfo), viewer
-        .getDeletedAtoms());
   }
 
   public String getAtomLabel(int i) {

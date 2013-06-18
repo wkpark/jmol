@@ -283,8 +283,7 @@ public abstract class Monomer extends Group {
   
   public Map<String, Object> getMyInfo() {
     Map<String, Object> info = getGroupInfo(groupIndex);
-    char chainID = chain.chainID;
-    info.put("chain", (chainID == '\0' ? "" : "" + chainID));
+    info.put("chain", chain.getIDStr());
     int seqNum = getSeqNumber();
     char insCode = getInsertionCode();
     if (seqNum > 0)      
@@ -430,13 +429,13 @@ public abstract class Monomer extends Group {
   }
 
   public String getUniqueID() {
-    char cid = getChainID();
+    int cid = getChainID();
     Atom a = getLeadAtom();
     String id = (a == null ? "" : "_" + a.getModelIndex()) + "_" + getResno()
-        + (cid == '\0' ? "" : "" + cid);
-    cid = (a == null ? '\0' : getLeadAtom().getAlternateLocationID());
-    if (cid != '\0')
-      id += cid;
+        + (cid == 0 ? "" : "_" + cid);
+    char aid = (a == null ? '\0' : getLeadAtom().getAlternateLocationID());
+    if (aid != '\0')
+      id += "_" + aid;
     return id;
   }
   

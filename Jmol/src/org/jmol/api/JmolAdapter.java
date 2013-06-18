@@ -419,17 +419,14 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   // range-checking routines
   /////////////////////////////////////////////////////////////////
 
-  public final static char canonizeAlphaDigit(char ch) {
-    if ((ch >= 'A' && ch <= 'Z') ||
-        (ch >= 'a' && ch <= 'z') ||
-        (ch >= '0' && ch <= '9'))
-      return ch;
-    return '\0';
+  private final static char canonizeAlphaDigit(char ch) {
+    return ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')
+        || (ch >= '0' && ch <= '9') ? ch : '\0');
   }
 
-  public final static char canonizeChainID(char chainID) {
-    return canonizeAlphaDigit(chainID);
-  }
+//  public final static char canonizeChainID(char chainID) {
+//    return canonizeAlphaDigit(chainID);
+//  }
 
   public final static char canonizeInsertionCode(char insertionCode) {
     return canonizeAlphaDigit(insertionCode);

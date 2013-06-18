@@ -121,9 +121,9 @@ public class SmilesGenerator {
           end = null;
           len = 0;
           if (bioStructureName.length() > 0) {
-            char id = a.getChainID();
-            if (id != '\0') {
-              s = "//* chain " + id + " " + bioStructureName + " " + a.getResno() + " *// ";
+            int id = a.getChainID();
+            if (id != 0) {
+              s = "//* chain " + a.getChainIDStr() + " " + bioStructureName + " " + a.getResno() + " *// ";
               len = s.length();
               sb.append(s);
             }
@@ -195,14 +195,14 @@ public class SmilesGenerator {
   private void addBracketedBioName(SB sb, JmolNode a, String atomName) {
     sb.append("[");
     if (atomName != null) {
-      char chChain = a.getChainID();
+      String chain = a.getChainIDStr();
       sb.append(a.getGroup3(false));
       if (!atomName.equals(".0"))
         sb.append(atomName).append("#").appendI(a.getElementNumber());
       sb.append("//* ").appendI(
           a.getResno());
-      if (chChain != '\0')
-        sb.append(":").appendC(chChain);
+      if (chain.length() > 0)
+        sb.append(":").append(chain);
       sb.append(" *//");
     } else {
       sb.append(Elements.elementNameFromNumber(a.getElementNumber()));

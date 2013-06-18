@@ -34,9 +34,9 @@ public class Structure extends AtomSetObject {
   public int strandCount;
   
   
-  public char startChainID = '\0';
+  public int startChainID;
   public char startInsertionCode = '\0';
-  public char endChainID = '\0';
+  public int endChainID;
   public char endInsertionCode = '\0';
   public int startSequenceNumber;
   public int endSequenceNumber;
@@ -68,8 +68,8 @@ public class Structure extends AtomSetObject {
   }
   
   
-  public void set(char startChainID, int startSequenceNumber, char startInsertionCode,
-            char endChainID, int endSequenceNumber, char endInsertionCode, int istart, int iend) {
+  public void set(int startChainID, int startSequenceNumber, char startInsertionCode,
+            int endChainID, int endSequenceNumber, char endInsertionCode, int istart, int iend) {
     this.startChainID = startChainID;
     this.startSequenceNumber = startSequenceNumber;
     this.startInsertionCode = startInsertionCode;

@@ -585,8 +585,7 @@ public class StateCreator implements JmolStateCreator {
     return commands.toString();
   }
 
-  private String getVariableState(StateManager.GlobalSettings global,
-                                  SB sfunc) {
+  private String getVariableState(StateManager.GlobalSettings global, SB sfunc) {
     String[] list = new String[global.htBooleanParameterFlags.size()
         + global.htNonbooleanParameterValues.size()];
     SB commands = new SB();
@@ -650,9 +649,9 @@ public class StateCreator implements JmolStateCreator {
 
     // label defaults
 
-    viewer.loadShape(JC.SHAPE_LABELS);
-    commands
-        .append(getDefaultLabelState((Labels) viewer.shapeManager.shapes[JC.SHAPE_LABELS]));
+    if (viewer.shapeManager.getShape(JC.SHAPE_LABELS) != null)
+      commands
+          .append(getDefaultLabelState((Labels) viewer.shapeManager.shapes[JC.SHAPE_LABELS]));
 
     // structure defaults
 

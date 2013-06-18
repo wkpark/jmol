@@ -261,7 +261,7 @@ public class Model {
     return (i < chainCount ? chains[i] : null);
   }
 
-  Chain getChain(char chainID) {
+  Chain getChain(int chainID) {
     for (int i = chainCount; --i >= 0;) {
       Chain chain = chains[i];
       if (chain.chainID == chainID)
@@ -428,9 +428,8 @@ public class Model {
   }
 
   /**
-   *  create a new structure, being careful to not
-   *  overwrite existing structure. 
-   *
+   * create a new structure, being careful to not overwrite existing structure.
+   * 
    * @param type
    * @param structureID
    * @param serialID
@@ -439,14 +438,18 @@ public class Model {
    * @param startSeqcode
    * @param endChainID
    * @param endSeqcode
-   * @param istart     starting atom index
-   * @param iend       ending atom index
-   * @param bsAssigned already assigned
+   * @param istart
+   *        starting atom index
+   * @param iend
+   *        ending atom index
+   * @param bsAssigned
+   *        already assigned
    */
   public void addSecondaryStructure(EnumStructure type, String structureID,
                                     int serialID, int strandCount,
-                                    char startChainID, int startSeqcode,
-                                    char endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
+                                    int startChainID, int startSeqcode,
+                                    int endChainID, int endSeqcode, int istart,
+                                    int iend, BS bsAssigned) {
   }
 
   /**
@@ -508,7 +511,7 @@ public class Model {
    * @param bs
    * @param caseSensitive
    */
-  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID,
+  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, int chainID,
                                  BS bs, boolean caseSensitive) {
   }
 
@@ -544,4 +547,4 @@ public class Model {
     return null;
   }
 
-}
+ }

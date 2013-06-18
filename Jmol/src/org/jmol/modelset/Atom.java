@@ -25,6 +25,8 @@
 
 package org.jmol.modelset;
 
+import java.util.Map;
+
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
@@ -875,12 +877,12 @@ final public class Atom extends Point3fi implements JmolNode {
     // for atom picking
     if (useChimeFormat) {
       String group3 = getGroup3(true);
-      char chainID = getChainID();
+      int chainID = getChainID();
       P3 pt = getFractionalCoordPt(true);
       return "Atom: " + (group3 == null ? getElementSymbol() : getAtomName()) + " " + getAtomNumber() 
           + (group3 != null && group3.length() > 0 ? 
               (isHetero() ? " Hetero: " : " Group: ") + group3 + " " + getResno() 
-              + (chainID != 0 && chainID != ' ' ? " Chain: " + chainID : "")              
+              + (chainID != 0 && chainID != 32 ? " Chain: " + group.chain.getIDStr() : "")              
               : "")
           + " Model: " + getModelNumber()
           + " Coordinates: " + x + " " + y + " " + z
@@ -904,10 +906,10 @@ final public class Atom extends Point3fi implements JmolNode {
       String seqcodeString = getSeqcodeString();
       if (seqcodeString != null)
         info.append(seqcodeString);
-      char chainID = getChainID();
-      if (chainID != 0 && chainID != ' ') {
+      int chainID = getChainID();
+      if (chainID != 0 && chainID != 32) {
         info.append(":");
-        info.appendC(chainID);
+        info.append(getChainIDStr());
       }
       if (!allInfo)
         return info.toString();
@@ -1036,10 +1038,14 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.getGroupParameter(tok);
   }
 
-  public char getChainID() {
+  public int getChainID() {
     return group.chain.chainID;
   }
 
+  public String getChainIDStr() {
+    return group.chain.getIDStr();
+  }
+  
   public int getSurfaceDistance100() {
     return group.chain.model.modelSet.getSurfaceDistance100(index);
   }
@@ -1385,8 +1391,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case T.atomtype:
       return atom.getAtomType();
     case T.chain:
-      ch = atom.getChainID();
-      return (ch == '\0' ? "" : "" + ch);
+      return atom.getChainIDStr();
     case T.sequence:
       return atom.getGroup1('?');
     case T.group1:

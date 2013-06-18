@@ -162,8 +162,8 @@ class AtomIterator extends JmolAdapterAtomIterator {
 	}
 
 	@Override
-	public char getChainID() {
-		return JmolAdapter.canonizeChainID(atom.chainID);
+	public int getChainID() {
+		return atom.chainID;
 	}
 
 	@Override

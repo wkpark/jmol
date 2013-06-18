@@ -1158,32 +1158,39 @@ abstract class ScriptCompilationTokenParser {
     return T.tv(T.spec_seqcode, seqvalue, Integer.valueOf(seqcode));
   }
 
+  /**
+   * [:] [term]
+   * [:] [*]
+   * [:] [0-9]
+   * [:] [?]
+   * 
+   * @param tok
+   * @return  true if chain
+   */
   private boolean clauseChainSpec(int tok) {
     if (tok == T.colon) {
       tokenNext();
       tok = tokPeek();
       if (isSpecTerminator(tok))
-        return generateResidueSpecCode(T.tv(T.spec_chain, '\0',
+        return generateResidueSpecCode(T.tv(T.spec_chain, 0,
             "spec_chain"));
     }
-    char chain;
+    int chain;
     switch (tok) {
     case T.times:
       return (getToken() != null);
     case T.integer:
       getToken();
       int val = theToken.intValue;
-      if (val < 0 || val > 9)
+      if (val < 0 || val > 9999)
         return error(ERROR_invalidChainSpecification);
-      chain = (char) ('0' + val);
+      chain = viewer.getChainID("" + val);
       break;
     default:
       String strChain = "" + getToken().value;
-      if (strChain.length() != 1)
-        return error(ERROR_invalidChainSpecification);
-      chain = strChain.charAt(0);
-      if (chain == '?')
+      if (strChain.equals("?"))
         return true;
+      chain = viewer.getChainID(strChain);
       break;
     }
     return generateResidueSpecCode(T.tv(T.spec_chain, chain,

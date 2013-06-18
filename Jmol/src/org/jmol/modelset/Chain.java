@@ -28,7 +28,7 @@ import org.jmol.util.BS;
 public final class Chain {
 
   public Model model;
-  public char chainID = '\0';
+  public int chainID;
   public boolean isDna, isRna;
   
   int groupCount;
@@ -39,7 +39,7 @@ public final class Chain {
     return model.modelSet.atoms[index];
   }
   
-  Chain(Model model, char chainID) {
+  Chain(Model model, int chainID) {
     this.model = model;
     this.chainID = chainID;
   }
@@ -123,5 +123,9 @@ public final class Chain {
   void setAtomBitSet(BS bs) {
     for (int i = 0; i < groupCount; i++)
       groups[i].selectAtoms(bs);
+  }
+
+  public String getIDStr() {
+    return (chainID == 0 ? "" : chainID < 256 ? "" + (char) chainID : (String) model.modelSet.viewer.chainMap.get(Integer.valueOf(chainID)));
   }
 }

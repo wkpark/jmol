@@ -848,10 +848,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           assemblyId = firstChar;
           break;
         case AUTH_ASYM_ID:
-          if (field.length() > 1)
-            Logger.warn("Don't know how to deal with chains more than 1 char: "
-                + field);
-          atom.chainID = firstChar;
+          atom.chainID = viewer.getChainID(field);
           break;
         case SEQ_ID:
           atom.sequenceNumber = parseIntStr(field);

@@ -460,13 +460,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return sc;
   }
 
-  static SB getContextTrace(ScriptContext sc, SB sb, boolean isTop) {
+  static SB getContextTrace(Viewer viewer, ScriptContext sc, SB sb, boolean isTop) {
     if (sb == null)
       sb = new SB();
     sb.append(getErrorLineMessage(sc.functionName, sc.scriptFileName,
-        sc.lineNumbers[sc.pc], sc.pc, ScriptEvaluator.statementAsString(sc.statement, (isTop ? sc.iToken : 9999), false)));
+        sc.lineNumbers[sc.pc], sc.pc, ScriptEvaluator.statementAsString(viewer, sc.statement, (isTop ? sc.iToken : 9999), false)));
     if (sc.parentContext != null)
-      getContextTrace(sc.parentContext, sb, false);
+      getContextTrace(viewer, sc.parentContext, sb, false);
     return sb;
   }
 
@@ -549,7 +549,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    */
   public String getNextStatement() {
     return (pc < aatoken.length ? getErrorLineMessage(functionName, scriptFileName,
-        getLinenumber(null), pc, statementAsString(aatoken[pc], -9999,
+        getLinenumber(null), pc, statementAsString(viewer, aatoken[pc], -9999,
             logMessages)) : "");
   }
 
@@ -624,7 +624,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       String s = (ifLevel > 0 ? "                          ".substring(0,
           ifLevel * 2) : "");
       strbufLog.append(s).append(
-          statementAsString(st, iToken, logMessages));
+          statementAsString(viewer, st, iToken, logMessages));
       viewer.scriptStatus(strbufLog.toString());
     } else {
       String cmd = getCommand(pc, false, false);
@@ -2851,7 +2851,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
       } else {
         sb.append(getErrorLineMessage(context.functionName, context.scriptFileName,
-            getLinenumber(context), context.pc, statementAsString(
+            getLinenumber(context), context.pc, statementAsString(viewer, 
                 context.statement, -9999, logMessages)));
       }
       context = context.parentContext;
@@ -2864,7 +2864,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
     } else {
       sb.append(getErrorLineMessage(functionName, scriptFileName,
-          getLinenumber(null), pc, statementAsString(st, -9999,
+          getLinenumber(null), pc, statementAsString(viewer, st, -9999,
               logMessages)));
     }
 
@@ -2893,7 +2893,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       sx.message = "";
       return;
     }
-    String s = ScriptEvaluator.getContextTrace(getScriptContext(), null, true).toString();
+    String s = ScriptEvaluator.getContextTrace(viewer, getScriptContext(), null, true).toString();
     while (thisContext != null && !thisContext.isTryCatch)
       popContext(false, false);
     sx.message += s;
@@ -3311,7 +3311,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return str.toString();
   }
 
-  static String statementAsString(T[] statement, int iTok,
+  static String statementAsString(Viewer viewer, T[] statement, int iTok,
                                   boolean doLogMessages) {
     if (statement.length == 0)
       return "";
@@ -3424,7 +3424,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         continue;
       case T.spec_chain:
         sb.append("*:");
-        sb.appendC((char) token.intValue);
+        sb.append(viewer.getChainIDStr(token.intValue));
         continue;
       case T.spec_alternate:
         sb.append("*%");
@@ -3860,10 +3860,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         int chainID = (pc + 3 < code.length && code[pc + 2].tok == T.opAND
             && code[pc + 3].tok == T.spec_chain ? code[pc + 3].intValue
-            : 9);
+            : -1);
         rpn.addXBs(getAtomBits(T.spec_seqcode_range, new int[] {
             getSeqCode(instruction), getSeqCode(code[++pc]), chainID }));
-        if (chainID != 9)
+        if (chainID != -1)
           pc += 2;
         break;
       case T.cell:
@@ -4363,8 +4363,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private static int getSeqCode(T instruction) {
-    return (instruction.intValue != Integer.MAX_VALUE ? Group.getSeqcodeFor(
-        instruction.intValue, ' ') : ((Integer) instruction.value).intValue());
+    return (instruction.intValue == Integer.MAX_VALUE ? ((Integer) instruction.value).intValue()
+        : Group.getSeqcodeFor(instruction.intValue, ' '));
   }
 
   /*
@@ -10235,7 +10235,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String msg = null;
     if (slen == 1) {
       if (!chk)
-        msg = getContextTrace(getScriptContext(), null, true).toString();
+        msg = getContextTrace(viewer, getScriptContext(), null, true).toString();
     } else {
       msg = parameterExpressionString(1, 0);
     }

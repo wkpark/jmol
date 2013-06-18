@@ -106,8 +106,8 @@ public abstract class JmolAdapterAtomIterator {
 		return Integer.MIN_VALUE;
 	}
 
-	public char getChainID() {
-		return '\0';
+	public int getChainID() {
+		return 0;
 	}
 
 	public char getAlternateLocationID() {

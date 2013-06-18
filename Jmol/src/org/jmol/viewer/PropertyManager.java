@@ -675,7 +675,8 @@ public class PropertyManager implements JmolPropertyManager {
       String names = "";
       String sep = "";
       Group lastGroup = null;
-      char chainlast = '\0';
+      int iChainLast = 0;
+      String sChainLast = null;
       String reslist = "";
       String model = "";
       int resnolast = Integer.MAX_VALUE;
@@ -686,25 +687,26 @@ public class PropertyManager implements JmolPropertyManager {
           continue;
         lastGroup = atom.group;
         int resno = atom.getResno();
-        char chain = atom.getChainID();
+        int chain = atom.getChainID();
         if (resnolast != resno - 1) {
           if (reslist.length() != 0 && resnolast != resnofirst)
             reslist += "-" + resnolast;
-          chain = '\1';
+          chain = -1;
           resnofirst = resno;
         }
         model = "/" + ms.getModelNumberDotted(atom.modelIndex);
-        if (chainlast != '\0' && chain != chainlast)
-          reslist += ":" + chainlast + model;
-        if (chain == '\1')
+        if (iChainLast != 0 && chain != iChainLast)
+          reslist += ":" + sChainLast + model;
+        if (chain == -1)
           reslist += " " + resno;
         resnolast = resno;
-        chainlast = atom.getChainID();
+        iChainLast = atom.getChainID();
+        sChainLast = atom.getChainIDStr();
         names += sep + atom.getGroup3(false);
         sep = "-";
       }
       reslist += (resnofirst == resnolast ? "" : "-" + resnolast)
-          + (chainlast == '\0' ? "" : ":" + chainlast) + model;
+          + (iChainLast == 0 ? "" : ":" + sChainLast) + model;
       ligand.put("groupNames", names);
       ligand.put("residueList", reslist.substring(1));
     }
@@ -1060,7 +1062,7 @@ public class PropertyManager implements JmolPropertyManager {
   private String getChimeInfoA(Atom[] atoms, int tok, BS bs) {
     SB info = new SB();
     info.append("\n");
-    char id;
+    int id;
     String s = "";
     Chain clast = null;
     Group glast = null;
@@ -1069,7 +1071,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         id = atoms[i].getChainID();
-        s = (id == '\0' ? " " : "" + id);
+        s = (id == 0 ? " " : atoms[i].getChainIDStr());
         switch (tok) {
         case T.chain:
           break;
@@ -1190,9 +1192,8 @@ public class PropertyManager implements JmolPropertyManager {
         info.put("resno", Integer.valueOf(seqNum));
       if (insCode != 0)
         info.put("insertionCode", "" + insCode);
-      char chainID = atom.getChainID();
       info.put("name", ms.getAtomName(i));
-      info.put("chain", (chainID == '\0' ? "" : "" + chainID));
+      info.put("chain", atom.getChainIDStr());
       info.put("atomID", Integer.valueOf(atom.atomID));
       info.put("groupID", Integer.valueOf(atom.getGroupID()));
       if (atom.alternateLocationID != '\0')
@@ -1336,8 +1337,8 @@ public class PropertyManager implements JmolPropertyManager {
   private static void getAtomResidueInfo(SB info, Atom atom) {
     info.append("[").append(atom.getGroup3(false)).append("]").append(
         atom.getSeqcodeString()).append(":");
-    char id = atom.getChainID();
-    info.append(id == '\0' ? " " : "" + id);
+    int id = atom.getChainID();
+    info.append(id == 0 ? " " : atom.getChainIDStr());
   }
 
 }

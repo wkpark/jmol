@@ -92,8 +92,8 @@ public final class BioModel extends Model{
   @Override
   public void addSecondaryStructure(EnumStructure type, 
                              String structureID, int serialID, int strandCount,
-                             char startChainID, int startSeqcode,
-                             char endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
+                             int startChainID, int startSeqcode,
+                             int endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
     for (int i = bioPolymerCount; --i >= 0; )
       bioPolymers[i].addStructure(type, structureID, serialID, strandCount, startChainID, startSeqcode,
                                     endChainID, endSeqcode, istart, iend, bsAssigned);
@@ -299,12 +299,12 @@ public final class BioModel extends Model{
   }
 
   @Override
-  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, char chainID,
+  public void selectSeqcodeRange(int seqcodeA, int seqcodeB, int chainID,
                                  BS bs, boolean caseSensitive) {
-    char ch;
+    int id;
     for (int i = chainCount; --i >= 0;)
-      if (chainID == (ch = chains[i].chainID) || chainID == '\t' || !caseSensitive
-          && chainID == Character.toUpperCase(ch))
+      if (chainID == -1 || chainID == (id = chains[i].chainID) || !caseSensitive
+          && chainID == Character.toUpperCase(id))
         for (int index = 0; index >= 0;)
           index = chains[i].selectSeqcodeRange(index, seqcodeA, seqcodeB, bs);
   }
@@ -658,14 +658,12 @@ public final class BioModel extends Model{
                   .isNaN(atoms[i].getGroupParameter(T.psi))))
             continue;
         }
-        char ch = atoms[i].getChainID();
-        if (ch == 0)
-          ch = ' ';
+        String ch = atoms[i].getChainIDStr();
         if (bs == null) {
           bs = new BS();
           res1 = atoms[i].getResno();
           group1 = atoms[i].getGroup3(false);
-          chain1 = "" + ch;
+          chain1 = ch;
         }
         type = atoms[i].getProteinStructureType();
         subtype = atoms[i].getProteinStructureSubType();
@@ -674,7 +672,7 @@ public final class BioModel extends Model{
         lastId = id;
         res2 = atoms[i].getResno();
         group2 = atoms[i].getGroup3(false);
-        chain2 = "" + ch;
+        chain2 = ch;
         iLastAtom = i;
       }
     if (n > 0)

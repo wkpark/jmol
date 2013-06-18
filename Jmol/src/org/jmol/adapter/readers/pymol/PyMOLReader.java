@@ -1105,13 +1105,13 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       return;
     int istart = -1;
     int iend = -1;
-    char ichain = '\0';
+    int ichain = 0;
     Atom[] atoms = atomSetCollection.getAtoms();
     BS bsSeq = null;
     BS bsAtom = pymolScene.getSSMapAtom(ssType);
     int n = atomCount + 1;
     int seqNo = -1;
-    char thischain = '\0';
+    int thischain = 0;
     int imodel = -1;
     int thismodel = -1;
     for (int i = atomCount0; i < n; i++) {

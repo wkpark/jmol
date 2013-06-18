@@ -77,8 +77,8 @@ public class StructureIterator extends JmolAdapterStructureIterator {
   }
 
   @Override
-  public char getStartChainID() {
-    return JmolAdapter.canonizeChainID(structure.startChainID);
+  public int getStartChainID() {
+    return structure.startChainID;
   }
   
   @Override
@@ -92,8 +92,8 @@ public class StructureIterator extends JmolAdapterStructureIterator {
   }
   
   @Override
-  public char getEndChainID() {
-    return JmolAdapter.canonizeChainID(structure.endChainID);
+  public int getEndChainID() {
+    return structure.endChainID;
   }
   
   @Override

@@ -1167,8 +1167,9 @@ public class AminoPolymer extends AlphaPolymer {
   }
 
   private String dumpSummary(char[] labels) {
-    char id = monomers[0].getLeadAtom().getChainID();
-    String prefix = (id == '\0' ? "" : String.valueOf(id) + ":");
+    Atom a = monomers[0].getLeadAtom();
+    int id = a.getChainID();
+    String prefix = (id == 0 ? "" : a.getChainIDStr() + ":");
     SB sb = new SB();
     char lastChar = '\0';
     char insCode1 = '\0';

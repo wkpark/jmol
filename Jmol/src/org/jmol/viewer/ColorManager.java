@@ -245,11 +245,12 @@ class ColorManager {
       argb = atom.getProteinStructureSubType().getColor();
       break;
     case StaticConstants.PALETTE_CHAIN:
-      int chain = atom.getChainID() & 0x1F;
+      int chain = atom.getChainID();
       if (chain < 0)
         chain = 0;
-      if (chain >= JC.argbsChainAtom.length)
-        chain = chain % JC.argbsChainAtom.length;
+      else if (chain >= 256)
+        chain -= 256;
+      chain = chain % JC.argbsChainAtom.length;
       argb = (atom.isHetero() ? JC.argbsChainHetero
           : JC.argbsChainAtom)[chain];
       break;

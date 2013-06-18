@@ -241,7 +241,7 @@ abstract public class AtomCollection {
   }
 
   public String getAtomChain(int i) {
-    return "" + atoms[i].getChainID();
+    return atoms[i].getChainIDStr();
   }
 
   public Quadric[] getEllipsoid(int i) {
@@ -2078,7 +2078,7 @@ abstract public class AtomCollection {
           bs.set(i);
       break;
     case T.spec_chain:
-      return BSUtil.copy(getChainBits((char) ((Integer) specInfo).intValue()));
+      return BSUtil.copy(getChainBits(((Integer) specInfo).intValue()));
     case T.spec_seqcode:
       return BSUtil.copy(getSeqcodeBits(((Integer) specInfo).intValue(), true));
     case T.hetero:
@@ -2423,15 +2423,15 @@ abstract public class AtomCollection {
     return (!isEmpty || returnEmpty ? bs : null);
   }
 
-  protected BS getChainBits(char chainId) {
+  protected BS getChainBits(int chainID) {
     boolean caseSensitive = viewer.getBoolean(T.chaincasesensitive);
-    if (!caseSensitive)
-      chainId = Character.toUpperCase(chainId);
+   if (!caseSensitive)
+      chainID = Character.toUpperCase(chainID);
     BS bs = new BS();
     BS bsDone = BSUtil.newBitSet(atomCount);
     for (int i = bsDone.nextClearBit(0); i < atomCount; i = bsDone.nextClearBit(i + 1)) {
       Chain chain = atoms[i].getChain();
-      if (chainId == (caseSensitive ? chain.chainID : Character.toUpperCase(chain.chainID))) {
+      if (chainID == (caseSensitive ? chain.chainID : Character.toUpperCase(chain.chainID))) {
         chain.setAtomBitSet(bs);
         bsDone.or(bs);
       } else {

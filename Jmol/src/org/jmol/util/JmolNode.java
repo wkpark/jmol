@@ -54,7 +54,8 @@ public interface JmolNode {
   public String getGroup1(char c0);
   public String getGroup3(boolean allowNull);
   public int getResno();
-  public char getChainID();
+  public int getChainID();
+  public String getChainIDStr();
   public int getOffsetResidueAtom(String name, int offset);
   public boolean getCrossLinkLeadAtomIndexes(JmolList<Integer> vReturn);
   public void getGroupBits(BS bs);

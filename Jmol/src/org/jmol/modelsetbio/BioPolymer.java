@@ -123,10 +123,10 @@ public abstract class BioPolymer {
     return leadAtomIndices;
   }
 
-  protected int getIndex(char chainID, int seqcode) {
+  protected int getIndex(int chainID, int seqcode) {
     int i;
     for (i = monomerCount; --i >= 0;)
-      if (monomers[i].getChainID() == chainID)
+      if (monomers[i].chain.chainID == chainID)
         if (monomers[i].getSeqcode() == seqcode)
           break;
     return i;
@@ -1014,8 +1014,8 @@ public abstract class BioPolymer {
    */
   public void addStructure(EnumStructure type, String structureID,
                                     int serialID, int strandCount,
-                                    char startChainID, int startSeqcode,
-                                    char endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
+                                    int startChainID, int startSeqcode,
+                                    int endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
     // overridden by each subclass
   }
 

@@ -96,6 +96,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private int configurationPtr = Integer.MIN_VALUE;
   private int conformationIndex;
   private boolean filterAssembly;
+
   
 
   private  JmolList<Matrix4f> vBiomts;
@@ -106,6 +107,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   
   private String appendedData;
   private boolean skipping;
+  private boolean haveChainsLC;
   private int nAtoms;
   
   @Override
@@ -848,7 +850,9 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           assemblyId = firstChar;
           break;
         case AUTH_ASYM_ID:
-          atom.chainID = viewer.getChainID(field);
+          if (!haveChainsLC && !field.toUpperCase().equals(field))
+            haveChainsLC = (viewer.getChainID("lc") != 0); // force chainCaseSensitive
+         atom.chainID = viewer.getChainID(field);
           break;
         case SEQ_ID:
           atom.sequenceNumber = parseIntStr(field);

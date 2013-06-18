@@ -1276,8 +1276,8 @@ all support for previous versions removed
         <include name="org/jmol/api/SmilesMatcherInterface.class" />
         <include name="org/jmol/constant/**" />
         <include name="org/jmol/util/ArrayUtil.class" />
-        <include name="org/jmol/util/BitSet.class" />
-        <include name="org/jmol/util/BitSetUtil.class" />
+        <include name="org/jmol/util/BS.class" />
+        <include name="org/jmol/util/BSUtil.class" />
         <include name="org/jmol/util/JmolEdge.class" />
         <include name="org/jmol/util/JmolNode.class" />
         <include name="org/jmol/util/JmolMolecule.class" />
@@ -1287,9 +1287,10 @@ all support for previous versions removed
         <include name="org/jmol/util/LoggerInterface.class" />
         <include name="org/jmol/util/TextFormat.class" />
         <include name="org/jmol/util/Tuple3f.class" />
-        <include name="org/jmol/util/Point3f.class" />
-        <include name="org/jmol/util/Vector3f.class" />
-        <include name="org/jmol/util/StringXBuilder.class" />
+        <include name="org/jmol/util/JmolList.class" />
+        <include name="org/jmol/util/P3.class" />
+        <include name="org/jmol/util/V3.class" />
+        <include name="org/jmol/util/SB.class" />
       </fileset>
     </jar>
   </target>

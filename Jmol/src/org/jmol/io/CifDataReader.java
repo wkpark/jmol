@@ -203,7 +203,7 @@ public class CifDataReader {
   }
 
   /*
-   * http://www.iucr.org/iucr-top/cif/spec/version1.1/cifsyntax.html#syntax
+   * http://www.iucr.org/resources/cif/spec/version1.1/cifsyntax
    * 
    * 17. The special sequence of end-of-line followed 
    * immediately by a semicolon in column one (denoted "<eol>;") 

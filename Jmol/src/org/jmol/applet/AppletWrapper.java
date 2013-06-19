@@ -179,7 +179,8 @@ public class AppletWrapper extends Applet {
       if (clockX < 0)
         clockX = 0;
       clockBaseline = dim.height - 5;
-      Logger.debug(clockText);
+      if (Logger.debugging)
+        Logger.debug(clockText);
       g.drawString(clockText, clockX, clockBaseline);
     }
   }

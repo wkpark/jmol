@@ -45,7 +45,8 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
 
   @Override
   public void finalize() {
-    Logger.debug(this + " finalized");
+    if (Logger.debugging)
+      Logger.debug(this + " finalized");
   }
   
   public GestureServer(int port, GestureServer main) {
@@ -224,7 +225,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   boolean processTouchPoint(Map<Integer, TouchPoint> inputDeviceTouchPoints, int id,
                             Location location, long time, int state) {
     if (Logger.debugging) {
-      Logger.info("[GestureServer] processTouchPoint id=" + id + " state=" + state + " " + location
+      Logger.debug("[GestureServer] processTouchPoint id=" + id + " state=" + state + " " + location
           + " " + time);
     }
     Integer iid = Integer.valueOf(id);
@@ -232,7 +233,8 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
       TouchPoint touchPoint = inputDeviceTouchPoints.get(iid);
       if (!touchPoint.isClaimed())
         return false;
-      Logger.debug("[GestureServer] OK");
+      if (Logger.debugging)
+        Logger.debug("[GestureServer] OK");
       synchronized (touchPoint) {
         touchPoint.update(location, time, state);
       }

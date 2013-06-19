@@ -4446,6 +4446,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      *   return null;
      * }
      */
+    {}
     if (getScriptManager() == null)
       return null;
     return scriptManager.evalStringWaitStatusQueued(returnType, strScript,

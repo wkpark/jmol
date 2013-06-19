@@ -1220,6 +1220,9 @@ public class PropertyManager implements JmolPropertyManager {
     int bondCount = ms.bondCount;
     Bond[] bonds = ms.bonds;
     BS bs1;
+    if (bsOrArray instanceof String) {
+      bsOrArray = viewer.getAtomBitSet(bsOrArray);
+    }
     if (bsOrArray instanceof BS[]) {
       bs1 = ((BS[]) bsOrArray)[0];
       BS bs2 = ((BS[]) bsOrArray)[1];
@@ -1234,7 +1237,7 @@ public class PropertyManager implements JmolPropertyManager {
       for (int i = bs1.nextSetBit(0); i >= 0 && i < bondCount; i = bs1
           .nextSetBit(i + 1))
         v.addLast(getBondInfo(i));
-    } else {
+    } else if (bsOrArray instanceof BS){
       bs1 = (BS) bsOrArray;
       int thisAtom = (bs1.cardinality() == 1 ? bs1.nextSetBit(0) : -1);
       for (int i = 0; i < bondCount; i++) {

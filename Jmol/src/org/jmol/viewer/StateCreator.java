@@ -1835,7 +1835,8 @@ public class StateCreator implements JmolStateCreator {
     Map<String, String> htScenes = new Hashtable<String, String>();
     JmolList<Integer> list = new  JmolList<Integer>();
     String script = JmolBinary.getSceneScript(scenes, htScenes, list);
-    Logger.debug(script);
+    if (Logger.debugging)
+      Logger.debug(script);
     script0 = TextFormat.simpleReplace(script0, "pause scene", "delay "
         + viewer.animationManager.lastFrameDelay + " # scene");
     String[] str = new String[] { script0, script, null };
@@ -2432,7 +2433,8 @@ public class StateCreator implements JmolStateCreator {
       }
       out.close();
     } catch (Exception e) {
-      Logger.debug("cannot log " + data);
+      if (Logger.debugging)
+        Logger.debug("cannot log " + data);
     }
   }
   

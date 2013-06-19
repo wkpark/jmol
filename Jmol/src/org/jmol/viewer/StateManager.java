@@ -208,7 +208,6 @@ public class StateManager {
       String name = e.next();
       if (name.startsWith(type)) {
         e.remove();
-        Logger.debug("deleted " + name);
       }
     }
   }

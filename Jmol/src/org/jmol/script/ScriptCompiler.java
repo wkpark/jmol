@@ -243,7 +243,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
   
   private void addTokenToPrefix(T token) {
     if (logMessages)
-      Logger.info("addTokenToPrefix" + token);
+      Logger.debug("addTokenToPrefix" + token);
     ltoken.addLast(token);
     if (token.tok != T.nada)
       lastToken = token;

@@ -196,10 +196,6 @@ public class Dots extends AtomShape {
     // Short.MIN_VALUE -- ADP min
     // Short.MAX_VALUE -- ADP max
 
-    if (Logger.debugging) {
-      Logger.debug("Dots.setSize " + rd.value);
-    }
-
     boolean isVisible = true;
     float setRadius = Float.MAX_VALUE;
     isActive = true;

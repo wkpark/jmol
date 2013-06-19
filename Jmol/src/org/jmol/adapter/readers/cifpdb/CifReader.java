@@ -321,7 +321,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         atomSetCollection.setCollectionName(thisDataSetName);
       }
     }
-    Logger.debug(key);
+    if (Logger.debugging)
+      Logger.debug(key);
   }
   
   /**
@@ -1959,7 +1960,7 @@ _pdbx_struct_oper_list.vector[3]
         if (atomSetCollection.bsAtoms.get(i))
           symmetry.toCartesian(atoms[i], true);
         else if (Logger.debugging)
-          Logger.info(molecularType + " removing " + i + " "
+          Logger.debug(molecularType + " removing " + i + " "
               + atoms[i].atomName + " " + atoms[i]);
       }
       atomSetCollection.setAtomSetAuxiliaryInfo("notionalUnitcell", null);

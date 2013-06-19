@@ -163,8 +163,6 @@ ICNTRL(20)=VERNUM ! version number
     for (int i = 0; i < n; i++)
       data[i] = binaryDoc.readFloat();
     n = binaryDoc.readInt() / 4; // TRAILER
-    if (Logger.debugging)
-      System.out.println(modelNumber + " " + binaryDoc.getPosition() + ": " + n + " " + data[0]+ "\t" + data[1]+ "\t" + data[2]);
     return data;
   }
 

@@ -195,7 +195,7 @@ public class ForceFieldUFF extends ForceField {
         if (vs.length < 13)
           continue;
         if (Logger.debugging)
-          Logger.info(line);
+          Logger.debug(line);
         if (line.substring(0, 5).equals("param")) {
           // set up all params from this
           ffParam = new FFParam();

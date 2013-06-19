@@ -185,7 +185,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   protected void finalize() throws Throwable {
-    Logger.debug("viewer finalize " + this);
+    if (Logger.debugging)
+      Logger.debug("viewer finalize " + this);
     super.finalize();
   }
 
@@ -2317,7 +2318,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.info("loading model inline, " + strModel.length()
           + " bytes, with newLine character " + (int) newLine + " isAppend="
           + isAppend);
-    Logger.debug(strModel);
+    if (Logger.debugging)
+      Logger.debug(strModel);
     String datasep = getDataSeparator();
     int i;
     if (datasep != null && datasep != ""
@@ -4436,6 +4438,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                                         boolean isScriptFile,
                                                         boolean isQuiet,
                                                         boolean isQueued) {
+    /**
+     * @j2sNative
+     * 
+     * if (strScript.indexOf("JSCONSOLE") == 0) {
+     *   this.applet._showInfo(true);
+     *   return null;
+     * }
+     */
     if (getScriptManager() == null)
       return null;
     return scriptManager.evalStringWaitStatusQueued(returnType, strScript,
@@ -4457,7 +4467,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
     }
 
-    Logger.debug("exitJmol -- exiting");
+    if (Logger.debugging)
+      Logger.debug("exitJmol -- exiting");
     System.out.flush();
     System.exit(0);
   }

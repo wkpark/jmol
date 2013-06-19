@@ -245,7 +245,8 @@ public class GifEncoder extends ImageEncoder {
 //      System.out.println(i + "\t" + item.count + "\t" + getKey(item.rgb));
 //    }
     
-    Logger.debug("# colors = " + nTotal);
+    if (Logger.debugging)
+      Logger.debug("# colors = " + nTotal);
     while (true) {
       nTotal = index;
       colorHash = new Hashtable<String, AdaptiveColorCollection>();
@@ -299,6 +300,7 @@ public class GifEncoder extends ImageEncoder {
       acc.index = iindex++;
       acc.setRgb(reds, grns, blus);
     }
+    if (Logger.debugging)
     Logger.debug("# colors = " + iindex);
     colorHash = ht;
     GIFEncode(out, width, height, interlace, (byte) 0, transparentIndex,

@@ -304,7 +304,7 @@ public class ForceFieldMMFF extends ForceField {
     
     Object value = null;
     if (Logger.debugging)
-      Logger.info("reading data from " + fileName);
+      Logger.debug("reading data from " + fileName);
     try {
       BufferedReader br = getBufferedReader(fileName);
       while ((line = br.readLine()) != null && line.length() < 5 || !line.startsWith("*"))
@@ -442,7 +442,7 @@ public class ForceFieldMMFF extends ForceField {
         Integer key = MinObject.getKey(type, a1, a2, a3, a4);
         data.put(key, value);
         if (Logger.debugging)
-          Logger.info(MinObject.decodeKey(key) + " " + (value instanceof Float ? value : Escape.eAD((double[])value)));
+          Logger.debug(MinObject.decodeKey(key) + " " + (value instanceof Float ? value : Escape.eAD((double[])value)));
       }
       br.close();
     } catch (Exception e) {
@@ -887,7 +887,7 @@ public class ForceFieldMMFF extends ForceField {
     if (Logger.debugging)
       for (int i = bsConnected.nextSetBit(0); i >= 0; i = bsConnected
           .nextSetBit(i + 1))
-        Logger.info("atom "
+        Logger.debug("atom "
             + atoms[i]
             + "\ttype "
             + (types[i] < 0 ? "" + -types[i] : (atomTypes.get(types[i]).mmType

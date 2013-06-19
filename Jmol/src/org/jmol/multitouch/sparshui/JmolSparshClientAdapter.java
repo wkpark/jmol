@@ -81,8 +81,8 @@ public class JmolSparshClientAdapter extends JmolMultiTouchClientAdapter impleme
   
   @Override
   public void dispose() {
-    
-    Logger.debug("JmolSparshClientAdapter -- dispose");
+    if (Logger.debugging)
+      Logger.debug("JmolSparshClientAdapter -- dispose");
     doneHere = true;
     try {
       if (serverConnection != null) {

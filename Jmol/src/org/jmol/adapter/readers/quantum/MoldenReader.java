@@ -335,7 +335,8 @@ public class MoldenReader extends MopacSlaterReader {
       }
       line = l;
     }
-    Logger.debug("read " + orbitals.size() + " MOs");
+    if (Logger.debugging)
+      Logger.debug("read " + orbitals.size() + " MOs");
     setMOs("eV");
     if (haveEnergy && doSort)
       sortMOs();

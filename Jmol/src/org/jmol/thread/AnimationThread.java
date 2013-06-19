@@ -55,7 +55,8 @@ public class AnimationThread extends JmolThread {
     if (stopped)
       return;
     stopped = true;
-    Logger.debug("animation thread interrupted!");
+    if (Logger.debugging)
+      Logger.debug("animation thread interrupted!");
     try {
       animationManager.setAnimationOn(false);
     } catch (Exception e) {
@@ -126,7 +127,8 @@ public class AnimationThread extends JmolThread {
         mode = MAIN;
         break;
       case FINISH:
-        Logger.debug("animation thread " + intThread + " exiting");
+        if (Logger.debugging)
+          Logger.debug("animation thread " + intThread + " exiting");
         animationManager.stopThread(false);
         return;
       }

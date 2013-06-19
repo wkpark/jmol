@@ -71,7 +71,7 @@ public class MlpCalculation extends MepCalculation {
         }
       }
       if (Logger.debugging)
-        Logger.info(atoms[i].getInfo() + " " + f);
+        Logger.debug(atoms[i].getInfo() + " " + f);
       potentials[i] = f;
     }
   }

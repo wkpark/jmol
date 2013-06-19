@@ -697,7 +697,7 @@ public class ZipUtil implements JmolZipUtility {
     boolean haveManifest = (manifest.length() > 0);
     if (haveManifest) {
       if (Logger.debugging)
-        Logger.info("manifest for  " + fileName + ":\n" + manifest);
+        Logger.debug("manifest for  " + fileName + ":\n" + manifest);
     }
     boolean ignoreErrors = (manifest.indexOf("IGNORE_ERRORS") >= 0);
     boolean selectAll = (manifest.indexOf("IGNORE_MANIFEST") >= 0);
@@ -862,7 +862,7 @@ public class ZipUtil implements JmolZipUtility {
           if (htCollections.containsKey(file))
             vCollections.addLast(htCollections.get(file));
           else if (Logger.debugging)
-            Logger.info("manifested file " + file + " was not found in "
+            Logger.debug("manifested file " + file + " was not found in "
                 + fileName);
         }
       }

@@ -31,8 +31,8 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetDragEvent;
 
-import  java.awt.datatransfer.DataFlavor;
-import  java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -41,47 +41,43 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.util.List;
 
-
-
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
-
-/** 
- * A simple Dropping class to allow files to be dragged onto a target.
- * It supports drag-and-drop of files from file browsers, and CML text
- * from editors, e.g. jEdit.
- *
- * <p>Note that multiple drops ARE thread safe.
- *
+/**
+ * A simple Dropping class to allow files to be dragged onto a target. It
+ * supports drag-and-drop of files from file browsers, and CML text from
+ * editors, e.g. jEdit.
+ * 
+ * <p>
+ * Note that multiple drops ARE thread safe.
+ * 
  * @author Billy <simon.tyrrell@virgin.net>
  */
 public class JmolFileDropper implements DropTargetListener {
   private String fd_oldFileName;
   private PropertyChangeSupport fd_propSupport;
 
-  static public final String FD_PROPERTY_INLINE   = "inline";
+  static public final String FD_PROPERTY_INLINE = "inline";
 
   JmolViewer viewer;
   PropertyChangeListener pcl;
   JmolStatusListener statusListener;
-  
+
   public JmolFileDropper(JmolStatusListener statusListener, JmolViewer viewer) {
     this.statusListener = statusListener;
     fd_oldFileName = "";
     fd_propSupport = new PropertyChangeSupport(this);
     this.viewer = viewer;
-    addPropertyChangeListener(
-        (pcl = new PropertyChangeListener() {
+    addPropertyChangeListener((pcl = new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent evt) {
         doDrop(evt);
       }
     }));
     Component display = (Component) viewer.getDisplay();
-    display.setDropTarget(
-        new DropTarget(display, this));
+    display.setDropTarget(new DropTarget(display, this));
     display.setEnabled(true);
   }
 
@@ -89,7 +85,7 @@ public class JmolFileDropper implements DropTargetListener {
     removePropertyChangeListener(pcl);
     viewer = null;
   }
-  
+
   private void loadFile(String fname) {
     fname = fname.replace('\\', '/').trim();
     if (fname.indexOf("://") < 0)
@@ -108,13 +104,13 @@ public class JmolFileDropper implements DropTargetListener {
 
   private void loadFiles(List<File> fileList) {
     StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < fileList.size(); ++ i) {
+    for (int i = 0; i < fileList.size(); ++i) {
       File f = fileList.get(i);
       String fname = f.getAbsolutePath();
       fname = fname.replace('\\', '/').trim();
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;
-      sb.append("load ").append(i == 0 ? "" : "APPEND ")
-          .append(Escape.eS(fname)).append(";\n");        
+      sb.append("load ").append(i == 0 ? "" : "APPEND ").append(
+          Escape.eS(fname)).append(";\n");
     }
     sb.append("frame *;reset;");
     viewer.script(sb.toString());
@@ -127,7 +123,6 @@ public class JmolFileDropper implements DropTargetListener {
     }
   }
 
-
   public synchronized void addPropertyChangeListener(PropertyChangeListener l) {
     fd_propSupport.addPropertyChangeListener(l);
   }
@@ -137,23 +132,28 @@ public class JmolFileDropper implements DropTargetListener {
   }
 
   public void dragOver(DropTargetDragEvent dtde) {
-    Logger.debug("DropOver detected...");
-		}
+    if (Logger.debugging)
+      Logger.debug("DropOver detected...");
+  }
 
   public void dragEnter(DropTargetDragEvent dtde) {
-    Logger.debug("DropEnter detected...");
+    if (Logger.debugging)
+      Logger.debug("DropEnter detected...");
     dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
   }
 
   public void dragExit(DropTargetEvent dtde) {
-    Logger.debug("DropExit detected...");
+    if (Logger.debugging)
+      Logger.debug("DropExit detected...");
   }
 
-  public void dropActionChanged(DropTargetDragEvent dtde) {		}
+  public void dropActionChanged(DropTargetDragEvent dtde) {
+  }
 
   @SuppressWarnings("unchecked")
   public void drop(DropTargetDropEvent dtde) {
-    Logger.debug("Drop detected...");
+    if (Logger.debugging)
+      Logger.debug("Drop detected...");
     Transferable t = dtde.getTransferable();
     boolean isAccepted = false;
     if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
@@ -186,7 +186,8 @@ public class JmolFileDropper implements DropTargetListener {
       }
     }
 
-    Logger.debug("browsing supported flavours to find something useful...");
+    if (Logger.debugging)
+      Logger.debug("browsing supported flavours to find something useful...");
     DataFlavor[] df = t.getTransferDataFlavors();
 
     if (df == null || df.length == 0)

@@ -1991,8 +1991,6 @@ public class ActionManager {
             : isBound(action, ACTION_select) ? "" : null);
     if (s != null) {
       s += "(" + item + ")";
-      if (Logger.debugging)
-        Logger.debug(s);
       BS bs = getSelectionSet(s);
       if (bs != null) {
         viewer.select(bs, false, 0, false);

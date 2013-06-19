@@ -25,8 +25,6 @@
 
 package org.jmol.modelset;
 
-import java.util.Map;
-
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
@@ -38,6 +36,7 @@ import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
+import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Quadric;
@@ -909,7 +908,10 @@ final public class Atom extends Point3fi implements JmolNode {
       int chainID = getChainID();
       if (chainID != 0 && chainID != 32) {
         info.append(":");
-        info.append(getChainIDStr());
+        String s = getChainIDStr();
+        if (chainID >= 256)
+          s = Escape.eS(s);
+        info.append(s);
       }
       if (!allInfo)
         return info.toString();

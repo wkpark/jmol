@@ -241,7 +241,7 @@ public class AminoMonomer extends AlphaMonomer {
     aminoHydrogenPoint.add2(nitrogenPoint, vNH);
     nitrogenHydrogenPoint = P3.newP(aminoHydrogenPoint);
     if (Logger.debugging)
-      Logger.info("draw ID \"pta" + monomerIndex + "_" + nitrogenPoint.index + "\" "
+      Logger.debug("draw ID \"pta" + monomerIndex + "_" + nitrogenPoint.index + "\" "
           + Escape.eP(nitrogenPoint) + Escape.eP(aminoHydrogenPoint)
           + " # " + nitrogenPoint);
     return true;

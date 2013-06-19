@@ -1259,7 +1259,7 @@ public class FileManager {
   void cachePut(String key, Object data) {
     key = key.replace('\\', '/');
     if (Logger.debugging)
-      Logger.info("cachePut " + key);
+      Logger.debug("cachePut " + key);
     if (data == null || data.equals(""))
       cache.remove(key);
     else
@@ -1269,7 +1269,7 @@ public class FileManager {
   public Object cacheGet(String key, boolean bytesOnly) {
     key = key.replace('\\', '/');
     if (Logger.debugging)
-      Logger.info("cacheGet " + key + " " + cache.containsKey(key));
+      Logger.debug("cacheGet " + key + " " + cache.containsKey(key));
     Object data = cache.get(key);
     return (bytesOnly && (data instanceof String) ? null : data);
   }

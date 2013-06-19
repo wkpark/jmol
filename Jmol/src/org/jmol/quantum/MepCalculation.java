@@ -112,7 +112,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
           f = 0;
       }
       if (Logger.debugging)
-        Logger.info(atoms[i].getInfo() + " " + f);
+        Logger.debug(atoms[i].getInfo() + " " + f);
       potentials[i] = f;
     }
   }
@@ -157,7 +157,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
         continue;
       float x0 = potentials[atomIndex];
       if (Logger.debugging)
-        Logger.info("process map for atom " + atomIndex + thisAtom + "  charge=" + x0);
+        Logger.debug("process map for atom " + atomIndex + thisAtom + "  charge=" + x0);
       thisAtom.setXYZ(this, true);
       for (int ix = xMax; --ix >= xMin;) {
         float dX = X2[ix];
@@ -234,7 +234,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
         if (vs.length < 2)
           continue;
         if (Logger.debugging)
-          Logger.info(line);
+          Logger.debug(line);
         htAtomicPotentials.put(vs[0], Float.valueOf(Parser.parseFloatStr(vs[1])));
       }
       br.close();

@@ -231,12 +231,14 @@ public class SpartanSmolReader extends SpartanInputReader {
 
   private boolean readArchiveHeader() throws Exception {
     String modelInfo = readLine();
-    Logger.debug(modelInfo);
+    if (Logger.debugging)
+      Logger.debug(modelInfo);
     if (modelInfo.indexOf("Error:") == 0) // no archive here
       return false;
     atomSetCollection.setCollectionName(modelInfo);
     modelName = readLine();
-    Logger.debug(modelName);
+    if (Logger.debugging)
+      Logger.debug(modelName);
     //    5  17  11  18   0   1  17   0 RHF      3-21G(d)           NOOPT FREQ
     readLine();
     return true;

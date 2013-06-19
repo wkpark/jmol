@@ -246,7 +246,6 @@ public class MoveToThread extends JmolThread {
 
   @Override
   public void interrupt() {
-    Logger.debug("moveto thread interrupted!");
     doEndMove = false;
     super.interrupt();
   }

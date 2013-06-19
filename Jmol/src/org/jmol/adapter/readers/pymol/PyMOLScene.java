@@ -905,7 +905,7 @@ class PyMOLScene implements JmolSceneGenerator {
       return defaultValue;
     float v = ((Number) setting.get(2)).floatValue();
     if (Logger.debugging)
-      Logger.info("Pymol unique setting for " + id + ": [" + key + "] = " + v);
+      Logger.debug("Pymol unique setting for " + id + ": [" + key + "] = " + v);
     return v;
   }
 

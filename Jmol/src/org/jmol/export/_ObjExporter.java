@@ -137,7 +137,7 @@ public class _ObjExporter extends __CartesianExporter {
    */
   protected void debugPrint(final String string) {
     if (debug) {
-      System.out.println(string);
+      Logger.debug(string);
     }
   }
 

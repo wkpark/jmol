@@ -65,7 +65,7 @@ public class MainPopupResourceBundle extends PopupResource {
           "- surfaceMenu FILEUNITMenu " +
           "- sceneComputedMenu zoomMenu spinMenu VIBRATIONMenu spectraMenu FRAMESanimateMenu " +
           "- measureMenu pickingMenu " +
-          "- showConsole showMenu fileMenu computationMenu " +
+          "- showConsole JSConsole showMenu fileMenu computationMenu " +
           "- languageComputedMenu aboutComputedMenu" },
 
       {   "selectMenuText",
@@ -470,6 +470,7 @@ public class MainPopupResourceBundle extends PopupResource {
       { "SYMMETRYpickSymmetry", "set picking symmetry" },
 
       { "showConsole", "console" },
+      { "JSConsole", "JSCONSOLE" },
       { "showFile", "console on;show file" },
       { "showFileHeader", "console on;getProperty FileHeader" },
       { "showHistory", "console on;show history" },
@@ -873,6 +874,7 @@ public class MainPopupResourceBundle extends PopupResource {
 
         "showMenu", GT._("Show"),
         "showConsole", GT._("Console"),
+        "JSConsole", "JavaScript Console",
         "showFile", GT._("File Contents"),
         "showFileHeader", GT._("File Header"),
         "showHistory", GT._("History"),

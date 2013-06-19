@@ -50,7 +50,7 @@ public class SinglePointGesture implements Gesture {
     List<Event> retEvents = new ArrayList<Event>();
     int nPoints = touchPoints.size();
     if (Logger.debugging) {
-      Logger.info("\nSinglePointGesture " + _myId + " nPoints: " + nPoints);
+      Logger.debug("\nSinglePointGesture " + _myId + " nPoints: " + nPoints);
     }
     // idea here is to prevent single-touch action during/after a multi-touch action.
     // most multi-touch operations, though, start with a single-touch action. So
@@ -67,7 +67,7 @@ public class SinglePointGesture implements Gesture {
     }
     int id = changedTouchPoint.getID();
     if (Logger.debugging)
-      Logger.info("\nSinglePointGesture id=" + id + " state="
+      Logger.debug("\nSinglePointGesture id=" + id + " state="
           + changedTouchPoint.getState() + " ncurrent=" + _nCurrent
           + " nMoves=" + _nMoves);
     switch (changedTouchPoint.getState()) {

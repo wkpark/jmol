@@ -1062,7 +1062,6 @@ public class PropertyManager implements JmolPropertyManager {
   private String getChimeInfoA(Atom[] atoms, int tok, BS bs) {
     SB info = new SB();
     info.append("\n");
-    int id;
     String s = "";
     Chain clast = null;
     Group glast = null;
@@ -1070,52 +1069,59 @@ public class PropertyManager implements JmolPropertyManager {
     int n = 0;
     if (bs != null)
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        id = atoms[i].getChainID();
-        s = (id == 0 ? " " : atoms[i].getChainIDStr());
+        Atom a = atoms[i];
         switch (tok) {
-        case T.chain:
-          break;
-        case T.selected:
-          s = atoms[i].getInfo();
-          break;
-        case T.atoms:
-          s = "" + atoms[i].getAtomNumber();
-          break;
-        case T.group:
-          s = atoms[i].getGroup3(false);
-          break;
-        case T.residue:
-          s = "[" + atoms[i].getGroup3(false) + "]"
-              + atoms[i].getSeqcodeString() + ":" + s;
-          break;
-        case T.sequence:
-          if (atoms[i].getModelIndex() != modelLast) {
-            info.appendC('\n');
-            n = 0;
-            modelLast = atoms[i].getModelIndex();
-            info.append("Model " + atoms[i].getModelNumber());
-            glast = null;
-            clast = null;
-          }
-          if (atoms[i].getChain() != clast) {
-            info.appendC('\n');
-            n = 0;
-            clast = atoms[i].getChain();
-            info.append("Chain " + s + ":\n");
-            glast = null;
-          }
-          Group g = atoms[i].getGroup();
-          if (g != glast) {
-            if ((n++) % 5 == 0 && n > 1)
-              info.appendC('\n');
-            TextFormat.lFill(info, "          ", "["
-                + atoms[i].getGroup3(false) + "]" + atoms[i].getResno() + " ");
-            glast = g;
-          }
-          continue;
         default:
           return "";
-        }
+        case T.selected:
+          s = a.getInfo();
+          break;
+        case T.atoms:
+          s = "" + a.getAtomNumber();
+          break;
+        case T.group:
+          s = a.getGroup3(false);
+          break;
+        case T.chain:
+        case T.residue:
+        case T.sequence:
+          int id = a.getChainID();
+          s = (id == 0 ? " " : a.getChainIDStr());
+          if (id > 255)
+            s = Escape.eS(s);
+          switch (tok) {
+          case T.residue:
+            s = "[" + a.getGroup3(false) + "]"
+                + a.getSeqcodeString() + ":" + s;
+            break;
+          case T.sequence:
+            if (a.getModelIndex() != modelLast) {
+              info.appendC('\n');
+              n = 0;
+              modelLast = a.getModelIndex();
+              info.append("Model " + a.getModelNumber());
+              glast = null;
+              clast = null;
+            }
+            if (a.getChain() != clast) {
+              info.appendC('\n');
+              n = 0;
+              clast = a.getChain();
+              info.append("Chain " + s + ":\n");
+              glast = null;
+            }
+            Group g = a.getGroup();
+            if (g != glast) {
+              if ((n++) % 5 == 0 && n > 1)
+                info.appendC('\n');
+              TextFormat.lFill(info, "          ", "["
+                  + a.getGroup3(false) + "]" + a.getResno() + " ");
+              glast = g;
+            }
+            continue;
+          }
+          break;
+        }        
         if (info.indexOf("\n" + s + "\n") < 0)
           info.append(s).appendC('\n');
       }

@@ -857,7 +857,7 @@ class PointGroup {
       type = OPERATION_INVERSION_CENTER;
       order = 1;
       if (Logger.debugging)
-        Logger.info("new operation -- " + typeNames[type]);
+        Logger.debug("new operation -- " + typeNames[type]);
     }
 
     Operation(V3 v, int i) {
@@ -866,7 +866,7 @@ class PointGroup {
       order = i % firstProper;
       normalOrAxis = Quaternion.newVA(v, 180).getNormal();
       if (Logger.debugging)
-        Logger.info("new operation -- " + (order == i ? "S" : "C") + order + " "
+        Logger.debug("new operation -- " + (order == i ? "S" : "C") + order + " "
             + normalOrAxis);
     }
 
@@ -877,7 +877,7 @@ class PointGroup {
       type = OPERATION_PLANE;
       normalOrAxis = Quaternion.newVA(v, 180).getNormal();
       if (Logger.debugging)
-        Logger.info("new operation -- plane " + normalOrAxis);
+        Logger.debug("new operation -- plane " + normalOrAxis);
     }
 
     String getLabel() {

@@ -868,11 +868,11 @@ public class SmilesGenerator {
       ht.put(key, new Object[] {
           s = SmilesParser.getRingPointer(++nPairs), Integer.valueOf(i1) });
       if (Logger.debugging)
-        Logger.info("adding for " + i0 + " ring key " + nPairs + ": " + key);
+        Logger.debug("adding for " + i0 + " ring key " + nPairs + ": " + key);
     } else {
       ht.remove(key);
       if (Logger.debugging)
-        Logger.info("using ring key " + key);
+        Logger.debug("using ring key " + key);
     }
     return s;//  + " _" + key + "_ \n";
   }

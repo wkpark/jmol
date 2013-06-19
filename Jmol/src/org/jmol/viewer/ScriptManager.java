@@ -155,7 +155,7 @@ public class ScriptManager implements JmolScriptManager {
         Thread.sleep(100);
         if (((n++) % 10) == 0)
           if (Logger.debugging) {
-            Logger.info("...scriptManager waiting for queue: "
+            Logger.debug("...scriptManager waiting for queue: "
                 + scriptQueue.size() + " thread="
                 + Thread.currentThread().getName());
           }
@@ -212,7 +212,7 @@ public class ScriptManager implements JmolScriptManager {
       clearCommandWatcherThread();
     }
     if (Logger.debugging) {
-      Logger.info("command watcher " + (isStart ? "started" : "stopped")
+      Logger.debug("command watcher " + (isStart ? "started" : "stopped")
           + commandWatcherThread);
     }
   }

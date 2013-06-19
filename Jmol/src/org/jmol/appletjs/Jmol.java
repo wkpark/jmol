@@ -869,7 +869,8 @@ public class Jmol implements JmolSyncInterface {
 
     @Override
     protected void finalize() throws Throwable {
-      Logger.debug("MyStatusListener finalize " + this);
+      if (Logger.debugging)
+        Logger.debug("MyStatusListener finalize " + this);
       super.finalize();
     }
 

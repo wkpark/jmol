@@ -36,7 +36,7 @@ public class HBond extends Bond {
     super(atom1, atom2, order, mad, colix);
     this.energy = energy;
     if (Logger.debugging)
-      Logger.info("HBond energy = " + energy + " #" + getIdentity());
+      Logger.debug("HBond energy = " + energy + " #" + getIdentity());
   }
   
   @Override

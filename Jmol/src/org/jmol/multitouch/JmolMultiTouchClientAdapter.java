@@ -49,7 +49,7 @@ public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapt
     actionManager = client; // ActionManagerMT
     viewer.apiPlatform.getFullScreenDimensions(viewer.getDisplay(), screen);
     if (Logger.debugging)
-      Logger.info("screen resolution: " + screen[0] + " x " + screen[1]);
+      Logger.debug("screen resolution: " + screen[0] + " x " + screen[1]);
     return true;
   }
   

@@ -316,17 +316,17 @@ public class CrystalReader extends AtomSetCollectionReader {
   private boolean setDirect() throws Exception {
     boolean isBohr = (line.indexOf("(BOHR") >= 0);
     directLatticeVectors = read3Vectors(isBohr);
-    if (Logger.debugging) {
-      addJmolScript("draw va vector {0 0 0} "
-          + Escape.eP(directLatticeVectors[0]) + " color red");
-      if (!isPolymer) {
-        addJmolScript("draw vb vector {0 0 0} "
-            + Escape.eP(directLatticeVectors[1]) + " color green");
-        if (!isSlab)
-          addJmolScript("draw vc vector {0 0 0} "
-              + Escape.eP(directLatticeVectors[2]) + " color blue");
-      }
-    }
+//    if (Logger.debugging) {
+//      addJmolScript("draw va vector {0 0 0} "
+//          + Escape.eP(directLatticeVectors[0]) + " color red");
+//      if (!isPolymer) {
+//        addJmolScript("draw vb vector {0 0 0} "
+//            + Escape.eP(directLatticeVectors[1]) + " color green");
+//        if (!isSlab)
+//          addJmolScript("draw vc vector {0 0 0} "
+//              + Escape.eP(directLatticeVectors[2]) + " color blue");
+//      }
+//    }
     V3 a = new V3();
     V3 b = new V3();
     if (isPrimitive) {

@@ -345,7 +345,7 @@ abstract class ScriptCompilationTokenParser {
     if (token == null)
       return false;
     if (logMessages)
-        Logger.info("addTokenToPostfix" + token);
+        Logger.debug("addTokenToPostfix" + token);
     ltokenPostfix.addLast(token);
     lastToken = token;
     return true;

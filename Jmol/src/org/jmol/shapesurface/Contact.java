@@ -128,10 +128,10 @@ public class Contact extends Isosurface {
         .abs(parameters[0])
         : 0.15f);
     if (Logger.debugging) {
-      Logger.info("Contact intramolecularMode " + intramolecularMode);
-      Logger.info("Contacts for " + bsA.cardinality() + ": "
+      Logger.debug("Contact intramolecularMode " + intramolecularMode);
+      Logger.debug("Contacts for " + bsA.cardinality() + ": "
           + Escape.eBS(bsA));
-      Logger.info("Contacts to " + bsB.cardinality() + ": "
+      Logger.debug("Contacts to " + bsB.cardinality() + ": "
           + Escape.eBS(bsB));
     }
     setPropI("newObject", null, null);
@@ -461,7 +461,7 @@ public class Contact extends Isosurface {
         list.remove(i);
     if (Logger.debugging)
       for (int i = 0; i < list.size(); i++)
-        Logger.info(list.get(i).toString());
+        Logger.debug(list.get(i).toString());
     Logger.info("Contact pairs: " + list.size());
     return list;
   }

@@ -355,7 +355,7 @@ public class JmolBinary {
       script = script.substring(0, pt1)
           + script.substring(pt1 + JPEG_CONTINUE_STRING.length() + 4);
     if (Logger.debugging)
-      Logger.info(script);
+      Logger.debug(script);
     return script;
   }
 

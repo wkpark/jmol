@@ -90,7 +90,7 @@ public class ScriptQueueThread extends JmolThread {
     boolean isScriptFile = ((Boolean) scriptItem.get(3)).booleanValue();
     boolean isQuiet = ((Boolean) scriptItem.get(4)).booleanValue();
     if (Logger.debugging) {
-      Logger.info("Queue[" + pt + "][" + queue.size()
+      Logger.debug("Queue[" + pt + "][" + queue.size()
           + "] scripts; running: " + script);
     }
     //System.out.println("removing: " + scriptItem + " " + script);

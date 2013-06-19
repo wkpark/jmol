@@ -2429,7 +2429,7 @@ public class TransformManager {
     // we should probably assign z = 0 as "unrenderable"
 
     if (Float.isNaN(z)) {
-      if (!haveNotifiedNaN)
+      if (!haveNotifiedNaN && Logger.debugging)
         Logger.debug("NaN seen in TransformPoint");
       haveNotifiedNaN = true;
       z = 1;
@@ -2477,7 +2477,8 @@ public class TransformManager {
     }
 
     if (Float.isNaN(point3fScreenTemp.x) && !haveNotifiedNaN) {
-      Logger.debug("NaN found in transformPoint ");
+      if (Logger.debugging)
+        Logger.debug("NaN found in transformPoint ");
       haveNotifiedNaN = true;
     }
 

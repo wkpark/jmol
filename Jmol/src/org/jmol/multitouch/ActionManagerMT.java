@@ -132,7 +132,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   
   @Override
   public void dispose() {
-    Logger.debug("ActionManagerMT -- dispose");
+    if (Logger.debugging)
+      Logger.debug("ActionManagerMT -- dispose");
     // per applet/application instance
     doneHere = true;
     if (adapter != null)
@@ -238,7 +239,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   public void processEvent(int groupID, int eventType, int touchID, int iData,
                            P3 pt, long time) {
     if (Logger.debugging)
-      Logger.info(this + " time=" + time + " groupID=" + groupID + " "
+      Logger.debug(this + " time=" + time + " groupID=" + groupID + " "
           + Integer.toHexString(groupID) + " eventType=" + eventType + "("
           + getEventName(eventType) + ") iData=" + iData + " pt=" + pt);
     switch (eventType) {

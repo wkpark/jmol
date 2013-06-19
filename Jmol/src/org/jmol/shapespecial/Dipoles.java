@@ -84,8 +84,6 @@ public class Dipoles extends Shape {
       dipoleValue = 0;
       calculatedDipole = null;
       isUserValue = isBond = iHaveTwoEnds = false;
-      if (currentDipole != null)
-        Logger.debug("current dipole: " + currentDipole.thisID);
       return;
     }
 
@@ -108,7 +106,6 @@ public class Dipoles extends Shape {
       currentDipole = findDipole(thisID);
       if (currentDipole == null)
         currentDipole = allocDipole(thisID, "");
-      Logger.debug("current dipole now " + currentDipole.thisID);
       tempDipole = currentDipole;
       if (thisID.equals("molecular")) {
         V3 v = calculatedDipole;

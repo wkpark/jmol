@@ -111,7 +111,7 @@ class ScriptMathProcessor {
     this.asBitSet = asBitSet;
     wasX = isArrayItem;
     if (logMessages)
-      Logger.info("initialize RPN");
+      Logger.debug("initialize RPN");
   }
 
   @SuppressWarnings("unchecked")
@@ -153,7 +153,7 @@ class ScriptMathProcessor {
     if (++xPt == xStack.length)
       xStack = (SV[]) ArrayUtil.doubleLength(xStack);
     if (logMessages) {
-      Logger.info("\nputX: " + x);
+      Logger.debug("\nputX: " + x);
     }
 
     xStack[xPt] = x;
@@ -354,7 +354,7 @@ class ScriptMathProcessor {
 
     if (logMessages) {
 
-      Logger.info("addOp entry\naddOp: " + op ); //+ " oPt=" + oPt + " ifPt = "
+      Logger.debug("addOp entry\naddOp: " + op ); //+ " oPt=" + oPt + " ifPt = "
          // + ifPt + " skipping=" + skipping + " wasX=" + wasX);
     }
 
@@ -499,7 +499,7 @@ class ScriptMathProcessor {
         && T.getPrecedence(tok0) >= T.getPrecedence(op.tok)) {
 
       if (logMessages) {
-        Logger.info("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
+        Logger.debug("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
             + " oStack[oPt]=" + T.nameOf(tok0) + "        prec="
             + T.getPrecedence(tok0) + " pending op=\""
             + T.nameOf(op.tok) + "\" prec=" + T.getPrecedence(op.tok));
@@ -688,14 +688,14 @@ class ScriptMathProcessor {
   }
 
   void dumpStacks(String message) {
-    Logger.info("\n\n------------------\nRPN stacks: " + message + "\n");
+    Logger.debug("\n\n------------------\nRPN stacks: " + message + "\n");
     for (int i = 0; i <= xPt; i++)
-      Logger.info("x[" + i + "]: " + xStack[i]);
-    Logger.info("\n");
+      Logger.debug("x[" + i + "]: " + xStack[i]);
+    Logger.debug("\n");
     for (int i = 0; i <= oPt; i++)
-      Logger.info("o[" + i + "]: " + oStack[i] + " prec="
+      Logger.debug("o[" + i + "]: " + oStack[i] + " prec="
           + T.getPrecedence(oStack[i].tok));
-    Logger.info(" ifStack = " + (new String(ifStack)).substring(0, ifPt + 1));
+    Logger.debug(" ifStack = " + (new String(ifStack)).substring(0, ifPt + 1));
   }
 
   private SV getX() throws ScriptException {

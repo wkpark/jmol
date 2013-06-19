@@ -375,7 +375,8 @@ class SpartanArchive {
   }
 
   void readProperties() throws Exception {
-    Logger.debug("Reading PROPARC properties records...");
+    if (Logger.debugging)
+      Logger.debug("Reading PROPARC properties records...");
     while (readLine() != null
         && !line.startsWith("ENDPROPARC") && !line.startsWith("END Directory Entry ")) {
       if (line.startsWith("PROP"))

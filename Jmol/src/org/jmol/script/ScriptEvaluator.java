@@ -292,7 +292,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private boolean useThreads() {
-    return (!viewer.autoExit && viewer.haveDisplay && outputBuffer == null);
+    return (!viewer.autoExit && viewer.haveDisplay && outputBuffer == null && allowJSThreads);
   }
   
   private void startEval() {
@@ -4996,7 +4996,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (p == null)
       error(ERROR_badMillerIndices);
     if (!chk && Logger.debugging)
-      Logger.info("defined plane: " + p);
+      Logger.debug("defined plane: " + p);
     return p;
   }
 
@@ -5401,7 +5401,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return true;
     }
     if (Logger.debugging) {
-      Logger.info("script execution paused at command " + (pc + 1) + " level "
+      Logger.debug("script execution paused at command " + (pc + 1) + " level "
           + scriptLevel + ": " + thisCommand);
     }
     refresh();
@@ -5445,7 +5445,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.scriptStatus("script execution "
           + (error || executionStopped ? "interrupted" : "resumed"));
     }
-    Logger.debug("script execution resumed");
+    if (Logger.debugging)
+      Logger.debug("script execution resumed");
   }
 
   /**
@@ -8543,7 +8544,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (data[i].indexOf("null") < 0)
             sb.append(data[i]).appendC('\n');
         if (Logger.debugging)
-          Logger.info(sb.toString());
+          Logger.debug(sb.toString());
         BS bsSubset = BSUtil.copy(viewer.getSelectionSubset());
         viewer.setSelectionSubset(bsTo);
         try {
@@ -10093,7 +10094,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return data;
 
     if (Logger.debugging)
-      Logger.info(data);
+      Logger.debug(data);
 
     if (tokCmd == T.draw) {
       runScript(data);

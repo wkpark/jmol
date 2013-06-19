@@ -84,21 +84,22 @@ abstract public class GenericPopup implements JmolPopupInterface,
   private Map<String, Object> modelInfo;
 
   private Map<String, Object> htMenus = new Hashtable<String, Object>();
-  private JmolList<Object> NotPDB = new  JmolList<Object>();
-  private JmolList<Object> PDBOnly = new  JmolList<Object>();
-  private JmolList<Object> FileUnitOnly = new  JmolList<Object>();
-  private JmolList<Object> FileMolOnly = new  JmolList<Object>();
-  private JmolList<Object> UnitcellOnly = new  JmolList<Object>();
-  private JmolList<Object> SingleModelOnly = new  JmolList<Object>();
-  private JmolList<Object> FramesOnly = new  JmolList<Object>();
-  private JmolList<Object> VibrationOnly = new  JmolList<Object>();
-  private JmolList<Object> SymmetryOnly = new  JmolList<Object>();
-  private JmolList<Object> SignedOnly = new  JmolList<Object>();
-  private JmolList<Object> AppletOnly = new  JmolList<Object>();
-  private JmolList<Object> ChargesOnly = new  JmolList<Object>();
-  private JmolList<Object> TemperatureOnly = new  JmolList<Object>();
+  private JmolList<Object> NotPDB = new JmolList<Object>();
+  private JmolList<Object> PDBOnly = new JmolList<Object>();
+  private JmolList<Object> FileUnitOnly = new JmolList<Object>();
+  private JmolList<Object> FileMolOnly = new JmolList<Object>();
+  private JmolList<Object> UnitcellOnly = new JmolList<Object>();
+  private JmolList<Object> SingleModelOnly = new JmolList<Object>();
+  private JmolList<Object> FramesOnly = new JmolList<Object>();
+  private JmolList<Object> VibrationOnly = new JmolList<Object>();
+  private JmolList<Object> SymmetryOnly = new JmolList<Object>();
+  private JmolList<Object> SignedOnly = new JmolList<Object>();
+  private JmolList<Object> AppletOnly = new JmolList<Object>();
+  private JmolList<Object> ChargesOnly = new JmolList<Object>();
+  private JmolList<Object> TemperatureOnly = new JmolList<Object>();
 
   private boolean allowSignedFeatures;
+  private boolean isJS;
   private boolean fileHasUnitCell;
   private boolean haveBFactors;
   private boolean haveCharges;
@@ -138,6 +139,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
   public Object jpiGetMenuAsObject() {
     return popupMenu;
   }
+
   public String jpiGetMenuAsString(String title) {
     updateForShow();
     int pt = title.indexOf("|");
@@ -199,11 +201,11 @@ abstract public class GenericPopup implements JmolPopupInterface,
   }
 
   ///////// protected methods //////////
-  
+
   /**
    * used only by ModelKit
    * 
-   * @param ret  
+   * @param ret
    * @return Object
    */
   protected Object getEntryIcon(String[] ret) {
@@ -219,7 +221,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
   /**
    * modelkit menu only
    * 
-   * @param fileName  
+   * @param fileName
    * @return ImageIcon or null
    */
   protected Object getImageIcon(String fileName) {
@@ -245,9 +247,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
     }
   }
 
-  static protected void addItemText(SB sb, char type, int level,
-                                    String name, String label, String script,
-                                    String flags) {
+  static protected void addItemText(SB sb, char type, int level, String name,
+                                    String label, String script, String flags) {
     sb.appendC(type).appendI(level).appendC('\t').append(name);
     if (label == null) {
       sb.append(".\n");
@@ -293,6 +294,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     thisPopup = popupMenu;
     menuSetListeners();
     htMenus.put(title, popupMenu);
+    isJS = viewer.isJS;
     allowSignedFeatures = (!viewer.isApplet() || viewer
         .getBooleanProperty("_signedApplet"));
     addMenuItems("", title, popupMenu, bundle);
@@ -348,7 +350,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
   }
 
   ///////// private methods /////////
-  
+
   private static boolean checkBoolean(Map<String, Object> info, String key) {
     return (info != null && info.get(key) == Boolean.TRUE); // not "Boolean.TRUE.equals(...)" (not working in Java2Script yet)
   }
@@ -425,7 +427,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
                             PopupResource popupResourceBundle) {
     String id = parentId + "." + key;
     String value = popupResourceBundle.getStructure(key);
-    //Logger.debug(id + " --- " + value);
+    if (Logger.debugging)
+      Logger.debug(id + " --- " + value);
     if (value == null) {
       menuCreateItem(menu, "#" + key, "", "");
       return;
@@ -483,6 +486,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
         script = popupResourceBundle.getStructure(item);
         if (script == null)
           script = item;
+        if (!isJS && item.startsWith("JS"))
+          continue;
         newMenu = menuCreateItem(menu, label, script, id + "." + item);
       }
 
@@ -534,14 +539,15 @@ abstract public class GenericPopup implements JmolPopupInterface,
   }
 
   /**
-   * @param key  
+   * @param key
    * @return true unless a JAVA-only key in JavaScript
    */
   private boolean checkKey(String key) {
     /**
      * @j2sNative
-     *
-     * return (key.indexOf("JAVA") < 0 && !(key.indexOf("NOGL") && this.viewer.isWebGL));
+     * 
+     *            return (key.indexOf("JAVA") < 0 && !(key.indexOf("NOGL") &&
+     *            this.viewer.isWebGL));
      * 
      */
     {
@@ -791,7 +797,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
     if (scenes == null)
       return;
     for (int i = 0; i < scenes.length; i++)
-      menuCreateItem(menu, scenes[i], "restore scene " + Escape.eS(scenes[i]) + " 1.0", null);
+      menuCreateItem(menu, scenes[i], "restore scene " + Escape.eS(scenes[i])
+          + " 1.0", null);
     menuEnable(menu, true);
   }
 
@@ -1097,8 +1104,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
         }
       }
     }
-    if (isApplet
-        && !viewer.getBooleanProperty("hideNameInPopup")) {
+    if (isApplet && !viewer.getBooleanProperty("hideNameInPopup")) {
       menuAddSeparator(menu);
       menuCreateItem(menu, GT._(getMenuText("viewMenuText"), modelSetFileName),
           "show url", null);
@@ -1145,7 +1151,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     Runtime runtime = null;
     /**
      * @j2sNative
-     *   
+     * 
      */
     {
       runtime = Runtime.getRuntime();
@@ -1261,6 +1267,5 @@ abstract public class GenericPopup implements JmolPopupInterface,
     if (doPopup)
       menuShowPopup(popupMenu, thisx, thisy);
   }
-
 
 }

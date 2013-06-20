@@ -59,6 +59,7 @@ public class Structure extends AtomSetObject {
                    String structureID, int serialID, int strandCount) {
     this.structureType = structureType;
     this.substructureType = substructureType;
+    System.out.println("structure.java type"+structureType + " " + serialID);
     if (structureID == null)
       return;
     this.atomSetIndex = modelIndex;
@@ -78,6 +79,7 @@ public class Structure extends AtomSetObject {
     this.endInsertionCode = endInsertionCode;
     this.istart = istart;
     this.iend = iend;
+    System.out.println("structure.java set " + startSequenceNumber + " " + endSequenceNumber + " " + startChainID + " " + endChainID);
   }
 
 }

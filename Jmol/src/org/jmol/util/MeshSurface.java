@@ -330,7 +330,8 @@ public class MeshSurface {
         vertexCount = vertexCount0;
         polygonCount0 = vertexCount0 = 0;
         normixCount = (isTriangleSet ? polygonCount : vertexCount);
-        bsSlabDisplay.setBits(0, (polygonCount == 0 ? vertexCount : polygonCount));
+        bsSlabDisplay.setBits(0, (polygonCount == 0 ? vertexCount
+            : polygonCount));
         slabOptions = new SB().append(meshType + " slab none");
         bsSlabGhost = null;
         slabMeshType = T.none;
@@ -339,7 +340,8 @@ public class MeshSurface {
         return false;
     }
     Object slabbingObject = slabObject[1];
-    boolean andCap = ((Boolean) slabObject[2]).booleanValue() && !(slabType == T.brillouin);
+    boolean andCap = ((Boolean) slabObject[2]).booleanValue()
+        && !(slabType == T.brillouin);
     if (andCap && !allowCap)
       return false;
     Object[] colorData = (Object[]) slabObject[3];
@@ -364,19 +366,20 @@ public class MeshSurface {
         bsSlabGhost = new BS();
       slabMeshType = ((Integer) colorData[0]).intValue();
       slabColix = ((Short) colorData[1]).shortValue();
-      if (C.isColixColorInherited(slabColix))
-        slabColix = C.copyColixTranslucency(slabColix, colix);
+      //if (C.isColixColorInherited(slabColix))
+      //slabColix = C.copyColixTranslucency(slabColix, colix);
       andCap = false;
       colix = C.getColixTranslucent3(colix, false, 0);
     }
 
-    
     SB sb = new SB();
     sb.append(andCap ? " cap " : " slab ");
     if (isGhost) {
       sb.append("translucent ").appendF(
-          C.getColixTranslucencyFractional(slabColix)).append(" ")
-          .append(C.getHexCode(slabColix)).append(" ");
+          C.getColixTranslucencyFractional(slabColix)).append(" ");
+      String s = C.getHexCode(slabColix);
+      if (s != null)
+        sb.append(s).append(" ");
       if (slabMeshType == T.mesh)
         sb.append("mesh ");
     }
@@ -386,14 +389,14 @@ public class MeshSurface {
       slabBrillouin((P3[]) slabbingObject);
       break;
     case T.decimal:
-      getIntersection(0, null, null, null, null, (BS) slabbingObject, null, andCap,
-          false, T.decimal, isGhost);
+      getIntersection(0, null, null, null, null, (BS) slabbingObject, null,
+          andCap, false, T.decimal, isGhost);
       break;
     case T.plane:
       P4 plane = (P4) slabbingObject;
       sb.append(Escape.eP4(plane));
-      getIntersection(0, plane, null, null, null, null, null, andCap,
-          false, T.plane, isGhost);
+      getIntersection(0, plane, null, null, null, null, null, andCap, false,
+          T.plane, isGhost);
       break;
     case T.unitcell:
     case T.boundbox:
@@ -420,8 +423,8 @@ public class MeshSurface {
         BS bs = (BS) o[2];
         sb.append("within ").appendF(distance).append(
             bs == null ? Escape.e(points) : Escape.e(bs));
-        getIntersection(distance, null, points, null, null, null, null,
-            andCap, false, (distance > 0 ? T.distance : T.sphere), isGhost);
+        getIntersection(distance, null, points, null, null, null, null, andCap,
+            false, (distance > 0 ? T.distance : T.sphere), isGhost);
         break;
       case T.range:
         // isosurface slab within range x.x y.y
@@ -445,8 +448,8 @@ public class MeshSurface {
         //NOT IMPLEMENTED
         MeshSurface mesh = (MeshSurface) o[1];
         //distance = -1;
-        getIntersection(0, null, null, null, null, null, mesh, andCap,
-            false, distance < 0 ? T.min : T.max, isGhost);
+        getIntersection(0, null, null, null, null, null, mesh, andCap, false,
+            distance < 0 ? T.min : T.max, isGhost);
         //TODO: unresolved how exactly to store this in the state
         // -- must indicate exact set of triangles to slab and how!
         break;
@@ -457,7 +460,8 @@ public class MeshSurface {
     if (slabOptions == null)
       slabOptions = new SB();
     if (slabOptions.indexOf(newOptions) < 0)
-      slabOptions.append(slabOptions.length() > 0 ? "; ": "").append(meshType).append(newOptions);      	
+      slabOptions.append(slabOptions.length() > 0 ? "; " : "").append(meshType)
+          .append(newOptions);
     return true;
   }
 
@@ -526,8 +530,16 @@ public class MeshSurface {
                               int tokType, boolean isGhost) {
     boolean isSlab = (vData == null);
     P3[] pts = null;
-    if (fData == null)
-      fData = vertexValues;
+    if (fData == null) { 
+      if (tokType == T.decimal && bsSource != null) {
+        fData = new float[vertexCount];
+        for (int i = 0; i < vertexCount; i++)
+          if ((fData[i] = vertexSource[i]) == -1)
+            System.out.println("meshsurface hmm");
+      } else {
+        fData = vertexValues;
+      }
+    }
     Map<String, Integer> mapEdge = new Hashtable<String, Integer>();
     
 
@@ -923,7 +935,7 @@ public class MeshSurface {
     float d;
     switch (tokType) {
     case T.decimal:
-      return (bs.get((int)val) ? 1 : -1);
+      return (val >= 0 && bs.get((int)val) ? 1 : -1);
     case T.min:
       d = distance - val;
       break;

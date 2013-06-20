@@ -1263,6 +1263,7 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("atom2", infoB);
     info.put("order", Float.valueOf(Parser.fVal(JmolEdge
         .getBondOrderNumberFromOrder(bond.order))));
+    info.put("type", JmolEdge.getBondOrderNameFromOrder(bond.order));
     info.put("radius", Float.valueOf((float) (bond.mad / 2000.)));
     info.put("length_Ang", Float.valueOf(atom1.distance(atom2)));
     info.put("visible", Boolean.valueOf(bond.shapeVisibilityFlags != 0));

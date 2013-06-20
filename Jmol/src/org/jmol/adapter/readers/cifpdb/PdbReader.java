@@ -770,7 +770,7 @@ REMARK 290 REMARK: NULL
         String name, 
         char altID, 
         String group3, 
-        char chain, 
+        int chain, 
         int seqNo,
         char insCode,
         boolean isHetero,
@@ -781,7 +781,7 @@ REMARK 290 REMARK: NULL
     if (ch != ' ')
       atom.alternateLocationID = ch;
     atom.group3 = group3;
-    ch = chain;
+    ch = chain < 256 ? (char) chain : 0;
     if (chainAtomCounts != null)
       chainAtomCounts[ch]++;
     atom.chainID = ch;

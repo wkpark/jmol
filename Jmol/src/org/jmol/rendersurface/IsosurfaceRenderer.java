@@ -349,6 +349,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         : !fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);
     short[] vertexColixes = (!fill && imesh.meshColix != 0 ? null
         : imesh.vertexColixes);
+    if (isTranslucentInherit)
+      colix = C.copyColixTranslucency(mesh.slabColix, mesh.colix);
     g3d.setColix(colix);
     int diam = Integer.MIN_VALUE;
     boolean generateSet = isExport;
@@ -362,8 +364,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
     boolean colorSolid = (isGhostPass && (!isBicolorMap)
         || vertexColixes == null || imesh.isColorSolid);
-    boolean noColor = (isGhostPass && !isBicolorMap
-        || vertexColixes == null || !fill && imesh.meshColix != 0);
+    boolean noColor = (isGhostPass && !isBicolorMap || vertexColixes == null || !fill
+        && imesh.meshColix != 0);
     boolean isPlane = (imesh.jvxlData.jvxlPlane != null);
     short colix = this.colix;
     if (isPlane && !colorSolid && !fill && imesh.fillTriangles) {
@@ -390,7 +392,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       int iA = polygon[0];
       int iB = polygon[1];
       int iC = polygon[2];
-      if (imesh.jvxlData.thisSet >= 0 && imesh.vertexSets != null 
+      if (imesh.jvxlData.thisSet >= 0 && imesh.vertexSets != null
           && imesh.vertexSets[iA] != imesh.jvxlData.thisSet)
         continue;
       if (haveBsDisplay
@@ -419,14 +421,16 @@ public class IsosurfaceRenderer extends MeshRenderer {
         if (isBicolorMap) {
           if (colixA != colixB || colixB != colixC)
             continue;
-          if (isGhostPass)
+          if (isGhostPass) {
             colixA = colixB = colixC = C.copyColixTranslucency(
                 imesh.slabColix, colixA);
+          }
         }
       }
       if (diam == Integer.MIN_VALUE) {
         if (imesh.diameter <= 0) {
-          diam = (meshScale  < 0 ? meshScale = viewer.getInt(T.meshscale) : meshScale);
+          diam = (meshScale < 0 ? meshScale = viewer.getInt(T.meshscale)
+              : meshScale);
           if (g3d.isAntialiased())
             diam *= 2;
         } else {
@@ -445,12 +449,17 @@ public class IsosurfaceRenderer extends MeshRenderer {
           if (iA == iB)
             g3d.fillSphereI(diam, screens[iA]);
           else
-            g3d.fillCylinder(GData.ENDCAPS_SPHERICAL, diam, screens[iA], screens[iB]);
+            g3d.fillCylinder(GData.ENDCAPS_SPHERICAL, diam, screens[iA],
+                screens[iB]);
         } else if (iShowTriangles) {
-          g3d.fillTriangle(screens[iA], colixA, nA, 
-              screens[iB], colixB, nB,
+          g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
               screens[iC], colixC, nC, 0.1f);
         } else {
+          if (isTranslucentInherit && vertexColixes != null) {
+            colixA = C.copyColixTranslucency(mesh.slabColix, vertexColixes[iA]);
+            colixB = C.copyColixTranslucency(mesh.slabColix, vertexColixes[iB]);
+            colixC = C.copyColixTranslucency(mesh.slabColix, vertexColixes[iC]);
+          }
           g3d.fillTriangle3CN(screens[iA], colixA, nA, screens[iB], colixB, nB,
               screens[iC], colixC, nC);
         }
@@ -472,8 +481,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
         pt3i.z -= 2;
         if (noColor) {
         } else if (colorArrayed) {
-          g3d.setColix(mesh.fillTriangles ? C.BLACK
-              : contourColixes[polygon[4] % contourColixes.length]);
+          g3d.setColix(mesh.fillTriangles ? C.BLACK : contourColixes[polygon[4]
+              % contourColixes.length]);
         } else {
           drawTriangle(pt1i, colixA, pt2i, colixB, pt3i, colixC, check, diam);
           continue;

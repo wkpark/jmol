@@ -973,7 +973,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     atomMap[apt] = -1;
     JmolList<Object> a = listAt(pymolAtoms, apt);
     int seqNo = intAt(a, 0); // may be negative
-    String chainID = stringAt(a, 1);
+    String chainID = stringAt(a, 1); // may be more than one char.
     String altLoc = stringAt(a, 2);
     String insCode = " "; //?    
     String name = stringAt(a, 6);
@@ -986,8 +986,8 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     if (sym.equals("A"))
       sym = "C";
     boolean isHetero = (intAt(a, 19) != 0);
-    Atom atom = processAtom(new Atom(), name, altLoc.charAt(0), group3, chainID
-        .charAt(0), seqNo, insCode.charAt(0), isHetero, sym);
+    int ichain = viewer.getChainID(chainID);
+    Atom atom = processAtom(new Atom(), name, altLoc.charAt(0), group3, ichain, seqNo, insCode.charAt(0), isHetero, sym);
     if (!filterPDBAtom(atom, fileAtomIndex++))
       return null;
     icoord *= 3;
@@ -1009,7 +1009,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       if (bs == null)
         ssMapSeq.put(ssType, bs = new BS());
       bs.set(seqNo - MIN_RESNO);
-      ssType += chainID;
+      ssType += ichain;
       bs = ssMapSeq.get(ssType);
       if (bs == null)
         ssMapSeq.put(ssType, bs = new BS());

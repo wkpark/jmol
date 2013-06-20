@@ -365,9 +365,9 @@ public class C {
   public final static short getColixTranslucent3(short colix,
                                                  boolean isTranslucent,
                                                  float translucentLevel) {
+    colix &= ~TRANSLUCENT_MASK;
     if (colix == INHERIT_ALL)
       colix = INHERIT_COLOR;
-    colix &= ~TRANSLUCENT_MASK;
     return (isTranslucent ? (short) (colix | getTranslucentFlag(translucentLevel))
         : colix);
   }

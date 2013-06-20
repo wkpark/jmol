@@ -99,9 +99,13 @@ public class MeasuresRenderer extends LabelsRenderer {
   private void renderMeasurement(int count, Measurement measurement,
                                  boolean renderLabel) {
     this.measurement = measurement;
+    System.out.println("Hmm "  + measurement);
     String s = (renderLabel ? measurement.getString() : null);
+    //System.out.println("1" + s);
     if (s != null & s.length() == 0)
       s = null;
+    System.out.println("2" + s);
+
     if (s != null && measurement.text != null) {
       measurement.text.setText(s);
       measurement.text.setColix(labelColix);

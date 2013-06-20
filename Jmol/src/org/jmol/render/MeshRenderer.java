@@ -134,7 +134,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   private boolean doRender;
   protected boolean volumeRender;
   protected BS bsPolygons;
-  
+  protected boolean isTranslucentInherit;  
   
   private boolean setVariables() {
     if (mesh.visibilityFlags == 0)
@@ -143,6 +143,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
       g3d.setColix(mesh.slabColix); // forces a second pass
     isGhostPass = (mesh.bsSlabGhost != null && (isExport ? exportPass == 2
         : g3d.isPass2()));
+    isTranslucentInherit = (isGhostPass && C.getColixTranslucent3(mesh.slabColix, false, 0)== C.INHERIT_COLOR);
     isTranslucent = isGhostPass
         || C.isColixTranslucent(mesh.colix);
     if (isTranslucent || volumeRender || mesh.bsSlabGhost != null)
@@ -256,6 +257,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
     int[][] polygonIndexes = mesh.polygonIndexes;
     colix = (isGhostPass ? mesh.slabColix : mesh.colix);
     // vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh
+    if (isTranslucentInherit)
+      colix = C.copyColixTranslucency(mesh.slabColix, mesh.colix);
     g3d.setColix(colix);
     if (generateSet) {
       if (frontOnly && fill)

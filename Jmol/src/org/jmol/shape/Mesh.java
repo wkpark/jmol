@@ -68,7 +68,6 @@ public class Mesh extends MeshSurface {
   public boolean visible = true;
   public int lighting = T.frontlit;
 
-  public float scale = 1;
   public boolean haveXyPoints;
   public int diameter;
   public float width;
@@ -123,8 +122,11 @@ public class Mesh extends MeshSurface {
   //  System.out.println("Mesh " + this + " finalized");
   //}
   
-
   public void clear(String meshType) {
+    clearMesh(meshType);
+  }
+
+  public void clearMesh(String meshType) {
     altVertices = null;
     bsDisplay = null;
     bsSlabDisplay = null;
@@ -147,7 +149,6 @@ public class Mesh extends MeshSurface {
     normixes = null;
     polygonIndexes = null;
     polygonTranslucencies = null;
-    scale = 1;
     scale3d = 0;
     showContourLines = false;
     showPoints = false;

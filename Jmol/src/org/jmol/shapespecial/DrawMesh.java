@@ -55,8 +55,18 @@ public class DrawMesh extends Mesh {
   public float drawArrowScale;
   public boolean noHead;
   public boolean isBarb;
-  
 
+  public float scale = 1;
+  public boolean isScaleSet;
+
+
+  @Override
+  public void clear(String meshType) {
+    clearMesh(meshType);
+    scale = 1;
+    isScaleSet = false;
+  }
+  
   public BS bsMeshesVisible = new BS();
 
   void setCenters() {

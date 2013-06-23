@@ -1036,6 +1036,7 @@ protected void resetObjects() {
       return;
     float f = newScale / dmesh.scale;
     dmesh.scale = newScale;
+    dmesh.isScaleSet = true;
     if (dmesh.isRenderScalable())
       return; // done in renderer
     V3 diff = new V3();
@@ -1344,7 +1345,7 @@ protected void resetObjects() {
       str.append(" noHead");
     else if (dmesh.isBarb)
       str.append(" barb");
-    if (dmesh.scale != 1
+    if (dmesh.scale != 1 && dmesh.isScaleSet
         && (dmesh.haveXyPoints || dmesh.connections != null || dmesh.drawType == EnumDrawType.CIRCLE || dmesh.drawType == EnumDrawType.ARC))
       str.append(" scale ").appendF(dmesh.scale);
     if (dmesh.width != 0)

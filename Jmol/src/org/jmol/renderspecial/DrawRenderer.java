@@ -428,7 +428,7 @@ public class DrawRenderer extends MeshRenderer {
   }
 
   private float getArrowScale() {
-    float fScale = dmesh.scale;
+    float fScale = (dmesh.isScaleSet ? dmesh.scale : 0);
     if (fScale == 0)
       fScale = viewer.getFloat(T.defaultdrawarrowscale) * (dmesh.connections == null ? 1f : 0.5f);
     if (fScale <= 0)

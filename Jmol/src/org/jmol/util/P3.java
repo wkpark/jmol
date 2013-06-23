@@ -55,7 +55,7 @@ public class P3 extends Tuple3f {
    *        the other point
    * @return the square of distance between these two points as a float
    */
-  public final float distanceSquared(P3 p1) {
+  public final float distanceSquared(Tuple3f p1) {
     double dx = x - p1.x;
     double dy = y - p1.y;
     double dz = z - p1.z;
@@ -69,7 +69,7 @@ public class P3 extends Tuple3f {
    *        the other point
    * @return the distance between these two points
    */
-  public final float distance(P3 p1) {
+  public final float distance(Tuple3f p1) {
     return (float) Math.sqrt(distanceSquared(p1));
   }
 

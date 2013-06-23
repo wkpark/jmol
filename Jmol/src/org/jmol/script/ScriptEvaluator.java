@@ -11065,17 +11065,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private void delete() throws ScriptException {
-    if (slen == 1) {
-      zap(true);
-      return;
-    }
     if (tokAt(1) == T.dollarsign) {
       setObjectProperty();
       return;
     }
-    BS bs = atomExpression(st, 1, 0, true, false, true, false);
+    BS bs = (slen == 1 ? null : atomExpression(st, 1, 0, true, false, true, false));
     if (chk)
       return;
+    if (bs == null)
+      bs = viewer.getModelUndeletedAtomsBitSet(-1);
     int nDeleted = viewer.deleteAtoms(bs, false);
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
       scriptStatusOrBuffer(GT._("{0} atoms deleted", nDeleted));
@@ -14707,14 +14705,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           isExport = true;
           if (isCommand)
             fileName = "Jmol." + type.toLowerCase();
-        } else if (type.equals("ZIP")) {
+          break;
+        } else if (type.equals("ZIP") || type.equals("ZIPALL")) {
           pt++;
-        } else if (type.equals("ZIPALL")) {
-          pt++;
+          break;
         } else {
           type = "(image)";
         }
-        break;
       }
       if (tokAtArray(pt, args) == T.integer) {
         width = SV.iValue(tokenAt(pt++, args));

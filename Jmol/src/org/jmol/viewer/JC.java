@@ -784,6 +784,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "UREA",// 45 urea, a cosolvent
     "PO4", // 46 phosphate ions  -- from here on is "ligand"
     "SO4", // 47 sulphate ions
+    "UNL", // 48 unknown ligand
+    
 
   };
   
@@ -1215,7 +1217,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@water _g>=" + GROUPID_WATER + " & _g<" + GROUPID_SOLVENT_MIN
         + ", oxygen & connected(2) & connected(2, hydrogen), (hydrogen) & connected(oxygen & connected(2) & connected(2, hydrogen))",
     "@solvent water, (_g>=" + GROUPID_SOLVENT_MIN + " & _g<" + GROUPID_ION_MAX + ")", // water, other solvent or ions
-    "@ligand !(_g<"+ GROUPID_ION_MIN + ",protein,nucleic,water)",
+    "@ligand _g=0|!(_g<"+ GROUPID_ION_MIN + ",protein,nucleic,water)", // includes UNL
 
     // structure
     "@turn structure=1",

@@ -113,6 +113,7 @@ import org.jmol.util.Rectangle;
 import org.jmol.util.SB;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
+import org.jmol.util.Vibration;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
@@ -1306,7 +1307,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.transformPoint(pointAngstroms);
   }
 
-  public P3i transformPtVib(P3 pointAngstroms, V3 vibrationVector) {
+  public P3i transformPtVib(P3 pointAngstroms, Vibration vibrationVector) {
     return transformManager.transformPointVib(pointAngstroms, vibrationVector);
   }
 
@@ -8659,8 +8660,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBondAtom2(i);
   }
 
-  public V3 getVibrationVector(int atomIndex) {
-    return modelSet.getVibrationVector(atomIndex, false);
+  public Vibration getVibration(int atomIndex) {
+    return modelSet.getVibration(atomIndex, false);
   }
 
   public int getVanderwaalsMar(int i) {

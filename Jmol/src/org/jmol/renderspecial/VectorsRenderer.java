@@ -35,11 +35,11 @@ import org.jmol.util.GData;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
 import org.jmol.util.V3;
+import org.jmol.util.Vibration;
 
 public class VectorsRenderer extends ShapeRenderer {
 
   private final static float arrowHeadOffset = -0.2f;
-  private final V3 vector2 = new V3();
   private final P3 pointVectorEnd = new P3();
   private final P3 pointArrowHead = new P3();
   private final P3i screenVectorEnd = new P3i();
@@ -53,6 +53,7 @@ public class VectorsRenderer extends ShapeRenderer {
   private boolean vectorSymmetry;
   private float headScale;
   private boolean doShaft;
+  private Vibration vibTemp;
 
 
   @Override
@@ -73,7 +74,7 @@ public class VectorsRenderer extends ShapeRenderer {
       Atom atom = atoms[i];
       if (!atom.isVisible(myVisibilityFlag))
         continue;
-      V3 vibrationVector = viewer.getVibrationVector(i);
+      Vibration vibrationVector = viewer.getVibration(i);
       if (vibrationVector == null)
         continue;
       if (!transform(mads[i], atom, vibrationVector))
@@ -84,16 +85,18 @@ public class VectorsRenderer extends ShapeRenderer {
       }
       renderVector(atom);
       if (vectorSymmetry) {
-        vector2.setT(vibrationVector);
-        vector2.scale(-1);
-        transform(mads[i], atom, vector2);
+        if (vibTemp == null)
+          vibTemp = new Vibration();
+        vibTemp.setT(vibrationVector);
+        vibTemp.scale(-1);
+        transform(mads[i], atom, vibTemp);
         renderVector(atom);
       }
     }
     return needTranslucent;
   }
 
-  private boolean transform(short mad, Atom atom, V3 vibrationVector) {
+  private boolean transform(short mad, Atom atom, Vibration vibrationVector) {
     float len = vibrationVector.length();
     // to have the vectors move when vibration is turned on
     if (Math.abs(len * vectorScale) < 0.01)

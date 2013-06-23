@@ -56,6 +56,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
 import org.jmol.util.V3;
+import org.jmol.util.Vibration;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
@@ -84,7 +85,7 @@ abstract public class AtomCollection {
     atomNames = null;
     atomTypes = null;
     atomSerials = null;
-    vibrationVectors = null;
+    vibrations = null;
     occupancies = null;
     bfactor100s = null;
     partialCharges = null;
@@ -97,7 +98,7 @@ abstract public class AtomCollection {
     atomNames = mergeModelSet.atomNames;
     atomTypes = mergeModelSet.atomTypes;
     atomSerials = mergeModelSet.atomSerials;
-    vibrationVectors = mergeModelSet.vibrationVectors;
+    vibrations = mergeModelSet.vibrations;
     occupancies = mergeModelSet.occupancies;
     bfactor100s = mergeModelSet.bfactor100s;
     ionicRadii = mergeModelSet.ionicRadii;
@@ -145,7 +146,7 @@ abstract public class AtomCollection {
   String[] atomNames;
   String[] atomTypes;
   int[] atomSerials;
-  public V3[] vibrationVectors;
+  public Vibration[] vibrations;
   byte[] occupancies;
   short[] bfactor100s;
   float[] partialCharges;
@@ -158,7 +159,7 @@ abstract public class AtomCollection {
   protected boolean haveStraightness;
 
   public boolean modelSetHasVibrationVectors(){
-    return (vibrationVectors != null);
+    return (vibrations != null);
   }
   
   public String[] getAtomTypes() {
@@ -672,39 +673,36 @@ abstract public class AtomCollection {
   }
 
   public float getVibrationCoord(int atomIndex, char c) {
-    if (vibrationVectors == null || vibrationVectors[atomIndex] == null)
+    if (vibrations == null || vibrations[atomIndex] == null)
       return 0;
     switch (c) {
     case 'X':
-      return vibrationVectors[atomIndex].x;
+      return vibrations[atomIndex].x;
     case 'Y':
-      return vibrationVectors[atomIndex].y;
+      return vibrations[atomIndex].y;
     default:
-      return vibrationVectors[atomIndex].z;
+      return vibrations[atomIndex].z;
     }
   }
 
-  public V3 getVibrationVector(int atomIndex, boolean forceNew) {
-    V3 v = (vibrationVectors == null ? null : vibrationVectors[atomIndex]);
-    return (v == null && forceNew ? new V3() : v);
+  public Vibration getVibration(int atomIndex, boolean forceNew) {
+    Vibration v = (vibrations == null ? null : vibrations[atomIndex]);
+    return (v == null && forceNew ? new Vibration() : v);
   }
 
   protected void setVibrationVector(int atomIndex, float x, float y, float z) {
     if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
       return;
-    if (vibrationVectors == null || vibrationVectors.length < atomIndex)
-      vibrationVectors = new V3[atoms.length];
-    if (vibrationVectors[atomIndex] == null)
-      vibrationVectors[atomIndex] = V3.new3(x, y, z);
-    else
-      vibrationVectors[atomIndex].set(x, y, z);
+    if (vibrations == null || vibrations.length < atomIndex)
+      vibrations = new Vibration[atoms.length];
+    if (vibrations[atomIndex] == null)
+      vibrations[atomIndex] = new Vibration();
+    vibrations[atomIndex].set(x, y, z);
     atoms[atomIndex].setVibrationVector();
   }
 
   private void setVibrationVector2(int atomIndex, int tok, float fValue) {
-    V3 v = getVibrationVector(atomIndex, true);
-    if (v == null)
-      v = new V3();
+    Vibration v = getVibration(atomIndex, true);
     switch(tok) {
     case T.vibx:
       v.x = fValue;
@@ -2519,7 +2517,7 @@ abstract public class AtomCollection {
         firstAtomIndex, nAtoms);
     ellipsoids = (Quadric[][]) ArrayUtil.deleteElements(ellipsoids,
         firstAtomIndex, nAtoms);
-    vibrationVectors = (V3[]) ArrayUtil.deleteElements(vibrationVectors,
+    vibrations = (Vibration[]) ArrayUtil.deleteElements(vibrations,
         firstAtomIndex, nAtoms);
     nSurfaceAtoms = 0;
     bsSurface = null;

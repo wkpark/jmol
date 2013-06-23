@@ -1072,6 +1072,17 @@ class ScriptMathProcessor {
 
   }
 
+  /**
+   * 
+   * {xxx}.symop()
+   * 
+   * symop({xxx}
+   * 
+   * @param args
+   * @param haveBitSet
+   * @return true/false
+   * @throws ScriptException
+   */
   private boolean evaluateSymop(SV[] args, boolean haveBitSet)
       throws ScriptException {
     if (args.length == 0)

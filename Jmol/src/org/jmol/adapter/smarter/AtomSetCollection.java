@@ -1695,6 +1695,7 @@ public class AtomSetCollection {
       setTrajectoryName(atomSetName);
       return;
     }
+    System.out.println(currentAtomSetIndex + " " + atomSetName);
     setAtomSetAuxiliaryInfoForSet("name", atomSetName, currentAtomSetIndex);
     // TODO -- trajectories could have different names. Need this for vibrations?
     if (!allowMultiple)
@@ -1719,10 +1720,12 @@ public class AtomSetCollection {
    *          The name
    * @param n
    *          The number of last AtomSets that needs these set
+   * @param namedSets 
    */
-  public void setAtomSetNames(String atomSetName, int n) {
-    for (int idx = currentAtomSetIndex; --n >= 0 && idx >= 0; --idx)
-      setAtomSetAuxiliaryInfoForSet("name", atomSetName, idx);
+  public void setAtomSetNames(String atomSetName, int n, BS namedSets) {
+    for (int i = currentAtomSetIndex; --n >= 0 && i >= 0; --i)
+      if (namedSets == null || !namedSets.get(i))
+        setAtomSetAuxiliaryInfoForSet("name", atomSetName, i);
   }
 
   /**
@@ -1919,15 +1922,17 @@ public class AtomSetCollection {
     setAtomSetModelProperty("Energy", "" + value);
   }
 
-  public void setAtomSetFrequency(String pathKey, String label, String freq, String units) {
+  public String setAtomSetFrequency(String pathKey, String label, String freq, String units) {
     freq += " " + (units == null ? "cm^-1" : units);
-    setAtomSetName((label == null ? "" : label + " ") + freq);
+    String name = (label == null ? "" : label + " ") + freq;
+    setAtomSetName(name);
     setAtomSetModelProperty("Frequency", freq);
     if (label != null)
       setAtomSetModelProperty("FrequencyLabel", label);
     setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, (pathKey == null ? ""
         : pathKey + SmarterJmolAdapter.PATH_SEPARATOR + "Frequencies")
         + "Frequencies");
+    return name;
   }
 
   void toCartesian(SymmetryInterface symmetry) {

@@ -218,7 +218,7 @@ public class NWChemReader extends MOReader {
     atomSetCollection.setAtomSetPropertyForSets(energyKey, energyValue,
         equivalentAtomSets);
     atomSetCollection.setAtomSetNames(energyKey + " = " + energyValue,
-        equivalentAtomSets);
+        equivalentAtomSets, null);
     atomSetCollection.setAtomSetEnergy(value, parseFloatStr(value));
     haveEnergy = true;
   }

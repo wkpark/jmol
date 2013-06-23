@@ -1053,7 +1053,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public V3 getVibrationVector() {
-    return group.chain.model.modelSet.getVibrationVector(index, false);
+    return group.chain.model.modelSet.getVibration(index, false);
   }
 
   public float getVibrationCoord(char ch) {

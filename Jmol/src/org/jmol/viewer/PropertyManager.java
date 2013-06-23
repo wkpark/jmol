@@ -841,7 +841,7 @@ public class PropertyManager implements JmolPropertyManager {
         mol.appendC('\n');
         for (int j = bsTemp.nextSetBit(0); j >= 0; j = bsTemp.nextSetBit(j + 1))
           mol.append(LabelToken.formatLabelAtomArray(viewer, atoms[j],
-              (ms.getVibrationVector(j, false) == null ? tokens2 : tokens1), '\0',
+              (ms.getVibration(j, false) == null ? tokens2 : tokens1), '\0',
               null));
       }
     } else {
@@ -1166,8 +1166,8 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("y", Float.valueOf(atom.y));
     info.put("z", Float.valueOf(atom.z));
     info.put("coord", P3.newP(atom));
-    if (ms.vibrationVectors != null && ms.vibrationVectors[i] != null) {
-      info.put("vibVector", V3.newV(ms.vibrationVectors[i]));
+    if (ms.vibrations != null && ms.vibrations[i] != null) {
+      info.put("vibVector", V3.newV(ms.vibrations[i]));
     }
     info.put("bondCount", Integer.valueOf(atom.getCovalentBondCount()));
     info.put("radius", Float.valueOf((float) (atom.getRasMolRadius() / 120.0)));

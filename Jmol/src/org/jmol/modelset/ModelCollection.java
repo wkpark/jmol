@@ -66,6 +66,7 @@ import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.TriangleData;
 import org.jmol.util.V3;
+import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.io.OutputStringBuilder;
@@ -1499,10 +1500,10 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public boolean modelHasVibrationVectors(int modelIndex) {
-    if (vibrationVectors != null)
+    if (vibrations != null)
       for (int i = atomCount; --i >= 0;)
         if ((modelIndex < 0 || atoms[i].modelIndex == modelIndex)
-            && vibrationVectors[i] != null && vibrationVectors[i].length() > 0)
+            && vibrations[i] != null && vibrations[i].length() > 0)
           return true;
     return false;
   }
@@ -3079,9 +3080,9 @@ abstract public class ModelCollection extends BondCollection {
         m.firstAtomIndex = i;
       m.bsAtoms.set(i);
     }
-    if (vibrationVectors != null)
+    if (vibrations != null)
       for (int i = i0; i < atomCount; i++)
-        vibrationVectors[i] = vibrationVectors[map[i]];
+        vibrations[i] = vibrations[map[i]];
     if (occupancies != null)
       for (int i = i0; i < atomCount; i++)
         occupancies[i] = occupancies[map[i]];
@@ -3107,8 +3108,8 @@ abstract public class ModelCollection extends BondCollection {
 
   protected void growAtomArrays(int newLength) {
     atoms = (Atom[]) ArrayUtil.arrayCopyObject(atoms, newLength);
-    if (vibrationVectors != null)
-      vibrationVectors = (V3[]) ArrayUtil.arrayCopyObject(vibrationVectors,
+    if (vibrations != null)
+      vibrations = (Vibration[]) ArrayUtil.arrayCopyObject(vibrations,
           newLength);
     if (occupancies != null)
       occupancies = ArrayUtil.arrayCopyByte(occupancies, newLength);

@@ -38,6 +38,7 @@ import org.jmol.util.TextFormat;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -78,6 +79,7 @@ public class GaussianReader extends MOReader {
   private int stepNumber;
 
   private int moModelSet = -1;
+  private BS namedSets = new BS();
 
 
   /**
@@ -216,7 +218,7 @@ public class GaussianReader extends MOReader {
     energyString = tokens[2] + " " + tokens[3];
     // now set the names for the last equivalentAtomSets
     atomSetCollection.setAtomSetNames(energyKey + " = " + energyString,
-        equivalentAtomSets);
+        equivalentAtomSets, namedSets);
     // also set the properties for them
     atomSetCollection.setAtomSetPropertyForSets(energyKey, energyString,
         equivalentAtomSets);
@@ -242,7 +244,7 @@ public class GaussianReader extends MOReader {
     String tokens[] = getTokens();
     energyKey = "Energy";
     energyString = tokens[1];
-    atomSetCollection.setAtomSetNames("Energy = "+tokens[1], equivalentAtomSets);
+    atomSetCollection.setAtomSetNames("Energy = "+tokens[1], equivalentAtomSets, namedSets);
     atomSetCollection.setAtomSetEnergy(energyString, parseFloatStr(energyString));
   }
   
@@ -280,7 +282,8 @@ public class GaussianReader extends MOReader {
     // this is needed for the last structure in an optimization
     // if energy information is found for this structure the reader
     // will overwrite this setting later.
-    atomSetCollection.setAtomSetName(energyKey + " = " + energyString);
+    if (energyKey.length() != 0)
+      atomSetCollection.setAtomSetName(energyKey + " = " + energyString);
     atomSetCollection.setAtomSetEnergy(energyString, parseFloatStr(energyString));
 //  atomSetCollection.setAtomSetName("Last read atomset.");
     String path = getTokens()[0]; // path = type of orientation
@@ -628,7 +631,9 @@ public class GaussianReader extends MOReader {
           continue;  
         atomSetCollection.cloneLastAtomSet();
         // set the properties
-        atomSetCollection.setAtomSetFrequency("Calculation " + calculationNumber, symmetries[i], frequencies[i], null);
+        String name = atomSetCollection.setAtomSetFrequency("Calculation " + calculationNumber, symmetries[i], frequencies[i], null);
+        appendLoadNote("model " + atomSetCollection.getAtomSetCount() + ": " + name);
+        namedSets.set(atomSetCollection.getCurrentAtomSetIndex());
         atomSetCollection.setAtomSetModelProperty("ReducedMass",
             red_masses[i]+" AMU");
         atomSetCollection.setAtomSetModelProperty("ForceConstant",

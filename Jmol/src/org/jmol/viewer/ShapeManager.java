@@ -48,7 +48,7 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
 import org.jmol.util.SB;
-import org.jmol.util.V3;
+import org.jmol.util.Vibration;
 
 public class ShapeManager {
 
@@ -434,7 +434,7 @@ public class ShapeManager {
   }
 
   public int[] transformAtoms() {
-    V3[] vibrationVectors = modelSet.vibrationVectors;
+    Vibration[] vibrationVectors = modelSet.vibrations;
     Atom[] atoms = modelSet.atoms;
     for (int i = bsRenderableAtoms.nextSetBit(0); i >= 0; i = bsRenderableAtoms.nextSetBit(i + 1)) {
       // note that this vibration business is not compatible with

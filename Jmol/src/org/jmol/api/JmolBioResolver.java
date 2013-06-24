@@ -24,7 +24,7 @@ public interface JmolBioResolver {
 
   public void setHaveHsAlready(boolean b);
 
-  public void addImplicitHydrogenAtoms(JmolAdapter adapter, int i);
+  public void addImplicitHydrogenAtoms(JmolAdapter adapter, int i, int nH);
 
   public void initialize(ModelSet modelSet);
 

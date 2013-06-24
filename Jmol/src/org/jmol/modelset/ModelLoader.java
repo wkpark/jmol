@@ -239,7 +239,8 @@ public final class ModelLoader {
   
   private int currentModelIndex;
   private Model currentModel;
-  private int currentChainID = 0;
+  private int currentChainID;
+  private boolean isNewChain;
   private Chain currentChain;
   private int currentGroupSequenceNumber;
   private char currentGroupInsertionCode = '\0';
@@ -276,7 +277,7 @@ public final class ModelLoader {
     group3Of = new String[defaultGroupCount];
     seqcodes = new int[defaultGroupCount];
     firstAtomIndexes = new int[defaultGroupCount];
-    currentChainID = '\uFFFF';
+    currentChainID = Integer.MAX_VALUE;
     currentChain = null;
     currentGroupInsertionCode = '\uFFFF';
     currentGroup3 = "xxxxx";
@@ -751,7 +752,8 @@ public final class ModelLoader {
       if (modelIndex != iLast) {
         currentModelIndex = modelIndex;
         currentModel = models[modelIndex];
-        currentChainID = '\uFFFF';
+        currentChainID = Integer.MAX_VALUE;
+        isNewChain = true;
         models[modelIndex].bsAtoms.clearAll();
         isPdbThisModel = models[modelIndex].isBioModel;
         iLast = modelIndex;
@@ -760,7 +762,8 @@ public final class ModelLoader {
           jbr.setHaveHsAlready(false);
       }
       String group3 = iterAtom.getGroup3();
-      checkNewGroup(adapter, iterAtom.getChainID(), group3, iterAtom.getSequenceNumber(), 
+      int chainID = iterAtom.getChainID();
+      checkNewGroup(adapter, chainID, group3, iterAtom.getSequenceNumber(), 
           iterAtom.getInsertionCode(), addH);
       short isotope = iterAtom.getElementNumber();
       if (addH && Elements.getElementNumber(isotope) == 1)
@@ -790,8 +793,9 @@ public final class ModelLoader {
           iterAtom.getRadius()
           );
     }
-    if (groupCount > 0 && addH)
-      jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1);    
+    if (groupCount > 0 && addH) {
+      jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1, isNewChain ? 1 : 0);
+    }
     iLast = -1;
     EnumVdw vdwtypeLast = null;
     Atom[] atoms = modelSet.atoms;
@@ -853,12 +857,13 @@ public final class ModelLoader {
       currentGroupInsertionCode = '\uFFFF';
       currentGroupSequenceNumber = -1;
       currentGroup3 = "xxxx";
+      isNewChain = true;
     }
     if (groupSequenceNumber != currentGroupSequenceNumber
         || groupInsertionCode != currentGroupInsertionCode
         || group3i != currentGroup3) {
       if (groupCount > 0 && addH) {
-        jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1);
+        jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1, isNewChain ? 1 : 0);
         jbr.setHaveHsAlready(false);
       }
       currentGroupSequenceNumber = groupSequenceNumber;

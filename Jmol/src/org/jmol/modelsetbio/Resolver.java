@@ -201,13 +201,14 @@ public final class Resolver implements JmolBioResolver {
     plane = new P4();
   }
   
-  public void addImplicitHydrogenAtoms(JmolAdapter adapter, int iGroup) {
+  public void addImplicitHydrogenAtoms(JmolAdapter adapter, int iGroup, int nH) {
     String group3 = modelLoader.getGroup3(iGroup);
-    int nH;
+    int nH1;
     if (haveHsAlready || group3 == null
-        || (nH = JC.getStandardPdbHydrogenCount(Group
+        || (nH1 = JC.getStandardPdbHydrogenCount(Group
         .lookupGroupID(group3))) == 0)
       return;
+    nH = (nH1 < 0 ? -1 : nH1 + nH);
     Object model = null;
     int iFirst = modelLoader.getFirstAtomIndex(iGroup);
     int atomCount = modelSet.getAtomCount();

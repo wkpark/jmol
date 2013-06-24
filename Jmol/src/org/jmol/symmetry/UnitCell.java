@@ -296,7 +296,7 @@ class UnitCell extends SimpleUnitCell {
     if (parBorU[0] == 0) { // this is iso
       float[] lengths = new float[3];
       lengths[0] = lengths[1] = lengths[2] = (float) Math.sqrt(parBorU[7]);
-      return new Quadric().fromVectors(null, lengths, true);
+      return new Quadric().fromVectors(null, lengths, 7, true);
     }
 
     double[] Bcart = new double[6];

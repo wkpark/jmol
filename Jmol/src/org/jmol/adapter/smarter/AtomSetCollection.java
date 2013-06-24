@@ -1361,7 +1361,7 @@ public class AtomSetCollection {
                 axes = symmetry.rotateEllipsoid(iSym, ptTemp, axes, ptTemp1,
                     ptTemp2);
               }
-              atom1.ellipsoid[j] = new Quadric().fromVectors(axes, lengths, e.isThermalEllipsoid);
+              atom1.ellipsoid[j] = new Quadric().fromVectors(axes, lengths, e.eigenSignMask, e.isThermalEllipsoid);
             }
           }
         }

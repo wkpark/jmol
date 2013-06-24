@@ -32,6 +32,7 @@ public class Quadric {
   public V3[] vectors;
   public boolean isThermalEllipsoid = true;
   public float scale = 1;
+  public int eigenSignMask = 7;
   
   public void scale(float f) {
     for (int i = 0; i < 3; i++)
@@ -46,9 +47,11 @@ public class Quadric {
       + vectors[2] + "\t" + lengths[2] + "\n");
   }
   
-  public Quadric fromVectors(V3[] vectors, float[] lengths, boolean isThermal) {
+  public Quadric fromVectors(V3[] vectors, float[] lengths, 
+                             int eigenSignMask, boolean isThermal) {
     this.vectors = vectors;
     this.lengths = lengths;
+    this.eigenSignMask = eigenSignMask;
     isThermalEllipsoid = isThermal;
     return this;
   }

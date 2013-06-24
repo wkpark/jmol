@@ -852,6 +852,7 @@ public class StateManager {
       //setParameterValue("edsUrlOptions", edsUrlOptions);
       setS("edsUrlCutoff", edsUrlCutoff);
       setB("ellipsoidArcs", ellipsoidArcs);
+      setB("ellipsoidArrrow", ellipsoidArrows);
       setB("ellipsoidAxes", ellipsoidAxes);
       setF("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
       setB("ellipsoidBall", ellipsoidBall);
@@ -1238,6 +1239,7 @@ public class StateManager {
     boolean ellipsoidAxes = false;
     boolean ellipsoidDots = false;
     boolean ellipsoidArcs = false;
+    boolean ellipsoidArrows = false;
     boolean ellipsoidFill = false;
     boolean ellipsoidBall = true;
 

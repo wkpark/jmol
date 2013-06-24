@@ -77,7 +77,7 @@ public class Eigen {
 
   public static void getUnitVectors(double[][] m, V3[] unitVectors, float[] lengths) {
     newM(m).set(unitVectors, lengths);
-    sort(unitVectors, lengths);
+    sort(unitVectors, lengths, null);
   }
 
   private void set(V3[] unitVectors, float[] lengths) {
@@ -89,8 +89,6 @@ public class Eigen {
         unitVectors[i] = new V3();
       unitVectors[i].setA(eigenVectors[i]);
       lengths[i] = (float) Math.sqrt(Math.abs(eigenValues[i]));
-      //if (eigenValues[i] < 0)
-        //unitVectors[i].scale(-1);
     }
   }
 
@@ -1088,8 +1086,8 @@ public class Eigen {
     V3[] unitVectors = new V3[3];
     float[] lengths = new float[3];
     eigen.set(unitVectors, lengths);
-    sort(unitVectors, lengths);
-    return new Quadric().fromVectors(unitVectors, lengths, false);
+    int mask = sort(unitVectors, lengths, eigen.d);
+    return new Quadric().fromVectors(unitVectors, lengths, mask, false);
   }
 
   public static Quadric getEllipsoid(V3[] vectors, float[] lengths, boolean isThermal) {
@@ -1097,27 +1095,34 @@ public class Eigen {
     V3[] unitVectors = new V3[vectors.length];
     for (int i = vectors.length; --i >= 0;)
       unitVectors[i] = V3.newV(vectors[i]);
-    sort(unitVectors, lengths);
-    return new Quadric().fromVectors(unitVectors, lengths, isThermal);
+    sort(unitVectors, lengths, null);
+    return new Quadric().fromVectors(unitVectors, lengths, 7, isThermal);
   }
 
   /**
    * sorts vectors by absolute value and normalizes them
    * @param vectors
    * @param lengths
+   * @param values 
+   * @return mask 0 - 7 -- 1 for positive, 0 for negative eigenvalue
    */
-  private static void sort(V3[] vectors, float[] lengths) {
+  private static int sort(V3[] vectors, float[] lengths, double[] values) {
     // for atoms, lengths need to have length 3 to allow for scaling
     Object[][] o = new Object[][] {
-        new Object[] { vectors[0], Float.valueOf(Math.abs(lengths[0])) }, 
-        new Object[] { vectors[1], Float.valueOf(Math.abs(lengths[1])) },
-        new Object[] { vectors[2], Float.valueOf(Math.abs(lengths[2])) } }; 
+        new Object[] { vectors[0], Float.valueOf(Math.abs(lengths[0])), values == null || values[0] >= 0 ? Boolean.TRUE : null }, 
+        new Object[] { vectors[1], Float.valueOf(Math.abs(lengths[1])), values == null || values[1] >= 0 ? Boolean.TRUE : null },
+        new Object[] { vectors[2], Float.valueOf(Math.abs(lengths[2])), values == null || values[2] >= 0 ? Boolean.TRUE : null } }; 
     Arrays.sort(o, new EigenSort());
+    
+    int mask = 0;
     for (int i = 0; i < 3; i++) {
       vectors[i] = V3.newV((V3) o[i][0]);
       vectors[i].normalize();
       lengths[i] = ((Float) o[i][1]).floatValue();
+      if (o[i][2] != null)
+        mask += 1 << i;
     }
+    return mask;
   }
   
   /**

@@ -218,10 +218,8 @@ class JmolObject {
     }
 
     switch (id) {
-    case T.trace:
-      id = JC.SHAPE_TRACE;
-      if (info != null)
-        sm.setShapePropertyBs(id, "putty", info, bsAtoms);
+    case JC.SHAPE_CGO:
+      sm.viewer.setCGO((JmolList<Object>) info);
       break;
     case JC.SHAPE_DOTS:
     case JC.SHAPE_BALLS:
@@ -350,10 +348,9 @@ class JmolObject {
     case T.script:
       sb = (SB) info;
       break;
-    case JC.SHAPE_CGO:
-      JmolList<Object> cgo = (JmolList<Object>) info;
-      //sID = (String) cgo.get(cgo.size() - 1);
-      sm.viewer.setCGO(cgo);
+    case T.trace:
+      sm.loadShape(id = JC.SHAPE_TRACE);
+      sm.setShapePropertyBs(id, "putty", info, bsAtoms);
       break;
     }
     if (sb != null) {

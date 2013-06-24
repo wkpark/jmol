@@ -957,10 +957,11 @@ public class T {
   public final static int dsspcalchydrogen               = booleanparam | 58;
   public final static int dynamicmeasurements            = booleanparam | 59;
   public final static int ellipsoidarcs                  = booleanparam | 60;  
-  public final static int ellipsoidaxes                  = booleanparam | 61;  
-  public final static int ellipsoidball                  = booleanparam | 62;  
-  public final static int ellipsoiddots                  = booleanparam | 63;  
-  public final static int ellipsoidfill                  = booleanparam | 64;  
+  public final static int ellipsoidarrows                = booleanparam | 61;  
+  public final static int ellipsoidaxes                  = booleanparam | 62;  
+  public final static int ellipsoidball                  = booleanparam | 63;  
+  public final static int ellipsoiddots                  = booleanparam | 64;  
+  public final static int ellipsoidfill                  = booleanparam | 65;  
   public final static int filecaching                    = booleanparam | 66;
   public final static int fontcaching                    = booleanparam | 68;
   public final static int fontscaling                    = booleanparam | 69;
@@ -2350,6 +2351,7 @@ public class T {
       "dsspCalculateHydrogenAlways",              T.t(dsspcalchydrogen),
       "dynamicMeasurements",                      T.t(dynamicmeasurements),
       "ellipsoidArcs",                            T.t(ellipsoidarcs),
+      "ellipsoidArrows",                          T.t(ellipsoidarrows),
       "ellipsoidAxes",                            T.t(ellipsoidaxes),
       "ellipsoidBall",                            T.t(ellipsoidball),
       "ellipsoidDots",                            T.t(ellipsoiddots),

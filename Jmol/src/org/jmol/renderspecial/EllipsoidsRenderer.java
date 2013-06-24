@@ -48,7 +48,7 @@ import org.jmol.viewer.JC;
 public class EllipsoidsRenderer extends ShapeRenderer {
 
   private Ellipsoids ellipsoids;
-  private boolean drawDots, drawArcs, drawAxes, drawFill, drawBall;
+  private boolean drawDots, drawArcs, drawAxes, drawFill, drawBall, drawArrows;
   private boolean wireframeOnly;
   private int dotCount;
   private int[] coords;
@@ -150,6 +150,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     wireframeOnly = (viewer.getBoolean(T.wireframerotation) && viewer.getInMotion(true));
     drawAxes = viewer.getBooleanProperty("ellipsoidAxes");
     drawArcs = viewer.getBooleanProperty("ellipsoidArcs");
+    drawArrows = viewer.getBooleanProperty("ellipsoidArrows");
     drawBall = viewer.getBooleanProperty("ellipsoidBall") && !wireframeOnly;
     drawDots = viewer.getBooleanProperty("ellipsoidDots") && !wireframeOnly;
     drawFill = viewer.getBooleanProperty("ellipsoidFill") && !wireframeOnly;
@@ -222,6 +223,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private int dx;
   private float perspectiveFactor;
   private P3 center;
+  private int eigenSignMask = 7;
   
   private void render1(Atom atom, Quadric ellipsoid) {
     if (!isSet)
@@ -245,6 +247,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     setAxes();
     if (g3d.isClippedXY(dx + dx, atom.screenX, atom.screenY))
       return;
+    eigenSignMask = ellipsoid.eigenSignMask;
     renderOne(atom.screenZ, isOK);
   }
 
@@ -271,6 +274,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
     if (drawDots)
       renderDots();
+    if (drawArrows)
+      renderArrows();
   }
 
   private void setMatrices() {
@@ -317,6 +322,45 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         coef, mDeriv, selectedOctant, selectedOctant >= 0 ? selectedPoints : null);
   }
 
+  private void renderArrows() {
+    for (int i = 0; i < 6; i += 2) {
+      int pt = (i == 0 ? 1 : i);
+      fillConeScreen(screens[i], screens[i + 1], (eigenSignMask & pt) != 0);
+    }
+  }
+  private void fillConeScreen(P3i p1, P3i p2, boolean isPositive) {
+    if (diameter == 0)
+      return;
+    float diam = (diameter == 0 ? 1 : diameter) * 4;
+    v1.set(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
+    v1.normalize();
+    v1.scale(diam);
+    s1.setT(p1);
+    s2.setT(p1);
+    if (isPositive) {
+      s2.x -= (int) v1.x; 
+      s2.y -= (int) v1.y; 
+      s2.z -= (int) v1.z; 
+    } else {
+      s1.x -= (int) v1.x; 
+      s1.y -= (int) v1.y; 
+      s1.z -= (int) v1.z; 
+    }
+    g3d.fillConeScreen(GData.ENDCAPS_FLAT, (int) diam, s1, s2, false); 
+    s1.setT(p2);
+    s2.setT(p2);
+    if (isPositive) {
+      s2.x += (int) v1.x; 
+      s2.y += (int) v1.y; 
+      s2.z += (int) v1.z; 
+    } else {
+      s1.x += (int) v1.x; 
+      s1.y += (int) v1.y; 
+      s1.z += (int) v1.z; 
+    }
+    g3d.fillConeScreen(GData.ENDCAPS_FLAT, (int) diam, s1, s2, false); 
+  }
+
   private void renderAxes() {
     if (drawBall && drawFill) {
       g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, s0,
@@ -349,7 +393,6 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 //    }
 
   }
-  
   private void renderDots() {
     for (int i = 0; i < coords.length;) {
       float fx = (float) Math.random();

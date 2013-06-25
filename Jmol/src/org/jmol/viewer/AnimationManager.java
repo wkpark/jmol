@@ -363,8 +363,8 @@ public class AnimationManager {
         currentAnimationFrame = ((Integer) info.get("currentFrame")).intValue();
         if (currentAnimationFrame < 0 || currentAnimationFrame >= animationFrames.length)
           currentAnimationFrame = 0;
-        //movie = info;
       }
+      setFrame(currentAnimationFrame);
     } 
     if (!isMovie) {
       //movie = null;

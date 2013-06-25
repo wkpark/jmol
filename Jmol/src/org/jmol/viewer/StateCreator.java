@@ -1138,7 +1138,6 @@ public class StateCreator implements JmolStateCreator {
   }
 
   public String getShapeState(Shape shape) {
-    clearTemp();
     String s;
     switch (shape.shapeID) {
     case JC.SHAPE_ECHO:
@@ -1171,6 +1170,7 @@ public class StateCreator implements JmolStateCreator {
                 hs.translucentAllowed) + ";\n";
       break;
     case JC.SHAPE_HOVER:
+      clearTemp();
       Hover h = (Hover) shape;
       if (h.atomFormats != null)
         for (int i = viewer.getAtomCount(); --i >= 0;)
@@ -1180,8 +1180,10 @@ public class StateCreator implements JmolStateCreator {
       s = "\n  hover "
           + Escape.eS((h.labelFormat == null ? "" : h.labelFormat))
           + ";\n" + getCommands(temp, null, "select");
+      clearTemp();
       break;
     case JC.SHAPE_LABELS:
+      clearTemp();
       Labels l = (Labels) shape;
       for (int i = l.bsSizeSet.nextSetBit(0); i >= 0; i = l.bsSizeSet
           .nextSetBit(i + 1)) {
@@ -1237,8 +1239,10 @@ public class StateCreator implements JmolStateCreator {
       s = getCommands(temp, temp2, "select")
           + getCommands(null, temp3, "select");
       temp3.clear();
+      clearTemp();
       break;
     case JC.SHAPE_BALLS:
+      clearTemp();
       int atomCount = viewer.getAtomCount();
       Atom[] atoms = viewer.modelSet.atoms;
       Balls balls = (Balls) shape;
@@ -1263,11 +1267,11 @@ public class StateCreator implements JmolStateCreator {
         }
       }
       s = getCommands(temp, temp2, "select");
+      clearTemp();
       break;
     default:
       s = "";
     }
-    clearTemp();
     return s;
   }
 
@@ -1409,6 +1413,7 @@ public class StateCreator implements JmolStateCreator {
     //    if (autoLoadOrientation)
     //      appendCmd(str, "set autoLoadOrientation true");
     appendCmd(str, "set legacyAutoBonding " + g.legacyAutoBonding);
+    appendCmd(str, "set legacyHAddition " + g.legacyHAddition);
     appendCmd(str, "set minBondDistance " + g.minBondDistance);
     // these next two might be part of a 2D->3D operation
     appendCmd(str, "set minimizationCriterion  " + g.minimizationCriterion);

@@ -559,7 +559,7 @@ public class StateManager {
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
         + ";debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;exportdrivers"
         + ";_filecaching;_filecache;fontcaching;fontscaling;forcefield;language"
-        + ";legacyautobonding"
+        + ";legacyautobonding;legacyhaddition"
         + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
         + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
         + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
@@ -677,6 +677,7 @@ public class StateManager {
         allowMultiTouch = g.allowMultiTouch;
         allowKeyStrokes = g.allowKeyStrokes;
         legacyAutoBonding = g.legacyAutoBonding;
+        legacyHAddition = g.legacyHAddition;
         useScriptQueue = g.useScriptQueue;
         useArcBall = g.useArcBall;
         databases = g.databases;
@@ -886,6 +887,7 @@ public class StateManager {
       setI("isosurfacePropertySmoothingPower", isosurfacePropertySmoothingPower);
       setB("justifyMeasurements", justifyMeasurements);
       setB("legacyAutoBonding", legacyAutoBonding);
+      setB("legacyHAddition", legacyHAddition);
       setF("loadAtomDataTolerance", loadAtomDataTolerance);
       setS("loadFormat", loadFormat);
       setS("loadLigandFormat", loadLigandFormat);
@@ -1049,6 +1051,7 @@ public class StateManager {
     boolean smartAromatic = true;
     boolean zeroBasedXyzRasmol = false;
     boolean legacyAutoBonding = false;
+    boolean legacyHAddition = false;
 
     void setDefaultLattice(P3 ptLattice) {
       ptDefaultLattice.setT(ptLattice);

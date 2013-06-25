@@ -5728,6 +5728,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // wrong bonds. 
       // reset after a state script is read
       return global.legacyAutoBonding;
+    case T.legacyhaddition:
+      // aargh -- Some atoms missed before Jmol 13.1.17
+      return global.legacyHAddition;
     case T.loggestures:
       return global.logGestures;
     case T.measureallmodels:
@@ -9567,6 +9570,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           stateScriptVersionInt = main * 10000 + sub * 100 + minor;
           // here's why:
           global.legacyAutoBonding = (stateScriptVersionInt < 110924);
+          global.legacyHAddition = (stateScriptVersionInt < 130117);
           return;
         }
       } catch (Exception e) {
@@ -9652,7 +9656,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String[][] info = htPdbBondInfo.get(group3);
     if (info != null)
       return info;
-    info = JC.getPdbBondInfo(Group.lookupGroupID(group3));
+    info = JC.getPdbBondInfo(Group.lookupGroupID(group3), global.legacyHAddition);
     htPdbBondInfo.put(group3, info);
     return info;
   }

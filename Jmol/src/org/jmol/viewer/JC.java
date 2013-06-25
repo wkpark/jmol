@@ -896,10 +896,13 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return (pt < 0 || pt >= pdbHydrogenCount.length ? -1 : pdbHydrogenCount[pt]);
   }
 
-  public static String[][] getPdbBondInfo(int pt) {
+  public static String[][] getPdbBondInfo(int pt, boolean isLegacy) {
     if (pt < 0 || pt > pdbBondInfo.length)
       return null;
     String s = pdbBondInfo[pt];
+    // unfortunately, this change is not backward compatible.
+    if (isLegacy && (pt = s.indexOf("O3'")) >= 0)
+      s = s.substring(0, pt);
     String[] temp = Parser.getTokens(s);
     String[][] info = new String[temp.length / 2][];
     for (int i = 0, p = 0; i < info.length; i++) {

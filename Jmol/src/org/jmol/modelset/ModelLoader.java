@@ -740,6 +740,7 @@ public final class ModelLoader {
     int iLast = -1;
     boolean isPdbThisModel = false;
     boolean addH = false;
+    boolean isLegacyHAddition = false;//viewer.getBoolean(T.legacyhaddition);
     JmolAdapterAtomIterator iterAtom = adapter.getAtomIterator(atomSetCollection);
     int nRead = 0;
     Model[] models = modelSet.models;
@@ -764,7 +765,7 @@ public final class ModelLoader {
       String group3 = iterAtom.getGroup3();
       int chainID = iterAtom.getChainID();
       checkNewGroup(adapter, chainID, group3, iterAtom.getSequenceNumber(), 
-          iterAtom.getInsertionCode(), addH);
+          iterAtom.getInsertionCode(), addH, isLegacyHAddition);
       short isotope = iterAtom.getElementNumber();
       if (addH && Elements.getElementNumber(isotope) == 1)
         jbr.setHaveHsAlready(true);
@@ -794,7 +795,7 @@ public final class ModelLoader {
           );
     }
     if (groupCount > 0 && addH) {
-      jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1, isNewChain ? 1 : 0);
+      jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1, isNewChain && !isLegacyHAddition? 1 : 0);
     }
     iLast = -1;
     EnumVdw vdwtypeLast = null;
@@ -849,7 +850,7 @@ public final class ModelLoader {
 
   private void checkNewGroup(JmolAdapter adapter, int chainID,
                              String group3, int groupSequenceNumber,
-                             char groupInsertionCode, boolean addH) {
+                             char groupInsertionCode, boolean addH, boolean isLegacyHAddition) {
     String group3i = (group3 == null ? null : group3.intern());
     if (chainID != currentChainID) {
       currentChainID = chainID;
@@ -863,7 +864,7 @@ public final class ModelLoader {
         || groupInsertionCode != currentGroupInsertionCode
         || group3i != currentGroup3) {
       if (groupCount > 0 && addH) {
-        jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1, isNewChain ? 1 : 0);
+        jbr.addImplicitHydrogenAtoms(adapter, groupCount - 1, isNewChain && !isLegacyHAddition? 1 : 0);
         jbr.setHaveHsAlready(false);
       }
       currentGroupSequenceNumber = groupSequenceNumber;

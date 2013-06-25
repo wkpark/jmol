@@ -294,8 +294,9 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     pymolScene.setStateCount(stateCount);
 
     int pymolState = (int) pymolScene.globalSetting(PyMOL.state);
-    pymolScene.setFrameObject(T.frame, (allStates ? Integer.valueOf(-1)
-        : Integer.valueOf(pymolState - 1)));
+    if (!isMovie)
+      pymolScene.setFrameObject(T.frame, (allStates ? Integer.valueOf(-1)
+          : Integer.valueOf(pymolState - 1)));
     appendLoadNote("frame=" + pymolFrame + " state=" + pymolState
         + " all_states=" + allStates);
 

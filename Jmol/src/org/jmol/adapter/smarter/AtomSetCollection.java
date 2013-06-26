@@ -1469,14 +1469,16 @@ public class AtomSetCollection {
     //TODO: need to clone bonds
   }
   
-  Map<Object, Integer> atomSymbolicMap = new Hashtable<Object, Integer>();
+  private Map<Object, Integer> atomSymbolicMap = new Hashtable<Object, Integer>();
 
   private void mapMostRecentAtomName() {
     if (atomCount > 0) {
       int index = atomCount - 1;
       String atomName = atoms[index].atomName;
-      if (atomName != null)
+      if (atomName != null) {
         atomSymbolicMap.put(atomName, Integer.valueOf(index));
+        System.out.println(this + " " + atomName);
+      }
     }
   }
 
@@ -1509,27 +1511,19 @@ public class AtomSetCollection {
     haveMappedSerials = true;
   }
 
-  void mapAtomName(String atomName, int atomIndex) {
-    atomSymbolicMap.put(atomName, Integer.valueOf(atomIndex));
-  }
-
   public int getAtomIndexFromName(String atomName) {
-    //for new Bond -- inconsistent with mmCIF altLoc
-    int index = -1;
-    Object value = atomSymbolicMap.get(atomName);
-    if (value != null)
-      index = ((Integer)value).intValue();
-    return index;
+    return getMapIndex(atomName);
   }
 
   public int getAtomIndexFromSerial(int serialNumber) {
-    int index = -1;
-    Object value = atomSymbolicMap.get(Integer.valueOf(serialNumber));
-    if (value != null)
-      index = ((Integer)value).intValue();
-    return index;
+    return getMapIndex(Integer.valueOf(serialNumber));
   }
   
+  private int getMapIndex(Object nameOrNum) {
+    Integer value = atomSymbolicMap.get(nameOrNum);
+    return (value == null ? -1 : value.intValue());
+  }
+
   public void setAtomSetCollectionAuxiliaryInfo(String key, Object value) {
     if (value == null)
       atomSetCollectionAuxiliaryInfo.remove(key);
@@ -1647,6 +1641,11 @@ public class AtomSetCollection {
   }
  
   public void newAtomSet() {
+    newAtomSetClear(true);
+  }
+  
+  public void newAtomSetClear(boolean doClearMap) {
+    
     if (!allowMultiple && currentAtomSetIndex >= 0)
       discardPreviousAtoms();
     bondIndex0 = bondCount;
@@ -1669,7 +1668,8 @@ public class AtomSetCollection {
     } else {
       atomSetNumbers[currentAtomSetIndex] = atomSetCount;
     }
-    atomSymbolicMap.clear();
+    if (doClearMap)
+      atomSymbolicMap.clear();
     setAtomSetAuxiliaryInfo("title", collectionName);    
   }
 

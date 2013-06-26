@@ -88,7 +88,6 @@ public class CastepReader extends AtomSetCollectionReader {
   private boolean isPhonon;
   private boolean isOutput;
   private boolean isCell;
-  private boolean isDispersion;
 
   private float a, b, c, alpha, beta, gamma;
   private V3[] abc = new V3[3];
@@ -241,9 +240,7 @@ public class CastepReader extends AtomSetCollectionReader {
   protected boolean checkLine() throws Exception {
     // only for .phonon, castep output, or other BEGIN HEADER type files
     if (isOutput) {
-      if (line.contains("DFT+D: Semi-empirical")){
-        isDispersion = true;
-      } else if (line.contains("Real Lattice(A)")) {
+      if (line.contains("Real Lattice(A)")) {
         readOutputUnitCell();
       } else if (line.contains("Fractional coordinates of atoms")) {
         if (doGetModel(++modelNumber, null)) {
@@ -255,8 +252,12 @@ public class CastepReader extends AtomSetCollectionReader {
         readOutputCharges();
       } else if (doProcessLines && line.contains("Born Effective Charges")) {
         readOutputBornChargeTensors();
-      } else if (line.contains("Final energy")) {
-        readEnergy();
+      } else if (line.contains("Final energy ")) { // not "Final energy, E"
+        readEnergy(3);
+      } else if (line.contains("Dispersion corrected final energy*")) {
+        readEnergy(5);
+      } else if (line.contains("Total energy corrected")) {
+        readEnergy(8);
       }
       return true;
     }
@@ -290,7 +291,6 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private void readOutputUnitCell() throws Exception {
     applySymmetryAndSetTrajectory();
-    //atomSetCollection.newAtomSet();
     setFractionalCoordinates(true);
     abc = read3Vectors(false);
     setLatticeVectors();
@@ -318,21 +318,16 @@ public class CastepReader extends AtomSetCollectionReader {
 
   }
 
-  private void readEnergy() throws Exception {
+  private void readEnergy(int pt) throws Exception {
     tokens = getTokens();
-    Double energy;
-
-    if (!isDispersion) {
-      energy = Double.valueOf(Double.parseDouble(tokens[3]));
-    } else {
-      discardLinesUntilContains("Dispersion corrected final energy*");
-      tokens = getTokens();
-      energy = Double.valueOf(Double.parseDouble(tokens[5]));
+    try {
+      Double energy = Double.valueOf(Double.parseDouble(tokens[pt]));
+      atomSetCollection.setAtomSetName("Energy = " + energy + " eV");
+      atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
+      atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
+    } catch (Exception e) {
+      appendLoadNote("CASTEP Energy could not be read: " + line);
     }
-    
-    atomSetCollection.setAtomSetName("Energy = " + energy + " eV");
-    atomSetCollection.setAtomSetEnergy("" + energy, energy.floatValue());
-    atomSetCollection.setAtomSetAuxiliaryInfo("Energy", energy);
     /*    
     is better to do this also here
     in case the output is only a 
@@ -340,7 +335,7 @@ public class CastepReader extends AtomSetCollectionReader {
     both volume and geometry
      */
     applySymmetryAndSetTrajectory();
-    atomSetCollection.newAtomSet();
+    atomSetCollection.newAtomSetClear(false);
     setLatticeVectors();
   }
   
@@ -348,7 +343,7 @@ public class CastepReader extends AtomSetCollectionReader {
     isTrajectory = (desiredVibrationNumber <= 0);
     doApplySymmetry = true;
     while (line != null && line.contains("<-- E")) {
-      atomSetCollection.newAtomSet();
+      atomSetCollection.newAtomSetClear(false);
       discardLinesUntilContains("<-- h");
       setSpaceGroupName("P1");
       abc = read3Vectors(true);
@@ -547,6 +542,7 @@ public class CastepReader extends AtomSetCollectionReader {
     if (readLine().indexOf("--------") < 0)
       return;
     Atom[] atoms = atomSetCollection.getAtoms();
+    appendLoadNote("Ellipsoids: Born Charge Tensors");
     while (readLine().indexOf('=') < 0)
       getOutputEllipsoid(atoms[readOutputAtomIndex()], line.substring(12));
   }
@@ -554,7 +550,8 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private int readOutputAtomIndex() {
     tokens = getTokensStr(line);
-    return atomSetCollection.getAtomIndexFromName(tokens[0] + tokens[1]);
+    String name = tokens[0] + tokens[1];
+    return atomSetCollection.getAtomIndexFromName(name);
   }
 
   private void getOutputEllipsoid(Atom atom, String line0) throws Exception {

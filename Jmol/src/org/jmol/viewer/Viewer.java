@@ -6490,6 +6490,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.ellipsoidarrows:
+      // 13.1.17 TRUE for little points on ellipsoids showing sign of 
+      // eigenvalues (in --> negative; out --> positive)
+      global.ellipsoidArrows = value;
+      break;
     case T.translucent:
       // 13.1.17 false -> translucent objects are opaque among themselves (Pymol transparency_mode 2)
       global.translucent = value;

@@ -1073,15 +1073,15 @@ public class Eigen {
       n.setT(evec[i]);
       m.transform(n);
       cross.cross(n, evec[i]);
-      Logger.info("v[i], n, n x v[i]"+ evec[i] + " " + n + " "  + cross);
+      //Logger.info("v[i], n, n x v[i]"+ evec[i] + " " + n + " "  + cross);
       n.setT(evec[i]);
       n.normalize();
       cross.cross(evec[i], evec[(i + 1)%3]);
-      Logger.info("draw id eigv" + i + " " + Escape.eP(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
+      //Logger.info("draw id eigv" + i + " " + Escape.eP(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
     }
-    Logger.info("eigVl (" + eigen.d[0] + " + " + eigen.e[0] 
-        + "I) (" + eigen.d[1] + " + " + eigen.e[1] 
-        + "I) (" + eigen.d[2] + " + " + eigen.e[2] + "I)");
+    Logger.info("eigVal+vec (" + eigen.d[0] + " + " + eigen.e[0] 
+        + ")\n             (" + eigen.d[1] + " + " + eigen.e[1] 
+        + ")\n             (" + eigen.d[2] + " + " + eigen.e[2] + ")");
     
     V3[] unitVectors = new V3[3];
     float[] lengths = new float[3];

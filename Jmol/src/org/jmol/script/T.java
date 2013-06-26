@@ -2382,6 +2382,7 @@ public class T {
       "justifyMeasurements",                      T.t(justifymeasurements),
       "languageTranslation",                      T.t(languagetranslation),
       "legacyAutoBonding",                        T.t(legacyautobonding),
+      "legacyHAddtion",                           T.t(legacyhaddition),
       "logCommands",                              T.t(logcommands),
       "logGestures",                              T.t(loggestures),
       "measureAllModels",                         T.t(measureallmodels),

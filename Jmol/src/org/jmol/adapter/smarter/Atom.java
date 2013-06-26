@@ -56,8 +56,6 @@ public class Atom extends P3 implements Cloneable {
   public void setEllipsoid(Quadric e) {
     if (e == null)
       return;
-    //if (atomIndex < 5)
-      //System.out.println("Atom: ellipsoid " + e);
     if (ellipsoid != null && ellipsoid.length == 3)
       ellipsoid[0] = e;
     else

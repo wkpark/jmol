@@ -853,7 +853,7 @@ public class StateManager {
       //setParameterValue("edsUrlOptions", edsUrlOptions);
       setS("edsUrlCutoff", edsUrlCutoff);
       setB("ellipsoidArcs", ellipsoidArcs);
-      setB("ellipsoidArrrow", ellipsoidArrows);
+      setB("ellipsoidArrows", ellipsoidArrows);
       setB("ellipsoidAxes", ellipsoidAxes);
       setF("ellipsoidAxisDiameter", ellipsoidAxisDiameter);
       setB("ellipsoidBall", ellipsoidBall);

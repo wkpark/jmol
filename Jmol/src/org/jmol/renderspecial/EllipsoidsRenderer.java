@@ -331,7 +331,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private void fillConeScreen(P3i p1, P3i p2, boolean isPositive) {
     if (diameter == 0)
       return;
-    float diam = (diameter == 0 ? 1 : diameter) * 4;
+    float diam = (diameter == 0 ? 1 : diameter) * 8;
     v1.set(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
     v1.normalize();
     v1.scale(diam);

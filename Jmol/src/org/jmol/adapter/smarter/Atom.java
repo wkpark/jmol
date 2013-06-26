@@ -115,7 +115,7 @@ public class Atom extends P3 implements Cloneable {
    * otherwise, bits 0-25 say whether or not is valid when followed
    * by the letters a-z.
    */
-  final static int[] elementCharMasks = {
+  private final static int[] elementCharMasks = {
     //   Ac Ag Al Am Ar As At Au
     1 << ('c' - 'a') |
     1 << ('g' - 'a') |

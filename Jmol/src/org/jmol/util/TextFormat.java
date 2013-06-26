@@ -561,11 +561,11 @@ public class TextFormat {
   }
   
   /**
-   * Does a clean replace of strFrom in str with strTo. 
-   * This method has far faster performance than just String.replace() 
-   * when str does not contain strFrom, but is about 15% slower when it does. 
-   * (Note that String.replace(CharSeq, CharSeq) was introduced in Java 1.5.
-   *  Finally getting around to using it in Jmol!)
+   * Does a clean replace of strFrom in str with strTo. This method has far
+   * faster performance than just String.replace() when str does not contain
+   * strFrom, but is about 15% slower when it does. (Note that
+   * String.replace(CharSeq, CharSeq) was introduced in Java 1.5. Finally
+   * getting around to using it in Jmol!)
    * 
    * @param str
    * @param strFrom
@@ -573,9 +573,15 @@ public class TextFormat {
    * @return replaced string
    */
   public static String simpleReplace(String str, String strFrom, String strTo) {
-    return (str == null || strFrom.length() == 0 || str.indexOf(strFrom) < 0
-        ? str : str.replace(strFrom, strTo));
+    if (str == null || strFrom.length() == 0 || str.indexOf(strFrom) < 0)
+      return str;
+    boolean isOnce = (strTo.indexOf(strFrom) >= 0);
+    do {
+      str = str.replace(strFrom, strTo);
+    } while (!isOnce && str.indexOf(strFrom) >= 0);
+    return str;
   }
+  
 
 //  static {
 //    long t = System.currentTimeMillis();

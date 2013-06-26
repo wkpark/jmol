@@ -27,15 +27,6 @@ package org.jmol.util;
 
 import java.util.List;
 
-
-
-//import java.text.DecimalFormat;
-
-
-
-
-
-
 public class TextFormat {
 
 //  private final static DecimalFormat[] formatters = new DecimalFormat[10];

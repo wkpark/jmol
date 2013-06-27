@@ -28,7 +28,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.util.BS;
 import org.jmol.util.P3;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 
 /* **************************************************************
  * the frame iterators
@@ -101,8 +101,8 @@ class AtomIterator extends JmolAdapterAtomIterator {
 	}
 
 	@Override
-	public Quadric[] getEllipsoid() {
-		return atom.ellipsoid;
+	public Tensor[] getEllipsoid() {
+		return atom.tensors;
 	}
 
 	@Override

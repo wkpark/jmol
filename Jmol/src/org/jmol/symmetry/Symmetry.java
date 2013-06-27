@@ -40,7 +40,7 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.SB;
@@ -304,7 +304,7 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.getUnitCellAsArray(vectorsOnly);
   }
 
-  public Quadric getEllipsoid(float[] parBorU) {
+  public Tensor getEllipsoid(float[] parBorU) {
     if (unitCell == null)
       unitCell = UnitCell.newA(new float[] {1,1,1,90,90,90});
     return unitCell.getEllipsoid(parBorU);

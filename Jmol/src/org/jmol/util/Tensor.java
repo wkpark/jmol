@@ -24,33 +24,31 @@
 
 package org.jmol.util;
 
+public class Tensor {
 
-
-public class Quadric {
-
-  public float[] lengths;
-  public V3[] vectors;
+  public float[] eigenValues;
+  public V3[] eigenVectors;
   public boolean isThermalEllipsoid = true;
   public float scale = 1;
   public int eigenSignMask = 7;
   
-  public void scale(float f) {
+  public void setScale(float f) {
     for (int i = 0; i < 3; i++)
-      lengths[i] *= f;
+      eigenValues[i] *= f;
   }
   
   @Override
   public String toString() {
-    return (vectors == null ? "" + lengths[0] : 
-      vectors[0] + "\t" + lengths[0] + "\n"
-      + vectors[1] + "\t" + lengths[1] + "\n"
-      + vectors[2] + "\t" + lengths[2] + "\n");
+    return (eigenVectors == null ? "" + eigenValues[0] : 
+      eigenVectors[0] + "\t" + eigenValues[0] + "\n"
+      + eigenVectors[1] + "\t" + eigenValues[1] + "\n"
+      + eigenVectors[2] + "\t" + eigenValues[2] + "\n");
   }
   
-  public Quadric fromVectors(V3[] vectors, float[] lengths, 
+  public Tensor fromVectors(V3[] eigenVectors, float[] eigenValues, 
                              int eigenSignMask, boolean isThermal) {
-    this.vectors = vectors;
-    this.lengths = lengths;
+    this.eigenVectors = eigenVectors;
+    this.eigenValues = eigenValues;
     this.eigenSignMask = eigenSignMask;
     isThermalEllipsoid = isThermal;
     return this;
@@ -67,25 +65,25 @@ public class Quadric {
   //////////////////////////////////////
 
   private static float ONE_OVER_ROOT2_PI = (float) (Math.sqrt(0.5) / Math.PI);
-  public Quadric fromBCart(double[] bcart) {
+  public Tensor fromBCart(double[] bcart) {
     isThermalEllipsoid = true;
-    lengths = new float[3];
-    vectors = new V3[3];
-    getAxesForEllipsoid(bcart, vectors, lengths);
+    eigenValues = new float[3];
+    eigenVectors = new V3[3];
+    getAxesForEllipsoid(bcart, eigenVectors, eigenValues);
 
     for (int i = 0; i < 3; i++)
-      lengths[i] *= ONE_OVER_ROOT2_PI;
+      eigenValues[i] *= ONE_OVER_ROOT2_PI;
     return this;
   }
 
   public void rotate(Matrix4f mat) {
-    if (vectors != null)
+    if (eigenVectors != null)
     for (int i = 0; i < 3; i++)
-      mat.transformV(vectors[i]);
+      mat.transformV(eigenVectors[i]);
   }
   
   public void setSize(int size) {
-    scale = (isThermalEllipsoid ? Quadric.getRadius(size) : size < 1 ? 0 : size / 100.0f);
+    scale = (isThermalEllipsoid ? Tensor.getThermalRadius(size) : size < 1 ? 0 : size / 100.0f);
   }
 
   public static void getAxesForEllipsoid(double[] coef, V3[] unitVectors, float[] lengths) {
@@ -230,7 +228,7 @@ public class Quadric {
     2.9912f, 3.1365f, 3.3682f 
   };
   
-  final public static float getRadius(int prob) {
+  final public static float getThermalRadius(int prob) {
     return crtval[prob < 1 ? 0 : prob > 99 ? 98 : prob - 1];
   }
 

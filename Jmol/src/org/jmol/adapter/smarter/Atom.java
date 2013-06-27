@@ -26,7 +26,7 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.util.BS;
 import org.jmol.util.P3;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 
 public class Atom extends P3 implements Cloneable {
   public int atomSetIndex;
@@ -52,14 +52,14 @@ public class Atom extends P3 implements Cloneable {
   public int sequenceNumber = Integer.MIN_VALUE;
   public char insertionCode = '\0';
   public float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
-  public Quadric[] ellipsoid;  
-  public void setEllipsoid(Quadric e) {
+  public Tensor[] tensors;  
+  public void setEllipsoid(Tensor e) {
     if (e == null)
       return;
-    if (ellipsoid != null && ellipsoid.length == 3)
-      ellipsoid[0] = e;
+    if (tensors != null && tensors.length == 3)
+      tensors[0] = e;
     else
-      ellipsoid = new Quadric[] { e };
+      tensors = new Tensor[] { e };
   }
 
   

@@ -55,7 +55,7 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
 import org.jmol.util.P3;
 import org.jmol.util.P4;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
@@ -3118,7 +3118,7 @@ abstract public class ModelCollection extends BondCollection {
     if (partialCharges != null)
       partialCharges = ArrayUtil.arrayCopyF(partialCharges, newLength);
     if (ellipsoids != null)
-      ellipsoids = (Quadric[][]) ArrayUtil.arrayCopyObject(ellipsoids, newLength);
+      ellipsoids = (Tensor[][]) ArrayUtil.arrayCopyObject(ellipsoids, newLength);
     if (atomNames != null)
       atomNames = ArrayUtil.arrayCopyS(atomNames, newLength);
     if (atomTypes != null)
@@ -3132,7 +3132,7 @@ abstract public class ModelCollection extends BondCollection {
                       int atomSerial, int atomSite, float x, float y, float z,
                       float radius, float vectorX, float vectorY,
                       float vectorZ, int formalCharge, float partialCharge,
-                      int occupancy, float bfactor, Quadric[] ellipsoid,
+                      int occupancy, float bfactor, Tensor[] ellipsoid,
                       boolean isHetero, byte specialAtomID, BS atomSymmetry) {
     Atom atom = new Atom(modelIndex, atomCount, x, y, z, radius, atomSymmetry,
         atomSite, atomicAndIsotopeNumber, formalCharge, isHetero);

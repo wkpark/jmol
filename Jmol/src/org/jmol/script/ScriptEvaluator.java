@@ -17828,7 +17828,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         int iAtom = bs.nextSetBit(0);
         Atom[] atoms = viewer.modelSet.atoms;
         if (iAtom >= 0)
-          propertyValue = atoms[iAtom].getEllipsoid();
+          propertyValue = atoms[iAtom].getTensors();
         if (propertyValue == null)
           return;
         i = iToken;

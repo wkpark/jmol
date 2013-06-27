@@ -30,7 +30,7 @@ import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.P3;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
@@ -826,7 +826,7 @@ public final class ModelLoader {
   private void addAtom(boolean isPDB, BS atomSymmetry, int atomSite,
                        Object atomUid, short atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
-                       Quadric[] ellipsoid, int occupancy, float bfactor,
+                       Tensor[] ellipsoid, int occupancy, float bfactor,
                        float x, float y, float z, boolean isHetero,
                        int atomSerial, String group3,
                        float vectorX, float vectorY, float vectorZ,

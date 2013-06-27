@@ -1056,7 +1056,7 @@ public class Eigen {
     return r;
   }
 
-  public static Quadric getEllipsoidDD(double[][] a) {
+  public static Tensor getEllipsoidDD(double[][] a) {
     Eigen eigen = new Eigen(3);      
     eigen.calc(a);
     Matrix3f m = new Matrix3f();
@@ -1087,16 +1087,16 @@ public class Eigen {
     float[] lengths = new float[3];
     eigen.set(unitVectors, lengths);
     int mask = sort(unitVectors, lengths, eigen.d);
-    return new Quadric().fromVectors(unitVectors, lengths, mask, false);
+    return new Tensor().fromVectors(unitVectors, lengths, mask, false);
   }
 
-  public static Quadric getEllipsoid(V3[] vectors, float[] lengths, boolean isThermal) {
+  public static Tensor getEllipsoid(V3[] vectors, float[] lengths, boolean isThermal) {
     //[0] is shortest; [2] is longest
     V3[] unitVectors = new V3[vectors.length];
     for (int i = vectors.length; --i >= 0;)
       unitVectors[i] = V3.newV(vectors[i]);
     sort(unitVectors, lengths, null);
-    return new Quadric().fromVectors(unitVectors, lengths, 7, isThermal);
+    return new Tensor().fromVectors(unitVectors, lengths, 7, isThermal);
   }
 
   /**

@@ -30,7 +30,7 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Tuple3f;
 
@@ -227,7 +227,7 @@ class UnitCell extends SimpleUnitCell {
   
   final private static double twoP2 = 2 * Math.PI * Math.PI;
   
-  Quadric getEllipsoid(float[] parBorU) {
+  Tensor getEllipsoid(float[] parBorU) {
     if (parBorU == null)
       return null;
     /*
@@ -296,7 +296,7 @@ class UnitCell extends SimpleUnitCell {
     if (parBorU[0] == 0) { // this is iso
       float[] lengths = new float[3];
       lengths[0] = lengths[1] = lengths[2] = (float) Math.sqrt(parBorU[7]);
-      return new Quadric().fromVectors(null, lengths, 7, true);
+      return new Tensor().fromVectors(null, lengths, 7, true);
     }
 
     double[] Bcart = new double[6];
@@ -356,7 +356,7 @@ class UnitCell extends SimpleUnitCell {
 
     //System.out.println("UnitCell Bcart=" + Bcart[0] + " " + Bcart[1] + " "
       //  + Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
-    return new Quadric().fromBCart(Bcart);
+    return new Tensor().fromBCart(Bcart);
   }
   
   P3[] getCanonicalCopy(float scale) {

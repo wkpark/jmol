@@ -35,7 +35,7 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.Normix;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.V3;
 import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
@@ -103,7 +103,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         continue;
       if (atom.screenZ <= 1)
         continue;
-      Quadric[] ellipsoid2 = atom.getEllipsoid();
+      Tensor[] ellipsoid2 = atom.getTensors();
       if (ellipsoid2 == null)
         continue;
       for (int j = 0; j < ellipsoid2.length; j++) {
@@ -225,19 +225,19 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private P3 center;
   private int eigenSignMask = 7;
   
-  private void render1(Atom atom, Quadric ellipsoid) {
+  private void render1(Atom atom, Tensor tensor) {
     if (!isSet)
       isSet = setGlobals();
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
     boolean isOK = true;
     for (int i = 3; --i >= 0;) {
-      factoredLengths[i] = ellipsoid.lengths[i] * ellipsoid.scale;
+      factoredLengths[i] = tensor.eigenValues[i] * tensor.scale;
       if (Float.isNaN(factoredLengths[i]))
         isOK = false;
       else if (factoredLengths[i] < 0.02f)
         factoredLengths[i] = 0.02f; // for extremely flat ellipsoids, we need at least some length    
     }
-    axes = ellipsoid.vectors;
+    axes = tensor.eigenVectors;
     if (axes == null) { //isotropic
       axes = unitVectors;
     }
@@ -247,7 +247,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     setAxes();
     if (g3d.isClippedXY(dx + dx, atom.screenX, atom.screenY))
       return;
-    eigenSignMask = ellipsoid.eigenSignMask;
+    eigenSignMask = tensor.eigenSignMask;
     renderOne(atom.screenZ, isOK);
   }
 
@@ -279,7 +279,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
 
   private void setMatrices() {
-    Quadric.setEllipsoidMatrix(axes, factoredLengths, v1, mat);
+    Tensor.setEllipsoidMatrix(axes, factoredLengths, v1, mat);
     // make this screen coordinates to ellisoidal coordinates
     matScreenToEllipsoid.mul2(mat, matScreenToCartesian);
     matEllipsoidToScreen.invertM(matScreenToEllipsoid);
@@ -316,7 +316,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private void renderBall() {
     setSelectedOctant();
     // get equation and differential
-    Quadric.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z,
+    Tensor.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z,
         matScreenToEllipsoid, v1, mTemp, coef, mDeriv);
     g3d.fillEllipsoid(center, points, s0.x, s0.y, s0.z, dx + dx, matScreenToEllipsoid,
         coef, mDeriv, selectedOctant, selectedOctant >= 0 ? selectedPoints : null);
@@ -493,7 +493,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       s1.scaleAdd(-3, s0, s1);
       pt1.set(s1.x, s1.y, s1.z);
       matScreenToEllipsoid.transform(pt1);
-      selectedOctant = Quadric.getOctant(pt1);
+      selectedOctant = Tensor.getOctant(pt1);
     }
   }  
 }

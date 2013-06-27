@@ -27,7 +27,7 @@ package org.jmol.api;
 
 import org.jmol.util.BS;
 import org.jmol.util.P3;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 
 public abstract class JmolAdapterAtomIterator {
 	public abstract boolean hasNext();
@@ -62,7 +62,7 @@ public abstract class JmolAdapterAtomIterator {
 		return Float.NaN;
 	}
 
-	public Quadric[] getEllipsoid() {
+	public Tensor[] getEllipsoid() {
 		return null;
 	}
 

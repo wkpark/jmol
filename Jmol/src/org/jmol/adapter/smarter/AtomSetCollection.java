@@ -43,7 +43,7 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SimpleUnitCell;
@@ -1343,13 +1343,13 @@ public class AtomSetCollection {
           atom1.bsSymmetry.set(iSym);
           if (addCartesian)
             cartesians[pt++] = cartesian;
-          if (atoms[i].ellipsoid != null) {
-            for (int j = 0; j < atoms[i].ellipsoid.length; j++) {
-              Quadric e = atoms[i].ellipsoid[j];
-              if (e == null)
+          if (atoms[i].tensors != null) {
+            for (int j = 0; j < atoms[i].tensors.length; j++) {
+              Tensor t = atoms[i].tensors[j];
+              if (t == null)
                 continue;
-              V3[] axes = e.vectors;
-              float[] lengths = e.lengths;
+              V3[] axes = t.eigenVectors;
+              float[] lengths = t.eigenValues;
               if (axes != null) {
                 // note -- PDB reader specifically turns off cartesians
                 if (addCartesian) {
@@ -1361,7 +1361,7 @@ public class AtomSetCollection {
                 axes = symmetry.rotateEllipsoid(iSym, ptTemp, axes, ptTemp1,
                     ptTemp2);
               }
-              atom1.ellipsoid[j] = new Quadric().fromVectors(axes, lengths, e.eigenSignMask, e.isThermalEllipsoid);
+              atom1.tensors[j] = new Tensor().fromVectors(axes, lengths, t.eigenSignMask, t.isThermalEllipsoid);
             }
           }
         }

@@ -37,7 +37,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
@@ -418,7 +418,7 @@ public class PdbReader extends AtomSetCollectionReader {
        anisou[0] += resid;
        anisou[1] += resid;
        anisou[2] += resid;
-       entry.getKey().ellipsoid[1] = symmetry.getEllipsoid(anisou);
+       entry.getKey().tensors[1] = symmetry.getEllipsoid(anisou);
        
        // check for equal: 
        
@@ -1801,7 +1801,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
 
     // symmetry is set to [1 1 1 90 90 90] -- Cartesians, not actual unit cell
 
-    atom.ellipsoid = new Quadric[] { null, null, symmetry.getEllipsoid(dataT) };
+    atom.tensors = new Tensor[] { null, null, symmetry.getEllipsoid(dataT) };
     //if (atom.atomIndex == 0)
       //System.out.println("pdbreader ellip 0 = " + atom.ellipsoid[1]); 
   }

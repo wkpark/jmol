@@ -29,7 +29,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-
 import org.jmol.api.JmolStateCreator;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.AtomShape;
@@ -41,7 +40,7 @@ import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.P3;
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
 
@@ -53,27 +52,6 @@ public class Ellipsoids extends AtomShape {
   public short[][] colixset;
   byte[][] paletteIDset;
   public short[][] madset;
-
-  public static class Ellipsoid {
-
-    String id;
-    public V3[] axes;
-    public float[] lengths;
-    public P3 center = P3.new3(0, 0, 0);
-    double[] coef;
-    public short colix = C.GOLD;
-    int modelIndex;
-    float scale = 1;
-    public boolean visible;
-    public boolean isValid;
-    boolean isOn = true;
-
-    Ellipsoid(String id, int modelIndex) {
-      this.id = id;
-      this.modelIndex = modelIndex;
-    }
-
-  }
 
   @Override
   public int getIndexFromName(String thisID) {
@@ -182,7 +160,7 @@ public class Ellipsoids extends AtomShape {
         ellipsoid.coef = (double[]) value;
         ellipsoid.axes = new V3[3];
         ellipsoid.lengths = new float[3];
-        Quadric.getAxesForEllipsoid(ellipsoid.coef, ellipsoid.axes,
+        Tensor.getAxesForEllipsoid(ellipsoid.coef, ellipsoid.axes,
             ellipsoid.lengths);
         return;
       }
@@ -332,7 +310,6 @@ public class Ellipsoids extends AtomShape {
     updateEquation(ellipsoid);
   }
 
-
   private void checkSets() {
     if (colixset == null) {
       colixset = ArrayUtil.newShort2(3);
@@ -348,7 +325,7 @@ public class Ellipsoids extends AtomShape {
     Matrix3f mTemp = new Matrix3f();
     V3 v1 = new V3();
     ellipsoid.coef = new double[10];
-    Quadric.getEquationForQuadricWithCenter(ellipsoid.center.x,
+    Tensor.getEquationForQuadricWithCenter(ellipsoid.center.x,
         ellipsoid.center.y, ellipsoid.center.z, mat, v1, mTemp, ellipsoid.coef,
         null);
     ellipsoid.isValid = true;
@@ -425,6 +402,31 @@ public class Ellipsoids extends AtomShape {
       ellipsoid.visible = ellipsoid.isOn
           && (ellipsoid.modelIndex < 0 || bs.get(ellipsoid.modelIndex));
     }
+  }
+
+  /*
+   * Just a shape, nothing more.
+   * 
+   */
+  public static class Ellipsoid {
+
+    String id;
+    public V3[] axes;
+    public float[] lengths;
+    public P3 center = P3.new3(0, 0, 0);
+    double[] coef;
+    public short colix = C.GOLD;
+    int modelIndex;
+    float scale = 1;
+    public boolean visible;
+    public boolean isValid;
+    boolean isOn = true;
+
+    Ellipsoid(String id, int modelIndex) {
+      this.id = id;
+      this.modelIndex = modelIndex;
+    }
+
   }
 
 }

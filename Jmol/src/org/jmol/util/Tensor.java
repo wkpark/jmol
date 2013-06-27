@@ -28,13 +28,75 @@ public class Tensor {
 
   public float[] eigenValues;
   public V3[] eigenVectors;
-  public boolean isThermalEllipsoid = true;
+  public boolean forThermalEllipsoid = true;
   public float scale = 1;
+  public float typeFactor = 1;
   public int eigenSignMask = 7;
+  private float[] lengths;
   
-  public void setScale(float f) {
-    for (int i = 0; i < 3; i++)
-      eigenValues[i] *= f;
+  private static float ONE_OVER_ROOT2_PI = (float) (Math.sqrt(0.5) / Math.PI);
+  
+  public Tensor setThermal(double[] coef) {
+    forThermalEllipsoid = true;
+    eigenValues = new float[3];
+    eigenVectors = new V3[3];
+    // assumes an ellipsoid centered on 0,0,0
+    // called by UnitCell for the initial creation of Object[] ellipsoid    
+    double[][] mat = new double[3][3];
+    mat[0][0] = coef[0]; //XX
+    mat[1][1] = coef[1]; //YY
+    mat[2][2] = coef[2]; //ZZ
+    mat[0][1] = mat[1][0] = coef[3] / 2; //XY
+    mat[0][2] = mat[2][0] = coef[4] / 2; //XZ
+    mat[1][2] = mat[2][1] = coef[5] / 2; //YZ
+    Eigen.getUnitVectors(mat, eigenVectors, eigenValues);
+    typeFactor = ONE_OVER_ROOT2_PI;
+    eigenSignMask = 7;
+    return this;
+  }
+
+  /**
+   * 
+   * @param eigenVectors  may be null, in which case typeFactor = 1
+   * @param eigenValues
+   * @param forThermalEllipsoid
+   * @param typeFactor
+   * @return this tensor
+   */
+  public Tensor setVectors(V3[] eigenVectors, float[] eigenValues, boolean forThermalEllipsoid, float typeFactor) {
+   this.eigenVectors = eigenVectors;
+   this.eigenValues = eigenValues;
+   this.forThermalEllipsoid = forThermalEllipsoid;
+   this.typeFactor = typeFactor;
+   eigenSignMask = (eigenValues[0] >= 0 ? 1 : 0) + (eigenValues[1] >= 0 ? 2 : 0) + (eigenValues[2] >= 0 ? 4 : 0);
+   return this;
+ }
+ 
+  public void setTypeFactor(float f) {
+    typeFactor = f;
+    lengths = null;
+  }
+  
+  public void setScale(float scale) {
+    this.scale = scale;
+    lengths = null;
+  }
+
+  public float getLength(int i) {
+    if (lengths == null)
+      setLengths();
+    return lengths[i];
+  }
+
+  public void setLengths() {
+    if (lengths == null)
+      lengths = new float[3];
+    if (forThermalEllipsoid)
+      for (int i = 0; i < lengths.length; i++)
+        lengths[i] = (float) (Math.sqrt(Math.abs(eigenValues[i])) * typeFactor * scale);
+    else
+      for (int i = 0; i < lengths.length; i++)
+        lengths[i] = (Math.abs(eigenValues[i]) * typeFactor * scale);
   }
   
   @Override
@@ -43,15 +105,6 @@ public class Tensor {
       eigenVectors[0] + "\t" + eigenValues[0] + "\n"
       + eigenVectors[1] + "\t" + eigenValues[1] + "\n"
       + eigenVectors[2] + "\t" + eigenValues[2] + "\n");
-  }
-  
-  public Tensor fromVectors(V3[] eigenVectors, float[] eigenValues, 
-                             int eigenSignMask, boolean isThermal) {
-    this.eigenVectors = eigenVectors;
-    this.eigenValues = eigenValues;
-    this.eigenSignMask = eigenSignMask;
-    isThermalEllipsoid = isThermal;
-    return this;
   }
   
   //////////  Ellipsoid Code ///////////
@@ -64,141 +117,12 @@ public class Tensor {
   //
   //////////////////////////////////////
 
-  private static float ONE_OVER_ROOT2_PI = (float) (Math.sqrt(0.5) / Math.PI);
-  public Tensor fromBCart(double[] bcart) {
-    isThermalEllipsoid = true;
-    eigenValues = new float[3];
-    eigenVectors = new V3[3];
-    getAxesForEllipsoid(bcart, eigenVectors, eigenValues);
-
-    for (int i = 0; i < 3; i++)
-      eigenValues[i] *= ONE_OVER_ROOT2_PI;
-    return this;
-  }
-
   public void rotate(Matrix4f mat) {
     if (eigenVectors != null)
     for (int i = 0; i < 3; i++)
       mat.transformV(eigenVectors[i]);
   }
   
-  public void setSize(int size) {
-    scale = (isThermalEllipsoid ? Tensor.getThermalRadius(size) : size < 1 ? 0 : size / 100.0f);
-  }
-
-  public static void getAxesForEllipsoid(double[] coef, V3[] unitVectors, float[] lengths) {
-    
-    // assumes an ellipsoid centered on 0,0,0
-    // called by UnitCell for the initial creation of Object[] ellipsoid
-    
-    double[][] mat = new double[3][3];
-    mat[0][0] = coef[0]; //XX
-    mat[1][1] = coef[1]; //YY
-    mat[2][2] = coef[2]; //ZZ
-    mat[0][1] = mat[1][0] = coef[3] / 2; //XY
-    mat[0][2] = mat[2][0] = coef[4] / 2; //XZ
-    mat[1][2] = mat[2][1] = coef[5] / 2; //YZ
-    Eigen.getUnitVectors(mat, unitVectors, lengths);
-  }
-
-  public static Matrix3f setEllipsoidMatrix(V3[] unitAxes, float[] lengths, V3 vTemp, Matrix3f mat) {
-    /*
-     * Create a matrix that transforms cartesian coordinates
-     * into ellipsoidal coordinates, where in that system we 
-     * are drawing a sphere. 
-     *
-     */
-    
-    for (int i = 0; i < 3; i++) {
-      vTemp.setT(unitAxes[i]);
-      vTemp.scale(lengths[i]);
-      mat.setColumnV(i, vTemp);
-    }
-    mat.invertM(mat);
-    return mat;
-  }
-
-  public static void getEquationForQuadricWithCenter(float x, float y, float z, Matrix3f mToElliptical, 
-                                             V3 vTemp, Matrix3f mTemp, double[] coef, Matrix4f mDeriv) {
-    /* Starting with a center point and a matrix that converts cartesian 
-     * or screen coordinates to ellipsoidal coordinates, 
-     * this method fills a float[10] with the terms for the 
-     * equation for the ellipsoid:
-     * 
-     * c0 x^2 + c1 y^2 + c2 z^2 + c3 xy + c4 xz + c5 yz + c6 x + c7 y + c8 z - 1 = 0 
-     * 
-     * I made this up; I haven't seen it in print. -- Bob Hanson, 4/2008
-     * 
-     */
-    
-    vTemp.set(x, y, z);
-    mToElliptical.transform(vTemp);
-    double f = 1 - vTemp.dot(vTemp); // J
-    mTemp.transposeM(mToElliptical);
-    mTemp.transform(vTemp);
-    mTemp.mul(mToElliptical);
-    coef[0] = mTemp.m00 / f;     // A = aXX
-    coef[1] = mTemp.m11 / f;     // B = aYY
-    coef[2] = mTemp.m22 / f;     // C = aZZ
-    coef[3] = mTemp.m01 * 2 / f; // D = aXY
-    coef[4] = mTemp.m02 * 2 / f; // E = aXZ
-    coef[5] = mTemp.m12 * 2 / f; // F = aYZ
-    coef[6] = -2 * vTemp.x / f;  // G = aX
-    coef[7] = -2 * vTemp.y / f;  // H = aY
-    coef[8] = -2 * vTemp.z / f;  // I = aZ
-    coef[9] = -1;                // J = -1
-    
-    /*
-     * f = Ax^2 + By^2 + Cz^2 + Dxy + Exz + Fyz + Gx + Hy + Iz + J
-     * df/dx = 2Ax +  Dy +  Ez + G
-     * df/dy =  Dx + 2By +  Fz + H
-     * df/dz =  Ex +  Fy + 2Cz + I
-     */
-    
-    if (mDeriv == null)
-      return;
-    mDeriv.setIdentity();
-    mDeriv.m00 = (float) (2 * coef[0]);
-    mDeriv.m11 = (float) (2 * coef[1]);
-    mDeriv.m22 = (float) (2 * coef[2]);
-  
-    mDeriv.m01 = mDeriv.m10 = (float) coef[3];
-    mDeriv.m02 = mDeriv.m20 = (float) coef[4];
-    mDeriv.m12 = mDeriv.m21 = (float) coef[5];
-  
-    mDeriv.m03 = (float) coef[6];
-    mDeriv.m13 = (float) coef[7];
-    mDeriv.m23 = (float) coef[8];
-  }
-
-  public static boolean getQuardricZ(double x, double y, 
-                                   double[] coef, double[] zroot) {
-    
-    /* simple quadratic formula for:
-     * 
-     * c0 x^2 + c1 y^2 + c2 z^2 + c3 xy + c4 xz + c5 yz + c6 x + c7 y + c8 z - 1 = 0 
-     * 
-     * or:
-     * 
-     * c2 z^2 + (c4 x + c5 y + c8)z + (c0 x^2 + c1 y^2 + c3 xy + c6 x + c7 y - 1) = 0
-     * 
-     * so:
-     * 
-     *  z = -(b/2a) +/- sqrt( (b/2a)^2 - c/a )
-     */
-    
-    double b_2a = (coef[4] * x + coef[5] * y + coef[8]) / coef[2] / 2;
-    double c_a = (coef[0] * x * x + coef[1] * y * y + coef[3] * x * y 
-        + coef[6] * x + coef[7] * y - 1) / coef[2];
-    double f = b_2a * b_2a - c_a;
-    if (f < 0)
-      return false;
-    f = Math.sqrt(f);
-    zroot[0] = (-b_2a - f);
-    zroot[1] = (-b_2a + f);
-    return true;
-  }
-
   public static int getOctant(P3 pt) {
     int i = 0;
     if (pt.x < 0)
@@ -209,28 +133,5 @@ public class Tensor {
       i += 4;
     return i;
   }
-
-  // from ORTEP manual ftp://ftp.ornl.gov/pub/ortep/man/pdf/chap6.pdf
-  
-  private static float[] crtval = new float[] {
-    0.3389f, 0.4299f, 0.4951f, 0.5479f, 0.5932f, 0.6334f, 0.6699f, 0.7035f,
-    0.7349f, 0.7644f, 0.7924f, 0.8192f, 0.8447f, 0.8694f, 0.8932f, 0.9162f,
-    0.9386f, 0.9605f, 0.9818f, 1.0026f, 1.0230f, 1.0430f, 1.0627f, 1.0821f,
-    1.1012f, 1.1200f, 1.1386f, 1.1570f, 1.1751f, 1.1932f, 1.2110f, 1.2288f,
-    1.2464f, 1.2638f, 1.2812f, 1.2985f, 1.3158f, 1.3330f, 1.3501f, 1.3672f,
-    1.3842f, 1.4013f, 1.4183f, 1.4354f, 1.4524f, 1.4695f, 1.4866f, 1.5037f,
-    1.5209f, 1.5382f, 1.5555f, 1.5729f, 1.5904f, 1.6080f, 1.6257f, 1.6436f,
-    1.6616f, 1.6797f, 1.6980f, 1.7164f, 1.7351f, 1.7540f, 1.7730f, 1.7924f,
-    1.8119f, 1.8318f, 1.8519f, 1.8724f, 1.8932f, 1.9144f, 1.9360f, 1.9580f,
-    1.9804f, 2.0034f, 2.0269f, 2.0510f, 2.0757f, 2.1012f, 2.1274f, 2.1544f,
-    2.1824f, 2.2114f, 2.2416f, 2.2730f, 2.3059f, 2.3404f, 2.3767f, 2.4153f,
-    2.4563f, 2.5003f, 2.5478f, 2.5997f, 2.6571f, 2.7216f, 2.7955f, 2.8829f,
-    2.9912f, 3.1365f, 3.3682f 
-  };
-  
-  final public static float getThermalRadius(int prob) {
-    return crtval[prob < 1 ? 0 : prob > 99 ? 98 : prob - 1];
-  }
-
 
 }

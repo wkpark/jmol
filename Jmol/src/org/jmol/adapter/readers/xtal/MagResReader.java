@@ -88,7 +88,7 @@ public class MagResReader extends AtomSetCollectionReader {
     String[] tokens = getTokens();
     String atomName = (tokens[1] + tokens[2]);
     fillFloatArray(line.substring(30), 0, data);
-    float f = (iType == 0 ? 0.04f : 1f);
+    float f = (iType == 0 ? 0.01f : 1f);
     //    if (isJ) {
     //      discardLinesUntilContains("Isotropic");
     //      float iso = parseFloatStr(getTokens()[3]);
@@ -102,7 +102,7 @@ public class MagResReader extends AtomSetCollectionReader {
         a[i][j] = data[pt++];
     atom = atomSetCollection.getAtoms()[atomSetCollection.getAtomIndexFromName(atomName)];
     atom.tensors[iType] = Eigen.getEllipsoidDD(a);
-    atom.tensors[iType].setScale(f);
+    atom.tensors[iType].setTypeFactor(f);
     if (tensorTypes.indexOf("" + iType) < 0) {
       tensorTypes += "" + iType;
       appendLoadNote("Ellipsoids set " + (iType + 1) + ": "
@@ -202,6 +202,6 @@ public class MagResReader extends AtomSetCollectionReader {
       for (int j = 0; j < 3; j++)
         a[i][j] = data[pt++];
     atom.setEllipsoid(Eigen.getEllipsoidDD(a));
-    atom.tensors[0].setScale(f);
+    atom.tensors[0].setTypeFactor(f);
   }
 }

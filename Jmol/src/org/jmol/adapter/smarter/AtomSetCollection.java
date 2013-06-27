@@ -1348,9 +1348,8 @@ public class AtomSetCollection {
               Tensor t = atoms[i].tensors[j];
               if (t == null)
                 continue;
-              V3[] axes = t.eigenVectors;
-              float[] lengths = t.eigenValues;
-              if (axes != null) {
+              V3[] eigenVectors = t.eigenVectors;
+              if (eigenVectors != null) {
                 // note -- PDB reader specifically turns off cartesians
                 if (addCartesian) {
                   ptTemp.setT(cartesians[i - iAtomFirst]);
@@ -1358,10 +1357,10 @@ public class AtomSetCollection {
                   ptTemp.setT(atoms[i]);
                   symmetry.toCartesian(ptTemp, false);
                 }
-                axes = symmetry.rotateEllipsoid(iSym, ptTemp, axes, ptTemp1,
+                eigenVectors = symmetry.rotateEllipsoid(iSym, ptTemp, eigenVectors, ptTemp1,
                     ptTemp2);
               }
-              atom1.tensors[j] = new Tensor().fromVectors(axes, lengths, t.eigenSignMask, t.isThermalEllipsoid);
+              atom1.tensors[j] = new Tensor().setVectors(eigenVectors, t.eigenValues, t.forThermalEllipsoid, t.typeFactor);
             }
           }
         }

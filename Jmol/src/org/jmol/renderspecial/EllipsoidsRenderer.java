@@ -231,7 +231,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
     boolean isOK = true;
     for (int i = 3; --i >= 0;) {
-      factoredLengths[i] = tensor.eigenValues[i] * tensor.scale;
+      factoredLengths[i] = tensor.getLength(i);
       if (Float.isNaN(factoredLengths[i]))
         isOK = false;
       else if (factoredLengths[i] < 0.02f)
@@ -279,7 +279,17 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   }
 
   private void setMatrices() {
-    Tensor.setEllipsoidMatrix(axes, factoredLengths, v1, mat);
+
+    // Create a matrix that transforms cartesian coordinates
+    // into ellipsoidal coordinates, where in that system we 
+    // are drawing a sphere. 
+    
+    for (int i = 0; i < 3; i++) {
+      v1.setT(axes[i]);
+      v1.scale(factoredLengths[i]);
+      mat.setColumnV(i, v1);
+    }
+    mat.invertM(mat);
     // make this screen coordinates to ellisoidal coordinates
     matScreenToEllipsoid.mul2(mat, matScreenToCartesian);
     matEllipsoidToScreen.invertM(matScreenToEllipsoid);
@@ -316,7 +326,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private void renderBall() {
     setSelectedOctant();
     // get equation and differential
-    Tensor.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z,
+    Ellipsoids.getEquationForQuadricWithCenter(s0.x, s0.y, s0.z,
         matScreenToEllipsoid, v1, mTemp, coef, mDeriv);
     g3d.fillEllipsoid(center, points, s0.x, s0.y, s0.z, dx + dx, matScreenToEllipsoid,
         coef, mDeriv, selectedOctant, selectedOctant >= 0 ? selectedPoints : null);

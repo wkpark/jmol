@@ -294,9 +294,11 @@ class UnitCell extends SimpleUnitCell {
      */
 
     if (parBorU[0] == 0) { // this is iso
-      float[] lengths = new float[3];
-      lengths[0] = lengths[1] = lengths[2] = (float) Math.sqrt(parBorU[7]);
-      return new Tensor().fromVectors(null, lengths, 7, true);
+      float[] eigenValues = new float[3];
+      eigenValues[0] = eigenValues[1] = eigenValues[2] = parBorU[7];
+      // sqrt will be taken when converted to lengths later
+      // no factor of 0.5 pi^2
+      return new Tensor().setVectors(null, eigenValues, true, 1);
     }
 
     double[] Bcart = new double[6];
@@ -356,7 +358,7 @@ class UnitCell extends SimpleUnitCell {
 
     //System.out.println("UnitCell Bcart=" + Bcart[0] + " " + Bcart[1] + " "
       //  + Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
-    return new Tensor().fromBCart(Bcart);
+    return new Tensor().setThermal(Bcart);
   }
   
   P3[] getCanonicalCopy(float scale) {

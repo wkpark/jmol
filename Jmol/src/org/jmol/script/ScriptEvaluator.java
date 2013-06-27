@@ -11709,7 +11709,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           continue;
         case T.delete:
           value = Boolean.TRUE;
-          checkLength(3);
+          checkLength(i + 1);
           break;
         case T.modelindex:
           value = Integer.valueOf(intParameter(++i));

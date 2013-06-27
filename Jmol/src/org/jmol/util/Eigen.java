@@ -27,7 +27,6 @@ package org.jmol.util;
 import java.util.Arrays;
 import java.util.Comparator;
 
-
 //import org.jmol.util.Escape;
 
 /**
@@ -68,27 +67,31 @@ public class Eigen {
     e = new double[n];
   }
 
-  
+  /**
+   * 
+   * @param m may be 3 or 4 here
+   * @return  Eigen e
+   */
   public static Eigen newM(double[][] m) {
     Eigen e = new Eigen(m.length);
     e.calc(m);
     return e;
   }
 
-  public static void getUnitVectors(double[][] m, V3[] unitVectors, float[] lengths) {
-    newM(m).set(unitVectors, lengths);
-    sort(unitVectors, lengths, null);
+  public static void getUnitVectors(double[][] m, V3[] eigenVectors,
+                                    float[] eigenValues) {
+    newM(m).fillArrays(eigenVectors, eigenValues);
+    sort(eigenVectors, eigenValues);
   }
 
-  private void set(V3[] unitVectors, float[] lengths) {
-    float[][] eigenVectors = getEigenvectorsFloatTransposed();
-    double[] eigenValues = getRealEigenvalues();
-
+  private void fillArrays(V3[] eigenVectors, float[] eigenValues) {
+    float[][] vectors = getEigenvectorsFloatTransposed();
+    double[] lambdas = getRealEigenvalues();
     for (int i = 0; i < n; i++) {
-      if (unitVectors[i] == null)
-        unitVectors[i] = new V3();
-      unitVectors[i].setA(eigenVectors[i]);
-      lengths[i] = (float) Math.sqrt(Math.abs(eigenValues[i]));
+      if (eigenVectors[i] == null)
+        eigenVectors[i] = new V3();
+      eigenVectors[i].setA(vectors[i]);
+      eigenValues[i] = (float) lambdas[i];
     }
   }
 
@@ -100,7 +103,7 @@ public class Eigen {
    */
 
   public void calc(double[][] A) {
-    
+
     /* Jmol only has need of symmetric solutions 
      * 
     issymmetric = true;
@@ -113,35 +116,35 @@ public class Eigen {
 
     if (issymmetric) {
      */
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          V[i][j] = A[i][j];
-        }
-      }
-
-      // Tridiagonalize.
-      tred2();
-
-      // Diagonalize.
-      tql2(); 
-  /*
-    } else {
-      H = new double[n][n];
-      ort = new double[n];
-
+    for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
-          H[i][j] = A[i][j];
-        }
+        V[i][j] = A[i][j];
       }
-
-      // Reduce to Hessenberg form.
-      orthes();
-
-      // Reduce Hessenberg to real Schur form.
-      hqr2();
     }
-  */
+
+    // Tridiagonalize.
+    tred2();
+
+    // Diagonalize.
+    tql2();
+    /*
+      } else {
+        H = new double[n][n];
+        ort = new double[n];
+
+        for (int j = 0; j < n; j++) {
+          for (int i = 0; i < n; i++) {
+            H[i][j] = A[i][j];
+          }
+        }
+
+        // Reduce to Hessenberg form.
+        orthes();
+
+        // Reduce Hessenberg to real Schur form.
+        hqr2();
+      }
+    */
 
   }
 
@@ -181,11 +184,11 @@ public class Eigen {
         f[j][i] = (float) V[i][j];
     return f;
   }
-  
+
   public V3[] getEigenVectors3() {
     V3[] v = new V3[3];
     for (int i = 0; i < 3; i++) {
-      v[i] = V3.new3((float)V[0][i], (float)V[1][i], (float)V[2][i]);
+      v[i] = V3.new3((float) V[0][i], (float) V[1][i], (float) V[2][i]);
     }
     return v;
   }
@@ -199,7 +202,7 @@ public class Eigen {
    * 
    * @serial matrix dimension.
    */
-  private int n;
+  private int n = 3;
 
   /**
    * Symmetry flag.
@@ -1057,15 +1060,15 @@ public class Eigen {
   }
 
   public static Tensor getEllipsoidDD(double[][] a) {
-    Eigen eigen = new Eigen(3);      
+    Eigen eigen = new Eigen(3);
     eigen.calc(a);
     Matrix3f m = new Matrix3f();
     float[] mm = new float[9];
-    for (int i = 0, p=0; i < 3; i++)
+    for (int i = 0, p = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         mm[p++] = (float) a[i][j];
     m.setA(mm);
-    
+
     V3[] evec = eigen.getEigenVectors3();
     V3 n = new V3();
     V3 cross = new V3();
@@ -1076,65 +1079,58 @@ public class Eigen {
       //Logger.info("v[i], n, n x v[i]"+ evec[i] + " " + n + " "  + cross);
       n.setT(evec[i]);
       n.normalize();
-      cross.cross(evec[i], evec[(i + 1)%3]);
+      cross.cross(evec[i], evec[(i + 1) % 3]);
       //Logger.info("draw id eigv" + i + " " + Escape.eP(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
     }
-    Logger.info("eigVal+vec (" + eigen.d[0] + " + " + eigen.e[0] 
-        + ")\n             (" + eigen.d[1] + " + " + eigen.e[1] 
+    Logger.info("eigVal+vec (" + eigen.d[0] + " + " + eigen.e[0]
+        + ")\n             (" + eigen.d[1] + " + " + eigen.e[1]
         + ")\n             (" + eigen.d[2] + " + " + eigen.e[2] + ")");
-    
+
     V3[] unitVectors = new V3[3];
-    float[] lengths = new float[3];
-    eigen.set(unitVectors, lengths);
-    int mask = sort(unitVectors, lengths, eigen.d);
-    return new Tensor().fromVectors(unitVectors, lengths, mask, false);
+    float[] eigenValues = new float[3];
+    eigen.fillArrays(unitVectors, eigenValues);
+    return new Tensor().setVectors(unitVectors, eigenValues, false, 1);
   }
 
-  public static Tensor getEllipsoid(V3[] vectors, float[] lengths, boolean isThermal) {
+  public static Tensor getEllipsoid(V3[] eigenVectors, float[] eigenValues,
+                                    boolean isThermal) {
     //[0] is shortest; [2] is longest
-    V3[] unitVectors = new V3[vectors.length];
-    for (int i = vectors.length; --i >= 0;)
-      unitVectors[i] = V3.newV(vectors[i]);
-    sort(unitVectors, lengths, null);
-    return new Tensor().fromVectors(unitVectors, lengths, 7, isThermal);
+    V3[] unitVectors = new V3[3];
+    for (int i = eigenVectors.length; --i >= 0;)
+      unitVectors[i] = V3.newV(eigenVectors[i]);
+    sort(unitVectors, eigenValues);
+    return new Tensor().setVectors(unitVectors, eigenValues, isThermal, 1);
   }
 
   /**
    * sorts vectors by absolute value and normalizes them
-   * @param vectors
-   * @param lengths
-   * @param values 
-   * @return mask 0 - 7 -- 1 for positive, 0 for negative eigenvalue
+   * 
+   * @param eigenVectors
+   * @param eigenValues
    */
-  private static int sort(V3[] vectors, float[] lengths, double[] values) {
-    // for atoms, lengths need to have length 3 to allow for scaling
+  private static void sort(V3[] eigenVectors, float[] eigenValues) {
     Object[][] o = new Object[][] {
-        new Object[] { vectors[0], Float.valueOf(Math.abs(lengths[0])), values == null || values[0] >= 0 ? Boolean.TRUE : null }, 
-        new Object[] { vectors[1], Float.valueOf(Math.abs(lengths[1])), values == null || values[1] >= 0 ? Boolean.TRUE : null },
-        new Object[] { vectors[2], Float.valueOf(Math.abs(lengths[2])), values == null || values[2] >= 0 ? Boolean.TRUE : null } }; 
+        new Object[] { eigenVectors[0], Float.valueOf(eigenValues[0]) },
+        new Object[] { eigenVectors[1], Float.valueOf(eigenValues[1]) },
+        new Object[] { eigenVectors[2], Float.valueOf(eigenValues[2]) } };
     Arrays.sort(o, new EigenSort());
-    
-    int mask = 0;
     for (int i = 0; i < 3; i++) {
-      vectors[i] = V3.newV((V3) o[i][0]);
-      vectors[i].normalize();
-      lengths[i] = ((Float) o[i][1]).floatValue();
-      if (o[i][2] != null)
-        mask += 1 << i;
+      eigenVectors[i] = V3.newV((V3) o[i][0]);
+      eigenVectors[i].normalize();
+      eigenValues[i] = ((Float) o[i][1]).floatValue();
     }
-    return mask;
   }
-  
+
   /**
-   * sort from smallest to largest
+   * sort from smallest to largest absolute
    * 
    */
-  protected static class EigenSort implements Comparator<Object[]> { 
+  protected static class EigenSort implements Comparator<Object[]> {
     public int compare(Object[] o1, Object[] o2) {
-      float a = ((Float)o1[1]).floatValue();
-      float b = ((Float)o2[1]).floatValue();
+      float a = Math.abs(((Float) o1[1]).floatValue());
+      float b = Math.abs(((Float) o2[1]).floatValue());
       return (a < b ? -1 : a > b ? 1 : 0);
-    }    
+    }
   }
 
 }

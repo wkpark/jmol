@@ -292,9 +292,7 @@ final public class Atom extends Point3fi implements JmolNode {
 
   public float getADPMinMax(boolean isMax) {
     Tensor[] tensors = getTensors();
-    return (tensors == null ? 0 : tensors[0] == null ? 
-        Math.abs(tensors[1].eigenValues[isMax ? 2 : 0]) * tensors[1].scale 
-        : Math.abs(tensors[0].eigenValues[isMax ? 2 : 0]) * tensors[0].scale);
+    return (tensors == null ? 0 : tensors[tensors[0] == null ? 1 : 0].getLength(isMax ? 2 : 0)); 
   }
 
   public int getRasMolRadius() {
@@ -649,13 +647,6 @@ final public class Atom extends Point3fi implements JmolNode {
 
    public Tensor[] getTensors() {
      return group.chain.model.modelSet.getEllipsoid(index);
-   }
-
-   public void scaleEllipsoid(int size, int iSelect) {
-     Tensor[] ellipsoid = getTensors();
-     if (ellipsoid == null || iSelect >= ellipsoid.length || ellipsoid[iSelect] == null)
-       return;
-     ellipsoid[iSelect].setSize(size);
    }
 
    /**

@@ -1475,10 +1475,8 @@ public class AtomSetCollection {
     if (atomCount > 0) {
       int index = atomCount - 1;
       String atomName = atoms[index].atomName;
-      if (atomName != null) {
+      if (atomName != null)
         atomSymbolicMap.put(atomName, Integer.valueOf(index));
-        System.out.println(this + " " + atomName);
-      }
     }
   }
 

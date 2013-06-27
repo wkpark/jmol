@@ -59,14 +59,18 @@ import org.jmol.util.V3;
  * CASTEP (http://www.castep.org) .cell file format relevant section of .cell
  * file are included as comments below
  * 
- * preliminary .castep, .phonon frequency reader -- hansonr@stolaf.edu 9/2011 -- Many
- * thanks to Keith Refson for his assistance with this implementation -- atom's
- * mass is encoded as bfactor -- FILTER options include "q=n" where n is an
- * integer or "q={1/4 1/4 0}" -- for non-simple fractions, you must use the
- * exact form of the wavevector description: -- load "xxx.phonon" FILTER
- * "q=(-0.083333 0.083333 0.500000) -- for simple fractions, you can also just
- * specify SUPERCELL {a b c} where -- the number of cells matches a given
- * wavevector -- SUPERCELL {4 4 1}, for example 
+ * preliminary .castep, .phonon frequency reader 
+ * -- hansonr@stolaf.edu 9/2011 
+ * -- Many thanks to Keith Refson for his assistance with this implementation 
+ * -- atom's mass is encoded as bfactor 
+ * -- FILTER options include 
+ *      "q=n" where n is an integer 
+ *      "q={1/4 1/4 0}" 
+ *      "q=ALL"
+ * -- for non-simple fractions, you must use the exact form of the wavevector description: 
+ * -- load "xxx.phonon" FILTER "q=(-0.083333 0.083333 0.500000) 
+ * -- for simple fractions, you can also just specify SUPERCELL {a b c} where 
+ *    the number of cells matches a given wavevector  -- SUPERCELL {4 4 1}, for example 
  * 
  * note: following was never implemented?
  * 
@@ -103,6 +107,8 @@ public class CastepReader extends AtomSetCollectionReader {
 
   private String chargeType = "MULL";
 
+  private boolean isAllQ;
+
   @Override
   public void initializeReader() throws Exception {
     if (filter != null) {
@@ -113,7 +119,8 @@ public class CastepReader extends AtomSetCollectionReader {
       }
       filter = filter.replace('(', '{').replace(')', '}');
       filter = TextFormat.simpleReplace(filter, "  ", " ");
-      if (filter.indexOf("{") >= 0)
+      isAllQ = (filter.indexOf("Q=ALL") >= 0);
+      if (!isAllQ && filter.indexOf("{") >= 0)
         setDesiredQpt(filter.substring(filter.indexOf("{")));
       filter = TextFormat.simpleReplace(filter, "-PT", "");
     }
@@ -714,13 +721,13 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       fcoord = qtoks;
     else
       fcoord = "{" + fcoord + "}";
-    boolean isOK = false;
+    boolean isOK = isAllQ;
     boolean isSecond = (tokens[1].equals(lastQPt));
     qpt2 = (isSecond ? qpt2 + 1 : 1);
 
     lastQPt = tokens[1];
     //TODO not quite right: can have more than two options. 
-    if (filter != null && checkFilterKey("Q=")) {
+    if (!isOK && filter != null && checkFilterKey("Q=")) {
       // check for an explicit q=n or q={1/4 1/2 1/4}
       if (desiredQpt != null) {
         v.sub2(desiredQpt, qvec);
@@ -757,7 +764,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       return;
     if (!isOK && (ptSupercell == null) == !isGammaPoint)
       return;
-    if (havePhonons)
+    if (havePhonons && !isAllQ)
       return;
     havePhonons = true;
     String qname = "q=" + lastQPt + " " + fcoord;

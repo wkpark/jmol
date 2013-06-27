@@ -15,7 +15,7 @@ package org.jmol.adapter.readers.xtal;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.Quadric;
+import org.jmol.util.Tensor;
 import org.jmol.util.TextFormat;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
@@ -59,7 +59,7 @@ public class MagResReader extends AtomSetCollectionReader {
         setUnitsNew();
       } else if (line.startsWith("atom")) {
         readAtom(true);
-        atom.ellipsoid = new Quadric[2];
+        atom.tensors = new Tensor[2];
       } else if (line.startsWith("symmetry")) {
         readSymmetryNew();
       } else if (line.startsWith("ms")) {
@@ -101,8 +101,8 @@ public class MagResReader extends AtomSetCollectionReader {
       for (int j = 0; j < 3; j++)
         a[i][j] = data[pt++];
     atom = atomSetCollection.getAtoms()[atomSetCollection.getAtomIndexFromName(atomName)];
-    atom.ellipsoid[iType] = Eigen.getEllipsoidDD(a);
-    atom.ellipsoid[iType].scale(f);
+    atom.tensors[iType] = Eigen.getEllipsoidDD(a);
+    atom.tensors[iType].setScale(f);
     if (tensorTypes.indexOf("" + iType) < 0) {
       tensorTypes += "" + iType;
       appendLoadNote("Ellipsoids set " + (iType + 1) + ": "
@@ -202,6 +202,6 @@ public class MagResReader extends AtomSetCollectionReader {
       for (int j = 0; j < 3; j++)
         a[i][j] = data[pt++];
     atom.setEllipsoid(Eigen.getEllipsoidDD(a));
-    atom.ellipsoid[0].scale(f);
+    atom.tensors[0].setScale(f);
   }
 }

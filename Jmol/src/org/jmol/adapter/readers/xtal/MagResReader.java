@@ -15,8 +15,6 @@ package org.jmol.adapter.readers.xtal;
 import java.util.Hashtable;
 import java.util.Map;
 
-//Random comment
-
 import org.jmol.util.Tensor;
 import org.jmol.util.TextFormat;
 

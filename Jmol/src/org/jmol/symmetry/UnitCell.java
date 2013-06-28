@@ -227,7 +227,7 @@ class UnitCell extends SimpleUnitCell {
   
   final private static double twoP2 = 2 * Math.PI * Math.PI;
   
-  Tensor getEllipsoid(float[] parBorU) {
+  Tensor getTensor(float[] parBorU) {
     if (parBorU == null)
       return null;
     /*
@@ -298,7 +298,7 @@ class UnitCell extends SimpleUnitCell {
       eigenValues[0] = eigenValues[1] = eigenValues[2] = parBorU[7];
       // sqrt will be taken when converted to lengths later
       // no factor of 0.5 pi^2
-      return new Tensor().setVectors(null, eigenValues, true, 1);
+      return new Tensor().setVectors(null, eigenValues, "iso");
     }
 
     double[] Bcart = new double[6];

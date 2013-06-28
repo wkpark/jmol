@@ -80,7 +80,7 @@ public interface SymmetryInterface {
 
   public void toCartesian(P3 pt, boolean asAbsolue);
 
-  public Tensor getEllipsoid(float[] parBorU);
+  public Tensor getTensor(float[] parBorU);
 
   public P3 ijkToPoint3f(int nnn);
 

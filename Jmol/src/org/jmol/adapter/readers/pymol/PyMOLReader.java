@@ -173,7 +173,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   @Override
   protected void finalizeReader() throws Exception {
     finalizeReaderPDB();
-    atomSetCollection.setEllipsoids();
+    atomSetCollection.setTensors();
   }
   /**
    * At the end of the day, we need to finalize all the JmolObjects, set the

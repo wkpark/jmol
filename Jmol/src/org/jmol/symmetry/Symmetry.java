@@ -304,10 +304,10 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.getUnitCellAsArray(vectorsOnly);
   }
 
-  public Tensor getEllipsoid(float[] parBorU) {
+  public Tensor getTensor(float[] parBorU) {
     if (unitCell == null)
       unitCell = UnitCell.newA(new float[] {1,1,1,90,90,90});
-    return unitCell.getEllipsoid(parBorU);
+    return unitCell.getTensor(parBorU);
   }
   
   public P3[] getUnitCellVertices() {

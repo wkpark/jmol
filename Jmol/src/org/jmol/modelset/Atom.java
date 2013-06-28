@@ -646,7 +646,7 @@ final public class Atom extends Point3fi implements JmolNode {
    }
 
    public Tensor[] getTensors() {
-     return group.chain.model.modelSet.getEllipsoid(index);
+     return group.chain.model.modelSet.getAtomTensors(index);
    }
 
    /**

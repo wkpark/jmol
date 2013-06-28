@@ -778,7 +778,7 @@ public final class ModelLoader {
           name,
           charge, 
           iterAtom.getPartialCharge(),
-          iterAtom.getEllipsoid(), 
+          iterAtom.getTensors(), 
           iterAtom.getOccupancy(), 
           iterAtom.getBfactor(), 
           iterAtom.getX(),
@@ -826,7 +826,7 @@ public final class ModelLoader {
   private void addAtom(boolean isPDB, BS atomSymmetry, int atomSite,
                        Object atomUid, short atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
-                       Tensor[] ellipsoid, int occupancy, float bfactor,
+                       JmolList<Tensor> tensors, int occupancy, float bfactor,
                        float x, float y, float z, boolean isHetero,
                        int atomSerial, String group3,
                        float vectorX, float vectorY, float vectorZ,
@@ -842,7 +842,7 @@ public final class ModelLoader {
     }
     Atom atom = modelSet.addAtom(currentModelIndex, nullGroup, atomicAndIsotopeNumber,
         atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY,
-        vectorZ, formalCharge, partialCharge, occupancy, bfactor, ellipsoid,
+        vectorZ, formalCharge, partialCharge, occupancy, bfactor, tensors,
         isHetero, specialAtomID, atomSymmetry);
     atom.setAltLoc(alternateLocationID);
     htAtomMap.put(atomUid, atom);

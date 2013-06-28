@@ -27,6 +27,7 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Tensor;
 
@@ -52,7 +53,7 @@ class AtomIterator extends JmolAdapterAtomIterator {
 		if (iatom == atomCount)
 			return false;
 		while ((atom = atoms[iatom++]) == null
-				|| (bsAtoms != null && !bsAtoms.get(atom.atomIndex)))
+				|| (bsAtoms != null && !bsAtoms.get(atom.index)))
 			if (iatom == atomCount)
 				return false;
 		atoms[iatom - 1] = null; // single pass
@@ -76,7 +77,7 @@ class AtomIterator extends JmolAdapterAtomIterator {
 
 	@Override
 	public Object getUniqueID() {
-		return Integer.valueOf(atom.atomIndex);
+		return Integer.valueOf(atom.index);
 	}
 
 	@Override
@@ -101,7 +102,7 @@ class AtomIterator extends JmolAdapterAtomIterator {
 	}
 
 	@Override
-	public Tensor[] getEllipsoid() {
+	public JmolList<Tensor> getTensors() {
 		return atom.tensors;
 	}
 

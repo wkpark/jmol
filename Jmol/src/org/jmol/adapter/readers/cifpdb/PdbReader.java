@@ -37,7 +37,6 @@ import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.Tensor;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 
@@ -418,7 +417,7 @@ public class PdbReader extends AtomSetCollectionReader {
        anisou[0] += resid;
        anisou[1] += resid;
        anisou[2] += resid;
-       entry.getKey().tensors[1] = symmetry.getEllipsoid(anisou);
+       entry.getKey().addTensor(symmetry.getTensor(anisou).setType(null), "TLS-R");
        
        // check for equal: 
        
@@ -1697,7 +1696,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
               || atom.chainID == chain1 && atom.sequenceNumber <= res1
           ) {
               data[iAtom - index0] = tlsGroupID;
-              setTlsEllipsoid(atom, group, symmetry);
+              setTlsTensor(atom, group, symmetry);
             }
         }
       }
@@ -1708,7 +1707,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     atomSetCollection.setAtomSetAtomProperty("tlsGroup", sdata.toString(),
         iModel);
     atomSetCollection.setAtomSetAuxiliaryInfoForSet("TLS", tlsGroupInfo, iModel);
-    atomSetCollection.setEllipsoids();
+    atomSetCollection.setTensors();
   }
 
   private int findAtomForRange(int atom1, int atom2, char chain, int resno,
@@ -1737,7 +1736,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   private static final float _8PI2_ = (float) (8 * Math.PI * Math.PI);
   private Map<Atom, float[]>tlsU;
   
-  private void setTlsEllipsoid(Atom atom, Map<String, Object> group, SymmetryInterface symmetry) {
+  private void setTlsTensor(Atom atom, Map<String, Object> group, SymmetryInterface symmetry) {
     P3 origin = (P3) group.get("origin");
     if (Float.isNaN(origin.x))
       return;
@@ -1801,9 +1800,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
 
     // symmetry is set to [1 1 1 90 90 90] -- Cartesians, not actual unit cell
 
-    atom.tensors = new Tensor[] { null, null, symmetry.getEllipsoid(dataT) };
-    //if (atom.atomIndex == 0)
-      //System.out.println("pdbreader ellip 0 = " + atom.ellipsoid[1]); 
+    atom.addTensor(symmetry.getTensor(dataT).setType(null), "TLS-U");
   }
 
   private void tlsAddError(String error) {

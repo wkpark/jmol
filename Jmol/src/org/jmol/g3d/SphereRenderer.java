@@ -25,11 +25,11 @@
 package org.jmol.g3d;
 
 //import javax.vecmath.Vector4f;  !NO -- requires Vector4d in applet
+import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
-import org.jmol.util.Tensor;
 import org.jmol.util.Shader;
 
 
@@ -519,7 +519,7 @@ public class SphereRenderer {
           if (checkOctant) {
             ptTemp.set(xCurrent - x, yCurrent - y, zPixel - z);
             mat.transform(ptTemp);
-            int thisOctant = Tensor.getOctant(ptTemp);
+            int thisOctant = GData.getScreenOctant(ptTemp);
             if (thisOctant == selectedOctant) {
               iShade = getPlaneShade(xCurrent, yCurrent, zroot);              
               zPixel = (int) zroot[0];

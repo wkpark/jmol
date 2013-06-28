@@ -375,8 +375,8 @@ public class AtomSetCollection {
     for (int i = atomSetCount; --i >= 0; )
       for (int j = lists[i].size(); --j >= 0;) {
         Atom a = atoms[--n] = lists[i].get(j);
-        newIndex[a.atomIndex] = n;
-        a.atomIndex = n;
+        newIndex[a.index] = n;
+        a.index = n;
       }
     for (int i = 0; i < bondCount; i++) {
       bonds[i].atomIndex1 = newIndex[bonds[i].atomIndex1];
@@ -606,7 +606,7 @@ public class AtomSetCollection {
     }
     if (atomSetCount == 0)
       newAtomSet();
-    atom.atomIndex = atomCount;
+    atom.index = atomCount;
     atoms[atomCount++] = atom;
     atom.atomSetIndex = currentAtomSetIndex;
     atom.atomSite = atomSetAtomCounts[currentAtomSetIndex]++;
@@ -1028,13 +1028,12 @@ public class AtomSetCollection {
   private int dtype = 3;
   private V3[] unitCellTranslations;
   
-  public void setEllipsoids() {
+  public void setTensors() {
     if (!haveAnisou)
       return;
     getSymmetry();
-    int iAtomFirst = getLastAtomSetAtomIndex();
-    for (int i = iAtomFirst; i < atomCount; i++)
-      atoms[i].setEllipsoid(symmetry.getEllipsoid(atoms[i].anisoBorU));
+    for (int i = getLastAtomSetAtomIndex(); i < atomCount; i++)
+      atoms[i].addTensor(symmetry.getTensor(atoms[i].anisoBorU), null); // getTensor will return correct type 
   }
   
   private int baseSymmetryAtomCount;
@@ -1046,7 +1045,7 @@ public class AtomSetCollection {
   private void applyAllSymmetry() throws Exception {
     int noSymmetryCount = (baseSymmetryAtomCount == 0 ? getLastAtomSetAtomCount() : baseSymmetryAtomCount);
     int iAtomFirst = getLastAtomSetAtomIndex();
-    setEllipsoids();
+    setTensors();
     bondCount0 = bondCount;
     finalizeSymmetry(iAtomFirst, noSymmetryCount);
     int operationCount = symmetry.getSpaceGroupOperationCount();
@@ -1330,7 +1329,7 @@ public class AtomSetCollection {
         int atomSite = atoms[i].atomSite;
         if (special != null) {
           if (addBonds)
-            atomMap[atomSite] = special.atomIndex;
+            atomMap[atomSite] = special.index;
           special.bsSymmetry.set(iCellOpPt + iSym);
           special.bsSymmetry.set(iSym);
         } else {
@@ -1344,8 +1343,8 @@ public class AtomSetCollection {
           if (addCartesian)
             cartesians[pt++] = cartesian;
           if (atoms[i].tensors != null) {
-            for (int j = 0; j < atoms[i].tensors.length; j++) {
-              Tensor t = atoms[i].tensors[j];
+            for (int j = atoms[i].tensors.size(); --j >= 0;) {
+              Tensor t = atoms[i].tensors.get(j);
               if (t == null)
                 continue;
               V3[] eigenVectors = t.eigenVectors;
@@ -1360,7 +1359,7 @@ public class AtomSetCollection {
                 eigenVectors = symmetry.rotateEllipsoid(iSym, ptTemp, eigenVectors, ptTemp1,
                     ptTemp2);
               }
-              atom1.tensors[j] = new Tensor().setVectors(eigenVectors, t.eigenValues, t.forThermalEllipsoid, t.typeFactor);
+              atom1.addTensor(new Tensor().setVectors(eigenVectors, t.eigenValues, t.type), null);
             }
           }
         }
@@ -1428,7 +1427,7 @@ public class AtomSetCollection {
             atomMap[atomSite] = atomCount;
             atom1 = newCloneAtom(atoms[iAtom]);
             if (bsAtoms != null)
-              bsAtoms.set(atom1.atomIndex);
+              bsAtoms.set(atom1.index);
             atom1.atomSite = atomSite;
           mat.transform(atom1);
           atom1.bsSymmetry = BSUtil.newAndSetBit(i);

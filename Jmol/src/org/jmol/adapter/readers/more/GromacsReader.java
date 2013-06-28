@@ -96,7 +96,7 @@ public class GromacsReader extends AtomSetCollectionReader {
       float vz = parseFloatRange(line, 60, 68) * 10;
       if (Float.isNaN(vx) || Float.isNaN(vy) || Float.isNaN(vz))
         continue;
-      atomSetCollection.addVibrationVector(atom.atomIndex, vx, vy, vz);
+      atomSetCollection.addVibrationVector(atom.index, vx, vy, vz);
     }
   }
 

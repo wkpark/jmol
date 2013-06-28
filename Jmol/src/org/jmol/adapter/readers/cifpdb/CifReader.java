@@ -980,7 +980,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           BS bs = assemblyIdAtoms.get("" + assemblyId);
           if (bs == null)
             assemblyIdAtoms.put("" + assemblyId, bs = new BS());
-          bs.set(atom.atomIndex);
+          bs.set(atom.index);
         }          
         if (atom.isHetero && htHetero != null) {
           atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);

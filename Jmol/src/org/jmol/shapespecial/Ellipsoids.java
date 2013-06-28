@@ -49,7 +49,7 @@ import org.jmol.util.V3;
 public class Ellipsoids extends AtomShape {
 
   public Map<String, Ellipsoid> htEllipsoids = new Hashtable<String, Ellipsoid>();
-  public boolean haveEllipsoids;
+  public boolean haveUserEllipsoids;
   public short[][] colixset;
   byte[][] paletteIDset;
   public short[][] madset;
@@ -82,9 +82,11 @@ public class Ellipsoids extends AtomShape {
   
   void scaleEllipsoid(Atom atom, int size, int iSelect) {
     Tensor[] tensors = atom.getTensors();
-    Tensor t = (tensors != null && iSelect < tensors.length ? tensors[iSelect] : null);
+    Tensor t = (tensors != null && iSelect < tensors.length ? tensors[iSelect]
+        : null);
     if (t != null)
-      tensors[iSelect].setScale(t.forThermalEllipsoid ? getThermalRadius(size) : size < 1 ? 0 : size / 100.0f);
+      tensors[iSelect].setScale(t.forThermalEllipsoid ? getThermalRadius(size)
+          : size < 1 ? 0 : size / 100.0f);
   }
 
   // from ORTEP manual ftp://ftp.ornl.gov/pub/ortep/man/pdf/chap6.pdf
@@ -117,9 +119,9 @@ public class Ellipsoids extends AtomShape {
         return;
       if (ellipsoid == null) {
         String id = (String) value;
-        ellipsoid = new Ellipsoid(id, viewer.getCurrentModelIndex());
+        ellipsoid = new Ellipsoid().setID(id, viewer.getCurrentModelIndex(), null);
         htEllipsoids.put(id, ellipsoid);
-        haveEllipsoids = true;
+        haveUserEllipsoids = true;
       }
       return;
     }
@@ -133,14 +135,14 @@ public class Ellipsoids extends AtomShape {
         else if (ellipsoid.modelIndex == modelIndex)
           e.remove();
       }
-      haveEllipsoids = !htEllipsoids.isEmpty();
+      haveUserEllipsoids = !htEllipsoids.isEmpty();
       ellipsoid = null;
       return;
     }
     if (ellipsoid != null) {
       if ("delete" == propertyName) {
         htEllipsoids.remove(ellipsoid.id);
-        haveEllipsoids = !htEllipsoids.isEmpty();
+        haveUserEllipsoids = !htEllipsoids.isEmpty();
         return;
       }
       if ("modelindex" == propertyName) {
@@ -325,19 +327,19 @@ public class Ellipsoids extends AtomShape {
   }
 
   private void getStateID(SB sb) {
-    if (!haveEllipsoids)
+    if (!haveUserEllipsoids)
       return;
     Iterator<Ellipsoid> e = htEllipsoids.values().iterator();
     V3 v1 = new V3();
     while (e.hasNext()) {
       Ellipsoid ellipsoid = e.next();
-      if (ellipsoid.axes == null || ellipsoid.lengths == null)
+      if (ellipsoid.eigenVectors == null || ellipsoid.lengths == null)
         continue;
       sb.append("  Ellipsoid ID ").append(ellipsoid.id).append(" modelIndex ")
           .appendI(ellipsoid.modelIndex).append(" center ").append(
               Escape.eP(ellipsoid.center)).append(" axes");
       for (int i = 0; i < 3; i++) {
-        v1.setT(ellipsoid.axes[i]);
+        v1.setT(ellipsoid.eigenVectors[i]);
         v1.scale(ellipsoid.lengths[i]);
         sb.append(" ").append(Escape.eP(v1));
       }
@@ -379,7 +381,7 @@ public class Ellipsoids extends AtomShape {
      * set all fixed objects visible; others based on model being displayed
      *      
      */
-    if (!haveEllipsoids)
+    if (!haveUserEllipsoids)
       return;
     Iterator<Ellipsoid> e = htEllipsoids.values().iterator();
     while (e.hasNext()) {
@@ -387,103 +389,6 @@ public class Ellipsoids extends AtomShape {
       ellipsoid.visible = ellipsoid.isOn
           && (ellipsoid.modelIndex < 0 || bs.get(ellipsoid.modelIndex));
     }
-  }
-
-  /*
-   * Just a shape, nothing more.
-   * 
-   */
-  public static class Ellipsoid {
-
-    String id;
-    public V3[] axes;
-    public float[] lengths;
-    public P3 center = P3.new3(0, 0, 0);
-    double[] coef;
-    public short colix = C.GOLD;
-    int modelIndex;
-    float scale = 1;
-    public boolean visible;
-    public boolean isValid;
-    boolean isOn = true;
-
-    protected Ellipsoid(String id, int modelIndex) {
-      this.id = id;
-      this.modelIndex = modelIndex;
-    }
-
-    public void setCenter(P3 center) {
-      this.center = center;
-      updateEquation();
-    }
-
-    public void setScale(float scale) {
-      if (scale <= 0 || lengths == null) {
-        isValid = false;
-      } else {
-        for (int i = 0; i < 3; i++)
-          lengths[i] *= scale / scale;
-        this.scale = scale;
-        updateEquation();
-      }
-    }
-
-//    public void setEigen(P3 ptCenter, Eigen eigen, float factor) {
-//      center = ptCenter;
-//      axes = eigen.getEigenVectors3();
-//      double[] v = eigen.getEigenvalues();
-//      lengths = new float[3];
-//      for (int i = 0; i < 3; i++)
-//        lengths[i] = (float) (v[i] * factor);
-//      scale = 1;
-//      updateEquation();
-//    }
-
-    protected void setEquation(double[] coef) {
-      Tensor t = new Tensor().setThermal(this.coef = coef);
-      axes = t.eigenVectors;
-      lengths = new float[] { t.getLength(0), t.getLength(1), t.getLength(2) };
-    }
-
-    protected void setAxes(V3[] axes) {
-      isValid = false;
-      this.axes = axes;
-      lengths = new float[3];
-      scale = 1;
-      for (int i = 0; i < 2; i++) {
-        if (axes[i].length() > axes[i + 1].length()) {
-          V3 v = axes[i];
-          axes[i] = axes[i + 1];
-          axes[i + 1] = v;
-          if (i == 1)
-            i = -1;
-        }
-      }
-      for (int i = 0; i < 3; i++) {
-        lengths[i] = axes[i].length();
-        if (lengths[i] == 0)
-          return;
-        axes[i].normalize();
-      }
-      if (Math.abs(axes[0].dot(axes[1])) > 0.0001f
-          || Math.abs(axes[0].dot(axes[1])) > 0.0001f
-          || Math.abs(axes[0].dot(axes[1])) > 0.0001f)
-        return;
-      updateEquation();
-    }
-
-    private void updateEquation() {
-      if (axes == null || lengths == null)
-        return;
-      Matrix3f mat = new Matrix3f();
-      Matrix3f mTemp = new Matrix3f();
-      V3 v1 = new V3();
-      coef = new double[10];
-      getEquationForQuadricWithCenter(center.x, center.y, center.z, mat, v1,
-          mTemp, coef, null);
-      isValid = true;
-    }
-
   }
 
 }

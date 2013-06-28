@@ -25,12 +25,13 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Tensor;
 
 public class Atom extends P3 implements Cloneable {
   public int atomSetIndex;
-  public int atomIndex;
+  public int index;
   public BS bsSymmetry;
   public int atomSite;
   public String elementSymbol;
@@ -52,14 +53,16 @@ public class Atom extends P3 implements Cloneable {
   public int sequenceNumber = Integer.MIN_VALUE;
   public char insertionCode = '\0';
   public float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
-  public Tensor[] tensors;  
-  public void setEllipsoid(Tensor e) {
-    if (e == null)
+  public JmolList<Tensor> tensors;
+  
+  public void addTensor(Tensor tensor, String type) {
+    if (tensor == null)
       return;
-    if (tensors != null && tensors.length == 3)
-      tensors[0] = e;
-    else
-      tensors = new Tensor[] { e };
+    if (tensors == null)
+      tensors = new JmolList<Tensor>();
+    tensors.addLast(tensor);
+    if (type != null)
+      tensor.setType(type);
   }
 
   

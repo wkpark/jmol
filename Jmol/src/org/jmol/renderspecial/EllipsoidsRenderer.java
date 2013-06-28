@@ -41,8 +41,8 @@ import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;
+import org.jmol.shapespecial.Ellipsoid;
 import org.jmol.shapespecial.Ellipsoids;
-import org.jmol.shapespecial.Ellipsoids.Ellipsoid;
 import org.jmol.viewer.JC;
 
 public class EllipsoidsRenderer extends ShapeRenderer {
@@ -93,7 +93,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   protected boolean render() {
     isSet = false;
     ellipsoids = (Ellipsoids) shape;
-    if (ellipsoids.madset == null && !ellipsoids.haveEllipsoids)
+    if (ellipsoids.madset == null && !ellipsoids.haveUserEllipsoids)
       return false;
     boolean needTranslucent = false;
     Atom[] atoms = modelSet.atoms;
@@ -103,21 +103,21 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         continue;
       if (atom.screenZ <= 1)
         continue;
-      Tensor[] ellipsoid2 = atom.getTensors();
-      if (ellipsoid2 == null)
+      Tensor[] tensors = atom.getTensors();
+      if (tensors == null)
         continue;
-      for (int j = 0; j < ellipsoid2.length; j++) {
-        if (ellipsoid2[j] == null || ellipsoids.madset[j] == null || ellipsoids.madset[j][i] == 0)
+      for (int j = 0; j < tensors.length; j++) {
+        if (tensors[j] == null || ellipsoids.madset[j] == null || ellipsoids.madset[j][i] == 0)
           continue;
         colix = Shape.getColix(ellipsoids.colixset[j], i, atom);
         if (g3d.setColix(colix))
-          render1(atom, ellipsoid2[j]);
+          render1(atom, tensors[j]);
         else
           needTranslucent = true;
       }
     }
 
-    if (ellipsoids.haveEllipsoids) {
+    if (ellipsoids.haveUserEllipsoids) {
       Iterator<Ellipsoid> e = ellipsoids.htEllipsoids.values().iterator();
       while (e.hasNext()) {
         Ellipsoid ellipsoid = e.next();
@@ -136,7 +136,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private void renderEllipsoid(Ellipsoid ellipsoid) {
     if (!isSet)
       isSet = setGlobals();
-    axes = ellipsoid.axes;
+    axes = ellipsoid.eigenVectors;
     for (int i = 0; i < 3; i++)
       factoredLengths[i] = ellipsoid.lengths[i];
     viewer.transformPtScr(ellipsoid.center, s0);
@@ -228,6 +228,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private void render1(Atom atom, Tensor tensor) {
     if (!isSet)
       isSet = setGlobals();
+    System.out.println(tensor);
     s0.set(atom.screenX, atom.screenY, atom.screenZ);
     boolean isOK = true;
     for (int i = 3; --i >= 0;) {
@@ -503,7 +504,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       s1.scaleAdd(-3, s0, s1);
       pt1.set(s1.x, s1.y, s1.z);
       matScreenToEllipsoid.transform(pt1);
-      selectedOctant = Tensor.getOctant(pt1);
+      selectedOctant = GData.getScreenOctant(pt1);
     }
   }  
 }

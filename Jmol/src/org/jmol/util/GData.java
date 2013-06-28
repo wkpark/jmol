@@ -690,5 +690,15 @@ public class GData implements JmolGraphicsInterface {
   public void renderAllStrings(Object jmolRenderer) {
     // only in Graphics3D
   }
+  public static int getScreenOctant(P3 pt) {
+    int i = 0;
+    if (pt.x < 0)
+      i |= 1;
+    if (pt.y < 0)
+      i |= 2;
+    if (pt.z < 0)
+      i |= 4;
+    return i;
+  }
 
 }

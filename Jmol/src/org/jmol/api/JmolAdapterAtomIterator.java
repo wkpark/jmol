@@ -26,6 +26,7 @@ package org.jmol.api;
 
 
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Tensor;
 
@@ -62,7 +63,7 @@ public abstract class JmolAdapterAtomIterator {
 		return Float.NaN;
 	}
 
-	public Tensor[] getEllipsoid() {
+	public JmolList<Tensor> getTensors() {
 		return null;
 	}
 

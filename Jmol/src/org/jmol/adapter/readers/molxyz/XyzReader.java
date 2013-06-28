@@ -149,7 +149,7 @@ public class XyzReader extends AtomSetCollectionReader {
         float vz = parseFloatStr(tokens[vpt++]);
         if (Float.isNaN(vx) || Float.isNaN(vy) || Float.isNaN(vz))
           continue;
-        atomSetCollection.addVibrationVector(atom.atomIndex, vx, vy, vz);
+        atomSetCollection.addVibrationVector(atom.index, vx, vy, vz);
       }
     }
   }

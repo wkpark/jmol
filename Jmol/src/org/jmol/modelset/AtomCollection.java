@@ -90,7 +90,7 @@ abstract public class AtomCollection {
     bfactor100s = null;
     partialCharges = null;
     ionicRadii = null;
-    ellipsoids = null;
+    atomTensors = null;
   }
 
   protected void mergeAtomArrays(AtomCollection mergeModelSet) {
@@ -103,7 +103,7 @@ abstract public class AtomCollection {
     bfactor100s = mergeModelSet.bfactor100s;
     ionicRadii = mergeModelSet.ionicRadii;
     partialCharges = mergeModelSet.partialCharges;
-    ellipsoids = mergeModelSet.ellipsoids;
+    atomTensors = mergeModelSet.atomTensors;
     setHaveStraightness(false);
     surfaceDistance100s = null;
   }
@@ -153,7 +153,7 @@ abstract public class AtomCollection {
   float[] ionicRadii;
   float[] hydrophobicities;
   
-  protected Tensor[][] ellipsoids;
+  protected Tensor[][] atomTensors;
   protected int[] surfaceDistance100s;
 
   protected boolean haveStraightness;
@@ -245,9 +245,9 @@ abstract public class AtomCollection {
     return atoms[i].getChainIDStr();
   }
 
-  public Tensor[] getEllipsoid(int i) {
-    return (i < 0 || ellipsoids == null || i >= ellipsoids.length ? null
-        : ellipsoids[i]);
+  public Tensor[] getAtomTensors(int i) {
+    return (i < 0 || atomTensors == null || i >= atomTensors.length ? null
+        : atomTensors[i]);
   }
 
   public Quaternion getQuaternion(int i, char qtype) {
@@ -800,12 +800,12 @@ abstract public class AtomCollection {
     return true;
   }
 
-  protected void setEllipsoid(int atomIndex, Tensor[] ellipsoid) {
-    if (ellipsoid == null)
+  protected void setTensors(int atomIndex, JmolList<Tensor> list) {
+    if (list == null || list.size() == 0)
       return;
-    if (ellipsoids == null)
-      ellipsoids = new Tensor[atoms.length][];
-    ellipsoids[atomIndex] = ellipsoid;
+    if (atomTensors == null)
+      atomTensors = new Tensor[atoms.length][];
+    atomTensors[atomIndex] = Tensor.getStandardArray(list, atomIndex);
   }
 
   // loading data
@@ -2515,7 +2515,7 @@ abstract public class AtomCollection {
         firstAtomIndex, nAtoms);
     partialCharges = (float[]) ArrayUtil.deleteElements(partialCharges,
         firstAtomIndex, nAtoms);
-    ellipsoids = (Tensor[][]) ArrayUtil.deleteElements(ellipsoids,
+    atomTensors = (Tensor[][]) ArrayUtil.deleteElements(atomTensors,
         firstAtomIndex, nAtoms);
     vibrations = (Vibration[]) ArrayUtil.deleteElements(vibrations,
         firstAtomIndex, nAtoms);

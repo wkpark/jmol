@@ -1,20 +1,16 @@
 package org.jmol.adapter.readers.xtal;
 
 /**
- * Piero Canepa
+ * MagRes reader for magnetic resonance files produced by CASTEP
  * 
- * Quantum Espresso
- * http://www.quantum-espresso.org and http://qe-forge.org/frs/?group_id=10
- * @author Pieremanuele Canepa, Room 104, FM Group School of Physical Sciences,
- *         Ingram Building, University of Kent, Canterbury, Kent, CT2 7NH United
- *         Kingdom, pc229@kent.ac.uk
+ * @author Bob Hanson hansonr@stolaf.edu 6/27/2013
  * 
- * @version 1.0
  */
 
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.util.JmolList;
 import org.jmol.util.Tensor;
 import org.jmol.util.TextFormat;
 
@@ -25,31 +21,37 @@ import org.jmol.util.Eigen;
 public class MagResReader extends AtomSetCollectionReader {
 
   private float[] cellParams;
-  private float maxIso = 10000;
+  private static float maxIso = 10000;
   private String tensorTypes = "";
   private boolean isNew;
   private Map<String, String> mapUnits = new Hashtable<String, String>();
-
+  private JmolList<Tensor> interactionTensors = new JmolList<Tensor>();
   @Override
   protected void initializeReader() {
     setFractionalCoordinates(false);
     doApplySymmetry = false;
     atomSetCollection.newAtomSet();
+    try {
+      readLine();
+      isNew = line.startsWith("#$magres");
+      if (isNew) {
+        ignoreFileSpaceGroupName = true;
+        //setSpaceGroupName("P1");
+      }
+    } catch (Exception e) {
+    }
   }
 
   @Override
   protected void finalizeReader() throws Exception {
     doApplySymmetry = true;
     finalizeReaderASCR();
+    if (interactionTensors.size() > 0)
+      atomSetCollection.setAtomSetAuxiliaryInfo("interactionTensors", interactionTensors);
   }
 
   @Override
   protected boolean checkLine() throws Exception {
-    if (!isNew && line.indexOf("<calculation>") >= 0) {
-      isNew = true;
-      ignoreFileSpaceGroupName = true;
-      //setSpaceGroupName("P1");
-    }
     if (cellParams == null && line.startsWith("lattice")) {
       readCellParams();
       return true;
@@ -59,13 +61,10 @@ public class MagResReader extends AtomSetCollectionReader {
         setUnitsNew();
       } else if (line.startsWith("atom")) {
         readAtom(true);
-        atom.tensors = new Tensor[2];
       } else if (line.startsWith("symmetry")) {
         readSymmetryNew();
-      } else if (line.startsWith("ms")) {
-        readTensorNew(0);
-      } else if (line.startsWith("efg")) {
-        readTensorNew(1);
+      } else if (line.startsWith("ms") || line.startsWith("efg") || line.startsWith("isc")) {
+        readTensorNew();
       } else if (line.startsWith("<magres_old>")) {
         continuing = false;
       }
@@ -74,39 +73,45 @@ public class MagResReader extends AtomSetCollectionReader {
     if (line.contains("Coordinates")) {
       readAtom(false);
     } else if (line.contains("J-coupling Total")
-        || line.contains("TOTAL tensor")) {
+        || line.contains("TOTAL tensor")|| line.contains("TOTAL Shielding Tensor")) {
       readTensorOld();
     }
     return true;
   }
 
-  // 0 ms H                  1          1.9115355485265077E+01         -6.8441521786256319E+00          1.9869475943756368E-01         -7.4231606832789883E+00          3.5078237789073569E+01          1.6453141184608533E+00         -8.4492087560280138E-01          1.4000600350356041E+00          1.7999188282948701E+01
-  // 1 efg H                  1         -9.7305664267778647E-02         -1.3880930041098827E-01          8.3161631703720738E-03         -1.3880930041098827E-01          2.5187188360357782E-01         -4.4856574290225361E-02          8.3161631703720738E-03         -4.4856574290225361E-02         -1.5456621933580317E-01
+  // ms H                  1          1.9115355485265077E+01         -6.8441521786256319E+00          1.9869475943756368E-01         -7.4231606832789883E+00          3.5078237789073569E+01          1.6453141184608533E+00         -8.4492087560280138E-01          1.4000600350356041E+00          1.7999188282948701E+01
+  // efg H                  1         -9.7305664267778647E-02         -1.3880930041098827E-01          8.3161631703720738E-03         -1.3880930041098827E-01          2.5187188360357782E-01         -4.4856574290225361E-02          8.3161631703720738E-03         -4.4856574290225361E-02         -1.5456621933580317E-01
+  // isc_fc C                   2 H                   3         -1.0414024145274923E+00          5.9457737246691622E-02          1.3323917584132525E-01          5.9457737246692129E-02         -8.0480723469752380E-01          5.4194562595693906E-02          1.3323917584132525E-01          5.4194562595693989E-02         -8.1674287041188620E-01
 
-  private void readTensorNew(int iType) throws Exception {
-    float[] data = new float[9];
+  private void readTensorNew() throws Exception {
     String[] tokens = getTokens();
-    String atomName = (tokens[1] + tokens[2]);
-    fillFloatArray(line.substring(30), 0, data);
-    float f = (iType == 0 ? 0.01f : 1f);
-    //    if (isJ) {
-    //      discardLinesUntilContains("Isotropic");
-    //      float iso = parseFloatStr(getTokens()[3]);
-    //      if (Math.abs(iso) > maxIso)
-    //        return;
-    //      f = 0.04f;
-    //    }
+    String id = tokens[0];
+    int pt = id.indexOf("_");
+    String type = (pt < 0 ? id : id.substring(0, pt));
+    String atomName1 = getAtomName(tokens[1], tokens[2]);
+    pt = 3;
+    String atomName2 = (type.equals("isc") ? getAtomName(tokens[pt++], tokens[pt++]) : null);
+    // TODO: maxIso for isc?
     double[][] a = new double[3][3];
-    for (int i = 0, pt = 0; i < 3; i++)
+    for (int i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
-        a[i][j] = data[pt++];
-    atom = atomSetCollection.getAtoms()[atomSetCollection.getAtomIndexFromName(atomName)];
-    atom.tensors[iType] = Eigen.getEllipsoidDD(a);
-    atom.tensors[iType].setTypeFactor(f);
-    if (tensorTypes.indexOf("" + iType) < 0) {
-      tensorTypes += "" + iType;
-      appendLoadNote("Ellipsoids set " + (iType + 1) + ": "
-          + (iType == 0 ? "Magnetic Shielding" : "Electric Field Gradient"));
+        a[i][j] = Double.valueOf(tokens[pt++]).doubleValue();
+    int index1 = atomSetCollection.getAtomIndexFromName(atomName1);
+    int index2;
+    Tensor t = Eigen.getTensorFromArray(a, type);
+    if (atomName2 == null) {
+      index2 = -1;
+      atomSetCollection.getAtoms()[index1].addTensor(t, null);
+      interactionTensors.addLast(t);
+    } else {
+      index2 = atomSetCollection.getAtomIndexFromName(atomName2);
+    }
+    t.setAtomIndexes(index1, index2);  
+    if (tensorTypes.indexOf(type) < 0) {
+      tensorTypes += type;
+      appendLoadNote("Ellipsoids set \"" + type + "\": "
+          + (type.equals("ms") ? "Magnetic Shielding" : 
+            type.equals("efg") ? "Electric Field Gradient" : type.equals("isc") ? "Coupling" : "?"));
     }
   }
 
@@ -144,11 +149,11 @@ public class MagResReader extends AtomSetCollectionReader {
   private void readAtom(boolean isNew) {
     float f = ((isNew ? mapUnits.get("atom").startsWith("A") : line.trim()
         .endsWith("A")) ? 1 : ANGSTROMS_PER_BOHR);
-    int pt = (isNew ? 2 : 0);
     String[] tokens = getTokens();
     atom = new Atom();
-    atom.elementSymbol = tokens[pt];
-    atom.atomName = tokens[pt++] + tokens[pt++];
+    int pt = (isNew ? 1 : 0);
+    atom.elementSymbol = tokens[isNew ? pt++ : pt];
+    atom.atomName = getAtomName(tokens[pt++], tokens[pt++]);
     atomSetCollection.addAtomWithMappedName(atom);
     if (!isNew)
       pt++;
@@ -157,6 +162,10 @@ public class MagResReader extends AtomSetCollectionReader {
     float z = parseFloatStr(tokens[pt++]) * f;
     atom.set(x, y, z);
     setAtomCoord(atom);
+  }
+
+  private String getAtomName(String name, String index) {
+    return name + (name.indexOf("_") >= 0 ? "_" : "") + index;
   }
 
   /*
@@ -183,25 +192,24 @@ public class MagResReader extends AtomSetCollectionReader {
       appendLoadNote("Ellipsoids: " + line);
     }
     atomSetCollection.setAtomSetName(line);
-    boolean isJ = (line.indexOf("J-") >= 0);
+    String type = (line.indexOf("J-") >= 0 ? "isc" : line.indexOf("Shielding") >= 0 ? "ms" : "efg");
     float[] data = new float[9];
     readLine();
     String s = TextFormat.simpleReplace(readLine() + readLine() + readLine(),
         "-", " -");
     fillFloatArray(s, 0, data);
-    float f = 3;
-    if (isJ) {
+    //float f = 3;
+    if (type.equals("isc")) {
       discardLinesUntilContains("Isotropic");
       float iso = parseFloatStr(getTokens()[3]);
       if (Math.abs(iso) > maxIso)
         return;
-      f = 0.04f;
+      //f = 0.04f;
     }
     double[][] a = new double[3][3];
     for (int i = 0, pt = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         a[i][j] = data[pt++];
-    atom.setEllipsoid(Eigen.getEllipsoidDD(a));
-    atom.tensors[0].setTypeFactor(f);
+    atom.addTensor(Eigen.getTensorFromArray(a, type), null);
   }
 }

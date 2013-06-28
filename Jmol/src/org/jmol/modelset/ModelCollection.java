@@ -3092,9 +3092,9 @@ abstract public class ModelCollection extends BondCollection {
     if (partialCharges != null)
       for (int i = i0; i < atomCount; i++)
         partialCharges[i] = partialCharges[map[i]];
-    if (ellipsoids != null)
+    if (atomTensors != null)
       for (int i = i0; i < atomCount; i++)
-        ellipsoids[i] = ellipsoids[map[i]];
+        atomTensors[i] = atomTensors[map[i]];
     if (atomNames != null)
       for (int i = i0; i < atomCount; i++)
         atomNames[i] = atomNames[map[i]];
@@ -3117,8 +3117,8 @@ abstract public class ModelCollection extends BondCollection {
       bfactor100s = ArrayUtil.arrayCopyShort(bfactor100s, newLength);
     if (partialCharges != null)
       partialCharges = ArrayUtil.arrayCopyF(partialCharges, newLength);
-    if (ellipsoids != null)
-      ellipsoids = (Tensor[][]) ArrayUtil.arrayCopyObject(ellipsoids, newLength);
+    if (atomTensors != null)
+      atomTensors = (Tensor[][]) ArrayUtil.arrayCopyObject(atomTensors, newLength);
     if (atomNames != null)
       atomNames = ArrayUtil.arrayCopyS(atomNames, newLength);
     if (atomTypes != null)
@@ -3132,7 +3132,7 @@ abstract public class ModelCollection extends BondCollection {
                       int atomSerial, int atomSite, float x, float y, float z,
                       float radius, float vectorX, float vectorY,
                       float vectorZ, int formalCharge, float partialCharge,
-                      int occupancy, float bfactor, Tensor[] ellipsoid,
+                      int occupancy, float bfactor, JmolList<Tensor> tensors,
                       boolean isHetero, byte specialAtomID, BS atomSymmetry) {
     Atom atom = new Atom(modelIndex, atomCount, x, y, z, radius, atomSymmetry,
         atomSite, atomicAndIsotopeNumber, formalCharge, isHetero);
@@ -3147,8 +3147,8 @@ abstract public class ModelCollection extends BondCollection {
     setBFactor(atomCount, bfactor);
     setOccupancy(atomCount, occupancy);
     setPartialCharge(atomCount, partialCharge);
-    if (ellipsoid != null)
-      setEllipsoid(atomCount, ellipsoid);
+    if (tensors != null)
+      setTensors(atomCount, tensors);
     atom.group = group;
     atom.colixAtom = viewer.getColixAtomPalette(atom, EnumPalette.CPK.id);
     if (atomName != null) {

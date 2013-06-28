@@ -368,7 +368,7 @@ public class NWChemReader extends MOReader {
       // Keep gradients in a.u. (larger value that way)
       // need to multiply with -1 so the direction is in the direction the
       // atom needs to move to lower the energy
-      atomSetCollection.addVibrationVector(atom.atomIndex,
+      atomSetCollection.addVibrationVector(atom.index,
           -parseFloatStr(tokens[5]), -parseFloatStr(tokens[6]),
           -parseFloatStr(tokens[7]));
     }

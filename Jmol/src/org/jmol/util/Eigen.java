@@ -1059,7 +1059,17 @@ public class Eigen {
     return r;
   }
 
-  public static Tensor getEllipsoidDD(double[][] a) {
+  public static Tensor getTensorFromArray(double[][] a, String type) {
+    // symmetrize matrix
+    if (a[0][1] != a[1][0]) {
+      a[0][1] = a[1][0] = (a[0][1] + a[1][0])/2;
+    }
+    if (a[1][2] != a[2][1]) {
+      a[1][2] = a[2][1] = (a[1][2] + a[2][1])/2;
+    }
+    if (a[0][2] != a[2][0]) {
+      a[0][2] = a[2][0] = (a[0][2] + a[2][0])/2;
+    }
     Eigen eigen = new Eigen(3);
     eigen.calc(a);
     Matrix3f m = new Matrix3f();
@@ -1089,17 +1099,17 @@ public class Eigen {
     V3[] unitVectors = new V3[3];
     float[] eigenValues = new float[3];
     eigen.fillArrays(unitVectors, eigenValues);
-    return new Tensor().setVectors(unitVectors, eigenValues, false, 1);
+    return new Tensor().setVectors(unitVectors, eigenValues, type);
   }
 
-  public static Tensor getEllipsoid(V3[] eigenVectors, float[] eigenValues,
-                                    boolean isThermal) {
+  public static Tensor getTensorFromVectors(V3[] eigenVectors, float[] eigenValues,
+                                    String type) {
     //[0] is shortest; [2] is longest
     V3[] unitVectors = new V3[3];
     for (int i = eigenVectors.length; --i >= 0;)
       unitVectors[i] = V3.newV(eigenVectors[i]);
     sort(unitVectors, eigenValues);
-    return new Tensor().setVectors(unitVectors, eigenValues, isThermal, 1);
+    return new Tensor().setVectors(unitVectors, eigenValues, type);
   }
 
   /**
@@ -1115,7 +1125,7 @@ public class Eigen {
         new Object[] { eigenVectors[2], Float.valueOf(eigenValues[2]) } };
     Arrays.sort(o, new EigenSort());
     for (int i = 0; i < 3; i++) {
-      eigenVectors[i] = V3.newV((V3) o[i][0]);
+      eigenVectors[i] = (V3)o[i][0];
       eigenVectors[i].normalize();
       eigenValues[i] = ((Float) o[i][1]).floatValue();
     }

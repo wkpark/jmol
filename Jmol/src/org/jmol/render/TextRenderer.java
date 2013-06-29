@@ -50,7 +50,7 @@ class TextRenderer {
     if (text.image == null && text.bgcolix != 0) {
       if (showText)
         g3d.setColix(text.bgcolix);
-      showBox(g3d, text.colix, (int) text.boxX, (int) text.boxY, text.z + 2,
+      showBox(g3d, text.colix, (int) text.boxX, (int) text.boxY + text.boxYoff2*2, text.z + 2,
           text.zSlab, (int) text.boxWidth, (int) text.boxHeight,
           text.fontScale, text.isLabelOrHover);
       if (!showText)
@@ -80,12 +80,12 @@ class TextRenderer {
       if (!g3d.setColix((text.pointer & Object2d.POINTER_BACKGROUND) != 0 && text.bgcolix != 0 ? text.bgcolix
               : text.colix))
         return;
-      if (text.boxX > text.movableX)
-        g3d.drawLineXYZ(text.movableX, text.movableY, text.zSlab , 
+      if (text.boxX > text.atomX)
+        g3d.drawLineXYZ(text.atomX, text.atomY, text.atomZ, 
             (int) text.boxX, (int) (text.boxY + text.boxHeight / 2),
             text.zSlab);
-      else if (text.boxX + text.boxWidth < text.movableX)
-        g3d.drawLineXYZ(text.movableX, text.movableY, text.zSlab, 
+      else if (text.boxX + text.boxWidth < text.atomX)
+        g3d.drawLineXYZ(text.atomX, text.atomY, text.atomZ, 
             (int) (text.boxX + text.boxWidth), 
             (int) (text.boxY + text.boxHeight / 2), text.zSlab);
     }

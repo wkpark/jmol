@@ -164,6 +164,9 @@ public class LabelsRenderer extends FontLineShapeRenderer {
     if (text != null) {
       if (text.font == null)
         text.setFontFromFid(fid);
+      text.atomX = atomPt.screenX; // just for pointer
+      text.atomY = atomPt.screenY;
+      text.atomZ = zSlab;
       if (text.pymolOffset == null) {
         text.setXYZs(atomPt.screenX, atomPt.screenY, zBox, zSlab);
         text.setColix(labelColix);
@@ -208,6 +211,9 @@ public class LabelsRenderer extends FontLineShapeRenderer {
       } else {
         text = Text.newLabel(g3d.getGData(), font3d, label, labelColix,
             bgcolix, textAlign, 0, null);
+        text.atomX = atomPt.screenX; // just for pointer
+        text.atomY = atomPt.screenY;
+        text.atomZ = zSlab;
         text.setXYZs(atomPt.screenX, atomPt.screenY, zBox, zSlab);
         newText = true;
       }

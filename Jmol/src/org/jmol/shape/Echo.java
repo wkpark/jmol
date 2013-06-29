@@ -29,6 +29,7 @@ import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.C;
+import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
 
 import java.util.Iterator;
@@ -67,6 +68,14 @@ public class Echo extends TextShape {
       return;
     }
 
+    if ("point" == propertyName) {
+      if (currentObject == null)
+        return;
+      Text t = (Text) currentObject;
+      t.pointerPt = (value == null ? null : P3.newP((P3)value));
+      t.pointer = (value == null ? Object2d.POINTER_NONE : Object2d.POINTER_ON);
+      return;
+    }
     if ("xyz" == propertyName) {
       if (currentObject != null && viewer.getBoolean(T.fontscaling))
         currentObject.setScalePixelsPerMicron(viewer

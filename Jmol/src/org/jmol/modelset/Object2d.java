@@ -41,9 +41,8 @@ public abstract class Object2d {
 
   public int align;
   public int valign;
-  public int movableX;
-  public int movableY;
-  public int movableZ;
+  public int atomX, atomY, atomZ = Integer.MAX_VALUE;
+  public int movableX, movableY, movableZ;
   public int movableXPercent = Integer.MAX_VALUE;
   public int movableYPercent = Integer.MAX_VALUE;
   public int movableZPercent = Integer.MAX_VALUE;
@@ -93,6 +92,8 @@ public abstract class Object2d {
 
   public void setXYZ(P3 xyz, boolean doAdjust) {
     this.xyz = xyz;
+    if (xyz == null)
+      this.zSlab = Integer.MIN_VALUE;
     if (doAdjust) {
       valign = (xyz == null ? VALIGN_XY : VALIGN_XYZ);
       setAdjustForWindow(xyz == null);

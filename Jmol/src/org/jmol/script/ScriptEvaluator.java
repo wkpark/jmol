@@ -13601,6 +13601,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         echo(pt - 1, id, isImage);
         return;
+      case T.point:
+        propertyName = "point";
+        propertyValue = (isCenterParameter(pt) ? centerParameter(pt) : null);
+        pt = iToken + 1;
+        break;
       default:
         if (isCenterParameter(pt - 1)) {
           propertyName = "xyz";

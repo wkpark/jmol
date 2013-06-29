@@ -1326,6 +1326,11 @@ public class StateCreator implements JmolStateCreator {
     if (t.modelIndex >= 0)
       s.append("  ").append(echoCmd).append(" model ").append(
           viewer.getModelNumberDotted(t.modelIndex)).append(";\n");
+    if (t.pointerPt != null) {
+      s.append("  ").append(echoCmd).append(" point ").append(
+          Escape.eP(t.pointerPt)).append(";\n");
+
+    }
     //    }
     //isDefine and target==top: do all
     //isDefine and target!=top: just start

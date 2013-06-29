@@ -56,6 +56,17 @@ public class EchoRenderer extends LabelsRenderer {
         int z = viewer.zValueFromPercent(t.movableZPercent);
         t.setZs(z, z);
       }
+      if (t.pointerPt == null) {
+        t.pointer = Object2d.POINTER_NONE;
+      } else {
+        t.pointer = Object2d.POINTER_ON;
+        viewer.transformPtScr(t.pointerPt, pt0i);
+        t.atomX = pt0i.x;
+        t.atomY = pt0i.y;
+        t.atomZ = pt0i.z;
+        if (t.zSlab == Integer.MIN_VALUE)
+          t.zSlab = 1;
+      }
       TextRenderer.render(t, viewer, g3d, scalePixelsPerMicron, imageFontScaling,
           false, null, xy);
       if (C.isColixTranslucent(t.bgcolix) || C.isColixTranslucent(t.colix))

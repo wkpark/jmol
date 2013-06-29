@@ -26,6 +26,7 @@ package org.jmol.modelset;
 
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+import org.jmol.util.P3;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.TextFormat;
 
@@ -48,7 +49,7 @@ public class Text extends Object2d {
   public JmolFont font;
   private byte fid;
   private int ascent;
-  private int descent;
+  public int descent;
   private int lineHeight;
 
   private int textWidth;
@@ -132,6 +133,10 @@ public class Text extends Object2d {
 
   public Object image;
   public float imageScale = 1;
+
+  public  int boxYoff2;
+  
+  
   public void setImage(Object image) {
     this.image = image;
     // this.text will be file name
@@ -262,6 +267,9 @@ public class Text extends Object2d {
         boxXY[1] = movableY - yAdj;
         y0 = movableY - dy - descent;        
         isExact = true;
+        boxYoff2 = -2; // empirica fudge factor 
+      } else {
+        boxYoff2 = 0;
       }
       setBoxXY(boxWidth, boxHeight, dx, dy, boxXY, isExact);
     } else {
@@ -401,6 +409,8 @@ public class Text extends Object2d {
   private float xAdj, yAdj;
 
   private float y0;
+
+  public P3 pointerPt; // for echo
 
   public void setXYA(float[] xy, int i) {
     if (i == 0) {

@@ -24,32 +24,149 @@
 
 package org.jmol.util;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 public class Tensor {
 
   private static float TEMPERATURE_FACTOR = (float) (Math.sqrt(0.5) / Math.PI);
-  private static final float MAGNETIC_SUSCEPTIBILITY_FACTOR = 0.1f;
+  private static final float MAGNETIC_SUSCEPTIBILITY_FACTOR = 0.01f;
   private static final float BORN_EFFECTIVE_CHARGE_FACTOR = 1f;
   private static final float INTERACTION_FACTOR = 0.04f;
-  
-  public String id;
-  public String type; // null == > 
-  public V3[] eigenVectors; // possibly null (isotropic)
-  public float[] eigenValues;
-  public int modelIndex;
-  public P3 center = P3.new3(0, 0, 0);
-  public boolean forThermalEllipsoid = true;
-  public float scale = 1;
+
+  private static TensorSort tSort;
+
+  private double[][] asymmetricTensor;
+    
+
+  public String type; // iso temp ms isc charge TLS-R TLS-U...
+  public String altType; // "0" "1" "2"
   public float typeFactor = 1;
-  public int eigenSignMask = 7;
-  public float[] lengths; // depends upon type
-  public double[] coef; // from equation
+
+  public int modelIndex;
   public int atomIndex1 = -1;
   public int atomIndex2 = -1;
 
-  public Tensor setThermal(double[] coef) {
-    this.coef = coef;
-    eigenValues = new float[3];
-    eigenVectors = new V3[3];
+  public V3[] eigenVectors; // possibly null (isotropic)
+  public float[] eigenValues;
+
+  public boolean forThermalEllipsoid = true;
+  public int eigenSignMask = 7;
+  public boolean isIsotropic;
+
+  public static Tensor copyTensor(Tensor t0) {
+    Tensor t = new Tensor();
+    t.eigenValues = t0.eigenValues;
+    t.eigenVectors = t0.eigenVectors;
+    t.asymmetricTensor = t0.asymmetricTensor;
+    t.type = t0.type;
+    t.typeFactor = t0.typeFactor;
+    return t;
+  }
+
+
+  public double[][] getAsymmetricTensor() {
+    return asymmetricTensor;
+  }
+
+  /**
+   * all instantiation must go through one of the static getTensor... methods
+   * 
+   */
+  private Tensor() {}
+  
+  /**
+   * 
+   * @param asymmetricTensor
+   * @param type
+   * @return Tensor
+   */
+  public static Tensor getTensorFromAsymmetricTensor(double[][] asymmetricTensor, String type) {
+    double[][] a = new double[3][3];    
+    for (int i = 3; --i >= 0;)
+      for (int j = 3; --j >= 0;)
+        a[i][j] = asymmetricTensor[i][j];
+    
+    // symmetrize matrix
+    if (a [0][1] != a[1][0]) {
+      a[0][1] = a[1][0] = (a[0][1] + a[1][0])/2;
+    }
+    if (a[1][2] != a[2][1]) {
+      a[1][2] = a[2][1] = (a[1][2] + a[2][1])/2;
+    }
+    if (a[0][2] != a[2][0]) {
+      a[0][2] = a[2][0] = (a[0][2] + a[2][0])/2;
+    }
+    Eigen eigen = new Eigen(3);
+    eigen.calc(a);
+    Matrix3f m = new Matrix3f();
+    float[] mm = new float[9];
+    for (int i = 0, p = 0; i < 3; i++)
+      for (int j = 0; j < 3; j++)
+        mm[p++] = (float) a[i][j];
+    m.setA(mm);
+
+    V3[] evec = eigen.getEigenVectors3();
+    V3 n = new V3();
+    V3 cross = new V3();
+    for (int i = 0; i < 3; i++) {
+      n.setT(evec[i]);
+      m.transform(n);
+      cross.cross(n, evec[i]);
+      //Logger.info("v[i], n, n x v[i]"+ evec[i] + " " + n + " "  + cross);
+      n.setT(evec[i]);
+       n.normalize();
+      cross.cross(evec[i], evec[(i + 1) % 3]);
+      //Logger.info("draw id eigv" + i + " " + Escape.eP(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
+    }
+//    Logger.info("eigVal+vec (" + eigen.d[0] + " + " + eigen.e[0]
+//        + ")\n             (" + eigen.d[1] + " + " + eigen.e[1]
+//        + ")\n             (" + eigen.d[2] + " + " + eigen.e[2] + ")");
+
+    V3[] vectors = new V3[3];
+    float[] values = new float[3];
+    eigen.fillArrays(vectors, values);
+    Tensor t = newTensorType(vectors, values, type);
+    t.asymmetricTensor = asymmetricTensor;
+    return t;
+  }
+
+  public static Tensor getTensorFromEigenVectors(V3[] eigenVectors,
+                                            float[] eigenValues, String type) {
+    float[] values = new float[3];
+    V3[] vectors = new V3[3];
+    for (int i = 0; i < 3; i++) {
+      vectors[i] = V3.newV(eigenVectors[i]);
+      values[i] = eigenValues[i];
+    }    
+    Tensor t = newTensorType(vectors, values, type);
+    t.isIsotropic = "iso".equals(type);
+    return t;
+  }
+
+  public static Tensor getTensorFromAxes(V3[] axes) {
+    Tensor t = new Tensor();
+    t.eigenValues = new float[3];
+    t.eigenVectors = new V3[3];
+    for (int i = 0; i < 3; i++) {
+      t.eigenVectors[i] = V3.newV(axes[i]);
+      t.eigenValues[i] = axes[i].length();
+      if (t.eigenValues[i] == 0)
+        return null;
+      t.eigenVectors[i].normalize();
+    }
+    if (Math.abs(t.eigenVectors[0].dot(t.eigenVectors[1])) > 0.0001f
+        || Math.abs(t.eigenVectors[1].dot(t.eigenVectors[2])) > 0.0001f 
+        || Math.abs(t.eigenVectors[2].dot(t.eigenVectors[0])) > 0.0001f)
+      return null;
+    sort(t.eigenVectors, t.eigenValues);
+    return t;
+  }
+
+  public static Tensor getTensorFromThermalEquation(double[] coef) {
+    Tensor t = new Tensor();
+    t.eigenValues = new float[3];
+    t.eigenVectors = new V3[3];
     // assumes an ellipsoid centered on 0,0,0
     // called by UnitCell for the initial creation of Object[] ellipsoid    
     double[][] mat = new double[3][3];
@@ -59,30 +176,25 @@ public class Tensor {
     mat[0][1] = mat[1][0] = coef[3] / 2; //XY
     mat[0][2] = mat[2][0] = coef[4] / 2; //XZ
     mat[1][2] = mat[2][1] = coef[5] / 2; //YZ
-    Eigen.getUnitVectors(mat, eigenVectors, eigenValues);
-    typeFactor = TEMPERATURE_FACTOR;
-    type = "temp";
-    setTypeFactor();
-    eigenSignMask = 7;
-    return this;
+    Eigen.getUnitVectors(mat, t.eigenVectors, t.eigenValues);
+    sort(t.eigenVectors, t.eigenValues);
+    t.typeFactor = TEMPERATURE_FACTOR;
+    t.type = "temp";
+    t.setTypeFactor();
+    return t;
   }
 
-  /**
-   * 
-   * @param eigenVectors
-   *        may be null, in which case typeFactor = 1
-   * @param eigenValues
-   * @param type
-   * @return this tensor
-   */
-  public Tensor setVectors(V3[] eigenVectors, float[] eigenValues, String type) {
-    this.eigenVectors = eigenVectors;
-    this.eigenValues = eigenValues;
-    this.type = type;
-    setTypeFactor();
-    eigenSignMask = (eigenValues[0] >= 0 ? 1 : 0)
-        + (eigenValues[1] >= 0 ? 2 : 0) + (eigenValues[2] >= 0 ? 4 : 0);
-    return this;
+  private static Tensor newTensorType(V3[] vectors, float[] values, String type) {
+    Tensor t = new Tensor();
+    t.eigenValues = values;
+    t.eigenVectors = vectors;
+    for (int i = 0; i < 3; i++)
+      t.eigenVectors[i].normalize();
+    sort(t.eigenVectors, t.eigenValues);
+    t.setType(type);
+    t.eigenSignMask = (t.eigenValues[0] >= 0 ? 1 : 0)
+        + (t.eigenValues[1] >= 0 ? 2 : 0) + (t.eigenValues[2] >= 0 ? 4 : 0);
+    return t;
   }
 
   private void setTypeFactor() {
@@ -119,26 +231,9 @@ public class Tensor {
     return this;
   }
 
-  public void setScale(float scale) {
-    this.scale = scale;
-    lengths = null;
-  }
-
-  public float getLength(int i) {
-    if (lengths == null)
-      setLengths();
-    return lengths[i];
-  }
-
-  public void setLengths() {
-    if (lengths == null)
-      lengths = new float[3];
-    if (forThermalEllipsoid)
-      for (int i = 0; i < lengths.length; i++)
-        lengths[i] = (float) (Math.sqrt(Math.abs(eigenValues[i])) * typeFactor * scale);
-    else
-      for (int i = 0; i < lengths.length; i++)
-        lengths[i] = (Math.abs(eigenValues[i]) * typeFactor * scale);
+  public float getFactoredValue(int i) {
+    float f = Math.abs(eigenValues[i]);
+    return (forThermalEllipsoid ? (float) Math.sqrt(f) : f) * typeFactor;
   }
 
   public void setAtomIndexes(int index1, int index2) {
@@ -146,57 +241,45 @@ public class Tensor {
     atomIndex2 = index2;
   }
 
+  private static int[] sortOrder = { 1, 0, 2 };
+
   /**
-   * set first element to be thermal ellipsoid if TLS is present
+   * sorts EigenVectors by
    * 
-   * @param list
-   * @param atomIndex
-   * @return somewhat ordered array
+   * and normalize the eigenVectors
+   * 
+   * @param eigenVectors
+   * @param eigenValues
    */
-  public static Tensor[] getStandardArray(JmolList<Tensor> list, int atomIndex) {
-    int  n = list.size();
-    for (int i = n; --i >= 0;)
-      list.get(i).setAtomIndexes(atomIndex, -1);
-    int pt = -1;
-    boolean haveTLS = false;
-    for (int i = n; --i >= 0;) {
-      Tensor t = list.get(i);
-      if (t.forThermalEllipsoid)
-        pt = i;
-      else if (t.type.equals("TLS-U"))
-        haveTLS = true;
+  private static void sort(V3[] eigenVectors, float[] eigenValues) {
+    // |sigma_3 - sigma_iso| >= |sigma_1 - sigma_iso| >= |sigma_2 - sigma_iso|
+    // first sorted 3 2 1, then 1 and 2 are switched using the sortOrder above.
+    Object[][] o = new Object[][] {
+        new Object[] { eigenVectors[0], Float.valueOf(eigenValues[0]) },
+        new Object[] { eigenVectors[1], Float.valueOf(eigenValues[1]) },
+        new Object[] { eigenVectors[2], Float.valueOf(eigenValues[2]) } };
+    float sigmaIso = (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3f;
+    Arrays.sort(o, getTensorSort(sigmaIso));
+    for (int i = 0; i < 3; i++) {
+      eigenValues[i] = ((Float) o[sortOrder[i]][1]).floatValue();
+      eigenVectors[i] = (V3) o[sortOrder[i]][0];
+      eigenVectors[i].normalize();
     }
-    Tensor[] a = new Tensor[(pt >= 0 || !haveTLS ? 0 : 1) + n];
-    if (pt >= 0) {
-      a[0] = list.get(pt);
-      if (list.size() == 1)
-        return a;
-    }
-    // back-fills list for TLS:
-    // 0 = temp, 1 = TLS-R, 2 = TLS-U
-    if (haveTLS) {
-      pt = 0;
-      for (int i = n; --i >= 0;) {
-        Tensor t = list.get(i);
-        if (t.forThermalEllipsoid)
-          continue;
-        a[++pt] = t;
-      }
-    } else {
-      for (int i = 0; i < n; i++)
-        a[i] = list.get(i);
-    }
-    return a;
+  }
+
+  private static Comparator<? super Object[]> getTensorSort(float sigmaIso) {
+    if (tSort == null)
+      tSort = new TensorSort();
+    tSort.sigmaIso = sigmaIso;
+    return tSort;
   }
 
   @Override
   public String toString() {
-    setLengths();
-    return (type + " " + eigenVectors == null ? "" + eigenValues[0]
-        : eigenVectors[0] + "\t" + eigenValues[0] + "\t" + lengths[0] + "\n" 
-        + eigenVectors[1] + "\t" + eigenValues[1] + "\t" + lengths[1] + "\n"
-        + eigenVectors[2] + "\t" + eigenValues[2] + "\t" + lengths[2] + "\n");
+    return (type + "\n" + (eigenVectors == null ? ""
+        + eigenValues[0] : eigenVectors[0] + "\t" + eigenValues[0] + "\t"
+        + "\n" + eigenVectors[1] + "\t" + eigenValues[1] + "\t" + "\n"
+        + eigenVectors[2] + "\t" + eigenValues[2] + "\t" + "\n"));
   }
-
 
 }

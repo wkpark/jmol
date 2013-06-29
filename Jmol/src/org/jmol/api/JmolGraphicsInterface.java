@@ -26,7 +26,7 @@ public interface JmolGraphicsInterface {
 
   public abstract boolean isClippedZ(int z);
 
-  public abstract boolean isClippedXY(int i, int screenX, int screenY);
+  public abstract boolean isClippedXY(int diameter, int screenX, int screenY);
 
   public abstract boolean isInDisplayRange(int x, int y);
 

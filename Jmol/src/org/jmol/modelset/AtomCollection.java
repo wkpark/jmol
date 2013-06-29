@@ -28,6 +28,7 @@ package org.jmol.modelset;
 import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.Map;
 
 
@@ -153,7 +154,8 @@ abstract public class AtomCollection {
   float[] ionicRadii;
   float[] hydrophobicities;
   
-  protected Tensor[][] atomTensors;
+  protected Tensor[][] atomTensorList; // specifically now for {*}.adpmin {*}.adpmax
+  public Map<String, JmolList<Tensor>> atomTensors;
   protected int[] surfaceDistance100s;
 
   protected boolean haveStraightness;
@@ -245,9 +247,80 @@ abstract public class AtomCollection {
     return atoms[i].getChainIDStr();
   }
 
-  public Tensor[] getAtomTensors(int i) {
-    return (i < 0 || atomTensors == null || i >= atomTensors.length ? null
-        : atomTensors[i]);
+  public Tensor[] getAtomTensorList(int i) {
+    return (i < 0 || atomTensorList == null || i >= atomTensorList.length ? null
+        : atomTensorList[i]);
+  }
+
+  protected void setAtomTensors(int atomIndex, JmolList<Tensor> list) {
+    if (list == null || list.size() == 0)
+      return;
+    if (atomTensors == null)
+      atomTensors = new Hashtable<String, JmolList<Tensor>>();
+    if (atomTensorList == null)
+      atomTensorList = new Tensor[atoms.length][];
+    atomTensorList[atomIndex] = getTensorList(list);
+    for (int i = list.size(); --i >= 0;) {
+      Tensor t = list.get(i);
+      t.atomIndex1 = atomIndex;
+      t.atomIndex2 = -1;
+      t.modelIndex = atoms[atomIndex].modelIndex;
+      addTensor(t, t.type);
+      int pt = "charge temp   TLS-R  TLS-U".indexOf(t.type + " ");
+      //        0      7      14     21
+      // "1" is assigned for Born Effective Charges and temperature
+      // "2" is TLS-R
+      // "3" is TLS-U
+      // and no more of that!
+      if (pt >= 0) {
+        addTensor(t, t.altType = "" + (pt >= 14 ? pt / 7: 1));        
+      }
+    }
+  }
+
+  public JmolList<Tensor> getAllAtomTensors(String type) {
+    return atomTensors.get(type);
+  }
+  
+  private Tensor[] getTensorList(JmolList<Tensor> list) {
+    int pt = -1;
+    boolean haveTLS = false;
+    int n = list.size();
+    for (int i = n; --i >= 0;) {
+      Tensor t = list.get(i);
+      if (t.forThermalEllipsoid)
+        pt = i;
+      else if (t.type.equals("TLS-U"))
+        haveTLS = true;
+    }
+    Tensor[] a = new Tensor[(pt >= 0 || !haveTLS ? 0 : 1) + n];
+    if (pt >= 0) {
+      a[0] = list.get(pt);
+      if (list.size() == 1)
+        return a;
+    }
+    // back-fills list for TLS:
+    // 0 = temp, 1 = TLS-R, 2 = TLS-U
+    if (haveTLS) {
+      pt = 0;
+      for (int i = n; --i >= 0;) {
+        Tensor t = list.get(i);
+        if (t.forThermalEllipsoid)
+          continue;
+        a[++pt] = t;
+      }
+    } else {
+      for (int i = 0; i < n; i++)
+        a[i] = list.get(i);
+    }
+    return a;
+ }
+
+  private void addTensor(Tensor t, String type) {
+    JmolList<Tensor> tensors = atomTensors.get(type);
+    if (tensors == null)
+      atomTensors.put(type, tensors = new JmolList<Tensor>()); 
+    tensors.addLast(t);
   }
 
   public Quaternion getQuaternion(int i, char qtype) {
@@ -798,14 +871,6 @@ abstract public class AtomCollection {
     }
     hydrophobicities[atomIndex] = value;
     return true;
-  }
-
-  protected void setTensors(int atomIndex, JmolList<Tensor> list) {
-    if (list == null || list.size() == 0)
-      return;
-    if (atomTensors == null)
-      atomTensors = new Tensor[atoms.length][];
-    atomTensors[atomIndex] = Tensor.getStandardArray(list, atomIndex);
   }
 
   // loading data
@@ -2494,7 +2559,7 @@ abstract public class AtomCollection {
     return bs;
   }
 
-  protected void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bs) {
+  protected void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsAtoms) {
     // all atoms in the model are being deleted here
     atoms = (Atom[]) ArrayUtil.deleteElements(atoms, firstAtomIndex, nAtoms);
     atomCount = atoms.length;
@@ -2502,6 +2567,7 @@ abstract public class AtomCollection {
       atoms[j].index = j;
       atoms[j].modelIndex--;
     }
+    deleteAtomTensors(bsAtoms);
     atomNames = (String[]) ArrayUtil.deleteElements(atomNames, firstAtomIndex,
         nAtoms);
     atomTypes = (String[]) ArrayUtil.deleteElements(atomTypes, firstAtomIndex,
@@ -2515,7 +2581,7 @@ abstract public class AtomCollection {
         firstAtomIndex, nAtoms);
     partialCharges = (float[]) ArrayUtil.deleteElements(partialCharges,
         firstAtomIndex, nAtoms);
-    atomTensors = (Tensor[][]) ArrayUtil.deleteElements(atomTensors,
+    atomTensorList = (Tensor[][]) ArrayUtil.deleteElements(atomTensorList,
         firstAtomIndex, nAtoms);
     vibrations = (Vibration[]) ArrayUtil.deleteElements(vibrations,
         firstAtomIndex, nAtoms);
@@ -2524,8 +2590,27 @@ abstract public class AtomCollection {
     surfaceDistance100s = null;
     if (tainted != null)
       for (int i = 0; i < TAINT_MAX; i++)
-        BSUtil.deleteBits(tainted[i], bs);
+        BSUtil.deleteBits(tainted[i], bsAtoms);
     // what about data?
+  }
+
+  // clean out deleted model atom tensors (ellipsoids)
+  private void deleteAtomTensors(BS bsAtoms) {
+    if (atomTensors == null)
+      return;
+    JmolList<String> toDelete = new JmolList<String>();
+    for (String key: atomTensors.keySet()) {
+      JmolList<Tensor> list = atomTensors.get(key);
+      for (int i = list.size(); --i >= 0;) {
+        Tensor t = list.get(i);
+        if (bsAtoms.get(t.atomIndex1) || t.atomIndex2 >= 0 && bsAtoms.get(t.atomIndex2))
+          list.remove(i);
+      }
+      if (list.size() == 0)
+        toDelete.addLast(key);
+    }
+    for (int i = toDelete.size(); --i >= 0;)
+      atomTensors.remove(toDelete.get(i));
   }
 
   public void getAtomIdentityInfo(int i, Map<String, Object> info) {

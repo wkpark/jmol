@@ -616,47 +616,47 @@ public final class ModelLoader {
    * Model numbers are considerably more complicated in Jmol 11.
    * 
    * int modelNumber
-   *  
-   *   The adapter gives us a modelNumber, but that is not necessarily
-   *   what the user accesses. If a single files is loaded this is:
-   *   
-   *   a) single file context:
-   *   
-   *     1) the sequential number of the model in the file , or
-   *     2) if a PDB file and "MODEL" record is present, that model number
-   *     
-   *   b) multifile context:
-   *   
-   *     always 1000000 * (fileIndex + 1) + (modelIndexInFile + 1)
-   *   
-   *   
+   * 
+   * The adapter gives us a modelNumber, but that is not necessarily what the
+   * user accesses. If a single files is loaded this is:
+   * 
+   * a) single file context:
+   * 
+   * 1) the sequential number of the model in the file , or 2) if a PDB file and
+   * "MODEL" record is present, that model number
+   * 
+   * b) multifile context:
+   * 
+   * always 1000000 * (fileIndex + 1) + (modelIndexInFile + 1)
+   * 
+   * 
    * int fileIndex
    * 
-   *   The 0-based reference to the file containing this model. Used
-   *   when doing   "_modelnumber3.2" in a multifile context
-   *   
+   * The 0-based reference to the file containing this model. Used when doing
+   * "_modelnumber3.2" in a multifile context
+   * 
    * int modelFileNumber
    * 
-   *   An integer coding both the file and the model:
-   *   
-   *     file * 1000000 + modelInFile (1-based)
-   *     
-   *   Used all over the place. Note that if there is only one file,
-   *   then modelFileNumber < 1000000.
+   * An integer coding both the file and the model:
+   * 
+   * file * 1000000 + modelInFile (1-based)
+   * 
+   * Used all over the place. Note that if there is only one file, then
+   * modelFileNumber < 1000000.
    * 
    * String modelNumberDotted
-   *   
-   *   A number the user can use "1.3"
-   *   
+   * 
+   * A number the user can use "1.3"
+   * 
    * String modelNumberForAtomLabel
    * 
-   *   Either the dotted number or the PDB MODEL number, if there is only one file
-   *   
+   * Either the dotted number or the PDB MODEL number, if there is only one file
+   * 
    * @param baseModelCount
-   *    
+   * 
    */
   private void finalizeModels(int baseModelCount) {
-    int modelCount= modelSet.modelCount;
+    int modelCount = modelSet.modelCount;
     if (modelCount == baseModelCount)
       return;
     String sNum;
@@ -714,18 +714,20 @@ public final class ModelLoader {
       modelSet.modelFileNumbers[i] = filenumber * 1000000 + modelnumber;
       if (modelNames[i] == null || modelNames[i].length() == 0)
         modelNames[i] = sNum;
-   }
-    
+    }
     if (merging)
       for (int i = 0; i < baseModelCount; i++)
         models[i].modelSet = modelSet;
-    
+
     // this won't do in the case of trajectories
     for (int i = 0; i < modelCount; i++) {
       modelSet.setModelAuxiliaryInfo(i, "modelName", modelNames[i]);
-      modelSet.setModelAuxiliaryInfo(i, "modelNumber", Integer.valueOf(modelNumbers[i] % 1000000));
-      modelSet.setModelAuxiliaryInfo(i, "modelFileNumber", Integer.valueOf(modelSet.modelFileNumbers[i]));
-      modelSet.setModelAuxiliaryInfo(i, "modelNumberDotted", modelSet.getModelNumberDotted(i));
+      modelSet.setModelAuxiliaryInfo(i, "modelNumber", Integer
+          .valueOf(modelNumbers[i] % 1000000));
+      modelSet.setModelAuxiliaryInfo(i, "modelFileNumber", Integer
+          .valueOf(modelSet.modelFileNumbers[i]));
+      modelSet.setModelAuxiliaryInfo(i, "modelNumberDotted", modelSet
+          .getModelNumberDotted(i));
       String codes = (String) modelSet.getModelAuxiliaryInfoValue(i, "altLocs");
       if (codes != null) {
         Logger.info("model " + modelSet.getModelNumberDotted(i)

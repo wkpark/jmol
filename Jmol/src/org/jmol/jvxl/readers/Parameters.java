@@ -427,7 +427,7 @@ public class Parameters {
     script = getScriptParams() + " SPHERE " + radius + ";";
   }
   
-  void setEllipsoid(P4 v) {
+  void setEllipsoidP4(P4 v) {
     dataType = SURFACE_ELLIPSOID2;
     distance = 1f;
     setEccentricity(v);
@@ -440,7 +440,7 @@ public class Parameters {
   }
 
   float[] anisoB;
-  public void setEllipsoid(float[] bList) {
+  public void setEllipsoidAF(float[] bList) {
     anisoB = bList;
     //for (int i = 0; i < 6; i++)System.out.print(bList[i] + " ");System.out.println( " in Parameters setEllipsoid" + center);
     dataType = SURFACE_ELLIPSOID3;

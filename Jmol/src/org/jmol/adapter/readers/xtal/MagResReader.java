@@ -16,7 +16,6 @@ import org.jmol.util.TextFormat;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.Eigen;
 
 public class MagResReader extends AtomSetCollectionReader {
 
@@ -98,7 +97,7 @@ public class MagResReader extends AtomSetCollectionReader {
         a[i][j] = Double.valueOf(tokens[pt++]).doubleValue();
     int index1 = atomSetCollection.getAtomIndexFromName(atomName1);
     int index2;
-    Tensor t = Eigen.getTensorFromArray(a, type);
+    Tensor t = Tensor.getTensorFromAsymmetricTensor(a, type);
     if (atomName2 == null) {
       index2 = -1;
       atomSetCollection.getAtoms()[index1].addTensor(t, null);
@@ -210,6 +209,6 @@ public class MagResReader extends AtomSetCollectionReader {
     for (int i = 0, pt = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         a[i][j] = data[pt++];
-    atom.addTensor(Eigen.getTensorFromArray(a, type), null);
+    atom.addTensor(Tensor.getTensorFromAsymmetricTensor(a, type), null);
   }
 }

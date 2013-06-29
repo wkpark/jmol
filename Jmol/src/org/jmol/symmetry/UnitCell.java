@@ -33,6 +33,8 @@ import org.jmol.util.P3i;
 import org.jmol.util.Tensor;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Tuple3f;
+import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 
 /**
  * a class private to the org.jmol.symmetry package
@@ -226,6 +228,9 @@ class UnitCell extends SimpleUnitCell {
   }
   
   final private static double twoP2 = 2 * Math.PI * Math.PI;
+
+  private final static V3[] unitVectors = {
+    JC.axisX, JC.axisY, JC.axisZ};
   
   Tensor getTensor(float[] parBorU) {
     if (parBorU == null)
@@ -294,11 +299,11 @@ class UnitCell extends SimpleUnitCell {
      */
 
     if (parBorU[0] == 0) { // this is iso
-      float[] eigenValues = new float[3];
-      eigenValues[0] = eigenValues[1] = eigenValues[2] = parBorU[7];
+      float f = parBorU[7];
+      float[] eigenValues = new float[] {f, f, f};
       // sqrt will be taken when converted to lengths later
       // no factor of 0.5 pi^2
-      return new Tensor().setVectors(null, eigenValues, "iso");
+      return Tensor.getTensorFromEigenVectors(unitVectors, eigenValues, "iso");
     }
 
     double[] Bcart = new double[6];
@@ -358,7 +363,7 @@ class UnitCell extends SimpleUnitCell {
 
     //System.out.println("UnitCell Bcart=" + Bcart[0] + " " + Bcart[1] + " "
       //  + Bcart[2] + " " + Bcart[3] + " " + Bcart[4] + " " + Bcart[5]);
-    return new Tensor().setThermal(Bcart);
+    return Tensor.getTensorFromThermalEquation(Bcart);
   }
   
   P3[] getCanonicalCopy(float scale) {

@@ -111,6 +111,7 @@ import org.jmol.util.P3i;
 import org.jmol.util.P4;
 import org.jmol.util.Rectangle;
 import org.jmol.util.SB;
+import org.jmol.util.Tensor;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 import org.jmol.util.Vibration;
@@ -10096,4 +10097,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   
   public Map<Object, Object> chainMap = new Hashtable<Object, Object>();
   public JmolList<String> chainList = new JmolList<String>();
+
+//  public float[] getQuadricForTensor(Tensor tensor, P3 center) {
+//    Object[] data = new Object[] { tensor, center, null };
+//    shapeManager.loadShape(JC.SHAPE_ELLIPSOIDS);
+//    shapeManager.getShapePropertyData(JC.SHAPE_ELLIPSOIDS, "quadric", data);
+//    return (float[]) data[2];
+//  }
 }

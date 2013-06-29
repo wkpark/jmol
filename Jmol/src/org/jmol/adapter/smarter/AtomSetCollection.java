@@ -1347,19 +1347,22 @@ public class AtomSetCollection {
               Tensor t = atoms[i].tensors.get(j);
               if (t == null)
                 continue;
-              V3[] eigenVectors = t.eigenVectors;
-              if (eigenVectors != null) {
-                // note -- PDB reader specifically turns off cartesians
-                if (addCartesian) {
-                  ptTemp.setT(cartesians[i - iAtomFirst]);
-                } else {
-                  ptTemp.setT(atoms[i]);
-                  symmetry.toCartesian(ptTemp, false);
-                }
-                eigenVectors = symmetry.rotateEllipsoid(iSym, ptTemp, eigenVectors, ptTemp1,
-                    ptTemp2);
+              if (nOperations == 1) {
+                atom1.addTensor(Tensor.copyTensor(t), null);
+                continue;
               }
-              atom1.addTensor(new Tensor().setVectors(eigenVectors, t.eigenValues, t.type), null);
+              V3[] eigenVectors = t.eigenVectors;
+              // note -- PDB reader specifically turns off cartesians
+              if (addCartesian) {
+                ptTemp.setT(cartesians[i - iAtomFirst]);
+              } else {
+                ptTemp.setT(atoms[i]);
+                symmetry.toCartesian(ptTemp, false);
+              }
+              eigenVectors = symmetry.rotateEllipsoid(iSym, ptTemp,
+                  eigenVectors, ptTemp1, ptTemp2);
+              atom1.addTensor(Tensor.getTensorFromEigenVectors(eigenVectors,
+                  t.eigenValues, t.type), null);
             }
           }
         }

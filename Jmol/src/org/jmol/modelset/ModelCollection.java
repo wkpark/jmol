@@ -800,7 +800,7 @@ abstract public class ModelCollection extends BondCollection {
   /*
     int getModelSetAuxiliaryInfoInt(String keyName) {
       if (modelSetAuxiliaryInfo != null
-          && modelSetAuxiliaryInfo.containsKey(keyName)) {
+          && modelSetAuxiliaryInfo.contains(keyName)) {
         return ((Integer) modelSetAuxiliaryInfo.get(keyName)).intValue();
       }
       return Integer.MIN_VALUE;
@@ -3092,9 +3092,16 @@ abstract public class ModelCollection extends BondCollection {
     if (partialCharges != null)
       for (int i = i0; i < atomCount; i++)
         partialCharges[i] = partialCharges[map[i]];
-    if (atomTensors != null)
-      for (int i = i0; i < atomCount; i++)
-        atomTensors[i] = atomTensors[map[i]];
+    if (atomTensors != null) {
+      for (int i = i0; i < atomCount; i++) {
+        Tensor[] list = atomTensorList[i] = atomTensorList[map[i]];
+        for (int j = list.length; --j >= 0;) {
+          Tensor t = list[j];
+          if (t != null)
+            t.atomIndex1 = map[t.atomIndex1];
+        }
+      }
+    }
     if (atomNames != null)
       for (int i = i0; i < atomCount; i++)
         atomNames[i] = atomNames[map[i]];
@@ -3118,7 +3125,7 @@ abstract public class ModelCollection extends BondCollection {
     if (partialCharges != null)
       partialCharges = ArrayUtil.arrayCopyF(partialCharges, newLength);
     if (atomTensors != null)
-      atomTensors = (Tensor[][]) ArrayUtil.arrayCopyObject(atomTensors, newLength);
+      atomTensorList = (Tensor[][]) ArrayUtil.arrayCopyObject(atomTensorList, newLength);
     if (atomNames != null)
       atomNames = ArrayUtil.arrayCopyS(atomNames, newLength);
     if (atomTypes != null)
@@ -3148,7 +3155,7 @@ abstract public class ModelCollection extends BondCollection {
     setOccupancy(atomCount, occupancy);
     setPartialCharge(atomCount, partialCharge);
     if (tensors != null)
-      setTensors(atomCount, tensors);
+      setAtomTensors(atomCount, tensors);
     atom.group = group;
     atom.colixAtom = viewer.getColixAtomPalette(atom, EnumPalette.CPK.id);
     if (atomName != null) {

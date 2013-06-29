@@ -24,8 +24,6 @@
 
 package org.jmol.util;
 
-import java.util.Arrays;
-import java.util.Comparator;
 
 //import org.jmol.util.Escape;
 
@@ -81,10 +79,9 @@ public class Eigen {
   public static void getUnitVectors(double[][] m, V3[] eigenVectors,
                                     float[] eigenValues) {
     newM(m).fillArrays(eigenVectors, eigenValues);
-    sort(eigenVectors, eigenValues);
   }
 
-  private void fillArrays(V3[] eigenVectors, float[] eigenValues) {
+  void fillArrays(V3[] eigenVectors, float[] eigenValues) {
     float[][] vectors = getEigenvectorsFloatTransposed();
     double[] lambdas = getRealEigenvalues();
     for (int i = 0; i < n; i++) {
@@ -1057,90 +1054,6 @@ public class Eigen {
       r = 0.0;
     }
     return r;
-  }
-
-  public static Tensor getTensorFromArray(double[][] a, String type) {
-    // symmetrize matrix
-    if (a[0][1] != a[1][0]) {
-      a[0][1] = a[1][0] = (a[0][1] + a[1][0])/2;
-    }
-    if (a[1][2] != a[2][1]) {
-      a[1][2] = a[2][1] = (a[1][2] + a[2][1])/2;
-    }
-    if (a[0][2] != a[2][0]) {
-      a[0][2] = a[2][0] = (a[0][2] + a[2][0])/2;
-    }
-    Eigen eigen = new Eigen(3);
-    eigen.calc(a);
-    Matrix3f m = new Matrix3f();
-    float[] mm = new float[9];
-    for (int i = 0, p = 0; i < 3; i++)
-      for (int j = 0; j < 3; j++)
-        mm[p++] = (float) a[i][j];
-    m.setA(mm);
-
-    V3[] evec = eigen.getEigenVectors3();
-    V3 n = new V3();
-    V3 cross = new V3();
-    for (int i = 0; i < 3; i++) {
-      n.setT(evec[i]);
-      m.transform(n);
-      cross.cross(n, evec[i]);
-      //Logger.info("v[i], n, n x v[i]"+ evec[i] + " " + n + " "  + cross);
-      n.setT(evec[i]);
-      n.normalize();
-      cross.cross(evec[i], evec[(i + 1) % 3]);
-      //Logger.info("draw id eigv" + i + " " + Escape.eP(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
-    }
-    Logger.info("eigVal+vec (" + eigen.d[0] + " + " + eigen.e[0]
-        + ")\n             (" + eigen.d[1] + " + " + eigen.e[1]
-        + ")\n             (" + eigen.d[2] + " + " + eigen.e[2] + ")");
-
-    V3[] unitVectors = new V3[3];
-    float[] eigenValues = new float[3];
-    eigen.fillArrays(unitVectors, eigenValues);
-    return new Tensor().setVectors(unitVectors, eigenValues, type);
-  }
-
-  public static Tensor getTensorFromVectors(V3[] eigenVectors, float[] eigenValues,
-                                    String type) {
-    //[0] is shortest; [2] is longest
-    V3[] unitVectors = new V3[3];
-    for (int i = eigenVectors.length; --i >= 0;)
-      unitVectors[i] = V3.newV(eigenVectors[i]);
-    sort(unitVectors, eigenValues);
-    return new Tensor().setVectors(unitVectors, eigenValues, type);
-  }
-
-  /**
-   * sorts vectors by absolute value and normalizes them
-   * 
-   * @param eigenVectors
-   * @param eigenValues
-   */
-  private static void sort(V3[] eigenVectors, float[] eigenValues) {
-    Object[][] o = new Object[][] {
-        new Object[] { eigenVectors[0], Float.valueOf(eigenValues[0]) },
-        new Object[] { eigenVectors[1], Float.valueOf(eigenValues[1]) },
-        new Object[] { eigenVectors[2], Float.valueOf(eigenValues[2]) } };
-    Arrays.sort(o, new EigenSort());
-    for (int i = 0; i < 3; i++) {
-      eigenVectors[i] = (V3)o[i][0];
-      eigenVectors[i].normalize();
-      eigenValues[i] = ((Float) o[i][1]).floatValue();
-    }
-  }
-
-  /**
-   * sort from smallest to largest absolute
-   * 
-   */
-  protected static class EigenSort implements Comparator<Object[]> {
-    public int compare(Object[] o1, Object[] o2) {
-      float a = Math.abs(((Float) o1[1]).floatValue());
-      float b = Math.abs(((Float) o2[1]).floatValue());
-      return (a < b ? -1 : a > b ? 1 : 0);
-    }
   }
 
 }

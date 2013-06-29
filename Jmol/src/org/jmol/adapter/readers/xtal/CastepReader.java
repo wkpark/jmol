@@ -47,10 +47,10 @@ import org.jmol.util.JmolList;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
+import org.jmol.util.Tensor;
 import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
 
@@ -572,7 +572,7 @@ public class CastepReader extends AtomSetCollectionReader {
     for (int p = 0, i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         a[i][j] = data[p++];
-    atom.addTensor(Eigen.getTensorFromArray(a, "charge"), null);
+    atom.addTensor(Tensor.getTensorFromAsymmetricTensor(a, "charge"), null);
     if (!haveCharges)
       appendLoadNote("Ellipsoids set \"charge\": Born Effective Charges");
     haveCharges = true;

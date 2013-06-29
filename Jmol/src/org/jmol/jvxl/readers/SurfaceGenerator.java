@@ -832,9 +832,9 @@ public class SurfaceGenerator {
 
     if ("ellipsoid" == propertyName) {
       if (value instanceof P4)
-        params.setEllipsoid((P4) value);
+        params.setEllipsoidP4((P4) value);
       else if (Escape.isAF(value))
-        params.setEllipsoid((float[]) value);
+        params.setEllipsoidAF((float[]) value);
       else
         return true;
       readerData = Float.valueOf(params.distance);
@@ -844,7 +844,7 @@ public class SurfaceGenerator {
     }
 
     if ("ellipsoid3" == propertyName) {
-      params.setEllipsoid((float[]) value);
+      params.setEllipsoidAF((float[]) value);
       readerData = Float.valueOf(params.distance);
       surfaceReader = newReader("IsoShapeReader");
       generateSurface();

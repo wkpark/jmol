@@ -86,6 +86,7 @@ import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.SB;
+//import org.jmol.util.Tensor;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
@@ -11659,7 +11660,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.set:
       checkLength(3);
       sm.loadShape(JC.SHAPE_ELLIPSOIDS);
-      setShapeProperty(JC.SHAPE_ELLIPSOIDS, "select", Integer.valueOf(intParameterRange(2, 1, 3)));      
+      setShapeProperty(JC.SHAPE_ELLIPSOIDS, "select", parameterAsString(2));      
       return;
     case T.id:
     case T.times:
@@ -17802,40 +17803,44 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.ellipsoid:
         // ellipsoid {xc yc zc f} where a = b and f = a/c
-        // OR ellipsoid {u11 u22 u33 u12 u13 u23}
+        // NOT OR ellipsoid {u11 u22 u33 u12 u13 u23}
         surfaceObjectSeen = true;
         ++i;
-        try {
+//        ignoreError = true;
+  //      try {
           propertyValue = getPoint4f(i);
           propertyName = "ellipsoid";
           i = iToken;
           sbCommand.append(" ellipsoid ")
               .append(Escape.eP4((P4) propertyValue));
           break;
-        } catch (ScriptException e) {
-        }
-        try {
-          propertyName = "ellipsoid";
-          propertyValue = floatParameterSet(i, 6, 6);
-          i = iToken;
-          sbCommand.append(" ellipsoid ").append(
-              Escape.eAF((float[]) propertyValue));
-          break;
-        } catch (ScriptException e) {
-        }
-        bs = atomExpressionAt(i);
-        sbCommand.append(" ellipsoid ").append(Escape.eBS(bs));
-        int iAtom = bs.nextSetBit(0);
-        Atom[] atoms = viewer.modelSet.atoms;
-        if (iAtom >= 0)
-          propertyValue = atoms[iAtom].getTensors();
-        if (propertyValue == null)
-          return;
-        i = iToken;
-        propertyName = "ellipsoid";
-        if (!chk)
-          addShapeProperty(propertyList, "center", viewer.getAtomPoint3f(iAtom));
-        break;
+//        } catch (Exception e) {
+//        }
+//        try {
+//          propertyName = "ellipsoid";
+//          propertyValue = floatParameterSet(i, 6, 6);
+//          i = iToken;
+//          sbCommand.append(" ellipsoid ").append(
+//              Escape.eAF((float[]) propertyValue));
+//          break;
+//        } catch (Exception e) {
+//        }
+//        ignoreError = false;
+//        bs = atomExpressionAt(i);
+//        sbCommand.append(" ellipsoid ").append(Escape.eBS(bs));
+//        int iAtom = bs.nextSetBit(0);
+//        if (iAtom < 0)
+//          return;
+//        Atom[] atoms = viewer.modelSet.atoms;
+//        Tensor[] tensors = atoms[iAtom].getTensors();
+//        if (tensors == null || tensors.length < 1 || tensors[0] == null
+//            || (propertyValue = viewer.getQuadricForTensor(tensors[0], null)) == null)
+//          return;
+//        i = iToken;
+//        propertyName = "ellipsoid";
+//        if (!chk)
+//          addShapeProperty(propertyList, "center", viewer.getAtomPoint3f(iAtom));
+//        break;
       case T.hkl:
         // miller indices hkl
         planeSeen = true;
@@ -18497,7 +18502,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         sbCommand.append(" squared");
         break;
       case T.inline:
-        propertyName = (!surfaceObjectSeen && !planeSeen && !isMapped ? "readFile" : "mapColor");
+        propertyName = (!surfaceObjectSeen && !planeSeen && !isMapped ? "readFile"
+            : "mapColor");
         str = stringParameter(++i);
         if (str == null)
           error(ERROR_invalidArgument);

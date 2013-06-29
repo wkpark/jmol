@@ -27,95 +27,193 @@ package org.jmol.shapespecial;
 
 import org.jmol.util.C;
 import org.jmol.util.Matrix3f;
+import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.V3;
 
-public class Ellipsoid extends Tensor {
-  
-    public short colix = C.GOLD;
-    public boolean visible;
-    public boolean isValid;
-    boolean isOn = true;
+public class Ellipsoid {
 
-    protected Ellipsoid setID(String id, int modelIndex, String type) {
-      this.id = id;
-      this.modelIndex = modelIndex;
-      this.type = type;
-      return this;
-    }
+  public short colix = C.GOLD;
+  public boolean visible;
+  public boolean isValid;
+  public P3 center = P3.new3(0, 0, 0);
+  public Tensor tensor;
+  boolean isOn = true;
 
-    public void setCenter(P3 center) {
-      this.center = center;
-      updateEquation();
-    }
+  String id;
+  int modelIndex;
+  byte pid;
+  float[] lengths;
+  float scale = 1;
+  int percent;
 
-    @Override
-    public void setScale(float scale) {
-      if (scale <= 0 || lengths == null) {
-        isValid = false;
-      } else {
-        for (int i = 0; i < 3; i++)
-          lengths[i] *= scale / scale;
-        this.scale = scale;
-        updateEquation();
-      }
-    }
-
-//    public void setEigen(P3 ptCenter, Eigen eigen, float factor) {
-//      center = ptCenter;
-//      axes = eigen.getEigenVectors3();
-//      double[] v = eigen.getEigenvalues();
-//      lengths = new float[3];
-//      for (int i = 0; i < 3; i++)
-//        lengths[i] = (float) (v[i] * factor);
-//      scale = 1;
-//      updateEquation();
-//    }
-
-    protected void setEquation(double[] coef) {
-      Tensor t = new Tensor().setThermal(this.coef = coef);
-      eigenVectors = t.eigenVectors;
-      lengths = new float[] { t.getLength(0), t.getLength(1), t.getLength(2) };
-    }
-
-    protected void setAxes(V3[] axes) {
-      isValid = false;
-      eigenVectors = axes;
-      lengths = new float[3];
-      scale = 1;
-      for (int i = 0; i < 2; i++) {
-        if (axes[i].length() > axes[i + 1].length()) {
-          V3 v = axes[i];
-          axes[i] = axes[i + 1];
-          axes[i + 1] = v;
-          if (i == 1)
-            i = -1;
-        }
-      }
-      for (int i = 0; i < 3; i++) {
-        lengths[i] = axes[i].length();
-        if (lengths[i] == 0)
-          return;
-        axes[i].normalize();
-      }
-      if (Math.abs(axes[0].dot(axes[1])) > 0.0001f
-          || Math.abs(axes[0].dot(axes[1])) > 0.0001f
-          || Math.abs(axes[0].dot(axes[1])) > 0.0001f)
-        return;
-      updateEquation();
-    }
-
-    private void updateEquation() {
-      if (eigenVectors == null || lengths == null)
-        return;
-      Matrix3f mat = new Matrix3f();
-      Matrix3f mTemp = new Matrix3f();
-      V3 v1 = new V3();
-      coef = new double[10];
-      Ellipsoids.getEquationForQuadricWithCenter(center.x, center.y, center.z, mat, v1,
-          mTemp, coef, null);
-      isValid = true;
-    }
-
+  private Ellipsoid() {
   }
+
+  public static Ellipsoid getEmptyEllipsoid(String id, int modelIndex) {
+    Ellipsoid e = new Ellipsoid();
+    e.id = id;
+    e.modelIndex = modelIndex;
+    return e;
+  }
+
+  public static Ellipsoid getEllipsoidForAtomTensor(Tensor t, P3 center) {
+    Ellipsoid e = new Ellipsoid();
+    e.tensor = t;
+    e.modelIndex = t.modelIndex;
+    e.colix = C.INHERIT_ALL;
+    e.center = center;
+    // not valid until scale is set
+    return e;
+  }
+
+  public void setCenter(P3 center) {
+    this.center = center;
+    validate(false);
+  }
+
+  public float getLength(int i) {
+    if (lengths == null)
+      setLengths();
+    return (lengths == null ? Float.NaN : lengths[i]);
+  }
+
+  public void setLengths() {
+    if (tensor == null)
+      return;
+    if (lengths == null)
+      lengths = new float[3];
+    for (int i = 0; i < lengths.length; i++)
+      lengths[i] = tensor.getFactoredValue(i) * scale;
+  }
+
+  public void setScale(float scale, boolean isPercent) {
+    if (scale <= 0)
+      return;
+    if (isPercent) {
+      percent = (int) scale;
+      scale = (tensor.forThermalEllipsoid ? getThermalRadius(percent)
+          : percent < 1 ? 0 : percent / 100.0f);
+    }
+    this.scale = scale;
+    validate(true);
+  }
+
+  // from ORTEP manual ftp://ftp.ornl.gov/pub/ortep/man/pdf/chap6.pdf
+
+  private final static float[] crtval = new float[] { 0.3389f, 0.4299f, 0.4951f,
+      0.5479f, 0.5932f, 0.6334f, 0.6699f, 0.7035f, 0.7349f, 0.7644f, 0.7924f,
+      0.8192f, 0.8447f, 0.8694f, 0.8932f, 0.9162f, 0.9386f, 0.9605f, 0.9818f,
+      1.0026f, 1.0230f, 1.0430f, 1.0627f, 1.0821f, 1.1012f, 1.1200f, 1.1386f,
+      1.1570f, 1.1751f, 1.1932f, 1.2110f, 1.2288f, 1.2464f, 1.2638f, 1.2812f,
+      1.2985f, 1.3158f, 1.3330f, 1.3501f, 1.3672f, 1.3842f, 1.4013f, 1.4183f,
+      1.4354f, 1.4524f, 1.4695f, 1.4866f, 1.5037f, 1.5209f, 1.5382f, 1.5555f,
+      1.5729f, 1.5904f, 1.6080f, 1.6257f, 1.6436f, 1.6616f, 1.6797f, 1.6980f,
+      1.7164f, 1.7351f, 1.7540f, 1.7730f, 1.7924f, 1.8119f, 1.8318f, 1.8519f,
+      1.8724f, 1.8932f, 1.9144f, 1.9360f, 1.9580f, 1.9804f, 2.0034f, 2.0269f,
+      2.0510f, 2.0757f, 2.1012f, 2.1274f, 2.1544f, 2.1824f, 2.2114f, 2.2416f,
+      2.2730f, 2.3059f, 2.3404f, 2.3767f, 2.4153f, 2.4563f, 2.5003f, 2.5478f,
+      2.5997f, 2.6571f, 2.7216f, 2.7955f, 2.8829f, 2.9912f, 3.1365f, 3.3682f };
+
+  final public static float getThermalRadius(int prob) {
+    return crtval[prob < 1 ? 0 : prob > 99 ? 98 : prob - 1];
+  }
+
+  protected void setEquation(double[] coef) {
+    isValid = false;
+    tensor = Tensor.getTensorFromThermalEquation(coef);
+    validate(true);
+  }
+
+  protected void setAxes(V3[] axes) {
+    isValid = false;
+    tensor = Tensor.getTensorFromAxes(axes);
+    validate(true);
+  }
+
+  private void validate(boolean andSetLengths) {
+    if (tensor == null)
+      return;
+    if (andSetLengths)
+      setLengths();
+    isValid = true;
+  }
+  
+//  public float[] getEquation() {
+//    Matrix3f mat = new Matrix3f();
+//    Matrix3f mTemp = new Matrix3f();
+//    V3 v1 = new V3();
+//    double[] coefs = new double[10];
+//    for (int i = 0; i < 3; i++) {
+//      v1.setT(tensor.eigenVectors[i]);
+//      v1.scale(getLength(i));
+//      mat.setColumnV(i, v1);
+//    }
+//    mat.invertM(mat);
+//    getEquationForQuadricWithCenter(center.x, center.y, center.z,
+//        mat, v1, mTemp, coefs, null);
+//    float[] a = new float[10];
+//    for (int i = 0; i < 10; i++)
+//      a[i] = (float) coefs[i];
+//    return a;
+//  }
+  
+  public static void getEquationForQuadricWithCenter(float x, float y, float z,
+                                                     Matrix3f mToElliptical,
+                                                     V3 vTemp, Matrix3f mTemp,
+                                                     double[] coef,
+                                                     Matrix4f mDeriv) {
+    /* Starting with a center point and a matrix that converts cartesian 
+     * or screen coordinates to ellipsoidal coordinates, 
+     * this method fills a float[10] with the terms for the 
+     * equation for the ellipsoid:
+     * 
+     * c0 x^2 + c1 y^2 + c2 z^2 + c3 xy + c4 xz + c5 yz + c6 x + c7 y + c8 z - 1 = 0 
+     * 
+     * I made this up; I haven't seen it in print. -- Bob Hanson, 4/2008
+     * 
+     */
+
+    vTemp.set(x, y, z);
+    mToElliptical.transform(vTemp);
+    double f = 1 - vTemp.dot(vTemp); // J
+    mTemp.transposeM(mToElliptical);
+    mTemp.transform(vTemp);
+    mTemp.mul(mToElliptical);
+    coef[0] = mTemp.m00 / f; // A = aXX
+    coef[1] = mTemp.m11 / f; // B = aYY
+    coef[2] = mTemp.m22 / f; // C = aZZ
+    coef[3] = mTemp.m01 * 2 / f; // D = aXY
+    coef[4] = mTemp.m02 * 2 / f; // E = aXZ
+    coef[5] = mTemp.m12 * 2 / f; // F = aYZ
+    coef[6] = -2 * vTemp.x / f; // G = aX
+    coef[7] = -2 * vTemp.y / f; // H = aY
+    coef[8] = -2 * vTemp.z / f; // I = aZ
+    coef[9] = -1; // J = -1
+
+    /*
+     * f = Ax^2 + By^2 + Cz^2 + Dxy + Exz + Fyz + Gx + Hy + Iz + J
+     * df/dx = 2Ax +  Dy +  Ez + G
+     * df/dy =  Dx + 2By +  Fz + H
+     * df/dz =  Ex +  Fy + 2Cz + I
+     */
+
+    if (mDeriv == null)
+      return;
+    mDeriv.setIdentity();
+    mDeriv.m00 = (float) (2 * coef[0]);
+    mDeriv.m11 = (float) (2 * coef[1]);
+    mDeriv.m22 = (float) (2 * coef[2]);
+
+    mDeriv.m01 = mDeriv.m10 = (float) coef[3];
+    mDeriv.m02 = mDeriv.m20 = (float) coef[4];
+    mDeriv.m12 = mDeriv.m21 = (float) coef[5];
+
+    mDeriv.m03 = (float) coef[6];
+    mDeriv.m13 = (float) coef[7];
+    mDeriv.m23 = (float) coef[8];
+  }
+
+
+}

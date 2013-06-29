@@ -94,7 +94,7 @@ public abstract class AtomShape extends Shape {
 
   @Override
   protected void setSizeRD(RadiusData rd, BS bsSelected) {
-    // Halos Stars Vectors Ellipsoids
+    // Halos Stars Vectors
     if (atoms == null)  // vector values are ignored if there are none for a model 
       return;
     isActive = true;

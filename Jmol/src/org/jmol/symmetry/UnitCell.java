@@ -263,8 +263,10 @@ class UnitCell extends SimpleUnitCell {
      * The coefficients bij (i,j = 1,2,3) of the various types are defined with
      * the following constant settings.
      * 
-     * Type 0: Base = e, c = 2, D = 1 Type 1: Base = e, c = 1, D = l Type 2:
-     * Base = 2, c = 2, D = l Type 3: Base = 2, c = 1, D = l
+     * Type 0: Base = e, c = 2, D = 1 
+     * Type 1: Base = e, c = 1, D = l 
+     * Type 2: Base = 2, c = 2, D = l 
+     * Type 3: Base = 2, c = 1, D = l
      * 
      * Anisotropic temperature factor Types 4, 5, 8, and 9 use the following
      * formula for the complete temperature factor, in which a1* , a2*, a3* are
@@ -276,7 +278,9 @@ class UnitCell extends SimpleUnitCell {
      * The coefficients Uij (i,j = 1,2,3) of the various types are defined with
      * the following constant settings.
      * 
-     * Type 4: C = 2, D = 1/4 Type 5: C = 1, D = 1/4 Type 8: C = 2, D = 2pi2
+     * Type 4: C = 2, D = 1/4 
+     * Type 5: C = 1, D = 1/4 
+     * Type 8: C = 2, D = 2pi2
      * Type 9: C = 1, D = 2pi2
      * 
      * 

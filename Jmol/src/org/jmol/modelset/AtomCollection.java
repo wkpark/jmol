@@ -168,7 +168,6 @@ abstract public class AtomCollection {
     return atomTypes;
   }
 
-  
   public float[] getPartialCharges() {
     return partialCharges;
   }
@@ -266,20 +265,13 @@ abstract public class AtomCollection {
       t.atomIndex2 = -1;
       t.modelIndex = atoms[atomIndex].modelIndex;
       addTensor(t, t.type);
-      int pt = "charge temp   TLS-R  TLS-U".indexOf(t.type + " ");
-      //        0      7      14     21
-      // "1" is assigned for Born Effective Charges and temperature
-      // "2" is TLS-R
-      // "3" is TLS-U
-      // and no more of that!
-      if (pt >= 0) {
-        addTensor(t, t.altType = "" + (pt >= 14 ? pt / 7: 1));        
-      }
+      if (t.altType != null)
+        addTensor(t, t.altType); 
     }
   }
 
   public JmolList<Tensor> getAllAtomTensors(String type) {
-    return atomTensors.get(type);
+    return atomTensors.get(type.toLowerCase());
   }
   
   private Tensor[] getTensorList(JmolList<Tensor> list) {
@@ -290,7 +282,7 @@ abstract public class AtomCollection {
       Tensor t = list.get(i);
       if (t.forThermalEllipsoid)
         pt = i;
-      else if (t.type.equals("TLS-U"))
+      else if (t.iType == Tensor.TYPE_TLS_U)
         haveTLS = true;
     }
     Tensor[] a = new Tensor[(pt >= 0 || !haveTLS ? 0 : 1) + n];
@@ -317,6 +309,7 @@ abstract public class AtomCollection {
  }
 
   private void addTensor(Tensor t, String type) {
+    type = type.toLowerCase();
     JmolList<Tensor> tensors = atomTensors.get(type);
     if (tensors == null)
       atomTensors.put(type, tensors = new JmolList<Tensor>()); 

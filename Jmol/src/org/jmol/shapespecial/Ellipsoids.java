@@ -194,7 +194,7 @@ public class Ellipsoids extends Shape {
     }
 
     if ("select" == propertyName) {
-      typeSelected = (String) value;
+      typeSelected = ((String) value).toLowerCase();
       return;
     }
 
@@ -210,7 +210,7 @@ public class Ellipsoids extends Shape {
       short colix = C.getColixO(value);
       byte pid = EnumPalette.pidOf(value);
       for (Ellipsoid e : atomEllipsoids.values())
-        if (e.tensor.type.equals(typeSelected)) {
+        if (e.tensor.type.equalsIgnoreCase(typeSelected)) {
           e.colix = getColixI(colix, pid, e.tensor.atomIndex1);
           e.pid = pid;
         }
@@ -220,7 +220,7 @@ public class Ellipsoids extends Shape {
     if ("translucency" == propertyName) {
       boolean isTranslucent = (value.equals("translucent"));
       for (Ellipsoid e : atomEllipsoids.values())
-        if (e.tensor.type.equals(typeSelected))
+        if (e.tensor.type.equalsIgnoreCase(typeSelected))
           e.colix = C.getColixTranslucent3(e.colix, isTranslucent,
               translucentLevel);
       return;

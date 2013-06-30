@@ -27,55 +27,110 @@ package org.jmol.util;
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * @author Bob Hanson hansonr@stolaf.edu 6/30/2013
+ * 
+ */
 public class Tensor {
 
-  private static float TEMPERATURE_FACTOR = (float) (Math.sqrt(0.5) / Math.PI);
+  // factors that give reasonable first views of ellipsoids.
+  
+  private static final float TEMPERATURE_FACTOR = (float) (Math.sqrt(0.5) / Math.PI);
   private static final float MAGNETIC_SUSCEPTIBILITY_FACTOR = 0.01f;
+  private static final float ELECTRIC_FIELD_GRADIENT_FACTOR = 1f;
   private static final float BORN_EFFECTIVE_CHARGE_FACTOR = 1f;
   private static final float INTERACTION_FACTOR = 0.04f;
+  
+  private static TensorSort tSort; // used for sorting eigenvector/values
 
-  private static TensorSort tSort;
+  // base data:
+  
+  public String type;
+  public int iType = TYPE_OTHER;
+  
+  // type is an identifier that the reader/creator delivers:
+  //
+  // temp   -- crystallographic displacement parameters 
+  //           - "temperature factors"; t.forThermalEllipsoid = true
+  //           - either anisotropic (ADP) or isotropic (IDP)
+  // iso      -- isotropic displacement parameters; from org.jmol.symmetry.UnitCell 
+  //           - changed to "temp" after setting t.isIsotropic = true
+  // ms       -- magnetic susceptibility
+  // isc      -- NMR interaction tensors
+  //           - will have both atomIndex1 and atomIndex2 defined when
+  //           - incorporated into a model
+  // charge   -- Born Effective Charge tensor
+  // TLS-U    -- Translation/Libration/Skew tensor (anisotropic)
+  // TLS-R    -- Translation/Libration/Skew tensor (residual)
+  
+  private static final String KNOWN_TYPES = ";iso....;temp...;tls-u..;tls-r..;ms.....;efg....;isc....;charge.;";
+  private static int getType(String type) {
+    int pt = KNOWN_TYPES.indexOf(";" + type.toLowerCase() + ".");
+    return (pt < 0 ? TYPE_OTHER : pt / 8); 
+  }
 
-  private double[][] asymmetricTensor;
-    
+  // these may be augmented, but the order should be kept the same within this list 
 
-  public String type; // iso temp ms isc charge TLS-R TLS-U...
+  public static final int TYPE_OTHER  = -1;
+  public static final int TYPE_ISO    = 0;
+  public static final int TYPE_TEMP   = 1;
+  public static final int TYPE_TLS_U  = 2;
+  public static final int TYPE_TLS_R  = 3;
+  public static final int TYPE_MS     = 4;
+  public static final int TYPE_EFG    = 5;
+  public static final int TYPE_ISC    = 6;
+  public static final int TYPE_CHARGE = 7;
+
+  public double[][] asymTensor;
+  public double[][] symTensor;    
+  public V3[] eigenVectors;
+  public float[] eigenValues;
+
+  // derived type-based information, Jmol-centric, for rendering:
+  
   public String altType; // "0" "1" "2"
-  public float typeFactor = 1;
 
+  // altType is somewhat of a legacy - just lets you use 
+  
+  //  ellipsoid SET 1
+  //  ellipsoid SET 2
+  //   etc...
+  
+  public boolean isIsotropic; // just rendered as balls, not special features
+  public boolean forThermalEllipsoid;
+  public int eigenSignMask = 7; // signs of eigenvalues; bits 2,1,0 set to 1 if > 0
+  private float typeFactor = 1; // an ellipsoid scaling factor depending upon type
+
+  // added only after passing
+  // the tensor to ModelLoader:
+  
   public int modelIndex;
   public int atomIndex1 = -1;
   public int atomIndex2 = -1;
 
-  public V3[] eigenVectors; // possibly null (isotropic)
-  public float[] eigenValues;
-
-  public boolean forThermalEllipsoid = true;
-  public int eigenSignMask = 7;
-  public boolean isIsotropic;
-
   public static Tensor copyTensor(Tensor t0) {
     Tensor t = new Tensor();
+    t.setType(t0.type);
     t.eigenValues = t0.eigenValues;
     t.eigenVectors = t0.eigenVectors;
-    t.asymmetricTensor = t0.asymmetricTensor;
-    t.type = t0.type;
-    t.typeFactor = t0.typeFactor;
+    t.asymTensor = t0.asymTensor;
+    t.symTensor = t0.symTensor;
+    t.eigenSignMask = t0.eigenSignMask;
+    t.modelIndex = t0.modelIndex;
+    t.atomIndex1 = t0.atomIndex1;
+    t.atomIndex2 = t0.atomIndex2;
     return t;
   }
 
-
-  public double[][] getAsymmetricTensor() {
-    return asymmetricTensor;
-  }
-
   /**
-   * all instantiation must go through one of the static getTensor... methods
+   * private constructor so that all instantiation must go through one 
+   * of the static getTensor... methods to set fields properly.
    * 
    */
   private Tensor() {}
   
   /**
+   * Standard constructor for QM tensors
    * 
    * @param asymmetricTensor
    * @param type
@@ -127,10 +182,19 @@ public class Tensor {
     float[] values = new float[3];
     eigen.fillArrays(vectors, values);
     Tensor t = newTensorType(vectors, values, type);
-    t.asymmetricTensor = asymmetricTensor;
+    t.asymTensor = asymmetricTensor;
+    t.symTensor = a;
     return t;
   }
 
+  /**
+   * Standard constructor for charge and iso 
+   * 
+   * @param eigenVectors
+   * @param eigenValues
+   * @param type
+   * @return Tensor
+   */
   public static Tensor getTensorFromEigenVectors(V3[] eigenVectors,
                                             float[] eigenValues, String type) {
     float[] values = new float[3];
@@ -139,11 +203,15 @@ public class Tensor {
       vectors[i] = V3.newV(eigenVectors[i]);
       values[i] = eigenValues[i];
     }    
-    Tensor t = newTensorType(vectors, values, type);
-    t.isIsotropic = "iso".equals(type);
-    return t;
+    return newTensorType(vectors, values, type);
   }
 
+  /**
+   * Standard constructor for ellipsoids based on axes 
+   * 
+   * @param axes
+   * @return Tensor
+   */
   public static Tensor getTensorFromAxes(V3[] axes) {
     Tensor t = new Tensor();
     t.eigenValues = new float[3];
@@ -160,30 +228,76 @@ public class Tensor {
         || Math.abs(t.eigenVectors[2].dot(t.eigenVectors[0])) > 0.0001f)
       return null;
     sort(t.eigenVectors, t.eigenValues);
-    return t;
+    return t.setType("other");
   }
 
-  public static Tensor getTensorFromThermalEquation(double[] coef) {
+  /**
+   * standard constructor for thermal ellipsoids convention beta
+   * (see http://www.iucr.org/iucr-top/comm/cnom/adp/finrepone/finrepone.html)
+   * 
+   * @param coefs
+   * @return Tensor
+   */
+  public static Tensor getTensorFromThermalEquation(double[] coefs) {
     Tensor t = new Tensor();
     t.eigenValues = new float[3];
     t.eigenVectors = new V3[3];
     // assumes an ellipsoid centered on 0,0,0
-    // called by UnitCell for the initial creation of Object[] ellipsoid    
+    // called by UnitCell for the initial creation from PDB/CIF ADP data    
     double[][] mat = new double[3][3];
-    mat[0][0] = coef[0]; //XX
-    mat[1][1] = coef[1]; //YY
-    mat[2][2] = coef[2]; //ZZ
-    mat[0][1] = mat[1][0] = coef[3] / 2; //XY
-    mat[0][2] = mat[2][0] = coef[4] / 2; //XZ
-    mat[1][2] = mat[2][1] = coef[5] / 2; //YZ
+    mat[0][0] = coefs[0]; //XX
+    mat[1][1] = coefs[1]; //YY
+    mat[2][2] = coefs[2]; //ZZ
+    mat[0][1] = mat[1][0] = coefs[3] / 2; //XY
+    mat[0][2] = mat[2][0] = coefs[4] / 2; //XZ
+    mat[1][2] = mat[2][1] = coefs[5] / 2; //YZ
     Eigen.getUnitVectors(mat, t.eigenVectors, t.eigenValues);
     sort(t.eigenVectors, t.eigenValues);
     t.typeFactor = TEMPERATURE_FACTOR;
-    t.type = "temp";
-    t.setTypeFactor();
-    return t;
+    return t.setType("temp");
   }
 
+  /**
+   * Note that type may be null here to skip type initialization
+   * and allow later setting of type; this should be used with care.
+   * 
+   * @param type
+   * @return "this" for convenience only
+   */
+  public Tensor setType(String type) {
+    if (this.type == null || type == null)
+      this.type = type;
+    if (type != null)
+      processType();
+    return this;
+  }
+
+  /**
+   * Returns a factored eigenvalue; thermal ellipsoids use sqrt(abs(eigenvalue)) for
+   * ellipsoid axes; others use just use abs(eigenvalue); all cases get factored by
+   * typeFactor
+   * 
+   * @param i
+   * @return factored eigenvalue
+   */
+  public float getFactoredValue(int i) {
+    float f = Math.abs(eigenValues[i]);
+    return (forThermalEllipsoid ? (float) Math.sqrt(f) : f) * typeFactor;
+  }
+
+  public void setAtomIndexes(int index1, int index2) {
+    atomIndex1 = index1;
+    atomIndex2 = index2;
+  }
+
+  /**
+   * common processing of eigenvectors.
+   * 
+   * @param vectors
+   * @param values
+   * @param type
+   * @return Tensor
+   */
   private static Tensor newTensorType(V3[] vectors, float[] values, String type) {
     Tensor t = new Tensor();
     t.eigenValues = values;
@@ -197,54 +311,57 @@ public class Tensor {
     return t;
   }
 
-  private void setTypeFactor() {
+  /**
+   * Sets typeFactor, altType, isIsotropic, forThermalEllipsoid;
+   * type "iso" changed to "temp" here.
+   * 
+   */
+  private void processType() {
+    
     forThermalEllipsoid = false;
-    switch ("iso  temp ms   isc  chargeTLS-UTLS-R".indexOf(type)) {
-    //       0    5    10   15   20    25   30
-    default: // TLS, other
-      typeFactor = 1;
-      break;
-    case 0: // iso
+    isIsotropic = false;
+    altType = null;
+    typeFactor = 1;
+    
+    switch (iType = getType(type)) {
+    case TYPE_ISO:
       forThermalEllipsoid = true;
-      typeFactor = 1;
+      isIsotropic = true;
+      altType = "1";
+      type = "temp";
       break;
-    case 5: // temp
+    case TYPE_TEMP:
       forThermalEllipsoid = true;
       typeFactor = TEMPERATURE_FACTOR;
+      altType = "1";
       break;
-    case 10: // ms
+    case TYPE_MS:
       typeFactor = MAGNETIC_SUSCEPTIBILITY_FACTOR;
       break;
-    case 15: // isc
+    case TYPE_EFG:
+      typeFactor = ELECTRIC_FIELD_GRADIENT_FACTOR;
+      break;
+    case TYPE_ISC:
       typeFactor = INTERACTION_FACTOR;
       break;
-    case 20: // charge
+    case TYPE_CHARGE:
       typeFactor = BORN_EFFECTIVE_CHARGE_FACTOR;
       break;
+    case TYPE_TLS_R:
+      altType = "2";
+      break;
+    case TYPE_TLS_U:
+      altType = "3";
+      break;
     }
-  }
-
-  public Tensor setType(String type) {
-    if (this.type == null || type == null)
-      this.type = type;
-    setTypeFactor();
-    return this;
-  }
-
-  public float getFactoredValue(int i) {
-    float f = Math.abs(eigenValues[i]);
-    return (forThermalEllipsoid ? (float) Math.sqrt(f) : f) * typeFactor;
-  }
-
-  public void setAtomIndexes(int index1, int index2) {
-    atomIndex1 = index1;
-    atomIndex2 = index2;
   }
 
   private static int[] sortOrder = { 1, 0, 2 };
 
   /**
-   * sorts EigenVectors by
+   * sorts EigenVectors by 
+   * 
+   * |sigma_3 - sigma_iso| >= |sigma_1 - sigma_iso| >= |sigma_2 - sigma_iso|
    * 
    * and normalize the eigenVectors
    * 
@@ -252,7 +369,6 @@ public class Tensor {
    * @param eigenValues
    */
   private static void sort(V3[] eigenVectors, float[] eigenValues) {
-    // |sigma_3 - sigma_iso| >= |sigma_1 - sigma_iso| >= |sigma_2 - sigma_iso|
     // first sorted 3 2 1, then 1 and 2 are switched using the sortOrder above.
     Object[][] o = new Object[][] {
         new Object[] { eigenVectors[0], Float.valueOf(eigenValues[0]) },

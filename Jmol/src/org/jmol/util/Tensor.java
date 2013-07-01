@@ -157,8 +157,14 @@ public class Tensor {
     case 5: // trace
       return Float.valueOf(eigenValues[0] + eigenValues[1] + eigenValues[2]);
     case 6: // haeberlen
-      // TODO
-      return null;
+      float[] haeb = new float[3];
+      haeb[0] = ((eigenValues[0] + eigenValues[1] + eigenValues[2])/3.0f);
+      haeb[1] = (eigenValues[2] - (eigenValues[0]+eigenValues[1])/2.0f);
+      if (haeb[1] != 0.0f)
+        haeb[2] = ((eigenValues[1]-eigenValues[0])/(eigenValues[2]-haeb[0]));
+      else
+        haeb[2] = 0.0f;
+      return haeb;
     case 7: // eulerzyz
       // TODO
       return null;

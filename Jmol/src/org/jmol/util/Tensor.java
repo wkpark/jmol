@@ -104,6 +104,7 @@ public class Tensor {
   public boolean forThermalEllipsoid;
   public int eigenSignMask = 7; // signs of eigenvalues; bits 2,1,0 set to 1 if > 0
   private float typeFactor = 1; // an ellipsoid scaling factor depending upon type
+  private boolean sortIso;
 
   // added only after passing
   // the tensor to ModelLoader:
@@ -125,7 +126,7 @@ public class Tensor {
     switch ((";............." + ";eigenvalues.." + ";eigenvectors."
         + ";asymmetric..." + ";symmetric...." + ";trace........"
         + ";haeberlen...." + ";eulerzyz....." + ";eulerzxz....."
-        + ";quaternion..." + ";indices......" + ";type.........")
+        + ";quaternion..." + ";indices......" + ";string......." + ";type.........")
         .indexOf(infoType) / 14) {
     case 1:
       return eigenValues;
@@ -169,6 +170,8 @@ public class Tensor {
     case 10: // 
       return new int[] { modelIndex, atomIndex1, atomIndex2 };
     case 11:
+      return this.toString();
+    case 12:
       return type;
     default:
       return null;
@@ -294,8 +297,9 @@ public class Tensor {
         || Math.abs(t.eigenVectors[1].dot(t.eigenVectors[2])) > 0.0001f 
         || Math.abs(t.eigenVectors[2].dot(t.eigenVectors[0])) > 0.0001f)
       return null;
-    sortAndNormalize(t.eigenVectors, t.eigenValues);
-    return t.setType("other");
+    t.setType("other");
+    t.sortAndNormalize();
+    return t;
   }
 
   /**
@@ -319,9 +323,9 @@ public class Tensor {
     mat[0][2] = mat[2][0] = coefs[4] / 2; //XZ
     mat[1][2] = mat[2][1] = coefs[5] / 2; //YZ
     Eigen.getUnitVectors(mat, t.eigenVectors, t.eigenValues);
-    sortAndNormalize(t.eigenVectors, t.eigenValues);
-    t.typeFactor = ADP_FACTOR;
-    return t.setType("adp");
+    t.setType("adp");
+    t.sortAndNormalize();
+    return t;
   }
 
   /**
@@ -375,8 +379,8 @@ public class Tensor {
     t.eigenVectors = vectors;
     for (int i = 0; i < 3; i++)
       t.eigenVectors[i].normalize();
-    sortAndNormalize(t.eigenVectors, t.eigenValues);
     t.setType(type);
+    t.sortAndNormalize();
     t.eigenSignMask = (t.eigenValues[0] >= 0 ? 1 : 0)
         + (t.eigenValues[1] >= 0 ? 2 : 0) + (t.eigenValues[2] >= 0 ? 4 : 0);
     return t;
@@ -393,6 +397,7 @@ public class Tensor {
     isIsotropic = false;
     altType = null;
     typeFactor = 1;
+    sortIso = false;
     
     switch (iType = getType(type)) {
     case TYPE_ISO:
@@ -427,28 +432,29 @@ public class Tensor {
     }
   }
 
-  private static int[] sortOrder = { 1, 0, 2 };
+  private static int[] isoOrder = { 1, 0, 2 };
 
   /**
-   * sorts EigenVectors by 
+   * Understand that sorting EigenVectors by 
    * 
    * |sigma_3 - sigma_iso| >= |sigma_1 - sigma_iso| >= |sigma_2 - sigma_iso|
    * 
+   * will result sigma_3 < sigma_1 sometimes, and then truncated ellipsoids
    * 
-   * @param eigenVectors
-   * @param eigenValues
+   * 
    */
-  private static void sortAndNormalize(V3[] eigenVectors, float[] eigenValues) {
+  private void sortAndNormalize() {
     // first sorted 3 2 1, then 1 and 2 are switched using the sortOrder above.
     Object[][] o = new Object[][] {
-        new Object[] { eigenVectors[0], Float.valueOf(eigenValues[0]) },
-        new Object[] { eigenVectors[1], Float.valueOf(eigenValues[1]) },
-        new Object[] { eigenVectors[2], Float.valueOf(eigenValues[2]) } };
-    float sigmaIso = (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3f;
+        new Object[] { V3.newV(eigenVectors[0]), Float.valueOf(eigenValues[0]) },
+        new Object[] { V3.newV(eigenVectors[1]), Float.valueOf(eigenValues[1]) },
+        new Object[] { V3.newV(eigenVectors[2]), Float.valueOf(eigenValues[2]) } };
+    float sigmaIso = (sortIso ? (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3f : 0);
     Arrays.sort(o, getTensorSort(sigmaIso));
     for (int i = 0; i < 3; i++) {
-      eigenValues[i] = ((Float) o[sortOrder[i]][1]).floatValue();
-      eigenVectors[i] = (V3) o[sortOrder[i]][0];
+      int pt = (sortIso ? isoOrder[i] : i);
+      eigenValues[i] = ((Float) o[pt][1]).floatValue();
+      eigenVectors[i] = (V3) o[pt][0];
       eigenVectors[i].normalize();
     }
   }

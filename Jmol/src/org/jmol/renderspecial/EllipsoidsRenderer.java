@@ -84,6 +84,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private final P3i s0 = new P3i();
   private final P3i s1 = new P3i();
   private final P3i s2 = new P3i();
+
+  private float maxLength;
   
   private final static float toRadians = (float) Math.PI/180f;
   private final static float[] cossin = new float[36];
@@ -188,10 +190,14 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 
   private void renderOne(Ellipsoid e) {
     center = e.center;
+    maxLength = 0;
     for (int i = 3; --i >= 0;) {
-      factoredLengths[i] = e.getLength(i);
-      if (factoredLengths[i] < 0.02f)
-        factoredLengths[i] = 0.02f; // for extremely flat ellipsoids, we need at least some length    
+      float f = e.getLength(i);
+      if (f < 0.02f)
+        f = 0.02f; // for extremely flat ellipsoids, we need at least some length
+      if (f > maxLength)
+        maxLength = f;
+      factoredLengths[i] = f;
     }
     axes = e.tensor.eigenVectors;
     setMatrices();
@@ -292,7 +298,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
           Math.round (s0.y + pt1.y * perspectiveFactor * 1.05f), Math.round(pt1.z * 1.05f + s0.z));
     }
     dx = 2 + (int) viewer.scaleToScreen(s0.z, 
-        Math.round((Float.isNaN(factoredLengths[0]) ? 1.0f : factoredLengths[0]) * 1000));
+        Math.round((Float.isNaN(maxLength) ? 1.0f : maxLength) * 1000));
   }
 
   private void renderBall() {

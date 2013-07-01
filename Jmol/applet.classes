@@ -69,7 +69,7 @@ org/jmol/symmetry/*.java
 org/jmol/thread/*.java
 org/jmol/util/*.java
 org/jmol/viewer/*.java
-org/jmol/viewer/bindings/*.java
+org/jmol/viewer/binding/*.java
 
 
 

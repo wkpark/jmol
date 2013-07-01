@@ -110,7 +110,8 @@ public class Tensor {
 
   /**
    * returns an object of the specified type, including 
-   * "eigenvalues", "eigenvectors", "asymmetric", "symmetric", "type", and "indices"
+   * "eigenvalues", "eigenvectors", "asymmetric", 
+   * "symmetric", "trace", "indices", and "type"
    * 
    * @param infoType
    * @return Object or null
@@ -123,8 +124,10 @@ public class Tensor {
            + ";eigenvectors."
            + ";asymmetric..."
            + ";symmetric...."
+           + ";trace........"
+           + ";indices......"
            + ";type........."
-           + ";indices......").indexOf(infoType)) {
+           ).indexOf(infoType)) {
     case 14:
       return eigenValues;
     case 28:
@@ -149,14 +152,15 @@ public class Tensor {
           b[i][j] = (float) symTensor[i][j];
       return b;
     case 70:
-      return type;
+      return Float.valueOf(eigenValues[0] + eigenValues[1] + eigenValues[2]);
     case 84:
       return new int[] {modelIndex, atomIndex1, atomIndex2};
+    case 98:
+      return type;
     default:
-      return null;
+      return null; 
     }
   }
-
 
   public static Tensor copyTensor(Tensor t0) {
     Tensor t = new Tensor();

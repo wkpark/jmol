@@ -3419,6 +3419,14 @@ abstract public class ModelCollection extends BondCollection {
     return ilist;
   }
 
+  /**
+   * Returns a list of tensors that are of the specified type and 
+   * have both atomIndex1 and atomIndex2 in bs.
+   * 
+   * @param type
+   * @param bs
+   * @return list of Tensors
+   */
   @SuppressWarnings("unchecked")
   public JmolList<Tensor> getInteractionTensorList(String type, BS bs) {
     type = type.toLowerCase();
@@ -3431,7 +3439,7 @@ abstract public class ModelCollection extends BondCollection {
       int n = tensors.size();
       for (int j = 0; j < n; j++) {
         Tensor t = tensors.get(j);
-        if (t.type.equals(type))
+        if (t.type.equals(type) && bs.get(t.atomIndex1) && bs.get(t.atomIndex2))
           list.addLast(t);
       }      
     }

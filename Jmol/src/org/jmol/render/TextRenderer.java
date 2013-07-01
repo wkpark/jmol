@@ -76,19 +76,23 @@ class TextRenderer {
   static void drawPointer(Text text, JmolRendererInterface g3d) {
     // now draw the pointer, if requested
 
-    if ((text.pointer & Object2d.POINTER_ON) != 0) {
-      if (!g3d.setColix((text.pointer & Object2d.POINTER_BACKGROUND) != 0 && text.bgcolix != 0 ? text.bgcolix
-              : text.colix))
-        return;
-      if (text.boxX > text.atomX)
-        g3d.drawLineXYZ(text.atomX, text.atomY, text.atomZ, 
-            (int) text.boxX, (int) (text.boxY + text.boxHeight / 2),
-            text.zSlab);
-      else if (text.boxX + text.boxWidth < text.atomX)
-        g3d.drawLineXYZ(text.atomX, text.atomY, text.atomZ, 
-            (int) (text.boxX + text.boxWidth), 
-            (int) (text.boxY + text.boxHeight / 2), text.zSlab);
-    }
+    if ((text.pointer & Object2d.POINTER_ON) == 0
+        || !g3d.setColix((text.pointer & Object2d.POINTER_BACKGROUND) != 0
+            && text.bgcolix != 0 ? text.bgcolix : text.colix))
+      return;
+    float w = text.boxWidth;
+    float h = text.boxHeight;
+    float pt = Float.NaN;
+    float x = text.boxX
+        + (text.boxX > text.atomX + w ? 0 : text.boxX + w < text.atomX -w ? w
+            : (pt = w / 2));
+    boolean setY = !Float.isNaN(pt);
+    float y = text.boxY
+        + (setY && text.boxY > text.atomY ? 0 : setY
+            && text.boxY + h < text.atomY ? h
+            : h / 2);
+    g3d.drawLineXYZ(text.atomX, text.atomY, text.atomZ, (int) x, (int) y,
+        text.zSlab);
   }
 
   static void renderSimpleLabel(JmolRendererInterface g3d, JmolFont font,

@@ -125,17 +125,20 @@ public class Tensor {
            + ";asymmetric..."
            + ";symmetric...."
            + ";trace........"
+           + ";haeberlen...."
+           + ";eulerzyz....."
+           + ";eulerzxz....."
            + ";indices......"
            + ";type........."
-           ).indexOf(infoType)) {
-    case 14:
+           ).indexOf(infoType) / 14) {
+    case 1:
       return eigenValues;
-    case 28:
+    case 2:
       P3[] list = new P3[3];
       for (int i = 0; i < 3; i++)
         list[i] = P3.newP(eigenVectors[i]);
       return list;
-    case 42:
+    case 3:
       if (asymTensor == null)
         return null;
       float[][] a = new float[3][3];
@@ -143,7 +146,7 @@ public class Tensor {
         for (int j = 0; j < 3; j++)
           a[i][j] = (float) asymTensor[i][j];
       return a;
-    case 56:
+    case 4:
       if (symTensor == null)
         return null;
       float[][] b = new float[3][3];
@@ -151,11 +154,20 @@ public class Tensor {
         for (int j = 0; j < 3; j++)
           b[i][j] = (float) symTensor[i][j];
       return b;
-    case 70:
+    case 5: // trace
       return Float.valueOf(eigenValues[0] + eigenValues[1] + eigenValues[2]);
-    case 84:
+    case 6: // haeberlen
+      // TODO
+      return null;
+    case 7: // eulerzyz
+      // TODO
+      return null;
+    case 8: // eulerzxz
+      // TODO
+      return null;
+    case 9: // 
       return new int[] {modelIndex, atomIndex1, atomIndex2};
-    case 98:
+    case 10:
       return type;
     default:
       return null; 
@@ -342,6 +354,10 @@ public class Tensor {
   public void setAtomIndexes(int index1, int index2) {
     atomIndex1 = index1;
     atomIndex2 = index2;
+  }
+
+  public boolean isSelected(BS bsSelected) {
+    return bsSelected.get(atomIndex1) && (atomIndex2 < 0 || bsSelected.get(atomIndex2));
   }
 
   /**

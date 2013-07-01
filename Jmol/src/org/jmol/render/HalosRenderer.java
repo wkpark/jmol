@@ -99,7 +99,7 @@ public class HalosRenderer extends ShapeRenderer {
     if (d < 0) { //unsized selection
       d = atom.screenDiameter;
       if (d == 0) {
-        float ellipsemax = atom.getADPMinMax(true);
+        float ellipsemax = (atom.isShapeVisible(JC.SHAPE_ELLIPSOIDS) ? atom.getADPMinMax(true) : 0);
         if (ellipsemax > 0)
           d = viewer.scaleToScreen(z, (int) Math.floor(ellipsemax * 2000));
         if (d == 0) {

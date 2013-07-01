@@ -58,6 +58,7 @@ public class Ellipsoids extends Shape {
 
   private String typeSelected = "1";
   private Ellipsoid ellipsoidSelected;
+  private BS selectedAtoms;
 
   @Override
   public int getIndexFromName(String thisID) {
@@ -66,62 +67,58 @@ public class Ellipsoids extends Shape {
 
   @Override
   protected void setSize(int size, BS bsSelected) {
-    if (modelSet.atoms == null) 
+    if (modelSet.atoms == null || typeSelected == null)
       return;
-    boolean isAll = (bsSelected == null);    
+    boolean isAll = (bsSelected == null);
+    if (!isAll && selectedAtoms != null)
+      bsSelected = selectedAtoms;
     JmolList<Tensor> tensors = modelSet.getAllAtomTensors(typeSelected);
     if (tensors == null)
       return;
     Atom[] atoms = modelSet.atoms;
     for (int i = tensors.size(); --i >= 0;) {
       Tensor t = tensors.get(i);
-      if (isAll || bsSelected.get(t.atomIndex1)) {
+      if (isAll || t.isSelected(bsSelected)) {
         Ellipsoid e = atomEllipsoids.get(t);
-        if (size != 0 && e == null)
-            atomEllipsoids.put(t, e = Ellipsoid.getEllipsoidForAtomTensor(t, atoms[t.atomIndex1]));
-        if (e != null) {
-          e.visible = (size != 0);
+        boolean isNew = (size != 0 && e == null); 
+        if (isNew)
+          atomEllipsoids.put(t, e = Ellipsoid.getEllipsoidForAtomTensor(t,
+              atoms[t.atomIndex1]));
+        if (e != null && (isNew || size != Integer.MAX_VALUE)) { // MAX_VALUE --> "create only"
           e.setScale(size, true);
         }
       }
     }
-    BS bsVisible = BS.newN(atoms.length);
-    for (Ellipsoid e: atomEllipsoids.values())
-       if (e.visible)
-         bsVisible.set(e.tensor.atomIndex1);
-    for (int i = atoms.length; --i >= 0;)
-      atoms[i].setShapeVisibility(myVisibilityFlag, bsVisible.get(i));    
   }
 
-//  @SuppressWarnings("unchecked")
-//  @Override
-//  public boolean getPropertyData(String property, Object[] data) {
-//    if (property == "quadric") {
-//      Tensor t = (Tensor) data[0];
-//      if (t == null)
-//        return false;
-//      Ellipsoid e = atomEllipsoids.get(t);
-//      if (e == null) {
-//        P3 center = (P3) data[1];
-//        if (center == null)
-//          center = new P3();
-//        e = Ellipsoid.getEllipsoidForAtomTensor(t, center);
-//      }
-//      data[2] = e.getEquation();
-//      return true;
-//    }
-//    return false;
-//  }
+  //  @SuppressWarnings("unchecked")
+  //  @Override
+  //  public boolean getPropertyData(String property, Object[] data) {
+  //    if (property == "quadric") {
+  //      Tensor t = (Tensor) data[0];
+  //      if (t == null)
+  //        return false;
+  //      Ellipsoid e = atomEllipsoids.get(t);
+  //      if (e == null) {
+  //        P3 center = (P3) data[1];
+  //        if (center == null)
+  //          center = new P3();
+  //        e = Ellipsoid.getEllipsoidForAtomTensor(t, center);
+  //      }
+  //      data[2] = e.getEquation();
+  //      return true;
+  //    }
+  //    return false;
+  //  }
 
   @Override
   public void setProperty(String propertyName, Object value, BS bs) {
+    //System.out.println(propertyName + " " + value + " " + bs);
     if (propertyName == "thisID") {
-      ellipsoidSelected = (value == null ? null : (Ellipsoid) simpleEllipsoids.get(value));
-      if (value == null)
-        return;
-      if (ellipsoidSelected == null) {
+      if (initEllipsoids(value) && ellipsoidSelected == null) {
         String id = (String) value;
-        ellipsoidSelected = Ellipsoid.getEmptyEllipsoid(id, viewer.getCurrentModelIndex());
+        ellipsoidSelected = Ellipsoid.getEmptyEllipsoid(id, viewer
+            .getCurrentModelIndex());
         simpleEllipsoids.put(id, ellipsoidSelected);
       }
       return;
@@ -139,6 +136,10 @@ public class Ellipsoids extends Shape {
       ellipsoidSelected = null;
       return;
     }
+    if ("atoms" == propertyName) {
+      selectedAtoms = (BS) value;
+      return;
+    }
     if (ellipsoidSelected != null) {
       if ("delete" == propertyName) {
         simpleEllipsoids.remove(ellipsoidSelected.id);
@@ -150,10 +151,6 @@ public class Ellipsoids extends Shape {
       }
       if ("on" == propertyName) {
         ellipsoidSelected.isOn = ((Boolean) value).booleanValue();
-        return;
-      }
-      if ("atoms" == propertyName) {
-        //setPoints(viewer.modelSet.atoms, (BS) value);
         return;
       }
       if ("points" == propertyName) {
@@ -187,8 +184,8 @@ public class Ellipsoids extends Shape {
       }
       if ("translucency" == propertyName) {
         boolean isTranslucent = (value.equals("translucent"));
-        ellipsoidSelected.colix = C.getColixTranslucent3(ellipsoidSelected.colix,
-            isTranslucent, translucentLevel);
+        ellipsoidSelected.colix = C.getColixTranslucent3(
+            ellipsoidSelected.colix, isTranslucent, translucentLevel);
         return;
       }
     }
@@ -198,6 +195,10 @@ public class Ellipsoids extends Shape {
       return;
     }
 
+    if ("scale" == propertyName) {
+      setSize((int) (((Float) value).floatValue() * 100), bs);
+      return;
+    }
     if ("params" == propertyName) {
       Object[] data = (Object[]) value;
       data[2] = null;// Jmol does not allow setting sizes this way from PyMOL yet
@@ -206,11 +207,25 @@ public class Ellipsoids extends Shape {
       // onward...
     }
 
+    if ("on" == propertyName) {
+      boolean isOn = ((Boolean) value).booleanValue();
+      if (selectedAtoms != null)
+        bs = selectedAtoms;
+      if (isOn)
+        setSize(Integer.MAX_VALUE, bs);
+      for (Ellipsoid e : atomEllipsoids.values())
+        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs))
+          e.isOn = isOn;
+      return;
+    }
+
     if ("color" == propertyName) {
       short colix = C.getColixO(value);
       byte pid = EnumPalette.pidOf(value);
+      if (selectedAtoms != null)
+        bs = selectedAtoms;
       for (Ellipsoid e : atomEllipsoids.values())
-        if (e.tensor.type.equalsIgnoreCase(typeSelected)) {
+        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs)) {
           e.colix = getColixI(colix, pid, e.tensor.atomIndex1);
           e.pid = pid;
         }
@@ -220,13 +235,22 @@ public class Ellipsoids extends Shape {
     if ("translucency" == propertyName) {
       boolean isTranslucent = (value.equals("translucent"));
       for (Ellipsoid e : atomEllipsoids.values())
-        if (e.tensor.type.equalsIgnoreCase(typeSelected))
+        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs))
           e.colix = C.getColixTranslucent3(e.colix, isTranslucent,
               translucentLevel);
       return;
     }
     setPropS(propertyName, value, bs);
   }
+
+private boolean initEllipsoids(Object value) {
+  ellipsoidSelected = (value == null ? null : (Ellipsoid) simpleEllipsoids.get(value));
+  if (value != null) {
+    typeSelected = null;
+  }
+  selectedAtoms = null;
+  return false;
+}
 
 //  private void setPoints(P3[] points, BS bs) {
 //    return;
@@ -299,26 +323,34 @@ public class Ellipsoids extends Shape {
     if (sc == null)
       return;
     String keyDone = "";
-    for (Ellipsoid e: atomEllipsoids.values()) {
+    for (Ellipsoid e : atomEllipsoids.values()) {
       String type = e.tensor.type;
       String key = ";" + type + ";";
       if (keyDone.indexOf(key) >= 0)
         continue;
-      keyDone += key;
-      appendCmd(sb, "Ellipsoids set " + Escape.eS(type));
       Map<String, BS> temp = new Hashtable<String, BS>();
       Map<String, BS> temp2 = new Hashtable<String, BS>();
-      for (Ellipsoid e2: atomEllipsoids.values()) {
+      boolean isTemp = (e.tensor.iType == Tensor.TYPE_TEMP);
+      String cmd = "Ellipsoids set " + Escape.eS(type);
+      if (isTemp)
+        sb.append(cmd);
+      for (Ellipsoid e2 : atomEllipsoids.values()) {
         if (e2.tensor.type.equals(type)) {
           int i = e2.tensor.atomIndex1;
-          BSUtil.setMapBitSet(temp, i, i, "Ellipsoids " + e.percent);
-          if (e.colix != C.INHERIT_ALL) {
-              BSUtil.setMapBitSet(temp2, i, i, getColorCommand("Ellipsoids",
-                  e.pid, e.colix, translucentAllowed));
+          // YES -- "e.percent" here, not "e2.percent" because there is one and 
+          //        only one setting for thermal ellipsoid percent
+          String script = (isTemp ? "Ellipsoids " + e.percent : cmd + " scale " + e2.scale);
+          if (!isTemp && e2.isOn)  
+            script += " ON";
+          BSUtil.setMapBitSet(temp, i, i, script);
+          if (e2.colix != C.INHERIT_ALL) {
+            BSUtil.setMapBitSet(temp2, i, i, getColorCommand(cmd, e2.pid,
+                e2.colix, translucentAllowed));
           }
         }
       }
       sb.append(sc.getCommands(temp, temp2, "select"));
+      keyDone += key;
     }
   }
 
@@ -330,16 +362,23 @@ public class Ellipsoids extends Shape {
      */
     if (!isActive())
       return;
-    setVis(simpleEllipsoids, bs);
-    setVis(atomEllipsoids, bs);
+    Atom[] atoms = viewer.modelSet.atoms;
+    setVis(simpleEllipsoids, bs, atoms);
+    if (atomEllipsoids != null)
+      for (int i = atoms.length; --i >= 0;)
+        atoms[i].setShapeVisibility(myVisibilityFlag, false);
+    setVis(atomEllipsoids, bs, atoms);
   }
 
-  private void setVis(Map<?, Ellipsoid> ellipsoids, BS bs) {
+  private void setVis(Map<?, Ellipsoid> ellipsoids, BS bs, Atom[] atoms) {
     Iterator<Ellipsoid> e = ellipsoids.values().iterator();
     while (e.hasNext()) {
       Ellipsoid ellipsoid = e.next();
       ellipsoid.visible = ellipsoid.isValid && ellipsoid.isOn
           && (ellipsoid.modelIndex < 0 || bs.get(ellipsoid.modelIndex));
+      if (atoms != null)
+        atoms[ellipsoid.tensor.atomIndex1].setShapeVisibility(myVisibilityFlag, true);
+
     }
   }
 

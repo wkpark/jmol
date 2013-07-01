@@ -3439,7 +3439,7 @@ abstract public class ModelCollection extends BondCollection {
       int n = tensors.size();
       for (int j = 0; j < n; j++) {
         Tensor t = tensors.get(j);
-        if (t.type.equals(type) && bs.get(t.atomIndex1) && bs.get(t.atomIndex2))
+        if (t.type.equals(type) && t.isSelected(bs))
           list.addLast(t);
       }      
     }

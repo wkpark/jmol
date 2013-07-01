@@ -7675,7 +7675,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.translucent:
       case T.opaque:
         isColorOrRadius = true;
-        translucentLevel = getColorTrans(i);
+        translucentLevel = getColorTrans(i, false);
         i = iToken;
         break;
       case T.pdb:
@@ -11648,9 +11648,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int mad = 0;
     int i = 1;
     float translucentLevel = Float.MAX_VALUE;
+    boolean checkMore = false;
+    boolean isSet = false;
+    setShapeProperty(JC.SHAPE_ELLIPSOIDS, "thisID", null);
     switch (getToken(1).tok) {
     case T.on:
-      mad = 50;
+      mad = Integer.MAX_VALUE; // default for this type
       break;
     case T.off:
       break;
@@ -11658,10 +11661,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       mad = intParameter(1);
       break;
     case T.set:
-      checkLength(3);
       sm.loadShape(JC.SHAPE_ELLIPSOIDS);
-      setShapeProperty(JC.SHAPE_ELLIPSOIDS, "select", parameterAsString(2));      
-      return;
+      setShapeProperty(JC.SHAPE_ELLIPSOIDS, "select", parameterAsString(2));
+      i = iToken;
+      checkMore = true;
+      isSet = true;
+      break;
     case T.id:
     case T.times:
     case T.identifier:
@@ -11670,10 +11675,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i++;
       setShapeId(JC.SHAPE_ELLIPSOIDS, i, false);
       i = iToken;
-      while (++i < slen) {
-        String key = parameterAsString(i);
-        Object value = null;
-        switch (getToken(i).tok) {
+      checkMore = true;
+      break;
+    default:
+      error(ERROR_invalidArgument);
+    }
+    if (!checkMore) {
+      setShapeSizeBs(JC.SHAPE_ELLIPSOIDS, mad, null);
+      return;
+    }
+    while (++i < slen) {
+      String key = parameterAsString(i);
+      Object value = null;
+      getToken(i);
+      if (!isSet)
+        switch (theTok) {
         case T.dollarsign:
           key = "points";
           Object[] data = new Object[3];
@@ -11682,12 +11698,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             continue;
           getShapePropertyData(JC.SHAPE_ISOSURFACE, "getVertices", data);
           value = data;
-          break;
-        case T.bitset:
-        case T.expressionBegin:
-          key = "atoms";
-          value = atomExpressionAt(i);
-          i = iToken;
           break;
         case T.axes:
           V3[] axes = new V3[3];
@@ -11702,20 +11712,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           value = centerParameter(++i);
           i = iToken;
           break;
-        case T.color:
-        case T.translucent:
-        case T.opaque:
-          translucentLevel = getColorTrans(i);
-          i = iToken;
-          continue;
+        case T.modelindex:
+          value = Integer.valueOf(intParameter(++i));
+          break;
         case T.delete:
           value = Boolean.TRUE;
           checkLength(i + 1);
           break;
-        case T.modelindex:
-          value = Integer.valueOf(intParameter(++i));
-          break;
+        }
+      if (value == null)
+        switch (theTok) {
         case T.on:
+          key = "on";
           value = Boolean.TRUE;
           break;
         case T.off:
@@ -11725,19 +11733,27 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.scale:
           value = Float.valueOf(floatParameter(++i));
           break;
+        case T.bitset:
+        case T.expressionBegin:
+          key = "atoms";
+          value = atomExpressionAt(i);
+          i = iToken;
+          break;
+        case T.color:
+        case T.translucent:
+        case T.opaque:
+          translucentLevel = getColorTrans(i, true);
+          i = iToken;
+          continue;
         }
-        if (value == null)
-          error(ERROR_invalidArgument);
-        setShapeProperty(JC.SHAPE_ELLIPSOIDS, key.toLowerCase(),
-            value);
-      }
-      finalizeObject(JC.SHAPE_ELLIPSOIDS, colorArgb[0], translucentLevel, 0, false, null, 0, null);
-      setShapeProperty(JC.SHAPE_ELLIPSOIDS, "thisID", null);
-      return;
-    default:
-      error(ERROR_invalidArgument);
+      if (value == null)
+        error(ERROR_invalidArgument);
+      setShapeProperty(JC.SHAPE_ELLIPSOIDS, key.toLowerCase(), value);
     }
-    setShapeSizeBs(JC.SHAPE_ELLIPSOIDS, mad, null);
+    finalizeObject(JC.SHAPE_ELLIPSOIDS, colorArgb[0], translucentLevel, 0,
+        false, null, 0, null);
+    setShapeProperty(JC.SHAPE_ELLIPSOIDS, "thisID", null);
+
   }
 
   private String getShapeNameParameter(int i) throws ScriptException {
@@ -15599,7 +15615,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.color:
       case T.translucent:
       case T.opaque:
-        translucentLevel = getColorTrans(i);
+        translucentLevel = getColorTrans(i, false);
         i = iToken;
         idSeen = true;
         continue;
@@ -15639,11 +15655,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * Checks color, translucent, opaque parameters.
    * 
    * @param i
+   * @param allowNone TODO
    * @return translucentLevel and sets iToken and colorArgb[0]
    * 
    * @throws ScriptException
    */
-  private float getColorTrans(int i) throws ScriptException {
+  private float getColorTrans(int i, boolean allowNone) throws ScriptException {
     float translucentLevel = Float.MAX_VALUE;
     if (theTok != T.color)
       --i;
@@ -15660,7 +15677,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (isColorParam(i + 1)) {
       colorArgb[0] = getArgbParam(++i);
-      i = iToken;
+    } else if (tokAt(i + 1) == T.none) {
+      colorArgb[0] = 0;
+      iToken = i + 1;
     } else if (translucentLevel == Float.MAX_VALUE) {
       error(ERROR_invalidArgument);
     } else {
@@ -16113,7 +16132,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.translucent:
       case T.opaque:
         idSeen = true;
-        translucentLevel = getColorTrans(i);
+        translucentLevel = getColorTrans(i, false);
         i = iToken;
         continue;
       default:
@@ -16258,7 +16277,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.color:
       case T.translucent:
       case T.opaque:
-        translucentLevel = getColorTrans(i);
+        translucentLevel = getColorTrans(i, true);
         i = iToken;
         continue;
       case T.collapsed:

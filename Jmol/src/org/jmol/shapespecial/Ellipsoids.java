@@ -252,50 +252,53 @@ private boolean initEllipsoids(Object value) {
   return false;
 }
 
-//  private void setPoints(P3[] points, BS bs) {
-//    return;
-    // doesn't really work. Just something I was playing with.
-//    if (points == null)
-//      return;
-//    int n = bs.cardinality();
-//    if (n < 3)
-//      return;
-//    P3 ptCenter = new P3();
-//    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-//      ptCenter.add(points[i]);
-//    ptCenter.scale(1.0f/n);
-//    double Sxx = 0, Syy = 0, Szz = 0, Sxy = 0, Sxz = 0, Syz = 0;
-//    P3 pt = new P3();
-//    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-//      pt.setT(points[i]);
-//      pt.sub(ptCenter);
-//      Sxx += (double) pt.x * (double) pt.x;
-//      Sxy += (double) pt.x * (double) pt.y;
-//      Sxz += (double) pt.x * (double) pt.z;
-//      Syy += (double) pt.y * (double) pt.y;
-//      Szz += (double) pt.z * (double) pt.z;
-//      Syz += (double) pt.y * (double) pt.z;      
-//    }
-//    double[][] N = new double[3][3];
-//    N[0][0] = Syy + Szz;
-//    N[1][1] = Sxx + Szz;
-//    N[2][2] = Sxx + Syy;
-//    Eigen eigen = Eigen.newM(N);
-//    ellipsoid.setEigen(ptCenter, eigen, 1f / n / 3);
-//  }
-
+  //  private void setPoints(P3[] points, BS bs) {
+  //    return;
+  // doesn't really work. Just something I was playing with.
+  //    if (points == null)
+  //      return;
+  //    int n = bs.cardinality();
+  //    if (n < 3)
+  //      return;
+  //    P3 ptCenter = new P3();
+  //    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+  //      ptCenter.add(points[i]);
+  //    ptCenter.scale(1.0f/n);
+  //    double Sxx = 0, Syy = 0, Szz = 0, Sxy = 0, Sxz = 0, Syz = 0;
+  //    P3 pt = new P3();
+  //    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+  //      pt.setT(points[i]);
+  //      pt.sub(ptCenter);
+  //      Sxx += (double) pt.x * (double) pt.x;
+  //      Sxy += (double) pt.x * (double) pt.y;
+  //      Sxz += (double) pt.x * (double) pt.z;
+  //      Syy += (double) pt.y * (double) pt.y;
+  //      Szz += (double) pt.z * (double) pt.z;
+  //      Syz += (double) pt.y * (double) pt.z;      
+  //    }
+  //    double[][] N = new double[3][3];
+  //    N[0][0] = Syy + Szz;
+  //    N[1][1] = Sxx + Szz;
+  //    N[2][2] = Sxx + Syy;
+  //    Eigen eigen = Eigen.newM(N);
+  //    ellipsoid.setEigen(ptCenter, eigen, 1f / n / 3);
+  //  }
 
   @Override
   public String getShapeState() {
+    JmolStateCreator sc = viewer.getStateCreator();
+    if (sc == null || !isActive())
+      return "";
     SB sb = new SB();
-    getStateID(sb);
-    getStateAtoms(sb);
+    sb.append("\n");
+    if (!simpleEllipsoids.isEmpty())
+      getStateID(sb);
+    if (!atomEllipsoids.isEmpty())
+      getStateAtoms(sb, sc);
     return sb.toString();
   }
 
   private void getStateID(SB sb) {
-    if (!isActive())
-      return;
     Iterator<Ellipsoid> e = simpleEllipsoids.values().iterator();
     V3 v1 = new V3();
     while (e.hasNext()) {
@@ -318,40 +321,30 @@ private boolean initEllipsoids(Object value) {
     }
   }
 
-  private void getStateAtoms(SB sb) {
-    JmolStateCreator sc = viewer.getStateCreator();
-    if (sc == null)
-      return;
-    String keyDone = "";
+  private void getStateAtoms(SB sb, JmolStateCreator sc) {
+    BS bsDone = new BS();
+    Map<String, BS> temp = new Hashtable<String, BS>();
+    Map<String, BS> temp2 = new Hashtable<String, BS>();
     for (Ellipsoid e : atomEllipsoids.values()) {
-      String type = e.tensor.type;
-      String key = ";" + type + ";";
-      if (keyDone.indexOf(key) >= 0)
+      int iType = e.tensor.iType;
+      if (bsDone.get(iType + 1))
         continue;
-      Map<String, BS> temp = new Hashtable<String, BS>();
-      Map<String, BS> temp2 = new Hashtable<String, BS>();
-      boolean isTemp = (e.tensor.iType == Tensor.TYPE_TEMP);
-      String cmd = "Ellipsoids set " + Escape.eS(type);
-      if (isTemp)
-        sb.append(cmd);
+      bsDone.set(iType + 1);
+      boolean isADP = (e.tensor.iType == Tensor.TYPE_ADP);
+      String cmd = (isADP ? null : "Ellipsoids set " + Escape.eS(e.tensor.type));
       for (Ellipsoid e2 : atomEllipsoids.values()) {
-        if (e2.tensor.type.equals(type)) {
-          int i = e2.tensor.atomIndex1;
-          // YES -- "e.percent" here, not "e2.percent" because there is one and 
-          //        only one setting for thermal ellipsoid percent
-          String script = (isTemp ? "Ellipsoids " + e.percent : cmd + " scale " + e2.scale);
-          if (!isTemp && e2.isOn)  
-            script += " ON";
-          BSUtil.setMapBitSet(temp, i, i, script);
-          if (e2.colix != C.INHERIT_ALL) {
-            BSUtil.setMapBitSet(temp2, i, i, getColorCommand(cmd, e2.pid,
-                e2.colix, translucentAllowed));
-          }
-        }
+        if (e2.tensor.iType != iType || isADP && !e2.isOn)
+          continue;
+        int i = e2.tensor.atomIndex1;
+        // 
+        BSUtil.setMapBitSet(temp, i, i, (isADP ? "Ellipsoids " + e2.percent
+            : cmd + " scale " + e2.scale + (e2.isOn ? " ON" : " OFF")));
+        if (e2.colix != C.INHERIT_ALL)
+          BSUtil.setMapBitSet(temp2, i, i, getColorCommand(cmd, e2.pid,
+              e2.colix, translucentAllowed));
       }
-      sb.append(sc.getCommands(temp, temp2, "select"));
-      keyDone += key;
     }
+    sb.append(sc.getCommands(temp, temp2, "select"));
   }
 
   @Override

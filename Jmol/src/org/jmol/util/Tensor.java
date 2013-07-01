@@ -35,7 +35,7 @@ public class Tensor {
 
   // factors that give reasonable first views of ellipsoids.
   
-  private static final float TEMPERATURE_FACTOR = (float) (Math.sqrt(0.5) / Math.PI);
+  private static final float ADP_FACTOR = (float) (Math.sqrt(0.5) / Math.PI);
   private static final float MAGNETIC_SUSCEPTIBILITY_FACTOR = 0.01f;
   private static final float ELECTRIC_FIELD_GRADIENT_FACTOR = 1f;
   private static final float BORN_EFFECTIVE_CHARGE_FACTOR = 1f;
@@ -50,11 +50,11 @@ public class Tensor {
   
   // type is an identifier that the reader/creator delivers:
   //
-  // temp   -- crystallographic displacement parameters 
-  //           - "temperature factors"; t.forThermalEllipsoid = true
+  // adp    -- crystallographic displacement parameters 
+  //           - "erature factors"; t.forThermalEllipsoid = true
   //           - either anisotropic (ADP) or isotropic (IDP)
   // iso      -- isotropic displacement parameters; from org.jmol.symmetry.UnitCell 
-  //           - changed to "temp" after setting t.isIsotropic = true
+  //           - changed to "adp" after setting t.isIsotropic = true
   // ms       -- magnetic susceptibility
   // isc      -- NMR interaction tensors
   //           - will have both atomIndex1 and atomIndex2 defined when
@@ -63,17 +63,18 @@ public class Tensor {
   // TLS-U    -- Translation/Libration/Skew tensor (anisotropic)
   // TLS-R    -- Translation/Libration/Skew tensor (residual)
   
-  private static final String KNOWN_TYPES = ";iso....;temp...;tls-u..;tls-r..;ms.....;efg....;isc....;charge.;";
+  private static final String KNOWN_TYPES = ";iso....;adp....;tls-u..;tls-r..;ms.....;efg....;isc....;charge.;";
   private static int getType(String type) {
     int pt = KNOWN_TYPES.indexOf(";" + type.toLowerCase() + ".");
     return (pt < 0 ? TYPE_OTHER : pt / 8); 
   }
 
   // these may be augmented, but the order should be kept the same within this list 
-
+  // no types  < -1, because these are used in Ellipsoids.getAtomState() as bs.get(iType + 1)
+  
   public static final int TYPE_OTHER  = -1;
   public static final int TYPE_ISO    = 0;
-  public static final int TYPE_TEMP   = 1;
+  public static final int TYPE_ADP   = 1;
   public static final int TYPE_TLS_U  = 2;
   public static final int TYPE_TLS_R  = 3;
   public static final int TYPE_MS     = 4;
@@ -325,8 +326,8 @@ public class Tensor {
     mat[1][2] = mat[2][1] = coefs[5] / 2; //YZ
     Eigen.getUnitVectors(mat, t.eigenVectors, t.eigenValues);
     sortAndNormalize(t.eigenVectors, t.eigenValues);
-    t.typeFactor = TEMPERATURE_FACTOR;
-    return t.setType("temp");
+    t.typeFactor = ADP_FACTOR;
+    return t.setType("adp");
   }
 
   /**
@@ -389,7 +390,7 @@ public class Tensor {
 
   /**
    * Sets typeFactor, altType, isIsotropic, forThermalEllipsoid;
-   * type "iso" changed to "temp" here.
+   * type "iso" changed to "" here.
    * 
    */
   private void processType() {
@@ -404,11 +405,11 @@ public class Tensor {
       forThermalEllipsoid = true;
       isIsotropic = true;
       altType = "1";
-      type = "temp";
+      type = "adp";
       break;
-    case TYPE_TEMP:
+    case TYPE_ADP:
       forThermalEllipsoid = true;
-      typeFactor = TEMPERATURE_FACTOR;
+      typeFactor = ADP_FACTOR;
       altType = "1";
       break;
     case TYPE_MS:

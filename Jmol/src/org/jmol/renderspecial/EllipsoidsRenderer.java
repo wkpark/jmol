@@ -251,7 +251,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     JC.axisNY, JC.axisY, 
     JC.axisNZ, JC.axisZ };
 
-  private final P3i[] screens = new P3i[32];
+  private final P3i[] screens = new P3i[38];
   private final P3[] points = new P3[6];
   {
     for (int i = 0; i < points.length; i++)
@@ -288,9 +288,11 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       matEllipsoidToScreen.transform(pt1);
       screens[i].set(Math.round (s0.x + pt1.x * perspectiveFactor),
           Math.round (s0.y + pt1.y * perspectiveFactor), Math.round(pt1.z + s0.z));
+      screens[i + 32].set(Math.round (s0.x + pt1.x * perspectiveFactor * 1.05f),
+          Math.round (s0.y + pt1.y * perspectiveFactor * 1.05f), Math.round(pt1.z * 1.05f + s0.z));
     }
     dx = 2 + (int) viewer.scaleToScreen(s0.z, 
-        Math.round((Float.isNaN(factoredLengths[2]) ? 1.0f : factoredLengths[2]) * 1000));
+        Math.round((Float.isNaN(factoredLengths[0]) ? 1.0f : factoredLengths[0]) * 1000));
   }
 
   private void renderBall() {
@@ -364,13 +366,22 @@ public class EllipsoidsRenderer extends ShapeRenderer {
 //          screens[5]);
 //      g3d.setColix(colix);
 //    } else {
+    if (drawBall) {
+      g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[32],
+          screens[33]);
+      g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[34],
+          screens[35]);
+      g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[36],
+          screens[37]);
+//    }
+    } else {
       g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[0],
           screens[1]);
       g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[2],
           screens[3]);
       g3d.fillCylinder(GData.ENDCAPS_FLAT, diameter, screens[4],
           screens[5]);
-//    }
+    }
 
   }
   private void renderDots() {

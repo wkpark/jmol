@@ -745,8 +745,8 @@ public class T {
   
   public final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
   public final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
-  final static int find         = 4 | 3 << 9 | mathfunc | mathproperty;
   final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
+  final static int tensor       = 4 | 2 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b,c)
   
@@ -759,6 +759,7 @@ public class T {
   
   final static int bin          = 1 | 3 << 9 | mathfunc | mathproperty;
   public final static int symop = 2 | 3 << 9 | mathfunc | mathproperty | intproperty; 
+  final static int find         = 3 | 3 << 9 | mathfunc | mathproperty;
 
   // anything beyond 3 are set "unlimited"
 
@@ -1978,6 +1979,7 @@ public class T {
       "sxyz",            T.t(screenxyz),
       "temperature",     T.t(temperature),
       "relativeTemperature", null,
+      "tensor",          T.t(tensor),
       "theta",           T.t(theta),
       "thisModel",       T.t(thismodel),
       "ticks",           T.t(ticks),

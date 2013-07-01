@@ -37,7 +37,6 @@ import org.jmol.util.P3;
 import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
-import org.jmol.util.Tensor;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 

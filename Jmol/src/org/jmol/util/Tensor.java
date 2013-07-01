@@ -108,6 +108,56 @@ public class Tensor {
   public int atomIndex1 = -1;
   public int atomIndex2 = -1;
 
+  /**
+   * returns an object of the specified type, including 
+   * "eigenvalues", "eigenvectors", "asymmetric", "symmetric", "type", and "indices"
+   * 
+   * @param infoType
+   * @return Object or null
+   */
+  public Object getInfo(String infoType) {
+    if (infoType.charAt(0) != ';')
+      infoType = ";" + infoType + ".";
+    switch ((";............."
+           + ";eigenvalues.."
+           + ";eigenvectors."
+           + ";asymmetric..."
+           + ";symmetric...."
+           + ";type........."
+           + ";indices......").indexOf(infoType)) {
+    case 14:
+      return eigenValues;
+    case 28:
+      P3[] list = new P3[3];
+      for (int i = 0; i < 3; i++)
+        list[i] = P3.newP(eigenVectors[i]);
+      return list;
+    case 42:
+      if (asymTensor == null)
+        return null;
+      float[][] a = new float[3][3];
+      for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+          a[i][j] = (float) asymTensor[i][j];
+      return a;
+    case 56:
+      if (symTensor == null)
+        return null;
+      float[][] b = new float[3][3];
+      for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+          b[i][j] = (float) symTensor[i][j];
+      return b;
+    case 70:
+      return type;
+    case 84:
+      return new int[] {modelIndex, atomIndex1, atomIndex2};
+    default:
+      return null;
+    }
+  }
+
+
   public static Tensor copyTensor(Tensor t0) {
     Tensor t = new Tensor();
     t.setType(t0.type);
@@ -227,7 +277,7 @@ public class Tensor {
         || Math.abs(t.eigenVectors[1].dot(t.eigenVectors[2])) > 0.0001f 
         || Math.abs(t.eigenVectors[2].dot(t.eigenVectors[0])) > 0.0001f)
       return null;
-    sort(t.eigenVectors, t.eigenValues);
+    sortAndNormalize(t.eigenVectors, t.eigenValues);
     return t.setType("other");
   }
 
@@ -252,7 +302,7 @@ public class Tensor {
     mat[0][2] = mat[2][0] = coefs[4] / 2; //XZ
     mat[1][2] = mat[2][1] = coefs[5] / 2; //YZ
     Eigen.getUnitVectors(mat, t.eigenVectors, t.eigenValues);
-    sort(t.eigenVectors, t.eigenValues);
+    sortAndNormalize(t.eigenVectors, t.eigenValues);
     t.typeFactor = TEMPERATURE_FACTOR;
     return t.setType("temp");
   }
@@ -304,7 +354,7 @@ public class Tensor {
     t.eigenVectors = vectors;
     for (int i = 0; i < 3; i++)
       t.eigenVectors[i].normalize();
-    sort(t.eigenVectors, t.eigenValues);
+    sortAndNormalize(t.eigenVectors, t.eigenValues);
     t.setType(type);
     t.eigenSignMask = (t.eigenValues[0] >= 0 ? 1 : 0)
         + (t.eigenValues[1] >= 0 ? 2 : 0) + (t.eigenValues[2] >= 0 ? 4 : 0);
@@ -363,12 +413,11 @@ public class Tensor {
    * 
    * |sigma_3 - sigma_iso| >= |sigma_1 - sigma_iso| >= |sigma_2 - sigma_iso|
    * 
-   * and normalize the eigenVectors
    * 
    * @param eigenVectors
    * @param eigenValues
    */
-  private static void sort(V3[] eigenVectors, float[] eigenValues) {
+  private static void sortAndNormalize(V3[] eigenVectors, float[] eigenValues) {
     // first sorted 3 2 1, then 1 and 2 are switched using the sortOrder above.
     Object[][] o = new Object[][] {
         new Object[] { eigenVectors[0], Float.valueOf(eigenValues[0]) },

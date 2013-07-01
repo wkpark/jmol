@@ -250,6 +250,17 @@ abstract public class AtomCollection {
     return (i < 0 || atomTensorList == null || i >= atomTensorList.length ? null
         : atomTensorList[i]);
   }
+  
+  public Tensor getAtomTensor(int i, String type) {
+    Tensor[] tensors = getAtomTensorList(i);
+    if (tensors == null || type == null)
+      return null;
+    type = type.toLowerCase();
+    for (int j = 0; j < tensors.length; j++)
+      if (tensors[j] != null && type.equals(tensors[j].type))
+        return tensors[j];
+    return null;
+  }
 
   protected void setAtomTensors(int atomIndex, JmolList<Tensor> list) {
     if (list == null || list.size() == 0)

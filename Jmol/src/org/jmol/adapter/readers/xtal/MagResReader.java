@@ -166,7 +166,7 @@ public class MagResReader extends AtomSetCollectionReader {
   }
 
   private String getAtomName(String name, String index) {
-    return name + (name.indexOf("_") >= 0 ? "_" : "") + index;
+    return name + "_" + index;
   }
 
   /*

@@ -3367,6 +3367,8 @@ class ScriptMathProcessor {
         // q%2 y
         // q%3 z
         // q%4 normal
+        // q%5 EulerZXZ (degrees)
+        // q%6 EulerZYZ (degrees)
         // q%-1 vector(1)
         // q%-2 theta
         // q%-3 Matrix column 0
@@ -3374,7 +3376,6 @@ class ScriptMathProcessor {
         // q%-5 Matrix column 2
         // q%-6 AxisAngle format
         // q%-9 Matrix format
-        // q%-10 EulerZXZ (degrees)
         case 0:
           return addXFloat(pt4.w);
         case 1:
@@ -3391,7 +3392,7 @@ class ScriptMathProcessor {
         case 5:
           return addXAF(q.getEulerZXZ());
         case 6:
-          return addXAF(q.getEulerZXZ());
+          return addXAF(q.getEulerZYZ());
         case -1:
           return addXPt(P3.newP(q.getVector(-1)));
         case -2:

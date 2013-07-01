@@ -282,7 +282,7 @@ abstract public class AtomCollection {
   }
 
   public JmolList<Tensor> getAllAtomTensors(String type) {
-    return atomTensors.get(type.toLowerCase());
+    return (atomTensors == null ? null : atomTensors.get(type.toLowerCase()));
   }
   
   private Tensor[] getTensorList(JmolList<Tensor> list) {

@@ -29,7 +29,7 @@ import java.util.Comparator;
 
 /**
  * @author Bob Hanson hansonr@stolaf.edu 6/30/2013
- * 
+ * @author Simone Sturniolo 
  */
 public class Tensor {
 
@@ -125,7 +125,8 @@ public class Tensor {
     switch ((";............." + ";eigenvalues.." + ";eigenvectors."
         + ";asymmetric..." + ";symmetric...." + ";trace........"
         + ";haeberlen...." + ";eulerzyz....." + ";eulerzxz....."
-        + ";indices......" + ";type.........").indexOf(infoType) / 14) {
+        + ";quaternion..." + ";indices......" + ";type.........")
+        .indexOf(infoType) / 14) {
     case 1:
       return eigenValues;
     case 2:
@@ -159,14 +160,15 @@ public class Tensor {
           / (eigenValues[2] - haeb[0]));
       return haeb;
     case 7: // eulerzyz
-      return Quaternion.getQuaternionFrame(P3.new3(0, 0, 0),
-          eigenVectors[0], eigenVectors[1]).getEulerZYZ(); 
+      return ((Quaternion) getInfo("quaternion")).getEulerZYZ();
     case 8: // eulerzxz
-      return Quaternion.getQuaternionFrame(P3.new3(0, 0, 0),
-          eigenVectors[0], eigenVectors[1]).getEulerZXZ(); 
-    case 9: // 
+      return ((Quaternion) getInfo("quaternion")).getEulerZXZ();
+    case 9: // quaternion
+      return Quaternion.getQuaternionFrame(null, eigenVectors[0],
+          eigenVectors[1]);
+    case 10: // 
       return new int[] { modelIndex, atomIndex1, atomIndex2 };
-    case 10:
+    case 11:
       return type;
     default:
       return null;

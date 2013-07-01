@@ -37,9 +37,7 @@ package org.jmol.util;
  * This ensures that the reported theta is always positive, and the normal
  * reported is always associated with a positive theta.  
  * 
- * By Bob Hanson, hansonr@stolaf.edu 6/2008
- * 
- * 
+ * @author Bob Hanson, hansonr@stolaf.edu 6/2008
  * 
  */
 
@@ -315,11 +313,23 @@ public class Quaternion {
     q3 *= -1;
   }
 
-  public static final Quaternion getQuaternionFrame(P3 center, Tuple3f x, Tuple3f y) {
+  /**
+   * returns a quaternion frame based on three points (center, x, and any point in xy plane)
+   * or two vectors (vA, vB).
+   * 
+   * @param center  (null for vA/vB option)
+   * @param x
+   * @param xy
+   * @return quaternion for frame
+   */
+  public static final Quaternion getQuaternionFrame(P3 center, Tuple3f x,
+                                                    Tuple3f xy) {
     V3 vA = V3.newV(x);
-    vA.sub(center);
-    V3 vB = V3.newV(y);
-    vB.sub(center);
+    V3 vB = V3.newV(xy);
+    if (center != null) {
+      vA.sub(center);
+      vB.sub(center);
+    }
     return getQuaternionFrameV(vA, vB, null, false);
   }
   
@@ -804,16 +814,21 @@ public class Quaternion {
   }
 
   public float[] getEulerZYZ() {
-    return null;
+    // http://www.swarthmore.edu/NatSci/mzucker1/e27/diebel2006attitude.pdf
+    double rA, rB, rG;
+    rA = Math.atan2(2 * (q2 * q3 - q0 * q1), 2 * (q1 * q3 + q0 * q2 ));
+    rB = Math.acos(q3 * q3 - q2 * q2 - q1 * q1 + q0 * q0);
+    rG = Math.atan2( 2 * (q2 * q3 + q0 * q1), 2 * (q0 * q2 - q1 * q3));
+    return new float[]  {(float) (rA / RAD_PER_DEG), (float) (rB / RAD_PER_DEG), (float) (rG / RAD_PER_DEG)};
   } 
 
   public float[] getEulerZXZ() {
     // NOT http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
     // http://www.swarthmore.edu/NatSci/mzucker1/e27/diebel2006attitude.pdf
     double rA, rB, rG;
-    rG = Math.atan2( 2 * (q1 * q3 - q0 * q2), 2 * (q2 * q3 + q0 * q1));
-    rB = Math.acos(q3 * q3 - q2 * q2 - q1 * q1 + q0 * q0);
     rA = Math.atan2(2 * (q1 * q3 + q0 * q2), 2 * (q0 * q1 - q2 * q3 ));
+    rB = Math.acos(q3 * q3 - q2 * q2 - q1 * q1 + q0 * q0);
+    rG = Math.atan2( 2 * (q1 * q3 - q0 * q2), 2 * (q2 * q3 + q0 * q1));
     return new float[]  {(float) (rA / RAD_PER_DEG), (float) (rB / RAD_PER_DEG), (float) (rG / RAD_PER_DEG)};
   }
   

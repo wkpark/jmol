@@ -48,6 +48,7 @@ public class Quaternion {
   private Matrix3f mat;
 
   private final static P4 qZero = new P4();
+  private static final double RAD_PER_DEG = Math.PI / 180;
   
   public Quaternion() {
     q0 = 1;
@@ -136,9 +137,9 @@ public class Quaternion {
       q0 = 1;
       return;
     }
-    double fact = (Math.sin(theta / 2 * Math.PI / 180) / Math.sqrt(pt.x
+    double fact = (Math.sin(theta / 2 * RAD_PER_DEG) / Math.sqrt(pt.x
         * pt.x + pt.y * pt.y + pt.z * pt.z));
-    q0 = (float) (Math.cos(theta / 2 * Math.PI / 180));
+    q0 = (float) (Math.cos(theta / 2 * RAD_PER_DEG));
     q1 = (float) (pt.x * fact);
     q2 = (float) (pt.y * fact);
     q3 = (float) (pt.z * fact);
@@ -314,10 +315,10 @@ public class Quaternion {
     q3 *= -1;
   }
 
-  public static final Quaternion getQuaternionFrame(P3 center, Tuple3f x, Tuple3f xy) {
+  public static final Quaternion getQuaternionFrame(P3 center, Tuple3f x, Tuple3f y) {
     V3 vA = V3.newV(x);
     vA.sub(center);
-    V3 vB = V3.newV(xy);
+    V3 vB = V3.newV(y);
     vB.sub(center);
     return getQuaternionFrameV(vA, vB, null, false);
   }
@@ -801,5 +802,20 @@ public class Quaternion {
       sum2 = 0;
     return (float) Math.sqrt(sum2 / (n - 1));
   }
+
+  public float[] getEulerZYZ() {
+    return null;
+  } 
+
+  public float[] getEulerZXZ() {
+    // NOT http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+    // http://www.swarthmore.edu/NatSci/mzucker1/e27/diebel2006attitude.pdf
+    double rA, rB, rG;
+    rG = Math.atan2( 2 * (q1 * q3 - q0 * q2), 2 * (q2 * q3 + q0 * q1));
+    rB = Math.acos(q3 * q3 - q2 * q2 - q1 * q1 + q0 * q0);
+    rA = Math.atan2(2 * (q1 * q3 + q0 * q2), 2 * (q0 * q1 - q2 * q3 ));
+    return new float[]  {(float) (rA / RAD_PER_DEG), (float) (rB / RAD_PER_DEG), (float) (rG / RAD_PER_DEG)};
+  }
+  
 
 }

@@ -65,7 +65,10 @@ public class Tensor {
   
   private static final String KNOWN_TYPES = ";iso....;adp....;tls-u..;tls-r..;ms.....;efg....;isc....;charge.;";
   private static int getType(String type) {
-    int pt = KNOWN_TYPES.indexOf(";" + type.toLowerCase() + ".");
+    int pt = type.indexOf("_");
+    if (pt >= 0)
+      type = type.substring(0, pt);
+    pt = KNOWN_TYPES.indexOf(";" + type.toLowerCase() + ".");
     return (pt < 0 ? TYPE_OTHER : pt / 8); 
   }
 
@@ -110,9 +113,8 @@ public class Tensor {
   public int atomIndex2 = -1;
 
   /**
-   * returns an object of the specified type, including 
-   * "eigenvalues", "eigenvectors", "asymmetric", 
-   * "symmetric", "trace", "indices", and "type"
+   * returns an object of the specified type, including "eigenvalues",
+   * "eigenvectors", "asymmetric", "symmetric", "trace", "indices", and "type"
    * 
    * @param infoType
    * @return Object or null
@@ -120,18 +122,10 @@ public class Tensor {
   public Object getInfo(String infoType) {
     if (infoType.charAt(0) != ';')
       infoType = ";" + infoType + ".";
-    switch ((";............."
-           + ";eigenvalues.."
-           + ";eigenvectors."
-           + ";asymmetric..."
-           + ";symmetric...."
-           + ";trace........"
-           + ";haeberlen...."
-           + ";eulerzyz....."
-           + ";eulerzxz....."
-           + ";indices......"
-           + ";type........."
-           ).indexOf(infoType) / 14) {
+    switch ((";............." + ";eigenvalues.." + ";eigenvectors."
+        + ";asymmetric..." + ";symmetric...." + ";trace........"
+        + ";haeberlen...." + ";eulerzyz....." + ";eulerzxz....."
+        + ";indices......" + ";type.........").indexOf(infoType) / 14) {
     case 1:
       return eigenValues;
     case 2:
@@ -159,25 +153,23 @@ public class Tensor {
       return Float.valueOf(eigenValues[0] + eigenValues[1] + eigenValues[2]);
     case 6: // haeberlen
       float[] haeb = new float[3];
-      haeb[0] = ((eigenValues[0] + eigenValues[1] + eigenValues[2])/3.0f);
-      haeb[1] = (eigenValues[2] - (eigenValues[0]+eigenValues[1])/2.0f);
-      if (haeb[1] != 0.0f)
-        haeb[2] = ((eigenValues[1]-eigenValues[0])/(eigenValues[2]-haeb[0]));
-      else
-        haeb[2] = 0.0f;
+      haeb[0] = (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3;
+      haeb[1] = eigenValues[2] - (eigenValues[0] + eigenValues[1]) / 2;
+      haeb[2] = (haeb[1] == 0 ? 0 : (eigenValues[1] - eigenValues[0])
+          / (eigenValues[2] - haeb[0]));
       return haeb;
     case 7: // eulerzyz
-      // TODO
-      return null;
+      return Quaternion.getQuaternionFrame(P3.new3(0, 0, 0),
+          eigenVectors[0], eigenVectors[1]).getEulerZYZ(); 
     case 8: // eulerzxz
-      // TODO
-      return null;
+      return Quaternion.getQuaternionFrame(P3.new3(0, 0, 0),
+          eigenVectors[0], eigenVectors[1]).getEulerZXZ(); 
     case 9: // 
-      return new int[] {modelIndex, atomIndex1, atomIndex2};
+      return new int[] { modelIndex, atomIndex1, atomIndex2 };
     case 10:
       return type;
     default:
-      return null; 
+      return null;
     }
   }
 

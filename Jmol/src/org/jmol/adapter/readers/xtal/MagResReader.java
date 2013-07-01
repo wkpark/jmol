@@ -86,11 +86,9 @@ public class MagResReader extends AtomSetCollectionReader {
   private void readTensorNew() throws Exception {
     String[] tokens = getTokens();
     String id = tokens[0];
-    int pt = id.indexOf("_");
-    String type = (pt < 0 ? id : id.substring(0, pt));
     String atomName1 = getAtomName(tokens[1], tokens[2]);
-    pt = 3;
-    String atomName2 = (type.equals("isc") ? getAtomName(tokens[pt++], tokens[pt++]) : null);
+    int pt = 3;
+    String atomName2 = (id.startsWith("isc") ? getAtomName(tokens[pt++], tokens[pt++]) : null);
     // TODO: maxIso for isc?
     double[][] a = new double[3][3];
     for (int i = 0; i < 3; i++)
@@ -98,7 +96,7 @@ public class MagResReader extends AtomSetCollectionReader {
         a[i][j] = Double.valueOf(tokens[pt++]).doubleValue();
     int index1 = atomSetCollection.getAtomIndexFromName(atomName1);
     int index2;
-    Tensor t = Tensor.getTensorFromAsymmetricTensor(a, type);
+    Tensor t = Tensor.getTensorFromAsymmetricTensor(a, id);
     if (atomName2 == null) {
       index2 = -1;
       atomSetCollection.getAtoms()[index1].addTensor(t, null);
@@ -106,12 +104,13 @@ public class MagResReader extends AtomSetCollectionReader {
     } else {
       index2 = atomSetCollection.getAtomIndexFromName(atomName2);
     }
-    t.setAtomIndexes(index1, index2);  
-    if (tensorTypes.indexOf(type) < 0) {
-      tensorTypes += type;
-      appendLoadNote("Ellipsoids set \"" + type + "\": "
-          + (type.equals("ms") ? "Magnetic Shielding" : 
-            type.equals("efg") ? "Electric Field Gradient" : type.equals("isc") ? "Coupling" : "?"));
+    t.setAtomIndexes(index1, index2);
+    String key = ";" + id +";";
+    if (tensorTypes.indexOf(key) < 0) {
+      tensorTypes += key;
+      appendLoadNote("Ellipsoids set \"" + id + "\": "
+          + (id.startsWith("ms") ? "Magnetic Shielding" : 
+            id.startsWith("efg") ? "Electric Field Gradient" : id.startsWith("isc") ? "J-Coupling" : "?"));
     }
   }
 

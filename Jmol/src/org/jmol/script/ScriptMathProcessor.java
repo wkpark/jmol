@@ -3374,6 +3374,7 @@ class ScriptMathProcessor {
         // q%-5 Matrix column 2
         // q%-6 AxisAngle format
         // q%-9 Matrix format
+        // q%-10 EulerZXZ (degrees)
         case 0:
           return addXFloat(pt4.w);
         case 1:
@@ -3382,24 +3383,31 @@ class ScriptMathProcessor {
           return addXFloat(pt4.y);
         case 3:
           return addXFloat(pt4.z);
+        }
+        Quaternion q = Quaternion.newP4(pt4);
+        switch(n) {
         case 4:
-          return addXPt(P3.newP((Quaternion.newP4(pt4)).getNormal()));
+          return addXPt(P3.newP(q.getNormal()));
+        case 5:
+          return addXAF(q.getEulerZXZ());
+        case 6:
+          return addXAF(q.getEulerZXZ());
         case -1:
-          return addXPt(P3.newP(Quaternion.newP4(pt4).getVector(-1)));
+          return addXPt(P3.newP(q.getVector(-1)));
         case -2:
-          return addXFloat((Quaternion.newP4(pt4)).getTheta());
+          return addXFloat(q.getTheta());
         case -3:
-          return addXPt(P3.newP((Quaternion.newP4(pt4)).getVector(0)));
+          return addXPt(P3.newP(q.getVector(0)));
         case -4:
-          return addXPt(P3.newP((Quaternion.newP4(pt4)).getVector(1)));
+          return addXPt(P3.newP(q.getVector(1)));
         case -5:
-          return addXPt(P3.newP((Quaternion.newP4(pt4)).getVector(2)));
+          return addXPt(P3.newP(q.getVector(2)));
         case -6:
-          AxisAngle4f ax = (Quaternion.newP4(pt4)).toAxisAngle4f();
+          AxisAngle4f ax = q.toAxisAngle4f();
           return addXPt4(P4.new4(ax.x, ax.y, ax.z,
               (float) (ax.angle * 180 / Math.PI)));
         case -9:
-          return addXM3((Quaternion.newP4(pt4)).getMatrix());
+          return addXM3(q.getMatrix());
         default:
           return addXPt4(pt4);
         }

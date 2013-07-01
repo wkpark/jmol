@@ -32,7 +32,7 @@ public class MagResReader extends AtomSetCollectionReader {
     atomSetCollection.newAtomSet();
     try {
       readLine();
-      isNew = line.startsWith("#$magres");
+      isNew = line.startsWith("#$magres");      
       if (isNew) {
         ignoreFileSpaceGroupName = true;
         //setSpaceGroupName("P1");
@@ -51,6 +51,7 @@ public class MagResReader extends AtomSetCollectionReader {
 
   @Override
   protected boolean checkLine() throws Exception {
+    line = line.trim();
     if (cellParams == null && line.startsWith("lattice")) {
       readCellParams();
       return true;
@@ -130,9 +131,10 @@ public class MagResReader extends AtomSetCollectionReader {
 
   private void readCellParams() throws Exception {
     String[] tokens = getTokens();
+    
     cellParams = new float[9];
     for (int i = 0; i < 9; i++)
-      cellParams[i] = parseFloatStr(tokens[i + 1]) * ANGSTROMS_PER_BOHR;
+      cellParams[i] = parseFloatStr(tokens[i + 1]);
     addPrimitiveLatticeVector(0, cellParams, 0);
     addPrimitiveLatticeVector(1, cellParams, 3);
     addPrimitiveLatticeVector(2, cellParams, 6);

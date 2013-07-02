@@ -31,7 +31,7 @@ abstract public class Binding {
   public final static int DOUBLE_CLICK = 2 << 8;
   public final static int SINGLE_CLICK = 1 << 8;
   public final static int DOWN = 4 << 8;
-  
+  public final static int CLICK_MASK = 7 << 8; 
   // for status messages:
   public final static int MOVED = 0;
   public final static int DRAGGED = 1;
@@ -128,6 +128,8 @@ abstract public class Binding {
   }
   
   public final boolean isBound(int mouseAction, int action) {
+    if (mouseAction == 1040 && action == 2)
+      System.out.println("left-down-2" + bindings.containsKey(mouseAction + "\t" + action));
     return bindings.containsKey(mouseAction + "\t" + action);
   }
   
@@ -163,11 +165,12 @@ abstract public class Binding {
 
     boolean isDefaultButton = (action == 0);
     
+    boolean isDown = (desc.indexOf("DOWN") >= 0);
     if (desc.indexOf("DOUBLE") >= 0)
       action |= DOUBLE_CLICK;
-    else if (action > 0 && (action & WHEEL) == 0 || desc.indexOf("SINGLE") >= 0)
+    else if (action > 0 && (action & WHEEL) == 0 && !isDown || desc.indexOf("SINGLE") >= 0)
       action |= SINGLE_CLICK;
-    else if (desc.indexOf("DOWN") >= 0)
+    else if (isDown)
       action |= DOWN;
     
     if (desc.indexOf("CTRL") >= 0)

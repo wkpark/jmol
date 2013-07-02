@@ -893,11 +893,19 @@ public class ActionManager {
 
   private boolean checkUserAction(int action, int x, int y, int deltaX,
                                   int deltaY, long time, int mode) {
+    if(mode == Binding.PRESSED) {
+      if (Binding.getClickCount(action) == 1)
+        action = (action & ~Binding.CLICK_MASK) + Binding.DOWN;
+    }else
+    if(mode == Binding.DRAGGED || mode == Binding.DRAGGED2) {
+      if (Binding.getClickCount(action) == 1)
+        action = (action & ~Binding.CLICK_MASK);
+    }
     if (!binding.isUserAction(action))
       return false;
     Map<String, Object> ht = binding.getBindings();
     Iterator<String> e = ht.keySet().iterator();
-    boolean ret = false;
+    boolean passThrough = false;
     Object obj;
     while (e.hasNext()) {
       String key = e.next();
@@ -940,10 +948,13 @@ public class ActionManager {
       script = TextFormat.simpleReplace(script, "_DELTAY", "" + deltaY);
       script = TextFormat.simpleReplace(script, "_TIME", "" + time);
       script = TextFormat.simpleReplace(script, "_MODE", "" + mode);
+      if (script.startsWith("+:")) {
+        passThrough = true;
+        script = script.substring(2);
+      }
       viewer.evalStringQuiet(script);
-      ret = true;
     }
-    return ret;
+    return !passThrough;
   }
 
   /**
@@ -1370,7 +1381,6 @@ public class ActionManager {
         exitMeasurementMode();
       action = Binding.getMouseAction(pressedCount, modifiers);
       dragGesture.add(action, x, y, time);
-      action = Binding.getMouseAction(Integer.MIN_VALUE, modifiers);
       checkAction(action, x, y, deltaX, deltaY, time, Binding.DRAGGED);
       return;
     case Binding.PRESSED:
@@ -1386,7 +1396,6 @@ public class ActionManager {
           Integer.MIN_VALUE, modifiers), ACTION_selectAndDrag);
       action = Binding.getMouseAction(pressedCount, modifiers);
       dragGesture.setAction(action, time);
-      action = Binding.getMouseAction(Integer.MIN_VALUE, modifiers);
       if (Binding.getModifiers(action) != 0) {
         action = viewer.notifyMouseClicked(x, y, action, Binding.PRESSED);
         if (action == 0)

@@ -277,9 +277,9 @@ public class MagResReader extends AtomSetCollectionReader {
     if (atomName2 == null) {
       index2 = -1;
       atomSetCollection.getAtoms()[index1].addTensor(t, null);
-      interactionTensors.addLast(t);
     } else {
       index2 = atomSetCollection.getAtomIndexFromName(atomName2);
+      interactionTensors.addLast(t);
     }
     t.setAtomIndexes(index1, index2);
     String key = ";" + id +";";

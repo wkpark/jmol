@@ -44,7 +44,7 @@ public class MagResReader extends AtomSetCollectionReader {
   @Override
   protected void initializeReader() {
     setFractionalCoordinates(false);
-    doApplySymmetry = false;
+    //doApplySymmetry = false;
     ignoreFileSpaceGroupName = true;
   }
 
@@ -57,7 +57,7 @@ public class MagResReader extends AtomSetCollectionReader {
    */
   @Override
   protected void finalizeReader() throws Exception {
-    doApplySymmetry = true;
+    //doApplySymmetry = true;
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("fileHeader",
         header.toString());
     finalizeReaderASCR();

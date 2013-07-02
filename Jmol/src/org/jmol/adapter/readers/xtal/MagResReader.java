@@ -75,9 +75,8 @@ public class MagResReader extends AtomSetCollectionReader {
    */
   @Override
   protected boolean checkLine() throws Exception {
-    trimLine();
-    if (currentBlock != BLOCK_NONE && line.startsWith("units"))
-      return setUnits();
+    if (!trimLine())
+      return true;
     switch (checkBlock()) {
     case BLOCK_CALC:
       header.append(line).append("\n");
@@ -86,12 +85,16 @@ public class MagResReader extends AtomSetCollectionReader {
     case BLOCK_ATOMS:
       if (cellParams == null && line.startsWith("lattice"))
         return readCellParams();
-      else if (line.startsWith("atom"))
-        return readAtom();
-      else if (line.startsWith("symmetry"))
+      if (line.startsWith("symmetry"))
         return readSymmetry();
+      if (line.startsWith("units"))
+        return setUnits();
+      if (line.startsWith("atom"))
+        return readAtom();
       break;
     case BLOCK_MAGRES:
+      if (line.startsWith("units"))
+        return setUnits();
       return readTensor();
     }
     return true;
@@ -99,13 +102,16 @@ public class MagResReader extends AtomSetCollectionReader {
 
   /**
    * All characters after hash ignored; lines are trimmed.
+   * 
+   * @return true if line has content
    *
    */
-  private void trimLine() {
+  private boolean trimLine() {
     int pt = line.indexOf("#");
     if (pt >= 0)
       line = line.substring(0, pt);
     line = line.trim();
+    return (line.length() > 0);
   }
 
   /**

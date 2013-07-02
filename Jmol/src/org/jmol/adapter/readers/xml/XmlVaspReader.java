@@ -125,7 +125,7 @@ public class XmlVaspReader extends XmlReader {
 
     if ("varray".equals(localName)) {
       name = atts.get("name");
-      if (name != null && Parser.isOneOf(name, "basis;positions;forces"))
+      if (name != null && Parser.isOneOf(name, ";basis;positions;forces;"))
         data = new SB();
       return;
     }

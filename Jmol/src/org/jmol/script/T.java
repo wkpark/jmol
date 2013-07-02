@@ -1220,6 +1220,7 @@ public class T {
   final static int once           = misc  | 246;
   final static int only           = misc  | 248;
   final static int opaque         = misc  | 250;
+  final static int options        = misc  | 251;
   final static int orbital        = misc  | 252;
   final static int orientation    = misc  | 253;
   final static int origin         = misc  | 254; // 12.1.51
@@ -1914,6 +1915,7 @@ public class T {
       "omega",           T.t(omega),
       "only",            T.t(only),
       "opaque",          T.t(opaque),
+      "options",         T.t(options),
       "partialCharge",   T.t(partialcharge),
       "phi",             T.t(phi),
       "plane",           T.t(plane),

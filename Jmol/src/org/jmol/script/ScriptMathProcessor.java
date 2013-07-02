@@ -1434,7 +1434,7 @@ class ScriptMathProcessor {
           else if (s.equalsIgnoreCase("minArray"))
             asArray = (nBitSets >= 1);
           else if (Parser.isOneOf(s.toLowerCase(),
-              "nm;nanometers;pm;picometers;angstroms;ang;au"))
+              ";nm;nanometers;pm;picometers;angstroms;ang;au;"))
             units = s.toLowerCase();
           else
             strFormat = nPoints + ":" + s;

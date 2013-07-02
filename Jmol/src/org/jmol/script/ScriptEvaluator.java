@@ -9997,7 +9997,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           .substring(0, 1);
       if (type.equals("a") || type.equals("r"))
         isDerivative = true;
-      if (!Parser.isOneOf(type, "w;x;y;z;r;a")) // a absolute; r relative
+      if (!Parser.isOneOf(type, ";w;x;y;z;r;a;")) // a absolute; r relative
         evalError("QUATERNION [w,x,y,z,a,r] [difference][2]", null);
       type = "quaternion " + type + (isDerivative ? " difference" : "")
           + (isSecondDerivative ? "2" : "") + (isDraw ? " draw" : "");
@@ -10962,7 +10962,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       break;
     case 2:
       applet = parameterAsString(1);
-      if (applet.indexOf("jmolApplet") == 0 || Parser.isOneOf(applet, "*;.;^")) {
+      if (applet.indexOf("jmolApplet") == 0 || Parser.isOneOf(applet, ";*;.;^;")) {
         text = "ON";
         if (!chk)
           viewer.syncScript(text, applet, 0);
@@ -11651,6 +11651,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean checkMore = false;
     boolean isSet = false;
     setShapeProperty(JC.SHAPE_ELLIPSOIDS, "thisID", null);
+    // the first three options, ON, OFF, and (int)scalePercent
+    // were implemented long before the idea of customized 
+    // ellipsoids was considered. "ON" will produce an ellipsoid
+    // with a standard radius, and "OFF" will reduce its scale to 0,
+    // effectively elliminating it.
+    
+    // The new options SET and ID are much more powerful. In those, 
+    // ON and OFF simply do that -- turn the ellipsoid on or off --
+    // and there are many more options.
+    
+    // The SET type ellipsoids, introduced in Jmol 13.1.19 in 7/2013,
+    // are created by all readers that read ellipsoid (PDB/CIF) or 
+    // tensor (Castep, MagRes) data.
+    
     switch (getToken(1).tok) {
     case T.on:
       mad = Integer.MAX_VALUE; // default for this type
@@ -11720,6 +11734,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           checkLength(i + 1);
           break;
         }
+      // these next are for SET "XXX" or ID "XXX" syntax only
       if (value == null)
         switch (theTok) {
         case T.on:
@@ -11745,6 +11760,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           translucentLevel = getColorTrans(i, true);
           i = iToken;
           continue;
+        case T.options:
+          value = parameterAsString(++i);
+          break;
         }
       if (value == null)
         error(ERROR_invalidArgument);
@@ -13368,7 +13386,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (lckey.indexOf("label") == 0
           && Parser
               .isOneOf(key.substring(5).toLowerCase(),
-                  "front;group;atom;offset;offsetexact;pointer;alignment;toggle;scalereference")) {
+                  ";front;group;atom;offset;offsetexact;pointer;alignment;toggle;scalereference;")) {
         if (setLabel(key.substring(5)))
           return;
       }
@@ -13775,10 +13793,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private boolean setUnits(String units, int tok) throws ScriptException {
     if (tok == T.measurementunits && Parser.isOneOf(units.toLowerCase(),
-        "angstroms;au;bohr;nanometers;nm;picometers;pm;vanderwaals;vdw")) {
+        ";angstroms;au;bohr;nanometers;nm;picometers;pm;vanderwaals;vdw;")) {
       if (!chk)
         viewer.setUnits(units, true); 
-    } else if (tok == T.energyunits && Parser.isOneOf(units.toLowerCase(), "kcal;kj")) {
+    } else if (tok == T.energyunits && Parser.isOneOf(units.toLowerCase(), ";kcal;kj;")) {
       if (!chk)
         viewer.setUnits(units, false);
     } else {
@@ -14199,7 +14217,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int tok = tokAt(index);
     String type = optParameterAsString(index).toLowerCase();
     if (slen == index + 1
-        && Parser.isOneOf(type, "window;unitcell;molecular")) {
+        && Parser.isOneOf(type, ";window;unitcell;molecular;")) {
       setBooleanProperty("axes" + type, true);
       return;
     }
@@ -14686,7 +14704,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (!chk) {
           viewer.setVibrationOff();
           if (!isJS)
-            viewer.delayScript(this, 100);          
+            viewer.delayScript(this, 100);
         }
         pt++;
         break;
@@ -14704,7 +14722,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.scene:
         val = SV.sValue(tokenAt(++pt, args)).toUpperCase();
-        if (Parser.isOneOf(val, "PNG;PNGJ")) {
+        if (Parser.isOneOf(val, ";PNG;PNGJ;")) {
           sceneType = val;
           pt++;
         }
@@ -14714,8 +14732,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       }
       if (tok == T.image) {
-        T t = T.getTokenFromName(SV.sValue(args[pt])
-            .toLowerCase());
+        T t = T.getTokenFromName(SV.sValue(args[pt]).toLowerCase());
         if (t != null)
           type = SV.sValue(t).toUpperCase();
         if (Parser.isOneOf(type, driverList.toUpperCase())) {
@@ -14750,16 +14767,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // if (isApplet)
         // evalError(GT._("The {0} command is not available for the applet.",
         // "WRITE CLIPBOARD"));
-      } else if (Parser.isOneOf(val.toLowerCase(),
-          "png;pngj;pngt;jpg;jpeg;jpg64;jpeg64")) {
-        if (tokAtArray(pt + 1, args) == T.integer && tokAtArray(pt + 2, args) == T.integer) {
+      } else if (Parser.isOneOf(val.toLowerCase(), JC.IMAGE_TYPES)) {
+        if (tokAtArray(pt + 1, args) == T.integer
+            && tokAtArray(pt + 2, args) == T.integer) {
           width = SV.iValue(tokenAt(++pt, args));
           height = SV.iValue(tokenAt(++pt, args));
         }
         if (tokAtArray(pt + 1, args) == T.integer)
           quality = SV.iValue(tokenAt(++pt, args));
       } else if (Parser.isOneOf(val.toLowerCase(),
-          "xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;cd;pdb;pqr;cml")) {
+          ";xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;cd;pdb;pqr;cml;")) {
         type = val.toUpperCase();
         if (pt + 1 == argCount)
           pt++;
@@ -14773,8 +14790,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // write isosurface t.jvxl
 
       if (type.equals("(image)")
-          && Parser.isOneOf(val.toUpperCase(),
-              "GIF;JPG;JPG64;JPEG;JPEG64;PNG;PNGJ;PNGT;PPM")) {
+          && Parser.isOneOf(val.toLowerCase(), JC.IMAGE_OR_SCENE)) {
         type = val.toUpperCase();
         pt++;
       }
@@ -14850,8 +14866,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (type.equals("COORD"))
         type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
             .substring(fileName.lastIndexOf(".") + 1).toUpperCase() : "XYZ");
-      isImage = Parser.isOneOf(type,
-          "GIF;JPEG64;JPEG;JPG64;JPG;PPM;PNG;PNGJ;PNGT;SCENE");
+      isImage = Parser.isOneOf(type.toLowerCase(), JC.IMAGE_OR_SCENE);
       if (scripts != null) {
         if (type.equals("PNG"))
           type = "PNGJ";
@@ -14865,7 +14880,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           && !Parser
               .isOneOf(
                   type,
-                  "SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE"))
+                  ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
         errorStr2(
             ERROR_writeWhat,
             "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|INLINE|ISOSURFACE|JMOL|MENU|MO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
@@ -14883,8 +14898,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           // todo -- there's no reason this data has to be done this way. 
           // we could send all of them out to file directly
           fullPath[0] = fileName;
-          data = viewer.generateOutputForExport(data,
-              isCommand || fileName != null ? fullPath : null, width, height);
+          data = viewer.generateOutputForExport(data, isCommand
+              || fileName != null ? fullPath : null, width, height);
           if (data == null || data.length() == 0)
             return "";
           if (!isCommand)
@@ -14947,8 +14962,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           data = viewer.getFunctionCalls(null);
           type = "TXT";
         } else if (data == "VAR") {
-          data = ((SV) getParameter(SV.sValue(tokenAt(
-              isCommand ? 2 : 1, args)), T.variable)).asString();
+          data = ((SV) getParameter(
+              SV.sValue(tokenAt(isCommand ? 2 : 1, args)), T.variable))
+              .asString();
           type = "TXT";
         } else if (data == "SPT") {
           if (isCoord) {
@@ -14976,13 +14992,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             error(ERROR_noData);
           type = "XJVXL";
         } else if (data == "ISOSURFACE" || data == "MESH") {
-          if ((data = getIsosurfaceJvxl(data == "MESH",
-              JC.SHAPE_ISOSURFACE)) == null)
+          if ((data = getIsosurfaceJvxl(data == "MESH", JC.SHAPE_ISOSURFACE)) == null)
             error(ERROR_noData);
           type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
           if (!isShow)
-            showString((String) getShapeProperty(
-                JC.SHAPE_ISOSURFACE, "jvxlFileInfo"));
+            showString((String) getShapeProperty(JC.SHAPE_ISOSURFACE,
+                "jvxlFileInfo"));
         } else {
           // image
           len = -1;
@@ -15021,11 +15036,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (doDefer)
         msg = viewer.streamFileData(fileName, type, type2, 0, null);
       else
-        msg = viewer.createImageSet(fileName, type, 
-            (bytes instanceof String ? (String) bytes : null), 
-            (bytes instanceof byte[] ? (byte[]) bytes : null), 
-            scripts, quality,
-            width, height, bsFrames, nVibes, fullPath);
+        msg = viewer.createImageSet(fileName, type,
+            (bytes instanceof String ? (String) bytes : null),
+            (bytes instanceof byte[] ? (byte[]) bytes : null), scripts,
+            quality, width, height, bsFrames, nVibes, fullPath);
     }
     if (!chk && msg != null) {
       if (!msg.startsWith("OK"))

@@ -153,6 +153,9 @@ public class Ellipsoids extends Shape {
         ellipsoidSelected.isOn = ((Boolean) value).booleanValue();
         return;
       }
+      if ("options" == propertyName) {
+        ellipsoidSelected.options = ((String) value).toLowerCase();
+      }
       if ("points" == propertyName) {
         //Object[] o = (Object[]) value;
         //setPoints((P3[]) o[1], (BS) o[2]);
@@ -219,6 +222,20 @@ public class Ellipsoids extends Shape {
       return;
     }
 
+    if ("options" == propertyName) {
+      String options = ((String) value).toLowerCase().trim();
+      if (options.length() == 0)
+        options = null;
+      if (selectedAtoms != null)
+        bs = selectedAtoms;
+      if (options != null)
+        setSize(Integer.MAX_VALUE, bs);
+      for (Ellipsoid e : atomEllipsoids.values())
+        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs, -1))
+          e.options = options;
+      return;
+    }
+    
     if ("color" == propertyName) {
       short colix = C.getColixO(value);
       byte pid = EnumPalette.pidOf(value);
@@ -315,6 +332,8 @@ private boolean initEllipsoids(Object value) {
         sb.append(" ").append(Escape.eP(v1));
       }
       sb.append(" " + getColorCommandUnk("", ellipsoid.colix, translucentAllowed));
+      if (ellipsoid.options != null)
+        sb.append(" options ").append(Escape.eS(ellipsoid.options));
       if (!ellipsoid.isOn)
         sb.append(" off");
       sb.append(";\n");
@@ -338,7 +357,9 @@ private boolean initEllipsoids(Object value) {
         int i = e2.tensor.atomIndex1;
         // 
         BSUtil.setMapBitSet(temp, i, i, (isADP ? "Ellipsoids " + e2.percent
-            : cmd + " scale " + e2.scale + (e2.isOn ? " ON" : " OFF")));
+            : cmd + " scale " + e2.scale 
+                  + (e2.options == null ? "" : " options " + Escape.eS(e2.options)) 
+                  + (e2.isOn ? " ON" : " OFF")));
         if (e2.colix != C.INHERIT_ALL)
           BSUtil.setMapBitSet(temp2, i, i, getColorCommand(cmd, e2.pid,
               e2.colix, translucentAllowed));

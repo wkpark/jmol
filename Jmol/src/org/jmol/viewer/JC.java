@@ -122,7 +122,7 @@ public class JC {
  
   public final static String SCRIPT_EDITOR_IGNORE = "\1## EDITOR_IGNORE ##";
 
-  public final static String LOAD_ATOM_DATA_TYPES = "xyz;vxyz;vibration;temperature;occupancy;partialcharge";
+  public final static String LOAD_ATOM_DATA_TYPES = ";xyz;vxyz;vibration;temperature;occupancy;partialcharge;";
 
   public final static float radiansPerDegree = (float) (Math.PI / 180);
 
@@ -1541,6 +1541,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static String binaryExtensions = ";pse=PyMOL;";// PyMOL
 
   public static final String SCRIPT_COMPLETED = "Script completed";
+  public static final String JPEG_EXTENSIONS = ";jpg;jpeg;jpg64;jpeg64;";
+  public final static String IMAGE_TYPES = JPEG_EXTENSIONS + "gif;ppm;png;pngj;pngt;";
+  public static final String IMAGE_OR_SCENE = IMAGE_TYPES + "scene;";
 
   public final static int getShapeVisibilityFlag(int shapeID) {
     return (4 << shapeID);

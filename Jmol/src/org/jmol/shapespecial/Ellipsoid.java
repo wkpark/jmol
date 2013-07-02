@@ -39,6 +39,7 @@ public class Ellipsoid {
   public boolean isValid;
   public P3 center = P3.new3(0, 0, 0);
   public Tensor tensor;
+  public String options;
   boolean isOn = true;
 
   String id;

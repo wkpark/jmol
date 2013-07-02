@@ -2261,7 +2261,7 @@ public class StateCreator implements JmolStateCreator {
     JmolImageCreatorInterface c = null;
     Object bytes = null;
     type = type.toLowerCase();
-    if (!Parser.isOneOf(type, "jpg;jpeg;jpg64;jpeg64"))
+    if (!Parser.isOneOf(type, JC.JPEG_EXTENSIONS))
       try {
         c = viewer.getImageCreator();
       } catch (Error er) {

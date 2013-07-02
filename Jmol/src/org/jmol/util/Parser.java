@@ -586,7 +586,9 @@ public class Parser {
   }
 
   public static boolean isOneOf(String key, String semiList) {
-    return key.indexOf(";") < 0  && (';' + semiList + ';').indexOf(';' + key + ';') >= 0;
+    if (semiList.charAt(0) != ';')
+      semiList = ";" + semiList + ";";
+    return key.indexOf(";") < 0  && (semiList).indexOf(';' + key + ';') >= 0;
   }
 
   public static String getQuotedAttribute(String info, String name) {

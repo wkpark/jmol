@@ -3431,6 +3431,7 @@ abstract public class ModelCollection extends BondCollection {
   public JmolList<Tensor> getInteractionTensorList(String type, BS bs) {
     type = type.toLowerCase();
     BS bsModels = getModelBitSet(bs, false);
+    int iAtom = (bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
     JmolList<Tensor> list = new JmolList<Tensor>();
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
       JmolList<Tensor> tensors = (JmolList<Tensor>) getModelAuxiliaryInfoValue(i, "interactionTensors");
@@ -3439,7 +3440,7 @@ abstract public class ModelCollection extends BondCollection {
       int n = tensors.size();
       for (int j = 0; j < n; j++) {
         Tensor t = tensors.get(j);
-        if (t.type.equals(type) && t.isSelected(bs))
+        if (t.type.equals(type) && t.isSelected(bs, iAtom))
           list.addLast(t);
       }      
     }

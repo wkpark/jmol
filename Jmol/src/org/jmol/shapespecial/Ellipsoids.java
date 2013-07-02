@@ -78,7 +78,7 @@ public class Ellipsoids extends Shape {
     Atom[] atoms = modelSet.atoms;
     for (int i = tensors.size(); --i >= 0;) {
       Tensor t = tensors.get(i);
-      if (isAll || t.isSelected(bsSelected)) {
+      if (isAll || t.isSelected(bsSelected, -1)) {
         Ellipsoid e = atomEllipsoids.get(t);
         boolean isNew = (size != 0 && e == null); 
         if (isNew)
@@ -214,7 +214,7 @@ public class Ellipsoids extends Shape {
       if (isOn)
         setSize(Integer.MAX_VALUE, bs);
       for (Ellipsoid e : atomEllipsoids.values())
-        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs))
+        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs, -1))
           e.isOn = isOn;
       return;
     }
@@ -225,7 +225,7 @@ public class Ellipsoids extends Shape {
       if (selectedAtoms != null)
         bs = selectedAtoms;
       for (Ellipsoid e : atomEllipsoids.values())
-        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs)) {
+        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs, -1)) {
           e.colix = getColixI(colix, pid, e.tensor.atomIndex1);
           e.pid = pid;
         }
@@ -235,7 +235,7 @@ public class Ellipsoids extends Shape {
     if ("translucency" == propertyName) {
       boolean isTranslucent = (value.equals("translucent"));
       for (Ellipsoid e : atomEllipsoids.values())
-        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs))
+        if (e.tensor.type.equals(typeSelected) && e.tensor.isSelected(bs, -1))
           e.colix = C.getColixTranslucent3(e.colix, isTranslucent,
               translucentLevel);
       return;

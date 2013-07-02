@@ -695,6 +695,8 @@ public class T {
   public final static int within    = 20 | 0 << 9 | mathfunc;
   final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
   final static int cache            = 22 | 0 << 9 | mathfunc | scriptCommand; // new in Jmol 13.1.2
+  final static int tensor           = 23 | 0 << 9 | mathfunc | mathproperty;
+  
   // xxx(a)
   
   final static int acos         = 3 | 1 << 9 | mathfunc;
@@ -746,7 +748,6 @@ public class T {
   public final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
   public final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
   final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
-  final static int tensor       = 4 | 2 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b,c)
   

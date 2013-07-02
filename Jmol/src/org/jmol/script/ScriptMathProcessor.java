@@ -838,9 +838,11 @@ class ScriptMathProcessor {
     // {*}.tensor("efg","eigenvalues")
     // T.tensor is set to allow exactly 2 parameters
     // change that in T.java to adjust
+    if (args.length == 0 || args.length > 2)
+      return false;
     BS bs = SV.getBitSet(getX(), false);
     String tensorType = SV.sValue(args[0]).toLowerCase();
-    String infoType = ";" + SV.sValue(args[1]).toLowerCase() + ".";
+    String infoType = ";" + (args.length == 1 ? "all" : SV.sValue(args[1]).toLowerCase()) + ".";
     JmolList<Object> data = new JmolList<Object>();
     if (tensorType.equals("isc")) {
       JmolList<Tensor> list = viewer.modelSet.getInteractionTensorList("isc",

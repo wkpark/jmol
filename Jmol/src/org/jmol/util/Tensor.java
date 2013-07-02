@@ -26,6 +26,8 @@ package org.jmol.util;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * @author Bob Hanson hansonr@stolaf.edu 6/30/2013
@@ -113,6 +115,11 @@ public class Tensor {
   public int atomIndex1 = -1;
   public int atomIndex2 = -1;
 
+  private static final String infoList = ";............." + ";eigenvalues.." + ";eigenvectors."
+  + ";asymmetric..." + ";symmetric...." + ";trace........"
+  + ";haeberlen...." + ";eulerzyz....." + ";eulerzxz....."
+  + ";quaternion..." + ";indices......" + ";string......." 
+  + ";type........." + ";all.........";
   /**
    * returns an object of the specified type, including "eigenvalues",
    * "eigenvectors", "asymmetric", "symmetric", "trace", "indices", and "type"
@@ -123,11 +130,15 @@ public class Tensor {
   public Object getInfo(String infoType) {
     if (infoType.charAt(0) != ';')
       infoType = ";" + infoType + ".";
-    switch ((";............." + ";eigenvalues.." + ";eigenvectors."
-        + ";asymmetric..." + ";symmetric...." + ";trace........"
-        + ";haeberlen...." + ";eulerzyz....." + ";eulerzxz....."
-        + ";quaternion..." + ";indices......" + ";string......." + ";type.........")
-        .indexOf(infoType) / 14) {
+    switch (infoList.indexOf(infoType) / 14) {
+    default: 
+      Map<String, Object> info = new Hashtable<String, Object>();
+      String[] s = Parser.getTokens(TextFormat.replaceAllCharacter(infoList, ";.", ' ').trim());
+      Arrays.sort(s);
+      for (int i = 0; i < s.length; i++)
+        if (!s[i].equals("all"))
+          info.put(s[i], getInfo(s[i]));
+      return info;
     case 1:
       return eigenValues;
     case 2:
@@ -173,8 +184,6 @@ public class Tensor {
       return this.toString();
     case 12:
       return type;
-    default:
-      return null;
     }
   }
 
@@ -361,8 +370,10 @@ public class Tensor {
     atomIndex2 = index2;
   }
 
-  public boolean isSelected(BS bsSelected) {
-    return bsSelected.get(atomIndex1) && (atomIndex2 < 0 || bsSelected.get(atomIndex2));
+  public boolean isSelected(BS bsSelected, int iAtom) {
+    return (iAtom >= 0 ? (atomIndex1 == iAtom || atomIndex2 == iAtom)
+        : bsSelected.get(atomIndex1)
+            && (atomIndex2 < 0 || bsSelected.get(atomIndex2)));
   }
 
   /**
@@ -468,7 +479,7 @@ public class Tensor {
 
   @Override
   public String toString() {
-    return (type + "\n" + (eigenVectors == null ? ""
+    return (type + " " + modelIndex + " " + atomIndex1 + " " + atomIndex2 + "\n" + (eigenVectors == null ? ""
         + eigenValues[0] : eigenVectors[0] + "\t" + eigenValues[0] + "\t"
         + "\n" + eigenVectors[1] + "\t" + eigenValues[1] + "\t" + "\n"
         + eigenVectors[2] + "\t" + eigenValues[2] + "\t" + "\n"));

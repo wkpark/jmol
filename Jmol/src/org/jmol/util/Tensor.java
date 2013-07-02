@@ -423,12 +423,15 @@ public class Tensor {
       altType = "1";
       break;
     case TYPE_MS:
+      sortIso = true;
       typeFactor = MAGNETIC_SUSCEPTIBILITY_FACTOR;
       break;
     case TYPE_EFG:
+      sortIso = true;
       typeFactor = ELECTRIC_FIELD_GRADIENT_FACTOR;
       break;
     case TYPE_ISC:
+      sortIso = true;
       typeFactor = INTERACTION_FACTOR;
       break;
     case TYPE_CHARGE:
@@ -450,7 +453,7 @@ public class Tensor {
    * 
    * |sigma_3 - sigma_iso| >= |sigma_1 - sigma_iso| >= |sigma_2 - sigma_iso|
    * 
-   * will result sigma_3 < sigma_1 sometimes, and then truncated ellipsoids
+   * will result sigma_3 < sigma_1 sometimes
    * 
    * 
    */

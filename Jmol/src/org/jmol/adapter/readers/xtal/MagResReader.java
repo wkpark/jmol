@@ -53,7 +53,7 @@ public class MagResReader extends AtomSetCollectionReader {
    * Set final auxiliary info and symmetry, including 
    * "fileHeader", "magresUnits", and "interactionTensors";
    * note that print getProperty("auxiliaryInfo.models[1].magresUnits") 
-   * should return catalog of tensor types.
+   * should return a catalog of tensor types.
    * 
    */
   @Override

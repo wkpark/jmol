@@ -150,7 +150,7 @@ public class ScriptManager implements JmolScriptManager {
     if (viewer.isSingleThreaded)
       return;
     int n = 0;
-    while (queueThreads[0] != null || queueThreads[1] != null) {
+    while (isQueueProcessing()) {
       try {
         Thread.sleep(100);
         if (((n++) % 10) == 0)
@@ -162,6 +162,10 @@ public class ScriptManager implements JmolScriptManager {
       } catch (InterruptedException e) {
       }
     }
+  }
+
+  public boolean isQueueProcessing() {
+    return queueThreads[0] != null || queueThreads[1] != null;
   }
 
   synchronized private void flushQueue(String command) {

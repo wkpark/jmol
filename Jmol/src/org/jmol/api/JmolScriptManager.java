@@ -44,5 +44,7 @@ public interface JmolScriptManager {
 
   JmolScriptEvaluator getEval();
 
+  boolean isQueueProcessing();
+
 }
 

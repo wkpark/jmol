@@ -43,7 +43,7 @@ public class Tensor {
   private static final float BORN_EFFECTIVE_CHARGE_FACTOR = 1f;
   private static final float INTERACTION_FACTOR = 0.04f;
   
-  private static TensorSort tSort; // used for sorting eigenvector/values
+  private static EigenSort tSort; // used for sorting eigenvector/values
 
   // base data:
   
@@ -446,38 +446,47 @@ public class Tensor {
     }
   }
 
-  private static int[] isoOrder = { 1, 0, 2 };
-
   /**
-   * Understand that sorting EigenVectors by 
+   * The expression: 
    * 
    * |sigma_3 - sigma_iso| >= |sigma_1 - sigma_iso| >= |sigma_2 - sigma_iso|
    * 
-   * will result sigma_3 < sigma_1 sometimes
-   * 
+   * simply sorts the values from largest to smallest or smallest to largest,
+   * depending upon the direction of the asymmetry, always setting the last
+   * value to be the farthest from the mean.
    * 
    */
   private void sortAndNormalize() {
-    // first sorted 3 2 1, then 1 and 2 are switched using the sortOrder above.
+    // first sorted 3 2 1, then check for iso-sorting
+    V3 vTemp = eigenVectors[0]; // will throw this away after the sort anyway
+                                // might as well use it!
     Object[][] o = new Object[][] {
         new Object[] { V3.newV(eigenVectors[0]), Float.valueOf(eigenValues[0]) },
         new Object[] { V3.newV(eigenVectors[1]), Float.valueOf(eigenValues[1]) },
         new Object[] { V3.newV(eigenVectors[2]), Float.valueOf(eigenValues[2]) } };
-    float sigmaIso = (sortIso ? (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3f : 0);
-    Arrays.sort(o, getTensorSort(sigmaIso));
+    Arrays.sort(o, getEigenSort());
     for (int i = 0; i < 3; i++) {
-      int pt = (sortIso ? isoOrder[i] : i);
-      eigenValues[i] = ((Float) o[pt][1]).floatValue();
+      int pt = i;
       eigenVectors[i] = (V3) o[pt][0];
-      eigenVectors[i].normalize();
+      eigenValues[i] = ((Float) o[pt][1]).floatValue();
     }
+    if (sortIso) {
+      float f = (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3f;
+      if (eigenValues[2] - f < f - eigenValues[0]) {
+        vTemp = eigenVectors[0];
+        eigenVectors[0] = eigenVectors[2];
+        eigenVectors[2] = vTemp;
+        f = eigenValues[0];
+        eigenValues[0] = eigenValues[2];
+        eigenValues[2] = f;
+      }      
+    }
+    for (int i = 0; i < 3; i++)
+      eigenVectors[i].normalize();
   }
 
-  private static Comparator<? super Object[]> getTensorSort(float sigmaIso) {
-    if (tSort == null)
-      tSort = new TensorSort();
-    tSort.sigmaIso = sigmaIso;
-    return tSort;
+  private static Comparator<? super Object[]> getEigenSort() {
+    return (tSort == null ? (tSort = new EigenSort()) : tSort);
   }
 
   @Override

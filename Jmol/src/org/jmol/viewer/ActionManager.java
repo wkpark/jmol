@@ -692,6 +692,7 @@ public class ActionManager {
       return;
     }
 
+    System.out.println("chackAction...");
     if (checkUserAction(action, x, y, deltaX, deltaY, time, mode))
       return;
 
@@ -902,6 +903,7 @@ public class ActionManager {
     Object obj;
     while (e.hasNext()) {
       String key = e.next();
+      System.out.println(action + " action " + mode + " key=" + key);
       if (key.indexOf(action + "\t") != 0
           || !Escape.isAS(obj = ht.get(key)))
         continue;
@@ -1372,6 +1374,7 @@ public class ActionManager {
         exitMeasurementMode();
       action = Binding.getMouseAction(pressedCount, modifiers);
       dragGesture.add(action, x, y, time);
+      action = Binding.getMouseAction(Integer.MIN_VALUE, modifiers);
       checkAction(action, x, y, deltaX, deltaY, time, Binding.DRAGGED);
       return;
     case Binding.PRESSED:
@@ -1387,6 +1390,7 @@ public class ActionManager {
           Integer.MIN_VALUE, modifiers), ACTION_selectAndDrag);
       action = Binding.getMouseAction(pressedCount, modifiers);
       dragGesture.setAction(action, time);
+      action = Binding.getMouseAction(Integer.MIN_VALUE, modifiers);
       if (Binding.getModifiers(action) != 0) {
         action = viewer.notifyMouseClicked(x, y, action, Binding.PRESSED);
         if (action == 0)
@@ -1400,6 +1404,7 @@ public class ActionManager {
         viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, action);
         return;
       }
+      System.out.println("mouseAction...");
       checkUserAction(action, x, y, 0, 0, time, Binding.PRESSED);
       boolean isBound = false;
       switch (atomPickingMode) {
@@ -1607,6 +1612,7 @@ public class ActionManager {
     // so that atom picking can be superceded by draw picking
     int action = Binding.getMouseAction(clickedCount, mods);
     if (action != Binding.MOVED) {
+      System.out.println("chackPoint...");
       checkUserAction(action, x, y, 0, 0, time, mode);
       action = viewer.notifyMouseClicked(x, y, action, mode);
       if (action == Binding.MOVED)

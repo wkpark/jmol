@@ -10098,6 +10098,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public Map<Object, Object> chainMap = new Hashtable<Object, Object>();
   public JmolList<String> chainList = new JmolList<String>();
 
+  public Boolean getScriptQueueInfo() {
+    return (scriptManager != null && scriptManager.isQueueProcessing() ? Boolean.TRUE : Boolean.FALSE);
+  }
+
 //  public float[] getQuadricForTensor(Tensor tensor, P3 center) {
 //    Object[] data = new Object[] { tensor, center, null };
 //    shapeManager.loadShape(JC.SHAPE_ELLIPSOIDS);

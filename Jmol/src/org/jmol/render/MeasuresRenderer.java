@@ -100,8 +100,7 @@ public class MeasuresRenderer extends LabelsRenderer {
                                  boolean renderLabel) {
     this.measurement = measurement;
     String s = (renderLabel ? measurement.getString() : null);
-    //System.out.println("1" + s);
-    if (s != null & s.length() == 0)
+    if (s != null && s.length() == 0)
       s = null;
     if (s != null && measurement.text != null) {
       measurement.text.setText(s);

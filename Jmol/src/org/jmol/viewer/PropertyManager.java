@@ -147,6 +147,7 @@ public class PropertyManager implements JmolPropertyManager {
     "isosurfaceData"  , "", "",
     "consoleText"     , "", "",
     "jspecView"       , "<key>", "",
+    "scriptQueueInfo" , "", "",
   };
 
   private final static int PROP_APPLET_INFO = 0;
@@ -194,7 +195,8 @@ public class PropertyManager implements JmolPropertyManager {
   private final static int PROP_ISOSURFACE_DATA = 36;
   private final static int PROP_CONSOLE_TEXT = 37;
   private final static int PROP_JSPECVIEW = 38;
-  private final static int PROP_COUNT = 39;
+  private final static int PROP_SCRIPT_QUEUE_INFO = 39;
+  private final static int PROP_COUNT = 40;
 
   //// static methods used by Eval and Viewer ////
 
@@ -414,8 +416,6 @@ public class PropertyManager implements JmolPropertyManager {
       return getAllChainInfo(viewer.getAtomBitSet(myParam));
     case PROP_CONSOLE_TEXT:
       return viewer.getProperty("DATA_API", "consoleText", null);
-    case PROP_JSPECVIEW:
-      return viewer.getJspecViewProperties(myParam);
     case PROP_DATA_INFO:
       return viewer.getData(myParam.toString());
     case PROP_ERROR_MESSAGE:
@@ -460,6 +460,8 @@ public class PropertyManager implements JmolPropertyManager {
       return viewer.getStatusChanged(myParam.toString());
     case PROP_JMOL_VIEWER:
       return viewer;
+    case PROP_JSPECVIEW:
+      return viewer.getJspecViewProperties(myParam);
     case PROP_LIGAND_INFO:
       return getLigandInfo(viewer.getAtomBitSet(myParam));
     case PROP_MEASUREMENT_INFO:
@@ -482,6 +484,8 @@ public class PropertyManager implements JmolPropertyManager {
       return viewer.getPointGroupInfo(myParam);
     case PROP_POLYMER_INFO:
       return getAllPolymerInfo(viewer.getAtomBitSet(myParam));
+    case PROP_SCRIPT_QUEUE_INFO:
+      return viewer.getScriptQueueInfo();
     case PROP_SHAPE_INFO:
       return viewer.getShapeInfo();
     case PROP_STATE_INFO:

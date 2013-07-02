@@ -67,8 +67,9 @@ public class MagResReader extends AtomSetCollectionReader {
   }
 
   /**
-   * Valid blocks include [calculation] [atoms] [magres]
-   * All magres entries must be prefaced with a corresponding unit
+   * Valid blocks include [calculation] [atoms] [magres];
+   * all magres entries must be prefaced with a corresponding unit;
+   * Use of &lt; &gt; instead of [ ] is allowed.
    * 
    * @return true to read another line (some readers return false because they have over-read a line)
    */

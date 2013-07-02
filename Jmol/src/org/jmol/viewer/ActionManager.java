@@ -676,7 +676,6 @@ public class ActionManager {
   private void checkAction(int action, int x, int y, int deltaX, int deltaY,
                            long time, int mode) {
     int mods = Binding.getModifiers(action);
-    //System.out.println("checkAction " + x + " " + y + " mode " + mode + " action " + action + " mods " + mods);
     if (mods != 0) {
       int newAction = viewer.notifyMouseClicked(x, y, Binding.getMouseAction(
           -pressedCount, mods), mode);
@@ -692,7 +691,6 @@ public class ActionManager {
       return;
     }
 
-    System.out.println("chackAction...");
     if (checkUserAction(action, x, y, deltaX, deltaY, time, mode))
       return;
 
@@ -903,7 +901,6 @@ public class ActionManager {
     Object obj;
     while (e.hasNext()) {
       String key = e.next();
-      System.out.println(action + " action " + mode + " key=" + key);
       if (key.indexOf(action + "\t") != 0
           || !Escape.isAS(obj = ht.get(key)))
         continue;
@@ -1325,7 +1322,6 @@ public class ActionManager {
                           int modifiers) {
     if (!viewer.getMouseEnabled())
       return;
-      //System.out.println("ActionManager mouseAction action=" + action + " x y = " + x + " " + y + " count = " + count + " mods = " + modifiers);
     switch (action) {
     case Binding.MOVED:
       setCurrent(time, x, y, modifiers);
@@ -1404,7 +1400,6 @@ public class ActionManager {
         viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, action);
         return;
       }
-      System.out.println("mouseAction...");
       checkUserAction(action, x, y, 0, 0, time, Binding.PRESSED);
       boolean isBound = false;
       switch (atomPickingMode) {
@@ -1612,7 +1607,6 @@ public class ActionManager {
     // so that atom picking can be superceded by draw picking
     int action = Binding.getMouseAction(clickedCount, mods);
     if (action != Binding.MOVED) {
-      System.out.println("chackPoint...");
       checkUserAction(action, x, y, 0, 0, time, mode);
       action = viewer.notifyMouseClicked(x, y, action, mode);
       if (action == Binding.MOVED)

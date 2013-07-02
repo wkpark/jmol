@@ -261,12 +261,13 @@ public class Ellipsoids extends Shape {
   }
 
 private boolean initEllipsoids(Object value) {
-  ellipsoidSelected = (value == null ? null : (Ellipsoid) simpleEllipsoids.get(value));
-  if (value != null) {
+  boolean haveID = (value != null);
+  ellipsoidSelected = (haveID ? (Ellipsoid) simpleEllipsoids.get(value) : null);
+  if (haveID) {
     typeSelected = null;
   }
   selectedAtoms = null;
-  return false;
+  return haveID;
 }
 
   //  private void setPoints(P3[] points, BS bs) {
@@ -390,7 +391,7 @@ private boolean initEllipsoids(Object value) {
       Ellipsoid ellipsoid = e.next();
       ellipsoid.visible = ellipsoid.isValid && ellipsoid.isOn
           && (ellipsoid.modelIndex < 0 || bs.get(ellipsoid.modelIndex));
-      if (atoms != null)
+      if (ellipsoid.tensor.atomIndex1 >= 0)
         atoms[ellipsoid.tensor.atomIndex1].setShapeVisibility(myVisibilityFlag, true);
 
     }

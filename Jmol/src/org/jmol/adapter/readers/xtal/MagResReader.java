@@ -10,9 +10,8 @@ package org.jmol.adapter.readers.xtal;
 import java.util.Hashtable;
 import java.util.Map;
 
-import jspecview.util.Logger;
-
 import org.jmol.util.JmolList;
+import org.jmol.util.Logger;
 import org.jmol.util.SB;
 import org.jmol.util.Tensor;
 import org.jmol.util.TextFormat;

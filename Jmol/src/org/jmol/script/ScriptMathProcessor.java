@@ -844,6 +844,8 @@ class ScriptMathProcessor {
     String tensorType = SV.sValue(args[0]).toLowerCase();
     String infoType = ";" + (args.length == 1 ? "all" : SV.sValue(args[1]).toLowerCase()) + ".";
     JmolList<Object> data = new JmolList<Object>();
+    if (tensorType.equals("unique"))
+      return addXBs(viewer.modelSet.getUniqueTensorSet(bs));
     if (tensorType.equals("isc")) {
       JmolList<Tensor> list = viewer.modelSet.getInteractionTensorList("isc",
           bs);

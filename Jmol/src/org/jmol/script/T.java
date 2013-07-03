@@ -450,6 +450,7 @@ public class T {
   public final static int specialposition = predefinedset | 44;
   final static int visible                = predefinedset | 46;
   final static int basemodel              = predefinedset | 48;
+  final static int nonequivalent          = predefinedset | 50;
 
   
   static int getPrecedence(int tokOperator) {
@@ -1903,6 +1904,7 @@ public class T {
       "inherit",         null,
       "normal",          T.t(normal),
       "noContourLines",  T.t(nocontourlines),
+      "nonequivalent",   T.t(nonequivalent),
       "notFrontOnly",    T.t(notfrontonly),
       "noTriangles",     T.t(notriangles),
       "now",             T.t(now),

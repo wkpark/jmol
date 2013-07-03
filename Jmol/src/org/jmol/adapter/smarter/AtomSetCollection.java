@@ -1343,6 +1343,7 @@ public class AtomSetCollection {
           if (addCartesian)
             cartesians[pt++] = cartesian;
           if (atoms[i].tensors != null) {
+            atom1.tensors = null;
             for (int j = atoms[i].tensors.size(); --j >= 0;) {
               Tensor t = atoms[i].tensors.get(j);
               if (t == null)

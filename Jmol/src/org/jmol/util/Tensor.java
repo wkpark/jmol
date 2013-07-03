@@ -49,6 +49,7 @@ public class Tensor {
   
   public String type;
   public int iType = TYPE_OTHER;
+  public int maxPt = 2;
   
   // type is an identifier that the reader/creator delivers:
   //
@@ -447,19 +448,21 @@ public class Tensor {
   }
 
   /**
-   * The expression: 
+   * The expression:
    * 
    * |sigma_3 - sigma_iso| >= |sigma_1 - sigma_iso| >= |sigma_2 - sigma_iso|
    * 
    * simply sorts the values from largest to smallest or smallest to largest,
    * depending upon the direction of the asymmetry, always setting the last
-   * value to be the farthest from the mean.
+   * value to be the farthest from the mean. We use a simpler form here:
+   * 
+   * |sigma_3 - sigma_1| >= |sigma_3 - sigma_2| >= |sigma_2 - sigma_1|
+   * 
+   * which amounts to the same thing and is prettier. (Think about it!)
    * 
    */
   private void sortAndNormalize() {
     // first sorted 3 2 1, then check for iso-sorting
-    V3 vTemp = eigenVectors[0]; // will throw this away after the sort anyway
-                                // might as well use it!
     Object[][] o = new Object[][] {
         new Object[] { V3.newV(eigenVectors[0]), Float.valueOf(eigenValues[0]) },
         new Object[] { V3.newV(eigenVectors[1]), Float.valueOf(eigenValues[1]) },
@@ -470,21 +473,29 @@ public class Tensor {
       eigenVectors[i] = (V3) o[pt][0];
       eigenValues[i] = ((Float) o[pt][1]).floatValue();
     }
-    if (sortIso) {
-      float f = (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3f;
-      if (eigenValues[2] - f < f - eigenValues[0]) {
-        vTemp = eigenVectors[0];
-        eigenVectors[0] = eigenVectors[2];
-        eigenVectors[2] = vTemp;
-        f = eigenValues[0];
-        eigenValues[0] = eigenValues[2];
-        eigenValues[2] = f;
-      }      
+    if (sortIso
+        && eigenValues[2] - eigenValues[1] < eigenValues[1] - eigenValues[0]) {
+      maxPt = 0;
+      V3 vTemp = eigenVectors[0];
+      eigenVectors[0] = eigenVectors[2];
+      eigenVectors[2] = vTemp;
+      float f = eigenValues[0];
+      eigenValues[0] = eigenValues[2];
+      eigenValues[2] = f;
     }
     for (int i = 0; i < 3; i++)
       eigenVectors[i].normalize();
   }
 
+  public boolean isEquiv(Tensor t) {
+    if (t.iType != iType) 
+      return false;
+    float f = Math.abs(eigenValues[0] + eigenValues[1] + eigenValues[2]);
+    for (int i = 0; i < 3; i++)
+      if (Math.abs(t.eigenValues[i] - eigenValues[i]) / f > 0.0003f)
+        return false;
+    return true;
+  }
   private static Comparator<? super Object[]> getEigenSort() {
     return (tSort == null ? (tSort = new EigenSort()) : tSort);
   }

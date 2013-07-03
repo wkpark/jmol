@@ -3447,5 +3447,51 @@ abstract public class ModelCollection extends BondCollection {
     return list;
   }
 
+  public BS getUniqueTensorSet(BS bsAtoms) {
+    BS bs = new BS();
+    for (int i = modelCount; --i >= 0;) {
+      BS bsModelAtoms = getModelAtomBitSetIncludingDeleted(i, true);
+      bsModelAtoms.and(bsAtoms);
+      // exclude any models without symmetry
+      if (viewer.getModelUnitCell(i) == null)
+        continue;
+      // exclude any symmetry-
+      for (int j = bsModelAtoms.nextSetBit(0); j >= 0; j = bsModelAtoms
+          .nextSetBit(j + 1))
+        if (atoms[j].atomSite != atoms[j].index + 1)
+          bsModelAtoms.clear(j);
+      bs.or(bsModelAtoms);
+      // march through all the atoms in the model...
+      for (int j = bsModelAtoms.nextSetBit(0); j >= 0; j = bsModelAtoms
+          .nextSetBit(j + 1)) {
+        Tensor[] ta = atoms[j].getTensors();
+        if (ta == null)
+          continue;
+        // go through all this atom's tensors...
+        for (int jj = ta.length; --jj >= 0;) {
+          Tensor t = ta[jj];
+          if (t == null)
+            continue;
+          // for each tensor in A, go through all atoms after the first-selected one...
+          for (int k = bsModelAtoms.nextSetBit(j + 1); k >= 0; k = bsModelAtoms
+              .nextSetBit(k + 1)) {
+            Tensor[] tb = atoms[k].getTensors();
+            if (tb == null)
+              continue;
+            // for each tensor in B, go through all this atom's tensors... 
+            for (int kk = tb.length; --kk >= 0;) {
+              // if equivalent, reject it.
+              if (t.isEquiv(tb[kk])) {
+                bsModelAtoms.clear(k);
+                bs.clear(k);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    return bs;
+  }
 
 }

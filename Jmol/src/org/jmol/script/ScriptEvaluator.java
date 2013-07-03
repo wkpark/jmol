@@ -3817,6 +3817,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.spec_alternate:
       case T.specialposition:
       case T.symmetry:
+      case T.nonequivalent:
       case T.unitcell:
         rpn.addXBs(getAtomBits(instruction.tok, value));
         break;

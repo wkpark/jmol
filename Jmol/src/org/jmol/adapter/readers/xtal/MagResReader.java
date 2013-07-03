@@ -291,7 +291,7 @@ public class MagResReader extends AtomSetCollectionReader {
     String key = ";" + id +";";
     if (tensorTypes.indexOf(key) < 0) {
       tensorTypes += key;
-      appendLoadNote("Ellipsoids set \"" + id + "\": "
+      appendLoadNote("Ellipsoid set \"" + id + "\": "
           + (id.startsWith("ms") ? "Magnetic Shielding" : 
             id.startsWith("efg") ? "Electric Field Gradient" : id.startsWith("isc") ? "J-Coupling" : "?"));
     }

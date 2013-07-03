@@ -10,6 +10,7 @@ package org.jmol.adapter.readers.xtal;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
@@ -87,13 +88,13 @@ public class MagResReader extends AtomSetCollectionReader {
       if (line.startsWith("symmetry"))
         return readSymmetry();
       if (line.startsWith("units"))
-        return setUnits();
+        return setUnits(false);
       if (line.startsWith("atom"))
         return readAtom();
       break;
     case BLOCK_MAGRES:
       if (line.startsWith("units"))
-        return setUnits();
+        return setUnits(true);
       return readTensor();
     }
     return true;
@@ -173,11 +174,19 @@ public class MagResReader extends AtomSetCollectionReader {
   /**
    * catalog units
    * 
+   * @param isMagresBlock
+   * 
    * @return true
    */
-  private boolean setUnits() {
+  private boolean setUnits(boolean isMagresBlock) {
     String[] tokens = getTokens();
-    magresUnits.put(tokens[1], tokens[2]);
+    String id = tokens[1];
+    if (isMagresBlock)
+      appendLoadNote("Ellipsoid set " + Escape.eS(id) + ": "
+          + (id.startsWith("ms") ? "Magnetic Shielding"
+              : id.startsWith("efg") ? "Electric Field Gradient" : id
+                  .startsWith("isc") ? "J-Coupling" : "?"));
+    magresUnits.put(id, tokens[2]);
     return true;
   }
 
@@ -288,13 +297,6 @@ public class MagResReader extends AtomSetCollectionReader {
       interactionTensors.addLast(t);
     }
     t.setAtomIndexes(index1, index2);
-    String key = ";" + id +";";
-    if (tensorTypes.indexOf(key) < 0) {
-      tensorTypes += key;
-      appendLoadNote("Ellipsoid set \"" + id + "\": "
-          + (id.startsWith("ms") ? "Magnetic Shielding" : 
-            id.startsWith("efg") ? "Electric Field Gradient" : id.startsWith("isc") ? "J-Coupling" : "?"));
-    }
     return true;
   }
 }

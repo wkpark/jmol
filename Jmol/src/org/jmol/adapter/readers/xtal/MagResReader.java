@@ -31,7 +31,6 @@ public class MagResReader extends AtomSetCollectionReader {
   private int currentBlock = BLOCK_NONE;
 
   private float[] cellParams;
-  private String tensorTypes = "";
   //private static float maxIso = 10000; // the old code was checking for this.
   
   private Map<String, String> magresUnits = new Hashtable<String, String>();

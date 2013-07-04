@@ -295,7 +295,6 @@ public class NMRCalculation implements JmolNMRInterface {
       Map<String, Object> map = new Hashtable<String, Object>();
       map.put("isotopes", isotopeData);
       map.put("shiftRefsHz", shiftRefsHz);
-      map.put("specFreqMHz", specFreqMHz);
       return map;
     }
     if (Character.isDigit(what.charAt(0)))
@@ -314,10 +313,7 @@ public class NMRCalculation implements JmolNMRInterface {
     if (!Float.isNaN(v)) {
       String sym = atom.getElementSymbol();
       Float ref = shiftRefsHz.get(sym);
-      Float freq = specFreqMHz.get(sym);
       v = (ref == null ? 0 : ref.floatValue()) - v;
-      if (freq != null)
-        v /= freq.floatValue();
     }
     return v;
   }
@@ -327,26 +323,11 @@ public class NMRCalculation implements JmolNMRInterface {
     return (t == null ? Float.NaN : t.eigenValues[2]);
   }
 
-  private Map<String, Float> specFreqMHz = new Hashtable<String, Float>();
   private Map<String, Float> shiftRefsHz = new Hashtable<String, Float>();
   
   public boolean setChemicalShiftReference(String element, float value) {
-    float freq = 0;
-    int pt = element.indexOf("_ppm_");
-    if (pt >= 0) {
-      try {
-      freq = Float.parseFloat(element.substring(pt + 5));
-      value *= freq;
-      element = element.substring(0, pt);
-      } catch (Exception e) {
-        Logger.error("Invalid frequency nnn: shift_ppm_nnn: " + element);
-        return false;
-      }
-    }
     element = element.substring(0, 1).toUpperCase() + element.substring(1);
     shiftRefsHz.put(element, Float.valueOf(value));
-    if (freq >= 0)
-      specFreqMHz.put(element, Float.valueOf(freq));    
     return true;
   }
 

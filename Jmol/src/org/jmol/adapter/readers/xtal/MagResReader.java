@@ -275,12 +275,18 @@ public class MagResReader extends AtomSetCollectionReader {
     String[] tokens = getTokens();
     String id = tokens[0];
     String units = magresUnits.get(id);
-    if (units == null)
+    if (units == null) {
+      Logger.warn(id + " ignored; no units defined; line: " + line);
       return true;
+    }
+    boolean isIsc = id.startsWith("isc");
     String atomName1 = getAtomName(tokens[1], tokens[2]);
     int pt = 3;
-    String atomName2 = (id.startsWith("isc") ? getAtomName(tokens[pt++], tokens[pt++]) : null);
-    // TODO: maxIso for isc?
+    String atomName2 = (isIsc ? getAtomName(tokens[pt++], tokens[pt++]) : null);
+    if (atomName1.equals(atomName2)) {
+      Logger.warn(id + " ignored; atom1 == atom2 for " + atomName1 + " line: " + line);
+      return true;
+    }
     double[][] a = new double[3][3];
     for (int i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)

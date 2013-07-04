@@ -66,7 +66,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       Measurement m = measures.measurements.get(i);
       if (dynamicMeasurements || m.isDynamic)
         m.refresh();
-      if (!m.isVisible)
+      if (!m.isVisible || !m.isValid)
         continue;
       colix = m.colix;
       if (colix == 0)

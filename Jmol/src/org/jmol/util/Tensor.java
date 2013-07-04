@@ -88,8 +88,8 @@ public class Tensor {
   public static final int TYPE_ISC    = 6;
   public static final int TYPE_CHARGE = 7;
 
-  public double[][] asymTensor;
-  public double[][] symTensor;    
+  public double[][] asymMatrix;
+  public double[][] symMatrix;    
   public V3[] eigenVectors;
   public float[] eigenValues;
 
@@ -116,11 +116,12 @@ public class Tensor {
   public int atomIndex1 = -1;
   public int atomIndex2 = -1;
 
-  private static final String infoList = ";............." + ";eigenvalues.." + ";eigenvectors."
-  + ";asymmetric..." + ";symmetric...." + ";trace........"
-  + ";haeberlen...." + ";eulerzyz....." + ";eulerzxz....."
-  + ";quaternion..." + ";indices......" + ";string......." 
-  + ";type........." + ";all.........";
+  private static final String infoList = 
+    ";............." + ";eigenvalues.." + ";eigenvectors."
+  + ";asymMatrix..." + ";symMatrix...." + ";value........"
+  + ";isotropy....." + ";anisotropy..." + ";asymmetry...." 
+  + ";eulerzyz....." + ";eulerzxz....." + ";quaternion..." 
+  + ";indices......" + ";string......." + ";type.........";
   /**
    * returns an object of the specified type, including "eigenvalues",
    * "eigenvectors", "asymmetric", "symmetric", "trace", "indices", and "type"
@@ -132,14 +133,15 @@ public class Tensor {
     if (infoType.charAt(0) != ';')
       infoType = ";" + infoType + ".";
     switch (infoList.indexOf(infoType) / 14) {
-    default: 
+    default:
+      // dump all key/value pairs
       Map<String, Object> info = new Hashtable<String, Object>();
       String[] s = Parser.getTokens(TextFormat.replaceAllCharacter(infoList, ";.", ' ').trim());
       Arrays.sort(s);
       for (int i = 0; i < s.length; i++)
-        if (!s[i].equals("all"))
-          info.put(s[i], getInfo(s[i]));
+        info.put(s[i], getInfo(s[i]));
       return info;
+      
     case 1:
       return eigenValues;
     case 2:
@@ -147,45 +149,67 @@ public class Tensor {
       for (int i = 0; i < 3; i++)
         list[i] = P3.newP(eigenVectors[i]);
       return list;
+      
+      
     case 3:
-      if (asymTensor == null)
+      if (asymMatrix == null)
         return null;
-      float[][] a = new float[3][3];
+      float[] a = new float[9];
+      int pt = 0;
       for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
-          a[i][j] = (float) asymTensor[i][j];
-      return a;
+          a[pt++] = (float) asymMatrix[i][j];
+      return Matrix3f.newA(a);
     case 4:
-      if (symTensor == null)
+      if (symMatrix == null)
         return null;
-      float[][] b = new float[3][3];
+      float[] b = new float[9];
+      int p2 = 0;
       for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
-          b[i][j] = (float) symTensor[i][j];
-      return b;
-    case 5: // trace
-      return Float.valueOf(eigenValues[0] + eigenValues[1] + eigenValues[2]);
-    case 6: // haeberlen
-      float[] haeb = new float[3];
-      haeb[0] = (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3;
-      haeb[1] = eigenValues[2] - (eigenValues[0] + eigenValues[1]) / 2;
-      haeb[2] = (haeb[1] == 0 ? 0 : (eigenValues[1] - eigenValues[0])
-          / (eigenValues[2] - haeb[0]));
-      return haeb;
-    case 7: // eulerzyz
+          b[p2++] = (float) symMatrix[i][j];
+      return Matrix3f.newA(b);
+    case 5:
+      return Float.valueOf(eigenValues[2]);
+    case 6: // isotropy
+      return Float.valueOf(getIso());
+    case 7: // anisotropy
+      // Anisotropy, defined as Vzz-(Vxx+Vyy)/2
+      return Float.valueOf(getAnisotropy()); 
+    case 8: // asymmetry
+      // Asymmetry, defined as (Vyy-Vxx)/(Vzz - Viso)
+      return Float.valueOf(getAsymmetry());
+ 
+      
+    case 9: // eulerzyz
       return ((Quaternion) getInfo("quaternion")).getEulerZYZ();
-    case 8: // eulerzxz
+    case 10: // eulerzxz
       return ((Quaternion) getInfo("quaternion")).getEulerZXZ();
-    case 9: // quaternion
+    case 11: // quaternion
       return Quaternion.getQuaternionFrame(null, eigenVectors[0],
           eigenVectors[1]);
-    case 10: // 
+      
+      
+    case 12: 
       return new int[] { modelIndex, atomIndex1, atomIndex2 };
-    case 11:
+    case 13:
       return this.toString();
-    case 12:
+    case 14:
       return type;
     }
+  }
+
+  public float getIso() {
+    return (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3;
+  }
+
+  public float getAnisotropy() {
+    return eigenValues[2] - (eigenValues[0] + eigenValues[1]) / 2;
+  }
+
+  public float getAsymmetry() {
+    return eigenValues[0] == eigenValues[2] ? 0 : (eigenValues[1] - eigenValues[0])
+        / (eigenValues[2] - getIso());
   }
 
   public static Tensor copyTensor(Tensor t0) {
@@ -193,8 +217,8 @@ public class Tensor {
     t.setType(t0.type);
     t.eigenValues = t0.eigenValues;
     t.eigenVectors = t0.eigenVectors;
-    t.asymTensor = t0.asymTensor;
-    t.symTensor = t0.symTensor;
+    t.asymMatrix = t0.asymMatrix;
+    t.symMatrix = t0.symMatrix;
     t.eigenSignMask = t0.eigenSignMask;
     t.modelIndex = t0.modelIndex;
     t.atomIndex1 = t0.atomIndex1;
@@ -262,8 +286,8 @@ public class Tensor {
     float[] values = new float[3];
     eigen.fillArrays(vectors, values);
     Tensor t = newTensorType(vectors, values, type);
-    t.asymTensor = asymmetricTensor;
-    t.symTensor = a;
+    t.asymMatrix = asymmetricTensor;
+    t.symMatrix = a;
     return t;
   }
 

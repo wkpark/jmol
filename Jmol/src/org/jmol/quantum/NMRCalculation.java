@@ -32,10 +32,15 @@ import java.util.Map;
 
 import org.jmol.api.JmolNMRInterface;
 import org.jmol.io.JmolBinary;
+import org.jmol.modelset.Atom;
+import org.jmol.util.BS;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-
+import org.jmol.util.Tensor;
+import org.jmol.util.V3;
+import org.jmol.viewer.Viewer;
 
 /*
  * 
@@ -50,36 +55,181 @@ import org.jmol.util.Parser;
  */
 
 public class NMRCalculation implements JmolNMRInterface {
-  
+
+  private static final int MAGNETOGYRIC_RATIO = 0;
+  private static final int QUADRUPOLE_MOMENT = 1;
+  private static final double e_charge = 1.60217646e-19; //C 
+  private static final double h_planck = 6.62606957e-34; //J*s
+  private static final double h_bar_planck = h_planck / (2 * Math.PI);
+  private static final double DIPOLAR_FACTOR = 1.0 / 2 * h_bar_planck * 1E37; // 1e37 = (1/1e-10)^3 * 1e7 * 1e7 / 1e-7
+  private static final double J_FACTOR = h_bar_planck / (2 * Math.PI) * 1E33;
+  private static final double Q_FACTOR = e_charge * (9.71736e-7) / h_planck;
+
+  private Viewer viewer;
+
   public NMRCalculation() {
     getData();
   }
 
+  public JmolNMRInterface setViewer(Viewer viewer) {
+    this.viewer = viewer;
+    return this;
+  }
+
+  public float getQuadrupolarConstant(Tensor efg) {
+    if (efg == null)
+      return 0;
+    Atom a = viewer.modelSet.atoms[efg.atomIndex1];
+    return (float) (getIsotopeData(a, QUADRUPOLE_MOMENT) * efg.eigenValues[2] * Q_FACTOR);
+  }
+
   /**
-   * isotopeData keyed by nnnSym, for example: 1H, 19F, etc.;
-   * and also by element name itself:  H, F, etc., for default
+   * Returns a list of tensors that are of the specified type and 
+   * have both atomIndex1 and atomIndex2 in bs.
+   * 
+   * @param type
+   * @param bs
+   * @return list of Tensors
    */
-  private Map<String, float[]> isotopeData;
-  
+  @SuppressWarnings("unchecked")
+  public JmolList<Tensor> getInteractionTensorList(String type, BS bs) {
+    type = type.toLowerCase();
+    BS bsModels = viewer.getModelBitSet(bs, false);
+    int iAtom = (bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
+    JmolList<Tensor> list = new JmolList<Tensor>();
+    for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
+      JmolList<Tensor> tensors = (JmolList<Tensor>) viewer.getModelAuxiliaryInfoValue(i, "interactionTensors");
+      if (tensors == null)
+        continue;
+      int n = tensors.size();
+      for (int j = 0; j < n; j++) {
+        Tensor t = tensors.get(j);
+        if (t.type.equals(type) && t.isSelected(bs, iAtom))
+          list.addLast(t);
+      }      
+    }
+    return list;
+  }
+
+  public BS getUniqueTensorSet(BS bsAtoms) {
+    BS bs = new BS();
+    Atom[] atoms = viewer.modelSet.atoms;
+    for (int i = viewer.getModelCount(); --i >= 0;) {
+      BS bsModelAtoms = viewer.getModelUndeletedAtomsBitSet(i);
+      bsModelAtoms.and(bsAtoms);
+      // exclude any models without symmetry
+      if (viewer.getModelUnitCell(i) == null)
+        continue;
+      // exclude any symmetry-
+      for (int j = bsModelAtoms.nextSetBit(0); j >= 0; j = bsModelAtoms
+          .nextSetBit(j + 1))
+        if (atoms[j].atomSite != atoms[j].index + 1)
+          bsModelAtoms.clear(j);
+      bs.or(bsModelAtoms);
+      // march through all the atoms in the model...
+      for (int j = bsModelAtoms.nextSetBit(0); j >= 0; j = bsModelAtoms
+          .nextSetBit(j + 1)) {
+        Tensor[] ta = atoms[j].getTensors();
+        if (ta == null)
+          continue;
+        // go through all this atom's tensors...
+        for (int jj = ta.length; --jj >= 0;) {
+          Tensor t = ta[jj];
+          if (t == null)
+            continue;
+          // for each tensor in A, go through all atoms after the first-selected one...
+          for (int k = bsModelAtoms.nextSetBit(j + 1); k >= 0; k = bsModelAtoms
+              .nextSetBit(k + 1)) {
+            Tensor[] tb = atoms[k].getTensors();
+            if (tb == null)
+              continue;
+            // for each tensor in B, go through all this atom's tensors... 
+            for (int kk = tb.length; --kk >= 0;) {
+              // if equivalent, reject it.
+              if (t.isEquiv(tb[kk])) {
+                bsModelAtoms.clear(k);
+                bs.clear(k);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    return bs;
+  }
+
+  @SuppressWarnings("unchecked")
+  public float getJCouplingHz(Atom a1, Atom a2, String type, Tensor isc) {
+    if (isc == null) {
+      JmolList<Tensor> tensors = (JmolList<Tensor>) viewer.getModelAuxiliaryInfoValue(a1.modelIndex, "interactionTensors");
+      if (tensors == null)
+        return 0;
+      BS bs = new BS();
+      bs.set(a1.index);
+      bs.set(a2.index);
+      type = (type == null ? "" : type.toLowerCase());
+      int pt = -1;
+      if ((pt = type.indexOf("khz")) >= 0 || (pt = type.indexOf("hz")) >= 0)
+        type = type.substring(0, pt).trim();
+      if (type.length() == 0)
+        type = "isc";
+      JmolList<Tensor> list = getInteractionTensorList(type, bs);
+      if (list.size() == 0)
+        return Float.NaN;
+      isc = list.get(0);
+    } else {
+      a1 = viewer.modelSet.atoms[isc.atomIndex1];
+      a2 = viewer.modelSet.atoms[isc.atomIndex2];
+    }
+    return (float) (getIsotopeData(a1, MAGNETOGYRIC_RATIO)
+        * getIsotopeData(a2, MAGNETOGYRIC_RATIO) * isc.getIso() * J_FACTOR);
+  }
+
+  public float getDipolarConstantHz(Atom a1, Atom a2) {
+    return (float) (-getIsotopeData(a1, MAGNETOGYRIC_RATIO)
+        * getIsotopeData(a2, MAGNETOGYRIC_RATIO) / Math.pow(a1.distance(a2), 3) * DIPOLAR_FACTOR);
+  }
+
+  public float getDipolarCouplingHz(Atom a1, Atom a2, V3 vField) {
+    V3 v12 = V3.newV(a2);
+    v12.sub(a1);
+    double r = v12.length();
+    double costheta = v12.dot(vField) / r / vField.length();
+    return (float) (getDipolarConstantHz(a1, a2) * (3 * costheta - 1));
+  }
+
   /**
-   * NOTE! Do not change this txt file! 
-   * Instead, edit trunk/Jmol/_documents/nmr_data.xls
-   * and then clip its contents to nmr_data.txt.
+   * isotopeData keyed by nnnSym, for example: 1H, 19F, etc.; and also by
+   * element name itself: H, F, etc., for default
+   */
+  private Map<String, double[]> isotopeData;
+
+  /**
+   * NOTE! Do not change this txt file! Instead, edit
+   * trunk/Jmol/_documents/nmr_data.xls and then clip its contents to
+   * nmr_data.txt.
    * 
    */
   private final static String resource = "org/jmol/quantum/nmr_data.txt";
 
   /**
-   * Get magnetogyricRatio (gamma/10^7 rad s^-1 T^-1) and quadrupoleMoment (Q/10^-2 fm^2)
-   * for a given isotope or for the default isotope of an element.
+   * Get magnetogyricRatio (gamma/10^7 rad s^-1 T^-1) and quadrupoleMoment
+   * (Q/10^-2 fm^2) for a given isotope or for the default isotope of an
+   * element.
    * 
-   * @param isoSym may be an element symbol (H, F) or an isotope_symbol (1H, 19F)
-   * @return  [g, Q]
+   * @param a
+   * 
+   * @param iType
+   * @return g or Q
    */
-  public float[] getIsotopeData(String isoSym) {
-     return isotopeData.get(isoSym);
+  private double getIsotopeData(Atom a, int iType) {
+    int iso = a.getIsotopeNumber();
+    String sym = a.getElementSymbol();
+    double[] d = isotopeData.get(iso == 0 ? sym : "" + iso + sym);
+    return (d == null ? 0 : d[iType]);
   }
-  
+
   private void getData() {
     BufferedReader br = null;
     boolean debugging = Logger.debugging;
@@ -96,7 +246,7 @@ public class NMRCalculation implements JmolNMRInterface {
       // "#extracted by Simone Sturniolo from ROBIN K. HARRIS, EDWIN D. BECKER, SONIA M. CABRAL DE MENEZES, ROBIN GOODFELLOW, AND PIERRE GRANGER, Pure Appl. Chem., Vol. 73, No. 11, pp. 1795–1818, 2001. NMR NOMENCLATURE. NUCLEAR SPIN PROPERTIES AND CONVENTIONS FOR CHEMICAL SHIFTS (IUPAC Recommendations 2001)"
       // #element atomNo  isotopeDef  isotope1  G1  Q1  isotope2  G2  Q2  isotope3  G3  Q3
       // H 1 1 1 26.7522128  0 2 4.10662791  0.00286 3 28.5349779  0
-      isotopeData = new Hashtable<String, float[]>();
+      isotopeData = new Hashtable<String, double[]>();
       while ((line = br.readLine()) != null) {
         if (debugging)
           Logger.info(line);
@@ -109,18 +259,19 @@ public class NMRCalculation implements JmolNMRInterface {
           Logger.info(name + " default isotope " + defaultIso);
         for (int i = 3; i < tokens.length; i += 3) {
           String isoname = tokens[i] + name;
-          float[] dataGQ = new float[] { Float.parseFloat(tokens[i + 1]),
-              Float.parseFloat(tokens[i + 2]) };
+          double[] dataGQ = new double[] { Double.parseDouble(tokens[i + 1]),
+              Double.parseDouble(tokens[i + 2]) };
           if (debugging)
-            Logger.info(isoname + "  " + Escape.eAF(dataGQ));
+            Logger.info(isoname + "  " + Escape.eAD(dataGQ));
           isotopeData.put(isoname, dataGQ);
         }
-        float[] defdata = isotopeData.get(defaultIso);
+        double[] defdata = isotopeData.get(defaultIso);
         if (defdata == null) {
-          Logger.error("Cannot find default NMR data in nmr_data.txt for " + defaultIso);
+          Logger.error("Cannot find default NMR data in nmr_data.txt for "
+              + defaultIso);
           throw new NullPointerException();
         }
-        isotopeData.put(name, defdata);          
+        isotopeData.put(name, defdata);
       }
       br.close();
     } catch (Exception e) {
@@ -132,4 +283,5 @@ public class NMRCalculation implements JmolNMRInterface {
       }
     }
   }
+
 }

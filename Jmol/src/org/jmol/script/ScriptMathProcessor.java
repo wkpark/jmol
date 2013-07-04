@@ -35,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+import org.jmol.api.JmolNMRInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
@@ -842,20 +843,30 @@ class ScriptMathProcessor {
       return false;
     BS bs = SV.getBitSet(getX(), false);
     String tensorType = SV.sValue(args[0]).toLowerCase();
-    String infoType = ";" + (args.length == 1 ? "all" : SV.sValue(args[1]).toLowerCase()) + ".";
+    String infoType = ";"
+        + (args.length == 1 ? "all" : SV.sValue(args[1]).toLowerCase()) + ".";
     JmolList<Object> data = new JmolList<Object>();
+    boolean isJ = tensorType.equals("isc") && infoType.equals(";jcoupling.");
+    boolean isChi = tensorType.equals("efg") && infoType.equals(";chi.");
+    JmolNMRInterface calc = (isJ || isChi
+        || Parser.isOneOf(tensorType, ";isc;unique;") ? viewer
+        .getNMRCalculation() : null);
     if (tensorType.equals("unique"))
-      return addXBs(viewer.modelSet.getUniqueTensorSet(bs));
+      return addXBs(calc.getUniqueTensorSet(bs));
     if (tensorType.equals("isc")) {
-      JmolList<Tensor> list = viewer.modelSet.getInteractionTensorList("isc",
-          bs);
+      JmolList<Tensor> list = calc.getInteractionTensorList("isc", bs);
       int n = (list == null ? 0 : list.size());
-      for (int i = 0; i < n; i++)
-        data.addLast((list.get(i).getInfo(infoType)));
-    }
-    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      Tensor t = viewer.modelSet.getAtomTensor(i, tensorType);
-      data.addLast(t == null ? null : t.getInfo(infoType));
+      for (int i = 0; i < n; i++) {
+        Tensor t = list.get(i);
+        data.addLast(isJ ? new float[] { t.atomIndex1, t.atomIndex2,
+            calc.getJCouplingHz(null, null, null, t) } : t.getInfo(infoType));
+      }
+    } else {
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        Tensor t = viewer.modelSet.getAtomTensor(i, tensorType);
+        data.addLast(t == null ? null : isChi ? Float.valueOf(calc
+            .getQuadrupolarConstant(t)) : t.getInfo(infoType));
+      }
     }
     return addXList(data);
   }
@@ -1390,6 +1401,7 @@ class ScriptMathProcessor {
       // measure({a},{b}, min, max, format, units)
       // measure({a},{b},{c},{d}, min, max, format, units)
       // measure({a} {b} "minArray") -- returns array of minimum distance values
+      
       JmolList<Object> points = new  JmolList<Object>();
       float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
       String strFormat = null;
@@ -1436,7 +1448,7 @@ class ScriptMathProcessor {
           else if (s.equalsIgnoreCase("minArray"))
             asArray = (nBitSets >= 1);
           else if (Parser.isOneOf(s.toLowerCase(),
-              ";nm;nanometers;pm;picometers;angstroms;ang;au;"))
+              ";nm;nanometers;pm;picometers;angstroms;ang;au;") || s.endsWith("hz"))
             units = s.toLowerCase();
           else
             strFormat = nPoints + ":" + s;

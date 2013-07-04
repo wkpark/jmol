@@ -62,7 +62,7 @@ final public class Atom extends Point3fi implements JmolNode {
 
   public char alternateLocationID = '\0';
   public byte atomID;
-  int atomSite;
+  public int atomSite;
   public Group group;
   private float userDefinedVanDerWaalRadius;
   byte valence;
@@ -298,7 +298,7 @@ final public class Atom extends Point3fi implements JmolNode {
   public Tensor[] getTensors() {
     return group.chain.model.modelSet.getAtomTensorList(index);
   }
-
+  
   public int getRasMolRadius() {
     return Math.abs(madAtom / 8); //  1000r = 1000d / 2; rr = (1000r / 4);
   }

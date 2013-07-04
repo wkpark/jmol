@@ -290,6 +290,8 @@ public class LabelToken {
     htValues.put("VALUE", Float.valueOf(value));
     htValues.put("UNITS", units);
     LabelToken[] tokens = compile(viewer, label, '\1', htValues);
+    if (tokens == null)
+      return "";
     setValues(tokens, htValues);
     Atom[] atoms = m.modelSet.atoms;
     int[] indices = m.getCountPlusIndices();

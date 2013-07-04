@@ -54,6 +54,7 @@ public class Measurement {
   public boolean isHidden = false;
   public boolean isDynamic = false;
   public boolean isTrajectory = false;
+  public boolean isValid = true;
   public short colix;
   public short labelColix = -1; // use colix
   public int mad;
@@ -293,20 +294,24 @@ public class Measurement {
       return value;
     float dist = value;
     if (units != null) {
-      if (units.equals("%")) {
+      boolean isPercent = units.equals("%");
+      if (isPercent || units.endsWith("hz")) {
         int i1 = getAtomIndex(1);
         int i2 = getAtomIndex(2);
         if (i1 >= 0 && i2 >= 0) {
-          float vdw = ((Atom) getAtom(1)).getVanderwaalsRadiusFloat(viewer,
-              EnumVdw.AUTO)
-              + ((Atom) getAtom(2)).getVanderwaalsRadiusFloat(viewer,
-                  EnumVdw.AUTO);
-          dist /= vdw;
-          return (andRound ? Math.round(dist * 1000) / 10f : dist * 100);
+          Atom a1 = (Atom) getAtom(1);
+          Atom a2 = (Atom) getAtom(2);
+          dist = (isPercent ? dist
+              / a1.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)
+              + a2.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO) : units
+              .startsWith("dc") || units.endsWith("khz") ? viewer.getNMRCalculation()
+              .getDipolarConstantHz(a1, a2) : viewer.getNMRCalculation()
+              .getJCouplingHz(a1, a2, units, null));
+            isValid = !Float.isNaN(dist);
+          if (isPercent)
+            units = "pm";
         }
-        units = "ang";
       }
-
       if (units.equals("nm"))
         return (andRound ? Math.round(dist * 100) / 1000f : dist / 10);
       if (units.equals("pm"))
@@ -314,6 +319,8 @@ public class Measurement {
       if (units.equals("au"))
         return (andRound ? Math.round(dist / JC.ANGSTROMS_PER_BOHR * 1000) / 1000f
             : dist / JC.ANGSTROMS_PER_BOHR);
+      if (units.equals("khz"))
+        return (andRound ? Math.round(dist / 10) / 100f : dist / 1000);
     }
     return (andRound ? Math.round(dist * 100) / 100f : dist);
   }
@@ -473,7 +480,7 @@ public class Measurement {
   public String getInfoAsString(String units) {
     float f = fixValue(units, true);
     SB sb = new SB();
-    sb.append(count == 2 ? "distance" : count == 3 ? "angle" : "dihedral");
+    sb.append(count == 2 ? (units != null && units.indexOf("hz") >= 0 ? "dipolarCouplingConstant" : "distance") : count == 3 ? "angle" : "dihedral");
     sb.append(" \t").appendF(f);
     sb.append(" \t").append(Escape.eS(strMeasurement));
     for (int i = 1; i <= count; i++)

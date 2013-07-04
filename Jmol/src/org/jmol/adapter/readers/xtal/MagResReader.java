@@ -280,6 +280,15 @@ public class MagResReader extends AtomSetCollectionReader {
       return true;
     }
     boolean isIsc = id.startsWith("isc");
+    if (tokens.length == 10) {
+      // raw vector - you get ONE
+      magresUnits.remove(id);
+      float[] data = new float[9];
+      for (int i = 0; i < 9;)
+        data[i] = parseFloatStr(tokens[++i]);
+      Logger.info("Magres reader creating magres_" + id + ": " + Escape.eAF(data));
+      atomSetCollection.setAtomSetAuxiliaryInfo("magres_" + id, data);
+    }
     String atomName1 = getAtomName(tokens[1], tokens[2]);
     int pt = 3;
     String atomName2 = (isIsc ? getAtomName(tokens[pt++], tokens[pt++]) : null);

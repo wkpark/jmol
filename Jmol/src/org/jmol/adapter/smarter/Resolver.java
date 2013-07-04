@@ -47,7 +47,7 @@ public class Resolver {
                  "WebMO;",
     "pymol.", ";PyMOL;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;", 
-    "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;MagRes;Shelx;Siesta;VaspOutcar;VaspPoscar;Wien2k;Xcrysden;"
+    "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;Magres;Shelx;Siesta;VaspOutcar;VaspPoscar;Wien2k;Xcrysden;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -722,8 +722,8 @@ public class Resolver {
   private final static String[] zMatrixFileStartRecords =
   {"ZMatrix", "#ZMATRIX"};
   
-  private final static String[] magResFileStartRecords =
-  {"MagRes", "# magres", "#$magres"};
+  private final static String[] magresFileStartRecords =
+  {"Magres", "#$magres"};
 
   private final static String[] pymolStartRecords =
   {"PyMOL", "}q" };
@@ -731,7 +731,7 @@ public class Resolver {
   private final static String[][] fileStartsWithRecords =
   { sptContainsRecords, cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
-    zMatrixFileStartRecords, magResFileStartRecords, pymolStartRecords };
+    zMatrixFileStartRecords, magresFileStartRecords, pymolStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

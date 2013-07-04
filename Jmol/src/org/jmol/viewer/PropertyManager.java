@@ -197,7 +197,7 @@ public class PropertyManager implements JmolPropertyManager {
   private final static int PROP_CONSOLE_TEXT = 37;
   private final static int PROP_JSPECVIEW = 38;
   private final static int PROP_SCRIPT_QUEUE_INFO = 39;
-  private final static int PROP_ISOTOPE_INFO = 40;
+  private final static int PROP_NMR_INFO = 40;
   private final static int PROP_COUNT = 41;
 
   //// static methods used by Eval and Viewer ////
@@ -466,7 +466,7 @@ public class PropertyManager implements JmolPropertyManager {
       return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getInfo");
     case PROP_ISOSURFACE_DATA:
       return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getData");
-    case PROP_ISOTOPE_INFO:
+    case PROP_NMR_INFO:
       return viewer.getNMRCalculation().getInfo(myParam.toString());
     case PROP_JMOL_STATUS:
       return viewer.getStatusChanged(myParam.toString());

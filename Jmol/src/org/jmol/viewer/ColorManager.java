@@ -149,7 +149,12 @@ class ColorManager {
       id = atom.getAtomicAndIsotopeNumber();
       if (id < Elements.elementNumberMax)
         return g3d.getChangeableColix(id, argbsCpk[id]);
+      short id0 = id;
       id = (short) Elements.altElementIndexFromNumber(id);
+      if (id == 0) {
+        id = Elements.getElementNumber(id0);
+        return g3d.getChangeableColix(id, argbsCpk[id]);
+      }
       return g3d.getChangeableColix((short) (Elements.elementNumberMax + id),
           altArgbsCpk[id]);
     case StaticConstants.PALETTE_PARTIAL_CHARGE:

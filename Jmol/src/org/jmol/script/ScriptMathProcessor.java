@@ -62,7 +62,6 @@ import org.jmol.util.Point3fi;
 import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
-import org.jmol.util.Tensor;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
@@ -845,30 +844,10 @@ class ScriptMathProcessor {
     String tensorType = SV.sValue(args[0]).toLowerCase();
     String infoType = ";"
         + (args.length == 1 ? "all" : SV.sValue(args[1]).toLowerCase()) + ".";
-    JmolList<Object> data = new JmolList<Object>();
-    boolean isJ = tensorType.equals("isc") && infoType.equals(";jcoupling.");
-    boolean isChi = tensorType.equals("efg") && infoType.equals(";chi.");
-    JmolNMRInterface calc = (isJ || isChi
-        || Parser.isOneOf(tensorType, ";isc;unique;") ? viewer
-        .getNMRCalculation() : null);
+    JmolNMRInterface calc = viewer.getNMRCalculation();      
     if (tensorType.equals("unique"))
       return addXBs(calc.getUniqueTensorSet(bs));
-    if (tensorType.equals("isc")) {
-      JmolList<Tensor> list = calc.getInteractionTensorList("isc", bs);
-      int n = (list == null ? 0 : list.size());
-      for (int i = 0; i < n; i++) {
-        Tensor t = list.get(i);
-        data.addLast(isJ ? new float[] { t.atomIndex1, t.atomIndex2,
-            calc.getJCouplingHz(null, null, null, t) } : t.getInfo(infoType));
-      }
-    } else {
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        Tensor t = viewer.modelSet.getAtomTensor(i, tensorType);
-        data.addLast(t == null ? null : isChi ? Float.valueOf(calc
-            .getQuadrupolarConstant(t)) : t.getInfo(infoType));
-      }
-    }
-    return addXList(data);
+    return addXList(calc.getTensorInfo(tensorType, infoType, bs));
   }
 
   private boolean evaluateCache(SV[] args) {

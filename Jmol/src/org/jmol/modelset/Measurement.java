@@ -271,8 +271,11 @@ public class Measurement {
     }
     units = fixUnits(units);
     int pt = label.indexOf("//");
-    if (pt >= 0)
+    if (pt >= 0) {
       label = label.substring(0, pt);
+      if (label.length() == 0)
+        label = "%VALUE";
+    }
     float f = fixValue(units, (label.indexOf("%V") >= 0));
     return formatString(f, units, label);
   }
@@ -304,7 +307,7 @@ public class Measurement {
           dist = (isPercent ? dist
               / a1.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)
               + a2.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO) : units
-              .startsWith("dc") || units.endsWith("khz") ? viewer.getNMRCalculation()
+              .startsWith("dc_") || units.equals("khz") ? viewer.getNMRCalculation()
               .getDipolarConstantHz(a1, a2) : viewer.getNMRCalculation()
               .getJCouplingHz(a1, a2, units, null));
             isValid = !Float.isNaN(dist);

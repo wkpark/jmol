@@ -642,7 +642,7 @@ public class Parser {
      * return this.dVal(s);
      */
     {
-      return Float.valueOf(s).floatValue();
+      return Float.parseFloat(s);
     }
   }
 

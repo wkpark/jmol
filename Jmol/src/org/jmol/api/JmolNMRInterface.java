@@ -1,6 +1,7 @@
 package org.jmol.api;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.Tensor;
@@ -67,4 +68,28 @@ public interface JmolNMRInterface {
    */
   public BS getUniqueTensorSet(BS bs);
 
+  /**
+   * 
+   * @param sym "C" or "14C" or "all"
+   * @return list of double[isotopeNumber,g,Q] if no isotope number is given, or a single double[] if it does.
+   */
+  public Object getInfo(String sym);
+
+  public float getMagneticShielding(Atom atom);
+
+  /**
+   * If shift reference has not been set, it defaults to 0 and just
+   * displays the negative of magnetic shielding
+   *  
+   * @param atom
+   * @return value
+   */
+  public float getChemicalShift(Atom atom);  
+  public boolean setChemicalShiftReference(String element, float value);
+
+  public JmolList<Tensor> getAllAtomTensors(String type);
+  public void setAtomTensors(ModelSet ms, int i, JmolList<Tensor> tensors);
+
+  public JmolList<Object> getTensorInfo(String tensorType, String infoType, BS bs);
+  
 }

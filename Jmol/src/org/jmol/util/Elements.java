@@ -185,7 +185,7 @@ public class Elements {
   public final static int elementNumberMax = elementSymbols.length;
   /**
    * @param elementSymbol First char must be upper case, second char accepts upper or lower case
-   * @param isSilent TODO
+   * @param isSilent
    * @return elementNumber = atomicNumber + IsotopeNumber*128
    */
   public final static short elementNumberFromSymbol(String elementSymbol, boolean isSilent) {
@@ -212,6 +212,22 @@ public class Elements {
     Integer boxedAtomicNumber = htElementMap.get(elementSymbol);
     if (boxedAtomicNumber != null)
       return (short) boxedAtomicNumber.intValue();
+    if (Character.isDigit(elementSymbol.charAt(0))) {
+      int pt = elementSymbol.length() - 2;
+      if (pt >= 0 && Character.isDigit(elementSymbol.charAt(pt)))
+        pt++;
+      int isotope = Parser.parseInt(elementSymbol.substring(0, pt));
+      if (isotope > 0) {
+        int n = elementNumberFromSymbol(elementSymbol.substring(pt), true);
+        if (n > 0) {  
+          isotope = getAtomicAndIsotopeNumber(n, isotope);
+          htElementMap.put(elementSymbol.toUpperCase(), Integer.valueOf(isotope));
+          return (short) isotope;
+        }        
+      }
+        
+    }
+    
     if (!isSilent)
       Logger.error("'" + elementSymbol + "' is not a recognized symbol");
     return 0;
@@ -223,16 +239,24 @@ public class Elements {
    */
   public final static String elementSymbolFromNumber(int elementNumber) {
     //Isotopes as atomicNumber + IsotopeNumber * 128
+    int isoNumber = 0;
     if (elementNumber >= elementNumberMax) {
       for (int j = altElementMax; --j >= 0;)
         if (elementNumber == altElementNumbers[j])
           return altElementSymbols[j];
+      isoNumber = getIsotopeNumber((short) elementNumber);
       elementNumber %= 128;
+      return "" + isoNumber + getElementSymbol(elementNumber);
     }
+    return getElementSymbol(elementNumber);
+  }
+  private static String getElementSymbol(int elementNumber) {
     if (elementNumber < 0 || elementNumber >= elementNumberMax)
       elementNumber = 0;
     return elementSymbols[elementNumber];
   }
+
+
   public final static String elementNames[] = {
     "unknown",       //  0
     "hydrogen",      //  1

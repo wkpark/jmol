@@ -49,7 +49,6 @@ public class Tensor {
   
   public String type;
   public int iType = TYPE_OTHER;
-  public int maxPt = 2;
   
   // type is an identifier that the reader/creator delivers:
   //
@@ -499,7 +498,6 @@ public class Tensor {
     }
     if (sortIso
         && eigenValues[2] - eigenValues[1] < eigenValues[1] - eigenValues[0]) {
-      maxPt = 0;
       V3 vTemp = eigenVectors[0];
       eigenVectors[0] = eigenVectors[2];
       eigenVectors[2] = vTemp;

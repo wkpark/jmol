@@ -222,11 +222,18 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private void renderOne(Ellipsoid e) {
     center = e.center;
     // for extremely flat ellipsoids, we need at least some length
-    for (int i = 3; --i >= 0;)
-      factoredLengths[i] = Math.max(e.getLength(i), 0.02f); 
+    int maxPt = 2;
+    float maxLen = 0;
+    for (int i = 3; --i >= 0;) {
+      float f = factoredLengths[i] = Math.max(e.getLength(i), 0.02f);
+      if (f > maxLen) {
+        maxLen = f;
+        maxPt = i;
+      }        
+    }
     axes = e.tensor.eigenVectors;
     setMatrices();
-    setAxes(e.tensor.maxPt);
+    setAxes(maxPt);
     if (g3d.isClippedXY(dx + dx, s0.x, s0.y))
       return;
     eigenSignMask = e.tensor.eigenSignMask;

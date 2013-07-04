@@ -28,10 +28,7 @@ package org.jmol.modelset;
 import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Hashtable;
 import java.util.Map;
-
-
 
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
@@ -154,8 +151,18 @@ abstract public class AtomCollection {
   float[] ionicRadii;
   float[] hydrophobicities;
   
-  protected Tensor[][] atomTensorList; // specifically now for {*}.adpmin {*}.adpmax
+  public Tensor[][] atomTensorList; // specifically now for {*}.adpmin {*}.adpmax
   public Map<String, JmolList<Tensor>> atomTensors;
+
+  public void addTensor(Tensor t, String type) {
+    type = type.toLowerCase();
+    JmolList<Tensor> tensors = atomTensors.get(type);
+    if (tensors == null)
+      atomTensors.put(type, tensors = new JmolList<Tensor>()); 
+    tensors.addLast(t);
+  }
+
+
   protected int[] surfaceDistance100s;
 
   protected boolean haveStraightness;
@@ -251,82 +258,6 @@ abstract public class AtomCollection {
         : atomTensorList[i]);
   }
   
-  public Tensor getAtomTensor(int i, String type) {
-    Tensor[] tensors = getAtomTensorList(i);
-    if (tensors == null || type == null)
-      return null;
-    type = type.toLowerCase();
-    for (int j = 0; j < tensors.length; j++)
-      if (tensors[j] != null && type.equals(tensors[j].type))
-        return tensors[j];
-    return null;
-  }
-
-  protected void setAtomTensors(int atomIndex, JmolList<Tensor> list) {
-    if (list == null || list.size() == 0)
-      return;
-    if (atomTensors == null)
-      atomTensors = new Hashtable<String, JmolList<Tensor>>();
-    if (atomTensorList == null)
-      atomTensorList = new Tensor[atoms.length][];
-    atomTensorList[atomIndex] = getTensorList(list);
-    for (int i = list.size(); --i >= 0;) {
-      Tensor t = list.get(i);
-      t.atomIndex1 = atomIndex;
-      t.atomIndex2 = -1;
-      t.modelIndex = atoms[atomIndex].modelIndex;
-      addTensor(t, t.type);
-      if (t.altType != null)
-        addTensor(t, t.altType); 
-    }
-  }
-
-  public JmolList<Tensor> getAllAtomTensors(String type) {
-    return (atomTensors == null ? null : atomTensors.get(type.toLowerCase()));
-  }
-  
-  private Tensor[] getTensorList(JmolList<Tensor> list) {
-    int pt = -1;
-    boolean haveTLS = false;
-    int n = list.size();
-    for (int i = n; --i >= 0;) {
-      Tensor t = list.get(i);
-      if (t.forThermalEllipsoid)
-        pt = i;
-      else if (t.iType == Tensor.TYPE_TLS_U)
-        haveTLS = true;
-    }
-    Tensor[] a = new Tensor[(pt >= 0 || !haveTLS ? 0 : 1) + n];
-    if (pt >= 0) {
-      a[0] = list.get(pt);
-      if (list.size() == 1)
-        return a;
-    }
-    // back-fills list for TLS:
-    // 0 = temp, 1 = TLS-R, 2 = TLS-U
-    if (haveTLS) {
-      pt = 0;
-      for (int i = n; --i >= 0;) {
-        Tensor t = list.get(i);
-        if (t.forThermalEllipsoid)
-          continue;
-        a[++pt] = t;
-      }
-    } else {
-      for (int i = 0; i < n; i++)
-        a[i] = list.get(i);
-    }
-    return a;
- }
-
-  private void addTensor(Tensor t, String type) {
-    type = type.toLowerCase();
-    JmolList<Tensor> tensors = atomTensors.get(type);
-    if (tensors == null)
-      atomTensors.put(type, tensors = new JmolList<Tensor>()); 
-    tensors.addLast(t);
-  }
-
   public Quaternion getQuaternion(int i, char qtype) {
     return (i < 0 ? null : atoms[i].group.getQuaternion(qtype));
   } 

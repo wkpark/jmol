@@ -604,21 +604,24 @@ public class T {
   
   public final static int adpmax          = floatproperty | 1;
   public final static int adpmin          = floatproperty | 2;
-  public final static int covalent        = floatproperty | 3;
-  public final static int eta             = floatproperty | 4; // Jmol 12.0.RC23
-  public final static int mass            = floatproperty | 5;
-  public final static int omega           = floatproperty | 6;
-  public final static int phi             = floatproperty | 7;
-  public final static int psi             = floatproperty | 8;
-  public final static int screenx         = floatproperty | 9;
-  public final static int screeny         = floatproperty | 10;
-  public final static int screenz         = floatproperty | 11;
-  public final static int straightness    = floatproperty | 12;
-  public final static int surfacedistance = floatproperty | 13;
-  public final static int theta           = floatproperty | 14; // Jmol 12.0.RC23
-  public final static int unitx           = floatproperty | 15;
-  public final static int unity           = floatproperty | 16;
-  public final static int unitz           = floatproperty | 17;
+  public final static int chemicalshift   = floatproperty | 3; // Jmol 13.1.19
+  public final static int covalent        = floatproperty | 4;
+  public final static int eta             = floatproperty | 5; // Jmol 12.0.RC23
+  public final static int magneticshielding = floatproperty | 6;  // Jmol 13.1.19
+  public final static int mass            = floatproperty | 7;
+  public final static int omega           = floatproperty | 8;
+  public final static int phi             = floatproperty | 9;
+  public final static int psi             = floatproperty | 10;
+  public final static int screenx         = floatproperty | 11;
+  public final static int screeny         = floatproperty | 12;
+  public final static int screenz         = floatproperty | 13;
+  public final static int straightness    = floatproperty | 14;
+  public final static int surfacedistance = floatproperty | 15;
+  public final static int theta           = floatproperty | 16; // Jmol 12.0.RC23
+  public final static int unitx           = floatproperty | 17;
+  public final static int unity           = floatproperty | 18;
+  public final static int unitz           = floatproperty | 19;
+  public final static int vectorscale     = floatproperty | 1 | floatparam;
   public final static int atomx           = floatproperty | 1 | settable;
   public final static int atomy           = floatproperty | 2 | settable;
   public final static int atomz           = floatproperty | 3 | settable;
@@ -628,20 +631,19 @@ public class T {
   public final static int fux             = floatproperty | 7 | settable;
   public final static int fuy             = floatproperty | 8 | settable;
   public final static int fuz             = floatproperty | 9 | settable;
-  public final static int hydrophobic     = floatproperty | 10 | settable | predefinedset;
   public final static int ionic           = floatproperty | 11 | settable;
   public final static int partialcharge   = floatproperty | 12 | settable;
-  public final static int property        = floatproperty | 13 | mathproperty | setparam | settable;
-  public final static int selected        = floatproperty | 14 | settable | predefinedset;
   public final static int temperature     = floatproperty | 15 | settable;
-  public final static int vanderwaals     = floatproperty | 16 | settable | setparam;
-  public final static int vectorscale     = floatproperty | 17 | floatparam;
   public final static int vibx            = floatproperty | 18 | settable;
   public final static int viby            = floatproperty | 19 | settable;
   public final static int vibz            = floatproperty | 20 | settable;
   public final static int x               = floatproperty | 21 | settable;
   public final static int y               = floatproperty | 22 | settable;
   public final static int z               = floatproperty | 23 | settable;
+  public final static int vanderwaals     = floatproperty | 24 | settable | setparam;
+  public final static int property        = floatproperty | 25 | settable | setparam | mathproperty;
+  public final static int hydrophobic     = floatproperty | 26 | settable | predefinedset;
+  public final static int selected        = floatproperty | 27 | settable | predefinedset;
   
   public final static int backbone     = floatproperty | shapeCommand | 1 | predefinedset | defaultON | settable;
   public final static int cartoon      = floatproperty | shapeCommand | 2 | defaultON | settable;
@@ -1797,6 +1799,8 @@ public class T {
       "cell",            T.t(cell),
       "chain",           T.t(chain),
       "chains",          null,
+      "chemicalShift",   T.t(chemicalshift),
+      "cs",              null,
       "clash",           T.t(clash),
       "clear",           T.t(clear),
       "clickable",       T.t(clickable),
@@ -1877,6 +1881,8 @@ public class T {
       "length",          T.t(length),
       "lines",           T.t(lines),
       "list",            T.t(list),
+      "magneticShielding", T.t(magneticshielding),
+      "ms",              null,
       "mass",            T.t(mass),
       "max",             T.t(max),
       "mep",             T.t(mep),

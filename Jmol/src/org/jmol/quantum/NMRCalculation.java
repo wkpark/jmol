@@ -29,10 +29,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jmol.api.JmolNMRInterface;
 import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
@@ -56,12 +58,12 @@ import org.jmol.viewer.Viewer;
 
 public class NMRCalculation implements JmolNMRInterface {
 
-  private static final int MAGNETOGYRIC_RATIO = 0;
-  private static final int QUADRUPOLE_MOMENT = 1;
+  private static final int MAGNETOGYRIC_RATIO = 1;
+  private static final int QUADRUPOLE_MOMENT = 2;
   private static final double e_charge = 1.60217646e-19; //C 
   private static final double h_planck = 6.62606957e-34; //J*s
   private static final double h_bar_planck = h_planck / (2 * Math.PI);
-  private static final double DIPOLAR_FACTOR = 1.0 / 2 * h_bar_planck * 1E37; // 1e37 = (1/1e-10)^3 * 1e7 * 1e7 / 1e-7
+  private static final double DIPOLAR_FACTOR = h_bar_planck * 1E37; // 1e37 = (1/1e-10)^3 * 1e7 * 1e7 / 1e-7
   private static final double J_FACTOR = h_bar_planck / (2 * Math.PI) * 1E33;
   private static final double Q_FACTOR = e_charge * (9.71736e-7) / h_planck;
 
@@ -170,8 +172,8 @@ public class NMRCalculation implements JmolNMRInterface {
       bs.set(a2.index);
       type = (type == null ? "" : type.toLowerCase());
       int pt = -1;
-      if ((pt = type.indexOf("khz")) >= 0 || (pt = type.indexOf("hz")) >= 0)
-        type = type.substring(0, pt).trim();
+      if ((pt = type.indexOf("_")) >= 0)
+        type = type.substring(0, pt);
       if (type.length() == 0)
         type = "isc";
       JmolList<Tensor> list = getInteractionTensorList(type, bs);
@@ -187,8 +189,11 @@ public class NMRCalculation implements JmolNMRInterface {
   }
 
   public float getDipolarConstantHz(Atom a1, Atom a2) {
-    return (float) (-getIsotopeData(a1, MAGNETOGYRIC_RATIO)
+    if (Logger.debugging)
+      Logger.debug(a1 + " g=" + getIsotopeData(a1, MAGNETOGYRIC_RATIO) + "; " + a2 + " g=" + getIsotopeData(a2, MAGNETOGYRIC_RATIO));
+    float v = (float) (-getIsotopeData(a1, MAGNETOGYRIC_RATIO)
         * getIsotopeData(a2, MAGNETOGYRIC_RATIO) / Math.pow(a1.distance(a2), 3) * DIPOLAR_FACTOR);
+    return (v == 0 || a1 == a2 ? Float.NaN : v);
   }
 
   public float getDipolarCouplingHz(Atom a1, Atom a2, V3 vField) {
@@ -196,7 +201,7 @@ public class NMRCalculation implements JmolNMRInterface {
     v12.sub(a1);
     double r = v12.length();
     double costheta = v12.dot(vField) / r / vField.length();
-    return (float) (getDipolarConstantHz(a1, a2) * (3 * costheta - 1));
+    return (float) (getDipolarConstantHz(a1, a2) * (3 * costheta - 1) / 2);
   }
 
   /**
@@ -258,8 +263,9 @@ public class NMRCalculation implements JmolNMRInterface {
         if (debugging)
           Logger.info(name + " default isotope " + defaultIso);
         for (int i = 3; i < tokens.length; i += 3) {
-          String isoname = tokens[i] + name;
-          double[] dataGQ = new double[] { Double.parseDouble(tokens[i + 1]),
+          int n = Integer.parseInt(tokens[i]);
+          String isoname = n + name;
+          double[] dataGQ = new double[] { n, Double.parseDouble(tokens[i + 1]),
               Double.parseDouble(tokens[i + 2]) };
           if (debugging)
             Logger.info(isoname + "  " + Escape.eAD(dataGQ));
@@ -282,6 +288,168 @@ public class NMRCalculation implements JmolNMRInterface {
         // ignore        
       }
     }
+  }
+
+  public Object getInfo(String what) {
+    if (what.equals("all")) {
+      Map<String, Object> map = new Hashtable<String, Object>();
+      map.put("isotopes", isotopeData);
+      map.put("shiftRefsHz", shiftRefsHz);
+      map.put("specFreqMHz", specFreqMHz);
+      return map;
+    }
+    if (Character.isDigit(what.charAt(0)))
+      return isotopeData.get(what);
+    JmolList<Object> info = new JmolList<Object>();
+    for (Entry<String, double[]> e: isotopeData.entrySet()) {
+      String key = e.getKey();
+      if (Character.isDigit(key.charAt(0)) && key.endsWith(what))
+        info.addLast(e.getValue());
+    }
+    return info;
+  }
+
+  public float getChemicalShift(Atom atom) {
+    float v = getMagneticShielding(atom);
+    if (!Float.isNaN(v)) {
+      String sym = atom.getElementSymbol();
+      Float ref = shiftRefsHz.get(sym);
+      Float freq = specFreqMHz.get(sym);
+      v = (ref == null ? 0 : ref.floatValue()) - v;
+      if (freq != null)
+        v /= freq.floatValue();
+    }
+    return v;
+  }
+
+  public float getMagneticShielding(Atom atom) {
+    Tensor t = getAtomTensor(atom.index, "ms");
+    return (t == null ? Float.NaN : t.eigenValues[2]);
+  }
+
+  private Map<String, Float> specFreqMHz = new Hashtable<String, Float>();
+  private Map<String, Float> shiftRefsHz = new Hashtable<String, Float>();
+  
+  public boolean setChemicalShiftReference(String element, float value) {
+    float freq = 0;
+    int pt = element.indexOf("_ppm_");
+    if (pt >= 0) {
+      try {
+      freq = Float.parseFloat(element.substring(pt + 5));
+      value *= freq;
+      element = element.substring(0, pt);
+      } catch (Exception e) {
+        Logger.error("Invalid frequency nnn: shift_ppm_nnn: " + element);
+        return false;
+      }
+    }
+    element = element.substring(0, 1).toUpperCase() + element.substring(1);
+    shiftRefsHz.put(element, Float.valueOf(value));
+    if (freq >= 0)
+      specFreqMHz.put(element, Float.valueOf(freq));    
+    return true;
+  }
+
+  public void setAtomTensors(ModelSet ms, int atomIndex, JmolList<Tensor> list) {
+    if (list == null || list.size() == 0)
+      return;
+    if (ms.atomTensors == null)
+      ms.atomTensors = new Hashtable<String, JmolList<Tensor>>();
+    if (ms.atomTensorList == null)
+      ms.atomTensorList = new Tensor[ms.atoms.length][];
+    ms.atomTensorList[atomIndex] = getTensorList(list);
+    Atom[] atoms = ms.atoms;
+    for (int i = list.size(); --i >= 0;) {
+      Tensor t = list.get(i);
+      t.atomIndex1 = atomIndex;
+      t.atomIndex2 = -1;
+      t.modelIndex = atoms[atomIndex].modelIndex;
+      ms.addTensor(t, t.type);
+      if (t.altType != null)
+        ms.addTensor(t, t.altType); 
+    }
+  }
+
+  public JmolList<Tensor> getAllAtomTensors(String type) {
+    if (viewer.modelSet.atomTensors == null)
+      return null;
+    if (type != null)
+      return viewer.modelSet.atomTensors.get(type.toLowerCase());
+    JmolList<Tensor> list = new JmolList<Tensor>();
+    for (Entry<String, JmolList<Tensor>> e : viewer.modelSet.atomTensors.entrySet()) {
+      JmolList<Tensor> list2 = e.getValue();
+      list.addAll(list2);
+    }
+    return list;
+  }
+  
+  public JmolList<Object> getTensorInfo(String tensorType, String infoType,
+                                        BS bs) {
+
+    JmolList<Object> data = new JmolList<Object>();
+    boolean isJ = tensorType.equals("isc") && infoType.equals(";jcoupling.");
+    boolean isChi = tensorType.equals("efg") && infoType.equals(";chi.");
+    if (tensorType.equals("isc")) {
+      JmolList<Tensor> list = getInteractionTensorList("isc", bs);
+      int n = (list == null ? 0 : list.size());
+      for (int i = 0; i < n; i++) {
+        Tensor t = list.get(i);
+        data.addLast(isJ ? new float[] { t.atomIndex1, t.atomIndex2,
+            getJCouplingHz(null, null, null, t) } : t.getInfo(infoType));
+      }
+    } else {
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+        Tensor t = getAtomTensor(i, tensorType);
+        data.addLast(t == null ? null : isChi ? Float
+            .valueOf(getQuadrupolarConstant(t)) : t.getInfo(infoType));
+      }
+    }
+    return data;
+  }
+
+  private static Tensor[] getTensorList(JmolList<Tensor> list) {
+    int pt = -1;
+    boolean haveTLS = false;
+    int n = list.size();
+    for (int i = n; --i >= 0;) {
+      Tensor t = list.get(i);
+      if (t.forThermalEllipsoid)
+        pt = i;
+      else if (t.iType == Tensor.TYPE_TLS_U)
+        haveTLS = true;
+    }
+    Tensor[] a = new Tensor[(pt >= 0 || !haveTLS ? 0 : 1) + n];
+    if (pt >= 0) {
+      a[0] = list.get(pt);
+      if (list.size() == 1)
+        return a;
+    }
+    // back-fills list for TLS:
+    // 0 = temp, 1 = TLS-R, 2 = TLS-U
+    if (haveTLS) {
+      pt = 0;
+      for (int i = n; --i >= 0;) {
+        Tensor t = list.get(i);
+        if (t.forThermalEllipsoid)
+          continue;
+        a[++pt] = t;
+      }
+    } else {
+      for (int i = 0; i < n; i++)
+        a[i] = list.get(i);
+    }
+    return a;
+ }
+
+  private Tensor getAtomTensor(int i, String type) {
+    Tensor[] tensors = viewer.modelSet.getAtomTensorList(i);
+    if (tensors == null || type == null)
+      return null;
+    type = type.toLowerCase();
+    for (int j = 0; j < tensors.length; j++)
+      if (tensors[j] != null && type.equals(tensors[j].type))
+        return tensors[j];
+    return null;
   }
 
 }

@@ -13391,6 +13391,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (setLabel(key.substring(5)))
           return;
       }
+      if (isJmolSet && lckey.indexOf("shift_") == 0) {
+        float f = floatParameter(2);
+        checkLength(3);
+        if (!chk)
+          viewer.getNMRCalculation().setChemicalShiftReference(lckey.substring(6), f);
+        return;
+      }
       if (lckey.endsWith("callback"))
         tok = T.setparam;
     }

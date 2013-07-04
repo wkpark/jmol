@@ -875,6 +875,16 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "float[" + imax + "]", sb);
     }
+    if (isAD(info)) {
+      sb.append("[");
+      int imax = ((double[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).appendD(((double[]) info)[i]);
+        sep = ",";
+      }
+      sb.append("]");
+      return packageReadableSb(name, "double[" + imax + "]", sb);
+    }
     if (isAP(info)) {
       sb.append("[");
       int imax = ((P3[]) info).length;

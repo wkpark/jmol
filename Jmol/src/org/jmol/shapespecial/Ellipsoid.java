@@ -90,8 +90,10 @@ public class Ellipsoid {
   }
 
   public void setScale(float scale, boolean isPercent) {
-    if (scale <= 0)
+    if (scale <= 0) {
+      this.isValid = false;
       return;
+    }
     if (isPercent) {
       if (scale == Integer.MAX_VALUE)
         scale = (tensor.forThermalEllipsoid ? 50 : 100);

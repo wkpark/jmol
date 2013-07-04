@@ -28,6 +28,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.util.C;
+import org.jmol.util.ColorUtil;
 import org.jmol.util.JmolFont;
 
 
@@ -83,7 +85,7 @@ class TextRenderer {
     if (text.length() == 0)
       return 0;
     //System.out.println(x + "  " + y + " " + text);
-    if (text.indexOf("<su") >= 0)
+    if (text.indexOf("<su") >= 0 || text.indexOf("<color") >= 0)
       return plotByCharacter(x, y, z, argb, bgargb, text, font3d, g3d, jmolRenderer,
           antialias);
     int offset = font3d.getAscent();
@@ -122,8 +124,23 @@ class TextRenderer {
     int len = text.length();
     int suboffset = Math.round(font3d.getHeight() * 0.25f);
     int supoffset = -Math.round(font3d.getHeight() * 0.3f);
+    int argb0 = 0;
     for (int i = 0; i < len; i++) {
       if (text.charAt(i) == '<') {
+        if (i + 5 < len && text.substring(i, i + 6).equals("<color")) {
+          argb0 = argb;
+          int pt = text.indexOf(">", i);
+          if (pt < 0)
+            continue;
+          argb = ColorUtil.getArgbFromString(text.substring(i + 7, pt).trim());
+          i = pt;
+          continue;
+        }
+        if (i + 7 < len && text.substring(i, i + 8).equals("</color>")) {
+          i += 7;
+          argb = argb0;
+          continue;
+        }
         if (i + 4 < len && text.substring(i, i + 5).equals("<sub>")) {
           i += 4;
           y += suboffset;

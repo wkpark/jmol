@@ -63,7 +63,8 @@ public class NMRCalculation implements JmolNMRInterface {
   
   /**
    * NOTE! Do not change this txt file! 
-   * Instead, edit trunk/Jmol/_documents/nmr_data.xls.
+   * Instead, edit trunk/Jmol/_documents/nmr_data.xls
+   * and then clip its contents to nmr_data.txt.
    * 
    */
   private final static String resource = "org/jmol/quantum/nmr_data.txt";

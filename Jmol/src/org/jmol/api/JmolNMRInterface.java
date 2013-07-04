@@ -12,24 +12,26 @@ public interface JmolNMRInterface {
   public JmolNMRInterface setViewer(Viewer viewer);
 
   /**
-   *  Quadrupolar constant, directly proportional to Vzz and dependent on the quadrupolar moment of the isotope considered
-   *   
-   * @param efg 
-   * @return float value 
+   * Quadrupolar constant, directly proportional to Vzz and dependent on the
+   * quadrupolar moment of the isotope considered
+   * 
+   * @param efg
+   * @return float value
    */
   public float getQuadrupolarConstant(Tensor efg);
-  
+
   /**
-   * If t is null, then a1, a2, and type are used to find the appropriate tensor.
+   * If t is null, then a1, a2, and type are used to find the appropriate
+   * tensor.
    * 
    * @param a1
    * @param a2
-   * @param type 
+   * @param type
    * @param t
-   * @return  0 if not found
+   * @return 0 if not found
    */
   public float getJCouplingHz(Atom a1, Atom a2, String type, Tensor t);
-  
+
   /**
    * 
    * @param a1
@@ -46,23 +48,23 @@ public interface JmolNMRInterface {
    * @return projected value
    */
   public float getDipolarCouplingHz(Atom a1, Atom a2, V3 vField);
-  
+
   /**
-   * An attempt to find unique atoms using tensors. 
-   * 
-   * @param bs
-   * @return bitset of atoms
-   */
-  public BS getUniqueTensorSet(BS bs);
-  
-  /**
-   * Finds a set of interaction tensors based on set of atoms -- all within the set
-   * if bs.cardinality() > 1; all for this atom when bs.cardinality() == 1.
+   * Finds a set of interaction tensors based on a set of atoms -- all within the
+   * set if bs.cardinality() > 1; all for this atom when bs.cardinality() == 1.
    * 
    * @param type
    * @param bs
    * @return list of matching tensors
    */
   public JmolList<Tensor> getInteractionTensorList(String type, BS bs);
+
+  /**
+   * An attempt to find unique atoms using tensors.
+   * 
+   * @param bs
+   * @return bitset of atoms
+   */
+  public BS getUniqueTensorSet(BS bs);
 
 }

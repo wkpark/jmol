@@ -4834,6 +4834,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.bitset:
     case T.expressionBegin:
       BS bs = atomExpression(st, i, 0, true, false, false, true);
+      if (bs != null && bs.cardinality() == 1)
+        return viewer.getAtomPoint3f(bs.nextSetBit(0));
       if (bs != null)
         return viewer.getAtomSetCenter(bs);
       if (expressionResult instanceof P3)

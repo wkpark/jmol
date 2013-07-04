@@ -1328,7 +1328,8 @@ public class StateCreator implements JmolStateCreator {
           viewer.getModelNumberDotted(t.modelIndex)).append(";\n");
     if (t.pointerPt != null) {
       s.append("  ").append(echoCmd).append(" point ").append(
-          Escape.eP(t.pointerPt)).append(";\n");
+          t.pointerPt instanceof Atom ? "({" + ((Atom) t.pointerPt).index + "})" 
+              : Escape.eP(t.pointerPt)).append(";\n");
 
     }
     //    }

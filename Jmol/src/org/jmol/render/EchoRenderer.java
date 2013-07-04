@@ -26,6 +26,7 @@ package org.jmol.render;
 import java.util.Iterator;
 
 
+import org.jmol.modelset.Atom;
 import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
@@ -48,6 +49,10 @@ public class EchoRenderer extends LabelsRenderer {
       Text t = e.next();
       if (!t.visible || t.hidden) {
         continue;
+      }
+      if (t.pointerPt instanceof Atom) {
+        if (!((Atom) t.pointerPt).isVisible(-1))
+          continue;
       }
       if (t.valign == Object2d.VALIGN_XYZ) {
         viewer.transformPtScr(t.xyz, pt0i);

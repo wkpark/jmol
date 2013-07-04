@@ -72,7 +72,7 @@ public class Echo extends TextShape {
       if (currentObject == null)
         return;
       Text t = (Text) currentObject;
-      t.pointerPt = (value == null ? null : P3.newP((P3)value));
+      t.pointerPt = (value == null ? null : (P3)value); // could be an atom.
       t.pointer = (value == null ? Object2d.POINTER_NONE : Object2d.POINTER_ON);
       return;
     }

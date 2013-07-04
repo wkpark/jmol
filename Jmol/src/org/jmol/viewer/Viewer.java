@@ -49,6 +49,7 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.api.JmolNMRInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.AtomIndexIterator;
@@ -10065,6 +10066,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getBsBranches(dihedralList);
   }
 
+  public Map<Object, Object> chainMap = new Hashtable<Object, Object>();
+  public JmolList<String> chainList = new JmolList<String>();
+
   /**
    * Create a unique integer for any chain string. 
    * Note that if there are any chains that are more than
@@ -10095,17 +10099,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (String) chainMap.get(Integer.valueOf(id));
   }
   
-  public Map<Object, Object> chainMap = new Hashtable<Object, Object>();
-  public JmolList<String> chainList = new JmolList<String>();
-
   public Boolean getScriptQueueInfo() {
     return (scriptManager != null && scriptManager.isQueueProcessing() ? Boolean.TRUE : Boolean.FALSE);
   }
 
-//  public float[] getQuadricForTensor(Tensor tensor, P3 center) {
-//    Object[] data = new Object[] { tensor, center, null };
-//    shapeManager.loadShape(JC.SHAPE_ELLIPSOIDS);
-//    shapeManager.getShapePropertyData(JC.SHAPE_ELLIPSOIDS, "quadric", data);
-//    return (float[]) data[2];
-//  }
+  private JmolNMRInterface nmrCalculation;
+  
+  public JmolNMRInterface getNMRCalculation() {
+    return (nmrCalculation == null ? (nmrCalculation = (JmolNMRInterface) Interface
+        .getOptionInterface("quantum.NMRCalculation")) : nmrCalculation);
+  }
 }

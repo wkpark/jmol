@@ -61,6 +61,11 @@ public class NMRCalculation implements JmolNMRInterface {
    */
   private Map<String, float[]> isotopeData;
   
+  /**
+   * NOTE! Do not change this txt file! 
+   * Instead, edit trunk/Jmol/_documents/nmr_data.xls.
+   * 
+   */
   private final static String resource = "org/jmol/quantum/nmr_data.txt";
 
   /**

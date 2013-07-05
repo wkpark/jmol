@@ -235,6 +235,12 @@ public class NMRCalculation implements JmolNMRInterface {
     return (d == null ? 0 : d[iType]);
   }
 
+  /**
+   * Creates the data set necessary for doing NMR calculations. Values
+   * are retrievable using getProperty "nmrInfo" "Xx"; each entry is 
+   * float[+/-isotopeNumber, g, Q], where [0] < 0 for the default value.
+   * 
+   */
   private void getData() {
     BufferedReader br = null;
     boolean debugging = Logger.debugging;
@@ -277,6 +283,7 @@ public class NMRCalculation implements JmolNMRInterface {
               + defaultIso);
           throw new NullPointerException();
         }
+        defdata[0] = -defdata[0];
         isotopeData.put(name, defdata);
       }
       br.close();
@@ -294,7 +301,7 @@ public class NMRCalculation implements JmolNMRInterface {
     if (what.equals("all")) {
       Map<String, Object> map = new Hashtable<String, Object>();
       map.put("isotopes", isotopeData);
-      map.put("shiftRefsHz", shiftRefsHz);
+      map.put("shiftRefsPPM", shiftRefsPPM);
       return map;
     }
     if (Character.isDigit(what.charAt(0)))
@@ -309,10 +316,14 @@ public class NMRCalculation implements JmolNMRInterface {
   }
 
   public float getChemicalShift(Atom atom) {
+    float[] data = viewer.getDataFloat("property_cs");
+    if (data != null) {
+      
+    }
     float v = getMagneticShielding(atom);
     if (!Float.isNaN(v)) {
       String sym = atom.getElementSymbol();
-      Float ref = shiftRefsHz.get(sym);
+      Float ref = shiftRefsPPM.get(sym);
       v = (ref == null ? 0 : ref.floatValue()) - v;
     }
     return v;
@@ -320,14 +331,14 @@ public class NMRCalculation implements JmolNMRInterface {
 
   public float getMagneticShielding(Atom atom) {
     Tensor t = getAtomTensor(atom.index, "ms");
-    return (t == null ? Float.NaN : t.eigenValues[2]);
+    return (t == null ? Float.NaN : t.getIso());
   }
 
-  private Map<String, Float> shiftRefsHz = new Hashtable<String, Float>();
+  private Map<String, Float> shiftRefsPPM = new Hashtable<String, Float>();
   
   public boolean setChemicalShiftReference(String element, float value) {
     element = element.substring(0, 1).toUpperCase() + element.substring(1);
-    shiftRefsHz.put(element, Float.valueOf(value));
+    shiftRefsPPM.put(element, Float.valueOf(value));
     return true;
   }
 

@@ -230,7 +230,7 @@ public class NMRCalculation implements JmolNMRInterface {
    */
   private double getIsotopeData(Atom a, int iType) {
     int iso = a.getIsotopeNumber();
-    String sym = a.getElementSymbol();
+    String sym = a.getElementSymbolIso(false);
     double[] d = isotopeData.get(iso == 0 ? sym : "" + iso + sym);
     return (d == null ? 0 : d[iType]);
   }

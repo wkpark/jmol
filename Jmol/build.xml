@@ -314,6 +314,11 @@ all support for previous versions removed
         <include name="jmol75x29x8.gif" />
       </fileset>
     </copy>
+    <copy todir="${applet.classes.dir}" >
+      <fileset dir="src">
+        <include name="org/jmol/quantum/*.txt" />
+      </fileset>
+    </copy>
     <copy file="Jmol.properties" tofile="${applet.classes.dir}/org/jmol/viewer/Jmol.properties" />
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${classes.dir}">

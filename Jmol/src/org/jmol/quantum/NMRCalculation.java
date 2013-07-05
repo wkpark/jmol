@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import org.jmol.api.JmolNMRInterface;
 import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
 import org.jmol.util.Escape;
@@ -91,10 +92,11 @@ public class NMRCalculation implements JmolNMRInterface {
    * 
    * @param type
    * @param bs
+   * @param bs2 
    * @return list of Tensors
    */
   @SuppressWarnings("unchecked")
-  public JmolList<Tensor> getInteractionTensorList(String type, BS bs) {
+  private JmolList<Tensor> getInteractionTensorList(String type, BS bs, BS bs2) {
     type = type.toLowerCase();
     BS bsModels = viewer.getModelBitSet(bs, false);
     int iAtom = (bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
@@ -106,13 +108,19 @@ public class NMRCalculation implements JmolNMRInterface {
       int n = tensors.size();
       for (int j = 0; j < n; j++) {
         Tensor t = tensors.get(j);
-        if (t.type.equals(type) && t.isSelected(bs, iAtom))
+        if (t.type.equals(type) && t.isSelected(bs, iAtom)
+            && (bs2 == null || bs2.get(getOtherAtom(t, iAtom))))
+          
           list.addLast(t);
       }      
     }
     return list;
   }
 
+  private int getOtherAtom(Tensor t, int iAtom) {
+      return (t.atomIndex1 == iAtom ? t.atomIndex2 : t.atomIndex1);
+  }
+  
   public BS getUniqueTensorSet(BS bsAtoms) {
     BS bs = new BS();
     Atom[] atoms = viewer.modelSet.atoms;
@@ -161,22 +169,16 @@ public class NMRCalculation implements JmolNMRInterface {
     return bs;
   }
 
-  @SuppressWarnings("unchecked")
   public float getJCouplingHz(Atom a1, Atom a2, String type, Tensor isc) {
     if (isc == null) {
-      JmolList<Tensor> tensors = (JmolList<Tensor>) viewer.getModelAuxiliaryInfoValue(a1.modelIndex, "interactionTensors");
-      if (tensors == null)
+      type = getISCtype(a1, type);
+      if (type == null)
         return 0;
       BS bs = new BS();
+      BS bs2 = new BS();
       bs.set(a1.index);
-      bs.set(a2.index);
-      type = (type == null ? "" : type.toLowerCase());
-      int pt = -1;
-      if ((pt = type.indexOf("_")) >= 0)
-        type = type.substring(0, pt);
-      if (type.length() == 0)
-        type = "isc";
-      JmolList<Tensor> list = getInteractionTensorList(type, bs);
+      bs2.set(a2.index);
+      JmolList<Tensor> list = getInteractionTensorList(type, bs, bs2);
       if (list.size() == 0)
         return Float.NaN;
       isc = list.get(0);
@@ -187,6 +189,21 @@ public class NMRCalculation implements JmolNMRInterface {
     return (float) (getIsotopeData(a1, MAGNETOGYRIC_RATIO)
         * getIsotopeData(a2, MAGNETOGYRIC_RATIO) * isc.getIso() * J_FACTOR);
   }
+
+  @SuppressWarnings("unchecked")
+  private String getISCtype(Atom a1, String type) {
+    JmolList<Tensor> tensors = (JmolList<Tensor>) viewer.getModelAuxiliaryInfoValue(a1.modelIndex, "interactionTensors");
+    if (tensors == null)
+      return null;
+    type = (type == null ? "" : type.toLowerCase());
+    int pt = -1;
+    if ((pt = type.indexOf("_hz")) >= 0 || (pt = type.indexOf("_khz")) >= 0
+        || (pt = type.indexOf("hz")) >= 0 || (pt = type.indexOf("khz")) >= 0)
+      type = type.substring(0, pt);
+    if (type.length() == 0)
+      type = "isc";
+    return type;
+ }
 
   public float getDipolarConstantHz(Atom a1, Atom a2) {
     if (Logger.debugging)
@@ -382,7 +399,7 @@ public class NMRCalculation implements JmolNMRInterface {
     boolean isJ = tensorType.equals("isc") && infoType.equals(";jcoupling.");
     boolean isChi = tensorType.equals("efg") && infoType.equals(";chi.");
     if (tensorType.equals("isc")) {
-      JmolList<Tensor> list = getInteractionTensorList("isc", bs);
+      JmolList<Tensor> list = getInteractionTensorList("isc", bs, null);
       int n = (list == null ? 0 : list.size());
       for (int i = 0; i < n; i++) {
         Tensor t = list.get(i);
@@ -442,6 +459,41 @@ public class NMRCalculation implements JmolNMRInterface {
       if (tensors[j] != null && type.equals(tensors[j].type))
         return tensors[j];
     return null;
+  }
+
+  public Map<String, Float> getMinDistances(MeasurementData md) {
+    BS bsPoints1 = (BS) md.points.get(0);
+    int n1 = bsPoints1.cardinality(); 
+    if (n1 == 0 || !(md.points.get(1) instanceof BS))
+      return null;
+    BS bsPoints2 = (BS) md.points.get(1);
+    int n2 = bsPoints2.cardinality(); 
+    if (n1 < 2 && n2 < 2)
+      return null;
+    Map<String, Float> htMin = new Hashtable<String, Float>();
+    Atom[] atoms = viewer.modelSet.atoms;
+    for (int i = bsPoints1.nextSetBit(0); i >= 0; i = bsPoints1
+        .nextSetBit(i + 1)) {
+      Atom a1 = atoms[i];
+      String name = a1.getAtomName();
+      for (int j = bsPoints2.nextSetBit(0); j >= 0; j = bsPoints2
+          .nextSetBit(j + 1)) {
+        Atom a2 = atoms[j];
+        float d = a2.distanceSquared(a1);
+        if (d == 0)
+          continue;
+        String key = (i < j ? name + a2.getAtomName() : a2.getAtomName() + name);
+        Float min = htMin.get(key);
+        if (min == null) {
+          min = Float.valueOf(d);
+          htMin.put(key, min);
+          continue;
+        }
+        if (d < min.floatValue())
+          htMin.put(key, Float.valueOf(d));
+      }
+    }
+    return htMin;
   }
 
 }

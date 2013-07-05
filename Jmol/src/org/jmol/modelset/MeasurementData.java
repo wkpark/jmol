@@ -23,6 +23,8 @@
  */
 package org.jmol.modelset;
 
+import java.util.Map;
+
 import org.jmol.util.JmolList;
 
 
@@ -81,7 +83,8 @@ public class MeasurementData implements JmolMeasurementClient {
   /*
    * the general constructor. tokAction is not used here
    */
-  public MeasurementData set(int tokAction, RadiusData radiusData, String strFormat, String units,
+  public MeasurementData set(int tokAction, Map<String, Float> htMin, 
+                             RadiusData radiusData, String strFormat, String units,
                  TickInfo tickInfo,
                  boolean mustBeConnected, boolean mustNotBeConnected,
                  Boolean intramolecular, boolean isAll, 
@@ -94,6 +97,7 @@ public class MeasurementData implements JmolMeasurementClient {
           viewer.getModelBitSet((BS) points.get(1), false)); 
     }
     //this.rangeMinMax = rangeMinMax;
+    this.htMin = htMin;
     this.radiusData = radiusData;
     this.strFormat = strFormat;
     this.units = units;
@@ -118,7 +122,7 @@ public class MeasurementData implements JmolMeasurementClient {
   public void processNextMeasure(Measurement m) {
     float value = m.getMeasurement();
     // here's where we check vdw
-    if (radiusData != null && !m.isInRange(radiusData, value))
+    if (htMin != null && !m.isMin(htMin) || radiusData != null && !m.isInRange(radiusData, value))
       return;
     if (measurementStrings == null) {
       float f = minArray[iFirstAtom];
@@ -157,6 +161,7 @@ public class MeasurementData implements JmolMeasurementClient {
   private Viewer viewer;
   private int iFirstAtom;
   private boolean justOneModel = true;
+  public Map<String, Float> htMin;
   
   /**
    * called by the client to generate a set of measurements

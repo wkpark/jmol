@@ -9850,7 +9850,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (text != null)
         text.pymolOffset = offset;
       setShapeProperty(JC.SHAPE_MEASURES, "measure", 
-          (new MeasurementData(id, viewer, points)).set(tokAction, rd, strFormat, null, tickInfo,
+          (new MeasurementData(id, viewer, points)).set(tokAction, null, rd, strFormat, null, tickInfo,
               isAllConnected, isNotConnected, intramolecular, isAll, mad, colix, text));
       return;
     }
@@ -13802,8 +13802,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   private boolean setUnits(String units, int tok) throws ScriptException {
-    if (tok == T.measurementunits && Parser.isOneOf(units.toLowerCase(),
-        ";angstroms;au;bohr;nanometers;nm;picometers;pm;vanderwaals;vdw;")) {
+    if (tok == T.measurementunits && (units.endsWith("hz") || Parser.isOneOf(units.toLowerCase(),
+        ";angstroms;au;bohr;nanometers;nm;picometers;pm;vanderwaals;vdw;"))) {
       if (!chk)
         viewer.setUnits(units, true); 
     } else if (tok == T.energyunits && Parser.isOneOf(units.toLowerCase(), ";kcal;kj;")) {

@@ -10109,4 +10109,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (nmrCalculation == null ? (nmrCalculation = (JmolNMRInterface) Interface
         .getOptionInterface("quantum.NMRCalculation")).setViewer(this) : nmrCalculation);
   }
+
+  public String getDistanceUnits(String s) {
+    if (s == null)
+      s = getDefaultMeasurementLabel(2);
+    int pt = s.indexOf("//"); 
+    return (pt < 0 ? getMeasureDistanceUnits() : s.substring(pt + 2));
+  }
+
 }

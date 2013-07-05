@@ -1273,6 +1273,8 @@ public class StateManager {
         measureDistanceUnits = "au";
       else if (units.equalsIgnoreCase("vanderwaals") || units.equalsIgnoreCase("vdw"))
         measureDistanceUnits = "vdw";
+      else if (units.toLowerCase().endsWith("hz") || units.toLowerCase().endsWith("khz"))
+        measureDistanceUnits = units.toLowerCase();
       else if (units.equalsIgnoreCase("kj"))
         energyUnits = "kJ";
       else if (units.equalsIgnoreCase("kcal"))

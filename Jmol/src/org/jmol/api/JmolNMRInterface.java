@@ -1,6 +1,9 @@
 package org.jmol.api;
 
+import java.util.Map;
+
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
 import org.jmol.util.JmolList;
@@ -51,16 +54,6 @@ public interface JmolNMRInterface {
   public float getDipolarCouplingHz(Atom a1, Atom a2, V3 vField);
 
   /**
-   * Finds a set of interaction tensors based on a set of atoms -- all within the
-   * set if bs.cardinality() > 1; all for this atom when bs.cardinality() == 1.
-   * 
-   * @param type
-   * @param bs
-   * @return list of matching tensors
-   */
-  public JmolList<Tensor> getInteractionTensorList(String type, BS bs);
-
-  /**
    * An attempt to find unique atoms using tensors.
    * 
    * @param bs
@@ -91,5 +84,7 @@ public interface JmolNMRInterface {
   public void setAtomTensors(ModelSet ms, int i, JmolList<Tensor> tensors);
 
   public JmolList<Object> getTensorInfo(String tensorType, String infoType, BS bs);
+
+  public Map<String, Float> getMinDistances(MeasurementData md);
   
 }

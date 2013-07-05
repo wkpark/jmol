@@ -67,6 +67,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   TickInfo tickInfo;
   TickInfo defaultTickInfo;
   public JmolFont font3d;
+  private Map<String, Float> htMin;
   
   @Override
   protected void initModelSet() {
@@ -182,7 +183,13 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         defaultTickInfo = md.tickInfo;
         return;
       }
+      if (md.isAll && md.points.size() == 2 && md.points.get(0) instanceof BS 
+          && Measurement.nmrType(viewer.getDistanceUnits(md.strFormat)) 
+          == Measurement.NMR_JC)
+          md.htMin = viewer.getNMRCalculation().getMinDistances(md);
+      tickInfo = md.tickInfo;
       radiusData = md.radiusData;
+      htMin = md.htMin;
       mustBeConnected = md.mustBeConnected;
       mustNotBeConnected = md.mustNotBeConnected;
       intramolecular = md.intramolecular;
@@ -297,7 +304,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       if (value instanceof String) {
         doAction(null, (String) value, T.opToggle);
       } else {
-      toggle(new Measurement().setPoints(modelSet, (int[]) value, null, null));
+        toggle(new Measurement().setPoints(modelSet, (int[]) value, null, null));
       }
       return;
     }
@@ -310,7 +317,6 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       }
       return;
     }
-
   }
 
   private Measurement setSingleItem(JmolList<Object> vector) {
@@ -397,6 +403,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   
   private void toggle(Measurement m) {
     radiusData = null;
+    htMin = null;
     //toggling one that is hidden should be interpreted as DEFINE
     int i = find(m);
     Measurement mt;
@@ -409,6 +416,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
 
   private void toggleOn(int[] indices) {
     radiusData = null;
+    htMin = null;
     //toggling one that is hidden should be interpreted as DEFINE
     bsSelected = new BS();
     defineAll(Integer.MIN_VALUE, new Measurement().setPoints(modelSet, indices, null, defaultTickInfo), false, true, true);
@@ -418,6 +426,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
 
   private void deleteM(Measurement m) {
     radiusData = null;
+    htMin = null;
     //toggling one that is hidden should be interpreted as DEFINE
     int i = find(m);
     if (i >= 0)
@@ -463,7 +472,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
           Integer.valueOf(atoms[atomIndex].getAtomNumber())) : (Object) m
           .getAtom(i));
     }
-    define((new MeasurementData(null, viewer, points)).set(tokAction, radiusData, strFormat, null, tickInfo,
+    define((new MeasurementData(null, viewer, points)).set(tokAction, htMin, radiusData, strFormat, null, tickInfo,
         mustBeConnected, mustNotBeConnected, intramolecular, true, 0, (short) 0, null),
         (isDelete ? T.delete : T.define));
   }
@@ -505,7 +514,8 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
 
   private void defineMeasurement(int i, Measurement m, boolean doSelect) {
     float value = m.getMeasurement();
-    if (radiusData != null && !m.isInRange(radiusData, value))
+    if (htMin != null && !m.isMin(htMin) 
+        || radiusData != null && !m.isInRange(radiusData, value))
       return;
     if (i == Integer.MIN_VALUE)
       i = find(m);
@@ -517,6 +527,8 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
     Measurement measureNew = new Measurement().setM(modelSet, m, value, (m.colix == 0 ? colix : m.colix),
         strFormat, measurementCount);
+    if (!measureNew.isValid)
+      return;
     measurements.addLast(measureNew);
     viewer.setStatusMeasuring("measureCompleted", measurementCount++,
         measureNew.toVector(false).toString(), measureNew.getValue());

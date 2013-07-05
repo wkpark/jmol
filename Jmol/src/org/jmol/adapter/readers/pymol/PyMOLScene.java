@@ -1049,7 +1049,7 @@ class PyMOLScene implements JmolSceneGenerator {
       Text text = newTextLabel(strFormat, offset, clabel,
           (int) floatSetting(PyMOL.label_font_id),
           floatSetting(PyMOL.label_size));
-      md.set(T.define, null, strFormat, "angstroms", null, false, false, null,
+      md.set(T.define, null, null, strFormat, "angstroms", null, false, false, null,
           false, (int) (rad * 2000), colix, text);
       addJmolObject(JC.SHAPE_MEASURES, bs, md);
     }

@@ -32,6 +32,8 @@ import org.jmol.util.V3;
 
 class XsfReader extends VolumeFileReader {
 
+  // from XCrysDen; see http://www.xcrysden.org/doc/XSF.html
+    
   XsfReader(){}
   
   @Override

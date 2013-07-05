@@ -29,6 +29,9 @@ package org.jmol.util;
 
 public class Parser {
 
+  public final static float FLOAT_MIN_SAFE = 2E-45f; 
+  // Float.MIN_ VALUE is not reliable with JavaScript because of the float/double difference there
+  
   /// general static string-parsing class ///
 
   // next[0] tracks the pointer within the string so these can all be static.

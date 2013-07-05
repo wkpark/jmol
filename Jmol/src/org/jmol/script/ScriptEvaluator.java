@@ -3868,9 +3868,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (chainID != -1)
           pc += 2;
         break;
+      case T.centroid:
       case T.cell:
         P3 pt = (P3) value;
-        rpn.addXBs(getAtomBits(T.cell, new int[] { (int) Math.floor(pt.x * 1000),
+        rpn.addXBs(getAtomBits(instruction.tok, new int[] { (int) Math.floor(pt.x * 1000),
             (int) Math.floor(pt.y * 1000), (int) Math.floor(pt.z * 1000) }));
         break;
       case T.thismodel:
@@ -8208,7 +8209,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           prefix = "atom";
         }
         // don't allow isosurface partial translucency (yet)
-        //translucentLevel = Float.MIN_VALUE;
+        //translucentLevel = Parser.FLOAT_MIN_SAFE;
         getToken(index = iToken + 1);
         break;
       }
@@ -8217,7 +8218,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     boolean isTranslucent = (theTok == T.translucent);
     if (isTranslucent || theTok == T.opaque) {
-      if (translucentLevel == Float.MIN_VALUE)
+      if (translucentLevel == Parser.FLOAT_MIN_SAFE)
         error(ERROR_invalidArgument);
       translucency = parameterAsString(index++);
       if (isTranslucent && isFloatParameter(index))
@@ -8881,8 +8882,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // if it is just LOAD "xxxx.xxx"
         // so as to avoid the ZAP in case these
         // do not contain a full state script
-        if (modelName.endsWith(".spt") 
-            || modelName.endsWith(".png")
+        if (modelName.endsWith(".spt") || modelName.endsWith(".png")
             || modelName.endsWith(".pngj")) {
           script(0, modelName);
           return;
@@ -8936,9 +8936,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i++;
         loadScript.append(" " + modelName);
         tokType = (tok == T.identifier
-            && Parser.isOneOf(modelName.toLowerCase(),
-                JC.LOAD_ATOM_DATA_TYPES) ? T
-            .getTokFromName(modelName) : T.nada);
+            && Parser.isOneOf(modelName.toLowerCase(), JC.LOAD_ATOM_DATA_TYPES) ? T
+            .getTokFromName(modelName)
+            : T.nada);
         if (tokType != T.nada) {
           // loading just some data here
           // xyz vxyz vibration temperature occupancy partialcharge
@@ -9024,7 +9024,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String filename = null;
     String appendedData = null;
     String appendedKey = null;
-    
+
     if (slen == i + 1) {
 
       // end-of-command options:
@@ -9050,15 +9050,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             if (loadScript.indexOf(" files") < 0)
               error(ERROR_invalidArgument);
             for (int j = 0; j < filenames.length; j++)
-              loadScript.append(" /*file*/")
-                  .append(Escape.eS(filenames[j]));
+              loadScript.append(" /*file*/").append(Escape.eS(filenames[j]));
           }
         }
       }
     } else if (getToken(i + 1).tok == T.manifest
         // model/vibration index or list of model indices
-        || theTok == T.integer || theTok == T.varray
-        || theTok == T.leftsquare || theTok == T.spacebeforesquare
+        || theTok == T.integer || theTok == T.varray || theTok == T.leftsquare
+        || theTok == T.spacebeforesquare
         // {i j k} (lattice)
         || theTok == T.leftbrace || theTok == T.point3f
         // PACKED/CENTROID, either order
@@ -9324,7 +9323,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // .... APPEND DATA "appendedData" .... end "appendedData"
       // option here to designate other than "appendedData"
       // .... APPEND "appendedData" @x ....
-      
 
       if (tokAt(i) == T.append) {
         // for CIF reader -- experimental
@@ -9357,7 +9355,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       P3 pt = null;
       BS bs = null;
-      JmolList<String> fNames = new  JmolList<String>();
+      JmolList<String> fNames = new JmolList<String>();
       while (i < slen) {
         switch (tokAt(i)) {
         case T.filter:
@@ -9367,7 +9365,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.coord:
           htParams.remove("isTrajectory");
           if (firstLastSteps == null) {
-            firstLastSteps = new  JmolList<Object>();
+            firstLastSteps = new JmolList<Object>();
             pt = P3.new3(0, -1, 1);
           }
           if (isPoint3f(++i)) {
@@ -9384,7 +9382,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         fNames.addLast(filename = parameterAsString(i++));
         if (pt != null) {
-          firstLastSteps.addLast(new int[] { (int) pt.x, (int) pt.y, (int) pt.z });
+          firstLastSteps
+              .addLast(new int[] { (int) pt.x, (int) pt.y, (int) pt.z });
           loadScript.append(" COORD " + Escape.eP(pt));
         } else if (bs != null) {
           firstLastSteps.addLast(bs);
@@ -9410,8 +9409,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // get default filter if necessary
 
     if (appendedData != null) {
-      sOptions += " APPEND data \"" + appendedKey + "\"\n" + appendedData 
-      + (appendedData.endsWith("\n") ? "" : "\n") + "end \"" + appendedKey + "\""; 
+      sOptions += " APPEND data \"" + appendedKey + "\"\n" + appendedData
+          + (appendedData.endsWith("\n") ? "" : "\n") + "end \"" + appendedKey
+          + "\"";
     }
     if (filter == null)
       filter = viewer.getDefaultLoadFilter();
@@ -9434,9 +9434,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         isVariable = true;
         String s = getStringParameter(filename.substring(1), false);
         htParams.put("fileData", s);
-        loadScript = new SB().append("{\n    var ")
-        .append(filename.substring(1)).append(" = ")
-        .append(Escape.eS(s)).append(";\n    ").appendSB(loadScript);
+        loadScript = new SB().append("{\n    var ").append(
+            filename.substring(1)).append(" = ").append(Escape.eS(s)).append(
+            ";\n    ").appendSB(loadScript);
       }
     }
 
@@ -9499,8 +9499,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf(JC.NOTE_SCRIPT_FILE) == 0) {
-        filename = errMsg.substring(JC.NOTE_SCRIPT_FILE.length())
-            .trim();
+        filename = errMsg.substring(JC.NOTE_SCRIPT_FILE.length()).trim();
         script(0, filename);
         return;
       }
@@ -9517,9 +9516,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           + (filenames == null ? htParams.get("fullPathName") : modelName));
     Map<String, Object> info = viewer.getModelSetAuxiliaryInfo();
     if (info != null && info.containsKey("centroidMinMax")
-        && viewer.getAtomCount() > 0)
-      viewer.setCentroid(isAppend ? atomCount0 : 0, viewer.getAtomCount() - 1,
-          (int[]) info.get("centroidMinMax"));
+        && viewer.getAtomCount() > 0) {
+      BS bs = BSUtil.newBitSet2(isAppend ? atomCount0 : 0, viewer.getAtomCount());
+      viewer.setCentroid(bs, (int[]) info.get("centroidMinMax"));
+    }
     String script = viewer.getDefaultLoadScript();
     String msg = "";
     if (script.length() > 0)
@@ -10388,7 +10388,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
 
     BS bsAtoms = null;
-    float degreesPerSecond = Float.MIN_VALUE;
+    float degreesPerSecond = Parser.FLOAT_MIN_SAFE;
     int nPoints = 0;
     float endDegrees = Float.MAX_VALUE;
     boolean isMolecular = false;
@@ -10456,7 +10456,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           // rotate spin ... [degreesPerSecond]
           // rotate spin ... [endDegrees] [degreesPerSecond]
           // rotate spin BRANCH <DihedralList> [seconds]
-          if (degreesPerSecond == Float.MIN_VALUE) {
+          if (degreesPerSecond == Parser.FLOAT_MIN_SAFE) {
             degreesPerSecond = floatParameter(i);
             continue;
           } else if (endDegrees == Float.MAX_VALUE) {
@@ -10470,7 +10470,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (endDegrees == Float.MAX_VALUE) {
             endDegrees = floatParameter(i);
             continue;
-          } else if (degreesPerSecond == Float.MIN_VALUE) {
+          } else if (degreesPerSecond == Parser.FLOAT_MIN_SAFE) {
             degreesPerSecond = floatParameter(i);
             isSpin = true;
             continue;
@@ -10630,7 +10630,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (bsAtoms == null)
         bsAtoms = bsCompare;
     }
-    float rate = (degreesPerSecond == Float.MIN_VALUE ? 10
+    float rate = (degreesPerSecond == Parser.FLOAT_MIN_SAFE ? 10
         : endDegrees == Float.MAX_VALUE ? degreesPerSecond
             : (degreesPerSecond < 0) == (endDegrees > 0) ?
             // -n means number of seconds, not degreesPerSecond
@@ -10712,7 +10712,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         && (endDegrees == 0 || degreesPerSecond == 0)) {
       // need a token rotation
       endDegrees = 0.01f;
-      rate = (degreesPerSecond == Float.MIN_VALUE ? 0.01f
+      rate = (degreesPerSecond == Parser.FLOAT_MIN_SAFE ? 0.01f
           : degreesPerSecond < 0 ?
           // -n means number of seconds, not degreesPerSecond
           -endDegrees / degreesPerSecond
@@ -11679,7 +11679,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       break;
     case T.set:
       sm.loadShape(JC.SHAPE_ELLIPSOIDS);
-      setShapeProperty(JC.SHAPE_ELLIPSOIDS, "select", parameterAsString(2));
+      setShapeProperty(JC.SHAPE_ELLIPSOIDS, "select", stringParameter(2));
       i = iToken;
       checkMore = true;
       isSet = true;
@@ -14430,11 +14430,32 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       index++;
       id = objectNameParameter(++index);
       break;
+    case T.center:
+      ++index;
+      switch (tokAt(++index)) {
+      case T.bitset:
+      case T.expressionBegin:
+        pt = P3.newP(viewer.getAtomSetCenter(atomExpressionAt(index)));
+        viewer.toFractional(pt, true);
+        index = iToken;
+        break;
+      default:
+        if (isCenterParameter(index)) {
+          pt = centerParameter(index);
+          index = iToken;
+          break;          
+        }
+        error(ERROR_invalidArgument);
+      }
+      pt.x -= 0.5f;
+      pt.y -= 0.5f;
+      pt.z -= 0.5f;
+      break;
     default:
       if (isArrayParameter(index + 1)) {
         points = getPointArray(++index, 4);
         index = iToken;
-      }else if (slen == index + 2) {
+      } else if (slen == index + 2) {
         if (getToken(index + 1).tok == T.integer
             && intParameter(index + 1) >= 111)
           icell = intParameter(++index);

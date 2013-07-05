@@ -9769,8 +9769,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       modelSet.setModelAuxiliaryInfo(modelIndex, "modelID", id);
   }
 
-  public void setCentroid(int iAtom0, int iAtom1, int[] minmax) {
-    modelSet.setCentroid(iAtom0, iAtom1, minmax);
+  public void setCentroid(BS bs, int[] minmax) {
+    modelSet.setCentroid(bs, minmax);
   }
 
   public String getPathForAllFiles() {

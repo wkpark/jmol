@@ -441,7 +441,8 @@ abstract class ScriptCompilationTokenParser {
       // create a file_model integer as part of the token
       return addTokenToPostfixInt(T.spec_model2, fixModelSpec(getToken()), theValue);
     case T.cell:
-      return clauseCell();
+    case T.centroid:
+      return clauseCell(tok);
     case T.connected:
       return clauseConnected();
     case T.search:
@@ -932,7 +933,7 @@ abstract class ScriptCompilationTokenParser {
     return true;
   }
 
-  private boolean clauseCell() {
+  private boolean clauseCell(int tok) {
     P3 cell = new P3();
     tokenNext(); // CELL
     if (!tokenNextTok(T.opEQ)) // =
@@ -946,7 +947,7 @@ abstract class ScriptCompilationTokenParser {
       cell.x = nnn / 100 - 4;
       cell.y = (nnn % 100) / 10 - 4;
       cell.z = (nnn % 10) - 4;
-      return addTokenToPostfix(T.cell, cell);
+      return addTokenToPostfix(tok, cell);
     }
     if (!isToken(T.leftbrace) || !getNumericalToken())
       return error(ERROR_coordinateExpected); // i
@@ -961,7 +962,7 @@ abstract class ScriptCompilationTokenParser {
     if (!getNumericalToken() || !tokenNextTok(T.rightbrace))
       return error(ERROR_coordinateExpected); // k
     cell.z = floatValue();
-    return addTokenToPostfix(T.cell, cell);
+    return addTokenToPostfix(tok, cell);
   }
 
   private boolean clauseDefine(boolean haveToken, boolean forceString) {

@@ -36,6 +36,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
+import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
@@ -267,7 +268,7 @@ public abstract class BioPolymer {
       leadMidpoints = new P3[monomerCount + 1];
       leadPoints = new P3[monomerCount + 1];
       wingVectors = new V3[monomerCount + 1];
-      sheetSmoothing = Float.MIN_VALUE;
+      sheetSmoothing = Parser.FLOAT_MIN_SAFE;
     }
     if (reversed == null)
       reversed = BS.newN(monomerCount);

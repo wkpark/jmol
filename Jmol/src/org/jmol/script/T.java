@@ -580,6 +580,7 @@ public class T {
   public final static int atomindex     = intproperty | 3;
   public final static int bondcount     = intproperty | 4;
   public final static int cell          = intproperty | 5;
+  public final static int centroid      = intproperty | 6;
   public final static int configuration = intproperty | 6 | scriptCommand;
   //color: see xxx(a, b, c, d)
   public final static int elemisono     = intproperty | 7;
@@ -1098,7 +1099,6 @@ public class T {
   final static int cancel        = misc  | 50;
   public final static int cap    = misc  | 51 | expression;
   final static int cavity        = misc  | 52;
-  final static int centroid      = misc  | 53;
   final static int check         = misc  | 54;
   final static int chemical      = misc  | 55;
   final static int circle        = misc  | 56;

@@ -129,6 +129,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.P3;
 import org.jmol.util.P4;
+import org.jmol.util.Parser;
 import org.jmol.util.V3;
 
 import org.jmol.viewer.JC;
@@ -421,7 +422,7 @@ public class Parameters {
     dataType = (isGeodesic ? SURFACE_GEODESIC : SURFACE_SPHERE);
     distance = radius;
     setEccentricity(P4.new4(0, 0, 1, 1));
-    cutoff = Float.MIN_VALUE;
+    cutoff = Parser.FLOAT_MIN_SAFE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
     script = getScriptParams() + " SPHERE " + radius + ";";
@@ -431,7 +432,7 @@ public class Parameters {
     dataType = SURFACE_ELLIPSOID2;
     distance = 1f;
     setEccentricity(v);
-    cutoff = Float.MIN_VALUE;
+    cutoff = Parser.FLOAT_MIN_SAFE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
     //script = " center " + Escape.escape(center)
@@ -445,7 +446,7 @@ public class Parameters {
     //for (int i = 0; i < 6; i++)System.out.print(bList[i] + " ");System.out.println( " in Parameters setEllipsoid" + center);
     dataType = SURFACE_ELLIPSOID3;
     distance = 0.3f * (Float.isNaN(scale) ? 1f : scale);
-    cutoff = Float.MIN_VALUE;
+    cutoff = Parser.FLOAT_MIN_SAFE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
     if (center.x == Float.MAX_VALUE)
@@ -574,7 +575,7 @@ public class Parameters {
   void setFunctionXY(JmolList<Object> value) {
     dataType = SURFACE_FUNCTIONXY;
     functionInfo = value;
-    cutoff = Float.MIN_VALUE;
+    cutoff = Parser.FLOAT_MIN_SAFE;
     isEccentric = isAnisotropic = false;
   }
 
@@ -582,7 +583,7 @@ public class Parameters {
     dataType = SURFACE_FUNCTIONXYZ;
     functionInfo = value;
     if (cutoff == Float.MAX_VALUE)
-      cutoff = Float.MIN_VALUE;
+      cutoff = Parser.FLOAT_MIN_SAFE;
     isEccentric = isAnisotropic = false;
   }
 

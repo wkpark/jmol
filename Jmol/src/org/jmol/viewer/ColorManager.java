@@ -31,6 +31,7 @@ import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.StaticConstants;
 import org.jmol.modelset.Atom;
@@ -311,7 +312,7 @@ class ColorManager {
     colorData = data;
     propertyColorEncoder.currentPalette = propertyColorEncoder.createColorScheme(
         colorScheme, true, false);
-    propertyColorEncoder.hi = Float.MIN_VALUE;
+    propertyColorEncoder.hi = Parser.FLOAT_MIN_SAFE;
     propertyColorEncoder.lo = Float.MAX_VALUE;
     if (data == null)
       return;

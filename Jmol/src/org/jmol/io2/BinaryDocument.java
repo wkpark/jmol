@@ -394,7 +394,7 @@ public class BinaryDocument implements JmolDocument {
     fracIEEE = new float[270];
     for (int i = 0; i < 270; i++)
       fracIEEE[i] = (float) Math.pow(2, i - 141);
-    //    System.out.println(fracIEEE[0] + "  " + Float.MIN_VALUE);
+    //    System.out.println(fracIEEE[0] + "  " + Parser.FLOAT_MIN_SAFE);
     //    System.out.println(fracIEEE[269] + "  " + Float.MAX_VALUE);
   }
 

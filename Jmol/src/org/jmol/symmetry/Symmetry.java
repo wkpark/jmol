@@ -567,21 +567,20 @@ public class Symmetry implements SymmetryInterface {
     }
   }
 
-  public void setCentroid(ModelSet modelSet, int iAtom0, int iAtom1,
+  public BS notInCentroid(ModelSet modelSet, BS bsAtoms,
                           int[] minmax) {
     try {
       BS bsDelete = new BS();
+      int iAtom0 = bsAtoms.nextSetBit(0);
       JmolMolecule[] molecules = modelSet.getMolecules();
       int moleculeCount = molecules.length;
       Atom[] atoms = modelSet.atoms;
-
       boolean isOneMolecule = (molecules[moleculeCount - 1].firstAtomIndex == modelSet
-          .models[atoms[iAtom1].modelIndex].firstAtomIndex);
+          .models[atoms[iAtom0].modelIndex].firstAtomIndex);
       P3 center = new P3();
       boolean centroidPacked = (minmax[6] == 1);
       nextMol: for (int i = moleculeCount; --i >= 0
-          && molecules[i].firstAtomIndex >= iAtom0
-          && molecules[i].firstAtomIndex < iAtom1;) {
+          && bsAtoms.get(molecules[i].firstAtomIndex);) {
         BS bs = molecules[i].atomList;
         center.set(0, 0, 0);
         int n = 0;
@@ -602,10 +601,9 @@ public class Symmetry implements SymmetryInterface {
         if (centroidPacked || n > 0 && isNotCentroid(center, n, minmax, false))
           bsDelete.or(bs);
       }
-      if (bsDelete.nextSetBit(0) >= 0)
-        modelSet.viewer.deleteAtoms(bsDelete, false);
+      return bsDelete;
     } catch (Exception e) {
-      // ignore
+      return null;
     }
   }
   
@@ -619,10 +617,20 @@ public class Symmetry implements SymmetryInterface {
       return (center.x + 0.000005f <= minmax[0] || center.x - 0.000005f > minmax[3] 
          || center.y + 0.000005f <= minmax[1] || center.y - 0.000005f > minmax[4]
          || center.z + 0.000005f <= minmax[2] || center.z - 0.000005f > minmax[5]);
-    return (center.x + 0.000005f <= minmax[0] || center.x + 0.00001f > minmax[3] 
-     || center.y + 0.000005f <= minmax[1] || center.y + 0.00001f > minmax[4]
-     || center.z + 0.000005f <= minmax[2] || center.z + 0.00001f > minmax[5]);
+    
+    return (center.x + 0.000005f <= minmax[0] || center.x + 0.00005f > minmax[3] 
+     || center.y + 0.000005f <= minmax[1] || center.y + 0.00005f > minmax[4]
+     || center.z + 0.000005f <= minmax[2] || center.z + 0.00005f > minmax[5]);
   }
 
+  public boolean checkUnitCell(SymmetryInterface uc, P3 cell, P3 ptTemp,
+                               boolean isAbsolute) {
+   uc.toFractional(ptTemp, isAbsolute);
+   float slop = 0.02f;
+   // {1 1 1} here is the original cell
+   return (ptTemp.x >= cell.x - 1f - slop && ptTemp.x <= cell.x + slop
+       && ptTemp.y >= cell.y - 1f - slop && ptTemp.y <= cell.y + slop
+       && ptTemp.z >= cell.z - 1f - slop && ptTemp.z <= cell.z + slop);
+ }
 
 }  

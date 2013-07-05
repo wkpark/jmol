@@ -58,6 +58,15 @@ class DataManager {
     dataValues.clear();
   }
   
+  private final static int DATA_TYPE_STRING = 0;
+  private final static int DATA_TYPE_AF = 1;
+  private final static int DATA_ARRAY_FF = 2;
+  private final static int DATA_ARRAY_FFF = 3;
+  //private final static int DATA_LABEL = 0;
+  private final static int DATA_VALUE = 1;
+  private final static int DATA_SELECTION_MAP = 2;
+  private final static int DATA_TYPE = 3;
+  
   void setData(String type, Object[] data, int arrayCount, int actualAtomCount,
                int matchField, int matchFieldColumnCount, int field,
                int fieldColumnCount) {
@@ -80,7 +89,7 @@ class DataManager {
     }
     type = type.toLowerCase();
     if (type.equals("element_vdw")) {
-      String stringData = ((String) data[1]).trim();
+      String stringData = ((String) data[DATA_VALUE]).trim();
       if (stringData.length() == 0) {
         userVdwMars = null;
         userVdws = null;
@@ -90,12 +99,12 @@ class DataManager {
       if (bsUserVdws == null)
         setUserVdw(defaultVdw);
       Parser.parseFloatArrayFromMatchAndField(stringData, bsUserVdws, 1, 0,
-          (int[]) data[2], 2, 0, userVdws, 1);
+          (int[]) data[DATA_SELECTION_MAP], 2, 0, userVdws, 1);
       for (int i = userVdws.length; --i >= 0;)
         userVdwMars[i] = (int) Math.floor(userVdws[i] * 1000);
       return;
     }
-    if (data[2] != null && arrayCount > 0) {
+    if (data[DATA_SELECTION_MAP] != null && arrayCount > 0) {
       boolean createNew = (matchField != 0 || field != Integer.MIN_VALUE
           && field != Integer.MAX_VALUE);
       Object[] oldData = dataValues.get(type);
@@ -106,9 +115,9 @@ class DataManager {
       // check to see if the data COULD be interpreted as a string of float values
       // and if so, do that. This pre-fetches the tokens in that case.
 
-      int depth = ((Integer)data[3]).intValue();
-      String stringData = (depth == 0 ? (String) data[1] : null);
-      float[] floatData = (depth == 1 ? (float[]) data[1] : null);
+      int depth = ((Integer)data[DATA_TYPE]).intValue();
+      String stringData = (depth == DATA_TYPE_STRING ? (String) data[DATA_VALUE] : null);
+      float[] floatData = (depth == DATA_TYPE_AF ? (float[]) data[DATA_VALUE] : null);
       String[] strData = null;
       if (field == Integer.MIN_VALUE
           && (strData = Parser.getTokens(stringData)).length > 1)
@@ -116,11 +125,11 @@ class DataManager {
 
       if (field == Integer.MIN_VALUE) {
         // set the selected data elements to a single value
-        bs = (BS) data[2];
+        bs = (BS) data[DATA_SELECTION_MAP];
         Parser.setSelectedFloats(Parser.parseFloatStr(stringData), bs, f);
       } else if (field == 0 || field == Integer.MAX_VALUE) {
         // just get the selected token values
-        bs = (BS) data[2];
+        bs = (BS) data[DATA_SELECTION_MAP];
         if (floatData != null) {
           if (floatData.length == bs.cardinality())
             for (int i = bs.nextSetBit(0), pt = 0; i >= 0; i = bs
@@ -135,13 +144,13 @@ class DataManager {
         }
       } else if (matchField <= 0) {
         // get the specified field >= 1 for the selected atoms
-        bs = (BS) data[2];
+        bs = (BS) data[DATA_SELECTION_MAP];
         Parser.parseFloatArrayFromMatchAndField(stringData, bs, 0, 0, null,
             field, fieldColumnCount, f, 1);
       } else {
         // get the selected field, with an integer match in a specified field
         // in this case, bs is created and indicates which data points were set
-        int[] iData = (int[]) data[2];
+        int[] iData = (int[]) data[DATA_SELECTION_MAP];
         Parser.parseFloatArrayFromMatchAndField(stringData, null, matchField,
             matchFieldColumnCount, iData, field, fieldColumnCount, f, 1);
         bs = new BS();
@@ -149,11 +158,11 @@ class DataManager {
           if (iData[i] >= 0)
             bs.set(iData[i]);
       }
-      if (oldData != null && oldData[2] instanceof BS && !createNew)
-        bs.or((BS) (oldData[2]));
-      data[3] = Integer.valueOf(1);
-      data[2] = bs;
-      data[1] = f;
+      if (oldData != null && oldData[DATA_SELECTION_MAP] instanceof BS && !createNew)
+        bs.or((BS) (oldData[DATA_SELECTION_MAP]));
+      data[DATA_TYPE] = Integer.valueOf(DATA_TYPE_AF);
+      data[DATA_SELECTION_MAP] = bs;
+      data[DATA_VALUE] = f;
       if (type.indexOf("property_atom.") == 0) {
         int tok = T.getSettableTokFromString(type = type.substring(14));
         if (tok == T.nada) {
@@ -192,16 +201,16 @@ class DataManager {
     if (dataValues == null)
       return null;
     Object[] data = getData(label);
-    if (data == null || ((Integer)data[3]).intValue() != 1)
+    if (data == null || ((Integer)data[DATA_TYPE]).intValue() != DATA_TYPE_AF)
       return null;
-    return (float[]) data[1];
+    return (float[]) data[DATA_VALUE];
   }
 
   float getDataFloat(String label, int atomIndex) {
     if (dataValues != null) {
       Object[] data = getData(label);
-      if (data != null && ((Integer)data[3]).intValue() == 1) {
-        float[] f = (float[]) data[1];
+      if (data != null && ((Integer)data[DATA_TYPE]).intValue() == DATA_TYPE_AF) {
+        float[] f = (float[]) data[DATA_VALUE];
         if (atomIndex < f.length)
           return f[atomIndex];
       }
@@ -213,18 +222,18 @@ class DataManager {
     if (dataValues == null)
       return null;
     Object[] data = getData(label);
-    if (data == null || ((Integer)data[3]).intValue() != 2)
+    if (data == null || ((Integer)data[DATA_TYPE]).intValue() != DATA_ARRAY_FF)
       return null;
-    return (float[][]) data[1];
+    return (float[][]) data[DATA_VALUE];
   }
 
   float[][][] getDataFloat3D(String label) {
     if (dataValues == null)
       return null;
     Object[] data = getData(label);
-    if (data == null || ((Integer)data[3]).intValue() != 3)
+    if (data == null || ((Integer)data[DATA_TYPE]).intValue() != DATA_ARRAY_FFF)
       return null;
-    return (float[][][]) data[1];
+    return (float[][][]) data[DATA_VALUE];
   }
 
   void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsDeleted) {
@@ -237,10 +246,10 @@ class DataManager {
         Object[] obj = dataValues.get(name);
         BSUtil.deleteBits((BS) obj[2], bsDeleted);
         switch (((Integer)obj[3]).intValue()) {
-        case 1:
+        case DATA_TYPE_AF:
           obj[1] = ArrayUtil.deleteElements(obj[1], firstAtomIndex, nAtoms);
           break;
-        case 2:
+        case DATA_ARRAY_FF:
           obj[1] = ArrayUtil.deleteElements(obj[1], firstAtomIndex, nAtoms);
           break;
         default:
@@ -326,4 +335,5 @@ class DataManager {
         .append(loadFilter == null || loadFilter.length() == 0 ? "" : " filter" + Escape.eS(loadFilter))
         .append("\";");
   }
+  
 }

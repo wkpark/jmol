@@ -1654,19 +1654,25 @@ abstract public class ModelCollection extends BondCollection {
    * deletes molecules based on: CENTROID -- molecular centroid is not in unit
    * cell CENTROID PACKED -- all molecule atoms are not in unit cell
    * 
-   * @param iAtom0
-   * @param iAtom1
+   * @param bs
    * @param minmax
    *        fractional [xmin, ymin, zmin, xmax, ymax, zmax, 1=packed]
    */
-  public void setCentroid(int iAtom0, int iAtom1, int[] minmax) {
-    SymmetryInterface uc = getUnitCell(atoms[iAtom0].modelIndex);
-    if (uc == null)
-      return;
-    uc.setCentroid((ModelSet) this, iAtom0, iAtom1, minmax);
+  public void setCentroid(BS bs, int[] minmax) {
+    BS bsDelete = getNotInCentroid(bs, minmax);
+    if (bsDelete != null && bsDelete.nextSetBit(0) >= 0)
+       viewer.deleteAtoms(bsDelete, false);
   }
 
-   public JmolMolecule[] getMolecules() {
+  private BS getNotInCentroid(BS bs, int[] minmax) {
+    int iAtom0 = bs.nextSetBit(0);
+    if (iAtom0 < 0)
+      return null;
+    SymmetryInterface uc = getUnitCell(atoms[iAtom0].modelIndex);
+    return (uc == null ? null : uc.notInCentroid((ModelSet) this, bs, minmax));
+  }
+
+  public JmolMolecule[] getMolecules() {
     if (moleculeCount > 0)
       return molecules;
     if (molecules == null)
@@ -1898,12 +1904,26 @@ abstract public class ModelCollection extends BondCollection {
       // select cell=555 (an absolute quantity)
       bs = new BS();
       info = (int[]) specInfo;
-      ptTemp1.set(info[0] / 1000f, info[1] / 1000f,
-          info[2] / 1000f);
+      ptTemp1.set(info[0] / 1000f, info[1] / 1000f, info[2] / 1000f);
       boolean isAbsolute = !viewer.getBoolean(T.fractionalrelative);
       for (int i = atomCount; --i >= 0;)
         if (isInLatticeCell(i, ptTemp1, ptTemp2, isAbsolute))
           bs.set(i);
+      return bs;
+    case T.centroid:
+      // select centroid=555  -- like cell=555 but for whole molecules
+      // if it is one full molecule, then return the EMPTY bitset      
+      bs = BSUtil.newBitSet2(0, atomCount);
+      info = (int[]) specInfo;
+      int[] minmax = new int[] { info[0] / 1000 - 1, info[1] / 1000 - 1, info[2] / 1000 - 1, info[0] / 1000, info[1] / 1000, info[2] / 1000, 0 };
+      for (int i = modelCount; --i >= 0;) {
+        SymmetryInterface uc = getUnitCell(i);
+        if (uc == null) {
+          BSUtil.andNot(bs, models[i].bsAtoms);
+          continue;
+        }
+        bs.andNot(uc.notInCentroid((ModelSet) this, models[i].bsAtoms, minmax));
+      }
       return bs;
     case T.molecule:
       return getMoleculeBitSet((BS) specInfo);
@@ -1953,8 +1973,8 @@ abstract public class ModelCollection extends BondCollection {
       }
       return bs;
     case T.symmetry:
-      return BSUtil.copy(bsSymmetry == null ? bsSymmetry = BSUtil.newBitSet(
-          atomCount) : bsSymmetry);
+      return BSUtil.copy(bsSymmetry == null ? bsSymmetry = BSUtil
+          .newBitSet(atomCount) : bsSymmetry);
     case T.unitcell:
       // select UNITCELL (a relative quantity)
       bs = new BS();
@@ -1963,33 +1983,23 @@ abstract public class ModelCollection extends BondCollection {
         return bs;
       ptTemp1.set(1, 1, 1);
       for (int i = atomCount; --i >= 0;)
-        if (isInLatticeCell(i, ptTemp1, ptTemp2, false)) 
+        if (isInLatticeCell(i, ptTemp1, ptTemp2, false))
           bs.set(i);
       return bs;
     }
   }
 
-  private boolean isInLatticeCell(int i, P3 cell, P3 pt,
+  private boolean isInLatticeCell(int i, P3 cell, P3 ptTemp,
                                   boolean isAbsolute) {
     // this is the one method that allows for an absolute fractional cell business
     // but it is always called with isAbsolute FALSE.
     // so then it is determining values for select UNITCELL and the like.
 
+
     int iModel = atoms[i].modelIndex;
     SymmetryInterface uc = getUnitCell(iModel);
-    if (uc == null)
-      return false;
-    pt.setT(atoms[i]);
-    uc.toFractional(pt, isAbsolute);
-    float slop = 0.02f;
-    // {1 1 1} here is the original cell
-    if (pt.x < cell.x - 1f - slop || pt.x > cell.x + slop)
-      return false;
-    if (pt.y < cell.y - 1f - slop || pt.y > cell.y + slop)
-      return false;
-    if (pt.z < cell.z - 1f - slop || pt.z > cell.z + slop)
-      return false;
-    return true;
+    ptTemp.setT(atoms[i]);
+    return (uc != null && uc.checkUnitCell(uc, cell, ptTemp, isAbsolute));
   }
 
   /**
@@ -2274,7 +2284,7 @@ abstract public class ModelCollection extends BondCollection {
     if (mad == 0)
       mad = 1;
     // null values for bitsets means "all"
-    if (maxBondingRadius == Float.MIN_VALUE)
+    if (maxBondingRadius == Parser.FLOAT_MIN_SAFE)
       findMaxRadii();
     float bondTolerance = viewer.getFloat(T.bondtolerance);
     float minBondDistance = viewer.getFloat(T.minbonddistance);
@@ -2365,7 +2375,7 @@ abstract public class ModelCollection extends BondCollection {
     if (mad == 0)
       mad = 1;
     // null values for bitsets means "all"
-    if (maxBondingRadius == Float.MIN_VALUE)
+    if (maxBondingRadius == Parser.FLOAT_MIN_SAFE)
       findMaxRadii();
     float bondTolerance = viewer.getFloat(T.bondtolerance);
     float minBondDistance = viewer.getFloat(T.minbonddistance);

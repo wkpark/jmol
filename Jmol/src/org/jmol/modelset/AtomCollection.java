@@ -301,12 +301,12 @@ abstract public class AtomCollection {
   
   // the maximum BondingRadius seen in this set of atoms
   // used in autobonding
-  protected float maxBondingRadius = Float.MIN_VALUE;
-  private float maxVanderwaalsRadius = Float.MIN_VALUE;
+  protected float maxBondingRadius = Parser.FLOAT_MIN_SAFE;
+  private float maxVanderwaalsRadius = Parser.FLOAT_MIN_SAFE;
 
   public float getMaxVanderwaalsRadius() {
     //Dots
-    if (maxVanderwaalsRadius == Float.MIN_VALUE)
+    if (maxVanderwaalsRadius == Parser.FLOAT_MIN_SAFE)
       findMaxRadii();
     return maxVanderwaalsRadius;
   }

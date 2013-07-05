@@ -165,7 +165,9 @@ public interface SymmetryInterface {
   public Object getSymmetryInfo(ModelSet modelSet, int iModel, int iAtom, SymmetryInterface uc, String xyz, int op,
                                 P3 pt, P3 pt2, String id, int type);
 
-  public void setCentroid(ModelSet modelSet, int iAtom0, int iAtom1,
+  public BS notInCentroid(ModelSet modelSet, BS bsAtoms,
                           int[] minmax);
+
+  public boolean checkUnitCell(SymmetryInterface uc, P3 cell, P3 ptTemp, boolean isAbsolute);
 
 }

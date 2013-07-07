@@ -1260,7 +1260,7 @@ public class FileManager {
     key = key.replace('\\', '/');
     if (Logger.debugging)
       Logger.debug("cachePut " + key);
-    if (data == null || data.equals(""))
+    if (data == null || "".equals(data)) // J2S error -- cannot implement Int32Array.equals
       cache.remove(key);
     else
       cache.put(key, data);

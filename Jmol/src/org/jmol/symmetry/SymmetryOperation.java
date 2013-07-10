@@ -1063,7 +1063,7 @@ class SymmetryOperation extends Matrix4f {
         // returns triangles and lines
         for (int i = v.size(); --i >= 0;) {
           P3[] pts = (P3[]) v.get(i);
-          draw1.append(drawid).append("planep").appendI(i).append(
+          draw1.append(drawid).append("planep").appendI(i).append(" ").append(
               Escape.eP(pts[0])).append(Escape.eP(pts[1]));
           if (pts.length == 3)
             draw1.append(Escape.eP(pts[2]));

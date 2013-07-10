@@ -723,7 +723,7 @@ public class Resolver {
   {"ZMatrix", "#ZMATRIX"};
   
   private final static String[] magresFileStartRecords =
-  {"Magres", "#$magres"};
+  {"Magres", "#$magres", "# magres"};
 
   private final static String[] pymolStartRecords =
   {"PyMOL", "}q" };

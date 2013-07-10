@@ -112,7 +112,14 @@ import java.util.Map;
    * it would be easier to take advantage of symmetry in the process of
    * converting from normal to normix.
    */
+ 
+/**
+ * 
+ * J2SRequireImport is needed because we use ArrayUtil in a static method
+ * 
+ */
 
+@J2SRequireImport({org.jmol.util.ArrayUtil.class})
 public class Geodesic {
   
   private final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));

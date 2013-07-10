@@ -368,8 +368,7 @@ public class Polyhedra extends AtomShape {
 
     while (!isOK && factor < 10.0f) {
       distMax = dAverage * factor;
-      for (int i = 0; i < ptCenter; i++)
-        bs.set(i);
+      bs.setBits(0, ptCenter);
       for (int i = 0; i < ptCenter - 2; i++)
         for (int j = i + 1; j < ptCenter - 1; j++) {
           if (points[i].distance(points[j]) > distMax)
@@ -396,6 +395,7 @@ public class Polyhedra extends AtomShape {
           break;
         }
     }
+
 
     /*  Start by defining a face to be when all three distances
      *  are < distanceFactor * (longest central) but if a vertex is missed, 
@@ -437,9 +437,13 @@ public class Polyhedra extends AtomShape {
         if (points[i].distance(points[j]) > distMax)
           continue;
         for (int k = j + 1; k < ptCenter; k++) {
+          System.out.println("checking poly " + i + " " + j + " " + k);
+          System.out.println("checking poly " + points[i] + " " + points[j] + " " + points[k]);
+          
           if (points[i].distance(points[k]) > distMax
               || points[j].distance(points[k]) > distMax)
             continue;
+          System.out.println("checking poly " + i + " " + j + " " + k + " ok ");
 
           if (planeCount >= FACE_COUNT_MAX) {
             Logger.error("Polyhedron error: maximum face(" + FACE_COUNT_MAX

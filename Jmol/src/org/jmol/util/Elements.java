@@ -216,7 +216,7 @@ public class Elements {
       int pt = elementSymbol.length() - 2;
       if (pt >= 0 && Character.isDigit(elementSymbol.charAt(pt)))
         pt++;
-      int isotope = Parser.parseInt(elementSymbol.substring(0, pt));
+      int isotope = (pt > 0 ? Parser.parseInt(elementSymbol.substring(0, pt)) : 0);
       if (isotope > 0) {
         int n = elementNumberFromSymbol(elementSymbol.substring(pt), true);
         if (n > 0) {  

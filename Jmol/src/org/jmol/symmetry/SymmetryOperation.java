@@ -147,7 +147,7 @@ class SymmetryOperation extends Matrix4f {
         .append("{\t0\t0\t0\t1\t}\n").toString();
   }
   
-  boolean setMatrixFromXYZ(String xyz) {
+  boolean setMatrixFromXYZ(String xyz, int modulationDimension) {
     /*
      * sets symmetry based on an operator string "x,-y,z+1/2", for example
      * 
@@ -156,7 +156,8 @@ class SymmetryOperation extends Matrix4f {
       return false;
     xyzOriginal = xyz;
     xyz = xyz.toLowerCase();
-    float[] temp = new float[16];
+    float[] rotTransMatrix = new float[16];
+    float[] modulation = (modulationDimension == 0 ? null : new float[2 * modulationDimension]);
     boolean isReverse = (xyz.startsWith("!"));
     if (isReverse)
       xyz = xyz.substring(1);
@@ -179,19 +180,19 @@ class SymmetryOperation extends Matrix4f {
        * The coordinates we are using here 
        */
       this.xyz = xyz;
-      Parser.parseStringInfestedFloatArray(xyz, null, temp);
+      Parser.parseStringInfestedFloatArray(xyz, null, rotTransMatrix);
       for (int i = 0; i < 16; i++) {
-        if (Float.isNaN(temp[i]))
+        if (Float.isNaN(rotTransMatrix[i]))
           return false;
-        float v = temp[i];
+        float v = rotTransMatrix[i];
         if (Math.abs(v) < 0.00001f)
           v = 0;
         if (i % 4 == 3)
           v = normalizeTwelfths((v < 0 ? -1 : 1) * Math.round(Math.abs(v * 12)), doNormalize);
-        temp[i] = v;
+        rotTransMatrix[i] = v;
       }
-      temp[15] = 1;
-      setA(temp);
+      rotTransMatrix[15] = 1;
+      setA(rotTransMatrix);
       isFinalized = true;
       if (isReverse)
         invertM(this);
@@ -200,12 +201,12 @@ class SymmetryOperation extends Matrix4f {
     }
     if (xyz.indexOf("[[") == 0) {
       xyz = xyz.replace('[',' ').replace(']',' ').replace(',',' ');
-      Parser.parseStringInfestedFloatArray(xyz, null, temp);
+      Parser.parseStringInfestedFloatArray(xyz, null, rotTransMatrix);
       for (int i = 0; i < 16; i++) {
-        if (Float.isNaN(temp[i]))
+        if (Float.isNaN(rotTransMatrix[i]))
           return false;
       }
-      setA(temp);
+      setA(rotTransMatrix);
       isFinalized = true;
       if (isReverse)
         invertM(this);
@@ -213,10 +214,10 @@ class SymmetryOperation extends Matrix4f {
       //System.out.println("SymmetryOperation: " + xyz + "\n" + (Matrix4f)this + "\n" + this.xyz);
       return true;
     }
-    String strOut = getMatrixFromString(xyz, temp, doNormalize, false);
+    String strOut = getMatrixFromString(xyz, rotTransMatrix, rotTransMatrix, doNormalize, false);
     if (strOut == null)
       return false;
-    setA(temp);
+    setA(rotTransMatrix);
     if (isReverse) {
       invertM(this);
       this.xyz = getXYZFromMatrix(this, true, false, false);
@@ -228,11 +229,12 @@ class SymmetryOperation extends Matrix4f {
     return true;
   }
 
-  static String getMatrixFromString(String xyz, float[] temp,
+  static String getMatrixFromString(String xyz, float[] rotTransMatrix, float[] modulation,
                                     boolean doNormalize, boolean allowScaling) {
     boolean isDenominator = false;
     boolean isDecimal = false;
     boolean isNegative = false;
+    boolean incommensurate = (modulation != null);
     char ch;
     int x = 0;
     int y = 0;
@@ -241,15 +243,14 @@ class SymmetryOperation extends Matrix4f {
     String strOut = "";
     String strT;
     int rowPt = -1;
+    
     float decimalMultiplier = 1f;
-    while (xyz.indexOf("x4") >= 0) {
-      Logger.info("ignoring last parameter in " + xyz);
-      xyz = xyz.substring(0, xyz.lastIndexOf(","));
+    xyz += ",";
+    if (incommensurate) {
       xyz = TextFormat.simpleReplace(xyz, "x1", "x");
       xyz = TextFormat.simpleReplace(xyz, "x2", "y");
       xyz = TextFormat.simpleReplace(xyz, "x3", "z");
     }
-    xyz += ",";
     for (int i = 0; i < xyz.length(); i++) {
       ch = xyz.charAt(i);
       switch (ch) {
@@ -270,10 +271,16 @@ class SymmetryOperation extends Matrix4f {
         continue;
       case 'X':
       case 'x':
-        x = (isNegative ? -1 : 1);
+        int val = (isNegative ? -1 : 1);
         if (allowScaling && iValue != 0) {
-          x *= iValue;
+          val *= iValue;
           iValue = 0;
+        }
+        if (incommensurate && rowPt >= 0) {
+          int pt = 2 * (rowPt + 1);
+          modulation[pt] = val;   
+        } else {
+          x = val;
         }
         break;
       case 'Y':
@@ -293,17 +300,20 @@ class SymmetryOperation extends Matrix4f {
         }
         break;
       case ',':
-        if (++rowPt > 2) {
+        if (++rowPt > 2 && !incommensurate) {
           Logger.warn("Symmetry Operation? " + xyz);
           return null;
         }
-        int tpt = rowPt * 4;
         // put translation into 12ths
         iValue = normalizeTwelfths(iValue, doNormalize);
-        temp[tpt++] = x;
-        temp[tpt++] = y;
-        temp[tpt++] = z;
-        temp[tpt] = iValue;
+        if (rowPt > 2 && incommensurate) {
+        modulation[2 * rowPt + 1] = iValue;
+        } else {
+        int tpt = rowPt * 4;
+        rotTransMatrix[tpt++] = x;
+        rotTransMatrix[tpt++] = y;
+        rotTransMatrix[tpt++] = z;
+        rotTransMatrix[tpt] = iValue;
         strT = "";
         strT += (x == 0 ? "" : x < 0 ? "-x" : strT.length() == 0 ? "x" : "+x");
         strT += (y == 0 ? "" : y < 0 ? "-y" : strT.length() == 0 ? "y" : "+y");
@@ -312,8 +322,9 @@ class SymmetryOperation extends Matrix4f {
         strOut += (strOut == "" ? "" : ",") + strT;
         //note: when ptLatt[3] = -1, ptLatt[rowPt] MUST be 0.
         if (rowPt == 2) {
-          temp[15] = 1;
+          rotTransMatrix[15] = 1;
           return strOut;
+        }
         }
         x = y = z = 0;
         iValue = 0;

@@ -220,7 +220,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
       } else if (key.startsWith("_symmetry_space_group_name_H-M")
-          || key.startsWith("_symmetry_space_group_name_Hall")) {
+          || key.startsWith("_symmetry_space_group_name_Hall")
+          || key.startsWith("_space_group_ssg_name")) {
         processSymmetrySpaceGroupName();
       } else if (key.startsWith("_atom_sites_fract_tran")) {
         processUnitCellTransformMatrix();
@@ -286,6 +287,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   }
 
   private int nMolecular = 0;
+
+  private boolean incommensurate;
 
   @Override
   public void applySymmetryAndSetTrajectory() throws Exception {
@@ -356,7 +359,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
    * @throws Exception
    */
   private void processSymmetrySpaceGroupName() throws Exception {
-    setSpaceGroupName((key.equals("_symmetry_space_group_name_H-M") ? "HM:" : "Hall:") + data);
+    incommensurate = (key.indexOf("_ssg_") >= 0);
+    setSpaceGroupName((key.indexOf("H-M") > 0 ? "HM:" : incommensurate ? "SSG:" : "Hall:") + data);
   }
 
   /**
@@ -506,7 +510,6 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       return;
     }
     if (str.startsWith("_symmetry_equiv_pos")
-        || str.startsWith("_space_group_symop")
         || str.startsWith("_space_group_symop")) {
       if (ignoreFileSymmetryOperators) {
         Logger.warn("ignoring file-based symmetry operators");

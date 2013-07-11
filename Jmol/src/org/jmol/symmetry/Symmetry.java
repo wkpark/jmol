@@ -211,8 +211,8 @@ public class Symmetry implements SymmetryInterface {
     return SymmetryOperation.fcoord(p);
   }
 
-  public String getMatrixFromString(String xyz, float[] temp, boolean allowScaling) {
-    return SymmetryOperation.getMatrixFromString(xyz, temp, false, allowScaling);
+  public String getMatrixFromString(String xyz, float[] rotTransMatrix, boolean allowScaling) {
+    return SymmetryOperation.getMatrixFromString(xyz, rotTransMatrix, null, false, allowScaling);
   }
 
   public P3 ijkToPoint3f(int nnn) {

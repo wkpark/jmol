@@ -397,10 +397,17 @@ class SpaceGroup {
   }
   
   Map<String, Integer> xyzList = new Hashtable<String, Integer>();
+  private int modulationDimension;
+  
   private int addOperation(String xyz0, int opId) {
     if (xyz0 == null || xyz0.length() < 3) {
       xyzList = new Hashtable<String, Integer>();
       return -1;
+    }
+    if (xyz0.startsWith("x1,x2,x3,x4")) {
+      xyzList.clear();
+      operationCount = 0;
+      modulationDimension = Parser.parseInt(xyz0.substring(xyz0.lastIndexOf("x") + 1)); 
     }
     boolean isSpecial = (xyz0.charAt(0) == '=');
     if (isSpecial) xyz0 = xyz0.substring(1);
@@ -408,7 +415,7 @@ class SpaceGroup {
       return xyzList.get(xyz0).intValue();
 
     SymmetryOperation symmetryOperation = new SymmetryOperation(null, null, 0, opId, doNormalize);
-    if (!symmetryOperation.setMatrixFromXYZ(xyz0)) {
+    if (!symmetryOperation.setMatrixFromXYZ(xyz0, modulationDimension)) {
       Logger.error("couldn't interpret symmetry operation: " + xyz0);      
       return -1;
     }

@@ -650,7 +650,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       break;
     case PyMOL.OBJECT_MAPMESH:
     case PyMOL.OBJECT_MAPDATA:
-      processMap(pymolObject, type == PyMOL.OBJECT_MAPMESH);
+      processMap(pymolObject, type == PyMOL.OBJECT_MAPMESH, false);
       break;
     case PyMOL.OBJECT_GADGET:
       processGadget(pymolObject);
@@ -721,7 +721,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    */
   private void processGadget(JmolList<Object> pymolObject) {
     if (objectName.endsWith("_e_pot"))
-      processMap(pymolObject, true);
+      processMap(pymolObject, true, true);
   }
 
   /**
@@ -729,12 +729,13 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
    * 
    * @param pymolObject
    * @param isObject
+   * @param isGadget 
    */
-  private void processMap(JmolList<Object> pymolObject, boolean isObject) {
+  private void processMap(JmolList<Object> pymolObject, boolean isObject, boolean isGadget) {
     if (isObject) {
       if (isStateScript)
         return;
-      if (isHidden)
+      if (isHidden && !isGadget)
         return; // for now
       if (mapObjects == null)
         mapObjects = new JmolList<JmolList<Object>>();

@@ -117,7 +117,7 @@ public class Tensor {
 
   private static final String infoList = 
     ";............." + ";eigenvalues.." + ";eigenvectors."
-  + ";asymMatrix..." + ";symMatrix...." + ";value........"
+  + ";asymmatrix..." + ";symmatrix...." + ";value........"
   + ";isotropy....." + ";anisotropy..." + ";asymmetry...." 
   + ";eulerzyz....." + ";eulerzxz....." + ";quaternion..." 
   + ";indices......" + ";string......." + ";type.........";

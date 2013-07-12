@@ -407,7 +407,7 @@ class SpaceGroup {
     if (xyz0.startsWith("x1,x2,x3,x4")) {
       xyzList.clear();
       operationCount = 0;
-      modulationDimension = Parser.parseInt(xyz0.substring(xyz0.lastIndexOf("x") + 1)); 
+      modulationDimension = Parser.parseInt(xyz0.substring(xyz0.lastIndexOf("x") + 1)) - 1; 
     }
     boolean isSpecial = (xyz0.charAt(0) == '=');
     if (isSpecial) xyz0 = xyz0.substring(1);

@@ -56,8 +56,6 @@ import org.jmol.script.T;
  * LATT : http://macxray.chem.upenn.edu/LATT.pdf thank you, Patrick Carroll
  * 
  * NEVER ACCESS THESE METHODS DIRECTLY! ONLY THROUGH CLASS Symmetry
- * 
- *
  */
 
 
@@ -71,6 +69,7 @@ class SymmetryOperation extends Matrix4f {
   private P3 atomTest;
   private P3 temp3;
   
+  private String[] myLabels;
 
 
   /**
@@ -156,8 +155,26 @@ class SymmetryOperation extends Matrix4f {
       return false;
     xyzOriginal = xyz;
     xyz = xyz.toLowerCase();
-    float[] rotTransMatrix = new float[16];
-    float[] modulation = (modulationDimension == 0 ? null : new float[2 * modulationDimension]);
+    int n = 16;
+    if (modulationDimension > 0) {
+      n += 2 * modulationDimension; // +/- 1 and twelfths
+      if (modulationDimension == 1) {
+        myLabels = labelsX1234;
+      } else {
+        myLabels = new String[modulationDimension + 3];
+        for (int i = modulationDimension + 3; --i >= 0;)
+          myLabels[i] = "x" + i;
+      }
+    }
+    float[] rotTransMatrix = new float[n];
+    switch (modulationDimension) {
+    case 0:
+      break;
+    case 1:
+      break;
+    default:
+    }
+    
     boolean isReverse = (xyz.startsWith("!"));
     if (isReverse)
       xyz = xyz.substring(1);
@@ -214,7 +231,7 @@ class SymmetryOperation extends Matrix4f {
       //System.out.println("SymmetryOperation: " + xyz + "\n" + (Matrix4f)this + "\n" + this.xyz);
       return true;
     }
-    String strOut = getMatrixFromString(xyz, rotTransMatrix, rotTransMatrix, doNormalize, false);
+    String strOut = getMatrixFromString(xyz, rotTransMatrix, myLabels, doNormalize, false);
     if (strOut == null)
       return false;
     setA(rotTransMatrix);
@@ -229,21 +246,25 @@ class SymmetryOperation extends Matrix4f {
     return true;
   }
 
-  static String getMatrixFromString(String xyz, float[] rotTransMatrix, float[] modulation,
-                                    boolean doNormalize, boolean allowScaling) {
+  static String getMatrixFromString(String xyz, float[] rotTransMatrix,
+                                    String[] myLabels, boolean doNormalize, boolean allowScaling) {
     boolean isDenominator = false;
     boolean isDecimal = false;
     boolean isNegative = false;
-    boolean incommensurate = (modulation != null);
+    boolean incommensurate = (rotTransMatrix.length > 16);
+    rotTransMatrix[15] = 1; // 12ths
+    if (myLabels == null)
+      myLabels = labelsXYZ;
     char ch;
     int x = 0;
     int y = 0;
     int z = 0;
+    int w = 0;
     float iValue = 0;
     String strOut = "";
     String strT;
     int rowPt = -1;
-    
+
     float decimalMultiplier = 1f;
     xyz += ",";
     if (incommensurate) {
@@ -276,9 +297,8 @@ class SymmetryOperation extends Matrix4f {
           val *= iValue;
           iValue = 0;
         }
-        if (incommensurate && rowPt >= 0) {
-          int pt = 2 * (rowPt + 1);
-          modulation[pt] = val;   
+        if (incommensurate && rowPt > 0) {
+          w = val;
         } else {
           x = val;
         }
@@ -306,25 +326,27 @@ class SymmetryOperation extends Matrix4f {
         }
         // put translation into 12ths
         iValue = normalizeTwelfths(iValue, doNormalize);
+        int tpt;
         if (rowPt > 2 && incommensurate) {
-        modulation[2 * rowPt + 1] = iValue;
+          tpt = 16 + 2 * (rowPt + -2);
+          rotTransMatrix[tpt++] = w;
+          rotTransMatrix[tpt] = iValue;
         } else {
-        int tpt = rowPt * 4;
-        rotTransMatrix[tpt++] = x;
-        rotTransMatrix[tpt++] = y;
-        rotTransMatrix[tpt++] = z;
-        rotTransMatrix[tpt] = iValue;
-        strT = "";
-        strT += (x == 0 ? "" : x < 0 ? "-x" : strT.length() == 0 ? "x" : "+x");
-        strT += (y == 0 ? "" : y < 0 ? "-y" : strT.length() == 0 ? "y" : "+y");
-        strT += (z == 0 ? "" : z < 0 ? "-z" : strT.length() == 0 ? "z" : "+z");
-        strT += xyzFraction(iValue, false, true);
-        strOut += (strOut == "" ? "" : ",") + strT;
-        //note: when ptLatt[3] = -1, ptLatt[rowPt] MUST be 0.
-        if (rowPt == 2) {
-          rotTransMatrix[15] = 1;
-          return strOut;
-        }
+          tpt = rowPt * 4;
+          rotTransMatrix[tpt++] = x;
+          rotTransMatrix[tpt++] = y;
+          rotTransMatrix[tpt++] = z;
+          rotTransMatrix[tpt] = iValue;
+          strT = "";
+          strT += plusMinus(strT, x, "x");
+          strT += plusMinus(strT, y, "y");
+          strT += plusMinus(strT, z, "z");
+          strT += xyzFraction(iValue, false, true);
+          strOut += (strOut == "" ? "" : ",") + strT;
+          //note: when ptLatt[3] = -1, ptLatt[rowPt] MUST be 0.
+          if (rowPt == 2) {
+            return strOut;
+          }
         }
         x = y = z = 0;
         iValue = 0;
@@ -363,6 +385,10 @@ class SymmetryOperation extends Matrix4f {
     return null;
   }
 
+  private static String plusMinus(String strT, float x, String sx) {
+    return (x == 0 ? "" : x < 0 ? "-" : strT.length() == 0 ? "" : "+") + sx;
+  }
+
   private static float normalizeTwelfths(float iValue, boolean doNormalize) {
     iValue *= 12f;
     if (doNormalize) {
@@ -374,23 +400,25 @@ class SymmetryOperation extends Matrix4f {
     return iValue;
   }
 
+  final static String[] labelsXYZ = new String[] {"x", "y", "z"};
+
+  final static String[] labelsX1234 = new String[] {"x1", "x2", "x3", "x4"};
+
   final static String getXYZFromMatrix(Matrix4f mat, boolean is12ths,
                                        boolean allPositive, boolean halfOrLess) {
     String str = "";
+    String[] thisLabels = (mat instanceof SymmetryOperation ? ((SymmetryOperation) mat).myLabels : null);
+    if (thisLabels == null)
+      thisLabels = labelsXYZ;
     float[] row = new float[4];
     for (int i = 0; i < 3; i++) {
       mat.getRow(i, row);
       String term = "";
-      if (row[0] != 0)
-        term += (row[0] < 0 ? "-" : "+") + "x";
-      if (row[1] != 0)
-        term += (row[1] < 0 ? "-" : "+") + "y";
-      if (row[2] != 0)
-        term += (row[2] < 0 ? "-" : "+") + "z";
+      for (int j = 0; j < 3; j++)
+      if (row[j] != 0)
+        term +=  plusMinus(term, row[j], thisLabels[j]);
       term += xyzFraction((is12ths ? row[3] : row[3] * 12), allPositive,
           halfOrLess);
-      if (term.length() > 0 && term.charAt(0) == '+')
-        term = term.substring(1);
       str += "," + term;
     }
     return str.substring(1);

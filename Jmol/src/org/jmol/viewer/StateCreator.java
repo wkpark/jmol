@@ -739,6 +739,8 @@ public class StateCreator implements JmolStateCreator {
 
   private String getViewState(TransformManager tm, SB sfunc) {
     SB commands = new SB();
+    String moveToText = tm.getMoveToText(0, false); 
+    // finalizes transform parameters, in case that has not been done
     if (sfunc != null) {
       sfunc.append("  _setPerspectiveState;\n");
       commands.append("function _setPerspectiveState() {\n");
@@ -757,7 +759,7 @@ public class StateCreator implements JmolStateCreator {
     appendCmd(commands, "center " + Escape.eP(tm.fixedRotationCenter));
     commands.append(viewer.getOrientationText(T.state, null));
 
-    appendCmd(commands, tm.getMoveToText(0, false));
+    appendCmd(commands, moveToText);
     if (tm.stereoMode != EnumStereoMode.NONE)
       appendCmd(commands, "stereo "
           + (tm.stereoColors == null ? tm.stereoMode.getName() : Escape

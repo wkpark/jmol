@@ -385,9 +385,12 @@ abstract class BioShapeRenderer extends MeshRenderer {
         //System.out.println(e.getMessage());
       }
     }
-    g3d.fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid, diameterEnd,
-        controlPointScreens[iPrev], controlPointScreens[i],
-        controlPointScreens[iNext], controlPointScreens[iNext2]);
+    if (diameterBeg == 0 && diameterEnd == 0)
+      g3d.drawLineAB(controlPointScreens[i], controlPointScreens[iNext]);
+    else
+      g3d.fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid, diameterEnd,
+          controlPointScreens[iPrev], controlPointScreens[i],
+          controlPointScreens[iNext], controlPointScreens[iNext2]);
   }
 
   /**

@@ -12392,6 +12392,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // draw pointgroup [C2|C3|Cs|Ci|etc.] [n] [scale x]
     int pt = 2;
     String type = (tokAt(pt) == T.scale ? "" : optParameterAsString(pt));
+    if (type.equals("chemicalShift"))
+      type = "cs";
     float scale = 1;
     int index = 0;
     if (type.length() > 0) {

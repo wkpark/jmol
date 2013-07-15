@@ -750,7 +750,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private void setPropertySuper(String propertyName, Object value, BS bs) {
     if (propertyName == "thisID" && currentMesh != null 
-        && currentMesh.thisID.equals(value)) {
+        && currentMesh.thisID != null && currentMesh.thisID.equals(value)) {
       checkExplicit((String) value);
       return;
     }

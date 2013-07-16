@@ -557,7 +557,8 @@ public class StateManager {
         + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
         + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
         + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
-        + ";debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;exportdrivers"
+        + ";debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;"
+        + ";exportdrivers;exportscale"
         + ";_filecaching;_filecache;fontcaching;fontscaling;forcefield;language"
         + ";legacyautobonding;legacyhaddition"
         + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
@@ -863,6 +864,7 @@ public class StateManager {
       setS("energyUnits", energyUnits);
       //      setParameterValue("_fileCaching", _fileCaching);
       //      setParameterValue("_fileCache", _fileCache);
+      setF("exportScale", exportScale);
       setB("fontScaling", fontScaling);
       setB("fontCaching", fontCaching);
       setB("forceAutoBond", forceAutoBond);
@@ -1171,13 +1173,14 @@ public class StateManager {
     String defaultLabelPDB = "%m%r";
     float defaultTranslucent = 0.5f;
     int delayMaximumMs = 0;
-    float dipoleScale = 1.0f;
+    float dipoleScale = 1f;
     boolean disablePopupMenu = false;
     boolean dragSelected = false;
     boolean drawHover = false;
     boolean drawPicking = false;
     boolean dsspCalcHydrogen = true;
     String energyUnits = "kJ";
+    float exportScale = 1f;
     String helpPath = JC.DEFAULT_HELP_PATH;
     boolean fontScaling = false;
     boolean fontCaching = true;

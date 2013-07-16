@@ -183,10 +183,14 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
         defaultTickInfo = md.tickInfo;
         return;
       }
-      if (md.isAll && md.points.size() == 2 && md.points.get(0) instanceof BS 
-          && Measurement.nmrType(viewer.getDistanceUnits(md.strFormat)) 
-          == Measurement.NMR_JC)
+      if (md.isAll && md.points.size() == 2 && md.points.get(0) instanceof BS) {
+        int type = Measurement.nmrType(viewer.getDistanceUnits(md.strFormat));
+        switch (type) {
+          case Measurement.NMR_JC:
+          case Measurement.NMR_DC:
           md.htMin = viewer.getNMRCalculation().getMinDistances(md);
+        }
+      }
       tickInfo = md.tickInfo;
       radiusData = md.radiusData;
       htMin = md.htMin;

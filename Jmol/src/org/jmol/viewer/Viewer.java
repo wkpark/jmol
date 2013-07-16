@@ -5827,6 +5827,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.defaultDrawArrowScale;
     case T.dipolescale:
       return global.dipoleScale;
+    case T.exportscale:
+      return global.exportScale;
     case T.hbondsangleminimum:
       return global.hbondsAngleMinimum;
     case T.hbondsdistancemaximum:
@@ -6101,6 +6103,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setFloatPropertyTok(String key, int tok, float value) {
     switch (tok) {
+    case T.exportscale:
+      // 13.1.19
+      global.exportScale = value;
+      break;
     case T.starscale:
       // 13.1.15
       global.starScale = value;

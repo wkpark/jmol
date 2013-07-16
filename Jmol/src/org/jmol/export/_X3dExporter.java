@@ -55,31 +55,34 @@ public class _X3dExporter extends _VrmlExporter {
     output("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
     output("<!DOCTYPE X3D PUBLIC \"ISO//Web3D//DTD X3D 3.1//EN\" \"http://www.web3d.org/specifications/x3d-3.1.dtd\">\n");
     output("<X3D profile='Immersive' version='3.1' "
-      + "xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' "
-      + "xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.1.xsd '>"
-      + "\n");
+        + "xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' "
+        + "xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.1.xsd '>"
+        + "\n");
     output("<head>\n");
-    output("<meta name='title' content=" + Escape.eS(viewer.getModelSetName()).replace('<',' ').replace('>',' ').replace('&',' ') + "/>\n");
+    output("<meta name='title' content="
+        + Escape.eS(viewer.getModelSetName()).replace('<', ' ').replace('>',
+            ' ').replace('&', ' ') + "/>\n");
     output("<meta name='description' content='Jmol rendering'/>\n");
     output("<meta name='creator' content=' '/>\n");
     output("<meta name='created' content='" + getExportDate() + "'/>\n");
-    output("<meta name='generator' content='Jmol "+ Viewer.getJmolVersion() +", http://www.jmol.org'/>\n");
-		output("<meta name='license' content='http://www.gnu.org/licenses/licenses.html#LGPL'/>\n");
+    output("<meta name='generator' content='Jmol " + Viewer.getJmolVersion()
+        + ", http://www.jmol.org'/>\n");
+    output("<meta name='license' content='http://www.gnu.org/licenses/licenses.html#LGPL'/>\n");
     output("</head>\n");
     output("<Scene>\n");
 
     output("<NavigationInfo type='EXAMINE'/>\n");
     // puts the viewer into model-rotation mode
-    output("<Background skyColor='" 
-      + rgbFractionalFromColix(backgroundColix) + "'/>\n");
-    // next is an approximation only 
-    float angle = (float) (aperatureAngle * Math.PI / 180);
-    viewer.getAxisAngle(viewpoint);
-    output("<Viewpoint fieldOfView='" + angle
-      + "' position='" + round(cameraPosition)
-      + "' orientation='" + viewpoint.x + " " + viewpoint.y + " " 
-      + (viewpoint.angle == 0 ? 1 : viewpoint.z) + " " + -viewpoint.angle
-      + "'\n jump='true' description='v1'/>\n");
+    output("<Background skyColor='" + rgbFractionalFromColix(backgroundColix)
+        + "'/>\n");
+    // next is an approximation only
+    float angle = getViewpoint();
+    output("<Viewpoint fieldOfView='" + angle);
+    output("' position='");
+    output(cameraPosition);
+    output("' orientation='");
+    output(tempP1);
+    output(" " + -viewpoint.angle + "'\n jump='true' description='v1'/>\n");
     output("\n  <!-- ");
     output(getJmolPerspective());
     output("\n  -->\n\n");
@@ -135,7 +138,7 @@ public class _X3dExporter extends _VrmlExporter {
       tempV1.scale(0.5f);
       output(tempV1);
       output("'><Billboard axisOfRotation='0 0 0'><Transform rotation='1 0 0 1.5708'>");
-      outputCylinderChild(pt1, tempP3, colix, GData.ENDCAPS_FLAT, radius);
+      outputCylinderChildScaled(pt1, tempP3, colix, GData.ENDCAPS_FLAT, radius);
       output("</Transform></Billboard>");
       output("</Transform>\n");
       
@@ -181,7 +184,8 @@ public class _X3dExporter extends _VrmlExporter {
   @Override
   protected void outputCone(P3 ptBase, P3 ptTip, float radius,
                             short colix) {
-    float height = ptBase.distance(ptTip);
+    radius = scale(radius);
+    float height = scale(ptBase.distance(ptTip));
     output("<Transform");
     outputTransRot(ptBase, ptTip, 0, 1, 0);
     output(">\n<Shape ");
@@ -220,7 +224,7 @@ public class _X3dExporter extends _VrmlExporter {
       pt2.set(0, 0, 1);
     }
     output(">\n");
-    outputCylinderChild(pt1, pt2, colix, endcaps, radius);
+    outputCylinderChildScaled(pt1, pt2, colix, endcaps, radius);
     output("\n</Transform>\n");
     if (endcaps == GData.ENDCAPS_SPHERICAL) {
       outputSphere(pt1, radius * 1.01f, colix, true);
@@ -229,9 +233,10 @@ public class _X3dExporter extends _VrmlExporter {
     return true;
   }
 
-  private void outputCylinderChild(P3 pt1, P3 pt2, short colix,
+  private void outputCylinderChildScaled(P3 pt1, P3 pt2, short colix,
                                    byte endcaps, float radius) {
-    float length = pt1.distance(pt2);
+    float length = scale(pt1.distance(pt2));
+    radius = scale(radius);
     String child = useTable.getDef("C" + colix + "_" + (int) (length * 100) + "_"
         + radius + "_" + endcaps);
     output("<Shape ");
@@ -267,12 +272,12 @@ public class _X3dExporter extends _VrmlExporter {
     outputQuaternionFrame(center, points[1], points[3], points[5], 1, "='", "'");
     output(">");
     tempP3.set(0, 0, 0);
-    outputSphereChild(tempP3, 1.0f, colix);
+    outputSphereChildUnscaled(tempP3, 1.0f, colix);
     output("</Transform>\n");
   }
 
   @Override
-  protected void outputSphereChild(P3 center, float radius, short colix) {
+  protected void outputSphereChildUnscaled(P3 center, float radius, short colix) {
     output("<Transform translation='");
     output(center);
     output("'>\n<Shape ");

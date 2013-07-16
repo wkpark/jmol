@@ -46,7 +46,6 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
@@ -171,6 +170,7 @@ public abstract class ___Exporter {
   protected float cameraDistance;
   protected float aperatureAngle;
   protected float scalePixelsPerAngstrom;
+  protected float exportScale = 1; // currently VRML and X3D only
 
 
 
@@ -197,7 +197,6 @@ public abstract class ___Exporter {
   final protected V3 tempV1 = new V3();
   final protected V3 tempV2 = new V3();
   final protected V3 tempV3 = new V3();
-  final protected AxisAngle4f tempA = new AxisAngle4f();
   
   public ___Exporter() {
   }
@@ -217,6 +216,8 @@ public abstract class ___Exporter {
     this.privateKey = privateKey;
     backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);
     center.setT(viewer.getRotationCenter());
+    exportScale = viewer.getFloat(T.exportscale);
+
     if ((screenWidth <= 0) || (screenHeight <= 0)) {
       screenWidth = viewer.getScreenWidth();
       screenHeight = viewer.getScreenHeight();
@@ -256,7 +257,7 @@ public abstract class ___Exporter {
   }
 
   abstract protected void outputHeader();
-  
+
   protected int nBytes;
   protected void output(String data) {
     nBytes += data.length();

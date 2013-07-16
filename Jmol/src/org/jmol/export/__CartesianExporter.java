@@ -110,6 +110,31 @@ abstract public class __CartesianExporter extends ___Exporter {
     }
   }
 
+  /**
+   * used only for VRML and X3D; could be expanded
+   * 
+   * @param f
+   * @return f*exportScale
+   */
+  protected float scale(float f) {
+    return f * exportScale;
+  }
+  
+  protected P3 ptScaled = new P3();
+  /**
+   * used only for VRML and X3D; could be expanded
+   * 
+   * @param pt
+   * @return pt or pt scaled by exportScale
+   */
+  protected Tuple3f scalePt(Tuple3f pt) {
+    if (exportScale == 1)
+      return pt;
+    ptScaled.setT(pt);
+    ptScaled.scale(exportScale);
+    return ptScaled;
+  }
+
   protected int getCoordinateMap(Tuple3f[] vertices, int[] coordMap, BS bsValid) {
     int n = 0;
     for (int i = 0; i < coordMap.length; i++) {
@@ -332,7 +357,7 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   protected Matrix4f sphereMatrix = new Matrix4f();
 
-  protected void setSphereMatrix(P3 center, float rx, float ry, float rz,
+  protected void setSphereMatrix(Tuple3f center, float rx, float ry, float rz,
                                  AxisAngle4f a, Matrix4f sphereMatrix) {
     if (a != null) {
       Matrix3f mq = new Matrix3f();

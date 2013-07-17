@@ -1,6 +1,6 @@
 package org.openscience.jmolandroid.api;
 
-import org.jmol.util.Point3f;
+import org.jmol.util.P3;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolFileAdapterInterface;
@@ -21,7 +21,7 @@ public class Platform implements ApiPlatform {
   ///// Display -- AndroidUpdateListener
   
   @Override
-  public void convertPointFromScreen(Object display, Point3f ptTemp) {
+  public void convertPointFromScreen(Object display, P3 ptTemp) {
     // unnecessary
   }
 
@@ -75,9 +75,10 @@ public class Platform implements ApiPlatform {
 
   ////// Image 
 
-  public Object allocateRgbImage(int windowWidth, int windowHeight,
-                                 int[] pBuffer, int windowSize,
-                                 boolean backgroundTransparent) {
+	@Override
+	public Object allocateRgbImage(int windowWidth, int windowHeight,
+			int[] pBuffer, int windowSize, boolean backgroundTransparent,
+			boolean isImageWrite) {
     return Image.allocateRgbImage(windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent);
   }
 
@@ -196,6 +197,8 @@ public class Platform implements ApiPlatform {
 	public String getDateFormat() {
 		return null;
 	}
+
+
 }
 
 

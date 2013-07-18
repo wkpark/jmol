@@ -10109,7 +10109,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (scriptManager != null && scriptManager.isQueueProcessing() ? Boolean.TRUE : Boolean.FALSE);
   }
 
-  private JmolNMRInterface nmrCalculation;
+  JmolNMRInterface nmrCalculation;
   
   public JmolNMRInterface getNMRCalculation() {
     return (nmrCalculation == null ? (nmrCalculation = (JmolNMRInterface) Interface

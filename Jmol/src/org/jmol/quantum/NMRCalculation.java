@@ -403,21 +403,36 @@ public class NMRCalculation implements JmolNMRInterface {
                                         BS bs) {
 
     JmolList<Object> data = new JmolList<Object>();
-    boolean isJ = tensorType.startsWith("isc") && infoType.equals(";jcoupling.");
-    boolean isChi = tensorType.startsWith("efg") && infoType.equals(";chi.");
-    if (tensorType.startsWith("isc")) {
+    JmolList<Object> list1;
+    if (infoType.equals(";dc.")) {
+      // tensorType is irrelevant for dipolar coupling constant
+      Atom[] atoms = viewer.modelSet.atoms;
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+        for (int j = bs.nextSetBit(i + 1); j >= 0; j = bs.nextSetBit(j + 1)) {
+          list1 = new JmolList<Object>();
+          list1.addLast(Integer.valueOf(atoms[i].index));
+          list1.addLast(Integer.valueOf(atoms[j].index));
+          list1.addLast(Float.valueOf(getDipolarConstantHz(atoms[i], atoms[j])));
+          data.addLast(list1);          
+        }
+    } else if (tensorType.startsWith("isc")) {
+      boolean isJ = infoType.equals(";jcoupling.");
       JmolList<Tensor> list = getInteractionTensorList(tensorType, bs, null);
       int n = (list == null ? 0 : list.size());
       for (int i = 0; i < n; i++) {
         Tensor t = list.get(i);
-        data.addLast(isJ ? new float[] { t.atomIndex1, t.atomIndex2,
-            getJCouplingHz(null, null, null, t) } : t.getInfo(infoType));
+        list1 = new JmolList<Object>();
+        list1.addLast(Integer.valueOf(t.atomIndex1));
+        list1.addLast(Integer.valueOf(t.atomIndex2));
+        list1.addLast(isJ ?  Float.valueOf(getJCouplingHz(null, null, null, t)) : t.getInfo(infoType));
+        data.addLast(list1);          
       }
     } else {
+      boolean isChi = tensorType.startsWith("efg") && infoType.equals(";chi.");
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         Tensor t = getAtomTensor(i, tensorType);
-        data.addLast(t == null ? null : isChi ? Float
-            .valueOf(getQuadrupolarConstant(t)) : t.getInfo(infoType));
+        data.addLast(t == null ? null : new Object[] {Integer.valueOf(i), isChi ?  
+            Float.valueOf(getQuadrupolarConstant(t)) : t.getInfo(infoType) });
       }
     }
     return data;

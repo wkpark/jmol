@@ -412,8 +412,9 @@ public class NMRCalculation implements JmolNMRInterface {
           list1 = new JmolList<Object>();
           list1.addLast(Integer.valueOf(atoms[i].index));
           list1.addLast(Integer.valueOf(atoms[j].index));
-          list1.addLast(Float.valueOf(getDipolarConstantHz(atoms[i], atoms[j])));
-          data.addLast(list1);          
+          list1
+              .addLast(Float.valueOf(getDipolarConstantHz(atoms[i], atoms[j])));
+          data.addLast(list1);
         }
     } else if (tensorType.startsWith("isc")) {
       boolean isJ = infoType.equals(";jcoupling.");
@@ -424,15 +425,16 @@ public class NMRCalculation implements JmolNMRInterface {
         list1 = new JmolList<Object>();
         list1.addLast(Integer.valueOf(t.atomIndex1));
         list1.addLast(Integer.valueOf(t.atomIndex2));
-        list1.addLast(isJ ?  Float.valueOf(getJCouplingHz(null, null, null, t)) : t.getInfo(infoType));
-        data.addLast(list1);          
+        list1.addLast(isJ ? Float.valueOf(getJCouplingHz(null, null, null, t))
+            : t.getInfo(infoType));
+        data.addLast(list1);
       }
     } else {
       boolean isChi = tensorType.startsWith("efg") && infoType.equals(";chi.");
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         Tensor t = getAtomTensor(i, tensorType);
-        data.addLast(t == null ? null : new Object[] {Integer.valueOf(i), isChi ?  
-            Float.valueOf(getQuadrupolarConstant(t)) : t.getInfo(infoType) });
+        data.addLast(t == null ? null : isChi ? Float
+            .valueOf(getQuadrupolarConstant(t)) : t.getInfo(infoType));
       }
     }
     return data;

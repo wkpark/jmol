@@ -333,11 +333,9 @@ public class NMRCalculation implements JmolNMRInterface {
   }
 
   public float getChemicalShift(Atom atom) {
-    float[] data = viewer.getDataFloat("property_cs");
-    if (data != null) {
-      
-    }
-    float v = getMagneticShielding(atom);
+    float v = viewer.getDataFloatAt("property_cs", atom.index);
+    if (Float.isNaN(v))
+      v = getMagneticShielding(atom);
     if (!Float.isNaN(v)) {
       String sym = atom.getElementSymbol();
       Float ref = shiftRefsPPM.get(sym);

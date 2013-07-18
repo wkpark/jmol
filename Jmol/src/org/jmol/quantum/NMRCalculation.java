@@ -41,6 +41,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.SB;
 import org.jmol.util.Tensor;
 import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
@@ -347,7 +348,19 @@ public class NMRCalculation implements JmolNMRInterface {
 
   private Map<String, Float> shiftRefsPPM = new Hashtable<String, Float>();
   
+  public boolean getState(SB sb) {
+    if (shiftRefsPPM.isEmpty())
+      return false;
+    for (Entry<String, Float> nuc : shiftRefsPPM.entrySet())
+      sb.append("  set shift_").append(nuc.getKey()).append(" ").appendO(nuc.getValue()).append("\n");
+    return true;
+  }
+  
   public boolean setChemicalShiftReference(String element, float value) {
+    if (element == null) {
+      shiftRefsPPM.clear();
+      return false;
+    }      
     element = element.substring(0, 1).toUpperCase() + element.substring(1);
     shiftRefsPPM.put(element, Float.valueOf(value));
     return true;

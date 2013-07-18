@@ -2784,6 +2784,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       modelManager.zap();
       if (scriptManager != null)
         scriptManager.clear(false);
+      if (nmrCalculation != null)
+        getNMRCalculation().setChemicalShiftReference(null, 0);
+
       if (haveDisplay) {
         mouse.clear();
         clearTimeouts();

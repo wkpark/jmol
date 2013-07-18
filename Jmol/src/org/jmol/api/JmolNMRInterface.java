@@ -7,6 +7,7 @@ import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
 import org.jmol.util.JmolList;
+import org.jmol.util.SB;
 import org.jmol.util.Tensor;
 import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
@@ -86,5 +87,7 @@ public interface JmolNMRInterface {
   public JmolList<Object> getTensorInfo(String tensorType, String infoType, BS bs);
 
   public Map<String, Float> getMinDistances(MeasurementData md);
+
+  public boolean getState(SB sb);
   
 }

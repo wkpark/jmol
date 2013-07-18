@@ -74,6 +74,7 @@ public class Measurement {
   private AxisAngle4f aa;
   private P3 pointArc;
   public Text text;
+  private String type;
 
   public Measurement setM(ModelSet modelSet, Measurement m, float value, short colix,
                           String strFormat, int index) {
@@ -305,13 +306,16 @@ public class Measurement {
         if (i1 >= 0 && i2 >= 0) {
           Atom a1 = (Atom) getAtom(1);
           Atom a2 = (Atom) getAtom(2);
+          boolean isDC = (!isPercent && nmrType(units) == NMR_DC);
+          type = (isPercent ? "percent" : isDC ? "dipoleCouplingConstant"
+              : "J-CouplingConstant");
           dist = (isPercent ? dist
-              / a1.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)
-              + a2.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO) : 
-                nmrType(units) == NMR_DC ? viewer.getNMRCalculation()
-              .getDipolarConstantHz(a1, a2) : viewer.getNMRCalculation()
-              .getJCouplingHz(a1, a2, units, null));
-            isValid = !Float.isNaN(dist);
+              / (a1.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)
+              + a2.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO))
+              : isDC ? viewer.getNMRCalculation().getDipolarConstantHz(a1, a2)
+                  : viewer.getNMRCalculation().getJCouplingHz(a1, a2, units,
+                      null));
+          isValid = !Float.isNaN(dist);
           if (isPercent)
             units = "pm";
         }
@@ -492,7 +496,7 @@ public class Measurement {
   public String getInfoAsString(String units) {
     float f = fixValue(units, true);
     SB sb = new SB();
-    sb.append(count == 2 ? (units != null && units.indexOf("hz") >= 0 ? "dipolarCouplingConstant" : "distance") : count == 3 ? "angle" : "dihedral");
+    sb.append(count == 2 ? (type == null ? "distance" : type) : count == 3 ? "angle" : "dihedral");
     sb.append(" \t").appendF(f);
     sb.append(" \t").append(Escape.eS(strMeasurement));
     for (int i = 1; i <= count; i++)

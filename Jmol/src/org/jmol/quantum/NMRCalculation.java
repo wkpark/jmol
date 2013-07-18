@@ -403,10 +403,10 @@ public class NMRCalculation implements JmolNMRInterface {
                                         BS bs) {
 
     JmolList<Object> data = new JmolList<Object>();
-    boolean isJ = tensorType.equals("isc") && infoType.equals(";jcoupling.");
-    boolean isChi = tensorType.equals("efg") && infoType.equals(";chi.");
-    if (tensorType.equals("isc")) {
-      JmolList<Tensor> list = getInteractionTensorList("isc", bs, null);
+    boolean isJ = tensorType.startsWith("isc") && infoType.equals(";jcoupling.");
+    boolean isChi = tensorType.startsWith("efg") && infoType.equals(";chi.");
+    if (tensorType.startsWith("isc")) {
+      JmolList<Tensor> list = getInteractionTensorList(tensorType, bs, null);
       int n = (list == null ? 0 : list.size());
       for (int i = 0; i < n; i++) {
         Tensor t = list.get(i);

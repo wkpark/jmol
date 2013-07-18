@@ -17,7 +17,7 @@
   <property name="temp.dir"        value="build/release" />
   <property name="web.dir"         value="/home/frs/project/j/jm/jmol" />
   <property name="web.host"        value="frs.sourceforge.net" />
-  <property name="path.release"    value="Jmol Prerelease Tests/Prerelease 13.1" />
+  <property name="path.release"    value="Jmol Prerelease Tests/Prerelease 13.3" />
   <property name="prefix.release"  value="Prerelease " />
 
   <property file="${dist.dir}/Jmol.properties" prefix="Jmol.properties" />
@@ -36,7 +36,7 @@
 
     <!-- Ask user for confirmation -->
     <input
-      message="Version ${version}. Do you really want to copy files to the website (y/n) ?"
+      message="Do you really want to copy files to ${path.release}/${prefix.release}${version} (y/n) ?"
       validargs="y,n"
       addproperty="do.scp"
     />

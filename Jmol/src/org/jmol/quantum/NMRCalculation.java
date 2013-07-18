@@ -417,7 +417,7 @@ public class NMRCalculation implements JmolNMRInterface {
           data.addLast(list1);
         }
     } else if (tensorType.startsWith("isc")) {
-      boolean isJ = infoType.equals(";jcoupling.");
+      boolean isJ = infoType.equals(";j.");
       JmolList<Tensor> list = getInteractionTensorList(tensorType, bs, null);
       int n = (list == null ? 0 : list.size());
       for (int i = 0; i < n; i++) {

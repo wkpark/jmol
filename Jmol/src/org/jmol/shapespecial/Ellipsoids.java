@@ -72,7 +72,7 @@ public class Ellipsoids extends Shape {
     boolean isAll = (bsSelected == null);
     if (!isAll && selectedAtoms != null)
       bsSelected = selectedAtoms;
-    JmolList<Tensor> tensors = viewer.getNMRCalculation().getAllAtomTensors(typeSelected);
+    JmolList<Tensor> tensors = viewer.modelSet.getAllAtomTensors(typeSelected);
     if (tensors == null)
       return;
     Atom[] atoms = modelSet.atoms;

@@ -3165,7 +3165,7 @@ abstract public class ModelCollection extends BondCollection {
     setOccupancy(atomCount, occupancy);
     setPartialCharge(atomCount, partialCharge);
     if (tensors != null)
-      viewer.getNMRCalculation().setAtomTensors((ModelSet) this, atomCount, tensors);
+      setAtomTensors(atomCount, tensors);
     atom.group = group;
     atom.colixAtom = viewer.getColixAtomPalette(atom, EnumPalette.CPK.id);
     if (atomName != null) {

@@ -161,7 +161,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   protected void newSg() {
     sg = new SurfaceGenerator(viewer, this, null, jvxlData = new JvxlData());
-    sg.getParams().showTiming = viewer.global.showTiming;
+    sg.getParams().showTiming = viewer.getBoolean(T.showtiming);
     sg.setVersion("Jmol " + Viewer.getJmolVersion());
   }
   

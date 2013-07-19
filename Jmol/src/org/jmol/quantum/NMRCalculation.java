@@ -35,7 +35,6 @@ import org.jmol.api.JmolNMRInterface;
 import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
-import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
@@ -342,7 +341,7 @@ public class NMRCalculation implements JmolNMRInterface {
   }
 
   public float getMagneticShielding(Atom atom) {
-    Tensor t = getAtomTensor(atom.index, "ms");
+    Tensor t = viewer.modelSet.getAtomTensor(atom.index, "ms");
     return (t == null ? Float.NaN : t.getIso());
   }
 
@@ -366,39 +365,6 @@ public class NMRCalculation implements JmolNMRInterface {
     return true;
   }
 
-  public void setAtomTensors(ModelSet ms, int atomIndex, JmolList<Tensor> list) {
-    if (list == null || list.size() == 0)
-      return;
-    if (ms.atomTensors == null)
-      ms.atomTensors = new Hashtable<String, JmolList<Tensor>>();
-    if (ms.atomTensorList == null)
-      ms.atomTensorList = new Tensor[ms.atoms.length][];
-    ms.atomTensorList[atomIndex] = getTensorList(list);
-    Atom[] atoms = ms.atoms;
-    for (int i = list.size(); --i >= 0;) {
-      Tensor t = list.get(i);
-      t.atomIndex1 = atomIndex;
-      t.atomIndex2 = -1;
-      t.modelIndex = atoms[atomIndex].modelIndex;
-      ms.addTensor(t, t.type);
-      if (t.altType != null)
-        ms.addTensor(t, t.altType); 
-    }
-  }
-
-  public JmolList<Tensor> getAllAtomTensors(String type) {
-    if (viewer.modelSet.atomTensors == null)
-      return null;
-    if (type != null)
-      return viewer.modelSet.atomTensors.get(type.toLowerCase());
-    JmolList<Tensor> list = new JmolList<Tensor>();
-    for (Entry<String, JmolList<Tensor>> e : viewer.modelSet.atomTensors.entrySet()) {
-      JmolList<Tensor> list2 = e.getValue();
-      list.addAll(list2);
-    }
-    return list;
-  }
-  
   public JmolList<Object> getTensorInfo(String tensorType, String infoType,
                                         BS bs) {
 
@@ -432,57 +398,12 @@ public class NMRCalculation implements JmolNMRInterface {
     } else {
       boolean isChi = tensorType.startsWith("efg") && infoType.equals(";chi.");
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-        Tensor t = getAtomTensor(i, tensorType);
+        Tensor t = viewer.modelSet.getAtomTensor(i, tensorType);
         data.addLast(t == null ? null : isChi ? Float
             .valueOf(getQuadrupolarConstant(t)) : t.getInfo(infoType));
       }
     }
     return data;
-  }
-
-  private static Tensor[] getTensorList(JmolList<Tensor> list) {
-    int pt = -1;
-    boolean haveTLS = false;
-    int n = list.size();
-    for (int i = n; --i >= 0;) {
-      Tensor t = list.get(i);
-      if (t.forThermalEllipsoid)
-        pt = i;
-      else if (t.iType == Tensor.TYPE_TLS_U)
-        haveTLS = true;
-    }
-    Tensor[] a = new Tensor[(pt >= 0 || !haveTLS ? 0 : 1) + n];
-    if (pt >= 0) {
-      a[0] = list.get(pt);
-      if (list.size() == 1)
-        return a;
-    }
-    // back-fills list for TLS:
-    // 0 = temp, 1 = TLS-R, 2 = TLS-U
-    if (haveTLS) {
-      pt = 0;
-      for (int i = n; --i >= 0;) {
-        Tensor t = list.get(i);
-        if (t.forThermalEllipsoid)
-          continue;
-        a[++pt] = t;
-      }
-    } else {
-      for (int i = 0; i < n; i++)
-        a[i] = list.get(i);
-    }
-    return a;
- }
-
-  private Tensor getAtomTensor(int i, String type) {
-    Tensor[] tensors = viewer.modelSet.getAtomTensorList(i);
-    if (tensors == null || type == null)
-      return null;
-    type = type.toLowerCase();
-    for (int j = 0; j < tensors.length; j++)
-      if (tensors[j] != null && type.equals(tensors[j].type))
-        return tensors[j];
-    return null;
   }
 
   public Map<String, Float> getMinDistances(MeasurementData md) {

@@ -105,7 +105,7 @@ public final class ModelLoader {
       viewer.resetShapes(false);
     }
     modelSet.preserveState = viewer.getPreserveState();
-    modelSet.showRebondTimes = viewer.global.showTiming;
+    modelSet.showRebondTimes = viewer.getBoolean(T.showtiming);
     if (bsNew == null) {
       initializeInfo(modelSetName, null);
       createModelSet(null, null, null);

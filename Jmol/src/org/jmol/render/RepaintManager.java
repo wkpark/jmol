@@ -26,6 +26,7 @@ package org.jmol.render;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolRepaintManager;
 import org.jmol.modelset.ModelSet;
+import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.util.BS;
 import org.jmol.util.GData;
@@ -183,7 +184,7 @@ public class RepaintManager implements JmolRepaintManager {
   /////////// actual rendering ///////////
   
   public void render(GData gdata, ModelSet modelSet, boolean isFirstPass, int[] minMax) {
-    boolean logTime = viewer.global.showTiming;
+    boolean logTime = viewer.getBoolean(T.showtiming);
     try {
       JmolRendererInterface g3d = (JmolRendererInterface) gdata;
       g3d.renderBackground(null);
@@ -224,7 +225,7 @@ public class RepaintManager implements JmolRepaintManager {
   public String renderExport(String type, GData gdata, ModelSet modelSet,
                       String fileName) {
     boolean isOK;
-    boolean logTime = viewer.global.showTiming;
+    boolean logTime = viewer.getBoolean(T.showtiming);
     viewer.finalizeTransformParameters();
     shapeManager.finalizeAtoms(null, null);
     shapeManager.transformAtoms();

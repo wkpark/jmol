@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
-import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.SB;
@@ -80,9 +79,6 @@ public interface JmolNMRInterface {
    */
   public float getChemicalShift(Atom atom);  
   public boolean setChemicalShiftReference(String element, float value);
-
-  public JmolList<Tensor> getAllAtomTensors(String type);
-  public void setAtomTensors(ModelSet ms, int i, JmolList<Tensor> tensors);
 
   public JmolList<Object> getTensorInfo(String tensorType, String infoType, BS bs);
 

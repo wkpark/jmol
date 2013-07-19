@@ -203,6 +203,8 @@ public final class Resolver implements JmolBioResolver {
   
   public void addImplicitHydrogenAtoms(JmolAdapter adapter, int iGroup, int nH) {
     String group3 = modelLoader.getGroup3(iGroup);
+    if (group3 != null && group3.equals("FS4"))
+      System.out.println("hest");
     int nH1;
     if (haveHsAlready || group3 == null
         || (nH1 = JC.getStandardPdbHydrogenCount(Group
@@ -228,9 +230,9 @@ public final class Resolver implements JmolBioResolver {
     bsAddedHydrogens.setBits(atomCount, atomCount + nH);
     boolean isHetero = modelSet.atoms[iFirst].isHetero();
     for (int i = 0; i < nH; i++)
-      modelSet.addAtom(modelSet.atoms[iFirst].modelIndex, modelSet.atoms[iFirst].getGroup(), (short) 1, "H", 0,
+      modelSet.addAtom(modelSet.atoms[iFirst].modelIndex, modelSet.atoms[iFirst].getGroup(), 1, "H", 0,
           0, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 0, 0, 1, 0,
-          null, isHetero, (byte) 0, null).delete(null);
+          null, isHetero, (byte) 0, null).deleteBonds(null);
   }
 
   public void getBondInfo(JmolAdapter adapter, String group3, Object model) {
@@ -483,8 +485,7 @@ public final class Resolver implements JmolBioResolver {
           Atom atomO = bonds1[j].getOtherAtom(atom1);
           if (atomO.getElementNumber() == 8) {
             bsAddedHydrogens.set(atomH.index);
-            atomH.delete(bsBondsDeleted);
-            // could do this... atom.setFormalCharge(atom.getFormalCharge() - 1);
+            atomH.deleteBonds(bsBondsDeleted);
             break;
           }
         }
@@ -499,8 +500,9 @@ public final class Resolver implements JmolBioResolver {
     Atom[] atoms = modelSet.atoms;
     // fix terminal N groups as +1
     for (int i = bsAtomsForHs.nextSetBit(0); i >= 0; i = bsAtomsForHs.nextSetBit(i + 1)) {
-      if (atoms[i].getGroup().getNitrogenAtom() == atoms[i] && atoms[i].getCovalentBondCount() == 1)
-        atoms[i].setFormalCharge(1);
+      Atom a = atoms[i];
+      if (a.getGroup().getNitrogenAtom() == a && a.getCovalentBondCount() == 1)
+        a.setFormalCharge(1);
       if ((i = bsAtomsForHs.nextClearBit(i + 1)) < 0)
         break;
     }

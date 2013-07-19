@@ -798,7 +798,7 @@ public class SmilesParser {
         name = pattern.substring(biopt + 1).toUpperCase();
         if ((biopt = name.indexOf("#")) >= 0) {
           getDigits(name, biopt + 1, ret);
-          newAtom.elementNumber = (short) ret[0];
+          newAtom.elementNumber = ret[0];
           name = name.substring(0, biopt);
         }
         if (name.length() == 0)
@@ -844,7 +844,7 @@ public class SmilesParser {
             break;
           case '#':
             index = getDigits(pattern, index + 1, ret);
-            newAtom.elementNumber = (short) ret[0];
+            newAtom.elementNumber = ret[0];
             break;
           case '-':
           case '+':

@@ -1208,7 +1208,7 @@ abstract public class AtomCollection {
         }
         if (doAll && atom.getCovalentHydrogenCount() > 0)
           continue;
-        int n = getImplicitHydrogenCount(atom);
+        int n = getImplicitHydrogenCount(atom, false);
         if (n == 0)
           continue;
         int targetValence = aaRet[0];
@@ -1368,8 +1368,10 @@ abstract public class AtomCollection {
 
   private int[] aaRet;
   
-  int getImplicitHydrogenCount(Atom atom) {
+  int getImplicitHydrogenCount(Atom atom, boolean allowNegative) {
     int targetValence = atom.getTargetValence();
+    if (targetValence < 0)
+      return 0;
     int charge = atom.getFormalCharge();
     if (aaRet == null)
       aaRet = new int[4];
@@ -1391,9 +1393,26 @@ abstract public class AtomCollection {
       aaRet[0] = targetValence;
     }
     int n = targetValence - atom.getValence();
-    return (n < 0 ? 0 : n);
+    return (n < 0 && !allowNegative ? 0 : n);
   }
 
+  public int fixFormalCharges(BS bs) {
+    int n = 0;
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      Atom a = atoms[i];
+      int nH = getImplicitHydrogenCount(a, true);
+      if (nH != 0) {
+        int c0 = a.getFormalCharge();
+        int c = c0 - nH;
+        a.setFormalCharge(c);
+        taintAtom(i, TAINT_FORMALCHARGE);
+        if (Logger.debugging)
+          Logger.debug("atom " + a + " formal charge " + c0 + " -> " + c);
+        n++;
+      }
+    }    
+    return n;
+  }
   private final static float sqrt3_2 = (float) (Math.sqrt(3) / 2);
   private final static V3 vRef = V3.new3(3.14159f, 2.71828f, 1.41421f);
   private final static float almost180 = (float) Math.PI * 0.95f;

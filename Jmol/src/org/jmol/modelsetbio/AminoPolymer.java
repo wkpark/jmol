@@ -33,6 +33,7 @@ import org.jmol.script.T;
 //import org.jmol.util.Escape;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
@@ -368,7 +369,7 @@ public class AminoPolymer extends AlphaPolymer {
     default:
       order = JmolEdge.BOND_H_CALC;
     }
-    vHBonds.addLast(new HBond(nitrogen, oxygen, order, (short) 1, (short) 0, energy));
+    vHBonds.addLast(new HBond(nitrogen, oxygen, order, (short) 1, C.INHERIT_ALL, energy));
   }
 
   ////////////////////// DSSP /////////////////////
@@ -993,7 +994,7 @@ public class AminoPolymer extends AlphaPolymer {
         return;
       htTemp.put(key, Boolean.TRUE);
     }
-    vHBonds.addLast(new HBond(nitrogen, oxygen, type, (short) 1, (short) 0, iEnergy / 1000f));
+    vHBonds.addLast(new HBond(nitrogen, oxygen, type, (short) 1, C.INHERIT_ALL, iEnergy / 1000f));
   }
 
   /**

@@ -127,7 +127,7 @@ public class Labels extends AtomShape {
           continue;
         text = getLabel(i);
         if (text == null) {
-          text = Text.newLabel(gdata, null, strings[i], (short) 0, (short) 0, 0, scalePixelsPerMicron, null);
+          text = Text.newLabel(gdata, null, strings[i], C.INHERIT_ALL, (short) 0, 0, scalePixelsPerMicron, null);
           putLabel(i, text);
         } else {
           text.setScalePixelsPerMicron(scalePixelsPerMicron);
@@ -438,7 +438,7 @@ public class Labels extends AtomShape {
     addString(atom, i, label, strLabel);
     text = getLabel(i);
     if (isScaled) {
-      text = Text.newLabel(gdata, null, label, (short) 0, (short) 0, 0, scalePixelsPerMicron, null);
+      text = Text.newLabel(gdata, null, label, C.INHERIT_ALL, (short) 0, 0, scalePixelsPerMicron, null);
       putLabel(i, text);
     } else if (text != null && label != null) {
       text.setText(label);

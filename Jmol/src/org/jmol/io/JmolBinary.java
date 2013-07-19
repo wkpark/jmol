@@ -491,7 +491,7 @@ public class JmolBinary {
     return (pathName.indexOf(".png") < 0 ? null : getJzu().getCachedPngjBytes(fm, pathName));
   }
 
-  static boolean cachePngjFile(FileManager fm, String[] data) {
+  public static boolean cachePngjFile(FileManager fm, String[] data) {
     return getJzu().cachePngjFile(fm, data);
   }
   

@@ -47,7 +47,7 @@ public abstract class JmolAdapterAtomIterator {
 
 	abstract public Object getUniqueID();
 
-	public short getElementNumber() {
+	public int getElementNumber() {
 		return -1;
 	} // may be atomicNumber + isotopeNumber*128
 

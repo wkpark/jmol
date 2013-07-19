@@ -2813,9 +2813,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       modelManager.zap();
     }
     initializeModel(false);
-    if (notify)
+    if (notify) {
       setFileLoadStatus(EnumFileStatus.ZAPPED, null, (resetUndo ? "resetUndo"
           : getZapName()), null, null, null);
+    }
     if (Logger.debugging)
       Logger.checkMemory();
   }
@@ -5768,6 +5769,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.showMeasurements;
     case T.showmultiplebonds:
       return global.showMultipleBonds;
+    case T.showtiming:
+      return global.showTiming;
     case T.slabbyatom:
       return global.slabByAtom;
     case T.slabbymolecule:
@@ -7158,13 +7161,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean getTestFlag(int i) {
     switch (i) {
     case 1:
+      // no PNGJ caching
       return global.testFlag1;
     case 2:
+      // passed to MOCalcuation, but not used
       // nciCalculation special params.testFlag = 2 "absolute" calc.
       return global.testFlag2;
     case 3:
+      // isosurface numbers
       return global.testFlag3;
     case 4:
+      // isosurface normals
       // contact -- true: do not edit Cp list
       return global.testFlag4;
     }
@@ -8689,7 +8696,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @SuppressWarnings("incomplete-switch")
-  public int getVanderwaalsMarType(int i, EnumVdw type) {
+  public int getVanderwaalsMarType(int atomicAndIsotopeNumber, EnumVdw type) {
     if (type == null)
       type = dataManager.defaultVdw;
     else
@@ -8698,7 +8705,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         if (dataManager.bsUserVdws == null)
           type = dataManager.defaultVdw;
         else
-          return dataManager.userVdwMars[i];
+          return dataManager.userVdwMars[atomicAndIsotopeNumber & 127];
         break;
       case AUTO:
       case JMOL:
@@ -8710,7 +8717,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           type = dataManager.defaultVdw;
         break;
       }
-    return (Elements.getVanderwaalsMar(i, type));
+    return (Elements.getVanderwaalsMar(atomicAndIsotopeNumber, type));
   }
 
   void setDefaultVdw(String type) {
@@ -10124,6 +10131,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       s = getDefaultMeasurementLabel(2);
     int pt = s.indexOf("//"); 
     return (pt < 0 ? getMeasureDistanceUnits() : s.substring(pt + 2));
+  }
+
+  public int calculateFormalCharges(BS bs) {
+    if (bs == null)
+      bs = getSelectionSet(false);
+    return modelSet.fixFormalCharges(bs);
+  }
+
+  public boolean cachePngFiles() {
+    return (!getTestFlag(1));
   }
 
 }

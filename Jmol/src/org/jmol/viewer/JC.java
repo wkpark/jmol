@@ -315,14 +315,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFFB22222 + 0x00101010, // firebrick
   };
 
-  public final static short FORMAL_CHARGE_COLIX_RED =
-    (short)Elements.elementSymbols.length;
-  public final static short FORMAL_CHARGE_COLIX_WHITE =
-    (short)(FORMAL_CHARGE_COLIX_RED + 4);
-  public final static short FORMAL_CHARGE_COLIX_BLUE =
-    (short)(FORMAL_CHARGE_COLIX_WHITE + 7);
-  public final static int FORMAL_CHARGE_RANGE_SIZE = 12;
-
   public final static int[] argbsFormalCharge = {
     0xFFFF0000, // -4
     0xFFFF4040, // -3
@@ -337,17 +329,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFF2424FF, // 6
     0xFF0000FF, // 7
   };
-
-  public final static int FORMAL_CHARGE_INDEX_WHITE = 4;
-  public final static int FORMAL_CHARGE_INDEX_MAX = argbsFormalCharge.length;
-
-  public final static short PARTIAL_CHARGE_COLIX_RED =
-    (short)(FORMAL_CHARGE_COLIX_BLUE + 1);
-  public final static short PARTIAL_CHARGE_COLIX_WHITE =
-    (short)(PARTIAL_CHARGE_COLIX_RED + 15);
-  public final static short PARTIAL_CHARGE_COLIX_BLUE =
-    (short)(PARTIAL_CHARGE_COLIX_WHITE + 15);
-  public final static int PARTIAL_CHARGE_RANGE_SIZE = 31;
 
   public final static int[] argbsRwbScale = {
     0xFFFF0000, // red
@@ -382,6 +363,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFF1010FF, //
     0xFF0000FF, // blue
   };
+
+  public final static int FORMAL_CHARGE_COLIX_RED = Elements.elementSymbols.length;
+  public final static int PARTIAL_CHARGE_COLIX_RED = Elements.elementSymbols.length + argbsFormalCharge.length;
+  public final static int PARTIAL_CHARGE_RANGE_SIZE = argbsRwbScale.length;
 
   public final static int[] argbsRoygbScale = {
     // must be multiple of THREE for high/low

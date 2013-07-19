@@ -1877,21 +1877,15 @@ _pdbx_struct_oper_list.vector[3]
   private Atom[] atoms;
   
   /**
-   * (1) If GEOM_BOND records are present, we
-   *     (a) use them to generate bonds
-   *     (b) add H atoms to bonds if necessary
-   *     (c) turn off autoBonding ("hasBonds")
-   * (2) If MOLECULAR, then we
-   *     (a) use {1 1 1} if lattice is not defined
-   *     (b) use atomSetCollection.bonds[] to construct 
-   *         a preliminary molecule and connect as we go
-   *     (c) check symmetry for connections to molecule in any
-   *         one of the 27 3x3 adjacent cells
-   *     (d) move those atoms and their connected branch set
-   *     (e) iterate as necessary to get all atoms desired
-   *     (f) delete unselected atoms
-   *     (g) set all coordinates as Cartesians
-   *     (h) remove all unit cell information
+   * (1) If GEOM_BOND records are present, we (a) use them to generate bonds (b)
+   * add H atoms to bonds if necessary (c) turn off autoBonding ("hasBonds") (2)
+   * If MOLECULAR, then we (a) use {1 1 1} if lattice is not defined (b) use
+   * atomSetCollection.bonds[] to construct a preliminary molecule and connect
+   * as we go (c) check symmetry for connections to molecule in any one of the
+   * 27 3x3 adjacent cells (d) move those atoms and their connected branch set
+   * (e) iterate as necessary to get all atoms desired (f) delete unselected
+   * atoms (g) set all coordinates as Cartesians (h) remove all unit cell
+   * information
    */
   private void setBondingAndMolecules() {
     Logger.info("CIF creating molecule "
@@ -1918,12 +1912,14 @@ _pdbx_struct_oper_list.vector[3]
     if (isMolecular) {
       atomRadius = new float[atomCount];
       for (int i = firstAtom; i < atomCount; i++) {
-        short elemnoWithIsotope = atoms[i].elementNumber = JmolAdapter
-            .getElementNumber(atoms[i].getElementSymbol());
+        int elemnoWithIsotope = JmolAdapter.getElementNumber(atoms[i]
+            .getElementSymbol());
+        atoms[i].elementNumber = (short) elemnoWithIsotope;
         int charge = (atoms[i].formalCharge == Integer.MIN_VALUE ? 0
             : atoms[i].formalCharge);
         if (elemnoWithIsotope > 0)
-          atomRadius[i] = JmolAdapter.getBondingRadiusFloat(elemnoWithIsotope, charge);
+          atomRadius[i] = JmolAdapter.getBondingRadiusFloat(elemnoWithIsotope,
+              charge);
       }
       bsConnected = new BS[atomCount];
       for (int i = firstAtom; i < atomCount; i++)
@@ -1974,9 +1970,9 @@ _pdbx_struct_oper_list.vector[3]
         atomSetCollection
             .clearGlobalBoolean(AtomSetCollection.GLOBAL_UNITCELLS);
       }
-      
+
     }
-    
+
     // Set return info to enable desired defaults.
 
     if (bondTypes.size() > 0)

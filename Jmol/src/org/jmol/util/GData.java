@@ -195,7 +195,7 @@ public class GData implements JmolGraphicsInterface {
     return antialiasThisFrame;
   }
 
-  public short getChangeableColix(short id, int argb) {
+  public short getChangeableColix(int id, int argb) {
     if (id >= changeableColixMap.length)
       changeableColixMap = ArrayUtil.arrayCopyShort(changeableColixMap, id + 16);
     if (changeableColixMap[id] == 0)
@@ -203,7 +203,7 @@ public class GData implements JmolGraphicsInterface {
     return (short) (id | C.CHANGEABLE_MASK);
   }
 
-  public void changeColixArgb(short id, int argb) {
+  public void changeColixArgb(int id, int argb) {
     if (id < changeableColixMap.length && changeableColixMap[id] != 0)
       changeableColixMap[id] = C.getColix(argb);
   }

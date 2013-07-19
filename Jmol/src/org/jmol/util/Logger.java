@@ -296,20 +296,26 @@ public final class Logger {
 
   static Map<String,Long>htTiming = new Hashtable<String, Long>();
   public static void startTimer(String msg) {
-    if (msg == null)
-      return;
-    htTiming.put(msg, Long.valueOf(System.currentTimeMillis()));
+    if (msg != null)
+      htTiming.put(msg, Long.valueOf(System.currentTimeMillis()));
   }
 
-  public static long checkTimer(String msg, boolean andReset) {
-    if (msg == null)
-      return -1;
-    Long t = htTiming.get(msg);
-    if (t == null)
-      return -1;
-    long time = System.currentTimeMillis() - t.longValue();
-    if (!msg.startsWith("("))
-      info("Time for " + msg + ": " + (time) + " ms");
+  public static String getTimerMsg(String msg, long time) {
+    if (time == 0)
+      time = getTimeFrom(msg);
+    return "Time for " + msg + ": " + (time) + " ms";
+  }
+  
+  private static int getTimeFrom(String msg) {
+    Long t;
+    return (msg == null || (t = htTiming.get(msg)) == null ? -1 : (int) (System
+        .currentTimeMillis() - t.longValue()));
+  }
+
+  public static int checkTimer(String msg, boolean andReset) {
+    int time = getTimeFrom(msg);
+    if (time >= 0 && !msg.startsWith("("))
+        info(getTimerMsg(msg, time));
     if (andReset)
       startTimer(msg);
     return time;

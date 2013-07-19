@@ -768,7 +768,7 @@ public final class ModelLoader {
       int chainID = iterAtom.getChainID();
       checkNewGroup(adapter, chainID, group3, iterAtom.getSequenceNumber(), 
           iterAtom.getInsertionCode(), addH, isLegacyHAddition);
-      short isotope = iterAtom.getElementNumber();
+      int isotope = iterAtom.getElementNumber();
       if (addH && Elements.getElementNumber(isotope) == 1)
         jbr.setHaveHsAlready(true);
       String name = iterAtom.getAtomName(); 
@@ -816,17 +816,25 @@ public final class ModelLoader {
     Logger.info(nRead + " atoms created");    
   }
 
+  /**
+   * Adjust known N and O atom formal charges.
+   * Note that this does not take care of ligands.
+   * 
+   * @param group3
+   * @param name
+   * @return 0, 1, or -1
+   */
   private int getPdbCharge(String group3, String name) {
-    if (group3.equals("ARG") && name.equals("NH1")
+    return (group3.equals("ARG") && name.equals("NH1")
         || group3.equals("LYS") && name.equals("NZ")
-        || group3.equals("HIS") && name.equals("ND1")
-        )
-      return 1;
-    return 0;
+        || group3.equals("HIS") && name.equals("ND1") ? 1 
+//            : name.equals("OXT") || group3.equals("GLU") && name.equals("OE2")
+ //       || group3.equals("ASP") && name.equals("OD2") ? -1
+            : 0);
   }
 
   private void addAtom(boolean isPDB, BS atomSymmetry, int atomSite,
-                       Object atomUid, short atomicAndIsotopeNumber,
+                       Object atomUid, int atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
                        JmolList<Tensor> tensors, int occupancy, float bfactor,
                        float x, float y, float z, boolean isHetero,

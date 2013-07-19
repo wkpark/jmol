@@ -653,7 +653,7 @@ class PyMOLScene implements JmolSceneGenerator {
     for (int i = 0; i < jmolObjects.size(); i++) {
       try {
         JmolObject obj = jmolObjects.get(i);
-        obj.offset(baseModelIndex, baseAtomIndex);
+        //obj.offset(baseModelIndex, baseAtomIndex);
         obj.finalizeObject(this, viewer.modelSet, mepList, doCache);
       } catch (Exception e) {
         System.out.println(e);

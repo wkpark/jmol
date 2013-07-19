@@ -88,7 +88,7 @@ public class SmilesAtom extends P3 implements JmolNode {
   boolean isFirst = true;
 
   int jmolIndex = -1;
-  short elementNumber = -2; // UNDEFINED (could be A or a or *)
+  int elementNumber = -2; // UNDEFINED (could be A or a or *)
 
   int missingHydrogenCount = Integer.MIN_VALUE;
   int implicitHydrogenCount = Integer.MIN_VALUE;
@@ -97,7 +97,7 @@ public class SmilesAtom extends P3 implements JmolNode {
   int bondCount;
   int iNested = 0;
 
-  private short atomicMass = Short.MIN_VALUE;
+  private int atomicMass = Integer.MIN_VALUE;
   private int charge = Integer.MIN_VALUE;
   private int matchingAtom = -1;
   private int chiralClass = Integer.MIN_VALUE;
@@ -198,7 +198,7 @@ public class SmilesAtom extends P3 implements JmolNode {
   int ringSize = Integer.MIN_VALUE;
   int ringConnectivity = -1;
 
-  public SmilesAtom setAll(int iComponent, int ptAtom, int flags, short atomicNumber,
+  public SmilesAtom setAll(int iComponent, int ptAtom, int flags, int atomicNumber,
       int charge) {
     component = iComponent;
     index = ptAtom;
@@ -349,7 +349,7 @@ public class SmilesAtom extends P3 implements JmolNode {
    * 
    * @return atomicNumber
    */
-  public short getElementNumber() {
+  public int getElementNumber() {
     return elementNumber;
   }
 
@@ -358,7 +358,7 @@ public class SmilesAtom extends P3 implements JmolNode {
    * 
    * @return Atomic mass.
    */
-  public short getAtomicMass() {
+  public int getAtomicMass() {
     return atomicMass;
   }
 
@@ -368,7 +368,7 @@ public class SmilesAtom extends P3 implements JmolNode {
    * @param mass Atomic mass.
    */
   public void setAtomicMass(int mass) {
-    atomicMass = (short) mass;
+    atomicMass = mass;
   }
 
   /**
@@ -515,11 +515,11 @@ public class SmilesAtom extends P3 implements JmolNode {
     return charge;
   }
 
-  public short getIsotopeNumber() {
+  public int getIsotopeNumber() {
     return atomicMass;
   }
 
-  public short getAtomicAndIsotopeNumber() {
+  public int getAtomicAndIsotopeNumber() {
     return Elements.getAtomicAndIsotopeNumber(elementNumber, atomicMass);
   }
 

@@ -171,8 +171,7 @@ public class C {
     int c = colixHash.get(argb);
     if ((c & RAW_RGB_INT) == RAW_RGB_INT)
       translucentFlag = 0;
-    return (c > 0 ? (short) (c | translucentFlag)
-        : (short) (allocateColix(argb) | translucentFlag));
+    return (short) ((c > 0 ? c : allocateColix(argb)) | translucentFlag);
   }
 
   public synchronized static int allocateColix(int argb) {

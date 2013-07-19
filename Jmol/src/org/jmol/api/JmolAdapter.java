@@ -92,7 +92,7 @@ public abstract class JmolAdapter {
     return Elements.elementSymbolFromNumber(elementNumber);
   }
   
-  public static short getElementNumber(String elementSymbol) {
+  public static int getElementNumber(String elementSymbol) {
     return Elements.elementNumberFromSymbol(elementSymbol, false);
   }
   
@@ -116,7 +116,7 @@ public abstract class JmolAdapter {
     return Group.lookupGroupID(group3);
   }
 
-  public static float getBondingRadiusFloat(short atomicNumberWithIsotope, int charge) {
+  public static float getBondingRadiusFloat(int atomicNumberWithIsotope, int charge) {
     return Elements.getBondingRadiusFloat(atomicNumberWithIsotope, charge);
   }
 

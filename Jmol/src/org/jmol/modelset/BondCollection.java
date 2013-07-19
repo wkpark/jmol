@@ -182,9 +182,9 @@ abstract public class BondCollection extends AtomCollection {
   protected Bond bondMutually(Atom atom, Atom atomOther, int order, short mad, float energy) {
     Bond bond;
     if (Bond.isOrderH(order)) {
-      bond = new HBond(atom, atomOther, order, mad, (short) 0, energy);
+      bond = new HBond(atom, atomOther, order, mad, C.INHERIT_ALL, energy);
     } else {
-      bond = new Bond(atom, atomOther, order, mad, (short) 0);
+      bond = new Bond(atom, atomOther, order, mad, C.INHERIT_ALL);
     }
     addBondToAtom(atom, bond);
     addBondToAtom(atomOther, bond);

@@ -188,7 +188,7 @@ public class Elements {
    * @param isSilent
    * @return elementNumber = atomicNumber + IsotopeNumber*128
    */
-  public final static short elementNumberFromSymbol(String elementSymbol, boolean isSilent) {
+  public final static int elementNumberFromSymbol(String elementSymbol, boolean isSilent) {
     if (htElementMap == null) {
       Map<String, Integer> map = new Hashtable<String, Integer>();
       for (int elementNumber = elementNumberMax; --elementNumber >= 0;) {
@@ -211,7 +211,7 @@ public class Elements {
       return 0;
     Integer boxedAtomicNumber = htElementMap.get(elementSymbol);
     if (boxedAtomicNumber != null)
-      return (short) boxedAtomicNumber.intValue();
+      return boxedAtomicNumber.intValue();
     if (Character.isDigit(elementSymbol.charAt(0))) {
       int pt = elementSymbol.length() - 2;
       if (pt >= 0 && Character.isDigit(elementSymbol.charAt(pt)))
@@ -222,10 +222,9 @@ public class Elements {
         if (n > 0) {  
           isotope = getAtomicAndIsotopeNumber(n, isotope);
           htElementMap.put(elementSymbol.toUpperCase(), Integer.valueOf(isotope));
-          return (short) isotope;
+          return isotope;
         }        
-      }
-        
+      }     
     }
     
     if (!isSilent)
@@ -234,26 +233,26 @@ public class Elements {
   }
   public static Map<String, Integer> htElementMap;
   /**
-   * @param elementNumber may be atomicNumber + isotopeNumber*128
+   * @param elemNo may be atomicNumber + isotopeNumber*128
    * @return elementSymbol
    */
-  public final static String elementSymbolFromNumber(int elementNumber) {
+  public final static String elementSymbolFromNumber(int elemNo) {
     //Isotopes as atomicNumber + IsotopeNumber * 128
     int isoNumber = 0;
-    if (elementNumber >= elementNumberMax) {
+    if (elemNo >= elementNumberMax) {
       for (int j = altElementMax; --j >= 0;)
-        if (elementNumber == altElementNumbers[j])
+        if (elemNo == altElementNumbers[j])
           return altElementSymbols[j];
-      isoNumber = getIsotopeNumber((short) elementNumber);
-      elementNumber %= 128;
-      return "" + isoNumber + getElementSymbol(elementNumber);
+      isoNumber = getIsotopeNumber(elemNo);
+      elemNo %= 128;
+      return "" + isoNumber + getElementSymbol(elemNo);
     }
-    return getElementSymbol(elementNumber);
+    return getElementSymbol(elemNo);
   }
-  private static String getElementSymbol(int elementNumber) {
-    if (elementNumber < 0 || elementNumber >= elementNumberMax)
-      elementNumber = 0;
-    return elementSymbols[elementNumber];
+  private static String getElementSymbol(int elemNo) {
+    if (elemNo < 0 || elemNo >= elementNumberMax)
+      elemNo = 0;
+    return elementSymbols[elemNo];
   }
 
 
@@ -399,7 +398,7 @@ public class Elements {
    * @param i index into altElementNumbers
    * @return elementNumber (may be atomicNumber + isotopeNumber*128)
    */
-  public final static short altElementNumberFromIndex(int i) {
+  public final static int altElementNumberFromIndex(int i) {
     return altElementNumbers[i];
   }
   
@@ -429,16 +428,16 @@ public class Elements {
     return  elementSymbolFromNumber(code & 127) + (code >> 7);
   }
   
-  public final static short getElementNumber(short atomicAndIsotopeNumber) {
-    return (short) (atomicAndIsotopeNumber % 128);
+  public final static int getElementNumber(int atomicAndIsotopeNumber) {
+    return atomicAndIsotopeNumber & 127;
   }
 
-  public final static short getIsotopeNumber(short atomicAndIsotopeNumber) {
-    return (short) (atomicAndIsotopeNumber >> 7);
+  public final static int getIsotopeNumber(int atomicAndIsotopeNumber) {
+    return atomicAndIsotopeNumber >> 7;
   }
 
-  public final static short getAtomicAndIsotopeNumber(int n, int mass) {
-    return (short) ((n < 0 ? 0 : n) + (mass <= 0 ? 0 : mass << 7));
+  public final static int getAtomicAndIsotopeNumber(int n, int mass) {
+    return ((n < 0 ? 0 : n) + (mass <= 0 ? 0 : mass << 7));
   }
   
   /**
@@ -479,7 +478,7 @@ public class Elements {
    */
   public final static int firstIsotope = 4;
 
-  private final static short[] altElementNumbers = {
+  private final static int[] altElementNumbers = {
     0,
     13,
     16,
@@ -1024,8 +1023,8 @@ public class Elements {
       bsCations.set(cationLookupTable[i]>>4);
   }
 
-  public static float getBondingRadiusFloat(short atomicNumberAndIsotope, int charge) {
-    int atomicNumber = getElementNumber(atomicNumberAndIsotope);
+  public static float getBondingRadiusFloat(int atomicNumberAndIsotope, int charge) {
+    int atomicNumber = atomicNumberAndIsotope & 127;
     if (charge > 0 && bsCations.get(atomicNumber))
       return getBondingRadFromTable(atomicNumber, charge, cationLookupTable);
     if (charge < 0 && bsAnions.get(atomicNumber))
@@ -1037,7 +1036,7 @@ public class Elements {
     // when found, return the corresponding value in ionicMars
     // if atom is not found, just return covalent radius
     // if atom is found, but charge is not found, return next lower charge
-    short ionic = (short) ((atomicNumber << 4) + (charge + 4)); 
+    int ionic = (atomicNumber << 4) + (charge + 4); 
     int iVal = 0, iMid = 0, iMin = 0, iMax = table.length / 2;
     while (iMin != iMax) {
       iMid = (iMin + iMax) / 2;
@@ -1058,8 +1057,8 @@ public class Elements {
     return table[(iMid << 1) + 1] / 1000f;
   }
 
-  public static int getVanderwaalsMar(int i, EnumVdw type) {
-    return vanderwaalsMars[(i << 2) + (type.pt % 4)];
+  public static int getVanderwaalsMar(int atomicAndIsotopeNumber, EnumVdw type) {
+    return vanderwaalsMars[((atomicAndIsotopeNumber & 127) << 2) + (type.pt % 4)];
   }
 
   public static float getHydrophobicity(int i) {
@@ -1167,5 +1166,9 @@ public class Elements {
   public static float getAllredRochowElectroNeg(int elemno) {
     return (elemno > 0 && elemno < electroNegativities.length ? electroNegativities[elemno] : 0);
   }
-
+  
+  public static boolean isElement(int atomicAndIsotopeNumber, int elemNo) {
+    return ((atomicAndIsotopeNumber & 127) == elemNo);
+  }
+  
 }

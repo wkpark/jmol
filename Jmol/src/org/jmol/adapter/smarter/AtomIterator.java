@@ -81,7 +81,7 @@ class AtomIterator extends JmolAdapterAtomIterator {
 	}
 
 	@Override
-	public short getElementNumber() {
+	public int getElementNumber() {
 		return (atom.elementNumber > 0 ? atom.elementNumber : JmolAdapter
 				.getElementNumber(atom.getElementSymbol()));
 	}

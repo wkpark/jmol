@@ -742,7 +742,7 @@ import java.util.Map;
       Atom atom1 = vConnections.get(i);
       // hmm. atom1.group will not be expanded, though...
       // something like within(group,...) will not select these atoms!
-      Atom atom2 = addAtom(modelIndex, atom1.group, (short) 1, "H"
+      Atom atom2 = addAtom(modelIndex, atom1.group, 1, "H"
           + n, n, n, pts[i].x, pts[i].y, pts[i].z, Float.NaN, Float.NaN, Float.NaN,
           Float.NaN, 0, 0, 100, Float.NaN, null, false, (byte) 0, null);
       

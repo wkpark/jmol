@@ -34,6 +34,7 @@ import org.jmol.modelset.HBond;
 import org.jmol.modelset.LabelToken;
 import org.jmol.script.T;
 import org.jmol.util.BS;
+import org.jmol.util.C;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolList;
 import org.jmol.util.Measure;
@@ -157,7 +158,7 @@ public class NucleicPolymer extends BioPolymer {
   static protected int addHydrogenBond(JmolList<Bond> vAtoms, Atom atom1, Atom atom2) {
     if (atom1 == null || atom2 == null)
       return 0;
-    vAtoms.addLast(new HBond(atom1, atom2, JmolEdge.BOND_H_NUCLEOTIDE, (short) 1, (short) 0, 0));
+    vAtoms.addLast(new HBond(atom1, atom2, JmolEdge.BOND_H_NUCLEOTIDE, (short) 1, C.INHERIT_ALL, 0));
     return 1;
   }
 

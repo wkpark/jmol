@@ -423,7 +423,8 @@ public class FileManager {
         }
         boolean isApplet = (appletDocumentBaseURL != null);
         JmolFileAdapterInterface fai = viewer.getFileAdapter();
-
+        if (name.indexOf(".png") >= 0 && pngjCache == null && viewer.cachePngFiles())
+          JmolBinary.cachePngjFile(this, null);
         if (isApplet || isURL) {
           if (isApplet && isURL && appletProxy != null)
             name = appletProxy + "?url=" + urlEncode(name);
@@ -433,7 +434,7 @@ public class FileManager {
             return null;
           name = url.toString();
           if (showMsg && name.toLowerCase().indexOf("password") < 0)
-            Logger.info("FileManager opening " + name);
+            Logger.info("FileManager opening 1 " + name);
           ret = fai.getBufferedURLInputStream(url, outputBytes, post);
           if (ret instanceof SB) {
             SB sb = (SB) ret;
@@ -445,7 +446,7 @@ public class FileManager {
           }
         } else if ((cacheBytes = (byte[]) cacheGet(name, true)) == null) {
           if (showMsg)
-            Logger.info("FileManager opening " + name);
+            Logger.info("FileManager opening 2 " + name);
           ret = fai.getBufferedFileInputStream(name);
         }
         if (ret instanceof String)
@@ -593,13 +594,13 @@ public class FileManager {
       // script or load command should be used)
     }
 
-    if (bytes == null && pngjCache != null )
+    if (bytes == null && pngjCache != null)
       bytes = JmolBinary.getCachedPngjBytes(this, name);
     String fullName = name;
     if (name.indexOf("|") >= 0) {
       subFileList = TextFormat.splitChars(name, "|");
       if (bytes == null)
-        Logger.info("FileManager opening " + name);
+        Logger.info("FileManager opening 3 " + name);
       name = subFileList[0];
     }
     Object t = (bytes == null ? getBufferedInputStreamOrErrorMessageFromName(
@@ -917,7 +918,7 @@ public class FileManager {
 
       } catch (Exception e) {
         System.out.println(e.toString());
-        fullPathName = e.toString() + " opening " + fullPathName;
+        fullPathName = e.toString() + " opening 4 " + fullPathName;
         image = null;
         break;
       }
@@ -1282,6 +1283,7 @@ public class FileManager {
   public int cacheFileByNameAdd(String fileName, boolean isAdd) {
     if (fileName == null || !isAdd && fileName.equalsIgnoreCase("")) {
       cacheClear();
+      clearPngjCache(null);
       return -1;
     }
     Object data;

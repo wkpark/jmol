@@ -1697,7 +1697,7 @@ public class ForceFieldMMFF extends ForceField {
     case 83:
       return 1.55;
     default:
-      return Elements.getBondingRadiusFloat((short) elemno, 0);
+      return Elements.getBondingRadiusFloat(elemno, 0);
     }
   }
 

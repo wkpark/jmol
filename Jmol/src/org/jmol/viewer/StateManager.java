@@ -682,6 +682,7 @@ public class StateManager {
         useScriptQueue = g.useScriptQueue;
         useArcBall = g.useArcBall;
         databases = g.databases;
+        showTiming = g.showTiming;
       }
       if (databases == null) {
         databases = new Hashtable<String, String>();

@@ -3009,7 +3009,7 @@ abstract public class ModelCollection extends BondCollection {
     BS bsBonds = new BS();
     for (int i = bs.nextSetBit(0); i >= 0 && i < atomCount; i = bs
         .nextSetBit(i + 1))
-      atoms[i].delete(bsBonds);
+      atoms[i].deleteBonds(bsBonds);
     for (int i = 0; i < modelCount; i++) {
       models[i].bsAtomsDeleted.or(bs);
       models[i].bsAtomsDeleted.and(models[i].bsAtoms);
@@ -3145,17 +3145,17 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public Atom addAtom(int modelIndex, Group group,
-                      short atomicAndIsotopeNumber, String atomName,
+                      int atomicAndIsotopeNumber, String atomName,
                       int atomSerial, int atomSite, float x, float y, float z,
                       float radius, float vectorX, float vectorY,
                       float vectorZ, int formalCharge, float partialCharge,
                       int occupancy, float bfactor, JmolList<Tensor> tensors,
                       boolean isHetero, byte specialAtomID, BS atomSymmetry) {
     Atom atom = new Atom(modelIndex, atomCount, x, y, z, radius, atomSymmetry,
-        atomSite, atomicAndIsotopeNumber, formalCharge, isHetero);
+        atomSite, (short) atomicAndIsotopeNumber, formalCharge, isHetero);
     models[modelIndex].atomCount++;
     models[modelIndex].bsAtoms.set(atomCount);
-    if (atomicAndIsotopeNumber % 128 == 1)
+    if (Elements.isElement(atomicAndIsotopeNumber, 1))
       models[modelIndex].hydrogenCount++;
     if (atomCount >= atoms.length)
       growAtomArrays(atomCount + 100); // only due to added hydrogens

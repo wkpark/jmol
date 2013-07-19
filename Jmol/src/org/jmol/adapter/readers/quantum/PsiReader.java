@@ -147,7 +147,7 @@ public class PsiReader extends MOReader {
       if (isInitial) {
         atomNames.addLast(tokens[0]);
         if (tokens[0].length() <= 2)
-          atom.elementNumber = JmolAdapter.getElementNumber(tokens[0]);
+          atom.elementNumber = (short) JmolAdapter.getElementNumber(tokens[0]);
       } else {
         atom.elementNumber = (short) parseIntStr(tokens[0]);
       }

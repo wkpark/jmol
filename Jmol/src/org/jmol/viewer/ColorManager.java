@@ -97,9 +97,9 @@ class ColorManager {
     propertyColorEncoder.createColorScheme((isRasmol ? "Rasmol="
         : "Jmol="), true, true);
     for (int i = EnumPalette.argbsCpk.length; --i >= 0;)
-      g3d.changeColixArgb((short) i, argbsCpk[i]);
+      g3d.changeColixArgb(i, argbsCpk[i]);
     for (int i = JC.altArgbsCpk.length; --i >= 0;)
-      g3d.changeColixArgb((short) (Elements.elementNumberMax + i),
+      g3d.changeColixArgb(Elements.elementNumberMax + i,
           altArgbsCpk[i]);
   }
 
@@ -134,15 +134,15 @@ class ColorManager {
   short getColixAtomPalette(Atom atom, byte pid) {
     int argb = 0;
     int index;
-    short id;
+    int id;
     ModelSet modelSet;
     int modelIndex;
     float lo, hi;
     // we need to use the byte form here for speed
     switch (pid) {
     case StaticConstants.PALETTE_PROPERTY:
-      return (colorData == null || atom.index >= colorData.length
-          ? C.GRAY : getColixForPropertyValue(colorData[atom.index]));
+      return (colorData == null || atom.index >= colorData.length ? C.GRAY
+          : getColixForPropertyValue(colorData[atom.index]));
     case StaticConstants.PALETTE_NONE:
     case StaticConstants.PALETTE_CPK:
       // Note that CPK colors can be changed based upon user preference
@@ -150,25 +150,23 @@ class ColorManager {
       id = atom.getAtomicAndIsotopeNumber();
       if (id < Elements.elementNumberMax)
         return g3d.getChangeableColix(id, argbsCpk[id]);
-      short id0 = id;
-      id = (short) Elements.altElementIndexFromNumber(id);
+      int id0 = id;
+      id = Elements.altElementIndexFromNumber(id);
       if (id == 0) {
         id = Elements.getElementNumber(id0);
         return g3d.getChangeableColix(id, argbsCpk[id]);
       }
-      return g3d.getChangeableColix((short) (Elements.elementNumberMax + id),
+      return g3d.getChangeableColix(Elements.elementNumberMax + id,
           altArgbsCpk[id]);
     case StaticConstants.PALETTE_PARTIAL_CHARGE:
       // This code assumes that the range of partial charges is [-1, 1].
       index = ColorEncoder.quantize(atom.getPartialCharge(), -1, 1,
           JC.PARTIAL_CHARGE_RANGE_SIZE);
-      return g3d.getChangeableColix(
-          (short) (JC.PARTIAL_CHARGE_COLIX_RED + index),
+      return g3d.getChangeableColix(JC.PARTIAL_CHARGE_COLIX_RED + index,
           JC.argbsRwbScale[index]);
     case StaticConstants.PALETTE_FORMAL_CHARGE:
       index = atom.getFormalCharge() - Elements.FORMAL_CHARGE_MIN;
-      return g3d.getChangeableColix(
-          (short) (JC.FORMAL_CHARGE_COLIX_RED + index),
+      return g3d.getChangeableColix(JC.FORMAL_CHARGE_COLIX_RED + index,
           JC.argbsFormalCharge[index]);
     case StaticConstants.PALETTE_TEMP:
     case StaticConstants.PALETTE_FIXEDTEMP:
@@ -184,8 +182,7 @@ class ColorManager {
           atom.getBfactor100(), lo, hi, ColorEncoder.BWR, false);
     case StaticConstants.PALETTE_STRAIGHTNESS:
       return propertyColorEncoder.getColorIndexFromPalette(atom
-          .getGroupParameter(T.straightness), -1, 1, ColorEncoder.BWR,
-          false);
+          .getGroupParameter(T.straightness), -1, 1, ColorEncoder.BWR, false);
     case StaticConstants.PALETTE_SURFACE:
       hi = viewer.getSurfaceDistanceMax();
       return propertyColorEncoder.getColorIndexFromPalette(atom
@@ -257,8 +254,7 @@ class ColorManager {
       else if (chain >= 256)
         chain -= 256;
       chain = chain % JC.argbsChainAtom.length;
-      argb = (atom.isHetero() ? JC.argbsChainHetero
-          : JC.argbsChainAtom)[chain];
+      argb = (atom.isHetero() ? JC.argbsChainHetero : JC.argbsChainAtom)[chain];
       break;
     }
     return (argb == 0 ? C.HOTPINK : C.getColix(argb));
@@ -292,12 +288,12 @@ class ColorManager {
     }
     if (id < Elements.elementNumberMax) {
       argbsCpk[id] = argb;
-      g3d.changeColixArgb((short) id, argb);
+      g3d.changeColixArgb(id, argb);
       return;
     }
     id = Elements.altElementIndexFromNumber(id);
     altArgbsCpk[id] = argb;
-    g3d.changeColixArgb((short) (Elements.elementNumberMax + id), argb);
+    g3d.changeColixArgb(Elements.elementNumberMax + id, argb);
   }
 
   ///////////////////  propertyColorScheme ///////////////

@@ -1098,10 +1098,10 @@ public class ZipUtil implements JmolZipUtility {
       Logger.info("FileManager using memory cache " + shortName);
       return pngjCache.get(shortName);
     }
-    for (String key : pngjCache.keySet())
-      System.out.println(key);
-    System.out.println("FileManager memory cache (" + pngjCache.size()
-        + ") did not find " + pathName + " as " + shortName);
+//    for (String key : pngjCache.keySet())
+  //    System.out.println(" key=" + key);
+    //System.out.println("FileManager memory cache size=" + pngjCache.size()
+      //  + " did not find " + pathName + " as " + shortName);
     if (!isMin || !cachePngjFile(fm, new String[] { pathName, null }))
       return null;
     Logger.info("FileManager using memory cache " + shortName);
@@ -1110,6 +1110,8 @@ public class ZipUtil implements JmolZipUtility {
 
   public boolean cachePngjFile(FileManager fm, String[] data) {
     Map<String, byte[]> pngjCache = fm.pngjCache = new Hashtable<String, byte[]>();
+    if (data == null)
+      return false;
     data[1] = null;
     if (data[0] == null)
       return false;

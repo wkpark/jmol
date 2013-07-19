@@ -37,15 +37,15 @@ public interface JmolNode {
   public int getBondedAtomIndex(int j);
   public int getCovalentHydrogenCount();
   public JmolEdge[] getEdges();
-  public short getElementNumber();
+  public int getElementNumber();
   public int getFormalCharge();
   public int getIndex();
-  public short getIsotopeNumber();
+  public int getIsotopeNumber();
   public int getModelIndex();
   public int getValence();
   public int getCovalentBondCount();
   public int getImplicitHydrogenCount();
-  public short getAtomicAndIsotopeNumber();
+  public int getAtomicAndIsotopeNumber();
   
   // BIOSMILES/BIOSMARTS
   

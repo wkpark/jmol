@@ -2362,7 +2362,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // _T ==> _isotope=iinn for each isotope
     // _3H ==> _isotope=iinn for each isotope
     for (int i = Elements.altElementMax; --i >= Elements.firstIsotope;) {
-      short ei = Elements.altElementNumberFromIndex(i);
+      int ei = Elements.altElementNumberFromIndex(i);
       String def = " _e=" + ei;
       String definition = "@_" + Elements.altElementSymbolFromIndex(i);
       defineAtomSet(definition + def);
@@ -2378,8 +2378,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       
       // @_12C _e=6
       // @_C12 _e=6
-      short e = Elements.getElementNumber(ei);
-      ei = (short) Elements.getNaturalIsotope(e);
+      int e = Elements.getElementNumber(ei);
+      ei = Elements.getNaturalIsotope(e);
       if (ei > 0) {
         def = Elements.elementSymbolFromNumber(e);
         defineAtomSet("@_" + def + ei + " _e=" + e);
@@ -9416,8 +9416,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (filter == null)
       filter = viewer.getDefaultLoadFilter();
     if (filter.length() > 0) {
-      if (filter.toUpperCase().indexOf("DOCACHE") >= 0)
-        viewer.cacheClear();
+      if (filter.toUpperCase().indexOf("DOCACHE") >= 0) {
+        // If this is a state script, it may have been created using
+        // the DOCACHE flag, but we never want that here, because then
+        // this is a file being loaded from the state script itself.
+        if (isStateScript)
+          filter = TextFormat
+              .simpleReplace(filter.toUpperCase(), "DOCACHE", "");
+        else
+          viewer.cacheClear();
+      }
       htParams.put("filter", filter);
       if (filter.equalsIgnoreCase("2d")) // MOL file hack
         filter = "2D-noMin";
@@ -9478,6 +9486,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       htParams.put("loadScript", loadScript);
     }
     setCursorWait(true);
+    boolean timeMsg = viewer.getBoolean(T.showtiming);
+    if (timeMsg)
+      Logger.startTimer("load");
     errMsg = viewer.loadModelFromFile(null, filename, filenames, null,
         isAppend, htParams, loadScript, tokType);
     if (os != null)
@@ -9517,7 +9528,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     Map<String, Object> info = viewer.getModelSetAuxiliaryInfo();
     if (info != null && info.containsKey("centroidMinMax")
         && viewer.getAtomCount() > 0) {
-      BS bs = BSUtil.newBitSet2(isAppend ? atomCount0 : 0, viewer.getAtomCount());
+      BS bs = BSUtil.newBitSet2(isAppend ? atomCount0 : 0, viewer
+          .getAtomCount());
       viewer.setCentroid(bs, (int[]) info.get("centroidMinMax"));
     }
     String script = viewer.getDefaultLoadScript();
@@ -9544,6 +9556,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (script.length() > 0 && !isCmdLine_c_or_C_Option)
       // NOT checking embedded scripts in some cases
       runScript(script);
+    if (timeMsg)
+      showString(Logger.getTimerMsg("load", 0));
   }
 
   @SuppressWarnings("unchecked")
@@ -10793,8 +10807,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         : null);
   }
 
-  private void script(int tok, String filename)
-      throws ScriptException {
+  private void script(int tok, String filename) throws ScriptException {
     boolean loadCheck = true;
     boolean isCheck = false;
     boolean doStep = false;
@@ -10808,7 +10821,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String remotePath = null;
     String scriptPath = null;
     JmolList<SV> params = null;
-    
+
     if (tok == T.javascript) {
       checkLength(2);
       if (!chk)
@@ -10838,8 +10851,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         tok = tokAt(slen - 1);
         doStep = (tok == T.step);
         if (filename.equalsIgnoreCase("inline")) {
-          theScript = parameterExpressionString(2,
-              (doStep ? slen - 1 : 0));
+          theScript = parameterExpressionString(2, (doStep ? slen - 1 : 0));
           i = iToken + 1;
         }
         while (filename.equalsIgnoreCase("localPath")
@@ -10915,14 +10927,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       boolean saveLoadCheck = isCmdLine_C_Option;
       isCmdLine_C_Option &= loadCheck;
       executionStepping |= doStep;
-      
+
       contextVariables = new Hashtable<String, SV>();
-      contextVariables.put("_arguments", (params == null ? SV.getVariableAI(new int[]{})
-          : SV.getVariableList(params)));
-      
+      contextVariables.put("_arguments", (params == null ? SV
+          .getVariableAI(new int[] {}) : SV.getVariableList(params)));
+
       if (isCheck)
         listCommands = true;
+      boolean timeMsg = viewer.getBoolean(T.showtiming);
+      if (timeMsg)
+        Logger.startTimer("script");
       dispatchCommands(false, false);
+      if (timeMsg)
+        showString(Logger.getTimerMsg("script", 0));
       isCmdLine_C_Option = saveLoadCheck;
       popContext(false, false);
     } else {
@@ -11338,7 +11355,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private void zap(boolean isZapCommand) throws ScriptException {
     if (slen == 1 || !isZapCommand) {
-      viewer.zap(true, isZapCommand && !isStateScript, true);
+      boolean doAll = (isZapCommand && !isStateScript);
+      if (doAll)
+        viewer.cacheFileByName(null, false);
+      viewer.zap(true, doAll, true);
       refresh();
       return;
     }
@@ -12237,7 +12257,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void calculate() throws ScriptException {
     boolean isSurface = false;
     boolean asDSSP = false;
-    BS bs;
+    BS bs1 = null;
     BS bs2 = null;
     int n = Integer.MIN_VALUE;
     if ((iToken = slen) >= 2) {
@@ -12246,45 +12266,47 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.identifier:
         checkLength(2);
         break;
+      case T.formalcharge:
+        checkLength(2);
+        if (chk)
+          return;
+        n = viewer.calculateFormalCharges(null);
+        showString(GT._("{0} charges modified", n));
+        return;
       case T.aromatic:
         checkLength(2);
         if (!chk)
           viewer.assignAromaticBonds();
         return;
       case T.hbond:
-        if (slen == 2) {
-          if (!chk) {
-            n = viewer.autoHbond(null, null, false);
-            break;
-          }
+        if (slen != 2) {
+          // calculate hbonds STRUCTURE -- only the DSSP structurally-defining H bonds
+          asDSSP = (tokAt(++iToken) == T.structure);
+          if (asDSSP)
+            bs1 = viewer.getSelectionSet(false);
+          else
+            bs1 = atomExpressionAt(iToken);
+          if (!asDSSP && !(asDSSP = (tokAt(++iToken) == T.structure)))
+            bs2 = atomExpressionAt(iToken);
+        }
+        if (chk)
           return;
-        }
-        BS bs1 = null;
-        // calculate hbonds STRUCTURE -- only the DSSP structurally-defining H bonds
-        asDSSP = (tokAt(++iToken) == T.structure);
-        if (asDSSP)
-          bs1 = viewer.getSelectionSet(false);
-        else
-          bs1 = atomExpressionAt(iToken);
-        if (!asDSSP && !(asDSSP = (tokAt(++iToken) == T.structure)))
-          bs2 = atomExpressionAt(iToken);
-        if (!chk) {
-          n = viewer.autoHbond(bs1, bs2, false);
-          break;
-        }
+        n = viewer.autoHbond(bs1, bs2, false);
+        if (n != Integer.MIN_VALUE)
+          scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));
         return;
       case T.hydrogen:
-        bs = (slen == 2 ? null : atomExpressionAt(2));
+        bs1 = (slen == 2 ? null : atomExpressionAt(2));
         checkLast(iToken);
         if (!chk)
-          viewer.addHydrogens(bs, false, false);
+          viewer.addHydrogens(bs1, false, false);
         return;
       case T.partialcharge:
         iToken = 1;
-        bs = (slen == 2 ? null : atomExpressionAt(2));
+        bs1 = (slen == 2 ? null : atomExpressionAt(2));
         checkLast(iToken);
         if (!chk)
-          viewer.calculatePartialCharges(bs);
+          viewer.calculatePartialCharges(bs1);
         return;
       case T.pointgroup:
         pointGroup();
@@ -12299,7 +12321,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         }
         return;
       case T.structure:
-        bs = (slen < 4 ? null : atomExpressionAt(2));
+        bs1 = (slen < 4 ? null : atomExpressionAt(2));
         switch (tokAt(++iToken)) {
         case T.ramachandran:
           break;
@@ -12313,21 +12335,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           error(ERROR_invalidArgument);
         }
         if (!chk)
-          showString(viewer.calculateStructures(bs, asDSSP, true));
+          showString(viewer.calculateStructures(bs1, asDSSP, true));
         return;
       case T.struts:
-        bs = (iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
+        bs1 = (iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
         bs2 = (iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
         checkLength(++iToken);
         if (!chk) {
-          n = viewer.calculateStruts(bs, bs2);
+          n = viewer.calculateStruts(bs1, bs2);
           if (n > 0) {
             setShapeProperty(JC.SHAPE_STICKS, "type", Integer
                 .valueOf(JmolEdge.BOND_STRUT));
             setShapePropertyBs(JC.SHAPE_STICKS, "color", Integer
                 .valueOf(0x0FFFFFF), null);
-            setShapeTranslucency(JC.SHAPE_STICKS, "", "translucent",
-                0.5f, null);
+            setShapeTranslucency(JC.SHAPE_STICKS, "", "translucent", 0.5f, null);
             setShapeProperty(JC.SHAPE_STICKS, "type", Integer
                 .valueOf(JmolEdge.BOND_COVALENT_MASK));
           }
@@ -12360,22 +12381,18 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         default:
           isFrom = true;
         }
-        bs = (iToken + 1 < slen ? atomExpressionAt(++iToken)
-            : viewer.getSelectionSet(false));
+        bs1 = (iToken + 1 < slen ? atomExpressionAt(++iToken) : viewer
+            .getSelectionSet(false));
         checkLength(++iToken);
         if (!chk)
-          viewer.calculateSurface(bs, (isFrom ? Float.MAX_VALUE : -1));
-        return;
-      }
-      if (n != Integer.MIN_VALUE) {
-        scriptStatusOrBuffer(GT._("{0} hydrogen bonds", Math.abs(n)));
+          viewer.calculateSurface(bs1, (isFrom ? Float.MAX_VALUE : -1));
         return;
       }
     }
     errorStr2(
         ERROR_what,
         "CALCULATE",
-        "aromatic? hbonds? hydrogen? partialCharge? pointgroup? straightness? structure? struts? surfaceDistance FROM? surfaceDistance WITHIN?");
+        "aromatic? hbonds? hydrogen? formalCharge? partialCharge? pointgroup? straightness? structure? struts? surfaceDistance FROM? surfaceDistance WITHIN?");
   }
 
   private void pointGroup() throws ScriptException {
@@ -14633,6 +14650,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int width = -1;
     int height = -1;
     int quality = Integer.MIN_VALUE;
+    boolean timeMsg = viewer.getBoolean(T.showtiming);
     String driverList = viewer.getExportDriverList();
     String sceneType = "PNGJ";
     String data = null;
@@ -14931,6 +14949,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           // todo -- there's no reason this data has to be done this way. 
           // we could send all of them out to file directly
           fullPath[0] = fileName;
+          if (timeMsg)
+            Logger.startTimer("export");
           data = viewer.generateOutputForExport(data, isCommand
               || fileName != null ? fullPath : null, width, height);
           if (data == null || data.length() == 0)
@@ -14946,6 +14966,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             if (type.equals("Idtf"))
               data = data.substring(0, data.indexOf("\\begin{comment}"));
             data = "Created " + fullPath[0] + ":\n\n" + data;
+            if (timeMsg)
+              showString(Logger.getTimerMsg("export", 0));
           } else {
             msg = data;
           }
@@ -15066,6 +15088,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         bytes = sceneType;
       else if (bytes == null && (!isImage || fileName != null))
         bytes = data;
+      if (timeMsg)
+        Logger.startTimer("write");
       if (doDefer)
         msg = viewer.streamFileData(fileName, type, type2, 0, null);
       else
@@ -15073,6 +15097,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             (bytes instanceof String ? (String) bytes : null),
             (bytes instanceof byte[] ? (byte[]) bytes : null), scripts,
             quality, width, height, bsFrames, nVibes, fullPath);
+      if (timeMsg)
+        showString(Logger.getTimerMsg("write", 0));
     }
     if (!chk && msg != null) {
       if (!msg.startsWith("OK"))
@@ -18832,8 +18858,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         addShapeProperty(propertyList, "slab", getCapSlabObject(-100, false));
       }
 
+      boolean timeMsg = (surfaceObjectSeen && viewer.getBoolean(T.showtiming));
+      if (timeMsg)
+        Logger.startTimer("isosurface");
       setShapeProperty(iShape, "setProperties", propertyList);
-
+      if (timeMsg)
+        showString(Logger.getTimerMsg("isosurface", 0));
       if (defaultMesh) {
         setShapeProperty(iShape, "token", Integer.valueOf(T.mesh));
         setShapeProperty(iShape, "token", Integer.valueOf(T.nofill));

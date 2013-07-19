@@ -1695,7 +1695,6 @@ public class AtomSetCollection {
       setTrajectoryName(atomSetName);
       return;
     }
-    System.out.println(currentAtomSetIndex + " " + atomSetName);
     setAtomSetAuxiliaryInfoForSet("name", atomSetName, currentAtomSetIndex);
     // TODO -- trajectories could have different names. Need this for vibrations?
     if (!allowMultiple)

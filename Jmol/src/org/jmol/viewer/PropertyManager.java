@@ -47,6 +47,7 @@ import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.C;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
@@ -1287,9 +1288,8 @@ public class PropertyManager implements JmolPropertyManager {
     if (strColor != null)
       info.put("color", strColor);
     info.put("colix", Integer.valueOf(bond.colix));
-    boolean isTranslucent = bond.isTranslucent();
-    if (isTranslucent)
-      info.put("translucent", Boolean.valueOf(isTranslucent));
+    if (C.isColixTranslucent(bond.colix))
+      info.put("translucent", Boolean.TRUE);
     return info;
   }
 

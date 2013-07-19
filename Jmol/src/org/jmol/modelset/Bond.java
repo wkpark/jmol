@@ -61,7 +61,7 @@ public class Bond extends JmolEdge {
   public Atom atom2;
 
   public short mad;
-  public short colix;
+  public short colix = C.INHERIT_ALL;
   
   public Bond(Atom atom1, Atom atom2, int order,
               short mad, short colix) {
@@ -168,11 +168,6 @@ public class Bond extends JmolEdge {
     colix = C.getColixTranslucent3(colix, isTranslucent, translucentLevel);
   }
   
-  public boolean isTranslucent() {
-    return C.isColixTranslucent(colix);
-    //but may show up translucent anyway!
-  }
-
   public void setOrder(int order) {
     if (atom1.getElementNumber() == 16 && atom2.getElementNumber() == 16)
       order |= BOND_SULFUR_MASK;

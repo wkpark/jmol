@@ -134,7 +134,8 @@ final public class Atom extends Point3fi implements JmolNode {
     this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
     if (isHetero)
       formalChargeAndFlags = IS_HETERO_FLAG;
-    setFormalCharge(formalCharge);
+    if (formalCharge != 0 && formalCharge != Integer.MIN_VALUE)
+      setFormalCharge(formalCharge);
     userDefinedVanDerWaalRadius = radius;
     set(x, y, z);
   }
@@ -349,26 +350,26 @@ final public class Atom extends Point3fi implements JmolNode {
     return C.isColixTranslucent(colixAtom);
   }
 
-  public short getElementNumber() {
+  public int getElementNumber() {
     return Elements.getElementNumber(atomicAndIsotopeNumber);
   }
   
-  public short getIsotopeNumber() {
+  public int getIsotopeNumber() {
     return Elements.getIsotopeNumber(atomicAndIsotopeNumber);
   }
   
-  public short getAtomicAndIsotopeNumber() {
+  public int getAtomicAndIsotopeNumber() {
     return atomicAndIsotopeNumber;
   }
 
   public void setAtomicAndIsotopeNumber(int n) {
-    if (n < 0 || (n % 128) >= Elements.elementNumberMax || n > Short.MAX_VALUE)
+    if (n < 0 || (n & 127) >= Elements.elementNumberMax || n > Short.MAX_VALUE)
       n = 0;
     atomicAndIsotopeNumber = (short) n;
   }
 
   public String getElementSymbolIso(boolean withIsotope) {
-    return Elements.elementSymbolFromNumber(withIsotope ? atomicAndIsotopeNumber : atomicAndIsotopeNumber % 128);    
+    return Elements.elementSymbolFromNumber(withIsotope ? atomicAndIsotopeNumber : atomicAndIsotopeNumber & 127);    
   }
   
   public String getElementSymbol() {
@@ -437,7 +438,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return !Float.isNaN(userDefinedVanDerWaalRadius = (radius > 0 ? radius : Float.NaN));  
   }
   
-  public void delete(BS bsBonds) {
+  public void deleteBonds(BS bsBonds) {
     valence = -1;
     if (bonds != null)
       for (int i = bonds.length; --i >= 0; ) {
@@ -469,7 +470,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public int getImplicitHydrogenCount() {
-    return group.chain.model.modelSet.getImplicitHydrogenCount(this);
+    return group.chain.model.modelSet.getImplicitHydrogenCount(this, false);
   }
 
   int getTargetValence() {
@@ -484,6 +485,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case 8: //O
     case 16: //S
       return 2;
+    case 1:
     case 9: // F
     case 17: // Cl
     case 35: // Br
@@ -505,7 +507,7 @@ final public class Atom extends Point3fi implements JmolNode {
     // AtomCollection.getAtomPropertyState with VDW_AUTO
     // AtomCollection.getVdwRadius with passed on type
     return (Float.isNaN(userDefinedVanDerWaalRadius) 
-        ? viewer.getVanderwaalsMarType(atomicAndIsotopeNumber % 128, getVdwType(type)) / 1000f
+        ? viewer.getVanderwaalsMarType(atomicAndIsotopeNumber, getVdwType(type)) / 1000f
         : userDefinedVanDerWaalRadius);
   }
 

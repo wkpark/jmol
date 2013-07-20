@@ -34,8 +34,11 @@ public class Structure {
   public int strandCount;
 
   public int startChainID;
+  public String startChainStr;  
   public char startInsertionCode = '\0';
   public int endChainID;
+  public String endChainStr;
+
   public char endInsertionCode = '\0';
   public int startSequenceNumber;
   public int endSequenceNumber;

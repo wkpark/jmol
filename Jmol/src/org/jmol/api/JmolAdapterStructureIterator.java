@@ -30,8 +30,6 @@ import org.jmol.util.BS;
 public abstract class JmolAdapterStructureIterator {
 	public abstract boolean hasNext();
 
-	public abstract int getModelIndex();
-
 	public abstract EnumStructure getStructureType();
 
 	public abstract EnumStructure getSubstructureType();
@@ -56,7 +54,7 @@ public abstract class JmolAdapterStructureIterator {
 
   public abstract BS getStructuredModels();
 
-  public abstract int getStartIndex();
+  public abstract int[] getAtomIndices();
 
-  public abstract int getEndIndex();
+  public abstract int[] getModelIndices();
 }

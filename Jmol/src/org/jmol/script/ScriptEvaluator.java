@@ -9420,10 +9420,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // If this is a state script, it may have been created using
         // the DOCACHE flag, but we never want that here, because then
         // this is a file being loaded from the state script itself.
-        if (isStateScript)
-          filter = TextFormat
-              .simpleReplace(filter.toUpperCase(), "DOCACHE", "");
-        else
+//        if (isStateScript)
+//          filter = TextFormat
+//              .simpleReplace(filter.toUpperCase(), "DOCACHE", "");
+        if (!isStateScript && !isAppend)
           viewer.cacheClear();
       }
       htParams.put("filter", filter);
@@ -18701,7 +18701,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
         }
         // just checking here, and getting the full path name
-        if (!filename.startsWith("cache://")) {
+        if (!filename.startsWith("cache://") &&  stype == null) {
           fullPathNameOrError = viewer.getFullPathNameOrError(filename);
           filename = fullPathNameOrError[0];
           if (fullPathNameOrError[1] != null)
@@ -18711,7 +18711,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         Logger.info("reading isosurface data from " + filename);
 
         if (stype != null) {
-          propertyValue = viewer.cacheGet(filename + "#jmolSurfaceInfo");
+          propertyValue = viewer.cacheGet(filename);
           addShapeProperty(propertyList, "calculationType", stype);
         }
         if (propertyValue == null) {

@@ -349,8 +349,6 @@ public class PdbReader extends AtomSetCollectionReader {
   protected void finalizeReaderPDB() throws Exception {
     checkNotPDB();
     atomSetCollection.connectAll(maxSerial, isConnectStateBug);
-    if (atomSetCollection.getStructureCount() > 0)
-      atomSetCollection.bsStructuredModels.setBits(0, atomSetCollection.getAtomSetCount());
     if (vBiomolecules != null && vBiomolecules.size() > 0
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
@@ -1169,7 +1167,7 @@ Polyproline 10
     Structure structure = new Structure(-1, structureType, substructureType,
         structureID, serialID, strandCount);
     structure.set(startChainID, startSequenceNumber,
-        startInsertionCode, endChainID, endSequenceNumber, endInsertionCode, -1, -1);
+        startInsertionCode, endChainID, endSequenceNumber, endInsertionCode, Integer.MIN_VALUE, Integer.MAX_VALUE);
     atomSetCollection.addStructure(structure);
   }
 

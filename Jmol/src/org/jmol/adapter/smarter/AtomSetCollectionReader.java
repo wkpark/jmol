@@ -182,6 +182,7 @@ public abstract class AtomSetCollectionReader {
   protected boolean doPackUnitCell;
   protected String strSupercell;
   protected P3 ptSupercell;
+  protected boolean mustFinalizeModelSet;
 
   // private state variables
 
@@ -211,7 +212,13 @@ public abstract class AtomSetCollectionReader {
   protected int stateScriptVersionInt = Integer.MAX_VALUE; // for compatibility PDB reader Jmol 12.0.RC24 fix 
   // http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/adapter/readers/cifpdb/PdbReader.java?r1=13502&r2=13525
 
-  void setup(String fullPath, Map<String, Object> htParams, Object reader) {
+  protected void setup(String fullPath, Map<String, Object> htParams, Object reader) {
+    setupASCR(fullPath, htParams, reader);
+  }
+
+  protected void setupASCR(String fullPath, Map<String, Object> htParams, Object reader) {
+    if (fullPath == null)
+      return;
     this.htParams = htParams;
     filePath = fullPath.replace('\\', '/');
     int i = filePath.lastIndexOf('/');
@@ -219,7 +226,7 @@ public abstract class AtomSetCollectionReader {
     if (reader instanceof BufferedReader)
       this.reader = (BufferedReader) reader;
     else if (reader instanceof JmolDocument)
-      this.doc = (JmolDocument) reader;
+      doc = (JmolDocument) reader;
   }
 
   Object readData() throws Exception {
@@ -248,6 +255,19 @@ public abstract class AtomSetCollectionReader {
     if (doc != null)
       doc.close();
     return finish();
+  }
+
+  private void fixBaseIndices() {
+    try {
+    int baseAtomIndex = ((Integer) htParams.get("baseAtomIndex")).intValue();
+    int baseModelIndex = ((Integer) htParams.get("baseModelIndex")).intValue();
+    baseAtomIndex += atomSetCollection.getAtomCount();
+    baseModelIndex += atomSetCollection.getAtomSetCount();
+    htParams.put("baseAtomIndex", Integer.valueOf(baseAtomIndex));
+    htParams.put("baseModelIndex", Integer.valueOf(baseModelIndex));
+    } catch (Exception e) {
+      // ignore
+    }
   }
 
   protected Object readDataObject(Object node) throws Exception {
@@ -339,6 +359,7 @@ public abstract class AtomSetCollectionReader {
   protected void finalizeReaderASCR() throws Exception {
     applySymmetryAndSetTrajectory();
     setLoadNote();
+    atomSetCollection.finalizeStructures();
     if (doCentralize)
       atomSetCollection.centralize();
   }
@@ -394,6 +415,7 @@ public abstract class AtomSetCollectionReader {
         : atomSetCollection.bsAtoms.cardinality()) == 0
         && fileType.indexOf("DataOnly") < 0 && atomSetCollection.getAtomSetCollectionAuxiliaryInfo("dataOnly") == null)
       return "No atoms found\nfor file " + filePath + "\ntype " + name;
+    fixBaseIndices();
     return atomSetCollection;
   }
 
@@ -1589,11 +1611,7 @@ public abstract class AtomSetCollectionReader {
     }
   }
 
-  /**
-   * @param baseModelIndex
-   * @param baseAtomIndex
-   */
-  public void finalizeModelSet(int baseModelIndex, int baseAtomIndex) {
+  public void finalizeModelSet() {
     // PyMOL reader only
   }
 

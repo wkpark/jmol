@@ -89,20 +89,22 @@ public final class BioModel extends Model{
     bioPolymers = (BioPolymer[])ArrayUtil.arrayCopyObject(bioPolymers, bioPolymerCount);
   }
   
-  @Override
-  public void addSecondaryStructure(EnumStructure type, 
-                             String structureID, int serialID, int strandCount,
-                             int startChainID, int startSeqcode,
-                             int endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
-    for (int i = bioPolymerCount; --i >= 0; )
-      bioPolymers[i].addStructure(type, structureID, serialID, strandCount, startChainID, startSeqcode,
-                                    endChainID, endSeqcode, istart, iend, bsAssigned);
+  public void addSecondaryStructure(EnumStructure type, String structureID,
+                                    int serialID, int strandCount,
+                                    int startChainID, int startSeqcode,
+                                    int endChainID, int endSeqcode, int istart,
+                                    int iend, BS bsAssigned) {
+    for (int i = bioPolymerCount; --i >= 0;)
+      if (bioPolymers[i] instanceof AlphaPolymer)
+        ((AlphaPolymer) bioPolymers[i]).addStructure(type, structureID,
+            serialID, strandCount, startChainID, startSeqcode, endChainID,
+            endSeqcode, istart, iend, bsAssigned);
   }
 
   @Override
-  public String calculateStructures(boolean asDSSP, boolean doReport, 
-                             boolean dsspIgnoreHydrogen, boolean setStructure,
-                             boolean includeAlpha) {
+  public String calculateStructures(boolean asDSSP, boolean doReport,
+                                    boolean dsspIgnoreHydrogen,
+                                    boolean setStructure, boolean includeAlpha) {
     if (bioPolymerCount == 0 || !setStructure && !asDSSP)
       return "";
     modelSet.proteinStructureTainted = structureTainted = true;
@@ -112,9 +114,10 @@ public final class BioModel extends Model{
           bioPolymers[i].clearStructures();
     if (!asDSSP || includeAlpha)
       for (int i = bioPolymerCount; --i >= 0;)
-        bioPolymers[i].calculateStructures(includeAlpha);
+        if (bioPolymers[i] instanceof AlphaPolymer)
+          ((AlphaPolymer) bioPolymers[i]).calculateStructures(includeAlpha);
     return (asDSSP ? bioPolymers[0].calculateDssp(bioPolymers, bioPolymerCount,
-          null, doReport, dsspIgnoreHydrogen, setStructure) : "");
+        null, doReport, dsspIgnoreHydrogen, setStructure) : "");
   }
 
   @Override

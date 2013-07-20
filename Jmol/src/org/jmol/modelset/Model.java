@@ -428,31 +428,6 @@ public class Model {
   }
 
   /**
-   * create a new structure, being careful to not overwrite existing structure.
-   * 
-   * @param type
-   * @param structureID
-   * @param serialID
-   * @param strandCount
-   * @param startChainID
-   * @param startSeqcode
-   * @param endChainID
-   * @param endSeqcode
-   * @param istart
-   *        starting atom index
-   * @param iend
-   *        ending atom index
-   * @param bsAssigned
-   *        already assigned
-   */
-  public void addSecondaryStructure(EnumStructure type, String structureID,
-                                    int serialID, int strandCount,
-                                    int startChainID, int startSeqcode,
-                                    int endChainID, int endSeqcode, int istart,
-                                    int iend, BS bsAssigned) {
-  }
-
-  /**
    * @param asDSSP
    * @param doReport
    * @param dsspIgnoreHydrogen

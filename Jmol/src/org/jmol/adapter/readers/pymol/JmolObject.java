@@ -57,14 +57,15 @@ class JmolObject {
   private BS bsAtoms;
   private Object info;
   private int size = -1;  
-  private short[] colixes;
   private Object[] colors;
+  int modelIndex = Integer.MIN_VALUE;
 
   String jmolName;
   int argb;
   float translucency = 0;
   boolean visible = true;
   RadiusData rd;
+  public String cacheID;
 
   /**
    * 
@@ -90,6 +91,8 @@ class JmolObject {
   @SuppressWarnings("unchecked")
   void offset(int modelOffset, int atomOffset) {
     if (modelOffset > 0) {
+      if (modelIndex != Integer.MIN_VALUE)
+        modelIndex += modelOffset;
       switch (id) {
       case T.display:
       case T.hide:
@@ -118,10 +121,11 @@ class JmolObject {
     }
     if (bsAtoms != null)
       BSUtil.offset(bsAtoms, 0, atomOffset);
-    if (colixes != null) {
+    if (colors != null) {
+      short[] colixes = (short[]) colors[0];
       short[] c = new short[colixes.length + atomOffset];
       System.arraycopy(colixes, 0, c, atomOffset, colixes.length);
-      colixes = c;
+      colors[0] = c;
     }
   }
 
@@ -129,10 +133,11 @@ class JmolObject {
   void finalizeObject(PyMOLScene pymolScene, ModelSet m, String mepList,
                       boolean doCache) {
     ShapeManager sm = m.shapeManager;
-    int modelIndex = getModelIndex(m);
     String color = "color";
     String sID;
     SB sb = null;
+    if (bsAtoms != null)
+      modelIndex = getModelIndex(m);
     switch (id) {
     case T.hidden:
       // bsHidden
@@ -254,12 +259,13 @@ class JmolObject {
       }
       sb = new SB();
       sb.append("isosurface ID ").append(Escape.eS(sID));
+      if (modelIndex < 0)
+        modelIndex = sm.viewer.getCurrentModelIndex();
       if (bsAtoms == null) {
         // point display of map 
-        modelIndex = sm.viewer.getCurrentModelIndex();
         sb.append(" model ")
             .append(m.models[modelIndex].getModelNumberDotted()).append(
-                " color density sigma 1.0").append(" \"\" ").append(
+                " color density sigma 1.0 ").append(Escape.eS(cacheID)).append(" ").append(
                 Escape.eS(sID));
         if (doCache)
           sb.append(";isosurface cache");
@@ -310,7 +316,7 @@ class JmolObject {
       float min = PyMOLScene.floatAt(PyMOLScene.listAt(mep, 3), 0);
       float max = PyMOLScene.floatAt(PyMOLScene.listAt(mep, 3), 2);
       sb = new SB();
-      sb.append(";isosurface ID ").append(Escape.eS(sID)).append(" map \"\" ")
+      sb.append(";isosurface ID ").append(Escape.eS(sID)).append(" map ").append(Escape.eS(cacheID)).append(" ")
           .append(Escape.eS(mapID)).append(
               ";color isosurface range " + min + " " + max
                   + ";isosurface colorscheme rwb;set isosurfacekey true");
@@ -326,7 +332,7 @@ class JmolObject {
       sb = new SB();
       sb.append("isosurface ID ").append(Escape.eS(sID)).append(" model ")
           .append(m.models[modelIndex].getModelNumberDotted())
-          .append(" color ").append(Escape.escapeColor(argb)).append(" \"\" ")
+          .append(" color ").append(Escape.escapeColor(argb)).append("  ").append(Escape.eS(cacheID)).append(" ")
           .append(Escape.eS(sID)).append(" mesh nofill frontonly");
       float within = PyMOLScene.floatAt(PyMOLScene.listAt(PyMOLScene.listAt(
           mesh, 2), 0), 11);
@@ -354,6 +360,7 @@ class JmolObject {
       break;
     }
     if (sb != null) {
+      System.out.println("jmolobject " + sb);
       sm.viewer.runScript(sb.toString());
       return;
     }
@@ -374,11 +381,12 @@ class JmolObject {
     if (bsAtoms == null)
       return -1;
     int iAtom = bsAtoms.nextSetBit(0);
+    if (iAtom >= m.atoms.length)
+      System.out.println("PyMOL LOADING ERROR IN MERGE");
     return (iAtom < 0 ? -1 : m.atoms[iAtom].modelIndex);
   }
 
   void setColors(short[] colixes, float translucency) {
-    this.colixes = colixes;
     colors = new Object[] {colixes, Float.valueOf(translucency) };
   }
   

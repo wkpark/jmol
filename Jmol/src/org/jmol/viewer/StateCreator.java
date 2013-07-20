@@ -755,7 +755,8 @@ public class StateCreator implements JmolStateCreator {
     if (!tm.isWindowCentered())
       appendCmd(commands, "set windowCentered false");
     appendCmd(commands, "set cameraDepth " + tm.cameraDepth);
-    if (tm.mode == TransformManager.MODE_NAVIGATION)
+    boolean navigating = (tm.mode == TransformManager.MODE_NAVIGATION);
+    if (navigating)
       appendCmd(commands, "set navigationMode true");
     appendCmd(commands, viewer.getBoundBoxCommand(false));
     appendCmd(commands, "center " + Escape.eP(tm.fixedRotationCenter));
@@ -768,7 +769,7 @@ public class StateCreator implements JmolStateCreator {
               .escapeColor(tm.stereoColors[0])
               + " " + Escape.escapeColor(tm.stereoColors[1])) + " "
           + tm.stereoDegrees);
-    if (tm.mode != TransformManager.MODE_NAVIGATION && !tm.zoomEnabled)
+    if (!navigating && !tm.zoomEnabled)
       appendCmd(commands, "zoom off");
     commands
         .append("  slab ")
@@ -776,7 +777,7 @@ public class StateCreator implements JmolStateCreator {
         .append(";depth ")
         .appendI(tm.depthPercentSetting)
         .append(
-            tm.slabEnabled && tm.mode != TransformManager.MODE_NAVIGATION ? ";slab on"
+            tm.slabEnabled && !navigating ? ";slab on"
                 : "").append(";\n");
     commands.append("  set slabRange ").appendF(tm.slabRange).append(";\n");
     if (tm.zShadeEnabled)
@@ -798,7 +799,7 @@ public class StateCreator implements JmolStateCreator {
     if (viewer.modelSetHasVibrationVectors() && tm.vibrationOn)
       appendCmd(commands, "set vibrationPeriod " + tm.vibrationPeriod
           + ";vibration on");
-    if (tm.mode == TransformManager.MODE_NAVIGATION) {
+    if (navigating) {
       commands.append(tm.getNavigationState());
       if (tm.depthPlane != null || tm.slabPlane != null)
         commands.append("  slab on;\n");

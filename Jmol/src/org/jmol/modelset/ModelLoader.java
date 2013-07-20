@@ -46,11 +46,9 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.api.JmolAdapterBondIterator;
-import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
-import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 
 
@@ -80,7 +78,7 @@ public final class ModelLoader {
   //}
   
   private Viewer viewer;
-  private ModelSet modelSet;
+  public ModelSet modelSet;
   private ModelSet mergeModelSet;
 
   private boolean merging;
@@ -141,7 +139,7 @@ public final class ModelLoader {
   private boolean someModelsHaveUnitcells;
   private boolean is2D;
   private boolean isPDB;
-  private boolean isTrajectory; 
+  public boolean isTrajectory; 
   private boolean isPyMOLsession;
   private boolean doMinimize;
   private boolean doAddHydrogens;
@@ -168,7 +166,7 @@ public final class ModelLoader {
       try {
         Class<?> shapeClass = Class.forName("org.jmol.modelsetbio.Resolver");
         jbr = (JmolBioResolver) shapeClass.newInstance();
-        jbr.initialize(modelSet);
+        jbr.initialize(this);
       } catch (Exception e) {
         Logger
             .error("developer error: org.jmol.modelsetbio.Resolver could not be found");
@@ -248,7 +246,7 @@ public final class ModelLoader {
 
   private Group nullGroup; // used in Atom
 
-  private int baseModelIndex = 0;
+  public int baseModelIndex = 0;
   private int baseModelCount = 0;
   private int baseAtomIndex = 0;
   private int baseGroupIndex = 0;
@@ -351,7 +349,8 @@ public final class ModelLoader {
 
     if (adapter != null) {
       modelSet.calculatePolymers(groups, groupCount, baseGroupIndex, null);
-      iterateOverAllNewStructures(adapter, atomSetCollection);
+      if (jbr != null)
+        jbr.iterateOverAllNewStructures(adapter, atomSetCollection);
     }
 
     
@@ -373,7 +372,7 @@ public final class ModelLoader {
     finalizeShapes();
     viewer.setModelSet(modelSet);
     if (adapter != null)
-      adapter.finish(atomSetCollection, baseModelIndex, baseAtomIndex);    
+      adapter.finish(atomSetCollection);    
     if (mergeModelSet != null) {
       mergeModelSet.releaseModelSet();
     }
@@ -456,7 +455,7 @@ public final class ModelLoader {
       modelSet.bonds = new Bond[250 + nAtoms]; // was "2 *" -- WAY overkill.
     }
     if (doAddHydrogens)
-      jbr.initializeHydrogenAddition(this, modelSet.bondCount);
+      jbr.initializeHydrogenAddition();
     if (trajectoryCount > 1)
       modelSet.modelCount += trajectoryCount - 1;
     modelSet.models = (Model[]) ArrayUtil.arrayCopyObject(modelSet.models, modelSet.modelCount);
@@ -576,7 +575,7 @@ public final class ModelLoader {
         && Boolean.TRUE == modelAuxiliaryInfo.get("isPDB"));
     if (appendNew) {
       modelSet.models[modelIndex] = (modelIsPDB ? 
-          jbr.getBioModel(modelSet, modelIndex, trajectoryBaseIndex,
+          jbr.getBioModel(modelIndex, trajectoryBaseIndex,
           jmolData, modelProperties, modelAuxiliaryInfo)
           : new Model(modelSet, modelIndex, trajectoryBaseIndex,
               jmolData, modelProperties, modelAuxiliaryInfo));
@@ -940,7 +939,7 @@ public final class ModelLoader {
   }
   
   private JmolList<Bond> vStereo;
-  private BS bsAssigned;
+  
   private Bond bondAtoms(Object atomUid1, Object atomUid2, short order) {
     Atom atom1 = htAtomMap.get(atomUid1);
     if (atom1 == null) {
@@ -978,94 +977,9 @@ public final class ModelLoader {
     modelSet.setBond(modelSet.bondCount++, bond);
     return bond;
   }
-
-  /**
-   * Pull in all spans of helix, etc. in the file(s)
-   * 
-   * We do turn first, because sometimes a group is defined twice, and this way
-   * it gets marked as helix or sheet if it is both one of those and turn.
-   * 
-   * @param adapter
-   * @param atomSetCollection
-   */
-  private void iterateOverAllNewStructures(JmolAdapter adapter,
-                                           Object atomSetCollection) {
-    JmolAdapterStructureIterator iterStructure = adapter
-        .getStructureIterator(atomSetCollection);
-    if (iterStructure == null)
-      return;
-    BS bs = iterStructure.getStructuredModels();
-    if (bs != null)
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-        structuresDefinedInFile.set(baseModelIndex + i);
-    while (iterStructure.hasNext()) {
-      if (iterStructure.getStructureType() != EnumStructure.TURN)
-        setStructure(iterStructure);
-    }
-
-    // define turns LAST. (pulled by the iterator first)
-    // so that if they overlap they get overwritten:
-
-    iterStructure = adapter.getStructureIterator(atomSetCollection);
-    while (iterStructure.hasNext()) {
-      if (iterStructure.getStructureType() == EnumStructure.TURN)
-        setStructure(iterStructure);
-    }
-  }
-
-  private void setStructure(JmolAdapterStructureIterator iterStructure) {
-    int i = iterStructure.getModelIndex();
-    EnumStructure t = iterStructure.getSubstructureType();
-    String id = iterStructure.getStructureID();
-    int serID = iterStructure.getSerialID();
-    int count = iterStructure.getStrandCount();
-    int istart = iterStructure.getStartIndex();
-    if (istart >= 0)
-      istart += baseAtomIndex;
-    int iend = iterStructure.getEndIndex();
-    if (iend >= 0)
-      iend += baseAtomIndex;
-    if (bsAssigned == null)
-      bsAssigned = new BS();
-    iterStructure.getSerialID();
-    defineStructure(i, t, id, serID, count, iterStructure.getStartChainID(),
-          iterStructure.getStartSequenceNumber(), iterStructure
-              .getStartInsertionCode(), iterStructure.getEndChainID(),
-          iterStructure.getEndSequenceNumber(), iterStructure
-              .getEndInsertionCode(), istart, iend, bsAssigned);
-  }
-
-  private BS structuresDefinedInFile = new BS();
-
-  private void defineStructure(int modelIndex, EnumStructure subType,
-                               String structureID, int serialID,
-                               int strandCount, int startChainID,
-                               int startSequenceNumber,
-                               char startInsertionCode, int endChainID,
-                               int endSequenceNumber, char endInsertionCode,
-                               int istart, int iend, BS bsAssigned) {
-    EnumStructure type = (subType == EnumStructure.NOT ? EnumStructure.NONE : subType);
-    int startSeqCode = Group.getSeqcodeFor(startSequenceNumber, startInsertionCode);
-    int endSeqCode = Group.getSeqcodeFor(endSequenceNumber, endInsertionCode);
-    Model[] models = modelSet.models;
-    if (modelIndex >= 0 || isTrajectory) { //from PDB file
-      if (isTrajectory)
-        modelIndex = 0;
-      modelIndex += baseModelIndex;
-      structuresDefinedInFile.set(modelIndex);
-      models[modelIndex].addSecondaryStructure(type,
-          structureID, serialID, strandCount,
-          startChainID, startSeqCode, endChainID, endSeqCode, istart, iend, bsAssigned);
-      return;
-    }
-    for (int i = baseModelIndex; i < modelSet.modelCount; i++) {
-      structuresDefinedInFile.set(i);
-      models[i].addSecondaryStructure(type,
-          structureID, serialID, strandCount,
-          startChainID, startSeqCode, endChainID, endSeqCode, istart, iend, bsAssigned);
-    }
-  }
   
+  public BS structuresDefinedInFile = new BS();
+
   ////// symmetry ///////
 
   private void initializeUnitCellAndSymmetry() {

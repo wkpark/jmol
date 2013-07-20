@@ -242,11 +242,9 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   abstract public Object getAtomSetCollectionFromDOM(Object DOMNode, Map<String, Object> htParams);
 
   /**
-   * @param atomSetCollection  
-   * @param baseModelIndex 
-   * @param baseAtomIndex 
+   * @param atomSetCollection 
    */
-  abstract public void finish(Object atomSetCollection, int baseModelIndex, int baseAtomIndex);
+  abstract public void finish(Object atomSetCollection);
 
   /**
    * Get the type of this file or molecular model, if known.
@@ -440,5 +438,5 @@ abstract public Object getAtomSetCollection(Object atomSetCollectionReader);
   abstract public Object getAtomSetCollectionFromReader(String fname,
                                             Object reader,
                                             Map<String, Object> htParams) throws Exception;
-
+  
 }

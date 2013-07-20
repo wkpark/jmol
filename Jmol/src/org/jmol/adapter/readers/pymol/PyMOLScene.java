@@ -190,9 +190,9 @@ class PyMOLScene implements JmolSceneGenerator {
   private int baseAtomIndex;
   private int stateCount;
 
-  private String mepList;
+  String mepList = "";
 
-  private boolean doCache;
+  boolean doCache;
   private boolean haveScenes;
   
   private BS bsCarve;
@@ -200,6 +200,8 @@ class PyMOLScene implements JmolSceneGenerator {
   private BS bsLineBonds = new BS();
   private BS bsStickBonds = new BS();
   private int thisState;
+  int currentAtomSetIndex;
+  String surfaceInfoName;
 
   void setStateCount(int stateCount) {
     this.stateCount = stateCount;
@@ -207,13 +209,20 @@ class PyMOLScene implements JmolSceneGenerator {
 
   @SuppressWarnings("unchecked")
   PyMOLScene(PymolAtomReader reader, Viewer viewer, JmolList<Object> settings,
-      Map<Integer, JmolList<Object>> uniqueSettings, int pymolVersion, boolean haveScenes) {
+      Map<Integer, JmolList<Object>> uniqueSettings, int pymolVersion, 
+      boolean haveScenes, int baseAtomIndex, int baseModelIndex, 
+      boolean doCache, String filePath) {
     this.reader = reader;
     this.viewer = viewer;
     this.settings = settings;
     this.uniqueSettings = uniqueSettings;
     this.pymolVersion = pymolVersion;
     this.haveScenes = haveScenes;
+    this.baseAtomIndex = baseAtomIndex;
+    this.baseModelIndex = baseModelIndex;
+    this.doCache = doCache;
+    this.surfaceInfoName = filePath + "##JmolSurfaceInfo##";
+
     setVersionSettings();
     settings.trimToSize();
     bgRgb = colorSetting(listAt(settings, PyMOL.bg_rgb));
@@ -436,6 +445,7 @@ class PyMOLScene implements JmolSceneGenerator {
       generateColors((Object[]) scene.get("colors"));
       generateShapes((Object[]) scene.get("moleculeReps"));
       finalizeVisibility();
+      offsetObjects();
       finalizeObjects();
     } catch (Exception e) {
       System.out.println("PyMOLScene exception " + e);
@@ -631,12 +641,7 @@ class PyMOLScene implements JmolSceneGenerator {
     return getColorPt(c.get(2));
   }
 
-  void setReaderObjects(String mepList, boolean doCache, int baseModelIndex,
-                  int baseAtomIndex) {
-    this.baseModelIndex = baseModelIndex;
-    this.baseAtomIndex = baseAtomIndex;
-    this.mepList = mepList;
-    this.doCache = doCache;
+  void setReaderObjects() {
     clearReaderData();
     finalizeObjects();
     if (!haveScenes) {
@@ -653,7 +658,6 @@ class PyMOLScene implements JmolSceneGenerator {
     for (int i = 0; i < jmolObjects.size(); i++) {
       try {
         JmolObject obj = jmolObjects.get(i);
-        //obj.offset(baseModelIndex, baseAtomIndex);
         obj.finalizeObject(this, viewer.modelSet, mepList, doCache);
       } catch (Exception e) {
         System.out.println(e);
@@ -664,8 +668,15 @@ class PyMOLScene implements JmolSceneGenerator {
     finalizeUniqueBonds();
     jmolObjects.clear();
   }
+  
+  void offsetObjects() {
+    for (int i = 0; i < jmolObjects.size(); i++)
+      jmolObjects.get(i).offset(baseModelIndex, baseAtomIndex);
+  }
 
   private JmolObject getJmolObject(int id, BS bsAtoms, Object info) {
+    if (baseAtomIndex > 0)
+      bsAtoms = BSUtil.copy(bsAtoms);
     return new JmolObject(id, objectNameID, bsAtoms, info);
   }
 
@@ -1408,6 +1419,8 @@ class PyMOLScene implements JmolSceneGenerator {
       jo.translucency = transparency;
       if (surfaceColor >= 0)
         jo.argb = PyMOL.getRGB(surfaceColor);
+      jo.modelIndex = currentAtomSetIndex;
+      jo.cacheID = surfaceInfoName;
       setUniqueObjects(JC.SHAPE_ISOSURFACE, bs, PyMOL.surface_color, surfaceColor, PyMOL.transparency, transparency, 0, 0, 0);
       break;
     case PyMOL.REP_MESH: //   = 8;
@@ -1710,10 +1723,13 @@ class PyMOLScene implements JmolSceneGenerator {
       jo.argb = PyMOL.getRGB(meshColor);
     }
     jo.translucency = transparency;
+    jo.cacheID = surfaceInfoName;
   }
 
-  public void addIsosurface(String objectName) {
-    addJmolObject(T.isosurface, null, objectName);
+  public JmolObject addIsosurface(String objectName) {
+    JmolObject jo = addJmolObject(T.isosurface, null, objectName);
+    jo.cacheID = surfaceInfoName;
+    return jo;
   }
 
 }

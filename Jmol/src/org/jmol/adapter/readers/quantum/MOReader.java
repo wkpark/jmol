@@ -573,6 +573,7 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff
    */
   private void readSecondOrderData() throws Exception {
 
+    readLines(5);
     if (lastMoData == null || moTypes == null)
       return;
     Hashtable<String, Integer> ht = new Hashtable<String, Integer>();
@@ -580,7 +581,6 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff
       ht.put(TextFormat.simpleReplace(moTypes.get(i).substring(10), " ", ""),
           Integer.valueOf(i + iMo0));
     JmolList<String[]> strSecondOrderData = new  JmolList<String[]>();
-    readLines(5);
     while (readLine() != null && line.indexOf("NBO") < 0) {
       if (line.length() < 5 || line.charAt(4) != '.')
         continue;

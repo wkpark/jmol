@@ -149,7 +149,7 @@ public class FileManager {
     if (fileName.startsWith("="))
       return "pdb";
     Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName, null,
-        true, false, true, true);
+        true, false, true, true, null);
     if (br instanceof BufferedReader)
       return viewer.getModelAdapter().getFileTypeName(br);
     if (br instanceof ZInputStream) {
@@ -521,7 +521,7 @@ public class FileManager {
     if (fullPathNameReturn != null)
       fullPathNameReturn[0] = names[0].replace('\\', '/');
     return getUnzippedBufferedReaderOrErrorMessageFromName(names[0], bytes,
-        false, isBinary, false, doSpecialLoad);
+        false, isBinary, false, doSpecialLoad, null);
   }
 
   public String getEmbeddedFileState(String fileName) {
@@ -547,7 +547,8 @@ public class FileManager {
                                                                 boolean allowZipStream,
                                                                 boolean asInputStream,
                                                                 boolean isTypeCheckOnly,
-                                                                boolean doSpecialLoad) {
+                                                                boolean doSpecialLoad, 
+                                                                Map<String, Object> htParams) {
     String[] subFileList = null;
     String[] info = (bytes == null && doSpecialLoad ? getSpartanFileList(name) : null);
     String name00 = name;
@@ -594,8 +595,11 @@ public class FileManager {
       // script or load command should be used)
     }
 
-    if (bytes == null && pngjCache != null)
+    if (bytes == null && pngjCache != null) {
       bytes = JmolBinary.getCachedPngjBytes(this, name);
+      if (bytes != null && htParams != null)
+        htParams.put("sourcePNGJ", Boolean.TRUE);
+    }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
       subFileList = TextFormat.splitChars(name, "|");
@@ -1251,8 +1255,10 @@ public class FileManager {
   public Map<String, byte[]> spardirCache;
   
   public void clearPngjCache(String fileName) {
-    if (fileName == null || pngjCache != null && pngjCache.containsKey(getCanonicalName(JmolBinary.getZipRoot(fileName))))
+    if (fileName != null && (pngjCache == null || !pngjCache.containsKey(getCanonicalName(JmolBinary.getZipRoot(fileName)))))
+        return;
       pngjCache = null;
+      Logger.info("PNGJ cache cleared");
   }
 
 
@@ -1276,14 +1282,14 @@ public class FileManager {
   }
 
   void cacheClear() {
-    Logger.info("cachClear");
+    Logger.info("cache cleared");
     cache.clear();
+    clearPngjCache(null);
   }
 
   public int cacheFileByNameAdd(String fileName, boolean isAdd) {
     if (fileName == null || !isAdd && fileName.equalsIgnoreCase("")) {
       cacheClear();
-      clearPngjCache(null);
       return -1;
     }
     Object data;

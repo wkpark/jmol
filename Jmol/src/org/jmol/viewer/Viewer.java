@@ -1916,7 +1916,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (filter.length() > 0)
         htParams.put("filter", filter);
     }
-    if (isAppend && !global.appendNew && getAtomCount() > 0)
+    boolean merging = (isAppend && !global.appendNew && getAtomCount() > 0);
+    htParams.put("baseAtomIndex", Integer.valueOf(isAppend ? getAtomCount() : 0));
+    htParams.put("baseModelIndex", Integer.valueOf(getAtomCount() == 0 ? 0 : getModelCount() + (merging ? -1 : 0)));
+    if (merging)
       htParams.put("merging", Boolean.TRUE);
     return htParams;
   }
@@ -9766,6 +9769,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void cachePut(String key, Object data) {
     // PyMOL reader and isosurface only
+    Logger.info("Viewer cachePut " + key);
     fileManager.cachePut(key, data);
   }
 
@@ -9776,7 +9780,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void cacheClear() {
     // script: reset cache
     fileManager.cacheClear();
-    fileManager.clearPngjCache(null);
   }
 
   public void setCurrentModelID(String id) {

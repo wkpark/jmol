@@ -1001,33 +1001,6 @@ public abstract class BioPolymer {
 
   /**
    * 
-   * @param type
-   * @param structureID
-   * @param serialID
-   * @param strandCount
-   * @param startChainID
-   * @param startSeqcode
-   * @param endChainID
-   * @param endSeqcode
-   * @param istart TODO
-   * @param iend TODO
-   * @param bsAssigned TODO
-   */
-  public void addStructure(EnumStructure type, String structureID,
-                                    int serialID, int strandCount,
-                                    int startChainID, int startSeqcode,
-                                    int endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
-    // overridden by each subclass
-  }
-
-  /**
-   * @param alphaOnly
-   */
-  public void calculateStructures(boolean alphaOnly) {
-  }
-
-  /**
-   * 
    * @param polymer
    * @param bsA
    * @param bsB

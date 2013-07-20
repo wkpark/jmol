@@ -74,12 +74,7 @@ import org.jmol.util.TextFormat;
  */
 public class CifReader extends AtomSetCollectionReader implements JmolLineReader {
 
-  public String readNextLine() throws Exception {
-    // from CifDataReader
-    if (readLine() != null && line.indexOf("#jmolscript:") >= 0)
-      checkCurrentLineForScript();
-    return line;
-  }
+  protected boolean isPDBX;
   
   private CifDataReader tokenizer = new CifDataReader(this);
 
@@ -112,6 +107,10 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   
   @Override
   public void initializeReader() throws Exception {
+    initializeReaderCif();
+  }
+
+  protected void initializeReaderCif() throws Exception {
     if (checkFilterKey("CONF "))
       configurationPtr = parseIntAt(filter, filter.indexOf("CONF ") + 5);
     appendedData = (String) htParams.get("appendedData");
@@ -159,28 +158,27 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     atomSetCollection.setCollectionName("<collection of "
         + atomSetCollection.getAtomSetCount() + " models>");
     continuing = false;
-  }
+   }
 
+  public String readNextLine() throws Exception {
+    // from CifDataReader
+    if (readLine() != null && line.indexOf("#jmolscript:") >= 0)
+      checkCurrentLineForScript();
+    return line;
+  }
+  
   private boolean readAllData() throws Exception {
     if (key.startsWith("data_")) {
+      if (isPDBX) {
+        tokenizer.getTokenPeeked();
+        return true;
+      }
       if (iHaveDesiredModel)
         return false;
-      skipping = !doGetModel(++modelNumber, null);
-      if (skipping) {
-        tokenizer.getTokenPeeked();
-      } else {
-        chemicalName = "";
-        thisStructuralFormula = "";
-        thisFormula = "";
-        if (nAtoms == atomSetCollection.getAtomCount())
-          // we found no atoms -- must revert
-          atomSetCollection.removeCurrentAtomSet();
-        else
-          applySymmetryAndSetTrajectory();
+      newModel(++modelNumber);
+      if (!skipping)
         processDataParameter();
-        iHaveDesiredModel = (isLastModel(modelNumber));
-        nAtoms = atomSetCollection.getAtomCount();
-      }
+      nAtoms = atomSetCollection.getAtomCount();
       return true;
     }
     if (key.startsWith("loop_")) {
@@ -234,10 +232,27 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     return true;
   }
   
+  protected void newModel(int modelNo) throws Exception {    
+    if (isPDB)
+      setIsPDB();
+    skipping = !doGetModel(modelNumber = modelNo, null);
+    if (skipping) {
+      tokenizer.getTokenPeeked();
+    } else {
+      chemicalName = "";
+      thisStructuralFormula = "";
+      thisFormula = "";
+      if (nAtoms == atomSetCollection.getAtomCount())
+        // we found no atoms -- must revert
+        atomSetCollection.removeCurrentAtomSet();
+      else
+        applySymmetryAndSetTrajectory();
+      iHaveDesiredModel = isLastModel(modelNumber);
+    }
+  }
+
   @Override
   protected void finalizeReader() throws Exception {
-    if (atomSetCollection.getStructureCount() > 0)
-      atomSetCollection.bsStructuredModels.setBits(0, atomSetCollection.getAtomSetCount());
     if (vBiomolecules != null && vBiomolecules.size() == 1
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
@@ -316,18 +331,23 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     tokenizer.getTokenPeeked();
     thisDataSetName = (key.length() < 6 ? "" : key.substring(5));
     if (thisDataSetName.length() > 0) {
-      if (atomSetCollection.getCurrentAtomSetIndex() >= 0) {
-        // note that there can be problems with multi-data mmCIF sets each with
-        // multiple models; and we could be loading multiple files!
-        atomSetCollection.newAtomSet();
-      } else {
-        atomSetCollection.setCollectionName(thisDataSetName);
-      }
+      nextAtomSet();
     }
     if (Logger.debugging)
       Logger.debug(key);
   }
   
+  private void nextAtomSet() {
+    atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
+    if (atomSetCollection.getCurrentAtomSetIndex() >= 0) {
+      // note that there can be problems with multi-data mmCIF sets each with
+      // multiple models; and we could be loading multiple files!
+      atomSetCollection.newAtomSet();
+    } else {
+      atomSetCollection.setCollectionName(thisDataSetName);
+    }
+  }
+
   /**
    * reads some of the more interesting info into specific atomSetAuxiliaryInfo
    * elements
@@ -733,13 +753,14 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
   /**
    * reads atom data in any order
-   * @param isLigand 
+   * 
+   * @param isLigand
    * 
    * @return TRUE if successful; FALS if EOF encountered
    * @throws Exception
    */
   boolean processAtomSiteLoopBlock(boolean isLigand) throws Exception {
-    int currentModelNO = -1;
+    int currentModelNO = -1; // PDBX
     boolean isAnisoData = false;
     char assemblyId = '\0';
     parseLoopParameters(atomFields);
@@ -769,12 +790,44 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     }
     int iAtom = -1;
     float[] data;
+    int modelField = -1;
     while (tokenizer.getData()) {
       Atom atom = new Atom();
       assemblyId = '\0';
+      if (isPDBX) {
+        if (modelField == -1) {
+          for (int i = 0; i < tokenizer.fieldCount; ++i)
+            if (fieldProperty(i) == MODEL_NO) {
+              modelField = i;
+              break;
+            }
+          if (modelField == -1)
+            modelField = -2;
+        }
+        if (modelField >= 0) {
+          fieldProperty(modelField);
+          int modelNO = parseIntStr(field);
+          if (modelNO != currentModelNO) {
+            if (iHaveDesiredModel) {
+              skipLoop();
+              // but only this atom loop
+              skipping = false;
+              continuing = true;
+              break;
+            }
+            currentModelNO = modelNO;
+            newModel(modelNO);
+            if (!skipping)
+              nextAtomSet();
+          }
+          if (skipping)
+            continue;
+        }
+      }
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case NONE:
+        case MODEL_NO:
           break;
         case CHEM_COMP_AC_SYM:
         case TYPE_SYMBOL:
@@ -856,7 +909,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case AUTH_ASYM_ID:
           if (!haveChainsLC && !field.toUpperCase().equals(field))
             haveChainsLC = (viewer.getChainID("lc") != 0); // force chainCaseSensitive
-         atom.chainID = viewer.getChainID(field);
+          atom.chainID = viewer.getChainID(field);
           break;
         case SEQ_ID:
           atom.sequenceNumber = parseIntStr(field);
@@ -870,7 +923,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         case DISORDER_ASSEMBLY:
           disorderAssembly = field;
           break;
-        case DISORDER_GROUP:          
+        case DISORDER_GROUP:
           if (firstChar == '-' && field.length() > 1) {
             atom.alternateLocationID = field.charAt(1);
             atom.ignoreSymmetry = true;
@@ -882,13 +935,6 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           isPDB = true;
           if ("HETATM".equals(field))
             atom.isHetero = true;
-          break;
-        case MODEL_NO:
-          int modelNO = parseIntStr(field);
-          if (modelNO != currentModelNO) {
-            atomSetCollection.newAtomSet();
-            currentModelNO = modelNO;
-          }
           break;
         case DUMMY_ATOM:
           //see http://www.iucr.org/iucr-top/cif/cifdic_html/
@@ -950,8 +996,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
             atomSetCollection.setAnisoBorU(atom, data = new float[8], 4);
             // Ortep Type 4: D = 1/4, C = 2, a*b*
           }
-           int iTypeB = (propertyOf[i] - ANISO_B11) % 6;
-           data[iTypeB] = parseFloatStr(field);
+          int iTypeB = (propertyOf[i] - ANISO_B11) % 6;
+          data[iTypeB] = parseFloatStr(field);
           break;
         case ANISO_Beta_11:
         case ANISO_Beta_22:
@@ -984,7 +1030,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           if (bs == null)
             assemblyIdAtoms.put("" + assemblyId, bs = new BS());
           bs.set(atom.index);
-        }          
+        }
         if (atom.isHetero && htHetero != null) {
           atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
           atomSetCollection.setAtomSetCollectionAuxiliaryInfo("hetNames",
@@ -993,10 +1039,11 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         }
       }
     }
-    if (isPDB) {
+    if (isPDB)
       setIsPDB();
-    }
     atomSetCollection.setAtomSetAuxiliaryInfo("isCIF", Boolean.TRUE);
+    if (isPDBX && skipping)
+      skipping = false;
     return true;
   }
      

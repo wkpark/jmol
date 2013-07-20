@@ -34,6 +34,7 @@ import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.V3;
+import org.jmol.viewer.Viewer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -197,8 +198,13 @@ public class SmarterJmolAdapter extends JmolAdapter {
         : null);
     AtomSetCollection[] atomsets = (getReadersOnly ? null
         : new AtomSetCollection[size]);
+    AtomSetCollectionReader r = null;
+    Viewer viewer = (Viewer) htParams.get("viewer"); // don't pass this on to user
+
     for (int i = 0; i < size; i++) {
       try {
+        if (r != null)
+          htParams.put("viewer", viewer);
         Object reader = filesReader.getBufferedReaderOrBinaryDocument(i, false);
         if (!(reader instanceof BufferedReader || reader instanceof JmolDocument))
           return reader;
@@ -206,7 +212,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
             (types == null ? null : types[i]), reader, htParams, i);
         if (!(ret instanceof AtomSetCollectionReader))
           return ret;
-        AtomSetCollectionReader r = (AtomSetCollectionReader) ret;
+        r = (AtomSetCollectionReader) ret;
+        r.setup(null, null, null);
         if (r.isBinary) {
           r.setup(names[i], htParams, filesReader
               .getBufferedReaderOrBinaryDocument(i, true));
@@ -225,6 +232,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
         }
       } catch (Throwable e) {
         Logger.error("" + e);
+        if (!viewer.isJS())
+          e.printStackTrace();
         return "" + e;
       }
     }
@@ -320,8 +329,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
   
   @Override
-  public void finish(Object atomSetCollection, int baseModelIndex, int baseAtomIndex) {
-    ((AtomSetCollection)atomSetCollection).finish(baseModelIndex, baseAtomIndex);
+  public void finish(Object atomSetCollection) {
+    ((AtomSetCollection)atomSetCollection).finish();
   }
 
   ////////////////////////// post processing ////////////////////////////

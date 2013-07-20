@@ -417,6 +417,8 @@ public class ZipUtil implements JmolZipUtility {
         String fname = (String) fileNamesAndByteArrays.get(i);
         byte[] bytes = null;
         Object data = fm.cacheGet(fname, false);
+        if (data instanceof Map<?, ?>)
+          continue;
         if (fname.indexOf("file:/") == 0) {
           fname = fname.substring(5);
           if (fname.length() > 2 && fname.charAt(2) == ':') // "/C:..." DOS/Windows

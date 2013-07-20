@@ -94,7 +94,7 @@ public class FilesReader implements JmolFilesReaderInterface {
       name = subFileList[0];
     }
     Object t = fm.getUnzippedBufferedReaderOrErrorMessageFromName(name, null,
-        true, isBinary, false, true);
+        true, isBinary, false, true, htParams);
     if (t instanceof ZipInputStream) {
       if (subFileList != null)
         htParams.put("subFileList", subFileList);

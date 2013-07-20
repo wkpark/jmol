@@ -52,7 +52,9 @@ import org.jmol.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
+import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.api.JmolBioResolver;
+import org.jmol.constant.EnumStructure;
 
 /**
  * a class used by ModelLoader only to handle all loading
@@ -66,7 +68,7 @@ public final class Resolver implements JmolBioResolver {
     // only implemented via reflection, and only for PDB/mmCIF files
   }
   
-  public Model getBioModel(ModelSet modelSet, int modelIndex,
+  public Model getBioModel(int modelIndex,
                         int trajectoryBaseIndex, String jmolData,
                         Properties modelProperties,
                         Map<String, Object> modelAuxiliaryInfo) {
@@ -184,12 +186,13 @@ public final class Resolver implements JmolBioResolver {
   private V3 vNorm;
   private P4 plane;
 
-  public void initialize(ModelSet modelSet) {
-    this.modelSet = modelSet;
-  }
-  public void initializeHydrogenAddition(ModelLoader modelLoader, int bondCount) {
+  public void initialize(ModelLoader modelLoader) {
     this.modelLoader = modelLoader;
-    baseBondIndex = bondCount;
+    this.modelSet = modelLoader.modelSet;
+  }
+  
+  public void initializeHydrogenAddition() {
+    baseBondIndex = modelLoader.modelSet.bondCount;
     bsAddedHydrogens = new BS();
     bsAtomsForHs = new BS();
     htBondMap = new Hashtable<String, String>();
@@ -347,104 +350,109 @@ public final class Resolver implements JmolBioResolver {
   public void finalizeHydrogens() {
     modelSet.viewer.getLigandModel(null);
     finalizePdbMultipleBonds();
-    if (bsAddedHydrogens.nextSetBit(0) >= 0) {
-      finalizePdbCharges();
-      int[] nTotal = new int[1];
-      P3[][] pts = modelSet.calculateHydrogens(bsAtomsForHs, nTotal, true,
-          false, null);
-      Group groupLast = null;
-      int ipt = 0;
-      for (int i = 0; i < pts.length; i++) {
-        if (pts[i] == null)
-          continue;
-        Atom atom = modelSet.atoms[i];
-        Group g = atom.getGroup();
-        if (g != groupLast) {
-          groupLast = g;
-          ipt = g.lastAtomIndex;
-          while (bsAddedHydrogens.get(ipt))
-            ipt--;
-        }
-        String gName = atom.getGroup3(false);
-        String aName = atom.getAtomName();
-        String hName = htBondMap.get(gName + "." + aName);
-        if (hName == null)
-          continue;
-        boolean isChiral = hName.contains("@");
-        boolean isMethyl = (hName.endsWith("?") || hName.indexOf("|") >= 0);
-        int n = pts[i].length;
-        if (n == 3 && !isMethyl && hName.equals("H@H2")) {
-          hName = "H|H2|H3";
-          isMethyl = true;
-          isChiral = false;
-        }
-        if (isChiral && n == 3 || isMethyl != (n == 3)) {
-          Logger.info("Error adding H atoms to " + gName + g.getResno() + ": "
-              + pts[i].length + " atoms should not be added to " + aName);
-          continue;
-        }
-        int pt = hName.indexOf("@");
-        switch (pts[i].length) {
-        case 1:
-          if (pt > 0)
-            hName = hName.substring(0, pt);
-          setHydrogen(i, ++ipt, hName, pts[i][0]);
-          break;
-        case 2:
-          String hName1,
-          hName2;
-          float d = -1;
-          Bond[] bonds = atom.getBonds();
-          if (bonds != null)
-            switch (bonds.length) {
-            case 2:
-              // could be nitrogen?
-              Atom atom1 = bonds[0].getOtherAtom(atom);
-              Atom atom2 = bonds[1].getOtherAtom(atom);
-              int factor = atom1.getAtomName().compareTo(atom2.getAtomName());
-              Measure.getPlaneThroughPoints(atom1, atom, atom2, vNorm, vAB,
-                  vAC, plane);
-              d = Measure.distanceToPlane(plane, pts[i][0]) * factor;
-              break;
-            }
-          if (pt < 0) {
-            Logger.info("Error adding H atoms to " + gName + g.getResno()
-                + ": expected to only need 1 H but needed 2");
-            hName1 = hName2 = "H";
-          } else if (d < 0) {
-            hName2 = hName.substring(0, pt);
-            hName1 = hName.substring(pt + 1);
-          } else {
-            hName1 = hName.substring(0, pt);
-            hName2 = hName.substring(pt + 1);
-          }
-          setHydrogen(i, ++ipt, hName1, pts[i][0]);
-          setHydrogen(i, ++ipt, hName2, pts[i][1]);
-          break;
-        case 3:
-          int pt1 = hName.indexOf('|');
-          if (pt1 >= 0) {
-            int pt2 = hName.lastIndexOf('|');
-            hNames[0] = hName.substring(0, pt1);
-            hNames[1] = hName.substring(pt1 + 1, pt2);
-            hNames[2] = hName.substring(pt2 + 1);
-          } else {
-            hNames[0] = hName.replace('?', '1');
-            hNames[1] = hName.replace('?', '2');
-            hNames[2] = hName.replace('?', '3');
-          }
-//          Measure.getPlaneThroughPoints(pts[i][0], pts[i][1], pts[i][2], vNorm, vAB,
-  //            vAC, plane);
-    //      d = Measure.distanceToPlane(plane, atom);
-      //    int hpt = (d < 0 ? 1 : 2);
-          setHydrogen(i, ++ipt, hNames[0], pts[i][0]);
-          setHydrogen(i, ++ipt, hNames[1], pts[i][2]);
-          setHydrogen(i, ++ipt, hNames[2], pts[i][1]);          
-          break;
-        }
+    addHydrogens();
+    modelSet.fixFormalCharges(bsAtomsForHs);
+  }
+
+  private void addHydrogens() {
+    if (bsAddedHydrogens.nextSetBit(0) < 0)
+      return;
+    finalizePdbCharges();
+    int[] nTotal = new int[1];
+    P3[][] pts = modelSet.calculateHydrogens(bsAtomsForHs, nTotal, true, false,
+        null);
+    Group groupLast = null;
+    int ipt = 0;
+    for (int i = 0; i < pts.length; i++) {
+      if (pts[i] == null)
+        continue;
+      Atom atom = modelSet.atoms[i];
+      Group g = atom.getGroup();
+      if (g != groupLast) {
+        groupLast = g;
+        ipt = g.lastAtomIndex;
+        while (bsAddedHydrogens.get(ipt))
+          ipt--;
       }
-      deleteUnneededAtoms();
+      String gName = atom.getGroup3(false);
+      String aName = atom.getAtomName();
+      String hName = htBondMap.get(gName + "." + aName);
+      if (hName == null)
+        continue;
+      boolean isChiral = hName.contains("@");
+      boolean isMethyl = (hName.endsWith("?") || hName.indexOf("|") >= 0);
+      int n = pts[i].length;
+      if (n == 3 && !isMethyl && hName.equals("H@H2")) {
+        hName = "H|H2|H3";
+        isMethyl = true;
+        isChiral = false;
+      }
+      if (isChiral && n == 3 || isMethyl != (n == 3)) {
+        Logger.info("Error adding H atoms to " + gName + g.getResno() + ": "
+            + pts[i].length + " atoms should not be added to " + aName);
+        continue;
+      }
+      int pt = hName.indexOf("@");
+      switch (pts[i].length) {
+      case 1:
+        if (pt > 0)
+          hName = hName.substring(0, pt);
+        setHydrogen(i, ++ipt, hName, pts[i][0]);
+        break;
+      case 2:
+        String hName1,
+        hName2;
+        float d = -1;
+        Bond[] bonds = atom.getBonds();
+        if (bonds != null)
+          switch (bonds.length) {
+          case 2:
+            // could be nitrogen?
+            Atom atom1 = bonds[0].getOtherAtom(atom);
+            Atom atom2 = bonds[1].getOtherAtom(atom);
+            int factor = atom1.getAtomName().compareTo(atom2.getAtomName());
+            Measure.getPlaneThroughPoints(atom1, atom, atom2, vNorm, vAB, vAC,
+                plane);
+            d = Measure.distanceToPlane(plane, pts[i][0]) * factor;
+            break;
+          }
+        if (pt < 0) {
+          Logger.info("Error adding H atoms to " + gName + g.getResno()
+              + ": expected to only need 1 H but needed 2");
+          hName1 = hName2 = "H";
+        } else if (d < 0) {
+          hName2 = hName.substring(0, pt);
+          hName1 = hName.substring(pt + 1);
+        } else {
+          hName1 = hName.substring(0, pt);
+          hName2 = hName.substring(pt + 1);
+        }
+        setHydrogen(i, ++ipt, hName1, pts[i][0]);
+        setHydrogen(i, ++ipt, hName2, pts[i][1]);
+        break;
+      case 3:
+        int pt1 = hName.indexOf('|');
+        if (pt1 >= 0) {
+          int pt2 = hName.lastIndexOf('|');
+          hNames[0] = hName.substring(0, pt1);
+          hNames[1] = hName.substring(pt1 + 1, pt2);
+          hNames[2] = hName.substring(pt2 + 1);
+        } else {
+          hNames[0] = hName.replace('?', '1');
+          hNames[1] = hName.replace('?', '2');
+          hNames[2] = hName.replace('?', '3');
+        }
+        //          Measure.getPlaneThroughPoints(pts[i][0], pts[i][1], pts[i][2], vNorm, vAB,
+        //            vAC, plane);
+        //      d = Measure.distanceToPlane(plane, atom);
+        //    int hpt = (d < 0 ? 1 : 2);
+        setHydrogen(i, ++ipt, hNames[0], pts[i][0]);
+        setHydrogen(i, ++ipt, hNames[1], pts[i][2]);
+        setHydrogen(i, ++ipt, hNames[2], pts[i][1]);
+        break;
+      }
     }
+    deleteUnneededAtoms();
   }
 
   /**
@@ -636,7 +644,90 @@ public final class Resolver implements JmolBioResolver {
             + previous);
     throw new NullPointerException();
   }
+  
+  private BS bsAssigned;
 
+  /**
+   * Pull in all spans of helix, etc. in the file(s)
+   * 
+   * We do turn first, because sometimes a group is defined twice, and this way
+   * it gets marked as helix or sheet if it is both one of those and turn.
+   * 
+   * @param adapter
+   * @param atomSetCollection
+   */
+  public void iterateOverAllNewStructures(JmolAdapter adapter,
+                                          Object atomSetCollection) {
+    JmolAdapterStructureIterator iterStructure = adapter
+        .getStructureIterator(atomSetCollection);
+    if (iterStructure == null)
+      return;
+    BS bs = iterStructure.getStructuredModels();
+    if (bs != null)
+      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+        modelLoader.structuresDefinedInFile.set(modelLoader.baseModelIndex + i);
+    while (iterStructure.hasNext())
+      if (iterStructure.getStructureType() != EnumStructure.TURN)
+        setStructure(iterStructure);
+
+    // define turns LAST. (pulled by the iterator first)
+    // so that if they overlap they get overwritten:
+
+    iterStructure = adapter.getStructureIterator(atomSetCollection);
+    while (iterStructure.hasNext())
+      if (iterStructure.getStructureType() == EnumStructure.TURN)
+        setStructure(iterStructure);
+  }
+
+  /**
+   * note that istart and iend will be adjusted. 
+   * 
+   * @param iterStructure
+   */
+  private void setStructure(JmolAdapterStructureIterator iterStructure) {
+    EnumStructure t = iterStructure.getSubstructureType();
+    String id = iterStructure.getStructureID();
+    int serID = iterStructure.getSerialID();
+    int count = iterStructure.getStrandCount();
+    int[] atomRange = iterStructure.getAtomIndices();
+    int[] modelRange = iterStructure.getModelIndices();
+    if (bsAssigned == null)
+      bsAssigned = new BS();
+    defineStructure(t, id, serID, count, iterStructure.getStartChainID(),
+          iterStructure.getStartSequenceNumber(), iterStructure
+              .getStartInsertionCode(), iterStructure.getEndChainID(),
+          iterStructure.getEndSequenceNumber(), iterStructure
+              .getEndInsertionCode(), atomRange, modelRange, bsAssigned);
+  }
+
+  private void defineStructure(EnumStructure subType, String structureID,
+                               int serialID, int strandCount, int startChainID,
+                               int startSequenceNumber,
+                               char startInsertionCode, int endChainID,
+                               int endSequenceNumber, char endInsertionCode,
+                               int[] atomRange, int[] modelRange, BS bsAssigned) {
+    EnumStructure type = (subType == EnumStructure.NOT ? EnumStructure.NONE
+        : subType);
+    int startSeqCode = Group.getSeqcodeFor(startSequenceNumber,
+        startInsertionCode);
+    int endSeqCode = Group.getSeqcodeFor(endSequenceNumber, endInsertionCode);
+    Model[] models = modelSet.models;
+    if (modelLoader.isTrajectory) { //from PDB file
+      modelRange[1] = modelRange[0];
+    } else {
+      modelRange[0] += modelLoader.baseModelIndex;
+      modelRange[1] += modelLoader.baseModelIndex;
+    }
+    modelLoader.structuresDefinedInFile.setBits(modelRange[0],
+        modelRange[1] + 1);
+    for (int i = modelRange[0]; i <= modelRange[1]; i++) {
+      int i0 = models[i].firstAtomIndex;
+      if (models[i] instanceof BioModel)
+        ((BioModel) models[i]).addSecondaryStructure(type, structureID,
+            serialID, strandCount, startChainID, startSeqCode, endChainID,
+            endSeqCode, i0 + atomRange[0], i0 + atomRange[1], bsAssigned);
+    }
+  }
 }
 
 

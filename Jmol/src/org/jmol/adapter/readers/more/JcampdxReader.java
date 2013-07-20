@@ -375,7 +375,7 @@ public class JcampdxReader extends MolReader {
       modelID = (String) atomSetCollection
           .getAtomSetAuxiliaryInfoValue(i, "modelID");
       if (havePeaks && !bsModels.get(i) && modelID.indexOf(".") >= 0) {
-        atomSetCollection.removeAtomSet(i);
+        atomSetCollection.removeAtomSet(i); 
         n--;
       }
     }

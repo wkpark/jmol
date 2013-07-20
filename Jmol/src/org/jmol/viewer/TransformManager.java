@@ -2589,15 +2589,14 @@ public class TransformManager {
   }
 
   protected String getNavigationText(boolean addComments) {
+    String s = (addComments ? " /* navigation center, translation, depth */ "
+        : " ");
+    if (mode != MODE_NAVIGATION)
+      return s + "{0 0 0} 0 0 0";
     getNavigationOffset();
-    return (addComments ? " /* navigation center, translation, depth */ " : " ")
-        + Escape.eP(navigationCenter)
-        + " "
-        + getNavigationOffsetPercent('X')
-        + " "
-        + getNavigationOffsetPercent('Y')
-        + " "
-        + getNavigationDepthPercent();
+    return s + Escape.eP(navigationCenter) + " "
+        + getNavigationOffsetPercent('X') + " "
+        + getNavigationOffsetPercent('Y') + " " + getNavigationDepthPercent();
   }
 
   void setScreenParameters(int screenWidth, int screenHeight,

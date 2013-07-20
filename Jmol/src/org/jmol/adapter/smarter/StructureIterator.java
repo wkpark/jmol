@@ -52,11 +52,6 @@ public class StructureIterator extends JmolAdapterStructureIterator {
   }
 
   @Override
-  public int getModelIndex() {
-    return structure.atomSetIndex;
-  }
-
-  @Override
   public EnumStructure getStructureType() {
     return structure.structureType;
   }
@@ -117,13 +112,13 @@ public class StructureIterator extends JmolAdapterStructureIterator {
   }
   
   @Override
-  public int getStartIndex() {
-    return structure.istart;
+  public int[] getAtomIndices() {
+    return structure.atomStartEnd;
   }
     
   @Override
-  public int getEndIndex() {
-    return structure.iend;
+  public int[] getModelIndices() {
+    return structure.modelStartEnd;
   }
 
 }

@@ -191,6 +191,8 @@ public class AtomSetCollection {
 
   public boolean allowMultiple;
   AtomSetCollectionReader reader;
+
+  private JmolList<AtomSetCollectionReader> readerList;
   
   public AtomSetCollection(String fileTypeName,
       AtomSetCollectionReader reader, 
@@ -208,8 +210,9 @@ public class AtomSetCollection {
     setAtomSetCollectionAuxiliaryInfo("properties", p);
     if (array != null) {
       int n = 0;
+      readerList = new JmolList<AtomSetCollectionReader>();
       for (int i = 0; i < array.length; i++) 
-        if (array[i].atomCount > 0)
+        if (array[i].atomCount > 0 || array[i].reader != null && array[i].reader.mustFinalizeModelSet) 
           appendAtomSetCollection(n++, array[i]);
       if (n > 1)
         setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
@@ -254,7 +257,10 @@ public class AtomSetCollection {
    */
   public void appendAtomSetCollection(int collectionIndex,
                                       AtomSetCollection collection) {
-    
+
+    // List readers that will need calls to finalizeModelSet();
+    if (collection.reader != null && collection.reader.mustFinalizeModelSet)
+      readerList.addLast(collection.reader);
     // Initializations
     int existingAtomsCount = atomCount;
 
@@ -273,6 +279,7 @@ public class AtomSetCollection {
 
     // Clone each AtomSet
     int clonedAtoms = 0;
+    int atomSetCount0 = atomSetCount;
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
       newAtomSet();
       // must fix referencing for someModelsHaveCONECT business
@@ -292,13 +299,6 @@ public class AtomSetCollection {
         }
         clonedAtoms++;
       }
-
-      //Structures: We must incorporate any global structures (modelIndex == -1) into this model
-      //explicitly. Whew! This is because some cif _data structures have multiple PDB models (1skt)
-      for (int i = 0; i < collection.structureCount; i++)
-        if (collection.structures[i] != null
-            && (collection.structures[i].atomSetIndex == atomSetNum || collection.structures[i].atomSetIndex == -1))
-          addStructure(collection.structures[i]);
 
       // numbers
       atomSetNumbers[currentAtomSetIndex] = (collectionIndex < 0 ? currentAtomSetIndex + 1
@@ -322,6 +322,13 @@ public class AtomSetCollection {
       if (collection.getGlobalBoolean(i))
         setGlobalBoolean(i);
 
+    // Add structures
+    for (int i = 0; i < collection.structureCount; i++) {
+      Structure s = collection.structures[i];
+      addStructure(s);
+      s.modelStartEnd[0] += atomSetCount0;
+      s.modelStartEnd[1] += atomSetCount0;
+    }
   }
 
   void setNoAutoBond() {
@@ -357,12 +364,15 @@ public class AtomSetCollection {
     reverseObject(atomSetAuxiliaryInfo);  
     for (int i = 0; i < atomCount; i++)    
       atoms[i].atomSetIndex = atomSetCount - 1 - atoms[i].atomSetIndex;
-    for (int i = 0; i < structureCount; i++)
-      if (structures[i].atomSetIndex >= 0)
-        structures[i].atomSetIndex = atomSetCount - 1 - structures[i].atomSetIndex;
+    for (int i = 0; i < structureCount; i++) {
+      int m = structures[i].modelStartEnd[0];
+      if (m >= 0) {
+         structures[i].modelStartEnd[0] = atomSetCount - 1 - structures[i].modelStartEnd[1];
+         structures[i].modelStartEnd[1] = atomSetCount - 1 - m;         
+      }
+    }
     for (int i = 0; i < bondCount; i++)    
       bonds[i].atomSetIndex = atomSetCount - 1 - atoms[bonds[i].atomIndex1].atomSetIndex;
-    reverseSets(structures, structureCount);        
     reverseSets(bonds, bondCount);
     //getAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max" ??
     JmolList<Atom>[] lists = ArrayUtil.createArrayOfArrayList(atomSetCount);
@@ -449,9 +459,12 @@ public class AtomSetCollection {
         setAtomSetAuxiliaryInfoForSet(type, lists[i], i);
   }
 
-  void finish(int baseModelIndex, int baseAtomIndex) {
+  void finish() {
     if (reader != null) 
-      reader.finalizeModelSet(baseModelIndex, baseAtomIndex);
+      reader.finalizeModelSet();
+    else if (readerList != null)
+      for (int i = 0; i < readerList.size(); i++)
+        readerList.get(i).finalizeModelSet();
     atoms = null;
     atomSetAtomCounts = new int[16];
     atomSetAuxiliaryInfo = new Hashtable[16];
@@ -465,6 +478,7 @@ public class AtomSetCollection {
     currentAtomSetIndex = -1;
     latticeCells = null;
     notionalUnitCell = null;
+    readerList = null;
     symmetry = null;
     structures = new Structure[16];
     structureCount = 0;
@@ -510,14 +524,23 @@ public class AtomSetCollection {
       atomSetAtomCounts[i - 1] = atomSetAtomCounts[i];
       atomSetNumbers[i - 1] = atomSetNumbers[i];
     }
+    int n = 0;
+    // following would be used in the case of a JCAMP-DX file with PDB data, perhaps
     for (int i = 0; i < structureCount; i++) {
-      if (structures[i] == null)
-        continue;
-      if (structures[i].atomSetIndex > imodel)
-        structures[i].atomSetIndex--;
-      else if (structures[i].atomSetIndex == imodel)
+      Structure s = structures[i];
+      if (s.modelStartEnd[0] == imodel && s.modelStartEnd[1] == imodel) {
         structures[i] = null;
+        n++;
+      }
     }
+    if (n > 0) {
+      Structure[] ss = new Structure[structureCount - n];
+      for (int i = 0, pt = 0; i < structureCount; i++)
+        if (structures[i] != null) 
+          ss[pt++] = structures[i];
+      structures = ss;
+    }
+
     for (int i = 0; i < bondCount; i++)
       bonds[i].atomSetIndex = atoms[bonds[i].atomIndex1].atomSetIndex;
     atomSetAuxiliaryInfo[--atomSetCount] = null;
@@ -739,26 +762,38 @@ public class AtomSetCollection {
     atomSetBondCounts[currentAtomSetIndex]++;
   }
 
+  public BS bsStructuredModels;
+  public void finalizeStructures() {
+    if (structureCount == 0)
+      return;
+    bsStructuredModels = new BS();
+    Map<String, Integer> map = new Hashtable<String, Integer>();
+    for (int i = 0; i < structureCount; i++) {
+      Structure s = structures[i];
+      if (s.modelStartEnd[0] == -1) {
+        s.modelStartEnd[0] = 0;
+        s.modelStartEnd[1] = atomSetCount - 1;
+      }
+      bsStructuredModels.setBits(s.modelStartEnd[0], s.modelStartEnd[1] + 1);
+      if (s.strandCount == 0)
+        continue;
+      String key = s.structureID + " " + s.modelStartEnd[0];
+      Integer v = map.get(key);
+      int  count = (v == null ? 0 : v.intValue()) + 1;
+      map.put(key, Integer.valueOf(count));
+    }
+    for (int i = 0; i < structureCount; i++){
+      Structure s = structures[i];
+      if (s.strandCount == 1)
+        s.strandCount = map.get(s.structureID + " " + s.modelStartEnd[0]).intValue();      
+    }
+  }
+  
   public void addStructure(Structure structure) {
     if (structureCount == structures.length)
       structures = (Structure[])ArrayUtil.arrayCopyObject(structures,
                                                       structureCount + 32);
-    structure.atomSetIndex = currentAtomSetIndex;
     structures[structureCount++] = structure;
-    if (bsStructuredModels == null)
-      bsStructuredModels = new BS();
-    bsStructuredModels.set(Math.max(structure.atomSetIndex, 0));
-    if (structure.strandCount >= 1) {
-      int i = structureCount;
-      for (i = structureCount; --i >= 0 
-        && structures[i].atomSetIndex == currentAtomSetIndex
-        && structures[i].structureID.equals(structure.structureID); ) {
-      }
-      i++;
-      int n = structureCount - i;
-      for (; i < structureCount; i++) 
-        structures[i].strandCount = n;
-    }
   }
 
   public void addVibrationVectorWithSymmetry(int iatom, float vx, float vy, float vz,
@@ -1489,7 +1524,6 @@ public class AtomSetCollection {
 
   boolean haveMappedSerials;
 
-  public BS bsStructuredModels;
   private void mapMostRecentAtomSerialNumber() {
     if (atomCount == 0)
       return;

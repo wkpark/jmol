@@ -26,22 +26,22 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.constant.EnumStructure;
 
-public class Structure extends AtomSetObject {
+public class Structure {
   public EnumStructure structureType;
   public EnumStructure substructureType;
   public String structureID;
   public int serialID;
   public int strandCount;
-  
-  
+
   public int startChainID;
   public char startInsertionCode = '\0';
   public int endChainID;
   public char endInsertionCode = '\0';
   public int startSequenceNumber;
   public int endSequenceNumber;
-  public int istart = Integer.MIN_VALUE;
-  public int iend = Integer.MIN_VALUE;
+  public int[] atomStartEnd = new int[2];
+  public int[] modelStartEnd = new int[] {-1, -1};
+  
 
   public static EnumStructure getHelixType(int type) {
     switch (type) {
@@ -54,30 +54,37 @@ public class Structure extends AtomSetObject {
     }
     return EnumStructure.HELIX;
   }
-  
-  public Structure(int modelIndex, EnumStructure structureType, EnumStructure substructureType,
-                   String structureID, int serialID, int strandCount) {
+
+  public Structure(int modelIndex, EnumStructure structureType,
+      EnumStructure substructureType, String structureID, int serialID,
+      int strandCount) {
     this.structureType = structureType;
     this.substructureType = substructureType;
     if (structureID == null)
       return;
-    this.atomSetIndex = modelIndex;
+    setModels(modelIndex, 0);
     this.structureID = structureID;
     this.strandCount = strandCount; // 1 for sheet initially; 0 for helix or turn
-    this.serialID = serialID;    
+    this.serialID = serialID;
   }
-  
-  
-  public void set(int startChainID, int startSequenceNumber, char startInsertionCode,
-            int endChainID, int endSequenceNumber, char endInsertionCode, int istart, int iend) {
+
+  public void set(int startChainID, int startSequenceNumber,
+                  char startInsertionCode, int endChainID,
+                  int endSequenceNumber, char endInsertionCode, int istart,
+                  int iend) {
     this.startChainID = startChainID;
     this.startSequenceNumber = startSequenceNumber;
     this.startInsertionCode = startInsertionCode;
     this.endChainID = endChainID;
     this.endSequenceNumber = endSequenceNumber;
     this.endInsertionCode = endInsertionCode;
-    this.istart = istart;
-    this.iend = iend;
+    atomStartEnd[0] = istart;
+    atomStartEnd[1] = iend;
+  }
+  
+  public void setModels(int model1, int model2) {
+    modelStartEnd[0] = model1;
+    modelStartEnd[1] = (model2 == 0 ? model1 : model2);
   }
 
 }

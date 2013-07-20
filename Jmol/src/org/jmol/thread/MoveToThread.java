@@ -27,7 +27,6 @@ package org.jmol.thread;
 
 
 import org.jmol.util.AxisAngle4f;
-import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.P3;
 import org.jmol.util.V3;
@@ -88,7 +87,6 @@ public class MoveToThread extends JmolThread {
                  float yNav, float navDepth, 
                  float cameraDepth, float cameraX, float cameraY) {
     this.center = center;
-    this.navCenter = navCenter;
     ptMoveToCenter = (center == null ? transformManager.fixedRotationCenter
         : center);
     this.rotationRadius = newSlider(transformManager.modelRadius, (center == null || Float.isNaN(newRotationRadius) ? transformManager.modelRadius
@@ -99,9 +97,12 @@ public class MoveToThread extends JmolThread {
     this.zoom = newSlider(transformManager.zoomPercent, zoom);
     this.xTrans = newSlider(transformManager.getTranslationXPercent(), xTrans);
     this.yTrans = newSlider(transformManager.getTranslationYPercent(), yTrans);
-    this.xNav = newSlider(transformManager.getNavigationOffsetPercent('X'), xNav);
-    this.yNav = newSlider(transformManager.getNavigationOffsetPercent('Y'), yNav);
-    this.navDepth = newSlider(transformManager.getNavigationDepthPercent(), navDepth);
+    if (navDepth != 0) {
+      this.navCenter = navCenter;
+      this.xNav = newSlider(transformManager.getNavigationOffsetPercent('X'), xNav);
+      this.yNav = newSlider(transformManager.getNavigationOffsetPercent('Y'), yNav);
+      this.navDepth = newSlider(transformManager.getNavigationDepthPercent(), navDepth);
+    }
     this.cameraDepth = newSlider(transformManager.getCameraDepth(), cameraDepth);
     this.cameraX = newSlider(transformManager.camera.x, cameraX);
     this.cameraY = newSlider(transformManager.camera.y, cameraY);    

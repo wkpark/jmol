@@ -39,7 +39,7 @@ public class Resolver {
 
   private final static String classBase = "org.jmol.adapter.readers.";
   private final static String[] readerSets = new String[] {
-    "cifpdb.", ";Cif;Pdb;",
+    "cifpdb.", ";Cif;Pdb;MMCIF_PDBX;",
     "molxyz.", ";Mol3D;Mol;Xyz;",
     "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;Pqr;P2n;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
@@ -244,8 +244,11 @@ public class Resolver {
     if ((readerName = checkSpecial(nLines, lines, false)) != null)
       return readerName;
 
-    if ((readerName = checkLineStarts(lines)) != null)
+    if ((readerName = checkLineStarts(lines)) != null) {
+      if (readerName.equals("Cif") && llr.getHeader(0).contains("mmcif_pdbx.dic"))
+        readerName = "MMCIF_PDBX";
       return readerName;
+    }
 
     if ((readerName = checkHeaderContains(llr.getHeader(0))) != null)
       return readerName;

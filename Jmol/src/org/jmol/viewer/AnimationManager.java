@@ -218,10 +218,10 @@ public class AnimationManager {
       if (ids != null) {
         if (modelIndex >= 0)
           viewer.restoreModelOrientation(modelIndex);
-        if (isSameSource && ids.indexOf("quaternion") >= 0 
-            && ids.indexOf("plot") < 0
+        if (isSameSource && (ids.indexOf("quaternion") >= 0 
+            || ids.indexOf("plot") < 0
             && ids.indexOf("ramachandran") < 0
-            && ids.indexOf(" property ") < 0) {
+            && ids.indexOf(" property ") < 0)) {
           viewer.restoreModelRotation(formerModelIndex);
         }
       }

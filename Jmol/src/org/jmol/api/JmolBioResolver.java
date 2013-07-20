@@ -8,7 +8,6 @@ import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelLoader;
-import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
 
 public interface JmolBioResolver {
@@ -18,7 +17,7 @@ public interface JmolBioResolver {
                                                   int modelIndex, int[] specialAtomIndexes,
                                                   Atom[] atoms);
   
-  public void initializeHydrogenAddition(ModelLoader modelSet, int bondCount);
+  public void initializeHydrogenAddition();
 
   public void finalizeHydrogens();
 
@@ -26,14 +25,17 @@ public interface JmolBioResolver {
 
   public void addImplicitHydrogenAtoms(JmolAdapter adapter, int i, int nH);
 
-  public void initialize(ModelSet modelSet);
+  public void initialize(ModelLoader modelLoader);
 
   public String fixPropertyValue(BS bsAtoms, String data);
 
-  public Model getBioModel(ModelSet modelSet, int modelIndex,
+  public Model getBioModel(int modelIndex,
                         int trajectoryBaseIndex, String jmolData,
                         Properties modelProperties,
                         Map<String, Object> modelAuxiliaryInfo);
+
+  public void iterateOverAllNewStructures(JmolAdapter adapter,
+                                          Object atomSetCollection);
 
   }
 

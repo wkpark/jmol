@@ -68,22 +68,24 @@ public class AlphaPolymer extends BioPolymer {
         isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
   }
 
-  @Override
   public void addStructure(EnumStructure type, String structureID,
                            int serialID, int strandCount, int startChainID,
-                           int startSeqcode, int endChainID, int endSeqcode, int istart, int iend, BS bsAssigned) {
-    if (istart >= 0 && (monomers[0].firstAtomIndex > iend || monomers[monomerCount - 1].lastAtomIndex < istart))
+                           int startSeqcode, int endChainID, int endSeqcode,
+                           int istart, int iend, BS bsAssigned) {
+    if (istart < iend
+        && (monomers[0].firstAtomIndex > iend || monomers[monomerCount - 1].lastAtomIndex < istart))
       return;
     int indexStart, indexEnd;
-      if ((indexStart = getIndex(startChainID, startSeqcode)) == -1
-          || (indexEnd = getIndex(endChainID, endSeqcode)) == -1)
-        return;
+    if ((indexStart = getIndex(startChainID, startSeqcode)) == -1
+        || (indexEnd = getIndex(endChainID, endSeqcode)) == -1)
+      return;
     if (istart >= 0 && bsAssigned != null) {
       int pt = bsAssigned.nextSetBit(monomers[indexStart].firstAtomIndex);
       if (pt >= 0 && pt < monomers[indexEnd].lastAtomIndex)
         return;
     }
-    addStructureProtected(type, structureID, serialID, strandCount, indexStart, indexEnd);
+    addStructureProtected(type, structureID, serialID, strandCount, indexStart,
+        indexEnd);
     if (istart >= 0)
       bsAssigned.setBits(istart, iend + 1);
   }
@@ -378,11 +380,9 @@ public class AlphaPolymer extends BioPolymer {
    * href='http://csb.stanford.edu/levitt/Levitt_JMB77_Secondary_structure.pdf'>
    * http://csb.stanford.edu/levitt/Levitt_JMB77_Secondary_structure.pdf
    * </a>
+   * @param alphaOnly  caught by AminoPolymer and discarded if desired 
    */
-  @Override
-  public void calculateStructures(boolean alphaOnly) {
-    // alphaOnly parameter is here so this can be 
-    // caught by AminoPolymer and discarded if desired
+  public void calculateStructures(boolean alphaOnly) { 
     if (monomerCount < 4)
       return;
     float[] angles = calculateAnglesInDegrees();

@@ -330,9 +330,7 @@ public class BioShape extends AtomShape {
       int atomIndex = leadAtomIndices[i];
       if (bsSelected.get(atomIndex) && i < colixes.length && atomIndex < n) {
         int pt = atomMap[atomIndex];
-        short colix = (c == null ? 0 : c[pt]);
-        if (colix == 0)
-          colix = C.INHERIT_ALL;
+        short colix = (c == null ? C.INHERIT_ALL : c[pt]);
         float f = (atrans == null ? 0 : atrans[pt]);
         if (f > 0.01f)
           colix = C.getColixTranslucent3(colix, true, f);

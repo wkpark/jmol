@@ -84,7 +84,7 @@ public class FileReader {
         fileTypeIn = JmolBinary.getBinaryType(fullPathNameIn);
       boolean isBinary = JmolBinary.checkBinaryType(fileTypeIn);
       t = fm.getUnzippedBufferedReaderOrErrorMessageFromName(fullPathNameIn,
-          bytes, true, isBinary, false, true);
+          bytes, true, isBinary, false, true, htParams);
       if (t == null || t instanceof String) {
         errorMessage = (t == null ? "error opening:" + nameAsGivenIn
             : (String) t);

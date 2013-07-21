@@ -32,26 +32,8 @@ import org.jmol.util.Logger;
 import org.jmol.util.SB;
 
 
-/**
- * A reader for PyMOL PSE file ObjectMap data
- * 
- * From PyMOL/layer2/ObjectMap.h: in order to achieve better backwards compatibility
- * with session files, future map source should be either:
- * cMapSourceCrystallographic or cMapSourceGeneralPurpose
- */
 class PyMOLMeshReader extends MapFileReader {
 
-  final static int cMapSourceCrystallographic = 1;
-  final static int cMapSourceCCP4 = 2;
-  final static int cMapSourceGeneralPurpose = 3;
-  final static int cMapSourceDesc = 4;
-  final static int cMapSourceFLD = 5;
-  final static int cMapSourceBRIX = 6;
-  final static int cMapSourceGRD = 7;
-  final static int cMapSourceChempyBrick = 8;
-  final static int cMapSourceVMDPlugin = 9;
-  final static int cMapSourceObsolete = 10;
-  
   private Hashtable<String, JmolList<Object>> map;
   private JmolList<Object> data;
   private JmolList<Object> surfaceList;
@@ -60,7 +42,6 @@ class PyMOLMeshReader extends MapFileReader {
   private int pymolType;
   private boolean isMesh;
   //private float cutoff = Float.NaN;
-  private int pymolState; // not nec. 0, but assuming that here.
 
   /*
    * PyMOL surface/mesh reader. 
@@ -106,81 +87,64 @@ class PyMOLMeshReader extends MapFileReader {
 
   @Override
   protected void readParameters() throws Exception {
-
+    
     JmolList<Object> t;
 
     jvxlFileHeaderBuffer = new SB();
     jvxlFileHeaderBuffer.append("PyMOL surface reader\n");
-    jvxlFileHeaderBuffer.append(surfaceName + " (" + params.calculationType
-        + ")\n");
-
-    // extentMin
-    t = getList(surfaceList, 7);
-    origin.set(getFloat(t, 0), getFloat(t, 1), getFloat(t, 2));
-
-    
-    // extentMax
-    t = getList(surfaceList, 8);
-    a = getFloat(t, 0) - origin.x;
-    b = getFloat(t, 1) - origin.y;
-    c = getFloat(t, 2) - origin.z;
+    jvxlFileHeaderBuffer.append(surfaceName + " (" + params.calculationType + ")\n");
 
     // cell parameters
     JmolList<Object> s = getList(surfaceList, 1);
     t = getList(s, 0);
     // change in format between PyMOL versions
-    // with PyMOL 1.6 allowing multiple crystal defs??
-
-    if (t == null) {
-      alpha = 1;
-    } else {
-      try {
-        getFloat(t, 0);
-      } catch (Exception e) {
-        // just pick up first crystal data
-        t = getList(s = getList(s, 0), 0);
-      }
-      // these seem to be irrelevant
-      //a = getFloat(t, 0);
-      //b = getFloat(t, 1);
-      //c = getFloat(t, 2);
-      t = getList(s, 1);
-      alpha = getFloat(t, 0);
-      beta = getFloat(t, 1);
-      gamma = getFloat(t, 2);
-    }
-    if (alpha == 1)
-      alpha = beta = gamma = 90;
-
-
-    // ignoring I->Div for now
+    if (t.size() < 3)
+      t = getList(s = getList(s, 0), 0);
+    a = getFloat(t, 0);
+    b = getFloat(t, 1);
+    c = getFloat(t, 2);
+    t = getList(s, 1);
+    alpha = getFloat(t, 0);
+    beta = getFloat(t, 1);
+    gamma = getFloat(t, 2);
     
-//    t = getList(surfaceList, 10); // I->Div
-//    ?? = (int) getFloat(t, 0);
-//    ?? = (int) getFloat(t, 1);
-//    ?? = (int) getFloat(t, 2);
-    
+    // origin
+    t = getList(surfaceList, 7);    
+    origin.set(getFloat(t, 0), getFloat(t, 1), getFloat(t, 2));
+      
+    // unit cell vectors in grid counts
+    t = getList(surfaceList, 10);
+    na = (int) getFloat(t, 0);
+    nb = (int) getFloat(t, 1);
+    nc = (int) getFloat(t, 2);
     // data block start and extents in grid units
-    t = getList(surfaceList, 11); // I->Min
+    t = getList(surfaceList, 11);
     nxyzStart[0] = (int) getFloat(t, 0);
     nxyzStart[1] = (int) getFloat(t, 1);
     nxyzStart[2] = (int) getFloat(t, 2);
-
+    
     // number of grid points
     // will end up with xyz, but we use zyx because of the storage
-    t = getList(surfaceList, 13); // I->FDim
+    t = getList(surfaceList, 13);
     nz = (int) getFloat(t, 0);
     ny = (int) getFloat(t, 1);
     nx = (int) getFloat(t, 2);
 
-    na = nz - 1;
-    nb = ny - 1;
-    nc = nx - 1;
-
+    if (na <= 0 || nb <= 0 || nc <= 0) {
+      na = nz - 1;
+      nb = ny - 1;
+      nc = nx - 1;
+      t = getList(surfaceList, 8);
+      a = getFloat(t, 0) - origin.x;
+      b = getFloat(t, 1) - origin.y;
+      c = getFloat(t, 2) - origin.z;
+    }
+    
+    
     mapc = 3; // fastest
     mapr = 2;
     maps = 1; // slowest
-
+    
     getVectorsAndOrigin();
     setCutoffAutomatic();
 

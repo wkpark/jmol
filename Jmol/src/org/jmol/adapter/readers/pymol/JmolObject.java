@@ -360,7 +360,7 @@ class JmolObject {
       break;
     }
     if (sb != null) {
-      System.out.println("jmolobject " + sb);
+      //System.out.println("jmolobject " + sb);
       sm.viewer.runScript(sb.toString());
       return;
     }

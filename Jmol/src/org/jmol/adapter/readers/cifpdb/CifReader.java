@@ -1626,7 +1626,7 @@ _pdbx_struct_oper_list.vector[3]
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case BEG_ASYM_ID:
-          structure.startChainID = viewer.getChainID(field);;
+          structure.startChainID = viewer.getChainID(field);
           break;
         case BEG_SEQ_ID:
           structure.startSequenceNumber = parseIntStr(field);

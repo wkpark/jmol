@@ -284,10 +284,10 @@ public abstract class Monomer extends Group {
   public Map<String, Object> getMyInfo() {
     Map<String, Object> info = getGroupInfo(groupIndex);
     info.put("chain", chain.getIDStr());
-    int seqNum = getSeqNumber();
-    char insCode = getInsertionCode();
+    int seqNum = getResno();
     if (seqNum > 0)      
       info.put("sequenceNumber", Integer.valueOf(seqNum));
+    char insCode = getInsertionCode();
     if (insCode != 0)      
       info.put("insertionCode","" + insCode);
     float f = getGroupParameter(T.phi);

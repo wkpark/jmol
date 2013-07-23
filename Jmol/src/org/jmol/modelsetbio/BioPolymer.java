@@ -124,12 +124,14 @@ public abstract class BioPolymer {
     return leadAtomIndices;
   }
 
-  protected int getIndex(int chainID, int seqcode) {
+  protected int getIndex(int chainID, int seqcode, int istart, int iend) {
     int i;
-    for (i = monomerCount; --i >= 0;)
-      if (monomers[i].chain.chainID == chainID)
-        if (monomers[i].getSeqcode() == seqcode)
-          break;
+    for (i = monomerCount; --i >= 0;) {
+      Monomer m = monomers[i];
+      if (m.chain.chainID == chainID && m.seqcode == seqcode
+          && (istart < 0 || istart == m.firstAtomIndex || iend == m.lastAtomIndex))
+        break;
+    }
     return i;
   }
 

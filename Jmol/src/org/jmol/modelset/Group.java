@@ -60,7 +60,7 @@ public class Group {
   public int leadAtomIndex = -1;
   public int lastAtomIndex;
 
-  int seqcode;
+  public int seqcode;
   
   protected short groupID;
   protected boolean isProtein;
@@ -280,14 +280,6 @@ public class Group {
 
   public final int getResno() {
     return (seqcode == Integer.MIN_VALUE ? 0 : seqcode >> SEQUENCE_NUMBER_SHIFT); 
-  }
-
-  public final int getSeqcode() {
-    return seqcode;
-  }
-
-  public final int getSeqNumber() {
-    return seqcode >> SEQUENCE_NUMBER_SHIFT;
   }
 
   public final static int getSeqNumberFor(int seqcode) {

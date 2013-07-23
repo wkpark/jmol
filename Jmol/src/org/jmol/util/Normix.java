@@ -25,8 +25,6 @@
 package org.jmol.util;
 
 
-
-
 /**
  * Provides quantization of normalized vectors so that shading for
  * lighting calculations can be handled by a simple index lookup
@@ -99,8 +97,8 @@ public class Normix {
   }
 
   public static short get2SidedNormix(V3 v, BS bsTemp) {
-    // ellipsoid arc and polyhedra only
-    return (short)~getNormix(v.x, v.y, v.z, Normix.NORMIX_GEODESIC_LEVEL, bsTemp);
+    // ellipsoid arc and CGO and polyhedra only
+    return (short) ~getNormixV(v, bsTemp);
   }
 
   private static short getNormix(double x, double y, double z, int geodesicLevel, BS bsConsidered) {

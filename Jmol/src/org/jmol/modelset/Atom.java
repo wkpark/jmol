@@ -971,7 +971,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   int getSeqcode() {
-    return group.getSeqcode();
+    return group.seqcode;
   }
 
   public int getResno() {
@@ -1132,10 +1132,6 @@ final public class Atom extends Point3fi implements JmolNode {
 
   public String getSeqcodeString() {
     return group.getSeqcodeString();
-  }
-
-  public int getSeqNumber() {
-    return group.getSeqNumber();
   }
 
   public char getInsertionCode() {

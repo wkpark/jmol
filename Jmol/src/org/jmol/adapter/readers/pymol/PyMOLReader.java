@@ -1177,6 +1177,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         Atom a = atoms[istart];
         Atom b = atoms[iend];
         int i0 = atomSetCollection.getAtomSetAtomIndex(thisModel);
+        System.out.println("addstruc " + i0 + " " + istart + " " + iend + " " + a.atomName + " " + b.atomName + " " + a.atomSerial + " " + b.atomSerial);
         structure.set(a.chainID, a.sequenceNumber, a.insertionCode, b.chainID,
             b.sequenceNumber, b.insertionCode, istart - i0, iend - i0);
         atomSetCollection.addStructure(structure);

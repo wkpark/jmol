@@ -1209,8 +1209,8 @@ public class PropertyManager implements JmolPropertyManager {
       info.put("surfaceDistance", Float.valueOf(d));
     if (ms.models[atom.modelIndex].isBioModel) {
       info.put("resname", atom.getGroup3(false));
-      int seqNum = atom.getSeqNumber();
       char insCode = atom.getInsertionCode();
+      int seqNum = atom.getResno();
       if (seqNum > 0)
         info.put("resno", Integer.valueOf(seqNum));
       if (insCode != 0)

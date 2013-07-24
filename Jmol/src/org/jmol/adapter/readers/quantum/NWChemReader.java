@@ -28,6 +28,7 @@ import org.jmol.util.JmolList;
 import java.util.Hashtable;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
@@ -85,11 +86,10 @@ public class NWChemReader extends MOReader {
   private boolean inInput;
 
   private JmolList<String> atomTypes;
-  private boolean readROHFonly;
+  private Map<String, JmolList<String>> htMOs = new Hashtable<String, JmolList<String>>();
 
   @Override
   protected void initializeReader() {
-    readROHFonly = (filter != null && filter.indexOf("ROHF") >= 0);
     calculationType = "(NWCHEM)"; // normalization is different for NWCHEM
   }
 
@@ -104,6 +104,9 @@ public class NWChemReader extends MOReader {
     if (line.trim().startsWith("NWChem")) {
       // currently only keep track of whether I am in the input module or not.
       inInput = (line.indexOf("NWChem Input Module") >= 0);
+      if (inInput) {
+        checkMOs();
+      }
     }
 
     if (line.startsWith("          Step")) {
@@ -160,40 +163,33 @@ public class NWChemReader extends MOReader {
 
     if (line.startsWith("  Mulliken analysis of the total density")) {
       // only do this if I have read an atom set in this task/step
-      if (equivalentAtomSets == 0)
-        return true;
-      readPartialCharges();
+      if (equivalentAtomSets != 0)
+        readPartialCharges();
       return true;
     }
+
     if (line.contains("Basis \"ao basis\"") && doReadMolecularOrbitals) {
       return readBasis();
     }
-    if (line.contains("Final Molecular Orbital Analysis")) {
-      if (equivalentAtomSets == 0)
-        return true;
-      return readMolecularOrbitalAnalysis(true);
+    
+    if (line.contains("Molecular Orbital Analysis")) {
+      if (equivalentAtomSets != 0)
+        readMOs();
+      return true;
     }
-
-    if (line.contains("Final Alpha Molecular Orbital Analysis")) {
-      if (equivalentAtomSets == 0)
-        return true;
-      alphaBeta = "alpha ";
-      return readMolecularOrbitalAnalysis(true);
-    }
-
-    if (line.contains("Final Beta Molecular Orbital Analysis")) {
-      if (equivalentAtomSets == 0)
-        return true;
-      return readMolecularOrbitalAnalysis(false);
-    }
-
-    if (!readROHFonly && line.contains("Final MO vectors")) {
-      if (equivalentAtomSets == 0)
-        return true;
-      return readMolecularOrbitalVectors();
-    }
+//    if (!readROHFonly && line.contains("Final MO vectors")) {
+//      if (equivalentAtomSets == 0)
+//        return true;
+//      return readMolecularOrbitalVectors();
+//    }
 
     return true;
+  }
+
+  @Override
+  protected void finalizeReader() throws Exception {
+    checkMOs();
+    finalizeReaderASCR();
   }
 
   private void init() {
@@ -684,7 +680,6 @@ public class NWChemReader extends MOReader {
     gaussianCount = 0;
     shellCount = 0;
     nBasisFunctions = 0;
-
     boolean isD6F10 = (line.indexOf("cartesian") >= 0);
     if (isD6F10) {
       getDFMap(DC_LIST, JmolAdapter.SHELL_D_CARTESIAN, CANONICAL_DC_LIST, 3);
@@ -807,62 +802,62 @@ public class NWChemReader extends MOReader {
    * 
    */
 
-  private Map<Integer, Map<String, Object>> moInfo;
   
   int moCount;
   
-  private boolean readMolecularOrbitalAnalysis(boolean doClear) throws Exception {
-
-    if (shells == null)
-      return true;
-    int moCount = 0;
-    boolean isBeta = false;
-    if (doClear && !readROHFonly) {
-      moInfo = new Hashtable<Integer, Map<String, Object>>();
+  // get just the LAST MO definition of each type.
+  private boolean readMOs() throws Exception {
+    JmolList<String> lines = new JmolList<String>();
+    htMOs.put(line, lines);
+    lines.addLast(line);
+    int nblank = 0;
+    while (nblank != 2 && readLine() != null) {
+      lines.addLast(line);
+      if (line.length() < 2)
+        nblank++;
+      else
+        nblank = 0;
     }
-    while (line != null) {
-      while ((line.length() < 3 || line.charAt(1) == ' ')
-          && line.indexOf("Final") < 0) {
-        readLine();
-      }
-      Logger.info(line);
-      if (line.indexOf("Final") >= 0) {
-        if (line.indexOf("MO") >= 0)
-          break;
-        if (line.indexOf("Final Beta") >= 0) {
-          isBeta = true;
-        }
-        readLine();
+    return true;
+  }
+
+  private void checkMOs() throws Exception {
+    if (shells == null)
+      return;
+    for (Entry<String, JmolList<String>> entry : htMOs.entrySet()) {
+      line = entry.getKey();
+      alphaBeta = line.substring(0, line.indexOf("Final")).trim() + " ";
+      int moCount = 0;
+      if (!filterMO())
         continue;
-      }
-      if (line.charAt(1) != 'V')
-        break;
-      line = line.replace('=', ' ');
-      //  Vector    9  Occ=2.000000D+00  E=-1.152419D+00  Symmetry=a1
-      String[] tokens = getTokens();
-      int iMo = parseIntStr(tokens[1]);
-      float occupancy = parseFloatStr(tokens[3]);
-      float energy = parseFloatStr(tokens[5]);
-      String symmetry = (tokens.length > 7 ? tokens[7] : null);
-      Map<String, Object> mo = new Hashtable<String, Object>();
-      mo.put("occupancy", Float.valueOf(occupancy));
-      mo.put("energy", Float.valueOf(energy));
-      if (symmetry != null)
-        mo.put("symmetry", symmetry);
-      float[] coefs = null;
-      if (readROHFonly) {
+      JmolList<String> list = entry.getValue();
+      int n = list.size();
+      Logger.info(line);
+      for (int i = 3; i < n; i++) {
+        while (i < n && ((line = list.get(i)).length() < 2
+            || line.charAt(1) != 'V'))
+          i++;
+        if (i == n)
+          break;
+        line = line.replace('=', ' ');
+        //  Vector    9  Occ=2.000000D+00  E=-1.152419D+00  Symmetry=a1
+        String[] tokens = getTokens();
+        float occupancy = parseFloatStr(tokens[3]);
+        float energy = parseFloatStr(tokens[5]);
+        String symmetry = (tokens.length > 7 ? tokens[7] : null);
+        Map<String, Object> mo = new Hashtable<String, Object>();
+        mo.put("occupancy", Float.valueOf(occupancy));
+        mo.put("energy", Float.valueOf(energy));
+        if (symmetry != null)
+          mo.put("symmetry", symmetry);
+        float[] coefs = null;
         setMO(mo);
-        mo.put("type", "ROHF " + (++moCount));
+        mo.put("type", alphaBeta + (++moCount));
         coefs = new float[nBasisFunctions];
         mo.put("coefficients", coefs);
-      } else {
-        moInfo.put(Integer.valueOf(isBeta ? -iMo : iMo), mo);
-      }
-
-      readLines(3);
-      //    68      2.509000   5 C  py               39     -2.096777   3 C  pz        
-      while (readLine() != null && line.length() > 3) {
-        if (readROHFonly) {
+        i += 3;
+        //    68      2.509000   5 C  py               39     -2.096777   3 C  pz        
+        while ((line = list.get(++i)) != null && line.length() > 3) {
           tokens = getTokens();
           coefs[parseIntStr(tokens[0]) - 1] = parseFloatStr(tokens[1]);
           int pt = tokens.length / 2;
@@ -872,12 +867,14 @@ public class NWChemReader extends MOReader {
       }
     }
     energyUnits = "a.u.";
-    if (readROHFonly)
-      setMOData(false);
-    return false;
+    setMOData(true);
+    shells = null;
+    htMOs.clear();
   }
 
   /*
+   * 
+   * OLD format? I do not have any examples of these files.
 
                                  Final MO vectors
                                  ----------------
@@ -896,74 +893,74 @@ public class NWChemReader extends MOReader {
    1      -0.00000    -0.00000     0.02285    -0.00000    -0.00000     0.00000
    
    */
-  private boolean readMolecularOrbitalVectors() throws Exception {
-
-    if (shells == null)
-      return true;
-    Map<String, Object>[] mos = null;
-    JmolList<String>[] data = null;
-    int iListed = 0;
-    int ptOffset = -1;
-    int fieldSize = 0;
-    int nThisLine = 0;
-    readLines(5);
-    boolean isBeta = false;
-    boolean betaOnly = !filterMO();
-    while (readLine() != null) {
-      if (parseIntStr(line) != iListed + 1) {
-        if (line.indexOf("beta") < 0)
-          break;
-        alphaBeta = "beta ";
-        if (!filterMO())
-          break;
-        isBeta = true;
-        iListed = 0;
-        readLine();
-        continue;
-      }
-      
-      readLine();
-      String[] tokens = getTokens();
-      if (Logger.debugging) {
-        Logger.debug(tokens.length + " --- " + line);
-      }
-      nThisLine = tokens.length;
-      ptOffset = 6;
-      fieldSize = 12;
-      mos = ArrayUtil.createArrayOfHashtable(nThisLine);
-      data = ArrayUtil.createArrayOfArrayList(nThisLine);
-      for (int i = 0; i < nThisLine; i++) {
-        mos[i] = new Hashtable<String, Object>();
-        data[i] = new  JmolList<String>();
-      }
-
-      while (readLine() != null && line.length() > 0)
-        for (int i = 0, pt = ptOffset; i < nThisLine; i++, pt += fieldSize)
-          data[i].addLast(line.substring(pt, pt + fieldSize).trim());
-
-      for (int iMo = 0; iMo < nThisLine; iMo++) {
-        float[] coefs = new float[data[iMo].size()];
-        int iCoeff = 0;
-        while (iCoeff < coefs.length) {
-          coefs[iCoeff] = parseFloatStr(data[iMo].get(iCoeff));
-          iCoeff++;
-        }
-        mos[iMo].put("coefficients", coefs);
-        mos[iMo].put("type", alphaBeta + " "            + (++iListed));
-        ++moCount;
-        Map<String, Object> mo = (moInfo == null ? null : moInfo.get(Integer
-            .valueOf(isBeta ? -iListed : iListed)));
-        if (mo != null)
-          mos[iMo].putAll(mo);
-        if (!betaOnly || isBeta)
-          setMO(mos[iMo]);
-      }
-      line = "";
-    }
-    energyUnits = "a.u.";
-    setMOData(false);
-    return true;
-  }
+//  private boolean readMolecularOrbitalVectors() throws Exception {
+//
+//    if (shells == null)
+//      return true;
+//    Map<String, Object>[] mos = null;
+//    JmolList<String>[] data = null;
+//    int iListed = 0;
+//    int ptOffset = -1;
+//    int fieldSize = 0;
+//    int nThisLine = 0;
+//    readLines(5);
+//    boolean isBeta = false;
+//    boolean betaOnly = !filterMO();
+//    while (readLine() != null) {
+//      if (parseIntStr(line) != iListed + 1) {
+//        if (line.indexOf("beta") < 0)
+//          break;
+//        alphaBeta = "beta ";
+//        if (!filterMO())
+//          break;
+//        isBeta = true;
+//        iListed = 0;
+//        readLine();
+//        continue;
+//      }
+//      
+//      readLine();
+//      String[] tokens = getTokens();
+//      if (Logger.debugging) {
+//        Logger.debug(tokens.length + " --- " + line);
+//      }
+//      nThisLine = tokens.length;
+//      ptOffset = 6;
+//      fieldSize = 12;
+//      mos = ArrayUtil.createArrayOfHashtable(nThisLine);
+//      data = ArrayUtil.createArrayOfArrayList(nThisLine);
+//      for (int i = 0; i < nThisLine; i++) {
+//        mos[i] = new Hashtable<String, Object>();
+//        data[i] = new  JmolList<String>();
+//      }
+//
+//      while (readLine() != null && line.length() > 0)
+//        for (int i = 0, pt = ptOffset; i < nThisLine; i++, pt += fieldSize)
+//          data[i].addLast(line.substring(pt, pt + fieldSize).trim());
+//
+//      for (int iMo = 0; iMo < nThisLine; iMo++) {
+//        float[] coefs = new float[data[iMo].size()];
+//        int iCoeff = 0;
+//        while (iCoeff < coefs.length) {
+//          coefs[iCoeff] = parseFloatStr(data[iMo].get(iCoeff));
+//          iCoeff++;
+//        }
+//        mos[iMo].put("coefficients", coefs);
+//        mos[iMo].put("type", alphaBeta + " "            + (++iListed));
+//        ++moCount;
+//        Map<String, Object> mo = (moInfo == null ? null : moInfo.get(Integer
+//            .valueOf(isBeta ? -iListed : iListed)));
+//        if (mo != null)
+//          mos[iMo].putAll(mo);
+//        if (!betaOnly || isBeta)
+//          setMO(mos[iMo]);
+//      }
+//      line = "";
+//    }
+//    energyUnits = "a.u.";
+//    setMOData(false);
+//    return true;
+//  }
 
   /*
 ------------------------------------------------------------

@@ -53,9 +53,7 @@ import org.jmol.util.Logger;
  * so it is not certain that all modules will be properly interpreted.
  * Most testing has been done with the SCF and DFT tasks.
  * 
- * no support yet for orbitals
- * 
-**/
+ **/
 
 public class NWChemReader extends MOReader {
 
@@ -146,7 +144,7 @@ public class NWChemReader extends MOReader {
       readAtoms();
       return true;
     }
-    if (line.indexOf("NWChem Nuclear Hessian and Frequency Analysis") >= 0) {
+    if (line.indexOf("Vibrational analysis") >= 0) {
       readFrequencies();
       return true;
     }
@@ -769,6 +767,7 @@ public class NWChemReader extends MOReader {
     gaussians = ArrayUtil.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++)
       gaussians[i] = gdata.get(i);
+    Logger.info(gaussianCount + " Gaussians read");
     return true;
   }
 
@@ -844,12 +843,12 @@ public class NWChemReader extends MOReader {
       int iMo = parseIntStr(tokens[1]);
       float occupancy = parseFloatStr(tokens[3]);
       float energy = parseFloatStr(tokens[5]);
-      String symmetry = tokens[7];
-      readLines(3);
+      String symmetry = (tokens.length > 7 ? tokens[7] : null);
       Map<String, Object> mo = new Hashtable<String, Object>();
       mo.put("occupancy", Float.valueOf(occupancy));
       mo.put("energy", Float.valueOf(energy));
-      mo.put("symmetry", symmetry);
+      if (symmetry != null)
+        mo.put("symmetry", symmetry);
       float[] coefs = null;
       if (readROHFonly) {
         setMO(mo);
@@ -860,6 +859,7 @@ public class NWChemReader extends MOReader {
         moInfo.put(Integer.valueOf(isBeta ? -iMo : iMo), mo);
       }
 
+      readLines(3);
       //    68      2.509000   5 C  py               39     -2.096777   3 C  pz        
       while (readLine() != null && line.length() > 3) {
         if (readROHFonly) {

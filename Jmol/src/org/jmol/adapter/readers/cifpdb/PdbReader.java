@@ -786,7 +786,7 @@ REMARK 290 REMARK: NULL
     ch = chain < 256 ? (char) chain : 0;
     if (chainAtomCounts != null)
       chainAtomCounts[ch]++;
-    atom.chainID = ch;
+    setChainID(atom, ch);
     atom.sequenceNumber = seqNo;
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(insCode);
     atom.isHetero = isHetero;    
@@ -898,7 +898,7 @@ REMARK 290 REMARK: NULL
         String msg = " atom [" + atom.group3 + "]"
                            + atom.sequenceNumber 
                            + (atom.insertionCode == '\0' ? "" : "^" + atom.insertionCode)
-                           + (atom.chainID == '\0' ? "" : ":" + atom.chainID)
+                           + (atom.chainID == 0 ? "" : ":" + viewer.getChainIDStr(atom.chainID))
                            + "." + atom.atomName
                            + "%" + atom.alternateLocationID + "\n";
         if (conformationIndex >= 0 && atom.alternateLocationID != lastAltLoc) {
@@ -1695,8 +1695,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
       for (int j = ranges.size(); --j >= 0;) {
         String chains = (String) ranges.get(j).get("chains");
         int[] residues = (int[]) ranges.get(j).get("residues");
-        char chain0 = chains.charAt(0);
-        char chain1 = chains.charAt(1);
+        int chain0 = 0 + chains.charAt(0);
+        int chain1 = 0 + chains.charAt(1);
         int res0 = residues[0];
         int res1 = residues[1];
         int index1 = findAtomForRange(index0, indexMax, chain0, res0, false);
@@ -1732,13 +1732,13 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     atomSetCollection.setTensors();
   }
 
-  private int findAtomForRange(int atom1, int atom2, char chain, int resno,
+  private int findAtomForRange(int atom1, int atom2, int chain, int resno,
                           boolean isLast) {
     int iAtom = findAtom(atom1, atom2, chain, resno, true);
     return (isLast && iAtom >= 0 ? findAtom(iAtom, atom2, chain, resno, false) : iAtom);
   }
 
-  private int findAtom(int atom1, int atom2, char chain, int resno, boolean isTrue) {
+  private int findAtom(int atom1, int atom2, int chain, int resno, boolean isTrue) {
     Atom[] atoms = atomSetCollection.getAtoms();
     for (int i = atom1; i < atom2; i++) {
      Atom atom = atoms[i];

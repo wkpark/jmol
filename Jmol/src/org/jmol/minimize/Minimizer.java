@@ -59,6 +59,8 @@ public class Minimizer implements MinimizerInterface {
   public MinBond[] minBonds;
   public MinAngle[] minAngles;
   public MinTorsion[] minTorsions;
+  public MinPosition[] minPositions;
+  
   public BS bsMinFixed;
   private int atomCount;
   private int bondCount;

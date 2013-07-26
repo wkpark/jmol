@@ -510,7 +510,7 @@ final public class Measure {
       for (int i = 1; i <= n; i++) {
         P3 aij = centerAndPoints[0][i];
         P3 bij = centerAndPoints[1][i];
-        if (aij instanceof Atom)
+        if (aij instanceof Atom && bij instanceof Atom)
           Logger.info(" atom 1 " + ((Atom) aij).getInfo() + "\tatom 2 "
               + ((Atom) bij).getInfo());
         else

@@ -9437,8 +9437,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     clearModelDependentObjects();
     if (pt == null) {
+      int atomCount = modelSet.getAtomCount();
       modelSet.assignAtom(atomIndex, type, true);
-      modelSet.setAtomNamesAndNumbers(atomIndex, -1, null);
+      if (!Parser.isOneOf(type,";Mi;Pl;X;"))
+        modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
       refresh(3, "assignAtom");
       return;
     }

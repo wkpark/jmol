@@ -922,8 +922,8 @@ public abstract class AtomSetCollectionReader {
             || atom.atomName.toUpperCase().indexOf("\0" + filterAtomTypeStr) >= 0)
         && (!filterElement || atom.elementSymbol == null || !filterReject(f, "_",
             atom.elementSymbol.toUpperCase() + ";"))
-        && (!filterChain || atom.chainID == '\0' || !filterReject(f, ":", ""
-            + atom.chainID))
+        && (!filterChain || atom.chainID == 0 || !filterReject(f, ":", ""
+            + viewer.getChainIDStr(atom.chainID)))
         && (!filterAltLoc || atom.alternateLocationID == '\0' || !filterReject(
             f, "%", "" + atom.alternateLocationID))
         && (!filterHetero || !filterReject(f, "HETATM",
@@ -1615,4 +1615,7 @@ public abstract class AtomSetCollectionReader {
     // PyMOL reader only
   }
 
+  public void setChainID(Atom atom, char ch) {
+    atom.chainID = viewer.getChainID("" + ch);    
+  }
 }

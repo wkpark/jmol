@@ -1390,7 +1390,8 @@ abstract public class AtomCollection {
       Atom a = atoms[i];
       int nH = getImplicitHydrogenCount(a, true);
       if (nH != 0) {
-        int c0 = a.getFormalCharge();
+
+          int c0 = a.getFormalCharge();
         int c = c0 - nH;
         a.setFormalCharge(c);
         taintAtom(i, TAINT_FORMALCHARGE);

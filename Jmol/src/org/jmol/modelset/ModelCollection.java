@@ -3259,6 +3259,13 @@ abstract public class ModelCollection extends BondCollection {
     return BSUtil.deleteBits(bs, bs1);
   }
 
+  /**
+   * 
+   * @param iFirst
+   *        0 from ModelLoader.freeze; -1 from Viewer.assignAtom
+   * @param baseAtomIndex
+   * @param mergeSet
+   */
   public void setAtomNamesAndNumbers(int iFirst, int baseAtomIndex,
                                      AtomCollection mergeSet) {
     // first, validate that all atomSerials are NaN
@@ -3281,10 +3288,14 @@ abstract public class ModelCollection extends BondCollection {
       // 1) do not change numbers assigned by adapter
       // 2) do not change the number already assigned when merging
       // 3) restart numbering with new atoms, not a continuation of old
-      if (atomSerials[i] == 0 || baseAtomIndex < 0)
-        atomSerials[i] = (i < baseAtomIndex ? mergeSet.atomSerials[i] : atomNo);
-      if (atomNames[i] == null || baseAtomIndex < 0)
-        atomNames[i] = (atom.getElementSymbol() + atomSerials[i]).intern();
+      if (i >= -baseAtomIndex) {
+        if (atomSerials[i] == 0 || baseAtomIndex < 0)
+          atomSerials[i] = (i < baseAtomIndex ? mergeSet.atomSerials[i]
+              : atomNo);
+        if (atomNames[i] == null || baseAtomIndex < 0)
+          atomNames[i] = (atom.getElementSymbol() + atomSerials[i]).intern();
+      }
+
       if (!models[lastModelIndex].isModelKit || atom.getElementNumber() > 0
           && !atom.isDeleted())
         atomNo++;

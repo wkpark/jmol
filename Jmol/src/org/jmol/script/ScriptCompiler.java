@@ -2348,7 +2348,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       ichT = ptLastChar + 1;
     else if (ptSpace > 0)
       ichT = ptSpace;
-    if (isVariable && ptSpace < 0 && parenpt <= 0 && ichT - ichToken > 1) {
+    if (isVariable && (!allowSpace || ptSpace < 0 && parenpt <= 0 && ichT - ichToken > 1)) {
       // if we have @xxx then this is not an implied string
       return false;
     }

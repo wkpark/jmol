@@ -103,6 +103,7 @@ abstract public class ForceField {
     this.minBonds = minimizer.minBonds;
     this.minAngles = minimizer.minAngles;
     this.minTorsions = minimizer.minTorsions;
+    this.minPositions = minimizer.minPositions; // not implemented
     this.bsFixed = minimizer.bsMinFixed;
     minAtomCount = minAtoms.length;
     minBondCount = minBonds.length;

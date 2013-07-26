@@ -253,6 +253,7 @@ class ColorManager {
         chain = 0;
       else if (chain >= 256)
         chain -= 256;
+      chain &= 0x1F;
       chain = chain % JC.argbsChainAtom.length;
       argb = (atom.isHetero() ? JC.argbsChainHetero : JC.argbsChainAtom)[chain];
       break;

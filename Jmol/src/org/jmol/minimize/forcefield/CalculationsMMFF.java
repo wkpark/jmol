@@ -34,7 +34,6 @@ import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinObject;
 import org.jmol.minimize.MinPosition;
 import org.jmol.minimize.MinTorsion;
-import org.jmol.minimize.forcefield.CalculationsUFF.PositionCalc;
 import org.jmol.util.TextFormat;
 
 /**

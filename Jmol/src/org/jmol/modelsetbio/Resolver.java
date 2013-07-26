@@ -40,6 +40,7 @@ import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
+import org.jmol.util.BSUtil;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -206,12 +207,9 @@ public final class Resolver implements JmolBioResolver {
   
   public void addImplicitHydrogenAtoms(JmolAdapter adapter, int iGroup, int nH) {
     String group3 = modelLoader.getGroup3(iGroup);
-    if (group3 != null && group3.equals("FS4"))
-      System.out.println("hest");
     int nH1;
     if (haveHsAlready || group3 == null
-        || (nH1 = JC.getStandardPdbHydrogenCount(Group
-        .lookupGroupID(group3))) == 0)
+        || (nH1 = JC.getStandardPdbHydrogenCount(Group.lookupGroupID(group3))) == 0)
       return;
     nH = (nH1 < 0 ? -1 : nH1 + nH);
     Object model = null;
@@ -351,7 +349,6 @@ public final class Resolver implements JmolBioResolver {
     modelSet.viewer.getLigandModel(null);
     finalizePdbMultipleBonds();
     addHydrogens();
-    modelSet.fixFormalCharges(bsAtomsForHs);
   }
 
   private void addHydrogens() {
@@ -453,6 +450,7 @@ public final class Resolver implements JmolBioResolver {
       }
     }
     deleteUnneededAtoms();
+    modelSet.fixFormalCharges(BSUtil.newBitSet2(modelLoader.baseAtomIndex, modelLoader.modelSet.atomCount));
   }
 
   /**

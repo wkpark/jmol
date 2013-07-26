@@ -47,7 +47,6 @@ import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
-import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;

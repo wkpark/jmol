@@ -1144,7 +1144,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     int thisModel = -1;
     for (int i = atomCount0; i < n; i++) {
       if (i == atomCount) {
-        thischain = '\0';
+        thischain = 0;
       } else {
         seqNo = atoms[i].sequenceNumber;
         thischain = atoms[i].chainID;

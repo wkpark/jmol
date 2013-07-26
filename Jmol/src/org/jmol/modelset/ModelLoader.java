@@ -248,7 +248,7 @@ public final class ModelLoader {
 
   public int baseModelIndex = 0;
   private int baseModelCount = 0;
-  private int baseAtomIndex = 0;
+  public int baseAtomIndex = 0;
   private int baseGroupIndex = 0;
 
   private int baseTrajectoryCount = 0;

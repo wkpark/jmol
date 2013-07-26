@@ -171,8 +171,8 @@ public class RocketsRenderer extends BioShapeRenderer {
     viewer.transformPt3f(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
     int diameter = (int) viewer.scaleToScreen(zMid, mad);
-    g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenA, screenB);
     if (g3d.setColix(colix)) {
+      g3d.fillCylinderBits(GData.ENDCAPS_FLAT, diameter, screenA, screenB);
       if (tEnd && renderArrowHeads) {
         vtemp.sub2(pointEnd, pointStart);
         vtemp.normalize();

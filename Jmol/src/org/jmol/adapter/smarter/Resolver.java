@@ -547,19 +547,17 @@ public class Resolver {
   
   private static boolean checkCube(String[] lines) {
     try {
-      StringTokenizer tokens2 = new StringTokenizer(lines[2]);
-      if (tokens2.countTokens() != 4)
-        return false;
-      Integer.parseInt(tokens2.nextToken());
-      for (int i = 3; --i >= 0; )
-        Parser.fVal(tokens2.nextToken());
-      StringTokenizer tokens3 = new StringTokenizer(lines[3]);
-      if (tokens3.countTokens() != 4)
-        return false;
-      Integer.parseInt(tokens3.nextToken());
-      for (int i = 3; --i >= 0; )
-        if (Parser.fVal(tokens3.nextToken()) < 0)
+      for (int j = 2; j <= 5; j++) {
+        StringTokenizer tokens2 = new StringTokenizer(lines[j]);
+        int n = tokens2.countTokens();
+        if (!(n == 4 || j == 2 && n == 5))
           return false;
+        Integer.parseInt(tokens2.nextToken());
+        for (int i = 3; --i >= 0;)
+          Parser.fVal(tokens2.nextToken());
+        if (n == 5)
+          Integer.parseInt(tokens2.nextToken());
+      }
       return true;
     } catch (NumberFormatException nfe) {
     }

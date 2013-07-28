@@ -59,6 +59,7 @@
   <property name="tests.dir" value="build/unit.tests" />
   <property name="javadoc.dir" value="build/javadoc" />
   <property name="jmol.applet.build.dir" value="build" />
+  <property name="jmol.applet.web.dir" value="appletweb" />
   <property name="jmol.build.dir" value="build" />
   <property name="docbook-xsl" value="docbook-xsl-1.76.1" />
   <property name="docbook-xml" value="docbook-xml-4.4" />
@@ -1310,14 +1311,10 @@ all support for previous versions removed
     <delete dir="build/dist/jmol-${version}"/>
     <mkdir dir="build/dist/jmol-${version}"/>
     <copy todir="build/dist/jmol-${version}" >
-      <fileset dir="${jmol.applet.build.dir}">
-        <include name="JmolApplet*.jar" />
-      </fileset>
       <fileset dir="${jmol.build.dir}">
         <include name="Jmol.jar" />
-        <include name="ChimeToJmol.jar" />
         <include name="JmolData.jar" />
-        <include name="JmolSmiles.jar" />
+        <include name="JmolLib.jar" />
       </fileset>
       <fileset dir=".">
         <include name="jmol" />
@@ -1339,9 +1336,7 @@ all support for previous versions removed
     <copy todir="build/dist/jmol-${version}" >
       <fileset dir="./appletweb">
         <include name="README*.txt" />
-        <include name="Jmol*.js" />
-        <include name="JSpecViewApplet.jar" />
-        <include name="JSpecViewAppletSigned.jar" />
+        <include name="jsmol.zip" />
       </fileset>
     </copy>
 

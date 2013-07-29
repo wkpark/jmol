@@ -386,7 +386,7 @@ class SymmetryOperation extends Matrix4f {
   }
 
   private static String plusMinus(String strT, float x, String sx) {
-    return (x == 0 ? "" : x < 0 ? "-" : strT.length() == 0 ? "" : "+") + sx;
+    return (x == 0 ? "" : (x < 0 ? "-" : strT.length() == 0 ? "" : "+") + sx);
   }
 
   private static float normalizeTwelfths(float iValue, boolean doNormalize) {

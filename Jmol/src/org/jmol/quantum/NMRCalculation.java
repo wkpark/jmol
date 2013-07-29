@@ -1,4 +1,4 @@
-/* $RCSfile$
+  /* $RCSfile$
  * $Author: hansonr $
  * $Date: 2006-05-13 19:17:06 -0500 (Sat, 13 May 2006) $
  * $Revision: 5114 $
@@ -108,7 +108,8 @@ public class NMRCalculation implements JmolNMRInterface {
       int n = tensors.size();
       for (int j = 0; j < n; j++) {
         Tensor t = tensors.get(j);
-        if (t.type.equals(type) && t.isSelected(bs, iAtom)
+        if (t.type.equals(type) 
+            && t.isSelected(bs, iAtom)
             && (bs2 == null || bs2.get(getOtherAtom(t, iAtom))))
           
           list.addLast(t);
@@ -172,12 +173,13 @@ public class NMRCalculation implements JmolNMRInterface {
   public float getJCouplingHz(Atom a1, Atom a2, String type, Tensor isc) {
     if (isc == null) {
       type = getISCtype(a1, type);
-      if (type == null)
+      if (type == null || a1.modelIndex != a2.modelIndex)
         return 0;
       BS bs = new BS();
       BS bs2 = new BS();
-      bs.set(a1.index);
-      bs2.set(a2.index);
+      int i0 =  viewer.modelSet.models[a1.modelIndex].firstAtomIndex - 1;
+      bs.set(a1.atomSite + i0);
+      bs2.set(a2.atomSite + i0);
       JmolList<Tensor> list = getInteractionTensorList(type, bs, bs2);
       if (list.size() == 0)
         return Float.NaN;
@@ -427,7 +429,8 @@ public class NMRCalculation implements JmolNMRInterface {
         float d = a2.distanceSquared(a1);
         if (d == 0)
           continue;
-        String key = (i < j ? name + a2.getAtomName() : a2.getAtomName() + name);
+        String name1 = a2.getAtomName();
+        String key = (name.compareTo(name1) < 0 ? name + name1 : name1 + name);
         Float min = htMin.get(key);
         if (min == null) {
           min = Float.valueOf(d);

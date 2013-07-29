@@ -538,7 +538,9 @@ public class Measurement {
     Atom a1 = (Atom) getAtom(1);
     Atom a2 = (Atom) getAtom(2);
     float d = a2.distanceSquared(a1);
-    String key = (a1.index < a2.index ? a1.getAtomName() + a2.getAtomName() : a2.getAtomName() + a1.getAtomName());
+    String n1 = a1.getAtomName();
+    String n2 = a2.getAtomName();
+    String key = (n1.compareTo(n2) < 0 ? n1 + n2 : n2 + n1);
     Float min = htMin.get(key);
     return (min != null && d == min.floatValue());
   }

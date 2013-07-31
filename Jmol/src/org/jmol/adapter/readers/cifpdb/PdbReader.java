@@ -194,10 +194,10 @@ public class PdbReader extends AtomSetCollectionReader {
      // from   load files "tls.out" "xxxx.pdb"
      vTlsModels = ( JmolList<Map<String, Object>>) htParams.remove("vTlsModels");
    }
-   if (checkFilterKey("TYPE ")) {
+   String s = getFilter("TYPE ");
+   if (s != null) {
      // first column, nColumns;
-     String s = filter.substring(filter.indexOf("TYPE ") + 5).replace(',', ' ').replace(';', ' ');
-     String[] tokens = Parser.getTokens(s);
+     String[] tokens = Parser.getTokens(s.replace(',', ' '));
      atomTypePt0 = Integer.parseInt(tokens[0]) - 1;
      int pt = tokens[1].indexOf("=");
      if (pt >= 0) {
@@ -207,8 +207,9 @@ public class PdbReader extends AtomSetCollectionReader {
      }
      atomTypeLen = Integer.parseInt(tokens[1].substring(0, pt));
    }
-   if (checkFilterKey("CONF ")) {
-     configurationPtr = parseIntAt(filter, filter.indexOf("CONF ") + 5);
+   String conf = getFilter("CONF ");
+   if (conf != null) {
+     configurationPtr = parseIntStr(conf);
      sbIgnored = new SB();
      sbSelected = new SB();
    }

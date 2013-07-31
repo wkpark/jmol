@@ -885,7 +885,12 @@ public abstract class AtomSetCollectionReader {
 
   private String filter1, filter2;
 
-  public boolean checkFilterKey(String key) {
+  protected String getFilter(String key) {
+    int pt = (filter == null ? -1 : filter.indexOf(key));
+    return (pt < 0 ? null : filter.substring(pt + key.length(), filter.indexOf(";", pt)));
+  }
+
+  protected boolean checkFilterKey(String key) {
     return (filter != null && filter.indexOf(key) >= 0);
   }
 

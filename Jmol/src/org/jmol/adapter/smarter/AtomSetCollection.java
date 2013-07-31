@@ -41,7 +41,6 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Modulation;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
 import org.jmol.util.Tensor;
@@ -1373,8 +1372,6 @@ public class AtomSetCollection {
           atom1.atomSite = atomSite;
           atom1.bsSymmetry = BSUtil.newAndSetBit(iCellOpPt + iSym);
           atom1.bsSymmetry.set(iSym);
-          if (htAtomMods != null)
-            modulateAtom(atom1.index);
           if (addCartesian)
             cartesians[pt++] = cartesian;
           if (atoms[i].tensors != null) {
@@ -2006,26 +2003,4 @@ public class AtomSetCollection {
     setAtomSetCollectionAuxiliaryInfo("trajectorySteps", trajectorySteps);
   }
   
-  private Map<String, JmolList<Modulation>> htAtomMods;
-  
-  public void addAtomModulation(String label, P3 q, char axis, P3 coefs) {
-    if (htAtomMods == null)
-      htAtomMods = new Hashtable<String, JmolList<Modulation>>();
-    JmolList<Modulation> list = htAtomMods.get(label);
-    if (list == null)
-      htAtomMods.put(label, list = new JmolList<Modulation>());
-    list.addLast(new Modulation(q, axis, coefs));
-  }
-  
-  public void modulateAtom(int i) {
-    Atom a = atoms[i];
-    a.vib = new V3();
-    JmolList<Modulation> list = htAtomMods.get(a.atomName);
-    if (list == null || symmetry == null)
-      return;
-    Modulation.modulateAtom(a, list, a.vib);
-    symmetry.toCartesian(a.vib, true);
-    
-  }
-
 }

@@ -114,14 +114,12 @@ public class CastepReader extends AtomSetCollectionReader {
   @Override
   public void initializeReader() throws Exception {
     if (filter != null) {
-      if (checkFilterKey("CHARGE=")) {
-        chargeType = filter.substring(filter.indexOf("CHARGE=") + 7);
-        if (chargeType.length() > 4)
-          chargeType = chargeType.substring(0, 4);
-      }
+      chargeType = getFilter("CHARGE=");
+      if (chargeType != null && chargeType.length() > 4)
+        chargeType = chargeType.substring(0, 4);
       filter = filter.replace('(', '{').replace(')', '}');
       filter = TextFormat.simpleReplace(filter, "  ", " ");
-      isAllQ = (filter.indexOf("Q=ALL") >= 0);
+      isAllQ = checkFilterKey("Q=ALL");
       if (!isAllQ && filter.indexOf("{") >= 0)
         setDesiredQpt(filter.substring(filter.indexOf("{")));
       filter = TextFormat.simpleReplace(filter, "-PT", "");
@@ -713,7 +711,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
 
     lastQPt = tokens[1];
     //TODO not quite right: can have more than two options. 
-    if (!isOK && filter != null && checkFilterKey("Q=")) {
+    if (!isOK && checkFilterKey("Q=")) {
       // check for an explicit q=n or q={1/4 1/2 1/4}
       if (desiredQpt != null) {
         v.sub2(desiredQpt, qvec);

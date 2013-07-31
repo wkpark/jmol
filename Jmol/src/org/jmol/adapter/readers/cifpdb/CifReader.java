@@ -45,9 +45,11 @@ import java.util.Map.Entry;
 import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
+import org.jmol.util.Modulation;
 import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
+import org.jmol.util.V3;
 
 
 /**
@@ -94,7 +96,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private int conformationIndex;
   private boolean filterAssembly;
   private boolean allowRotations = true;
-  private String modulationAxes;
+  private boolean modVib;
+  private String modAxes;
 
   
 
@@ -116,13 +119,14 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   }
 
   protected void initializeReaderCif() throws Exception {
-    if (checkFilterKey("CONF "))
-      configurationPtr = parseIntAt(filter, filter.indexOf("CONF ") + 5);
     appendedData = (String) htParams.get("appendedData");
-    isMolecular = (filter != null && filter.indexOf("MOLECUL") >= 0);
-    filterAssembly = (filter != null && filter.indexOf("$") >= 0);
-    int pt = (filter == null ? -1 : filter.indexOf("MODULATIONAXES="));
-    modulationAxes = (pt >= 0 ? filter.substring(pt + 15) : null);
+    String conf = getFilter("CONF ");
+    if (conf != null)
+      configurationPtr = parseIntStr(conf);
+    isMolecular = checkFilterKey("MOLECUL");
+    filterAssembly = checkFilterKey("$");
+    modAxes = getFilter("MODAXES=");
+    modVib = checkFilterKey("MODVIB");
     if (isMolecular) {
       if (!doApplySymmetry) {
         doApplySymmetry = true;
@@ -151,13 +155,14 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       if (!readAllData())
         break;
     if (appendedData != null) {
-      tokenizer = new CifDataReader(new BufferedReader(new StringReader(appendedData)));
+      tokenizer = new CifDataReader(new BufferedReader(new StringReader(
+          appendedData)));
       while ((key = tokenizer.peekToken()) != null)
         if (!readAllData())
           break;
-    }    
+    }
     continuing = false;
-   }
+  }
 
   public String readNextLine() throws Exception {
     // from CifDataReader
@@ -220,9 +225,9 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           appendLoadNote("CIF Reader: Too high modulation dimension (" + modDim + ") -- ignored");
           modDim = 0;
         } else {
-          appendLoadNote("CIF Reader: modulation dimension = " + modDim + " symmetry operations are disabled.");   
+          appendLoadNote("CIF Reader: modulation dimension = " + modDim);   
           htModulation = new Hashtable<String, P3>();
-          allowRotations = false;
+          //allowRotations = false;
         }
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
@@ -1902,7 +1907,12 @@ _pdbx_struct_oper_list.vector[3]
   };
   
   /**
-   * creates entries in htModulation
+   * creates entries in htModulation with a key of 
+   * the form: type_id_axis;atomLabel where
+   * type = W|F|D|O (wave vector, Fourier index, displacement, occupancy);
+   * id = 1|2|3|S (Fourier index or special -- sawtooth or crenel);
+   * axis (optional) = o|x|y|z (o indicates irrelevant -- occupancy);
+   * and ;atomLabel is only for D and O.
    * 
    * @throws Exception
    */
@@ -1923,7 +1933,7 @@ _pdbx_struct_oper_list.vector[3]
         case FWV_ID:
         case FWV_DISP_ID:
         case FWV_OCC_ID:
-          switch(tok) {
+          switch (tok) {
           case WV_ID:
             id = "W_" + field;
             break;
@@ -1937,16 +1947,15 @@ _pdbx_struct_oper_list.vector[3]
             id = "O_" + field;
             break;
           }
-          c = w = 99999;
           break;
         case DISP_SPEC_LABEL:
-          if (id == null)
-            id = "D_S";
+          id = "D_S";
           atomLabel = field;
+          axis = "0";
           break;
         case OCC_SPECIAL_LABEL:
-          id = "O_C";
-          c = w = 99999;
+          id = "O_S";
+          axis = "0";
           //$FALL-THROUGH$
         case FWV_DISP_LABEL:
         case FWV_OCC_LABEL:
@@ -1955,18 +1964,19 @@ _pdbx_struct_oper_list.vector[3]
           break;
         case FWV_DISP_AXIS:
           axis = field;
-          if (modulationAxes != null && modulationAxes.indexOf(axis.toUpperCase()) < 0)
+          if (modAxes != null
+              && modAxes.indexOf(axis.toUpperCase()) < 0)
             ignore = true;
           break;
         case WV_X:
         case FWV_X:
         case FWV_DISP_COS:
         case FWV_OCC_COS:
-        case OCC_CRENEL_C:        
+        case OCC_CRENEL_C:
         case DISP_SAW_AX:
           pt.x = parseFloatStr(field);
           break;
-        case FWV_Q1_COEF:        
+        case FWV_Q1_COEF:
           id += "_q_";
           pt.x = parseFloatStr(field);
           switch (modDim) {
@@ -2006,16 +2016,30 @@ _pdbx_struct_oper_list.vector[3]
           w = parseFloatStr(field);
           break;
         }
-        if (ignore || Float.isNaN(pt.x + pt.y + pt.z + c + w) || id == null)
+        if (ignore || Float.isNaN(pt.x + pt.y + pt.z) || id == null)
           continue;
-        if (axis != null)
-          id += axis;
-        if (c != 99999)
-          addModulation("D_s;" + atomLabel, P3.new3(c, w, 0));
-        if (atomLabel != null)
-          id += ";" + atomLabel;
-         addModulation(id, pt);
-        break;
+        switch (id.charAt(0)) {
+        case 'W':
+        case 'F':
+          break;
+        case 'D':
+        case 'O':
+          if (atomLabel == null || axis == null)
+            continue;
+          if (id.equals("D_S")) {
+            // saw tooth displacement  center/width/Axyz
+            if (pt.x != 0)
+              addModulation("D_Sx;" + atomLabel, P3.new3(c, w, pt.x));
+            if (pt.y != 0)
+              addModulation("D_Sy;" + atomLabel, P3.new3(c, w, pt.y));
+            if (pt.z != 0)
+              addModulation("D_Sz;" + atomLabel, P3.new3(c, w, pt.z));
+            continue;
+          }
+            id += axis + ";" + atomLabel;
+          break;
+        }
+        addModulation(id, pt);
       }
     }
   }
@@ -2037,8 +2061,8 @@ _pdbx_struct_oper_list.vector[3]
       switch (key.charAt(0)) {
       case 'D':
       case 'O':
-        // displacement - fix modulus/phase option
-        if (pt.z > 0) {
+        // fix modulus/phase option only for non-special modulations;
+        if (pt.z == 1 && key.charAt(2) != 'S') {
           // modulus/phase M cos(2pi(q.r) + 2pi(p))
           //  --> A cos(2pi(p)) cos(2pi(q.r)) + A sin(-2pi(p)) sin(2pi(q.r))
           double a = pt.x;
@@ -2072,21 +2096,56 @@ _pdbx_struct_oper_list.vector[3]
     for (Entry<String, P3> e : htModulation.entrySet()) {
       String key = e.getKey();
       switch (key.charAt(0)) {
+      case 'O':
+        // TODO
+        break;
       case 'D':
-        P3 coefs = e.getValue();
-        String label = key.substring(key.indexOf(";") + 1);
-        P3 q = htModulation.get("F_" + key.substring(2, 3));
         char axis = key.charAt(3);
-        atomSetCollection.addAtomModulation(label, q, axis, coefs);
-        haveAtomMods = true;
+        if (key.charAt(2) == 'S') {
+          // TODO -- sawtooth, so now what? 
+        } else {
+          P3 coefs = e.getValue();
+          String label = key.substring(key.indexOf(";") + 1);
+          key = "F_" + key.substring(2, 3);
+          P3 q = htModulation.get(key);
+          addAtomModulation(label, q, axis, coefs);
+          haveAtomMods = true;
+        }
         break;
       }
     }
-    if (haveAtomMods)
-      for (int i = atomSetCollection.getAtomCount(); --i >= 0;)
-        atomSetCollection.modulateAtom(i);
+    if (!haveAtomMods)
+      return;
+    atoms = atomSetCollection.getAtoms();
+    symmetry = atomSetCollection.getSymmetry();
+    for (int i = atomSetCollection.getAtomCount(); --i >= 0;)
+      modulateAtom(i, modVib);
   }
-
+  
+  private Map<String, JmolList<Modulation>> htAtomMods;
+  
+  public void addAtomModulation(String label, P3 q, char axis, P3 coefs) {
+    if (htAtomMods == null)
+      htAtomMods = new Hashtable<String, JmolList<Modulation>>();
+    JmolList<Modulation> list = htAtomMods.get(label);
+    if (list == null)
+      htAtomMods.put(label, list = new JmolList<Modulation>());
+    list.addLast(new Modulation(q, axis, coefs));
+  }
+  
+  public void modulateAtom(int i, boolean modvib) {
+    Atom a = atoms[i];
+    a.vib = new V3();
+    JmolList<Modulation> list = htAtomMods.get(a.atomName);
+    if (list == null || symmetry == null)
+      return;
+    Modulation.modulateAtom(a, list, a.vib);
+    if (!modvib) {
+      a.add(a.vib);
+      a.vib.scale(-1);
+    }
+    symmetry.toCartesian(a.vib, true);
+  }
 
   ////////////////////////////////////////////////////////////////
   // symmetry operations

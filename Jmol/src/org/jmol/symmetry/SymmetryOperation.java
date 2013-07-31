@@ -163,7 +163,7 @@ class SymmetryOperation extends Matrix4f {
       } else {
         myLabels = new String[modulationDimension + 3];
         for (int i = modulationDimension + 3; --i >= 0;)
-          myLabels[i] = "x" + i;
+          myLabels[i] = "x" + (i + 1);
       }
     }
     float[] rotTransMatrix = new float[n];

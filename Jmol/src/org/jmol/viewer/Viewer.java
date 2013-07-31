@@ -5920,7 +5920,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     case T.forcefield:
       // 12.3.25
-      global.forceField = value;
+      global.forceField = value = ("UFF".equalsIgnoreCase(value)? "UFF" : "MMFF");
       minimizer = null;
       break;
     case T.nmrurlformat:
@@ -9193,6 +9193,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           haveFixed, isSilent, ff);
     } catch (Exception e) {
       Logger.error("Minimization error: " + e.toString());
+      if (!isJS)
+        e.printStackTrace();
     }
   }
 

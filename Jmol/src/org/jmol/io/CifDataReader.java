@@ -266,8 +266,13 @@ public class CifDataReader {
    */
   private String setStringNextLine() throws Exception {
     setString(readLine());
-    if (line == null || line.length() == 0 || line.charAt(0) != ';')
+    if (line == null || line.length() == 0)
       return line;
+    if (line.charAt(0) != ';') {
+      if (str.startsWith("###non-st#"))
+        ich = 10;
+      return line;
+    }
     ich = 1;
     String str = '\1' + line.substring(1) + '\n';
     while (readLine() != null) {
@@ -317,7 +322,8 @@ public class CifDataReader {
       if (ich == ichStart + 1)
         if (str.charAt(ichStart) == '.' || str.charAt(ichStart) == '?')
           return "\0";
-      return str.substring(ichStart, ich);
+      String s = str.substring(ichStart, ich);
+      return s;
     }
     wasUnQuoted = false;
     char chOpeningQuote = ch;

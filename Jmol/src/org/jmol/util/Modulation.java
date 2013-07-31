@@ -10,35 +10,66 @@ package org.jmol.util;
 
 public class Modulation extends V3 {
 
+  private final static double TWOPI = 2 * Math.PI; 
+  
   private double ccos; 
   private double csin;
-  private int f; // usually f[0] = 1, f[1] = 2, etc. 
-  private V3 wv; // wave vectors
-  private double twoPIx4;
+  private V3 q; // wave vector
+  private char axis;
 
-  public static float getPointAndOffset(Modulation[] mods, P3 pt, double t, double scale) {
-    // f(x4) = x1 + A1 cos(2pi * x4 * t) + B1 sin(2pi * x4 * t)
-    //            + A2 cos(2pi * x4 * t * 2) + B2 sin(2pi * x4 * t * 2);
-    //            + A3 cos(2pi * x4 * t * 3) + B3 sin(2pi * x4 * t * 3);
-    // however, more generally, we allow any number of independent wave
-    // vectors with any number of orders.
-    // x' = x1 + sum_i[ ccos[i] cos(2pi * x4[i] * f[i] * t)
-    //                    +csin[i] sin(2pi * x4[i] * f[i] * t) ] * wv[i] * scale
-    P3 pt0 = P3.newP(pt);
-    for (int i = mods.length; --i >= 0;) {
-      mods[i].addTo(pt, t, scale);
-    }
-    return pt.distance(pt0);
+  /**
+   * Each atomic modulation involves a fractional coordinate wave vector q, 
+   * a modulation axis (x, y, or, z), and specified coefficients for cos and sin.
+   * 
+   * @param q
+   * @param axis
+   * @param coefs
+   */
+  public Modulation(P3 q, char axis, P3 coefs) {
+    this.q = V3.newV(q);
+    this.axis = axis;
+    this.ccos = coefs.x;
+    this.csin = coefs.y;
+  }
+  
+  /**
+   * Starting with fractional coordinates, determine the overall modulation vector.
+   * 
+   * @param pt     fractional xyz
+   * @param mods   a given atom's modulations
+   * @param vecMod will be filled;
+   */
+  public static void modulateAtom(P3 pt, JmolList<Modulation> mods, V3 vecMod) {    
+    V3 r = V3.newV(pt);
+    vecMod.set(0, 0, 0);
+    for (int i = mods.size(); --i >= 0;)
+      mods.get(i).addTo(r, vecMod);
   }
 
-  private void addTo(P3 pt, double t, double scale) {
-    double theta = t * twoPIx4 * f;
+  /**
+   * @param r 
+   * @param vecMod 
+   * 
+   */
+  private void addTo(V3 r, V3 vecMod) {
+    // pt[axis]' = pt[axis] + A1 cos(2pi * q.r) + B1 sin(2pi * q.r)
+    double theta = TWOPI * q.dot(r);
     double v = 0;
     if (ccos != 0)
       v += ccos * Math.cos(theta);
     if (csin != 0)
       v += csin * Math.sin(theta);
-    pt.scaleAdd2((float) (v * scale), wv, pt);
-  }
+    switch (axis) {
+    case 'x':
+      vecMod.x += v;
+      break;
+    case 'y':
+      vecMod.y += v;
+      break;
+    case 'z':
+      vecMod.z += v;
+      break;
+    }
+   }
 
 }

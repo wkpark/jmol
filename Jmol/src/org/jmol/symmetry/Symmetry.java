@@ -284,7 +284,7 @@ public class Symmetry implements SymmetryInterface {
     unitCell.toUnitCell(pt, offset);
   }
 
-  public void toCartesian(P3 fpt, boolean isAbsolute) {
+  public void toCartesian(Tuple3f fpt, boolean isAbsolute) {
     unitCell.toCartesian(fpt, isAbsolute);    
   }
 
@@ -292,7 +292,7 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.toSupercell(fpt);    
   }
 
-  public void toFractional(P3 pt, boolean isAbsolute) {
+  public void toFractional(Tuple3f pt, boolean isAbsolute) {
     unitCell.toFractional(pt, isAbsolute);
   }
 

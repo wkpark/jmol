@@ -78,13 +78,13 @@ public interface SymmetryInterface {
   
   public void setUnitCell(float[] notionalUnitCell);
 
-  public void toCartesian(P3 pt, boolean asAbsolue);
+  public void toCartesian(Tuple3f pt, boolean asAbsolue);
 
   public Tensor getTensor(float[] parBorU);
 
   public P3 ijkToPoint3f(int nnn);
 
-  public void toFractional(P3 pt, boolean isAbsolute);
+  public void toFractional(Tuple3f pt, boolean isAbsolute);
 
   public P3[] getUnitCellVertices();
 

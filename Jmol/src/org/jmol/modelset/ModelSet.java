@@ -234,7 +234,7 @@ import java.util.Map;
         if (vibrationSteps != null) {
           if (vibs != null && vibs[pt] != null)
             vib = vibs[pt];
-          setVibrationVector(i, vib.x, vib.y, vib.z);
+          setVibrationVector(i, vib);
         }
         bs.set(i);
       }
@@ -743,8 +743,7 @@ import java.util.Map;
       // hmm. atom1.group will not be expanded, though...
       // something like within(group,...) will not select these atoms!
       Atom atom2 = addAtom(modelIndex, atom1.group, 1, "H"
-          + n, n, n, pts[i].x, pts[i].y, pts[i].z, Float.NaN, Float.NaN, Float.NaN,
-          Float.NaN, 0, 0, 100, Float.NaN, null, false, (byte) 0, null);
+          + n, n, n, pts[i], Float.NaN, null, 0, 0, 100, Float.NaN, null, false, (byte) 0, null);
       
       atom2.setMadAtom(viewer, rd);
       bs.set(atom2.index);

@@ -72,7 +72,7 @@ class CalculationsUFF extends Calculations {
   TorsionCalc torsionCalc;
   OOPCalc oopCalc;
   VDWCalc vdwCalc;
-  PositionCalc posCalc;
+  //PositionCalc posCalc;
   //ESCalc esCalc;
     
   CalculationsUFF(ForceField ff, Map<Object, FFParam> ffParams, 
@@ -86,7 +86,7 @@ class CalculationsUFF extends Calculations {
     torsionCalc = new TorsionCalc();
     oopCalc = new OOPCalc();
     vdwCalc = new VDWCalc();
-    posCalc = new PositionCalc();
+    //posCalc = new PositionCalc();
     //esCalc = new ESCalc();
   }
   
@@ -132,13 +132,13 @@ class CalculationsUFF extends Calculations {
         oopCalc.setData(calc, i, elemNo);
     }
 
-    if (minPositions != null) {
-      calc = calculations[CALC_POSITION] = new JmolList<Object[]>();
-      // set up the special atom arrays
-      PositionCalc posCalc = new PositionCalc();
-      for (int i = minPositions.length; --i >= 0;)
-        posCalc.setData(calc, minPositions[i].data, minPositions[i].ddata);
-    }
+//    if (minPositions != null) {
+//      calc = calculations[CALC_POSITION] = new JmolList<Object[]>();
+//      // set up the special atom arrays
+//      //PositionCalc posCalc = new PositionCalc();
+//      //for (int i = minPositions.length; --i >= 0;)
+//      //  posCalc.setData(calc, minPositions[i].data, minPositions[i].ddata);
+//    }
 
     // Note that while the UFF paper mentions an electrostatic term,
     // it does not actually use it. Both Towhee and the UFF FAQ
@@ -193,8 +193,8 @@ class CalculationsUFF extends Calculations {
       return oopCalc.compute(dataIn);
     case CALC_VDW:
       return vdwCalc.compute(dataIn);
-    case CALC_POSITION:
-      return posCalc.compute(dataIn);
+    //case CALC_POSITION:
+      //return posCalc.compute(dataIn);
     //case CALC_ES:
       //return esCalc.compute(dataIn);
     }
@@ -504,21 +504,21 @@ class CalculationsUFF extends Calculations {
   final static double KCAL22 = 22.0 * KCAL_TO_KJ;
   final static double KCAL44 = 44.0 * KCAL_TO_KJ;
   
-  class PositionCalc extends Calculation {
-
-    @Override
-    double compute(Object[] dataIn) {
-      // TODO
-      return 0;
-    }
-
-    public void setData(JmolList<Object[]> calc, int[] data, double[] ddata) {
-      // TODO
-      
-    }
-    
-  }
-  
+//  class PositionCalc extends Calculation {
+//
+//    @Override
+//    double compute(Object[] dataIn) {
+//      // TODO
+//      return 0;
+//    }
+//
+//    public void setData(JmolList<Object[]> calc, int[] data, double[] ddata) {
+//      // TODO
+//      
+//    }
+//    
+//  }
+//  
   class OOPCalc extends Calculation {
 
     void setData(JmolList<Object[]> calc, int ib, int elemNo) {

@@ -28,7 +28,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.JmolFont;
 

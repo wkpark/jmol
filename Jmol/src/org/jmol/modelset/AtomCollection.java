@@ -55,6 +55,7 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
+import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 import org.jmol.util.Vibration;
 
@@ -481,14 +482,14 @@ abstract public class AtomCollection {
           taintAtom(i, TAINT_COORD);
           break;
         case T.vibxyz:
-          setAtomVibrationVector(i, xyz.x, xyz.y, xyz.z);
+          setAtomVibrationVector(i, xyz);
           break;
         }
       }
   }
 
-  private void setAtomVibrationVector(int atomIndex, float x, float y, float z) {
-    setVibrationVector(atomIndex, x, y, z);  
+  private void setAtomVibrationVector(int atomIndex, Tuple3f vib) {
+    setVibrationVector(atomIndex, vib);  
     taintAtom(atomIndex, TAINT_VIBRATION);
   }
   
@@ -686,14 +687,14 @@ abstract public class AtomCollection {
     return (v == null && forceNew ? new Vibration() : v);
   }
 
-  protected void setVibrationVector(int atomIndex, float x, float y, float z) {
-    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+  protected void setVibrationVector(int atomIndex, Tuple3f vib) {
+    if (Float.isNaN(vib.x) || Float.isNaN(vib.y) || Float.isNaN(vib.z))
       return;
     if (vibrations == null || vibrations.length < atomIndex)
       vibrations = new Vibration[atoms.length];
     if (vibrations[atomIndex] == null)
       vibrations[atomIndex] = new Vibration();
-    vibrations[atomIndex].set(x, y, z);
+    vibrations[atomIndex].setT(vib);
     atoms[atomIndex].setVibrationVector();
   }
 
@@ -710,7 +711,7 @@ abstract public class AtomCollection {
       v.z = fValue;
       break;
     }
-    setAtomVibrationVector(atomIndex, v.x, v.y, v.z);
+    setAtomVibrationVector(atomIndex, v);
   }
 
   public void setAtomName(int atomIndex, String name) {
@@ -881,6 +882,7 @@ abstract public class AtomCollection {
   
   private void loadCoordinates(String data, boolean isVibrationVectors, boolean doTaint) {
     int[] lines = Parser.markLines(data, ';');
+    V3 v = (isVibrationVectors ? new V3() : null);
     try {
       int nData = Parser.parseInt(data.substring(0, lines[0] - 1));
       for (int i = 1; i <= nData; i++) {
@@ -891,7 +893,8 @@ abstract public class AtomCollection {
         float y = Parser.parseFloatStr(tokens[4]);
         float z = Parser.parseFloatStr(tokens[5]);
         if (isVibrationVectors) {
-          setAtomVibrationVector(atomIndex, x, y, z);
+          v.set(x, y, z);
+          setAtomVibrationVector(atomIndex, v);
         } else {
           setAtomCoord(atomIndex, x, y, z);
           if (!doTaint)

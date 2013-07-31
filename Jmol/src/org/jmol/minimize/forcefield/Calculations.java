@@ -55,8 +55,8 @@ abstract class Calculations {
   final static int CALC_OOP = 4;
   final static int CALC_VDW = 5;
   final static int CALC_ES = 6;
-  final static int CALC_POSITION = 7; 
-  final static int CALC_MAX = 8;
+//  final static int CALC_POSITION = 7; 
+  final static int CALC_MAX = 7;
 
   ForceField ff;
   JmolList<Object[]>[] calculations = ArrayUtil.createArrayOfArrayList(CALC_MAX);
@@ -198,9 +198,9 @@ abstract class Calculations {
     return calc(CALC_OOP, gradients);
   }
 
-  double energyPos(boolean gradients) {
-    return calc(CALC_POSITION, gradients);
-  }
+//  double energyPos(boolean gradients) {
+//    return calc(CALC_POSITION, gradients);
+//  }
 
   double energyVDW(boolean gradients) {
     return calc(CALC_VDW, gradients);
@@ -410,12 +410,12 @@ abstract class Calculations {
     case -1:
       //Override to give reference
       break;
-    case CALC_POSITION:
-      return
-          "\nA T O M   P O S I T I O N\n\n"
-         +"  ATOM  TYPE  POSITION                    FORCE\n"
-         +"              X        Y        Z        CONSTANT   DELTA   ENERGY\n"
-         +"----------------------------------------------------------------";
+//    case CALC_POSITION:
+//      return
+//          "\nA T O M   P O S I T I O N\n\n"
+//         +"  ATOM  TYPE  POSITION                    FORCE\n"
+//         +"              X        Y        Z        CONSTANT   DELTA   ENERGY\n"
+//         +"----------------------------------------------------------------";
     case CALC_DISTANCE:
       return
            "\nB O N D   S T R E T C H I N G (" + bondCount + " bonds)\n\n"
@@ -469,13 +469,13 @@ abstract class Calculations {
   protected String getDebugLineC(int iType, Calculation c) {
     float energy = ff.toUserUnits(c.energy);
     switch (iType) {
-    case CALC_POSITION:
-      return TextFormat.sprintf(
-          "%3d  %-5s %8.3f    %8.3f    %8.3f    %8.3f    %8.3f",
-          "sFI", new Object[] { minAtoms[c.ia].sType, 
-          new float[] { (float)c.dData[0], (float)c.dData[1], (float)c.dData[2], (float)c.dData[3], 
-              (float)c.delta, energy },
-          new int[] { minAtoms[c.ia].atom.getAtomNumber() }});
+//    case CALC_POSITION:
+//      return TextFormat.sprintf(
+//          "%3d  %-5s %8.3f    %8.3f    %8.3f    %8.3f    %8.3f",
+//          "sFI", new Object[] { minAtoms[c.ia].sType, 
+//          new float[] { (float)c.dData[0], (float)c.dData[1], (float)c.dData[2], (float)c.dData[3], 
+//              (float)c.delta, energy },
+//          new int[] { minAtoms[c.ia].atom.getAtomNumber() }});
     case CALC_DISTANCE:
       return TextFormat.sprintf(
           "%3d %3d  %-5s %-5s  %4.2f%8.3f   %8.3f     %8.3f   %8.3f   %8.3f",

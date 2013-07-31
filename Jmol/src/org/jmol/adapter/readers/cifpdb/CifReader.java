@@ -39,6 +39,7 @@ import org.jmol.script.T;
 import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Map.Entry;
 
 
 import org.jmol.util.BS;
@@ -47,6 +48,7 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
+
 
 /**
  * A true line-free CIF file reader for CIF and mmCIF files.
@@ -91,6 +93,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private int configurationPtr = Integer.MIN_VALUE;
   private int conformationIndex;
   private boolean filterAssembly;
+  private boolean allowRotations = true;
+  private String modulationAxes;
 
   
 
@@ -104,6 +108,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private boolean skipping;
   private boolean haveChainsLC;
   private int nAtoms;
+  private int modDim;
   
   @Override
   public void initializeReader() throws Exception {
@@ -116,6 +121,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     appendedData = (String) htParams.get("appendedData");
     isMolecular = (filter != null && filter.indexOf("MOLECUL") >= 0);
     filterAssembly = (filter != null && filter.indexOf("$") >= 0);
+    int pt = (filter == null ? -1 : filter.indexOf("MODULATIONAXES="));
+    modulationAxes = (pt >= 0 ? filter.substring(pt + 15) : null);
     if (isMolecular) {
       if (!doApplySymmetry) {
         doApplySymmetry = true;
@@ -149,14 +156,6 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         if (!readAllData())
           break;
     }    
-    if (atomSetCollection.getAtomCount() == nAtoms)
-      atomSetCollection.removeCurrentAtomSet();
-    else
-      applySymmetryAndSetTrajectory();
-    if (htSites != null)
-      addSites(htSites);
-    atomSetCollection.setCollectionName("<collection of "
-        + atomSetCollection.getAtomSetCount() + " models>");
     continuing = false;
    }
 
@@ -208,13 +207,23 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       return true;
     }
     if (!skipping) {
-      key = key.replace('.', '_');
+      key = fixKey(key);
       if (key.startsWith("_chemical_name") || key.equals("_chem_comp_name")) {
         processChemicalInfo("name");
       } else if (key.startsWith("_chemical_formula_structural")) {
         processChemicalInfo("structuralFormula");
       } else if (key.startsWith("_chemical_formula_sum") || key.equals("_chem_comp_formula")) {
         processChemicalInfo("formula");
+      } else if (key.equals("_cell_modulation_dimension")) {
+        modDim = parseIntStr(data);
+        if (modDim > 3) {
+          appendLoadNote("CIF Reader: Too high modulation dimension (" + modDim + ") -- ignored");
+          modDim = 0;
+        } else {
+          appendLoadNote("CIF Reader: modulation dimension = " + modDim + " symmetry operations are disabled.");   
+          htModulation = new Hashtable<String, P3>();
+          allowRotations = false;
+        }
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
       } else if (key.startsWith("_symmetry_space_group_name_H-M")
@@ -232,6 +241,10 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     return true;
   }
   
+  private String fixKey(String key) {
+    return TextFormat.simpleReplace(key, ".", "_").toLowerCase();
+  }
+
   protected void newModel(int modelNo) throws Exception {    
     if (isPDB)
       setIsPDB();
@@ -253,6 +266,14 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
   @Override
   protected void finalizeReader() throws Exception {
+    if (atomSetCollection.getAtomCount() == nAtoms)
+      atomSetCollection.removeCurrentAtomSet();
+    else
+      applySymmetryAndSetTrajectory();
+    if (htSites != null)
+      addSites(htSites);
+    atomSetCollection.setCollectionName("<collection of "
+        + atomSetCollection.getAtomSetCount() + " models>");
     if (vBiomolecules != null && vBiomolecules.size() == 1
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
@@ -261,6 +282,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         atomSetCollection.applySymmetryBio(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
       }
     }
+    if (htModulation != null)
+      setModulation();
     finalizeReaderASCR();
     String header = tokenizer.getFileHeader();
     if (header.length() > 0)
@@ -390,7 +413,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
    */
   private void processCellParameter() throws Exception {
     for (int i = JmolAdapter.cellParamNames.length; --i >= 0;)
-      if (isMatch(key, JmolAdapter.cellParamNames[i])) {
+      if (key.equals(JmolAdapter.cellParamNames[i])) {
         setUnitCellItem(i, parseFloatStr(data));
         return;
       }
@@ -479,7 +502,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     if (str == null)
       return;
     boolean isLigand = false;
-    if (str.startsWith("_atom_site_") || str.startsWith("_atom_site.") 
+    str = fixKey(str);
+    if (modDim > 0 && (str.startsWith("_cell_wave") || str.contains("fourier")
+        || str.contains("_special_func"))) {
+      processModulationLoopBlock();
+      return;
+    }
+    if (str.startsWith("_atom_site_") || str.startsWith("_atom_site.")
         || (isLigand = str.equals("_chem_comp_atom.comp_id"))) {
       if (!processAtomSiteLoopBlock(isLigand))
         return;
@@ -498,7 +527,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       processLigandBondLoopBlock();
       return;
     }
-    
+
     if (str.startsWith("_geom_bond")) {
       if (!doApplySymmetry) {
         isMolecular = true;
@@ -509,7 +538,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       }
       if (isMolecular)
         processGeomBondLoopBlock();
-      else 
+      else
         skipLoop();
       return;
     }
@@ -530,7 +559,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       return;
     }
     if (str.startsWith("_symmetry_equiv_pos")
-        || str.startsWith("_space_group_symop")) {
+        || str.startsWith("_space_group_symop")
+        || str.startsWith("_symmetry_ssg_equiv")) {
       if (ignoreFileSymmetryOperators) {
         Logger.warn("ignoring file-based symmetry operators");
         skipLoop();
@@ -658,12 +688,12 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   final private static byte ANISO_B12 = 38;
   final private static byte ANISO_B13 = 39;
   final private static byte ANISO_B23 = 40;
-  final private static byte ANISO_Beta_11 = 41;
-  final private static byte ANISO_Beta_22 = 42;
-  final private static byte ANISO_Beta_33 = 43;
-  final private static byte ANISO_Beta_12 = 44;
-  final private static byte ANISO_Beta_13 = 45;
-  final private static byte ANISO_Beta_23 = 46;
+  final private static byte ANISO_BETA_11 = 41;
+  final private static byte ANISO_BETA_22 = 42;
+  final private static byte ANISO_BETA_33 = 43;
+  final private static byte ANISO_BETA_12 = 44;
+  final private static byte ANISO_BETA_13 = 45;
+  final private static byte ANISO_BETA_23 = 46;
   final private static byte ADP_TYPE = 47;
   final private static byte CHEM_COMP_AC_ID = 48;
   final private static byte CHEM_COMP_AC_NAME = 49;
@@ -686,58 +716,58 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       "_atom_site_fract_x",
       "_atom_site_fract_y", 
       "_atom_site_fract_z", 
-      "_atom_site_Cartn_x",
-      "_atom_site_Cartn_y", 
-      "_atom_site_Cartn_z", 
+      "_atom_site_cartn_x",
+      "_atom_site_cartn_y", 
+      "_atom_site_cartn_z", 
       "_atom_site_occupancy",
       "_atom_site_b_iso_or_equiv", 
       "_atom_site_auth_comp_id",
       "_atom_site_auth_asym_id", 
       "_atom_site_auth_seq_id",
-      "_atom_site_pdbx_PDB_ins_code", 
+      "_atom_site_pdbx_pdb_ins_code", 
       "_atom_site_label_alt_id",
-      "_atom_site_group_PDB", 
-      "_atom_site_pdbx_PDB_model_num",
+      "_atom_site_group_pdb", 
+      "_atom_site_pdbx_pdb_model_num",
       "_atom_site_calc_flag", 
       "_atom_site_disorder_group",
       "_atom_site_aniso_label", 
       "_atom_site_anisotrop_id",
-      "_atom_site_aniso_U_11",
-      "_atom_site_aniso_U_22",
-      "_atom_site_aniso_U_33",
-      "_atom_site_aniso_U_12",
-      "_atom_site_aniso_U_13",
-      "_atom_site_aniso_U_23",
-      "_atom_site_anisotrop_U[1][1]",
-      "_atom_site_anisotrop_U[2][2]",
-      "_atom_site_anisotrop_U[3][3]",
-      "_atom_site_anisotrop_U[1][2]",
-      "_atom_site_anisotrop_U[1][3]",
-      "_atom_site_anisotrop_U[2][3]",
-      "_atom_site_U_iso_or_equiv",
-      "_atom_site_aniso_B_11",
-      "_atom_site_aniso_B_22",
-      "_atom_site_aniso_B_33",
-      "_atom_site_aniso_B_12",
-      "_atom_site_aniso_B_13",
-      "_atom_site_aniso_B_23",
-      "_atom_site_aniso_Beta_11",
-      "_atom_site_aniso_Beta_22",
-      "_atom_site_aniso_Beta_33",
-      "_atom_site_aniso_Beta_12",
-      "_atom_site_aniso_Beta_13",
-      "_atom_site_aniso_Beta_23",
+      "_atom_site_aniso_u_11",
+      "_atom_site_aniso_u_22",
+      "_atom_site_aniso_u_33",
+      "_atom_site_aniso_u_12",
+      "_atom_site_aniso_u_13",
+      "_atom_site_aniso_u_23",
+      "_atom_site_anisotrop_u[1][1]",
+      "_atom_site_anisotrop_u[2][2]",
+      "_atom_site_anisotrop_u[3][3]",
+      "_atom_site_anisotrop_u[1][2]",
+      "_atom_site_anisotrop_u[1][3]",
+      "_atom_site_anisotrop_u[2][3]",
+      "_atom_site_u_iso_or_equiv",
+      "_atom_site_aniso_b_11",
+      "_atom_site_aniso_b_22",
+      "_atom_site_aniso_b_33",
+      "_atom_site_aniso_b_12",
+      "_atom_site_aniso_b_13",
+      "_atom_site_aniso_b_23",
+      "_atom_site_aniso_beta_11",
+      "_atom_site_aniso_beta_22",
+      "_atom_site_aniso_beta_33",
+      "_atom_site_aniso_beta_12",
+      "_atom_site_aniso_beta_13",
+      "_atom_site_aniso_beta_23",
       "_atom_site_adp_type",
       "_chem_comp_atom_comp_id",
       "_chem_comp_atom_atom_id", 
       "_chem_comp_atom_type_symbol", 
       "_chem_comp_atom_charge",
-      "_chem_comp_atom_model_Cartn_x", 
-      "_chem_comp_atom_model_Cartn_y", 
-      "_chem_comp_atom_model_Cartn_z", 
-      "_chem_comp_atom_pdbx_model_Cartn_x_ideal", 
-      "_chem_comp_atom_pdbx_model_Cartn_y_ideal", 
-      "_chem_comp_atom_pdbx_model_Cartn_z_ideal", 
+      "_chem_comp_atom_model_cartn_x", 
+      "_chem_comp_atom_model_cartn_y", 
+      "_chem_comp_atom_model_cartn_z", 
+      "_chem_comp_atom_pdbx_model_cartn_x_ideal", 
+      "_chem_comp_atom_pdbx_model_cartn_y_ideal", 
+      "_chem_comp_atom_pdbx_model_cartn_z_ideal", 
       "_atom_site_disorder_assembly",
       "_atom_site_label_asym_id"
   };
@@ -825,7 +855,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         }
       }
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
-        switch (fieldProperty(i)) {
+        int tok = fieldProperty(i);
+        switch (tok) {
         case NONE:
         case MODEL_NO:
           break;
@@ -999,44 +1030,53 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
           int iTypeB = (propertyOf[i] - ANISO_B11) % 6;
           data[iTypeB] = parseFloatStr(field);
           break;
-        case ANISO_Beta_11:
-        case ANISO_Beta_22:
-        case ANISO_Beta_33:
-        case ANISO_Beta_12:
-        case ANISO_Beta_13:
-        case ANISO_Beta_23:
+        case ANISO_BETA_11:
+        case ANISO_BETA_22:
+        case ANISO_BETA_33:
+        case ANISO_BETA_12:
+        case ANISO_BETA_13:
+        case ANISO_BETA_23:
           data = atomSetCollection.getAnisoBorU(atom);
           if (data == null) {
             atomSetCollection.setAnisoBorU(atom, data = new float[8], 0);
             //Ortep Type 0: D = 1, c = 2 -- see org.jmol.symmetry/UnitCell.java
           }
-          int iTypeBeta = (propertyOf[i] - ANISO_Beta_11) % 6;
+          int iTypeBeta = (propertyOf[i] - ANISO_BETA_11) % 6;
           data[iTypeBeta] = parseFloatStr(field);
           break;
         }
       }
+      if (isAnisoData)
+        continue;
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
         Logger.warn("atom " + atom.atomName
             + " has invalid/unknown coordinates");
-      } else {
-        if (isAnisoData || !filterCIFAtom(atom, iAtom, assemblyId))
-          continue;
-        setAtomCoord(atom);
-        atomSetCollection.addAtomWithMappedName(atom);
-        if (assemblyId != '\0') {
-          if (assemblyIdAtoms == null)
-            assemblyIdAtoms = new Hashtable<String, BS>();
-          BS bs = assemblyIdAtoms.get("" + assemblyId);
-          if (bs == null)
-            assemblyIdAtoms.put("" + assemblyId, bs = new BS());
-          bs.set(atom.index);
-        }
-        if (atom.isHetero && htHetero != null) {
-          atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
-          atomSetCollection.setAtomSetCollectionAuxiliaryInfo("hetNames",
-              htHetero);
-          htHetero = null;
-        }
+        continue;
+      }
+      if (!filterCIFAtom(atom, iAtom, assemblyId))
+        continue;
+      setAtomCoord(atom);
+      if (atom.elementSymbol == null && atom.atomName != null) {
+        String sym = atom.atomName;
+        int pt = 0;
+        while (pt < sym.length() && Character.isLetter(sym.charAt(pt)))
+          pt++;
+        atom.elementSymbol = (pt == 0 || pt > 2 ? "Xx" : sym.substring(0, pt));
+      }
+      atomSetCollection.addAtomWithMappedName(atom);
+      if (assemblyId != '\0') {
+        if (assemblyIdAtoms == null)
+          assemblyIdAtoms = new Hashtable<String, BS>();
+        BS bs = assemblyIdAtoms.get("" + assemblyId);
+        if (bs == null)
+          assemblyIdAtoms.put("" + assemblyId, bs = new BS());
+        bs.set(atom.index);
+      }
+      if (atom.isHetero && htHetero != null) {
+        atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
+        atomSetCollection.setAtomSetCollectionAuxiliaryInfo("hetNames",
+            htHetero);
+        htHetero = null;
       }
     }
     if (isPDB)
@@ -1413,7 +1453,7 @@ _pdbx_struct_oper_list.vector[3]
     if (hetatmData == null)
       hetatmData = new String[3];
     for (int i = nonpolyFields.length; --i >= 0;)
-      if (isMatch(key, nonpolyFields[i])) {
+      if (key.equals(nonpolyFields[i])) {
         hetatmData[i] = data;
         break;
       }
@@ -1521,13 +1561,13 @@ _pdbx_struct_oper_list.vector[3]
       "_struct_conf_conf_type_id",
       "_struct_conf_beg_auth_asym_id", 
       "_struct_conf_beg_auth_seq_id",
-      "_struct_conf_pdbx_beg_PDB_ins_code",
+      "_struct_conf_pdbx_beg_pdb_ins_code",
       "_struct_conf_end_auth_asym_id", 
       "_struct_conf_end_auth_seq_id",
-      "_struct_conf_pdbx_end_PDB_ins_code",
+      "_struct_conf_pdbx_end_pdb_ins_code",
       "_struct_conf_id", 
-      "_struct_conf_pdbx_PDB_helix_id", 
-      "_struct_conf_pdbx_PDB_helix_class"
+      "_struct_conf_pdbx_pdb_helix_id", 
+      "_struct_conf_pdbx_pdb_helix_class"
   };
 
   /**
@@ -1600,10 +1640,10 @@ _pdbx_struct_oper_list.vector[3]
     "_struct_sheet_range_sheet_id",  //unused placeholder
     "_struct_sheet_range_beg_auth_asym_id",
     "_struct_sheet_range_beg_auth_seq_id",
-    "_struct_sheet_range_pdbx_beg_PDB_ins_code",
+    "_struct_sheet_range_pdbx_beg_pdb_ins_code",
     "_struct_sheet_range_end_auth_asym_id",
     "_struct_sheet_range_end_auth_seq_id",
-    "_struct_sheet_range_pdbx_end_PDB_ins_code", 
+    "_struct_sheet_range_pdbx_end_pdb_ins_code", 
     "_struct_sheet_range_id",
   };
 
@@ -1694,6 +1734,8 @@ _pdbx_struct_oper_list.vector[3]
 
   //private int siteNum;
   private Map<String, Map<String, Object>> htSites;
+
+  private Map<String, P3> htModulation;
   
   /**
    * 
@@ -1768,16 +1810,297 @@ _pdbx_struct_oper_list.vector[3]
   }
 
   ////////////////////////////////////////////////////////////////
+  // incommensurate modulation
+  ////////////////////////////////////////////////////////////////
+ 
+//  The occupational distortion of a given atom or rigid group is
+//  usually parameterized by Fourier series. Each term of the series
+//  commonly adopts two different representations: the sine-cosine
+//  form,
+//           Pc cos(2\p k r)+Ps sin(2\p k r),
+//  and the modulus-argument form,
+//           |P| cos(2\p k r+\d),
+//  where k is the wave vector of the term and r is the atomic
+//  average position. _atom_site_occ_Fourier_param_phase is the phase
+//  (\d/2\p) in cycles corresponding to the Fourier term defined by
+//  _atom_site_occ_Fourier_atom_site_label and
+//  _atom_site_occ_Fourier_wave_vector_seq_id.
+
+  private final static int WV_ID = 0;
+  private final static int WV_X = 1;
+  private final static int WV_Y = 2;
+  private final static int WV_Z = 3;
+  private final static int FWV_ID = 4;
+  private final static int FWV_X = 5;
+  private final static int FWV_Y = 6;
+  private final static int FWV_Z = 7;
+  private final static int FWV_Q1_COEF = 8;
+  private final static int FWV_Q2_COEF = 9;
+  private final static int FWV_Q3_COEF = 10;
+  
+  private final static int FWV_DISP_LABEL = 11;
+  private final static int FWV_DISP_AXIS = 12;
+  private final static int FWV_DISP_ID = 13;
+  private final static int FWV_DISP_COS = 14;
+  private final static int FWV_DISP_SIN = 15;
+  private final static int FWV_DISP_MODULUS = 16;
+  private final static int FWV_DISP_PHASE = 17;
+  
+  private final static int FWV_OCC_LABEL = 18;
+  private final static int FWV_OCC_ID = 19;
+  private final static int FWV_OCC_COS = 20;
+  private final static int FWV_OCC_SIN = 21;
+  private final static int FWV_OCC_MODULUS = 22;
+  private final static int FWV_OCC_PHASE = 23;
+  
+  private final static int DISP_SPEC_LABEL = 24;
+  private final static int DISP_SAW_AX = 25; 
+  private final static int DISP_SAW_AY = 26;
+  private final static int DISP_SAW_AZ = 27;
+  private final static int DISP_SAW_C = 28;
+  private final static int DISP_SAW_W = 29;
+  
+  private final static int OCC_SPECIAL_LABEL = 30;
+  private final static int OCC_CRENEL_C = 31;
+  private final static int OCC_CRENEL_W = 32;
+  
+
+  final private static String[] modulationFields = {
+      "_cell_wave_vector_seq_id", 
+      "_cell_wave_vector_x", 
+      "_cell_wave_vector_y", 
+      "_cell_wave_vector_z", 
+      "_atom_site_fourier_wave_vector_seq_id", 
+      "_atom_site_fourier_wave_vector_x", 
+      "_atom_site_fourier_wave_vector_y", 
+      "_atom_site_fourier_wave_vector_z",
+      "_jana_atom_site_fourier_wave_vector_q1_coeff", 
+      "_jana_atom_site_fourier_wave_vector_q2_coeff", 
+      "_jana_atom_site_fourier_wave_vector_q3_coeff", 
+      "_atom_site_displace_fourier_atom_site_label", 
+      "_atom_site_displace_fourier_axis", 
+      "_atom_site_displace_fourier_wave_vector_seq_id", 
+      "_atom_site_displace_fourier_param_cos", 
+      "_atom_site_displace_fourier_param_sin", 
+      "_atom_site_displace_fourier_param_modulus", 
+      "_atom_site_displace_fourier_param_phase", 
+      "_atom_site_occ_fourier_atom_site_label", 
+      "_atom_site_occ_fourier_wave_vector_seq_id", 
+      "_atom_site_occ_fourier_param_cos", 
+      "_atom_site_occ_fourier_param_sin",
+      "_atom_site_occ_fourier_param_modulus", 
+      "_atom_site_occ_fourier_param_phase", 
+      "_atom_site_displace_special_func_atom_site_label", 
+      "_atom_site_displace_special_func_sawtooth_ax", 
+      "_atom_site_displace_special_func_sawtooth_ay", 
+      "_atom_site_displace_special_func_sawtooth_az", 
+      "_atom_site_displace_special_func_sawtooth_c", 
+      "_atom_site_displace_special_func_sawtooth_w", 
+      "_atom_site_occ_special_func_atom_site_label",
+      "_atom_site_occ_special_func_crenel_c",
+      "_atom_site_occ_special_func_crenel_w"
+  };
+  
+  /**
+   * creates entries in htModulation
+   * 
+   * @throws Exception
+   */
+  private void processModulationLoopBlock() throws Exception {
+    parseLoopParameters(modulationFields);
+    int tok;
+    while (tokenizer.getData()) {
+      boolean ignore = false;
+      String id = null;
+      String atomLabel = null;
+      String axis = null;
+      P3 pt = P3.new3(Float.NaN, Float.NaN, Float.NaN);
+      float c = Float.NaN;
+      float w = Float.NaN;
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (tok = fieldProperty(i)) {
+        case WV_ID:
+        case FWV_ID:
+        case FWV_DISP_ID:
+        case FWV_OCC_ID:
+          switch(tok) {
+          case WV_ID:
+            id = "W_" + field;
+            break;
+          case FWV_ID:
+            id = "F_" + field;
+            break;
+          case FWV_DISP_ID:
+            id = "D_" + field;
+            break;
+          case FWV_OCC_ID:
+            id = "O_" + field;
+            break;
+          }
+          c = w = 99999;
+          break;
+        case DISP_SPEC_LABEL:
+          if (id == null)
+            id = "D_S";
+          atomLabel = field;
+          break;
+        case OCC_SPECIAL_LABEL:
+          id = "O_C";
+          c = w = 99999;
+          //$FALL-THROUGH$
+        case FWV_DISP_LABEL:
+        case FWV_OCC_LABEL:
+          atomLabel = field;
+          pt.z = 0;
+          break;
+        case FWV_DISP_AXIS:
+          axis = field;
+          if (modulationAxes != null && modulationAxes.indexOf(axis.toUpperCase()) < 0)
+            ignore = true;
+          break;
+        case WV_X:
+        case FWV_X:
+        case FWV_DISP_COS:
+        case FWV_OCC_COS:
+        case OCC_CRENEL_C:        
+        case DISP_SAW_AX:
+          pt.x = parseFloatStr(field);
+          break;
+        case FWV_Q1_COEF:        
+          id += "_q_";
+          pt.x = parseFloatStr(field);
+          switch (modDim) {
+          case 1:
+            pt.y = 0;
+            //$FALL-THROUGH$
+          case 2:
+            pt.z = 0;
+          }
+          break;
+        case FWV_DISP_MODULUS:
+        case FWV_OCC_MODULUS:
+          pt.x = parseFloatStr(field);
+          pt.z = 1;
+          break;
+        case WV_Y:
+        case FWV_Y:
+        case FWV_Q2_COEF:
+        case FWV_DISP_SIN:
+        case FWV_DISP_PHASE:
+        case FWV_OCC_SIN:
+        case FWV_OCC_PHASE:
+        case OCC_CRENEL_W:
+        case DISP_SAW_AY:
+          pt.y = parseFloatStr(field);
+          break;
+        case WV_Z:
+        case FWV_Z:
+        case FWV_Q3_COEF:
+        case DISP_SAW_AZ:
+          pt.z = parseFloatStr(field);
+          break;
+        case DISP_SAW_C:
+          c = parseFloatStr(field);
+          break;
+        case DISP_SAW_W:
+          w = parseFloatStr(field);
+          break;
+        }
+        if (ignore || Float.isNaN(pt.x + pt.y + pt.z + c + w) || id == null)
+          continue;
+        if (axis != null)
+          id += axis;
+        if (c != 99999)
+          addModulation("D_s;" + atomLabel, P3.new3(c, w, 0));
+        if (atomLabel != null)
+          id += ";" + atomLabel;
+         addModulation(id, pt);
+        break;
+      }
+    }
+  }
+  
+  private void addModulation(String id, P3 pt) {
+    htModulation.put(id, pt);
+    Logger.info("msCIF adding " + id + " " + pt);
+  }
+
+  /**
+   * synthesizes modulation data
+   * 
+   */
+  private void setModulation() {
+    Map<String, P3> map = new Hashtable<String, P3>();
+    for (Entry<String, P3> e : htModulation.entrySet()) {
+      String key = e.getKey();
+      P3 pt = e.getValue();
+      switch (key.charAt(0)) {
+      case 'D':
+      case 'O':
+        // displacement - fix modulus/phase option
+        if (pt.z > 0) {
+          // modulus/phase M cos(2pi(q.r) + 2pi(p))
+          //  --> A cos(2pi(p)) cos(2pi(q.r)) + A sin(-2pi(p)) sin(2pi(q.r))
+          double a = pt.x;
+          double d = 2 * Math.PI * pt.y;
+          pt.x = (float) (a * Math.cos(d));
+          pt.y = (float) (a * Math.sin(-d));
+          pt.z = 0;
+          Logger.info("msCIF setting " + key + " " + pt);
+        }
+        break;
+      case 'F':
+        // convert JAVA Fourier descriptions to standard descriptions
+        if (key.indexOf("_q_") >= 0) {
+          P3 pf = new P3();
+          if (pt.x != 0)
+            pf.scaleAdd(pt.x, htModulation.get("W_1"));
+          if (pt.y != 0)
+            pf.scaleAdd(pt.y, htModulation.get("W_2"));
+          if (pt.z != 0)
+            pf.scaleAdd(pt.z, htModulation.get("W_3"));
+          key = TextFormat.simpleReplace(key, "_q_", "");
+          map.put(key, pf);
+          Logger.info("msCIF adding " + key + " " + pt);
+        }
+        break;
+      }
+    }
+    if (!map.isEmpty())
+      htModulation.putAll(map);
+    boolean haveAtomMods = false;
+    for (Entry<String, P3> e : htModulation.entrySet()) {
+      String key = e.getKey();
+      switch (key.charAt(0)) {
+      case 'D':
+        P3 coefs = e.getValue();
+        String label = key.substring(key.indexOf(";") + 1);
+        P3 q = htModulation.get("F_" + key.substring(2, 3));
+        char axis = key.charAt(3);
+        atomSetCollection.addAtomModulation(label, q, axis, coefs);
+        haveAtomMods = true;
+        break;
+      }
+    }
+    if (haveAtomMods)
+      for (int i = atomSetCollection.getAtomCount(); --i >= 0;)
+        atomSetCollection.modulateAtom(i);
+  }
+
+
+  ////////////////////////////////////////////////////////////////
   // symmetry operations
   ////////////////////////////////////////////////////////////////
 
   final private static byte SYMOP_XYZ = 0;
   final private static byte SYM_EQUIV_XYZ = 1;
-  final private static byte SYM_SSG_OP = 2;
+  final private static byte SYM_SSG_XYZ = 2;
+  final private static byte SYM_SSG_OP = 3;
 
   final private static String[] symmetryOperationsFields = {
       "_space_group_symop_operation_xyz", 
       "_symmetry_equiv_pos_as_xyz", 
+      "_symmetry_ssg_equiv_pos_as_xyz",
       "_space_group_symop_ssg_operation_algebraic"
   };
 
@@ -1797,12 +2120,19 @@ _pdbx_struct_oper_list.vector[3]
       skipLoop();
       return;
     }
+    int n = 0;
     while (tokenizer.getData()) {
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
+        case SYM_SSG_XYZ:
+          // check for non-standard record x~1~,x~2~,x~3~,x~4~  kIsfCqpM.cif
+          if (field.indexOf('~') >= 0)
+            field = TextFormat.simpleReplace(field, "~", "");
+          //$FALL-THROUGH$
         case SYMOP_XYZ:
         case SYM_EQUIV_XYZ:
         case SYM_SSG_OP:
+          if (allowRotations || ++n == 1)
           setSymmetryOperator(field);
           break;
         }
@@ -1846,8 +2176,9 @@ _pdbx_struct_oper_list.vector[3]
         break;
       tokenizer.getTokenPeeked();
       propertyOf[tokenizer.fieldCount] = NONE;
+      str = fixKey(str);
       for (int i = fields.length; --i >= 0;)
-        if (isMatch(str, fields[i])) {
+        if (str.equals(fields[i])) {
           propertyOf[tokenizer.fieldCount] = i;
           fieldOf[i] = (byte) tokenizer.fieldCount;
           break;
@@ -1883,34 +2214,7 @@ _pdbx_struct_oper_list.vector[3]
     while (tokenizer.getNextDataToken() != null) {
     }
   }  
-  
-  /**
-   * 
-   * @param str1
-   * @param str2
-   * @return TRUE if a match
-   */
-  private static boolean isMatch(String str1, String str2) {
-    int cch = str1.length();
-    if (str2.length() != cch)
-      return false;
-    for (int i = cch; --i >= 0;) {
-      char ch1 = str1.charAt(i);
-      char ch2 = str2.charAt(i);
-      if (ch1 == ch2)
-        continue;
-      if ((ch1 == '_' || ch1 == '.') && (ch2 == '_' || ch2 == '.'))
-        continue;
-      if (ch1 <= 'Z' && ch1 >= 'A')
-        ch1 += 'a' - 'A';
-      else if (ch2 <= 'Z' && ch2 >= 'A')
-        ch2 += 'a' - 'A';
-      if (ch1 != ch2)
-        return false;
-    }
-    return true;
-  }
-  
+
   /////////////////////////////////////
   //  bonding and molecular 
   /////////////////////////////////////

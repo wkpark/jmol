@@ -3146,12 +3146,11 @@ abstract public class ModelCollection extends BondCollection {
 
   public Atom addAtom(int modelIndex, Group group,
                       int atomicAndIsotopeNumber, String atomName,
-                      int atomSerial, int atomSite, float x, float y, float z,
-                      float radius, float vectorX, float vectorY,
-                      float vectorZ, int formalCharge, float partialCharge,
+                      int atomSerial, int atomSite, P3 xyz,
+                      float radius, V3 vib, int formalCharge, float partialCharge,
                       int occupancy, float bfactor, JmolList<Tensor> tensors,
                       boolean isHetero, byte specialAtomID, BS atomSymmetry) {
-    Atom atom = new Atom(modelIndex, atomCount, x, y, z, radius, atomSymmetry,
+    Atom atom = new Atom(modelIndex, atomCount, xyz, radius, atomSymmetry,
         atomSite, (short) atomicAndIsotopeNumber, formalCharge, isHetero);
     models[modelIndex].atomCount++;
     models[modelIndex].bsAtoms.set(atomCount);
@@ -3188,8 +3187,8 @@ abstract public class ModelCollection extends BondCollection {
         atomSerials = new int[atoms.length];
       atomSerials[atomCount] = atomSerial;
     }
-    if (!Float.isNaN(vectorZ))
-      setVibrationVector(atomCount, vectorX, vectorY, vectorZ);
+    if (vib != null)
+      setVibrationVector(atomCount, vib);
     atomCount++;
     return atom;
   }

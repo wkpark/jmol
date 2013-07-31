@@ -351,7 +351,7 @@ public class Mesh extends MeshSurface {
       if (vertexValues != null && Float.isNaN(val = vertexValues[i]))
         continue;
       if (mat4 != null)
-        mat4.transform((P3) altVertices[i]);
+        mat4.transform(altVertices[i]);
       P3 pt = (P3) altVertices[i];
       if (normal != null && val != 0)
         pt.scaleAdd2(val, normal, pt);

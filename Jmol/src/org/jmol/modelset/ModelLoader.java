@@ -782,15 +782,11 @@ public final class ModelLoader {
           iterAtom.getTensors(), 
           iterAtom.getOccupancy(), 
           iterAtom.getBfactor(), 
-          iterAtom.getX(),
-          iterAtom.getY(), 
-          iterAtom.getZ(), 
+          iterAtom.getXYZ(),
           iterAtom.getIsHetero(), 
           iterAtom.getAtomSerial(), 
           group3,
-          iterAtom.getVectorX(), 
-          iterAtom.getVectorY(), 
-          iterAtom.getVectorZ(),
+          iterAtom.getVib(), 
           iterAtom.getAlternateLocationID(),
           iterAtom.getRadius()
           );
@@ -836,9 +832,9 @@ public final class ModelLoader {
                        Object atomUid, int atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
                        JmolList<Tensor> tensors, int occupancy, float bfactor,
-                       float x, float y, float z, boolean isHetero,
+                       P3 xyz, boolean isHetero,
                        int atomSerial, String group3,
-                       float vectorX, float vectorY, float vectorZ,
+                       V3 vib,
                        char alternateLocationID, float radius) {
     byte specialAtomID = 0;
     if (atomName != null) {
@@ -850,8 +846,7 @@ public final class ModelLoader {
         specialAtomID = 0;
     }
     Atom atom = modelSet.addAtom(currentModelIndex, nullGroup, atomicAndIsotopeNumber,
-        atomName, atomSerial, atomSite, x, y, z, radius, vectorX, vectorY,
-        vectorZ, formalCharge, partialCharge, occupancy, bfactor, tensors,
+        atomName, atomSerial, atomSite, xyz, radius, vib, formalCharge, partialCharge, occupancy, bfactor, tensors,
         isHetero, specialAtomID, atomSymmetry);
     atom.setAltLoc(alternateLocationID);
     htAtomMap.put(atomUid, atom);
@@ -1457,7 +1452,6 @@ public final class ModelLoader {
     // must be one of JmolConstants.LOAD_ATOM_DATA_TYPES
     JmolAdapter adapter = viewer.getModelAdapter();
     P3 pt = new P3();
-    P3 v = new P3();
     Atom[] atoms = modelSet.atoms;
     float tolerance = viewer.getFloat(T.loadatomdatatolerance);
     if (modelSet.unitCells != null)
@@ -1473,12 +1467,9 @@ public final class ModelLoader {
         .getAtomCount());
     for (JmolAdapterAtomIterator iterAtom = adapter
         .getAtomIterator(atomSetCollection); iterAtom.hasNext();) {
-      float x = iterAtom.getX();
-      float y = iterAtom.getY();
-      float z = iterAtom.getZ();
-      if (Float.isNaN(x + y + z))
+      P3 xyz = iterAtom.getXYZ();
+      if (Float.isNaN(xyz.x + xyz.y + xyz.z))
         continue;
-
       if (tokType == T.xyz) {
         // we are loading selected coordinates only
         i = bsSelected.nextSetBit(i + 1);
@@ -1487,11 +1478,11 @@ public final class ModelLoader {
         n++;
         if (Logger.debugging)
           Logger.debug("atomIndex = " + i + ": " + atoms[i]
-              + " --> (" + x + "," + y + "," + z);
-        modelSet.setAtomCoord(i, x, y, z);
+              + " --> (" + xyz.x + "," + xyz.y + "," + xyz.z);
+        modelSet.setAtomCoord(i, xyz.x, xyz.y, xyz.z);
         continue;
       }
-      pt.set(x, y, z);
+      pt.setT(xyz);
       BS bs = BSUtil.newBitSet(modelSet.atomCount);
       modelSet.getAtomsWithin(tolerance, pt, bs, -1);
       bs.and(bsSelected);
@@ -1507,15 +1498,12 @@ public final class ModelLoader {
       }
       switch (tokType) {
       case T.vibxyz:
-        float vx = iterAtom.getVectorX();
-        float vy = iterAtom.getVectorY();
-        float vz = iterAtom.getVectorZ();
-        if (Float.isNaN(vx + vy + vz))
+        V3 vib = iterAtom.getVib();
+        if (vib == null)
           continue;
-        v.set(vx, vy, vz);
         if (Logger.debugging)
-          Logger.debug("xyz: " + pt + " vib: " + v);
-        modelSet.setAtomCoords(bs, T.vibxyz, v);
+          Logger.debug("xyz: " + pt + " vib: " + vib);
+        modelSet.setAtomCoords(bs, T.vibxyz, vib);
         break;
       case T.occupancy:
         // [0 to 100], default 100

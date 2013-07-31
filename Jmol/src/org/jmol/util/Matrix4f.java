@@ -1085,7 +1085,7 @@ public class Matrix4f implements Serializable {
    * @param pointOut
    *        the transformed point
    */
-  public final void transform2(P3 point, P3 pointOut) {
+  public final void transform2(Tuple3f point, Tuple3f pointOut) {
     try {
       pointOut.set(m00 * point.x + m01 * point.y + m02 * point.z + m03, m10
           * point.x + m11 * point.y + m12 * point.z + m13, m20 * point.x + m21
@@ -1102,7 +1102,7 @@ public class Matrix4f implements Serializable {
    * @param point
    *        the input point to be transformed.
    */
-  public final void transform(P3 point) {
+  public final void transform(Tuple3f point) {
     transform2(point, point);
   }
 

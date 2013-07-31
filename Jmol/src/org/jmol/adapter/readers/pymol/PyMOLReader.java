@@ -44,6 +44,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
+import org.jmol.util.V3;
 
 /**
  * PyMOL PSE (binary Python session) file reader.
@@ -1064,11 +1065,10 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
     int flags = intAt(a, 24);
     boolean bonded = (intAt(a, 25) != 0);
     
-    // repurposing vectorX,Y,Z
+    // repurposing vib; leaving Z = Float.NaN to disable actual vibrations
     
     int uniqueID = (a.size() > 40 && intAt(a, 40) == 1 ? intAt(a, 32) : -1);
-    atom.vectorX = uniqueID;
-    atom.vectorY = cartoonType;
+    atom.vib = V3.new3(uniqueID, cartoonType, Float.NaN);
     if (a.size() > 46) {
       float[] data = PyMOLScene.floatsAt(a, 41, new float[8], 6);
       atomSetCollection.setAnisoBorU(atom, data, 12);
@@ -1348,11 +1348,11 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
   /// PymolAtomReader interface
   
   public int getUniqueID(int iAtom) {
-    return (int) atoms[iAtom].vectorX;
+    return (int) atoms[iAtom].vib.x;
   }
 
   public int getCartoonType(int iAtom) {
-    return (int) atoms[iAtom].vectorY;
+    return (int) atoms[iAtom].vib.y;
   }
 
   public float getVDW(int iAtom) {

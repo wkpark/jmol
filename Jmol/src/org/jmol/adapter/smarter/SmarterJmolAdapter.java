@@ -423,20 +423,17 @@ public class SmarterJmolAdapter extends JmolAdapter {
   ////////////////////////////////////////////////////////////////
 
   @Override
-  public JmolAdapterAtomIterator
-    getAtomIterator(Object atomSetCollection) {
+  public JmolAdapterAtomIterator getAtomIterator(Object atomSetCollection) {
     return new AtomIterator((AtomSetCollection)atomSetCollection);
   }
 
   @Override
-  public JmolAdapterBondIterator
-    getBondIterator(Object atomSetCollection) {
+  public JmolAdapterBondIterator getBondIterator(Object atomSetCollection) {
     return new BondIterator((AtomSetCollection)atomSetCollection);
   }
 
   @Override
-  public JmolAdapterStructureIterator
-    getStructureIterator(Object atomSetCollection) {
+  public JmolAdapterStructureIterator getStructureIterator(Object atomSetCollection) {
     return ((AtomSetCollection)atomSetCollection).getStructureCount() == 0 ? 
         null : new StructureIterator((AtomSetCollection)atomSetCollection);
   }

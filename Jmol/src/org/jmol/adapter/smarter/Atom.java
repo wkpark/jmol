@@ -28,6 +28,7 @@ import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.P3;
 import org.jmol.util.Tensor;
+import org.jmol.util.V3;
 
 public class Atom extends P3 implements Cloneable {
   public int atomSetIndex;
@@ -39,9 +40,7 @@ public class Atom extends P3 implements Cloneable {
   public String atomName;
   public int formalCharge = Integer.MIN_VALUE;
   public float partialCharge = Float.NaN;
-  public float vectorX = Float.NaN;
-  public float vectorY = Float.NaN;
-  public float vectorZ = Float.NaN;
+  public V3 vib;
   public float bfactor = Float.NaN;
   public int occupancy = 100;
   public float radius = Float.NaN;
@@ -301,10 +300,8 @@ public class Atom extends P3 implements Cloneable {
   }
 
   public void scaleVector(float vibScale) {
-    if (Float.isNaN(vectorX))
+    if (vib == null || Float.isNaN(vib.z))
       return;
-    vectorX *= vibScale;
-    vectorY *= vibScale;
-    vectorZ *= vibScale;    
+    vib.scale(vibScale);
   }
 }

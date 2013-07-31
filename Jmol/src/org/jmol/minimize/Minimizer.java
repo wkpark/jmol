@@ -214,7 +214,7 @@ public class Minimizer implements MinimizerInterface {
 
     if (minimizationOn)
       return false;
-
+    ForceField pFF0 = pFF;
     getForceField(ff);
     if (pFF == null) {
       Logger.error(GT._("Could not get class for force field {0}", ff));
@@ -234,6 +234,8 @@ public class Minimizer implements MinimizerInterface {
 
     boolean sameAtoms = BSUtil.areEqual(bsSelected, this.bsSelected);
     this.bsSelected = bsSelected;
+    if (pFF0 != null && pFF != pFF0)
+      sameAtoms = false;
     if (!sameAtoms)
       pFF.clear();
     if ((!sameAtoms || !BSUtil.areEqual(bsFixed, this.bsFixed))
@@ -478,6 +480,8 @@ public class Minimizer implements MinimizerInterface {
   ///////////////////////////// minimize //////////////////////
 
   public ForceField getForceField(String ff) {
+    if (ff.startsWith("MMFF"))
+      ff = "MMFF";
     if (pFF == null || !ff.equals(this.ff)) {
       if (ff.equals("UFF")) {
         pFF = new ForceFieldUFF(this);

@@ -57,7 +57,7 @@ class CalculationsMMFF extends Calculations {
   VDWCalc vdwCalc;
   ESCalc esCalc;
   SBCalc sbCalc;
-  PositionCalc posCalc;
+  //PositionCalc posCalc;
   
   ForceFieldMMFF mmff;
   
@@ -75,7 +75,7 @@ class CalculationsMMFF extends Calculations {
     oopCalc = new OOPCalc();
     vdwCalc = new VDWCalc();
     esCalc = new ESCalc();
-    posCalc = new PositionCalc();
+    //posCalc = new PositionCalc();
   }
   
   @Override
@@ -115,13 +115,13 @@ class CalculationsMMFF extends Calculations {
       if (isInvertible(minAtoms[i]))
         oopCalc.setData(calc, i);
 
-    if (minPositions != null) {
-      calc = calculations[CALC_POSITION] = new JmolList<Object[]>();
-      // set up the special atom arrays
-      PositionCalc posCalc = new PositionCalc();
-      for (int i = minPositions.length; --i >= 0;)
-        posCalc.setData(calc, minPositions[i].data, minPositions[i].ddata);
-    }
+//    if (minPositions != null) {
+//      calc = calculations[CALC_POSITION] = new JmolList<Object[]>();
+//      // set up the special atom arrays
+//      //PositionCalc posCalc = new PositionCalc();
+//      //for (int i = minPositions.length; --i >= 0;)
+//      //  posCalc.setData(calc, minPositions[i].data, minPositions[i].ddata);
+//    }
 
     pairSearch(calculations[CALC_VDW] = new  JmolList<Object[]>(), new VDWCalc(),
         calculations[CALC_ES] = new  JmolList<Object[]>(), new ESCalc());
@@ -190,8 +190,8 @@ class CalculationsMMFF extends Calculations {
       return vdwCalc.compute(dataIn);
     case CALC_ES:
       return esCalc.compute(dataIn);
-    case CALC_POSITION:
-      return posCalc.compute(dataIn);
+    //case CALC_POSITION:
+      //return posCalc.compute(dataIn);
     }
     return 0.0;
   }
@@ -397,20 +397,20 @@ class CalculationsMMFF extends Calculations {
     }
   }
   
-  class PositionCalc extends Calculation {
-
-    @Override
-    double compute(Object[] dataIn) {
-      // TODO
-      return 0;
-    }
-
-    public void setData(JmolList<Object[]> calc, int[] data, double[] ddata) {
-      // TODO
-      
-    }
-    
-  }
+//  class PositionCalc extends Calculation {
+//
+//    @Override
+//    double compute(Object[] dataIn) {
+//      // TODO
+//      return 0;
+//    }
+//
+//    public void setData(JmolList<Object[]> calc, int[] data, double[] ddata) {
+//      // TODO
+//      
+//    }
+//    
+//  }
   
   class OOPCalc extends Calculation {
 

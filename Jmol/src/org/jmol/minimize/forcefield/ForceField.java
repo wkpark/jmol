@@ -103,7 +103,7 @@ abstract public class ForceField {
     this.minBonds = minimizer.minBonds;
     this.minAngles = minimizer.minAngles;
     this.minTorsions = minimizer.minTorsions;
-    this.minPositions = minimizer.minPositions; // not implemented
+//    this.minPositions = minimizer.minPositions; // not implemented
     this.bsFixed = minimizer.bsMinFixed;
     minAtomCount = minAtoms.length;
     minBondCount = minBonds.length;
@@ -327,9 +327,9 @@ abstract public class ForceField {
     return calc.energyOOP(gradients); 
   }
 
-  double energyPosition(boolean gradients) {
-    return calc.energyPos(gradients); 
-  }
+//  double energyPosition(boolean gradients) {
+//    return calc.energyPos(gradients); 
+//  }
 
   double energyVDW(boolean gradients) {
     return calc.energyVDW(gradients);

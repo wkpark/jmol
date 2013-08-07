@@ -601,9 +601,9 @@ abstract class VolumeFileReader extends SurfaceFileReader {
     if (Float.isNaN(scale))
       return;
     Logger.info("applying scaling factor of " + scale);
-    volumetricOrigin.scaleAdd((1 - scale) / 2, volumetricVectors[0]);
-    volumetricOrigin.scaleAdd((1 - scale) / 2, volumetricVectors[1]);
-    volumetricOrigin.scaleAdd((1 - scale) / 2, volumetricVectors[2]);
+    volumetricOrigin.scaleAdd2((1 - scale) / 2, volumetricVectors[0], volumetricOrigin);
+    volumetricOrigin.scaleAdd2((1 - scale) / 2, volumetricVectors[1], volumetricOrigin);
+    volumetricOrigin.scaleAdd2((1 - scale) / 2, volumetricVectors[2], volumetricOrigin);
     volumetricVectors[0].scale(scale);
     volumetricVectors[1].scale(scale);
     volumetricVectors[2].scale(scale);

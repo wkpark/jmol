@@ -22,9 +22,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.readers.more;
+package org.jmol.adapter.readers.pdb;
 
-import org.jmol.adapter.readers.cifpdb.PdbReader;
+import org.jmol.adapter.readers.pdb.PdbReader;
 
 /**
  * PQR file reader.

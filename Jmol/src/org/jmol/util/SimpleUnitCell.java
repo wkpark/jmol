@@ -306,6 +306,5 @@ public class SimpleUnitCell {
     cell.y = (nnn % 100) / 10 + c;
     cell.z = (nnn % 10) + c;
   }
-  
 
 }

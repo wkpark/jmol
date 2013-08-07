@@ -68,8 +68,11 @@ class SymmetryOperation extends Matrix4f {
 
   private P3 atomTest;
   private P3 temp3;
-  
+
+  V3 originalTranslation = new V3();
   private String[] myLabels;
+  private int modulationDimension;
+  private float[] rotTransMatrix;
 
 
   /**
@@ -94,8 +97,13 @@ class SymmetryOperation extends Matrix4f {
      * 
      */
     xyzOriginal = op.xyzOriginal;
+    originalTranslation = op.originalTranslation;
     xyz = op.xyz;
-    this.opId = op.opId;
+    opId = op.opId;
+    modulationDimension = op.modulationDimension;
+    myLabels = op.myLabels;
+    rotTransMatrix = op.rotTransMatrix;
+    
     setM(op); // sets the underlying Matrix4f
     doFinalize();
     if (doNormalize)
@@ -110,7 +118,7 @@ class SymmetryOperation extends Matrix4f {
   }
   
   String getXyz(boolean normalized) {
-    return (normalized || xyzOriginal == null ? xyz : xyzOriginal);
+    return (normalized && modulationDimension == 0 || xyzOriginal == null ? xyz : xyzOriginal);
   }
 
   void newPoint(P3 atom1, P3 atom2,
@@ -156,25 +164,27 @@ class SymmetryOperation extends Matrix4f {
     xyzOriginal = xyz;
     xyz = xyz.toLowerCase();
     int n = 16;
+    this.modulationDimension = modulationDimension;
     if (modulationDimension > 0) {
-      n += 2 * modulationDimension; // +/- 1 and twelfths
+      n += 4 * modulationDimension; // x4, x5, x6, and twelfths
       if (modulationDimension == 1) {
-        myLabels = labelsX1234;
+        myLabels = labelsX1_6;
       } else {
         myLabels = new String[modulationDimension + 3];
         for (int i = modulationDimension + 3; --i >= 0;)
           myLabels[i] = "x" + (i + 1);
       }
     }
-    float[] rotTransMatrix = new float[n];
+    rotTransMatrix = new float[n];
     switch (modulationDimension) {
     case 0:
       break;
     case 1:
       break;
     default:
+      // TODO?
     }
-    
+    float v = 0;
     boolean isReverse = (xyz.startsWith("!"));
     if (isReverse)
       xyz = xyz.substring(1);
@@ -201,11 +211,13 @@ class SymmetryOperation extends Matrix4f {
       for (int i = 0; i < 16; i++) {
         if (Float.isNaN(rotTransMatrix[i]))
           return false;
-        float v = rotTransMatrix[i];
+        v = rotTransMatrix[i];
         if (Math.abs(v) < 0.00001f)
           v = 0;
-        if (i % 4 == 3)
+        if (i % 4 == 3) {
+          setOrigTranslation(i, v);
           v = normalizeTwelfths((v < 0 ? -1 : 1) * Math.round(Math.abs(v * 12)), doNormalize);
+        }
         rotTransMatrix[i] = v;
       }
       rotTransMatrix[15] = 1;
@@ -220,8 +232,11 @@ class SymmetryOperation extends Matrix4f {
       xyz = xyz.replace('[',' ').replace(']',' ').replace(',',' ');
       Parser.parseStringInfestedFloatArray(xyz, null, rotTransMatrix);
       for (int i = 0; i < 16; i++) {
-        if (Float.isNaN(rotTransMatrix[i]))
+        v = rotTransMatrix[i];
+        if (Float.isNaN(v))
           return false;
+        if (i % 4 == 3)
+          setOrigTranslation(i, v);
       }
       setA(rotTransMatrix);
       isFinalized = true;
@@ -231,7 +246,7 @@ class SymmetryOperation extends Matrix4f {
       //System.out.println("SymmetryOperation: " + xyz + "\n" + (Matrix4f)this + "\n" + this.xyz);
       return true;
     }
-    String strOut = getMatrixFromString(xyz, rotTransMatrix, myLabels, doNormalize, false);
+    String strOut = getMatrixFromString(this, xyz, rotTransMatrix, false);
     if (strOut == null)
       return false;
     setA(rotTransMatrix);
@@ -246,20 +261,35 @@ class SymmetryOperation extends Matrix4f {
     return true;
   }
 
-  static String getMatrixFromString(String xyz, float[] rotTransMatrix,
-                                    String[] myLabels, boolean doNormalize, boolean allowScaling) {
+  private void setOrigTranslation(int i, float v) {
+    switch(i) {
+    case 3:
+      originalTranslation.x = v;
+      break;
+    case 7:
+      originalTranslation.y = v;
+      break;
+    case 11:
+      originalTranslation.z = v;
+      break;
+    }
+  }
+
+  static String getMatrixFromString(SymmetryOperation op, String xyz,
+                                    float[] rotTransMatrix, boolean allowScaling) {
     boolean isDenominator = false;
     boolean isDecimal = false;
     boolean isNegative = false;
     boolean incommensurate = (rotTransMatrix.length > 16);
+    boolean doNormalize = (op != null && op.doNormalize);
     rotTransMatrix[15] = 1; // 12ths
+    String[] myLabels = (op == null || !incommensurate ? null : op.myLabels);
     if (myLabels == null)
       myLabels = labelsXYZ;
     char ch;
     int x = 0;
     int y = 0;
     int z = 0;
-    int w = 0;
     float iValue = 0;
     String strOut = "";
     String strT;
@@ -271,6 +301,9 @@ class SymmetryOperation extends Matrix4f {
       xyz = TextFormat.simpleReplace(xyz, "x1", "x");
       xyz = TextFormat.simpleReplace(xyz, "x2", "y");
       xyz = TextFormat.simpleReplace(xyz, "x3", "z");
+      xyz = TextFormat.simpleReplace(xyz, "x4", "x");
+      xyz = TextFormat.simpleReplace(xyz, "x5", "y");
+      xyz = TextFormat.simpleReplace(xyz, "x6", "z");
     }
     for (int i = 0; i < xyz.length(); i++) {
       ch = xyz.charAt(i);
@@ -297,11 +330,7 @@ class SymmetryOperation extends Matrix4f {
           val *= iValue;
           iValue = 0;
         }
-        if (incommensurate && rowPt > 0) {
-          w = val;
-        } else {
-          x = val;
-        }
+        x = val;
         break;
       case 'Y':
       case 'y':
@@ -325,29 +354,28 @@ class SymmetryOperation extends Matrix4f {
           return null;
         }
         // put translation into 12ths
+        float trans = iValue;
         iValue = normalizeTwelfths(iValue, doNormalize);
-        int tpt;
-        if (rowPt > 2 && incommensurate) {
-          tpt = 16 + 2 * (rowPt + -2);
-          rotTransMatrix[tpt++] = w;
-          rotTransMatrix[tpt] = iValue;
-        } else {
-          tpt = rowPt * 4;
-          rotTransMatrix[tpt++] = x;
-          rotTransMatrix[tpt++] = y;
-          rotTransMatrix[tpt++] = z;
-          rotTransMatrix[tpt] = iValue;
-          strT = "";
-          strT += plusMinus(strT, x, "x");
-          strT += plusMinus(strT, y, "y");
-          strT += plusMinus(strT, z, "z");
-          strT += xyzFraction(iValue, false, true);
-          strOut += (strOut == "" ? "" : ",") + strT;
-          //note: when ptLatt[3] = -1, ptLatt[rowPt] MUST be 0.
-          if (rowPt == 2) {
-            return strOut;
-          }
-        }
+        //TODO -- not properly handling this in two senses:
+        // 1. not adding to strOut
+        // 2. not considering possibility of x4/x5 mixing 
+        int tpt = rowPt * 4 + (rowPt > 2 ? 4 : 0);
+        rotTransMatrix[tpt++] = x;
+        rotTransMatrix[tpt++] = y;
+        rotTransMatrix[tpt++] = z;
+        rotTransMatrix[tpt] = iValue;
+        if (op != null)
+          op.setOrigTranslation(tpt, trans);
+        strT = "";
+        int pt = (rowPt < 3 ? 0 : 3);
+        strT += plusMinus(strT, x, myLabels[pt++]);
+        strT += plusMinus(strT, y, myLabels[pt++]);
+        strT += plusMinus(strT, z, myLabels[pt++]);
+        strT += xyzFraction(iValue, false, true);
+        strOut += (strOut == "" ? "" : ",") + strT;
+        //note: when ptLatt[3] = -1, ptLatt[rowPt] MUST be 0.
+        if (!incommensurate && rowPt == 2 || tpt + 1 == rotTransMatrix.length)
+          return strOut;
         x = y = z = 0;
         iValue = 0;
         break;
@@ -402,7 +430,7 @@ class SymmetryOperation extends Matrix4f {
 
   final static String[] labelsXYZ = new String[] {"x", "y", "z"};
 
-  final static String[] labelsX1234 = new String[] {"x1", "x2", "x3", "x4"};
+  final static String[] labelsX1_6 = new String[] {"x1", "x2", "x3", "x4", "x5", "x6"};
 
   final static String getXYZFromMatrix(Matrix4f mat, boolean is12ths,
                                        boolean allPositive, boolean halfOrLess) {
@@ -1278,6 +1306,16 @@ class SymmetryOperation extends Matrix4f {
     operation.m03 = ((int)operation.m03 + 12) % 12;
     operation.m13 = ((int)operation.m13 + 12) % 12;
     operation.m23 = ((int)operation.m23 + 12) % 12;    
+  }
+
+  public float getModParam(int type) {
+    switch (type) {
+    case 0: // x4 epsilon
+      return rotTransMatrix[16];
+    case 1:
+      return rotTransMatrix[19] / 12;
+    }
+    return 0;
   }
 
 }

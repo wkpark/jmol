@@ -358,10 +358,23 @@ public class Parser {
   }
 
   private final static float[] decimalScale = { 0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f,
-      0.000001f, 0.0000001f, 0.00000001f };
+    0.000001f, 0.0000001f, 0.00000001f, 
+    0.000000001f, 0.0000000001f, 0.00000000001f,
+    0.000000000001f, 0.000000000001f, 0.000000000001f,
+    };
 
   private final static float[] tensScale = { 10, 100, 1000, 10000, 100000, 1000000 };
 
+  /**
+   * A float parser that is 30% faster than Float.parseFloat(x) and
+   * also accepts x.yD+-n
+   * 
+   * @param str
+   * @param ichMax
+   * @param next   pointer; incremented 
+   * @param isStrict
+   * @return value or Float.NaN
+   */
   private static float parseFloatChecked(String str, int ichMax, int[] next, boolean isStrict) {
     boolean digitSeen = false;
     float value = 0;
@@ -376,27 +389,31 @@ public class Parser {
       negative = true;
     }
     char ch = 0;
+    int ival = 0;
     while (ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
-      value = value * 10 + (ch - '0');
+      ival = (ival << 3) + (ival << 1) + (ch - '0');
       ++ich;
       digitSeen = true;
     }
     boolean isDecimal = false;
+    int ival2 = 0;
+    int iscale = 0;
     if (ch == '.') {
       isDecimal = true;
-      int iscale = 0;
       while (++ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
-        if (iscale < decimalScale.length)
-          value += (ch - '0') * decimalScale[iscale];
-        ++iscale;
+        if (iscale < decimalScale.length) {
+          ival2 = (ival2 << 3) + (ival2 << 1) + (ch - '0');
+          iscale++;
+        }
         digitSeen = true;
       }
     }
+    value = ival;
+    if (ival2 != 0)
+      value += ival2 * decimalScale[iscale - 1];
     boolean isExponent = false;
     if (!digitSeen)
       value = Float.NaN;
-    else if (negative)
-      value = -value;
     if (ich < ichMax && (ch == 'E' || ch == 'e' || ch == 'D')) {
       isExponent = true;
       if (++ich >= ichMax)
@@ -408,29 +425,75 @@ public class Parser {
       int exponent = parseIntChecked(str, ichMax, next);
       if (exponent == Integer.MIN_VALUE)
         return Float.NaN;
-      if (exponent > 0)
-        value *= ((exponent < tensScale.length) ? tensScale[exponent - 1]
-            : Math.pow(10, exponent));
-      else if (exponent < 0)
-        value *= ((-exponent < decimalScale.length) ? decimalScale[-exponent - 1]
-            : Math.pow(10, exponent));
+      if (exponent > 0 && exponent <= tensScale.length)
+        value *= tensScale[exponent - 1];
+      else if (exponent < 0 && -exponent <= decimalScale.length)
+        value *= decimalScale[-exponent - 1];
+      else if (exponent != 0)
+        value *= Math.pow(10, exponent);
     } else {
        next[0] = ich; // the exponent code finds its own ichNextParse
     }
-    if (value == Float.NEGATIVE_INFINITY)
-      value = -Float.MAX_VALUE;
-    else if (value == Float.POSITIVE_INFINITY)
+    if (negative)
+      value = -value;
+    if (value == Float.POSITIVE_INFINITY)
       value= Float.MAX_VALUE;
     return (!isStrict 
         || (!isExponent || isDecimal) && checkTrailingText(str, next[0], ichMax) 
         ? value : Float.NaN);
   }
 
+
+//  private static float parseFloatCheckedOld(String str, int ichMax, int[] next, boolean isStrict) {
+//    float value = 0;
+//    int ich = next[0];
+//    if (isStrict && str.indexOf('\n') != str.lastIndexOf('\n'))
+//        return Float.NaN;
+//    while (ich < ichMax && isWhiteSpace(str, ich))
+//      ++ich;
+//    boolean negative = false;
+//    if (ich < ichMax && str.charAt(ich) == '-') {
+//      ++ich;
+//      negative = true;
+//    }
+//    char ch = 0;
+//    int ich0 = ich;
+//    boolean isDecimal = false;
+//    while (ich < ichMax && (Character.isDigit(ch = str.charAt(ich)) || ch == '.')) {
+//      ++ich;
+//      if (ch == '.') {
+//        if (isDecimal)
+//          return Float.NaN;
+//        isDecimal = true;
+//      }
+//    }
+//    boolean isDouble = false;
+//    boolean isExponent = false;
+//    if (ich != ich0 && ich < ichMax && (ch == 'E' || ch == 'e' || (isDouble = (ch == 'D')))) {
+//      isExponent = true;
+//      if (++ich >= ichMax || ((ch = str.charAt(ich)) == '+' || ch == '-') && ++ich >= ichMax)
+//        return Float.NaN;
+//      while (ich < ichMax && Character.isDigit(str.charAt(ich))) {
+//        ++ich;
+//      }
+//    }
+//    next[0] = ich;
+//    if (ich0 == ich)
+//      return Float.NaN;
+//    value = fVal(isDouble ? str.substring(ich0, ich).replace('D','E') : str.substring(ich0, ich)); 
+//    if (value == Float.POSITIVE_INFINITY)
+//      value= Float.MAX_VALUE;
+//    if (negative)
+//      value = -value;
+//    return (!isStrict 
+//        || (!isExponent || isDecimal) && checkTrailingText(str, next[0], ichMax) 
+//        ? value : Float.NaN);
+//  }
+
   private static boolean checkTrailingText(String str, int ich, int ichMax) {
     //number must be pure -- no additional characters other than white space or ;
     char ch;
-    while (ich < ichMax && ((ch = str.charAt(ich)) == ' '
-        || ch == '\t' || ch == '\n' || ch == ';'))
+    while (ich < ichMax && (Character.isWhitespace(ch = str.charAt(ich)) || ch == ';'))
       ++ich;
     return (ich == ichMax);
   }
@@ -466,7 +529,7 @@ public class Parser {
       ++ich;
     }
     while (ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
-      value = value * 10 + (ch - '0');
+      value = (value << 3) + (value << 1) + (ch - '0');
       digitSeen = true;
       ++ich;
     }
@@ -650,5 +713,4 @@ public class Parser {
       return Float.parseFloat(s);
     }
   }
-
 }

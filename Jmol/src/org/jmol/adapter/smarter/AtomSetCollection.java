@@ -1068,7 +1068,7 @@ public class AtomSetCollection {
       atoms[i].addTensor(symmetry.getTensor(atoms[i].anisoBorU), null); // getTensor will return correct type 
   }
   
-  private int baseSymmetryAtomCount;
+  public int baseSymmetryAtomCount;
   
   public void setBaseSymmetryAtomCount(int n) {
     baseSymmetryAtomCount = n;
@@ -1229,7 +1229,7 @@ public class AtomSetCollection {
         .getLatticeDesignation());
     setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
     setAtomSetAuxiliaryInfo("unitCellTranslations", unitCellTranslations);
-    symmetry.setSpaceGroupS(null);
+    //symmetry.setSpaceGroupS(null);
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false;
     // turn off global fractional conversion -- this will be model by model
@@ -1256,11 +1256,11 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("symmetryCount", Integer.valueOf(operationCount));
   }
 
-  P3[] cartesians;
-  int bondCount0;
-  int bondIndex0;
-  boolean applySymmetryToBonds = false;
-  boolean checkSpecial = true;
+  private P3[] cartesians;
+  private int bondCount0;
+  private int bondIndex0;
+  private boolean applySymmetryToBonds = false;
+  private boolean checkSpecial = true;
 
   public void setCheckSpecial(boolean TF) {
     checkSpecial = TF;
@@ -1303,7 +1303,7 @@ public class AtomSetCollection {
     int atomMax = iAtomFirst + noSymmetryCount;
     P3 ptAtom = new P3();
     for (int iSym = 0; iSym < nOperations; iSym++) {
-      if (isBaseCell && symmetry.getSpaceGroupXyz(iSym, true).equals("x,y,z"))
+      if (isBaseCell && iSym == 0)
         continue;
 
       /* pt0 sets the range of points cross-checked. 

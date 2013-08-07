@@ -177,6 +177,18 @@ public class Symmetry implements SymmetryInterface {
   public Matrix4f getSpaceGroupOperation(int i) {
     return spaceGroup.finalOperations[i];
   }
+  
+
+  public V3 getOriginalTranslation(int iop) {
+    return spaceGroup.finalOperations[iop].originalTranslation;
+  }
+  
+  public float getModParam(int iop, int type) {
+    return spaceGroup.finalOperations[iop].getModParam(type);
+  }
+
+
+
 
   public String getSpaceGroupXyz(int i, boolean doNormalize) {
     return spaceGroup.finalOperations[i].getXyz(doNormalize);
@@ -212,7 +224,7 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public String getMatrixFromString(String xyz, float[] rotTransMatrix, boolean allowScaling) {
-    return SymmetryOperation.getMatrixFromString(xyz, rotTransMatrix, null, false, allowScaling);
+    return SymmetryOperation.getMatrixFromString(null, xyz, rotTransMatrix, allowScaling);
   }
 
   public P3 ijkToPoint3f(int nnn) {
@@ -278,6 +290,10 @@ public class Symmetry implements SymmetryInterface {
 
   public void setUnitCellOrientation(Matrix3f matUnitCellOrientation) {
       unitCell.setOrientation(matUnitCellOrientation);
+  }
+
+  public void unitize(P3 ptFrac) {
+    unitCell.unitize(ptFrac);
   }
 
   public void toUnitCell(P3 pt, P3 offset) {
@@ -632,5 +648,9 @@ public class Symmetry implements SymmetryInterface {
        && ptTemp.y >= cell.y - 1f - slop && ptTemp.y <= cell.y + slop
        && ptTemp.z >= cell.z - 1f - slop && ptTemp.z <= cell.z + slop);
  }
+
+  public boolean unitCellEquals(SymmetryInterface uc2) {
+    return ((Symmetry) (uc2)).unitCell.isSameAs(unitCell);
+  }
 
 }  

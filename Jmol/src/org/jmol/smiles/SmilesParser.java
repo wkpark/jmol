@@ -641,9 +641,9 @@ public class SmilesParser {
             isNot = true;
             s = s.substring(1);
           }
-          float min = (pt + 1 == pt2 ? 0 : Float.parseFloat(s));
+          float min = (pt + 1 == pt2 ? 0 : Parser.fVal(s));
           s = strMeasure.substring(pt2 + 1);
-          float max = (s.length() == 0 ? Float.MAX_VALUE : Float.parseFloat(s));
+          float max = (s.length() == 0 ? Float.MAX_VALUE : Parser.fVal(s));
           m = new SmilesMeasure(molecule, index, type, min, max, isNot);
           molecule.measures.addLast(m);
           if (index > 0)

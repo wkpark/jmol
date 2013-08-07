@@ -153,6 +153,7 @@ class SpaceGroup {
       generateAllOperators(h);
       //doNormalize = false;  // why this here?
     }
+    finalOperations = null;
     if (index >= getSpaceGroups().length) {
       SpaceGroup sg = getDerivedSpaceGroup();
       if (sg != null)
@@ -404,15 +405,15 @@ class SpaceGroup {
       xyzList = new Hashtable<String, Integer>();
       return -1;
     }
+    boolean isSpecial = (xyz0.charAt(0) == '=');
+    if (isSpecial) xyz0 = xyz0.substring(1);
+    if (xyzList.containsKey(xyz0))
+      return xyzList.get(xyz0).intValue();
     if (xyz0.startsWith("x1,x2,x3,x4") && modulationDimension == 0) {
       xyzList.clear();
       operationCount = 0;
       modulationDimension = Parser.parseInt(xyz0.substring(xyz0.lastIndexOf("x") + 1)) - 3; 
     }
-    boolean isSpecial = (xyz0.charAt(0) == '=');
-    if (isSpecial) xyz0 = xyz0.substring(1);
-    if (xyzList.containsKey(xyz0))
-      return xyzList.get(xyz0).intValue();
 
     SymmetryOperation symmetryOperation = new SymmetryOperation(null, null, 0, opId, doNormalize);
     if (!symmetryOperation.setMatrixFromXYZ(xyz0, modulationDimension)) {

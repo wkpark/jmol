@@ -365,12 +365,10 @@ public final class ModelLoader {
     for (int i = models[baseModelIndex].firstAtomIndex; i < atomCount; i++)
       models[atoms[i].modelIndex].bsAtoms.set(i);
 
-    setAtomProperties();
-
     freeze();
-
     finalizeShapes();
     viewer.setModelSet(modelSet);
+    setAtomProperties();
     if (adapter != null)
       adapter.finish(atomSetCollection);    
     if (mergeModelSet != null) {

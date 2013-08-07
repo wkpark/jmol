@@ -1392,6 +1392,7 @@ class ScriptMathProcessor {
       RadiusData rd = null;
       int nBitSets = 0;
       float vdw = Float.MAX_VALUE;
+      boolean asMinArray = false;
       boolean asArray = false;
       for (int i = 0; i < args.length; i++) {
         switch (args[i].tok) {
@@ -1425,6 +1426,8 @@ class ScriptMathProcessor {
           else if (s.equalsIgnoreCase("connected"))
             isAllConnected = true;
           else if (s.equalsIgnoreCase("minArray"))
+            asMinArray = (nBitSets >= 1);
+          else if (s.equalsIgnoreCase("asArray"))
             asArray = (nBitSets >= 1);
           else if (Parser.isOneOf(s.toLowerCase(),
               ";nm;nanometers;pm;picometers;angstroms;ang;au;") || s.endsWith("hz"))
@@ -1446,7 +1449,7 @@ class ScriptMathProcessor {
       rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax, 0, null, null)
           : new RadiusData(null, vdw, EnumType.FACTOR, EnumVdw.AUTO));
       return addXObj((new MeasurementData(null, viewer, points)).set(0, null, rd, strFormat, units, null, isAllConnected,
-          isNotConnected, null, true, 0, (short) 0, null).getMeasurements(asArray));
+          isNotConnected, null, true, 0, (short) 0, null).getMeasurements(asArray, asMinArray));
     case T.angle:
       if ((nPoints = args.length) != 3 && nPoints != 4)
         return false;

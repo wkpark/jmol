@@ -3473,7 +3473,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setCurrentColorRange(String label) {
     float[] data = getDataFloat(label);
     BS bs = (data == null ? null : (BS) (dataManager.getData(label))[2]);
-    if (bs != null && getBoolean(T.rangeselected))
+    if (bs != null && global.rangeSelected)
       bs.and(getSelectionSet(false));
     setCurrentColorRangeData(data, bs);
   }
@@ -3549,7 +3549,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public SymmetryInterface getCurrentUnitCell() {
-    return modelSet.getUnitCell(animationManager.currentModelIndex);
+    if (animationManager.currentModelIndex >= 0)
+      return modelSet.getUnitCell(animationManager.currentModelIndex);
+    BS models = getVisibleFramesBitSet();
+    SymmetryInterface ucLast = null;
+    for (int i = models.nextSetBit(0); i >= 0; i = models.nextSetBit(i + 1)) {
+      SymmetryInterface uc = modelSet.getUnitCell(i);
+      if (uc == null)
+        continue;
+      if (ucLast == null) {
+        ucLast = uc;
+        continue;
+      }
+      if (!ucLast.unitCellEquals(uc)) 
+        return null;
+    }
+  return ucLast;
   }
 
   public SymmetryInterface getModelUnitCell(int modelIndex) {

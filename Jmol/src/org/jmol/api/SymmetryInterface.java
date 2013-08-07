@@ -65,6 +65,10 @@ public interface SymmetryInterface {
 
   public Matrix4f getSpaceGroupOperation(int i);
 
+  public V3 getOriginalTranslation(int iop);
+
+  public float getModParam(int iop, int type);
+
   public String getSpaceGroupXyz(int i, boolean doNormalize);
 
   public void newSpaceGroupPoint(int i, P3 atom1, P3 atom2,
@@ -170,4 +174,8 @@ public interface SymmetryInterface {
 
   public boolean checkUnitCell(SymmetryInterface uc, P3 cell, P3 ptTemp, boolean isAbsolute);
 
+  public boolean unitCellEquals(SymmetryInterface uc2);
+
+  public void unitize(P3 ptFrac);
+  
 }

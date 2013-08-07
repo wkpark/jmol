@@ -23,7 +23,6 @@
  */
 package org.jmol.adapter.readers.cifpdb;
 
-import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Structure;
@@ -39,17 +38,14 @@ import org.jmol.script.T;
 import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Map.Entry;
 
 
 import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Modulation;
 import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
-import org.jmol.util.V3;
 
 
 /**
@@ -76,7 +72,7 @@ import org.jmol.util.V3;
  *  applySymmetryAndSetTrajectory()
  *  
  */
-public class CifReader extends AtomSetCollectionReader implements JmolLineReader {
+public class CifReader extends ModulationReader implements JmolLineReader {
 
   protected boolean isPDBX;
   
@@ -95,15 +91,13 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private int configurationPtr = Integer.MIN_VALUE;
   private int conformationIndex;
   private boolean filterAssembly;
-  private boolean allowRotations = true;
-  private boolean modVib;
-  private String modAxes;
-
+  private int nMolecular = 0;
   
 
   private  JmolList<Matrix4f> vBiomts;
   private  JmolList<Map<String, Object>> vBiomolecules;
   private Map<String,Matrix4f> htBiomts;
+  private Map<String, Map<String, Object>> htSites;
 
   private Map<String, BS> assemblyIdAtoms;
   
@@ -111,7 +105,6 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
   private boolean skipping;
   private boolean haveChainsLC;
   private int nAtoms;
-  private int modDim;
   
   @Override
   public void initializeReader() throws Exception {
@@ -125,8 +118,6 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       configurationPtr = parseIntStr(conf);
     isMolecular = checkFilterKey("MOLECUL");
     filterAssembly = checkFilterKey("$");
-    modAxes = getFilter("MODAXES=");
-    modVib = checkFilterKey("MODVIB");
     if (isMolecular) {
       if (!doApplySymmetry) {
         doApplySymmetry = true;
@@ -136,8 +127,8 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       }
       molecularType = "filter \"MOLECULAR\"";
     }
-
-    nAtoms = 0;
+    initializeMod();
+    
     /*
      * Modified for 10.9.64 9/23/06 by Bob Hanson to remove as much as possible
      * of line dependence. a loop could now go:
@@ -219,21 +210,24 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         processChemicalInfo("structuralFormula");
       } else if (key.startsWith("_chemical_formula_sum") || key.equals("_chem_comp_formula")) {
         processChemicalInfo("formula");
-      } else if (key.equals("_cell_modulation_dimension")) {
+      } else if (key.equals("_cell_modulation_dimension") && !modAverage) {
         modDim = parseIntStr(data);
-        if (modDim > 3) {
-          appendLoadNote("CIF Reader: Too high modulation dimension (" + modDim + ") -- ignored");
+        if (modDim > 1) {
+          // not ready for dim=2
+          appendLoadNote("CIF Reader: Too high modulation dimension (" + modDim + ") -- reading average structure");
           modDim = 0;
+          modAverage = true;
         } else {
           appendLoadNote("CIF Reader: modulation dimension = " + modDim);   
           htModulation = new Hashtable<String, P3>();
           //allowRotations = false;
         }
+        incommensurate = (modDim > 0);
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
       } else if (key.startsWith("_symmetry_space_group_name_H-M")
           || key.startsWith("_symmetry_space_group_name_Hall")
-          || key.startsWith("_space_group_ssg_name")) {
+          || key.contains("_ssg_name")) {
         processSymmetrySpaceGroupName();
       } else if (key.startsWith("_atom_sites_fract_tran")) {
         processUnitCellTransformMatrix();
@@ -271,14 +265,18 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
 
   @Override
   protected void finalizeReader() throws Exception {
+    if (incommensurate)
+      atomSetCollection.setBaseSymmetryAtomCount(atomSetCollection.getAtomCount());
     if (atomSetCollection.getAtomCount() == nAtoms)
       atomSetCollection.removeCurrentAtomSet();
     else
       applySymmetryAndSetTrajectory();
     if (htSites != null)
       addSites(htSites);
-    atomSetCollection.setCollectionName("<collection of "
-        + atomSetCollection.getAtomSetCount() + " models>");
+    int n = atomSetCollection.getAtomSetCount();
+    if (n > 1)
+      atomSetCollection.setCollectionName("<collection of "
+          + n + " models>");
     if (vBiomolecules != null && vBiomolecules.size() == 1
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
@@ -287,7 +285,7 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
         atomSetCollection.applySymmetryBio(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
       }
     }
-    if (htModulation != null)
+    if (incommensurate && htModulation != null)
       setModulation();
     finalizeReaderASCR();
     String header = tokenizer.getFileHeader();
@@ -329,21 +327,18 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
     }
   }
 
-  private int nMolecular = 0;
-
-  private boolean incommensurate;
-
   @Override
   public void applySymmetryAndSetTrajectory() throws Exception {
     // This speeds up calculation, because no crosschecking
     // No special-position atoms in mmCIF files, because there will
     // be no center of symmetry, no rotation-inversions, 
     // no atom-centered rotation axes, and no mirror or glide planes. 
-    atomSetCollection.setCheckSpecial(!isPDB);
+    atomSetCollection.setCheckSpecial(checkSpecial && !isPDB);
     boolean doCheck = doCheckUnitCell && !isPDB;
     applySymTrajASCR();
     if (doCheck && (bondTypes.size() > 0 || isMolecular))
       setBondingAndMolecules();
+    atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -407,7 +402,10 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
    * @throws Exception
    */
   private void processSymmetrySpaceGroupName() throws Exception {
-    incommensurate = (key.indexOf("_ssg_") >= 0);
+    if(key.indexOf("_ssg_name") >= 0)
+      incommensurate = true;
+    else if (incommensurate)
+      return;
     setSpaceGroupName((key.indexOf("H-M") > 0 ? "HM:" : incommensurate ? "SSG:" : "Hall:") + data);
   }
 
@@ -508,9 +506,12 @@ public class CifReader extends AtomSetCollectionReader implements JmolLineReader
       return;
     boolean isLigand = false;
     str = fixKey(str);
-    if (modDim > 0 && (str.startsWith("_cell_wave") || str.contains("fourier")
+    if (incommensurate && (str.startsWith("_cell_wave") || str.contains("fourier")
         || str.contains("_special_func"))) {
-      processModulationLoopBlock();
+      if (modAverage)
+        skipLoop();
+      else
+        processModulationLoopBlock();
       return;
     }
     if (str.startsWith("_atom_site_") || str.startsWith("_atom_site.")
@@ -1737,11 +1738,7 @@ _pdbx_struct_oper_list.vector[3]
 //  5 CAT 5 PHE A 100 PHE A 100 . . ? ? 
 //  # 
 
-  //private int siteNum;
-  private Map<String, Map<String, Object>> htSites;
 
-  private Map<String, P3> htModulation;
-  
   /**
    * 
    * identifies structure sites
@@ -2029,124 +2026,21 @@ _pdbx_struct_oper_list.vector[3]
           if (id.equals("D_S")) {
             // saw tooth displacement  center/width/Axyz
             if (pt.x != 0)
-              addModulation("D_Sx;" + atomLabel, P3.new3(c, w, pt.x));
+              addModulation(htModulation, "D_Sx;" + atomLabel, P3.new3(c, w, pt.x));
             if (pt.y != 0)
-              addModulation("D_Sy;" + atomLabel, P3.new3(c, w, pt.y));
+              addModulation(htModulation, "D_Sy;" + atomLabel, P3.new3(c, w, pt.y));
             if (pt.z != 0)
-              addModulation("D_Sz;" + atomLabel, P3.new3(c, w, pt.z));
+              addModulation(htModulation, "D_Sz;" + atomLabel, P3.new3(c, w, pt.z));
             continue;
           }
             id += axis + ";" + atomLabel;
           break;
         }
-        addModulation(id, pt);
+        addModulation(htModulation, id, pt);
       }
     }
   }
   
-  private void addModulation(String id, P3 pt) {
-    htModulation.put(id, pt);
-    Logger.info("msCIF adding " + id + " " + pt);
-  }
-
-  /**
-   * synthesizes modulation data
-   * 
-   */
-  private void setModulation() {
-    Map<String, P3> map = new Hashtable<String, P3>();
-    for (Entry<String, P3> e : htModulation.entrySet()) {
-      String key = e.getKey();
-      P3 pt = e.getValue();
-      switch (key.charAt(0)) {
-      case 'D':
-      case 'O':
-        // fix modulus/phase option only for non-special modulations;
-        if (pt.z == 1 && key.charAt(2) != 'S') {
-          // modulus/phase M cos(2pi(q.r) + 2pi(p))
-          //  --> A cos(2pi(p)) cos(2pi(q.r)) + A sin(-2pi(p)) sin(2pi(q.r))
-          double a = pt.x;
-          double d = 2 * Math.PI * pt.y;
-          pt.x = (float) (a * Math.cos(d));
-          pt.y = (float) (a * Math.sin(-d));
-          pt.z = 0;
-          Logger.info("msCIF setting " + key + " " + pt);
-        }
-        break;
-      case 'F':
-        // convert JAVA Fourier descriptions to standard descriptions
-        if (key.indexOf("_q_") >= 0) {
-          P3 pf = new P3();
-          if (pt.x != 0)
-            pf.scaleAdd(pt.x, htModulation.get("W_1"));
-          if (pt.y != 0)
-            pf.scaleAdd(pt.y, htModulation.get("W_2"));
-          if (pt.z != 0)
-            pf.scaleAdd(pt.z, htModulation.get("W_3"));
-          key = TextFormat.simpleReplace(key, "_q_", "");
-          map.put(key, pf);
-          Logger.info("msCIF adding " + key + " " + pt);
-        }
-        break;
-      }
-    }
-    if (!map.isEmpty())
-      htModulation.putAll(map);
-    boolean haveAtomMods = false;
-    for (Entry<String, P3> e : htModulation.entrySet()) {
-      String key = e.getKey();
-      switch (key.charAt(0)) {
-      case 'O':
-        // TODO
-        break;
-      case 'D':
-        char axis = key.charAt(3);
-        if (key.charAt(2) == 'S') {
-          // TODO -- sawtooth, so now what? 
-        } else {
-          P3 coefs = e.getValue();
-          String label = key.substring(key.indexOf(";") + 1);
-          key = "F_" + key.substring(2, 3);
-          P3 q = htModulation.get(key);
-          addAtomModulation(label, q, axis, coefs);
-          haveAtomMods = true;
-        }
-        break;
-      }
-    }
-    if (!haveAtomMods)
-      return;
-    atoms = atomSetCollection.getAtoms();
-    symmetry = atomSetCollection.getSymmetry();
-    for (int i = atomSetCollection.getAtomCount(); --i >= 0;)
-      modulateAtom(i, modVib);
-  }
-  
-  private Map<String, JmolList<Modulation>> htAtomMods;
-  
-  public void addAtomModulation(String label, P3 q, char axis, P3 coefs) {
-    if (htAtomMods == null)
-      htAtomMods = new Hashtable<String, JmolList<Modulation>>();
-    JmolList<Modulation> list = htAtomMods.get(label);
-    if (list == null)
-      htAtomMods.put(label, list = new JmolList<Modulation>());
-    list.addLast(new Modulation(q, axis, coefs));
-  }
-  
-  public void modulateAtom(int i, boolean modvib) {
-    Atom a = atoms[i];
-    a.vib = new V3();
-    JmolList<Modulation> list = htAtomMods.get(a.atomName);
-    if (list == null || symmetry == null)
-      return;
-    Modulation.modulateAtom(a, list, a.vib);
-    if (!modvib) {
-      a.add(a.vib);
-      a.vib.scale(-1);
-    }
-    symmetry.toCartesian(a.vib, true);
-  }
-
   ////////////////////////////////////////////////////////////////
   // symmetry operations
   ////////////////////////////////////////////////////////////////
@@ -2175,12 +2069,14 @@ _pdbx_struct_oper_list.vector[3]
       if (fieldOf[i] != NONE)
         nRefs++;
     if (nRefs != 1) {
-      Logger.warn("?que? _symmetry_equiv or _space_group_symop property not found");
+      Logger
+          .warn("?que? _symmetry_equiv or _space_group_symop property not found");
       skipLoop();
       return;
     }
     int n = 0;
     while (tokenizer.getData()) {
+      boolean ssgop = false;
       for (int i = 0; i < tokenizer.fieldCount; ++i) {
         switch (fieldProperty(i)) {
         case SYM_SSG_XYZ:
@@ -2188,11 +2084,15 @@ _pdbx_struct_oper_list.vector[3]
           if (field.indexOf('~') >= 0)
             field = TextFormat.simpleReplace(field, "~", "");
           //$FALL-THROUGH$
+        case SYM_SSG_OP:
+          incommensurate = true;
+          ssgop = true;
+          //$FALL-THROUGH$
         case SYMOP_XYZ:
         case SYM_EQUIV_XYZ:
-        case SYM_SSG_OP:
           if (allowRotations || ++n == 1)
-          setSymmetryOperator(field);
+            if (!incommensurate || ssgop)
+              setSymmetryOperator(field);
           break;
         }
       }
@@ -2286,7 +2186,6 @@ _pdbx_struct_oper_list.vector[3]
   private BS bsExclude;
   private int firstAtom;
   private int atomCount;
-  private Atom[] atoms;
   
   /**
    * (1) If GEOM_BOND records are present, we (a) use them to generate bonds (b)
@@ -2389,7 +2288,6 @@ _pdbx_struct_oper_list.vector[3]
 
     if (bondTypes.size() > 0)
       atomSetCollection.setAtomSetAuxiliaryInfo("hasBonds", Boolean.TRUE);
-    atomSetCollection.setAtomSetAuxiliaryInfo("fileHasUnitCell", Boolean.TRUE);
 
     // Clear temporary fields.
 

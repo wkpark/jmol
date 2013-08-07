@@ -1623,4 +1623,5 @@ public abstract class AtomSetCollectionReader {
   public void setChainID(Atom atom, char ch) {
     atom.chainID = viewer.getChainID("" + ch);    
   }
+
 }

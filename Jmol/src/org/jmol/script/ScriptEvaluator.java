@@ -9294,8 +9294,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           htParams.put("unitcell", fparams);
           if (iGroup == Integer.MIN_VALUE)
             iGroup = -1;
+          i = iToken + 1;
         }
-        i = iToken + 1;
         if (iGroup != Integer.MIN_VALUE)
           htParams.put("spaceGroupIndex", Integer.valueOf(iGroup));
       }

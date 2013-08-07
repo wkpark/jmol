@@ -494,8 +494,7 @@ public final class EnvelopeCalculation {
     boolean ok1, ok2, ok3;
     mapT.clearAll();
     for (int i = 0; i < 12; i++) {
-      vertexTest[i].setT(Geodesic.getVertexVector(i));
-      vertexTest[i].scaleAdd(combinedRadii, centerI);      
+      vertexTest[i].scaleAdd2(combinedRadii, Geodesic.getVertexVector(i), centerI);      
     }    
     for (int f = 0; f < 20; f++) {
       faceTest = 0;
@@ -535,8 +534,7 @@ public final class EnvelopeCalculation {
           for (int j = 0; j < neighborCount; j++) {
             float maxDist = neighborPlusProbeRadii2[j];
             centerT = neighborCenters[j];
-            pointT.setT(Geodesic.getVertexVector(vect));
-            pointT.scaleAdd(combinedRadii, centerI);
+            pointT.scaleAdd2(combinedRadii, Geodesic.getVertexVector(vect), centerI);
             if (pointT.distanceSquared(centerT) < maxDist)
               geodesicMap.clear(vect);
           }

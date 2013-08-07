@@ -33,6 +33,7 @@ import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.P3;
+import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.Tensor;
@@ -958,7 +959,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetModelProperty("Ramanactivity", data[3]);
     atomSetCollection.setAtomSetName((isLongMode ? "LO " : "") + data[0] + " "
         + TextFormat.formatDecimal(freq, 2) + " cm-1 ("
-        + TextFormat.formatDecimal(Float.parseFloat(data[1]), 0)
+        + TextFormat.formatDecimal(Parser.fVal(data[1]), 0)
         + " km/Mole), " + activity);
   }
 

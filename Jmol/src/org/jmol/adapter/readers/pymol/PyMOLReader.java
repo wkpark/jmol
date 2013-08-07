@@ -29,7 +29,7 @@ import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.adapter.readers.cifpdb.PdbReader;
+import org.jmol.adapter.readers.pdb.PdbReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Structure;

@@ -39,12 +39,13 @@ public class Resolver {
 
   private final static String classBase = "org.jmol.adapter.readers.";
   private final static String[] readerSets = new String[] {
-    "cifpdb.", ";Cif;Pdb;MMCIF_PDBX;",
+    "cifpdb.", ";Cif;MMCIF_PDBX;",
     "molxyz.", ";Mol3D;Mol;Xyz;",
     "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;Pqr;P2n;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GausianWfn;Jaguar;" +
                  "Molden;MopacGraphf;GenNBO;NWChem;Odyssey;Psi;Qchem;Spartan;SpartanSmol;" +
                  "WebMO;",
+    "pdb.", ";Pdb;",
     "pymol.", ";PyMOL;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;", 
     "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;Magres;Shelx;Siesta;VaspOutcar;VaspPoscar;Wien2k;Xcrysden;"
@@ -729,10 +730,13 @@ public class Resolver {
   private final static String[] pymolStartRecords =
   {"PyMOL", "}q" };
 
+  private final static String[] janaStartRecords = 
+  { "Jana", "Version Jana" };
+
   private final static String[][] fileStartsWithRecords =
   { sptContainsRecords, cubeFileStartRecords, mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
-    zMatrixFileStartRecords, magresFileStartRecords, pymolStartRecords };
+    zMatrixFileStartRecords, magresFileStartRecords, pymolStartRecords, janaStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings

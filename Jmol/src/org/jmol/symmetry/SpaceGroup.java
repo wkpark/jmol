@@ -1385,13 +1385,14 @@ class SpaceGroup {
     int nOps = operationCount;
     for (int j = 0; j < lattvecs.size(); j++) {
       float[] data = lattvecs.get(j);
-      if (data.length != modulationDimension + 3)
+      if (data.length > modulationDimension + 3)
         return;
       for (int i = 0; i < nOps; i++) {
         SymmetryOperation op = operations[i];
         float[] rotTrans = op.rotTransMatrix;
         SymmetryOperation newOp = new SymmetryOperation(null, null, 0, 0,
             doNormalize);
+        newOp.modDim = modulationDimension;
         newOp.rotTransMatrix = ArrayUtil.arrayCopyF(rotTrans, -1);
         newOp.setFromMatrix(data, false);
         newOp.xyzOriginal = newOp.xyz;

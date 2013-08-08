@@ -257,7 +257,6 @@ public class CifReader extends ModulationReader implements JmolLineReader {
 
   @Override
   protected void finalizeReader() throws Exception {
-    finalizeIncommensurate();
     if (atomSetCollection.getAtomCount() == nAtoms)
       atomSetCollection.removeCurrentAtomSet();
     else
@@ -1803,236 +1802,6 @@ _pdbx_struct_oper_list.vector[3]
   }
 
   ////////////////////////////////////////////////////////////////
-  // incommensurate modulation
-  ////////////////////////////////////////////////////////////////
- 
-//  The occupational distortion of a given atom or rigid group is
-//  usually parameterized by Fourier series. Each term of the series
-//  commonly adopts two different representations: the sine-cosine
-//  form,
-//           Pc cos(2\p k r)+Ps sin(2\p k r),
-//  and the modulus-argument form,
-//           |P| cos(2\p k r+\d),
-//  where k is the wave vector of the term and r is the atomic
-//  average position. _atom_site_occ_Fourier_param_phase is the phase
-//  (\d/2\p) in cycles corresponding to the Fourier term defined by
-//  _atom_site_occ_Fourier_atom_site_label and
-//  _atom_site_occ_Fourier_wave_vector_seq_id.
-
-  private final static int WV_ID = 0;
-  private final static int WV_X = 1;
-  private final static int WV_Y = 2;
-  private final static int WV_Z = 3;
-  private final static int FWV_ID = 4;
-  private final static int FWV_X = 5;
-  private final static int FWV_Y = 6;
-  private final static int FWV_Z = 7;
-  private final static int FWV_Q1_COEF = 8;
-  private final static int FWV_Q2_COEF = 9;
-  private final static int FWV_Q3_COEF = 10;
-  
-  private final static int FWV_DISP_LABEL = 11;
-  private final static int FWV_DISP_AXIS = 12;
-  private final static int FWV_DISP_ID = 13;
-  private final static int FWV_DISP_COS = 14;
-  private final static int FWV_DISP_SIN = 15;
-  private final static int FWV_DISP_MODULUS = 16;
-  private final static int FWV_DISP_PHASE = 17;
-  
-  private final static int FWV_OCC_LABEL = 18;
-  private final static int FWV_OCC_ID = 19;
-  private final static int FWV_OCC_COS = 20;
-  private final static int FWV_OCC_SIN = 21;
-  private final static int FWV_OCC_MODULUS = 22;
-  private final static int FWV_OCC_PHASE = 23;
-  
-  private final static int DISP_SPEC_LABEL = 24;
-  private final static int DISP_SAW_AX = 25; 
-  private final static int DISP_SAW_AY = 26;
-  private final static int DISP_SAW_AZ = 27;
-  private final static int DISP_SAW_C = 28;
-  private final static int DISP_SAW_W = 29;
-  
-  private final static int OCC_SPECIAL_LABEL = 30;
-  private final static int OCC_CRENEL_C = 31;
-  private final static int OCC_CRENEL_W = 32;
-  
-
-  final private static String[] modulationFields = {
-      "_cell_wave_vector_seq_id", 
-      "_cell_wave_vector_x", 
-      "_cell_wave_vector_y", 
-      "_cell_wave_vector_z", 
-      "_atom_site_fourier_wave_vector_seq_id", 
-      "_atom_site_fourier_wave_vector_x", 
-      "_atom_site_fourier_wave_vector_y", 
-      "_atom_site_fourier_wave_vector_z",
-      "_jana_atom_site_fourier_wave_vector_q1_coeff", 
-      "_jana_atom_site_fourier_wave_vector_q2_coeff", 
-      "_jana_atom_site_fourier_wave_vector_q3_coeff", 
-      "_atom_site_displace_fourier_atom_site_label", 
-      "_atom_site_displace_fourier_axis", 
-      "_atom_site_displace_fourier_wave_vector_seq_id", 
-      "_atom_site_displace_fourier_param_cos", 
-      "_atom_site_displace_fourier_param_sin", 
-      "_atom_site_displace_fourier_param_modulus", 
-      "_atom_site_displace_fourier_param_phase", 
-      "_atom_site_occ_fourier_atom_site_label", 
-      "_atom_site_occ_fourier_wave_vector_seq_id", 
-      "_atom_site_occ_fourier_param_cos", 
-      "_atom_site_occ_fourier_param_sin",
-      "_atom_site_occ_fourier_param_modulus", 
-      "_atom_site_occ_fourier_param_phase", 
-      "_atom_site_displace_special_func_atom_site_label", 
-      "_atom_site_displace_special_func_sawtooth_ax", 
-      "_atom_site_displace_special_func_sawtooth_ay", 
-      "_atom_site_displace_special_func_sawtooth_az", 
-      "_atom_site_displace_special_func_sawtooth_c", 
-      "_atom_site_displace_special_func_sawtooth_w", 
-      "_atom_site_occ_special_func_atom_site_label",
-      "_atom_site_occ_special_func_crenel_c",
-      "_atom_site_occ_special_func_crenel_w"
-  };
-  
-  /**
-   * creates entries in htModulation with a key of 
-   * the form: type_id_axis;atomLabel where
-   * type = W|F|D|O (wave vector, Fourier index, displacement, occupancy);
-   * id = 1|2|3|S (Fourier index or special -- sawtooth or crenel);
-   * axis (optional) = o|x|y|z (o indicates irrelevant -- occupancy);
-   * and ;atomLabel is only for D and O.
-   * 
-   * @throws Exception
-   */
-  private void processModulationLoopBlock() throws Exception {
-    parseLoopParameters(modulationFields);
-    int tok;
-    while (tokenizer.getData()) {
-      boolean ignore = false;
-      String id = null;
-      String atomLabel = null;
-      String axis = null;
-      P3 pt = P3.new3(Float.NaN, Float.NaN, Float.NaN);
-      float c = Float.NaN;
-      float w = Float.NaN;
-      for (int i = 0; i < tokenizer.fieldCount; ++i) {
-        switch (tok = fieldProperty(i)) {
-        case WV_ID:
-        case FWV_ID:
-        case FWV_DISP_ID:
-        case FWV_OCC_ID:
-          switch (tok) {
-          case WV_ID:
-            id = "W_" + field;
-            break;
-          case FWV_ID:
-            id = "F_" + field;
-            break;
-          case FWV_DISP_ID:
-            id = "D_" + field;
-            break;
-          case FWV_OCC_ID:
-            id = "O_" + field;
-            break;
-          }
-          break;
-        case DISP_SPEC_LABEL:
-          id = "D_S";
-          atomLabel = field;
-          axis = "0";
-          break;
-        case OCC_SPECIAL_LABEL:
-          id = "O_S";
-          axis = "0";
-          //$FALL-THROUGH$
-        case FWV_DISP_LABEL:
-        case FWV_OCC_LABEL:
-          atomLabel = field;
-          pt.z = 0;
-          break;
-        case FWV_DISP_AXIS:
-          axis = field;
-          if (modAxes != null
-              && modAxes.indexOf(axis.toUpperCase()) < 0)
-            ignore = true;
-          break;
-        case WV_X:
-        case FWV_X:
-        case FWV_DISP_COS:
-        case FWV_OCC_COS:
-        case OCC_CRENEL_C:
-        case DISP_SAW_AX:
-          pt.x = parseFloatStr(field);
-          break;
-        case FWV_Q1_COEF:
-          id += "_q_";
-          pt.x = parseFloatStr(field);
-          switch (modDim) {
-          case 1:
-            pt.y = 0;
-            //$FALL-THROUGH$
-          case 2:
-            pt.z = 0;
-          }
-          break;
-        case FWV_DISP_MODULUS:
-        case FWV_OCC_MODULUS:
-          pt.x = parseFloatStr(field);
-          pt.z = 1;
-          break;
-        case WV_Y:
-        case FWV_Y:
-        case FWV_Q2_COEF:
-        case FWV_DISP_SIN:
-        case FWV_DISP_PHASE:
-        case FWV_OCC_SIN:
-        case FWV_OCC_PHASE:
-        case OCC_CRENEL_W:
-        case DISP_SAW_AY:
-          pt.y = parseFloatStr(field);
-          break;
-        case WV_Z:
-        case FWV_Z:
-        case FWV_Q3_COEF:
-        case DISP_SAW_AZ:
-          pt.z = parseFloatStr(field);
-          break;
-        case DISP_SAW_C:
-          c = parseFloatStr(field);
-          break;
-        case DISP_SAW_W:
-          w = parseFloatStr(field);
-          break;
-        }
-        if (ignore || Float.isNaN(pt.x + pt.y + pt.z) || id == null)
-          continue;
-        switch (id.charAt(0)) {
-        case 'W':
-        case 'F':
-          break;
-        case 'D':
-        case 'O':
-          if (atomLabel == null || axis == null)
-            continue;
-          if (id.equals("D_S")) {
-            // saw tooth displacement  center/width/Axyz
-            if (pt.x != 0)
-              addModulation(null, "D_Sx;" + atomLabel, P3.new3(c, w, pt.x));
-            if (pt.y != 0)
-              addModulation(null, "D_Sy;" + atomLabel, P3.new3(c, w, pt.y));
-            if (pt.z != 0)
-              addModulation(null, "D_Sz;" + atomLabel, P3.new3(c, w, pt.z));
-            continue;
-          }
-            id += axis + ";" + atomLabel;
-          break;
-        }
-        addModulation(null, id, pt);
-      }
-    }
-  }
-  
-  ////////////////////////////////////////////////////////////////
   // symmetry operations
   ////////////////////////////////////////////////////////////////
 
@@ -2430,4 +2199,238 @@ _pdbx_struct_oper_list.vector[3]
         setBs(atoms, i, bsBonds, bs);
     }
   }
+  
+  ////////////////////////////////////////////////////////////////
+  // incommensurate modulation
+  ////////////////////////////////////////////////////////////////
+ 
+//  The occupational distortion of a given atom or rigid group is
+//  usually parameterized by Fourier series. Each term of the series
+//  commonly adopts two different representations: the sine-cosine
+//  form,
+//           Pc cos(2\p k r)+Ps sin(2\p k r),
+//  and the modulus-argument form,
+//           |P| cos(2\p k r+\d),
+//  where k is the wave vector of the term and r is the atomic
+//  average position. _atom_site_occ_Fourier_param_phase is the phase
+//  (\d/2\p) in cycles corresponding to the Fourier term defined by
+//  _atom_site_occ_Fourier_atom_site_label and
+//  _atom_site_occ_Fourier_wave_vector_seq_id.
+
+  private final static int WV_ID = 0;
+  private final static int WV_X = 1;
+  private final static int WV_Y = 2;
+  private final static int WV_Z = 3;
+  private final static int FWV_ID = 4;
+  private final static int FWV_X = 5;
+  private final static int FWV_Y = 6;
+  private final static int FWV_Z = 7;
+  private final static int FWV_Q1_COEF = 8;
+  private final static int FWV_Q2_COEF = 9;
+  private final static int FWV_Q3_COEF = 10;
+  
+  private final static int FWV_DISP_LABEL = 11;
+  private final static int FWV_DISP_AXIS = 12;
+  private final static int FWV_DISP_ID = 13;
+  private final static int FWV_DISP_COS = 14;
+  private final static int FWV_DISP_SIN = 15;
+  private final static int FWV_DISP_MODULUS = 16;
+  private final static int FWV_DISP_PHASE = 17;
+  
+  private final static int FWV_OCC_LABEL = 18;
+  private final static int FWV_OCC_ID = 19;
+  private final static int FWV_OCC_COS = 20;
+  private final static int FWV_OCC_SIN = 21;
+  private final static int FWV_OCC_MODULUS = 22;
+  private final static int FWV_OCC_PHASE = 23;
+  
+  private final static int DISP_SPEC_LABEL = 24;
+  private final static int DISP_SAW_AX = 25; 
+  private final static int DISP_SAW_AY = 26;
+  private final static int DISP_SAW_AZ = 27;
+  private final static int DISP_SAW_C = 28;
+  private final static int DISP_SAW_W = 29;
+  
+  private final static int OCC_SPECIAL_LABEL = 30;
+  private final static int OCC_CRENEL_C = 31;
+  private final static int OCC_CRENEL_W = 32;
+  
+
+  final private static String[] modulationFields = {
+      "_cell_wave_vector_seq_id", 
+      "_cell_wave_vector_x", 
+      "_cell_wave_vector_y", 
+      "_cell_wave_vector_z", 
+      "_atom_site_fourier_wave_vector_seq_id", 
+      "_atom_site_fourier_wave_vector_x", 
+      "_atom_site_fourier_wave_vector_y", 
+      "_atom_site_fourier_wave_vector_z",
+      "_jana_atom_site_fourier_wave_vector_q1_coeff", 
+      "_jana_atom_site_fourier_wave_vector_q2_coeff", 
+      "_jana_atom_site_fourier_wave_vector_q3_coeff", 
+      "_atom_site_displace_fourier_atom_site_label", 
+      "_atom_site_displace_fourier_axis", 
+      "_atom_site_displace_fourier_wave_vector_seq_id", 
+      "_atom_site_displace_fourier_param_cos", 
+      "_atom_site_displace_fourier_param_sin", 
+      "_atom_site_displace_fourier_param_modulus", 
+      "_atom_site_displace_fourier_param_phase", 
+      "_atom_site_occ_fourier_atom_site_label", 
+      "_atom_site_occ_fourier_wave_vector_seq_id", 
+      "_atom_site_occ_fourier_param_cos", 
+      "_atom_site_occ_fourier_param_sin",
+      "_atom_site_occ_fourier_param_modulus", 
+      "_atom_site_occ_fourier_param_phase", 
+      "_atom_site_displace_special_func_atom_site_label", 
+      "_atom_site_displace_special_func_sawtooth_ax", 
+      "_atom_site_displace_special_func_sawtooth_ay", 
+      "_atom_site_displace_special_func_sawtooth_az", 
+      "_atom_site_displace_special_func_sawtooth_c", 
+      "_atom_site_displace_special_func_sawtooth_w", 
+      "_atom_site_occ_special_func_atom_site_label",
+      "_atom_site_occ_special_func_crenel_c",
+      "_atom_site_occ_special_func_crenel_w"
+  };
+  
+  /**
+   * creates entries in htModulation with a key of 
+   * the form: type_id_axis;atomLabel where
+   * type = W|F|D|O (wave vector, Fourier index, displacement, occupancy);
+   * id = 1|2|3|0|S (Fourier index, Crenel(0), sawtooth);
+   * axis (optional) = 0|x|y|z (0 indicates irrelevant -- occupancy);
+   * and ;atomLabel is only for D and O.
+   * 
+   * @throws Exception
+   */
+  private void processModulationLoopBlock() throws Exception {
+    parseLoopParameters(modulationFields);
+    int tok;
+    while (tokenizer.getData()) {
+      boolean ignore = false;
+      String id = null;
+      String atomLabel = null;
+      String axis = null;
+      P3 pt = P3.new3(Float.NaN, Float.NaN, Float.NaN);
+      float c = Float.NaN;
+      float w = Float.NaN;
+      for (int i = 0; i < tokenizer.fieldCount; ++i) {
+        switch (tok = fieldProperty(i)) {
+        case WV_ID:
+        case FWV_ID:
+          pt.x = pt.y = pt.z = 0; 
+          //$FALL-THROUGH$
+        case FWV_DISP_ID:
+        case FWV_OCC_ID:
+          switch (tok) {
+          case WV_ID:
+            id = "W_" + field;
+            break;
+          case FWV_ID:
+            id = "F_" + field;
+            break;
+          case FWV_DISP_ID:
+            id = "D_" + field;
+            break;
+          case FWV_OCC_ID:
+            id = "O_" + field;
+            break;
+          }
+          break;
+        case DISP_SPEC_LABEL:
+          id = "D_S";
+          atomLabel = field;
+          axis = "0";
+          break;
+        case OCC_SPECIAL_LABEL:
+          id = "O_0";
+          axis = "0";
+          //$FALL-THROUGH$
+        case FWV_DISP_LABEL:
+        case FWV_OCC_LABEL:
+          atomLabel = field;
+          pt.z = 0;
+          break;
+        case FWV_DISP_AXIS:
+          axis = field;
+          if (modAxes != null
+              && modAxes.indexOf(axis.toUpperCase()) < 0)
+            ignore = true;
+          break;
+        case WV_X:
+        case FWV_X:
+        case FWV_DISP_COS:
+        case FWV_OCC_COS:
+        case OCC_CRENEL_C:
+        case DISP_SAW_AX:
+          pt.x = parseFloatStr(field);
+          break;
+        case FWV_Q1_COEF:
+          id += "_q_";
+          pt.x = parseFloatStr(field);
+          switch (modDim) {
+          case 1:
+            pt.y = 0;
+            //$FALL-THROUGH$
+          case 2:
+            pt.z = 0;
+          }
+          break;
+        case FWV_DISP_MODULUS:
+        case FWV_OCC_MODULUS:
+          pt.x = parseFloatStr(field);
+          pt.z = 1;
+          break;
+        case WV_Y:
+        case FWV_Y:
+        case FWV_Q2_COEF:
+        case FWV_DISP_SIN:
+        case FWV_DISP_PHASE:
+        case FWV_OCC_SIN:
+        case FWV_OCC_PHASE:
+        case OCC_CRENEL_W:
+        case DISP_SAW_AY:
+          pt.y = parseFloatStr(field);
+          break;
+        case WV_Z:
+        case FWV_Z:
+        case FWV_Q3_COEF:
+        case DISP_SAW_AZ:
+          pt.z = parseFloatStr(field);
+          break;
+        case DISP_SAW_C:
+          c = parseFloatStr(field);
+          break;
+        case DISP_SAW_W:
+          w = parseFloatStr(field);
+          break;
+        }
+        if (ignore || Float.isNaN(pt.x + pt.y + pt.z) || id == null)
+          continue;
+        switch (id.charAt(0)) {
+        case 'W':
+        case 'F':
+          break;
+        case 'D':
+        case 'O':
+          if (atomLabel == null || axis == null)
+            continue;
+          if (id.equals("D_S")) {
+            // saw tooth displacement  center/width/Axyz
+            if (pt.x != 0)
+              addModulation(null, "D_Sx;" + atomLabel, P3.new3(c, w, pt.x));
+            if (pt.y != 0)
+              addModulation(null, "D_Sy;" + atomLabel, P3.new3(c, w, pt.y));
+            if (pt.z != 0)
+              addModulation(null, "D_Sz;" + atomLabel, P3.new3(c, w, pt.z));
+            continue;
+          }
+            id += axis + ";" + atomLabel;
+          break;
+        }
+        addModulation(null, id, pt);
+      }
+    }
+  }
+  
+
 }

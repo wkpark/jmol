@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import org.jmol.adapter.readers.cif.ModulationReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.io.JmolBinary;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
@@ -41,7 +42,9 @@ import org.jmol.util.TextFormat;
 public class JanaReader extends ModulationReader {
 
   private String m40Data;
+  private JmolList<float[]> lattvecs;
   private String[] tokens;
+  
   @Override
   public void initializeReader() throws Exception {
       setFractionalCoordinates(true);
@@ -105,7 +108,7 @@ public class JanaReader extends ModulationReader {
         ndim();
         break;
       case LATT:
-        lattvec();
+        lattvec(line.substring(8));
         break;
       case SPG:
         setSpaceGroupName(getTokens()[1]);
@@ -127,12 +130,68 @@ public class JanaReader extends ModulationReader {
   @Override
   public void finalizeReader() throws Exception {
     readM40Data();
-    finalizeIncommensurate();
+    if (lattvecs != null)
+      atomSetCollection.getSymmetry().addLatticeVectors(lattvecs);
     applySymmetryAndSetTrajectory();
     setModulation();
     finalizeReaderASCR();
   }
   
+  private void cell() throws Exception {
+    for (int ipt = 0; ipt < 6; ipt++)
+      setUnitCellItem(ipt, parseFloat());
+  }
+
+  private void ndim() {
+    setModDim(line.substring(line.length() - 1));
+  }
+
+  private int qicount;
+
+  private void qi() {
+    P3 pt = P3.new3(parseFloat(), parseFloat(), parseFloat());
+    if (qicount == 0)
+      addModulation(null, "W_1", pt);
+    addModulation(null, "F_" + (++qicount), pt);
+  }
+   private void lattvec(String data) throws Exception {
+    float[] a;
+    char c = data.charAt(0);
+    switch(c) {
+    case 'P':
+    case 'X':
+      return;
+    case 'A':
+    case 'B':
+    case 'C':
+    case 'I':
+      a = new float[] {0.5f, 0.5f, 0.5f};
+      if (c != 'I')
+        a[c - 'A'] = 0;
+      break; 
+    case 'F':
+      lattvec("A");
+      lattvec("B");
+      lattvec("C");
+      return;
+    case '0': // X explicit
+      if (data.indexOf(".") < 0)
+        return; // lattvec 0 0 0 unnecessary
+      a = getTokensFloat(data, null, modDim + 3);
+      break;
+    default:
+      appendLoadNote(line + " not supported");
+      return;
+    }
+    if (lattvecs == null)
+      lattvecs = new JmolList<float[]>();
+    lattvecs.addLast(a);
+  }
+
+  private void symmetry() throws Exception {
+    setSymmetryOperator(TextFormat.simpleReplace(line.substring(9).trim()," ", ","));
+  }
+
   private final String labels = "xyz";
 
   //  12    0    0    1
@@ -192,32 +251,6 @@ public class JanaReader extends ModulationReader {
     line = TextFormat.simpleReplace(line, "-", " -");
     tokens = getTokens();
     return line;
-  }
-
-  private int qicount;
-
-  private void qi() {
-    P3 pt = P3.new3(parseFloat(), parseFloat(), parseFloat());
-    if (qicount == 0)
-      addModulation(null, "W_1", pt);
-    addModulation(null, "F_" + (++qicount), pt);
-  }
- 
-  private void ndim() {
-    setModDim(line.substring(line.length() - 1));
-  }
-
-  private void lattvec() throws Exception {
-    addLatticeVector(line.substring(8));
-  }
-
-  private void symmetry() throws Exception {
-    setSymmetryOperator(TextFormat.simpleReplace(line.substring(9).trim()," ", ","));
-  }
-
-  private void cell() throws Exception {
-    for (int ipt = 0; ipt < 6; ipt++)
-      setUnitCellItem(ipt, parseFloat());
   }
 
 

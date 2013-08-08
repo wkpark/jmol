@@ -71,7 +71,7 @@ class SymmetryOperation extends Matrix4f {
 
   V3 originalTranslation;
   private String[] myLabels;
-  private int modDim;
+  int modDim;
   float[] rotTransMatrix;
 
 
@@ -245,8 +245,6 @@ class SymmetryOperation extends Matrix4f {
   boolean setFromMatrix(float[] offset, boolean isReverse) {
     float v = 0;
     int pt = 0;
-    if (offset != null)
-      modDim = offset.length - 3;
     myLabels = (modDim == 0 ? labelsXYZ : labelsX1_6);
     for (int i = 0; i < rotTransMatrix.length; i++) {
       if (Float.isNaN(rotTransMatrix[i]))
@@ -255,7 +253,7 @@ class SymmetryOperation extends Matrix4f {
       if (Math.abs(v) < 0.00001f)
         v = 0;
       if (i % 4 == 3) {
-        if (offset != null)
+        if (offset != null && pt < offset.length)
           v = v / 12 + offset[pt++];
         setOrigTranslation(i, v);
         v = normalizeTwelfths((v < 0 ? -1 : 1) * Math.round(Math.abs(v * 12))/ 12f, doNormalize);

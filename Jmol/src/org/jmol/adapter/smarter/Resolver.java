@@ -48,7 +48,8 @@ public class Resolver {
     "pdb.", ";Pdb;",
     "pymol.", ";PyMOL;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;", 
-    "xtal.", ";Aims;Castep;Crystal;Dmol;Espresso;Gulp;Jana;Magres;Shelx;Siesta;VaspOutcar;VaspPoscar;Wien2k;Xcrysden;"
+    "xtal.", ";Abinit;Aims;Castep;Crystal;Dmol;Espresso;Gulp;Magres;Shelx;Siesta;VaspOutcar;" +
+             "VaspPoscar;Wien2k;Xcrysden;"
   };
   
   public final static String getReaderClassBase(String type) {
@@ -873,6 +874,9 @@ public class Resolver {
   private final static String[] mopacArchiveContainsRecords =
   { "MopacArchive", "SUMMARY OF PM" };
   
+  private final static String [] abinitContainsRecords = 
+    {"ABINIT", "Louvain", "http://www.abinit.org"};
+  
   
   
   
@@ -883,7 +887,7 @@ public class Resolver {
     spartanBinaryContainsRecords, spartanContainsRecords, mol2Records, adfContainsRecords, psiContainsRecords,
     nwchemContainsRecords, uicrcifContainsRecords, dgridContainsRecords, crystalContainsRecords, 
     dmolContainsRecords, gulpContainsRecords, espressoContainsRecords, siestaContainsRecords,xcrysDenContainsRecords,
-    mopacArchiveContainsRecords
+    mopacArchiveContainsRecords,abinitContainsRecords
   };
 }
 

@@ -23,7 +23,6 @@
  */
 package org.jmol.render;
 
-import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.script.T;
 import org.jmol.shape.Axes;

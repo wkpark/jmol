@@ -69,7 +69,7 @@ class SymmetryOperation extends Matrix4f {
   private P3 atomTest;
   private P3 temp3;
 
-  V3 originalTranslation = new V3();
+  V3 originalTranslation;
   private String[] myLabels;
   private int modDim;
   float[] rotTransMatrix;
@@ -89,6 +89,7 @@ class SymmetryOperation extends Matrix4f {
                            int atomIndex, int countOrId, boolean doNormalize) {
     this.doNormalize = doNormalize;
     if (op == null) {
+      originalTranslation = new V3();
       opId = countOrId;
       return;
     }

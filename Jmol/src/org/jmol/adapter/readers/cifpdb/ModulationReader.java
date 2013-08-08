@@ -53,11 +53,11 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   protected String modAxes;
   protected boolean modAverage;
   protected boolean checkSpecial = true;
-  protected boolean modCentered;
-  protected boolean modOffset;
   protected int modDim;
+  //protected boolean modCentered;
+  //protected boolean modOffset;
   protected boolean incommensurate;
-  protected Map<String, P3> htModulation;
+  private Map<String, P3> htModulation;
   protected Atom[] atoms;
   
   protected void initializeMod() throws Exception {
@@ -65,18 +65,63 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     modVib = checkFilterKey("MODVIB");
     modAverage = checkFilterKey("MODAVE");
     checkSpecial = !checkFilterKey("NOSPECIAL");
-    modOffset = !checkFilterKey("NOMODOFFSET");
-    modCentered = !checkFilterKey("NOMODCENT");
+    atomSetCollection.setCheckSpecial(checkSpecial);
     allowRotations = !checkFilterKey("NOSYM");
-    if (!modCentered) {
-      if (doCentralize && filter.indexOf("CENTER") == filter.lastIndexOf("CENTER"))
-        doCentralize = false;
-      appendLoadNote("CIF reader not using delta to recenter modulation.");
-    }
+    //modOffset = !checkFilterKey("NOMODOFFSET");
+    //modCentered = !checkFilterKey("NOMODCENT");
+    //if (!modCentered) {
+    //  if (doCentralize && filter.indexOf("CENTER") == filter.lastIndexOf("CENTER"))
+    //    doCentralize = false;
+    //  appendLoadNote("CIF reader not using delta to recenter modulation.");
+    // }
   }
 
+  private JmolList<float[]> lattvecs;
+
+  protected void addLatticeVector(String data) {
+    if (lattvecs == null)
+      lattvecs = new JmolList<float[]>();
+    float[] a = getTokensFloat(data, null, modDim + 3);
+    boolean isOK = false;
+    for (int i = a.length; --i >= 0 && !isOK;) {
+      if (Float.isNaN(a[i]))
+        return;
+      isOK |= (a[i] != 0);
+    }
+    if (isOK)
+      lattvecs.addLast(a);
+  }
+
+  protected void finalizeIncommensurate() {
+    if (incommensurate)
+      atomSetCollection.setBaseSymmetryAtomCount(atomSetCollection.getAtomCount());
+    if (lattvecs != null)
+      atomSetCollection.getSymmetry().addLatticeVectors(lattvecs);
+  }
+
+  protected void setModDim(String token) {
+    modDim = parseIntStr(token);
+    if (modAverage)
+      return;
+    if (modDim > 1) {
+      // not ready for dim=2
+      appendLoadNote("Too high modulation dimension (" + modDim + ") -- reading average structure");
+      modDim = 0;
+      modAverage = true;
+    } else {
+      appendLoadNote("Modulation dimension = " + modDim);   
+      htModulation = new Hashtable<String, P3>();
+    }
+    incommensurate = (modDim > 0);
+  }
+  
+  protected P3 getModulationVector(String id) {
+    return htModulation.get(id);
+  }
   
   protected void addModulation(Map<String, P3> map, String id, P3 pt) {
+    if (map == null)
+      map = htModulation;
     map.put(id, pt);
     Logger.info("Adding " + id + " " + pt);
     if (id.charAt(0) == 'W' || id.charAt(0) == 'F')
@@ -88,6 +133,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
    * 
    */
   protected void setModulation() {
+    if (!incommensurate || htModulation == null)
+      return;
     Map<String, P3> map = new Hashtable<String, P3>();
     for (Entry<String, P3> e : htModulation.entrySet()) {
       String key = e.getKey();
@@ -201,8 +248,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
    * 
    * @param i
    * @param modvib
-   * @param pt0 
-   * @param sb 
+   * @param pt0
+   * @param sb
    */
   public void modulateAtom(int i, boolean modvib, P3 pt0, SB sb) {
     Atom a = atoms[i];
@@ -210,54 +257,37 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     JmolList<Modulation> list = htAtomMods.get(a.atomName);
     if (list == null || symmetry == null)
       return;
-//    if (pt0 != null) {
-      int iop = a.bsSymmetry.nextSetBit(0);
-      if (iop < 0)
-        iop = 0;
-      Matrix4f m = symmetry.getSpaceGroupOperation(iop);
-      m.getRotationScale(mtemp3);
-      //mtemp3i.invertM(mtemp3);
-      //opTrans = symmetry.getOriginalTranslation(iop);
-      //m.get(opTrans);
-      float epsilon = (modCentered ? symmetry.getModParam(iop, 0) : 1);
-      float delta = (modCentered ? symmetry.getModParam(iop, 1) : 0);
-      if (modOffset) {
-        ptemp.setT(a);
-        symmetry.unitize(ptemp);
-        offset.sub2(a, ptemp);
-        //getOffset(pt0, atoms[i]);
-      }
-      //System.out.println("=========CIF i=" + i + " " + a.atomName + " " + a);
-      //System.out.println("op=" + (iop+1) + " " + symmetry.getSpaceGroupXyz(iop, false) + " ep=" + epsilon + " de=" + delta + "\nopTrans=" + opTrans + " a=" + a);
-      qNorm = V3.newV(list.get(0).getWaveVector());
-      qNorm.normalize();
-      Modulation.modulateAtom(ptemp, offset, list, epsilon, delta, a.vib);
-      System.out.println("a.vib(abc)=" + a.vib);
-      //System.out.println("CIF R=" + mtemp3);
-      //System.out.println("CIF R-1=" + mtemp3i);
-      mtemp3.transform(a.vib);
-      sb.append((int)(qNorm.dot(offset)*1.01f) + "\n");
-//    } else {
-//      Modulation.modulateAtom(a, null, list, 1, 0f, a.vib);
-//      sb.append("0\n");
-//    }
+    //    if (pt0 != null) {
+    int iop = a.bsSymmetry.nextSetBit(0);
+    if (iop < 0)
+      iop = 0;
+    Matrix4f m = symmetry.getSpaceGroupOperation(iop);
+    m.getRotationScale(mtemp3);
+    //mtemp3i.invertM(mtemp3);
+    //opTrans = symmetry.getOriginalTranslation(iop);
+    //m.get(opTrans);
+    float epsilon = symmetry.getModParam(iop, 0);
+    float delta = symmetry.getModParam(iop, 1);
+    ptemp.setT(a);
+    symmetry.unitize(ptemp);
+    offset.sub2(a, ptemp);
+    //System.out.println("=========CIF i=" + i + " " + a.atomName + " " + a);
+    //System.out.println("op=" + (iop + 1) + " "
+      //  + symmetry.getSpaceGroupXyz(iop, false) + " ep=" + epsilon + " de="
+        //+ delta + " a=" + a);
+    qNorm = V3.newV(list.get(0).getWaveVector());
+    qNorm.normalize();
+    Modulation.modulateAtom(ptemp, offset, list, epsilon, delta, a.vib);
+    System.out.println("a.vib(abc)=" + a.vib);
+    mtemp3.transform(a.vib);
+    sb.append((int) (qNorm.dot(offset) * 1.01f) + "\n");
     if (!modvib) {
       a.add(a.vib);
       a.vib.scale(-1);
     }
     symmetry.toCartesian(a.vib, true);
-    System.out.println("a.vib(xyz)=" + a.vib);
+    //System.out.println("a.vib(xyz)=" + a.vib);
     //if (i == 98 || i == 99)
-      //System.out.println("CIFTEST");  
+      //System.out.println("CIFTEST");
   }
-
-  //  private void getOffset(P3 pt0, P3 pt1) {
-  //    ptemp.setT(pt1);
-  //    
-  //    //ptemp.sub(opTrans);
-  //    //mtemp3i.transform(ptemp);
-  //    //offset.sub2(ptemp, pt0);
-  //    System.out.println("pt0=" + pt0 + " ptemp=" + ptemp);
-  //  }
-
 }

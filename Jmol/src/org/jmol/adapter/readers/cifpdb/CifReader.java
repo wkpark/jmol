@@ -128,6 +128,11 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       molecularType = "filter \"MOLECULAR\"";
     }
     initializeMod();
+    readCifData();
+    continuing = false;
+  }
+
+  private void readCifData() throws Exception {
     
     /*
      * Modified for 10.9.64 9/23/06 by Bob Hanson to remove as much as possible
@@ -141,7 +146,6 @@ public class CifReader extends ModulationReader implements JmolLineReader {
      * report if it finds data where a key is supposed to be.
      */
     line = "";
-    skipping = false;
     while ((key = tokenizer.peekToken()) != null)
       if (!readAllData())
         break;
@@ -152,7 +156,6 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         if (!readAllData())
           break;
     }
-    continuing = false;
   }
 
   public String readNextLine() throws Exception {
@@ -211,18 +214,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       } else if (key.startsWith("_chemical_formula_sum") || key.equals("_chem_comp_formula")) {
         processChemicalInfo("formula");
       } else if (key.equals("_cell_modulation_dimension") && !modAverage) {
-        modDim = parseIntStr(data);
-        if (modDim > 1) {
-          // not ready for dim=2
-          appendLoadNote("CIF Reader: Too high modulation dimension (" + modDim + ") -- reading average structure");
-          modDim = 0;
-          modAverage = true;
-        } else {
-          appendLoadNote("CIF Reader: modulation dimension = " + modDim);   
-          htModulation = new Hashtable<String, P3>();
-          //allowRotations = false;
-        }
-        incommensurate = (modDim > 0);
+        setModDim(data);
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
       } else if (key.startsWith("_symmetry_space_group_name_H-M")
@@ -265,8 +257,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
 
   @Override
   protected void finalizeReader() throws Exception {
-    if (incommensurate)
-      atomSetCollection.setBaseSymmetryAtomCount(atomSetCollection.getAtomCount());
+    finalizeIncommensurate();
     if (atomSetCollection.getAtomCount() == nAtoms)
       atomSetCollection.removeCurrentAtomSet();
     else
@@ -285,8 +276,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         atomSetCollection.applySymmetryBio(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
       }
     }
-    if (incommensurate && htModulation != null)
-      setModulation();
+    setModulation();
     finalizeReaderASCR();
     String header = tokenizer.getFileHeader();
     if (header.length() > 0)
@@ -332,8 +322,9 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     // This speeds up calculation, because no crosschecking
     // No special-position atoms in mmCIF files, because there will
     // be no center of symmetry, no rotation-inversions, 
-    // no atom-centered rotation axes, and no mirror or glide planes. 
-    atomSetCollection.setCheckSpecial(checkSpecial && !isPDB);
+    // no atom-centered rotation axes, and no mirror or glide planes.
+    if (isPDB)
+      atomSetCollection.setCheckSpecial(false);
     boolean doCheck = doCheckUnitCell && !isPDB;
     applySymTrajASCR();
     if (doCheck && (bondTypes.size() > 0 || isMolecular))
@@ -2026,17 +2017,17 @@ _pdbx_struct_oper_list.vector[3]
           if (id.equals("D_S")) {
             // saw tooth displacement  center/width/Axyz
             if (pt.x != 0)
-              addModulation(htModulation, "D_Sx;" + atomLabel, P3.new3(c, w, pt.x));
+              addModulation(null, "D_Sx;" + atomLabel, P3.new3(c, w, pt.x));
             if (pt.y != 0)
-              addModulation(htModulation, "D_Sy;" + atomLabel, P3.new3(c, w, pt.y));
+              addModulation(null, "D_Sy;" + atomLabel, P3.new3(c, w, pt.y));
             if (pt.z != 0)
-              addModulation(htModulation, "D_Sz;" + atomLabel, P3.new3(c, w, pt.z));
+              addModulation(null, "D_Sz;" + atomLabel, P3.new3(c, w, pt.z));
             continue;
           }
             id += axis + ";" + atomLabel;
           break;
         }
-        addModulation(htModulation, id, pt);
+        addModulation(null, id, pt);
       }
     }
   }

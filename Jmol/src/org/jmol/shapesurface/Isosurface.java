@@ -1536,6 +1536,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   protected void addMeshInfo(IsosurfaceMesh mesh, Map<String, Object> info) {
     info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
+    info.put("visible", Boolean.valueOf(mesh.visible));
     info.put("vertexCount", Integer.valueOf(mesh.vertexCount));
     if (mesh.calculatedVolume != null)
       info.put("volume", mesh.calculatedVolume);

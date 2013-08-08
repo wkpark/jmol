@@ -473,7 +473,6 @@ public class AtomSetCollection {
     atomSetNumbers = new int[16];
     atomSymbolicMap = new Hashtable<Object, Integer>();
     bonds = null;
-    cartesians = null;
     connectLast = null;
     currentAtomSetIndex = -1;
     latticeCells = null;
@@ -1139,7 +1138,7 @@ public class AtomSetCollection {
         : symmetryRange < 0 ? 1 // checking against symop=1555 set; just a box
             : 1 // not checking
     );
-    cartesians = new P3[cartesianCount];
+    P3[] cartesians = new P3[cartesianCount];
     for (int i = 0; i < noSymmetryCount; i++)
       atoms[i + iAtomFirst].bsSymmetry = BSUtil.newBitSet(operationCount
           * (nCells + 1));
@@ -1197,7 +1196,7 @@ public class AtomSetCollection {
             rmaxz += absRange;
           }
           cell555Count = pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount, 0,
-              0, 0, 0, pt, iCell * operationCount);
+              0, 0, 0, pt, iCell * operationCount, cartesians);
         }
     if (checkRange111) {
       rminx -= absRange;
@@ -1217,7 +1216,7 @@ public class AtomSetCollection {
           iCell++;
           if (tx != 0 || ty != 0 || tz != 0)
             pt = symmetryAddAtoms(iAtomFirst, noSymmetryCount, tx, ty, tz,
-                cell555Count, pt, iCell * operationCount);
+                cell555Count, pt, iCell * operationCount, cartesians);
         }
     if (iCell * noSymmetryCount == atomCount - iAtomFirst)
       appendAtomProperties(iCell);
@@ -1256,7 +1255,6 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("symmetryCount", Integer.valueOf(operationCount));
   }
 
-  private P3[] cartesians;
   private int bondCount0;
   private int bondIndex0;
   private boolean applySymmetryToBonds = false;
@@ -1272,7 +1270,7 @@ public class AtomSetCollection {
   
   private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, int transX,
                                int transY, int transZ, int baseCount, int pt,
-                               int iCellOpPt) throws Exception {
+                               int iCellOpPt, P3[] cartesians) throws Exception {
     boolean isBaseCell = (baseCount == 0);
     boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
     int[] atomMap = (addBonds ? new int[noSymmetryCount] : null);

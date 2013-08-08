@@ -197,8 +197,10 @@ public class JanaReader extends ModulationReader {
   private int qicount;
 
   private void qi() {
-    addModulation(null, "F_" + (++qicount), P3.new3(parseFloat(),
-          parseFloat(), parseFloat()));
+    P3 pt = P3.new3(parseFloat(), parseFloat(), parseFloat());
+    if (qicount == 0)
+      addModulation(null, "W_1", pt);
+    addModulation(null, "F_" + (++qicount), pt);
   }
  
   private void ndim() {

@@ -80,17 +80,6 @@ public class V3 extends Tuple3f {
   }
 
   /**
-   * Computes the dot product of the this vector and vector v.
-   * 
-   * @param v
-   *        the other vector
-   * @return this.dot.v
-   */
-  public final float dot(V3 v) {
-    return x * v.x + y * v.y + z * v.z;
-  }
-
-  /**
    * Normalizes this vector in place.
    */
   public final void normalize() {

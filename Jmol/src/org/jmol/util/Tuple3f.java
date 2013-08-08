@@ -188,6 +188,17 @@ public abstract class Tuple3f implements Serializable {
     y = s * y + t1.y;
     z = s * z + t1.z;
   }
+  
+  /**
+   * Was in Vector3f; more useful here, though.
+   * 
+   * @param v
+   *        the other vector
+   * @return this.dot.v
+   */
+  public final float dot(Tuple3f v) {
+    return x * v.x + y * v.y + z * v.z;
+  }
 
   /**
    * Returns a hash number based on the data values in this object. Two

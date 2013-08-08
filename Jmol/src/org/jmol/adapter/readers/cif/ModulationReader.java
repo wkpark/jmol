@@ -32,7 +32,6 @@ import java.util.Map.Entry;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
 import org.jmol.util.Modulation;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
@@ -42,6 +41,11 @@ import org.jmol.util.V3;
 
 /**
  * abstract modulation class for CIF and Jana
+ * 
+ * Current status:
+ * 
+ * -- d=1 only
+ * -- only simple atom displacement, no occupation crenel, no sawtooth
  *  
  *  @author Bob Hanson hansonr@stolaf.edu 8/7/13
  *  
@@ -54,11 +58,14 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   protected boolean modAverage;
   protected boolean checkSpecial = true;
   protected int modDim;
-  //protected boolean modCentered;
-  //protected boolean modOffset;
   protected boolean incommensurate;
-  private Map<String, P3> htModulation;
   protected Atom[] atoms;
+  
+  private JmolList<float[]> lattvecs;
+  private V3 modT;  
+  private Matrix3f rot;
+  private Map<String, P3> htModulation;
+  private Map<String, JmolList<Modulation>> htAtomMods;
   
   protected void initializeMod() throws Exception {
     modAxes = getFilter("MODAXES=");
@@ -67,16 +74,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     checkSpecial = !checkFilterKey("NOSPECIAL");
     atomSetCollection.setCheckSpecial(checkSpecial);
     allowRotations = !checkFilterKey("NOSYM");
-    //modOffset = !checkFilterKey("NOMODOFFSET");
-    //modCentered = !checkFilterKey("NOMODCENT");
-    //if (!modCentered) {
-    //  if (doCentralize && filter.indexOf("CENTER") == filter.lastIndexOf("CENTER"))
-    //    doCentralize = false;
-    //  appendLoadNote("CIF reader not using delta to recenter modulation.");
-    // }
   }
 
-  private JmolList<float[]> lattvecs;
 
   protected void addLatticeVector(String data) {
     if (lattvecs == null)
@@ -124,8 +123,13 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       map = htModulation;
     map.put(id, pt);
     Logger.info("Adding " + id + " " + pt);
-    if (id.charAt(0) == 'W' || id.charAt(0) == 'F')
-      appendLoadNote("Wave vector " + id +" = " + pt);   
+    if (id.charAt(0) == 'W' || id.charAt(0) == 'F') {
+      appendLoadNote("Wave vector " + id +" = " + pt);
+      if (id.equals("W_1")) {
+        modT = V3.newV(pt);
+        modT.normalize();
+      }
+    }
   }
 
   /**
@@ -185,12 +189,19 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
         if (key.charAt(2) == 'S') {
           // TODO -- sawtooth, so now what? 
         } else {
+          if (htAtomMods == null)
+            htAtomMods = new Hashtable<String, JmolList<Modulation>>();
           P3 coefs = e.getValue();
           String label = key.substring(key.indexOf(";") + 1);
           int n = key.charAt(2) - '0';
           key = "F_" + n;
-          P3 q = htModulation.get(key);
-          addAtomModulation(label, q, axis, coefs, n);
+          //TODO -- THIS IS WRONG. n is just a label. It will break in 2D
+          //        but I don't know to determine "n" any other way in a CIF file. 
+          P3 nq = htModulation.get(key);
+          JmolList<Modulation> list = htAtomMods.get(label);
+          if (list == null)
+            htAtomMods.put(label, list = new JmolList<Modulation>());
+          list.addLast(new Modulation(nq, n, axis, coefs));
           haveAtomMods = true;
         }
         break;
@@ -200,94 +211,53 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       return;
     atoms = atomSetCollection.getAtoms();
     symmetry = atomSetCollection.getSymmetry();
-    mtemp3 = new Matrix3f();
-    //mtemp3i = new Matrix3f();
-    ptemp = new P3();
-    offset = new V3();
-    //opTrans = new V3();
-    // step one: All base atoms.
-    int n = atomSetCollection.baseSymmetryAtomCount;
-    P3[] pts = new P3[n];
+    rot = new Matrix3f();
     SB sb = new SB();
-    for (int i = 0; i < n; i++) {
-      pts[i] = P3.newP(atoms[i]);
-      modulateAtom(i, modVib, null, sb);
-    }
-    // step two: All other atoms.
-    int n1 = atomSetCollection.getAtomCount();
-    for (int i = n1; --i >= n;)
-      modulateAtom(i, modVib, pts[atoms[i].atomSite], sb);
+    int n = atomSetCollection.getAtomCount();
+    for (int i = 0; i < n; i++)
+      modulateAtom(atoms[i], sb);
     atomSetCollection.setAtomSetAtomProperty("modt", sb.toString(), -1);
   }
   
-  private Matrix3f mtemp3;
-  private P3 ptemp;
-  private V3 offset;
-  private Map<String, JmolList<Modulation>> htAtomMods;
-  
-  public void addAtomModulation(String label, P3 q, char axis, P3 coefs, int n) {
-    if (htAtomMods == null)
-      htAtomMods = new Hashtable<String, JmolList<Modulation>>();
-    JmolList<Modulation> list = htAtomMods.get(label);
-    if (list == null)
-      htAtomMods.put(label, list = new JmolList<Modulation>());
-    list.addLast(new Modulation(q, n, axis, coefs));
-  }
-  
-  private V3 qNorm;
-
   /**
-   * Modulation generally involves u(x4) = u(q.r + t). Here we arbitrarily set t
-   * = 0, making this u(x4) = u(q.r). For symmetry- related atoms, including
-   * lattice shifts, we need to apply this as:
-   * 
-   * u'(x4') = R'u(q.r + q.s')
-   * 
-   * where s' is the sum of all shifts, and R' is the product of all rotations.
-   * We already track symmetry, so we should be able to figure this out.
-   * 
-   * @param i
-   * @param modvib
-   * @param pt0
+   * Modulation generally involves x4 = q.r + t. Here we arbitrarily set t = 0, 
+   * but t could be a FILTER option MODT=n. There would need to be one t per dimension.
+   * The displacement will be set as the atom vibration vector. 
+   *  
+   * @param a
    * @param sb
    */
-  public void modulateAtom(int i, boolean modvib, P3 pt0, SB sb) {
-    Atom a = atoms[i];
-    a.vib = new V3();
+  public void modulateAtom(Atom a, SB sb) {
     JmolList<Modulation> list = htAtomMods.get(a.atomName);
-    if (list == null || symmetry == null)
+    if (list == null || symmetry == null || a.bsSymmetry == null)
       return;
-    //    if (pt0 != null) {
     int iop = a.bsSymmetry.nextSetBit(0);
     if (iop < 0)
       iop = 0;
-    Matrix4f m = symmetry.getSpaceGroupOperation(iop);
-    m.getRotationScale(mtemp3);
-    //mtemp3i.invertM(mtemp3);
-    //opTrans = symmetry.getOriginalTranslation(iop);
-    //m.get(opTrans);
     float epsilon = symmetry.getModParam(iop, 0);
     float delta = symmetry.getModParam(iop, 1);
-    ptemp.setT(a);
-    symmetry.unitize(ptemp);
-    offset.sub2(a, ptemp);
-    //System.out.println("=========CIF i=" + i + " " + a.atomName + " " + a);
-    //System.out.println("op=" + (iop + 1) + " "
-      //  + symmetry.getSpaceGroupXyz(iop, false) + " ep=" + epsilon + " de="
-        //+ delta + " a=" + a);
-    qNorm = V3.newV(list.get(0).getWaveVector());
-    qNorm.normalize();
-    Modulation.modulateAtom(ptemp, offset, list, epsilon, delta, a.vib);
-    System.out.println("a.vib(abc)=" + a.vib);
-    mtemp3.transform(a.vib);
-    sb.append((int) (qNorm.dot(offset) * 1.01f) + "\n");
-    if (!modvib) {
+    symmetry.getSpaceGroupOperation(iop).getRotationScale(rot);
+    a.vib = new V3();
+    Modulation.modulateAtom(list, a, epsilon, delta, rot, a.vib);
+    //System.out.println("=========MR i=" + i + " " + a.atomName + " " + a);
+    //System.out.println("op=" + (iop + 1) + " " + symmetry.getSpaceGroupXyz(iop, false) + " ep=" + epsilon + " de=" + delta);
+    //System.out.println("a.vib(abc)=" + a.vib);
+    
+    // set property_modT to be Math.floor (q.r/|q|) -- really only for d=1
+
+    float t = modT.dot(a);
+    if (Math.abs(t - (int) t) > 0.001f)
+      t = (int) Math.floor(t);
+    sb.append(((int) t) + "\n");
+
+    // displace the atom if not filter "MODVIB"
+    if (!modVib) {
       a.add(a.vib);
       a.vib.scale(-1);
     }
     symmetry.toCartesian(a.vib, true);
     //System.out.println("a.vib(xyz)=" + a.vib);
-    //if (i == 98 || i == 99)
-      //System.out.println("CIFTEST");
+    
   }
+  
 }

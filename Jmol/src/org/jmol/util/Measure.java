@@ -199,7 +199,7 @@ final public class Measure {
   }
   
   public static void getPlaneThroughPoint(P3 pt, V3 normal, P4 plane) {
-    plane.set(normal.x, normal.y, normal.z, -normal.dot(V3.newV(pt)));
+    plane.set(normal.x, normal.y, normal.z, -normal.dot(pt));
   }
   
   public static float distanceToPlane(P4 plane, P3 pt) {

@@ -25,13 +25,13 @@ package org.jmol.adapter.readers.xtal;
 
 import java.io.BufferedReader;
 
-import jspecview.util.TextFormat;
 
 import org.jmol.adapter.readers.cif.ModulationReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.io.JmolBinary;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
+import org.jmol.util.TextFormat;
 
 /**
  * A reader for Jana M50+M40 file pairs.  *

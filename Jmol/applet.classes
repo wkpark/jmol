@@ -1,6 +1,7 @@
 JmolApplet.java
 JmolSmilesApplet.java
-org/jmol/adapter/readers/cifpdb/*.java
+org/jmol/adapter/readers/cif/*.java
+org/jmol/adapter/readers/pdb/*.java
 org/jmol/adapter/readers/molxyz/*.java
 org/jmol/adapter/readers/more/*.java
 org/jmol/adapter/readers/quantum/*.java

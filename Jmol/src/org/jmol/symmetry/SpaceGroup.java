@@ -32,6 +32,7 @@ import java.util.Map;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
@@ -406,28 +407,35 @@ class SpaceGroup {
       return -1;
     }
     boolean isSpecial = (xyz0.charAt(0) == '=');
-    if (isSpecial) xyz0 = xyz0.substring(1);
+    if (isSpecial)
+      xyz0 = xyz0.substring(1);
     if (xyzList.containsKey(xyz0))
       return xyzList.get(xyz0).intValue();
     if (xyz0.startsWith("x1,x2,x3,x4") && modulationDimension == 0) {
       xyzList.clear();
       operationCount = 0;
-      modulationDimension = Parser.parseInt(xyz0.substring(xyz0.lastIndexOf("x") + 1)) - 3; 
+      modulationDimension = Parser.parseInt(xyz0.substring(xyz0
+          .lastIndexOf("x") + 1)) - 3;
     }
 
-    SymmetryOperation symmetryOperation = new SymmetryOperation(null, null, 0, opId, doNormalize);
-    if (!symmetryOperation.setMatrixFromXYZ(xyz0, modulationDimension)) {
-      Logger.error("couldn't interpret symmetry operation: " + xyz0);      
+    SymmetryOperation op = new SymmetryOperation(null, null, 0, opId,
+        doNormalize);
+    if (!op.setMatrixFromXYZ(xyz0, modulationDimension)) {
+      Logger.error("couldn't interpret symmetry operation: " + xyz0);
       return -1;
     }
-    String xyz = symmetryOperation.xyz;
+    return addOp(op, xyz0, isSpecial);
+  }
+
+  private int addOp(SymmetryOperation op, String xyz0, boolean isSpecial) {
+    String xyz = op.xyz;
     if (!isSpecial) {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return xyzList.get(xyz).intValue();
       xyzList.put(xyz, Integer.valueOf(operationCount));
     }
-    if (!xyz.equals(xyz0))
+    if (xyz != null && !xyz.equals(xyz0))
       xyzList.put(xyz0, Integer.valueOf(operationCount));
     if (operations == null) {
       operations = new SymmetryOperation[4];
@@ -436,10 +444,10 @@ class SpaceGroup {
     if (operationCount == operations.length)
       operations = (SymmetryOperation[]) ArrayUtil.arrayCopyObject(operations,
           operationCount * 2);
-    operations[operationCount++] = symmetryOperation;
+    operations[operationCount++] = op;
     if (Logger.debugging)
         Logger.debug("\naddOperation " + operationCount
-        + symmetryOperation.dumpInfo());
+        + op.dumpInfo());
     return operationCount - 1;
   }
 
@@ -1372,6 +1380,26 @@ class SpaceGroup {
       , new SpaceGroup("230;oh^10;i a -3 d;-i 4bd 2c 3")
     } : spaceGroupDefinitions);
   }
+
+  public void addLatticeVectors(JmolList<float[]> lattvecs) {
+    int nOps = operationCount;
+    for (int j = 0; j < lattvecs.size(); j++) {
+      float[] data = lattvecs.get(j);
+      if (data.length != modulationDimension + 3)
+        return;
+      for (int i = 0; i < nOps; i++) {
+        SymmetryOperation op = operations[i];
+        float[] rotTrans = op.rotTransMatrix;
+        SymmetryOperation newOp = new SymmetryOperation(null, null, 0, 0,
+            doNormalize);
+        newOp.rotTransMatrix = ArrayUtil.arrayCopyF(rotTrans, -1);
+        newOp.setFromMatrix(data, false);
+        newOp.xyzOriginal = newOp.xyz;
+        addOp(newOp, newOp.xyz, true);
+      }
+    }
+  }
+
 
   /*  see http://cci.lbl.gov/sginfo/itvb_2001_table_a1427_hall_symbols.html
 

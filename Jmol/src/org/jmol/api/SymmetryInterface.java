@@ -6,10 +6,12 @@ import java.util.Map;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.BS;
+import org.jmol.util.JmolList;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
+import org.jmol.util.P4;
 import org.jmol.util.Tensor;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
@@ -177,5 +179,7 @@ public interface SymmetryInterface {
   public boolean unitCellEquals(SymmetryInterface uc2);
 
   public void unitize(P3 ptFrac);
+
+  public void addLatticeVectors(JmolList<float[]> lattvecs);
   
 }

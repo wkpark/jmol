@@ -661,14 +661,16 @@ public abstract class AtomSetCollectionReader {
     Logger.info("Setting space group name to " + spaceGroup);
   }
 
-  public void setSymmetryOperator(String xyz) {
+  public int setSymmetryOperator(String xyz) {
     if (ignoreFileSymmetryOperators)
-      return;
+      return -1;
     atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
         doPackUnitCell, doCentroidUnitCell, centroidPacked, strSupercell, ptSupercell);
-    if (!atomSetCollection.addSpaceGroupOperation(xyz))
+    int isym = atomSetCollection.addSpaceGroupOperation(xyz);
+    if (isym < 0)
       Logger.warn("Skipping symmetry operation " + xyz);
     iHaveSymmetryOperators = true;
+    return isym;
   }
 
   private int nMatrixElements = 0;

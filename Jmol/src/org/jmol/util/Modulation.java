@@ -85,6 +85,6 @@ public class Modulation extends V3 {
       vecMod.z += v;
       break;
     }
-    //System.out.println("MOD q=" + q + " r=" + r + " axis=" + axis + " theta=" + theta + " ccos=" + ccos + " csin=" + csin + " delta=" + delta + " v=" + v);
+    System.out.println("MOD q=" + q + " r=" + r + " axis=" + axis + " theta=" + theta + " ccos=" + ccos + " csin=" + csin + " delta=" + delta + " v=" + v);
   }
 }

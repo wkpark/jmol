@@ -8533,7 +8533,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
           if (isProperty)
             viewer.setData(property2,
-                new Object[] { property2, dataOut, bsOut, Integer.valueOf(0) }, viewer
+                new Object[] { property2, dataOut, bsOut, Integer.valueOf(0)}, viewer
                     .getAtomCount(), 0, 0, Integer.MAX_VALUE, 0);
           else
             viewer.setAtomProperty(bsOut, tokProp2, 0, 0, null, dataOut, null);
@@ -8629,7 +8629,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (dataType.indexOf("ligand_") == 0) {
       // ligand structure for pdbAddHydrogen
-      viewer.setLigandModel(dataLabel.substring(7), dataString.trim());
+      viewer.setLigandModel(dataLabel.substring(7).toUpperCase()+ "_data", dataString.trim());
+      return;
+    }
+    if (dataType.indexOf("file_") == 0) {
+      // ligand structure for pdbAddHydrogen
+      viewer.setLigandModel(dataLabel.substring(5).toUpperCase()+ "_file", dataString.trim());
       return;
     }
     if (dataType.indexOf("data2d_") == 0) {
@@ -14195,7 +14200,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         viewer.setData(propertyName, new Object[] {
             propertyName,
             (tv.tok == T.varray ? SV.flistValue(tv,((JmolList<?>)tv.value).size() == bs.cardinality() ? bs.cardinality() : viewer.getAtomCount()) : tv.asString()), 
-             BSUtil.copy(bs), Integer.valueOf(tv.tok == T.varray ? 1 : 0) }, 
+             BSUtil.copy(bs), Integer.valueOf(tv.tok == T.varray ? 1 : 0), Boolean.FALSE }, 
              viewer.getAtomCount(), 0, 0, tv.tok == T.varray ? Integer.MAX_VALUE
             : Integer.MIN_VALUE, 0);
         return;

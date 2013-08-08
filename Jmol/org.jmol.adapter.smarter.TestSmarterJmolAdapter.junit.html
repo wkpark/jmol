@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>org.jmol.adapter.smarter.TestSmarterJmolAdapter</title>
+<style text="text/css">
+div.powered {
+	position:absolute;
+	right:0;
+	top:0;
+	margin:1em;
+}
+a.alaa {
+	display:block;
+	white-space:nowrap;
+	width:1em;
+	overflow-x:visible;
+	text-decoration:none;
+	padding-left:32px;
+	margin:2em;
+	color:navy;
+	cursor:pointer;
+	cursor:hand;
+}
+span.alaa-icon {
+	display:block;
+	position:absolute;
+	width:16px;
+	height:16px;
+	margin:2px 8px 0 -24px;
+	background-color:rgb(57,61,254);
+}
+</style>
+</head>
+<body>
+<!-- A Link An Application (ALAA) -->
+<div class="powered">Powered by <a href="http://java2script.org/">Java2Script</a></div>
+<a class="alaa" title="Launch org.jmol.adapter.smarter.TestSmarterJmolAdapter" href="javascript:if(a='org.jmol.adapter.smarter.TestSmarterJmolAdapter@bin',window['ClazzLoader']!=null)$u$(a);else{var d=document,t='onreadystatechange',x=d.createElement('SCRIPT'),f=function(){var s=this.readyState;if(s==null||s=='loaded'||s=='complete'){$u$(a);}};x.src='../../eclipse/plugins/net.sf.j2s.lib_2.0.0/j2slib/j2slib.z.js';(typeof x[t]=='undefined')?x.onload=f:x[t]=f;d.getElementsByTagName('HEAD')[0].appendChild(x);void(0);}"><span class="alaa-icon"></span>org.jmol.adapter.smarter.TestSmarterJmolAdapter</a>
+
+<script type="text/javascript">
+window["j2s.lib"] = {
+	/*base : "http://archive.java2script.org/",*/
+	base : "../../eclipse/plugins/net.sf.j2s.lib_2.0.0/",
+	/*alias : "2.0.0",*/
+	alias : "j2slib",
+	version : "20081203",
+	/*forward : true,*/
+	mode : "dailybuild",
+	onload : function () {
+		ClazzLoader.setPrimaryFolder ("bin");
+		ClazzLoader.loadClass ("junit.textui.TestRunner", function () {
+			ClazzLoader.loadClass ("org.jmol.adapter.smarter.TestSmarterJmolAdapter", function () {
+				junit.textui.TestRunner.run (org.jmol.adapter.smarter.TestSmarterJmolAdapter.suite ());
+			});
+		});
+	}
+};
+
+// mozilla.addon.js
+// Following script will make J2SLib compatiable with Java2Script addon
+function generateScriptCallback () {
+	return function () {
+		var s = this.readyState;
+		if (s == null || s == "loaded" || s == "complete") {
+			if (window["ClazzLoader"] != null) {
+				window["j2s.lib"].onload (this);
+			}
+			this.onreadystatechange = null;
+			this.onload = null;
+		}
+	};
+};
+function loadJ2SLibZJS (path, cb) {
+	var sxr = document.createElement ("SCRIPT");
+	sxr.src = path;
+	sxr.type = "text/javascript";
+	if (cb) {
+		var t = "onreadystatechange";
+		var xhrCallback = generateScriptCallback ();
+		if (typeof sxr[t] == "undefined") {
+			sxr.onload = xhrCallback;
+		} else {
+			sxr[t] = xhrCallback;
+		}
+	}
+	document.getElementsByTagName ("HEAD")[0].appendChild (sxr);
+};
+if (navigator.userAgent.toLowerCase ().indexOf ("gecko") != -1) {
+	loadJ2SLibZJS("chrome://java2script/content/j2slib.js");
+	window.setTimeout (function () {
+		if (window["j2s.addon.loaded"]) return; // Loaded by Firefox addon!
+		var o = window["j2s.lib"];
+		if (o.base == null) {
+			o.base = "http://archive.java2script.org/";
+		}
+		o.j2sBase = o.base + (o.alias ? o.alias : o.version) + "/";
+		loadJ2SLibZJS(o.j2sBase + "j2slib.z.js", o.onload);
+	}, 300); // with 0.3 second lag! 0.3 is enough for chrome://*.js to be loaded.
+} else {
+	var o = window["j2s.lib"];
+	if (o.base == null) {
+		o.base = "http://archive.java2script.org/";
+	}
+	o.j2sBase = o.base + (o.alias ? o.alias : o.version) + "/";
+	loadJ2SLibZJS(o.j2sBase + "j2slib.z.js", o.onload);
+}</script>
+</body>
+</html>

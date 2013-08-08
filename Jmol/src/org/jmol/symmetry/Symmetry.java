@@ -35,11 +35,13 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
+import org.jmol.util.P4;
 import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
@@ -651,6 +653,10 @@ public class Symmetry implements SymmetryInterface {
 
   public boolean unitCellEquals(SymmetryInterface uc2) {
     return ((Symmetry) (uc2)).unitCell.isSameAs(unitCell);
+  }
+
+  public void addLatticeVectors(JmolList<float[]> lattvecs) {
+    spaceGroup.addLatticeVectors(lattvecs);
   }
 
 }  

@@ -466,8 +466,10 @@ public class StateCreator implements JmolStateCreator {
     while (e.hasNext()) {
       String name = e.next();
       if (name.indexOf("property_") == 0) {
-        haveData = true;
         Object[] obj = dm.dataValues.get(name);
+        if (obj.length > DataManager.DATA_SAVE_IN_STATE && obj[DataManager.DATA_SAVE_IN_STATE] == Boolean.FALSE)
+          continue;
+        haveData = true;
         Object data = obj[1];
         if (data != null && ((Integer) obj[3]).intValue() == 1) {
           getAtomicPropertyStateBuffer(sb, AtomCollection.TAINT_MAX,
@@ -492,7 +494,6 @@ public class StateCreator implements JmolStateCreator {
         }
       }
     }
-
     if (dm.userVdws != null) {
       String info = dm.getDefaultVdwNameOrData(0, EnumVdw.USER, dm.bsUserVdws);
       if (info.length() > 0) {
@@ -1798,6 +1799,10 @@ public class StateCreator implements JmolStateCreator {
         if (data != null)
           cmds.append("  ").append(
               Escape.encapsulateData("ligand_" + key, data.trim() + "\n", 0));
+        data = (String) viewer.ligandModels.get(key + "_file");
+        if (data != null)
+          cmds.append("  ").append(
+              Escape.encapsulateData("file_" + key, data.trim() + "\n", 0));
       }
     }
     SB commands = new SB();

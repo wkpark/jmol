@@ -2108,11 +2108,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   Map<String, Object> ligandModels;
   Map<String, Boolean> ligandModelSet;
 
-  public void setLigandModel(String id, String data) {
-    id = id.toUpperCase();
+  public void setLigandModel(String key, String data) {
     if (ligandModels == null)
       ligandModels = new Hashtable<String, Object>();
-    ligandModels.put(id + "_data", data);
+    ligandModels.put(key, data);
   }
 
   /**
@@ -2120,9 +2119,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    * @param id
    *        if null, clear "bad" entries from the set.
-   * @return a ligand model or null
+   * @param prefix 
+   * @param suffix 
+   * @return a ligand model or a string if just file data or null
    */
-  public Object getLigandModel(String id) {
+  public Object getLigandModel(String id, String prefix, String suffix) {
     if (id == null) {
       if (ligandModelSet != null) {
         Iterator<Map.Entry<String, Object>> e = ligandModels.entrySet()
@@ -2135,7 +2136,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       return null;
     }
-    id = id.toUpperCase();
+    boolean isLigand = prefix.equals("ligand_");
+    if (isLigand)
+      id = id.toUpperCase();
     if (ligandModelSet == null)
       ligandModelSet = new Hashtable<String, Boolean>();
     ligandModelSet.put(id, Boolean.TRUE);
@@ -2147,18 +2150,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (model instanceof Boolean)
       return null;
     if (model == null)
-      model = ligandModels.get(id + "_data");
+      model = ligandModels.get(id + suffix);
     boolean isError = false;
     if (model == null) {
-      fname = (String) setLoadFormat("#" + id, '#', false);
-      if (fname.length() == 0)
-        return null;
-      scriptEcho("fetching " + fname);
-      model = getFileAsString(fname);
-      isError = (((String) model).indexOf("java.") == 0);
+      if (isLigand) {
+        fname = (String) setLoadFormat("#" + id, '#', false);
+        if (fname.length() == 0)
+          return null;
+        scriptEcho("fetching " + fname);
+        model = getFileAsString(fname);
+        isError = (((String) model).indexOf("java.") == 0);
+      } else {
+        model = getFileAsString(prefix);
+      }
       if (!isError)
-        ligandModels.put(id + "_data", model);
+        ligandModels.put(id + suffix, model);
     }
+    if (!isLigand)
+      return model;
     if (!isError && model instanceof String) {
       data = (String) model;
       // TODO: check for errors in reading file

@@ -66,7 +66,8 @@ class DataManager {
   private final static int DATA_VALUE = 1;
   private final static int DATA_SELECTION_MAP = 2;
   private final static int DATA_TYPE = 3;
-  
+  final static int DATA_SAVE_IN_STATE = 4;
+    
   void setData(String type, Object[] data, int arrayCount, int actualAtomCount,
                int matchField, int matchFieldColumnCount, int field,
                int fieldColumnCount) {
@@ -76,6 +77,7 @@ class DataManager {
      * data[1] -- string or float[] or float[][] or float[][][]
      * data[2] -- selection bitset or int[] atomMap when field > 0
      * data[3] -- arrayDepth 0(String),1(float[]),2,3(float[][][])
+     * data[4] -- Boolean.TRUE == saveInState
      * 
      * matchField = data must match atomNo in this column, >= 1
      * field = column containing the data, >= 1:

@@ -918,9 +918,9 @@ public class AtomSetCollection {
     }
   }
 
-  boolean addSpaceGroupOperation(String xyz) {
+  int addSpaceGroupOperation(String xyz) {
     getSymmetry().setSpaceGroup(doNormalize);
-    return (symmetry.addSpaceGroupOperation(xyz, 0) >= 0);
+    return symmetry.addSpaceGroupOperation(xyz, 0);
   }
   
   public void setLatticeParameter(int latt) {

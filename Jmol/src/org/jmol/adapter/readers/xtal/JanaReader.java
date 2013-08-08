@@ -23,12 +23,15 @@
  */
 package org.jmol.adapter.readers.xtal;
 
-import org.jmol.adapter.readers.cifpdb.ModulationReader;
-import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.adapter.smarter.Atom;
+import java.io.BufferedReader;
 
-import org.jmol.util.ArrayUtil;
+import jspecview.util.TextFormat;
+
+import org.jmol.adapter.readers.cif.ModulationReader;
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.io.JmolBinary;
 import org.jmol.util.Logger;
+import org.jmol.util.P3;
 
 /**
  * A reader for Jana M50+M40 file pairs.  *
@@ -37,239 +40,183 @@ import org.jmol.util.Logger;
 
 public class JanaReader extends ModulationReader {
 
-  private String[] sfacElementSymbols;
-  private boolean isCmdf;
-  String[] tokens;
-  
+  private String m40Data;
+  private String[] tokens;
   @Override
   public void initializeReader() throws Exception {
       setFractionalCoordinates(true);
       initializeMod();
+      atomSetCollection.newAtomSet();
+      String name = filePath;
+      int pt = name.lastIndexOf(".");
+      if (pt < 0)
+        return;
+      name = name.substring(0, pt + 2) + "40";
+      String id = name.substring(0, pt);
+      pt = id.lastIndexOf("/");
+      id = id.substring(pt + 1);
+      m40Data = (String) viewer.getLigandModel(id, name, "_file");
   }
   
+  final static String records = "tit  cell ndim qi   lat  sym  spg  end";
+  //                             0    5    10   15   20   25   30   35
+  final static int TITLE = 0;
+  final static int CELL  = 5;
+  final static int NDIM  = 10;
+  final static int QI    = 15;
+  final static int LATT  = 20;
+  final static int SYM   = 25;
+  final static int SPG   = 30;
+  final static int END   = 35;
+  
+//  Version Jana2006
+//  title
+//  cell 8.987 15.503 12.258 90 90 90
+//  esdcell 0.002 0.002 0.002 0 0 0
+//  ndim 4 ncomp 1
+//  qi 0 0 0.413
+//  qr 0 0 0
+//  spgroup Pmcn(00g)s00 62 3
+//  lattice P
+//  symmetry x1 x2 x3 x4
+//  symmetry -x1+1/2 -x2+1/2 x3+1/2 x4+1/2
+//  symmetry -x1 x2+1/2 -x3+1/2 -x4
+//  symmetry x1+1/2 -x2 -x3 -x4+1/2
+//  symmetry -x1 -x2 -x3 -x4
+//  symmetry x1+1/2 x2+1/2 -x3+1/2 -x4+1/2
+//  symmetry x1 -x2+1/2 x3+1/2 x4
+//  symmetry -x1+1/2 x2 x3 x4+1/2
+
   @Override
   protected boolean checkLine() throws Exception {
-
-    int lineLength ;
-    // '=' as last char of line means continue on next line
-    while ((lineLength = (line = line.trim()).length()) > 0 
-        && line.charAt(lineLength - 1) == '=') 
-      line = line.substring(0, lineLength - 1) + readLine();
-    
-    tokens = getTokens();
-    if (tokens.length == 0)
+    if (line.length() < 3)
       return true;
-    String command = tokens[0].toUpperCase();
-    if (command.equals("TITL")) {
-      if (!doGetModel(++modelNumber, null))
-        return checkLastModel();
-      sfacElementSymbols = null;
-      applySymmetryAndSetTrajectory();
-      setFractionalCoordinates(true);
-      atomSetCollection.newAtomSet();
-      atomSetCollection.setAtomSetName(line.substring(4).trim());
-      return true;
+    Logger.info(line);
+    parseTokenStr(line);
+    switch (records.indexOf(line.substring(0, 3))) {
+      case TITLE:
+        atomSetCollection.setAtomSetName(line.substring(5).trim());
+        break;
+      case CELL:
+        cell();
+        setSymmetryOperator("x,y,z");
+        break;
+      case NDIM:
+        ndim();
+        break;
+      case LATT:
+        lattvec();
+        break;
+      case SPG:
+        setSpaceGroupName(getTokens()[1]);
+        break;
+      case SYM:
+        symmetry();        
+        break;
+      case QI:
+        if (!modAverage)
+          qi();
+        break;
+      case END:
+        continuing = false;
+        break;
     }
-
-    if (!doProcessLines || lineLength < 3)
-      return true;
-
-    if (unsupportedRecordTypes.indexOf(";" + command + ";") >= 0)
-      return true;
-    for (int i = supportedRecordTypes.length; --i >= 0;)
-      if (command.equals(supportedRecordTypes[i])) {
-        processSupportedRecord(i);
-        return true;
-      }
-    if (!isCmdf)
-      assumeAtomRecord();
     return true;
   }
 
-  private final static String unsupportedRecordTypes = 
-    ";ZERR;DISP;UNIT;LAUE;REM;MORE;TIME;" +
-    "HKLF;OMIT;SHEL;BASF;TWIN;EXTI;SWAT;HOPE;MERG;" +
-    "SPEC;RESI;MOVE;ANIS;AFIX;HFIX;FRAG;FEND;EXYZ;" +
-    "EXTI;EADP;EQIV;" +
-    "CONN;PART;BIND;FREE;" +
-    "DFIX;DANG;BUMP;SAME;SADI;CHIV;FLAT;DELU;SIMU;" +
-    "DEFS;ISOR;NCSY;SUMP;" +
-    "L.S.;CGLS;BLOC;DAMP;STIR;WGHT;FVAR;" +
-    "BOND;CONF;MPLA;RTAB;HTAB;LIST;ACTA;SIZE;TEMP;" +
-    "WPDB;" +
-    "FMAP;GRID;PLAN;MOLE;";
+  @Override
+  public void finalizeReader() throws Exception {
+    readM40Data();
+    finalizeIncommensurate();
+    applySymmetryAndSetTrajectory();
+    setModulation();
+    finalizeReaderASCR();
+  }
   
-  final private static String[] supportedRecordTypes = { "TITL", "CELL", "SPGR",
-      "SFAC", "LATT", "SYMM", "NOTE", "ATOM", "END" };
+  private final String labels = "xyz";
 
-  private void processSupportedRecord(int recordIndex) throws Exception {
-    //Logger.debug(recordIndex+" "+line);
-    switch (recordIndex) {
-    case 0: // TITL
-    case 8: // END
-      break;
-    case 1: // CELL
-      cell();
-      setSymmetryOperator("x,y,z");
-      break;
-    case 2: // SPGR
-      setSpaceGroupName(parseTrimmedAt(line, 4));
-      break;
-    case 3: // SFAC
-      parseSfacRecord();
-      break;
-    case 4: // LATT
-      parseLattRecord();
-      break;
-    case 5: // SYMM
-      parseSymmRecord();
-      break;
-    case 6: // NOTE
-      isCmdf = true;
-      break;
-    case 7: // ATOM
-      isCmdf = true;
-      processCmdfAtoms();
-      break;
+  //  12    0    0    1
+  //  1.000000 0.000000 0.000000 0.000000 0.000000 0.000000      000000
+  //  0.000000 0.000000                                          00
+  //  0.000000 0.000000 0.000000 0.000000 0.000000 0.000000      000000
+  //  0.000000 0.000000 0.000000 0.000000 0.000000 0.000000      000000
+  // Zn        5  1     0.500000 0.250000 0.406400 0.244000      000  0  2  0
+  //  0.048000 0.000000 0.000000 0.000000 0.000000 0.000000      0000000000
+  //  0.015300 0.000000 0.000000-0.010100 0.000000 0.000000      000000
+  //  0.000000 0.000200-0.000100 0.000000 0.000500-0.000400      000000
+  //  0.000000                                                   0
+
+  private void readM40Data() throws Exception {
+    if (m40Data == null)
+      return;
+    BufferedReader r = JmolBinary.getBufferedReaderForString(m40Data);
+    readM40Line(r);
+    int nAtoms = parseIntStr(tokens[0]);
+    for (int i = 0; i < nAtoms; i++) {
+      while (readM40Line(r).length() == 0 || line.charAt(0) == ' ') {
+      }
+      Atom atom = atomSetCollection.addNewAtom();
+      atom.atomName = tokens[0];
+      setAtomCoordXYZ(atom, parseFloatStr(tokens[4]), parseFloatStr(tokens[5]), parseFloatStr(tokens[6]));
+      int nq = (incommensurate && tokens.length > 9 ? parseIntStr(tokens[9]) : 0);
+      r.readLine();
+      for (int j = 0; j < nq; j++) {
+        P3 pt;
+        if (j > 0 && getModulationVector("F_" + (j + 1)) == null) {
+          pt = P3.newP(getModulationVector("F_1"));
+          pt.scale(j + 1);
+          addModulation(null, "F_" + (j + 1), pt);
+        }
+        readM40Line(r);
+        System.out.println(line);
+        for (int k = 0; k < 3; ++k) {
+          float ccos = parseFloatStr(tokens[k]);
+          float csin = parseFloatStr(tokens[k + 3]);
+          if (csin == 0 && ccos == 0)
+            continue;
+          String axis = "" + labels.charAt(k % 3);
+          if (modAxes != null
+              && modAxes.indexOf(axis.toUpperCase()) < 0)
+            continue;
+          String id = "D_" + (j + 1) + axis + ";" + atom.atomName;
+          pt = P3.new3(csin, ccos, 0);
+          addModulation(null, id, pt);
+        }
+      }
     }
+    r.close();
   }
 
-  private void parseLattRecord() throws Exception {
-    parseTokenStr(line);
-    int latt = parseInt();
-    atomSetCollection.setLatticeParameter(latt);
+  private String readM40Line(BufferedReader r) throws Exception {
+    line = r.readLine();
+    line = TextFormat.simpleReplace(line, "-", " -");
+    tokens = getTokens();
+    return line;
   }
 
-  private void parseSymmRecord() throws Exception {
-    setSymmetryOperator(line.substring(4).trim());
+  private int qicount;
+
+  private void qi() {
+    addModulation(null, "F_" + (++qicount), P3.new3(parseFloat(),
+          parseFloat(), parseFloat()));
+  }
+ 
+  private void ndim() {
+    setModDim(line.substring(line.length() - 1));
+  }
+
+  private void lattvec() throws Exception {
+    addLatticeVector(line.substring(8));
+  }
+
+  private void symmetry() throws Exception {
+    setSymmetryOperator(TextFormat.simpleReplace(line.substring(9).trim()," ", ","));
   }
 
   private void cell() throws Exception {
-    /* example:
-     * CELL   wavelngth    a        b         c       alpha   beta   gamma
-     * CELL   1.54184   7.11174  21.71704  30.95857  90.000  90.000  90.000
-     * 
-     * or CrystalMaker file:
-     * 
-     * CELL       a        b         c       alpha   beta   gamma
-     * CELL   7.11174  21.71704  30.95857  90.000  90.000  90.000
-     */
-
-    int ioff = tokens.length - 6;
-    if (ioff == 2)
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("wavelength",
-          Float.valueOf(parseFloatStr(tokens[1])));
     for (int ipt = 0; ipt < 6; ipt++)
-      setUnitCellItem(ipt, parseFloatStr(tokens[ipt + ioff]));
+      setUnitCellItem(ipt, parseFloat());
   }
 
-  private void parseSfacRecord() {
-    // an SFAC record is one of two cases
-    // a simple SFAC record contains element names
-    // a general SFAC record contains coefficients for a single element
-    boolean allElementSymbols = true;
-    for (int i = tokens.length; allElementSymbols && --i >= 1;) {
-      String token = tokens[i];
-      allElementSymbols = Atom.isValidElementSymbolNoCaseSecondChar(token);
-    }
-    String[] sfacTokens = getTokensStr(line.substring(4));
-    if (allElementSymbols)
-      parseSfacElementSymbols(sfacTokens);
-    else
-      parseSfacCoefficients(sfacTokens);
-  }
-
-  private void parseSfacElementSymbols(String[] sfacTokens) {
-    if (sfacElementSymbols == null) {
-      sfacElementSymbols = sfacTokens;
-    } else {
-      int oldCount = sfacElementSymbols.length;
-      int tokenCount = sfacTokens.length;
-      sfacElementSymbols = ArrayUtil.arrayCopyS(sfacElementSymbols, oldCount + tokenCount);
-      for (int i = tokenCount; --i >= 0;)
-        sfacElementSymbols[oldCount + i] = sfacTokens[i];
-    }
-  }
-  
-  private void parseSfacCoefficients(String[] sfacTokens) {
-    float a1 = parseFloatStr(sfacTokens[1]);
-    float a2 = parseFloatStr(sfacTokens[3]);
-    float a3 = parseFloatStr(sfacTokens[5]);
-    float a4 = parseFloatStr(sfacTokens[7]);
-    float c = parseFloatStr(sfacTokens[9]);
-    // element # is these floats rounded to nearest int
-    int z = Math.round(a1 + a2 + a3 + a4 + c);
-    String elementSymbol = getElementSymbol(z);
-    int oldCount = 0;
-    if (sfacElementSymbols == null) {
-      sfacElementSymbols = new String[1];
-    } else {
-      oldCount = sfacElementSymbols.length;
-      sfacElementSymbols = ArrayUtil.arrayCopyS(sfacElementSymbols, oldCount + 1);
-      sfacElementSymbols[oldCount] = elementSymbol;
-    }
-    sfacElementSymbols[oldCount] = elementSymbol;
-  }
-
-  private void assumeAtomRecord() throws Exception {
-    // this line gives an atom, because any line not starting with
-    // a SHELX command is an atom
-    String atomName = tokens[0];
-    int elementIndex = parseIntStr(tokens[1]);
-    float x = parseFloatStr(tokens[2]);
-    float y = parseFloatStr(tokens[3]);
-    float z = parseFloatStr(tokens[4]);
-    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)) {
-      Logger.error("skipping line " + line);
-      return;
-    }
-      
-    elementIndex--;
-    Atom atom = atomSetCollection.addNewAtom();
-    atom.atomName = atomName;
-    if (sfacElementSymbols != null && elementIndex >= 0 && elementIndex < sfacElementSymbols.length)
-        atom.elementSymbol = sfacElementSymbols[elementIndex];
-    setAtomCoordXYZ(atom, x, y, z);
-    
-    if (tokens.length == 12) {
-      float[] data = new float[8];
-      data[0] = parseFloatStr(tokens[6]);  //U11
-      data[1] = parseFloatStr(tokens[7]);  //U22
-      data[2] = parseFloatStr(tokens[8]);  //U33
-      data[3] = parseFloatStr(tokens[11]); //U12
-      data[4] = parseFloatStr(tokens[10]); //U13
-      data[5] = parseFloatStr(tokens[9]);  //U23
-      for (int i = 0; i < 6; i++)
-        if (Float.isNaN(data[i])) {
-            Logger.error("Bad anisotropic Uij data: " + line);
-            return;
-        }
-      atomSetCollection.setAnisoBorU(atom, data, 8);
-      // Ortep Type 8: D = 2pi^2, C = 2, a*b*  
-    }
-  }
-
-  private void processCmdfAtoms() throws Exception {
-    while (readLine() != null && line.length() > 10) {
-      Atom atom = atomSetCollection.addNewAtom();
-      tokens = getTokens();
-      atom.elementSymbol = getSymbol(tokens[0]);
-      atom.atomName = tokens[1];
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[2]), parseFloatStr(tokens[3]),
-          parseFloatStr(tokens[4]));
-    }
-  }
-
-  private String getSymbol(String sym) {
-    if (sym == null)
-      return "Xx";
-    int len = sym.length();
-    if (len < 2)
-      return sym;
-    char ch1 = sym.charAt(1);
-    if (ch1 >= 'a' && ch1 <= 'z')
-      return sym.substring(0, 2);
-    return "" + sym.charAt(0);
-  }
 
 }

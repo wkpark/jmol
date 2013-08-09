@@ -48,7 +48,7 @@ public class Resolver {
     "pdb.", ";Pdb;",
     "pymol.", ";PyMOL;",
     "simple.", ";Alchemy;Ampac;Cube;FoldingXyz;GhemicalMM;HyperChem;Jme;Mopac;MopacArchive;ZMatrix;", 
-    "xtal.", ";Abinit;Aims;Castep;Crystal;Dmol;Espresso;Gulp;Magres;Shelx;Siesta;VaspOutcar;" +
+    "xtal.", ";Abinit;Aims;Castep;Crystal;Dmol;Espresso;Gulp;Jana;Magres;Shelx;Siesta;VaspOutcar;" +
              "VaspPoscar;Wien2k;Xcrysden;"
   };
   

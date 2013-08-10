@@ -151,8 +151,8 @@ public class JanaReader extends ModulationReader {
   private void qi() {
     P3 pt = P3.new3(parseFloat(), parseFloat(), parseFloat());
     if (qicount == 0)
-      addModulation(null, "W_1", pt);
-    addModulation(null, "F_" + (++qicount), pt);
+      addModulation(null, "W_1", pt, -1);
+    addModulation(null, "F_" + (++qicount), pt, -1);
   }
    private void lattvec(String data) throws Exception {
     float[] a;
@@ -224,7 +224,7 @@ public class JanaReader extends ModulationReader {
         if (j > 0 && getModulationVector("F_" + (j + 1)) == null) {
           pt = P3.newP(getModulationVector("F_1"));
           pt.scale(j + 1);
-          addModulation(null, "F_" + (j + 1), pt);
+          addModulation(null, "F_" + (j + 1), pt, -1);
         }
         readM40Line(r);
         System.out.println(line);
@@ -239,7 +239,7 @@ public class JanaReader extends ModulationReader {
             continue;
           String id = "D_" + (j + 1) + axis + ";" + atom.atomName;
           pt = P3.new3(csin, ccos, 0);
-          addModulation(null, id, pt);
+          addModulation(null, id, pt, -1);
         }
       }
     }

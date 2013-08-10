@@ -190,7 +190,7 @@ public abstract class Tuple3f implements Serializable {
   }
   
   /**
-   * Was in Vector3f; more useful here, though.
+   * Vector dot product. Was in Vector3f; more useful here, though.
    * 
    * @param v
    *        the other vector
@@ -198,6 +198,39 @@ public abstract class Tuple3f implements Serializable {
    */
   public final float dot(Tuple3f v) {
     return x * v.x + y * v.y + z * v.z;
+  }
+
+  /**
+   * Returns the squared length of this vector.
+   * Was in Vector3f; more useful here, though.
+   * 
+   * @return the squared length of this vector
+   */
+  public final float lengthSquared() {
+    return x * x + y * y + z * z;
+  }
+
+  /**
+   * Returns the length of this vector.
+   * Was in Vector3f; more useful here, though.
+   * 
+   * @return the length of this vector
+   */
+  public final float length() {
+    return (float) Math.sqrt(lengthSquared());
+  }
+
+  /**
+   * Normalizes this vector in place.
+   * Was in Vector3f; more useful here, though.
+   */
+  public final void normalize() {
+    double d = length();
+
+    // zero-div may occur.
+    x /= d;
+    y /= d;
+    z /= d;
   }
 
   /**

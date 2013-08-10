@@ -664,8 +664,7 @@ public abstract class AtomSetCollectionReader {
   public int setSymmetryOperator(String xyz) {
     if (ignoreFileSymmetryOperators)
       return -1;
-    atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
-        doPackUnitCell, doCentroidUnitCell, centroidPacked, strSupercell, ptSupercell);
+    setLatticeCells(false);
     int isym = atomSetCollection.addSpaceGroupOperation(xyz);
     if (isym < 0)
       Logger.warn("Skipping symmetry operation " + xyz);
@@ -1036,16 +1035,17 @@ public abstract class AtomSetCollectionReader {
     applySymTrajASCR();
   }
   
-  public void applySymTrajASCR() throws Exception {
+  public SymmetryInterface applySymTrajASCR() throws Exception {
+    SymmetryInterface sym = null;
     if (iHaveUnitCell && doCheckUnitCell) {
       atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
       atomSetCollection.setNotionalUnitCell(notionalUnitCell,
           matUnitCellOrientation, unitCellOffset);
+      sym = atomSetCollection.symmetry;
       atomSetCollection.setAtomSetSpaceGroupName(spaceGroup);
       atomSetCollection.setSymmetryRange(symmetryRange);
       if (doConvertToFractional || fileCoordinatesAreFractional) {
-        atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
-            doPackUnitCell, doCentroidUnitCell, centroidPacked, strSupercell, ptSupercell);
+        setLatticeCells(false);
         if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
           if (!merging || symmetry == null)
             getSymmetry();
@@ -1071,6 +1071,7 @@ public abstract class AtomSetCollectionReader {
     if (isTrajectory)
       atomSetCollection.setTrajectory();
     initializeSymmetry();
+    return sym;
   }
 
   @SuppressWarnings("unchecked")
@@ -1324,7 +1325,7 @@ public abstract class AtomSetCollectionReader {
           fileScaling.z = 1;
         setFractionalCoordinates(true);
         latticeCells = new int[3];
-        atomSetCollection.setLatticeCells(latticeCells, true, false, false, false, null, null);
+        setLatticeCells(true);
         setUnitCell(plotScale.x * 2 / (maxXYZ.x - minXYZ.x), plotScale.y * 2
             / (maxXYZ.y - minXYZ.y), plotScale.z * 2
             / (maxXYZ.z == minXYZ.z ? 1 : maxXYZ.z - minXYZ.z), 90, 90, 90);
@@ -1367,6 +1368,16 @@ public abstract class AtomSetCollectionReader {
       line = line.substring(0, pt).trim();
     }
   }
+
+  private void setLatticeCells(boolean isReset) {
+    if (isReset)
+      atomSetCollection.setLatticeCells(latticeCells, true, false, false,
+          false, null, null);
+    else
+      atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds,
+          doPackUnitCell, doCentroidUnitCell, centroidPacked, strSupercell,
+          ptSupercell);
+ }
 
   private String previousScript;
 

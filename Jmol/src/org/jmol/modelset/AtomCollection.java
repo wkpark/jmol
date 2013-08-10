@@ -683,7 +683,7 @@ abstract public class AtomCollection {
   }
 
   public Vibration getVibration(int atomIndex, boolean forceNew) {
-    Vibration v = (vibrations == null ? null : vibrations[atomIndex]);
+    Vibration v = (vibrations == null  ? null : vibrations[atomIndex]);
     return (v == null && forceNew ? new Vibration() : v);
   }
 
@@ -692,9 +692,13 @@ abstract public class AtomCollection {
       return;
     if (vibrations == null || vibrations.length < atomIndex)
       vibrations = new Vibration[atoms.length];
-    if (vibrations[atomIndex] == null)
-      vibrations[atomIndex] = new Vibration();
-    vibrations[atomIndex].setT(vib);
+    if (vib instanceof Vibration) {
+      vibrations[atomIndex] = (Vibration) vib;
+    } else {
+      if (vibrations[atomIndex] == null)
+        vibrations[atomIndex] = new Vibration();
+      vibrations[atomIndex].setT(vib);
+    }
     atoms[atomIndex].setVibrationVector();
   }
 
@@ -1434,8 +1438,7 @@ abstract public class AtomCollection {
     x.set(0, 0, 0);
     V3[] v = new V3[4];
     for (int i = 0; i < nAttached; i++) {
-      v[i] = V3.newV(atom);
-      v[i].sub(attached[i]);
+      v[i] = V3.newVsub(atom, attached[i]);
       v[i].normalize();
       z.add(v[i]);
     }

@@ -819,13 +819,11 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("spaceGroup", spaceGroupName+"");
   }
     
-  public void setCoordinatesAreFractional(boolean coordinatesAreFractional) {
-    this.coordinatesAreFractional = coordinatesAreFractional;
-    setAtomSetAuxiliaryInfo(
-        "coordinatesAreFractional",
-        Boolean.valueOf(coordinatesAreFractional));
-    if (coordinatesAreFractional)
-      setGlobalBoolean(GLOBAL_FRACTCOORD);    
+  public void setCoordinatesAreFractional(boolean tf) {
+    coordinatesAreFractional = tf;
+    setAtomSetAuxiliaryInfo("coordinatesAreFractional", Boolean.valueOf(tf));
+    if (tf)
+      setGlobalBoolean(GLOBAL_FRACTCOORD);
   }
   
   float symmetryRange;
@@ -885,12 +883,13 @@ public class AtomSetCollection {
     Logger.info("Using supercell \n" + Matrix4f.newA(fmatSupercell));
   }
  
-  SymmetryInterface symmetry;
+  public SymmetryInterface symmetry;
   public SymmetryInterface getSymmetry() {
     if (symmetry == null)
       symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
     return symmetry;
   }
+  
   
   
   
@@ -941,7 +940,8 @@ public class AtomSetCollection {
   boolean doNormalize = true;
   boolean doPackUnitCell = false;
    
-  private void applySymmetryLattice(int maxX, int maxY, int maxZ) throws Exception {
+  private void applySymmetryLattice(int maxX, int maxY, int maxZ)
+      throws Exception {
     if (!coordinatesAreFractional || !getSymmetry().haveSpaceGroup())
       return;
     if (fmatSupercell != null) {
@@ -976,8 +976,7 @@ public class AtomSetCollection {
       symmetry = null;
       setNotionalUnitCell(new float[] { 0, 0, 0, 0, 0, 0, ptx.x, ptx.y, ptx.z,
           pty.x, pty.y, pty.z, ptz.x, ptz.y, ptz.z }, null,
-          (P3) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex,
-              "unitCellOffset"));
+          (P3) getAtomSetAuxiliaryInfoValue(-1, "unitCellOffset"));
       setAtomSetSpaceGroupName("P1");
       getSymmetry().setSpaceGroup(doNormalize);
       symmetry.addSpaceGroupOperation("x,y,z", 0);
@@ -988,11 +987,12 @@ public class AtomSetCollection {
         symmetry.toFractional(atoms[i], true);
 
       // 5) apply the full lattice symmetry now
-      
+
       haveAnisou = false;
-      
+
       // ?? TODO
-      atomSetAuxiliaryInfo[currentAtomSetIndex].remove("matUnitCellOrientation");
+      atomSetAuxiliaryInfo[currentAtomSetIndex]
+          .remove("matUnitCellOrientation");
       doPackUnitCell = false; // already done that.
     }
 
@@ -1239,7 +1239,7 @@ public class AtomSetCollection {
   
   private void finalizeSymmetry(int iAtomFirst, int noSymmetryCount) {
     symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
-    String name = (String) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex, "spaceGroup");
+    String name = (String) getAtomSetAuxiliaryInfoValue(-1, "spaceGroup");
     if (name == null || name.equals("unspecified!"))
       setAtomSetSpaceGroupName(symmetry.getSpaceGroupName());
   }
@@ -1808,7 +1808,7 @@ public class AtomSetCollection {
   }
 
   private void appendAtomProperties(int nTimes) {
-    Map<String, String> p = (Map<String, String>) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex, "atomProperties");
+    Map<String, String> p = (Map<String, String>) getAtomSetAuxiliaryInfoValue(-1, "atomProperties");
     if (p == null) {
       return;
     }
@@ -1842,7 +1842,7 @@ public class AtomSetCollection {
   }
   
   public Object getAtomSetAuxiliaryInfoValue(int index, String key) {
-    return  atomSetAuxiliaryInfo[index].get(key);
+    return  atomSetAuxiliaryInfo[index >= 0 ? index : currentAtomSetIndex].get(key);
   }
   
   /**

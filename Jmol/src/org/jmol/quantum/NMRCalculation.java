@@ -216,8 +216,7 @@ public class NMRCalculation implements JmolNMRInterface {
   }
 
   public float getDipolarCouplingHz(Atom a1, Atom a2, V3 vField) {
-    V3 v12 = V3.newV(a2);
-    v12.sub(a1);
+    V3 v12 = V3.newVsub(a2, a1);
     double r = v12.length();
     double costheta = v12.dot(vField) / r / vField.length();
     return (float) (getDipolarConstantHz(a1, a2) * (3 * costheta - 1) / 2);

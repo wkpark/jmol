@@ -33,11 +33,11 @@ package org.jmol.util;
 public class V3 extends Tuple3f {
 
   public static V3 newV(Tuple3f t) {
-    V3 v = new V3();
-    v.x = t.x;
-    v.y = t.y;
-    v.z = t.z;
-    return v;
+    return V3.new3(t.x, t.y, t.z);
+  }
+
+  public static V3 newVsub(Tuple3f t1, Tuple3f t2) {
+    return V3.new3(t1.x - t2.x, t1.y - t2.y,t1.z - t2.z);
   }
 
   public static V3 new3(float x, float y, float z) {
@@ -46,24 +46,6 @@ public class V3 extends Tuple3f {
     v.y = y;
     v.z = z;
     return v;
-  }
-
-  /**
-   * Returns the squared length of this vector.
-   * 
-   * @return the squared length of this vector
-   */
-  public final float lengthSquared() {
-    return x * x + y * y + z * z;
-  }
-
-  /**
-   * Returns the length of this vector.
-   * 
-   * @return the length of this vector
-   */
-  public final float length() {
-    return (float) Math.sqrt(lengthSquared());
   }
 
   /**
@@ -77,18 +59,6 @@ public class V3 extends Tuple3f {
   public final void cross(V3 v1, V3 v2) {
     set(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y
         - v1.y * v2.x);
-  }
-
-  /**
-   * Normalizes this vector in place.
-   */
-  public final void normalize() {
-    double d = length();
-
-    // zero-div may occur.
-    x /= d;
-    y /= d;
-    z /= d;
   }
 
   /**

@@ -424,8 +424,7 @@ public class TransformManager {
         && (isSpin || endDegrees == 0))
       return false;
 
-    V3 axis = V3.newV(point2);
-    axis.sub(point1);
+    V3 axis = V3.newVsub(point2, point1);
     if (isClockwise)
       axis.scale(-1f);
     internalRotationCenter.setT(point1);

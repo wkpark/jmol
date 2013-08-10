@@ -60,7 +60,7 @@ final public class Atom extends Point3fi implements JmolNode {
   
   public static final int RADIUS_MAX = 16;
 
-  public char alternateLocationID = '\0';
+  public char altloc = '\0';
   public byte atomID;
   public int atomSite;
   public Group group;
@@ -139,7 +139,7 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public void setAltLoc(char altLoc) {
-    alternateLocationID = altLoc;
+    this.altloc = altLoc;
   }
   
   public final void setShapeVisibilityFlags(int flag) {
@@ -375,18 +375,18 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public char getAlternateLocationID() {
-    return alternateLocationID;
+    return altloc;
   }
   
   boolean isAlternateLocationMatch(String strPattern) {
     if (strPattern == null)
-      return (alternateLocationID == '\0');
+      return (altloc == '\0');
     if (strPattern.length() != 1)
       return false;
     char ch = strPattern.charAt(0);
     return (ch == '*' 
-        || ch == '?' && alternateLocationID != '\0' 
-        || alternateLocationID == ch);
+        || ch == '?' && altloc != '\0' 
+        || altloc == ch);
   }
 
   public boolean isHetero() {
@@ -915,9 +915,9 @@ final public class Atom extends Point3fi implements JmolNode {
       info.append(" ");
       info.appendI(getAtomNumber());
     }
-    if (alternateLocationID != 0) {
+    if (altloc != 0) {
       info.append("%");
-      info.appendC(alternateLocationID);
+      info.appendC(altloc);
     }
     if (group.chain.model.modelSet.modelCount > 1) {
       info.append("/");

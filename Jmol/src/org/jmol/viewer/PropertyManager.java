@@ -1220,8 +1220,8 @@ public class PropertyManager implements JmolPropertyManager {
       info.put("chain", atom.getChainIDStr());
       info.put("atomID", Integer.valueOf(atom.atomID));
       info.put("groupID", Integer.valueOf(atom.getGroupID()));
-      if (atom.alternateLocationID != '\0')
-        info.put("altLocation", "" + atom.alternateLocationID);
+      if (atom.altloc != '\0')
+        info.put("altLocation", "" + atom.altloc);
       info.put("structure", Integer.valueOf(atom.getProteinStructureType()
           .getId()));
       info.put("polymerLength", Integer.valueOf(atom.getPolymerLength()));

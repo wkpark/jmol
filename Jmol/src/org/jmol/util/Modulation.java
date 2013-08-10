@@ -9,7 +9,7 @@ package org.jmol.util;
  * 
  */
 
-public class Modulation extends V3 {
+public class Modulation {
 
   private static final double TWOPI = 2 * Math.PI;
 
@@ -23,10 +23,13 @@ public class Modulation extends V3 {
   private char axis;
   private final int type;
 
+  private String utens;
+
   public static final int TYPE_DISP_FOURIER = 0;
   public static final int TYPE_DISP_SAWTOOTH = 1;
   public static final int TYPE_OCC_FOURIER = 2;
   public static final int TYPE_OCC_CRENEL = 3;
+  public static final int TYPE_U_FOURIER = 4;
 
   public V3 getWaveVector() {
     return nq;
@@ -43,21 +46,23 @@ public class Modulation extends V3 {
    * @param type
    * @param fn
    * @param params
+   * @param utens TODO
    */
-  public Modulation(P3 nq, char axis, int type, int fn, P3 params) {
+  public Modulation(P3 nq, char axis, int type, int fn, P3 params, String utens) {
     this.nq = V3.newV(nq);
     this.axis = axis;
     this.type = type;
+    this.fn = fn;
+    this.utens = utens;
     switch (type) {
     case TYPE_DISP_FOURIER:
     case TYPE_OCC_FOURIER:
-      this.fn = fn;
+    case TYPE_U_FOURIER:
       a1 = params.x;
       a2 = params.y;
       break;
     case TYPE_DISP_SAWTOOTH:
     case TYPE_OCC_CRENEL:
-      this.fn = 1;
       center = params.x;
       float width = params.y;
       if (width > 1)
@@ -73,40 +78,6 @@ public class Modulation extends V3 {
       a1 = 2 * params.z / width;
       break;
     }
-  }
-
-  /**
-   * Starting with fractional coordinates, determine the overall modulation.
-   * 
-   * @param mods
-   *        a given atom's modulations
-   * @param r
-   *        fractional xyz
-   * @param epsilon
-   *        as in x4´ = epsilon x4 + delta
-   * @param delta
-   *        as in x4´ = epsilon x4 + delta
-   * @param rot
-   *        symmetry rotation to be applied
-   * @param d
-   *        displacement return
-   * @return crenel value
-   */
-  public static float modulateAtom(JmolList<Modulation> mods, Tuple3f r,
-                                   float epsilon, float delta, Matrix3f rot,
-                                   V3 d) {
-    d.set(0, 0, 0);
-    float v = Float.NaN;
-    for (int i = mods.size(); --i >= 0;) {
-      float f = mods.get(i).apply(r, epsilon, delta, d);
-      if (!Float.isNaN(f)) {
-        if (Float.isNaN(v))
-          v = 0;
-        v += f;
-      }
-    }
-    rot.transform(d);
-    return v;
   }
 
   /**
@@ -138,26 +109,23 @@ public class Modulation extends V3 {
    * Will have to work on that later!
    * 
    * 
-   * @param r
-   * @param epsilon
-   * @param delta
-   * @param vecMod
-   * @return crenel value if that type
+   * @param ms
    * 
    */
-  private float apply(Tuple3f r, float epsilon, float delta, V3 vecMod) {
+   void apply(ModulationSet ms) {
 
     // TODO: must be adapted for d > 1 modulation
 
     double v = 0;
     //if (type == TYPE_OCC_CRENEL)
     //delta = 0;
-
-    double x4 = (epsilon * (nq.dot(r) - fn * delta));
+    
+    double x4 = ms.epsilon * (nq.dot(ms.r) - fn * ms.delta + fn * ms.t);
 
     switch (type) {
     case TYPE_DISP_FOURIER:
     case TYPE_OCC_FOURIER:
+    case TYPE_U_FOURIER:
       double theta = TWOPI * x4;
       if (a1 != 0)
         v += a1 * Math.cos(theta);
@@ -173,8 +141,8 @@ public class Modulation extends V3 {
       //           p(x4)=0   if x4 is outside the interval [c-w/2,c+w/2],
 
       x4 -= Math.floor(x4);
-      return (range(x4) ? 1 : 0);
-
+      ms.v = (range(x4) ? 1 : 0);
+      return;
     case TYPE_DISP_SAWTOOTH:
 
       //  _atom_site_displace_special_func_sawtooth_ items are the
@@ -193,7 +161,7 @@ public class Modulation extends V3 {
 
       x4 -= Math.floor(x4);
       if (!range(x4))
-        return Float.NaN;
+        return;
 
       // x < L < c
       //
@@ -244,29 +212,32 @@ public class Modulation extends V3 {
       //     |/
 
       if (left > right) {
-        if (x < left && left < center)
-          x += 1;
-        else if (x > right && right > center)
-          x -= 1;
+        if (x4 < left && left < center)
+          x4 += 1;
+        else if (x4 > right && right > center)
+          x4 -= 1;
       }
       v = a1 * (x4 - center);
       break;
     }
     switch (axis) {
     case 'x':
-      vecMod.x += v;
+      ms.x += v;
       break;
     case 'y':
-      vecMod.y += v;
+      ms.y += v;
       break;
     case 'z':
-      vecMod.z += v;
+      ms.z += v;
+      break;
+    case 'U':
+      ms.addUTens(utens, (float) v);
       break;
     default:
-      return (float) v;
+      if (Float.isNaN(ms.v))
+        ms.v = 0;
+      ms.v += (float) v;
     }
-    return Float.NaN;
-    //System.out.println("MOD q=" + nq + " r=" + r + " axis=" + axis + " theta=" + theta + " ccos=" + ccos + " csin=" + csin + " delta=" + delta + " v=" + v);
   }
 
   /**
@@ -281,4 +252,5 @@ public class Modulation extends V3 {
         || x4 <= right);
   }
 
+  
 }

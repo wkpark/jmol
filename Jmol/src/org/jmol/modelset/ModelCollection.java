@@ -2227,9 +2227,9 @@ abstract public class ModelCollection extends BondCollection {
           atomB = atoms[iB];
           if (atomA.modelIndex != atomB.modelIndex || atomB.isDeleted())
             continue;
-          if (atomA.alternateLocationID != atomB.alternateLocationID
-              && atomA.alternateLocationID != '\0'
-              && atomB.alternateLocationID != '\0')
+          if (atomA.altloc != atomB.altloc
+              && atomA.altloc != '\0'
+              && atomB.altloc != '\0')
             continue;
           bondAB = atomA.getBond(atomB);
         }
@@ -2971,8 +2971,7 @@ abstract public class ModelCollection extends BondCollection {
         dx = 1.0f;
       }
     if (dx != 0) {
-      V3 v = V3.newV(atom);
-      v.sub(atoms[atom.getBondedAtomIndex(0)]);
+      V3 v = V3.newVsub(atom,atoms[atom.getBondedAtomIndex(0)]);
       float d = v.length();
       v.normalize();
       v.scale(dx - d);

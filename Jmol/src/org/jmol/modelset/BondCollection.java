@@ -274,8 +274,8 @@ abstract public class BondCollection extends AtomCollection {
           || (formalChargeA > 0 && formalChargeB > 0))
         return false;
     }
-    if (atomA.alternateLocationID != atomB.alternateLocationID
-        && atomA.alternateLocationID != '\0' && atomB.alternateLocationID != '\0')
+    if (atomA.altloc != atomB.altloc
+        && atomA.altloc != '\0' && atomB.altloc != '\0')
       return false;
     getOrAddBond(atomA, atomB, order, mad, bsBonds, 0, false);
     return true;

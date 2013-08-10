@@ -272,8 +272,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     for (int i = 0; i < myAtomCount; i++)
       setBBox(atomXyz[i], getRadii ? atomRadius[i] + 0.5f : 0);
     if (!Float.isNaN(params.scale)) {
-      V3 v = V3.newV(xyzMax);
-      v.sub(xyzMin);
+      V3 v = V3.newVsub(xyzMax, xyzMin);
       v.scale(0.5f);
       xyzMin.add(v);
       v.scale(params.scale);

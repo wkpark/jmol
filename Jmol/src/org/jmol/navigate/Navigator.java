@@ -390,8 +390,7 @@ public final class Navigator extends JmolThread implements
     Matrix3f m = tm.getMatrixRotate();
     m.transform2(pt0, pt0s);
     m.transform2(pt1, pt1s);
-    V3 vPath = V3.newV(pt0s);
-    vPath.sub(pt1s);
+    V3 vPath = V3.newVsub(pt0s, pt1s);
     V3 v = V3.new3(0, 0, 1);
     float angle = vPath.angle(v);
     v.cross(vPath, v);

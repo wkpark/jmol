@@ -49,7 +49,13 @@ import org.jmol.util.V3;
  * Current status:
  * 
  * -- d=1 only
- * -- only simple atom displacement, no occupation crenel, no sawtooth
+ * -- includes Fourier, Crenel, Sawtooth; displacement, occupancy, and Uiso
+ * -- reading composite subsystem files such as ms-fit-1.cif
+ * 
+ * TODO: Uij, d > 1
+ * TODO: handle subsystems properly
+ * 
+ * No plan to implement rigid-body rotation
  *  
  *  @author Bob Hanson hansonr@stolaf.edu 8/7/13
  *  
@@ -238,6 +244,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       return;
     atoms = atomSetCollection.getAtoms();
     symmetry = atomSetCollection.getSymmetry();
+    iopLast = -1;
     SB sb = new SB();
     for (int i = atomSetCollection.getLastAtomSetAtomIndex(); i < n; i++)
       modulateAtom(atoms[i], sb);
@@ -250,6 +257,9 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     return (pt_ < 0 ? null : key.substring(0, pt_));
   }
 
+  private int iopLast = -1;
+  private Matrix3f rot;
+  
   /**
    * The displacement will be set as the atom vibration vector; the string
    * buffer will be appended with the t value for a given unit cell.
@@ -271,7 +281,10 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     float epsilon = symmetry.getModParam(iop, 0);
     float delta = symmetry.getModParam(iop, 1);
     delta -= modT;
-    Matrix3f rot = new Matrix3f();
+    if (iop != iopLast) {
+      iopLast = iop;
+      rot = new Matrix3f();
+    }
     symmetry.getSpaceGroupOperation(iop).getRotationScale(rot);
     System.out.println("=========MR i=" + a.index + " " + a.atomName + " " + a + " " + a.occupancy);
     System.out.println("op=" + (iop + 1) + " " + symmetry.getSpaceGroupXyz(iop, false) + " ep=" + epsilon + " de=" + delta);
@@ -294,7 +307,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
         if (key.equalsIgnoreCase("Uiso")) {
           setU(a, 7, v);
         } else {
-            
+          //TODO  
         }
         
       }

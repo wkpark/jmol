@@ -407,7 +407,7 @@ public class NMRCalculation implements JmolNMRInterface {
     return data;
   }
 
-  public Map<String, Float> getMinDistances(MeasurementData md) {
+  public Map<String, Integer> getMinDistances(MeasurementData md) {
     BS bsPoints1 = (BS) md.points.get(0);
     int n1 = bsPoints1.cardinality(); 
     if (n1 == 0 || !(md.points.get(1) instanceof BS))
@@ -416,7 +416,7 @@ public class NMRCalculation implements JmolNMRInterface {
     int n2 = bsPoints2.cardinality(); 
     if (n1 < 2 && n2 < 2)
       return null;
-    Map<String, Float> htMin = new Hashtable<String, Float>();
+    Map<String, Integer> htMin = new Hashtable<String, Integer>();
     Atom[] atoms = viewer.modelSet.atoms;
     for (int i = bsPoints1.nextSetBit(0); i >= 0; i = bsPoints1
         .nextSetBit(i + 1)) {
@@ -425,19 +425,19 @@ public class NMRCalculation implements JmolNMRInterface {
       for (int j = bsPoints2.nextSetBit(0); j >= 0; j = bsPoints2
           .nextSetBit(j + 1)) {
         Atom a2 = atoms[j];
-        float d = a2.distanceSquared(a1);
+        int d = (int) (a2.distanceSquared(a1) * 100);
         if (d == 0)
           continue;
         String name1 = a2.getAtomName();
         String key = (name.compareTo(name1) < 0 ? name + name1 : name1 + name);
-        Float min = htMin.get(key);
+        Integer min = htMin.get(key);
         if (min == null) {
-          min = Float.valueOf(d);
+          min = Integer.valueOf(d);
           htMin.put(key, min);
           continue;
         }
-        if (d < min.floatValue())
-          htMin.put(key, Float.valueOf(d));
+        if (d < min.intValue())
+          htMin.put(key, Integer.valueOf(d));
       }
     }
     return htMin;

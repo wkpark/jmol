@@ -84,7 +84,7 @@ public class MeasurementData implements JmolMeasurementClient {
   /*
    * the general constructor. tokAction is not used here
    */
-  public MeasurementData set(int tokAction, Map<String, Float> htMin, 
+  public MeasurementData set(int tokAction, Map<String, Integer> htMin, 
                              RadiusData radiusData, String strFormat, String units,
                  TickInfo tickInfo,
                  boolean mustBeConnected, boolean mustNotBeConnected,
@@ -170,7 +170,7 @@ public class MeasurementData implements JmolMeasurementClient {
   private Viewer viewer;
   private int iFirstAtom;
   private boolean justOneModel = true;
-  public Map<String, Float> htMin;
+  public Map<String, Integer> htMin;
   
   /**
    * called by the client to generate a set of measurements

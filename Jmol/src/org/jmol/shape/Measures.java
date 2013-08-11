@@ -67,7 +67,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   TickInfo tickInfo;
   TickInfo defaultTickInfo;
   public JmolFont font3d;
-  private Map<String, Float> htMin;
+  private Map<String, Integer> htMin;
   
   @Override
   protected void initModelSet() {

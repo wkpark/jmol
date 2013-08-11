@@ -82,7 +82,7 @@ public interface JmolNMRInterface {
 
   public JmolList<Object> getTensorInfo(String tensorType, String infoType, BS bs);
 
-  public Map<String, Float> getMinDistances(MeasurementData md);
+  public Map<String, Integer> getMinDistances(MeasurementData md);
 
   public boolean getState(SB sb);
   

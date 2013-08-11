@@ -35,6 +35,7 @@ import org.jmol.api.JmolNMRInterface;
 import org.jmol.io.JmolBinary;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
+import org.jmol.modelset.Model;
 import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
@@ -87,40 +88,64 @@ public class NMRCalculation implements JmolNMRInterface {
   }
 
   /**
-   * Returns a list of tensors that are of the specified type and 
-   * have both atomIndex1 and atomIndex2 in bs.
+   * Returns a list of tensors that are of the specified type and have both
+   * atomIndex1 and atomIndex2 in bsA. If there is just one atom specified, then 
+   * the list is "all tensors involving this atom".
+   * 
+   * We have to use atom sites, because interaction tensors are not duplicated.
    * 
    * @param type
-   * @param bs
-   * @param bs2 
+   * @param bsA
    * @return list of Tensors
    */
   @SuppressWarnings("unchecked")
-  private JmolList<Tensor> getInteractionTensorList(String type, BS bs, BS bs2) {
+  private JmolList<Tensor> getInteractionTensorList(String type, BS bsA) {
     type = type.toLowerCase();
-    BS bsModels = viewer.getModelBitSet(bs, false);
-    int iAtom = (bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
+
+    BS bsModels = viewer.getModelBitSet(bsA, false);
+    BS bs1 = getAtomSiteBS(bsA);
+    int iAtom = (bs1.cardinality() == 1 ? bs1.nextSetBit(0) : -1);
     JmolList<Tensor> list = new JmolList<Tensor>();
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
-      JmolList<Tensor> tensors = (JmolList<Tensor>) viewer.getModelAuxiliaryInfoValue(i, "interactionTensors");
+      JmolList<Tensor> tensors = (JmolList<Tensor>) viewer
+          .getModelAuxiliaryInfoValue(i, "interactionTensors");
       if (tensors == null)
         continue;
       int n = tensors.size();
       for (int j = 0; j < n; j++) {
         Tensor t = tensors.get(j);
-        if (t.type.equals(type) 
-            && t.isSelected(bs, iAtom)
-            && (bs2 == null || bs2.get(getOtherAtom(t, iAtom))))
-          
+        if (t.type.equals(type) && t.isSelected(bs1, iAtom))
           list.addLast(t);
-      }      
+      }
     }
     return list;
   }
 
-  private int getOtherAtom(Tensor t, int iAtom) {
-      return (t.atomIndex1 == iAtom ? t.atomIndex2 : t.atomIndex1);
+  /**
+   * Interaction tensors are not repeated for every possible combination. They are just for the
+   * base atom set. These are identified as a.atomIndex == models[b.modelIndex].firstAtomIndex + b.atomSite - 1  
+   * @param bsA
+   * @return new bs in terms of atom sites
+   */
+  private BS getAtomSiteBS(BS bsA) {
+    if (bsA == null)
+      return null;
+    BS bs = new BS();
+    Atom[] atoms = viewer.modelSet.atoms;
+    Model[] models = viewer.modelSet.models;
+    
+    for (int i = bsA.nextSetBit(0); i >= 0; i = bsA.nextSetBit(i + 1)) {
+      if (!bsA.get(i))
+        continue;
+      Atom a = atoms[i];
+      bs.set(models[a.modelIndex].firstAtomIndex - 1 + a.atomSite);
+    }
+    return bs;
   }
+
+//  private int getOtherAtom(Tensor t, int iAtom) {
+//      return (t.atomIndex1 == iAtom ? t.atomIndex2 : t.atomIndex1);
+//  }
   
   public BS getUniqueTensorSet(BS bsAtoms) {
     BS bs = new BS();
@@ -176,11 +201,9 @@ public class NMRCalculation implements JmolNMRInterface {
       if (type == null || a1.modelIndex != a2.modelIndex)
         return 0;
       BS bs = new BS();
-      BS bs2 = new BS();
-      int i0 =  viewer.modelSet.models[a1.modelIndex].firstAtomIndex - 1;
-      bs.set(a1.atomSite + i0);
-      bs2.set(a2.atomSite + i0);
-      JmolList<Tensor> list = getInteractionTensorList(type, bs, bs2);
+      bs.set(a1.index);
+      bs.set(a2.index);
+      JmolList<Tensor> list = getInteractionTensorList(type, bs);
       if (list.size() == 0)
         return Float.NaN;
       isc = list.get(0);
@@ -385,7 +408,7 @@ public class NMRCalculation implements JmolNMRInterface {
         }
     } else if (tensorType.startsWith("isc")) {
       boolean isJ = infoType.equals(";j.");
-      JmolList<Tensor> list = getInteractionTensorList(tensorType, bs, null);
+      JmolList<Tensor> list = getInteractionTensorList(tensorType, bs);
       int n = (list == null ? 0 : list.size());
       for (int i = 0; i < n; i++) {
         Tensor t = list.get(i);

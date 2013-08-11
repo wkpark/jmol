@@ -19,6 +19,8 @@ public class Modulation {
   private double left, right;
 
   private V3 nq; // wave vector
+  private double nqlen;
+
   private int fn; // power
   private char axis;
   private final int type;
@@ -50,6 +52,7 @@ public class Modulation {
    */
   public Modulation(P3 nq, char axis, int type, int fn, P3 params, String utens) {
     this.nq = V3.newV(nq);
+    nqlen  = nq.length();
     this.axis = axis;
     this.type = type;
     this.fn = fn;
@@ -120,7 +123,7 @@ public class Modulation {
     //if (type == TYPE_OCC_CRENEL)
     //delta = 0;
     
-    double x4 = ms.epsilon * (nq.dot(ms.r) - fn * ms.delta + fn * ms.t);
+    double x4 = ms.epsilon * (nq.dot(ms.r) - fn * ms.delta + nqlen * ms.t);
 
     switch (type) {
     case TYPE_DISP_FOURIER:
@@ -131,6 +134,7 @@ public class Modulation {
         v += a1 * Math.cos(theta);
       if (a2 != 0)
         v += a2 * Math.sin(theta);
+      //System.out.println("MOD v " + v + " a1 a2 " + a1 + " " + a2 + " / " + theta + " " +  ms.t);
       break;
     case TYPE_OCC_CRENEL:
 

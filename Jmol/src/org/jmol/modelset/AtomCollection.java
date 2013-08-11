@@ -2660,6 +2660,5 @@ abstract public class AtomCollection {
   }
   
 
-
 }
 

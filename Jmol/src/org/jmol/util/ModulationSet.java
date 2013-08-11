@@ -21,6 +21,7 @@ public class ModulationSet extends Vibration {
   public float v = Float.NaN;
   public int t;
   public Map<String, Float> htValues;
+  public boolean enabled = false;
   
   public ModulationSet(JmolList<Modulation> list) {
     mods = list;
@@ -44,6 +45,35 @@ public class ModulationSet extends Vibration {
       htValues = new Hashtable<String, Float>();
     Float f = htValues.get(utens);
     htValues.put(utens, Float.valueOf(f == null ? v : f.floatValue() + v));
+  }
+
+  public V3 prevSetting;
+  
+  /**
+   * Set modulation "t" value, which sets which unit cell in sequence we are looking at.
+   * 
+   * @param isOn
+   * @param t
+   * @return 0 (no change), 1 (disabled), 2 (enabled), 3 (new t), 4 (same t)
+   * 
+   */
+  public int setModT(boolean isOn, int t) {
+    if (t == Integer.MAX_VALUE) {
+      if (enabled == isOn)
+        return 0;
+      enabled = isOn;
+      scale(-1);
+      return (enabled ? 2 : 1);
+    }
+    if (t == this.t)
+      return 4;
+    if (prevSetting == null)
+      prevSetting = new V3(); 
+    prevSetting.setT(this);
+    this.t = t;
+    calculate();
+    enabled = false;
+    return 3;
   }
 
 }

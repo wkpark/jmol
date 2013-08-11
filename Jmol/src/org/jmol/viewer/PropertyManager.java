@@ -642,8 +642,7 @@ public class PropertyManager implements JmolPropertyManager {
       s = (String) m.getModelAuxiliaryInfoValue(i, "modelID");
       if (s != null)
         model.put("id", s);
-      model.put("vibrationVectors", Boolean.valueOf(m
-          .modelHasVibrationVectors(i)));
+      model.put("vibrationVectors", Boolean.valueOf(viewer.modelHasVibrationVectors(i)));
       Model mi = m.models[i];
       model.put("atomCount", Integer.valueOf(mi.atomCount));
       model.put("bondCount", Integer.valueOf(mi.getBondCount()));

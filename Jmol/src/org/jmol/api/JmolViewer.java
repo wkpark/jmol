@@ -617,6 +617,7 @@ abstract public class JmolViewer {
    * @return string from ScriptEvaluator#outputBuffer
    */
   abstract public String runScript(String script);
+  abstract public int modelGetLastVibrationIndex(int i, int tok);
 
 }
 

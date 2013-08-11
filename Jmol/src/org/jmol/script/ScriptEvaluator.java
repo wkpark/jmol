@@ -5773,6 +5773,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.minimize:
           minimize();
           break;
+        case T.modulation:
+          modulation();
+          break;
         case T.move:
           move();
           break;
@@ -12524,6 +12527,31 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     setShapeSizeBs(shapeType, mad, null);
   }
 
+  private void modulation() throws ScriptException {
+    boolean mod = false;
+    switch (getToken(1).tok) {
+    case T.on:
+      mod = true;
+      //$FALL-THROUGH$
+    case T.off:
+      if (!chk)
+        viewer.setModulation(mod, Integer.MAX_VALUE, Integer.MAX_VALUE, false);
+      break;
+    case T.integer:
+      if (!chk)
+        viewer.setModulation(true, intParameter(1), Integer.MAX_VALUE, false);
+      break;
+    case T.fps:
+      if (!chk)
+        viewer.setModulationFps(floatParameter(2));
+      break;
+    case T.play:
+      if (!chk)
+        viewer.setModulation(true, intParameter(2), intParameter(3), false);
+      break;
+    } 
+  }
+  
   private void animation() throws ScriptException {
     boolean animate = false;
     switch (getToken(1).tok) {

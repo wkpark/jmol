@@ -3130,8 +3130,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
+  public int modelGetLastVibrationIndex(int modelIndex, int tok) {
+    return modelSet.getLastVibrationVector(modelIndex, tok);
+  }
+
+  @Override
   public boolean modelHasVibrationVectors(int modelIndex) {
-    return modelSet.modelHasVibrationVectors(modelIndex);
+    return (modelSet.getLastVibrationVector(modelIndex, T.vibration) >= 0);
   }
 
   @Override
@@ -10172,6 +10177,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean cachePngFiles() {
     return (!getTestFlag(1));
+  }
+
+  public void setModulation(boolean isOn, int t1, int t2, boolean isThread) {
+    if (t2 == Integer.MAX_VALUE) {
+      if (!isThread)
+        animationManager.setModulationPlay(Integer.MAX_VALUE, 0);
+      if (t1 != Integer.MAX_VALUE)
+        global.setI("_modt", t1);
+      modelSet.setModulation(getSelectionSet(false), isOn, t1);
+    } else {
+      animationManager.setModulationPlay(t1, t2);
+    }
+  }
+
+  public void setModulationFps(float fps) {
+    animationManager.setModulationFps(fps);
   }
 
 }

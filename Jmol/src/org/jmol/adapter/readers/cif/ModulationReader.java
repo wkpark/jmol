@@ -68,7 +68,6 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   
   private P3 q1;  
   private V3 q1Norm;  
-  private Matrix3f rot;
   private Map<String, P3> htModulation;
   private Map<String, JmolList<Modulation>> htAtomMods;
   private int modT;
@@ -77,7 +76,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   
   protected void initializeMod() throws Exception {
     modAxes = getFilter("MODAXES=");
-    modVib = checkFilterKey("MODVIB");
+    modVib = checkFilterKey("MODVIB"); // then use MODULATION ON  to see modulation
     modAverage = checkFilterKey("MODAVE");
     checkSpecial = !checkFilterKey("NOSPECIAL");
     atomSetCollection.setCheckSpecial(checkSpecial);
@@ -239,7 +238,6 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       return;
     atoms = atomSetCollection.getAtoms();
     symmetry = atomSetCollection.getSymmetry();
-    rot = new Matrix3f();
     SB sb = new SB();
     for (int i = atomSetCollection.getLastAtomSetAtomIndex(); i < n; i++)
       modulateAtom(atoms[i], sb);
@@ -273,9 +271,10 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     float epsilon = symmetry.getModParam(iop, 0);
     float delta = symmetry.getModParam(iop, 1);
     delta -= modT;
+    Matrix3f rot = new Matrix3f();
     symmetry.getSpaceGroupOperation(iop).getRotationScale(rot);
-    //System.out.println("=========MR i=" + a.index + " " + a.atomName + " " + a + " " + a.occupancy);
-    //System.out.println("op=" + (iop + 1) + " " + symmetry.getSpaceGroupXyz(iop, false) + " ep=" + epsilon + " de=" + delta);
+    System.out.println("=========MR i=" + a.index + " " + a.atomName + " " + a + " " + a.occupancy);
+    System.out.println("op=" + (iop + 1) + " " + symmetry.getSpaceGroupXyz(iop, false) + " ep=" + epsilon + " de=" + delta);
     ModulationSet ms = new ModulationSet(list);
     a.vib = ms;
     ms.epsilon = epsilon;
@@ -312,7 +311,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     // displace the atom and reverse the vector only if not filter "MODVIB"
     if (!modVib) {
       a.add(ms);
-      ms.scale(-1);
+      ms.setModT(true, Integer.MAX_VALUE);
     }
     symmetry.toCartesian(ms, true);
     //System.out.println("a.vib(xyz)=" + a.vib);

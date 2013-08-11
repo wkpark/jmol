@@ -588,7 +588,7 @@ ActionListener, ChangeListener, Runnable {
     
     // search till get to either end of found a frequency
     while (index >= 0 && index < maxIndex 
-        && !(foundFrequency=viewer.modelHasVibrationVectors(indexes[index]))) {
+        && !(foundFrequency=(viewer.modelHasVibrationVectors(indexes[index])))) {
       index+=increment;
     }
     

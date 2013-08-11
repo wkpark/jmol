@@ -79,6 +79,7 @@ import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
+import org.jmol.util.ModulationSet;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
@@ -290,8 +291,7 @@ public class StateCreator implements JmolStateCreator {
       if (bs.isEmpty())
         ms.haveHiddenBonds = false;
       else
-        commands.append("  hide ").append(Escape.eBond(bs)).append(
-            ";\n");
+        commands.append("  hide ").append(Escape.eBond(bs)).append(";\n");
     }
 
     // shape construction
@@ -317,12 +317,12 @@ public class StateCreator implements JmolStateCreator {
         String s = (String) ms.getModelAuxiliaryInfoValue(i, "modelID");
         if (s != null
             && !s.equals(ms.getModelAuxiliaryInfoValue(i, "modelID0")))
-          commands.append(fcmd).append("; frame ID ").append(
-              Escape.eS(s)).append(";\n");
+          commands.append(fcmd).append("; frame ID ").append(Escape.eS(s))
+              .append(";\n");
         String t = ms.frameTitles[i];
         if (t != null && t.length() > 0)
-          commands.append(fcmd).append("; frame title ").append(
-              Escape.eS(t)).append(";\n");
+          commands.append(fcmd).append("; frame title ").append(Escape.eS(t))
+              .append(";\n");
         if (needOrientations && models[i].orientation != null
             && !ms.isTrajectorySubFrame(i))
           commands.append(fcmd).append("; ").append(
@@ -339,6 +339,7 @@ public class StateCreator implements JmolStateCreator {
       }
 
       if (ms.unitCells != null) {
+        boolean haveModulation = false;
         for (int i = 0; i < modelCount; i++) {
           SymmetryInterface symmetry = ms.getUnitCell(i);
           if (symmetry == null)
@@ -351,12 +352,30 @@ public class StateCreator implements JmolStateCreator {
           if (pt != null)
             commands.append("; set unitcell ").append(Escape.eP(pt));
           commands.append(";\n");
+          haveModulation |= (viewer.modelGetLastVibrationIndex(i, T.modulation) >= 0);
         }
         getShapeState(commands, isAll, JC.SHAPE_UCCAGE);
         //        if (viewer.getObjectMad(StateManager.OBJ_UNITCELL) == 0)
         //        commands.append("  unitcell OFF;\n");
+        if (haveModulation) {
+          //commands.append("  modulation fps "
+            //  + viewer.animationManager.modulationFps + ";\n");
+          Map<String, BS> temp = new Hashtable<String, BS>();
+          int ivib;
+          for (int i = modelCount; --i >= 0;) {
+            if ((ivib = viewer.modelGetLastVibrationIndex(i, T.modulation)) >= 0)
+              for (int j = models[i].firstAtomIndex; j <= ivib; j++) {
+                ModulationSet mset = (ModulationSet) viewer.getVibration(j);
+                if (mset.enabled)
+                  BSUtil.setMapBitSet(temp, j, j, "modulation " + mset.t);
+              }
+          }
+          String s = getCommands(temp, null, "select");
+          commands.append(s);
+        }
       }
-      commands.append("  set fontScaling " + viewer.getBoolean(T.fontscaling) + ";\n");
+      commands.append("  set fontScaling " + viewer.getBoolean(T.fontscaling)
+          + ";\n");
       if (viewer.getBoolean(T.modelkitmode))
         commands.append("  set modelKitMode true;\n");
     }

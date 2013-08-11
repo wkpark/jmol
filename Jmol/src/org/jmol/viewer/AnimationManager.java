@@ -27,6 +27,7 @@ package org.jmol.viewer;
 import java.util.Map;
 
 import org.jmol.thread.AnimationThread;
+import org.jmol.thread.ModulationThread;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 //import org.jmol.util.JmolList;
@@ -37,6 +38,7 @@ import org.jmol.modelset.ModelSet;
 public class AnimationManager {
 
   private AnimationThread animationThread;
+  private ModulationThread modulationThread;
   private Viewer viewer;
   
   AnimationManager(Viewer viewer) {
@@ -70,7 +72,9 @@ public class AnimationManager {
     if (!viewer.getSpinOn())
       viewer.refresh(3, "Viewer:setAnimationOff");
     animation(false);
+    stopModulationThread();
     viewer.setStatusFrameChanged(false);
+    
   }
 
   public boolean setAnimationNext() {
@@ -300,6 +304,18 @@ public class AnimationManager {
     lastFramePainted = currentAnimationFrame;
   }
   
+  public void setModulationPlay(int modT1, int modT2) {
+    if (modT1 == Integer.MAX_VALUE || !viewer.haveModelSet() || viewer.isHeadless()) {
+      stopThread(false);
+      return;
+    }
+    if (modulationThread == null) {
+      modulationPlay = true;
+      modulationThread = new ModulationThread(this, viewer, modT1, modT2);
+      modulationThread.start();
+    }
+  }
+  
   void resumeAnimation() {
     if(currentModelIndex < 0)
       setAnimationRange(firstFrameIndex, lastFrameIndex);
@@ -411,6 +427,16 @@ public class AnimationManager {
   private int lastFramePainted;
   private int lastModelPainted;
   private int intAnimThread;
+  public boolean modulationPlay;
+  public float modulationFps = 1;
+  public BS bsModulating;
+  
+  public void setModulationFps(float fps) {
+    if (fps > 0)
+      modulationFps = fps;
+    else
+      stopModulationThread();
+  }
   
   private void setViewer(boolean clearBackgroundModel) {
     viewer.setTrajectory(currentModelIndex);
@@ -509,6 +535,14 @@ public class AnimationManager {
 
   private int getFrameStep(int direction) {
     return frameStep * direction * currentDirection;
+  }
+
+  public void stopModulationThread() {
+    if (modulationThread != null) {
+      modulationThread.interrupt();
+      modulationThread = null;
+    }
+    modulationPlay = false;
   }
 
 

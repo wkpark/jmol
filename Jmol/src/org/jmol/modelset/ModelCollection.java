@@ -53,6 +53,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
+import org.jmol.util.ModulationSet;
 import org.jmol.util.P3;
 import org.jmol.util.P4;
 import org.jmol.util.Tensor;
@@ -1499,13 +1500,15 @@ abstract public class ModelCollection extends BondCollection {
     return unitCells[modelIndex].getCellRange();
   }
 
-  public boolean modelHasVibrationVectors(int modelIndex) {
+  public int getLastVibrationVector(int modelIndex, int tok) {
     if (vibrations != null)
       for (int i = atomCount; --i >= 0;)
         if ((modelIndex < 0 || atoms[i].modelIndex == modelIndex)
-            && vibrations[i] != null && vibrations[i].length() > 0)
-          return true;
-    return false;
+            && vibrations[i] != null
+            && vibrations[i].length() > 0
+            && (tok == 0 || (tok == T.modulation) == (vibrations[i] instanceof ModulationSet)))
+          return i;
+    return -1;
   }
 
   public BS getElementsPresentBitSet(int modelIndex) {
@@ -2705,8 +2708,7 @@ abstract public class ModelCollection extends BondCollection {
           sb.append(" name=").append(Escape.eS(getModelName(i)))
           .append(" title=").append(Escape.eS(
               getModelTitle(i)))
-           .append(" hasVibrationVectors=\"").appendB(
-              modelHasVibrationVectors(i)).append("\" />");
+           .append(" hasVibrationVectors=\"").appendB(viewer.modelHasVibrationVectors(i)).append("\" />");
     }
     sb.append("\n</models>");
     return sb.toString();
@@ -3436,6 +3438,44 @@ abstract public class ModelCollection extends BondCollection {
     for (int i = n; --i >= 0;)
       ilist[n - i - 1] = list.get(i);
     return ilist;
+  }
+
+  public void setModulation(BS bs, boolean isOn, int t) {
+    //System.out.println("setModulation " + isOn + " " + t);
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      Vibration v = getVibration(i, false);
+      if (!(v instanceof ModulationSet))
+        continue;
+      ModulationSet ms = (ModulationSet) v;
+      Atom a = atoms[i];
+      boolean wasEnabled = ms.enabled;
+      //System.out.println(a.x + " " + a.y + " " + a.z + " ms was " + ms + " " + wasEnabled + " " + ms.t);
+      switch (ms.setModT(isOn, t)) {
+      case 0:
+        continue;
+      case 1: // now off
+      case 2: // now on
+        a.sub(ms);
+        break;
+      case 3: // new t
+        // will turn on modulation
+        // must convert to Cartesians
+        getUnitCell(a.modelIndex).toCartesian(ms, true);
+        //System.out.println("ms now1 " + ms + " " + ms.enabled + " " + ms.t);
+        if (wasEnabled)
+          a.add(ms.prevSetting);
+        ms.setModT(true, Integer.MAX_VALUE);
+        a.sub(ms);
+        //System.out.println(a.x + " " + a.y + " " + a.z + " ms now " + ms + " " + ms.enabled + " " + ms.t);
+        break;
+      case 4: // unchanged t
+        ms.setModT(true, Integer.MAX_VALUE);
+        if (!wasEnabled)
+          a.sub(ms);
+        break;
+      }
+      //System.out.println(a.x + " " + a.y + " " + a.z + " ms is " + ms + " " + ms.enabled + " " + ms.t);
+    }
   }
 
 }

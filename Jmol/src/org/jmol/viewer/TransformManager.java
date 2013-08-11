@@ -2064,8 +2064,7 @@ public class TransformManager {
         return;
       period = -period;
     }
-    setVibrationOn(period > 0
-        && viewer.modelHasVibrationVectors(viewer.getCurrentModelIndex()));
+    setVibrationOn(period > 0 && viewer.modelGetLastVibrationIndex(viewer.getCurrentModelIndex(), 0) >= 0);
   }
 
   public void setVibrationT(float t) {

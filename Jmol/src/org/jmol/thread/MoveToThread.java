@@ -226,10 +226,14 @@ public class MoveToThread extends JmolThread {
   }
 
   private void setValues(float fStep) {
-    transformManager.modelRadius = rotationRadius.getVal(fStep);
-    transformManager.scaleDefaultPixelsPerAngstrom = pixelScale.getVal(fStep);
+    if (cameraDepth != null)
+      transformManager.setCameraDepthPercent(cameraDepth.getVal(fStep), false);
+    if (cameraX != null && cameraY != null)
+      transformManager.setCamera(cameraX.getVal(fStep), cameraY.getVal(fStep));
     if (zoom != null)
       transformManager.zoomToPercent(zoom.getVal(fStep));
+    transformManager.modelRadius = rotationRadius.getVal(fStep);
+    transformManager.scaleDefaultPixelsPerAngstrom = pixelScale.getVal(fStep);
     if (xTrans != null && yTrans != null) {
       transformManager.translateToPercent('x', xTrans.getVal(fStep));
       transformManager.translateToPercent('y', yTrans.getVal(fStep));
@@ -239,10 +243,6 @@ public class MoveToThread extends JmolThread {
           .getVal(fStep));
     if (navDepth != null)
       transformManager.setNavigationDepthPercent(navDepth.getVal(fStep));
-    if (cameraDepth != null)
-      transformManager.setCameraDepthPercent(cameraDepth.getVal(fStep), false);
-    if (cameraX != null && cameraY != null)
-      transformManager.setCamera(cameraX.getVal(fStep), cameraY.getVal(fStep));
   }
 
   @Override

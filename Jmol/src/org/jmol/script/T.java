@@ -700,6 +700,7 @@ public class T {
   final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
   final static int cache            = 22 | 0 << 9 | mathfunc | scriptCommand; // new in Jmol 13.1.2
   final static int tensor           = 23 | 0 << 9 | mathfunc | mathproperty;
+  public final static int modulation       = 24 | 0 << 9 | mathfunc | scriptCommand;
   
   // xxx(a)
   
@@ -1645,6 +1646,7 @@ public class T {
       "mo",                T.t(mo),
       "model",             T.t(model),
       "models",            null,
+      "modulation",        T.t(modulation),
       "move",              T.t(move),
       "moveTo",            T.t(moveto),
       "navigate",          T.t(navigate),

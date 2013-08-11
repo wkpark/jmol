@@ -305,7 +305,7 @@ public class MagresReader extends AtomSetCollectionReader {
     Tensor t = Tensor.getTensorFromAsymmetricTensor(a, id);
     if (atomName2 == null) {
       index2 = -1;
-      atomSetCollection.getAtoms()[index1].addTensor(t, null);
+      atomSetCollection.getAtoms()[index1].addTensor(t, null, false);
     } else {
       index2 = atomSetCollection.getAtomIndexFromName(atomName2);
       interactionTensors.addLast(t);

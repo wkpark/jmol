@@ -874,8 +874,8 @@ public class Resolver {
   private final static String[] mopacArchiveContainsRecords =
   { "MopacArchive", "SUMMARY OF PM" };
   
-  private final static String [] abinitContainsRecords = 
-    {"ABINIT", "Louvain", "http://www.abinit.org"};
+  private final static String[] abinitContainsRecords = { "Abinit",
+    "http://www.abinit.org", "Catholique", "Louvain" };
   
   
   

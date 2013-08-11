@@ -2933,14 +2933,12 @@ public class ScriptExt implements JmolScriptExtension {
         case 3:
           break;
         case 1: // polymer
-          v2 = V3.newV(pts[2]);
-          v2.sub(pts[0]);
+          v2 = V3.newVsub(pts[2], pts[0]);
           v2.scale(1000f);
           //$FALL-THROUGH$
         case 2: // slab
           // "a b c" is really "z y x"
-          v1 = V3.newV(pts[1]);
-          v1.sub(pts[0]);
+          v1 = V3.newVsub(pts[1], pts[0]);
           v1.scale(1000f);
           pts[0].sub(v1);
           pts[1].scale(2000f);

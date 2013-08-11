@@ -1022,7 +1022,7 @@ public class CrystalReader extends AtomSetCollectionReader {
        atoms[index].addTensor(Tensor.getTensorFromEigenVectors(directLatticeVectors, 
            new float[] {parseFloatStr(tokens[1]), 
            parseFloatStr(tokens[3]), 
-           parseFloatStr(tokens[5]) }, "unknown"), null);
+           parseFloatStr(tokens[5]) }, "unknown"), null, false);
        readLine();
      }
      return true;

@@ -55,10 +55,10 @@ public class Atom extends P3 implements Cloneable {
   public float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
   public JmolList<Tensor> tensors;
   
-  public void addTensor(Tensor tensor, String type) {
+  public void addTensor(Tensor tensor, String type, boolean reset) {
     if (tensor == null)
       return;
-    if (tensors == null)
+    if (reset || tensors == null)
       tensors = new JmolList<Tensor>();
     tensors.addLast(tensor);
     if (type != null)

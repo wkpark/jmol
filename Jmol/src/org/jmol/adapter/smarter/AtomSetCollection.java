@@ -1064,7 +1064,7 @@ public class AtomSetCollection {
       return;
     getSymmetry();
     for (int i = getLastAtomSetAtomIndex(); i < atomCount; i++)
-      atoms[i].addTensor(symmetry.getTensor(atoms[i].anisoBorU), null); // getTensor will return correct type 
+      atoms[i].addTensor(symmetry.getTensor(atoms[i].anisoBorU), null, false); // getTensor will return correct type 
   }
   
   public int baseSymmetryAtomCount;
@@ -1264,9 +1264,8 @@ public class AtomSetCollection {
     checkSpecial = TF;
   }
   
-  private final P3 ptTemp = new P3();
-  private final P3 ptTemp1 = new P3();
-  private final P3 ptTemp2 = new P3();
+  private P3 ptTemp;
+  private Matrix3f mTemp;
   
   private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, int transX,
                                int transY, int transZ, int baseCount, int pt,
@@ -1378,22 +1377,10 @@ public class AtomSetCollection {
               Tensor t = atoms[i].tensors.get(j);
               if (t == null)
                 continue;
-              if (nOperations == 1) {
-                atom1.addTensor(Tensor.copyTensor(t), null);
-                continue;
-              }
-              V3[] eigenVectors = t.eigenVectors;
-              // note -- PDB reader specifically turns off cartesians
-              if (addCartesian) {
-                ptTemp.setT(cartesians[i - iAtomFirst]);
-              } else {
-                ptTemp.setT(atoms[i]);
-                symmetry.toCartesian(ptTemp, false);
-              }
-              eigenVectors = symmetry.rotateEllipsoid(iSym, ptTemp,
-                  eigenVectors, ptTemp1, ptTemp2);
-              atom1.addTensor(Tensor.getTensorFromEigenVectors(eigenVectors,
-                  t.eigenValues, t.type), null);
+              if (nOperations == 1)
+                atom1.addTensor(Tensor.copyTensor(t), null, false);
+              else
+                addRotatedTensor(atom1, t, iSym, false);
             }
           }
         }
@@ -1416,6 +1403,16 @@ public class AtomSetCollection {
     return pt;
   }
   
+  public void addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset) {
+    if (ptTemp == null) {
+      ptTemp = new P3();
+      mTemp = new Matrix3f();
+    }
+    a.addTensor(Tensor.getTensorFromEigenVectors(symmetry
+        .rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
+        t.eigenValues, t.type), null, reset);
+  }
+
   public void applySymmetryBio(JmolList<Matrix4f> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
     if (latticeCells != null && latticeCells[0] != 0) {
       Logger.error("Cannot apply biomolecule when lattice cells are indicated");

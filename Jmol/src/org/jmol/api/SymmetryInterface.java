@@ -66,18 +66,14 @@ public interface SymmetryInterface {
 
   public Matrix4f getSpaceGroupOperation(int i);
 
-  public V3 getOriginalTranslation(int iop);
-
-  public float getModParam(int iop, int type);
+  public void getMod456Row(int iop, int irow, float[] f4);
 
   public String getSpaceGroupXyz(int i, boolean doNormalize);
 
   public void newSpaceGroupPoint(int i, P3 atom1, P3 atom2,
                                           int transX, int transY, int transZ);
 
-  public V3[] rotateEllipsoid(int i, P3 ptTemp,
-                                         V3[] axes, P3 ptTemp1,
-                                         P3 ptTemp2);
+  public V3[] rotateAxes(int iop, V3[] axes, P3 ptTemp, Matrix3f mTemp);
 
   public void setUnitCellAllFractionalRelative(boolean TF);
   

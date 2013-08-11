@@ -79,22 +79,22 @@ public class T {
   public final static int decimal    =  3;
   public final static int string     =  4;
   
-  final static int seqcode    =  5;
-  final static int hash       =  6;  // associative array; Hashtable
-  final static int varray     =  7;  // JmolList<ScriptVariable>
-  final static int point3f    =  8;
-  final static int point4f    =  9;  
+  public final static int seqcode    =  5;
+  public final static int hash       =  6;  // associative array; Hashtable
+  public final static int varray     =  7;  // JmolList<ScriptVariable>
+  public final static int point3f    =  8;
+  public final static int point4f    =  9;  
   public final static int bitset     =  10;
   
   public final static int matrix3f   = 11;  
   public final static int matrix4f   = 12;  
   // listf "list-float" is specifically for xxx.all.bin, 
   // but it could be developed further
-  final static int listf             = 13;     
+  public final static int listf             = 13;     
   final private static int keyword   = 14;
   
 
-  final static String[] astrType = {
+  public final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",
     "seqcode", "hash", "array", "point", "point4", "bitset",
     "matrix3f",  "matrix4f", "listf", "keyword"
@@ -188,9 +188,9 @@ public class T {
   // parameter bit flags
   //
   
-  final static int setparam          = (1 << 29); // parameter to set command
-  final static int misc              = (1 << 30); // misc parameter
-  final static int deprecatedparam   = setparam | misc;
+  public final static int setparam          = (1 << 29); // parameter to set command
+  public final static int misc              = (1 << 30); // misc parameter
+  public final static int deprecatedparam   = setparam | misc;
   
   public final static int identifier =  misc;
 
@@ -203,27 +203,27 @@ public class T {
   // this implicitString flag indicates that then entire command is an implied quoted string  
   // -- ODD echo, hover, label, message, pause  -- do NOT parse variables the same way
   // -- EVEN help, javascript, cd, gotocmd -- allow for single starting variable
-  final static int implicitStringCommand     = (1 << 14) | scriptCommand;
+  public final static int implicitStringCommand     = (1 << 14) | scriptCommand;
   
   // this implicitExpression flag indicates that phrases surrounded 
   // by ( ) should be considered the same as { }. 
   // -- elseif, forcmd, ifcmd, print, returncmd, set, var, whilecmd
-  final static int mathExpressionCommand = (1 << 15) | scriptCommand;
+  public final static int mathExpressionCommand = (1 << 15) | scriptCommand;
   
   // program flow commands include:
   // -- breakcmd, continuecmd, elsecmd, elseif, end, endifcmd, switch, case, 
   //    forcmd, function, ifcmd, whilecmd
-  final static int flowCommand        = (1 << 16) | mathExpressionCommand;
+  public final static int flowCommand        = (1 << 16) | mathExpressionCommand;
 
   // these commands will be handled specially
-  final static int shapeCommand   = (1 << 17) | scriptCommand;
+  public final static int shapeCommand   = (1 << 17) | scriptCommand;
 
   // Command argument compile flags
   
-  final static int noArgs         = (1 << 18);
-  final static int defaultON      = (1 << 19);
+  public final static int noArgs         = (1 << 18);
+  public final static int defaultON      = (1 << 19);
   
-  final static int expression           = (1 << 20);
+  public final static int expression           = (1 << 20);
   public final static int predefinedset = (1 << 21) | expression;
   
   public final static int atomproperty  = (1 << 22) | expression | misc; 
@@ -240,139 +240,139 @@ public class T {
   public final static int intparam   = (1 << 24) | setparam; // int parameter
   public final static int floatparam = (1 << 25) | setparam; // float parameter
   public final static int booleanparam = (1 << 26) | setparam; // boolean parameter
-  private final static int paramTypes = (strparam | intparam | floatparam | booleanparam);
+  public final static int paramTypes = (strparam | intparam | floatparam | booleanparam);
   
   // note: the booleanparam and the mathproperty bits are the same, but there is no
   //       conflict because mathproperty is only checked in ScriptEvaluator.getBitsetProperty
   //       meaning it is coming after a "." as in {*}.min
   
-  final static int mathproperty         = (1 << 26) | expression | misc; // {xxx}.nnnn
-  final static int mathfunc             = (1 << 27) | expression;  
-  final static int mathop               = (1 << 28) | expression;
-  final static int comparator           = mathop | (1 << 8);
+  public final static int mathproperty         = (1 << 26) | expression | misc; // {xxx}.nnnn
+  public final static int mathfunc             = (1 << 27) | expression;  
+  public final static int mathop               = (1 << 28) | expression;
+  public final static int comparator           = mathop | (1 << 8);
   
   public final static int center       = 1 | atomExpressionCommand;
   public final static int define       = 2 | atomExpressionCommand | expression;
   public final static int delete       = 3 | atomExpressionCommand;
   public final static int display      = 4 | atomExpressionCommand | deprecatedparam;
-  final static int fixed        = 5 | atomExpressionCommand | expression; // Jmol 12.0.RC15
+  public final static int fixed        = 5 | atomExpressionCommand | expression; // Jmol 12.0.RC15
   public final static int hide         = 6 | atomExpressionCommand;
   public final static int restrict     = 7 | atomExpressionCommand;
-//final static int select       see mathfunc
-  final static int subset       = 8 | atomExpressionCommand | predefinedset;
-  final static int zap          = 9 | atomExpressionCommand | expression;
+//public final static int select       see mathfunc
+  public final static int subset       = 8 | atomExpressionCommand | predefinedset;
+  public final static int zap          = 9 | atomExpressionCommand | expression;
 
-  final static int print        = 1 | mathExpressionCommand;
-  final static int returncmd    = 2 | mathExpressionCommand;
+  public final static int print        = 1 | mathExpressionCommand;
+  public final static int returncmd    = 2 | mathExpressionCommand;
   public final static int set          = 3 | mathExpressionCommand | expression;
-  final static int var          = 4 | mathExpressionCommand;
-  final static int log          = 5 | mathExpressionCommand;
-  //final static int prompt     see mathfunc
+  public final static int var          = 4 | mathExpressionCommand;
+  public final static int log          = 5 | mathExpressionCommand;
+  //public final static int prompt     see mathfunc
   
   public final static int echo  = 1 /* must be odd */ | implicitStringCommand | shapeCommand | setparam;
-  final static int help         = 2 /* must be even */ | implicitStringCommand;
+  public final static int help         = 2 /* must be even */ | implicitStringCommand;
   public final static int hover = 3 /* must be odd */ | implicitStringCommand | defaultON;
-//final static int javascript   see mathfunc
-//final static int label        see mathfunc
-  final static int message      = 5 /* must be odd */ | implicitStringCommand;
+//public final static int javascript   see mathfunc
+//public final static int label        see mathfunc
+  public final static int message      = 5 /* must be odd */ | implicitStringCommand;
   public final static int pause = 7 /* must be odd */ | implicitStringCommand;
 
   //these commands control flow
   //sorry about GOTO!
-//final static int function     see mathfunc
-//final static int ifcmd        see mathfunc
-  final static int elseif       = 2 | flowCommand;
-  final static int elsecmd      = 3 | flowCommand | noArgs;
-  final static int endifcmd     = 4 | flowCommand | noArgs;
-//final static int forcmd       see mathfunc
-  final static int whilecmd     = 6 | flowCommand;
-  final static int breakcmd     = 7 | flowCommand;
-  final static int continuecmd  = 8 | flowCommand;
-  final static int end          = 9 | flowCommand | expression;
-  final static int switchcmd    = 10 | flowCommand;
-  final static int casecmd      = 11 | flowCommand;
-  final static int catchcmd     = 12 | flowCommand;
-  final static int defaultcmd   = 13 | flowCommand;
+//public final static int function     see mathfunc
+//public final static int ifcmd        see mathfunc
+  public final static int elseif       = 2 | flowCommand;
+  public final static int elsecmd      = 3 | flowCommand | noArgs;
+  public final static int endifcmd     = 4 | flowCommand | noArgs;
+//public final static int forcmd       see mathfunc
+  public final static int whilecmd     = 6 | flowCommand;
+  public final static int breakcmd     = 7 | flowCommand;
+  public final static int continuecmd  = 8 | flowCommand;
+  public final static int end          = 9 | flowCommand | expression;
+  public final static int switchcmd    = 10 | flowCommand;
+  public final static int casecmd      = 11 | flowCommand;
+  public final static int catchcmd     = 12 | flowCommand;
+  public final static int defaultcmd   = 13 | flowCommand;
   public final static int trycmd       = 14 | flowCommand | noArgs;
   
   public final static int animation    = scriptCommand | 1;
-  final static int assign       = scriptCommand | 2;
-  final static int background   = scriptCommand | 3 | deprecatedparam;
-  final static int bind         = scriptCommand | 4;
-  final static int bondorder    = scriptCommand | 5;
-  final static int calculate    = scriptCommand | 6;
-//final static int cache        see mathfunc
-  final static int cd           = scriptCommand | 8 /* must be even */| implicitStringCommand | expression; // must be even
-  final static int centerAt     = scriptCommand | 9;
-//final static int color        see intproperty
-//final static int configuration see intproperty
+  public final static int assign       = scriptCommand | 2;
+  public final static int background   = scriptCommand | 3 | deprecatedparam;
+  public final static int bind         = scriptCommand | 4;
+  public final static int bondorder    = scriptCommand | 5;
+  public final static int calculate    = scriptCommand | 6;
+//public final static int cache        see mathfunc
+  public final static int cd           = scriptCommand | 8 /* must be even */| implicitStringCommand | expression; // must be even
+  public final static int centerAt     = scriptCommand | 9;
+//public final static int color        see intproperty
+//public final static int configuration see intproperty
   public final static int connect = scriptCommand | 10;
-  final static int console      = scriptCommand | 11 | defaultON;
-//final static int data         see mathfunc
-  final static int delay        = scriptCommand | 13 | defaultON;
+  public final static int console      = scriptCommand | 11 | defaultON;
+//public final static int data         see mathfunc
+  public final static int delay        = scriptCommand | 13 | defaultON;
   public final static int depth = scriptCommand | 14 | intparam | defaultON;
-  final static int exit         = scriptCommand | 15 | noArgs;
-  final static int exitjmol     = scriptCommand | 16 | noArgs;
-//final static int file         see intproperty
-  final static int font         = scriptCommand | 18;
+  public final static int exit         = scriptCommand | 15 | noArgs;
+  public final static int exitjmol     = scriptCommand | 16 | noArgs;
+//public final static int file         see intproperty
+  public final static int font         = scriptCommand | 18;
   public final static int frame        = scriptCommand | 19;
-//final static int getproperty  see mathfunc
-  final static int gotocmd      = scriptCommand | 20 /*must be even*/| implicitStringCommand;
+//public final static int getproperty  see mathfunc
+  public final static int gotocmd      = scriptCommand | 20 /*must be even*/| implicitStringCommand;
   public final static int hbond = scriptCommand | 22 | deprecatedparam | expression | defaultON;
-  final static int history      = scriptCommand | 23 | deprecatedparam;
-  final static int initialize   = scriptCommand | 24 | noArgs;
-  final static int invertSelected = scriptCommand | 25;
-//final static int load         see mathfunc
-  final static int loop         = scriptCommand | 26 | defaultON;
-  final static int mapProperty  = scriptCommand | 28 | expression;
-  final static int minimize     = scriptCommand | 30;
-//final static int model        see mathfunc
-//final static int measure      see mathfunc
+  public final static int history      = scriptCommand | 23 | deprecatedparam;
+  public final static int initialize   = scriptCommand | 24 | noArgs;
+  public final static int invertSelected = scriptCommand | 25;
+//public final static int load         see mathfunc
+  public final static int loop         = scriptCommand | 26 | defaultON;
+  public final static int mapProperty  = scriptCommand | 28 | expression;
+  public final static int minimize     = scriptCommand | 30;
+//public final static int model        see mathfunc
+//public final static int measure      see mathfunc
   public final static int move         = scriptCommand | 32;
   public final static int moveto = scriptCommand | 34;
   public final static int navigate = scriptCommand | 35;
-//final static int quaternion   see mathfunc
-  final static int parallel     = flowCommand   | 36;
-  final static int plot         = scriptCommand | 37;
-  final static int pop          = scriptCommand | 38 | noArgs; //internal only
-  final static int process      = flowCommand   | 39;
-//  final static int prompt     see mathfunc
-  final static int push         = scriptCommand | 40 | noArgs; //internal only
-  final static int quit         = scriptCommand | 41 | noArgs;
-  final static int ramachandran = scriptCommand | 42 | expression;
+//public final static int quaternion   see mathfunc
+  public final static int parallel     = flowCommand   | 36;
+  public final static int plot         = scriptCommand | 37;
+  public final static int pop          = scriptCommand | 38 | noArgs; //internal only
+  public final static int process      = flowCommand   | 39;
+//  public final static int prompt     see mathfunc
+  public final static int push         = scriptCommand | 40 | noArgs; //internal only
+  public final static int quit         = scriptCommand | 41 | noArgs;
+  public final static int ramachandran = scriptCommand | 42 | expression;
   public final static int redomove = scriptCommand | 43;
-  final static int refresh      = scriptCommand | 44 | noArgs;
-  final static int reset        = scriptCommand | 45;
-  final static int restore      = scriptCommand | 46;
+  public final static int refresh      = scriptCommand | 44 | noArgs;
+  public final static int reset        = scriptCommand | 45;
+  public final static int restore      = scriptCommand | 46;
   public final static int resume = scriptCommand | 47 | noArgs;
   public final static int rotate       = scriptCommand | 48 | defaultON;
-  final static int rotateSelected = scriptCommand | 49;
+  public final static int rotateSelected = scriptCommand | 49;
   public final static int save  = scriptCommand | 50;
-//final static int script   see mathfunc
+//public final static int script   see mathfunc
   public final static int selectionhalos = scriptCommand | 51 | deprecatedparam | defaultON;
   public final static int show         = scriptCommand | 52;
   public final static int slab  = scriptCommand | 53 | intparam | defaultON;
-  final static int spin         = scriptCommand | 55 | deprecatedparam | defaultON;
+  public final static int spin         = scriptCommand | 55 | deprecatedparam | defaultON;
   public final static int ssbond = scriptCommand | 56 | deprecatedparam | defaultON;
-  final static int step         = scriptCommand | 58 | noArgs;
-  final static int stereo       = scriptCommand | 59 | defaultON;
-//final static int structure    see intproperty
-  final static int sync         = scriptCommand | 60;
-  final static int timeout      = scriptCommand | 62 | setparam;
+  public final static int step         = scriptCommand | 58 | noArgs;
+  public final static int stereo       = scriptCommand | 59 | defaultON;
+//public final static int structure    see intproperty
+  public final static int sync         = scriptCommand | 60;
+  public final static int timeout      = scriptCommand | 62 | setparam;
   public final static int translate    = scriptCommand | 64;
-  final static int translateSelected   = scriptCommand | 66;
-  final static int unbind              = scriptCommand | 68;
+  public final static int translateSelected   = scriptCommand | 66;
+  public final static int unbind              = scriptCommand | 68;
   public final static int undomove     = scriptCommand | 69;
   public final static int vibration    = scriptCommand | 70;
-  //final static int write   see mathfunc
-  final static int zoom                = scriptCommand | 72;
-  final static int zoomTo              = scriptCommand | 74;
+  //public final static int write   see mathfunc
+  public final static int zoom                = scriptCommand | 72;
+  public final static int zoomTo              = scriptCommand | 74;
 
   // shapes:
   
   public final static int axes         = shapeCommand | 2 | deprecatedparam | defaultON;
-//final static int boundbox     see mathproperty
-//final static int contact      see mathfunc
+//public final static int boundbox     see mathproperty
+//public final static int contact      see mathfunc
   public final static int cgo          = shapeCommand | 6; // PyMOL Compiled Graphical Object
   public final static int dipole       = shapeCommand | 7;
   public final static int draw         = shapeCommand | 8;
@@ -397,20 +397,20 @@ public class T {
   // atom expression terms
   //
   
-  final static int expressionBegin     = expression | 1;
-  final static int expressionEnd       = expression | 2;
+  public final static int expressionBegin     = expression | 1;
+  public final static int expressionEnd       = expression | 2;
   public final static int all          = expression | 3;
   public final static int branch       = expression | 4;
-  final static int coord               = expression | 6;
-  final static int dollarsign          = expression | 7;
-  final static int per                 = expression | 8;
+  public final static int coord               = expression | 6;
+  public final static int dollarsign          = expression | 7;
+  public final static int per                 = expression | 8;
   public final static int isaromatic   = expression | 9;
-  final static int leftbrace           = expression | 10;
+  public final static int leftbrace           = expression | 10;
   public final static int none                = expression | 11;
   public final static int off          = expression | 12; //for within(dist,false,...)
   public final static int on           = expression | 13; //for within(dist,true,...)
-  final static int rightbrace          = expression | 14;
-  final static int semicolon           = expression | 15;
+  public final static int rightbrace          = expression | 14;
+  public final static int semicolon           = expression | 15;
 
   // generated by compiler:
   
@@ -418,18 +418,18 @@ public class T {
   public final static int spec_atom            = expression | 32;
   public final static int spec_chain           = expression | 33;
   public final static int spec_model           = expression | 34;  // /3, /4
-  final static int spec_model2                 = expression | 35;  // 1.2, 1.3
+  public final static int spec_model2                 = expression | 35;  // 1.2, 1.3
   public final static int spec_name_pattern    = expression | 36;
   public final static int spec_resid           = expression | 37;
   public final static int spec_seqcode         = expression | 38;
   public final static int spec_seqcode_range   = expression | 39;
 
-  final static int amino                = predefinedset | 2;
+  public final static int amino                = predefinedset | 2;
   public final static int dna           = predefinedset | 4;
   public final static int hetero        = predefinedset | 6 | deprecatedparam;
-  final static int helixalpha           = predefinedset | 7;   // Jmol 12.1.14
-  final static int helix310             = predefinedset | 8;   // Jmol 12.1.14
-  final static int helixpi              = predefinedset | 10; 
+  public final static int helixalpha           = predefinedset | 7;   // Jmol 12.1.14
+  public final static int helix310             = predefinedset | 8;   // Jmol 12.1.14
+  public final static int helixpi              = predefinedset | 10; 
   public final static int hydrogen      = predefinedset | 12 | deprecatedparam;
   public final static int nucleic       = predefinedset | 14;
   public final static int protein       = predefinedset | 16;
@@ -439,18 +439,18 @@ public class T {
   public final static int solvent       = predefinedset | 24 | deprecatedparam;
   public final static int sidechain     = predefinedset | 26;
   public final static int surface              = predefinedset | 28;
-  final static int thismodel            = predefinedset | 30;
+  public final static int thismodel            = predefinedset | 30;
   public final static int sheet         = predefinedset | 32;
   public final static int spine         = predefinedset | 34;  // 11.9.34
   // these next are predefined in the sense that they are known quantities
   public final static int carbohydrate    = predefinedset | 36;
-  final static int clickable              = predefinedset | 38;
-  final static int displayed              = predefinedset | 40;
+  public final static int clickable              = predefinedset | 38;
+  public final static int displayed              = predefinedset | 40;
   public final static int hidden                 = predefinedset | 42;
   public final static int specialposition = predefinedset | 44;
-  final static int visible                = predefinedset | 46;
-  final static int basemodel              = predefinedset | 48;
-  final static int nonequivalent          = predefinedset | 50;
+  public final static int visible                = predefinedset | 46;
+  public final static int basemodel              = predefinedset | 48;
+  public final static int nonequivalent          = predefinedset | 50;
 
   
   static int getPrecedence(int tokOperator) {
@@ -458,51 +458,51 @@ public class T {
   }
 
 
-  final static int leftparen    = 0 | mathop | 1 << 4;
-  final static int rightparen   = 1 | mathop | 1 << 4;
+  public final static int leftparen    = 0 | mathop | 1 << 4;
+  public final static int rightparen   = 1 | mathop | 1 << 4;
 
-  final static int opIf         = 1 | mathop | 2 << 4 | setparam;   // set ?
-  final static int colon        = 2 | mathop | 2 << 4;
+  public final static int opIf         = 1 | mathop | 2 << 4 | setparam;   // set ?
+  public final static int colon        = 2 | mathop | 2 << 4;
 
-  final static int comma        = 0 | mathop | 3 << 4;
+  public final static int comma        = 0 | mathop | 3 << 4;
 
-  final static int leftsquare   = 0 | mathop | 4 << 4;
-  final static int rightsquare  = 1 | mathop | 4 << 4;
+  public final static int leftsquare   = 0 | mathop | 4 << 4;
+  public final static int rightsquare  = 1 | mathop | 4 << 4;
 
-  final static int opOr         = 0 | mathop | 5 << 4;
-  final static int opXor        = 1 | mathop | 5 << 4;
+  public final static int opOr         = 0 | mathop | 5 << 4;
+  public final static int opXor        = 1 | mathop | 5 << 4;
   public final static int opToggle = 2 | mathop | 5 << 4;
 
-  final static int opAnd        = 0 | mathop | 6 << 4;
+  public final static int opAnd        = 0 | mathop | 6 << 4;
  
-  final static int opNot        = 0 | mathop | 7 << 4;
+  public final static int opNot        = 0 | mathop | 7 << 4;
 
-  final static int opAND        = 0 | mathop | 8 << 4;
+  public final static int opAND        = 0 | mathop | 8 << 4;
 
-  final static int opGT         = 0 | comparator | 9 << 4;
-  final static int opGE         = 1 | comparator | 9 << 4;
-  final static int opLE         = 2 | comparator | 9 << 4;
-  final static int opLT         = 3 | comparator | 9 << 4;
+  public final static int opGT         = 0 | comparator | 9 << 4;
+  public final static int opGE         = 1 | comparator | 9 << 4;
+  public final static int opLE         = 2 | comparator | 9 << 4;
+  public final static int opLT         = 3 | comparator | 9 << 4;
   public final static int opEQ  = 4 | comparator | 9 << 4;
-  final static int opNE         = 6 | comparator | 9 << 4;
+  public final static int opNE         = 6 | comparator | 9 << 4;
    
-  final static int minus        = 0 | mathop | 10 << 4;
-  final static int plus         = 1 | mathop | 10 << 4;
+  public final static int minus        = 0 | mathop | 10 << 4;
+  public final static int plus         = 1 | mathop | 10 << 4;
  
-  final static int divide         = 0 | mathop | 11 << 4;
-  final static int times          = 1 | mathop | 11 << 4;
+  public final static int divide         = 0 | mathop | 11 << 4;
+  public final static int times          = 1 | mathop | 11 << 4;
   public final static int percent = 2 | mathop | 11 << 4;
-  final static int leftdivide     = 3 | mathop | 11 << 4;  //   quaternion1 \ quaternion2
+  public final static int leftdivide     = 3 | mathop | 11 << 4;  //   quaternion1 \ quaternion2
   
-  final static int unaryMinus   = 0 | mathop | 12 << 4;
-  final static int minusMinus   = 1 | mathop | 12 << 4;
-  final static int plusPlus     = 2 | mathop | 12 << 4;
-  final static int timestimes   = 3 | mathop | 12 << 4;
+  public final static int unaryMinus   = 0 | mathop | 12 << 4;
+  public final static int minusMinus   = 1 | mathop | 12 << 4;
+  public final static int plusPlus     = 2 | mathop | 12 << 4;
+  public final static int timestimes   = 3 | mathop | 12 << 4;
   
   
-  final static int propselector = 1 | mathop | 13 << 4;
+  public final static int propselector = 1 | mathop | 13 << 4;
 
-  final static int andequals    = 2 | mathop | 13 << 4;
+  public final static int andequals    = 2 | mathop | 13 << 4;
 
   // these atom and math properties are invoked after a ".":
   // x.atoms
@@ -517,7 +517,7 @@ public class T {
   // .allfloat is a special flag for colorShape() to get a full
   // atom float array
   
-  final static int minmaxmask /*all*/ = 0xF << 5; 
+  public final static int minmaxmask /*all*/ = 0xF << 5; 
   public final static int min           = 1 << 5;
   public final static int max           = 2 << 5;
   public final static int average       = 3 << 5;
@@ -527,7 +527,7 @@ public class T {
   public final static int selectedfloat = 7 << 5; //not user-selectable
   public final static int allfloat      = 8 << 5; //not user-selectable
 
-  final static int settable           = 1 << 11;
+  public final static int settable           = 1 << 11;
   
   // bits 0 - 4 are for an identifier -- DO NOT GO OVER 31!
   // but, note that we can have more than 1 provided other parameters differ
@@ -536,10 +536,10 @@ public class T {
     
   public final static int atoms     = 1 | mathproperty;
   public final static int bonds     = 2 | mathproperty | deprecatedparam;
-  final static int length           = 3 | mathproperty;
-  final static int lines            = 4 | mathproperty;
+  public final static int length           = 3 | mathproperty;
+  public final static int lines            = 4 | mathproperty;
   public final static int reverse   = 5 | mathproperty;
-  final static int size             = 6 | mathproperty;
+  public final static int size             = 6 | mathproperty;
   public final static int type      = 8 | mathproperty;
   public final static int boundbox  = 9 | mathproperty | deprecatedparam | shapeCommand | defaultON;
   public final static int xyz       =10 | mathproperty | atomproperty | settable;
@@ -548,8 +548,8 @@ public class T {
   public final static int fuxyz     =13 | mathproperty | atomproperty | settable;
   public final static int unitxyz   =14 | mathproperty | atomproperty;
   public final static int vibxyz    =15 | mathproperty | atomproperty | settable;
-  final static int w                =16 | mathproperty;
-  final static int keys             =17 | mathproperty; 
+  public final static int w                =16 | mathproperty;
+  public final static int keys             =17 | mathproperty; 
   
   // occupancy, radius, and structure are odd, because they takes different meanings when compared
   
@@ -679,66 +679,66 @@ public class T {
   
   public final static int angle     = 1 | 0 << 9 | mathfunc;
   public final static int array     = 2 | 0 << 9 | mathfunc;
-  final static int axisangle        = 3 | 0 << 9 | mathfunc;
+  public final static int axisangle        = 3 | 0 << 9 | mathfunc;
   public final static int color     = 4 | 0 << 9 | mathfunc | intproperty | scriptCommand | deprecatedparam | settable;
-  final static int compare          = 5 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int compare          = 5 | 0 << 9 | mathfunc | scriptCommand;
   public final static int connected = 6 | 0 << 9 | mathfunc;
   public final static int data      = 7 | 0 << 9 | mathfunc | scriptCommand;
   public final static int format    = 8 | 0 << 9 | mathfunc | mathproperty | strproperty | settable;
-  final static int function         = 9 | 0 << 9 | mathfunc | flowCommand;
-  final static int getproperty      = 10 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int function         = 9 | 0 << 9 | mathfunc | flowCommand;
+  public final static int getproperty      = 10 | 0 << 9 | mathfunc | scriptCommand;
   public final static int label     = 11 /* must be odd */| 0 << 9 | mathfunc | mathproperty | strproperty | settable | implicitStringCommand | shapeCommand | defaultON | deprecatedparam; 
   public final static int helix     = 12 | 0 << 9 | mathfunc | predefinedset;
   public final static int measure   = 13 | 0 << 9| mathfunc | shapeCommand | deprecatedparam | defaultON;
-  final static int now              = 14 | 0 << 9 | mathfunc;
+  public final static int now              = 14 | 0 << 9 | mathfunc;
   public final static int plane     = 15 | 0 << 9 | mathfunc;
   public final static int point     = 16 | 0 << 9 | mathfunc;
-  final static int quaternion       = 17 | 0 << 9 | mathfunc | scriptCommand;
-  final static int sort             = 18 | 0 << 9 | mathfunc | mathproperty;
-  final static int count            = 19 | 0 << 9 | mathfunc | mathproperty;
+  public final static int quaternion       = 17 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int sort             = 18 | 0 << 9 | mathfunc | mathproperty;
+  public final static int count            = 19 | 0 << 9 | mathfunc | mathproperty;
   public final static int within    = 20 | 0 << 9 | mathfunc;
-  final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
-  final static int cache            = 22 | 0 << 9 | mathfunc | scriptCommand; // new in Jmol 13.1.2
-  final static int tensor           = 23 | 0 << 9 | mathfunc | mathproperty;
+  public final static int write            = 21 | 0 << 9 | mathfunc | scriptCommand;
+  public final static int cache            = 22 | 0 << 9 | mathfunc | scriptCommand; // new in Jmol 13.1.2
+  public final static int tensor           = 23 | 0 << 9 | mathfunc | mathproperty;
   public final static int modulation       = 24 | 0 << 9 | mathfunc | scriptCommand;
   
   // xxx(a)
   
-  final static int acos         = 3 | 1 << 9 | mathfunc;
-  final static int sin          = 4 | 1 << 9 | mathfunc;
-  final static int cos          = 5 | 1 << 9 | mathfunc;
-  final static int sqrt         = 6 | 1 << 9 | mathfunc;
+  public final static int acos         = 3 | 1 << 9 | mathfunc;
+  public final static int sin          = 4 | 1 << 9 | mathfunc;
+  public final static int cos          = 5 | 1 << 9 | mathfunc;
+  public final static int sqrt         = 6 | 1 << 9 | mathfunc;
   public final static int file  = 7 | 1 << 9 | mathfunc | intproperty | scriptCommand;
-  final static int forcmd       = 8 | 1 << 9 | mathfunc | flowCommand;
-  final static int ifcmd        = 9 | 1 << 9 | mathfunc | flowCommand;
-  final static int abs          = 10 | 1 << 9 | mathfunc;
-  final static int javascript   = 12 /* must be even */| 1 << 9 | mathfunc | implicitStringCommand;
+  public final static int forcmd       = 8 | 1 << 9 | mathfunc | flowCommand;
+  public final static int ifcmd        = 9 | 1 << 9 | mathfunc | flowCommand;
+  public final static int abs          = 10 | 1 << 9 | mathfunc;
+  public final static int javascript   = 12 /* must be even */| 1 << 9 | mathfunc | implicitStringCommand;
 
   // ___.xxx(a)
   
   // a.distance(b) is in a different set -- distance(b,c) -- because it CAN take
   // two parameters and it CAN be a dot-function (but not both together)
   
-  final static int div          = 0 | 1 << 9 | mathfunc | mathproperty;
-  final static int dot          = 1 | 1 << 9 | mathfunc | mathproperty;
-  final static int join         = 2 | 1 << 9 | mathfunc | mathproperty;
-  final static int mul          = 3 | 1 << 9 | mathfunc | mathproperty;
-  final static int split        = 4 | 1 << 9 | mathfunc | mathproperty;
-  final static int sub          = 5 | 1 << 9 | mathfunc | mathproperty;
+  public final static int div          = 0 | 1 << 9 | mathfunc | mathproperty;
+  public final static int dot          = 1 | 1 << 9 | mathfunc | mathproperty;
+  public final static int join         = 2 | 1 << 9 | mathfunc | mathproperty;
+  public final static int mul          = 3 | 1 << 9 | mathfunc | mathproperty;
+  public final static int split        = 4 | 1 << 9 | mathfunc | mathproperty;
+  public final static int sub          = 5 | 1 << 9 | mathfunc | mathproperty;
   public final static int trim         = 6 | 1 << 9 | mathfunc | mathproperty;  
   public final static int volume = 7 | 1 << 9 | mathfunc | mathproperty | floatproperty;  
-  final static int col           = 8 | 1 << 9 | mathfunc | mathproperty;
-  final static int row           = 9 | 1 << 9 | mathfunc | mathproperty;
+  public final static int col           = 8 | 1 << 9 | mathfunc | mathproperty;
+  public final static int row           = 9 | 1 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b)
   
   public final static int cross = 1 | 2 << 9 | mathfunc;
-  final static int load         = 2 | 2 << 9 | mathfunc | scriptCommand;
-  final static int random       = 4 | 2 << 9 | mathfunc;
+  public final static int load         = 2 | 2 << 9 | mathfunc | scriptCommand;
+  public final static int random       = 4 | 2 << 9 | mathfunc;
   public final static int script       = 5 | 2 << 9 | mathfunc | scriptCommand;
   public final static int substructure = 6 | 2 << 9 | mathfunc | intproperty | strproperty;
-  final static int search       = 7 | 2 << 9 | mathfunc;
-  final static int smiles       = 8 | 2 << 9 | mathfunc;
+  public final static int search       = 7 | 2 << 9 | mathfunc;
+  public final static int smiles       = 8 | 2 << 9 | mathfunc;
   public final static int contact = 9 | 2 << 9 | mathfunc | shapeCommand;
 
 
@@ -752,20 +752,20 @@ public class T {
   
   public final static int add          = 1 | 2 << 9 | mathfunc | mathproperty;
   public final static int distance     = 2 | 2 << 9 | mathfunc | mathproperty;
-  final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
+  public final static int replace      = 3 | 2 << 9 | mathfunc | mathproperty;
 
   // xxx(a,b,c)
   
-  final static int hkl          = 1 | 3 << 9 | mathfunc;
-  final static int intersection = 2 | 3 << 9 | mathfunc;
-  final static int prompt       = 3 | 3 << 9 | mathfunc | mathExpressionCommand;
-  final static int select       = 4 | 3 << 9 | mathfunc | atomExpressionCommand;
+  public final static int hkl          = 1 | 3 << 9 | mathfunc;
+  public final static int intersection = 2 | 3 << 9 | mathfunc;
+  public final static int prompt       = 3 | 3 << 9 | mathfunc | mathExpressionCommand;
+  public final static int select       = 4 | 3 << 9 | mathfunc | atomExpressionCommand;
 
   // ___.xxx(a,b,c)
   
-  final static int bin          = 1 | 3 << 9 | mathfunc | mathproperty;
+  public final static int bin          = 1 | 3 << 9 | mathfunc | mathproperty;
   public final static int symop = 2 | 3 << 9 | mathfunc | mathproperty | intproperty; 
-  final static int find         = 3 | 3 << 9 | mathfunc | mathproperty;
+  public final static int find         = 3 | 3 << 9 | mathfunc | mathproperty;
 
   // anything beyond 3 are set "unlimited"
 
@@ -773,11 +773,11 @@ public class T {
   
   // deprecated or handled specially in ScriptEvaluator
   
-  final static int bondmode           = deprecatedparam | 1;  
-  final static int fontsize           = deprecatedparam | 2;
-  final static int measurementnumbers = deprecatedparam | 3;
-  final static int scale3d            = deprecatedparam | 4;
-  final static int togglelabel        = deprecatedparam | 5;
+  public final static int bondmode           = deprecatedparam | 1;  
+  public final static int fontsize           = deprecatedparam | 2;
+  public final static int measurementnumbers = deprecatedparam | 3;
+  public final static int scale3d            = deprecatedparam | 4;
+  public final static int togglelabel        = deprecatedparam | 5;
 
   // handled specially in ScriptEvaluator
 
@@ -1070,239 +1070,239 @@ public class T {
   
   // misc
 
-  final static int absolute      = misc  | 2;
-  final static int addhydrogens  = misc  | 4;
-  final static int adjust        = misc  | 6;
-  final static int align         = misc  | 8;
-  final static int allconnected  = misc  | 10;
-  final static int angstroms     = misc  | 12;
-  final static int anisotropy    = misc  | 14;
-  final static int append        = misc  | 15;
-  final static int arc           = misc  | 16 | expression;
-  final static int area          = misc  | 18;
-  final static int aromatic      = misc  | 20 | predefinedset;
-  final static int arrow         = misc  | 22;
-  final static int as            = misc  | 24; // for LOAD and ISOSURFACE only
-  final static int atomicorbital = misc  | 26;
+  public final static int absolute      = misc  | 2;
+  public final static int addhydrogens  = misc  | 4;
+  public final static int adjust        = misc  | 6;
+  public final static int align         = misc  | 8;
+  public final static int allconnected  = misc  | 10;
+  public final static int angstroms     = misc  | 12;
+  public final static int anisotropy    = misc  | 14;
+  public final static int append        = misc  | 15;
+  public final static int arc           = misc  | 16 | expression;
+  public final static int area          = misc  | 18;
+  public final static int aromatic      = misc  | 20 | predefinedset;
+  public final static int arrow         = misc  | 22;
+  public final static int as            = misc  | 24; // for LOAD and ISOSURFACE only
+  public final static int atomicorbital = misc  | 26;
   public final static int auto   = misc  | 28;
   public final static int axis   = misc  | 30;
-  final static int babel         = misc  | 32;
-  final static int babel21       = misc  | 34; 
-  final static int back          = misc  | 35;
+  public final static int babel         = misc  | 32;
+  public final static int babel21       = misc  | 34; 
+  public final static int back          = misc  | 35;
   public final static int balls         = misc  | 36;
-  final static int barb          = misc  | 37;
+  public final static int barb          = misc  | 37;
   public final static int backlit = misc  | 38;
   public final static int basepair      = misc  | 40;
-  final static int binary        = misc  | 42;
-  final static int blockdata     = misc  | 44;
-  final static int bondset       = misc  | 46;
-  final static int bottom        = misc  | 47;
+  public final static int binary        = misc  | 42;
+  public final static int blockdata     = misc  | 44;
+  public final static int bondset       = misc  | 46;
+  public final static int bottom        = misc  | 47;
   public final static int brillouin     = misc  | 48;
-  final static int cancel        = misc  | 50;
+  public final static int cancel        = misc  | 50;
   public final static int cap    = misc  | 51 | expression;
-  final static int cavity        = misc  | 52;
-  final static int check         = misc  | 54;
-  final static int chemical      = misc  | 55;
-  final static int circle        = misc  | 56;
+  public final static int cavity        = misc  | 52;
+  public final static int check         = misc  | 54;
+  public final static int chemical      = misc  | 55;
+  public final static int circle        = misc  | 56;
   public final static int clash         = misc  | 57;
-  final static int clear         = misc  | 58;
-  final static int clipboard     = misc  | 60;
-  final static int collapsed     = misc  | 62;
-  final static int colorscheme   = misc  | 64;
-  final static int command       = misc  | 66;
-  final static int commands      = misc  | 68;
-  final static int constraint    = misc  | 70;
-  final static int contour       = misc  | 72;
+  public final static int clear         = misc  | 58;
+  public final static int clipboard     = misc  | 60;
+  public final static int collapsed     = misc  | 62;
+  public final static int colorscheme   = misc  | 64;
+  public final static int command       = misc  | 66;
+  public final static int commands      = misc  | 68;
+  public final static int constraint    = misc  | 70;
+  public final static int contour       = misc  | 72;
   public final static int contourlines  = misc  | 74;
-  final static int contours      = misc  | 76;
-  final static int corners       = misc  | 78;
+  public final static int contours      = misc  | 76;
+  public final static int corners       = misc  | 78;
   public final static int create = misc  | 80;
-  final static int criterion     = misc  | 81;
-  final static int crossed       = misc  | 82;
-  final static int curve         = misc  | 84;
-  final static int cutoff        = misc  | 86;
-  final static int cylinder      = misc  | 88;
-  final static int density        = misc  | 90;
-  final static int dssp           = misc  | 91;
-  final static int diameter       = misc  | 92;
-  final static int direction      = misc  | 94;
-  final static int discrete       = misc  | 96;
-  final static int displacement   = misc  | 98;
-  final static int distancefactor = misc  | 100;
-  final static int dotted         = misc  | 102;
-  final static int downsample     = misc  | 104;
-  final static int drawing        = misc  | 105;
-  final static int eccentricity   = misc  | 106;
-  final static int ed             = misc  | 108 | expression;
-  final static int edges          = misc  | 109;
-  final static int energy         = misc  | 110;
-  final static int error          = misc  | 111;
-  final static int facecenteroffset = misc  | 113;
+  public final static int criterion     = misc  | 81;
+  public final static int crossed       = misc  | 82;
+  public final static int curve         = misc  | 84;
+  public final static int cutoff        = misc  | 86;
+  public final static int cylinder      = misc  | 88;
+  public final static int density        = misc  | 90;
+  public final static int dssp           = misc  | 91;
+  public final static int diameter       = misc  | 92;
+  public final static int direction      = misc  | 94;
+  public final static int discrete       = misc  | 96;
+  public final static int displacement   = misc  | 98;
+  public final static int distancefactor = misc  | 100;
+  public final static int dotted         = misc  | 102;
+  public final static int downsample     = misc  | 104;
+  public final static int drawing        = misc  | 105;
+  public final static int eccentricity   = misc  | 106;
+  public final static int ed             = misc  | 108 | expression;
+  public final static int edges          = misc  | 109;
+  public final static int energy         = misc  | 110;
+  public final static int error          = misc  | 111;
+  public final static int facecenteroffset = misc  | 113;
   public final static int fill    = misc  | 114;
-  final static int filter         = misc  | 116;
+  public final static int filter         = misc  | 116;
   public final static int first   = misc  | 118;
-  final static int fixedtemp      = misc  | 122;
-  final static int flat           = misc  | 124;
-  final static int fps            = misc  | 126 | expression;
-  final static int from           = misc  | 128;
+  public final static int fixedtemp      = misc  | 122;
+  public final static int flat           = misc  | 124;
+  public final static int fps            = misc  | 126 | expression;
+  public final static int from           = misc  | 128;
   public final static int front   = misc  | 130;
-  final static int frontedges     = misc  | 132;
+  public final static int frontedges     = misc  | 132;
   public final static int frontlit = misc  | 134;
   public final static int frontonly = misc  | 136;
   public final static int full            = misc  | 137;
-  final static int fullplane       = misc  | 138;
+  public final static int fullplane       = misc  | 138;
   public final static int fullylit = misc  | 140;
-  final static int functionxy     = misc  | 142;
-  final static int functionxyz    = misc  | 144;
-  final static int gridpoints     = misc  | 146;
-  final static int homo           = misc  | 149;
-  final static int id             = misc  | 150 | expression;
-  final static int ignore         = misc  | 152;
-  final static int inchi          = misc  | 153;
-  final static int inchikey       = misc  | 154;
-  final static int image          = misc  | 155;
-  final static int in             = misc  | 156;
-  final static int increment      = misc  | 157;
+  public final static int functionxy     = misc  | 142;
+  public final static int functionxyz    = misc  | 144;
+  public final static int gridpoints     = misc  | 146;
+  public final static int homo           = misc  | 149;
+  public final static int id             = misc  | 150 | expression;
+  public final static int ignore         = misc  | 152;
+  public final static int inchi          = misc  | 153;
+  public final static int inchikey       = misc  | 154;
+  public final static int image          = misc  | 155;
+  public final static int in             = misc  | 156;
+  public final static int increment      = misc  | 157;
   public final static int info    = misc  | 158;
-  final static int inline         = misc  | 159;
-  final static int insideout      = misc  | 160;
-  final static int interior       = misc  | 162;
-  final static int internal       = misc  | 164;
+  public final static int inline         = misc  | 159;
+  public final static int insideout      = misc  | 160;
+  public final static int interior       = misc  | 162;
+  public final static int internal       = misc  | 164;
   public final static int intramolecular = misc  | 165;
   public final static int intermolecular = misc  | 166;
   public final static int jmol    = misc  | 168;
   public final static int last    = misc  | 169;
-  final static int lattice        = misc  | 170;
-  final static int lighting       = misc  | 171;
+  public final static int lattice        = misc  | 170;
+  public final static int lighting       = misc  | 171;
   public final static int left    = misc  | 172;
-  final static int line           = misc  | 174;
-  final static int link           = misc  | 175;
-  final static int linedata       = misc  | 176;
+  public final static int line           = misc  | 174;
+  public final static int link           = misc  | 175;
+  public final static int linedata       = misc  | 176;
   public final static int list    = misc  | 177; // just "list"
-  final static int lobe           = misc  | 178;
-  final static int lonepair       = misc  | 180;
-  final static int lp             = misc  | 182;
-  final static int lumo           = misc  | 184;
-  final static int manifest       = misc  | 186;
-  final static int maxset         = misc  | 190;
-  final static int menu           = misc  | 191;
+  public final static int lobe           = misc  | 178;
+  public final static int lonepair       = misc  | 180;
+  public final static int lp             = misc  | 182;
+  public final static int lumo           = misc  | 184;
+  public final static int manifest       = misc  | 186;
+  public final static int maxset         = misc  | 190;
+  public final static int menu           = misc  | 191;
   public final static int mep            = misc  | 192;
   public final static int mesh    = misc  | 194;
-  final static int middle         = misc  | 195;
-  final static int minset         = misc  | 196;
-  final static int mlp            = misc  | 198;
-  final static int mode           = misc  | 200;
+  public final static int middle         = misc  | 195;
+  public final static int minset         = misc  | 196;
+  public final static int mlp            = misc  | 198;
+  public final static int mode           = misc  | 200;
   public final static int modify         = misc  | 201;
   public final static int modifyorcreate = misc  | 202;
-  final static int modelbased     = misc  | 204;
-  final static int molecular      = misc  | 205;
-  final static int monomer        = misc  | 206;
-  final static int morph          = misc  | 207;
+  public final static int modelbased     = misc  | 204;
+  public final static int molecular      = misc  | 205;
+  public final static int monomer        = misc  | 206;
+  public final static int morph          = misc  | 207;
   public final static int movie          = misc  | 208;
-  final static int mrc            = misc  | 209;
-  final static int msms           = misc  | 210;
-  final static int name           = misc  | 211;
+  public final static int mrc            = misc  | 209;
+  public final static int msms           = misc  | 210;
+  public final static int name           = misc  | 211;
   public final static int nci            = misc  | 212;
   public final static int next    = misc  | 213;
-  final static int nmr            = misc  | 214;
+  public final static int nmr            = misc  | 214;
   public final static int nocontourlines  = misc  | 215;
-  final static int nocross        = misc  | 216;
-  final static int nodebug        = misc  | 217;
+  public final static int nocross        = misc  | 216;
+  public final static int nodebug        = misc  | 217;
   public final static int nodots  = misc  | 218;
-  final static int noedges        = misc  | 220;
+  public final static int noedges        = misc  | 220;
   public final static int nofill  = misc  | 222;
-  final static int nohead         = misc  | 224;
-  final static int noload         = misc  | 226;
+  public final static int nohead         = misc  | 224;
+  public final static int noload         = misc  | 226;
   public final static int nomesh  = misc  | 228;
-  final static int noplane        = misc  | 230;
-  final static int normal         = misc  | 232;
+  public final static int noplane        = misc  | 230;
+  public final static int normal         = misc  | 232;
   public final static int notfrontonly  = misc  | 234;
   public final static int notriangles   = misc  | 236;
-  final static int obj            = misc  | 238;
-  final static int object         = misc  | 240;
-  final static int offset         = misc  | 242;
-  final static int offsetside     = misc  | 244;
-  final static int once           = misc  | 246;
-  final static int only           = misc  | 248;
-  final static int opaque         = misc  | 250;
-  final static int options        = misc  | 251;
-  final static int orbital        = misc  | 252;
-  final static int orientation    = misc  | 253;
-  final static int origin         = misc  | 254; // 12.1.51
-  final static int out            = misc  | 255;
-  final static int packed         = misc  | 256;
-  final static int palindrome     = misc  | 258;
-  final static int parameters     = misc  | 259;
+  public final static int obj            = misc  | 238;
+  public final static int object         = misc  | 240;
+  public final static int offset         = misc  | 242;
+  public final static int offsetside     = misc  | 244;
+  public final static int once           = misc  | 246;
+  public final static int only           = misc  | 248;
+  public final static int opaque         = misc  | 250;
+  public final static int options        = misc  | 251;
+  public final static int orbital        = misc  | 252;
+  public final static int orientation    = misc  | 253;
+  public final static int origin         = misc  | 254; // 12.1.51
+  public final static int out            = misc  | 255;
+  public final static int packed         = misc  | 256;
+  public final static int palindrome     = misc  | 258;
+  public final static int parameters     = misc  | 259;
   public final static int path           = misc  | 260;
-  final static int pdb            = misc  | 262 | expression;
-  final static int pdbheader      = misc  | 264;
-  final static int period         = misc  | 266;
-  final static int perpendicular  = misc  | 268;
-  final static int phase          = misc  | 270;
+  public final static int pdb            = misc  | 262 | expression;
+  public final static int pdbheader      = misc  | 264;
+  public final static int period         = misc  | 266;
+  public final static int perpendicular  = misc  | 268;
+  public final static int phase          = misc  | 270;
   public final static int play    = misc  | 272;
   public final static int playrev = misc  | 274;
-  final static int pocket         = misc  | 276;
-  final static int pointgroup     = misc  | 278;
-  final static int pointsperangstrom = misc  | 280;
-  final static int polygon        = misc  | 282;
+  public final static int pocket         = misc  | 276;
+  public final static int pointgroup     = misc  | 278;
+  public final static int pointsperangstrom = misc  | 280;
+  public final static int polygon        = misc  | 282;
   public final static int prev    = misc  | 284;
   public final static int probe   = misc  | 285;
   public final static int pymol   = misc  | 286;
-  final static int rad            = misc  | 287;
-  final static int radical        = misc  | 288;
+  public final static int rad            = misc  | 287;
+  public final static int radical        = misc  | 288;
   public final static int range   = misc  | 290;
   public final static int rasmol  = misc  | 292;
-  final static int reference      = misc  | 294;
+  public final static int reference      = misc  | 294;
   public final static int remove         = misc  | 295;
   public final static int residue = misc  | 296;
-  final static int resolution     = misc  | 298;
-  final static int reversecolor   = misc  | 300;
+  public final static int resolution     = misc  | 298;
+  public final static int reversecolor   = misc  | 300;
   public final static int rewind  = misc  | 302;
   public final static int right   = misc  | 304;
-  final static int rotate45       = misc  | 306;
+  public final static int rotate45       = misc  | 306;
   public final static int rotation = misc  | 308;
-  final static int rubberband     = misc  | 310;
+  public final static int rubberband     = misc  | 310;
   public final static int sasurface      = misc  | 312;
-  final static int scale          = misc  | 314;
+  public final static int scale          = misc  | 314;
   public final static int scene          = misc  | 315; // Jmol 12.3.32
-  final static int selection      = misc  | 316;
-  final static int shapely        = misc  | 320;
-  final static int sigma          = misc  | 322;
-  final static int sign           = misc  | 323;
-  final static int silent         = misc  | 324;
-  final static int solid          = misc  | 326;
-  final static int spacegroup     = misc  | 328;
+  public final static int selection      = misc  | 316;
+  public final static int shapely        = misc  | 320;
+  public final static int sigma          = misc  | 322;
+  public final static int sign           = misc  | 323;
+  public final static int silent         = misc  | 324;
+  public final static int solid          = misc  | 326;
+  public final static int spacegroup     = misc  | 328;
   public final static int sphere  = misc  | 330;
-  final static int squared        = misc  | 332;
+  public final static int squared        = misc  | 332;
   public final static int state          = misc  | 334;
-  final static int stop           = misc  | 338;
-  final static int supercell      = misc  | 339;//
-  final static int ticks          = misc  | 340; 
-  final static int title          = misc  | 342;
-  final static int titleformat    = misc  | 344;
-  final static int to             = misc  | 346 | expression;
-  final static int top            = misc  | 348 | expression;
-  final static int torsion        = misc  | 350;
-  final static int transform      = misc  | 352;
+  public final static int stop           = misc  | 338;
+  public final static int supercell      = misc  | 339;//
+  public final static int ticks          = misc  | 340; 
+  public final static int title          = misc  | 342;
+  public final static int titleformat    = misc  | 344;
+  public final static int to             = misc  | 346 | expression;
+  public final static int top            = misc  | 348 | expression;
+  public final static int torsion        = misc  | 350;
+  public final static int transform      = misc  | 352;
   public final static int translation   = misc  | 354;
   public final static int triangles     = misc  | 358;
-  final static int url             = misc  | 360 | expression;
-  final static int user            = misc  | 362;
-  final static int val             = misc  | 364;
-  final static int variable        = misc  | 366;
-  final static int variables       = misc  | 368;
-  final static int vertices        = misc  | 370;
-  final static int spacebeforesquare      = misc  | 371;
-  final static int width           = misc  | 372;
+  public final static int url             = misc  | 360 | expression;
+  public final static int user            = misc  | 362;
+  public final static int val             = misc  | 364;
+  public final static int variable        = misc  | 366;
+  public final static int variables       = misc  | 368;
+  public final static int vertices        = misc  | 370;
+  public final static int spacebeforesquare      = misc  | 371;
+  public final static int width           = misc  | 372;
   
   
   // predefined Tokens: 
   
-  final static T tokenSpaceBeforeSquare = o(spacebeforesquare, " ");
-  final static T tokenOn  = tv(on, 1, "on");
-  final static T tokenOff = tv(off, 0, "off");
-  final static T tokenAll = o(all, "all");
-  final static T tokenIf = o(ifcmd, "if");
+  public final static T tokenSpaceBeforeSquare = o(spacebeforesquare, " ");
+  public final static T tokenOn  = tv(on, 1, "on");
+  public final static T tokenOff = tv(off, 0, "off");
+  public final static T tokenAll = o(all, "all");
+  public final static T tokenIf = o(ifcmd, "if");
   public final static T tokenAnd = o(opAnd, "and");
   public final static T tokenAND = o(opAND, "");
   public final static T tokenOr  = o(opOr, "or");
@@ -1310,32 +1310,32 @@ public class T {
   public final static T tokenOrTRUE = o(opOr, "or");
   public final static T tokenOpIf  = o(opIf, "?");
   public final static T tokenComma = o(comma, ",");
-  final static T tokenDefineString = tv(define, string, "@");
-  final static T tokenPlus = o(plus, "+");
-  final static T tokenMinus = o(minus, "-");
-  final static T tokenTimes = o(times, "*");
-  final static T tokenDivide = o(divide, "/");
+  public final static T tokenDefineString = tv(define, string, "@");
+  public final static T tokenPlus = o(plus, "+");
+  public final static T tokenMinus = o(minus, "-");
+  public final static T tokenTimes = o(times, "*");
+  public final static T tokenDivide = o(divide, "/");
 
   public final static T tokenLeftParen = o(leftparen, "(");
   public final static T tokenRightParen = o(rightparen, ")");
-  final static T tokenArraySquare = o(array, "[");
-  final static T tokenArraySelector = o(leftsquare, "[");
+  public final static T tokenArraySquare = o(array, "[");
+  public final static T tokenArraySelector = o(leftsquare, "[");
  
   public final static T tokenExpressionBegin = o(expressionBegin, "expressionBegin");
   public final static T tokenExpressionEnd   = o(expressionEnd, "expressionEnd");
   public final static T tokenConnected       = o(connected, "connected");
-  final static T tokenCoordinateBegin = o(leftbrace, "{");
-  final static T tokenRightBrace = o(rightbrace, "}");
-  final static T tokenCoordinateEnd = tokenRightBrace;
-  final static T tokenColon           = o(colon, ":");
-  final static T tokenSetCmd          = o(set, "set");
-  final static T tokenSet             = tv(set, '=', "");
-  final static T tokenSetArray        = tv(set, '[', "");
-  final static T tokenSetProperty     = tv(set, '.', "");
-  final static T tokenSetVar          = tv(set, '=', "var");
-  final static T tokenEquals          = o(opEQ, "=");
-  final static T tokenScript          = o(script, "script");
-  final static T tokenSwitch          = o(switchcmd, "switch");
+  public final static T tokenCoordinateBegin = o(leftbrace, "{");
+  public final static T tokenRightBrace = o(rightbrace, "}");
+  public final static T tokenCoordinateEnd = tokenRightBrace;
+  public final static T tokenColon           = o(colon, ":");
+  public final static T tokenSetCmd          = o(set, "set");
+  public final static T tokenSet             = tv(set, '=', "");
+  public final static T tokenSetArray        = tv(set, '[', "");
+  public final static T tokenSetProperty     = tv(set, '.', "");
+  public final static T tokenSetVar          = tv(set, '=', "var");
+  public final static T tokenEquals          = o(opEQ, "=");
+  public final static T tokenScript          = o(script, "script");
+  public final static T tokenSwitch          = o(switchcmd, "switch");
     
   private static Map<String, T> tokenMap = new Hashtable<String, T>();
   public static void addToken(String ident, T token) {

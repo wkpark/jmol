@@ -57,6 +57,7 @@ org/jmol/rendercgo/*.java
 org/jmol/renderspecial/*.java
 org/jmol/rendersurface/*.java
 org/jmol/script/*.java
+org/jmol/scriptext/*.java
 org/jmol/shape/*.java
 org/jmol/shapebio/*.java
 org/jmol/shapecgo/*.java

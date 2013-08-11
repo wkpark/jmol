@@ -235,7 +235,7 @@ public class Modulation {
       ms.z += v;
       break;
     case 'U':
-      ms.addUTens(utens, (float) v);
+      ms.addUTens(utens, (float) v, fn);
       break;
     default:
       if (Float.isNaN(ms.v))

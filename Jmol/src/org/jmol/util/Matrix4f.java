@@ -822,24 +822,25 @@ public class Matrix4f implements Serializable {
    * of this matrix, etc.).
    * 
    * @param m
+   * @param i TODO
    */
-  public final void setA(float m[]) {
-    m00 = m[0];
-    m01 = m[1];
-    m02 = m[2];
-    m03 = m[3];
-    m10 = m[4];
-    m11 = m[5];
-    m12 = m[6];
-    m13 = m[7];
-    m20 = m[8];
-    m21 = m[9];
-    m22 = m[10];
-    m23 = m[11];
-    m30 = m[12];
-    m31 = m[13];
-    m32 = m[14];
-    m33 = m[15];
+  public final void setA(float m[], int i) {
+    m00 = m[i++];
+    m01 = m[i++];
+    m02 = m[i++];
+    m03 = m[i++];
+    m10 = m[i++];
+    m11 = m[i++];
+    m12 = m[i++];
+    m13 = m[i++];
+    m20 = m[i++];
+    m21 = m[i++];
+    m22 = m[i++];
+    m23 = m[i++];
+    m30 = m[i++];
+    m31 = m[i++];
+    m32 = m[i++];
+    m33 = m[i++];
   }
 
   /**

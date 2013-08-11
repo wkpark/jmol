@@ -89,7 +89,7 @@ public class SV extends T {
     return sv;
   }
 
-  static SV newScriptVariableToken(T x) {
+  public static SV newScriptVariableToken(T x) {
     return newScriptVariableIntValue(x.tok, x.intValue, x.value);
   }
 
@@ -284,7 +284,7 @@ public class SV extends T {
     return newVariable(varray, objects);
   }
 
-  static SV getVariableAD(double[] f) {
+  public static SV getVariableAD(double[] f) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < f.length; i++)
       objects.addLast(newVariable(decimal, Float.valueOf((float) f[i])));
@@ -528,7 +528,7 @@ public class SV extends T {
     }
   }
 
-  static float fValue(T x) {
+  public static float fValue(T x) {
     switch (x == null ? nada : x.tok) {
     case on:
       return 1;
@@ -564,7 +564,7 @@ public class SV extends T {
     }
   }
 
-  static String sValue(T x) {
+  public static String sValue(T x) {
     if (x == null)
       return "";
     int i;
@@ -1244,7 +1244,7 @@ public class SV extends T {
     return bs;
   }
 
-  static String[] listValue(T x) {
+  public static String[] listValue(T x) {
     if (x.tok != varray)
       return new String[] { sValue(x) };
     JmolList<SV> sv = ((SV) x).getList();
@@ -1272,7 +1272,7 @@ public class SV extends T {
     }
     return list;    
   }
-  static float[] flistValue(T x, int nMin) {
+  public static float[] flistValue(T x, int nMin) {
     if (x.tok != varray)
       return new float[] { fValue(x) };
     JmolList<SV> sv = ((SV) x).getList();
@@ -1285,7 +1285,7 @@ public class SV extends T {
     return list;
   }
 
-  void toArray() {
+  public void toArray() {
     int dim;
     Matrix3f m3 = null;
     Matrix4f m4 = null;

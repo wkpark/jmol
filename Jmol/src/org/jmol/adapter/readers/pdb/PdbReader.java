@@ -421,7 +421,7 @@ public class PdbReader extends AtomSetCollectionReader {
        anisou[0] += resid;
        anisou[1] += resid;
        anisou[2] += resid;
-       entry.getKey().addTensor(symmetry.getTensor(anisou).setType(null), "TLS-R");
+       entry.getKey().addTensor(symmetry.getTensor(anisou).setType(null), "TLS-R", false);
        
        // check for equal: 
        
@@ -641,7 +641,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           }
           mat[15] = 1;
           Matrix4f m4 = new Matrix4f();
-          m4.setA(mat);
+          m4.setA(mat, 0);
           if (m4.equals(mIdent))
             biomts.add(0, m4);
           else
@@ -1823,7 +1823,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
 
     // symmetry is set to [1 1 1 90 90 90] -- Cartesians, not actual unit cell
 
-    atom.addTensor(symmetry.getTensor(dataT).setType(null), "TLS-U");
+    atom.addTensor(symmetry.getTensor(dataT).setType(null), "TLS-U", false);
   }
 
   private void tlsAddError(String error) {

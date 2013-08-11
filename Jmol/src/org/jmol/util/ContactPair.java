@@ -37,8 +37,7 @@ public class ContactPair {
     // r is not necessarily VDW(B). That's certainly true for clashes,
     // for attractive Van der Waals forces R and r will be larger
     
-    V3 v = V3.newV(myAtoms[1]);
-    v.sub(myAtoms[0]);
+    V3 v = V3.newVsub(myAtoms[1], myAtoms[0]);
     d = v.length();
     
     // find center of asymmetric lens

@@ -180,12 +180,8 @@ public class Symmetry implements SymmetryInterface {
   }
   
 
-  public V3 getOriginalTranslation(int iop) {
-    return spaceGroup.finalOperations[iop].originalTranslation;
-  }
-  
-  public float getModParam(int iop, int type) {
-    return spaceGroup.finalOperations[iop].getModParam(type);
+  public void getMod456Row(int iop, int rowPt, float[] f4) {
+    spaceGroup.finalOperations[iop].getMod456Row(rowPt, f4);
   }
 
 
@@ -207,10 +203,8 @@ public class Symmetry implements SymmetryInterface {
     spaceGroup.finalOperations[i].newPoint(atom1, atom2, transX, transY, transZ);
   }
     
-  public V3[] rotateEllipsoid(int i, P3 ptTemp, V3[] axes, P3 ptTemp1,
-                                P3 ptTemp2) {
-    return spaceGroup.finalOperations[i].rotateEllipsoid(ptTemp, axes, unitCell, ptTemp1,
-        ptTemp2);
+  public V3[] rotateAxes(int iop, V3[] axes, P3 ptTemp, Matrix3f mTemp) {
+    return (iop == 0 ? axes : spaceGroup.finalOperations[iop].rotateAxes(axes, unitCell, ptTemp, mTemp));
   }
 
   public Object[] getSymmetryOperationDescription(int isym,

@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
@@ -229,8 +230,6 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
         //TODO -- THIS IS WRONG. n is just a label. It will break in 2D
         //        but I don't know to determine "n" any other way in a CIF file. 
         P3 nq = getMod(key);
-        if (!htModulation.containsKey(key + "_q_" + suffix))
-          System.out.println("hmm");
         fn = (fn == 0 ? 1 : (int) getMod(key + "_q_").x);
         JmolList<Modulation> list = htAtomMods.get(atomName);
         if (list == null)
@@ -245,6 +244,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     atoms = atomSetCollection.getAtoms();
     symmetry = atomSetCollection.getSymmetry();
     iopLast = -1;
+    f4 = new float[4];
     SB sb = new SB();
     for (int i = atomSetCollection.getLastAtomSetAtomIndex(); i < n; i++)
       modulateAtom(atoms[i], sb);
@@ -259,6 +259,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
 
   private int iopLast = -1;
   private Matrix3f rot;
+  private float[] f4;
+  private float epsilon, delta;
   
   /**
    * The displacement will be set as the atom vibration vector; the string
@@ -278,17 +280,19 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     int iop = a.bsSymmetry.nextSetBit(0);
     if (iop < 0)
       iop = 0;
-    float epsilon = symmetry.getModParam(iop, 0);
-    float delta = symmetry.getModParam(iop, 1);
-    delta -= modT;
+    // now set to 
+    int mdim = 0;    // just the first row -- assuming d=1 here
+    //System.out.println("=========MR i=" + a.index + " " + a.atomName + " " + a + " " + a.occupancy);
     if (iop != iopLast) {
+      symmetry.getMod456Row(iop, mdim, f4);
+      //System.out.println("mdim=" + mdim + " op=" + (iop + 1) + " " + symmetry.getSpaceGroupOperation(iop) + " " + symmetry.getSpaceGroupXyz(iop, false));
       iopLast = iop;
       rot = new Matrix3f();
+      epsilon = f4[0];  //symmetry.getModParam(iop, 0);
+      delta = f4[3] - modT;    //symmetry.getModParam(iop, 1);
     }
     symmetry.getSpaceGroupOperation(iop).getRotationScale(rot);
-    System.out.println("=========MR i=" + a.index + " " + a.atomName + " " + a + " " + a.occupancy);
-    System.out.println("op=" + (iop + 1) + " " + symmetry.getSpaceGroupXyz(iop, false) + " ep=" + epsilon + " de=" + delta);
-    ModulationSet ms = new ModulationSet(list);
+    ModulationSet ms = new ModulationSet(a.index + " " + a.atomName, list);
     a.vib = ms;
     ms.epsilon = epsilon;
     ms.delta = delta;
@@ -301,16 +305,13 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
         bsAtoms.clear(a.index);
     }
     if (ms.htValues != null) {
-      for (Entry<String, Float>e : ms.htValues.entrySet()) {
-        String key= e.getKey();
-        float v = e.getValue().floatValue();
-        if (key.equalsIgnoreCase("Uiso")) {
-          setU(a, 7, v);
-        } else {
-          //TODO  
-        }
-        
-      }
+      // Uiso or Uij. We add the displacements, create the tensor, then rotate it, 
+      // replacing the tensor already present for that atom.
+      System.out.println("U1: " + a.index + " " + a.atomName + " " + a + " " + Escape.eAF(a.anisoBorU));
+      for (Entry<String, Float>e : ms.htValues.entrySet())
+        addUStr(a, e.getKey(), e.getValue().floatValue());
+      atomSetCollection.addRotatedTensor(a, symmetry.getTensor(a.anisoBorU), iop, true);
+      System.out.println("U2: " + a.index + " " + a.atomName + " " + a + " " + Escape.eAF(a.anisoBorU) + "\n");
     }
 
     // set property_modT to be Math.floor (q.r/|q|) -- really only for d=1
@@ -339,12 +340,20 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       htSubsystems.put(code, m4);
   }
 
-  protected void setU(Atom atom, int i, float uiso) {
+  private final static String U_LIST = "U11U22U33U12U13U23OTPUISO";
+  
+  private void addUStr(Atom atom, String id, float val) {
+    int i = U_LIST.indexOf(id) / 3;
+    System.out.println("adding " + id + " " + i + " " + val + " to " + atom.anisoBorU[i]);
+    setU(atom, i, val + atom.anisoBorU[i]);
+  }
+  
+  protected void setU(Atom atom, int i, float val) {
     // Ortep Type 8: D = 2pi^2, C = 2, a*b*
     float[] data = atomSetCollection.getAnisoBorU(atom);
     if (data == null)
       atomSetCollection.setAnisoBorU(atom, data = new float[8], 8);
-    data[i] = uiso;
+    data[i] = val;
   }
 
 

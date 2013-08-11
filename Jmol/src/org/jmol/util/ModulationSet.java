@@ -22,8 +22,10 @@ public class ModulationSet extends Vibration {
   public int t;
   public Map<String, Float> htValues;
   public boolean enabled = false;
+  public String id;
   
-  public ModulationSet(JmolList<Modulation> list) {
+  public ModulationSet(String id, JmolList<Modulation> list) {
+    this.id = id;
     mods = list;
   }
 
@@ -40,11 +42,15 @@ public class ModulationSet extends Vibration {
     rot.transform(this);
   }
 
-  public void addUTens(String utens, float v) {
+  public void addUTens(String utens, float v, int n) {
     if (htValues == null)
       htValues = new Hashtable<String, Float>();
     Float f = htValues.get(utens);
-    htValues.put(utens, Float.valueOf(f == null ? v : f.floatValue() + v));
+    System.out.println("MOD " + id + " n=" + n + " utens=" + utens + " f=" + f + " v="+ v);
+    if(f != null)
+      v += f.floatValue();
+    htValues.put(utens, Float.valueOf(v));
+
   }
 
   public V3 prevSetting;

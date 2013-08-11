@@ -1289,7 +1289,7 @@ _pdbx_struct_oper_list.vector[3]
           m[7] *= symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_B) / 12;
           m[11] *= symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_C) / 12;
         }
-        m4.setA(m);
+        m4.setA(m, 0);
         if (htBiomts == null)
           htBiomts = new Hashtable<String, Matrix4f>();
         htBiomts.put(id, m4);
@@ -2441,7 +2441,7 @@ _pdbx_struct_oper_list.vector[3]
           axis = field;
           break;
         case FWV_U_TENS:
-          axis = field;
+          axis = field.toUpperCase();
           break;
         case FWV_DISP_COS:
         case FWV_OCC_COS:
@@ -2575,9 +2575,29 @@ _pdbx_struct_oper_list.vector[3]
       int c = key.charAt(key.length() - 1) - '1';
       a[r * 4 + c] = parseFloatStr(field);
     }
-    m4.setA(a);
+    m4.setA(a, 0);
     return m4;
   }
 
+//  static {
+//    System.out.println(92345678);
+//    System.out.println(999999999);
+//    System.out.println(Parser.parseFloatStr("-8.6634100000000014E-01")
+//        + " " + Float.valueOf(("-8.6634100000000014E-01")));
+//    System.out.println(Parser.parseFloatStr("-0.0000000000663415E-01")
+//            + " " + Float.valueOf(("-0.0000000000663415E-01")));
+//
+//    System.out.println(Parser.parseFloatStr("-0.0000663415E-01")
+//        + " " + Float.valueOf(("-0.0000663415E-01")));
+//    System.out.println(Parser.parseFloatStr("-0.00663415E-01")
+//        + " " + Float.valueOf(("-0.00663415E-01")));
+//    System.out.println(Parser.parseFloatStr("-0.00000000663415E-01")
+//        + " " + Float.valueOf(("-0.00000000663415E-01")));
+//    System.out.println(Parser.parseFloatStr("-0.0663415E-01")
+//        + " " + Float.valueOf(("-0.0663415E-01")));
+//    System.out.println(Parser.parseFloatStr("-0.663415E-01")
+//        + " " + Float.valueOf(("-0.663415E-01")));
+//
+//  }
 
 }

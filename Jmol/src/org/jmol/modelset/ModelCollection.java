@@ -456,15 +456,19 @@ abstract public class ModelCollection extends BondCollection {
    * @return array of two lists of points, centers first if desired
    */
 
-  public P3[][] getCenterAndPoints(JmolList<BS[]> vAtomSets,
-                                        boolean addCenters) {
+  public P3[][] getCenterAndPoints(JmolList<Object[]> vAtomSets,
+                                   boolean addCenters) {
     BS bsAtoms1, bsAtoms2;
     int n = (addCenters ? 1 : 0);
     for (int ii = vAtomSets.size(); --ii >= 0;) {
-      BS[] bss = vAtomSets.get(ii);
-      bsAtoms1 = bss[0];
-      bsAtoms2 = bss[1];
-      n += Math.min(bsAtoms1.cardinality(), bsAtoms2.cardinality());
+      Object[] bss = vAtomSets.get(ii);
+      bsAtoms1 = (BS) bss[0];
+      if (bss[1] instanceof BS) {
+        bsAtoms2 = (BS) bss[1];
+        n += Math.min(bsAtoms1.cardinality(), bsAtoms2.cardinality());
+      } else {
+        n += Math.min(bsAtoms1.cardinality(), ((P3[]) bss[1]).length);
+      }
     }
     P3[][] points = new P3[2][n];
     if (addCenters) {
@@ -472,17 +476,30 @@ abstract public class ModelCollection extends BondCollection {
       points[1][0] = new P3();
     }
     for (int ii = vAtomSets.size(); --ii >= 0;) {
-      BS[] bss = vAtomSets.get(ii);
-      bsAtoms1 = bss[0];
-      bsAtoms2 = bss[1];
-      for (int i = bsAtoms1.nextSetBit(0), j = bsAtoms2.nextSetBit(0); i >= 0
-          && j >= 0; i = bsAtoms1.nextSetBit(i + 1), j = bsAtoms2
-          .nextSetBit(j + 1)) {
-        points[0][--n] = atoms[i];
-        points[1][n] = atoms[j];
-        if (addCenters) {
-          points[0][0].add(atoms[i]);
-          points[1][0].add(atoms[j]);
+      Object[] bss = vAtomSets.get(ii);
+      bsAtoms1 = (BS) bss[0];
+      if (bss[1] instanceof BS) {
+        bsAtoms2 = (BS) bss[1];
+        for (int i = bsAtoms1.nextSetBit(0), j = bsAtoms2.nextSetBit(0); i >= 0
+            && j >= 0; i = bsAtoms1.nextSetBit(i + 1), j = bsAtoms2
+            .nextSetBit(j + 1)) {
+          points[0][--n] = atoms[i];
+          points[1][n] = atoms[j];
+          if (addCenters) {
+            points[0][0].add(atoms[i]);
+            points[1][0].add(atoms[j]);
+          }
+        }
+      } else {
+        P3[] coords = (P3[]) bss[1];
+        for (int i = bsAtoms1.nextSetBit(0), j = 0; i >= 0 && j < coords.length; i = bsAtoms1
+            .nextSetBit(i + 1), j++) {
+          points[0][--n] = atoms[i];
+          points[1][n] = coords[j];
+          if (addCenters) {
+            points[0][0].add(atoms[i]);
+            points[1][0].add(coords[j]);
+          }
         }
       }
     }

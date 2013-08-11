@@ -9247,7 +9247,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         data);
   }
 
-  public P3[][] getCenterAndPoints(JmolList<BS[]> atomSets, boolean addCenter) {
+  public P3[][] getCenterAndPoints(JmolList<Object[]> atomSets, boolean addCenter) {
     return modelSet.getCenterAndPoints(atomSets, addCenter);
   }
 

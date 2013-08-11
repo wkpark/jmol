@@ -727,6 +727,12 @@ all support for previous versions removed
       </fileset>
     </jar>
 
+  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_ScriptExt.jar" manifest="manifest/applet.txt" >
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/scriptext/**" />
+      </fileset>
+    </jar>
+
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" manifest="manifest/applet.txt" >
 	  <fileset dir="${applet.classes.dir}">
 	    <include name="org/jmol/modelsetbio/**" />
@@ -822,6 +828,7 @@ all support for previous versions removed
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersSimple.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXtal.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ScriptExt.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSurface.jar" />
@@ -971,6 +978,11 @@ all support for previous versions removed
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ScriptExt.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ScriptExt.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+
     <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
@@ -1061,6 +1073,7 @@ all support for previous versions removed
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersSimple.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar" /> 
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXtal.jar" /> 
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ScriptExt.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSurface.jar" />
@@ -1188,6 +1201,12 @@ all support for previous versions removed
       </fileset>
     </jar>
 
+  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_ScriptExt.jar" manifest="manifest/applet.txt" >
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/scriptext/**" />
+      </fileset>
+    </jar>
+
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" manifest="manifest/applet.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/modelsetbio/**" />
@@ -1251,6 +1270,7 @@ all support for previous versions removed
         <include name="org/jmol/modelset/**" />
         <include name="org/jmol/render/**" />
         <include name="org/jmol/script/**" />
+        <include name="org/jmol/scriptext/**" />
         <include name="org/jmol/shape/**" />
         <include name="org/jmol/thread/**" />
         <include name="org/jmol/util/**" />

@@ -22,7 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.shapescript;
+package org.jmol.scriptext;
 
 import java.util.Map;
 
@@ -31,6 +31,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.ModelCollection.StateScript;
 import org.jmol.script.JmolScriptExtension;
 import org.jmol.script.SV;
 import org.jmol.script.ScriptEvaluator;
@@ -44,6 +45,7 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
+import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
@@ -66,6 +68,7 @@ public class ShapeScript implements JmolScriptExtension {
   private boolean chk;
   private String fullCommand;
   private String thisCommand;
+  private T[] st;
 
   final static int ERROR_invalidArgument = 22;
 
@@ -80,6 +83,37 @@ public class ShapeScript implements JmolScriptExtension {
     return this;
   }
 
+  public boolean dispatch(int iShape, boolean b, T[] st) throws ScriptException {
+    chk = eval.chk;
+    fullCommand = eval.fullCommand;
+    thisCommand = eval.thisCommand;
+    this.st = st;
+    switch (iShape) {
+    case JC.SHAPE_CGO:
+      return cgo();
+    case JC.SHAPE_CONTACT:
+      return contact();
+    case JC.SHAPE_DIPOLES:
+      return dipole();
+    case JC.SHAPE_DRAW:
+      return draw();
+    case JC.SHAPE_ISOSURFACE:
+    case JC.SHAPE_PLOT3D:
+    case JC.SHAPE_PMESH:
+      return isosurface(iShape);
+    case JC.SHAPE_LCAOCARTOON:
+      return lcaoCartoon();
+    case JC.SHAPE_MO:
+      return mo(b);
+    case JC.SHAPE_POLYHEDRA:
+      return polyhedra();
+    case JC.SHAPE_STRUTS:
+      return struts();
+      
+    }
+    return false;
+  }
+
   private BS atomExpressionAt(int i) throws ScriptException {
     return eval.atomExpressionAt(i);
   }
@@ -89,9 +123,13 @@ public class ShapeScript implements JmolScriptExtension {
   }
 
   private void invArg() throws ScriptException {
-    eval.error(ScriptEvaluator.ERROR_invalidArgument);
+    error(ScriptEvaluator.ERROR_invalidArgument);
   }
 
+  private void invPO() throws ScriptException {
+    error(ScriptEvaluator.ERROR_invalidParameterOrder);
+  }
+  
   private Object getShapeProperty(int shapeType, String propertyName) {
     return eval.getShapeProperty(shapeType, propertyName);
   }
@@ -140,33 +178,7 @@ public class ShapeScript implements JmolScriptExtension {
   }
   
   private int tokAt(int i) {
-
     return eval.tokAt(i);
-  }
-
-  public boolean dispatch(int iShape, boolean b) throws ScriptException {
-    chk = eval.chk;
-    fullCommand = eval.fullCommand;
-    thisCommand = eval.thisCommand;
-    switch (iShape) {
-    case JC.SHAPE_CGO:
-      return cgo();
-    case JC.SHAPE_CONTACT:
-      return contact();
-    case JC.SHAPE_DIPOLES:
-      return dipole();
-    case JC.SHAPE_DRAW:
-      return draw();
-    case JC.SHAPE_ISOSURFACE:
-    case JC.SHAPE_PLOT3D:
-    case JC.SHAPE_PMESH:
-      return isosurface(iShape);
-    case JC.SHAPE_LCAOCARTOON:
-      return lcaoCartoon();
-    case JC.SHAPE_MO:
-      return mo(b);
-    }
-    return false;
   }
 
   private boolean cgo() throws ScriptException {
@@ -619,7 +631,7 @@ public class ShapeScript implements JmolScriptExtension {
     case T.helix:
     case T.quaternion:
     case T.ramachandran:
-      eval.plot(eval.st);
+      plot(st);
       return false;
     }
     boolean havePoints = false;
@@ -1241,7 +1253,7 @@ public class ShapeScript implements JmolScriptExtension {
             if (tok == T.all) {
               sbCommand.append(" all");
             } else {
-              propertyValue = eval.st[i].value;
+              propertyValue = st[i].value;
               sbCommand.append(" ").append(Escape.eBS((BS) propertyValue));
             }
             eval.checkLast(i);
@@ -1269,7 +1281,7 @@ public class ShapeScript implements JmolScriptExtension {
             havePt = true;
             eval.iToken = eval.iToken + 2;
           } else {
-            bs = eval.atomExpression(eval.st, i + 5, eval.slen, true, false, false, true);
+            bs = eval.atomExpression(st, i + 5, eval.slen, true, false, false, true);
             if (bs == null)
               invArg();
           }
@@ -1540,10 +1552,10 @@ public class ShapeScript implements JmolScriptExtension {
             sbCommand.append(" ").append(Escape.escapeColor(color));
             isBicolor = true;
           } else if (isSign) {
-            error(ScriptEvaluator.ERROR_invalidParameterOrder);
+            invPO();
           }
         } else if (!isSign && discreteColixes == null) {
-          error(ScriptEvaluator.ERROR_invalidParameterOrder);
+          invPO();
         }
         continue;
       case T.cache:
@@ -1553,7 +1565,7 @@ public class ShapeScript implements JmolScriptExtension {
         continue;
       case T.file:
         if (tokAt(i + 1) != T.string)
-          error(ScriptEvaluator.ERROR_invalidParameterOrder);
+          invPO();
         continue;
       case T.ionic:
       case T.vanderwaals:
@@ -3262,6 +3274,517 @@ public class ShapeScript implements JmolScriptExtension {
     addShapeProperty(propertyList, "molecularOrbital", lc != null ? lc
         : Integer.valueOf(Math.abs(moNumber)));
     addShapeProperty(propertyList, "clear", null);
+  }
+
+  public String plot(T[] args) throws ScriptException {
+    // also used for draw [quaternion, helix, ramachandran] 
+    // and write quaternion, ramachandran, plot, ....
+    // and plot property propertyX, propertyY, propertyZ //
+    int modelIndex = viewer.getCurrentModelIndex();
+    if (modelIndex < 0)
+      eval.errorStr(ScriptEvaluator.ERROR_multipleModelsDisplayedNotOK, "plot");
+    modelIndex = viewer.getJmolDataSourceFrame(modelIndex);
+    int pt = args.length - 1;
+    boolean isReturnOnly = (args != st);
+    T[] statementSave = st;
+    if (isReturnOnly)
+      st = args;
+    int tokCmd = (isReturnOnly ? T.show : args[0].tok);
+    int pt0 = (isReturnOnly || tokCmd == T.quaternion
+        || tokCmd == T.ramachandran ? 0 : 1);
+    String filename = null;
+    boolean makeNewFrame = true;
+    boolean isDraw = false;
+    switch (tokCmd) {
+    case T.plot:
+    case T.quaternion:
+    case T.ramachandran:
+      break;
+    case T.draw:
+      makeNewFrame = false;
+      isDraw = true;
+      break;
+    case T.show:
+      makeNewFrame = false;
+      break;
+    case T.write:
+      makeNewFrame = false;
+      if (ScriptEvaluator.tokAtArray(pt, args) == T.string) {
+        filename = stringParameter(pt--);
+      } else if (ScriptEvaluator.tokAtArray(pt - 1, args) == T.per) {
+        filename = parameterAsString(pt - 2) + "." + parameterAsString(pt);
+        pt -= 3;
+      } else {
+        st = statementSave;
+        eval.iToken = st.length;
+        error(ScriptEvaluator.ERROR_endOfStatementUnexpected);
+      }
+      break;
+    }
+    String qFrame = "";
+    Object[] parameters = null;
+    String stateScript = "";
+    boolean isQuaternion = false;
+    boolean isDerivative = false;
+    boolean isSecondDerivative = false;
+    boolean isRamachandranRelative = false;
+    int propertyX = 0, propertyY = 0, propertyZ = 0;
+    BS bs = BSUtil.copy(viewer.getSelectionSet(false));
+    String preSelected = "; select " + Escape.eBS(bs) + ";\n ";
+    String type = eval.optParameterAsString(pt).toLowerCase();
+    P3 minXYZ = null;
+    P3 maxXYZ = null;
+    int tok = ScriptEvaluator.tokAtArray(pt0, args);
+    if (tok == T.string)
+      tok = T.getTokFromName((String) args[pt0].value);
+    switch (tok) {
+    default:
+      eval.iToken = 1;
+      invArg();
+      break;
+    case T.data:
+      eval.iToken = 1;
+      type = "data";
+      preSelected = "";
+      break;
+    case T.property:
+      eval.iToken = pt0 + 1;
+      if (!T.tokAttr(propertyX = tokAt(eval.iToken++), T.atomproperty)
+          || !T.tokAttr(propertyY = tokAt(eval.iToken++), T.atomproperty))
+        invArg();
+      if (T.tokAttr(propertyZ = tokAt(eval.iToken), T.atomproperty))
+        eval.iToken++;
+      else
+        propertyZ = 0;
+      if (tokAt(eval.iToken) == T.min) {
+        minXYZ = getPoint3f(++eval.iToken, false);
+        eval.iToken++;
+      }
+      if (tokAt(eval.iToken) == T.max) {
+        maxXYZ = getPoint3f(++eval.iToken, false);
+        eval.iToken++;
+      }
+      type = "property " + T.nameOf(propertyX) + " "
+          + T.nameOf(propertyY)
+          + (propertyZ == 0 ? "" : " " + T.nameOf(propertyZ));
+      if (bs.nextSetBit(0) < 0)
+        bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
+      stateScript = "select " + Escape.eBS(bs) + ";\n ";
+      break;
+    case T.ramachandran:
+      if (type.equalsIgnoreCase("draw")) {
+        isDraw = true;
+        type = eval.optParameterAsString(--pt).toLowerCase();
+      }
+      isRamachandranRelative = (pt > pt0 && type.startsWith("r"));
+      type = "ramachandran" + (isRamachandranRelative ? " r" : "")
+          + (tokCmd == T.draw ? " draw" : "");
+      break;
+    case T.quaternion:
+    case T.helix:
+      qFrame = " \"" + viewer.getQuaternionFrame() + "\"";
+      stateScript = "set quaternionFrame" + qFrame + ";\n  ";
+      isQuaternion = true;
+      // working backward this time:
+      if (type.equalsIgnoreCase("draw")) {
+        isDraw = true;
+        type = eval.optParameterAsString(--pt).toLowerCase();
+      }
+      isDerivative = (type.startsWith("deriv") || type.startsWith("diff"));
+      isSecondDerivative = (isDerivative && type.indexOf("2") > 0);
+      if (isDerivative)
+        pt--;
+      if (type.equalsIgnoreCase("helix") || type.equalsIgnoreCase("axis")) {
+        isDraw = true;
+        isDerivative = true;
+        pt = -1;
+      }
+      type = ((pt <= pt0 ? "" : eval.optParameterAsString(pt)) + "w")
+          .substring(0, 1);
+      if (type.equals("a") || type.equals("r"))
+        isDerivative = true;
+      if (!Parser.isOneOf(type, ";w;x;y;z;r;a;")) // a absolute; r relative
+        eval.evalError("QUATERNION [w,x,y,z,a,r] [difference][2]", null);
+      type = "quaternion " + type + (isDerivative ? " difference" : "")
+          + (isSecondDerivative ? "2" : "") + (isDraw ? " draw" : "");
+      break;
+    }
+    st = statementSave;
+    if (chk) // just in case we later add parameter options to this
+      return "";
+
+    // if not just drawing check to see if there is already a plot of this type
+
+    if (makeNewFrame) {
+      stateScript += "plot " + type;
+      int ptDataFrame = viewer.getJmolDataFrameIndex(modelIndex, stateScript);
+      if (ptDataFrame > 0 && tokCmd != T.write && tokCmd != T.show) {
+        // no -- this is that way we switch frames. viewer.deleteAtoms(viewer.getModelUndeletedAtomsBitSet(ptDataFrame), true);
+        // data frame can't be 0.
+        viewer.setCurrentModelIndexClear(ptDataFrame, true);
+        // BitSet bs2 = viewer.getModelAtomBitSet(ptDataFrame);
+        // bs2.and(bs);
+        // need to be able to set data directly as well.
+        // viewer.display(BitSetUtil.setAll(viewer.getAtomCount()), bs2, tQuiet);
+        return "";
+      }
+    }
+
+    // prepare data for property plotting
+
+    float[] dataX = null, dataY = null, dataZ = null;
+    P3 factors = P3.new3(1, 1, 1);
+    if (tok == T.property) {
+      dataX = eval.getBitsetPropertyFloat(bs, propertyX | T.selectedfloat,
+          (minXYZ == null ? Float.NaN : minXYZ.x), (maxXYZ == null ? Float.NaN
+              : maxXYZ.x));
+      dataY = eval.getBitsetPropertyFloat(bs, propertyY | T.selectedfloat,
+          (minXYZ == null ? Float.NaN : minXYZ.y), (maxXYZ == null ? Float.NaN
+              : maxXYZ.y));
+      if (propertyZ != 0)
+        dataZ = eval.getBitsetPropertyFloat(bs, propertyZ | T.selectedfloat,
+            (minXYZ == null ? Float.NaN : minXYZ.z),
+            (maxXYZ == null ? Float.NaN : maxXYZ.z));
+      if (minXYZ == null)
+        minXYZ = P3.new3(getMinMax(dataX, false, propertyX), getMinMax(
+            dataY, false, propertyY), getMinMax(dataZ, false, propertyZ));
+      if (maxXYZ == null)
+        maxXYZ = P3.new3(getMinMax(dataX, true, propertyX), getMinMax(
+            dataY, true, propertyY), getMinMax(dataZ, true, propertyZ));
+      Logger.info("plot min/max: " + minXYZ + " " + maxXYZ);
+      P3 center = P3.newP(maxXYZ);
+      center.add(minXYZ);
+      center.scale(0.5f);
+      factors.setT(maxXYZ);
+      factors.sub(minXYZ);
+      factors.set(factors.x / 200, factors.y / 200, factors.z / 200);
+      if (T.tokAttr(propertyX, T.intproperty)) {
+        factors.x = 1;
+        center.x = 0;
+      } else if (factors.x > 0.1 && factors.x <= 10) {
+        factors.x = 1;
+      }
+      if (T.tokAttr(propertyY, T.intproperty)) {
+        factors.y = 1;
+        center.y = 0;
+      } else if (factors.y > 0.1 && factors.y <= 10) {
+        factors.y = 1;
+      }
+      if (T.tokAttr(propertyZ, T.intproperty)) {
+        factors.z = 1;
+        center.z = 0;
+      } else if (factors.z > 0.1 && factors.z <= 10) {
+        factors.z = 1;
+      }
+      if (propertyZ == 0)
+        center.z = minXYZ.z = maxXYZ.z = factors.z = 0;
+      for (int i = 0; i < dataX.length; i++)
+        dataX[i] = (dataX[i] - center.x) / factors.x;
+      for (int i = 0; i < dataY.length; i++)
+        dataY[i] = (dataY[i] - center.y) / factors.y;
+      if (propertyZ != 0)
+        for (int i = 0; i < dataZ.length; i++)
+          dataZ[i] = (dataZ[i] - center.z) / factors.z;
+      parameters = new Object[] { bs, dataX, dataY, dataZ, minXYZ, maxXYZ,
+          factors, center };
+    }
+
+    // all set...
+
+    if (tokCmd == T.write)
+      return viewer.streamFileData(filename, "PLOT", type, modelIndex,
+          parameters);
+    
+    String data = (type.equals("data") ? "1 0 H 0 0 0 # Jmol PDB-encoded data" : viewer.getPdbData(modelIndex, type, parameters));
+    
+    if (tokCmd == T.show)
+      return data;
+
+    if (Logger.debugging)
+      Logger.debug(data);
+
+    if (tokCmd == T.draw) {
+      eval.runScript(data);
+      return "";
+    }
+
+    // create the new model
+
+    String[] savedFileInfo = viewer.getFileInfo();
+    boolean oldAppendNew = viewer.getBoolean(T.appendnew);
+    viewer.setAppendNew(true);
+    boolean isOK = (data != null && viewer.loadInline(data, true) == null);
+    viewer.setAppendNew(oldAppendNew);
+    viewer.setFileInfo(savedFileInfo);
+    if (!isOK)
+      return "";
+    int modelCount = viewer.getModelCount();
+    viewer.setJmolDataFrame(stateScript, modelIndex, modelCount - 1);
+    if (tok != T.property)
+      stateScript += ";\n" + preSelected;
+    StateScript ss = viewer.addStateScript(stateScript, true, false);
+
+    // get post-processing script
+
+    float radius = 150;
+    String script;
+    switch (tok) {
+    default:
+      script = "frame 0.0; frame last; reset;select visible;wireframe only;";
+      radius = 10;
+      break;
+    case T.property:
+      viewer.setFrameTitle(modelCount - 1, type + " plot for model "
+          + viewer.getModelNumberDotted(modelIndex));
+      float f = 3;
+      script = "frame 0.0; frame last; reset;" + "select visible; spacefill "
+          + f + "; wireframe 0;" + "draw plotAxisX" + modelCount
+          + " {100 -100 -100} {-100 -100 -100} \"" + T.nameOf(propertyX)
+          + "\";" + "draw plotAxisY" + modelCount
+          + " {-100 100 -100} {-100 -100 -100} \"" + T.nameOf(propertyY)
+          + "\";";
+      if (propertyZ != 0)
+        script += "draw plotAxisZ" + modelCount
+            + " {-100 -100 100} {-100 -100 -100} \"" + T.nameOf(propertyZ)
+            + "\";";
+      break;
+    case T.ramachandran:
+      viewer.setFrameTitle(modelCount - 1, "ramachandran plot for model "
+          + viewer.getModelNumberDotted(modelIndex));
+      script = "frame 0.0; frame last; reset;"
+          + "select visible; color structure; spacefill 3.0; wireframe 0;"
+          + "draw ramaAxisX" + modelCount + " {100 0 0} {-100 0 0} \"phi\";"
+          + "draw ramaAxisY" + modelCount + " {0 100 0} {0 -100 0} \"psi\";";
+      break;
+    case T.quaternion:
+    case T.helix:
+      viewer.setFrameTitle(modelCount - 1, type.replace('w', ' ') + qFrame
+          + " for model " + viewer.getModelNumberDotted(modelIndex));
+      String color = (C
+          .getHexCode(viewer.getColixBackgroundContrast()));
+      script = "frame 0.0; frame last; reset;"
+          + "select visible; wireframe 0; spacefill 3.0; "
+          + "isosurface quatSphere" + modelCount + " color " + color
+          + " sphere 100.0 mesh nofill frontonly translucent 0.8;"
+          + "draw quatAxis" + modelCount
+          + "X {100 0 0} {-100 0 0} color red \"x\";" + "draw quatAxis"
+          + modelCount + "Y {0 100 0} {0 -100 0} color green \"y\";"
+          + "draw quatAxis" + modelCount
+          + "Z {0 0 100} {0 0 -100} color blue \"z\";" + "color structure;"
+          + "draw quatCenter" + modelCount + "{0 0 0} scale 0.02;";
+      break;
+    }
+
+    // run the post-processing script and set rotation radius and display frame title
+    eval.runScript(script + preSelected);
+    ss.setModelIndex(viewer.getCurrentModelIndex());
+    viewer.setRotationRadius(radius, true);
+    sm.loadShape(JC.SHAPE_ECHO);
+    eval.showString("frame " + viewer.getModelNumberDotted(modelCount - 1)
+        + (type.length() > 0 ? " created: " + type + (isQuaternion ? qFrame : "") : ""));
+    return "";
+  }
+
+  private static float getMinMax(float[] data, boolean isMax, int tok) {
+    if (data == null)
+      return 0;
+    switch (tok) {
+    case T.omega:
+    case T.phi:
+    case T.psi:
+      return (isMax ? 180 : -180);
+    case T.eta:
+    case T.theta:
+      return (isMax ? 360 : 0);
+    case T.straightness:
+      return (isMax ? 1 : -1);
+    }
+    float fmax = (isMax ? -1E10f : 1E10f);
+    for (int i = data.length; --i >= 0;) {
+      float f = data[i];
+      if (Float.isNaN(f))
+        continue;
+      if (isMax == (f > fmax))
+        fmax = f;
+    }
+    return fmax;
+  }
+
+  private boolean polyhedra() throws ScriptException {
+    /*
+     * needsGenerating:
+     * 
+     * polyhedra [number of vertices and/or basis] [at most two selection sets]
+     * [optional type and/or edge] [optional design parameters]
+     * 
+     * OR else:
+     * 
+     * polyhedra [at most one selection set] [type-and/or-edge or on/off/delete]
+     */
+    boolean needsGenerating = false;
+    boolean onOffDelete = false;
+    boolean typeSeen = false;
+    boolean edgeParameterSeen = false;
+    boolean isDesignParameter = false;
+    int lighting = 0;
+    int nAtomSets = 0;
+    sm.loadShape(JC.SHAPE_POLYHEDRA);
+    setShapeProperty(JC.SHAPE_POLYHEDRA, "init", Boolean.TRUE);
+    String setPropertyName = "centers";
+    String decimalPropertyName = "radius_";
+    float translucentLevel = Float.MAX_VALUE;
+    eval.colorArgb[0] = Integer.MIN_VALUE;
+    for (int i = 1; i < eval.slen; ++i) {
+      String propertyName = null;
+      Object propertyValue = null;
+      switch (eval.getToken(i).tok) {
+      case T.delete:
+      case T.on:
+      case T.off:
+        if (i + 1 != eval.slen || needsGenerating || nAtomSets > 1
+            || nAtomSets == 0 && "to".equals(setPropertyName))
+          error(ScriptEvaluator.ERROR_incompatibleArguments);
+        propertyName = (eval.theTok == T.off ? "off" : eval.theTok == T.on ? "on"
+            : "delete");
+        onOffDelete = true;
+        break;
+      case T.opEQ:
+      case T.comma:
+        continue;
+      case T.bonds:
+        if (nAtomSets > 0)
+          invPO();
+        needsGenerating = true;
+        propertyName = "bonds";
+        break;
+      case T.radius:
+        decimalPropertyName = "radius";
+        continue;
+      case T.integer:
+      case T.decimal:
+        if (nAtomSets > 0 && !isDesignParameter)
+          invPO();
+        if (eval.theTok == T.integer) {
+          if (decimalPropertyName == "radius_") {
+            propertyName = "nVertices";
+            propertyValue = Integer.valueOf(intParameter(i));
+            needsGenerating = true;
+            break;
+          }
+        }
+        propertyName = (decimalPropertyName == "radius_" ? "radius"
+            : decimalPropertyName);
+        propertyValue = Float.valueOf(floatParameter(i));
+        decimalPropertyName = "radius_";
+        isDesignParameter = false;
+        needsGenerating = true;
+        break;
+      case T.bitset:
+      case T.expressionBegin:
+        if (typeSeen)
+          invPO();
+        if (++nAtomSets > 2)
+          error(ScriptEvaluator.ERROR_badArgumentCount);
+        if ("to".equals(setPropertyName))
+          needsGenerating = true;
+        propertyName = setPropertyName;
+        setPropertyName = "to";
+        propertyValue = atomExpressionAt(i);
+        i =eval.iToken;
+        break;
+      case T.to:
+        if (nAtomSets > 1)
+          invPO();
+        if (tokAt(i + 1) == T.bitset 
+            || tokAt(i + 1) == T.expressionBegin && !needsGenerating) {
+          propertyName = "toBitSet";
+          propertyValue = atomExpressionAt(++i);
+          i = eval.iToken;
+          needsGenerating = true;
+          break;
+        } else if (!needsGenerating) {
+          error(ScriptEvaluator.ERROR_insufficientArguments);
+        }
+        setPropertyName = "to";
+        continue;
+      case T.facecenteroffset:
+        if (!needsGenerating)
+          error(ScriptEvaluator.ERROR_insufficientArguments);
+        decimalPropertyName = "faceCenterOffset";
+        isDesignParameter = true;
+        continue;
+      case T.distancefactor:
+        if (nAtomSets == 0)
+          error(ScriptEvaluator.ERROR_insufficientArguments);
+        decimalPropertyName = "distanceFactor";
+        isDesignParameter = true;
+        continue;
+      case T.color:
+      case T.translucent:
+      case T.opaque:
+        translucentLevel = eval.getColorTrans(i, true);
+        i = eval.iToken;
+        continue;
+      case T.collapsed:
+      case T.flat:
+        propertyName = "collapsed";
+        propertyValue = (eval.theTok == T.collapsed ? Boolean.TRUE
+            : Boolean.FALSE);
+        if (typeSeen)
+          error(ScriptEvaluator.ERROR_incompatibleArguments);
+        typeSeen = true;
+        break;
+      case T.noedges:
+      case T.edges:
+      case T.frontedges:
+        if (edgeParameterSeen)
+          error(ScriptEvaluator.ERROR_incompatibleArguments);
+        propertyName = parameterAsString(i);
+        edgeParameterSeen = true;
+        break;
+      case T.fullylit:
+        lighting = eval.theTok;
+        continue;
+      default:
+        if (eval.isColorParam(i)) {
+          eval.colorArgb[0] = eval.getArgbParam(i);
+          i = eval.iToken;
+          continue;
+        }
+        invArg();
+      }
+      setShapeProperty(JC.SHAPE_POLYHEDRA, propertyName,
+          propertyValue);
+      if (onOffDelete)
+        return false;
+    }
+    if (!needsGenerating && !typeSeen && !edgeParameterSeen && lighting == 0)
+      error(ScriptEvaluator.ERROR_insufficientArguments);
+    if (needsGenerating)
+      setShapeProperty(JC.SHAPE_POLYHEDRA, "generate", null);
+    if (eval.colorArgb[0] != Integer.MIN_VALUE)
+      setShapeProperty(JC.SHAPE_POLYHEDRA, "colorThis", Integer
+          .valueOf(eval.colorArgb[0]));
+    if (translucentLevel != Float.MAX_VALUE)
+      eval.setShapeTranslucency(JC.SHAPE_POLYHEDRA, "", "translucentThis",
+          translucentLevel, null);
+    if (lighting != 0)
+      setShapeProperty(JC.SHAPE_POLYHEDRA, "token", Integer.valueOf(lighting));
+    setShapeProperty(JC.SHAPE_POLYHEDRA, "init", Boolean.FALSE);
+    return true;
+  }
+
+  private boolean struts() throws ScriptException {
+    boolean defOn = (tokAt(1) == T.only || tokAt(1) == T.on || eval.slen == 1);
+    int mad = eval.getMadParameter();
+    if (defOn)
+      mad = Math.round (viewer.getFloat(T.strutdefaultradius) * 2000f);
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
+        .valueOf(JmolEdge.BOND_STRUT));
+    eval.setShapeSizeBs(JC.SHAPE_STICKS, mad, null);
+    setShapeProperty(JC.SHAPE_STICKS, "type", Integer
+        .valueOf(JmolEdge.BOND_COVALENT_MASK));
+    return true;
   }
 
   private String initIsosurface(int iShape) throws ScriptException {

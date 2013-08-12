@@ -91,7 +91,6 @@ public class MoveToThread extends JmolThread {
     transformManager = (TransformManager) manager;
     center = (P3) options[0];
     matrixEnd.setM((Matrix3f) options[1]);
-    navCenter = (P3) options[2];
     float[] f = (float[]) options[3];
     int[] ret = (int[]) options[4];
     ptMoveToCenter = (center == null ? transformManager.fixedRotationCenter
@@ -106,13 +105,14 @@ public class MoveToThread extends JmolThread {
     pixelScale = newSlider(transformManager.scaleDefaultPixelsPerAngstrom,
         (center == null ? transformManager.scaleDefaultPixelsPerAngstrom
             : transformManager.defaultScaleToScreen(this.rotationRadius.value)));
-    if (navCenter != null) {
+    if (f[7] != 0) {
+      navDepth = newSlider(transformManager.getNavigationDepthPercent(),
+          f[7]);
       xNav = newSlider(transformManager.getNavigationOffsetPercent('X'),
          f[5]);
       yNav = newSlider(transformManager.getNavigationOffsetPercent('Y'),
           f[6]);
-      navDepth = newSlider(transformManager.getNavigationDepthPercent(),
-          f[7]);
+      navCenter = (P3) options[2];
     }
     cameraDepth = newSlider(transformManager.getCameraDepth(), f[8]);
     cameraX = newSlider(transformManager.camera.x, f[9]);
@@ -124,7 +124,7 @@ public class MoveToThread extends JmolThread {
 
     fps = 30;
     totalSteps = (int) (floatSecondsTotal * fps);
-    if (totalSteps != 0)
+    if (totalSteps == 0)
       return;
     frameTimeMillis = 1000 / fps;
     targetTime = System.currentTimeMillis();

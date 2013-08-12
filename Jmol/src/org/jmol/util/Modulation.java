@@ -134,7 +134,8 @@ public class Modulation {
         v += a1 * Math.cos(theta);
       if (a2 != 0)
         v += a2 * Math.sin(theta);
-      //System.out.println("MOD v " + v + " a1 a2 " + a1 + " " + a2 + " / " + theta + " " +  ms.t);
+      if (Logger.debuggingHigh)
+        Logger.debug("MOD v " + v + " a1 a2 " + a1 + " " + a2 + " / " + theta + " " +  ms.t);
       break;
     case TYPE_OCC_CRENEL:
 

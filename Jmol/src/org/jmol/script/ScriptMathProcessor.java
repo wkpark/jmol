@@ -835,17 +835,18 @@ class ScriptMathProcessor {
   }
 
   private boolean evaluateTensor(SV[] args) throws ScriptException {
+    // {*}.tensor()
+    // {*}.tensor("isc")            // only within this atom set
+    // {atomindex=1}.tensor("isc")  // all to this atom
     // {*}.tensor("efg","eigenvalues")
-    // T.tensor is set to allow exactly 2 parameters
-    // change that in T.java to adjust
-    if (args.length == 0 || args.length > 2)
+    if (args.length > 2)
       return false;
     BS bs = SV.getBitSet(getX(), false);
-    String tensorType = SV.sValue(args[0]).toLowerCase();
+    String tensorType = (args.length == 0 ? null : SV.sValue(args[0]).toLowerCase());
     String infoType = ";"
-        + (args.length == 1 ? "all" : SV.sValue(args[1]).toLowerCase()) + ".";
+        + (args.length < 2 ? "all" : SV.sValue(args[1]).toLowerCase()) + ".";
     JmolNMRInterface calc = viewer.getNMRCalculation();      
-    if (tensorType.equals("unique"))
+    if ("unique".equals(tensorType))
       return addXBs(calc.getUniqueTensorSet(bs));
     return addXList(calc.getTensorInfo(tensorType, infoType, bs));
   }

@@ -105,6 +105,8 @@ abstract public class AtomCollection {
     ionicRadii = mergeModelSet.ionicRadii;
     partialCharges = mergeModelSet.partialCharges;
     atomTensors = mergeModelSet.atomTensors;
+    atomTensorList = mergeModelSet.atomTensorList;
+    bsModulated = mergeModelSet.bsModulated;
     setHaveStraightness(false);
     surfaceDistance100s = null;
   }
@@ -2508,6 +2510,12 @@ abstract public class AtomCollection {
     return bs;
   }
 
+  BS bsModulated;
+  
+  public boolean isModulated(int i) {
+    return bsModulated != null && bsModulated.get(i);
+  }
+
   protected void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsAtoms) {
     // all atoms in the model are being deleted here
     atoms = (Atom[]) ArrayUtil.deleteElements(atoms, firstAtomIndex, nAtoms);
@@ -2516,6 +2524,10 @@ abstract public class AtomCollection {
       atoms[j].index = j;
       atoms[j].modelIndex--;
     }
+    // fix modulation and tensors    
+    if (bsModulated != null)
+      BSUtil.deleteBits(bsModulated, bsAtoms);
+
     deleteAtomTensors(bsAtoms);
     atomNames = (String[]) ArrayUtil.deleteElements(atomNames, firstAtomIndex,
         nAtoms);
@@ -2631,12 +2643,14 @@ abstract public class AtomCollection {
 
   public Tensor getAtomTensor(int i, String type) {
     Tensor[] tensors = getAtomTensorList(i);
-    if (tensors == null || type == null)
-      return null;
-    type = type.toLowerCase();
-    for (int j = 0; j < tensors.length; j++)
-      if (tensors[j] != null && type.equals(tensors[j].type))
-        return tensors[j];
+    if (tensors != null && type != null) {
+      type = type.toLowerCase();
+      for (int j = 0; j < tensors.length; j++) {
+        Tensor t = tensors[j];
+        if (t != null && (type.equals(t.type) || type.equals(t.altType)))
+          return t;
+      }
+    }
     return null;
   }
 

@@ -42,7 +42,6 @@ import java.util.Map;
 
 
 import org.jmol.util.BS;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
@@ -239,7 +238,6 @@ public class CifReader extends ModulationReader implements JmolLineReader {
           String key = TextFormat.simpleReplace(auditBlockCode, "_MOD_", "_REFRNCE_");
           if ((atomSetCollection.symmetry = (SymmetryInterface) htAudit.get(key)) != null) {
             notionalUnitCell = atomSetCollection.symmetry.getNotionalUnitCell();
-            System.out.println(Escape.eAF(notionalUnitCell));
             iHaveUnitCell = true;
           }
         } else if (htAudit != null && symops != null) {
@@ -2510,6 +2508,8 @@ _pdbx_struct_oper_list.vector[3]
             continue;
           if (id.equals("D_S")) {
             // saw tooth displacement  center/width/Axyz
+            if (Float.isNaN(c) || Float.isNaN(w))
+              continue;
             if (pt.x != 0)
               addMod("D_S#x;" + atomLabel, fid, P3.new3(c, w, pt.x));
             if (pt.y != 0)
@@ -2578,26 +2578,5 @@ _pdbx_struct_oper_list.vector[3]
     m4.setA(a, 0);
     return m4;
   }
-
-//  static {
-//    System.out.println(92345678);
-//    System.out.println(999999999);
-//    System.out.println(Parser.parseFloatStr("-8.6634100000000014E-01")
-//        + " " + Float.valueOf(("-8.6634100000000014E-01")));
-//    System.out.println(Parser.parseFloatStr("-0.0000000000663415E-01")
-//            + " " + Float.valueOf(("-0.0000000000663415E-01")));
-//
-//    System.out.println(Parser.parseFloatStr("-0.0000663415E-01")
-//        + " " + Float.valueOf(("-0.0000663415E-01")));
-//    System.out.println(Parser.parseFloatStr("-0.00663415E-01")
-//        + " " + Float.valueOf(("-0.00663415E-01")));
-//    System.out.println(Parser.parseFloatStr("-0.00000000663415E-01")
-//        + " " + Float.valueOf(("-0.00000000663415E-01")));
-//    System.out.println(Parser.parseFloatStr("-0.0663415E-01")
-//        + " " + Float.valueOf(("-0.0663415E-01")));
-//    System.out.println(Parser.parseFloatStr("-0.663415E-01")
-//        + " " + Float.valueOf(("-0.663415E-01")));
-//
-//  }
 
 }

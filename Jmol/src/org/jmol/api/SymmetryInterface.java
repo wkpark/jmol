@@ -176,5 +176,7 @@ public interface SymmetryInterface {
   public void unitize(P3 ptFrac);
 
   public void addLatticeVectors(JmolList<float[]> lattvecs);
+
+  public boolean hasLatticeCentering();
   
 }

@@ -150,7 +150,7 @@ public class SurfaceTool {
       //set positionMin to minimum of BBoxCornerMin.x .y or .z or if all are 
       //negative -1* distance from origin. PositionMax similarly.
       if (negCorner.x < 0 && negCorner.y < 0 && negCorner.z < 0) {
-        positionMin = -1 * negCorner.distance(P3.new3(0, 0, 0));
+        positionMin = -1 * negCorner.length();
       } else {
         positionMin = Math.min(negCorner.x, negCorner.y);
         positionMin = Math.min(negCorner.z, positionMin);

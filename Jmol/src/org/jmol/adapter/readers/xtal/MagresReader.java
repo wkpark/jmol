@@ -273,36 +273,39 @@ public class MagresReader extends AtomSetCollectionReader {
    */
   private boolean readTensor() throws Exception {
     String[] tokens = getTokens();
-    String id = tokens[0];
-    String units = magresUnits.get(id);
+    String type = tokens[0];
+    String units = magresUnits.get(type);
     if (units == null) {
-      Logger.warn(id + " ignored; no units defined; line: " + line);
+      Logger.warn(type + " ignored; no units defined; line: " + line);
       return true;
     }
-    boolean isIsc = id.startsWith("isc");
+    boolean isIsc = type.startsWith("isc");
     if (tokens.length == 10) {
       // raw vector - you get ONE
-      magresUnits.remove(id);
+      magresUnits.remove(type);
       float[] data = new float[9];
       for (int i = 0; i < 9;)
         data[i] = parseFloatStr(tokens[++i]);
-      Logger.info("Magres reader creating magres_" + id + ": " + Escape.eAF(data));
-      atomSetCollection.setAtomSetAuxiliaryInfo("magres_" + id, data);
+      Logger.info("Magres reader creating magres_" + type + ": " + Escape.eAF(data));
+      atomSetCollection.setAtomSetAuxiliaryInfo("magres_" + type, data);
     }
     String atomName1 = getAtomName(tokens[1], tokens[2]);
     int pt = 3;
     String atomName2 = (isIsc ? getAtomName(tokens[pt++], tokens[pt++]) : null);
     if (atomName1.equals(atomName2)) {
-      Logger.warn(id + " ignored; atom1 == atom2 for " + atomName1 + " line: " + line);
+      Logger.warn(type + " ignored; atom1 == atom2 for " + atomName1 + " line: " + line);
       return true;
     }
+    String id = atomName1;
+    if (atomName2 != null)
+      id += "//" + atomName2;
     double[][] a = new double[3][3];
     for (int i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         a[i][j] = Double.valueOf(tokens[pt++]).doubleValue();
     int index1 = atomSetCollection.getAtomIndexFromName(atomName1);
     int index2;
-    Tensor t = Tensor.getTensorFromAsymmetricTensor(a, id);
+    Tensor t = Tensor.getTensorFromAsymmetricTensor(a, type, id);
     if (atomName2 == null) {
       index2 = -1;
       atomSetCollection.getAtoms()[index1].addTensor(t, null, false);

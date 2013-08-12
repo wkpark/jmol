@@ -128,7 +128,7 @@ public class Ellipsoid {
 
   protected void setEquation(double[] coef) {
     isValid = false;
-    tensor = Tensor.getTensorFromThermalEquation(coef);
+    tensor = Tensor.getTensorFromThermalEquation(coef, null);
     validate(true);
   }
 

@@ -40,6 +40,7 @@ import org.jmol.util.Modulation;
 import org.jmol.util.ModulationSet;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
+import org.jmol.util.Tensor;
 import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
 
@@ -85,6 +86,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     modAxes = getFilter("MODAXES=");
     modVib = checkFilterKey("MODVIB"); // then use MODULATION ON  to see modulation
     modAverage = checkFilterKey("MODAVE");
+    if (!modVib && !modAverage)
+      addJmolScript("modulation on");
     checkSpecial = !checkFilterKey("NOSPECIAL");
     atomSetCollection.setCheckSpecial(checkSpecial);
     allowRotations = !checkFilterKey("NOSYM");
@@ -206,7 +209,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
         params = getMod(atomName.substring(pt_ + 2));
         atomName = atomName.substring(0, pt_);
       }
-      System.out.println(key + " " + params);
+      if (Logger.debuggingHigh)
+        Logger.debug("SetModulation: " + key + " " + params);
       int type = key.charAt(0);
       pt_ = key.indexOf("#") + 1;
       String utens = null;
@@ -282,7 +286,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       iop = 0;
     // now set to 
     int mdim = 0;    // just the first row -- assuming d=1 here
-    //System.out.println("=========MR i=" + a.index + " " + a.atomName + " " + a + " " + a.occupancy);
+    if (Logger.debuggingHigh)
+      Logger.debug("setModulation: i=" + a.index + " " + a.atomName + " xyz=" + a + " occ=" + a.occupancy);
     if (iop != iopLast) {
       symmetry.getMod456Row(iop, mdim, f4);
       //System.out.println("mdim=" + mdim + " op=" + (iop + 1) + " " + symmetry.getSpaceGroupOperation(iop) + " " + symmetry.getSpaceGroupXyz(iop, false));
@@ -307,11 +312,22 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     if (ms.htValues != null) {
       // Uiso or Uij. We add the displacements, create the tensor, then rotate it, 
       // replacing the tensor already present for that atom.
-      System.out.println("U1: " + a.index + " " + a.atomName + " " + a + " " + Escape.eAF(a.anisoBorU));
+      if (Logger.debuggingHigh) {
+        Logger.debug("setModulation Uij(initial)=" + Escape.eAF(a.anisoBorU));
+        Logger.debug("setModulation tensor=" + Escape.e(a.tensors.get(0).getInfo("all")));
+      }
       for (Entry<String, Float>e : ms.htValues.entrySet())
         addUStr(a, e.getKey(), e.getValue().floatValue());
-      atomSetCollection.addRotatedTensor(a, symmetry.getTensor(a.anisoBorU), iop, true);
-      System.out.println("U2: " + a.index + " " + a.atomName + " " + a + " " + Escape.eAF(a.anisoBorU) + "\n");
+      
+      if (a.tensors != null)
+        a.tensors.get(0).isUnmodulated = true;
+      Tensor t = atomSetCollection.addRotatedTensor(a, symmetry.getTensor(a.anisoBorU), iop, false);
+      t.isModulated = true;
+      System.out.println("Uij modulation for " + a.atomName);
+      if (Logger.debuggingHigh) {
+        Logger.debug("setModulation Uij(final)=" + Escape.eAF(a.anisoBorU) + "\n");
+        Logger.debug("setModulation tensor=" + a.tensors.get(0).getInfo("all"));
+      }
     }
 
     // set property_modT to be Math.floor (q.r/|q|) -- really only for d=1
@@ -323,10 +339,10 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       sb.append(((int) t) + "\n");
     }
     // displace the atom and reverse the vector only if not filter "MODVIB"
-    if (!modVib) {
-      a.add(ms);
-      ms.setModT(true, Integer.MAX_VALUE);
-    }
+//    if (!modVib) {
+  //    a.add(ms);
+    //  ms.setModT(true, Integer.MAX_VALUE);
+   // }
     symmetry.toCartesian(ms, true);
     //System.out.println("a.vib(xyz)=" + a.vib);
   }
@@ -344,7 +360,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   
   private void addUStr(Atom atom, String id, float val) {
     int i = U_LIST.indexOf(id) / 3;
-    System.out.println("adding " + id + " " + i + " " + val + " to " + atom.anisoBorU[i]);
+    if (Logger.debuggingHigh)
+      Logger.debug("MOD RDR adding " + id + " " + i + " " + val + " to " + atom.anisoBorU[i]);
     setU(atom, i, val + atom.anisoBorU[i]);
   }
   

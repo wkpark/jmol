@@ -197,6 +197,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     boolean needTranslucent = false;
     Iterator<Ellipsoid> e = ht.values().iterator();
     Atom atom = null;
+    System.out.println("ellipsoidrend");
     while (e.hasNext()) {
       Ellipsoid ellipsoid = e.next();
       if (!ellipsoid.visible)
@@ -213,6 +214,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         needTranslucent = true;
         continue;
       }
+      System.out.println(ellipsoid.tensor.getInfo("all"));
       viewer.transformPtScr(ellipsoid.center, s0);
       renderOne(ellipsoid);
     }

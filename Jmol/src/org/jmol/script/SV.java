@@ -548,17 +548,17 @@ public class SV extends T {
     case bitset:
       return iValue(x);
     case point3f:
-      return ((P3) x.value).distance(pt0);
+      return ((P3) x.value).length();
     case point4f:
       return Measure.distanceToPlane((P4) x.value, pt0);
     case matrix3f:
       P3 pt = new P3();
       ((Matrix3f) x.value).transform(pt);
-      return pt.distance(pt0);
+      return pt.length();
     case matrix4f:
       P3 pt1 = new P3();
       ((Matrix4f) x.value).transform(pt1);
-      return pt1.distance(pt0);
+      return pt1.length();
     default:
       return 0;
     }

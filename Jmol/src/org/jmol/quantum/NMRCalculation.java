@@ -1,4 +1,4 @@
-  /* $RCSfile$
+/* $RCSfile$
  * $Author: hansonr $
  * $Date: 2006-05-13 19:17:06 -0500 (Sat, 13 May 2006) $
  * $Revision: 5114 $
@@ -100,8 +100,8 @@ public class NMRCalculation implements JmolNMRInterface {
    */
   @SuppressWarnings("unchecked")
   private JmolList<Tensor> getInteractionTensorList(String type, BS bsA) {
-    type = type.toLowerCase();
-
+    if (type != null)
+      type = type.toLowerCase();
     BS bsModels = viewer.getModelBitSet(bsA, false);
     BS bs1 = getAtomSiteBS(bsA);
     int iAtom = (bs1.cardinality() == 1 ? bs1.nextSetBit(0) : -1);
@@ -114,7 +114,7 @@ public class NMRCalculation implements JmolNMRInterface {
       int n = tensors.size();
       for (int j = 0; j < n; j++) {
         Tensor t = tensors.get(j);
-        if (t.type.equals(type) && t.isSelected(bs1, iAtom))
+        if (type == null  || t.type.equals(type) && t.isSelected(bs1, iAtom))
           list.addLast(t);
       }
     }
@@ -391,10 +391,11 @@ public class NMRCalculation implements JmolNMRInterface {
 
   public JmolList<Object> getTensorInfo(String tensorType, String infoType,
                                         BS bs) {
-
+    if ("".equals(tensorType))
+      tensorType = null;
     JmolList<Object> data = new JmolList<Object>();
     JmolList<Object> list1;
-    if (infoType.equals(";dc.")) {
+    if (";dc.".equals(infoType)) {
       // tensorType is irrelevant for dipolar coupling constant
       Atom[] atoms = viewer.modelSet.atoms;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
@@ -406,7 +407,9 @@ public class NMRCalculation implements JmolNMRInterface {
               .addLast(Float.valueOf(getDipolarConstantHz(atoms[i], atoms[j])));
           data.addLast(list1);
         }
-    } else if (tensorType.startsWith("isc")) {
+      return data;
+    }
+    if (tensorType == null || tensorType.startsWith("isc")) {
       boolean isJ = infoType.equals(";j.");
       JmolList<Tensor> list = getInteractionTensorList(tensorType, bs);
       int n = (list == null ? 0 : list.size());
@@ -419,9 +422,17 @@ public class NMRCalculation implements JmolNMRInterface {
             : t.getInfo(infoType));
         data.addLast(list1);
       }
-    } else {
-      boolean isChi = tensorType.startsWith("efg") && infoType.equals(";chi.");
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      if (tensorType != null)
+        return data;
+    }
+    boolean isChi = tensorType != null && tensorType.startsWith("efg")
+        && infoType.equals(";chi.");
+    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      if (tensorType == null) {
+        Tensor[] a = viewer.modelSet.getAtomTensorList(i);
+        for (int j = 0; j < a.length; j++)
+          data.addLast(a[j].getInfo(infoType));
+      } else {
         Tensor t = viewer.modelSet.getAtomTensor(i, tensorType);
         data.addLast(t == null ? null : isChi ? Float
             .valueOf(getQuadrupolarConstant(t)) : t.getInfo(infoType));

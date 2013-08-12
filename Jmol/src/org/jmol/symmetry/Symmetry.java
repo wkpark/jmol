@@ -652,4 +652,8 @@ public class Symmetry implements SymmetryInterface {
     spaceGroup.addLatticeVectors(lattvecs);
   }
 
+  public boolean hasLatticeCentering() {
+    return spaceGroup.hasLatticeCentering;
+  }
+
 }  

@@ -2876,7 +2876,7 @@ abstract public class ModelCollection extends BondCollection {
       unitCells = (SymmetryInterface[]) ArrayUtil.deleteElements(unitCells,
           modelIndex, 1);
     }
-
+    
     // correct stateScripts, particularly CONNECT scripts
     for (int i = stateScripts.size(); --i >= 0;) {
       if (!stateScripts.get(i).deleteAtoms(modelIndex, bsBonds, bsAtoms)) {
@@ -3120,7 +3120,7 @@ abstract public class ModelCollection extends BondCollection {
     if (partialCharges != null)
       for (int i = i0; i < atomCount; i++)
         partialCharges[i] = partialCharges[map[i]];
-    if (atomTensors != null) {
+    if (atomTensorList != null) {
       for (int i = i0; i < atomCount; i++) {
         Tensor[] list = atomTensorList[i] = atomTensorList[map[i]];
         for (int j = list.length; --j >= 0;) {
@@ -3152,7 +3152,7 @@ abstract public class ModelCollection extends BondCollection {
       bfactor100s = ArrayUtil.arrayCopyShort(bfactor100s, newLength);
     if (partialCharges != null)
       partialCharges = ArrayUtil.arrayCopyF(partialCharges, newLength);
-    if (atomTensors != null)
+    if (atomTensorList != null)
       atomTensorList = (Tensor[][]) ArrayUtil.arrayCopyObject(atomTensorList, newLength);
     if (atomNames != null)
       atomNames = ArrayUtil.arrayCopyS(atomNames, newLength);
@@ -3458,6 +3458,8 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public void setModulation(BS bs, boolean isOn, int t) {
+    if (bsModulated == null)
+      bsModulated = new BS();    
     //System.out.println("setModulation " + isOn + " " + t);
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Vibration v = getVibration(i, false);
@@ -3491,6 +3493,7 @@ abstract public class ModelCollection extends BondCollection {
           a.sub(ms);
         break;
       }
+      bsModulated.setBitTo(i, ms.enabled);
       //System.out.println(a.x + " " + a.y + " " + a.z + " ms is " + ms + " " + ms.enabled + " " + ms.t);
     }
   }

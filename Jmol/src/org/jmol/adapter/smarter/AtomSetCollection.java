@@ -1160,6 +1160,10 @@ public class AtomSetCollection {
       rmaxz = -Float.MAX_VALUE;
     }
     // always do the 555 cell first
+    
+    // incommensurate symmetry can have lattice centering, reulting in 
+    // duplication of operators.
+    checkAll = checkSpecial && symmetry.hasLatticeCentering();
     Matrix4f op = symmetry.getSpaceGroupOperation(0);
     if (doPackUnitCell)
       ptOffset.set(0, 0, 0);
@@ -1208,7 +1212,6 @@ public class AtomSetCollection {
     }
     
     // now apply all the translations
-    
     iCell = 0;
     for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
       for (int ty = minXYZ.y; ty < maxXYZ.y; ty++)
@@ -1259,6 +1262,7 @@ public class AtomSetCollection {
   private int bondIndex0;
   private boolean applySymmetryToBonds = false;
   private boolean checkSpecial = true;
+  private boolean checkAll = false;
 
   public void setCheckSpecial(boolean TF) {
     checkSpecial = TF;
@@ -1267,8 +1271,9 @@ public class AtomSetCollection {
   private P3 ptTemp;
   private Matrix3f mTemp;
   
-  private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, int transX,
-                               int transY, int transZ, int baseCount, int pt,
+  private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, 
+                               int transX, int transY, int transZ, 
+                               int baseCount, int pt,
                                int iCellOpPt, P3[] cartesians) throws Exception {
     boolean isBaseCell = (baseCount == 0);
     boolean addBonds = (bondCount0 > bondIndex0 && applySymmetryToBonds);
@@ -1324,7 +1329,7 @@ public class AtomSetCollection {
             transZ);
         Atom special = null;
         P3 cartesian = P3.newP(ptAtom);
-        symmetry.toCartesian(cartesian, false);
+        symmetry. toCartesian(cartesian, false);
         if (doPackUnitCell) {
           symmetry.toUnitCell(cartesian, ptOffset);
           ptAtom.setT(cartesian);
@@ -1343,11 +1348,14 @@ public class AtomSetCollection {
           float minDist2 = Float.MAX_VALUE;
           if (checkSymmetryRange && !isInSymmetryRange(cartesian))
             continue;
-          for (int j = pt0; --j >= 0;) {
+          int j0 = (checkAll ? atomCount : pt0);
+          for (int j = j0; --j >= 0;) {
             float d2 = cartesian.distanceSquared(cartesians[j]);
             if (checkSpecial && d2 < 0.0001) {
               special = atoms[iAtomFirst + j];
-              break;
+              if (special.atomName == null || special.atomName.equals(atoms[i].atomName))
+                break;
+              special = null;
             }
             if (checkRange111 && j < baseCount && d2 < minDist2)
               minDist2 = d2;
@@ -1403,14 +1411,14 @@ public class AtomSetCollection {
     return pt;
   }
   
-  public void addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset) {
+  public Tensor addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset) {
     if (ptTemp == null) {
       ptTemp = new P3();
       mTemp = new Matrix3f();
     }
-    a.addTensor(Tensor.getTensorFromEigenVectors(symmetry
+    return a.addTensor(Tensor.getTensorFromEigenVectors(symmetry
         .rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
-        t.eigenValues, t.type), null, reset);
+        t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
   }
 
   public void applySymmetryBio(JmolList<Matrix4f> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
@@ -1481,7 +1489,6 @@ public class AtomSetCollection {
       mat.m23 /= notionalUnitCell[2];
       if (symmetry != null && i > 0)
         symmetry.addSpaceGroupOperationM(mat);
-      //System.out.println("biomt " + i + " " + atomCount);
     }
     int noSymmetryCount = atomMax - iAtomFirst;
     setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(iAtomFirst));
@@ -1965,7 +1972,6 @@ public class AtomSetCollection {
     for (int i = 0; i < bondCount; i++) {
       info[i] = new String[] { atoms[bonds[i].atomIndex1].atomName, 
         atoms[bonds[i].atomIndex2].atomName, "" + bonds[i].order };
-      //System.out.println("testing asc getBondList  " + info[i][0] + " " + info[i][1] + " " + info[i][2]);
     }
     return info;
   }

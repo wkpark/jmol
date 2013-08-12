@@ -45,8 +45,10 @@ public class Tensor {
   
   private static EigenSort tSort; // used for sorting eigenvector/values
 
+
   // base data:
   
+  public String id;
   public String type;
   public int iType = TYPE_OTHER;
   
@@ -114,13 +116,16 @@ public class Tensor {
   public int modelIndex;
   public int atomIndex1 = -1;
   public int atomIndex2 = -1;
+  public boolean isModulated;
+  public boolean isUnmodulated;
 
   private static final String infoList = 
     ";............." + ";eigenvalues.." + ";eigenvectors."
   + ";asymmatrix..." + ";symmatrix...." + ";value........"
   + ";isotropy....." + ";anisotropy..." + ";asymmetry...." 
   + ";eulerzyz....." + ";eulerzxz....." + ";quaternion..." 
-  + ";indices......" + ";string......." + ";type.........";
+  + ";indices......" + ";string......." + ";type........."
+  + ";id...........";
   /**
    * returns an object of the specified type, including "eigenvalues",
    * "eigenvectors", "asymmetric", "symmetric", "trace", "indices", and "type"
@@ -137,8 +142,11 @@ public class Tensor {
       Map<String, Object> info = new Hashtable<String, Object>();
       String[] s = Parser.getTokens(TextFormat.replaceAllCharacter(infoList, ";.", ' ').trim());
       Arrays.sort(s);
-      for (int i = 0; i < s.length; i++)
-        info.put(s[i], getInfo(s[i]));
+      for (int i = 0; i < s.length; i++) {
+        Object o = getInfo(s[i]);
+        if (o != null)
+          info.put(s[i], o);
+      }
       return info;
       
     case 1:
@@ -195,6 +203,9 @@ public class Tensor {
       return this.toString();
     case 14:
       return type;
+      
+    case 15:
+      return id;
     }
   }
 
@@ -222,6 +233,7 @@ public class Tensor {
     t.modelIndex = t0.modelIndex;
     t.atomIndex1 = t0.atomIndex1;
     t.atomIndex2 = t0.atomIndex2;
+    t.id = t0.id;
     return t;
   }
 
@@ -237,9 +249,10 @@ public class Tensor {
    * 
    * @param asymmetricTensor
    * @param type
+   * @param id 
    * @return Tensor
    */
-  public static Tensor getTensorFromAsymmetricTensor(double[][] asymmetricTensor, String type) {
+  public static Tensor getTensorFromAsymmetricTensor(double[][] asymmetricTensor, String type, String id) {
     double[][] a = new double[3][3];    
     for (int i = 3; --i >= 0;)
       for (int j = 3; --j >= 0;)
@@ -284,9 +297,10 @@ public class Tensor {
     V3[] vectors = new V3[3];
     float[] values = new float[3];
     eigen.fillArrays(vectors, values);
-    Tensor t = newTensorType(vectors, values, type);
+    Tensor t = newTensorType(vectors, values, type, id);
     t.asymMatrix = asymmetricTensor;
     t.symMatrix = a;
+    t.id = id;
     return t;
   }
 
@@ -296,17 +310,18 @@ public class Tensor {
    * @param eigenVectors
    * @param eigenValues
    * @param type
+   * @param id 
    * @return Tensor
    */
   public static Tensor getTensorFromEigenVectors(V3[] eigenVectors,
-                                            float[] eigenValues, String type) {
+                                            float[] eigenValues, String type, String id) {
     float[] values = new float[3];
     V3[] vectors = new V3[3];
     for (int i = 0; i < 3; i++) {
       vectors[i] = V3.newV(eigenVectors[i]);
       values[i] = eigenValues[i];
     }    
-    return newTensorType(vectors, values, type);
+    return newTensorType(vectors, values, type, id);
   }
 
   /**
@@ -340,12 +355,14 @@ public class Tensor {
    * (see http://www.iucr.org/iucr-top/comm/cnom/adp/finrepone/finrepone.html)
    * 
    * @param coefs
+   * @param id  
    * @return Tensor
    */
-  public static Tensor getTensorFromThermalEquation(double[] coefs) {
+  public static Tensor getTensorFromThermalEquation(double[] coefs, String id) {
     Tensor t = new Tensor();
     t.eigenValues = new float[3];
     t.eigenVectors = new V3[3];
+    t.id = (id == null ? "coefs=" + Escape.eAD(coefs) : id);
     // assumes an ellipsoid centered on 0,0,0
     // called by UnitCell for the initial creation from PDB/CIF ADP data    
     double[][] mat = new double[3][3];
@@ -406,15 +423,17 @@ public class Tensor {
    * @param vectors
    * @param values
    * @param type
+   * @param id 
    * @return Tensor
    */
-  private static Tensor newTensorType(V3[] vectors, float[] values, String type) {
+  private static Tensor newTensorType(V3[] vectors, float[] values, String type, String id) {
     Tensor t = new Tensor();
     t.eigenValues = values;
     t.eigenVectors = vectors;
     for (int i = 0; i < 3; i++)
       t.eigenVectors[i].normalize();
     t.setType(type);
+    t.id = id;
     t.sortAndNormalize();
     t.eigenSignMask = (t.eigenValues[0] >= 0 ? 1 : 0)
         + (t.eigenValues[1] >= 0 ? 2 : 0) + (t.eigenValues[2] >= 0 ? 4 : 0);

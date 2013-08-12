@@ -73,7 +73,10 @@ import org.jmol.util.TextFormat;
 
 class SpaceGroup {
 
+  private static String[] canonicalSeitzList;
+  
   int index;
+  
   String name = "unknown!";
   String hallSymbol;
   //String schoenfliesSymbol; //parsed but not read
@@ -96,8 +99,17 @@ class SpaceGroup {
   int latticeParameter;
   char latticeCode = '\0';
   SymmetryOperation[] operations;
+  SymmetryOperation[] finalOperations;
   int operationCount;
+  boolean hasLatticeCentering;
+  Map<String, Integer> xyzList = new Hashtable<String, Integer>();
+
+  private int modulationDimension;
+
   boolean doNormalize = true;
+
+  
+  
 
   static SpaceGroup getNull() {
     getSpaceGroups();
@@ -142,8 +154,6 @@ class SpaceGroup {
     return addOperation(xyz, opId);
   }
    
-  SymmetryOperation[] finalOperations;
-  
   void setFinalOperations(P3[] atoms, int atomIndex, int count,
                           boolean doNormalize) {
     //from AtomSetCollection.applySymmetry only
@@ -285,9 +295,7 @@ class SpaceGroup {
   }
 
   ///// private methods /////
-  
-  private static String[] canonicalSeitzList;
-  
+    
   /**
    * 
    * @return either a String or a SpaceGroup, depending on index.
@@ -390,9 +398,6 @@ class SpaceGroup {
     return sg;
   }
   
-  Map<String, Integer> xyzList = new Hashtable<String, Integer>();
-  private int modulationDimension;
-  
   private int addOperation(String xyz0, int opId) {
     if (xyz0 == null || xyz0.length() < 3) {
       xyzList = new Hashtable<String, Integer>();
@@ -425,6 +430,8 @@ class SpaceGroup {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return xyzList.get(xyz).intValue();
+      if (!hasLatticeCentering && xyzList.containsKey(TextFormat.simpleReplace(TextFormat.simpleReplace(xyz, "+1/2", ""), "+1/2", "")))
+        hasLatticeCentering = true;
       xyzList.put(xyz, Integer.valueOf(operationCount));
     }
     if (xyz != null && !xyz.equals(xyz0))
@@ -1374,6 +1381,7 @@ class SpaceGroup {
   }
 
   public void addLatticeVectors(JmolList<float[]> lattvecs) {
+    hasLatticeCentering = true; 
     int nOps = operationCount;
     for (int j = 0; j < lattvecs.size(); j++) {
       float[] data = lattvecs.get(j);

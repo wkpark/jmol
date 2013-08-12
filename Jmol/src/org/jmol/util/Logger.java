@@ -84,6 +84,7 @@ public final class Logger {
   public static void setLogger(LoggerInterface logger) {
     _logger = logger;
     debugging = isActiveLevel(LEVEL_DEBUG) || isActiveLevel(LEVEL_DEBUGHIGH);
+    debuggingHigh = (debugging && _activeLevels[LEVEL_DEBUGHIGH]);
   }
 
   /**
@@ -110,6 +111,7 @@ public final class Logger {
       level = LEVEL_MAX - 1;
     _activeLevels[level] = active;
     debugging = isActiveLevel(LEVEL_DEBUG) || isActiveLevel(LEVEL_DEBUGHIGH);
+    debuggingHigh = (debugging && _activeLevels[LEVEL_DEBUGHIGH]);
   }
 
   /**

@@ -46,7 +46,8 @@ public class ModulationSet extends Vibration {
     if (htValues == null)
       htValues = new Hashtable<String, Float>();
     Float f = htValues.get(utens);
-    System.out.println("MOD " + id + " n=" + n + " utens=" + utens + " f=" + f + " v="+ v);
+    if (Logger.debuggingHigh)
+      Logger.debug("MODSET " + id + " n=" + n + " utens=" + utens + " f=" + f + " v="+ v);
     if(f != null)
       v += f.floatValue();
     htValues.put(utens, Float.valueOf(v));

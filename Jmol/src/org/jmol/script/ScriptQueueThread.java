@@ -23,11 +23,12 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.thread;
+package org.jmol.script;
 
 
 
 import org.jmol.api.JmolScriptManager;
+import org.jmol.thread.JmolThread;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
@@ -36,7 +37,7 @@ public class ScriptQueueThread extends JmolThread {
   /**
    * 
    */
-  private final JmolScriptManager scriptManager;
+  private JmolScriptManager scriptManager;
   private boolean startedByCommandThread = false;
   private int pt;
 

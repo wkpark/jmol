@@ -39,7 +39,7 @@ public class SpinThread extends JmolThread {
   /**
    * 
    */
-  private final TransformManager transformManager;
+  private TransformManager transformManager;
   private float endDegrees;
   private JmolList<P3> endPositions;
   private float[] dihedralList;
@@ -53,26 +53,37 @@ public class SpinThread extends JmolThread {
   private int index;
   //private boolean navigatingSurface;
   private BS[] bsBranches;
-  boolean isDone = false;
+  private boolean isDone = false;
   
-  public boolean isGesture() {
-    return isGesture;
-  }
+  public SpinThread() {}
   
-  public SpinThread(TransformManager transformManager, Viewer viewer,
-      float endDegrees, JmolList<P3> endPositions, float[] dihedralList, BS bsAtoms, boolean isNav,
-      boolean isGesture) {
-    super();
+  @SuppressWarnings("unchecked")
+  @Override
+  public void setManager(Object manager, Viewer viewer, Object params) {
+    transformManager = (TransformManager) manager;
     setViewer(viewer, "SpinThread");
-    this.transformManager = transformManager;
-    this.endDegrees = endDegrees;
-    this.dihedralList = dihedralList;
-    if (dihedralList != null) 
-      bsBranches = viewer.getBsBranches(dihedralList);
-    this.endPositions = endPositions;
-    this.bsAtoms = bsAtoms;
-    this.isNav = isNav;
-    this.isGesture = isGesture;
+    Object[] options = (Object[]) params;
+
+    //f//loat endDegrees, JmolList<P3> endPositions, float[] dihedralList, BS bsAtoms, boolean isNav,
+    //boolean isGesture) {
+
+    //Float.valueOf(endDegrees), endPositions, dihedralList,
+    //bsAtoms, Boolean.valueOf(isGesture)} );
+
+    //        spinThread = new SpinThread(this, viewer, NULL 
+    //            === 0, null, null, null, true, false);
+
+    if (options == null) {
+      isNav = true;
+    } else {
+      endDegrees = ((Float) options[0]).floatValue();
+      endPositions = (JmolList<P3>) options[1];
+      dihedralList = (float[]) options[2];
+      if (dihedralList != null)
+        bsBranches = viewer.getBsBranches(dihedralList);
+      bsAtoms = (BS) options[3];
+      isGesture = (options[4] != null);
+    }
   }
 
   /**

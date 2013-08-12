@@ -59,7 +59,7 @@ import org.jmol.modelset.Text;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
-import org.jmol.thread.ScriptDelayThread;
+import org.jmol.thread.JmolThread;
 import org.jmol.util.BSUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
@@ -480,7 +480,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (chk || viewer.isHeadless())
       return;
     if (withDelay && !isJS )
-      viewer.delayScript(this, -100);
+      delayScript(-100);
     viewer.popHoldRepaintWhy("pauseExecution");
     executionStepping = false;
     executionPaused = true;
@@ -5359,7 +5359,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     if (isJS && allowJSThreads)
       throw new ScriptInterruption(this, "delay", millis);
-    viewer.delayScript(this, millis);  
+    delayScript(millis);  
   }
 
   /**
@@ -5462,7 +5462,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         int milliSecDelay = viewer.getInt(T.showscript);
         if (listCommands || milliSecDelay > 0) {
           if (milliSecDelay > 0)
-            viewer.delayScript(this, -milliSecDelay);
+            delayScript(-milliSecDelay);
           viewer.scriptEcho("$[" + scriptLevel + "." + lineNumbers[pc] + "."
               + (pc + 1) + "] " + thisCommand);
         }
@@ -14241,7 +14241,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (!chk) {
           viewer.setVibrationOff();
           if (!isJS)
-            viewer.delayScript(this, 100);
+            delayScript(100);
         }
         pt++;
         break;
@@ -15526,5 +15526,23 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     bsB.andNot(bsA);
     return bsB;
   }
+
+  private JmolThread scriptDelayThread;
+
+  public void stopScriptDelayThread() {
+    if (scriptDelayThread != null) {
+      scriptDelayThread.interrupt();
+      scriptDelayThread = null;
+    }
+  }
+
+  public void delayScript(int millis) {
+    if (viewer.autoExit)
+      return;
+    stopScriptDelayThread();
+    scriptDelayThread = new ScriptDelayThread(this, viewer, millis);
+    scriptDelayThread.run();
+  }
+
 
 }

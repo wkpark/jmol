@@ -34,20 +34,24 @@ public class ModulationThread extends JmolThread {
    * 
    */
   private int modT;
-  private final int modT2;
+  private int modT2;
 
   private AnimationManager animationManager;
   
 
-  public ModulationThread(AnimationManager animationManager, Viewer viewer, int modT1, int modT2) {
-    super();
-    setViewer(viewer, "ModulationThread");
-    modT = modT1;
-    this.modT2 = modT2;
-    this.animationManager = animationManager;
-    viewer.startHoverWatcher(false);
+  public ModulationThread() {
   }
 
+  @Override
+  public void setManager(Object manager, Viewer viewer, Object params) {
+    int[] options = (int[]) params;
+    modT = options[0];
+    modT2 = options[1];
+    animationManager = (AnimationManager) manager;
+    setViewer(viewer, "ModulationThread");
+    viewer.startHoverWatcher(false);      
+  }
+  
   @Override
   public void interrupt() {
     if (stopped)

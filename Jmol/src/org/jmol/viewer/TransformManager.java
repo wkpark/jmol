@@ -28,10 +28,7 @@ import org.jmol.api.JmolNavigatorInterface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.script.T;
-import org.jmol.thread.MoveThread;
-import org.jmol.thread.MoveToThread;
-import org.jmol.thread.SpinThread;
-import org.jmol.thread.VibrationThread;
+import org.jmol.thread.JmolThread;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BS;
 import org.jmol.util.Escape;
@@ -206,11 +203,11 @@ public class TransformManager {
 
   V3 rotationAxis = new V3();
   float rotationRate = 0;
-
+  
   void spinXYBy(int xDelta, int yDelta, float speed) {
     // from mouse action
     if (xDelta == 0 && yDelta == 0) {
-      if (spinThread != null && spinThread.isGesture())
+      if (spinThread != null && spinIsGesture)
         clearSpin();
       return;
     }
@@ -1579,8 +1576,10 @@ public class TransformManager {
   void move(JmolScriptEvaluator eval, V3 dRot, float dZoom, V3 dTrans,
             float dSlab, float floatSecondsTotal, int fps) {
 
-    MoveThread motion = new MoveThread(this, viewer);
-    motion.set(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
+    JmolThread motion = (JmolThread) Interface
+        .getOptionInterface("thread.MoveThread");
+    motion.setManager(this, viewer, new Object[] { dRot, dTrans,
+        new float[] { dZoom, dSlab, floatSecondsTotal, fps } });
     if (floatSecondsTotal > 0)
       motion.setEval(eval);
     motion.run();
@@ -1678,7 +1677,7 @@ public class TransformManager {
         rotationRadius, null, Float.NaN, Float.NaN, Float.NaN, cameraDepth, cameraX, cameraY);
   }
 
-  public MoveToThread motion;
+  public JmolThread motion;
 
   // from Viewer
   void moveTo(JmolScriptEvaluator eval, float floatSecondsTotal, P3 center,
@@ -1715,10 +1714,15 @@ public class TransformManager {
       yTrans = cameraY * 50 / newRotationRadius / height * screenPixelCount;
     try {
       if (motion == null)
-        motion = new MoveToThread(this, viewer);
-      int nSteps = motion.set(floatSecondsTotal, center, matrixEnd, zoom,
-          xTrans, yTrans, newRotationRadius, navCenter, xNav, yNav, navDepth,
-          cameraDepth, cameraX, cameraY);
+        motion = (JmolThread) Interface
+            .getOptionInterface("thread.MoveToThread");
+      int[] ret = new int[1];
+      motion.setManager(this, viewer, new Object[] {
+          center, matrixEnd, navCenter,
+          new float[] { floatSecondsTotal, zoom, xTrans, yTrans,
+              newRotationRadius, xNav, yNav, navDepth, cameraDepth, cameraX,
+              cameraY }, ret });
+      int nSteps = ret[0];
       if (nSteps <= 0 || viewer.global.waitForMoveTo) {
         if (nSteps > 0)
           motion.setEval(eval);
@@ -1968,7 +1972,9 @@ public class TransformManager {
     return navOn;
   }
 
-  private SpinThread spinThread;
+  private JmolThread spinThread;
+
+  private boolean spinIsGesture;
 
   public void setSpinOn() {
     setSpin(null, true, Float.MAX_VALUE, null, null, null, false);
@@ -1990,8 +1996,12 @@ public class TransformManager {
     viewer.getGlobalSettings().setB("_spinning", spinOn);
     if (spinOn) {
       if (spinThread == null) {
-        spinThread = new SpinThread(this, viewer, endDegrees, endPositions, dihedralList,
-            bsAtoms, false, isGesture);
+        spinThread = (JmolThread) Interface
+        .getOptionInterface("thread.SpinThread");
+        spinThread.setManager(this, viewer, new Object[] {
+            Float.valueOf(endDegrees), endPositions, dihedralList,
+            bsAtoms, isGesture ? Boolean.TRUE : null } );
+        spinIsGesture = isGesture;
         if (bsAtoms == null && dihedralList == null) {
           spinThread.start();
         } else {
@@ -2021,7 +2031,9 @@ public class TransformManager {
       if (navFps == 0)
         navFps = 10;
       if (spinThread == null) {
-        spinThread = new SpinThread(this, viewer, 0, null, null, null, true, false);
+        spinThread = (JmolThread) Interface
+            .getOptionInterface("thread.SpinThread");
+        spinThread.setManager(this, viewer, null);
         spinThread.start();
       }
     } else if (wasOn) {
@@ -2073,7 +2085,7 @@ public class TransformManager {
       vibrationScale = viewer.global.vibrationScale;
   }
 
-  private VibrationThread vibrationThread;
+  private JmolThread vibrationThread;
 
   boolean isVibrationOn() {
     return vibrationOn;
@@ -2093,7 +2105,9 @@ public class TransformManager {
       return;
     }
     if (vibrationThread == null) {
-      vibrationThread = new VibrationThread(this, viewer);
+      vibrationThread = (JmolThread) Interface
+          .getOptionInterface("thread.VibrationThread");
+      vibrationThread.setManager(this, viewer, null);
       vibrationThread.start();
     }
     this.vibrationOn = true;

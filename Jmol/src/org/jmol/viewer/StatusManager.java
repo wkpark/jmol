@@ -80,7 +80,7 @@ viewerRefreshed
  * 
  */
 
-class StatusManager {
+public class StatusManager {
 
   protected Viewer viewer;
   private JmolStatusListener jmolStatusListener;
@@ -97,7 +97,7 @@ class StatusManager {
      allowStatusReporting = TF;
   }
   
-  String getStatusList() {
+  public String getStatusList() {
     return statusList;
   }
   
@@ -524,7 +524,7 @@ class StatusManager {
   }
   
   private int minSyncRepeatMs = 100;
-  boolean syncingScripts = false;
+  public boolean syncingScripts = false;
   boolean syncingMouse = false;
   boolean doSync() {
     return (isSynced && drivingSync && !syncDisabled);
@@ -543,12 +543,12 @@ class StatusManager {
   boolean syncDisabled = false;
   boolean stereoSync = false;
   
-  final static int SYNC_OFF = 0;
-  final static int SYNC_DRIVER = 1;
-  final static int SYNC_SLAVE = 2;
-  final static int SYNC_DISABLE = 3;
-  final static int SYNC_ENABLE = 4;
-  final static int SYNC_STEREO = 5;
+  public final static int SYNC_OFF = 0;
+  public final static int SYNC_DRIVER = 1;
+  public final static int SYNC_SLAVE = 2;
+  public final static int SYNC_DISABLE = 3;
+  public final static int SYNC_ENABLE = 4;
+  public final static int SYNC_STEREO = 5;
   
   void setSyncDriver(int syncMode) {
  

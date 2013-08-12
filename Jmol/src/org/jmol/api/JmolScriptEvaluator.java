@@ -96,4 +96,6 @@ public interface JmolScriptEvaluator {
 
   String setObjectPropSafe(String id, int tokCommand, int iTok);
 
+  void stopScriptDelayThread();
+
 }

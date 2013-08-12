@@ -23,12 +23,13 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.thread;
+package org.jmol.script;
 
 import org.jmol.api.JmolScriptEvaluator;
+import org.jmol.thread.JmolThread;
 import org.jmol.viewer.Viewer;
 
-public class ScriptDelayThread extends JmolThread {
+class ScriptDelayThread extends JmolThread {
 
   public static final int PAUSE_DELAY = -100;
   private int millis;
@@ -40,7 +41,6 @@ public class ScriptDelayThread extends JmolThread {
    * @param millis    negative to bypass pop/hold sequence
    */
   public ScriptDelayThread(JmolScriptEvaluator eval, Viewer viewer, int millis) {
-    super();
     setViewer(viewer, "ScriptDelayThread");
     this.millis = millis;
     setEval(eval);

@@ -26,20 +26,20 @@ package org.jmol.viewer;
 
 import java.util.Map;
 
-import org.jmol.thread.AnimationThread;
-import org.jmol.thread.ModulationThread;
+import org.jmol.thread.JmolThread;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 //import org.jmol.util.JmolList;
 
+import org.jmol.api.Interface;
 import org.jmol.constant.EnumAnimationMode;
 import org.jmol.modelset.ModelSet;
 
 public class AnimationManager {
 
-  private AnimationThread animationThread;
-  private ModulationThread modulationThread;
-  private Viewer viewer;
+  private JmolThread animationThread;
+  private JmolThread modulationThread;
+  public Viewer viewer;
   
   AnimationManager(Viewer viewer) {
     this.viewer = viewer;
@@ -311,7 +311,8 @@ public class AnimationManager {
     }
     if (modulationThread == null) {
       modulationPlay = true;
-      modulationThread = new ModulationThread(this, viewer, modT1, modT2);
+      modulationThread = (JmolThread) Interface.getOptionInterface("thread.ModulationThread");
+      modulationThread.setManager(this, viewer, new int[] {modT1, modT2} );
       modulationThread.start();
     }
   }
@@ -327,7 +328,8 @@ public class AnimationManager {
     animationPaused = false;
     if (animationThread == null) {
       intAnimThread++;
-      animationThread = new AnimationThread(this, viewer, firstFrameIndex, lastFrameIndex, intAnimThread);
+      animationThread = (JmolThread) Interface.getOptionInterface("thread.AnimationThread");
+      animationThread.setManager(this, viewer, new int[] {firstFrameIndex, lastFrameIndex, intAnimThread} );
       animationThread.start();
     }
   }

@@ -37,18 +37,10 @@ public class MoveToThread extends JmolThread {
   /**
    * 
    */
-  private final TransformManager transformManager;
+  private TransformManager transformManager;
 
-  /**
-   * @param transformManager
-   * @param viewer 
-   */
-  public MoveToThread(TransformManager transformManager, Viewer viewer) {
-    super();
-    setViewer(viewer, "MoveToThread");
-    this.transformManager = transformManager;
-  }
-
+  public MoveToThread() {}
+  
   private final V3 aaStepCenter = new V3();
   private final V3 aaStepNavCenter = new V3();
   private final AxisAngle4f aaStep = new AxisAngle4f();
@@ -80,43 +72,60 @@ public class MoveToThread extends JmolThread {
   private int iStep;  
   private boolean doEndMove;
   private float floatSecondsTotal;
-  
-  public int set(float floatSecondsTotal, P3 center, Matrix3f end,
-                 float zoom, float xTrans, float yTrans,
-                 float newRotationRadius, P3 navCenter, float xNav,
-                 float yNav, float navDepth, 
-                 float cameraDepth, float cameraX, float cameraY) {
-    this.center = center;
+
+  /*
+  center, matrixEnd, navCenter,
+  new float[] { 
+  5 xNav,
+  6 yNav,
+  7 navDepth,
+  8 cameraDepth,
+  9 cameraX,
+  10  cameraY }, ret });
+
+   */
+  @Override
+  public void setManager(Object manager, Viewer viewer, Object params) {
+    Object[] options = (Object[]) params;
+    setViewer(viewer, "MoveToThread");
+    transformManager = (TransformManager) manager;
+    center = (P3) options[0];
+    matrixEnd.setM((Matrix3f) options[1]);
+    navCenter = (P3) options[2];
+    float[] f = (float[]) options[3];
+    int[] ret = (int[]) options[4];
     ptMoveToCenter = (center == null ? transformManager.fixedRotationCenter
         : center);
-    this.rotationRadius = newSlider(transformManager.modelRadius, (center == null || Float.isNaN(newRotationRadius) ? transformManager.modelRadius
-        : newRotationRadius <= 0 ? viewer.calcRotationRadius(center)
-            : newRotationRadius));
-    this.pixelScale = newSlider(transformManager.scaleDefaultPixelsPerAngstrom, (center == null ? transformManager.scaleDefaultPixelsPerAngstrom : transformManager
-        .defaultScaleToScreen(this.rotationRadius.value)));
-    this.zoom = newSlider(transformManager.zoomPercent, zoom);
-    this.xTrans = newSlider(transformManager.getTranslationXPercent(), xTrans);
-    this.yTrans = newSlider(transformManager.getTranslationYPercent(), yTrans);
-    if (navDepth != 0) {
-      this.navCenter = navCenter;
-      this.xNav = newSlider(transformManager.getNavigationOffsetPercent('X'), xNav);
-      this.yNav = newSlider(transformManager.getNavigationOffsetPercent('Y'), yNav);
-      this.navDepth = newSlider(transformManager.getNavigationDepthPercent(), navDepth);
+    floatSecondsTotal = f[0];
+    zoom = newSlider(transformManager.zoomPercent, f[1]);
+    xTrans = newSlider(transformManager.getTranslationXPercent(), f[2]);
+    yTrans = newSlider(transformManager.getTranslationYPercent(), f[3]);
+    rotationRadius = newSlider(transformManager.modelRadius, (center == null
+        || Float.isNaN(f[4]) ? transformManager.modelRadius
+        : f[4] <= 0 ? viewer.calcRotationRadius(center) : f[4]));
+    pixelScale = newSlider(transformManager.scaleDefaultPixelsPerAngstrom,
+        (center == null ? transformManager.scaleDefaultPixelsPerAngstrom
+            : transformManager.defaultScaleToScreen(this.rotationRadius.value)));
+    if (navCenter != null) {
+      xNav = newSlider(transformManager.getNavigationOffsetPercent('X'),
+         f[5]);
+      yNav = newSlider(transformManager.getNavigationOffsetPercent('Y'),
+          f[6]);
+      navDepth = newSlider(transformManager.getNavigationDepthPercent(),
+          f[7]);
     }
-    this.cameraDepth = newSlider(transformManager.getCameraDepth(), cameraDepth);
-    this.cameraX = newSlider(transformManager.camera.x, cameraX);
-    this.cameraY = newSlider(transformManager.camera.y, cameraY);    
-    matrixEnd.setM(end);
+    cameraDepth = newSlider(transformManager.getCameraDepth(), f[8]);
+    cameraX = newSlider(transformManager.camera.x, f[9]);
+    cameraY = newSlider(transformManager.camera.y, f[10]);
     transformManager.getRotation(matrixStart);
     matrixStartInv.invertM(matrixStart);
     matrixStep.mul2(matrixEnd, matrixStartInv);
     aaTotal.setM(matrixStep);
-    
+
     fps = 30;
-    this.floatSecondsTotal = floatSecondsTotal;
     totalSteps = (int) (floatSecondsTotal * fps);
-    if (totalSteps == 0)
-      return 0;
+    if (totalSteps != 0)
+      return;
     frameTimeMillis = 1000 / fps;
     targetTime = System.currentTimeMillis();
     aaStepCenter.setT(ptMoveToCenter);
@@ -128,7 +137,8 @@ public class MoveToThread extends JmolThread {
       aaStepNavCenter.sub(transformManager.navigationCenter);
       aaStepNavCenter.scale(1f / totalSteps);
     }
-    return totalSteps;
+    ret[0] = totalSteps;
+    return;
   }
          
   private Slider newSlider(float start, float value) {

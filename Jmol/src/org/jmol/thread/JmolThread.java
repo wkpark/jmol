@@ -36,6 +36,12 @@ abstract public class JmolThread extends Thread {
 
   private boolean useTimeout = true;
 
+  /**
+   * @param manager  
+   * @param viewer 
+   * @param params 
+   */
+  public void setManager(Object manager, Viewer viewer, Object params){}
  
   public void setViewer(Viewer viewer, String name) {
     setName(name);
@@ -160,4 +166,5 @@ abstract public class JmolThread extends Thread {
     isReset = true;
     interrupt();
   }
+
 }

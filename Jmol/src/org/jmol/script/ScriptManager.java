@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.viewer;
+package org.jmol.script;
 
 import org.jmol.util.JmolList;
 
@@ -29,14 +29,14 @@ import org.jmol.util.JmolList;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.api.JmolScriptManager;
-import org.jmol.script.ScriptContext;
-import org.jmol.script.T;
-import org.jmol.thread.CommandWatcherThread;
-import org.jmol.thread.ScriptQueueThread;
+import org.jmol.thread.JmolThread;
 import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.JC;
+import org.jmol.viewer.StatusManager;
+import org.jmol.viewer.Viewer;
 
 public class ScriptManager implements JmolScriptManager {
 
@@ -51,7 +51,7 @@ public class ScriptManager implements JmolScriptManager {
 
   private Thread[] queueThreads = new Thread[2];
   private boolean[] scriptQueueRunning = new boolean[2];
-  private CommandWatcherThread commandWatcherThread;
+  private JmolThread commandWatcherThread;
   
 
   public JmolList<JmolList<Object>> scriptQueue = new  JmolList<JmolList<Object>>();
@@ -208,7 +208,9 @@ public class ScriptManager implements JmolScriptManager {
     if (isStart) {
       if (commandWatcherThread != null)
         return;
-      commandWatcherThread = new CommandWatcherThread(viewer, this);
+      commandWatcherThread = (JmolThread) Interface
+      .getOptionInterface("script.CommandWatcherThread");
+      commandWatcherThread.setManager(this, viewer, null);
       commandWatcherThread.start();
     } else {
       if (commandWatcherThread == null)
@@ -410,12 +412,12 @@ public class ScriptManager implements JmolScriptManager {
     if (msg != null)
       return msg;
     if (viewer.isScriptExecuting() && (isInsert || eval.isPaused())) {
-      viewer.insertedCommand = strScript;
+      viewer.setInsertedCommand(strScript);
       if (strScript.indexOf("moveto ") == 0)
         flushQueue("moveto ");
       return "!" + strScript;
     }
-    viewer.insertedCommand = "";
+    viewer.setInsertedCommand("");
     if (isQuiet)
       strScript += JC.SCRIPT_EDITOR_IGNORE;
     return addScript(strScript, false, isQuiet

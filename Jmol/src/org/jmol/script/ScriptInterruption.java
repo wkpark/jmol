@@ -33,6 +33,6 @@ class ScriptInterruption extends ScriptException {
     // the delay execution is here just to ensure that even a delay of 0 
     // still forces the interruption.
     if (why.equals("delay"))
-      eval.viewer.delayScript(eval, millis);    
+      eval.delayScript(millis);    
   }  
 }

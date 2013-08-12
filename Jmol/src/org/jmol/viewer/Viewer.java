@@ -29,8 +29,6 @@ import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
 import org.jmol.shape.Measures;
 import org.jmol.shape.Shape;
-import org.jmol.thread.JmolThread;
-import org.jmol.thread.ScriptDelayThread;
 import org.jmol.thread.TimeoutThread;
 import org.jmol.i18n.GT;
 import org.jmol.io.CifDataReader;
@@ -218,13 +216,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public FileManager fileManager;
 
   boolean isApplet;
-  boolean isSyntaxAndFileCheck = false;
-  boolean isSyntaxCheck = false;
-  boolean listCommands = false;
+  public boolean isSyntaxAndFileCheck = false;
+  public boolean isSyntaxCheck = false;
+  public boolean listCommands = false;
   boolean mustRender = false;
 
   String htmlName = "";
-  String insertedCommand = "";
+  
+  private String insertedCommand = "";
+  public void setInsertedCommand(String strScript) {
+    insertedCommand = strScript;
+  }
 
   GData gdata;
   Object applet; // j2s only
@@ -237,7 +239,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   SelectionManager selectionManager;
   JmolRepaintManager repaintManager;
   public StateManager.GlobalSettings global;
-  StatusManager statusManager;
+  public StatusManager statusManager;
   TransformManager transformManager;
 
   private final static String strJavaVendor = System.getProperty("java.vendor",
@@ -609,7 +611,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private JmolScriptManager getScriptManager() {
     if (allowScripting && scriptManager == null) {
       scriptManager = (JmolScriptManager) Interface
-          .getOptionInterface("viewer.ScriptManager");
+          .getOptionInterface("script.ScriptManager");
       scriptManager.setViewer(this);
       eval = scriptManager.getEval();
       if (useCommandThread)
@@ -4533,9 +4535,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void haltScriptExecution() {
-    if (eval != null)
+    if (eval != null) {
       eval.haltExecution();
-    stopScriptDelayThread();
+      eval.stopScriptDelayThread();
+    }
     setStringPropertyTok("pathForAllFiles", T.pathforallfiles, "");
     clearTimeouts();
   }
@@ -4919,7 +4922,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return statusManager.getMessageQueue();
   }
 
-  JmolList<JmolList<JmolList<Object>>> getStatusChanged(String statusNameList) {
+  public JmolList<JmolList<JmolList<Object>>> getStatusChanged(String statusNameList) {
     return (statusNameList == null ? null : statusManager
         .getStatusChanged(statusNameList));
   }
@@ -8668,7 +8671,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getModelIndexFromId(id);
   }
 
-  void setSyncDriver(int mode) {
+  public void setSyncDriver(int mode) {
     statusManager.setSyncDriver(mode);
   }
 
@@ -9849,25 +9852,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return fileManager.cacheList();
   }
 
-  private JmolThread scriptDelayThread;
-
-  private void stopScriptDelayThread() {
-    if (scriptDelayThread != null) {
-      scriptDelayThread.interrupt();
-      scriptDelayThread = null;
-    }
-  }
-
-  public void delayScript(JmolScriptEvaluator eval, int millis) {
-    if (autoExit)
-      return;
-    stopScriptDelayThread();
-    scriptDelayThread = new ScriptDelayThread(eval, this, millis);
-    scriptDelayThread.run();
-  }
-
-  void clearThreads() {
-    stopScriptDelayThread();
+  public void clearThreads() {
+    if (eval != null)
+      eval.stopScriptDelayThread();
     stopMinimization();
     setVibrationOff();
     setSpinOn(false);

@@ -9408,7 +9408,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (timeMsg)
       Logger.startTimer("load");
     errMsg = viewer.loadModelFromFile(null, filename, filenames, null,
-        isAppend, htParams, loadScript, tokType, false);
+        isAppend, htParams, loadScript, tokType);
     if (os != null)
       try {
         viewer.setFileInfo(new String[] { localName, localName, localName });

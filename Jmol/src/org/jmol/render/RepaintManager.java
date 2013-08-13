@@ -134,7 +134,7 @@ public class RepaintManager implements JmolRepaintManager {
      * 
      */
     {
-      System.out.println("RepaintMan repaintNow " + why);
+      //System.out.println("RepaintMan repaintNow " + why);
       viewer.apiPlatform.repaint(viewer.getDisplay());
     }
      

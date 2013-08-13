@@ -113,6 +113,9 @@ public class RepaintManager implements JmolRepaintManager {
     return true;
   }
 
+  /**
+   * @param why  
+   */
   private void repaintNow(String why) {
     // from RepaintManager to the System
     // -- "Send me an asynchronous update() event!"

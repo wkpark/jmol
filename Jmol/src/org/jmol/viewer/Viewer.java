@@ -1929,22 +1929,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
 
   //  *indicates when a refresh is made (external apps and applets only)
-  //
+  //  
   //  external apps only 
   //    via loadInline(List)*
   //      createModelSetAndReturnError
-  //
-  //  script LOAD via loadModelFromFile
-  //  openDOM, openReader, openFile, openFiles via loadModelFromFileRepaint*
+  //  
+  //  openDOM, openReader, openFile, openFiles
+  //    via loadModelFromFileRepaint*
   //      createModelSetAndReturnError
-  //
-  //  script CALCULATE HYDROGENS, PLOT, ZAP (modelkit)
+  //  
   //  loadInLine(String) via loadInLineScriptRepaint*
   //  FileDropper (string drop) via openStringInline*
-  //    openStringInlineParamsAppend
+  //    via openStringInlineParamsAppend
   //      createModelSetAndReturnError
   //
   //  external apps, applet only, via loadInline(String[])*
+  //    via openStringsInlineParamsAppend
+  //      createModelSetAndReturnError
+  //
+  //  script LOAD
+  //    via loadModelFromFile
+  //      createModelSetAndReturnError
+  //      
+  //  script CALCULATE HYDROGENS, PLOT, ZAP (modelkit)
+  //    via openStringInlineParamsAppend
+  //      createModelSetAndReturnError
+  //  
   //  script LOAD DATA via loadFileFull and loadInlineScript
   //    openStringsInlineParamsAppend
   //      createModelSetAndReturnError

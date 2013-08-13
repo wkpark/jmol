@@ -321,10 +321,8 @@ private boolean initEllipsoids(Object value) {
   }
 
   private void getStateID(SB sb) {
-    Iterator<Ellipsoid> e = simpleEllipsoids.values().iterator();
     V3 v1 = new V3();
-    while (e.hasNext()) {
-      Ellipsoid ellipsoid = e.next();
+    for (Ellipsoid ellipsoid:simpleEllipsoids.values()) {
       Tensor t = ellipsoid.tensor;
       if (!ellipsoid.isValid || t == null)
         continue;
@@ -390,10 +388,8 @@ private boolean initEllipsoids(Object value) {
   }
 
   private void setVis(Map<?, Ellipsoid> ellipsoids, BS bs, Atom[] atoms) {
-    Iterator<Ellipsoid> e = ellipsoids.values().iterator();
-    while (e.hasNext()) {
-      Ellipsoid ellipsoid = e.next();
-      Tensor t = ellipsoid.tensor; 
+    for (Ellipsoid e: ellipsoids.values()) {
+      Tensor t = e.tensor; 
       boolean isOK = true;
       if (t.atomIndex1 >= 0) {
         if (t.iType == Tensor.TYPE_ADP) {
@@ -404,8 +400,8 @@ private boolean initEllipsoids(Object value) {
         }
         atoms[t.atomIndex1].setShapeVisibility(myVisibilityFlag, true);
       }
-      ellipsoid.visible = isOK && ellipsoid.isValid && ellipsoid.isOn
-      && (ellipsoid.modelIndex < 0 || bs.get(ellipsoid.modelIndex));
+      e.visible = isOK && e.isValid && e.isOn
+      && (e.modelIndex < 0 || bs.get(e.modelIndex));
     }
   }
 
@@ -413,10 +409,8 @@ private boolean initEllipsoids(Object value) {
   public void setModelClickability() {
     if (atomEllipsoids.isEmpty())
       return;
-    Iterator<Ellipsoid> e = atomEllipsoids.values().iterator();
-    while (e.hasNext()) {
-      Ellipsoid ellipsoid = e.next();
-      int i = ellipsoid.tensor.atomIndex1;
+    for (Ellipsoid e: atomEllipsoids.values()) {
+      int i = e.tensor.atomIndex1;
       Atom atom = modelSet.atoms[i];
       if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
           || modelSet.isAtomHidden(i))

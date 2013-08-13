@@ -75,7 +75,7 @@ public class AnimationThread extends JmolThread {
       case INIT:
         if (Logger.debugging)
           Logger.debug("animation thread " + intThread + " running");
-        viewer.requestRepaintAndWait();
+        viewer.requestRepaintAndWait("animationThread");
         viewer.startHoverWatcher(false);
         isFirst = true;
         mode = MAIN;

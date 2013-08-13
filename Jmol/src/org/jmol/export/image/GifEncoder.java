@@ -47,7 +47,6 @@ import org.jmol.util.JmolList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.awt.Image;
 import java.awt.image.ImageProducer;
@@ -295,8 +294,8 @@ public class GifEncoder extends ImageEncoder {
       ht.put(srgb, item.acc);
     }
     int iindex = 0;
-    for (Iterator<AdaptiveColorCollection> e = colorHash.values().iterator(); e.hasNext();) {
-      AdaptiveColorCollection acc = e.next();
+    
+    for (AdaptiveColorCollection acc: colorHash.values()) {
       acc.index = iindex++;
       acc.setRgb(reds, grns, blus);
     }

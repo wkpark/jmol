@@ -268,7 +268,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
   
   private void startEval() {
-    viewer.pushHoldRepaintWhy("runEval");
+    viewer.pushHoldRepaint("runEval");
     setScriptExtensions();
     executeCommands(false);
   }
@@ -308,7 +308,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (haveError || !isJS || !allowJSThreads) {
       viewer.setTainted(true);
-      viewer.popHoldRepaintWhy("runEval");
+      viewer.popHoldRepaint("executeCommands" + " " + scriptLevel);
     }
     timeEndExecution = System.currentTimeMillis();
     if (errorMessage == null && executionStopped)
@@ -374,7 +374,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     setErrorMessage(null);
     if (executionStopped || sc == null || !sc.mustResumeEval) {
       viewer.setTainted(true);
-      viewer.popHoldRepaintWhy("runEval");
+      viewer.popHoldRepaint("resumeEval");
       viewer.queueOnHold = false;
       return;
     }
@@ -400,7 +400,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     contextPath += " >> script() ";
     this.outputBuffer = outputBuffer;
     allowJSThreads = false;
-    if (compileScript(null, script + JC.SCRIPT_EDITOR_IGNORE, false))
+    if (compileScript(null, script + JC.SCRIPT_EDITOR_IGNORE + JC.REPAINT_IGNORE, false))
       dispatchCommands(false, false);
     popContext(false, false);
   }
@@ -481,7 +481,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     if (withDelay && !isJS )
       delayScript(-100);
-    viewer.popHoldRepaintWhy("pauseExecution");
+    viewer.popHoldRepaint("pauseExecution " + withDelay);
     executionStepping = false;
     executionPaused = true;
   }
@@ -5306,7 +5306,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     refresh();
     while (executionPaused) {
-      viewer.popHoldRepaintWhy("pause"); 
+      viewer.popHoldRepaint("pause " + JC.REPAINT_IGNORE); 
       // does not actually do a repaint
       // but clears the way for interaction
       String script = viewer.getInsertedCommand();
@@ -5333,7 +5333,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // JavaScript will not reach this point, 
       // but no need to pop anyway, because
       // we will be out of this thread.
-      viewer.pushHoldRepaintWhy("pause");        
+      viewer.pushHoldRepaint("pause");        
     }
     notifyResumeStatus();
     // once more to trap quit during pause
@@ -9408,7 +9408,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (timeMsg)
       Logger.startTimer("load");
     errMsg = viewer.loadModelFromFile(null, filename, filenames, null,
-        isAppend, htParams, loadScript, tokType);
+        isAppend, htParams, loadScript, tokType, false);
     if (os != null)
       try {
         viewer.setFileInfo(new String[] { localName, localName, localName });
@@ -9850,7 +9850,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (chk)
       return;
     viewer.setTainted(true);
-    viewer.requestRepaintAndWait();
+    viewer.requestRepaintAndWait("refresh cmd");
   }
 
   private void reset() throws ScriptException {
@@ -15520,7 +15520,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     for (int i = 0; i < pts.length; i++)
       sb.append("H ").appendF(pts[i].x).append(" ").appendF(pts[i].y).append(" ")
           .appendF(pts[i].z).append(" - - - - ").appendI(++atomno).appendC('\n');
-    viewer.loadInlineScript(sb.toString(), '\n', true, null);
+    viewer.openStringInlineParamsAppend(sb.toString(), null, true);
     runScriptBuffer(sbConnect.toString(), null);
     BS bsB = viewer.getModelUndeletedAtomsBitSet(modelIndex);
     bsB.andNot(bsA);

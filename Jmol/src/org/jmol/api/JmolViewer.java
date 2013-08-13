@@ -215,7 +215,7 @@ abstract public class JmolViewer {
   abstract public boolean haveFrame();
 
   abstract public void pushHoldRepaint();
-  abstract public void popHoldRepaint();
+  abstract public void popHoldRepaint(String why);
 
   // for example: getData("selected","XYZ");
   abstract public String getData(String atomExpression, String type);

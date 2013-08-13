@@ -23,9 +23,6 @@
  */
 package org.jmol.render;
 
-import java.util.Iterator;
-
-
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
@@ -40,13 +37,11 @@ public class EchoRenderer extends LabelsRenderer {
     if (viewer.isPreviewOnly())
       return false;
     Echo echo = (Echo) shape;
-    Iterator<Text> e = echo.objects.values().iterator();
     float scalePixelsPerMicron = (viewer.getBoolean(T.fontscaling) ? viewer
         .getScalePixelsPerAngstrom(true) * 10000 : 0);
     imageFontScaling = viewer.getImageFontScaling();
     boolean haveTranslucent = false;
-    while (e.hasNext()) {
-      Text t = e.next();
+    for (Text t: echo.objects.values()) {
       if (!t.visible || t.hidden) {
         continue;
       }

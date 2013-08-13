@@ -72,7 +72,7 @@ class ScriptDelayThread extends JmolThread {
             millis = 1;
         }
         if (doPopPush)
-          viewer.popHoldRepaintWhy("delay INIT");
+          viewer.popHoldRepaint("scriptDelayThread INIT");
         mode = MAIN;
         break;
       case MAIN:
@@ -88,7 +88,7 @@ class ScriptDelayThread extends JmolThread {
         break;
       case FINISH:
         if (doPopPush)
-          viewer.pushHoldRepaintWhy("delay FINISH");
+          viewer.pushHoldRepaint("delay FINISH");
         if (isPauseDelay)
           eval.notifyResumeStatus();
         resumeEval();

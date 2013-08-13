@@ -147,6 +147,7 @@ public class Modulation {
 
       x4 -= Math.floor(x4);
       ms.v = (range(x4) ? 1 : 0);
+      //System.out.println("MOD " + ms.r + " " +  ms.delta + " " + ms.epsilon + " " + ms.id + " " + ms.v + " l=" + left + " x=" + x4 + " r=" + right);
       return;
     case TYPE_DISP_SAWTOOTH:
 

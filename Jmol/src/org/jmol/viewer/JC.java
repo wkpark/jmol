@@ -121,6 +121,7 @@ public class JC {
   public final static String NOTE_SCRIPT_FILE = "NOTE: file recognized as a script file: ";
  
   public final static String SCRIPT_EDITOR_IGNORE = "\1## EDITOR_IGNORE ##";
+  public final static String REPAINT_IGNORE = "\1## REPAINT_IGNORE ##";
 
   public final static String LOAD_ATOM_DATA_TYPES = ";xyz;vxyz;vibration;temperature;occupancy;partialcharge;";
 
@@ -1296,7 +1297,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "pubchem", "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d"
   };
   
-  public final static String MODELKIT_ZAP_STRING = "1 0 C 0 0";
+  public final static String MODELKIT_ZAP_STRING = "5\n\nC 0 0 0\nH .63 .63 .63\nH -.63 -.63 .63\nH -.63 .63 -.63\nH .63 -.63 -.63";
   public final static String MODELKIT_ZAP_TITLE = "Jmol Model Kit";//do not ever change this -- it is in the state
   public final static String ADD_HYDROGEN_TITLE = "Viewer.AddHydrogens"; //do not ever change this -- it is in the state
 

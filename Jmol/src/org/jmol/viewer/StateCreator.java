@@ -32,7 +32,6 @@ import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import java.util.Map;
 
@@ -475,15 +474,13 @@ public class StateCreator implements JmolStateCreator {
                             SB sfunc, String atomProps) {
     if (dm.dataValues == null)
       return;
-    Iterator<String> e = dm.dataValues.keySet().iterator();
     SB sb = new SB();
     boolean haveData = false;
     if (atomProps.length() > 0) {
       haveData = true;
       sb.append(atomProps);
     }
-    while (e.hasNext()) {
-      String name = e.next();
+    for (String name: dm.dataValues.keySet()) {
       if (name.indexOf("property_") == 0) {
         Object[] obj = dm.dataValues.get(name);
         if (obj.length > DataManager.DATA_SAVE_IN_STATE && obj[DataManager.DATA_SAVE_IN_STATE] == Boolean.FALSE)
@@ -617,19 +614,12 @@ public class StateCreator implements JmolStateCreator {
       commands.append("function _setVariableState() {\n\n");
     }
     int n = 0;
-    Iterator<String> e;
-    String key;
     //booleans
-    e = global.htBooleanParameterFlags.keySet().iterator();
-    while (e.hasNext()) {
-      key = e.next();
+    for (String key : global.htBooleanParameterFlags.keySet())
       if (StateManager.doReportProperty(key))
         list[n++] = "set " + key + " "
             + global.htBooleanParameterFlags.get(key);
-    }
-    e = global.htNonbooleanParameterValues.keySet().iterator();
-    while (e.hasNext()) {
-      key = e.next();
+    for (String key : global.htNonbooleanParameterValues.keySet())
       if (StateManager.doReportProperty(key)) {
         Object value = global.htNonbooleanParameterValues.get(key);
         if (key.charAt(0) == '=') {
@@ -645,7 +635,6 @@ public class StateCreator implements JmolStateCreator {
         }
         list[n++] = key + " " + value;
       }
-    }
     switch (global.axesMode) {
     case UNITCELL:
       list[n++] = "set axes unitcell";
@@ -1169,9 +1158,7 @@ public class StateCreator implements JmolStateCreator {
       Echo es = (Echo) shape;
       SB sb = new SB();
       sb.append("\n  set echo off;\n");
-      Iterator<Text> e = es.objects.values().iterator();
-      while (e.hasNext()) {
-        Text t = e.next();
+      for (Text t: es.objects.values()) {
         sb.append(getTextState(t));
         if (t.hidden)
           sb.append("  set echo ID ").append(Escape.eS(t.target))
@@ -1467,25 +1454,19 @@ public class StateCreator implements JmolStateCreator {
   public String getAllSettings(String prefix) {
     GlobalSettings g = viewer.global;
     SB commands = new SB();
-    Iterator<String> e;
-    String key;
     String[] list = new String[g.htBooleanParameterFlags.size()
         + g.htNonbooleanParameterValues.size() + g.htUserVariables.size()];
     //booleans
     int n = 0;
     String _prefix = "_" + prefix;
-    e = g.htBooleanParameterFlags.keySet().iterator();
-    while (e.hasNext()) {
-      key = e.next();
+    for (String key: g.htBooleanParameterFlags.keySet()) {
       if (prefix == null || key.indexOf(prefix) == 0
           || key.indexOf(_prefix) == 0)
         list[n++] = (key.indexOf("_") == 0 ? key + " = " : "set " + key + " ")
             + g.htBooleanParameterFlags.get(key);
     }
     //save as _xxxx if you don't want "set" to be there first
-    e = g.htNonbooleanParameterValues.keySet().iterator();
-    while (e.hasNext()) {
-      key = e.next();
+    for (String key: g.htNonbooleanParameterValues.keySet()) {
       if (key.charAt(0) != '@'
           && (prefix == null || key.indexOf(prefix) == 0 || key
               .indexOf(_prefix) == 0)) {
@@ -1496,9 +1477,7 @@ public class StateCreator implements JmolStateCreator {
             + value;
       }
     }
-    e = g.htUserVariables.keySet().iterator();
-    while (e.hasNext()) {
-      key = e.next();
+    for (String key: g.htUserVariables.keySet()) {
       if (prefix == null || key.indexOf(prefix) == 0) {
         SV value = g.htUserVariables.get(key);
         String s = value.asString();
@@ -1565,15 +1544,12 @@ public class StateCreator implements JmolStateCreator {
     Map<String, JmolScriptFunction> ht = (isStatic ? Viewer.staticFunctions
         : viewer.localFunctions);
     String[] names = new String[ht.size()];
-    Iterator<String> e = ht.keySet().iterator();
     int n = 0;
-    while (e.hasNext()) {
-      String name = e.next();
+    for (String name : ht.keySet())
       if (selectedFunction.length() == 0 && !name.startsWith("_")
           || name.equalsIgnoreCase(selectedFunction) || isGeneric
           && name.toLowerCase().indexOf(selectedFunction) == 0)
         names[n++] = name;
-    }
     Arrays.sort(names, 0, n);
     for (int i = 0; i < n; i++) {
       JmolScriptFunction f = ht.get(names[i]);

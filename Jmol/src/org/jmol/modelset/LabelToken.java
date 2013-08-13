@@ -26,7 +26,6 @@
 package org.jmol.modelset;
 
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 
 
@@ -371,16 +370,10 @@ public class LabelToken {
         ++ich;
       }
     }
-    if (ich < cch && htValues != null) {
-      Iterator<String> keys = htValues.keySet().iterator();
-      while (keys.hasNext()) {
-        String key = keys.next();
-        if (strFormat.indexOf(key) == ich) {
-          lt.key = key;
-          return ich + key.length();
-        }
-      }
-    }
+    if (ich < cch && htValues != null)
+      for (String key: htValues.keySet())
+        if (strFormat.indexOf(key) == ich)
+          return ich + (lt.key = key).length();
     if (ich < cch)
       switch (ch = strFormat.charAt(ich++)) {
       case '%':

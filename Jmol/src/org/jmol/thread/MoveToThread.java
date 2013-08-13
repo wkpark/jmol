@@ -170,7 +170,7 @@ public class MoveToThread extends JmolThread {
           doRender = true;
         }
         if (doRender)
-          viewer.requestRepaintAndWait();
+          viewer.requestRepaintAndWait("movetoThread");
         if (transformManager.motion == null || !isJS && eval != null
             && !viewer.isScriptExecuting()) {
           stopped = true;

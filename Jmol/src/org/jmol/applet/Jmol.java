@@ -449,7 +449,7 @@ public class Jmol implements WrappedApplet {
       }
     }
 
-    viewer.popHoldRepaint();
+    viewer.popHoldRepaint("applet init");
   }
 
   private void setLogging() {
@@ -751,6 +751,14 @@ public class Jmol implements WrappedApplet {
     return errMsg;
   }
 
+  /**
+   * used by applet only
+   * @param strModels 
+   * @param script 
+   * @param isAppend 
+   * @return null or error message
+   */
+  
   public String loadInlineArray(String[] strModels, String script,
                               boolean isAppend) {
     if (strModels == null || strModels.length == 0)

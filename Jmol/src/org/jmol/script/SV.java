@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -247,22 +246,20 @@ public class SV extends T {
   @SuppressWarnings("unchecked")
   static SV getVariableMap(Map<String, ?> x) {
     Map<String, Object> ht = (Map<String, Object>) x;
-    Iterator<String> e = ht.keySet().iterator();
-    while (e.hasNext()) {
-      if (!(ht.get(e.next()) instanceof SV)) {
-        Map<String, SV> x2 = new Hashtable<String, SV>();
-        for (Map.Entry<String, Object> entry : ht.entrySet()) {
-          String key = entry.getKey();
-          Object o = entry.getValue();
-          if (isVariableType(o))
-            x2.put(key, getVariable(o));
-          else
-            x2.put(key, newVariable(string, Escape.toReadable(null,
-                o)));
-        }
-        x = x2;
+    Object o = null;
+    for (Object oo : ht.values()) {
+      o = oo;
+      break;
+    }
+    if (!(o instanceof SV)) {
+      Map<String, SV> x2 = new Hashtable<String, SV>();
+      for (Map.Entry<String, Object> entry : ht.entrySet()) {
+        String key = entry.getKey();
+        o = entry.getValue();
+        x2.put(key, isVariableType(o) ? getVariable(o) : newVariable(string,
+            Escape.toReadable(null, o)));
       }
-      break; // just need to check the first one
+      x = x2;
     }
     return newVariable(hash, x);
   }

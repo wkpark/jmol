@@ -76,12 +76,9 @@ public abstract class Object2dShape extends Shape {
     if ("model" == propertyName) {
       int modelIndex = ((Integer) value).intValue();
       if (currentObject == null) {
-        if (isAll) {
-          Iterator<Text> e = objects.values().iterator();
-          while (e.hasNext()) {
-            e.next().setModel(modelIndex);
-          }
-        }
+        if (isAll)
+          for (Text t : objects.values())
+            t.setModel(modelIndex);
         return;
       }
       currentObject.setModel(modelIndex);
@@ -91,12 +88,9 @@ public abstract class Object2dShape extends Shape {
     if ("align" == propertyName) {
       String align = (String) value;
       if (currentObject == null) {
-        if (isAll) {
-          Iterator<Text> e = objects.values().iterator();
-          while (e.hasNext()) {
-            e.next().setAlignmentLCR(align);
-          }
-        }
+        if (isAll)
+          for (Object2d obj : objects.values())
+            obj.setAlignmentLCR(align);
         return;
       }
       if (!currentObject.setAlignmentLCR(align))
@@ -196,14 +190,9 @@ public abstract class Object2dShape extends Shape {
 
   @Override
   public void setVisibilityFlags(BS bs) {
-    if (isHover) {
-      return;
-    }
-    Iterator<Text> e = objects.values().iterator();
-    while (e.hasNext()) {
-      Text t = e.next();
-      t.setVisibility(t.modelIndex < 0 || bs.get(t.modelIndex));
-    }
+    if (!isHover)
+      for (Text t : objects.values())
+        t.setVisibility(t.modelIndex < 0 || bs.get(t.modelIndex));
   }
 
   @Override
@@ -211,9 +200,7 @@ public abstract class Object2dShape extends Shape {
     if (isHover || modifiers == 0)
       return null;
     boolean isAntialiased = viewer.isAntialiased();
-    Iterator<Text> e = objects.values().iterator();
-    while (e.hasNext()) {
-      Object2d obj = e.next();
+    for (Object2d obj: objects.values()) {
       if (obj.checkObjectClicked(isAntialiased, x, y, bsVisible)) {
         String s = obj.getScript();
         if (s != null) {
@@ -240,9 +227,7 @@ public abstract class Object2dShape extends Shape {
       return false;
     boolean haveScripts = false;
     boolean isAntialiased = viewer.isAntialiased();
-    Iterator<Text> e = objects.values().iterator();
-    while (e.hasNext()) {
-      Object2d obj = e.next();
+    for (Object2d obj: objects.values()) {
       String s = obj.getScript();
       if (s != null) {
         haveScripts = true;

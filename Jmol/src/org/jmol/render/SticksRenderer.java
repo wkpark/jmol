@@ -75,6 +75,9 @@ public class SticksRenderer extends FontLineShapeRenderer {
   
   @Override
   protected boolean render() {
+    Bond[] bonds = modelSet.bonds;
+    if (bonds == null)
+      return false;
     isPass2 = g3d.isPass2();
     if (!isPass2)
       bsForPass2.clearAll();
@@ -99,7 +102,6 @@ public class SticksRenderer extends FontLineShapeRenderer {
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
     hbondsSolid = viewer.getBoolean(T.hbondssolid);
     isAntialiased = g3d.isAntialiased();
-    Bond[] bonds = modelSet.bonds;
     boolean needTranslucent = false;
     if (!isExport && isPass2)
       for (int i = bsForPass2.nextSetBit(0); i >= 0; i = bsForPass2

@@ -196,9 +196,8 @@ public class StateManager {
 
   String listSavedStates() {
     String names = "";
-    Iterator<String> e = saved.keySet().iterator();
-    while (e.hasNext())
-      names += "\n" + e.next();
+    for (String name: saved.keySet())
+      names += "\n" + name;
     return names;
   }
 

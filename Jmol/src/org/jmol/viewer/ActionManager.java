@@ -25,7 +25,6 @@ package org.jmol.viewer;
 
 import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import java.util.Map;
 
@@ -269,9 +268,7 @@ public class ActionManager {
   public Map<String, Object> getMouseInfo() {
     Map<String, Object> info = new Hashtable<String, Object>();
     JmolList<Object> vb = new  JmolList<Object>();
-    Iterator<Object> e = binding.getBindings().values().iterator();
-    while (e.hasNext()) {
-      Object obj = e.next();
+    for (Object obj: binding.getBindings().values()) {
       if (obj instanceof Boolean)
         continue;
       if (Escape.isAI(obj)) {
@@ -902,12 +899,10 @@ public class ActionManager {
     }
     if (!binding.isUserAction(action))
       return false;
-    Map<String, Object> ht = binding.getBindings();
-    Iterator<String> e = ht.keySet().iterator();
     boolean passThrough = false;
     Object obj;
-    while (e.hasNext()) {
-      String key = e.next();
+    Map<String, Object> ht = binding.getBindings();
+    for (String key: ht.keySet()) {
       if (key.indexOf(action + "\t") != 0
           || !Escape.isAS(obj = ht.get(key)))
         continue;

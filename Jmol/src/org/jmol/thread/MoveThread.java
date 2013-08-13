@@ -116,7 +116,7 @@ public class MoveThread extends JmolThread {
         int timeSpent = (int) (System.currentTimeMillis() - startTime);
         int timeAllowed = iStep * timePerStep;
         if (timeSpent < timeAllowed) {
-          viewer.requestRepaintAndWait();
+          viewer.requestRepaintAndWait("moveThread");
           if (!isJS && !viewer.isScriptExecuting()) {
             mode = FINISH;
             break;

@@ -75,7 +75,7 @@ public class ModulationThread extends JmolThread {
       case INIT:
         if (Logger.debugging)
           Logger.debug("modulation thread running");
-        viewer.requestRepaintAndWait();
+        viewer.requestRepaintAndWait("modulationThread");
         viewer.startHoverWatcher(false);
         mode = MAIN;
         break;

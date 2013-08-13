@@ -11,15 +11,15 @@ public interface JmolRepaintManager {
 
   boolean isRepaintPending();
 
-  void popHoldRepaint(boolean andRepaint);
+  void popHoldRepaint(boolean andRepaint, String why);
 
-  boolean repaintIfReady();
+  boolean repaintIfReady(String why);
 
-  void pushHoldRepaint();
+  void pushHoldRepaint(String why);
 
   void repaintDone();
 
-  void requestRepaintAndWait();
+  void requestRepaintAndWait(String why);
 
   void clear(int iShape);
 

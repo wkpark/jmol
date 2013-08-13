@@ -177,7 +177,6 @@ import java.io.StringReader;
  *   calculate hydrogens
  *   
  * 
- * 
  * ****************************************************************
  */
 
@@ -696,7 +695,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setAxesModeMolecular(false);
     prevFrame = Integer.MIN_VALUE;
     if (!getSpinOn())
-      refresh(1, "Viewer:homePosition()");
+      refresh(-1, "Viewer:homePosition()"); // from 1 - was repainting
   }
 
   @Override
@@ -987,7 +986,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void moveUpdate(float floatSecondsTotal) {
     if (floatSecondsTotal > 0)
-      requestRepaintAndWait();
+      requestRepaintAndWait("moveUpdate");
     else if (floatSecondsTotal == 0)
       setSync();
   }
@@ -1928,6 +1927,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // //////////////// methods that open a file to create a model set ///////////
 
+
+  //  *indicates when a refresh is made (external apps and applets only)
+  //
+  //  external apps only 
+  //    via loadInline(List)*
+  //      createModelSetAndReturnError
+  //
+  //  script LOAD
+  //  openDOM, openReader, openFile, openFiles*
+  //    via loadModelFromFile(*)
+  //      createModelSetAndReturnError
+  //
+  //  script CALCULATE HYDROGENS, PLOT, ZAP (modelkit)
+  //  loadInLine(String)* via loadInLineScript(*)
+  //  FileDropper (string drop) via openStringInline*
+  //    openStringInlineParamsAppend
+  //      createModelSetAndReturnError
+  //
+  //  external apps, applet only, via loadInline(String[])*
+  //  script LOAD DATA via loadFileFull and loadInlineScript
+  //    openStringsInlineParamsAppend
+  //      createModelSetAndReturnError
+  
+  
   /**
    * opens a file as a model, a script, or a surface via the creation of a
    * script that is queued \t at the beginning disallows script option - used by
@@ -1952,7 +1975,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public String openFile(String fileName) {
     zap(true, true, false);
-    return loadModelFromFile(null, fileName, null, null, false, null, null, 0);
+    return loadModelFromFile(null, fileName, null, null, false, null, null, 0, true);
   }
 
   /**
@@ -1964,7 +1987,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public String openFiles(String[] fileNames) {
     zap(true, true, false);
-    return loadModelFromFile(null, null, fileNames, null, false, null, null, 0);
+    return loadModelFromFile(null, null, fileNames, null, false, null, null, 0, true);
   }
 
   /**
@@ -1979,7 +2002,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String openReader(String fullPathName, String fileName, Reader reader) {
     zap(true, true, false);
     return loadModelFromFile(fullPathName, fileName, null, reader, false, null,
-        null, 0);
+        null, 0, true);
   }
 
   /**
@@ -1993,7 +2016,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String openDOM(Object DOMNode) {
     // applet.loadDOMNode
     zap(true, true, false);
-    return loadModelFromFile("?", "?", null, DOMNode, false, null, null, 0);
+    return loadModelFromFile("?", "?", null, DOMNode, false, null, null, 0, true);
   }
 
   /**
@@ -2011,14 +2034,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param htParams
    * @param loadScript
    * @param tokType
-   * 
+   * @param andRepaint TODO
    * @return null or error
    */
   public String loadModelFromFile(String fullPathName, String fileName,
                                   String[] fileNames, Object reader,
                                   boolean isAppend,
                                   Map<String, Object> htParams, SB loadScript,
-                                  int tokType) {
+                                  int tokType, boolean andRepaint) {
     if (htParams == null)
       htParams = setLoadParameters(null, isAppend);
     Object atomSetCollection;
@@ -2103,8 +2126,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     // and finally to create the model set...
 
-    return createModelSetAndReturnError(atomSetCollection, isAppend,
+    String ret = createModelSetAndReturnError(atomSetCollection, isAppend,
         loadScript, htParams);
+    if (andRepaint)
+      refresh(1, "loadModelFromFile");
+    return ret;
   }
 
   Map<String, Object> ligandModels;
@@ -2123,9 +2149,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    *        if null, clear "bad" entries from the set.
    * @param prefix 
    * @param suffix 
+   * @param terminator  Only save to this if not null
    * @return a ligand model or a string if just file data or null
    */
-  public Object getLigandModel(String id, String prefix, String suffix) {
+  public Object getLigandModel(String id, String prefix, String suffix, String terminator) {
     if (id == null) {
       if (ligandModelSet != null) {
         Iterator<Map.Entry<String, Object>> e = ligandModels.entrySet()
@@ -2155,16 +2182,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       model = ligandModels.get(id + suffix);
     boolean isError = false;
     if (model == null) {
+      String s;
       if (isLigand) {
         fname = (String) setLoadFormat("#" + id, '#', false);
         if (fname.length() == 0)
           return null;
         scriptEcho("fetching " + fname);
-        model = getFileAsString(fname);
-        isError = (((String) model).indexOf("java.") == 0);
+        s = getFileAsString(fname);
       } else {
-        model = getFileAsString(prefix);
+        s = getFileAsString(prefix);
+        int pt = (terminator == null ? -1 : s.indexOf(terminator));
+        if (pt >= 0)
+          s = s.substring(0, pt);
       }
+      isError = (s.indexOf("java.") == 0);
+      model = s;
       if (!isError)
         ligandModels.put(id + suffix, model);
     }
@@ -2198,6 +2230,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   /**
    * 
+   * does NOT repaint
+   * 
    * @param fileName
    * @param isAppend
    * @param htParams
@@ -2227,7 +2261,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (haveFileData) {
       strModel = (String) htParams.get("fileData");
       if (htParams.containsKey("isData")) {
-        return loadInlineScript(strModel, '\0', isAppend, htParams);
+        return loadInlineScript(strModel, '\0', isAppend, htParams, false);
       }
     } else if (isString) {
       strModel = modelSet.getInlineData(-1);
@@ -2261,31 +2295,41 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return atomSetCollection;
   }
 
-  /// (unnecessarily) many inline versions
+  /**
+   * only used by file dropper.
+   */
 
   @Override
   public String openStringInline(String strModel) {
-    // JmolSimpleViewer
-    return openStringInlineParams(strModel, null, false);
+    // JmolSimpleViewer; JmolFileDropper inline string event
+    String ret = openStringInlineParamsAppend(strModel, null, false);
+    refresh(1, "openStringInline");
+    return ret;
   }
+  
+  /**
+   * from Applet and external applications only
+   */
 
   @Override
   public String loadInline(String strModel) {
     // jmolViewer interface
-    return loadInlineScript(strModel, global.inlineNewlineChar, false, null);
+    return loadInlineScript(strModel, global.inlineNewlineChar, false, null, true);
   }
+  
+  /** external apps only
+   * 
+   */
 
   @Override
   public String loadInline(String strModel, char newLine) {
     // JmolViewer interface
-    return loadInlineScript(strModel, newLine, false, null);
+    return loadInlineScript(strModel, newLine, false, null, true);
   }
-
-  @Override
-  public String loadInline(String strModel, boolean isAppend) {
-    // JmolViewer interface
-    return loadInlineScript(strModel, '\0', isAppend, null);
-  }
+  
+  /** external apps only
+   * 
+   */
 
   @Override
   public String loadInline(String[] arrayModels) {
@@ -2293,6 +2337,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return loadInline(arrayModels, false);
   }
 
+  /**
+   * used by applet and console
+   */
+
+  @Override
+  public String loadInline(String strModel, boolean isAppend) {
+    // JmolViewer interface
+    return loadInlineScript(strModel, '\0', isAppend, null, true);
+  }
+
+  /**
+   * external apps and applet only
+   * 
+   */
   @Override
   public String loadInline(String[] arrayModels, boolean isAppend) {
     // JmolViewer interface
@@ -2300,11 +2358,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // loadInline
     if (arrayModels == null || arrayModels.length == 0)
       return null;
-    return openStringsInline(arrayModels, null, isAppend);
+    String ret = openStringsInlineParamsAppend(arrayModels, null, isAppend);
+    refresh(1, "loadInline String[]");
+    return ret;
   }
 
   /**
-   * does not preserver state, intentionally!
+   * External applications only;
+   * does not preserver state -- intentionally!
    * 
    * @param arrayData
    * @param isAppend
@@ -2322,12 +2383,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       zap(true, false/*true*/, false);
     Object atomSetCollection = fileManager.createAtomSeCollectionFromArrayData(
         arrayData, setLoadParameters(null, isAppend), isAppend);
-    return createModelSetAndReturnError(atomSetCollection, isAppend, null, null);
+    String ret = createModelSetAndReturnError(atomSetCollection, isAppend, null, null);
+    refresh(1, "loadInline");
+    return ret;
   }
 
-  public String loadInlineScript(String strModel, char newLine,
-                                 boolean isAppend, Map<String, Object> htParams) {
-    // ScriptEvaluator DATA command uses this, but anyone could.
+  /**
+   * used by  loadInline and openFileFull
+   * @param strModel
+   * @param newLine
+   * @param isAppend
+   * @param htParams
+   * @param andRepaint TODO
+   * @return null or error message
+   */
+  private String loadInlineScript(String strModel, char newLine,
+                                 boolean isAppend, Map<String, Object> htParams, boolean andRepaint) {
     if (strModel == null || strModel.length() == 0)
       return null;
     strModel = fixInlineString(strModel, newLine);
@@ -2339,6 +2410,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       Logger.debug(strModel);
     String datasep = getDataSeparator();
     int i;
+    String ret;
     if (datasep != null && datasep != ""
         && (i = strModel.indexOf(datasep)) >= 0
         && strModel.indexOf("# Jmol state") < 0) {
@@ -2354,9 +2426,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         strModels[i] = strModel.substring(pt0, pt);
         pt0 = pt + datasep.length();
       }
-      return openStringsInline(strModels, htParams, isAppend);
+      ret = openStringsInlineParamsAppend(strModels, htParams, isAppend);
+    } else {
+      ret = openStringInlineParamsAppend(strModel, htParams, isAppend);
     }
-    return openStringInlineParams(strModel, htParams, isAppend);
+    if (andRepaint)
+      refresh(1, "loadInlineScript");
+    return ret;
+
   }
 
   public static String fixInlineString(String strModel, char newLine) {
@@ -2386,9 +2463,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return strModel;
   }
 
-  // everything funnels to these two inline methods: String and String[]
-
-  private String openStringInlineParams(String strModel,
+  /**
+   * Only used for adding hydrogen atoms and adding the model kit methane model;
+   * not part of the public interface.
+   * 
+   * @param strModel 
+   * @param htParams 
+   * @param isAppend 
+   * @return null or error string
+   * 
+   */
+  public String openStringInlineParamsAppend(String strModel,
                                         Map<String, Object> htParams,
                                         boolean isAppend) {
     // loadInline, openStringInline
@@ -2414,7 +2499,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         loadScript, null);
   }
 
-  private String openStringsInline(String[] arrayModels,
+  /**
+   * opens multiple files inline; does NOT repaint
+   * 
+   * @param arrayModels
+   * @param htParams
+   * @param isAppend
+   * @return null or error message
+   */
+  private String openStringsInlineParamsAppend(String[] arrayModels,
                                    Map<String, Object> htParams,
                                    boolean isAppend) {
     // loadInline
@@ -2442,7 +2535,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   /**
    * finally(!) we are ready to create the "model set" from the
-   * "atom set collection"
+   * "atom set collection"  - does NOT repaint
    * 
    * @param atomSetCollection
    * @param isAppend
@@ -2477,7 +2570,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         null, null, null);
 
     // null fullPathName implies we are doing a merge
-    pushHoldRepaintWhy("createModelSet");
+    pushHoldRepaint("createModelSet");
     setErrorMessage(null, null);
     try {
       BS bsNew = new BS();
@@ -2508,7 +2601,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       zapMsg(errMsg);
       setErrorMessage(errMsg, null);
     }
-    popHoldRepaintWhy("createModelSet");
+    popHoldRepaint("createModelSet " + JC.REPAINT_IGNORE);
     errMsg = getErrorMessage();
 
     setFileLoadStatus(EnumFileStatus.CREATED, fullPathName, fileName,
@@ -2815,7 +2908,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       dataManager.clear();
       if (resetUndo) {
         if (zapModelKit && global.modelKitMode) {
-          loadInline(JC.MODELKIT_ZAP_STRING); // a JME string for methane
+          openStringInlineParamsAppend(JC.MODELKIT_ZAP_STRING, null, true);
           setRotationRadius(5.0f, true);
           setStringProperty("picking", "assignAtom_C");
           setStringProperty("picking", "assignBond_p");
@@ -3901,34 +3994,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void pushHoldRepaint() {
-    pushHoldRepaintWhy(null);
+    pushHoldRepaint(null);
   }
 
   /**
    * 
    * @param why
    */
-  public void pushHoldRepaintWhy(String why) {
-    if (repaintManager != null) {
-      repaintManager.pushHoldRepaint();
-      //System.out.println("viewer pushHoldRepaint " + why + " " + ((org.jmol.render.RepaintManager)repaintManager).holdRepaint);
-    }
-
+  public void pushHoldRepaint(String why) {
+    if (repaintManager != null)
+      repaintManager.pushHoldRepaint(why);
   }
 
   @Override
-  public void popHoldRepaint() {
-    //System.out.println("viewer popHoldRepaint don't know why");
-    if (repaintManager != null) {
-      repaintManager.popHoldRepaint(true);
-    }
-  }
-
-  public void popHoldRepaintWhy(String why) {
-    //if (!why.equals("pause"))
+  public void popHoldRepaint(String why) {
     //System.out.println("viewer popHoldRepaint " + why);
     if (repaintManager != null) {
-      repaintManager.popHoldRepaint(!why.equals("pause"));
+      repaintManager.popHoldRepaint(why.indexOf(JC.REPAINT_IGNORE) < 0, why);
       //System.out.println("viewer popHoldRepaint " + why + " " + ((org.jmol.render.RepaintManager)repaintManager).holdRepaint);
     }
   }
@@ -3993,14 +4075,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (mode == 7)
         return;
       if (mode > 0)
-        repaintManager.repaintIfReady();
+        repaintManager.repaintIfReady("refresh " + mode + " " + strWhy);
     }
 
     if (mode % 3 != 0 && statusManager.doSync())
       statusManager.setSync(mode == 2 ? strWhy : null);
   }
 
-  public void requestRepaintAndWait() {
+  public void requestRepaintAndWait(String why) {
     // called by moveUpdate from move, moveTo, navigate,
     // navTranslate
     // called by ScriptEvaluator "refresh" command
@@ -4009,7 +4091,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // called by TransformationManager11 navigate, navigateTo
     if (!haveDisplay || repaintManager == null)
       return;
-    repaintManager.requestRepaintAndWait();
+    repaintManager.requestRepaintAndWait(why);
     setSync();
   }
 

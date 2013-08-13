@@ -25,7 +25,6 @@
 
 package org.jmol.renderspecial;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.util.BS;
@@ -193,12 +192,15 @@ public class EllipsoidsRenderer extends ShapeRenderer {
         coords = new int[dotCount * 3];
     }
   }
+  
+  int test1;
+  
   private boolean renderEllipsoids(Map<?, Ellipsoid> ht, boolean isSimple) {
     boolean needTranslucent = false;
-    Iterator<Ellipsoid> e = ht.values().iterator();
+    int t = test1++;
+    System.out.println("renderE test1=" + t);
     Atom atom = null;
-    while (e.hasNext()) {
-      Ellipsoid ellipsoid = e.next();
+    for (Ellipsoid ellipsoid: ht.values()) {
       if (!ellipsoid.visible)
         continue;
       if (isSimple) {

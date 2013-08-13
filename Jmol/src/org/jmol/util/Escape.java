@@ -665,7 +665,8 @@ public class Escape {
     String sep = "";
     if (info == null)
       return packageJSON(infoType, (String) null);
-    if (info instanceof Integer || info instanceof Float || info instanceof Double)
+    if (info instanceof Integer || info instanceof Float
+        || info instanceof Double)
       return packageJSON(infoType, info.toString());
     if (info instanceof String)
       return packageJSON(infoType, fixString((String) info));
@@ -801,28 +802,24 @@ public class Escape {
       return packageJSONSb(infoType, sb);
     }
     if (info instanceof AxisAngle4f) {
-      sb.append("[")
-      .appendF(((AxisAngle4f) info).x).append(",")
-      .appendF(((AxisAngle4f) info).y).append(",")
-      .appendF(((AxisAngle4f) info).z).append(",")
-      .appendF((float)(((AxisAngle4f) info).angle * 180d/Math.PI)).append("]");
-    return packageJSONSb(infoType, sb);
+      sb.append("[").appendF(((AxisAngle4f) info).x).append(",").appendF(
+          ((AxisAngle4f) info).y).append(",").appendF(((AxisAngle4f) info).z)
+          .append(",").appendF(
+              (float) (((AxisAngle4f) info).angle * 180d / Math.PI))
+          .append("]");
+      return packageJSONSb(infoType, sb);
     }
     if (info instanceof P4) {
-      sb.append("[")
-        .appendF(((P4) info).x).append(",")
-        .appendF(((P4) info).y).append(",")
-        .appendF(((P4) info).z).append(",")
-        .appendF(((P4) info).w).append("]");
+      sb.append("[").appendF(((P4) info).x).append(",").appendF(((P4) info).y)
+          .append(",").appendF(((P4) info).z).append(",")
+          .appendF(((P4) info).w).append("]");
       return packageJSONSb(infoType, sb);
     }
     if (info instanceof Map) {
       sb.append("{ ");
-      Iterator<String> e = ((Map<String, ?>) info).keySet().iterator();
-      while (e.hasNext()) {
-        String key = e.next();
-        sb.append(sep)
-            .append(packageJSON(key, toJSON(null, ((Map<?, ?>) info).get(key))));
+      for (String key : ((Map<String, ?>) info).keySet()) {
+        sb.append(sep).append(
+            packageJSON(key, toJSON(null, ((Map<?, ?>) info).get(key))));
         sep = ",";
       }
       sb.append(" }");

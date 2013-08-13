@@ -41,24 +41,13 @@ import org.jmol.util.TextFormat;
 
 public class JanaReader extends ModulationReader {
 
-  private String m40Data;
   private JmolList<float[]> lattvecs;
-  private String[] tokens;
   
   @Override
   public void initializeReader() throws Exception {
       setFractionalCoordinates(true);
       initializeMod();
       atomSetCollection.newAtomSet();
-      String name = filePath;
-      int pt = name.lastIndexOf(".");
-      if (pt < 0)
-        return;
-      name = name.substring(0, pt + 2) + "40";
-      String id = name.substring(0, pt);
-      pt = id.lastIndexOf("/");
-      id = id.substring(pt + 1);
-      m40Data = (String) viewer.getLigandModel(id, name, "_file");
   }
   
   final static String records = "tit  cell ndim qi   lat  sym  spg  end";
@@ -192,66 +181,173 @@ public class JanaReader extends ModulationReader {
     setSymmetryOperator(TextFormat.simpleReplace(line.substring(9).trim()," ", ","));
   }
 
-  private final String labels = "xyz";
+  private final String LABELS = "xyz";
 
+  
   //  12    0    0    1
   //  1.000000 0.000000 0.000000 0.000000 0.000000 0.000000      000000
   //  0.000000 0.000000                                          00
   //  0.000000 0.000000 0.000000 0.000000 0.000000 0.000000      000000
   //  0.000000 0.000000 0.000000 0.000000 0.000000 0.000000      000000
+  //
+  //                             x        y        z             CS?  O  D  U
   // Zn        5  1     0.500000 0.250000 0.406400 0.244000      000  0  2  0
+  //
+  // 0         1         2         3         4         5         6         7
+  // 01234567890123456789012345678901234567890123456789012345678901234567890
+  //
   //  0.048000 0.000000 0.000000 0.000000 0.000000 0.000000      0000000000
   //  0.015300 0.000000 0.000000-0.010100 0.000000 0.000000      000000
   //  0.000000 0.000200-0.000100 0.000000 0.000500-0.000400      000000
   //  0.000000                                                   0
 
   private void readM40Data() throws Exception {
-    if (m40Data == null)
+    String name = filePath;
+    int ipt = name.lastIndexOf(".");
+    if (ipt < 0)
       return;
-    BufferedReader r = JmolBinary.getBufferedReaderForString(m40Data);
-    readM40Line(r);
-    int nAtoms = parseIntStr(tokens[0]);
+    name = name.substring(0, ipt + 2) + "40";
+    String id = name.substring(0, ipt);
+    ipt = id.lastIndexOf("/");
+    id = id.substring(ipt + 1);
+    BufferedReader r = JmolBinary.getBufferedReaderForString((String) viewer.getLigandModel(id, name, "_file", "----"));
+    if (readM40Floats(r).startsWith("command")) {
+      discardLinesUntilContains("end");
+      readM40Floats(r);
+    }
+    int nAtoms = (int) floats[0];
     for (int i = 0; i < nAtoms; i++) {
-      while (readM40Line(r).length() == 0 || line.charAt(0) == ' ') {
+      while (readM40Floats(r).length() == 0 || line.charAt(0) == ' '
+          || line.charAt(0) == '-') {
       }
       Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = tokens[0];
-      setAtomCoordXYZ(atom, parseFloatStr(tokens[4]), parseFloatStr(tokens[5]), parseFloatStr(tokens[6]));
-      int nq = (incommensurate && tokens.length > 9 ? parseIntStr(tokens[9]) : 0);
-      r.readLine();
-      for (int j = 0; j < nq; j++) {
-        P3 pt;
-        if (j > 0 && getModulationVector("F_" + (j + 1)) == null) {
-          pt = P3.newP(getModulationVector("F_1"));
-          pt.scale(j + 1);
-          addModulation(null, "F_" + (j + 1), pt, -1);
+      atom.atomName = line.substring(0, 9).trim();
+      setAtomCoordXYZ(atom, floats[3], floats[4], floats[5]);
+      if (!incommensurate)
+        continue;
+      String label = ";" + atom.atomName;
+      boolean haveCrenel = (getInt(60, 61) > 0);
+      boolean haveSawTooth = (getInt(61, 62) > 0);
+      boolean haveSomething = (getInt(62, 63) > 0);
+      int nOcc = getInt(65, 68);
+      int nDisp = getInt(68, 71);
+      int nUij = getInt(71, 74);
+
+      // read anisotropies
+      readM40Floats(r);
+      boolean isIso = true;
+      for (int j = 1; j < 6; j++)
+        if (floats[j] != 0) {
+          isIso = false;
+          break;
         }
-        readM40Line(r);
-        System.out.println(line);
-        for (int k = 0; k < 3; ++k) {
-          float ccos = parseFloatStr(tokens[k]);
-          float csin = parseFloatStr(tokens[k + 3]);
-          if (csin == 0 && ccos == 0)
-            continue;
-          String axis = "" + labels.charAt(k % 3);
-          if (modAxes != null
-              && modAxes.indexOf(axis.toUpperCase()) < 0)
-            continue;
-          String id = "D_" + (j + 1) + axis + ";" + atom.atomName;
-          pt = P3.new3(csin, ccos, 0);
+      if (isIso) {
+        if (floats[0] != 0)
+          setU(atom, 7, floats[0]);
+      } else {
+        for (int j = 0; j < 6; j++)
+          setU(atom, j, floats[j]);
+      }
+
+      // read occupancy parameters
+      P3 pt;
+      if (nOcc > 0 && !haveCrenel)
+        r.readLine(); //"1.00000"
+      for (int j = 0; j < nOcc; j++) {
+        if (haveCrenel) {
+          float[][] data = readM40FloatLines(2, 1, r);
+          float w = data[0][0];
+          float c = data[1][0];
+          id = "O_0#0" + label;
+          pt = P3.new3(c, w, 0);
           addModulation(null, id, pt, -1);
+        } else {
+          addSinCos(j, "O_", label, r);
+        }
+      }
+      
+      // read displacement data
+      for (int j = 0; j < nDisp; j++) {
+        if (haveSawTooth) {
+          readM40Floats(r);
+          float c = floats[3];
+          float w = floats[4];
+          for (int k = 0; k < 3; k++)
+            if (floats[k] != 0)
+              addModulation(null, "D_S#" + LABELS.charAt(k) + label, P3.new3(c,
+                  w, floats[k]), -1);
+        } else {
+          // Fourier
+          addSinCos(j, "D_", label, r);
+        }
+      }
+      // finally read Uij sines and cosines
+      for (int j = 0; j < nUij; j++) {
+        checkFourier(j);
+        if (isIso) {
+          // fourier?
+          addSinCos(j, "U_", label, r);
+        } else {
+          float[][] data = readM40FloatLines(2, 6, r);
+          for (int k = 0, p = 0; k < 6; k++, p+=3)
+            addModulation(null, "U_" + (j + 1) + "#"
+                + U_LIST.substring(p, p + 3) + label, P3.new3(data[1][k],
+                data[0][k], 0), -1);
         }
       }
     }
     r.close();
   }
 
-  private String readM40Line(BufferedReader r) throws Exception {
+  private void addSinCos(int j, String key, String label, BufferedReader r) throws Exception {
+    checkFourier(j);
+    readM40Floats(r);
+    for (int k = 0; k < 3; ++k) {
+      float ccos = floats[k + 3];
+      float csin = floats[k];
+      if (csin == 0 && ccos == 0)
+        continue;
+      String axis = "" + LABELS.charAt(k % 3);
+      if (modAxes != null && modAxes.indexOf(axis.toUpperCase()) < 0)
+        continue;
+      String id = key + (j + 1) + "#" + axis + label;
+      P3 pt = P3.new3(ccos, csin, 0);
+      addModulation(null, id, pt, -1);
+    }
+  }
+
+  private void checkFourier(int j) {
+    if (j > 0 && getModulationVector("F_" + (j + 1)) == null) {
+      P3 pt = P3.newP(getModulationVector("F_1"));
+      pt.scale(j + 1);
+      addModulation(null, "F_" + (j + 1), pt, -1);
+    }
+  }
+
+  private int getInt(int col1, int col2) {
+    int n = line.length();
+    return (n > col1 ? parseIntStr(line.substring(col1, Math.min(n, col2))) : 0);
+  }
+
+  private float[] floats = new float[6];
+  
+  private String readM40Floats(BufferedReader r) throws Exception {
     line = r.readLine();
-    line = TextFormat.simpleReplace(line, "-", " -");
-    tokens = getTokens();
+    System.out.println(line);
+    int ptLast = line.length() - 10;
+    for (int i = 0, pt = 0; i < 6 && pt <= ptLast; i++, pt += 9)
+      floats[i] = parseFloatStr(line.substring(pt, pt + 9));
     return line;
   }
 
+  private float[][] readM40FloatLines(int nLines, int nFloats, BufferedReader r) throws Exception {
+    float[][] data = new float[nLines][nFloats];
+    for (int i = 0; i < nLines; i++) {
+      readM40Floats(r);
+      for (int j = 0; j < nFloats; j++)
+        data[i][j] = floats[j];
+    }
+    return data;
+  }
 
 }

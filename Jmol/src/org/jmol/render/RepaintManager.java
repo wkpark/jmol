@@ -62,22 +62,22 @@ public class RepaintManager implements JmolRepaintManager {
     return repaintPending;
   }
   
-  public void pushHoldRepaint() {
+  public void pushHoldRepaint(String why) {
     ++holdRepaint;
   }
   
-  public void popHoldRepaint(boolean andRepaint) {
+  public void popHoldRepaint(boolean andRepaint, String why) {
     --holdRepaint;
     if (holdRepaint <= 0) {
       holdRepaint = 0;
       if (andRepaint) {
         repaintPending = true;
-        repaintNow();
+        repaintNow(why);
       }
     }
   }
 
-  synchronized public void requestRepaintAndWait() {
+  synchronized public void requestRepaintAndWait(String why) {
     /**
      * @j2sNative
      * 
@@ -88,7 +88,7 @@ public class RepaintManager implements JmolRepaintManager {
     {
       //System.out.println("RM requestRepaintAndWait() " + (test++));
       try {
-        repaintNow();
+        repaintNow(why);
         //System.out.println("repaintManager requestRepaintAndWait I am waiting for a repaint: thread=" + Thread.currentThread().getName());
         wait(viewer.global.repaintWaitMs); // more than a second probably means we are locked up here
         if (repaintPending) {
@@ -102,18 +102,18 @@ public class RepaintManager implements JmolRepaintManager {
     //System.out.println("repaintManager requestRepaintAndWait I am no longer waiting for a repaint: thread=" + Thread.currentThread().getName());
   }
 
-  public boolean repaintIfReady() {
+  public boolean repaintIfReady(String why) {
     if (repaintPending)
       return false;
     repaintPending = true;
     if (holdRepaint == 0) {
       //System.out.println("RM refresh() " + (test++));
-      repaintNow();
+      repaintNow(why);
     }
     return true;
   }
 
-  private void repaintNow() {
+  private void repaintNow(String why) {
     // from RepaintManager to the System
     // -- "Send me an asynchronous update() event!"
     if (!viewer.haveDisplay)
@@ -134,6 +134,7 @@ public class RepaintManager implements JmolRepaintManager {
      * 
      */
     {
+      System.out.println("RepaintMan repaintNow " + why);
       viewer.apiPlatform.repaint(viewer.getDisplay());
     }
      

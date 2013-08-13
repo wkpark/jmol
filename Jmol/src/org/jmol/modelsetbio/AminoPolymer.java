@@ -47,7 +47,6 @@ import org.jmol.viewer.Viewer;
 //import org.jmol.util.JmolList;
 import org.jmol.util.JmolList;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import java.util.Map;
 
@@ -1029,9 +1028,7 @@ public class AminoPolymer extends AlphaPolymer {
 
     BS bsEEE = new BS();
     BS bsB = new BS();
-    Iterator<int[][]> e = htLadders.keySet().iterator();
-    while (e.hasNext()) {
-      int[][] ladder = e.next();
+    for (int[][] ladder: htLadders.keySet()) {
       if (ladder[0][0] == ladder[0][1] && ladder[1][0] == ladder[1][1]) {
         bsB.set(ladder[0][0]);
         bsB.set(ladder[1][0]);

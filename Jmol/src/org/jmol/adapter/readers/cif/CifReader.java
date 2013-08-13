@@ -2441,8 +2441,8 @@ _pdbx_struct_oper_list.vector[3]
         case FWV_U_TENS:
           axis = field.toUpperCase();
           break;
-        case FWV_DISP_COS:
         case FWV_OCC_COS:
+        case FWV_DISP_COS:
         case FWV_U_COS:
         case OCC_CRENEL_C:
           pt.z = 0;
@@ -2469,12 +2469,15 @@ _pdbx_struct_oper_list.vector[3]
           pt.x = parseFloatStr(field);
           pt.z = 1;
           break;
+        case FWV_OCC_SIN:
+          pt.y = parseFloatStr(field);
+          axis = "0";
+          break;
         case WV_Y:
         case FWV_Y:
         case FWV_Q2_COEF:
         case FWV_DISP_SIN:
         case FWV_DISP_PHASE:
-        case FWV_OCC_SIN:
         case FWV_OCC_PHASE:
         case FWV_U_SIN:
         case FWV_U_PHASE:
@@ -2495,7 +2498,7 @@ _pdbx_struct_oper_list.vector[3]
           w = parseFloatStr(field);
           break;
         }
-        if (ignore || Float.isNaN(pt.x + pt.y + pt.z) || id == null)
+        if (ignore || Float.isNaN(pt.x + pt.y + pt.z) || pt.x == 0 && pt.y == 0 && pt.z == 0 || id == null)
           continue;
         switch (id.charAt(0)) {
         case 'W':

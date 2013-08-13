@@ -173,7 +173,7 @@ public class SpinThread extends JmolThread {
         if (bsAtoms == null)
           viewer.refresh(1, "SpinThread:run()");
         else
-          viewer.requestRepaintAndWait();
+          viewer.requestRepaintAndWait("spin thread");
         //System.out.println(angle * degreesPerRadian + " " + count + " " + nDegrees + " " + endDegrees);
         if (!isNav && nDegrees >= endDegrees - 0.001) {
           isDone = true;

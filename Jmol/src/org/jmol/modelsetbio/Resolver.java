@@ -218,7 +218,7 @@ public final class Resolver implements JmolBioResolver {
     if (nH < 0) {
       if (atomCount - iFirst == 1) // CA or P-only, or simple metals, also HOH, DOD
         return;
-      model = modelSet.viewer.getLigandModel(group3, "ligand_", "_data");
+      model = modelSet.viewer.getLigandModel(group3, "ligand_", "_data", null);
       if (model == null)
         return;
       nH = adapter.getHydrogenAtomCount(model);
@@ -347,7 +347,7 @@ public final class Resolver implements JmolBioResolver {
   }
   
   public void finalizeHydrogens() {
-    modelSet.viewer.getLigandModel(null, null, null);
+    modelSet.viewer.getLigandModel(null, null, null, null);
     finalizePdbMultipleBonds();
     addHydrogens();
   }

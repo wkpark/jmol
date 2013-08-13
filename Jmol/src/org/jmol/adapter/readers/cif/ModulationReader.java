@@ -110,7 +110,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   }
   
   protected P3 getModulationVector(String id) {
-    return htModulation.get(id);
+    return htModulation.get(id + "@0");
   }
 
   protected void addModulation(Map<String, P3> map, String id, P3 pt, int iModel) {
@@ -286,6 +286,10 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       iop = 0;
     // now set to 
     int mdim = 0;    // just the first row -- assuming d=1 here
+    
+    //if (a.index == 40)
+      //Logger.debuggingHigh = Logger.debugging = true;
+
     if (Logger.debuggingHigh)
       Logger.debug("setModulation: i=" + a.index + " " + a.atomName + " xyz=" + a + " occ=" + a.occupancy);
     if (iop != iopLast) {
@@ -297,6 +301,9 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       delta = f4[3] - modT;    //symmetry.getModParam(iop, 1);
     }
     symmetry.getSpaceGroupOperation(iop).getRotationScale(rot);
+    if (Logger.debugging) {
+      Logger.debug("setModulation iop = " + iop + " "  + symmetry.getSpaceGroupXyz(iop, false) + " " + a.bsSymmetry);
+    }
     ModulationSet ms = new ModulationSet(a.index + " " + a.atomName, list);
     a.vib = ms;
     ms.epsilon = epsilon;
@@ -323,7 +330,6 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
         a.tensors.get(0).isUnmodulated = true;
       Tensor t = atomSetCollection.addRotatedTensor(a, symmetry.getTensor(a.anisoBorU), iop, false);
       t.isModulated = true;
-      System.out.println("Uij modulation for " + a.atomName);
       if (Logger.debuggingHigh) {
         Logger.debug("setModulation Uij(final)=" + Escape.eAF(a.anisoBorU) + "\n");
         Logger.debug("setModulation tensor=" + a.tensors.get(0).getInfo("all"));
@@ -356,7 +362,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       htSubsystems.put(code, m4);
   }
 
-  private final static String U_LIST = "U11U22U33U12U13U23OTPUISO";
+  protected final static String U_LIST = "U11U22U33U12U13U23OTPUISO";
   
   private void addUStr(Atom atom, String id, float val) {
     int i = U_LIST.indexOf(id) / 3;

@@ -24,7 +24,6 @@
 package org.jmol.viewer;
 
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.constant.EnumVdw;
@@ -186,17 +185,15 @@ class DataManager {
   Object[] getData(String type) {
     if (dataValues == null || type == null)
       return null;
-    if (type.equalsIgnoreCase("types")) {
-      String[] info = new String[2];
-      info[0] = "types";
-      info[1] = "";
-      int n = 0;
-      Iterator<String> e = dataValues.keySet().iterator();
-      while (e.hasNext())
-        info[1] += (n++ > 0 ? "\n" : "") + e.next();
-      return info;
-    }
-    return dataValues.get(type);
+    if (!type.equalsIgnoreCase("types"))
+      return dataValues.get(type);
+    String[] info = new String[2];
+    info[0] = "types";
+    info[1] = "";
+    int n = 0;
+    for (String name : dataValues.keySet())
+      info[1] += (n++ > 0 ? "\n" : "") + name;
+    return info;
   }
 
   float[] getDataFloatA(String label) {
@@ -241,9 +238,7 @@ class DataManager {
   void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsDeleted) {
     if (dataValues == null)
       return;
-    Iterator<String> e = dataValues.keySet().iterator();
-    while (e.hasNext()) {
-      String name = e.next();
+    for (String name: dataValues.keySet()) {
       if (name.indexOf("property_") == 0) {
         Object[] obj = dataValues.get(name);
         BSUtil.deleteBits((BS) obj[2], bsDeleted);

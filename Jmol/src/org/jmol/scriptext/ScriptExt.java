@@ -3511,7 +3511,7 @@ public class ScriptExt implements JmolScriptExtension {
     String[] savedFileInfo = viewer.getFileInfo();
     boolean oldAppendNew = viewer.getBoolean(T.appendnew);
     viewer.setAppendNew(true);
-    boolean isOK = (data != null && viewer.loadInline(data, true) == null);
+    boolean isOK = (data != null && viewer.openStringInlineParamsAppend(data, null, true) == null);
     viewer.setAppendNew(oldAppendNew);
     viewer.setFileInfo(savedFileInfo);
     if (!isOK)

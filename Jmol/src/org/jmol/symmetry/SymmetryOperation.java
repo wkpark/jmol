@@ -257,8 +257,11 @@ class SymmetryOperation extends Matrix4f {
       if (Math.abs(v) < 0.00001f)
         v = 0;
       if (i % 4 == 3) {
-        if (offset != null && pt < offset.length)
-          v = v / 12 + offset[pt++];
+        if (offset != null) {
+          v /= 12;
+          if (pt < offset.length)
+          v += offset[pt++];
+        }
         v = normalizeTwelfths((v < 0 ? -1 : 1) * Math.round(Math.abs(v * 12))/ 12f, doNormalize);
       }
       rotTransMatrix[i] = v;

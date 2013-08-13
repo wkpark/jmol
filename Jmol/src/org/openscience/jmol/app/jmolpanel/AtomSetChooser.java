@@ -58,7 +58,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Enumeration;
@@ -69,6 +68,7 @@ import org.jmol.script.T;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
+import org.jmol.viewer.JC;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 
@@ -315,7 +315,7 @@ ActionListener, ChangeListener, Runnable {
     radiusSlider.setPaintTicks(true);
     radiusSlider.setSnapToTicks(true);
     radiusSlider.addChangeListener(this);
-    viewer.evalStringQuiet("vector "+ RADIUS_VALUE);
+    script("vector "+ RADIUS_VALUE);
     radiusPanel.add(radiusSlider);
     row1.add(radiusPanel);
     // controller for the vector scale
@@ -325,7 +325,7 @@ ActionListener, ChangeListener, Runnable {
     scaleSlider = new JSlider(0, (int)(SCALE_MAX/SCALE_PRECISION),
         (int) (SCALE_VALUE/SCALE_PRECISION));
     scaleSlider.addChangeListener(this);
-    viewer.evalStringQuiet("vector scale " + SCALE_VALUE);
+    script("vector scale " + SCALE_VALUE);
     scalePanel.add(scaleSlider);
     row1.add(scalePanel);
     vectorPanel.add(row1);
@@ -338,7 +338,7 @@ ActionListener, ChangeListener, Runnable {
     amplitudePanel.setBorder(new TitledBorder(GT._("Amplitude")));
     amplitudeSlider = new JSlider(0, (int) (AMPLITUDE_MAX/AMPLITUDE_PRECISION),
         (int)(AMPLITUDE_VALUE/AMPLITUDE_PRECISION));
-    viewer.evalStringQuiet("vibration scale " + AMPLITUDE_VALUE);
+    script("vibration scale " + AMPLITUDE_VALUE);
     amplitudeSlider.addChangeListener(this);
     amplitudePanel.add(amplitudeSlider);
     row2.add(amplitudePanel);
@@ -349,7 +349,7 @@ ActionListener, ChangeListener, Runnable {
     periodSlider = new JSlider(0,
         (int)(PERIOD_MAX/PERIOD_PRECISION),
         (int)(PERIOD_VALUE/PERIOD_PRECISION));
-    viewer.evalStringQuiet("vibration " + PERIOD_VALUE);
+    script("vibration " + PERIOD_VALUE);
     periodSlider.addChangeListener(this);
     periodPanel.add(periodSlider);
     row2.add(periodPanel);
@@ -451,7 +451,7 @@ ActionListener, ChangeListener, Runnable {
     try {
       currentIndex = index;
       int atomSetIndex = indexes[index];
-      viewer.evalStringQuiet("frame " + viewer.getModelNumberDotted(atomSetIndex));
+      script("frame " + viewer.getModelNumberDotted(atomSetIndex));
       infoLabel.setText(viewer.getModelName(atomSetIndex));
       showProperties(viewer.getModelProperties(atomSetIndex));
       showAuxiliaryInfo(viewer.getModelAuxiliaryInfo(atomSetIndex));
@@ -513,9 +513,9 @@ ActionListener, ChangeListener, Runnable {
           } else if (PREVIOUS.equals(cmd)) {
             findFrequency(currentIndex-1,-1);
           } else if (PLAY.equals(cmd)) {
-            viewer.evalStringQuiet("vibration on; vectors " + radiusValue);
+            script("vibration on; vectors " + radiusValue);
           } else if (PAUSE.equals(cmd)) {
-            viewer.evalStringQuiet("vibration off; vectors off");
+            script("vibration off; vectors off");
           } else if (NEXT.equals(cmd)) {
             findFrequency(currentIndex+1,1);
           } else if (FF.equals(cmd)) {
@@ -624,9 +624,13 @@ ActionListener, ChangeListener, Runnable {
       cmd = "vibration " + (value * PERIOD_PRECISION);
     }
     if (cmd != null)
-      viewer.evalStringQuiet(cmd);
+      script(cmd);
   }
   
+  private void script(String cmd) {
+    viewer.evalStringQuiet(cmd + JC.REPAINT_IGNORE);    
+  }
+
   /**
    * Shows the properties in the propertiesPane of the
    * AtomSetChooser window
@@ -657,9 +661,7 @@ ActionListener, ChangeListener, Runnable {
     String separator = " ";
     //propertiesTextArea.setText(""); AFTER properties
     if (auxiliaryInfo != null) {
-      Iterator<String> e = auxiliaryInfo.keySet().iterator();
-      while (e.hasNext()) {
-        String keyName = e.next();
+      for (String keyName: auxiliaryInfo.keySet()) {
         if (keyName.startsWith("."))
           continue; // skip the 'hidden' ones
         //won't show objects properly, of course

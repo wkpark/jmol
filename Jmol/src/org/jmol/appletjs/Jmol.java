@@ -223,7 +223,7 @@ public class Jmol implements JmolSyncInterface {
     	viewer.getProperty("DATA_API", "disablePopupMenu", null);
 
     String scriptParam = getValue("script", "");
-    viewer.popHoldRepaint();
+    viewer.popHoldRepaint("applet init");
     if (scriptParam.length() > 0)
       scriptProcessor(scriptParam, null, SCRIPT_WAIT);
     jmolReady();

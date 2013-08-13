@@ -26,7 +26,6 @@ package org.jmol.console;
 
 import java.awt.event.KeyEvent;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.api.JmolAbstractButton;
@@ -242,9 +241,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
 
   public static void setAbstractButtonLabels(Map<String, Object> menuMap,
                                Map<String, String> labels) {
-    Iterator<String> e = menuMap.keySet().iterator();
-    while (e.hasNext()) {
-      String key = e.next();
+    for (String key: menuMap.keySet()) {
       JmolAbstractButton m = (JmolAbstractButton) menuMap.get(key);
       String label = labels.get(key);
       if (key.indexOf("Tip") == key.length() - 3) {

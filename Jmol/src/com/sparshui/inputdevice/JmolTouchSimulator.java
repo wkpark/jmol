@@ -11,7 +11,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -170,9 +169,7 @@ public class JmolTouchSimulator implements JmolTouchSimulatorInterface {
 	}
 	
 	private void dispatchTouchEvents() {
-	  Iterator<TouchData> it = _events.iterator();
-	  while (it.hasNext()) {
-		  TouchData data = it.next();
+    for (TouchData data: _events) {
 			TouchTimerTask task = new TouchTimerTask(data);
 			_timer.schedule(task, data.delay + 250);
 		}

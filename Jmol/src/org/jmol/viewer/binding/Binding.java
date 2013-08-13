@@ -204,9 +204,7 @@ abstract public class Binding {
       names[i] = (qlow == null
           || actionNames[i].toLowerCase().indexOf(qlow) >= 0 ? new  JmolList<String>()
           : null);
-    Iterator<String> e = bindings.keySet().iterator();
-    while (e.hasNext()) {
-      Object obj = bindings.get(e.next());
+    for (Object obj: bindings.values()) {
       if (!Escape.isAI(obj))
         continue;
       int[] info = (int[]) obj;

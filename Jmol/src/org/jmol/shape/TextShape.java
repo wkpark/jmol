@@ -24,8 +24,6 @@
 
 package org.jmol.shape;
 
-import java.util.Iterator;
-
 import org.jmol.modelset.Text;
 import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
@@ -43,12 +41,9 @@ public abstract class TextShape extends Object2dShape {
     if ("text" == propertyName) {
       String text = (String) value;
       if (currentObject == null) {
-        if (isAll) {
-          Iterator<Text> e = objects.values().iterator();
-          while (e.hasNext()) {
-            e.next().setText(text);
-          }
-        }
+        if (isAll)
+          for (Text t : objects.values())
+            t.setText(text);
         return;
       }
       ((Text) currentObject).setText(text);
@@ -58,19 +53,16 @@ public abstract class TextShape extends Object2dShape {
     if ("font" == propertyName) {
       currentFont = (JmolFont) value;
       if (currentObject == null) {
-        if (isAll) {
-          Iterator<Text> e = objects.values().iterator();
-          while (e.hasNext()) {
-            e.next().setFont(currentFont, true);
-          }
-        }
+        if (isAll)
+          for (Text t : objects.values())
+            t.setFont(currentFont, true);
         return;
       }
       ((Text) currentObject).setFont(currentFont, true);
       ((Text) currentObject).setFontScale(0);
       return;
     }
-    
+
     setPropOS(propertyName, value, bsSelected);
   }
   

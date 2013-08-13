@@ -241,7 +241,7 @@ public final class Navigator extends JmolThread implements
           break;
         }
         doNavStep(iStep++);
-        viewer.requestRepaintAndWait();
+        viewer.requestRepaintAndWait("navigatorThread");
         int sleepTime = (int) (targetTime - System.currentTimeMillis());
         if (!runSleep(sleepTime, MAIN))
           return;

@@ -25,7 +25,6 @@
 
 package org.jmol.thread;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.util.SB;
@@ -104,9 +103,8 @@ public class TimeoutThread extends JmolThread {
   }
 
   public static void clear(Map<String, Object> timeouts) {
-    Iterator<Object> e = timeouts.values().iterator();
-    while (e.hasNext()) {
-      TimeoutThread t = (TimeoutThread) e.next();
+    for (Object o: timeouts.values()) {
+      TimeoutThread t = (TimeoutThread) o;
       if (!t.script.equals("exitJmol"))
         t.interrupt();
     }
@@ -140,9 +138,8 @@ public class TimeoutThread extends JmolThread {
   public static String showTimeout(Map<String, Object> timeouts, String name) {
     SB sb = new SB();
     if (timeouts != null) {
-      Iterator<Object> e = timeouts.values().iterator();
-      while (e.hasNext()) {
-        TimeoutThread t = (TimeoutThread) e.next();
+      for (Object o: timeouts.values()) {
+        TimeoutThread t = (TimeoutThread) o;
         if (name == null || t.name.equalsIgnoreCase(name))
           sb.append(t.toString()).append("\n");
       }

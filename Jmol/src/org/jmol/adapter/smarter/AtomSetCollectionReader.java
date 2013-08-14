@@ -742,6 +742,7 @@ public abstract class AtomSetCollectionReader {
       for (i = 0; i < 6; i++)
         notionalUnitCell[i] = -1;
     }
+        
     iHaveUnitCell = checkUnitCell(15);
   }
 

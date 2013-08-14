@@ -118,7 +118,6 @@ public class AnimationManager {
 
   boolean isMovie;
   boolean animationPaused;
-  boolean inMotion;
   
   int currentModelIndex;
   int currentAnimationFrame;

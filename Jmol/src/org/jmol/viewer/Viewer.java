@@ -3964,8 +3964,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setB("_animMovie", animationManager.isMovie);
   }
 
-  boolean wasInMotion = false;
-  int motionEventNumber;
+  private boolean wasInMotion = false;
+  private int motionEventNumber;
+  private boolean inMotion;
+
+  public boolean getInMotion(boolean includeAnim) {
+    return (inMotion || includeAnim && animationManager.animationOn);
+  }
 
   @Override
   public int getMotionEventNumber() {
@@ -3976,21 +3981,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setInMotion(boolean inMotion) {
     // MouseManager, TransformManager
     if (wasInMotion ^ inMotion) {
-      animationManager.inMotion = inMotion;
+      this.inMotion = inMotion;
       if (inMotion) {
         startHoverWatcher(false);
         ++motionEventNumber;
       } else {
         startHoverWatcher(true);
-        refresh(3, "viewer stInMotion " + inMotion);
+        refresh(3, "viewer setInMotion " + inMotion);
       }
       wasInMotion = inMotion;
     }
-  }
-
-  public boolean getInMotion(boolean includeAnim) {
-    return animationManager.inMotion
-        && (!includeAnim || animationManager.animationOn);
   }
 
   private boolean refreshing = true;

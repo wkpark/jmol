@@ -91,29 +91,43 @@ abstract class BioShapeRenderer extends MeshRenderer {
   protected EnumStructure[] structureTypes;
   
   protected boolean isPass2;
+  protected boolean wireframeOnly;
 
   protected abstract void renderBioShape(BioShape bioShape);
 
   @Override
   protected boolean render() {
     if (shape == null)
-      return false;
+      return false;    
+    setGlobals();
+    renderShapes();
+    return needTranslucent;
+  }
+
+  private void setGlobals() {
     isPass2 = g3d.isPass2();
     invalidateMesh = false;
     needTranslucent = false;
-    boolean TF = (isExport || viewer.getBoolean(T.highresolution));
+    boolean TF = (!isExport && viewer.getBoolean(T.wireframerotation) && viewer.getInMotion(true));
+    
+    System.out.println(viewer.getBoolean(T.wireframerotation) + " bioshaperend " + viewer.getInMotion(true));
+    if (TF != wireframeOnly)
+      invalidateMesh = true;
+    wireframeOnly = TF;
+    
+    TF = (isExport || !wireframeOnly && viewer.getBoolean(T.highresolution));
     if (TF != isHighRes)
       invalidateMesh = true;
     isHighRes = TF;
 
-    boolean v = viewer.getBoolean(T.cartoonsfancy);
-    if (cartoonsFancy != v) {
+    TF = !wireframeOnly && viewer.getBoolean(T.cartoonsfancy);
+    if (cartoonsFancy != TF) {
       invalidateMesh = true;
-      cartoonsFancy = v;
+      cartoonsFancy = TF;
     }
     int val1 = viewer.getHermiteLevel();
     val1 = (val1 <= 0 ? -val1 : viewer.getInMotion(true) ? 0 : val1);
-    if (cartoonsFancy)
+    if (cartoonsFancy && !wireframeOnly)
       val1 = Math.max(val1, 3); // at least HermiteLevel 3 for "cartoonFancy"
     //else if (val1 == 0 && exportType == GData.EXPORT_CARTESIAN)
       //val1 = 5; // forces hermite for 3D exporters
@@ -125,13 +139,12 @@ abstract class BioShapeRenderer extends MeshRenderer {
     val = Math.min(Math.max(0, val), 20);
     if (cartoonsFancy && val >= 16)
       val = 4; // at most 4 for elliptical cartoonFancy
-    if (hermiteLevel == 0)
+    if (wireframeOnly || hermiteLevel == 0)
       val = 0;
 
     if (val != aspectRatio && val != 0 && val1 != 0)
       invalidateMesh = true;
     aspectRatio = val;
-
 
     TF = viewer.getBoolean(T.tracealpha);
     if (TF != isTraceAlpha)
@@ -145,6 +158,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
       invalidateMesh = true;
       invalidateSheets = true;
     }
+  }
+  
+  private void renderShapes() {
 
     BioShapeCollection mps = (BioShapeCollection) shape;
     for (int c = mps.bioShapes.length; --c >= 0;) {
@@ -158,7 +174,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
         freeTempArrays();
       }
     }
-    return needTranslucent;
   }
 
   protected boolean setBioColix(short colix) {
@@ -385,7 +400,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         //System.out.println(e.getMessage());
       }
     }
-    if (diameterBeg == 0 && diameterEnd == 0)
+    if (diameterBeg == 0 && diameterEnd == 0 || wireframeOnly)
       g3d.drawLineAB(controlPointScreens[i], controlPointScreens[iNext]);
     else
       g3d.fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid, diameterEnd,
@@ -515,6 +530,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private final static int MODE_NONELLIPTICAL = 3;
 
   /**
+   * Cartoon meshes are triangulated objects. 
    * 
    * @param i
    * @param madBeg

@@ -393,6 +393,7 @@ public class NMRCalculation implements JmolNMRInterface {
                                         BS bs) {
     if ("".equals(tensorType))
       tensorType = null;
+    infoType = (infoType == null ? ";all." : ";" + infoType + ".");
     JmolList<Object> data = new JmolList<Object>();
     JmolList<Object> list1;
     if (";dc.".equals(infoType)) {

@@ -843,11 +843,10 @@ class ScriptMathProcessor {
       return false;
     BS bs = SV.getBitSet(getX(), false);
     String tensorType = (args.length == 0 ? null : SV.sValue(args[0]).toLowerCase());
-    String infoType = ";"
-        + (args.length < 2 ? "all" : SV.sValue(args[1]).toLowerCase()) + ".";
     JmolNMRInterface calc = viewer.getNMRCalculation();      
     if ("unique".equals(tensorType))
       return addXBs(calc.getUniqueTensorSet(bs));
+    String infoType = (args.length < 2 ? null : SV.sValue(args[1]).toLowerCase());
     return addXList(calc.getTensorInfo(tensorType, infoType, bs));
   }
 

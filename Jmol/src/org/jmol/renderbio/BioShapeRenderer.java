@@ -110,7 +110,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
     needTranslucent = false;
     boolean TF = (!isExport && viewer.getBoolean(T.wireframerotation) && viewer.getInMotion(true));
     
-    System.out.println(viewer.getBoolean(T.wireframerotation) + " bioshaperend " + viewer.getInMotion(true));
     if (TF != wireframeOnly)
       invalidateMesh = true;
     wireframeOnly = TF;

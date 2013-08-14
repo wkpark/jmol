@@ -134,7 +134,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
   private boolean doRender;
   protected boolean volumeRender;
   protected BS bsPolygons;
-  protected boolean isTranslucentInherit;  
+  protected boolean isTranslucentInherit;
+  protected boolean wireframeOnly;  
   
   private boolean setVariables() {
     if (mesh.visibilityFlags == 0)
@@ -170,7 +171,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
       bsPolygons = (isGhostPass ? mesh.bsSlabGhost
           : selectedPolyOnly ? mesh.bsSlabDisplay : null);
       
-      frontOnly = !viewer.getSlabEnabled() && mesh.frontOnly
+      wireframeOnly = (!isExport && viewer.getBoolean(T.wireframerotation) && viewer.getInMotion(true));
+      frontOnly = wireframeOnly || !viewer.getSlabEnabled() && mesh.frontOnly
           && !mesh.isTwoSided && !selectedPolyOnly;
       screens = viewer.allocTempScreens(vertexCount);
       if (frontOnly)
@@ -214,10 +216,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
     if (!g3d.setColix(isGhostPass ? mesh.slabColix : colix))
       return;
     if (mesh.showPoints || mesh.polygonCount == 0)
-      renderPoints();    
-    if (isGhostPass ? mesh.slabMeshType == T.mesh : mesh.drawTriangles)
+      renderPoints(); 
+    if (wireframeOnly || (isGhostPass ? mesh.slabMeshType == T.mesh : mesh.drawTriangles))
       renderTriangles(false, mesh.showTriangles, false);
-    if (isGhostPass ? mesh.slabMeshType == T.fill : mesh.fillTriangles)
+    if (!wireframeOnly && (isGhostPass ? mesh.slabMeshType == T.fill : mesh.fillTriangles))
       renderTriangles(true, mesh.showTriangles, generateSet);
   }
 
@@ -360,24 +362,25 @@ public abstract class MeshRenderer extends ShapeRenderer {
       exportSurface(colix);
   }
 
-  protected void drawTriangle(P3i screenA, short colixA, 
-                            P3i screenB, short colixB, 
-                            P3i screenC, short colixC, int check, int diam) {
-    if (antialias || diam != 1) {
-      if (antialias)
-        diam <<= 1;
-      if ((check & 1) == 1)
-        g3d.fillCylinderXYZ(colixA, colixB, GData.ENDCAPS_OPEN, diam, 
-            screenA.x, screenA.y, screenA.z, screenB.x, screenB.y, screenB.z);
-      if ((check & 2) == 2)
-        g3d.fillCylinderXYZ(colixB, colixC, GData.ENDCAPS_OPEN, diam, 
-            screenB.x, screenB.y, screenB.z, screenC.x, screenC.y, screenC.z);
-      if ((check & 4) == 4)
-        g3d.fillCylinderXYZ(colixA, colixC, GData.ENDCAPS_OPEN, diam, 
-            screenA.x, screenA.y, screenA.z, screenC.x, screenC.y, screenC.z);
-    } else {
-      g3d.drawTriangle3C(screenA, colixA, screenB, colixB, screenC, colixC, check);
+  protected void drawTriangle(P3i screenA, short colixA, P3i screenB,
+                              short colixB, P3i screenC, short colixC,
+                              int check, int diam) {
+    if (wireframeOnly || !antialias && diam == 1) {
+      g3d.drawTriangle3C(screenA, colixA, screenB, colixB, screenC, colixC,
+          check);
+      return;
     }
+    if (antialias)
+      diam <<= 1;
+    if ((check & 1) == 1)
+      g3d.fillCylinderXYZ(colixA, colixB, GData.ENDCAPS_OPEN, diam, screenA.x,
+          screenA.y, screenA.z, screenB.x, screenB.y, screenB.z);
+    if ((check & 2) == 2)
+      g3d.fillCylinderXYZ(colixB, colixC, GData.ENDCAPS_OPEN, diam, screenB.x,
+          screenB.y, screenB.z, screenC.x, screenC.y, screenC.z);
+    if ((check & 4) == 4)
+      g3d.fillCylinderXYZ(colixA, colixC, GData.ENDCAPS_OPEN, diam, screenA.x,
+          screenA.y, screenA.z, screenC.x, screenC.y, screenC.z);
   }
 
   protected int checkNormals(short nA, short nB, short nC) {

@@ -42,8 +42,15 @@ public class CartoonRenderer extends RocketsRenderer {
   
   @Override
   protected void renderBioShape(BioShape bioShape) {
+    if (wireframeOnly) {
+      if (wingVectors == null || isCarbohydrate)
+        renderTrace();
+      else
+        renderMeshRibbon();        
+      return;
+    }
     newRockets = true;
-    if (bioShape.wingVectors == null || isCarbohydrate)
+    if (wingVectors == null || isCarbohydrate)
       return;
     getScreenControlPoints();
     if (isNucleic) {
@@ -67,7 +74,7 @@ public class CartoonRenderer extends RocketsRenderer {
       calcScreenControlPoints(cordMidPoints);
       controlPoints = cordMidPoints;
     }
-    render1();
+    renderRockets();
     viewer.freeTempPoints(cordMidPoints);
     viewer.freeTempScreens(ribbonTopScreens);
     viewer.freeTempScreens(ribbonBottomScreens);
@@ -101,7 +108,7 @@ public class CartoonRenderer extends RocketsRenderer {
   }
 
   @Override
-  protected void render1() {
+  protected void renderRockets() {
     boolean lastWasSheet = false;
     boolean lastWasHelix = false;
     ProteinStructure previousStructure = null;
@@ -143,10 +150,10 @@ public class CartoonRenderer extends RocketsRenderer {
       lastWasHelix = isHelix;
     }
     if (renderAsRockets || !renderArrowHeads)
-      renderRockets();
+      renderCartoonRockets();
   }
 
-  private void renderRockets() {
+  private void renderCartoonRockets() {
     // doing the cylinders separately because we want to connect them if we can.
 
     // Key structures that must render properly

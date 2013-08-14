@@ -52,7 +52,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
   private Boolean showKey;
   private boolean hasColorRange;
   private int meshScale = -1;
-  
+  private int mySlabValue;
+  private int globalSlabValue;
 
   @Override
   protected boolean render() {
@@ -60,6 +61,28 @@ public class IsosurfaceRenderer extends MeshRenderer {
   }
 
   protected boolean renderIso() {
+    
+    setGlobals();
+
+    for (int i = isosurface.meshCount; --i >= 0;) {
+      imesh = (IsosurfaceMesh) isosurface.meshes[i];
+      if (imesh.connections != null && !viewer.getModelSet().atoms[imesh.connections[0]].isVisible(0))
+        continue;
+      hasColorRange = false;
+      if (renderMeshSlab()) {
+        if (!isExport)
+          renderInfo();
+        if (isExport && isGhostPass) {
+          exportPass = 1;
+          renderMeshSlab();
+          exportPass = 2;
+        }
+      }
+    }
+    return needTranslucent;
+  }
+
+  private void setGlobals() {
     needTranslucent = false;
     iShowNormals = viewer.getTestFlag(4);
     showNumbers = viewer.getTestFlag(3);
@@ -68,29 +91,11 @@ public class IsosurfaceRenderer extends MeshRenderer {
     // first pass is #2 (translucent), then #1 (opaque).
     exportPass = (isExport ? 2 : 0); 
     isNavigationMode = viewer.getBoolean(T.navigationmode);
-    int mySlabValue = Integer.MAX_VALUE;
-    int slabValue = g3d.getSlab();
     showKey = (viewer.getBoolean(T.isosurfacekey) ? Boolean.TRUE : null);
-    if (isNavigationMode)
-      mySlabValue = (int) viewer.getNavigationOffset().z;
     isosurface.keyXy = null;
     meshScale = -1;
-    for (int i = isosurface.meshCount; --i >= 0;) {
-      imesh = (IsosurfaceMesh) isosurface.meshes[i];
-      if (imesh.connections != null && !viewer.getModelSet().atoms[imesh.connections[0]].isVisible(0))
-        continue;
-      hasColorRange = false;
-      if (renderMeshSlab(mySlabValue, slabValue)) {
-        if (!isExport)
-          renderInfo();
-        if (isExport && isGhostPass) {
-          exportPass = 1;
-          renderMeshSlab(mySlabValue, slabValue);
-          exportPass = 2;
-        }
-      }
-    }
-    return needTranslucent;
+    globalSlabValue = g3d.getSlab();
+    mySlabValue = (isNavigationMode ? (int) viewer.getNavigationOffset().z : Integer.MAX_VALUE);
   }
 
   protected void renderInfo() {
@@ -150,8 +155,9 @@ public class IsosurfaceRenderer extends MeshRenderer {
     isosurface.keyXy[1] = (y + dy) / factor;
   }
   
-  private boolean renderMeshSlab(int mySlabValue, int slabValue) {
+  private boolean renderMeshSlab() {
     volumeRender = (imesh.jvxlData.colorDensity && imesh.jvxlData.allowVolumeRender);
+    int thisSlabValue = mySlabValue;
     if (!isNavigationMode) {
       int meshSlabValue = imesh.jvxlData.slabValue;
       if (meshSlabValue != Integer.MIN_VALUE  
@@ -162,7 +168,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
         pt2f.scale(0.5f); // center
         viewer.transformPt3f(pt2f, pt2f);
         float r = viewer.scaleToScreen((int)pt2f.z, Math.round(points[0].distance(points[1]) * 500f));
-        mySlabValue = Math.round(pt2f.z + r * (1 - meshSlabValue / 50f));
+        thisSlabValue = Math.round(pt2f.z + r * (1 - meshSlabValue / 50f));
       }
     }
     boolean tcover = g3d.getTranslucentCoverOnly();
@@ -170,10 +176,10 @@ public class IsosurfaceRenderer extends MeshRenderer {
     thePlane = imesh.jvxlData.jvxlPlane;
     vertexValues = imesh.vertexValues;
     boolean isOK;
-    if (mySlabValue != Integer.MAX_VALUE && imesh.jvxlData.isSlabbable) {
-      g3d.setSlab(mySlabValue);
+    if (thisSlabValue != Integer.MAX_VALUE && imesh.jvxlData.isSlabbable) {
+      g3d.setSlab(thisSlabValue);
       isOK = renderMesh(imesh);
-      g3d.setSlab(slabValue);
+      g3d.setSlab(globalSlabValue);
     } else {
       isOK = renderMesh(imesh);
     }

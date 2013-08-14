@@ -29,48 +29,52 @@ import org.jmol.shapebio.BioShape;
 import org.jmol.shapebio.Strands;
 import org.jmol.util.P3i;
 
-public class StrandsRenderer extends BioShapeRenderer {
+public class StrandsRenderer extends TraceRenderer {
 
   protected int strandCount;
   protected float strandSeparation;
-  protected float baseOffset;
+  protected float baseStrandOffset;
 
   @Override
   protected void renderBioShape(BioShape bioShape) {
-    if (!setStrandCount())
-      return;
-    render1();
+    renderStrandShape();
   }
   
+  protected void renderStrandShape() {
+    if (!setStrandCount())
+      return;
+    renderStrands();
+  }
+
   protected boolean setStrandCount() {
     if (wingVectors == null)
       return false;
-    strandCount = viewer.getStrandCount(((Strands) shape).shapeID);
+    strandCount = (shape instanceof Strands ? viewer.getStrandCount(((Strands) shape).shapeID) : 10);
     strandSeparation = (strandCount <= 1) ? 0 : 1f / (strandCount - 1);
-    baseOffset = ((strandCount & 1) == 0 ? strandSeparation / 2
+    baseStrandOffset = ((strandCount & 1) == 0 ? strandSeparation / 2
         : strandSeparation);
     return true;
   }
 
-  protected void render1() {
+  protected void renderStrands() {
     P3i[] screens;
     for (int i = strandCount >> 1; --i >= 0;) {
-      float f = (i * strandSeparation) + baseOffset;
+      float f = (i * strandSeparation) + baseStrandOffset;
       screens = calcScreens(f);
-      render1Strand(screens);
+      renderStrand(screens);
       viewer.freeTempScreens(screens);
       screens = calcScreens(-f);
-      render1Strand(screens);
+      renderStrand(screens);
       viewer.freeTempScreens(screens);
     }
     if (strandCount % 2 == 1) {
       screens = calcScreens(0f);
-      render1Strand(screens);
+      renderStrand(screens);
       viewer.freeTempScreens(screens);
     }
   }
 
-  private void render1Strand(P3i[] screens) {
+  private void renderStrand(P3i[] screens) {
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1))
       renderHermiteCylinder(screens, i);
   }

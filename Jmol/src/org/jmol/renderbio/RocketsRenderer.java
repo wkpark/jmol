@@ -37,7 +37,7 @@ import org.jmol.util.P3;
 import org.jmol.util.V3;
 
 
-public class RocketsRenderer extends BioShapeRenderer {
+public class RocketsRenderer extends MeshRibbonRenderer {
 
   //private final static float MIN_CONE_HEIGHT = 0.05f;
 
@@ -48,6 +48,10 @@ public class RocketsRenderer extends BioShapeRenderer {
   protected void renderBioShape(BioShape bioShape) {
     if (!(bioShape.bioPolymer instanceof AlphaPolymer))
       return;
+    if (wireframeOnly) {
+      renderMeshRibbon();
+      return;
+    }
     boolean val = !viewer.getBoolean(T.rocketbarrels);
     if (renderArrowHeads != val) {
       bioShape.falsifyMesh();
@@ -56,7 +60,7 @@ public class RocketsRenderer extends BioShapeRenderer {
     calcRopeMidPoints(newRockets);    
     calcScreenControlPoints(cordMidPoints);
     controlPoints = cordMidPoints;
-    render1();
+    renderRockets();
     viewer.freeTempPoints(cordMidPoints);
   }
 
@@ -99,7 +103,7 @@ public class RocketsRenderer extends BioShapeRenderer {
     }
   }
 
-  protected void render1() {
+  protected void renderRockets() {
     tPending = false;
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
         .nextSetBit(i + 1)) {

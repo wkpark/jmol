@@ -31,6 +31,10 @@ public class TraceRenderer extends BioShapeRenderer {
 
   @Override
   protected void renderBioShape(BioShape bioShape) {
+    renderTrace();
+  }
+
+  protected void renderTrace() {
     getScreenControlPoints();
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible.nextSetBit(i + 1))
       renderHermiteConic(i, false);

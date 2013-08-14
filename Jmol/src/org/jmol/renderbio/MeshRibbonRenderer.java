@@ -30,11 +30,15 @@ public class MeshRibbonRenderer extends StrandsRenderer {
 
   @Override
   protected void renderBioShape(BioShape bioShape) {
+    renderMeshRibbon();
+  }
+
+  protected void renderMeshRibbon() {
     if (!setStrandCount())
       return;
-    float offset = ((strandCount >> 1) * strandSeparation) + baseOffset;
+    float offset = ((strandCount >> 1) * strandSeparation) + baseStrandOffset;
     render2Strand(false, offset, offset);
-    render1();
+    renderStrands();
   }
 
   protected void render2Strand(boolean doFill, float offsetTop, float offsetBottom) {

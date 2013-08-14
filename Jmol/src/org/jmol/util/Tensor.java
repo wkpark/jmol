@@ -167,7 +167,7 @@ public class Tensor {
         for (int j = 0; j < 3; j++)
           a[pt++] = (float) asymMatrix[i][j];
       return Matrix3f.newA(a);
-    case 4:
+    case 4: 
       if (symMatrix == null)
         return null;
       float[] b = new float[9];
@@ -176,7 +176,7 @@ public class Tensor {
         for (int j = 0; j < 3; j++)
           b[p2++] = (float) symMatrix[i][j];
       return Matrix3f.newA(b);
-    case 5:
+    case 5: // value
       return Float.valueOf(eigenValues[2]);
     case 6: // isotropy
       return Float.valueOf(getIso());

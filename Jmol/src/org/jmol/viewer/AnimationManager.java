@@ -53,23 +53,28 @@ public class AnimationManager {
   public int lastFrameDelayMs;
 
   public void setAnimationOn(boolean animationOn) {
+    if (animationOn == this.animationOn)
+      return;
+    
     if (!animationOn || !viewer.haveModelSet() || viewer.isHeadless()) {
       stopThread(false);
       return;
     }
     if (!viewer.getSpinOn())
-      viewer.refresh(3, "Viewer:setAnimationOn");
+      viewer.refresh(3, "Anim:setAnimationOn");
     setAnimationRange(-1, -1);
     resumeAnimation();
   }
 
   public void stopThread(boolean isPaused) {
+    boolean stopped = false;
     if (animationThread != null) {
       animationThread.interrupt();
       animationThread = null;
+      stopped = true;
     }
     animationPaused = isPaused;
-    if (!viewer.getSpinOn())
+    if (stopped && !viewer.getSpinOn())
       viewer.refresh(3, "Viewer:setAnimationOff");
     animation(false);
     stopModulationThread();

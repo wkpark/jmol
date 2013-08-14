@@ -68,7 +68,10 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   protected boolean modVib;
   protected String modAxes;
   protected boolean modAverage;
+  protected String modType;
   protected boolean checkSpecial = true;
+  protected boolean modDebug;
+  
   protected int modDim;
   protected boolean incommensurate;
   protected Atom[] atoms;
@@ -83,7 +86,9 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   
   
   protected void initializeMod() throws Exception {
+    modDebug = checkFilterKey("MODDEBUG");
     modAxes = getFilter("MODAXES=");
+    modType = getFilter("MODTYPE="); //ODU
     modVib = checkFilterKey("MODVIB"); // then use MODULATION ON  to see modulation
     modAverage = checkFilterKey("MODAVE");
     if (!modVib && !modAverage)
@@ -93,10 +98,10 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     allowRotations = !checkFilterKey("NOSYM");
   }
 
-  protected void setModDim(String token) {
-    modDim = parseIntStr(token);
+  protected void setModDim(int ndim) {
     if (modAverage)
       return;
+    modDim = ndim;
     if (modDim > 1) {
       // not ready for dim=2
       appendLoadNote("Too high modulation dimension (" + modDim + ") -- reading average structure");
@@ -114,9 +119,19 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   }
 
   protected void addModulation(Map<String, P3> map, String id, P3 pt, int iModel) {
+    if (modType != null)
+      switch (id.charAt(0)) {
+      case 'O':
+      case 'D':
+      case 'U':
+        if (modType.indexOf(id.charAt(0)) < 0)
+          return;
+        break;
+      }
     if (map == null)
       map = htModulation;
-    id += "@" + (iModel >= 0 ? iModel : atomSetCollection.getCurrentAtomSetIndex());
+    id += "@"
+        + (iModel >= 0 ? iModel : atomSetCollection.getCurrentAtomSetIndex());
     Logger.info("Adding " + id + " " + pt);
     map.put(id, pt);
   }
@@ -128,7 +143,11 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   protected void setModulation() {
     if (!incommensurate || htModulation == null)
       return;
+    if (modDebug)
+      Logger.debugging = Logger.debuggingHigh = false;
     setModulationForStructure(atomSetCollection.getCurrentAtomSetIndex());
+    if (modDebug)
+      Logger.debugging = Logger.debuggingHigh = true;
   }
   
   private String suffix;
@@ -255,7 +274,6 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetAtomProperty("modt", sb.toString(), -1);
     htAtomMods = null;
   }
-
   private String checkKey(String key) {
     int pt_ = key.indexOf(suffix);
     return (pt_ < 0 ? null : key.substring(0, pt_));
@@ -285,53 +303,62 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     if (iop < 0)
       iop = 0;
     // now set to 
-    int mdim = 0;    // just the first row -- assuming d=1 here
-    
+    int mdim = 0; // just the first row -- assuming d=1 here
+
     //if (a.index == 40)
-      //Logger.debuggingHigh = Logger.debugging = true;
+    //Logger.debuggingHigh = Logger.debugging = true;
 
     if (Logger.debuggingHigh)
-      Logger.debug("setModulation: i=" + a.index + " " + a.atomName + " xyz=" + a + " occ=" + a.occupancy);
+      Logger.debug("setModulation: i=" + a.index + " " + a.atomName + " xyz="
+          + a + " occ=" + a.occupancy);
     if (iop != iopLast) {
       symmetry.getMod456Row(iop, mdim, f4);
       //System.out.println("mdim=" + mdim + " op=" + (iop + 1) + " " + symmetry.getSpaceGroupOperation(iop) + " " + symmetry.getSpaceGroupXyz(iop, false));
       iopLast = iop;
       rot = new Matrix3f();
-      epsilon = f4[0];  //symmetry.getModParam(iop, 0);
-      delta = f4[3] - modT;    //symmetry.getModParam(iop, 1);
+      epsilon = f4[0]; //symmetry.getModParam(iop, 0);
+      delta = f4[3] - modT; //symmetry.getModParam(iop, 1);
     }
     symmetry.getSpaceGroupOperation(iop).getRotationScale(rot);
     if (Logger.debugging) {
-      Logger.debug("setModulation iop = " + iop + " "  + symmetry.getSpaceGroupXyz(iop, false) + " " + a.bsSymmetry);
+      Logger.debug("setModulation iop = " + iop + " "
+          + symmetry.getSpaceGroupXyz(iop, false) + " " + a.bsSymmetry);
     }
     ModulationSet ms = new ModulationSet(a.index + " " + a.atomName, list);
     a.vib = ms;
     ms.epsilon = epsilon;
     ms.delta = delta;
     ms.r = P3.newP(a);
+    ms.v0 = a.occupancy / 100f;
     ms.rot = rot;
     ms.calculate();
-    if (ms.v < 0.5f) {
+    if (modVib && !Float.isNaN(ms.v0)) {
+      a.occupancy = (int) ((ms.v0 + ms.v) * 100);
+    } else if (ms.v < 0.5f) {
       a.occupancy = 0;
-      if (bsAtoms != null)
-        bsAtoms.clear(a.index);
+      bsAtoms.clear(a.index);
+    } else if (ms.v >= 0.5f) {
+      a.occupancy = 100;
     }
     if (ms.htValues != null) {
       // Uiso or Uij. We add the displacements, create the tensor, then rotate it, 
       // replacing the tensor already present for that atom.
       if (Logger.debuggingHigh) {
         Logger.debug("setModulation Uij(initial)=" + Escape.eAF(a.anisoBorU));
-        Logger.debug("setModulation tensor=" + Escape.e(a.tensors.get(0).getInfo("all")));
+        Logger.debug("setModulation tensor="
+            + Escape.e(a.tensors.get(0).getInfo("all")));
       }
-      for (Entry<String, Float>e : ms.htValues.entrySet())
+      for (Entry<String, Float> e : ms.htValues.entrySet())
         addUStr(a, e.getKey(), e.getValue().floatValue());
-      
+
       if (a.tensors != null)
         a.tensors.get(0).isUnmodulated = true;
-      Tensor t = atomSetCollection.addRotatedTensor(a, symmetry.getTensor(a.anisoBorU), iop, false);
+      Tensor t = atomSetCollection.addRotatedTensor(a, symmetry
+          .getTensor(a.anisoBorU), iop, false);
       t.isModulated = true;
       if (Logger.debuggingHigh) {
-        Logger.debug("setModulation Uij(final)=" + Escape.eAF(a.anisoBorU) + "\n");
+        Logger.debug("setModulation Uij(final)=" + Escape.eAF(a.anisoBorU)
+            + "\n");
         Logger.debug("setModulation tensor=" + a.tensors.get(0).getInfo("all"));
       }
     }
@@ -345,10 +372,10 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       sb.append(((int) t) + "\n");
     }
     // displace the atom and reverse the vector only if not filter "MODVIB"
-//    if (!modVib) {
-  //    a.add(ms);
+    //    if (!modVib) {
+    //    a.add(ms);
     //  ms.setModT(true, Integer.MAX_VALUE);
-   // }
+    // }
     symmetry.toCartesian(ms, true);
     //System.out.println("a.vib(xyz)=" + a.vib);
   }

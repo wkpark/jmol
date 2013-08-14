@@ -218,7 +218,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       } else if (key.startsWith("_chemical_formula_sum") || key.equals("_chem_comp_formula")) {
         processChemicalInfo("formula");
       } else if (key.equals("_cell_modulation_dimension") && !modAverage) {
-        setModDim(data);
+        setModDim(parseIntStr(data));
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
       } else if (key.startsWith("_symmetry_space_group_name_H-M")

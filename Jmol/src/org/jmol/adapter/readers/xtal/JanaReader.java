@@ -132,7 +132,7 @@ public class JanaReader extends ModulationReader {
   }
 
   private void ndim() {
-    setModDim(line.substring(line.length() - 1));
+    setModDim(parseIntStr(getTokens()[1]) - 3);
   }
 
   private int qicount;
@@ -253,17 +253,23 @@ public class JanaReader extends ModulationReader {
       P3 pt;
       if (nOcc > 0 && !haveCrenel)
         r.readLine(); //"1.00000"
+      int wv = 0;
+      float a1, a2;
       for (int j = 0; j < nOcc; j++) {
         if (haveCrenel) {
           float[][] data = readM40FloatLines(2, 1, r);
-          float w = data[0][0];
-          float c = data[1][0];
-          id = "O_0#0" + label;
-          pt = P3.new3(c, w, 0);
-          addModulation(null, id, pt, -1);
+          a1 = data[0][0];
+          a2 = data[1][0];
         } else {
-          addSinCos(j, "O_", label, r);
+          wv = j + 1;
+          readM40Floats(r);
+          a1 = floats[1];
+          a2 = floats[0];          
         }
+        id = "O_" + wv + "#0" + label;        
+        pt = P3.new3(a1, a2, 0);
+        if (a1 != 0 || a2 != 0)
+          addModulation(null, id, pt, -1);
       }
       
       // read displacement data

@@ -308,7 +308,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (haveError || !isJS || !allowJSThreads) {
       viewer.setTainted(true);
-      viewer.popHoldRepaint("executeCommands" + " " + scriptLevel);
+      viewer.popHoldRepaint("executeCommands" + " " + (scriptLevel > 0 ? JC.REPAINT_IGNORE : ""));
     }
     timeEndExecution = System.currentTimeMillis();
     if (errorMessage == null && executionStopped)

@@ -106,10 +106,8 @@ public class RepaintManager implements JmolRepaintManager {
     if (repaintPending)
       return false;
     repaintPending = true;
-    if (holdRepaint == 0) {
-      //System.out.println("RM refresh() " + (test++));
+    if (holdRepaint == 0)
       repaintNow(why);
-    }
     return true;
   }
 

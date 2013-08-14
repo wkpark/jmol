@@ -18,6 +18,7 @@ public class ModulationSet extends Vibration {
   public float delta;
   public P3 r;
   public Matrix3f rot;
+  public float v0;
   public float v = Float.NaN;
   public int t;
   public Map<String, Float> htValues;

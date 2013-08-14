@@ -61,8 +61,9 @@ public class Modulation {
     case TYPE_DISP_FOURIER:
     case TYPE_OCC_FOURIER:
     case TYPE_U_FOURIER:
-      a1 = params.x;
-      a2 = params.y;
+      a1 = params.x;  // cos
+      a2 = params.y;  // sin
+      //System.out.println("ccos=" + a1 + " csin=" + a2);
       break;
     case TYPE_DISP_SAWTOOTH:
     case TYPE_OCC_CRENEL:
@@ -135,7 +136,7 @@ public class Modulation {
       if (a2 != 0)
         v += a2 * Math.sin(theta);
       if (Logger.debuggingHigh)
-        Logger.debug("MOD v " + v + " a1 a2 " + a1 + " " + a2 + " / " + theta + " " +  ms.t);
+        Logger.debug("MOD v=" + v + " a1,a2=" + a1 + " " + a2 + " / theta=" + theta + " id=" +  ms.id);
       break;
     case TYPE_OCC_CRENEL:
 
@@ -147,6 +148,7 @@ public class Modulation {
 
       x4 -= Math.floor(x4);
       ms.v = (range(x4) ? 1 : 0);
+      ms.v0 = Float.NaN; // don't add this in
       //System.out.println("MOD " + ms.r + " " +  ms.delta + " " + ms.epsilon + " " + ms.id + " " + ms.v + " l=" + left + " x=" + x4 + " r=" + right);
       return;
     case TYPE_DISP_SAWTOOTH:

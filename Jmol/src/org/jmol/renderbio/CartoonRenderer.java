@@ -43,10 +43,11 @@ public class CartoonRenderer extends RocketsRenderer {
   @Override
   protected void renderBioShape(BioShape bioShape) {
     if (wireframeOnly) {
-      if (wingVectors == null || isCarbohydrate)
-        renderTrace();
-      else
-        renderMeshRibbon();        
+      renderStrands();
+//      if (wingVectors == null || isCarbohydrate)
+//        renderTrace();
+//      else
+//        renderMeshRibbon();        
       return;
     }
     newRockets = true;

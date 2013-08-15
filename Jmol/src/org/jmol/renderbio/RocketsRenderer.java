@@ -37,7 +37,7 @@ import org.jmol.util.P3;
 import org.jmol.util.V3;
 
 
-public class RocketsRenderer extends MeshRibbonRenderer {
+public class RocketsRenderer extends StrandsRenderer {
 
   //private final static float MIN_CONE_HEIGHT = 0.05f;
 
@@ -49,7 +49,7 @@ public class RocketsRenderer extends MeshRibbonRenderer {
     if (!(bioShape.bioPolymer instanceof AlphaPolymer))
       return;
     if (wireframeOnly) {
-      renderMeshRibbon();
+      renderStrands();
       return;
     }
     boolean val = !viewer.getBoolean(T.rocketbarrels);

@@ -27,11 +27,14 @@ package org.jmol.renderbio;
 import org.jmol.shapebio.BioShape;
 
 
-public class TraceRenderer extends BioShapeRenderer {
+public class TraceRenderer extends StrandsRenderer {
 
   @Override
   protected void renderBioShape(BioShape bioShape) {
-    renderTrace();
+    if (wireframeOnly)
+      renderStrands();
+    else
+      renderTrace();
   }
 
   protected void renderTrace() {

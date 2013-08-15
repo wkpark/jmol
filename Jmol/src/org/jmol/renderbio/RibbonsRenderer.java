@@ -34,7 +34,9 @@ public class RibbonsRenderer extends MeshRibbonRenderer {
     if (wingVectors == null)
       return;
     if (wireframeOnly) {
-      renderMeshRibbon();
+      // renderMeshRibbon();
+      strandCount = 1; 
+      renderStrands();
       return;
     }
     render2Strand(true, isNucleic ? 1f : 0.5f, isNucleic ? 0f : 0.5f);

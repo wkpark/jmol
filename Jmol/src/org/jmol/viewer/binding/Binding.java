@@ -195,14 +195,14 @@ abstract public class Binding {
   }
 
   @SuppressWarnings("unchecked")
-  public String getBindingInfo(String[] actionNames, String qualifiers) {
+  public String getBindingInfo(String[] actionInfo, String[] actionNames, String qualifiers) {
     SB sb = new SB();
     String qlow = (qualifiers == null || qualifiers.equalsIgnoreCase("all") ? null
         : qualifiers.toLowerCase());
-    JmolList<String>[] names = new JmolList[actionNames.length];
-    for (int i = 0; i < actionNames.length; i++)
+    JmolList<String>[] names = new JmolList[actionInfo.length];
+    for (int i = 0; i < actionInfo.length; i++)
       names[i] = (qlow == null
-          || actionNames[i].toLowerCase().indexOf(qlow) >= 0 ? new  JmolList<String>()
+          || actionInfo[i].toLowerCase().indexOf(qlow) >= 0 ? new  JmolList<String>()
           : null);
     for (Object obj: bindings.values()) {
       if (!Escape.isAI(obj))
@@ -213,20 +213,23 @@ abstract public class Binding {
         continue;
       names[i].addLast(getMouseActionName(info[0], true));
     }
-    for (int i = 0; i < actionNames.length; i++) {
+    for (int i = 0; i < actionInfo.length; i++) {
       int n;
       if (names[i] == null || (n = names[i].size()) == 0)
         continue;
       String[] list = names[i].toArray(new String[n]);
       Arrays.sort(list);
-      sb.append(actionNames[i]).append("\t");
+      sb.append((actionNames[i] + "                  ").substring(0, 22)).append("\t");
       String sep = "";
+      int len = sb.length();
       for (int j = 0; j < n; j++) {
-        sb.append(sep);
-        sb.append(list[j].substring(7));
+        sb.append(sep).append(list[j].substring(7));
         sep = ", ";
       }
-      sb.appendC('\n');
+      len = sb.length() - len;
+      if (len < 20)
+        sb.append("                 ".substring(0, 20 - len));
+      sb.append("\t").append(actionInfo[i]).appendC('\n');
     }
     return sb.toString();
   }

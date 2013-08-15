@@ -37,7 +37,6 @@ public class TimeoutThread extends JmolThread {
   private Map<String, Object> timeouts;
   
   public TimeoutThread(Viewer viewer, String name, int ms, String script) {
-    super();
     setViewer(viewer, name);
     this.name = name; // no appended info
     set(ms, script);
@@ -57,7 +56,8 @@ public class TimeoutThread extends JmolThread {
   
   @Override
   protected void run1(int mode) throws InterruptedException {
-    while (true)
+    while (true) {
+      //System.out.println("timeoutthread run1 " + name + " " + mode + " " + System.currentTimeMillis() + " " + targetTime);
       switch (mode) {
       case INIT:
         if (!isJS)
@@ -85,14 +85,19 @@ public class TimeoutThread extends JmolThread {
           return;
         status++;
         boolean continuing = (sleepTime < 0);
-        targetTime = System.currentTimeMillis() + Math.abs(sleepTime);
-        if (!continuing)
+        if (continuing)
+          targetTime = System.currentTimeMillis() + Math.abs(sleepTime);
+        else
           timeouts.remove(name);
         if (triggered) {
           triggered = false;
           // script execution of "timeout ID <name>;" triggers the timeout again
-          viewer.evalStringQuiet((continuing ? script + ";\ntimeout ID \""
-              + name + "\";" : script));
+          if (name.equals("_SET_IN_MOTION_")) {
+            viewer.checkInMotion(2);
+          } else {
+            viewer.evalStringQuiet((continuing ? script + ";\ntimeout ID \""
+                + name + "\";" : script));
+          }
         }
         mode = (continuing ? MAIN : FINISH);
         break;
@@ -100,6 +105,7 @@ public class TimeoutThread extends JmolThread {
         timeouts.remove(name);
         return;
       }
+    }
   }
 
   public static void clear(Map<String, Object> timeouts) {

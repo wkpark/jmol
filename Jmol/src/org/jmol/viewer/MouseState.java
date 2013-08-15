@@ -34,7 +34,10 @@ public class MouseState {
   int modifiers = 0;
   public long time = -1;
   
-  MouseState() {
+  public String name;
+  
+  MouseState(String name) {
+    this.name = name;
   }
   
   void set(long time, int x, int y, int modifiers) {
@@ -46,12 +49,14 @@ public class MouseState {
 
   /**
    * @param current 
-   * @param why  - for debugging purposes 
+   * @param clickCount 
    */
-  void setCurrent(MouseState current, int why) {
+  void setCurrent(MouseState current, int clickCount) {
     time = current.time;
-    x = current.x;
-    y = current.y;
+    if (clickCount < 2) {
+      x = current.x;
+      y = current.y;
+    }
     modifiers = current.modifiers;
   }
 
@@ -59,10 +64,11 @@ public class MouseState {
     return (Math.abs(this.x - x) <= xyRange && Math.abs(this.y - y) <= xyRange);
   }
   
+  private final static int MIN_DELAY_MS = 20;
   public boolean check(int xyRange, int x, int y, int modifiers, long time, long delayMax) {
     return (this.modifiers == modifiers 
         && (delayMax >= Integer.MAX_VALUE ? inRange(xyRange, x, y) 
-            : (time - this.time) < delayMax));
+            : time - this.time < delayMax && time - this.time > MIN_DELAY_MS));
   }
 
   public boolean is(MouseState current) {

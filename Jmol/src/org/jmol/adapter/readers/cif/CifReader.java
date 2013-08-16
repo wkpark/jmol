@@ -425,7 +425,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       incommensurate = true;
     else if (incommensurate)
       return;
-    setSpaceGroupName(lastSpaceGroupName = (key.indexOf("H-M") > 0 ? "HM:" : incommensurate ? "SSG:" : "Hall:") + data);
+    setSpaceGroupName(lastSpaceGroupName = (key.indexOf("h-m") > 0 ? "HM:" : incommensurate ? "SSG:" : "Hall:") + data);
   }
 
   /**

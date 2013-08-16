@@ -221,8 +221,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         setModDim(parseIntStr(data));
       } else if (key.startsWith("_cell_")) {
         processCellParameter();
-      } else if (key.startsWith("_symmetry_space_group_name_H-M")
-          || key.startsWith("_symmetry_space_group_name_Hall")
+      } else if (key.startsWith("_symmetry_space_group_name_h-m")
+          || key.startsWith("_symmetry_space_group_name_hall")
           || key.contains("_ssg_name")) {
         processSymmetrySpaceGroupName();
       } else if (key.startsWith("_atom_sites_fract_tran")) {

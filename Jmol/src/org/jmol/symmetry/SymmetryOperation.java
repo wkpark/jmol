@@ -157,11 +157,11 @@ class SymmetryOperation extends Matrix4f {
   
   final static String dumpCanonicalSeitz(Matrix4f s) {
     return new SB().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
-        .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf(s.m03+12)).append("\t}\n")
+        .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf((s.m03+12)%12)).append("\t}\n")
         .append("{\t").appendI((int) s.m10).append("\t").appendI((int) s.m11).append("\t").appendI((int) s.m12)
-        .append("\t").append(twelfthsOf(s.m13+12)).append("\t}\n").append("{\t").appendI((int) s.m20)
+        .append("\t").append(twelfthsOf((s.m13+12)%12)).append("\t}\n").append("{\t").appendI((int) s.m20)
         .append("\t").appendI((int) s.m21).append("\t")
-        .appendI((int) s.m22).append("\t").append(twelfthsOf(s.m23+12)).append("\t}\n")
+        .appendI((int) s.m22).append("\t").append(twelfthsOf((s.m23+12)%12)).append("\t}\n")
         .append("{\t0\t0\t0\t1\t}\n").toString();
   }
   

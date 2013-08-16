@@ -33,12 +33,9 @@ public class RibbonsRenderer extends MeshRibbonRenderer {
   protected void renderBioShape(BioShape bioShape) {
     if (wingVectors == null)
       return;
-    if (wireframeOnly) {
-      // renderMeshRibbon();
-      strandCount = 1; 
+    if (wireframeOnly)
       renderStrands();
-      return;
-    }
-    render2Strand(true, isNucleic ? 1f : 0.5f, isNucleic ? 0f : 0.5f);
+    else
+      render2Strand(true, isNucleic ? 1f : 0.5f, isNucleic ? 0f : 0.5f);
   }
 }

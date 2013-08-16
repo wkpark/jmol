@@ -135,7 +135,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected boolean volumeRender;
   protected BS bsPolygons;
   protected boolean isTranslucentInherit;
-  protected boolean wireframeOnly;  
+  protected boolean renderLow;  
   
   private boolean setVariables() {
     if (mesh.visibilityFlags == 0)
@@ -171,8 +171,8 @@ public abstract class MeshRenderer extends ShapeRenderer {
       bsPolygons = (isGhostPass ? mesh.bsSlabGhost
           : selectedPolyOnly ? mesh.bsSlabDisplay : null);
       
-      wireframeOnly = (!isExport && viewer.getBoolean(T.wireframerotation) && viewer.getInMotion(true));
-      frontOnly = wireframeOnly || !viewer.getSlabEnabled() && mesh.frontOnly
+      renderLow = (!isExport && !viewer.checkMotionRendering(T.mesh));
+      frontOnly = renderLow || !viewer.getSlabEnabled() && mesh.frontOnly
           && !mesh.isTwoSided && !selectedPolyOnly;
       screens = viewer.allocTempScreens(vertexCount);
       if (frontOnly)
@@ -215,11 +215,11 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void render2b(boolean generateSet) {
     if (!g3d.setColix(isGhostPass ? mesh.slabColix : colix))
       return;
-    if (mesh.showPoints || mesh.polygonCount == 0)
+    if (renderLow || mesh.showPoints || mesh.polygonCount == 0)
       renderPoints(); 
-    if (wireframeOnly || (isGhostPass ? mesh.slabMeshType == T.mesh : mesh.drawTriangles))
+    if (!renderLow && (isGhostPass ? mesh.slabMeshType == T.mesh : mesh.drawTriangles))
       renderTriangles(false, mesh.showTriangles, false);
-    if (!wireframeOnly && (isGhostPass ? mesh.slabMeshType == T.fill : mesh.fillTriangles))
+    if (!renderLow && (isGhostPass ? mesh.slabMeshType == T.fill : mesh.fillTriangles))
       renderTriangles(true, mesh.showTriangles, generateSet);
   }
 
@@ -242,7 +242,13 @@ public abstract class MeshRenderer extends ShapeRenderer {
           if (bsPoints.get(pt))
             continue;
           bsPoints.set(pt);
-          g3d.fillSphereI(4, screens[pt]);
+
+          if (renderLow) {
+            P3i s = screens[pt];
+            g3d.drawPixel(s.x, s.y, s.z);
+          } else {
+            g3d.fillSphereI(4, screens[pt]);
+          }
         }
       }
       return;
@@ -365,7 +371,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected void drawTriangle(P3i screenA, short colixA, P3i screenB,
                               short colixB, P3i screenC, short colixC,
                               int check, int diam) {
-    if (wireframeOnly || !antialias && diam == 1) {
+    if (!antialias && diam == 1) {
       g3d.drawTriangle3C(screenA, colixA, screenB, colixB, screenC, colixC,
           check);
       return;

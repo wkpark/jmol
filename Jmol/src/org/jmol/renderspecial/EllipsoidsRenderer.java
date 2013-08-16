@@ -130,7 +130,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     bGlobals[OPT_BALL] = viewer.getBooleanProperty("ellipsoidBall");
     bGlobals[OPT_DOTS] = viewer.getBooleanProperty("ellipsoidDots");
     bGlobals[OPT_FILL] = viewer.getBooleanProperty("ellipsoidFill");
-    bGlobals[OPT_WIREFRAME] = (viewer.getBoolean(T.wireframerotation) && viewer.getInMotion(true));
+    bGlobals[OPT_WIREFRAME] = !isExport && !viewer.checkMotionRendering(T.ellipsoid);
     diameter0 = Math.round (((Float) viewer.getParameter("ellipsoidAxisDiameter"))
         .floatValue() * 1000);    
     Matrix4f m4 = viewer.getMatrixtransform();

@@ -562,7 +562,8 @@ public class StateManager {
         + ";legacyautobonding;legacyhaddition"
         + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
         + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
-        + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;preservestate;refreshing;repaintwaitms;rotationradius"
+        + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;platformspeed"
+        + ";preservestate;refreshing;repaintwaitms;rotationradius"
         + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showtiming;showunitcell"
         + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent;celshading;specularpower;stateversion"
         + ";statusreporting;stereo;stereostate;vibrationperiod"
@@ -678,10 +679,12 @@ public class StateManager {
         allowKeyStrokes = g.allowKeyStrokes;
         legacyAutoBonding = g.legacyAutoBonding;
         legacyHAddition = g.legacyHAddition;
+        platformSpeed = g.platformSpeed;
         useScriptQueue = g.useScriptQueue;
         useArcBall = g.useArcBall;
         databases = g.databases;
         showTiming = g.showTiming;
+        wireframeRotation = g.wireframeRotation;
       }
       if (databases == null) {
         databases = new Hashtable<String, String>();
@@ -1106,6 +1109,7 @@ public class StateManager {
     boolean isosurfaceKey = false;
     boolean isosurfacePropertySmoothing = true;
     int isosurfacePropertySmoothingPower = 7;
+    int platformSpeed = 10; // 1 (slow) to 10 (fast)
     public int repaintWaitMs = 1000;
     boolean showHiddenSelectionHalos = false;
     boolean showKeyStrokes = true;

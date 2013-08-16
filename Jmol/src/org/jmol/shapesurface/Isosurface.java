@@ -149,7 +149,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     currentMesh = thisMesh = isomeshes[index] = (m == null ? new IsosurfaceMesh(
         thisID, colix, index) : (IsosurfaceMesh) m);
     currentMesh.index = index;
-    sg.setJvxlData(jvxlData = thisMesh.jvxlData);
+    if (sg != null)
+      sg.setJvxlData(jvxlData = thisMesh.jvxlData);
   }
 
   @Override

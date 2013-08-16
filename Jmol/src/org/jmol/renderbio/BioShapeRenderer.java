@@ -108,7 +108,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     isPass2 = g3d.isPass2();
     invalidateMesh = false;
     needTranslucent = false;
-    boolean TF = (!isExport && viewer.getBoolean(T.wireframerotation) && viewer.getInMotion(true));
+    boolean TF = (!isExport && !viewer.checkMotionRendering(T.cartoon));
     
     if (TF != wireframeOnly)
       invalidateMesh = true;

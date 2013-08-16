@@ -3980,6 +3980,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setInMotion(boolean inMotion) {
     if (this.inMotion ^ inMotion) {
       this.inMotion = inMotion;
+      resizeImage(0, 0, false, false, true); // for antialiasdisplay
       if (inMotion) {
         startHoverWatcher(false);
         ++motionEventNumber;
@@ -4164,7 +4165,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     if (!isExport && !isImageWrite)
       setShapeProperty(JC.SHAPE_LABELS, "clearBoxes", null);
-    antialiasDisplay = (isReset ? global.antialiasDisplay : isImageWrite
+    antialiasDisplay = (isReset ? global.antialiasDisplay  
+        && checkMotionRendering(T.antialiasdisplay) : isImageWrite
         && !isExport ? global.antialiasImages : false);
     imageFontScaling = (isReset || width <= 0 ? 1
         : (global.zoomLarge == (height > width) ? height : width)
@@ -4325,8 +4327,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void beginRendering(boolean isDouble, boolean isImageWrite) {
     gdata.beginRendering(transformManager.getStereoRotationMatrix(isDouble),
-        global.translucent, 
-        isImageWrite);
+        global.translucent, isImageWrite, !checkMotionRendering(T.translucent));
   }
 
   private boolean antialiasDisplay;
@@ -5748,6 +5749,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.percentVdwAtom;
     case T.pickingspinrate:
       return global.pickingSpinRate;
+    case T.platformspeed:
+      return global.platformSpeed;
     case T.ribbonaspectratio:
       return global.ribbonAspectRatio;
     case T.showscript:
@@ -5918,8 +5921,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.vectorSymmetry;
     case T.waitformoveto:
       return global.waitForMoveTo;
-    case T.wireframerotation:
-      return global.wireframeRotation;
     case T.zerobasedxyzrasmol:
       return global.zeroBasedXyzRasmol;
     }
@@ -6431,6 +6432,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setIntPropertyTok(String key, int tok, int value) {
     switch (tok) {
+    case T.platformspeed:
+      // 13.4.4
+      global.platformSpeed = Math.min(Math.max(value, 0), 10); // 0 could mean "adjust as needed"
+      break;
     case T.meshscale:
       // 12.3.29
       global.meshScale = value;
@@ -6862,13 +6867,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case T.antialiasdisplay:
       // 11.3.36
-      setAntialias(0, value);
-      break;
     case T.antialiastranslucent:
-      setAntialias(1, value);
-      break;
     case T.antialiasimages:
-      setAntialias(2, value);
+      setAntialias(tok, value);
       break;
     case T.smartaromatic:
       // 11.3.29
@@ -7671,21 +7672,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setShapeSizeRD(JC.SHAPE_BALLS, rd, getModelUndeletedAtomsBitSet(-1));
   }
 
-  private void setAntialias(int mode, boolean TF) {
+  private void setAntialias(int tok, boolean TF) {
 
-    switch (mode) {
-    case 0: // display
+    switch (tok) {
+    case T.antialiasdisplay:
       global.antialiasDisplay = TF;
       break;
-    case 1: // translucent
+    case T.antialiastranslucent:
       global.antialiasTranslucent = TF;
       break;
-    case 2: // images
+    case T.antialiasimages:
       global.antialiasImages = TF;
       return;
     }
     resizeImage(0, 0, false, false, true);
-    // requestRepaintAndWait();
   }
 
   // //////////////////////////////////////////////////////////////
@@ -10277,15 +10277,36 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case 0: // off
       setTimeout("_SET_IN_MOTION_", 0, null);
       break;
-    case 1: // start timer
-      if (getBoolean(T.wireframerotation) && !inMotion)
+    case 1: // start 1-second timer (by default)
+      if (!inMotion)
         setTimeout("_SET_IN_MOTION_", global.hoverDelayMs * 2, "!setInMotion");
       break;
-    case 2: // trigger
+    case 2: // trigger, from a timeout thread
       setInMotion(true);
       refresh(3, "timeoutThread set in motion");
       break;
     }
+  }
+
+  public boolean checkMotionRendering(int tok) {
+    if (!getInMotion(true))
+      return true;
+    if (global.wireframeRotation)
+      return false;
+    switch (tok) {
+    case T.balls:
+    case T.bonds:
+    case T.ellipsoid:
+      return global.platformSpeed >= 3;
+    case T.cartoon:
+    case T.geosurface:
+      return global.platformSpeed >= 5;
+    case T.mesh:
+    case T.translucent:
+    case T.antialiasdisplay:
+      return global.platformSpeed >= 8;
+    }
+    return false;
   }
 
 }

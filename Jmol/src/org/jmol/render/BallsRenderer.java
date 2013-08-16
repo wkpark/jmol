@@ -37,7 +37,7 @@ public class BallsRenderer extends ShapeRenderer {
   @Override
   protected boolean render() {
     boolean needTranslucent = false;
-    if (!viewer.getBoolean(T.wireframerotation) || !viewer.getInMotion(true)) {
+    if (isExport || viewer.checkMotionRendering(T.balls)) {
       Atom[] atoms = modelSet.atoms;
       short[] colixes = ((Balls) shape).colixes;
       BS bsOK = viewer.getRenderableBitSet();

@@ -30,7 +30,10 @@ public class MeshRibbonRenderer extends StrandsRenderer {
 
   @Override
   protected void renderBioShape(BioShape bioShape) {
-    renderMeshRibbon();
+    if (wireframeOnly)
+      renderStrands();
+    else
+      renderMeshRibbon();
   }
 
   protected void renderMeshRibbon() {

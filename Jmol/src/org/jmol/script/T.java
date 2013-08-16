@@ -903,7 +903,8 @@ public class T {
   public final static int percentvdwatom                 = intparam | 26;
   public final static int perspectivemodel               = intparam | 27;
   public final static int phongexponent                  = intparam | 28;
-  public final static int pickingspinrate                = intparam | 30;
+  public final static int pickingspinrate                = intparam | 29;
+  public final static int platformspeed                  = intparam | 30;
   public final static int propertyatomnumberfield        = intparam | 31;
   public final static int propertyatomnumbercolumncount  = intparam | 32;
   public final static int propertydatacolumncount        = intparam | 34;
@@ -2223,6 +2224,7 @@ public class T {
       "picking",                                  T.t(picking),
       "pickingStyle",                             T.t(pickingstyle),
       "pickLabel",                                T.t(picklabel),
+      "platformSpeed",                            T.t(platformspeed),
       "propertyColorScheme",                      T.t(propertycolorscheme),
       "quaternionFrame",                          T.t(quaternionframe),
       "smilesUrlFormat",                          T.t(smilesurlformat),

@@ -60,7 +60,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
   private int dx, dy;
   private int mag2d;
   private int bondOrder;
-  private boolean renderWireframe;
+  private boolean wireframeOnly;
   private boolean isAntialiased;
   private boolean slabbing;
   private boolean slabByAtom;
@@ -95,8 +95,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
         && modeMultipleBond != JC.MULTIBOND_NEVER
         && viewer.getBoolean(T.showmultiplebonds));
 
-    renderWireframe = viewer.getInMotion(true)
-        && viewer.getBoolean(T.wireframerotation);
+    wireframeOnly = !viewer.checkMotionRendering(T.bonds);
     ssbondsBackbone = viewer.getBoolean(T.ssbondsbackbone);
     hbondsBackbone = viewer.getBoolean(T.hbondsbackbone);
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
@@ -250,7 +249,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
     dx = xB - xA;
     dy = yB - yA;
     width = (int) viewer.scaleToScreen((zA + zB) / 2, mad);
-    if (renderWireframe && width > 0)
+    if (wireframeOnly && width > 0)
       width = 1;
     if (!isCartesianExport) {
       asLineOnly = (width <= 1);

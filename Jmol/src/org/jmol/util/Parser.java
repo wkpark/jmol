@@ -369,7 +369,7 @@ public class Parser {
     0.000000001f
     };
 
-  private final static float[] tensScale = { 10, 100, 1000, 10000, 100000, 1000000 };
+  private final static float[] tensScale = { 10f, 100f, 1000f, 10000f, 100000f, 1000000f };
 
   /**
    * A float parser that is 30% faster than Float.parseFloat(x) and also accepts
@@ -395,35 +395,41 @@ public class Parser {
       ++ich;
       negative = true;
     }
-    char ch = 0;
-    int ival = 0;
-    while (ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
-      ival = (ival << 3) + (ival << 1) + (ch - '0');
+    // looks crazy, but if we don't do this, Google Closure Compiler will 
+    // write code that Safari will misinterpret in a VERY nasty way -- 
+    // getting totally confused as to long integers and double values
+    int ch = 0;
+    float ival = 0f;
+    float ival2 = 0f;
+    while (ich < ichMax && (ch = str.charAt(ich)) >= 48 && ch <= 57) {
+      ival = (ival * 10f) + (ch - 48)*1f;
       ++ich;
       digitSeen = true;
     }
     boolean isDecimal = false;
-    int ival2 = 0;
     int iscale = 0;
     int nzero = (ival == 0 ? -1 : 0);
     if (ch == '.') {
       isDecimal = true;
-      while (++ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
+      while (++ich < ichMax && (ch = str.charAt(ich)) >= 48 && ch <= 57) {
         digitSeen = true;
         if (nzero < 0) {
-          if (ch == '0') { 
+          if (ch == 48) { 
             nzero--;
             continue;
           }
           nzero = -nzero;
         } 
         if (iscale  < decimalScale.length) {
-          ival2 = (ival2 << 3) + (ival2 << 1) + (ch - '0');
+          ival2 = (ival2 * 10f) + (ch - 48)*1f;
           iscale++;
         }
       }
     }
     float value;
+    
+    // Safari breaks here intermittently converting integers to floats 
+    
     if (!digitSeen) {
       value = Float.NaN;
     } else if (ival2 > 0) {
@@ -461,6 +467,8 @@ public class Parser {
     } else {
       next[0] = ich; // the exponent code finds its own ichNextParse
     }
+    // believe it or not, Safari reports the long-equivalent of the 
+    // float value here, then later the float value, after no operation!
     if (negative)
       value = -value;
     if (value == Float.POSITIVE_INFINITY)
@@ -550,12 +558,12 @@ public class Parser {
     while (ich < ichMax && isWhiteSpace(str, ich))
       ++ich;
     boolean negative = false;
-    if (ich < ichMax && str.charAt(ich) == '-') {
+    if (ich < ichMax && str.charAt(ich) == 45) { //"-"
       negative = true;
       ++ich;
     }
-    while (ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
-      value = (value << 3) + (value << 1) + (ch - '0');
+    while (ich < ichMax && (ch = str.charAt(ich)) >= 48 && ch <= 57) {
+      value = value * 10 + (ch - 48);
       digitSeen = true;
       ++ich;
     }
@@ -738,5 +746,14 @@ public class Parser {
     {
       return Float.parseFloat(s);
     }
+  }
+  
+  static {
+    long x = System.currentTimeMillis();
+    int j;
+    for(int i = 0; i < 1000000; i++)
+      j = 35 * 3;
+    System.out.println(System.currentTimeMillis() - x);
+    System.out.println("OK");
   }
 }

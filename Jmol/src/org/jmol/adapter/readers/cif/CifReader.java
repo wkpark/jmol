@@ -533,8 +533,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         processModulationLoopBlock();
       return;
     }
-    if (str.startsWith("_atom_site_") || str.startsWith("_atom_site.")
-        || (isLigand = str.equals("_chem_comp_atom.comp_id"))) {
+    if (str.startsWith("_atom_site_") || (isLigand = str.equals("_chem_comp_atom_comp_id"))) {
       if (!processAtomSiteLoopBlock(isLigand))
         return;
       atomSetCollection.setAtomSetName(thisDataSetName);

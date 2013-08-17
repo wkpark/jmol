@@ -548,7 +548,7 @@ public class Escape {
           if (Character.isDigit(ch)) {
             if (iThis < 0)
               iThis = 0;
-            iThis = (iThis << 3) + (iThis << 1) + (ch - '0');
+            iThis = (iThis * 10) + (ch - 48);
           }
         }
       }
@@ -1014,12 +1014,12 @@ public class Escape {
   }
   
   public static int getHexitValue(char ch) {
-    if (ch >= '0' && ch <= '9')
-      return ch - '0';
-    else if (ch >= 'a' && ch <= 'f')
-      return 10 + ch - 'a';
-    else if (ch >= 'A' && ch <= 'F')
-      return 10 + ch - 'A';
+    if (ch >= 48 && ch <= 57)
+      return ch - 48;
+    else if (ch >= 97 && ch <= 102)
+      return 10 + ch - 97;
+    else if (ch >= 65 && ch <= 70)
+      return 10 + ch - 65;
     else
       return -1;
   }

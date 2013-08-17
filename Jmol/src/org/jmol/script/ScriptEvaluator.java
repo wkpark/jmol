@@ -6559,7 +6559,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         q = (chk ? new Quaternion() : viewer.getAtomQuaternion(bsCenter
             .nextSetBit(0)));
       } else {
-        q = getQuaternionParameter(i);
+        q = getQuaternionParameter(i, null);
       }
       i = iToken + 1;
       if (q == null)
@@ -10097,12 +10097,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       case T.point4f:
       case T.quaternion:
+      case T.best:
         if (tok == T.quaternion)
           i++;
         haveRotation = true;
-        q = getQuaternionParameter(i);
-        rotAxis.setT(q.getNormal());
-        endDegrees = q.getTheta();
+        q = getQuaternionParameter(i, isSelected || tok != T.best ? null : viewer.getRotationQuaternion().mul(-1));
+        if (q != null) {
+          rotAxis.setT(q.getNormal());
+          endDegrees = q.getTheta();
+        }
         break;
       case T.axisangle:
         haveRotation = true;
@@ -10333,15 +10336,26 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
   }
 
-  private Quaternion getQuaternionParameter(int i) throws ScriptException {
-    if (tokAt(i) == T.varray) {
+  private Quaternion getQuaternionParameter(int i, Quaternion q0)
+      throws ScriptException {
+    Quaternion q;
+    switch (tokAt(i)) {
+    case T.varray:
       JmolList<SV> sv = ((SV) getToken(i)).getList();
       P4 p4 = null;
       if (sv.size() == 0 || (p4 = SV.pt4Value(sv.get(0))) == null)
         invArg();
-      return Quaternion.newP4(p4);
+      q = Quaternion.newP4(p4);
+      break;
+    case T.best:
+      if (chk)
+        return null;
+      q = Quaternion.newP4((P4) Escape.uP(viewer.getOrientationText(T.best, null)));
+      break;
+    default:
+      q = Quaternion.newP4(getPoint4f(i));
     }
-    return Quaternion.newP4(getPoint4f(i));
+    return (q0 == null ? q : q.mulQ(q0));
   }
 
   JmolList<P3> getPointVector(T t, int i) throws ScriptException {
@@ -11821,12 +11835,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // deprecated
         //$FALL-THROUGH$
       case T.surfacedistance:
-        /*
-         * preferred:
-         * 
-         * calculate surfaceDistance FROM {...} calculate surfaceDistance WITHIN
-         * {...}
-         */
+        // preferred
+        // calculate surfaceDistance FROM {...}
+        // calculate surfaceDistance WITHIN {...}
         boolean isFrom = false;
         switch (tokAt(2)) {
         case T.within:
@@ -15004,8 +15015,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!chk)
         msg = viewer.getMeasurementInfoAsString();
       break;
-    case T.translation:
     case T.rotation:
+      tok = tokAt(2);
+      if (tok == T.nada)
+        tok = T.rotation;
+      else
+        len = 3;
+      //$FALL-THROUGH$
+    case T.translation:
     case T.moveto:
       if (!chk)
         msg = viewer.getOrientationText(tok, null);
@@ -15024,7 +15041,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       default:
         name = optParameterAsString(2);
-        msg = viewer.getOrientationText(0, name);
+        msg = viewer.getOrientationText(T.name, name);
       }
       len = slen;
       break;

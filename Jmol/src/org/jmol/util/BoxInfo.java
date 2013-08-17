@@ -36,12 +36,13 @@ import java.util.Map;
 public class BoxInfo {
 
  
-  private final P3 bbCorner0 = new P3();
-  private final P3 bbCorner1 = new P3();
+  public final P3 bbCorner0 = new P3();
+  public final P3 bbCorner1 = new P3();
   private final P3 bbCenter = new P3();
   private final V3 bbVector = new V3();
   private final Point3fi[] bbVertices = new Point3fi[8];
   private boolean isScaleSet;
+  private float margin;
 
   {
     for (int i = 8; --i >= 0;)
@@ -234,7 +235,7 @@ public class BoxInfo {
         bbCorner1 } : new P3[] { bbCorner0, bbCorner1 });
   }
 
-  public Point3fi[] getBboxVertices() {
+  public Point3fi[] getBoundBoxVertices() {
     if (!isScaleSet)
       setBbcage(1);
     return bbVertices;
@@ -278,9 +279,13 @@ public class BoxInfo {
     bbCorner1.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
   }
   
+  public void setMargin(float m) {
+    margin = m;
+  }
+  
   public void addBoundBoxPoint(P3 pt) {
     isScaleSet = false;
-    addPoint(pt, bbCorner0, bbCorner1, 0);
+    addPoint(pt, bbCorner0, bbCorner1, margin);
   }
 
   public static void addPoint(P3 pt, P3 xyzMin, P3 xyzMax, float margin) {
@@ -344,7 +349,5 @@ public class BoxInfo {
        && pt.y >= bbCorner0.y && pt.y <= bbCorner1.y
        && pt.z >= bbCorner0.z && pt.z <= bbCorner1.z); 
   }
-
-
 
 }

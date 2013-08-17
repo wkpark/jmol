@@ -2148,6 +2148,7 @@ class ScriptMathProcessor {
     // quaternion(vector, theta)
     // quaternion(q0, q1, q2, q3)
     // quaternion("{x, y, z, w"})
+    // quaternion("best")
     // quaternion(center, X, XY)
     // quaternion(mcol1, mcol2)
     // quaternion(q, "id", center) // draw code
@@ -2224,7 +2225,8 @@ class ScriptMathProcessor {
       } else if (args[0].tok == T.point4f) {
         p4 = (P4) args[0].value;
       } else {
-        Object v = Escape.uP(SV.sValue(args[0]));
+        String s = SV.sValue(args[0]);
+        Object v = Escape.uP(s.equalsIgnoreCase("best") ? viewer.getOrientationText(T.best, null) : s);
         if (!(v instanceof P4))
           return false;
         p4 = (P4) v;

@@ -600,10 +600,11 @@ public class Quaternion {
     return ptNew;
   }
 
-  public void transformP2(Tuple3f pt, Tuple3f ptNew) {
+  public Tuple3f transformP2(Tuple3f pt, Tuple3f ptNew) {
     if (mat == null)
       setMatrix();
     mat.transform2(pt, ptNew);
+    return ptNew;
   }
 
   public V3 transform(V3 v) {

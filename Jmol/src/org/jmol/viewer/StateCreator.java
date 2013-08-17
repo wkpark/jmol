@@ -769,7 +769,7 @@ public class StateCreator implements JmolStateCreator {
       appendCmd(commands, "set navigationMode true");
     appendCmd(commands, viewer.getBoundBoxCommand(false));
     appendCmd(commands, "center " + Escape.eP(tm.fixedRotationCenter));
-    commands.append(viewer.getOrientationText(T.state, null));
+    commands.append(viewer.getOrientationText(T.name, null));
 
     appendCmd(commands, moveToText);
     if (tm.stereoMode != EnumStereoMode.NONE)

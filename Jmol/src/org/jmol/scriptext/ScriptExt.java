@@ -3833,8 +3833,8 @@ public class ScriptExt implements JmolScriptExtension {
       v.addLast(ptc);
     } else {
       BoxInfo bbox = viewer.getBoxInfo(bs, -Math.abs(distance));
-      pts[0] = bbox.getBboxVertices()[0];
-      pts[1] = bbox.getBboxVertices()[7];
+      pts[0] = bbox.getBoundBoxVertices()[0];
+      pts[1] = bbox.getBoundBoxVertices()[7];
       if (bs.cardinality() == 1)
         v.addLast(viewer.getAtomPoint3f(bs.nextSetBit(0)));
     }

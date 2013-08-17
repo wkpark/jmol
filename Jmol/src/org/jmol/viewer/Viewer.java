@@ -1436,9 +1436,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getOrientationText(int type, String name) {
-    return (name == null && type != T.state ? transformManager.getOrientationText(type)
-        : stateManager.getSavedOrientationText(name));
-  }
+    switch (type) {
+    case T.volume:
+    case T.best:
+    case T.x:
+    case T.y:
+    case T.z:
+    case T.quaternion:
+      return modelSet.getBoundBoxOrientation(type, getSelectionSet(false));
+    case T.name:
+      return stateManager.getSavedOrientationText(name);
+    default:     
+      return transformManager.getOrientationText(type);
+    }
+   }
 
   Map<String, Object> getOrientationInfo() {
     return transformManager.getOrientationInfo();

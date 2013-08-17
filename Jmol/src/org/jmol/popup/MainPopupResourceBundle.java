@@ -90,7 +90,7 @@ public class MainPopupResourceBundle extends PopupResource {
               + "Ligand exceptWater nonWaterSolvent" },
 
       {   "viewMenu",
-          "front left right top bottom back" },
+          "best front left right top bottom back" },
 
       {   "renderMenu",
           "perspectiveDepthCB showBoundBoxCB showUNITCELLCB showAxesCB stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
@@ -305,6 +305,7 @@ public class MainPopupResourceBundle extends PopupResource {
       // not implemented    { "Lipid", "SELECT lipid" },
       { "PDBnoneOfTheAbove", "SELECT not(hetero,protein,nucleic,carbohydrate)" },
 
+      { "best", "rotate best -1.0" },
       { "front", Box( "moveto 2.0 front;delay 1" ) },
       { "left", Box( "moveto 1.0 front;moveto 2.0 left;delay 1"  ) },
       { "right", Box( "moveto 1.0 front;moveto 2.0 right;delay 1"  ) },
@@ -592,6 +593,7 @@ public class MainPopupResourceBundle extends PopupResource {
         "invertSelection", GT._("Invert Selection"),
 
         "viewMenu", GT._("View"),
+        "best", GT._("Best"),
         "front", GT._("Front"),
         "left", GT._("Left"),
         "right", GT._("Right"),

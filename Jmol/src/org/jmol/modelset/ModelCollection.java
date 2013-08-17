@@ -317,7 +317,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public Point3fi[] getBboxVertices() {
-    return boxInfo.getBboxVertices();
+    return boxInfo.getBoundBoxVertices();
   }
 
   public Map<String, Object> getBoundBoxInfo() {
@@ -3497,5 +3497,103 @@ abstract public class ModelCollection extends BondCollection {
       //System.out.println(a.x + " " + a.y + " " + a.z + " ms is " + ms + " " + ms.enabled + " " + ms.t);
     }
   }
+  
+  private Quaternion[] vOrientations;
+  
+  public String getBoundBoxOrientation(int type, BS bsAtoms) {
+    int j0 = bsAtoms.nextSetBit(0);
+    if (j0 < 0)
+      return "{0 0 0 1}";
+    int n = (vOrientations == null ? 0 : vOrientations.length);
+    if (n == 0) {
+      V3[] av = new V3[15*15*15];
+      n = 0;
+      P4 p4 = new P4();
+      for (int i = -7; i <= 7; i++)
+        for (int j = -7; j <= 7; j++)
+          for (int k = 0; k <= 14; k++, n++)
+            if ((av[n] = V3.new3(i / 7f, j / 7f, k / 14f)).length() > 1)
+              --n;
+      vOrientations = new Quaternion[n];
+      for (int i = n; --i >= 0;) {
+        float cos = (float) Math.sqrt(1 - av[i].lengthSquared());
+        if (Float.isNaN(cos))
+          cos = 0;
+        p4.set(av[i].x, av[i].y, av[i].z, cos);
+        vOrientations[i] = Quaternion.newP4(p4);
+      }
+    }
+    P3 pt = new P3();
+    float vMin = Float.MAX_VALUE;
+    Quaternion q, qBest = null;
+    BoxInfo bBest = null;
+    float v;
+    for (int i = 0; i < n; i++) {
+      q = vOrientations[i];
+      BoxInfo b = new BoxInfo();
+      b.setMargin(0);
+      for (int j = j0; j >= 0; j = bsAtoms.nextSetBit(j + 1))
+        b.addBoundBoxPoint((P3) q.transformP2(atoms[j],
+            pt));
+      switch (type) {
+      default:
+      case T.volume:
+      case T.best:
+        v = (b.bbCorner1.x - b.bbCorner0.x) * (b.bbCorner1.y - b.bbCorner0.y)
+            * (b.bbCorner1.z - b.bbCorner0.z);
+        break;
+      case T.x:
+        v = b.bbCorner1.x - b.bbCorner0.x;
+        break;
+      case T.y:
+        v = b.bbCorner1.y - b.bbCorner0.y;
+        break;
+      case T.z:
+        v = b.bbCorner1.z - b.bbCorner0.z;
+        break;
+      }
+      if (v < vMin) {
+        qBest = q;
+        bBest = b;
+        vMin = v;
+      }
+    }
+    if (type != T.volume && type != T.best)
+      return qBest.toString();
+    // we want dz < dy < dx
+    q = Quaternion.newQ(qBest);
+    float dx = bBest.bbCorner1.x - bBest.bbCorner0.x;
+    float dy = bBest.bbCorner1.y - bBest.bbCorner0.y;
+    float dz = bBest.bbCorner1.z - bBest.bbCorner0.z;
+    if (dx < dy) {
+      pt.set(0, 0, 1);
+      q = Quaternion.newVA(pt, 90).mulQ(q);
+      float f = dx;
+      dx = dy;
+      dy = f;
+    }
+    if (dy < dz) {
+      if (dz > dx) {
+        // is dy < dx < dz
+        pt.set(0, 1, 0);
+        q = Quaternion.newVA(pt, 90).mulQ(q);
+        float f = dx;
+        dx = dz;
+        dz = f;
+      }
+      // is dy < dz < dx
+      pt.set(1, 0, 0);
+      q = Quaternion.newVA(pt, 90).mulQ(q);
+      float f = dy;
+      dy = dz;
+      dz = f;
+    }
+    v = q.getTheta();
+    if (v == 180 || v == 0)
+      return "{0 0 0 1}";
+    V3 vec = V3.new3(dx, dy, dz);
+    return q.toString() + (type == T.best ? "" : " " + vMin + " " + Escape.eP(vec));
+  }
 
 }
+  

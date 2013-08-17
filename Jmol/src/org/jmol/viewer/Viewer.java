@@ -10299,25 +10299,47 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
+  /**
+   * check motion for rendering during mouse movement, 
+   * spin, vibration, and animation
+   * 
+   * @param tok
+   * @return TRUE if allowed
+   */
   public boolean checkMotionRendering(int tok) {
-    if (!getInMotion(true))
+    if (!getInMotion(true) && 
+        !transformManager.spinOn && 
+        !transformManager.vibrationOn && 
+        !animationManager.animationOn)
       return true;
     if (global.wireframeRotation)
       return false;
+    int n = 0;
     switch (tok) {
-    case T.balls:
     case T.bonds:
+    case T.atoms:
+      n = 2;
+      break;
     case T.ellipsoid:
-      return global.platformSpeed >= 3;
-    case T.cartoon:
+      n = 3;
+      break;
     case T.geosurface:
-      return global.platformSpeed >= 5;
+      n = 4;
+      break;
+    case T.cartoon:
+      n = 5;
+      break;
     case T.mesh:
+      n = 6;
+      break;
     case T.translucent:
+      n = 7;
+      break;
     case T.antialiasdisplay:
-      return global.platformSpeed >= 8;
+      n = 8;
+      break;
     }
-    return false;
+    return global.platformSpeed >= n;
   }
 
 }

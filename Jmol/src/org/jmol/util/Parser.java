@@ -763,12 +763,4 @@ public class Parser {
     }
   }
   
-  static {
-    long x = System.currentTimeMillis();
-    int j;
-    for(int i = 0; i < 1000000; i++)
-      j = 35 * 3;
-    System.out.println(System.currentTimeMillis() - x);
-    System.out.println("OK");
-  }
 }

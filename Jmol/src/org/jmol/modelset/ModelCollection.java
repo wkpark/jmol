@@ -3588,11 +3588,8 @@ abstract public class ModelCollection extends BondCollection {
       dy = dz;
       dz = f;
     }
-    v = q.getTheta();
-    if (v == 180 || v == 0)
-      return "{0 0 0 1}";
-    V3 vec = V3.new3(dx, dy, dz);
-    return q.toString() + (type == T.best ? "" : " " + vMin + " " + Escape.eP(vec));
+    return (type == T.volume ? vMin + "\t{" + dx + " " + dy + " " + dz + "}"
+        : q.getTheta() == 0 ? "{0 0 0 1}" : q.toString());
   }
 
 }

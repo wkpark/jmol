@@ -37,9 +37,10 @@ public class MinimizationThread extends JmolThread {
   public MinimizationThread() {}
   
   @Override
-  public void setManager(Object manager, Viewer viewer, Object options) {
+  public int setManager(Object manager, Viewer viewer, Object options) {
     minimizer = (Minimizer) manager;
     setViewer(viewer, "MinimizationThread");
+    return 0;
   }
   
   @Override

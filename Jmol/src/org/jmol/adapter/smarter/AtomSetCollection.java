@@ -926,13 +926,9 @@ public class AtomSetCollection {
     symmetry.setLattice(latt);
   }
   
-  void applySymmetry() throws Exception {
-    //parameters are counts of unit cells as [a b c]
-    applySymmetryLattice(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
-  }
-
-  void applySymmetryUsing(SymmetryInterface symmetry) throws Exception {
-    getSymmetry().setSpaceGroupS(symmetry);
+  void applySymmetry(SymmetryInterface symmetry) throws Exception {
+    if (symmetry != null)
+      getSymmetry().setSpaceGroupS(symmetry);
     //parameters are counts of unit cells as [a b c]
     applySymmetryLattice(latticeCells[0], latticeCells[1], Math.abs(latticeCells[2]));
   }

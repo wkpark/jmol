@@ -35,9 +35,10 @@ public class VibrationThread extends JmolThread {
   public VibrationThread() {}
   
   @Override
-  public void setManager(Object manager, Viewer viewer, Object options) {
+  public int setManager(Object manager, Viewer viewer, Object options) {
     transformManager = (TransformManager) manager;
     setViewer(viewer, "VibrationThread");
+    return 0;
   }
   
   @Override

@@ -40,8 +40,9 @@ abstract public class JmolThread extends Thread {
    * @param manager  
    * @param viewer 
    * @param params 
+   * @return TODO
    */
-  public void setManager(Object manager, Viewer viewer, Object params){}
+  public int setManager(Object manager, Viewer viewer, Object params){return 0;}
  
   public void setViewer(Viewer viewer, String name) {
     setName(name);

@@ -13,13 +13,12 @@ public class Modulation {
 
   private static final double TWOPI = 2 * Math.PI;
 
+  private int[] qCoefs;
+  
   private double a1;
   private double a2;
   private double center;
   private double left, right;
-
-  private V3 nq; // wave vector
-  private double nqlen;
 
   private int fn; // power
   private char axis;
@@ -33,30 +32,27 @@ public class Modulation {
   public static final int TYPE_OCC_CRENEL = 3;
   public static final int TYPE_U_FOURIER = 4;
 
-  public V3 getWaveVector() {
-    return nq;
-  }
-
   /**
    * Each atomic modulation involves a fractional coordinate wave vector q, a
    * Fourier power n, a modulation axis (x, y, or, z), and specified parameters
    * that depend upon the type of function.
    * 
    * 
-   * @param nq
    * @param axis
    * @param type
    * @param fn
    * @param params
    * @param utens TODO
+   * @param qCoefs
    */
-  public Modulation(P3 nq, char axis, int type, int fn, P3 params, String utens) {
-    this.nq = V3.newV(nq);
-    nqlen  = nq.length();
+  public Modulation(char axis, int type, int fn, P3 params, String utens, int[] qCoefs) {
+    if (Logger.debuggingHigh)
+      Logger.debug("MOD create " + Escape.eAI(qCoefs) + " axis=" + axis + " type=" + type + " fn=" + fn + " params=" + params + " utens=" + utens);
     this.axis = axis;
     this.type = type;
     this.fn = fn;
     this.utens = utens;
+    this.qCoefs = qCoefs;
     switch (type) {
     case TYPE_DISP_FOURIER:
     case TYPE_OCC_FOURIER:
@@ -86,57 +82,34 @@ public class Modulation {
 
   /**
    * 
-   * In general, we have:
+   * In general, we have, for Fourier:
    * 
    * u_axis(x) = sum[A1 cos(theta) + B1 sin(theta)]
    * 
    * where axis is x, y, or z, and theta = 2n pi x
    * 
-   * However, for symmetry-related atoms, we need to do a 4D transformation, not
-   * just a 3D one. We need to operate on x first BEFORE applying u(x):
-   * 
-   * u(x4') = Ru(x4)
-   * 
-   * where we need to express x4 in terms of a "transformed" x4', because x4' is
-   * for our rotated point.
-   * 
-   * x4' = epsilon x4 + delta
-   * 
-   * where epsilon = +/-1, so
-   * 
-   * x4 = epsilon (x4' - delta)
-   * 
-   * More generally, we might have something like:
-   * 
-   * x4' = x5 + 1/2; x5' = x4 - 1/2
-   * 
-   * Will have to work on that later!
-   * 
-   * 
+   * @param i
    * @param ms
+   * @param x4 
    * 
    */
-   void apply(ModulationSet ms) {
-
-    // TODO: must be adapted for d > 1 modulation
+   void apply(int i, ModulationSet ms, double x4) {
 
     double v = 0;
     //if (type == TYPE_OCC_CRENEL)
     //delta = 0;
     
-    double x4 = ms.epsilon * (nq.dot(ms.r) - fn * ms.delta + nqlen * ms.t);
-
     switch (type) {
     case TYPE_DISP_FOURIER:
     case TYPE_OCC_FOURIER:
     case TYPE_U_FOURIER:
-      double theta = TWOPI * x4;
+      double theta = TWOPI * fn * x4;
       if (a1 != 0)
         v += a1 * Math.cos(theta);
       if (a2 != 0)
         v += a2 * Math.sin(theta);
       if (Logger.debuggingHigh)
-        Logger.debug("MOD v=" + v + " a1,a2=" + a1 + " " + a2 + " / theta=" + theta + " id=" +  ms.id);
+        Logger.debug("MOD " +  i + ":" + ms.id + " fn=" + fn + " " +  " axis=" + axis + " v=" + v + " ccos,csin=" + a1 + "," + a2 + " / theta=" + theta);
       break;
     case TYPE_OCC_CRENEL:
 
@@ -147,8 +120,8 @@ public class Modulation {
       //           p(x4)=0   if x4 is outside the interval [c-w/2,c+w/2],
 
       x4 -= Math.floor(x4);
-      ms.v = (range(x4) ? 1 : 0);
-      ms.v0 = Float.NaN; // don't add this in
+      ms.vocc = (range(x4) ? 1 : 0);
+      ms.vocc0 = Float.NaN; // don't add this in
       //System.out.println("MOD " + ms.r + " " +  ms.delta + " " + ms.epsilon + " " + ms.id + " " + ms.v + " l=" + left + " x=" + x4 + " r=" + right);
       return;
     case TYPE_DISP_SAWTOOTH:
@@ -228,6 +201,7 @@ public class Modulation {
       v = a1 * (x4 - center);
       break;
     }
+
     switch (axis) {
     case 'x':
       ms.x += v;
@@ -242,9 +216,9 @@ public class Modulation {
       ms.addUTens(utens, (float) v, fn);
       break;
     default:
-      if (Float.isNaN(ms.v))
-        ms.v = 0;
-      ms.v += (float) v;
+      if (Float.isNaN(ms.vocc))
+        ms.vocc = 0;
+      ms.vocc += (float) v;
     }
   }
 
@@ -260,5 +234,25 @@ public class Modulation {
         || x4 <= right);
   }
 
+  /** just guessing here....
+   * 
+   * @param aq
+   * @param q
+   * @return pointer to last-used index
+   */
+  int getQ(P3[] aq, P3 q) {
+    q.set(0, 0, 0);
+    int eq = 0;
+    fn = 0;
+    for (int i = 0; i < aq.length; i++) {
+      q.scaleAdd2(qCoefs[i], aq[i], q);
+      if (qCoefs[i] != 0) {
+        eq = i;
+        fn+= Math.abs(qCoefs[i]);
+      }
+    }
+    q.scale(1f/fn);
+    return eq;
+  }
   
 }

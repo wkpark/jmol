@@ -42,7 +42,7 @@ public class AnimationThread extends JmolThread {
   public AnimationThread() {}
   
   @Override
-  public void setManager(Object manager, Viewer viewer, Object params) {
+  public int setManager(Object manager, Viewer viewer, Object params) {
     int[] options = (int[]) params;
     framePointer1 = options[0];
     framePointer2 = options[1];
@@ -50,6 +50,7 @@ public class AnimationThread extends JmolThread {
     animationManager = (AnimationManager) manager;
     setViewer(viewer, "AnimationThread");
     viewer.startHoverWatcher(false);
+    return 0;
   }
 
   @Override

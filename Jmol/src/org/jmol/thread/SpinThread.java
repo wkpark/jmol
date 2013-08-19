@@ -59,7 +59,7 @@ public class SpinThread extends JmolThread {
   
   @SuppressWarnings("unchecked")
   @Override
-  public void setManager(Object manager, Viewer viewer, Object params) {
+  public int setManager(Object manager, Viewer viewer, Object params) {
     transformManager = (TransformManager) manager;
     setViewer(viewer, "SpinThread");
     Object[] options = (Object[]) params;
@@ -84,6 +84,7 @@ public class SpinThread extends JmolThread {
       bsAtoms = (BS) options[3];
       isGesture = (options[4] != null);
     }
+    return 0;
   }
 
   /**

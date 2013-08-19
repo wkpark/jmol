@@ -178,13 +178,7 @@ class SymmetryOperation extends Matrix4f {
     this.modDim = modDim;
     if (modDim > 0) {
       n = 32; // x4, x5, x6, and twelfths
-      if (modDim == 1) {
-        myLabels = labelsX1_6;
-      } else {
-        myLabels = new String[modDim + 3];
-        for (int i = modDim + 3; --i >= 0;)
-          myLabels[i] = "x" + (i + 1);
-      }
+      myLabels = labelsX1_6;
     }
     rotTransMatrix = new float[n];
     boolean isReverse = (xyz.startsWith("!"));
@@ -1322,9 +1316,7 @@ class SymmetryOperation extends Matrix4f {
   }
 
   public void getMod456Row(int rowPt, float[] f4) {
-    for (int i = 0, pt = 16 + rowPt * 4; i < 4; i++, pt++)
-      f4[i] = rotTransMatrix[pt];
-    f4[3] /= 12;
+    mod456.getRow(rowPt, f4);
   }
 
 }

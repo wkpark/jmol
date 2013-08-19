@@ -43,13 +43,14 @@ public class ModulationThread extends JmolThread {
   }
 
   @Override
-  public void setManager(Object manager, Viewer viewer, Object params) {
+  public int setManager(Object manager, Viewer viewer, Object params) {
     int[] options = (int[]) params;
     modT = options[0];
     modT2 = options[1];
     animationManager = (AnimationManager) manager;
     setViewer(viewer, "ModulationThread");
     viewer.startHoverWatcher(false);      
+    return 0;
   }
   
   @Override
@@ -88,7 +89,7 @@ public class ModulationThread extends JmolThread {
         mode = CHECK1;
         break;
       case CHECK1:
-        viewer.setModulation(true, modT++, Integer.MAX_VALUE, true);
+        viewer.setModulation(true, new int[] {modT++}, Integer.MAX_VALUE, true);
         mode = CHECK2;
         break;
       case CHECK2:

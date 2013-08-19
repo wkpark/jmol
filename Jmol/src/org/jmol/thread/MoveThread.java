@@ -53,7 +53,7 @@ public class MoveThread extends JmolThread {
   public MoveThread() {}
   
   @Override
-  public void setManager(Object manager, Viewer viewer, Object params) {
+  public int setManager(Object manager, Viewer viewer, Object params) {
     Object[] options = (Object[]) params;
     setViewer(viewer, "MoveThread");
     transformManager = (TransformManager) manager;
@@ -80,6 +80,7 @@ public class MoveThread extends JmolThread {
     radiansZStep = radiansPerDegreePerStep * dRot.z;
     zoomPercent0 = transformManager.zoomPercent;
     iStep = 0;
+    return totalSteps;
   }
   
 

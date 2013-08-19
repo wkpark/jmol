@@ -742,7 +742,6 @@ public abstract class AtomSetCollectionReader {
       for (i = 0; i < 6; i++)
         notionalUnitCell[i] = -1;
     }
-        
     iHaveUnitCell = checkUnitCell(15);
   }
 
@@ -1054,10 +1053,10 @@ public abstract class AtomSetCollectionReader {
               (spaceGroup.indexOf("!") >= 0 ? "P1" : spaceGroup), notionalUnitCell)) {
             atomSetCollection.setAtomSetSpaceGroupName(symmetry
                 .getSpaceGroupName());
-            atomSetCollection.applySymmetryUsing(symmetry);
+            atomSetCollection.applySymmetry(symmetry);
           }
         } else {
-          atomSetCollection.applySymmetry();
+          atomSetCollection.applySymmetry(null);
         }
       }
       if (iHaveFractionalCoordinates && merging && symmetry != null) {

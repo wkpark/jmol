@@ -39,9 +39,10 @@ public class CommandWatcherThread extends JmolThread {
   
   
   @Override
-  public void setManager(Object manager, Viewer viewer, Object params) {
+  public int setManager(Object manager, Viewer viewer, Object params) {
     scriptManager = (ScriptManager) manager;
     setViewer(viewer, "CommmandWatcherThread"); 
+    return 0;
   }
 
   private final static int commandDelay = 50; // was 200

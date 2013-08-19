@@ -248,11 +248,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                                      boolean allowThreads) {
     boolean tempOpen = this.isCmdLine_C_Option;
     this.isCmdLine_C_Option = isCmdLine_C_Option;
-    executionStopped = executionPaused = false;
-    executionStepping = false;
-    executing = true;
     chk = this.isCmdLine_c_or_C_Option = isCmdLine_c_or_C_Option;
-    timeBeginExecution = System.currentTimeMillis();
     this.historyDisabled = historyDisabled;
     this.outputBuffer = outputBuffer;
     currentThread = Thread.currentThread();
@@ -268,6 +264,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
   
   private void startEval() {
+    timeBeginExecution = System.currentTimeMillis();
+    executionStopped = executionPaused = false;
+    executionStepping = false;
+    executing = true;
     viewer.pushHoldRepaint("runEval");
     setScriptExtensions();
     executeCommands(false);
@@ -2767,6 +2767,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                                     boolean isPopContext,
                                     boolean isFlowCommand, boolean statementOnly) {
 
+    executing = !chk;
     if (context == null)
       return;
     if (debugScript || isCmdLine_c_or_C_Option)
@@ -11999,11 +12000,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       //$FALL-THROUGH$
     case T.off:
       if (!chk)
-        viewer.setModulation(mod, Integer.MAX_VALUE, Integer.MAX_VALUE, false);
+        viewer.setModulation(mod, null, Integer.MAX_VALUE, false);
       break;
     case T.integer:
       if (!chk)
-        viewer.setModulation(true, intParameter(1), Integer.MAX_VALUE, false);
+        viewer.setModulation(true, new int[] {intParameter(1)}, Integer.MAX_VALUE, false);
       break;
     case T.fps:
       if (!chk)
@@ -12011,7 +12012,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       break;
     case T.play:
       if (!chk)
-        viewer.setModulation(true, intParameter(2), intParameter(3), false);
+        viewer.setModulation(true, new int[] {intParameter(2)}, intParameter(3), false);
       break;
     } 
   }

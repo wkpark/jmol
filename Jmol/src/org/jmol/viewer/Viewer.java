@@ -10267,16 +10267,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (!getTestFlag(1));
   }
 
-  public void setModulation(boolean isOn, int t1, int t2, boolean isThread) {
+  public void setModulation(boolean isOn, int[] t1, int t2, boolean isThread) {
+    int t = (t1 == null ? Integer.MAX_VALUE : t1[0]);
     if (t2 == Integer.MAX_VALUE) {
       if (!isThread)
         animationManager.setModulationPlay(Integer.MAX_VALUE, 0);
-      if (t1 != Integer.MAX_VALUE)
-        global.setI("_modt", t1);
-      modelSet.setModulation(getSelectionSet(false), isOn, t1);
+      if (t1 != null)
+        global.setI("_modt", t1[0]);
+      modelSet.setModulation(getSelectionSet(false), isOn, t);
     } else {
-      animationManager.setModulationPlay(t1, t2);
+      animationManager.setModulationPlay(t, t2);
     }
+    refreshMeasures(true);
   }
 
   public void setModulationFps(float fps) {

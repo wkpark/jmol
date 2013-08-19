@@ -258,8 +258,8 @@ public class JanaReader extends ModulationReader {
       for (int j = 0; j < nOcc; j++) {
         if (haveCrenel) {
           float[][] data = readM40FloatLines(2, 1, r);
-          a1 = data[0][0];
-          a2 = data[1][0];
+          a1 = data[1][0];
+          a2 = data[0][0];
         } else {
           wv = j + 1;
           readM40Floats(r);

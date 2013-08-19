@@ -66,8 +66,6 @@ public interface SymmetryInterface {
 
   public Matrix4f getSpaceGroupOperation(int i);
 
-  public void getMod456Row(int iop, int irow, float[] f4);
-
   public String getSpaceGroupXyz(int i, boolean doNormalize);
 
   public void newSpaceGroupPoint(int i, P3 atom1, P3 atom2,
@@ -178,5 +176,7 @@ public interface SymmetryInterface {
   public void addLatticeVectors(JmolList<float[]> lattvecs);
 
   public boolean hasLatticeCentering();
+
+  public Matrix4f getOperationGammaIS(int iop);
   
 }

@@ -13,14 +13,13 @@ public class Modulation {
 
   private static final double TWOPI = 2 * Math.PI;
 
-  private int[] qCoefs;
+  private P3 qCoefs;
   
   private double a1;
   private double a2;
   private double center;
   private double left, right;
 
-  private int fn; // power
   private char axis;
   private final int type;
 
@@ -40,17 +39,15 @@ public class Modulation {
    * 
    * @param axis
    * @param type
-   * @param fn
    * @param params
    * @param utens TODO
    * @param qCoefs
    */
-  public Modulation(char axis, int type, int fn, P3 params, String utens, int[] qCoefs) {
+  public Modulation(char axis, int type, P3 params, String utens, P3 qCoefs) {
     if (Logger.debuggingHigh)
-      Logger.debug("MOD create " + Escape.eAI(qCoefs) + " axis=" + axis + " type=" + type + " fn=" + fn + " params=" + params + " utens=" + utens);
+      Logger.debug("MOD create " + Escape.eP(qCoefs) + " axis=" + axis + " type=" + type + " params=" + params + " utens=" + utens);
     this.axis = axis;
     this.type = type;
-    this.fn = fn;
     this.utens = utens;
     this.qCoefs = qCoefs;
     switch (type) {
@@ -75,7 +72,7 @@ public class Modulation {
         right -= 1;
       if (left >= right && left - right < 0.01f)
         left = right + 0.01f;
-      a1 = 2 * params.z / width;
+      a1 = 2 * params.z / params.y;
       break;
     }
   }
@@ -88,28 +85,64 @@ public class Modulation {
    * 
    * where axis is x, y, or z, and theta = 2n pi x
    * 
-   * @param i
+   * More generally, we have for a given rotation that is characterized by
+   * 
+   * X {x4 x5 x6 ...}
+   * 
+   * Gamma_E (R3 rotation)
+   * 
+   * Gamma_I (X rotation)
+   * 
+   * S_I (X translation)
+   * 
+   * We allow here only up to x6, simply because we are using standard R3
+   * rotation objects Matrix3f, P3, V3.
+   * 
+   * We desire:
+   * 
+   * u'(X') = Gamma_E u(X)
+   * 
+   * which is defined as [private communication, Vaclav Petricek]:
+   * 
+   * u'(X') = Gamma_E sum[ U_c cos(2 pi (n m).Gamma_I^-1{X - S_I}) + U_s sin(2
+   * pi (n m).Gamma_I^-1{X - S_I}) ]
+   * 
+   * where
+   * 
+   * U_c and U_s are coefficients for cos and sin, respectively (will be a1 and
+   * a2 here)
+   * 
+   * (n m) is an array of Fourier number coefficients, such as (1 0), (1 -1), or
+   * (0 2)
+   * 
+   * Offset here is only for d=1 case.
+   * 
+   * 
+   * 
    * @param ms
-   * @param x4 
+   * @param offset
+   * 
    * 
    */
-   void apply(int i, ModulationSet ms, double x4) {
 
+  void apply(ModulationSet ms, double offset) {
+    double x = qCoefs.dot(ms.x456) + qCoefs.x * offset;
     double v = 0;
     //if (type == TYPE_OCC_CRENEL)
     //delta = 0;
-    
+
     switch (type) {
     case TYPE_DISP_FOURIER:
     case TYPE_OCC_FOURIER:
     case TYPE_U_FOURIER:
-      double theta = TWOPI * fn * x4;
+      double theta = TWOPI * x;
       if (a1 != 0)
         v += a1 * Math.cos(theta);
       if (a2 != 0)
         v += a2 * Math.sin(theta);
       if (Logger.debuggingHigh)
-        Logger.debug("MOD " +  i + ":" + ms.id + " fn=" + fn + " " +  " axis=" + axis + " v=" + v + " ccos,csin=" + a1 + "," + a2 + " / theta=" + theta);
+        Logger.debug("MOD " + ms.id + " " + Escape.eP(qCoefs) + " axis=" + axis
+            + " v=" + v + " ccos,csin=" + a1 + "," + a2 + " / theta=" + theta);
       break;
     case TYPE_OCC_CRENEL:
 
@@ -119,8 +152,8 @@ public class Modulation {
       //           p(x4)=1   if x4 belongs to the interval [c-w/2,c+w/2]
       //           p(x4)=0   if x4 is outside the interval [c-w/2,c+w/2],
 
-      x4 -= Math.floor(x4);
-      ms.vocc = (range(x4) ? 1 : 0);
+      x -= Math.floor(x);
+      ms.vocc = (range(x) ? 1 : 0);
       ms.vocc0 = Float.NaN; // don't add this in
       //System.out.println("MOD " + ms.r + " " +  ms.delta + " " + ms.epsilon + " " + ms.id + " " + ms.v + " l=" + left + " x=" + x4 + " r=" + right);
       return;
@@ -140,8 +173,8 @@ public class Modulation {
 
       // here we have set a1 = 2a_xyz/w 
 
-      x4 -= Math.floor(x4);
-      if (!range(x4))
+      x -= Math.floor(x);
+      if (!range(x))
         return;
 
       // x < L < c
@@ -193,12 +226,12 @@ public class Modulation {
       //     |/
 
       if (left > right) {
-        if (x4 < left && left < center)
-          x4 += 1;
-        else if (x4 > right && right > center)
-          x4 -= 1;
+        if (x < left && left < center)
+          x += 1;
+        else if (x > right && right > center)
+          x -= 1;
       }
-      v = a1 * (x4 - center);
+      v = a1 * (x - center);
       break;
     }
 
@@ -213,7 +246,7 @@ public class Modulation {
       ms.z += v;
       break;
     case 'U':
-      ms.addUTens(utens, (float) v, fn);
+      ms.addUTens(utens, (float) v);
       break;
     default:
       if (Float.isNaN(ms.vocc))
@@ -234,25 +267,4 @@ public class Modulation {
         || x4 <= right);
   }
 
-  /** just guessing here....
-   * 
-   * @param aq
-   * @param q
-   * @return pointer to last-used index
-   */
-  int getQ(P3[] aq, P3 q) {
-    q.set(0, 0, 0);
-    int eq = 0;
-    fn = 0;
-    for (int i = 0; i < aq.length; i++) {
-      q.scaleAdd2(qCoefs[i], aq[i], q);
-      if (qCoefs[i] != 0) {
-        eq = i;
-        fn+= Math.abs(qCoefs[i]);
-      }
-    }
-    q.scale(1f/fn);
-    return eq;
-  }
-  
 }

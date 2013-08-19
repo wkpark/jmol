@@ -342,6 +342,8 @@ public class LabelToken {
   private static int setToken(Viewer viewer, String strFormat, LabelToken lt,
                               int cch, int chAtom, Map<String, Object> htValues) {
     int ich = lt.pt + 1;
+    if (ich >= cch)
+      return ich;
     char ch;
     if (strFormat.charAt(ich) == '-') {
       lt.alignLeft = true;

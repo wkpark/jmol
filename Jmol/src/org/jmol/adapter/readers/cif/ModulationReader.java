@@ -41,7 +41,6 @@ import org.jmol.util.ModulationSet;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
 import org.jmol.util.Tensor;
-import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
 
 
@@ -82,7 +81,6 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   private V3 q1Norm;  
   private Map<String, P3> htModulation;
   private Map<String, JmolList<Modulation>> htAtomMods;
-  private int modT;
   protected Map<String, Object> htSubsystems;
   
   
@@ -110,7 +108,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       modDim = 0;
       modAverage = true;
     } else {
-      appendLoadNote("Modulation dimension = " + modDim + (modDim > 1 ? " NOT IMPLEMENTED YET " : ""));   
+      appendLoadNote("Modulation dimension = " + modDim);   
       htModulation = new Hashtable<String, P3>();
     }
     incommensurate = (modDim > 0);
@@ -143,6 +141,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
         pt.x = pt.y = 0;
         break;
       }
+    if (pt.x == 0 && pt.y == 0 && pt.z == 0)
+      return;
     if (map == null)
       map = htModulation;
     id += "@"
@@ -179,7 +179,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     if (htModulation.containsKey("X_" + suffix))
       return;
     htModulation.put("X_" +suffix, new P3());
-    q123 = new P3[modDim];
+    q123 = new P3[3];
     qlen = new double[modDim];
     for (int i = 0; i < modDim; i++) {
       q123[i] = getMod("W_" + (i + 1));
@@ -189,8 +189,11 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       }
       qlen[i] = q123[i].length();
     }
+    for (int i = modDim; i < 3; i++)
+      q123[i] = new P3();
     q1 = q123[0];
     q1Norm = V3.new3(q1.x == 0 ? 0 : 1, q1.y == 0 ? 0 : 1, q1.z == 0 ? 0 : 1);
+    P3 qlist100 = P3.new3(1, 0, 0);
     P3 pt;    
     int n = atomSetCollection.getAtomCount();
     Map<String, P3> map = new Hashtable<String, P3>();
@@ -225,23 +228,13 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
         // convert JAVA Fourier descriptions to standard descriptions
         if (key.indexOf("_q_") >= 0) {
           // d > 1 -- already set
-          appendLoadNote("Wave vector " + key + "(n=" + (modDim == 1 ? Integer.valueOf((int)pt.x) : pt)+")");
-          P3 pf = new P3();
-          if (pt.x != 0)
-            pf.scaleAdd2(pt.x, getMod("W_1"), pf);
-          if (pt.y != 0)
-            pf.scaleAdd2(pt.y, getMod("W_2"), pf);
-          if (pt.z != 0)
-            pf.scaleAdd2(pt.z, getMod("W_3"), pf);
-          key = TextFormat.simpleReplace(key, "_q_", "");
-          addModulation(map, key, pf, iModel);
-          appendLoadNote("Wave vector " + key + "(n=" + (modDim == 1 ? Integer.valueOf((int)pt.x) : pt)+") = " + pf);
+          appendLoadNote("Wave vector " + key + "=" + pt);
         } else {
           int fn = (int) (pt.dot(q1) / q1.dot(q1) * 1.01f);
           String k2 = key  + "_q_";
           if (!htModulation.containsKey(k2 + suffix)) {
             addModulation(map, k2, P3.new3(fn, 0, 0), iModel);
-            appendLoadNote("Wave vector " + key + " = " + pt + " n = " + fn);
+            //appendLoadNote("Wave vector " + key + " = " + pt + " n = " + fn);
           }
         }
         break;
@@ -282,10 +275,13 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
           htAtomMods = new Hashtable<String, JmolList<Modulation>>();
         int fn = (id == 'S' ? 0 : parseIntStr(key.substring(2)));
         if (fn == 0) {
-          addAtomModulation(atomName, axis, type, 1, params, utens, new int[] {1});
+          addAtomModulation(atomName, axis, type, params, utens, qlist100);
         } else {
-          P3 qlist = getMod("F_" + fn + "_q_"); 
-          addAtomModulation(atomName, axis, type, 1, params, utens, new int[] { (int) qlist.x, (int) qlist.y, (int) qlist.z } );
+          P3 qlist = getMod("F_" + fn + "_q_");
+          if (qlist == null) {
+            Logger.error("Missing qlist for F_" + fn);
+          }
+          addAtomModulation(atomName, axis, type, params, utens, qlist);
         }
         haveAtomMods = true;
         break;
@@ -296,7 +292,6 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     atoms = atomSetCollection.getAtoms();
     symmetry = atomSetCollection.getSymmetry();
     iopLast = -1;
-    f4 = new float[4];
     SB sb = new SB();
     for (int i = atomSetCollection.getLastAtomSetAtomIndex(); i < n; i++)
       modulateAtom(atoms[i], sb);
@@ -305,11 +300,11 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   }
 
   private void addAtomModulation(String atomName, char axis, int type,
-                                 int fn, P3 params, String utens, int[] qcoefs) {
+                                 P3 params, String utens, P3 qcoefs) {
     JmolList<Modulation> list = htAtomMods.get(atomName);
     if (list == null)
       htAtomMods.put(atomName, list = new JmolList<Modulation>());
-    list.addLast(new Modulation(axis, type, fn, params, utens, qcoefs));
+    list.addLast(new Modulation(axis, type, params, utens, qcoefs));
   }
 
   private String checkKey(String key) {
@@ -318,10 +313,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   }
 
   private int iopLast = -1;
-  private Matrix3f rot;
-  private float[] f4;
-  float[] epsilon = new float[3];
-  float[] delta = new float[3];
+  private Matrix3f gammaE;
+  private Matrix4f gammaIS;
   
   /**
    * The displacement will be set as the atom vibration vector; the string
@@ -352,37 +345,23 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     if (iop != iopLast) {
       //System.out.println("mdim=" + mdim + " op=" + (iop + 1) + " " + symmetry.getSpaceGroupOperation(iop) + " " + symmetry.getSpaceGroupXyz(iop, false));
       iopLast = iop;
-      rot = new Matrix3f();
-      for (int i = 0; i < modDim; i++) {
-        symmetry.getMod456Row(iop, i, f4);
-        epsilon[i] = 0;
-        if (modSelected > 0) {
-          if (i == modSelected - 1)
-            epsilon[i] = f4[i] * modSelected;
-          continue;
-        }
-        for (int j = 0; j < modDim; j++)
-          epsilon[i] += f4[j] * (j + 1);
-        delta[i] = f4[3] - modT;
-      }
+      gammaE = new Matrix3f();
+      symmetry.getSpaceGroupOperation(iop).getRotationScale(gammaE);
+      gammaIS = symmetry.getOperationGammaIS(iop);
     }
-    symmetry.getSpaceGroupOperation(iop).getRotationScale(rot);
     if (Logger.debugging) {
       Logger.debug("setModulation iop = " + iop + " "
           + symmetry.getSpaceGroupXyz(iop, false) + " " + a.bsSymmetry);
     }
-    ModulationSet ms = new ModulationSet(a.index + " " + a.atomName, list,
-        modDim, q123, qlen);
+    
+    float vocc0 = a.occupancy / 100f;
+    ModulationSet ms = new ModulationSet(a.index + " " + a.atomName, 
+        P3.newP(a), vocc0, modDim, list, gammaE, gammaIS, q123, qlen);
     a.vib = ms;
-    ms.epsilon = epsilon;
-    ms.delta = delta;
-    ms.r = P3.newP(a);
-    ms.vocc0 = a.occupancy / 100f;
-    ms.rot = rot;
     ms.calculate();
     if (!Float.isNaN(ms.vocc)) {
-      if (modVib && !Float.isNaN(ms.vocc0)) {
-        a.occupancy = (int) ((ms.vocc0 + ms.vocc) * 100);
+      if (modVib && !Float.isNaN(vocc0)) {
+        a.occupancy = (int) ((vocc0 + ms.vocc) * 100);
       } else if (ms.vocc < 0.5f) {
         a.occupancy = 0;
         if (bsAtoms != null)
@@ -391,7 +370,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
         a.occupancy = 100;
       }
     }
-    if (ms.htValues != null) {
+    if (ms.htUij != null) {
       // Uiso or Uij. We add the displacements, create the tensor, then rotate it, 
       // replacing the tensor already present for that atom.
       if (Logger.debuggingHigh) {
@@ -399,7 +378,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
         Logger.debug("setModulation tensor="
             + Escape.e(a.tensors.get(0).getInfo("all")));
       }
-      for (Entry<String, Float> e : ms.htValues.entrySet())
+      for (Entry<String, Float> e : ms.htUij.entrySet())
         addUStr(a, e.getKey(), e.getValue().floatValue());
 
       if (a.tensors != null)

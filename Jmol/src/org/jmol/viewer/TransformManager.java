@@ -1708,15 +1708,15 @@ public class TransformManager {
         matrixEnd.setAA(aaMoveTo);
       }
     }
-    if (Float.isNaN(cameraX) || cameraX == cameraSetting.x)
-      cameraX = Float.MAX_VALUE;
-    if (Float.isNaN(cameraY) || cameraY == cameraSetting.y)
-      cameraY = Float.MAX_VALUE;
+    if (cameraX == cameraSetting.x)
+      cameraX = Float.NaN;
+    if (cameraY == cameraSetting.y)
+      cameraY = Float.NaN;
     if (cameraDepth == this.cameraDepth)
-      cameraDepth = Float.MAX_VALUE;
-    if (cameraX != Float.MAX_VALUE)
+      cameraDepth = Float.NaN;
+    if (!Float.isNaN(cameraX))
       xTrans = cameraX * 50 / newRotationRadius / width * screenPixelCount;
-    if (cameraY != Float.MAX_VALUE)
+    if (!Float.isNaN(cameraY))
       yTrans = cameraY * 50 / newRotationRadius / height * screenPixelCount;
     float pixelScale = (center == null ? scaleDefaultPixelsPerAngstrom
         : defaultScaleToScreen(newRotationRadius));
@@ -2760,21 +2760,23 @@ public class TransformManager {
       moveRotationCenter(center, !windowCentered);
     if (navCenter != null && mode == MODE_NAVIGATION)
       navigationCenter.setT(navCenter);
-    if (cameraDepth != Float.MAX_VALUE)
+    if (!Float.isNaN(cameraDepth))
       setCameraDepthPercent(cameraDepth, false);
-    if (cameraX != Float.MAX_VALUE && cameraY != Float.MAX_VALUE)
+    if (!Float.isNaN(cameraX) && !Float.isNaN(cameraY))
       setCamera(cameraX, cameraY);
-    if (zoom != Float.MAX_VALUE)
+    if (!Float.isNaN(zoom))
       zoomToPercent(zoom);
-    modelRadius = rotationRadius;
-    scaleDefaultPixelsPerAngstrom = pixelScale;
-    if (xTrans != Float.MAX_VALUE && yTrans != Float.MAX_VALUE) {
+    if (!Float.isNaN(rotationRadius))
+      modelRadius = rotationRadius;
+    if (!Float.isNaN(pixelScale))
+      scaleDefaultPixelsPerAngstrom = pixelScale;
+    if (!Float.isNaN(xTrans) && !Float.isNaN(yTrans)) {
       translateToPercent('x', xTrans);
       translateToPercent('y', yTrans);
     }
-    if (xNav != Float.MAX_VALUE && yNav != Float.MAX_VALUE)
+    if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
       navTranslatePercentOrTo(0, xNav, yNav);
-    if (navDepth != Float.MAX_VALUE)
+    if (!Float.isNaN(navDepth))
       setNavigationDepthPercent(navDepth);
   }
 

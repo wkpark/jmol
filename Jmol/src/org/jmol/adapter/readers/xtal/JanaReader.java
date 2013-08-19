@@ -139,9 +139,20 @@ public class JanaReader extends ModulationReader {
 
   private void qi() {
     P3 pt = P3.new3(parseFloat(), parseFloat(), parseFloat());
-    if (qicount == 0)
-      addModulation(null, "W_1", pt, -1);
-    addModulation(null, "F_" + (++qicount), pt, -1);
+    addModulation(null, "W_" + (++qicount), pt, -1);
+    pt = new P3();
+    switch (qicount) {
+    case 1:
+      pt.x = 1;
+      break;
+    case 2:
+      pt.y = 1;
+      break;
+    case 3:
+      pt.z = 1;
+      break;
+    }
+    addModulation(null, "F_" + qicount + "_q_", pt, -1);
   }
    private void lattvec(String data) throws Exception {
     float[] a;
@@ -211,18 +222,21 @@ public class JanaReader extends ModulationReader {
     ipt = id.lastIndexOf("/");
     id = id.substring(ipt + 1);
     BufferedReader r = JmolBinary.getBufferedReaderForString((String) viewer.getLigandModel(id, name, "_file", "----"));
-    if (readM40Floats(r).startsWith("command")) {
-      discardLinesUntilContains("end");
-      readM40Floats(r);
-    }
+    if (readM40Floats(r).startsWith("command"))
+      readM40WaveVectors(r);
     int nAtoms = (int) floats[0];
     for (int i = 0; i < nAtoms; i++) {
       while (readM40Floats(r).length() == 0 || line.charAt(0) == ' '
           || line.charAt(0) == '-') {
       }
-      Atom atom = atomSetCollection.addNewAtom();
+      
+      
+      Atom atom = new Atom();
       atom.atomName = line.substring(0, 9).trim();
+      if (!filterAtom(atom, 0))
+        continue;
       setAtomCoordXYZ(atom, floats[3], floats[4], floats[5]);
+      atomSetCollection.addAtom(atom);
       if (!incommensurate)
         continue;
       String label = ";" + atom.atomName;
@@ -305,6 +319,26 @@ public class JanaReader extends ModulationReader {
     r.close();
   }
 
+  private void readM40WaveVectors(BufferedReader r) throws Exception {
+    while (!readM40Floats(r).contains("end"))
+      if (line.startsWith("wave")) {
+        String[] tokens = getTokens();
+        P3 pt = new P3();
+        switch (modDim) {
+        case 3:
+          pt.z = parseFloatStr(tokens[4]);
+          //$FALL-THROUGH$
+        case 2:
+          pt.y = parseFloatStr(tokens[3]);
+          //$FALL-THROUGH$
+        case 1:
+          pt.x = parseFloatStr(tokens[2]);
+        }
+        addModulation(null, "F_" + parseIntStr(tokens[1]) + "_q_", pt, -1);
+      }
+    readM40Floats(r);
+  }
+
   private void addSinCos(int j, String key, String label, BufferedReader r) throws Exception {
     checkFourier(j);
     readM40Floats(r);
@@ -323,10 +357,11 @@ public class JanaReader extends ModulationReader {
   }
 
   private void checkFourier(int j) {
-    if (j > 0 && getModulationVector("F_" + (j + 1)) == null) {
-      P3 pt = P3.newP(getModulationVector("F_1"));
+    P3 pt;
+    if (j > 0 && getModulationVector("F_" + (j + 1) + "_q_") == null && (pt = getModulationVector("F_1_q_")) != null) {
+      pt = P3.newP(pt);
       pt.scale(j + 1);
-      addModulation(null, "F_" + (j + 1), pt, -1);
+      addModulation(null, "F_" + (j + 1) + "_q_", pt, -1);
     }
   }
 
@@ -339,7 +374,8 @@ public class JanaReader extends ModulationReader {
   
   private String readM40Floats(BufferedReader r) throws Exception {
     line = r.readLine();
-    System.out.println(line);
+    if (Logger.debugging)
+      Logger.debug(line);
     int ptLast = line.length() - 10;
     for (int i = 0, pt = 0; i < 6 && pt <= ptLast; i++, pt += 9)
       floats[i] = parseFloatStr(line.substring(pt, pt + 9));

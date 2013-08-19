@@ -790,7 +790,8 @@ public abstract class AtomSetCollectionReader {
   private boolean filterChain;
   private boolean filterAtomName;
   private boolean filterAtomType;
-  protected String filterAtomTypeStr;
+  private String filterAtomTypeStr;
+  private String filterAtomNameTerminator = ";";  
   private boolean filterElement;
   protected boolean filterHetero;
   private boolean filterEveryNth;
@@ -823,6 +824,12 @@ public abstract class AtomSetCollectionReader {
   // Spartan: "INPUT", "ESPCHARGES"
   // 
 
+  protected void setFilterAtomTypeStr(String s) {
+    // PDB reader TYPE=...
+    filterAtomTypeStr = s;
+    filterAtomNameTerminator = "\0";
+  }
+  
   protected void setFilter(String filter0) {
     if (filter0 == null) {
       filter0 = (String) htParams.get("filter");
@@ -922,8 +929,7 @@ public abstract class AtomSetCollectionReader {
   private boolean checkFilter(Atom atom, String f) {
     return (!filterGroup3 || atom.group3 == null || !filterReject(f, "[",
         atom.group3.toUpperCase() + "]"))
-        && (!filterAtomName || atom.atomName == null || !filterReject(f, ".",
-            atom.atomName.toUpperCase() + (filterAtomTypeStr == null ? ";" : "\0")))
+        && (!filterAtomName || allowAtomName(atom.atomName, f))
         && (filterAtomTypeStr == null || atom.atomName == null 
             || atom.atomName.toUpperCase().indexOf("\0" + filterAtomTypeStr) >= 0)
         && (!filterElement || atom.elementSymbol == null || !filterReject(f, "_",
@@ -934,6 +940,15 @@ public abstract class AtomSetCollectionReader {
             f, "%", "" + atom.alternateLocationID))
         && (!filterHetero || !filterReject(f, "HETATM",
             atom.isHetero ? "HETATM" : "ATOM"));
+  }
+
+  protected boolean rejectAtomName(String name) {
+    return filterAtomName && !allowAtomName(name, filter);
+  }
+
+  private boolean allowAtomName(String atomName, String f) {
+    return (atomName == null || !filterReject(f, ".",
+        atomName.toUpperCase() + filterAtomNameTerminator));
   }
 
   protected boolean filterReject(String f, String code, String atomCode) {

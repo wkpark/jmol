@@ -233,7 +233,7 @@ public class MoveToThread extends JmolThread {
   }
 
   private float getVal(Slider s) {
-    return (s == null ? Float.MAX_VALUE : s.getVal(fStep));
+    return (s == null ? Float.NaN : s.getVal(fStep));
   }
 
   @Override

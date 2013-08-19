@@ -2356,12 +2356,12 @@ _pdbx_struct_oper_list.vector[3]
   /**
    * creates entries in htModulation with a key of the form:
    * 
-   * type_id_axis;atomLabel 
+   * type_id_axis;atomLabel
    * 
-   * where type = W|F|D|O (wave vector, Fourier index,
-   * displacement, occupancy); id = 1|2|3|0|S (Fourier index, Crenel(0),
-   * sawtooth); axis (optional) = 0|x|y|z (0 indicates irrelevant -- occupancy);
-   * and ;atomLabel is only for D and O.
+   * where type = W|F|D|O (wave vector, Fourier index, displacement, occupancy);
+   * id = 1|2|3|0|S (Fourier index, Crenel(0), sawtooth); axis (optional) =
+   * 0|x|y|z (0 indicates irrelevant -- occupancy); and ;atomLabel is only for D
+   * and O.
    * 
    * @throws Exception
    */
@@ -2384,7 +2384,8 @@ _pdbx_struct_oper_list.vector[3]
         case FA_ID:
         case FO_ID:
         case FU_ID:
-          fid = "#=P" + Character.toUpperCase(modulationFields[tok].charAt(11)) + "_" + field;
+          fid = "#=P" + Character.toUpperCase(modulationFields[tok].charAt(11))
+              + "_" + field;
           pt.x = pt.y = pt.z = 0;
           break;
         case WV_ID:
@@ -2407,28 +2408,27 @@ _pdbx_struct_oper_list.vector[3]
           case FWV_DISP_ID:
           case FWV_OCC_ID:
           case FWV_U_ID:
-            id = "" + Character.toUpperCase(modulationFields[tok].charAt(11)) + "_";
+            id = "" + Character.toUpperCase(modulationFields[tok].charAt(11))
+                + "_";
             break;
           case FP_DISP_ID:
           case FP_OCC_ID:
           case FP_U_ID:
-            id = "P" + Character.toUpperCase(modulationFields[tok].charAt(11)) + "_";
+            id = "P" + Character.toUpperCase(modulationFields[tok].charAt(11))
+                + "_";
           }
           id += field;
           break;
         case DISP_SPEC_LABEL:
           id = "D_S";
-          atomLabel = field;
-          axis = "0";
-          break;
+          //$FALL-THROUGH$
         case OCC_SPECIAL_LABEL:
-          id = "O_0";
+          if (id == null)
+            id = "O_0";
           axis = "0";
           //$FALL-THROUGH$
         case FWV_DISP_LABEL:
         case FWV_OCC_LABEL:
-          atomLabel = field;
-          break;
         case FWV_U_LABEL:
           atomLabel = field;
           break;
@@ -2497,7 +2497,9 @@ _pdbx_struct_oper_list.vector[3]
           w = parseFloatStr(field);
           break;
         }
-        if (ignore || Float.isNaN(pt.x + pt.y + pt.z) || pt.x == 0 && pt.y == 0 && pt.z == 0 || id == null)
+        if (ignore || Float.isNaN(pt.x + pt.y + pt.z) || pt.x == 0 && pt.y == 0
+            && pt.z == 0 || id == null || atomLabel != null
+            && rejectAtomName(atomLabel))
           continue;
         switch (id.charAt(0)) {
         case 'W':
@@ -2527,8 +2529,7 @@ _pdbx_struct_oper_list.vector[3]
       }
     }
   }
-  
-  
+    
   private void addMod(String id, String fid, P3 params) {
     if (fid != null)
       id += fid;

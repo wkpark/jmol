@@ -180,13 +180,6 @@ public class Symmetry implements SymmetryInterface {
   }
   
 
-  public void getMod456Row(int iop, int rowPt, float[] f4) {
-    spaceGroup.finalOperations[iop].getMod456Row(rowPt, f4);
-  }
-
-
-
-
   public String getSpaceGroupXyz(int i, boolean doNormalize) {
     return spaceGroup.finalOperations[i].getXyz(doNormalize);
   }
@@ -655,5 +648,12 @@ public class Symmetry implements SymmetryInterface {
   public boolean hasLatticeCentering() {
     return spaceGroup.hasLatticeCentering;
   }
+
+  public Matrix4f getOperationGammaIS(int iop) {
+    return spaceGroup.finalOperations[iop].gammaIS;
+  }
+
+
+
 
 }  

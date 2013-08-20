@@ -6559,7 +6559,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         q = (chk ? new Quaternion() : viewer.getAtomQuaternion(bsCenter
             .nextSetBit(0)));
       } else {
-        q = getQuaternionParameter(i, null);
+        q = getQuaternionParameter(i);
       }
       i = iToken + 1;
       if (q == null)
@@ -10101,8 +10101,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (tok == T.quaternion)
           i++;
         haveRotation = true;
-        q = getQuaternionParameter(i, isSelected || tok != T.best ? null : viewer.getRotationQuaternion().mul(-1));
+        q = getQuaternionParameter(i);
         if (q != null) {
+          if (tok == T.best && !(isMolecular = isSelected)) // yes, setting isMolecular here.
+            q = q.mulQ(viewer.getRotationQuaternion().mul(-1));
           rotAxis.setT(q.getNormal());
           endDegrees = q.getTheta();
         }
@@ -10336,26 +10338,20 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
   }
 
-  private Quaternion getQuaternionParameter(int i, Quaternion q0)
+  private Quaternion getQuaternionParameter(int i)
       throws ScriptException {
-    Quaternion q;
     switch (tokAt(i)) {
     case T.varray:
       JmolList<SV> sv = ((SV) getToken(i)).getList();
       P4 p4 = null;
       if (sv.size() == 0 || (p4 = SV.pt4Value(sv.get(0))) == null)
         invArg();
-      q = Quaternion.newP4(p4);
-      break;
+      return Quaternion.newP4(p4);
     case T.best:
-      if (chk)
-        return null;
-      q = Quaternion.newP4((P4) Escape.uP(viewer.getOrientationText(T.best, null)));
-      break;
+      return (chk ? null : Quaternion.newP4((P4) Escape.uP(viewer.getOrientationText(T.best, null))));
     default:
-      q = Quaternion.newP4(getPoint4f(i));
+      return Quaternion.newP4(getPoint4f(i));
     }
-    return (q0 == null ? q : q.mulQ(q0));
   }
 
   JmolList<P3> getPointVector(T t, int i) throws ScriptException {

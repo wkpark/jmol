@@ -313,7 +313,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     timeEndExecution = System.currentTimeMillis();
     if (errorMessage == null && executionStopped)
       setErrorMessage("execution interrupted");
-    else if (!tQuiet && !chk)
+    else if (!tQuiet && !chk) 
       viewer.scriptStatus(JC.SCRIPT_COMPLETED);
     executing = chk = this.isCmdLine_c_or_C_Option = this.historyDisabled = false;
     String msg = getErrorMessageUntranslated();
@@ -771,7 +771,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    *        variable name for debugging reference only -- null indicates return
    *        Boolean -- "" indicates return String
    * @param ignoreComma
-   *        TODO
+   *        
    * @param asVector
    *        a flag passed on to RPN;
    * @param ptAtom
@@ -2210,7 +2210,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       Map<String, SV> cv = contextVariables;
       executeCommands(true);
       //JavaScript will not return here after DELAY
-      while (thisContext.tryPt != tryPt)
+      while (thisContext.tryPt > tryPt)
         popContext(false, false);
       processTry(cv);
       return null;
@@ -3822,7 +3822,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.spec_seqcode_range:
         if (isInMath) {
           rpn.addXNum(SV.newScriptVariableInt(instruction.intValue));
-          // TODO -- in 13.0 had addXObj this adds a "-" to the X stack. 
           rpn.addOp(T.tokenMinus);
           rpn.addXNum(SV.newScriptVariableInt(code[++pc].intValue));
           break;
@@ -5366,7 +5365,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   /**
    * 
    * @param isSpt
-   * @param fromFunc TODO
+   * @param fromFunc 
    * @return false only when still working through resumeEval
    * @throws ScriptException
    */
@@ -15155,7 +15154,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * Checks color, translucent, opaque parameters.
    * 
    * @param i
-   * @param allowNone TODO
+   * @param allowNone
    * @return translucentLevel and sets iToken and colorArgb[0]
    * 
    * @throws ScriptException

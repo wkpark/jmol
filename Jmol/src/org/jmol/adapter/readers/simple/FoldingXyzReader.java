@@ -150,7 +150,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
               }
             }
             if (correct && (destination > origin)) {
-            	atomSetCollection.addNewBond(origin, destination);
+            	atomSetCollection.addNewBondWithOrder(origin, destination, 1);
             }
           }
         }

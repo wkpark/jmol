@@ -644,14 +644,6 @@ public class AtomSetCollection {
     mapMostRecentAtomSerialNumber();
   }
 
-  public Bond addNewBond(int atomIndex1, int atomIndex2) {
-    return addNewBondWithOrder(atomIndex1, atomIndex2, 1);
-  }
-
-  Bond addNewSingleBondFromNames(String atomName1, String atomName2) {
-    return addNewBondFromNames(atomName1, atomName2, 1);
-  }
-
   public Bond addNewBondWithOrder(int atomIndex1, int atomIndex2, int order) {
     if (atomIndex1 < 0 || atomIndex1 >= atomCount ||
         atomIndex2 < 0 || atomIndex2 >= atomCount)

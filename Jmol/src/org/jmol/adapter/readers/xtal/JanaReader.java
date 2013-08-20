@@ -46,7 +46,7 @@ public class JanaReader extends ModulationReader {
   @Override
   public void initializeReader() throws Exception {
       setFractionalCoordinates(true);
-      initializeMod();
+      initializeModulation();
       atomSetCollection.newAtomSet();
   }
   
@@ -123,6 +123,7 @@ public class JanaReader extends ModulationReader {
       atomSetCollection.getSymmetry().addLatticeVectors(lattvecs);
     applySymmetryAndSetTrajectory();
     setModulation();
+    finalizeModulation();
     finalizeReaderASCR();
   }
   
@@ -221,7 +222,8 @@ public class JanaReader extends ModulationReader {
     String id = name.substring(0, ipt);
     ipt = id.lastIndexOf("/");
     id = id.substring(ipt + 1);
-    BufferedReader r = JmolBinary.getBufferedReaderForString((String) viewer.getLigandModel(id, name, "_file", "----"));
+    BufferedReader r = JmolBinary.getBufferedReaderForString((String) viewer
+        .getLigandModel(id, name, "_file", "----"));
     if (readM40Floats(r).startsWith("command"))
       readM40WaveVectors(r);
     int nAtoms = (int) floats[0];
@@ -229,8 +231,7 @@ public class JanaReader extends ModulationReader {
       while (readM40Floats(r).length() == 0 || line.charAt(0) == ' '
           || line.charAt(0) == '-') {
       }
-      
-      
+
       Atom atom = new Atom();
       atom.atomName = line.substring(0, 9).trim();
       if (!filterAtom(atom, 0))
@@ -240,9 +241,9 @@ public class JanaReader extends ModulationReader {
       if (!incommensurate)
         continue;
       String label = ";" + atom.atomName;
-      boolean haveCrenel = (getInt(60, 61) > 0);
-      boolean haveSawTooth = (getInt(61, 62) > 0);
-      boolean haveSomething = (getInt(62, 63) > 0);
+      boolean haveSpecialOcc = (getInt(60, 61) > 0);
+      boolean haveSpecialDisp = (getInt(61, 62) > 0);
+      boolean haveSpecialUij = (getInt(62, 63) > 0);
       int nOcc = getInt(65, 68);
       int nDisp = getInt(68, 71);
       int nUij = getInt(71, 74);
@@ -265,12 +266,12 @@ public class JanaReader extends ModulationReader {
 
       // read occupancy parameters
       P3 pt;
-      if (nOcc > 0 && !haveCrenel)
+      if (nOcc > 0 && !haveSpecialOcc)
         r.readLine(); //"1.00000"
       int wv = 0;
       float a1, a2;
       for (int j = 0; j < nOcc; j++) {
-        if (haveCrenel) {
+        if (haveSpecialOcc) {
           float[][] data = readM40FloatLines(2, 1, r);
           a1 = data[1][0];
           a2 = data[0][0];
@@ -278,17 +279,17 @@ public class JanaReader extends ModulationReader {
           wv = j + 1;
           readM40Floats(r);
           a1 = floats[1];
-          a2 = floats[0];          
+          a2 = floats[0];
         }
-        id = "O_" + wv + "#0" + label;        
+        id = "O_" + wv + "#0" + label;
         pt = P3.new3(a1, a2, 0);
         if (a1 != 0 || a2 != 0)
           addModulation(null, id, pt, -1);
       }
-      
+
       // read displacement data
       for (int j = 0; j < nDisp; j++) {
-        if (haveSawTooth) {
+        if (haveSpecialDisp) {
           readM40Floats(r);
           float c = floats[3];
           float w = floats[4];
@@ -308,11 +309,16 @@ public class JanaReader extends ModulationReader {
           // fourier?
           addSinCos(j, "U_", label, r);
         } else {
-          float[][] data = readM40FloatLines(2, 6, r);
-          for (int k = 0, p = 0; k < 6; k++, p+=3)
-            addModulation(null, "U_" + (j + 1) + "#"
-                + U_LIST.substring(p, p + 3) + label, P3.new3(data[1][k],
-                data[0][k], 0), -1);
+          if (haveSpecialUij) {
+            //TODO
+            Logger.error("JanaReader -- not interpreting SpecialUij flag: " + line);
+          } else {
+            float[][] data = readM40FloatLines(2, 6, r);
+            for (int k = 0, p = 0; k < 6; k++, p += 3)
+              addModulation(null, "U_" + (j + 1) + "#"
+                  + U_LIST.substring(p, p + 3) + label, P3.new3(data[1][k],
+                  data[0][k], 0), -1);
+          }
         }
       }
     }

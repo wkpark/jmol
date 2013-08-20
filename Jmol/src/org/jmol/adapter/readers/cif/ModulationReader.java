@@ -84,15 +84,13 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   protected Map<String, Object> htSubsystems;
   
   
-  protected void initializeMod() throws Exception {
+  protected void initializeModulation() throws Exception {
     modDebug = checkFilterKey("MODDEBUG");
     modAxes = getFilter("MODAXES=");
     modType = getFilter("MODTYPE="); //ODU
     modSelected = parseIntStr("" + getFilter("MOD="));
     modVib = checkFilterKey("MODVIB"); // then use MODULATION ON  to see modulation
     modAverage = checkFilterKey("MODAVE");
-    if (!modVib && !modAverage)
-      addJmolScript("modulation on");
     checkSpecial = !checkFilterKey("NOSPECIAL");
     atomSetCollection.setCheckSpecial(checkSpecial);
     allowRotations = !checkFilterKey("NOSYM");
@@ -165,6 +163,11 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       Logger.debugging = Logger.debuggingHigh = false;
   }
   
+  protected void finalizeModulation() {
+    if (incommensurate && !modVib)
+      addJmolScript("modulation on");
+  }
+
   private String suffix;
   private P3 getMod(String key) {
     return htModulation.get(key + suffix);

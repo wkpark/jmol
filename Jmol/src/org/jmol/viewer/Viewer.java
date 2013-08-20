@@ -9198,7 +9198,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         Logger.info(GT._("Setting log file to {0}", path));
       global.setS("_logFile", logFile = path);
     }
-    return value;
+      return value;
   }
 
   public void log(String data) {

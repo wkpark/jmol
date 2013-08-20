@@ -1940,6 +1940,7 @@ public class AtomSetCollection {
   public void setAtomSetEnergy(String energyString, float value) {
     if (currentAtomSetIndex < 0)
       return;
+    Logger.info("Energy for model " + (currentAtomSetIndex + 1) + " = " + energyString);
     setAtomSetAuxiliaryInfo("EnergyString", energyString);
     setAtomSetAuxiliaryInfo("Energy", Float.valueOf(value));
     setAtomSetModelProperty("Energy", "" + value);

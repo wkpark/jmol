@@ -91,6 +91,8 @@ public class GamessUSReader extends GamessReader {
   @Override
   protected boolean checkLine() throws Exception {
     boolean isBohr;
+    if (line.indexOf("FINAL ENERGY IS") >= 0 || line.indexOf("TOTAL ENERGY = ") >= 0)
+      readEnergy();
     if (line.indexOf("BASIS OPTIONS") >= 0){
       readBasisInfo();
       return true;

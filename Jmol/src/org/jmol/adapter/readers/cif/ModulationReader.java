@@ -164,8 +164,10 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   }
   
   protected void finalizeModulation() {
-    if (incommensurate && !modVib)
-      addJmolScript("modulation on");
+    if (!incommensurate)
+      return;
+    if (!modVib)
+      addJmolScript("modulation on" + (haveOccupancy  ? ";display occupancy > 0.5" : ""));
   }
 
   private String suffix;
@@ -173,8 +175,9 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     return htModulation.get(key + suffix);
   }
   
-  private P3[] q123;
+  private Matrix3f q123;
   private double[] qlen;
+  private boolean haveOccupancy;
   
   private void setModulationForStructure(int iModel) {
     suffix = "@" + iModel;
@@ -182,19 +185,19 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     if (htModulation.containsKey("X_" + suffix))
       return;
     htModulation.put("X_" +suffix, new P3());
-    q123 = new P3[3];
+    q123 = new Matrix3f();
     qlen = new double[modDim];
     for (int i = 0; i < modDim; i++) {
-      q123[i] = getMod("W_" + (i + 1));
-      if (q123[i] == null) {
+      P3 pt = getMod("W_" + (i + 1));
+      if (pt == null) {
         Logger.info("Not enough cell wave vectors for d=" + modDim);
         return;
       }
-      qlen[i] = q123[i].length();
+      if (i == 0)
+        q1 = P3.newP(pt);
+      q123.setRowV(i, pt);
+      qlen[i] = pt.length();
     }
-    for (int i = modDim; i < 3; i++)
-      q123[i] = new P3();
-    q1 = q123[0];
     q1Norm = V3.new3(q1.x == 0 ? 0 : 1, q1.y == 0 ? 0 : 1, q1.z == 0 ? 0 : 1);
     P3 qlist100 = P3.new3(1, 0, 0);
     P3 pt;    
@@ -206,8 +209,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       pt = e.getValue();
       switch (key.charAt(0)) {
       case 'O':
-          if (!modVib && bsAtoms == null)
-            bsAtoms = atomSetCollection.bsAtoms = BSUtil.newBitSet2(0, n);
+        haveOccupancy = true;
         //$FALL-THROUGH$
       case 'D':
         // fix modulus/phase option only for non-special modulations;
@@ -356,25 +358,23 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       Logger.debug("setModulation iop = " + iop + " "
           + symmetry.getSpaceGroupXyz(iop, false) + " " + a.bsSymmetry);
     }
-
+    Matrix4f q123w = Matrix4f.newMV(q123, new V3());
+    setSubsystemMatrix(a.atomName, q123w);
     ModulationSet ms = new ModulationSet(a.index + " " + a.atomName, 
-        P3.newP(a), a.foccupancy / 10000f, modDim, list, gammaE, gammaIS, q123, qlen);
+        P3.newP(a), a.foccupancy, modDim, list, gammaE, gammaIS, q123w, qlen);
     a.vib = ms;
     ms.calculate();
-    float occ = ms.vOcc;
-    if (!Float.isNaN(occ)) {
-      if (modVib && !Float.isNaN(ms.vOcc0)) {
-        a.foccupancy = Math.min(1, Math.max(0, ms.vOcc0 + occ));
-        if (a.foccupancy  < 0)
-          a.foccupancy = 0;
-        
-      } else if (occ < 0.5f) {
-        a.foccupancy = 0;
-        if (bsAtoms != null)
-          bsAtoms.clear(a.index);
-      } else if (occ >= 0.5f) {
-        a.foccupancy = 1;
-      }
+    if (!Float.isNaN(ms.vOcc)) {
+      a.foccupancy = Math.min(1, Math.max(0, ms.vOcc0 + ms.vOcc));
+//      if (!modVib) {
+//        if (occ < 0.5f) {
+//          a.foccupancy = 0;
+//          if (bsAtoms != null)
+//            bsAtoms.clear(a.index);
+//        } else if (occ >= 0.5f) {
+//          a.foccupancy = 1;
+//        }
+//      } 
     }
     if (ms.htUij != null) {
       // Uiso or Uij. We add the displacements, create the tensor, then rotate it, 
@@ -416,6 +416,16 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     //System.out.println("a.vib(xyz)=" + a.vib);
   }
   
+  private void setSubsystemMatrix(String atomName, Matrix4f q123w) {
+    Object o;
+    if (true || htSubsystems == null || (o = htSubsystems.get(";" + atomName)) == null)
+      return;
+// not sure what to do yet.
+    String subcode = (String) o;
+    Matrix4f wmatrix = (Matrix4f) htSubsystems.get(subcode);
+    q123w.mulM4(wmatrix);
+  }
+
   protected void addSubsystem(String code, Matrix4f m4, String atomName) {
     if (htSubsystems == null)
       htSubsystems = new Hashtable<String, Object>();

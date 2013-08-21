@@ -46,7 +46,8 @@ public class ModulationSet extends Vibration {
    */
 
   public ModulationSet(String id, P3 r, float vocc0, int modDim, 
-                       JmolList<Modulation> mods, Matrix3f gammaE, Matrix4f gammaIS, P3[] q123, double[] qlen) {
+                       JmolList<Modulation> mods, Matrix3f gammaE, 
+                       Matrix4f gammaIS, Matrix4f q123w, double[] qlen) {
     this.id = id;
     this.vOcc0 = vocc0;
     this.modDim = modDim;
@@ -61,11 +62,13 @@ public class ModulationSet extends Vibration {
     
     gammaIS.get(sI);
     gammaIinv.invert();
-    x456 = V3.new3(q123[0].dot(r), q123[1].dot(r), q123[2].dot(r));
+    x456 = V3.newV(r);
+    Matrix3f m = new Matrix3f();
+    q123w.transform(x456);
     x456.sub(sI);
     gammaIinv.transform(x456);
     if (Logger.debuggingHigh)
-      Logger.debug("MODSET create r=" + Escape.eP(r) + " q0=" + Escape.eP(q123[0]) 
+      Logger.debug("MODSET create r=" + Escape.eP(r)
         + " si=" + Escape.eP(sI) + " ginv=" + gammaIinv.toString().replace('\n',' ') + " x4=" + x456.x);
 
     // temporary only - only for d=1:

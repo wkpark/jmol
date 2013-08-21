@@ -1036,7 +1036,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
           break;
         case OCCUPANCY:
           float floatOccupancy = parseFloatStr(field);
-          if (Float.isNaN(floatOccupancy))
+          if (!Float.isNaN(floatOccupancy))
             atom.foccupancy = floatOccupancy;
           break;
         case B_ISO:

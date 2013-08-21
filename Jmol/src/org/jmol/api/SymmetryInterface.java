@@ -178,5 +178,7 @@ public interface SymmetryInterface {
   public boolean hasLatticeCentering();
 
   public Matrix4f getOperationGammaIS(int iop);
+
+  public int getSiteMultiplicity(P3 a);
   
 }

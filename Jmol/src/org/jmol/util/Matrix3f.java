@@ -279,7 +279,7 @@ public class Matrix3f implements Serializable {
    * @param v
    *        the replacement row
    */
-  public final void setRowV(int row, V3 v) {
+  public final void setRowV(int row, Tuple3f v) {
     if (row == 0) {
       m00 = v.x;
       m01 = v.y;

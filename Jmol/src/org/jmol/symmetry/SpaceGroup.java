@@ -1401,6 +1401,28 @@ class SpaceGroup {
     }
   }
 
+  public int getSiteMultiplicity(P3 pt, UnitCell unitCell) {
+    int n = finalOperations.length;
+    JmolList<P3> pts = new JmolList<P3>();
+    for (int i = n; --i >= 0;) {
+      P3 pt1 = P3.newP(pt);
+      finalOperations[i].transform(pt1);
+      unitCell.unitize(pt1);
+      for (int j = pts.size(); --j >= 0;) {
+        P3 pt0 = pts.get(j);
+        if (pt1.distanceSquared(pt0) < 0.000001f) {
+          pt1 = null;
+          break;
+        }      
+      }
+      if (pt1 != null) {
+        //System.out.println(pt + " to " + pt1 + " by " + i + ": " + finalOperations[i].xyz);
+        pts.addLast(pt1);
+      }
+    }
+    return n / pts.size();
+  }
+
 
   /*  see http://cci.lbl.gov/sginfo/itvb_2001_table_a1427_hall_symbols.html
 

@@ -653,6 +653,10 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup.finalOperations[iop].gammaIS;
   }
 
+  public int getSiteMultiplicity(P3 pt) {
+    return spaceGroup.getSiteMultiplicity(pt,unitCell);
+  }
+
 
 
 

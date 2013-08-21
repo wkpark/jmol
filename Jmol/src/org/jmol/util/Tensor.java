@@ -125,7 +125,8 @@ public class Tensor {
   + ";isotropy....." + ";anisotropy..." + ";asymmetry...." 
   + ";eulerzyz....." + ";eulerzxz....." + ";quaternion..." 
   + ";indices......" + ";string......." + ";type........."
-  + ";id...........";
+  + ";id..........." + ";span........." + ";skew.........";
+  
   /**
    * returns an object of the specified type, including "eigenvalues",
    * "eigenvectors", "asymmetric", "symmetric", "trace", "indices", and "type"
@@ -206,6 +207,12 @@ public class Tensor {
       
     case 15:
       return id;
+    
+    case 16:
+      return Float.valueOf(getSpan());
+    case 17:
+      return Float.valueOf(getSkew());
+    
     }
   }
 
@@ -220,6 +227,23 @@ public class Tensor {
   public float getAsymmetry() {
     return eigenValues[0] == eigenValues[2] ? 0 : (eigenValues[1] - eigenValues[0])
         / (eigenValues[2] - getIso());
+  }
+  
+  public float getSpan() {
+    float red_aniso = eigenValues[2]-getIso();
+    float asymm = getAsymmetry();
+    
+    if (red_aniso > 0.0)
+      return red_aniso*(3.0f+asymm)/2.0f;
+
+    return -red_aniso*(3.0f+asymm)/2.0f;
+  }
+  
+  public float getSkew() {
+    float red_aniso = eigenValues[2]-getIso();
+    float asymm = getAsymmetry();
+
+    return -3.0f*red_aniso*(1.0f-asymm)/2.0f/getSpan();
   }
 
   public static Tensor copyTensor(Tensor t0) {

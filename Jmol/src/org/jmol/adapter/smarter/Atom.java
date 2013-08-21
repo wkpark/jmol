@@ -43,7 +43,7 @@ public class Atom extends P3 implements Cloneable {
   public float partialCharge = Float.NaN;
   public V3 vib;
   public float bfactor = Float.NaN;
-  public int occupancy = 100;
+  public float foccupancy = 1;
   public float radius = Float.NaN;
   public boolean isHetero;
   public int atomSerial = Integer.MIN_VALUE;

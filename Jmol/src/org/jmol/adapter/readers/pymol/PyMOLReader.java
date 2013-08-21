@@ -1051,7 +1051,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
       bs.set(seqNo - MIN_RESNO);
     }
     atom.bfactor = floatAt(a, 14);
-    atom.occupancy = (int) (floatAt(a, 15) * 100);
+    atom.foccupancy = floatAt(a, 15);
     atom.radius = floatAt(a, 16);
     if (atom.radius == 0)
       atom.radius = 1;

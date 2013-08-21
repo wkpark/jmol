@@ -123,7 +123,7 @@ class AtomIterator implements JmolAdapterAtomIterator {
 
 	
 	public int getOccupancy() {
-		return atom.occupancy;
+		return (int) (atom.foccupancy * 100);
 	}
 
 	

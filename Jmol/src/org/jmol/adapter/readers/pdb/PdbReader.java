@@ -955,8 +955,7 @@ REMARK 290 REMARK: NULL
         
     }
     
-    atom.occupancy = (Float.isNaN(floatOccupancy) ? 100
-        : (int) (floatOccupancy * 100));
+    atom.foccupancy = (Float.isNaN(floatOccupancy) ? 1 : floatOccupancy);
     
   }
 

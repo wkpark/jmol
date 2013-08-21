@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import org.jmol.adapter.readers.cif.ModulationReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.io.JmolBinary;
+import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
@@ -48,6 +49,7 @@ public class JanaReader extends ModulationReader {
       setFractionalCoordinates(true);
       initializeModulation();
       atomSetCollection.newAtomSet();
+      forcePacked = true; // need site occupancies anyway
   }
   
   final static String records = "tit  cell ndim qi   lat  sym  spg  end";
@@ -122,6 +124,7 @@ public class JanaReader extends ModulationReader {
     if (lattvecs != null)
       atomSetCollection.getSymmetry().addLatticeVectors(lattvecs);
     applySymmetryAndSetTrajectory();
+    adjustM40Occupancies();
     setModulation();
     finalizeModulation();
     finalizeReaderASCR();
@@ -236,6 +239,7 @@ public class JanaReader extends ModulationReader {
       atom.atomName = line.substring(0, 9).trim();
       if (!filterAtom(atom, 0))
         continue;
+      atom.foccupancy = floats[2];
       setAtomCoordXYZ(atom, floats[3], floats[4], floats[5]);
       atomSetCollection.addAtom(atom);
       if (!incommensurate)
@@ -247,7 +251,6 @@ public class JanaReader extends ModulationReader {
       int nOcc = getInt(65, 68);
       int nDisp = getInt(68, 71);
       int nUij = getInt(71, 74);
-
       // read anisotropies
       readM40Floats(r);
       boolean isIso = true;
@@ -398,4 +401,19 @@ public class JanaReader extends ModulationReader {
     return data;
   }
 
+  /**
+   * M40 occupancies are divided by the site multiplicity
+   */
+  private void adjustM40Occupancies() {
+    int nOps = atomSetCollection.getSymmetry().getSpaceGroupOperationCount();
+    BS bsSite = new BS();
+    Atom[] atoms = atomSetCollection.getAtoms();
+    for (int i = atomSetCollection.getAtomCount(); --i >= 0;) {
+      Atom a = atoms[i];
+      bsSite.clearAll();
+      bsSite.setBits(0, nOps);
+      bsSite.and(a.bsSymmetry);
+      a.foccupancy *= bsSite.cardinality();
+    }
+  }
 }

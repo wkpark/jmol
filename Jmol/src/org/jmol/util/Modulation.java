@@ -153,8 +153,8 @@ public class Modulation {
       //           p(x4)=0   if x4 is outside the interval [c-w/2,c+w/2],
 
       x -= Math.floor(x);
-      ms.vocc = (range(x) ? 1 : 0);
-      ms.vocc0 = Float.NaN; // don't add this in
+      ms.vOcc = (range(x) ? 1 : 0);
+      ms.vOcc0 = Float.NaN; // don't add this in
       //System.out.println("MOD " + ms.r + " " +  ms.delta + " " + ms.epsilon + " " + ms.id + " " + ms.v + " l=" + left + " x=" + x4 + " r=" + right);
       return;
     case TYPE_DISP_SAWTOOTH:
@@ -249,9 +249,9 @@ public class Modulation {
       ms.addUTens(utens, (float) v);
       break;
     default:
-      if (Float.isNaN(ms.vocc))
-        ms.vocc = 0;
-      ms.vocc += (float) v;
+      if (Float.isNaN(ms.vOcc))
+        ms.vOcc = 0;
+      ms.vOcc += (float) v;
     }
   }
 

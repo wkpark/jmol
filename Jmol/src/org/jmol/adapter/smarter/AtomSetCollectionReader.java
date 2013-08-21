@@ -183,6 +183,7 @@ public abstract class AtomSetCollectionReader {
   protected String strSupercell;
   protected P3 ptSupercell;
   protected boolean mustFinalizeModelSet;
+  protected boolean forcePacked;
 
   // private state variables
 
@@ -514,27 +515,7 @@ public abstract class AtomSetCollectionReader {
 
     symmetryRange = (htParams.containsKey("symmetryRange") ? ((Float) htParams
         .get("symmetryRange")).floatValue() : 0);
-    latticeCells = new int[3];
-    if (htParams.containsKey("lattice")) {
-      P3 pt = ((P3) htParams.get("lattice"));
-      latticeCells[0] = (int) pt.x;
-      latticeCells[1] = (int) pt.y;
-      latticeCells[2] = (int) pt.z;
-      doCentroidUnitCell = (htParams.containsKey("centroid"));
-      if (doCentroidUnitCell && (latticeCells[2] == -1 || latticeCells[2] == 0))
-        latticeCells[2] = 1;
-      centroidPacked = doCentroidUnitCell && htParams.containsKey("packed");
-      doPackUnitCell = !doCentroidUnitCell && (htParams.containsKey("packed") || latticeCells[2] < 0);
-      
-    }
-    doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
-    //allows for {1 1 1} or {1 1 -1} or {555 555 0|1|-1} (-1  being "packed")
-    if (!doApplySymmetry) {
-      latticeCells[0] = 0;
-      latticeCells[1] = 0;
-      latticeCells[2] = 0;
-    }
-
+    initializeSymmetryOptions();
     //this flag FORCES symmetry -- generally if coordinates are not fractional,
     //we may note the unit cell, but we do not apply symmetry
     //with this flag, we convert any nonfractional coordinates to fractional
@@ -578,6 +559,31 @@ public abstract class AtomSetCollectionReader {
       if (merging && !iHaveUnitCell)
         setFractionalCoordinates(false);
       // with appendNew == false and UNITCELL parameter, we assume fractional coordinates
+    }
+  }
+
+  protected void initializeSymmetryOptions() {
+    latticeCells = new int[3];
+    P3 pt = ((P3) htParams.get("lattice"));
+    if (forcePacked && pt == null)
+      pt = P3.new3(1, 1, 1);
+    if (pt != null) {
+      latticeCells[0] = (int) pt.x;
+      latticeCells[1] = (int) pt.y;
+      latticeCells[2] = (int) pt.z;
+      doCentroidUnitCell = (htParams.containsKey("centroid"));
+      if (doCentroidUnitCell && (latticeCells[2] == -1 || latticeCells[2] == 0))
+        latticeCells[2] = 1;
+      boolean isPacked = forcePacked || htParams.containsKey("packed");
+      centroidPacked = doCentroidUnitCell && isPacked;
+      doPackUnitCell = !doCentroidUnitCell && (isPacked || latticeCells[2] < 0);      
+    }
+    doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0);
+    //allows for {1 1 1} or {1 1 -1} or {555 555 0|1|-1} (-1  being "packed")
+    if (!doApplySymmetry) {
+      latticeCells[0] = 0;
+      latticeCells[1] = 0;
+      latticeCells[2] = 0;
     }
   }
 
@@ -1051,6 +1057,8 @@ public abstract class AtomSetCollectionReader {
   }
   
   public SymmetryInterface applySymTrajASCR() throws Exception {
+    if (forcePacked)
+      initializeSymmetryOptions();
     SymmetryInterface sym = null;
     if (iHaveUnitCell && doCheckUnitCell) {
       atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);

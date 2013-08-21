@@ -117,12 +117,12 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   }
 
   protected void addModulation(Map<String, P3> map, String id, P3 pt, int iModel) {
-    if (modType != null)
-      switch (id.charAt(0)) {
+    char ch  = id.charAt(0);
+      switch (ch) {
       case 'O':
       case 'D':
       case 'U':
-        if (modType.indexOf(id.charAt(0)) < 0 || modSelected > 0
+        if (modType != null && modType.indexOf(ch) < 0 || modSelected > 0
             && modSelected != 1)
           return;
         break;
@@ -344,7 +344,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
 
     if (Logger.debuggingHigh)
       Logger.debug("\nsetModulation: i=" + a.index + " " + a.atomName + " xyz="
-          + a + " occ=" + a.occupancy);
+          + a + " occ=" + a.foccupancy);
     if (iop != iopLast) {
       //System.out.println("mdim=" + mdim + " op=" + (iop + 1) + " " + symmetry.getSpaceGroupOperation(iop) + " " + symmetry.getSpaceGroupXyz(iop, false));
       iopLast = iop;
@@ -356,21 +356,24 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       Logger.debug("setModulation iop = " + iop + " "
           + symmetry.getSpaceGroupXyz(iop, false) + " " + a.bsSymmetry);
     }
-    
-    float vocc0 = a.occupancy / 100f;
+
     ModulationSet ms = new ModulationSet(a.index + " " + a.atomName, 
-        P3.newP(a), vocc0, modDim, list, gammaE, gammaIS, q123, qlen);
+        P3.newP(a), a.foccupancy / 10000f, modDim, list, gammaE, gammaIS, q123, qlen);
     a.vib = ms;
     ms.calculate();
-    if (!Float.isNaN(ms.vocc)) {
-      if (modVib && !Float.isNaN(vocc0)) {
-        a.occupancy = (int) ((vocc0 + ms.vocc) * 100);
-      } else if (ms.vocc < 0.5f) {
-        a.occupancy = 0;
+    float occ = ms.vOcc;
+    if (!Float.isNaN(occ)) {
+      if (modVib && !Float.isNaN(ms.vOcc0)) {
+        a.foccupancy = Math.min(1, Math.max(0, ms.vOcc0 + occ));
+        if (a.foccupancy  < 0)
+          a.foccupancy = 0;
+        
+      } else if (occ < 0.5f) {
+        a.foccupancy = 0;
         if (bsAtoms != null)
           bsAtoms.clear(a.index);
-      } else if (ms.vocc >= 0.5f) {
-        a.occupancy = 100;
+      } else if (occ >= 0.5f) {
+        a.foccupancy = 1;
       }
     }
     if (ms.htUij != null) {
@@ -398,7 +401,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
 
     // set property_modT to be Math.floor (q.r/|q|) -- really only for d=1
 
-    if (modVib || a.occupancy != 0) {
+    if (modVib || a.foccupancy != 0) {
       float t = q1Norm.dot(a);
       if (Math.abs(t - (int) t) > 0.001f)
         t = (int) Math.floor(t);

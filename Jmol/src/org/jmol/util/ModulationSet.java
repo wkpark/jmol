@@ -13,13 +13,13 @@ import java.util.Map;
 
 public class ModulationSet extends Vibration {
 
-  public float vocc = Float.NaN;
+  public float vOcc = Float.NaN;
   public Map<String, Float> htUij;
   public boolean enabled = false;
   public String id;
   public V3 prevSetting;
 
-  float vocc0 = Float.NaN;
+  public float vOcc0;
 
   private JmolList<Modulation> mods;
   private Matrix3f gammaE;
@@ -48,7 +48,7 @@ public class ModulationSet extends Vibration {
   public ModulationSet(String id, P3 r, float vocc0, int modDim, 
                        JmolList<Modulation> mods, Matrix3f gammaE, Matrix4f gammaIS, P3[] q123, double[] qlen) {
     this.id = id;
-    this.vocc0 = vocc0;
+    this.vOcc0 = vocc0;
     this.modDim = modDim;
     this.mods = mods;
     
@@ -76,7 +76,7 @@ public class ModulationSet extends Vibration {
   public void calculate() {
     x = y = z = 0;
     htUij = null;
-    vocc = Float.NaN;
+    vOcc = Float.NaN;
     double offset = (t == Integer.MAX_VALUE ? 0 : qlen[0] * t);
     for (int i = mods.size(); --i >= 0;)
       mods.get(i).apply(this, offset);

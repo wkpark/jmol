@@ -55,6 +55,8 @@ import org.jmol.util.V3;
 @SuppressWarnings("unchecked")
 public class AtomSetCollection {
 
+  public BS bsAtoms; // required for CIF reader
+    
   private String fileTypeName;
   
   public String getFileTypeName() {
@@ -79,8 +81,6 @@ public class AtomSetCollection {
   public Map<String, Object> getAtomSetCollectionAuxiliaryInfoMap() {
     return atomSetCollectionAuxiliaryInfo;
   }
-  
-  public BS bsAtoms; // required for CIF reader
   
   private final static String[] globalBooleans = {"someModelsHaveFractionalCoordinates",
     "someModelsHaveSymmetry", "someModelsHaveUnitcells", "someModelsHaveCONECT", "isPDB"};
@@ -1509,7 +1509,7 @@ public class AtomSetCollection {
     haveMappedSerials = false;
   }
 
-  boolean haveMappedSerials;
+  private boolean haveMappedSerials;
 
   private void mapMostRecentAtomSerialNumber() {
     if (atomCount == 0)

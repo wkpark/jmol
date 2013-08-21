@@ -349,7 +349,6 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     // no atom-centered rotation axes, and no mirror or glide planes.
     if (isPDB)
       atomSetCollection.setCheckSpecial(false);
-
     boolean doCheck = doCheckUnitCell && !isPDB;
     SymmetryInterface sym = applySymTrajASCR();
     if (auditBlockCode != null && auditBlockCode.contains("REFRNCE") && sym != null) {
@@ -1037,8 +1036,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
           break;
         case OCCUPANCY:
           float floatOccupancy = parseFloatStr(field);
-          if (!Float.isNaN(floatOccupancy))
-            atom.occupancy = (int) (floatOccupancy * 100);
+          if (Float.isNaN(floatOccupancy))
+            atom.foccupancy = floatOccupancy;
           break;
         case B_ISO:
           atom.bfactor = parseFloatStr(field) * (isPDB ? 1 : 100f);

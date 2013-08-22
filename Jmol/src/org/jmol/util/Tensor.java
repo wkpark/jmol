@@ -180,7 +180,7 @@ public class Tensor {
     case 5: // value
       return Float.valueOf(eigenValues[2]);
     case 6: // isotropy
-      return Float.valueOf(iso());
+      return Float.valueOf(isotropy());
     case 7: // anisotropy
       // Anisotropy, defined as Vzz-(Vxx+Vyy)/2
       return Float.valueOf(anisotropy()); 
@@ -216,6 +216,8 @@ public class Tensor {
     }
   }
 
+  //  isotropy = (e2 + e1 + e0)/3
+  //
   //                |                  |        |
   //                |                  |        |
   //               e2                 e1       e0
@@ -227,17 +229,17 @@ public class Tensor {
    * 
    * @return isotropy
    */
-  public float iso() {
+  public float isotropy() {
     return (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3;
   }
 
+  // span = |e2 - e0|
+  //
   //                |                  |        |
   //                |                  |        |
   //                e2                 e1       e0
   //                |---------------------------|
   //                            span      
-  //
-  // span = |e2 - e0|
   //
     
   /**
@@ -249,17 +251,15 @@ public class Tensor {
     return Math.abs(eigenValues[2] - eigenValues[0]);  
   }
 
-
-  
+  // skew = 3 (e1 - iso) / span
+  //
   //                |                  |        |
-  //                |                  |        |
-  //                e2              | e1       e0
-  //                               iso           
+  //                |              iso |        |
+  //                e2              |  e1       e0
+  //                      e1 - iso  |->          
   //                                     
   //                |---------------------------|
   //                            span      
-  //
-  // skew = 3 (e1 - iso) / span
   //
   //  or 0 if 0/0
     
@@ -269,7 +269,7 @@ public class Tensor {
    * @return range [-1, 1]
    */
   public float skew() {
-    return (span() == 0 ? 0 : 3 * (eigenValues[1] - iso()) / span());
+    return (span() == 0 ? 0 : 3 * (eigenValues[1] - isotropy()) / span());
   }
 
 
@@ -306,17 +306,17 @@ public class Tensor {
    * @return unitless number
    * 
    */
-  public float redAniso() {
+  public float reducedAnisotropy() {
     return anisotropy() * 2 / 3;  // = eigenValues[2]-iso();
   }
 
-  // asymmetry = d10/ra
+  // asymmetry = (e1 - e0)/(e2 - iso)
   //
   //                |                  |        |
   //                |                  |        |
   //                e2            iso  e1       e0
   //                <--------------|   <--------|
-  //                       ra              d10
+  //                   (e2 - iso)       (e1 - e0)
   //  or 0 when 0/0
 
   /**
@@ -325,7 +325,7 @@ public class Tensor {
    * @return range [0,1]
    */
   public float asymmetry() {
-    return span() == 0 ? 0 : (eigenValues[1] - eigenValues[0]) / redAniso();
+    return span() == 0 ? 0 : (eigenValues[1] - eigenValues[0]) / reducedAnisotropy();
   }
 
   public static Tensor copyTensor(Tensor t0) {

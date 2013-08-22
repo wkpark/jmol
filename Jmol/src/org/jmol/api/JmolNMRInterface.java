@@ -28,13 +28,14 @@ public interface JmolNMRInterface {
    * If t is null, then a1, a2, and type are used to find the appropriate
    * tensor.
    * 
+   * @param isIso
    * @param a1
    * @param a2
    * @param type
    * @param t
    * @return 0 if not found
    */
-  public float getJCouplingHz(Atom a1, Atom a2, String type, Tensor t);
+  public float getIsoOrAnisoHz(boolean isIso, Atom a1, Atom a2, String type, Tensor t);
 
   /**
    * 

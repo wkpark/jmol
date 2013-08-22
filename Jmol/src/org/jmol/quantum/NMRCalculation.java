@@ -196,45 +196,29 @@ public class NMRCalculation implements JmolNMRInterface {
   }
 
   public float getJCouplingHz(Atom a1, Atom a2, String type, Tensor isc) {
-    if (isc == null) {
-      type = getISCtype(a1, type);
-      if (type == null || a1.modelIndex != a2.modelIndex)
-        return 0;
-      BS bs = new BS();
-      bs.set(a1.index);
-      bs.set(a2.index);
-      JmolList<Tensor> list = getInteractionTensorList(type, bs);
-      if (list.size() == 0)
-        return Float.NaN;
-      isc = list.get(0);
-    } else {
-      a1 = viewer.modelSet.atoms[isc.atomIndex1];
-      a2 = viewer.modelSet.atoms[isc.atomIndex2];
-    }
-    return (float) (getIsotopeData(a1, MAGNETOGYRIC_RATIO)
-        * getIsotopeData(a2, MAGNETOGYRIC_RATIO) * isc.getIso() * J_FACTOR);
-  }
-
-  public float getAnisoHz(Atom a1, Atom a2, String type, Tensor isc) {
-    if (isc == null) {
-      type = getISCtype(a1, type);
-      if (type == null || a1.modelIndex != a2.modelIndex)
-        return 0;
-      BS bs = new BS();
-      bs.set(a1.index);
-      bs.set(a2.index);
-      JmolList<Tensor> list = getInteractionTensorList(type, bs);
-      if (list.size() == 0)
-        return Float.NaN;
-      isc = list.get(0);
-    } else {
-      a1 = viewer.modelSet.atoms[isc.atomIndex1];
-      a2 = viewer.modelSet.atoms[isc.atomIndex2];
-    }
-    return (float) (getIsotopeData(a1, MAGNETOGYRIC_RATIO)
-        * getIsotopeData(a2, MAGNETOGYRIC_RATIO) * isc.getAnisotropy() * J_FACTOR);
+    return getIsoOrAnisoHz(true, a1, a2, type, isc);
   }
   
+  public float getIsoOrAnisoHz(boolean isIso, Atom a1, Atom a2, String type, Tensor isc) {
+    if (isc == null) {
+      type = getISCtype(a1, type);
+      if (type == null || a1.modelIndex != a2.modelIndex)
+        return 0;
+      BS bs = new BS();
+      bs.set(a1.index);
+      bs.set(a2.index);
+      JmolList<Tensor> list = getInteractionTensorList(type, bs);
+      if (list.size() == 0)
+        return Float.NaN;
+      isc = list.get(0);
+    } else {
+      a1 = viewer.modelSet.atoms[isc.atomIndex1];
+      a2 = viewer.modelSet.atoms[isc.atomIndex2];
+    }
+    return (float) (getIsotopeData(a1, MAGNETOGYRIC_RATIO)
+        * getIsotopeData(a2, MAGNETOGYRIC_RATIO) * (isIso ? isc.isotropy() : isc.anisotropy()) * J_FACTOR);
+  }
+
   @SuppressWarnings("unchecked")
   private String getISCtype(Atom a1, String type) {
     JmolList<Tensor> tensors = (JmolList<Tensor>) viewer.getModelAuxiliaryInfoValue(a1.modelIndex, "interactionTensors");
@@ -386,7 +370,7 @@ public class NMRCalculation implements JmolNMRInterface {
 
   public float getMagneticShielding(Atom atom) {
     Tensor t = viewer.modelSet.getAtomTensor(atom.index, "ms");
-    return (t == null ? Float.NaN : t.getIso());
+    return (t == null ? Float.NaN : t.isotropy());
   }
 
   private Map<String, Float> shiftRefsPPM = new Hashtable<String, Float>();
@@ -440,8 +424,8 @@ public class NMRCalculation implements JmolNMRInterface {
         list1 = new JmolList<Object>();
         list1.addLast(Integer.valueOf(t.atomIndex1));
         list1.addLast(Integer.valueOf(t.atomIndex2));
-        list1.addLast(isEta? Float.valueOf(getAnisoHz(null, null, null, t)) : isJ ? Float.valueOf(getJCouplingHz(null, null, null, t))
-            : t.getInfo(infoType));
+        list1.addLast(isEta || isJ ? Float.valueOf(getIsoOrAnisoHz(isJ, null,
+            null, null, t)) : t.getInfo(infoType));
         data.addLast(list1);
       }
       if (tensorType != null)

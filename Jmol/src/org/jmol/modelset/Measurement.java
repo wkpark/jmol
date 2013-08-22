@@ -313,7 +313,7 @@ public class Measurement {
               / (a1.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO)
               + a2.getVanderwaalsRadiusFloat(viewer, EnumVdw.AUTO))
               : isDC ? viewer.getNMRCalculation().getDipolarConstantHz(a1, a2)
-                  : viewer.getNMRCalculation().getJCouplingHz(a1, a2, units,
+                  : viewer.getNMRCalculation().getIsoOrAnisoHz(true, a1, a2, units,
                       null));
           isValid = !Float.isNaN(dist);
           if (isPercent)

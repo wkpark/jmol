@@ -47,6 +47,7 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TextFormat;
+import org.jmol.util.V3;
 
 
 /**
@@ -818,6 +819,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   final private static byte DISORDER_ASSEMBLY = 58;
   final private static byte ASYM_ID = 59;
   final private static byte SUBSYS_ID = 60;
+  final private static byte SITE_MULT = 61;
 
 
   final private static String[] atomFields = { 
@@ -881,7 +883,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       "_chem_comp_atom_pdbx_model_cartn_z_ideal", 
       "_atom_site_disorder_assembly",
       "_atom_site_label_asym_id",
-      "_atom_site_subsystem_code"
+      "_atom_site_subsystem_code",
+      "_atom_site_symmetry_multiplicity"
   };
 
   /* to: hansonr@stolaf.edu
@@ -933,6 +936,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     int iAtom = -1;
     int modelField = -1;
     String subid = null;
+    int siteMult = 0;
     while (tokenizer.getData()) {
       Atom atom = new Atom();
       assemblyId = '\0';
@@ -1141,6 +1145,9 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         case SUBSYS_ID:
           subid = field;
           break;
+        case SITE_MULT:
+          if (incommensurate)
+            siteMult = parseIntStr(field); 
         }
       }
       if (isAnisoData)
@@ -1175,9 +1182,10 @@ public class CifReader extends ModulationReader implements JmolLineReader {
             htHetero);
         htHetero = null;
       }
-      if (subid != null) {
+      if (subid != null)
         addSubsystem(subid, null, atom.atomName);
-      }
+      if (siteMult != 0)
+        atom.vib = V3.new3(siteMult, 0, Float.NaN);
         
     }
     if (isPDB)
@@ -2321,6 +2329,9 @@ _pdbx_struct_oper_list.vector[3]
   private final static int FP_DISP_ID = 43;
   private final static int FP_OCC_ID = 44;
   private final static int FP_U_ID = 45;
+  
+  private final static int JANA_OCC_ABS_LABEL = 46;
+  private final static int JANA_OCC_ABS_O_0 = 47;
 
   final private static String[] modulationFields = {
       "_cell_wave_vector_seq_id", 
@@ -2372,6 +2383,9 @@ _pdbx_struct_oper_list.vector[3]
       "_atom_site_displace_fourier_param_id",
       "_atom_site_occ_fourier_param_id",
       "_atom_site_u_fourier_param_id",
+      
+      "_jana_atom_site_occ_fourier_absolute_site_label",
+      "_jana_atom_site_occ_fourier_absolute"
   };
   
   /**
@@ -2440,7 +2454,12 @@ _pdbx_struct_oper_list.vector[3]
           }
           id += field;
           break;
+        case JANA_OCC_ABS_LABEL:
+          id = "J_O";
+          pt.x = pt.z = 1;
+          //$FALL-THROUGH$
         case DISP_SPEC_LABEL:
+          if (id == null)
           id = "D_S";
           //$FALL-THROUGH$
         case OCC_SPECIAL_LABEL:
@@ -2503,6 +2522,7 @@ _pdbx_struct_oper_list.vector[3]
         case FWV_U_PHASE:
         case OCC_CRENEL_W:
         case DISP_SAW_AY:
+        case JANA_OCC_ABS_O_0:
           pt.y = parseFloatStr(field);
           break;
         case WV_Z:
@@ -2529,6 +2549,7 @@ _pdbx_struct_oper_list.vector[3]
         case 'D':
         case 'O':
         case 'U':
+        case 'J':
           if (atomLabel == null || axis == null)
             continue;
           if (id.equals("D_S")) {

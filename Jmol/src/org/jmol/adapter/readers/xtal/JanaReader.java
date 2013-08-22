@@ -221,7 +221,9 @@ public class JanaReader extends ModulationReader {
   //  0.000000 0.000000 0.000000 0.000000 0.000000 0.000000      000000
   //  0.000000 0.000000 0.000000 0.000000 0.000000 0.000000      000000
   //
-  //                             x        y        z             CS?  O  D  U
+  //                                                         SPECIAL   COUNTS
+  //                                                             ---  -------
+  //                             x        y        z             ODU  O  D  U
   // Zn        5  1     0.500000 0.250000 0.406400 0.244000      000  0  2  0
   //
   // 0         1         2         3         4         5         6         7
@@ -231,7 +233,25 @@ public class JanaReader extends ModulationReader {
   //  0.015300 0.000000 0.000000-0.010100 0.000000 0.000000      000000
   //  0.000000 0.000200-0.000100 0.000000 0.000500-0.000400      000000
   //  0.000000                                                   0
+  // ...
+  //                   [occ_site]
+  // Na1       1  2     0.500000 0.500000 0.000000 0.000000      000  1  1  1
+  //  0.034155-0.007468 0.002638 0.000000-0.005723 0.000000      0000111010
+  // [occ_0 for Fourier or width for crenel] 
+  //  0.848047                                                   1
+  // [center for Crenel; ]
+  //  0.000000 0.312670                                          01
+  //  0.029441 0.000000 0.003581 0.000000 0.000000 0.000000      101000
+  //  0.000000 0.000000 0.000000 0.000000 0.000000 0.000000      000000
+  // -0.051170 0.000624-0.008585 0.000000 0.014781 0.000000      111010
+  //  0.000000
+  //
 
+  /**
+   * read the M40 file
+   * 
+   * @throws Exception 
+   */
   private void readM40Data() throws Exception {
     String name = filePath;
     int ipt = name.lastIndexOf(".");
@@ -266,7 +286,7 @@ public class JanaReader extends ModulationReader {
           iSub++;
         addSubsystem("" + iSub, null, atom.atomName);
       }
-      atom.foccupancy = floats[2];
+      float o_site = atom.foccupancy = floats[2];
       setAtomCoordXYZ(atom, floats[3], floats[4], floats[5]);
       atomSetCollection.addAtom(atom);
       if (!incommensurate)
@@ -296,20 +316,30 @@ public class JanaReader extends ModulationReader {
 
       // read occupancy parameters
       P3 pt;
-      if (nOcc > 0 && !haveSpecialOcc)
-        r.readLine(); //"1.00000"
+      float o_0 = (nOcc > 0 && !haveSpecialOcc ? parseFloatStr(r.readLine()) : 1);
+      // we add a pt that save the original (unadjusted) o_0 and o_site
+      // will implement 
+      //
+      //  O = o_site (o_0 + SUM)
+      //
+      // However, first we need to adjust o_0 because the value given in m40 is 
+      // divided by the number of operators giving this site.
+      if (o_0 != 1) {
+        addModulation(null, "J_O#0;" + atom.atomName, P3.new3(o_site, o_0, 0), -1);
+      }
+      atom.foccupancy = o_0 * o_site;
       int wv = 0;
       float a1, a2;
       for (int j = 0; j < nOcc; j++) {
         if (haveSpecialOcc) {
           float[][] data = readM40FloatLines(2, 1, r);
-          a1 = data[1][0];
-          a2 = data[0][0];
+          a2 = data[0][0]; // width (first line)
+          a1 = data[1][0]; // center (second line)
         } else {
           wv = j + 1;
           readM40Floats(r);
-          a1 = floats[1];
-          a2 = floats[0];
+          a2 = floats[0];  // sin (first line)
+          a1 = floats[1];  // cos (second line)
         }
         id = "O_" + wv + "#0" + label;
         pt = P3.new3(a1, a2, 0);
@@ -445,7 +475,9 @@ public class JanaReader extends ModulationReader {
   }
 
   /**
-   * M40 occupancies are divided by the site multiplicity
+   * M40 occupancies are divided by the site multiplicity; 
+   * here we factor that back in.
+   * 
    */
   private void adjustM40Occupancies() {
     Map<String, Integer> htSiteMult = new Hashtable<String, Integer>();    
@@ -454,9 +486,8 @@ public class JanaReader extends ModulationReader {
       Atom a = atoms[i];
       Integer ii = htSiteMult.get(a.atomName);
       if (ii == null) {
-        System.out.println(a.atomName);
         htSiteMult.put(a.atomName, ii = Integer.valueOf(atomSetCollection.getSymmetry().getSiteMultiplicity(a)));
-        System.out.println(a.atomName + " " + ii + " " + a.bsSymmetry + " " + a.foccupancy);
+        //System.out.println(a.atomName + " " + ii + " " + a.bsSymmetry + " " + a.foccupancy);
       }
       a.foccupancy *= ii.intValue();
     }

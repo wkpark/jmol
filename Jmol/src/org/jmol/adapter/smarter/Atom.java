@@ -41,7 +41,7 @@ public class Atom extends P3 implements Cloneable {
   public String atomName;
   public int formalCharge = Integer.MIN_VALUE;
   public float partialCharge = Float.NaN;
-  public V3 vib;
+  public V3 vib; // .x and .y can be used for in-reader purposes as long as vib.z is left Float.NaN
   public float bfactor = Float.NaN;
   public float foccupancy = 1;
   public float radius = Float.NaN;

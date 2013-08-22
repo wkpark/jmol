@@ -45,11 +45,10 @@ public class ModulationSet extends Vibration {
    * 
    */
 
-  public ModulationSet(String id, P3 r, float vocc0, int modDim, 
+  public ModulationSet(String id, P3 r, int modDim, 
                        JmolList<Modulation> mods, Matrix3f gammaE, 
                        Matrix4f gammaIS, Matrix4f q123w, double[] qlen) {
     this.id = id;
-    this.vOcc0 = vocc0;
     this.modDim = modDim;
     this.mods = mods;
     

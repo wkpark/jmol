@@ -320,6 +320,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   private int iopLast = -1;
   private Matrix3f gammaE;
   private Matrix4f gammaIS;
+  private int nOps;
   
   /**
    * The displacement will be set as the atom vibration vector; the string
@@ -353,6 +354,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       gammaE = new Matrix3f();
       symmetry.getSpaceGroupOperation(iop).getRotationScale(gammaE);
       gammaIS = symmetry.getOperationGammaIS(iop);
+      nOps = symmetry.getSpaceGroupOperationCount();
     }
     if (Logger.debugging) {
       Logger.debug("setModulation iop = " + iop + " "
@@ -361,11 +363,32 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     Matrix4f q123w = Matrix4f.newMV(q123, new V3());
     setSubsystemMatrix(a.atomName, q123w);
     ModulationSet ms = new ModulationSet(a.index + " " + a.atomName, 
-        P3.newP(a), a.foccupancy, modDim, list, gammaE, gammaIS, q123w, qlen);
-    a.vib = ms;
+        P3.newP(a), modDim, list, gammaE, gammaIS, q123w, qlen);
     ms.calculate();
     if (!Float.isNaN(ms.vOcc)) {
-      a.foccupancy = Math.min(1, Math.max(0, ms.vOcc0 + ms.vOcc));
+      P3 pt = getMod("J_O#0;" + a.atomName);
+      float occ0 = ms.vOcc0;
+      float occ;
+      if (Float.isNaN(occ0)) {
+        // Crenel
+        occ = ms.vOcc; 
+      } else if (pt == null) {
+        // cif Fourier
+        // _atom_site_occupancy + SUM
+        occ = a.foccupancy + ms.vOcc; 
+      } else if (a.vib != null) {
+        // cif with m40 Fourier
+        // occ_site * (occ_0 + SUM)
+        float site_mult = a.vib.x;
+        float o_site = a.foccupancy * site_mult / nOps / pt.y;
+        occ = o_site * (pt.y + ms.vOcc);  
+      } else {
+        // m40 Fourier
+        // occ_site * (occ_0 + SUM)
+        occ = pt.x * (pt.y + ms.vOcc);  
+      }
+      a.foccupancy = Math.min(1, Math.max(0, occ));
+      a.vib = ms;
 //      if (!modVib) {
 //        if (occ < 0.5f) {
 //          a.foccupancy = 0;

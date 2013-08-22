@@ -154,7 +154,7 @@ public class Modulation {
 
       x -= Math.floor(x);
       ms.vOcc = (range(x) ? 1 : 0);
-      ms.vOcc0 = 0; // absolute
+      ms.vOcc0 = Float.NaN; // absolute
       //System.out.println("MOD " + ms.r + " " +  ms.delta + " " + ms.epsilon + " " + ms.id + " " + ms.v + " l=" + left + " x=" + x4 + " r=" + right);
       return;
     case TYPE_DISP_SAWTOOTH:

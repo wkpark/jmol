@@ -180,13 +180,13 @@ public class Tensor {
     case 5: // value
       return Float.valueOf(eigenValues[2]);
     case 6: // isotropy
-      return Float.valueOf(getIso());
+      return Float.valueOf(iso());
     case 7: // anisotropy
       // Anisotropy, defined as Vzz-(Vxx+Vyy)/2
-      return Float.valueOf(getAnisotropy()); 
+      return Float.valueOf(anisotropy()); 
     case 8: // asymmetry
       // Asymmetry, defined as (Vyy-Vxx)/(Vzz - Viso)
-      return Float.valueOf(getAsymmetry());
+      return Float.valueOf(asymmetry());
  
       
     case 9: // eulerzyz
@@ -209,41 +209,123 @@ public class Tensor {
       return id;
     
     case 16:
-      return Float.valueOf(getSpan());
+      return Float.valueOf(span());
     case 17:
-      return Float.valueOf(getSkew());
+      return Float.valueOf(skew());
     
     }
   }
 
-  public float getIso() {
+  //                |                  |        |
+  //                |                  |        |
+  //               e2                 e1       e0
+  //                               |
+  //                              iso
+    
+  /**
+   * isotropy = average of eigenvalues
+   * 
+   * @return isotropy
+   */
+  public float iso() {
     return (eigenValues[0] + eigenValues[1] + eigenValues[2]) / 3;
   }
 
-  public float getAnisotropy() {
+  //                |                  |        |
+  //                |                  |        |
+  //                e2                 e1       e0
+  //                |---------------------------|
+  //                            span      
+  //
+  // span = |e2 - e0|
+  //
+    
+  /**
+   * width of the signal; |e2 - e0|
+   * 
+   * @return unitless; >= 0
+   */
+  public float span() {
+    return Math.abs(eigenValues[2] - eigenValues[0]);  
+  }
+
+
+  
+  //                |                  |        |
+  //                |                  |        |
+  //                e2              | e1       e0
+  //                               iso           
+  //                                     
+  //                |---------------------------|
+  //                            span      
+  //
+  // skew = 3 (e1 - iso) / span
+  //
+  //  or 0 if 0/0
+    
+  /**
+   * a measure of asymmetry.
+   * 
+   * @return range [-1, 1]
+   */
+  public float skew() {
+    return (span() == 0 ? 0 : 3 * (eigenValues[1] - iso()) / span());
+  }
+
+
+  // anistropy = e2 - (e1 + e0)/2
+  //
+  //                |                  |        |
+  //                |                  |        |
+  //               e2                 e1       e0
+  //                <----------------------|              
+  //                        anisotropy
+    
+  /**
+   * anisotropy = directed distance from (center of two closest) to (the furthest)
+   * @return unitless number
+   */
+  public float anisotropy() {
     return eigenValues[2] - (eigenValues[0] + eigenValues[1]) / 2;
   }
 
-  public float getAsymmetry() {
-    return eigenValues[0] == eigenValues[2] ? 0 : (eigenValues[1] - eigenValues[0])
-        / (eigenValues[2] - getIso());
-  }
-  
-  public float getSpan() {
-    float red_aniso = eigenValues[2]-getIso();
-    float asymm = getAsymmetry();
+  //  reduced anisotropy = e2 - iso = anisotropy * 2/3
+  //
+  //                |                  |        |
+  //                |                  |        |
+  //                e2            iso  e1       e0
+  //                <----------------------|              
+  //                        anisotropy
+  //                <--------------|
+  //                  reduced anisotropy
     
-    if (red_aniso > 0.0)
-      return red_aniso*(3.0f+asymm)/2.0f;
-
-    return -red_aniso*(3.0f+asymm)/2.0f;
+  /**
+   * reduced anisotropy = largest difference from isotropy
+   * (may be negative)
+   * 
+   * @return unitless number
+   * 
+   */
+  public float redAniso() {
+    return anisotropy() * 2 / 3;  // = eigenValues[2]-iso();
   }
-  
-  public float getSkew() {
-    float red_aniso = eigenValues[2]-getIso();
-    float asymm = getAsymmetry();
 
-    return -3.0f*red_aniso*(1.0f-asymm)/2.0f/getSpan();
+  // asymmetry = d10/ra
+  //
+  //                |                  |        |
+  //                |                  |        |
+  //                e2            iso  e1       e0
+  //                <--------------|   <--------|
+  //                       ra              d10
+  //  or 0 when 0/0
+
+  /**
+   * asymmetry = deviation from a symmetric tensor
+   * 
+   * @return range [0,1]
+   */
+  public float asymmetry() {
+    return span() == 0 ? 0 : (eigenValues[1] - eigenValues[0]) / redAniso();
   }
 
   public static Tensor copyTensor(Tensor t0) {

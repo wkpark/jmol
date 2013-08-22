@@ -3875,7 +3875,8 @@ public class ScriptExt implements JmolScriptExtension {
       if (eval.isColorParam(eval.iToken + 1)) {
         int color = eval.getArgbParam(++eval.iToken);
         setShapeProperty(iShape, "colorRGB", Integer.valueOf(color));
-        sb.append(" ").append(Escape.escapeColor(color));
+        if (sb != null)
+          sb.append(" ").append(Escape.escapeColor(color));
       } else if (eval.iToken < index) {
         invArg();
       } else {

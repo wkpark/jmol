@@ -827,8 +827,9 @@ public class T {
   public final static int loadligandformat               = strparam | 46;
   public final static int logfile                        = strparam | 47;
   public final static int measurementunits               = strparam | 48; 
-  public final static int nmrurlformat                   = strparam | 49;
-  public final static int pathforallfiles                = strparam | 50;
+  public final static int nmrpredictformat               = strparam | 49;
+  public final static int nmrurlformat                   = strparam | 50;
+  public final static int pathforallfiles                = strparam | 51;
   public final static int picking                        = strparam | 52;
   public final static int pickingstyle                   = strparam | 54;
   public final static int picklabel                      = strparam | 56;
@@ -2221,6 +2222,7 @@ public class T {
       "loadLigandFormat",                         T.t(loadligandformat),
       "logFile",                                  T.t(logfile),
       "measurementUnits",                         T.t(measurementunits),
+      "nmrPredictFormat",                         T.t(nmrpredictformat),
       "nmrUrlFormat",                             T.t(nmrurlformat),
       "pathForAllFiles",                          T.t(pathforallfiles),
       "picking",                                  T.t(picking),

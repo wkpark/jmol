@@ -14643,6 +14643,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         msg = viewer.getPathForAllFiles();
       break;
     case T.nmr:
+      if (optParameterAsString(2).equalsIgnoreCase("1H")) {
+        len = 3;
+        if (!chk)
+          msg = viewer.getNMRPredict(viewer.getModelExtract("selected", true, false, "V2000"));
+      }
+      break;
     case T.smiles:
     case T.drawing:
     case T.chemical:

@@ -2346,17 +2346,12 @@ abstract public class AtomCollection {
     bs.and(bsInsert);
     if (pt >= len)
       return bs;
-    //
-    // look for a chain spec -- no colon
-    //
-    char chainID = identifier.charAt(pt++);
-    bs.and(getChainBits(chainID));
-    if (pt == len)
-      return bs;
-    //
-    // not applicable
-    //
-    return null;
+    if(pt != len - 1)
+      return null;
+    // ALA32B  (no colon; not ALA32:B)
+    // old school; not supported for multi-character chains
+    bs.and(getChainBits(identifier.charAt(pt)));
+    return bs;
   }
 
   private BS getSpecName(String name) {

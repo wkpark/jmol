@@ -694,6 +694,7 @@ public class StateManager {
       loadFormat = databases.get("pdb");
       loadLigandFormat = databases.get("ligand");
       nmrUrlFormat = databases.get("nmr");
+      nmrPredictFormat = databases.get("nmrdb");
       smilesUrlFormat = databases.get("nci") + "/file?format=sdf&get3d=True";
       nihResolverFormat = databases.get("nci");
       pubChemFormat = databases.get("pubchem");
@@ -918,6 +919,7 @@ public class StateManager {
       //setParamB("navigateSurface", navigateSurface);
       setB("navigationPeriodic", navigationPeriodic);
       setF("navigationSpeed", navigationSpeed);
+      setS("nmrPredictFormat", nmrPredictFormat);
       setS("nmrUrlFormat", nmrUrlFormat);
       setB("partialDots", partialDots);
       setB("pdbAddHydrogens", pdbAddHydrogens); // new 12.1.51
@@ -1041,7 +1043,7 @@ public class StateManager {
     boolean forceAutoBond = false;
     boolean fractionalRelative = false; // true: UNITCELL offset will change meaning of {1/2 1/2 1/2} 
     char inlineNewlineChar = '|'; //pseudo static
-    String loadFormat, loadLigandFormat, nmrUrlFormat, smilesUrlFormat, nihResolverFormat, pubChemFormat;
+    String loadFormat, loadLigandFormat, nmrUrlFormat, nmrPredictFormat, smilesUrlFormat, nihResolverFormat, pubChemFormat;
 
     String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.omap";
     String edsUrlCutoff = "load('http://eds.bmc.uu.se/eds/dfs/%LC13/%LCFILE/%LCFILE.sfdat').lines.find('MAP_SIGMA').split(' ')[2]";

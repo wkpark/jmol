@@ -6038,8 +6038,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setStringPropertyTok(String key, int tok, String value) {
     switch (tok) {
-    // 13.1.2
+    case T.nmrpredictformat:
+      // 13.3.4
+      global.nmrPredictFormat = value;
+      break;
     case T.defaultdropscript:
+      // 13.1.2
       // for File|Open and Drag/drop
       global.defaultDropScript = value;
       break;
@@ -8568,6 +8572,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         for (int k = 0; k < nZ; k++)
           xyzdata[i][j][k] = f[n++];
     return xyzdata;
+  }
+
+  public String getNMRPredict(String molFile) {
+    // nmrdb cannot handle "." separator and cannot handle c=c
+    int pt = molFile.indexOf("\n");
+    molFile = "Jmol " + version_date + molFile.substring(pt);
+    String url = global.nmrPredictFormat + molFile;
+    return getFileAsString(url);
   }
 
   public void showNMR(String smiles) {

@@ -1953,10 +1953,10 @@ abstract public class ModelCollection extends BondCollection {
       info = (int[]) specInfo;
       int seqcodeA = info[0];
       int seqcodeB = info[1];
-      char chainID = (char) info[2];
+      int chainID = info[2];
       bs = new BS();
       boolean caseSensitive = viewer.getBoolean(T.chaincasesensitive);
-      if (!caseSensitive)
+      if (chainID >= 0 && !caseSensitive)
         chainID = Character.toUpperCase(chainID);
       for (int i = modelCount; --i >= 0;)
         if (models[i].isBioModel)

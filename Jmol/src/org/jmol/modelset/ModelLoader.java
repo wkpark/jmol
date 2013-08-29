@@ -686,6 +686,7 @@ public final class ModelLoader {
     }
     Model[] models = modelSet.models;
     for (int i = baseModelCount; i < modelCount; ++i) {
+      modelSet.setModelAuxiliaryInfo(i, "fileType", modelSet.modelSetTypeName);
       if (fileHeader != null)
         modelSet.setModelAuxiliaryInfo(i, "fileHeader", fileHeader);
       int filenumber = modelNumbers[i] / 1000000;

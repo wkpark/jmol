@@ -14646,9 +14646,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (optParameterAsString(2).equalsIgnoreCase("1H")) {
         len = 3;
         if (!chk)
-          msg = viewer.getNMRPredict(viewer.getModelExtract("selected", true, false, "V2000"));
+          msg = viewer.getNMRPredict(false);
+        break;
       }
-      break;
+      if (!chk)
+        viewer.getNMRPredict(true);
+      return;
     case T.smiles:
     case T.drawing:
     case T.chemical:
@@ -14664,13 +14667,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           return;
         }
         msg = "Could not show drawing -- Either insufficient atoms are selected or the model is a PDB file.";
-        break;
-      case T.nmr:
-        if (msg.length() > 0) {
-          viewer.showNMR(msg);
-          return;
-        }
-        msg = "Could not show nmr -- Either insufficient atoms are selected or the model is a PDB file.";
         break;
       case T.chemical:
         len = 3;

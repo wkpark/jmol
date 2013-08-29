@@ -30,16 +30,35 @@ public class ModulationSet extends Vibration {
   V3 x456;
 
   /**
-   * A collection of modulations for a specific atom.
+   * A collection of modulations for a specific atom. 
+   * 
+   * We treat the set of modulation vectors q1,q2,q3,... as
+   * a matrix Q with row 1 = q1, row 2 = q2, etc. Then we
+   * have Qr = [q1.r, q2.r, q3.r,...]. 
+   * 
+   * Similarly, we express the x1' - xn' aspects of the operators
+   * as the matrix Gamma_I (epsilons) and s_I (shifts). However, 
+   * since we are only considering up to n = 3, we can express these
+   * together as a 4x4 matrix just for storage. 
+   * 
+   * Then for X defined as [x4,x5,x6...] (column vector, really)
+   * we have:
+   * 
+   * X' = Gamma_I * X + s_I
+   *
+   * and
+   * 
+   * X = Gamma_I^-1(X' - S_I)
+   * 
+   * not figured out for composite structures
    * 
    * @param id 
    * @param r 
-   * @param vocc0 
    * @param modDim 
    * @param mods 
    * @param gammaE 
    * @param gammaIS 
-   * @param q123 
+   * @param q123w 
    * @param qlen 
    * 
    * 

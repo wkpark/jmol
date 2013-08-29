@@ -2126,6 +2126,7 @@ public class StateCreator implements JmolStateCreator {
       sm.setSyncDriver(StatusManager.SYNC_DISABLE);
     if (script.indexOf("Mouse: ") != 0) {
       if (script.startsWith("Select: ")) {
+        // from JSpecView peak pick
         String filename = Parser.getQuotedAttribute(script, "file");
         String modelID = Parser.getQuotedAttribute(script, "model");
         String baseModel = Parser.getQuotedAttribute(script, "baseModel");

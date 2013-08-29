@@ -618,6 +618,7 @@ abstract public class JmolViewer {
    */
   abstract public String runScript(String script);
   abstract public int modelGetLastVibrationIndex(int i, int tok);
+  abstract public String extractMolData(String what);
 
 }
 

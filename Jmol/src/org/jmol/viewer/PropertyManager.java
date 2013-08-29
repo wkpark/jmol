@@ -1156,6 +1156,7 @@ public class PropertyManager implements JmolPropertyManager {
         sb.append("\nid").append(s).append(Escape.eS(id));
       sb.append("\ntitle").append(s).append(Escape.eS(ms.getModelTitle(i)));
       sb.append("\nname").append(s).append(Escape.eS(ms.getModelName(i)));
+      sb.append("\ntype").append(s).append(Escape.eS(ms.getModelFileType(i)));
     }
     return sb.toString();
   }

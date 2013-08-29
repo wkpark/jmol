@@ -515,7 +515,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager = new FileManager(this);
     definedAtomSets = new Hashtable<String, Object>();
     setJmolStatusListener(statusListener);
-
     if (isApplet) {
       Logger.info("viewerOptions: \n" + Escape.escapeMap(viewerOptions));
       jsDocumentBase = appletDocumentBase;
@@ -3185,15 +3184,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public int getModelNumber(int modelIndex) {
-    if (modelIndex < 0)
-      return modelIndex;
-    return modelSet.getModelNumber(modelIndex);
+    return (modelIndex < 0 ? modelIndex : modelSet.getModelNumber(modelIndex));
   }
 
   public int getModelFileNumber(int modelIndex) {
-    if (modelIndex < 0)
-      return 0;
-    return modelSet.getModelFileNumber(modelIndex);
+    return (modelIndex < 0 ? 0 : modelSet.getModelFileNumber(modelIndex));
   }
 
   @Override
@@ -5183,7 +5178,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setS("_modelTitle",
         (modelIndex < 0 ? "" : getModelTitle(modelIndex)));
     global.setS("_modelFile", (modelIndex < 0 ? ""
-        : getModelFileName(modelIndex)));
+        : modelSet.getModelFileName(modelIndex)));
+    global.setS("_modelType", (modelIndex < 0 ? ""
+        : modelSet.getModelFileType(modelIndex)));
 
     if (currentFrame == prevFrame)
       return;
@@ -8574,18 +8571,32 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return xyzdata;
   }
 
-  public String getNMRPredict(String molFile) {
-    // nmrdb cannot handle "." separator and cannot handle c=c
+  @Override
+  public String extractMolData(String what) {
+  	if (what == null) {
+  		int i = getCurrentModelIndex();
+  		if (i < 0)
+  			return null;
+  		what = getModelNumberDotted(i);
+  	}
+    return getModelExtract(what, true, false, "V2000");
+  }
+  public String getNMRPredict(boolean openURL) {
+    String molFile = getModelExtract("selected", true, false, "V2000");
     int pt = molFile.indexOf("\n");
     molFile = "Jmol " + version_date + molFile.substring(pt);
+    if (openURL) {
+      if (isApplet) {
+        //TODO -- can do this if connected
+        showUrl(global.nmrUrlFormat + molFile);
+      } else {
+        syncScript("true", "*", 0);
+        syncScript("JSpecView:", ".", 0);
+      }
+      return null; 
+    }
     String url = global.nmrPredictFormat + molFile;
     return getFileAsString(url);
-  }
-
-  public void showNMR(String smiles) {
-    // nmrdb cannot handle "." separator and cannot handle c=c
-    showUrl(global.nmrUrlFormat
-        + Escape.escapeUrl(getChemicalInfo(smiles, '/', "smiles")));
   }
 
   public void getHelp(String what) {
@@ -8781,6 +8792,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int getModelIndexFromId(String id) {
+    // from JSpecView peak pick and model "ID"
     return modelSet.getModelIndexFromId(id);
   }
 

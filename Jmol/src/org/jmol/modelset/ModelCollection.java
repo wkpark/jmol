@@ -197,6 +197,10 @@ abstract public class ModelCollection extends BondCollection {
     return (String) getModelAuxiliaryInfoValue(modelIndex, "fileName");
   }
 
+  public String getModelFileType(int modelIndex) {
+    return (String) getModelAuxiliaryInfoValue(modelIndex, "fileType");
+  }
+
   public void setFrameTitle(BS bsFrames, Object title) {
     if (title instanceof String) {
       for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames
@@ -1008,10 +1012,6 @@ abstract public class ModelCollection extends BondCollection {
 
   public int getInsertionCountInModel(int modelIndex) {
     return models[modelIndex].nInsertions;
-  }
-
-  public String getModelFileType(int modelIndex) {
-    return (String) getModelAuxiliaryInfoValue(modelIndex, "fileType");
   }
 
   public static int modelFileNumberFromFloat(float fDotM) {
@@ -3397,13 +3397,14 @@ abstract public class ModelCollection extends BondCollection {
     String fname = null;
     for (int i = 0; i < modelCount; i++) {
       String mid = (String) getModelAuxiliaryInfoValue(i, "modelID");
-      if (mid == null && (mid = getModelTitle(i)) == null)
+      String mnum = (id.startsWith("~") ? "~" + getModelNumberDotted(i) : null);
+      if (mnum == null && mid == null && (mid = getModelTitle(i)) == null)
         continue;
       if (haveFile) {
         fname = getModelFileName(i) + "#";
         mid = fname + mid;
       }
-      if (id.equalsIgnoreCase(mid))
+      if (id.equalsIgnoreCase(mid) || id.equalsIgnoreCase(mnum))
         return (isBaseModel ? viewer.getJDXBaseModelIndex(i) : i);
       if (fname != null && id.startsWith(fname))
         errCode = -2;

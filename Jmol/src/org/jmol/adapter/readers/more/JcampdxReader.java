@@ -26,10 +26,12 @@ package org.jmol.adapter.readers.more;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
 import org.jmol.util.JmolList;
-
-
-
 import org.jmol.util.TextFormat;
 
 import org.jmol.adapter.readers.molxyz.MolReader;
@@ -96,7 +98,7 @@ C    -1.693100    0.007800    0.000000   -0.000980    0.000120    0.000000
 
 public class JcampdxReader extends MolReader {
 
-  private String modelID;
+  private String thisModelID;
   private AtomSetCollection models;
   private String modelIdList = "";
   private  JmolList<String> peakData = new  JmolList<String>();
@@ -152,7 +154,9 @@ public class JcampdxReader extends MolReader {
     if (label.equals("##$MODELS"))
       return readModels();
     if (label.equals("##$PEAKS"))
-      return readPeaks();
+      return (readPeaks(false) > 0);
+    if (label.equals("##$SIGNALS"))
+      return (readPeaks(true) > 0);
     return true;
   }
 
@@ -180,7 +184,7 @@ public class JcampdxReader extends MolReader {
     // load xxx.jdx 0  will mean "load only the base model(s)"
     models = null;
     line = "";
-    modelID = "";
+    thisModelID = "";
     boolean isFirst = true;
     while (true) {
       int model0 = atomSetCollection.getCurrentAtomSetIndex();
@@ -208,11 +212,11 @@ public class JcampdxReader extends MolReader {
   private void updateModelIDs(int model0, boolean isFirst) {
     int n = atomSetCollection.getAtomSetCount();
     if (isFirst && n == model0 + 2) {
-      atomSetCollection.setAtomSetAuxiliaryInfo("modelID", modelID);
+      atomSetCollection.setAtomSetAuxiliaryInfo("modelID", thisModelID);
       return;
     }
     for (int pt = 0, i = model0; ++i < n;) {
-      atomSetCollection.setAtomSetAuxiliaryInfoForSet("modelID", modelID + "."
+      atomSetCollection.setAtomSetAuxiliaryInfoForSet("modelID", thisModelID + "."
           + (++pt), i);
     }
   }
@@ -223,10 +227,10 @@ public class JcampdxReader extends MolReader {
   }
 
   private AtomSetCollection getModelAtomSetCollection() throws Exception {
-    lastModel = modelID;
-    modelID = getAttribute(line, "id");
+    lastModel = thisModelID;
+    thisModelID = getAttribute(line, "id");
     // read model only once for a given ID
-    String key = ";" + modelID + ";";
+    String key = ";" + thisModelID + ";";
     if (modelIdList.indexOf(key) >= 0) {
       discardLinesUntilContains("</ModelData>");
       return null;
@@ -276,7 +280,7 @@ public class JcampdxReader extends MolReader {
       for (int i = a.getAtomCount(); --i >= 0;)
         atoms[i].scaleVector(vibScale);
     }
-    Logger.info("jdx model=" + modelID + " type=" + a.getFileTypeName());
+    Logger.info("jdx model=" + thisModelID + " type=" + a.getFileTypeName());
     return a;
   }
 
@@ -312,20 +316,167 @@ public class JcampdxReader extends MolReader {
     }
   }
 
-  private boolean readPeaks() throws Exception {
-    if (line.indexOf("<Peaks") < 0)
-      discardLinesUntilContains2("<Peaks", "##");
-    if (line.indexOf("<Peaks") < 0)
-      return false;
-    String type = getAttribute(line, "type").toUpperCase();
-    if (type.equals("HNMR"))
-      type = "1HNMR";
-    else if (type.equals("CNMR"))
-      type = "13CNMR";
-    while (readLine() != null && !(line = line.trim()).startsWith("</Peaks>"))
-      if (line.startsWith("<PeakData"))
-        peakData.addLast("<PeakData file=" + peakFilePath + " index=\"" + (++peakIndex[0]) + "\"" + " type=\"" + type + "\" " + line.substring(9).trim());
-    return true;
+  String piUnitsX, piUnitsY;
+
+  /**
+   * read a <Peaks> or <Signals> block See similar method in
+   * JSpecViewLib/src/jspecview/source/FileReader.java
+   * 
+   * @param isSignals
+   * @return true if successful
+   * @throws Exception
+   */
+  private int readPeaks(boolean isSignals) throws Exception {
+    JcampdxReader reader = this;
+    Object spectrum = null;
+    
+    try {
+      String tag1 = (isSignals ? "Signals" : "Peaks");
+      String tag2 = (isSignals ? "<Signal" : "<PeakData");
+      String line = discardUntil(reader, tag1);
+      if (line.indexOf("<" + tag1) < 0)
+        line = discardUntil(reader, "<" + tag1);
+      if (line.indexOf("<" + tag1) < 0)
+        return 0;
+
+      String file = getPeakFilePath();
+      String model = getQuotedAttribute(line, "model");
+      model = " model=" + escape(model == null ? thisModelID : model);
+      String type = getQuotedAttribute(line, "type");
+      if ("HNMR".equals(type))
+        type = "1HNMR";
+      else if ("CNMR".equals(type))
+        type = "13CNMR";
+      type = (type == null ? "" : " type=" + escape(type));
+      piUnitsX = getQuotedAttribute(line, "xLabel");
+      piUnitsY = getQuotedAttribute(line, "yLabel");
+      Map<String, Object[]> htSets = new Hashtable<String, Object[]>();
+      List<Object[]> list = new ArrayList<Object[]>();
+      while ((line = reader.readLine()) != null
+          && !(line = line.trim()).startsWith("</" + tag1)) {
+        if (line.startsWith(tag2)) {
+          info(line);
+          String title = getQuotedAttribute(line, "title");
+          if (title == null) {
+            title = (type == "1HNMR" ? "atom%S%: %ATOMS%; integration: %NATOMS%" : "");
+            title = " title=" + escape(title);
+          } else {
+            title = "";
+          }
+          String stringInfo = "<PeakData "
+              + file
+              + " index=\"%INDEX%\""
+              + title
+              + type
+              + (getQuotedAttribute(line, "model") == null ? model
+                  : "") + " " + line.substring(tag2.length()).trim();
+          String atoms = getQuotedAttribute(stringInfo, "atoms");
+          if (atoms != null)
+            stringInfo = simpleReplace(stringInfo, "atoms=\""
+                + atoms + "\"", "atoms=\"%ATOMS%\"");
+          String key = ((int) (parseFloatStr(getQuotedAttribute(line, "xMin")) * 100))
+              + "_"
+              + ((int) (parseFloatStr(getQuotedAttribute(line,
+                  "xMax")) * 100));
+          Object[] o = htSets.get(key);
+          if (o == null) {
+            o = new Object[] { stringInfo,
+                (atoms == null ? null : new BS()) };
+            htSets.put(key, o);
+            list.add(o);
+          }
+          BS bs = (BS) o[1];
+          if (bs != null) {
+            atoms = atoms.replace(',', ' ');
+            bs.or(unescapeBitSet("({" + atoms + "})"));
+          }
+        }
+      }
+      int nH = 0;
+      int n = list.size();
+      for (int i = 0; i < n; i++) {
+        Object[] o = list.get(i);
+        String stringInfo = (String) o[0];
+        stringInfo = simpleReplace(stringInfo, "%INDEX%", ""
+            + getPeakIndex());
+        BS bs = (BS) o[1];
+        if (bs != null) {
+          String s = "";
+          for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+            s += "," + (j + 1);
+          int na = bs.cardinality();
+          nH += na;
+          stringInfo = simpleReplace(stringInfo, "%ATOMS%", s
+              .substring(1));
+          stringInfo = simpleReplace(stringInfo, "%S%",
+              (na == 1 ? "" : "s"));
+          stringInfo = simpleReplace(stringInfo, "%NATOMS%", ""
+              + na);
+        }
+        info("Jmol using " + stringInfo);
+        add(peakData, stringInfo);
+      }
+      setSpectrumPeaks(spectrum, peakData, nH);
+      return n;
+    } catch (Exception e) {
+      return 0;
+    }
+  }
+
+  private void info(String s) {
+    Logger.info(s);
+  }
+
+  private BS unescapeBitSet(String s) {
+    return Escape.uB(s);
+  }
+
+  private String simpleReplace(String s, String sfrom, String sto) {
+    return TextFormat.simpleReplace(s, sfrom, sto);
+  }
+
+  private String escape(String s) {
+    return Escape.eS(s);
+  }
+
+  private String getQuotedAttribute(String s, String attr) {
+    return Parser.getQuotedAttribute(s, attr);
+  }
+
+  /**
+   * @param o1 
+   * @param o2 
+   * @param nH  
+   */
+  private void setSpectrumPeaks(Object o1, Object o2,
+                                int nH) {
+    // only in JSpecView
+  }
+
+  private void add(JmolList<String> peakData, String info) {
+    peakData.addLast(info);
+  }
+
+  private String getPeakFilePath() {
+    return " file=" + Escape.eS(peakFilePath);
+  }
+
+  
+  /**
+   * @param ignored  
+   * @param tag 
+   * @return line 
+   * @throws Exception 
+   */
+  private String discardUntil(Object ignored, String tag) throws Exception {
+    return discardLinesUntilContains2("<" + tag, "##");
+  }
+
+  /**
+   * @return index
+   */
+  private int getPeakIndex() {
+    return ++peakIndex[0];
   }
 
   /**
@@ -341,10 +492,10 @@ public class JcampdxReader extends MolReader {
     for (int p = 0; p < n; p++) {
       line = peakData.get(p);
       String type = getAttribute(line, "type");
-      modelID = getAttribute(line, "model");
-      int i = findModelById(modelID);
+      thisModelID = getAttribute(line, "model");
+      int i = findModelById(thisModelID);
       if (i < 0) {
-        Logger.warn("cannot find model " + modelID + " required for " + line);
+        Logger.warn("cannot find model " + thisModelID + " required for " + line);
         continue;
       }
       addType(i, type);
@@ -372,9 +523,9 @@ public class JcampdxReader extends MolReader {
     }
     n = atomSetCollection.getAtomSetCount();
     for (int i = n; --i >= 0;) {
-      modelID = (String) atomSetCollection
+      thisModelID = (String) atomSetCollection
           .getAtomSetAuxiliaryInfoValue(i, "modelID");
-      if (havePeaks && !bsModels.get(i) && modelID.indexOf(".") >= 0) {
+      if (havePeaks && !bsModels.get(i) && thisModelID.indexOf(".") >= 0) {
         atomSetCollection.removeAtomSet(i); 
         n--;
       }

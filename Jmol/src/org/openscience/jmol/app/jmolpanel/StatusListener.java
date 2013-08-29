@@ -74,6 +74,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
 
   private JmolViewer viewer;
   private MainFrame jSpecViewFrame;
+  private boolean jSpecViewForceNew;
   void setViewer(JmolViewer viewer) {
     this.viewer = viewer;
   }
@@ -131,6 +132,8 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         display.status.setStatus(1, menuName);
         if (jmol.frame != null)
           jmol.frame.setTitle(menuName);
+//        if (jSpecViewFrame != null)
+//          setJSpecView("", true);
       }
       return;
     case SCRIPT:
@@ -167,7 +170,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       break;
     case SYNC:
       if (strInfo != null && strInfo.toLowerCase().startsWith("jspecview")) {
-        setJSpecView(strInfo.substring(9).trim());
+        setJSpecView(strInfo.substring(9).trim(), false, false);
         return;
       }
       jmol.sendNioMessage(((Integer) data[3]).intValue(), strInfo);
@@ -262,10 +265,13 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       title = modelName;
     jmol.notifyFileOpen(fullPathName == null ? null : fullPathName + (isAsync == Boolean.TRUE ? " (*)" : ""), title);    
     if (jSpecViewFrame != null) {
+      jSpecViewForceNew = jSpecViewFrame.isVisible();
       if (fullPathName == null) {
         jSpecViewFrame.syncScript("close ALL");
-      } else if (fullPathName.endsWith(".jdx"))
-        jSpecViewFrame.syncScript("load CHECK " + Escape.eS(fullPathName));
+      } else {
+        setJSpecView("", true, true);
+      }
+      jSpecViewForceNew = true;
     }
   }
 
@@ -359,7 +365,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     return jmol.resizeInnerPanel(data);
   }
 
-  public void setJSpecView(String peaks) {
+  public void setJSpecView(String peaks, boolean doLoadCheck, boolean isFileLoad) {
     if (!display.isRotateMode())
       return;
     if (peaks.startsWith(":"))
@@ -367,15 +373,35 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     if (jSpecViewFrame == null) {
       jSpecViewFrame = new MainFrame((Component) viewer.getDisplay(), this);
       jSpecViewFrame.setSize(800, 500);
-      jSpecViewFrame.setLocation(400, 400);
+      jSpecViewFrame.setLocation(jmol.frame.getLocation().x + 10, jmol.frame
+          .getLocation().y + 100);
       jSpecViewFrame.register("Jmol", this);
       if (peaks.length() == 0) {
-        String s = "" + viewer.getParameter("_modelfile");
-        if (s.indexOf("/") >= 0)
-          peaks = "hidden false; load " + Escape.eS(s);
+        doLoadCheck = true;
       }
     }
-    if (!jSpecViewFrame.isVisible() && !peaks.toLowerCase().startsWith("hidden")) {
+    if (doLoadCheck || jSpecViewForceNew) {
+      String type = "" + viewer.getParameter("_modelType");
+      if (type.equalsIgnoreCase("jcampdx")) {
+        jSpecViewForceNew = false;
+        String file = "" + viewer.getParameter("_modelFile");
+        if (file.indexOf("/") < 0)
+          return;
+        peaks = "hidden true; load CHECK " + Escape.eS(file) + ";hidden false";
+      } else if (isFileLoad && !jSpecViewForceNew) {
+        return;
+      } else {
+        jSpecViewForceNew = false;
+        String model = "" + viewer.getParameter("_modelNumber");
+        String data = viewer.extractMolData(null);
+        if (data == null)
+          return;
+        peaks = "hidden true; load CHECK MOL "
+            + Escape.eS("id='~" + model + "';" + data) + ";hidden false";
+      }
+    }
+    if (!jSpecViewFrame.isVisible()) {
+    //    && !peaks.toLowerCase().startsWith("hidden")) {
       jSpecViewFrame.awaken(true);
       display.setViewer(viewer);
     }

@@ -108,6 +108,8 @@ public class StateCreator implements JmolStateCreator {
     this.viewer = viewer;
   }
 
+  public static String SIMULATION_PROTOCOL = "http://SIMULATION/";
+
   public Object getWrappedState(String fileName, String[] scripts,
                                 boolean isImage, boolean asJmolZip, int width,
                                 int height) {
@@ -2125,9 +2127,21 @@ public class StateCreator implements JmolStateCreator {
     if (disableSend)
       sm.setSyncDriver(StatusManager.SYNC_DISABLE);
     if (script.indexOf("Mouse: ") != 0) {
+      if (script.startsWith("Peaks: [")) {
+        // JSpecView simulation
+        String[] list = Escape.unescapeStringArray(script.substring(7));
+        JmolList<String> peaks = new JmolList<String>();
+        for (int i = 0; i < list.length; i++)
+          peaks.addLast(list[i]);
+        viewer.getModelSet().setModelAuxiliaryInfo(
+            viewer.getCurrentModelIndex(), "jdxAtomSelect_1HNMR", peaks);
+        return;
+      }
       if (script.startsWith("Select: ")) {
         // from JSpecView peak pick
         String filename = Parser.getQuotedAttribute(script, "file");
+        if (filename.startsWith(SIMULATION_PROTOCOL + "MOL="))
+          filename = null; // from our sending; don't reload
         String modelID = Parser.getQuotedAttribute(script, "model");
         String baseModel = Parser.getQuotedAttribute(script, "baseModel");
         String atoms = Parser.getQuotedAttribute(script, "atoms");
@@ -2135,10 +2149,9 @@ public class StateCreator implements JmolStateCreator {
         String script2 = Parser.getQuotedAttribute(script, "script");
         boolean isNIH = (modelID != null && modelID.startsWith("$"));
         if (isNIH)
-          filename = (modelID.substring(1).equals(
-              viewer.getParameter("_smilesstring")) ? null : modelID);
-        String id = (isNIH || modelID == null ? null : (filename == null ? ""
-            : filename + "#")
+          filename = (String) viewer.setLoadFormat(modelID, '$', false);
+        String id = (modelID == null ? null : (filename == null ? "" : filename
+            + "#")
             + modelID);
         if ("".equals(baseModel))
           id += ".baseModel";
@@ -2147,6 +2160,7 @@ public class StateCreator implements JmolStateCreator {
           return; // file was found, or no file was indicated, but not this model -- ignore
         script = (modelIndex == -1 && filename != null ? script = "load "
             + Escape.eS(filename) : "");
+        script = TextFormat.simpleReplace(script, SIMULATION_PROTOCOL, "");
         if (id != null)
           script += ";model " + Escape.eS(id);
         if (atoms != null)

@@ -376,6 +376,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       jSpecViewFrame.setLocation(jmol.frame.getLocation().x + 10, jmol.frame
           .getLocation().y + 100);
       jSpecViewFrame.register("Jmol", this);
+      viewer.setBooleanProperty("_jspecview", true);
       if (peaks.length() == 0) {
         doLoadCheck = true;
       }
@@ -397,9 +398,12 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         if (data == null)
           return;
         peaks = "hidden true; load CHECK MOL "
-            + Escape.eS("id='~" + model + "';" + data) + ";hidden false";
+            + Escape.eS("id='~" + model + "';" + data) + ";hidden false #SYNC_PEAKS";
       }
     }
+    if (!jSpecViewFrame.isVisible() && peaks.contains("<PeakData"))
+      return;
+
     if (!jSpecViewFrame.isVisible()) {
     //    && !peaks.toLowerCase().startsWith("hidden")) {
       jSpecViewFrame.awaken(true);

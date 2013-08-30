@@ -91,6 +91,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     case ANIMFRAME:
     case ECHO:
     case LOADSTRUCT:
+    case STRUCTUREMODIFIED:
     case MEASURE:
     case MESSAGE:
     case PICK:
@@ -168,6 +169,13 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     case PICK:
       notifyAtomPicked(strInfo);
       break;
+    case STRUCTUREMODIFIED:
+      // 0 DONE; 1 in process
+      int mode = ((Integer) data[1]).intValue();
+      int atomIndex = ((Integer) data[2]).intValue();
+      int modelIndexx = ((Integer) data[3]).intValue();
+      notifyStructureModified(atomIndex, modelIndexx, mode);
+      break;
     case SYNC:
       if (strInfo != null && strInfo.toLowerCase().startsWith("jspecview")) {
         setJSpecView(strInfo.substring(9).trim(), false, false);
@@ -189,6 +197,21 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         .getProperty("DATA_API", "getAppConsole", null);
     if (appConsole != null)
       appConsole.notifyCallback(type, data);
+  }
+
+  private void notifyStructureModified(int atomIndex, int modelIndex, int mode) {
+    modificationMode = mode;
+    if (mode < 0) {
+      switch (mode) {
+      case -1: // assign atom
+      case -2: // assign bond
+      case -3: // 
+      case -4: // delete atoms
+      case -5: // delete models
+        checkJSpecView(false);
+        return;
+      }
+    }
   }
 
   public void setCallbackFunction(String callbackType, String callbackFunction) {
@@ -254,19 +277,25 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     }
     if (!display.haveDisplay)
       return;
-
+System.out.println("StatusListener notifyFileLoaded: " + fileName);
     // this code presumes only ptLoad = -1 (error), 0 (zap), or 3 (completed)
     String title = "Jmol";
     if (modelName != null && fileName != null)
-      title = fileName + " - " + modelName;
+      title = (fileName.contains("&") ? "" : fileName + " - ") + modelName;
     else if (fileName != null)
       title = fileName;
     else if (modelName != null)
       title = modelName;
-    jmol.notifyFileOpen(fullPathName == null ? null : fullPathName + (isAsync == Boolean.TRUE ? " (*)" : ""), title);    
-    if (jSpecViewFrame != null) {
+    jmol.notifyFileOpen(fullPathName == null ? null : fullPathName + (isAsync == Boolean.TRUE ? " (*)" : ""), title);
+    checkJSpecView(fullPathName == null);
+  }
+
+  private int modificationMode;
+  
+  private void checkJSpecView(boolean closeAll) {
+    if (jSpecViewFrame != null && modificationMode <= 0) {
       jSpecViewForceNew = jSpecViewFrame.isVisible();
-      if (fullPathName == null) {
+      if (closeAll) {
         jSpecViewFrame.syncScript("close ALL");
       } else {
         setJSpecView("", true, true);
@@ -366,8 +395,8 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   }
 
   public void setJSpecView(String peaks, boolean doLoadCheck, boolean isFileLoad) {
-    if (!display.isRotateMode())
-      return;
+    //if (!display.isRotateMode())
+      //return;
     if (peaks.startsWith(":"))
       peaks = peaks.substring(1);
     if (jSpecViewFrame == null) {

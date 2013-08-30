@@ -506,6 +506,7 @@ public class Jmol implements JmolSyncInterface {
       case MEASURE:
       case MESSAGE:
       case PICK:
+      case STRUCTUREMODIFIED:
       case SYNC:
       case SCRIPT:
         return true;
@@ -645,6 +646,9 @@ public class Jmol implements JmolSyncInterface {
         output(strInfo);
         showStatus(strInfo);
         break;
+      case STRUCTUREMODIFIED:
+        notifyStructureModified(((Integer) data[1]).intValue(), ((Integer) data[2]).intValue());
+        break;
       case SYNC:
         sendScript(strInfo, (String) data[2], true, doCallback);
         return;
@@ -670,6 +674,12 @@ public class Jmol implements JmolSyncInterface {
         haveNotifiedError = true;
       }
     }
+
+    private void notifyStructureModified(int modelIndex, int mode) {
+      // TODO
+      
+    }
+
 
     private void output(String s) {
       if (outputBuffer != null && s != null)

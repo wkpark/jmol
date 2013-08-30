@@ -5790,6 +5790,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   @Override
   public boolean getBoolean(int tok) {
     switch (tok) {
+    case T.pdb:
+      return modelSet.getModelSetAuxiliaryInfoBoolean("isPDB");
     case T.allowgestures:
       return global.allowGestures;
     case T.allowmultitouch:
@@ -8894,16 +8896,20 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int deleteAtoms(BS bs, boolean fullModels) {
+    int atomIndex = (bs == null ? -1 : bs.nextSetBit(0));
+    if (atomIndex < 0)
+      return 0;
     clearModelDependentObjects();
     if (!fullModels) {
+      statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex, 4);
       modelSet.deleteAtoms(bs);
       int n = selectionManager.deleteAtoms(bs);
       setTainted(true);
+      statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex, -4);
       return n;
     }
-    if (bs.cardinality() == 0)
-      return 0;
     // fileManager.addLoadScript("zap " + Escape.escape(bs));
+    statusManager.modifySend(-1, modelSet.atoms[atomIndex].modelIndex, 5);
     setCurrentModelIndexClear(0, false);
     animationManager.setAnimationOn(false);
     BS bsD0 = BSUtil.copy(getDeletedAtoms());
@@ -8921,6 +8927,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refreshMeasures(true);
     if (bsD0 != null)
       bsDeleted.andNot(bsD0);
+    statusManager.modifySend(-1, modelSet.atoms[atomIndex].modelIndex, -5);
     return BSUtil.cardinalityOf(bsDeleted);
   }
 
@@ -9596,10 +9603,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     clearModelDependentObjects();
     if (pt == null) {
+      statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex, 1);
       int atomCount = modelSet.getAtomCount();
       modelSet.assignAtom(atomIndex, type, true);
       if (!Parser.isOneOf(type,";Mi;Pl;X;"))
         modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
+      statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex, -1);
       refresh(3, "assignAtom");
       return;
     }
@@ -9608,6 +9617,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     P3[] pts = new P3[] { pt };
     JmolList<Atom> vConnections = new JmolList<Atom>();
     vConnections.addLast(atom);
+    int modelIndex = atom.modelIndex;
+    statusManager.modifySend(atomIndex, modelIndex, 3);
     try {
       bs = addHydrogensInline(bs, vConnections, pts);
       atomIndex = bs.nextSetBit(0);
@@ -9616,15 +9627,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       //
     }
     modelSet.setAtomNamesAndNumbers(atomIndex, -1, null);
+    statusManager.modifySend(atomIndex, modelIndex,-3);
   }
 
   public void assignConnect(int index, int index2) {
     clearModelDependentObjects();
     float[][] connections = ArrayUtil.newFloat2(1);
     connections[0] = new float[] { index, index2 };
+    int modelIndex = modelSet.atoms[index].modelIndex;
+    statusManager.modifySend(index, modelIndex, 2);
     modelSet.connect(connections);
     modelSet.assignAtom(index, ".", true);
     modelSet.assignAtom(index2, ".", true);
+    statusManager.modifySend(index, modelIndex, -2);
     refresh(3, "assignConnect");
   }
 

@@ -19,13 +19,15 @@ public class JSpecView implements JmolJSpecView {
   }
   
   public void atomPicked(int atomIndex) {
+    if (atomIndex < 0)
+      return;
     String peak = getPeakAtomRecord(atomIndex);
     if (peak != null)
       sendJSpecView(peak + " src=\"JmolAtomSelect\"");
   }
   
   @SuppressWarnings("unchecked")
-  public String getPeakAtomRecord(int atomIndex) {
+  private String getPeakAtomRecord(int atomIndex) {
     Atom[] atoms = viewer.modelSet.atoms;
     int iModel = atoms[atomIndex].modelIndex;
     String type = null;

@@ -601,6 +601,12 @@ public class StatusManager {
       jmolCallbackListener.notifyCallback(EnumCallback.SYNC,
           new Object[] { null, script, appletName, Integer.valueOf(port) });
   }
+ 
+  void modifySend(int atomIndex, int modelIndex, int mode) {
+    if (notifyEnabled(EnumCallback.STRUCTUREMODIFIED))
+      jmolCallbackListener.notifyCallback(EnumCallback.STRUCTUREMODIFIED,
+          new Object[] { null, Integer.valueOf(mode), Integer.valueOf(atomIndex), Integer.valueOf(modelIndex) });
+  }
   
   int getSyncMode() {
     return (!isSynced ? SYNC_OFF : drivingSync ? SYNC_DRIVER : SYNC_SLAVE);

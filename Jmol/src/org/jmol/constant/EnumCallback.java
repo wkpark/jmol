@@ -44,7 +44,7 @@ public enum EnumCallback {
   PICK,
   RESIZE,
   SCRIPT,
-  SYNC;
+  SYNC, STRUCTUREMODIFIED;
 
   public static EnumCallback getCallback(String name) {
     

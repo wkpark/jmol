@@ -49,19 +49,24 @@ public class JSpecView implements JmolJSpecView {
     Hashtable<String, BS> htPeaks = viewer.modelSet.htPeaks;
     for (int i = 0; i < peaks.size(); i++) {
       String peak = peaks.get(i);
+      System.out.println("Jmol JSpecView.java peak="  + peak);
       BS bsPeak = htPeaks.get(peak);
+      System.out.println("Jmol JSpecView.java bspeak="  + bsPeak);
       if (bsPeak == null) {
         htPeaks.put(peak, bsPeak = new BS());
         String satoms = Parser.getQuotedAttribute(peak, "atoms");
         String select = Parser.getQuotedAttribute(peak, "select");
+        System.out.println("Jmol JSpecView.java satoms select " + satoms + " " + select);
         String script = "";
         if (satoms != null)
           script += "visible & (atomno="
               + TextFormat.simpleReplace(satoms, ",", " or atomno=") + ")";
         else if (select != null)
           script += "visible & (" + select + ")";
+        System.out.println("Jmol JSpecView.java script : " + script);
         bsPeak.or(viewer.getAtomBitSet(script));
       }
+      System.out.println("Jmol JSpecView bsPeak now : " + bsPeak + " " + atomIndex);
       if (bsPeak.get(atomIndex))
         return peak;
     }

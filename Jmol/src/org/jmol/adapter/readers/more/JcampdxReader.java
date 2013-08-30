@@ -331,6 +331,7 @@ public class JcampdxReader extends MolReader {
     Object spectrum = null;
     
     try {
+      int offset = (isSignals ? 1 : 0);
       String tag1 = (isSignals ? "Signals" : "Peaks");
       String tag2 = (isSignals ? "<Signal" : "<PeakData");
       String line = discardUntil(reader, tag1);
@@ -403,7 +404,7 @@ public class JcampdxReader extends MolReader {
         if (bs != null) {
           String s = "";
           for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
-            s += "," + (j + 1);
+            s += "," + (j + offset);
           int na = bs.cardinality();
           nH += na;
           stringInfo = simpleReplace(stringInfo, "%ATOMS%", s

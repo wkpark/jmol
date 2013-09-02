@@ -1209,6 +1209,10 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
         && flowContext.var != null && theTok != T.casecmd
         && theTok != T.defaultcmd && lastToken.tok != T.switchcmd)
       return ERROR(ERROR_badContext, ident);
+    if (lastToken.tok == T.define && theTok != T.leftbrace && nTokens != 1) {
+      addTokenToPrefix(T.o(T.string, ident));
+      return CONTINUE;
+    }
     switch (theTok) {
     case T.identifier:
       if (nTokens == 0 && !checkImpliedScriptCmd) {
@@ -2330,12 +2334,6 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
           ptLastChar = ichT;
         }
         break;
-      }
-      if (Character.isWhitespace(ch)) {
-        if (ptSpace < 0)
-          ptSpace = ichT;
-      } else {
-        ptLastChar = ichT;
       }
       ++ichT;
     }

@@ -8878,8 +8878,19 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       switch (tok) {
       case T.file:
+        i++;
+        loadScript.append(" " + modelName);
+        if (tokAt(i) == T.varray) {
+          filenames = stringParameterSet(i);
+          i = iToken;
+          if (i + 1 != slen)
+            invArg();
+          if (filenames != null)
+            nFiles = filenames.length;
+        }
+        break;
       case T.inline:
-        isInline = (tok == T.inline);
+        isInline = true;
         i++;
         loadScript.append(" " + modelName);
         break;
@@ -8918,7 +8929,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       default:
         modelName = "fileset";
       }
-      if (getToken(i).tok != T.string)
+      if (filenames == null && getToken(i).tok != T.string)
         error(ERROR_filenameExpected);
     }
     // long timeBegin = System.currentTimeMillis();
@@ -8947,31 +8958,33 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       // end-of-command options:
       // LOAD SMILES "xxxx" --> load "$xxxx"
-      // LOAD "['xxxxx','yyyyy','zzzzz']"
 
-      if (i == 0 || (filename = parameterAsString(filePt)).length() == 0)
+      if (i == 0 || filenames == null
+          && (filename = parameterAsString(filePt)).length() == 0)
         filename = viewer.getFullPathName();
-      if (filename == null) {
+      if (filename == null && filenames == null) {
         zap(false);
         return;
       }
-      if (isSmiles) {
-        filename = "$" + filename;
-      } else if (!isInline) {
-        if (filename.indexOf("[]") >= 0)
-          return;
-        if (filename.indexOf("[") == 0) {
-          filenames = Escape.unescapeStringArray(filename);
-          if (filenames != null) {
-            if (i == 1)
-              loadScript.append(" files");
-            if (loadScript.indexOf(" files") < 0)
-              invArg();
-            for (int j = 0; j < filenames.length; j++)
-              loadScript.append(" /*file*/").append(Escape.eS(filenames[j]));
+      if (filenames == null)
+        if (isSmiles) {
+          filename = "$" + filename;
+        } else if (!isInline) {
+          if (filename.indexOf("[]") >= 0)
+            return;
+          if (filename.indexOf("[") == 0) {
+            filenames = Escape.unescapeStringArray(filename);
+            if (filenames != null) {
+              if (i == 1)
+                loadScript.append(" files");
+              nFiles = filenames.length;
+            }
           }
         }
-      }
+      if (filenames != null)
+        for (int j = 0; j < filenames.length; j++)
+          loadScript.append(" /*file*/").append(Escape.eS(filenames[j]));
+
     } else if (getToken(i + 1).tok == T.manifest
         // model/vibration index or list of model indices
         || theTok == T.integer || theTok == T.varray || theTok == T.leftsquare
@@ -9316,13 +9329,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       filenames = new String[nFiles];
       for (int j = 0; j < nFiles; j++)
         filenames[j] = fNames.get(j);
-      filename = "fileSet";
     }
 
     // end of parsing
 
     if (!doLoadFiles)
       return;
+
+    if (filenames != null)
+      filename = "fileSet";
 
     // get default filter if necessary
 
@@ -9338,9 +9353,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // If this is a state script, it may have been created using
         // the DOCACHE flag, but we never want that here, because then
         // this is a file being loaded from the state script itself.
-//        if (isStateScript)
-//          filter = TextFormat
-//              .simpleReplace(filter.toUpperCase(), "DOCACHE", "");
+        //        if (isStateScript)
+        //          filter = TextFormat
+        //              .simpleReplace(filter.toUpperCase(), "DOCACHE", "");
         if (!isStateScript && !isAppend)
           viewer.cacheClear();
       }

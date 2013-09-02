@@ -85,6 +85,8 @@ public abstract class JmolAdapter {
   public final static int        SHELL_F_CARTESIAN = EnumQuantumShell.F_CARTESIAN.id;
   public final static int        SHELL_G_SPHERICAL = EnumQuantumShell.G_SPHERICAL.id;
   public final static int        SHELL_G_CARTESIAN = EnumQuantumShell.G_CARTESIAN.id;
+  public final static int        SHELL_H_SPHERICAL = EnumQuantumShell.H_SPHERICAL.id;
+  public final static int        SHELL_H_CARTESIAN = EnumQuantumShell.H_CARTESIAN.id;
   public static final String SUPPORTED_BASIS_FUNCTIONS = EnumQuantumShell.SUPPORTED_BASIS_FUNCTIONS;
   public static final String NOTE_SCRIPT_FILE = JC.NOTE_SCRIPT_FILE;
   
@@ -104,6 +106,10 @@ public abstract class JmolAdapter {
     return JC.isHetero(group3);
   }
   
+  public static String getQuantumShellTag(int id) {
+    return EnumQuantumShell.getQuantumShellTag(id);
+  }
+                                           
   public static int getQuantumShellTagID(String tag) {
     return EnumQuantumShell.getQuantumShellTagID(tag);
   }

@@ -86,6 +86,7 @@ class MyStatusListener implements JmolStatusListener {
     case MINIMIZATION:
     case RESIZE:
     case SYNC:
+    case STRUCTUREMODIFIED:
     case SCRIPT:
     case CLICK:
     case EVAL:

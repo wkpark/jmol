@@ -1025,12 +1025,12 @@ public class Escape {
   }
 
   public static String[] unescapeStringArray(String data) {
-    // was only used for very strange LOAD "[\"...\",\"....\",...]"
+    // was only used for  LOAD "[\"...\",\"....\",...]" (coming from implicit string)
     // now also used for simulation peaks array from JSpecView,
     // which double-escapes strings, I guess
     //TODO -- should recognize '..' as well as "..." ?
     if (data == null || !data.startsWith("[") || !data.endsWith("]"))
-      return null;
+      return null; 
     JmolList<String> v = new  JmolList<String>();
     int[] next = new int[1];
     next[0] = 1;
@@ -1038,7 +1038,7 @@ public class Escape {
       String s = Parser.getQuotedStringNext(data, next);
       if (s == null)
         return null;
-      v.addLast(s);
+      v.addLast(TextFormat.simpleReplace(s, "\\\"", "\""));      
       while (next[0] < data.length() && data.charAt(next[0]) != '"')
         next[0]++;
     }    

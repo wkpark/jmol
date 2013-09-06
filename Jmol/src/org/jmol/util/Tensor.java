@@ -39,8 +39,6 @@ public class Tensor {
   
   private static final float ADP_FACTOR = (float) (Math.sqrt(0.5) / Math.PI);
   private static final float MAGNETIC_SUSCEPTIBILITY_FACTOR = 0.01f;
-  private static final float ELECTRIC_FIELD_GRADIENT_FACTOR = 1f;
-  private static final float BORN_EFFECTIVE_CHARGE_FACTOR = 1f;
   private static final float INTERACTION_FACTOR = 0.04f;
   
   private static EigenSort tSort; // used for sorting eigenvector/values
@@ -67,27 +65,37 @@ public class Tensor {
   // TLS-U    -- Translation/Libration/Skew tensor (anisotropic)
   // TLS-R    -- Translation/Libration/Skew tensor (residual)
   
-  private static final String KNOWN_TYPES = ";iso....;adp....;tls-u..;tls-r..;ms.....;efg....;isc....;charge.;";
+  private static final String KNOWN_TYPES = 
+    ";iso........" +
+    ";adp........" +
+    ";tls-u......" +
+    ";tls-r......" +
+    ";ms........." +
+    ";efg........" +
+    ";isc........" +
+    ";charge....." +
+    ";quadrupole.";
   private static int getType(String type) {
     int pt = type.indexOf("_");
     if (pt >= 0)
       type = type.substring(0, pt);
     pt = KNOWN_TYPES.indexOf(";" + type.toLowerCase() + ".");
-    return (pt < 0 ? TYPE_OTHER : pt / 8); 
+    return (pt < 0 ? TYPE_OTHER : pt / 11); 
   }
 
   // these may be augmented, but the order should be kept the same within this list 
   // no types  < -1, because these are used in Ellipsoids.getAtomState() as bs.get(iType + 1)
   
-  public static final int TYPE_OTHER  = -1;
-  public static final int TYPE_ISO    = 0;
-  public static final int TYPE_ADP   = 1;
-  public static final int TYPE_TLS_U  = 2;
-  public static final int TYPE_TLS_R  = 3;
-  public static final int TYPE_MS     = 4;
-  public static final int TYPE_EFG    = 5;
-  public static final int TYPE_ISC    = 6;
-  public static final int TYPE_CHARGE = 7;
+  public static final int TYPE_OTHER      = -1;
+  public static final int TYPE_ISO        = 0;
+  public static final int TYPE_ADP        = 1;
+  public static final int TYPE_TLS_U      = 2;
+  public static final int TYPE_TLS_R      = 3;
+  public static final int TYPE_MS         = 4;
+  public static final int TYPE_EFG        = 5;
+  public static final int TYPE_ISC        = 6;
+  public static final int TYPE_CHARGE     = 7;
+  public static final int TYPE_QUADRUPOLE = 8;
 
   public double[][] asymMatrix;
   public double[][] symMatrix;    
@@ -392,7 +400,7 @@ public class Tensor {
       cross.cross(n, evec[i]);
       //Logger.info("v[i], n, n x v[i]"+ evec[i] + " " + n + " "  + cross);
       n.setT(evec[i]);
-       n.normalize();
+      n.normalize();
       cross.cross(evec[i], evec[(i + 1) % 3]);
       //Logger.info("draw id eigv" + i + " " + Escape.eP(evec[i]) + " color " + (i ==  0 ? "red": i == 1 ? "green" : "blue") + " # " + n + " " + cross);
     }
@@ -577,20 +585,19 @@ public class Tensor {
       break;
     case TYPE_EFG:
       sortIso = true;
-      typeFactor = ELECTRIC_FIELD_GRADIENT_FACTOR;
       break;
     case TYPE_ISC:
       sortIso = true;
       typeFactor = INTERACTION_FACTOR;
-      break;
-    case TYPE_CHARGE:
-      typeFactor = BORN_EFFECTIVE_CHARGE_FACTOR;
       break;
     case TYPE_TLS_R:
       altType = "2";
       break;
     case TYPE_TLS_U:
       altType = "3";
+      break;
+    case TYPE_CHARGE:
+    case TYPE_QUADRUPOLE:
       break;
     }
   }

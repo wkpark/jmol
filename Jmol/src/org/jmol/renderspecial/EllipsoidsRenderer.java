@@ -193,12 +193,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     }
   }
   
-  int test1;
-  
   private boolean renderEllipsoids(Map<?, Ellipsoid> ht, boolean isSimple) {
     boolean needTranslucent = false;
-    int t = test1++;
-    System.out.println("renderE test1=" + t);
     Atom atom = null;
     for (Ellipsoid ellipsoid: ht.values()) {
       if (!ellipsoid.visible)

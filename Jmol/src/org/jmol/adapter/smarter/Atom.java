@@ -80,15 +80,16 @@ public class Atom extends P3 implements Cloneable {
   }
 
   public Atom getClone() throws CloneNotSupportedException {
-    // note that anisoBorU and ellipsoid are not copied
-    // we consider them "final" in a sense
     Atom a = (Atom)clone();
     if (vib != null)
       a.vib = V3.newV(a.vib);
     if (anisoBorU != null)
       a.anisoBorU = ArrayUtil.arrayCopyF(anisoBorU, -1);
-
-    
+    if (tensors != null) {
+      a.tensors = new JmolList<Tensor>();
+      for (int i = tensors.size(); --i >= 0;)
+        a.tensors.addLast(Tensor.copyTensor(tensors.get(i)));
+    }
     return a;
   }
 

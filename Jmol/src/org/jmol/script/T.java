@@ -844,7 +844,8 @@ public class T {
   public final static int cameradepth                    = floatparam | 6;
   public final static int defaultdrawarrowscale          = floatparam | 8;
   public final static int defaulttranslucent             = floatparam | 10;
-  public final static int dipolescale                    = floatparam | 12;
+  public final static int dipolescale                    = floatparam | 11;
+  public final static int drawfontsize                   = floatparam | 12;
   public final static int ellipsoidaxisdiameter          = floatparam | 13;
   public final static int exportscale                    = floatparam | 14;
   public final static int gestureswipefactor             = floatparam | 15;
@@ -2210,6 +2211,7 @@ public class T {
       "defaults",                                 T.t(defaults),
       "defaultTorsionLabel",                      T.t(defaulttorsionlabel),
       "defaultVDW",                               T.t(defaultvdw),
+      "drawFontSize",                             T.t(drawfontsize),
       "edsUrlCutoff",                             T.t(edsurlcutoff),
       "edsUrlFormat",                             T.t(edsurlformat),
       "energyUnits",                              T.t(energyunits),

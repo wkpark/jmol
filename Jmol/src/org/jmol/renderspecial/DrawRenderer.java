@@ -473,7 +473,10 @@ public class DrawRenderer extends MeshRenderer {
     for (int i = dmesh.polygonCount; --i >= 0;)
       if (isPolygonDisplayable(i)) {
         //just the first line of the title -- nothing fancy here.
-        byte fid = g3d.getFontFid(14 * imageFontScaling);
+        float size = viewer.getFloat(T.drawfontsize);
+        if (size <= 0)
+          size = 14;
+        byte fid = g3d.getFontFid(size * imageFontScaling);
         g3d.setFontFid(fid);
         String s = mesh.title[i < mesh.title.length ? i : mesh.title.length - 1];
         int pt = 0;

@@ -851,6 +851,7 @@ public class StateManager {
       setB("dotSurface", dotSurface);
       setB("dragSelected", dragSelected);
       setB("drawHover", drawHover);
+      setF("drawFontSize", drawFontSize);
       setB("drawPicking", drawPicking);
       setB("dsspCalculateHydrogenAlways", dsspCalcHydrogen);
       setB("dynamicMeasurements", dynamicMeasurements);
@@ -1180,6 +1181,7 @@ public class StateManager {
     float defaultTranslucent = 0.5f;
     int delayMaximumMs = 0;
     float dipoleScale = 1f;
+    float drawFontSize = 14f;
     boolean disablePopupMenu = false;
     boolean dragSelected = false;
     boolean drawHover = false;

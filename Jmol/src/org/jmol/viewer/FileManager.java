@@ -961,7 +961,7 @@ public class FileManager {
   /**
    * 
    * @param name
-   * @param isFullLoad
+   * @param isFullLoad false only when just checking path
    * @return [0] full path name, [1] file name without path, [2] full URL
    */
   public String[] classifyName(String name, boolean isFullLoad) {
@@ -1263,11 +1263,12 @@ public class FileManager {
 
 
   private Map<String, Object> cache = new Hashtable<String, Object>();
+
   void cachePut(String key, Object data) {
     key = key.replace('\\', '/');
     if (Logger.debugging)
       Logger.debug("cachePut " + key);
-    if ("".equals(data)) // J2S error -- cannot implement Int32Array.equals
+    if (data == null || "".equals(data)) // J2S error -- cannot implement Int32Array.equals
       cache.remove(key);
     else
       cache.put(key, data);
@@ -1275,6 +1276,11 @@ public class FileManager {
   
   public Object cacheGet(String key, boolean bytesOnly) {
     key = key.replace('\\', '/');
+    // in the case of JavaScript local file reader, 
+    // this will be a cached file, and the filename will not be known.
+    int pt = key.indexOf("|");
+    if (pt >= 0)
+      key = key.substring(0, pt);
     if (Logger.debugging)
       Logger.debug("cacheGet " + key + " " + cache.containsKey(key));
     Object data = cache.get(key);

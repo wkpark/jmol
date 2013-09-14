@@ -931,6 +931,7 @@ public class StateManager {
       setI("phongExponent", phongExponent);
       setI("pickingSpinRate", pickingSpinRate);
       setS("pickLabel", pickLabel);
+      setI("platformSpeed", platformSpeed);
       setF("pointGroupLinearTolerance", pointGroupLinearTolerance);
       setF("pointGroupDistanceTolerance", pointGroupDistanceTolerance);
       setB("preserveState", preserveState);

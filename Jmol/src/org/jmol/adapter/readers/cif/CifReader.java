@@ -2005,15 +2005,21 @@ _pdbx_struct_oper_list.vector[3]
   private int atomCount;
 
   /**
-   * (1) If GEOM_BOND records are present, we (a) use them to generate bonds (b)
-   * add H atoms to bonds if necessary (c) turn off autoBonding ("hasBonds") (2)
-   * If MOLECULAR, then we (a) use {1 1 1} if lattice is not defined (b) use
-   * atomSetCollection.bonds[] to construct a preliminary molecule and connect
-   * as we go (c) check symmetry for connections to molecule in any one of the
-   * 27 3x3 adjacent cells (d) move those atoms and their connected branch set
-   * (e) iterate as necessary to get all atoms desired (f) delete unselected
-   * atoms (g) set all coordinates as Cartesians (h) remove all unit cell
-   * information
+   * (1) If GEOM_BOND records are present, we
+   *     (a) use them to generate bonds
+   *     (b) add H atoms to bonds if necessary
+   *     (c) turn off autoBonding ("hasBonds")
+   * (2) If MOLECULAR, then we
+   *     (a) use {1 1 1} if lattice is not defined
+   *     (b) use atomSetCollection.bonds[] to construct 
+   *         a preliminary molecule and connect as we go
+   *     (c) check symmetry for connections to molecule in any
+   *         one of the 27 3x3 adjacent cells
+   *     (d) move those atoms and their connected branch set
+   *     (e) iterate as necessary to get all atoms desired
+   *     (f) delete unselected atoms
+   *     (g) set all coordinates as Cartesians
+   *     (h) remove all unit cell information
    */
   private void setBondingAndMolecules() {
     Logger.info("CIF creating molecule "

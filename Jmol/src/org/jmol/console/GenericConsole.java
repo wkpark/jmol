@@ -312,6 +312,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     case RESIZE:
     case SCRIPT:
     case SYNC:
+    case STRUCTUREMODIFIED:
       break;
     }
     return false;

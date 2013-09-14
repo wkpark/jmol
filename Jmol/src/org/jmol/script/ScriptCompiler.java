@@ -1957,9 +1957,8 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
       flowContext.token.intValue = (tokCommand == T.catchcmd ? -pt : pt);
       if (tokCommand == T.endifcmd)
         flowContext = flowContext.getParent();
-      if (tokCommand == T.trycmd) {
-        
-      }
+//      if (tokCommand == T.trycmd) {
+//      }
     } else if (isNew) {
       ContextToken ct = ContextToken.newCmd(tokCommand, tokenCommand.value);
       if (tokCommand == T.switchcmd)

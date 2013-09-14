@@ -199,6 +199,11 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       appConsole.notifyCallback(type, data);
   }
 
+  /**
+   * @param atomIndex  
+   * @param modelIndex 
+   * @param mode 
+   */
   private void notifyStructureModified(int atomIndex, int modelIndex, int mode) {
     modificationMode = mode;
     if (mode < 0) {

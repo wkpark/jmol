@@ -312,7 +312,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       return;
     }
     if (source == loadButton) {
-      setContext(viewer.getScriptContext());
+      setContext(viewer.getScriptContext("SE loadButton"));
       return;
     }
     if (source == topButton) {

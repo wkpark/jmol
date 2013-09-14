@@ -246,7 +246,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         bytes[pt++] = bytes0[i];
       bytes0 = null;
       String fileName = filePath;
-      viewer.cacheFile(fileName, bytes);
+      viewer.cachePut(fileName, bytes);
     }
   }
 

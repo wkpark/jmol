@@ -68,6 +68,7 @@ public class ScriptContext {
   public String scriptFileName;
   int scriptLevel;
   T[] statement;
+  Map<String, String> htFileCache;
   int statementLength;
   ContextToken token;
   int tryPt;

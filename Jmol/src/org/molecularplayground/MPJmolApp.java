@@ -263,7 +263,8 @@ public class MPJmolApp implements JsonNioClient {
       case PICK:
       case RESIZE:
       case SYNC:
-       break;
+      case STRUCTUREMODIFIED:
+        break;
       }
       return false;
     }

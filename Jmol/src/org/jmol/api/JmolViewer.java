@@ -571,7 +571,7 @@ abstract public class JmolViewer {
     return (jmolViewer == null ? "" : "" + jmolViewer.getParameter(var));
   }
 
-  abstract public void cacheFile(String fileName, byte[] bytes);
+  abstract public void cachePut(String key, Object data);
 
   abstract public void renderScreenImage(Object g, int width, int height);
   abstract public String evalFile(String strFilename);

@@ -510,7 +510,7 @@ public class StatusManager {
           viewer.scriptEditor.notifyScriptStart();
       } else if (viewer.scriptEditor.isVisible()
           && ((String) data[2]).length() > 0) {
-        viewer.scriptEditor.notifyContext(viewer.getScriptContext(), data);
+        viewer.scriptEditor.notifyContext(viewer.getScriptContext("SE notify"), data);
       }
     }
 

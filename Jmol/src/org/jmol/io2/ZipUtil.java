@@ -327,6 +327,8 @@ public class ZipUtil implements JmolZipUtility {
       }
       return null;
     }
+    if (n == 0)
+      return null;
     Logger.info("ZipUtil cached " + n + " bytes from " + fileName);
     return listing.toString();
   }

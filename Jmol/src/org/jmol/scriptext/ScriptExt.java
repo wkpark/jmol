@@ -3490,7 +3490,7 @@ public class ScriptExt implements JmolScriptExtension {
     // all set...
 
     if (tokCmd == T.write)
-      return viewer.streamFileData(filename, "PLOT", type, modelIndex,
+      return viewer.writeFileData(filename, "PLOT_" + type, modelIndex,
           parameters);
     
     String data = (type.equals("data") ? "1 0 H 0 0 0 # Jmol PDB-encoded data" : viewer.getPdbData(modelIndex, type, parameters));

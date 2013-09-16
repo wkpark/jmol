@@ -198,7 +198,7 @@ public class ZipUtil implements JmolZipUtility {
           continue;
         byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
         //System.out.println("ZipUtil::ZipEntry.name = " + ze.getName() + " " + bytes.length);
-        if (JmolBinary.isZipFile(bytes))
+        if (JmolBinary.isZipB(bytes))
           return getZipFileContents(new BufferedInputStream(
               new ByteArrayInputStream(bytes)), list, ++listPtr,
               asBufferedInputStream);
@@ -231,7 +231,7 @@ public class ZipUtil implements JmolZipUtility {
         if (!fileName.equals(ze.getName()))
           continue;
         byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
-        if (JmolBinary.isZipFile(bytes) && ++listPtr < list.length)
+        if (JmolBinary.isZipB(bytes) && ++listPtr < list.length)
           return getZipFileContentsAsBytes(new BufferedInputStream(
               new ByteArrayInputStream(bytes)), list, listPtr);
         return bytes;
@@ -351,7 +351,7 @@ public class ZipUtil implements JmolZipUtility {
     }
   }
 
-  public InputStream getGzippedInputStream(byte[] bytes) {
+  public InputStream getUnGzippedInputStream(byte[] bytes) {
     try {
       InputStream is = new ByteArrayInputStream(bytes);
       do {
@@ -670,8 +670,7 @@ public class ZipUtil implements JmolZipUtility {
                                                             String[] zipDirectory,
                                                             Map<String, Object> htParams,
                                                             int subFilePtr,
-                                                            boolean asBufferedReader,
-                                                            boolean asBufferedInputStream) {
+                                                            boolean asBufferedReader) {
 
     // we're here because user is using | in a load file name
     // or we are opening a zip file.
@@ -772,14 +771,14 @@ public class ZipUtil implements JmolZipUtility {
         byte[] bytes = JmolBinary.getStreamBytes(zis, ze.getSize());
 //        String s = new String(bytes);
 //        System.out.println("ziputil " + s.substring(0, 100));
-        if (JmolBinary.isZipFile(bytes)) {
+        if (JmolBinary.isZipB(bytes)) {
           BufferedInputStream bis = new BufferedInputStream(
               new ByteArrayInputStream(bytes));
           String[] zipDir2 = JmolBinary.getZipDirectoryAndClose(bis, true);
           bis = new BufferedInputStream(new ByteArrayInputStream(bytes));
           Object atomSetCollections = getAtomSetCollectionOrBufferedReaderFromZip(
               adapter, bis, fileName + "|" + thisEntry, zipDir2, htParams,
-              ++subFilePtr, asBufferedReader, asBufferedInputStream);
+              ++subFilePtr, asBufferedReader);
           if (atomSetCollections instanceof String) {
             if (ignoreErrors)
               continue;
@@ -801,9 +800,9 @@ public class ZipUtil implements JmolZipUtility {
             zis.close();
             return "unknown zip reader error";
           }
-        } else if (asBufferedInputStream) {
-          if (JmolBinary.isGzipB(bytes))
-            return getGzippedInputStream(bytes);
+        } else if (JmolBinary.isGzipB(bytes)) {
+            return getUnGzippedInputStream(bytes);
+        } else if (JmolBinary.isPickleB(bytes)) {
           BufferedInputStream bis = new BufferedInputStream(
               new ByteArrayInputStream(bytes));
           if (doCombine)
@@ -811,7 +810,7 @@ public class ZipUtil implements JmolZipUtility {
           return bis;
         } else {
           String sData;
-          if (JmolBinary.isCompoundDocumentArray(bytes)) {
+          if (JmolBinary.isCompoundDocumentB(bytes)) {
             JmolDocument jd = (JmolDocument) Interface
                 .getInterface("jmol.util.CompoundDocument");
             jd.setStream(new BufferedInputStream(

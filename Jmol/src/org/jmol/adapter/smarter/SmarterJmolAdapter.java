@@ -232,7 +232,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
         }
       } catch (Throwable e) {
         Logger.error("" + e);
-        if (!viewer.isJS())
+        if (!viewer.isJS)
           e.printStackTrace();
         return "" + e;
       }

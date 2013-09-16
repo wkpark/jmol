@@ -33,7 +33,9 @@ import java.util.Properties;
 import org.jmol.constant.EnumStructure;
 import org.jmol.io.OutputStringBuilder;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.LabelToken;
@@ -305,11 +307,14 @@ public final class BioModel extends Model{
   public void selectSeqcodeRange(int seqcodeA, int seqcodeB, int chainID,
                                  BS bs, boolean caseSensitive) {
     int id;
-    for (int i = chainCount; --i >= 0;)
-      if (chainID == -1 || chainID == (id = chains[i].chainID) || !caseSensitive
-          && chainID == Character.toUpperCase(id))
+    for (int i = chainCount; --i >= 0;) {
+      Chain chain = chains[i];
+      if (chainID == -1 
+          || chainID == (id = chain.chainID) 
+          || !caseSensitive && id < 256 && chainID == AtomCollection.chainToUpper(id))
         for (int index = 0; index >= 0;)
           index = chains[i].selectSeqcodeRange(index, seqcodeA, seqcodeB, bs);
+    }
   }
 
   @Override

@@ -33,6 +33,7 @@ class FileLoadThread extends JmolThread {
 
   String fileName;
   private String cacheName;
+  private String key;
 
   /**
    * JavaScript only
@@ -40,11 +41,13 @@ class FileLoadThread extends JmolThread {
    * @param eval
    * @param viewer
    * @param fileName
+   * @param key 
    * @param cacheName 
    */
-  public FileLoadThread(JmolScriptEvaluator eval, Viewer viewer, String fileName, String cacheName) {
+  public FileLoadThread(JmolScriptEvaluator eval, Viewer viewer, String fileName, String key, String cacheName) {
     setViewer(viewer, "FileLoadThread");
     this.fileName = fileName;
+    this.key = key;
     this.cacheName = cacheName;
     setEval(eval);
     sc.pc--; // re-start this load command.
@@ -54,7 +57,7 @@ class FileLoadThread extends JmolThread {
   protected void run1(int mode) throws InterruptedException {
     while (true)
       switch (mode) {
-      case INIT:
+      case INIT: 
         mode = MAIN;
         break;
       case MAIN:
@@ -78,12 +81,17 @@ class FileLoadThread extends JmolThread {
   }
 
   /**
-   *  called by Jmol._loadFileAsyncDone(this.viewer.applet);
+   * Called by Jmol._loadFileAsyncDone(this.viewer.applet). Allows for callback
+   * to set the file name.
    * 
+   * @param fileName
    * @param data
    * @throws InterruptedException
    */
-  void setData(Object data) throws InterruptedException {
+  void setData(String fileName, Object data) throws InterruptedException {
+    if (fileName != null)
+      sc.parentContext.htFileCache.put(key, cacheName = cacheName.substring(0, 
+          cacheName.lastIndexOf("_") + 1) + fileName);
     viewer.cachePut(cacheName, data);
     run1(FINISH);
   }   

@@ -2317,12 +2317,22 @@ class ScriptMathProcessor {
     return addXPt(P3.newP(a));
   }
 
-  private boolean evaluateLoad(SV[] args, int tok) {
+  private boolean evaluateLoad(SV[] args, int tok) throws ScriptException {
     if (args.length > 2 || args.length < 1)
       return false;
     String file = SV.sValue(args[0]);
-    int nBytesMax = (args.length == 2 ? args[1].asInt()
-        : Integer.MAX_VALUE);
+    int nBytesMax = (args.length == 2 ? args[1].asInt() : -1);
+    if (viewer.isJS && file.startsWith("?")) {
+      if (tok == T.file)
+        return addXStr("");
+      file = eval.loadFileAsync("load()_", file, oPt, true);
+      // A ScriptInterrupt will be thrown, and an asynchronous
+      // file load will initiate, which will return to the script 
+      // at this command when the load operation has completed.
+      // Note that we need to have just a simple command here.
+      // The evaluation will be repeated up to this point, so for example,
+      // x = (i++) + load("?") would increment i twice.
+    }
     return addXStr(tok == T.load ? viewer.getFileAsString4(file, nBytesMax,
         false, false) : viewer.getFilePath(file, false));
   }

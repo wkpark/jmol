@@ -25,6 +25,7 @@
 package org.jmol.export.image;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -78,7 +79,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
         return "NO SECURITY";
       // returns message starting with OK or an error message
       if ("OutputStream".equals(type))
-        return new FileOutputStream(fileName);
+        return (viewer.isJS ? new ByteArrayOutputStream() : new FileOutputStream(fileName));
       if (isBytes) {
         if (bytes_or_image instanceof byte[]) {
           len = ((byte[]) bytes_or_image).length;

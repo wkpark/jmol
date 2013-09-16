@@ -102,7 +102,7 @@ abstract public class JmolThread extends Thread {
   
   protected void oops(Exception e) {
     Logger.debug(name + " exception " + e);
-    if (!viewer.isJS())
+    if (!viewer.isJS)
       e.printStackTrace();
     viewer.queueOnHold = false;
   }

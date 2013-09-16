@@ -30,6 +30,7 @@ import java.util.StringTokenizer;
 
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolDocument;
 import org.jmol.io.LimitedLineReader;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -105,7 +106,7 @@ public class Resolver {
       else
         Logger.info("The Resolver assumes " + readerName);
     } else {
-      readerName = determineAtomSetCollectionReader((BufferedReader) bufferedReader, true);
+      readerName = determineAtomSetCollectionReader(bufferedReader, true);
       if (readerName.charAt(0) == '\n') {
         type = (String) htParams.get("defaultType");
         if (type != null) {
@@ -200,14 +201,18 @@ public class Resolver {
    * 
    * We must do this in a very specific order. DON'T MESS WITH THIS!
    * 
-   * @param bufferedReader
+   * @param readerOrDocument
    * @param returnLines
    * @return readerName or a few lines, if requested, or null
    * @throws Exception
    */
-  private static String determineAtomSetCollectionReader(BufferedReader bufferedReader, boolean returnLines)
+  private static String determineAtomSetCollectionReader(Object readerOrDocument, boolean returnLines)
       throws Exception {
-    LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
+    if (readerOrDocument instanceof JmolDocument) {
+      // only binary type to date;      
+      return "PyMOL";
+    }
+    LimitedLineReader llr = new LimitedLineReader((BufferedReader) readerOrDocument, 16384);
     
     // first check just the first 64 bytes
     

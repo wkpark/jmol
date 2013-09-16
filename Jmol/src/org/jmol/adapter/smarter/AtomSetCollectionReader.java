@@ -247,7 +247,7 @@ public abstract class AtomSetCollectionReader {
       finalizeReader(); // upstairs
     } catch (Throwable e) {
       Logger.info("Reader error: " + e);
-      if (!viewer.isJS())
+      if (!viewer.isJS)
         e.printStackTrace();
       setError(e);
     }
@@ -441,7 +441,7 @@ public abstract class AtomSetCollectionReader {
     else
       atomSetCollection.errorMessage = "Error reading file at line " + ptLine
           + ":\n" + line + "\n" + s;
-    if (!viewer.isJS())
+    if (!viewer.isJS)
       e.printStackTrace();
   }
 

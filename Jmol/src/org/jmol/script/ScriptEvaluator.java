@@ -685,7 +685,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.setStringProperty("_errormessage", "" + ex);
       if (e.thisContext == null) {
         Logger.error("Error evaluating context " + ex);
-        if (!viewer.isJS())
+        if (!viewer.isJS)
           ex.printStackTrace();
       }
       return false;
@@ -2034,7 +2034,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           debugScript);
     String[] data = new String[2];
     data[0] = filename;
-    if (!viewer.getFileAsStringBin(data, Integer.MAX_VALUE, false)) { // first opening
+    if (!viewer.getFileAsStringBin(data)) { // first opening
       setErrorMessage("io error reading " + data[0] + ": " + data[1]);
       return false;
     }
@@ -2045,7 +2045,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         filename += "|";
       } else {
         data[0] = filename += "|JmolManifest.txt";
-        if (!viewer.getFileAsStringBin(data, Integer.MAX_VALUE, false)) { // second entry
+        if (!viewer.getFileAsStringBin(data)) { // second entry
           setErrorMessage("io error reading " + data[0] + ": " + data[1]);
           return false;
         }
@@ -2054,7 +2054,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (path != null && path.length() > 0) {
         data[0] = filename = filename.substring(0, filename.lastIndexOf("|"))
             + path;
-        if (!viewer.getFileAsStringBin(data, Integer.MAX_VALUE, false)) { // third entry
+        if (!viewer.getFileAsStringBin(data)) { // third entry
           setErrorMessage("io error reading " + data[0] + ": " + data[1]);
           return false;
         }
@@ -8746,7 +8746,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isInline = false;
     boolean isSmiles = false;
     boolean isData = false;
-    boolean isAsynchronous = false;
     BS bsModels;
     int i = (tokAt(0) == T.data ? 0 : 1);
     boolean appendNew = viewer.getBoolean(T.appendnew);
@@ -8940,7 +8939,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     String appendedKey = null;
 
     if (slen == i + 1) {
-
       // end-of-command options:
       // LOAD SMILES "xxxx" --> load "$xxxx"
 
@@ -8951,10 +8949,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         zap(false);
         return;
       }
-      if (filenames == null)
+      if (filenames == null && !isInline) {
         if (isSmiles) {
           filename = "$" + filename;
-        } else if (!isInline) {
+        } else {
           if (filename.indexOf("[]") >= 0)
             return;
           if (filename.indexOf("[") == 0) {
@@ -8966,10 +8964,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             }
           }
         }
+      }
       if (filenames != null)
-        for (int j = 0; j < filenames.length; j++)
+        for (int j = 0; j < nFiles; j++)
           loadScript.append(" /*file*/").append(Escape.eS(filenames[j]));
-
     } else if (getToken(i + 1).tok == T.manifest
         // model/vibration index or list of model indices
         || theTok == T.integer || theTok == T.varray || theTok == T.leftsquare
@@ -9309,9 +9307,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         htParams.put("firstLastSteps", firstLastSteps);
       }
       nFiles = fNames.size();
-      filenames = new String[nFiles];
-      for (int j = 0; j < nFiles; j++)
-        filenames[j] = fNames.get(j);
+      filenames = fNames.toArray(new String[nFiles]);
     }
 
     // end of parsing
@@ -9356,11 +9352,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             filename.substring(1)).append(" = ").append(Escape.eS(s)).append(
             ";\n    ").appendSB(loadScript);
       } else if (filename.startsWith("?") && viewer.isJS) {
-        isAsynchronous = true;
         localName = null;
-        filename = loadFileAsync(filename, i);
+        filename = loadFileAsync("LOAD" + (isAppend ? "_APPEND_" : "_"), filename, i, !isAppend);
         // on first pass, a ScriptInterruption will be thrown; 
-        // on the second pass, we will have the file name, which will be cache://local_n__m
+        // on the second pass, we will have the file name, which will be cache://localLoad_n__m
       }
     }
 
@@ -9407,8 +9402,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       Logger.startTimer("load");
     errMsg = viewer.loadModelFromFile(null, filename, filenames, null,
         isAppend, htParams, loadScript, tokType);
-    if (isAsynchronous)
-      loadFileAsync(null, -1);
     if (os != null)
       try {
         viewer.setFileInfo(new String[] { localName, localName, localName });
@@ -9463,7 +9456,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         script = "allowEmbeddedScripts = false;try{" + script
             + "} allowEmbeddedScripts = true;";
       }
-
+    } else {
+      setStringProperty("_loadScript", "");
     }
     logLoadInfo(msg);
 
@@ -9479,31 +9473,37 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   /**
-   * Only run from JSmol/HTML5 when viewer.isJS;
+   * Allows asynchronous file loading from the LOAD or SCRIPT command. Saves the
+   * context, initiates a FileLoadThread instance. When the file loading
+   * completes, the file data (sans filename) is saved in the FileManager cache
+   * under cache://localLoad_xxxxx. Context is resumed at this command in the
+   * script, and the file is then retrieved from the cache. Only run from
+   * JSmol/HTML5 when viewer.isJS;
    * 
+   * Incompatibilities:
+   * 
+   * LOAD and SCRIPT commands, load() function only; 
+   * 
+   * only one "?" per LOAD command
+   * 
+   * @param prefix 
    * @param filename
    *        or null if end of LOAD command and now just clearing out cache
    * @param i
+   * @param doClear  ensures only one file is in the cache for a given type
    * @return cached file name if it exists
    * @throws ScriptException
    */
-  private String loadFileAsync(String filename, int i) throws ScriptException {
-    String key = pc + "_";
-    if (filename == null) {
-      fileLoadThread = null;
-      if (thisContext != null && thisContext.htFileCache != null) {
-        for (String k : thisContext.htFileCache.keySet())
-          if (k.startsWith(key)) {
-            String cacheName = thisContext.htFileCache.get(k);
-            viewer.cachePut(cacheName, null);
-            thisContext.htFileCache.put(k, "");
-          }
-        popContext(false, false);
-        viewer.queueOnHold = false;
-      }
-      return null;
-    }
-    key += "_" + i;
+  String loadFileAsync(String prefix, String filename, int i, boolean doClear)
+      throws ScriptException {
+    // note that we will never know the actual file name
+    // so we construct one and point to it in the scriptContext
+    // with a key to this point in the script. Note that this 
+    // could in principle allow more than one file load for a 
+    // given script command, but actually we are not allowing that
+    //
+    prefix = "cache://local" + prefix;
+    String key = pc + "_" + i;
     String cacheName;
     if (thisContext == null || thisContext.htFileCache == null) {
       pushContext(null, "loadFileAsync");
@@ -9511,17 +9511,21 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     cacheName = thisContext.htFileCache.get(key);
     if (cacheName != null && cacheName.length() > 0) {
-      if ("#CANCELED#".equals(viewer.cacheGet(cacheName))) {
-        loadFileAsync(null, -1);
+      // file has been loaded
+      fileLoadThread = null;
+      popContext(false, false);
+      viewer.queueOnHold = false;
+      if ("#CANCELED#".equals(viewer.cacheGet(cacheName)))
         evalError("#CANCELED#", null);
-      }
       return cacheName;
     }
-    // note that we will never know the actual file name
-    thisContext.htFileCache.put(key, cacheName = "cache://local_" + key);
+    thisContext.htFileCache.put(key, cacheName = prefix
+        + System.currentTimeMillis());
     if (fileLoadThread != null)
       evalError("#CANCELED#", null);
-    fileLoadThread = new FileLoadThread(this, viewer, filename, cacheName);
+    if (doClear)
+      viewer.cacheFileByName(prefix + "*", false);
+    fileLoadThread = new FileLoadThread(this, viewer, filename, key, cacheName);
     fileLoadThread.run();
     throw new ScriptInterruption(this, "load", 1);
   }
@@ -10455,7 +10459,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   private void script(int tok, String filename) throws ScriptException {
     boolean loadCheck = true;
     boolean isCheck = false;
-    boolean isAsynchronous = false;
     boolean doStep = false;
     int lineNumber = 0;
     int pc = 0;
@@ -10512,12 +10515,10 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           filename = parameterAsString(i++);
         }
         if (filename.startsWith("?") && viewer.isJS) {
-          isAsynchronous = true;
-          filename = loadFileAsync(filename, i);
-          // on first pass, a ScriptInterruption will be thrown; 
-          // on the second pass, we will have the file name, which will be cache://local_n__m
+          filename = loadFileAsync("SCRIPT_", filename, i, true);
+          // on first pass a ScriptInterruption will be thrown; 
+          // on the second pass we will have the file name, which will be cache://local_n__m
         }
-
         if ((tok = tokAt(i)) == T.check) {
           isCheck = true;
           tok = tokAt(++i);
@@ -10595,13 +10596,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         showString(Logger.getTimerMsg("script", 0));
       isCmdLine_C_Option = saveLoadCheck;
       popContext(false, false);
-      if (isAsynchronous)
-        loadFileAsync(null, -1);
     } else {
       Logger.error(GT._("script ERROR: ") + errorMessage);
       popContext(false, false);
-      if (isAsynchronous)
-        loadFileAsync(null, -1);
       if (wasScriptCheck) {
         setErrorMessage(null);
       } else {
@@ -14542,7 +14539,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               1.0f);
         } else if (data == "PDB" || data == "PQR") {
           if (isShow) {
-            data = viewer.getPdbData(null, null);
+            data = viewer.getPdbAtomData(null, null);
           } else {
             doDefer = true;
             /*
@@ -14649,7 +14646,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (timeMsg)
         Logger.startTimer("write");
       if (doDefer)
-        msg = viewer.streamFileData(fileName, type, type2, 0, null);
+        msg = viewer.writeFileData(fileName, type, 0, null);
       else
         msg = viewer.createImageSet(fileName, type,
             (bytes instanceof String ? (String) bytes : null),

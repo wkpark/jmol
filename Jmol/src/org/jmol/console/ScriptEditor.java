@@ -358,7 +358,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
  
   private static String[] lastOpened = {"?.spt", null} ;
   private void doOpen() {
-    viewer.getFileAsStringBin(lastOpened, Integer.MAX_VALUE, false);
+    viewer.getFileAsStringBin(lastOpened);
     editor.clearContent(lastOpened[1]);
     lastOpened[1] = null;
   }

@@ -218,7 +218,7 @@ public class RepaintManager implements JmolRepaintManager {
       }
       g3d.renderAllStrings(null);
     } catch (Exception e) {
-      if (!viewer.isJS())
+      if (!viewer.isJS)
         e.printStackTrace();
       Logger.error("rendering error? " + e);
     }

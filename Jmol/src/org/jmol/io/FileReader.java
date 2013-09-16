@@ -73,18 +73,13 @@ public class FileReader {
   }
 
   public void run() {
-
     if (!isAppend && viewer.displayLoadErrors)
       viewer.zap(false, true, false);
-
     String errorMessage = null;
     Object t = null;
     if (reader == null) {
-      if (fileTypeIn == null)
-        fileTypeIn = JmolBinary.getBinaryType(fullPathNameIn);
-      boolean isBinary = JmolBinary.checkBinaryType(fileTypeIn);
-      t = fm.getUnzippedBufferedReaderOrErrorMessageFromName(fullPathNameIn,
-          bytes, true, isBinary, false, true, htParams);
+      t = fm.getUnzippedReaderOrStreamFromName(fullPathNameIn,
+          bytes, true, false, false, true, htParams);
       if (t == null || t instanceof String) {
         errorMessage = (t == null ? "error opening:" + nameAsGivenIn
             : (String) t);
@@ -97,7 +92,6 @@ public class FileReader {
         reader = t;
       } else if (t instanceof ZInputStream) {
         String name = fullPathNameIn;
-        isBinary = (JmolBinary.getBinaryType(name) != null);
         String[] subFileList = null;
         if (name.indexOf("|") >= 0 && !name.endsWith(".zip")) {
           subFileList = TextFormat.splitChars(name, "|");
@@ -109,8 +103,7 @@ public class FileReader {
         String[] zipDirectory = fm.getZipDirectory(name, true);
         atomSetCollection = t = JmolBinary
             .getAtomSetCollectionOrBufferedReaderFromZip(viewer
-                .getModelAdapter(), zis, name, zipDirectory, htParams, false,
-                isBinary);
+                .getModelAdapter(), zis, name, zipDirectory, htParams, false);
         try {
           zis.close();
         } catch (Exception e) {

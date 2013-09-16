@@ -9,7 +9,7 @@ public class LimitedLineReader {
 
   public LimitedLineReader(BufferedReader bufferedReader, int readLimit)
     throws Exception {  
-    bufferedReader.mark(readLimit);
+    bufferedReader.mark(readLimit + 1);
     buf = new char[readLimit];
     cchBuf = Math.max(bufferedReader.read(buf, 0, readLimit), 0);
     ichCurrent = 0;

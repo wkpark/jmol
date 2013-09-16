@@ -2431,16 +2431,17 @@ abstract public class AtomCollection {
     }
     return (!isEmpty || returnEmpty ? bs : null);
   }
-
+  
   protected BS getChainBits(int chainID) {
-    boolean caseSensitive = viewer.getBoolean(T.chaincasesensitive);
-   if (!caseSensitive)
-      chainID = Character.toUpperCase(chainID);
+    boolean caseSensitive = chainID < 256 && viewer.getBoolean(T.chaincasesensitive);
+    if (!caseSensitive)
+      chainID = chainToUpper(chainID);
     BS bs = new BS();
     BS bsDone = BSUtil.newBitSet(atomCount);
+    int id;
     for (int i = bsDone.nextClearBit(0); i < atomCount; i = bsDone.nextClearBit(i + 1)) {
       Chain chain = atoms[i].getChain();
-      if (chainID == (caseSensitive ? chain.chainID : Character.toUpperCase(chain.chainID))) {
+      if (chainID == (id = chain.chainID) || !caseSensitive && chainID == chainToUpper(id)) {
         chain.setAtomBitSet(bs);
         bsDone.or(bs);
       } else {
@@ -2448,6 +2449,18 @@ abstract public class AtomCollection {
       }
     }
     return bs;
+  }
+
+  public static int chainToUpper(int chainID) {
+    /** 
+     * @j2sNative
+     * 
+     * return String.fromCharCode(chainID).toUpperCase().charCodeAt(0);
+     * 
+     */
+    {
+      return Character.toUpperCase(chainID);
+    }
   }
 
   public int[] getAtomIndices(BS bs) {

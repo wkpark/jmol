@@ -131,7 +131,7 @@ public class XmlReader extends AtomSetCollectionReader {
       } catch (Exception e) {
         if (Logger.debugging)
           Logger.debug("Could not instantiate JAXP/SAX XML reader: "
-            + e.getMessage());
+            + ((parent == null ? this : parent).viewer.isJS? e : e.getMessage()));
       }
       if (saxReader == null)
         return "No XML reader found";
@@ -155,7 +155,7 @@ public class XmlReader extends AtomSetCollectionReader {
     try {
       thisReader.processXml(this, saxReader);
     } catch (Exception e) {
-      return "Error reading XML: " + e.getMessage();
+      return "Error reading XML: " + (parent.viewer.isJS? e : e.getMessage());
     }
     return null;
   }
@@ -181,23 +181,23 @@ public class XmlReader extends AtomSetCollectionReader {
       attribs = new Object[1];
       attArgs = new Object[1];
       domObj = new Object[1];
+      
       /**
        * 
-       * @j2sNative this.domObj[0] =
-       *            parent.viewer.applet._createDomNode("xmlReader"
-       *            ,this.reader.lock.lock);
+       * @j2sNative 
+       * 
+       * var s = this.reader.lock.lock;
+       * if (Clazz.instanceOf (s, java.io.BufferedInputStream)) {
+       *   s = new java.io.BufferedInputStream(new java.io.ByteArrayInputStream(s.$in.buf));
+       *   s = J.io.JmolBinary.StreamToString (s);
+       * }
+       * this.domObj[0] = parent.viewer.applet._createDomNode("xmlReader",s);
+       * this.walkDOMTree();
+       * parent.viewer.applet._createDomNode("xmlReader",null);
        * 
        */
       {
-      }
-      walkDOMTree();
-      /**
-       * @j2sNative
-       * 
-       *            parent.viewer.applet._createDomNode("xmlReader",null);
-       * 
-       */
-      {
+        walkDOMTree();
       }
     } else {
       JmolXmlHandler saxHandler = (JmolXmlHandler) Interface
@@ -213,7 +213,7 @@ public class XmlReader extends AtomSetCollectionReader {
       else
         parent.applySymmetryAndSetTrajectory();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      System.out.println((parent == null ? this : parent).viewer.isJS? e : e.getMessage());
       Logger.error("applySymmetry failed: " + e);
     }
   }

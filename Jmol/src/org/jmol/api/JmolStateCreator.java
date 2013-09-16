@@ -77,11 +77,8 @@ public interface JmolStateCreator {
                         int height, BS bsFrames, int nVibes,
                         String[] fullPath);
 
-  Object createImagePathCheck(String fileName, String type,
-                                     String text, byte[] bytes,
-                                     String[] scripts, Object appendix,
-                                     int quality, int width, int height,
-                                     String[] fullPath, boolean doCheck);
+  Object createImage(String fileName, String type, String text, byte[] bytes,
+                     String[] scripts, int quality, int width, int height);
 
   void syncScript(String script, String applet, int port);
 
@@ -92,7 +89,7 @@ public interface JmolStateCreator {
                                String fileName, String[] scripts,
                                OutputStream os, String comment);
 
-  String streamFileData(String fileName, String type, String type2,
+  String writeFileData(String fileName, String type, 
                         int modelIndex, Object[] parameters);
 
   OutputStream getOutputStream(String localName, String[] fullPath);

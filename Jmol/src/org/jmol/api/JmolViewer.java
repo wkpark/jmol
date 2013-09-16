@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jmol.io.OutputStringBuilder;
 import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Dimension;
@@ -347,7 +348,6 @@ abstract public class JmolViewer {
   abstract public String getModelSetPathName();
   abstract public String getEmbeddedFileState(String filename);
   abstract public String getFileAsString(String filename);
-  abstract public boolean getFileAsStringBin(String[] data, int nBytesMax, boolean doSpecialLoad);
   abstract public Properties getModelSetProperties();
   abstract public Map<String, Object> getModelSetAuxiliaryInfo();
   abstract public int getModelNumber(int modelIndex);
@@ -516,7 +516,7 @@ abstract public class JmolViewer {
     openFileAsyncPDB(fileName, false);    
   }
   
-  abstract public Object getFileAsBytes(String fullPathName, OutputStream os);
+  abstract public Object getFileAsBytes(String fullPathName, OutputStringBuilder osb);
 
   abstract public String getErrorMessage();
   abstract public String getErrorMessageUn();
@@ -619,6 +619,15 @@ abstract public class JmolViewer {
   abstract public String runScript(String script);
   abstract public int modelGetLastVibrationIndex(int i, int tok);
   abstract public String extractMolData(String what);
+  
+  /**
+   * used in JSmolApplet.js for drag-drop behavior.
+   * 
+   * @param fileName
+   * @param isAdd
+   * @return number of bytes cached
+   */
+  abstract public int cacheFileByName(String fileName, boolean isAdd);
 
 }
 

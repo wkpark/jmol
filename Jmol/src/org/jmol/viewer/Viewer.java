@@ -343,10 +343,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return isApplet;
   }
 
-  public boolean isJS() {
-    return isJS;
-  }
-
   public boolean isRestricted(ACCESS a) {
     // disables WRITE, LOAD file:/, set logFile 
     // command line -g and -w options ARE available for final writing of image
@@ -1977,6 +1973,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * the file
    * 
    * @param fileName
+   * @param pdbCartoons
+   * 
    */
   @Override
   public void openFileAsyncPDB(String fileName, boolean pdbCartoons) {
@@ -2681,8 +2679,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public Object getFileAsBytes(String pathName, OutputStream os) {
-    return fileManager.getFileAsBytes(pathName, os, true);
+  public Object getFileAsBytes(String pathName, OutputStringBuilder osb) {
+    return fileManager.getFileAsBytes(pathName, osb, true);
   }
 
   public String getCurrentFileAsString() {
@@ -2696,7 +2694,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String pathName = modelManager.getModelSetPathName();
     if (pathName == null)
       return null;
-    return getFileAsString4(pathName, Integer.MAX_VALUE, true, false);
+    return getFileAsString4(pathName, -1, true, false);
   }
 
   public String getFullPathName() {
@@ -2719,7 +2717,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public String getFileAsString(String name) {
-    return getFileAsString4(name, Integer.MAX_VALUE, false, false);
+    return getFileAsString4(name, -1, false, false);
   }
 
   public String getFileAsString4(String name, int nBytesMax,
@@ -2729,20 +2727,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String[] data = new String[2];
     data[0] = name;
     // ignore error completely
-    getFileAsStringFM(data, nBytesMax, doSpecialLoad, allowBinary);
+    fileManager.getFileDataOrErrorAsString(data, nBytesMax, doSpecialLoad, allowBinary);
     return data[1];
   }
 
-  @Override
-  public boolean getFileAsStringBin(String[] data, int nBytesMax,
-                                    boolean doSpecialLoad) {
-    return getFileAsStringFM(data, nBytesMax, doSpecialLoad, true);
-  }
-
-  private boolean getFileAsStringFM(String[] data, int nBytesMax,
-                                    boolean doSpecialLoad, boolean allowBinary) {
-    return fileManager.getFileDataOrErrorAsString(data, nBytesMax,
-        doSpecialLoad, allowBinary);
+  public boolean getFileAsStringBin(String[] data) {
+    return fileManager.getFileDataOrErrorAsString(data, -1, false, true);
   }
 
   public String getFilePath(String name, boolean asShortName) {
@@ -5893,6 +5883,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return global.partialDots;
     case T.pdbsequential:
       return global.pdbSequential;
+    case T.preservestate:
+      return global.preserveState;
     case T.ribbonborder:
       return global.ribbonBorder;
     case T.rocketbarrels:
@@ -8205,10 +8197,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getHelixData(bs, tokType);
   }
 
-  public String getPdbData(BS bs, OutputStringBuilder sb) {
-    if (bs == null)
-      bs = getSelectionSet(true);
-    return modelSet.getPdbAtomData(bs, sb);
+  public String getPdbAtomData(BS bs, OutputStringBuilder sb) {
+    return modelSet.getPdbAtomData(bs == null ? getSelectionSet(true) : bs, sb);
   }
 
   public boolean isJmolDataFrameForModel(int modelIndex) {
@@ -8626,7 +8616,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String s = (String) setLoadFormat("_" + smiles, type, false);
     if (type == '/')
       s += TextFormat.simpleReplace(info, " ", "%20");
-    return getFileAsString4(s, Integer.MAX_VALUE, false, false);
+    return getFileAsString4(s, -1, false, false);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -8740,8 +8730,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Object createZip(String fileName, String type, String stateInfo,
                           String[] scripts) {
-    return getStateCreator().createImagePathCheck(fileName, type, stateInfo,
-        null, scripts, null, Integer.MIN_VALUE, -1, -1, null, true);
+    return getStateCreator().createImage(fileName, type, stateInfo,
+        null, scripts, Integer.MIN_VALUE, -1, -1);
   }
 
   @Override
@@ -8751,14 +8741,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         : null);
     byte[] bytes = (text_or_bytes instanceof byte[] ? (byte[]) text_or_bytes
         : null);
-    return getStateCreator().createImagePathCheck(fileName, type, text, bytes,
-        null, null, quality, width, height, null, true);
+    return getStateCreator().createImage(fileName, type, text, 
+        bytes, null, quality, width, height);
   }
 
   public Object createImage(String fileName, String type, String text,
                             byte[] bytes, int quality, int width, int height) {
-    return getStateCreator().createImagePathCheck(fileName, type, text, bytes,
-        null, null, quality, width, height, null, true);
+    return getStateCreator().createImage(fileName, type, text, 
+        bytes, null, quality, width, height);
   }
 
   JmolImageCreatorInterface getImageCreator() {
@@ -9394,9 +9384,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getCenterAndPoints(atomSets, addCenter);
   }
 
-  public String streamFileData(String fileName, String type, String type2,
+  public String writeFileData(String fileName, String type, 
                                int modelIndex, Object[] parameters) {
-    return getStateCreator().streamFileData(fileName, type, type2, modelIndex,
+    return getStateCreator().writeFileData(fileName, type, modelIndex,
         parameters);
   }
 
@@ -9973,7 +9963,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // script: reset cache
     fileManager.cacheClear();
   }
-
+    
   /**
    * JmolViewer interface -- allows saving files in memory for later retrieval
    * @param key 
@@ -9989,6 +9979,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     fileManager.cachePut(key, data);
   }
 
+  @Override
   public int cacheFileByName(String fileName, boolean isAdd) {
     // cache command in script
     return fileManager.cacheFileByNameAdd(fileName, isAdd);

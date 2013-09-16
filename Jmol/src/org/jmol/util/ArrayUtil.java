@@ -487,5 +487,21 @@ final public class ArrayUtil {
     }
   }
 
+  /**
+   * remove all keys from a map that start with given root
+   * @param map
+   * @param root
+   * @return number removed
+   */
+  public static int removeMapKeys(Map<String, ?> map, String root) {
+    JmolList<String> list = new JmolList<String>();
+    for (String key: map.keySet())
+      if (key.startsWith(root))
+        list.addLast(key);
+    for (int i = list.size(); --i >= 0;)
+      map.remove(list.get(i));
+    return list.size();
+  }
+
 
 }

@@ -79,13 +79,13 @@ public class FilesReader implements JmolFilesReaderInterface {
    * 
    * @param i
    *        the reader index
-   * @param isBinary
+   * @param forceBinary
    * @return a BufferedReader or null in the case of an error
    * 
    */
-  public Object getBufferedReaderOrBinaryDocument(int i, boolean isBinary) {
+  public Object getBufferedReaderOrBinaryDocument(int i, boolean forceBinary) {
     if (dataReaders != null)
-      return (isBinary ? null : dataReaders[i].getBufferedReader()); // no binary strings
+      return (forceBinary ? null : dataReaders[i].getBufferedReader()); // no binary strings
     String name = fullPathNamesIn[i];
     String[] subFileList = null;
     htParams.remove("subFileList");
@@ -93,8 +93,8 @@ public class FilesReader implements JmolFilesReaderInterface {
       subFileList = TextFormat.splitChars(name, "|");
       name = subFileList[0];
     }
-    Object t = fm.getUnzippedBufferedReaderOrErrorMessageFromName(name, null,
-        true, isBinary, false, true, htParams);
+    Object t = fm.getUnzippedReaderOrStreamFromName(name, null,
+        true, forceBinary, false, true, htParams);
     if (t instanceof ZipInputStream) {
       if (subFileList != null)
         htParams.put("subFileList", subFileList);
@@ -102,7 +102,7 @@ public class FilesReader implements JmolFilesReaderInterface {
       t = fm.getBufferedInputStreamOrErrorMessageFromName(name,
           fullPathNamesIn[i], false, false, null, false);
       t = JmolBinary.getAtomSetCollectionOrBufferedReaderFromZip(viewer.getModelAdapter(),
-          (BufferedInputStream) t, name, zipDirectory, htParams, true, isBinary);
+          (BufferedInputStream) t, name, zipDirectory, htParams, true);
     }
     if (t instanceof BufferedInputStream) {
       JmolDocument jd = (JmolDocument) Interface

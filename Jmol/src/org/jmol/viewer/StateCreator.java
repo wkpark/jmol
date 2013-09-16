@@ -1876,14 +1876,13 @@ public class StateCreator implements JmolStateCreator {
         str[2] = "all"; // full PNGJ
         String fileName = fileRoot + "_scene_" + iScene + ".all." + fileExt;
         String msg = (String) createImagePathCheck(fileName, "PNGJ", null,
-            null, str, null, -1, width, height, null, false);
+            null, str, -1, width, height, null, false);
         str[0] = null; // script0 only saved in first file
         str[2] = "min"; // script only -- for fast loading
         fileName = fileRoot + "_scene_" + iScene + ".min." + fileExt;
         msg += "\n"
             + (String) createImagePathCheck(fileName, "PNGJ", null, null, str,
-                null, -1, Math.min(width, 200), Math.min(height, 200), null,
-                false);
+                -1, Math.min(width, 200), Math.min(height, 200), null, false);
         viewer.showString(msg, false);
         nFiles += 2;
       } catch (Exception e) {
@@ -1904,7 +1903,7 @@ public class StateCreator implements JmolStateCreator {
                                int nVibes, String[] fullPath) {
     if (bsFrames == null && nVibes == 0)
       return (String) createImagePathCheck(fileName, type, text, bytes,
-          scripts, null, quality, width, height, fullPath, true);
+          scripts, quality, width, height, fullPath, true);
     String info = "";
     int n = 0;
     fileName = getOutputFileNameFromDialog(fileName, quality);
@@ -1953,10 +1952,17 @@ public class StateCreator implements JmolStateCreator {
     if (fullPath != null)
       fullPath[0] = fileName;
     String msg = (String) createImagePathCheck(fileName, type, null, null,
-        null, "", quality, width, height, null, false);
+        null, quality, width, height, null, false);
     viewer.scriptEcho(msg);
     sb.append(msg).append("\n");
     return msg.startsWith("OK");
+  }
+
+  public Object createImage(String fileName, String type, String text,
+                            byte[] bytes, String[] scripts, int quality,
+                            int width, int height) {
+    return createImagePathCheck(fileName, type, text, bytes, scripts, quality,
+        width, height, null, true);
   }
 
   /**
@@ -1974,8 +1980,6 @@ public class StateCreator implements JmolStateCreator {
    * @param bytes
    *        byte[] or null if an image
    * @param scripts
-   * @param appendix
-   *        byte[] or String
    * @param quality
    *        Integer.MIN_VALUE --> not an image
    * @param width
@@ -1986,12 +1990,10 @@ public class StateCreator implements JmolStateCreator {
    * @param doCheck
    * @return null (canceled) or a message starting with OK or an error message
    */
-  public Object createImagePathCheck(String fileName, String type, String text,
+  private Object createImagePathCheck(String fileName, String type, String text,
                                      byte[] bytes, String[] scripts,
-                                     Object appendix, int quality, int width,
-                                     int height, String[] fullPath,
-                                     boolean doCheck) {
-
+                                     int quality, int width, int height,
+                                     String[] fullPath, boolean doCheck) {
     /*
      * 
      * org.jmol.export.image.AviCreator does create AVI animations from Jpegs
@@ -2320,57 +2322,79 @@ public class StateCreator implements JmolStateCreator {
     return bytes;
   }
 
-  public String streamFileData(String fileName, String type, String type2,
-                               int modelIndex, Object[] parameters) {
-    String msg = null;
+  /**
+   * Generates file data and passes it on either to a FileOuputStream (Java) 
+   * or via POSTing to a url using a ByteOutputStream (JavaScript)
+   * 
+   * @param fileName 
+   * @param type  one of: PDB PQR FILE PLOT 
+   * @param modelIndex 
+   * @param parameters 
+   * @return "OK..." or "" or null 
+   * 
+   */
+  public String writeFileData(String fileName, String type, 
+                              int modelIndex, Object[] parameters) {
     String[] fullPath = new String[1];
     OutputStream os = getOutputStream(fileName, fullPath);
     if (os == null)
       return "";
-    OutputStringBuilder sb;
-    if (type.equals("PDB") || type.equals("PQR")) {
-      sb = new OutputStringBuilder(new BufferedOutputStream(os));
-      sb.type = type;
-      msg = viewer.getPdbData(null, sb);
-    } else if (type.equals("FILE")) {
-      msg = writeCurrentFile(os);
-      // quality = Integer.MIN_VALUE;
-    } else if (type.equals("PLOT")) {
-      sb = new OutputStringBuilder(new BufferedOutputStream(os));
-      msg = viewer.modelSet.getPdbData(modelIndex, type2, viewer
-          .getSelectionSet(false), parameters, sb);
+    fileName = fullPath[0];
+    String pathName = (type.equals("FILE") ? viewer.getFullPathName() : null);
+    boolean getCurrentFile = (pathName != null && (pathName.equals("string")
+        || pathName.indexOf("[]") >= 0 || pathName.equals("JSNode")));
+    boolean asBytes = (pathName != null && !getCurrentFile);
+    if (asBytes) {
+      pathName = viewer.getModelSetPathName();
+      if (pathName == null)
+        return null; // zapped
     }
+    BufferedOutputStream bos;
+    /**
+     * @j2sNative
+     * 
+     *            bos = os; asBytes = true;
+    */
+    {
+      bos = new BufferedOutputStream(os);
+    }
+    // The OutputStringBuilder allows us to create strings or byte arrays
+    // of a given type, passing just one parameter and maintaining an 
+    // output stream all along. For JavaScript, this will be a ByteArrayOutputStream
+    // which will then be posted to a server for a return that allows saving.
+    OutputStringBuilder osb = new OutputStringBuilder(bos, asBytes);
+    osb.type = type;
+    String msg = (
+        type.equals("PDB") || type.equals("PQR") ? viewer.getPdbAtomData(null, osb)
+        : type.startsWith("PLOT") ? viewer.modelSet.getPdbData(modelIndex, 
+            type.substring(5), viewer.getSelectionSet(false), parameters, osb)
+        : getCurrentFile ? osb.append(viewer.getCurrentFileAsString()).toString()
+        : (String) viewer.getFileAsBytes(pathName, osb));
     if (msg != null)
-      msg = "OK " + msg + " " + fullPath[0];
+      msg = "OK " + msg + " " + fileName;
     try {
       os.flush();
       os.close();
     } catch (IOException e) {
-      // TODO
+      // ignore
+    }
+    /**
+     * @j2sNative
+     * 
+     *            J.io.JmolBinary.postByteArray(this.viewer.fileManager,
+     *            fileName, os.toByteArray());
+     * 
+     */
+    {
     }
     return msg;
-  }
-
-  private String writeCurrentFile(OutputStream os) {
-    String filename = viewer.getFullPathName();
-    if (filename.equals("string") || filename.indexOf("[]") >= 0
-        || filename.equals("JSNode")) {
-      String str = viewer.getCurrentFileAsString();
-      BufferedOutputStream bos = new BufferedOutputStream(os);
-      OutputStringBuilder sb = new OutputStringBuilder(bos);
-      sb.append(str);
-      return sb.toString();
-    }
-    String pathName = viewer.getModelSetPathName();
-    return (pathName == null ? "" : (String) viewer
-        .getFileAsBytes(pathName, os));
   }
 
   public OutputStream getOutputStream(String localName, String[] fullPath) {
     if (!viewer.isRestricted(ACCESS.ALL))
       return null;
     Object ret = createImagePathCheck(localName, "OutputStream", null, null,
-        null, null, Integer.MIN_VALUE, 0, 0, fullPath, true);
+        null, Integer.MIN_VALUE, 0, 0, fullPath, true);
     if (ret instanceof String) {
       Logger.error((String) ret);
       return null;
@@ -2384,10 +2408,11 @@ public class StateCreator implements JmolStateCreator {
     if (!allowScript)
       fileName = fileName.substring(1);
     fileName = fileName.replace('\\', '/');
+    boolean isCached = fileName.startsWith("cache://");
     if (viewer.isApplet && fileName.indexOf("://") < 0)
       fileName = "file://" + (fileName.startsWith("/") ? "" : "/") + fileName;
     if (fileName.endsWith(".pse")) {
-      viewer.evalString("zap;load SYNC " + Escape.eS(fileName)
+      viewer.evalString((isCached ? "" : "zap;") + "load SYNC " + Escape.eS(fileName)
           + " filter 'DORESIZE'");
       return;
     }
@@ -2408,13 +2433,15 @@ public class StateCreator implements JmolStateCreator {
           return;
         }
       } else if (type.equals("Jmol")) {
-        cmd = "load ";
+        cmd = "script ";
       } else if (type.equals("Cube")) {
         cmd = "isosurface sign red blue ";
       } else if (!type.equals("spt")) {
         cmd = viewer.global.defaultDropScript;
         cmd = TextFormat.simpleReplace(cmd, "%FILE", fileName);
         cmd = TextFormat.simpleReplace(cmd, "%ALLOWCARTOONS", "" + pdbCartoons);
+        if (cmd.toLowerCase().startsWith("zap") && isCached)
+          cmd = cmd.substring(3);
         viewer.evalString(cmd);
         return;
       }

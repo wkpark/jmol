@@ -53,8 +53,7 @@ public interface JmolZipUtility {
                                                             String[] zipDirectory,
                                                             Map<String, Object> htParams,
                                                             int i,
-                                                            boolean asBufferedReader,
-                                                            boolean asBufferedInputStream);
+                                                            boolean asBufferedReader);
 
   public String[] spartanFileList(String name, String zipDirectory);
 

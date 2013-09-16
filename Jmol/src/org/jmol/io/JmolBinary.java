@@ -29,7 +29,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
@@ -187,6 +186,14 @@ public class JmolBinary {
   }
 
   private static Encoding getUTFEncodingForStream(BufferedInputStream is) throws IOException {
+    /**
+     * @j2sNative
+     * 
+     *  is.resetStream();
+     * 
+     */
+    {
+    }
     byte[] abMagic = new byte[4];
     abMagic[3] = 1;
     try{
@@ -239,19 +246,33 @@ public class JmolBinary {
 
   }
   
-  public static boolean isCompoundDocumentStream(InputStream is) throws Exception {
-    byte[] abMagic = new byte[8];
-    is.mark(9);
-    int countRead = is.read(abMagic, 0, 8);
-    is.reset();
-    return (countRead == 8 && abMagic[0] == (byte) 0xD0
-        && abMagic[1] == (byte) 0xCF && abMagic[2] == (byte) 0x11
-        && abMagic[3] == (byte) 0xE0 && abMagic[4] == (byte) 0xA1
-        && abMagic[5] == (byte) 0xB1 && abMagic[6] == (byte) 0x1A 
-        && abMagic[7] == (byte) 0xE1);
+  private static byte[] getMagic(InputStream is, int n) {
+    byte[] abMagic = new byte[n];
+    /**
+     * @j2sNative
+     * 
+     * is.resetStream();
+     * 
+     */
+    {
+    }
+    try {
+      is.mark(n + 1);
+      is.read(abMagic, 0, n);
+    } catch (IOException e) {
+    }
+    try {
+      is.reset();
+    } catch (IOException e) {
+    }
+    return abMagic;
   }
 
-  public static boolean isCompoundDocumentArray(byte[] bytes) {
+  public static boolean isCompoundDocumentS(InputStream is) {
+    return isCompoundDocumentB(getMagic(is, 8));
+  }
+
+  public static boolean isCompoundDocumentB(byte[] bytes) {
     return (bytes.length >= 8 && bytes[0] == (byte) 0xD0
         && bytes[1] == (byte) 0xCF && bytes[2] == (byte) 0x11
         && bytes[3] == (byte) 0xE0 && bytes[4] == (byte) 0xA1
@@ -259,54 +280,44 @@ public class JmolBinary {
         && bytes[7] == (byte) 0xE1);
   }
 
+  public static boolean isGzipS(InputStream is) {
+    return isGzipB(getMagic(is, 2));
+  }
+
   public static boolean isGzipB(byte[] bytes) {    
-      return (bytes != null && bytes.length > 2 
+      return (bytes != null && bytes.length >= 2 
           && bytes[0] == (byte) 0x1F && bytes[1] == (byte) 0x8B);
   }
 
-  public static boolean isGzipS(InputStream is) {
-    byte[] abMagic = new byte[4];
-    try {
-      is.mark(5);
-      is.read(abMagic, 0, 4);
-      is.reset();
-    } catch (IOException e) {
-      // ignore
-    }
-    return isGzipB(abMagic);
+  public static boolean isPickleS(InputStream is) {
+    return isPickleB(getMagic(is, 2));
   }
 
-  public static boolean isZipStream(InputStream is) {
-    byte[] abMagic = new byte[4];
-    try {
-      is.mark(5);
-      is.read(abMagic, 0, 4);
-      is.reset();
-    } catch (Exception e) {
-      // ignore;
-    }
-    return isZipFile(abMagic);
+  public static boolean isPickleB(byte[] bytes) {    
+    return (bytes != null && bytes.length >= 2 
+        && bytes[0] == (byte) 0x7D && bytes[1] == (byte) 0x71);
+}
+
+  public static boolean isZipS(InputStream is) {
+    return isZipB(getMagic(is, 4));
   }
 
-  public static boolean isZipFile(byte[] bytes) {
+  public static boolean isZipB(byte[] bytes) {
     return (bytes.length >= 4 
-        && bytes[0] == 'P'  //PK<03><04> 
-        && bytes[1] == 'K'
-        && bytes[2] == '\3' 
-        && bytes[3] == '\4');
+        && bytes[0] == 0x50  //PK<03><04> 
+        && bytes[1] == 0x4B
+        && bytes[2] == 0x03 
+        && bytes[3] == 0x04);
   }
 
   public static boolean isPngZipStream(InputStream is) {
-    if (isZipStream(is))
+    if (isZipS(is))
       return false;
-    try {
-      is.mark(56);
-      byte[] abMagic = getStreamBytes(is, 55);
-      is.reset();
-      return (abMagic[51] == 'P' && abMagic[52] == 'N' && abMagic[53] == 'G' && abMagic[54] == 'J');
-    } catch (Exception e) {
-    }
-    return false;
+      byte[] abMagic = getMagic(is, 55); // PNGJ
+      return (abMagic[51] == 0x50 
+           && abMagic[52] == 0x4E
+           && abMagic[53] == 0x47 
+           && abMagic[54] == 0x4A);
   }
 
   public static String getZipRoot(String fileName) {
@@ -407,23 +418,23 @@ public class JmolBinary {
   }
 
   public static Object getStreamAsBytes(BufferedInputStream bis,
-                                         OutputStream os) throws IOException {
+                                         OutputStringBuilder osb) throws IOException {
     byte[] buf = new byte[1024];
-    byte[] bytes = (os == null ? new byte[4096] : null);
+    byte[] bytes = (osb == null ? new byte[4096] : null);
     int len = 0;
     int totalLen = 0;
     while ((len = bis.read(buf, 0, 1024)) > 0) {
       totalLen += len;
-      if (os == null) {
+      if (osb == null) {
         if (totalLen >= bytes.length)
           bytes = ArrayUtil.ensureLengthByte(bytes, totalLen * 2);
         System.arraycopy(buf, 0, bytes, totalLen - len, len);
       } else {
-        os.write(buf, 0, len);
+        osb.write(buf, 0, len);
       }
     }
     bis.close();
-    if (os == null) {
+    if (osb == null) {
       return ArrayUtil.arrayCopyByte(bytes, totalLen);
     }
     return totalLen + " bytes";
@@ -507,13 +518,12 @@ public class JmolBinary {
    * @param zipDirectory 
    * @param htParams 
    * @param asBufferedReader 
-   * @param asBufferedInputStream 
    * @return a single atomSetCollection
    * 
    */
   public static Object getAtomSetCollectionOrBufferedReaderFromZip(JmolAdapter adapter, InputStream is, String fileName, String[] zipDirectory,
-                             Map<String, Object> htParams, boolean asBufferedReader, boolean asBufferedInputStream) {
-    return getJzu().getAtomSetCollectionOrBufferedReaderFromZip(adapter, is, fileName, zipDirectory, htParams, 1, asBufferedReader, asBufferedInputStream);
+                             Map<String, Object> htParams, boolean asBufferedReader) {
+    return getJzu().getAtomSetCollectionOrBufferedReaderFromZip(adapter, is, fileName, zipDirectory, htParams, 1, asBufferedReader);
   }
 
   public static String[] spartanFileList(String name, String zipDirectory) {
@@ -617,6 +627,47 @@ public class JmolBinary {
 
   public static boolean checkBinaryType(String fileTypeIn) {
     return (JC.binaryExtensions.indexOf("=" + fileTypeIn + ";") >= 0);
+  }
+
+  public static String StreamToString(BufferedInputStream bis) {
+    String[] data = new String[1];
+    try {
+      readAll(getBufferedReader(bis, "UTF-8"), -1, true, data, 0);
+    } catch (IOException e) {
+    }
+    return data[0];
+  }
+
+  public static boolean readAll(BufferedReader br, int nBytesMax, boolean allowBinary, String[] data, int i) {
+    try {
+      SB sb = SB.newN(8192);
+      String line;
+      if (nBytesMax < 0) {
+        line = br.readLine();
+        if (allowBinary || line != null && line.indexOf('\0') < 0
+            && (line.length() != 4 || line.charAt(0) != 65533
+            || line.indexOf("PNG") != 1)) {
+          sb.append(line).appendC('\n');
+          while ((line = br.readLine()) != null)
+            sb.append(line).appendC('\n');
+        }
+      } else {
+        int n = 0;
+        int len;
+        while (n < nBytesMax && (line = br.readLine()) != null) {
+          if (nBytesMax - n < (len = line.length()) + 1)
+            line = line.substring(0, nBytesMax - n - 1);
+          sb.append(line).appendC('\n');
+          n += len + 1;
+        }
+      }
+      br.close();
+      data[i] = sb.toString();
+      return true;
+    } catch (Exception ioe) {
+      data[i] = ioe.toString();
+      return false;
+    }
   }
 
 }

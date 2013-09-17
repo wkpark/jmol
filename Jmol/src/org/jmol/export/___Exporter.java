@@ -29,10 +29,7 @@ package org.jmol.export;
 import java.awt.Image;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import org.jmol.util.JmolList;
 
@@ -150,7 +147,6 @@ public abstract class ___Exporter {
   protected JmolRendererInterface jmolRenderer;
   protected SB output;
   protected BufferedWriter bw;
-  private FileOutputStream os;
   protected String fileName;
   protected String commandLineOptions;
   
@@ -244,9 +240,8 @@ public abstract class ___Exporter {
       try {
         File f = new File(fileName);
         System.out.println("__Exporter writing to " + f.getAbsolutePath());
-        os = new FileOutputStream(fileName);
-        bw = new BufferedWriter(new OutputStreamWriter(os));
-      } catch (FileNotFoundException e) {
+        bw = (BufferedWriter)viewer.openOutputChannel(privateKey, fileName, true);
+      } catch (IOException e) {
         return false;
       }
     } else {
@@ -341,7 +336,6 @@ public abstract class ___Exporter {
     try {
       bw.flush();
       bw.close();
-      os = null;
     } catch (IOException e) {
       System.out.println(e.getMessage());
       return "ERROR EXPORTING FILE";

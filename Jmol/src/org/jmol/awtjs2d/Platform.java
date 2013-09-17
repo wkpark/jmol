@@ -9,7 +9,6 @@ import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
-import org.jmol.api.JmolViewer;
 import org.jmol.util.JmolFont;
 import org.jmol.util.P3;
 import org.jmol.viewer.ActionManager;
@@ -30,10 +29,10 @@ import org.jmol.viewer.Viewer;
  */
 public class Platform implements ApiPlatform {
   Object canvas;
-  JmolViewer viewer;
+  Viewer viewer;
   Object context;
   
-	public void setViewer(JmolViewer viewer, Object canvas) {
+	public void setViewer(Viewer viewer, Object canvas) {
 	  /**
 	   * @j2sNative
 	   * 
@@ -130,11 +129,10 @@ public class Platform implements ApiPlatform {
 	/**
 	 * legacy apps will use this
 	 * 
-	 * @param viewer
 	 * @param context
 	 * @param size
 	 */
-	public void renderScreenImage(JmolViewer viewer, Object context, Object size) {
+	public void renderScreenImage(Object context, Object size) {
 		Display.renderScreenImage(viewer, context, size);
 	}
 
@@ -333,5 +331,4 @@ public class Platform implements ApiPlatform {
     }
   }
 
-	
 }

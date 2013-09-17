@@ -25,12 +25,8 @@
 package org.jmol.export.image;
 
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
 import org.jmol.api.JmolImageCreatorInterface;
 import org.jmol.api.JmolViewer;
@@ -66,42 +62,43 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
    * @param quality
    * @return null (canceled) or a message starting with OK or an error message
    */
-  public Object createImage(String fileName, String type, String text, Object bytes_or_image,
-                            String[] scripts, Object appendix, int quality) {
+  public Object createImage(String fileName, String type, String text,
+                            Object bytes_or_image, String[] scripts,
+                            Object appendix, int quality) {
     // this method may not be accessed, though public, unless 
     // accessed via viewer, which provides its private key.
     boolean isBytes = (bytes_or_image != null);
     boolean isText = (!isBytes && quality == Integer.MIN_VALUE);
-    FileOutputStream os = null;
+    OutputStream os = null;
     long len = -1;
     try {
       if (!viewer.checkPrivateKey(privateKey))
         return "NO SECURITY";
       // returns message starting with OK or an error message
       if ("OutputStream".equals(type))
-        return (viewer.isJS ? new ByteArrayOutputStream() : new FileOutputStream(fileName));
+        return viewer.openOutputChannel(privateKey, fileName, false);
       if (isBytes) {
         if (bytes_or_image instanceof byte[]) {
           len = ((byte[]) bytes_or_image).length;
-          os = new FileOutputStream(fileName);
+          os = (OutputStream) viewer.openOutputChannel(privateKey, fileName, false);
           byte[] b = (byte[]) bytes_or_image;
           os.write(b, 0, b.length);
           os.flush();
           os.close();
+          os = null;
         } else {
-          getImageBytes(type, quality, fileName, scripts, bytes_or_image, null, null);
+          getImageBytes(type, quality, fileName, scripts, bytes_or_image, null,
+              null);
           return fileName;
         }
       } else if (isText) {
         if (text == null)
           return "NO DATA";
-        os = new FileOutputStream(fileName);
-        OutputStreamWriter osw = new OutputStreamWriter(os);
-        BufferedWriter bw = new BufferedWriter(osw, 8192);
+        BufferedWriter bw = (BufferedWriter) viewer.openOutputChannel(
+            privateKey, fileName, true);
         len = text.length();
         bw.write(text);
         bw.close();
-        os = null;
       } else {
         len = 1;
         Object bytesOrError = getImageBytes(type, quality, fileName, scripts,
@@ -111,7 +108,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
         byte[] bytes = (byte[]) bytesOrError;
         if (bytes != null)
           return (fileName == null ? bytes : new String(bytes));
-        len = (new File(fileName)).length();
+        len = viewer.getFileLength(privateKey, fileName);
       }
     } catch (IOException exc) {
       Logger.errorEx("IO Exception", exc);
@@ -126,8 +123,8 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
       }
     }
     return (len < 0 ? "Creation of " + fileName + " failed: "
-        + viewer.getErrorMessageUn() : "OK " + type + " " + len + " "
-        + fileName
+        + viewer.getErrorMessageUn() : "OK " + type + " "
+        + (len > 0 ? len + " " : "") + fileName
         + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality));
   }
 
@@ -155,7 +152,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
               viewer.apiPlatform.getImageWidth(image), viewer.apiPlatform
                   .getImageHeight(image));
         if (isOsTemp)
-          os = new FileOutputStream(fileName);
+          os = (OutputStream) viewer.openOutputChannel(privateKey, fileName, false);
         if (type.equals("JPEG") || type.equals("JPG")) {
           if (quality <= 0)
             quality = 100; // high quality

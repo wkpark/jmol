@@ -722,7 +722,7 @@ public class StateManager {
       setB("hideNotSelected", false); //maintained by the selectionManager
       setS("hoverLabel", ""); // maintained by the Hover shape
       setB("isKiosk", viewer.isKiosk()); // maintained by Viewer
-      setS("logFile", viewer.getLogFile()); // maintained by Viewer
+      setS("logFile", viewer.getLogFileName()); // maintained by Viewer
       setI("logLevel", Logger.getLogLevel());
       setF("mouseWheelFactor", ActionManager.DEFAULT_MOUSE_WHEEL_FACTOR);
       setF("mouseDragFactor", ActionManager.DEFAULT_MOUSE_DRAG_FACTOR);

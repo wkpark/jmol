@@ -28,11 +28,7 @@ package org.jmol.exportjs;
 
 import java.awt.Image;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 
 
 import org.jmol.util.TextFormat;
@@ -142,7 +138,6 @@ public abstract class Exporter {
   protected JmolRendererInterface jmolRenderer;
   protected SB output;
   protected BufferedWriter bw;
-  private FileOutputStream os;
   protected String fileName;
   protected String commandLineOptions;
   
@@ -226,11 +221,9 @@ public abstract class Exporter {
       }
       //viewer.writeTextFile(fileName + ".spt", viewer.getSavedState("_Export"));
       try {
-        File f = new File(fileName);
-        System.out.println("__Exporter writing to " + f.getAbsolutePath());
-        os = new FileOutputStream(fileName);
-        bw = new BufferedWriter(new OutputStreamWriter(os));
-      } catch (FileNotFoundException e) {
+        System.out.println("__Exporter writing to " + viewer.getAbsolutePath(privateKey, fileName));
+        bw = (BufferedWriter) viewer.openOutputChannel(privateKey, fileName, true);
+      } catch (IOException e) {
         return false;
       }
     } else {
@@ -291,7 +284,6 @@ public abstract class Exporter {
     try {
       bw.flush();
       bw.close();
-      os = null;
     } catch (IOException e) {
       System.out.println(e.toString());
       return "ERROR EXPORTING FILE";

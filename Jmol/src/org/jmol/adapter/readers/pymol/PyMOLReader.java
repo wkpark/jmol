@@ -275,7 +275,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
 
     // just log and display some information here
 
-    logging = (viewer.getLogFile().length() > 0);
+    logging = (viewer.getLogFileName().length() > 0);
     JmolList<Object> names = getMapList(map, "names");
     for (Map.Entry<String, Object> e : map.entrySet()) {
       String name = e.getKey();

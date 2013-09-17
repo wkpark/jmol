@@ -17,7 +17,6 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
-import org.jmol.api.JmolViewer;
 import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.util.JmolFont;
 import org.jmol.util.P3;
@@ -26,9 +25,9 @@ import org.jmol.viewer.Viewer;
 
 public class Platform implements ApiPlatform {
 
-  JmolViewer viewer;
+  Viewer viewer;
   
-  public void setViewer(JmolViewer viewer, Object display) {
+  public void setViewer(Viewer viewer, Object display) {
     this.viewer = viewer;
   }
   
@@ -62,11 +61,10 @@ public class Platform implements ApiPlatform {
   /**
    * legacy apps will use this
    * 
-   * @param viewer
    * @param g
    * @param size
    */
-  public void renderScreenImage(JmolViewer viewer, Object g, Object size) {
+  public void renderScreenImage(Object g, Object size) {
     Display.renderScreenImage(viewer, g, size);
   }
 
@@ -87,7 +85,7 @@ public class Platform implements ApiPlatform {
   }
 
   public JmolFileAdapterInterface getFileAdapter() {
-    return new JmolFileAdapter();
+    return new JmolFileAdapter(viewer);
   }
 
   ////// Mouse
@@ -245,6 +243,5 @@ public class Platform implements ApiPlatform {
     return (new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z"))
         .format(new Date());
   }
-
 
 }

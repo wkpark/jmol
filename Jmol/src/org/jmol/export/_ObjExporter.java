@@ -5,11 +5,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-//import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import org.jmol.util.JmolList;
 
 import java.util.HashSet;
@@ -75,8 +71,6 @@ public class _ObjExporter extends __CartesianExporter {
   private boolean normalizeUV = true;
   /** BufferedWriter for the .mtl file. */
   private BufferedWriter mtlbw;
-  /** FileOutputStream for the .mtl file. */
-  private FileOutputStream mtlos;
   /** Path of the OBJ file without the extension. */
   String objFileRootName;
   /** File for the .mtl file. */
@@ -463,10 +457,9 @@ public class _ObjExporter extends __CartesianExporter {
       String mtlFileName = objFileRootName + ".mtl";
       mtlFile = new File(mtlFileName);
       System.out.println("_WavefrontObjExporter writing to "
-          + mtlFile.getAbsolutePath());
-      mtlos = new FileOutputStream(mtlFile);
-      mtlbw = new BufferedWriter(new OutputStreamWriter(mtlos));
-    } catch (FileNotFoundException ex) {
+          + viewer.getAbsolutePath(privateKey, mtlFileName));
+      mtlbw = (BufferedWriter) viewer.openOutputChannel(privateKey, mtlFileName, true);
+    } catch (IOException ex) {
       debugPrint("End initializeOutput (" + ex.getMessage() + "):");
       return false;
     }
@@ -492,7 +485,6 @@ public class _ObjExporter extends __CartesianExporter {
     try {
       mtlbw.flush();
       mtlbw.close();
-      mtlos = null;
     } catch (IOException ex) {
       ex.printStackTrace();
       if (retVal.startsWith("OK")) {

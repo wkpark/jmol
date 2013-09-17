@@ -413,8 +413,8 @@ public class JmolBinary {
     return getJzu().getZipFileContentsAsBytes(bis, subFileList, i);
   }
 
-  public static Object createZipSet(FileManager fm, Viewer viewer, String fileName, String script, String[] scripts, boolean includeRemoteFiles) {
-    return getJzu().createZipSet(fm, viewer, fileName, script, scripts, includeRemoteFiles);
+  public static Object createZipSet(double privateKey, FileManager fm, Viewer viewer, String fileName, String script, String[] scripts, boolean includeRemoteFiles) {
+    return getJzu().createZipSet(privateKey, fm, viewer, fileName, script, scripts, includeRemoteFiles);
   }
 
   public static Object getStreamAsBytes(BufferedInputStream bis,
@@ -443,6 +443,7 @@ public class JmolBinary {
   /**
    * generic method to create a zip file based on
    * http://www.exampledepot.com/egs/java.util.zip/CreateZip.html
+   * @param privateKey 
    * @param fm 
    * @param viewer 
    * 
@@ -453,10 +454,10 @@ public class JmolBinary {
    * @param msg
    * @return msg bytes filename or errorMessage or byte[]
    */
-  public static Object writeZipFile(FileManager fm, Viewer viewer, String outFileName,
+  public static Object writeZipFile(double privateKey, FileManager fm, Viewer viewer, String outFileName,
                               JmolList<Object> fileNamesAndByteArrays,
                               String msg) {
-    return getJzu().writeZipFile(fm, viewer, outFileName, fileNamesAndByteArrays, msg);
+    return getJzu().writeZipFile(privateKey, fm, viewer, outFileName, fileNamesAndByteArrays, msg);
   }
 
 

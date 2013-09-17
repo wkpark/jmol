@@ -560,7 +560,7 @@ abstract public class JmolViewer {
    */
   public void renderScreenImage(Object g, Object currentSize,
                                 Object rectClip) {
-    apiPlatform.renderScreenImage(this, g, currentSize);
+    apiPlatform.renderScreenImage(g, currentSize);
   }
 
   public Object getJsObjectInfo(Object[] jsObject, String method, Object[] args) {

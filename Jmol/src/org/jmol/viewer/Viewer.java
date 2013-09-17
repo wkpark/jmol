@@ -134,7 +134,9 @@ import java.util.Map.Entry;
 import java.net.URL;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
@@ -214,7 +216,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public ModelSet modelSet;
   public FileManager fileManager;
 
-  boolean isApplet;
+  private boolean isApplet;
+  @Override
+  public boolean isApplet() {
+    return isApplet;
+  }
+
   public boolean isSyntaxAndFileCheck = false;
   public boolean isSyntaxCheck = false;
   public boolean listCommands = false;
@@ -249,10 +256,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private String syncId = "";
   private String logFilePath = "";
-
+  String getLogFilePath() {
+    return logFilePath;
+  }
+  
   private boolean allowScripting;
   private boolean isPrintOnly = false;
   private boolean isSignedApplet = false;
+  public boolean isSignedApplet() {
+    return isSignedApplet;
+  }
+
   private boolean isSignedAppletLocal = false;
   private boolean isSilent;
   private boolean multiTouch;
@@ -336,11 +350,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   StatusManager getStatusManager() {
     return statusManager;
-  }
-
-  @Override
-  public boolean isApplet() {
-    return isApplet;
   }
 
   public boolean isRestricted(ACCESS a) {
@@ -3551,7 +3560,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public JmolStateCreator getStateCreator() {
     if (sc == null)
       (sc = (JmolStateCreator) Interface
-          .getOptionInterface("viewer.StateCreator")).setViewer(this);
+          .getOptionInterface("viewer.StateCreator")).setViewer(this, privateKey);
     return sc;
   }
 
@@ -6077,7 +6086,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.defaultLoadFilter = value;
       break;
     case T.logfile:
-      value = setLogFile(value);
+      value = getStateCreator().setLogFile(value);
       if (value == null)
         return;
       break;
@@ -7615,10 +7624,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (isPreviewOnly || isApplet && creatingImage)
       return false;
     return (!isJS && isSignedApplet && !isSignedAppletLocal || frankOn);
-  }
-
-  public boolean isSignedApplet() {
-    return isSignedApplet;
   }
 
   @Override
@@ -9198,43 +9203,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (global.preserveState && scriptManager != null);
   }
 
-  String logFile = null;
-
-  public String getLogFile() {
-    return (logFile == null ? "" : logFile);
-  }
-
-  private String setLogFile(String value) {
-    String path = null;
-    if (logFilePath == null || value.indexOf("\\") >= 0
-        || value.indexOf("/") >= 0) {
-      value = null;
-    } else if (value.length() > 0) {
-      if (!value.startsWith("JmolLog_"))
-        value = "JmolLog_" + value;
-      try {
-        path = (isApplet ? logFilePath + value : (new File(logFilePath + value)
-            .getAbsolutePath()));
-      } catch (Exception e) {
-        value = null;
-      }
-    }
-    if (value == null || !isRestricted(ACCESS.ALL)) {
-      Logger.info(GT._("Cannot set log file path."));
-      value = null;
-    } else {
-      if (path != null)
-        Logger.info(GT._("Setting log file to {0}", path));
-      global.setS("_logFile", logFile = path);
-    }
-      return value;
-  }
-
-  public void log(String data) {
-    if (data != null)
-      getStateCreator().logToFile(data);
-  }
-
   boolean isKiosk;
 
   boolean isKiosk() {
@@ -10380,4 +10348,39 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.platformSpeed >= n;
   }
 
+  // ///////////////////////////////////////////////////////////////
+  // delegated to JmolFileAdapter
+  // ///////////////////////////////////////////////////////////////
+
+  public Object openOutputChannel(double privateKey, String fileName, boolean asWriter)
+      throws IOException {
+    return getFileAdapter().openOutputChannel(privateKey, fileManager, fileName, asWriter);
+  }
+
+  public InputStream openFileInputStream(double privateKey, String fileName) throws IOException {
+    return getFileAdapter().openFileInputStream(privateKey, fileName);
+  }
+
+  public String getAbsolutePath(double privateKey, String fileName) {
+    return getFileAdapter().getAbsolutePath(privateKey, fileName);
+  }
+
+  public long getFileLength(double privateKey, String fileName) throws IOException {
+    return getFileAdapter().getFileLength(privateKey, fileName);
+  }
+
+  public Object openLogFile(double privateKey, String logFileName,
+                                    boolean asAppend) throws IOException {
+    return getFileAdapter().openLogFile(privateKey, logFileName, asAppend);
+  }
+
+  public void log(String data) {
+    if (data != null)
+      getStateCreator().logToFile(data);
+  }
+
+  public String getLogFileName() {
+    return getStateCreator().getLogFileName();
+  }
+  
 }

@@ -8,7 +8,7 @@ import org.jmol.viewer.Viewer;
 
 public interface ApiPlatform {
 
-  void setViewer(JmolViewer viewer, Object display);
+  void setViewer(Viewer viewer, Object display);
   
   /////// Display
 
@@ -72,7 +72,7 @@ public interface ApiPlatform {
 
   Object newOffScreenImage(int w, int h);
   
-  void renderScreenImage(JmolViewer jmolViewer, Object g, Object currentSize);
+  void renderScreenImage(Object g, Object currentSize);
 
   int[] getTextPixels(String text, JmolFont font3d, Object gObj,
                       Object image, int mapWidth, int height,

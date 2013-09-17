@@ -18,7 +18,7 @@ import org.jmol.viewer.Viewer;
 
 public interface JmolStateCreator {
 
-  void setViewer(Viewer viewer);
+  void setViewer(Viewer viewer, double privateKey);
 
   Object getWrappedState(String fileName, String[] scripts, boolean isImage,
                          boolean asJmolZip, int width, int height);
@@ -103,6 +103,10 @@ public interface JmolStateCreator {
   void quickScript(String script);
 
   String getAtomDefs(Map<String, Object> names);
+
+  String getLogFileName();
+
+  String setLogFile(String name);
 
 
 }

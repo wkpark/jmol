@@ -37,13 +37,13 @@ public interface JmolZipUtility {
                                         String shortName,
                                         Map<String, byte[]> pngjCache);
 
-  public Object writeZipFile(FileManager fm, Viewer viewer, String outFileName,
+  public Object writeZipFile(double privateKey, FileManager fm, Viewer viewer, String outFileName,
                              JmolList<Object> fileNamesAndByteArrays, String msg);
 
   public String getSceneScript(String[] scenes, Map<String, String> htScenes,
                              JmolList<Integer> list);
 
-  public Object createZipSet(FileManager fm, Viewer viewer, String fileName,
+  public Object createZipSet(double privateKey, FileManager fm, Viewer viewer, String fileName,
                              String script, String[] scripts,
                              boolean includeRemoteFiles);
 

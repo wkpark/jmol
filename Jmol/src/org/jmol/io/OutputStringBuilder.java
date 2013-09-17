@@ -23,8 +23,15 @@ public class OutputStringBuilder {
       if (asBytes) {
         this.bos = bos;
       } else {
-        OutputStreamWriter osw = new OutputStreamWriter(bos);
-        bw = new BufferedWriter(osw, 8192);
+        /** 
+         * @j2sNative
+         * 
+         * this.bw = bos;
+         * 
+         */
+        {
+          bw = new BufferedWriter(new OutputStreamWriter(bos), 8192);
+        }
       }
     } else if (asBytes) {
       buf = new byte[8092];

@@ -14636,6 +14636,14 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
       if (bytes != null && bytes instanceof String) {
         // load error or completion message here
+        /**
+         * @j2sNative
+         * 
+         * if (bytes.indexOf("OK") != 0)alert(bytes);
+         * 
+         */
+        {
+        }
         scriptStatusOrBuffer((String) bytes);
         return (String) bytes;
       }
@@ -14656,8 +14664,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         showString(Logger.getTimerMsg("write", 0));
     }
     if (!chk && msg != null) {
-      if (!msg.startsWith("OK"))
+      if (!msg.startsWith("OK")) {
         evalError(msg, null);
+        /**
+         * @j2sNative
+         * 
+         * alert(msg);
+         */
+        {
+        }
+      }
       scriptStatusOrBuffer(msg
           + (isImage ? "; width=" + width + "; height=" + height : ""));
       return msg;

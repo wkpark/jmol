@@ -134,7 +134,6 @@ import java.util.Map.Entry;
 import java.net.URL;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8678,6 +8677,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // ///////////////////////////////////////////////////////////////
 
   public OutputStream getOutputStream(String localName, String[] fullPath) {
+    // called by Script LOAD AS  and ISOSURFACE AS  options 
     return getStateCreator().getOutputStream(localName, fullPath);
   }
 
@@ -10354,7 +10354,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public Object openOutputChannel(double privateKey, String fileName, boolean asWriter)
       throws IOException {
-    return getFileAdapter().openOutputChannel(privateKey, fileManager, fileName, asWriter);
+    return (!isRestricted(ACCESS.ALL) ? null :
+      getFileAdapter().openOutputChannel(privateKey, fileManager, fileName, asWriter));
   }
 
   public InputStream openFileInputStream(double privateKey, String fileName) throws IOException {

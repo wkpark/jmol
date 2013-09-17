@@ -35,7 +35,7 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
 	}
 
   public Object openOutputChannel(double privateKey, FileManager fm, String fileName, boolean asWriter) {
-    return new WebPostOutputChannel(fm, fileName, asWriter);
+    return new WebOutputChannel(fileName);
   }
 
   public InputStream openFileInputStream(double privateKey, String fileName)

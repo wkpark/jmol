@@ -951,7 +951,7 @@ public class FileManager {
       return new String[] { null };
     boolean doSetPathForAllFiles = (pathForAllFiles.length() > 0);
     if (name.startsWith("?")) {
-       if ((name = viewer.dialogAsk("load", name.substring(1))) == null)
+       if ((name = viewer.dialogAsk("Load", name.substring(1))) == null)
          return new String[] { isFullLoad ? "#CANCELED#" : null };
        doSetPathForAllFiles = false;
     }

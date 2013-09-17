@@ -464,7 +464,10 @@ public class ZipUtil implements JmolZipUtility {
       }
       os.close();
       Logger.info(nBytesOut + " bytes prior to compression");
-      if (bos != null) {
+      if (bos == null) {
+        fullFilePath = viewer.getAbsolutePath(privateKey, outFileName).replace('\\', '/');
+        nBytes = viewer.getFileLength(privateKey, outFileName);
+      } else {
         byte[] bytes = bos.toByteArray();
         if (outFileName == null)
           return bytes;
@@ -474,10 +477,6 @@ public class ZipUtil implements JmolZipUtility {
         if (ret.indexOf("Exception") >= 0)
           return ret;
         msg += " " + ret;
-      } else {
-        JmolFileInterface f = viewer.apiPlatform.newFile(outFileName);
-        fullFilePath = f.getAbsolutePath().replace('\\', '/');
-        nBytes = f.length();
       }
     } catch (IOException e) {
       Logger.info(e.toString());

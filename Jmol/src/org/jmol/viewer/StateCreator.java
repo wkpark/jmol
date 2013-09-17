@@ -2013,18 +2013,22 @@ public class StateCreator implements JmolStateCreator {
      */
 
     Object ret = null;
-    String localName = null;
     boolean isClip = (fileName == null);
+    // localName will be fileName only if we are able to write to disk.
+    String localName = null;
     if (!isClip) {
       if (doCheck)
         fileName = getOutputFileNameFromDialog(fileName, quality);
       if (fileName == null)
         return null;
-      if (!viewer.isJS && FileManager.isLocal(fileName))
+      if (FileManager.isLocal(fileName))
         localName = fileName;
       if (fullPath != null)
         fullPath[0] = fileName;
     }
+    // JSmol/HTML5 WILL produce a localName now
+    if (!isClip && fullPath != null && (fileName = fullPath[0]) == null)
+      return null;
     int saveWidth = viewer.dimScreen.width;
     int saveHeight = viewer.dimScreen.height;
     viewer.creatingImage = true;
@@ -2050,9 +2054,8 @@ public class StateCreator implements JmolStateCreator {
         } else {
           // see if application wants to do it (returns non-null String)
           // both Jmol application and applet return null
-          if (!type.equals("OutputStream"))
-            ret = viewer.statusManager.createImage(fileName, type, text, bytes,
-                quality);
+          ret = viewer.statusManager.createImage(fileName, type, text, bytes,
+              quality);
           if (ret == null) {
             // application can do it itself or allow Jmol to do it here
             JmolImageCreatorInterface c = viewer.getImageCreator();
@@ -2269,10 +2272,8 @@ public class StateCreator implements JmolStateCreator {
     useDialog |= viewer.isApplet() && (fileName.indexOf("http:") < 0);
     fileName = FileManager.getLocalPathForWritingFile(viewer, fileName);
     if (useDialog)
-      fileName = viewer.dialogAsk(quality == Integer.MIN_VALUE ? "save"
-          : "saveImage", fileName);
-    if (viewer.isJS && fileName.indexOf("http:") < 0)
-      fileName = "POST://" + fileName;
+      fileName = viewer.dialogAsk(quality == Integer.MIN_VALUE ? "Save"
+          : "Save Image", fileName);
     return fileName;
   }
 
@@ -2357,8 +2358,8 @@ public class StateCreator implements JmolStateCreator {
     /**
      * @j2sNative
      * 
-     *            bos = os; asBytes = true;
-    */
+     *            bos = os;
+     */
     {
       bos = new BufferedOutputStream(os);
     }
@@ -2382,28 +2383,24 @@ public class StateCreator implements JmolStateCreator {
     } catch (IOException e) {
       // ignore
     }
-    /**
-     * @j2sNative
-     * 
-     *            J.io.JmolBinary.postByteArray(this.viewer.fileManager,
-     *            fileName, os.toByteArray());
-     * 
-     */
-    {
-    }
     return msg;
   }
 
-  public OutputStream getOutputStream(String localName, String[] fullPath) {
+  public OutputStream getOutputStream(String fileName, String[] fullPath) {
     if (!viewer.isRestricted(ACCESS.ALL))
       return null;
-    Object ret = createImagePathCheck(localName, "OutputStream", null, null,
-        null, Integer.MIN_VALUE, 0, 0, fullPath, true);
-    if (ret instanceof String) {
-      Logger.error((String) ret);
+    fileName = getOutputFileNameFromDialog(fileName, Integer.MIN_VALUE);
+    if (fileName == null)
+      return null;
+    if (fullPath != null)
+      fullPath[0] = fileName;
+    String localName = (FileManager.isLocal(fileName) ? fileName : null);
+    try {
+      return (OutputStream) viewer.openOutputChannel(privateKey, localName, false);
+    } catch (IOException e) {
+      Logger.info(e.toString());
       return null;
     }
-    return (OutputStream) ret;
   }
 
   public void openFileAsync(String fileName, boolean pdbCartoons) {

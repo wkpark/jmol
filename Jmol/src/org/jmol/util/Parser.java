@@ -569,7 +569,7 @@ public class Parser {
     int ich = next[0];
     if (ich < 0)
       return Integer.MIN_VALUE;
-    char ch;
+    int ch;
     while (ich < ichMax && isWhiteSpace(str, ich))
       ++ich;
     boolean negative = false;

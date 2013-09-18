@@ -43,6 +43,6 @@ public interface JmolMultiTouchClient {
    */
   public int getGroupID(int x, int y);
   public List<GestureType> getAllowedGestures(int groupID);
-  public void processEvent(int groupID, int eventType, int touchID, 
+  public void processMultitouchEvent(int groupID, int eventType, int touchID, 
                            int iData, P3 pt, long time);
 }

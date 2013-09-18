@@ -531,7 +531,7 @@ abstract public class JmolViewer {
   
   public String menuStructure;
 
-  abstract public void processEvent(int groupID, int eventType, int touchID, int iData,
+  abstract public void processMultitouchEvent(int groupID, int eventType, int touchID, int iData,
                            P3 pt, long time);
 
   abstract public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,

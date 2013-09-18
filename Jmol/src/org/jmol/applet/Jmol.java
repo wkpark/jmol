@@ -1341,18 +1341,18 @@ public class Jmol implements WrappedApplet {
   protected static String sendCallback(JSObject jso, String callback, Object[] data) {
     if (callback == null || callback.length() == 0)
       return "";
-    System.out.println(callback);
+    //System.out.println(callback);
     if (callback.indexOf(".") > 0) {
       String[] mods = TextFormat.split(callback, '.');
-      System.out.println(Escape.eAS(mods, true));
+      //System.out.println(Escape.eAS(mods, true));
       for (int i = 0; i < mods.length - 1; i++) {
-        System.out.println(jso);
+        //System.out.println(jso);
         jso = (JSObject) jso.getMember(mods[i]);
-        System.out.println(jso);
+        //System.out.println(jso);
       }
       callback = mods[mods.length - 1];
     }
-    System.out.println("OK -- calling " + jso + " " + callback + " " + data);
+    //System.out.println("OK -- calling " + jso + " " + callback + " " + data);
     return "" + jso.call(callback, data);
   }
 

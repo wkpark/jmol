@@ -2231,12 +2231,6 @@ public class StateCreator implements JmolStateCreator {
         viewer.rotateArcBall(Parser.parseInt(tokens[2]), Parser
             .parseInt(tokens[3]), Parser.parseFloatStr(tokens[4]));
       break;
-    case 7:
-      if (key.equals("centerAt"))
-        viewer.centerAt(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
-            P3.new3(Parser.parseFloatStr(tokens[4]), Parser
-                .parseFloatStr(tokens[5]), Parser.parseFloatStr(tokens[6])));
-      break;
     }
   }
 

@@ -647,7 +647,7 @@ public class Labels extends AtomShape {
   
   @Override
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
-                                                 int y, int modifiers,
+                                                 int y, int dragAction,
                                                  BS bsVisible) {
     if (viewer.getPickingMode() != ActionManager.PICKING_LABEL || labelBoxes == null)
       return false;

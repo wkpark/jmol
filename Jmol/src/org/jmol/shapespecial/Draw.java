@@ -1185,14 +1185,14 @@ protected void resetObjects() {
 
   @Override
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
-                                                 int y, int action,
+                                                 int y, int dragAction,
                                                  BS bsVisible) {
     //TODO -- can dispense with this first check:
     if (viewer.getPickingMode() != ActionManager.PICKING_DRAW)
       return false;
-    boolean moveAll = viewer.isBound(action,
+    boolean moveAll = viewer.isBound(dragAction,
         ActionManager.ACTION_dragDrawObject);
-    boolean movePoint = viewer.isBound(action,
+    boolean movePoint = viewer.isBound(dragAction,
         ActionManager.ACTION_dragDrawPoint);
     if (!moveAll && !movePoint)
       return false;

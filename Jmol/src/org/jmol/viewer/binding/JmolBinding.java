@@ -12,68 +12,68 @@ public class JmolBinding extends Binding {
     
   protected void setSelectBindings() {
     // these are only utilized for  set picking select
-    bindAction(DOUBLE_CLICK+LEFT, ActionManager.ACTION_select);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_selectToggleExtended);
+    bindAction(DOUBLE|CLICK|LEFT, ActionManager.ACTION_select);
+    bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_selectToggleExtended);
   }
 
   private void setGeneralBindings() {
     
-    bindAction(DOUBLE_CLICK+LEFT, ActionManager.ACTION_center);
-    bindAction(SINGLE_CLICK+CTRL+ALT+LEFT, ActionManager.ACTION_translate);
-    bindAction(SINGLE_CLICK+CTRL+RIGHT, ActionManager.ACTION_translate);
-    bindAction(DOUBLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_translate); 
-    bindAction(DOUBLE_CLICK+MIDDLE, ActionManager.ACTION_translate);
+    bindAction(SINGLE|CTRL|ALT|LEFT|DRAG, ActionManager.ACTION_translate);
+    bindAction(SINGLE|CTRL|RIGHT|DRAG, ActionManager.ACTION_translate);
+    bindAction(DOUBLE|SHIFT|LEFT|DRAG, ActionManager.ACTION_translate); 
+    bindAction(DOUBLE|MIDDLE|DRAG, ActionManager.ACTION_translate);
 
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_rotate);
-    bindAction(SINGLE_CLICK+ALT+LEFT, ActionManager.ACTION_rotateZ);
-    bindAction(SINGLE_CLICK+SHIFT+RIGHT, ActionManager.ACTION_rotateZ);
-    bindAction(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_rotateZorZoom);
-    bindAction(SINGLE_CLICK+MIDDLE, ActionManager.ACTION_rotateZorZoom);
-    bindAction(WHEEL, ActionManager.ACTION_wheelZoom);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_slideZoom);
+    bindAction(SINGLE|LEFT|DRAG, ActionManager.ACTION_rotate);
+    bindAction(SINGLE|ALT|LEFT|DRAG, ActionManager.ACTION_rotateZ);
+    bindAction(SINGLE|SHIFT|RIGHT|DRAG, ActionManager.ACTION_rotateZ);
+    bindAction(SINGLE|SHIFT|LEFT|DRAG, ActionManager.ACTION_rotateZorZoom);
+    bindAction(SINGLE|MIDDLE|DRAG, ActionManager.ACTION_rotateZorZoom);
+    bindAction(SINGLE|WHEEL, ActionManager.ACTION_wheelZoom);
+    bindAction(SINGLE|LEFT|DRAG, ActionManager.ACTION_slideZoom);
 
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_navTranslate);
+    bindAction(SINGLE|LEFT|DRAG, ActionManager.ACTION_navTranslate);
     
-    bindAction(SINGLE_CLICK+CTRL+LEFT, ActionManager.ACTION_popupMenu);
-    bindAction(SINGLE_CLICK+RIGHT, ActionManager.ACTION_popupMenu);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_clickFrank);
+    bindAction(SINGLE|CTRL|LEFT|DOWN, ActionManager.ACTION_popupMenu);
+    bindAction(SINGLE|RIGHT|DOWN, ActionManager.ACTION_popupMenu);
+    bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_clickFrank);
 
-    bindAction(SINGLE_CLICK+CTRL+SHIFT+LEFT, ActionManager.ACTION_slab);
-    bindAction(DOUBLE_CLICK+CTRL+SHIFT+LEFT, ActionManager.ACTION_depth); 
-    bindAction(SINGLE_CLICK+CTRL+ALT+SHIFT+LEFT, ActionManager.ACTION_slabAndDepth);
+    bindAction(SINGLE|CTRL|SHIFT|LEFT|DRAG, ActionManager.ACTION_slab);
+    bindAction(DOUBLE|CTRL|SHIFT|LEFT|DRAG, ActionManager.ACTION_depth); 
+    bindAction(SINGLE|CTRL|ALT|SHIFT|LEFT|DRAG, ActionManager.ACTION_slabAndDepth);
     
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_swipe);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_spinDrawObjectCCW);
-    bindAction(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_spinDrawObjectCW);
+    bindAction(SINGLE|LEFT|DRAG, ActionManager.ACTION_swipe);
+    bindAction(SINGLE|LEFT|DRAG, ActionManager.ACTION_spinDrawObjectCCW);
+    bindAction(SINGLE|SHIFT|LEFT|DRAG, ActionManager.ACTION_spinDrawObjectCW);
 
-    bindAction(SINGLE_CLICK+ALT+SHIFT+LEFT, ActionManager.ACTION_dragSelected);
-    bindAction(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_dragZ);
-    bindAction(SINGLE_CLICK+ALT+LEFT, ActionManager.ACTION_rotateSelected);
-    bindAction(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_rotateBranch);
+    bindAction(SINGLE|ALT|SHIFT|LEFT|DRAG, ActionManager.ACTION_dragSelected);
+    bindAction(SINGLE|SHIFT|LEFT|DRAG, ActionManager.ACTION_dragZ);
+    bindAction(SINGLE|ALT|LEFT|DRAG, ActionManager.ACTION_rotateSelected);
+    bindAction(SINGLE|SHIFT|LEFT|DRAG, ActionManager.ACTION_rotateBranch);
 
-    bindAction(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_dragLabel);    
-    bindAction(SINGLE_CLICK+ALT+LEFT, ActionManager.ACTION_dragDrawPoint);
-    bindAction(SINGLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_dragDrawObject);
+    bindAction(SINGLE|SHIFT|LEFT|DRAG, ActionManager.ACTION_dragLabel);    
+    bindAction(SINGLE|ALT|LEFT|DRAG, ActionManager.ACTION_dragDrawPoint);
+    bindAction(SINGLE|SHIFT|LEFT|DRAG, ActionManager.ACTION_dragDrawObject);
     
-    bindAction(DOUBLE_CLICK+SHIFT+LEFT, ActionManager.ACTION_reset);
-    bindAction(DOUBLE_CLICK+MIDDLE, ActionManager.ACTION_reset); 
+    bindAction(DOUBLE|CLICK|SHIFT|LEFT, ActionManager.ACTION_reset);
+    bindAction(DOUBLE|CLICK|MIDDLE, ActionManager.ACTION_reset); 
     
-    bindAction(DOUBLE_CLICK+LEFT, ActionManager.ACTION_stopMotion); 
+    bindAction(DOUBLE|CLICK|LEFT, ActionManager.ACTION_stopMotion); 
     
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_dragAtom);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_dragMinimize);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_dragMinimizeMolecule);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_pickAtom);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_pickPoint);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_pickLabel);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_pickMeasure);
-    bindAction(DOUBLE_CLICK+LEFT, ActionManager.ACTION_setMeasure);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_pickIsosurface); // requires set drawPicking     
-    bindAction(SINGLE_CLICK+CTRL+SHIFT+LEFT, ActionManager.ACTION_pickNavigate);      
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_deleteAtom);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_deleteBond);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_connectAtoms);
-    bindAction(SINGLE_CLICK+LEFT, ActionManager.ACTION_assignNew);
+    bindAction(SINGLE|LEFT|DRAG, ActionManager.ACTION_dragAtom);
+    bindAction(SINGLE|LEFT|DRAG, ActionManager.ACTION_dragMinimize);
+    bindAction(SINGLE|LEFT|DRAG, ActionManager.ACTION_dragMinimizeMolecule);
+    bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_pickAtom);
+    bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_pickPoint);
+    bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_pickLabel);
+    bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_pickMeasure);
+    bindAction(DOUBLE|CLICK|LEFT, ActionManager.ACTION_setMeasure);
+    bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_pickIsosurface); // requires set drawPicking     
+    bindAction(SINGLE|CLICK|CTRL|SHIFT|LEFT, ActionManager.ACTION_pickNavigate);      
+    bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_deleteAtom);
+    bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_deleteBond);
+    bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_connectAtoms);
+    bindAction(SINGLE|CLICK|LEFT, ActionManager.ACTION_assignNew);
+    bindAction(SINGLE|CLICK|CTRL|SHIFT|LEFT, ActionManager.ACTION_center);
   }
   
 }

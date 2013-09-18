@@ -645,7 +645,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       if (motionDisabled)
         break;
       // raw touch event
-      jmolViewer.processEvent(0, json.getInt("eventType"), json
+      jmolViewer.processMultitouchEvent(0, json.getInt("eventType"), json
           .getInt("touchID"), json.getInt("iData"), P3.new3((float) json
           .getDouble("x"), (float) json.getDouble("y"), (float) json
           .getDouble("z")), json.getLong("time"));

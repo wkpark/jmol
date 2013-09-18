@@ -138,8 +138,13 @@ abstract public class JmolThread extends Thread {
     *  
     */
     {
-      if (millis > 0)
+      if (millis > 0) {
+        try {
         Thread.sleep(millis);
+        } catch (Exception e) {
+          // ignore interruption
+        }
+      }
       return true;
     }
   }

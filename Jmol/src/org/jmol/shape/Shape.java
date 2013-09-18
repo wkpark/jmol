@@ -309,12 +309,12 @@ public abstract class Shape {
    * @param prevY
    * @param x
    * @param y
-   * @param modifiers
+   * @param dragAction
    * @param bsVisible
    * @return T/F
    */
   public boolean checkObjectDragged(int prevX, int prevY, int x, int y,
-                             int modifiers, BS bsVisible) {
+                             int dragAction, BS bsVisible) {
     return false;
   }
 

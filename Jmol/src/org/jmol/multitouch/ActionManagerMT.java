@@ -112,11 +112,11 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   @Override
   protected void setBinding(Binding newBinding) {
     super.setBinding(newBinding);
-    binding.unbindMouseAction(Binding.RIGHT);
+    binding.unbindMouseAction(Binding.RIGHT|Binding.DOWN);
     if (simulator != null && binding != null) {
-      binding.unbindJmolAction(ACTION_center);
-      binding.unbindName(Binding.CTRL + Binding.LEFT + Binding.SINGLE_CLICK, null);
-      binding.bindAction(Binding.CTRL + Binding.LEFT + Binding.SINGLE_CLICK, ACTION_multiTouchSimulation);
+      //binding.unbindJmolAction(ACTION_center);
+      binding.unbindName(Binding.CTRL|Binding.LEFT|Binding.SINGLE|Binding.DOWN, null);
+      binding.bindAction(Binding.CTRL|Binding.LEFT|Binding.SINGLE|Binding.DOWN, ACTION_multiTouchSimulation);
     }
   }
 
@@ -236,7 +236,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   boolean mouseDown;
   
   @Override
-  public void processEvent(int groupID, int eventType, int touchID, int iData,
+  public void processMultitouchEvent(int groupID, int eventType, int touchID, int iData,
                            P3 pt, long time) {
     if (Logger.debugging)
       Logger.debug(this + " time=" + time + " groupID=" + groupID + " "
@@ -246,7 +246,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     case DRAG_EVENT:
       if (iData == 2) {
         // This is a 2-finger drag
-        checkMotion(JC.CURSOR_MOVE, true);
+        setMotion(JC.CURSOR_MOVE, true);
         viewer.translateXYBy((int) pt.x, (int) pt.y);
         logEvent("Drag", pt);
       }
@@ -258,7 +258,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       viewer.log("SparshUI reports no driver present -- setting haveMultiTouchInput FALSE");
       break;
     case ROTATE_EVENT:
-      checkMotion(JC.CURSOR_MOVE, true);
+      setMotion(JC.CURSOR_MOVE, true);
       viewer.rotateZBy((int) pt.z, Integer.MAX_VALUE, Integer.MAX_VALUE);
       logEvent("Rotate", pt);
       break;
@@ -314,8 +314,8 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
   }
 
   @Override
-  public void mouseAction(int action, long time, int x, int y, int count, int modifiers) {
-    switch(action) {
+  public void mouseAction(int mode, long time, int x, int y, int count, int modifiers) {
+    switch(mode) {
     case Binding.MOVED:
       if (haveMultiTouchInput)
         return;
@@ -333,7 +333,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       break;
     case Binding.PRESSED:
       if (simulator != null) {
-        int maction = Binding.getMouseAction(1, modifiers);
+        int maction = Binding.getMouseAction(1, modifiers, mode);
         if (binding.isBound(maction, ACTION_multiTouchSimulation)) {
           setCurrent(0, x, y, modifiers);
           viewer.setFocus();
@@ -361,7 +361,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       break;
     }
     if (!haveMultiTouchInput)
-      super.mouseAction(action, time, x, y, count, modifiers);
+      super.mouseAction(mode, time, x, y, count, modifiers);
   }
 
   @Override

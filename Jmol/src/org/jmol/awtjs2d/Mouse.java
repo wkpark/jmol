@@ -190,7 +190,7 @@ public class Mouse implements JmolMouseInterface {
      * Netscape 4.* Win32 has a problem with mouseDragged if you left-drag then
      * none of the modifiers are selected we will try to fix that here
      ****************************************************************/
-    if ((modifiers & Binding.LEFT_MIDDLE_RIGHT) == 0)
+    if ((modifiers & Binding.BUTTON_MASK) == 0)
       modifiers |= Binding.LEFT;
     /****************************************************************/
     dragged(e.getWhen(), e.getX(), e.getY(), modifiers);
@@ -383,7 +383,7 @@ public class Mouse implements JmolMouseInterface {
 
   private static int applyLeftMouse(int modifiers) {
     // if neither BUTTON2 or BUTTON3 then it must be BUTTON1
-    return ((modifiers & Binding.LEFT_MIDDLE_RIGHT) == 0) ? (modifiers | Binding.LEFT)
+    return ((modifiers & Binding.BUTTON_MASK) == 0) ? (modifiers | Binding.LEFT)
         : modifiers;
   }
 

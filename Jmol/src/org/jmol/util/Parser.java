@@ -462,7 +462,7 @@ public class Parser {
       value = ival;
     }
     boolean isExponent = false;
-    if (ich < ichMax && (ch == 'E' || ch == 'e' || ch == 'D')) {
+    if (ich < ichMax && (ch == 69 || ch == 101 || ch == 68)) { // E e D
       isExponent = true;
       if (++ich >= ichMax)
         return Float.NaN;

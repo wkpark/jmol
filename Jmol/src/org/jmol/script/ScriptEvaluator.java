@@ -2867,7 +2867,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     sx.message += s;
     sx.untranslated += s;
     if (thisContext != null || chk
-        || msg.indexOf("file recognized as a script file:") >= 0)
+        || msg.indexOf(JC.NOTE_SCRIPT_FILE) >= 0)
       return;
     Logger.error("eval ERROR: " + toString());
     if (viewer.autoExit)

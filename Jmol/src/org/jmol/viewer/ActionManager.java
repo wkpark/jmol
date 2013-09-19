@@ -1041,6 +1041,13 @@ public class ActionManager {
           Long.MAX_VALUE);
       checkReleaseAction(x, y, time, dragRelease);
       return;
+    case Binding.WHEELED:
+      if (viewer.isApplet() && !viewer.hasFocus())
+        return;
+      setCurrent(time, current.x, current.y, buttonMods);
+      checkDragWheelAction(Binding.getMouseAction(0, buttonMods,
+          Binding.WHEELED), current.x, current.y, 0, y, time, Binding.WHEELED);
+      return;
     case Binding.CLICKED:
       setMouseMode();
       clickedCount = (count > 1 ? count : clicked.check(0, 0, 0, buttonMods,
@@ -1058,13 +1065,6 @@ public class ActionManager {
       clickAction = Binding.getMouseAction(clickedCount, buttonMods,
           Binding.CLICKED);
       checkClickAction(x, y, time, clickedCount);
-      return;
-    case Binding.WHEELED:
-      if (viewer.isApplet() && !viewer.hasFocus())
-        return;
-      setCurrent(time, current.x, current.y, buttonMods);
-      checkDragWheelAction(Binding.getMouseAction(0, buttonMods,
-          Binding.WHEELED), current.x, current.y, 0, y, time, Binding.WHEELED);
       return;
     }
   }
@@ -1237,7 +1237,7 @@ public class ActionManager {
       }
     }
 
-    if (dragAtomIndex >= 0 && isBound(dragWheelAction, ACTION_assignNew)
+    if (dragAtomIndex >= 0 && mode == Binding.DRAGGED && isBound(clickAction, ACTION_assignNew)
         && atomPickingMode == PICKING_ASSIGN_ATOM) {
       int nearestAtomIndex = viewer.findNearestAtomIndexMovable(x, y, false);
       if (nearestAtomIndex >= 0) {

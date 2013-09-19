@@ -707,7 +707,7 @@ public class Resolver {
   private final static int LEADER_CHAR_MAX = 64;
   
   private final static String[] sptContainsRecords = 
-  { "spt", "# Jmol state", "# Jmol script" };
+  { "spt", "# Jmol state", "# Jmol script", "JmolManifest" };
   
   private final static String[] cubeFileStartRecords =
   {"Cube", "JVXL", "#JVXL"};

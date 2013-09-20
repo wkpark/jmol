@@ -8577,6 +8577,12 @@
   <fah_proj number="6357" name="p6357" public="y"
     server="155.247.166.219" atoms="3130" preferred="3" deadline="7"
     credit="199.0" frames="100" code="A4" contact="vvoelz" kfactor="0.75"/>
+  <fah_proj number="6360" name="p6360" public="y"
+    server="155.247.166.219" atoms="3126" preferred="3" deadline="7"
+    credit="199.0" frames="100" code="A4" contact="vvoelz" kfactor="0.75"/>
+  <fah_proj number="6361" name="p6361" public="y"
+    server="155.247.166.219" atoms="3126" preferred="3" deadline="7"
+    credit="199.0" frames="100" code="A4" contact="vvoelz" kfactor="0.75"/>
 
   <!-- Projects 6500 to 6599 -->
   <fah_proj number="6500" name="p6500_TR538_predict" public="y" file="xyz"
@@ -9504,6 +9510,9 @@
   <fah_proj number="7523" name="ctx-acyl" public="n"
     server="128.143.199.97" atoms="87452" preferred="3.8" deadline="6.3"
     credit="785.0" frames="100" code="A3" contact="kasson" kfactor="3.01"/>
+  <fah_proj number="7524" name="kpc2-acyl" public="n"
+    server="128.143.199.97" atoms="77096" preferred="3.4" deadline="5.599988425925926"
+    credit="700.0" frames="100" code="null" contact="kasson" kfactor="3.02"/>
 
   <!-- Projects 7600 to 7699 -->
   <fah_proj number="7600" name="p7600" public="y" file="xyz"
@@ -9693,6 +9702,12 @@
   <fah_proj number="7809" name="p7809" public="y"
     server="171.64.65.99" atoms="60595" preferred="25.6" deadline="55.46"
     credit="1722.5" frames="100" code="A4" contact="schwancr" kfactor="0.58"/>
+  <fah_proj number="7810" name="p7810" public="y"
+    server="171.64.65.98" atoms="31119" preferred="3.31" deadline="4.26"
+    credit="3075.6" frames="100" code="null" contact="jweber1" kfactor="0.75"/>
+  <fah_proj number="7811" name="p7811" public="y"
+    server="171.64.65.98" atoms="23055" preferred="2.89" deadline="3.71"
+    credit="2060.0" frames="100" code="null" contact="jweber1" kfactor="0.75"/>
 
   <!-- Projects 7900 to 7999 -->
   <fah_proj number="7900" name="p7900" public="y"
@@ -10245,6 +10260,18 @@
   <fah_proj number="8702" name="p8702" public="n"
     server="171.67.108.35" atoms="43000" preferred="3.6" deadline="7.9"
     credit="197.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8703" name="p8703" public="n"
+    server="171.67.108.60" atoms="37000" preferred="26" deadline="57"
+    credit="1440.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8704" name="p8704" public="y"
+    server="171.67.108.59" atoms="37000" preferred="26" deadline="57"
+    credit="1440.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8717" name="p8717" public="n"
+    server="171.64.65.156" atoms="38000" preferred="8" deadline="10"
+    credit="5.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8719" name="p8719" public="n"
+    server="171.64.65.157" atoms="38000" preferred="8" deadline="10"
+    credit="5.0" frames="100" code="A4" contact="shukla" kfactor="0.75"/>
 
   <!-- Projects 8800 to 8899 -->
   <fah_proj number="8800" name="hema_insertion" public="y"
@@ -10369,9 +10396,23 @@
     credit="1633.0" frames="100" code="A3" contact="pela3247" kfactor="3.01"/>
 
   <!-- Projects 8900 to 8999 -->
-  <fah_proj number="8900" name="p8900" public="n"
+  <fah_proj number="8900" name="p8900" public="y"
     server="171.64.65.69" atoms="40000" preferred="6.5" deadline="8.8"
     credit="6000.0" frames="100" code="null" contact="shukla@stanford.edu" kfactor="0.75"/>
+  <fah_proj number="8901" name="p8901" public="n"
+    server="171.64.65.69" atoms="40000" preferred="6.5" deadline="8.8"
+    credit="6000.0" frames="100" code="Z" contact="shukla" kfactor="0.75"/>
+  <fah_proj number="8902" name="p8902" public="n"
+    server="171.64.65.69" atoms="75000" preferred="8.13" deadline="10.46"
+    credit="7500.0" frames="100" code="Z" contact="shukla" kfactor="0.75"/>
+
+  <!-- Projects 9000 to 9099 -->
+  <fah_proj number="9000" name="p9000" public="y"
+    server="171.64.65.124" atoms="36421" preferred="3.93" deadline="8.52"
+    credit="213.0" frames="100" code="A4" contact="sryckbos" kfactor="0.75"/>
+  <fah_proj number="9001" name="p9001" public="y"
+    server="171.64.65.124" atoms="36345" preferred="3.93" deadline="8.5"
+    credit="213.0" frames="100" code="A4" contact="sryckbos" kfactor="0.75"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9900" name="p9900_supervillin_e1" public="y"

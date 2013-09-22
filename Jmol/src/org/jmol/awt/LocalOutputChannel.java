@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.jmol.api.JmolOutputChannel;
+
 /**
  * 
  * A wrapper for FileOutputStream, allowing debugging.
@@ -11,9 +13,13 @@ import java.io.IOException;
  *  
  */
 
-public class LocalOutputChannel extends FileOutputStream {
+public class LocalOutputChannel extends FileOutputStream implements JmolOutputChannel {
  
-  public String fileName;
+  private String fileName;
+  
+  public String getFileName() {
+    return fileName;
+  }
   
   public LocalOutputChannel(String fileName) throws FileNotFoundException {
     super(fileName);    

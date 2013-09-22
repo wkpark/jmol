@@ -26,6 +26,7 @@ package org.jmol.popup;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.i18n.GT;
 import org.jmol.i18n.Language;
+import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
@@ -97,6 +98,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
   private JmolList<Object> AppletOnly = new JmolList<Object>();
   private JmolList<Object> ChargesOnly = new JmolList<Object>();
   private JmolList<Object> TemperatureOnly = new JmolList<Object>();
+  private JmolList<Object> Special = new JmolList<Object>();
 
   private boolean allowSignedFeatures;
   private boolean isJS;
@@ -395,31 +397,31 @@ abstract public class GenericPopup implements JmolPopupInterface,
   }
 
   private void updateFileTypeDependentMenus() {
-    for (int i = 0; i < NotPDB.size(); i++)
+    for (int i = NotPDB.size(); --i >= 0;)
       menuEnable(NotPDB.get(i), !isPDB);
-    for (int i = 0; i < PDBOnly.size(); i++)
+    for (int i = PDBOnly.size(); --i >= 0;)
       menuEnable(PDBOnly.get(i), isPDB);
-    for (int i = 0; i < UnitcellOnly.size(); i++)
+    for (int i = UnitcellOnly.size(); --i >= 0;)
       menuEnable(UnitcellOnly.get(i), isUnitCell);
-    for (int i = 0; i < FileUnitOnly.size(); i++)
+    for (int i = FileUnitOnly.size(); --i >= 0;)
       menuEnable(FileUnitOnly.get(i), isUnitCell || fileHasUnitCell);
-    for (int i = 0; i < FileMolOnly.size(); i++)
+    for (int i = FileMolOnly.size(); --i >= 0;)
       menuEnable(FileMolOnly.get(i), isUnitCell || fileHasUnitCell);
-    for (int i = 0; i < SingleModelOnly.size(); i++)
+    for (int i = SingleModelOnly.size(); --i >= 0;)
       menuEnable(SingleModelOnly.get(i), isLastFrame);
-    for (int i = 0; i < FramesOnly.size(); i++)
+    for (int i = FramesOnly.size(); --i >= 0;)
       menuEnable(FramesOnly.get(i), isMultiFrame);
-    for (int i = 0; i < VibrationOnly.size(); i++)
+    for (int i = VibrationOnly.size(); --i >= 0;)
       menuEnable(VibrationOnly.get(i), isVibration);
-    for (int i = 0; i < SymmetryOnly.size(); i++)
+    for (int i = SymmetryOnly.size(); --i >= 0;)
       menuEnable(SymmetryOnly.get(i), isSymmetry && isUnitCell);
-    for (int i = 0; i < SignedOnly.size(); i++)
+    for (int i = SignedOnly.size(); --i >= 0;)
       menuEnable(SignedOnly.get(i), isSigned || !isApplet);
-    for (int i = 0; i < AppletOnly.size(); i++)
+    for (int i = AppletOnly.size(); --i >= 0;)
       menuEnable(AppletOnly.get(i), isApplet);
-    for (int i = 0; i < ChargesOnly.size(); i++)
+    for (int i = ChargesOnly.size(); --i >= 0;)
       menuEnable(ChargesOnly.get(i), haveCharges);
-    for (int i = 0; i < TemperatureOnly.size(); i++)
+    for (int i = TemperatureOnly.size(); --i >= 0;)
       menuEnable(TemperatureOnly.get(i), haveBFactors);
   }
 
@@ -528,6 +530,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
       }
       if (item.startsWith("SIGNED"))
         SignedOnly.addLast(newMenu);
+      if (item.indexOf("SPECIAL") >= 0)
+        Special.addLast(newMenu);
 
       if (dumpList) {
         String str = item.endsWith("Menu") ? "----" : id + "." + item + "\t"
@@ -1228,6 +1232,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
     updateSceneComputedMenu();
     updateModelSetComputedMenu();
     updateAboutSubmenu();
+    for (int i = Special.size(); --i >= 0;)
+      updateSpecialMenuItem(Special.get(i));
   }
 
   private void setFrankMenu(String id) {
@@ -1271,5 +1277,29 @@ abstract public class GenericPopup implements JmolPopupInterface,
     if (doPopup)
       menuShowPopup(popupMenu, thisx, thisy);
   }
+
+  /**
+   * menus or menu items with SPECIAL in their name are sent here for on-the-fly labeling
+   *  
+   * @param name
+   * @param text
+   * @return revised text
+   */
+  protected String getSpecialLabel(String name, String text) {
+    int pt = text.indexOf(" (");
+    if (pt < 0)
+      pt = text.length();
+    String info = null;
+    if (name.indexOf("captureLooping") >= 0)
+      info = (viewer.getAnimationReplayMode().name().equals("ONCE") ? "ONCE"
+          : "LOOP");
+    else if (name.indexOf("captureFps") >= 0)
+      info = "" + viewer.getInt(T.animationfps);
+    else if (name.indexOf("captureMenu") >= 0)
+    	info = (viewer.captureParams == null ? GT._("not capturing") : viewer.getFilePath((String)viewer.captureParams.get("captureFileName"), true) 
+    	    + " " + viewer.captureParams.get("captureCount"));
+    return (info == null ? text : text.substring(0, pt) + " (" + info + ")");
+  }
+
 
 }

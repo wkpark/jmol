@@ -372,6 +372,17 @@ abstract public class JSPopup extends GenericPopup {
      */
     {
     }
+    
   }
+
+  public void updateSpecialMenuItem(Object m) {
+    /**
+     * @j2sNative
+     * 
+     *          m.setText(this.getSpecialLabel(m.getName(), m.getText()));
+     */
+    {}    
+  }
+
 
 }

@@ -83,6 +83,11 @@ abstract public class SwingPopup extends GenericPopup {
       b.setActionCommand(script);
   }
 
+  public void updateSpecialMenuItem(Object menuItem) {
+    AbstractButton m = (AbstractButton) menuItem;
+    m.setText(getSpecialLabel(m.getName(), m.getText()));
+  }
+
   private Object newMenuItem(JMenuItem jmi, Object menu, String entry,
                              String script, String id) {
     updateButton(jmi, entry, script);    

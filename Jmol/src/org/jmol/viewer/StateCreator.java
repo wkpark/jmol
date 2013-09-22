@@ -35,6 +35,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolImageCreatorInterface;
+import org.jmol.api.JmolOutputChannel;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolScriptFunction;
 import org.jmol.api.JmolStateCreator;
@@ -2026,9 +2027,8 @@ public class StateCreator implements JmolStateCreator {
     // localName will be fileName only if we are able to write to disk.
     String localName = null;
     if (!isClip) {
-      if (captureMode != Integer.MIN_VALUE && captureMode != T.movie) {
-        localName = fileName = "";
-        doCheck = false;
+      if (captureMode != Integer.MIN_VALUE) {
+        doCheck = false; // will be checked later
         mustRender = false;
       }
       if (doCheck)
@@ -2084,11 +2084,12 @@ public class StateCreator implements JmolStateCreator {
               case T.movie:
                 if (cparams != null)
                   ((OutputStream) cparams.get("outputStream")).close();
-                os = getOutputStream(localName, null);
+                os = (OutputStream) getOutputStream(localName, null);
                 if (os == null) {
                   ret = msg = "ERROR: capture canceled";
                   viewer.captureParams = null;
                 } else {
+                  localName = ((JmolOutputChannel) os).getFileName();
                   msg = type + "_STREAM_OPEN " + localName;
                   viewer.captureParams = params;
                   params.put("captureFileName", localName);
@@ -2114,18 +2115,24 @@ public class StateCreator implements JmolStateCreator {
                   case T.on:
                   case T.off:
                     params = cparams;
-                    params.put("captureEnabled", (captureMode == T.on ? Boolean.TRUE : Boolean.FALSE));
-                    ret = type + "_STREAM_" + (captureMode == T.on ? "ON" : "OFF");
+                    params.put("captureEnabled",
+                        (captureMode == T.on ? Boolean.TRUE : Boolean.FALSE));
+                    ret = type + "_STREAM_"
+                        + (captureMode == T.on ? "ON" : "OFF");
                     params.put("captureMode", Integer.valueOf(T.add));
                     break;
                   case T.end:
                   case T.cancel:
                     params = cparams;
                     params.put("captureMode", Integer.valueOf(captureMode));
+                    fileName = (String) params.get("captureFileName");
                     msg = type + "_STREAM_"
                         + (captureMode == T.end ? "CLOSE " : "CANCEL ")
                         + params.get("captureFileName");
                     viewer.captureParams = null;
+                    viewer.prompt(GT._("Capture") + ": " + (captureMode == T.cancel ? GT
+                        ._("canceled") : GT._("{0} saved",
+                        new Object[] { fileName })), "OK", null, true);
                   }
                   break;
                 }
@@ -2141,7 +2148,8 @@ public class StateCreator implements JmolStateCreator {
               viewer.statusManager.createImage((String) ret, type, null, null,
                   quality);
             if (msg != null)
-              viewer.showString(msg + " (" + params.get("captureByteCount") + " bytes)", false);
+              viewer.showString(msg + " (" + params.get("captureByteCount")
+                  + " bytes)", false);
           }
         }
         if (ret instanceof byte[])
@@ -2415,7 +2423,7 @@ public class StateCreator implements JmolStateCreator {
   public String writeFileData(String fileName, String type, 
                               int modelIndex, Object[] parameters) {
     String[] fullPath = new String[1];
-    OutputStream os = getOutputStream(fileName, fullPath);
+    OutputStream os = (OutputStream) getOutputStream(fileName, fullPath);
     if (os == null)
       return "";
     fileName = fullPath[0];
@@ -2460,7 +2468,7 @@ public class StateCreator implements JmolStateCreator {
     return msg;
   }
 
-  public OutputStream getOutputStream(String fileName, String[] fullPath) {
+  public JmolOutputChannel getOutputStream(String fileName, String[] fullPath) {
     if (!viewer.isRestricted(ACCESS.ALL))
       return null;
     fileName = getOutputFileNameFromDialog(fileName, Integer.MIN_VALUE);
@@ -2470,7 +2478,7 @@ public class StateCreator implements JmolStateCreator {
       fullPath[0] = fileName;
     String localName = (FileManager.isLocal(fileName) ? fileName : null);
     try {
-      return (OutputStream) viewer.openOutputChannel(privateKey, localName, false);
+      return (JmolOutputChannel) viewer.openOutputChannel(privateKey, localName, false);
     } catch (IOException e) {
       Logger.info(e.toString());
       return null;

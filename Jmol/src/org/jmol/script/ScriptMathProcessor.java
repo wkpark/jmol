@@ -1840,7 +1840,7 @@ class ScriptMathProcessor {
         SV.listValue(args[1]) : null);
     boolean asButtons = (buttonArray != null || args.length == 1 || args.length == 3 && args[2].asBoolean());
     String input = (buttonArray != null ? null : args.length >= 2 ? SV.sValue(args[1]) : "OK");
-    String s = viewer.prompt(label, input, buttonArray, asButtons);
+    String s = "" + viewer.prompt(label, input, buttonArray, asButtons);
     return (asButtons && buttonArray != null ? addXInt(Integer.parseInt(s) + 1) : addXStr(s));
   }
 
@@ -3049,7 +3049,7 @@ class ScriptMathProcessor {
       case T.integer:
         switch (x2.tok) {
         case T.string:
-          if ((s = (SV.sValue(x2)).trim()).indexOf(".") < 0
+          if ((s = SV.sValue(x2).trim()).indexOf(".") < 0
               && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
             return addXInt(x1.intValue + x2.asInt());
           break;

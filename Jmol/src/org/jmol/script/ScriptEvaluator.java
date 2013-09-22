@@ -9446,7 +9446,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               viewer.getFilePath(filename, false)))
         invArg();
       String[] fullPath = new String[] { localName };
-      os = viewer.getOutputStream(localName, fullPath);
+      os = (OutputStream) viewer.getOutputStream(localName, fullPath);
       if (os == null)
         Logger.error("Could not create output stream for " + fullPath[0]);
       else
@@ -14511,7 +14511,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       default:
         invArg();
       }
-      if (type.equals("IMAGE") || type.equals("FRAME")
+      if (type.equals("IMAGE") || type.equals("(image)") || type.equals("FRAME")
           || type.equals("VIBRATION")) {
         type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
             .substring(fileName.lastIndexOf(".") + 1).toUpperCase() : "JPG");

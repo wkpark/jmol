@@ -48,6 +48,7 @@ import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolNMRInterface;
+import org.jmol.api.JmolOutputChannel;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.AtomIndexIterator;
@@ -135,7 +136,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -8662,7 +8662,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // image and file export
   // ///////////////////////////////////////////////////////////////
 
-  public OutputStream getOutputStream(String localName, String[] fullPath) {
+  public JmolOutputChannel getOutputStream(String localName, String[] fullPath) {
     // called by Script LOAD AS  and ISOSURFACE AS  options 
     return getStateCreator().getOutputStream(localName, fullPath);
   }

@@ -50,4 +50,5 @@ public class JmolPopup extends SwingPopup {
     GT.setDoTranslate(doTranslate);
   }
 
+
 }

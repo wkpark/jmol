@@ -2,6 +2,7 @@ package org.jmol.awtjs2d;
 
 import java.io.ByteArrayOutputStream;
 
+import org.jmol.api.JmolOutputChannel;
 import org.jmol.util.SB;
 
 /**
@@ -12,9 +13,14 @@ import org.jmol.util.SB;
  *  
  */
 
-public class WebOutputChannel extends ByteArrayOutputStream {
+public class WebOutputChannel extends ByteArrayOutputStream  implements JmolOutputChannel {
  
   private String fileName;
+  
+  public String getFileName() {
+    return fileName;
+  }
+  
   private SB sb;
   
   public WebOutputChannel(String fileName) {

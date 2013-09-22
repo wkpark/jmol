@@ -400,6 +400,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return viewerOptions;
   }
 
+  @SuppressWarnings("unchecked")
   private void setOptions(Map<String, Object> info) {
 
     viewerOptions = info;
@@ -562,7 +563,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       autoExit = checkOption2("exit", "-x");
       cd(".");
       if (isHeadless()) {
-        headlessImage = (Object[]) info.get("headlessImage");
+        headlessImage = (Map<String, Object>) info.get("headlessImage");
         o = info.get("headlistMaxTimeMs");
         if (o == null)
           o = Integer.valueOf(60000);
@@ -3833,7 +3834,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         lastFrameDelay);
   }
 
-  EnumAnimationMode getAnimationReplayMode() {
+  public EnumAnimationMode getAnimationReplayMode() {
     return animationManager.animationReplayMode;
   }
 
@@ -4248,8 +4249,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       //System.out.println(Thread.currentThread() +
       // "notifying repaintManager repaint is done");
     }
+    if (captureParams != null && Boolean.FALSE != captureParams.get("captureEnabled")) {
+      createImageSet(captureParams);
+    }
     notifyViewerRepaintDone();
   }
+
+  public Map<String, Object> captureParams;
 
   /**
    * for JavaScript only
@@ -4430,37 +4436,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
   }
 
-  @Override
-  public Object getImageAs(String type, int quality, int width, int height,
-                           String fileName, OutputStream os) {
-    /**
-     * @j2sNative
-     * 
-     *            if (this.isWebGL)return null
-     * 
-     */
-    {
-    }
-    return getImageAsWithComment(type, quality, width, height, fileName, null,
-        os, "");
-  }
-
   /**
-   * @param type
-   *        "PNG", "PNGJ", "JPG", "JPEG", "JPG64", "PPM", "GIF"
-   * @param quality
-   * @param width
-   * @param height
-   * @param fileName
-   * @param scripts
-   * @param os
-   * @param comment
+   * @param params
    * @return base64-encoded or binary version of the image
    */
-  public Object getImageAsWithComment(String type, int quality, int width,
-                                      int height, String fileName,
-                                      String[] scripts, OutputStream os,
-                                      String comment) {
+  @Override
+  public Object getImageAs(Map<String, Object> params) {
     /**
      * @j2sNative
      * 
@@ -4469,8 +4450,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      */
     {
     }
-    return getStateCreator().getImageAsWithComment(type, quality, width,
-        height, fileName, scripts, os, comment);
+    return getStateCreator().getImageAs(params);
   }
 
   @Override
@@ -4596,11 +4576,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     if (headlessImage != null) {
       try {
-        Object[] p = headlessImage;
         if (isHeadless())
-          createImage((String) p[0], (String) p[1], null, ((Integer) p[2])
-              .intValue(), ((Integer) p[3]).intValue(), ((Integer) p[4])
-              .intValue());
+          createImage(headlessImage);
       } catch (Exception e) {
         //
       }
@@ -7930,7 +7907,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   JmolScriptEditorInterface scriptEditor;
   JmolPopupInterface jmolpopup;
   private JmolPopupInterface modelkitPopup;
-  private Object[] headlessImage;
+  private Map<String, Object> headlessImage;
 
   @Override
   public Object getProperty(String returnType, String infoType, Object paramInfo) {
@@ -8692,7 +8669,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public void writeTextFile(String fileName, String data) {
-    createImage(fileName, "txt", data, Integer.MIN_VALUE, 0, 0);
+    Map<String, Object> params = new Hashtable<String, Object>();
+    params.put("fileName", fileName);
+    params.put("type", "txt");
+    params.put("text", data);
+    createImage(params);
   }
 
   /**
@@ -8721,48 +8702,29 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    * from eval write command only includes option to write set of files
    * 
-   * @param fileName
-   * @param type
-   * @param text
-   * @param bytes
-   * @param scripts
-   * @param quality
-   * @param width
-   * @param height
-   * @param bsFrames
-   * @param nVibes
-   * @param fullPath
+   * @param params
    * @return message starting with "OK" or an error message
    */
-  public String createImageSet(String fileName, String type, String text,
-                               byte[] bytes, String[] scripts, int quality,
-                               int width, int height, BS bsFrames, int nVibes,
-                               String[] fullPath) {
-    return getStateCreator().createImageSet(fileName, type, text, bytes,
-        scripts, quality, width, height, bsFrames, nVibes, fullPath);
+  public String createImageSet(Map<String, Object> params) {
+    return getStateCreator().createImageSet(params);
   }
 
   public Object createZip(String fileName, String type, String stateInfo,
                           String[] scripts) {
-    return getStateCreator().createImage(fileName, type, stateInfo, null,
-        scripts, Integer.MIN_VALUE, -1, -1);
+    Map<String, Object> params = new Hashtable<String, Object>();
+    params.put("fileName", fileName);
+    params.put("type", type);
+    params.put("text", stateInfo);
+    if (scripts != null)
+      params.put("scripts", scripts);
+    return getStateCreator().createImage(params);
+    // fileName, type, stateInfo, null, scripts, , -1, -1
   }
 
   @Override
-  public Object createImage(String fileName, String type, Object text_or_bytes,
-                            int quality, int width, int height) {
-    String text = (text_or_bytes instanceof String ? (String) text_or_bytes
-        : null);
-    byte[] bytes = (text_or_bytes instanceof byte[] ? (byte[]) text_or_bytes
-        : null);
-    return getStateCreator().createImage(fileName, type, text, bytes, null,
-        quality, width, height);
-  }
-
-  public Object createImage(String fileName, String type, String text,
-                            byte[] bytes, int quality, int width, int height) {
-    return getStateCreator().createImage(fileName, type, text, bytes, null,
-        quality, width, height);
+  public Object createImage(Map<String, Object> params) {
+    // String fileName, String type, Object text_or_bytes, int quality, int width, int height
+    return getStateCreator().createImage(params);
   }
 
   JmolImageCreatorInterface getImageCreator() {

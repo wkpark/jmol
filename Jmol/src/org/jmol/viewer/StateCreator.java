@@ -1877,14 +1877,21 @@ public class StateCreator implements JmolStateCreator {
         iSceneLast = iScene;
         str[2] = "all"; // full PNGJ
         String fileName = fileRoot + "_scene_" + iScene + ".all." + fileExt;
-        String msg = (String) createImagePathCheck(fileName, "PNGJ", null,
-            null, str, -1, width, height, null, false);
+        Map<String, Object> params = new Hashtable<String, Object>();
+        params.put("fileName", fileName);
+        params.put("type", "PNGJ");
+        params.put("scripts", str);
+        params.put("width", Integer.valueOf(width));
+        params.put("height", Integer.valueOf(height));
+        String msg = (String) createImagePathCheck(params, false);
         str[0] = null; // script0 only saved in first file
         str[2] = "min"; // script only -- for fast loading
         fileName = fileRoot + "_scene_" + iScene + ".min." + fileExt;
+        params.put("fileName", fileName);
+        params.put("width", Integer.valueOf(Math.min(width, 200)));
+        params.put("height", Integer.valueOf(Math.min(height, 200)));
         msg += "\n"
-            + (String) createImagePathCheck(fileName, "PNGJ", null, null, str,
-                -1, Math.min(width, 200), Math.min(height, 200), null, false);
+            + (String) createImagePathCheck(params, false);
         viewer.showString(msg, false);
         nFiles += 2;
       } catch (Exception e) {
@@ -1899,16 +1906,23 @@ public class StateCreator implements JmolStateCreator {
     return "OK " + nFiles + " files created";
   }
 
-  public String createImageSet(String fileName, String type, String text,
-                               byte[] bytes, String[] scripts, int quality,
-                               int width, int height, BS bsFrames,
-                               int nVibes, String[] fullPath) {
+
+  /**
+   * 
+   * @param params include fileName, type, text, bytes, scripts, quality, 
+   *                       width, height, bsFrames, nVibes, fullPath
+   * @return message
+   */
+  public String createImageSet(Map<String, Object> params) {
+    BS bsFrames = (BS) params.get("bsFrames");
+    int nVibes = getInt(params, "nVibes", 0);
     if (bsFrames == null && nVibes == 0)
-      return (String) createImagePathCheck(fileName, type, text, bytes,
-          scripts, quality, width, height, fullPath, true);
+      return (String) createImagePathCheck(params, true);
     String info = "";
     int n = 0;
-    fileName = getOutputFileNameFromDialog(fileName, quality);
+    int quality = getInt(params, "quality", -1);
+    String fileName = getOutputFileNameFromDialog((String) params.get("fileName"), quality);
+    String[] fullPath = (String[]) params.get("fullPath");
     if (fullPath != null)
       fullPath[0] = fileName;
     if (fileName == null)
@@ -1926,8 +1940,7 @@ public class StateCreator implements JmolStateCreator {
       for (int i = 0; i < nVibes; i++) {
         for (int j = 0; j < 20; j++) {
           viewer.transformManager.setVibrationT(j / 20f + 0.2501f);
-          if (!writeFrame(++n, froot, fext, fullPath, type, quality, width,
-              height, sb))
+          if (!writeFrame(++n, froot, fext, params, sb))
             return "ERROR WRITING FILE SET: \n" + info;
         }
       }
@@ -1936,8 +1949,7 @@ public class StateCreator implements JmolStateCreator {
       for (int i = bsFrames.nextSetBit(0); i >= 0; i = bsFrames
           .nextSetBit(i + 1)) {
         viewer.setCurrentModelIndex(i);
-        if (!writeFrame(++n, froot, fext, fullPath, type, quality, width,
-            height, sb))
+        if (!writeFrame(++n, froot, fext, params, sb))
           return "ERROR WRITING FILE SET: \n" + info;
       }
     }
@@ -1946,25 +1958,25 @@ public class StateCreator implements JmolStateCreator {
     return info + "\n" + n + " files created";
   }
 
-  private boolean writeFrame(int n, String froot, String fext,
-                             String[] fullPath, String type, int quality,
-                             int width, int height, SB sb) {
+  private static int getInt(Map<String, Object> params, String key, int def) {
+    Integer p = (Integer) params.get(key);
+    return (p == null ? def : p.intValue());
+  }
+
+  private boolean writeFrame(int n, String froot, String fext, Map<String, Object> params, SB sb) {
     String fileName = "0000" + n;
     fileName = froot + fileName.substring(fileName.length() - 4) + fext;
+    String[] fullPath = (String[]) params.get("fullPath");
     if (fullPath != null)
       fullPath[0] = fileName;
-    String msg = (String) createImagePathCheck(fileName, type, null, null,
-        null, quality, width, height, null, false);
+    String msg = (String) createImagePathCheck(params, false);
     viewer.scriptEcho(msg);
     sb.append(msg).append("\n");
     return msg.startsWith("OK");
   }
 
-  public Object createImage(String fileName, String type, String text,
-                            byte[] bytes, String[] scripts, int quality,
-                            int width, int height) {
-    return createImagePathCheck(fileName, type, text, bytes, scripts, quality,
-        width, height, null, true);
+  public Object createImage(Map<String, Object> params) {
+    return createImagePathCheck(params, true);
   }
 
   /**
@@ -1973,32 +1985,19 @@ public class StateCreator implements JmolStateCreator {
    * passes request to statusManager to pass along to app or applet
    * jmolStatusListener interface
    * 
-   * @param fileName
-   *        starts with ? --> use file dialog; null --> to clipboard
-   * @param type
-   *        PNG, JPG, etc.
-   * @param text
-   *        String to output
-   * @param bytes
-   *        byte[] or null if an image
-   * @param scripts
-   * @param quality
-   *        Integer.MIN_VALUE --> not an image
-   * @param width
-   *        image width
-   * @param height
-   *        image height
-   * @param fullPath
+   * @param params
+   *        include: fileName: starts with ? --> use file dialog; null --> to
+   *        clipboard; type: PNG, JPG, etc.; text: String to output bytes:
+   *        byte[] or null if an image scripts quality width: image width
+   *        height: image height fullPath: String[] return
    * @param doCheck
    * @return null (canceled) or a message starting with OK or an error message
    */
-  private Object createImagePathCheck(String fileName, String type, String text,
-                                     byte[] bytes, String[] scripts,
-                                     int quality, int width, int height,
-                                     String[] fullPath, boolean doCheck) {
+  private Object createImagePathCheck(Map<String, Object> params,
+                                      boolean doCheck) {
     /*
      * 
-     * org.jmol.export.image.AviCreator does create AVI animations from Jpegs
+     * org.jmol.export.image.AviCreator does create AVI animations from JPEGs
      * but these aren't read by standard readers, so that's pretty much useless.
      * 
      * files must have the designated width and height
@@ -2013,14 +2012,30 @@ public class StateCreator implements JmolStateCreator {
      */
 
     Object ret = null;
+    String type = (String) params.get("type");
+    String fileName = (String) params.get("fileName");
+    String text = (String) params.get("text");
+    String[] fullPath = (String[]) params.get("fullPath");
+    int width = getInt(params, "width", 0);
+    int height = getInt(params, "height", 0);
+    int quality = getInt(params, "quality", Integer.MIN_VALUE);
+    int captureMode = getInt(params, "captureMode", Integer.MIN_VALUE);
+
     boolean isClip = (fileName == null);
+    boolean mustRender = (quality != Integer.MIN_VALUE);
     // localName will be fileName only if we are able to write to disk.
     String localName = null;
     if (!isClip) {
+      if (captureMode != Integer.MIN_VALUE && captureMode != T.movie) {
+        localName = fileName = "";
+        doCheck = false;
+        mustRender = false;
+      }
       if (doCheck)
         fileName = getOutputFileNameFromDialog(fileName, quality);
       if (fileName == null)
         return null;
+      params.put("fileName", fileName);
       if (FileManager.isLocal(fileName))
         localName = fileName;
       if (fullPath != null)
@@ -2032,7 +2047,7 @@ public class StateCreator implements JmolStateCreator {
     int saveWidth = viewer.dimScreen.width;
     int saveHeight = viewer.dimScreen.height;
     viewer.creatingImage = true;
-    if (quality != Integer.MIN_VALUE) {
+    if (mustRender) {
       viewer.mustRender = true;
       viewer.resizeImage(width, height, true, false, false);
       viewer.setModelVisibility();
@@ -2044,32 +2059,95 @@ public class StateCreator implements JmolStateCreator {
         if (type.equals("JMOL"))
           type = "ZIPALL";
         if (type.equals("ZIP") || type.equals("ZIPALL")) {
+          String[] scripts = (String[]) params.get("scripts");
           if (scripts != null && type.equals("ZIP"))
             type = "ZIPALL";
-          ret = JmolBinary.createZipSet(privateKey, viewer.fileManager, viewer, localName,
-              text, scripts, type.equals("ZIPALL"));
+          ret = JmolBinary.createZipSet(privateKey, viewer.fileManager, viewer,
+              localName, text, scripts, type.equals("ZIPALL"));
         } else if (type.equals("SCENE")) {
           ret = (viewer.isJS ? "ERROR: Not Available" : createSceneSet(
               fileName, text, width, height));
         } else {
           // see if application wants to do it (returns non-null String)
           // both Jmol application and applet return null
+          byte[] bytes = (byte[]) params.get("bytes");
           ret = viewer.statusManager.createImage(fileName, type, text, bytes,
               quality);
           if (ret == null) {
-            // application can do it itself or allow Jmol to do it here
+            // allow Jmol to do it            
+            String msg = null;
+            OutputStream os = null;
             JmolImageCreatorInterface c = viewer.getImageCreator();
-            ret = c.createImage(localName, type, text, bytes, scripts, null,
-                quality);
+            if (captureMode != Integer.MIN_VALUE) {
+              Map<String, Object> cparams = viewer.captureParams;
+              switch (captureMode) {
+              case T.movie:
+                if (cparams != null)
+                  ((OutputStream) cparams.get("outputStream")).close();
+                os = getOutputStream(localName, null);
+                if (os == null) {
+                  ret = msg = "ERROR: capture canceled";
+                  viewer.captureParams = null;
+                } else {
+                  msg = type + "_STREAM_OPEN " + localName;
+                  viewer.captureParams = params;
+                  params.put("captureFileName", localName);
+                  params.put("captureCount", Integer.valueOf(1));
+                  params.put("captureMode", Integer.valueOf(T.movie));
+                }
+                break;
+              default:
+                if (cparams == null) {
+                  ret = msg = "ERROR: capture not active";
+                } else {
+                  params = cparams;
+                  switch (captureMode) {
+                  case T.add:
+                    if (Boolean.FALSE == params.get("captureEnabled")) {
+                      ret = msg = "capturing OFF; use CAPTURE ON/END/CANCEL to continue";
+                    } else {
+                      int count = getInt(params, "captureCount", 1);
+                      params.put("captureCount", Integer.valueOf(++count));
+                      msg = type + "_STREAM_ADD " + count;
+                    }
+                    break;
+                  case T.on:
+                  case T.off:
+                    params = cparams;
+                    params.put("captureEnabled", (captureMode == T.on ? Boolean.TRUE : Boolean.FALSE));
+                    ret = type + "_STREAM_" + (captureMode == T.on ? "ON" : "OFF");
+                    params.put("captureMode", Integer.valueOf(T.add));
+                    break;
+                  case T.end:
+                  case T.cancel:
+                    params = cparams;
+                    params.put("captureMode", Integer.valueOf(captureMode));
+                    msg = type + "_STREAM_"
+                        + (captureMode == T.end ? "CLOSE " : "CANCEL ")
+                        + params.get("captureFileName");
+                    viewer.captureParams = null;
+                  }
+                  break;
+                }
+                break;
+              }
+            }
+            if (os != null)
+              params.put("outputStream", os);
+            params.put("fileName", localName);
+            if (ret == null)
+              ret = c.createImage(params);
             if (ret instanceof String)
-              // report error status (text_or_bytes == null)
               viewer.statusManager.createImage((String) ret, type, null, null,
                   quality);
+            if (msg != null)
+              viewer.showString(msg + " (" + params.get("captureByteCount") + " bytes)", false);
           }
         }
         if (ret instanceof byte[])
-          ret = "OK " + JmolBinary.postByteArray(viewer.fileManager, fileName,
-              (byte[]) ret);
+          ret = "OK "
+              + JmolBinary.postByteArray(viewer.fileManager, fileName,
+                  (byte[]) ret);
       }
     } catch (Throwable er) {
       //er.printStackTrace();
@@ -2271,29 +2349,32 @@ public class StateCreator implements JmolStateCreator {
     return fileName;
   }
 
-  public Object getImageAsWithComment(String type, int quality, int width,
-                                      int height, String fileName,
-                                      String[] scripts, OutputStream os,
-                                      String comment) {
+  public Object getImageAs(Map<String, Object> params) {
+    String comment = (String) params.get("comment");
+    if (comment == null)
+      comment = "";
     int saveWidth = viewer.dimScreen.width;
     int saveHeight = viewer.dimScreen.height;
     viewer.mustRender = true;
+    int width = getInt(params, "width", 0);
+    int height = getInt(params, "height", 0);
     viewer.resizeImage(width, height, true, false, false);
     viewer.setModelVisibility();
     viewer.creatingImage = true;
     JmolImageCreatorInterface c = null;
     Object bytes = null;
-    type = type.toLowerCase();
+    String type = ((String) params.get("type")).toLowerCase();
     if (!Parser.isOneOf(type, JC.JPEG_EXTENSIONS))
       try {
         c = viewer.getImageCreator();
       } catch (Error er) {
         // unsigned applet will not have this interface
         // and thus will not use os or filename
+        viewer.creatingImage = false;
       }
     if (c == null) {
       try {
-        bytes = viewer.apiPlatform.getJpgImage(viewer, quality, comment);
+        bytes = viewer.apiPlatform.getJpgImage(viewer, getInt(params, "quality", -1), comment);
         if (type.equals("jpg64") || type.equals("jpeg64"))
           bytes = (bytes == null ? "" : Base64.getBase64((byte[]) bytes)
               .toString());
@@ -2305,8 +2386,7 @@ public class StateCreator implements JmolStateCreator {
       }
     } else {
       try {
-        bytes = c.getImageBytes(type, quality, fileName, scripts, null, null,
-            os);
+        bytes = c.getImageBytes(params);
       } catch (IOException e) {
         bytes = e;
         viewer.setErrorMessage("Error creating image: " + e, null);

@@ -541,17 +541,17 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     try {
       SwingUtilities.invokeAndWait(new Runnable() {
         public void run() {
-          if (dialogType.equals("load")) {
+          if (dialogType.equals("Load")) {
             outputFileName = getOpenFileNameFromDialog(
                 viewer.getViewerOptions(), viewer, inputFileName, null, null, false);
             return; 
           }
-          if (dialogType.equals("save")) {
+          if (dialogType.equals("Save")) {
             outputFileName = getSaveFileNameFromDialog(viewer,
                 inputFileName, null);
             return;
           }
-          if (dialogType.startsWith("saveImage")) {
+          if (dialogType.startsWith("Save Image")) {
             outputFileName = getImageFileNameFromDialog(viewer,
                 inputFileName, imageType, imageChoices, imageExtensions,
                 qualityJ, qualityP);

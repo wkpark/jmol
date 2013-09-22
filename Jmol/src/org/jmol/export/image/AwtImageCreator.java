@@ -27,6 +27,7 @@ package org.jmol.export.image;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolPdfCreatorInterface;
@@ -62,37 +63,6 @@ public class AwtImageCreator extends GenericImageCreator {
     return msg;
   }
 
-  /**
-   * @param fileName
-   * @param objImage
-   * @param type
-   * @param asBytes
-   * @param errRet
-   * @return byte array if needed
-   * @throws IOException 
-   */
-  @Override
-  protected byte[] getOtherBytes(String fileName, Object objImage, String type,
-                               boolean asBytes, OutputStream os, String[] errRet) throws IOException {
-    java.awt.Image image = (java.awt.Image) objImage;
-    if (type.equals("PPM")) {
-      if (asBytes)
-        return PpmEncoder.getBytes(image);
-      PpmEncoder.write(image, os);
-    } else if (type.equals("GIF")) {
-      if (asBytes)
-        return GifEncoder.getBytes(image);
-      GifEncoder.write(image, os);
-    } else if (type.equals("PDF")) {
-      // applet will not have this interface
-      // PDF is application-only because it is such a HUGE package
-      JmolPdfCreatorInterface pci = (JmolPdfCreatorInterface) Interface
-          .getApplicationInterface("jmolpanel.PdfCreator");
-      errRet[0] = pci.createPdfDocument(fileName, image);
-    }
-    return null;
-  }
-
   @Override
   public String getClipboardText() {
     return ImageSelection.getClipboardText();
@@ -101,6 +71,34 @@ public class AwtImageCreator extends GenericImageCreator {
   public static String getClipboardTextStatic() {
     
     return ImageSelection.getClipboardText();
+  }
+
+  /**
+   * @param fileName
+   * @param objImage
+   * @param type
+   * @param asBytes
+   * @param os
+   * @param errRet
+   * @return byte array if needed
+   * @throws IOException
+   */
+  @Override
+  protected byte[] getOtherBytes(String fileName, Object objImage, String type,
+                                 boolean asBytes, OutputStream os,
+                                 Map<String, Object> params, String[] errRet)
+      throws IOException {
+    java.awt.Image image = (java.awt.Image) objImage;
+    type = type.substring(0, 1) + type.substring(1).toLowerCase();
+    if (!type.equals("Pdf"))
+      return (byte[]) ImageEncoder.write(type, image, (asBytes ? null : os),
+          params);
+    // applet will not have this interface
+    // PDF is application-only because it is such a HUGE package
+    JmolPdfCreatorInterface pci = (JmolPdfCreatorInterface) Interface
+        .getApplicationInterface("jmolpanel.PdfCreator");
+    errRet[0] = pci.createPdfDocument(fileName, image);
+    return null;
   }
 
 }

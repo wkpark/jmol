@@ -28,11 +28,8 @@
 
 package org.jmol.export.image;
 
-import java.awt.Image;
-import java.awt.image.ImageProducer;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.Map;
 
 /// Write out an image as a PPM.
 // <P>
@@ -45,51 +42,20 @@ import java.io.OutputStream;
 
 public class PpmEncoder extends ImageEncoder {
 
-
-  public static byte[] getBytes(Image image) {
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    try {
-      write(image, os);
-      os.flush();
-      os.close();
-    } catch (IOException e) {
-      // ignore
-    }
-    return os.toByteArray();
-  }
-
-  public static void write(Image image, OutputStream os) throws IOException {
-    (new PpmEncoder(image, os)).encode();
-  }
-
-  /// Constructor.
-  // @param img The image to encode.
-  // @param out The stream to write the PPM to.
-  public PpmEncoder(Image img, OutputStream out) {
-    super(img, out);
-  }
-
-  /// Constructor.
-  // @param prod The ImageProducer to encode.
-  // @param out The stream to write the PPM to.
-  public PpmEncoder(ImageProducer prod, OutputStream out) {
-    super(prod, out);
+  @Override
+  protected void setParams(Map<String, Object> params) {
+    // no options
   }
 
   @Override
-  void encodeStart(int width, int height) throws IOException {
-    writeString(out, "P6\n");
-    writeString(out, width + " " + height + "\n");
-    writeString(out, "255\n");
-  }
-
-  static void writeString(OutputStream out, String str) throws IOException {
-    byte[] buf = str.getBytes();
-    out.write(buf);
+  protected void encodeStart() throws IOException {
+    putString("P6\n");
+    putString(width + " " + height + "\n");
+    putString("255\n");
   }
 
   @Override
-  void encodePixels(int x, int y, int w, int h, int[] rgbPixels, int off,
+  protected void encodePixels(int x, int y, int w, int h, int[] rgbPixels, int off,
                     int scansize) throws IOException {
     byte[] ppmPixels = new byte[w * 3];
     for (int row = 0; row < h; ++row) {
@@ -101,12 +67,13 @@ public class PpmEncoder extends ImageEncoder {
         ppmPixels[j + 1] = (byte) ((rgbPixels[i] & 0x00ff00) >> 8);
         ppmPixels[j + 2] = (byte) (rgbPixels[i] & 0x0000ff);
       }
-      out.write(ppmPixels);
+      out.write(ppmPixels, 0, ppmPixels.length);
     }
   }
 
   @Override
-  void encodeDone() throws IOException {
+  protected void encodeDone() throws IOException {
     // Nothing.
   }
+
 }

@@ -25,7 +25,6 @@
 package org.jmol.adapter.readers.molxyz;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Atom;
 
 
@@ -75,10 +74,10 @@ public class MolReader extends AtomSetCollectionReader {
    * $END MOL
    */
 
-  boolean is2D;
+  private boolean is2D;
   private boolean isV3000;
   protected String dimension;
-  boolean allow2D = true;
+  protected boolean allow2D = true;
   
   @Override
   public void initializeReader() throws Exception {
@@ -144,7 +143,7 @@ public class MolReader extends AtomSetCollectionReader {
     finalizeReaderASCR();
   }
 
-  void processMolSdHeader() throws Exception {
+  private void processMolSdHeader() throws Exception {
     /* 
      * obviously we aren't being this strict, but for the record:
      *  
@@ -195,7 +194,7 @@ public class MolReader extends AtomSetCollectionReader {
     newAtomSet(thisDataSetName);
   }
 
-  void processCtab(boolean isMDL) throws Exception {
+  private void processCtab(boolean isMDL) throws Exception {
     String[] tokens = null;
     if (isMDL)
       discardLinesUntilStartsWith("$CTAB");
@@ -211,12 +210,15 @@ public class MolReader extends AtomSetCollectionReader {
     int bondCount = (isV3000 ? parseIntStr(tokens[4]) : parseIntRange(line, 3, 6));
     int atom0 = atomSetCollection.getAtomCount();
     readAtoms(atomCount);
-    readBonds(atom0, bondCount);
+    readBonds(bondCount);
     readUserData(atom0);
+    if (isV3000)
+      discardLinesUntilContains("END CTAB");
+
     applySymmetryAndSetTrajectory();
   }
 
-  void readAtoms(int atomCount) throws Exception {
+  private void readAtoms(int atomCount) throws Exception {
     if (isV3000)
       discardLinesUntilContains("BEGIN ATOM");
     for (int i = 0; i < atomCount; ++i) {
@@ -225,10 +227,14 @@ public class MolReader extends AtomSetCollectionReader {
       float x, y, z;
       int charge = 0;
       int isotope = 0;
+      int iAtom = i + 1;
       if (isV3000) {
         checkLineContinuation();
         String[] tokens = getTokens();
+        iAtom = parseIntStr(tokens[2]);
         elementSymbol = tokens[3];
+        if (elementSymbol.equals("*"))
+          continue;
         x = parseFloatStr(tokens[4]);
         y = parseFloatStr(tokens[5]);
         z = parseFloatStr(tokens[6]);
@@ -285,11 +291,15 @@ public class MolReader extends AtomSetCollectionReader {
       }
       if (is2D && z != 0)
         is2D = false;
-      Atom atom = atomSetCollection.addNewAtom();
+      Atom atom = new Atom();
       atom.elementSymbol = elementSymbol;
       atom.formalCharge = charge;
       setAtomCoordXYZ(atom, x, y, z);
+      atom.atomSerial = iAtom;
+      atomSetCollection.addAtomWithMappedSerialNumber(atom);
     }
+    if (isV3000)
+      discardLinesUntilContains("END ATOM");
   }
 
   private void checkLineContinuation() throws Exception {
@@ -300,70 +310,81 @@ public class MolReader extends AtomSetCollectionReader {
     }
   }
 
-  void readBonds(int atom0, int bondCount) throws Exception {
+  private void readBonds(int bondCount) throws Exception {
     if (isV3000)
       discardLinesUntilContains("BEGIN BOND");
     for (int i = 0; i < bondCount; ++i) {
       readLine();
-      int atomIndex1, atomIndex2, order;
+      int iAtom1, iAtom2, order;
       int stereo = 0;
       if (isV3000) {
         checkLineContinuation();
         String[] tokens = getTokens();
         order = parseIntStr(tokens[3]);
-        atomIndex1 = parseIntStr(tokens[4]);
-        atomIndex2 = parseIntStr(tokens[5]);
-          for (int j = 6; j < tokens.length; j++) {
+        iAtom1 = parseIntStr(tokens[4]);
+        iAtom2 = parseIntStr(tokens[5]);
+        for (int j = 6; j < tokens.length; j++) {
           String s = tokens[j].toUpperCase();
           if (s.startsWith("CFG=")) {
             stereo = parseIntStr(tokens[j].substring(4));
             break;
+          } else if (s.startsWith("ENDPTS=")) {
+            if (line.indexOf("ATTACH=ALL") < 0)
+              continue; // probably "ATTACH=ANY"
+            tokens = getTokensAt(line, line.indexOf("ENDPTS=") + 8);
+            int n = parseIntStr(tokens[0]);
+            order = fixOrder(order, 0);
+            for (int k = 1; k <= n; k++) {
+              iAtom2 = parseIntStr(tokens[k]);
+              atomSetCollection.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
+            }
+            break;
           }
         }
       } else {
-        atomIndex1 = parseIntRange(line, 0, 3);
-        atomIndex2 = parseIntRange(line, 3, 6);
+        iAtom1 = parseIntRange(line, 0, 3);
+        iAtom2 = parseIntRange(line, 3, 6);
         order = parseIntRange(line, 6, 9);
         if (is2D && order == 1 && line.length() >= 12)
           stereo = parseIntRange(line, 9, 12);
       }
-      switch (order) {
-      case 0:
-      case -10:
-        order = 1; // smiles parser error 
-        break;
-      case 1:
-        switch (stereo) {
-        case 1: // UP
-          order = JmolAdapter.ORDER_STEREO_NEAR;
-          break;
-        case 3: // DOWN, V3000
-        case 6: // DOWN
-          order = JmolAdapter.ORDER_STEREO_FAR;
-          break;
-        }
-        break;
-      case 2:
-      case 3:
-        break;
-      case 4:
-        order = JmolAdapter.ORDER_AROMATIC;
-        break;
-      case 5:
-        order = JmolAdapter.ORDER_PARTIAL12;
-        break;
-      case 6:
-        order = JmolAdapter.ORDER_AROMATIC_SINGLE;
-        break;
-      case 7:
-        order = JmolAdapter.ORDER_AROMATIC_DOUBLE;
-        break;
-      case 8:
-        order = JmolAdapter.ORDER_PARTIAL01;
-        break;
-      }
-      atomSetCollection.addBond(new Bond(atom0 + atomIndex1 - 1, atom0
-          + atomIndex2 - 1, order));
+      order = fixOrder(order, stereo);
+      atomSetCollection.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
     }
+    if (isV3000)
+      discardLinesUntilContains("END BOND");
+  }
+
+  private int fixOrder(int order, int stereo) {
+    switch (order) {
+    default:
+    case 0:
+    case -10:
+      return 1; // smiles parser error 
+    case 1:
+      switch (stereo) {
+      case 1: // UP
+        return JmolAdapter.ORDER_STEREO_NEAR;
+      case 3: // DOWN, V3000
+      case 6: // DOWN
+        return JmolAdapter.ORDER_STEREO_FAR;
+      }
+      break;
+    case 2:
+    case 3:
+      break;
+    case 4:
+      return JmolAdapter.ORDER_AROMATIC;
+    case 5:
+      return JmolAdapter.ORDER_PARTIAL12;
+    case 6:
+      return JmolAdapter.ORDER_AROMATIC_SINGLE;
+    case 7:
+      return JmolAdapter.ORDER_AROMATIC_DOUBLE;
+    case 8:
+    case 9: // haptic
+      return JmolAdapter.ORDER_PARTIAL01;
+    }
+    return order;
   }
 }

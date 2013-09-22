@@ -24,6 +24,9 @@
  */
 package org.openscience.jmol.app.webexport;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -145,7 +148,13 @@ class PopInJmol extends WebPanel implements ChangeListener {
           index);
       instance.width = width;
       instance.height = height;
-      viewer.createImage(instance.pictFile, "PNG", null, 2, width, height);
+      Map<String, Object> params = new Hashtable<String, Object>();
+      params.put("fileName", instance.pictFile);
+      params.put("type", "PNG");
+      params.put("quality", Integer.valueOf(2));
+      params.put("width", Integer.valueOf(width));
+      params.put("height", Integer.valueOf(height));
+      viewer.createImage(params);
       return;
     }
 

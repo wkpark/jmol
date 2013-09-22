@@ -72,22 +72,15 @@ public interface JmolStateCreator {
 
   void undoMoveActionClear(int taintedAtom, int type, boolean clearRedo);
 
-  String createImageSet(String fileName, String type, String text,
-                        byte[] bytes, String[] scripts, int quality, int width,
-                        int height, BS bsFrames, int nVibes,
-                        String[] fullPath);
-
-  Object createImage(String fileName, String type, String text, byte[] bytes,
-                     String[] scripts, int quality, int width, int height);
+  String createImageSet(Map<String, Object> params);
+  Object createImage(Map<String, Object> params);
 
   void syncScript(String script, String applet, int port);
 
+  Object getImageAs(Map<String, Object> params);
+
   String generateOutputForExport(String type, String[] fileName, int width,
                                  int height);
-
-  Object getImageAsWithComment(String type, int quality, int width, int height,
-                               String fileName, String[] scripts,
-                               OutputStream os, String comment);
 
   String writeFileData(String fileName, String type, 
                         int modelIndex, Object[] parameters);

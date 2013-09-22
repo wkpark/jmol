@@ -387,6 +387,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     executeCommands(sc.isTryCatch);
   }
 
+  public void runScript(String script) throws ScriptException {
+    if (!viewer.isPreviewOnly())
+      runScriptBuffer(script, outputBuffer);
+  }
+
   /**
    * runs a script and sends selected output to a provided StringXBuilder
    * 
@@ -2019,11 +2024,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (pc > 0 && pc < lineIndices.length && lineIndices[pc][0] > pt)
       --pc;
     return pc;
-  }
-
-  public void runScript(String script) throws ScriptException {
-    if (!viewer.isPreviewOnly())
-      runScriptBuffer(script, outputBuffer);
   }
 
   private boolean compileScriptFileInternal(String filename, String localPath,
@@ -5536,6 +5536,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case T.cache:
           cache();
           break;
+        case T.capture:
+          capture();
+          break;
         case T.cd:
           cd();
           break;
@@ -5635,7 +5638,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           invertSelected();
           break;
         case T.javascript:
-          script(T.javascript, null);
+          script(T.javascript, null, null);
           break;
         case T.load:
           load();
@@ -5714,7 +5717,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           set();
           break;
         case T.script:
-          script(T.script, null);
+          script(T.script, null, null);
           break;
         case T.select:
           select(1);
@@ -5818,6 +5821,73 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     default:
       invArg();
     }
+  }
+
+  private void capture() throws ScriptException {
+    // capture "filename"
+    // capture "filename" ROTATE axis degrees // y 5 assumed; axis and degrees optional
+    // capture off/on
+    // capture "" or just capture   -- end
+    int mode = 0;
+    String fileName = "";
+    Map<String, Object> params = viewer.captureParams;
+    int tok = tokAt(1);
+    switch (tok) {
+    case T.nada:
+      mode = T.end;
+      break;
+    case T.string:
+      fileName = optParameterAsString(1);
+      if (fileName.length() == 0) {
+        mode = T.end;
+        break;
+      }
+      if (tokAt(2) == T.rotate) {
+        if (!chk) {
+          int i = 3;
+          String axis = (tokAt(3) == T.integer ? "y"
+              : optParameterAsString(i++).toLowerCase());
+          if ("xyz".indexOf(axis) < 0)
+            axis = "y";
+          int n = (tokAt(i) == T.nada ? 5 : intParameter(i));
+          String s = "; rotate Y 10 10;delay 2.0; rotate Y -10 -10; delay 2.0;rotate Y -10 -10; delay 2.0;rotate Y 10 10;delay 2.0";
+          s = TextFormat.simpleReplace(s, "10", "" + n);
+          s = TextFormat.simpleReplace(s, "Y", axis);
+          s = "capture " + Escape.eS(fileName) + s + ";capture;";
+          script(0, null, s);
+          return;
+        }
+        return;
+      }
+      checkLength(2);
+      if (params != null)
+        params = new Hashtable<String, Object>();
+      mode = T.movie;
+      params = new Hashtable<String, Object>();
+      break;
+    case T.cancel:
+    case T.on:
+    case T.off:
+      checkLength(2);
+      mode = tok;
+      break;
+    default:
+      invArg();
+    }
+    if (chk || params == null)
+      return;
+    boolean looping = !viewer.getAnimationReplayMode().name().equals("ONCE");
+    if (!looping)
+      showString(GT._("Note: Enable looping using {0}", new Object[] {"ANIMATION MODE LOOP"}));
+    int fps = viewer.getInt(T.animationfps);
+    showString(GT._("Animation delay based on: {0}", new Object[] {"ANIMATION FPS " + fps} ));
+    params.put("type", "GIF");
+    params.put("fileName", fileName);
+    params.put("quality", Integer.valueOf(-1));
+    params.put("captureMode", Integer.valueOf(mode));
+    params.put("captureLooping", looping ? Boolean.TRUE : Boolean.FALSE);
+    params.put("captureFps", Integer.valueOf(fps));
+    Logger.info(viewer.createImageSet(params));
   }
 
   public void setCursorWait(boolean TF) {
@@ -6742,6 +6812,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           viewer.setNavXYZ(0, 0, 0);
         return;
       case T.point3f:
+      case T.trace:
         break;
       default:
         invArg();
@@ -6844,8 +6915,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.trace:
         P3[][] pathGuide;
         JmolList<P3[]> vp = new JmolList<P3[]>();
-        BS bs = atomExpressionAt(++i);
-        i = iToken;
+        BS bs;
+        if (tokAt(i + 1) == T.bitset || tokAt(i + 1) ==  T.expressionBegin) {
+          bs = atomExpressionAt(++i);
+          i = iToken;
+        } else {
+          bs = viewer.getSelectionSet(false);
+        }
         if (chk)
           return;
         viewer.getPolymerPointsAndVectors(bs, vp);
@@ -8786,7 +8862,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // do not contain a full state script
         if (modelName.endsWith(".spt") || modelName.endsWith(".png")
             || modelName.endsWith(".pngj")) {
-          script(0, modelName);
+          script(0, modelName, null);
           return;
         }
       }
@@ -9422,7 +9498,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (errMsg != null && !isCmdLine_c_or_C_Option) {
       if (errMsg.indexOf(JC.NOTE_SCRIPT_FILE) == 0) {
         filename = errMsg.substring(JC.NOTE_SCRIPT_FILE.length()).trim();
-        script(0, filename);
+        script(0, filename, null);
         return;
       }
       evalError(errMsg, null);
@@ -10456,7 +10532,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         : null);
   }
 
-  private void script(int tok, String filename) throws ScriptException {
+  private void script(int tok, String filename, String theScript) throws ScriptException {
     boolean loadCheck = true;
     boolean isCheck = false;
     boolean doStep = false;
@@ -10465,7 +10541,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int lineEnd = 0;
     int pcEnd = 0;
     int i = 2;
-    String theScript = null;
     String localPath = null;
     String remotePath = null;
     String scriptPath = null;
@@ -10477,7 +10552,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         viewer.jsEval(parameterAsString(1));
       return;
     }
-    if (filename == null) {
+    if (filename == null && theScript == null) {
       tok = tokAt(1);
       if (tok != T.string)
         error(ERROR_filenameExpected);
@@ -10982,7 +11057,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         viewer.setAtomCoordsRelative(pt, bs);
       return;
     }
-    char xyz = parameterAsString(i).toLowerCase().charAt(0);
+    char xyz = (parameterAsString(i).toLowerCase()+" ").charAt(0);
     if ("xyz".indexOf(xyz) < 0)
       error(ERROR_axisExpected);
     float amount = floatParameter(++i);
@@ -14221,6 +14296,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     boolean isImage = false;
     BS bsFrames = null;
     String[] scripts = null;
+    Map<String, Object> params;
     String type = "SPT";
     int tok = (isCommand && args.length == 1 ? T.clipboard : tokAtArray(pt,
         args));
@@ -14516,8 +14592,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               && fullPath[0] != null) {
             String ext = (type.equals("Idtf") ? ".tex" : ".ini");
             fileName = fullPath[0] + ext;
-            msg = viewer.createImageSet(fileName, ext, data, null, null,
-                Integer.MIN_VALUE, 0, 0, null, 0, fullPath);
+            params = new Hashtable<String, Object>();
+            params.put("fileName", fileName);
+            params.put("type", ext);
+            params.put("text", data);
+            params.put("fullPath", fullPath);
+            msg = viewer.createImageSet(params);
             if (type.equals("Idtf"))
               data = data.substring(0, data.indexOf("\\begin{comment}"));
             data = "Created " + fullPath[0] + ":\n\n" + data;
@@ -14653,13 +14733,28 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         bytes = data;
       if (timeMsg)
         Logger.startTimer("write");
-      if (doDefer)
+      if (doDefer) {
         msg = viewer.writeFileData(fileName, type, 0, null);
-      else
-        msg = viewer.createImageSet(fileName, type,
-            (bytes instanceof String ? (String) bytes : null),
-            (bytes instanceof byte[] ? (byte[]) bytes : null), scripts,
-            quality, width, height, bsFrames, nVibes, fullPath);
+      } else {
+        params = new Hashtable<String, Object>();
+        params.put("fileName", fileName);
+        params.put("type", type);
+        if (bytes instanceof String && quality == Integer.MIN_VALUE)
+          params.put("text", bytes);
+        else if (bytes instanceof byte[])
+          params.put("bytes", bytes);
+        if (scripts != null)
+          params.put("scripts", scripts);
+        if (bsFrames != null)
+          params.put("bsFrames", bsFrames);
+        params.put("fullPath", fullPath);
+        params.put("quality", Integer.valueOf(quality));
+        params.put("width", Integer.valueOf(width));
+        params.put("height", Integer.valueOf(height));
+        params.put("nVibes", Integer.valueOf(nVibes));
+        msg = viewer.createImageSet(params);
+        //? (byte[]) bytes : null), scripts,  quality, width, height, bsFrames, nVibes, fullPath);
+      }
       if (timeMsg)
         showString(Logger.getTimerMsg("write", 0));
     }

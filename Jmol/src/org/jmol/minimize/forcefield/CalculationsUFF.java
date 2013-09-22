@@ -751,6 +751,8 @@ class CalculationsUFF extends Calculations {
 
       double Xa = parA.dVal[PAR_X];
       double Da = parA.dVal[PAR_D];
+      if (parB == null || parB.dVal == null)
+        System.out.println("OHOH");
       double Xb = parB.dVal[PAR_X];
       double Db = parB.dVal[PAR_D];
 

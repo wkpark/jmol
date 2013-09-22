@@ -2,6 +2,7 @@ package org.jmol.api;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 
 public interface JmolImageCreatorInterface {
 
@@ -11,23 +12,14 @@ public interface JmolImageCreatorInterface {
 
   /**
    * 
-   * @param fileName
-   * @param type
-   * @param text
-   * @param bytes
-   * @param scripts
-   * @param appendix (byte[] or Image ?)
-   * @param quality
+   * @param params include fileName, type, text, bytes, image, 
+   *                       scripts, appendix, quality, 
+   *                       outputStream, and type-specific parameters
    * @return null (canceled) or a message starting with OK or an error message
    */
-  abstract public Object createImage(String fileName, String type, String text,
-                                     Object bytes, String[] scripts,
-                                     Object appendix, int quality);
+  abstract public Object createImage(Map<String, Object> params);
 
-  abstract public Object getImageBytes(String type, int quality,
-                                       String fileName, String[] scripts,
-                                       Object objImage, Object appendix,
-                                       OutputStream os) throws IOException;
+  abstract public Object getImageBytes(Map<String, Object> params) throws IOException;
 
   abstract String clipImage(JmolViewer viewer, String text);
 

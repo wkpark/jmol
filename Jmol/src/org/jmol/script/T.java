@@ -302,6 +302,7 @@ public class T {
   public final static int bondorder    = scriptCommand | 5;
   public final static int calculate    = scriptCommand | 6;
 //public final static int cache        see mathfunc
+  public final static int capture      = scriptCommand | 7;
   public final static int cd           = scriptCommand | 8 /* must be even */| implicitStringCommand | expression; // must be even
   public final static int centerAt     = scriptCommand | 9;
 //public final static int color        see intproperty
@@ -1103,7 +1104,7 @@ public class T {
   public final static int bottom        = misc  | 47;
   public final static int brillouin     = misc  | 48;
   public final static int cancel        = misc  | 50;
-  public final static int cap    = misc  | 51 | expression;
+  public final static int cap           = misc  | 51 | expression;
   public final static int cavity        = misc  | 52;
   public final static int check         = misc  | 54;
   public final static int chemical      = misc  | 55;
@@ -1558,6 +1559,7 @@ public class T {
       "boundingBox",       null,
       "break",             T.t(breakcmd),
       "calculate",         T.t(calculate),
+      "capture",           T.t(capture),
       "cartoon",           T.t(cartoon),
       "cartoons",          null,
       "case",              T.t(casecmd),

@@ -176,7 +176,7 @@ public class SpinThread extends JmolThread {
         else
           viewer.requestRepaintAndWait("spin thread");
         //System.out.println(angle * degreesPerRadian + " " + count + " " + nDegrees + " " + endDegrees);
-        if (!isNav && nDegrees >= endDegrees - 0.001) {
+        if (!isNav && endDegrees >= 0? nDegrees >= endDegrees - 0.001 : -nDegrees <= endDegrees + 0.001) {
           isDone = true;
           transformManager.setSpinOff();
         }

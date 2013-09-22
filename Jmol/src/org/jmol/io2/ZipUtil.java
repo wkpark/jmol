@@ -50,7 +50,6 @@ import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
-import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
 import org.jmol.io.JmolBinary;
@@ -651,8 +650,10 @@ public class ZipUtil implements JmolZipUtility {
     v.addLast(null);
     v.addLast(new byte[0]);
     if (fileRoot != null) {
-      Object bytes = viewer.getImageAsWithComment("PNG", -1, -1, -1, null,
-          null, null, JC.embedScript(script));
+      Map<String, Object> imageParams = new Hashtable<String, Object>();
+      imageParams.put("type", "PNG");
+      imageParams.put("comment", JC.embedScript(script));
+      Object bytes = viewer.getImageAs(imageParams); 
       if (Escape.isAB(bytes)) {
         v.addLast("preview.png");
         v.addLast(null);

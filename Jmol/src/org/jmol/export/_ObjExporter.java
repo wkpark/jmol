@@ -9,6 +9,8 @@ import java.io.IOException;
 import org.jmol.util.JmolList;
 
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
 
 import java.util.Set;
 
@@ -704,8 +706,6 @@ public class _ObjExporter extends __CartesianExporter {
     // TODO Fix this to set compression for JPEGs
     Object ret = null;
     try {
-
-
       // in the applet, we allow the user to use a dialog, which can change the file name
       ret = createImage(objFileRootName + "_" + name + "." + textureType, textureType, 
           bytes == null ? image : bytes, width, height);
@@ -733,7 +733,11 @@ public class _ObjExporter extends __CartesianExporter {
       GenericImageCreator ic = new GenericImageCreator();
       // we need the viewer's private key to access the image creator
       ic.setViewer(viewer, privateKey);
-      return ic.createImage(fileName, type, null, image, null, null, Integer.MIN_VALUE);
+      Map<String, Object> params = new Hashtable<String, Object>();
+      params.put("fileName", fileName);
+      params.put("type", type);
+      params.put("image", image);
+      return ic.createImage(params);
     }
     /*  TGA test -- not worth it 
     // write simple TGA file

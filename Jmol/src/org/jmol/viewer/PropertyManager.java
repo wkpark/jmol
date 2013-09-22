@@ -457,8 +457,11 @@ public class PropertyManager implements JmolPropertyManager {
         width = height;
       else
         height = width;
-      return viewer.getImageAs(returnType == null ? "JPEG" : "JPG64", -1,
-          width, height, null, null);
+      Map<String, Object> imageParams = new Hashtable<String, Object>();
+      imageParams.put("type", returnType == null ? "JPEG" : "JPG64");
+      imageParams.put("width", Integer.valueOf(width));
+      imageParams.put("height", Integer.valueOf(height));
+      return viewer.getImageAs(imageParams);
     case PROP_ISOSURFACE_INFO:
       return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getInfo");
     case PROP_ISOSURFACE_DATA:

@@ -1290,7 +1290,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       }
       if (fileName.indexOf(".") < 0)
         fileName += "." + (sType.equalsIgnoreCase("JPEG") ? "jpg" : sType.toLowerCase());
-      Logger.info((String) viewer.createImage(fileName, sType, null, sd.getQuality(sType), 0, 0));
+      Map<String, Object> params = new Hashtable<String, Object>();
+      params.put("fileName", fileName);
+      params.put("type", sType);
+      params.put("quality", Integer.valueOf(sd.getQuality(sType)));
+      viewer.createImage(params);
+      Logger.info((String) viewer.createImage(params));
     }
 
   }
@@ -1371,9 +1376,13 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     public void actionPerformed(ActionEvent e) {
       String fileName = (new Dialog()).getSaveFileNameFromDialog(viewer,
           null, "SPT");
-      if (fileName != null)
-        Logger.info((String) viewer.createImage(fileName, "SPT", viewer.getStateInfo(),
-            Integer.MIN_VALUE, 0, 0));
+      if (fileName != null) {
+        Map<String, Object> params = new Hashtable<String, Object>();
+        params.put("fileName", fileName);
+        params.put("type", "SPT");
+        params.put("text", viewer.getStateInfo());
+        Logger.info((String)viewer.createImage(params));
+      }
     }
   }
 

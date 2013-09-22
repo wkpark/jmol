@@ -242,30 +242,19 @@ abstract public class JmolViewer {
    * @return "OK" for image or "OK [number of bytes]"
    */
   abstract public String clipImage(String text);
-
+  
   /**
    * 
-   * @param fileName
-   * @param type
-   * @param text_or_bytes
-   * @param quality
-   * @param width 
-   * @param height 
+   * @param params include type, fileName, text, bytes, quality, width, height 
    * @return          null (canceled) or a message starting with OK or an error message
    */
-  abstract public Object createImage(String fileName, String type, Object text_or_bytes, int quality,
-                                   int width, int height);
+  abstract public Object createImage(Map<String, Object> params);
 
   /**
-   * @param type      "PNG", "JPG", "JPEG", "JPG64", "PPM", "GIF"
-   * @param quality
-   * @param width 
-   * @param height 
-   * @param fileName 
-   * @param os 
+   * @param params includes type, fileName, quality, width, height, outputStream, comment 
    * @return base64-encoded or binary version of the image
    */
-  abstract public Object getImageAs(String type, int quality, int width, int height, String fileName, OutputStream os);
+  abstract public Object getImageAs(Map<String, Object> params);
 
   abstract public int getMotionEventNumber();
 

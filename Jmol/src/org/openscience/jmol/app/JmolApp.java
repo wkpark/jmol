@@ -439,13 +439,13 @@ public class JmolApp {
           type.substring(0, type.indexOf(" "));
         }
         if (GraphicsEnvironment.isHeadless()) {
-          info.put("headlessImage", new Object[] { 
-              type_name, 
-              type, 
-              Integer.valueOf(quality),
-              Integer.valueOf(width),
-              Integer.valueOf(height) });
-
+          Map<String, Object> data = new Hashtable<String, Object>();
+          data.put("fileName", type_name);
+          data.put("type", type);
+          data.put("quality", Integer.valueOf(quality));
+          data.put("width", Integer.valueOf(width));
+          data.put("height", Integer.valueOf(height));
+          info.put("headlessImage", data);
         }
         else
           script2 += ";write image " + width + " " + height + " " + type + " " + quality + " " + Escape.eS(type_name);

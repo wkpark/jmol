@@ -124,7 +124,7 @@ public class JC {
   public final static String REPAINT_IGNORE = "\1## REPAINT_IGNORE ##";
 
   public final static String LOAD_ATOM_DATA_TYPES = ";xyz;vxyz;vibration;temperature;occupancy;partialcharge;";
-
+      
   public final static float radiansPerDegree = (float) (Math.PI / 180);
 
   public final static String allowedQuaternionFrames = "RC;RP;a;b;c;n;p;q;x;";

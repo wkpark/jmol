@@ -1,3 +1,27 @@
+/* $RCSfile$
+ * $Author: hansonr $
+ * $Date: 2007-06-02 12:14:13 -0500 (Sat, 02 Jun 2007) $
+ * $Revision: 7831 $
+ *
+ * Copyright (C) 2000-2005  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 // ImageEncoder - abstract class for writing out an image
 //
 // Copyright (C) 1996 by Jef Poskanzer <jef@mail.acme.com>.  All rights reserved.
@@ -29,81 +53,146 @@
 package org.jmol.export.image;
 
 import java.util.Hashtable;
+import java.util.Map;
 import java.awt.Image;
 import java.awt.image.ColorModel;
 import java.awt.image.ImageConsumer;
 import java.awt.image.ImageProducer;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/// Abstract class for writing out an image.
-// <P>
-// A framework for classes that encode and write out an image in
-// a particular file format.
-// <P>
-// This provides a simplified rendition of the ImageConsumer interface.
-// It always delivers the pixels as ints in the RGBdefault color model.
-// It always provides them in top-down left-right order.
-// If you want more flexibility you can always implement ImageConsumer
-// directly.
-// <P>
-// <A HREF="/resources/classes/Acme/JPM/Encoders/ImageEncoder.java">Fetch the software.</A><BR>
-// <A HREF="/resources/classes/Acme.tar.gz">Fetch the entire Acme package.</A>
-// <P>
-// @see GifEncoder
-// @see PpmEncoder
-// @see Acme.JPM.Decoders.ImageDecoder
+import org.jmol.api.Interface;
+import org.jmol.util.J2SIgnoreImport;
 
+/** Abstract class for writing out an image.
+ *  <P>
+ *  A framework for classes that encode and write out an image in
+ *  a particular file format.
+ *  <P>
+ *  This provides a simplified rendition of the ImageConsumer interface.
+ *  It always delivers the pixels as ints in the RGBdefault color model.
+ *  It always provides them in top-down left-right order.
+ *  If you want more flexibility you can always implement ImageConsumer 
+ *  directly.
+ *  <P>
+ *  <A HREF="/resources/classes/Acme/JPM/Encoders/ImageEncoder.java">Fetch the software.</A><BR>
+ *  <A HREF="/resources/classes/Acme.tar.gz">Fetch the entire Acme package.</A>
+ * <P>
+ * @see GifEncoder
+ * @see PpmEncoder
+ * 
+ * See http://www.acme.com/java/
+ * 
+ * @author Bob Hanson hansonr@stolaf.edu
+ */
+
+@J2SIgnoreImport({java.awt.Image.class, java.awt.image.ColorModel.class, 
+  java.awt.image.ImageConsumer.class, java.awt.image.ImageProducer.class})
 public abstract class ImageEncoder implements ImageConsumer {
 
   protected OutputStream out;
 
+  protected int width = -1;
+  protected int height = -1;
+
   private ImageProducer producer;
-  private int width = -1;
-  private int height = -1;
   private int hintflags = 0;
   private boolean started = false;
   private boolean encoding;
   private IOException iox;
-  private static final ColorModel rgbModel = ColorModel.getRGBdefault();
-
+  protected int byteCount;
   
-  /// Constructor.
-  // @param img The image to encode.
-  // @param out The stream to write the bytes to.
-  public ImageEncoder(Image img, OutputStream out) {
-    this(img.getSource(), out);
+  
+  public static Object write(String type, Object image, OutputStream os,
+                             Map<String, Object> params) throws IOException {
+    ImageEncoder ie = (ImageEncoder) Interface
+        .getInterface("org.jmol.export.image." + type + "Encoder");
+    if (ie == null)
+      return null;
+    ie.setParams(params);
+    /**
+     * @j2sNative
+     * 
+     *  ie.producer = image; 
+     */
+    {
+      ie.producer = (image == null ? null : ((Image) image).getSource());
+    }
+    boolean asBytes = (os == null);
+    if (asBytes)
+      os = new ByteArrayOutputStream();
+    ie.out = os;
+    
+    if (ie.producer != null)
+      ie.encode();
+    ie.close();
+    return (asBytes ? ((ByteArrayOutputStream) os).toByteArray() : null);
   }
 
-  /// Constructor.
-  // @param producer The ImageProducer to encode.
-  // @param out The stream to write the bytes to.
-  public ImageEncoder(ImageProducer producer, OutputStream out) {
-    this.producer = producer;
-    this.out = out;
+  protected void close() {
+    try {
+      out.flush();
+      out.close();
+    } catch (IOException e) {
+      // ignore
+    }
+  }
+
+  protected void putString(String str) throws IOException {
+    byte[] buf = str.getBytes();
+    byteCount += buf.length;
+    out.write(buf);
+  }
+
+  protected void putByte(int b) throws IOException {
+    byteCount++;
+    /**
+     * @j2sNative
+     * 
+     *            this.out.writeByteAsInt(b);
+     * 
+     */
+    {
+      out.write(b);
+    }
   }
 
   // Methods that subclasses implement.
 
+  abstract protected void setParams(Map<String, Object> params);
+
   /// Subclasses implement this to initialize an encoding.
-  abstract void encodeStart(int w, int h) throws IOException;
+  abstract protected void encodeStart() throws IOException;
 
   /// Subclasses implement this to actually write out some bits.  They
   // are guaranteed to be delivered in top-down-left-right order.
   // One int per pixel, index is row * scansize + off + col,
   // RGBdefault (AARRGGBB) color model.
-  abstract void encodePixels(int x, int y, int w, int h, int[] rgbPixels,
+  abstract protected void encodePixels(int x, int y, int w, int h, int[] rgbPixels,
                              int off, int scansize) throws IOException;
 
   /// Subclasses implement this to finish an encoding.
-  abstract void encodeDone() throws IOException;
+  abstract protected void encodeDone() throws IOException;
 
   // Our own methods.
 
   /// Call this after initialization to get things going.
-  public synchronized void encode() throws IOException {
-    encoding = true;
+  protected synchronized void encode() throws IOException {
     iox = null;
+    /**
+     * @j2sNative
+     *
+     * this.width = this.producer.width;
+     * this.height= this.producer.height;
+     * this.accumulator = this.producer.buf32;
+     * this.encodeStart();
+     * this.encodeFinish();
+     * this.encodeDone();
+     * 
+     */
+    {
+    encoding = true;
     producer.startProduction(this);
     while (encoding)
       try {
@@ -112,22 +201,20 @@ public abstract class ImageEncoder implements ImageConsumer {
       }
     if (iox != null)
       throw iox;
+    }
   }
 
-  private boolean accumulate = false;
   private int[] accumulator;
 
   private void encodePixelsWrapper(int x, int y, int w, int h, int[] rgbPixels,
                                    int off, int scansize) throws IOException {
     if (!started) {
       started = true;
-      encodeStart(width, height);
-      if ((hintflags & TOPDOWNLEFTRIGHT) == 0) {
-        accumulate = true;
+      encodeStart();
+      if ((hintflags & TOPDOWNLEFTRIGHT) == 0)
         accumulator = new int[width * height];
-      }
     }
-    if (accumulate)
+    if (accumulator != null)
       for (int row = 0; row < h; ++row)
         System.arraycopy(rgbPixels, row * scansize + off, accumulator,
             (y + row) * width + x, w);
@@ -136,10 +223,9 @@ public abstract class ImageEncoder implements ImageConsumer {
   }
 
   private void encodeFinish() throws IOException {
-    if (accumulate) {
+    if (accumulator != null) {
       encodePixels(0, 0, width, height, accumulator, 0, width);
       accumulator = null;
-      accumulate = false;
     }
   }
 
@@ -150,8 +236,8 @@ public abstract class ImageEncoder implements ImageConsumer {
 
   // Methods from ImageConsumer.
 
-  public void setDimensions(int width, int height) {
-    this.width = width;
+  public void setDimensions(int width, int height) { // from image dimensions
+    this.width = width; 
     this.height = height;
   }
 
@@ -186,7 +272,7 @@ public abstract class ImageEncoder implements ImageConsumer {
 
   public void setPixels(int x, int y, int w, int h, ColorModel model,
                         int[] pixels, int off, int scansize) {
-    if (model == rgbModel) {
+    if (model == ColorModel.getRGBdefault()) {
       try {
         encodePixelsWrapper(x, y, w, h, pixels, off, scansize);
       } catch (IOException e) {

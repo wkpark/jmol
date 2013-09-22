@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,7 +78,7 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
   public Object openOutputChannel(double privateKey, FileManager fm, String fileName, boolean asWriter) throws IOException {
     if (!viewer.checkPrivateKey(privateKey))
       return null;
-    OutputStream os = new FileOutputStream(fileName);
+    OutputStream os = new LocalOutputChannel(fileName);
     return (asWriter ? new BufferedWriter(new OutputStreamWriter(os)) : os);
   }
 

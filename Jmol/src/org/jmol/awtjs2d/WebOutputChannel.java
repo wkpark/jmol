@@ -5,9 +5,10 @@ import java.io.ByteArrayOutputStream;
 import org.jmol.util.SB;
 
 /**
+ * 
  * A surrogate for FileOutputStream, allowing collection of byte
  * or character data for final posting to a server as bytes to
- * be returned to the user via a browser dialog.
+ * be returned to the user via a browser dialog. HTML5 JS only.
  *  
  */
 
@@ -20,6 +21,11 @@ public class WebOutputChannel extends ByteArrayOutputStream {
     this.fileName = fileName;
   }
 
+  public void cancel() {
+    fileName = null;
+    sb = null;
+  }
+  
   public void write(String data) {
     if (sb == null)
       sb = new SB();

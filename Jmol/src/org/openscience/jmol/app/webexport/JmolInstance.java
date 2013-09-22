@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Map;
 
 
 import javax.swing.filechooser.FileSystemView;
@@ -84,7 +86,13 @@ class JmolInstance {
     }
     pictFile = scratchpath + "/" + javaname + ".png";
     // note -- the current Jmol State for THIS computer is saved in the PNG
-    viewer.createImage(pictFile, "PNG", null, 2, width, height);
+    Map<String, Object> params = new Hashtable<String, Object>();
+    params.put("fileName", pictFile);
+    params.put("type", "PNG");
+    params.put("quality", Integer.valueOf(2));
+    params.put("width", Integer.valueOf(width));
+    params.put("height", Integer.valueOf(height));
+    viewer.createImage(params);
     pictIsScratchFile = true;
   }
 

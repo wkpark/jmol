@@ -410,8 +410,9 @@ public class FileManager {
         boolean isPngjBinaryPost = (name.indexOf("?POST?_PNGJBIN_") >= 0);
         boolean isPngjPost = (isPngjBinaryPost || name.indexOf("?POST?_PNGJ_") >= 0);
         if (name.indexOf("?POST?_PNG_") > 0 || isPngjPost) {
-          Object o = viewer.getImageAs(isPngjPost ? "PNGJ" : "PNG", -1, 0, 0,
-              null, null);
+          Map<String, Object> params = new Hashtable<String, Object>();
+          params.put("type", isPngjPost ? "PNGJ" : "PNG");
+          Object o = viewer.getImageAs(params);
           if (!Escape.isAB(o))
             return o;
           if (isPngjBinaryPost) {

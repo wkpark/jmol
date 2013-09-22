@@ -212,7 +212,7 @@ public class MainPopupResourceBundle extends PopupResource {
               		"- SIGNEDJAVAcaptureMenuSPECIAL " +
               		"- SIGNEDJAVAwriteGif SIGNEDNOGLwriteJpg SIGNEDNOGLwritePng SIGNEDNOGLwritePngJmol SIGNEDJAVAwritePovray - "
               + "SIGNEDJAVAwriteVrml SIGNEDJAVAwriteX3d SIGNEDJAVAwriteIdtf SIGNEDJAVAwriteMaya" },
-      {    "SIGNEDJAVAcaptureMenuSPECIAL", "SIGNEDJAVAcaptureBegin SIGNEDJAVAcaptureEnd SIGNEDJAVAcaptureOff SIGNEDJAVAcaptureOn SIGNEDJAVAcaptureFpsSPECIAL SIGNEDJAVAcaptureLoopingSPECIAL" },
+      {    "SIGNEDJAVAcaptureMenuSPECIAL", "SIGNEDJAVAcaptureRotate SIGNEDJAVAcaptureBegin SIGNEDJAVAcaptureEnd SIGNEDJAVAcaptureOff SIGNEDJAVAcaptureOn SIGNEDJAVAcaptureFpsSPECIAL SIGNEDJAVAcaptureLoopingSPECIAL" },
 
       { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
       { "[set_spin_Y]Menu", null },
@@ -492,12 +492,13 @@ public class MainPopupResourceBundle extends PopupResource {
       { "SIGNEDloadFileUnitCell", "load ? {1 1 1}" },      
       { "SIGNEDloadScript", "script ?.spt" },      
       
+      { "SIGNEDJAVAcaptureRotate", "capture '?Jmol.gif' rotate y 5"},      
       { "SIGNEDJAVAcaptureBegin", "capture '?Jmol.gif'" },      
       { "SIGNEDJAVAcaptureEnd", "capture ''"},      
       { "SIGNEDJAVAcaptureOff", "capture off"},      
       { "SIGNEDJAVAcaptureOn", "capture on"},      
       { "SIGNEDJAVAcaptureFpsSPECIAL", "animation fps @{0+prompt('Capture replay frames per second?', getProperty('animationInfo.animationFPS'))}"},      
-      { "SIGNEDJAVAcaptureLoopingSPECIAL", "script inline @{\"animation mode \"+(getProperty('animationinfo.animationReplayMode')=='ONCE' ? 'LOOP':'ONCE');prompt('capture looping set to ' + getProperty('animationinfo.animationReplayMode')}"},
+      { "SIGNEDJAVAcaptureLoopingSPECIAL", "script inline @{\"animation mode \"+(getProperty('animationinfo.animationReplayMode')=='ONCE' ? 'LOOP':'ONCE')+\";prompt 'capture looping set to ' + getProperty('animationinfo.animationReplayMode')\"}"},
       
       
       { "writeFileTextVARIABLE", "if (_applet && !_signedApplet) { console;show file } else { write file \"?FILE?\"}" },      
@@ -908,6 +909,7 @@ public class MainPopupResourceBundle extends PopupResource {
         "SIGNEDloadScript", GT._("Open script"),      
 
         "SIGNEDJAVAcaptureMenuSPECIAL", GT._("Capture"),
+        "SIGNEDJAVAcaptureRotate", "capture '?.gif' rotate y 5",
         "SIGNEDJAVAcaptureBegin", GT._("Start capturing"),
         "SIGNEDJAVAcaptureEnd", GT._("End capturing"),
         "SIGNEDJAVAcaptureOff", GT._("Disable capturing"),

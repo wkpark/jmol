@@ -3826,12 +3826,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     animationManager.setAnimationFps(fps);
   }
 
+  private void setAnimationMode(String mode) {
+    if (mode.equalsIgnoreCase("once")) {
+      setAnimationReplayMode(EnumAnimationMode.ONCE, 0, 0);
+    } else if (mode.equalsIgnoreCase("loop")) {
+      setAnimationReplayMode(EnumAnimationMode.LOOP, 1, 1);
+    } else if (mode.startsWith("pal")) {
+      setAnimationReplayMode(EnumAnimationMode.PALINDROME, 1, 1);
+    }
+  }
+  
   public void setAnimationReplayMode(EnumAnimationMode replayMode,
                                      float firstFrameDelay, float lastFrameDelay) {
     // Eval
 
     animationManager.setAnimationReplayMode(replayMode, firstFrameDelay,
         lastFrameDelay);
+    global.setS("animationMode", replayMode.name());
   }
 
   public EnumAnimationMode getAnimationReplayMode() {
@@ -4250,6 +4261,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // "notifying repaintManager repaint is done");
     }
     if (captureParams != null && Boolean.FALSE != captureParams.get("captureEnabled")) {
+      //showString(transformManager.matrixRotate.toString(), false);
       createImageSet(captureParams);
     }
     notifyViewerRepaintDone();
@@ -6022,6 +6034,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setStringPropertyTok(String key, int tok, String value) {
     switch (tok) {
+    // 13.3.6
+    case T.animationmode:
+      setAnimationMode(value);
+      return;
     case T.nmrpredictformat:
       // 13.3.4
       global.nmrPredictFormat = value;

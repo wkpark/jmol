@@ -794,6 +794,7 @@ public class T {
 
   // full set of all Jmol "set" parameters
 
+  public final static int animationmode                  = strparam | 1;
   public final static int appletproxy                    = strparam | 2;
   public final static int atomtypes                      = strparam | 4;
   public final static int axescolor                      = strparam | 6;
@@ -1262,8 +1263,9 @@ public class T {
   public final static int residue = misc  | 296;
   public final static int resolution     = misc  | 298;
   public final static int reversecolor   = misc  | 300;
-  public final static int rewind  = misc  | 302;
-  public final static int right   = misc  | 304;
+  public final static int rewind         = misc  | 302;
+  public final static int right          = misc  | 304;
+  public final static int rock           = misc  | 305;
   public final static int rotate45       = misc  | 306;
   public final static int rotation = misc  | 308;
   public final static int rubberband     = misc  | 310;
@@ -1965,6 +1967,7 @@ public class T {
       "reverse",         T.t(reverse),
       "right",           T.t(right),
       "RNA",             T.t(rna),
+      "rock",            T.t(rock),
       "rubberband",      T.t(rubberband),
       "saSurface",       T.t(sasurface),
       "scale",           T.t(scale),
@@ -2188,6 +2191,7 @@ public class T {
       
       // string
       
+      "animationMode",                            T.t(animationmode),
       "appletProxy",                              T.t(appletproxy),
       "atomTypes",                                T.t(atomtypes),
       "axesColor",                                T.t(axescolor),

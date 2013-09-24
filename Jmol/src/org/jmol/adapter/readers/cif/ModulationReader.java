@@ -30,8 +30,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jmol.util.BS;
-import org.jmol.util.BSUtil;
+//import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
@@ -75,7 +74,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   protected int modDim;
   protected boolean incommensurate;
   protected Atom[] atoms;
-  private BS bsAtoms;
+  //private BS bsAtoms;
   
   private P3 q1;  
   private V3 q1Norm;  

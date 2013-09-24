@@ -17,7 +17,6 @@ import org.jmol.util.TextFormat;
 public class AbinitReader extends AtomSetCollectionReader {
 
   private float[] cellLattice;
-  private String spaceGroupName;
   private String atomList[];
 
   @Override

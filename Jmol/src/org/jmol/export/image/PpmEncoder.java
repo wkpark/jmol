@@ -67,7 +67,7 @@ public class PpmEncoder extends ImageEncoder {
         ppmPixels[j + 1] = (byte) ((rgbPixels[i] & 0x00ff00) >> 8);
         ppmPixels[j + 2] = (byte) (rgbPixels[i] & 0x0000ff);
       }
-      out.write(ppmPixels, 0, ppmPixels.length);
+      out.writeBytes(ppmPixels, 0, ppmPixels.length);
     }
   }
 

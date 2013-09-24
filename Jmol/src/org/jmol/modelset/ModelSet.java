@@ -835,6 +835,8 @@ import java.util.Map;
 
   public void setDihedrals(float[] dihedralList, BS[] bsBranches, float f) {
     int n = dihedralList.length / 6;
+    if (f > 1)
+      f = 1;
     for (int j = 0, pt = 0; j < n; j++, pt += 6) {
       BS bs = bsBranches[j];
       if (bs == null || bs.isEmpty())

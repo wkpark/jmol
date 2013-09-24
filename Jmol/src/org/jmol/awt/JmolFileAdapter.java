@@ -4,16 +4,17 @@ import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 
 import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
 
@@ -75,11 +76,13 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
     return new JmolFile(name);
   }
 
-  public Object openOutputChannel(double privateKey, FileManager fm, String fileName, boolean asWriter) throws IOException {
-    if (!viewer.checkPrivateKey(privateKey))
-      return null;
-    OutputStream os = new LocalOutputChannel(fileName);
-    return (asWriter ? new BufferedWriter(new OutputStreamWriter(os)) : os);
+  public JmolOutputChannel openOutputChannel(double privateKey, FileManager fm,
+                                             String fileName, boolean asWriter)
+      throws IOException {
+    return (viewer.checkPrivateKey(privateKey) ? (new JmolOutputChannel())
+        .setParams(fm, fileName, asWriter, (fileName == null
+            || fileName.startsWith("http://") || fileName.startsWith("https://") ? null
+            : new FileOutputStream(fileName))) : null);
   }
 
   public InputStream openFileInputStream(double privateKey, String fileName)
@@ -90,10 +93,6 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
   public String getAbsolutePath(double privateKey, String fileName) {
     return (viewer.isApplet() || !viewer.checkPrivateKey(privateKey) ? fileName
         : (new File(fileName).getAbsolutePath()));
-  }
-
-  public long getFileLength(double privateKey, String fileName) {
-    return (new File(fileName)).length();
   }
 
   public Object openLogFile(double privateKey, String logFileName, boolean asAppend) throws IOException {

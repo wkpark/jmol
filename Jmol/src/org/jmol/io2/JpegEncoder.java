@@ -33,15 +33,10 @@
 
 package org.jmol.io2;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.jmol.api.ApiPlatform;
 import org.jmol.io.JmolBinary;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.Logger;
 
 /*
  * JpegEncoder - The JPEG main program which performs a jpeg compression of
@@ -65,7 +60,7 @@ public class JpegEncoder {
   private static final int CONTINUE_MAX_BUFFER = CONTINUE_MAX + 10; // never break up last 10 bytes
   
   //Thread runner;
-  private BufferedOutputStream outStream;
+  private JmolOutputChannel outStream;
   //Image image;
   private JpegObj jpegObj;
   private Huffman huf;
@@ -73,7 +68,7 @@ public class JpegEncoder {
   private int jpegQuality;
   //int code;
 
-  public JpegEncoder(ApiPlatform apiPlatform, Object image, int quality, OutputStream out, String comment) {
+  public JpegEncoder(ApiPlatform apiPlatform, Object image, int quality, JmolOutputChannel out, String comment) {
     
    // try {
    //   if (!apiPlatform.waitForDisplay(null, image)) 
@@ -94,56 +89,48 @@ public class JpegEncoder {
      */
     jpegObj = new JpegObj(apiPlatform, image, comment);
     
-    outStream = new BufferedOutputStream(out);
+    outStream = out;
     dct = new DCT(jpegQuality);
     huf=new Huffman(jpegObj.imageWidth,jpegObj.imageHeight);
   }
   
   public static byte[] getBytes(ApiPlatform apiPlatform, Object image, int quality, String comment) {
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    JmolOutputChannel os = new JmolOutputChannel();
     write(apiPlatform, image, quality, os, comment);
-    try {
-      os.flush();
-      os.close();
-    } catch (IOException e) {
-      // ignore
-    }
+    os.closeChannel();
     return os.toByteArray();
   }
 
-  public static void write(ApiPlatform apiPlatform, Object image, int quality, OutputStream os, String comment) {
-    (new JpegEncoder(apiPlatform, image, quality, os, comment)).Compress();
+  public static void write(ApiPlatform apiPlatform, Object image, int quality, JmolOutputChannel out, String comment) {
+    (new JpegEncoder(apiPlatform, image, quality, out, comment)).Compress();
   }
 
-//  public void setQuality(int quality) {
-//    dct = new DCT(quality);
-//  }
-/*  
-  public int getQuality() {
-    return Quality;
-  }
-*/  
+  //  public void setQuality(int quality) {
+  //    dct = new DCT(quality);
+  //  }
+  /*  
+    public int getQuality() {
+      return Quality;
+    }
+  */
   public void Compress() {
     if (jpegObj == null)
       return;
     String longState = WriteHeaders(outStream, jpegObj, dct);
     WriteCompressedData(outStream, jpegObj, dct, huf);
     WriteEOI(outStream);
-    if (longState != null)
-      try {
-        byte[] b = longState.getBytes();
-        outStream.write(b, 0, b.length);
-      } catch (IOException e1) {
-        System.out.println("ERROR WRITING COMMENT");
-      }
-    try {
-      outStream.flush();
-    } catch (IOException e) {
-      Logger.errorEx("IO Error", e);
+    if (longState != null) {
+      byte[] b = longState.getBytes();
+      outStream.writeBytes(b, 0, b.length);
     }
+    //    try {
+    //      outStream.flush();
+    //    } catch (IOException e) {
+    //      Logger.errorEx("IO Error", e);
+    //    }
   }
   
-  static private void WriteCompressedData(BufferedOutputStream outStream,
+  static private void WriteCompressedData(JmolOutputChannel out,
                                           JpegObj jpegObj, DCT dct,
                                           Huffman huf) {
     int i, j, r, c, a, b;
@@ -218,7 +205,7 @@ public class JpegEncoder {
               //   zeroArray[0] = lastDCvalue[comp];
               //   dctArray3 = zeroArray;
               // }
-              huf.HuffmanBlockEncoder(outStream, dctArray3, lastDCvalue[comp],
+              huf.HuffmanBlockEncoder(out, dctArray3, lastDCvalue[comp],
                   dcNumber, acNumber);
               lastDCvalue[comp] = dctArray3[0];
             }
@@ -226,12 +213,12 @@ public class JpegEncoder {
         }
       }
     }
-    huf.flushBuffer(outStream);
+    huf.flushBuffer(out);
   }
 
   private static byte[] eoi = {(byte) 0xFF, (byte) 0xD9};
   
-  static private void WriteEOI(BufferedOutputStream out) {
+  static private void WriteEOI(JmolOutputChannel out) {
     WriteMarker(eoi, out);
   }
 
@@ -257,7 +244,7 @@ public class JpegEncoder {
 
   private static byte[] soi = {(byte) 0xFF, (byte) 0xD8};
   
-  static private String WriteHeaders(BufferedOutputStream out, JpegObj jpegObj, DCT dct) {
+  static private String WriteHeaders(JmolOutputChannel out, JpegObj jpegObj, DCT dct) {
     int i, j, index, offset;
     int tempArray[];
 
@@ -336,7 +323,7 @@ public class JpegEncoder {
     return comment;
   }
 
-  private static void writeString(String s, byte id, BufferedOutputStream out) {
+  private static void writeString(String s, byte id, JmolOutputChannel out) {
     int len = s.length();
     int i0 = 0;
     String suffix = JmolBinary.JPEG_CONTINUE_STRING;
@@ -359,7 +346,7 @@ public class JpegEncoder {
     }
   }
 
-  private static void writeTag(int length, byte id, BufferedOutputStream out) {
+  private static void writeTag(int length, byte id, JmolOutputChannel out) {
     length += 2;
     byte com[] = new byte[4];
     com[0] = (byte) 0xFF;
@@ -369,7 +356,7 @@ public class JpegEncoder {
     writeArray(com, out);
   }
 
-  static void WriteDHTHeader(int[] bits, int[] val, BufferedOutputStream out) {
+  static void WriteDHTHeader(int[] bits, int[] val, JmolOutputChannel out) {
     // hansonr@stolaf.edu: simplified code.
     byte[] dht;
     int bytes = 0;
@@ -388,20 +375,12 @@ public class JpegEncoder {
     writeArray(dht, out);
   }
   
-  static void WriteMarker(byte[] data, BufferedOutputStream out) {
-    try {
-      out.write(data, 0, 2);
-    } catch (IOException e) {
-      Logger.errorEx("IO Error", e);
-    }
+  static void WriteMarker(byte[] data, JmolOutputChannel out) {
+    out.writeBytes(data, 0, 2);
   }
   
-  static void writeArray(byte[] data, BufferedOutputStream out) {
-    try {
-      out.write(data, 0, data.length);
-    } catch (IOException e) {
-      Logger.errorEx("IO Error", e);
-    }
+  static void writeArray(byte[] data, JmolOutputChannel out) {
+    out.writeBytes(data, 0, data.length);
   }
 }
 
@@ -885,7 +864,7 @@ class Huffman
    * @param acCode
    **/
   
-  void HuffmanBlockEncoder(BufferedOutputStream outStream, int zigzag[], int prec, int dcCode, int acCode)
+  void HuffmanBlockEncoder(JmolOutputChannel outStream, int zigzag[], int prec, int dcCode, int acCode)
   {
     int temp, temp2, nbits, k, r, i;
     
@@ -952,75 +931,45 @@ class Huffman
   
   // Uses an integer long (32 bits) buffer to store the Huffman encoded bits
   // and sends them to outStream by the byte.
-  
-  void bufferIt(BufferedOutputStream outStream, int code,int size)
-  {
+
+  void bufferIt(JmolOutputChannel out, int code, int size) {
     int putBuffer = code;
     int putBits = bufferPutBits;
-    
+
     putBuffer &= (1 << size) - 1;
     putBits += size;
     putBuffer <<= 24 - putBits;
     putBuffer |= bufferPutBuffer;
-    
-    while(putBits >= 8) {
+
+    while (putBits >= 8) {
       int c = ((putBuffer >> 16) & 0xFF);
-      try
-      {
-        outStream.write(c);
-      }
-      catch (IOException e) {
-        Logger.errorEx("IO Error", e);
-      }
+      out.writeByteAsInt(c);
       if (c == 0xFF) {
-        try
-        {
-          outStream.write(0);
-        }
-        catch (IOException e) {
-          Logger.errorEx("IO Error", e);
-        }
+        out.writeByteAsInt(0);
       }
       putBuffer <<= 8;
       putBits -= 8;
     }
     bufferPutBuffer = putBuffer;
     bufferPutBits = putBits;
-    
+
   }
   
-  void flushBuffer(BufferedOutputStream outStream) {
+  void flushBuffer(JmolOutputChannel out) {
     int putBuffer = bufferPutBuffer;
     int putBits = bufferPutBits;
     while (putBits >= 8) {
       int c = ((putBuffer >> 16) & 0xFF);
-      try
-      {
-        outStream.write(c);
-      }
-      catch (IOException e) {
-        Logger.errorEx("IO Error", e);
-      }
+      out.writeByteAsInt(c);
       if (c == 0xFF) {
-        try {
-          outStream.write(0);
-        }
-        catch (IOException e) {
-          Logger.errorEx("IO Error", e);
-        }
+        out.writeByteAsInt(0);
       }
       putBuffer <<= 8;
       putBits -= 8;
     }
     if (putBits > 0) {
       int c = ((putBuffer >> 16) & 0xFF);
-      try
-      {
-        outStream.write(c);
-      }
-      catch (IOException e) {
-        Logger.errorEx("IO Error", e);
-      }
+      out.writeByteAsInt(c);
     }
   }
   

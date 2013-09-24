@@ -31,7 +31,7 @@ import java.util.Properties;
 
 
 import org.jmol.constant.EnumStructure;
-import org.jmol.io.OutputStringBuilder;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -723,7 +723,7 @@ public final class BioModel extends Model{
   @Override
   public void getPdbData(Viewer viewer, String type, char ctype,
                          boolean isDraw, BS bsSelected,
-                         OutputStringBuilder sb, LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
+                         JmolOutputChannel out, LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
     boolean bothEnds = false;
     char qtype = (ctype != 'R' ? 'r' : type.length() > 13
         && type.indexOf("ramachandran ") >= 0 ? type.charAt(13) : 'R');
@@ -733,26 +733,26 @@ public final class BioModel extends Model{
     int derivType = (type.indexOf("diff") < 0 ? 0 : type.indexOf("2") < 0 ? 1
         : 2);
     if (!isDraw) {
-      sb.append("REMARK   6 Jmol PDB-encoded data: " + type + ";");
+      out.append("REMARK   6 Jmol PDB-encoded data: " + type + ";");
       if (ctype != 'R') {
-        sb.append("  quaternionFrame = \"" + qtype + "\"");
+        out.append("  quaternionFrame = \"" + qtype + "\"");
         bothEnds = true; //???
       }
-      sb.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion())
+      out.append("\nREMARK   6 Jmol Version ").append(Viewer.getJmolVersion())
           .append("\n");
       if (ctype == 'R')
-        sb
+        out
             .append("REMARK   6 Jmol data min = {-180 -180 -180} max = {180 180 180} "
                 + "unScaledXyz = xyz * {1 1 1} + {0 0 0} plotScale = {100 100 100}\n");
       else
-        sb
+        out
             .append("REMARK   6 Jmol data min = {-1 -1 -1} max = {1 1 1} "
                 + "unScaledXyz = xyz * {0.1 0.1 0.1} + {0 0 0} plotScale = {100 100 100}\n");
     }
     
     for (int p = 0; p < bioPolymerCount; p++)
       bioPolymers[p].getPdbData(viewer, ctype, qtype, mStep, derivType,
-          bsAtoms, bsSelected, bothEnds, isDraw, p == 0, tokens, sb, 
+          bsAtoms, bsSelected, bothEnds, isDraw, p == 0, tokens, out, 
           pdbCONECT, bsWritten);
   }
 

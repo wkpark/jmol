@@ -1,6 +1,8 @@
 package org.jmol.api;
 
+import org.jmol.io.JmolOutputChannel;
+
 public interface JmolPdfCreatorInterface {
 
-  public String createPdfDocument(String fileName, Object image);
+  public String createPdfDocument(JmolOutputChannel out, Object image);
 }

@@ -23,6 +23,7 @@
  */
 package org.openscience.jmol.app;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
@@ -31,11 +32,11 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.api.JmolAppAPI;
 import org.jmol.api.JmolViewer;
 
 import org.apache.commons.cli.Options;
@@ -46,7 +47,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.HelpFormatter;
 
-public class JmolApp {
+public class JmolApp implements JmolAppAPI {
 
   /**
    * The data model.
@@ -554,6 +555,17 @@ public class JmolApp {
       viewer.script(script);
   }
   
+  public void addHistoryWindowInfo(String name, Component window, Point border) {
+    historyFile.addWindowInfo(name, window, border);
+  }
+
+  public Point getHistoryWindowPosition(String name) {
+    return historyFile.getWindowPosition(name);
+  }
+
+  public Dimension getHistoryWindowSize(String name) {
+    return historyFile.getWindowSize(name);
+  }
   
   
 }

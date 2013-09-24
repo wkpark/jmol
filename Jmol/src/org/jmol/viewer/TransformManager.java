@@ -394,7 +394,7 @@ public class TransformManager {
    * @param translation
    * @param finalPoints
    * @param dihedralList
-   * @return  true if synchronous so that JavaScript can restart properly
+   * @return true if synchronous so that JavaScript can restart properly
    */
   boolean rotateAboutPointsInternal(JmolScriptEvaluator eval, P3 point1,
                                     P3 point2, float degreesPerSecond,
@@ -421,15 +421,18 @@ public class TransformManager {
         && (isSpin || endDegrees == 0))
       return false;
 
-    V3 axis = V3.newVsub(point2, point1);
-    if (isClockwise)
-      axis.scale(-1f);
-    internalRotationCenter.setT(point1);
-    rotationAxis.setT(axis);
-    if (translation == null) {
-      internalTranslation = null;
-    } else {
-      internalTranslation = V3.newV(translation);
+    V3 axis = null;
+    if (dihedralList == null) {
+      axis = V3.newVsub(point2, point1);
+      if (isClockwise)
+        axis.scale(-1f);
+      internalRotationCenter.setT(point1);
+      rotationAxis.setT(axis);
+      if (translation == null) {
+        internalTranslation = null;
+      } else {
+        internalTranslation = V3.newV(translation);
+      }
     }
     boolean isSelected = (bsAtoms != null);
     if (isSpin) {

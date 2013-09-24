@@ -2,6 +2,7 @@ package org.jmol.api;
 
 import java.util.Map;
 
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.TickInfo;
@@ -83,7 +84,7 @@ public interface JmolStateCreator {
   String writeFileData(String fileName, String type, 
                         int modelIndex, Object[] parameters);
 
-  JmolOutputChannel getOutputStream(String localName, String[] fullPath);
+  JmolOutputChannel getOutputChannel(String localName, String[] fullPath);
 
   void openFileAsync(String fileName, boolean pdbCartoons);
 

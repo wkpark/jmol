@@ -1,7 +1,6 @@
 package org.jmol.api;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Map;
 
 public interface JmolImageCreatorInterface {

@@ -32,7 +32,6 @@ import org.jmol.console.JmolButton;
 import org.jmol.console.JmolToggleButton;
 import org.jmol.export.JmolFileDropper;
 import org.jmol.export.dialog.Dialog;
-import org.jmol.export.history.HistoryFile;
 import org.jmol.export.image.AwtImageCreator;
 import org.jmol.i18n.GT;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;
@@ -47,6 +46,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
+import org.openscience.jmol.app.HistoryFile;
 import org.openscience.jmol.app.Jmol;
 import org.openscience.jmol.app.JmolApp;
 import org.openscience.jmol.app.SplashInterface;
@@ -1480,7 +1480,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   void openFile() {
     String fileName = (new Dialog()).getOpenFileNameFromDialog(viewerOptions,
-        viewer, null, historyFile, FILE_OPEN_WINDOW_NAME, true);
+        viewer, null, jmolApp, FILE_OPEN_WINDOW_NAME, true);
     if (fileName == null)
       return;
     boolean pdbCartoons = !fileName.startsWith("#NOC#;");

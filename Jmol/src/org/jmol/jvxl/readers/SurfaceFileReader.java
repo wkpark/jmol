@@ -25,10 +25,10 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.Parser;
 
 /**
@@ -38,7 +38,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
 
   protected BufferedReader br;
   protected JmolDocument binarydoc;
-  protected OutputStream os;
+  protected JmolOutputChannel out;
 
   SurfaceFileReader() {
   }
@@ -62,11 +62,11 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
   
   @Override
-  protected void setOutputStream(OutputStream os) {
+  protected void setOutputChannel(JmolOutputChannel out) {
     if (binarydoc == null)
-      this.os = os;
+      this.out = out;
     else
-      sg.setOutputStream(binarydoc, os);
+      sg.setOutputChannel(binarydoc, out);
   }
 
   @Override
@@ -81,13 +81,8 @@ abstract class SurfaceFileReader extends SurfaceReader {
       } catch (IOException e) {
         // ignore
       }
-    if (os != null)
-      try {
-        os.flush();
-        os.close();
-      } catch (IOException e) {
-        // ignore
-      }
+    if (out != null)
+      out.closeChannel();
     if (binarydoc != null)
       binarydoc.close();
   }
@@ -157,17 +152,10 @@ abstract class SurfaceFileReader extends SurfaceReader {
     line = br.readLine();
     if (line != null) {
       nBytes += line.length();
-      if (os != null) {
+      if (out != null) {
         byte[] b = line.getBytes();
-        os.write(b, 0, b.length);
-        /**
-         * @j2sNative
-         * 
-         *    this.os.writeByteAsInt(0x0A);
-         */
-        {
-          os.write('\n');
-        }
+        out.writeBytes(b, 0, b.length);
+        out.writeByteAsInt(0x0A);
       }
     }
     return line;

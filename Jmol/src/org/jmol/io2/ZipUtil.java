@@ -26,14 +26,12 @@
 package org.jmol.io2;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader; //import java.net.URL;
-//import java.net.URLConnection;
+import java.io.StringReader;
 import org.jmol.util.JmolList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -53,6 +51,7 @@ import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
 import org.jmol.io.JmolBinary;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -408,12 +407,9 @@ public class ZipUtil implements JmolZipUtility {
     String fullFilePath = null;
     String fileList = "";
     try {
-      ByteArrayOutputStream bos = (outFileName == null
-          || outFileName.startsWith("http://") ? new ByteArrayOutputStream()
-          : null);
-      ZipOutputStream os = new ZipOutputStream(
-          bos == null ? (OutputStream) viewer.openOutputChannel(privateKey,
-              outFileName, false) : bos);
+      JmolOutputChannel out = viewer.openOutputChannel(privateKey,
+          outFileName, false);
+      ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(out));
       for (int i = 0; i < fileNamesAndByteArrays.size(); i += 3) {
         String fname = (String) fileNamesAndByteArrays.get(i);
         byte[] bytes = null;
@@ -441,42 +437,37 @@ public class ZipUtil implements JmolZipUtility {
           continue;
         }
         fileList += key;
-        os.putNextEntry(new ZipEntry(fnameShort));
+        zos.putNextEntry(new ZipEntry(fnameShort));
         int nOut = 0;
         if (bytes == null) {
           // get data from disk
           InputStream in = viewer.openFileInputStream(privateKey, fname);
           int len;
           while ((len = in.read(buf, 0, 1024)) > 0) {
-            os.write(buf, 0, len);
+            zos.write(buf, 0, len);
             nOut += len;
           }
           in.close();
         } else {
           // data are already in byte form
-          os.write(bytes, 0, bytes.length);
+          zos.write(bytes, 0, bytes.length);
           nOut += bytes.length;
         }
         nBytesOut += nOut;
-        os.closeEntry();
+        zos.closeEntry();
         Logger.info("...added " + fname + " (" + nOut + " bytes)");
       }
-      os.close();
+      String ret = out.closeChannel();
       Logger.info(nBytesOut + " bytes prior to compression");
-      if (bos == null) {
-        fullFilePath = viewer.getAbsolutePath(privateKey, outFileName).replace('\\', '/');
-        nBytes = viewer.getFileLength(privateKey, outFileName);
-      } else {
-        byte[] bytes = bos.toByteArray();
-        if (outFileName == null)
-          return bytes;
-        fullFilePath = outFileName;
-        nBytes = bytes.length;
-        String ret = JmolBinary.postByteArray(fm, outFileName, bytes);
+      nBytes = out.getByteCount();
+      if (ret != null) {
         if (ret.indexOf("Exception") >= 0)
           return ret;
         msg += " " + ret;
       }
+      fullFilePath = out.getFileName();
+      if (fullFilePath == null)
+        return out.toByteArray();
     } catch (IOException e) {
       Logger.info(e.toString());
       return e.toString();
@@ -1157,6 +1148,4 @@ public class ZipUtil implements JmolZipUtility {
     return pathName.substring(0, pt) + s
         + (pt2 > 0 ? pathName.substring(pt2) : "");
   }
-
-
 }

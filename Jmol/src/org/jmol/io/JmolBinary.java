@@ -418,23 +418,23 @@ public class JmolBinary {
   }
 
   public static Object getStreamAsBytes(BufferedInputStream bis,
-                                         OutputStringBuilder osb) throws IOException {
+                                         JmolOutputChannel out) throws IOException {
     byte[] buf = new byte[1024];
-    byte[] bytes = (osb == null ? new byte[4096] : null);
+    byte[] bytes = (out == null ? new byte[4096] : null);
     int len = 0;
     int totalLen = 0;
     while ((len = bis.read(buf, 0, 1024)) > 0) {
       totalLen += len;
-      if (osb == null) {
+      if (out == null) {
         if (totalLen >= bytes.length)
           bytes = ArrayUtil.ensureLengthByte(bytes, totalLen * 2);
         System.arraycopy(buf, 0, bytes, totalLen - len, len);
       } else {
-        osb.write(buf, 0, len);
+        out.writeBytes(buf, 0, len);
       }
     }
     bis.close();
-    if (osb == null) {
+    if (out == null) {
       return ArrayUtil.arrayCopyByte(bytes, totalLen);
     }
     return totalLen + " bytes";

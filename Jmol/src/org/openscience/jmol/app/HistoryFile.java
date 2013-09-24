@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.export.history;
+package org.openscience.jmol.app;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -188,7 +188,7 @@ public class HistoryFile {
    * @param name Window name
    * @return Visibility of the window stored in the history file
    */
-  public Boolean getWindowVisibility(String name) {
+  private Boolean getWindowVisibility(String name) {
     Boolean result = null;
     if (name != null) {
       try {

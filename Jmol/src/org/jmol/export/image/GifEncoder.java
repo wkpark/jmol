@@ -161,6 +161,7 @@ public class GifEncoder extends ImageEncoder {
   private int delayTime100ths = -1;
   private boolean looping;
   private Map<String, Object> params;
+  private int byteCount;
 
   /**
    * we allow for animated GIF by being able to re-enter
@@ -254,13 +255,11 @@ public class GifEncoder extends ImageEncoder {
   @Override
   protected void close() {
     if (addTrailer) {
-    try {
       writeTrailer();
-    } catch (IOException e) {
+      super.close();
     }
-    super.close();
-    }
-    params.put("captureByteCount", Integer.valueOf(byteCount));
+    params.put("captureByteCount", Integer.valueOf(byteCount
+        + out.getByteCount()));
   }
 
   /**
@@ -405,7 +404,7 @@ public class GifEncoder extends ImageEncoder {
     return ht;
   }
 
-  private void writeGraphicControlExtension() throws IOException {
+  private void writeGraphicControlExtension() {
     if (transparentIndex != -1 || delayTime100ths >= 0) {
       putByte(0x21); // graphic control extension
       putByte(0xf9); // graphic control label
@@ -459,7 +458,7 @@ public class GifEncoder extends ImageEncoder {
 //  18  |     0x00      |  Block Terminator
 //      +---------------+
 
-  private void writeNetscapeLoopExtension() throws IOException {
+  private void writeNetscapeLoopExtension() {
     putByte(0x21); // graphic control extension
     putByte(0xff); // netscape loop extension
     putByte(0x0B); // block size
@@ -473,7 +472,7 @@ public class GifEncoder extends ImageEncoder {
 
   private int initCodeSize;
 
-  private void writeImage() throws IOException {
+  private void writeImage() {
     putByte(0x2C);
     putWord(0); //left
     putWord(0); //top
@@ -501,7 +500,7 @@ public class GifEncoder extends ImageEncoder {
     putByte(0);
   }
 
-  private void writeTrailer() throws IOException {
+  private void writeTrailer() {
     // Write the GIF file terminator
     putByte(0x3B);
   }
@@ -556,7 +555,7 @@ public class GifEncoder extends ImageEncoder {
   }
 
   // Write out a word to the GIF file
-  private void putWord(int w) throws IOException {
+  private void putWord(int w) {
     putByte(w);
     putByte(w >> 8);
   }
@@ -622,7 +621,7 @@ public class GifEncoder extends ImageEncoder {
   private int pass = 0;
   private int curx, cury;
 
-  private void compress() throws IOException {
+  private void compress() {
 
     // Calculate number of bits we are expecting
     countDown = width * height;
@@ -717,7 +716,7 @@ public class GifEncoder extends ImageEncoder {
       0x003F, 0x007F, 0x00FF, 0x01FF, 0x03FF, 0x07FF, 0x0FFF, 0x1FFF, 0x3FFF,
       0x7FFF, 0xFFFF };
 
-  private void output(int code) throws IOException {
+  private void output(int code) {
     curAccum &= masks[curBits];
 
     if (curBits > 0)
@@ -762,7 +761,7 @@ public class GifEncoder extends ImageEncoder {
   // Clear out the hash table
 
   // table clear for block compress
-  private void clearBlock() throws IOException {
+  private void clearBlock() {
     clearHash(hsize);
     freeEnt = clearCode + 2;
     clearFlag = true;
@@ -786,17 +785,17 @@ public class GifEncoder extends ImageEncoder {
 
   // Add a byte to the end of the current packet, and if it is 254
   // byte, flush the packet to disk.
-  private void byteOut(byte c) throws IOException {
+  private void byteOut(byte c) {
     buf[bufPt++] = c;
     if (bufPt >= 254)
       flushBytes();
   }
 
   // Flush the packet to disk, and reset the accumulator
-  protected void flushBytes() throws IOException {
+  protected void flushBytes() {
     if (bufPt > 0) {
       putByte(bufPt);
-      out.write(buf, 0, bufPt);
+      out.writeBytes(buf, 0, bufPt);
       byteCount += bufPt;
       bufPt = 0;
     }

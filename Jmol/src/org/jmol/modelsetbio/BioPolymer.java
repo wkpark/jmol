@@ -24,7 +24,7 @@
 package org.jmol.modelsetbio;
 
 import org.jmol.constant.EnumStructure;
-import org.jmol.io.OutputStringBuilder;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
@@ -476,7 +476,7 @@ public abstract class BioPolymer {
                                       BS bsAtoms, BS bsSelected,
                                       boolean bothEnds, boolean isDraw,
                                       boolean addHeader, LabelToken[] tokens,
-                                      OutputStringBuilder pdbATOM,
+                                      JmolOutputChannel pdbATOM,
                                       SB pdbCONECT, BS bsWritten) {
     boolean calcRamachandranStraightness = (qtype == 'C' || qtype == 'P');
     boolean isRamachandran = (ctype == 'R' || ctype == 'S'
@@ -603,7 +603,7 @@ public abstract class BioPolymer {
                               boolean writeRamachandranStraightness,
                               boolean quaternionStraightness, float factor,
                               boolean isAmino, boolean isRelativeAlias,
-                              LabelToken[] tokens, OutputStringBuilder pdbATOM,
+                              LabelToken[] tokens, JmolOutputChannel pdbATOM,
                               SB pdbCONECT, BS bsWritten) {
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
     Quaternion q;
@@ -1047,7 +1047,7 @@ public abstract class BioPolymer {
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep,
                          int derivType, BS bsAtoms, BS bsSelected,
                          boolean bothEnds, boolean isDraw, boolean addHeader,
-                         LabelToken[] tokens, OutputStringBuilder pdbATOM,
+                         LabelToken[] tokens, JmolOutputChannel pdbATOM,
                          SB pdbCONECT, BS bsWritten) {
     return;
   }

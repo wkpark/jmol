@@ -498,12 +498,17 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
      * to be used as input. These lines start with $ and have a [...] phrase
      * after them. Their presence switches us to this new mode where we use
      * those statements as our commands and any line WITHOUT those as comments.
+     * 
+     * adjusted to only do this if $ starts the FIRST line of a script
+     * and to accept standard $ ... entries clipped from the console  Jmol 13.3.6
+     * 
      */
-    if (ichToken == ichCurrentCommand && ch == '$') {
+    if (ichToken == ichCurrentCommand && ch == '$' && (isShowScriptOutput || ichToken == 0)) {
       isShowScriptOutput = true;
       isShowCommand = true;
-      while (ch != ']' && !eol(ch = charAt(ichT)))
-        ++ichT;
+      if (charAt(++ichT) == '[')
+        while (ch != ']' && !eol(ch = charAt(ichT)))
+          ++ichT;
       cchToken = ichT - ichToken;
       return CONTINUE;
     } else if (isShowScriptOutput && !isShowCommand) {

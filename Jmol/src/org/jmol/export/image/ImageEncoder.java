@@ -58,11 +58,10 @@ import java.awt.Image;
 import java.awt.image.ColorModel;
 import java.awt.image.ImageConsumer;
 import java.awt.image.ImageProducer;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.jmol.api.Interface;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.J2SIgnoreImport;
 
 /** Abstract class for writing out an image.
@@ -91,7 +90,7 @@ import org.jmol.util.J2SIgnoreImport;
   java.awt.image.ImageConsumer.class, java.awt.image.ImageProducer.class})
 public abstract class ImageEncoder implements ImageConsumer {
 
-  protected OutputStream out;
+  protected JmolOutputChannel out;
 
   protected int width = -1;
   protected int height = -1;
@@ -100,16 +99,14 @@ public abstract class ImageEncoder implements ImageConsumer {
   private int hintflags = 0;
   private boolean started = false;
   private boolean encoding;
-  private IOException iox;
-  protected int byteCount;
+  private IOException iox;  
   
-  
-  public static Object write(String type, Object image, OutputStream os,
+  public static boolean write(String type, Object image, JmolOutputChannel out,
                              Map<String, Object> params) throws IOException {
     ImageEncoder ie = (ImageEncoder) Interface
         .getInterface("org.jmol.export.image." + type + "Encoder");
     if (ie == null)
-      return null;
+      return false;
     ie.setParams(params);
     /**
      * @j2sNative
@@ -119,43 +116,23 @@ public abstract class ImageEncoder implements ImageConsumer {
     {
       ie.producer = (image == null ? null : ((Image) image).getSource());
     }
-    boolean asBytes = (os == null);
-    if (asBytes)
-      os = new ByteArrayOutputStream();
-    ie.out = os;
-    
+    ie.out = out;    
     if (ie.producer != null)
       ie.encode();
     ie.close();
-    return (asBytes ? ((ByteArrayOutputStream) os).toByteArray() : null);
+    return true;
   }
 
   protected void close() {
-    try {
-      out.flush();
-      out.close();
-    } catch (IOException e) {
-      // ignore
-    }
+    out.closeChannel();
   }
 
-  protected void putString(String str) throws IOException {
-    byte[] buf = str.getBytes();
-    byteCount += buf.length;
-    out.write(buf);
+  protected void putString(String str) {
+    out.append(str);
   }
 
-  protected void putByte(int b) throws IOException {
-    byteCount++;
-    /**
-     * @j2sNative
-     * 
-     *            this.out.writeByteAsInt(b);
-     * 
-     */
-    {
-      out.write(b);
-    }
+  protected void putByte(int b) {
+    out.writeByteAsInt(b);
   }
 
   // Methods that subclasses implement.

@@ -33,7 +33,7 @@ import org.jmol.thread.TimeoutThread;
 import org.jmol.i18n.GT;
 import org.jmol.io.CifDataReader;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.OutputStringBuilder;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -48,7 +48,6 @@ import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolNMRInterface;
-import org.jmol.api.JmolOutputChannel;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.AtomIndexIterator;
@@ -354,7 +353,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return statusManager;
   }
 
-  public boolean isRestricted(ACCESS a) {
+  public boolean haveAccess(ACCESS a) {
     // disables WRITE, LOAD file:/, set logFile 
     // command line -g and -w options ARE available for final writing of image
     return access == a;
@@ -659,7 +658,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getExportDriverList() {
-    return (isRestricted(ACCESS.ALL) ? (String) global
+    return (haveAccess(ACCESS.ALL) ? (String) global
         .getParameter("exportDrivers") : "");
   }
 
@@ -2689,8 +2688,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public Object getFileAsBytes(String pathName, OutputStringBuilder osb) {
-    return fileManager.getFileAsBytes(pathName, osb, true);
+  public Object getFileAsBytes(String pathName, JmolOutputChannel out) {
+    return fileManager.getFileAsBytes(pathName, out, true);
   }
 
   public String getCurrentFileAsString() {
@@ -3156,7 +3155,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   @Override
   public int getModelCount() {
-    return modelSet.modelCount;
+    return (modelSet == null ? 0 : modelSet.modelCount);
   }
 
   public String getModelInfoAsString() {
@@ -3820,7 +3819,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       fps = 1;
     if (fps > 50)
       fps = 50;
-    global.setI("animationFps", fps);
     // Eval
     // app AtomSetChooser
     animationManager.setAnimationFps(fps);
@@ -3842,7 +3840,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     animationManager.setAnimationReplayMode(replayMode, firstFrameDelay,
         lastFrameDelay);
-    global.setS("animationMode", replayMode.name());
   }
 
   public EnumAnimationMode getAnimationReplayMode() {
@@ -3977,6 +3974,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void setFrameVariables() {
+    global.setS("animationMode", animationManager.animationReplayMode.name());
+    global.setI("animationFps", animationManager.animationFps);
     global.setS("_firstFrame", animationManager.getModelSpecial(-1));
     global.setS("_lastFrame", animationManager.getModelSpecial(1));
     global.setF("_animTimeSec", animationManager.getAnimRunTimeSeconds());
@@ -5591,7 +5590,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * 
      */
     {
-      return (isKiosk || !isRestricted(ACCESS.ALL) ? null : statusManager
+      return (isKiosk || !haveAccess(ACCESS.ALL) ? null : statusManager
           .dialogAsk(type, fileName));
     }
   }
@@ -6596,7 +6595,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case T.animationfps:
       setAnimationFps(value);
-      break;
+      return;
     case T.percentvdwatom:
       setPercentVdwAtom(value);
       break;
@@ -8202,7 +8201,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelSet.getHelixData(bs, tokType);
   }
 
-  public String getPdbAtomData(BS bs, OutputStringBuilder sb) {
+  public String getPdbAtomData(BS bs, JmolOutputChannel sb) {
     return modelSet.getPdbAtomData(bs == null ? getSelectionSet(true) : bs, sb);
   }
 
@@ -8678,9 +8677,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // image and file export
   // ///////////////////////////////////////////////////////////////
 
-  public JmolOutputChannel getOutputStream(String localName, String[] fullPath) {
+  public JmolOutputChannel getOutputChannel(String localName, String[] fullPath) {
     // called by Script LOAD AS  and ISOSURFACE AS  options 
-    return getStateCreator().getOutputStream(localName, fullPath);
+    return getStateCreator().getOutputChannel(localName, fullPath);
   }
 
   @Override
@@ -8700,7 +8699,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   @Override
   public String clipImage(String text) {
-    if (!isRestricted(ACCESS.ALL))
+    if (!haveAccess(ACCESS.ALL))
       return "no";
     JmolImageCreatorInterface c;
     try {
@@ -10200,6 +10199,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setDihedrals(float[] dihedralList, BS[] bsBranches, float rate) {
+    if (bsBranches == null)
+      bsBranches = getBsBranches(dihedralList);
     modelSet.setDihedrals(dihedralList, bsBranches, rate);
   }
 
@@ -10349,9 +10350,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to JmolFileAdapter
   // ///////////////////////////////////////////////////////////////
 
-  public Object openOutputChannel(double privateKey, String fileName,
+  public JmolOutputChannel openOutputChannel(double privateKey, String fileName,
                                   boolean asWriter) throws IOException {
-    return (!isRestricted(ACCESS.ALL) ? null : getFileAdapter()
+    return (!haveAccess(ACCESS.ALL) ? null : getFileAdapter()
         .openOutputChannel(privateKey, fileManager, fileName, asWriter));
   }
 
@@ -10362,11 +10363,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getAbsolutePath(double privateKey, String fileName) {
     return getFileAdapter().getAbsolutePath(privateKey, fileName);
-  }
-
-  public long getFileLength(double privateKey, String fileName)
-      throws IOException {
-    return getFileAdapter().getFileLength(privateKey, fileName);
   }
 
   public Object openLogFile(double privateKey, String logFileName,

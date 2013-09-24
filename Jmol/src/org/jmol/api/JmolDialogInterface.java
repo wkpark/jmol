@@ -23,7 +23,7 @@ public interface JmolDialogInterface {
   public abstract String getOpenFileNameFromDialog(Map<String, Object> viewerOptions,
                                                    JmolViewer viewer,
                                                    String fileName,
-                                                   Object historyFile,
+                                                   JmolAppAPI historyFile,
                                                    String windowName,
                                                    boolean allowAppend);
 

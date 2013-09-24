@@ -23,10 +23,8 @@
 
 package org.jmol.viewer;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Date;
@@ -35,7 +33,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolImageCreatorInterface;
-import org.jmol.api.JmolOutputChannel;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.api.JmolScriptFunction;
 import org.jmol.api.JmolStateCreator;
@@ -47,7 +44,7 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.i18n.GT;
 import org.jmol.io.Base64;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.OutputStringBuilder;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -113,6 +110,16 @@ public class StateCreator implements JmolStateCreator {
   
   public static String SIMULATION_PROTOCOL = "http://SIMULATION/";
 
+  /**
+   * @param fileName 
+   * @param scripts 
+   * @param isImage 
+   * @param asJmolZip 
+   * @param width 
+   * @param height 
+   * @return either byte[] (a full ZIP file) or String (just an embedded state script)
+   * 
+   */
   public Object getWrappedState(String fileName, String[] scripts,
                                 boolean isImage, boolean asJmolZip, int width,
                                 int height) {
@@ -2076,20 +2083,20 @@ public class StateCreator implements JmolStateCreator {
           if (ret == null) {
             // allow Jmol to do it            
             String msg = null;
-            OutputStream os = null;
+            JmolOutputChannel out = null;
             JmolImageCreatorInterface c = viewer.getImageCreator();
             if (captureMode != Integer.MIN_VALUE) {
               Map<String, Object> cparams = viewer.captureParams;
               switch (captureMode) {
               case T.movie:
                 if (cparams != null)
-                  ((OutputStream) cparams.get("outputStream")).close();
-                os = (OutputStream) getOutputStream(localName, null);
-                if (os == null) {
+                  ((JmolOutputChannel) cparams.get("outputChannel")).closeChannel();
+                out = getOutputChannel(localName, null);
+                if (out == null) {
                   ret = msg = "ERROR: capture canceled";
                   viewer.captureParams = null;
                 } else {
-                  localName = ((JmolOutputChannel) os).getFileName();
+                  localName = out.getFileName();
                   msg = type + "_STREAM_OPEN " + localName;
                   viewer.captureParams = params;
                   params.put("captureFileName", localName);
@@ -2139,8 +2146,8 @@ public class StateCreator implements JmolStateCreator {
                 break;
               }
             }
-            if (os != null)
-              params.put("outputStream", os);
+            if (out != null)
+              params.put("outputChannel", out);
             params.put("fileName", localName);
             if (ret == null)
               ret = c.createImage(params);
@@ -2410,21 +2417,22 @@ public class StateCreator implements JmolStateCreator {
   }
 
   /**
-   * Generates file data and passes it on either to a FileOuputStream (Java) 
-   * or via POSTing to a url using a ByteOutputStream (JavaScript)
+   * Generates file data and passes it on either to a FileOuputStream (Java) or
+   * via POSTing to a url using a ByteOutputStream (JavaScript)
    * 
-   * @param fileName 
-   * @param type  one of: PDB PQR FILE PLOT 
-   * @param modelIndex 
-   * @param parameters 
-   * @return "OK..." or "" or null 
+   * @param fileName
+   * @param type
+   *        one of: PDB PQR FILE PLOT
+   * @param modelIndex
+   * @param parameters
+   * @return "OK..." or "" or null
    * 
    */
-  public String writeFileData(String fileName, String type, 
-                              int modelIndex, Object[] parameters) {
+  public String writeFileData(String fileName, String type, int modelIndex,
+                              Object[] parameters) {
     String[] fullPath = new String[1];
-    OutputStream os = (OutputStream) getOutputStream(fileName, fullPath);
-    if (os == null)
+    JmolOutputChannel out = getOutputChannel(fileName, fullPath);
+    if (out == null)
       return "";
     fileName = fullPath[0];
     String pathName = (type.equals("FILE") ? viewer.getFullPathName() : null);
@@ -2436,40 +2444,25 @@ public class StateCreator implements JmolStateCreator {
       if (pathName == null)
         return null; // zapped
     }
-    BufferedOutputStream bos;
-    /**
-     * @j2sNative
-     * 
-     *            bos = os;
-     */
-    {
-      bos = new BufferedOutputStream(os);
-    }
     // The OutputStringBuilder allows us to create strings or byte arrays
     // of a given type, passing just one parameter and maintaining an 
     // output stream all along. For JavaScript, this will be a ByteArrayOutputStream
     // which will then be posted to a server for a return that allows saving.
-    OutputStringBuilder osb = new OutputStringBuilder(bos, asBytes);
-    osb.type = type;
-    String msg = (
-        type.equals("PDB") || type.equals("PQR") ? viewer.getPdbAtomData(null, osb)
-        : type.startsWith("PLOT") ? viewer.modelSet.getPdbData(modelIndex, 
-            type.substring(5), viewer.getSelectionSet(false), parameters, osb)
-        : getCurrentFile ? osb.append(viewer.getCurrentFileAsString()).toString()
-        : (String) viewer.getFileAsBytes(pathName, osb));
+    out.setType(type);
+    String msg = (type.equals("PDB") || type.equals("PQR") ? viewer
+        .getPdbAtomData(null, out) : type.startsWith("PLOT") ? viewer.modelSet
+        .getPdbData(modelIndex, type.substring(5), viewer
+            .getSelectionSet(false), parameters, out) : getCurrentFile ? out
+        .append(viewer.getCurrentFileAsString()).toString() : (String) viewer
+        .getFileAsBytes(pathName, out));
+    out.closeChannel();
     if (msg != null)
       msg = "OK " + msg + " " + fileName;
-    try {
-      os.flush();
-      os.close();
-    } catch (IOException e) {
-      // ignore
-    }
     return msg;
   }
 
-  public JmolOutputChannel getOutputStream(String fileName, String[] fullPath) {
-    if (!viewer.isRestricted(ACCESS.ALL))
+  public JmolOutputChannel getOutputChannel(String fileName, String[] fullPath) {
+    if (!viewer.haveAccess(ACCESS.ALL))
       return null;
     fileName = getOutputFileNameFromDialog(fileName, Integer.MIN_VALUE);
     if (fileName == null)
@@ -2478,7 +2471,7 @@ public class StateCreator implements JmolStateCreator {
       fullPath[0] = fileName;
     String localName = (FileManager.isLocal(fileName) ? fileName : null);
     try {
-      return (JmolOutputChannel) viewer.openOutputChannel(privateKey, localName, false);
+      return viewer.openOutputChannel(privateKey, localName, false);
     } catch (IOException e) {
       Logger.info(e.toString());
       return null;
@@ -2575,7 +2568,7 @@ public class StateCreator implements JmolStateCreator {
       value = null;
     else
       Logger.info(GT._("Setting log file to {0}", path));
-    if (value == null || !viewer.isRestricted(ACCESS.ALL)) {
+    if (value == null || !viewer.haveAccess(ACCESS.ALL)) {
       Logger.info(GT._("Cannot set log file path."));
       value = null;
     } else {

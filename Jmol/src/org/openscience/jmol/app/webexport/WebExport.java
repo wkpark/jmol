@@ -47,9 +47,9 @@ import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
-import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.util.Parser;
+import org.openscience.jmol.app.HistoryFile;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
 
 public class WebExport extends JPanel implements WindowListener {

@@ -23,8 +23,6 @@
  */
 package org.jmol.script;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import org.jmol.util.JmolList;
 
 import java.util.Hashtable;
@@ -45,6 +43,7 @@ import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -59,6 +58,7 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
 import org.jmol.thread.JmolThread;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
@@ -7136,11 +7136,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // compare {model1} {model2} FRAMES
     // compare {model1} ATOMS {bsAtoms1} [coords]
     // compare {model1} [coords] ATOMS {bsAtoms1} [coords]
+    // compare {model1} {model2} BONDS "....."   /// flexible fit
 
     boolean isQuaternion = false;
     boolean doRotate = false;
     boolean doTranslate = false;
     boolean doAnimate = false;
+    boolean isFlexFit = false;
     Quaternion[] data1 = null, data2 = null;
     BS bsAtoms1 = null, bsAtoms2 = null;
     JmolList<Object[]> vAtomSets = null;
@@ -7177,7 +7179,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       case T.smiles:
         isSmiles = true;
         //$FALL-THROUGH$
-      case T.search:
+      case T.search: // SMARTS
+        strSmiles = stringParameter(++i);
+        break;
+      case T.bonds:
+        isFlexFit = true;
+        doRotate = true;
         strSmiles = stringParameter(++i);
         break;
       case T.decimal:
@@ -7249,6 +7256,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (chk)
       return;
 
+    // processing
     if (isFrames)
       nSeconds = 0;
     if (Float.isNaN(nSeconds) || nSeconds < 0)
@@ -7356,6 +7364,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
         Matrix4f m4 = new Matrix4f();
         center = new P3();
+        if (isFlexFit) {
+          float[] list;
+          if (bsFrom == null || bsTo == null || (list = getFlexFitList(bsFrom, bsTo, strSmiles)) == null)
+            return;
+          viewer.setDihedrals(list, null, 1);
+        }
         float stddev = getSmilesCorrelation(bsFrom, bsTo, strSmiles, null,
             null, m4, null, !isSmiles, false, null, center);
         if (Float.isNaN(stddev))
@@ -9442,7 +9456,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             ";\n    ").appendSB(loadScript);
       } else if (filename.startsWith("?") && viewer.isJS) {
         localName = null;
-        filename = loadFileAsync("LOAD" + (isAppend ? "_APPEND_" : "_"), filename, i, !isAppend);
+        filename = loadFileAsync("LOAD" + (isAppend ? "_APPEND_" : "_"),
+            filename, i, !isAppend);
         // on first pass, a ScriptInterruption will be thrown; 
         // on the second pass, we will have the file name, which will be cache://localLoad_n__m
       }
@@ -9450,7 +9465,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     // set up the output stream from AS keyword
 
-    OutputStream os = null;
+    JmolOutputChannel out = null;
     if (localName != null) {
       if (localName.equals("."))
         localName = viewer.getFilePath(filename, true);
@@ -9459,11 +9474,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               viewer.getFilePath(filename, false)))
         invArg();
       String[] fullPath = new String[] { localName };
-      os = (OutputStream) viewer.getOutputStream(localName, fullPath);
-      if (os == null)
+      out = viewer.getOutputChannel(localName, fullPath);
+      if (out == null)
         Logger.error("Could not create output stream for " + fullPath[0]);
       else
-        htParams.put("OutputStream", os);
+        htParams.put("OutputChannel", out);
     }
 
     if (filenames == null && tokType == 0) {
@@ -9491,15 +9506,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       Logger.startTimer("load");
     errMsg = viewer.loadModelFromFile(null, filename, filenames, null,
         isAppend, htParams, loadScript, tokType);
-    if (os != null)
-      try {
-        viewer.setFileInfo(new String[] { localName, localName, localName });
-        Logger.info(GT._("file {0} created", localName));
-        showString(viewer.getFilePath(localName, false) + " created");
-        os.close();
-      } catch (IOException e) {
-        Logger.error("error closing file " + e.toString());
-      }
+    if (out != null) {
+      viewer.setFileInfo(new String[] { localName, localName, localName });
+      Logger.info(GT._("file {0} created", localName));
+      showString(viewer.getFilePath(localName, false) + " created");
+      out.closeChannel();
+    }
     if (tokType > 0) {
       // we are just loading an atom property
       // reset the file info in FileManager, check for errors, and return
@@ -10272,7 +10284,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         if (isArrayParameter(++i)) {
           dihedralList = floatParameterSet(i, 6, Integer.MAX_VALUE);
           i = iToken;
-          isSpin = true;
         } else {
           int iAtom1 = atomExpressionAt(i).nextSetBit(0);
           int iAtom2 = atomExpressionAt(++iToken).nextSetBit(0);
@@ -10371,6 +10382,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (chk)
       return;
+
+    // process
+    if (dihedralList != null) {
+      if (endDegrees != Float.MAX_VALUE) {
+        isSpin = true;
+        degreesPerSecond = endDegrees;
+      }
+    }
+
     if (isSelected && bsAtoms == null)
       bsAtoms = viewer.getSelectionSet(false);
     if (bsCompare != null) {
@@ -10384,6 +10404,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             // -n means number of seconds, not degreesPerSecond
             -endDegrees / degreesPerSecond
                 : degreesPerSecond);
+
+    if (dihedralList != null) {
+      if (!isSpin) {
+        viewer.setDihedrals(dihedralList, null, 1);
+        return;
+      }
+      translation = null;
+    }
+
     if (q != null) {
       // only when there is a translation (4x4 matrix or TRANSLATE)
       // do we set the rotation to be the center of the selected atoms or model
@@ -12244,8 +12273,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       case T.integer:
         direction = intParameter(i);
-        if (direction > 0)
-          direction = 0;
         break;
       default:
         invArg();
@@ -14281,7 +14308,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       pt = pt0 = 1;
       isCommand = true;
       isShow = (viewer.isApplet() && !viewer.isSignedApplet()
-          || !viewer.isRestricted(ACCESS.ALL) || viewer.getPathForAllFiles()
+          || !viewer.haveAccess(ACCESS.ALL) || viewer.getPathForAllFiles()
           .length() > 0);
     } else {
       isCommand = false;
@@ -14518,7 +14545,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             type = "IMAGE";
         }
         if (fileName.equalsIgnoreCase("clipboard")
-            || !viewer.isRestricted(ACCESS.ALL))
+            || !viewer.haveAccess(ACCESS.ALL))
           fileName = null;
         break;
       default:
@@ -15193,6 +15220,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!chk)
         msg = viewer.getMeasurementInfoAsString();
       break;
+    case T.best:
+      len = 3;
+      if (!chk && slen == len)
+        msg = viewer.getOrientationText(tokAt(2), null);
+      break;
     case T.rotation:
       tok = tokAt(2);
       if (tok == T.nada)
@@ -15732,5 +15764,49 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     scriptDelayThread = new ScriptDelayThread(this, viewer, millis);
     scriptDelayThread.run();
   }
+
+  public float[] getFlexFitList(BS bs1, BS bs2, String smiles1)
+      throws ScriptException {
+    int[][] mapSet = ArrayUtil.newInt2(2);
+    getSmilesCorrelation(bs1, bs2, smiles1, null, null, null, null, true,
+        false, mapSet, null);
+    int[][] bondMap1 = viewer.getDihedralMap(mapSet[0]);
+    int[][] bondMap2 = (bondMap1 == null ? null : viewer
+        .getDihedralMap(mapSet[1]));
+    if (bondMap2 == null || bondMap2.length != bondMap1.length)
+      return null;
+    float[][] angles = new float[bondMap1.length][3];
+    Atom[] atoms = viewer.modelSet.atoms;
+    getTorsions(atoms, bondMap2, angles, 0);
+    getTorsions(atoms, bondMap1, angles, 1);
+    float[] data = new float[bondMap1.length * 6];
+    for (int i = 0, pt = 0; i < bondMap1.length; i++) {
+      int[] map = bondMap1[i];
+      data[pt++] = map[0];
+      data[pt++] = map[1];
+      data[pt++] = map[2];
+      data[pt++] = map[3];
+      data[pt++] = angles[i][0];
+      data[pt++] = angles[i][1];
+    }
+    return data;
+  }
+  
+  private static void getTorsions(Atom[] atoms, int[][] bondMap,
+                                  float[][] diff, int pt) {
+    for (int i = bondMap.length; --i >= 0;) {
+      int[] map = bondMap[i];
+      float v = Measure.computeTorsion(atoms[map[0]], atoms[map[1]],
+          atoms[map[2]], atoms[map[3]], true);
+      if (pt == 1) {
+        if (v - diff[i][0] > 180)
+          v -= 360;
+        else if (v - diff[i][0] <= -180)
+          v += 360;
+      }
+      diff[i][pt] = v;
+    }
+  }
+
 
 }

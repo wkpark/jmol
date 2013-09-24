@@ -70,7 +70,7 @@ import org.jmol.util.V3;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
-import org.jmol.io.OutputStringBuilder;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.io.XmlUtil;
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
@@ -1179,14 +1179,14 @@ abstract public class ModelCollection extends BondCollection {
    *        StringXBuilder or BufferedWriter
    * @return PDB file data string
    */
-  public String getPdbAtomData(BS bs, OutputStringBuilder sb) {
+  public String getPdbAtomData(BS bs, JmolOutputChannel sb) {
     if (atomCount == 0 || bs.nextSetBit(0) < 0)
       return "";
     if (sb == null)
-      sb = new OutputStringBuilder(null, false);
+      sb = new JmolOutputChannel();
     int iModel = atoms[bs.nextSetBit(0)].modelIndex;
     int iModelLast = -1;
-    boolean isPQR = "PQR".equals(sb.type);
+    boolean isPQR = "PQR".equals(sb.getType());
     String occTemp = "%6.2Q%6.2b          ";
     if (isPQR) {
       occTemp = "%8.4P%7.4V       ";
@@ -1286,7 +1286,7 @@ abstract public class ModelCollection extends BondCollection {
    *****************************/
 
   public String getPdbData(int modelIndex, String type, BS bsSelected,
-                           Object[] parameters, OutputStringBuilder sb) {
+                           Object[] parameters, JmolOutputChannel out) {
     if (isJmolDataFrameForModel(modelIndex))
       modelIndex = getJmolDataSourceFrame(modelIndex);
     if (modelIndex < 0)
@@ -1295,8 +1295,8 @@ abstract public class ModelCollection extends BondCollection {
     if (parameters == null && !isPDB)
       return null;
     Model model = models[modelIndex];
-    if (sb == null)
-      sb = new OutputStringBuilder(null, false);
+    if (out == null)
+      out = new JmolOutputChannel();
     SB pdbCONECT = new SB();
     boolean isDraw = (type.indexOf("draw") >= 0);
     BS bsAtoms = null;
@@ -1307,7 +1307,7 @@ abstract public class ModelCollection extends BondCollection {
     if (parameters == null) {
       ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
           .charAt(11) : 'R');
-      model.getPdbData(viewer, type, ctype, isDraw, bsSelected, sb, tokens,
+      model.getPdbData(viewer, type, ctype, isDraw, bsSelected, out, tokens,
           pdbCONECT, bsWritten);
       bsAtoms = viewer.getModelUndeletedAtomsBitSet(modelIndex);
     } else {
@@ -1321,9 +1321,9 @@ abstract public class ModelCollection extends BondCollection {
       P3 maxXYZ = (P3) parameters[5];
       P3 factors = (P3) parameters[6];
       P3 center = (P3) parameters[7];
-      sb.append("REMARK   6 Jmol PDB-encoded data: ").append(type)
+      out.append("REMARK   6 Jmol PDB-encoded data: ").append(type)
           .append(";\n");
-      sb.append("REMARK   6 Jmol data").append(" min = ").append(
+      out.append("REMARK   6 Jmol data").append(" min = ").append(
           Escape.eP(minXYZ)).append(" max = ")
           .append(Escape.eP(maxXYZ)).append(" unScaledXyz = xyz * ")
           .append(Escape.eP(factors)).append(" + ").append(
@@ -1338,10 +1338,10 @@ abstract public class ModelCollection extends BondCollection {
         if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
           continue;
         Atom a = atoms[i];
-        sb.append(LabelToken.formatLabelAtomArray(viewer, a, tokens, '\0', null));
+        out.append(LabelToken.formatLabelAtomArray(viewer, a, tokens, '\0', null));
         if (isPDB)
           bsWritten.set(i);
-        sb.append(TextFormat.sprintf(
+        out.append(TextFormat.sprintf(
             "%-8.2f%-8.2f%-10.2f    %6.3f          %2s    %s\n", 
             "ssF", new Object[] {
                 a.getElementSymbolIso(false).toUpperCase(), strExtra,
@@ -1355,14 +1355,14 @@ abstract public class ModelCollection extends BondCollection {
         atomLast = a;
       }
     }
-    sb.append(pdbCONECT.toString());
+    out.append(pdbCONECT.toString());
     if (isDraw)
-      return sb.toString();
+      return out.toString();
     bsSelected.and(bsAtoms);
     if (isPDB)
-      sb.append("\n\n"
+      out.append("\n\n"
           + getProteinStructureState(bsWritten, false, ctype == 'R', 1));
-    return sb.toString();
+    return out.toString();
   }
 
   public boolean isJmolDataFrameForModel(int modelIndex) {

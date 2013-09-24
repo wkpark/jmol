@@ -24,10 +24,15 @@
 
 package org.jmol.adapter.smarter;
 
+
+import java.io.BufferedReader;
+import java.util.Map;
+
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
@@ -37,14 +42,7 @@ import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
-
-import java.io.BufferedReader;
-import java.io.OutputStream;
-
-import java.util.Map;
 import org.jmol.util.JmolList;
-
-
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.Viewer;
 
@@ -177,7 +175,7 @@ public abstract class AtomSetCollectionReader {
   protected float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
   protected int desiredModelNumber = Integer.MIN_VALUE;
   protected SymmetryInterface symmetry;
-  protected OutputStream os;
+  protected JmolOutputChannel out;
   protected boolean iHaveFractionalCoordinates;
   protected boolean doPackUnitCell;
   protected String strSupercell;
@@ -461,8 +459,8 @@ public abstract class AtomSetCollectionReader {
     getHeader = htParams.containsKey("getHeader");
     isSequential = htParams.containsKey("isSequential");
     readerName = (String) htParams.get("readerName");
-    if (htParams.containsKey("OutputStream"))
-      os = (OutputStream) htParams.get("OutputStream");
+    if (htParams.containsKey("OutputChannel"))
+      out = (JmolOutputChannel) htParams.get("OutputChannel");
     //parameterData = (String) htParams.get("parameterData");
     if (htParams.containsKey("vibrationNumber"))
       desiredVibrationNumber = ((Integer) htParams.get("vibrationNumber"))
@@ -1434,18 +1432,10 @@ public abstract class AtomSetCollectionReader {
   public String RL() throws Exception {
     prevline = line;
     line = reader.readLine();
-    if (os != null && line != null) {
+    if (out != null && line != null) {
       byte[] b = line.getBytes();
-      os.write(b, 0, b.length);
-      /**
-       * @j2sNative
-       * 
-       *  this.os.writeByteAsInt(0x0A);
-       * 
-       */
-      {
-      os.write('\n');
-      }
+      out.writeBytes(b, 0, b.length);
+      out.writeByteAsInt(0x0A);
     }
     ptLine++;
     if (Logger.debugging)

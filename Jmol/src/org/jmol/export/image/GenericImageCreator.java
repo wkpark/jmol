@@ -24,14 +24,13 @@
 
 package org.jmol.export.image;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Map;
 
 import org.jmol.api.JmolImageCreatorInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.io.Base64;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.io2.JpegEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -62,7 +61,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
    * @param params
    * @return null (canceled) or a message starting with OK or an error message
    */
-  public Object createImage(Map<String, Object> params) {    
+  public Object createImage(Map<String, Object> params) {
     // this method may not be accessed, though public, unless 
     // accessed via viewer, which provides its private key.
     String type = (String) params.get("type");
@@ -71,32 +70,29 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
     byte[] bytes = (byte[]) params.get("bytes");
     Object objImage = params.get("image");
     int quality = getInt(params, "quality", Integer.MIN_VALUE);
-    OutputStream os = (OutputStream) params.get("outputStream");
+    JmolOutputChannel out = (JmolOutputChannel) params.get("outputChannel");
 
-    boolean closeStream = (os == null);
+    boolean closeStream = (out == null);
     long len = -1;
     try {
       if (!viewer.checkPrivateKey(privateKey))
         return "NO SECURITY";
       // returns message starting with OK or an error message
-      if ("OutputStream".equals(type))
+      if ("OutputChannel".equals(type))
         return viewer.openOutputChannel(privateKey, fileName, false);
       if (bytes != null) {
         len = bytes.length;
-        os = (OutputStream) viewer.openOutputChannel(privateKey, fileName, false);
-        os.write(bytes, 0, bytes.length);
-        os.flush();
-        os.close();
-        os = null;
+        if (out == null)
+          out = viewer.openOutputChannel(privateKey, fileName, false);
+        out.writeBytes(bytes, 0, bytes.length);
       } else if (objImage != null) {
         getImageBytes(params);
         return fileName;
       } else if (text != null) {
-        BufferedWriter bw = (BufferedWriter) viewer.openOutputChannel(
-            privateKey, fileName, true);
+        if (out == null)
+          out = viewer.openOutputChannel(privateKey, fileName, true);
         len = text.length();
-        bw.write(text);
-        bw.close();
+        out.append(text);
       } else {
         len = 1;
         Object bytesOrError = getImageBytes(params);
@@ -105,19 +101,14 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
         bytes = (byte[]) bytesOrError;
         if (bytes != null)
           return (fileName == null ? bytes : new String(bytes));
-        len = viewer.getFileLength(privateKey, fileName);
+        len = ((Integer) params.get("byteCount")).intValue();
       }
     } catch (IOException exc) {
       Logger.errorEx("IO Exception", exc);
       return exc.toString();
     } finally {
-      if (os != null && closeStream) {
-        try {
-          os.close();
-        } catch (IOException e) {
-          // ignore
-        }
-      }
+      if (out != null && closeStream)
+        out.closeChannel();
     }
     return (len < 0 ? "Creation of " + fileName + " failed: "
         + viewer.getErrorMessageUn() : "OK " + type + " "
@@ -125,8 +116,15 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
         + (quality == Integer.MIN_VALUE ? "" : "; quality=" + quality));
   }
 
-  public Object getImageBytes(Map<String, Object> params)
-      throws IOException {
+  /**
+   * 
+   * this method needs to set "byteCount" to be the length of bytes if not "asBytes"
+   * @param params 
+   * @return        bytes[] or (String) error or null
+   * @throws IOException 
+   * 
+   */
+  public Object getImageBytes(Map<String, Object> params) throws IOException {
     byte[] bytes = null;
     String errMsg = null;
     String type = ((String) params.get("type")).toUpperCase();
@@ -135,38 +133,33 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
     String[] scripts = (String[]) params.get("scripts");
     Object objImage = params.get("image");
     int quality = getInt(params, "quality", Integer.MIN_VALUE);
-    OutputStream os = (OutputStream) params.get("outputStream");
+    JmolOutputChannel channel = (JmolOutputChannel) params.get("outputChannel");
+    int len = -1;
 
-    boolean isPDF = type.equals("PDF");
-    boolean isOsTemp = (os == null && fileName != null && !isPDF);
-    boolean asBytes = (os == null && fileName == null && !isPDF);
+    boolean closeChannel = (channel == null && fileName != null);
+    boolean asBytes = (channel == null && fileName == null);
     boolean isImage = (objImage != null);
-    Object image = (isImage ? objImage : viewer.getScreenImageBuffer(null, true));
+    Object image = (isImage ? objImage : viewer
+        .getScreenImageBuffer(null, true));
     try {
       if (image == null) {
         errMsg = viewer.getErrorMessage();
       } else {
         Object ret = null;
         boolean includeState = (!asBytes || type.equals("PNGJ"));
-        if (type.equals("PNGJ"))
-          ret = viewer.getWrappedState(fileName, scripts, true, true,
-              viewer.apiPlatform.getImageWidth(image), viewer.apiPlatform
-                  .getImageHeight(image));
-        if (isOsTemp)
-          os = (OutputStream) viewer.openOutputChannel(privateKey, fileName, false);
+        if (channel == null)
+          channel = viewer.openOutputChannel(privateKey, fileName, false);
         if (type.equals("JPEG") || type.equals("JPG")) {
           if (quality <= 0)
             quality = 100; // high quality
-          if (asBytes) {
-            bytes = JpegEncoder.getBytes(viewer.apiPlatform, image, quality,
-                Viewer.getJmolVersion());
-          } else {
-            String caption = (includeState ? (String) viewer.getWrappedState(
-                null, null, true, false, viewer.apiPlatform
-                    .getImageWidth(image), viewer.apiPlatform
-                    .getImageHeight(image)) : Viewer.getJmolVersion());
-            JpegEncoder.write(viewer.apiPlatform, image, quality, os, caption);
-          }
+          String caption = (asBytes ? Viewer.getJmolVersion()
+              : includeState ? (String) viewer.getWrappedState(null, null,
+                  true, false, viewer.apiPlatform.getImageWidth(image),
+                  viewer.apiPlatform.getImageHeight(image)) : Viewer
+                  .getJmolVersion());
+          JpegEncoder.write(viewer.apiPlatform, image, quality, channel,
+              caption);
+          len = channel.getByteCount();
         } else if (type.equals("JPG64") || type.equals("JPEG64")) {
           if (quality <= 0)
             quality = 75;
@@ -174,19 +167,25 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
               Viewer.getJmolVersion());
           if (asBytes) {
             bytes = Base64.getBytes64(bytes);
+            len = bytes.length;
           } else {
-            Base64.write(bytes, os);
+            Base64.write(bytes, channel);
+            len = bytes.length;
             bytes = null;
           }
         } else if (type.startsWith("PNG")) {
+          if (type.equals("PNGJ")) // get zip file data
+            ret = viewer.getWrappedState(fileName, scripts, true, true,
+                viewer.apiPlatform.getImageWidth(image), viewer.apiPlatform
+                    .getImageHeight(image));
           if (quality < 0)
             quality = 2;
           else if (quality > 9)
             quality = 9;
           int bgcolor = (type.equals("PNGT") ? viewer.getBackgroundArgb() : 0);
           int[] ptJmol = new int[1];
-          bytes = GenericPngEncoder.getBytesType(viewer.apiPlatform, image, quality,
-              bgcolor, type, ptJmol);
+          bytes = GenericPngEncoder.getBytesType(viewer.apiPlatform, image,
+              quality, bgcolor, type, ptJmol);
           byte[] b = null;
           if (includeState) {
             int nPNG = bytes.length;
@@ -200,10 +199,11 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
             int nState = bytes.length;
             GenericPngEncoder.setJmolTypeText(ptJmol[0], b, nPNG, nState, type);
           }
+          len = (b == null ? 0 : b.length) + bytes.length;
           if (!asBytes) {
             if (b != null)
-              os.write(b, 0, b.length);
-            os.write(bytes, 0, bytes.length);
+              channel.writeBytes(b, 0, b.length);
+            channel.writeBytes(bytes, 0, bytes.length);
             b = bytes = null;
           } else if (b != null) {
             byte[] bt = new byte[b.length + bytes.length];
@@ -214,15 +214,17 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
           }
         } else {
           String[] errRet = new String[1];
-          bytes = getOtherBytes(fileName, image, type, asBytes, os, params, errRet);
+          boolean isOK = getOtherBytes(image, type, channel, params, errRet);
+          if (isOK && asBytes)
+            bytes = channel.toByteArray();
+          len = channel.getByteCount();
           errMsg = errRet[0];
-          if (bytes == null && errMsg == null && params.containsKey("captureByteCount"))
-            errMsg = "OK: " + params.get("captureByteCount").toString() + " bytes";
+          if (isOK && params.containsKey("captureByteCount"))
+            errMsg = "OK: " + params.get("captureByteCount").toString()
+                + " bytes";
         }
-        if (os != null)
-          os.flush();
-        if (isOsTemp)
-          os.close();
+        if (closeChannel)
+          channel.closeChannel();
       }
     } catch (IOException e) {
       if (!isImage)
@@ -235,6 +237,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
     }
     if (!isImage)
       viewer.releaseScreenImage();
+    params.put("byteCount", Integer.valueOf(errMsg == null ? len : -1));
     if (errMsg != null)
       return errMsg;
     return bytes;
@@ -244,20 +247,17 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
    * 
    * GIF PPM PDF -- not available in JavaScript
    * 
-   * @param fileName  
    * @param objImage 
    * @param type 
-   * @param asBytes 
-   * @param os 
+   * @param out 
    * @param params TODO
    * @param errRet 
    * @return byte array if needed
    * @throws IOException 
    */
-  byte[] getOtherBytes(String fileName, Object objImage, String type,
-                       boolean asBytes, OutputStream os, Map<String, Object> params, String[] errRet) throws IOException {
+  protected boolean getOtherBytes(Object objImage, String type, JmolOutputChannel out, Map<String, Object> params, String[] errRet) throws IOException {
     errRet[0] = "file type " + type + " not available on this platform";
-    return null;
+    return false;
   }
   
   public String clipImage(JmolViewer viewer, String text) {

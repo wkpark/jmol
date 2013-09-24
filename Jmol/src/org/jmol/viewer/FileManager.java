@@ -23,23 +23,6 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.script.T;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.Escape;
-import org.jmol.util.Logger;
-import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
-import org.jmol.viewer.Viewer.ACCESS;
-
-import org.jmol.api.JmolDocument;
-import org.jmol.api.JmolDomReaderInterface;
-import org.jmol.api.JmolFileAdapterInterface;
-import org.jmol.api.JmolFileInterface;
-import org.jmol.api.JmolFilesReaderInterface;
-import org.jmol.api.JmolViewer;
-import org.jmol.api.ApiPlatform;
-import org.jmol.api.ZInputStream;
-
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
@@ -48,22 +31,33 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
-import org.jmol.util.JmolList;
 import java.util.Hashtable;
 import java.util.List;
-
 import java.util.Map;
 
 import org.jmol.api.Interface;
+import org.jmol.api.JmolDocument;
+import org.jmol.api.JmolDomReaderInterface;
+import org.jmol.api.JmolFileAdapterInterface;
+import org.jmol.api.JmolFileInterface;
+import org.jmol.api.JmolFilesReaderInterface;
+import org.jmol.api.JmolViewer;
+import org.jmol.api.ApiPlatform;
+import org.jmol.api.ZInputStream;
 import org.jmol.io.Base64;
 import org.jmol.io.DataReader;
 import org.jmol.io.FileReader;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.OutputStringBuilder;
+import org.jmol.io.JmolOutputChannel;
+import org.jmol.script.T;
+import org.jmol.util.ArrayUtil;
+import org.jmol.util.Escape;
+import org.jmol.util.JmolList;
+import org.jmol.util.Logger;
+import org.jmol.util.SB;
+import org.jmol.util.TextFormat;
+import org.jmol.viewer.Viewer.ACCESS;
 
-
-// updated 
 
 public class FileManager {
 
@@ -788,7 +782,7 @@ public class FileManager {
     return JmolBinary.getZipDirectoryAndClose((BufferedInputStream) t, addManifest);
   }
 
-  public Object getFileAsBytes(String name, OutputStringBuilder osb,
+  public Object getFileAsBytes(String name, JmolOutputChannel out,
                                boolean allowZip) {
     // ?? used by eval of "WRITE FILE"
     // will be full path name
@@ -807,10 +801,10 @@ public class FileManager {
       return "Error:" + t;
     try {
       BufferedInputStream bis = (BufferedInputStream) t;
-      Object bytes = (osb != null || !allowZip || subFileList == null
+      Object bytes = (out != null || !allowZip || subFileList == null
           || subFileList.length <= 1 || !JmolBinary.isZipS(bis)
           && !JmolBinary.isPngZipStream(bis) ? JmolBinary.getStreamAsBytes(bis,
-          osb) : JmolBinary.getZipFileContentsAsBytes(bis, subFileList, 1));
+          out) : JmolBinary.getZipFileContentsAsBytes(bis, subFileList, 1));
       bis.close();
       return bytes;
     } catch (Exception ioe) {
@@ -982,8 +976,8 @@ public class FileManager {
     } else {
       // This code is for the app -- no local file reading for headless
       if (urlTypeIndex(name) >= 0 
-          || viewer.isRestricted(ACCESS.NONE) 
-          || viewer.isRestricted(ACCESS.READSPT) 
+          || viewer.haveAccess(ACCESS.NONE) 
+          || viewer.haveAccess(ACCESS.READSPT) 
               && !name.endsWith(".spt") && !name.endsWith("/")) {
         try {
           url = new URL((URL) null, name, null);

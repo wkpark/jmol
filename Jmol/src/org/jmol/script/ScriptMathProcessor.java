@@ -886,29 +886,9 @@ class ScriptMathProcessor {
     if (isBonds) {
       if (args.length != 4)
         return false;
-      smiles1 = SV.sValue(args[2]);
-      int[][] mapSet = ArrayUtil.newInt2(2);
-      eval.getSmilesCorrelation(bs1, bs2, smiles1, null, null,
-          null, null, true, false, mapSet, null);
-      int[][] bondMap1 = viewer.getDihedralMap(mapSet[0]);
-      int[][] bondMap2 = (bondMap1 == null ? null : viewer.getDihedralMap(mapSet[1]));
-      if (bondMap2 == null || bondMap2.length != bondMap1.length)
-        return addXStr("");
-      float[][] angles = new float[bondMap1.length][3];
-      Atom[] atoms = viewer.modelSet.atoms;
-      getTorsions(atoms, bondMap2, angles, 0);
-      getTorsions(atoms, bondMap1, angles, 1);
-      float[] data = new float[bondMap1.length * 6];
-      for (int i = 0, pt = 0; i < bondMap1.length; i++) {
-        int[] map = bondMap1[i];
-        data[pt++] = map[0];
-        data[pt++] = map[1];
-        data[pt++] = map[2];
-        data[pt++] = map[3];
-        data[pt++] = angles[i][0];
-        data[pt++] = angles[i][1];
-      }
-      return addXAF(data);
+      smiles1 = SV.sValue(args[2]);      
+      float[] data = eval.getFlexFitList(bs1, bs2, smiles1);
+      return (data == null ? addXStr("") : addXAF(data));
     }
     if (isIsomer) {
       if (args.length != 3)
@@ -1009,22 +989,6 @@ class ScriptMathProcessor {
         stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
     }
     return (isStdDev || Float.isNaN(stddev) ? addXFloat(stddev) : addXM4(m));
-  }
-
-  private static void getTorsions(Atom[] atoms, int[][] bondMap,
-                                  float[][] diff, int pt) {
-    for (int i = bondMap.length; --i >= 0;) {
-      int[] map = bondMap[i];
-      float v = Measure.computeTorsion(atoms[map[0]], atoms[map[1]],
-          atoms[map[2]], atoms[map[3]], true);
-      if (pt == 1) {
-        if (v - diff[i][0] > 180)
-          v -= 360;
-        else if (v - diff[i][0] <= -180)
-          v += 360;
-      }
-      diff[i][pt] = v;
-    }
   }
 
 //  private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
@@ -1549,6 +1513,7 @@ class ScriptMathProcessor {
           sFind = flags;
         BS bsMatch3D = bs2;
         if (asBonds) {
+          // this will return a single match
           int[][] map = viewer.getSmilesMatcher().getCorrelationMaps(sFind,
               viewer.modelSet.atoms, viewer.getAtomCount(), (BS) x1.value,
               !isSmiles, true);

@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.jmol.api.JmolPdfCreatorInterface;
+import org.jmol.io.JmolOutputChannel;
 
 public class PdfCreator implements JmolPdfCreatorInterface {
   
@@ -44,16 +45,13 @@ public class PdfCreator implements JmolPdfCreatorInterface {
    // for Class.forName  
   }
   
-  public String createPdfDocument(String fileName, Object objImage) {
+  public String createPdfDocument(JmolOutputChannel out, Object objImage) {
     Image image = (Image) objImage;
     Document document = new Document();
-    File file = null;
     try {
       int w = image.getWidth(null);
       int h = image.getHeight(null);
-      file = new File(fileName);
-      PdfWriter writer = PdfWriter.getInstance(document,
-          new FileOutputStream(file));
+      PdfWriter writer = PdfWriter.getInstance(document, out);
       document.open();
       PdfContentByte cb = writer.getDirectContent();
       PdfTemplate tp = cb.createTemplate(w, h);
@@ -66,8 +64,6 @@ public class PdfCreator implements JmolPdfCreatorInterface {
       cb.addTemplate(tp, 72, 720 - h);
     } catch (DocumentException de) {
       return de.getMessage();
-    } catch (IOException ioe) {
-      return ioe.getMessage();
     }
     document.close();
     return null;

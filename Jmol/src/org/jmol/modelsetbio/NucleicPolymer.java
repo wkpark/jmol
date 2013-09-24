@@ -27,7 +27,7 @@ package org.jmol.modelsetbio;
 
 
 
-import org.jmol.io.OutputStringBuilder;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
@@ -167,7 +167,7 @@ public class NucleicPolymer extends BioPolymer {
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
                          BS bsAtoms, BS bsSelected, 
                          boolean bothEnds, boolean isDraw, 
-                         boolean addHeader, LabelToken[] tokens, OutputStringBuilder pdbATOM, SB pdbCONECT, BS bsWritten) {
+                         boolean addHeader, LabelToken[] tokens, JmolOutputChannel pdbATOM, SB pdbCONECT, BS bsWritten) {
     getPdbData(viewer, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, 
         isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
   }   

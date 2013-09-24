@@ -81,7 +81,7 @@ public class ModulationSet extends Vibration {
     gammaIS.get(sI);
     gammaIinv.invert();
     x456 = V3.newV(r);
-    Matrix3f m = new Matrix3f();
+    //Matrix3f m = new Matrix3f();
     q123w.transform(x456);
     x456.sub(sI);
     gammaIinv.transform(x456);

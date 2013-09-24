@@ -3,7 +3,6 @@ package org.jmol.export;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import org.jmol.util.JmolList;
@@ -18,6 +17,7 @@ import org.jmol.util.TextFormat;
 
 
 import org.jmol.export.image.GenericImageCreator;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
@@ -72,7 +72,7 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private boolean normalizeUV = true;
   /** BufferedWriter for the .mtl file. */
-  private BufferedWriter mtlbw;
+  private JmolOutputChannel mtlout;
   /** Path of the OBJ file without the extension. */
   String objFileRootName;
   /** File for the .mtl file. */
@@ -458,9 +458,7 @@ public class _ObjExporter extends __CartesianExporter {
     try {
       String mtlFileName = objFileRootName + ".mtl";
       mtlFile = new File(mtlFileName);
-      System.out.println("_WavefrontObjExporter writing to "
-          + viewer.getAbsolutePath(privateKey, mtlFileName));
-      mtlbw = (BufferedWriter) viewer.openOutputChannel(privateKey, mtlFileName, true);
+      mtlout = viewer.openOutputChannel(privateKey, mtlFileName, true);
     } catch (IOException ex) {
       debugPrint("End initializeOutput (" + ex.getMessage() + "):");
       return false;
@@ -484,15 +482,13 @@ public class _ObjExporter extends __CartesianExporter {
     String retVal = finalizeOutput2();
 
     // Close the writer and stream
-    try {
-      mtlbw.flush();
-      mtlbw.close();
-    } catch (IOException ex) {
-      ex.printStackTrace();
-      if (retVal.startsWith("OK")) {
-        return "ERROR EXPORTING MTL FILE";
-      }
-      return retVal + " and ERROR EXPORTING MTL FILE";
+    String ret = mtlout.closeChannel();
+    if (ret != null) {
+      Logger.info(ret);
+      ret = "ERROR EXPORTING MTL FILE: " + ret;
+      if (retVal.startsWith("OK"))
+        return ret;
+      return retVal + " and " + ret;
     }
 
     retVal += ", " + nMtlBytes + " " + mtlFile.getPath();
@@ -513,11 +509,7 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private void outputMtl(String data) {
     nMtlBytes += data.length();
-    try {
-      mtlbw.write(data);
-    } catch (IOException ex) {
-      // TODO Ignore for now
-    }
+    mtlout.append(data);
   }
 
   /**

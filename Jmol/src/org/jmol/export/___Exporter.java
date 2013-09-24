@@ -27,7 +27,6 @@ package org.jmol.export;
 
 
 import java.awt.Image;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -40,6 +39,7 @@ import java.util.Map;
 
 
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
@@ -47,6 +47,7 @@ import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.MeshSurface;
@@ -146,7 +147,7 @@ public abstract class ___Exporter {
   protected double privateKey;
   protected JmolRendererInterface jmolRenderer;
   protected SB output;
-  protected BufferedWriter bw;
+  protected JmolOutputChannel out;
   protected String fileName;
   protected String commandLineOptions;
   
@@ -240,7 +241,7 @@ public abstract class ___Exporter {
       try {
         File f = new File(fileName);
         System.out.println("__Exporter writing to " + f.getAbsolutePath());
-        bw = (BufferedWriter)viewer.openOutputChannel(privateKey, fileName, true);
+        out = viewer.openOutputChannel(privateKey, fileName, true);
       } catch (IOException e) {
         return false;
       }
@@ -254,16 +255,13 @@ public abstract class ___Exporter {
   abstract protected void outputHeader();
 
   protected int nBytes;
+
   protected void output(String data) {
     nBytes += data.length();
-    try {
-      if (bw == null)
-        output.append(data);
-      else
-        bw.write(data);
-    } catch (IOException e) {
-      // ignore for now
-    }
+    if (out == null)
+      output.append(data);
+    else
+      out.append(data);
   }
 
   protected void outputComment(String comment) {
@@ -333,12 +331,10 @@ public abstract class ___Exporter {
     outputFooter();
     if (!isToFile)
       return (output == null ? "" : output.toString());
-    try {
-      bw.flush();
-      bw.close();
-    } catch (IOException e) {
-      System.out.println(e.getMessage());
-      return "ERROR EXPORTING FILE";
+    String ret = out.closeChannel();
+    if (ret != null) {
+      Logger.info(ret);
+      return "ERROR EXPORTING FILE: " + ret;
     }
     return "OK " + nBytes + " " + jmolRenderer.getExportName() + " " + fileName ;
   }

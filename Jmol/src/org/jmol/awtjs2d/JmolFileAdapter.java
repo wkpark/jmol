@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.UnknownServiceException;
 
 import org.jmol.api.JmolFileAdapterInterface;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.viewer.FileManager;
 
 public class JmolFileAdapter implements JmolFileAdapterInterface {
@@ -34,8 +35,8 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
 		}
 	}
 
-  public Object openOutputChannel(double privateKey, FileManager fm, String fileName, boolean asWriter) {
-    return new WebOutputChannel(fileName);
+  public JmolOutputChannel openOutputChannel(double privateKey, FileManager fm, String fileName, boolean asWriter) {
+    return (new JmolOutputChannel()).setParams(fm, fileName, asWriter, null);
   }
 
   public InputStream openFileInputStream(double privateKey, String fileName)
@@ -46,11 +47,6 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
 
   public String getAbsolutePath(double privateKey, String fileName) {
     return fileName;
-  }
-
-  public long getFileLength(double privateKey, String fileName)
-      throws IOException {
-    return 0;
   }
 
   public BufferedWriter openLogFile(double privateKey, String logFileName, boolean asAppend) {

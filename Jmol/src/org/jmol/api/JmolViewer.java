@@ -24,7 +24,6 @@
 
 package org.jmol.api;
 
-import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.util.Hashtable;
@@ -32,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.jmol.io.OutputStringBuilder;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Dimension;
@@ -505,7 +504,7 @@ abstract public class JmolViewer {
     openFileAsyncPDB(fileName, false);    
   }
   
-  abstract public Object getFileAsBytes(String fullPathName, OutputStringBuilder osb);
+  abstract public Object getFileAsBytes(String fullPathName, JmolOutputChannel out);
 
   abstract public String getErrorMessage();
   abstract public String getErrorMessageUn();

@@ -32,7 +32,6 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.jmol.api.JmolViewer;
-import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.script.T;
 import org.jmol.shape.Mesh;
@@ -45,6 +44,7 @@ import org.jmol.util.P4;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
 import org.jmol.viewer.JC;
+import org.openscience.jmol.app.HistoryFile;
 
 /**
  * 

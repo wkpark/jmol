@@ -26,12 +26,12 @@ package org.jmol.export.image;
 
 import java.awt.Image;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolPdfCreatorInterface;
 import org.jmol.api.JmolViewer;
+import org.jmol.io.JmolOutputChannel;
 import org.jmol.viewer.Viewer;
 
 public class AwtImageCreator extends GenericImageCreator {
@@ -78,27 +78,26 @@ public class AwtImageCreator extends GenericImageCreator {
    * @param objImage
    * @param type
    * @param asBytes
-   * @param os
+   * @param out
    * @param errRet
    * @return byte array if needed
    * @throws IOException
    */
   @Override
-  protected byte[] getOtherBytes(String fileName, Object objImage, String type,
-                                 boolean asBytes, OutputStream os,
+  protected boolean getOtherBytes(Object objImage, String type,
+                                 JmolOutputChannel out,
                                  Map<String, Object> params, String[] errRet)
       throws IOException {
     java.awt.Image image = (java.awt.Image) objImage;
     type = type.substring(0, 1) + type.substring(1).toLowerCase();
     if (!type.equals("Pdf"))
-      return (byte[]) ImageEncoder.write(type, image, (asBytes ? null : os),
-          params);
+      return ImageEncoder.write(type, image, out, params);
     // applet will not have this interface
     // PDF is application-only because it is such a HUGE package
     JmolPdfCreatorInterface pci = (JmolPdfCreatorInterface) Interface
         .getApplicationInterface("jmolpanel.PdfCreator");
-    errRet[0] = pci.createPdfDocument(fileName, image);
-    return null;
+    errRet[0] = pci.createPdfDocument(out, image);
+    return errRet[0] == null;
   }
 
 }

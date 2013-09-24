@@ -63,8 +63,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jmol.api.JmolViewer;
-import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
+import org.openscience.jmol.app.HistoryFile;
+
 import java.util.List;
 
 /**

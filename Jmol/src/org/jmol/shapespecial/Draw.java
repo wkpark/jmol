@@ -1372,7 +1372,7 @@ protected void resetObjects() {
     } else {
       int nVertices = dmesh.drawVertexCount > 0  || dmesh.drawVertexCounts == null ? dmesh.drawVertexCount
           : dmesh.drawVertexCounts[iModel >= 0 ? iModel : 0];
-      switch (dmesh.drawTypes == null ? dmesh.drawType : dmesh.drawTypes[iModel]) {
+      switch (dmesh.drawTypes == null || dmesh.drawTypes[iModel] == null ? dmesh.drawType : dmesh.drawTypes[iModel]) {
       case NONE:
       case MULTIPLE:
         break;

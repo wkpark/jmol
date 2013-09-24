@@ -48,9 +48,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
+import org.jmol.api.JmolAppAPI;
 import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolViewer;
-import org.jmol.export.history.HistoryFile;
 import org.jmol.i18n.GT;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -84,11 +84,9 @@ public class Dialog extends JPanel implements JmolDialogInterface {
 
   public String getOpenFileNameFromDialog(Map<String, Object> viewerOptions,
                                           JmolViewer viewer,
-                                          String fileName, Object historyFileObject,
+                                          String fileName, JmolAppAPI jmolApp,
                                           String windowName,
                                           boolean allowAppend) {
-
-    HistoryFile historyFile = (HistoryFile) historyFileObject;
 
     if (openChooser == null) {
       openChooser = new FileChooser();
@@ -103,11 +101,11 @@ public class Dialog extends JPanel implements JmolDialogInterface {
       openPreview = new FilePreview(viewer, openChooser, allowAppend, viewerOptions);
     }
 
-    if (historyFile != null) {
-      Dimension dim = historyFile.getWindowSize(windowName);
+    if (jmolApp != null) {
+      Dimension dim = jmolApp.getHistoryWindowSize(windowName);
       if (dim != null)
         openChooser.setDialogSize(dim);
-      Point loc = historyFile.getWindowPosition(windowName);
+      Point loc = jmolApp.getHistoryWindowPosition(windowName);
       if (loc != null)
         openChooser.setDialogLocation(loc);
     }
@@ -139,8 +137,8 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     if (file == null)
       return closePreview();
     
-    if (historyFile != null)
-      historyFile.addWindowInfo(windowName, openChooser.getDialog(), null);
+    if (jmolApp != null)
+      jmolApp.addHistoryWindowInfo(windowName, openChooser.getDialog(), null);
 
     String url = FileManager.getLocalUrl(viewer.apiPlatform.newFile(file.getAbsolutePath()));
     if (url != null) {

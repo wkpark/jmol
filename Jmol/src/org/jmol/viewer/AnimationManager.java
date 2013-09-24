@@ -263,6 +263,7 @@ public class AnimationManager {
 
   void setAnimationFps(int animationFps) {
     this.animationFps = animationFps;
+    viewer.setFrameVariables();
   }
 
   // 0 = once

@@ -318,9 +318,9 @@ public class Platform implements ApiPlatform {
      * 
      * Mon Jan 07 2013 19:54:39 GMT-0600 (Central Standard Time)
      * 
-     * j2sNative
+     * *j2sNative
      * 
-     * return (new Date()).split(" (")[0];
+     * return ("" + (new Date())).split(" (")[0];
      */
     {
       return null;

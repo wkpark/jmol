@@ -16,13 +16,14 @@ org/jmol/atomdata/*.java
 org/jmol/awt/*.java
 org/jmol/bspt/*.java
 org/jmol/console/*.java
+org/jmol/dialog/*.java
 org/jmol/export/*.java
 org/jmol/export/dialog/*.java
 org/jmol/export/history/*.java
-org/jmol/export/image/*.java
 org/jmol/g3d/*.java
 org/jmol/geodesic/*.java
 org/jmol/i18n/*.java
+org/jmol/image/*.java
 org/jmol/io/*.java
 org/jmol/io2/*.java
 org/jmol/jvxl/api/*.java

@@ -42,6 +42,7 @@ public class JmolOutputChannel extends OutputStream {
   private boolean isLocalFile;
   private int byteCount;
   private boolean isCanceled;
+  private boolean closed;
   private OutputStream os;
   private SB sb;
   private String type;
@@ -167,6 +168,9 @@ public class JmolOutputChannel extends OutputStream {
   }
 
   public String closeChannel() {
+    if (closed)
+      return null;
+    closed = true;
     // can't cancel file writers
     try {
       if (bw != null) {
@@ -183,7 +187,6 @@ public class JmolOutputChannel extends OutputStream {
       return null;
     if (fileName == null)
       return (sb == null ? null : sb.toString());
-
     /**
      * @j2sNative
      * 

@@ -110,7 +110,7 @@ public class JmolOutputChannel extends OutputStream {
     /**
      * @j2sNative
      * 
-     *            this.os.writeBytes(buf, i, len);
+     *            this.os.write(buf, i, len);
      * 
      */
     {

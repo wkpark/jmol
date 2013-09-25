@@ -1,0 +1,37 @@
+Jmol building notes
+
+Building Jmol properly requires three projects:
+
+Jmol
+JSmol
+JSpecView
+
+- JSpecView: Jmol needs JSpecView's jar file, so if there are changes, to JSpecView, start there.
+  Copy JSpecView.jar into jmol/jars
+
+- Jmol: update org.jmol.viewer.Jmol.properties and check it in so that it gets a new time stamp.
+        Jmol.properties is also used by JSmol (along with all the Jmol java files).
+
+- JSmol: for testing, run buildfromjmol.xml, then buildtojstest.xml. This replaces ALL the files in
+         jsmol/src/org and also create jsmol/site, which you can then run test.htm in. 
+         buildtojstest.xml does not create minified files, so it is faster than buildtojs.xml.
+         
+         Test test test
+         
+- JSmol: run buildfromjmol.xml, then buildtojs.xml. This produces minified files and ultimately 
+         creates dist/jsmol.zip, copying that also to jmol/appletweb. 
+
+         Unzip dist/jsmol.zip and test it out, this time using jsmol.htm, which uses the minified 
+         library.
+         
+         Test test test
+                  
+- JSmol: Update and check in jsmol files
+
+- Jmol: Update and check in jmol files
+
+    It is at this point that I make my own ZIP files and upload them into chemapps.stolaf.edu/jmol/zip.
+    When I am creating chemapps.stolaf.edu/jmol/jsmol, I upload first as j
+         
+         
+

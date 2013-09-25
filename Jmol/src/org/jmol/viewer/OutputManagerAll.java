@@ -30,8 +30,8 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolPdfCreatorInterface;
-import org.jmol.export.image.ImageEncoder;
 import org.jmol.i18n.GT;
+import org.jmol.image.ImageEncoder;
 import org.jmol.io.JmolBinary;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.script.T;

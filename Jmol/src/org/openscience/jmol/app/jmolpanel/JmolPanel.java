@@ -31,7 +31,7 @@ import org.jmol.awt.FileDropper;
 import org.jmol.awt.Platform;
 import org.jmol.console.JmolButton;
 import org.jmol.console.JmolToggleButton;
-import org.jmol.export.dialog.Dialog;
+import org.jmol.dialog.Dialog;
 import org.jmol.i18n.GT;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;
 import org.openscience.jmol.app.jmolpanel.console.ConsoleTextArea;

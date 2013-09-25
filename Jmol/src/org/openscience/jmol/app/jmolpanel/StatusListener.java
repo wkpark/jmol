@@ -30,7 +30,7 @@ import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolSyncInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
-import org.jmol.export.dialog.Dialog;
+import org.jmol.dialog.Dialog;
 import org.jmol.util.Dimension;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;

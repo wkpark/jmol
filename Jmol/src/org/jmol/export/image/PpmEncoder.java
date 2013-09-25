@@ -28,52 +28,32 @@
 
 package org.jmol.export.image;
 
-import java.io.IOException;
 import java.util.Map;
 
-/// Write out an image as a PPM.
-// <P>
-// Writes an image onto a specified OutputStream in the PPM file format.
-// <P>
-// <A HREF="/resources/classes/Acme/JPM/Encoders/PpmEncoder.java">Fetch the software.</A><BR>
-// <A HREF="/resources/classes/Acme.tar.gz">Fetch the entire Acme package.</A>
-// <P>
-// @see ToPpm
-
+/**
+ * see http://netpbm.sourceforge.net/doc/ppm.html
+ */
 public class PpmEncoder extends ImageEncoder {
 
   @Override
   protected void setParams(Map<String, Object> params) {
-    // no options
+    // no params
   }
 
   @Override
-  protected void encodeStart() throws IOException {
+  protected void createImage() {
     putString("P6\n");
     putString(width + " " + height + "\n");
     putString("255\n");
-  }
-
-  @Override
-  protected void encodePixels(int x, int y, int w, int h, int[] rgbPixels, int off,
-                    int scansize) throws IOException {
-    byte[] ppmPixels = new byte[w * 3];
-    for (int row = 0; row < h; ++row) {
-      int rowOff = off + row * scansize;
-      for (int col = 0; col < w; ++col) {
-        int i = rowOff + col;
-        int j = col * 3;
-        ppmPixels[j] = (byte) ((rgbPixels[i] & 0xff0000) >> 16);
-        ppmPixels[j + 1] = (byte) ((rgbPixels[i] & 0x00ff00) >> 8);
-        ppmPixels[j + 2] = (byte) (rgbPixels[i] & 0x0000ff);
+    byte[] ppmPixels = new byte[width * 3];
+    for (int pt = 0, row = 0; row < height; ++row) {
+      for (int col = 0, j = 0; col < width; ++col, pt++) {
+        int p = pixels[pt];
+        ppmPixels[j++] = (byte) ((p >> 16) & 0xff);
+        ppmPixels[j++] = (byte) ((p >> 8) & 0xff);
+        ppmPixels[j++] = (byte) (p & 0xff);
       }
       out.writeBytes(ppmPixels, 0, ppmPixels.length);
     }
   }
-
-  @Override
-  protected void encodeDone() throws IOException {
-    // Nothing.
-  }
-
 }

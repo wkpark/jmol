@@ -25,9 +25,7 @@
 
 package org.jmol.awtjs2d;
 
-import org.jmol.api.ApiPlatform;
 import org.jmol.util.JmolFont;
-import org.jmol.viewer.Viewer;
 
 /**
  * methods required by Jmol that access java.awt.Image
@@ -65,17 +63,6 @@ class Image {
     {
       return 0;
     }
-  }
-
-  /**
-   * @param apiPlatform 
-   * @param viewer 
-   * @param quality  
-   * @param comment 
-   * @return null
-   */
-  static Object getJpgImage(ApiPlatform apiPlatform, Viewer viewer, int quality, String comment) {
-    return  null;
   }
 
   /**

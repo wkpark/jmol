@@ -30,8 +30,8 @@ import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolScriptInterface;
 import org.jmol.api.JmolSyncInterface;
 import org.jmol.api.JmolViewer;
+import org.jmol.awt.FileDropper;
 import org.jmol.constant.EnumCallback;
-import org.jmol.export.JmolFileDropper;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -174,7 +174,7 @@ public class Jmol implements WrappedApplet {
   private String statusText;
   private String statusTextarea;
 
-  private JmolFileDropper dropper;  
+  private FileDropper dropper;  
   
   protected boolean doTranslate = true;
   protected boolean haveDocumentAccess;
@@ -443,7 +443,7 @@ public class Jmol implements WrappedApplet {
 
     if (isSigned) {
       try {
-      dropper = new JmolFileDropper(null, viewer);
+      dropper = new FileDropper(null, viewer);
       } catch (Exception e) {
         //
       }

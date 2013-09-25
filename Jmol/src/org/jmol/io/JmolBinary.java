@@ -440,26 +440,6 @@ public class JmolBinary {
     return totalLen + " bytes";
   }
 
-  /**
-   * generic method to create a zip file based on
-   * http://www.exampledepot.com/egs/java.util.zip/CreateZip.html
-   * @param privateKey 
-   * @param fm 
-   * @param viewer 
-   * 
-   * @param outFileName
-   *        or null to return byte[]
-   * @param fileNamesAndByteArrays
-   *        Vector of [filename1, bytes|null, filename2, bytes|null, ...]
-   * @param msg
-   * @return msg bytes filename or errorMessage or byte[]
-   */
-  public static Object writeZipFile(double privateKey, FileManager fm, Viewer viewer, String outFileName,
-                              JmolList<Object> fileNamesAndByteArrays,
-                              String msg) {
-    return getJzu().writeZipFile(privateKey, fm, viewer, outFileName, fileNamesAndByteArrays, msg);
-  }
-
 
   public static String postByteArray(FileManager fm, String outFileName,
                                       byte[] bytes) {

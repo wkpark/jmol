@@ -14,7 +14,7 @@ import org.jmol.viewer.FileManager;
  * A generic output method. JmolOutputChannel can be used to:
  * 
  * add characters to a StringBuffer 
- *   using append() and toString()
+ *   using fileName==null, append() and toString()
  *   
  * add bytes utilizing ByteArrayOutputStream 
  *   using writeBytes(), writeByteAsInt(), append()*, and bytesAsArray()

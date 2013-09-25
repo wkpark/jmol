@@ -396,7 +396,22 @@ public class ZipUtil implements JmolZipUtility {
     return newName;
   }
 
-  public Object writeZipFile(double privateKey, FileManager fm, Viewer viewer,
+  /**
+   * generic method to create a zip file based on
+   * http://www.exampledepot.com/egs/java.util.zip/CreateZip.html
+   * @param privateKey 
+   * @param fm 
+   * @param viewer 
+   * 
+   * @param outFileName
+   *        or null to return byte[]
+   * @param fileNamesAndByteArrays
+   *        Vector of [filename1, bytes|null, filename2, bytes|null, ...]
+   * @param msg
+   * @return msg bytes filename or errorMessage or byte[]
+   */
+
+  private Object writeZipFile(double privateKey, FileManager fm, Viewer viewer,
                              String outFileName,
                              JmolList<Object> fileNamesAndByteArrays, String msg) {
     byte[] buf = new byte[1024];
@@ -653,7 +668,7 @@ public class ZipUtil implements JmolZipUtility {
         v.addLast(bytes);
       }
     }
-    return JmolBinary.writeZipFile(privateKey, fm, viewer, fileName, v, "OK JMOL");
+    return writeZipFile(privateKey, fm, viewer, fileName, v, "OK JMOL");
   }
 
   public Object getAtomSetCollectionOrBufferedReaderFromZip(

@@ -4,17 +4,17 @@ import java.util.zip.CRC32;
 
 import org.jmol.util.ArrayUtil;
 
-class GenericCRCEncoder {
+abstract class CRCEncoder extends ImageEncoder {
 
   protected int startPos, bytePos;
   
   private CRC32 crc;  
-  private byte[] pngBytes;  
-  private int dataLen;
+  protected byte[] pngBytes;  
+  protected int dataLen;
   private byte[] int2 = new byte[2];
   private byte[] int4 = new byte[4];
 
-  GenericCRCEncoder() {
+  CRCEncoder() {
     pngBytes = new byte[250];
     crc = new CRC32();
   }

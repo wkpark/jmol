@@ -45,11 +45,8 @@ import java.net.URL;
 
 import javax.swing.JPanel;
 
-import org.jmol.api.ApiPlatform;
-import org.jmol.io2.JpegEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
-import org.jmol.viewer.Viewer;
 
 /**
  * methods required by Jmol that access java.awt.Image
@@ -92,18 +89,6 @@ class Image {
 
   static int getHeight(Object image) {
     return ((java.awt.Image) image).getHeight(null);
-  }
-
-  static Object getJpgImage(ApiPlatform apiPlatform, Viewer viewer,
-                            int quality, String comment) {
-    BufferedImage eImage = (BufferedImage) viewer.getScreenImageBuffer(null, true);
-    if (eImage == null)
-      return null;
-    if (quality < 0)
-      quality = 75;
-    Object bytes = JpegEncoder.getBytes(apiPlatform, eImage, quality, comment);
-    viewer.releaseScreenImage();
-    return bytes;
   }
 
   static int[] grabPixels(Object imageobj, int width, int height, 

@@ -86,8 +86,8 @@ public class Platform implements ApiPlatform {
     return new JmolFile(name);
   }
 
-  public JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager) {
-    return new Mouse(viewer, actionManager);
+  public JmolMouseInterface getMouseManager(double privateKey, Viewer viewer, ActionManager actionManager) {
+    return new Mouse(privateKey, viewer, actionManager);
   }
 
   // /// Display
@@ -235,10 +235,6 @@ public class Platform implements ApiPlatform {
 
 	public int getImageWidth(Object canvas) {
 		return (canvas == null ? -1 : Image.getWidth(canvas));
-	}
-
-	public Object getJpgImage(Viewer viewer, int quality, String comment) {
-		return Image.getJpgImage(this, viewer, quality, comment);
 	}
 
 	public Object getStaticGraphics(Object image, boolean backgroundTransparent) {

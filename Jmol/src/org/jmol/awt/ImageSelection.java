@@ -23,7 +23,7 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.export.image;
+package org.jmol.awt;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -37,7 +37,6 @@ import java.util.List;
 
 
 import org.jmol.util.Escape;
-import org.jmol.util.Logger;
 
 /**
  * This class is used to transfer an {@link Image} into the clipboard.
@@ -122,46 +121,45 @@ public class ImageSelection implements Transferable {
   }
 
   /**
-   * Get the String residing on the clipboard. Or, if it is a file list,
-   * get the load command associated with that.
-   * from http://www.javapractices.com/Topic82.cjp
-   * @return any text found on the Clipboard; if none found, return an
-   * empty String.
+   * Get the String residing on the clipboard. Or, if it is a file list, get the
+   * load command associated with that. from
+   * http://www.javapractices.com/Topic82.cjp
+   * 
+   * @return any text found on the Clipboard; if none found, return an empty
+   *         String.
    */
   @SuppressWarnings("unchecked")
   public static String getClipboardText() {
     String result = null;
-    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    Transferable contents = clipboard.getContents(null);
-    if (contents == null)
-      return null;
-      try {
-        if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+    try {
+      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+      Transferable contents = clipboard.getContents(null);
+      if (contents == null)
+        return null;
+      if (contents.isDataFlavorSupported(DataFlavor.stringFlavor)) {
         result = (String) contents.getTransferData(DataFlavor.stringFlavor);
-        } else if (contents.isDataFlavorSupported(DataFlavor.javaFileListFlavor)){
-          Object o = contents.getTransferData(DataFlavor.javaFileListFlavor);
-          List<File> fileList = (List<File>) o;
-          final int length = fileList.size();
-          if (length == 0)
-            return null;
-          if (length == 1) {
-            result = "LoAd " + Escape.eS(fileList.get(0).getAbsolutePath().replace('\\','/'));
-            if (result.endsWith(".pse\""))
-              result += " filter 'DORESIZE'";
-          } else {
-            result = "LoAd files ";
-            for (int i = 0; i < length; i++)
-              result += " " + Escape.eS(fileList.get(i).getAbsolutePath().replace('\\','/'));
-          }
+      } else if (contents.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+        Object o = contents.getTransferData(DataFlavor.javaFileListFlavor);
+        List<File> fileList = (List<File>) o;
+        final int length = fileList.size();
+        if (length == 0)
+          return null;
+        if (length == 1) {
+          result = "LoAd "
+              + Escape.eS(fileList.get(0).getAbsolutePath().replace('\\', '/'));
+          if (result.endsWith(".pse\""))
+            result += " filter 'DORESIZE'";
+        } else {
+          result = "LoAd files ";
+          for (int i = 0; i < length; i++)
+            result += " "
+                + Escape.eS(fileList.get(i).getAbsolutePath()
+                    .replace('\\', '/'));
         }
-      } catch (UnsupportedFlavorException ex) {
-        //highly unlikely since we are using a standard DataFlavor
-        Logger.errorEx("Clipboard problem", ex);
-        ex.printStackTrace();
-      } catch (IOException ex) {
-        Logger.errorEx("Clipboard problem", ex);
-        ex.printStackTrace();
       }
+    } catch (Exception ex) {
+      result = ex.toString();
+    }
     return result;
   }
 }

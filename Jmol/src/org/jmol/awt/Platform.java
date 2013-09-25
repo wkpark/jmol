@@ -90,8 +90,8 @@ public class Platform implements ApiPlatform {
 
   ////// Mouse
 
-  public JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager) {
-    return new Mouse(viewer, actionManager);
+  public JmolMouseInterface getMouseManager(double privateKey, Viewer viewer, ActionManager actionManager) {
+    return new Mouse(privateKey, viewer, actionManager);
   }
 
   ////// Image 
@@ -148,10 +148,6 @@ public class Platform implements ApiPlatform {
 
   public int getImageWidth(Object image) {
     return (image == null ? -1 : Image.getWidth(image));
-  }
-
-  public Object getJpgImage(Viewer viewer, int quality, String comment) {
-    return Image.getJpgImage(this, viewer, quality, comment);
   }
 
   public Object getStaticGraphics(Object image, boolean backgroundTransparent) {
@@ -243,5 +239,4 @@ public class Platform implements ApiPlatform {
     return (new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z"))
         .format(new Date());
   }
-
 }

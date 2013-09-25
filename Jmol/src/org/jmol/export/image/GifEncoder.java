@@ -215,22 +215,6 @@ public class GifEncoder extends ImageEncoder {
     }
   }
 
-  private int[][] rgbPixels;
-
-  @Override
-  protected void encodeStart() throws IOException {
-    rgbPixels = new int[height][width];
-  }
-
-  @Override
-  protected void encodePixels(int x, int y, int w, int h, int[] rgbPixels,
-                              int off, int scansize) throws IOException {
-    // Save the pixels.
-    for (int row = 0; row < h; ++row)
-      if (row < 3500000)
-      System.arraycopy(rgbPixels, row * scansize + off,
-          this.rgbPixels[y + row], x, w);
-  }
 
   // Adapted from ppmtogif, which is based on GIFENCOD by David
   // Rowley <mgardi@watdscu.waterloo.edu>.  Lempel-Zim compression
@@ -240,7 +224,7 @@ public class GifEncoder extends ImageEncoder {
   protected int transparentIndex = -1;
 
   @Override
-  protected void encodeDone() throws IOException {
+  protected void createImage() throws IOException {
     if (addHeader)
       writeHeader();
     addHeader = false; // only one header
@@ -301,10 +285,9 @@ public class GifEncoder extends ImageEncoder {
     Integer key;
     int ptTransparent = -1;
     
-    for (int row = 0, transparentRgb = -1; row < height; ++row) {
-      int[] rp = rgbPixels[row];
-      for (int col = 0; col < width; ++col) {
-        int rgb = rp[col];
+    for (int pt = 0, row = 0, transparentRgb = -1; row < height; ++row) {
+      for (int col = 0; col < width; ++col, pt++) {
+        int rgb = pixels[pt];
         boolean isTransparent = (rgb >= 0);
         if (isTransparent) {
           if (ptTransparent < 0) {
@@ -314,7 +297,7 @@ public class GifEncoder extends ImageEncoder {
           } else if (rgb != transparentRgb) {
             // A second transparent color; replace it with
             // the first one.
-            rp[col] = rgb = transparentRgb;
+            pixels[pt] = rgb = transparentRgb;
           }
         }
         ColorItem item = ciHash.get(key = Integer.valueOf(rgb));
@@ -471,6 +454,7 @@ public class GifEncoder extends ImageEncoder {
   }
 
   private int initCodeSize;
+  private int curpt;
 
   private void writeImage() {
     putByte(0x2C);
@@ -513,7 +497,7 @@ public class GifEncoder extends ImageEncoder {
   private int nextPixel() {
     if (countDown-- == 0)
       return EOF;
-    int colorIndex = colorMap.get(Integer.valueOf(rgbPixels[cury][curx])).index;
+    int colorIndex = colorMap.get(Integer.valueOf(pixels[curpt])).index;
     // Bump the current X position
     ++curx;
     if (curx == width) {
@@ -526,6 +510,7 @@ public class GifEncoder extends ImageEncoder {
       else
        ++cury;
     }
+    curpt = cury * width + curx;
     return colorIndex & 0xff;
   }
 

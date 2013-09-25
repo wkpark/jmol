@@ -4,18 +4,11 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import org.jmol.util.JmolList;
-
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
-
 import java.util.Set;
 
-import org.jmol.util.TextFormat;
-
-
-import org.jmol.export.image.GenericImageCreator;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
@@ -25,12 +18,14 @@ import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.GData;
+import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
+import org.jmol.util.TextFormat;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
@@ -705,10 +700,7 @@ public class _ObjExporter extends __CartesianExporter {
         params.put("type", textureType);
         params.put("width", Integer.valueOf(width));
         params.put("height", Integer.valueOf(height));
-        GenericImageCreator ic = new GenericImageCreator();
-        // we need the viewer's private key to access the image creator
-        ic.setViewer(viewer, privateKey);
-        fname = (String) ic.createImage(params);
+        fname = (String) viewer.createImage(params);
       }
       debugPrint("End createTextureFile: " + fname);
       return new File(fname);

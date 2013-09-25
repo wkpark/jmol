@@ -32,7 +32,7 @@ public interface ApiPlatform {
 
   ////  Mouse 
 
-  JmolMouseInterface getMouseManager(Viewer viewer, ActionManager actionManager);
+  JmolMouseInterface getMouseManager(double privateKey, Viewer viewer, ActionManager actionManager);
 
   ///// Font
   
@@ -89,16 +89,6 @@ public interface ApiPlatform {
   Object createImage(Object ret);
 
   /**
-   * used for JPG writing only; can be ignored
-   * 
-   * @param viewer
-   * @param quality
-   * @param comment
-   * @return    null only if this platform cannot save images
-   */
-  Object getJpgImage(Viewer viewer, int quality, String comment);
-
-  /**
    * 
    * @param image
    * @param width
@@ -133,6 +123,6 @@ public interface ApiPlatform {
 
   void notifyEndOfRendering();
 
-  public String getDateFormat();
+  String getDateFormat();
 
 }

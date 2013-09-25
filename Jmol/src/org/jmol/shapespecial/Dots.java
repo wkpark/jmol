@@ -34,7 +34,6 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.SB;
 
-import org.jmol.api.JmolStateCreator;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.geodesic.EnvelopeCalculation;
@@ -296,9 +295,6 @@ public class Dots extends AtomShape {
     BS[] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)
       return "";
-    JmolStateCreator sc = viewer.getStateCreator();
-    if (sc == null)
-      return "";
     SB s = new SB();
     Map<String, BS> temp = new Hashtable<String, BS>();
     int atomCount = viewer.getAtomCount();
@@ -315,7 +311,7 @@ public class Dots extends AtomShape {
             + Escape.eBS(bs));
       }
     }
-    return s.append(sc.getCommands(temp, null, "select")).toString();
+    return s.append(viewer.getCommands(temp, null, "select")).toString();
   }
 
 }

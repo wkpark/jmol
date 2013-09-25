@@ -29,7 +29,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.jmol.api.JmolStateCreator;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 //import org.jmol.script.T;
@@ -45,7 +44,6 @@ import org.jmol.util.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
-
 
 public class Ellipsoids extends Shape {
 
@@ -308,15 +306,14 @@ private boolean initEllipsoids(Object value) {
 
   @Override
   public String getShapeState() {
-    JmolStateCreator sc = viewer.getStateCreator();
-    if (sc == null || !isActive())
+    if (!isActive())
       return "";
     SB sb = new SB();
     sb.append("\n");
     if (!simpleEllipsoids.isEmpty())
       getStateID(sb);
     if (!atomEllipsoids.isEmpty())
-      getStateAtoms(sb, sc);
+      getStateAtoms(sb);
     return sb.toString();
   }
 
@@ -343,7 +340,7 @@ private boolean initEllipsoids(Object value) {
     }
   }
 
-  private void getStateAtoms(SB sb, JmolStateCreator sc) {
+  private void getStateAtoms(SB sb) {
     BS bsDone = new BS();
     Map<String, BS> temp = new Hashtable<String, BS>();
     Map<String, BS> temp2 = new Hashtable<String, BS>();
@@ -368,7 +365,7 @@ private boolean initEllipsoids(Object value) {
               e2.colix, translucentAllowed));
       }
     }
-    sb.append(sc.getCommands(temp, temp2, "select"));
+    sb.append(viewer.getCommands(temp, temp2, "select"));
   }
 
   @Override

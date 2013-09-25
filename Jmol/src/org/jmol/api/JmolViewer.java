@@ -237,13 +237,6 @@ abstract public class JmolViewer {
   
   /**
    * 
-   * @param text   null here clips image; String clips text
-   * @return "OK" for image or "OK [number of bytes]"
-   */
-  abstract public String clipImage(String text);
-  
-  /**
-   * 
    * @param params include type, fileName, text, bytes, quality, width, height 
    * @return          null (canceled) or a message starting with OK or an error message
    */
@@ -616,6 +609,10 @@ abstract public class JmolViewer {
    * @return number of bytes cached
    */
   abstract public int cacheFileByName(String fileName, boolean isAdd);
+  
+  abstract public String getClipboardText();
+  
+  abstract public String clipImageOrPasteText(String text);
  
 }
 

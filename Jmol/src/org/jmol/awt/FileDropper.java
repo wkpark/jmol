@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.export;
+package org.jmol.awt;
 
 import java.awt.Component;
 import java.awt.dnd.DnDConstants;
@@ -56,7 +56,7 @@ import org.jmol.util.Logger;
  * 
  * @author Billy <simon.tyrrell@virgin.net>
  */
-public class JmolFileDropper implements DropTargetListener {
+public class FileDropper implements DropTargetListener {
   private String fd_oldFileName;
   private PropertyChangeSupport fd_propSupport;
 
@@ -66,7 +66,7 @@ public class JmolFileDropper implements DropTargetListener {
   PropertyChangeListener pcl;
   JmolStatusListener statusListener;
 
-  public JmolFileDropper(JmolStatusListener statusListener, JmolViewer viewer) {
+  public FileDropper(JmolStatusListener statusListener, JmolViewer viewer) {
     this.statusListener = statusListener;
     fd_oldFileName = "";
     fd_propSupport = new PropertyChangeSupport(this);

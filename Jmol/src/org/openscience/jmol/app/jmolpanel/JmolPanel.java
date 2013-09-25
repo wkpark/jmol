@@ -27,12 +27,11 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
+import org.jmol.awt.FileDropper;
 import org.jmol.awt.Platform;
 import org.jmol.console.JmolButton;
 import org.jmol.console.JmolToggleButton;
-import org.jmol.export.JmolFileDropper;
 import org.jmol.export.dialog.Dialog;
-import org.jmol.export.image.AwtImageCreator;
 import org.jmol.i18n.GT;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;
 import org.openscience.jmol.app.jmolpanel.console.ConsoleTextArea;
@@ -367,7 +366,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     //historyFile.repositionWindow(EDITOR_WINDOW_NAME, c, 150, 50);
 
     say(GT._("Setting up Drag-and-Drop..."));
-    new JmolFileDropper(myStatusListener, viewer);
+    new FileDropper(myStatusListener, viewer);
     // it's important to set this up first, even though it consumes some memory
     // otherwise, loading a new model in a script that sets the vibration or vector parameters
     // can appear to skip those -- they aren't skipped, but creating the atomSetChooser
@@ -1112,7 +1111,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.loadInline(AwtImageCreator.getClipboardTextStatic(), false);
+      viewer.loadInline(viewer.getClipboardText(), false);
     }
   }
 
@@ -1126,7 +1125,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      (new AwtImageCreator()).clipImageOrPasteText(viewer, null);
+      viewer.clipImageOrPasteText(null);
     }
   }
 
@@ -1137,7 +1136,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      (new AwtImageCreator()).clipImageOrPasteText(viewer, (String) viewer.getProperty(
+      viewer.clipImageOrPasteText((String) viewer.getProperty(
           "string", "stateInfo", null));
     }
   }

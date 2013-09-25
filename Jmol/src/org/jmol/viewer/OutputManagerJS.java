@@ -22,15 +22,48 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.exportjs;
+package org.jmol.viewer;
 
-import org.jmol.export.image.GenericImageCreator;
+import java.io.IOException;
+import java.util.Map;
 
-public class JSImageCreator extends GenericImageCreator {
+import org.jmol.io.JmolOutputChannel;
+import org.jmol.util.Logger;
 
-  // could override methods here if desired, but it is not necessary, I think.
-  
-  public JSImageCreator() {
+public class OutputManagerJS extends OutputManagerAll {
+
+  public OutputManagerJS() {
+      // by reflection only
+  }
+
+  @Override
+  String clipImageOrPasteText(String text) {
+    return "Clipboard not available";
+  }
+
+  @Override
+  String getClipboardText() {
+    return "Clipboard not available";
+  }
+
+  @Override
+  protected boolean getImageBytes2(Object objImage, String type,
+                                   JmolOutputChannel out,
+                                   Map<String, Object> params, String[] errRet)
+      throws IOException {
+    errRet[0] = "image type " + type + " not available on this platform";
+    return false;
+  }
+
+  @Override
+  void logToFile(String data) {
+    Logger.info(data);
+  }
+
+  @Override
+  String setLogFile(String name) {
+    Logger.info("cannot set LogFile name");
+    return null;
   }
 
 }

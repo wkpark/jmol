@@ -35,7 +35,6 @@ import java.awt.event.MouseWheelListener;
 
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.Event;
-import org.jmol.export.image.AwtImageCreator;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -58,7 +57,14 @@ class Mouse implements MouseWheelListener, MouseListener,
   private Viewer viewer;
   private ActionManager actionManager;
 
-  Mouse(Viewer viewer, ActionManager actionManager) {
+  //double privateKey;
+  /**
+   * @param privateKey  
+   * @param viewer 
+   * @param actionManager 
+   */
+  Mouse(double privateKey, Viewer viewer, ActionManager actionManager) {
+    //this.privateKey = privateKey;
     this.viewer = viewer;
     this.actionManager = actionManager;
     Component display = (Component) viewer.getDisplay();
@@ -195,7 +201,7 @@ class Mouse implements MouseWheelListener, MouseListener,
       case 'v': // paste
         switch (modifiers) {
         case Binding.CTRL:
-          String ret = AwtImageCreator.getClipboardTextStatic();
+          String ret = viewer.getClipboardText();
           if (ret == null)
             break;
           if (ret.startsWith("http://") && ret.indexOf("\n") < 0)

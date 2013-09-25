@@ -5829,11 +5829,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     // capture "filename" SPIN axis  // y assumed; axis optional
     // capture off/on
     // capture "" or just capture   -- end
+    if (!chk && !viewer.allowCapture()) {
+      showString("Cannot capture on this platform");
+      return;
+    }
+    int fps = viewer.getInt(T.animationfps);
     int mode = 0;
     String fileName = "";
     Map<String, Object> params = viewer.captureParams;
     boolean looping = !viewer.getAnimationReplayMode().name().equals("ONCE");
     int tok = tokAt(1);
+    String sfps = "";
     switch (tok) {
     case T.nada:
       mode = T.end;
@@ -5844,34 +5850,45 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         mode = T.end;
         break;
       }
+      if (!fileName.endsWith(".gif"))
+        fileName += ".gif";
       String s = null;
-      String axis = null;
-      if (tokAt(2) == T.rock) {
+      String axis = "y";
+      int i = 2;
+      switch (tokAt(i)) {
+      case T.rock:
         looping = true;
-        int i = 3;
+        i = 3;
         axis = (tokAt(3) == T.integer ? "y" : optParameterAsString(i++)
             .toLowerCase());
-        if ("xyz".indexOf(axis) < 0)
-          axis = "y";
-        int n = (tokAt(i) == T.nada ? 5 : intParameter(i));
+        int n = (tokAt(i) == T.nada ? 5 : intParameter(i++));
         s = "; rotate Y 10 10;delay 2.0; rotate Y -10 -10; delay 2.0;rotate Y -10 -10; delay 2.0;rotate Y 10 10;delay 2.0";
         s = TextFormat.simpleReplace(s, "10", "" + n);
-
-      } else if (tokAt(2) == T.spin) {
+        break;
+      case T.spin:
         looping = true;
-        int i = 3;
-        axis = optParameterAsString(i++).toLowerCase();
-        if ("xyz".indexOf(axis) < 0)
-          axis = "y";
+        i = 3;
+        axis = optParameterAsString(i).toLowerCase();
+        if (axis.length() > 0)
+          i++;
         s = "; rotate Y 360 30;delay 15.0;";
+        if (tokAt(i) == T.integer)
+          sfps = " " + (fps = intParameter(i++));
+        break;
+      case T.integer:
+        fps = intParameter(2);
+        break;
       }
       if (s != null) {
+        if (!chk)
+          viewer.setNavigationMode(false);
+        if (axis == "" || "xyz".indexOf(axis) < 0)
+          axis = "y";
         s = TextFormat.simpleReplace(s, "Y", axis);
-        s = "capture " + Escape.eS(fileName) + s + ";capture;";
+        s = "capture " + Escape.eS(fileName) + sfps + s + ";capture;";
         script(0, null, s);
         return;
       }
-      checkLength(2);
       if (params != null)
         params = new Hashtable<String, Object>();
       mode = T.movie;
@@ -5879,6 +5896,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (!looping)
         showString(GT._("Note: Enable looping using {0}",
             new Object[] { "ANIMATION MODE LOOP" }));
+      showString(GT._("Animation delay based on: {0}",
+          new Object[] { "ANIMATION FPS " + fps }));
+      params.put("captureFps", Integer.valueOf(fps));
       break;
     case T.cancel:
     case T.on:
@@ -5891,15 +5911,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (chk || params == null)
       return;
-    int fps = viewer.getInt(T.animationfps);
-    showString(GT._("Animation delay based on: {0}",
-        new Object[] { "ANIMATION FPS " + fps }));
     params.put("type", "GIF");
     params.put("fileName", fileName);
     params.put("quality", Integer.valueOf(-1));
     params.put("captureMode", Integer.valueOf(mode));
     params.put("captureLooping", looping ? Boolean.TRUE : Boolean.FALSE);
-    params.put("captureFps", Integer.valueOf(fps));
     Logger.info(viewer.processWriteOrCapture(params));
   }
 

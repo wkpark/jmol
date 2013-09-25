@@ -707,13 +707,6 @@ abstract class OutputManagerAll extends OutputManager {
     return s;
   }
 
-  protected String logFileName = null;
-
-  @Override
-  String getLogFileName() {
-    return (logFileName == null ? "" : logFileName);
-  }
-
   /**
    * @param objImage
    * @param type

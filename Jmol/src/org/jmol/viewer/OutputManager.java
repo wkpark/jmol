@@ -27,8 +27,6 @@ abstract class OutputManager {
 
   abstract void logToFile(String data);
   
-  abstract String getLogFileName();
-
   abstract String setLogFile(String name);
 
   /**

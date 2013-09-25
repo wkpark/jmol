@@ -10394,8 +10394,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       getOutputManager().logToFile(data);
   }
 
+  /*default*/ String logFileName;
+  
   public String getLogFileName() {
-    return getOutputManager().getLogFileName();
+    return (logFileName == null ? "" : logFileName);
   }
 
   public String getCommands(Map<String, BS> htDefine, Map<String, BS> htMore,

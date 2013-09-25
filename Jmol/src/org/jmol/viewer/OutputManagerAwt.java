@@ -87,7 +87,7 @@ public class OutputManagerAwt extends OutputManagerAll {
       Logger.info(GT._("Cannot set log file path."));
       value = null;
     } else {
-      logFileName = path;
+      viewer.logFileName = path;
       viewer.global.setS("_logFile", viewer.isApplet() ? value : path);
     }
     return value;
@@ -99,12 +99,12 @@ public class OutputManagerAwt extends OutputManagerAll {
       boolean doClear = (data.equals("$CLEAR$"));
       if (data.indexOf("$NOW$") >= 0)
         data = TextFormat.simpleReplace(data, "$NOW$", (new Date()).toString());
-      if (logFileName == null) {
+      if (viewer.logFileName == null) {
         System.out.println(data);
         return;
       }
       BufferedWriter out = (BufferedWriter) viewer.openLogFile(privateKey,
-          logFileName, !doClear);
+          viewer.logFileName, !doClear);
       if (!doClear) {
         int ptEnd = data.indexOf('\0');
         if (ptEnd >= 0)

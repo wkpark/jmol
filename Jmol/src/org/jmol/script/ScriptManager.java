@@ -23,14 +23,20 @@
  */
 package org.jmol.script;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+
 import org.jmol.util.JmolList;
 
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.api.JmolScriptManager;
+import org.jmol.api.ZInputStream;
+import org.jmol.io.JmolBinary;
 import org.jmol.thread.JmolThread;
 import org.jmol.util.BS;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
@@ -484,5 +490,100 @@ public class ScriptManager implements JmolScriptManager {
       return sc;
     return sc.errorMessage;
   }
-  
+
+  //////////////////////// open file async ///////////////////////
+
+  /**
+   * 
+   * From file dropping.
+   * 
+   * @param fileName 
+   * @param pdbCartoons 
+   * 
+   */
+  public void openFileAsync(String fileName, boolean pdbCartoons) {
+    String cmd = null;
+    fileName = fileName.trim();
+    boolean allowScript = (!fileName.startsWith("\t"));
+    if (!allowScript)
+      fileName = fileName.substring(1);
+    fileName = fileName.replace('\\', '/');
+    boolean isCached = fileName.startsWith("cache://");
+    if (viewer.isApplet() && fileName.indexOf("://") < 0)
+      fileName = "file://" + (fileName.startsWith("/") ? "" : "/") + fileName;
+    try {
+      if (fileName.endsWith(".pse")) {
+        cmd = (isCached ? "" : "zap;") + "load SYNC " + Escape.eS(fileName)
+            + " filter 'DORESIZE'";
+        return;
+      }
+      if (fileName.endsWith("jvxl")) {
+        cmd = "isosurface ";
+        return;
+      }
+      if (!fileName.endsWith(".spt")) {
+        String type = getFileTypeName(fileName);
+        if (type == null) {
+          type = JmolBinary.determineSurfaceTypeIs(viewer
+              .getBufferedInputStream(fileName));
+          if (type != null)
+            cmd = "if (_filetype == 'Pdb') { isosurface sigma 1.0 within 2.0 {*} "
+                + Escape.eS(fileName)
+                + " mesh nofill }; else; { isosurface "
+                + Escape.eS(fileName) + "}";
+          return;
+        } else if (type.equals("Jmol")) {
+          cmd = "script ";
+        } else if (type.equals("Cube")) {
+          cmd = "isosurface sign red blue ";
+        } else if (!type.equals("spt")) {
+          cmd = viewer.global.defaultDropScript;
+          cmd = TextFormat.simpleReplace(cmd, "%FILE", fileName);
+          cmd = TextFormat.simpleReplace(cmd, "%ALLOWCARTOONS", ""
+              + pdbCartoons);
+          if (cmd.toLowerCase().startsWith("zap") && isCached)
+            cmd = cmd.substring(3);
+          return;
+        }
+      }
+      if (allowScript && viewer.scriptEditorVisible && cmd == null)
+        viewer.showEditor(new String[] { fileName,
+            viewer.getFileAsString(fileName) });
+      else
+        cmd = (cmd == null ? "script " : cmd) + Escape.eS(fileName);
+    } finally {
+      if (cmd != null)
+        viewer.evalString(cmd);
+    }
+  }
+
+  private String getFileTypeName(String fileName) {
+    int pt = fileName.indexOf("::");
+    if (pt >= 0)
+      return fileName.substring(0, pt);
+    if (fileName.startsWith("="))
+      return "pdb";
+    Object br = viewer.fileManager.getUnzippedReaderOrStreamFromName(fileName, null,
+        true, false, true, true, null);
+    if (br instanceof BufferedReader)
+      return viewer.getModelAdapter().getFileTypeName(br);
+    if (br instanceof ZInputStream) {
+      String zipDirectory = getZipDirectoryAsString(fileName);
+      if (zipDirectory.indexOf("JmolManifest") >= 0)
+        return "Jmol";
+      return viewer.getModelAdapter().getFileTypeName(
+          JmolBinary.getBufferedReaderForString(zipDirectory));
+    }
+    if (Escape.isAS(br)) {
+      return ((String[]) br)[0];
+    }
+    return null;
+  }
+
+  private String getZipDirectoryAsString(String fileName) {
+    Object t = viewer.fileManager.getBufferedInputStreamOrErrorMessageFromName(
+        fileName, fileName, false, false, null, false);
+    return JmolBinary.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
+  }
+
 }

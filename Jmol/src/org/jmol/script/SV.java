@@ -206,6 +206,8 @@ public class SV extends T {
       return getVariableAV((SV[]) x);
     if (Escape.isAI(x))
       return getVariableAI((int[]) x);
+    if (Escape.isAB(x))
+      return getVariableAB((byte[]) x);
     if (Escape.isAF(x))
       return getVariableAF((float[]) x);
     if (Escape.isAD(x))
@@ -232,6 +234,7 @@ public class SV extends T {
     {
        return x instanceof JmolList<?>
           || x instanceof SV[] 
+          || x instanceof byte[] 
           || x instanceof int[] 
           || x instanceof float[]
           || x instanceof double[] 
@@ -324,6 +327,13 @@ public class SV extends T {
   }
 
   static SV getVariableAI(int[] ix) {
+    JmolList<SV> objects = new  JmolList<SV>();
+    for (int i = 0; i < ix.length; i++)
+      objects.addLast(newScriptVariableInt(ix[i]));
+    return newVariable(varray, objects);
+  }
+
+  static SV getVariableAB(byte[] ix) {
     JmolList<SV> objects = new  JmolList<SV>();
     for (int i = 0; i < ix.length; i++)
       objects.addLast(newScriptVariableInt(ix[i]));

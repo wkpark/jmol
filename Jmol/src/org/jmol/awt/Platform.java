@@ -143,11 +143,11 @@ public class Platform implements ApiPlatform {
   }
 
   public int getImageHeight(Object image) {
-    return Image.getHeight(image);
+    return (image == null ? -1 : Image.getHeight(image));
   }
 
   public int getImageWidth(Object image) {
-    return Image.getWidth(image);
+    return (image == null ? -1 : Image.getWidth(image));
   }
 
   public Object getJpgImage(Viewer viewer, int quality, String comment) {

@@ -59,11 +59,11 @@ public class _TachyonExporter extends __RayTracerExporter {
   }
  
   @Override
-  boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
+  boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Map<String, Object> params) {
     //wasPerspectiveDepth = viewer.getPerspectiveDepth();
     //viewer.setPerspectiveDepth(false);
     getLightingInfo();
-    return initOutput(viewer, privateKey, g3d, output);    
+    return initOutput(viewer, privateKey, g3d, params);    
   }
   
   private void getLightingInfo() {

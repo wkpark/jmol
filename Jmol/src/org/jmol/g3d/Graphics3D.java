@@ -26,6 +26,7 @@ package org.jmol.g3d;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Map;
 
 
 import org.jmol.api.ApiPlatform;
@@ -1823,8 +1824,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     return false;
   }
 
-  public JmolRendererInterface initializeExporter(String type, Viewer viewer, double privateKey, GData g3d,
-                                    Object output) {
+  public JmolRendererInterface initializeExporter(Viewer viewer, double privateKey, GData g3d,
+                                    Map<String, Object> params) {
     return null;
   }
 
@@ -1939,8 +1940,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     drawRect(x, y + h, z, 0, w, h);
   }
 
-  public boolean initializeOutput(String type, Viewer viewer,
-                                  double privateKey, GData gdata, Object object) {
+  public boolean initializeOutput(Viewer viewer,
+                                  double privateKey, GData gdata, Map<String, Object> params) {
     // N/A
     return false;
   }

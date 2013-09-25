@@ -24,6 +24,7 @@
 package org.jmol.exportjs;
 
 import java.awt.Image;
+import java.util.Map;
 
 
 import org.jmol.api.JmolRendererInterface;
@@ -73,11 +74,11 @@ final public class Export3D implements JmolRendererInterface {
     return exportName;
   }
 
-  public Object initializeExporter(String type, Viewer viewer, double privateKey, GData gdata,
-                                    Object output) {
-    exportName = type;
+  public Object initializeExporter(Viewer viewer, double privateKey, GData gdata,
+                                    Map<String, Object> params) {
+    exportName = (String) params.get("type");
     try {
-      String name = "org.jmol.exportjs." + type + "Exporter";
+      String name = "org.jmol.exportjs." + exportName + "Exporter";
       Class<?> exporterClass = Class.forName(name);
       exporter = (Exporter) exporterClass.newInstance();
     } catch (Exception e) {
@@ -90,12 +91,12 @@ final public class Export3D implements JmolRendererInterface {
     width = g3d.getRenderWidth();
     height = g3d.getRenderHeight();
     this.privateKey = privateKey;
-    return (exporter.initializeOutput(viewer, privateKey, g3d, output) ? exporter : null);
+    return (exporter.initializeOutput(viewer, privateKey, g3d, params) ? exporter : null);
   }
 
-  public boolean initializeOutput(String type, Viewer viewer,
-                                  double privateKey, GData gdata, Object output) {
-    return exporter.initializeOutput(viewer, privateKey, g3d, output);
+  public boolean initializeOutput(Viewer viewer,
+                                  double privateKey, GData gdata, Map<String, Object> params) {
+    return exporter.initializeOutput(viewer, privateKey, g3d, params);
   }
 
   public String finalizeOutput() {

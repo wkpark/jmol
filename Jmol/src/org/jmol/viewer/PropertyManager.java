@@ -34,6 +34,7 @@ import java.util.Properties;
 
 import org.jmol.api.JmolPropertyManager;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.io.Base64;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
@@ -135,7 +136,7 @@ public class PropertyManager implements JmolPropertyManager {
     
     "boundBoxInfo"    , "", "",  
     "dataInfo"        , "<data type>", "types",
-    "image"           , "", "",
+    "image"           , "<width=www,height=hhh>", "",
     "evaluate"        , "<expression>", "",
     "menu"            , "<type>", "current",
     "minimizationInfo", "", "",
@@ -443,7 +444,7 @@ public class PropertyManager implements JmolPropertyManager {
         return viewer.getFileAsString(myParam.toString());
       return viewer.getCurrentFileAsString();
     case PROP_IMAGE:
-      String params = myParam.toString();
+      String params = myParam.toString().toLowerCase();
       int height = -1,
       width = -1;
       int pt;
@@ -457,11 +458,19 @@ public class PropertyManager implements JmolPropertyManager {
         width = height;
       else
         height = width;
+      if (params.indexOf("g64") >= 0 || params.indexOf("base64") >= 0)
+        returnType = "string";
       Map<String, Object> imageParams = new Hashtable<String, Object>();
-      imageParams.put("type", returnType == null ? "JPEG" : "JPG64");
+      String type = "JPG";
+      if (params.indexOf("type=") >= 0)
+        type = Parser.getTokens(TextFormat.replaceAllCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
+      imageParams.put("type", type.toUpperCase());
       imageParams.put("width", Integer.valueOf(width));
       imageParams.put("height", Integer.valueOf(height));
-      return viewer.getImageAs(imageParams);
+      imageParams.put("quality", Integer.valueOf(-1));
+      Object bytes = viewer.getImageAsBytes(imageParams);
+      return (returnType == null || bytes instanceof String ? bytes : Base64
+          .getBase64((byte[]) bytes).toString());
     case PROP_ISOSURFACE_INFO:
       return viewer.getShapeProperty(JC.SHAPE_ISOSURFACE, "getInfo");
     case PROP_ISOSURFACE_DATA:

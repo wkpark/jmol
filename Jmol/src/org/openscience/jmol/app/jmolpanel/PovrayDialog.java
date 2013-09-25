@@ -52,6 +52,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.JComponent;
 import javax.swing.InputVerifier;
 import java.io.File;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * A dialog for controling the creation of a povray input file from a
@@ -557,8 +559,13 @@ public class PovrayDialog extends JDialog {
     int height = Integer.parseInt(imageSizeTextHeight.getValue().toString());
     int width = Integer.parseInt(imageSizeTextWidth.getValue().toString());
     //}
-    String[] fullPath = new String[] { filename + ":::" + getINI() };
-    String data = viewer.generateOutputForExport("Povray", fullPath, width, height);
+    Map<String, Object> params = new Hashtable<String, Object>();
+    params.put("type", "Povray");
+    params.put("fileName", filename);
+    params.put("width", Integer.valueOf(width));
+    params.put("height", Integer.valueOf(height));
+    params.put("params", getINI());
+    String data = viewer.generateOutputForExport(params);
     if (data == null)
       return;
     viewer.writeTextFile(filename + ".ini", data);

@@ -43,7 +43,6 @@ class Image {
    */
   static int getWidth(Object canvas) {
     /**
-     * could also be a simple object with width defined (WRITE IMAGE)
      * @j2sNative
      * 
      *            return (canvas.imageWidth ? canvas.imageWidth : canvas.width);

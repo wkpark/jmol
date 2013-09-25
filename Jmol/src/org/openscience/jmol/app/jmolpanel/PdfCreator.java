@@ -32,9 +32,6 @@ import com.lowagie.text.pdf.PdfWriter;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import org.jmol.api.JmolPdfCreatorInterface;
 import org.jmol.io.JmolOutputChannel;

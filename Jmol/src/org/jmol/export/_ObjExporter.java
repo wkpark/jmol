@@ -1,6 +1,5 @@
 package org.jmol.export;
 
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -435,10 +434,10 @@ public class _ObjExporter extends __CartesianExporter {
    * @see org.jmol.export.___Exporter#initializeOutput(org.jmol.viewer.Viewer, org.jmol.g3d.Graphics3D, java.lang.Object)
    */
   @Override
-  boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
+  boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Map<String, Object> params) {
     debugPrint("initializeOutput: + output");
     // Call the super method
-    boolean retVal = initOutput(viewer, privateKey, g3d, output);
+    boolean retVal = initOutput(viewer, privateKey, g3d, params);
     if (!retVal) {
       debugPrint("End initializeOutput (error in super):");
       return false;
@@ -696,41 +695,30 @@ public class _ObjExporter extends __CartesianExporter {
 
     // Write the file
     // TODO Fix this to set compression for JPEGs
-    Object ret = null;
     try {
       // in the applet, we allow the user to use a dialog, which can change the file name
-      ret = createImage(objFileRootName + "_" + name + "." + textureType, textureType, 
-          bytes == null ? image : bytes, width, height);
-      if (ret instanceof String)
-        name = (String) ret;
-      debugPrint("End createTextureFile: " + name);
-      return new File(name);
+      Map<String, Object> params = new Hashtable<String, Object>();
+      String fname = fileName;
+      if (image != null) {
+        params.put("image", image);
+        params.put("fileName", objFileRootName + "_" + name + "." + textureType);
+        params.put("type", textureType);
+        params.put("width", Integer.valueOf(width));
+        params.put("height", Integer.valueOf(height));
+        GenericImageCreator ic = new GenericImageCreator();
+        // we need the viewer's private key to access the image creator
+        ic.setViewer(viewer, privateKey);
+        fname = (String) ic.createImage(params);
+      }
+      debugPrint("End createTextureFile: " + fname);
+      return new File(fname);
     } catch (Exception ex) {
       debugPrint("End createTextureFile (" + ex.getMessage() + "):");
       return null;
     }
   }
 
-  /**
-   * @param fileName 
-   * @param type 
-   * @param image 
-   * @param width  
-   * @param height 
-   * @return        the file name
-   * @throws Exception 
-   */
-  private Object createImage(String fileName, String type, Object image, int width, int height) throws Exception {
-    if (image instanceof Image) {
-      GenericImageCreator ic = new GenericImageCreator();
-      // we need the viewer's private key to access the image creator
-      ic.setViewer(viewer, privateKey);
-      Map<String, Object> params = new Hashtable<String, Object>();
-      params.put("fileName", fileName);
-      params.put("type", type);
-      params.put("image", image);
-      return ic.createImage(params);
-    }
+//  private Object createImage(Map<String, Object> params) throws Exception {
     /*  TGA test -- not worth it 
     // write simple TGA file
     // see http://www.organicbit.com/closecombat/formats/tga.html
@@ -753,8 +741,7 @@ public class _ObjExporter extends __CartesianExporter {
     os.flush();
     os.close();
     */
-    return fileName;
-  }
+//  }
 
   /**
    * Local implementation of outputEllipsoid.

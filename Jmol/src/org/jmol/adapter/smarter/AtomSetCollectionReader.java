@@ -240,6 +240,7 @@ public abstract class AtomSetCollectionReader {
           if (checkLine())
             readLine();
       } else {
+        doc.setOutputChannel(out);
         processBinaryDocument(doc);
       }
       finalizeReader(); // upstairs
@@ -459,8 +460,8 @@ public abstract class AtomSetCollectionReader {
     getHeader = htParams.containsKey("getHeader");
     isSequential = htParams.containsKey("isSequential");
     readerName = (String) htParams.get("readerName");
-    if (htParams.containsKey("OutputChannel"))
-      out = (JmolOutputChannel) htParams.get("OutputChannel");
+    if (htParams.containsKey("outputChannel"))
+      out = (JmolOutputChannel) htParams.get("outputChannel");
     //parameterData = (String) htParams.get("parameterData");
     if (htParams.containsKey("vibrationNumber"))
       desiredVibrationNumber = ((Integer) htParams.get("vibrationNumber"))

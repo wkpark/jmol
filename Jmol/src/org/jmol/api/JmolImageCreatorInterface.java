@@ -18,8 +18,8 @@ public interface JmolImageCreatorInterface {
    */
   abstract public Object createImage(Map<String, Object> params);
 
-  abstract public Object getImageBytes(Map<String, Object> params) throws IOException;
+  abstract public Object getOrSaveImage(Map<String, Object> params) throws IOException;
 
-  abstract String clipImage(JmolViewer viewer, String text);
+  abstract String clipImageOrPasteText(JmolViewer viewer, String text);
 
 }

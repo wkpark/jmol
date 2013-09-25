@@ -83,6 +83,9 @@ import org.jmol.util.J2SIgnoreImport;
  * 
  * See http://www.acme.com/java/
  * 
+ * extensively modified for Jmol
+ * 
+ * 
  * @author Bob Hanson hansonr@stolaf.edu
  */
 

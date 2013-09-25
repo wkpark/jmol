@@ -43,7 +43,6 @@ import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.ApiPlatform;
-import org.jmol.api.ZInputStream;
 import org.jmol.io.Base64;
 import org.jmol.io.DataReader;
 import org.jmol.io.FileReader;
@@ -139,34 +138,6 @@ public class FileManager {
         : appletProxy);
   }
 
-  String getFileTypeName(String fileName) {
-    int pt = fileName.indexOf("::");
-    if (pt >= 0)
-      return fileName.substring(0, pt);
-    if (fileName.startsWith("="))
-      return "pdb";
-    Object br = getUnzippedReaderOrStreamFromName(fileName, null,
-        true, false, true, true, null);
-    if (br instanceof BufferedReader)
-      return viewer.getModelAdapter().getFileTypeName(br);
-    if (br instanceof ZInputStream) {
-      String zipDirectory = getZipDirectoryAsString(fileName);
-      if (zipDirectory.indexOf("JmolManifest") >= 0)
-        return "Jmol";
-      return viewer.getModelAdapter().getFileTypeName(
-          JmolBinary.getBufferedReaderForString(zipDirectory));
-    }
-    if (Escape.isAS(br)) {
-      return ((String[]) br)[0];
-    }
-    return null;
-  }
-
-  private String getZipDirectoryAsString(String fileName) {
-    Object t = getBufferedInputStreamOrErrorMessageFromName(
-        fileName, fileName, false, false, null, false);
-    return JmolBinary.getZipDirectoryAsStringAndClose((BufferedInputStream) t);
-  }
 
   /////////////// createAtomSetCollectionFromXXX methods /////////////////
 
@@ -406,7 +377,7 @@ public class FileManager {
         if (name.indexOf("?POST?_PNG_") > 0 || isPngjPost) {
           Map<String, Object> params = new Hashtable<String, Object>();
           params.put("type", isPngjPost ? "PNGJ" : "PNG");
-          Object o = viewer.getImageAs(params);
+          Object o = viewer.getImageAsBytes(params);
           if (!Escape.isAB(o))
             return o;
           if (isPngjBinaryPost) {
@@ -835,7 +806,11 @@ public class FileManager {
       data[1] = (String) t;
       return false;
     }
+    try {
     return JmolBinary.readAll((BufferedReader) t, nBytesMax, allowBinary, data, 1);
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   void loadImage(String name, String echoName) {

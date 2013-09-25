@@ -27,8 +27,6 @@ package org.jmol.export;
 
 
 import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import org.jmol.util.JmolList;
 
@@ -146,13 +144,11 @@ public abstract class ___Exporter {
   protected Viewer viewer;
   protected double privateKey;
   protected JmolRendererInterface jmolRenderer;
-  protected SB output;
   protected JmolOutputChannel out;
   protected String fileName;
   protected String commandLineOptions;
   
   boolean isCartesian;
-  protected boolean isToFile;
   protected GData g3d;
 
   protected short backgroundColix;
@@ -202,12 +198,13 @@ public abstract class ___Exporter {
     this.jmolRenderer = jmolRenderer;
   }
   
-  boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
-    return initOutput(viewer, privateKey, g3d, output);
+  boolean initializeOutput(Viewer viewer, double privateKey, GData g3d,
+                           Map<String, Object> params) {
+    return initOutput(viewer, privateKey, g3d, params);
   }
 
   protected boolean initOutput(Viewer viewer, double privateKey, GData g3d,
-                             Object output) {
+                             Map<String, Object> params) {
     this.viewer = viewer;
     this.g3d = g3d;
     this.privateKey = privateKey;
@@ -229,39 +226,17 @@ public abstract class ___Exporter {
     cameraDistance = cameraFactors[3].x;
     aperatureAngle = cameraFactors[3].y;
     scalePixelsPerAngstrom = cameraFactors[3].z;
-    isToFile = (output instanceof String);
-    if (isToFile) {
-      fileName = (String) output;
-      int pt = fileName.indexOf(":::"); 
-      if (pt > 0) {
-        commandLineOptions = fileName.substring(pt + 3);
-        fileName = fileName.substring(0, pt);
-      }
-      //viewer.writeTextFile(fileName + ".spt", viewer.getSavedState("_Export"));
-      try {
-        File f = new File(fileName);
-        System.out.println("__Exporter writing to " + f.getAbsolutePath());
-        out = viewer.openOutputChannel(privateKey, fileName, true);
-      } catch (IOException e) {
-        return false;
-      }
-    } else {
-      this.output = (SB) output;
-    }
+    out = (JmolOutputChannel) params.get("outputChannel");
+    commandLineOptions = (String) params.get("params");
+    fileName = out.getFileName();
     outputHeader();
     return true;
   }
 
   abstract protected void outputHeader();
 
-  protected int nBytes;
-
   protected void output(String data) {
-    nBytes += data.length();
-    if (out == null)
-      output.append(data);
-    else
-      out.append(data);
+    out.append(data);
   }
 
   protected void outputComment(String comment) {
@@ -329,14 +304,14 @@ public abstract class ___Exporter {
   
   protected String finalizeOutput2() {
     outputFooter();
-    if (!isToFile)
-      return (output == null ? "" : output.toString());
     String ret = out.closeChannel();
+    if (fileName == null)
+      return ret;
     if (ret != null) {
       Logger.info(ret);
       return "ERROR EXPORTING FILE: " + ret;
     }
-    return "OK " + nBytes + " " + jmolRenderer.getExportName() + " " + fileName ;
+    return "OK " + out.getByteCount() + " " + jmolRenderer.getExportName() + " " + fileName ;
   }
 
   protected static String getExportDate() {

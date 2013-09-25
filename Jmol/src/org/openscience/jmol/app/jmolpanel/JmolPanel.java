@@ -1126,7 +1126,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      (new AwtImageCreator()).clipImage(viewer, null);
+      (new AwtImageCreator()).clipImageOrPasteText(viewer, null);
     }
   }
 
@@ -1137,7 +1137,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      (new AwtImageCreator()).clipImage(viewer, (String) viewer.getProperty(
+      (new AwtImageCreator()).clipImageOrPasteText(viewer, (String) viewer.getProperty(
           "string", "stateInfo", null));
     }
   }

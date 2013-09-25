@@ -1981,7 +1981,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
   @Override
   public void openFileAsyncPDB(String fileName, boolean pdbCartoons) {
-    getStateCreator().openFileAsync(fileName, pdbCartoons);
+    getScriptManager().openFileAsync(fileName, pdbCartoons);
   }
 
   /**
@@ -3567,10 +3567,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Object getWrappedState(String fileName, String[] scripts,
-                                boolean isImage, boolean asJmolZip, int width,
-                                int height) {
-    return getStateCreator().getWrappedState(fileName, scripts, isImage,
-        asJmolZip, width, height);
+                                Object image, boolean asJmolZip) {
+    return getStateCreator().getWrappedState(fileName, scripts, apiPlatform.getImageWidth(image),
+        apiPlatform.getImageHeight(image), asJmolZip);
   }
 
   @Override
@@ -4225,12 +4224,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   @Override
-  public String generateOutputForExport(String type, String[] fileName,
-                                        int width, int height) {
-    if (noGraphicsAllowed || repaintManager == null)
-      return null;
-    return getStateCreator().generateOutputForExport(type, fileName, width,
-        height);
+  public String generateOutputForExport(Map<String, Object> params) {
+    return (noGraphicsAllowed || repaintManager == null ? null 
+        : getStateCreator().getOutputFromExport(params));
   }
 
   private void clearRepaintManager(int iShape) {
@@ -4261,7 +4257,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (captureParams != null && Boolean.FALSE != captureParams.get("captureEnabled")) {
       //showString(transformManager.matrixRotate.toString(), false);
-      createImageSet(captureParams);
+      processWriteOrCapture(captureParams);
     }
     notifyViewerRepaintDone();
   }
@@ -4449,11 +4445,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   /**
    * @param params
-   * @return base64-encoded or binary version of the image
+   * @return byte[] image or an error message
    */
   @Override
-  public Object getImageAs(Map<String, Object> params) {
+  public Object getImageAsBytes(Map<String, Object> params) {
     /**
+     * 
+     * 
      * @j2sNative
      * 
      *            if (this.isWebGL)return null
@@ -4461,7 +4459,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      */
     {
     }
-    return getStateCreator().getImageAs(params);
+    return getStateCreator().getImageAsBytes(params);
   }
 
   @Override
@@ -7954,7 +7952,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case 20:
       return (appConsole == null ? "" : appConsole.getText());
     case 40:
-      getStateCreator().showEditor((String[]) paramInfo);
+      showEditor((String[]) paramInfo);
       return null;
     case 60:
       scriptEditorVisible = ((Boolean) paramInfo).booleanValue();
@@ -8029,6 +8027,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return null;
   }
 
+  public void showEditor(String[] file_text) {
+    JmolScriptEditorInterface scriptEditor = (JmolScriptEditorInterface)
+      getProperty("DATA_API", "getScriptEditor", Boolean.TRUE);
+    if (scriptEditor == null)
+      return;
+    scriptEditor.show(file_text);
+  }
+    
   JmolPropertyManager pm;
 
   private JmolPropertyManager getPropertyManager() {
@@ -8694,8 +8700,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   /**
    * 
    * @param text
-   *        null here clips image; String clips text
-   * @return "OK" for image or "OK [number of bytes]"
+   *        null here clips image; String pastes text
+   *        
+   * @return "OK image to clipboard: [width] * [height]  or  
+   *           "OK text to clipboard: [length]
    */
   @Override
   public String clipImage(String text) {
@@ -8704,7 +8712,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     JmolImageCreatorInterface c;
     try {
       c = getImageCreator();
-      return c.clipImage(this, text);
+      return c.clipImageOrPasteText(this, text);
     } catch (Error er) {
       // unsigned applet will not have this interface
       return GT._("clipboard is not accessible -- use signed applet");
@@ -8720,8 +8728,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @param params
    * @return message starting with "OK" or an error message
    */
-  public String createImageSet(Map<String, Object> params) {
-    return getStateCreator().createImageSet(params);
+  public String processWriteOrCapture(Map<String, Object> params) {
+    return getStateCreator().processWriteOrCapture(params);
   }
 
   public Object createZip(String fileName, String type, String stateInfo,
@@ -8732,14 +8740,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     params.put("text", stateInfo);
     if (scripts != null)
       params.put("scripts", scripts);
-    return getStateCreator().createImage(params);
+    return getStateCreator().outputToFile(params);
     // fileName, type, stateInfo, null, scripts, , -1, -1
   }
 
   @Override
   public Object createImage(Map<String, Object> params) {
     // String fileName, String type, Object text_or_bytes, int quality, int width, int height
-    return getStateCreator().createImage(params);
+    return getStateCreator().outputToFile(params);
   }
 
   JmolImageCreatorInterface getImageCreator() {
@@ -9742,31 +9750,36 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private JmolRendererInterface jsExporter3D;
 
-  public JmolRendererInterface initializeExporter(String type, String fileName) {
-    if (jsExporter3D != null) {
-      jsExporter3D.initializeOutput(type, this, privateKey, gdata, null);
-      return jsExporter3D;
+  public JmolRendererInterface initializeExporter(Map<String, Object> params) {
+    boolean isJS = params.get("type").equals("JS");
+    String cname;
+    if (isJS) {
+      if (jsExporter3D != null) {
+        jsExporter3D.initializeOutput(this, privateKey, gdata, params);
+        return jsExporter3D;
+      }
+      cname = "org.jmol.exportjs.Export3D";
+    } else {
+      String fileName = (String) params.get("fileName");
+      String[] fullPath = (String[]) params.get("fullPath");
+      JmolOutputChannel out = getOutputChannel(fileName, fullPath);
+      if (out == null)
+        return null;
+      params.put("outputChannel", out);
+      cname = "org.jmol.export.Export3D";
     }
-    boolean isJS = type.equals("JS");
-    Object output = (fileName == null ? new SB() : fileName);
     JmolRendererInterface export3D = null;
     try {
-      Class<?> export3Dclass = Class
-          .forName(isJS ? "org.jmol.exportjs.Export3D"
-              : "org.jmol.export.Export3D");
+      Class<?> export3Dclass = Class.forName(cname);
       export3D = (JmolRendererInterface) export3Dclass.newInstance();
     } catch (Exception e) {
       return null;
     }
-    Object exporter = export3D.initializeExporter(type, this, privateKey,
-        gdata, output);
+    Object exporter = export3D.initializeExporter(this, privateKey, gdata,
+        params);
     if (isJS && exporter != null)
       jsExporter3D = export3D;
     return (exporter == null ? null : export3D);
-  }
-
-  public void setPrivateKeyForShape(int iShape) {
-    setShapeProperty(iShape, "privateKey", Double.valueOf(privateKey));
   }
 
   public boolean getMouseEnabled() {
@@ -10378,5 +10391,4 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String getLogFileName() {
     return getStateCreator().getLogFileName();
   }
-
 }

@@ -41,7 +41,7 @@ public class AwtImageCreator extends GenericImageCreator {
   }
 
   @Override
-  public String clipImage(JmolViewer viewer, String text) {
+  public String clipImageOrPasteText(JmolViewer viewer, String text) {
     this.viewer = (Viewer) viewer;
     String msg;
     try {
@@ -74,10 +74,8 @@ public class AwtImageCreator extends GenericImageCreator {
   }
 
   /**
-   * @param fileName
    * @param objImage
    * @param type
-   * @param asBytes
    * @param out
    * @param errRet
    * @return byte array if needed

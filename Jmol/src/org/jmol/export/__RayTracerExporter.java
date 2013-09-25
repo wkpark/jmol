@@ -94,7 +94,6 @@ abstract class __RayTracerExporter extends ___Exporter {
   }
 
   protected void initVars() {
-    nBytes = 0;
     isSlabEnabled = viewer.getSlabEnabled();
     minScreenDimension = Math.min(screenWidth, screenHeight);
   }

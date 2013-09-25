@@ -1,6 +1,8 @@
 package org.jmol.api;
 
 
+import java.util.Map;
+
 import org.jmol.modelset.Atom;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
@@ -20,13 +22,13 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
 
   public abstract String getExportName();
 
-  public abstract Object initializeExporter(String type, Viewer viewer,
+  public abstract Object initializeExporter(Viewer viewer,
                                              double privateKey, GData gdata,
-                                             Object output);
+                                             Map<String, Object> params);
 
-  public abstract boolean initializeOutput(String type, Viewer viewer,
+  public abstract boolean initializeOutput(Viewer viewer,
                                         double privateKey, GData gdata,
-                                        Object object);
+                                        Map<String, Object> params);
 
   public abstract short[] getBgColixes(short[] bgcolixes);
 

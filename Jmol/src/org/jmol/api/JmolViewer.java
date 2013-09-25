@@ -199,8 +199,8 @@ abstract public class JmolViewer {
 
   // for POV-Ray -- returns the INI file
   
-  abstract public String generateOutputForExport(String type, String[] fileName, int width, int height); 
-
+  abstract public String generateOutputForExport(Map<String, Object> params); 
+  
   abstract public void setJmolCallbackListener(JmolCallbackListener jmolCallbackListener);
 
   abstract public void setJmolStatusListener(JmolStatusListener jmolStatusListener);
@@ -253,7 +253,7 @@ abstract public class JmolViewer {
    * @param params includes type, fileName, quality, width, height, outputStream, comment 
    * @return base64-encoded or binary version of the image
    */
-  abstract public Object getImageAs(Map<String, Object> params);
+  abstract public Object getImageAsBytes(Map<String, Object> params);
 
   abstract public int getMotionEventNumber();
 
@@ -616,6 +616,6 @@ abstract public class JmolViewer {
    * @return number of bytes cached
    */
   abstract public int cacheFileByName(String fileName, boolean isAdd);
-
+ 
 }
 

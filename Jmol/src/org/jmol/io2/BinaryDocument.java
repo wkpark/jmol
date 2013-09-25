@@ -32,7 +32,6 @@ import org.jmol.api.JmolDocument;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
-import org.jmol.viewer.Viewer;
 
 
 //import java.io.RandomAccessFile;
@@ -430,8 +429,7 @@ public class BinaryDocument implements JmolDocument {
   }
 
   JmolOutputChannel out;
-  public void setOutputChannel(JmolOutputChannel out, Viewer viewer, double privateKey) {
-    if (viewer.checkPrivateKey(privateKey))
+  public void setOutputChannel(JmolOutputChannel out) {
       this.out = out;
   }
 

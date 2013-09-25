@@ -67,7 +67,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     output("// This script was generated on " + getExportDate() + "\n");
     output("// ******************************************************\n");
     try {
-    output((String) viewer.getWrappedState(null, null, true, false, 0, 0));
+    output((String) viewer.getWrappedState(null, null, null, false));
     } catch (Exception e) {
       // tough luck
     }
@@ -314,7 +314,7 @@ public class _PovrayExporter extends __RayTracerExporter {
     fName = fName.substring(fName.lastIndexOf("\\") + 1);    
     return "; Created by: Jmol " + Viewer.getJmolVersion()
         + "\n; Creation date: " + getExportDate() 
-        + "\n; File created: "  + fileName + " (" + nBytes + " bytes)\n\n" 
+        + "\n; File created: "  + fileName + " (" + out.getByteCount() + " bytes)\n\n" 
         + (commandLineOptions != null ? commandLineOptions :
           "\n; Jmol state: (embedded in input file)" 
         + "\nInput_File_Name=" + fName 

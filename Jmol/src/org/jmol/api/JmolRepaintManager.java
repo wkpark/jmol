@@ -1,5 +1,7 @@
 package org.jmol.api;
 
+import java.util.Map;
+
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.GData;
 import org.jmol.viewer.ShapeManager;
@@ -25,7 +27,6 @@ public interface JmolRepaintManager {
 
   void render(GData gdata, ModelSet modelSet, boolean isFirstPass, int[] minMax);
 
-  String renderExport(String type, GData gdata, ModelSet modelSet,
-                      String fileName);
+  String renderExport(GData gdata, ModelSet modelSet, Map<String, Object> params);
 
 }

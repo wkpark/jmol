@@ -2399,7 +2399,6 @@ public class ScriptExt implements JmolScriptExtension {
               localName = null;
             } else {
               addShapeProperty(propertyList, "localName", localName);
-              viewer.setPrivateKeyForShape(iShape); // for the "AS" keyword to work
             }
           }
         }

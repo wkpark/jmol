@@ -11,12 +11,27 @@ import org.jmol.viewer.FileManager;
 
 /**
  * 
- * A generic output method. JmolOutputChannel can be used to output to a StringBuffer,
- * a ByteArrayOutputStream (both just using new JmolOutputChannel()), to a file
- * (os = FileOutputStream()) 
- * a Extension of OutputStream is for the sole purpose
- * of allowing the zip utility to use new ZipOutputStream(jmolOutputChannel);
+ * A generic output method. JmolOutputChannel can be used to:
  * 
+ * add characters to a StringBuffer 
+ *   using append() and toString()
+ *   
+ * add bytes utilizing ByteArrayOutputStream 
+ *   using writeBytes(), writeByteAsInt(), append()*, and bytesAsArray()
+ *       *append() can be used as long as os==ByteArrayOutputStream
+ *        or it is not used before one of the writeByte methods. 
+ * 
+ * output characters to a FileOutputStream 
+ *  using os==FileOutputStream, asWriter==true, append(), and closeChannel()
+ *  
+ * output bytes to a FileOutputStream 
+ *  using os==FileOutputStream, writeBytes(), writeByteAsInt(), append(), and closeChannel()
+ * 
+ * post characters or bytes to a remote server
+ *  using filename=="http://..." or "https://...",
+ *    writeBytes(), writeByteAsInt(), append(), and closeChannel()
+ *  
+ *  
  */
 
 public class JmolOutputChannel extends OutputStream {
@@ -35,7 +50,7 @@ public class JmolOutputChannel extends OutputStream {
     this.fm = fm;
     this.fileName = fileName;
     this.os = os;
-    isLocalFile = (fileName != null && (fileName.startsWith("http://") || fileName.startsWith("https://")));
+    isLocalFile = (fileName != null && !(fileName.startsWith("http://") || fileName.startsWith("https://")));
     if (asWriter)
       bw = new BufferedWriter(new OutputStreamWriter(os));
     return this;
@@ -49,6 +64,10 @@ public class JmolOutputChannel extends OutputStream {
     return byteCount;
   }
 
+  /**
+   * 
+   * @param type  user-identified type (PNG, JPG, etc)
+   */
   public void setType(String type) {
     this.type = type;
   }
@@ -56,18 +75,27 @@ public class JmolOutputChannel extends OutputStream {
   public String getType() {
     return type;
   }
-  
+
+  /**
+   * will go to string buffer if bw == null and os == null
+   * 
+   * @param s
+   * @return this, for chaining like a standard StringBuffer
+   * 
+   */
   public JmolOutputChannel append(String s) {
     try {
       if (bw != null) {
         bw.write(s);
-      } else if (os != null) {
-        byte[] b = s.getBytes();
-        os.write(b, 0, b.length);
-      } else {
+      } else if (os == null) {
         if (sb == null)
           sb = new SB();
         sb.append(s);
+      } else {
+        byte[] b = s.getBytes();
+        os.write(b, 0, b.length);
+        byteCount += b.length;
+        return this;
       }
     } catch (IOException e) {
       // ignore
@@ -139,11 +167,13 @@ public class JmolOutputChannel extends OutputStream {
   }
 
   public String closeChannel() {
+    // can't cancel file writers
     try {
       if (bw != null) {
         bw.flush();
         bw.close();
       } else if (os != null) {
+        os.flush();
         os.close();
       }
     } catch (Exception e) {
@@ -158,12 +188,13 @@ public class JmolOutputChannel extends OutputStream {
      * @j2sNative
      * 
      *            Jmol._doAjax(this.fileName, null, (this.sb == null ?
-     *            os.toByteArray() : this.sb.toString()));
+     *            this.toByteArray() : this.sb.toString()));
      * 
      */
     {
-      if (!isLocalFile)
-        return JmolBinary.postByteArray(fm, fileName, toByteArray());
+      if (!isLocalFile) // unsigned applet could do this
+        return JmolBinary.postByteArray(fm, fileName, 
+            (sb == null ? toByteArray() : sb.toString().getBytes()));
     }
     return null;
   }

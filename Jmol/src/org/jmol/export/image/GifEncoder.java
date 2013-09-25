@@ -22,49 +22,43 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/** GifEncoder - write out an image as a GIF
- * 
- *  Transparency handling and variable bit size courtesy of Jack Palevich.
- *  
- *  Copyright (C)1996,1998 by Jef Poskanzer <jef@mail.acme.com>. All rights reserved.
- *  
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *  1. Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *  2. Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- * 
- *  THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *  ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- *  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- *  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- *  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- *  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- *  SUCH DAMAGE.
- * 
- *  Visit the ACME Labs Java page for up-to-date versions of this and other
- *  fine Java utilities: http://www.acme.com/java/
- * 
- * extensively modified for Jmol by Bob Hanson
- * 
- * -- much simplified interface with encoder
- * -- uses simple Hashtable with Integer()
- * -- adds adaptive color reduction to generate 256 colors
- *      Reduction algorithm simply removes lower bits of red, green, and blue
- *      one at a time until the number of sets is <= 256. Then it creates a
- *      color for each set that is a weighted average of all the colors for that set.
- *      Seems to work reasonably well. Mapped isosurfaces look pretty crude.
- * -- allows progressive production of animated GIF via Jmol CAPTURE command
- * 
- * @author Bob Hanson hansonr@stolaf.edu
- */
+//  GifEncoder - write out an image as a GIF
+// 
+//  Transparency handling and variable bit size courtesy of Jack Palevich.
+//  
+//  Copyright (C)1996,1998 by Jef Poskanzer <jef@mail.acme.com>. All rights reserved.
+//  
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions
+//  are met:
+//  1. Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//  2. Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in the
+//     documentation and/or other materials provided with the distribution.
+// 
+//  THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+//  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+//  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//  ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+//  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+//  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+//  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+//  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+//  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+//  SUCH DAMAGE.
+// 
+//  Visit the ACME Labs Java page for up-to-date versions of this and other
+//  fine Java utilities: http://www.acme.com/java/
+// 
+/// Write out an image as a GIF.
+// <P>
+// <A HREF="/resources/classes/Acme/JPM/Encoders/GifEncoder.java">Fetch the software.</A><BR>
+// <A HREF="/resources/classes/Acme.tar.gz">Fetch the entire Acme package.</A>
+// <P>
+// @see ToGif
+
 
 package org.jmol.export.image;
 
@@ -78,21 +72,32 @@ import java.io.IOException;
 
 import org.jmol.util.Logger;
 
-/// Write out an image as a GIF.
-// <P>
-// <A HREF="/resources/classes/Acme/JPM/Encoders/GifEncoder.java">Fetch the software.</A><BR>
-// <A HREF="/resources/classes/Acme.tar.gz">Fetch the entire Acme package.</A>
-// <P>
-// @see ToGif
-
 /**
- * Extensively modified
  * 
- *  see http://www.w3.org/Graphics/GIF/spec-gif89a.txt
+ * GifEncoder extensively modified for Jmol by Bob Hanson
  * 
- *  @author Bob Hanson hansonr@stolaf.edu
- *  
+ * -- much simplified interface with ImageEncoder
+ * 
+ * -- uses simple Hashtable with Integer()
+ * 
+ * -- adds adaptive color reduction to generate 256 colors
+ *      Reduction algorithm simply removes lower bits of red, green, and blue
+ *      one at a time until the number of sets is <= 256. Then it creates a
+ *      color for each set that is a weighted average of all the colors for that set.
+ *      Seems to work reasonably well. Mapped isosurfaces look pretty crude.
+ * 
+ * -- allows progressive production of animated GIF via Jmol CAPTURE command
+ * 
+ * -- uses general purpose JmolOutputChannel for byte-handling options
+ *    such as posting to a server, writing to disk, and retrieving bytes.
+ *    
+ * -- allows JavaScript port
+ *    
+ * -- Bob Hanson, 24 Sep 2013
+ *    
+ * @author Bob Hanson hansonr@stolaf.edu
  */
+
 public class GifEncoder extends ImageEncoder {
 
   private Map<Integer, AdaptiveColorCollection> colorMap;
@@ -165,13 +170,9 @@ public class GifEncoder extends ImageEncoder {
 
   /**
    * we allow for animated GIF by being able to re-enter
-   * the code with different parameters:
-   * Standard GIF:            null
-   * Interlaced GIF:         [TRUE]
-   * GIF_STREAM_BEGIN:     [0]
-   * GIF_STREAM_ADD:       [1, delayTimeMS]
-   * GIF_STREAM_END:       [-1]
-   * GIF_STREAM_CANCEL:    [-2]
+   * the code with different parameters held in params
+   * 
+   * 
    */
   @Override
   protected void setParams(Map<String, Object> params) {
@@ -258,8 +259,7 @@ public class GifEncoder extends ImageEncoder {
       writeTrailer();
       super.close();
     }
-    params.put("captureByteCount", Integer.valueOf(byteCount
-        + out.getByteCount()));
+    params.put("captureByteCount", Integer.valueOf(byteCount));
   }
 
   /**

@@ -23,6 +23,8 @@
  */
 package org.jmol.render;
 
+import java.util.Map;
+
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolRepaintManager;
 import org.jmol.modelset.ModelSet;
@@ -224,17 +226,16 @@ public class RepaintManager implements JmolRepaintManager {
     }
   }
   
-  public String renderExport(String type, GData gdata, ModelSet modelSet,
-                      String fileName) {
+  public String renderExport(GData gdata, ModelSet modelSet, Map<String, Object> params) {
     boolean isOK;
     boolean logTime = viewer.getBoolean(T.showtiming);
     viewer.finalizeTransformParameters();
     shapeManager.finalizeAtoms(null, null);
     shapeManager.transformAtoms();
-    JmolRendererInterface g3dExport = viewer.initializeExporter(type, fileName);
+    JmolRendererInterface g3dExport = viewer.initializeExporter(params);
     isOK = (g3dExport != null);
     if (!isOK) {
-      Logger.error("Cannot export " + type);
+      Logger.error("Cannot export " + params.get("type"));
       return null;
     }
     g3dExport.renderBackground(g3dExport);

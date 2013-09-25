@@ -5900,7 +5900,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     params.put("captureMode", Integer.valueOf(mode));
     params.put("captureLooping", looping ? Boolean.TRUE : Boolean.FALSE);
     params.put("captureFps", Integer.valueOf(fps));
-    Logger.info(viewer.createImageSet(params));
+    Logger.info(viewer.processWriteOrCapture(params));
   }
 
   public void setCursorWait(boolean TF) {
@@ -9478,7 +9478,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (out == null)
         Logger.error("Could not create output stream for " + fullPath[0]);
       else
-        htParams.put("OutputChannel", out);
+        htParams.put("outputChannel", out);
     }
 
     if (filenames == null && tokType == 0) {
@@ -14616,14 +14616,17 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (data == null || isExport) {
         data = type.intern();
         if (isExport) {
-          // POV-Ray uses a BufferedWriter instead of a StringXBuilder.
-          // todo -- there's no reason this data has to be done this way. 
-          // we could send all of them out to file directly
-          fullPath[0] = fileName;
           if (timeMsg)
             Logger.startTimer("export");
-          data = viewer.generateOutputForExport(data, isCommand
-              || fileName != null ? fullPath : null, width, height);
+          Map<String, Object> eparams = new Hashtable<String, Object>();
+          eparams.put("type", data);
+          if (fileName != null)
+            eparams.put("fileName", fileName);
+          if (isCommand || fileName != null)
+            eparams.put("fullPath", fullPath);
+          eparams.put("width", Integer.valueOf(width));
+          eparams.put("height", Integer.valueOf(height));
+          data = viewer.generateOutputForExport(eparams);
           if (data == null || data.length() == 0)
             return "";
           if (!isCommand)
@@ -14637,7 +14640,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             params.put("type", ext);
             params.put("text", data);
             params.put("fullPath", fullPath);
-            msg = viewer.createImageSet(params);
+            msg = viewer.processWriteOrCapture(params);
             if (type.equals("Idtf"))
               data = data.substring(0, data.indexOf("\\begin{comment}"));
             data = "Created " + fullPath[0] + ":\n\n" + data;
@@ -14777,7 +14780,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         msg = viewer.writeFileData(fileName, type, 0, null);
       } else {
         params = new Hashtable<String, Object>();
-        params.put("fileName", fileName);
+        if (fileName != null)
+          params.put("fileName", fileName);
         params.put("type", type);
         if (bytes instanceof String && quality == Integer.MIN_VALUE)
           params.put("text", bytes);
@@ -14792,7 +14796,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         params.put("width", Integer.valueOf(width));
         params.put("height", Integer.valueOf(height));
         params.put("nVibes", Integer.valueOf(nVibes));
-        msg = viewer.createImageSet(params);
+        msg = viewer.processWriteOrCapture(params);
         //? (byte[]) bytes : null), scripts,  quality, width, height, bsFrames, nVibes, fullPath);
       }
       if (timeMsg)

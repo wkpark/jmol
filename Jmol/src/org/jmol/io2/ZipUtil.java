@@ -457,6 +457,8 @@ public class ZipUtil implements JmolZipUtility {
         zos.closeEntry();
         Logger.info("...added " + fname + " (" + nOut + " bytes)");
       }
+      zos.flush();
+      zos.close();
       String ret = out.closeChannel();
       Logger.info(nBytesOut + " bytes prior to compression");
       nBytes = out.getByteCount();
@@ -644,7 +646,7 @@ public class ZipUtil implements JmolZipUtility {
       Map<String, Object> imageParams = new Hashtable<String, Object>();
       imageParams.put("type", "PNG");
       imageParams.put("comment", JC.embedScript(script));
-      Object bytes = viewer.getImageAs(imageParams); 
+      Object bytes = viewer.getImageAsBytes(imageParams); 
       if (Escape.isAB(bytes)) {
         v.addLast("preview.png");
         v.addLast(null);

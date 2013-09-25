@@ -19,8 +19,8 @@ public interface JmolStateCreator {
 
   void setViewer(Viewer viewer, double privateKey);
 
-  Object getWrappedState(String fileName, String[] scripts, boolean isImage,
-                         boolean asJmolZip, int width, int height);
+  Object getWrappedState(String fileName, String[] scripts, int width,
+                         int height, boolean asJmolZip);
 
   String getStateScript(String type, int width, int height);
 
@@ -71,24 +71,19 @@ public interface JmolStateCreator {
 
   void undoMoveActionClear(int taintedAtom, int type, boolean clearRedo);
 
-  String createImageSet(Map<String, Object> params);
-  Object createImage(Map<String, Object> params);
+  String processWriteOrCapture(Map<String, Object> params);
+  String outputToFile(Map<String, Object> params);
 
   void syncScript(String script, String applet, int port);
 
-  Object getImageAs(Map<String, Object> params);
+  Object getImageAsBytes(Map<String, Object> params);
 
-  String generateOutputForExport(String type, String[] fileName, int width,
-                                 int height);
+  String getOutputFromExport(Map<String, Object> params);
 
   String writeFileData(String fileName, String type, 
                         int modelIndex, Object[] parameters);
 
   JmolOutputChannel getOutputChannel(String localName, String[] fullPath);
-
-  void openFileAsync(String fileName, boolean pdbCartoons);
-
-  void showEditor(String[] file_text);
 
   void logToFile(String data);
   

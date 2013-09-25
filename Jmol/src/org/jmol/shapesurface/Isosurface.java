@@ -477,11 +477,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return;
     }
 
-    if ("privateKey" == propertyName) {
-      this.privateKey = ((Double) value).doubleValue();
-      return;
-    }
-
     if ("connections" == propertyName) {
       if (currentMesh != null) {
         connections = (int[]) value;
@@ -1306,10 +1301,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.invalidatePolygons();
   }
 
-  private double privateKey;
-  
   public void setOutputChannel(JmolDocument binaryDoc, JmolOutputChannel out) {
-    binaryDoc.setOutputChannel(out, viewer, privateKey);
+    binaryDoc.setOutputChannel(out);
   }
 
   public void fillMeshData(MeshData meshData, int mode, IsosurfaceMesh mesh) {

@@ -32,7 +32,6 @@ import org.jmol.api.JmolViewer;
 import org.jmol.io.Base64;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.io2.JpegEncoder;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -57,6 +56,8 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
   }
 
   /**
+   * This method does too much. It can create byte data, it can
+   * save text, it can save image data, it can 
    * 
    * @param params
    * @return null (canceled) or a message starting with OK or an error message
@@ -68,34 +69,30 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
     String fileName = (String) params.get("fileName");
     String text = (String) params.get("text");
     byte[] bytes = (byte[]) params.get("bytes");
-    Object objImage = params.get("image");
     int quality = getInt(params, "quality", Integer.MIN_VALUE);
     JmolOutputChannel out = (JmolOutputChannel) params.get("outputChannel");
-
     boolean closeStream = (out == null);
-    long len = -1;
+    int len = -1;
     try {
       if (!viewer.checkPrivateKey(privateKey))
-        return "NO SECURITY";
+        return "ERROR: SECURITY";
+      if (params.get("image") != null) {
+        // _ObjExport needs to save the texture file
+        getOrSaveImage(params);
+        return fileName;
+      } 
       // returns message starting with OK or an error message
-      if ("OutputChannel".equals(type))
-        return viewer.openOutputChannel(privateKey, fileName, false);
       if (bytes != null) {
-        len = bytes.length;
         if (out == null)
           out = viewer.openOutputChannel(privateKey, fileName, false);
         out.writeBytes(bytes, 0, bytes.length);
-      } else if (objImage != null) {
-        getImageBytes(params);
-        return fileName;
       } else if (text != null) {
         if (out == null)
           out = viewer.openOutputChannel(privateKey, fileName, true);
-        len = text.length();
         out.append(text);
       } else {
         len = 1;
-        Object bytesOrError = getImageBytes(params);
+        Object bytesOrError = getOrSaveImage(params);
         if (bytesOrError instanceof String)
           return bytesOrError;
         bytes = (byte[]) bytesOrError;
@@ -107,8 +104,11 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
       Logger.errorEx("IO Exception", exc);
       return exc.toString();
     } finally {
-      if (out != null && closeStream)
-        out.closeChannel();
+      if (out != null) {
+        if (closeStream)
+          out.closeChannel();
+        len = out.getByteCount();
+      }
     }
     return (len < 0 ? "Creation of " + fileName + " failed: "
         + viewer.getErrorMessageUn() : "OK " + type + " "
@@ -118,129 +118,114 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
 
   /**
    * 
-   * this method needs to set "byteCount" to be the length of bytes if not "asBytes"
-   * @param params 
-   * @return        bytes[] or (String) error or null
-   * @throws IOException 
+   * @param params
+   * @return bytes[] or (String) error or null
+   * @throws IOException
    * 
    */
-  public Object getImageBytes(Map<String, Object> params) throws IOException {
+  public Object getOrSaveImage(Map<String, Object> params) throws IOException {
     byte[] bytes = null;
     String errMsg = null;
     String type = ((String) params.get("type")).toUpperCase();
     String fileName = (String) params.get("fileName");
-    //String text = (String) params.get("text");
     String[] scripts = (String[]) params.get("scripts");
     Object objImage = params.get("image");
     int quality = getInt(params, "quality", Integer.MIN_VALUE);
     JmolOutputChannel channel = (JmolOutputChannel) params.get("outputChannel");
     int len = -1;
-
-    boolean closeChannel = (channel == null && fileName != null);
     boolean asBytes = (channel == null && fileName == null);
-    boolean isImage = (objImage != null);
-    Object image = (isImage ? objImage : viewer
-        .getScreenImageBuffer(null, true));
+    boolean closeChannel = (channel == null && fileName != null);
+    boolean releaseImage = (objImage == null);
+    Object image = (objImage == null ? viewer.getScreenImageBuffer(null, true)
+        : objImage);
+    boolean isOK = false;
     try {
-      if (image == null) {
-        errMsg = viewer.getErrorMessage();
-      } else {
-        Object ret = null;
-        boolean includeState = (!asBytes || type.equals("PNGJ"));
-        if (channel == null)
-          channel = viewer.openOutputChannel(privateKey, fileName, false);
-        if (type.equals("JPEG") || type.equals("JPG")) {
-          if (quality <= 0)
-            quality = 100; // high quality
-          String caption = (asBytes ? Viewer.getJmolVersion()
-              : includeState ? (String) viewer.getWrappedState(null, null,
-                  true, false, viewer.apiPlatform.getImageWidth(image),
-                  viewer.apiPlatform.getImageHeight(image)) : Viewer
-                  .getJmolVersion());
-          JpegEncoder.write(viewer.apiPlatform, image, quality, channel,
-              caption);
-          len = channel.getByteCount();
-        } else if (type.equals("JPG64") || type.equals("JPEG64")) {
-          if (quality <= 0)
-            quality = 75;
-          bytes = JpegEncoder.getBytes(viewer.apiPlatform, image, quality,
-              Viewer.getJmolVersion());
-          if (asBytes) {
-            bytes = Base64.getBytes64(bytes);
-            len = bytes.length;
-          } else {
-            Base64.write(bytes, channel);
-            len = bytes.length;
-            bytes = null;
-          }
-        } else if (type.startsWith("PNG")) {
-          if (type.equals("PNGJ")) // get zip file data
-            ret = viewer.getWrappedState(fileName, scripts, true, true,
-                viewer.apiPlatform.getImageWidth(image), viewer.apiPlatform
-                    .getImageHeight(image));
-          if (quality < 0)
-            quality = 2;
-          else if (quality > 9)
-            quality = 9;
-          int bgcolor = (type.equals("PNGT") ? viewer.getBackgroundArgb() : 0);
-          int[] ptJmol = new int[1];
-          bytes = GenericPngEncoder.getBytesType(viewer.apiPlatform, image,
-              quality, bgcolor, type, ptJmol);
-          byte[] b = null;
-          if (includeState) {
-            int nPNG = bytes.length;
-            b = bytes;
-            if (ret == null)
-              ret = viewer.getWrappedState(null, scripts, true, false,
-                  viewer.apiPlatform.getImageWidth(image), viewer.apiPlatform
-                      .getImageHeight(image));
-            bytes = (Escape.isAB(ret) ? (byte[]) ret : ((String) ret)
-                .getBytes());
-            int nState = bytes.length;
-            GenericPngEncoder.setJmolTypeText(ptJmol[0], b, nPNG, nState, type);
-          }
-          len = (b == null ? 0 : b.length) + bytes.length;
-          if (!asBytes) {
-            if (b != null)
-              channel.writeBytes(b, 0, b.length);
-            channel.writeBytes(bytes, 0, bytes.length);
-            b = bytes = null;
-          } else if (b != null) {
-            byte[] bt = new byte[b.length + bytes.length];
-            System.arraycopy(b, 0, bt, 0, b.length);
-            System.arraycopy(bytes, 0, bt, b.length, bytes.length);
-            bytes = bt;
-            b = bt = null;
-          }
-        } else {
-          String[] errRet = new String[1];
-          boolean isOK = getOtherBytes(image, type, channel, params, errRet);
-          if (isOK && asBytes)
-            bytes = channel.toByteArray();
-          len = channel.getByteCount();
-          errMsg = errRet[0];
-          if (isOK && params.containsKey("captureByteCount"))
-            errMsg = "OK: " + params.get("captureByteCount").toString()
-                + " bytes";
+      if (image == null)
+        return errMsg = viewer.getErrorMessage();
+      if (channel == null)
+        channel = viewer.openOutputChannel(privateKey, fileName, false);
+      if (channel == null)
+        return errMsg = "ERROR: canceled";
+      if (type.startsWith("PNG")) {
+        boolean isPngj = type.equals("PNGJ");
+        Object stateData = null;
+        if (isPngj) {// get zip file data
+          stateData = viewer.getWrappedState(fileName, scripts, image, true);
+          if (stateData instanceof String)
+            stateData = Viewer.getJmolVersion().getBytes();
+        } else if (!asBytes) {
+          stateData = ((String) viewer.getWrappedState(null, scripts, image,
+              false)).getBytes();
         }
-        if (closeChannel)
-          channel.closeChannel();
+        if (quality < 0)
+          quality = 2;
+        else if (quality > 9)
+          quality = 9;
+        int bgcolor = (type.equals("PNGT") ? viewer.getBackgroundArgb() : 0);
+        int[] ptJmol = new int[1];
+        bytes = GenericPngEncoder.getBytesType(viewer.apiPlatform, image,
+            quality, bgcolor, type, ptJmol);
+        byte[] b = null;
+        len = 0;
+        if (stateData != null) {
+          len = bytes.length;
+          b = bytes;
+          bytes = (byte[]) stateData;
+          GenericPngEncoder.setJmolTypeText(ptJmol[0], b, len, bytes.length,
+              type);
+        }
+        if (!asBytes) {
+          if (b != null)
+            channel.writeBytes(b, 0, b.length);
+          channel.writeBytes(bytes, 0, bytes.length);
+          bytes = null;
+          isOK = true;
+        } else if (b != null) {
+          byte[] bt = new byte[len];
+          System.arraycopy(b, 0, bt, 0, b.length);
+          System.arraycopy(bytes, 0, bt, b.length, bytes.length);
+          bytes = bt;
+        }
+      } else if (type.equals("JPEG") || type.equals("JPG")) {
+        if (quality <= 0)
+          quality = 100; // high quality
+        String caption = (!asBytes ? (String) viewer.getWrappedState(null,
+            null, image, false) : "");
+        if (caption.length() == 0)
+          caption = Viewer.getJmolVersion();
+        JpegEncoder.write(viewer.apiPlatform, image, quality, channel, caption);
+        isOK = true;
+      } else if (type.equals("JPG64") || type.equals("JPEG64")) {
+        if (quality <= 0)
+          quality = 75;
+        bytes = JpegEncoder.getBytes(viewer.apiPlatform, image, quality, Viewer
+            .getJmolVersion());
+        if (asBytes) {
+          bytes = Base64.getBytes64(bytes);
+        } else {
+          Base64.write(bytes, channel);
+          bytes = null;
+          isOK = true;
+        }
+      } else {
+        String[] errRet = new String[1];
+        isOK = getOtherBytes(image, type, channel, params, errRet);
+        if (isOK && asBytes)
+          bytes = channel.toByteArray();
+        errMsg = errRet[0];
+        if (isOK && params.containsKey("captureByteCount"))
+          errMsg = "OK: " + params.get("captureByteCount").toString()
+              + " bytes";
       }
-    } catch (IOException e) {
-      if (!isImage)
+      if (closeChannel)
+        channel.closeChannel();
+    } finally {
+      if (releaseImage)
         viewer.releaseScreenImage();
-      throw new IOException("" + e);
-    } catch (Error er) {
-      if (!isImage)
-        viewer.releaseScreenImage();
-      throw new Error(er);
+      params.put("byteCount", Integer.valueOf(bytes != null ? bytes.length
+          : isOK ? channel.getByteCount() : -1));
     }
-    if (!isImage)
-      viewer.releaseScreenImage();
-    params.put("byteCount", Integer.valueOf(errMsg == null ? len : -1));
-    if (errMsg != null)
-      return errMsg;
-    return bytes;
+    return (errMsg == null ? bytes : errMsg);
   }
 
   /**
@@ -260,7 +245,7 @@ public class GenericImageCreator implements JmolImageCreatorInterface {
     return false;
   }
   
-  public String clipImage(JmolViewer viewer, String text) {
+  public String clipImageOrPasteText(JmolViewer viewer, String text) {
     // Java only
     return null;
   }

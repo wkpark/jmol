@@ -22,4 +22,6 @@ public interface JmolScriptEditorInterface {
 
   void setFilename(String filename);
 
+  void show(String[] fileText);
+
 }

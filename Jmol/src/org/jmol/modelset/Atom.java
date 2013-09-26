@@ -290,18 +290,18 @@ final public class Atom extends Point3fi implements JmolNode {
   }
 
   public float getADPMinMax(boolean isMax) {
-    Tensor[] tensors = getTensors();
+    Object[] tensors = getTensors();
     if (tensors == null)
       return 0;
-    Tensor t = tensors[0];
+    Tensor t = (Tensor) tensors[0];
     if (t == null || t.iType != Tensor.TYPE_ADP)
       return 0;
     if (group.chain.model.modelSet.isModulated(index) && t.isUnmodulated)
-      t = tensors[1];
+      t = (Tensor) tensors[1];
     return t.getFactoredValue(isMax ? 2 : 1); 
   }
 
-  public Tensor[] getTensors() {
+  public Object[] getTensors() {
     return group.chain.model.modelSet.getAtomTensorList(index);
   }
   

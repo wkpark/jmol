@@ -725,9 +725,9 @@ public class StateCreator extends JmolStateCreator {
     String pointer = Object2d.getPointer(l.defaultPointer);
     appendCmd(s, "set labelPointer "
         + (pointer.length() == 0 ? "off" : pointer));
-    if ((l.defaultZPos & Labels.FRONT_FLAG) != 0)
+    if ((l.defaultZPos & JC.LABEL_FRONT_FLAG) != 0)
       appendCmd(s, "set labelFront");
-    else if ((l.defaultZPos & Labels.GROUP_FLAG) != 0)
+    else if ((l.defaultZPos & JC.LABEL_GROUP_FLAG) != 0)
       appendCmd(s, "set labelGroup");
     appendCmd(s, Shape.getFontCommand("label", JmolFont
         .getFont3D(l.defaultFontId)));
@@ -1265,18 +1265,18 @@ public class StateCreator extends JmolStateCreator {
                   i,
                   i,
                   "set "
-                      + ((offsetFull & Labels.EXACT_OFFSET_FLAG) == Labels.EXACT_OFFSET_FLAG ? "labelOffsetExact "
+                      + ((offsetFull & JC.LABEL_EXACT_OFFSET_FLAG) == JC.LABEL_EXACT_OFFSET_FLAG ? "labelOffsetExact "
                           : "labelOffset ")
-                      + Object2d.getXOffset(offsetFull >> Labels.FLAG_OFFSET)
+                      + Object2d.getXOffset(offsetFull >> JC.LABEL_FLAG_OFFSET)
                       + " "
-                      + (-Object2d.getYOffset(offsetFull >> Labels.FLAG_OFFSET)));
+                      + (-Object2d.getYOffset(offsetFull >> JC.LABEL_FLAG_OFFSET)));
           String align = Object2d.getAlignmentName(offsetFull >> 2);
           String pointer = Object2d.getPointer(offsetFull);
           if (pointer.length() > 0)
             BSUtil.setMapBitSet(temp2, i, i, "set labelPointer " + pointer);
-          if ((offsetFull & Labels.FRONT_FLAG) != 0)
+          if ((offsetFull & JC.LABEL_FRONT_FLAG) != 0)
             BSUtil.setMapBitSet(temp2, i, i, "set labelFront");
-          else if ((offsetFull & Labels.GROUP_FLAG) != 0)
+          else if ((offsetFull & JC.LABEL_GROUP_FLAG) != 0)
             BSUtil.setMapBitSet(temp2, i, i, "set labelGroup");
           // labelAlignment must come last, so we put it in a separate hash
           // table

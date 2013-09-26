@@ -286,7 +286,7 @@ public class Labels extends AtomShape {
             .nextSetBit(i + 1))
           setFront(i, TF);
       if (setDefaults || !defaultsOnlyForNone)
-        defaultZPos = (TF ? FRONT_FLAG : 0);
+        defaultZPos = (TF ? JC.LABEL_FRONT_FLAG : 0);
       return;
     }
 
@@ -297,7 +297,7 @@ public class Labels extends AtomShape {
             .nextSetBit(i + 1))
           setGroup(i, TF);
       if (setDefaults || !defaultsOnlyForNone)
-        defaultZPos = (TF ? GROUP_FLAG : 0);
+        defaultZPos = (TF ? JC.LABEL_GROUP_FLAG : 0);
       return;
     }
 
@@ -447,9 +447,9 @@ public class Labels extends AtomShape {
       setOffsets(i, defaultOffset, false);
     if (defaultAlignment != Object2d.ALIGN_LEFT)
       setAlignment(i, defaultAlignment);
-    if ((defaultZPos & FRONT_FLAG) != 0)
+    if ((defaultZPos & JC.LABEL_FRONT_FLAG) != 0)
       setFront(i, true);
-    else if ((defaultZPos & GROUP_FLAG) != 0)
+    else if ((defaultZPos & JC.LABEL_GROUP_FLAG) != 0)
       setGroup(i, true);
     if (defaultPointer != Object2d.POINTER_NONE)
       setPointer(i, defaultPointer);
@@ -526,36 +526,15 @@ public class Labels extends AtomShape {
       text.setBgColix(bgcolix);
   }
 
-  public final static int POINTER_FLAGS = 0x03;
-  public final static int ALIGN_FLAGS   = 0x0C;
-  public final static int ZPOS_FLAGS    = 0x30;
-  public final static int GROUP_FLAG    = 0x10;
-  public final static int FRONT_FLAG    = 0x20;
-  public final static int SCALE_FLAG    = 0x40;
-  public final static int EXACT_OFFSET_FLAG = 0x80;
-  public final static int FLAGS         = 0xFF;
-  public final static int FLAG_OFFSET   = 8;
-
   private void setOffsets(int i, int offset, boolean isExact) {
-    //entry is just xxxxxxxxyyyyyyyy
-    //  3         2         1        
-    // 10987654321098765432109876543210
-    //         xxxxxxxxyyyyyyyytsfgaabp
-    //          x-align y-align||||| ||_pointer on
-    //                         ||||| |_background pointer color
-    //                         |||||_text alignment 0xC 
-    //                         ||||_labels group 0x10
-    //                         |||_labels front  0x20
-    //                         ||_scaled
-    //                         |_exact offset
     if (offsets == null || i >= offsets.length) {
       if (offset == 0)
         return;
       offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & FLAGS) | (offset << FLAG_OFFSET);
+    offsets[i] = (offsets[i] & JC.LABEL_FLAGS) | (offset << JC.LABEL_FLAG_OFFSET);
     if (isExact)
-      offsets[i] |= EXACT_OFFSET_FLAG;
+      offsets[i] |= JC.LABEL_EXACT_OFFSET_FLAG;
     text = getLabel(i);
     if (text != null)
       text.setOffset(offset);
@@ -567,14 +546,14 @@ public class Labels extends AtomShape {
         return;
       offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & ~ALIGN_FLAGS) | (alignment << 2);
+    offsets[i] = (offsets[i] & ~JC.LABEL_ALIGN_FLAGS) | (alignment << 2);
     text = getLabel(i);
     if (text != null)
       text.setAlignment(alignment);
   }
 
   public static int getAlignment(int offsetFull) {
-    return (offsetFull & ALIGN_FLAGS) >> 2;
+    return (offsetFull & JC.LABEL_ALIGN_FLAGS) >> 2;
   }
   
   private void setPointer(int i, int pointer) {
@@ -583,7 +562,7 @@ public class Labels extends AtomShape {
         return;
       offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & ~POINTER_FLAGS) + pointer;
+    offsets[i] = (offsets[i] & ~JC.LABEL_POINTER_FLAGS) + pointer;
     text = getLabel(i);
     if (text != null)
       text.setPointer(pointer);
@@ -595,7 +574,7 @@ public class Labels extends AtomShape {
         return;
       offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF ? FRONT_FLAG : 0);
+    offsets[i] = (offsets[i] & ~JC.LABEL_ZPOS_FLAGS) + (TF ? JC.LABEL_FRONT_FLAG : 0);
   }
 
   private void setGroup(int i, boolean TF) {
@@ -604,7 +583,7 @@ public class Labels extends AtomShape {
         return;
       offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF ? GROUP_FLAG : 0);
+    offsets[i] = (offsets[i] & ~JC.LABEL_ZPOS_FLAGS) + (TF ? JC.LABEL_GROUP_FLAG : 0);
   }
 
   private void setFont(int i, byte fid) {
@@ -660,7 +639,7 @@ public class Labels extends AtomShape {
         pickedY = y;
         pickedOffset = (offsets == null 
             || pickedAtom >= offsets.length ? 0 
-                : offsets[pickedAtom]) >> FLAG_OFFSET;
+                : offsets[pickedAtom]) >> JC.LABEL_FLAG_OFFSET;
         return true;
       }
       return false;

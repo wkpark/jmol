@@ -1370,11 +1370,11 @@ public class AtomSetCollection {
           if (atoms[i].tensors != null) {
             atom1.tensors = null;
             for (int j = atoms[i].tensors.size(); --j >= 0;) {
-              Tensor t = atoms[i].tensors.get(j);
+              Tensor t = (Tensor) atoms[i].tensors.get(j);
               if (t == null)
                 continue;
               if (nOperations == 1)
-                atom1.addTensor(Tensor.copyTensor(t), null, false);
+                atom1.addTensor(t.copyTensor(), null, false);
               else
                 addRotatedTensor(atom1, t, iSym, false);
             }
@@ -1404,7 +1404,7 @@ public class AtomSetCollection {
       ptTemp = new P3();
       mTemp = new Matrix3f();
     }
-    return a.addTensor(Tensor.getTensorFromEigenVectors(symmetry
+    return a.addTensor(t.getTensorFromEigenVectors(symmetry
         .rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
         t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
   }

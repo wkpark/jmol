@@ -128,9 +128,6 @@ public class ShapeManager {
           shapes[i].setModelSet(newModelSet);
     loadShape(JC.SHAPE_BALLS);
     loadShape(JC.SHAPE_STICKS);
-    loadShape(JC.SHAPE_MEASURES);
-    loadShape(JC.SHAPE_BBCAGE);
-    loadShape(JC.SHAPE_UCCAGE);
   }
 
   public Shape loadShape(int shapeID) {

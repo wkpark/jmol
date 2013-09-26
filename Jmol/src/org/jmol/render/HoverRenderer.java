@@ -28,7 +28,11 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Text;
 import org.jmol.shape.Hover;
 
-public class HoverRenderer extends LabelsRenderer {
+public class HoverRenderer extends ShapeRenderer {
+  
+  private float[] tempXY = new float[3];
+
+  @SuppressWarnings("static-access")
   @Override
   protected boolean render() {
     // hover rendering always involves translucent pass
@@ -42,8 +46,8 @@ public class HoverRenderer extends LabelsRenderer {
       String label = (hover.specialLabel != null ? hover.specialLabel 
           : hover.atomFormats != null
           && hover.atomFormats[hover.atomIndex] != null ? 
-              LabelToken.formatLabel(viewer, atom, hover.atomFormats[hover.atomIndex])
-          : hover.labelFormat != null ? LabelToken.formatLabel(viewer, atom, fixLabel(atom, hover.labelFormat))
+              viewer.modelSet.getLabeler().formatLabel(viewer, atom, hover.atomFormats[hover.atomIndex])
+          : hover.labelFormat != null ? viewer.modelSet.getLabeler().formatLabel(viewer, atom, fixLabel(atom, hover.labelFormat))
               : null);
       if (label == null)
         return false;
@@ -55,7 +59,7 @@ public class HoverRenderer extends LabelsRenderer {
     } else {
       return true;
     }
-    TextRenderer.render(text, viewer, g3d, 0, antialias ? 2 : 1, false, null, xy);
+    TextRenderer.render(text, viewer, g3d, 0, antialias ? 2 : 1, false, null, tempXY );
     return true;
   }
   

@@ -36,7 +36,7 @@ class TextRenderer {
   static void render(Text text, Viewer viewer,
                             JmolRendererInterface g3d,
                             float scalePixelsPerMicron, float imageFontScaling,
-                            boolean isExact, float[] boxXY, float[] xy) {
+                            boolean isExact, float[] boxXY, float[] temp) {
     if (text == null || text.image == null && text.lines == null)
       return;
     boolean showText = g3d.setColix(text.colix);
@@ -61,8 +61,8 @@ class TextRenderer {
     if (text.image == null) {
       // now write properly aligned text
       for (int i = 0; i < text.lines.length; i++) {
-        text.setXYA(xy, i);
-        g3d.drawString(text.lines[i], text.font, (int) xy[0], (int) xy[1],
+        text.setXYA(temp, i);
+        g3d.drawString(text.lines[i], text.font, (int) temp[0], (int) temp[1],
             text.z, text.zSlab, text.bgcolix);
       }
     } else {

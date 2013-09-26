@@ -70,12 +70,12 @@ public class Ellipsoids extends Shape {
     boolean isAll = (bsSelected == null);
     if (!isAll && selectedAtoms != null)
       bsSelected = selectedAtoms;
-    JmolList<Tensor> tensors = viewer.modelSet.getAllAtomTensors(typeSelected);
+    JmolList<Object> tensors = viewer.modelSet.getAllAtomTensors(typeSelected);
     if (tensors == null)
       return;
     Atom[] atoms = modelSet.atoms;
     for (int i = tensors.size(); --i >= 0;) {
-      Tensor t = tensors.get(i);
+      Tensor t = (Tensor) tensors.get(i);
       if (isAll || t.isSelected(bsSelected, -1)) {
         Ellipsoid e = atomEllipsoids.get(t);
         boolean isNew = (size != 0 && e == null); 

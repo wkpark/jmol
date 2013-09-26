@@ -33,6 +33,7 @@ import org.jmol.shape.Labels;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
 import org.jmol.util.Point3fi;
+import org.jmol.viewer.JC;
 
 public class LabelsRenderer extends FontLineShapeRenderer {
 
@@ -116,12 +117,12 @@ public class LabelsRenderer extends FontLineShapeRenderer {
       fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
           : fids[i]);
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);
-      boolean labelsFront = ((offsetFull & Labels.FRONT_FLAG) != 0);
-      boolean labelsGroup = ((offsetFull & Labels.GROUP_FLAG) != 0);
-      isExact = ((offsetFull & Labels.EXACT_OFFSET_FLAG) != 0);
-      offset = offsetFull >> Labels.FLAG_OFFSET;
+      boolean labelsFront = ((offsetFull & JC.LABEL_FRONT_FLAG) != 0);
+      boolean labelsGroup = ((offsetFull & JC.LABEL_GROUP_FLAG) != 0);
+      isExact = ((offsetFull & JC.LABEL_EXACT_OFFSET_FLAG) != 0);
+      offset = offsetFull >> JC.LABEL_FLAG_OFFSET;
       textAlign = Labels.getAlignment(offsetFull);
-      pointer = offsetFull & Labels.POINTER_FLAGS;
+      pointer = offsetFull & JC.LABEL_POINTER_FLAGS;
       zSlab = atom.screenZ - atom.screenDiameter / 2 - 3;
       if (zCutoff > 0 && zSlab > zCutoff)
         continue;

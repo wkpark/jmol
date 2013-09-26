@@ -10408,4 +10408,5 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public boolean allowCapture() {
     return !isApplet || isSignedApplet;
   }
+
 }

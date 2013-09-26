@@ -1285,6 +1285,7 @@ abstract public class ModelCollection extends BondCollection {
    * 
    *****************************/
 
+  @SuppressWarnings("static-access")
   public String getPdbData(int modelIndex, String type, BS bsSelected,
                            Object[] parameters, JmolOutputChannel out) {
     if (isJmolDataFrameForModel(modelIndex))
@@ -1302,7 +1303,7 @@ abstract public class ModelCollection extends BondCollection {
     BS bsAtoms = null;
     BS bsWritten = new BS();
     char ctype = '\0';
-    LabelToken[] tokens = LabelToken.compile(viewer,
+    LabelToken[] tokens = getLabeler().compile(viewer,
         "ATOM  %-6i%4a%1A%3n %1c%4R%1E   ", '\0', null);
     if (parameters == null) {
       ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type
@@ -3122,9 +3123,9 @@ abstract public class ModelCollection extends BondCollection {
         partialCharges[i] = partialCharges[map[i]];
     if (atomTensorList != null) {
       for (int i = i0; i < atomCount; i++) {
-        Tensor[] list = atomTensorList[i] = atomTensorList[map[i]];
+        Object[] list = atomTensorList[i] = atomTensorList[map[i]];
         for (int j = list.length; --j >= 0;) {
-          Tensor t = list[j];
+          Tensor t = (Tensor) list[j];
           if (t != null)
             t.atomIndex1 = map[t.atomIndex1];
         }
@@ -3153,7 +3154,7 @@ abstract public class ModelCollection extends BondCollection {
     if (partialCharges != null)
       partialCharges = ArrayUtil.arrayCopyF(partialCharges, newLength);
     if (atomTensorList != null)
-      atomTensorList = (Tensor[][]) ArrayUtil.arrayCopyObject(atomTensorList, newLength);
+      atomTensorList = (Object[][]) ArrayUtil.arrayCopyObject(atomTensorList, newLength);
     if (atomNames != null)
       atomNames = ArrayUtil.arrayCopyS(atomNames, newLength);
     if (atomTypes != null)
@@ -3166,7 +3167,7 @@ abstract public class ModelCollection extends BondCollection {
                       int atomicAndIsotopeNumber, String atomName,
                       int atomSerial, int atomSite, P3 xyz,
                       float radius, V3 vib, int formalCharge, float partialCharge,
-                      int occupancy, float bfactor, JmolList<Tensor> tensors,
+                      int occupancy, float bfactor, JmolList<Object> tensors,
                       boolean isHetero, byte specialAtomID, BS atomSymmetry) {
     Atom atom = new Atom(modelIndex, atomCount, xyz, radius, atomSymmetry,
         atomSite, (short) atomicAndIsotopeNumber, formalCharge, isHetero);

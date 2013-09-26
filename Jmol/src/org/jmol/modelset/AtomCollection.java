@@ -32,6 +32,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.jmol.api.Interface;
+import org.jmol.api.JmolEnvCalc;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
@@ -39,7 +41,6 @@ import org.jmol.bspt.Bspf;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
-import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BS;
@@ -156,8 +157,8 @@ abstract public class AtomCollection {
   float[] ionicRadii;
   float[] hydrophobicities;
   
-  public Tensor[][] atomTensorList; // specifically now for {*}.adpmin {*}.adpmax
-  public Map<String, JmolList<Tensor>> atomTensors;
+  public Object[][] atomTensorList; // specifically now for {*}.adpmin {*}.adpmax
+  public Map<String, JmolList<Object>> atomTensors;
 
   protected int[] surfaceDistance100s;
 
@@ -200,8 +201,18 @@ abstract public class AtomCollection {
   
   //////////// atoms //////////////
   
+  LabelToken labeler;
+  @SuppressWarnings("static-access")
   public String getAtomInfo(int i, String format) {
-    return (format == null ? atoms[i].getInfo() : LabelToken.formatLabel(viewer, atoms[i],format));
+    if (format == null)
+      return atoms[i].getInfo();
+    
+    return getLabeler().formatLabel(viewer, atoms[i], format);
+  }
+
+  public LabelToken getLabeler() {
+    // prevents JavaScript from requiring LabelToken upon core load
+    return (labeler == null ? labeler = (LabelToken) Interface.getOptionInterface("modelset.LabelToken") : labeler);
   }
 
   public String getAtomInfoXYZ(int i, boolean useChimeFormat) {
@@ -399,8 +410,10 @@ abstract public class AtomCollection {
   
   public P3[] calculateSurface(BS bsSelected, float envelopeRadius) {
     if (envelopeRadius < 0)
-      envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
-    EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null);
+      envelopeRadius = JC.ENC_CALC_MAX_DIST;
+    
+    JmolEnvCalc ec = ((JmolEnvCalc) Interface.getOptionInterface("geodesic.EnvelopeCalculation"))
+    .set(viewer, atomCount, null);
     ec.calculate(new RadiusData(null, envelopeRadius, EnumType.ABSOLUTE, null), 
         Float.MAX_VALUE, 
         bsSelected, BSUtil.copyInvert(bsSelected, atomCount), 
@@ -2550,7 +2563,7 @@ abstract public class AtomCollection {
         firstAtomIndex, nAtoms);
     partialCharges = (float[]) ArrayUtil.deleteElements(partialCharges,
         firstAtomIndex, nAtoms);
-    atomTensorList = (Tensor[][]) ArrayUtil.deleteElements(atomTensorList,
+    atomTensorList = (Object[][]) ArrayUtil.deleteElements(atomTensorList,
         firstAtomIndex, nAtoms);
     vibrations = (Vibration[]) ArrayUtil.deleteElements(vibrations,
         firstAtomIndex, nAtoms);
@@ -2571,7 +2584,7 @@ abstract public class AtomCollection {
     info.put("sym", getElementSymbol(i));
   }
 
-  public Tensor[] getAtomTensorList(int i) {
+  public Object[] getAtomTensorList(int i) {
     return (i < 0 || atomTensorList == null || i >= atomTensorList.length ? null
         : atomTensorList[i]);
   }
@@ -2582,9 +2595,9 @@ abstract public class AtomCollection {
       return;
     JmolList<String> toDelete = new JmolList<String>();
     for (String key: atomTensors.keySet()) {
-      JmolList<Tensor> list = atomTensors.get(key);
+      JmolList<Object> list = atomTensors.get(key);
       for (int i = list.size(); --i >= 0;) {
-        Tensor t = list.get(i);
+        Tensor t = (Tensor) list.get(i);
         if (bsAtoms.get(t.atomIndex1) || t.atomIndex2 >= 0 && bsAtoms.get(t.atomIndex2))
           list.remove(i);
       }
@@ -2595,17 +2608,17 @@ abstract public class AtomCollection {
       atomTensors.remove(toDelete.get(i));
   }
 
-  public void setAtomTensors(int atomIndex, JmolList<Tensor> list) {
+  public void setAtomTensors(int atomIndex, JmolList<Object> list) {
     if (list == null || list.size() == 0)
       return;
     if (atomTensors == null)
-     atomTensors = new Hashtable<String, JmolList<Tensor>>();
+     atomTensors = new Hashtable<String, JmolList<Object>>();
     if (atomTensorList == null)
-      atomTensorList = new Tensor[atoms.length][];
-    atomTensorList = (Tensor[][]) ArrayUtil.ensureLength(atomTensorList, atoms.length);
+      atomTensorList = new Object[atoms.length][];
+    atomTensorList = (Object[][]) ArrayUtil.ensureLength(atomTensorList, atoms.length);
     atomTensorList[atomIndex] = getTensorList(list);
     for (int i = list.size(); --i >= 0;) {
-      Tensor t = list.get(i);
+      Tensor t = (Tensor) list.get(i);
       t.atomIndex1 = atomIndex;
       t.atomIndex2 = -1;
       t.modelIndex = atoms[atomIndex].modelIndex;
@@ -2615,18 +2628,18 @@ abstract public class AtomCollection {
     }
   }
 
-  private static Tensor[] getTensorList(JmolList<Tensor> list) {
+  private static Object[] getTensorList(JmolList<Object> list) {
     int pt = -1;
     boolean haveTLS = false;
     int n = list.size();
     for (int i = n; --i >= 0;) {
-      Tensor t = list.get(i);
+      Tensor t = (Tensor) list.get(i);
       if (t.forThermalEllipsoid)
         pt = i;
       else if (t.iType == Tensor.TYPE_TLS_U)
         haveTLS = true;
     }
-    Tensor[] a = new Tensor[(pt >= 0 || !haveTLS ? 0 : 1) + n];
+    Object[] a = new Object[(pt >= 0 || !haveTLS ? 0 : 1) + n];
     if (pt >= 0) {
       a[0] = list.get(pt);
       if (list.size() == 1)
@@ -2637,7 +2650,7 @@ abstract public class AtomCollection {
     if (haveTLS) {
       pt = 0;
       for (int i = n; --i >= 0;) {
-        Tensor t = list.get(i);
+        Tensor t = (Tensor) list.get(i);
         if (t.forThermalEllipsoid)
           continue;
         a[++pt] = t;
@@ -2650,11 +2663,11 @@ abstract public class AtomCollection {
  }
 
   public Tensor getAtomTensor(int i, String type) {
-    Tensor[] tensors = getAtomTensorList(i);
+    Object[] tensors = getAtomTensorList(i);
     if (tensors != null && type != null) {
       type = type.toLowerCase();
       for (int j = 0; j < tensors.length; j++) {
-        Tensor t = tensors[j];
+        Tensor t = (Tensor) tensors[j];
         if (t != null && (type.equals(t.type) || type.equals(t.altType)))
           return t;
       }
@@ -2664,23 +2677,21 @@ abstract public class AtomCollection {
 
   public void addTensor(Tensor t, String type) {
     type = type.toLowerCase();
-    JmolList<Tensor> tensors = atomTensors.get(type);
+    JmolList<Object> tensors = atomTensors.get(type);
     if (tensors == null)
-      atomTensors.put(type, tensors = new JmolList<Tensor>()); 
+      atomTensors.put(type, tensors = new JmolList<Object>()); 
     tensors.addLast(t);
   }
 
-  public JmolList<Tensor> getAllAtomTensors(String type) {
+  public JmolList<Object> getAllAtomTensors(String type) {
     if (atomTensors == null)
       return null;
     if (type != null)
       return atomTensors.get(type.toLowerCase());
-    JmolList<Tensor> list = new JmolList<Tensor>();
-    for (Entry<String, JmolList<Tensor>> e : atomTensors.entrySet())
+    JmolList<Object> list = new JmolList<Object>();
+    for (Entry<String, JmolList<Object>> e : atomTensors.entrySet())
       list.addAll(e.getValue());
     return list;
   }
-  
-
 }
 

@@ -102,7 +102,7 @@ class AtomIterator implements JmolAdapterAtomIterator {
 	}
 
 	
-	public JmolList<Tensor> getTensors() {
+	public JmolList<Object> getTensors() {
 		return atom.tensors;
 	}
 

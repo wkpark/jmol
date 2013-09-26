@@ -165,24 +165,24 @@ public class NMRCalculation implements JmolNMRInterface {
       // march through all the atoms in the model...
       for (int j = bsModelAtoms.nextSetBit(0); j >= 0; j = bsModelAtoms
           .nextSetBit(j + 1)) {
-        Tensor[] ta = atoms[j].getTensors();
+        Object[] ta = atoms[j].getTensors();
         if (ta == null)
           continue;
         // go through all this atom's tensors...
         for (int jj = ta.length; --jj >= 0;) {
-          Tensor t = ta[jj];
+          Tensor t = (Tensor) ta[jj];
           if (t == null)
             continue;
           // for each tensor in A, go through all atoms after the first-selected one...
           for (int k = bsModelAtoms.nextSetBit(j + 1); k >= 0; k = bsModelAtoms
               .nextSetBit(k + 1)) {
-            Tensor[] tb = atoms[k].getTensors();
+            Object[] tb = atoms[k].getTensors();
             if (tb == null)
               continue;
             // for each tensor in B, go through all this atom's tensors... 
             for (int kk = tb.length; --kk >= 0;) {
               // if equivalent, reject it.
-              if (t.isEquiv(tb[kk])) {
+              if (t.isEquiv((Tensor) tb[kk])) {
                 bsModelAtoms.clear(k);
                 bs.clear(k);
                 break;
@@ -435,10 +435,10 @@ public class NMRCalculation implements JmolNMRInterface {
         && infoType.equals(";chi.");
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (tensorType == null) {
-        Tensor[] a = viewer.modelSet.getAtomTensorList(i);
+        Object[] a = viewer.modelSet.getAtomTensorList(i);
         if (a != null)
           for (int j = 0; j < a.length; j++)
-            data.addLast(a[j].getInfo(infoType));
+            data.addLast(((Tensor) a[j]).getInfo(infoType));
       } else {
         Tensor t = viewer.modelSet.getAtomTensor(i, tensorType);
         if (t != null)

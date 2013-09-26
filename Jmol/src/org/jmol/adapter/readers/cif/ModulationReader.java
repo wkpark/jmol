@@ -404,20 +404,20 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       if (Logger.debuggingHigh) {
         Logger.debug("setModulation Uij(initial)=" + Escape.eAF(a.anisoBorU));
         Logger.debug("setModulation tensor="
-            + Escape.e(a.tensors.get(0).getInfo("all")));
+            + Escape.e(((Tensor) a.tensors.get(0)).getInfo("all")));
       }
       for (Entry<String, Float> e : ms.htUij.entrySet())
         addUStr(a, e.getKey(), e.getValue().floatValue());
 
       if (a.tensors != null)
-        a.tensors.get(0).isUnmodulated = true;
+        ((Tensor)a.tensors.get(0)).isUnmodulated = true;
       Tensor t = atomSetCollection.addRotatedTensor(a, symmetry
           .getTensor(a.anisoBorU), iop, false);
       t.isModulated = true;
       if (Logger.debuggingHigh) {
         Logger.debug("setModulation Uij(final)=" + Escape.eAF(a.anisoBorU)
             + "\n");
-        Logger.debug("setModulation tensor=" + a.tensors.get(0).getInfo("all"));
+        Logger.debug("setModulation tensor=" + ((Tensor) a.tensors.get(0)).getInfo("all"));
       }
     }
 

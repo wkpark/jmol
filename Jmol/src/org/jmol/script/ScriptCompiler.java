@@ -49,7 +49,7 @@ import java.util.Map;
 
 
 
-class ScriptCompiler extends ScriptCompilationTokenParser {
+public class ScriptCompiler extends ScriptCompilationTokenParser {
 
   /*
    * The Compiler class is really two parts -- 
@@ -67,7 +67,7 @@ class ScriptCompiler extends ScriptCompilationTokenParser {
    * 
    */
   
-  ScriptCompiler(Viewer viewer) {
+  public ScriptCompiler(Viewer viewer) {
     this.viewer = viewer;
   }
   

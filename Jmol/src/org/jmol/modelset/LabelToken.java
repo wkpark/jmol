@@ -157,6 +157,15 @@ public class LabelToken {
       T.magneticshielding, T.chemicalshift
   };
 
+  public LabelToken() {
+    // for access to static methods without preloading JavaScript
+  }
+  private LabelToken set(String text, int pt) {
+    this.text = text;
+    this.pt = pt;
+    return this;
+  }
+
   private static boolean isLabelPropertyTok(int tok) {
     for (int i = labelTokenIds.length; --i >= 0;)
       if (labelTokenIds[i] == tok)
@@ -171,11 +180,6 @@ public class LabelToken {
   private final static int[] twoCharLabelTokenIds = { T.fracx, T.fracy,
       T.fracz, T.unitx, T.unity, T.unitz, T.vibx,
       T.viby, T.vibz, };
-
-  private LabelToken(String text, int pt) {
-    this.text = text;
-    this.pt = pt;
-  }
 
   /**
    * Compiles a set of tokens for each primitive element of a 
@@ -192,7 +196,7 @@ public class LabelToken {
     if (strFormat == null || strFormat.length() == 0)
       return null;
     if (strFormat.indexOf("%") < 0 || strFormat.length() < 2)
-      return new LabelToken[] { new LabelToken(strFormat, -1) };
+      return new LabelToken[] { new LabelToken().set(strFormat, -1) };
     int n = 0;
     int ich = -1;
     int cch = strFormat.length();
@@ -203,13 +207,13 @@ public class LabelToken {
     int i = 0;
     for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) >= 0;) {
       if (ich != ichPercent)
-        tokens[i++] = new LabelToken(strFormat.substring(ich, ichPercent), -1);
-      LabelToken lt = tokens[i++] = new LabelToken(null, ichPercent);
+        tokens[i++] = new LabelToken().set(strFormat.substring(ich, ichPercent), -1);
+      LabelToken lt = tokens[i++] = new LabelToken().set(null, ichPercent);
       viewer.autoCalculate(lt.tok);
       ich = setToken(viewer, strFormat, lt, cch, chAtom, htValues);
     }
     if (ich < cch)
-      tokens[i++] = new LabelToken(strFormat.substring(ich), -1);
+      tokens[i++] = new LabelToken().set(strFormat.substring(ich), -1);
     return tokens;
   }
 

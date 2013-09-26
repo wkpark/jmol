@@ -336,18 +336,18 @@ public class Tensor {
     return span() == 0 ? 0 : (eigenValues[1] - eigenValues[0]) / reducedAnisotropy();
   }
 
-  public static Tensor copyTensor(Tensor t0) {
+  public Tensor copyTensor() {
     Tensor t = new Tensor();
-    t.setType(t0.type);
-    t.eigenValues = t0.eigenValues;
-    t.eigenVectors = t0.eigenVectors;
-    t.asymMatrix = t0.asymMatrix;
-    t.symMatrix = t0.symMatrix;
-    t.eigenSignMask = t0.eigenSignMask;
-    t.modelIndex = t0.modelIndex;
-    t.atomIndex1 = t0.atomIndex1;
-    t.atomIndex2 = t0.atomIndex2;
-    t.id = t0.id;
+    t.setType(type);
+    t.eigenValues = eigenValues;
+    t.eigenVectors = eigenVectors;
+    t.asymMatrix = asymMatrix;
+    t.symMatrix = symMatrix;
+    t.eigenSignMask = eigenSignMask;
+    t.modelIndex = modelIndex;
+    t.atomIndex1 = atomIndex1;
+    t.atomIndex2 = atomIndex2;
+    t.id = id;
     return t;
   }
 
@@ -356,7 +356,7 @@ public class Tensor {
    * of the static getTensor... methods to set fields properly.
    * 
    */
-  private Tensor() {}
+  public Tensor() {}
   
   /**
    * Standard constructor for QM tensors
@@ -382,7 +382,7 @@ public class Tensor {
     if (a[0][2] != a[2][0]) {
       a[0][2] = a[2][0] = (a[0][2] + a[2][0])/2;
     }
-    Eigen eigen = new Eigen(3);
+    Eigen eigen = new Eigen().set(3);
     eigen.calc(a);
     Matrix3f m = new Matrix3f();
     float[] mm = new float[9];
@@ -419,7 +419,8 @@ public class Tensor {
   }
 
   /**
-   * Standard constructor for charge and iso 
+   * Standard constructor for charge and iso. Use new Tensor().getTensorFromEigenValues.
+   * Not static, because of JavaScript then requiring pre-loading of this class for all structures 
    * 
    * @param eigenVectors
    * @param eigenValues
@@ -427,7 +428,7 @@ public class Tensor {
    * @param id 
    * @return Tensor
    */
-  public static Tensor getTensorFromEigenVectors(V3[] eigenVectors,
+  public Tensor getTensorFromEigenVectors(V3[] eigenVectors,
                                             float[] eigenValues, String type, String id) {
     float[] values = new float[3];
     V3[] vectors = new V3[3];

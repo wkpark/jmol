@@ -29,6 +29,7 @@ import org.jmol.util.JmolList;
 
 
 import org.jmol.viewer.JC;
+import org.jmol.api.Interface;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 
@@ -469,6 +470,7 @@ final public class Measure {
     return retStddev[1];
   }
   
+  @SuppressWarnings("static-access")
   public static Quaternion calculateQuaternionRotation(
                                                        P3[][] centerAndPoints,
                                                        float[] retStddev,
@@ -556,7 +558,8 @@ final public class Measure {
 
     N[3][3] = -Sxx - Syy + Szz;
 
-    Eigen eigen = Eigen.newM(N);
+    //this construction prevents JavaScript from requiring preloading of Eigen
+    Eigen eigen = ((Eigen) Interface.getOptionInterface("util.Eigen")).newM(N);
  
     float[] v = eigen.getEigenvectorsFloatTransposed()[3];
     q = Quaternion.newP4(P4.new4(v[1], v[2], v[3], v[0]));

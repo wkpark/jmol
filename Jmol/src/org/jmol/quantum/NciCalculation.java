@@ -286,7 +286,7 @@ public class NciCalculation extends QuantumCalculation implements
   }
 
   private void initializeEigen() {
-    eigen = new Eigen(3);
+    eigen = new Eigen().set(3);
     hess = new double[3][3];
   }
 

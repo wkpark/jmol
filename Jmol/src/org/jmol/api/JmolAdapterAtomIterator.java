@@ -51,7 +51,7 @@ public interface JmolAdapterAtomIterator {
 
 	abstract public float getPartialCharge();
 
-	abstract public JmolList<Tensor> getTensors();
+	abstract public JmolList<Object> getTensors();
 
 	abstract public float getRadius();
 

@@ -303,7 +303,7 @@ class UnitCell extends SimpleUnitCell {
       float[] eigenValues = new float[] {f, f, f};
       // sqrt will be taken when converted to lengths later
       // no factor of 0.5 pi^2
-      return Tensor.getTensorFromEigenVectors(unitVectors, eigenValues, "iso", "Uiso=" + f);
+      return new Tensor().getTensorFromEigenVectors(unitVectors, eigenValues, "iso", "Uiso=" + f);
     }
 
     double[] Bcart = new double[6];

@@ -32,6 +32,7 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Normix;
 import org.jmol.util.P3;
 import org.jmol.util.V3;
+import org.jmol.viewer.JC;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
@@ -147,27 +148,27 @@ public final class EnvelopeCalculation {
   private int atomCount;
   private static BS EMPTY_SET;
   
+  public EnvelopeCalculation() {
+  }
+  
   /**
    * 
    * @param viewer
    * @param atomCount
    * @param mads
+   * @return this
    */
-  public EnvelopeCalculation(AtomDataServer viewer, int atomCount, short[] mads/*, boolean asJavaBitSet*/) {
+  public EnvelopeCalculation set(AtomDataServer viewer, int atomCount, short[] mads) {
     this.viewer = viewer;
     this.atomCount = atomCount; //preliminary, for setFromBits()
     this.mads = mads;
-    geodesicCount = Geodesic.getVertexCount(MAX_LEVEL);    
+    geodesicCount = Geodesic.getVertexCount(JC.ENV_CALC_MAX_LEVEL);    
     geodesicMap = BSUtil.newBitSet(geodesicCount);
     mapT = BSUtil.newBitSet(geodesicCount);
     EMPTY_SET = BSUtil.emptySet;
-
-}
+    return this;
+  }
    
-  public final static float SURFACE_DISTANCE_FOR_CALCULATION = 3f;
-
-  public final static int MAX_LEVEL = 3;//Geodesic.standardLevel;
-  
   private float maxRadius = 0;
   private boolean modelZeroBased;
   private boolean disregardNeighbors = false;
@@ -305,7 +306,7 @@ public final class EnvelopeCalculation {
       this.isSurface = isSurface;
     }
     if (rd.value == Float.MAX_VALUE)
-      rd.value = SURFACE_DISTANCE_FOR_CALCULATION;
+      rd.value = JC.ENC_CALC_MAX_DIST;
     atomData.modelIndex = (multiModel ? -1 : 0);
     modelZeroBased = !multiModel;
 
@@ -348,7 +349,7 @@ public final class EnvelopeCalculation {
   
   public P3[] getPoints() {
     if (dotsConvexMaps == null) {
-      calculate(new RadiusData(null, SURFACE_DISTANCE_FOR_CALCULATION, EnumType.ABSOLUTE, null),
+      calculate(new RadiusData(null, JC.ENC_CALC_MAX_DIST, EnumType.ABSOLUTE, null),
           Float.MAX_VALUE, bsMySelected, null, false, false, false, false);
     }
     if (currentPoints != null)
@@ -434,7 +435,7 @@ public final class EnvelopeCalculation {
   
   private void addIncompleteFaces(BS points) {
     mapT.clearAll();
-    short[] faces = Geodesic.getFaceVertexes(MAX_LEVEL);
+    short[] faces = Geodesic.getFaceVertexes(JC.ENV_CALC_MAX_LEVEL);
     int len = faces.length;
     int maxPt = -1;
     for (int f = 0; f < len;) {
@@ -488,9 +489,9 @@ public final class EnvelopeCalculation {
       return;
     int faceTest;
     int p1, p2, p3;
-    short[] faces = Geodesic.getFaceVertexes(MAX_LEVEL);
+    short[] faces = Geodesic.getFaceVertexes(JC.ENV_CALC_MAX_LEVEL);
     
-    int p4 = power4[MAX_LEVEL - 1];
+    int p4 = power4[JC.ENV_CALC_MAX_LEVEL - 1];
     boolean ok1, ok2, ok3;
     mapT.clearAll();
     for (int i = 0; i < 12; i++) {

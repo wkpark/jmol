@@ -1089,7 +1089,7 @@ public class CrystalReader extends AtomSetCollectionReader {
        String[] tokens = getTokens();
        int index = parseIntStr(tokens[3]) - 1;
        tokens = getTokensStr(readLines(3));
-       atoms[index].addTensor(Tensor.getTensorFromEigenVectors(directLatticeVectors, 
+       atoms[index].addTensor(new Tensor().getTensorFromEigenVectors(directLatticeVectors, 
            new float[] {parseFloatStr(tokens[1]), 
            parseFloatStr(tokens[3]), 
            parseFloatStr(tokens[5]) }, "quadrupole", atoms[index].atomName), null, false);

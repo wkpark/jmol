@@ -512,7 +512,7 @@ public class SV extends T {
     }
   }
 
-  static int iValue(T x) {
+  public static int iValue(T x) {
     switch (x == null ? nada : x.tok) {
     case on:
       return 1;

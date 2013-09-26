@@ -830,7 +830,7 @@ public final class ModelLoader {
   private void addAtom(boolean isPDB, BS atomSymmetry, int atomSite,
                        Object atomUid, int atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
-                       JmolList<Tensor> tensors, int occupancy, float bfactor,
+                       JmolList<Object> tensors, int occupancy, float bfactor,
                        P3 xyz, boolean isHetero,
                        int atomSerial, String group3,
                        V3 vib,

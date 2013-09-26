@@ -594,6 +594,7 @@ public abstract class BioPolymer {
    * @param pdbCONECT
    * @param bsWritten
    */
+  @SuppressWarnings("static-access")
   private static void getData(Viewer viewer, int m0, int mStep, BioPolymer p,
                               char ctype, char qtype, int derivType,
                               BS bsAtoms, BS bsSelected,
@@ -896,7 +897,7 @@ public abstract class BioPolymer {
         if (pdbATOM == null)// || bsSelected != null && !bsSelected.get(a.getIndex()))
           continue;
         bsWritten.set(((Monomer) a.getGroup()).leadAtomIndex);
-        pdbATOM.append(LabelToken.formatLabelAtomArray(viewer, a, tokens, '\0',
+        pdbATOM.append(viewer.modelSet.getLabeler().formatLabelAtomArray(viewer, a, tokens, '\0',
             null));
         pdbATOM.append(TextFormat
             .sprintf("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n",

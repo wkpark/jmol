@@ -68,7 +68,7 @@ import org.jmol.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
-class ScriptMathProcessor {
+public class ScriptMathProcessor {
   /**
    * Reverse Polish Notation Engine for IF, SET, and %{...} -- Bob Hanson
    * 2/16/2007 Just a (not so simple?) RPN processor that can handle boolean,
@@ -3507,7 +3507,7 @@ class ScriptMathProcessor {
     return addXMap(ht);
   }
 
-  static Matrix4f getMatrix4f(Matrix3f matRotate, Tuple3f vTranslate) {
+  public static Matrix4f getMatrix4f(Matrix3f matRotate, Tuple3f vTranslate) {
     return Matrix4f.newMV(matRotate, vTranslate == null ? new V3() : V3.newV(vTranslate));
   }
 
@@ -3814,7 +3814,8 @@ class ScriptMathProcessor {
   }
 
   @SuppressWarnings("unchecked")
-  protected static Quaternion[] getQuaternionArray(Object quaternionOrSVData, int itype) {
+  public
+  static Quaternion[] getQuaternionArray(Object quaternionOrSVData, int itype) {
     Quaternion[] data;
     switch (itype) {
     case T.quaternion:

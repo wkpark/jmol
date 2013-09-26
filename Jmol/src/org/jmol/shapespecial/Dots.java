@@ -33,6 +33,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.SB;
+import org.jmol.viewer.JC;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
@@ -55,7 +56,7 @@ public class Dots extends AtomShape {
   BS bsOn = new BS();
   private BS bsSelected, bsIgnore;
 
-  public static int MAX_LEVEL = EnvelopeCalculation.MAX_LEVEL;
+  public static int MAX_LEVEL = JC.ENV_CALC_MAX_LEVEL;
 
   int thisAtom;
   float thisRadius;
@@ -67,7 +68,7 @@ public class Dots extends AtomShape {
   public void initShape() {
     super.initShape();
     translucentAllowed = false; //except for geosurface
-    ec = new EnvelopeCalculation(viewer, atomCount, mads);
+    ec = new EnvelopeCalculation().set(viewer, atomCount, mads);
   }
 
   @Override
@@ -175,7 +176,7 @@ public class Dots extends AtomShape {
     bsIgnore = null;
     isActive = false;
     if (ec == null)
-      ec = new EnvelopeCalculation(viewer, atomCount, mads);
+      ec = new EnvelopeCalculation().set(viewer, atomCount, mads);
   }
 
   @Override

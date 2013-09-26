@@ -157,6 +157,33 @@ public class JC {
   public final static int MINIMIZATION_ATOM_MAX = 200;
   public final static float MINIMIZE_FIXED_RANGE = 5.0f;
 
+  public final static float ENC_CALC_MAX_DIST = 3f;
+  public final static int ENV_CALC_MAX_LEVEL = 3;//Geodesic.standardLevel;
+
+
+  public final static int LABEL_FRONT_FLAG    = 0x20;
+  public final static int LABEL_GROUP_FLAG    = 0x10;
+  public final static int LABEL_POINTER_FLAGS = 0x03;
+  public final static int LABEL_ALIGN_FLAGS   = 0x0C;
+  public final static int LABEL_ZPOS_FLAGS    = 0x30;
+  public final static int LABEL_SCALE_FLAG    = 0x40;
+  public final static int LABEL_EXACT_OFFSET_FLAG = 0x80;
+  public final static int LABEL_FLAGS         = 0xFF;
+  public final static int LABEL_FLAG_OFFSET   = 8;
+
+  //entry is just xxxxxxxxyyyyyyyy
+  //  3         2         1        
+  // 10987654321098765432109876543210
+  //         xxxxxxxxyyyyyyyytsfgaabp
+  //          x-align y-align||||| ||_pointer on
+  //                         ||||| |_background pointer color
+  //                         |||||_text alignment 0xC 
+  //                         ||||_labels group 0x10
+  //                         |||_labels front  0x20
+  //                         ||_scaled
+  //                         |_exact offset
+
+
   public final static int MOUSE_NONE = -1;
 
   public final static byte MULTIBOND_NEVER =     0;
@@ -1563,5 +1590,4 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       throw new NullPointerException();
     }
   }
-
 }

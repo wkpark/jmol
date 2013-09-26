@@ -26,6 +26,7 @@ package org.jmol.renderspecial;
 
 import org.jmol.modelset.Atom;
 import org.jmol.render.ShapeRenderer;
+import org.jmol.script.T;
 import org.jmol.shapespecial.Polyhedra;
 import org.jmol.util.C;
 import org.jmol.util.GData;
@@ -44,6 +45,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
     Polyhedra polyhedra = (Polyhedra) shape;
     Polyhedra.Polyhedron[] polyhedrons = polyhedra.polyhedrons;
     drawEdges = polyhedra.drawEdges;
+    g3d.addRenderer(T.triangles);
     short[] colixes = polyhedra.colixes;
     boolean needTranslucent = false;
     for (int i = polyhedra.polyhedronCount; --i >= 0;) {

@@ -1590,4 +1590,60 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       throw new NullPointerException();
     }
   }
+
+  public static int getOffset(int xOffset, int yOffset) {
+    xOffset = Math.min(Math.max(xOffset, -127), 127);
+    yOffset = Math.min(Math.max(yOffset, -127), 127);
+    return ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
+  }
+
+  public static int getXOffset(int offset) {
+    // ----48------FF--
+    switch (offset) {
+    case 0:
+      return LABEL_DEFAULT_X_OFFSET;
+    case Short.MAX_VALUE:
+      return 0;
+    default:
+      return (int) (((long) offset << 48) >> 56);
+    }
+  }
+
+  public static int getYOffset(int offset) {
+    // ----56--------FF
+    switch (offset) {
+    case 0:
+      return -LABEL_DEFAULT_Y_OFFSET;
+    case Short.MAX_VALUE:
+      return 0;
+    default:
+      return -(int) (((long) offset << 56) >> 56);
+    }
+  }
+
+  public static String getAlignmentName(int align) {
+    return JC.hAlignNames[align & 3];
+  }
+
+  public final static String[] hAlignNames = { "", "left", "center", "right",
+  "" };
+  public final static String[] vAlignNames = { "xy", "top", "bottom", "middle" };
+
+  public static String getPointer(int pointer) {
+    return ((pointer & JC.POINTER_ON) == 0 ? ""
+        : (pointer & JC.POINTER_BACKGROUND) > 0 ? "background" : "on");
+  }
+
+  public final static int POINTER_NONE = 0;
+  public final static int POINTER_ON = 1;
+  public final static int POINTER_BACKGROUND = 2;
+  final public static int VALIGN_XY = 0;
+  final public static int VALIGN_TOP = 1;
+  final public static int VALIGN_BOTTOM = 2;
+  final public static int VALIGN_MIDDLE = 3;
+  final public static int VALIGN_XYZ = 4;
+  public final static int ALIGN_NONE = 0;
+  public final static int ALIGN_LEFT = 1;
+  public final static int ALIGN_CENTER = 2;
+  public final static int ALIGN_RIGHT = 3;
 }

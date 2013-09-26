@@ -35,7 +35,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
+import org.jmol.api.Interface;
 import org.jmol.api.JmolNMRInterface;
+import org.jmol.api.JmolPatternMatcher;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
@@ -1534,10 +1536,10 @@ public class ScriptMathProcessor {
     boolean isList = (x1.tok == T.varray);
     boolean isPattern = (args.length == 2);
     if (isList || isPattern) {
+      JmolPatternMatcher pm = getPatternMatcher();
       Pattern pattern = null;
       try {
-        pattern = Pattern.compile(sFind,
-            isCaseInsensitive ? Pattern.CASE_INSENSITIVE : 0);
+        pattern = pm.compile(sFind, isCaseInsensitive);
       } catch (Exception e) {
         eval.evalError(e.toString(), null);
       }
@@ -1579,6 +1581,11 @@ public class ScriptMathProcessor {
       return addXAS(listNew);
     }
     return addXInt(SV.sValue(x1).indexOf(sFind) + 1);
+  }
+
+  private JmolPatternMatcher pm;
+  private JmolPatternMatcher getPatternMatcher() {
+    return (pm == null ? pm = (JmolPatternMatcher) Interface.getOptionInterface("util.PatternMatcher") : pm);
   }
 
   private boolean evaluateGetProperty(SV[] args) {

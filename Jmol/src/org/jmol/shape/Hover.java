@@ -24,13 +24,13 @@
 
 package org.jmol.shape;
 
-import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.P3i;
+import org.jmol.viewer.JC;
 
 public class Hover extends TextShape {
 
@@ -53,7 +53,7 @@ public class Hover extends TextShape {
     JmolFont font3d = gdata.getFont3DFSS(FONTFACE, FONTSTYLE, FONTSIZE);
     short bgcolix = C.getColixS("#FFFFC3"); // 255, 255, 195
     short colix = C.BLACK;
-    currentObject = hoverText = Text.newLabel(gdata, font3d, null, colix, bgcolix, Object2d.ALIGN_LEFT, 0,
+    currentObject = hoverText = Text.newLabel(gdata, font3d, null, colix, bgcolix, JC.ALIGN_LEFT, 0,
         null);
     hoverText.setAdjustForWindow(true);
   }

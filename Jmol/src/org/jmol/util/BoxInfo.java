@@ -26,6 +26,7 @@
 package org.jmol.util;
 
 
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.JmolList;
 import java.util.Hashtable;
 
@@ -72,6 +73,7 @@ public class BoxInfo {
   /**
    * returns a set of points defining the geometric object within the given
    * plane that spans the unit cell within the given margins
+   * @param modelSet 
    * @param plane 
    * @param scale 
    * @param flags
@@ -79,10 +81,10 @@ public class BoxInfo {
    * @return    a set of points
    * 
    */
-  public JmolList<Object> intersectPlane(P4 plane, float scale, int flags) {
+  public JmolList<Object> intersectPlane(ModelSet modelSet, P4 plane, float scale, int flags) {
     JmolList<Object> v = new  JmolList<Object>();
     v.addLast(getCanonicalCopy(scale));
-    return TriangleData.intersectPlane(plane, v, flags);
+    return modelSet.intersectPlane(plane, v, flags);
   }
 
 

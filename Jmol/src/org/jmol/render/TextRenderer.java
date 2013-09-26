@@ -26,9 +26,9 @@
 package org.jmol.render;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.util.JmolFont;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 class TextRenderer {
@@ -76,8 +76,8 @@ class TextRenderer {
   static void drawPointer(Text text, JmolRendererInterface g3d) {
     // now draw the pointer, if requested
 
-    if ((text.pointer & Object2d.POINTER_ON) == 0
-        || !g3d.setColix((text.pointer & Object2d.POINTER_BACKGROUND) != 0
+    if ((text.pointer & JC.POINTER_ON) == 0
+        || !g3d.setColix((text.pointer & JC.POINTER_BACKGROUND) != 0
             && text.bgcolix != 0 ? text.bgcolix : text.colix))
       return;
     float w = text.boxWidth;

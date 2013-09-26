@@ -49,7 +49,6 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
-import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.shape.MeshCollection;
@@ -8742,6 +8741,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return filename;
   }
 
+  @SuppressWarnings("static-access")
   private void measure() throws ScriptException {
     String id = null;
     int pt = 1;
@@ -9012,7 +9012,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         tokAction = T.define;
       Text text = null;
       if (font != null)
-        text = Text.newLabel(viewer.getGraphicsData(), font, "", colix,
+        text = ((Text) Interface.getOptionInterface("modelset.Text")).newLabel(viewer.getGraphicsData(), font, "", colix,
             (short) 0, 0, 0, null);
       if (text != null)
         text.pymolOffset = offset;
@@ -12174,7 +12174,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         } else {
           int xOffset = intParameterRange(2, -127, 127);
           int yOffset = intParameterRange(3, -127, 127);
-          propertyValue = Integer.valueOf(Object2d.getOffset(xOffset, yOffset));
+          propertyValue = Integer.valueOf(JC.getOffset(xOffset, yOffset));
         }
         break;
       }
@@ -12192,16 +12192,16 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         break;
       }
       if (str.equals("pointer")) {
-        int flags = Object2d.POINTER_NONE;
+        int flags = JC.POINTER_NONE;
         switch (getToken(2).tok) {
         case T.off:
         case T.none:
           break;
         case T.background:
-          flags |= Object2d.POINTER_BACKGROUND;
+          flags |= JC.POINTER_BACKGROUND;
           //$FALL-THROUGH$
         case T.on:
-          flags |= Object2d.POINTER_ON;
+          flags |= JC.POINTER_ON;
           break;
         default:
           invArg();

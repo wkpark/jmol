@@ -56,7 +56,7 @@ import org.jmol.util.V3;
  *
  * @author Miguel, miguel@jmol.org
  */
-public class HermiteRenderer {
+public class HermiteRenderer implements G3DRenderer {
 
   private static V3 vAB = new V3();
   private static V3 vAC = new V3();
@@ -66,8 +66,12 @@ public class HermiteRenderer {
   
   private JmolRendererInterface g3d;
 
-  public HermiteRenderer(JmolRendererInterface g3d) {
+  public HermiteRenderer() {
+  }
+
+  public G3DRenderer set(JmolRendererInterface g3d) {
     this.g3d = g3d;
+    return this;
   }
 
   private final P3i[] pLeft = new P3i[16];

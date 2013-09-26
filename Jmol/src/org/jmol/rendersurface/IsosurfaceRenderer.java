@@ -350,6 +350,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   @Override
   protected void renderTriangles(boolean fill, boolean iShowTriangles,
                                  boolean isExport) {
+    g3d.addRenderer(T.triangles);
     int[][] polygonIndexes = imesh.polygonIndexes;
     colix = (isGhostPass ? imesh.slabColix
         : !fill && imesh.meshColix != 0 ? imesh.meshColix : imesh.colix);

@@ -30,6 +30,7 @@ import java.util.Map;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.HermiteRenderer;
 import org.jmol.modelset.Atom;
+import org.jmol.script.T;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Matrix3f;
@@ -62,8 +63,6 @@ final public class Export3D implements JmolRendererInterface {
   String exportName;
 
   public Export3D() {
-    hermite3d = new HermiteRenderer(this);
-
   }
 
   public int getExportType() {
@@ -905,6 +904,11 @@ final public class Export3D implements JmolRendererInterface {
 
   public boolean getTranslucentCoverOnly() {
     return g3d.getTranslucentCoverOnly();
+  }
+
+  public void addRenderer(int tok) {
+    if (tok == T.hermitelevel)
+      hermite3d = (HermiteRenderer) new HermiteRenderer().set(this);
   }
 
 

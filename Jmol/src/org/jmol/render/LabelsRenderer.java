@@ -26,7 +26,6 @@ package org.jmol.render;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
-import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.shape.Labels;
@@ -185,7 +184,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
         text.setScalePixelsPerMicron(sppm);
       }
     } else {
-      boolean isLeft = (textAlign == Object2d.ALIGN_LEFT || textAlign == Object2d.ALIGN_NONE);
+      boolean isLeft = (textAlign == JC.ALIGN_LEFT || textAlign == JC.ALIGN_NONE);
       if (fid != fidPrevious || ascent == 0) {
         g3d.setFontFid(fid);
         fidPrevious = fid;
@@ -199,13 +198,13 @@ public class LabelsRenderer extends FontLineShapeRenderer {
           && (imageFontScaling == 1 && scalePixelsPerMicron == 0
               && label.indexOf("|") < 0 && label.indexOf("<su") < 0);
       if (isSimple) {
-        boolean doPointer = ((pointer & Object2d.POINTER_ON) != 0);
-        short pointerColix = ((pointer & Object2d.POINTER_BACKGROUND) != 0
+        boolean doPointer = ((pointer & JC.POINTER_ON) != 0);
+        short pointerColix = ((pointer & JC.POINTER_BACKGROUND) != 0
             && bgcolix != 0 ? bgcolix : labelColix);
         boxXY[0] = atomPt.screenX;
         boxXY[1] = atomPt.screenY;
         TextRenderer.renderSimpleLabel(g3d, font3d, label, labelColix, bgcolix,
-            boxXY, zBox, zSlab, Object2d.getXOffset(offset), Object2d
+            boxXY, zBox, zSlab, JC.getXOffset(offset), JC
                 .getYOffset(offset), ascent, descent, doPointer, pointerColix,
             isExact);
         atomPt = null;
@@ -222,7 +221,7 @@ public class LabelsRenderer extends FontLineShapeRenderer {
     if (atomPt != null) {
       if (text.pymolOffset == null) {
         text.setOffset(offset);
-        if (textAlign != Object2d.ALIGN_NONE)
+        if (textAlign != JC.ALIGN_NONE)
           text.setAlignment(textAlign);
       }
       text.setPointer(pointer);

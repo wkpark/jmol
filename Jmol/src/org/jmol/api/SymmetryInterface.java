@@ -121,9 +121,9 @@ public interface SymmetryInterface {
 
   public void setSymmetryInfo(int modelIndex, Map<String, Object> modelAuxiliaryInfo);
 
-  public Object[] getSymmetryOperationDescription(int iSym,
-                                                         SymmetryInterface cellInfo, 
-                                                         P3 pt1, P3 pt2, String id);
+  public Object[] getSymmetryOperationDescription(ModelSet modelSet,
+                                                         int iSym, 
+                                                         SymmetryInterface cellInfo, P3 pt1, P3 pt2, String id);
 
   public boolean isPolymer();
 

@@ -347,4 +347,6 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
 
   public abstract boolean getTranslucentCoverOnly();
 
+  public abstract void addRenderer(int tok);
+
 }

@@ -43,7 +43,6 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
-import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.modelset.TickInfo;
 import org.jmol.modelset.Bond.BondSet;
@@ -718,11 +717,11 @@ public class StateCreator extends JmolStateCreator {
     appendCmd(s, Shape.getColorCommand("label", l.defaultPaletteID,
         l.defaultColix, l.translucentAllowed));
     appendCmd(s, "background label " + Shape.encodeColor(l.defaultBgcolix));
-    appendCmd(s, "set labelOffset " + Object2d.getXOffset(l.defaultOffset)
-        + " " + (-Object2d.getYOffset(l.defaultOffset)));
-    String align = Object2d.getAlignmentName(l.defaultAlignment);
+    appendCmd(s, "set labelOffset " + JC.getXOffset(l.defaultOffset)
+        + " " + (-JC.getYOffset(l.defaultOffset)));
+    String align = JC.getAlignmentName(l.defaultAlignment);
     appendCmd(s, "set labelAlignment " + (align.length() < 5 ? "left" : align));
-    String pointer = Object2d.getPointer(l.defaultPointer);
+    String pointer = JC.getPointer(l.defaultPointer);
     appendCmd(s, "set labelPointer "
         + (pointer.length() == 0 ? "off" : pointer));
     if ((l.defaultZPos & JC.LABEL_FRONT_FLAG) != 0)
@@ -1267,11 +1266,11 @@ public class StateCreator extends JmolStateCreator {
                   "set "
                       + ((offsetFull & JC.LABEL_EXACT_OFFSET_FLAG) == JC.LABEL_EXACT_OFFSET_FLAG ? "labelOffsetExact "
                           : "labelOffset ")
-                      + Object2d.getXOffset(offsetFull >> JC.LABEL_FLAG_OFFSET)
+                      + JC.getXOffset(offsetFull >> JC.LABEL_FLAG_OFFSET)
                       + " "
-                      + (-Object2d.getYOffset(offsetFull >> JC.LABEL_FLAG_OFFSET)));
-          String align = Object2d.getAlignmentName(offsetFull >> 2);
-          String pointer = Object2d.getPointer(offsetFull);
+                      + (-JC.getYOffset(offsetFull >> JC.LABEL_FLAG_OFFSET)));
+          String align = JC.getAlignmentName(offsetFull >> 2);
+          String pointer = JC.getPointer(offsetFull);
           if (pointer.length() > 0)
             BSUtil.setMapBitSet(temp2, i, i, "set labelPointer " + pointer);
           if ((offsetFull & JC.LABEL_FRONT_FLAG) != 0)
@@ -1342,7 +1341,7 @@ public class StateCreator extends JmolStateCreator {
     String strOff = null;
     String echoCmd = "set echo ID " + Escape.eS(t.target);
     switch (t.valign) {
-    case Object2d.VALIGN_XY:
+    case JC.VALIGN_XY:
       if (t.movableXPercent == Integer.MAX_VALUE
           || t.movableYPercent == Integer.MAX_VALUE) {
         strOff = (t.movableXPercent == Integer.MAX_VALUE ? t.movableX + " "
@@ -1353,19 +1352,19 @@ public class StateCreator extends JmolStateCreator {
         strOff = "[" + t.movableXPercent + " " + t.movableYPercent + "%]";
       }
       //$FALL-THROUGH$
-    case Object2d.VALIGN_XYZ:
+    case JC.VALIGN_XYZ:
       if (strOff == null)
         strOff = Escape.eP(t.xyz);
       s.append("  ").append(echoCmd).append(" ").append(strOff);
-      if (t.align != Object2d.ALIGN_LEFT)
+      if (t.align != JC.ALIGN_LEFT)
         s.append(";  ").append(echoCmd).append(" ").append(
-            Object2d.hAlignNames[t.align]);
+            JC.hAlignNames[t.align]);
       break;
     default:
-      s.append("  set echo ").append(Object2d.vAlignNames[t.align]).append(" ")
-          .append(Object2d.hAlignNames[t.align]);
+      s.append("  set echo ").append(JC.vAlignNames[t.align]).append(" ")
+          .append(JC.hAlignNames[t.align]);
     }
-    if (t.valign == Object2d.VALIGN_XY
+    if (t.valign == JC.VALIGN_XY
         && t.movableZPercent != Integer.MAX_VALUE)
       s.append(";  ").append(echoCmd).append(" depth ").appendI(
           t.movableZPercent);

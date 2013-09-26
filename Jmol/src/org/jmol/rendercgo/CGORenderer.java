@@ -25,6 +25,7 @@ package org.jmol.rendercgo;
 
 
 import org.jmol.renderspecial.DrawRenderer;
+import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shapecgo.CGO;
 import org.jmol.shapecgo.CGOMesh;
@@ -263,6 +264,7 @@ public class CGORenderer extends DrawRenderer {
 
 
   private void fillTriangle() {
+    g3d.addRenderer(T.triangles);
     g3d.fillTriangle3CN(pt0i, colix0, normix0, pt1i, colix1, normix1, pt2i,
         colix2, normix2);
   }

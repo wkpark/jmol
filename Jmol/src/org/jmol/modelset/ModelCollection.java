@@ -39,6 +39,7 @@ import java.util.Properties;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.api.Triangulator;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.bspt.Bspf;
@@ -65,7 +66,6 @@ import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
-import org.jmol.util.TriangleData;
 import org.jmol.util.V3;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
@@ -175,7 +175,7 @@ abstract public class ModelCollection extends BondCollection {
     }
     JmolList<Object> v = new  JmolList<Object>();
     v.addLast(pts);
-    return TriangleData.intersectPlane(plane, v, flags);
+    return intersectPlane(plane, v, flags);
   }
 
   protected int[] modelNumbers = new int[1]; // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
@@ -3593,6 +3593,15 @@ abstract public class ModelCollection extends BondCollection {
     return (type == T.volume ? vMin + "\t{" + dx + " " + dy + " " + dz + "}"
         : q.getTheta() == 0 ? "{0 0 0 1}" : q.toString());
   }
+
+  private Triangulator triangulator;
+  
+  public JmolList<Object> intersectPlane(P4 plane, JmolList<Object> v, int i) {
+    return (triangulator == null ? (triangulator = (Triangulator) Interface
+        .getOptionInterface("util.TriangleData")) : triangulator)
+        .intersectPlane(plane, v, i);
+  }
+
 
 }
   

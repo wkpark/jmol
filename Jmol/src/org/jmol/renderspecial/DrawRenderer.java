@@ -163,9 +163,11 @@ public class DrawRenderer extends MeshRenderer {
         width *= dmesh.scale;
       if (width > 0)
         diameter = (int) viewer.scaleToScreen(pt1i.z, (int) Math.floor(width * 1000));
-      if (diameter > 0 && (mesh.drawTriangles || mesh.fillTriangles))
+      if (diameter > 0 && (mesh.drawTriangles || mesh.fillTriangles)) {
+        g3d.addRenderer(T.circle);
         g3d.drawFilledCircle(colix, mesh.fillTriangles ? colix : 0, diameter,
             pt1i.x, pt1i.y, pt1i.z);
+      }
       break;
     case CURVE:
     case LINE_SEGMENT:
@@ -245,6 +247,7 @@ public class DrawRenderer extends MeshRenderer {
     if (diameter == 0)
       diameter = 3;
     if (isCurved) {
+      g3d.addRenderer(T.hermitelevel);
       for (int i = 0, i0 = 0; i < nPoints - 1; i++) {
         g3d
             .fillHermite(tension, diameter, diameter, diameter, screens[i0],
@@ -447,6 +450,7 @@ public class DrawRenderer extends MeshRenderer {
       short colixFill = C.getColixTranslucent3(C.GOLD, true,
           0.5f);
       bsHandles.clearAll();
+      g3d.addRenderer(T.circle);
       for (int i = dmesh.polygonCount; --i >= 0;) {
         if (!isPolygonDisplayable(i))
           continue;

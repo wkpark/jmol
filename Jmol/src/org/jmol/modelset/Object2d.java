@@ -10,26 +10,6 @@ public abstract class Object2d {
 
   // Echo, Label
 
-  public final static int POINTER_NONE = 0;
-  public final static int POINTER_ON = 1;
-  public final static int POINTER_BACKGROUND = 2;
-
-  public final static String[] hAlignNames = { "", "left", "center", "right",
-      "" };
-
-  public final static int ALIGN_NONE = 0;
-  public final static int ALIGN_LEFT = 1;
-  public final static int ALIGN_CENTER = 2;
-  public final static int ALIGN_RIGHT = 3;
-
-  public final static String[] vAlignNames = { "xy", "top", "bottom", "middle" };
-
-  final public static int VALIGN_XY = 0;
-  final public static int VALIGN_TOP = 1;
-  final public static int VALIGN_BOTTOM = 2;
-  final public static int VALIGN_MIDDLE = 3;
-  final public static int VALIGN_XYZ = 4;
-
   public boolean isLabelOrHover;
   protected GData gdata;
   public P3 xyz;
@@ -95,7 +75,7 @@ public abstract class Object2d {
     if (xyz == null)
       this.zSlab = Integer.MIN_VALUE;
     if (doAdjust) {
-      valign = (xyz == null ? VALIGN_XY : VALIGN_XYZ);
+      valign = (xyz == null ? JC.VALIGN_XY : JC.VALIGN_XYZ);
       setAdjustForWindow(xyz == null);
     }
   }
@@ -130,13 +110,13 @@ public abstract class Object2d {
   }
 
   private void setMovableX(int x) {
-    valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);
+    valign = (valign == JC.VALIGN_XYZ ? JC.VALIGN_XYZ : JC.VALIGN_XY);
     movableX = x;
     movableXPercent = Integer.MAX_VALUE;
   }
 
   private void setMovableY(int y) {
-    valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);
+    valign = (valign == JC.VALIGN_XYZ ? JC.VALIGN_XYZ : JC.VALIGN_XY);
     movableY = y;
     movableYPercent = Integer.MAX_VALUE;
   }
@@ -149,20 +129,20 @@ public abstract class Object2d {
   //  }
 
   public void setMovableXPercent(int x) {
-    valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);
+    valign = (valign == JC.VALIGN_XYZ ? JC.VALIGN_XYZ : JC.VALIGN_XY);
     movableX = Integer.MAX_VALUE;
     movableXPercent = x;
   }
 
   public void setMovableYPercent(int y) {
-    valign = (valign == VALIGN_XYZ ? VALIGN_XYZ : VALIGN_XY);
+    valign = (valign == JC.VALIGN_XYZ ? JC.VALIGN_XYZ : JC.VALIGN_XY);
     movableY = Integer.MAX_VALUE;
     movableYPercent = y;
   }
 
   public void setMovableZPercent(int z) {
-    if (valign != VALIGN_XYZ)
-      valign = VALIGN_XY;
+    if (valign != JC.VALIGN_XYZ)
+      valign = JC.VALIGN_XY;
     movableZ = Integer.MAX_VALUE;
     movableZPercent = z;
   }
@@ -188,43 +168,19 @@ public abstract class Object2d {
 
   public void setOffset(int offset) {
     //Labels only
-    offsetX = getXOffset(offset);
-    offsetY = getYOffset(offset);
+    offsetX = JC.getXOffset(offset);
+    offsetY = JC.getYOffset(offset);
     pymolOffset = null;
-    valign = VALIGN_XY;
-  }
-
-  public static int getXOffset(int offset) {
-    // ----48------FF--
-    switch (offset) {
-    case 0:
-      return JC.LABEL_DEFAULT_X_OFFSET;
-    case Short.MAX_VALUE:
-      return 0;
-    default:
-      return (int) (((long) offset << 48) >> 56);
-    }
-  }
-
-  public static int getYOffset(int offset) {
-    // ----56--------FF
-    switch (offset) {
-    case 0:
-      return -JC.LABEL_DEFAULT_Y_OFFSET;
-    case Short.MAX_VALUE:
-      return 0;
-    default:
-      return -(int) (((long) offset << 56) >> 56);
-    }
+    valign = JC.VALIGN_XY;
   }
 
   public boolean setAlignmentLCR(String align) {
     if ("left".equals(align))
-      return setAlignment(ALIGN_LEFT);
+      return setAlignment(JC.ALIGN_LEFT);
     if ("center".equals(align))
-      return setAlignment(ALIGN_CENTER);
+      return setAlignment(JC.ALIGN_CENTER);
     if ("right".equals(align))
-      return setAlignment(ALIGN_RIGHT);
+      return setAlignment(JC.ALIGN_RIGHT);
     return false;
   }
 
@@ -236,17 +192,8 @@ public abstract class Object2d {
     return true;
   }
 
-  public static String getAlignmentName(int align) {
-    return hAlignNames[align & 3];
-  }
-
   public void setPointer(int pointer) {
     this.pointer = pointer;
-  }
-
-  public static String getPointer(int pointer) {
-    return ((pointer & POINTER_ON) == 0 ? ""
-        : (pointer & POINTER_BACKGROUND) > 0 ? "background" : "on");
   }
 
   public void setBoxOffsetsInWindow(float margin, float vMargin, float vTop) {
@@ -352,12 +299,6 @@ public abstract class Object2d {
       return true;
     }
     return false;
-  }
-
-  public static int getOffset(int xOffset, int yOffset) {
-    xOffset = Math.min(Math.max(xOffset, -127), 127);
-    yOffset = Math.min(Math.max(yOffset, -127), 127);
-    return ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
   }
 
 }

@@ -31,6 +31,7 @@ import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.P3;
 import org.jmol.util.TextFormat;
+import org.jmol.viewer.JC;
 
 public class Echo extends TextShape {
 
@@ -70,7 +71,7 @@ public class Echo extends TextShape {
         return;
       Text t = (Text) currentObject;
       t.pointerPt = (value == null ? null : (P3) value); // could be an atom.
-      t.pointer = (value == null ? Object2d.POINTER_NONE : Object2d.POINTER_ON);
+      t.pointer = (value == null ? JC.POINTER_NONE : JC.POINTER_ON);
       return;
     }
     if ("xyz" == propertyName) {
@@ -135,16 +136,16 @@ public class Echo extends TextShape {
         isAll = false;
         Text text = objects.get(target);
         if (text == null) {
-          int valign = Object2d.VALIGN_XY;
-          int halign = Object2d.ALIGN_LEFT;
+          int valign = JC.VALIGN_XY;
+          int halign = JC.ALIGN_LEFT;
           if ("top" == target) {
-            valign = Object2d.VALIGN_TOP;
-            halign = Object2d.ALIGN_CENTER;
+            valign = JC.VALIGN_TOP;
+            halign = JC.ALIGN_CENTER;
           } else if ("middle" == target) {
-            valign = Object2d.VALIGN_MIDDLE;
-            halign = Object2d.ALIGN_CENTER;
+            valign = JC.VALIGN_MIDDLE;
+            halign = JC.ALIGN_CENTER;
           } else if ("bottom" == target) {
-            valign = Object2d.VALIGN_BOTTOM;
+            valign = JC.VALIGN_BOTTOM;
           }
           text = Text.newEcho(viewer, gdata, gdata.getFont3DFS(FONTFACE,
               FONTSIZE), target, COLOR, valign, halign, 0);

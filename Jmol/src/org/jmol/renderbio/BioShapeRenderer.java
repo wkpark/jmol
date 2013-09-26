@@ -98,7 +98,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   @Override
   protected boolean render() {
     if (shape == null)
-      return false;    
+      return false;
     setGlobals();
     renderShapes();
     return needTranslucent;
@@ -108,6 +108,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
     isPass2 = g3d.isPass2();
     invalidateMesh = false;
     needTranslucent = false;
+    g3d.addRenderer(T.hermitelevel);
     boolean TF = (!isExport && !viewer.checkMotionRendering(T.cartoon));
     
     if (TF != wireframeOnly)
@@ -401,10 +402,11 @@ abstract class BioShapeRenderer extends MeshRenderer {
     }
     if (diameterBeg == 0 && diameterEnd == 0 || wireframeOnly)
       g3d.drawLineAB(controlPointScreens[i], controlPointScreens[iNext]);
-    else
+    else {
       g3d.fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid, diameterEnd,
           controlPointScreens[iPrev], controlPointScreens[i],
           controlPointScreens[iNext], controlPointScreens[iNext2]);
+    }
   }
 
   /**

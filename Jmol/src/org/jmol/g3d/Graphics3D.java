@@ -30,9 +30,11 @@ import java.util.Map;
 
 
 import org.jmol.api.ApiPlatform;
+import org.jmol.api.Interface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.modelset.Atom;
+import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
@@ -158,12 +160,14 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   Platform3D platform;
   LineRenderer line3d;
-  
-  private CircleRenderer circle3d;
   private SphereRenderer sphere3d;
-  private TriangleRenderer triangle3d;
   private CylinderRenderer cylinder3d;
-  private HermiteRenderer hermite3d;
+  
+  // loaded only if needed
+  private G3DRenderer triangle3d;
+  private G3DRenderer circle3d;
+  private G3DRenderer hermite3d;
+  
   private boolean isFullSceneAntialiasingEnabled;
   private boolean antialias2; 
 
@@ -235,14 +239,38 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     platform = new Platform3D(apiPlatform);
     graphicsForMetrics = platform.getGraphicsForMetrics();
     
-    this.line3d = new LineRenderer(this);
-    this.circle3d = new CircleRenderer(this);
-    this.sphere3d = new SphereRenderer(this);
-    this.triangle3d = new TriangleRenderer(this);
-    this.cylinder3d = new CylinderRenderer(this);
-    this.hermite3d = new HermiteRenderer(this);
+    line3d = new LineRenderer(this);
+    sphere3d = new SphereRenderer(this);
+    cylinder3d = new CylinderRenderer(this);    
+  }
+
+  /**
+   * allows core JavaScript loading to not involve these classes
+   * @param tok 
+   * 
+   */
+  @Override
+  public void addRenderer(int tok) {
+    switch (tok) {
+    case T.circle:
+      if (circle3d == null)
+        circle3d = getRenderer("Circle");
+      break;
+    case T.hermitelevel:
+      if (hermite3d == null)
+        hermite3d = getRenderer("Hermite");
+      //$FALL-THROUGH$
+    case T.triangles:
+      if (triangle3d == null)
+        triangle3d = getRenderer("Triangle");
+      break;
+    }    
   }
   
+  private G3DRenderer getRenderer(String type) {
+    return ((G3DRenderer) Interface.getOptionInterface("g3d." + type + "Renderer")).set(this);
+  }
+
   public boolean currentlyRendering() {
     return currentlyRendering;
   }
@@ -652,6 +680,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   
   public void drawFilledCircle(short colixRing, short colixFill, int diameter,
                                int x, int y, int z) {
+    // Halos, Draw handles
     if (isClippedZ(z))
       return;
     int r = (diameter + 1) / 2;
@@ -660,15 +689,15 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       return;
     if (colixRing != 0 && setColix(colixRing)) {
       if (isClipped)
-        circle3d.plotCircleCenteredClipped(x, y, z, diameter);
+        ((CircleRenderer)circle3d).plotCircleCenteredClipped(x, y, z, diameter);
       else
-        circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
+        ((CircleRenderer)circle3d).plotCircleCenteredUnclipped(x, y, z, diameter);
     }
     if (colixFill != 0 && setColix(colixFill)) {
       if (isClipped)
-        circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
+        ((CircleRenderer)circle3d).plotFilledCircleCenteredClipped(x, y, z, diameter);
       else
-        circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
+        ((CircleRenderer)circle3d).plotFilledCircleCenteredUnclipped(x, y, z, diameter);
     }
   }
 
@@ -684,9 +713,9 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     if (isClipped && isClippedXY(diameter, x, y))
       return;
     if (isClipped)
-      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
+      ((CircleRenderer)circle3d).plotFilledCircleCenteredClipped(x, y, z, diameter);
     else
-      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
+      ((CircleRenderer)circle3d).plotFilledCircleCenteredUnclipped(x, y, z, diameter);
   }
   
   /**
@@ -1170,7 +1199,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   public void drawHermite4(int tension,
                           P3i s0, P3i s1, P3i s2, P3i s3) {
-    hermite3d.renderHermiteRope(false, tension, 0, 0, 0, s0, s1, s2, s3);
+    // bioShapeRenderer
+    ((HermiteRenderer) hermite3d).renderHermiteRope(false, tension, 0, 0, 0, s0, s1, s2, s3);
   }
 
   public void drawHermite7(boolean fill, boolean border, int tension,
@@ -1178,15 +1208,15 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                            P3i s4, P3i s5, P3i s6, P3i s7,
                            int aspectRatio, short colixBack) {
     if (colixBack == 0) {
-      hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
+      ((HermiteRenderer) hermite3d).renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
           s5, s6, s7, aspectRatio, 0);
       return;
     }
-    hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
+    ((HermiteRenderer) hermite3d).renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
         s5, s6, s7, aspectRatio, 1);
     short colix = colixCurrent;
     setColix(colixBack);
-    hermite3d.renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
+    ((HermiteRenderer) hermite3d).renderHermiteRibbon(fill, border, tension, s0, s1, s2, s3, s4,
         s5, s6, s7, aspectRatio, -1);
     setColix(colix);
   }
@@ -1194,7 +1224,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   public void fillHermite(int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
                           P3i s0, P3i s1, P3i s2, P3i s3) {
-    hermite3d.renderHermiteRope(true, tension,
+    ((HermiteRenderer) hermite3d).renderHermiteRope(true, tension,
                      diameterBeg, diameterMid, diameterEnd,
                      s0, s1, s2, s3);
   }
@@ -1241,7 +1271,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
         yA, zA, xC, yC, zC, true);
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xB,
         yB, zB, xC, yC, zC, true);
-    triangle3d.fillTriangle(xA, yA, zA, xB, yB, zB, xC, yC, zC, false);
+    ((TriangleRenderer) triangle3d).fillTriangle(xA, yA, zA, xB, yB, zB, xC, yC, zC, false);
   }
   */
   public void fillTriangleTwoSided(short normix,
@@ -1250,7 +1280,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                            int xScreenC, int yScreenC, int zScreenC) {
     // polyhedra
     setColorNoisy(getShadeIndex(normix));
-    triangle3d.fillTriangleXYZ( xScreenA, yScreenA, zScreenA,
+    ((TriangleRenderer) triangle3d).fillTriangleXYZ( xScreenA, yScreenA, zScreenA,
         xScreenB, yScreenB, zScreenB,
         xScreenC, yScreenC, zScreenC, false);
   }
@@ -1262,13 +1292,13 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
       setColorNoisy(i);
     else
       setColor(shadesCurrent[i]);
-    triangle3d.fillTriangleP3f(screenA, screenB, screenC, false);
+    ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenB, screenC, false);
   }
 
   public void fillTriangle3i(P3i screenA, P3i screenB, P3i screenC,
                              P3 ptA, P3 ptB, P3 ptC) {
     // cartoon DNA plates
-    triangle3d.fillTriangleP3i(screenA, screenB, screenC, false);
+    ((TriangleRenderer) triangle3d).fillTriangleP3i(screenA, screenB, screenC, false);
   }
 
   public void fillTriangle(P3i screenA, short colixA,
@@ -1285,12 +1315,12 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     } else {
       if (!setTriangleTranslucency(colixA, colixB, colixC))
         return;
-      triangle3d.setGouraud(getShades(colixA)[getShadeIndex(normixA)],
+      ((TriangleRenderer) triangle3d).setGouraud(getShades(colixA)[getShadeIndex(normixA)],
           getShades(colixB)[getShadeIndex(normixB)],
           getShades(colixC)[getShadeIndex(normixC)]);
       useGouraud = true;
     }
-    triangle3d.fillTriangleP3if(screenA, screenB, screenC, factor,
+    ((TriangleRenderer) triangle3d).fillTriangleP3if(screenA, screenB, screenC, factor,
         useGouraud);
   }
 
@@ -1306,12 +1336,12 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     } else {
       if (!setTriangleTranslucency(colixA, colixB, colixC))
         return;
-      triangle3d.setGouraud(getShades(colixA)[getShadeIndex(normixA)],
+      ((TriangleRenderer) triangle3d).setGouraud(getShades(colixA)[getShadeIndex(normixA)],
                             getShades(colixB)[getShadeIndex(normixB)],
                             getShades(colixC)[getShadeIndex(normixC)]);
       useGouraud = true;
     }
-    triangle3d.fillTriangleP3i(screenA, screenB, screenC, useGouraud);
+    ((TriangleRenderer) triangle3d).fillTriangleP3i(screenA, screenB, screenC, useGouraud);
     //triangle3d.fillTriangleP3if(screenA, screenB, screenC, 0.1f, useGouraud);
   }
 
@@ -1355,8 +1385,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                 P3 screenC, P3 screenD) {
     // hermite, rockets, cartoons
     setColorNoisy(getShadeIndexP3(screenA, screenB, screenC));
-    triangle3d.fillTriangleP3f(screenA, screenB, screenC, false);
-    triangle3d.fillTriangleP3f(screenA, screenC, screenD, false);
+    ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenB, screenC, false);
+    ((TriangleRenderer) triangle3d).fillTriangleP3f(screenA, screenC, screenD, false);
   }
 
   public void fillQuadrilateral3i(P3i screenA, short colixA, short normixA,

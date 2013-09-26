@@ -27,7 +27,6 @@ package org.jmol.shape;
 import org.jmol.constant.EnumPalette;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
-import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.util.ArrayUtil;
@@ -255,11 +254,11 @@ public class Labels extends AtomShape {
 
     if ("align" == propertyName) {
       String type = (String) value;
-      int alignment = Object2d.ALIGN_LEFT;
+      int alignment = JC.ALIGN_LEFT;
       if (type.equalsIgnoreCase("right"))
-        alignment = Object2d.ALIGN_RIGHT;
+        alignment = JC.ALIGN_RIGHT;
       else if (type.equalsIgnoreCase("center"))
-        alignment = Object2d.ALIGN_CENTER;
+        alignment = JC.ALIGN_CENTER;
       for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
           .nextSetBit(i + 1))
         setAlignment(i, alignment);
@@ -445,13 +444,13 @@ public class Labels extends AtomShape {
     }
     if (defaultOffset != zeroOffset)
       setOffsets(i, defaultOffset, false);
-    if (defaultAlignment != Object2d.ALIGN_LEFT)
+    if (defaultAlignment != JC.ALIGN_LEFT)
       setAlignment(i, defaultAlignment);
     if ((defaultZPos & JC.LABEL_FRONT_FLAG) != 0)
       setFront(i, true);
     else if ((defaultZPos & JC.LABEL_GROUP_FLAG) != 0)
       setGroup(i, true);
-    if (defaultPointer != Object2d.POINTER_NONE)
+    if (defaultPointer != JC.POINTER_NONE)
       setPointer(i, defaultPointer);
     if (defaultColix != 0 || defaultPaletteID != 0)
       setLabelColix(i, defaultColix, defaultPaletteID);
@@ -542,7 +541,7 @@ public class Labels extends AtomShape {
 
   private void setAlignment(int i, int alignment) {
     if (offsets == null || i >= offsets.length) {
-      if (alignment == Object2d.ALIGN_LEFT)
+      if (alignment == JC.ALIGN_LEFT)
         return;
       offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
     }
@@ -558,7 +557,7 @@ public class Labels extends AtomShape {
   
   private void setPointer(int i, int pointer) {
     if (offsets == null || i >= offsets.length) {
-      if (pointer == Object2d.POINTER_NONE)
+      if (pointer == JC.POINTER_NONE)
         return;
       offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
     }
@@ -680,11 +679,11 @@ public class Labels extends AtomShape {
   }
 
   private void move2D(int pickedAtom, int x, int y) {
-    int xOffset = Object2d.getXOffset(pickedOffset);
-    int yOffset = -Object2d.getYOffset(pickedOffset);
+    int xOffset = JC.getXOffset(pickedOffset);
+    int yOffset = -JC.getYOffset(pickedOffset);
     xOffset += x - pickedX;
     yOffset += pickedY - y;
-    int offset = Object2d.getOffset(xOffset, yOffset);
+    int offset = JC.getOffset(xOffset, yOffset);
     if (offset == 0)
       offset = Short.MAX_VALUE;
     else if (offset == zeroOffset)

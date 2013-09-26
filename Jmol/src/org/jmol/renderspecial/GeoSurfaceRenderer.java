@@ -51,6 +51,7 @@ public class GeoSurfaceRenderer extends DotsRenderer {
       return false;
     if (!g3d.setColix(C.BLACK))
       return true;
+    g3d.addRenderer(T.triangles);
     if (iShowSolid && faceMap == null)
       faceMap = new int[screenDotCount];
     //testRadiusAdjust = -1.2f;

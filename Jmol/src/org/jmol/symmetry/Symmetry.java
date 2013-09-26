@@ -200,11 +200,11 @@ public class Symmetry implements SymmetryInterface {
     return (iop == 0 ? axes : spaceGroup.finalOperations[iop].rotateAxes(axes, unitCell, ptTemp, mTemp));
   }
 
-  public Object[] getSymmetryOperationDescription(int isym,
-                                                  SymmetryInterface cellInfo,
-                                                  P3 pt1, P3 pt2,
-                                                  String id) {
-    return spaceGroup.operations[isym].getDescription(cellInfo, pt1, pt2, id);
+  public Object[] getSymmetryOperationDescription(ModelSet modelSet,
+                                                  int isym,
+                                                  SymmetryInterface cellInfo, P3 pt1,
+                                                  P3 pt2, String id) {
+    return spaceGroup.operations[isym].getDescription(modelSet, cellInfo, pt1, pt2, id);
   }
     
   public String fcoord(Tuple3f p) {
@@ -458,8 +458,8 @@ public class Symmetry implements SymmetryInterface {
           if (iSym < 0)
             continue;
           infolist[i] = (symOp > 0 && symOp - 1 != iSym ? null
-              : getSymmetryOperationDescription(iSym, cellInfo, pt1,
-                  pt2, drawID));
+              : getSymmetryOperationDescription(modelSet, iSym, cellInfo,
+                  pt1, pt2, drawID));
           if (infolist[i] != null)
             strOperations += "\n" + (i + 1) + "\t" + infolist[i][0] + "\t"
                 + infolist[i][2];
@@ -518,8 +518,8 @@ public class Symmetry implements SymmetryInterface {
       return sympt;
     }
     // null id means "array info only" but here we want the draw commands
-    info = symTemp.getSymmetryOperationDescription(iSym, uc, pt, pt2,
-        (id == null ? "sym" : id));
+    info = symTemp.getSymmetryOperationDescription(modelSet, iSym, uc, pt,
+        pt2, (id == null ? "sym" : id));
     int ang = ((Integer) info[9]).intValue();
     /*
      *  xyz (Jones-Faithful calculated from matrix)

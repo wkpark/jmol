@@ -41,9 +41,9 @@ import org.jmol.util.P3;
 import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
-import org.jmol.util.TriangleData;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
+import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 
 /*
@@ -578,6 +578,7 @@ class SymmetryOperation extends Matrix4f {
   
   /**
    * 
+   * @param modelSet TODO
    * @param uc
    * @param pt00
    * @param ptTarget 
@@ -595,16 +596,16 @@ class SymmetryOperation extends Matrix4f {
    *              [9]      angle of rotation
    *              [10]      matrix representation
    */
-  public Object[] getDescription(SymmetryInterface uc, P3 pt00, P3 ptTarget, String id) {
+  public Object[] getDescription(ModelSet modelSet, SymmetryInterface uc, P3 pt00, P3 ptTarget, String id) {
     if (!isFinalized)
       doFinalize();
-    return getDescription(this, xyzOriginal, uc, pt00, ptTarget, id);
+    return getDescription(modelSet, this, xyzOriginal, uc, pt00, ptTarget, id);
   }
   
-  private static Object[] getDescription(SymmetryOperation m,
-                                         String xyzOriginal,
-                                         SymmetryInterface uc, P3 pt00,
-                                         P3 ptTarget, String id) {
+  private static Object[] getDescription(ModelSet modelSet,
+                                         SymmetryOperation m,
+                                         String xyzOriginal, SymmetryInterface uc,
+                                         P3 pt00, P3 ptTarget, String id) {
     V3 vtemp = new V3();
     P3 ptemp = new P3();
     P3 pt01 = new P3();
@@ -1132,7 +1133,7 @@ class SymmetryOperation extends Matrix4f {
         P4 plane = P4.new4(vtemp.x, vtemp.y, vtemp.z, w);
         JmolList<Object> v = new  JmolList<Object>();
         v.addLast(uc.getCanonicalCopy(1.05f));
-        TriangleData.intersectPlane(plane, v, 3);
+        modelSet.intersectPlane(plane, v, 3);
 
         // returns triangles and lines
         for (int i = v.size(); --i >= 0;) {

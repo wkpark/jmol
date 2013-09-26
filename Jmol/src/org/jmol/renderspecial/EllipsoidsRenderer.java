@@ -174,6 +174,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     bOptions[OPT_BALL] &= !bOptions[OPT_WIREFRAME];
     bOptions[OPT_FILL] &= !bOptions[OPT_WIREFRAME];
     fillArc = bOptions[OPT_FILL] && !bOptions[OPT_BALL];
+    if (fillArc)
+      g3d.addRenderer(T.triangles);
 
     if (bOptions[OPT_BALL])
       bOptions[OPT_DOTS] = false;
@@ -487,7 +489,8 @@ public class EllipsoidsRenderer extends ShapeRenderer {
       pt1.setT(pt2);
       s1.setT(s2);
     }
-    if (!fillArc && !bOptions[OPT_WIREFRAME])
+    if (!fillArc && !bOptions[OPT_WIREFRAME]) {
+      g3d.addRenderer(T.hermitelevel);
       for (int i = 0; i < 18; i++) {
         g3d.fillHermite(5, diameter, diameter, diameter, 
             screens[i == 0 ? i + 6 : i + 5], 
@@ -495,6 +498,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
             screens[i + 7], 
             screens[i == 17 ? i + 7 : i + 8]);
       }
+    }
   }
 
 

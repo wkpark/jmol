@@ -26,6 +26,7 @@ package org.jmol.g3d;
 
 
 //import org.jmol.util.Logger;
+import org.jmol.api.JmolRendererInterface;
 import org.jmol.util.GData;
 import org.jmol.util.P3;
 import org.jmol.util.P3i;
@@ -40,10 +41,9 @@ import org.jmol.util.Rgb16;
  *
  * @author Miguel, miguel@jmol.org
  */
-class TriangleRenderer {
+public class TriangleRenderer implements G3DRenderer {
 
-  final Graphics3D g3d;
-  final LineRenderer line3d;
+  private Graphics3D g3d;
 
   private final static int DEFAULT = 64;
   private int[] ax = new int[3], ay = new int[3], az = new int[3];
@@ -55,18 +55,26 @@ class TriangleRenderer {
   
   //private final static boolean VERIFY = false;
 
-  TriangleRenderer(Graphics3D g3d) {
-    rgb16sW = new Rgb16[DEFAULT];
-    rgb16sE = new Rgb16[DEFAULT];
-    for (int i = DEFAULT; --i >= 0;) {
-      rgb16sW[i] = new Rgb16();
-      rgb16sE[i] = new Rgb16();
+  public TriangleRenderer() {    
+  }
+  
+  public G3DRenderer set(JmolRendererInterface g3d) {
+    try {
+      rgb16sW = new Rgb16[DEFAULT];
+      rgb16sE = new Rgb16[DEFAULT];
+      for (int i = DEFAULT; --i >= 0;) {
+        rgb16sW[i] = new Rgb16();
+        rgb16sE[i] = new Rgb16();
+      }
+      this.g3d = (Graphics3D) g3d;
+      rgb16sGouraud = new Rgb16[3];
+      for (int i = 3; --i >= 0;)
+        rgb16sGouraud[i] = new Rgb16();
+    } catch (Exception e) {
+      // must be export; not a problem
     }
-    this.g3d = g3d;
-    this.line3d = g3d.line3d;
-    rgb16sGouraud = new Rgb16[3];
-    for (int i = 3; --i >= 0;)
-      rgb16sGouraud[i] = new Rgb16();
+
+    return this;
   }
 
   Rgb16[] reallocRgb16s(Rgb16[] rgb16s, int n) {

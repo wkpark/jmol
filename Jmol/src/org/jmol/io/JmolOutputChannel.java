@@ -109,7 +109,11 @@ public class JmolOutputChannel extends OutputStream {
     return this;
   }
 
-  public void writeBytes(byte[] buf, int i, int len) {
+  /**
+   * @j2sOverride
+   */
+  @Override
+  public void write(byte[] buf, int i, int len) {
     if (os == null)
       os = new ByteArrayOutputStream();
     /**
@@ -126,7 +130,7 @@ public class JmolOutputChannel extends OutputStream {
     }
     byteCount += len;
   }
-
+  
   /**
    * @param b  
    */
@@ -146,28 +150,6 @@ public class JmolOutputChannel extends OutputStream {
       }
     }
     byteCount++;
-  }
-  
-  
-  @Override
-  @Deprecated
-  public void write(byte[] buf, int i, int len) {
-    // required by DeflatorOutputStream -- do not use, as it will break JavaScript methods
-    if (os == null)
-      os = new ByteArrayOutputStream();
-    /**
-     * @j2sNative
-     * 
-     *            this.os.write(buf, i, len);
-     * 
-     */
-    {
-      try {
-        os.write(buf, i, len);
-      } catch (IOException e) {
-      }
-    }
-    byteCount += len;
   }
   
   /**

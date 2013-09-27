@@ -45,7 +45,7 @@ public class Base64 {
     byte[] b = new byte[1];
     for (int i = 0; i < len; i++) {
       b[0] = (byte) sb.charAt(i);
-      out.writeBytes(b, 0, 1);
+      out.write(b, 0, 1);
     }
   }
 

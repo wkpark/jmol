@@ -154,7 +154,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
       nBytes += line.length();
       if (out != null) {
         byte[] b = line.getBytes();
-        out.writeBytes(b, 0, b.length);
+        out.write(b, 0, b.length);
         out.writeByteAsInt(0x0A);
       }
     }

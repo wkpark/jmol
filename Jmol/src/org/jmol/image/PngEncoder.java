@@ -134,11 +134,10 @@ public class PngEncoder extends CRCEncoder {
     if (applicationData != null) {
       setJmolTypeText(applicationPrefix, ptJmol[0], bytes, len, applicationData.length,
           type);
-      out.writeBytes(bytes, 0, len);
-      bytes = applicationData;
-      len = bytes.length;
+      out.write(bytes, 0, len);
+      len = (bytes = applicationData).length;
     }
-    out.writeBytes(bytes, 0, len);
+    out.write(bytes, 0, len);
   }
 
 

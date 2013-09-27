@@ -127,7 +127,7 @@ public class BinaryDocument implements JmolDocument {
   }
 
   public void writeBytes(byte[] b, int off, int n) throws Exception {
-    out.writeBytes(b, off, n);
+    out.write(b, off, n);
   }
 
   public String readString(int nChar) throws Exception {

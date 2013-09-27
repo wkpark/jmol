@@ -57,7 +57,7 @@ public class Jpg64Encoder extends JpgEncoder {
     byte[] bytes = Base64.getBytes64(out.toByteArray());
     outTemp = null;
     out = out0;
-    out.writeBytes(bytes, 0, bytes.length);
+    out.write(bytes, 0, bytes.length);
   }
 
 }

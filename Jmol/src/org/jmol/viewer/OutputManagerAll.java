@@ -84,7 +84,7 @@ abstract class OutputManagerAll extends OutputManager {
       if (bytes != null) {
         if (out == null)
           out = viewer.openOutputChannel(privateKey, fileName, false);
-        out.writeBytes(bytes, 0, bytes.length);
+        out.write(bytes, 0, bytes.length);
       } else if (text != null) {
         if (out == null)
           out = viewer.openOutputChannel(privateKey, fileName, true);

@@ -92,7 +92,7 @@ public class JpgEncoder extends ImageEncoder {
     writeMarker(eoi);
     if (longState != null) {
       byte[] b = longState.getBytes();
-      out.writeBytes(b, 0, b.length);
+      out.write(b, 0, b.length);
     }
   }
 
@@ -337,11 +337,11 @@ public class JpgEncoder extends ImageEncoder {
   }
 
   void writeMarker(byte[] data) {
-    out.writeBytes(data, 0, 2);
+    out.write(data, 0, 2);
   }
 
   void writeArray(byte[] data) {
-    out.writeBytes(data, 0, data.length);
+    out.write(data, 0, data.length);
   }
 
 }

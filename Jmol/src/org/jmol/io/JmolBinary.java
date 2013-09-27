@@ -430,7 +430,7 @@ public class JmolBinary {
           bytes = ArrayUtil.ensureLengthByte(bytes, totalLen * 2);
         System.arraycopy(buf, 0, bytes, totalLen - len, len);
       } else {
-        out.writeBytes(buf, 0, len);
+        out.write(buf, 0, len);
       }
     }
     bis.close();

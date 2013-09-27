@@ -1435,7 +1435,7 @@ public abstract class AtomSetCollectionReader {
     line = reader.readLine();
     if (out != null && line != null) {
       byte[] b = line.getBytes();
-      out.writeBytes(b, 0, b.length);
+      out.write(b, 0, b.length);
       out.writeByteAsInt(0x0A);
     }
     ptLine++;

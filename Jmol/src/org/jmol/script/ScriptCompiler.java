@@ -2644,7 +2644,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if ((ch = charAt(ichToken)) == '"' || ch == '@' || ch == '\0')
       return false;
     int ichT = ichToken;
-    while (!isSpaceOrTab(ch = script.charAt(ichT)) 
+    while (!isSpaceOrTab(ch = charAt(ichT)) 
         && ch != '#' && ch != '}' && !eol(ch))
         ++ichT;
     cchToken = ichT - ichToken;

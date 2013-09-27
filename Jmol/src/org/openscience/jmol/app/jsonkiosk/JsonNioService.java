@@ -220,7 +220,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         startService(port, client, jmolViewer, myName, 1);
       }
       if (msg.startsWith("Mouse:"))
-        msg = "{\"type\":\"move\",\"style\":\"sync\", \"sync\":\""
+        msg = "{\"type\":\"sync\", \"sync\":\""
             + msg.substring(6) + "\"}";
       sendMessage(null, msg, null);
     } catch (IOException e) {
@@ -682,7 +682,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       script = "pause; save orientation 'JsonNios-save'; spin off";
       isPaused = true;
     } else {
-      script = "restore rotation 'JsonNios-save' 1; resume; spin " + wasSpinOn;
+      script = "restore orientation 'JsonNios-save' 1; resume; spin " + wasSpinOn;
       wasSpinOn = false;
     }
     isPaused = isPause;

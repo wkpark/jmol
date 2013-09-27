@@ -5142,7 +5142,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // does not actually do a repaint
       // but clears the way for interaction
       String script = viewer.getInsertedCommand();
-      if (script != "") {
+      if (script.length() > 0) {
         resumePausedExecution();
         setErrorMessage(null);
         ScriptContext scSave = getScriptContext("script insertion");
@@ -9826,46 +9826,44 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     checkLength(-3);
     String text = "";
     String applet = "";
-    switch (slen) {
-    case 1:
-      applet = "*";
-      text = "ON";
-      break;
-    case 2:
-      applet = parameterAsString(1);
-      if (applet.indexOf("jmolApplet") == 0
-          || Parser.isOneOf(applet, ";*;.;^;")) {
+    int port = Parser.parseInt(optParameterAsString(1));
+    if (port == Integer.MIN_VALUE) {
+      port = 0;
+      switch (slen) {
+      case 1:
+        // sync
+        applet = "*";
         text = "ON";
-        if (!chk)
-          viewer.syncScript(text, applet, 0);
-        applet = ".";
+        break;
+      case 2:
+        // sync (*) text
+        applet = parameterAsString(1);
+        if (applet.indexOf("jmolApplet") == 0
+            || Parser.isOneOf(applet, ";*;.;^;")) {
+          text = "ON";
+          if (!chk)
+            viewer.syncScript(text, applet, 0);
+          applet = ".";
+          break;
+        }
+        text = applet;
+        applet = "*";
+        break;
+      case 3:
+        // sync applet text
+        // sync applet STEREO
+        applet = parameterAsString(1);
+        text = (tokAt(2) == T.stereo ? Viewer.SYNC_GRAPHICS_MESSAGE
+            : parameterAsString(2));
         break;
       }
-      if (tokAt(1) == T.integer) {
-        // start/stop server on port <nnnn>
-        if (!chk)
-          viewer.syncScript(null, null, intParameter(1));
-        return;
-      }
-      text = applet;
-      applet = "*";
-      break;
-    case 3:
-      if (chk)
-        return;
-      applet = parameterAsString(1);
-      text = (tokAt(2) == T.stereo ? Viewer.SYNC_GRAPHICS_MESSAGE
-          : parameterAsString(2));
-      if (tokAt(1) == T.integer) {
-        // send to server on port <nnnn>
-        viewer.syncScript(text, null, intParameter(1));
-        return;
-      }
-      break;
+    } else {
+      text = (slen == 2 ? null : parameterAsString(2));
+      applet = null;
     }
     if (chk)
       return;
-    viewer.syncScript(text, applet, 0);
+    viewer.syncScript(text, applet, port);
   }
 
   private void history(int pt) throws ScriptException {

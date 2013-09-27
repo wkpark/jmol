@@ -68,7 +68,7 @@ abstract class JmolStateCreator {
 
   abstract void syncScript(String script, String applet, int port);
 
-  abstract void quickScript(String script);
+  abstract void mouseScript(String script);
 
   abstract String getAtomDefs(Map<String, Object> names);
 

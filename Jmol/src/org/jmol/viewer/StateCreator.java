@@ -1958,52 +1958,81 @@ public class StateCreator extends JmolStateCreator {
       viewer.evalStringQuietSync(script, true, false);
       return;
     }
-    quickScript(script);
+    mouseScript(script);
     if (disableSend)
       viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
   }
 
   @Override
-  void quickScript(String script) {
+  void mouseScript(String script) {
     String[] tokens = Parser.getTokens(script);
     String key = tokens[1];
-    switch (tokens.length) {
-    case 3:
-      if (key.equals("zoomByFactor"))
-        viewer.zoomByFactor(Parser.parseFloatStr(tokens[2]), Integer.MAX_VALUE,
-            Integer.MAX_VALUE);
-      else if (key.equals("zoomBy"))
-        viewer.zoomBy(Parser.parseInt(tokens[2]));
-      else if (key.equals("rotateZBy"))
-        viewer.rotateZBy(Parser.parseInt(tokens[2]), Integer.MAX_VALUE,
-            Integer.MAX_VALUE);
-      break;
-    case 4:
-      if (key.equals("rotateXYBy"))
+    try {
+      key = (key.toLowerCase() + "...............").substring(0, 15);
+      switch ((
+          "zoombyfactor..." + 
+          "zoomby........." + 
+          "rotatezby......" + 
+          "rotatexyby....." + 
+          "translatexyby.." + 
+          "rotatemolecule." + 
+          "spinxyby......." + 
+          "rotatearcball..").indexOf(key)) {
+      case 0: //zoombyfactor
+        switch (tokens.length) {
+        case 3:
+          viewer.zoomByFactor(Parser.parseFloatStr(tokens[2]),
+              Integer.MAX_VALUE, Integer.MAX_VALUE);
+          return;
+        case 5:
+          viewer.zoomByFactor(Parser.parseFloatStr(tokens[2]), Parser
+              .parseInt(tokens[3]), Parser.parseInt(tokens[4]));
+          return;
+        }
+        break;
+      case 15: //zoomby
+        switch (tokens.length) {
+        case 3:
+          viewer.zoomBy(Parser.parseInt(tokens[2]));
+          return;
+        }
+        break;
+      case 30: // rotatezby
+        switch (tokens.length) {
+        case 3:
+          viewer.rotateZBy(Parser.parseInt(tokens[2]), Integer.MAX_VALUE,
+              Integer.MAX_VALUE);
+          return;
+        case 5:
+          viewer.rotateZBy(Parser.parseInt(tokens[2]), Parser
+              .parseInt(tokens[3]), Parser.parseInt(tokens[4]));
+        }
+        break;
+      case 45: // rotatexyby
         viewer.rotateXYBy(Parser.parseFloatStr(tokens[2]), Parser
             .parseFloatStr(tokens[3]));
-      else if (key.equals("translateXYBy"))
+        return;
+      case 60: // translatexyby
         viewer.translateXYBy(Parser.parseInt(tokens[2]), Parser
             .parseInt(tokens[3]));
-      else if (key.equals("rotateMolecule"))
+        return;
+      case 75: // rotatemolecule
         viewer.rotateSelected(Parser.parseFloatStr(tokens[2]), Parser
             .parseFloatStr(tokens[3]), null);
-      break;
-    case 5:
-      if (key.equals("spinXYBy"))
+        return;
+      case 90:// spinxyby
         viewer.spinXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
             Parser.parseFloatStr(tokens[4]));
-      else if (key.equals("zoomByFactor"))
-        viewer.zoomByFactor(Parser.parseFloatStr(tokens[2]), Parser
-            .parseInt(tokens[3]), Parser.parseInt(tokens[4]));
-      else if (key.equals("rotateZBy"))
-        viewer.rotateZBy(Parser.parseInt(tokens[2]),
-            Parser.parseInt(tokens[3]), Parser.parseInt(tokens[4]));
-      else if (key.equals("rotateArcBall"))
+        return;
+      case 105: // rotatearcball
         viewer.rotateArcBall(Parser.parseInt(tokens[2]), Parser
             .parseInt(tokens[3]), Parser.parseFloatStr(tokens[4]));
-      break;
+        return;
+      }
+    } catch (Exception e) {
+      //
     }
+    viewer.showString("error reading SYNC command: " + script, false);
   }
 
 }

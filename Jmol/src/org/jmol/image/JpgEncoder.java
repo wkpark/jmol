@@ -64,7 +64,6 @@ public class JpgEncoder extends ImageEncoder {
   private JpegObj jpegObj;
   private Huffman huf;
   private DCT dct;
-  protected int jpegQuality;
   protected int defaultQuality = 100;
 
   public JpgEncoder() {
@@ -73,9 +72,8 @@ public class JpgEncoder extends ImageEncoder {
 
   @Override
   protected void setParams(Map<String, Object> params) {
-    jpegQuality = ((Integer) params.get("quality")).intValue();
-    if (jpegQuality <= 0)
-      jpegQuality = defaultQuality;
+    if (quality <= 0)
+      quality = defaultQuality;
     jpegObj = new JpegObj();
     jpegObj.comment = (String) params.get("comment");
   }
@@ -84,7 +82,7 @@ public class JpgEncoder extends ImageEncoder {
   protected void generate() throws IOException {
     jpegObj.imageWidth = width;
     jpegObj.imageHeight = height;
-    dct = new DCT(jpegQuality);
+    dct = new DCT(quality);
     huf = new Huffman(width, height);
     if (jpegObj == null)
       return;

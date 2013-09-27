@@ -76,6 +76,8 @@ public abstract class ImageEncoder implements JmolImageEncoder {
 
   protected int width = -1;
   protected int height = -1;
+  protected int quality = -1;
+  protected String date;
 
   protected String[] errRet;
   
@@ -96,6 +98,9 @@ public abstract class ImageEncoder implements JmolImageEncoder {
     try {
       width = apiPlatform.getImageWidth(objImage);
       height = apiPlatform.getImageHeight(objImage);
+      date = (String) params.get("date");
+      Integer q = (Integer) params.get("quality");
+      quality = (q == null ? -1 : q.intValue());
       setParams(params);
       encodeImage(apiPlatform, objImage);
       generate();

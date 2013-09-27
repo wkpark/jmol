@@ -96,7 +96,6 @@ public class PngEncoder extends CRCEncoder {
 
   private byte[] applicationData;
   private String applicationPrefix;
-  private String date;
   private String version;
 
   
@@ -106,7 +105,6 @@ public class PngEncoder extends CRCEncoder {
 
   @Override
   protected void setParams(Map<String, Object> params) {
-    int quality = ((Integer) params.get("quality")).intValue();
     if (quality < 0)
       quality = 2;
     else if (quality > 9)
@@ -117,7 +115,6 @@ public class PngEncoder extends CRCEncoder {
     transparentColor = (Integer) params.get("transparentColor");
     
     type = (params.get("type") + "0000").substring(0, 4);
-    date = (String) params.get("date");
     version = (String) params.get("comment");
     applicationData = (byte[]) params.get("applicationData");
     applicationPrefix = (String) params.get("applicationPrefix");

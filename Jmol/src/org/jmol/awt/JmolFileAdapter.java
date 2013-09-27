@@ -1,11 +1,9 @@
 package org.jmol.awt;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -77,12 +75,16 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
   }
 
   public JmolOutputChannel openOutputChannel(double privateKey, FileManager fm,
-                                             String fileName, boolean asWriter)
+                                             String fileName, boolean asWriter,
+                                             boolean asAppend)
       throws IOException {
+    boolean isLocal = (fileName != null && !fileName.startsWith("http://") && !fileName
+        .startsWith("https://"));
+    if (asAppend && isLocal && fileName.indexOf("JmolLog_") < 0)
+      asAppend = false;
     return (viewer.checkPrivateKey(privateKey) ? (new JmolOutputChannel())
-        .setParams(fm, fileName, asWriter, (fileName == null
-            || fileName.startsWith("http://") || fileName.startsWith("https://") ? null
-            : new FileOutputStream(fileName))) : null);
+        .setParams(fm, fileName, asWriter, (isLocal ? new FileOutputStream(
+            fileName, asAppend) : null)) : null);
   }
 
   public InputStream openFileInputStream(double privateKey, String fileName)
@@ -93,11 +95,6 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
   public String getAbsolutePath(double privateKey, String fileName) {
     return (viewer.isApplet() || !viewer.checkPrivateKey(privateKey) ? fileName
         : (new File(fileName).getAbsolutePath()));
-  }
-
-  public Object openLogFile(double privateKey, String logFileName, boolean asAppend) throws IOException {
-      return (viewer.checkPrivateKey(privateKey) && logFileName.indexOf("JmolLog_") >= 0 ?
-          new BufferedWriter(new FileWriter(logFileName, asAppend)) : null);
   }
 
 }

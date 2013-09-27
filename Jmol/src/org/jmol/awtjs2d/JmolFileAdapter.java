@@ -1,6 +1,5 @@
 package org.jmol.awtjs2d;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -35,7 +34,8 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
 		}
 	}
 
-  public JmolOutputChannel openOutputChannel(double privateKey, FileManager fm, String fileName, boolean asWriter) {
+  public JmolOutputChannel openOutputChannel(double privateKey, FileManager fm, String fileName, boolean asWriter, boolean asAppend) {
+    // ignoring  append
     return (new JmolOutputChannel()).setParams(fm, fileName, asWriter, null);
   }
 
@@ -48,11 +48,5 @@ public class JmolFileAdapter implements JmolFileAdapterInterface {
   public String getAbsolutePath(double privateKey, String fileName) {
     return fileName;
   }
-
-  public BufferedWriter openLogFile(double privateKey, String logFileName, boolean asAppend) {
-    // could implement remote logging here
-    return null;
-  }
-
 
 }

@@ -14,12 +14,10 @@ public interface JmolFileAdapterInterface {
 
   public Object getBufferedFileInputStream(String name);
 
-  public JmolOutputChannel openOutputChannel(double privateKey, FileManager fm, String fileName, boolean asWriter) throws IOException;
+  public JmolOutputChannel openOutputChannel(double privateKey, FileManager fm, String fileName, boolean asWriter, boolean asAppend) throws IOException;
 
   public InputStream openFileInputStream(double privateKey, String fileName) throws IOException;
 
   public String getAbsolutePath(double privateKey, String fileName);
-
-  public Object openLogFile(double privateKey, String logFileName, boolean asAppend) throws IOException ;
 
 }

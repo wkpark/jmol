@@ -126,7 +126,7 @@ public class PngEncoder extends CRCEncoder {
   
 
   @Override
-  protected void createImage() throws IOException {
+  protected void generate() throws IOException {
     int[] ptJmol = new int[1];
     if (!pngEncode(ptJmol)) {
       out.cancel();

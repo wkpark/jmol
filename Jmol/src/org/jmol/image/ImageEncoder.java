@@ -52,25 +52,32 @@
 
 package org.jmol.image;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.jmol.api.ApiPlatform;
-import org.jmol.api.Interface;
+import org.jmol.api.JmolImageEncoder;
 import org.jmol.io.JmolOutputChannel;
 
 
-/** 
+/**
+ * Generic abstract image creator:
+ * 
+ *   (1) set parameters
+ *   
+ *   (2) encode the image bytes, if necessary
+ *   
+ *   (3) generate the image 
  * @author Bob Hanson hansonr@stolaf.edu
  */
 
-public abstract class ImageEncoder {
+public abstract class ImageEncoder implements JmolImageEncoder {
 
   protected JmolOutputChannel out;
 
   protected int width = -1;
   protected int height = -1;
-  //protected int[][] rgbPixels;
+
+  protected String[] errRet;
   
   /**
    * @param apiPlatform 
@@ -81,39 +88,32 @@ public abstract class ImageEncoder {
    * @param errRet  
    * @return  true if successful
    */
-  public static boolean write(ApiPlatform apiPlatform, String type,
+  public boolean createImage(ApiPlatform apiPlatform, String type,
                               Object objImage, JmolOutputChannel out,
                               Map<String, Object> params, String[] errRet) {
-    ImageEncoder ie = (ImageEncoder) Interface
-        .getInterface("org.jmol.image." + type + "Encoder");
-    if (ie == null) {
-      errRet[0] = "Image encoder type " + type + " not available";
-      return false;
-    }
-    ie.encode(apiPlatform, objImage, out, params);
+    this.out = out;
+    this.errRet = errRet;
     try {
-      ie.createImage();
-    } catch (IOException e) {
+      width = apiPlatform.getImageWidth(objImage);
+      height = apiPlatform.getImageHeight(objImage);
+      setParams(params);
+      encodeImage(apiPlatform, objImage);
+      generate();
+    } catch (Exception e) {
       errRet[0] = e.toString();
       out.cancel();
-      return false;
     } finally {
-      ie.close();
+      close();
     }
-    return true;
+    return (errRet[0] == null);
   }
 
   abstract protected void setParams(Map<String, Object> params);
-  abstract protected void createImage() throws IOException;
+  abstract protected void generate() throws Exception;
 
   protected int[] pixels;
 
-  private void encode(ApiPlatform apiPlatform, Object objImage,
-                      JmolOutputChannel out, Map<String, Object> params) {
-    this.out = out;
-    setParams(params);
-    width = apiPlatform.getImageWidth(objImage);
-    height = apiPlatform.getImageHeight(objImage);
+  protected void encodeImage(ApiPlatform apiPlatform, Object objImage) throws Exception {
     /**
      * @j2sNative
      *
@@ -123,15 +123,7 @@ public abstract class ImageEncoder {
     {
       pixels = new int[width * height];
     }
-    //rgbPixels = new int[height][width];
     pixels = apiPlatform.grabPixels(objImage, width, height, pixels, 0, height);
-    //for (int row = 0; row < height; ++row)
-      //System.arraycopy(pixels, row * width,
-        //  rgbPixels[row], 0, width);
-  }
-
-  protected void close() {
-    out.closeChannel();
   }
 
   protected void putString(String str) {
@@ -142,4 +134,8 @@ public abstract class ImageEncoder {
     out.writeByteAsInt(b);
   }
   
+  protected void close() {
+    out.closeChannel();
+  }
+
 }

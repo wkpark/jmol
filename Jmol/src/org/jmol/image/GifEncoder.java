@@ -224,7 +224,7 @@ public class GifEncoder extends ImageEncoder {
   protected int transparentIndex = -1;
 
   @Override
-  protected void createImage() throws IOException {
+  protected void generate() throws IOException {
     if (addHeader)
       writeHeader();
     addHeader = false; // only one header

@@ -24,14 +24,14 @@
 
 package org.jmol.viewer;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.Interface;
-import org.jmol.api.JmolPdfCreatorInterface;
+import org.jmol.api.JmolImageEncoder;
 import org.jmol.i18n.GT;
-import org.jmol.image.ImageEncoder;
 import org.jmol.io.JmolBinary;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.script.T;
@@ -145,57 +145,54 @@ abstract class OutputManagerAll extends OutputManager {
         channel = viewer.openOutputChannel(privateKey, fileName, false);
       if (channel == null)
         return errMsg = "ERROR: canceled";
-      if (type.startsWith("JPEG"))
-        type = "JPG" + type.substring(4);
       String comment = null;
       Object stateData = null;
-      if (type.equals("JPG")) {
-        comment = (!asBytes ? (String) viewer.getWrappedState(null, null,
-            image, false) : "");
-      } else if (type.equals("JPG64")) {
-        params.put("outputChannelTemp", getOutputChannel(null, null));
-        comment = "";
+      params.put("date", viewer.apiPlatform.getDateFormat());
+      if (type.startsWith("JP")) {
+        type = TextFormat.simpleReplace(type, "E", "");
+        if (type.equals("JPG64")) {
+          params.put("outputChannelTemp", getOutputChannel(null, null));
+          comment = "";
+        } else {
+          comment = (!asBytes ? (String) getWrappedState(null, null, image,
+              false) : "");
+        }
       } else if (type.startsWith("PNG")) {
-        params.put("date", viewer.apiPlatform.getDateFormat());
         comment = "";
         boolean isPngj = type.equals("PNGJ");
         if (isPngj) {// get zip file data
-          stateData = viewer.getWrappedState(fileName, scripts, image, true);
+          stateData = getWrappedState(fileName, scripts, image, true);
           if (stateData instanceof String)
             stateData = Viewer.getJmolVersion().getBytes();
         } else if (!asBytes) {
-          stateData = ((String) viewer.getWrappedState(null, scripts, image,
-              false)).getBytes();
+          stateData = ((String) getWrappedState(null, scripts, image, false))
+              .getBytes();
         }
-        if (type.equals("PNGT"))
-          params.put("transparentColor", Integer.valueOf(viewer.getBackgroundArgb()));
         if (stateData != null) {
           params.put("applicationData", stateData);
           params.put("applicationPrefix", "Jmol Type");
         }
+        if (type.equals("PNGT"))
+          params.put("transparentColor", Integer.valueOf(viewer
+              .getBackgroundArgb()));
+        type = "PNG";
       }
       if (comment != null)
         params.put("comment", comment.length() == 0 ? Viewer.getJmolVersion()
             : comment);
       String[] errRet = new String[1];
-      type = type.substring(0, 1) + type.substring(1).toLowerCase();
-      if (type.equals("Pdf")) {
-        // applet will not have this interface
-        // PDF is application-only because it is such a HUGE package
-        JmolPdfCreatorInterface pci = (JmolPdfCreatorInterface) Interface
-            .getApplicationInterface("jmolpanel.PdfCreator");
-        isOK = ((errRet[0] = pci.createPdfDocument(channel, image)) == null);
-      } else {
-        isOK = ImageEncoder.write(viewer.apiPlatform, type, image, channel, params, errRet);
-      }
-      isOK = getImageBytes2(image, type, channel, params, errRet);
-      if (isOK && asBytes)
-        bytes = channel.toByteArray();
-      errMsg = errRet[0];
-      if (isOK && params.containsKey("captureByteCount"))
-        errMsg = "OK: " + params.get("captureByteCount").toString() + " bytes";
+      isOK = createTheImage(image, type, channel, params, errRet);
       if (closeChannel)
         channel.closeChannel();
+      if (isOK) {
+        if (asBytes)
+          bytes = channel.toByteArray();
+        else if (params.containsKey("captureByteCount"))
+          errMsg = "OK: " + params.get("captureByteCount").toString()
+              + " bytes";
+      } else {
+        errMsg = errRet[0];
+      }
     } finally {
       if (releaseImage)
         viewer.releaseScreenImage();
@@ -203,6 +200,77 @@ abstract class OutputManagerAll extends OutputManager {
           : isOK ? channel.getByteCount() : -1));
     }
     return (errMsg == null ? bytes : errMsg);
+  }
+
+  /**
+   * @param fileName
+   * @param scripts
+   * @param objImage 
+   * @param asJmolZip
+   * @return either byte[] (a full ZIP file) or String (just an embedded state
+   *         script)
+   * 
+   */
+  @Override
+  Object getWrappedState(String fileName, String[] scripts, Object objImage, boolean asJmolZip) {
+    int width = viewer.apiPlatform.getImageWidth(objImage);
+    int height = viewer.apiPlatform.getImageHeight(objImage);
+    if (width > 0 && !viewer.global.imageState && !asJmolZip
+        || !viewer.global.preserveState)
+      return "";
+    String s = viewer.getStateInfo3(null, width, height);
+    if (asJmolZip) {
+      if (fileName != null)
+        viewer.fileManager.clearPngjCache(fileName);
+      // when writing a file, we need to make sure
+      // the pngj cache for that file is cleared
+      return JmolBinary.createZipSet(privateKey, viewer.fileManager, viewer,
+          null, s, scripts, true);
+    }
+    // we remove local file references in the embedded states for images
+    try {
+      s = JC.embedScript(FileManager
+          .setScriptFileReferences(s, ".", null, null));
+    } catch (Throwable e) {
+      // ignore if this uses too much memory
+      Logger.error("state could not be saved: " + e.toString());
+      s = "Jmol " + Viewer.getJmolVersion();
+    }
+    return s;
+  }
+
+  /**
+   * @param objImage
+   * @param type
+   * @param out
+   * @param params 
+   * @param errRet
+   * @return byte array if needed
+   * @throws IOException
+   */
+  private boolean createTheImage(Object objImage, String type,
+                                 JmolOutputChannel out,
+                                 Map<String, Object> params, String[] errRet)
+      throws IOException {
+    type = type.substring(0, 1) + type.substring(1).toLowerCase();
+    /**
+     * @j2sNative
+     * 
+     * if (type == "Pdf")
+     *  type += ":";
+     *  
+     */
+    {
+      // JSmol spoiler for PDF -- even if it is present, we couldn't run it.
+    }
+
+    JmolImageEncoder ie = (JmolImageEncoder) Interface
+        .getInterface("org.jmol.image." + type + "Encoder");
+    if (ie == null) {
+      errRet[0] = "Image encoder type " + type + " not available";
+      return false;
+    } 
+    return ie.createImage(viewer.apiPlatform, type, objImage, out, params, errRet);     
   }
 
   /////////////////////// general output including logging //////////////////////
@@ -670,67 +738,75 @@ abstract class OutputManagerAll extends OutputManager {
     return "OK " + nFiles + " files created";
   }
 
-  /**
-   * @param fileName
-   * @param scripts
-   * @param width
-   * @param height
-   * @param asJmolZip
-   * @return either byte[] (a full ZIP file) or String (just an embedded state
-   *         script)
-   * 
-   */
   @Override
-  Object getWrappedState(String fileName, String[] scripts, int width,
-                                int height, boolean asJmolZip) {
-    if (width > 0 && !viewer.global.imageState && !asJmolZip
-        || !viewer.global.preserveState)
-      return "";
-    String s = viewer.getStateInfo3(null, width, height);
-    if (asJmolZip) {
-      if (fileName != null)
-        viewer.fileManager.clearPngjCache(fileName);
-      // when writing a file, we need to make sure
-      // the pngj cache for that file is cleared
-      return JmolBinary.createZipSet(privateKey, viewer.fileManager, viewer,
-          null, s, scripts, true);
+  String setLogFile(String value) {
+    String path = null;
+    String logFilePath = viewer.getLogFilePath();
+    if (logFilePath == null || value.indexOf("\\") >= 0) {
+      value = null;
+    } else if (value.startsWith("http://") || value.startsWith("https://")) {
+      // allow for remote logging
+      path = value;
+    } else if (value.indexOf("/") >= 0) {
+      value = null;
+    } else if (value.length() > 0) {
+      if (!value.startsWith("JmolLog_"))
+        value = "JmolLog_" + value;
+      path = viewer.getAbsolutePath(privateKey, logFilePath + value);
     }
-    // we remove local file references in the embedded states for images
+    if (path == null)
+      value = null;
+    else
+      Logger.info(GT._("Setting log file to {0}", path));
+    if (value == null || !viewer.haveAccess(ACCESS.ALL)) {
+      Logger.info(GT._("Cannot set log file path."));
+      value = null;
+    } else {
+      viewer.logFileName = path;
+      viewer.global.setS("_logFile", viewer.isApplet() ? value : path);
+    }
+    return value;
+  }
+
+  @Override
+  void logToFile(String data) {
     try {
-      s = JC.embedScript(FileManager
-          .setScriptFileReferences(s, ".", null, null));
-    } catch (Throwable e) {
-      // ignore if this uses too much memory
-      Logger.error("state could not be saved: " + e.toString());
-      s = "Jmol " + Viewer.getJmolVersion();
+      boolean doClear = (data.equals("$CLEAR$"));
+      if (data.indexOf("$NOW$") >= 0)
+        data = TextFormat.simpleReplace(data, "$NOW$", viewer.apiPlatform
+            .getDateFormat());
+      if (viewer.logFileName == null) {
+        Logger.info(data);
+        return;
+      }
+
+      // allows users to generate their own logging interface
+
+      /**
+       * @j2sNative
+       * 
+       *     if (       if (Jmol.Logger && Jmol.Logger.logToFile) return
+       *            Jmol.Logger.logToFile(data);
+       */
+
+      Logger.info(data);
+      {
+        BufferedWriter out = (BufferedWriter) viewer.openLogFile(privateKey,
+            viewer.logFileName, !doClear);
+        if (!doClear) {
+          int ptEnd = data.indexOf('\0');
+          if (ptEnd >= 0)
+            data = data.substring(0, ptEnd);
+          out.write(data);
+          if (ptEnd < 0)
+            out.write("\n");
+        }
+        out.close();
+      }
+    } catch (Exception e) {
+      if (Logger.debugging)
+        Logger.debug("cannot log " + data);
     }
-    return s;
-  }
-
-  /**
-   * @param objImage
-   * @param type
-   * @param out
-   * @param params 
-   * @param errRet
-   * @return byte array if needed
-   * @throws IOException
-   */
-  protected boolean getImageBytes2(Object objImage, String type,
-                                 JmolOutputChannel out,
-                                 Map<String, Object> params, String[] errRet)
-      throws IOException {
-    java.awt.Image image = (java.awt.Image) objImage;
-    type = type.substring(0, 1) + type.substring(1).toLowerCase();
-    if (!type.equals("Pdf"))
-      return ImageEncoder.write(viewer.apiPlatform, type, image, out, params, errRet);
-    // applet will not have this interface
-    // PDF is application-only because it is such a HUGE package
-    JmolPdfCreatorInterface pci = (JmolPdfCreatorInterface) Interface
-        .getApplicationInterface("jmolpanel.PdfCreator");
-    errRet[0] = pci.createPdfDocument(out, image);
-    return errRet[0] == null;    
-  }
-
+  }  
 
 }

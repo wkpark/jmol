@@ -39,56 +39,34 @@ import java.util.List;
 import org.jmol.util.Escape;
 
 /**
- * This class is used to transfer an {@link Image} into the clipboard.
+ * This class is used to transfer text or an image into the clipboard and to get tet from the clipboard.
+ * Simplified by Bob Hanson
  * 
  * @author Nicolas Vervelle
  */
-public class ImageSelection implements Transferable {
+public class AwtClipboard implements Transferable {
 
   /**
    * The image to transfer into the clipboard.
    */
   private Image image;
   private String text;
-  //boolean isText;
   
   /**
-   * Transfers <code>image</code> into the clipboard.
+   * Transfers text or image into the clipboard.
    * 
-   * @param image Image to transfer into the clipboard.
+   * @param textOrImage to transfer into the clipboard.
    */
-  public static void setClipboard(Image image) {
-    ImageSelection sel = new ImageSelection(image);
-    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, null);
-  }
-
-  /**
-   * Transfers <code>text</code> into the clipboard.
-   * 
-   * @param text to transfer into the clipboard.
-   */
-  public static void setClipboard(String text) {
-    ImageSelection sel = new ImageSelection(text);
+  public static void setClipboard(Object textOrImage) {
+    AwtClipboard sel = new AwtClipboard(textOrImage);
     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, null);
   }
   
-
-  /**
-   * Constructs a <code>ImageSelection</code>.
-   * 
-   * @param image The real Image.
-   */
-  public ImageSelection(Image image) {
-    this.image = image;
-  }
-  
-  /**
-   * Constructs a <code>ImageSelection</code>.
-   * 
-   * @param text The text to transfer
-   */
-  public ImageSelection(String text) {
-    this.text = text;
+  private AwtClipboard(Object image) {
+    if (image instanceof String)
+      this.text = (String) image;
+    else
+      this.image = (Image) image;
   }
 
   /* (non-Javadoc)

@@ -543,7 +543,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           logFilePath = null;
         else
           isSignedAppletLocal = true;
-      } else {
+      } else if (!isJS){
         logFilePath = null;
       }
     } else {
@@ -3563,10 +3563,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return sc;
   }
 
-  public Object getWrappedState(String fileName, String[] scripts,
-                                Object image, boolean asJmolZip) {
-    return getOutputManager().getWrappedState(fileName, scripts, apiPlatform.getImageWidth(image),
-        apiPlatform.getImageHeight(image), asJmolZip);
+  public Object getWrappedStateScript() {
+    return getOutputManager().getWrappedState(null, null, null, false);
   }
 
   @Override

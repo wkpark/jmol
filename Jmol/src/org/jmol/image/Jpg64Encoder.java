@@ -12,7 +12,6 @@
 // Jpeg Group's Jpeg 6a library, Copyright Thomas G. Lane.
 // See license.txt for details 
 
-
 /*
  * JpegEncoder and its associated classes are Copyright (c) 1998, James R. Weeks and BioElectroMech
  * see(Jmol/src/com/obrador/license.txt)
@@ -41,7 +40,6 @@ import org.jmol.io.JmolOutputChannel;
 
 public class Jpg64Encoder extends JpgEncoder {
 
-  
   private JmolOutputChannel outTemp;
 
   @Override
@@ -52,10 +50,10 @@ public class Jpg64Encoder extends JpgEncoder {
   }
 
   @Override
-  protected void createImage() throws IOException {
+  protected void generate() throws IOException {
     JmolOutputChannel out0 = out;
     out = outTemp;
-    super.createImage();
+    super.generate();
     byte[] bytes = Base64.getBytes64(out.toByteArray());
     outTemp = null;
     out = out0;

@@ -24,12 +24,6 @@
 
 package org.jmol.viewer;
 
-import java.io.IOException;
-import java.util.Map;
-
-import org.jmol.io.JmolOutputChannel;
-import org.jmol.util.Logger;
-
 public class OutputManagerJS extends OutputManagerAll {
 
   public OutputManagerJS() {
@@ -46,24 +40,5 @@ public class OutputManagerJS extends OutputManagerAll {
     return "Clipboard not available";
   }
 
-  @Override
-  protected boolean getImageBytes2(Object objImage, String type,
-                                   JmolOutputChannel out,
-                                   Map<String, Object> params, String[] errRet)
-      throws IOException {
-    errRet[0] = "image type " + type + " not available on this platform";
-    return false;
-  }
-
-  @Override
-  void logToFile(String data) {
-    Logger.info(data);
-  }
-
-  @Override
-  String setLogFile(String name) {
-    Logger.info("cannot set LogFile name");
-    return null;
-  }
 
 }

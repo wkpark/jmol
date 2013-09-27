@@ -346,7 +346,7 @@ public class _IdtfExporter extends __CartesianExporter {
         + "\n\\end{center}" 
         + "\n\\end{document}"
         +"\n\\begin{comment}"
-        + viewer.getWrappedState(null, null, null, false)
+        + viewer.getWrappedStateScript()
         +"\n\\end{comment}";
 }
 

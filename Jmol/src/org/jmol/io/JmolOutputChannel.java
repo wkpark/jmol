@@ -148,6 +148,28 @@ public class JmolOutputChannel extends OutputStream {
     byteCount++;
   }
   
+  
+  @Override
+  @Deprecated
+  public void write(byte[] buf, int i, int len) {
+    // required by DeflatorOutputStream -- do not use, as it will break JavaScript methods
+    if (os == null)
+      os = new ByteArrayOutputStream();
+    /**
+     * @j2sNative
+     * 
+     *            this.os.write(buf, i, len);
+     * 
+     */
+    {
+      try {
+        os.write(buf, i, len);
+      } catch (IOException e) {
+      }
+    }
+    byteCount += len;
+  }
+  
   /**
    * Will break JavaScript if used.
    * 
@@ -194,7 +216,7 @@ public class JmolOutputChannel extends OutputStream {
   }
 
   public String closeChannel() {
-    if (closed && fileName != null)
+    if (closed)
       return null;
     // can't cancel file writers
     try {

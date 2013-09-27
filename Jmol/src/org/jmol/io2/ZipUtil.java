@@ -31,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import org.jmol.util.JmolList;
 import java.util.Date;
@@ -61,6 +62,9 @@ import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
+import org.jmol.util.J2SIgnoreImport;
+
+@J2SIgnoreImport({java.io.BufferedOutputStream.class})
 public class ZipUtil implements JmolZipUtility {
 
   private final static String SCENE_TAG = "###scene.spt###";
@@ -424,7 +428,20 @@ public class ZipUtil implements JmolZipUtility {
     try {
       JmolOutputChannel out = viewer.openOutputChannel(privateKey,
           outFileName, false);
-      ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(out));
+      OutputStream bos;
+      /**
+       * 
+       * no need for buffering here
+       * 
+       * @j2sNative
+       * 
+       * bos = out;
+       * 
+       */
+      {
+        bos = new BufferedOutputStream(out);
+      }
+      ZipOutputStream zos = new ZipOutputStream(bos);
       for (int i = 0; i < fileNamesAndByteArrays.size(); i += 3) {
         String fname = (String) fileNamesAndByteArrays.get(i);
         byte[] bytes = null;

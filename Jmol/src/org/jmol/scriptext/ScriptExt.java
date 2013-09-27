@@ -4943,6 +4943,8 @@ public class ScriptExt implements JmolScriptExtension {
         } else if (data == "ZIP" || data == "ZIPALL") {
           data = viewer.getStateInfo();
           bytes = viewer.createZip(fileName, type, data, scripts);
+          if (bytes == null)
+            evalError("#CANCELED#", null);
         } else if (data == "HISTORY") {
           data = viewer.getSetHistory(Integer.MAX_VALUE);
           type = "SPT";

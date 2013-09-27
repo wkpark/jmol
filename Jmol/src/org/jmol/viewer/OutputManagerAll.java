@@ -24,7 +24,6 @@
 
 package org.jmol.viewer;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
@@ -742,6 +741,12 @@ abstract class OutputManagerAll extends OutputManager {
   String setLogFile(String value) {
     String path = null;
     String logFilePath = viewer.getLogFilePath();
+    /**
+     * @j2sNative
+     * 
+     * if (typeof value == "function") path = value;
+     * 
+     */
     if (logFilePath == null || value.indexOf("\\") >= 0) {
       value = null;
     } else if (value.startsWith("http://") || value.startsWith("https://")) {
@@ -779,30 +784,16 @@ abstract class OutputManagerAll extends OutputManager {
         Logger.info(data);
         return;
       }
-
-      // allows users to generate their own logging interface
-
-      /**
-       * @j2sNative
-       * 
-       *     if (       if (Jmol.Logger && Jmol.Logger.logToFile) return
-       *            Jmol.Logger.logToFile(data);
-       */
-
-      Logger.info(data);
-      {
-        BufferedWriter out = (BufferedWriter) viewer.openLogFile(privateKey,
-            viewer.logFileName, !doClear);
-        if (!doClear) {
-          int ptEnd = data.indexOf('\0');
-          if (ptEnd >= 0)
-            data = data.substring(0, ptEnd);
-          out.write(data);
-          if (ptEnd < 0)
-            out.write("\n");
-        }
-        out.close();
+      JmolOutputChannel out = viewer.openLogFile(privateKey, !doClear);
+      if (!doClear) {
+        int ptEnd = data.indexOf('\0');
+        if (ptEnd >= 0)
+          data = data.substring(0, ptEnd);
+        out.append(data);
+        if (ptEnd < 0)
+          out.append("\n");
       }
+      Logger.info(out.closeChannel());
     } catch (Exception e) {
       if (Logger.debugging)
         Logger.debug("cannot log " + data);

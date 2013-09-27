@@ -6077,7 +6077,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.defaultLoadFilter = value;
       break;
     case T.logfile:
-      value = getOutputManager().setLogFile(value);
+      value = setLogFile(value);
       if (value == null)
         return;
       break;
@@ -10370,7 +10370,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public JmolOutputChannel openOutputChannel(double privateKey, String fileName,
                                   boolean asWriter) throws IOException {
     return (!haveAccess(ACCESS.ALL) ? null : getFileAdapter()
-        .openOutputChannel(privateKey, fileManager, fileName, asWriter));
+        .openOutputChannel(privateKey, fileManager, fileName, asWriter, false));
   }
 
   public InputStream openFileInputStream(double privateKey, String fileName)
@@ -10382,9 +10382,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getFileAdapter().getAbsolutePath(privateKey, fileName);
   }
 
-  public Object openLogFile(double privateKey, String logFileName,
-                            boolean asAppend) throws IOException {
-    return getFileAdapter().openLogFile(privateKey, logFileName, asAppend);
+  public JmolOutputChannel openLogFile(double privateKey, boolean asAppend)
+      throws IOException {
+    return (!haveAccess(ACCESS.ALL) ? null : getFileAdapter()
+        .openOutputChannel(privateKey, fileManager, logFileName, true, asAppend));
+  }
+  
+  /*default*/ String logFileName;
+  
+  private String setLogFile(String value) {
+    return getOutputManager().setLogFile(value);
   }
 
   public void log(String data) {
@@ -10392,8 +10399,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       getOutputManager().logToFile(data);
   }
 
-  /*default*/ String logFileName;
-  
   public String getLogFileName() {
     return (logFileName == null ? "" : logFileName);
   }

@@ -1699,8 +1699,8 @@ public class ActionManager {
     viewer.setPicked(-1);
     viewer.setPicked(iAtom);
     viewer.setCursor(JC.CURSOR_CROSSHAIR);
-    viewer.setPendingMeasurement(measurementPending = MeasurementPending
-        .getMP(viewer.getModelSet()));
+    viewer.setPendingMeasurement(measurementPending = 
+        viewer.getMP());
     measurementQueued = measurementPending;
   }
 
@@ -1721,7 +1721,7 @@ public class ActionManager {
     // doesn't reset the measurement that is being picked using
     // double-click, just the one using set picking measure.
     exitMeasurementMode();
-    measurementQueued = MeasurementPending.getMP(viewer.getModelSet());
+    measurementQueued = viewer.getMP();
   }
 
   private void exitMeasurementMode() {

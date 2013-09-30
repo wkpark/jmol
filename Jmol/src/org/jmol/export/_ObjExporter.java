@@ -452,7 +452,7 @@ public class _ObjExporter extends __CartesianExporter {
     try {
       String mtlFileName = objFileRootName + ".mtl";
       mtlFile = new File(mtlFileName);
-      mtlout = viewer.openOutputChannel(privateKey, mtlFileName, true);
+      mtlout = viewer.openExportChannel(privateKey, mtlFileName, true);
     } catch (IOException ex) {
       debugPrint("End initializeOutput (" + ex.getMessage() + "):");
       return false;
@@ -700,7 +700,7 @@ public class _ObjExporter extends __CartesianExporter {
         params.put("type", textureType);
         params.put("width", Integer.valueOf(width));
         params.put("height", Integer.valueOf(height));
-        fname = (String) viewer.createImage(params);
+        fname = viewer.outputToFile(params);
       }
       debugPrint("End createTextureFile: " + fname);
       return new File(fname);

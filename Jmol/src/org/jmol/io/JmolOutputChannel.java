@@ -1,5 +1,6 @@
 package org.jmol.io;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -7,7 +8,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import org.jmol.util.SB;
-import org.jmol.viewer.FileManager;
+import org.jmol.viewer.Viewer;
 
 /**
  * 
@@ -38,7 +39,7 @@ import org.jmol.viewer.FileManager;
 
 public class JmolOutputChannel extends OutputStream {
  
-  private FileManager fm; // only necessary for writing to http:// or https://
+  private Viewer viewer; // only necessary for writing to http:// or https://
   private String fileName;
   private BufferedWriter bw;
   private boolean isLocalFile;
@@ -49,9 +50,9 @@ public class JmolOutputChannel extends OutputStream {
   private SB sb;
   private String type;
   
-  public JmolOutputChannel setParams(FileManager fm, String fileName,
+  public JmolOutputChannel setParams(Viewer viewer, String fileName,
                                      boolean asWriter, OutputStream os) {
-    this.fm = fm;
+    this.viewer = viewer;
     this.fileName = fileName;
     this.os = os;
     isLocalFile = (fileName != null && !(fileName.startsWith("http://") || fileName
@@ -222,8 +223,7 @@ public class JmolOutputChannel extends OutputStream {
      */
     {
       if (!isLocalFile) // unsigned applet could do this
-        return JmolBinary.postByteArray(fm, fileName, 
-            (sb == null ? toByteArray() : sb.toString().getBytes()));
+        return postByteArray();
     }
     return null;
   }
@@ -251,5 +251,22 @@ public class JmolOutputChannel extends OutputStream {
     return byteCount + " bytes";
   }
 
-
+  private String postByteArray() {
+    byte[] bytes = (sb == null ? toByteArray() : sb.toString().getBytes());
+    Object ret = viewer.fileManager
+        .getBufferedInputStreamOrErrorMessageFromName(fileName, null, false,
+            false, bytes, false);
+    if (ret instanceof String)
+      return (String) ret;
+    try {
+      ret = JmolBinary.getStreamAsBytes((BufferedInputStream) ret, null);
+    } catch (IOException e) {
+      try {
+        ((BufferedInputStream) ret).close();
+      } catch (IOException e1) {
+        // ignore
+      }
+    }
+    return JmolBinary.fixUTF((byte[]) ret);
+  }
 }

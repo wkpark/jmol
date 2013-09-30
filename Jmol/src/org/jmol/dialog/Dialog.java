@@ -50,7 +50,6 @@ import javax.swing.filechooser.FileFilter;
 
 import org.jmol.api.JmolAppAPI;
 import org.jmol.api.JmolDialogInterface;
-import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -83,7 +82,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   private FilePreview openPreview;
 
   public String getOpenFileNameFromDialog(Map<String, Object> viewerOptions,
-                                          JmolViewer viewer,
+                                          Viewer viewer,
                                           String fileName, JmolAppAPI jmolApp,
                                           String windowName,
                                           boolean allowAppend) {
@@ -140,7 +139,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     if (jmolApp != null)
       jmolApp.addHistoryWindowInfo(windowName, openChooser.getDialog(), null);
 
-    String url = FileManager.getLocalUrl(viewer.apiPlatform.newFile(file.getAbsolutePath()));
+    String url = viewer.getLocalUrl(file.getAbsolutePath());
     if (url != null) {
       fileName = url;
     } else {
@@ -161,7 +160,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
     return null;
   }
   
-  public String getSaveFileNameFromDialog(JmolViewer viewer, String fileName,
+  public String getSaveFileNameFromDialog(Viewer viewer, String fileName,
                                           String type) {
     if (saveChooser == null) {
       saveChooser = new JFileChooser();
@@ -191,7 +190,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
   }
 
   
-  public String getImageFileNameFromDialog(JmolViewer viewer, String fileName,
+  public String getImageFileNameFromDialog(Viewer viewer, String fileName,
                                            String type, String[] imageChoices,
                                            String[] imageExtensions,
                                            int qualityJPG0, int qualityPNG0) {

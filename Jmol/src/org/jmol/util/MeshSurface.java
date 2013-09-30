@@ -256,12 +256,6 @@ public class MeshSurface {
 
   public SB slabOptions;
   
-  
-  public static Object[] getSlabWithinRange(float min, float max) {
-    return new Object[] { Integer.valueOf(T.range), 
-        new Float[] {Float.valueOf(min), Float.valueOf(max)}, Boolean.FALSE, null };
-  }
-
   public void resetTransPolygons() {
     boolean isTranslucent = C.isColixTranslucent(colix);
     float translucentLevel = C.getColixTranslucencyFractional(colix);
@@ -278,11 +272,7 @@ public class MeshSurface {
   }
   
   public void resetSlab() {
-    slabPolygons(getSlabObject(T.none, null, false, null), false);
-  }
-
-  public static Object[] getSlabObject(int tok, Object data, boolean isCap, Object colorData) {
-    return new Object[] { Integer.valueOf(tok), data, Boolean.valueOf(isCap), colorData };
+    slabPolygons(ArrayUtil.getSlabObject(T.none, null, false, null), false);
   }
 
   /**
@@ -296,7 +286,7 @@ public class MeshSurface {
     try {
       if (s.indexOf("array") == 0) {
         String[] pts = TextFormat.splitChars(s.substring(6, s.length() - 1), ",");
-        return getSlabObject(T.boundbox, new P3[] {
+        return ArrayUtil.getSlabObject(T.boundbox, new P3[] {
             (P3) Escape.uP(pts[0]),
             (P3) Escape.uP(pts[1]),
             (P3) Escape.uP(pts[2]),
@@ -304,7 +294,7 @@ public class MeshSurface {
       }
       Object plane = Escape.uP(s);
       if (plane instanceof P4)
-        return getSlabObject(T.plane, plane, isCap, null);
+        return ArrayUtil.getSlabObject(T.plane, plane, isCap, null);
     } catch (Exception e) {
       //
     }

@@ -1089,7 +1089,7 @@ public class CrystalReader extends AtomSetCollectionReader {
        String[] tokens = getTokens();
        int index = parseIntStr(tokens[3]) - 1;
        tokens = getTokensStr(readLines(3));
-       atoms[index].addTensor(new Tensor().getTensorFromEigenVectors(directLatticeVectors, 
+       atoms[index].addTensor(new Tensor().setFromEigenVectors(directLatticeVectors, 
            new float[] {parseFloatStr(tokens[1]), 
            parseFloatStr(tokens[3]), 
            parseFloatStr(tokens[5]) }, "quadrupole", atoms[index].atomName), null, false);
@@ -1123,7 +1123,7 @@ public class CrystalReader extends AtomSetCollectionReader {
         for (int j = 0; j < 3; j++)
           a[i][j] = parseFloatStr(tokens[j + 1]);
       }
-      atom.addTensor(Tensor.getTensorFromAsymmetricTensor(a, "charge", atom.elementSymbol + (index + 1)), null, false);
+      atom.addTensor(new Tensor().setFromAsymmetricTensor(a, "charge", atom.elementSymbol + (index + 1)), null, false);
       readLine();
     }
     appendLoadNote("Ellipsoids set \"charge\": Born charge tensors");

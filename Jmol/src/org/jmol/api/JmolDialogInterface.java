@@ -21,16 +21,16 @@ public interface JmolDialogInterface {
   public abstract int getQuality(String sType);
 
   public abstract String getOpenFileNameFromDialog(Map<String, Object> viewerOptions,
-                                                   JmolViewer viewer,
+                                                   Viewer viewer,
                                                    String fileName,
                                                    JmolAppAPI historyFile,
                                                    String windowName,
                                                    boolean allowAppend);
 
-  public abstract String getSaveFileNameFromDialog(JmolViewer viewer,
+  public abstract String getSaveFileNameFromDialog(Viewer viewer,
                                                    String data, String type);
 
-  public abstract String getImageFileNameFromDialog(JmolViewer viewer,
+  public abstract String getImageFileNameFromDialog(Viewer viewer,
                                                     String fileName,
                                                     String type,
                                                     String[] imageChoices,

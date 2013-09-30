@@ -240,13 +240,17 @@ abstract public class JmolViewer {
    * @param params include type, fileName, text, bytes, quality, width, height 
    * @return          null (canceled) or a message starting with OK or an error message
    */
-  abstract public Object createImage(Map<String, Object> params);
+  abstract public String outputToFile(Map<String, Object> params);
 
   /**
-   * @param params includes type, fileName, quality, width, height, outputStream, comment 
+   * @param type 
+   * @param width 
+   * @param height 
+   * @param quality 
+   * @param errMsg TODO
    * @return base64-encoded or binary version of the image
    */
-  abstract public Object getImageAsBytes(Map<String, Object> params);
+  abstract public byte[] getImageAsBytes(String type, int width, int height, int quality, String[] errMsg);
 
   abstract public int getMotionEventNumber();
 
@@ -504,12 +508,6 @@ abstract public class JmolViewer {
 
   abstract public String getModelFileName(int modelIndex);
 
-  /**
-   * @param privateKey  
-   * @return T/F
-   */
-  abstract public boolean checkPrivateKey(double privateKey);
-  
   public String menuStructure;
 
   abstract public void processMultitouchEvent(int groupID, int eventType, int touchID, int iData,
@@ -524,13 +522,6 @@ abstract public class JmolViewer {
   }
 
   public ApiPlatform apiPlatform; // used in Viewer and JmolViewer
-
-  private JmolFileAdapterInterface fileAdapter;
-
-  public JmolFileAdapterInterface getFileAdapter() {
-    return (fileAdapter == null ? fileAdapter = apiPlatform.getFileAdapter()
-        : fileAdapter);
-  }
 
   /**
    * old -- not used in 12.2

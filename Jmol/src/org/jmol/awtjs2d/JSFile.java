@@ -1,5 +1,7 @@
 package org.jmol.awtjs2d;
 
+import java.net.URL;
+
 import org.jmol.api.JmolFileInterface;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
@@ -11,12 +13,16 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-class JmolFile implements JmolFileInterface {
+class JSFile implements JmolFileInterface {
 
   private String name;
 	private String fullName;
 
-	public JmolFile(String name) {
+  static JmolFileInterface newFile(String name) {
+    return new JSFile(name);
+  }
+
+	JSFile(String name) {
   	this.name = name.replace('\\','/');
   	fullName = name;
   	if (!fullName.startsWith("/") && FileManager.urlTypeIndex(name) < 0)
@@ -27,7 +33,7 @@ class JmolFile implements JmolFileInterface {
 
   public JmolFileInterface getParentAsFile() {
   	int pt = fullName.lastIndexOf("/");
-  	return (pt < 0 ? null : new JmolFile(fullName.substring(0, pt)));
+  	return (pt < 0 ? null : new JSFile(fullName.substring(0, pt)));
   }
 
 	public String getAbsolutePath() {
@@ -45,5 +51,19 @@ class JmolFile implements JmolFileInterface {
 	public long length() {
 		return 0; // can't do this, shouldn't be necessary
 	}
+
+  static Object getBufferedURLInputStream(URL url, byte[] outputBytes,
+      String post) {
+    try {
+      JSURLConnection conn = (JSURLConnection) url.openConnection();
+      if (outputBytes != null)
+        conn.outputBytes(outputBytes);
+      else if (post != null)
+        conn.outputString(post);
+      return conn.getStringXBuilder();
+    } catch (Exception e) {
+      return e.toString();
+    }
+  }
 
 }

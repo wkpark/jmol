@@ -42,6 +42,7 @@ import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.ColorEncoder;
@@ -50,7 +51,6 @@ import org.jmol.util.ContactPair;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.MeshSurface;
 import org.jmol.util.P3;
 import org.jmol.util.V3;
 
@@ -569,7 +569,7 @@ public class Contact extends Isosurface {
         iSlab0 = -100;
     }
     if (iSlab0 != iSlab1)
-      thisMesh.slabPolygons(MeshSurface.getSlabWithinRange(iSlab0, iSlab1),
+      thisMesh.slabPolygons(ArrayUtil.getSlabWithinRange(iSlab0, iSlab1),
           false);
     if (displayType != T.surface)
       thisMesh.setMerged(true);

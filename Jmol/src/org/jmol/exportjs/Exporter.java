@@ -222,7 +222,7 @@ public abstract class Exporter {
       }
       //viewer.writeTextFile(fileName + ".spt", viewer.getSavedState("_Export"));
       try {
-        out = viewer.openOutputChannel(privateKey, fileName, true);
+        out = viewer.openExportChannel(privateKey, fileName, true);
       } catch (IOException e) {
         return false;
       }

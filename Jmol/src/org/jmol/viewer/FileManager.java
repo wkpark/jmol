@@ -38,10 +38,8 @@ import java.util.Map;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolDomReaderInterface;
-import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolFilesReaderInterface;
-import org.jmol.api.JmolViewer;
 import org.jmol.api.ApiPlatform;
 import org.jmol.io.Base64;
 import org.jmol.io.DataReader;
@@ -375,17 +373,16 @@ public class FileManager {
         boolean isPngjBinaryPost = (name.indexOf("?POST?_PNGJBIN_") >= 0);
         boolean isPngjPost = (isPngjBinaryPost || name.indexOf("?POST?_PNGJ_") >= 0);
         if (name.indexOf("?POST?_PNG_") > 0 || isPngjPost) {
-          Map<String, Object> params = new Hashtable<String, Object>();
-          params.put("type", isPngjPost ? "PNGJ" : "PNG");
-          Object o = viewer.getImageAsBytes(params);
-          if (!Escape.isAB(o))
-            return o;
+          String[] errMsg = new String[1];
+          byte[] bytes = viewer.getImageAsBytes(isPngjPost ? "PNGJ" : "PNG", 0, 0, -1, errMsg);
+          if (errMsg[0] != null)
+            return errMsg[0];
           if (isPngjBinaryPost) {
-            outputBytes = (byte[]) o;
+            outputBytes = bytes;
             name = TextFormat.simpleReplace(name, "?_", "=_");
           } else {
             name = new SB().append(name).append("=").appendSB(
-                Base64.getBase64((byte[]) o)).toString();
+                Base64.getBase64(bytes)).toString();
           }
         }
         int iurl = urlTypeIndex(name);
@@ -396,7 +393,6 @@ public class FileManager {
           name = name.substring(0, iurl);
         }
         boolean isApplet = (appletDocumentBaseURL != null);
-        JmolFileAdapterInterface fai = viewer.getFileAdapter();
         if (name.indexOf(".png") >= 0 && pngjCache == null
             && viewer.cachePngFiles())
           JmolBinary.cachePngjFile(this, null);
@@ -410,7 +406,7 @@ public class FileManager {
           name = url.toString();
           if (showMsg && name.toLowerCase().indexOf("password") < 0)
             Logger.info("FileManager opening 1 " + name);
-          ret = fai.getBufferedURLInputStream(url, outputBytes, post);
+          ret = viewer.apiPlatform.getBufferedURLInputStream(url, outputBytes, post);
           if (ret instanceof SB) {
             SB sb = (SB) ret;
             if (allowReader && !JmolBinary.isBase64(sb))
@@ -423,7 +419,7 @@ public class FileManager {
         } else if ((cacheBytes = (byte[]) cacheGet(name, true)) == null) {
           if (showMsg)
             Logger.info("FileManager opening 2 " + name);
-          ret = fai.getBufferedFileInputStream(name);
+          ret = viewer.apiPlatform.getBufferedFileInputStream(name);
         }
         if (ret instanceof String)
           return ret;
@@ -1046,7 +1042,8 @@ public class FileManager {
       "http://www.", "https:", "https://", "ftp:", "ftp://", "file:",
       "file:///" };
 
-  public static String getLocalUrl(JmolFileInterface file) {
+  String getLocalUrl(String fileName) {
+    JmolFileInterface file = viewer.apiPlatform.newFile(fileName);
     // entering a url on a file input box will be accepted,
     // but cause an error later. We can fix that...
     // return null if there is no problem, the real url if there is
@@ -1065,7 +1062,7 @@ public class FileManager {
     return null;
   }
 
-  public static JmolFileInterface getLocalDirectory(JmolViewer viewer, boolean forDialog) {
+  public static JmolFileInterface getLocalDirectory(Viewer viewer, boolean forDialog) {
     String localDir = (String) viewer
         .getParameter(forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
     if (forDialog && localDir.length() == 0)
@@ -1101,7 +1098,7 @@ public class FileManager {
    * @param path
    * @param forDialog
    */
-  public static void setLocalPath(JmolViewer viewer, String path,
+  public static void setLocalPath(Viewer viewer, String path,
                                   boolean forDialog) {
     while (path.endsWith("/") || path.endsWith("\\"))
       path = path.substring(0, path.length() - 1);
@@ -1110,7 +1107,7 @@ public class FileManager {
       viewer.setStringProperty("defaultDirectoryLocal", path);
   }
 
-  public static String getLocalPathForWritingFile(JmolViewer viewer, String file) {
+  public static String getLocalPathForWritingFile(Viewer viewer, String file) {
     if (file.indexOf("file:/") == 0)
       return file.substring(6);
     if (file.indexOf("/") == 0 || file.indexOf(":") >= 0)

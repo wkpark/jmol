@@ -1272,7 +1272,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     public void actionPerformed(ActionEvent e) {
 
       Dialog sd = new Dialog();
-      String fileName = sd.getImageFileNameFromDialog(viewer, null, imageType,
+      String fileName = sd.getImageFileNameFromDialog((Viewer) viewer, null, imageType,
           imageChoices, imageExtensions, qualityJPG, qualityPNG);
       if (fileName == null)
         return;
@@ -1293,8 +1293,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       params.put("fileName", fileName);
       params.put("type", sType);
       params.put("quality", Integer.valueOf(sd.getQuality(sType)));
-      viewer.createImage(params);
-      Logger.info((String) viewer.createImage(params));
+      String msg = viewer.outputToFile(params);
+      Logger.info(msg);
     }
 
   }
@@ -1373,14 +1373,15 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      String fileName = (new Dialog()).getSaveFileNameFromDialog(viewer,
+      String fileName = (new Dialog()).getSaveFileNameFromDialog((Viewer) viewer,
           null, "SPT");
       if (fileName != null) {
         Map<String, Object> params = new Hashtable<String, Object>();
         params.put("fileName", fileName);
         params.put("type", "SPT");
         params.put("text", viewer.getStateInfo());
-        Logger.info((String)viewer.createImage(params));
+        String msg = viewer.outputToFile(params);
+        Logger.info(msg);
       }
     }
   }
@@ -1479,7 +1480,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   void openFile() {
     String fileName = (new Dialog()).getOpenFileNameFromDialog(viewerOptions,
-        viewer, null, jmolApp, FILE_OPEN_WINDOW_NAME, true);
+        (Viewer) viewer, null, jmolApp, FILE_OPEN_WINDOW_NAME, true);
     if (fileName == null)
       return;
     boolean pdbCartoons = !fileName.startsWith("#NOC#;");

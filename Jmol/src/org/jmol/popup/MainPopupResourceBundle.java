@@ -492,7 +492,7 @@ public class MainPopupResourceBundle extends PopupResource {
       { "SIGNEDloadFileUnitCell", "load ? {1 1 1}" },      
       { "SIGNEDloadScript", "script ?.spt" },      
       
-      { "SIGNEDJAVAcaptureRock", "animation mode loop;capture '?Jmol.gif' rock y 5"},      
+      { "SIGNEDJAVAcaptureRock", "animation mode loop;capture '?Jmol.gif' rock y 10"},      
       { "SIGNEDJAVAcaptureSpin", "animation mode loop;capture '?Jmol.gif' spin y"},      
       { "SIGNEDJAVAcaptureBegin", "capture '?Jmol.gif'" },      
       { "SIGNEDJAVAcaptureEnd", "capture ''"},      

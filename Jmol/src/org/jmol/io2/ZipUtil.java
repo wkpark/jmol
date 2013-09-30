@@ -26,7 +26,6 @@
 package org.jmol.io2;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,7 +33,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import org.jmol.util.JmolList;
-import java.util.Date;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -42,8 +40,8 @@ import java.util.StringTokenizer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.zip.CRC32;
 import java.util.zip.ZipOutputStream;
+import java.util.zip.CRC32;
 
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.api.Interface;
@@ -52,22 +50,16 @@ import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
-import org.jmol.viewer.JC;
-import org.jmol.viewer.Viewer;
 
 import org.jmol.util.J2SIgnoreImport;
 
-@J2SIgnoreImport({java.io.BufferedOutputStream.class})
+@J2SIgnoreImport({java.io.BufferedOutputStream.class, java.util.zip.ZipOutputStream.class})
 public class ZipUtil implements JmolZipUtility {
-
-  private final static String SCENE_TAG = "###scene.spt###";
 
   public ZipUtil() {
     // for reflection
@@ -366,326 +358,6 @@ public class ZipUtil implements JmolZipUtility {
   public InputStream newGZIPInputStream(BufferedInputStream bis)
       throws IOException {
     return new GZIPInputStream(bis, 512);
-  }
-
-  private String addPngFileBytes(String name, byte[] ret, int iFile,
-                                Hashtable<Object, String> crcMap,
-                                boolean isSparDir, String newName, int ptSlash,
-                                JmolList<Object> v) {
-    CRC32 crc = new CRC32();
-    crc.update(ret, 0, ret.length);
-    Long crcValue = Long.valueOf(crc.getValue());
-    // only add to the data list v when the data in the file is new
-    if (crcMap.containsKey(crcValue)) {
-      // let newName point to the already added data
-      newName = crcMap.get(crcValue);
-    } else {
-      if (isSparDir)
-        newName = newName.replace('.', '_');
-      if (crcMap.containsKey(newName)) {
-        // now we have a conflict. To different files with the same name
-        // append "[iFile]" to the new file name to ensure it's unique
-        int pt = newName.lastIndexOf(".");
-        if (pt > ptSlash) // is a file extension, probably
-          newName = newName.substring(0, pt) + "[" + iFile + "]"
-              + newName.substring(pt);
-        else
-          newName = newName + "[" + iFile + "]";
-      }
-      v.addLast(name);
-      v.addLast(newName);
-      v.addLast(ret);
-      crcMap.put(crcValue, newName);
-    }
-    return newName;
-  }
-
-  /**
-   * generic method to create a zip file based on
-   * http://www.exampledepot.com/egs/java.util.zip/CreateZip.html
-   * @param privateKey 
-   * @param fm 
-   * @param viewer 
-   * 
-   * @param outFileName
-   *        or null to return byte[]
-   * @param fileNamesAndByteArrays
-   *        Vector of [filename1, bytes|null, filename2, bytes|null, ...]
-   * @param msg
-   * @return msg bytes filename or errorMessage or byte[]
-   */
-
-  private Object writeZipFile(double privateKey, FileManager fm, Viewer viewer,
-                             String outFileName,
-                             JmolList<Object> fileNamesAndByteArrays, String msg) {
-    byte[] buf = new byte[1024];
-    long nBytesOut = 0;
-    long nBytes = 0;
-    Logger.info("creating zip file " + (outFileName == null ? "" : outFileName)
-        + "...");
-    String fullFilePath = null;
-    String fileList = "";
-    try {
-      JmolOutputChannel out = viewer.openOutputChannel(privateKey,
-          outFileName, false);
-      OutputStream bos;
-      /**
-       * 
-       * no need for buffering here
-       * 
-       * @j2sNative
-       * 
-       * bos = out;
-       * 
-       */
-      {
-        bos = new BufferedOutputStream(out);
-      }
-      ZipOutputStream zos = new ZipOutputStream(bos);
-      for (int i = 0; i < fileNamesAndByteArrays.size(); i += 3) {
-        String fname = (String) fileNamesAndByteArrays.get(i);
-        byte[] bytes = null;
-        Object data = fm.cacheGet(fname, false);
-        if (data instanceof Map<?, ?>)
-          continue;
-        if (fname.indexOf("file:/") == 0) {
-          fname = fname.substring(5);
-          if (fname.length() > 2 && fname.charAt(2) == ':') // "/C:..." DOS/Windows
-            fname = fname.substring(1);
-        } else if (fname.indexOf("cache://") == 0) {
-          fname = fname.substring(8);
-        }
-        String fnameShort = (String) fileNamesAndByteArrays.get(i + 1);
-        if (fnameShort == null)
-          fnameShort = fname;
-        if (data != null)
-          bytes = (Escape.isAB(data) ? (byte[]) data : ((String) data)
-              .getBytes());
-        if (bytes == null)
-          bytes = (byte[]) fileNamesAndByteArrays.get(i + 2);
-        String key = ";" + fnameShort + ";";
-        if (fileList.indexOf(key) >= 0) {
-          Logger.info("duplicate entry");
-          continue;
-        }
-        fileList += key;
-        zos.putNextEntry(new ZipEntry(fnameShort));
-        int nOut = 0;
-        if (bytes == null) {
-          // get data from disk
-          InputStream in = viewer.openFileInputStream(privateKey, fname);
-          int len;
-          while ((len = in.read(buf, 0, 1024)) > 0) {
-            zos.write(buf, 0, len);
-            nOut += len;
-          }
-          in.close();
-        } else {
-          // data are already in byte form
-          zos.write(bytes, 0, bytes.length);
-          nOut += bytes.length;
-        }
-        nBytesOut += nOut;
-        zos.closeEntry();
-        Logger.info("...added " + fname + " (" + nOut + " bytes)");
-      }
-      zos.flush();
-      zos.close();
-      String ret = out.closeChannel();
-      Logger.info(nBytesOut + " bytes prior to compression");
-      nBytes = out.getByteCount();
-      if (ret != null) {
-        if (ret.indexOf("Exception") >= 0)
-          return ret;
-        msg += " " + ret;
-      }
-      fullFilePath = out.getFileName();
-      if (fullFilePath == null)
-        return out.toByteArray();
-    } catch (IOException e) {
-      Logger.info(e.toString());
-      return e.toString();
-    }
-    return msg + " " + nBytes + " " + fullFilePath;
-  }
-
-  public String getSceneScript(String[] scenes, Map<String, String> htScenes,
-                               JmolList<Integer> list) {
-    // no ".spt.png" -- that's for the sceneScript-only version
-    // that we will create here.
-    // extract scenes based on "pause scene ..." commands
-    int iSceneLast = 0;
-    int iScene = 0;
-    SB sceneScript = new SB().append(SCENE_TAG).append(
-        " Jmol ").append(Viewer.getJmolVersion()).append(
-        "\n{\nsceneScripts={");
-    for (int i = 1; i < scenes.length; i++) {
-      scenes[i - 1] = TextFormat.trim(scenes[i - 1], "\t\n\r ");
-      int[] pt = new int[1];
-      iScene = Parser.parseIntNext(scenes[i], pt);
-      if (iScene == Integer.MIN_VALUE)
-        return "bad scene ID: " + iScene;
-      scenes[i] = scenes[i].substring(pt[0]);
-      list.addLast(Integer.valueOf(iScene));
-      String key = iSceneLast + "-" + iScene;
-      htScenes.put(key, scenes[i - 1]);
-      if (i > 1)
-        sceneScript.append(",");
-      sceneScript.appendC('\n').append(Escape.eS(key)).append(": ")
-          .append(Escape.eS(scenes[i - 1]));
-      iSceneLast = iScene;
-    }
-    sceneScript.append("\n}\n");
-    if (list.size() == 0)
-      return "no lines 'pause scene n'";
-    sceneScript
-        .append("\nthisSceneRoot = '$SCRIPT_PATH$'.split('_scene_')[1];\n")
-        .append(
-            "thisSceneID = 0 + ('$SCRIPT_PATH$'.split('_scene_')[2]).split('.')[1];\n")
-        .append(
-            "var thisSceneState = '$SCRIPT_PATH$'.replace('.min.png','.all.png') + 'state.spt';\n")
-        .append("var spath = ''+currentSceneID+'-'+thisSceneID;\n")
-        .append("print thisSceneRoot + ' ' + spath;\n")
-        .append("var sscript = sceneScripts[spath];\n")
-        .append("var isOK = true;\n")
-        .append("try{\n")
-        .append("if (thisSceneRoot != currentSceneRoot){\n")
-        .append(" isOK = false;\n")
-        .append("} else if (sscript != '') {\n")
-        .append(" isOK = true;\n")
-        .append("} else if (thisSceneID <= currentSceneID){\n")
-        .append(" isOK = false;\n")
-        .append("} else {\n")
-        .append(" sscript = '';\n")
-        .append(" for (var i = currentSceneID; i < thisSceneID; i++){\n")
-        .append(
-            "  var key = ''+i+'-'+(i + 1); var script = sceneScripts[key];\n")
-        .append("  if (script = '') {isOK = false;break;}\n")
-        .append("  sscript += ';'+script;\n")
-        .append(" }\n")
-        .append("}\n}catch(e){print e;isOK = false}\n")
-        .append(
-            "if (isOK) {"
-                + wrapPathForAllFiles("script inline @sscript",
-                    "print e;isOK = false") + "}\n")
-        .append("if (!isOK){script @thisSceneState}\n")
-        .append(
-            "currentSceneRoot = thisSceneRoot; currentSceneID = thisSceneID;\n}\n");
-    return sceneScript.toString();
-  }
-
-  private static String wrapPathForAllFiles(String cmd, String strCatch) {
-    String vname = "v__" + ("" + Math.random()).substring(3);
-    return "# Jmol script\n{\n\tVar "
-        + vname
-        + " = pathForAllFiles\n\tpathForAllFiles=\"$SCRIPT_PATH$\"\n\ttry{\n\t\t"
-        + cmd + "\n\t}catch(e){" + strCatch + "}\n\tpathForAllFiles = " + vname
-        + "\n}\n";
-  }
-
-  public Object createZipSet(double privateKey, FileManager fm, Viewer viewer, String fileName,
-                             String script, String[] scripts,
-                             boolean includeRemoteFiles) {
-    JmolList<Object> v = new  JmolList<Object>();
-    JmolList<String> fileNames = new  JmolList<String>();
-    Hashtable<Object, String> crcMap = new Hashtable<Object, String>();
-    boolean haveSceneScript = (scripts != null && scripts.length == 3 && scripts[1]
-        .startsWith(SCENE_TAG));
-    boolean sceneScriptOnly = (haveSceneScript && scripts[2].equals("min"));
-    if (!sceneScriptOnly) {
-      JmolBinary.getFileReferences(script, fileNames);
-      if (haveSceneScript)
-        JmolBinary.getFileReferences(scripts[1], fileNames);
-    }
-    boolean haveScripts = (!haveSceneScript && scripts != null && scripts.length > 0);
-    if (haveScripts) {
-      script = wrapPathForAllFiles("script " + Escape.eS(scripts[0]), "");
-      for (int i = 0; i < scripts.length; i++)
-        fileNames.addLast(scripts[i]);
-    }
-    int nFiles = fileNames.size();
-    if (fileName != null)
-      fileName = fileName.replace('\\', '/');
-    String fileRoot = fileName;
-    if (fileRoot != null) {
-      fileRoot = fileName.substring(fileName.lastIndexOf("/") + 1);
-      if (fileRoot.indexOf(".") >= 0)
-        fileRoot = fileRoot.substring(0, fileRoot.indexOf("."));
-    }
-    JmolList<String> newFileNames = new  JmolList<String>();
-    for (int iFile = 0; iFile < nFiles; iFile++) {
-      String name = fileNames.get(iFile);
-      boolean isLocal = !viewer.isJS && FileManager.isLocal(name);
-      String newName = name;
-      // also check that somehow we don't have a local file with the same name as
-      // a fixed remote file name (because someone extracted the files and then used them)
-      if (isLocal || includeRemoteFiles) {
-        int ptSlash = name.lastIndexOf("/");
-        newName = (name.indexOf("?") > 0 && name.indexOf("|") < 0 ? TextFormat
-            .replaceAllCharacters(name, "/:?\"'=&", "_") : FileManager
-            .stripPath(name));
-        newName = TextFormat.replaceAllCharacters(newName, "[]", "_");
-        boolean isSparDir = (fm.spardirCache != null && fm.spardirCache
-            .containsKey(name));
-        if (isLocal && name.indexOf("|") < 0 && !isSparDir) {
-          v.addLast(name);
-          v.addLast(newName);
-          v.addLast(null); // data will be gotten from disk
-        } else {
-          // all remote files, and any file that was opened from a ZIP collection
-          Object ret = (isSparDir ? fm.spardirCache.get(name) : fm
-              .getFileAsBytes(name, null, true));
-          if (!Escape.isAB(ret))
-            return ret;
-          newName = addPngFileBytes(name, (byte[]) ret, iFile,
-              crcMap, isSparDir, newName, ptSlash, v);
-        }
-        name = "$SCRIPT_PATH$" + newName;
-      }
-      crcMap.put(newName, newName);
-      newFileNames.addLast(name);
-    }
-    if (!sceneScriptOnly) {
-      script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
-      v.addLast("state.spt");
-      v.addLast(null);
-      v.addLast(script.getBytes());
-    }
-    if (haveSceneScript) {
-      if (scripts[0] != null) {
-        v.addLast("animate.spt");
-        v.addLast(null);
-        v.addLast(scripts[0].getBytes());
-      }
-      v.addLast("scene.spt");
-      v.addLast(null);
-      script = TextFormat.replaceQuotedStrings(scripts[1], fileNames,
-          newFileNames);
-      v.addLast(script.getBytes());
-    }
-    String sname = (haveSceneScript ? "scene.spt" : "state.spt");
-    v.addLast("JmolManifest.txt");
-    v.addLast(null);
-    String sinfo = "# Jmol Manifest Zip Format 1.1\n" + "# Created "
-        + (new Date()) + "\n" + "# JmolVersion " + Viewer.getJmolVersion()
-        + "\n" + sname;
-    v.addLast(sinfo.getBytes());
-    v.addLast("Jmol_version_"
-        + Viewer.getJmolVersion().replace(' ', '_').replace(':', '.'));
-    v.addLast(null);
-    v.addLast(new byte[0]);
-    if (fileRoot != null) {
-      Map<String, Object> imageParams = new Hashtable<String, Object>();
-      imageParams.put("type", "PNG");
-      imageParams.put("comment", JC.embedScript(script));
-      Object bytes = viewer.getImageAsBytes(imageParams); 
-      if (Escape.isAB(bytes)) {
-        v.addLast("preview.png");
-        v.addLast(null);
-        v.addLast(bytes);
-      }
-    }
-    return writeZipFile(privateKey, fm, viewer, fileName, v, "OK JMOL");
   }
 
   public Object getAtomSetCollectionOrBufferedReaderFromZip(
@@ -1181,5 +853,31 @@ public class ZipUtil implements JmolZipUtility {
     int pt2 = pathName.lastIndexOf("|");
     return pathName.substring(0, pt) + s
         + (pt2 > 0 ? pathName.substring(pt2) : "");
+  }
+
+  public void addZipEntry(Object zos, String fileName) throws IOException {
+    ((ZipOutputStream) zos).putNextEntry(new ZipEntry(fileName));
+  }
+
+  public void closeZipEntry(Object zos) throws IOException {
+    ((ZipOutputStream) zos).closeEntry();
+  }
+
+  public Object getZipOutputStream(Object bos) {
+    /**
+     * @j2sNative
+     * 
+     * return J.api.Interface.getInterface("java.util.zip.ZipOutputStream").setZOS(bos);
+     * 
+     */
+    {
+    return new ZipOutputStream((OutputStream) bos);
+    }
+  }
+
+  public int getCrcValue(byte[] bytes) {
+    CRC32 crc = new CRC32();
+    crc.update(bytes, 0, bytes.length);
+    return (int) crc.getValue();
   }
 }

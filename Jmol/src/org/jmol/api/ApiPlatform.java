@@ -1,6 +1,8 @@
 package org.jmol.api;
 
 
+import java.net.URL;
+
 import org.jmol.util.JmolFont;
 import org.jmol.util.P3;
 import org.jmol.viewer.ActionManager;
@@ -115,14 +117,16 @@ public interface ApiPlatform {
 
   Object getJsObjectInfo(Object[] jsObject, String method, Object[] args);
 
-  JmolFileAdapterInterface getFileAdapter();
-
-  JmolFileInterface newFile(String name);
-
   boolean isSingleThreaded();
 
   void notifyEndOfRendering();
 
   String getDateFormat();
+  
+  JmolFileInterface newFile(String name);
+  
+  Object getBufferedFileInputStream(String name);
+  
+  Object getBufferedURLInputStream(URL url, byte[] outputBytes, String post);
 
 }

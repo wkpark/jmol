@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
@@ -508,7 +509,7 @@ class IsoSolventReader extends AtomDataReader {
       }
     }
     if (params.thePlane != null && params.slabInfo == null)
-      params.addSlabInfo(MeshSurface.getSlabWithinRange(-100, 0));
+      params.addSlabInfo(ArrayUtil.getSlabWithinRange(-100, 0));
   }
 
   /////////////// calculation methods //////////////

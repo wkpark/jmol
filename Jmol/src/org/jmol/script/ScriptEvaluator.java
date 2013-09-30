@@ -46,21 +46,17 @@ import org.jmol.io.JmolOutputChannel;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
-import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelCollection;
 import org.jmol.modelset.ModelSet;
-import org.jmol.modelset.Text;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
 import org.jmol.thread.JmolThread;
-import org.jmol.util.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BS;
-import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolFont;
@@ -72,7 +68,6 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.Point3fi;
 import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB; //import org.jmol.util.Tensor;
@@ -1248,7 +1243,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   }
 
   @SuppressWarnings("unchecked")
-  protected Object getBitsetProperty(BS bs, int tok, P3 ptRef, P4 planeRef,
+  public Object getBitsetProperty(BS bs, int tok, P3 ptRef, P4 planeRef,
                                      Object tokenValue, Object opValue,
                                      boolean useAtomMap, int index,
                                      boolean asVectorIfAll)
@@ -2072,7 +2067,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   static int tryPt;
 
-  SV runFunctionRet(JmolScriptFunction function, String name,
+  public SV runFunctionRet(JmolScriptFunction function, String name,
                     JmolList<SV> params, SV tokenAtom, boolean getReturn,
                     boolean setContextPath, boolean allowThreads)
       throws ScriptException {
@@ -2854,7 +2849,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   final static int ERROR_drawObjectNotDefined = 12;
   public final static int ERROR_endOfStatementUnexpected = 13;
   public final static int ERROR_expressionExpected = 14;
-  final static int ERROR_expressionOrIntegerExpected = 15;
+  public final static int ERROR_expressionOrIntegerExpected = 15;
   final static int ERROR_filenameExpected = 16;
   public final static int ERROR_fileNotFoundException = 17;
   public final static int ERROR_incompatibleArguments = 18;
@@ -2863,7 +2858,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
   final static int ERROR_integerOutOfRange = 21;
   public final static int ERROR_invalidArgument = 22;
   public final static int ERROR_invalidParameterOrder = 23;
-  final static int ERROR_keywordExpected = 24;
+  public final static int ERROR_keywordExpected = 24;
   public final static int ERROR_moCoefficients = 25;
   public final static int ERROR_moIndex = 26;
   public final static int ERROR_moModelError = 27;
@@ -3336,7 +3331,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return sm.getShapePropertyIndex(shapeType, propertyName, Integer.MIN_VALUE);
   }
 
-  private boolean getShapePropertyData(int shapeType, String propertyName,
+  public boolean getShapePropertyData(int shapeType, String propertyName,
                                        Object[] data) {
     return sm.getShapePropertyData(shapeType, propertyName, data);
   }
@@ -3962,7 +3957,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return bs;
   }
 
-  protected BS compareInt(int tokWhat, int tokOperator, int comparisonValue) {
+  public BS compareInt(int tokWhat, int tokOperator, int comparisonValue) {
     int propertyValue = Integer.MAX_VALUE;
     BS propertyBitSet = null;
     int bitsetComparator = tokOperator;
@@ -4734,7 +4729,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return p;
   }
 
-  protected P4 getHklPlane(P3 pt) {
+  public P4 getHklPlane(P3 pt) {
     V3 vAB = new V3();
     V3 vAC = new V3();
     P3 pt1 = P3.new3(pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
@@ -5920,10 +5915,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.frank:
       frank(1);
       return;
-    case T.measurements:
-    case T.measure:
-      measure();
-      return;
     case T.unitcell:
       unitcell(1);
       return;
@@ -5933,6 +5924,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.draw:
     case T.isosurface:
     case T.lcaocartoon:
+    case T.measurements:
+    case T.measure:
     case T.mo:
     case T.plot3d:
     case T.pmesh:
@@ -5945,7 +5938,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private JmolScriptExtension scriptExt;
 
-  private JmolScriptExtension getExtension() {
+  JmolScriptExtension getExtension() {
     return (scriptExt == null ? (scriptExt = (JmolScriptExtension) Interface
         .getOptionInterface("scriptext.ScriptExt")).init(this) : scriptExt);
   }
@@ -6761,158 +6754,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (chk)
       return;
     viewer.setStereoMode(colors, stereoMode, degrees);
-  }
-
-  public float getSmilesCorrelation(BS bsA, BS bsB, String smiles, JmolList<P3> ptsA,
-                             JmolList<P3> ptsB, Matrix4f m4,
-                             JmolList<BS> vReturn, boolean isSmarts,
-                             boolean asMap, int[][] mapSet, P3 center)
-      throws ScriptException {
-    float tolerance = (mapSet == null ? 0.1f : Float.MAX_VALUE);
-    try {
-      if (ptsA == null) {
-        ptsA = new JmolList<P3>();
-        ptsB = new JmolList<P3>();
-      }
-      Matrix4f m = new Matrix4f();
-      P3 c = new P3();
-
-      Atom[] atoms = viewer.modelSet.atoms;
-      int atomCount = viewer.getAtomCount();
-      int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles,
-          atoms, atomCount, bsA, isSmarts, true);
-      if (maps == null)
-        evalError(viewer.getSmilesMatcher().getLastException(), null);
-      if (maps.length == 0)
-        return Float.NaN;
-      int[] mapA = maps[0];
-      for (int i = 0; i < mapA.length; i++)
-        ptsA.addLast(atoms[mapA[i]]);
-      maps = viewer.getSmilesMatcher().getCorrelationMaps(smiles, atoms,
-          atomCount, bsB, isSmarts, false);
-      if (maps == null)
-        evalError(viewer.getSmilesMatcher().getLastException(), null);
-      if (maps.length == 0)
-        return Float.NaN;
-      if (asMap) {
-        for (int i = 0; i < maps.length; i++)
-          for (int j = 0; j < maps[i].length; j++)
-            ptsB.addLast(atoms[maps[i][j]]);
-        return 0;
-      }
-      float lowestStdDev = Float.MAX_VALUE;
-      int[] mapB = null;
-      for (int i = 0; i < maps.length; i++) {
-        ptsB.clear();
-        for (int j = 0; j < maps[i].length; j++)
-          ptsB.addLast(atoms[maps[i][j]]);
-        float stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, c);
-        Logger.info("getSmilesCorrelation stddev=" + stddev);
-        if (vReturn != null) {
-          if (stddev < tolerance) {
-            BS bs = new BS();
-            for (int j = 0; j < maps[i].length; j++)
-              bs.set(maps[i][j]);
-            vReturn.addLast(bs);
-          }
-        }
-        if (stddev < lowestStdDev) {
-          mapB = maps[i];
-          if (m4 != null)
-            m4.setM(m);
-          if (center != null)
-            center.setT(c);
-          lowestStdDev = stddev;
-        }
-      }
-      if (mapSet != null) {
-        mapSet[0] = mapA;
-        mapSet[1] = mapB;
-      }
-      ptsB.clear();
-      for (int i = 0; i < mapB.length; i++)
-        ptsB.addLast(atoms[mapB[i]]);
-      return lowestStdDev;
-    } catch (Exception e) {
-      evalError(e.toString(), null);
-      return 0; // unattainable
-    }
-  }
-
-  Object getSmilesMatches(String pattern, String smiles, BS bsSelected,
-                          BS bsMatch3D, boolean isSmarts, boolean asOneBitset)
-      throws ScriptException {
-    if (chk) {
-      if (asOneBitset)
-        return new BS();
-      return new String[] { "({})" };
-    }
-
-    // just retrieving the SMILES or bioSMILES string
-
-    if (pattern.length() == 0) {
-      boolean isBioSmiles = (!asOneBitset);
-      Object ret = viewer.getSmiles(0, 0, bsSelected, isBioSmiles, false, true,
-          true);
-      if (ret == null)
-        evalError(viewer.getSmilesMatcher().getLastException(), null);
-      return ret;
-    }
-
-    boolean asAtoms = true;
-    BS[] b;
-    if (bsMatch3D == null) {
-
-      // getting a BitSet or BitSet[] from a set of atoms or a pattern.
-
-      asAtoms = (smiles == null);
-      if (asAtoms)
-        b = viewer.getSmilesMatcher().getSubstructureSetArray(pattern,
-            viewer.modelSet.atoms, viewer.getAtomCount(), bsSelected, null,
-            isSmarts, false);
-      else
-        b = viewer.getSmilesMatcher().find(pattern, smiles, isSmarts, false);
-
-      if (b == null) {
-        showStringPrint(viewer.getSmilesMatcher().getLastException(), false);
-        if (!asAtoms && !isSmarts)
-          return Integer.valueOf(-1);
-        return "?";
-      }
-    } else {
-
-      // getting a correlation
-
-      JmolList<BS> vReturn = new JmolList<BS>();
-      float stddev = getSmilesCorrelation(bsMatch3D, bsSelected, pattern, null,
-          null, null, vReturn, isSmarts, false, null, null);
-      if (Float.isNaN(stddev)) {
-        if (asOneBitset)
-          return new BS();
-        return new String[] {};
-      }
-      showString("RMSD " + stddev + " Angstroms");
-      b = vReturn.toArray(new BS[vReturn.size()]);
-    }
-    if (asOneBitset) {
-      // sum total of all now, not just first
-      BS bs = new BS();
-      for (int j = 0; j < b.length; j++)
-        bs.or(b[j]);
-      if (asAtoms)
-        return bs;
-      if (!isSmarts)
-        return Integer.valueOf(bs.cardinality());
-      int[] iarray = new int[bs.cardinality()];
-      int pt = 0;
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
-        iarray[pt++] = i + 1;
-      return iarray;
-    }
-    String[] matches = new String[b.length];
-    for (int j = 0; j < b.length; j++)
-      matches[j] = (asAtoms ? Escape.eBS(b[j]) : Escape.eBond(b[j]));
-    return matches;
   }
 
   /**
@@ -8674,7 +8515,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @return cached file name if it exists
    * @throws ScriptException
    */
-  String loadFileAsync(String prefix, String filename, int i, boolean doClear)
+  public String loadFileAsync(String prefix, String filename, int i, boolean doClear)
       throws ScriptException {
     // note that we will never know the actual file name
     // so we construct one and point to it in the scriptContext
@@ -8739,306 +8580,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (filename == null)
       invArg();
     return filename;
-  }
-
-  @SuppressWarnings("static-access")
-  private void measure() throws ScriptException {
-    String id = null;
-    int pt = 1;
-    short colix = 0;
-    float[] offset = null;
-    switch (tokAt(1)) {
-    case T.search:
-      String smarts = stringParameter(slen == 3 ? 2 : 4);
-      if (chk)
-        return;
-      Atom[] atoms = viewer.modelSet.atoms;
-      int atomCount = viewer.getAtomCount();
-      int[][] maps = viewer.getSmilesMatcher().getCorrelationMaps(smarts,
-          atoms, atomCount, viewer.getSelectionSet(false), true, false);
-      if (maps == null)
-        return;
-      setShapeProperty(JC.SHAPE_MEASURES, "maps", maps);
-      return;
-    }
-    switch (slen) {
-    case 2:
-      switch (getToken(pt).tok) {
-      case T.nada:
-      case T.on:
-        setShapeProperty(JC.SHAPE_MEASURES, "hideAll", Boolean.FALSE);
-        return;
-      case T.off:
-        setShapeProperty(JC.SHAPE_MEASURES, "hideAll", Boolean.TRUE);
-        return;
-      case T.list:
-        if (!chk)
-          showStringPrint(viewer.getMeasurementInfoAsString(), false);
-        return;
-      case T.delete:
-        if (!chk)
-          viewer.clearAllMeasurements();
-        return;
-      case T.string:
-        setShapeProperty(JC.SHAPE_MEASURES, "setFormats", stringParameter(1));
-        return;
-      }
-      errorStr(ERROR_keywordExpected, "ON, OFF, DELETE");
-      break;
-    case 3: // measure delete N
-      // search "smartsString"
-      switch (getToken(1).tok) {
-      case T.delete:
-        if (getToken(2).tok == T.all) {
-          if (!chk)
-            viewer.clearAllMeasurements();
-        } else {
-          int i = intParameter(2) - 1;
-          if (!chk)
-            viewer.deleteMeasurement(i);
-        }
-        return;
-      }
-    }
-
-    int nAtoms = 0;
-    int expressionCount = 0;
-    int modelIndex = -1;
-    int atomIndex = -1;
-    int ptFloat = -1;
-    int[] countPlusIndexes = new int[5];
-    float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
-    boolean isAll = false;
-    boolean isAllConnected = false;
-    boolean isNotConnected = false;
-    boolean isRange = true;
-    RadiusData rd = null;
-    Boolean intramolecular = null;
-    int tokAction = T.opToggle;
-    String strFormat = null;
-    JmolFont font = null;
-
-    JmolList<Object> points = new JmolList<Object>();
-    BS bs = new BS();
-    Object value = null;
-    TickInfo tickInfo = null;
-    int nBitSets = 0;
-    int mad = 0;
-    for (int i = 1; i < slen; ++i) {
-      switch (getToken(i).tok) {
-      case T.id:
-        if (i != 1)
-          invArg();
-        id = optParameterAsString(++i);
-        continue;
-      case T.identifier:
-        errorStr(ERROR_keywordExpected, "ALL, ALLCONNECTED, DELETE");
-        break;
-      default:
-        error(ERROR_expressionOrIntegerExpected);
-        break;
-      case T.opNot:
-        if (tokAt(i + 1) != T.connected)
-          invArg();
-        i++;
-        isNotConnected = true;
-        break;
-      case T.connected:
-      case T.allconnected:
-      case T.all:
-        isAllConnected = (theTok == T.allconnected);
-        atomIndex = -1;
-        isAll = true;
-        if (isAllConnected && isNotConnected)
-          invArg();
-        break;
-      case T.color:
-        colix = C.getColix(getArgbParam(++i));
-        i = iToken;
-        break;
-      case T.offset:
-        if (isPoint3f(++i)) {
-          // PyMOL offsets -- {x, y, z} in angstroms
-          P3 p = getPoint3f(i, false);
-          offset = new float[] { 1, p.x, p.y, p.z, 0, 0, 0 };
-        } else {
-          offset = floatParameterSet(i, 7, 7);
-        }
-        i = iToken;
-        break;
-      case T.radius:
-      case T.diameter:
-        mad = (int) ((theTok == T.radius ? 2000 : 1000) * floatParameter(++i));
-        if (id != null && mad <= 0)
-          mad = -1;
-        break;
-      case T.decimal:
-        if (rd != null)
-          invArg();
-        isAll = true;
-        isRange = true;
-        ptFloat = (ptFloat + 1) % 2;
-        rangeMinMax[ptFloat] = floatParameter(i);
-        break;
-      case T.delete:
-        if (tokAction != T.opToggle)
-          invArg();
-        tokAction = T.delete;
-        break;
-      case T.font:
-        float fontsize = floatParameter(++i);
-        String fontface = parameterAsString(++i);
-        String fontstyle = parameterAsString(++i);
-        if (!chk)
-          font = viewer.getFont3D(fontface, fontstyle, fontsize);
-        break;
-      case T.integer:
-        int iParam = intParameter(i);
-        if (isAll) {
-          isRange = true; // irrelevant if just four integers
-          ptFloat = (ptFloat + 1) % 2;
-          rangeMinMax[ptFloat] = iParam;
-        } else {
-          atomIndex = viewer.getAtomIndexFromAtomNumber(iParam);
-          if (!chk && atomIndex < 0)
-            return;
-          if (value != null)
-            invArg();
-          if ((countPlusIndexes[0] = ++nAtoms) > 4)
-            error(ERROR_badArgumentCount);
-          countPlusIndexes[nAtoms] = atomIndex;
-        }
-        break;
-      case T.modelindex:
-        modelIndex = intParameter(++i);
-        break;
-      case T.off:
-        if (tokAction != T.opToggle)
-          invArg();
-        tokAction = T.off;
-        break;
-      case T.on:
-        if (tokAction != T.opToggle)
-          invArg();
-        tokAction = T.on;
-        break;
-      case T.range:
-        isAll = true;
-        isRange = true; // unnecessary
-        atomIndex = -1;
-        break;
-      case T.intramolecular:
-      case T.intermolecular:
-        intramolecular = Boolean.valueOf(theTok == T.intramolecular);
-        isAll = true;
-        isNotConnected = (theTok == T.intermolecular);
-        break;
-      case T.vanderwaals:
-        if (ptFloat >= 0)
-          invArg();
-        rd = encodeRadiusParameter(i, false, true);
-        rd.values = rangeMinMax;
-        i = iToken;
-        isNotConnected = true;
-        isAll = true;
-        intramolecular = Boolean.valueOf(false);
-        if (nBitSets == 1) {
-          nBitSets++;
-          nAtoms++;
-          BS bs2 = BSUtil.copy(bs);
-          BSUtil.invertInPlace(bs2, viewer.getAtomCount());
-          bs2.and(viewer.getAtomsWithinRadius(5, bs, false, null));
-          points.addLast(bs2);
-        }
-        break;
-      case T.bitset:
-      case T.expressionBegin:
-      case T.leftbrace:
-      case T.point3f:
-      case T.dollarsign:
-        if (theTok == T.bitset || theTok == T.expressionBegin)
-          nBitSets++;
-        if (atomIndex >= 0)
-          invArg();
-        expressionResult = Boolean.FALSE;
-        value = centerParameter(i);
-        if (expressionResult instanceof BS) {
-          value = bs = (BS) expressionResult;
-          if (!chk && bs.length() == 0)
-            return;
-        }
-        if (value instanceof P3) {
-          Point3fi v = new Point3fi();
-          v.setT((P3) value);
-          v.modelIndex = (short) modelIndex;
-          value = v;
-        }
-        if ((nAtoms = ++expressionCount) > 4)
-          error(ERROR_badArgumentCount);
-        i = iToken;
-        points.addLast(value);
-        break;
-      case T.string:
-        // measures "%a1 %a2 %v %u"
-        strFormat = stringParameter(i);
-        break;
-      case T.ticks:
-        tickInfo = checkTicks(i, false, true, true);
-        i = iToken;
-        tokAction = T.define;
-        break;
-      }
-    }
-    if (rd != null && (ptFloat >= 0 || nAtoms != 2) || nAtoms < 2 && id == null
-        && (tickInfo == null || nAtoms == 1))
-      error(ERROR_badArgumentCount);
-    if (strFormat != null && strFormat.indexOf(nAtoms + ":") != 0)
-      strFormat = nAtoms + ":" + strFormat;
-    if (isRange) {
-      if (rangeMinMax[1] < rangeMinMax[0]) {
-        rangeMinMax[1] = rangeMinMax[0];
-        rangeMinMax[0] = (rangeMinMax[1] == Float.MAX_VALUE ? Float.MAX_VALUE
-            : -200);
-      }
-    }
-    if (chk)
-      return;
-    if (value != null || tickInfo != null) {
-      if (rd == null)
-        rd = new RadiusData(rangeMinMax, 0, null, null);
-      if (value == null)
-        tickInfo.id = "default";
-      if (value != null && strFormat != null && tokAction == T.opToggle)
-        tokAction = T.define;
-      Text text = null;
-      if (font != null)
-        text = ((Text) Interface.getOptionInterface("modelset.Text")).newLabel(viewer.getGraphicsData(), font, "", colix,
-            (short) 0, 0, 0, null);
-      if (text != null)
-        text.pymolOffset = offset;
-      setShapeProperty(JC.SHAPE_MEASURES, "measure", (new MeasurementData(id,
-          viewer, points)).set(tokAction, null, rd, strFormat, null, tickInfo,
-          isAllConnected, isNotConnected, intramolecular, isAll, mad, colix,
-          text));
-      return;
-    }
-    Object propertyValue = (id == null ? countPlusIndexes : id);
-    switch (tokAction) {
-    case T.delete:
-      setShapeProperty(JC.SHAPE_MEASURES, "delete", propertyValue);
-      break;
-    case T.on:
-      setShapeProperty(JC.SHAPE_MEASURES, "show", propertyValue);
-      break;
-    case T.off:
-      setShapeProperty(JC.SHAPE_MEASURES, "hide", propertyValue);
-      break;
-    default:
-      setShapeProperty(JC.SHAPE_MEASURES, (strFormat == null ? "toggle"
-          : "toggleOn"), propertyValue);
-      if (strFormat != null)
-        setShapeProperty(JC.SHAPE_MEASURES, "setFormats", strFormat);
-    }
   }
 
   private boolean pause() throws ScriptException {
@@ -9608,7 +9149,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
   }
 
-  JmolList<P3> getPointVector(T t, int i) throws ScriptException {
+  public JmolList<P3> getPointVector(T t, int i) throws ScriptException {
     switch (t.tok) {
     case T.bitset:
       return viewer.getAtomPointVector((BS) t.value);
@@ -12257,6 +11798,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.dotted:
     case T.integer:
     case T.decimal:
+      viewer.loadShape(JC.SHAPE_MEASURES);
       setShapeSizeBs(JC.SHAPE_MEASURES, getSetAxesTypeMad(2), null);
       return;
     }
@@ -12824,7 +12366,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
    * @return TickInfo
    * @throws ScriptException
    */
-  private TickInfo checkTicks(int index, boolean allowUnitCell,
+  public TickInfo checkTicks(int index, boolean allowUnitCell,
                               boolean allowScale, boolean allowFirst)
       throws ScriptException {
     iToken = index - 1;
@@ -13299,19 +12841,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       viewer.undoMoveAction(tokAt(0), n);
   }
 
-  BS getAtomsNearSurface(float distance, String surfaceId) {
-    Object[] data = new Object[] { surfaceId, null, null };
-    if (chk)
-      return new BS();
-    if (getShapePropertyData(JC.SHAPE_ISOSURFACE, "getVertices", data))
-      return viewer.getAtomsNearPts(distance, (P3[]) data[1], (BS) data[2]);
-    data[1] = Integer.valueOf(0);
-    data[2] = Integer.valueOf(-1);
-    if (getShapePropertyData(JC.SHAPE_DRAW, "getCenter", data))
-      return viewer.getAtomsNearPt(distance, (P3) data[2]);
-    return new BS();
-  }
-
   /**
    * Encodes a string such as "2.10" as an integer instead of a float so as to
    * distinguish "2.1" from "2.10" used for model numbers and partial bond
@@ -13359,7 +12888,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         + ((bondOrderInteger % 1000000) & 0x1F);
   }
 
-  static int getBondOrderFromString(String s) {
+  public static int getBondOrderFromString(String s) {
     return (s.indexOf(' ') < 0 ? JmolEdge.getBondOrderFromString(s)
         : s.toLowerCase().indexOf("partial ") == 0 ? getPartialBondOrderFromString(s
             .substring(8).trim())
@@ -13429,49 +12958,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     scriptDelayThread.run();
   }
 
-  public float[] getFlexFitList(BS bs1, BS bs2, String smiles1)
-      throws ScriptException {
-    int[][] mapSet = ArrayUtil.newInt2(2);
-    getSmilesCorrelation(bs1, bs2, smiles1, null, null, null, null, true,
-        false, mapSet, null);
-    int[][] bondMap1 = viewer.getDihedralMap(mapSet[0]);
-    int[][] bondMap2 = (bondMap1 == null ? null : viewer
-        .getDihedralMap(mapSet[1]));
-    if (bondMap2 == null || bondMap2.length != bondMap1.length)
-      return null;
-    float[][] angles = new float[bondMap1.length][3];
-    Atom[] atoms = viewer.modelSet.atoms;
-    getTorsions(atoms, bondMap2, angles, 0);
-    getTorsions(atoms, bondMap1, angles, 1);
-    float[] data = new float[bondMap1.length * 6];
-    for (int i = 0, pt = 0; i < bondMap1.length; i++) {
-      int[] map = bondMap1[i];
-      data[pt++] = map[0];
-      data[pt++] = map[1];
-      data[pt++] = map[2];
-      data[pt++] = map[3];
-      data[pt++] = angles[i][0];
-      data[pt++] = angles[i][1];
-    }
-    return data;
-  }
   
-  private static void getTorsions(Atom[] atoms, int[][] bondMap,
-                                  float[][] diff, int pt) {
-    for (int i = bondMap.length; --i >= 0;) {
-      int[] map = bondMap[i];
-      float v = Measure.computeTorsion(atoms[map[0]], atoms[map[1]],
-          atoms[map[2]], atoms[map[3]], true);
-      if (pt == 1) {
-        if (v - diff[i][0] > 180)
-          v -= 360;
-        else if (v - diff[i][0] <= -180)
-          v += 360;
-      }
-      diff[i][pt] = v;
-    }
-  }
-
+  // ScriptExtension interfaces 
+  
   public String getErrorLineMessage2() {
     return getErrorLineMessage(functionName, scriptFileName,
         getLinenumber(null), pc, statementAsString(viewer, st, -9999,
@@ -13482,21 +12971,5 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
                                   ShapeManager shapeManager) {
     return getExtension().evaluateParallel(context, shapeManager);
   }
-
-  public String write(SV[] args) throws ScriptException {
-    return getExtension().write(args);
-  }
-
-  public Object getBitsetIdent(BS bs, String label, Object tokenValue,
-                               boolean useAtomMap, int index, boolean isExplicitlyAll) {
-    return getExtension().getBitsetIdent(bs, label, tokenValue, useAtomMap, index, isExplicitlyAll);
-  }
-
-  public BS setContactBitSets(BS bsA, BS bsB, boolean localOnly,
-                              float distance, RadiusData rd,
-                              boolean warnMultiModel) {
-    return getExtension().setContactBitSets(bsA, bsB, localOnly, distance, rd, warnMultiModel);
-  }
-  
 
 }

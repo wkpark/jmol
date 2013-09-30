@@ -49,10 +49,11 @@ public class MeasurementPending extends Measurement {
     return numSet;
   }
 
-  public static MeasurementPending getMP(ModelSet modelSet) {
-    return (MeasurementPending) new MeasurementPending().setM(modelSet, null,
-        Float.NaN, (short) 0, null, 0);
+  public MeasurementPending set(ModelSet modelSet) {
+    return (MeasurementPending) setM(modelSet, null, Float.NaN, (short) 0,
+        null, 0);
   }
+
 
   private boolean checkPoint(Point3fi ptClicked) {
     for (int i = 1; i <= numSet; i++)
@@ -78,6 +79,7 @@ public class MeasurementPending extends Measurement {
   private int lastIndex = -1;
   
   synchronized public int addPoint(int atomIndex, Point3fi ptClicked, boolean doSet) {
+    System.out.println("addPoint " + atomIndex);
     haveModified = (atomIndex != lastIndex);
     lastIndex = atomIndex;
     if (ptClicked == null) {
@@ -107,7 +109,9 @@ public class MeasurementPending extends Measurement {
     if (doSet)
       numSet = count;
     value = getMeasurement();
+    strFormat = null;
     formatMeasurement(null);
     return count;
   }
+
 }

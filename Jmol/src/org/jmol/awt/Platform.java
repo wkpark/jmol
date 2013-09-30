@@ -4,6 +4,7 @@ import java.awt.Container;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import java.awt.Window;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -17,7 +18,6 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
-import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.util.JmolFont;
 import org.jmol.util.P3;
 import org.jmol.viewer.ActionManager;
@@ -82,10 +82,6 @@ public class Platform implements ApiPlatform {
 
   public void setCursor(int c, Object display) {
     Display.setCursor(c, display);
-  }
-
-  public JmolFileAdapterInterface getFileAdapter() {
-    return new JmolFileAdapter(viewer);
   }
 
   ////// Mouse
@@ -206,10 +202,6 @@ public class Platform implements ApiPlatform {
     return GraphicsEnvironment.isHeadless();
   }
 
-  public JmolFileInterface newFile(String name) {
-    return JmolFileAdapter.newFile(name);
-  }
-
   public boolean isSingleThreaded() {
     return false;
   }
@@ -239,4 +231,19 @@ public class Platform implements ApiPlatform {
     return (new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z"))
         .format(new Date());
   }
+  
+  public JmolFileInterface newFile(String name) {
+    return new AwtFile(name);
+  }
+
+  public Object getBufferedFileInputStream(String name) {
+    return AwtFile.getBufferedFileInputStream(name);
+  }
+
+  public Object getBufferedURLInputStream(URL url, byte[] outputBytes,
+                                          String post) {
+    return AwtFile.getBufferedURLInputStream(url, outputBytes, post);
+  }
+
+    
 }

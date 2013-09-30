@@ -6,9 +6,7 @@ import java.io.InputStream;
 
 import java.util.Map;
 
-import org.jmol.util.JmolList;
 import org.jmol.viewer.FileManager;
-import org.jmol.viewer.Viewer;
 
 public interface JmolZipUtility {
 
@@ -37,13 +35,6 @@ public interface JmolZipUtility {
                                         String shortName,
                                         Map<String, byte[]> pngjCache);
 
-  public String getSceneScript(String[] scenes, Map<String, String> htScenes,
-                             JmolList<Integer> list);
-
-  public Object createZipSet(double privateKey, FileManager fm, Viewer viewer, String fileName,
-                             String script, String[] scripts,
-                             boolean includeRemoteFiles);
-
   public Object getAtomSetCollectionOrBufferedReaderFromZip(JmolAdapter adapter,
                                                             InputStream is,
                                                             String fileName,
@@ -58,6 +49,12 @@ public interface JmolZipUtility {
 
   public boolean cachePngjFile(FileManager fm, String[] data);
 
- // public String postByteArray(FileManager fm, String outFileName, byte[] bytes);
+  public void addZipEntry(Object zos, String fileName) throws IOException;
+
+  public void closeZipEntry(Object zos) throws IOException;
+
+  public Object getZipOutputStream(Object bos);
+
+  public int getCrcValue(byte[] bytes);
 
 }

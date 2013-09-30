@@ -1404,7 +1404,7 @@ public class AtomSetCollection {
       ptTemp = new P3();
       mTemp = new Matrix3f();
     }
-    return a.addTensor(t.getTensorFromEigenVectors(symmetry
+    return a.addTensor(((Tensor) Interface.getOptionInterface("util.Tensor")).setFromEigenVectors(symmetry
         .rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
         t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
   }

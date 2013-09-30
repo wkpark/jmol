@@ -5,7 +5,6 @@ import java.net.URL;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.Interface;
-import org.jmol.api.JmolFileAdapterInterface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
@@ -74,16 +73,6 @@ public class Platform implements ApiPlatform {
 
   public boolean isHeadless() {
     return false;
-  }
-
-  private JmolFileAdapter fileAdapter;
-
-  public JmolFileAdapterInterface getFileAdapter() {
-    return (fileAdapter == null  ? fileAdapter = new JmolFileAdapter() : fileAdapter);
-  }
-
-  public JmolFileInterface newFile(String name) {
-    return new JmolFile(name);
   }
 
   public JmolMouseInterface getMouseManager(double privateKey, Viewer viewer, ActionManager actionManager) {
@@ -326,5 +315,20 @@ public class Platform implements ApiPlatform {
       return null;
     }
   }
+
+  public JmolFileInterface newFile(String name) {
+    return new JSFile(name);
+  }
+
+  public Object getBufferedFileInputStream(String name) {
+    // n/a for any applet
+    return null; 
+  }
+
+  public Object getBufferedURLInputStream(URL url, byte[] outputBytes,
+                                          String post) {
+    return JSFile.getBufferedURLInputStream(url, outputBytes, post);
+  }
+
 
 }

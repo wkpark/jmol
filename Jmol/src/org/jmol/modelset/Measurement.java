@@ -263,12 +263,15 @@ public class Measurement {
     String label = getLabelString();
     if (label == null)
       return "";
+    System.out.println("strformat=" + strFormat + " units=" + units);
     if (units == null) {
       int pt = strFormat.indexOf("//");
       units = (pt >= 0 ? strFormat.substring(pt + 2) : null);
       if (units == null) {
         units = viewer.getMeasureDistanceUnits();
         strFormat += "//" + units;
+        if (count == 3)
+          System.out.println("measu");
       }
     }
     units = fixUnits(units);

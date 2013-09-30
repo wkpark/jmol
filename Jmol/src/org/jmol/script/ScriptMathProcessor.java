@@ -26,48 +26,29 @@ package org.jmol.script;
 import org.jmol.util.JmolList;
 import java.util.Arrays;
 
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.Set;
 
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
-import org.jmol.api.Interface;
-import org.jmol.api.JmolNMRInterface;
-import org.jmol.api.JmolPatternMatcher;
-import org.jmol.atomdata.RadiusData;
-import org.jmol.atomdata.RadiusData.EnumType;
-import org.jmol.constant.EnumVdw;
-import org.jmol.modelset.Atom;
-import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.AxisAngle4f;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
-import org.jmol.util.ColorEncoder;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
-import org.jmol.util.Measure;
-import org.jmol.util.Parser;
 import org.jmol.util.P3;
-import org.jmol.util.Point3fi;
 import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
-import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 public class ScriptMathProcessor {
@@ -90,16 +71,16 @@ public class ScriptMathProcessor {
   private SV[] xStack = new SV[8];
   private char[] ifStack = new char[8];
   private int ifPt = -1;
-  private int oPt = -1;
+  public int oPt = -1;
   private int xPt = -1;
   private int parenCount;
   private int squareCount;
   private int braceCount;
-  private boolean wasX;
+  public boolean wasX;
   private int incrementX;
   private boolean isArrayItem;
   private boolean asVector;
-  private boolean asBitSet;
+  public boolean asBitSet;
   private int ptid = 0;
   private int ptx = Integer.MAX_VALUE;
 
@@ -176,13 +157,13 @@ public class ScriptMathProcessor {
     ifStack[ifPt] = c;
   }
 
-  boolean addXVar(SV x) {
+  public boolean addXVar(SV x) {
     // the standard entry point
     putX(x);
     return wasX = true;
   }
 
-  boolean addXObj(Object x) {
+  public boolean addXObj(Object x) {
     // the generic, slower, entry point
     SV v = SV.getVariable(x);
     if (v == null)
@@ -191,66 +172,66 @@ public class ScriptMathProcessor {
     return wasX = true;
   }
 
-  boolean addXStr(String x) {
+  public boolean addXStr(String x) {
     putX(SV.newVariable(T.string, x));
     return wasX = true;
   }
 
-  private boolean addXBool(boolean x) {
+  public boolean addXBool(boolean x) {
     putX(SV.getBoolean(x));
     return wasX = true;
   }
 
-  private boolean addXInt(int x) {
+  public boolean addXInt(int x) {
     // no check for unary minus
     putX(SV.newScriptVariableInt(x));
     return wasX = true;
   }
 
-  private boolean addXList(JmolList<?> x) {
+  public boolean addXList(JmolList<?> x) {
     putX(SV.getVariableList(x));
     return wasX = true;
   }
 
-  private boolean addXMap(Map<String, ?> x) {
+  public boolean addXMap(Map<String, ?> x) {
     putX(SV.getVariableMap(x));
     return wasX = true;
   }
 
-  private boolean addXM3(Matrix3f x) {
+  public boolean addXM3(Matrix3f x) {
     putX(SV.newVariable(T.matrix3f, x));
     return wasX = true;
   }
 
-  private boolean addXM4(Matrix4f x) {
+  public boolean addXM4(Matrix4f x) {
     putX(SV.newVariable(T.matrix4f, x));
     return wasX = true;
   }
 
-  private boolean addXFloat(float x) {
+  public boolean addXFloat(float x) {
     if (Float.isNaN(x))
       return addXStr("NaN");
     putX(SV.newVariable(T.decimal, Float.valueOf(x)));
     return wasX = true;
   }
 
-  boolean addXBs(BS bs) {
+  public boolean addXBs(BS bs) {
     // the standard entry point for bit sets
     putX(SV.newVariable(T.bitset, bs));
     return wasX = true;
   }
 
-  boolean addXPt(P3 pt) {
+  public boolean addXPt(P3 pt) {
     putX(SV.newVariable(T.point3f, pt));
     return wasX = true;
   }
 
-  boolean addXPt4(P4 pt) {
+  public boolean addXPt4(P4 pt) {
     putX(SV.newVariable(T.point4f, pt));
     return wasX = true;
   }
 
-  boolean addXNum(SV x) throws ScriptException {
+  public boolean addXNum(SV x) throws ScriptException {
     // corrects for x -3 being x - 3
     // only when coming from expression() or parameterExpression()
     if (wasX)
@@ -273,37 +254,37 @@ public class ScriptMathProcessor {
     return wasX = true;
   }
 
-  boolean addXAV(SV[] x) {
+  public boolean addXAV(SV[] x) {
     putX(SV.getVariableAV(x));
     return wasX = true;
   }
 
-  boolean addXAD(double[] x) {
+  public boolean addXAD(double[] x) {
     putX(SV.getVariableAD(x));
     return wasX = true;
   }
 
-  boolean addXAS(String[] x) {
+  public boolean addXAS(String[] x) {
     putX(SV.getVariableAS(x));
     return wasX = true;
   }
 
-  boolean addXAI(int[] x) {
+  public boolean addXAI(int[] x) {
     putX(SV.getVariableAI(x));
     return wasX = true;
   }
 
-  boolean addXAII(int[][] x) {
+  public boolean addXAII(int[][] x) {
     putX(SV.getVariableAII(x));
     return wasX = true;
   }
 
-  boolean addXAF(float[] x) {
+  public boolean addXAF(float[] x) {
     putX(SV.getVariableAF(x));
     return wasX = true;
   }
 
-  boolean addXAFF(float[][] x) {
+  public boolean addXAFF(float[][] x) {
     putX(SV.getVariableAFF(x));
     return wasX = true;
   }
@@ -346,7 +327,7 @@ public class ScriptMathProcessor {
    * @return false if an error condition arises
    * @throws ScriptException
    */
-  boolean addOp(T op) throws ScriptException {
+  public boolean addOp(T op) throws ScriptException {
     return addOpAllowMath(op, true);
   }
 
@@ -586,7 +567,7 @@ public class ScriptMathProcessor {
       oPt--;
       if (oPt < 0)
         return true;
-      if (isOpFunc(oStack[oPt]) && !evaluateFunction(0))
+      if (isOpFunc(oStack[oPt]) && !evaluateFunction(T.nada))
         return false;
       skipping = (ifPt >= 0 && ifStack[ifPt] == 'X');
       return true;
@@ -651,7 +632,7 @@ public class ScriptMathProcessor {
     if (op.tok == T.propselector
         && (op.intValue & ~T.minmaxmask) == T.function
         && op.intValue != T.function) {
-      return evaluateFunction(0);
+      return evaluateFunction(T.nada);
     }
     return true;
   }
@@ -701,7 +682,7 @@ public class ScriptMathProcessor {
     Logger.debug(" ifStack = " + (new String(ifStack)).substring(0, ifPt + 1));
   }
 
-  private SV getX() throws ScriptException {
+  public SV getX() throws ScriptException {
     if (xPt < 0)
       eval.error(ScriptEvaluator.ERROR_endOfStatementUnexpected);
     SV v = SV.selectItemVar(xStack[xPt]);
@@ -713,9 +694,8 @@ public class ScriptMathProcessor {
     T op = oStack[oPt--];
     // for .xxx or .xxx() functions
     // we store the token in the intValue field of the propselector token
-    if (tok == 0)
-      tok = (op.tok == T.propselector ? op.intValue & ~T.minmaxmask
-        : op.tok);
+    if (tok == T.nada)
+      tok = (op.tok == T.propselector ? op.intValue & ~T.minmaxmask : op.tok);
 
     int nParamMax = T.getMaxMathParams(tok); // note - this is NINE for
     // dot-operators
@@ -733,2076 +713,9 @@ public class ScriptMathProcessor {
     // we cannot know what variables are real
     // if this is a property selector, as in x.func(), then we
     // just exit; otherwise we add a new TRUE to xStack
-    if (chk)
-      return (op.tok == T.propselector ? true : addXBool(true));
-    switch (tok) {
-    case T.abs:
-    case T.acos:
-    case T.cos:
-    case T.now:
-    case T.sin:
-    case T.sqrt:
-      return evaluateMath(args, tok);
-    case T.add:
-    case T.div:
-    case T.mul:
-    case T.sub:
-      return evaluateList(op.intValue, args);
-    case T.array:
-    case T.leftsquare:
-      return evaluateArray(args, tok == T.leftsquare);
-    case T.axisangle:
-    case T.quaternion:
-      return evaluateQuaternion(args, tok);
-    case T.bin:
-      return evaluateBin(args);
-    case T.col:
-    case T.row:
-      return evaluateRowCol(args, tok);
-    case T.color:
-      return evaluateColor(args);
-    case T.compare:
-      return evaluateCompare(args);
-    case T.connected:
-      return evaluateConnected(args);
-    case T.cross:
-      return evaluateCross(args);
-    case T.data:
-      return evaluateData(args);
-    case T.distance:
-    case T.dot:
-      if (op.tok == T.propselector)
-        return evaluateDot(args, tok, op.intValue);
-      //$FALL-THROUGH$
-    case T.angle:
-    case T.measure:
-      return evaluateMeasure(args, op.tok);
-    case T.file:
-    case T.load:
-      return evaluateLoad(args, tok);
-    case T.find:
-      return evaluateFind(args);
-    case T.function:
-      return evaluateUserFunction((String) op.value, args, op.intValue,
-          op.tok == T.propselector);
-    case T.format:
-    case T.label:
-      return evaluateLabel(op.intValue, args);
-    case T.getproperty:
-      return evaluateGetProperty(args);
-    case T.helix:
-      return evaluateHelix(args);
-    case T.hkl:
-    case T.plane:
-    case T.intersection:
-      return evaluatePlane(args, tok);
-    case T.javascript:
-    case T.script:
-      return evaluateScript(args, tok);
-    case T.join:
-    case T.split:
-    case T.trim:
-      return evaluateString(op.intValue, args);
-    case T.point:
-      return evaluatePoint(args);
-    case T.prompt:
-      return evaluatePrompt(args);
-    case T.random:
-      return evaluateRandom(args);
-    case T.replace:
-      return evaluateReplace(args);
-    case T.search:
-    case T.smiles:
-    case T.substructure:
-      return evaluateSubstructure(args, tok);
-    case T.cache:
-      return evaluateCache(args);
-    case T.sort:
-    case T.count:
-      return evaluateSort(args, tok);
-    case T.symop:
-      return evaluateSymop(args, op.tok == T.propselector);
-//    case Token.volume:
-  //    return evaluateVolume(args);
-    case T.tensor:
-      return evaluateTensor(args);
-    case T.within:
-      return evaluateWithin(args);
-    case T.contact:
-      return evaluateContact(args);
-    case T.write:
-      return evaluateWrite(args);
-    }
-    return false;
+    return (!chk ? eval.getExtension().evaluate(this, op, args, tok)
+        : op.tok == T.propselector ? true : addXBool(true));
   }
-
-  private boolean evaluateTensor(SV[] args) throws ScriptException {
-    // {*}.tensor()
-    // {*}.tensor("isc")            // only within this atom set
-    // {atomindex=1}.tensor("isc")  // all to this atom
-    // {*}.tensor("efg","eigenvalues")
-    if (args.length > 2)
-      return false;
-    BS bs = SV.getBitSet(getX(), false);
-    String tensorType = (args.length == 0 ? null : SV.sValue(args[0]).toLowerCase());
-    JmolNMRInterface calc = viewer.getNMRCalculation();      
-    if ("unique".equals(tensorType))
-      return addXBs(calc.getUniqueTensorSet(bs));
-    String infoType = (args.length < 2 ? null : SV.sValue(args[1]).toLowerCase());
-    return addXList(calc.getTensorInfo(tensorType, infoType, bs));
-  }
-
-  private boolean evaluateCache(SV[] args) {
-    if (args.length > 0)
-      return false;
-    return addXMap(viewer.cacheList());
-  }
-
-  private boolean evaluateCompare(SV[] args) throws ScriptException {
-    // compare({bitset} or [{positions}],{bitset} or [{positions}] [,"stddev"])
-    // compare({bitset},{bitset}[,"SMARTS"|"SMILES"],smilesString [,"stddev"])
-    // returns matrix4f for rotation/translation or stddev
-    // compare({bitset},{bitset},"ISOMER")  12.1.5
-    // compare({bitset},{bitset},"BONDS",smilesString) 13.1.17
-
-    if (args.length < 2 || args.length > 5)
-      return false;
-    float stddev;
-    String sOpt = SV.sValue(args[args.length - 1]);
-    boolean isStdDev = sOpt.equalsIgnoreCase("stddev");
-    boolean isIsomer = sOpt.equalsIgnoreCase("ISOMER");
-    boolean isBonds = sOpt.equalsIgnoreCase("BONDS");
-    boolean isSmiles = (isBonds || !isIsomer
-        && args.length > (isStdDev ? 3 : 2));
-    BS bs1 = (args[0].tok == T.bitset ? (BS) args[0].value : null);
-    BS bs2 = (args[1].tok == T.bitset ? (BS) args[1].value : null);
-    String smiles1 = (bs1 == null ? SV.sValue(args[0]) : "");
-    String smiles2 = (bs2 == null ? SV.sValue(args[1]) : "");
-    Matrix4f m = new Matrix4f();
-    stddev = Float.NaN;
-    JmolList<P3> ptsA, ptsB;
-    if (isSmiles) {
-      if (bs1 == null || bs2 == null)
-        return false;
-    }
-    if (isBonds) {
-      if (args.length != 4)
-        return false;
-      smiles1 = SV.sValue(args[2]);      
-      float[] data = eval.getFlexFitList(bs1, bs2, smiles1);
-      return (data == null ? addXStr("") : addXAF(data));
-    }
-    if (isIsomer) {
-      if (args.length != 3)
-        return false;
-      if (bs1 == null && bs2 == null)
-        return addXStr(viewer.getSmilesMatcher().getRelationship(smiles1,
-            smiles2).toUpperCase());
-      String mf1 = (bs1 == null ? viewer.getSmilesMatcher()
-          .getMolecularFormula(smiles1, false) : JmolMolecule
-          .getMolecularFormula(viewer.getModelSet().atoms, bs1, false));
-      String mf2 = (bs2 == null ? viewer.getSmilesMatcher()
-          .getMolecularFormula(smiles2, false) : JmolMolecule
-          .getMolecularFormula(viewer.getModelSet().atoms, bs2, false));
-      if (!mf1.equals(mf2))
-        return addXStr("NONE");
-      if (bs1 != null)
-        smiles1 = (String) eval.getSmilesMatches("", null, bs1, null, false,
-            true);
-      boolean check;
-      if (bs2 == null) {
-        // note: find smiles1 IN smiles2 here
-        check = (viewer.getSmilesMatcher().areEqual(smiles2, smiles1) > 0);
-      } else {
-        check = (((BS) eval.getSmilesMatches(smiles1, null, bs2, null, false,
-            true)).nextSetBit(0) >= 0);
-      }
-      if (!check) {
-        // MF matched, but didn't match SMILES
-        String s = smiles1 + smiles2;
-        if (s.indexOf("/") >= 0 || s.indexOf("\\") >= 0 || s.indexOf("@") >= 0) {
-          if (smiles1.indexOf("@") >= 0
-              && (bs2 != null || smiles2.indexOf("@") >= 0)) {
-            // reverse chirality centers
-            smiles1 = viewer.getSmilesMatcher().reverseChirality(smiles1);
-            if (bs2 == null) {
-              check = (viewer.getSmilesMatcher().areEqual(smiles1, smiles2) > 0);
-            } else {
-              check = (((BS) eval.getSmilesMatches(smiles1, null, bs2, null,
-                  false, true)).nextSetBit(0) >= 0);
-            }
-            if (check)
-              return addXStr("ENANTIOMERS");
-          }
-          // remove all stereochemistry from SMILES string
-          if (bs2 == null) {
-            check = (viewer.getSmilesMatcher().areEqual("/nostereo/" + smiles2,
-                smiles1) > 0);
-          } else {
-            Object ret = eval.getSmilesMatches("/nostereo/" + smiles1, null,
-                bs2, null, false, true);
-            check = (((BS) ret).nextSetBit(0) >= 0);
-          }
-          if (check)
-            return addXStr("DIASTERIOMERS");
-        }
-        // MF matches, but not enantiomers or diasteriomers
-        return addXStr("CONSTITUTIONAL ISOMERS");
-      }
-      //identical or conformational 
-      if (bs1 == null || bs2 == null)
-        return addXStr("IDENTICAL");
-      stddev = eval.getSmilesCorrelation(bs1, bs2, smiles1, null, null, null,
-          null, false, false, null, null);
-      return addXStr(stddev < 0.2f ? "IDENTICAL"
-          : "IDENTICAL or CONFORMATIONAL ISOMERS (RMSD=" + stddev + ")");
-    } else if (isSmiles) {
-      ptsA = new JmolList<P3>();
-      ptsB = new JmolList<P3>();
-      sOpt = SV.sValue(args[2]);
-      boolean isMap = sOpt.equalsIgnoreCase("MAP");
-      isSmiles = (sOpt.equalsIgnoreCase("SMILES"));
-      boolean isSearch = (isMap || sOpt.equalsIgnoreCase("SMARTS"));
-      if (isSmiles || isSearch)
-        sOpt = (args.length > 3 ? SV.sValue(args[3]) : null);
-      if (sOpt == null)
-        return false;
-      stddev = eval.getSmilesCorrelation(bs1, bs2, sOpt, ptsA, ptsB, m, null,
-          !isSmiles, isMap, null, null);
-      if (isMap) {
-        int nAtoms = ptsA.size();
-        if (nAtoms == 0)
-          return addXStr("");
-        int nMatch = ptsB.size() / nAtoms;
-        JmolList<int[][]> ret = new JmolList<int[][]>();
-        for (int i = 0, pt = 0; i < nMatch; i++) {
-          int[][] a = ArrayUtil.newInt2(nAtoms);
-          ret.addLast(a);
-          for (int j = 0; j < nAtoms; j++, pt++)
-            a[j] = new int[] { ((Atom) ptsA.get(j)).index,
-                ((Atom) ptsB.get(pt)).index };
-        }
-        return addXList(ret);
-      }
-    } else {
-      ptsA = eval.getPointVector(args[0], 0);
-      ptsB = eval.getPointVector(args[1], 0);
-      if (ptsA != null && ptsB != null)
-        stddev = Measure.getTransformMatrix4(ptsA, ptsB, m, null);
-    }
-    return (isStdDev || Float.isNaN(stddev) ? addXFloat(stddev) : addXM4(m));
-  }
-
-//  private boolean evaluateVolume(ScriptVariable[] args) throws ScriptException {
-//    ScriptVariable x1 = getX();
-//    if (x1.tok != Token.bitset)
-//      return false;
-//    String type = (args.length == 0 ? null : ScriptVariable.sValue(args[0]));
-//    return addX(viewer.getVolume((BitSet) x1.value, type));
-//  }
-
-  private boolean evaluateSort(SV[] args, int tok)
-      throws ScriptException {
-    if (args.length > 1)
-      return false;
-    if (tok == T.sort) {
-      int n = (args.length == 0 ? 0 : args[0].asInt());
-      return addXVar(getX().sortOrReverse(n));
-    }
-    SV x = getX();
-    SV match = (args.length == 0 ? null : args[0]);
-    if (x.tok == T.string) {
-      int n = 0;
-      String s = SV.sValue(x);
-      if (match == null)
-        return addXInt(0);
-      String m = SV.sValue(match);
-      for (int i = 0; i < s.length(); i++) {
-        int pt = s.indexOf(m, i);
-        if (pt < 0)
-          break;
-        n++;
-        i = pt;
-      }
-      return addXInt(n);
-    }
-    JmolList<SV> counts = new  JmolList<SV>();
-    SV last = null;
-    SV count = null;
-    JmolList<SV> xList = SV.getVariable(x.value)
-        .sortOrReverse(0).getList();
-    if (xList == null)
-      return (match == null ? addXStr("") : addXInt(0));
-    for (int i = 0, nLast = xList.size(); i <= nLast; i++) {
-      SV a = (i == nLast ? null : xList.get(i));
-      if (match != null && a != null && !SV.areEqual(a, match))
-        continue;
-      if (SV.areEqual(a, last)) {
-        count.intValue++;
-        continue;
-      } else if (last != null) {
-        JmolList<SV> y = new  JmolList<SV>();
-        y.addLast(last);
-        y.addLast(count);
-        counts.addLast(SV.getVariableList(y));
-      }
-      count = SV.newScriptVariableInt(1);
-      last = a; 
-    }
-    if (match == null)
-      return addXVar(SV.getVariableList(counts));
-    if (counts.isEmpty())
-      return addXInt(0);
-    return addXVar(counts.get(0).getList().get(1));
-
-  }
-
-  /**
-   * 
-   * {xxx}.symop()
-   * 
-   * symop({xxx}
-   * 
-   * @param args
-   * @param haveBitSet
-   * @return true/false
-   * @throws ScriptException
-   */
-  private boolean evaluateSymop(SV[] args, boolean haveBitSet)
-      throws ScriptException {
-    if (args.length == 0)
-      return false;
-    SV x1 = (haveBitSet ? getX() : null);
-    if (x1 != null && x1.tok != T.bitset)
-      return false;
-    BS bs = (x1 != null ? (BS) x1.value : args.length > 2
-        && args[1].tok == T.bitset ? (BS) args[1].value : viewer
-        .getModelUndeletedAtomsBitSet(-1));
-    String xyz;
-    switch (args[0].tok) {
-    case T.string:
-      xyz = SV.sValue(args[0]);
-      break;
-    case T.matrix4f:
-      xyz = args[0].escape();
-      break;
-    default:
-      xyz = null;
-    }
-    int iOp = (xyz == null ? args[0].asInt() : 0);
-    P3 pt = (args.length > 1 ? ptValue(args[1], true) : null);
-    if (args.length == 2 && !Float.isNaN(pt.x))
-      return addXObj(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, null,
-          T.point));
-    String desc = (args.length == 1 ? "" : SV
-        .sValue(args[args.length - 1])).toLowerCase();
-    int tok = T.draw;
-    if (args.length == 1 || desc.equalsIgnoreCase("matrix")) {
-      tok = T.matrix4f;
-    } else if (desc.equalsIgnoreCase("array") || desc.equalsIgnoreCase("list")) {
-      tok = T.list;
-    } else if (desc.equalsIgnoreCase("description")) {
-      tok = T.label;
-    } else if (desc.equalsIgnoreCase("xyz")) {
-      tok = T.info;
-    } else if (desc.equalsIgnoreCase("translation")) {
-      tok = T.translation;
-    } else if (desc.equalsIgnoreCase("axis")) {
-      tok = T.axis;
-    } else if (desc.equalsIgnoreCase("plane")) {
-      tok = T.plane;
-    } else if (desc.equalsIgnoreCase("angle")) {
-      tok = T.angle;
-    } else if (desc.equalsIgnoreCase("axispoint")) {
-      tok = T.point;
-    } else if (desc.equalsIgnoreCase("center")) {
-      tok = T.center;
-    }
-    return addXObj(viewer.getSymmetryInfo(bs, xyz, iOp, pt, null, desc, tok));
-  }
-
-  private boolean evaluateBin(SV[] args) throws ScriptException {
-    if (args.length != 3)
-      return false;
-    SV x1 = getX();
-    boolean isListf = (x1.tok == T.listf);
-    if (!isListf && x1.tok != T.varray)
-      return addXVar(x1);
-    float f0 = SV.fValue(args[0]);
-    float f1 = SV.fValue(args[1]);
-    float df = SV.fValue(args[2]);
-    float[] data;
-    if (isListf) {
-      data = (float[]) x1.value;
-    } else {
-      JmolList<SV> list = x1.getList();
-      data = new float[list.size()];
-      for (int i = list.size(); --i >= 0; )
-        data[i] = SV.fValue(list.get(i));
-    }
-    int nbins = (int) Math.floor((f1 - f0) / df + 0.01f);
-    int[] array = new int[nbins];
-    int nPoints = data.length;
-    for (int i = 0; i < nPoints; i++) {
-      float v = data[i];
-      int bin = (int) Math.floor((v - f0) / df);
-      if (bin < 0)
-        bin = 0;
-      else if (bin >= nbins)
-        bin = nbins - 1;
-      array[bin]++;
-    }
-    return addXAI(array);
-  }
-
-  private boolean evaluateHelix(SV[] args) throws ScriptException {
-    if (args.length < 1 || args.length > 5)
-      return false;
-    // helix({resno=3})
-    // helix({resno=3},"point|axis|radius|angle|draw|measure|array")
-    // helix(resno,"point|axis|radius|angle|draw|measure|array")
-    // helix(pt1, pt2, dq, "point|axis|radius|angle|draw|measure|array|")
-    // helix(pt1, pt2, dq, "draw","someID")
-    // helix(pt1, pt2, dq)
-    int pt = (args.length > 2 ? 3 : 1);
-    String type = (pt >= args.length ? "array" : SV
-        .sValue(args[pt]));
-    int tok = T.getTokFromName(type);
-    if (args.length > 2) {
-      // helix(pt1, pt2, dq ...)
-      P3 pta = ptValue(args[0], true);
-      P3 ptb = ptValue(args[1], true);
-      if (args[2].tok != T.point4f)
-        return false;
-      Quaternion dq = Quaternion.newP4((P4) args[2].value);
-      switch (tok) {
-      case T.nada:
-        break;
-      case T.point:
-      case T.axis:
-      case T.radius:
-      case T.angle:
-      case T.measure:
-        return addXObj(Measure.computeHelicalAxis(null, tok, pta, ptb, dq));
-      case T.array:
-        String[] data = (String[]) Measure.computeHelicalAxis(null, T.list,
-            pta, ptb, dq);
-        if (data == null)
-          return false;
-        return addXAS(data);
-      default:
-        return addXObj(Measure.computeHelicalAxis(type, T.draw, pta, ptb,
-            dq));
-      }
-    } else {
-      BS bs = (args[0].value instanceof BS ? (BS) args[0].value
-          : eval.compareInt(T.resno, T.opEQ, args[0].asInt()));
-      switch (tok) {
-      case T.point:
-        return addXObj(viewer.getHelixData(bs, T.point));
-      case T.axis:
-        return addXObj(viewer.getHelixData(bs, T.axis));
-      case T.radius:
-        return addXObj(viewer.getHelixData(bs, T.radius));
-      case T.angle:
-        return addXFloat(((Float) viewer.getHelixData(bs, T.angle))
-            .floatValue());
-      case T.draw:
-      case T.measure:
-        return addXObj(viewer.getHelixData(bs, tok));
-      case T.array:
-        String[] data = (String[]) viewer.getHelixData(bs, T.list);
-        if (data == null)
-          return false;
-        return addXAS(data);
-      }
-    }
-    return false;
-  }
-
-  /**
-   * distance, dot
-   * 
-   * @param args
-   * @param tok
-   * @param intValue
-   * @return variable
-   * @throws ScriptException
-   */
-  private boolean evaluateDot(SV[] args, int tok, int intValue)
-      throws ScriptException {
-    if (args.length != 1)
-      return false;
-    SV x1 = getX();
-    SV x2 = args[0];
-    P3 pt2 = (x2.tok == T.varray ? null : ptValue(x2, false));
-    P4 plane2 = planeValue(x2);
-    if (tok == T.distance) {
-      int minMax = intValue & T.minmaxmask;
-      switch (x1.tok) {
-      case T.bitset:
-        switch (x2.tok) {
-        case T.bitset:
-          BS bs = SV.bsSelectVar(x1);
-          if (minMax == T.min || minMax == T.max) {
-            BS bs2 = SV.bsSelectVar(x2);
-            float[] data = new float[bs.cardinality()];
-            Atom[] atoms = viewer.modelSet.atoms;
-            for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-              pt2 = atoms[i];
-              data[i] = ((Float) eval.getBitsetProperty(bs2, intValue, pt2,
-                  plane2, x1.value, null, false, x1.index, false)).floatValue();
-            }
-            return addXAF(data);
-          }
-          return addXObj(eval.getBitsetProperty(bs, intValue, pt2, plane2,
-              x1.value, null, false, x1.index, false));
-        }
-      }
-    }
-    return addXFloat(getDistance(x1, x2, tok));
-  }
-
-  private float getDistance(SV x1, SV x2, int tok) throws ScriptException {
-    P3 pt1 = ptValue(x1, true);
-    P4 plane1 = planeValue(x1);
-    P3 pt2 = ptValue(x2, true);
-    P4 plane2 = planeValue(x2);
-    if (tok == T.dot) {
-      if (plane1 != null && plane2 != null)
-        // q1.dot(q2) assume quaternions
-        return plane1.x * plane2.x + plane1.y * plane2.y + plane1.z
-            * plane2.z + plane1.w * plane2.w;
-      // plane.dot(point) =
-      if (plane1 != null)
-        pt1 = P3.new3(plane1.x, plane1.y, plane1.z);
-      // point.dot(plane)
-      if (plane2 != null)
-        pt2 = P3.new3(plane2.x, plane2.y, plane2.z);
-      return pt1.x * pt2.x + pt1.y * pt2.y + pt1.z * pt2.z;
-    }
-
-    if (plane1 == null)
-      return (plane2 == null ? pt2.distance(pt1) : Measure.distanceToPlane(
-          plane2, pt1));
-    return Measure.distanceToPlane(plane1, pt2);
-  }
-
-  public P3 ptValue(SV x, boolean allowFloat)
-      throws ScriptException {
-    Object pt;
-    if (chk)
-      return new P3();
-    switch (x.tok) {
-    case T.point3f:
-      return (P3) x.value;
-    case T.bitset:
-      return (P3) eval
-          .getBitsetProperty(SV.bsSelectVar(x), T.xyz, null, null,
-              x.value, null, false, Integer.MAX_VALUE, false);
-    case T.string:
-      pt = Escape.uP(SV.sValue(x));
-      if (pt instanceof P3)
-        return (P3) pt;
-      break;
-    case T.varray:
-      pt = Escape.uP("{" + SV.sValue(x) + "}");
-      if (pt instanceof P3)
-        return (P3) pt;
-      break;
-    }
-    if (!allowFloat)
-      return null;
-    float f = SV.fValue(x);
-    return P3.new3(f, f, f);
-  }
-
-  private P4 planeValue(T x) {
-    if (chk)
-      return new P4();
-    switch (x.tok) {
-    case T.point4f:
-      return (P4) x.value;
-    case T.varray:
-    case T.string:
-      Object pt = Escape.uP(SV.sValue(x));
-      return (pt instanceof P4 ? (P4) pt : null);
-    case T.bitset:
-      // ooooh, wouldn't THIS be nice!
-      break;
-    }
-    return null;
-  }
-
-  private boolean evaluateMeasure(SV[] args, int tok)
-      throws ScriptException {
-    int nPoints = 0;
-    switch (tok) {
-    case T.measure:
-      // note: min/max are always in Angstroms
-      // note: order is not important (other than min/max)
-      // measure({a},{b},{c},{d}, min, max, format, units)
-      // measure({a},{b},{c}, min, max, format, units)
-      // measure({a},{b}, min, max, format, units)
-      // measure({a},{b},{c},{d}, min, max, format, units)
-      // measure({a} {b} "minArray") -- returns array of minimum distance values
-      
-      JmolList<Object> points = new  JmolList<Object>();
-      float[] rangeMinMax = new float[] { Float.MAX_VALUE, Float.MAX_VALUE };
-      String strFormat = null;
-      String units = null;
-      boolean isAllConnected = false;
-      boolean isNotConnected = false;
-      int rPt = 0;
-      boolean isNull = false;
-      RadiusData rd = null;
-      int nBitSets = 0;
-      float vdw = Float.MAX_VALUE;
-      boolean asMinArray = false;
-      boolean asArray = false;
-      for (int i = 0; i < args.length; i++) {
-        switch (args[i].tok) {
-        case T.bitset:
-          BS bs = (BS) args[i].value;
-          if (bs.length() == 0)
-            isNull = true;
-          points.addLast(bs);
-          nPoints++;
-          nBitSets++;
-          break;
-        case T.point3f:
-          Point3fi v = new Point3fi();
-          v.setT((P3) args[i].value);
-          points.addLast(v);
-          nPoints++;
-          break;
-        case T.integer:
-        case T.decimal:
-          rangeMinMax[rPt++ % 2] = SV.fValue(args[i]);
-          break;
-
-        case T.string:
-          String s = SV.sValue(args[i]);
-          if (s.equalsIgnoreCase("vdw") || s.equalsIgnoreCase("vanderwaals"))
-            vdw = (i + 1 < args.length && args[i + 1].tok == T.integer ? args[++i]
-                .asInt()
-                : 100) / 100f;
-          else if (s.equalsIgnoreCase("notConnected"))
-            isNotConnected = true;
-          else if (s.equalsIgnoreCase("connected"))
-            isAllConnected = true;
-          else if (s.equalsIgnoreCase("minArray"))
-            asMinArray = (nBitSets >= 1);
-          else if (s.equalsIgnoreCase("asArray"))
-            asArray = (nBitSets >= 1);
-          else if (Parser.isOneOf(s.toLowerCase(),
-              ";nm;nanometers;pm;picometers;angstroms;ang;au;") || s.endsWith("hz"))
-            units = s.toLowerCase();
-          else
-            strFormat = nPoints + ":" + s;
-          break;
-        default:
-          return false;
-        }
-      }
-      if (nPoints < 2 || nPoints > 4 || rPt > 2 || isNotConnected
-          && isAllConnected)
-        return false;
-      if (isNull)
-        return addXStr("");
-      if (vdw != Float.MAX_VALUE && (nBitSets != 2 || nPoints != 2))
-        return addXStr("");
-      rd = (vdw == Float.MAX_VALUE ? new RadiusData(rangeMinMax, 0, null, null)
-          : new RadiusData(null, vdw, EnumType.FACTOR, EnumVdw.AUTO));
-      return addXObj((new MeasurementData(null, viewer, points)).set(0, null, rd, strFormat, units, null, isAllConnected,
-          isNotConnected, null, true, 0, (short) 0, null).getMeasurements(asArray, asMinArray));
-    case T.angle:
-      if ((nPoints = args.length) != 3 && nPoints != 4)
-        return false;
-      break;
-    default: // distance
-      if ((nPoints = args.length) != 2)
-        return false;
-    }
-    P3[] pts = new P3[nPoints];
-    for (int i = 0; i < nPoints; i++)
-      pts[i] = ptValue(args[i], true);
-    switch (nPoints) {
-    case 2:
-      return addXFloat(pts[0].distance(pts[1]));
-    case 3:
-      return addXFloat(Measure.computeAngleABC(pts[0], pts[1], pts[2], true));
-    case 4:
-      return addXFloat(Measure.computeTorsion(pts[0], pts[1], pts[2], pts[3],
-          true));
-    }
-    return false;
-  }
-
-  private boolean evaluateUserFunction(String name, SV[] args,
-                                       int tok, boolean isSelector)
-      throws ScriptException {
-    SV x1 = null;
-    if (isSelector) {
-      x1 = getX();
-      if (x1.tok != T.bitset)
-        return false;
-    }
-    wasX = false;
-    JmolList<SV> params = new  JmolList<SV>();
-    for (int i = 0; i < args.length; i++) {
-      params.addLast(args[i]);
-    }
-    if (isSelector) {
-      return addXObj(eval.getBitsetProperty(SV.bsSelectVar(x1), tok,
-          null, null, x1.value, new Object[] { name, params }, false, x1.index,
-          false));
-    }
-    SV var = eval.runFunctionRet(null, name, params, null, true, true, false);
-    return (var == null ? false : addXVar(var));
-  }
-
-  private boolean evaluateFind(SV[] args) throws ScriptException {
-    if (args.length == 0)
-      return false;
-
-    // {*}.find("MF")
-    // {*}.find("SEQENCE")
-    // {*}.find("SMARTS", "CCCC")
-    // "CCCC".find("SMARTS", "CC")
-    // "CCCC".find("SMILES", "MF")
-    // {2.1}.find("CCCC",{1.1}) // find pattern "CCCC" in {2.1} with conformation given by {1.1}
-    // {*}.find("ccCCN","BONDS")
-
-    SV x1 = getX();
-    String sFind = SV.sValue(args[0]);
-    String flags = (args.length > 1 && args[1].tok != T.on
-        && args[1].tok != T.off ? SV.sValue(args[1]) : "");
-    boolean isSequence = sFind.equalsIgnoreCase("SEQUENCE");
-    boolean isSmiles = sFind.equalsIgnoreCase("SMILES");
-    boolean isSearch = sFind.equalsIgnoreCase("SMARTS");
-    boolean isMF = sFind.equalsIgnoreCase("MF");
-    if (isSmiles || isSearch || x1.tok == T.bitset) {
-      int iPt = (isSmiles || isSearch ? 2 : 1);
-      BS bs2 = (iPt < args.length && args[iPt].tok == T.bitset ? (BS) args[iPt++].value
-          : null);
-      boolean asBonds = ("bonds".equalsIgnoreCase(SV
-          .sValue(args[args.length - 1])));
-      boolean isAll = (asBonds || args[args.length - 1].tok == T.on);
-      Object ret = null;
-      switch (x1.tok) {
-      case T.string:
-        String smiles = SV.sValue(x1);
-        if (bs2 != null)
-          return false;
-        if (flags.equalsIgnoreCase("mf")) {
-          ret = viewer.getSmilesMatcher().getMolecularFormula(smiles, isSearch);
-          if (ret == null)
-            eval.evalError(viewer.getSmilesMatcher().getLastException(), null);
-        } else {
-          ret = eval.getSmilesMatches(flags, smiles, null, null, isSearch,
-              !isAll);
-        }
-        break;
-      case T.bitset:
-        if (isMF)
-          return addXStr(JmolMolecule.getMolecularFormula(
-              viewer.getModelSet().atoms, (BS) x1.value, false));
-        if (isSequence)
-          return addXStr(viewer.getSmiles(-1, -1, (BS) x1.value, true, isAll,
-              isAll, false));
-        if (isSmiles || isSearch)
-          sFind = flags;
-        BS bsMatch3D = bs2;
-        if (asBonds) {
-          // this will return a single match
-          int[][] map = viewer.getSmilesMatcher().getCorrelationMaps(sFind,
-              viewer.modelSet.atoms, viewer.getAtomCount(), (BS) x1.value,
-              !isSmiles, true);
-          ret = (map.length > 0 ? viewer.getDihedralMap(map[0]) : new int[0]);
-        } else {
-          ret = eval.getSmilesMatches(sFind, null, (BS) x1.value, bsMatch3D,
-              !isSmiles, !isAll);
-        }
-        break;
-      }
-      if (ret == null)
-        eval.error(ScriptEvaluator.ERROR_invalidArgument);
-      return addXObj(ret);
-    }
-    boolean isReverse = (flags.indexOf("v") >= 0);
-    boolean isCaseInsensitive = (flags.indexOf("i") >= 0);
-    boolean asMatch = (flags.indexOf("m") >= 0);
-    boolean isList = (x1.tok == T.varray);
-    boolean isPattern = (args.length == 2);
-    if (isList || isPattern) {
-      JmolPatternMatcher pm = getPatternMatcher();
-      Pattern pattern = null;
-      try {
-        pattern = pm.compile(sFind, isCaseInsensitive);
-      } catch (Exception e) {
-        eval.evalError(e.toString(), null);
-      }
-      String[] list = SV.listValue(x1);
-      if (Logger.debugging)
-        Logger.debug("finding " + sFind);
-      BS bs = new BS();
-      int ipt = 0;
-      int n = 0;
-      Matcher matcher = null;
-      JmolList<String> v = (asMatch ? new JmolList<String>() : null);
-      for (int i = 0; i < list.length; i++) {
-        String what = list[i];
-        matcher = pattern.matcher(what);
-        boolean isMatch = matcher.find();
-        if (asMatch && isMatch || !asMatch && isMatch == !isReverse) {
-          n++;
-          ipt = i;
-          bs.set(i);
-          if (asMatch)
-            v.addLast(isReverse ? what.substring(0, matcher.start())
-                + what.substring(matcher.end()) : matcher.group());
-        }
-      }
-      if (!isList) {
-        return (asMatch ? addXStr(v.size() == 1 ? (String) v.get(0) : "")
-            : isReverse ? addXBool(n == 1) : asMatch ? addXStr(n == 0 ? ""
-                : matcher.group()) : addXInt(n == 0 ? 0 : matcher.start() + 1));
-      }
-      if (n == 1)
-        return addXStr(asMatch ? (String) v.get(0) : list[ipt]);
-      String[] listNew = new String[n];
-      if (n > 0)
-        for (int i = list.length; --i >= 0;)
-          if (bs.get(i)) {
-            --n;
-            listNew[n] = (asMatch ? (String) v.get(n) : list[i]);
-          }
-      return addXAS(listNew);
-    }
-    return addXInt(SV.sValue(x1).indexOf(sFind) + 1);
-  }
-
-  private JmolPatternMatcher pm;
-  private JmolPatternMatcher getPatternMatcher() {
-    return (pm == null ? pm = (JmolPatternMatcher) Interface.getOptionInterface("util.PatternMatcher") : pm);
-  }
-
-  private boolean evaluateGetProperty(SV[] args) {
-    int pt = 0;
-    String propertyName = (args.length > pt ? SV.sValue(args[pt++])
-        .toLowerCase() : "");
-    if (propertyName.startsWith("$")) {
-      // TODO
-    }
-    Object propertyValue = "";
-    if (propertyName.equalsIgnoreCase("fileContents") && args.length > 2) {
-      String s = SV.sValue(args[1]);
-      for (int i = 2; i < args.length; i++)
-        s += "|" + SV.sValue(args[i]);
-      propertyValue = s;
-      pt = args.length;
-    } else if (args.length > pt) {
-      switch (args[pt].tok) {
-      case T.bitset:
-        propertyValue = SV.bsSelectVar(args[pt++]);
-        if (propertyName.equalsIgnoreCase("bondInfo") &&  args.length > pt && args[pt].tok == T.bitset)
-          propertyValue = new BS[] { (BS) propertyValue , SV.bsSelectVar(args[pt]) };
-        break;
-      case T.string:
-        if (viewer.checkPropertyParameter(propertyName))
-          propertyValue = args[pt++].value;
-        break;
-      }
-    }
-    Object property = viewer.getProperty(null, propertyName, propertyValue);
-    if (pt < args.length)
-      property = viewer.extractProperty(property, args, pt);
-    return addXObj(SV.isVariableType(property) ? property : Escape
-        .toReadable(propertyName, property));
-  }
-
-  private boolean evaluatePlane(SV[] args, int tok)
-      throws ScriptException {
-    if (tok == T.hkl && args.length != 3 
-        || tok == T.intersection && args.length != 2 && args.length != 3 
-        || args.length == 0 || args.length > 4)
-      return false;
-    P3 pt1, pt2, pt3;
-    P4 plane;
-    V3 norm, vTemp;
-
-    switch (args.length) {
-    case 1:
-      if (args[0].tok == T.bitset) {
-        BS bs = SV.getBitSet(args[0], false);
-        if (bs.cardinality() == 3) {
-          JmolList<P3> pts = viewer.getAtomPointVector(bs);
-          V3 vNorm = new V3();
-          V3 vAB = new V3();
-          V3 vAC = new V3();
-          plane = new P4();
-          Measure.getPlaneThroughPoints(pts.get(0), pts.get(1), pts.get(2), vNorm , vAB, vAC, plane);
-          return addXPt4(plane);
-        }
-      }
-      Object pt = Escape.uP(SV.sValue(args[0]));
-      if (pt instanceof P4)
-        return addXPt4((P4)pt);
-      return addXStr("" + pt);
-    case 2:
-      if (tok == T.intersection) {
-        // intersection(plane, plane)
-        // intersection(point, plane)
-        if (args[1].tok != T.point4f)
-          return false;
-        pt3 = new P3();
-        norm = new V3();
-        vTemp = new V3();
-
-        plane = (P4) args[1].value;
-        if (args[0].tok == T.point4f) {
-          JmolList<Object> list = Measure.getIntersectionPP((P4) args[0].value,
-              plane);
-          if (list == null)
-            return addXStr("");
-          return addXList(list);
-        }
-        pt2 = ptValue(args[0], false);
-        if (pt2 == null)
-          return addXStr("");
-        return addXPt(Measure.getIntersection(pt2, null, plane, pt3, norm, vTemp));
-      }
-      //$FALL-THROUGH$
-    case 3:
-    case 4:
-      switch (tok) {
-      case T.hkl:
-        // hkl(i,j,k)
-        return addXPt4(eval.getHklPlane(P3.new3(
-            SV.fValue(args[0]), SV.fValue(args[1]),
-            SV.fValue(args[2]))));
-      case T.intersection:
-        pt1 = ptValue(args[0], false);
-        pt2 = ptValue(args[1], false);
-        if (pt1 == null || pt2 == null)
-          return addXStr("");
-        V3 vLine = V3.newV(pt2);
-        vLine.normalize();
-        if (args[2].tok == T.point4f) {
-          // intersection(ptLine, vLine, plane)
-          pt3 = new P3();
-          norm = new V3();
-          vTemp = new V3();
-          pt1 = Measure.getIntersection(pt1, vLine, (P4) args[2].value, pt3, norm, vTemp);
-          if (pt1 == null)
-            return addXStr("");
-          return addXPt(pt1);
-        }
-        pt3 = ptValue(args[2], false);
-        if (pt3 == null)
-          return addXStr("");
-        // interesection(ptLine, vLine, pt2); // IE intersection of plane perp to line through pt2
-        V3 v = new V3();
-        Measure.projectOntoAxis(pt3, pt1, vLine, v);
-        return addXPt(pt3);
-      }
-      switch (args[0].tok) {
-      case T.integer:
-      case T.decimal:
-        if (args.length == 3) {
-          // plane(r theta phi)
-          float r = SV.fValue(args[0]); 
-          float theta = SV.fValue(args[1]);  // longitude, azimuthal, in xy plane
-          float phi = SV.fValue(args[2]);    // 90 - latitude, polar, from z
-          // rotate {0 0 r} about y axis need to stay in the x-z plane
-          norm = V3.new3(0, 0, 1);
-          pt2 = P3.new3(0, 1, 0);
-          Quaternion q = Quaternion.newVA(pt2, phi);
-          q.getMatrix().transform(norm);
-          // rotate that vector around z
-          pt2.set(0, 0, 1);
-          q = Quaternion.newVA(pt2, theta);
-          q.getMatrix().transform(norm);
-          pt2.setT(norm);
-          pt2.scale(r);
-          plane = new P4();
-          Measure.getPlaneThroughPoint(pt2, norm, plane);
-          return addXPt4(plane);          
-        }
-        break;
-      case T.bitset:
-      case T.point3f:
-        pt1 = ptValue(args[0], false);
-        pt2 = ptValue(args[1], false);
-        if (pt2 == null)
-          return false;
-        pt3 = (args.length > 2
-            && (args[2].tok == T.bitset || args[2].tok == T.point3f) ? ptValue(
-            args[2], false)
-            : null);
-        norm = V3.newV(pt2);
-        if (pt3 == null) {
-          plane = new P4();
-          if (args.length == 2 || !args[2].asBoolean()) {
-            // plane(<point1>,<point2>) or 
-            // plane(<point1>,<point2>,false)
-            pt3 = P3.newP(pt1);
-            pt3.add(pt2);
-            pt3.scale(0.5f);
-            norm.sub(pt1);
-            norm.normalize();
-          } else {
-            // plane(<point1>,<vLine>,true)
-            pt3 = pt1;
-          }
-          Measure.getPlaneThroughPoint(pt3, norm, plane);
-          return addXPt4(plane);
-        }
-        // plane(<point1>,<point2>,<point3>)
-        // plane(<point1>,<point2>,<point3>,<pointref>)
-        V3 vAB = new V3();
-        V3 vAC = new V3();
-        float nd = Measure.getDirectedNormalThroughPoints(pt1, pt2, pt3,
-            (args.length == 4 ? ptValue(args[3], true) : null), norm, vAB, vAC);
-        return addXPt4(P4.new4(norm.x, norm.y, norm.z, nd));
-      }
-    }
-    if (args.length != 4)
-      return false;
-    float x = SV.fValue(args[0]);
-    float y = SV.fValue(args[1]);
-    float z = SV.fValue(args[2]);
-    float w = SV.fValue(args[3]);
-    return addXPt4(P4.new4(x, y, z, w));
-  }
-
-  private boolean evaluatePoint(SV[] args) {
-    if (args.length != 1 && args.length != 3 && args.length != 4)
-      return false;
-    switch (args.length) {
-    case 1:
-      if (args[0].tok == T.decimal || args[0].tok == T.integer)
-        return addXInt(args[0].asInt());
-      String s = SV.sValue(args[0]);
-      if (args[0].tok == T.varray)
-        s = "{" + s + "}";
-      Object pt = Escape.uP(s);
-      if (pt instanceof P3)
-        return addXPt((P3) pt);
-      return addXStr("" + pt);
-    case 3:
-      return addXPt(P3.new3(args[0].asFloat(), args[1].asFloat(), args[2].asFloat()));
-    case 4:
-      return addXPt4(P4.new4(args[0].asFloat(), args[1].asFloat(), args[2].asFloat(), args[3].asFloat()));
-    }
-    return false;
-  }
-
-  private boolean evaluatePrompt(SV[] args) {
-    //x = prompt("testing")
-    //x = prompt("testing","defaultInput")
-    //x = prompt("testing","yes|no|cancel", true)
-    //x = prompt("testing",["button1", "button2", "button3"])
-
-    if (args.length != 1 && args.length != 2 && args.length != 3)
-      return false;
-    String label = SV.sValue(args[0]);
-    String[] buttonArray = (args.length > 1 && args[1].tok == T.varray ?
-        SV.listValue(args[1]) : null);
-    boolean asButtons = (buttonArray != null || args.length == 1 || args.length == 3 && args[2].asBoolean());
-    String input = (buttonArray != null ? null : args.length >= 2 ? SV.sValue(args[1]) : "OK");
-    String s = "" + viewer.prompt(label, input, buttonArray, asButtons);
-    return (asButtons && buttonArray != null ? addXInt(Integer.parseInt(s) + 1) : addXStr(s));
-  }
-
-  private boolean evaluateReplace(SV[] args) throws ScriptException {
-    if (args.length != 2)
-      return false;
-    SV x = getX();
-    String sFind = SV.sValue(args[0]);
-    String sReplace = SV.sValue(args[1]);
-    String s = (x.tok == T.varray ? null : SV.sValue(x));
-    if (s != null)
-      return addXStr(TextFormat.simpleReplace(s, sFind, sReplace));
-    String[] list = SV.listValue(x);
-    for (int i = list.length; --i >= 0;)
-      list[i] = TextFormat.simpleReplace(list[i], sFind, sReplace);
-    return addXAS(list);
-  }
-
-  private boolean evaluateString(int tok, SV[] args)
-      throws ScriptException {
-    if (args.length > 1)
-      return false;
-    SV x = getX();
-    String s = (tok == T.split && x.tok == T.bitset
-        || tok == T.trim && x.tok == T.varray ? null : SV
-        .sValue(x));
-    String sArg = (args.length == 1 ? SV.sValue(args[0])
-        : tok == T.trim ? "" : "\n");
-    switch (tok) {
-    case T.split:
-      if (x.tok == T.bitset) {
-        BS bsSelected = SV.bsSelectVar(x);
-        sArg = "\n";
-        int modelCount = viewer.getModelCount();
-        s = "";
-        for (int i = 0; i < modelCount; i++) {
-          s += (i == 0 ? "" : "\n");
-          BS bs = viewer.getModelUndeletedAtomsBitSet(i);
-          bs.and(bsSelected);
-          s += Escape.eBS(bs);
-        }
-      }
-      return addXAS(TextFormat.splitChars(s, sArg));
-    case T.join:
-      if (s.length() > 0 && s.charAt(s.length() - 1) == '\n')
-        s = s.substring(0, s.length() - 1);
-      return addXStr(TextFormat.simpleReplace(s, "\n", sArg));
-    case T.trim:
-      if (s != null)
-        return addXStr(TextFormat.trim(s, sArg));      
-      String[] list = SV.listValue(x);
-      for (int i = list.length; --i >= 0;)
-        list[i] = TextFormat.trim(list[i], sArg);
-      return addXAS(list);
-    }
-    return addXStr("");
-  }
-
-  private boolean evaluateList(int tok, SV[] args)
-      throws ScriptException {
-    if (args.length != 1
-        && !(tok == T.add && (args.length == 0 || args.length == 2)))
-      return false;
-    SV x1 = getX();
-    SV x2;
-    int len;
-    String[] sList1 = null, sList2 = null, sList3 = null;
-
-    if (args.length == 2) {
-      // [xxxx].add("\t", [...])
-      int itab = (args[0].tok == T.string ? 0 : 1);
-      String tab = SV.sValue(args[itab]);
-      sList1 = (x1.tok == T.varray ? SV.listValue(x1)
-          : TextFormat.split(SV.sValue(x1), '\n'));
-      x2 = args[1 - itab];
-      sList2 = (x2.tok == T.varray ? SV.listValue(x2)
-          : TextFormat.split(SV.sValue(x2), '\n'));
-      sList3 = new String[len = Math.max(sList1.length, sList2.length)];
-      for (int i = 0; i < len; i++)
-        sList3[i] = (i >= sList1.length ? "" : sList1[i]) + tab
-            + (i >= sList2.length ? "" : sList2[i]);
-      return addXAS(sList3);
-    }
-    x2 = (args.length == 0 ? SV.newVariable(T.all, "all") : args[0]);
-    boolean isAll = (x2.tok == T.all);
-    if (x1.tok != T.varray && x1.tok != T.string) {
-      wasX = false;
-      addOp(T.tokenLeftParen);
-      addXVar(x1);
-      switch (tok) {
-      case T.add:
-        addOp(T.tokenPlus);
-        break;
-      case T.sub:
-        addOp(T.tokenMinus);
-        break;
-      case T.mul:
-        addOp(T.tokenTimes);
-        break;
-      case T.div:
-        addOp(T.tokenDivide);
-        break;
-      }
-      addXVar(x2);
-      return addOp(T.tokenRightParen);
-    }
-    boolean isScalar = (x2.tok != T.varray && SV.sValue(x2)
-        .indexOf("\n") < 0);
-
-    float[] list1 = null;
-    float[] list2 = null;
-    JmolList<SV> alist1 = x1.getList();
-    JmolList<SV> alist2 = x2.getList();
-
-    if (x1.tok == T.varray) {
-      len = alist1.size();
-    } else {
-      sList1 = (TextFormat.splitChars((String) x1.value, "\n"));
-      list1 = new float[len = sList1.length];
-      Parser.parseFloatArrayData(sList1, list1);
-    }
-
-    if (isAll) {
-      float sum = 0f;
-      if (x1.tok == T.varray) {
-        for (int i = len; --i >= 0;)
-          sum += SV.fValue(alist1.get(i));
-      } else {
-        for (int i = len; --i >= 0;)
-          sum += list1[i];
-      }
-      return addXFloat(sum);
-    }
-
-    SV scalar = null;
-
-    if (isScalar) {
-      scalar = x2;
-    } else if (x2.tok == T.varray) {
-      len = Math.min(len, alist2.size());
-    } else {
-      sList2 = TextFormat.splitChars((String) x2.value, "\n");
-      list2 = new float[sList2.length];
-      Parser.parseFloatArrayData(sList2, list2);
-      len = Math.min(list1.length, list2.length);
-    }
-    
-    T token = null;
-    switch (tok) {
-    case T.add:
-      token = T.tokenPlus;
-      break;
-    case T.sub:
-      token = T.tokenMinus;
-      break;
-    case T.mul:
-      token = T.tokenTimes;
-      break;
-    case T.div:
-      token = T.tokenDivide;
-      break;
-    }
-
-    SV[] olist = new SV[len];
-    
-    for (int i = 0; i < len; i++) {
-      if (x1.tok == T.varray)
-        addXVar(alist1.get(i));
-      else if (Float.isNaN(list1[i]))
-        addXObj(SV.unescapePointOrBitsetAsVariable(sList1[i]));
-      else
-        addXFloat(list1[i]);
-
-      if (isScalar)
-        addXVar(scalar);
-      else if (x2.tok == T.varray)
-        addXVar(alist2.get(i));
-      else if (Float.isNaN(list2[i]))
-        addXObj(SV.unescapePointOrBitsetAsVariable(sList2[i]));
-      else
-        addXFloat(list2[i]);
-      
-      if (!addOp(token) || !operate())
-        return false;
-      olist[i] = xStack[xPt--];
-    }
-    return addXAV(olist);
-  }
-
-  private boolean evaluateRowCol(SV[] args, int tok)
-      throws ScriptException {
-    if (args.length != 1)
-      return false;
-    int n = args[0].asInt() - 1;
-    SV x1 = getX();
-    float[] f;
-    switch (x1.tok) {
-    case T.matrix3f:
-      if (n < 0 || n > 2)
-        return false;
-      Matrix3f m = (Matrix3f) x1.value;
-      switch (tok) {
-      case T.row:
-        f = new float[3];
-        m.getRow(n, f);
-        return addXAF(f);
-      case T.col:
-      default:
-        f = new float[3];
-        m.getColumn(n, f);
-        return addXAF(f);
-      }
-    case T.matrix4f:
-      if (n < 0 || n > 2)
-        return false;
-      Matrix4f m4 = (Matrix4f) x1.value;
-      switch (tok) {
-      case T.row:
-        f = new float[4];
-        m4.getRow(n, f);
-        return addXAF(f);
-      case T.col:
-      default:
-        f = new float[4];
-        m4.getColumn(n, f);
-        return addXAF(f);
-      }
-    }
-    return false;
-
-  }
-
-  private boolean evaluateArray(SV[] args, boolean allowMatrix) {
-    int len = args.length;
-    if (allowMatrix && (len == 4 || len == 3)) {
-      boolean isMatrix = true;
-      for (int i = 0; i < len && isMatrix; i++)
-        isMatrix = (args[i].tok == T.varray && args[i].getList().size() == len);
-      if (isMatrix) {
-        float[] m = new float[len * len];
-        int pt = 0;
-        for (int i = 0; i < len && isMatrix; i++) {
-          JmolList<SV> list = args[i].getList();
-          for (int j = 0; j < len; j++) {
-            float x = SV.fValue(list.get(j));
-            if (Float.isNaN(x)) {
-              isMatrix = false;
-              break;
-            }
-            m[pt++] = x;
-          }
-        }
-        if (isMatrix) {
-          if (len == 3)
-            return addXM3(Matrix3f.newA(m));
-          return addXM4(Matrix4f.newA(m));
-        }
-      }
-    }
-    SV[] a = new SV[args.length];
-    for (int i = a.length; --i >= 0;)
-      a[i] = SV.newScriptVariableToken(args[i]);
-    return addXAV(a);
-  }
-
-  private boolean evaluateMath(SV[] args, int tok) {
-    if (tok == T.now) {
-      if (args.length == 1 && args[0].tok == T.string)
-        return addXStr((new Date()) + "\t" + SV.sValue(args[0]));
-      return addXInt(((int) System.currentTimeMillis() & 0x7FFFFFFF)
-          - (args.length == 0 ? 0 : args[0].asInt()));
-    }
-    if (args.length != 1)
-      return false;
-    if (tok == T.abs) {
-      if (args[0].tok == T.integer)
-        return addXInt(Math.abs(args[0].asInt()));
-      return addXFloat(Math.abs(args[0].asFloat()));
-    }
-    double x = SV.fValue(args[0]);
-    switch (tok) {
-    case T.acos:
-      return addXFloat((float) (Math.acos(x) * 180 / Math.PI));
-    case T.cos:
-      return addXFloat((float) Math.cos(x * Math.PI / 180));
-    case T.sin:
-      return addXFloat((float) Math.sin(x * Math.PI / 180));
-    case T.sqrt:
-      return addXFloat((float) Math.sqrt(x));
-    }
-    return false;
-  }
-
-  private boolean evaluateQuaternion(SV[] args, int tok)
-      throws ScriptException {
-    P3 pt0 = null;
-    // quaternion([quaternion array]) // mean
-    // quaternion([quaternion array1], [quaternion array2], "relative") //
-    // difference array
-    // quaternion(matrix)
-    // quaternion({atom1}) // quaternion (1st if array)
-    // quaternion({atomSet}, nMax) // nMax quaternions, by group; 0 for all
-    // quaternion({atom1}, {atom2}) // difference 
-    // quaternion({atomSet1}, {atomset2}, nMax) // difference array, by group; 0 for all
-    // quaternion(vector, theta)
-    // quaternion(q0, q1, q2, q3)
-    // quaternion("{x, y, z, w"})
-    // quaternion("best")
-    // quaternion(center, X, XY)
-    // quaternion(mcol1, mcol2)
-    // quaternion(q, "id", center) // draw code
-    // axisangle(vector, theta)
-    // axisangle(x, y, z, theta)
-    // axisangle("{x, y, z, theta"})
-    int nArgs = args.length;
-    int nMax = Integer.MAX_VALUE;
-    boolean isRelative = false;
-    if (tok == T.quaternion) {
-      if (nArgs > 1 && args[nArgs - 1].tok == T.string
-          && ((String) args[nArgs - 1].value).equalsIgnoreCase("relative")) {
-        nArgs--;
-        isRelative = true;
-      }
-      if (nArgs > 1 && args[nArgs - 1].tok == T.integer 
-          && args[0].tok == T.bitset) {
-        nMax = args[nArgs - 1].asInt();
-        if (nMax <= 0)
-          nMax = Integer.MAX_VALUE - 1;
-        nArgs--;
-      }
-    }
-
-    switch (nArgs) {
-    case 0:
-    case 1:
-    case 4:
-      break;
-    case 2:
-      if (tok == T.quaternion) {
-        if (args[0].tok == T.varray && args[1].tok == T.varray)
-          break;
-        if (args[0].tok == T.bitset
-            && (args[1].tok == T.integer || args[1].tok == T.bitset))
-          break;
-      }
-      if ((pt0 = ptValue(args[0], false)) == null || tok != T.quaternion
-          && args[1].tok == T.point3f)
-        return false;
-      break;
-    case 3:
-      if (tok != T.quaternion)
-        return false;
-      if (args[0].tok == T.point4f) {
-        if (args[2].tok != T.point3f && args[2].tok != T.bitset)
-          return false;
-        break;
-      }
-      for (int i = 0; i < 3; i++)
-        if (args[i].tok != T.point3f && args[i].tok != T.bitset)
-          return false;
-      break;
-    default:
-      return false;
-    }
-    Quaternion q = null;
-    Quaternion[] qs = null;
-    P4 p4 = null;
-    switch (nArgs) {
-    case 0:
-      return addXPt4(Quaternion.newQ(viewer.getRotationQuaternion()).toPoint4f());
-    case 1:
-    default:
-      if (tok == T.quaternion && args[0].tok == T.varray) {
-        Quaternion[] data1 = getQuaternionArray(args[0].getList(), T.list);
-        Object mean = Quaternion.sphereMean(data1, null, 0.0001f);
-        q = (mean instanceof Quaternion ? (Quaternion) mean : null);
-        break;
-      } else if (tok == T.quaternion && args[0].tok == T.bitset) {
-        qs = viewer.getAtomGroupQuaternions((BS) args[0].value, nMax);
-      } else if (args[0].tok == T.matrix3f) {
-        q = Quaternion.newM((Matrix3f) args[0].value);
-      } else if (args[0].tok == T.point4f) {
-        p4 = (P4) args[0].value;
-      } else {
-        String s = SV.sValue(args[0]);
-        Object v = Escape.uP(s.equalsIgnoreCase("best") ? viewer.getOrientationText(T.best, null) : s);
-        if (!(v instanceof P4))
-          return false;
-        p4 = (P4) v;
-      }
-      if (tok == T.axisangle)
-        q = Quaternion.newVA(P3.new3(p4.x, p4.y, p4.z), p4.w);
-      break;
-    case 2:
-      if (tok == T.quaternion) {
-        if (args[0].tok == T.varray && args[1].tok == T.varray) {
-          Quaternion[] data1 = getQuaternionArray(args[0].getList(), T.list);
-          Quaternion[] data2 = getQuaternionArray(args[1].getList(), T.list);
-          qs = Quaternion.div(data2, data1, nMax, isRelative);
-          break;
-        }
-        if (args[0].tok == T.bitset && args[1].tok == T.bitset) {
-          Quaternion[] data1 = viewer.getAtomGroupQuaternions(
-              (BS) args[0].value, Integer.MAX_VALUE);
-          Quaternion[] data2 = viewer.getAtomGroupQuaternions(
-              (BS) args[1].value, Integer.MAX_VALUE);
-          qs = Quaternion.div(data2, data1, nMax, isRelative);
-          break;
-        }
-      }
-      P3 pt1 = ptValue(args[1], false);
-      p4 = planeValue(args[0]);
-      if (pt1 != null)
-        q = Quaternion.getQuaternionFrame(P3.new3(0, 0, 0), pt0, pt1);
-      else
-        q = Quaternion.newVA(pt0, SV.fValue(args[1]));
-      break;
-    case 3:
-      if (args[0].tok == T.point4f) {
-        P3 pt = (args[2].tok == T.point3f ? (P3) args[2].value
-            : viewer.getAtomSetCenter((BS) args[2].value));
-        return addXStr((Quaternion.newP4((P4) args[0].value)).draw("q",
-            SV.sValue(args[1]), pt, 1f));
-      }
-      P3[] pts = new P3[3];
-      for (int i = 0; i < 3; i++)
-        pts[i] = (args[i].tok == T.point3f ? (P3) args[i].value
-            : viewer.getAtomSetCenter((BS) args[i].value));
-      q = Quaternion.getQuaternionFrame(pts[0], pts[1], pts[2]);
-      break;
-    case 4:
-      if (tok == T.quaternion)
-        p4 = P4.new4(SV.fValue(args[1]), SV
-            .fValue(args[2]), SV.fValue(args[3]), SV
-            .fValue(args[0]));
-      else
-        q = Quaternion.newVA(P3.new3(SV.fValue(args[0]),
-            SV.fValue(args[1]), SV.fValue(args[2])),
-            SV.fValue(args[3]));
-      break;
-    }
-    if (qs != null) {
-      if (nMax != Integer.MAX_VALUE) {
-        JmolList<P4> list = new  JmolList<P4>();
-        for (int i = 0; i < qs.length; i++)
-          list.addLast(qs[i].toPoint4f());
-        return addXList(list);
-      }
-      q = (qs.length > 0 ? qs[0] : null);
-    }
-    return addXPt4((q == null ? Quaternion.newP4(p4) : q).toPoint4f());
-  }
-
-  private boolean evaluateRandom(SV[] args) {
-    if (args.length > 2)
-      return false;
-    float lower = (args.length < 2 ? 0 : SV.fValue(args[0]));
-    float range = (args.length == 0 ? 1 : SV
-        .fValue(args[args.length - 1]));
-    range -= lower;
-    return addXFloat((float) (Math.random() * range) + lower);
-  }
-
-  private boolean evaluateCross(SV[] args) {
-    if (args.length != 2)
-      return false;
-    SV x1 = args[0];
-    SV x2 = args[1];
-    if (x1.tok != T.point3f || x2.tok != T.point3f)
-      return false;
-    V3 a = V3.newV((P3) x1.value);
-    V3 b = V3.newV((P3) x2.value);
-    a.cross(a, b);
-    return addXPt(P3.newP(a));
-  }
-
-  private boolean evaluateLoad(SV[] args, int tok) throws ScriptException {
-    if (args.length > 2 || args.length < 1)
-      return false;
-    String file = SV.sValue(args[0]);
-    int nBytesMax = (args.length == 2 ? args[1].asInt() : -1);
-    if (viewer.isJS && file.startsWith("?")) {
-      if (tok == T.file)
-        return addXStr("");
-      file = eval.loadFileAsync("load()_", file, oPt, true);
-      // A ScriptInterrupt will be thrown, and an asynchronous
-      // file load will initiate, which will return to the script 
-      // at this command when the load operation has completed.
-      // Note that we need to have just a simple command here.
-      // The evaluation will be repeated up to this point, so for example,
-      // x = (i++) + load("?") would increment i twice.
-    }
-    return addXStr(tok == T.load ? viewer.getFileAsString4(file, nBytesMax,
-        false, false) : viewer.getFilePath(file, false));
-  }
-
-  private boolean evaluateWrite(SV[] args) throws ScriptException {
-    if (args.length == 0)
-      return false;
-    return addXStr(eval.write(args));
-  }
-
-  private boolean evaluateScript(SV[] args, int tok)
-      throws ScriptException {
-    if (tok == T.javascript && args.length != 1 || args.length == 0
-        || args.length > 2)
-      return false;
-    String s = SV.sValue(args[0]);
-    SB sb = new SB();
-    switch (tok) {
-    case T.script:
-      String appID = (args.length == 2 ? SV.sValue(args[1]) : ".");
-      // options include * > . or an appletID with or without "jmolApplet"
-      if (!appID.equals("."))
-        sb.append(viewer.jsEval(appID + "\1" + s));
-      if (appID.equals(".") || appID.equals("*"))
-        eval.runScriptBuffer(s, sb);
-      break;
-    case T.javascript:
-      sb.append(viewer.jsEval(s));
-      break;
-    }
-    s = sb.toString();
-    float f;
-    return (Float.isNaN(f = Parser.parseFloatStrict(s)) ? addXStr(s) : s
-        .indexOf(".") >= 0 ? addXFloat(f) : addXInt(Parser.parseInt(s)));
-  }
-
-  private boolean evaluateData(SV[] args) {
-
-    // x = data("somedataname") # the data
-    // x = data("data2d_xxxx") # 2D data (x,y paired values)
-    // x = data("data2d_xxxx", iSelected) # selected row of 2D data, with <=0
-    // meaning "relative to the last row"
-    // x = data("property_x", "property_y") # array addition of two property
-    // sets
-    // x = data({atomno < 10},"xyz") # (or "pdb" or "mol") coordinate data in
-    // xyz, pdb, or mol format
-    // x = data(someData,ptrFieldOrColumn,nBytes,firstLine) # extraction of a
-    // column of data based on a field (nBytes = 0) or column range (nBytes >
-    // 0)
-    if (args.length != 1 && args.length != 2 && args.length != 4)
-      return false;
-    String selected = SV.sValue(args[0]);
-    String type = (args.length == 2 ? SV.sValue(args[1]) : "");
-
-    if (args.length == 4) {
-      int iField = args[1].asInt();
-      int nBytes = args[2].asInt();
-      int firstLine = args[3].asInt();
-      float[] f = Parser.extractData(selected, iField, nBytes, firstLine);
-      return addXStr(Escape.escapeFloatA(f, false));
-    }
-
-    if (selected.indexOf("data2d_") == 0) {
-      // tab, newline separated data
-      float[][] f1 = viewer.getDataFloat2D(selected);
-      if (f1 == null)
-        return addXStr("");
-      if (args.length == 2 && args[1].tok == T.integer) {
-        int pt = args[1].intValue;
-        if (pt < 0)
-          pt += f1.length;
-        if (pt >= 0 && pt < f1.length)
-          return addXStr(Escape.escapeFloatA(f1[pt], false));
-        return addXStr("");
-      }
-      return addXStr(Escape.escapeFloatAA(f1, false));
-    }
-
-    // parallel addition of float property data sets
-
-    if (selected.indexOf("property_") == 0) {
-      float[] f1 = viewer.getDataFloat(selected);
-      if (f1 == null)
-        return addXStr("");
-      float[] f2 = (type.indexOf("property_") == 0 ? viewer.getDataFloat(type)
-          : null);
-      if (f2 != null) {
-        f1 = ArrayUtil.arrayCopyF(f1, -1);
-        for (int i = Math.min(f1.length, f2.length); --i >= 0;)
-          f1[i] += f2[i];
-      }
-      return addXStr(Escape.escapeFloatA(f1, false));
-    }
-
-    // some other data type -- just return it
-
-    if (args.length == 1) {
-      Object[] data = viewer.getData(selected);
-      return addXStr(data == null ? "" : "" + data[1]);
-    }
-    // {selected atoms} XYZ, MOL, PDB file format
-    return addXStr(viewer.getData(selected, type));
-  }
-
-  private boolean evaluateLabel(int intValue, SV[] args)
-      throws ScriptException {
-    // NOT {xxx}.label
-    // {xxx}.label("....")
-    // {xxx}.yyy.format("...")
-    // (value).format("...")
-    // format("....",a,b,c...)
-
-    SV x1 = (args.length < 2 ? getX() : null);
-    String format = (args.length == 0 ? "%U" : SV.sValue(args[0]));
-    boolean asArray = T.tokAttr(intValue, T.minmaxmask);
-    if (x1 == null)
-      return addXStr(SV.sprintfArray(args));
-    BS bs = SV.getBitSet(x1, true);
-    if (bs == null)
-      return addXObj(SV.sprintf(TextFormat.formatCheck(format), x1));
-    return addXObj(eval.getBitsetIdent(bs, format,
-          x1.value, true, x1.index, asArray));
-  }
-
-  private boolean evaluateWithin(SV[] args) throws ScriptException {
-    if (args.length < 1 || args.length > 5)
-      return false;
-    int i = args.length;
-    float distance = 0;
-    Object withinSpec = args[0].value;
-    String withinStr = "" + withinSpec;
-    int tok = args[0].tok;
-    if (tok == T.string)
-      tok = T.getTokFromName(withinStr);
-    boolean isVdw = (tok == T.vanderwaals);
-    if (isVdw) {
-      distance = 100;
-      withinSpec = null;
-    }
-    BS bs;
-    boolean isWithinModelSet = false;
-    boolean isWithinGroup = false;
-    boolean isDistance = (isVdw || tok == T.decimal || tok == T.integer);
-    RadiusData rd = null;
-    switch (tok) {
-    case T.branch:
-      if (i != 3 || !(args[1].value instanceof BS)
-          || !(args[2].value instanceof BS))
-        return false;
-      return addXBs(viewer.getBranchBitSet(
-          ((BS) args[2].value).nextSetBit(0), ((BS) args[1].value)
-              .nextSetBit(0), true));
-    case T.smiles:
-    case T.substructure:  // same as "SMILES"
-    case T.search:
-      // within("smiles", "...", {bitset})
-      // within("smiles", "...", {bitset})
-      BS bsSelected = null;
-      boolean isOK = true;
-      switch (i) {
-      case 2:
-        break;
-      case 3:
-        isOK = (args[2].tok == T.bitset);
-        if (isOK)
-          bsSelected = (BS) args[2].value;
-        break;
-      default:
-        isOK = false;
-      }
-      if (!isOK)
-        eval.error(ScriptEvaluator.ERROR_invalidArgument);
-      return addXObj(eval.getSmilesMatches(SV
-          .sValue(args[1]), null, bsSelected, null, tok == T.search, asBitSet));
-    }
-    if (withinSpec instanceof String) {
-      if (tok == T.nada) {
-        tok = T.spec_seqcode;
-        if (i > 2)
-          return false;
-        i = 2;
-      }
-    } else if (isDistance) {
-      if (!isVdw)
-        distance = SV.fValue(args[0]); 
-      if (i < 2)
-        return false;
-      switch (tok = args[1].tok) {
-      case T.on:
-      case T.off:
-        isWithinModelSet = args[1].asBoolean();
-        i = 0;
-        break;
-      case T.string:
-        String s = SV.sValue(args[1]);
-        if (s.startsWith("$"))
-          return addXBs(eval.getAtomsNearSurface(distance, s.substring(1)));
-        isWithinGroup = (s.equalsIgnoreCase("group"));
-        isVdw = (s.equalsIgnoreCase("vanderwaals"));
-        if (isVdw) {
-          withinSpec = null;
-          tok = T.vanderwaals;
-        } else {
-          tok = T.group;
-        }
-        break;
-      }
-    } else {
-      return false;
-    }
-    P3 pt = null;
-    P4 plane = null;
-    switch (i) {
-    case 1:
-      // within (sheet)
-      // within (helix)
-      // within (boundbox)
-      switch (tok) {
-      case T.helix:
-      case T.sheet:
-      case T.boundbox:
-        return addXBs(viewer.getAtomBits(tok, null));
-      case T.basepair:
-        return addXBs(viewer.getAtomBits(tok, ""));
-      case T.spec_seqcode:
-        return addXBs(viewer.getAtomBits(T.sequence,
-            withinStr));
-      }
-      return false;
-    case 2:
-      // within (atomName, "XX,YY,ZZZ")
-      switch (tok) {
-      case T.spec_seqcode:
-        tok = T.sequence;
-        break;
-      case T.atomname:
-      case T.atomtype:
-      case T.basepair:
-      case T.sequence:
-        return addXBs(viewer.getAtomBits(tok, SV
-            .sValue(args[args.length - 1])));
-      }
-      break;
-    case 3:
-      switch (tok) {
-      case T.on:
-      case T.off:
-      case T.group:
-      case T.vanderwaals:
-      case T.plane:
-      case T.hkl:
-      case T.coord:
-        break;
-      case T.sequence:
-        // within ("sequence", "CII", *.ca)
-        withinStr = SV.sValue(args[2]);
-        break;
-      default:
-        return false;
-      }
-      // within (distance, group, {atom collection})
-      // within (distance, true|false, {atom collection})
-      // within (distance, plane|hkl, [plane definition] )
-      // within (distance, coord, [point or atom center] )
-      break;
-    }
-    i = args.length - 1;
-    if (args[i].value instanceof P4) {
-      plane = (P4) args[i].value;
-    } else if (args[i].value instanceof P3) {
-      pt = (P3) args[i].value;
-      if (SV.sValue(args[1]).equalsIgnoreCase("hkl"))
-        plane = eval.getHklPlane(pt);
-    }
-    if (i > 0 && plane == null && pt == null
-        && !(args[i].value instanceof BS))
-      return false;
-    if (plane != null)
-      return addXBs(viewer.getAtomsNearPlane(distance, plane));
-    if (pt != null)
-      return addXBs(viewer.getAtomsNearPt(distance, pt));
-    bs = (args[i].tok == T.bitset ? SV.bsSelectVar(args[i]) : null);
-    if (tok == T.sequence)
-      return addXBs(viewer.getSequenceBits(withinStr, bs));
-    if (bs == null)
-      bs = new BS();
-    if (!isDistance)
-      return addXBs(viewer.getAtomBits(tok, bs));
-    if (isWithinGroup)
-      return addXBs(viewer.getGroupsWithin((int) distance, bs));
-    if (isVdw)
-      rd = new RadiusData(null, 
-          (distance > 10 ? distance / 100 : distance), 
-          (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET), EnumVdw.AUTO);
-    return addXBs(viewer.getAtomsWithinRadius(distance, bs, isWithinModelSet, rd));
-  }
-
-  private boolean evaluateContact(SV[] args) {
-    if (args.length < 1 || args.length > 3)
-      return false;
-    int i = 0;
-    float distance = 100;
-    int tok = args[0].tok;
-    switch (tok) {
-    case T.decimal:
-    case T.integer:
-      distance = SV.fValue(args[i++]);
-      break;
-    case T.bitset:
-      break;
-    default:
-      return false;
-    }
-    if (i == args.length || !(args[i].value instanceof BS))
-      return false;
-    BS bsA = BSUtil.copy(SV.bsSelectVar(args[i++]));
-    if (chk)
-      return addXBs(new BS());
-    BS bsB = (i < args.length ? BSUtil.copy(SV
-        .bsSelectVar(args[i])) : null);
-    RadiusData rd = new RadiusData(null,
-        (distance > 10 ? distance / 100 : distance),
-        (distance > 10 ? EnumType.FACTOR : EnumType.OFFSET), EnumVdw.AUTO);
-    bsB = eval.setContactBitSets(bsA, bsB, true, Float.NaN, rd, false);
-    bsB.or(bsA);
-    return addXBs(bsB);
-  }
-
-  private boolean evaluateColor(SV[] args) {
-    // color("hsl", {r g b})         # r g b in 0 to 255 scale 
-    // color("rwb")                  # "" for most recently used scheme for coloring by property
-    // color("rwb", min, max)        # min/max default to most recent property mapping 
-    // color("rwb", min, max, value) # returns color
-    // color("$isosurfaceId")        # info for a given isosurface
-    // color("$isosurfaceId", value) # color for a given mapped isosurface value
-    
-    String colorScheme = (args.length > 0 ? SV.sValue(args[0])
-        : "");
-    if (colorScheme.equalsIgnoreCase("hsl") && args.length == 2) {
-      P3 pt = P3.newP(SV.ptValue(args[1]));
-      float[] hsl = new float[3];
-      ColorEncoder.RGBtoHSL(pt.x, pt.y, pt.z, hsl);
-      pt.set(hsl[0]*360, hsl[1]*100, hsl[2]*100);
-      return addXPt(pt);
-    }
-    boolean isIsosurface = colorScheme.startsWith("$");
-    ColorEncoder ce = (isIsosurface ? null : viewer.getColorEncoder(colorScheme));
-    if (!isIsosurface && ce == null)
-      return addXStr("");
-    float lo = (args.length > 1 ? SV.fValue(args[1])
-        : Float.MAX_VALUE);
-    float hi = (args.length > 2 ? SV.fValue(args[2])
-        : Float.MAX_VALUE);
-    float value = (args.length > 3 ? SV.fValue(args[3])
-        : Float.MAX_VALUE);
-    boolean getValue = (value != Float.MAX_VALUE || lo != Float.MAX_VALUE
-        && hi == Float.MAX_VALUE);
-    boolean haveRange = (hi != Float.MAX_VALUE);
-    if (!haveRange && colorScheme.length() == 0) {
-      value = lo;
-      float[] range = viewer.getCurrentColorRange();
-      lo = range[0];
-      hi = range[1];
-    }
-    if (isIsosurface) {
-      // isosurface color scheme      
-      String id = colorScheme.substring(1);
-      Object[] data = new Object[] { id, null};
-      if (!viewer.getShapePropertyData(JC.SHAPE_ISOSURFACE, "colorEncoder", data))
-        return addXStr("");
-      ce = (ColorEncoder) data[1];
-    } else {
-      ce.setRange(lo, hi, lo > hi);
-    }
-    Map<String, Object> key = ce.getColorKey();
-    if (getValue)
-      return addXPt(ColorUtil.colorPointFromInt2(ce
-          .getArgb(hi == Float.MAX_VALUE ? lo : value)));
-    return addXVar(SV.getVariableMap(key));
-  }
-
-  private boolean evaluateConnected(SV[] args) {
-    /*
-     * Two options here:
-     * 
-     * connected(1, 3, "single", {carbon})
-     * 
-     * connected(1, 3, "partial 3.1", {carbon})
-     * 
-     * means "atoms connected to carbon by from 1 to 3 single bonds"
-     * 
-     * connected(1.0, 1.5, "single", {carbon}, {oxygen})
-     * 
-     * means "single bonds from 1.0 to 1.5 Angstroms between carbon and oxygen"
-     * 
-     * the first returns an atom bitset; the second returns a bond bitset.
-     */
-
-    if (args.length > 5)
-      return false;
-    float min = Integer.MIN_VALUE, max = Integer.MAX_VALUE;
-    float fmin = 0, fmax = Float.MAX_VALUE;
-
-    int order = JmolEdge.BOND_ORDER_ANY;
-    BS atoms1 = null;
-    BS atoms2 = null;
-    boolean haveDecimal = false;
-    boolean isBonds = false;
-    for (int i = 0; i < args.length; i++) {
-      SV var = args[i];
-      switch (var.tok) {
-      case T.bitset:
-        isBonds = (var.value instanceof BondSet);
-        if (isBonds && atoms1 != null)
-          return false;
-        if (atoms1 == null)
-          atoms1 = SV.bsSelectVar(var);
-        else if (atoms2 == null)
-          atoms2 = SV.bsSelectVar(var);
-        else
-          return false;
-        break;
-      case T.string:
-        String type = SV.sValue(var);
-        if (type.equalsIgnoreCase("hbond"))
-          order = JmolEdge.BOND_HYDROGEN_MASK;
-        else
-          order = ScriptEvaluator.getBondOrderFromString(type);
-        if (order == JmolEdge.BOND_ORDER_NULL)
-          return false;
-        break;
-      case T.decimal:
-        haveDecimal = true;
-        //$FALL-THROUGH$
-      default:
-        int n = var.asInt();
-        float f = var.asFloat();
-        if (max != Integer.MAX_VALUE)
-          return false;
-
-        if (min == Integer.MIN_VALUE) {
-          min = Math.max(n, 0);
-          fmin = f;
-        } else {
-          max = n;
-          fmax = f;
-        }
-      }
-    }
-    if (min == Integer.MIN_VALUE) {
-      min = 1;
-      max = 100;
-      fmin = JC.DEFAULT_MIN_CONNECT_DISTANCE;
-      fmax = JC.DEFAULT_MAX_CONNECT_DISTANCE;
-    } else if (max == Integer.MAX_VALUE) {
-      max = min;
-      fmax = fmin;
-      fmin = JC.DEFAULT_MIN_CONNECT_DISTANCE;
-    }
-    if (atoms1 == null)
-      atoms1 = viewer.getModelUndeletedAtomsBitSet(-1);
-    if (haveDecimal && atoms2 == null)
-      atoms2 = atoms1;
-    if (atoms2 != null) {
-      BS bsBonds = new BS();
-      viewer
-          .makeConnections(fmin, fmax, order,
-              T.identify, atoms1, atoms2, bsBonds,
-              isBonds, false, 0);
-      return addXVar(SV.newVariable(T.bitset, new BondSet(bsBonds, viewer
-          .getAtomIndices(viewer.getAtomBits(T.bonds, bsBonds)))));
-    }
-    return addXBs(viewer.getAtomsConnected(min, max, order, atoms1));
-  }
-
-  private boolean evaluateSubstructure(SV[] args, int tok)
-      throws ScriptException {
-    // select substucture(....) legacy - was same as smiles(), now search()
-    // select smiles(...)
-    // select search(...)  now same as substructure
-    if (args.length == 0)
-      return false;
-    BS bs = new BS();
-    String pattern = SV.sValue(args[0]);
-    if (pattern.length() > 0)
-      try {
-        BS bsSelected = (args.length == 2 && args[1].tok == T.bitset ? SV
-            .bsSelectVar(args[1])
-            : null);
-        bs = viewer.getSmilesMatcher().getSubstructureSet(pattern,
-            viewer.getModelSet().atoms, viewer.getAtomCount(), bsSelected,
-            tok != T.smiles && tok != T.substructure, false);
-      } catch (Exception e) {
-        eval.evalError(e.toString(), null);
-      }
-    return addXBs(bs);
-  }
-
   @SuppressWarnings("unchecked")
   private boolean operate() throws ScriptException {
 
@@ -3460,6 +1373,50 @@ public class ScriptMathProcessor {
     return true;
   }
 
+  public P3 ptValue(SV x, boolean allowFloat) throws ScriptException {
+    Object pt;
+    if (chk)
+      return new P3();
+    switch (x.tok) {
+    case T.point3f:
+      return (P3) x.value;
+    case T.bitset:
+      return (P3) eval.getBitsetProperty(SV.bsSelectVar(x), T.xyz, null, null,
+          x.value, null, false, Integer.MAX_VALUE, false);
+    case T.string:
+      pt = Escape.uP(SV.sValue(x));
+      if (pt instanceof P3)
+        return (P3) pt;
+      break;
+    case T.varray:
+      pt = Escape.uP("{" + SV.sValue(x) + "}");
+      if (pt instanceof P3)
+        return (P3) pt;
+      break;
+    }
+    if (!allowFloat)
+      return null;
+    float f = SV.fValue(x);
+    return P3.new3(f, f, f);
+  }
+
+  public P4 planeValue(T x) {
+    if (chk)
+      return new P4();
+    switch (x.tok) {
+    case T.point4f:
+      return (P4) x.value;
+    case T.varray:
+    case T.string:
+      Object pt = Escape.uP(SV.sValue(x));
+      return (pt instanceof P4 ? (P4) pt : null);
+    case T.bitset:
+      // ooooh, wouldn't THIS be nice!
+      break;
+    }
+    return null;
+  }
+
   static private String typeOf(SV x) {
     int tok = (x == null ? T.nada : x.tok);
     switch (tok) {
@@ -3542,7 +1499,7 @@ public class ScriptMathProcessor {
       case T.stddev:
       case T.sum:
       case T.sum2:
-        return addXObj(getMinMax(x2.getList(), op.intValue));
+        return addXObj(eval.getExtension().getMinMax(x2.getList(), op.intValue));
       case T.sort:
       case T.reverse:
         return addXVar(x2
@@ -3635,219 +1592,10 @@ public class ScriptMathProcessor {
     return false;
   }
 
-  @SuppressWarnings("unchecked")
-  private static Object getMinMax(Object floatOrSVArray, int tok) {
-    float[] data = null;
-    JmolList<SV> sv = null;
-    int ndata = 0;
-    while (true) {
-      if (Escape.isAF(floatOrSVArray)) {
-        data = (float[]) floatOrSVArray;
-        ndata = data.length;
-        if (ndata == 0)
-          break;
-      } else if (floatOrSVArray instanceof JmolList<?>) {
-        sv = (JmolList<SV>) floatOrSVArray;
-        ndata = sv.size();
-        if (ndata == 0)
-          break;
-        SV sv0 = sv.get(0);
-        if (sv0.tok == T.string && ((String) sv0.value).startsWith("{")) {
-          Object pt = SV.ptValue(sv0);
-          if (pt instanceof P3)
-            return getMinMaxPoint(sv, tok);
-          if (pt instanceof P4)
-            return getMinMaxQuaternion(sv, tok);
-          break;
-        }
-      } else {
-        break;
-      }
-      double sum;
-      switch (tok) {
-      case T.min:
-        sum = Float.MAX_VALUE;
-        break;
-      case T.max:
-        sum = -Float.MAX_VALUE;
-        break;
-      default:
-        sum = 0;
-      }
-      double sum2 = 0;
-      int n = 0;
-      for (int i = ndata; --i >= 0;) {
-        float v = (data == null ? SV.fValue(sv.get(i)) : data[i]);
-        if (Float.isNaN(v))
-          continue;
-        n++;
-        switch (tok) {
-        case T.sum2:
-        case T.stddev:
-          sum2 += ((double) v) * v;
-          //$FALL-THROUGH$
-        case T.sum:
-        case T.average:
-          sum += v;
-          break;
-        case T.min:
-          if (v < sum)
-            sum = v;
-          break;
-        case T.max:
-          if (v > sum)
-            sum = v;
-          break;
-        }
-      }
-      if (n == 0)
-        break;
-      switch (tok) {
-      case T.average:
-        sum /= n;
-        break;
-      case T.stddev:
-        if (n == 1)
-          break;
-        sum = Math.sqrt((sum2 - sum * sum / n) / (n - 1));
-        break;
-      case T.min:
-      case T.max:
-      case T.sum:
-        break;
-      case T.sum2:
-        sum = sum2;
-        break;
-      }
-      return Float.valueOf((float) sum);
-    }
-    return "NaN";
-  }
-
-  /**
-   * calculates the statistical value for x, y, and z independently
-   * 
-   * @param pointOrSVArray
-   * @param tok
-   * @return Point3f or "NaN"
-   */
-  @SuppressWarnings("unchecked")
-  private static Object getMinMaxPoint(Object pointOrSVArray, int tok) {
-    P3[] data = null;
-    JmolList<SV> sv = null;
-    int ndata = 0;
-    if (pointOrSVArray instanceof Quaternion[]) {
-      data = (P3[]) pointOrSVArray;
-      ndata = data.length;
-    } else if (pointOrSVArray instanceof JmolList<?>) {
-      sv = (JmolList<SV>) pointOrSVArray;
-      ndata = sv.size();
-    }
-    if (sv != null || data != null) {
-      P3 result = new P3();
-      float[] fdata = new float[ndata];
-      boolean ok = true;
-      for (int xyz = 0; xyz < 3 && ok; xyz++) {
-        for (int i = 0; i < ndata; i++) {
-          P3 pt = (data == null ? SV.ptValue(sv.get(i)) : data[i]);
-          if (pt == null) {
-            ok = false;
-            break;
-          }
-          switch (xyz) {
-          case 0:
-            fdata[i] = pt.x;
-            break;
-          case 1:
-            fdata[i] = pt.y;
-            break;
-          case 2:
-            fdata[i] = pt.z;
-            break;
-          }
-        }
-        if (!ok)
-          break;
-        Object f = getMinMax(fdata, tok);
-        if (f instanceof Float) {
-          float value = ((Float) f).floatValue();
-          switch (xyz) {
-          case 0:
-            result.x = value;
-            break;
-          case 1:
-            result.y = value;
-            break;
-          case 2:
-            result.z = value;
-            break;
-          }
-        } else {
-          break;
-        }
-      }
-      return result;
-    }
-    return "NaN";
-  }
-
-  private static Object getMinMaxQuaternion(JmolList<SV> svData, int tok) {
-    Quaternion[] data;
-    switch (tok) {
-    case T.min:
-    case T.max:
-    case T.sum:
-    case T.sum2:
-      return "NaN";
-    }
-
-    // only stddev and average
-
-    while (true) {
-      data = getQuaternionArray(svData, T.list);
-      if (data == null)
-        break;
-      float[] retStddev = new float[1];
-      Quaternion result = Quaternion.sphereMean(data, retStddev, 0.0001f);
-      switch (tok) {
-      case T.average:
-        return result;
-      case T.stddev:
-        return Float.valueOf(retStddev[0]);
-      }
-      break;
-    }
-    return "NaN";
-  }
-
-  @SuppressWarnings("unchecked")
-  public
-  static Quaternion[] getQuaternionArray(Object quaternionOrSVData, int itype) {
-    Quaternion[] data;
-    switch (itype) {
-    case T.quaternion:
-      data = (Quaternion[]) quaternionOrSVData;
-      break;
-    case T.point4f:
-      P4[] pts = (P4[]) quaternionOrSVData;
-      data = new Quaternion[pts.length];
-      for (int i = 0; i < pts.length; i++)
-        data[i] = Quaternion.newP4(pts[i]);
-      break;
-    case T.list:
-      JmolList<SV> sv = (JmolList<SV>) quaternionOrSVData;
-      data = new Quaternion[sv.size()];
-      for (int i = 0; i < sv.size(); i++) {
-        P4 pt = SV.pt4Value(sv.get(i));
-        if (pt == null)
-          return null;
-        data[i] = Quaternion.newP4(pt);
-      }
-      break;
-    default:
+  public SV evalOp(T token) throws ScriptException {
+    if (!addOp(token) || !operate())
       return null;
-    }
-    return data;
+    return xStack[xPt--];
   }
   
 }

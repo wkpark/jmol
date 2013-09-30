@@ -476,7 +476,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
           Integer.valueOf(atoms[atomIndex].getAtomNumber())) : (Object) m
           .getAtom(i));
     }
-    define((new MeasurementData(null, viewer, points)).set(tokAction, htMin, radiusData, strFormat, null, tickInfo,
+    define((new MeasurementData().init(null, viewer, points)).set(tokAction, htMin, radiusData, strFormat, null, tickInfo,
         mustBeConnected, mustNotBeConnected, intramolecular, true, 0, (short) 0, null),
         (isDelete ? T.delete : T.define));
   }

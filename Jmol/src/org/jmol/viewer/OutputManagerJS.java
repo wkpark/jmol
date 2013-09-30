@@ -24,10 +24,17 @@
 
 package org.jmol.viewer;
 
-public class OutputManagerJS extends OutputManagerAll {
+import org.jmol.io.JmolOutputChannel;
+
+public class OutputManagerJS extends OutputManager {
 
   public OutputManagerJS() {
-      // by reflection only
+    // by reflection only
+  }
+
+  @Override
+  protected String getLogPath(String fileName) {
+    return fileName;
   }
 
   @Override
@@ -40,5 +47,17 @@ public class OutputManagerJS extends OutputManagerAll {
     return "Clipboard not available";
   }
 
+  @Override
+  JmolOutputChannel openOutputChannel(double privateKey, String fileName,
+                                      boolean asWriter, boolean asAppend) {
+    return (new JmolOutputChannel())
+        .setParams(viewer, fileName, asWriter, null);
+  }
+
+  @Override
+  protected String createSceneSet(String sceneFile, String type, int width,
+                                int height) {
+    return "ERROR: Not Available";
+  }
 
 }

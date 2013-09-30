@@ -47,7 +47,6 @@ import org.jmol.util.SB;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
-import org.jmol.viewer.Viewer;
 
 
 public class JmolBinary {
@@ -413,10 +412,6 @@ public class JmolBinary {
     return getJzu().getZipFileContentsAsBytes(bis, subFileList, i);
   }
 
-  public static Object createZipSet(double privateKey, FileManager fm, Viewer viewer, String fileName, String script, String[] scripts, boolean includeRemoteFiles) {
-    return getJzu().createZipSet(privateKey, fm, viewer, fileName, script, scripts, includeRemoteFiles);
-  }
-
   public static Object getStreamAsBytes(BufferedInputStream bis,
                                          JmolOutputChannel out) throws IOException {
     byte[] buf = new byte[1024];
@@ -441,24 +436,6 @@ public class JmolBinary {
   }
 
 
-  public static String postByteArray(FileManager fm, String outFileName,
-                                      byte[] bytes) {
-    Object ret = fm.getBufferedInputStreamOrErrorMessageFromName(outFileName,
-        null, false, false, bytes, false);
-    if (ret instanceof String)
-      return (String) ret;
-    try {
-      ret = getStreamAsBytes((BufferedInputStream) ret, null);
-    } catch (IOException e) {
-      try {
-        ((BufferedInputStream) ret).close();
-      } catch (IOException e1) {
-        // ignore
-      }
-    }
-    return fixUTF((byte[]) ret);
-  }
-
   public static boolean isBase64(SB sb) {
     return (sb.indexOf(";base64,") == 0);
   }
@@ -473,10 +450,6 @@ public class JmolBinary {
 
   public static BufferedReader getBufferedReaderForString(String string) {
     return new BufferedReader(new StringReader(string));
-  }
-
-  public static String getSceneScript(String[] scenes, Map<String, String> htScenes, JmolList<Integer> list) {
-    return getJzu().getSceneScript(scenes, htScenes, list);
   }
 
   public static byte[] getCachedPngjBytes(FileManager fm, String pathName) {
@@ -651,5 +624,20 @@ public class JmolBinary {
     }
   }
 
+  public static void addZipEntry(Object zos, String fileName) throws IOException {
+    getJzu().addZipEntry(zos, fileName);    
+  }
+
+  public static void closeZipEntry(Object zos) throws IOException {
+    getJzu().closeZipEntry(zos);
+  }
+
+  public static Object getZipOutputStream(Object bos) {
+    return getJzu().getZipOutputStream(bos);
+  }
+
+  public static int getCrcValue(byte[] bytes) {
+    return getJzu().getCrcValue(bytes);
+  }
 }
 

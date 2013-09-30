@@ -28,7 +28,6 @@ package org.jmol.api;
 import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.P3;
-import org.jmol.util.Tensor;
 import org.jmol.util.V3;
 
 public interface JmolAdapterAtomIterator {

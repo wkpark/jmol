@@ -282,8 +282,8 @@ public class MeasuresRenderer extends LabelsRenderer {
     int count = measurementPending.getCount();
     if (count == 0)
       return;
-    g3d.setColix(measurementPending.traceX == Integer.MIN_VALUE ? viewer.getColixRubberband()
-        : count == 2 ? C.MAGENTA : C.GOLD);
+    g3d.setColix(labelColix = (measurementPending.traceX == Integer.MIN_VALUE ? viewer.getColixRubberband()
+        : count == 2 ? C.MAGENTA : C.GOLD));
     measurementPending.refresh();
     if (measurementPending.haveTarget())
       renderMeasurement(count, measurementPending, measurementPending.traceX == Integer.MIN_VALUE);

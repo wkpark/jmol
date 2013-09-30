@@ -30,7 +30,6 @@ import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.P3;
-import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;

@@ -92,7 +92,7 @@ class JmolInstance {
     params.put("quality", Integer.valueOf(2));
     params.put("width", Integer.valueOf(width));
     params.put("height", Integer.valueOf(height));
-    viewer.createImage(params);
+    viewer.outputToFile(params);
     pictIsScratchFile = true;
   }
 

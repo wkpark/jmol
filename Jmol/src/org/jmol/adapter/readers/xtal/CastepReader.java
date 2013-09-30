@@ -570,7 +570,7 @@ public class CastepReader extends AtomSetCollectionReader {
     for (int p = 0, i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         a[i][j] = data[p++];
-    atom.addTensor(Tensor.getTensorFromAsymmetricTensor(a, "charge", atom.atomName + " " + line0), null, false);
+    atom.addTensor((new Tensor()).setFromAsymmetricTensor(a, "charge", atom.atomName + " " + line0), null, false);
     if (!haveCharges)
       appendLoadNote("Ellipsoids set \"charge\": Born Effective Charges");
     haveCharges = true;

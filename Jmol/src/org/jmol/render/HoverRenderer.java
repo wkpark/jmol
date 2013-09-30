@@ -24,7 +24,6 @@
 package org.jmol.render;
 
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Text;
 import org.jmol.shape.Hover;
 

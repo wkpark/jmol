@@ -41,7 +41,6 @@ import javax.swing.JPanel;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -53,7 +52,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
   JFileChooser chooser;
   private static boolean pdbCartoonChecked = true;
   private FPPanel display;
-  JmolViewer viewer;
+  Viewer viewer;
 
   /**
    * Constructor
@@ -64,7 +63,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
    * @param allowAppend
    * @param viewerOptions
    */
-  public FilePreview(JmolViewer viewer, JFileChooser fileChooser, 
+  public FilePreview(Viewer viewer, JFileChooser fileChooser, 
       boolean allowAppend, Map<String, Object> viewerOptions) {
     super();
     this.viewer = viewer;
@@ -74,7 +73,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     Box box = Box.createVerticalBox();
 
     // Add a checkbox to activate / deactivate preview
-    final JmolViewer v = viewer;
+    final Viewer v = viewer;
     active = new JCheckBox(GT._("Preview"), false);
     active.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -148,15 +147,14 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
    * @param file
    *        File selected
    */
-  void updatePreview(JmolViewer viewer, File file) {
+  void updatePreview(Viewer viewer, File file) {
     String script;
     if (file == null) {
       script = "zap";
     } else {
       String fileName = file.getAbsolutePath();
       //System.out.println("updatePreview "+ fileName + " " + chooser.getSelectedFile());
-      String url = FileManager.getLocalUrl(viewer.apiPlatform
-          .newFile(fileName));
+      String url = viewer.getLocalUrl(fileName);
       //System.out.println("updatePreview + " + fileName + " " + url);
       if (url != null)
         fileName = url;

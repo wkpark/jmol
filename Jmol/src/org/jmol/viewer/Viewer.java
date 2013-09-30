@@ -132,7 +132,6 @@ import java.net.URL;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -560,7 +559,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       autoExit = checkOption2("exit", "-x");
       cd(".");
       if (isHeadless()) {
-        headlessImage = (Map<String, Object>) info.get("headlessImage");
+        headlessImageParams = (Map<String, Object>) info.get("headlessImage");
         o = info.get("headlistMaxTimeMs");
         if (o == null)
           o = Integer.valueOf(60000);
@@ -1881,6 +1880,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   String getDefaultDirectory() {
     return global.defaultDirectory;
+  }
+
+  public String getLocalUrl(String fileName) {
+    return fileManager.getLocalUrl(fileName);
   }
 
   public BufferedInputStream getBufferedInputStream(String fullPathName) {
@@ -3563,8 +3566,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return sc;
   }
 
-  public Object getWrappedStateScript() {
-    return getOutputManager().getWrappedState(null, null, null, false);
+  public String getWrappedStateScript() {
+    return (String) getOutputManager().getWrappedState(null, null, null, null);
   }
 
   @Override
@@ -3741,6 +3744,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setPendingMeasurement(MeasurementPending measurementPending) {
     // from MouseManager
+    loadShape(JC.SHAPE_MEASURES);
     setShapeProperty(JC.SHAPE_MEASURES, "pending", measurementPending);
   }
 
@@ -4439,11 +4443,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   /**
-   * @param params
-   * @return byte[] image or an error message
+   * @return byte[] image, or null and an error message
    */
   @Override
-  public Object getImageAsBytes(Map<String, Object> params) {
+  public byte[] getImageAsBytes(String type, int width, int height, int quality, String[] errMsg) {
     /**
      * 
      * 
@@ -4454,7 +4457,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      */
     {
     }
-    return getOutputManager().getImageAsBytes(params);
+    return getOutputManager().getImageAsBytes(type, width, height, quality, errMsg);
   }
 
   @Override
@@ -4578,10 +4581,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void exitJmol() {
     if (isApplet)
       return;
-    if (headlessImage != null) {
+    if (headlessImageParams != null) {
       try {
         if (isHeadless())
-          createImage(headlessImage);
+          outputToFile(headlessImageParams);
       } catch (Exception e) {
         //
       }
@@ -6077,7 +6080,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       global.defaultLoadFilter = value;
       break;
     case T.logfile:
-      value = setLogFile(value);
+      value = getOutputManager().setLogFile(value);
       if (value == null)
         return;
       break;
@@ -7915,7 +7918,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   JmolScriptEditorInterface scriptEditor;
   JmolPopupInterface jmolpopup;
   private JmolPopupInterface modelkitPopup;
-  private Map<String, Object> headlessImage;
+  private Map<String, Object> headlessImageParams;
 
   @Override
   public Object getProperty(String returnType, String infoType, Object paramInfo) {
@@ -8679,7 +8682,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // ///////////////////////////////////////////////////////////////
 
   public JmolOutputChannel getOutputChannel(String localName, String[] fullPath) {
-    // called by Script LOAD AS  and ISOSURFACE AS  options 
     return getOutputManager().getOutputChannel(localName, fullPath);
   }
 
@@ -8689,7 +8691,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     params.put("fileName", fileName);
     params.put("type", "txt");
     params.put("text", data);
-    createImage(params);
+    outputToFile(params);
   }
 
   /**
@@ -8732,27 +8734,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getOutputManager().processWriteOrCapture(params);
   }
 
-  public Object createZip(String fileName, String type, String stateInfo,
+  public String createZip(String fileName, String type,
                           String[] scripts) {
     Map<String, Object> params = new Hashtable<String, Object>();
-    params.put("fileName", fileName);
+    params.put("fileName", fileName); // could be null here!
     params.put("type", type);
-    params.put("text", stateInfo);
+    params.put("text", getStateInfo());
     if (scripts != null)
       params.put("scripts", scripts);
     return getOutputManager().outputToFile(params);
-    // fileName, type, stateInfo, null, scripts, , -1, -1
   }
 
   @Override
-  public Object createImage(Map<String, Object> params) {
-    // String fileName, String type, Object text_or_bytes, int quality, int width, int height
+  public String outputToFile(Map<String, Object> params) {
     return getOutputManager().outputToFile(params);
   }
 
-  OutputManager outputManager;
+  private OutputManager outputManager;
   
-  OutputManager getOutputManager() {
+  private OutputManager getOutputManager() {
     if (outputManager != null)
       return outputManager;
     return (outputManager = (OutputManager) Interface.getOptionInterface(isJS
@@ -8973,14 +8973,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void loadImageData(Object image, String nameOrError, String echoName,
                      ScriptContext sc) {
-
-    //what will "image" be in JavaScript. Maybe a unique canvas? We don't really want to hang on to the image itself?
-
     if (image == null)
       Logger.info(nameOrError);
     if (echoName == null) {
       setBackgroundImage((image == null ? null : nameOrError), image);
     } else {
+      loadShape(JC.SHAPE_ECHO);
       setShapeProperty(JC.SHAPE_ECHO, "text", nameOrError);
       if (image != null)
         setShapeProperty(JC.SHAPE_ECHO, "image", image);
@@ -9151,7 +9149,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    */
 
-  @Override
   public boolean checkPrivateKey(double privateKey) {
     return privateKey == this.privateKey;
   }
@@ -10367,33 +10364,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // delegated to JmolFileAdapter
   // ///////////////////////////////////////////////////////////////
 
-  public JmolOutputChannel openOutputChannel(double privateKey, String fileName,
+  public JmolOutputChannel openExportChannel(double privateKey, String fileName,
                                   boolean asWriter) throws IOException {
-    return (!haveAccess(ACCESS.ALL) ? null : getFileAdapter()
-        .openOutputChannel(privateKey, fileManager, fileName, asWriter, false));
+    return getOutputManager().openOutputChannel(privateKey, fileName, asWriter, false);
   }
 
-  public InputStream openFileInputStream(double privateKey, String fileName)
-      throws IOException {
-    return getFileAdapter().openFileInputStream(privateKey, fileName);
-  }
-
-  public String getAbsolutePath(double privateKey, String fileName) {
-    return getFileAdapter().getAbsolutePath(privateKey, fileName);
-  }
-
-  public JmolOutputChannel openLogFile(double privateKey, boolean asAppend)
-      throws IOException {
-    return (!haveAccess(ACCESS.ALL) ? null : getFileAdapter()
-        .openOutputChannel(privateKey, fileManager, logFileName, true, asAppend));
-  }
-  
   /*default*/ String logFileName;
   
-  private String setLogFile(String value) {
-    return getOutputManager().setLogFile(value);
-  }
-
   public void log(String data) {
     if (data != null)
       getOutputManager().logToFile(data);
@@ -10410,6 +10387,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean allowCapture() {
     return !isApplet || isSignedApplet;
+  }
+
+  public MeasurementPending getMP() {
+    return ((MeasurementPending) Interface
+        .getOptionInterface("modelset.MeasurementPending")).set(modelSet);
   }
 
 }

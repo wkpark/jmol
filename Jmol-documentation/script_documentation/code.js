@@ -6,18 +6,27 @@
 //BH 2:47 PM 4/11/2006 added TEXT option
 //BH 6:51 AM 5/30/2007 refined ?command= and ?search= options
 //BH 6:41 AM 10/1/2011 version 12.2 default
+//BH 5:57 PM 4/22/2012 "undefined" "see also" terms removed
+//BH 9/23/2013 6:39:11 AM allowing display of later versions with note
+
+
+docsearch=unescape(document.location.search)
+isxhtmltest=(docsearch.indexOf("html")>=0)
+dowritexml=(docsearch.indexOf("xml")>=0)
+dowritedocbook=(docsearch.indexOf("docbook")>=0)
+
+showrecent = !dowritexml && !dowritedocbook
 
 lastupdate = ""
-startmessage ="See an error? Something missing? Please <a href=\"mailto:hansonr@stolaf.edu?subject=Jmol applet documentation\">let us know</a>. For a wide variety of interactive examples, see <a href=examples-11/new.htm>new.htm</a>."
-defaultversion = "12.2"
-versionlist = ";12.4;12.2;12.0;11.8;11.6;11.4;11.2;11.0;10.2;" //semis on BOTH SIDES
-removelist = versionlist.substring(0, versionlist.length-1).replace(/\;/g, ";*v-")
-versionlist = ";12.4;12.2;12.0;11.8;11.6;" //semis on BOTH SIDES
-
+startmessage ="See an error? Something missing? Please <a href=\"mailto:hansonr@stolaf.edu?subject=Jmol applet documentation\">let us know</a>. For a wide variety of interactive examples, see <a href=examples-12/new.htm>new.htm</a> and <a href=../jsmol/jsmol.htm>jsmol.htm</a>."
+defaultversion = "13.2"
+removelist = ";13.4;13.2;13.0;12.4;12.2;12.0;11.8;11.6;11.4;11.2;11.0;10.2" //semis on LEFT ONLY
+versionlist = ";13.4;13.2;13.0;12.4;12.2;12.0;" //semis on BOTH SIDES
 exampledir = "examples/" //will be ignored if the example has a / in the name
 datadir = "examples/"
 jmoljs = "Jmol.js"
 jmolSite = "http://chemapps.stolaf.edu/jmol"
+jsmolSite = "http://jsmol.sourceforge.net"
 popupscript = "popupscript.js"
 //popup-example display did not work with the multi-file archive path
 
@@ -72,10 +81,11 @@ thistoken=""
 ntest=10
 thesearch=""
 onlycommand=""
-docsearch=unescape(document.location.search)
 thisSubversion = "10.2" //could be 10.x
 rthisversion=""
 spanversion=""
+rthisversion1=""
+spanversion1 = ""
 
 if(document.location.href.indexOf("#")<0){
  thesearch=(docsearch+"search=").split("search=")[1].split("&")[0]
@@ -90,10 +100,7 @@ docbase=(document.location.href.split("?")[0]).split("#")[0]
 onlycommand=(docsearch+"command=").split("command=")[1].split("&")[0]
 onlyid = idof(onlycommand)
 
-dowritexml=(docsearch.indexOf("xml")>=0)
 
-isxhtmltest=(docsearch.indexOf("html")>=0)
-dowritedocbook=(docsearch.indexOf("docbook")>=0)
 doshowunimplemented=(docsearch.indexOf("unimplemented")>=0)
 xrefbase=(dowritexml||dowritedocbook?"":docbase)
 dousejmoljs=(docsearch.indexOf("nojmoljs")<0)
@@ -157,8 +164,19 @@ function setVersion(ver) {
    thisSubversion = newV 
  }
  if (thisSubversion == "11.10")thisSubversion = "12.0"
+
+ if (showrecent) {
+  removelist = removelist.substring(removelist.indexOf(";" + thisSubversion));
+ } 
+ removelist = removelist.replace(/\;/g, ";*v-")
+
+ 
+ thisSubversion1 = thisSubversion.split(".")
+ thisSubversion1 = thisSubversion1[0] + "." + (parseInt(thisSubversion1[1]) - 1)
  rthisversion=new RegExp("Jmol " + thisSubversion,"gi")
+ rthisversion1=new RegExp("Jmol (" + thisSubversion1 + "\\.\\d)","gi")
  spanversion="<span class=\"newv\">Jmol " + thisSubversion + "</span>"
+ spanversion1="<span class=\"newv\">Jmol $1</span>"
  thisVersion = thisSubversion.substring(0,2);
  thisVrefNew = "*v+"+thisSubversion
  if(!dowritexml && !dowritedocbook) {
@@ -310,21 +328,46 @@ function newToken(text,preferred){
 }
 
 
-function newCmd(command,examples,xref,description,nparams,param1,param2,param3,param4){
+function newCmd(command,version0,examples,xref,description,nparams,param1,param2,param3,param4){
+ var c0 = command
+ var isnewc = (c0 != "")
+ var Cmd
+ if (isnewc) {
+  if (Cmds[c0])return;
+	Cmd = Cmds[c0]={}
+	thiscommand = c0
+	thisid = idof(c0)
+ } else {
+	command = thiscommand
+	Cmd = Cmds[command]
+ }
+ 
+ if (!Cmd)alert("??? " + command)
+    //alert("missing " + ref + " in removelist for " + xref + " " + c0)
+
  // *v+10.2 means added in 10.2 -- highlight if thisSubversion and remove from previous versions
  // *v-10.2 means do not include in 10.2 list
  // *v-11   means do not include in 11.x list
  var pt = xref.indexOf("*v-")
+ var isnewer = false;
  if (pt >= 0 && pt == xref.lastIndexOf("*v-")) {
-	var ref = removelist.substring(0, removelist.indexOf(xref.substring(pt,pt+7)))//*v-11.3
-	if (ref == "")alert("problem with " + xref)
+ // just one *v- here 
+  var s = xref.substring(pt,pt+7);
+  var pt1 = removelist.indexOf(s);
+	var ref = (pt1 < 0 ? "" : removelist.substring(0, pt1))//*v-11.3
+	if (ref == ""){
+    //alert("problem with " + xref + " removelist does not contain " + s + " pt1= " + pt1)
+  }
 	xref += ref
  }
  if (xref.substring(0,3)=="*v+") {
 	var ref = (xref.substring(0, 10) + " ").split(" ")[0].split(";")[0].replace(/\+/,"-")
 	var pt = removelist.indexOf(ref)
-	if(pt < 0)alert("missing " + ref + " in removelist for " + xref + " " + command)
-	xref+=removelist.substring(pt + ref.length)
+	if(pt < 0) {
+    isnewer = true;
+  } else {
+	  xref+=removelist.substring(pt + ref.length)
+  }
  }
 
  if (xref.substring(0,2)=="*v") {
@@ -337,15 +380,7 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
  var S=description.split("CHIME NOTE:")
  var descr=checkfortable(marksearch(S[0],1),0)
  var chimenote=(S[1]?checkfortable(marksearch(S[1],1),0):0)
- if(!doshowunimplemented && (notimplemented||command.indexOf("unimplemented")>=0))return
- var c0 = command
- var isnew = (command != "")
- if (isnew) {
-	thiscommand = command
-	thisid = idof(command)
- } else {
-	command = thiscommand
- }
+ if(!doshowunimplemented && (notimplemented||c0.indexOf("unimplemented")>=0))return
  if (onlycommand != "") {
    if (asdivs) {
 	if(thisid == onlyid) firstcmd = command
@@ -353,15 +388,15 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
 	if(thisid != onlyid) return
    }
  }
- var Cmd
- if(isnew) {
-	Cmd = Cmds[command]={}
+ if(isnewc) {
 	Cmd.isimplemented=!notimplemented
 	Cmd.description=descr
+	Cmd.version0 = version0
 	Cmd.chimenote=chimenote
+	Cmd.isnewer = isnewer
 	Cmd.enabled=foundsearch(description)
 	Cmd.version=""
-	Cmd.isnew=false
+	Cmd.isnew=isnewer
 	Cmd.xrefs=""
 	Cmd.examples=examples.replace(/\~/,"")
 	Cmd.list=[]
@@ -374,8 +409,6 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
  	Cmd.keynote = (Cmd.keyname == Cmd.keyname.toUpperCase() ? "The " + Cmd.keyname + " command does not require @{ ... } around Jmol math expressions." : "")
 	Cmd.idof=thisid
 	CmdFromId[thisid]=Cmd
- }else{
-	Cmd = Cmds[command]
  }
 
  if(nparams == "TEXT"){
@@ -387,12 +420,19 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
 	Cmd.textParams[Cmd.textParams.length] = "&nbsp;&nbsp;&nbsp;<a class=\"textParam\" href=\"#" + paramid + "\">" + param1 + "</a><br />"
  }
  var S=xref.split(";")
+ var isnew = false;
+ var isnewer = false;
+ var xrefnew = "";
  for (var i=0;i<S.length;i++){
 	xref=S[i]
 	if(xref.indexOf("*v+")==0){
-		Cmd.isnew|=(xref.indexOf(thisVrefNew)==0)
-                if (c0) {
-			Cmd.version=xref.substring(3,xref.length)
+    isnew = (xref.indexOf(thisVrefNew)==0)
+		Cmd.isnew|=isnew
+    isnewer = (!isnew && xref > "*v+" + thisSubversion)
+    if (isnewer)xrefnew = " [<b>Jmol " + (version0? version0 : Cmd.version0 ? Cmd.version0 : xref.substring(3)) + "</b>]"
+    Cmd.isnewer|=isnewer
+    if (c0) {
+			Cmd.version=xref.substring(3)
 		}
 	}else if(xref && xref.length > 0 && xref!="x" && xref.indexOf("*v-")<0){
 		if(!Xrefs[xref])Xrefs[xref]=""
@@ -400,7 +440,9 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
 		if(Cmd.xrefs.indexOf(xref)<0)Cmd.xrefs+=","+xref
 	}
  }
- if (!Cmd.isnew && (Cmd.description+description+descr).indexOf("Jmol " + thisSubversion) >= 0) {
+ var s = Cmd.description+description+descr
+ if (!Cmd.isnew && (s.indexOf("Jmol " + thisSubversion) >= 0
+             ||s.indexOf("Jmol " + thisSubversion1) >= 0) ) {
    Cmd.isnew = true
    if (!Cmd.version)
      Cmd.version = thisSubversion
@@ -411,7 +453,6 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
 
  var n=Cmd.list.length
  var C=Cmd.list[n]={}
-
  if (command.indexOf(".set")==0) {
    var p = (command.indexOf("(")>=0 ? param1 : command.split(" ")[1]+"").toLowerCase()
    if (mylist.indexOf(" "+p+" ")<0) {
@@ -424,12 +465,17 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
      }
      Cmd.key +=s
    }
+ } else {
+    C.key = (Cmd.name+"_"+(param1.indexOf("{") < 0 ? param1 : param2)).replace(/\./,"").replace(/[\ \"\(\)]/g,"_").toLowerCase() 
  }
 
  if(examples.charAt(0)!="~")C.examples=examples
  C.xref=xref
+ C.xrefnew = xrefnew
  C.isimplemented=!notimplemented
  C.description=descr
+ C.isnew=isnew
+ C.isnewer=isnewer
  C.chimenote=chimenote
  C.enabled=foundsearch(description)
  C.Nparams=nparams.split("|")
@@ -452,7 +498,7 @@ function newCmd(command,examples,xref,description,nparams,param1,param2,param3,p
 
 function newDef(jsToken,typelist,label,description){
  Defs[jsToken]={}
- Defs[jsToken].typelist=typelist.split(",").join(", ").replace(/  /g," ").replace(/\</g,"&lt;")
+ Defs[jsToken].typelist=checkfortable(typelist.split(",").join(", ").replace(/  /g," ").replace(/\</g,"&lt;"))
  Defs[jsToken].label=(label.indexOf("-")>=0||label.indexOf(" ")>=0&&label.indexOf('"')<0?"["+label+"]":label).replace(/\"/g,"")
  if(description.indexOf("{{") >= 0)description = description.replace(/\{\{/g,"@0@").replace(/\}\}/g,"@1@")
  Defs[jsToken].description=marksearch(description,1)
@@ -487,7 +533,7 @@ function TABLE1(isReservedOnly,isNotVariableX, isDeprecatedOnly, caption) {
   return (isReservedOnly || isNotVariableX || isDeprecatedOnly ? "" : mylist)
  }
 
- var s = '<a id="table1'+(isReservedOnly ? "A" : isNotVariableX ? "B" : isDeprecatedOnly ? "C" : "")+'">&nbsp;</a>' + caption + '<br /><br /><table border="0" cellspacing="2"><tr>'
+ var s = '<a id="table1'+(isReservedOnly ? "A" : isNotVariableX ? "B" : isDeprecatedOnly ? "C" : "")+'">&nbsp;</a>' + caption + '<br /><br /><table border="0" cellspacing="2"><tr><td></td>'
  var n = 0;
  var nTotal = 0;
  for (var i = 0; i < Vars.length; i++) {
@@ -505,7 +551,7 @@ function TABLE1(isReservedOnly,isNotVariableX, isDeprecatedOnly, caption) {
   }
   var nColumns = (asdivs ? 4 : 5)
   if (isOK) {
-	  if (n > 0 && n % nColumns == 0) s+="</tr><tr>"
+	  if (n > 0 && n % nColumns == 0) s+="</tr><tr><td></td>"
 	  n++;
 	  var data = Vars[i].name
 	  var p = data.toLowerCase()
@@ -608,7 +654,7 @@ function writelastupdate() {
 
 function writeheader(){
  if(dowritexml||dowritedocbook)return
- var s="<a id=\"top\"><table><tr><td valign=top><span style='font-size:24pt;font-face:bold'><a target=\"_blank\" href=\""+jmolSite+"\">Jmol</a> interactive scripting documentation</span></td><td valign=center>" + getVersionHTML() + "</td></tr></table></a>"
+ var s="<a id=\"top\"><table><tr><td valign=top><span style='font-size:24pt;font-face:bold'><a target=\"_blank\" href=\""+jmolSite+"\">Jmol</a>/<a target=\"_blank\" href=\""+jsmolSite+"\">JSmol</a> interactive scripting documentation</span></td><td valign=center>" + getVersionHTML() + "</td></tr></table></a>"
 
  if(onlycommand){
 	s+="<p><br /><br /><a href=\"javascript:setsearch()\"><img class=\"nf\" src=\"img/q.gif\" border=\"0\" />Search</a> "
@@ -669,10 +715,8 @@ function writecmds(){
 	}else{
 		for(var i=0;i<HeadList.length;i++)T[T.length]="<td xml=headlistdata=xml>"
 			+"<a style=\"text-decoration:none\" href=\""+(asdivs ? getCmdLink(HeadList[i]):root+"#"+Cmds[HeadList[i]].idof)+"\"><img class=\"nf\" height=\"10\" width=\"10\" border=\"0\" src="+(Cmds[HeadList[i]].ihavewin?"\"img/ex.jpg\" title=\"includes example page\"":"\"img/ex.gif\" title=\"\"")+" />&nbsp;"
-			+"<span"+(Cmds[HeadList[i]].isnew?" class=\"new\"":"")+">"
-			+ fixhtml(keyof(HeadList[i],0,0))
-			+(Cmds[HeadList[i]].isnew?"&nbsp;*":"")
-			+"</span></a>"
+			+wrapNew(Cmds[HeadList[i]],fixhtml(keyof(HeadList[i],0,0)), true)
+      +"</a>"
 			+"</td xml=/headlistdata=xml>"
 
 		shead=(asdivs ? "<table>" : dowritexml?"<headlist>":"<table width=\"800\">")
@@ -684,7 +728,7 @@ function writecmds(){
 		for(var j=i;j<T.length;j+=nrows)shead+=T[j]
 		if(!dowritexml)shead+="</tr>"
 	}
-	if(!dowritedocbook && !dowritexml)shead+="<tr ><td colspan=6 ><span class=new>&nbsp;<br /><br />* indicates  new or modified in version "+thisSubversion+"</span> </td ></tr ><tr ><td >&nbsp;</td ></tr >"+thesep()
+	if(!dowritedocbook && !dowritexml)shead+="<tr ><td colspan=6 ><span class=new>&nbsp;<br /><br />* indicates  new or modified in version "+thisSubversion+"</span> <span class=newer>&nbsp;** indicates new or modified in version after "+thisSubversion+"</span></td ></tr ><tr ><td >&nbsp;</td ></tr >"+thesep()
 	shead+=(dowritedocbook?"\n</informaltable>":"</table xml=/headlist=xml>")
        if (asdivs) {
 		s = "<table><tr><td valign='top'><div id='cmdlistdiv' style='overflow:auto;height:400px'>" + shead + "</td><td valign='top'><div id='cmddiv'></div></td></tr></table>"
@@ -696,6 +740,11 @@ function writecmds(){
  s = doreplacements(s)
  if (asdivs)return s
  docwrite(s)
+}
+
+function wrapNew(d, text, isHeader) {
+  if (!d.isnew && !d.isnewer)return text
+  return "<span class=" + (d.isnewer ? "newer" : "new")+">" + text + (!isHeader ? "" : d.isnewer ? "&nbsp;**" : "&nbsp;*") + "</span>"
 }
 
 function doreplacements(s) {
@@ -761,6 +810,7 @@ function doreplacements(s) {
  }else{
 	s=s.replace(/xml\=\S*?\=xml/g,"")
         s=s.replace(rthisversion,spanversion)
+        s=s.replace(rthisversion1,spanversion1)
  }
 
  if (s.indexOf("TABLE1") >= 0)
@@ -855,8 +905,9 @@ function getcmdhtml(C){
 	shead="<jmolcmd><cmdname>"+shead+"</cmdname>"
  }else{
 	sindextemp="<b><br /><a href=\"" + (asdivs ? getCmdLink(sname) : "#"+idof(sname))+"\">"+s+"</a><a id=\"k"+(ikey+1)+"\">&nbsp;</a><br /></b>\n"
-	shead="<h3>"+shead+C.key
-		+(C.version!="" && C.isnew?" <br /><span class=new>(v. "+C.version+")</span>":"")
+  var sclass = (C.isnewer ? "class=h3newer" : C.isnew ? "class=h3new" : "")
+	shead="<h3 " + sclass + ">"+shead+C.key
+		+(C.version!="" && C.isnew?" <br /><span class=" + (C.isnewer ? "newer" : "new") + ">(v. "+C.version+")</span>":"")
 		+"</h3>"
 	shead= tr +"<td colspan=\"5\">"
 		+shead+(C.isimplemented?"":"<p><i>not implemented</i></p>")
@@ -881,19 +932,20 @@ function getcmdhtml(C){
 	}
 	LineList[0]=""
 	for(var i=0;i<C.list.length;i++){
+    var L = C.list[i];
 		sline=""
 		definfo=""
 		newdefs=""
-		if(!C.list[i].isimplemented){
+		if(!L.isimplemented){
 			if(!dowritexml && !dowritedocbook){
 				sline+=tr +"<td xml=cmdlisti=xml valign=\"top\"><p>"+marksearch(sname.replace(/\./,""))
-				sline+=" "+marksearch(C.list[i].Param[1].replace(/\./,""))+" <i>--not implemented</i></p></td xml=/cmdlisti=xml></tr>"
+				sline+=" "+marksearch(L.Param[1].replace(/\./,""))+" <i>--not implemented</i></p></td xml=/cmdlisti=xml></tr>"
 			}
-		}else if(C.list[i].Nparams.length==1 && C.list[i].Nparams[0]!="0"){
+		}else if(L.Nparams.length==1 && L.Nparams[0]!="0"){
 			cmdoption=(sname.charAt(0) == '.' ? sname.substring(1) : sname)
 			cmdoptionreal=cmdoption.split(" ")[0]
-			for(var p=1;p<=C.list[i].lastparam;p++){
-				sp=C.list[i].Param[p]
+			for(var p=1;p<=L.lastparam;p++){
+				sp=L.Param[p]
 				sdefault=""
 				if(sp.indexOf("{")>=0){
 				  if (sp.indexOf("{{")>=0) {
@@ -925,29 +977,29 @@ function getcmdhtml(C){
 				cmdoption+=" "+sp
 				cmdoptionreal+=" "+spreal
 			}
-			skey=(C.list[i].Nparams[0].charAt(0)=="*"?C.list[i].Nparams[0]:"")+cmdoption.replace(/ /g,"~")
+			skey=(L.Nparams[0].charAt(0)=="*"?L.Nparams[0]:"")+cmdoption.replace(/ /g,"~")
 			if(dowritedocbook){
 				sline+="\n<varlistentry><term><command id=\"k"+getIndexKey(skey)+"\" xreflabel=\""+cmdoptionreal+"\">"+marksearch(icandoxrefincommand?cmdoption:cmdoptionreal)+"</command></term>"
 			}else{
 				if(dowritexml)sline+="<cmdexample>"
+        cmdoption = wrapNew(L, cmdoption  + L.xrefnew)
 				sline+=tr +"<td xml=cmdoption=xml valign=\"top\"><a " 
-	+ (C.list[i].key ? "name=\"" + C.list[i].key + "\" " : "") 
-	+ " id=\"k"+getIndexKey(skey)+"\">&nbsp;</a>"+marksearch(cmdoption)+"</td xml=/cmdoption=xml></tr>"
-
+        	+ (L.key ? "name=\"" + L.key + "\" " : "") 
+        	+ " id=\"k"+getIndexKey(skey)+"\">&nbsp;</a>"+marksearch(cmdoption)+"</td xml=/cmdoption=xml></tr>"
 			}
 
-			if(C.list[i].description){
+			if(L.description){
 				if(dowritedocbook){
-					sline+="\n<listitem><para>"+C.list[i].description+"</para></listitem>"
+					sline+="\n<listitem><para>"+L.description+"</para></listitem>"
 				}else{
-					sline+=tr +"<td><blockquote><p xml=cmdlistidescription=xml><i xml==xml>"+C.list[i].description+"</i xml==xml></p xml=/cmdlistidescription=xml></blockquote></td></tr>"
+					sline+=tr +"<td><blockquote><p xml=cmdlistidescription=xml><i xml==xml>"+wrapNew(L, L.description)+"</i xml==xml></p xml=/cmdlistidescription=xml></blockquote></td></tr>"
 				}
 			}
-			if(C.list[i].examples){
-				sline+=getexamples(tr, C.list[i].examples)
+			if(L.examples){
+				sline+=getexamples(tr, L.examples)
 			}
 			if(dowritedocbook){
-				if(!C.list[i].description && !C.list[i].examples)sline+="<listitem><para> </para></listitem>"
+				if(!L.description && !L.examples)sline+="<listitem><para> </para></listitem>"
 				sline+="</varlistentry>"
 			}
 			if(dowritexml)sline+="</cmdexample>"
@@ -1259,12 +1311,15 @@ function getlinkhtml(tr, C){
  }
 
  if(!C.xrefs)return sout
- L=C.xrefs.split(",")
- for(var i=1;i<L.length;i++)slist+=","+Xrefs[L[i]]
+ L=C.xrefs.replace(/ /g,"").split(",")
+ for(var i=1;i<L.length;i++){
+	var sl = Xrefs[L[i]]
+	if(sl)slist+=","+sl
+ }
  S=slist.split(",").sort()
  slist=""
  for(var i=1;i<S.length;i++){
-	if(S[i]!=C.name && slist.indexOf(S[i])<0){
+	if(S[i] && S[i]!=C.name && slist.indexOf(S[i])<0){
 		if(dowritexml)s+="<seealso>"
 		if(dowritedocbook){
 			s+="<xref linkend=\""+idof(S[i])+"\"/> "

@@ -1,4 +1,13 @@
-/* Jmol 12.0 script library Jmol.js 9:48 PM 1/31/2011 Bob Hanson
+/* Jmol 12.0 script library Jmol.js 5/20/2013 7:34:08 AM Bob Hanson
+
+
+NOTE: THIS LIBRARY IS DEPRECATED STARTING WITH Jmol 13.0. 
+      IT STILL WORKS (AND ALWAYS WILL, PROBABLY).
+      PLEASE USE the set JmolCore.js/JmolApplet.js/JmolControls.js/JmolApi.js
+      WITH OPTIONAL JmolCD.js (ChemDoodle Canvas and Canvas2D options) and JmolJSV.js (JSpecView)
+
+      SEE http://chemapps.stolaf.edu/jmol/files/JmolCore.js for details
+      SEE http://chemapps.stolaf.edu/jmol/examples-12/simple2.htm for an example
 
  checkbox heirarchy -- see http://chemapps.stolaf.edu/jmol/docs/examples-11/check.htm
 
@@ -81,6 +90,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh 4/2010  -- added jmolSetMemoryMb(nMb)
 // ah 1/2011  -- wider detection of browsers; more browsers now use the object tag instead of the applet tag;
 //               fix of object tag (removed classid) accounts for change of behavior in Chrome
+// bh 5/2013  -- fix for master checkbox click not actuating checkboxes
 
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
@@ -321,6 +331,8 @@ function _jmolCommandKeyPress(e, id, target) {
 function _jmolScriptExecute(element,script,target) {
   if (typeof(script) == "object")
     script[0](element, script, target)
+	else if (typeof(script) == "function")
+	  script(target);
   else
     jmolScript(script, target)
 }
@@ -755,11 +767,12 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     var widthAndHeight = " width='" + sz[0] + "' height='" + sz[1] + "' ";
     var tHeader, tFooter;
     codebase || jmolInitialize(".");
+    params.name = "jmolApplet" + nameSuffix
     if (useIEObject || useHtml4Object) {
       params.archive = archivePath;
       params.mayscript = 'true';
       params.codebase = codebase;
-      params.code = 'JmolApplet';
+      params.code = 'JmolApplet.class';
       tHeader =
         "<object name='jmolApplet" + nameSuffix +
         "' id='jmolApplet" + nameSuffix + "' " + appletCssText + "\n" +
@@ -1058,10 +1071,9 @@ function _jmolFindAppletInWindow(win, target) {
     var doc = win.document;
     if (doc.getElementById(target))
       return doc.getElementById(target);
-    else if (doc.applets)
+    if (doc.applets)
       return doc.applets[target];
-    else
-      return doc[target];
+    return doc[target];
 }
 
 function _jmolAddScript(script) {
@@ -1136,8 +1148,9 @@ function _jmolNotifyMaster(m){
 function _jmolNotifyGroup(m, isOn){
   //called when a master item is checked
   for (var chkBox in m.chkGroup){
-    var item = m.chkGroup[chkBox]
-    item.checked = isOn;
+    var item = m.chkGroup[chkBox]    
+    if (item.checked != isOn)
+      item.click();
     if (_jmol.checkboxMasters[item.id])
       _jmolNotifyGroup(_jmol.checkboxMasters[item.id], isOn)
   }
@@ -1195,6 +1208,7 @@ function _jmolOnloadResetForms() {
 
 function _jmolEvalJSON(s,key){
  s=s+""
+
  if(!s)return []
  if(s.charAt(0)!="{"){
   if(s.indexOf(" | ")>=0)s=s.replace(/\ \|\ /g, "\n")

@@ -447,6 +447,7 @@ public class Symmetry implements SymmetryInterface {
         modelSet.setModelAuxiliaryInfo(modelIndex, "spaceGroupInfo", info);
       spaceGroup = cellInfo.getSpaceGroupName();
       String[] list = cellInfo.getSymmetryOperations();
+      String jf = "";
       if (list == null) {
         strOperations = "\n no symmetry operations employed";
       } else {
@@ -457,6 +458,7 @@ public class Symmetry implements SymmetryInterface {
           int iSym = addSpaceGroupOperation("=" + list[i], i + 1);
           if (iSym < 0)
             continue;
+          jf += ";" + list[i];
           infolist[i] = (symOp > 0 && symOp - 1 != iSym ? null
               : getSymmetryOperationDescription(modelSet, iSym, cellInfo,
                   pt1, pt2, drawID));
@@ -465,6 +467,9 @@ public class Symmetry implements SymmetryInterface {
                 + infolist[i][2];
         }
       }
+      jf = jf.substring(jf.indexOf(";") + 1);
+      if (spaceGroup.indexOf("[--]") >= 0)
+        spaceGroup = jf;
     } else {
       info = new Hashtable<String, Object>();
     }
@@ -474,7 +479,7 @@ public class Symmetry implements SymmetryInterface {
       info.put("operations", infolist);
       info.put("symmetryInfo", strOperations);
     }
-    if (data == null)
+    if (data == null || data.equals("?"))
       data = "could not identify space group from name: " + spaceGroup
           + "\nformat: show spacegroup \"2\" or \"P 2c\" "
           + "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"";

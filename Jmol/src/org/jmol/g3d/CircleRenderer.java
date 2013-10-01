@@ -32,12 +32,12 @@ import org.jmol.api.JmolRendererInterface;
  *
  * @author Miguel, miguel@jmol.org
  */
-final class CircleRenderer implements G3DRenderer {
+public final class CircleRenderer implements G3DRenderer {
 
   private Graphics3D g3d;
 
-  CircleRenderer() {
-    
+  public CircleRenderer() {
+    // for reflection
   }
   
   public G3DRenderer set(JmolRendererInterface g3d) {

@@ -1073,9 +1073,9 @@ public abstract class AtomSetCollectionReader {
             getSymmetry();
           if (symmetry.createSpaceGroup(desiredSpaceGroupIndex,
               (spaceGroup.indexOf("!") >= 0 ? "P1" : spaceGroup), notionalUnitCell)) {
+            atomSetCollection.applySymmetry(symmetry);
             atomSetCollection.setAtomSetSpaceGroupName(symmetry
                 .getSpaceGroupName());
-            atomSetCollection.applySymmetry(symmetry);
           }
         } else {
           atomSetCollection.applySymmetry(null);

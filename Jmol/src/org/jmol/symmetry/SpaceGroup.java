@@ -169,6 +169,8 @@ class SpaceGroup {
       if (sg != null)
         name = sg.getName();
     }
+    
+    System.out.println("SpaceGroup name: " + name);
 
     finalOperations = new SymmetryOperation[operationCount];
     if (doNormalize && count > 0 && atoms != null) {
@@ -180,6 +182,8 @@ class SpaceGroup {
       P3 atom = atoms[atomIndex];
       P3 c = P3.newP(atom);
       finalOperations[0].transform(c);
+      if (atom == null)
+        System.out.println("HMMM");
       if (c.distance(atom) > 0.0001) // not cartesian, but this is OK here
         for (int i = 0; i < count; i++) {
           atom = atoms[atomIndex + i];

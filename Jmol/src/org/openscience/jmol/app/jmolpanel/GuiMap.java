@@ -41,6 +41,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JCheckBox;
 
 import org.jmol.console.GenericConsole;
+import org.jmol.console.JmolButton;
 import org.jmol.console.KeyJMenu;
 import org.jmol.console.KeyJMenuItem;
 import org.jmol.console.KeyJCheckBox;
@@ -256,7 +257,7 @@ public class GuiMap {
     return new KeyJCheckBox(key, getLabel(key), map, isChecked);
   }
   JButton newJButton(String key) {
-    JButton jb = new JButton(getLabel(key));
+    JButton jb = new JmolButton(getLabel(key));
     map.put(key, jb);
     return jb;
   }

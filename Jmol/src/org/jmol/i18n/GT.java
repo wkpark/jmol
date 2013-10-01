@@ -275,14 +275,14 @@ public class GT {
     if (doTranslate) {
       for (int bundle = resourceCount; --bundle >= 0;) {
         trans = resources[bundle].getString(string);
-        break;
+        if (trans != null) {
+          string = trans;
+          break;
+        }
       }
-      if (trans == null) {
-        if (resourceCount > 0 && allowDebug && Logger.debugging)
-          Logger.debug("No trans, using default: " + string);
-      } else {
-        string = trans;
-      }
+      if (resourceCount > 0 && trans == null && allowDebug && Logger.debugging)
+        Logger.debug("No trans, using default: " + string);
+
     }
     if (trans == null) {
       if (string.startsWith("["))

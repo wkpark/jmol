@@ -12,9 +12,11 @@ import org.jmol.util.Logger;
 class Resource {
 
   private Object resource;
+  String className;
   
-  private Resource(Object resource) {
+  private Resource(Object resource, String className) {
     this.resource = resource;
+    this.className = className;
   }
 
   @SuppressWarnings("null")
@@ -43,7 +45,7 @@ class Resource {
       try {
         return (bundleClass == null
             || !ResourceBundle.class.isAssignableFrom(bundleClass) ? null
-            : new Resource(bundleClass.newInstance()));
+            : new Resource(bundleClass.newInstance(), className));
       } catch (IllegalAccessException e) {
         Logger.warn("Illegal Access Exception: " + e.toString());
       } catch (InstantiationException e) {
@@ -138,37 +140,6 @@ class Resource {
     {
       return null;
     }
-//    if (bytes == null || bytes.length == 0)
-//      return null;
-//    Hashtable<String, String> map = null;
-//       try {
-//      String[] lines = TextFormat.split(new String(bytes, "UTF-8"), '\n');
-//      map = new Hashtable<String, String>();
-//      int mode = 0;
-//      String msgstr = "";
-//      String msgid = "";
-//      for (int i = 0; i < lines.length; i++) {
-//        String line = lines[i];
-//        if (line.length() <= 2) {
-//          if (mode == 2 && msgstr.length() != 0 && msgid.length() != 0)
-//            map.put(msgid, msgstr);
-//        } else if (line.indexOf("msgid") == 0) {
-//          mode = 1;
-//          msgid = fix(line);
-//        } else if (line.indexOf("msgstr") == 0) {
-//          mode = 2;
-//          msgstr = fix(line);
-//        } else if (mode == 1) {
-//          msgid += fix(line);
-//        } else if (mode == 2) {
-//          msgstr += fix(line);
-//        }
-//      }
-//      
-//    } catch (UnsupportedEncodingException e) {
-//      //ignore
-//    }    
-//    return (map == null || map.size() == 0 ? null : new Resource(map));
   }
 
   static String fix(String line) {

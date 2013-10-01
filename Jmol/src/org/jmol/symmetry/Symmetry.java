@@ -650,8 +650,8 @@ public class Symmetry implements SymmetryInterface {
     spaceGroup.addLatticeVectors(lattvecs);
   }
 
-  public boolean hasLatticeCentering() {
-    return spaceGroup.hasLatticeCentering;
+  public int getLatticeOp() {
+    return spaceGroup.latticeOp;
   }
 
   public Matrix4f getOperationGammaIS(int iop) {

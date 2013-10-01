@@ -127,6 +127,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     addVibrations &= !inputOnly; 
     getLastConventional = (!isPrimitive && desiredModelNumber == 0);
     setFractionalCoordinates(readHeader());
+    atomSetCollection.setLatticeOnly(true);
   }
 
   @Override

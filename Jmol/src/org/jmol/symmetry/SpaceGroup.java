@@ -101,7 +101,7 @@ class SpaceGroup {
   SymmetryOperation[] operations;
   SymmetryOperation[] finalOperations;
   int operationCount;
-  boolean hasLatticeCentering;
+  int latticeOp = -1;
   Map<String, Integer> xyzList = new Hashtable<String, Integer>();
 
   private int modulationDimension;
@@ -169,8 +169,6 @@ class SpaceGroup {
       if (sg != null)
         name = sg.getName();
     }
-    
-    System.out.println("SpaceGroup name: " + name);
 
     finalOperations = new SymmetryOperation[operationCount];
     if (doNormalize && count > 0 && atoms != null) {
@@ -182,8 +180,6 @@ class SpaceGroup {
       P3 atom = atoms[atomIndex];
       P3 c = P3.newP(atom);
       finalOperations[0].transform(c);
-      if (atom == null)
-        System.out.println("HMMM");
       if (c.distance(atom) > 0.0001) // not cartesian, but this is OK here
         for (int i = 0; i < count; i++) {
           atom = atoms[atomIndex + i];
@@ -434,16 +430,14 @@ class SpaceGroup {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return xyzList.get(xyz).intValue();
-      if (!hasLatticeCentering && xyzList.containsKey(TextFormat.simpleReplace(TextFormat.simpleReplace(xyz, "+1/2", ""), "+1/2", "")))
-        hasLatticeCentering = true;
+      if (latticeOp < 0 && xyzList.containsKey(TextFormat.simpleReplace(TextFormat.simpleReplace(xyz, "+1/2", ""), "+1/2", "")))
+        latticeOp = operationCount;
       xyzList.put(xyz, Integer.valueOf(operationCount));
     }
     if (xyz != null && !xyz.equals(xyz0))
       xyzList.put(xyz0, Integer.valueOf(operationCount));
-    if (operations == null) {
+    if (operations == null)
       operations = new SymmetryOperation[4];
-      operationCount = 0;
-    }
     if (operationCount == operations.length)
       operations = (SymmetryOperation[]) ArrayUtil.arrayCopyObject(operations,
           operationCount * 2);
@@ -470,7 +464,6 @@ class SpaceGroup {
       if (operationCount > 0)
         return;
       operations = new SymmetryOperation[4];
-      operationCount = 0;
       if (hallInfo == null || hallInfo.nRotations == 0)
         h = hallInfo = new HallInfo(hallSymbol);
       setLattice(hallInfo.latticeCode, hallInfo.isCentrosymmetric);
@@ -1385,8 +1378,7 @@ class SpaceGroup {
   }
 
   public void addLatticeVectors(JmolList<float[]> lattvecs) {
-    hasLatticeCentering = true; 
-    int nOps = operationCount;
+    int nOps = latticeOp = operationCount;
     for (int j = 0; j < lattvecs.size(); j++) {
       float[] data = lattvecs.get(j);
       if (data.length > modulationDimension + 3)

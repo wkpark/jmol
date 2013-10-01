@@ -175,7 +175,7 @@ public interface SymmetryInterface {
 
   public void addLatticeVectors(JmolList<float[]> lattvecs);
 
-  public boolean hasLatticeCentering();
+  public int getLatticeOp();
 
   public Matrix4f getOperationGammaIS(int iop);
 

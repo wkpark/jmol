@@ -1056,6 +1056,14 @@ public class AtomSetCollection {
   }
   
   public int baseSymmetryAtomCount;
+
+  private boolean checkLatticeOnly;
+  public void setLatticeOnly(boolean b) {
+    checkLatticeOnly = b;
+  }
+  
+  private int latticeOp;
+  private boolean latticeOnly;
   
   public void setBaseSymmetryAtomCount(int n) {
     baseSymmetryAtomCount = n;
@@ -1152,7 +1160,9 @@ public class AtomSetCollection {
     // incommensurate symmetry can have lattice centering, resulting in 
     // duplication of operators. There's a bug later on that requires we 
     // only do this with the first atom set for now, at least. 
-    checkAll = (atomSetCount == 1 && checkSpecial && symmetry.hasLatticeCentering());
+    latticeOp = symmetry.getLatticeOp();
+    checkAll = (atomSetCount == 1 && checkSpecial && latticeOp >= 0);
+    latticeOnly = (checkLatticeOnly && latticeOp >= 0);
     Matrix4f op = symmetry.getSpaceGroupOperation(0);
     if (doPackUnitCell)
       ptOffset.set(0, 0, 0);
@@ -1294,7 +1304,7 @@ public class AtomSetCollection {
     int atomMax = iAtomFirst + noSymmetryCount;
     P3 ptAtom = new P3();
     for (int iSym = 0; iSym < nOperations; iSym++) {
-      if (isBaseCell && iSym == 0)
+      if (isBaseCell && iSym == 0 || latticeOnly && iSym > 0 && iSym != latticeOp)
         continue;
 
       /* pt0 sets the range of points cross-checked. 
@@ -1339,8 +1349,6 @@ public class AtomSetCollection {
             continue;
           int j0 = (checkAll ? atomCount : pt0);
           for (int j = j0; --j >= 0;) {
-            if (cartesians[j] == null)
-              System.out.println("Hmm asc");
             float d2 = cartesian.distanceSquared(cartesians[j]);
             if (checkSpecial && d2 < 0.0001) {
               special = atoms[iAtomFirst + j];

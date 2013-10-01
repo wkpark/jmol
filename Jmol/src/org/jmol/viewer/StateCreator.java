@@ -1361,7 +1361,7 @@ public class StateCreator extends JmolStateCreator {
             JC.hAlignNames[t.align]);
       break;
     default:
-      s.append("  set echo ").append(JC.vAlignNames[t.align]).append(" ")
+      s.append("  set echo ").append(JC.vAlignNames[t.valign]).append(" ")
           .append(JC.hAlignNames[t.align]);
     }
     if (t.valign == JC.VALIGN_XY

@@ -107,7 +107,7 @@ public class ZipOutputStream extends DeflaterOutputStream implements
    */
   public ZipOutputStream(OutputStream out) {
     super();
-    setDOS(out, newDeflater());
+    setZOS(out);
   }
 
   public ZipOutputStream setZOS(OutputStream out) {

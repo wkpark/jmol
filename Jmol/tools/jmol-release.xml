@@ -38,6 +38,7 @@
     <input
       message="Do you really want to copy files to ${path.release}/${prefix.release}${version} (y/n) ?"
       validargs="y,n"
+      defaultvalue="y"
       addproperty="do.scp"
     />
     <condition property="do.abort">

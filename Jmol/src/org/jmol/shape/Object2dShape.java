@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 
+import org.jmol.api.ApiPlatform;
 import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.util.BS;
@@ -12,7 +13,6 @@ import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.Txt;
-import org.jmol.viewer.JC;
 
 public abstract class Object2dShape extends Shape {
 
@@ -232,13 +232,13 @@ public abstract class Object2dShape extends Shape {
       if (s != null) {
         haveScripts = true;
         if (obj.checkObjectClicked(isAntialiased, x, y, bsVisible)) {
-          viewer.setCursor(JC.CURSOR_HAND);
+          viewer.setCursor(ApiPlatform.CURSOR_HAND);
           return true;
         }
       }
     }
     if (haveScripts)
-      viewer.setCursor(JC.CURSOR_DEFAULT);
+      viewer.setCursor(ApiPlatform.CURSOR_DEFAULT);
     return false;
   }
 

@@ -29,6 +29,7 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
+import org.jmol.api.ApiPlatform;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.api.JmolScriptFunction;
@@ -5745,7 +5746,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   public void setCursorWait(boolean TF) {
     if (!chk)
-      viewer.setCursor(TF ? JC.CURSOR_WAIT : JC.CURSOR_DEFAULT);
+      viewer.setCursor(TF ? ApiPlatform.CURSOR_WAIT : ApiPlatform.CURSOR_DEFAULT);
   }
 
   private void processShapeCommand(int tok) throws ScriptException {

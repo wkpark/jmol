@@ -41,7 +41,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
-import org.jmol.viewer.binding.Binding;
 
 /**
  * formerly org.jmol.viewer.MouseManager14
@@ -150,8 +149,8 @@ class Mouse implements MouseWheelListener, MouseListener,
      * Netscape 4.* Win32 has a problem with mouseDragged if you left-drag then
      * none of the modifiers are selected we will try to fix that here
      ****************************************************************/
-    if ((modifiers & Binding.BUTTON_MASK) == 0)
-      modifiers |= Binding.LEFT;
+    if ((modifiers & Event.BUTTON_MASK) == 0)
+      modifiers |= Event.MOUSE_LEFT;
     
     /****************************************************************/
     mouseDragged(e.getWhen(), e.getX(), e.getY(), modifiers);
@@ -164,7 +163,7 @@ class Mouse implements MouseWheelListener, MouseListener,
   public void mouseWheelMoved(MouseWheelEvent e) {
     e.consume();
     mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers()
-        | Binding.WHEEL);
+        | Event.MOUSE_WHEEL);
   }
 
   public void keyTyped(KeyEvent ke) {
@@ -177,18 +176,18 @@ class Mouse implements MouseWheelListener, MouseListener,
     // so we are in the ASCII non-printable region 1-31
     if (Logger.debuggingHigh)
       Logger.debug("MouseManager keyTyped: " + ch + " " + (0+ch) + " " + modifiers);
-    if (modifiers != 0 && modifiers != Binding.SHIFT) {
+    if (modifiers != 0 && modifiers != Event.SHIFT_MASK) {
       switch (ch) {
       case (char) 11:
       case 'k': // keystrokes on/off
         boolean isON = !viewer.getBooleanProperty("allowKeyStrokes");
         switch (modifiers) {
-        case Binding.CTRL:
+        case Event.CTRL_MASK:
           viewer.setBooleanProperty("allowKeyStrokes", isON);
           viewer.setBooleanProperty("showKeyStrokes", true);
           break;
-        case Binding.CTRL_ALT:
-        case Binding.ALT:
+        case Event.CTRL_ALT:
+        case Event.ALT_MASK:
           viewer.setBooleanProperty("allowKeyStrokes", isON);
           viewer.setBooleanProperty("showKeyStrokes", false);
           break;
@@ -199,7 +198,7 @@ class Mouse implements MouseWheelListener, MouseListener,
       case 22:
       case 'v': // paste
         switch (modifiers) {
-        case Binding.CTRL:
+        case Event.CTRL_MASK:
           String ret = viewer.getClipboardText();
           if (ret == null)
             break;
@@ -217,10 +216,10 @@ class Mouse implements MouseWheelListener, MouseListener,
       case 26:
       case 'z': // undo
         switch (modifiers) {
-        case Binding.CTRL:
+        case Event.CTRL_MASK:
           viewer.undoMoveAction(T.undomove, 1);
           break;
-        case Binding.CTRL_SHIFT:
+        case Event.CTRL_SHIFT:
           viewer.undoMoveAction(T.redomove, 1);
           break;
         }
@@ -228,7 +227,7 @@ class Mouse implements MouseWheelListener, MouseListener,
       case 25:
       case 'y': // redo
         switch (modifiers) {
-        case Binding.CTRL:
+        case Event.CTRL_MASK:
           viewer.undoMoveAction(T.redomove, 1);
           break;
         }
@@ -238,7 +237,7 @@ class Mouse implements MouseWheelListener, MouseListener,
     }
     if (!viewer.getBooleanProperty("allowKeyStrokes"))
       return;
-    addKeyBuffer(ke.getModifiers() == Binding.SHIFT ? Character.toUpperCase(ch) : ch);
+    addKeyBuffer(ke.getModifiers() == Event.SHIFT_MASK ? Character.toUpperCase(ch) : ch);
   }
 
   public void keyPressed(KeyEvent ke) {
@@ -315,7 +314,7 @@ class Mouse implements MouseWheelListener, MouseListener,
     clearKeyBuffer();
     // clickedCount is not reliable on some platforms
     // so we will just deal with it ourselves
-    actionManager.mouseAction(Binding.CLICKED, time, x, y, 1, modifiers);
+    actionManager.mouseAction(Event.CLICKED, time, x, y, 1, modifiers);
   }
 
   private boolean isMouseDown; // Macintosh may not recognize CTRL-SHIFT-LEFT as drag, only move
@@ -323,14 +322,14 @@ class Mouse implements MouseWheelListener, MouseListener,
   private void mouseMoved(long time, int x, int y, int modifiers) {
     clearKeyBuffer();
     if (isMouseDown)
-      actionManager.mouseAction(Binding.DRAGGED, time, x, y, 0, applyLeftMouse(modifiers));
+      actionManager.mouseAction(Event.DRAGGED, time, x, y, 0, applyLeftMouse(modifiers));
     else
-      actionManager.mouseAction(Binding.MOVED, time, x, y, 0, modifiers);
+      actionManager.mouseAction(Event.MOVED, time, x, y, 0, modifiers);
   }
 
   private void mouseWheel(long time, int rotation, int modifiers) {
     clearKeyBuffer();
-    actionManager.mouseAction(Binding.WHEELED, time, 0, rotation, 0, modifiers);
+    actionManager.mouseAction(Event.WHEELED, time, 0, rotation, 0, modifiers);
   }
 
   /**
@@ -345,23 +344,23 @@ class Mouse implements MouseWheelListener, MouseListener,
                     boolean isPopupTrigger) {
     clearKeyBuffer();
     isMouseDown = true;
-    actionManager.mouseAction(Binding.PRESSED, time, x, y, 0, modifiers);
+    actionManager.mouseAction(Event.PRESSED, time, x, y, 0, modifiers);
   }
 
   private void mouseReleased(long time, int x, int y, int modifiers) {
     isMouseDown = false;
-    actionManager.mouseAction(Binding.RELEASED, time, x, y, 0, modifiers);
+    actionManager.mouseAction(Event.RELEASED, time, x, y, 0, modifiers);
   }
 
   private void mouseDragged(long time, int x, int y, int modifiers) {
-    if ((modifiers & Binding.MAC_COMMAND) == Binding.MAC_COMMAND)
-      modifiers = modifiers & ~Binding.RIGHT | Binding.CTRL; 
-    actionManager.mouseAction(Binding.DRAGGED, time, x, y, 0, modifiers);
+    if ((modifiers & Event.MAC_COMMAND) == Event.MAC_COMMAND)
+      modifiers = modifiers & ~Event.MOUSE_RIGHT | Event.CTRL_MASK; 
+    actionManager.mouseAction(Event.DRAGGED, time, x, y, 0, modifiers);
   }
 
   private static int applyLeftMouse(int modifiers) {
     // if neither BUTTON2 or BUTTON3 then it must be BUTTON1
-    return ((modifiers & Binding.BUTTON_MASK) == 0) ? (modifiers | Binding.LEFT)
+    return ((modifiers & Event.BUTTON_MASK) == 0) ? (modifiers | Event.MOUSE_LEFT)
         : modifiers;
   }
 

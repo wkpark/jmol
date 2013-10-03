@@ -1546,12 +1546,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ATOM_SLABBED     = 2;  // reserved for future use
   
   
-  public final static int CURSOR_DEFAULT = 0;
-  public final static int CURSOR_HAND = 1;
-  public final static int CURSOR_CROSSHAIR = 2;
-  public final static int CURSOR_MOVE = 3;
-  public final static int CURSOR_WAIT = 4;
-  public final static int CURSOR_ZOOM = 5;
   public final static String binaryExtensions = ";pse=PyMOL;";// PyMOL
 
   public static final String SCRIPT_COMPLETED = "Script completed";

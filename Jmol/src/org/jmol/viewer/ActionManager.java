@@ -28,6 +28,7 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
+import org.jmol.api.ApiPlatform;
 import org.jmol.api.Event;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
@@ -69,8 +70,8 @@ public class ActionManager {
   public void setViewer(Viewer viewer, String commandOptions) {
     this.viewer = viewer;
     setBinding(jmolBinding = new JmolBinding("toggle"));
-    LEFT_CLICKED = Binding.getMouseAction(1, Binding.LEFT, Binding.CLICKED);
-    LEFT_DRAGGED = Binding.getMouseAction(1, Binding.LEFT, Binding.DRAGGED);
+    LEFT_CLICKED = Binding.getMouseAction(1, Binding.LEFT, Event.CLICKED);
+    LEFT_DRAGGED = Binding.getMouseAction(1, Binding.LEFT, Event.DRAGGED);
   }
 
   protected Thread hoverWatcherThread;
@@ -83,7 +84,7 @@ public class ActionManager {
         return;
       boolean isLabel = (getAtomPickingMode() == PICKING_LABEL && isBound(
           Binding
-              .getMouseAction(clickedCount, moved.modifiers, Binding.DRAGGED),
+              .getMouseAction(clickedCount, moved.modifiers, Event.DRAGGED),
           ACTION_dragLabel));
       viewer.hoverOn(atomIndex, isLabel);
     }
@@ -933,7 +934,7 @@ public class ActionManager {
       moved.modifiers &= ~Binding.CTRL;
     }
     if (moved.modifiers == 0)
-      viewer.setCursor(JC.CURSOR_DEFAULT);
+      viewer.setCursor(ApiPlatform.CURSOR_DEFAULT);
     if (!viewer.getBoolean(T.navigationmode))
       return;
     //if (viewer.getBooleanProperty("showKeyStrokes", false))
@@ -962,9 +963,9 @@ public class ActionManager {
 
   private void setMouseActions(int count, int buttonMods, boolean isRelease) {
     pressAction = Binding.getMouseAction(count, buttonMods,
-        isRelease ? Binding.RELEASED : Binding.PRESSED);
-    dragAction = Binding.getMouseAction(count, buttonMods, Binding.DRAGGED);
-    clickAction = Binding.getMouseAction(count, buttonMods, Binding.CLICKED);
+        isRelease ? Event.RELEASED : Event.PRESSED);
+    dragAction = Binding.getMouseAction(count, buttonMods, Event.DRAGGED);
+    clickAction = Binding.getMouseAction(count, buttonMods, Event.CLICKED);
   }
 
   /**
@@ -983,12 +984,12 @@ public class ActionManager {
     if (!viewer.getMouseEnabled())
       return;
     switch (mode) {
-    case Binding.MOVED:
+    case Event.MOVED:
       setCurrent(time, x, y, buttonMods);
       moved.setCurrent(current, 0);
       if (measurementPending != null || hoverActive) {
         clickAction = Binding.getMouseAction(clickedCount, buttonMods,
-            Binding.MOVED);
+            Event.MOVED);
         checkClickAction(x, y, time, 0);
         return;
       }
@@ -996,10 +997,10 @@ public class ActionManager {
         checkMotionRotateZoom(LEFT_DRAGGED, 0, 0, 0, false);
         return;
       }
-      if (viewer.getCursor() == JC.CURSOR_ZOOM)//if (dragSelectedMode)
-        viewer.setCursor(JC.CURSOR_DEFAULT);
+      if (viewer.getCursor() == ApiPlatform.CURSOR_ZOOM)//if (dragSelectedMode)
+        viewer.setCursor(ApiPlatform.CURSOR_DEFAULT);
       return;
-    case Binding.PRESSED:
+    case Event.PRESSED:
       setMouseMode();
       pressedCount = (pressed.check(0, 0, 0, buttonMods, time,
           MAX_DOUBLE_CLICK_MILLIS) ? pressedCount + 1 : 1);
@@ -1008,15 +1009,15 @@ public class ActionManager {
         setCurrent(time, x, y, buttonMods);
       }
       pressAction = Binding.getMouseAction(pressedCount, buttonMods,
-          Binding.PRESSED);
-      viewer.setCursor(JC.CURSOR_HAND);
+          Event.PRESSED);
+      viewer.setCursor(ApiPlatform.CURSOR_HAND);
       pressed.setCurrent(current, 1);
       dragged.setCurrent(current, 1);
       viewer.setFocus();
       dragGesture.setAction(dragAction, time);
       checkPressedAction(x, y, time);
       return;
-    case Binding.DRAGGED:
+    case Event.DRAGGED:
       setMouseMode();
       setMouseActions(pressedCount, buttonMods, false);
       int deltaX = x - dragged.x;
@@ -1027,9 +1028,9 @@ public class ActionManager {
         exitMeasurementMode();
       dragGesture.add(dragAction, x, y, time);
       checkDragWheelAction(dragAction, x, y, deltaX, deltaY, time,
-          Binding.DRAGGED);
+          Event.DRAGGED);
       return;
-    case Binding.RELEASED:
+    case Event.RELEASED:
       setMouseActions(pressedCount, buttonMods, true);
       setCurrent(time, x, y, buttonMods);
       viewer.spinXYBy(0, 0, 0);
@@ -1037,14 +1038,14 @@ public class ActionManager {
           Long.MAX_VALUE);
       checkReleaseAction(x, y, time, dragRelease);
       return;
-    case Binding.WHEELED:
+    case Event.WHEELED:
       if (viewer.isApplet() && !viewer.hasFocus())
         return;
       setCurrent(time, current.x, current.y, buttonMods);
       checkDragWheelAction(Binding.getMouseAction(0, buttonMods,
-          Binding.WHEELED), current.x, current.y, 0, y, time, Binding.WHEELED);
+          Event.WHEELED), current.x, current.y, 0, y, time, Event.WHEELED);
       return;
-    case Binding.CLICKED:
+    case Event.CLICKED:
       setMouseMode();
       clickedCount = (count > 1 ? count : clicked.check(0, 0, 0, buttonMods,
           time, MAX_DOUBLE_CLICK_MILLIS) ? clickedCount + 1 : 1);
@@ -1055,11 +1056,11 @@ public class ActionManager {
       clicked.setCurrent(current, clickedCount);
       viewer.setFocus();
       if (atomPickingMode != PICKING_SELECT_ATOM
-          && isBound(Binding.getMouseAction(1, buttonMods, Binding.PRESSED),
+          && isBound(Binding.getMouseAction(1, buttonMods, Event.PRESSED),
               ACTION_selectAndDrag))
         return;
       clickAction = Binding.getMouseAction(clickedCount, buttonMods,
-          Binding.CLICKED);
+          Event.CLICKED);
       checkClickAction(x, y, time, clickedCount);
       return;
     }
@@ -1068,10 +1069,10 @@ public class ActionManager {
   private void checkPressedAction(int x, int y, long time) {
     int buttonMods = Binding.getButtonMods(pressAction);
     boolean isSelectAndDrag = isBound(Binding.getMouseAction(1, buttonMods,
-        Binding.PRESSED), ACTION_selectAndDrag);
+        Event.PRESSED), ACTION_selectAndDrag);
     if (buttonMods != 0) {
       pressAction = viewer.notifyMouseClicked(x, y, pressAction,
-          Binding.PRESSED);
+          Event.PRESSED);
       if (pressAction == 0)
         return;
       buttonMods = Binding.getButtonMods(pressAction);
@@ -1087,7 +1088,7 @@ public class ActionManager {
       viewer.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, dragAction);
       return;
     }
-    checkUserAction(pressAction, x, y, 0, 0, time, Binding.PRESSED);
+    checkUserAction(pressAction, x, y, 0, 0, time, Event.PRESSED);
     boolean isBound = false;
     switch (atomPickingMode) {
     case PICKING_ASSIGN_ATOM:
@@ -1187,7 +1188,7 @@ public class ActionManager {
     if (dragAtomIndex >= 0) {
       switch (atomPickingMode) {
       case PICKING_DRAG_SELECTED:
-        setMotion(JC.CURSOR_MOVE, true);
+        setMotion(ApiPlatform.CURSOR_MOVE, true);
         if (isBound(dragWheelAction, ACTION_rotateSelected)
             && viewer.getBoolean(T.allowrotateselected)) {
           viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
@@ -1210,7 +1211,7 @@ public class ActionManager {
         if (dragGesture.getPointCount() == 1)
           viewer.undoMoveActionClear(dragAtomIndex, AtomCollection.TAINT_COORD,
               true);
-        setMotion(JC.CURSOR_MOVE, true);
+        setMotion(ApiPlatform.CURSOR_MOVE, true);
         if (isBound(dragWheelAction, ACTION_rotateSelected)) {
           viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
               bs);
@@ -1233,7 +1234,7 @@ public class ActionManager {
       }
     }
 
-    if (dragAtomIndex >= 0 && mode == Binding.DRAGGED && isBound(clickAction, ACTION_assignNew)
+    if (dragAtomIndex >= 0 && mode == Event.DRAGGED && isBound(clickAction, ACTION_assignNew)
         && atomPickingMode == PICKING_ASSIGN_ATOM) {
       int nearestAtomIndex = viewer.findNearestAtomIndexMovable(x, y, false);
       if (nearestAtomIndex >= 0) {
@@ -1272,7 +1273,7 @@ public class ActionManager {
       else
         viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE,
             Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
-      setMotion(JC.CURSOR_MOVE, true);
+      setMotion(ApiPlatform.CURSOR_MOVE, true);
       if (isBound(dragWheelAction, ACTION_rotateSelected)
           && viewer.getBoolean(T.allowrotateselected))
         viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
@@ -1287,7 +1288,7 @@ public class ActionManager {
         && (isBound(dragWheelAction, ACTION_dragDrawObject) || isBound(
             dragWheelAction, ACTION_dragDrawPoint)) || labelMode
         && isBound(dragWheelAction, ACTION_dragLabel)) {
-      setMotion(JC.CURSOR_MOVE, true);
+      setMotion(ApiPlatform.CURSOR_MOVE, true);
       viewer.checkObjectDragged(dragged.x, dragged.y, x, y, dragWheelAction);
       return;
     }
@@ -1310,11 +1311,11 @@ public class ActionManager {
     if (isBound(dragWheelAction, ACTION_rotateZorZoom)) {
       if (deltaX == 0 && Math.abs(deltaY) > 1) {
         // if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
-        setMotion(JC.CURSOR_ZOOM, true);
+        setMotion(ApiPlatform.CURSOR_ZOOM, true);
         viewer.zoomBy(deltaY + (deltaY > 0 ? -1 : 1));
       } else if (deltaY == 0 && Math.abs(deltaX) > 1) {
         // if (deltaX < 0 && deltaY > deltaX || deltaX > 0 && deltaY < deltaX)
-        setMotion(JC.CURSOR_MOVE, true);
+        setMotion(ApiPlatform.CURSOR_MOVE, true);
         viewer.rotateZBy(-deltaX + (deltaX > 0 ? 1 : -1), Integer.MAX_VALUE,
             Integer.MAX_VALUE);
       }
@@ -1323,7 +1324,7 @@ public class ActionManager {
       zoomByFactor(deltaY, Integer.MAX_VALUE, Integer.MAX_VALUE);
       return;
     } else if (isBound(dragWheelAction, ACTION_rotateZ)) {
-      setMotion(JC.CURSOR_MOVE, true);
+      setMotion(ApiPlatform.CURSOR_MOVE, true);
       viewer.rotateZBy(-deltaX, Integer.MAX_VALUE, Integer.MAX_VALUE);
       return;
     }
@@ -1348,7 +1349,7 @@ public class ActionManager {
       Logger.debug(Binding.getMouseActionName(pressAction, false));
     viewer.checkInMotion(0);
     viewer.setInMotion(false);
-    viewer.setCursor(JC.CURSOR_DEFAULT);
+    viewer.setCursor(ApiPlatform.CURSOR_DEFAULT);
     dragGesture.add(dragAction, x, y, time);
     if (dragRelease)
       viewer.setRotateBondIndex(Integer.MIN_VALUE);
@@ -1372,7 +1373,7 @@ public class ActionManager {
     rectRubber.x = Integer.MAX_VALUE;
     if (dragRelease) {
       viewer.notifyMouseClicked(x, y, Binding.getMouseAction(pressedCount, 0,
-          Binding.RELEASED), Binding.RELEASED);
+          Event.RELEASED), Event.RELEASED);
     }
     if (drawMode
         && (isBound(dragAction, ACTION_dragDrawObject) || isBound(dragAction,
@@ -1387,7 +1388,7 @@ public class ActionManager {
           Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
 
     if (dragRelease
-        && checkUserAction(pressAction, x, y, 0, 0, time, Binding.RELEASED))
+        && checkUserAction(pressAction, x, y, 0, 0, time, Event.RELEASED))
       return;
 
     if (viewer.getBoolean(T.allowgestures)) {
@@ -1596,9 +1597,9 @@ public class ActionManager {
     boolean isZoom = (isRotateZorZoom && (deltaX == 0 || Math.abs(deltaY) > 5 * Math
         .abs(deltaX)));
     int cursor = (isZoom || isZoomArea(moved.x)
-        || isBound(mouseAction, ACTION_wheelZoom) ? JC.CURSOR_ZOOM : isRotateXY
-        || isRotateZorZoom ? JC.CURSOR_MOVE : isBound(mouseAction,
-        ACTION_center) ? JC.CURSOR_HAND : JC.CURSOR_DEFAULT);
+        || isBound(mouseAction, ACTION_wheelZoom) ? ApiPlatform.CURSOR_ZOOM : isRotateXY
+        || isRotateZorZoom ? ApiPlatform.CURSOR_MOVE : isBound(mouseAction,
+        ACTION_center) ? ApiPlatform.CURSOR_HAND : ApiPlatform.CURSOR_DEFAULT);
     setMotion(cursor, isDrag);
     return (isZoom || isSlideZoom);
   }
@@ -1694,7 +1695,7 @@ public class ActionManager {
   private void enterMeasurementMode(int iAtom) {
     viewer.setPicked(-1);
     viewer.setPicked(iAtom);
-    viewer.setCursor(JC.CURSOR_CROSSHAIR);
+    viewer.setCursor(ApiPlatform.CURSOR_CROSSHAIR);
     viewer.setPendingMeasurement(measurementPending = 
         viewer.getMP());
     measurementQueued = measurementPending;
@@ -1724,7 +1725,7 @@ public class ActionManager {
     if (measurementPending == null)
       return;
     viewer.setPendingMeasurement(measurementPending = null);
-    viewer.setCursor(JC.CURSOR_DEFAULT);
+    viewer.setCursor(ApiPlatform.CURSOR_DEFAULT);
   }
 
   private void getSequence() {
@@ -1757,7 +1758,7 @@ public class ActionManager {
 
   protected void setMotion(int cursor, boolean inMotion) {
     switch (viewer.getCursor()) {
-    case JC.CURSOR_WAIT:
+    case ApiPlatform.CURSOR_WAIT:
       break;
     default:
       viewer.setCursor(cursor);
@@ -1769,7 +1770,7 @@ public class ActionManager {
   protected void zoomByFactor(int dz, int x, int y) {
     if (dz == 0)
       return;
-    setMotion(JC.CURSOR_ZOOM, true);
+    setMotion(ApiPlatform.CURSOR_ZOOM, true);
     viewer.zoomByFactor((float) Math.pow(mouseWheelFactor, dz), x, y);
     viewer.setInMotion(false);
   }

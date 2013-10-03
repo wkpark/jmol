@@ -37,7 +37,6 @@ import org.jmol.util.Logger;
 import org.jmol.util.V3;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.Viewer;
-import org.jmol.viewer.binding.Binding;
 
 /**
  * JavaScript interface from JmolJSmol.js via handleOldJvm10Event (for now)
@@ -76,7 +75,7 @@ public class Mouse implements JmolMouseInterface {
       modifiers = applyLeftMouse(modifiers);
     switch (id) {
     case -1: // JavaScript
-      wheeled(time, x, modifiers | Binding.WHEEL);
+      wheeled(time, x, modifiers | Event.MOUSE_WHEEL);
       break;
     case Event.MOUSE_DOWN:
       xWhenPressed = x;
@@ -165,7 +164,7 @@ public class Mouse implements JmolMouseInterface {
       v1 = V3.new3(x2first - x1first, y2first - y1first, 0);
       v2 = V3.new3(x2last - x1last, y2last - y1last, 0);
       float dx = v2.length() - v1.length();
-      wheeled(System.currentTimeMillis(), dx < 0 ? -1 : 1, Binding.WHEEL);
+      wheeled(System.currentTimeMillis(), dx < 0 ? -1 : 1, Event.MOUSE_WHEEL);
     }
   }
   
@@ -197,8 +196,8 @@ public class Mouse implements JmolMouseInterface {
      * Netscape 4.* Win32 has a problem with mouseDragged if you left-drag then
      * none of the modifiers are selected we will try to fix that here
      ****************************************************************/
-    if ((modifiers & Binding.BUTTON_MASK) == 0)
-      modifiers |= Binding.LEFT;
+    if ((modifiers & Event.BUTTON_MASK) == 0)
+      modifiers |= Event.MOUSE_LEFT;
     /****************************************************************/
     dragged(e.getWhen(), e.getX(), e.getY(), modifiers);
   }
@@ -210,7 +209,7 @@ public class Mouse implements JmolMouseInterface {
   public void mouseWheelMoved(MouseWheelEvent e) {
     e.consume();
     wheeled(e.getWhen(), e.getWheelRotation(), e.getModifiers()
-        | Binding.WHEEL);
+        | Event.MOUSE_WHEEL);
   }
 
   public void keyTyped(KeyEvent ke) {
@@ -223,18 +222,18 @@ public class Mouse implements JmolMouseInterface {
     // so we are in the ASCII non-printable region 1-31
     if (Logger.debuggingHigh)
       Logger.debug("MouseManager keyTyped: " + ch + " " + (0+ch) + " " + modifiers);
-    if (modifiers != 0 && modifiers != Binding.SHIFT) {
+    if (modifiers != 0 && modifiers != Event.SHIFT_MASK) {
       switch (ch) {
       case (char) 11:
       case 'k': // keystrokes on/off
         boolean isON = !viewer.getBooleanProperty("allowKeyStrokes");
         switch (modifiers) {
-        case Binding.CTRL:
+        case Event.CTRL_MASK:
           viewer.setBooleanProperty("allowKeyStrokes", isON);
           viewer.setBooleanProperty("showKeyStrokes", true);
           break;
-        case Binding.CTRL_ALT:
-        case Binding.ALT:
+        case Event.CTRL_ALT:
+        case Event.SHIFT_MASK:
           viewer.setBooleanProperty("allowKeyStrokes", isON);
           viewer.setBooleanProperty("showKeyStrokes", false);
           break;
@@ -245,17 +244,17 @@ public class Mouse implements JmolMouseInterface {
       case 22:
       case 'v': // paste
         switch (modifiers) {
-        case Binding.CTRL:
+        case Event.CTRL_MASK:
         	break;
         }
         break;
       case 26:
       case 'z': // undo
         switch (modifiers) {
-        case Binding.CTRL:
+        case Event.CTRL_MASK:
           viewer.undoMoveAction(T.undomove, 1);
           break;
-        case Binding.CTRL_SHIFT:
+        case Event.CTRL_SHIFT:
           viewer.undoMoveAction(T.redomove, 1);
           break;
         }
@@ -263,7 +262,7 @@ public class Mouse implements JmolMouseInterface {
       case 25:
       case 'y': // redo
         switch (modifiers) {
-        case Binding.CTRL:
+        case Event.CTRL_MASK:
           viewer.undoMoveAction(T.redomove, 1);
           break;
         }
@@ -273,7 +272,7 @@ public class Mouse implements JmolMouseInterface {
     }
     if (!viewer.getBooleanProperty("allowKeyStrokes"))
       return;
-    addKeyBuffer(ke.getModifiers() == Binding.SHIFT ? Character.toUpperCase(ch) : ch);
+    addKeyBuffer(ke.getModifiers() == Event.SHIFT_MASK ? Character.toUpperCase(ch) : ch);
   }
 
   public void keyPressed(KeyEvent ke) {
@@ -344,7 +343,7 @@ public class Mouse implements JmolMouseInterface {
     clearKeyBuffer();
     // clickedCount is not reliable on some platforms
     // so we will just deal with it ourselves
-    actionManager.mouseAction(Binding.CLICKED, time, x, y, 1, modifiers);
+    actionManager.mouseAction(Event.CLICKED, time, x, y, 1, modifiers);
   }
 
   private boolean isMouseDown; // Macintosh may not recognize CTRL-SHIFT-LEFT as drag, only move
@@ -352,14 +351,14 @@ public class Mouse implements JmolMouseInterface {
   private void moved(long time, int x, int y, int modifiers) {
     clearKeyBuffer();
     if (isMouseDown)
-      actionManager.mouseAction(Binding.DRAGGED, time, x, y, 0, applyLeftMouse(modifiers));
+      actionManager.mouseAction(Event.DRAGGED, time, x, y, 0, applyLeftMouse(modifiers));
     else
-      actionManager.mouseAction(Binding.MOVED, time, x, y, 0, modifiers);
+      actionManager.mouseAction(Event.MOVED, time, x, y, 0, modifiers);
   }
 
   private void wheeled(long time, int rotation, int modifiers) {
     clearKeyBuffer();
-    actionManager.mouseAction(Binding.WHEELED, time, 0, rotation, 0, modifiers);
+    actionManager.mouseAction(Event.WHEELED, time, 0, rotation, 0, modifiers);
   }
 
   /**
@@ -374,23 +373,23 @@ public class Mouse implements JmolMouseInterface {
                     boolean isPopupTrigger) {
     clearKeyBuffer();
     isMouseDown = true;
-    actionManager.mouseAction(Binding.PRESSED, time, x, y, 0, modifiers);
+    actionManager.mouseAction(Event.PRESSED, time, x, y, 0, modifiers);
   }
 
   private void released(long time, int x, int y, int modifiers) {
     isMouseDown = false;
-    actionManager.mouseAction(Binding.RELEASED, time, x, y, 0, modifiers);
+    actionManager.mouseAction(Event.RELEASED, time, x, y, 0, modifiers);
   }
 
   private void dragged(long time, int x, int y, int modifiers) {
-    if ((modifiers & Binding.MAC_COMMAND) == Binding.MAC_COMMAND)
-      modifiers = modifiers & ~Binding.RIGHT | Binding.CTRL; 
-    actionManager.mouseAction(Binding.DRAGGED, time, x, y, 0, modifiers);
+    if ((modifiers & Event.MAC_COMMAND) == Event.MAC_COMMAND)
+      modifiers = modifiers & ~Event.MOUSE_RIGHT | Event.CTRL_MASK; 
+    actionManager.mouseAction(Event.DRAGGED, time, x, y, 0, modifiers);
   }
 
   private static int applyLeftMouse(int modifiers) {
     // if neither BUTTON2 or BUTTON3 then it must be BUTTON1
-    return ((modifiers & Binding.BUTTON_MASK) == 0) ? (modifiers | Binding.LEFT)
+    return ((modifiers & Event.BUTTON_MASK) == 0) ? (modifiers | Event.MOUSE_LEFT)
         : modifiers;
   }
 

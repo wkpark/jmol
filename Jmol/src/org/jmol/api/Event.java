@@ -31,6 +31,10 @@ public class Event {
   public static final int MOUSE_MIDDLE =   8; //Event.ALT_MASK;
   public static final int MOUSE_RIGHT  =   4; //Event.META_MASK;
   public static final int MOUSE_WHEEL  =  32;
+  
+  public final static int MAC_COMMAND = MOUSE_LEFT | MOUSE_RIGHT;
+  public final static int BUTTON_MASK = MOUSE_LEFT | MOUSE_MIDDLE | MOUSE_RIGHT;
+
   public static final int MOUSE_DOWN   = 501; //InputEvent.MOUSE_DOWN;
   public static final int MOUSE_UP     = 502; //Event.MOUSE_UP;
   public static final int MOUSE_MOVE   = 503; //Event.MOUSE_MOVE;
@@ -38,9 +42,14 @@ public class Event {
   public static final int MOUSE_EXIT   = 505; //Event.MOUSE_EXIT;
   public static final int MOUSE_DRAG   = 506; //Event.MOUSE_DRAG;
     
+  
   public static final int SHIFT_MASK =  1;//InputEvent.SHIFT_MASK;
   public static final int ALT_MASK   =  8;//InputEvent.ALT_MASK;
   public static final int CTRL_MASK  =  2;//InputEvent.CTRL_MASK;
+  
+  public final static int CTRL_ALT = CTRL_MASK | ALT_MASK;
+  public final static int CTRL_SHIFT = CTRL_MASK | SHIFT_MASK;
+
   public static final int META_MASK  =  4;//InputEvent.META_MASK;
   public static final int VK_SHIFT   = 16;//KeyEvent.VK_SHIFT;
   public static final int VK_ALT     = 18;//KeyEvent.VK_ALT;
@@ -51,5 +60,12 @@ public class Event {
   public static final int VK_SPACE   = 32;//KeyEvent.VK_SPACE;
   public static final int VK_DOWN    = 40;//KeyEvent.VK_DOWN;
   public static final int VK_UP      = 38;//KeyEvent.VK_UP;
+  // for status messages:
+  public final static int MOVED = 0;
+  public final static int DRAGGED = 1;
+  public final static int CLICKED = 2;
+  public final static int WHEELED = 3;
+  public final static int PRESSED = 4;
+  public final static int RELEASED = 5;
 
 }

@@ -4916,7 +4916,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     setTainted(true);
   }
 
-  private int currentCursor = JC.CURSOR_DEFAULT;
+  private int currentCursor = ApiPlatform.CURSOR_DEFAULT;
 
   public int getCursor() {
     return currentCursor;
@@ -9066,7 +9066,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       undoClear();
       if (Logger.getLogLevel() == 0)
         Logger.setLogLevel(Logger.LEVEL_INFO);
-      setCursor(JC.CURSOR_DEFAULT);
+      setCursor(ApiPlatform.CURSOR_DEFAULT);
       setBooleanProperty("refreshing", true);
       fileManager.setPathForAllFiles("");
       Logger.error("viewer handling error condition: " + er + "  ");

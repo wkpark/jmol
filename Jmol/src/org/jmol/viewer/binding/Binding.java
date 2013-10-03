@@ -52,12 +52,12 @@ abstract public class Binding {
   public final static int ALT = Event.ALT_MASK; // MIDDLE and ALT are the same
   public final static int CTRL = Event.CTRL_MASK;
   public final static int SHIFT = Event.SHIFT_MASK;
-  public final static int CTRL_ALT = CTRL | ALT;
-  public final static int CTRL_SHIFT = CTRL | SHIFT;
-  public final static int MAC_COMMAND = LEFT | RIGHT;
-  public final static int BUTTON_MASK = LEFT | MIDDLE | RIGHT;
+  public final static int CTRL_ALT = Event.CTRL_ALT;
+  public final static int CTRL_SHIFT = Event.CTRL_SHIFT;
+  public final static int MAC_COMMAND = Event.MAC_COMMAND;
+  public final static int BUTTON_MASK = Event.BUTTON_MASK;
   public final static int BUTTON_MODIFIER_MASK = CTRL | SHIFT | LEFT | MIDDLE | RIGHT | WHEEL;
-  
+
   public final static int SINGLE = 1 << 8;
   public final static int DOUBLE = 2 << 8;
   public final static int COUNT_MASK = SINGLE | DOUBLE;
@@ -69,14 +69,6 @@ abstract public class Binding {
 
   public final static int MODE_MASK = DOWN | DRAG | UP | CLICK;
   
-  // for status messages:
-  public final static int MOVED = 0;
-  public final static int DRAGGED = 1;
-  public final static int CLICKED = 2;
-  public final static int WHEELED = 3;
-  public final static int PRESSED = 4;
-  public final static int RELEASED = 5;
-
   public static int getMouseAction(int clickCount, int modifiers, int mode) {
     if (clickCount > 2)
       clickCount = 2;
@@ -90,19 +82,19 @@ abstract public class Binding {
       clickCount = DOUBLE;
     }
     switch (mode) {
-    case PRESSED:
+    case Event.PRESSED:
       mode = DOWN;
       break;
-    case DRAGGED:
+    case Event.DRAGGED:
       mode = DRAG;
       break;
-    case RELEASED:
+    case Event.RELEASED:
       mode = UP;
       break;
-    case CLICKED:
+    case Event.CLICKED:
       mode = CLICK;
       break;
-    case WHEELED:
+    case Event.WHEELED:
       mode = WHEEL;
     }
     return (modifiers & BUTTON_MODIFIER_MASK) | clickCount | mode;   

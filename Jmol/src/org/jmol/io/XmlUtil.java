@@ -38,6 +38,9 @@ import org.jmol.util.Txt;
 
 public class XmlUtil {
 
+  public XmlUtil() {
+    // just here to allow ModelCollection to not access this directly 
+  }
   // / simple Xml parser/generator ///
 
   public static void openDocument(SB data) {

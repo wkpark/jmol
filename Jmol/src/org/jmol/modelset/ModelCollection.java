@@ -3054,13 +3054,16 @@ abstract public class ModelCollection extends BondCollection {
    * <bond atomRefs2="a3 a6" order="S"/> <bond atomRefs2="a3 a7" order="S"/>
    * </bondArray> </molecule>
    */
+  @SuppressWarnings("static-access")
   public String getModelCml(BS bs, int atomsMax, boolean addBonds) {
     SB sb = new SB();
     int nAtoms = BSUtil.cardinalityOf(bs);
     if (nAtoms == 0)
       return "";
-    XmlUtil.openTag(sb, "molecule");
-    XmlUtil.openTag(sb, "atomArray");
+    // creating an instance prevents pre-loading by JavaScript
+    XmlUtil xmlUtil = (XmlUtil) Interface.getOptionInterface("io.XmlUtil");
+    xmlUtil.openTag(sb, "molecule");
+    xmlUtil.openTag(sb, "atomArray");
     BS bsAtoms = new BS();
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       if (--atomsMax < 0)
@@ -3069,14 +3072,14 @@ abstract public class ModelCollection extends BondCollection {
       String name = atom.getAtomName();
       Txt.simpleReplace(name, "\"", "''");
       bsAtoms.set(atom.index);
-      XmlUtil.appendTag(sb, "atom/", new String[] { "id",
+      xmlUtil.appendTag(sb, "atom/", new String[] { "id",
           "a" + (atom.index + 1), "title", atom.getAtomName(), "elementType",
           atom.getElementSymbol(), "x3", "" + atom.x, "y3", "" + atom.y, "z3",
           "" + atom.z });
     }
-    XmlUtil.closeTag(sb, "atomArray");
+    xmlUtil.closeTag(sb, "atomArray");
     if (addBonds) {
-      XmlUtil.openTag(sb, "bondArray");
+      xmlUtil.openTag(sb, "bondArray");
       for (int i = 0; i < bondCount; i++) {
         Bond bond = bonds[i];
         Atom a1 = bond.atom1;
@@ -3086,13 +3089,13 @@ abstract public class ModelCollection extends BondCollection {
         String order = JmolEdge.getCmlBondOrder(bond.order);
         if (order == null)
           continue;
-        XmlUtil.appendTag(sb, "bond/", new String[] { "atomRefs2",
+        xmlUtil.appendTag(sb, "bond/", new String[] { "atomRefs2",
             "a" + (bond.atom1.index + 1) + " a" + (bond.atom2.index + 1),
             "order", order, });
       }
-      XmlUtil.closeTag(sb, "bondArray");
+      xmlUtil.closeTag(sb, "bondArray");
     }
-    XmlUtil.closeTag(sb, "molecule");
+    xmlUtil.closeTag(sb, "molecule");
     return sb.toString();
   }
 

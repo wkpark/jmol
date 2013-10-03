@@ -23,10 +23,11 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.io;
+package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
+import org.jmol.io.XmlUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.P3;
 import org.jmol.util.SB;

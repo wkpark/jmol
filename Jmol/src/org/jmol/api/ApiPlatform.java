@@ -5,12 +5,10 @@ import java.net.URL;
 
 import org.jmol.util.JmolFont;
 import org.jmol.util.P3;
-import org.jmol.viewer.ActionManager;
-import org.jmol.viewer.Viewer;
 
 public interface ApiPlatform {
 
-  void setViewer(Viewer viewer, Object display);
+  void setViewer(PlatformViewer viewer, Object display);
   
   /////// Display
 
@@ -34,7 +32,7 @@ public interface ApiPlatform {
 
   ////  Mouse 
 
-  JmolMouseInterface getMouseManager(double privateKey, Viewer viewer, ActionManager actionManager);
+  JmolMouseInterface getMouseManager(double privateKey);
 
   ///// Font
   
@@ -113,7 +111,7 @@ public interface ApiPlatform {
    */
   boolean waitForDisplay(Object boolIsEcho, Object image) throws InterruptedException;
 
-  JmolPopupInterface getMenuPopup(Viewer viewer, String menuStructure, char type);
+  JmolPopupInterface getMenuPopup(String menuStructure, char type);
 
   Object getJsObjectInfo(Object[] jsObject, String method, Object[] args);
 

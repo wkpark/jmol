@@ -1111,7 +1111,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.loadInline(viewer.getClipboardText(), false);
+      viewer.loadInlineAppend(viewer.getClipboardText(), false);
     }
   }
 

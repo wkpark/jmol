@@ -304,7 +304,7 @@ abstract public class JmolViewer {
   abstract public String scriptWait(String script);
   abstract public Object scriptWaitStatus(String script, String statusList);
   abstract public String loadInline(String strModel);
-  abstract public String loadInline(String strModel, boolean isAppend);
+  abstract public String loadInlineAppend(String strModel, boolean isAppend);
   abstract public String loadInline(String strModel, char newLine);
   abstract public String loadInline(String[] arrayModels);
   /**

@@ -745,7 +745,7 @@ public class Jmol implements WrappedApplet {
   }
 
   public String loadInlineString(String strModel, String script, boolean isAppend) {
-    String errMsg = viewer.loadInline(strModel, isAppend);
+    String errMsg = viewer.loadInlineAppend(strModel, isAppend);
     if (errMsg == null)
       script(script);
     return errMsg;

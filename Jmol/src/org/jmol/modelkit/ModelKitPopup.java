@@ -29,6 +29,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.jmol.api.PlatformViewer;
 import org.jmol.i18n.GT;
 import org.jmol.popup.PopupResource;
 import org.jmol.popup.SwingPopup;
@@ -41,11 +42,11 @@ public class ModelKitPopup extends SwingPopup {
     // required by reflection
   }
   
-  public void jpiInitialize(Viewer viewer, String menu) {
+  public void jpiInitialize(PlatformViewer viewer, String menu) {
     updateMode = UPDATE_NEVER;
     boolean doTranslate = GT.setDoTranslate(true);
     PopupResource bundle = new ModelKitPopupResourceBundle();
-    initialize(viewer, bundle, bundle.getMenuName());
+    initialize((Viewer) viewer, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);
   }
 

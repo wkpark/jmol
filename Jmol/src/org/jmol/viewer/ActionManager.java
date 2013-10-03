@@ -948,13 +948,9 @@ public class ActionManager {
     }
   }
 
-  public void mouseEntered(long time, int x, int y) {
+  public void mouseEnterExit(long time, int x, int y, boolean isExit) {
     setCurrent(time, x, y, 0);
-  }
-
-  public void mouseExited(long time, int x, int y) {
-    setCurrent(time, x, y, 0);
-    if (measurementPending != null) {
+    if (isExit && measurementPending != null) {
       exitMeasurementMode();
       viewer.refresh(3, "mouseExit");
     }

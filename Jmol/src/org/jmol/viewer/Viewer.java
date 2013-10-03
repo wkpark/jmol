@@ -70,6 +70,7 @@ import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.MinimizerInterface;
+import org.jmol.api.PlatformViewer;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
@@ -177,7 +178,7 @@ import java.io.StringReader;
  */
 
 @J2SIgnoreImport( { Runtime.class })
-public class Viewer extends JmolViewer implements AtomDataServer {
+public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer {
 
   @Override
   protected void finalize() throws Throwable {
@@ -191,6 +192,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public boolean autoExit = false;
   public boolean haveDisplay = false;
+  
+  public boolean hasDisplay() {
+    return haveDisplay;
+  }
+  
   public boolean isJS, isWebGL;
   public boolean isSingleThreaded;
   public boolean queueOnHold = false;
@@ -234,6 +240,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   Object applet; // j2s only
 
   ActionManager actionManager;
+  
+  public ActionManager getActionManager() {
+    return actionManager;
+  }
+
+
   AnimationManager animationManager;
   ColorManager colorManager;
   DataManager dataManager;
@@ -501,7 +513,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           : new ActionManager());
       actionManager.setViewer(this, commandOptions + "-multitouch-"
           + info.get("multiTouch"));
-      mouse = apiPlatform.getMouseManager(privateKey, this, actionManager);
+      mouse = apiPlatform.getMouseManager(privateKey);
       if (multiTouch && !checkOption2("-simulated", "-simulated"))
         apiPlatform.setTransparentCursor(display);
     }
@@ -675,6 +687,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void disposeMouse() {
+    actionManager.dispose();
     mouse.dispose();
     mouse = null;
   }
@@ -1828,10 +1841,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     // call before setting viewer=null
     if (modeMouse == JC.MOUSE_NONE) {
       // applet is being destroyed
-      if (mouse != null) {
-        mouse.dispose();
-        mouse = null;
-      }
+      if (mouse != null)
+        disposeMouse();
       clearScriptQueue();
       clearThreads();
       haltScriptExecution();
@@ -2359,7 +2370,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    */
 
   @Override
-  public String loadInline(String strModel, boolean isAppend) {
+  public String loadInlineAppend(String strModel, boolean isAppend) {
     // JmolViewer interface
     return loadInlineScriptRepaint(strModel, '\0', isAppend);
   }
@@ -4508,7 +4519,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return evalStringQuietSync(strScript, true, true);
   }
 
-  String evalStringQuietSync(String strScript, boolean isQuiet,
+  public String evalStringQuietSync(String strScript, boolean isQuiet,
                              boolean allowSyncScript) {
     return (getScriptManager() == null ? null : scriptManager
         .evalStringQuietSync(strScript, isQuiet, allowSyncScript));
@@ -5034,7 +5045,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     case 'b':
     case 'm':
       // atom, bond, or main -- ignored      
-      modelkitPopup = apiPlatform.getMenuPopup(this, null, type);
+      modelkitPopup = apiPlatform.getMenuPopup(null, type);
       if (modelkitPopup != null)
         modelkitPopup.jpiShow(x, y);
       break;
@@ -5054,8 +5065,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private Object getPopupMenu() {
     if (jmolpopup == null) {
-      jmolpopup = (allowScripting ? apiPlatform.getMenuPopup(this,
-          menuStructure, 'j') : null);
+      jmolpopup = (allowScripting ? apiPlatform.getMenuPopup(menuStructure, 'j') : null);
       if (jmolpopup == null) {
         global.disablePopupMenu = true;
         return null;

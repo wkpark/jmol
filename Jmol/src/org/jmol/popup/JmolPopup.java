@@ -23,6 +23,7 @@
  */
 package org.jmol.popup;
 
+import org.jmol.api.PlatformViewer;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.Viewer;
 
@@ -42,11 +43,11 @@ public class JmolPopup extends SwingPopup {
     // required by reflection
   }
 
-  public void jpiInitialize(Viewer viewer, String menu) {
+  public void jpiInitialize(PlatformViewer viewer, String menu) {
     boolean doTranslate = GT.setDoTranslate(true);
     PopupResource bundle = new MainPopupResourceBundle(strMenuStructure = menu,
         menuText);
-    initialize(viewer, bundle, bundle.getMenuName());
+    initialize((Viewer) viewer, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);
   }
 

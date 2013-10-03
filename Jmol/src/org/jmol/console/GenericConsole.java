@@ -214,7 +214,7 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
         return;
       }
       if (source == loadButton) {
-        viewer.loadInline(input.getText(), false);
+        viewer.loadInlineAppend(input.getText(), false);
         return;
       }
       if (isMenuItem(source)) {

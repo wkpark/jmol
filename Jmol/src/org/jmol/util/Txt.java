@@ -752,4 +752,10 @@ public class Txt {
     return ichT;
   }
 
+  public static String trimQuotes(String value) {
+    return (value != null && value.length() > 1 && value.startsWith("\"")
+        && value.endsWith("\"") ? value.substring(1, value.length() - 1)
+        : value);
+  }
+
 }

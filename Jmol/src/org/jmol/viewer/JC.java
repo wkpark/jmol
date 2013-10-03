@@ -30,6 +30,7 @@ import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SB;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 
 import java.io.BufferedInputStream;
@@ -71,16 +72,15 @@ public class JC {
         bis = new BufferedInputStream(is);
         Properties props = new Properties();
         props.load(bis);
-        tmpVersion = props.getProperty("___JmolVersion", tmpVersion);
-        tmpDate = props.getProperty("___JmolDate", tmpDate);
+        tmpVersion = Txt.trimQuotes(props.getProperty("___JmolVersion", tmpVersion));
+        tmpDate = Txt.trimQuotes(props.getProperty("___JmolDate", tmpDate));
       }
       if (tmpDate != null) {
-        tmpDate = tmpDate.substring(8, 24);
+        tmpDate = tmpDate.substring(7, 24);
         // NOTE : date is updated in the properties by SVN, and is in the format
         // "$Date$"
-        // 0         1         2
-        // 012345678901234567890123456789
-        tmpVersion = tmpVersion.substring(1, tmpVersion.length() - 1);
+        //  0         1         2
+        //  012345678901234567890123456789
       }
     } catch (Exception e) {
       // Nothing to do

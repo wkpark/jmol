@@ -102,7 +102,7 @@ public class Parser {
     boolean haveBitSet = (bs != null);
     for (int i = (haveBitSet ? bs.nextSetBit(0) : 0); i >= 0 && i < len && n < nTokens; i = (haveBitSet ? bs.nextSetBit(i + 1) : i + 1)) {
       float f;
-      while (Float.isNaN(f = Parser.parseFloatStr(tokens[n++])) 
+      while (Float.isNaN(f = parseFloatStr(tokens[n++])) 
           && n < nTokens) {
       }
       if (!Float.isNaN(f))
@@ -284,7 +284,7 @@ public class Parser {
    */
   public static void parseFloatArrayDataN(String[] tokens, float[] data, int nData) {
     for (int i = nData; --i >= 0;)
-      data[i] = (i >= tokens.length ? Float.NaN : Parser.parseFloatStr(tokens[i]));
+      data[i] = (i >= tokens.length ? Float.NaN : parseFloatStr(tokens[i]));
   }
  
   public static float parseFloatStr(String str) {

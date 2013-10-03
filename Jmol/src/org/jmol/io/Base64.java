@@ -39,15 +39,15 @@ public class Base64 {
     41,42,43,44, 45,46,47,48, 49,50,51,0,  0,0,0,0,      //0x70-0x7F
   };
     
-  public static void write(byte[] bytes, JmolOutputChannel out) {
-    SB sb = getBase64(bytes);
-    int len = sb.length();
-    byte[] b = new byte[1];
-    for (int i = 0; i < len; i++) {
-      b[0] = (byte) sb.charAt(i);
-      out.write(b, 0, 1);
-    }
-  }
+//  public static void write(byte[] bytes, JmolOutputChannel out) {
+//    SB sb = getBase64(bytes);
+//    int len = sb.length();
+//    byte[] b = new byte[1];
+//    for (int i = 0; i < len; i++) {
+//      b[0] = (byte) sb.charAt(i);
+//      out.write(b, 0, 1);
+//    }
+//  }
 
   public static byte[] getBytes64(byte[] bytes) {
     return getBase64(bytes).toBytes(0, -1);

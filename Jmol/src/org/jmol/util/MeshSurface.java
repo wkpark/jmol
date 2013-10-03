@@ -272,7 +272,7 @@ public class MeshSurface {
   }
   
   public void resetSlab() {
-    slabPolygons(ArrayUtil.getSlabObject(T.none, null, false, null), false);
+    slabPolygons(TempArray.getSlabObjectType(T.none, null, false, null), false);
   }
 
   /**
@@ -286,7 +286,7 @@ public class MeshSurface {
     try {
       if (s.indexOf("array") == 0) {
         String[] pts = TextFormat.splitChars(s.substring(6, s.length() - 1), ",");
-        return ArrayUtil.getSlabObject(T.boundbox, new P3[] {
+        return TempArray.getSlabObjectType(T.boundbox, new P3[] {
             (P3) Escape.uP(pts[0]),
             (P3) Escape.uP(pts[1]),
             (P3) Escape.uP(pts[2]),
@@ -294,7 +294,7 @@ public class MeshSurface {
       }
       Object plane = Escape.uP(s);
       if (plane instanceof P4)
-        return ArrayUtil.getSlabObject(T.plane, plane, isCap, null);
+        return TempArray.getSlabObjectType(T.plane, plane, isCap, null);
     } catch (Exception e) {
       //
     }

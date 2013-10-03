@@ -83,6 +83,7 @@ import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.SimpleUnitCell;
+import org.jmol.util.TempArray;
 import org.jmol.util.TextFormat;
 import org.jmol.util.V3;
 import org.jmol.viewer.FileManager;
@@ -2897,7 +2898,7 @@ public class ScriptExt implements JmolScriptExtension {
       throws ScriptException {
     if (i < 0) {
       // standard range -100 to 0
-      return ArrayUtil.getSlabWithinRange(i, 0);
+      return TempArray.getSlabWithinRange(i, 0);
     }
     ScriptEvaluator eval = this.eval;
     Object data = null;
@@ -3055,7 +3056,7 @@ public class ScriptExt implements JmolScriptExtension {
     }
     Object colorData = (slabMeshType == null ? null : new Object[] {
         slabMeshType, slabColix });
-    return ArrayUtil.getSlabObject(tok, data, !isSlab, colorData);
+    return TempArray.getSlabObjectType(tok, data, !isSlab, colorData);
   }
 
   private boolean mo(boolean isInitOnly) throws ScriptException {

@@ -26,12 +26,11 @@ package org.jmol.util;
 
 import java.lang.reflect.Array;
 
-import org.jmol.script.T;
-import org.jmol.util.JmolList;
 import java.util.Arrays;
 import java.util.Hashtable;
-
 import java.util.Map;
+
+import org.jmol.util.JmolList;
 
 
 final public class ArrayUtil {
@@ -503,15 +502,6 @@ final public class ArrayUtil {
     for (int i = list.size(); --i >= 0;)
       map.remove(list.get(i));
     return list.size();
-  }
-
-  public static Object[] getSlabObject(int tok, Object data, boolean isCap, Object colorData) {
-    return new Object[] { Integer.valueOf(tok), data, Boolean.valueOf(isCap), colorData };
-  }
-
-  public static Object[] getSlabWithinRange(float min, float max) {
-    return new Object[] { Integer.valueOf(T.range), 
-        new Float[] {Float.valueOf(min), Float.valueOf(max)}, Boolean.FALSE, null };
   }
 
 

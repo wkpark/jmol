@@ -48,7 +48,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 
 
@@ -1441,7 +1441,7 @@ public class AtomSetCollection {
     int atomMax = atomCount;
     if (filter.indexOf("#<") >= 0) {
       len = Math.min(len, Parser.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
-      filter = TextFormat.simpleReplace(filter, "#<", "_<");
+      filter = Txt.simpleReplace(filter, "#<", "_<");
     }
     for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++)
       atoms[iAtom].bsSymmetry = BSUtil.newAndSetBit(0);

@@ -44,7 +44,7 @@ import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
 
@@ -491,7 +491,7 @@ public class JmolBinary {
       while ((i = script.indexOf(tag, i + 1)) >= 0) {
         String s = Parser.getQuotedStringAt(script, i);
         if (s.indexOf("::") >= 0)
-          s = TextFormat.splitChars(s, "::")[1];
+          s = Txt.split(s, "::")[1];
         if (fileList instanceof JmolList<?>)
           ((JmolList<String>) fileList).addLast(s);
         else
@@ -558,12 +558,12 @@ public class JmolBinary {
   public static String getManifestScriptPath(String manifest) {
     if (manifest.indexOf("$SCRIPT_PATH$") >= 0)
       return "";
-    char ch = (manifest.indexOf('\n') >= 0 ? '\n' : '\r');
+    String ch = (manifest.indexOf('\n') >= 0 ? "\n" : "\r");
     if (manifest.indexOf(".spt") >= 0) {
-      String[] s = TextFormat.split(manifest, ch);
+      String[] s = Txt.split(manifest, ch);
       for (int i = s.length; --i >= 0;)
         if (s[i].indexOf(".spt") >= 0)
-          return "|" + TextFormat.trim(s[i], "\r\n \t");
+          return "|" + Txt.trim(s[i], "\r\n \t");
     }
     return null;
   }

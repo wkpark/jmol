@@ -25,7 +25,7 @@ import org.jmol.util.MeshSurface;
 import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
@@ -752,7 +752,7 @@ public class _ObjExporter extends __CartesianExporter {
     String name;
     if (center instanceof Atom) {
       Atom atom = (Atom) center;
-      name = TextFormat.replaceAllCharacters(atom.getAtomName(), " \t", "") + "_Atom";
+      name = Txt.replaceAllCharacters(atom.getAtomName(), " \t", "") + "_Atom";
     } else if (rx == ry && rx == rz) {
       // Is a sphere
       name = "Sphere" + sphereNum++;

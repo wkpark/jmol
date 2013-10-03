@@ -39,7 +39,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 
 import java.awt.Event;
@@ -967,7 +967,7 @@ public class Jmol implements JmolSyncInterface {
     	  System.out.println(strInfo);
     	}
     } else {
-    	 String[] tokens = TextFormat.split(callback, '.');
+    	 String[] tokens = Txt.split(callback, ".");
     	/**
     	 * @j2sNative
     	 * 

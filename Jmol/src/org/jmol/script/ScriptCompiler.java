@@ -32,7 +32,7 @@ import org.jmol.util.Matrix3f;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.api.Interface;
@@ -2291,7 +2291,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     boolean isMath = (isVariable && ichT + 3 < cchScript && script
         .charAt(ichT + 1) == '{');
     if (isMath && parseVariables) {
-      ichT = TextFormat.ichMathTerminator(script, ichToken + 1, cchScript);
+      ichT = Txt.ichMathTerminator(script, ichToken + 1, cchScript);
       return (!isID && ichT != cchScript && (cchToken = ichT + 1 - ichToken) > 0);
     }
     int ptSpace = -1;

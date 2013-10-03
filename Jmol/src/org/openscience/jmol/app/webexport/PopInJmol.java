@@ -38,7 +38,7 @@ import javax.swing.event.ChangeListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 class PopInJmol extends WebPanel implements ChangeListener {
 
@@ -117,15 +117,15 @@ class PopInJmol extends WebPanel implements ChangeListener {
           + javaname + "'," + JmolSizeW + "," + JmolSizeH + ")");
     } else {
       String s = htmlAppletTemplate;
-      s = TextFormat.simpleReplace(s, "@CLASS@", "" + divClass);
-      s = TextFormat.simpleReplace(s, "@I@", "" + i);
-      s = TextFormat.simpleReplace(s, "@WIDTH@", "" + JmolSizeW);
-      s = TextFormat.simpleReplace(s, "@HEIGHT@", "" + JmolSizeH);
-      s = TextFormat.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
-      s = TextFormat.simpleReplace(s, "@APPLETNAME@", GT.escapeHTML(javaname));
-      s = TextFormat.simpleReplace(s, "@LEFTWIDGETS@", "");// no left widgets
+      s = Txt.simpleReplace(s, "@CLASS@", "" + divClass);
+      s = Txt.simpleReplace(s, "@I@", "" + i);
+      s = Txt.simpleReplace(s, "@WIDTH@", "" + JmolSizeW);
+      s = Txt.simpleReplace(s, "@HEIGHT@", "" + JmolSizeH);
+      s = Txt.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
+      s = Txt.simpleReplace(s, "@APPLETNAME@", GT.escapeHTML(javaname));
+      s = Txt.simpleReplace(s, "@LEFTWIDGETS@", "");// no left widgets
                                                            // for now
-      s = TextFormat.simpleReplace(s, "@RIGHTWIDGETS@", widgetDefs);
+      s = Txt.simpleReplace(s, "@RIGHTWIDGETS@", widgetDefs);
       appletDefs.append(s);
     }
     return html;

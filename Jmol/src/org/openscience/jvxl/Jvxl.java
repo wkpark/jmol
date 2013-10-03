@@ -238,21 +238,21 @@ public class Jvxl {
         isPositiveOnly = true;
         s = s.substring(1);
       }
-      cutoff = Parser.parseFloatStr(s);
+      cutoff = Parser.parseFloat(s);
     }
 
     if (line.hasOption("n")) {
       if (bicolor)
         Logger.warn("--min option ignored; incompatible with --bicolor");
       else
-        min = Parser.parseFloatStr(line.getOptionValue("n"));
+        min = Parser.parseFloat(line.getOptionValue("n"));
     }
 
     if (line.hasOption("x")) {
       if (bicolor)
         Logger.warn("--max option ignored; incompatible with --bicolor");
       else
-        max = Parser.parseFloatStr(line.getOptionValue("x"));
+        max = Parser.parseFloat(line.getOptionValue("x"));
     }
 
     //    if (line.hasOption("P")) {
@@ -357,13 +357,13 @@ public class Jvxl {
     if (str.equalsIgnoreCase("yz"))
       return P4.new4(1, 0, 0, 0);
     if (str.indexOf("x=") == 0) {
-      return P4.new4(1, 0, 0, -Parser.parseFloatStr(str.substring(2)));
+      return P4.new4(1, 0, 0, -Parser.parseFloat(str.substring(2)));
     }
     if (str.indexOf("y=") == 0) {
-      return P4.new4(0, 1, 0, -Parser.parseFloatStr(str.substring(2)));
+      return P4.new4(0, 1, 0, -Parser.parseFloat(str.substring(2)));
     }
     if (str.indexOf("z=") == 0) {
-      return P4.new4(0, 0, 1, -Parser.parseFloatStr(str.substring(2)));
+      return P4.new4(0, 0, 1, -Parser.parseFloat(str.substring(2)));
     }
     if (str.indexOf("{") == 0) {
       str = str.replace(',', ' ');

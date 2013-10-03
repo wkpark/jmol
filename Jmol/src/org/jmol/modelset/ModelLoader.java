@@ -35,7 +35,7 @@ import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
@@ -533,7 +533,7 @@ public final class ModelLoader {
     String loadState = (String) modelSet.modelSetAuxiliaryInfo.remove("loadState");
     SB loadScript = (SB)modelSet.modelSetAuxiliaryInfo.remove("loadScript");
     if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
-      String[] lines = TextFormat.split(loadState, '\n');
+      String[] lines = Txt.split(loadState, "\n");
       SB sb = new SB();
       for (int i = 0; i < lines.length; i++) {
         int pt = m.loadState.indexOf(lines[i]);

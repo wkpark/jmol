@@ -143,7 +143,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.P4;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 
 public class SurfaceGenerator {
@@ -348,7 +348,7 @@ public class SurfaceGenerator {
         params.script = (String) value;
         if (params.script != null && params.script.indexOf(";#") >= 0) {
           // crude hack for ScriptEvaluator messing up
-          params.script = TextFormat.simpleReplace(params.script, ";#", "; #");
+          params.script = Txt.simpleReplace(params.script, ";#", "; #");
         }
       }
       return false; // more to do

@@ -33,7 +33,7 @@ import javax.swing.SpinnerNumberModel;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 class ScriptButtons extends WebPanel {
 
@@ -68,10 +68,10 @@ class ScriptButtons extends WebPanel {
     int nbuttons = getInstanceList().getModel().getSize();
     if (!allSelectedWidgets().isEmpty())
       appletheightpercent = 85;
-    html = TextFormat.simpleReplace(html, "@WIDTHPERCENT@", "" + size);
-    html = TextFormat.simpleReplace(html, "@LEFTPERCENT@", "" + leftpercent);
-    html = TextFormat.simpleReplace(html, "@NBUTTONS@", "" + nbuttons);
-    html = TextFormat.simpleReplace(html, "@HEIGHT@", "" + appletheightpercent);
+    html = Txt.simpleReplace(html, "@WIDTHPERCENT@", "" + size);
+    html = Txt.simpleReplace(html, "@LEFTPERCENT@", "" + leftpercent);
+    html = Txt.simpleReplace(html, "@NBUTTONS@", "" + nbuttons);
+    html = Txt.simpleReplace(html, "@HEIGHT@", "" + appletheightpercent);
     return html;
   }
 
@@ -104,18 +104,18 @@ class ScriptButtons extends WebPanel {
       widgetDefs += "</tr></tbody></table>";
     }
     if (i == 0)
-      html = TextFormat.simpleReplace(html, "@APPLETNAME0@", GT.escapeHTML(buttonname));
+      html = Txt.simpleReplace(html, "@APPLETNAME0@", GT.escapeHTML(buttonname));
     if (useAppletJS) {
       String info = "info for " + name;
       appletDefs.append("\naddAppletButton(" + i + ",'" + buttonname + "',\""
           + name + "\",\"" + info + "\");");
     } else {
       String s = htmlAppletTemplate;
-      s = TextFormat.simpleReplace(s, "@APPLETNAME0@", GT.escapeHTML(buttonname));
-      s = TextFormat.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
-      s = TextFormat.simpleReplace(s, "@LABEL@", GT.escapeHTML(name));
-      s = TextFormat.simpleReplace(s, "@I@", ""+i);
-      s = TextFormat.simpleReplace(s, "@WIDGETSTR@", widgetDefs);
+      s = Txt.simpleReplace(s, "@APPLETNAME0@", GT.escapeHTML(buttonname));
+      s = Txt.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
+      s = Txt.simpleReplace(s, "@LABEL@", GT.escapeHTML(name));
+      s = Txt.simpleReplace(s, "@I@", ""+i);
+      s = Txt.simpleReplace(s, "@WIDGETSTR@", widgetDefs);
       appletDefs.append(s);
     }
     return html;

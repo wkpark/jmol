@@ -13,7 +13,7 @@ import javax.swing.SwingUtilities;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.util.P3;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 
 /**
@@ -99,7 +99,7 @@ class Display {
       if (!asButtons)
         return JOptionPane.showInputDialog(label, data);
       if (data != null)
-        list = TextFormat.splitChars(data, "|");
+        list = Txt.split(data, "|");
       int i = JOptionPane.showOptionDialog(null, label, "Jmol prompt",
           JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
           list, list[0]);

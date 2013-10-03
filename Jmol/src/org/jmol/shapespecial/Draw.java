@@ -44,7 +44,7 @@ import org.jmol.util.SB;
 import org.jmol.util.V3;
 
 import org.jmol.util.Measure;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
@@ -1313,14 +1313,14 @@ protected void resetObjects() {
     
     SB sb = new SB();
     String key = (explicitID && previousMeshID != null
-        && TextFormat.isWild(previousMeshID) ? previousMeshID.toUpperCase()
+        && Txt.isWild(previousMeshID) ? previousMeshID.toUpperCase()
         : null);
     if (key != null && key.length() == 0)
       key = null;
     for (int i = 0; i < meshCount; i++) {
       Mesh m = meshes[i];
       if (key == null
-          || TextFormat.isMatch(m.thisID.toUpperCase(), key, true, true))
+          || Txt.isMatch(m.thisID.toUpperCase(), key, true, true))
         sb.append(getCommand2(m, m.modelIndex));
     }
     return sb.toString();

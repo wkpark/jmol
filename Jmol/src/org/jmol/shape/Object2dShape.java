@@ -11,7 +11,7 @@ import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 
 public abstract class Object2dShape extends Shape {
@@ -45,7 +45,7 @@ public abstract class Object2dShape extends Shape {
           while (e.hasNext()) {
             Text text = e.next();
             if (isAll
-                || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
+                || Txt.isMatch(text.target.toUpperCase(), thisID, true,
                     true)) {
               e.remove();
             }
@@ -121,7 +121,7 @@ public abstract class Object2dShape extends Shape {
           while (e.hasNext()) {
             Text text = e.next();
             if (isAll
-                || TextFormat.isMatch(text.target.toUpperCase(), thisID, true,
+                || Txt.isMatch(text.target.toUpperCase(), thisID, true,
                     true)) {
               text.setColixO(value);
             }

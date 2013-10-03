@@ -204,18 +204,18 @@ public class ForceFieldUFF extends ForceField {
           ffParam.sVal = new String[1];
           ffParam.sVal[0] = vs[1]; // atom type
           
-          ffParam.dVal[CalculationsUFF.PAR_R] = Parser.parseFloatStr(vs[2]); // r1
-          ffParam.dVal[CalculationsUFF.PAR_THETA] = Parser.parseFloatStr(vs[3]) 
+          ffParam.dVal[CalculationsUFF.PAR_R] = Parser.parseFloat(vs[2]); // r1
+          ffParam.dVal[CalculationsUFF.PAR_THETA] = Parser.parseFloat(vs[3]) 
              * Calculations.DEG_TO_RAD; // theta0(radians)
-          ffParam.dVal[CalculationsUFF.PAR_X] = Parser.parseFloatStr(vs[4]); // x1
-          ffParam.dVal[CalculationsUFF.PAR_D] = Parser.parseFloatStr(vs[5]); // D1
-          ffParam.dVal[CalculationsUFF.PAR_ZETA] = Parser.parseFloatStr(vs[6]); // zeta
-          ffParam.dVal[CalculationsUFF.PAR_Z] = Parser.parseFloatStr(vs[7]); // Z1
-          ffParam.dVal[CalculationsUFF.PAR_V] = Parser.parseFloatStr(vs[8]); // Vi
-          ffParam.dVal[CalculationsUFF.PAR_U] = Parser.parseFloatStr(vs[9]); // Uj
-          ffParam.dVal[CalculationsUFF.PAR_XI] = Parser.parseFloatStr(vs[10]); // Xi
-          ffParam.dVal[CalculationsUFF.PAR_HARD] = Parser.parseFloatStr(vs[11]); // Hard
-          ffParam.dVal[CalculationsUFF.PAR_RADIUS] = Parser.parseFloatStr(vs[12]); // Radius
+          ffParam.dVal[CalculationsUFF.PAR_X] = Parser.parseFloat(vs[4]); // x1
+          ffParam.dVal[CalculationsUFF.PAR_D] = Parser.parseFloat(vs[5]); // D1
+          ffParam.dVal[CalculationsUFF.PAR_ZETA] = Parser.parseFloat(vs[6]); // zeta
+          ffParam.dVal[CalculationsUFF.PAR_Z] = Parser.parseFloat(vs[7]); // Z1
+          ffParam.dVal[CalculationsUFF.PAR_V] = Parser.parseFloat(vs[8]); // Vi
+          ffParam.dVal[CalculationsUFF.PAR_U] = Parser.parseFloat(vs[9]); // Uj
+          ffParam.dVal[CalculationsUFF.PAR_XI] = Parser.parseFloat(vs[10]); // Xi
+          ffParam.dVal[CalculationsUFF.PAR_HARD] = Parser.parseFloat(vs[11]); // Hard
+          ffParam.dVal[CalculationsUFF.PAR_RADIUS] = Parser.parseFloat(vs[12]); // Radius
           
           ffParam.iVal = new int[1];
 

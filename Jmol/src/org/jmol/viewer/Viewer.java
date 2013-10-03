@@ -115,7 +115,7 @@ import org.jmol.util.Vibration;
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
 import org.jmol.util.TempArray;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.viewer.binding.Binding;
 
@@ -536,8 +536,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (appletProxy != null)
         setStringProperty("appletProxy", appletProxy);
       if (isSignedApplet) {
-        logFilePath = TextFormat.simpleReplace(appletCodeBase, "file://", "");
-        logFilePath = TextFormat.simpleReplace(logFilePath, "file:/", "");
+        logFilePath = Txt.simpleReplace(appletCodeBase, "file://", "");
+        logFilePath = Txt.simpleReplace(logFilePath, "file:/", "");
         if (logFilePath.indexOf("//") >= 0)
           logFilePath = null;
         else
@@ -2098,7 +2098,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         String fname = fileNames[i];
         if (fileTypes != null && fileTypes[i] != null)
           fname = fileTypes[i] + "::" + fname;
-        s = TextFormat.simpleReplace(s, "$FILENAME" + (i + 1) + "$", Escape
+        s = Txt.simpleReplace(s, "$FILENAME" + (i + 1) + "$", Escape
             .eS(fname.replace('\\', '/')));
       }
 
@@ -2146,7 +2146,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // may have been modified.
       if (htParams.containsKey("loadScript"))
         loadScript = (SB) htParams.get("loadScript");
-      htParams.put("loadScript", loadScript = new SB().append(TextFormat
+      htParams.put("loadScript", loadScript = new SB().append(Txt
           .simpleReplace(loadScript.toString(), "$FILENAME$", Escape.eS(fname
               .replace('\\', '/')))));
     }
@@ -2298,7 +2298,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           return "cannot find string data";
       if (loadScript != null)
         htParams
-            .put("loadScript", loadScript = new SB().append(TextFormat
+            .put("loadScript", loadScript = new SB().append(Txt
                 .simpleReplace(loadScript.toString(), "$FILENAME$",
                     "data \"model inline\"\n" + strModel
                         + "end \"model inline\"")));
@@ -2473,8 +2473,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // by the web page <embed> mechanism, browsers differ
       // in how they handle CR and LF. Some will pass it,
       // some will not.
-      strModel = TextFormat.simpleReplace(strModel, "\n", "");
-      strModel = TextFormat.simpleReplace(strModel, "\\/n", "\n");
+      strModel = Txt.simpleReplace(strModel, "\n", "");
+      strModel = Txt.simpleReplace(strModel, "\\/n", "\n");
       newLine = 0;
     }
     if (newLine != 0 && newLine != '\n') {
@@ -2485,7 +2485,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (i < len && strModel.charAt(i) == newLine)
         strModel = strModel.substring(i + 1);
       if (repEmpty)
-        strModel = TextFormat.simpleReplace(strModel, "" + newLine, "");
+        strModel = Txt.simpleReplace(strModel, "" + newLine, "");
       else
         strModel = strModel.replace(newLine, '\n');
     }
@@ -4689,7 +4689,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       String s = (type == '=' ? global.loadFormat : global.loadLigandFormat);
       if (f.indexOf(".") > 0 && s.indexOf("%FILE.") >= 0)
         s = s.substring(0, s.indexOf("%FILE") + 5);
-      return TextFormat.formatStringS(s, "FILE", f);
+      return Txt.formatStringS(s, "FILE", f);
 
     case ':': // PubChem
       format = global.pubChemFormat;
@@ -4716,14 +4716,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           f = "name/" + Escape.escapeUrl(f);
         }
       }
-      return TextFormat.formatStringS(format, "FILE", f);
+      return Txt.formatStringS(format, "FILE", f);
     case '$':
       if (name.startsWith("$$")) {
         // 2D version
         f = f.substring(1);
-        format = TextFormat.simpleReplace(global.smilesUrlFormat,
+        format = Txt.simpleReplace(global.smilesUrlFormat,
             "&get3d=True", "");
-        return TextFormat.formatStringS(format, "FILE", Escape.escapeUrl(f));
+        return Txt.formatStringS(format, "FILE", Escape.escapeUrl(f));
       }
       //$FALL-THROUGH$
     case 'N':
@@ -4753,7 +4753,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         break;
       }
       return (withPrefix ? "MOL3D::" : "")
-          + TextFormat.formatStringS(format, "FILE", f);
+          + Txt.formatStringS(format, "FILE", f);
     case '_': // isosurface "=...", but we code that type as '_'
       String server = FileManager.fixFileNameVariables(global.edsUrlFormat, f);
       String strCutoff = FileManager.fixFileNameVariables(global.edsUrlCutoff,
@@ -6020,7 +6020,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setIntPropertyTok(key, tok, SV.newVariable(T.string, value).asInt());
       break;
     case T.floatparam:
-      setFloatPropertyTok(key, tok, Parser.parseFloatStr(value));
+      setFloatPropertyTok(key, tok, Parser.parseFloat(value));
       break;
     default:
       setStringPropertyTok(key, tok, value);
@@ -6903,7 +6903,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       break;
     case T.usenumberlocalization:
       // 11.1.21
-      TextFormat.setUseNumberLocalization(global.useNumberLocalization = value);
+      Txt.setUseNumberLocalization(global.useNumberLocalization = value);
       break;
     case T.frank:
       key = "showFrank";
@@ -7747,17 +7747,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String text = text0;
     boolean isEscaped = (text.indexOf("\\") >= 0);
     if (isEscaped) {
-      text = TextFormat.simpleReplace(text, "\\%", "\1");
-      text = TextFormat.simpleReplace(text, "\\@", "\2");
+      text = Txt.simpleReplace(text, "\\%", "\1");
+      text = Txt.simpleReplace(text, "\\@", "\2");
       isEscaped = !text.equals(text0);
     }
-    text = TextFormat.simpleReplace(text, "%{", "@{");
+    text = Txt.simpleReplace(text, "%{", "@{");
     String name;
     while ((i = text.indexOf("@{")) >= 0) {
       i++;
       int i0 = i + 1;
       int len = text.length();
-      i = TextFormat.ichMathTerminator(text, i, len);
+      i = Txt.ichMathTerminator(text, i, len);
       if (i >= len)
         return text;
       name = text.substring(i0, i);
@@ -7769,8 +7769,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       text = text.substring(0, i0 - 2) + v.toString() + text.substring(i + 1);
     }
     if (isEscaped) {
-      text = TextFormat.simpleReplace(text, "\2", "@");
-      text = TextFormat.simpleReplace(text, "\1", "%");
+      text = Txt.simpleReplace(text, "\2", "@");
+      text = Txt.simpleReplace(text, "\1", "%");
     }
     return text;
   }
@@ -8193,7 +8193,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       // if(type.equals("XYZ"))
       exp = "\"\" + {selected}.size + \"\n\n\"+{selected}.label(\"%-2e %10.5x %10.5y %10.5z\").lines";
     if (!atomExpression.equals("selected"))
-      exp = TextFormat.simpleReplace(exp, "selected", atomExpression);
+      exp = Txt.simpleReplace(exp, "selected", atomExpression);
     return (String) evaluateExpression(exp);
   }
 
@@ -8609,7 +8609,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void getHelp(String what) {
     if (global.helpPath.indexOf("?") < 0) {
       if (what.length() > 0 && what.indexOf("?") != 0)
-        what = "?search=" + TextFormat.simpleReplace(what, " ", "%20");
+        what = "?search=" + Txt.simpleReplace(what, " ", "%20");
       what += (what.length() == 0 ? "?ver=" : "&ver=") + JC.version;
     } else {
       what = "&" + what;
@@ -8624,7 +8624,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String getChemicalInfo(String smiles, char type, String info) {
     String s = (String) setLoadFormat("_" + smiles, type, false);
     if (type == '/')
-      s += TextFormat.simpleReplace(info, " ", "%20");
+      s += Txt.simpleReplace(info, " ", "%20");
     return getFileAsString4(s, -1, false, false);
   }
 
@@ -8650,7 +8650,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void addCommand(String command) {
     if (autoExit || !haveDisplay || !getPreserveState())
       return;
-    commandHistory.addCommand(TextFormat.replaceAllCharacters(command,
+    commandHistory.addCommand(Txt.replaceAllCharacters(command,
         "\r\n\t", " "));
   }
 

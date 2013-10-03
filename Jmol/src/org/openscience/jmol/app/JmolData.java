@@ -25,7 +25,7 @@ package org.openscience.jmol.app;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.util.Escape;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
 public class JmolData {
@@ -51,7 +51,7 @@ public class JmolData {
     jmolApp.isDataOnly = true;
     //jmolApp.info.put("exit", Boolean.TRUE);
 
-    String[] args = TextFormat.split(commandOptions, ' '); // doesn't allow for double-quoted 
+    String[] args = Txt.split(commandOptions, " "); // doesn't allow for double-quoted 
     jmolApp.parseCommandLine(args);
     return new JmolData(jmolApp);
   }

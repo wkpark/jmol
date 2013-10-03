@@ -32,7 +32,7 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.StateManager;
 
 public class UccageRenderer extends CageRenderer {
@@ -133,7 +133,7 @@ public class UccageRenderer extends CageRenderer {
   }
   
   private String nfformat(float x) {
-    return (/*doLocalize && nf != null ? nf.format(x) :*/ TextFormat.formatDecimal(x, 3));
+    return (/*doLocalize && nf != null ? nf.format(x) :*/ Txt.formatDecimal(x, 3));
   }
 
   private void renderInfo(SymmetryInterface symmetry) {

@@ -36,7 +36,7 @@ import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 /**
  * A reader for Jana M50+M40 file pairs.  *
@@ -209,7 +209,7 @@ public class JanaReader extends ModulationReader {
   }
 
   private void symmetry() throws Exception {
-    setSymmetryOperator(TextFormat.simpleReplace(line.substring(9).trim()," ", ","));
+    setSymmetryOperator(Txt.simpleReplace(line.substring(9).trim()," ", ","));
   }
 
   private final String LABELS = "xyz";

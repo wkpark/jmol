@@ -58,7 +58,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 
 /**
@@ -230,8 +230,8 @@ public class PropertyManager implements JmolPropertyManager {
   private Object getModelProperty(String propertyName, Object propertyValue) {
     propertyName = propertyName.replace(']', ' ').replace('[', ' ').replace(
         '.', ' ');
-    propertyName = TextFormat.simpleReplace(propertyName, "  ", " ");
-    String[] names = TextFormat.splitChars(TextFormat.trim(propertyName, " "),
+    propertyName = Txt.simpleReplace(propertyName, "  ", " ");
+    String[] names = Txt.split(Txt.trim(propertyName, " "),
         " ");
     SV[] args = new SV[names.length];
     propertyName = names[0];
@@ -462,7 +462,7 @@ public class PropertyManager implements JmolPropertyManager {
         returnType = "string";
       String type = "JPG";
       if (params.indexOf("type=") >= 0)
-        type = Parser.getTokens(TextFormat.replaceAllCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
+        type = Parser.getTokens(Txt.replaceAllCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
       String[] errMsg = new String[1];
       byte[] bytes = viewer.getImageAsBytes(type.toUpperCase(), width,  height, -1, errMsg);
       return (errMsg[0] != null ? errMsg[0] : returnType == null ? bytes : Base64
@@ -540,7 +540,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (objHeader instanceof Map) {
       return (haveType ? ((Map<?, ?>) objHeader).get(type) : objHeader);
     }
-    String[] lines = TextFormat.split((String) objHeader, '\n');
+    String[] lines = Txt.split((String) objHeader, "\n");
     // this is meant to be for PDB files only
     if (lines.length == 0
         || lines[0].length() < 6
@@ -787,11 +787,11 @@ public class PropertyManager implements JmolPropertyManager {
         cHH = c.get(Calendar.HOUR_OF_DAY);
         cmm = c.get(Calendar.MINUTE);
       }
-      TextFormat.rFill(mol, "_00", "" + (1 + cMM));
-      TextFormat.rFill(mol, "00", "" + cDD);
+      Txt.rightJustify(mol, "_00", "" + (1 + cMM));
+      Txt.rightJustify(mol, "00", "" + cDD);
       mol.append(("" + cYYYY).substring(2, 4));
-      TextFormat.rFill(mol, "00", "" + cHH);
-      TextFormat.rFill(mol, "00", "" + cmm);
+      Txt.rightJustify(mol, "00", "" + cHH);
+      Txt.rightJustify(mol, "00", "" + cmm);
       mol.append("3D 1   1.00000     0.00000     0");
       //       This line has the format:
       //  IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
@@ -886,8 +886,8 @@ public class PropertyManager implements JmolPropertyManager {
     } else if (asChemDoodle) {
       mol.append("{\"mol\":{\"scaling\":[20,-20,20],\"a\":[");
     } else {
-      TextFormat.rFill(mol, "   ", "" + nAtoms);
-      TextFormat.rFill(mol, "   ", "" + nBonds);
+      Txt.rightJustify(mol, "   ", "" + nAtoms);
+      Txt.rightJustify(mol, "   ", "" + nBonds);
       mol.append("  0  0  0  0              1 V2000");
     }
     if (!asChemDoodle)
@@ -1010,7 +1010,7 @@ public class PropertyManager implements JmolPropertyManager {
       mol.append("\"x\":").appendF(a.x*20).append(",\"y\":").appendF(-a.y*20).append(
           ",\"z\":").appendF(a.z*20).append("}");
     } else {
-      mol.append(TextFormat.sprintf("%10.5p%10.5p%10.5p",
+      mol.append(Txt.sprintf("%10.5p%10.5p%10.5p",
           "p", new Object[] {pTemp }));
       mol.append(" ").append(sym);
       if (sym.length() == 1)
@@ -1018,8 +1018,8 @@ public class PropertyManager implements JmolPropertyManager {
       if (iso > 0)
         iso -= Elements.getNaturalIsotope(a.getElementNumber());
       mol.append(" ");
-      TextFormat.rFill(mol, "  ", "" + iso);
-      TextFormat.rFill(mol, "   ", "" + (charge == 0 ? 0 : 4 - charge));
+      Txt.rightJustify(mol, "  ", "" + iso);
+      Txt.rightJustify(mol, "   ", "" + (charge == 0 ? 0 : 4 - charge));
       mol.append("  0  0  0  0\n");
     }
   }
@@ -1060,8 +1060,8 @@ public class PropertyManager implements JmolPropertyManager {
         mol.append(",\"o\":").appendI(order);
       mol.append("}");
     } else {
-      TextFormat.rFill(mol, "   ", "" + a1);
-      TextFormat.rFill(mol, "   ", "" + a2);
+      Txt.rightJustify(mol, "   ", "" + a1);
+      Txt.rightJustify(mol, "   ", "" + a2);
       mol.append("  ").appendI(order).append("  0  0  0\n");
     }
   }
@@ -1135,7 +1135,7 @@ public class PropertyManager implements JmolPropertyManager {
             if (g != glast) {
               if ((n++) % 5 == 0 && n > 1)
                 info.appendC('\n');
-              TextFormat.lFill(info, "          ", "["
+              Txt.leftJustify(info, "          ", "["
                   + a.getGroup3(false) + "]" + a.getResno() + " ");
               glast = g;
             }

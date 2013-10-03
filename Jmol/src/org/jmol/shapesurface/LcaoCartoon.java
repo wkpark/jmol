@@ -31,7 +31,7 @@ import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 
 public class LcaoCartoon extends Isosurface {
@@ -212,10 +212,10 @@ public class LcaoCartoon extends Isosurface {
   }
 
   private void setLcaoOn(boolean TF) {
-    if (TextFormat.isWild(lcaoID)) {
+    if (Txt.isWild(lcaoID)) {
       String key = lcaoID.toLowerCase();
       for (int i = meshCount; --i >= 0; ) {
-        if (TextFormat.isMatch(meshes[i].thisID.toLowerCase(), key, true, true))
+        if (Txt.isMatch(meshes[i].thisID.toLowerCase(), key, true, true))
           meshes[i].visible = TF;
       }
       return;
@@ -236,7 +236,7 @@ public class LcaoCartoon extends Isosurface {
   }
 
   private void deleteLcaoCartoon() {
-    if (TextFormat.isWild(lcaoID)) {
+    if (Txt.isWild(lcaoID)) {
       deleteMeshKey(lcaoID);
       return;
     }
@@ -327,7 +327,7 @@ public class LcaoCartoon extends Isosurface {
     // both "pz" and "-pz" on the same atom
     // but we can have "-sp3a" and "sp3a"
     return (id != null ? id : (isLonePair || isRadical ? "lp_" : "lcao_") + (i + 1) + "_")
-        + (thisType == null ? "" : TextFormat.simpleReplace(thisType, "-",
+        + (thisType == null ? "" : Txt.simpleReplace(thisType, "-",
             (thisType.indexOf("-p") == 0 ? "" : "_")));
   }
 

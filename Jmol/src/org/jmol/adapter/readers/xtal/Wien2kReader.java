@@ -25,7 +25,7 @@ package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 /**
  * A reader for Wein2k DFT files.  
@@ -153,7 +153,7 @@ public class Wien2kReader extends AtomSetCollectionReader {
       String sym = atomName.substring(0,2).trim();
       if (sym.length() == 2 && Character.isDigit(sym.charAt(1)))
         sym = sym.substring(0, 1);
-      atomName = TextFormat.simpleReplace(atomName, " ", "");
+      atomName = Txt.simpleReplace(atomName, " ", "");
       int n = 0;
       for (int i = atomSetCollection.getAtomCount(); --i >= thisAtom; ) {
         Atom atom = atomSetCollection.getAtom(i);

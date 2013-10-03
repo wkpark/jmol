@@ -38,7 +38,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
 public class Test extends JPanel implements ActionListener {
@@ -152,9 +152,9 @@ public class Test extends JPanel implements ActionListener {
       }
       // Change the state string so that it will work as a script with an
       // animated moveto...
-      statestr = TextFormat.simpleReplace(statestr, "set refreshing false;",
+      statestr = Txt.simpleReplace(statestr, "set refreshing false;",
           "set refreshing true;");
-      statestr = TextFormat.simpleReplace(statestr,
+      statestr = Txt.simpleReplace(statestr,
           "moveto /* time, axisAngle */ 0.0",
           "moveto /* time, axisAngle */ 5.0");
       LogPanel.log("The state below should have a 5 second moveto time...");

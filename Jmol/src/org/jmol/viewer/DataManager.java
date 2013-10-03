@@ -127,7 +127,7 @@ class DataManager {
       if (field == Integer.MIN_VALUE) {
         // set the selected data elements to a single value
         bs = (BS) data[DATA_SELECTION_MAP];
-        Parser.setSelectedFloats(Parser.parseFloatStr(stringData), bs, f);
+        Parser.setSelectedFloats(Parser.parseFloat(stringData), bs, f);
       } else if (field == 0 || field == Integer.MAX_VALUE) {
         // just get the selected token values
         bs = (BS) data[DATA_SELECTION_MAP];

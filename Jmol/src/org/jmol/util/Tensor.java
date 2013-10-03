@@ -149,7 +149,7 @@ public class Tensor {
     default:
       // dump all key/value pairs
       Map<String, Object> info = new Hashtable<String, Object>();
-      String[] s = Parser.getTokens(TextFormat.replaceAllCharacter(infoList, ";.", ' ').trim());
+      String[] s = Parser.getTokens(Txt.replaceAllCharacter(infoList, ";.", ' ').trim());
       Arrays.sort(s);
       for (int i = 0; i < s.length; i++) {
         Object o = getInfo(s[i]);

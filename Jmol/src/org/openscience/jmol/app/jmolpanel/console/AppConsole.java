@@ -57,7 +57,7 @@ import org.jmol.i18n.GT;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 
 import org.openscience.jmol.app.jmolpanel.HelpDialog;
@@ -727,7 +727,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
           isError = true;
           cmd = cmd.substring(0, cmd.indexOf(CommandHistory.ERROR_FLAG));
         }
-        cmd = TextFormat.trim(cmd, ";");
+        cmd = Txt.trim(cmd, ";");
         consoleDoc.replaceCommand(cmd, isError);
       } catch (BadLocationException e) {
         e.printStackTrace();

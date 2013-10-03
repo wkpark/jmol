@@ -9,7 +9,7 @@ import org.jmol.util.BS;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 public class JSpecView implements JmolJSpecView {
 
@@ -62,7 +62,7 @@ public class JSpecView implements JmolJSpecView {
         String script = "";
         if (satoms != null)
           script += "visible & (atomno="
-              + TextFormat.simpleReplace(satoms, ",", " or atomno=") + ")";
+              + Txt.simpleReplace(satoms, ",", " or atomno=") + ")";
         else if (select != null)
           script += "visible & (" + select + ")";
         System.out.println("Jmol JSpecView.java script : " + script);

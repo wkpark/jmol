@@ -12,7 +12,7 @@ import org.jmol.api.Interface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 
 abstract public class Binding {
@@ -350,7 +350,7 @@ abstract public class Binding {
   
   private void addInfo(SB sb, String[] list, String name, String info) {
     Arrays.sort(list);
-    TextFormat.lFill(sb, "                      ", name);
+    Txt.leftJustify(sb, "                      ", name);
     sb.append("\t");
     String sep = "";
     int len = sb.length();

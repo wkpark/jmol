@@ -37,7 +37,7 @@ import org.jmol.api.JmolDocument;
 import org.jmol.api.ZInputStream;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
 
@@ -94,7 +94,7 @@ public class FileReader {
         String name = fullPathNameIn;
         String[] subFileList = null;
         if (name.indexOf("|") >= 0 && !name.endsWith(".zip")) {
-          subFileList = TextFormat.splitChars(name, "|");
+          subFileList = Txt.split(name, "|");
           name = subFileList[0];
         }
         if (subFileList != null)

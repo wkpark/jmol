@@ -30,7 +30,7 @@ import org.jmol.script.T;
 import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.P3;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 
 public class Echo extends TextShape {
@@ -104,7 +104,7 @@ public class Echo extends TextShape {
     if ("thisID" == propertyName) {
       String target = (String) value;
       currentObject = objects.get(target);
-      if (currentObject == null && TextFormat.isWild(target))
+      if (currentObject == null && Txt.isWild(target))
         thisID = target.toUpperCase();
       return;
     }
@@ -115,7 +115,7 @@ public class Echo extends TextShape {
         if (isAll || thisID != null)
           for (Text t : objects.values())
             if (isAll
-                || TextFormat.isMatch(t.target.toUpperCase(), thisID, true,
+                || Txt.isMatch(t.target.toUpperCase(), thisID, true,
                     true))
               t.hidden = isHidden;
         return;
@@ -176,11 +176,11 @@ public class Echo extends TextShape {
     }
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
-      boolean isWild = TextFormat.isWild(key);
+      boolean isWild = Txt.isWild(key);
       for (Text t: objects.values()) {
         String id = t.target;
         if (id.equalsIgnoreCase(key) || isWild
-            && TextFormat.isMatch(id.toUpperCase(), key, true, true)) {
+            && Txt.isMatch(id.toUpperCase(), key, true, true)) {
           data[1] = id;
           return true;
         }

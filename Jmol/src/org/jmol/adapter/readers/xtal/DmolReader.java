@@ -15,7 +15,7 @@ package org.jmol.adapter.readers.xtal;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 public class DmolReader extends AtomSetCollectionReader {
 
@@ -171,7 +171,7 @@ public class DmolReader extends AtomSetCollectionReader {
           iAtom0 = atomSetCollection.getLastAtomSetAtomIndex();
         atomSetCollection.setAtomSetFrequency(null, null,
             String.valueOf(frequencies[i]), null);
-        atomSetCollection.setAtomSetName(TextFormat.formatDecimal(
+        atomSetCollection.setAtomSetName(Txt.formatDecimal(
             frequencies[i], 2) + " cm-1");
 
       }

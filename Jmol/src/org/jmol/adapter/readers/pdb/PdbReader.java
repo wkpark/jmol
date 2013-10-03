@@ -38,7 +38,7 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import java.util.Hashtable;
 
@@ -514,7 +514,7 @@ public class PdbReader extends AtomSetCollectionReader {
     currentCompnd.put(currentKey, value);
     if (currentKey.equals("CHAIN"))
       currentCompnd.put("select", "(:"
-          + TextFormat.simpleReplace(TextFormat
+          + Txt.simpleReplace(Txt
               .simpleReplace(value, ", ", ",:"), " ", "") + ")");
   }
 

@@ -66,7 +66,7 @@ public class Escape {
   }
 
   public static String matrixToScript(Object m) {
-    return TextFormat.replaceAllCharacters(m.toString(), "\n\r ","").replace('\t',' ');
+    return Txt.replaceAllCharacters(m.toString(), "\n\r ","").replace('\t',' ');
   }
 
   public static String eP4(P4 x) {
@@ -98,9 +98,9 @@ public class Escape {
     if (isAP(x))
       return eAP((P3[]) x);
     if (x instanceof Matrix3f) 
-      return TextFormat.simpleReplace(((Matrix3f) x).toString(), "\t", ",\t");
+      return Txt.simpleReplace(((Matrix3f) x).toString(), "\t", ",\t");
     if (x instanceof Matrix4f) 
-      return TextFormat.simpleReplace(((Matrix4f) x).toString(), "\t", ",\t");
+      return Txt.simpleReplace(((Matrix4f) x).toString(), "\t", ",\t");
     if (x instanceof AxisAngle4f) {
       AxisAngle4f a = (AxisAngle4f) x;
       return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";
@@ -651,8 +651,8 @@ public class Escape {
     {}
     if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
       return s;
-    s = TextFormat.simpleReplace(s, "\"", "''");
-    s = TextFormat.simpleReplace(s, "\n", " | ");
+    s = Txt.simpleReplace(s, "\"", "''");
+    s = Txt.simpleReplace(s, "\n", " | ");
     return "\"" + s + "\"";
   }
 
@@ -1038,7 +1038,7 @@ public class Escape {
       String s = Parser.getQuotedStringNext(data, next);
       if (s == null)
         return null;
-      v.addLast(TextFormat.simpleReplace(s, "\\\"", "\""));      
+      v.addLast(Txt.simpleReplace(s, "\\\"", "\""));      
       while (next[0] < data.length() && data.charAt(next[0]) != '"')
         next[0]++;
     }    
@@ -1046,11 +1046,11 @@ public class Escape {
   }
 
   public static String escapeUrl(String url) {
-    url = TextFormat.simpleReplace(url, "\n", "");
-    url = TextFormat.simpleReplace(url, "%", "%25");
-    url = TextFormat.simpleReplace(url, "[", "%5B");
-    url = TextFormat.simpleReplace(url, "]", "%5D");
-    url = TextFormat.simpleReplace(url, " ", "%20");
+    url = Txt.simpleReplace(url, "\n", "");
+    url = Txt.simpleReplace(url, "%", "%25");
+    url = Txt.simpleReplace(url, "[", "%5B");
+    url = Txt.simpleReplace(url, "]", "%5D");
+    url = Txt.simpleReplace(url, " ", "%20");
     return url;
   }
 

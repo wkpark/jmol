@@ -36,7 +36,7 @@ import org.jmol.util.P3i;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
 
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
@@ -378,10 +378,10 @@ abstract class AtomDataReader extends VolumeDataReader {
       return false;
     String line = params.title[iLine];
     if (line.indexOf("%F") > 0)
-      line = params.title[iLine] = TextFormat.formatStringS(line, "F",
+      line = params.title[iLine] = Txt.formatStringS(line, "F",
           atomData.fileName);
     if (line.indexOf("%M") > 0)
-      params.title[iLine] = TextFormat.formatStringS(line, "M",
+      params.title[iLine] = Txt.formatStringS(line, "M",
           atomData.modelName);
     return true;
   }

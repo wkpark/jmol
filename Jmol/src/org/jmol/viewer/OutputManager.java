@@ -19,7 +19,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 
 abstract class OutputManager {
@@ -144,7 +144,7 @@ abstract class OutputManager {
       Object stateData = null;
       params.put("date", viewer.apiPlatform.getDateFormat());
       if (type.startsWith("JP")) {
-        type = TextFormat.simpleReplace(type, "E", "");
+        type = Txt.simpleReplace(type, "E", "");
         if (type.equals("JPG64")) {
           params.put("outputChannelTemp", getOutputChannel(null, null));
           comment = "";
@@ -722,7 +722,7 @@ abstract class OutputManager {
     try {
       boolean doClear = (data.equals("$CLEAR$"));
       if (data.indexOf("$NOW$") >= 0)
-        data = TextFormat.simpleReplace(data, "$NOW$", viewer.apiPlatform
+        data = Txt.simpleReplace(data, "$NOW$", viewer.apiPlatform
             .getDateFormat());
       if (viewer.logFileName == null) {
         Logger.info(data);
@@ -779,10 +779,10 @@ abstract class OutputManager {
        // a fixed remote file name (because someone extracted the files and then used them)
        if (isLocal || includeRemoteFiles) {
          int ptSlash = name.lastIndexOf("/");
-         newName = (name.indexOf("?") > 0 && name.indexOf("|") < 0 ? TextFormat
+         newName = (name.indexOf("?") > 0 && name.indexOf("|") < 0 ? Txt
              .replaceAllCharacters(name, "/:?\"'=&", "_") : FileManager
              .stripPath(name));
-         newName = TextFormat.replaceAllCharacters(newName, "[]", "_");
+         newName = Txt.replaceAllCharacters(newName, "[]", "_");
          boolean isSparDir = (fm.spardirCache != null && fm.spardirCache
              .containsKey(name));
          if (isLocal && name.indexOf("|") < 0 && !isSparDir) {
@@ -804,7 +804,7 @@ abstract class OutputManager {
        newFileNames.addLast(name);
      }
      if (!sceneScriptOnly) {
-       script = TextFormat.replaceQuotedStrings(script, fileNames, newFileNames);
+       script = Txt.replaceQuotedStrings(script, fileNames, newFileNames);
        v.addLast("state.spt");
        v.addLast(null);
        v.addLast(script.getBytes());
@@ -817,7 +817,7 @@ abstract class OutputManager {
        }
        v.addLast("scene.spt");
        v.addLast(null);
-       script = TextFormat.replaceQuotedStrings(scripts[1], fileNames,
+       script = Txt.replaceQuotedStrings(scripts[1], fileNames,
            newFileNames);
        v.addLast(script.getBytes());
      }

@@ -285,7 +285,7 @@ public class MeshSurface {
   public static Object[] getCapSlabObject(String s, boolean isCap) {
     try {
       if (s.indexOf("array") == 0) {
-        String[] pts = TextFormat.splitChars(s.substring(6, s.length() - 1), ",");
+        String[] pts = Txt.split(s.substring(6, s.length() - 1), ",");
         return TempArray.getSlabObjectType(T.boundbox, new P3[] {
             (P3) Escape.uP(pts[0]),
             (P3) Escape.uP(pts[1]),

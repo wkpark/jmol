@@ -256,7 +256,7 @@ import org.jmol.constant.EnumPalette;
     int pt = Math.max(colorScheme.indexOf("=")
         , colorScheme.indexOf("["));
     if (pt >= 0) {
-      String name = TextFormat.replaceAllCharacters(colorScheme
+      String name = Txt.replaceAllCharacters(colorScheme
           .substring(0, pt), " =", "");
       if (name.length() > 0)
         isOverloaded = true;
@@ -265,9 +265,9 @@ import org.jmol.constant.EnumPalette;
         // also allow xxx=red,blue,green
         
         colorScheme = "[" + colorScheme.substring(pt + 1).trim() + "]";
-        colorScheme = TextFormat.simpleReplace(colorScheme.replace('\n', ' '), "  ", " ");
-        colorScheme = TextFormat.simpleReplace(colorScheme, ", ", ",").replace(' ',',');
-        colorScheme = TextFormat.simpleReplace(colorScheme, ",", "][");
+        colorScheme = Txt.simpleReplace(colorScheme.replace('\n', ' '), "  ", " ");
+        colorScheme = Txt.simpleReplace(colorScheme, ", ", ",").replace(' ',',');
+        colorScheme = Txt.simpleReplace(colorScheme, ",", "][");
       }
       pt = -1;
       while ((pt = colorScheme.indexOf("[", pt + 1)) >= 0)

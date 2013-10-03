@@ -73,7 +73,7 @@ import org.jmol.io.JmolBinary;
 import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.HelpDialog;
 
@@ -667,7 +667,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
           String newName = copyBinaryFile(filesToCopy.get(iFile), datadirPath);
           copiedFileNames.add(newName.substring(newName.lastIndexOf('/') + 1));
         }
-        script = TextFormat.replaceQuotedStrings(script, filesToCopy, copiedFileNames);
+        script = Txt.replaceQuotedStrings(script, filesToCopy, copiedFileNames);
         LogPanel.log("      ..." + GT._("adding {0}", javaname + ".spt"));
         viewer.writeTextFile(datadirPath + "/" + javaname + ".spt", script);
       }
@@ -716,7 +716,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
           }
         }
       }
-      html=TextFormat.simpleReplace(html,"@WIDGETJSFILES@",jsStr);
+      html=Txt.simpleReplace(html,"@WIDGETJSFILES@",jsStr);
       appletInfoDivs = "";
       StringBuilder appletDefs = new StringBuilder();
       if (!useAppletJS)
@@ -725,33 +725,33 @@ abstract class WebPanel extends JPanel implements ActionListener,
       for (int i = 0; i < listModel.getSize(); i++)
         html = getAppletDefs(i, html, appletDefs, listModel
             .getElementAt(i));
-      html = TextFormat.simpleReplace(html, "@AUTHOR@", GT
+      html = Txt.simpleReplace(html, "@AUTHOR@", GT
           .escapeHTML(pageAuthorName.getText()));
-      html = TextFormat.simpleReplace(html, "@TITLE@", GT
+      html = Txt.simpleReplace(html, "@TITLE@", GT
           .escapeHTML(webPageTitle.getText()));
-      html = TextFormat.simpleReplace(html, "@REMOTEAPPLETPATH@",
+      html = Txt.simpleReplace(html, "@REMOTEAPPLETPATH@",
           remoteAppletPath.getText());
-      html = TextFormat.simpleReplace(html, "@LOCALAPPLETPATH@",
+      html = Txt.simpleReplace(html, "@LOCALAPPLETPATH@",
           localAppletPath.getText());
-      html = TextFormat.simpleReplace(html, "@DATADIRNAME@", datadirName);
+      html = Txt.simpleReplace(html, "@DATADIRNAME@", datadirName);
       if (appletInfoDivs.length() > 0)
         appletInfoDivs = "\n<div style='display:none'>\n" + appletInfoDivs
             + "\n</div>\n";
       String str = appletDefs.toString();
       if (useAppletJS)
         str = "<script type='text/javascript'>\n" + str + "\n</script>";
-      html = TextFormat.simpleReplace(html, "@APPLETINFO@", appletInfoDivs);
-      html = TextFormat.simpleReplace(html, "@APPLETDEFS@", str);
-      html = TextFormat.simpleReplace(html, "@CREATIONDATA@", GT
+      html = Txt.simpleReplace(html, "@APPLETINFO@", appletInfoDivs);
+      html = Txt.simpleReplace(html, "@APPLETDEFS@", str);
+      html = Txt.simpleReplace(html, "@CREATIONDATA@", GT
           .escapeHTML(WebExport.TimeStamp_WebLink()));
-      html = TextFormat
+      html = Txt
           .simpleReplace(
               html,
               "@AUTHORDATA@",
               GT
                   .escapeHTML(GT
                       ._("Based on template by A. Herr&#x00E1;ez as modified by J. Gutow")));
-      html = TextFormat.simpleReplace(html, "@LOGDATA@", "<pre>\n"
+      html = Txt.simpleReplace(html, "@LOGDATA@", "<pre>\n"
           + LogPanel.getText() + "\n</pre>\n");
       LogPanel.log("      ..." + GT._("creating {0}", fileName));
       viewer.writeTextFile(fileName, html);

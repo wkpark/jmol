@@ -46,7 +46,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import java.util.Arrays;
 import java.util.Map.Entry;
@@ -1444,8 +1444,8 @@ public class StateManager {
           bTotal = runtime.totalMemory() / 1000000f;
           bFree = runtime.freeMemory() / 1000000f;
         }
-        String value = TextFormat.formatDecimal(bTotal - bFree, 1) + "/"
-            + TextFormat.formatDecimal(bTotal, 1);
+        String value = Txt.formatDecimal(bTotal - bFree, 1) + "/"
+            + Txt.formatDecimal(bTotal, 1);
         htNonbooleanParameterValues.put("_memory", value);
       }
       if (htNonbooleanParameterValues.containsKey(name))
@@ -1521,7 +1521,7 @@ public class StateManager {
         else if (database.equals("nci"))
           id += "/file?format=sdf&get3d=True";
       }
-      return (format.indexOf("%FILE") < 0 ? format + id : TextFormat
+      return (format.indexOf("%FILE") < 0 ? format + id : Txt
           .formatStringS(format, "FILE", id));
     }
 

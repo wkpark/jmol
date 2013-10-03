@@ -129,7 +129,7 @@ import org.jmol.util.P3i;
 import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
@@ -333,7 +333,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         thisMesh.polygonColixes = null;
         thisMesh.colorEncoder = null;
         thisMesh.vertexColorMap = null;
-      } else if (!TextFormat.isWild(previousMeshID)) {
+      } else if (!Txt.isWild(previousMeshID)) {
         for (int i = meshCount; --i >= 0;) {
           // isomeshes[i].vertexColixes = null;
           isomeshes[i].jvxlData.baseColor = color;
@@ -877,11 +877,11 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     }
     if (property == "command") {
       String key = previousMeshID.toUpperCase();
-      boolean isWild = TextFormat.isWild(key);
+      boolean isWild = Txt.isWild(key);
       SB sb = new SB();
       for (int i = meshCount; --i >= 0;) {
         String id = meshes[i].thisID.toUpperCase();
-        if (id.equals(key) || isWild && TextFormat.isMatch(id, key, true, true))
+        if (id.equals(key) || isWild && Txt.isMatch(id, key, true, true))
             getMeshCommand(sb, i);
       }
       return sb.toString();
@@ -958,16 +958,16 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int modelCount = viewer.getModelCount();
     if (modelCount > 1)
       appendCmd(sb, "frame " + viewer.getModelNumberDotted(imesh.modelIndex));
-    cmd = TextFormat.simpleReplace(cmd, ";; isosurface map"," map");
-    cmd = TextFormat.simpleReplace(cmd, "; isosurface map", " map");
+    cmd = Txt.simpleReplace(cmd, ";; isosurface map"," map");
+    cmd = Txt.simpleReplace(cmd, "; isosurface map", " map");
     cmd = cmd.replace('\t', ' ');
-    cmd = TextFormat.simpleReplace(cmd, ";#", "; #");
+    cmd = Txt.simpleReplace(cmd, ";#", "; #");
     int pt = cmd.indexOf("; #");
     if (pt >= 0)
       cmd = cmd.substring(0, pt);
     if (imesh.connections != null)
       cmd += " connect " + Escape.eAI(imesh.connections);
-    cmd = TextFormat.trim(cmd, ";");
+    cmd = Txt.trim(cmd, ";");
     if (imesh.linkedMesh != null)
       cmd += " LINK"; // for lcaoCartoon state
     if (myType == "lcaoCartoon" && imesh.atomIndex >= 0)

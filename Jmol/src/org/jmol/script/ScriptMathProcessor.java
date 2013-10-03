@@ -46,7 +46,7 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
@@ -800,7 +800,7 @@ public class ScriptMathProcessor {
         case T.matrix3f:
         case T.matrix4f:
           s = SV.sValue(x2);
-          s = TextFormat.simpleReplace(s.substring(1, s.length() - 1), "],[",
+          s = Txt.simpleReplace(s.substring(1, s.length() - 1), "],[",
               "]\n[");
           break;
         case T.string:
@@ -809,8 +809,8 @@ public class ScriptMathProcessor {
         default:
           s = SV.sValue(x2);
         }
-        s = TextFormat.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
-        return addXAS(TextFormat.split(s, '\n'));
+        s = Txt.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
+        return addXAS(Txt.split(s, "\n"));
       case T.color:
         switch (x2.tok) {
         case T.string:
@@ -1219,28 +1219,28 @@ public class ScriptMathProcessor {
         // neg is scientific notation
         if (n == 0)
           return addXInt(Math.round(f));
-        s = TextFormat.formatDecimal(f, n);
+        s = Txt.formatDecimal(f, n);
         return addXStr(s);
       case T.string:
         s = (String) x1.value;
         if (n == 0)
-          return addXStr(TextFormat.trim(s, "\n\t "));
+          return addXStr(Txt.trim(s, "\n\t "));
         if (n == 9999)
           return addXStr(s.toUpperCase());
         if (n == -9999)
           return addXStr(s.toLowerCase());
         if (n > 0)
-          return addXStr(TextFormat.formatS(s, n, n, false, false));
-        return addXStr(TextFormat.formatS(s, n, n - 1, true, false));
+          return addXStr(Txt.formatS(s, n, n, false, false));
+        return addXStr(Txt.formatS(s, n, n - 1, true, false));
       case T.varray:
         String[] list = SV.listValue(x1);
         for (int i = 0; i < list.length; i++) {
           if (n == 0)
             list[i] = list[i].trim();
           else if (n > 0)
-            list[i] = TextFormat.formatS(list[i], n, n, true, false);
+            list[i] = Txt.formatS(list[i], n, n, true, false);
           else
-            list[i] = TextFormat.formatS(s, -n, n, false, false);
+            list[i] = Txt.formatS(s, -n, n, false, false);
         }
         return addXAS(list);
       case T.point3f:

@@ -42,7 +42,7 @@ import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 public abstract class MeshCollection extends Shape {
 
@@ -76,7 +76,7 @@ public abstract class MeshCollection extends Shape {
 
   private Mesh setMesh(String thisID) {
     linkedMesh = null;
-    if (thisID == null || TextFormat.isWild(thisID)) {
+    if (thisID == null || Txt.isWild(thisID)) {
       if (thisID != null)
         previousMeshID = thisID;
       currentMesh = null;
@@ -322,13 +322,13 @@ public abstract class MeshCollection extends Shape {
   private void setTokenProperty(int tokProp, boolean bProp, boolean testD) {
     if (currentMesh == null) {
       String key = (explicitID && previousMeshID != null
-          && TextFormat.isWild(previousMeshID) ? previousMeshID.toUpperCase()
+          && Txt.isWild(previousMeshID) ? previousMeshID.toUpperCase()
           : null);
       if (key != null && key.length() == 0)
         key = null;
       for (int i = 0; i < meshCount; i++)
         if (key == null
-            || TextFormat.isMatch(meshes[i].thisID.toUpperCase(), key, true, true))
+            || Txt.isMatch(meshes[i].thisID.toUpperCase(), key, true, true))
           setMeshTokenProperty(meshes[i], tokProp, bProp, testD);
     } else {
       setMeshTokenProperty(currentMesh, tokProp, bProp, testD);
@@ -387,11 +387,11 @@ public abstract class MeshCollection extends Shape {
     }
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
-      boolean isWild = TextFormat.isWild(key);
+      boolean isWild = Txt.isWild(key);
       for (int i = meshCount; --i >= 0;) {
         String id = meshes[i].thisID;
         if (id.equalsIgnoreCase(key) || isWild
-            && TextFormat.isMatch(id.toUpperCase(), key, true, true)) {
+            && Txt.isMatch(id.toUpperCase(), key, true, true)) {
           data[1] = id;
           return true;
         }
@@ -485,7 +485,7 @@ public abstract class MeshCollection extends Shape {
       deleteMeshI(currentMesh.index);
     else
       deleteMeshKey(explicitID && previousMeshID != null
-          && TextFormat.isWild(previousMeshID) ?  
+          && Txt.isWild(previousMeshID) ?  
               previousMeshID : null);
     currentMesh = null;
   }
@@ -501,7 +501,7 @@ public abstract class MeshCollection extends Shape {
     } else {
       key = key.toLowerCase();
       for (int i = meshCount; --i >= 0; ) {
-        if (TextFormat.isMatch(meshes[i].thisID.toLowerCase(), key, true, true))
+        if (Txt.isMatch(meshes[i].thisID.toLowerCase(), key, true, true))
           deleteMeshI(i);
       }
     }
@@ -525,11 +525,11 @@ public abstract class MeshCollection extends Shape {
     if (MeshCollection.PREVIOUS_MESH_ID.equals(thisID))
       return (previousMeshID == null ? meshCount - 1
           : getIndexFromName(previousMeshID));
-    if (TextFormat.isWild(thisID)) {
+    if (Txt.isWild(thisID)) {
       thisID = thisID.toLowerCase();
       for (int i = meshCount; --i >= 0;) {
         if (meshes[i] != null
-            && TextFormat.isMatch(meshes[i].thisID, thisID, true, true))
+            && Txt.isMatch(meshes[i].thisID, thisID, true, true))
           return i;
       }
     } else {

@@ -30,7 +30,7 @@ import java.awt.Image;
 import java.io.IOException;
 
 
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.io.JmolOutputChannel;
@@ -194,7 +194,7 @@ public abstract class Exporter {
   
   boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
     this.viewer = viewer;
-    appletName = TextFormat.split(viewer.getHtmlName(), '_')[0];
+    appletName = Txt.split(viewer.getHtmlName(), "_")[0];
     this.g3d = g3d;
     this.privateKey = privateKey;
     backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);

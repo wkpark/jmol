@@ -36,7 +36,7 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Point3fi;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
@@ -549,12 +549,12 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
 
   private void doAction(MeasurementData md, String s, int tok) {
     s = s.toUpperCase().replace('?','*');
-    boolean isWild = TextFormat.isWild(s);
+    boolean isWild = Txt.isWild(s);
     for (int i = measurements.size(); --i >= 0;) {
       Measurement m = measurements.get(i);
       if (m.thisID != null
           && (m.thisID.equalsIgnoreCase(s) || isWild
-              && TextFormat.isMatch(m.thisID.toUpperCase(), s, true, true)))
+              && Txt.isMatch(m.thisID.toUpperCase(), s, true, true)))
         switch (tok) {
         case T.radius:
           m.mad = md.mad;

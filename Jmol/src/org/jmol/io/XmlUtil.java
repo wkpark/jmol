@@ -26,7 +26,7 @@
 package org.jmol.io;
 
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 //import org.jmol.util.JmolList;
 //import java.util.Iterator;
@@ -100,7 +100,7 @@ public class XmlUtil {
   public static String wrapCdata(Object data) {
     String s = "" + data;
     return (s.indexOf("&") < 0 && s.indexOf("<") < 0 ? (s.startsWith("\n") ? "" : "\n") + s 
-        : "<![CDATA[" + TextFormat.simpleReplace(s, "]]>", "]]]]><![CDATA[>") + "]]>");
+        : "<![CDATA[" + Txt.simpleReplace(s, "]]>", "]]]]><![CDATA[>") + "]]>");
   }
   
   /**
@@ -109,7 +109,7 @@ public class XmlUtil {
    */
   public static String unwrapCdata(String s) {
     return (s.startsWith("<![CDATA[") && s.endsWith("]]>") ?
-        TextFormat.simpleReplace(s.substring(9, s.length()-3),"]]]]><![CDATA[>", "]]>") : s);
+        Txt.simpleReplace(s.substring(9, s.length()-3),"]]]]><![CDATA[>", "]]>") : s);
   }
   
   /**

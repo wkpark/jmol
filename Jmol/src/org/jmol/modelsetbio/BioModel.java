@@ -49,7 +49,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 
 import org.jmol.viewer.JC;
@@ -601,7 +601,7 @@ public final class BioModel extends Model{
                 case HELIX:
                   nx = ++nHelix;
                   if (sid == null || pdbFileMode)
-                    sid = TextFormat.formatStringI("%3N %3N", "N", nx);
+                    sid = Txt.formatStringI("%3N %3N", "N", nx);
                   str = "HELIX  %ID %3GROUPA %1CA %4RESA  %3GROUPB %1CB %4RESB";
                   sb = sbHelix;
                   String stype = null;
@@ -623,8 +623,8 @@ public final class BioModel extends Model{
                 case SHEET:
                   nx = ++nSheet;
                   if (sid == null || pdbFileMode) {
-                    sid = TextFormat.formatStringI("%3N %3A 0", "N", nx);
-                    sid = TextFormat.formatStringS(sid, "A", "S" + nx);
+                    sid = Txt.formatStringI("%3N %3A 0", "N", nx);
+                    sid = Txt.formatStringS(sid, "A", "S" + nx);
                   }
                   str = "SHEET  %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
                   sb = sbSheet;
@@ -633,18 +633,18 @@ public final class BioModel extends Model{
                 default:
                   nx = ++nTurn;
                   if (sid == null || pdbFileMode)
-                    sid = TextFormat.formatStringI("%3N %3N", "N", nx);
+                    sid = Txt.formatStringI("%3N %3N", "N", nx);
                   str = "TURN   %ID %3GROUPA %1CA%4RESA  %3GROUPB %1CB%4RESB";
                   sb = sbTurn;
                   break;
                 }
-                str = TextFormat.formatStringS(str, "ID", sid);
-                str = TextFormat.formatStringS(str, "GROUPA", group1);
-                str = TextFormat.formatStringS(str, "CA", chain1);
-                str = TextFormat.formatStringI(str, "RESA", res1);
-                str = TextFormat.formatStringS(str, "GROUPB", group2);
-                str = TextFormat.formatStringS(str, "CB", chain2);
-                str = TextFormat.formatStringI(str, "RESB", res2);
+                str = Txt.formatStringS(str, "ID", sid);
+                str = Txt.formatStringS(str, "GROUPA", group1);
+                str = Txt.formatStringS(str, "CA", chain1);
+                str = Txt.formatStringI(str, "RESA", res1);
+                str = Txt.formatStringS(str, "GROUPB", group2);
+                str = Txt.formatStringS(str, "CB", chain2);
+                str = Txt.formatStringI(str, "RESB", res2);
                 sb.append(str);
                 if (showMode)
                   sb.append(" strucno= ").appendI(lastId);

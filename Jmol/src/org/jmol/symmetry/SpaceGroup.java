@@ -38,7 +38,7 @@ import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 /*
  * 
@@ -430,7 +430,7 @@ class SpaceGroup {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return xyzList.get(xyz).intValue();
-      if (latticeOp < 0 && xyzList.containsKey(TextFormat.simpleReplace(TextFormat.simpleReplace(xyz, "+1/2", ""), "+1/2", "")))
+      if (latticeOp < 0 && xyzList.containsKey(Txt.simpleReplace(Txt.simpleReplace(xyz, "+1/2", ""), "+1/2", "")))
         latticeOp = operationCount;
       xyzList.put(xyz, Integer.valueOf(operationCount));
     }
@@ -451,7 +451,7 @@ class SpaceGroup {
   private void generateOperatorsFromXyzInfo(String xyzInfo) {
     addOperation(null, 0);
     addSymmetry("x,y,z", 0);
-    String[] terms = TextFormat.splitChars(xyzInfo.toLowerCase(), ";");
+    String[] terms = Txt.split(xyzInfo.toLowerCase(), ";");
     for (int i = 0; i < terms.length; i++)
       addSymmetry(terms[i], 0);
   }
@@ -584,7 +584,7 @@ class SpaceGroup {
     }
 
     // generate spaceless abbreviation "P m m m" --> "Pmmm"  "P 2(1)/c" --> "P21/c"
-    String abbr = TextFormat.replaceAllCharacters(name, " ()", "");
+    String abbr = Txt.replaceAllCharacters(name, " ()", "");
 
     SpaceGroup s;
 
@@ -717,12 +717,12 @@ class SpaceGroup {
   private static String lastInfo = "";
   
   private void buildSpaceGroup(String cifLine) {
-    String[] terms = TextFormat.splitChars(cifLine.toLowerCase(), ";");
+    String[] terms = Txt.split(cifLine.toLowerCase(), ";");
     String[] parts;
 
     intlTableNumberFull = terms[0].trim(); // International Table Number :
                                            // options
-    parts = TextFormat.splitChars(intlTableNumberFull, ":");
+    parts = Txt.split(intlTableNumberFull, ":");
     intlTableNumber = parts[0];
     intlTableNumberExt = (parts.length == 1 ? "" : parts[1]);
     ambiguityType = '\0';
@@ -748,7 +748,7 @@ class SpaceGroup {
 
     hmSymbolFull = Character.toUpperCase(terms[2].charAt(0))
         + terms[2].substring(1);
-    parts = TextFormat.splitChars(hmSymbolFull, ":");
+    parts = Txt.split(hmSymbolFull, ":");
     hmSymbol = parts[0];
     hmSymbolExt = (parts.length == 1 ? "" : parts[1]);
     int pt = hmSymbol.indexOf(" -3");
@@ -757,9 +757,9 @@ class SpaceGroup {
         hmSymbolAlternative = (hmSymbol.substring(0, pt) + " 3"
             + hmSymbol.substring(pt + 3)).toLowerCase();
       }
-    hmSymbolAbbr = TextFormat.simpleReplace(hmSymbol, " ", "");
-    hmSymbolAbbrShort = TextFormat.simpleReplace(hmSymbol, " 1", "");
-    hmSymbolAbbrShort = TextFormat.simpleReplace(hmSymbolAbbrShort, " ", "");
+    hmSymbolAbbr = Txt.simpleReplace(hmSymbol, " ", "");
+    hmSymbolAbbrShort = Txt.simpleReplace(hmSymbol, " 1", "");
+    hmSymbolAbbrShort = Txt.simpleReplace(hmSymbolAbbrShort, " ", "");
 
     hallSymbol = terms[3];
     if (hallSymbol.length() > 1)

@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmol.util.JmolList;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import org.jmol.adapter.readers.molxyz.MolReader;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
@@ -137,7 +137,7 @@ public class JcampdxReader extends MolReader {
         htParams.put("peakIndex", peakIndex);
       }
       if (!htParams.containsKey("subFileName"))
-        peakFilePath = Escape.eS(TextFormat.split(filePath, '|')[0]);
+        peakFilePath = Escape.eS(Txt.split(filePath, "|")[0]);
     } else {
       peakIndex = new int[1];
     }
@@ -238,7 +238,7 @@ public class JcampdxReader extends MolReader {
     modelIdList += key;
     String baseModel = getAttribute(line, "baseModel");
     String modelType = getAttribute(line, "type").toLowerCase();
-    float vibScale = Parser.parseFloatStr(getAttribute(line, "vibrationScale"));
+    float vibScale = Parser.parseFloat(getAttribute(line, "vibrationScale"));
     if (modelType.equals("xyzvib"))
       modelType = "xyz";
     else if (modelType.length() == 0)
@@ -433,7 +433,7 @@ public class JcampdxReader extends MolReader {
   }
 
   private String simpleReplace(String s, String sfrom, String sto) {
-    return TextFormat.simpleReplace(s, sfrom, sto);
+    return Txt.simpleReplace(s, sfrom, sto);
   }
 
   private String escape(String s) {

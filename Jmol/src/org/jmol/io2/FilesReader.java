@@ -11,7 +11,7 @@ import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.io.DataReader;
 import org.jmol.io.JmolBinary;
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
 
@@ -90,7 +90,7 @@ public class FilesReader implements JmolFilesReaderInterface {
     String[] subFileList = null;
     htParams.remove("subFileList");
     if (name.indexOf("|") >= 0) {
-      subFileList = TextFormat.splitChars(name, "|");
+      subFileList = Txt.split(name, "|");
       name = subFileList[0];
     }
     Object t = fm.getUnzippedReaderOrStreamFromName(name, null,

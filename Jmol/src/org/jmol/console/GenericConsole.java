@@ -36,7 +36,7 @@ import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.i18n.GT;
 import org.jmol.script.T;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
@@ -169,8 +169,8 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     String cmd = null;
     if (!asCommand && (notThis.charAt(0) == '"' || notThis.charAt(0) == '\'')) {
       char q = notThis.charAt(0);
-      notThis = TextFormat.trim(notThis, "\"\'");
-      String stub = TextFormat.trim(splitCmd[2], "\"\'");
+      notThis = Txt.trim(notThis, "\"\'");
+      String stub = Txt.trim(splitCmd[2], "\"\'");
       cmd = nextFileName(stub, nTab);
       if (cmd != null)
         cmd = splitCmd[0] + splitCmd[1] + q + cmd + q;

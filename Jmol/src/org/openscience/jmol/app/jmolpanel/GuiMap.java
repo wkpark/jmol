@@ -48,7 +48,7 @@ import org.jmol.console.KeyJCheckBox;
 import org.jmol.console.KeyJCheckBoxMenuItem;
 import org.jmol.console.KeyJRadioButtonMenuItem;
 import org.jmol.i18n.GT;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 
 public class GuiMap {
@@ -286,7 +286,7 @@ public class GuiMap {
       setTranslations();
     language = GT.getLanguage();
     for (int i = 0; i < translations.length; i += 2)
-      str = TextFormat.simpleReplace(str, translations[i], translations[i + 1]);
+      str = Txt.simpleReplace(str, translations[i], translations[i + 1]);
     return str;
   }
 

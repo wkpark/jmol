@@ -52,7 +52,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 
 
@@ -379,7 +379,7 @@ public class FileManager {
             return errMsg[0];
           if (isPngjBinaryPost) {
             outputBytes = bytes;
-            name = TextFormat.simpleReplace(name, "?_", "=_");
+            name = Txt.simpleReplace(name, "?_", "=_");
           } else {
             name = new SB().append(name).append("=").appendSB(
                 Base64.getBase64(bytes)).toString();
@@ -573,7 +573,7 @@ public class FileManager {
     }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
-      subFileList = TextFormat.splitChars(name, "|");
+      subFileList = Txt.split(name, "|");
       if (bytes == null)
         Logger.info("FileManager opening 3 " + name);
       name = subFileList[0];
@@ -669,7 +669,7 @@ public class FileManager {
     }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
-      subFileList = TextFormat.splitChars(name, "|");
+      subFileList = Txt.split(name, "|");
       name = subFileList[0];
     }
     BufferedInputStream bis = null;
@@ -758,7 +758,7 @@ public class FileManager {
     String fullName = name;
     String[] subFileList = null;
     if (name.indexOf("|") >= 0) {
-      subFileList = TextFormat.splitChars(name, "|");
+      subFileList = Txt.split(name, "|");
       name = subFileList[0];
       allowZip = true;
     }
@@ -972,7 +972,7 @@ public class FileManager {
       Logger.info("FileManager substituting " + name0 + " --> " + names[0]);
     }
     if (isFullLoad && (file != null || urlTypeIndex(names[0]) == URL_LOCAL)) {
-      String path = (file == null ? TextFormat.trim(names[0].substring(5), "/")
+      String path = (file == null ? Txt.trim(names[0].substring(5), "/")
           : names[0]);
       int pt = path.length() - names[1].length() - 1;
       if (pt > 0) {
@@ -1007,7 +1007,7 @@ public class FileManager {
 
   private static String fixPath(String path) {
     path = path.replace('\\', '/');
-    path = TextFormat.simpleReplace(path, "/./", "/");
+    path = Txt.simpleReplace(path, "/./", "/");
     int pt = path.lastIndexOf("//") + 1;
     if (pt < 1)
       pt = path.indexOf(":/") + 1;
@@ -1021,7 +1021,7 @@ public class FileManager {
     while ((pt = path.lastIndexOf("/../")) >= 0) {
       int pt0 = path.substring(0, pt).lastIndexOf("/");
       if (pt0 < 0)
-        return TextFormat.simpleReplace(protocol + path, "/../", "/");
+        return Txt.simpleReplace(protocol + path, "/../", "/");
       path = path.substring(0, pt0) + path.substring(pt + 3);
     }
     if (path.length() == 0)
@@ -1057,7 +1057,7 @@ public class FileManager {
     for (int i = 0; i < urlPrefixPairs.length; i += 2)
       if (path.indexOf(urlPrefixPairs[i]) > 0)
         return urlPrefixPairs[i + 1]
-            + TextFormat.trim(path.substring(path.indexOf(urlPrefixPairs[i])
+            + Txt.trim(path.substring(path.indexOf(urlPrefixPairs[i])
                 + urlPrefixPairs[i].length()), "/");
     return null;
   }
@@ -1123,13 +1123,13 @@ public class FileManager {
       script = setScriptFileRefs(script, localPath, true);
     if (remotePath != null)
       script = setScriptFileRefs(script, remotePath, false);
-    script = TextFormat.simpleReplace(script, "\1\"", "\"");
+    script = Txt.simpleReplace(script, "\1\"", "\"");
     if (scriptPath != null) {
       while (scriptPath.endsWith("/"))
         scriptPath = scriptPath.substring(0, scriptPath.length() - 1);
       for (int ipt = 0; ipt < scriptFilePrefixes.length; ipt++) {
         String tag = scriptFilePrefixes[ipt];
-        script = TextFormat.simpleReplace(script, tag + ".", tag + scriptPath);
+        script = Txt.simpleReplace(script, tag + ".", tag + scriptPath);
       }
     }
     return script;
@@ -1178,7 +1178,7 @@ public class FileManager {
       oldFileNames.addLast("\"" + name0 + "\"");
       newFileNames.addLast("\1\"" + name + "\"");
     }
-    return TextFormat.replaceStrings(script, oldFileNames, newFileNames);
+    return Txt.replaceStrings(script, oldFileNames, newFileNames);
   }
 
   public static String[] scriptFilePrefixes = new String[] { "/*file*/\"",
@@ -1190,13 +1190,13 @@ public class FileManager {
   }
 
   public static String fixFileNameVariables(String format, String fname) {
-    String str = TextFormat.simpleReplace(format, "%FILE", fname);
+    String str = Txt.simpleReplace(format, "%FILE", fname);
     if (str.indexOf("%LC") < 0)
       return str;
     fname = fname.toLowerCase();
-    str = TextFormat.simpleReplace(str, "%LCFILE", fname);
+    str = Txt.simpleReplace(str, "%LCFILE", fname);
     if (fname.length() == 4)
-      str = TextFormat.simpleReplace(str, "%LC13", fname.substring(1, 3));
+      str = Txt.simpleReplace(str, "%LC13", fname.substring(1, 3));
     return str;
   }
 

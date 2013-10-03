@@ -65,7 +65,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
@@ -1263,9 +1263,9 @@ abstract public class ModelCollection extends BondCollection {
               //$FALL-THROUGH$
             case 1:
               sbCONECT.append("CONECT").append(
-                  TextFormat.formatStringI("%5i", "i", iThis));
+                  Txt.formatStringI("%5i", "i", iThis));
               for (int k = 0; k < n; k++)
-                sbCONECT.append(TextFormat.formatStringI("%5i", "i", iOther));
+                sbCONECT.append(Txt.formatStringI("%5i", "i", iOther));
               sbCONECT.appendC('\n');
               break;
             }
@@ -1342,7 +1342,7 @@ abstract public class ModelCollection extends BondCollection {
         out.append(LabelToken.formatLabelAtomArray(viewer, a, tokens, '\0', null));
         if (isPDB)
           bsWritten.set(i);
-        out.append(TextFormat.sprintf(
+        out.append(Txt.sprintf(
             "%-8.2f%-8.2f%-10.2f    %6.3f          %2s    %s\n", 
             "ssF", new Object[] {
                 a.getElementSymbolIso(false).toUpperCase(), strExtra,
@@ -1350,8 +1350,8 @@ abstract public class ModelCollection extends BondCollection {
         if (atomLast != null
             && atomLast.getPolymerIndexInModel() == a.getPolymerIndexInModel())
           pdbCONECT.append("CONECT").append(
-              TextFormat.formatStringI("%5i", "i", atomLast.getAtomNumber()))
-              .append(TextFormat.formatStringI("%5i", "i", a.getAtomNumber()))
+              Txt.formatStringI("%5i", "i", atomLast.getAtomNumber()))
+              .append(Txt.formatStringI("%5i", "i", a.getAtomNumber()))
               .appendC('\n');
         atomLast = a;
       }
@@ -2927,12 +2927,12 @@ abstract public class ModelCollection extends BondCollection {
           type += sym;
         }
         String energy = "" + mo.get("energy");
-        if (Float.isNaN(Parser.parseFloatStr(energy)))
-          sb.append(TextFormat.sprintf("model %-2s;  mo %-2i # %s\n",
+        if (Float.isNaN(Parser.parseFloat(energy)))
+          sb.append(Txt.sprintf("model %-2s;  mo %-2i # %s\n",
               "sis", new Object[] {getModelNumberDotted(m), Integer.valueOf(i + 1),
                   type }));
         else
-          sb.append(TextFormat.sprintf(
+          sb.append(Txt.sprintf(
               "model %-2s;  mo %-2i # energy %-8.3f %s %s\n", 
               "sifss", 
               new Object[] {
@@ -3067,7 +3067,7 @@ abstract public class ModelCollection extends BondCollection {
         break;
       Atom atom = atoms[i];
       String name = atom.getAtomName();
-      TextFormat.simpleReplace(name, "\"", "''");
+      Txt.simpleReplace(name, "\"", "''");
       bsAtoms.set(atom.index);
       XmlUtil.appendTag(sb, "atom/", new String[] { "id",
           "a" + (atom.index + 1), "title", atom.getAtomName(), "elementType",

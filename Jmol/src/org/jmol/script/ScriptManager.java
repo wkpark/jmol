@@ -39,7 +39,7 @@ import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.StatusManager;
 import org.jmol.viewer.Viewer;
@@ -115,7 +115,7 @@ public class ScriptManager implements JmolScriptManager {
     if (commandWatcherThread == null && useCommandWatcherThread)
       startCommandWatcher(true);
     if (commandWatcherThread != null && strScript.indexOf("/*SPLIT*/") >= 0) {
-      String[] scripts = TextFormat.splitChars(strScript, "/*SPLIT*/");
+      String[] scripts = Txt.split(strScript, "/*SPLIT*/");
       for (int i = 0; i < scripts.length; i++)
         addScr(returnType, scripts[i], statusList, isScriptFile, isQuiet);
       return "split into " + scripts.length + " sections for processing";
@@ -410,7 +410,7 @@ public class ScriptManager implements JmolScriptManager {
         && strScript.indexOf("#NOSYNC;") < 0)
       viewer.syncScript(strScript + " #NOSYNC;", null, 0);
     if (eval.isPaused() && strScript.charAt(0) != '!')
-      strScript = '!' + TextFormat.trim(strScript, "\n\r\t ");
+      strScript = '!' + Txt.trim(strScript, "\n\r\t ");
     boolean isInsert = (strScript.length() > 0 && strScript.charAt(0) == '!');
     if (isInsert)
       strScript = strScript.substring(1);
@@ -538,8 +538,8 @@ public class ScriptManager implements JmolScriptManager {
           cmd = "isosurface sign red blue ";
         } else if (!type.equals("spt")) {
           cmd = viewer.global.defaultDropScript;
-          cmd = TextFormat.simpleReplace(cmd, "%FILE", fileName);
-          cmd = TextFormat.simpleReplace(cmd, "%ALLOWCARTOONS", ""
+          cmd = Txt.simpleReplace(cmd, "%FILE", fileName);
+          cmd = Txt.simpleReplace(cmd, "%ALLOWCARTOONS", ""
               + pdbCartoons);
           if (cmd.toLowerCase().startsWith("zap") && isCached)
             cmd = cmd.substring(3);

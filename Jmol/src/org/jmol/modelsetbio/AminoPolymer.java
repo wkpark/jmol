@@ -40,7 +40,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
 
@@ -1196,7 +1196,7 @@ public class AminoPolymer extends AlphaPolymer {
   private String dumpTags(String lines, BS bsBad, int mode) {
     String prefix = monomers[0].getLeadAtom().getChainID() 
     + "." + (bioPolymerIndexInModel + 1);
-    lines = TextFormat.simpleReplace(lines, "$", prefix);
+    lines = Txt.simpleReplace(lines, "$", prefix);
     int iFirst = monomers[0].getResno();
     String pre = "\n" + prefix;
     SB sb = new SB();

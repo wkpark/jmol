@@ -34,7 +34,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
@@ -404,7 +404,7 @@ public class GaussianReader extends MOReader {
           gaussianCount += nGaussians;
           for (int i = 0; i < nGaussians; i++) {
             readLine();
-            line = TextFormat.simpleReplace(line, "D ", "D+");
+            line = Txt.simpleReplace(line, "D ", "D+");
             tokens = getTokens();
             if (Logger.debugging)
               Logger.debug("Gaussians " + (i + 1) + " " + Escape.eAS(tokens, true));
@@ -505,7 +505,7 @@ public class GaussianReader extends MOReader {
           String sym;
           if (isNOtype) {
             mos[i]
-                .put("occupancy", Float.valueOf(Parser.parseFloatStr(tokens[i + 2])));
+                .put("occupancy", Float.valueOf(Parser.parseFloat(tokens[i + 2])));
           } else {
             sym = tokens[i];
             mos[i].put("symmetry", sym);
@@ -532,7 +532,7 @@ public class GaussianReader extends MOReader {
       }
       try {
         // must fix "7D 0 " to be "7D0  " and "7F 0 " to be "7F0  " Jmol 13.0.RC6
-        line = TextFormat.simpleReplace(line, " 0 ", "0  ");
+        line = Txt.simpleReplace(line, " 0 ", "0  ");
         tokens = getTokens();
         String type = tokens[tokens.length - nThisLine - 1].substring(1);
         if (Character.isDigit(type.charAt(0)))

@@ -28,7 +28,7 @@ import org.jmol.util.JmolList;
 
 
 
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Escape;
@@ -304,12 +304,12 @@ class SymmetryOperation extends Matrix4f {
     float decimalMultiplier = 1f;
     xyz += ",";
     if (incommensurate) {
-      xyz = TextFormat.simpleReplace(xyz, "x1", "x");
-      xyz = TextFormat.simpleReplace(xyz, "x2", "y");
-      xyz = TextFormat.simpleReplace(xyz, "x3", "z");
-      xyz = TextFormat.simpleReplace(xyz, "x4", "x");
-      xyz = TextFormat.simpleReplace(xyz, "x5", "y");
-      xyz = TextFormat.simpleReplace(xyz, "x6", "z");
+      xyz = Txt.simpleReplace(xyz, "x1", "x");
+      xyz = Txt.simpleReplace(xyz, "x2", "y");
+      xyz = Txt.simpleReplace(xyz, "x3", "z");
+      xyz = Txt.simpleReplace(xyz, "x4", "x");
+      xyz = Txt.simpleReplace(xyz, "x5", "y");
+      xyz = Txt.simpleReplace(xyz, "x6", "z");
     }
     for (int i = 0; i < xyz.length(); i++) {
       ch = xyz.charAt(i);

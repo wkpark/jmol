@@ -38,7 +38,7 @@ import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 
 final public class OutputManagerAwt extends OutputManager {
@@ -99,16 +99,16 @@ final public class OutputManagerAwt extends OutputManager {
     String script0 = viewer.getFileAsString(sceneFile);
     if (script0 == null)
       return "no such file: " + sceneFile;
-    sceneFile = TextFormat.simpleReplace(sceneFile, ".spt", "");
+    sceneFile = Txt.simpleReplace(sceneFile, ".spt", "");
     String fileRoot = sceneFile;
     String fileExt = type.toLowerCase();
-    String[] scenes = TextFormat.splitChars(script0, "pause scene ");
+    String[] scenes = Txt.split(script0, "pause scene ");
     Map<String, String> htScenes = new Hashtable<String, String>();
     JmolList<Integer> list = new JmolList<Integer>();
     String script = getSceneScript(scenes, htScenes, list);
     if (Logger.debugging)
       Logger.debug(script);
-    script0 = TextFormat.simpleReplace(script0, "pause scene", "delay "
+    script0 = Txt.simpleReplace(script0, "pause scene", "delay "
         + viewer.animationManager.lastFrameDelay + " # scene");
     String[] str = new String[] { script0, script, null };
     viewer.saveState("_scene0");
@@ -166,7 +166,7 @@ final public class OutputManagerAwt extends OutputManager {
         " Jmol ").append(Viewer.getJmolVersion()).append(
         "\n{\nsceneScripts={");
     for (int i = 1; i < scenes.length; i++) {
-      scenes[i - 1] = TextFormat.trim(scenes[i - 1], "\t\n\r ");
+      scenes[i - 1] = Txt.trim(scenes[i - 1], "\t\n\r ");
       int[] pt = new int[1];
       iScene = Parser.parseIntNext(scenes[i], pt);
       if (iScene == Integer.MIN_VALUE)

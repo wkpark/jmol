@@ -41,7 +41,7 @@ import org.jmol.minimize.Minimizer;
 import org.jmol.minimize.Util;
 import org.jmol.util.BS;
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
 abstract public class ForceField {
@@ -142,7 +142,7 @@ abstract public class ForceField {
     dE = 0;
     calc.setPreliminary(stepMax > 0);
     e0 = energyFull(false, false);
-    s = TextFormat.sprintf(" Initial " + name + " E = %10.3f " + minimizer.units + " criterion = %8.6f max steps = " + stepMax, 
+    s = Txt.sprintf(" Initial " + name + " E = %10.3f " + minimizer.units + " criterion = %8.6f max steps = " + stepMax, 
         "ff", new Object[] {Float.valueOf(toUserUnits(e0)), Float.valueOf(toUserUnits(criterion)) });
     minimizer.report(s, false);
     calc.appendLogData(s);
@@ -175,7 +175,7 @@ abstract public class ForceField {
       boolean done = Util.isNear3(e1, e0, criterion);
 
       if (done || currentStep % 10 == 0 || stepMax <= currentStep) {
-        String s = TextFormat.sprintf(name + " Step %-4d E = %10.6f    dE = %8.6f ",
+        String s = Txt.sprintf(name + " Step %-4d E = %10.6f    dE = %8.6f ",
             "Fi", new Object[] {new float[] { (float) e1, (float) (dE), (float) criterion },
             Integer.valueOf(currentStep) });
         minimizer.report(s, false);
@@ -186,7 +186,7 @@ abstract public class ForceField {
         if (calc.loggingEnabled)
           calc.appendLogData(calc.getAtomList("F I N A L  G E O M E T R Y"));
         if (done) {
-          String s = TextFormat.formatStringF(
+          String s = Txt.formatStringF(
               "\n    " + name + " STEEPEST DESCENT HAS CONVERGED: E = %8.5f " + minimizer.units + " after " + currentStep + " steps", "f",
               toUserUnits(e1));
           calc.appendLogData(s);
@@ -297,7 +297,7 @@ abstract public class ForceField {
        + energyES(gradients);
 
     if (!isSilent && calc.loggingEnabled)      
-      calc.appendLogData(TextFormat.sprintf("\nTOTAL %s ENERGY = %8.3f %s/mol\n", 
+      calc.appendLogData(Txt.sprintf("\nTOTAL %s ENERGY = %8.3f %s/mol\n", 
           "sfs", new Object[] {name, Float.valueOf(toUserUnits(energy)), minimizer.units }));
     return energy;
   }

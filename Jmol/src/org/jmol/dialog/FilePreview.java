@@ -40,7 +40,7 @@ import javax.swing.JPanel;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -163,9 +163,9 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       if (fileName.indexOf(".spt") >= 0) {
         script = "script " + script;
       } else {
-        script = TextFormat.simpleReplace((String) display.getViewer()
+        script = Txt.simpleReplace((String) display.getViewer()
             .getParameter("defaultdropscript"), "%FILE", script + " 1");
-        script = TextFormat.simpleReplace(script, "%ALLOWCARTOONS", ""
+        script = Txt.simpleReplace(script, "%ALLOWCARTOONS", ""
             + isCartoonsSelected());
       }
     }

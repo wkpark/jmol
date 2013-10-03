@@ -38,7 +38,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 
 public class JvxlCoder {
@@ -205,7 +205,7 @@ public class JvxlCoder {
     int r = (int) (jvxlData.nBytes > 0 ? ((float) jvxlData.nBytes) / len
         : ((float) (jvxlData.nPointsX
           * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / len);
-    return TextFormat.simpleReplace(s, "\"not calculated\"", (r > 0 ? "\"" + r +":1\"": "\"?\""));
+    return Txt.simpleReplace(s, "\"not calculated\"", (r > 0 ? "\"" + r +":1\"": "\"?\""));
   }
 
   private static void appendXmlEdgeData(SB sb, JvxlData jvxlData) {
@@ -225,7 +225,7 @@ public class JvxlCoder {
           "\n" + (cmd.indexOf("#") < 0 ? cmd : cmd.substring(0, cmd.indexOf("#"))) + "\n");
     if (state != null) {
       if (state.indexOf("** XML ** ") >=0) {
-        state = TextFormat.splitChars(state, "** XML **")[1].trim(); 
+        state = Txt.split(state, "** XML **")[1].trim(); 
         XmlUtil.appendTag(data, "jvxlIsosurfaceState",  "\n" + state + "\n");
       } else {
         XmlUtil.appendCdata(data, "jvxlIsosurfaceState", null, "\n" + state);

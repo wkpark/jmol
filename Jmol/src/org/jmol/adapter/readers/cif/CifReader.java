@@ -46,7 +46,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Matrix4f;
 import org.jmol.util.P3;
 import org.jmol.util.SimpleUnitCell;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 
 
@@ -239,7 +239,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         auditBlockCode = tokenizer.fullTrim(data).toUpperCase();
         appendLoadNote(auditBlockCode);
         if (htAudit != null && auditBlockCode.contains("_MOD_")) {
-          String key = TextFormat.simpleReplace(auditBlockCode, "_MOD_", "_REFRNCE_");
+          String key = Txt.simpleReplace(auditBlockCode, "_MOD_", "_REFRNCE_");
           if ((atomSetCollection.symmetry = (SymmetryInterface) htAudit.get(key)) != null) {
             notionalUnitCell = atomSetCollection.symmetry.getNotionalUnitCell();
             iHaveUnitCell = true;
@@ -257,7 +257,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   }
   
   private String fixKey(String key) {
-    return TextFormat.simpleReplace(key, ".", "_").toLowerCase();
+    return Txt.simpleReplace(key, ".", "_").toLowerCase();
   }
 
   protected void newModel(int modelNo) throws Exception {    
@@ -316,7 +316,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       return;
     for (int i = vBiomolecules.size(); --i >= 0;) {
       Map<String, Object> biomolecule = vBiomolecules.get(i);
-      String[] ops = TextFormat.split((String) biomolecule.get("operators"), ',');
+      String[] ops = Txt.split((String) biomolecule.get("operators"), ",");
       String assemblies = (String) biomolecule.get("assemblies");
       vBiomts = new  JmolList<Matrix4f>();
       biomolecule.put("biomts", vBiomts);
@@ -1803,7 +1803,7 @@ _pdbx_struct_oper_list.vector[3]
         case SYM_SSG_XYZ:
           // check for non-standard record x~1~,x~2~,x~3~,x~4~  kIsfCqpM.cif
           if (field.indexOf('~') >= 0)
-            field = TextFormat.simpleReplace(field, "~", "");
+            field = Txt.simpleReplace(field, "~", "");
           //$FALL-THROUGH$
         case SYM_SSG_OP:
           incommensurate = true;

@@ -32,7 +32,7 @@ import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.JmolList;
 import org.jmol.util.JmolNode;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 /** 
  * Originating author: Nicholas Vervelle
@@ -227,12 +227,12 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     
 
   public String reverseChirality(String smiles) {
-    smiles = TextFormat.simpleReplace(smiles, "@@", "!@");
-    smiles = TextFormat.simpleReplace(smiles, "@", "@@");
-    smiles = TextFormat.simpleReplace(smiles, "!@@", "@");
-    smiles = TextFormat.simpleReplace(smiles, "@@SP", "@SP");
-    smiles = TextFormat.simpleReplace(smiles, "@@OH", "@OH");
-    smiles = TextFormat.simpleReplace(smiles, "@@TB", "@TB");
+    smiles = Txt.simpleReplace(smiles, "@@", "!@");
+    smiles = Txt.simpleReplace(smiles, "@", "@@");
+    smiles = Txt.simpleReplace(smiles, "!@@", "@");
+    smiles = Txt.simpleReplace(smiles, "@@SP", "@SP");
+    smiles = Txt.simpleReplace(smiles, "@@OH", "@OH");
+    smiles = Txt.simpleReplace(smiles, "@@TB", "@TB");
     return smiles;
   }
 
@@ -401,7 +401,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   private int countStereo(String s) {
-    s = TextFormat.simpleReplace(s, "@@","@");
+    s = Txt.simpleReplace(s, "@@","@");
     int i = s.lastIndexOf('@') + 1;
     int n = 0;
     for (; --i >= 0;)

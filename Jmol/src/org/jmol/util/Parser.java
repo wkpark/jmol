@@ -102,7 +102,7 @@ public class Parser {
     boolean haveBitSet = (bs != null);
     for (int i = (haveBitSet ? bs.nextSetBit(0) : 0); i >= 0 && i < len && n < nTokens; i = (haveBitSet ? bs.nextSetBit(i + 1) : i + 1)) {
       float f;
-      while (Float.isNaN(f = parseFloatStr(tokens[n++])) 
+      while (Float.isNaN(f = parseFloat(tokens[n++])) 
           && n < nTokens) {
       }
       if (!Float.isNaN(f))
@@ -115,9 +115,9 @@ public class Parser {
 
   private static String fixDataString(String str) {
     str = str.replace(';', str.indexOf('\n') < 0 ? '\n' : ' ');
-    str = TextFormat.trim(str, "\n \t");
-    str = TextFormat.simpleReplace(str, "\n ", "\n");
-    str = TextFormat.simpleReplace(str, "\n\n", "\n");
+    str = Txt.trim(str, "\n \t");
+    str = Txt.simpleReplace(str, "\n ", "\n");
+    str = Txt.simpleReplace(str, "\n\n", "\n");
     return str;    
   }
   
@@ -228,11 +228,11 @@ public class Parser {
       // and parse data
       if (fieldColumnCount <= 0) {
         if (tokens.length < minLen
-            || Float.isNaN(f = parseFloatStr(tokens[field - 1])))
+            || Float.isNaN(f = parseFloat(tokens[field - 1])))
           continue;
       } else {
         if (line.length() < minLen
-            || Float.isNaN(f = parseFloatStr(line.substring(field - 1, field
+            || Float.isNaN(f = parseFloat(line.substring(field - 1, field
                 + fieldColumnCount - 1))))
           continue;
       }
@@ -284,10 +284,10 @@ public class Parser {
    */
   public static void parseFloatArrayDataN(String[] tokens, float[] data, int nData) {
     for (int i = nData; --i >= 0;)
-      data[i] = (i >= tokens.length ? Float.NaN : parseFloatStr(tokens[i]));
+      data[i] = (i >= tokens.length ? Float.NaN : parseFloat(tokens[i]));
   }
  
-  public static float parseFloatStr(String str) {
+  public static float parseFloat(String str) {
     return parseFloatNext(str, new int[] {0});
   }
 

@@ -31,7 +31,7 @@ import java.util.Map;
 import org.jmol.api.JmolSyncInterface;
 import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 final class JmolAppletRegistry {
 
@@ -65,7 +65,7 @@ final class JmolAppletRegistry {
   synchronized static void findApplets(String appletName, String mySyncId,
                                        String excludeName, JmolList<String> apps) {
     if (appletName != null && appletName.indexOf(",") >= 0) {
-      String[] names = TextFormat.split(appletName, ',');
+      String[] names = Txt.split(appletName, ",");
       for (int i = 0; i < names.length; i++)
         findApplets(names[i], mySyncId, excludeName, apps);
       return;

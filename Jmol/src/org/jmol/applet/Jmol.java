@@ -38,7 +38,7 @@ import org.jmol.viewer.Viewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 
 import java.awt.Color;
@@ -1270,7 +1270,7 @@ public class Jmol implements WrappedApplet {
     private void showStatus(String message) {
       try {
         System.out.println(message);
-        appletWrapper.showStatus(TextFormat.simpleReplace(TextFormat.splitChars(message, "\n")[0], "'", "\\'"));
+        appletWrapper.showStatus(Txt.simpleReplace(Txt.split(message, "\n")[0], "'", "\\'"));
         sendJsTextStatus(message);
       } catch (Exception e) {
         //ignore if page is closing
@@ -1343,7 +1343,7 @@ public class Jmol implements WrappedApplet {
       return "";
     //System.out.println(callback);
     if (callback.indexOf(".") > 0) {
-      String[] mods = TextFormat.split(callback, '.');
+      String[] mods = Txt.split(callback, ".");
       //System.out.println(Escape.eAS(mods, true));
       for (int i = 0; i < mods.length - 1; i++) {
         //System.out.println(jso);

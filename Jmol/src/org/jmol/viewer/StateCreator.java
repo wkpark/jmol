@@ -70,7 +70,7 @@ import org.jmol.util.ModulationSet;
 import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 import org.jmol.viewer.StateManager.GlobalSettings;
 
@@ -1938,12 +1938,12 @@ public class StateCreator extends JmolStateCreator {
           return; // file was found, or no file was indicated, but not this model -- ignore
         script = (modelIndex == -1 && filename != null ? script = "load "
             + Escape.eS(filename) : "");
-        script = TextFormat.simpleReplace(script, SIMULATION_PROTOCOL, "");
+        script = Txt.simpleReplace(script, SIMULATION_PROTOCOL, "");
         if (id != null)
           script += ";model " + Escape.eS(id);
         if (atoms != null)
           script += ";select visible & (@"
-              + TextFormat.simpleReplace(atoms, ",", " or @") + ")";
+              + Txt.simpleReplace(atoms, ",", " or @") + ")";
         else if (select != null)
           script += ";select visible & (" + select + ")";
         if (script2 != null)
@@ -1981,11 +1981,11 @@ public class StateCreator extends JmolStateCreator {
       case 0: //zoombyfactor
         switch (tokens.length) {
         case 3:
-          viewer.zoomByFactor(Parser.parseFloatStr(tokens[2]),
+          viewer.zoomByFactor(Parser.parseFloat(tokens[2]),
               Integer.MAX_VALUE, Integer.MAX_VALUE);
           return;
         case 5:
-          viewer.zoomByFactor(Parser.parseFloatStr(tokens[2]), Parser
+          viewer.zoomByFactor(Parser.parseFloat(tokens[2]), Parser
               .parseInt(tokens[3]), Parser.parseInt(tokens[4]));
           return;
         }
@@ -2009,24 +2009,24 @@ public class StateCreator extends JmolStateCreator {
         }
         break;
       case 45: // rotatexyby
-        viewer.rotateXYBy(Parser.parseFloatStr(tokens[2]), Parser
-            .parseFloatStr(tokens[3]));
+        viewer.rotateXYBy(Parser.parseFloat(tokens[2]), Parser
+            .parseFloat(tokens[3]));
         return;
       case 60: // translatexyby
         viewer.translateXYBy(Parser.parseInt(tokens[2]), Parser
             .parseInt(tokens[3]));
         return;
       case 75: // rotatemolecule
-        viewer.rotateSelected(Parser.parseFloatStr(tokens[2]), Parser
-            .parseFloatStr(tokens[3]), null);
+        viewer.rotateSelected(Parser.parseFloat(tokens[2]), Parser
+            .parseFloat(tokens[3]), null);
         return;
       case 90:// spinxyby
         viewer.spinXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
-            Parser.parseFloatStr(tokens[4]));
+            Parser.parseFloat(tokens[4]));
         return;
       case 105: // rotatearcball
         viewer.rotateArcBall(Parser.parseInt(tokens[2]), Parser
-            .parseInt(tokens[3]), Parser.parseFloatStr(tokens[4]));
+            .parseInt(tokens[3]), Parser.parseFloat(tokens[4]));
         return;
       }
     } catch (Exception e) {

@@ -34,7 +34,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Matrix3f;
 import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 import org.jmol.viewer.JC;
 
@@ -399,10 +399,10 @@ public class AminoMonomer extends AlphaMonomer {
     if (proteinStructure == null || proteinStructure.structureID == null)
       return null;
     String tag = "%3N %3ID";
-    tag = TextFormat.formatStringI(tag, "N", proteinStructure.serialID);
-    tag = TextFormat.formatStringS(tag, "ID", proteinStructure.structureID);
+    tag = Txt.formatStringI(tag, "N", proteinStructure.serialID);
+    tag = Txt.formatStringS(tag, "ID", proteinStructure.structureID);
     if (proteinStructure.type == EnumStructure.SHEET)
-      tag += TextFormat.formatStringI("%2SC", "SC", proteinStructure.strandCount);
+      tag += Txt.formatStringI("%2SC", "SC", proteinStructure.strandCount);
     return tag;
   }
   

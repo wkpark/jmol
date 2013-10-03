@@ -34,7 +34,7 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 import org.jmol.script.T;
 
@@ -97,7 +97,7 @@ public class Dipoles extends Shape {
     if ("thisID" == propertyName) {
       wildID = null;
       String thisID = (String) value;
-      if (thisID == null || TextFormat.isWild(thisID)) {
+      if (thisID == null || Txt.isWild(thisID)) {
         currentDipole = null;
         if (thisID != null)
           wildID = thisID.toUpperCase();
@@ -313,7 +313,7 @@ public class Dipoles extends Shape {
       for (int i = dipoleCount; --i >= 0;)
         if (!bondOnly || isBondDipole(i))
           if (wildID == null
-              || TextFormat.isMatch(dipoles[i].thisID.toUpperCase(), wildID,
+              || Txt.isMatch(dipoles[i].thisID.toUpperCase(), wildID,
                   true, true))
             setProperty(tok, dipoles[i], iValue, fValue);
     }
@@ -369,11 +369,11 @@ public class Dipoles extends Shape {
     }
     if (property == "checkID") {
       String key = ((String) data[0]).toUpperCase();
-      boolean isWild = TextFormat.isWild(key);
+      boolean isWild = Txt.isWild(key);
       for (int i = dipoleCount; --i >= 0;) {
         String id = dipoles[i].thisID;
         if (id.equalsIgnoreCase(key) || isWild
-            && TextFormat.isMatch(id.toUpperCase(), key, true, true)) {
+            && Txt.isMatch(id.toUpperCase(), key, true, true)) {
           data[1] = id;
           return true;
         }

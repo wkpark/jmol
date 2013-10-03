@@ -15,7 +15,7 @@ import org.jmol.util.JmolList;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
 import org.jmol.util.Tensor;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
@@ -123,8 +123,8 @@ public class MagresReader extends AtomSetCollectionReader {
     if (!(line.startsWith("<") && line.endsWith(">"))
        && !(line.startsWith("[") && line.endsWith("]")))      
       return currentBlock;
-    line = TextFormat.simpleReplace(line, "<", "[");
-    line = TextFormat.simpleReplace(line, ">", "]");
+    line = Txt.simpleReplace(line, "<", "[");
+    line = Txt.simpleReplace(line, ">", "]");
     switch (("..............." +
     		     "[calculation].." +
     		     "[/calculation]." +

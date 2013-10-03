@@ -51,7 +51,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.Tensor;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 
 
@@ -118,11 +118,11 @@ public class CastepReader extends AtomSetCollectionReader {
       if (chargeType != null && chargeType.length() > 4)
         chargeType = chargeType.substring(0, 4);
       filter = filter.replace('(', '{').replace(')', '}');
-      filter = TextFormat.simpleReplace(filter, "  ", " ");
+      filter = Txt.simpleReplace(filter, "  ", " ");
       isAllQ = checkFilterKey("Q=ALL");
       if (!isAllQ && filter.indexOf("{") >= 0)
         setDesiredQpt(filter.substring(filter.indexOf("{")));
-      filter = TextFormat.simpleReplace(filter, "-PT", "");
+      filter = Txt.simpleReplace(filter, "-PT", "");
     }
     continuing = readFileData();
   }
@@ -626,7 +626,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
         spins[index] = tokens[tokens.length - 1];
     }
     if (haveSpin) {
-      String data = TextFormat.join(spins, '\n', 0);
+      String data = Txt.join(spins, '\n', 0);
       atomSetCollection.setAtomSetAtomProperty("spin", data, -1);
     }
 
@@ -800,7 +800,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       if (isTrajectory)
         atomSetCollection.setTrajectory();
       atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
-      atomSetCollection.setAtomSetName(TextFormat.formatDecimal(freq, 2)
+      atomSetCollection.setAtomSetName(Txt.formatDecimal(freq, 2)
           + " cm-1 " + qname);
     }
   }

@@ -29,7 +29,7 @@ import org.jmol.util.GData;
 import org.jmol.util.P3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 public class Text extends Object2d {
 
@@ -194,7 +194,7 @@ public class Text extends Object2d {
     }
     if (font == null)
       return;
-    lines = TextFormat.split(text, '|');
+    lines = Txt.split(text, "|");
     textWidth = 0;
     widths = new int[lines.length];
     for (int i = lines.length; --i >= 0;)

@@ -34,7 +34,7 @@ import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinObject;
 import org.jmol.minimize.MinPosition;
 import org.jmol.minimize.MinTorsion;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 /**
  * @author  Bob Hanson  5/10/12 - 5/15/12
@@ -588,7 +588,7 @@ class CalculationsMMFF extends Calculations {
     switch (iType) {
     case CALC_ANGLE:
     case CALC_STRETCH_BEND:
-      return TextFormat.sprintf(
+      return Txt.sprintf(
           "%15s  %-5s %-5s %-5s  %8.3f  %8.3f     %8.3f   %8.3f", 
           "ssssFI", new Object[] { MinObject.decodeKey(c.key), minAtoms[c.ia].sType, minAtoms[c.ib].sType, 
               minAtoms[c.ic].sType,
@@ -597,7 +597,7 @@ class CalculationsMMFF extends Calculations {
           new int[] { minAtoms[c.ia].atom.getAtomNumber(), minAtoms[c.ib].atom.getAtomNumber(),
               minAtoms[c.ic].atom.getAtomNumber()} });
       case CALC_TORSION:
-        return TextFormat.sprintf(
+        return Txt.sprintf(
               "%15s  %-5s %-5s %-5s %-5s  %8.3f %8.3f %8.3f %8.3f %8.3f", 
               "sssssF", new Object[] { MinObject.decodeKey(c.key), 
                  minAtoms[c.ia].sType, minAtoms[c.ib].sType, 

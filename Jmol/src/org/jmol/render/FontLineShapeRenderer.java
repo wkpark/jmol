@@ -32,7 +32,7 @@ import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
 import org.jmol.util.P3i;
 import org.jmol.util.SimpleUnitCell;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 
 public abstract class FontLineShapeRenderer extends ShapeRenderer {
@@ -210,7 +210,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
             (y = (int) Math.floor(pointT2.y + vectorT2.y)), (int) z, diameter);
         if (drawLabel && (draw000 || p != 0)) {
           val[0] = Float.valueOf((p == 0 ? 0 : p * signFactor));
-          String s = TextFormat.sprintf(formats[i % formats.length], "f", val);
+          String s = Txt.sprintf(formats[i % formats.length], "f", val);
           drawString(x, y, (int) z, 4, rightJustify, centerX, centerY,
               (int) Math.floor(pointT2.y), s);
         }

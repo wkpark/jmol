@@ -84,7 +84,7 @@ import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TempArray;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
@@ -1265,8 +1265,8 @@ public class ScriptExt implements JmolScriptExtension {
         break;
       case T.boundbox:
         if (fullCommand.indexOf("# BBOX=") >= 0) {
-          String[] bbox = TextFormat.split(Parser.getQuotedAttribute(
-              fullCommand, "# BBOX"), ',');
+          String[] bbox = Txt.split(Parser.getQuotedAttribute(
+              fullCommand, "# BBOX"), ",");
           pts = new P3[] { (P3) Escape.uP(bbox[0]), (P3) Escape.uP(bbox[1]) };
         } else if (eval.isCenterParameter(i + 1)) {
           pts = new P3[] { getPoint3f(i + 1, true),
@@ -2390,7 +2390,7 @@ public class ScriptExt implements JmolScriptExtension {
           invArg();
         // inline PMESH data
         if (isPmesh)
-          str = TextFormat.replaceAllCharacter(str, "{,}|", ' ');
+          str = Txt.replaceAllCharacter(str, "{,}|", ' ');
         if (eval.logMessages)
           Logger.debug("pmesh inline data:\n" + str);
         propertyValue = (chk ? null : str);
@@ -4137,7 +4137,7 @@ public class ScriptExt implements JmolScriptExtension {
           str = labeler.formatLabelBond(viewer, bond, tokens, htValues,
               indices);
       }
-      str = TextFormat.formatStringI(str, "#", (n + 1));
+      str = Txt.formatStringI(str, "#", (n + 1));
       sout[n++] = str;
       if (haveIndex)
         break;
@@ -5347,7 +5347,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (name.equals("/") && (len = slen) == 4) {
         name = parameterAsString(3).toLowerCase();
         if (!chk) {
-          String[] info = TextFormat.split(viewer.getStateInfo(), '\n');
+          String[] info = Txt.split(viewer.getStateInfo(), "\n");
           SB sb = new SB();
           for (int i = 0; i < info.length; i++)
             if (info[i].toLowerCase().indexOf(name) >= 0)
@@ -5391,7 +5391,7 @@ public class ScriptExt implements JmolScriptExtension {
       } else {
         String sg = parameterAsString(2);
         if (!chk)
-          info = viewer.getSpaceGroupInfo(TextFormat.simpleReplace(sg, "''",
+          info = viewer.getSpaceGroupInfo(Txt.simpleReplace(sg, "''",
               "\""));
       }
       if (info != null)
@@ -8017,10 +8017,10 @@ public class ScriptExt implements JmolScriptExtension {
     String sReplace = SV.sValue(args[1]);
     String s = (x.tok == T.varray ? null : SV.sValue(x));
     if (s != null)
-      return mp.addXStr(TextFormat.simpleReplace(s, sFind, sReplace));
+      return mp.addXStr(Txt.simpleReplace(s, sFind, sReplace));
     String[] list = SV.listValue(x);
     for (int i = list.length; --i >= 0;)
-      list[i] = TextFormat.simpleReplace(list[i], sFind, sReplace);
+      list[i] = Txt.simpleReplace(list[i], sFind, sReplace);
     return mp.addXAS(list);
   }
 
@@ -8048,17 +8048,17 @@ public class ScriptExt implements JmolScriptExtension {
           s += Escape.eBS(bs);
         }
       }
-      return mp.addXAS(TextFormat.splitChars(s, sArg));
+      return mp.addXAS(Txt.split(s, sArg));
     case T.join:
       if (s.length() > 0 && s.charAt(s.length() - 1) == '\n')
         s = s.substring(0, s.length() - 1);
-      return mp.addXStr(TextFormat.simpleReplace(s, "\n", sArg));
+      return mp.addXStr(Txt.simpleReplace(s, "\n", sArg));
     case T.trim:
       if (s != null)
-        return mp.addXStr(TextFormat.trim(s, sArg));      
+        return mp.addXStr(Txt.trim(s, sArg));      
       String[] list = SV.listValue(x);
       for (int i = list.length; --i >= 0;)
-        list[i] = TextFormat.trim(list[i], sArg);
+        list[i] = Txt.trim(list[i], sArg);
       return mp.addXAS(list);
     }
     return mp.addXStr("");
@@ -8079,10 +8079,10 @@ public class ScriptExt implements JmolScriptExtension {
       int itab = (args[0].tok == T.string ? 0 : 1);
       String tab = SV.sValue(args[itab]);
       sList1 = (x1.tok == T.varray ? SV.listValue(x1)
-          : TextFormat.split(SV.sValue(x1), '\n'));
+          : Txt.split(SV.sValue(x1), "\n"));
       x2 = args[1 - itab];
       sList2 = (x2.tok == T.varray ? SV.listValue(x2)
-          : TextFormat.split(SV.sValue(x2), '\n'));
+          : Txt.split(SV.sValue(x2), "\n"));
       sList3 = new String[len = Math.max(sList1.length, sList2.length)];
       for (int i = 0; i < len; i++)
         sList3[i] = (i >= sList1.length ? "" : sList1[i]) + tab
@@ -8123,7 +8123,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (x1.tok == T.varray) {
       len = alist1.size();
     } else {
-      sList1 = (TextFormat.splitChars((String) x1.value, "\n"));
+      sList1 = (Txt.split((String) x1.value, "\n"));
       list1 = new float[len = sList1.length];
       Parser.parseFloatArrayData(sList1, list1);
     }
@@ -8147,7 +8147,7 @@ public class ScriptExt implements JmolScriptExtension {
     } else if (x2.tok == T.varray) {
       len = Math.min(len, alist2.size());
     } else {
-      sList2 = TextFormat.splitChars((String) x2.value, "\n");
+      sList2 = Txt.split((String) x2.value, "\n");
       list2 = new float[sList2.length];
       Parser.parseFloatArrayData(sList2, list2);
       len = Math.min(list1.length, list2.length);
@@ -8615,7 +8615,7 @@ public class ScriptExt implements JmolScriptExtension {
       return mp.addXStr(SV.sprintfArray(args));
     BS bs = SV.getBitSet(x1, true);
     if (bs == null)
-      return mp.addXObj(SV.sprintf(TextFormat.formatCheck(format), x1));
+      return mp.addXObj(SV.sprintf(Txt.formatCheck(format), x1));
     return mp.addXObj(getBitsetIdent(bs, format,
           x1.value, true, x1.index, asArray));
   }

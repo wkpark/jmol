@@ -28,7 +28,7 @@ import org.jmol.util.BS;
 import org.jmol.util.Dimension;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import org.jmol.util.JmolList;
 
@@ -230,10 +230,10 @@ public class StatusManager {
     boolean isAdd = (newStatusList.length() > 0 && newStatusList.charAt(0) == '+');
     boolean getList = false;
     if (isRemove) {
-      statusList = TextFormat.simpleReplace(statusList, newStatusList
+      statusList = Txt.simpleReplace(statusList, newStatusList
           .substring(1, newStatusList.length()), "");
     } else {
-      newStatusList = TextFormat.simpleReplace(newStatusList, "+", "");
+      newStatusList = Txt.simpleReplace(newStatusList, "+", "");
       if (statusList.equals(newStatusList) || isAdd
           && statusList.indexOf(newStatusList) >= 0) {
         getList = true;

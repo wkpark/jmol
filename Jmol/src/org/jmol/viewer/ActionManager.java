@@ -43,7 +43,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Rectangle;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.binding.Binding;
 import org.jmol.viewer.binding.JmolBinding;
 
@@ -701,7 +701,7 @@ public class ActionManager {
     info.put("bindingName", binding.getName());
     info.put("actionNames", actionNames);
     info.put("actionInfo", actionInfo);
-    info.put("bindingInfo", TextFormat.split(getBindingInfo(null), '\n'));
+    info.put("bindingInfo", Txt.split(getBindingInfo(null), "\n"));
     return info;
   }
 
@@ -1540,10 +1540,10 @@ public class ActionManager {
       P3 nearestPoint = null;
       if (script.indexOf("_ATOM") >= 0) {
         int iatom = findNearestAtom(x, y, null, true);
-        script = TextFormat.simpleReplace(script, "_ATOM", "({"
+        script = Txt.simpleReplace(script, "_ATOM", "({"
             + (iatom >= 0 ? "" + iatom : "") + "})");
         if (iatom >= 0)
-          script = TextFormat.simpleReplace(script, "_POINT", Escape.eP(viewer
+          script = Txt.simpleReplace(script, "_POINT", Escape.eP(viewer
               .getModelSet().atoms[iatom]));
       }
       if (!drawMode
@@ -1553,25 +1553,25 @@ public class ActionManager {
         if (t != null && (nearestPoint = (P3) t.get("pt")) != null) {
           boolean isBond = t.get("type").equals("bond");
           if (isBond)
-            script = TextFormat.simpleReplace(script, "_BOND", "[{"
+            script = Txt.simpleReplace(script, "_BOND", "[{"
                 + t.get("index") + "}]");
-          script = TextFormat.simpleReplace(script, "_POINT", Escape
+          script = Txt.simpleReplace(script, "_POINT", Escape
               .eP(nearestPoint));
-          script = TextFormat.simpleReplace(script, "_OBJECT", Escape
+          script = Txt.simpleReplace(script, "_OBJECT", Escape
               .escapeMap(t));
         }
-        script = TextFormat.simpleReplace(script, "_BOND", "[{}]");
-        script = TextFormat.simpleReplace(script, "_OBJECT", "{}");
+        script = Txt.simpleReplace(script, "_BOND", "[{}]");
+        script = Txt.simpleReplace(script, "_OBJECT", "{}");
       }
-      script = TextFormat.simpleReplace(script, "_POINT", "{}");
-      script = TextFormat.simpleReplace(script, "_ACTION", "" + mouseAction);
-      script = TextFormat.simpleReplace(script, "_X", "" + x);
-      script = TextFormat.simpleReplace(script, "_Y", ""
+      script = Txt.simpleReplace(script, "_POINT", "{}");
+      script = Txt.simpleReplace(script, "_ACTION", "" + mouseAction);
+      script = Txt.simpleReplace(script, "_X", "" + x);
+      script = Txt.simpleReplace(script, "_Y", ""
           + (viewer.getScreenHeight() - y));
-      script = TextFormat.simpleReplace(script, "_DELTAX", "" + deltaX);
-      script = TextFormat.simpleReplace(script, "_DELTAY", "" + deltaY);
-      script = TextFormat.simpleReplace(script, "_TIME", "" + time);
-      script = TextFormat.simpleReplace(script, "_MODE", "" + mode);
+      script = Txt.simpleReplace(script, "_DELTAX", "" + deltaX);
+      script = Txt.simpleReplace(script, "_DELTAY", "" + deltaY);
+      script = Txt.simpleReplace(script, "_TIME", "" + time);
+      script = Txt.simpleReplace(script, "_MODE", "" + mode);
       if (script.startsWith("+:")) {
         passThrough = true;
         script = script.substring(2);

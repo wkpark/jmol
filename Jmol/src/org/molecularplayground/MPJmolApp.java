@@ -29,7 +29,7 @@ import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 import org.openscience.jmol.app.jsonkiosk.BannerFrame;
 import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
@@ -145,7 +145,7 @@ public class MPJmolApp implements JsonNioClient {
       Logger.info(script);
       if (script.indexOf("java.io") >= 0)
         script = "";
-      String s = TextFormat.simpleReplace(script.toLowerCase(), " ", "");
+      String s = Txt.simpleReplace(script.toLowerCase(), " ", "");
       if (s.indexOf("niocontentpath=") < 0) {
         String path = System.getProperty("user.dir").replace('\\', '/')
         + "/Content-Cache/%ID%/%ID%.json";

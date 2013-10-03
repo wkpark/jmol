@@ -27,7 +27,7 @@ package org.jmol.util;
 
 import java.util.List;
 
-public class TextFormat {
+public class Txt {
 
 //  private final static DecimalFormat[] formatters = new DecimalFormat[10];
 
@@ -47,6 +47,15 @@ public class TextFormat {
     useNumberLocalization[0] = (TF ? Boolean.TRUE : Boolean.FALSE);
   }
 
+  public static String formatDecimalDbl(double value, int decimalDigits) {
+    if (decimalDigits == Integer.MAX_VALUE 
+        || value == Double.NEGATIVE_INFINITY
+        || value == Double.POSITIVE_INFINITY 
+        || Double.isNaN(value))
+      return "" + value;
+    return formatDecimal((float) value, decimalDigits);
+  }
+  
   /**
    * a simple alternative to DecimalFormat (which Java2Script does not have
    * and which is quite too complex for our use here.
@@ -79,7 +88,7 @@ public class TextFormat {
       String s = ("" + d).toUpperCase();
       int i = s.indexOf("E");
       n = Parser.parseInt(s.substring(i + 1)) + n;
-      return (i < 0 ? "" + value : formatDecimal(Parser.parseFloatStr(s.substring(
+      return (i < 0 ? "" + value : formatDecimal(Parser.parseFloat(s.substring(
           0, i)), decimalDigits - 1)
           + "E" + (n >= 0 ? "+" : "") + n);
     }
@@ -411,7 +420,7 @@ public class TextFormat {
     strFormat = simpleReplace(strFormat, "%%", "\1");
     strFormat = simpleReplace(strFormat, "%p", "%6.2p");
     strFormat = simpleReplace(strFormat, "%q", "%6.2q");
-    String[] format = split(strFormat, '%');
+    String[] format = split(strFormat, "%");
     SB sb = new SB();
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
@@ -474,7 +483,7 @@ public class TextFormat {
    * @param run
    * @return  String array
    */
-  public static String[] splitChars(String text, String run) {
+  public static String[] split(String text, String run) {
     if (text.length() == 0)
       return new String[0];
     int n = 1;
@@ -588,18 +597,14 @@ public class TextFormat {
     return str.substring(k, m + 1);
   }
 
-  public static String[] split(String text, char ch) {
-    return splitChars(text, "" + ch);
-  }
-  
-  public static void lFill(SB s, String s1, String s2) {
+  public static void leftJustify(SB s, String s1, String s2) {
     s.append(s2);
     int n = s1.length() - s2.length();
     if (n > 0)
       s.append(s1.substring(0, n));
   }
   
-  public static void rFill(SB s, String s1, String s2) {
+  public static void rightJustify(SB s, String s1, String s2) {
     int n = s1.length() - s2.length();
     if (n > 0)
       s.append(s1.substring(0, n));

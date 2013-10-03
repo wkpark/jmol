@@ -45,7 +45,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.P3;
 import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.SB;
 import org.jmol.util.V3;
 
@@ -1101,7 +1101,7 @@ public class SV extends T {
       of[4]= var.value;
     if (getQ)
       of[5]= var.value;
-    return TextFormat.sprintf(strFormat, "IFDspq", of );
+    return Txt.sprintf(strFormat, "IFDspq", of );
   }
 
   /**
@@ -1117,11 +1117,11 @@ public class SV extends T {
     case 1:
       return sValue(args[0]);
     }
-    String[] format = TextFormat.split(TextFormat.simpleReplace(sValue(args[0]), "%%","\1"), '%');
+    String[] format = Txt.split(Txt.simpleReplace(sValue(args[0]), "%%","\1"), "%");
     SB sb = new SB();
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
-      Object ret = sprintf(TextFormat.formatCheck("%" + format[i]), (i < args.length ? args[i] : null));
+      Object ret = sprintf(Txt.formatCheck("%" + format[i]), (i < args.length ? args[i] : null));
       if (Escape.isAS(ret)) {
         String[] list = (String[]) ret;
         for (int j = 0; j < list.length; j++)

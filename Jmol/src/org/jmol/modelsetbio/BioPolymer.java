@@ -39,7 +39,7 @@ import org.jmol.util.P3;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 import org.jmol.viewer.Viewer;
 import org.jmol.script.T;
@@ -883,14 +883,14 @@ public abstract class BioPolymer {
             continue;
           }
           strExtra = q.getInfo()
-              + TextFormat.sprintf("  %10.5p %10.5p %10.5p",
+              + Txt.sprintf("  %10.5p %10.5p %10.5p",
                   "p", new Object[] { ptCenter });
           if (qtype == 'n' && isAmino) {
-            strExtra += TextFormat.sprintf("  %10.5p %10.5p %10.5p",
+            strExtra += Txt.sprintf("  %10.5p %10.5p %10.5p",
                 "p", new Object[] { ((AminoMonomer) monomer)
                     .getNitrogenHydrogenPoint() });
           } else if (derivType == 2 && !Float.isNaN(val1)) {
-            strExtra += TextFormat.sprintf(" %10.5f %10.5f",
+            strExtra += Txt.sprintf(" %10.5f %10.5f",
                 "F", new Object[] { new float[] { val1, val2 } });
           }
         }
@@ -899,7 +899,7 @@ public abstract class BioPolymer {
         bsWritten.set(((Monomer) a.getGroup()).leadAtomIndex);
         pdbATOM.append(viewer.modelSet.getLabeler().formatLabelAtomArray(viewer, a, tokens, '\0',
             null));
-        pdbATOM.append(TextFormat
+        pdbATOM.append(Txt
             .sprintf("%8.2f%8.2f%8.2f      %6.3f          %2s    %s\n",
                 "ssF", new Object[] {
                     a.getElementSymbolIso(false).toUpperCase(),
@@ -909,8 +909,8 @@ public abstract class BioPolymer {
         if (atomLast != null
             && atomLast.getPolymerIndexInModel() == a.getPolymerIndexInModel()) {
           pdbCONECT.append("CONECT").append(
-              TextFormat.formatStringI("%5i", "i", atomLast.getAtomNumber()))
-              .append(TextFormat.formatStringI("%5i", "i", a.getAtomNumber()))
+              Txt.formatStringI("%5i", "i", atomLast.getAtomNumber()))
+              .append(Txt.formatStringI("%5i", "i", a.getAtomNumber()))
               .appendC('\n');
         }
         atomLast = a;

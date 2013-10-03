@@ -48,7 +48,7 @@ import org.jmol.util.P3;
 import org.jmol.util.Parser;
 import org.jmol.util.P4;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.api.JmolAdapter;
@@ -595,7 +595,7 @@ public final class Resolver implements JmolBioResolver {
   }
 
   public String fixPropertyValue(BS bsAtoms, String data) {
-    String[] aData = TextFormat.split(data, '\n');
+    String[] aData = Txt.split(data, "\n");
     Atom[] atoms = modelSet.atoms;
     String[] newData = new String[bsAtoms.cardinality()];
     String lastData = "";
@@ -605,7 +605,7 @@ public final class Resolver implements JmolBioResolver {
         lastData = aData[pt++];
       newData[iAtom] = lastData;
     }
-    return TextFormat.join(newData, '\n', 0);
+    return Txt.join(newData, '\n', 0);
   }
 
   static BioPolymer allocateBioPolymer(Group[] groups, int firstGroupIndex,

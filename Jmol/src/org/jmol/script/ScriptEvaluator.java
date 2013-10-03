@@ -71,7 +71,7 @@ import org.jmol.util.P3;
 import org.jmol.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB; //import org.jmol.util.Tensor;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.Tuple3f;
 import org.jmol.util.V3;
 import org.jmol.modelset.TickInfo;
@@ -561,9 +561,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     try {
       s = script.substring(ichBegin, ichEnd);
       if (s.indexOf("\\\n") >= 0)
-        s = TextFormat.simpleReplace(s, "\\\n", "  ");
+        s = Txt.simpleReplace(s, "\\\n", "  ");
       if (s.indexOf("\\\r") >= 0)
-        s = TextFormat.simpleReplace(s, "\\\r", "  ");
+        s = Txt.simpleReplace(s, "\\\r", "  ");
       // int i;
       // for (i = s.length(); --i >= 0 && !ScriptCompiler.eol(s.charAt(i), 0);
       // ){
@@ -669,8 +669,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     try {
       pushContext(null, "getAtomBitSet");
       String scr = "select (" + atomExpression + ")";
-      scr = TextFormat.replaceAllCharacters(scr, "\n\r", "),(");
-      scr = TextFormat.simpleReplace(scr, "()", "(none)");
+      scr = Txt.replaceAllCharacters(scr, "\n\r", "),(");
+      scr = Txt.simpleReplace(scr, "()", "(none)");
       if (compileScript(null, scr, false)) {
         st = aatoken[0];
         bs = atomExpression(st, 1, 0, false, false, true, true);
@@ -1530,7 +1530,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           String s = Atom.atomPropertyString(viewer, atom, tok);
           switch (minmaxtype) {
           case T.allfloat:
-            fout[i] = Parser.parseFloatStr(s);
+            fout[i] = Parser.parseFloat(s);
             break;
           default:
             if (vout == null)
@@ -1639,7 +1639,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             fout[i] = ((Integer) v).floatValue();
             break;
           case 2:
-            fout[i] = Parser.parseFloatStr((String) v);
+            fout[i] = Parser.parseFloat((String) v);
             break;
           case 3:
             fout[i] = ((P3) v).length();
@@ -1804,7 +1804,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         fvalues = new float[nValues];
         for (int i = nValues; --i >= 0;)
           fvalues[i] = (tok == T.element ? Elements.elementNumberFromSymbol(
-              list[i], false) : Parser.parseFloatStr(list[i]));
+              list[i], false) : Parser.parseFloat(list[i]));
       }
       if (tokenValue.tok != T.varray && nValues == 1) {
         if (isStrProperty)
@@ -1898,9 +1898,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // we first check for paths into ZIP files and adjust accordingly
       int pt = Math.max(filename.lastIndexOf("|"), filename.lastIndexOf("/"));
       path = path.substring(0, pt + 1);
-      strScript = TextFormat.simpleReplace(strScript, "$SCRIPT_PATH$/", path);
+      strScript = Txt.simpleReplace(strScript, "$SCRIPT_PATH$/", path);
       // now replace the variable itself
-      strScript = TextFormat.simpleReplace(strScript, "$SCRIPT_PATH$", path);
+      strScript = Txt.simpleReplace(strScript, "$SCRIPT_PATH$", path);
     }
     return strScript;
   }
@@ -3090,13 +3090,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (value != null)
         msg += ": " + value;
     } else {
-      msg = TextFormat.simpleReplace(msg, "{0}", value);
+      msg = Txt.simpleReplace(msg, "{0}", value);
       if (msg.indexOf("{1}") >= 0)
-        msg = TextFormat.simpleReplace(msg, "{1}", more);
+        msg = Txt.simpleReplace(msg, "{1}", more);
       else if (more != null)
         msg += ": " + more;
       if (msg.indexOf("{2}") >= 0)
-        msg = TextFormat.simpleReplace(msg, "{2}", more);
+        msg = Txt.simpleReplace(msg, "{2}", more);
     }
     if (doTranslate)
       GT.setDoTranslate(true);
@@ -4140,7 +4140,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     switch (tokOperator) {
     case T.opEQ:
     case T.opNE:
-      return (TextFormat.isMatch(propertyValue, comparisonValue, true, true) == (tokOperator == T.opEQ));
+      return (Txt.isMatch(propertyValue, comparisonValue, true, true) == (tokOperator == T.opEQ));
     default:
       invArg();
     }
@@ -4397,7 +4397,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     switch (tokAt(i)) {
     case T.string:
       s = SV.sValue(st[i]);
-      s = TextFormat.replaceAllCharacter(s, "{},[]\"'", ' ');
+      s = Txt.replaceAllCharacter(s, "{},[]\"'", ' ');
       fparams = Parser.parseFloatArray(s);
       n = fparams.length;
       break;
@@ -4497,7 +4497,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (s.startsWith("[\"")) {
         Object o = viewer.evaluateExpression(s);
         if (o instanceof String)
-          return TextFormat.split((String) o, '\n');
+          return Txt.split((String) o, "\n");
       }
       return new String[] { s };
     case T.spacebeforesquare:
@@ -5687,7 +5687,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             .toLowerCase());
         int n = (tokAt(i) == T.nada ? 5 : intParameter(i++));
         s = "; rotate Y 10 10;delay 2.0; rotate Y -10 -10; delay 2.0;rotate Y -10 -10; delay 2.0;rotate Y 10 10;delay 2.0";
-        s = TextFormat.simpleReplace(s, "10", "" + n);
+        s = Txt.simpleReplace(s, "10", "" + n);
         break;
       case T.spin:
         looping = true;
@@ -5708,7 +5708,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           viewer.setNavigationMode(false);
         if (axis == "" || "xyz".indexOf(axis) < 0)
           axis = "y";
-        s = TextFormat.simpleReplace(s, "Y", axis);
+        s = Txt.simpleReplace(s, "Y", axis);
         s = "capture " + Escape.eS(fileName) + sfps + s + ";capture;";
         script(0, null, s);
         return;
@@ -7124,7 +7124,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       throws ScriptException {
     Object[] data = new Object[] { id, null };
     String s = "";
-    boolean isWild = TextFormat.isWild(id);
+    boolean isWild = Txt.isWild(id);
     for (int iShape = JC.SHAPE_DIPOLES;;) {
       if (iShape != JC.SHAPE_MO
           && getShapePropertyData(iShape, "checkID", data)) {
@@ -8183,7 +8183,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         int iGroup = Integer.MIN_VALUE;
         if (tokAt(i) == T.spacegroup) {
           ++i;
-          spacegroup = TextFormat.simpleReplace(parameterAsString(i++), "''",
+          spacegroup = Txt.simpleReplace(parameterAsString(i++), "''",
               "\"");
           sOptions += " spacegroup " + Escape.eS(spacegroup);
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {

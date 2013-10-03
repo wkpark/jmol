@@ -3,7 +3,7 @@ package org.jmol.i18n;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import org.jmol.util.J2SIgnoreImport;
 import org.jmol.util.Logger;
@@ -143,7 +143,7 @@ class Resource {
   }
 
   static String fix(String line) {
-    return TextFormat.simpleReplace(line.substring(line.indexOf("\"") + 1, line
+    return Txt.simpleReplace(line.substring(line.indexOf("\"") + 1, line
         .lastIndexOf("\"")), "\\n", "\n");
   }
 

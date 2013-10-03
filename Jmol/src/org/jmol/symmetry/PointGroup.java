@@ -39,7 +39,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.V3;
 
 /*
@@ -1036,19 +1036,19 @@ class PointGroup {
       sb.append("\n").append(name).append("\tCi\t  ").appendI(n).append("\t  ").appendI(n);
 
       sb.append("\n").append(name).append("\tCs\t");
-      TextFormat.rFill(sb, "    ", nAxes[0] + "\t");
-      TextFormat.rFill(sb, "    ", nAxes[0] + "\n");
+      Txt.rightJustify(sb, "    ", nAxes[0] + "\t");
+      Txt.rightJustify(sb, "    ", nAxes[0] + "\n");
 
       sb.append(name).append("\tCn\t");
-      TextFormat.rFill(sb, "    ", nType[OPERATION_PROPER_AXIS][0] + "\t");
-      TextFormat.rFill(sb, "    ", nType[OPERATION_PROPER_AXIS][1] + "\n");
+      Txt.rightJustify(sb, "    ", nType[OPERATION_PROPER_AXIS][0] + "\t");
+      Txt.rightJustify(sb, "    ", nType[OPERATION_PROPER_AXIS][1] + "\n");
 
       sb.append(name).append("\tSn\t");
-      TextFormat.rFill(sb, "    ", nType[OPERATION_IMPROPER_AXIS][0] + "\t");
-      TextFormat.rFill(sb, "    ", nType[OPERATION_IMPROPER_AXIS][1] + "\n");
+      Txt.rightJustify(sb, "    ", nType[OPERATION_IMPROPER_AXIS][0] + "\t");
+      Txt.rightJustify(sb, "    ", nType[OPERATION_IMPROPER_AXIS][1] + "\n");
 
       sb.append(name).append("\t\tTOTAL\t");
-      TextFormat.rFill(sb, "    ", nTotal + "\n");
+      Txt.rightJustify(sb, "    ", nTotal + "\n");
       textInfo = sb.toString();
       return textInfo;
     }

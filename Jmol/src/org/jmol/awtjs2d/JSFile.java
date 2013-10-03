@@ -3,7 +3,7 @@ package org.jmol.awtjs2d;
 import java.net.URL;
 
 import org.jmol.api.JmolFileInterface;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
 
@@ -27,7 +27,7 @@ class JSFile implements JmolFileInterface {
   	fullName = name;
   	if (!fullName.startsWith("/") && FileManager.urlTypeIndex(name) < 0)
   		fullName = Viewer.jsDocumentBase + "/" + fullName;
-  	fullName = TextFormat.simpleReplace(fullName, "/./", "/");
+  	fullName = Txt.simpleReplace(fullName, "/./", "/");
   	name = name.substring(name.lastIndexOf("/") + 1);
   }
 

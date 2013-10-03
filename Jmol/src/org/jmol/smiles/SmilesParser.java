@@ -35,7 +35,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Parser;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.util.Logger;
 
 /**
@@ -176,7 +176,7 @@ public class SmilesParser {
     if (isSmarts && pattern.indexOf("[$") >= 0)
       pattern = parseVariableLength(pattern);
     if (pattern.indexOf("||") >= 0) {
-      String[] patterns = TextFormat.splitChars(pattern, "||");  
+      String[] patterns = Txt.split(pattern, "||");  
       String toDo = "";
       search.subSearches = new SmilesSearch[patterns.length];
       for (int i = 0; i < patterns.length; i++) {
@@ -220,7 +220,7 @@ public class SmilesParser {
       }
     }
     if (pattern.indexOf("||") >= 0) {
-      String[] patterns = TextFormat.splitChars(pattern, "||");
+      String[] patterns = Txt.split(pattern, "||");
       for (int i = 0; i < patterns.length; i++)
         sout.append("||").append(parseVariableLength(patterns[i]));
     } else {
@@ -732,7 +732,7 @@ public class SmilesParser {
     }
     if (iptLast < 0)
       return pattern;
-    return TextFormat.replaceStrings(pattern.substring(iptLast), keys, values);
+    return Txt.replaceStrings(pattern.substring(iptLast), keys, values);
   }
 
   /**
@@ -1382,14 +1382,14 @@ public class SmilesParser {
    * @return  comments and white space removed, also ^^ to '
    */
   static String cleanPattern(String pattern) {
-    pattern = TextFormat.replaceAllCharacters(pattern, " \t\n\r", "");
-    pattern = TextFormat.simpleReplace(pattern, "^^", "'");
+    pattern = Txt.replaceAllCharacters(pattern, " \t\n\r", "");
+    pattern = Txt.simpleReplace(pattern, "^^", "'");
     int i = 0;
     int i2 = 0;
     while ((i = pattern.indexOf("//*")) >= 0
         && (i2 = pattern.indexOf("*//")) >= i)
       pattern = pattern.substring(0, i) + pattern.substring(i2 + 3);
-    pattern = TextFormat.simpleReplace(pattern, "//", "");
+    pattern = Txt.simpleReplace(pattern, "//", "");
     return pattern;
   }
 

@@ -30,7 +30,7 @@ import java.util.Map;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.i18n.GT;
@@ -1409,9 +1409,9 @@ abstract class ScriptCompilationTokenParser {
       if (value != null)
         msg += ": " + value;
     } else {
-      msg = TextFormat.simpleReplace(msg, "{0}", value);
+      msg = Txt.simpleReplace(msg, "{0}", value);
       if (msg.indexOf("{1}") >= 0)
-        msg = TextFormat.simpleReplace(msg, "{1}", more);
+        msg = Txt.simpleReplace(msg, "{1}", more);
       else if (more != null)
         msg += ": " + more;
     }

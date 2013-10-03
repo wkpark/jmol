@@ -32,7 +32,7 @@ import java.util.Map;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 abstract public class GamessReader extends MOReader {
 
@@ -310,7 +310,7 @@ $SYSTEM OPTIONS
         if (calculationType.length() > 0)
           calculationType += " ";
         calculationType += igauss + "-"
-            + TextFormat.simpleReplace(gbasis, "N", "");
+            + Txt.simpleReplace(gbasis, "N", "");
         if ("T".equals(calcOptions.get("basis_options_DIFFSP"))) {
           // check if we have diffuse S on H's too => "++" instead of "+"
           if ("T".equals(calcOptions.get("basis_options_DIFFS")))
@@ -382,7 +382,7 @@ $SYSTEM OPTIONS
     while (readLine() != null && (line = line.trim()).length() > 0) {
       if (line.indexOf("=") < 0)
         continue;
-      String[] tokens = getTokensStr(TextFormat.simpleReplace(line, "="," = ") + " ?");
+      String[] tokens = getTokensStr(Txt.simpleReplace(line, "="," = ") + " ?");
       for (int i = 0; i < tokens.length; i++) {
         if (!tokens[i].equals("="))
           continue;

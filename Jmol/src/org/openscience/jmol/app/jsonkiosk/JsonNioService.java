@@ -44,7 +44,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.P3;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
 //import com.json.JSONArray;
@@ -531,7 +531,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         break;
       }
       String id = json.getString("id");
-      String path = TextFormat.simpleReplace(contentPath, "%ID%", id).replace(
+      String path = Txt.simpleReplace(contentPath, "%ID%", id).replace(
           '\\', '/');
       File f = new File(path);
       Logger.info("JsonNiosService Setting path to " + f.getAbsolutePath());

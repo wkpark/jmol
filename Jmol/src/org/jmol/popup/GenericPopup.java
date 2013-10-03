@@ -33,7 +33,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
@@ -278,13 +278,13 @@ abstract public class GenericPopup implements JmolPopupInterface,
       id = id.replace('_', ' ');
       if (script.indexOf("[]") < 0)
         script = "[] " + script;
-      return TextFormat.simpleReplace(script, "[]", id);
+      return Txt.simpleReplace(script, "[]", id);
     } else if (script.indexOf("?FILEROOT?") >= 0) {
-      script = TextFormat.simpleReplace(script, "FILEROOT?", modelSetRoot);
+      script = Txt.simpleReplace(script, "FILEROOT?", modelSetRoot);
     } else if (script.indexOf("?FILE?") >= 0) {
-      script = TextFormat.simpleReplace(script, "FILE?", modelSetFileName);
+      script = Txt.simpleReplace(script, "FILE?", modelSetFileName);
     } else if (script.indexOf("?PdbId?") >= 0) {
-      script = TextFormat.simpleReplace(script, "PdbId?", "=xxxx");
+      script = Txt.simpleReplace(script, "PdbId?", "=xxxx");
     }
     return script;
   }
@@ -586,7 +586,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
         what = what.substring(pt + 1);
         if ((pt = what.indexOf("|")) >= 0)
           what = (TF ? what.substring(0, pt) : what.substring(pt + 1)).trim();
-        what = TextFormat.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
+        what = Txt.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
       }
     }
     viewer.evalStringQuiet(what);
@@ -719,7 +719,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
       String atoms = Parser.getQuotedAttribute(peak, "atoms");
       if (atoms != null)
         menuCreateItem(menu, title, "select visible & (@"
-            + TextFormat.simpleReplace(atoms, ",", " or @") + ")", "Focus" + i);
+            + Txt.simpleReplace(atoms, ",", " or @") + ")", "Focus" + i);
     }
     menuEnable(menu, true);
     return true;

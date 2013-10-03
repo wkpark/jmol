@@ -629,7 +629,7 @@ public class Quaternion {
 
   public String getInfo() {
     AxisAngle4f axis = toAxisAngle4f();
-    return TextFormat.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5f %10.5f %10.5f",
+    return Txt.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5f %10.5f %10.5f",
         "F", new Object[] { new float[] { q0, q1, q2, q3, 
             (float) (axis.angle * 180 / Math.PI), axis.x, axis.y, axis.z } });
   }

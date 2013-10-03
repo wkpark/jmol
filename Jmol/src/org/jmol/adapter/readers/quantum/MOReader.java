@@ -29,7 +29,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import org.jmol.util.JmolList;
 import java.util.Hashtable;
@@ -109,7 +109,7 @@ abstract public class MOReader extends BasisFunctionReader {
     getNBOCharges = (filter != null && filterMO());
     if (filter == null)
       return;
-    String f = TextFormat.simpleReplace(filter, "NBOCHARGES", "");
+    String f = Txt.simpleReplace(filter, "NBOCHARGES", "");
     if (f.length() < 3)
       filter = null;
   }
@@ -578,15 +578,15 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff
       return;
     Hashtable<String, Integer> ht = new Hashtable<String, Integer>();
     for (int i = moTypes.size(); --i >= 0;)
-      ht.put(TextFormat.simpleReplace(moTypes.get(i).substring(10), " ", ""),
+      ht.put(Txt.simpleReplace(moTypes.get(i).substring(10), " ", ""),
           Integer.valueOf(i + iMo0));
     JmolList<String[]> strSecondOrderData = new  JmolList<String[]>();
     while (readLine() != null && line.indexOf("NBO") < 0) {
       if (line.length() < 5 || line.charAt(4) != '.')
         continue;
       strSecondOrderData.addLast(new String[] {
-          TextFormat.simpleReplace(line.substring(5, 27).trim(), " ", ""),
-          TextFormat.simpleReplace(line.substring(32, 54).trim(), " ", ""),
+          Txt.simpleReplace(line.substring(5, 27).trim(), " ", ""),
+          Txt.simpleReplace(line.substring(32, 54).trim(), " ", ""),
           line.substring(55, 62).trim(), line.substring(71).trim() });
     }
     float[][] secondOrderData = new float[strSecondOrderData.size()][4];

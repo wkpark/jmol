@@ -53,7 +53,7 @@ import org.jmol.io.JmolBinary;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.SB;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 
 import org.jmol.util.J2SIgnoreImport;
@@ -102,7 +102,7 @@ public class ZipUtil implements JmolZipUtility {
     ZipEntry ze;
     SB listing = new SB();
     binaryFileList = "|" + binaryFileList + "|";
-    String prefix = TextFormat.join(subfileList, '/', 1);
+    String prefix = Txt.join(subfileList, '/', 1);
     String prefixd = null;
     if (prefix != null) {
       prefixd = prefix.substring(0, prefix.indexOf("/") + 1);
@@ -554,7 +554,7 @@ public class ZipUtil implements JmolZipUtility {
       // if a manifest exists, it sets the files and file order
 
       if (haveManifest && !exceptFiles) {
-        String[] list = TextFormat.split(manifest, '|');
+        String[] list = Txt.split(manifest, "|");
         for (int i = 0; i < list.length; i++) {
           String file = list[i];
           if (file.length() == 0 || file.indexOf("#") == 0)
@@ -717,7 +717,7 @@ public class ZipUtil implements JmolZipUtility {
         if ((token = tokens.nextToken()).equals(")"))
           v.addLast(lasttoken);
         else if (token.equals("Start-") && tokens.nextToken().equals("Molecule"))
-          v.addLast(TextFormat.split(tokens.nextToken(), '"')[1]);
+          v.addLast(Txt.split(tokens.nextToken(), "\"")[1]);
         lasttoken = token;
       }
     } catch (Exception e) {

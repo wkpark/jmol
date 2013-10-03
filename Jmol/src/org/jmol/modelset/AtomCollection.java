@@ -62,7 +62,7 @@ import org.jmol.util.Vibration;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Quaternion;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
@@ -847,7 +847,7 @@ abstract public class AtomCollection {
         Atom atom = atoms[atomIndex];
         n++;
         int pt = tokens.length - 1;
-        float x = Parser.parseFloatStr(tokens[pt]);
+        float x = Parser.parseFloat(tokens[pt]);
         switch (type) {
         case TAINT_MAX:
           fData[atomIndex] = x;
@@ -908,9 +908,9 @@ abstract public class AtomCollection {
         String[] tokens = Parser.getTokens(Parser.parseTrimmed(data.substring(
             lines[i], lines[i + 1])));
         int atomIndex = Parser.parseInt(tokens[0]) - 1;
-        float x = Parser.parseFloatStr(tokens[3]);
-        float y = Parser.parseFloatStr(tokens[4]);
-        float z = Parser.parseFloatStr(tokens[5]);
+        float x = Parser.parseFloat(tokens[3]);
+        float y = Parser.parseFloat(tokens[4]);
+        float z = Parser.parseFloat(tokens[5]);
         if (isVibrationVectors) {
           v.set(x, y, z);
           setAtomVibrationVector(atomIndex, v);
@@ -2184,7 +2184,7 @@ abstract public class AtomCollection {
     case T.spec_atom:
       String atomSpec = ((String) specInfo).toUpperCase();
       if (atomSpec.indexOf("\\?") >= 0)
-        atomSpec = TextFormat.simpleReplace(atomSpec, "\\?", "\1");
+        atomSpec = Txt.simpleReplace(atomSpec, "\\?", "\1");
       // / here xx*yy is NOT changed to "xx??????????yy"
       for (i = atomCount; --i >= 0;)
         if (isAtomNameMatch(atoms[i], atomSpec, false))
@@ -2314,7 +2314,7 @@ abstract public class AtomCollection {
     BS bs = getSpecNameOrNull(identifier, false);
     
     if (identifier.indexOf("\\?") >= 0)
-      identifier = TextFormat.simpleReplace(identifier, "\\?","\1");
+      identifier = Txt.simpleReplace(identifier, "\\?","\1");
     if (bs != null || identifier.indexOf("?") > 0)
       return bs;
     // now check with * option ON
@@ -2383,11 +2383,11 @@ abstract public class AtomCollection {
     BS bs = null;
     name = name.toUpperCase();
     if (name.indexOf("\\?") >= 0)
-      name = TextFormat.simpleReplace(name, "\\?","\1");
+      name = Txt.simpleReplace(name, "\\?","\1");
     for (int i = atomCount; --i >= 0;) {
       String g3 = atoms[i].getGroup3(true);
       if (g3 != null && g3.length() > 0) {
-        if (TextFormat.isMatch(g3, name, checkStar, true)) {
+        if (Txt.isMatch(g3, name, checkStar, true)) {
           if (bs == null)
             bs = BSUtil.newBitSet(i + 1);
           bs.set(i);
@@ -2409,7 +2409,7 @@ abstract public class AtomCollection {
     /// but not necessarily when coming from getIdentifierOrNull
     /// and NOT when coming from getAtomBits with Token.spec_atom
     /// because it is presumed that some names can include "*"
-    return TextFormat.isMatch(atom.getAtomName().toUpperCase(), strPattern,
+    return Txt.isMatch(atom.getAtomName().toUpperCase(), strPattern,
         checkStar, false);
   }
   

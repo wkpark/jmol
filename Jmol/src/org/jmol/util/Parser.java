@@ -342,7 +342,7 @@ public class Parser {
   }
 
   public static float parseFloatNext(String str, int[] next) {
-    int cch = str.length();
+    int cch = (str == null ? -1 : str.length());
     if (next[0] < 0 || next[0] >= cch)
       return Float.NaN;
     return parseFloatChecked(str, cch, next, false);

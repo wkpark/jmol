@@ -901,7 +901,7 @@ public class FileManager {
     if (fileName == null)
       return false;
     int itype = urlTypeIndex(fileName);
-    return (itype < 0 || itype == FileManager.URL_LOCAL);
+    return (itype < 0 || itype == URL_LOCAL);
   }
 
 

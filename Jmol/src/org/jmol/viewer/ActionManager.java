@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.Event;
+import org.jmol.api.EventManager;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -48,7 +49,7 @@ import org.jmol.util.Txt;
 import org.jmol.viewer.binding.Binding;
 import org.jmol.viewer.binding.JmolBinding;
 
-public class ActionManager {
+public class ActionManager implements EventManager {
 
   protected Viewer viewer;
   protected boolean haveMultiTouchInput = false;

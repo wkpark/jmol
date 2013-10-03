@@ -137,7 +137,14 @@ abstract public class JSPopup extends GenericPopup {
   }
 
   public void menuClearListeners(Object menu) {
-    // ignored
+    /**
+     * @j2sNative
+     * 
+     *            menu.dispose();
+     */
+    {
+      
+    }
   }
 
   public Object menuCreateCheckboxItem(Object menu, String entry,
@@ -341,7 +348,7 @@ abstract public class JSPopup extends GenericPopup {
      * @j2sNative
      * 
      *            this.setCheckBoxValue(source, source.getActionCommand(),
-     *            source.isSelected()); this.thisPopup.tainted = true;
+     *            source.isSelected()); if(this.thisPopup)this.thisPopup.tainted = true;
      * 
      */
     {

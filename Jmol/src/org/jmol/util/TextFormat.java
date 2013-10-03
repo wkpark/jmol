@@ -86,12 +86,6 @@ public class TextFormat {
 
     if (decimalDigits >= formattingStrings.length)
       decimalDigits = formattingStrings.length - 1;
-//    DecimalFormat formatter = formatters[decimalDigits];
-//    if (formatter == null)
-//      formatter = formatters[decimalDigits] = new DecimalFormat(
-//          formattingStrings[decimalDigits]);
-//    String s = formatter.format(value);
-
     String s1 = ("" + value).toUpperCase();
     boolean isNeg = s1.startsWith("-");
     if (isNeg)
@@ -124,7 +118,6 @@ public class TextFormat {
     int len = s1.length();
     int pt2 = decimalDigits + pt + 1;
     if (pt2 < len && s1.charAt(pt2) >= '5') {
-//      System.out.print(value + " " + s1 + "/" + s + " ");
       return formatDecimal(
           value + (isNeg ? -1 : 1) * formatAdds[decimalDigits], decimalDigits);
     }
@@ -138,9 +131,6 @@ public class TextFormat {
         sb.appendC('0');
     }
     s1 = (isNeg ? "-" : "") + sb;
-//    System.out.print(value + " " + s1 + "/");
-//    System.out.println(s);
-
     return (Boolean.TRUE.equals(useNumberLocalization[0]) ? s1 : s1.replace(',',
         '.'));
   }

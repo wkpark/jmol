@@ -35,6 +35,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import org.jmol.api.BytePoster;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolDomReaderInterface;
@@ -56,7 +57,7 @@ import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 
 
-public class FileManager {
+public class FileManager implements BytePoster {
 
   private Viewer viewer;
 
@@ -1277,6 +1278,23 @@ public class FileManager {
   public String getCanonicalName(String pathName) {
     String[] names = classifyName(pathName, true);
     return (names == null ? pathName : names[2]);
+  }
+
+  public String postByteArray(String fileName, byte[] bytes) {
+    Object ret = getBufferedInputStreamOrErrorMessageFromName(fileName, null, false,
+            false, bytes, false);
+    if (ret instanceof String)
+      return (String) ret;
+    try {
+      ret = JmolBinary.getStreamAsBytes((BufferedInputStream) ret, null);
+    } catch (IOException e) {
+      try {
+        ((BufferedInputStream) ret).close();
+      } catch (IOException e1) {
+        // ignore
+      }
+    }
+    return (ret == null ? "" : JmolBinary.fixUTF((byte[]) ret));
   }
 
 }

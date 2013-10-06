@@ -89,7 +89,7 @@ final public class OutputManagerAwt extends OutputManager {
       asAppend = false;
     return (fileName != null && !viewer.haveAccess(ACCESS.ALL)
         || !viewer.checkPrivateKey(privateKey) ? null
-        : (new JmolOutputChannel()).setParams(viewer, fileName, asWriter,
+        : (new JmolOutputChannel()).setParams(viewer.fileManager, fileName, asWriter,
             (isLocal ? new FileOutputStream(fileName, asAppend) : null)));
   }
 

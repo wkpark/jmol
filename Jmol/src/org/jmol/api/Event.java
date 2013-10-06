@@ -54,6 +54,7 @@ public class Event {
   public static final int VK_SHIFT   = 16;//KeyEvent.VK_SHIFT;
   public static final int VK_ALT     = 18;//KeyEvent.VK_ALT;
   public static final int VK_CONTROL = 17;//KeyEvent.VK_CONTROL;
+  public static final int VK_META    = 157;//KeyEvent.VK_META;
   public static final int VK_LEFT    = 37;//KeyEvent.VK_LEFT;
   public static final int VK_RIGHT   = 39;//KeyEvent.VK_RIGHT;
   public static final int VK_PERIOD  = 46;//KeyEvent.VK_PERIOD;

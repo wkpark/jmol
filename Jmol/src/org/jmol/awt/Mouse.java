@@ -66,7 +66,7 @@ class Mouse implements MouseWheelListener, MouseListener,
     //this.privateKey = privateKey;
     this.viewer = (Viewer) viewer;
     manager = this.viewer.getActionManager();
-    Component display = (Component) this.viewer.getDisplay();
+    Component display = (Component) viewer.getDisplay();
     display.addKeyListener(this);
     display.addMouseListener(this);
     display.addMouseMotionListener(this);
@@ -296,12 +296,7 @@ class Mouse implements MouseWheelListener, MouseListener,
   private void mouseExited(long time, int x, int y) {
     manager.mouseEnterExit(time, x, y, true);
   }
-/*
-  void setMouseMode() {
-    clearKeyBuffer();
-    actionManager.setMouseMode();
-  }
-*/
+
   /**
    * 
    * @param time

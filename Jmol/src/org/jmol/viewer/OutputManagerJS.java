@@ -51,7 +51,7 @@ public class OutputManagerJS extends OutputManager {
   JmolOutputChannel openOutputChannel(double privateKey, String fileName,
                                       boolean asWriter, boolean asAppend) {
     return (new JmolOutputChannel())
-        .setParams(viewer, fileName, asWriter, null);
+        .setParams(viewer.fileManager, fileName, asWriter, null);
   }
 
   @Override

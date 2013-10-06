@@ -11,7 +11,6 @@ import java.awt.image.MemoryImageSource;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.jmol.api.ApiPlatform;
 import org.jmol.api.PlatformViewer;
 import org.jmol.util.P3;
 import org.jmol.util.Txt;
@@ -70,28 +69,7 @@ class Display {
   }
 
   static void setCursor(int c, Object display) {
-    Container d = (Container) display;
-    switch (c) {
-    case ApiPlatform.CURSOR_HAND:
-      c = Cursor.HAND_CURSOR;
-      break;
-    case ApiPlatform.CURSOR_MOVE:
-      c = Cursor.MOVE_CURSOR;
-      break;
-    case ApiPlatform.CURSOR_ZOOM:
-      c = Cursor.N_RESIZE_CURSOR;
-      break;
-    case ApiPlatform.CURSOR_CROSSHAIR:
-      c = Cursor.CROSSHAIR_CURSOR;
-      break;
-    case ApiPlatform.CURSOR_WAIT:
-      c = Cursor.WAIT_CURSOR;
-      break;
-    default:
-      d.setCursor(Cursor.getDefaultCursor());
-      return;
-    }
-    d.setCursor(Cursor.getPredefinedCursor(c));
+    ((Container) display).setCursor(Cursor.getPredefinedCursor(c));
   }
 
   public static String prompt(String label, String data, String[] list,

@@ -1,14 +1,13 @@
 package org.jmol.io;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import org.jmol.api.BytePoster;
 import org.jmol.util.SB;
-import org.jmol.viewer.Viewer;
 
 /**
  * 
@@ -39,7 +38,7 @@ import org.jmol.viewer.Viewer;
 
 public class JmolOutputChannel extends OutputStream {
  
-  private Viewer viewer; // only necessary for writing to http:// or https://
+  private BytePoster bytePoster; // only necessary for writing to http:// or https://
   private String fileName;
   private BufferedWriter bw;
   private boolean isLocalFile;
@@ -50,9 +49,9 @@ public class JmolOutputChannel extends OutputStream {
   private SB sb;
   private String type;
   
-  public JmolOutputChannel setParams(Viewer viewer, String fileName,
+  public JmolOutputChannel setParams(BytePoster bytePoster, String fileName,
                                      boolean asWriter, OutputStream os) {
-    this.viewer = viewer;
+    this.bytePoster = bytePoster;
     this.fileName = fileName;
     this.os = os;
     isLocalFile = (fileName != null && !(fileName.startsWith("http://") || fileName
@@ -253,20 +252,6 @@ public class JmolOutputChannel extends OutputStream {
 
   private String postByteArray() {
     byte[] bytes = (sb == null ? toByteArray() : sb.toString().getBytes());
-    Object ret = viewer.fileManager
-        .getBufferedInputStreamOrErrorMessageFromName(fileName, null, false,
-            false, bytes, false);
-    if (ret instanceof String)
-      return (String) ret;
-    try {
-      ret = JmolBinary.getStreamAsBytes((BufferedInputStream) ret, null);
-    } catch (IOException e) {
-      try {
-        ((BufferedInputStream) ret).close();
-      } catch (IOException e1) {
-        // ignore
-      }
-    }
-    return JmolBinary.fixUTF((byte[]) ret);
+    return bytePoster.postByteArray(fileName, bytes);
   }
 }

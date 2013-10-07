@@ -18,7 +18,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.jmol.util.JUnitLogger;
 import org.jmol.util.Logger;
-import org.jmol.util.TextFormat;
+import org.jmol.util.Txt;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -134,7 +134,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     if (testOne != null && !directory.equals(testOne))
       return;
     File dir = new File(datafileDirectory, directory);
-    String[] exts = TextFormat.split(ext, ';');
+    String[] exts = Txt.split(ext, ";");
     for (int ie = 0; ie < exts.length; ie++) {
       final String e = exts[ie];
       String[] files = dir.list(new FilenameFilter() {

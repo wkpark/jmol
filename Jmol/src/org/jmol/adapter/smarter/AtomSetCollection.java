@@ -1595,7 +1595,7 @@ public class AtomSetCollection {
   
   private void addTrajectoryStep() {
     P3[] trajectoryStep = new P3[atomCount];
-    boolean haveVibrations = (atomCount > 0 && atoms[0] != null && !Float.isNaN(atoms[0].z));
+    boolean haveVibrations = (atomCount > 0 && atoms[0].vib != null && !Float.isNaN(atoms[0].vib.z));
     V3[] vibrationStep = (haveVibrations ? new V3[atomCount] : null);
     P3[] prevSteps = (trajectoryStepCount == 0 ? null 
         : (P3[]) trajectorySteps.get(trajectoryStepCount - 1));

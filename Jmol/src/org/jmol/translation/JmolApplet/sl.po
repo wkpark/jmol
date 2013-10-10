@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2011-05-21 17:36+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Domen <Unknown>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:57+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -137,7 +137,8 @@ msgid "Check"
 msgstr "Preveri"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Vrh"
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -611,9 +612,8 @@ msgid "drag atom (and minimize)"
 msgstr "povleci atom (in minimiraj)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-#, fuzzy
 msgid "drag molecule (ALT to rotate)"
-msgstr "povleci molekulo (SHIFT za vrtenje)"
+msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag and minimize molecule (docking)"
@@ -890,9 +890,8 @@ msgid "View"
 msgstr "Pogled"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "Baze"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -921,9 +920,8 @@ msgid "Back"
 msgstr "Zadaj"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "Shema"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -2443,7 +2441,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2486,14 +2485,13 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "Prekliči"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "  {0} sekund"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2527,6 +2525,3 @@ msgstr ""
 #, java-format
 msgid "{0} hydrogens added"
 msgstr ""
-
-#~ msgid "Top"
-#~ msgstr "Zgoraj"

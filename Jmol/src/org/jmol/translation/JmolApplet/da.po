@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2012-11-09 23:38+0000\n"
+"PO-Revision-Date: 2013-06-02 23:44+0000\n"
 "Last-Translator: Kaki <karsten.r.s@kaki.dk>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:57+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -145,7 +145,8 @@ msgid "Check"
 msgstr "Tjek"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Toppen"
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -619,9 +620,8 @@ msgid "drag atom (and minimize)"
 msgstr "træk atom (og minimer)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-#, fuzzy
 msgid "drag molecule (ALT to rotate)"
-msgstr "træk molekyle (SKIFT for at rotere)"
+msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag and minimize molecule (docking)"
@@ -907,9 +907,8 @@ msgid "View"
 msgstr "Vis"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "Baser"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -938,9 +937,8 @@ msgid "Back"
 msgstr "Tilbage"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "Skema"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1814,14 +1812,12 @@ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr "Opløsningsmiddel-tilgængelig overflade (VDW + {0} Ångström)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:952
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range ALL)"
-msgstr "Molekylært elektrostatisk potential"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:953
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range -0.1 0.1)"
-msgstr "Molekylært elektrostatisk potential"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:959
 #: org/jmol/popup/MainPopupResourceBundle.java:960
@@ -2252,14 +2248,14 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} hydrogenbindinger"
 
 #: org/jmol/scriptext/ScriptExt.java:5689
-#, fuzzy, java-format
+#, java-format
 msgid "{0} charges modified"
-msgstr "{0} hydrogener tilføjet"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:5770
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts mp.added"
-msgstr "{0} afstivere tilføjet"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:6073
 msgid "Note: More than one model is involved in this contact!"
@@ -2471,7 +2467,8 @@ msgstr "zoom (langs højre vindueskant)"
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "klik på to punkter for at rotere rundt om akse mod uret (kræver {0})"
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2514,14 +2511,13 @@ msgid ""
 msgstr "vælg to atomer for at vise symmetriforholdet mellem dem"
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "Annuller"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "{0} afstivere tilføjet"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2556,29 +2552,6 @@ msgstr "udklipsholder er ikke tilgængelig -- brug underskrevet applet"
 msgid "{0} hydrogens added"
 msgstr "{0} hydrogener tilføjet"
 
-#~ msgid "About Jmol"
-#~ msgstr "Om Jmol"
-
-#~ msgid "File or URL"
-#~ msgstr "Fil eller URL"
-
-#~ msgid "File creation failed."
-#~ msgstr "Fil oprettelse mislykkedes."
-
-#~ msgid "Minimize"
-#~ msgstr "Minimér"
-
-#~ msgid "Top"
-#~ msgstr "Top"
-
-#~ msgid "{0} 3D Model"
-#~ msgstr "{0} 3D model"
-
-#~ msgid "File {0}"
-#~ msgstr "Fil {0}"
-
-#~ msgid "File from PDB"
-#~ msgstr "Fil fra PDB"
-
-#~ msgid "Molecular Orbitals"
-#~ msgstr "Molekylære orbitaler"
+#, java-format
+#~ msgid "{0} struts added"
+#~ msgstr "{0} afstivere tilføjet"

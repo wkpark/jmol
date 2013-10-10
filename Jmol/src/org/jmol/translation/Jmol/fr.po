@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2013-01-06 21:39+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Guillaume F <marsguo@wanadoo.fr>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: France\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -62,7 +62,8 @@ msgstr "pas d'affichage (et également quitter lorsque vous avez terminé)"
 
 #: org/openscience/jmol/app/JmolApp.java:143
 msgid "check script syntax only - no file loading"
-msgstr "vérifier la syntaxe de script seulement - pas de chargement de fichier"
+msgstr ""
+"vérifier la syntaxe de script seulement - pas de chargement de fichier"
 
 #: org/openscience/jmol/app/JmolApp.java:145
 msgid "check script syntax only - with file loading"
@@ -1066,9 +1067,8 @@ msgid "Initializing Jmol..."
 msgstr "Initialisation de Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "À propos de Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1162,7 +1162,8 @@ msgstr "Afficher pendant le calcul"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
+msgstr ""
+"Est-ce que POV-Ray doit essayer d’afficher l’image durant le calcul ?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1695,8 +1696,8 @@ msgstr "Donner un nom à l’instance de Jmol:"
 #: org/openscience/jmol/app/webexport/WebPanel.java:486
 msgid "Error creating new instance containing script(s) and image."
 msgstr ""
-"Erreur lors de la création d’une nouvelle instance contenant un(des) script"
-"(s) et une image"
+"Erreur lors de la création d’une nouvelle instance contenant un(des) "
+"script(s) et une image"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:497
 #, java-format
@@ -1895,162 +1896,3 @@ msgstr "Affichage de téléchargement"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "non-implémenté"
-
-#~ msgid "All"
-#~ msgstr "Tout"
-
-#~ msgid "None"
-#~ msgstr "Aucun"
-
-#~ msgid "Wireframe"
-#~ msgstr "Fil de fer"
-
-#~ msgid "Label"
-#~ msgstr "Texte"
-
-#~ msgid "Centered"
-#~ msgstr "Centré"
-
-#~ msgid "On"
-#~ msgstr "On"
-
-#~ msgid "Zoom"
-#~ msgstr "Zoom"
-
-#~ msgid "Front"
-#~ msgstr "Face"
-
-#~ msgid "Bottom"
-#~ msgstr "Bas"
-
-#~ msgid "Right"
-#~ msgstr "Droite"
-
-#~ msgid "Left"
-#~ msgstr "Gauche"
-
-#~ msgid "Controller"
-#~ msgstr "Contrôleur"
-
-#~ msgid "atom set"
-#~ msgstr "groupe d'atomes"
-
-#~ msgid "vector"
-#~ msgstr "vecteur"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Aller au premier {0} de la collection"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Aller au {0} précédent de la collection"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "Jouer la collection complète de {0}"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Aller au {0} suivant de la collection"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Aller au dernier {0} de la collection"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Console Script Jmol"
-
-#~ msgid "Clear console button (requires restarting Jmol)"
-#~ msgstr "Bouton Effacer dans la console (redémarrage de Jmol nécessaire)"
-
-#~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr ""
-#~ "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "Output Conso&le..."
-
-#~ msgid "independent commmand thread"
-#~ msgstr "indépendante fil commmand"
-
-#~ msgid "double-click and drag to reorder"
-#~ msgstr "double-cliquer et faire glisser pour réorganiser"
-
-#~ msgid "Show Selected"
-#~ msgstr "Afficher les options sélectionnées"
-
-#~ msgid ""
-#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
-#~ "model {0}."
-#~ msgstr ""
-#~ "Insérer un texte explicatif pertinente ici. Long texte sera coupé "
-#~ "entourent le modèle de Jmol {0}."
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "ajoutant {0}. spt"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "ajoutant {0}. png"
-
-#~ msgid "adding JmolPopIn.js"
-#~ msgstr "ajoutant JmolPopIn.js"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Impossible de trouver ou ouvert: \n"
-#~ "{0}"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Se rendre au vecteur suivant de la liste"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Lire la liste complète de vecteurs"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Se rendre au premier vecteur de la liste"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Se rendre au vecteur précédent de la liste"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Se rendre au dernier vecteur de la liste"
-
-#~ msgid "Get PDB file"
-#~ msgstr "Obtenir un fichier PDB"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Entrer une ID de PDB à 4 chiffres"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Obtenir un fichier MOL par nom du composé ou ID"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-#~ msgstr "Entrer le nom ou l’identifiant (SMILES, InChI, CAS) d’une molécule"
-
-#~ msgid "domain"
-#~ msgstr "domaine"
-
-#~ msgid "value"
-#~ msgstr "valeur"
-
-#~ msgid "name"
-#~ msgstr "nom"
-
-#~ msgid "expires"
-#~ msgstr "expire"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "Version HTTP"
-
-#~ msgid "path"
-#~ msgstr "chemin"
-
-#~ msgid "Reason-Phrase"
-#~ msgstr "Reason Phrase"
-
-#~ msgid "Status-Code"
-#~ msgstr "Codes d'état"
-
-#~ msgid "Method"
-#~ msgstr "Méthode"
-
-#~ msgid "Request-URI"
-#~ msgstr "Requête URI"

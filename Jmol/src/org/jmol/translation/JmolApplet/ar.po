@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2009-09-08 18:25+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Dilmi Fethi <delphiexile@gmail.com>\n"
 "Language-Team: Arabic <ar@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:20+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:57+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -143,7 +143,8 @@ msgid "Check"
 msgstr "تحقق"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -895,9 +896,8 @@ msgid "View"
 msgstr "عرض"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "الأسس"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -926,9 +926,8 @@ msgid "Back"
 msgstr "عودة"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "مخطط"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -2448,7 +2447,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2491,14 +2491,13 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "ألغ الأمر"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "  {0} ثانية"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2532,22 +2531,3 @@ msgstr ""
 #, java-format
 msgid "{0} hydrogens added"
 msgstr ""
-
-#~ msgid "Top"
-#~ msgstr "أعلى"
-
-#~ msgid "Minimize"
-#~ msgstr "صغّر"
-
-#~ msgid "File creation failed."
-#~ msgstr "فشل إنشاء ملف"
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "الملف المنشأ بواسطة هذا البرنامج غير مسموح به، لأجل صيغة JPEG Base64 "
-#~ "إستعمل {0}"
-
-#~ msgid "Java memory usage"
-#~ msgstr "المساحة المستعملة من برنامج  الـ Java"

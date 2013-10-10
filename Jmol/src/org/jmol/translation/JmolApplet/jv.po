@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2011-01-13 01:50+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: zaenal arifin <Unknown>\n"
 "Language-Team: Javanese <jv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:57+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -147,7 +147,8 @@ msgid "Check"
 msgstr "Check"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 "Duwur[as in \"go to the top\" - (translators: remove this bracketed part]"
 
@@ -2451,7 +2452,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2494,14 +2496,13 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "Rak sido"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "  {0} seconds"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format

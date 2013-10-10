@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2013-01-13 09:41+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Zdeněk Chalupský <Unknown>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "X-Poedit-Language: Czech\n"
 
@@ -974,7 +974,8 @@ msgstr "Vložte zde titulek pro {0}."
 msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
-msgstr "Zde vlož text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
+msgstr ""
+"Zde vlož text s vysvětlením. Dlouhý text bude obtékat Jmol model {0}."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:374
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1060,9 +1061,8 @@ msgid "Initializing Jmol..."
 msgstr "Inicializuji Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "O programu Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1088,8 +1088,8 @@ msgid ""
 "with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH "
 "Resolver."
 msgstr ""
-"Zadej jméno nebo identifikátor (SMILES, InChI, CAS) sloučeniny. Předřaď \":"
-"\" pro nahrání z PubChem; jinak Jmol použije NCI/NIH Resolver."
+"Zadej jméno nebo identifikátor (SMILES, InChI, CAS) sloučeniny. Předřaď "
+"\":\" pro nahrání z PubChem; jinak Jmol použije NCI/NIH Resolver."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:1391
 msgid "IO Exception:"
@@ -1883,154 +1883,3 @@ msgstr "Ulož pohled"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "neimplementováno"
-
-#~ msgid "All"
-#~ msgstr "Vše"
-
-#~ msgid "None"
-#~ msgstr "Nic"
-
-#~ msgid "Wireframe"
-#~ msgstr "Drátový model"
-
-#~ msgid "Label"
-#~ msgstr "Popisek"
-
-#~ msgid "Centered"
-#~ msgstr "Na střed"
-
-#~ msgid "On"
-#~ msgstr "Zapnuto"
-
-#~ msgid "Zoom"
-#~ msgstr "Lupa"
-
-#~ msgid "Front"
-#~ msgstr "Zepředu"
-
-#~ msgid "Bottom"
-#~ msgstr "Zespoda"
-
-#~ msgid "Right"
-#~ msgstr "Zprava"
-
-#~ msgid "Left"
-#~ msgstr "Zleva"
-
-#~ msgid "Controller"
-#~ msgstr "Ovládací prvek"
-
-#~ msgid "atom set"
-#~ msgstr "sada atomů"
-
-#~ msgid "vector"
-#~ msgstr "vektor"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Přejít na první {0} v kolekci"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Přejít na předchozí {0} v kolekci"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "Přehrát celou kolekci {0}"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Přejít na další {0} ve sbírce"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Přejít na poslední  {0} ve sbírce"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Jmol skriptovací konzole"
-
-#~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr "-D volby jsou následující (standardní v závorkách):"
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "Output Conso&le..."
-
-#~ msgid "independent commmand thread"
-#~ msgstr "nezávislá řada příkazů"
-
-#~ msgid "Show Selected"
-#~ msgstr "Zobrazit vybrané"
-
-#~ msgid "double-click and drag to reorder"
-#~ msgstr "poklepejte a táhněte pro změnu pořadí"
-
-#~ msgid ""
-#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
-#~ "model {0}."
-#~ msgstr ""
-#~ "Zde vložte vysvětlující text. Delší text bude obtékat Jmol model {0}."
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Nemohu najít nebo otevřít:\n"
-#~ "{0}"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "přidávám {0}.spt"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "přidávám {0}.png"
-
-#~ msgid "adding JmolPopIn.js"
-#~ msgstr "přidávám JmolPopIn.js"
-
-#~ msgid "Clear console button (requires restarting Jmol)"
-#~ msgstr "Vyčistit tlačítka konzole (vyžaduje restart Jmolu)"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Jít na další vektor v kolekci"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Přehrát celou kolekci vektorů"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Jít na první vektor v kolekci"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Jít na předchozí vektor v kolekci"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Skočit na poslední vektor v kolekci"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-#~ msgstr "Zadej jméno nebo identifikátor (SMILES, InChI, CAS) molekuly"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Získat MOL soubor podle jména sloučeniny nebo ID"
-
-#~ msgid "Get PDB file"
-#~ msgstr "Získat PDB soubor"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Zadej čtyřčíselný PDB ID"
-
-#~ msgid "domain"
-#~ msgstr "doména"
-
-#~ msgid "expires"
-#~ msgstr "vyprší"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "HTTP-verze"
-
-#~ msgid "path"
-#~ msgstr "cesta"
-
-#~ msgid "value"
-#~ msgstr "hodnota"
-
-#~ msgid "name"
-#~ msgstr "název"
-
-#~ msgid "Method"
-#~ msgstr "Metoda"
-
-#~ msgid "Request-URI"
-#~ msgstr "URI požadavku"

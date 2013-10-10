@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2010-04-16 18:38+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Bundo <bundo@bundo.biz>\n"
 "Language-Team: Korean <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -106,9 +106,7 @@ msgstr "불러옴"
 
 #: org/jmol/console/GenericConsole.java:93
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"CTRL-ENTER를 누르면 다음줄로 넘어가며 혹은 모델 데이타를 붙여넣기한 후에 불러"
-"옴을 누르세요"
+msgstr "CTRL-ENTER를 누르면 다음줄로 넘어가며 혹은 모델 데이타를 붙여넣기한 후에 불러옴을 누르세요"
 
 #: org/jmol/console/GenericConsole.java:95
 msgid ""
@@ -144,7 +142,8 @@ msgid "Check"
 msgstr "검사"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -896,9 +895,8 @@ msgid "View"
 msgstr "보기"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "염기"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -927,9 +925,8 @@ msgid "Back"
 msgstr "뒷면"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "형식"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1803,14 +1800,12 @@ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr "Solvent-Accessiable 표면 (VDW + {0} 옹스트롬)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:952
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range ALL)"
-msgstr "분자 전하 포텐셜(MEP)"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:953
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range -0.1 0.1)"
-msgstr "분자 전하 포텐셜(MEP)"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:959
 #: org/jmol/popup/MainPopupResourceBundle.java:960
@@ -2112,9 +2107,7 @@ msgstr "아무 정보가 없음"
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
-msgstr ""
-"부분 전하 정보가 없습니다; Jmol은 MEP 정보를 보여주기 위해 이 정보가필요합니"
-"다."
+msgstr "부분 전하 정보가 없습니다; Jmol은 MEP 정보를 보여주기 위해 이 정보가필요합니다."
 
 #: org/jmol/script/ScriptEvaluator.java:3022
 msgid "No unit cell"
@@ -2239,9 +2232,9 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} 수소 결합"
 
 #: org/jmol/scriptext/ScriptExt.java:5689
-#, fuzzy, java-format
+#, java-format
 msgid "{0} charges modified"
-msgstr "{0} 새 결합: {1} 변경됨"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:5770
 #, java-format
@@ -2453,7 +2446,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2496,14 +2490,13 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "취소"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "{0} 그림"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2537,46 +2530,3 @@ msgstr ""
 #, java-format
 msgid "{0} hydrogens added"
 msgstr ""
-
-#~ msgid "Molecular Orbitals"
-#~ msgstr "분자 궤도"
-
-#~ msgid "Top"
-#~ msgstr "위"
-
-#~ msgid "About Jmol"
-#~ msgstr "Jmol은"
-
-#~ msgid "Java memory usage"
-#~ msgstr "자바 메모리 사용량"
-
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr "오류: 문자열값에 부울린값을 지정할 수 없음: {0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr "오류: 숫자에 부울린값을 지정할 수 없음: {0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr "오류: 부울린에 이 값을 넣을 수 없음: {0}"
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "애플릿이 파일을 만들 수 없습니다. Base64 방식의 JPEG 포맷은 {0}을(를) 사용"
-#~ "하세요."
-
-#~ msgid "File creation failed."
-#~ msgstr "파일 생성 오류."
-
-#~ msgid "File {0}"
-#~ msgstr "파일 {0}"
-
-#~ msgid "File or URL"
-#~ msgstr "파일 혹은 URL"
-
-#~ msgid "{0} 3D Model"
-#~ msgstr "{0} 삼차원 모델"
-
-#~ msgid "Minimize"
-#~ msgstr "최소화"

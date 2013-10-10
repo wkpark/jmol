@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2011-12-30 12:15+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Hiroshi Kihara <Unknown>\n"
 "Language-Team: Japanese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: Japan\n"
 "X-Poedit-Language: Japanese\n"
 
@@ -108,9 +108,7 @@ msgstr "読み込み"
 
 #: org/jmol/console/GenericConsole.java:93
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"改行するにはCtrl-Enterキーを押してください。またはデータをペーストして[読み込"
-"み]ボタンをクリックしてください。"
+msgstr "改行するにはCtrl-Enterキーを押してください。またはデータをペーストして[読み込み]ボタンをクリックしてください。"
 
 #: org/jmol/console/GenericConsole.java:95
 msgid ""
@@ -118,9 +116,8 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
-"メッセージはここに表示されます。下のボックスにコマンドを入力してください。コ"
-"ンソールのヘルプメニューの項目をクリックするとブラウザの新しいウィンドウでオ"
-"ンラインヘルプが表示されます。"
+"メッセージはここに表示されます。下のボックスにコマンドを入力してください。コンソールのヘルプメニューの項目をクリックするとブラウザの新しいウィンドウでオン"
+"ラインヘルプが表示されます。"
 
 #: org/jmol/console/GenericConsole.java:128
 msgid "Jmol Script Console"
@@ -149,7 +146,8 @@ msgid "Check"
 msgstr "チェック"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "トップ"
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -623,9 +621,8 @@ msgid "drag atom (and minimize)"
 msgstr "原子をドラッグ (その後、構造最適化する)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-#, fuzzy
 msgid "drag molecule (ALT to rotate)"
-msgstr "分子をドラッグ (SHIFTキーで回転)"
+msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag and minimize molecule (docking)"
@@ -679,8 +676,7 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
-"注意: バックボーンのアミド水素の位置は無視されます。それらの位置は標準DSSP解"
-"析のように近似されます。\n"
+"注意: バックボーンのアミド水素の位置は無視されます。それらの位置は標準DSSP解析のように近似されます。\n"
 "この近似を用いないためには {0}を使用してください。\n"
 "\n"
 
@@ -692,8 +688,7 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
-"注意: バックボーンのアミド水素の位置が利用されます。結果は標準DSSP解析と大き"
-"く異なる可能性があります。\n"
+"注意: バックボーンのアミド水素の位置が利用されます。結果は標準DSSP解析と大きく異なる可能性があります。\n"
 "これらの水素の位置を無視するには {0} を使用してください。\n"
 "\n"
 
@@ -910,9 +905,8 @@ msgid "View"
 msgstr "表示"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "塩基"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -941,9 +935,8 @@ msgid "Back"
 msgstr "後"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "モデルの表示方法"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1817,14 +1810,12 @@ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr "溶媒接触表面 (VDW + {0} オングストローム)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:952
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range ALL)"
-msgstr "静電ポテンシャル面"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:953
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range -0.1 0.1)"
-msgstr "静電ポテンシャル面"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:959
 #: org/jmol/popup/MainPopupResourceBundle.java:960
@@ -2126,9 +2117,7 @@ msgstr "データがありません"
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
-msgstr ""
-"JmolでMEPデータを表示するのに必要な部分電荷がファイルから読み込まれていませ"
-"ん。"
+msgstr "JmolでMEPデータを表示するのに必要な部分電荷がファイルから読み込まれていません。"
 
 #: org/jmol/script/ScriptEvaluator.java:3022
 msgid "No unit cell"
@@ -2203,8 +2192,7 @@ msgstr "認識できないオブジェクト"
 #: org/jmol/script/ScriptEvaluator.java:3078
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr ""
-"Jmol state スクリプトでの認識できない {0} パラメーター (いずれにせよ設定)"
+msgstr "Jmol state スクリプトでの認識できない {0} パラメーター (いずれにせよ設定)"
 
 #: org/jmol/script/ScriptEvaluator.java:3081
 #, java-format
@@ -2254,14 +2242,14 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} 水素結合"
 
 #: org/jmol/scriptext/ScriptExt.java:5689
-#, fuzzy, java-format
+#, java-format
 msgid "{0} charges modified"
-msgstr "{0} 個の水素が付加されました"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:5770
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts mp.added"
-msgstr "{0} ストラットが追加されました"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:6073
 msgid "Note: More than one model is involved in this contact!"
@@ -2278,8 +2266,7 @@ msgstr "原子または結合の割り当て/新規作成 ({0}が必要)"
 
 #: org/jmol/viewer/ActionManager.java:344
 msgid "pop up recent context menu (click on Jmol frank)"
-msgstr ""
-"最近のコンテキストメニューをポップアップ表示する(右下のJmolロゴをクリック)"
+msgstr "最近のコンテキストメニューをポップアップ表示する(右下のJmolロゴをクリック)"
 
 #: org/jmol/viewer/ActionManager.java:346
 #, java-format
@@ -2410,8 +2397,7 @@ msgstr "Z軸の回りの回転"
 #: org/jmol/viewer/ActionManager.java:409
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
-msgstr ""
-"Z軸の回りの回転(マウスの横方向移動) または表示の拡大(マウスの縦方向移動)"
+msgstr "Z軸の回りの回転(マウスの横方向移動) または表示の拡大(マウスの縦方向移動)"
 
 #: org/jmol/viewer/ActionManager.java:410
 #, java-format
@@ -2449,8 +2435,7 @@ msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
 msgstr ""
-"すべてが選択されている場合はすべてを選択解除してください。さもなければ、選択"
-"された原子の集合にこのグループの原子を追加してください。( {0} が必要)"
+"すべてが選択されている場合はすべてを選択解除してください。さもなければ、選択された原子の集合にこのグループの原子を追加してください。( {0} が必要)"
 
 #: org/jmol/viewer/ActionManager.java:433
 msgid "pick an atom to initiate or conclude a measurement"
@@ -2472,7 +2457,8 @@ msgstr "ズーム（ウィンドウの右縁に沿って）"
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "2点をクリックして軸の回りに反時計回りに回転させる ({0}が必要)"
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2515,14 +2501,13 @@ msgid ""
 msgstr "対称性の関係を表示するために2つの原子を選択する"
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "キャンセル"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "{0} ストラットが追加されました"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2556,3 +2541,7 @@ msgstr "クリップボードは利用できません -- 署名付きアプレ�
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} 個の水素が付加されました"
+
+#, java-format
+#~ msgid "{0} struts added"
+#~ msgstr "{0} ストラットが追加されました"

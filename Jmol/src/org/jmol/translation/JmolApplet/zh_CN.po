@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2012-08-24 11:16+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Wang Dianjin <Unknown>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:57+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -112,9 +112,7 @@ msgid ""
 "Messages will appear here. Enter commands in the box below. Click the "
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
-msgstr ""
-"信息会显示于此。在下方窗口中键入命令。点击控制台的帮助(Help)菜单可得到在线帮"
-"助信息（新窗口中显示）。"
+msgstr "信息会显示于此。在下方窗口中键入命令。点击控制台的帮助(Help)菜单可得到在线帮助信息（新窗口中显示）。"
 
 #: org/jmol/console/GenericConsole.java:128
 msgid "Jmol Script Console"
@@ -143,7 +141,8 @@ msgid "Check"
 msgstr "勾选"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "回到顶端"
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -617,9 +616,8 @@ msgid "drag atom (and minimize)"
 msgstr "拖动原子(并最小化)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-#, fuzzy
 msgid "drag molecule (ALT to rotate)"
-msgstr "拖动分子(Shift-旋转)"
+msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag and minimize molecule (docking)"
@@ -673,8 +671,7 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
-"注意：骨架酰胺氢原子位置存在，将会被忽略。它们的位置将被近似化，象标准DSSP分"
-"析中一样。\n"
+"注意：骨架酰胺氢原子位置存在，将会被忽略。它们的位置将被近似化，象标准DSSP分析中一样。\n"
 "使用 {0} 以停止使用这种近似化。\n"
 "\n"
 
@@ -903,9 +900,8 @@ msgid "View"
 msgstr "视图"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "碱"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -934,9 +930,8 @@ msgid "Back"
 msgstr "返回"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "方案"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1810,14 +1805,12 @@ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr "溶剂可及表面 (范德华表面 + {0} Å)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:952
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range ALL)"
-msgstr "分子静电势"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:953
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range -0.1 0.1)"
-msgstr "分子静电势"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:959
 #: org/jmol/popup/MainPopupResourceBundle.java:960
@@ -2244,14 +2237,14 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} 个氢键"
 
 #: org/jmol/scriptext/ScriptExt.java:5689
-#, fuzzy, java-format
+#, java-format
 msgid "{0} charges modified"
-msgstr "{0} 个氢原子已增加"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:5770
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts mp.added"
-msgstr "已增加 {0} struts"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:6073
 msgid "Note: More than one model is involved in this contact!"
@@ -2458,7 +2451,8 @@ msgstr "缩放 (沿着窗口右侧)"
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "点击两点以绕轴逆时钟转动 (需要{0} )"
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2501,14 +2495,13 @@ msgid ""
 msgstr "选择两个原子以显示它们之间的对称性关系"
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "取消"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "{0} 图像"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2543,55 +2536,6 @@ msgstr "不能存取剪贴板——请用使用签署过的小程序 (applet)"
 msgid "{0} hydrogens added"
 msgstr "{0} 个氢原子已增加"
 
-#~ msgid "Molecular Orbitals"
-#~ msgstr "分子轨道"
-
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr "错误：不能把布尔真假值设定为字符串值：{0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr "错误：不能把布尔真假值标设定为数值：{0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr "错误：不能把这个变量值设为布尔真假值：{0}"
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr "不允许用这个小程序创建文件。欲使用 Base64 JPEC 格式，请使用 {0}。"
-
-#~ msgid "File creation failed."
-#~ msgstr "创建文件失败"
-
-#~ msgid "Minimize"
-#~ msgstr "最小化"
-
-#~ msgid "About Jmol"
-#~ msgstr "关于 Jmol"
-
-#~ msgid "{0} 3D Model"
-#~ msgstr "{0} 3D 模型"
-
-#~ msgid "JVXL Isosurface"
-#~ msgstr "JVXL 等值面"
-
-#~ msgid "File {0}"
-#~ msgstr "文件 {0}"
-
-#~ msgid "File from PDB"
-#~ msgstr "源自 PDB 的文件"
-
-#~ msgid "File or URL"
-#~ msgstr "文件或URL"
-
-#~ msgid "Script with state"
-#~ msgstr "带状态的脚本"
-
-#~ msgid "Java memory usage"
-#~ msgstr "Java 内存使用量"
-
-#~ msgid "Script with history"
-#~ msgstr "带历史记录的脚本"
-
-#~ msgid "Top"
-#~ msgstr "顶视"
+#, java-format
+#~ msgid "{0} struts added"
+#~ msgstr "已增加 {0} struts"

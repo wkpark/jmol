@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2011-08-04 06:24+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Praveen Illa <mail2ipn@gmail.com>\n"
 "Language-Team: Telugu <te@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:22+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/appletjs/Jmol.java:364
 #, java-format
@@ -1042,9 +1042,8 @@ msgid "Initializing Jmol..."
 msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "Jmol గురించి"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."

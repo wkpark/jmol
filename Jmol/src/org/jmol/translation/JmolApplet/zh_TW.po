@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2011-12-12 08:33+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: iychiang <iychiang1809@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:20+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:57+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -106,8 +106,7 @@ msgstr "載入"
 
 #: org/jmol/console/GenericConsole.java:93
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"按下 CTRL-ENTER 來新增一行，或貼上分子模型資料然後點擊 載入 (Load) 選項。"
+msgstr "按下 CTRL-ENTER 來新增一行，或貼上分子模型資料然後點擊 載入 (Load) 選項。"
 
 #: org/jmol/console/GenericConsole.java:95
 msgid ""
@@ -115,8 +114,7 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
-"訊息會顯示於此。在以下的視窗中可以輸入指令。線上的求助訊息可以點擊主控台上的 "
-"求助(Help) 選單，求助訊息就可以再新的瀏灠器視窗中顯示。"
+"訊息會顯示於此。在以下的視窗中可以輸入指令。線上的求助訊息可以點擊主控台上的 求助(Help) 選單，求助訊息就可以再新的瀏灠器視窗中顯示。"
 
 #: org/jmol/console/GenericConsole.java:128
 msgid "Jmol Script Console"
@@ -145,7 +143,8 @@ msgid "Check"
 msgstr "勾選"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "回到頂端"
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -619,9 +618,8 @@ msgid "drag atom (and minimize)"
 msgstr "拖曳原子 (以及最小化)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-#, fuzzy
 msgid "drag molecule (ALT to rotate)"
-msgstr "拖曳分子 (SHIFT 以旋轉)"
+msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag and minimize molecule (docking)"
@@ -675,9 +673,8 @@ msgid ""
 "Use {0} to not use this approximation.\n"
 "\n"
 msgstr ""
-"注意：主幹上的含氮基中氫原子的位置是顯現的而且在逼近計算中將會被乎略。在標準"
-"的 DSSP 逼近法分析中，氫原子的位置將是顯現在大約位置而己。使用 {0} 選項就不採"
-"用這樣的逼近法來計算。\n"
+"注意：主幹上的含氮基中氫原子的位置是顯現的而且在逼近計算中將會被乎略。在標準的 DSSP 逼近法分析中，氫原子的位置將是顯現在大約位置而己。使用 {0} "
+"選項就不採用這樣的逼近法來計算。\n"
 "\n"
 
 #: org/jmol/modelsetbio/AminoPolymer.java:585
@@ -688,9 +685,8 @@ msgid ""
 "Use {0} to ignore these hydrogen positions.\n"
 "\n"
 msgstr ""
-"注意：主幹上的含氮基中氫原子的位置是顯現的而且將會被引入逼近計算中。計算的結"
-"果可能和標準的 DSSP 法的結果有著顯著的不同。使用 {0} 選項則不採計這些氫原子的"
-"位置。\n"
+"注意：主幹上的含氮基中氫原子的位置是顯現的而且將會被引入逼近計算中。計算的結果可能和標準的 DSSP 法的結果有著顯著的不同。使用 {0} "
+"選項則不採計這些氫原子的位置。\n"
 "\n"
 
 #: org/jmol/popup/GenericPopup.java:636
@@ -906,9 +902,8 @@ msgid "View"
 msgstr "檢視"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "鹼"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -937,9 +932,8 @@ msgid "Back"
 msgstr "返回"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "骨架"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1813,14 +1807,12 @@ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr "溶劑可及表面積 (VDW + {0} 埃)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:952
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range ALL)"
-msgstr "分子靜電位能"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:953
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range -0.1 0.1)"
-msgstr "分子靜電位能"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:959
 #: org/jmol/popup/MainPopupResourceBundle.java:960
@@ -2247,14 +2239,14 @@ msgid "{0} hydrogen bonds"
 msgstr "{0}個氫鍵"
 
 #: org/jmol/scriptext/ScriptExt.java:5689
-#, fuzzy, java-format
+#, java-format
 msgid "{0} charges modified"
-msgstr "{0} 加入氫"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:5770
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts mp.added"
-msgstr "{0} 加入支架 (struts)"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:6073
 msgid "Note: More than one model is involved in this contact!"
@@ -2439,8 +2431,7 @@ msgstr "固定所選的 (需要 {0})"
 msgid ""
 "if all are selected, unselect all, otherwise add this group of atoms to the "
 "set of selected atoms (requires {0})"
-msgstr ""
-"若已經全選, 請先取消全選, 或者是將這堆原子加到已經選取的原子中 (需要 {0})"
+msgstr "若已經全選, 請先取消全選, 或者是將這堆原子加到已經選取的原子中 (需要 {0})"
 
 #: org/jmol/viewer/ActionManager.java:433
 msgid "pick an atom to initiate or conclude a measurement"
@@ -2462,7 +2453,8 @@ msgstr "縮放 (沿著視窗右側)"
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "點取兩個點以繞著該軸逆時針旋轉 (需要 {0})"
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2505,14 +2497,13 @@ msgid ""
 msgstr "請選取兩個原子以呈現兩者的對稱關係"
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "取消"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "{0} 圖形"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2547,55 +2538,6 @@ msgstr "不能存取剪貼簿--請用使用簽署過的程序 (applet)"
 msgid "{0} hydrogens added"
 msgstr "{0} 加入氫"
 
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr "Applet 不能新增這個檔案。要用 Base64 JPEC 格式檔，請使用 {0}。"
-
-#~ msgid "File creation failed."
-#~ msgstr "新增檔案失敗"
-
-#~ msgid "Minimize"
-#~ msgstr "最小化"
-
-#~ msgid "Java memory usage"
-#~ msgstr "Java 所用的記憶體大小"
-
-#~ msgid "Molecular Orbitals"
-#~ msgstr "分子軌域"
-
-#~ msgid "Top"
-#~ msgstr "頂端"
-
-#~ msgid "File {0}"
-#~ msgstr "檔案 {0}"
-
-#~ msgid "File from PDB"
-#~ msgstr "PDB 來的檔案"
-
-#~ msgid "File or URL"
-#~ msgstr "檔案或網址(URL)"
-
-#~ msgid "Script with state"
-#~ msgstr "含狀態指令稿"
-
-#~ msgid "Script with history"
-#~ msgstr "含記錄的指令稿"
-
-#~ msgid "JVXL Isosurface"
-#~ msgstr "JVXL 等位面"
-
-#~ msgid "{0} 3D Model"
-#~ msgstr "{0} 3D 模型"
-
-#~ msgid "About Jmol"
-#~ msgstr "關於Jmol"
-
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr "錯誤：不能把布林旗標設定為字串：{0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr "錯誤：不能把這個變數值設定至布林值：{0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr "錯誤：不能把布林旗標設定為數字：{0}"
+#, java-format
+#~ msgid "{0} struts added"
+#~ msgstr "{0} 加入支架 (struts)"

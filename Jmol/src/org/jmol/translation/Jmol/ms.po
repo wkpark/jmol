@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2013-01-14 13:34+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:22+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/appletjs/Jmol.java:364
 #, java-format
@@ -74,7 +74,7 @@ msgstr "operasi permulaaan secara senyap"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "allow piping of input from System.Input"
-msgstr ""
+msgstr "benarkan perpaipan input dari System.Input"
 
 #: org/openscience/jmol/app/JmolApp.java:150
 msgid "kiosk mode -- no frame"
@@ -1057,9 +1057,8 @@ msgid "Initializing Jmol..."
 msgstr "Mengawalkan Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "Perihal Jmol"
+msgstr "Keluar Jmol?"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1880,161 +1879,3 @@ msgstr "Muat turun paparan"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "tidak dilaksanakan"
-
-#~ msgid "Controller"
-#~ msgstr "Pengawal"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Pergi ke vektor pertama dalam koleksi"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Pergi ke vektor terdahulu didalam koleksi"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Main keseluruhan koleksi vektor"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Pergi ke vektor berikutnya didalam koleksi"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Lompat ke vektor terakhir didalam koleksi"
-
-#~ msgid "Get PDB file"
-#~ msgstr "Dapatkan fail PDB"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Masukkan ID empat-digit PDB"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Dapatkan fail melalui nama atau ID sebatian"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-#~ msgstr "Masukkan nama atau pengecam (SMILES, InChI, CAS) molekul"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Tidak dapat mencari atau buka:\n"
-#~ "{0}"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Konsol Skrip Jmol"
-
-#~ msgid "vector"
-#~ msgstr "vektor"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Pergi ke {0} yang pertama didalam koleksi"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Pergi ke {0} yang terdahulu didalam koleksi"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "Main keseluruhan koleksi {0}"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Pergi ke {0} yang berikutnya didalam koleksi"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Pergi ke {0} yang terakhir didalam koleksi"
-
-#~ msgid "atom set"
-#~ msgstr "set atom"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "menambah {0}.spt"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "menambah {0}.png"
-
-#~ msgid "adding JmolPopIn.js"
-#~ msgstr "menambah JmolPopIn.js"
-
-#~ msgid "Show Selected"
-#~ msgstr "Papar yang Dipilih"
-
-#~ msgid "double-click and drag to reorder"
-#~ msgstr "dwi-klik dan seret untuk tertib semula"
-
-#~ msgid "Clear console button (requires restarting Jmol)"
-#~ msgstr "Kosongkan butang kosong (perlu mulakan semula Jmol)"
-
-#~ msgid ""
-#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
-#~ "model {0}."
-#~ msgstr ""
-#~ "Sisip teks penerangan disini. Teks panjang akan lilit disekeliling model "
-#~ "Jmol {0}."
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "Konso&l Output..."
-
-#~ msgid "domain"
-#~ msgstr "domain"
-
-#~ msgid "expires"
-#~ msgstr "luput"
-
-#~ msgid "path"
-#~ msgstr "laluan"
-
-#~ msgid "name"
-#~ msgstr "Nama"
-
-#~ msgid "Reason-Phrase"
-#~ msgstr "Frasa-Sebab"
-
-#~ msgid "Status-Code"
-#~ msgstr "Kod-Status"
-
-#~ msgid "value"
-#~ msgstr "nilai"
-
-#~ msgid "Method"
-#~ msgstr "Kaedah"
-
-#~ msgid "Request-URI"
-#~ msgstr "URI-Dipinta"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "Versi-HTTP"
-
-#~ msgid "independent commmand thread"
-#~ msgstr "bebenag perintah bebas"
-
-#~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr "Pilihan -D adalah berikut (lalai dalam kurungan):"
-
-#~ msgid "Wireframe"
-#~ msgstr "Bingkai Wayar"
-
-#~ msgid "All"
-#~ msgstr "Semua"
-
-#~ msgid "None"
-#~ msgstr "Tiada"
-
-#~ msgid "Centered"
-#~ msgstr "Ditengahkan"
-
-#~ msgid "Label"
-#~ msgstr "Label"
-
-#~ msgid "Zoom"
-#~ msgstr "Zum"
-
-#~ msgid "On"
-#~ msgstr "Dihidupkan"
-
-#~ msgid "Front"
-#~ msgstr "Hadapan"
-
-#~ msgid "Left"
-#~ msgstr "Kiri"
-
-#~ msgid "Bottom"
-#~ msgstr "Bawah"
-
-#~ msgid "Right"
-#~ msgstr "Kanan"

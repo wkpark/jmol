@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2013-03-08 19:13+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Sergio Silva <inonimus@bol.com.br>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:22+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: BRAZIL\n"
 "X-Poedit-Language: Portuguese\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -113,7 +113,7 @@ msgstr "sair após o \"script\" (implícito com -n)"
 
 #: org/openscience/jmol/app/JmolApp.java:169
 msgid "port for JSON/MolecularPlayground-style communication"
-msgstr ""
+msgstr "porta para comunicação JSON/MolecularPlayground-style"
 
 #: org/openscience/jmol/app/JmolApp.java:175
 msgid "script file to execute or '-' for System.in"
@@ -1057,9 +1057,8 @@ msgid "Initializing Jmol..."
 msgstr "Preparando o Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "Sobre o Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1872,158 +1871,3 @@ msgstr "Baixar vista"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "não implementado"
-
-#~ msgid "All"
-#~ msgstr "Todos"
-
-#~ msgid "None"
-#~ msgstr "Nenhum"
-
-#~ msgid "Wireframe"
-#~ msgstr "Arames"
-
-#~ msgid "Label"
-#~ msgstr "Rótulo"
-
-#~ msgid "Centered"
-#~ msgstr "Centrado"
-
-#~ msgid "On"
-#~ msgstr "Ligado"
-
-#~ msgid "Zoom"
-#~ msgstr "Zoom"
-
-#~ msgid "Front"
-#~ msgstr "Frontal"
-
-#~ msgid "Bottom"
-#~ msgstr "Inferior"
-
-#~ msgid "Right"
-#~ msgstr "Lateral direita"
-
-#~ msgid "Left"
-#~ msgstr "Lateral esquerda"
-
-#~ msgid "Controller"
-#~ msgstr "Controles"
-
-#~ msgid "atom set"
-#~ msgstr "conjunto de átomos"
-
-#~ msgid "vector"
-#~ msgstr "vetor"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Voltar para o primeiro {0} na coleção"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Voltar para o {0} anterior na coleção"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "Tocar toda a coleção de {0}'s"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Avançar para o {0} seguinte na coleção"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Avançar para o último {0} na coleção"
-
-#~ msgid "double-click and drag to reorder"
-#~ msgstr "duplo-clique seguido de arrastar para reordenar"
-
-#~ msgid "Show Selected"
-#~ msgstr "Mostrar selecionado"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Não foi possível localizar ou abrir:\n"
-#~ "{0}"
-
-#~ msgid "adding JmolPopIn.js"
-#~ msgstr "adicionando JmolPopIn.js"
-
-#~ msgid ""
-#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
-#~ "model {0}."
-#~ msgstr ""
-#~ "Insira texto explanatório adicional aqui. Textos longos fluirão ao redor "
-#~ "do modelo Jmol {0}."
-
-#~ msgid "adding {0}.png"
-#~ msgstr "adicionando {0}.png"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "adicionando {0}.spt"
-
-#~ msgid "Clear console button (requires restarting Jmol)"
-#~ msgstr "Apagar o botão do console (necessário reiniciar o Jmol)"
-
-#~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr "As opções -D são as seguintes (pré-definições entre parênteses):"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Console de \"script\" do Jmol"
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "Output Conso&le..."
-
-#~ msgid "independent commmand thread"
-#~ msgstr "sequência de comando independente"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Ir para o próximo vetor na coleção"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Ir para o último vetor na coleção"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Ir para o primeiro vetor na coleção"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Ir para o vetor anterior na coleção"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Ver toda a coleção de vetores"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Obter arquivo MOL pelo nome da mistura ou ID"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-#~ msgstr "Digite o nome ou identificador (SMILES, InChi, CAS) de uma molécula"
-
-#~ msgid "Get PDB file"
-#~ msgstr "Obter arquivo PDB"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Digite quatro digitos do ID PDB"
-
-#~ msgid "domain"
-#~ msgstr "domínio"
-
-#~ msgid "value"
-#~ msgstr "valor"
-
-#~ msgid "name"
-#~ msgstr "nome"
-
-#~ msgid "expires"
-#~ msgstr "validade"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "Versão HTTP"
-
-#~ msgid "path"
-#~ msgstr "caminho"
-
-#~ msgid "Status-Code"
-#~ msgstr "Código do status"
-
-#~ msgid "Request-URI"
-#~ msgstr "URI da solicitação"
-
-#~ msgid "Method"
-#~ msgstr "Método"

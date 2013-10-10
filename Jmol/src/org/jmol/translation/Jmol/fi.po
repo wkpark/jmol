@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2011-09-27 22:41+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Finland <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: Finland\n"
 "X-Poedit-Language: Finnish\n"
 
@@ -91,7 +91,8 @@ msgstr "ei konsolia -- ulostulo sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "send only output from print messages to console (implies -i)"
-msgstr "tulostustiedoista vain ulostulot lähetetään konsolille (merkitään -i)"
+msgstr ""
+"tulostustiedoista vain ulostulot lähetetään konsolille (merkitään -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "restrict local file access"
@@ -1054,9 +1055,8 @@ msgid "Initializing Jmol..."
 msgstr "Alustetaan Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "Tietoja"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1869,61 +1869,3 @@ msgstr "Latausnäkymä"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "toteutumatta"
-
-#~ msgid "Controller"
-#~ msgstr "Ohjain"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Mene valikoiman ensimmäiseen vektoriin"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Mene valikoiman edelliseen vektoriin"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Toista valikoiman kaikki vektorit"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Mene valikoiman seuraavaan vektoriin"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Mene valikoiman viimeiseen vektoriin"
-
-#~ msgid "Get PDB file"
-#~ msgstr "Hae PDB-tiedosto"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Anna nelinumeroinen PDB-ID"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Hae MOL-tiedosto yhdisteen nimellä tai ID:llä"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-#~ msgstr "Lisää molekyylin nimi tai tunniste (SMILES, InChI, CAS)"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Ei löydetä tai pystytä avaamaan:\n"
-#~ "{0}"
-
-#~ msgid "vector"
-#~ msgstr "vector"
-
-#~ msgid "atom set"
-#~ msgstr "atom set"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Jmol Script Console"
-
-#~ msgid "Show Selected"
-#~ msgstr "Show Selected"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "adding {0}.spt"
-
-#~ msgid "adding JmolPopIn.js"
-#~ msgstr "adding JmolPopIn.js"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "adding {0}.png"

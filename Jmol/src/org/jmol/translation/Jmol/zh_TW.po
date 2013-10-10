@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2012-03-16 08:01+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Emerson Hsieh <emerson1234567890@yahoo.com.tw>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:22+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/appletjs/Jmol.java:364
 #, java-format
@@ -144,9 +144,7 @@ msgstr "視窗的 寬度 x 高度,例如 {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr ""
-"JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 "
-"9)"
+msgstr "JPG 影像壓縮品質(1-100;預設 75) 或 PNG 影像壓縮品質(0-9;預設 2,最大壓縮值為 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:232
 #, java-format
@@ -939,8 +937,7 @@ msgstr "清除"
 msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
-msgstr ""
-"可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
+msgstr "可以手動取得3-D模型，按{0}中的{1}。第一次載入applet時，須要相當長的下載時間。"
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
 msgid "Insert the page TITLE here."
@@ -1045,9 +1042,8 @@ msgid "Initializing Jmol..."
 msgstr "啟始 Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "關於Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1856,99 +1852,3 @@ msgstr "下載觀看"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "未實作的"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "無法找到或開啓:\n"
-#~ "{0}"
-
-#~ msgid "vector"
-#~ msgstr "向量"
-
-#~ msgid "Show Selected"
-#~ msgstr "顯示所選的"
-
-#~ msgid "Controller"
-#~ msgstr "控制器"
-
-#~ msgid "atom set"
-#~ msgstr "原子集合"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "從收藏中取得第一個 {0}"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "從收藏中取得前一個 {0}"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "撥放{0}的所有收藏"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "從收藏中取得後一個 {0}"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "從收藏中取得最後一個 {0}"
-
-#~ msgid "Clear console button (requires restarting Jmol)"
-#~ msgstr "清除主控台按鈕(Jmol須重新啟動)"
-
-#~ msgid "independent commmand thread"
-#~ msgstr "相依指令程式緒"
-
-#~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr "選項 -D 如下(括符內為預設值)"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Jmol Script 主控台"
-
-#~ msgid "double-click and drag to reorder"
-#~ msgstr "雙擊並拖著重排"
-
-#~ msgid ""
-#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
-#~ "model {0}."
-#~ msgstr "在這兒插入更多的文字。太長的文字將會圍繞在Jmol模型 {0}。"
-
-#~ msgid "adding JmolPopIn.js"
-#~ msgstr "JmolPopIn.js加入中"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "{0}.png加入中"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "{0}.spt加入中"
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "批次檔(&L)"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "跳到收集的最後一個向量 (vector)"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "前往收集的第一個向量 (vector)"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "前往收集的下一個向量 (vector)"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "顯示所有收集的向量"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "前往收集的前一個向量 (vector)"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "依照化合物名稱或是 ID 取得 MOL 檔"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-#~ msgstr "請輸入分子的名稱或是辨識碼 (SMILES, InChI, CAS)"
-
-#~ msgid "Get PDB file"
-#~ msgstr "取得 PDB 檔"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "請輸入四位數的 PDB 代碼"
-
-#~ msgid "expires"
-#~ msgstr "過期"

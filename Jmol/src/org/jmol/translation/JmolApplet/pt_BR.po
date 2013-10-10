@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2012-08-23 21:21+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Rafael Neri <Unknown>\n"
 "Language-Team: Brazilian Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:57+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: BRAZIL\n"
 "X-Poedit-Language: Portuguese\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -149,7 +149,8 @@ msgid "Check"
 msgstr "Conferir"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Início"
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -623,9 +624,8 @@ msgid "drag atom (and minimize)"
 msgstr "Arraster o átomo e movê-lo (com campo de força)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-#, fuzzy
 msgid "drag molecule (ALT to rotate)"
-msgstr "Arrastar molécula (pressione SHIFT para girá-la)"
+msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag and minimize molecule (docking)"
@@ -912,9 +912,8 @@ msgid "View"
 msgstr "Visualização"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "Bases"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -943,9 +942,8 @@ msgid "Back"
 msgstr "Trazeira"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "Esquema"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1819,14 +1817,12 @@ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr "Superfície acessível ao solvente (VDW + {0} Angstrom)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:952
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range ALL)"
-msgstr "Potencial Eletrostático Molecular (MEP)"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:953
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range -0.1 0.1)"
-msgstr "Potencial Eletrostático Molecular (MEP)"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:959
 #: org/jmol/popup/MainPopupResourceBundle.java:960
@@ -2259,14 +2255,14 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} ponte(s) de Hidrogênio"
 
 #: org/jmol/scriptext/ScriptExt.java:5689
-#, fuzzy, java-format
+#, java-format
 msgid "{0} charges modified"
-msgstr "{0} hidrogênio(s) adicionado"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:5770
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts mp.added"
-msgstr "{0} estrutura(s) adicionada(s)"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:6073
 msgid "Note: More than one model is involved in this contact!"
@@ -2323,7 +2319,8 @@ msgstr "mover rótulo (requer {0})"
 #: org/jmol/viewer/ActionManager.java:360
 #, java-format
 msgid "move atom and minimize molecule (requires {0})"
-msgstr "Mover átomo e molécula (utilizando campo de força - {0} é necessário)"
+msgstr ""
+"Mover átomo e molécula (utilizando campo de força - {0} é necessário)"
 
 #: org/jmol/viewer/ActionManager.java:363
 #, java-format
@@ -2483,7 +2480,8 @@ msgstr "zoom (ao longo da borda direita da janela)"
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "clique em dois pontos para girar o eixo no sentido anti-horário ({0} é "
 "necessário)"
@@ -2532,14 +2530,13 @@ msgid ""
 msgstr "selecione dois átomos para mostrar a relação de simetria entre eles"
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "Cancelar"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "{0} Imagem"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2567,68 +2564,14 @@ msgstr "Arraste para mover rótulo"
 
 #: org/jmol/viewer/Viewer.java:8730
 msgid "clipboard is not accessible -- use signed applet"
-msgstr "área de transferência não está acessível -- use o \"applet\" assinado"
+msgstr ""
+"área de transferência não está acessível -- use o \"applet\" assinado"
 
 #: org/jmol/viewer/Viewer.java:10098
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} hidrogênio(s) adicionado"
 
-#~ msgid "Java memory usage"
-#~ msgstr "Memória usada pelo Java"
-
-#~ msgid "Molecular Orbitals"
-#~ msgstr "Orbitais Moleculares"
-
-#~ msgid "Top"
-#~ msgstr "Superior"
-
-#~ msgid "About Jmol"
-#~ msgstr "Sobre o Jmol"
-
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr ""
-#~ "ERRO: impossível designar um sinalizador booleano para uma \"string\": {0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr ""
-#~ "ERRO: impossível designar um sinalizador booleano para um valor numérico: "
-#~ "{0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr ""
-#~ "ERRO: impossível designar o valor desta variável para um booleano: {0}"
-
-#~ msgid "File creation failed."
-#~ msgstr "Criação de arquivo falhou."
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "Criação de arquivo por este \"applet\" não é permitida. Para formato "
-#~ "Base64 JPEG, use {0}."
-
-#~ msgid "File from PDB"
-#~ msgstr "Arquivo do PDB"
-
-#~ msgid "File or URL"
-#~ msgstr "Arquivo ou URL"
-
-#~ msgid "File {0}"
-#~ msgstr "Arquivo {0}"
-
-#~ msgid "Script with state"
-#~ msgstr "\"Script\" com estado"
-
-#~ msgid "Script with history"
-#~ msgstr "\"Script\" com histórico"
-
-#~ msgid "JVXL Isosurface"
-#~ msgstr "Isosuperfície JVXL"
-
-#~ msgid "{0} 3D Model"
-#~ msgstr "{0} modelos 3D"
-
-#~ msgid "Minimize"
-#~ msgstr "Minimizar"
+#, java-format
+#~ msgid "{0} struts added"
+#~ msgstr "{0} estrutura(s) adicionada(s)"

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2011-02-22 14:47+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Dimitrios - Georgios Kontopoulos <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/appletjs/Jmol.java:364
 #, java-format
@@ -944,9 +944,9 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Για να αποκτήσετε ένα 3-D μοντέλο που μπορείτε να χειριστείτε, κάντε κλικ {0}"
-"εδώ{1}. Ο χρόνος κατεβάσματος μπορεί να είναι σημαντικός την πρώτη φορά που "
-"φορτώνεται το applet."
+"Για να αποκτήσετε ένα 3-D μοντέλο που μπορείτε να χειριστείτε, κάντε κλικ "
+"{0}εδώ{1}. Ο χρόνος κατεβάσματος μπορεί να είναι σημαντικός την πρώτη φορά "
+"που φορτώνεται το applet."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
 msgid "Insert the page TITLE here."
@@ -1051,9 +1051,8 @@ msgid "Initializing Jmol..."
 msgstr "Εκκίνηση Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "Σχετικά με το Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1862,25 +1861,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#~ msgid "Controller"
-#~ msgstr "Ελεγκτής"
-
-#~ msgid "vector"
-#~ msgstr "διάνυσμα"
-
-#~ msgid "Get PDB file"
-#~ msgstr "Λήψη PDB αρχείου"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Εισαγωγή τετραψήφιου κωδικού PDB"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Δεν μπορεί να βρεθεί ή να ανοιχτεί:\n"
-#~ "{0}"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Κονσόλα Script του Jmol"

@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2011-06-04 05:49+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Won-Kyu Park <wkpark@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/appletjs/Jmol.java:364
 #, java-format
@@ -143,9 +143,7 @@ msgstr "창 너비 x 높이, 예) . {0}"
 msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
-msgstr ""
-"JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최"
-"대 압축률 9)"
+msgstr "JPG 이미지 화질 (1-100: 기본값 75) 혹은 PNG 이미지 압축률 (0-9: 기본값 2, 최대 압축률 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:232
 #, java-format
@@ -1043,9 +1041,8 @@ msgid "Initializing Jmol..."
 msgstr "Jmol 초기화..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "정보"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1851,48 +1848,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#~ msgid "atom set"
-#~ msgstr "원자셋"
-
-#~ msgid "vector"
-#~ msgstr "벡터"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "콜렉션의 처음 {0}(으)로 가기"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "콜렉션의 {0} 이전으로 가기"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "{0}의 모든 콜렉션 재생"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "{0} 콜렉션의 다음으로"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "{0} 콜렉션의 맨 마지막으로"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Jmol 스크립트 콘솔"
-
-#~ msgid "independent commmand thread"
-#~ msgstr "독립적인 명령 쓰레드"
-
-#~ msgid "Clear console button (requires restarting Jmol)"
-#~ msgstr "콘솔 버튼 지우기 (Jmol 재시작 필요)"
-
-#~ msgid "Label"
-#~ msgstr "레이블"
-
-#~ msgid "Wireframe"
-#~ msgstr "뼈대구조"
-
-#~ msgid "All"
-#~ msgstr "모두"
-
-#~ msgid "None"
-#~ msgstr "없음"
-
-#~ msgid "Controller"
-#~ msgstr "콘트롤러"

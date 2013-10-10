@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2012-12-26 13:36+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Eugene Marshal <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/appletjs/Jmol.java:364
 #, java-format
@@ -947,8 +947,9 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Чтобы получить 3D модель, которой можно манипулировать, щёлкните {0}здесь"
-"{1}. Время загрузки может быть существенным при первой загрузке апплета."
+"Чтобы получить 3D модель, которой можно манипулировать, щёлкните "
+"{0}здесь{1}. Время загрузки может быть существенным при первой загрузке "
+"апплета."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
 msgid "Insert the page TITLE here."
@@ -969,8 +970,8 @@ msgid ""
 "Insert additional explanatory text here. Long text will wrap around Jmol "
 "model {0}."
 msgstr ""
-"Вставьте дополнительный поясняющий текст здесь. Длинный текст будет \"обёрнут"
-"\" вокруг Jmol модели {0}."
+"Вставьте дополнительный поясняющий текст здесь. Длинный текст будет "
+"\"обёрнут\" вокруг Jmol модели {0}."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:374
 msgid "Insert your TITLE and INTRODUCTION here."
@@ -1056,9 +1057,8 @@ msgid "Initializing Jmol..."
 msgstr "Инициализация Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "О Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1876,152 +1876,3 @@ msgstr "Загрузить вид"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "не реализовано"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Консоль сценариев Jmol"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Перейти к следующему {0} в коллекции"
-
-#~ msgid "Controller"
-#~ msgstr "Контроллер"
-
-#~ msgid "vector"
-#~ msgstr "вектор"
-
-#~ msgid "All"
-#~ msgstr "Всё"
-
-#~ msgid "None"
-#~ msgstr "Нет"
-
-#~ msgid "Label"
-#~ msgstr "Ярлык"
-
-#~ msgid "Centered"
-#~ msgstr "По центру"
-
-#~ msgid "Zoom"
-#~ msgstr "Увеличить"
-
-#~ msgid "Front"
-#~ msgstr "Передний"
-
-#~ msgid "Bottom"
-#~ msgstr "Низ"
-
-#~ msgid "Right"
-#~ msgstr "Вправо"
-
-#~ msgid "Left"
-#~ msgstr "Влево"
-
-#~ msgid "atom set"
-#~ msgstr "Набор атомов"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Идти к первой {0} в коллекции"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Идти к предыдущей {0} в коллекции"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "Смотреть всю коллекцию {0}"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Перейти к последней {0} в коллекции"
-
-#~ msgid "Show Selected"
-#~ msgstr "Показать Выбранное"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "добавление {0}.spt"
-
-#~ msgid "adding JmolPopIn.js"
-#~ msgstr "добавление JmolPopIn.js"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "добавление {0}.png"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Не могу найти или открыть:\n"
-#~ "{0}"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Перейти к первому вектору в коллекции"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Перейти к предыдущему вектору в коллекции"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Перейти к следующему вектору в коллекции"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Проиграть всю коллекцию векторов"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Перейти к последнему вектору в коллекции"
-
-#~ msgid "Clear console button (requires restarting Jmol)"
-#~ msgstr "Кнопка очистки консоли (требует перезапуска Jmol)"
-
-#~ msgid "Get PDB file"
-#~ msgstr "Взять файл PDB"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Ввести четырёхзначный PDB ID"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Взять файл MOL по структурному имени или ID"
-
-#~ msgid "double-click and drag to reorder"
-#~ msgstr "Дважды щелкните и перетащите, чтобы изменить порядок"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-#~ msgstr "Введите имя или идентификатор (SMILES, InChI, CAS) молекулы"
-
-#~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr "Варианты -D следующие (в скобках значения по умолчанию):"
-
-#~ msgid ""
-#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
-#~ "model {0}."
-#~ msgstr ""
-#~ "Введите сюда поясненяющий текст. Длинный текст будет обернут вокруг "
-#~ "модели Jmol {0}."
-
-#~ msgid "domain"
-#~ msgstr "домен"
-
-#~ msgid "expires"
-#~ msgstr "истекает"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "HTTP-версия"
-
-#~ msgid "path"
-#~ msgstr "путь"
-
-#~ msgid "value"
-#~ msgstr "величина"
-
-#~ msgid "name"
-#~ msgstr "имя"
-
-#~ msgid "Reason-Phrase"
-#~ msgstr "Поясняющая фраза"
-
-#~ msgid "Status-Code"
-#~ msgstr "Статус-код"
-
-#~ msgid "Method"
-#~ msgstr "Метод"
-
-#~ msgid "Request-URI"
-#~ msgstr "URI запроса"
-
-#~ msgid "independent commmand thread"
-#~ msgstr "поток независимых команд"

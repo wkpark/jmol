@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2011-01-17 09:29+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.cat>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:22+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: ANDORRA\n"
 "X-Poedit-Language: Catalan\n"
 
@@ -1054,9 +1054,8 @@ msgid "Initializing Jmol..."
 msgstr "S'està inicialitzant el Jmol…"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "Quant al Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1872,73 +1871,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr ""
-#~ "Les opcions -D són les següents (els paràmetres predeterminats en "
-#~ "parèntesis):"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Consola script del Jmol"
-
-#~ msgid "Controller"
-#~ msgstr "Control·lador"
-
-#~ msgid "atom set"
-#~ msgstr "conjunt d'àtoms"
-
-#~ msgid "vector"
-#~ msgstr "vector"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Vés al primer {0} de la col·lecció"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Vés a l''anterior {0} de la col·lecció"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "Reprodueix la col·lecció sencera de {0}s"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Vés al següent {0} de la col·lecció"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Salta al darrer {0} de la col·lecció"
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "Scrip&t…"
-
-#~ msgid "Clear console button (requires restarting Jmol)"
-#~ msgstr "Botó de neteja de la consola (cal reiniciar el Jmol)"
-
-#~ msgid ""
-#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
-#~ "model {0}."
-#~ msgstr ""
-#~ "Inseriu un text explicatori addicional ací. Si el text és llarg, "
-#~ "s''ajustarà al voltant del model de Jmol {0}."
-
-#~ msgid "double-click and drag to reorder"
-#~ msgstr "feu doble clic i arrosegueu per a reordenar"
-
-#~ msgid "Show Selected"
-#~ msgstr "Mostra allò seleccionat"
-
-#~ msgid "adding JmolPopIn.js"
-#~ msgstr "s'afig JmolPopIn.js"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "afig {0}.png"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "afig {0}.spt"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "No es pot trobar o obrir:\n"
-#~ "{0}"
-
-#~ msgid "independent commmand thread"
-#~ msgstr "Fil d'ordre independent"

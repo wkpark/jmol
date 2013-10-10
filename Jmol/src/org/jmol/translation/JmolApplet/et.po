@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2010-12-16 12:57+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Ivo Sarak <Unknown>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: Estonia\n"
 "X-Poedit-Language: Estonian\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -49,11 +49,11 @@ msgstr ""
 
 #: org/jmol/console/GenericConsole.java:79
 msgid "&Help"
-msgstr ""
+msgstr "&Abi"
 
 #: org/jmol/console/GenericConsole.java:80
 msgid "&Search..."
-msgstr ""
+msgstr "Ot&si..."
 
 #: org/jmol/console/GenericConsole.java:81
 msgid "&Commands"
@@ -139,7 +139,8 @@ msgid "Check"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -406,7 +407,7 @@ msgstr ""
 
 #: org/jmol/i18n/Language.java:92
 msgid "Finnish"
-msgstr ""
+msgstr "Soome"
 
 #: org/jmol/i18n/Language.java:93
 msgid "Faroese"
@@ -553,7 +554,7 @@ msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:84
 msgid "new"
-msgstr ""
+msgstr "uus"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:85
 msgid "undo (CTRL-Z)"
@@ -566,7 +567,7 @@ msgstr ""
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:87
 #: org/jmol/viewer/ActionManager.java:342
 msgid "center"
-msgstr ""
+msgstr "keskel"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:88
 msgid "add hydrogens"
@@ -574,7 +575,7 @@ msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:89
 msgid "minimize"
-msgstr ""
+msgstr "minimeeri"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:90
 msgid "fix hydrogens and minimize"
@@ -582,11 +583,11 @@ msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:91
 msgid "clear"
-msgstr ""
+msgstr "puhas"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:92
 msgid "save file"
-msgstr ""
+msgstr "salvesta fail"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:93
 msgid "save state"
@@ -634,15 +635,15 @@ msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:112
 msgid "single"
-msgstr ""
+msgstr "üksik"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:113
 msgid "double"
-msgstr ""
+msgstr "topelt"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:114
 msgid "triple"
-msgstr ""
+msgstr "kolmekordne"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:115
 msgid "increase order"
@@ -708,7 +709,7 @@ msgstr "Tõlked"
 
 #: org/jmol/popup/GenericPopup.java:1151
 msgid "System"
-msgstr ""
+msgstr "Süsteem"
 
 #: org/jmol/popup/GenericPopup.java:1156
 msgid "Java version:"
@@ -891,9 +892,8 @@ msgid "View"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "Alused"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -922,9 +922,8 @@ msgid "Back"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "Skeem"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1136,7 +1135,7 @@ msgstr "Vesiniku Sidemed"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:679
 msgid "Calculate"
-msgstr ""
+msgstr "Arvuta"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:681
 msgid "Set H-Bonds Side Chain"
@@ -1658,15 +1657,15 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:903
 msgid "Current state"
-msgstr ""
+msgstr "Praegune olek"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:905
 msgid "File"
-msgstr ""
+msgstr "Fail"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:906
 msgid "Reload"
-msgstr ""
+msgstr "Lae uuesti"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:907
 msgid "Open from PDB"
@@ -1761,7 +1760,7 @@ msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:937
 msgid "Computation"
-msgstr ""
+msgstr "Arvutus"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:938
 msgid "Optimize structure"
@@ -2366,7 +2365,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:399
 msgid "rotate"
-msgstr ""
+msgstr "pööramine"
 
 #: org/jmol/viewer/ActionManager.java:401
 #, java-format
@@ -2444,7 +2443,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2463,7 +2463,7 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:457
 msgid "translate"
-msgstr ""
+msgstr "tõlgi"
 
 #: org/jmol/viewer/ActionManager.java:458
 msgid "zoom"
@@ -2527,6 +2527,3 @@ msgstr ""
 #, java-format
 msgid "{0} hydrogens added"
 msgstr ""
-
-#~ msgid "About Jmol"
-#~ msgstr "Jmol'ist"

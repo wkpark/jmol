@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2013-01-09 09:38+0000\n"
-"Last-Translator: Peter Sahlin <Unknown>\n"
+"PO-Revision-Date: 2013-06-02 23:46+0000\n"
+"Last-Translator: Nicolas Vervelle <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:20+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:57+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -146,7 +146,8 @@ msgid "Check"
 msgstr "Kontrollera"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Överst"
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -620,9 +621,8 @@ msgid "drag atom (and minimize)"
 msgstr "dra atom (och minimera)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-#, fuzzy
 msgid "drag molecule (ALT to rotate)"
-msgstr "dra molekyl (SHIFT för att rotera)"
+msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag and minimize molecule (docking)"
@@ -907,9 +907,8 @@ msgid "View"
 msgstr "Vy"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "Baser"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -938,9 +937,8 @@ msgid "Back"
 msgstr "Tillbaka"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "Schema"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1814,14 +1812,12 @@ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:952
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range ALL)"
-msgstr "Molekulär Elektrostatisk Potential"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:953
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range -0.1 0.1)"
-msgstr "Molekulär Elektrostatisk Potential"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:959
 #: org/jmol/popup/MainPopupResourceBundle.java:960
@@ -2252,14 +2248,14 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} vätebindningar"
 
 #: org/jmol/scriptext/ScriptExt.java:5689
-#, fuzzy, java-format
+#, java-format
 msgid "{0} charges modified"
-msgstr "{0} väte tillagda"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:5770
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts mp.added"
-msgstr "{0} väte tillagda"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:6073
 msgid "Note: More than one model is involved in this contact!"
@@ -2472,7 +2468,8 @@ msgstr "zooma (längs högra sidan av fönstret)"
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr "klicka på två punkter för att rotera runt axel moturs (kräver {0})"
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2515,14 +2512,13 @@ msgid ""
 msgstr "välj två atomer för att visa symmetriförhållandet mellan dem"
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "Avbryt"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "{0} Bild"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2556,31 +2552,3 @@ msgstr "urklipp är inte tillgängligt - används den signerade appleten"
 #, java-format
 msgid "{0} hydrogens added"
 msgstr "{0} väte tillagda"
-
-#~ msgid "Minimize"
-#~ msgstr "Minimera"
-
-#~ msgid "Top"
-#~ msgstr "Överst"
-
-#~ msgid "File {0}"
-#~ msgstr "Fil {0}"
-
-#~ msgid "File or URL"
-#~ msgstr "Fil eller URL"
-
-#~ msgid "{0} 3D Model"
-#~ msgstr "{0} 3D-modell"
-
-#~ msgid "About Jmol"
-#~ msgstr "Om Jmol"
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "Skapande av filer genom det här programmet är inte tillåtet. För Base64 "
-#~ "JPEG-format, använd {0}."
-
-#~ msgid "File creation failed."
-#~ msgstr "Skapande av en fil misslyckades."

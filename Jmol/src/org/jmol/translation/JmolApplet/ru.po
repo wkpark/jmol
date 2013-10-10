@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2012-08-24 10:27+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Ivlev Denis <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:20+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:57+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -147,7 +147,8 @@ msgid "Check"
 msgstr "Проверить"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Наверх"
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -621,9 +622,8 @@ msgid "drag atom (and minimize)"
 msgstr "перетащить атом (и свернуть)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-#, fuzzy
 msgid "drag molecule (ALT to rotate)"
-msgstr "перетащить молекулу (SHIFT для поворота)"
+msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag and minimize molecule (docking)"
@@ -910,9 +910,8 @@ msgid "View"
 msgstr "Вид"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "Основания"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -941,9 +940,8 @@ msgid "Back"
 msgstr "Сзади"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "Схема"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1817,14 +1815,12 @@ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:952
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range ALL)"
-msgstr "Молекулярный электростатический потенциал"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:953
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range -0.1 0.1)"
-msgstr "Молекулярный электростатический потенциал"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:959
 #: org/jmol/popup/MainPopupResourceBundle.java:960
@@ -2253,9 +2249,9 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} водородных связей"
 
 #: org/jmol/scriptext/ScriptExt.java:5689
-#, fuzzy, java-format
+#, java-format
 msgid "{0} charges modified"
-msgstr "{0} новых связей; {1} изменено"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:5770
 #, java-format
@@ -2467,7 +2463,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2510,14 +2507,13 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "Отмена"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "  {0} секунд"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2551,28 +2547,3 @@ msgstr "буфер недоступен — используйте подпис�
 #, java-format
 msgid "{0} hydrogens added"
 msgstr ""
-
-#~ msgid "Top"
-#~ msgstr "Сверху"
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "Этому апплету не позволено создавать файлы. Для формата Base64 JPEG, "
-#~ "используйте {0}."
-
-#~ msgid "File creation failed."
-#~ msgstr "Не удалось срздать файл."
-
-#~ msgid "Java memory usage"
-#~ msgstr "Использование памяти Java"
-
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr "ОШИБКА: невозможно присвоить булеву флагу строковое значение: {0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr "ОШИБКА: Невозможно присвоить булево значение этой переменной: {0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr "ОШИБКА: невозможно присвоить булеву флагу числовое значение: {0}"

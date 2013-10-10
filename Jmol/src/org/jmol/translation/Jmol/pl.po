@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2012-11-12 20:53+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Łukasz Cieliński <lukasc@mp.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:22+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/appletjs/Jmol.java:364
 #, java-format
@@ -1049,9 +1049,8 @@ msgid "Initializing Jmol..."
 msgstr "Inicjowanie Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "O programie Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1857,60 +1856,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#~ msgid "Controller"
-#~ msgstr "Kontroler"
-
-#~ msgid "atom set"
-#~ msgstr "zestaw atomów"
-
-#~ msgid "vector"
-#~ msgstr "wektor"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Idź do pierwszego {0} w kolekcji"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Idź do ostatniego {0} w kolekcji"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Konsola skryptów Jmol"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Przejdź do ostatniego {0} w kolekcji"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Przejdź do nastepnego {0} w kolekcji"
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "Skryp&t..."
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Idź do następnego wektora w kolekcji"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Skocz do ostatniego wektora w kolekcji"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Idź do pierwszego wektora w kolekcji"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Idź do popszedniego wektora w kolekcji"
-
-#~ msgid "domain"
-#~ msgstr "domena"
-
-#~ msgid "expires"
-#~ msgstr "wygasa"
-
-#~ msgid "path"
-#~ msgstr "ścieżka"
-
-#~ msgid "value"
-#~ msgstr "wartość"
-
-#~ msgid "name"
-#~ msgstr "nazwa"
-
-#~ msgid "Method"
-#~ msgstr "Metoda"

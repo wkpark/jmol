@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: Jmol 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2010-03-18 18:34+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Krasznecz Zoltán <zoltan.krasznecz@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:22+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: HUNGARY\n"
 "X-Poedit-Language: Hungarian\n"
 "X-Poedit-SourceCharset: utf-8\n"
@@ -1053,9 +1053,8 @@ msgid "Initializing Jmol..."
 msgstr "Jmol inicializálása..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "A programról..."
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1866,83 +1865,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#~ msgid "Controller"
-#~ msgstr "Vezérlő"
-
-#~ msgid "atom set"
-#~ msgstr "atomcsoport"
-
-#~ msgid "vector"
-#~ msgstr "vektor"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Ugárs az első {0}-ra a gyűjteményben"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Ugárs az előző {0}-ra a gyűjteményben"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "A teljes {0} gyűjtemény lejátszása"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Ugárs a következő  {0}-ra a gyűjteményben"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Ugárs az utolsó {0}-ra a gyűjteményben"
-
-#~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr "A -D lehetőségek a következők (alapértelmezés zárójelben)"
-
-#~ msgid "Clear console button (requires restarting Jmol)"
-#~ msgstr "Konzol gomb alaphelyzetbe állítása (Jmol újraindítás szükséges)"
-
-#~ msgid "independent commmand thread"
-#~ msgstr "független parancsvégrehajtási szál"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Jmol parancsnyelvi konzol"
-
-#~ msgid ""
-#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
-#~ "model {0}."
-#~ msgstr ""
-#~ "Itt egy hosszabb, magyarázó szöveget adhat meg. Ha hosszú, akkor a {0} "
-#~ "Jmol modell körül megjelenni."
-
-#~ msgid "double-click and drag to reorder"
-#~ msgstr "dupla kattinttással vagy húzással rendezhető át"
-
-#~ msgid "Show Selected"
-#~ msgstr "A jelöltek látszanak"
-
-#~ msgid "adding JmolPopIn.js"
-#~ msgstr "JmolPopIn.js hozzáadása"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "{0}.png hozzáadása"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "{0}.spt hozzáadása"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Nem található vagy nyitható:\n"
-#~ "{0}"
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "&Parancsfájl..."
-
-#~ msgid "All"
-#~ msgstr "Minden"
-
-#~ msgid "Label"
-#~ msgstr "Címke"
-
-#~ msgid "Wireframe"
-#~ msgstr "Drótváz"
-
-#~ msgid "None"
-#~ msgstr "Semmi"

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2012-08-09 05:31+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Marco Buono <Unknown>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/appletjs/Jmol.java:364
 #, java-format
@@ -89,7 +89,8 @@ msgstr "nessuna console -- tutto l'output inviato a sysout"
 
 #: org/openscience/jmol/app/JmolApp.java:158
 msgid "send only output from print messages to console (implies -i)"
-msgstr "inviare l'output di stampa solo dai messaggi alla console (implica -i)"
+msgstr ""
+"inviare l'output di stampa solo dai messaggi alla console (implica -i)"
 
 #: org/openscience/jmol/app/JmolApp.java:160
 msgid "restrict local file access"
@@ -118,7 +119,8 @@ msgstr "file di script da eseguire o '-' per System.in"
 
 #: org/openscience/jmol/app/JmolApp.java:181
 msgid "use multitouch interface (requires \"sparshui\" parameter"
-msgstr "l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
+msgstr ""
+"l'uso dell'interfaccia multitouch (richiede il parametro \"sparshui\""
 
 #: org/openscience/jmol/app/JmolApp.java:188
 msgid "Jmol script to execute BEFORE -s option"
@@ -146,8 +148,8 @@ msgid ""
 "JPG image quality (1-100; default 75) or PNG image compression (0-9; default "
 "2, maximum compression 9)"
 msgstr ""
-"Qualità delle immagini JPG (1-100; default 75) o compressione delle "
-"immagini  PNG (0-9; default e, compressione massima 9)"
+"Qualità delle immagini JPG (1-100; default 75) o compressione delle immagini "
+" PNG (0-9; default e, compressione massima 9)"
 
 #: org/openscience/jmol/app/JmolApp.java:232
 #, java-format
@@ -1056,9 +1058,8 @@ msgid "Initializing Jmol..."
 msgstr "Inizializzazione Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "Riguardo a Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1152,7 +1153,8 @@ msgstr "Mostra durante Rendering"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:245
 msgid "Should POV-Ray attempt to display while rendering?"
-msgstr "Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
+msgstr ""
+"Deve il POV-Ray tentare di visualizzare durante la fare di rendering?"
 
 #: org/openscience/jmol/app/jmolpanel/PovrayDialog.java:268
 msgid "width:"
@@ -1884,142 +1886,3 @@ msgstr "Scarica vista"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "non implementato"
-
-#~ msgid "Controller"
-#~ msgstr "Controller"
-
-#~ msgid "atom set"
-#~ msgstr "atom set"
-
-#~ msgid "vector"
-#~ msgstr "vettore"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Vai al primo {0} nella raccolta"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Vai al precedente {0} nella raccolta"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "Riproduci la collezione completa di {0}"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Vai al prossimo {0} nella raccolta"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Jmol Script Console"
-
-#~ msgid "double-click and drag to reorder"
-#~ msgstr "doppoi click e trascina per riordinare"
-
-#~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr "Le opzioni -D sono come segue (default in parentesi)"
-
-#~ msgid "Show Selected"
-#~ msgstr "Mostra Selezionati."
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "aggiungendo {0}.spt"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "aggiungendo {0}.png"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Impossibile trovare o aprire:\n"
-#~ "{0}"
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "Output Conso&le..."
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Vai al vettore precedente della raccolta"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Vai al primo vettore nella raccolta"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Val al successivo vettore nella raccolta"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Mostra l'intera raccolta di vettori"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Salta all'ultimo vettore nella raccolta"
-
-#~ msgid "Clear console button (requires restarting Jmol)"
-#~ msgstr "Pulsante pulisci console (richiede il riavvio di Jmol)"
-
-#~ msgid "adding JmolPopIn.js"
-#~ msgstr "aggiungendo JmolPopIn.js"
-
-#~ msgid "Get PDB file"
-#~ msgstr "Ottieni documento PDB"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-#~ msgstr ""
-#~ "Inserisci il nome o il numero identificativo (SMILES, InChI, CAS) di una "
-#~ "molecola"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Inserisci un ID di 4 caratteri per PDB"
-
-#~ msgid ""
-#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
-#~ "model {0}."
-#~ msgstr ""
-#~ "Inserisci una descrizione qui. I testi lunghi saranno avvolti nel modello "
-#~ "jmod {0}"
-
-#~ msgid "All"
-#~ msgstr "Tutto"
-
-#~ msgid "None"
-#~ msgstr "Nulla"
-
-#~ msgid "Centered"
-#~ msgstr "Centrato"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Ottieni il file MOL dall'ID o dal nome del composto"
-
-#~ msgid "Wireframe"
-#~ msgstr "Wireframe"
-
-#~ msgid "independent commmand thread"
-#~ msgstr "comando indipendente"
-
-#~ msgid "domain"
-#~ msgstr "dominio"
-
-#~ msgid "expires"
-#~ msgstr "scade"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "Versione HTTP"
-
-#~ msgid "path"
-#~ msgstr "percorso"
-
-#~ msgid "name"
-#~ msgstr "nome"
-
-#~ msgid "Reason-Phrase"
-#~ msgstr "Motivo della Frase"
-
-#~ msgid "Status-Code"
-#~ msgstr "Codice di Stato"
-
-#~ msgid "value"
-#~ msgstr "valore"
-
-#~ msgid "Method"
-#~ msgstr "Metodo"
-
-#~ msgid "Request-URI"
-#~ msgstr "Richiesta URI"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Salta all ultimo {0} nella raccolta"

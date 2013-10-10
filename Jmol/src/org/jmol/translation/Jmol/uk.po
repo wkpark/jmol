@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2012-12-28 05:10+0000\n"
+"PO-Revision-Date: 2013-08-23 05:29+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "Language: uk\n"
 
 #: org/jmol/appletjs/Jmol.java:364
@@ -44,8 +44,8 @@ msgstr "Елемент?"
 #: org/openscience/jmol/app/JmolApp.java:101
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr ""
-"Помилка під час спроби запуску Jmol: не вказано значення властивості «user."
-"home»."
+"Помилка під час спроби запуску Jmol: не вказано значення властивості "
+"«user.home»."
 
 #: org/openscience/jmol/app/JmolApp.java:138
 msgid "transparent background"
@@ -77,7 +77,7 @@ msgstr "обробка скрипту без повідомлень"
 
 #: org/openscience/jmol/app/JmolApp.java:148
 msgid "allow piping of input from System.Input"
-msgstr ""
+msgstr "дозволити передавання вхідних даних каналом з System.Input"
 
 #: org/openscience/jmol/app/JmolApp.java:150
 msgid "kiosk mode -- no frame"
@@ -922,7 +922,8 @@ msgstr "Обертати молекулу."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:225
 msgid "Select a set of atoms using SHIFT-LEFT-DRAG."
-msgstr "Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
+msgstr ""
+"Вкажіть набір атомів за допомогою SHIFT-СТРІЛКА ЛІВОРУЧ-ПЕРЕТЯГУВАННЯ."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:227
 msgid "Click atoms to measure distances"
@@ -953,8 +954,8 @@ msgid ""
 "To get a 3-D model you can manipulate, click {0}here{1}. Download time may "
 "be significant the first time the applet is loaded."
 msgstr ""
-"Щоб отримати просторову модель, з якою можна буде працювати, натисніть {0}тут"
-"{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
+"Щоб отримати просторову модель, з якою можна буде працювати, натисніть "
+"{0}тут{1}. Перше звантаження за допомогою аплету може бути доволі тривалим."
 
 #: org/openscience/jmol/app/jmolpanel/GuiMap.java:368
 msgid "Insert the page TITLE here."
@@ -1063,9 +1064,8 @@ msgid "Initializing Jmol..."
 msgstr "Ініціалізація Jmol…"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "Про Jmol"
+msgstr "Завершити роботу Jmol?"
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1893,162 +1893,3 @@ msgstr "Звантажити перегляд"
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr "не реалізовано"
-
-#~ msgid "vector"
-#~ msgstr "вектор"
-
-#~ msgid "independent commmand thread"
-#~ msgstr "окремий потік виконання команд"
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Скриптова консоль Jmol"
-
-#~ msgid "Controller"
-#~ msgstr "Регулятор"
-
-#~ msgid "atom set"
-#~ msgstr "набір атомів"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Перейти до першого {0} у збірці"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Перейти до попереднього {0} у збірці"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "Відтворити усю збірку {0}"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Перейти до наступного {0} у збірці"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Перейти до останнього {0} у збірці"
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "Консо&ль виводу…"
-
-#~ msgid "Show Selected"
-#~ msgstr "Показати позначені"
-
-#~ msgid "adding JmolPopIn.js"
-#~ msgstr "додавання JmolPopIn.js"
-
-#~ msgid "adding {0}.png"
-#~ msgstr "додавання {0}.png"
-
-#~ msgid "adding {0}.spt"
-#~ msgstr "додавання {0}.spt"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Не вдалося виявити або відкрити:\n"
-#~ "{0}"
-
-#~ msgid "Clear console button (requires restarting Jmol)"
-#~ msgstr "Кнопка спорожнення консолі (потрібен перезапуску Jmol)"
-
-#~ msgid ""
-#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
-#~ "model {0}."
-#~ msgstr ""
-#~ "Тут ви можете вставити додатковий текст пояснення. Довгі рядки буде "
-#~ "поділено на частини і розташовано навколо моделі Jmol {0}."
-
-#~ msgid "double-click and drag to reorder"
-#~ msgstr ""
-#~ "двічі клацніть лівою кнопкою миші і перетягніть, щоб змінити порядок"
-
-#~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr "Параметри -D (типові значення вказано у дужках):"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Перейти до першого вектора у збірці"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Перейти до попереднього вектора у збірці"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Відтворити усю збірку векторів"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Перейти до останнього вектора у збірці"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Перейти до наступного вектора у збірці"
-
-#~ msgid "Get MOL file by compound name or ID"
-#~ msgstr "Звантажити файл MOL за складеною назвою або ідентифікатором"
-
-#~ msgid "Enter the name or identifier (SMILES, InChI, CAS) of a molecule"
-#~ msgstr "Введіть назву або ідентифікатор молекули (SMILES, InChI, CAS)"
-
-#~ msgid "Get PDB file"
-#~ msgstr "Звантажити файл PDB"
-
-#~ msgid "Enter a four-digit PDB ID"
-#~ msgstr "Введіть чотирицифровий ідентифікатор PDB"
-
-#~ msgid "name"
-#~ msgstr "назва"
-
-#~ msgid "domain"
-#~ msgstr "домен"
-
-#~ msgid "expires"
-#~ msgstr "застаріває"
-
-#~ msgid "value"
-#~ msgstr "значення"
-
-#~ msgid "Reason-Phrase"
-#~ msgstr "Фраза-причини"
-
-#~ msgid "Status-Code"
-#~ msgstr "Код-стану"
-
-#~ msgid "HTTP-Version"
-#~ msgstr "Версія HTTP"
-
-#~ msgid "path"
-#~ msgstr "шлях"
-
-#~ msgid "Method"
-#~ msgstr "Метод"
-
-#~ msgid "Request-URI"
-#~ msgstr "Адреса-запиту"
-
-#~ msgid "All"
-#~ msgstr "Все"
-
-#~ msgid "None"
-#~ msgstr "Немає"
-
-#~ msgid "Front"
-#~ msgstr "Спереду"
-
-#~ msgid "Left"
-#~ msgstr "Зліва"
-
-#~ msgid "Right"
-#~ msgstr "Справа"
-
-#~ msgid "Bottom"
-#~ msgstr "Знизу"
-
-#~ msgid "Wireframe"
-#~ msgstr "Каркас"
-
-#~ msgid "On"
-#~ msgstr "Увімкнено"
-
-#~ msgid "Centered"
-#~ msgstr "По центру"
-
-#~ msgid "Zoom"
-#~ msgstr "Масштабування"
-
-#~ msgid "Label"
-#~ msgstr "Мітка"

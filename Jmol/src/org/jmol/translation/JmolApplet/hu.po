@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: JmolApplet 11.7.x\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2010-03-18 20:28+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Krasznecz Zoltán <zoltan.krasznecz@gmail.com>\n"
 "Language-Team: Hungarian <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: HUNGARY\n"
 "X-Poedit-Language: Hungarian\n"
 "X-Poedit-SourceCharset: utf-8\n"
@@ -120,8 +120,8 @@ msgid ""
 "console Help menu item for on-line help, which will appear in a new browser "
 "window."
 msgstr ""
-"Az üzenetek itt fognak megjelenni. A parancsokat az alábbi mezőbe írja be."
-"Kattintson a konzol Súgó menüpontjára segítségért, mely egy új böngésző-"
+"Az üzenetek itt fognak megjelenni. A parancsokat az alábbi mezőbe írja "
+"be.Kattintson a konzol Súgó menüpontjára segítségért, mely egy új böngésző-"
 "ablakban fog megjelenni."
 
 #: org/jmol/console/GenericConsole.java:128
@@ -151,7 +151,8 @@ msgid "Check"
 msgstr "Ellenőrzés"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr ""
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -904,9 +905,8 @@ msgid "View"
 msgstr "Nézet"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "Bázisok"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -935,9 +935,8 @@ msgid "Back"
 msgstr "Hátulnézet"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "Séma"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1811,14 +1810,12 @@ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr "Oldószerrel elérhető felszín (VDW + {0} Angstrom)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:952
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range ALL)"
-msgstr "Molekuláris elektrosztatikus potenciál"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:953
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range -0.1 0.1)"
-msgstr "Molekuláris elektrosztatikus potenciál"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:959
 #: org/jmol/popup/MainPopupResourceBundle.java:960
@@ -2250,9 +2247,9 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} hidrogénkötés"
 
 #: org/jmol/scriptext/ScriptExt.java:5689
-#, fuzzy, java-format
+#, java-format
 msgid "{0} charges modified"
-msgstr "{0} új kötés, {1} módosítva"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:5770
 #, java-format
@@ -2464,7 +2461,8 @@ msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 
 #: org/jmol/viewer/ActionManager.java:448
@@ -2507,14 +2505,13 @@ msgid ""
 msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "Mégsem"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "{0} kép"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2548,58 +2545,3 @@ msgstr "a vágólap nem érhető el, használjon aláírt Java kisalkalmazást"
 #, java-format
 msgid "{0} hydrogens added"
 msgstr ""
-
-#~ msgid "Java memory usage"
-#~ msgstr "Java memóriahasználat"
-
-#~ msgid "Molecular Orbitals"
-#~ msgstr "Molekuláris orbitálok"
-
-#~ msgid "Top"
-#~ msgstr "Felülnézet"
-
-#~ msgid "About Jmol"
-#~ msgstr "A Jmol programról"
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "A kisalkalmazás nem hozhat létre fájlt. A Base64 JPEG formátumhoz "
-#~ "használja ezt: {0}."
-
-#~ msgid "File creation failed."
-#~ msgstr "Fájl létrehozása sikertelen."
-
-#~ msgid "Minimize"
-#~ msgstr "Minimalizál"
-
-#~ msgid "File from PDB"
-#~ msgstr "Fájl PDB-ből"
-
-#~ msgid "File or URL"
-#~ msgstr "Fájl vagy URL:"
-
-#~ msgid "File {0}"
-#~ msgstr "{0} fájl"
-
-#~ msgid "Script with state"
-#~ msgstr "Skript állapottal"
-
-#~ msgid "Script with history"
-#~ msgstr "Skript történettel"
-
-#~ msgid "JVXL Isosurface"
-#~ msgstr "JVXL Iso-felület"
-
-#~ msgid "{0} 3D Model"
-#~ msgstr "{0} 3D modell"
-
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr "HIBA: a logikai jelzőt nem lehet {0} string értékre állítani"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr "HIBA: a logikai jelzőt nem lehet {0} számértékre állítani"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr "HIBA: ezt a változót nem lehet logikai értékre állítani: {0}"

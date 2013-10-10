@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-04-10 17:59+0200\n"
-"PO-Revision-Date: 2012-02-29 16:17+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: Alexandre Duarte <d3vilbl3ss3d@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 "X-Poedit-Country: Portugal\n"
 "X-Poedit-Language: Portuguese\n"
 "X-Poedit-Basepath: ../../../..\n"
@@ -1048,9 +1048,8 @@ msgid "Initializing Jmol..."
 msgstr "Inicializando Jmol..."
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:588
-#, fuzzy
 msgid "Exit Jmol?"
-msgstr "Acerca do Jmol"
+msgstr ""
 
 #: org/openscience/jmol/app/jmolpanel/JmolPanel.java:625
 msgid "Closing Jmol..."
@@ -1303,7 +1302,8 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:429
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Tolerância da ligação- somatório de dois raios covalentes+ este valor"
+msgstr ""
+"Tolerância da ligação- somatório de dois raios covalentes+ este valor"
 
 #: org/openscience/jmol/app/jmolpanel/PreferencesDialog.java:470
 msgid "Minimum Bonding Distance"
@@ -1680,7 +1680,8 @@ msgstr ""
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:537
 msgid "Select a directory to create or an HTML file to save"
-msgstr "Seleccionar uma directoria para criar ou um ficheiro HTML para guardar"
+msgstr ""
+"Seleccionar uma directoria para criar ou um ficheiro HTML para guardar"
 
 #: org/openscience/jmol/app/webexport/WebPanel.java:557
 #, java-format
@@ -1855,107 +1856,3 @@ msgstr ""
 #: org/openscience/jmol/app/webexport/Widgets.java:247
 msgid "unimplemented"
 msgstr ""
-
-#~ msgid "All"
-#~ msgstr "Todos"
-
-#~ msgid "None"
-#~ msgstr "Nenhum"
-
-#~ msgid "Wireframe"
-#~ msgstr "LigarFrame"
-
-#~ msgid "Label"
-#~ msgstr "Etiqueta"
-
-#~ msgid "Centered"
-#~ msgstr "Centrado"
-
-#~ msgid "On"
-#~ msgstr "On/Ligado"
-
-#~ msgid "Zoom"
-#~ msgstr "Zoom"
-
-#~ msgid "Front"
-#~ msgstr "Frente"
-
-#~ msgid "Bottom"
-#~ msgstr "Fundo"
-
-#~ msgid "Right"
-#~ msgstr "Direita"
-
-#~ msgid "Left"
-#~ msgstr "Esquerda"
-
-#~ msgid "Controller"
-#~ msgstr "Controlador"
-
-#~ msgid "atom set"
-#~ msgstr "Grupo de átomos"
-
-#~ msgid "vector"
-#~ msgstr "vector"
-
-#~ msgid "Go to first {0} in the collection"
-#~ msgstr "Ir para o primeiro {0} na colecção"
-
-#~ msgid "Go to previous {0} in the collection"
-#~ msgstr "Ir para o anterior {0} na colecção"
-
-#~ msgid "Play the whole collection of {0}'s"
-#~ msgstr "Correr toda a colecção de {0}'s"
-
-#~ msgid "Go to next {0} in the collection"
-#~ msgstr "Ir para a seguinte  {0} na colecção"
-
-#~ msgid "Jump to last {0} in the collection"
-#~ msgstr "Saltar para o último {0} na selecção"
-
-#~ msgid "The -D options are as follows (defaults in parenthesis):"
-#~ msgstr "As opções -D são as seguintes (pré-definição em parentesis):"
-
-#~ msgid "Output Conso&le..."
-#~ msgstr "Output Conso&le..."
-
-#~ msgid "independent commmand thread"
-#~ msgstr "discussão commmand independente"
-
-#~ msgid ""
-#~ "Insert additonal explanatory text here. Long text will wrap around Jmol "
-#~ "model {0}."
-#~ msgstr ""
-#~ "Insira um texto de explicação aqui. Textos grandes serão ajustados em "
-#~ "torno do modelo de Jmol {0}.."
-
-#~ msgid "Jmol Script Console"
-#~ msgstr "Consola de Script Jmol"
-
-#~ msgid "Play the whole collection of vectors"
-#~ msgstr "Mostrar toda a colecção de vectores"
-
-#~ msgid "Go to first vector in the collection"
-#~ msgstr "Ir para o primeiro vector da colecção"
-
-#~ msgid "Go to previous vector in the collection"
-#~ msgstr "Ir para o vector anterior da colecção"
-
-#~ msgid "Go to next vector in the collection"
-#~ msgstr "Ir para o próximo vector da colecção"
-
-#~ msgid "Jump to last vector in the collection"
-#~ msgstr "Ir para o último vector da colecção"
-
-#~ msgid "Get PDB file"
-#~ msgstr "Obter ficheiro PDB"
-
-#~ msgid ""
-#~ "Could not find or open:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Não é possível encontrar ou abrir:\n"
-#~ "{0}"
-
-#~ msgid "expires"
-#~ msgstr "expira"

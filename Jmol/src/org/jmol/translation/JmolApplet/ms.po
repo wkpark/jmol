@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2012-09-04 04:10+0000\n"
+"PO-Revision-Date: 2013-06-02 18:20+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:21+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:57+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -146,7 +146,8 @@ msgid "Check"
 msgstr "Semak"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Atas[sebagaimana \"pergi ke atas\""
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -620,9 +621,8 @@ msgid "drag atom (and minimize)"
 msgstr "seret atom (dan minimakan)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-#, fuzzy
 msgid "drag molecule (ALT to rotate)"
-msgstr "seret molekul (SHIFT untuk putarkan)"
+msgstr ""
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag and minimize molecule (docking)"
@@ -908,9 +908,8 @@ msgid "View"
 msgstr "Papar"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "Asas"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -939,9 +938,8 @@ msgid "Back"
 msgstr "Undur"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "Skema"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1815,14 +1813,12 @@ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr "Permukaan Pelarut-Boleh-Capai (VDW + {0} Angstrom)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:952
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range ALL)"
-msgstr "Keupayaan Elektrostatik Molekul"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:953
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range -0.1 0.1)"
-msgstr "Keupayaan Elektrostatik Molekul"
+msgstr ""
 
 #: org/jmol/popup/MainPopupResourceBundle.java:959
 #: org/jmol/popup/MainPopupResourceBundle.java:960
@@ -2202,7 +2198,8 @@ msgstr "objek tidak dikenalpasti"
 #: org/jmol/script/ScriptEvaluator.java:3078
 #, java-format
 msgid "unrecognized {0} parameter in Jmol state script (set anyway)"
-msgstr "parameter {0} tidak dikenali didalam skrip keadaan Jmol (tetapkan jua)"
+msgstr ""
+"parameter {0} tidak dikenali didalam skrip keadaan Jmol (tetapkan jua)"
 
 #: org/jmol/script/ScriptEvaluator.java:3081
 #, java-format
@@ -2252,14 +2249,14 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} ikatan hidrogen"
 
 #: org/jmol/scriptext/ScriptExt.java:5689
-#, fuzzy, java-format
+#, java-format
 msgid "{0} charges modified"
-msgstr "{0} hidrogen ditambah"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:5770
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts mp.added"
-msgstr "{0} struts ditambah"
+msgstr ""
 
 #: org/jmol/scriptext/ScriptExt.java:6073
 msgid "Note: More than one model is involved in this contact!"
@@ -2409,7 +2406,8 @@ msgstr "putar Z"
 #: org/jmol/viewer/ActionManager.java:409
 msgid ""
 "rotate Z (horizontal motion of mouse) or zoom (vertical motion of mouse)"
-msgstr "putar Z (gerakan melintang tetikus) atau zum (gerakan menegak tetikus)"
+msgstr ""
+"putar Z (gerakan melintang tetikus) atau zum (gerakan menegak tetikus)"
 
 #: org/jmol/viewer/ActionManager.java:410
 #, java-format
@@ -2470,7 +2468,8 @@ msgstr "zum (sepanjang bucu kanan tetingkap)"
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "klik pada dua titik untuk putar disekeliling paksi lawan jam (perlukan {0})"
 
@@ -2519,14 +2518,13 @@ msgstr ""
 "ambil dua atom dalam tertib untuk paparkan hubungan simetri diantara mereka"
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "Batal"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "Imej {0}"
+msgstr ""
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2561,59 +2559,6 @@ msgstr "papan keratan tidak boleh dicapai -- guna aplet terdaftar"
 msgid "{0} hydrogens added"
 msgstr "{0} hidrogen ditambah"
 
-#~ msgid "Top"
-#~ msgstr "Atas"
-
-#~ msgid "Minimize"
-#~ msgstr "Minimumkan"
-
-#~ msgid "Molecular Orbitals"
-#~ msgstr "Orbit Molekul"
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "Penciptaan fail oleh aplet ini tidak dibenarkan. Untuk format JPEG "
-#~ "Base64, guna {0}."
-
-#~ msgid "File creation failed."
-#~ msgstr "Penciptaan fail gagal."
-
-#~ msgid "File {0}"
-#~ msgstr "Fail {0}"
-
-#~ msgid "File from PDB"
-#~ msgstr "Fail dari PDB"
-
-#~ msgid "File or URL"
-#~ msgstr "Fail atau URL"
-
-#~ msgid "Script with state"
-#~ msgstr "Skrip dengan keadaan"
-
-#~ msgid "Script with history"
-#~ msgstr "Skrip dengan sejarah"
-
-#~ msgid "Java memory usage"
-#~ msgstr "Penggunaan ingatan Java"
-
-#~ msgid "{0} 3D Model"
-#~ msgstr "Model 3D {0}"
-
-#~ msgid "JVXL Isosurface"
-#~ msgstr "Permukaan Iso JVXL"
-
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr ""
-#~ "RALAT: tidak dapat tetapkan bendera boolean kepada nilai rentetan: {0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr "RALAT: tidak dapat tetapkan bendera boolean kepada nilai angka: {0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr ""
-#~ "RALAT: tidak dapat tetapkan nilai pembolehubah ini kepada boolean: {0}"
-
-#~ msgid "About Jmol"
-#~ msgstr "Perihal Jmol"
+#, java-format
+#~ msgid "{0} struts added"
+#~ msgstr "{0} struts ditambah"

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2013-10-09 20:04+0200\n"
-"PO-Revision-Date: 2012-10-01 05:36+0000\n"
+"PO-Revision-Date: 2013-10-09 20:00+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-31 01:20+0000\n"
-"X-Generator: Launchpad (build 16546)\n"
+"X-Launchpad-Export-Date: 2013-10-10 00:56+0000\n"
+"X-Generator: Launchpad (build 16799)\n"
 
 #: org/jmol/applet/AppletWrapper.java:101
 msgid "Loading Jmol applet ..."
@@ -147,7 +147,8 @@ msgid "Check"
 msgstr "Перевірити"
 
 #: org/jmol/console/ScriptEditor.java:138
-msgid "Top[as in \"go to the top\" - (translators: remove this bracketed part]"
+msgid ""
+"Top[as in \"go to the top\" - (translators: remove this bracketed part]"
 msgstr "Вгору"
 
 #: org/jmol/console/ScriptEditor.java:139
@@ -621,9 +622,8 @@ msgid "drag atom (and minimize)"
 msgstr "перетягнути атом (і мінімізувати)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:99
-#, fuzzy
 msgid "drag molecule (ALT to rotate)"
-msgstr "перетягнути молекулу (SHIFT для обертання)"
+msgstr "перетягування молекули (ALT — обертання)"
 
 #: org/jmol/modelkit/ModelKitPopupResourceBundle.java:100
 msgid "drag and minimize molecule (docking)"
@@ -773,7 +773,7 @@ msgstr "максимум невідомий"
 
 #: org/jmol/popup/GenericPopup.java:1299
 msgid "not capturing"
-msgstr ""
+msgstr "захоплення не виконується"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:572
 msgid "Configurations"
@@ -912,9 +912,8 @@ msgid "View"
 msgstr "Перегляд"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:609
-#, fuzzy
 msgid "Best"
-msgstr "Базові"
+msgstr "Найкраще"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:610
 msgid "Front"
@@ -943,9 +942,8 @@ msgid "Back"
 msgstr "Ззаду"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:617
-#, fuzzy
 msgid "Scenes"
-msgstr "Схема"
+msgstr "Сцени"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:619
 msgid "Protein"
@@ -1579,7 +1577,8 @@ msgstr "Клацніть, щоб почати вимірювання двогр�
 
 #: org/jmol/popup/MainPopupResourceBundle.java:868
 msgid "Click two atoms to display a sequence in the console"
-msgstr "Позначте клацанням два атоми, щоб переглянути послідовність у консолі."
+msgstr ""
+"Позначте клацанням два атоми, щоб переглянути послідовність у консолі."
 
 #: org/jmol/popup/MainPopupResourceBundle.java:869
 msgid "Delete measurements"
@@ -1708,39 +1707,39 @@ msgstr "Відкрити скрипт"
 #: org/jmol/popup/MainPopupResourceBundle.java:912
 #: org/jmol/viewer/OutputManager.java:652
 msgid "Capture"
-msgstr ""
+msgstr "Захоплення"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:913
 msgid "Capture rock"
-msgstr ""
+msgstr "Захопити коливання"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:914
 msgid "Capture spin"
-msgstr ""
+msgstr "Захопити обертання"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:915
 msgid "Start capturing"
-msgstr ""
+msgstr "Розпочати захоплення"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:916
 msgid "End capturing"
-msgstr ""
+msgstr "Завершити захоплення"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:917
 msgid "Disable capturing"
-msgstr ""
+msgstr "Вимкнути захоплення"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:918
 msgid "Re-enable capturing"
-msgstr ""
+msgstr "Повторно увімкнути захоплення"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:919
 msgid "Set capture replay rate"
-msgstr ""
+msgstr "Встановити частоту відтворення захоплення"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:920
 msgid "Toggle capture looping"
-msgstr ""
+msgstr "Увімкнути/Вимкнути циклічне захоплення"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:922
 #, java-format
@@ -1819,14 +1818,12 @@ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 msgstr "Доступна для розчинника поверхня (ВДВ + {0} ангстрем)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:952
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range ALL)"
-msgstr "Молекулярний електростатичний потенціал"
+msgstr "Молекулярний електростатичний потенціал (діапазон ALL)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:953
-#, fuzzy
 msgid "Molecular Electrostatic Potential (range -0.1 0.1)"
-msgstr "Молекулярний електростатичний потенціал"
+msgstr "Молекулярний електростатичний потенціал (діапазон -0.1 – 0.1)"
 
 #: org/jmol/popup/MainPopupResourceBundle.java:959
 #: org/jmol/popup/MainPopupResourceBundle.java:960
@@ -2227,12 +2224,12 @@ msgstr "що записувати? {0} або «назву файла» {1}"
 #: org/jmol/script/ScriptEvaluator.java:5722
 #, java-format
 msgid "Note: Enable looping using {0}"
-msgstr ""
+msgstr "Зауваження: циклічність можна увімкнути за допомогою {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:5724
 #, java-format
 msgid "Animation delay based on: {0}"
-msgstr ""
+msgstr "Затримка анімації на основі: {0}"
 
 #: org/jmol/script/ScriptEvaluator.java:7001
 #, java-format
@@ -2262,14 +2259,14 @@ msgid "{0} hydrogen bonds"
 msgstr "{0} водневих зв’язки"
 
 #: org/jmol/scriptext/ScriptExt.java:5689
-#, fuzzy, java-format
+#, java-format
 msgid "{0} charges modified"
-msgstr "додано атоми водню {0}"
+msgstr "Змінено {0} зарядів"
 
 #: org/jmol/scriptext/ScriptExt.java:5770
-#, fuzzy, java-format
+#, java-format
 msgid "{0} struts mp.added"
-msgstr "додано {0} розпірки"
+msgstr "Додано {0} розпинок"
 
 #: org/jmol/scriptext/ScriptExt.java:6073
 msgid "Note: More than one model is involved in this contact!"
@@ -2369,7 +2366,8 @@ msgstr "вибрати точку ISOSURFACE (потрібно {0}"
 #: org/jmol/viewer/ActionManager.java:380
 #, java-format
 msgid "pick a label to toggle it hidden/displayed (requires {0})"
-msgstr "вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
+msgstr ""
+"вибрати мітку для перемикання стану приховано/показано (потрібно {0})"
 
 #: org/jmol/viewer/ActionManager.java:387
 #, java-format
@@ -2482,7 +2480,8 @@ msgstr "зміна масштабу (вздовж правого краю вік
 
 #: org/jmol/viewer/ActionManager.java:445
 #, java-format
-msgid "click on two points to spin around axis counterclockwise (requires {0})"
+msgid ""
+"click on two points to spin around axis counterclockwise (requires {0})"
 msgstr ""
 "клацніть лівою кнопкою миші у двох точках, щоб почати обертання навколо вісі "
 "проти годинникової стрілки (потрібно {0})"
@@ -2531,14 +2530,13 @@ msgid ""
 msgstr "вибрати два атоми для показу взаємозв’язків симетрії між ними"
 
 #: org/jmol/viewer/OutputManager.java:654
-#, fuzzy
 msgid "canceled"
-msgstr "Скасувати"
+msgstr "скасовано"
 
 #: org/jmol/viewer/OutputManager.java:655
-#, fuzzy, java-format
+#, java-format
 msgid "{0} saved"
-msgstr "Зображення {0}"
+msgstr "{0} збережено"
 
 #: org/jmol/viewer/OutputManager.java:710
 #, java-format
@@ -2573,60 +2571,6 @@ msgstr "доступ до буфера даних заборонено — ви�
 msgid "{0} hydrogens added"
 msgstr "додано атоми водню {0}"
 
-#~ msgid "File creation failed."
-#~ msgstr "Не вдалося створити файл."
-
-#~ msgid "Minimize"
-#~ msgstr "Мінімізувати"
-
-#~ msgid "Molecular Orbitals"
-#~ msgstr "Молекулярні орбіталі"
-
-#~ msgid ""
-#~ "File creation by this applet is not allowed. For Base64 JPEG format, use "
-#~ "{0}."
-#~ msgstr ""
-#~ "Створення файлів цим аплетом заборонено. Щоб отримати JPEG у форматі "
-#~ "Base64, скористайтеся {0}."
-
-#~ msgid "Java memory usage"
-#~ msgstr "Використання пам’яті Java"
-
-#~ msgid "Top"
-#~ msgstr "Згори"
-
-#~ msgid "File from PDB"
-#~ msgstr "Файл з PDB"
-
-#~ msgid "File or URL"
-#~ msgstr "Файл або адреса URL"
-
-#~ msgid "File {0}"
-#~ msgstr "Файл {0}"
-
-#~ msgid "Script with state"
-#~ msgstr "Скрипт зі станом"
-
-#~ msgid "Script with history"
-#~ msgstr "Скрипт з журналом"
-
-#~ msgid "JVXL Isosurface"
-#~ msgstr "Ізоповерхня JVXL"
-
-#~ msgid "{0} 3D Model"
-#~ msgstr "Просторова модель {0}"
-
-#~ msgid "About Jmol"
-#~ msgstr "Про Jmol"
-
-#~ msgid "ERROR: cannot set boolean flag to string value: {0}"
-#~ msgstr ""
-#~ "ПОМИЛКА: не можна призначати булівське значення до значення типу "
-#~ "«string»: {0}"
-
-#~ msgid "ERROR: Cannot set value of this variable to a boolean: {0}"
-#~ msgstr "ПОМИЛКА: не можна змінити тип цієї змінної на булівський: {0}"
-
-#~ msgid "ERROR: cannot set boolean flag to numeric value: {0}"
-#~ msgstr ""
-#~ "ПОМИЛКА: не можна призначати булівське значення до числового значення: {0}"
+#, java-format
+#~ msgid "{0} struts added"
+#~ msgstr "додано {0} розпірки"

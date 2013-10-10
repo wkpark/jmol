@@ -2,7 +2,9 @@ package org.jmol.api;
 
 public interface EventManager {
 
-  void keyPressed(int keyCode, int modifiers);
+  boolean keyPressed(int keyCode, int modifiers);
+
+  boolean keyTyped(int keyChar, int modifiers);
 
   void keyReleased(int keyCode);
 

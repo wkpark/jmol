@@ -877,10 +877,11 @@ public class ActionManager implements EventManager {
    * 
    * @param key
    * @param modifiers
+   * @return 
    */
-  public void keyPressed(int key, int modifiers) {
+  public boolean keyPressed(int key, int modifiers) {
     if (keyProcessing)
-      return;
+      return false;
     viewer.hoverOff();
     keyProcessing = true;
     switch (key) {
@@ -917,6 +918,7 @@ public class ActionManager implements EventManager {
       }
     }
     keyProcessing = false;
+    return true;
   }
 
   public void keyReleased(int key) {
@@ -2144,6 +2146,11 @@ public class ActionManager implements EventManager {
   private void zoomTo(int atomIndex) {
     runScript("zoomTo (atomindex=" + atomIndex + ")");
     viewer.setStatusAtomPicked(atomIndex, null);
+  }
+
+
+  public boolean keyTyped(int keyChar, int modifiers) {
+    return false;
   }
 
 }

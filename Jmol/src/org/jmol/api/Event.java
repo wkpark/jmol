@@ -54,13 +54,19 @@ public class Event {
   public static final int VK_SHIFT   = 16;//KeyEvent.VK_SHIFT;
   public static final int VK_ALT     = 18;//KeyEvent.VK_ALT;
   public static final int VK_CONTROL = 17;//KeyEvent.VK_CONTROL;
-  public static final int VK_META    = 157;//KeyEvent.VK_META;
+  public static final int VK_META    = 157; // KeyEvent.VK_META;
   public static final int VK_LEFT    = 37;//KeyEvent.VK_LEFT;
   public static final int VK_RIGHT   = 39;//KeyEvent.VK_RIGHT;
   public static final int VK_PERIOD  = 46;//KeyEvent.VK_PERIOD;
   public static final int VK_SPACE   = 32;//KeyEvent.VK_SPACE;
   public static final int VK_DOWN    = 40;//KeyEvent.VK_DOWN;
   public static final int VK_UP      = 38;//KeyEvent.VK_UP;
+  public static final int VK_ESCAPE  = 27;//KeyEvent.VK_ESCAPE;
+  public static final int VK_DELETE  = 127;//KeyEvent.VK_DELETE;
+  public static final int VK_BACK_SPACE = 8;//KeyEvent.VK_BACK_SPACE;
+  public static final int VK_PAGE_DOWN = 34;//KeyEvent.VK_PAGE_DOWN;
+  public static final int VK_PAGE_UP   = 33;//KeyEvent.VK_PAGE_UP;
+
   // for status messages:
   public final static int MOVED = 0;
   public final static int DRAGGED = 1;

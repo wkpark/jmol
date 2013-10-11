@@ -509,6 +509,9 @@ public final class URL implements java.io.Serializable {
        * if (arguments.length == 1) {
        *   spec = context;context = handler = null;
        * }
+       * if (context && context.getValue() == null)
+       *   context = null;
+       * 
        */
         String original = spec;
         int i, limit, c;

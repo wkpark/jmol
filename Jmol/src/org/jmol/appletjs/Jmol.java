@@ -240,7 +240,7 @@ public class Jmol implements JmolSyncInterface {
 
   private String getParameter(String paramName) {
     Object o = htParams.get(paramName.toLowerCase());
-    return (o == null ? (String) null : new String(o.toString()));
+    return (o == null ? null : new String(o.toString()));
   }
 
   private boolean getBooleanValue(String propertyName, boolean defaultValue) {

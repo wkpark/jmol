@@ -8,4 +8,6 @@ public interface JmolMouseInterface {
 
   void dispose();
 
+	void processTwoPointGesture(float[][][] touches);
+
 }

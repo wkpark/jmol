@@ -345,7 +345,7 @@ public class MoldenReader extends MopacSlaterReader {
   
   @SuppressWarnings("unchecked")
   private void sortMOs() {
-    Object[] list = orbitals.toArray();
+    Object[] list = orbitals.toArray(new Object[orbitals.size()]);
     Arrays.sort(list, new MOEnergySorter());
     orbitals.clear();
     for (int i = 0; i < list.length; i++)

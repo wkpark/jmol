@@ -112,7 +112,7 @@ public class Mouse implements JmolMouseInterface {
 
   /**
    * 
-   * called directly by JSmol as applet._applet.viewer.mouse.processTwoPointGesture(canvas.touches);
+   * called by JSmol as processTwoPointGesture(canvas.touches);
    * 
    * @param touches
    *     [[finger1 touches],[finger2 touches]]

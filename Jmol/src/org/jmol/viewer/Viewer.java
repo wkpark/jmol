@@ -47,6 +47,7 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.api.JSmolInterface;
 import org.jmol.api.JmolNMRInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.ApiPlatform;
@@ -178,7 +179,7 @@ import java.io.StringReader;
  */
 
 @J2SIgnoreImport( { Runtime.class })
-public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer {
+public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer, JSmolInterface {
 
   @Override
   protected void finalize() throws Throwable {
@@ -692,6 +693,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     mouse = null;
   }
 
+  public void processTwoPointGesture(float[][][] touches) {
+    mouse.processTwoPointGesture(touches);
+  }
+  
   @Override
   public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
                                      long time) {
@@ -10402,6 +10407,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public MeasurementPending getMP() {
     return ((MeasurementPending) Interface
         .getOptionInterface("modelset.MeasurementPending")).set(modelSet);
+  }
+
+  public Object getApplet() {
+    return applet;
   }
 
 }

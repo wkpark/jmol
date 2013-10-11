@@ -664,7 +664,7 @@ public class Escape {
     SB sb = new SB();
     String sep = "";
     if (info == null)
-      return packageJSON(infoType, (String) null);
+      return packageJSON(infoType, null);
     if (info instanceof Integer || info instanceof Float
         || info instanceof Double)
       return packageJSON(infoType, info.toString());

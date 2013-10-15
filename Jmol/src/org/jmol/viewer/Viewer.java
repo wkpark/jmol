@@ -514,7 +514,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
           : new ActionManager());
       actionManager.setViewer(this, commandOptions + "-multitouch-"
           + info.get("multiTouch"));
-      mouse = apiPlatform.getMouseManager(privateKey);
+      mouse = apiPlatform.getMouseManager(privateKey, display);
       if (multiTouch && !checkOption2("-simulated", "-simulated"))
         apiPlatform.setTransparentCursor(display);
     }

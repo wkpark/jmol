@@ -39,7 +39,7 @@ public interface ApiPlatform {
 
   ////  Mouse 
 
-  JmolMouseInterface getMouseManager(double privateKey);
+  JmolMouseInterface getMouseManager(double privateKey, Object display);
 
   ///// Font
   

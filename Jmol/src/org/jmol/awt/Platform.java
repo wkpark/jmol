@@ -85,8 +85,8 @@ public class Platform implements ApiPlatform {
 
   ////// Mouse
 
-  public JmolMouseInterface getMouseManager(double privateKey) {
-    return new Mouse(privateKey, viewer);
+  public JmolMouseInterface getMouseManager(double privateKey, Object display) {
+    return new Mouse(privateKey, viewer, display);
   }
 
   ////// Image 

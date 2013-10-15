@@ -61,12 +61,13 @@ class Mouse implements MouseWheelListener, MouseListener,
   /**
    * @param privateKey  
    * @param viewer 
+   * @param odisplay 
    */
-  Mouse(double privateKey, PlatformViewer viewer) {
+  Mouse(double privateKey, PlatformViewer viewer, Object odisplay) {
     //this.privateKey = privateKey;
     this.viewer = (Viewer) viewer;
     manager = this.viewer.getActionManager();
-    Component display = (Component) viewer.getDisplay();
+    Component display = (Component) odisplay;
     display.addKeyListener(this);
     display.addMouseListener(this);
     display.addMouseMotionListener(this);

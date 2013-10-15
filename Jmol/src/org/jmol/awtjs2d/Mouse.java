@@ -55,8 +55,9 @@ public class Mouse implements JmolMouseInterface {
   /**
    * @param privateKey -- not used in JavaScript  
    * @param viewer 
+   * @param display 
    */
-  public Mouse(double privateKey, PlatformViewer viewer) {
+  public Mouse(double privateKey, PlatformViewer viewer, Object display) {
     //this.privateKey = privateKey; could be used for clipboard access
     this.viewer = (Viewer) viewer;
     this.manager = this.viewer.getActionManager();

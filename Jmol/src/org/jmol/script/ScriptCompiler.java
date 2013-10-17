@@ -23,12 +23,10 @@
 
 package org.jmol.script;
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -39,9 +37,11 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Bond.BondSet;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
+import javajs.util.SB;
+import javajs.util.M3;
+import javajs.util.M4;
 
 import java.util.Hashtable;
 
@@ -1181,9 +1181,9 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       }
       if (isBondOrMatrix) {
         Object m = lookingAtMatrix();
-        if (m instanceof Matrix3f || m instanceof Matrix4f) {
+        if (m instanceof M3 || m instanceof M4) {
           addTokenToPrefix(T.o(
-              (m instanceof Matrix3f ? T.matrix3f : T.matrix4f), m));
+              (m instanceof M3 ? T.matrix3f : T.matrix4f), m));
           return CONTINUE;
         }
       }

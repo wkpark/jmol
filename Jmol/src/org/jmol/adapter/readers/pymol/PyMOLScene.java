@@ -14,17 +14,19 @@ import org.jmol.java.BS;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
+import org.jmol.util.Point3fi;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.vec.Point3fi;
-import javajs.lang.SB;
+import javajs.util.P3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 

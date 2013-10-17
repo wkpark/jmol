@@ -29,9 +29,10 @@ import org.jmol.shape.AtomShape;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import javajs.lang.SB;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
+
+import javajs.util.SB;
+import javajs.util.M3;
+import javajs.util.M4;
 
 import org.jmol.viewer.JC;
 
@@ -152,10 +153,10 @@ public class Dots extends AtomShape {
 
     if ("refreshTrajectories" == propertyName) {
       bs = (BS) ((Object[]) value)[1];
-      Matrix4f m4 = (Matrix4f) ((Object[]) value)[2];
+      M4 m4 = (M4) ((Object[]) value)[2];
       if (m4 == null) // end of compare command
         return;
-      Matrix3f m = new Matrix3f();
+      M3 m = new M3();
       m4.getRotationScale(m);
       ec.reCalculate(bs, m);
       return;

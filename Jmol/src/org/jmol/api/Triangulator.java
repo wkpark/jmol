@@ -1,7 +1,7 @@
 package org.jmol.api;
 
 import javajs.util.List;
-import javajs.vec.P4;
+import javajs.util.P4;
 
 public interface Triangulator {
 

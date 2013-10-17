@@ -35,10 +35,11 @@ import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.shape.AtomShape;
 import org.jmol.shape.Mesh;
-import javajs.array.ArrayUtil;
 import org.jmol.util.C;
 import org.jmol.util.Logger;
-import javajs.vec.V3;
+
+import javajs.util.ArrayUtil;
+import javajs.util.V3;
 import org.jmol.viewer.JC;
 
 public class BioShape extends AtomShape {

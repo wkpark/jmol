@@ -39,11 +39,12 @@ import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Model;
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.lang.SB;
 import org.jmol.util.Tensor;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 /*

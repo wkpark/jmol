@@ -25,6 +25,8 @@
 package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -40,7 +42,6 @@ import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Minimizer;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;

@@ -31,7 +31,7 @@ import java.util.Map;
 import org.jmol.java.BS;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Parser;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 /*
  * 

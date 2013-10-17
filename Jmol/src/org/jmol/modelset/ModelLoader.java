@@ -25,17 +25,15 @@
 
 package org.jmol.modelset;
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
@@ -51,7 +49,10 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.java.BS;
 
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Arrays;
 
 import java.util.Hashtable;

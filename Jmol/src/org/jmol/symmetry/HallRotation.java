@@ -52,13 +52,13 @@ package org.jmol.symmetry;
  *
  */
 
-import javajs.vec.Matrix4f;
+import javajs.util.M4;
 
 class HallRotation {
   String rotCode;
   //int order;
-  Matrix4f seitzMatrix = new Matrix4f();
-  Matrix4f seitzMatrixInv = new Matrix4f();
+  M4 seitzMatrix = new M4();
+  M4 seitzMatrixInv = new M4();
   
   private HallRotation (String code, String matrixData) {
     rotCode = code;

@@ -12,8 +12,9 @@ import java.util.Map;
 
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
-import javajs.lang.SB;
 import org.jmol.util.Tensor;
 import org.jmol.util.Txt;
 

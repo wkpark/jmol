@@ -27,7 +27,8 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
-import javajs.lang.SB;
+
+import javajs.util.SB;
 
 import java.util.Hashtable;
 import java.util.Map;

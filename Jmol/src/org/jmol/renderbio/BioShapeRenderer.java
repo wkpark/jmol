@@ -41,11 +41,11 @@ import org.jmol.util.Hermite;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.V3;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.V3;
 
 /**
    * @author Alexander Rose
@@ -520,12 +520,12 @@ abstract class BioShapeRenderer extends MeshRenderer {
   private final V3 wing = new V3();
   private final V3 wing1 = new V3();
   private final V3 wingT = new V3();
-  private final AxisAngle4f aa = new AxisAngle4f();
+  private final A4 aa = new A4();
   private final P3 pt = new P3();
   private final P3 pt1 = new P3();
   private final P3 ptPrev = new P3();
   private final P3 ptNext = new P3();
-  private final Matrix3f mat = new Matrix3f();
+  private final M3 mat = new M3();
   private final static int MODE_TUBE = 0;
   private final static int MODE_FLAT = 1;
   private final static int MODE_ELLIPTICAL = 2;

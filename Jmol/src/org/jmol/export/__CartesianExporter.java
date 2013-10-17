@@ -38,12 +38,12 @@ import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import javajs.util.List;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.Tuple3f;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.T3;
 
 /*
  * for programs that use the standard 3D coordinates.
@@ -56,7 +56,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     lineWidthMad = 100;
   }
 
-  protected AxisAngle4f viewpoint = new AxisAngle4f();
+  protected A4 viewpoint = new A4();
 
   protected P3 getModelCenter() {
     // "center" is the center of rotation, not
@@ -128,7 +128,7 @@ abstract public class __CartesianExporter extends ___Exporter {
    * @param pt
    * @return pt or pt scaled by exportScale
    */
-  protected Tuple3f scalePt(Tuple3f pt) {
+  protected T3 scalePt(T3 pt) {
     if (exportScale == 1)
       return pt;
     ptScaled.setT(pt);
@@ -136,7 +136,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     return ptScaled;
   }
 
-  protected int getCoordinateMap(Tuple3f[] vertices, int[] coordMap, BS bsValid) {
+  protected int getCoordinateMap(T3[] vertices, int[] coordMap, BS bsValid) {
     int n = 0;
     for (int i = 0; i < coordMap.length; i++) {
       if (bsValid != null && !bsValid.get(i) || Float.isNaN(vertices[i].x)) {
@@ -149,7 +149,7 @@ abstract public class __CartesianExporter extends ___Exporter {
     return n;
   }
 
-  protected int[] getNormalMap(Tuple3f[] normals, int nNormals,
+  protected int[] getNormalMap(T3[] normals, int nNormals,
                                BS bsValid, List<String> vNormals) {
     Map<String, Integer> htNormals = new Hashtable<String, Integer>();
     int[] normalMap = new int[nNormals];
@@ -318,8 +318,8 @@ abstract public class __CartesianExporter extends ___Exporter {
 
   @Override
   void fillEllipsoid(P3 center, P3[] points, short colix, int x,
-                     int y, int z, int diameter, Matrix3f toEllipsoidal,
-                     double[] coef, Matrix4f deriv, P3i[] octantPoints) {
+                     int y, int z, int diameter, M3 toEllipsoidal,
+                     double[] coef, M4 deriv, P3i[] octantPoints) {
     outputEllipsoid(center, points, colix);
   }
 
@@ -356,13 +356,13 @@ abstract public class __CartesianExporter extends ___Exporter {
         font3d, jmolRenderer);
   }
 
-  protected Matrix4f sphereMatrix = new Matrix4f();
+  protected M4 sphereMatrix = new M4();
 
-  protected void setSphereMatrix(Tuple3f center, float rx, float ry, float rz,
-                                 AxisAngle4f a, Matrix4f sphereMatrix) {
+  protected void setSphereMatrix(T3 center, float rx, float ry, float rz,
+                                 A4 a, M4 sphereMatrix) {
     if (a != null) {
-      Matrix3f mq = new Matrix3f();
-      Matrix3f m = new Matrix3f();
+      M3 mq = new M3();
+      M3 m = new M3();
       m.m00 = rx;
       m.m11 = ry;
       m.m22 = rz;

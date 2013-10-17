@@ -31,7 +31,7 @@ package javajs.vec;
  *         constructor and method names for the optimization of compiled
  *         JavaScript using Java2Script
  */
-public class P3i extends Tuple3i {
+public class P3i extends T3i {
 
   public static P3i new3(int x, int y, int z) {
     P3i pt = new P3i();

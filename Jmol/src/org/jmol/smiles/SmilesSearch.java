@@ -24,7 +24,10 @@
 
 package org.jmol.smiles;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Arrays;
 
 import java.util.Hashtable;
@@ -32,7 +35,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-import javajs.array.ArrayUtil;
 
 import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
@@ -40,9 +42,8 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.lang.SB;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.V3;
 
 /**
  *  -- was SmilesMolecule, 

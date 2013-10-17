@@ -27,7 +27,9 @@ import java.util.Properties;
 
 
 import org.jmol.i18n.GT;
-import javajs.lang.SB;
+
+import javajs.util.SB;
+
 import org.jmol.util.Txt;
 
 public class MainPopupResourceBundle extends PopupResource {

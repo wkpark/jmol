@@ -27,14 +27,12 @@ package org.jmol.shapespecial;
 import org.jmol.shape.Shape;
 import org.jmol.util.BSUtil;
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.P3;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.script.T;
 
 import org.jmol.java.BS;
@@ -42,7 +40,10 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 
 import java.util.Map;

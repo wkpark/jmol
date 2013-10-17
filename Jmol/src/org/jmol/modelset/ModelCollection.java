@@ -25,7 +25,9 @@
 
 package org.jmol.modelset;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Date;
 import java.util.Enumeration;
@@ -47,26 +49,24 @@ import org.jmol.bspt.CubeIterator;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
 import org.jmol.util.ModulationSet;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.vec.Point3fi;
+import javajs.util.P3;
+import javajs.util.P4;
 
+import org.jmol.util.Point3fi;
 import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;

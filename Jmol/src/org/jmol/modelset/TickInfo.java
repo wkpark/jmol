@@ -24,7 +24,7 @@
 package org.jmol.modelset;
 
 
-import javajs.vec.P3;
+import javajs.util.P3;
 
 public class TickInfo {
   

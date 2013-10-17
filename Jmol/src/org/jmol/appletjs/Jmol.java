@@ -38,7 +38,6 @@ import javajs.awt.Dimension;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
 
 
@@ -46,6 +45,8 @@ import java.awt.Event;
 import java.net.URL;
 import java.net.MalformedURLException;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 import java.util.Map;
 

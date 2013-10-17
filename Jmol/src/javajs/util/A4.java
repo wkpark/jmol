@@ -18,7 +18,7 @@ package javajs.vec;
 
 import java.io.Serializable;
 
-import org.jmol.util.Tuple3f;
+import javajs.util.T3;
 
 
 
@@ -35,7 +35,7 @@ import org.jmol.util.Tuple3f;
  * for unique constructor and method names
  * for the optimization of compiled JavaScript using Java2Script
  */
-public class AxisAngle4f implements Serializable {
+public class A4 implements Serializable {
 
   /*
    * I assumed that the length of the axis vector is not significant.
@@ -64,7 +64,7 @@ public class AxisAngle4f implements Serializable {
   /**
    * Constructs and initializes a AxisAngle4f to (0,0,1,0).
    */
-  public AxisAngle4f() {
+  public A4() {
     z = 1.0f;
   }
 
@@ -82,8 +82,8 @@ public class AxisAngle4f implements Serializable {
    *        the angle.
    * @return a
    */
-  public static AxisAngle4f new4(float x, float y, float z, float angle) {
-    AxisAngle4f a = new AxisAngle4f();
+  public static A4 new4(float x, float y, float z, float angle) {
+    A4 a = new A4();
     a.set4(x, y, z, angle);
     return a;
   }
@@ -95,8 +95,8 @@ public class AxisAngle4f implements Serializable {
    *        the AxisAngle4f containing the initialization x y z angle data
    * @return a
    */
-  public static AxisAngle4f newAA(AxisAngle4f a1) {
-    AxisAngle4f a = new AxisAngle4f();
+  public static A4 newAA(A4 a1) {
+    A4 a = new A4();
     a.set4(a1.x, a1.y, a1.z, a1.angle);
     return a;
   }
@@ -111,8 +111,8 @@ public class AxisAngle4f implements Serializable {
    *        the angle
    * @return a
    */
-  public static AxisAngle4f newVA(V3 axis, float angle) {
-    AxisAngle4f a = new AxisAngle4f();
+  public static A4 newVA(V3 axis, float angle) {
+    A4 a = new A4();
     a.setVA(axis, angle);
     return a;
   }
@@ -158,7 +158,7 @@ public class AxisAngle4f implements Serializable {
    * @param a
    *        the axis angle to be copied
    */
-  public final void setAA(AxisAngle4f a) {
+  public final void setAA(A4 a) {
     x = a.x;
     y = a.y;
     z = a.z;
@@ -173,7 +173,7 @@ public class AxisAngle4f implements Serializable {
    * @param m1
    *        the matrix3f
    */
-  public final void setM(Matrix3f m1) {
+  public final void setM(M3 m1) {
     setFromMat(m1.m00, m1.m01, m1.m02, m1.m10, m1.m11, m1.m12, m1.m20, m1.m21,
         m1.m22);
   }
@@ -219,9 +219,9 @@ public class AxisAngle4f implements Serializable {
    */
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof AxisAngle4f))
+    if (!(o instanceof A4))
       return false;
-    AxisAngle4f a1 = (AxisAngle4f) o;
+    A4 a1 = (A4) o;
     return x == a1.x && y == a1.y && z == a1.z && angle == a1.angle;
   }
 
@@ -234,7 +234,7 @@ public class AxisAngle4f implements Serializable {
    */
   @Override
   public int hashCode() {
-    return Tuple3f.floatToIntBits0(x) ^ Tuple3f.floatToIntBits0(y)
-        ^ Tuple3f.floatToIntBits0(z) ^ Tuple3f.floatToIntBits0(angle);
+    return T3.floatToIntBits0(x) ^ T3.floatToIntBits0(y)
+        ^ T3.floatToIntBits0(z) ^ T3.floatToIntBits0(angle);
   }
 }

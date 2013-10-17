@@ -457,7 +457,7 @@ public abstract class URLStreamHandler {
       return "";
     }
 //
-//    // pre-compute length of StringBuilder
+//    // pre-compute length of SB
 //    int len = u.getProtocol().length() + 1;
 //    if (u.getAuthority() != null && u.getAuthority().length() > 0)
 //        len += 2 + u.getAuthority().length();
@@ -470,7 +470,7 @@ public abstract class URLStreamHandler {
 //    if (u.getRef() != null) 
 //        len += 1 + u.getRef().length();
 //
-//    StringBuilder result = new StringBuilder(len);
+//    SB result = new SB(len);
 //    result.append(u.getProtocol());
 //        result.append(":");
 //        if (u.getAuthority() != null && u.getAuthority().length() > 0) {

@@ -2,6 +2,7 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.Atom;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 
 import java.util.Arrays;
@@ -12,7 +13,6 @@ import java.util.Map;
 import org.jmol.api.JmolAdapter;
 import org.jmol.java.BS;
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 

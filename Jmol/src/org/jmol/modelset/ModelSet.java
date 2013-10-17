@@ -30,15 +30,14 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Measure;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P4;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P4;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.T3;
+import javajs.util.V3;
 
 import org.jmol.viewer.JC;
 import org.jmol.viewer.TransformManager;
@@ -51,6 +50,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
 
 import javajs.util.List;
+import javajs.util.SB;
 
 
 import java.util.Hashtable;
@@ -755,7 +755,7 @@ import java.util.Map;
     return bs;
   }
 
-  public void setAtomCoordsRelative(Tuple3f offset, BS bs) {
+  public void setAtomCoordsRelative(T3 offset, BS bs) {
     setAtomsCoordRelative(bs, offset.x, offset.y, offset.z);
     mat4.setIdentity();
     vTemp.setT(offset);
@@ -828,10 +828,10 @@ import java.util.Map;
     }
   }
 
-  private final Matrix3f matTemp = new Matrix3f();
-  private final Matrix3f matInv = new Matrix3f();
-  private final Matrix4f mat4 = new Matrix4f();
-  private final Matrix4f mat4t = new Matrix4f();
+  private final M3 matTemp = new M3();
+  private final M3 matInv = new M3();
+  private final M4 mat4 = new M4();
+  private final M4 mat4t = new M4();
   private final V3 vTemp = new V3();
 
   public void setDihedrals(float[] dihedralList, BS[] bsBranches, float f) {
@@ -845,7 +845,7 @@ import java.util.Map;
       Atom a1 = atoms[(int) dihedralList[pt + 1]];
       V3 v = V3.newVsub(atoms[(int) dihedralList[pt + 2]], a1);
       float angle = (dihedralList[pt + 5] - dihedralList[pt + 4]) * f;
-      AxisAngle4f aa = AxisAngle4f.newVA(v, (float)(-angle / TransformManager.degreesPerRadian));
+      A4 aa = A4.newVA(v, (float)(-angle / TransformManager.degreesPerRadian));
       matTemp.setAA(aa);
       ptTemp.setT(a1);
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -857,7 +857,7 @@ import java.util.Map;
     }    
   }
 
-  public void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate,
+  public void moveAtoms(M3 mNew, M3 matrixRotate,
                         V3 translation, BS bs, P3 center,
                         boolean isInternal) {
     if (mNew == null) {
@@ -908,7 +908,7 @@ import java.util.Map;
     recalculatePositionDependentQuantities(bs, mat4);
   }
 
-  public void recalculatePositionDependentQuantities(BS bs, Matrix4f mat) {
+  public void recalculatePositionDependentQuantities(BS bs, M4 mat) {
     if (getHaveStraightness())
       calculateStraightness();
     recalculateLeadMidpointsAndWingVectors(-1);

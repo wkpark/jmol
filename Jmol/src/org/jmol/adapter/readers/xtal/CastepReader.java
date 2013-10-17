@@ -49,10 +49,10 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 
 /**

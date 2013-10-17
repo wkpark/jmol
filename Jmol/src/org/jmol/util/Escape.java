@@ -29,12 +29,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javajs.util.List;
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.vec.Tuple3f;
+import javajs.util.SB;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.T3;
 
 
 import org.jmol.java.BS;
@@ -66,7 +67,7 @@ public class Escape {
    * @param xyz
    * @return  {x y z}
    */
-  public static String eP(Tuple3f xyz) {
+  public static String eP(T3 xyz) {
     if (xyz == null)
       return "null";
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z + "}";
@@ -90,8 +91,8 @@ public class Escape {
       return eV((List<SV>) x);
     if (x instanceof BS) 
       return eBS((BS) x);
-    if (x instanceof Tuple3f)
-      return eP((Tuple3f) x);
+    if (x instanceof T3)
+      return eP((T3) x);
     if (x instanceof P4)
       return eP4((P4) x);
     if (isAS(x))
@@ -104,12 +105,12 @@ public class Escape {
       return eAD((double[]) x);
     if (isAP(x))
       return eAP((P3[]) x);
-    if (x instanceof Matrix3f) 
-      return Txt.simpleReplace(((Matrix3f) x).toString(), "\t", ",\t");
-    if (x instanceof Matrix4f) 
-      return Txt.simpleReplace(((Matrix4f) x).toString(), "\t", ",\t");
-    if (x instanceof AxisAngle4f) {
-      AxisAngle4f a = (AxisAngle4f) x;
+    if (x instanceof M3) 
+      return Txt.simpleReplace(((M3) x).toString(), "\t", ",\t");
+    if (x instanceof M4) 
+      return Txt.simpleReplace(((M4) x).toString(), "\t", ",\t");
+    if (x instanceof A4) {
+      A4 a = (A4) x;
       return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";
     }    
     if (x instanceof Map)
@@ -581,9 +582,9 @@ public class Escape {
     if (!Float.isNaN(Parser.parseFloatNext(str, next)))
       return strMatrix; // overflow
     if (nPoints == 9)
-      return Matrix3f.newA(points);
+      return M3.newA(points);
     if (nPoints == 16)
-      return Matrix4f.newA(points);
+      return M4.newA(points);
     return strMatrix;
   }
 /*
@@ -778,9 +779,9 @@ public class Escape {
       sb.append(" ]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof Matrix4f) {
+    if (info instanceof M4) {
       float[] x = new float[4];
-      Matrix4f m4 = (Matrix4f) info;
+      M4 m4 = (M4) info;
       sb.appendC('[');
       for (int i = 0; i < 4; i++) {
         if (i > 0)
@@ -791,9 +792,9 @@ public class Escape {
       sb.appendC(']');
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof Matrix3f) {
+    if (info instanceof M3) {
       float[] x = new float[3];
-      Matrix3f m3 = (Matrix3f) info;
+      M3 m3 = (M3) info;
       sb.appendC('[');
       for (int i = 0; i < 3; i++) {
         if (i > 0)
@@ -804,15 +805,15 @@ public class Escape {
       sb.appendC(']');
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof Tuple3f) {
-      addJsonTuple(sb, (Tuple3f) info);
+    if (info instanceof T3) {
+      addJsonTuple(sb, (T3) info);
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof AxisAngle4f) {
-      sb.append("[").appendF(((AxisAngle4f) info).x).append(",").appendF(
-          ((AxisAngle4f) info).y).append(",").appendF(((AxisAngle4f) info).z)
+    if (info instanceof A4) {
+      sb.append("[").appendF(((A4) info).x).append(",").appendF(
+          ((A4) info).y).append(",").appendF(((A4) info).z)
           .append(",").appendF(
-              (float) (((AxisAngle4f) info).angle * 180d / Math.PI))
+              (float) (((A4) info).angle * 180d / Math.PI))
           .append("]");
       return packageJSONSb(infoType, sb);
     }
@@ -835,7 +836,7 @@ public class Escape {
     return packageJSON(infoType, fixString(info.toString()));
   }
 
-  private static void addJsonTuple(SB sb, Tuple3f pt) {
+  private static void addJsonTuple(SB sb, T3 pt) {
     sb.append("[")
     .appendF(pt.x).append(",")
     .appendF(pt.y).append(",")
@@ -936,10 +937,10 @@ public class Escape {
       }
       return packageReadableSb(name, "List[" + imax + "]", sb);
     }
-    if (info instanceof Matrix3f
-        || info instanceof Tuple3f
+    if (info instanceof M3
+        || info instanceof T3
         || info instanceof P4
-        || info instanceof AxisAngle4f) {
+        || info instanceof A4) {
       sb.append(e(info));
       return packageReadableSb(name, null, sb);
     }

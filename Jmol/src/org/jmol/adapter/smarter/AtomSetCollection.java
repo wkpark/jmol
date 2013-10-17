@@ -24,7 +24,10 @@
 
 package org.jmol.adapter.smarter;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Collections;
 import java.util.Hashtable;
 
@@ -37,22 +40,20 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P3i;
 
 import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SimpleUnitCell;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 
 @SuppressWarnings("unchecked")
@@ -875,7 +876,7 @@ public class AtomSetCollection {
       fmatSupercell = null;
       return;
     }
-    Logger.info("Using supercell \n" + Matrix4f.newA(fmatSupercell));
+    Logger.info("Using supercell \n" + M4.newA(fmatSupercell));
   }
  
   public SymmetryInterface symmetry;
@@ -890,7 +891,7 @@ public class AtomSetCollection {
   
   boolean haveUnitCell = false;
   
-  public void setNotionalUnitCell(float[] info, Matrix3f matUnitCellOrientation, P3 unitCellOffset) {
+  public void setNotionalUnitCell(float[] info, M3 matUnitCellOrientation, P3 unitCellOffset) {
     notionalUnitCell = new float[info.length];
     this.unitCellOffset = unitCellOffset;
     for (int i = 0; i < info.length; i++)
@@ -1166,7 +1167,7 @@ public class AtomSetCollection {
     latticeOp = symmetry.getLatticeOp();
     checkAll = (atomSetCount == 1 && checkSpecial && latticeOp >= 0);
     latticeOnly = (checkLatticeOnly && latticeOp >= 0);
-    Matrix4f op = symmetry.getSpaceGroupOperation(0);
+    M4 op = symmetry.getSpaceGroupOperation(0);
     if (doPackUnitCell)
       ptOffset.set(0, 0, 0);
     for (int tx = minXYZ.x; tx < maxXYZ.x; tx++)
@@ -1271,7 +1272,7 @@ public class AtomSetCollection {
   }
   
   private P3 ptTemp;
-  private Matrix3f mTemp;
+  private M3 mTemp;
   
   private int symmetryAddAtoms(int iAtomFirst, int noSymmetryCount, 
                                int transX, int transY, int transZ, 
@@ -1416,14 +1417,14 @@ public class AtomSetCollection {
   public Tensor addRotatedTensor(Atom a, Tensor t, int iSym, boolean reset) {
     if (ptTemp == null) {
       ptTemp = new P3();
-      mTemp = new Matrix3f();
+      mTemp = new M3();
     }
     return a.addTensor(((Tensor) Interface.getOptionInterface("util.Tensor")).setFromEigenVectors(symmetry
         .rotateAxes(iSym, t.eigenVectors, ptTemp, mTemp),
         t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
   }
 
-  public void applySymmetryBio(List<Matrix4f> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
+  public void applySymmetryBio(List<M4> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
     if (latticeCells != null && latticeCells[0] != 0) {
       Logger.error("Cannot apply biomolecule when lattice cells are indicated");
       return;
@@ -1456,7 +1457,7 @@ public class AtomSetCollection {
           && filter.indexOf("#" + (i + 1) + ";") < 0) {
         continue;
       }
-      Matrix4f mat = biomts.get(i);
+      M4 mat = biomts.get(i);
       //Vector3f trans = new Vector3f();    
       for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++) {
         if (bsAtoms != null && !bsAtoms.get(iAtom))

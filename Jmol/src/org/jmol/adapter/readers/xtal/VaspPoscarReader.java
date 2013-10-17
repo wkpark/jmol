@@ -3,8 +3,9 @@ package org.jmol.adapter.readers.xtal;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
-import javajs.lang.SB;
 
 /**
  * http://cms.mpi.univie.ac.at/vasp/

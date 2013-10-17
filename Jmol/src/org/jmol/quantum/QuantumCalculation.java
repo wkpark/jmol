@@ -28,7 +28,7 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 
 abstract class QuantumCalculation {

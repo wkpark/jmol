@@ -26,9 +26,10 @@
 package org.jmol.symmetry;
 
 import org.jmol.util.Logger;
-import javajs.lang.SB;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3i;
+
+import javajs.util.SB;
+import javajs.util.M4;
+import javajs.util.P3i;
 
 class HallRotationTerm {
   
@@ -38,7 +39,7 @@ class HallRotationTerm {
   String translationString;
   HallRotation rotation;
   HallTranslation translation;
-  Matrix4f seitzMatrix12ths = new Matrix4f();
+  M4 seitzMatrix12ths = new M4();
   boolean isImproper;
   int order;
   char axisType = '\0';
@@ -158,8 +159,8 @@ class HallRotationTerm {
     }
 
     if (hallInfo.vectorCode.length() > 0) {
-      Matrix4f m1 = new Matrix4f();
-      Matrix4f m2 = new Matrix4f();
+      M4 m1 = new M4();
+      M4 m2 = new M4();
       m1.setIdentity();
       m2.setIdentity();
       P3i v = hallInfo.vector12ths;

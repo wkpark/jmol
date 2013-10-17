@@ -26,10 +26,11 @@ package org.jmol.jvxl.readers;
 
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
-import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.lang.SB;
+
+import javajs.util.ArrayUtil;
+import javajs.util.SB;
+import javajs.util.P3;
 
 abstract class VolumeDataReader extends SurfaceReader {
 

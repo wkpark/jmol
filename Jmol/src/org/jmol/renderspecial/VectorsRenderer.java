@@ -32,9 +32,9 @@ import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.shapespecial.Vectors;
 import org.jmol.util.GData;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.V3;
 import org.jmol.util.Vibration;
 
 public class VectorsRenderer extends ShapeRenderer {

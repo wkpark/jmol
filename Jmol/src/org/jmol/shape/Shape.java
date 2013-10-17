@@ -29,10 +29,11 @@ import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.lang.SB;
+import javajs.util.P3;
+import javajs.util.P3i;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.atomdata.RadiusData;

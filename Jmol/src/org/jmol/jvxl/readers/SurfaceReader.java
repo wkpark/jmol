@@ -35,19 +35,21 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.lang.SB;
-import javajs.vec.V3;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.V3;
 
 
 public abstract class SurfaceReader implements VertexDataServer {
@@ -221,8 +223,8 @@ public abstract class SurfaceReader implements VertexDataServer {
   protected P3 center;
   protected float[] anisotropy;
   protected boolean isAnisotropic;
-  protected Matrix3f eccentricityMatrix;
-  protected Matrix3f eccentricityMatrixInverse;
+  protected M3 eccentricityMatrix;
+  protected M3 eccentricityMatrixInverse;
   protected boolean isEccentric;
   protected float eccentricityScale;
   protected float eccentricityRatio;

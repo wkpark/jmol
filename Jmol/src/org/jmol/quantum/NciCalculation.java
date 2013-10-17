@@ -27,13 +27,14 @@ import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.java.BS;
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 
 

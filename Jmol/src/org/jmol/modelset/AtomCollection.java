@@ -25,6 +25,7 @@
 
 package org.jmol.modelset;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -43,23 +44,22 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
 import org.jmol.java.BS;
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.P4;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.P4;
 import org.jmol.util.Tensor;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.util.Vibration;
 
 import org.jmol.util.Measure;
@@ -505,7 +505,7 @@ abstract public class AtomCollection {
       }
   }
 
-  private void setAtomVibrationVector(int atomIndex, Tuple3f vib) {
+  private void setAtomVibrationVector(int atomIndex, T3 vib) {
     setVibrationVector(atomIndex, vib);  
     taintAtom(atomIndex, TAINT_VIBRATION);
   }
@@ -704,7 +704,7 @@ abstract public class AtomCollection {
     return (v == null && forceNew ? new Vibration() : v);
   }
 
-  protected void setVibrationVector(int atomIndex, Tuple3f vib) {
+  protected void setVibrationVector(int atomIndex, T3 vib) {
     if (Float.isNaN(vib.x) || Float.isNaN(vib.y) || Float.isNaN(vib.z))
       return;
     if (vibrations == null || vibrations.length < atomIndex)
@@ -1623,9 +1623,9 @@ abstract public class AtomCollection {
         x.scaleAdd2(2.828f, x, z); // 2*sqrt(2)
         if (pt != 3) {
           x.normalize();
-          AxisAngle4f a = AxisAngle4f.new4(z.x, z.y, z.z,
+          A4 a = A4.new4(z.x, z.y, z.z,
               (pt == 2 ? 1 : -1) * 2.09439507f); // PI*2/3
-          Matrix3f m = new Matrix3f();
+          M3 m = new M3();
           m.setIdentity();
           m.setAA(a);
           m.transform(x);

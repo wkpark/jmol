@@ -35,11 +35,11 @@ import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.MeshSurface;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.V3;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -704,8 +704,8 @@ final public class Export3D implements JmolRendererInterface {
   }
 
   public void fillEllipsoid(P3 center, P3[] points, int x, int y,
-                            int z, int diameter, Matrix3f mToEllipsoidal,
-                            double[] coef, Matrix4f mDeriv, int selectedOctant,
+                            int z, int diameter, M3 mToEllipsoidal,
+                            double[] coef, M4 mDeriv, int selectedOctant,
                             P3i[] octantPoints) {
     exporter.fillEllipsoid(center, points, colix, x, y, z, diameter,
         mToEllipsoidal, coef, mDeriv, octantPoints);

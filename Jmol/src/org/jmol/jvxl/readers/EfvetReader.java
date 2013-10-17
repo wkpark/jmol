@@ -28,7 +28,7 @@ import java.io.BufferedReader;
 import org.jmol.util.ColorUtil;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 /*
  * A simple EFVET file reader -- vertices and triangles only
  * 

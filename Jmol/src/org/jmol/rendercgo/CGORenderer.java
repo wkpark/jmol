@@ -32,8 +32,8 @@ import org.jmol.shapecgo.CGOMesh;
 import org.jmol.util.C;
 import javajs.util.List;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.vec.P3i;
+import javajs.util.P3;
+import javajs.util.P3i;
 
 public class CGORenderer extends DrawRenderer {
 

@@ -22,7 +22,10 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package javajs.vec;
+package org.jmol.util;
+
+import javajs.util.P3;
+import javajs.util.P3i;
 
 
 /**

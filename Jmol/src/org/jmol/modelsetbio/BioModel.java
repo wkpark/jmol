@@ -23,7 +23,10 @@
  */
 package org.jmol.modelsetbio;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -43,12 +46,10 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.P3;
 import org.jmol.util.Txt;
 
 

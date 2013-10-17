@@ -25,8 +25,11 @@
 
 package org.jmol.util;
 
-import javajs.util.List;
-import javajs.lang.SB;
+import java.util.List;
+
+import javajs.util.SB;
+import javajs.util.T3;
+import javajs.util.T4;
 
 public class Txt {
 
@@ -256,7 +259,7 @@ public class Txt {
                 ((Double) values[o]).doubleValue(), true);
             break;
           case 'p':
-            P3 pVal = (P3) values[o];
+            T3 pVal = (T3) values[o];
             strFormat = formatString(strFormat, "p", null, pVal.x, Double.NaN,
                 true);
             strFormat = formatString(strFormat, "p", null, pVal.y, Double.NaN,
@@ -265,7 +268,7 @@ public class Txt {
                 true);
             break;
           case 'q':
-            P4 qVal = (P4) values[o];
+            T4 qVal = (T4) values[o];
             strFormat = formatString(strFormat, "q", null, qVal.x, Double.NaN,
                 true);
             strFormat = formatString(strFormat, "q", null, qVal.y, Double.NaN,
@@ -753,10 +756,10 @@ public class Txt {
     return ichT;
   }
 
-  public static String trimQuotes(String value) {
-    return (value != null && value.length() > 1 && value.startsWith("\"")
-        && value.endsWith("\"") ? value.substring(1, value.length() - 1)
-        : value);
-  }
+	public static String trimQuotes(String value) {
+	  return (value != null && value.length() > 1 && value.startsWith("\"")
+	      && value.endsWith("\"") ? value.substring(1, value.length() - 1)
+	      : value);
+	}
 
 }

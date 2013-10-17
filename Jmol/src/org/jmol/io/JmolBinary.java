@@ -38,11 +38,13 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
-import javajs.array.ArrayUtil;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;

@@ -24,17 +24,17 @@
 
 package org.jmol.util;
 
-import javajs.vec.P3;
-import javajs.vec.V3;
-import javajs.vec.Tuple3f;
+import javajs.util.P3;
+import javajs.util.V3;
+import javajs.util.T3;
 
 
 
 public class Hermite {
 
-  public static void getHermiteList(int tension, Tuple3f p0, Tuple3f p1,
-                                    Tuple3f p2, Tuple3f p3, Tuple3f p4,
-                                    Tuple3f[] list, int index0, int n, boolean isPt) {
+  public static void getHermiteList(int tension, T3 p0, T3 p1,
+                                    T3 p2, T3 p3, T3 p4,
+                                    T3[] list, int index0, int n, boolean isPt) {
     //always deliver ONE MORE than one might expect, to provide a normal
     int nPoints = n + 1;
     float fnPoints = n - 1;

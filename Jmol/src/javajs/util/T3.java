@@ -19,37 +19,35 @@ package javajs.vec;
 import java.io.Serializable;
 
 /**
- * A generic 3 element tuple that is represented by double precision floating
+ * A generic 3 element tuple that is represented by single precision floating
  * point x,y and z coordinates.
  * 
- * @version specification 1.1, implementation $Revision: 1.9 $, $Date:
- *          2006/07/28 17:01:32 $
+ * @version specification 1.1, implementation $Revision: 1.10 $, $Date:
+ *          2006/09/08 20:20:20 $
  * @author Kenji hiranabe
  * 
  * additions by Bob Hanson hansonr@stolaf.edu 9/30/2012
  * for unique constructor and method names
  * for the optimization of compiled JavaScript using Java2Script
  */
-public abstract class Tuple3d implements Serializable {
+public abstract class T3 implements Serializable {
+
   /**
    * The x coordinate.
    */
-  public double x;
+  public float x;
 
   /**
    * The y coordinate.
    */
-  public double y;
+  public float y;
 
   /**
    * The z coordinate.
    */
-  public double z;
+  public float z;
 
-  /**
-   * Constructs and initializes a Tuple3d to (0,0,0).
-   */
-  public Tuple3d() {
+  public T3() {
   }
 
   /**
@@ -62,7 +60,7 @@ public abstract class Tuple3d implements Serializable {
    * @param z
    *        the z coordinate
    */
-  public final void set(double x, double y, double z) {
+  public final void set(float x, float y, float z) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -74,7 +72,7 @@ public abstract class Tuple3d implements Serializable {
    * @param t
    *        the array of length 3 containing xyz in order
    */
-  public final void setA(double t[]) {
+  public final void setA(float t[]) {
     // ArrayIndexOutOfBounds is thrown if t.length < 3
     x = t[0];
     y = t[1];
@@ -82,12 +80,12 @@ public abstract class Tuple3d implements Serializable {
   }
 
   /**
-   * Sets the value of this tuple to the value of the Tuple3d argument.
+   * Sets the value of this tuple to the value of the Tuple3f argument.
    * 
    * @param t1
    *        the tuple to be copied
    */
-  public final void setT(Tuple3d t1) {
+  public final void setT(T3 t1) {
     x = t1.x;
     y = t1.y;
     z = t1.z;
@@ -101,7 +99,7 @@ public abstract class Tuple3d implements Serializable {
    * @param t2
    *        the second tuple
    */
-  public final void add2(Tuple3d t1, Tuple3d t2) {
+  public final void add2(T3 t1, T3 t2) {
     x = t1.x + t2.x;
     y = t1.y + t2.y;
     z = t1.z + t2.z;
@@ -113,7 +111,7 @@ public abstract class Tuple3d implements Serializable {
    * @param t1
    *        the other tuple
    */
-  public final void add(Tuple3d t1) {
+  public final void add(T3 t1) {
     x += t1.x;
     y += t1.y;
     z += t1.z;
@@ -128,7 +126,7 @@ public abstract class Tuple3d implements Serializable {
    * @param t2
    *        the second tuple
    */
-  public final void sub2(Tuple3d t1, Tuple3d t2) {
+  public final void sub2(T3 t1, T3 t2) {
     x = t1.x - t2.x;
     y = t1.y - t2.y;
     z = t1.z - t2.z;
@@ -141,7 +139,7 @@ public abstract class Tuple3d implements Serializable {
    * @param t1
    *        the other tuple
    */
-  public final void sub(Tuple3d t1) {
+  public final void sub(T3 t1) {
     x -= t1.x;
     y -= t1.y;
     z -= t1.z;
@@ -153,7 +151,7 @@ public abstract class Tuple3d implements Serializable {
    * @param s
    *        the scalar value
    */
-  public final void scale(double s) {
+  public final void scale(float s) {
     x *= s;
     y *= s;
     z *= s;
@@ -170,34 +168,93 @@ public abstract class Tuple3d implements Serializable {
    * @param t2
    *        the tuple to be added
    */
-  public final void scaleAdd(double s, Tuple3d t1, Tuple3d t2) {
+  public final void scaleAdd2(float s, T3 t1, T3 t2) {
     x = s * t1.x + t2.x;
     y = s * t1.y + t2.y;
     z = s * t1.z + t2.z;
   }
 
   /**
+   * Sets the value of this tuple to the scalar multiplication of itself and
+   * then adds tuple t1 (this = s*this + t1).
+   * 
+   * @param s
+   *        the scalar value
+   * @param t1
+   *        the tuple to be added
+   */
+  public final void scaleAdd(float s, T3 t1) {
+    x = s * x + t1.x;
+    y = s * y + t1.y;
+    z = s * z + t1.z;
+  }
+  
+  /**
+   * Vector dot product. Was in Vector3f; more useful here, though.
+   * 
+   * @param v
+   *        the other vector
+   * @return this.dot.v
+   */
+  public final float dot(T3 v) {
+    return x * v.x + y * v.y + z * v.z;
+  }
+
+  /**
+   * Returns the squared length of this vector.
+   * Was in Vector3f; more useful here, though.
+   * 
+   * @return the squared length of this vector
+   */
+  public final float lengthSquared() {
+    return x * x + y * y + z * z;
+  }
+
+  /**
+   * Returns the length of this vector.
+   * Was in Vector3f; more useful here, though.
+   * 
+   * @return the length of this vector
+   */
+  public final float length() {
+    return (float) Math.sqrt(lengthSquared());
+  }
+
+  /**
+   * Normalizes this vector in place.
+   * Was in Vector3f; more useful here, though.
+   */
+  public final void normalize() {
+    double d = length();
+
+    // zero-div may occur.
+    x /= d;
+    y /= d;
+    z /= d;
+  }
+
+  /**
    * Returns a hash number based on the data values in this object. Two
-   * different Tuple3d objects with identical data values (ie, returns true for
-   * equals(Tuple3d) ) will return the same hash number. Two vectors with
+   * different Tuple3f objects with identical data values (ie, returns true for
+   * equals(Tuple3f) ) will return the same hash number. Two vectors with
    * different data members may return the same hash value, although this is not
    * likely.
    */
   @Override
   public int hashCode() {
-    long xbits = doubleToLongBits0(x);
-    long ybits = doubleToLongBits0(y);
-    long zbits = doubleToLongBits0(z);
-    return (int) (xbits ^ (xbits >> 32) ^ ybits ^ (ybits >> 32) ^ zbits ^ (zbits >> 32));
+    long bits = 1L;
+    bits = 31L * bits + floatToIntBits0(x);
+    bits = 31L * bits + floatToIntBits0(y);
+    bits = 31L * bits + floatToIntBits0(z);
+    return (int) (bits ^ (bits >> 32));
   }
 
-  static long doubleToLongBits0(double d) {
-    // Check for +0 or -0
-    return (d == 0 ? 0 : Double.doubleToLongBits(d));
+  public static int floatToIntBits0(float f) {
+    return (f == 0 ? 0 : Float.floatToIntBits(f));
   }
 
   /**
-   * Returns true if all of the data members of Tuple3d t1 are equal to the
+   * Returns true if all of the data members of Tuple3f t1 are equal to the
    * corresponding data members in this
    * 
    * @param t1
@@ -205,14 +262,14 @@ public abstract class Tuple3d implements Serializable {
    */
   @Override
   public boolean equals(Object t1) {
-    if (!(t1 instanceof Tuple3d))
+    if (!(t1 instanceof T3))
       return false;
-    Tuple3d t2 = (Tuple3d) t1;
+    T3 t2 = (T3) t1;
     return (this.x == t2.x && this.y == t2.y && this.z == t2.z);
   }
 
   /**
-   * Returns a string that contains the values of this Tuple3d. The form is
+   * Returns a string that contains the values of this Tuple3f. The form is
    * (x,y,z).
    * 
    * @return the String representation
@@ -221,5 +278,4 @@ public abstract class Tuple3d implements Serializable {
   public String toString() {
     return "(" + x + ", " + y + ", " + z + ")";
   }
-
 }

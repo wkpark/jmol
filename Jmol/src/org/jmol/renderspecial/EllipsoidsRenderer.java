@@ -31,13 +31,13 @@ import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Normix;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P3i;
 
 import org.jmol.util.Parser;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -79,12 +79,12 @@ public class EllipsoidsRenderer extends ShapeRenderer {
   private float perspectiveFactor;
   private BS bsTemp = new BS();
   
-  private Matrix3f mat = new Matrix3f();
-  private Matrix3f mTemp = new Matrix3f();
-  private Matrix4f mDeriv = new Matrix4f();
-  private Matrix3f matScreenToCartesian = new Matrix3f();
-  private Matrix3f matScreenToEllipsoid = new Matrix3f();
-  private Matrix3f matEllipsoidToScreen = new Matrix3f();
+  private M3 mat = new M3();
+  private M3 mTemp = new M3();
+  private M4 mDeriv = new M4();
+  private M3 matScreenToCartesian = new M3();
+  private M3 matScreenToEllipsoid = new M3();
+  private M3 matEllipsoidToScreen = new M3();
   
   private final double[] coefs = new double[10];
   private final float[] factoredLengths = new float[3];
@@ -136,7 +136,7 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     bGlobals[OPT_WIREFRAME] = !isExport && !viewer.checkMotionRendering(T.ellipsoid);
     diameter0 = Math.round (((Float) viewer.getParameter("ellipsoidAxisDiameter"))
         .floatValue() * 1000);    
-    Matrix4f m4 = viewer.getMatrixtransform();
+    M4 m4 = viewer.getMatrixtransform();
     mat.setRow(0, m4.m00, m4.m01, m4.m02);
     mat.setRow(1, m4.m10, m4.m11, m4.m12);
     mat.setRow(2, m4.m20, m4.m21, m4.m22);

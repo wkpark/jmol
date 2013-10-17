@@ -35,9 +35,9 @@ import org.jmol.thread.JmolThread;
 import org.jmol.util.Escape;
 import org.jmol.util.Hermite;
 import javajs.util.List;
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.V3;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
@@ -387,7 +387,7 @@ public final class Navigator extends JmolThread implements
   private void alignZX(P3 pt0, P3 pt1, P3 ptVectorWing) {
     P3 pt0s = new P3();
     P3 pt1s = new P3();
-    Matrix3f m = tm.getMatrixRotate();
+    M3 m = tm.getMatrixRotate();
     m.transform2(pt0, pt0s);
     m.transform2(pt1, pt1s);
     V3 vPath = V3.newVsub(pt0s, pt1s);

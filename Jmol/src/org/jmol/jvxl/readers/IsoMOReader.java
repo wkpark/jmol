@@ -29,13 +29,13 @@ import java.util.Random;
 
 
 
-import javajs.array.ArrayUtil;
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.api.Interface;
 import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.QuantumPlaneCalculationInterface;

@@ -29,9 +29,9 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.V3;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.V3;
 
 import org.jmol.java.BS;
 
@@ -181,7 +181,7 @@ public class Tensor {
       for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
           a[pt++] = (float) asymMatrix[i][j];
-      return Matrix3f.newA(a);
+      return M3.newA(a);
     case 4: 
       if (symMatrix == null)
         return null;
@@ -190,7 +190,7 @@ public class Tensor {
       for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
           b[p2++] = (float) symMatrix[i][j];
-      return Matrix3f.newA(b);
+      return M3.newA(b);
     case 5: // value
       return Float.valueOf(eigenValues[2]);
     case 6: // isotropy
@@ -396,7 +396,7 @@ public class Tensor {
     }
     Eigen eigen = new Eigen().set(3);
     eigen.calc(a);
-    Matrix3f m = new Matrix3f();
+    M3 m = new M3();
     float[] mm = new float[9];
     for (int i = 0, p = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)

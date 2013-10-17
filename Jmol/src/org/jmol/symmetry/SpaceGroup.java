@@ -31,14 +31,16 @@ import java.util.Map;
 
 
 import org.jmol.api.SymmetryInterface;
-import javajs.array.ArrayUtil;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.M4;
+import javajs.util.P3;
 import org.jmol.util.Txt;
 
 /*
@@ -199,7 +201,7 @@ class SpaceGroup {
     return finalOperations.length;
   }
 
-  Matrix4f getOperation(int i) {
+  M4 getOperation(int i) {
     return finalOperations[i];
   }
 
@@ -471,11 +473,11 @@ class SpaceGroup {
       addOperation(null, 0);
       addSymmetry("x,y,z", 0);
     }
-    Matrix4f mat1 = new Matrix4f();
-    Matrix4f operation = new Matrix4f();
-    Matrix4f[] newOps = new Matrix4f[7];
+    M4 mat1 = new M4();
+    M4 operation = new M4();
+    M4[] newOps = new M4[7];
     for (int i = 0; i < 7; i++)
-      newOps[i] = new Matrix4f();
+      newOps[i] = new M4();
     // prior to Jmol 11.7.36/11.6.23 this was setting nOps within the loop
     // and setIdentity() outside the loop. That caused a multiplication of
     // operations, not a resetting of them each time. 
@@ -499,7 +501,7 @@ class SpaceGroup {
     }
   }
 
-  private void addSymmetrySM(String xyz, Matrix4f operation) {
+  private void addSymmetrySM(String xyz, M4 operation) {
     int iop = addOperation(xyz, 0);
     if (iop < 0)
       return;

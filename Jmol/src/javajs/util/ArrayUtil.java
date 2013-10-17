@@ -21,7 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package javajs.array;
+package javajs.util;
 
 
 import java.lang.reflect.Array;
@@ -30,8 +30,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.List;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 
 

@@ -44,11 +44,11 @@ import java.util.Map;
 
 import org.jmol.util.Logger;
 
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
+import javajs.util.M4;
+import javajs.util.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 
 /**
@@ -99,9 +99,9 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   private int nMolecular = 0;
   
 
-  private  List<Matrix4f> vBiomts;
+  private  List<M4> vBiomts;
   private  List<Map<String, Object>> vBiomolecules;
-  private Map<String,Matrix4f> htBiomts;
+  private Map<String,M4> htBiomts;
   private Map<String, Map<String, Object>> htSites;
 
   private Map<String, BS> assemblyIdAtoms;
@@ -311,7 +311,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   }
 
   private void setBiomolecules() {
-    Matrix4f mident = new Matrix4f();
+    M4 mident = new M4();
     mident.setIdentity();
     if (assemblyIdAtoms == null)
       return;
@@ -319,11 +319,11 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       Map<String, Object> biomolecule = vBiomolecules.get(i);
       String[] ops = Txt.split((String) biomolecule.get("operators"), ",");
       String assemblies = (String) biomolecule.get("assemblies");
-      vBiomts = new  List<Matrix4f>();
+      vBiomts = new  List<M4>();
       biomolecule.put("biomts", vBiomts);
       vBiomts.addLast(mident);
       for (int j = 0; j < ops.length; j++) {
-        Matrix4f m = htBiomts.get(ops[j]);
+        M4 m = htBiomts.get(ops[j]);
         if (m != null && !m.equals(mident))
           vBiomts.addLast(m);
       }
@@ -1338,7 +1338,7 @@ _pdbx_struct_oper_list.vector[3]
     info.put("molecule", Integer.valueOf(iMolecule));
     info.put("assemblies", "$" + assem[ASSEM_LIST].replace(',', '$'));
     info.put("operators", assem[ASSEM_OPERS]);
-    info.put("biomts", new  List<Matrix4f>());
+    info.put("biomts", new  List<M4>());
     Logger.info("assembly " + iMolecule + " operators " + assem[ASSEM_OPERS] + " ASYM_IDs " + assem[ASSEM_LIST]);
     vBiomolecules.addLast(info);
     assem = null;
@@ -1370,7 +1370,7 @@ _pdbx_struct_oper_list.vector[3]
       }
       if (id != null && (count == 12 || xyz != null && symmetry != null)) {
         Logger.info("assembly operator " + id + " " + xyz);
-        Matrix4f m4 = new Matrix4f();
+        M4 m4 = new M4();
         if (count != 12) {
           symmetry.getMatrixFromString(xyz, m, false);
           m[3] *= symmetry.getUnitCellInfoType(SimpleUnitCell.INFO_A) / 12;
@@ -1379,7 +1379,7 @@ _pdbx_struct_oper_list.vector[3]
         }
         m4.setA(m, 0);
         if (htBiomts == null)
-          htBiomts = new Hashtable<String, Matrix4f>();
+          htBiomts = new Hashtable<String, M4>();
         htBiomts.put(id, m4);
       }
     }
@@ -2616,8 +2616,8 @@ _pdbx_struct_oper_list.vector[3]
     }
   }
 
-  private Matrix4f getMatrix4(int i) {
-    Matrix4f m4 = new Matrix4f();
+  private M4 getMatrix4(int i) {
+    M4 m4 = new M4();
     float[] a = new float[16];
     for (; i < tokenizer.fieldCount; ++i) {
       String key = fields[fieldProperty(i)];

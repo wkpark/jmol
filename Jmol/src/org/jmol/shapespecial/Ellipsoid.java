@@ -28,11 +28,11 @@ package org.jmol.shapespecial;
 import org.jmol.api.Interface;
 import org.jmol.util.C;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
 import org.jmol.util.Tensor;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 public class Ellipsoid {
 
@@ -168,10 +168,10 @@ public class Ellipsoid {
   //  }
 
   public static void getEquationForQuadricWithCenter(float x, float y, float z,
-                                                     Matrix3f mToElliptical,
-                                                     V3 vTemp, Matrix3f mTemp,
+                                                     M3 mToElliptical,
+                                                     V3 vTemp, M3 mTemp,
                                                      double[] coef,
-                                                     Matrix4f mDeriv) {
+                                                     M4 mDeriv) {
     /* Starting with a center point and a matrix that converts cartesian 
      * or screen coordinates to ellipsoidal coordinates, 
      * this method fills a float[10] with the terms for the 

@@ -24,14 +24,14 @@
 
 package org.jmol.geodesic;
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Geodesic;
 import org.jmol.util.Normix;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.V3;
+import javajs.util.ArrayUtil;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.V3;
 import org.jmol.viewer.JC;
 
 import org.jmol.api.AtomIndexIterator;
@@ -243,7 +243,7 @@ public final class EnvelopeCalculation {
    * @param bs
    * @param m
    */
-  public void reCalculate(BS bs, Matrix3f m) {
+  public void reCalculate(BS bs, M3 m) {
     if (atomData.radiusData != null) {    
       calculate(null, maxRadius, bs, bsIgnore, disregardNeighbors,
           onlySelectedDots, isSurface, multiModel);

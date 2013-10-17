@@ -1,6 +1,6 @@
 package org.jmol.popup;
 
-import javajs.lang.SB;
+import javajs.util.SB;
 
 interface JmolAbstractMenu {
 

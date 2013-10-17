@@ -34,11 +34,11 @@ import java.util.Map;
 import org.jmol.java.BS;
 import org.jmol.util.GData;
 import javajs.util.List;
-import javajs.vec.P3;
-import javajs.lang.SB;
-import javajs.vec.Matrix3f;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.SB;
+import javajs.util.P3;
+import javajs.util.M3;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -127,7 +127,7 @@ public class _TachyonExporter extends __RayTracerExporter {
   }
 
   @Override
-  protected void output(Tuple3f pt) {
+  protected void output(T3 pt) {
     output(triad(pt));
   }
 
@@ -135,7 +135,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     return (int) x + " " + (int) (-y) + " " + (int) z;
   }
 
-  private String triad(Tuple3f pt) {
+  private String triad(T3 pt) {
     if (Float.isNaN(pt.x))
       return "0 0 0";
     return triad(pt.x, pt.y, pt.z);
@@ -204,7 +204,7 @@ public class _TachyonExporter extends __RayTracerExporter {
     viewer.unTransformPoint(screenBase, tempP1);
     viewer.unTransformPoint(screenTip, tempP2);
     radius = viewer.unscaleToScreen(screenBase.z, radius);
-    Matrix3f matRotateScale = getRotationMatrix(tempP1, tempP2, radius);
+    M3 matRotateScale = getRotationMatrix(tempP1, tempP2, radius);
     jmolRenderer.drawSurface(getConeMesh(tempP1, matRotateScale, colix), colix);
   }
 

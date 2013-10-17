@@ -30,7 +30,7 @@ import org.jmol.script.T;
 import org.jmol.shape.Uccage;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Txt;
 import org.jmol.viewer.StateManager;

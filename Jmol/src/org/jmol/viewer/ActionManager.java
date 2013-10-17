@@ -42,8 +42,9 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.vec.Point3fi;
+import org.jmol.util.Point3fi;
+
+import javajs.util.P3;
 
 import org.jmol.util.Rectangle;
 import org.jmol.util.Txt;

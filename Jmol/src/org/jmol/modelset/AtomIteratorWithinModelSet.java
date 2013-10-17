@@ -29,7 +29,7 @@ package org.jmol.modelset;
 
 import org.jmol.java.BS;
 
-import javajs.vec.P3;
+import javajs.util.P3;
 
 public class AtomIteratorWithinModelSet extends AtomIteratorWithinModel {
   private BS bsModels;

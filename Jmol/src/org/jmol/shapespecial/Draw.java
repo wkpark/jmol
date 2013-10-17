@@ -24,23 +24,24 @@
 
 package org.jmol.shapespecial;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 
 import java.util.Map;
 
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.P4;
-import javajs.lang.SB;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.P4;
+import javajs.util.V3;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Txt;

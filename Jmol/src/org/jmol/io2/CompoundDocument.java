@@ -27,11 +27,11 @@ package org.jmol.io2;
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Map;
 
 import org.jmol.util.Logger;
-import javajs.lang.SB;
 
 
 /* a simple compound document reader. 

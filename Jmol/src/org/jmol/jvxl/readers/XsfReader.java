@@ -27,8 +27,9 @@ import java.io.BufferedReader;
 
 
 import org.jmol.util.Logger;
-import javajs.lang.SB;
-import javajs.vec.V3;
+
+import javajs.util.SB;
+import javajs.util.V3;
 
 class XsfReader extends VolumeFileReader {
 

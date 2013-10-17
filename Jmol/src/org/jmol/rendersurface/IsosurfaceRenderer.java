@@ -33,9 +33,9 @@ import org.jmol.util.C;
 import org.jmol.util.GData;
 import javajs.util.List;
 import org.jmol.util.Normix;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.V3;
 
 public class IsosurfaceRenderer extends MeshRenderer {
 

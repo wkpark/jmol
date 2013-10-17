@@ -29,8 +29,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 
 /**

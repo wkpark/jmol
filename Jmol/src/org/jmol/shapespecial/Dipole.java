@@ -29,9 +29,10 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import javajs.vec.P3;
-import javajs.lang.SB;
-import javajs.vec.V3;
+
+import javajs.util.SB;
+import javajs.util.P3;
+import javajs.util.V3;
 
 public class Dipole {
   

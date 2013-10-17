@@ -6,7 +6,7 @@ import java.io.BufferedInputStream;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.java.BS;
 
-import javajs.vec.P3;
+import javajs.util.P3;
 
 
 

@@ -5,12 +5,15 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.script.T;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.vec.V3;
-import javajs.vec.Tuple3f;
+import javajs.util.SB;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.V3;
+import javajs.util.T3;
 
 public class MeshSurface {
 
@@ -35,16 +38,16 @@ public class MeshSurface {
   
   public boolean isColorSolid = true;
   public P3 offset;
-  public Tuple3f[] altVertices;
+  public T3[] altVertices;
 
   public short[] polygonColixes;
   public short[] vertexColixes;
-  public Tuple3f[] normals; // for export only or for cartoons
+  public T3[] normals; // for export only or for cartoons
   public V3[] normalsTemp; // for cartoons
   public int normalCount; // for export only
   public int normixCount;
   public BS bsPolygons;
-  public Matrix4f mat4;
+  public M4 mat4;
   public BS[] surfaceSet;
   public int[] vertexSets;
   public int nSets = 0;
@@ -54,8 +57,8 @@ public class MeshSurface {
   public MeshSurface() {
   }
   
-  public static MeshSurface newMesh(boolean isAlt, Tuple3f[] vertices, int vertexCount, int[][] polygonIndexes,
-      Tuple3f[] normals, int nNormals) {
+  public static MeshSurface newMesh(boolean isAlt, T3[] vertices, int vertexCount, int[][] polygonIndexes,
+      T3[] normals, int nNormals) {
     MeshSurface ms = new MeshSurface();
     ms.polygonIndexes = polygonIndexes;
     if (isAlt)
@@ -84,7 +87,7 @@ public class MeshSurface {
   /**
    * @return The vertices.
    */
-  public Tuple3f[] getVertices() {
+  public T3[] getVertices() {
     return (altVertices == null ? vertices : altVertices);
   }
   

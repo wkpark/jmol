@@ -28,7 +28,6 @@ import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.awt.Platform;
 import org.jmol.i18n.GT;
-import javajs.array.ArrayUtil;
 import org.jmol.viewer.FileManager;
 
 import java.awt.Container;
@@ -39,6 +38,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FilenameFilter;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 
 

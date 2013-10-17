@@ -26,14 +26,15 @@ package org.jmol.jvxl.readers;
 import java.util.Date;
 
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.ContactPair;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.lang.SB;
-import javajs.vec.V3;
+
+import javajs.util.ArrayUtil;
+import javajs.util.SB;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.V3;
 
 import org.jmol.util.Txt;
 

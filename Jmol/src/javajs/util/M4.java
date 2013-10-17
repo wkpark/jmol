@@ -33,7 +33,7 @@ import java.io.Serializable;
  * for unique constructor and method names
  * for the optimization of compiled JavaScript using Java2Script
  */
-public class Matrix4f implements Serializable {
+public class M4 implements Serializable {
 
   /**
    * The first element of the first row.
@@ -123,8 +123,8 @@ public class Matrix4f implements Serializable {
    *        the array of length 16 containing in order
    * @return m
    */
-  public static Matrix4f newA(float[] v) {
-    Matrix4f m = new Matrix4f();
+  public static M4 newA(float[] v) {
+    M4 m = new M4();
     m.m00 = v[0];
     m.m01 = v[1];
     m.m02 = v[2];
@@ -155,8 +155,8 @@ public class Matrix4f implements Serializable {
    *        the source matrix
    * @return m
    */
-  public static Matrix4f newM(Matrix4f m1) {
-    Matrix4f m = new Matrix4f();
+  public static M4 newM(M4 m1) {
+    M4 m = new M4();
     m.m00 = m1.m00;
     m.m01 = m1.m01;
     m.m02 = m1.m02;
@@ -186,8 +186,8 @@ public class Matrix4f implements Serializable {
    * @param t  The translational components of the matrix
    * @return m
    */
- public static Matrix4f newMV(Matrix3f m1, V3 t) {
-   Matrix4f m = new Matrix4f();
+ public static M4 newMV(M3 m1, V3 t) {
+   M4 m = new M4();
    m.setMV(m1, t);
    return m;
  }
@@ -198,7 +198,7 @@ public class Matrix4f implements Serializable {
   * @param m1  The rotation matrix representing the rotational components
   * @param t  The translational components of the matrix
   */
-  public void setMV(Matrix3f m1, V3 t) {
+  public void setMV(M3 m1, V3 t) {
     setM3(m1);
     setTranslation(t);
   }
@@ -210,7 +210,7 @@ public class Matrix4f implements Serializable {
    * @param a1
    *        the axis and angle to be converted
    */
-  public final void setAA(AxisAngle4f a1) {
+  public final void setAA(A4 a1) {
     setFromAxisAngle(a1.x, a1.y, a1.z, a1.angle);
   }
 
@@ -253,7 +253,7 @@ public class Matrix4f implements Serializable {
    * @param m1
    *        the matrix to be copied
    */
-  public final void setM(Matrix4f m1) {
+  public final void setM(M4 m1) {
     m00 = m1.m00;
     m01 = m1.m01;
     m02 = m1.m02;
@@ -453,7 +453,7 @@ public class Matrix4f implements Serializable {
    * @param m1
    *        The matrix that will hold the values
    */
-  public final void getRotationScale(Matrix3f m1) {
+  public final void getRotationScale(M3 m1) {
     m1.m00 = m00;
     m1.m01 = m01;
     m1.m02 = m02;
@@ -472,7 +472,7 @@ public class Matrix4f implements Serializable {
    * @param m1
    *        The matrix that will be the new upper 3x3
    */
-  public final void setRotationScale(Matrix3f m1) {
+  public final void setRotationScale(M3 m1) {
     m00 = m1.m00;
     m01 = m1.m01;
     m02 = m1.m02;
@@ -672,7 +672,7 @@ public class Matrix4f implements Serializable {
    * @param m1
    *        the other matrix
    */
-  public final void sub(Matrix4f m1) {
+  public final void sub(M4 m1) {
     m00 -= m1.m00;
     m01 -= m1.m01;
     m02 -= m1.m02;
@@ -728,7 +728,7 @@ public class Matrix4f implements Serializable {
    * @param m1
    *        the matrix to be inverted
    */
-  public final void invertM(Matrix4f m1) {
+  public final void invertM(M4 m1) {
     setM(m1);
     invert();
   }
@@ -799,7 +799,7 @@ public class Matrix4f implements Serializable {
    * @param m1
    *        the 3x3 matrix
    */
-  public final void setM3(Matrix3f m1) {
+  public final void setM3(M3 m1) {
     m00 = m1.m00;
     m01 = m1.m01;
     m02 = m1.m02;
@@ -974,7 +974,7 @@ public class Matrix4f implements Serializable {
    * @param m1
    *        the other matrix
    */
-  public final void mulM4(Matrix4f m1) {
+  public final void mulM4(M4 m1) {
     mul2(this, m1);
   }
 
@@ -987,7 +987,7 @@ public class Matrix4f implements Serializable {
    * @param m2
    *        the second matrix
    */
-  public final void mul2(Matrix4f m1, Matrix4f m2) {
+  public final void mul2(M4 m1, M4 m2) {
     // alias-safe way.
     set(m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20 + m1.m03 * m2.m30,
         m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21 + m1.m03 * m2.m31,
@@ -1019,9 +1019,9 @@ public class Matrix4f implements Serializable {
    */
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof Matrix4f))
+    if (!(o instanceof M4))
       return false;
-    Matrix4f m = (Matrix4f) o;
+    M4 m = (M4) o;
     return (this.m00 == m.m00 && this.m01 == m.m01 && this.m02 == m.m02
         && this.m03 == m.m03 && this.m10 == m.m10 && this.m11 == m.m11
         && this.m12 == m.m12 && this.m13 == m.m13 && this.m20 == m.m20
@@ -1040,14 +1040,14 @@ public class Matrix4f implements Serializable {
    */
   @Override
   public int hashCode() {
-    return Tuple3f.floatToIntBits0(m00) ^ Tuple3f.floatToIntBits0(m01)
-        ^ Tuple3f.floatToIntBits0(m02) ^ Tuple3f.floatToIntBits0(m03)
-        ^ Tuple3f.floatToIntBits0(m10) ^ Tuple3f.floatToIntBits0(m11)
-        ^ Tuple3f.floatToIntBits0(m12) ^ Tuple3f.floatToIntBits0(m13)
-        ^ Tuple3f.floatToIntBits0(m20) ^ Tuple3f.floatToIntBits0(m21)
-        ^ Tuple3f.floatToIntBits0(m22) ^ Tuple3f.floatToIntBits0(m23)
-        ^ Tuple3f.floatToIntBits0(m30) ^ Tuple3f.floatToIntBits0(m31)
-        ^ Tuple3f.floatToIntBits0(m32) ^ Tuple3f.floatToIntBits0(m33);
+    return T3.floatToIntBits0(m00) ^ T3.floatToIntBits0(m01)
+        ^ T3.floatToIntBits0(m02) ^ T3.floatToIntBits0(m03)
+        ^ T3.floatToIntBits0(m10) ^ T3.floatToIntBits0(m11)
+        ^ T3.floatToIntBits0(m12) ^ T3.floatToIntBits0(m13)
+        ^ T3.floatToIntBits0(m20) ^ T3.floatToIntBits0(m21)
+        ^ T3.floatToIntBits0(m22) ^ T3.floatToIntBits0(m23)
+        ^ T3.floatToIntBits0(m30) ^ T3.floatToIntBits0(m31)
+        ^ T3.floatToIntBits0(m32) ^ T3.floatToIntBits0(m33);
   }
 
   /**
@@ -1059,7 +1059,7 @@ public class Matrix4f implements Serializable {
    * @param vecOut
    *        the vector into which the transformed values are placed
    */
-  public final void transformT2(Tuple4f vec, Tuple4f vecOut) {
+  public final void transformT2(T4 vec, T4 vecOut) {
     // alias-safe
     vecOut.set(m00 * vec.x + m01 * vec.y + m02 * vec.z + m03 * vec.w, m10
         * vec.x + m11 * vec.y + m12 * vec.z + m13 * vec.w, m20 * vec.x + m21
@@ -1074,7 +1074,7 @@ public class Matrix4f implements Serializable {
    * @param vec
    *        the single precision vector to be transformed
    */
-  public final void transform4(Tuple4f vec) {
+  public final void transform4(T4 vec) {
     transformT2(vec, vec);
   }
 
@@ -1088,7 +1088,7 @@ public class Matrix4f implements Serializable {
    * @param pointOut
    *        the transformed point
    */
-  public final void transform2(Tuple3f point, Tuple3f pointOut) {
+  public final void transform2(T3 point, T3 pointOut) {
     try {
       pointOut.set(m00 * point.x + m01 * point.y + m02 * point.z + m03, m10
           * point.x + m11 * point.y + m12 * point.z + m13, m20 * point.x + m21
@@ -1105,7 +1105,7 @@ public class Matrix4f implements Serializable {
    * @param point
    *        the input point to be transformed.
    */
-  public final void transform(Tuple3f point) {
+  public final void transform(T3 point) {
     transform2(point, point);
   }
 

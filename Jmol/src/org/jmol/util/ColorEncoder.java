@@ -23,6 +23,7 @@
  */
 package org.jmol.util;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -32,7 +33,7 @@ import java.util.Map;
 import org.jmol.viewer.JC;
 import org.jmol.constant.EnumPalette;
 
-import javajs.vec.P3;
+import javajs.util.P3;
 
 /*
  * 

@@ -29,8 +29,8 @@ import org.jmol.api.JmolAdapterAtomIterator;
 import org.jmol.java.BS;
 
 import javajs.util.List;
-import javajs.vec.P3;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.V3;
 
 
 /* **************************************************************

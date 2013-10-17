@@ -36,7 +36,7 @@ import javajs.util.List;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Logger;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 public class GamessUSReader extends GamessReader {
 

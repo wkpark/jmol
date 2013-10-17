@@ -24,8 +24,9 @@
 
 package org.jmol.util;
 
-import javajs.vec.Matrix4f;
-import javajs.vec.V3;
+import javajs.util.ArrayUtil;
+import javajs.util.M4;
+import javajs.util.V3;
 
 
 /**
@@ -485,7 +486,7 @@ public class Shader {
   // @author N David Brown
 
   public int getEllipsoidShade(float x, float y, float z, int radius,
-                                       Matrix4f mDeriv) {
+                                       M4 mDeriv) {
     float tx = mDeriv.m00 * x + mDeriv.m01 * y + mDeriv.m02 * z + mDeriv.m03;
     float ty = mDeriv.m10 * x + mDeriv.m11 * y + mDeriv.m12 * z + mDeriv.m13;
     float tz = mDeriv.m20 * x + mDeriv.m21 * y + mDeriv.m22 * z + mDeriv.m23;

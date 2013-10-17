@@ -5,7 +5,7 @@ package org.jmol.api;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.java.BS;
 import org.jmol.modelset.ModelCollection;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 
 /**

@@ -26,7 +26,8 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 
 
-import javajs.lang.SB;
+import javajs.util.SB;
+
 import org.jmol.viewer.Viewer;
 
 class PltFormattedReader extends VolumeFileReader {

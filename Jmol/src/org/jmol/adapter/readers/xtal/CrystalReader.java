@@ -32,16 +32,17 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
+import javajs.util.M3;
+import javajs.util.P3;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
 import org.jmol.util.Tensor;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Arrays;
 
 
@@ -116,7 +117,7 @@ public class CrystalReader extends AtomSetCollectionReader {
 
   private Double energy;
   private P3 ptOriginShift = new P3();
-  private Matrix3f primitiveToCryst;
+  private M3 primitiveToCryst;
   private V3[] directLatticeVectors;
   private String spaceGroupName;
 
@@ -337,7 +338,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     } else {
       if (primitiveToCryst == null)
         return true;
-      Matrix3f mp = new Matrix3f();
+      M3 mp = new M3();
       mp.setColumnV(0, directLatticeVectors[0]);
       mp.setColumnV(1, directLatticeVectors[1]);
       mp.setColumnV(2, directLatticeVectors[2]);
@@ -363,7 +364,7 @@ public class CrystalReader extends AtomSetCollectionReader {
    *  
    */
   private void readTransformationMatrix() throws Exception {
-    primitiveToCryst = Matrix3f.newA(fillFloatArray(null, 0, new float[9]));
+    primitiveToCryst = M3.newA(fillFloatArray(null, 0, new float[9]));
   }
 
   // SHIFT OF THE ORIGIN                  :    3/4    1/4      0

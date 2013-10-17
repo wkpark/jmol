@@ -35,9 +35,9 @@ import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.util.BoxInfo;
 import javajs.awt.Dimension;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.V3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -379,7 +379,7 @@ abstract public class JmolViewer {
 
   abstract public int getZoomPercent(); //deprecated
   abstract public float getZoomPercentFloat();
-  abstract public Matrix4f getUnscaledTransformMatrix();
+  abstract public M4 getUnscaledTransformMatrix();
 
   abstract public int getBackgroundArgb();
   

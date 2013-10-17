@@ -27,8 +27,8 @@ package org.jmol.util;
 import org.jmol.constant.EnumStructure;
 import org.jmol.script.T;
 
-import javajs.vec.P3;
-import javajs.vec.P3i;
+import javajs.util.P3;
+import javajs.util.P3i;
 
 public class TempArray {
 

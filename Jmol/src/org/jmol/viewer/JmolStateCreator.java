@@ -11,7 +11,7 @@ import org.jmol.shape.Measures;
 import org.jmol.shape.Shape;
 import org.jmol.util.JmolFont;
 import javajs.util.List;
-import javajs.lang.SB;
+import javajs.util.SB;
 
 abstract class JmolStateCreator {
 

@@ -25,6 +25,7 @@
 package org.jmol.symmetry;
 
 import javajs.util.List;
+import javajs.util.SB;
 
 
 
@@ -36,14 +37,13 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P4;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P4;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 
@@ -61,7 +61,7 @@ import org.jmol.script.T;
  */
 
 
-class SymmetryOperation extends Matrix4f {
+class SymmetryOperation extends M4 {
   String xyzOriginal;
   String xyz;
   private boolean doNormalize = true;
@@ -74,7 +74,7 @@ class SymmetryOperation extends Matrix4f {
   private String[] myLabels;
   int modDim;
   float[] rotTransMatrix;
-  Matrix4f gammaIS;
+  M4 gammaIS;
 
 
   /**
@@ -114,7 +114,7 @@ class SymmetryOperation extends Matrix4f {
   }
 
   private void setMod456() {
-    (gammaIS = new Matrix4f()).setA(rotTransMatrix, 16);
+    (gammaIS = new M4()).setA(rotTransMatrix, 16);
   }
 
   void doFinalize() {
@@ -144,10 +144,10 @@ class SymmetryOperation extends Matrix4f {
 
   String dumpInfo() {
     return "\n" + xyz + "\ninternal matrix representation:\n"
-        + ((Matrix4f) this).toString();
+        + ((M4) this).toString();
   }
 
-  final static String dumpSeitz(Matrix4f s) {
+  final static String dumpSeitz(M4 s) {
     return new SB().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
         .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf(s.m03)).append("\t}\n")
         .append("{\t").appendI((int) s.m10).append("\t").appendI((int) s.m11).append("\t").appendI((int) s.m12)
@@ -156,7 +156,7 @@ class SymmetryOperation extends Matrix4f {
         .append("\t").append(twelfthsOf(s.m23)).append("\t}\n").append("{\t0\t0\t0\t1\t}\n").toString();
   }
   
-  final static String dumpCanonicalSeitz(Matrix4f s) {
+  final static String dumpCanonicalSeitz(M4 s) {
     return new SB().append("{\t").appendI((int) s.m00).append("\t").appendI((int) s.m01)
         .append("\t").appendI((int) s.m02).append("\t").append(twelfthsOf((s.m03+12)%12)).append("\t}\n")
         .append("{\t").appendI((int) s.m10).append("\t").appendI((int) s.m11).append("\t").appendI((int) s.m12)
@@ -267,7 +267,7 @@ class SymmetryOperation extends Matrix4f {
     setA(rotTransMatrix, 0);
     if (rotTransMatrix.length == 32) {
       rotTransMatrix[31] = 1;
-      (gammaIS = new Matrix4f()).setA(rotTransMatrix, 16);
+      (gammaIS = new M4()).setA(rotTransMatrix, 16);
     }
     isFinalized = true;
     if (isReverse)
@@ -436,7 +436,7 @@ class SymmetryOperation extends Matrix4f {
 
   final static String[] labelsX1_6 = new String[] {"x1", "x2", "x3", "x4", "x5", "x6"};
 
-  final static String getXYZFromMatrix(Matrix4f mat, boolean is12ths,
+  final static String getXYZFromMatrix(M4 mat, boolean is12ths,
                                        boolean allPositive, boolean halfOrLess) {
     String str = "";
     SymmetryOperation op = (mat instanceof SymmetryOperation ? (SymmetryOperation) mat
@@ -564,7 +564,7 @@ class SymmetryOperation extends Matrix4f {
 //
 //  }
   
-  V3[] rotateAxes(V3[] vectors, UnitCell unitcell, P3 ptTemp, Matrix3f mTemp) {
+  V3[] rotateAxes(V3[] vectors, UnitCell unitcell, P3 ptTemp, M3 mTemp) {
     V3[] vRot = new V3[3];
     getRotationScale(mTemp);    
     for (int i = vectors.length; --i >=0;) {
@@ -1253,8 +1253,8 @@ class SymmetryOperation extends Matrix4f {
     // and display translation if still not {0 0 0}
     if (ax1 != null)
       ax1.normalize();
-    Matrix4f m2 = null;
-    m2 = Matrix4f.newM(m);
+    M4 m2 = null;
+    m2 = M4.newM(m);
     if (vtrans.length() != 0) {
       m2.m03 += vtrans.x;
       m2.m13 += vtrans.y;
@@ -1273,7 +1273,7 @@ class SymmetryOperation extends Matrix4f {
         .append(" color ").append(color);
   }
 
-  static String fcoord(Tuple3f p) {
+  static String fcoord(T3 p) {
     return fc(p.x) + " " + fc(p.y) + " " + fc(p.z);
   }
 
@@ -1286,7 +1286,7 @@ class SymmetryOperation extends Matrix4f {
     return (x24 == 0 ? "0" : x24 == 24 ? m + "1" : m + (x24/8) + "/3");
   }
 
-  private static Tuple3f approx0(Tuple3f pt) {
+  private static T3 approx0(T3 pt) {
     if (pt != null) {
       if (Math.abs(pt.x) < 0.0001f)
         pt.x = 0;
@@ -1298,7 +1298,7 @@ class SymmetryOperation extends Matrix4f {
     return pt;
   }
   
-  private static Tuple3f approx(Tuple3f pt) {
+  private static T3 approx(T3 pt) {
     if (pt != null) {
       pt.x = approxF(pt.x);
       pt.y = approxF(pt.y);
@@ -1311,7 +1311,7 @@ class SymmetryOperation extends Matrix4f {
     return Parser.approx(f, 100);
   }
 
-  public static void normalizeTranslation(Matrix4f operation) {
+  public static void normalizeTranslation(M4 operation) {
     operation.m03 = ((int)operation.m03 + 12) % 12;
     operation.m13 = ((int)operation.m13 + 12) % 12;
     operation.m23 = ((int)operation.m23 + 12) % 12;    

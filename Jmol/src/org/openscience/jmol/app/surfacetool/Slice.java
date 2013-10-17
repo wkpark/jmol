@@ -27,9 +27,9 @@ package org.openscience.jmol.app.surfacetool;
 
 
 import org.jmol.util.Measure;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.V3;
 
 class Slice {
 

@@ -39,7 +39,7 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 /*
  * a simple molecular electrostatic potential cube generator

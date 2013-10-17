@@ -31,8 +31,8 @@ import org.jmol.jvxl.calc.MarchingCubes;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;
-import javajs.vec.P3;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.V3;
 
 //import org.jmol.util.Logger;
 

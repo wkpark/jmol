@@ -24,6 +24,7 @@
 
 package org.jmol.minimize;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -38,7 +39,6 @@ import org.jmol.minimize.forcefield.ForceFieldUFF;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;

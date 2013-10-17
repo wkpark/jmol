@@ -40,14 +40,15 @@ import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
-import javajs.vec.P3;
-import javajs.lang.SB;
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3i;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+
+import javajs.util.SB;
+import javajs.util.P3;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3i;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 
@@ -182,7 +183,7 @@ public abstract class Exporter {
   final protected V3 tempV1 = new V3();
   final protected V3 tempV2 = new V3();
   final protected V3 tempV3 = new V3();
-  final protected AxisAngle4f tempA = new AxisAngle4f();
+  final protected A4 tempA = new A4();
   protected String appletName;
   
   public Exporter() {
@@ -267,7 +268,7 @@ public abstract class Exporter {
     output(tempP1);
   }
 
-  abstract protected void output(Tuple3f pt);
+  abstract protected void output(T3 pt);
   // to exporters
 
   protected void outputFooter() {
@@ -286,7 +287,7 @@ public abstract class Exporter {
     return "OK " + nBytes + " " + jmolRenderer.getExportName() + " " + fileName ;
   }
 
-  protected String getTriad(Tuple3f t) {
+  protected String getTriad(T3 t) {
     return round(t.x) + " " + round(t.y) + " " + round(t.z); 
   }
   
@@ -298,7 +299,7 @@ public abstract class Exporter {
           s.endsWith(".0") ? s.substring(0, s.length() - 2) : s);
   }
 
-  protected static String round(Tuple3f pt) {
+  protected static String round(T3 pt) {
     return round(pt.x) + " " + round(pt.y) + " " + round(pt.z);
   }
   
@@ -387,8 +388,8 @@ public abstract class Exporter {
 
   abstract void fillEllipsoid(P3 center, P3[] points, short colix, 
                               int x, int y, int z, int diameter,
-                              Matrix3f toEllipsoidal, double[] coef,
-                              Matrix4f deriv, P3i[] octantPoints);
+                              M3 toEllipsoidal, double[] coef,
+                              M4 deriv, P3i[] octantPoints);
 
   void drawFilledCircle(short colixRing, short colixFill, int diameter, int x, int y, int z) {
     if (colixRing != 0)

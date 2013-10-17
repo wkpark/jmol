@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.script.SV;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.viewer.Viewer;
 
 public interface JmolPropertyManager {

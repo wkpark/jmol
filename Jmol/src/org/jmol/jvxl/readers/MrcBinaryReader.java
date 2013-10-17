@@ -27,7 +27,8 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
-import javajs.lang.SB;
+
+import javajs.util.SB;
 
 class MrcBinaryReader extends MapFileReader {
 

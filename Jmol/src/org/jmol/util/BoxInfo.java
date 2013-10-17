@@ -29,13 +29,12 @@ package org.jmol.util;
 import org.jmol.modelset.ModelSet;
 import javajs.util.List;
 
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.P4;
-import javajs.vec.Point3fi;
-import javajs.vec.V3;
-import javajs.vec.Tuple3f;
-import javajs.vec.Tuple4f;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.P4;
+import javajs.util.V3;
+import javajs.util.T3;
+import javajs.util.T4;
 
 import java.util.Hashtable;
 
@@ -206,7 +205,7 @@ public class BoxInfo {
     P3i.new3(0, 1, 1)  //7 pt + z + 1 
   };
 
-  public final static P3[] getCriticalPoints(P3[] bbVertices, Tuple3f offset) {
+  public final static P3[] getCriticalPoints(P3[] bbVertices, T3 offset) {
     P3 center = P3.newP(bbVertices[0]);
     P3 a = P3.newP(bbVertices[1]);
     P3 b = P3.newP(bbVertices[2]);

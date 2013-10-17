@@ -47,11 +47,13 @@ import org.jmol.io.FileReader;
 import org.jmol.io.JmolBinary;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.script.T;
-import javajs.array.ArrayUtil;
 import org.jmol.util.Escape;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 

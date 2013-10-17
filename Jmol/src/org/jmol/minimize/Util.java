@@ -26,7 +26,7 @@ package org.jmol.minimize;
 
 import java.util.Random;
 
-import javajs.vec.Vector3d;
+import javajs.util.V3d;
 
 
 public class Util {
@@ -34,11 +34,11 @@ public class Util {
   final public static double RAD_TO_DEG = (180.0 / Math.PI);
   final public static double DEG_TO_RAD = (Math.PI / 180.0);
 
-  public static void sub(double[] a, double[] b, Vector3d result) {
+  public static void sub(double[] a, double[] b, V3d result) {
     result.set(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
   }
 
-  public static void putCoord(Vector3d v, double[] c) {
+  public static void putCoord(V3d v, double[] c) {
     c[0] = v.x;
     c[1] = v.y;
     c[2] = v.z;
@@ -51,7 +51,7 @@ public class Util {
     return (dx * dx + dy * dy + dz * dz);
   }
   
-  public static double distance2V(Vector3d a, Vector3d b) {
+  public static double distance2V(V3d a, V3d b) {
     double dx = a.x - b.x;
     double dy = a.y - b.y;
     double dz = a.z - b.z;
@@ -70,7 +70,7 @@ public class Util {
         Math.acos((ab2 + bc2 - ac2 ) / 2 / Math.sqrt(ab2 * bc2)));
   }
   
-  public static boolean isApprox(Vector3d a, Vector3d b, double precision) {
+  public static boolean isApprox(V3d a, V3d b, double precision) {
     return (distance2V(a, b) <= precision * precision
         * Math.min(a.lengthSquared(), b.lengthSquared()));
   }
@@ -111,7 +111,7 @@ public class Util {
     return (Math.abs(a) < epsilon);
   }
 
-  public static boolean canBeNormalized(Vector3d a) {
+  public static boolean canBeNormalized(V3d a) {
     if (a.x == 0.0 && a.y == 0.0 && a.z == 0.0)
       return false;
     return (canBeSquared(a.x) && canBeSquared(a.y) && canBeSquared(a.z));
@@ -132,10 +132,10 @@ public class Util {
    * @param fixTheta 
    * @return  Wilson angle
    */
-  public static double pointPlaneAngleRadians(Vector3d a, Vector3d b,
-                                              Vector3d c, Vector3d d,
-                                              Vector3d v1,Vector3d v2, 
-                                              Vector3d norm, boolean fixTheta) {
+  public static double pointPlaneAngleRadians(V3d a, V3d b,
+                                              V3d c, V3d d,
+                                              V3d v1,V3d v2, 
+                                              V3d norm, boolean fixTheta) {
     
     v1.sub2(b, c);
     v2.sub2(b, d);
@@ -156,7 +156,7 @@ public class Util {
     return val;
   }
 
-  private static double vectorAngleRadians(Vector3d v1, Vector3d v2) {
+  private static double vectorAngleRadians(V3d v1, V3d v2) {
     double l1 = v1.length();
     double l2 = v2.length();
     return (isNearZero(l1) || isNearZero(l2) ? 0 :
@@ -164,7 +164,7 @@ public class Util {
   }
 
   public static double getTorsionAngleRadians(double[] a, double[] b, double[] c, double[] d,
-                                              Vector3d r1, Vector3d r2, Vector3d r3) {
+                                              V3d r1, V3d r2, V3d r3) {
     //   a --r1--> b --r2--> c --r3--> d
 
     // get r1 x r2 ==> r1 
@@ -199,7 +199,7 @@ public class Util {
    * 
    */
  
-  public static double restorativeForceAndDistance(Vector3d a, Vector3d b, Vector3d vab) {
+  public static double restorativeForceAndDistance(V3d a, V3d b, V3d vab) {
     
     // a and b will be set to the force on the atom when r > r0
     
@@ -217,7 +217,7 @@ public class Util {
     return rab;
   }
 
-  private static void randomizeUnitVector(Vector3d v) {
+  private static void randomizeUnitVector(V3d v) {
     Random ptr = new Random();
 
     // obtain a random vector with 0.001 <= length^2 <= 1.0, normalize
@@ -230,7 +230,7 @@ public class Util {
     v.normalize();
   }
 
-  public static double restorativeForceAndAngleRadians(Vector3d i, Vector3d j, Vector3d k) {
+  public static double restorativeForceAndAngleRadians(V3d i, V3d j, V3d k) {
     // This is adapted from http://scidok.sulb.uni-saarland.de/volltexte/2007/1325/pdf/Dissertation_1544_Moll_Andr_2007.pdf
     // Many thanks to Andreas Moll and the BALLView developers for this
     // via OpenBabel
@@ -297,8 +297,8 @@ public class Util {
     return theta;
   }
 
-  public static double restorativeForceAndOutOfPlaneAngleRadians(Vector3d i, Vector3d j, 
-                           Vector3d k, Vector3d l, Vector3d an, Vector3d bn, Vector3d cn) {
+  public static double restorativeForceAndOutOfPlaneAngleRadians(V3d i, V3d j, 
+                           V3d k, V3d l, V3d an, V3d bn, V3d cn) {
     // This is adapted from http://scidok.sulb.uni-saarland.de/volltexte/2007/1325/pdf/Dissertation_1544_Moll_Andr_2007.pdf
     // Many thanks to Andreas Moll and the BALLView developers for this
 
@@ -416,8 +416,8 @@ public class Util {
   }
 
 
-  public static double restorativeForceAndTorsionAngleRadians(Vector3d i, Vector3d j,
-                                                      Vector3d k, Vector3d l) {
+  public static double restorativeForceAndTorsionAngleRadians(V3d i, V3d j,
+                                                      V3d k, V3d l) {
     // This is adapted from http://scidok.sulb.uni-saarland.de/volltexte/2007/1325/pdf/Dissertation_1544_Moll_Andr_2007.pdf
     // Many thanks to Andreas Moll and the BALLView developers for this
 

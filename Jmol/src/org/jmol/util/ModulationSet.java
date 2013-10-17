@@ -4,10 +4,10 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.util.List;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.V3;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.V3;
 
 /**
  * A class to group a set of modulations for an atom as a "vibration"
@@ -28,7 +28,7 @@ public class ModulationSet extends Vibration {
   public float vOcc0;
 
   private List<Modulation> mods;
-  private Matrix3f gammaE;
+  private M3 gammaE;
   private int t = Integer.MAX_VALUE;  
   private double[] qlen;
   
@@ -71,8 +71,8 @@ public class ModulationSet extends Vibration {
    */
 
   public ModulationSet(String id, P3 r, int modDim, 
-                       List<Modulation> mods, Matrix3f gammaE, 
-                       Matrix4f gammaIS, Matrix4f q123w, double[] qlen) {
+                       List<Modulation> mods, M3 gammaE, 
+                       M4 gammaIS, M4 q123w, double[] qlen) {
     this.id = id;
     this.modDim = modDim;
     this.mods = mods;
@@ -80,7 +80,7 @@ public class ModulationSet extends Vibration {
     // set up x456
     
     this.gammaE = gammaE;
-    Matrix3f gammaIinv = new Matrix3f();
+    M3 gammaIinv = new M3();
     gammaIS.getRotationScale(gammaIinv);
     V3 sI = new V3();
     

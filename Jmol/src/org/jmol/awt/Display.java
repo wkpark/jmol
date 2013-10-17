@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.jmol.api.PlatformViewer;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 

@@ -25,6 +25,7 @@
 package org.jmol.smiles;
 
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Iterator;
 
@@ -38,8 +39,7 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.P3;
 
 import org.jmol.java.BS;
 import org.jmol.smiles.SmilesSearch.VTemp;

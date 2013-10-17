@@ -39,11 +39,11 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import javajs.util.List;
-import javajs.vec.P3;
-//import javajs.vec.P4;
+import javajs.util.SB;
+import javajs.util.P3;
+//import javajs.util.P4;
 import org.jmol.util.Tensor;
-import javajs.lang.SB;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 public class Ellipsoids extends Shape {
 

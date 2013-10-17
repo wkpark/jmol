@@ -26,22 +26,23 @@ package org.jmol.adapter.readers.cif;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-//import org.jmol.util.BS;
+//import org.jmol.java.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Modulation;
 import org.jmol.util.ModulationSet;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
 import org.jmol.util.Tensor;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 
 /**
@@ -175,7 +176,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     return htModulation.get(key + suffix);
   }
   
-  private Matrix3f q123;
+  private M3 q123;
   private double[] qlen;
   private boolean haveOccupancy;
   
@@ -185,7 +186,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     if (htModulation.containsKey("X_" + suffix))
       return;
     htModulation.put("X_" +suffix, new P3());
-    q123 = new Matrix3f();
+    q123 = new M3();
     qlen = new double[modDim];
     for (int i = 0; i < modDim; i++) {
       P3 pt = getMod("W_" + (i + 1));
@@ -318,8 +319,8 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   }
 
   private int iopLast = -1;
-  private Matrix3f gammaE;
-  private Matrix4f gammaIS;
+  private M3 gammaE;
+  private M4 gammaIS;
   private int nOps;
   
   /**
@@ -351,7 +352,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     if (iop != iopLast) {
       //System.out.println("mdim=" + mdim + " op=" + (iop + 1) + " " + symmetry.getSpaceGroupOperation(iop) + " " + symmetry.getSpaceGroupXyz(iop, false));
       iopLast = iop;
-      gammaE = new Matrix3f();
+      gammaE = new M3();
       symmetry.getSpaceGroupOperation(iop).getRotationScale(gammaE);
       gammaIS = symmetry.getOperationGammaIS(iop);
       nOps = symmetry.getSpaceGroupOperationCount();
@@ -360,7 +361,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
       Logger.debug("setModulation iop = " + iop + " "
           + symmetry.getSpaceGroupXyz(iop, false) + " " + a.bsSymmetry);
     }
-    Matrix4f q123w = Matrix4f.newMV(q123, new V3());
+    M4 q123w = M4.newMV(q123, new V3());
     setSubsystemMatrix(a.atomName, q123w);
     ModulationSet ms = new ModulationSet(a.index + " " + a.atomName, 
         P3.newP(a), modDim, list, gammaE, gammaIS, q123w, qlen);
@@ -439,17 +440,17 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
     //System.out.println("a.vib(xyz)=" + a.vib);
   }
   
-  private void setSubsystemMatrix(String atomName, Matrix4f q123w) {
+  private void setSubsystemMatrix(String atomName, M4 q123w) {
     Object o;
     if (true || htSubsystems == null || (o = htSubsystems.get(";" + atomName)) == null)
       return;
 // not sure what to do yet.
     String subcode = (String) o;
-    Matrix4f wmatrix = (Matrix4f) htSubsystems.get(subcode);
+    M4 wmatrix = (M4) htSubsystems.get(subcode);
     q123w.mulM4(wmatrix);
   }
 
-  protected void addSubsystem(String code, Matrix4f m4, String atomName) {
+  protected void addSubsystem(String code, M4 m4, String atomName) {
     if (htSubsystems == null)
       htSubsystems = new Hashtable<String, Object>();
     if (m4 == null)

@@ -30,9 +30,10 @@ import org.jmol.constant.EnumAxesMode;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
-import javajs.vec.P3;
-import javajs.lang.SB;
-import javajs.vec.V3;
+
+import javajs.util.SB;
+import javajs.util.P3;
+import javajs.util.V3;
 import org.jmol.viewer.JC;
 
 public class Axes extends FontLineShape {

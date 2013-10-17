@@ -30,8 +30,8 @@ import org.jmol.script.T;
 import org.jmol.shapebio.BioShape;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import javajs.vec.P3;
-import javajs.vec.P3i;
+import javajs.util.P3;
+import javajs.util.P3i;
 
 
 public class CartoonRenderer extends RocketsRenderer {

@@ -29,27 +29,27 @@
  
 package org.jmol.export;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Hashtable;
 
 import java.util.Map;
 
 
-import javajs.array.ArrayUtil;
 
 import org.jmol.java.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Geodesic;
 import org.jmol.util.MeshSurface;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix4f;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.A4;
+import javajs.util.M4;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 public class _IdtfExporter extends __CartesianExporter {
@@ -222,11 +222,11 @@ public class _IdtfExporter extends __CartesianExporter {
   private boolean haveCircle;
   
   @Override
-  protected void output(Tuple3f pt) {
+  protected void output(T3 pt) {
     output(pt, sbTemp, true);
   }
 
-  private void output(Tuple3f pt, SB sb, boolean checkpt) {
+  private void output(T3 pt, SB sb, boolean checkpt) {
     if (checkpt)
       checkPoint(pt);
     sb.append(round(pt.x)).append(" ").append(round(pt.y)).append(" ").append(round(pt.z)).append(" ");
@@ -235,7 +235,7 @@ public class _IdtfExporter extends __CartesianExporter {
   private P3 ptMin = P3.new3(1e10f,1e10f,1e10f);
   private P3 ptMax = P3.new3(-1e10f,-1e10f,-1e10f);
   
-  private void checkPoint(Tuple3f pt) {
+  private void checkPoint(T3 pt) {
     if (pt.x < ptMin.x)
       ptMin.x = pt.x;
     if (pt.y < ptMin.y)
@@ -253,7 +253,7 @@ public class _IdtfExporter extends __CartesianExporter {
   private int iObj;
   private Map<String, Boolean> htDefs = new Hashtable<String, Boolean>();
   
-  final private Matrix4f m = new Matrix4f();
+  final private M4 m = new M4();
 
   final private SB models = new SB();
   final private SB resources = new SB();
@@ -352,7 +352,7 @@ public class _IdtfExporter extends __CartesianExporter {
 }
 
 
-  private String getParentItem(String name, Matrix4f m) {
+  private String getParentItem(String name, M4 m) {
     SB sb= new SB();
     sb.append("PARENT_NAME \"" + name + "\"\n");
     sb.append("PARENT_TM {\n");
@@ -517,7 +517,7 @@ public class _IdtfExporter extends __CartesianExporter {
     // Just send three points to Quaternion to define a plane and return
     // the AxisAngle required to rotate to that position. That's all there is to it.
     
-    AxisAngle4f a = Quaternion.getQuaternionFrame(center, points[1], points[3]).toAxisAngle4f();
+    A4 a = Quaternion.getQuaternionFrame(center, points[1], points[3]).toAxisAngle4f();
     float sx = points[1].distance(center);
     float sy = points[3].distance(center);
     float sz = points[5].distance(center);
@@ -525,9 +525,9 @@ public class _IdtfExporter extends __CartesianExporter {
     outputEllipsoid(center, sphereMatrix, colix);
   }
 
-  private Matrix4f cylinderMatrix = new Matrix4f();
+  private M4 cylinderMatrix = new M4();
 
-  private void outputEllipsoid(P3 center, Matrix4f sphereMatrix, short colix) {
+  private void outputEllipsoid(P3 center, M4 sphereMatrix, short colix) {
     if (!haveSphere) {
       models.append(getSphereResource());
       haveSphere = true;
@@ -565,7 +565,7 @@ public class _IdtfExporter extends __CartesianExporter {
     return getMeshData("Sphere", faces, vertexes, vertexes);
   }
 
-  private String getMeshData(String type, int[][] indices, Tuple3f[] vertexes, Tuple3f[] normals) {
+  private String getMeshData(String type, int[][] indices, T3[] vertexes, T3[] normals) {
     int nFaces = indices.length;
     int vertexCount = vertexes.length;
     int normalCount = normals.length;
@@ -703,7 +703,7 @@ public class _IdtfExporter extends __CartesianExporter {
     if (!haveCircle) {
       models.append(getCircleResource());
       haveCircle = true;
-      cylinderMatrix = new Matrix4f();
+      cylinderMatrix = new M4();
     }
     addColix(colix, false);
     String key = "Ellipse_" + colix;
@@ -727,7 +727,7 @@ public class _IdtfExporter extends __CartesianExporter {
     if (!haveCircle) {
       models.append(getCircleResource());
       haveCircle = true;
-      cylinderMatrix = new Matrix4f();
+      cylinderMatrix = new M4();
     }
     addColix(colix, false);
     String key = "Circle_" + colix;
@@ -996,7 +996,7 @@ public class _IdtfExporter extends __CartesianExporter {
     htNodes.put(key, v);
     addShader(key, colix);
     if (cylinderMatrix == null)
-      cylinderMatrix = new Matrix4f();
+      cylinderMatrix = new M4();
     cylinderMatrix.setIdentity();
     v.addLast(getParentItem("Jmol", cylinderMatrix));
   }

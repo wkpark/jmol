@@ -27,7 +27,7 @@ package org.jmol.adapter.readers.simple;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 
 /**

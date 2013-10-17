@@ -30,9 +30,10 @@ import java.util.Map;
 
 
 import org.jmol.util.Escape;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
-import javajs.vec.Tuple3f;
+
+import javajs.util.SB;
+import javajs.util.T3;
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 
@@ -458,7 +459,7 @@ public class LabelToken {
                                            int[] indices) {
     String strT = null;
     float floatT = Float.NaN;
-    Tuple3f ptT = null;
+    T3 ptT = null;
     try {
       switch (t.tok) {
 
@@ -568,7 +569,7 @@ public class LabelToken {
       strLabel.append(strT);
   }
 
-  private String format(float floatT, String strT, Tuple3f ptT) {
+  private String format(float floatT, String strT, T3 ptT) {
     if (!Float.isNaN(floatT)) {
       return Txt.formatF(floatT, width, precision, alignLeft, zeroPad);
     } else if (strT != null) {

@@ -39,10 +39,11 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Escape;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.lang.SB;
-import javajs.vec.V3;
+
+import javajs.util.SB;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.V3;
 import org.jmol.viewer.JC;
 import org.openscience.jmol.app.HistoryFile;
 

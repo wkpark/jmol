@@ -30,10 +30,11 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
-import javajs.vec.P3;
-import javajs.lang.SB;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+
+import javajs.util.SB;
+import javajs.util.P3;
+import javajs.util.T3;
+import javajs.util.V3;
 
 class IsoShapeReader extends VolumeDataReader {
 
@@ -499,7 +500,7 @@ class IsoShapeReader extends VolumeDataReader {
 
   private void createGeodesic() {
     MeshSurface ms = MeshSurface.getSphereData(4);
-    Tuple3f[] pts = ms.altVertices;
+    T3[] pts = ms.altVertices;
     for (int i = 0; i < pts.length; i++) {
       P3 pt = P3.newP(pts[i]);
       pt.scale(params.distance);

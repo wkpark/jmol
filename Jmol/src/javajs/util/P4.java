@@ -19,48 +19,36 @@ package javajs.vec;
 
 
 /**
- * A 3 element point that is represented by single precision floating point
- * x,y,z coordinates.
+ * A 4 element point that is represented by single precision floating point
+ * x,y,z,w coordinates.
  * 
- * @version specification 1.1, implementation $Revision: 1.10 $, $Date:
- *          2006/09/08 20:20:20 $
+ * @version specification 1.1, implementation $Revision: 1.9 $, $Date:
+ *          2006/07/28 17:01:32 $
  * @author Kenji hiranabe
  * 
  * additions by Bob Hanson hansonr@stolaf.edu 9/30/2012
  * for unique constructor and method names
  * for the optimization of compiled JavaScript using Java2Script
- * 
  */
-public class P3 extends Tuple3f {
-
-  public static P3 newP(Tuple3f t) {
-    P3 p = new P3();
-    p.x = t.x;
-    p.y = t.y;
-    p.z = t.z;
-    return p;
-  }
-
-  public static P3 new3(float x, float y, float z) {
-    P3 p = new P3();
-    p.x = x;
-    p.y = y;
-    p.z = z;
-    return p;
-  }
+public class P4 extends T4 {
 
   /**
-   * Computes the square of the distance between this point and point p1.
-   * 
-   * @param p1
-   *        the other point
-   * @return the square of distance between these two points as a float
+   * Constructs and initializes a Point4f to (0,0,0,0).
    */
-  public final float distanceSquared(Tuple3f p1) {
-    double dx = x - p1.x;
-    double dy = y - p1.y;
-    double dz = z - p1.z;
-    return (float) (dx * dx + dy * dy + dz * dz);
+  public P4() {
+    super();
+  }
+
+  public static P4 new4(float x, float y, float z, float w) {
+    P4 pt = new P4();
+    pt.set(x, y, z, w);
+    return pt;
+  }
+
+  public static P4 newPt(P4 value) {
+    P4 pt = new P4();
+    pt.set(value.x, value.y, value.z, value.w);    
+    return pt;
   }
 
   /**
@@ -70,8 +58,12 @@ public class P3 extends Tuple3f {
    *        the other point
    * @return the distance between these two points
    */
-  public final float distance(Tuple3f p1) {
-    return (float) Math.sqrt(distanceSquared(p1));
+  public final float distance(P4 p1) {
+    double dx = x - p1.x;
+    double dy = y - p1.y;
+    double dz = z - p1.z;
+    double dw = w - p1.w;
+    return (float) Math.sqrt(dx * dx + dy * dy + dz * dz + dw * dw);
   }
 
 }

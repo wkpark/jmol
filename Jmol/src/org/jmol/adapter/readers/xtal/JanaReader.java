@@ -36,8 +36,8 @@ import org.jmol.java.BS;
 import javajs.util.List;
 import org.jmol.util.Logger;
 
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
+import javajs.util.M4;
+import javajs.util.P3;
 import org.jmol.util.Txt;
 
 /**
@@ -121,12 +121,12 @@ public class JanaReader extends ModulationReader {
         continuing = false;
         break;
       case WMATRIX:
-        Matrix4f m = new Matrix4f();
+        M4 m = new M4();
         if (thisSub++ == 0) {
           m.setIdentity();
           addSubsystem("1", m, null);
           thisSub++;
-          m = new Matrix4f();
+          m = new M4();
         }
         float[] data = new float[16];
         fillFloatArray(null, 0, data);

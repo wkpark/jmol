@@ -24,6 +24,8 @@
 package org.jmol.viewer;
 
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -55,12 +57,11 @@ import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
+import javajs.util.M3;
+import javajs.util.P3;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 /**
  * 
@@ -264,8 +265,8 @@ public class PropertyManager implements JmolPropertyManager {
           return extractProperty(v.get(pt), args, ptr);
         return "";
       }
-      if (property instanceof Matrix3f) {
-        Matrix3f m = (Matrix3f) property;
+      if (property instanceof M3) {
+        M3 m = (M3) property;
         float[][] f = new float[][] { new float[] { m.m00, m.m01, m.m02 },
             new float[] { m.m10, m.m11, m.m12 },
             new float[] { m.m20, m.m21, m.m22 } };

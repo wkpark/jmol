@@ -29,8 +29,9 @@ package org.jmol.adapter.readers.xml;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.lang.SB;
-import javajs.vec.V3;
+
+import javajs.util.SB;
+import javajs.util.V3;
 
 /**
  * 

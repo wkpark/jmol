@@ -26,11 +26,11 @@ package org.jmol.util;
 
 import javajs.util.List;
 
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.vec.V3;
-import javajs.vec.Tuple3f;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.V3;
+import javajs.util.T3;
 
 
 
@@ -43,20 +43,20 @@ final public class Measure {
 
   public final static float radiansPerDegree = (float) (2 * Math.PI / 360);
   
-  public static float computeAngle(Tuple3f pointA, Tuple3f pointB, Tuple3f pointC, V3 vectorBA, V3 vectorBC, boolean asDegrees) {
+  public static float computeAngle(T3 pointA, T3 pointB, T3 pointC, V3 vectorBA, V3 vectorBC, boolean asDegrees) {
     vectorBA.sub2(pointA, pointB);
     vectorBC.sub2(pointC, pointB);
     float angle = vectorBA.angle(vectorBC);
     return (asDegrees ? angle / radiansPerDegree : angle);
   }
 
-  public static float computeAngleABC(Tuple3f pointA, Tuple3f pointB, Tuple3f pointC, boolean asDegrees) {
+  public static float computeAngleABC(T3 pointA, T3 pointB, T3 pointC, boolean asDegrees) {
     V3 vectorBA = new V3();
     V3 vectorBC = new V3();        
     return computeAngle(pointA, pointB, pointC, vectorBA, vectorBC, asDegrees);
   }
 
-  public static float computeTorsion(Tuple3f p1, Tuple3f p2, Tuple3f p3, Tuple3f p4, boolean asDegrees) {
+  public static float computeTorsion(T3 p1, T3 p2, T3 p3, T3 p4, boolean asDegrees) {
   
     float ijx = p1.x - p2.x;
     float ijy = p1.y - p2.y;
@@ -460,7 +460,7 @@ final public class Measure {
     return pts;
   }
 
-  public static float getTransformMatrix4(List<P3> ptsA, List<P3> ptsB, Matrix4f m, P3 centerA) {
+  public static float getTransformMatrix4(List<P3> ptsA, List<P3> ptsB, M4 m, P3 centerA) {
     P3[] cptsA = getCenterAndPoints(ptsA);
     P3[] cptsB = getCenterAndPoints(ptsB);
     //System.out.println("draw d1 @{point" + cptsA[0] + "}");
@@ -592,7 +592,7 @@ final public class Measure {
     return (float) Math.sqrt(sum2 / n);
   }
 
-  public static List<P3> transformPoints(List<P3> vPts, Matrix4f m4, P3 center) {
+  public static List<P3> transformPoints(List<P3> vPts, M4 m4, P3 center) {
     List<P3> v = new  List<P3>();
     for (int i = 0; i < vPts.size(); i++) {
       P3 pt = P3.newP(vPts.get(i));

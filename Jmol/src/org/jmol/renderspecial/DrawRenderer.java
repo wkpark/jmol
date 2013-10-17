@@ -39,11 +39,11 @@ import org.jmol.util.Hermite;
 import javajs.util.List;
 import org.jmol.util.Measure;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.V3;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.V3;
 import org.jmol.viewer.ActionManager;
 
 public class DrawRenderer extends MeshRenderer {
@@ -188,8 +188,8 @@ public class DrawRenderer extends MeshRenderer {
       // crossing point
       pt1f.scaleAdd2(fractionalOffset, vTemp, vertices[0]);
       // define rotational axis
-      Matrix3f mat = new Matrix3f();
-      mat.setAA(AxisAngle4f.newVA(vTemp, (float) (nDegreesOffset * Math.PI / 180)));
+      M3 mat = new M3();
+      mat.setAA(A4.newVA(vTemp, (float) (nDegreesOffset * Math.PI / 180)));
       // vector to rotate
       if (vertexCount > 2)
         vTemp2.setT(vertices[2]);
@@ -210,7 +210,7 @@ public class DrawRenderer extends MeshRenderer {
         degrees /= 2;
         nPoints = Math.round (theta / degrees) + 1;
       }
-      mat.setAA(AxisAngle4f.newVA(vTemp, (float) (degrees * Math.PI / 180)));
+      mat.setAA(A4.newVA(vTemp, (float) (degrees * Math.PI / 180)));
       screens = viewer.allocTempScreens(nPoints);
       int iBase = nPoints - (dmesh.scale < 2 ? 3 : 3);
       for (int i = 0; i < nPoints; i++) {

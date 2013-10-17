@@ -25,9 +25,10 @@ package org.jmol.jvxl.readers;
 
 
 import org.jmol.jvxl.data.JvxlCoder;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.lang.SB;
+
+import javajs.util.SB;
+import javajs.util.P3;
+import javajs.util.P4;
 
 class IsoFxyReader extends AtomDataReader {
   

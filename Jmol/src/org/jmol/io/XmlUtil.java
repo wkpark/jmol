@@ -25,7 +25,8 @@
 
 package org.jmol.io;
 
-import javajs.lang.SB;
+import javajs.util.SB;
+
 import org.jmol.util.Txt;
 
 //import javajs.util.List;

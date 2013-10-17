@@ -2,7 +2,7 @@ package org.jmol.awtjs2d;
 
 
 import org.jmol.api.PlatformViewer;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 /**
  * methods required by Jmol that access java.awt.Component

@@ -29,10 +29,11 @@ import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shapespecial.Draw;
-import javajs.array.ArrayUtil;
 import org.jmol.util.Escape;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.lang.SB;
+import javajs.util.SB;
 public class CGO extends Draw {
   
   CGOMesh[] cmeshes = new CGOMesh[4];

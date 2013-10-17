@@ -33,10 +33,10 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.P4;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.P4;
+import javajs.util.V3;
 
 public abstract class MeshRenderer extends ShapeRenderer {
 

@@ -28,15 +28,15 @@ package org.jmol.symmetry;
 import org.jmol.api.Interface;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Escape;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.SimpleUnitCell;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3i;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3i;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.viewer.JC;
 
 /**
@@ -60,7 +60,7 @@ class UnitCell extends SimpleUnitCell {
     
   }
   
-  static UnitCell newP(Tuple3f[] points) {
+  static UnitCell newP(T3[] points) {
     UnitCell c = new UnitCell();
     float[] parameters = new float[] { -1, 0, 0, 0, 0, 0, points[1].x,
         points[1].y, points[1].z, points[2].x, points[2].y, points[2].z,
@@ -79,10 +79,10 @@ class UnitCell extends SimpleUnitCell {
     return  c;
   }
 
-  void setOrientation(Matrix3f mat) {
+  void setOrientation(M3 mat) {
     if (mat == null)
       return;
-    Matrix4f m = new Matrix4f();
+    M4 m = new M4();
     m.setM3(mat);
     matrixFractionalToCartesian.mul2(m, matrixFractionalToCartesian);
     matrixCartesianToFractional.invertM(matrixFractionalToCartesian);
@@ -159,7 +159,7 @@ class UnitCell extends SimpleUnitCell {
     }
   }
 
-  public void setCartesianOffset(Tuple3f origin) {
+  public void setCartesianOffset(T3 origin) {
     cartesianOffset.setT(origin);
     matrixFractionalToCartesian.m03 = cartesianOffset.x;
     matrixFractionalToCartesian.m13 = cartesianOffset.y;
@@ -395,8 +395,8 @@ class UnitCell extends SimpleUnitCell {
   private void calcUnitcellVertices() {
     if (matrixFractionalToCartesian == null)
       return;
-    matrixCtoFAbsolute = Matrix4f.newM(matrixCartesianToFractional);
-    matrixFtoCAbsolute = Matrix4f.newM(matrixFractionalToCartesian);
+    matrixCtoFAbsolute = M4.newM(matrixCartesianToFractional);
+    matrixFtoCAbsolute = M4.newM(matrixFractionalToCartesian);
     vertices = new P3[8];
     for (int i = 8; --i >= 0;) {
       vertices[i] = new P3(); 
@@ -440,7 +440,7 @@ class UnitCell extends SimpleUnitCell {
   }
 
   public P3[] getUnitCellVectors() {
-    Matrix4f m = matrixFractionalToCartesian;
+    M4 m = matrixFractionalToCartesian;
     return new P3[] { 
         P3.newP(cartesianOffset),
         P3.new3(m.m00, m.m10, m.m20), 

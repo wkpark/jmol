@@ -35,7 +35,9 @@ import org.jmol.modelsetbio.BioModel;
 import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.shape.Shape;
-import javajs.array.ArrayUtil;
+
+import javajs.util.ArrayUtil;
+
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 /****************************************************************

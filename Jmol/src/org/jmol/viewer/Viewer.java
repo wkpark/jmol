@@ -88,7 +88,6 @@ import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 
 import javajs.J2SIgnoreImport;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
@@ -103,16 +102,15 @@ import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.vec.P3;
-import javajs.vec.P4;
+import javajs.util.P3;
+import javajs.util.P4;
 import org.jmol.util.Rectangle;
-import javajs.lang.SB;
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3i;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3i;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.util.Vibration;
 
 import org.jmol.util.Measure;
@@ -122,7 +120,10 @@ import org.jmol.util.Txt;
 import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.viewer.binding.Binding;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -896,7 +897,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////
 
-  public Matrix4f getMatrixtransform() {
+  public M4 getMatrixtransform() {
     return transformManager.getMatrixtransform();
   }
 
@@ -986,13 +987,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     transformManager.stopMotion();
   }
 
-  void setRotationMatrix(Matrix3f rotationMatrix) {
+  void setRotationMatrix(M3 rotationMatrix) {
     transformManager.setRotation(rotationMatrix);
   }
 
   public void moveTo(JmolScriptEvaluator eval, float floatSecondsTotal,
                      P3 center, V3 rotAxis, float degrees,
-                     Matrix3f rotationMatrix, float zoom, float xTrans,
+                     M3 rotationMatrix, float zoom, float xTrans,
                      float yTrans, float rotationRadius, P3 navCenter,
                      float xNav, float yNav, float navDepth, float cameraDepth,
                      float cameraX, float cameraY) {
@@ -1299,7 +1300,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   @Override
-  public Matrix4f getUnscaledTransformMatrix() {
+  public M4 getUnscaledTransformMatrix() {
     return transformManager.getUnscaledTransformMatrix();
   }
 
@@ -1468,11 +1469,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return transformManager.getOrientationInfo();
   }
 
-  Matrix3f getMatrixRotate() {
+  M3 getMatrixRotate() {
     return transformManager.getMatrixRotate();
   }
 
-  public void getAxisAngle(AxisAngle4f axisAngle) {
+  public void getAxisAngle(A4 axisAngle) {
     transformManager.getAxisAngle(axisAngle);
   }
 
@@ -1480,7 +1481,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return transformManager.getTransformText();
   }
 
-  void getRotation(Matrix3f matrixRotation) {
+  void getRotation(M3 matrixRotation) {
     transformManager.getRotation(matrixRotation);
   }
 
@@ -8314,7 +8315,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     statusManager.setStatusAtomMoved(bs);
   }
 
-  public void setAtomCoordsRelative(Tuple3f offset, BS bs) {
+  public void setAtomCoordsRelative(T3 offset, BS bs) {
     // Eval
     if (bs == null)
       bs = getSelectionSet(false);
@@ -8348,7 +8349,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     statusManager.setStatusAtomMoved(bs);
   }
 
-  public void moveAtoms(Matrix3f mNew, Matrix3f matrixRotate, V3 translation,
+  public void moveAtoms(M3 mNew, M3 matrixRotate, V3 translation,
                         P3 center, boolean isInternal, BS bsAtoms) {
     // from TransformManager exclusively
     if (bsAtoms.cardinality() == 0)

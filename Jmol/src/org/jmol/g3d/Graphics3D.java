@@ -35,21 +35,21 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
-import javajs.array.ArrayUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Normix;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
+import javajs.util.ArrayUtil;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P3i;
 
 import org.jmol.util.Rgb16;
 import org.jmol.util.Shader;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -291,7 +291,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
   
   @Override
-  public void beginRendering(Matrix3f rotationMatrix, boolean translucentMode, boolean isImageWrite, boolean renderLow) {
+  public void beginRendering(M3 rotationMatrix, boolean translucentMode, boolean isImageWrite, boolean renderLow) {
     if (currentlyRendering)
       endRendering();
     this.renderLow = renderLow;
@@ -778,8 +778,8 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
 
   public void fillEllipsoid(P3 center, P3[] points, int x, int y,
-                              int z, int diameter, Matrix3f mToEllipsoidal,
-                              double[] coef, Matrix4f mDeriv,
+                              int z, int diameter, M3 mToEllipsoidal,
+                              double[] coef, M4 mDeriv,
                               int selectedOctant, P3i[] octantPoints) {
     switch (diameter) {
     case 1:
@@ -1910,7 +1910,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     
   }
 
-  public void setRotationMatrix(Matrix3f rotationMatrix) {
+  public void setRotationMatrix(M3 rotationMatrix) {
     V3[] vertexVectors = Normix.getVertexVectors();
     for (int i = normixCount; --i >= 0; ) {
       V3 tv = transformedVectors[i];

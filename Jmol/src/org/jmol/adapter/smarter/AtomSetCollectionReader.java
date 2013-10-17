@@ -38,12 +38,13 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
+import javajs.util.M3;
+import javajs.util.P3;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
-import javajs.vec.V3;
+import javajs.util.V3;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
@@ -715,7 +716,7 @@ public abstract class AtomSetCollectionReader {
       checkUnitCell(22);
   }
 
-  protected Matrix3f matUnitCellOrientation;
+  protected M3 matUnitCellOrientation;
 
   public void setUnitCell(float a, float b, float c, float alpha, float beta,
                           float gamma) {
@@ -976,13 +977,13 @@ public abstract class AtomSetCollectionReader {
         && (desiredVibrationNumber <= 0 || vibrationNumber == desiredVibrationNumber);
   }
 
-  private Matrix3f matrixRotate;
+  private M3 matrixRotate;
 
   public void setTransform(float x1, float y1, float z1, float x2, float y2,
                            float z2, float x3, float y3, float z3) {
     if (matrixRotate != null || !doSetOrientation)
       return;
-    matrixRotate = new Matrix3f();
+    matrixRotate = new M3();
     V3 v = new V3();
     // rows in Sygress/CAChe and Spartan become columns here
     v.set(x1, y1, z1);
@@ -995,7 +996,7 @@ public abstract class AtomSetCollectionReader {
     v.normalize();
     matrixRotate.setColumnV(2, v);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo(
-        "defaultOrientationMatrix", Matrix3f.newM(matrixRotate));
+        "defaultOrientationMatrix", M3.newM(matrixRotate));
     // first two matrix column vectors define quaternion X and XY plane
     Quaternion q = Quaternion.newM(matrixRotate);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo(

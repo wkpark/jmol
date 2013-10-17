@@ -28,8 +28,9 @@ import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.lang.SB;
+
+import javajs.util.SB;
+import javajs.util.P3;
 
 
 

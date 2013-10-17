@@ -121,12 +121,12 @@ import org.jmol.jvxl.readers.SurfaceReader;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.P4;
-import javajs.lang.SB;
-import javajs.vec.V3;
+import javajs.util.SB;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.P4;
+import javajs.util.V3;
 
 public class VolumeData implements VolumeDataInterface {
 
@@ -157,8 +157,8 @@ public class VolumeData implements VolumeDataInterface {
   private int yzCount;
 
   public final V3[] unitVolumetricVectors = new V3[3];
-  private final Matrix3f volumetricMatrix = new Matrix3f();
-  private final Matrix3f inverseMatrix = new Matrix3f();
+  private final M3 volumetricMatrix = new M3();
+  private final M3 inverseMatrix = new M3();
   private P4 thePlane;
 
   public boolean hasPlane() {

@@ -8,7 +8,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.SymmetryInterface;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 /**
  * Problems identified (Bob Hanson) --

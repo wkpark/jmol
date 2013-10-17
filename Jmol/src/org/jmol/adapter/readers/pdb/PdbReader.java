@@ -33,12 +33,13 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.M4;
+import javajs.util.P3;
 import org.jmol.util.Txt;
 
 import java.util.Hashtable;
@@ -125,7 +126,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private Map<String, Map<String, String>> htMolIds;
   
   private  List<Map<String, String>> vCompnds;
-  private  List<Matrix4f> vBiomts;
+  private  List<M4> vBiomts;
   private  List<Map<String, Object>> vBiomolecules;
   private  List<Map<String, Object>> vTlsModels;
   private SB sbTlsErrors;
@@ -524,7 +525,7 @@ public class PdbReader extends AtomSetCollectionReader {
     for (int i = vBiomolecules.size(); --i >= 0;) {
       Map<String, Object> biomolecule = vBiomolecules.get(i);
       String chain = (String) biomolecule.get("chains");
-      int nTransforms = ((List<Matrix4f>) biomolecule.get("biomts")).size();
+      int nTransforms = ((List<M4>) biomolecule.get("biomts")).size();
       int nAtoms = 0;
       for (int j = chain.length() - 1; --j >= 0;)
         if (chain.charAt(j) == ':')
@@ -568,7 +569,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
  
   
   private void remark350() throws Exception {
-     List<Matrix4f> biomts = null;
+     List<M4> biomts = null;
     vBiomolecules = new  List<Map<String,Object>>();
     chainAtomCounts = new int[255];
     String title = "";
@@ -577,7 +578,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
     boolean needLine = true;
     Map<String, Object> info = null;
     int nBiomt = 0;
-    Matrix4f mIdent = new Matrix4f();
+    M4 mIdent = new M4();
     mIdent.setIdentity();
     while (true) {
       if (needLine)
@@ -592,7 +593,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
             Logger.info("biomolecule " + iMolecule + ": number of transforms: "
                 + nBiomt);
           info = new Hashtable<String, Object>();
-          biomts = new  List<Matrix4f>();
+          biomts = new  List<M4>();
           iMolecule = parseIntStr(line.substring(line.indexOf(":") + 1));
           title = line.trim();
           info.put("molecule", Integer.valueOf(iMolecule));
@@ -641,7 +642,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
               readLine();
           }
           mat[15] = 1;
-          Matrix4f m4 = new Matrix4f();
+          M4 m4 = new M4();
           m4.setA(mat, 0);
           if (m4.equals(mIdent))
             biomts.add(0, m4);

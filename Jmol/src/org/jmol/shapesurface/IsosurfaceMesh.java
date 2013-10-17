@@ -24,7 +24,9 @@
 
 package org.jmol.shapesurface;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Hashtable;
 
@@ -33,7 +35,6 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
@@ -45,12 +46,11 @@ import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.lang.SB;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 import org.jmol.java.BS;
 import org.jmol.jvxl.data.JvxlCoder;
@@ -921,7 +921,7 @@ public class IsosurfaceMesh extends Mesh {
    */
   @Override
   protected void slabBrillouin(P3[] unitCellPoints) {
-    Tuple3f[] vectors = (unitCellPoints == null ? spanningVectors : unitCellPoints);
+    T3[] vectors = (unitCellPoints == null ? spanningVectors : unitCellPoints);
     if (vectors == null)
       return;    
     
@@ -1053,7 +1053,7 @@ public class IsosurfaceMesh extends Mesh {
    * @param m
    * @param bs
    */
-  public void updateCoordinates(Matrix4f m, BS bs) {
+  public void updateCoordinates(M4 m, BS bs) {
     boolean doUpdate = (bs == null);
     if (!doUpdate)
       for (int i = 0; i < connections.length; i++)
@@ -1065,7 +1065,7 @@ public class IsosurfaceMesh extends Mesh {
       return;
 
     if (mat4 == null) {
-      mat4 = new Matrix4f();
+      mat4 = new M4();
       mat4.setIdentity();
     }
     mat4.mul2(m, mat4);

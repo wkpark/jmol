@@ -25,7 +25,7 @@
 
 package org.jmol.constant;
 
-import javajs.lang.SB;
+import javajs.util.SB;
 
 public enum EnumCallback {
 

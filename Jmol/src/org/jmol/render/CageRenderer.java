@@ -27,8 +27,9 @@ package org.jmol.render;
 import org.jmol.shape.Bbcage;
 import org.jmol.shape.FontLineShape;
 import org.jmol.util.BoxInfo;
-import javajs.vec.P3;
-import javajs.vec.Point3fi;
+import org.jmol.util.Point3fi;
+
+import javajs.util.P3;
 
 abstract class CageRenderer extends FontLineShapeRenderer {
 

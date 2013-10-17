@@ -29,11 +29,11 @@ package org.jmol.export;
 import org.jmol.modelset.Atom;
 import org.jmol.util.GData;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.V3;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.V3;
 
 /*
  * for PovRay and related ray tracers that use screen coordinates
@@ -235,8 +235,8 @@ abstract class __RayTracerExporter extends ___Exporter {
 
   @Override
   void fillEllipsoid(P3 center, P3[] points, short colix, int x,
-                       int y, int z, int diameter, Matrix3f toEllipsoidal,
-                       double[] coef, Matrix4f deriv, P3i[] octantPoints) {
+                       int y, int z, int diameter, M3 toEllipsoidal,
+                       double[] coef, M4 deriv, P3i[] octantPoints) {
     float radius = diameter / 2f;
     if (radius == 0)
       return;

@@ -42,13 +42,14 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.lang.SB;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P3i;
 import org.jmol.util.Vibration;
 
 public class ShapeManager {
@@ -154,7 +155,7 @@ public class ShapeManager {
     }
   }
 
-  public void refreshShapeTrajectories(int baseModel, BS bs, Matrix4f mat) {
+  public void refreshShapeTrajectories(int baseModel, BS bs, M4 mat) {
     Integer Imodel = Integer.valueOf(baseModel);
     BS bsModelAtoms = viewer.getModelUndeletedAtomsBitSet(baseModel);
     for (int i = 0; i < JC.SHAPE_MAX; i++)

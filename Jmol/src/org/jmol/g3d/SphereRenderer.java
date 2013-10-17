@@ -27,10 +27,10 @@ package org.jmol.g3d;
 //import javax.vecmath.Vector4f;  !NO -- requires Vector4d in applet
 import org.jmol.util.GData;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P3i;
 
 import org.jmol.util.Shader;
 
@@ -76,9 +76,9 @@ public class SphereRenderer {
   final static int maxSphereDiameter = 1000;
   final static int maxSphereDiameter2 = maxSphereDiameter * 2;
   private double[] zroot = new double[2];
-  private Matrix3f mat;
+  private M3 mat;
   private double[] coef;
-  private Matrix4f mDeriv;
+  private M4 mDeriv;
   private int selectedOctant;
   private P3i[] octantPoints;
   private int planeShade;
@@ -91,7 +91,7 @@ public class SphereRenderer {
   private boolean addAllPixels;
 
   void render(int[] shades, boolean tScreened, int diameter, int x, int y,
-              int z, Matrix3f mat, double[] coef, Matrix4f mDeriv,
+              int z, M3 mat, double[] coef, M4 mDeriv,
               int selectedOctant, P3i[] octantPoints, boolean addAllPixels) {
     if (z == 1)
       return;

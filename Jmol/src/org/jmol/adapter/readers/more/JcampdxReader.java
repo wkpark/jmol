@@ -30,6 +30,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Txt;
 
 import org.jmol.adapter.readers.molxyz.MolReader;
@@ -43,7 +45,6 @@ import org.jmol.java.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.lang.SB;
 
 /**
  * A preliminary reader for JCAMP-DX files having ##$MODELS= and ##$PEAKS= records

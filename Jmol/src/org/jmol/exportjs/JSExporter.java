@@ -35,9 +35,9 @@ import org.jmol.util.GData;
 import org.jmol.util.JmolFont;
 
 import javajs.J2SRequireImport;
-import javajs.vec.P3;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.T3;
+import javajs.util.V3;
 
 @J2SRequireImport( { org.jmol.exportjs.Exporter.class,
     org.jmol.exportjs.CartesianExporter.class,
@@ -173,7 +173,7 @@ public class JSExporter extends CartesianExporter {
   }
 
   @Override
-  protected void output(Tuple3f pt) {
+  protected void output(T3 pt) {
     // TODO Auto-generated method stub
 
   }

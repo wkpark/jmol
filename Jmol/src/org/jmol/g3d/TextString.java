@@ -1,6 +1,6 @@
 package org.jmol.g3d;
 
-import javajs.vec.P3i;
+import javajs.util.P3i;
 
 import org.jmol.util.JmolFont;
 

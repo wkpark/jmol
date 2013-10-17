@@ -17,8 +17,9 @@ import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 

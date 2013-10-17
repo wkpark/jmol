@@ -24,10 +24,11 @@
 
 package org.jmol.util;
 
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.V3;
-import javajs.vec.Tuple3f;
+import javajs.util.ArrayUtil;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.V3;
+import javajs.util.T3;
 
 
 
@@ -43,8 +44,8 @@ import javajs.vec.Tuple3f;
 public class SimpleUnitCell {
 
   protected float[] notionalUnitcell; //6 parameters + optional 16 matrix items
-  protected Matrix4f matrixCartesianToFractional;
-  public Matrix4f matrixFractionalToCartesian;
+  protected M4 matrixCartesianToFractional;
+  public M4 matrixFractionalToCartesian;
 
   protected final static float toRadians = (float) Math.PI * 2 / 360;
 
@@ -188,21 +189,21 @@ public class SimpleUnitCell {
         scaleMatrix[i] = parameters[6 + i] * f;
       }
       
-      matrixCartesianToFractional = Matrix4f.newA(scaleMatrix);
-      matrixFractionalToCartesian = new Matrix4f();
+      matrixCartesianToFractional = M4.newA(scaleMatrix);
+      matrixFractionalToCartesian = new M4();
       matrixFractionalToCartesian.invertM(matrixCartesianToFractional);
     } else if (parameters.length > 14 && !Float.isNaN(parameters[14])) {
       // parameters with a 3 vectors
       // [a b c alpha beta gamma ax ay az bx by bz cx cy cz...]
-      Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
+      M4 m = matrixFractionalToCartesian = new M4();
       m.setColumn4(0, parameters[6] * na, parameters[7] * na, parameters[8] * na, 0);
       m.setColumn4(1, parameters[9] * nb, parameters[10] * nb, parameters[11] * nb, 0);
       m.setColumn4(2, parameters[12] * nc, parameters[13] * nc, parameters[14] * nc, 0);
       m.setColumn4(3, 0, 0, 0, 1);
-      matrixCartesianToFractional = new Matrix4f();
+      matrixCartesianToFractional = new M4();
       matrixCartesianToFractional.invertM(matrixFractionalToCartesian);
     } else {
-      Matrix4f m = matrixFractionalToCartesian = new Matrix4f();
+      M4 m = matrixFractionalToCartesian = new M4();
       // 1. align the a axis with x axis
       m.setColumn4(0, a, 0, 0, 0);
       // 2. place the b is in xy plane making a angle gamma with a
@@ -213,15 +214,15 @@ public class SimpleUnitCell {
           * (cosAlpha - cosBeta * cosGamma) / sinGamma), (float) (volume / (a
           * b * sinGamma)), 0);
       m.setColumn4(3, 0, 0, 0, 1);
-      matrixCartesianToFractional = new Matrix4f();
+      matrixCartesianToFractional = new M4();
       matrixCartesianToFractional.invertM(matrixFractionalToCartesian);
     }
     matrixCtoFAbsolute = matrixCartesianToFractional;
     matrixFtoCAbsolute = matrixFractionalToCartesian;
   }
 
-  protected Matrix4f matrixCtoFAbsolute;
-  protected Matrix4f matrixFtoCAbsolute;
+  protected M4 matrixCtoFAbsolute;
+  protected M4 matrixFtoCAbsolute;
   public final static int INFO_DIMENSIONS = 6;
   public final static int INFO_GAMMA = 5;
   public final static int INFO_BETA = 4;
@@ -243,13 +244,13 @@ public class SimpleUnitCell {
     return fpt;
   }
 
-  public final void toCartesian(Tuple3f pt, boolean isAbsolute) {
+  public final void toCartesian(T3 pt, boolean isAbsolute) {
     if (matrixFractionalToCartesian != null)
       (isAbsolute ? matrixFtoCAbsolute : matrixFractionalToCartesian)
           .transform(pt);
   }
 
-  public final void toFractional(Tuple3f pt, boolean isAbsolute) {
+  public final void toFractional(T3 pt, boolean isAbsolute) {
     if (matrixCartesianToFractional == null)
       return;
     (isAbsolute ? matrixCtoFAbsolute : matrixCartesianToFractional)
@@ -269,7 +270,7 @@ public class SimpleUnitCell {
   }
 
   public final float[] getUnitCellAsArray(boolean vectorsOnly) {
-    Matrix4f m = matrixFractionalToCartesian;
+    M4 m = matrixFractionalToCartesian;
     return (vectorsOnly ? new float[] { 
         m.m00, m.m10, m.m20, // Va
         m.m01, m.m11, m.m21, // Vb

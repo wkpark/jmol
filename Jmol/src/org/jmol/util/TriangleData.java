@@ -1,12 +1,14 @@
 package org.jmol.util;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 
 import org.jmol.api.Triangulator;
 import org.jmol.java.BS;
 
-import javajs.vec.P3i;
-import javajs.vec.P4;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.P4;
 
 public class TriangleData implements Triangulator {
 

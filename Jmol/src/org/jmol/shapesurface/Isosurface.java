@@ -115,23 +115,25 @@ import org.jmol.shape.Shape;
 import org.jmol.util.Escape;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
-import javajs.array.ArrayUtil;
 import org.jmol.util.ColorUtil;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.P4;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.P4;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -369,7 +371,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
     if ("moveIsosurface" == propertyName) {
       if (thisMesh != null) {
-        thisMesh.updateCoordinates((Matrix4f) value, null);
+        thisMesh.updateCoordinates((M4) value, null);
         thisMesh.altVertices = null;
       }
       return;
@@ -381,7 +383,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
             && meshes[i].modelIndex == ((Integer) ((Object[]) value)[0])
                 .intValue())
           ((IsosurfaceMesh) meshes[i]).updateCoordinates(
-              (Matrix4f) ((Object[]) value)[2], (BS) ((Object[]) value)[1]);
+              (M4) ((Object[]) value)[2], (BS) ((Object[]) value)[1]);
       return;
     }
 
@@ -1183,14 +1185,14 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int sense = (isReverse ? -1 : 1);
     y.cross(z, x);
     if (rotRadians != 0) {
-      AxisAngle4f a = new AxisAngle4f();
+      A4 a = new A4();
       if (rotAxis.x != 0)
         a.setVA(x, rotRadians);
       else if (rotAxis.y != 0)
         a.setVA(y, rotRadians);
       else
         a.setVA(z, rotRadians);
-      Matrix3f m = new Matrix3f();
+      M3 m = new M3();
       m.setAA(a);
       m.transform(x);
       m.transform(y);

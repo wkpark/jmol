@@ -25,17 +25,17 @@
 
 package org.jmol.shapesurface;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Hashtable;
 
 import java.util.Map;
 
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.Escape;
-import javajs.vec.P4;
-import javajs.lang.SB;
+import javajs.util.P4;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.constant.EnumQuantumShell;

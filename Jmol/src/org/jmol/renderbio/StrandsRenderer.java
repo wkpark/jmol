@@ -25,7 +25,7 @@
 package org.jmol.renderbio;
 
 
-import javajs.vec.P3i;
+import javajs.util.P3i;
 
 import org.jmol.shapebio.BioShape;
 import org.jmol.shapebio.Strands;

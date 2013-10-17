@@ -32,7 +32,9 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
-import javajs.array.ArrayUtil;
+
+import javajs.util.ArrayUtil;
+
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 

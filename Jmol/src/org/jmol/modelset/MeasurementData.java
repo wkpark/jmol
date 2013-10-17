@@ -26,7 +26,6 @@ package org.jmol.modelset;
 import java.util.Map;
 
 import javajs.util.List;
-import javajs.vec.Point3fi;
 
 
 import org.jmol.api.JmolMeasurementClient;
@@ -34,6 +33,7 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
+import org.jmol.util.Point3fi;
 import org.jmol.viewer.Viewer;
 
 public class MeasurementData implements JmolMeasurementClient {

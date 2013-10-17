@@ -35,17 +35,18 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.util.Escape;
 
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 import org.jmol.script.T;
 
 
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 
 import java.util.Map;

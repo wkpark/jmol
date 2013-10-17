@@ -1,11 +1,12 @@
 package org.jmol.export;
 
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.MeshSurface;
-import javajs.vec.P3;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+
+import javajs.util.ArrayUtil;
+import javajs.util.P3;
+import javajs.util.T3;
+import javajs.util.V3;
 
 /**
  * Class to generate mesh data (faces, vertices, and normals) for several kinds
@@ -21,7 +22,7 @@ class MeshData {
    */
   static class Data {
     private int[][] faces;
-    private Tuple3f[] normals;
+    private T3[] normals;
     private int nVertices;
     private int nNormals;
 
@@ -60,7 +61,7 @@ class MeshData {
     /**
      * @return The normals.
      */
-    Tuple3f[] getNormals() {
+    T3[] getNormals() {
       return normals;
     }
   }

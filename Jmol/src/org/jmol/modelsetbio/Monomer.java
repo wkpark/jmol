@@ -34,7 +34,7 @@ import org.jmol.modelset.Group;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;

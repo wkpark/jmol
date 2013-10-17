@@ -31,12 +31,12 @@ import org.jmol.modelset.Chain;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.JC;
 
 public class AminoMonomer extends AlphaMonomer {
@@ -342,8 +342,8 @@ public class AminoMonomer extends AlphaMonomer {
       getNHPoint(ptTemp, vC, true, false);
       vB.sub2(ptCa, getNitrogenAtom());
       vB.cross(vC, vB);
-      Matrix3f mat = new Matrix3f();
-      mat.setAA(AxisAngle4f.newVA(vB, -beta));
+      M3 mat = new M3();
+      mat.setAA(A4.newVA(vB, -beta));
       mat.transform(vC);
       vA.cross(vB, vC);
       break;

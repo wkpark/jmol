@@ -30,7 +30,7 @@ import org.jmol.java.BS;
 
 import javajs.util.List;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 
 

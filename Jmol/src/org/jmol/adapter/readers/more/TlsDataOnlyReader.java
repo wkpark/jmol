@@ -25,6 +25,8 @@
 package org.jmol.adapter.readers.more;
 
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -34,8 +36,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.P3;
 
 /*
  * TLS output reader -- data only; no atoms

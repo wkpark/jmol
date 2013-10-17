@@ -26,14 +26,13 @@ package org.jmol.modelset;
 import java.util.Map;
 
 import org.jmol.util.Escape;
+import org.jmol.util.Point3fi;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.P3;
-import javajs.vec.Point3fi;
+import javajs.util.A4;
+import javajs.util.P3;
 
 import org.jmol.util.Measure;
-import javajs.lang.SB;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
@@ -43,6 +42,7 @@ import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 import javajs.util.List;
+import javajs.util.SB;
 
 public class Measurement {
 
@@ -73,7 +73,7 @@ public class Measurement {
 
   private Viewer viewer;
   private String strMeasurement;
-  private AxisAngle4f aa;
+  private A4 aa;
   private P3 pointArc;
   public Text text;
   private String type;
@@ -179,7 +179,7 @@ public class Measurement {
     return value;
   }
 
-  public AxisAngle4f getAxisAngle() {
+  public A4 getAxisAngle() {
     return aa;
   }
 
@@ -239,7 +239,7 @@ public class Measurement {
             getAtom(3), vectorBA, vectorBC, false);
         V3 vectorAxis = new V3();
         vectorAxis.cross(vectorBA, vectorBC);
-        aa = AxisAngle4f
+        aa = A4
             .new4(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
 
         vectorBA.normalize();

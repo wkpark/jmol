@@ -34,11 +34,11 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure; 
 import org.jmol.util.MeshSurface;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.P4;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.P4;
 import org.jmol.util.TempArray;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.java.BS;

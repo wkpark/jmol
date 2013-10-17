@@ -34,10 +34,10 @@ import org.jmol.java.BS;
 
 import javajs.util.List;
 import org.jmol.util.Measure;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -295,7 +295,7 @@ public class _PovrayExporter extends __RayTracerExporter {
   }
   
   @Override
-  protected String getTriad(Tuple3f pt) {
+  protected String getTriad(T3 pt) {
     if (Float.isNaN(pt.x))
       return "0,0,0";
     return pt.x + "," + pt.y + "," + pt.z;
@@ -334,7 +334,7 @@ public class _PovrayExporter extends __RayTracerExporter {
   }
 
   @Override
-  protected void output(Tuple3f pt) {
+  protected void output(T3 pt) {
     output(", <" + getTriad(pt) + ">");    
   }
   

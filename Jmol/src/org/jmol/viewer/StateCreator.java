@@ -24,6 +24,8 @@
 package org.jmol.viewer;
 
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
@@ -68,10 +70,9 @@ import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
 import org.jmol.util.ModulationSet;
 import org.jmol.util.Parser;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.P3;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.StateManager.GlobalSettings;
 
 /**

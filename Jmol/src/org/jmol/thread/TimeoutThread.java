@@ -27,7 +27,8 @@ package org.jmol.thread;
 
 import java.util.Map;
 
-import javajs.lang.SB;
+import javajs.util.SB;
+
 import org.jmol.viewer.Viewer;
 
 public class TimeoutThread extends JmolThread {

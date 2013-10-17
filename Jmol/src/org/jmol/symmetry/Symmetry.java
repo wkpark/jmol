@@ -36,17 +36,18 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.JmolMolecule;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
-import javajs.lang.SB;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3i;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3i;
+import javajs.util.T3;
+import javajs.util.V3;
 
 public class Symmetry implements SymmetryInterface {
   
@@ -122,7 +123,7 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup.addSymmetry(xyz, opId);
   }
 
-  public void addSpaceGroupOperationM(Matrix4f mat) {
+  public void addSpaceGroupOperationM(M4 mat) {
     spaceGroup.addSymmetry("=" + 
         SymmetryOperation.getXYZFromMatrix(mat, false, false, false), 0);    
   }
@@ -175,7 +176,7 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup.finalOperations.length;
   }  
   
-  public Matrix4f getSpaceGroupOperation(int i) {
+  public M4 getSpaceGroupOperation(int i) {
     return spaceGroup.finalOperations[i];
   }
   
@@ -196,7 +197,7 @@ public class Symmetry implements SymmetryInterface {
     spaceGroup.finalOperations[i].newPoint(atom1, atom2, transX, transY, transZ);
   }
     
-  public V3[] rotateAxes(int iop, V3[] axes, P3 ptTemp, Matrix3f mTemp) {
+  public V3[] rotateAxes(int iop, V3[] axes, P3 ptTemp, M3 mTemp) {
     return (iop == 0 ? axes : spaceGroup.finalOperations[iop].rotateAxes(axes, unitCell, ptTemp, mTemp));
   }
 
@@ -207,7 +208,7 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup.operations[isym].getDescription(modelSet, cellInfo, pt1, pt2, id);
   }
     
-  public String fcoord(Tuple3f p) {
+  public String fcoord(T3 p) {
     return SymmetryOperation.fcoord(p);
   }
 
@@ -253,7 +254,7 @@ public class Symmetry implements SymmetryInterface {
     setOffsetPt((P3) modelAuxiliaryInfo.get("unitCellOffset"));
     if (modelAuxiliaryInfo.containsKey("jmolData"))
       setUnitCellAllFractionalRelative(true);
-    Matrix3f matUnitCellOrientation = (Matrix3f) modelAuxiliaryInfo.get("matUnitCellOrientation");
+    M3 matUnitCellOrientation = (M3) modelAuxiliaryInfo.get("matUnitCellOrientation");
     if (matUnitCellOrientation != null)
       setUnitCellOrientation(matUnitCellOrientation);
     if (Logger.debugging)
@@ -276,7 +277,7 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.dumpInfo(false);
   }
 
-  public void setUnitCellOrientation(Matrix3f matUnitCellOrientation) {
+  public void setUnitCellOrientation(M3 matUnitCellOrientation) {
       unitCell.setOrientation(matUnitCellOrientation);
   }
 
@@ -288,7 +289,7 @@ public class Symmetry implements SymmetryInterface {
     unitCell.toUnitCell(pt, offset);
   }
 
-  public void toCartesian(Tuple3f fpt, boolean isAbsolute) {
+  public void toCartesian(T3 fpt, boolean isAbsolute) {
     unitCell.toCartesian(fpt, isAbsolute);    
   }
 
@@ -296,7 +297,7 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.toSupercell(fpt);    
   }
 
-  public void toFractional(Tuple3f pt, boolean isAbsolute) {
+  public void toFractional(T3 pt, boolean isAbsolute) {
     unitCell.toFractional(pt, isAbsolute);
   }
 
@@ -322,7 +323,7 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.getCartesianOffset();
   }
 
-  public void setCartesianOffset(Tuple3f origin) {
+  public void setCartesianOffset(T3 origin) {
     unitCell.setCartesianOffset(origin);
   }
 
@@ -380,7 +381,7 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.getUnitCellVectors();
   }
 
-  public SymmetryInterface getUnitCell(Tuple3f[] points) {
+  public SymmetryInterface getUnitCell(T3[] points) {
     Symmetry sym = new Symmetry();
     sym.unitCell = UnitCell.newP(points);
     return sym;
@@ -654,7 +655,7 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup.latticeOp;
   }
 
-  public Matrix4f getOperationGammaIS(int iop) {
+  public M4 getOperationGammaIS(int iop) {
     return spaceGroup.finalOperations[iop].gammaIS;
   }
 

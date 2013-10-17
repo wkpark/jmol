@@ -24,14 +24,14 @@
 
 package org.jmol.adapter.smarter;
 
-import javajs.array.ArrayUtil;
 
 import org.jmol.java.BS;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Tensor;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 public class Atom extends P3 implements Cloneable {
   public int atomSetIndex;

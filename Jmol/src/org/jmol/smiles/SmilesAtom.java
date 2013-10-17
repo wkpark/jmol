@@ -28,15 +28,16 @@ package org.jmol.smiles;
 
 
 
-import javajs.array.ArrayUtil;
 
 import org.jmol.java.BS;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 //import org.jmol.util.Logger;
 

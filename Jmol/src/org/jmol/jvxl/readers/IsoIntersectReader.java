@@ -28,7 +28,7 @@ package org.jmol.jvxl.readers;
 
 import org.jmol.java.BS;
 
-import javajs.vec.P3;
+import javajs.util.P3;
 
 class IsoIntersectReader extends AtomDataReader {
 

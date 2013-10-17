@@ -31,8 +31,8 @@ import org.jmol.java.BS;
 import org.jmol.util.JmolEdge;
 import javajs.util.List;
 import org.jmol.util.JmolNode;
-import javajs.vec.P3;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.V3;
 
 public class SmilesAromatic {
   /** 

@@ -3,10 +3,11 @@ package org.jmol.util;
 
 import java.awt.Image;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.V3;
+import javajs.util.ArrayUtil;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.V3;
 
 
 import org.jmol.api.ApiPlatform;
@@ -534,7 +535,7 @@ public class GData implements JmolGraphicsInterface {
    * @param isImageWrite 
    * @param renderLow TODO
    */
-  public void beginRendering(Matrix3f stereoRotationMatrix, boolean translucentMode, boolean isImageWrite, boolean renderLow) {
+  public void beginRendering(M3 stereoRotationMatrix, boolean translucentMode, boolean isImageWrite, boolean renderLow) {
   }
 
   public void endRendering() {

@@ -26,7 +26,7 @@ package org.jmol.viewer;
 import org.jmol.script.T;
 import javajs.awt.Dimension;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Txt;
 
 import javajs.util.List;

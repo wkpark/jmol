@@ -24,13 +24,13 @@
 
 package org.jmol.adapter.readers.quantum;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
-import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Txt;
 

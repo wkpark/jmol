@@ -37,15 +37,16 @@ import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
+import org.jmol.util.Point3fi;
+
 import javajs.util.List;
-import javajs.vec.P3;
+import javajs.util.SB;
+import javajs.util.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
-import javajs.lang.SB;
-import javajs.vec.Point3fi;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
@@ -1426,7 +1427,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return ""; 
   }
 
-  public static Tuple3f atomPropertyTuple(Atom atom, int tok) {
+  public static T3 atomPropertyTuple(Atom atom, int tok) {
     switch (tok) {
     case T.fracxyz:
       return atom.getFractionalCoordPt(!atom.group.chain.model.isJmolDataFrame);

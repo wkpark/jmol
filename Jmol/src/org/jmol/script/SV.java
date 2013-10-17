@@ -38,17 +38,18 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P4;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
-import javajs.lang.SB;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 
 /**
@@ -195,9 +196,9 @@ public class SV extends T {
     // rotation angle (axisangle), and cos(theta/2) (quaternion).
     if (x instanceof Quaternion)
       return newVariable(point4f, ((Quaternion) x).toPoint4f());
-    if (x instanceof Matrix3f)
+    if (x instanceof M3)
       return newVariable(matrix3f, x);
-    if (x instanceof Matrix4f)
+    if (x instanceof M4)
       return newVariable(matrix4f, x);
     if (x instanceof Map)
       return getVariableMap((Map<String, ?>)x);
@@ -562,11 +563,11 @@ public class SV extends T {
       return Measure.distanceToPlane((P4) x.value, pt0);
     case matrix3f:
       P3 pt = new P3();
-      ((Matrix3f) x.value).transform(pt);
+      ((M3) x.value).transform(pt);
       return pt.length();
     case matrix4f:
       P3 pt1 = new P3();
-      ((Matrix4f) x.value).transform(pt1);
+      ((M4) x.value).transform(pt1);
       return pt1.length();
     default:
       return 0;
@@ -854,9 +855,9 @@ public class SV extends T {
         if (col > 0 && col <= len && row <= len) {
           if (tokenIn.tok == matrix3f)
             return newVariable(decimal, Float.valueOf(
-                ((Matrix3f) tokenIn.value).getElement(row - 1, col - 1)));
+                ((M3) tokenIn.value).getElement(row - 1, col - 1)));
           return newVariable(decimal, Float.valueOf(
-              ((Matrix4f) tokenIn.value).getElement(row - 1, col - 1)));
+              ((M4) tokenIn.value).getElement(row - 1, col - 1)));
         }
         return newVariable(string, "");
       }
@@ -865,14 +866,14 @@ public class SV extends T {
       float[] data = new float[len];
       if (len == 3) {
         if (i1 < 0)
-          ((Matrix3f) tokenIn.value).getColumn(-1 - i1, data);
+          ((M3) tokenIn.value).getColumn(-1 - i1, data);
         else
-          ((Matrix3f) tokenIn.value).getRow(i1 - 1, data);
+          ((M3) tokenIn.value).getRow(i1 - 1, data);
       } else {
         if (i1 < 0)
-          ((Matrix4f) tokenIn.value).getColumn(-1 - i1, data);
+          ((M4) tokenIn.value).getColumn(-1 - i1, data);
         else
-          ((Matrix4f) tokenIn.value).getRow(i1 - 1, data);
+          ((M4) tokenIn.value).getRow(i1 - 1, data);
       }
       if (i2 == Integer.MIN_VALUE)
         return getVariableAF(data);
@@ -948,9 +949,9 @@ public class SV extends T {
         int row = (selector - col) / 10;
         if (col > 0 && col <= len && row <= len) {
           if (tok == matrix3f)
-            ((Matrix3f) value).setElement(row - 1, col - 1, fValue(var));
+            ((M3) value).setElement(row - 1, col - 1, fValue(var));
           else
-            ((Matrix4f) value).setElement(row - 1, col - 1, fValue(var));
+            ((M4) value).setElement(row - 1, col - 1, fValue(var));
           return true;
         }
       }
@@ -963,14 +964,14 @@ public class SV extends T {
             data[i] = fValue(sv.get(i));
           if (selector > 0) {
             if (tok == matrix3f)
-              ((Matrix3f) value).setRowA(selector - 1, data);
+              ((M3) value).setRowA(selector - 1, data);
             else
-              ((Matrix4f) value).setRow(selector - 1, data);
+              ((M4) value).setRow(selector - 1, data);
           } else {
             if (tok == matrix3f)
-              ((Matrix3f) value).setColumnA(-1 - selector, data);
+              ((M3) value).setColumnA(-1 - selector, data);
             else
-              ((Matrix4f) value).setColumn(-1 - selector, data);
+              ((M4) value).setColumn(-1 - selector, data);
           }
           return true;
         }
@@ -1057,9 +1058,9 @@ public class SV extends T {
         v = new BondSet((BS) v);
       return newVariable(bitset, v);
     }
-    if (v instanceof Matrix3f)
+    if (v instanceof M3)
       return (newVariable(matrix3f, v));
-    if (v instanceof Matrix4f)
+    if (v instanceof M4)
       return newVariable(matrix4f, v);
     return o;
   }
@@ -1296,15 +1297,15 @@ public class SV extends T {
 
   public void toArray() {
     int dim;
-    Matrix3f m3 = null;
-    Matrix4f m4 = null;
+    M3 m3 = null;
+    M4 m4 = null;
     switch (tok) {
     case matrix3f:
-      m3 = (Matrix3f) value;
+      m3 = (M3) value;
       dim = 3;
       break;
     case matrix4f:
-      m4 = (Matrix4f) value;
+      m4 = (M4) value;
       dim = 4;
       break;
     default:

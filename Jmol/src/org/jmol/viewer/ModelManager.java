@@ -28,7 +28,8 @@ package org.jmol.viewer;
 import org.jmol.java.BS;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
-import javajs.lang.SB;
+
+import javajs.util.SB;
 
 class ModelManager {
 

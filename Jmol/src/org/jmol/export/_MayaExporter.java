@@ -33,9 +33,9 @@ import java.util.Map;
 import org.jmol.java.BS;
 
 import javajs.util.List;
-import javajs.vec.P3;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.T3;
+import javajs.util.V3;
 
 
 public class _MayaExporter extends __CartesianExporter {
@@ -99,7 +99,7 @@ public class _MayaExporter extends __CartesianExporter {
     output(" setAttr \"." + attr + "\" " + val + ";\n");
   }
 
-  private void setAttr(String attr, Tuple3f pt) {
+  private void setAttr(String attr, T3 pt) {
     output(" setAttr \"." + attr + "\" -type \"double3\" " + pt.x + " "
         + pt.y + " " + pt.z + ";\n");
   }
@@ -214,7 +214,7 @@ public class _MayaExporter extends __CartesianExporter {
   }
 
   @Override
-  protected void output(Tuple3f pt) {
+  protected void output(T3 pt) {
     // TODO
     
   }

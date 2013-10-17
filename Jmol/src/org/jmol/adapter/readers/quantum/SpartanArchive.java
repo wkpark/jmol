@@ -31,15 +31,15 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 
 import java.util.Hashtable;
 import java.util.Map;
 
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 class SpartanArchive {
   

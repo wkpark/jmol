@@ -28,13 +28,14 @@ import org.jmol.constant.EnumAxesMode;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.Point3fi;
+import org.jmol.util.Point3fi;
+
+import javajs.util.P3;
+import javajs.util.P3i;
 
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 public abstract class FontLineShapeRenderer extends ShapeRenderer {
 

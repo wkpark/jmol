@@ -11,7 +11,7 @@ import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Txt;
 
 public abstract class Object2dShape extends Shape {

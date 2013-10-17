@@ -25,7 +25,6 @@
 
 package javajs.util;
 
-import javajs.lang.SB;
 
 
 /**

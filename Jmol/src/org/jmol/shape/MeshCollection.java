@@ -37,11 +37,13 @@ import java.util.Map;
 
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import javajs.array.ArrayUtil;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.P3;
 import org.jmol.util.Txt;
 
 public abstract class MeshCollection extends Shape {

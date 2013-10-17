@@ -30,9 +30,10 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 import javajs.J2SRequireImport;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+
+import javajs.util.SB;
+import javajs.util.V3;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -41,7 +42,7 @@ import java.util.Map;
 import java.util.Properties;
 
 
-@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,javajs.lang.SB.class})
+@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,javajs.util.SB.class})
 public class JC {
 
   // axes mode constants --> org.jmol.constant.EnumAxesMode

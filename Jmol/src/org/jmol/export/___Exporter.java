@@ -28,7 +28,10 @@ package org.jmol.export;
 
 import java.awt.Image;
 import java.text.SimpleDateFormat;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Date;
 import java.util.Hashtable;
@@ -41,20 +44,18 @@ import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
-import javajs.array.ArrayUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3i;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3i;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 
@@ -265,7 +266,7 @@ public abstract class ___Exporter {
     output(tempP1);
   }
 
-  abstract protected void output(Tuple3f pt);
+  abstract protected void output(T3 pt);
 
   protected void outputJmolPerspective() {
     outputComment(getJmolPerspective());
@@ -322,7 +323,7 @@ public abstract class ___Exporter {
     return rgbFractionalFromArgb(g3d.getColorArgbOrGray(colix));
   }
 
-  protected String getTriad(Tuple3f t) {
+  protected String getTriad(T3 t) {
     return round(t.x) + " " + round(t.y) + " " + round(t.z); 
   }
   
@@ -359,7 +360,7 @@ public abstract class ___Exporter {
           s.endsWith(".0") ? s.substring(0, s.length() - 2) : s);
   }
 
-  protected static String round(Tuple3f pt) {
+  protected static String round(T3 pt) {
     return round(pt.x) + " " + round(pt.y) + " " + round(pt.z);
   }
   
@@ -389,7 +390,7 @@ public abstract class ___Exporter {
     return list;
   }
 
-  protected static MeshSurface getConeMesh(P3 centerBase, Matrix3f matRotateScale, short colix) {
+  protected static MeshSurface getConeMesh(P3 centerBase, M3 matRotateScale, short colix) {
     MeshSurface ms = new MeshSurface();
     int ndeg = 10;
     int n = 360 / ndeg;
@@ -418,11 +419,11 @@ public abstract class ___Exporter {
     return ms;
   }
 
-  protected Matrix3f getRotationMatrix(P3 pt1, P3 pt2, float radius) {    
-    Matrix3f m = new Matrix3f();
-    Matrix3f m1;
+  protected M3 getRotationMatrix(P3 pt1, P3 pt2, float radius) {    
+    M3 m = new M3();
+    M3 m1;
     if (pt2.x == pt1.x && pt2.y == pt1.y) {
-      m1 = new Matrix3f();
+      m1 = new M3();
       m1.setIdentity();
       if (pt1.z > pt2.z) // 180-degree rotation about X
         m1.m11 = m1.m22 = -1;
@@ -442,13 +443,13 @@ public abstract class ___Exporter {
     return m1;
   }
 
-  protected Matrix3f getRotationMatrix(P3 pt1, P3 ptZ, float radius, P3 ptX, P3 ptY) {    
-    Matrix3f m = new Matrix3f();
+  protected M3 getRotationMatrix(P3 pt1, P3 ptZ, float radius, P3 ptX, P3 ptY) {    
+    M3 m = new M3();
     m.m00 = ptX.distance(pt1) * radius;
     m.m11 = ptY.distance(pt1) * radius;
     m.m22 = ptZ.distance(pt1) * 2;
     Quaternion q = Quaternion.getQuaternionFrame(pt1, ptX, ptY);
-    Matrix3f m1 = q.getMatrix();
+    M3 m1 = q.getMatrix();
     m1.mul(m);
     return m1;
   }
@@ -547,8 +548,8 @@ public abstract class ___Exporter {
 
   abstract void fillEllipsoid(P3 center, P3[] points, short colix, 
                               int x, int y, int z, int diameter,
-                              Matrix3f toEllipsoidal, double[] coef,
-                              Matrix4f deriv, P3i[] octantPoints);
+                              M3 toEllipsoidal, double[] coef,
+                              M4 deriv, P3i[] octantPoints);
 
   void drawFilledCircle(short colixRing, short colixFill, int diameter, int x, int y, int z) {
     if (colixRing != 0)

@@ -27,9 +27,9 @@ package org.jmol.modelsetbio;
 import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Quaternion;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.JC;
 
 public class PhosphorusMonomer extends Monomer {

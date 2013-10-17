@@ -24,7 +24,7 @@
 
 package org.jmol.util;
 
-import javajs.vec.V3;
+import javajs.util.V3;
 
 
 //import org.jmol.util.Escape;

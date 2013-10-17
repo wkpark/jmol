@@ -30,7 +30,7 @@ import java.io.Serializable;
  *         constructor and method names for the optimization of compiled
  *         JavaScript using Java2Script
  */
-public abstract class Tuple3i implements Serializable {
+public abstract class T3i implements Serializable {
 
   /**
    * The x coordinate.
@@ -50,7 +50,7 @@ public abstract class Tuple3i implements Serializable {
   /**
    * Constructs and initializes a Tuple3i to (0,0,0).
    */
-  public Tuple3i() {
+  public T3i() {
   }
 
   /**
@@ -75,7 +75,7 @@ public abstract class Tuple3i implements Serializable {
    * @param t1
    *        the tuple to be copied.
    */
-  public final void setT(Tuple3i t1) {
+  public final void setT(T3i t1) {
     x = t1.x;
     y = t1.y;
     z = t1.z;
@@ -87,7 +87,7 @@ public abstract class Tuple3i implements Serializable {
    * @param t
    *        is the other tuple
    */
-  public final void add(Tuple3i t) {
+  public final void add(T3i t) {
     x += t.x;
     y += t.y;
     z += t.z;
@@ -104,7 +104,7 @@ public abstract class Tuple3i implements Serializable {
    * @param t2
    *        the tuple to be added
    */
-  public final void scaleAdd(int s, Tuple3i t1, Tuple3i t2) {
+  public final void scaleAdd(int s, T3i t1, T3i t2) {
     x = s * t1.x + t2.x;
     y = s * t1.y + t2.y;
     z = s * t1.z + t2.z;
@@ -131,9 +131,9 @@ public abstract class Tuple3i implements Serializable {
    */
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof Tuple3i))
+    if (!(o instanceof T3i))
       return false;
-    Tuple3i t = (Tuple3i) o;
+    T3i t = (T3i) o;
     return (this.x == t.x && this.y == t.y && this.z == t.z);
   }
 

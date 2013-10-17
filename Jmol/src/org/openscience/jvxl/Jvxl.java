@@ -46,7 +46,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.jmol.jvxl.readers.SurfaceGenerator;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.vec.P4;
+import javajs.util.P4;
 
 public class Jvxl {
 

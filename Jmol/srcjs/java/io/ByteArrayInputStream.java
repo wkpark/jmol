@@ -39,7 +39,7 @@ import java.io.IOException;
  * generating an <tt>IOException</tt>.
  *
  * @author  Arthur van Hoff
- * see     java.io.StringBufferInputStream
+ * see     java.io.SBInputStream
  * @since   JDK1.0
  */
 public

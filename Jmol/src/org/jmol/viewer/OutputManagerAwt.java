@@ -35,9 +35,10 @@ import org.jmol.awt.AwtClipboard;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 

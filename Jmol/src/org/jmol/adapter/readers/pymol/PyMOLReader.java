@@ -42,9 +42,9 @@ import org.jmol.script.T;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 /**
  * PyMOL PSE (binary Python session) file reader.

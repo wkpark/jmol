@@ -126,12 +126,12 @@ import org.jmol.util.ContactPair;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.P4;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.P4;
 import org.jmol.util.Parser;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 import org.jmol.viewer.JC;
 
@@ -368,8 +368,8 @@ public class Parameters {
         center.set(0, 0, 0);
   }
   
-  Matrix3f eccentricityMatrix;
-  Matrix3f eccentricityMatrixInverse;
+  M3 eccentricityMatrix;
+  M3 eccentricityMatrixInverse;
   boolean isEccentric;
   float eccentricityScale;
   float eccentricityRatio;
@@ -394,10 +394,10 @@ public class Parameters {
     ecc.normalize();
     if (Float.isNaN(ecc.x)) // was exactly {0 0 -1} -- just rotate about x
       ecc.set(1, 0, 0);
-    eccentricityMatrix = new Matrix3f();
+    eccentricityMatrix = new M3();
     eccentricityMatrix.setIdentity();
-    eccentricityMatrix.setAA(AxisAngle4f.newVA(ecc, (float) Math.PI));
-    eccentricityMatrixInverse = new Matrix3f();
+    eccentricityMatrix.setAA(A4.newVA(ecc, (float) Math.PI));
+    eccentricityMatrixInverse = new M3();
     eccentricityMatrixInverse.invertM(eccentricityMatrix);
     isEccentric = isAnisotropic = true;
     eccentricityScale = c;

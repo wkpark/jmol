@@ -39,8 +39,8 @@ import org.jmol.java.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
-import javajs.vec.P3;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 public class _X3dExporter extends _VrmlExporter {

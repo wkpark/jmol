@@ -117,13 +117,14 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 
-import javajs.array.ArrayUtil;
 
 import org.jmol.java.BS;
 //import org.jmol.util.Escape;
 import org.jmol.util.MeshSurface;
-import javajs.vec.P3;
-import javajs.vec.V3;
+
+import javajs.util.ArrayUtil;
+import javajs.util.P3;
+import javajs.util.V3;
 
 public class MeshData extends MeshSurface {
   

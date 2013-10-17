@@ -28,8 +28,8 @@ package org.jmol.g3d;
 //import org.jmol.util.Logger;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.util.GData;
-import javajs.vec.P3;
-import javajs.vec.P3i;
+import javajs.util.P3;
+import javajs.util.P3i;
 
 import org.jmol.util.Rgb16;
 

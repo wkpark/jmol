@@ -24,6 +24,7 @@
 package org.jmol.script;
 
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Hashtable;
 
@@ -66,16 +67,15 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P4;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P4;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB; //import org.jmol.util.Tensor;
 import org.jmol.util.Txt;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.modelset.TickInfo;
 import org.jmol.api.JmolParallelProcessor;
 import org.jmol.viewer.ActionManager;
@@ -1541,7 +1541,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
           break;
         case 3: // isPt
-          Tuple3f t = Atom.atomPropertyTuple(atom, tok);
+          T3 t = Atom.atomPropertyTuple(atom, tok);
           if (t == null)
             errorStr(ERROR_unrecognizedAtomProperty, T.nameOf(tok));
           switch (minmaxtype) {
@@ -2498,9 +2498,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           fixed[j] = SV.newVariable(T.point3f, v);
         } else if (v instanceof P4) {
           fixed[j] = SV.newVariable(T.point4f, v);
-        } else if (v instanceof Matrix3f) {
+        } else if (v instanceof M3) {
           fixed[j] = SV.newVariable(T.matrix3f, v);
-        } else if (v instanceof Matrix4f) {
+        } else if (v instanceof M4) {
           fixed[j] = SV.newVariable(T.matrix4f, v);
         } else if (v instanceof Map<?, ?>) {
           fixed[j] = SV.newVariable(T.hash, v);
@@ -6465,7 +6465,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       i = iToken + 1;
       if (q == null)
         invArg();
-      AxisAngle4f aa = q.toAxisAngle4f();
+      A4 aa = q.toAxisAngle4f();
       axis.set(aa.x, aa.y, aa.z);
       /*
        * The quaternion angle for an atom represents the angle by which the
@@ -8776,8 +8776,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     P3[] points = new P3[2];
     V3 rotAxis = V3.new3(0, 1, 0);
     V3 translation = null;
-    Matrix4f m4 = null;
-    Matrix3f m3 = null;
+    M4 m4 = null;
+    M3 m3 = null;
     int direction = 1;
     int tok;
     Quaternion q = null;
@@ -8973,7 +8973,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           ptsB = getPointVector(getToken(++i), i);
           if (ptsB == null || ptsA.size() != ptsB.size())
             errorAt(ERROR_invalidArgument, i);
-          m4 = new Matrix4f();
+          m4 = new M4();
           points[0] = new P3();
           nPoints = 1;
           float stddev = (chk ? 0 : Measure.getTransformMatrix4(ptsA, ptsB, m4,
@@ -8983,15 +8983,15 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (stddev > 0.001)
             ptsB = null;
         } else if (tok == T.matrix4f) {
-          m4 = (Matrix4f) theToken.value;
+          m4 = (M4) theToken.value;
         }
-        m3 = new Matrix3f();
+        m3 = new M3();
         if (m4 != null) {
           translation = new V3();
           m4.get(translation);
           m4.getRotationScale(m3);
         } else {
-          m3 = (Matrix3f) theToken.value;
+          m3 = (M3) theToken.value;
         }
         q = (chk ? new Quaternion() : Quaternion.newM(m3));
         rotAxis.setT(q.getNormal());

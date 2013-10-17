@@ -27,7 +27,7 @@ package org.jmol.quantum;
 
 import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 class QMAtom extends P3 {
 

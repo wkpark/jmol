@@ -36,7 +36,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import javajs.J2SRequireImport;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 /**

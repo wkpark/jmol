@@ -26,6 +26,7 @@ package org.jmol.smiles;
 
 
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -34,7 +35,6 @@ import java.util.Map;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Parser;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.util.Logger;
 

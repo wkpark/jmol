@@ -27,7 +27,8 @@ package org.jmol.modelset;
 
 
 
-import javajs.array.ArrayUtil;
+import javajs.util.ArrayUtil;
+
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolEdge;

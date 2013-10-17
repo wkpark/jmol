@@ -1,6 +1,8 @@
 package org.jmol.adapter.readers.pymol;
 
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
 
 import java.util.Hashtable;
@@ -8,7 +10,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolDocument;
-import javajs.lang.SB;
 import org.jmol.viewer.Viewer;
 
 /**

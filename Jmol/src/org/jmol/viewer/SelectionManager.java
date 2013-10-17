@@ -24,7 +24,9 @@
 package org.jmol.viewer;
 
 import org.jmol.script.T;
-import javajs.array.ArrayUtil;
+
+import javajs.util.ArrayUtil;
+
 import org.jmol.util.BSUtil;
 
 import org.jmol.api.JmolSelectionListener;

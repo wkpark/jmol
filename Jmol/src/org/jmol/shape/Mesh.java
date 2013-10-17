@@ -31,23 +31,25 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.script.T;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Normix;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P4;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P4;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.api.SymmetryInterface;
 
 //import javax.vecmath.Matrix3f;
@@ -343,7 +345,7 @@ public class Mesh extends MeshSurface {
         normal.normalize();
         normal.scale(scale3d);
         if (mat4 != null) {
-          Matrix3f m3 = new Matrix3f();
+          M3 m3 = new M3();
           mat4.getRotationScale(m3); 
           m3.transform(normal);
         }
@@ -494,15 +496,15 @@ public class Mesh extends MeshSurface {
     return null;
   }
 
-  public void rotateTranslate(Quaternion q, Tuple3f offset, boolean isAbsolute) {
+  public void rotateTranslate(Quaternion q, T3 offset, boolean isAbsolute) {
     if (q == null && offset == null) {
       mat4 = null;
       return;
     }
-    Matrix3f m3 = new Matrix3f();
+    M3 m3 = new M3();
     V3 v = new V3();
     if (mat4 == null) {
-      mat4 = new Matrix4f();
+      mat4 = new M4();
       mat4.setIdentity();
     }
     mat4.getRotationScale(m3);
@@ -515,7 +517,7 @@ public class Mesh extends MeshSurface {
     } else {
       m3.mul(q.getMatrix());
     }
-    mat4 = Matrix4f.newMV(m3, v);
+    mat4 = M4.newMV(m3, v);
     recalcAltVertices = true;
   }
 

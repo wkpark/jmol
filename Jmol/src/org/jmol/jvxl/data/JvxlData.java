@@ -70,9 +70,9 @@ import java.util.Map;
 import org.jmol.java.BS;
 
 import javajs.util.List;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.lang.SB;
+import javajs.util.SB;
+import javajs.util.P3;
+import javajs.util.P4;
 
 
 /*

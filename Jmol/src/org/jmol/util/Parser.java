@@ -25,6 +25,8 @@
 
 package org.jmol.util;
 
+import javajs.util.ArrayUtil;
+
 import org.jmol.java.BS;
 
 

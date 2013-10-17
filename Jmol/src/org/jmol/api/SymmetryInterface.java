@@ -7,14 +7,14 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
 import javajs.util.List;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Tensor;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3i;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3i;
+import javajs.util.T3;
+import javajs.util.V3;
 
 public interface SymmetryInterface {
 
@@ -65,26 +65,26 @@ public interface SymmetryInterface {
 
   public int getSpaceGroupOperationCount();
 
-  public Matrix4f getSpaceGroupOperation(int i);
+  public M4 getSpaceGroupOperation(int i);
 
   public String getSpaceGroupXyz(int i, boolean doNormalize);
 
   public void newSpaceGroupPoint(int i, P3 atom1, P3 atom2,
                                           int transX, int transY, int transZ);
 
-  public V3[] rotateAxes(int iop, V3[] axes, P3 ptTemp, Matrix3f mTemp);
+  public V3[] rotateAxes(int iop, V3[] axes, P3 ptTemp, M3 mTemp);
 
   public void setUnitCellAllFractionalRelative(boolean TF);
   
   public void setUnitCell(float[] notionalUnitCell);
 
-  public void toCartesian(Tuple3f pt, boolean asAbsolue);
+  public void toCartesian(T3 pt, boolean asAbsolue);
 
   public Tensor getTensor(float[] parBorU);
 
   public P3 ijkToPoint3f(int nnn);
 
-  public void toFractional(Tuple3f pt, boolean isAbsolute);
+  public void toFractional(T3 pt, boolean isAbsolute);
 
   public P3[] getUnitCellVertices();
 
@@ -130,11 +130,11 @@ public interface SymmetryInterface {
 
   public boolean isSlab();
 
-  public void addSpaceGroupOperationM(Matrix4f mat);
+  public void addSpaceGroupOperationM(M4 mat);
 
   public void setMinMaxLatticeParameters(P3i minXYZ, P3i maxXYZ);
 
-  public void setUnitCellOrientation(Matrix3f matUnitCellOrientation);
+  public void setUnitCellOrientation(M3 matUnitCellOrientation);
 
   public String getMatrixFromString(String xyz, float[] temp, boolean allowScaling);
 
@@ -143,13 +143,13 @@ public interface SymmetryInterface {
 
   public P3 getFractionalOffset();
 
-  public String fcoord(Tuple3f p);
+  public String fcoord(T3 p);
 
-  public void setCartesianOffset(Tuple3f origin);
+  public void setCartesianOffset(T3 origin);
 
   public P3[] getUnitCellVectors();
 
-  public SymmetryInterface getUnitCell(Tuple3f[] points);
+  public SymmetryInterface getUnitCell(T3[] points);
 
   public P3 toSupercell(P3 fpt);
 
@@ -178,7 +178,7 @@ public interface SymmetryInterface {
 
   public int getLatticeOp();
 
-  public Matrix4f getOperationGammaIS(int iop);
+  public M4 getOperationGammaIS(int iop);
 
   public int getSiteMultiplicity(P3 a);
   

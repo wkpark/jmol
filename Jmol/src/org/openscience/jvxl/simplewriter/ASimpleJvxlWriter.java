@@ -37,7 +37,7 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 public class ASimpleJvxlWriter {
 

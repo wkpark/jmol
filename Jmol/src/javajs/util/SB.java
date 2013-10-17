@@ -1,5 +1,5 @@
 
-package javajs.lang;
+package javajs.util;
 
 /**
  * Interesting thing here is that JavaScript is 3x faster than Java in handling strings.
@@ -32,7 +32,7 @@ public class SB {
   public static SB newN(int n) {
     /**
      * @j2sNative
-     *            return new javajs.lang.SB(); 
+     *            return new javajs.util.SB(); 
      */
     {
       // not perfect, because it requires defining sb twice. 
@@ -47,7 +47,7 @@ public class SB {
     /**
      * @j2sNative 
      * 
-     * var sb = new javajs.lang.SB();
+     * var sb = new javajs.util.SB();
      * sb.s = s;
      * return sb; 
      * 

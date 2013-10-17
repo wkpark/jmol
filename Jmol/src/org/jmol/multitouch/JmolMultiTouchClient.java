@@ -27,7 +27,7 @@ package org.jmol.multitouch;
 
 
 import java.util.List;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 import com.sparshui.GestureType;
 

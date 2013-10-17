@@ -28,7 +28,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.J2SRequireImport;
-import javajs.vec.V3;
+import javajs.util.ArrayUtil;
+import javajs.util.V3;
 
   /**
    * 
@@ -122,7 +123,7 @@ import javajs.vec.V3;
  * 
  */
 
-@J2SRequireImport({javajs.array.ArrayUtil.class})
+@J2SRequireImport({javajs.util.ArrayUtil.class})
 public class Geodesic {
   
   private final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));

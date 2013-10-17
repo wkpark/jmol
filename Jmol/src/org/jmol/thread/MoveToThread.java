@@ -27,10 +27,10 @@ package org.jmol.thread;
 
 
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.V3;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.V3;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
@@ -44,12 +44,12 @@ public class MoveToThread extends JmolThread {
   
   private final V3 aaStepCenter = new V3();
   private final V3 aaStepNavCenter = new V3();
-  private final AxisAngle4f aaStep = new AxisAngle4f();
-  private final AxisAngle4f aaTotal = new AxisAngle4f();
-  private final Matrix3f matrixStart = new Matrix3f();
-  private final Matrix3f matrixStartInv = new Matrix3f();
-  private Matrix3f matrixStep = new Matrix3f();
-  private final Matrix3f matrixEnd = new Matrix3f();
+  private final A4 aaStep = new A4();
+  private final A4 aaTotal = new A4();
+  private final M3 matrixStart = new M3();
+  private final M3 matrixStartInv = new M3();
+  private M3 matrixStep = new M3();
+  private final M3 matrixEnd = new M3();
 
   private P3 center;
   private P3 navCenter;
@@ -95,7 +95,7 @@ public class MoveToThread extends JmolThread {
     setViewer(viewer, "MoveToThread");
     transformManager = (TransformManager) manager;
     center = (P3) options[0];
-    matrixEnd.setM((Matrix3f) options[1]);
+    matrixEnd.setM((M3) options[1]);
     float[] f = (float[]) options[3];
     ptMoveToCenter = (center == null ? transformManager.fixedRotationCenter
         : center);
@@ -226,7 +226,7 @@ public class MoveToThread extends JmolThread {
     setValues(matrixEnd, center, navCenter);
   }
 
-  private void setValues(Matrix3f m, P3 center, P3 navCenter) {
+  private void setValues(M3 m, P3 center, P3 navCenter) {
     transformManager.setAll(center, m, navCenter, getVal(zoom), getVal(xTrans), getVal(yTrans), 
         getVal(rotationRadius), getVal(pixelScale), getVal(navDepth), 
         getVal(xNav), getVal(yNav),

@@ -30,7 +30,7 @@ import org.jmol.java.BS;
 import org.jmol.script.T;
 import javajs.util.List;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;

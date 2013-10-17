@@ -33,9 +33,9 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Chain;
 import javajs.util.List;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Quaternion;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.JC;
 
 public class NucleicMonomer extends PhosphorusMonomer {

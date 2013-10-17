@@ -33,7 +33,7 @@ import java.io.Serializable;
  *         
  *         
  */
-public class Matrix3f implements Serializable {
+public class M3 implements Serializable {
 
   /**
    * The first element of the first row.
@@ -83,7 +83,7 @@ public class Matrix3f implements Serializable {
   /**
    * Constructs and initializes a Matrix3f to all zeros.
    */
-  public Matrix3f() {
+  public M3() {
   }
 
   /**
@@ -94,8 +94,8 @@ public class Matrix3f implements Serializable {
    *        the array of length 9 containing in order
    * @return m
    */
-  public static Matrix3f newA(float[] v) {
-    Matrix3f m = new Matrix3f();
+  public static M3 newA(float[] v) {
+    M3 m = new M3();
     m.setA(v);
     return m;
   }
@@ -107,8 +107,8 @@ public class Matrix3f implements Serializable {
    *        The source matrix.
    * @return m
    */
-  public static Matrix3f newM(Matrix3f m1) {
-    Matrix3f m = new Matrix3f();
+  public static M3 newM(M3 m1) {
+    M3 m = new M3();
     m.m00 = m1.m00;
     m.m01 = m1.m01;
     m.m02 = m1.m02;
@@ -281,7 +281,7 @@ public class Matrix3f implements Serializable {
    * @param v
    *        the replacement row
    */
-  public final void setRowV(int row, Tuple3f v) {
+  public final void setRowV(int row, T3 v) {
     if (row == 0) {
       m00 = v.x;
       m01 = v.y;
@@ -499,7 +499,7 @@ public class Matrix3f implements Serializable {
    * @param m1
    *        the other matrix
    */
-  public final void add(Matrix3f m1) {
+  public final void add(M3 m1) {
     m00 += m1.m00;
     m01 += m1.m01;
     m02 += m1.m02;
@@ -518,7 +518,7 @@ public class Matrix3f implements Serializable {
    * @param m1
    *        the other matrix
    */
-  public final void sub(Matrix3f m1) {
+  public final void sub(M3 m1) {
     m00 -= m1.m00;
     m01 -= m1.m01;
     m02 -= m1.m02;
@@ -554,7 +554,7 @@ public class Matrix3f implements Serializable {
    * @param m1
    *        the matrix to be transposed
    */
-  public final void transposeM(Matrix3f m1) {
+  public final void transposeM(M3 m1) {
     // alias-safe
     setM(m1);
     transpose();
@@ -567,7 +567,7 @@ public class Matrix3f implements Serializable {
    * @param a1
    *        the axis and angle to be converted
    */
-  public final void setAA(AxisAngle4f a1) {
+  public final void setAA(A4 a1) {
     setFromAxisAngle(a1.x, a1.y, a1.z, a1.angle);
   }
 
@@ -609,7 +609,7 @@ public class Matrix3f implements Serializable {
    * @param m1
    *        the matrix3f
    */
-  public final void setM(Matrix3f m1) {
+  public final void setM(M3 m1) {
     m00 = m1.m00;
     m01 = m1.m01;
     m02 = m1.m02;
@@ -647,7 +647,7 @@ public class Matrix3f implements Serializable {
    * @param m1
    *        the matrix to be inverted
    */
-  public final void invertM(Matrix3f m1) {
+  public final void invertM(M3 m1) {
     setM(m1);
     invert();
   }
@@ -785,7 +785,7 @@ public class Matrix3f implements Serializable {
    * @param m1
    *        the other matrix
    */
-  public final void mul(Matrix3f m1) {
+  public final void mul(M3 m1) {
     mul2(this, m1);
   }
 
@@ -798,7 +798,7 @@ public class Matrix3f implements Serializable {
    * @param m2
    *        the second matrix
    */
-  public final void mul2(Matrix3f m1, Matrix3f m2) {
+  public final void mul2(M3 m1, M3 m2) {
     // alias-safe way.
     set(m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20, m1.m00 * m2.m01
         + m1.m01 * m2.m11 + m1.m02 * m2.m21, m1.m00 * m2.m02 + m1.m01 * m2.m12
@@ -822,9 +822,9 @@ public class Matrix3f implements Serializable {
    */
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof Matrix3f))
+    if (!(o instanceof M3))
       return false;
-    Matrix3f m = (Matrix3f) o;
+    M3 m = (M3) o;
     return m00 == m.m00 && m01 == m.m01 && m02 == m.m02 && m10 == m.m10
         && m11 == m.m11 && m12 == m.m12 && m20 == m.m20 && m21 == m.m21
         && m22 == m.m22;
@@ -841,11 +841,11 @@ public class Matrix3f implements Serializable {
    */
   @Override
   public int hashCode() {
-    return Tuple3f.floatToIntBits0(m00) ^ Tuple3f.floatToIntBits0(m01)
-        ^ Tuple3f.floatToIntBits0(m02) ^ Tuple3f.floatToIntBits0(m10)
-        ^ Tuple3f.floatToIntBits0(m11) ^ Tuple3f.floatToIntBits0(m12)
-        ^ Tuple3f.floatToIntBits0(m20) ^ Tuple3f.floatToIntBits0(m21)
-        ^ Tuple3f.floatToIntBits0(m22);
+    return T3.floatToIntBits0(m00) ^ T3.floatToIntBits0(m01)
+        ^ T3.floatToIntBits0(m02) ^ T3.floatToIntBits0(m10)
+        ^ T3.floatToIntBits0(m11) ^ T3.floatToIntBits0(m12)
+        ^ T3.floatToIntBits0(m20) ^ T3.floatToIntBits0(m21)
+        ^ T3.floatToIntBits0(m22);
   }
 
   /**
@@ -863,7 +863,7 @@ public class Matrix3f implements Serializable {
     m22 = 0.0f;
   }
 
-  public final void transform(Tuple3f t) {
+  public final void transform(T3 t) {
     // alias-safe
     transform2(t, t);
   }
@@ -877,7 +877,7 @@ public class Matrix3f implements Serializable {
    * @param result
    *        the vector into which the transformed values are placed
    */
-  public final void transform2(Tuple3f t, Tuple3f result) {
+  public final void transform2(T3 t, T3 result) {
     // alias-safe
     result.set(m00 * t.x + m01 * t.y + m02 * t.z, m10 * t.x + m11 * t.y + m12
         * t.z, m20 * t.x + m21 * t.y + m22 * t.z);

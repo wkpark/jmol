@@ -35,6 +35,8 @@ import java.io.StringReader;
 
 import javajs.J2SIgnoreImport;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -54,7 +56,6 @@ import org.jmol.api.ZInputStream;
 import org.jmol.io.JmolBinary;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 

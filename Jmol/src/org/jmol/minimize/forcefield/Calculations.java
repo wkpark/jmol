@@ -34,10 +34,11 @@ import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinPosition;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Util;
-import javajs.array.ArrayUtil;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.vec.Vector3d;
-import javajs.lang.SB;
+import javajs.util.SB;
+import javajs.util.V3d;
 import org.jmol.util.Txt;
 
 
@@ -100,7 +101,7 @@ abstract class Calculations {
 
   abstract double compute(int iType, Object[] dataIn);
 
-  void addForce(Vector3d v, int i, double dE) {
+  void addForce(V3d v, int i, double dE) {
     minAtoms[i].force[0] += v.x * dE;
     minAtoms[i].force[1] += v.y * dE;
     minAtoms[i].force[2] += v.z * dE;
@@ -210,15 +211,15 @@ abstract class Calculations {
     return calc(CALC_ES, gradients);
   }
 
-  final Vector3d da = new Vector3d();
-  final Vector3d db = new Vector3d();
-  final Vector3d dc = new Vector3d();
-  final Vector3d dd = new Vector3d();
+  final V3d da = new V3d();
+  final V3d db = new V3d();
+  final V3d dc = new V3d();
+  final V3d dd = new V3d();
   int ia, ib, ic, id;
 
-  final Vector3d v1 = new Vector3d();
-  final Vector3d v2 = new Vector3d();
-  final Vector3d v3 = new Vector3d();
+  final V3d v1 = new V3d();
+  final V3d v2 = new V3d();
+  final V3d v3 = new V3d();
 
   private final static double PI_OVER_2 = Math.PI / 2;
   private final static double TWO_PI = Math.PI * 2;

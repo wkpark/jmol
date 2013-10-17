@@ -32,12 +32,12 @@ import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Map;
 import java.util.Properties;

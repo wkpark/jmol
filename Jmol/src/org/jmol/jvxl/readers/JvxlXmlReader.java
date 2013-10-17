@@ -25,7 +25,10 @@ package org.jmol.jvxl.readers;
 
 
 import java.io.BufferedReader;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Hashtable;
 
@@ -36,17 +39,15 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.shapesurface.IsosurfaceMesh;
-import javajs.array.ArrayUtil;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.lang.SB;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.V3;
 
 public class JvxlXmlReader extends VolumeFileReader {
 

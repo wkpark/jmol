@@ -31,7 +31,7 @@ import org.jmol.script.T;
 import org.jmol.shapespecial.Dots;
 import org.jmol.util.C;
 import org.jmol.util.Geodesic;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 
 

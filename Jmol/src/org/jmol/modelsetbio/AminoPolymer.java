@@ -32,20 +32,21 @@ import org.jmol.modelset.HBond;
 import org.jmol.modelset.Model;
 import org.jmol.script.T;
 //import org.jmol.util.Escape;
-import javajs.array.ArrayUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.P3;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 //import javajs.util.List;
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 
 import java.util.Map;

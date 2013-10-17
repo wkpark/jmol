@@ -26,7 +26,8 @@ package org.jmol.adapter.readers.xtal;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 
-import javajs.array.ArrayUtil;
+import javajs.util.ArrayUtil;
+
 import org.jmol.util.Logger;
 
 /**

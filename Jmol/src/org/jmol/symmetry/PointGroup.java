@@ -25,6 +25,7 @@
 package org.jmol.symmetry;
 
 import javajs.util.List;
+import javajs.util.SB;
 
 import java.util.Hashtable;
 
@@ -36,11 +37,10 @@ import org.jmol.modelset.Atom;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 /*
  * Bob Hanson 7/2008

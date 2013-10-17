@@ -29,13 +29,13 @@ import java.util.Map;
 import org.jmol.constant.EnumVdw;
 import org.jmol.java.BS;
 import org.jmol.script.T;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.lang.SB;
+import javajs.util.ArrayUtil;
+import javajs.util.SB;
 
 
 /*

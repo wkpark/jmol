@@ -31,7 +31,7 @@ import org.jmol.util.ColorUtil;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
-import javajs.vec.Tuple3f;
+import javajs.util.T3;
 
 /*
  * Compiled Graphical Object -- ala PyMOL
@@ -193,7 +193,7 @@ public class CGOMesh extends DrawMesh {
    * @param i  pointer to PRECEDING item
    * @param pt
    */
-  public void getPoint(int i, Tuple3f pt) {
+  public void getPoint(int i, T3 pt) {
     pt.set(getFloat(++i), getFloat(++i), getFloat(++i));
   }
 

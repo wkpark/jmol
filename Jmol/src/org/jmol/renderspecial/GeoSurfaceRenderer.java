@@ -24,7 +24,7 @@
 
 package org.jmol.renderspecial;
 
-import javajs.vec.P3i;
+import javajs.util.P3i;
 
 import org.jmol.java.BS;
 import org.jmol.script.T;

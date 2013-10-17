@@ -32,7 +32,7 @@ package javajs.vec;
  * for unique constructor and method names
  * for the optimization of compiled JavaScript using Java2Script
  */
-public class Vector3d extends Tuple3d {
+public class V3d extends T3d {
 
   /**
    * Sets this vector to be the vector cross product of vectors v1 and v2.
@@ -42,7 +42,7 @@ public class Vector3d extends Tuple3d {
    * @param v2
    *        the second vector
    */
-  public final void cross(Vector3d v1, Vector3d v2) {
+  public final void cross(V3d v1, V3d v2) {
     // store on stack once for aliasing-safty
     // i.e. safe when a.cross(a, b)
     set(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y
@@ -68,7 +68,7 @@ public class Vector3d extends Tuple3d {
    *        the other vector
    * @return this.dot.v
    */
-  public final double dot(Vector3d v) {
+  public final double dot(V3d v) {
     return x * v.x + y * v.y + z * v.z;
   }
 

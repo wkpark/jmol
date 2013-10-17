@@ -24,6 +24,7 @@
 package org.jmol.modelsetbio;
 
 import javajs.util.List;
+import javajs.util.SB;
 
 
 
@@ -36,9 +37,8 @@ import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import javajs.vec.P3;
-import javajs.lang.SB;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 public class AlphaPolymer extends BioPolymer {

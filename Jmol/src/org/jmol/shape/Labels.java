@@ -30,10 +30,11 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;

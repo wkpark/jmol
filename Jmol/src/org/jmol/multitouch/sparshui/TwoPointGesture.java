@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.jmol.multitouch.ActionManagerMT;
 import org.jmol.util.Logger;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 import com.sparshui.common.Event;
 import com.sparshui.common.Location;

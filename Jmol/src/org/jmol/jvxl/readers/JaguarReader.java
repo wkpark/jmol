@@ -27,7 +27,8 @@ import java.io.BufferedReader;
 
 
 import org.jmol.util.Parser;
-import javajs.lang.SB;
+
+import javajs.util.SB;
 
 /*
  * A simple Jaguar .PLT file reader for isosurface

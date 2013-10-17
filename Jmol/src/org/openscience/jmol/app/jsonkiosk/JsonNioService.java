@@ -42,8 +42,9 @@ import org.jmol.api.JmolViewer;
 import org.jmol.script.SV;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.lang.SB;
+
+import javajs.util.SB;
+import javajs.util.P3;
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 

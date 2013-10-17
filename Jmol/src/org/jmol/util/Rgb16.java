@@ -24,6 +24,8 @@
 
 package org.jmol.util;
 
+import javajs.util.SB;
+
 
 public final class Rgb16 {
   public int rScaled;

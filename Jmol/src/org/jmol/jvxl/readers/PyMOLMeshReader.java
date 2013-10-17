@@ -28,8 +28,9 @@ import java.io.BufferedReader;
 import java.util.Hashtable;
 
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
-import javajs.lang.SB;
 
 
 /**

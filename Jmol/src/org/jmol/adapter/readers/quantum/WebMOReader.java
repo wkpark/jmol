@@ -28,13 +28,13 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Atom;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
-import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 
 /**

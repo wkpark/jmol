@@ -30,11 +30,12 @@ import javajs.util.List;
 
 
 import org.jmol.api.JmolRendererInterface;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.Point3fi;
+import org.jmol.util.Point3fi;
 
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.P3i;
+
+import javajs.util.V3;
 
 
 /**

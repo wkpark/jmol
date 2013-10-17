@@ -23,12 +23,12 @@
  */
 package org.jmol.util;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.vec.V3;
-import javajs.vec.Tuple3f;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.V3;
+import javajs.util.T3;
 
 
 /*
@@ -49,7 +49,7 @@ import javajs.vec.Tuple3f;
 
 public class Quaternion {
   public float q0, q1, q2, q3;
-  private Matrix3f mat;
+  private M3 mat;
 
   private final static P4 qZero = new P4();
   private static final double RAD_PER_DEG = Math.PI / 180;
@@ -64,19 +64,19 @@ public class Quaternion {
     return q1;
   }
 
-  public static Quaternion newVA(Tuple3f pt, float theta) {
+  public static Quaternion newVA(T3 pt, float theta) {
     Quaternion q = new Quaternion();
     q.setTA(pt, theta);
     return q;
   }
 
-  public static Quaternion newM(Matrix3f mat) {
+  public static Quaternion newM(M3 mat) {
     Quaternion q = new Quaternion();
     q.setM(mat);
     return q;
   }
 
-  public static Quaternion newAA(AxisAngle4f a) {
+  public static Quaternion newAA(A4 a) {
     Quaternion q = new Quaternion();
     q.setAA(a);
     return q;
@@ -136,7 +136,7 @@ public class Quaternion {
    * @param pt
    * @param theta
    */
-  public void setTA(Tuple3f pt, float theta) {
+  public void setTA(T3 pt, float theta) {
     if (pt.x == 0 && pt.y == 0 && pt.z == 0) {
       q0 = 1;
       return;
@@ -149,16 +149,16 @@ public class Quaternion {
     q3 = (float) (pt.z * fact);
   }
 
-  public void setAA(AxisAngle4f a) {
-    AxisAngle4f aa = AxisAngle4f.newAA(a);
+  public void setAA(A4 a) {
+    A4 aa = A4.newAA(a);
     if (aa.angle == 0)
       aa.y = 1;
-    Matrix3f m3 = new Matrix3f();
+    M3 m3 = new M3();
     m3.setAA(aa);
     setM(m3);
   }
 
-  public void setM(Matrix3f mat) {
+  public void setM(M3 mat) {
 
     /*
      * Changed 7/16/2008 to double precision for 11.5.48.
@@ -328,8 +328,8 @@ public class Quaternion {
    * @param xy
    * @return quaternion for frame
    */
-  public static final Quaternion getQuaternionFrame(P3 center, Tuple3f x,
-                                                    Tuple3f xy) {
+  public static final Quaternion getQuaternionFrame(P3 center, T3 x,
+                                                    T3 xy) {
     V3 vA = V3.newV(x);
     V3 vB = V3.newV(xy);
     if (center != null) {
@@ -352,7 +352,7 @@ public class Quaternion {
     vA.normalize();
     vBprime.normalize();
     vC.normalize();
-    Matrix3f mat = new Matrix3f();
+    M3 mat = new M3();
     mat.setColumnV(0, vA);
     mat.setColumnV(1, vBprime);
     mat.setColumnV(2, vC);
@@ -393,14 +393,14 @@ public class Quaternion {
     return q;
   }
 
-  public Matrix3f getMatrix() {
+  public M3 getMatrix() {
     if (mat == null)
       setMatrix();
     return mat;
   }
 
   private void setMatrix() {
-    mat = new Matrix3f();
+    mat = new M3();
     // q0 = w, q1 = x, q2 = y, q3 = z
     mat.m00 = q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3;
     mat.m01 = 2 * q1 * q2 - 2 * q0 * q3;
@@ -587,7 +587,7 @@ public class Quaternion {
     return P4.new4(q1, q2, q3, q0);
   }
 
-  public AxisAngle4f toAxisAngle4f() {
+  public A4 toAxisAngle4f() {
     double theta = 2 * Math.acos(Math.abs(q0));
     double sinTheta2 = Math.sin(theta/2);
     V3 v = getNormal();
@@ -595,7 +595,7 @@ public class Quaternion {
       v.scale(-1);
       theta = Math.PI - theta;
     }
-    return AxisAngle4f.newVA(v, (float) theta);
+    return A4.newVA(v, (float) theta);
   }
 
   public P3 transformPt(P3 pt) {
@@ -606,7 +606,7 @@ public class Quaternion {
     return ptNew;
   }
 
-  public Tuple3f transformP2(Tuple3f pt, Tuple3f ptNew) {
+  public T3 transformP2(T3 pt, T3 ptNew) {
     if (mat == null)
       setMatrix();
     mat.transform2(pt, ptNew);
@@ -634,7 +634,7 @@ public class Quaternion {
   }
 
   public String getInfo() {
-    AxisAngle4f axis = toAxisAngle4f();
+    A4 axis = toAxisAngle4f();
     return Txt.sprintf("%10.6f%10.6f%10.6f%10.6f  %6.2f  %10.5f %10.5f %10.5f",
         "F", new Object[] { new float[] { q0, q1, q2, q3, 
             (float) (axis.angle * 180 / Math.PI), axis.x, axis.y, axis.z } });

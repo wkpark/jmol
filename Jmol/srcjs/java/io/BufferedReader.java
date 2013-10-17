@@ -25,7 +25,7 @@
 
 package java.io;
 
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 /**
  * Reads text from a character-input stream, buffering characters so as to

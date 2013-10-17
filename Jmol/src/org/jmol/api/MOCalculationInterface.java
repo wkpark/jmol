@@ -7,7 +7,7 @@ package org.jmol.api;
 import org.jmol.java.BS;
 
 import javajs.util.List;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 
 public interface MOCalculationInterface {

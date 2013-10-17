@@ -26,8 +26,8 @@ package org.jmol.util;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.vec.P3;
-import javajs.vec.Tuple3f;
+import javajs.util.P3;
+import javajs.util.T3;
 
 
 
@@ -448,7 +448,7 @@ public class ColorUtil {
     return P3.new3((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
   }
 
-  public static int colorPtToInt(Tuple3f pt) {
+  public static int colorPtToInt(T3 pt) {
     return colorTriadToInt(pt.x, pt.y, pt.z);
   }
 

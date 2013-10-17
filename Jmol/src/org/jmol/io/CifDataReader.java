@@ -2,13 +2,14 @@ package org.jmol.io;
 
 import java.io.BufferedReader;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 
 import java.util.Map;
 
 import org.jmol.api.JmolLineReader;
 import org.jmol.util.Logger;
-import javajs.lang.SB;
 
 
 public class CifDataReader {

@@ -30,13 +30,13 @@ package javajs.vec;
  * for unique constructor and method names
  * for the optimization of compiled JavaScript using Java2Script
  */
-public class V3 extends Tuple3f {
+public class V3 extends T3 {
 
-  public static V3 newV(Tuple3f t) {
+  public static V3 newV(T3 t) {
     return V3.new3(t.x, t.y, t.z);
   }
 
-  public static V3 newVsub(Tuple3f t1, Tuple3f t2) {
+  public static V3 newVsub(T3 t1, T3 t2) {
     return V3.new3(t1.x - t2.x, t1.y - t2.y,t1.z - t2.z);
   }
 

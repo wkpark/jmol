@@ -23,14 +23,15 @@
 
 package org.jmol.script;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import java.util.Hashtable;
 
 import java.util.Map;
 
 import org.jmol.api.JmolScriptFunction;
-import javajs.array.ArrayUtil;
-import javajs.lang.SB;
 
 public class ScriptFunction implements JmolScriptFunction {
 

@@ -60,7 +60,6 @@ import org.jmol.script.ScriptInterruption;
 import org.jmol.script.ScriptMathProcessor;
 import org.jmol.script.T;
 import org.jmol.shape.MeshCollection;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
@@ -70,24 +69,27 @@ import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolFont;
+import org.jmol.util.Point3fi;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.vec.Point3fi;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3;
+import javajs.util.P4;
 
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
-import javajs.lang.SB;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TempArray;
 import org.jmol.util.Txt;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
@@ -6344,7 +6346,7 @@ public class ScriptExt implements JmolScriptExtension {
         vAtomSets.add(new BitSet[] { bsAtoms1, bsAtoms2 });
         */
 
-        Matrix4f m4 = new Matrix4f();
+        M4 m4 = new M4();
         center = new P3();
         if (isFlexFit) {
           float[] list;
@@ -6361,7 +6363,7 @@ public class ScriptExt implements JmolScriptExtension {
           m4.get(translation);
         }
         if (doRotate) {
-          Matrix3f m3 = new Matrix3f();
+          M3 m3 = new M3();
           m4.getRotationScale(m3);
           q = Quaternion.newM(m3);
         }
@@ -6392,7 +6394,7 @@ public class ScriptExt implements JmolScriptExtension {
       List<P3> ptsB = null;
       if (doRotate && doTranslate && nSeconds != 0) {
         List<P3> ptsA = viewer.getAtomPointVector(bsFrom);
-        Matrix4f m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(),
+        M4 m4 = ScriptMathProcessor.getMatrix4f(q.getMatrix(),
             translation);
         ptsB = Measure.transformPoints(ptsA, m4, center);
       }
@@ -6782,7 +6784,7 @@ public class ScriptExt implements JmolScriptExtension {
 
   private float getSmilesCorrelation(BS bsA, BS bsB, String smiles,
                                     List<P3> ptsA, List<P3> ptsB,
-                                    Matrix4f m4, List<BS> vReturn,
+                                    M4 m4, List<BS> vReturn,
                                     boolean isSmarts, boolean asMap,
                                     int[][] mapSet, P3 center)
       throws ScriptException {
@@ -6792,7 +6794,7 @@ public class ScriptExt implements JmolScriptExtension {
         ptsA = new List<P3>();
         ptsB = new List<P3>();
       }
-      Matrix4f m = new Matrix4f();
+      M4 m = new M4();
       P3 c = new P3();
 
       Atom[] atoms = viewer.modelSet.atoms;
@@ -7082,7 +7084,7 @@ public class ScriptExt implements JmolScriptExtension {
     BS bs2 = (args[1].tok == T.bitset ? (BS) args[1].value : null);
     String smiles1 = (bs1 == null ? SV.sValue(args[0]) : "");
     String smiles2 = (bs2 == null ? SV.sValue(args[1]) : "");
-    Matrix4f m = new Matrix4f();
+    M4 m = new M4();
     stddev = Float.NaN;
     List<P3> ptsA, ptsB;
     if (isSmiles) {
@@ -8206,7 +8208,7 @@ public class ScriptExt implements JmolScriptExtension {
     case T.matrix3f:
       if (n < 0 || n > 2)
         return false;
-      Matrix3f m = (Matrix3f) x1.value;
+      M3 m = (M3) x1.value;
       switch (tok) {
       case T.row:
         f = new float[3];
@@ -8221,7 +8223,7 @@ public class ScriptExt implements JmolScriptExtension {
     case T.matrix4f:
       if (n < 0 || n > 2)
         return false;
-      Matrix4f m4 = (Matrix4f) x1.value;
+      M4 m4 = (M4) x1.value;
       switch (tok) {
       case T.row:
         f = new float[4];
@@ -8260,8 +8262,8 @@ public class ScriptExt implements JmolScriptExtension {
         }
         if (isMatrix) {
           if (len == 3)
-            return mp.addXM3(Matrix3f.newA(m));
-          return mp.addXM4(Matrix4f.newA(m));
+            return mp.addXM3(M3.newA(m));
+          return mp.addXM4(M4.newA(m));
         }
       }
     }
@@ -8386,7 +8388,7 @@ public class ScriptExt implements JmolScriptExtension {
       } else if (tok == T.quaternion && args[0].tok == T.bitset) {
         qs = viewer.getAtomGroupQuaternions((BS) args[0].value, nMax);
       } else if (args[0].tok == T.matrix3f) {
-        q = Quaternion.newM((Matrix3f) args[0].value);
+        q = Quaternion.newM((M3) args[0].value);
       } else if (args[0].tok == T.point4f) {
         p4 = (P4) args[0].value;
       } else {

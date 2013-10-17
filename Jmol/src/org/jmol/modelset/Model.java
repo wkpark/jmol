@@ -33,11 +33,12 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.SB;
+import javajs.util.P3;
 
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;

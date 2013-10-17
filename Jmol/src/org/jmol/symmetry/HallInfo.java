@@ -54,8 +54,9 @@ package org.jmol.symmetry;
 
 
 import org.jmol.util.Logger;
-import javajs.lang.SB;
-import javajs.vec.P3i;
+
+import javajs.util.SB;
+import javajs.util.P3i;
 
 class HallInfo {
   

@@ -28,6 +28,8 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
 import java.io.IOException;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -39,11 +41,10 @@ import org.jmol.util.Txt;
 import org.jmol.api.JmolAdapter;
 import org.jmol.java.BS;
 
-import javajs.array.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import javajs.vec.V3;
+import javajs.util.V3;
 
 /**
  * Reader for Gaussian 94/98/03/09 output files.

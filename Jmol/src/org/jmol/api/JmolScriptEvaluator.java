@@ -10,8 +10,8 @@ import org.jmol.script.ScriptException;
 import org.jmol.script.ScriptContext;
 import org.jmol.script.SV;
 import javajs.util.List;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.SB;
+import javajs.util.P3;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.Viewer;
 

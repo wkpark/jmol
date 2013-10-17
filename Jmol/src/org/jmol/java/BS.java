@@ -25,7 +25,7 @@
 
 package org.jmol.java;
 
-import org.jmol.util.SB;
+import javajs.util.SB;
 
 
 /**

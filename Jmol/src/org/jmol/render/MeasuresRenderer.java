@@ -30,12 +30,12 @@ import org.jmol.script.T;
 import org.jmol.shape.Measures;
 import org.jmol.util.C;
 import org.jmol.util.GData;
+import org.jmol.util.Point3fi;
 
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.Point3fi;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.P3i;
 
 
 
@@ -182,8 +182,8 @@ public class MeasuresRenderer extends LabelsRenderer {
     }
   }
                           
-  private AxisAngle4f aaT = new AxisAngle4f();
-  private Matrix3f matrixT = new Matrix3f();
+  private A4 aaT = new A4();
+  private M3 matrixT = new M3();
 
   private void renderAngle(String s) {
     int zOffset = atomB.screenDiameter + 10;
@@ -198,7 +198,7 @@ public class MeasuresRenderer extends LabelsRenderer {
       return;
     radius = (radius + 1) / 2;
 
-    AxisAngle4f aa = measurement.getAxisAngle();
+    A4 aa = measurement.getAxisAngle();
     if (aa == null) { // 180 degrees
       if (measurement.text == null) {
         int offset = (int) Math.floor(5 * imageFontScaling);

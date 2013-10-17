@@ -29,7 +29,7 @@ import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.util.C;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 

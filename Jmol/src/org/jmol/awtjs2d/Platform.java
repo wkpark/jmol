@@ -9,7 +9,7 @@ import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.util.JmolFont;
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.api.PlatformViewer;
 
 /**

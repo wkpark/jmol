@@ -28,11 +28,12 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
-import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 import java.io.IOException;
+
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import java.util.Hashtable;
 

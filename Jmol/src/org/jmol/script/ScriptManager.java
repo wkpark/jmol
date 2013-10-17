@@ -27,6 +27,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 
 import javajs.util.List;
+import javajs.util.SB;
 
 
 import org.jmol.api.Interface;
@@ -38,7 +39,6 @@ import org.jmol.java.BS;
 import org.jmol.thread.JmolThread;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.StatusManager;

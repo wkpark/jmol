@@ -29,10 +29,10 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.shape.Labels;
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.Point3fi;
+import javajs.util.P3;
+import javajs.util.P3i;
 
+import org.jmol.util.Point3fi;
 import org.jmol.viewer.JC;
 
 public class LabelsRenderer extends FontLineShapeRenderer {

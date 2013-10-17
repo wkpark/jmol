@@ -32,16 +32,17 @@ import org.jmol.script.T;
 import org.jmol.thread.JmolThread;
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.SB;
+
 import org.jmol.util.Logger;
-import javajs.vec.P3;
-import javajs.vec.P4;
-import javajs.lang.SB;
-import javajs.vec.AxisAngle4f;
-import javajs.vec.Matrix3f;
-import javajs.vec.Matrix4f;
-import javajs.vec.P3i;
-import javajs.vec.Tuple3f;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.A4;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.P3i;
+import javajs.util.T3;
+import javajs.util.V3;
 import org.jmol.util.Vibration;
 
 import org.jmol.util.Quaternion;
@@ -72,7 +73,7 @@ public class TransformManager {
   public final P3 navigationShiftXY = new P3();
   public float navigationDepth;
 
-  protected final Matrix4f matrixTemp = new Matrix4f();
+  protected final M4 matrixTemp = new M4();
   protected final V3 vectorTemp = new V3();
 
   TransformManager(Viewer viewer, int width, int height) {
@@ -106,7 +107,7 @@ public class TransformManager {
     setRotationCenterAndRadiusXYZ(null, true);
     matrixRotate.setIdentity(); // no rotations
     //if (viewer.autoLoadOrientation()) {
-    Matrix3f m = (Matrix3f) viewer
+    M3 m = (M3) viewer
         .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
     if (m != null)
       matrixRotate.setM(m);
@@ -167,8 +168,8 @@ public class TransformManager {
   private final P3 rotationCenterDefault = new P3();
   private float rotationRadiusDefault;
 
-  public final AxisAngle4f fixedRotationAxis = new AxisAngle4f();
-  public final AxisAngle4f internalRotationAxis = new AxisAngle4f();
+  public final A4 fixedRotationAxis = new A4();
+  public final A4 internalRotationAxis = new A4();
   protected V3 internalTranslation;
   final P3 internalRotationCenter = P3.new3(0, 0, 0);
   private float internalRotationAngle = 0;
@@ -178,11 +179,11 @@ public class TransformManager {
    ***************************************************************/
 
   // this matrix only holds rotations ... no translations
-  protected final Matrix3f matrixRotate = new Matrix3f();
+  protected final M3 matrixRotate = new M3();
 
-  private final Matrix3f matrixTemp3 = new Matrix3f();
-  private final Matrix4f matrixTemp4 = new Matrix4f();
-  private final AxisAngle4f axisangleT = new AxisAngle4f();
+  private final M3 matrixTemp3 = new M3();
+  private final M4 matrixTemp4 = new M4();
+  private final A4 axisangleT = new A4();
   private final V3 vectorT = new V3();
   private final V3 vectorT2 = new V3();
   private final P3 pointT2 = new P3();
@@ -226,7 +227,7 @@ public class TransformManager {
   final V3 arcBall0 = new V3();
   final V3 arcBall1 = new V3();
   final V3 arcBallAxis = new V3();
-  final Matrix3f arcBall0Rotation = new Matrix3f();
+  final M3 arcBall0Rotation = new M3();
 
   void rotateArcBall(float x, float y, float factor) {
     // radius is half the screen pixel count. 
@@ -282,7 +283,7 @@ public class TransformManager {
     matrixRotate.rotZ(angleRadians);
   }
 
-  private void applyRotation(Matrix3f mNew, boolean isInternal, BS bsAtoms,
+  private void applyRotation(M3 mNew, boolean isInternal, BS bsAtoms,
                              V3 translation) {
     if (bsAtoms == null) {
       matrixRotate.mul2(mNew, matrixRotate);
@@ -315,7 +316,7 @@ public class TransformManager {
     rotateAxisAngle2(axisangleT, null);
   }
 
-  private synchronized void rotateAxisAngle2(AxisAngle4f axisAngle, BS bsAtoms) {
+  private synchronized void rotateAxisAngle2(A4 axisAngle, BS bsAtoms) {
     //matrixTemp3.setIdentity();
     matrixTemp3.setAA(axisAngle);
     applyRotation(matrixTemp3, false, bsAtoms, null);
@@ -644,7 +645,7 @@ public class TransformManager {
     info.put("moveTo", getMoveToText(1, false));
     info.put("center", "center " + getCenterText());
     info.put("centerPt", fixedRotationCenter);
-    AxisAngle4f aa = new AxisAngle4f();
+    A4 aa = new A4();
     getAxisAngle(aa);
     info.put("axisAngle", aa);
     info.put("quaternion", Quaternion.newAA(aa).toPoint4f());
@@ -668,7 +669,7 @@ public class TransformManager {
     return info;
   }
 
-  void getAxisAngle(AxisAngle4f axisAngle) {
+  void getAxisAngle(A4 axisAngle) {
     axisAngle.setM(matrixRotate);
   }
 
@@ -676,16 +677,16 @@ public class TransformManager {
     return matrixRotate.toString();
   }
 
-  public Matrix3f getMatrixRotate() {
+  public M3 getMatrixRotate() {
     return matrixRotate;
   }
 
-  public void setRotation(Matrix3f matrixRotation) {
+  public void setRotation(M3 matrixRotation) {
     if (!Float.isNaN(matrixRotation.m00))
       matrixRotate.setM(matrixRotation);
   }
 
-  public void getRotation(Matrix3f matrixRotation) {
+  public void getRotation(M3 matrixRotation) {
     // hmm ... I suppose that there could be a race condiditon here
     // if matrixRotate is being modified while this is called
     matrixRotation.setM(matrixRotate);
@@ -950,7 +951,7 @@ public class TransformManager {
       if (slabPlane != null)
         return slabPlane;
     }
-    Matrix4f m = matrixTransform;
+    M4 m = matrixTransform;
     return P4.new4(-m.m20, -m.m21, -m.m22, -m.m23
         + (isDepth ? depthValue : slabValue));
   }
@@ -1210,9 +1211,9 @@ public class TransformManager {
     visualRange = angstroms;
   }
 
-  Matrix4f getUnscaledTransformMatrix() {
+  M4 getUnscaledTransformMatrix() {
     //for povray only
-    Matrix4f unscaled = new Matrix4f();
+    M4 unscaled = new M4();
     unscaled.setIdentity();
     vectorTemp.setT(fixedRotationCenter);
     matrixTemp.setZero();
@@ -1340,10 +1341,10 @@ public class TransformManager {
    * TRANSFORMATIONS
    ****************************************************************/
 
-  public final Matrix4f matrixTransform = new Matrix4f();
-  public final Matrix4f matrixTransformInv = new Matrix4f();
+  public final M4 matrixTransform = new M4();
+  public final M4 matrixTransformInv = new M4();
 
-  Matrix4f getMatrixtransform() {
+  M4 getMatrixtransform() {
     return matrixTransform;
   }
 
@@ -1591,8 +1592,8 @@ public class TransformManager {
   protected final P3 ptTest1 = new P3();
   protected final P3 ptTest2 = new P3();
   protected final P3 ptTest3 = new P3();
-  protected final AxisAngle4f aaTest1 = new AxisAngle4f();
-  protected final Matrix3f matrixTest = new Matrix3f();
+  protected final A4 aaTest1 = new A4();
+  protected final M3 matrixTest = new M3();
 
   boolean isInPosition(V3 axis, float degrees) {
     if (Float.isNaN(degrees))
@@ -1609,7 +1610,7 @@ public class TransformManager {
   public void moveToPyMOL(JmolScriptEvaluator eval, float floatSecondsTotal,
                         float[] pymolView) {
     // PyMOL matrices are inverted (row-based)
-    Matrix3f m3 = Matrix3f.newA(pymolView);
+    M3 m3 = M3.newA(pymolView);
     m3.invert();
     float cameraX = pymolView[9];
     float cameraY = -pymolView[10];
@@ -1684,12 +1685,12 @@ public class TransformManager {
 
   // from Viewer
   void moveTo(JmolScriptEvaluator eval, float floatSecondsTotal, P3 center,
-              Tuple3f rotAxis, float degrees, Matrix3f matrixEnd, float zoom,
+              T3 rotAxis, float degrees, M3 matrixEnd, float zoom,
               float xTrans, float yTrans, float newRotationRadius,
               P3 navCenter, float xNav, float yNav, float navDepth,
               float cameraDepth, float cameraX, float cameraY) {
     if (matrixEnd == null) {
-      matrixEnd = new Matrix3f();
+      matrixEnd = new M3();
       V3 axis = V3.newV(rotAxis);
       if (Float.isNaN(degrees)) {
         matrixEnd.m00 = Float.NaN;
@@ -1706,7 +1707,7 @@ public class TransformManager {
            */
           return;
         }
-        AxisAngle4f aaMoveTo = new AxisAngle4f();
+        A4 aaMoveTo = new A4();
         aaMoveTo.setVA(axis, (float) (degrees / degreesPerRadian));
         matrixEnd.setAA(aaMoveTo);
       }
@@ -1890,12 +1891,12 @@ public class TransformManager {
 
   private String getRotateZyzText(boolean iAddComment) {
     SB sb = new SB();
-    Matrix3f m = (Matrix3f) viewer
+    M3 m = (M3) viewer
         .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
     if (m == null) {
       m = matrixRotate;
     } else {
-      m = Matrix3f.newM(m);
+      m = M3.newM(m);
       m.invert();
       m.mul2(matrixRotate, m);
     }
@@ -2161,9 +2162,9 @@ public class TransformManager {
 
   boolean stereoFrame;
 
-  protected final Matrix3f matrixStereo = new Matrix3f();
+  protected final M3 matrixStereo = new M3();
 
-  synchronized Matrix3f getStereoRotationMatrix(boolean stereoFrame) {
+  synchronized M3 getStereoRotationMatrix(boolean stereoFrame) {
     this.stereoFrame = stereoFrame;
     if (!stereoFrame)
       return matrixRotate;
@@ -2754,7 +2755,7 @@ public class TransformManager {
     scaleFitToScreen(false, zoomLarge, false, true);
   }
 
-  public void setAll(P3 center, Matrix3f m, P3 navCenter, float zoom,
+  public void setAll(P3 center, M3 m, P3 navCenter, float zoom,
                      float xTrans, float yTrans, float rotationRadius,
                      float pixelScale, float navDepth, float xNav,
                      float yNav, float cameraDepth, float cameraX, float cameraY) {

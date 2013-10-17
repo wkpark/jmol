@@ -44,9 +44,9 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 
 import javajs.J2SIgnoreImport;
-import javajs.vec.Matrix3f;
-import javajs.vec.P3;
-import javajs.lang.SB;
+import javajs.util.SB;
+import javajs.util.M3;
+import javajs.util.P3;
 import org.jmol.util.Txt;
 
 import java.util.Arrays;
@@ -377,7 +377,7 @@ public class StateManager {
 
     String saveName;
 
-    Matrix3f rotationMatrix = new Matrix3f();
+    M3 rotationMatrix = new M3();
     float xTrans, yTrans;
     float zoom, rotationRadius;
     P3 center = new P3();
@@ -404,7 +404,7 @@ public class StateManager {
       } 
       viewer.finalizeTransformParameters();
       if (asDefault) {
-        Matrix3f rotationMatrix = (Matrix3f) viewer
+        M3 rotationMatrix = (M3) viewer
             .getModelSetAuxiliaryInfoValue("defaultOrientationMatrix");
         if (rotationMatrix == null)
           this.rotationMatrix.setIdentity();

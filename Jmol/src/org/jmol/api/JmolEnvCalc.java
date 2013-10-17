@@ -3,7 +3,7 @@ package org.jmol.api;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.java.BS;
 
-import javajs.vec.P3;
+import javajs.util.P3;
 import org.jmol.viewer.Viewer;
 
 public interface JmolEnvCalc {

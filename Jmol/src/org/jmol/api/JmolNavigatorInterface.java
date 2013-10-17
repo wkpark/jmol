@@ -3,8 +3,8 @@ package org.jmol.api;
 
 
 import javajs.util.List;
-import javajs.vec.P3;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.V3;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 

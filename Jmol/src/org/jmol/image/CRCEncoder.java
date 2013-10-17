@@ -2,7 +2,7 @@ package org.jmol.image;
 
 import java.util.zip.CRC32;
 
-import javajs.array.ArrayUtil;
+import javajs.util.ArrayUtil;
 
 abstract class CRCEncoder extends ImageEncoder {
 

@@ -6,9 +6,10 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
 import javajs.util.List;
-import javajs.lang.SB;
+import javajs.util.SB;
+
 import org.jmol.util.Tensor;
-import javajs.vec.V3;
+import javajs.util.V3;
 import org.jmol.viewer.Viewer;
 
 public interface JmolNMRInterface {

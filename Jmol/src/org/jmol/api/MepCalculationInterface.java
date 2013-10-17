@@ -4,7 +4,7 @@ package org.jmol.api;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
-import javajs.vec.P3;
+import javajs.util.P3;
 
 
 public interface MepCalculationInterface {

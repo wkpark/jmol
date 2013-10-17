@@ -29,10 +29,11 @@ package org.jmol.shapespecial;
 import org.jmol.java.BS;
 import org.jmol.shape.Mesh;
 import org.jmol.shapespecial.Draw.EnumDrawType;
-import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
-import javajs.vec.P3;
-import javajs.vec.V3;
+
+import javajs.util.ArrayUtil;
+import javajs.util.P3;
+import javajs.util.V3;
 
 
 public class DrawMesh extends Mesh {

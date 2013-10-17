@@ -35,13 +35,13 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
+import org.jmol.util.Point3fi;
 import org.jmol.util.Txt;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
 
 import javajs.util.List;
-import javajs.vec.Point3fi;
 
 
 import java.util.Hashtable;

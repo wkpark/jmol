@@ -25,6 +25,9 @@
 package org.jmol.util;
 
 
+import javajs.util.ArrayUtil;
+import javajs.util.SB;
+
 import org.jmol.constant.EnumPalette;
 
 /**

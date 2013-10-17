@@ -25,8 +25,6 @@
 
 package java.io;
 
-import org.jmol.util.ArrayUtil;
-
 /**
  * This class implements an output stream in which the data is
  * written into a byte array. The buffer automatically grows as data
@@ -108,10 +106,18 @@ public class ByteArrayOutputStream extends OutputStream {
         if (newCapacity < 0) {
             if (minCapacity < 0) // overflow
                 throw new OutOfMemoryError();
-            newCapacity = Integer.MAX_VALUE;
+            newCapacity = minCapacity;
         }
-        buf = ArrayUtil.arrayCopyByte(buf, newCapacity);
+        buf = arrayCopyByte(buf, newCapacity);
     }
+
+    private static byte[] arrayCopyByte(byte[] array, int newLength) {
+      byte[] t = new byte[newLength];
+      System.arraycopy(array, 0, t, 0, array.length < newLength ? array.length
+          : newLength);
+      return t;
+    }
+
 
     /**
      * Writes the specified byte to this byte array output stream.
@@ -177,7 +183,7 @@ public class ByteArrayOutputStream extends OutputStream {
      * @see     java.io.ByteArrayOutputStream#size()
      */
     public synchronized byte toByteArray()[] {
-        return (count == buf.length ? buf : ArrayUtil.arrayCopyByte(buf, count));
+        return (count == buf.length ? buf : arrayCopyByte(buf, count));
     }
 
     /**

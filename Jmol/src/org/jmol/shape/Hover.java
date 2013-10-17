@@ -26,8 +26,9 @@ package org.jmol.shape;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.Text;
-import javajs.array.ArrayUtil;
-import javajs.vec.P3i;
+
+import javajs.util.ArrayUtil;
+import javajs.util.P3i;
 
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;

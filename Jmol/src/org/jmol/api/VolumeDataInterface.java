@@ -1,10 +1,10 @@
 package org.jmol.api;
 
 
-import javajs.vec.P3;
-import javajs.vec.P3i;
-import javajs.vec.P4;
-import javajs.vec.V3;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.P4;
+import javajs.util.V3;
 
 public interface VolumeDataInterface {
 

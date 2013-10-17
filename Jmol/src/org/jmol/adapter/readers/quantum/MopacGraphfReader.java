@@ -25,8 +25,8 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import javajs.array.ArrayUtil;
 
+import javajs.util.ArrayUtil;
 import javajs.util.List;
 import java.util.Hashtable;
 

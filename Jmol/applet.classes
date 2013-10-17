@@ -10,11 +10,8 @@ com/sparshui/inputdevice/*.java
 com/sparshui/server/*.java
 
 javajs/api/*.java
-javajs/array/*.java
 javajs/awt/*.java
-javajs/lang/*.java
 javajs/util/*.java
-javajs/vec/*.java
 
 org/jmol/adapter/readers/cif/*.java
 org/jmol/adapter/readers/pdb/*.java

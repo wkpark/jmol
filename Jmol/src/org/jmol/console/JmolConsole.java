@@ -28,7 +28,7 @@ import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolScriptEditorInterface;
 import org.jmol.awt.Platform;
 import org.jmol.i18n.GT;
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.viewer.FileManager;
 
 import java.awt.Container;
@@ -39,7 +39,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FilenameFilter;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 
 import javax.swing.JDialog;
@@ -134,7 +134,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
 
   private class FileChecker implements FilenameFilter {
     private String stub;
-    private JmolList<String> v = new  JmolList<String>();
+    private List<String> v = new  List<String>();
     
     protected FileChecker(String stub) {
       this.stub = stub.toLowerCase();

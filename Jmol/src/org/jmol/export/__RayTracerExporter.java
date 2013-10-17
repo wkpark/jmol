@@ -28,11 +28,12 @@ package org.jmol.export;
 
 import org.jmol.modelset.Atom;
 import org.jmol.util.GData;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.V3;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.V3;
 
 /*
  * for PovRay and related ray tracers that use screen coordinates

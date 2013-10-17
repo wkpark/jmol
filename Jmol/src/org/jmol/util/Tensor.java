@@ -29,6 +29,12 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
+import javajs.vec.V3;
+
+import org.jmol.java.BS;
+
 /**
  * @author Bob Hanson hansonr@stolaf.edu 6/30/2013
  * @author Simone Sturniolo 

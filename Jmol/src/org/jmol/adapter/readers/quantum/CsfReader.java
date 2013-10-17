@@ -27,12 +27,12 @@ import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
 
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -637,8 +637,8 @@ public class CsfReader extends MopacSlaterReader {
       }
     }
     if (isGaussian) {
-      JmolList<int[]> sdata = new  JmolList<int[]>();
-      JmolList<float[]> gdata = new  JmolList<float[]>();
+      List<int[]> sdata = new  List<int[]>();
+      List<float[]> gdata = new  List<float[]>();
       int iShell = 0;
       int gaussianCount = 0;
       for (int ipt = 0; ipt < nGaussians; ipt++) {

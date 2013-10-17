@@ -24,12 +24,14 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
-import org.jmol.util.JmolList;
-import org.jmol.util.P3;
+import javajs.array.ArrayUtil;
+
+import org.jmol.java.BS;
+
+import javajs.util.List;
+import javajs.vec.P3;
 import org.jmol.util.Tensor;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 public class Atom extends P3 implements Cloneable {
   public int atomSetIndex;
@@ -54,13 +56,13 @@ public class Atom extends P3 implements Cloneable {
   public int sequenceNumber = Integer.MIN_VALUE;
   public char insertionCode = '\0';
   public float[] anisoBorU; //[6] = 1 for U, 0 for B; [7] = bFactor
-  public JmolList<Object> tensors;
+  public List<Object> tensors;
   
   public Tensor addTensor(Tensor tensor, String type, boolean reset) {
     if (tensor == null)
       return null;
     if (reset || tensors == null)
-      tensors = new JmolList<Object>();
+      tensors = new List<Object>();
     tensors.addLast(tensor);
     if (type != null)
       tensor.setType(type);
@@ -86,7 +88,7 @@ public class Atom extends P3 implements Cloneable {
     if (anisoBorU != null)
       a.anisoBorU = ArrayUtil.arrayCopyF(anisoBorU, -1);
     if (tensors != null) {
-      a.tensors = new JmolList<Object>();
+      a.tensors = new List<Object>();
       for (int i = tensors.size(); --i >= 0;)
         a.tensors.addLast(((Tensor)tensors.get(i)).copyTensor());
     }

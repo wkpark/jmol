@@ -29,7 +29,7 @@ import java.io.BufferedReader;
 import org.jmol.io.JmolBinary;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 /*
  * 

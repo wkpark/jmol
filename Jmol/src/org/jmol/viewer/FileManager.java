@@ -32,7 +32,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.BytePoster;
@@ -48,11 +47,11 @@ import org.jmol.io.FileReader;
 import org.jmol.io.JmolBinary;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.script.T;
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 
@@ -308,7 +307,7 @@ public class FileManager implements BytePoster {
   private DataReader newDataReader(Object data) {
     String reader = (data instanceof String ? "String"
         : Escape.isAS(data) ? "Array" 
-        : data instanceof JmolList<?> ? "List" : null);
+        : data instanceof List<?> ? "List" : null);
     if (reader == null)
       return null;
     DataReader dr = (DataReader) Interface.getOptionInterface("io2." + reader + "DataReader");
@@ -1154,10 +1153,10 @@ public class FileManager implements BytePoster {
     if (dataPath == null)
       return script;
     boolean noPath = (dataPath.length() == 0);
-    JmolList<String> fileNames = new  JmolList<String>();
+    List<String> fileNames = new  List<String>();
     JmolBinary.getFileReferences(script, fileNames);
-    JmolList<String> oldFileNames = new  JmolList<String>();
-    JmolList<String> newFileNames = new  JmolList<String>();
+    List<String> oldFileNames = new  List<String>();
+    List<String> newFileNames = new  List<String>();
     int nFiles = fileNames.size();
     for (int iFile = 0; iFile < nFiles; iFile++) {
       String name0 = fileNames.get(iFile);

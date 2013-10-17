@@ -29,7 +29,7 @@ import java.io.DataInputStream;
 import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 
 class Dsn6BinaryReader extends MapFileReader {

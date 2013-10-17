@@ -25,6 +25,8 @@
 
 package org.jmol.util;
 
+import org.jmol.java.BS;
+
 
 
 public class Parser {

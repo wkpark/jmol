@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.jmol.io.JmolBinary;
+import org.jmol.java.BS;
 import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
@@ -39,7 +40,6 @@ import org.jmol.minimize.MinPosition;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Minimizer;
 import org.jmol.minimize.Util;
-import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;

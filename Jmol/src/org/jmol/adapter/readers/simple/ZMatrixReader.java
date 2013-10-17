@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.readers.simple;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -37,10 +37,10 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
+import javajs.vec.P3;
+import javajs.vec.P4;
 import org.jmol.util.Quaternion;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 public class ZMatrixReader extends AtomSetCollectionReader {
   /*
@@ -189,11 +189,11 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
    */
 
   protected int atomCount;
-  protected JmolList<Atom> vAtoms = new JmolList<Atom>();
+  protected List<Atom> vAtoms = new List<Atom>();
   private Map<String, Integer> atomMap = new Hashtable<String, Integer>();
   private String[] tokens;
   private boolean isJmolZformat;
-  private JmolList<String[]> lineBuffer = new JmolList<String[]>();
+  private List<String[]> lineBuffer = new List<String[]>();
   private Map<String, Float> symbolicMap = new Hashtable<String, Float>();
   private boolean isMopac;
   private boolean isHeader = true;
@@ -438,7 +438,7 @@ No distinction between "Variable:" and "Constant:" is made by Jmol.
           v1, plane1);
       Measure.getPlaneThroughPoint(setAtom(atom, ia, ic, ib, -d, theta2, 0),
           v1, plane2);
-      JmolList<Object> list = Measure.getIntersectionPP(plane1, plane2);
+      List<Object> list = Measure.getIntersectionPP(plane1, plane2);
       if (list.size() == 0)
         return null;
       pt0.setT((P3) list.get(0));

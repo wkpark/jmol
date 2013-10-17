@@ -24,12 +24,13 @@
 
 package org.jmol.renderspecial;
 
+import javajs.vec.P3i;
+
+import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.shapespecial.GeoSurface;
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.Geodesic;
-import org.jmol.util.P3i;
 
 
 /*

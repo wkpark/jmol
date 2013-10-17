@@ -1,9 +1,9 @@
 package org.jmol.modelset;
 
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.viewer.JC;
 
 public abstract class Object2d {

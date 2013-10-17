@@ -27,22 +27,22 @@ package org.jmol.shapespecial;
 import org.jmol.shape.Shape;
 import org.jmol.util.BSUtil;
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.script.T;
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -575,8 +575,8 @@ public class Dipoles extends Shape {
   }
 
   @Override
-  public JmolList<Map<String, Object>> getShapeDetail() {
-    JmolList<Map<String, Object>> V = new  JmolList<Map<String,Object>>();
+  public List<Map<String, Object>> getShapeDetail() {
+    List<Map<String, Object>> V = new  List<Map<String,Object>>();
     Map<String, Object> atomInfo;
     for (int i = 0; i < dipoleCount; i++) {
       Map<String, Object> info = new Hashtable<String, Object>();
@@ -587,7 +587,7 @@ public class Dipoles extends Shape {
       if (dipole.atoms[0] != null) {
         atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[0].getIndex(), atomInfo);
-        JmolList<Map<String, Object>> atoms = new  JmolList<Map<String,Object>>();
+        List<Map<String, Object>> atoms = new  List<Map<String,Object>>();
         atoms.addLast(atomInfo);
         atomInfo = new Hashtable<String, Object>();
         viewer.getAtomIdentityInfo(dipole.atoms[1].getIndex(), atomInfo);

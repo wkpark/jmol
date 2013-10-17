@@ -30,20 +30,20 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.constant.EnumPalette;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 //import org.jmol.script.T;
 import org.jmol.shape.Shape;
 //import org.jmol.shapesurface.IsosurfaceMesh;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
-import org.jmol.util.P3;
-//import org.jmol.util.P4;
+import javajs.util.List;
+import javajs.vec.P3;
+//import javajs.vec.P4;
 import org.jmol.util.Tensor;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+import javajs.lang.SB;
+import javajs.vec.V3;
 
 public class Ellipsoids extends Shape {
 
@@ -70,7 +70,7 @@ public class Ellipsoids extends Shape {
     boolean isAll = (bsSelected == null);
     if (!isAll && selectedAtoms != null)
       bsSelected = selectedAtoms;
-    JmolList<Object> tensors = viewer.modelSet.getAllAtomTensors(typeSelected);
+    List<Object> tensors = viewer.modelSet.getAllAtomTensors(typeSelected);
     if (tensors == null)
       return;
     Atom[] atoms = modelSet.atoms;

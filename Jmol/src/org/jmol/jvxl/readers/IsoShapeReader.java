@@ -30,10 +30,10 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.lang.SB;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 
 class IsoShapeReader extends VolumeDataReader {
 

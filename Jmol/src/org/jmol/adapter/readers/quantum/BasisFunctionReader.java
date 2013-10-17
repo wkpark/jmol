@@ -27,7 +27,7 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -41,10 +41,10 @@ import java.util.Map;
  */
 abstract class BasisFunctionReader extends AtomSetCollectionReader {
 
-  protected JmolList<int[]> shells;
+  protected List<int[]> shells;
 
   protected Map<String, Object> moData = new Hashtable<String, Object>();
-  protected JmolList<Map<String, Object>> orbitals = new  JmolList<Map<String, Object>>();
+  protected List<Map<String, Object>> orbitals = new  List<Map<String, Object>>();
   protected int nOrbitals = 0;
   protected boolean ignoreMOs = false;
   protected String alphaBeta = "";

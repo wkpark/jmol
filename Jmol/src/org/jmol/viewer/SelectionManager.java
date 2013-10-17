@@ -24,12 +24,12 @@
 package org.jmol.viewer;
 
 import org.jmol.script.T;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 
 import org.jmol.api.JmolSelectionListener;
 import org.jmol.i18n.GT;
+import org.jmol.java.BS;
 import org.jmol.modelset.ModelSet;
 
 public class SelectionManager {

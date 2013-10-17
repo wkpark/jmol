@@ -25,10 +25,10 @@
 package org.jmol.viewer;
 
 
+import org.jmol.java.BS;
 import org.jmol.modelset.ModelLoader;
 import org.jmol.modelset.ModelSet;
-import org.jmol.util.BS;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 class ModelManager {
 

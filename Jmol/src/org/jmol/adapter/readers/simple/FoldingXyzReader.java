@@ -29,7 +29,7 @@ import org.jmol.adapter.smarter.Atom;
 
 import java.util.StringTokenizer;
 
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.Parser;
 
 /**

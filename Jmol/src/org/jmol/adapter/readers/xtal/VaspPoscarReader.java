@@ -2,9 +2,9 @@ package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 /**
  * http://cms.mpi.univie.ac.at/vasp/
@@ -17,7 +17,7 @@ import org.jmol.util.SB;
 
 public class VaspPoscarReader extends AtomSetCollectionReader {
 
-  private JmolList<String> atomLabels = new JmolList<String>();
+  private List<String> atomLabels = new List<String>();
   private int atomCount;
 
   @Override

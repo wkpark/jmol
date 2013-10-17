@@ -32,18 +32,17 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
-import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.JmolList;
+import javajs.array.ArrayUtil;
+import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
@@ -492,10 +491,7 @@ public class JmolBinary {
         String s = Parser.getQuotedStringAt(script, i);
         if (s.indexOf("::") >= 0)
           s = Txt.split(s, "::")[1];
-        if (fileList instanceof JmolList<?>)
-          ((JmolList<String>) fileList).addLast(s);
-        else
-          fileList.add(s);          
+        fileList.addLast(s);
       }
     }
   }

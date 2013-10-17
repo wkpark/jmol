@@ -25,6 +25,7 @@ package org.jmol.modelsetbio;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.io.JmolOutputChannel;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
@@ -33,19 +34,18 @@ import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.Escape;
 
-import org.jmol.util.BS;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 import org.jmol.script.T;
 
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -385,7 +385,7 @@ public abstract class BioPolymer {
   }
 
   public int getPolymerPointsAndVectors(int last, BS bs,
-                                        JmolList<P3[]> vList,
+                                        List<P3[]> vList,
                                         boolean isTraceAlpha,
                                         float sheetSmoothing) {
     P3[] points = getControlPoints(isTraceAlpha, sheetSmoothing, false);
@@ -414,8 +414,8 @@ public abstract class BioPolymer {
 
   public Map<String, Object> getPolymerInfo(BS bs) {
     Map<String, Object> returnInfo = new Hashtable<String, Object>();
-    JmolList<Map<String, Object>> info = new  JmolList<Map<String, Object>>();
-    JmolList<Map<String, Object>> structureInfo = null;
+    List<Map<String, Object>> info = new  List<Map<String, Object>>();
+    List<Map<String, Object>> structureInfo = null;
     ProteinStructure ps;
     ProteinStructure psLast = null;
     int n = 0;
@@ -428,7 +428,7 @@ public abstract class BioPolymer {
           Map<String, Object> psInfo = new Hashtable<String, Object>();
           (psLast = ps).getInfo(psInfo);
           if (structureInfo == null) {
-            structureInfo = new  JmolList<Map<String, Object>>();
+            structureInfo = new  List<Map<String, Object>>();
           }
           psInfo.put("index", Integer.valueOf(n++));
           structureInfo.addLast(psInfo);
@@ -991,7 +991,7 @@ public abstract class BioPolymer {
   }
 
   public String calculateDssp(BioPolymer[] bioPolymers,
-                                    int bioPolymerCount, JmolList<Bond> vHBonds,
+                                    int bioPolymerCount, List<Bond> vHBonds,
                                     boolean doReport,
                                     boolean dsspIgnoreHydrogens,
                                     boolean setStructure) {
@@ -1014,7 +1014,7 @@ public abstract class BioPolymer {
    * @param dsspIgnoreHydrogens
    */
   public void calcRasmolHydrogenBonds(BioPolymer polymer, BS bsA,
-                                      BS bsB, JmolList<Bond> vHBonds,
+                                      BS bsB, List<Bond> vHBonds,
                                       int nMaxPerResidue, int[][][] min,
                                       boolean checkDistances,
                                       boolean dsspIgnoreHydrogens) {
@@ -1068,8 +1068,8 @@ public abstract class BioPolymer {
    * @param allowMultiple
    * @return List [ {atom1, atom2}, {atom1, atom2}...]
    */
-  public JmolList<Atom[]> calculateStruts(ModelSet modelSet, BS bs1,
-                                      BS bs2, JmolList<Atom> vCA, float thresh,
+  public List<Atom[]> calculateStruts(ModelSet modelSet, BS bs1,
+                                      BS bs2, List<Atom> vCA, float thresh,
                                       int delta, boolean allowMultiple) {
     return null;
   }

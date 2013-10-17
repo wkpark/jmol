@@ -25,28 +25,28 @@ package org.jmol.jvxl.readers;
 
 
 import java.io.BufferedReader;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Hashtable;
 
 
 
+import org.jmol.java.BS;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.shapesurface.IsosurfaceMesh;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.P4;
+import javajs.lang.SB;
+import javajs.vec.V3;
 
 public class JvxlXmlReader extends VolumeFileReader {
 
@@ -936,7 +936,7 @@ public class JvxlXmlReader extends VolumeFileReader {
 
   protected void jvxlDecodeContourData(JvxlData jvxlData, String data)
       throws Exception {
-    JmolList<JmolList<Object>> vs = new  JmolList<JmolList<Object>>();
+    List<List<Object>> vs = new  List<List<Object>>();
     SB values = new SB();
     SB colors = new SB();
     int pt = -1;
@@ -944,7 +944,7 @@ public class JvxlXmlReader extends VolumeFileReader {
     if (data == null)
       return;
     while ((pt = data.indexOf("<jvxlContour", pt + 1)) >= 0) {
-      JmolList<Object> v = new  JmolList<Object>();
+      List<Object> v = new  List<Object>();
       String s = xr.getXmlData("jvxlContour", data.substring(pt), true, false);
       float value = parseFloatStr(XmlReader.getXmlAttrib(s, "value"));
       values.append(" ").appendF(value);

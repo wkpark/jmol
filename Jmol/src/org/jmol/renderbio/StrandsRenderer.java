@@ -25,9 +25,10 @@
 package org.jmol.renderbio;
 
 
+import javajs.vec.P3i;
+
 import org.jmol.shapebio.BioShape;
 import org.jmol.shapebio.Strands;
-import org.jmol.util.P3i;
 
 public class StrandsRenderer extends BioShapeRenderer {
 

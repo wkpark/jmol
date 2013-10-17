@@ -225,8 +225,8 @@ class MyStatusListener implements JmolStatusListener {
     return null;
   }
 
-  public org.jmol.util.Dimension resizeInnerPanel(String data) {
-    return new org.jmol.util.Dimension().set(0, 0);
+  public javajs.awt.Dimension resizeInnerPanel(String data) {
+    return new javajs.awt.Dimension(0, 0);
   }
 
   public Map<String, Object> getProperty(String type) {

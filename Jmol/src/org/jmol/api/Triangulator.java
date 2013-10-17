@@ -1,9 +1,9 @@
 package org.jmol.api;
 
-import org.jmol.util.JmolList;
-import org.jmol.util.P4;
+import javajs.util.List;
+import javajs.vec.P4;
 
 public interface Triangulator {
 
-  public JmolList<Object> intersectPlane(P4 plane, JmolList<Object> v, int flags);
+  public List<Object> intersectPlane(P4 plane, List<Object> v, int flags);
 }

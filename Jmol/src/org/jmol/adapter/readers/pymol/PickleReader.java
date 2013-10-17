@@ -1,6 +1,6 @@
 package org.jmol.adapter.readers.pymol;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
 
 import java.util.Hashtable;
@@ -8,7 +8,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolDocument;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -32,9 +32,9 @@ class PickleReader {
 
   private Viewer viewer;
   private JmolDocument binaryDoc;
-  private JmolList<Object> stack = new JmolList<Object>();
-  private JmolList<Integer> marks = new JmolList<Integer>();
-  private JmolList<Object> build = new JmolList<Object>();
+  private List<Object> stack = new List<Object>();
+  private List<Integer> marks = new List<Integer>();
+  private List<Object> build = new List<Object>();
 
   private Map<Integer, Object> memo = new Hashtable<Integer, Object>();
   
@@ -113,7 +113,7 @@ class PickleReader {
     Object o;
     byte[] a;
     Map<String, Object> map;
-    JmolList<Object> l;
+    List<Object> l;
     boolean going = true;
 
     while (going) {
@@ -126,19 +126,19 @@ class PickleReader {
         break;
       case APPEND:
         o = pop();
-        ((JmolList<Object>) peek()).addLast(o);
+        ((List<Object>) peek()).addLast(o);
         break;
       case APPENDS:
         l = getObjects(getMark());
         if (inNames && markCount == 2){// && l.size() > 0 && l.get(0) == thisName) {
           int pt = (int) binaryDoc.getPosition();
           System.out.println(" " + thisName + " " + filePt + " " + (pt - filePt));
-          JmolList<Object> l2 = new JmolList<Object>();
+          List<Object> l2 = new List<Object>();
           l2.addLast(Integer.valueOf(filePt));
           l2.addLast(Integer.valueOf(pt - filePt));
           l.addLast(l2); // [ptr to start of this PyMOL object, length in bytes ] 
         }
-        ((JmolList<Object>) peek()).addAll(l);
+        ((List<Object>) peek()).addAll(l);
         break;
       case BINFLOAT:
         d = binaryDoc.readDouble();
@@ -207,10 +207,10 @@ class PickleReader {
         break;
       case EMPTY_LIST:
         emptyListPt = (int) binaryDoc.getPosition() - 1;
-        push(new  JmolList<Object>());
+        push(new  List<Object>());
         break;
       case GLOBAL:
-        l = new JmolList<Object>();
+        l = new List<Object>();
         l.addLast("global");
         l.addLast(readString());
         l.addLast(readString());
@@ -240,9 +240,9 @@ class PickleReader {
         mark = getMark();
         l = getObjects(mark);
         o = peek();
-        if (o instanceof JmolList) {
+        if (o instanceof List) {
           for (i = 0; i < l.size(); i++)
-            ((JmolList) o).addLast(l.get(i));
+            ((List) o).addLast(l.get(i));
         } else {
         map = (Map<String, Object>) o;
         for (i = l.size(); --i >= 0;) {
@@ -382,9 +382,9 @@ class PickleReader {
     return o;
   }
 
-  private JmolList<Object> getObjects(int mark) {
+  private List<Object> getObjects(int mark) {
     int n = stack.size() - mark;
-    JmolList<Object> args = new  JmolList<Object>();
+    List<Object> args = new  List<Object>();
     for (int j = 0; j < n; j++)
       args.addLast(null);
     for (int j = n, i = stack.size(); --i >= mark;)

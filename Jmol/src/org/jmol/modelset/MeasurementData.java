@@ -25,15 +25,15 @@ package org.jmol.modelset;
 
 import java.util.Map;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
+import javajs.vec.Point3fi;
 
 
 import org.jmol.api.JmolMeasurementClient;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.java.BS;
 import org.jmol.script.T;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
-import org.jmol.util.Point3fi;
 import org.jmol.viewer.Viewer;
 
 public class MeasurementData implements JmolMeasurementClient {
@@ -45,10 +45,10 @@ public class MeasurementData implements JmolMeasurementClient {
    */
   
   private JmolMeasurementClient client;
-  private JmolList<String> measurementStrings;
-  private JmolList<Float> measurements;
+  private List<String> measurementStrings;
+  private List<Float> measurements;
 
-  public JmolList<Object> points;
+  public List<Object> points;
   public boolean mustBeConnected;
   public boolean mustNotBeConnected;
   public TickInfo tickInfo;
@@ -73,7 +73,7 @@ public class MeasurementData implements JmolMeasurementClient {
   public MeasurementData() {
     // by reflection
   }
-  public MeasurementData init(String id, Viewer viewer, JmolList<Object> points) {
+  public MeasurementData init(String id, Viewer viewer, List<Object> points) {
     this.viewer = viewer;
     this.points = points;
     thisID = id;
@@ -162,11 +162,11 @@ public class MeasurementData implements JmolMeasurementClient {
       return minArray;      
     }
     if (asArray) {
-      measurements = new JmolList<Float>();
+      measurements = new List<Float>();
       define(null, modelSet);
       return measurements;
     }
-    measurementStrings = new  JmolList<String>();
+    measurementStrings = new  List<String>();
     define(null, modelSet);
     return measurementStrings;
   }

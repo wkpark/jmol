@@ -24,29 +24,29 @@
 
 package org.jmol.shapespecial;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
 
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.P4;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.P4;
+import javajs.lang.SB;
+import javajs.vec.V3;
 
 import org.jmol.util.Measure;
 import org.jmol.util.Txt;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
+import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
@@ -120,13 +120,13 @@ public void initShape() {
   private int nbitsets;
   private P4 plane;
   private BS bsAllModels;
-  private JmolList<Object> polygon;
+  private List<Object> polygon;
   
-  private JmolList<Object[]> vData;
+  private List<Object[]> vData;
   private String intersectID;
   private P3[] boundBox;
   
-  private JmolList<P3[]> lineData;
+  private List<P3[]> lineData;
   private final static int PT_COORD = 1;
   private final static int PT_IDENTIFIER = 2;
   private final static int PT_BITSET = 3;
@@ -176,7 +176,7 @@ public void initShape() {
     }
     
     if ("lineData" == propertyName) {
-      lineData = new  JmolList<P3[]>();
+      lineData = new  List<P3[]>();
       if (indicatedModelIndex < 0)
         indicatedModelIndex = viewer.getCurrentModelIndex();
       float[] fdata = (float[]) value;
@@ -336,9 +336,9 @@ public void initShape() {
     }
 
     if ("polygon" == propertyName) {
-      polygon = (JmolList<Object>) value;
+      polygon = (List<Object>) value;
       if (polygon == null)
-        polygon = new  JmolList<Object>();
+        polygon = new  List<Object>();
       return;
     }
 
@@ -455,7 +455,7 @@ private void initDraw() {
    plane = null;
    polygon = null;
    slabData = null;
-   vData = new  JmolList<Object[]>();
+   vData = new  List<Object[]>();
    width = 0;
    setPropertySuper("thisID", MeshCollection.PREVIOUS_MESH_ID, null);
   }
@@ -651,7 +651,7 @@ protected void resetObjects() {
         
       }
     } else if (plane != null && intersectID != null) {
-      JmolList<P3[]> vData = new  JmolList<P3[]>();
+      List<P3[]> vData = new  List<P3[]>();
       Object[] data = new Object[] { intersectID, plane, vData, null };
       viewer.getShapePropertyData(JC.SHAPE_ISOSURFACE, "intersectPlane",
           data);
@@ -667,7 +667,7 @@ protected void resetObjects() {
   private void setSlabData() {
     if (plane != null) {
       slabData.getIntersection(0, plane, null, null, null, null, null, false, true, T.plane, false);
-      polygon = new  JmolList<Object>();
+      polygon = new  List<Object>();
       polygon.addLast(slabData.vertices);
       polygon.addLast(slabData.polygonIndexes);
     }
@@ -1487,8 +1487,8 @@ protected void resetObjects() {
   }
   
   @Override
-  public JmolList<Map<String, Object>> getShapeDetail() {
-    JmolList<Map<String, Object>> V = new  JmolList<Map<String,Object>>();
+  public List<Map<String, Object>> getShapeDetail() {
+    List<Map<String, Object>> V = new  List<Map<String,Object>>();
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0)
@@ -1503,7 +1503,7 @@ protected void resetObjects() {
         info.put("width", Float.valueOf(mesh.width));
       info.put("scale", Float.valueOf(mesh.scale));
       if (mesh.drawType == EnumDrawType.MULTIPLE) {
-        JmolList<Map<String, Object>> m = new  JmolList<Map<String,Object>>();
+        List<Map<String, Object>> m = new  List<Map<String,Object>>();
         int modelCount = viewer.getModelCount();
         for (int k = 0; k < modelCount; k++) {
           if (mesh.ptCenters[k] == null)
@@ -1516,7 +1516,7 @@ protected void resetObjects() {
           mInfo.put("vertexCount", Integer.valueOf(nPoints));
           if (nPoints > 1)
             mInfo.put("axis", mesh.axes[k]);
-          JmolList<P3> v = new  JmolList<P3>();
+          List<P3> v = new  List<P3>();
           for (int ipt = 0; ipt < nPoints; ipt++)
             v.addLast(mesh.vertices[mesh.polygonIndexes[k][ipt]]);
           mInfo.put("vertices", v);
@@ -1533,7 +1533,7 @@ protected void resetObjects() {
         info.put("center", mesh.ptCenter);
         if (mesh.drawVertexCount > 1)
           info.put("axis", mesh.axis);
-        JmolList<P3> v = new  JmolList<P3>();
+        List<P3> v = new  List<P3>();
         for (int j = 0; j < mesh.vertexCount; j++)
           v.addLast(mesh.vertices[j]);
         info.put("vertices", v);

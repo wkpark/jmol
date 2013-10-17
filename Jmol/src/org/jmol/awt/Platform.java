@@ -20,7 +20,7 @@ import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.PlatformViewer;
 import org.jmol.util.JmolFont;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 public class Platform implements ApiPlatform {
 

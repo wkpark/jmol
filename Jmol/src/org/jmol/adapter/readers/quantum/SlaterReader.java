@@ -27,7 +27,7 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -46,7 +46,7 @@ abstract class SlaterReader extends BasisFunctionReader {
    * 
    */
 
-  protected final JmolList<SlaterData> slaters = new  JmolList<SlaterData>();
+  protected final List<SlaterData> slaters = new  List<SlaterData>();
   protected SlaterData[] slaterArray;
   
   /**

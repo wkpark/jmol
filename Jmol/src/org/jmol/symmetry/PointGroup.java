@@ -24,23 +24,23 @@
 
 package org.jmol.symmetry;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Hashtable;
 
 import java.util.Map;
 
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 /*
  * Bob Hanson 7/2008
@@ -1013,7 +1013,7 @@ class PointGroup {
         n *= nAxes[i];
         nTotal += n;
         nType[axes[i][0].type][1] += n;
-        JmolList<V3> vinfo = (info == null ? null : new  JmolList<V3>());
+        List<V3> vinfo = (info == null ? null : new  List<V3>());
         for (int j = 0; j < nAxes[i]; j++) {
           //axes[i][j].typeIndex = j + 1;
           if (vinfo == null)

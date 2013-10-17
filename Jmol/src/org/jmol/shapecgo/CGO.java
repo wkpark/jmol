@@ -24,15 +24,15 @@
 
 package org.jmol.shapecgo;
 
+import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shapespecial.Draw;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
-import org.jmol.util.SB;
+import javajs.util.List;
+import javajs.lang.SB;
 public class CGO extends Draw {
   
   CGOMesh[] cmeshes = new CGOMesh[4];
@@ -74,7 +74,7 @@ public class CGO extends Draw {
     }
     
     if ("setCGO" == propertyName) {
-      JmolList<Object> list = (JmolList<Object>) value;
+      List<Object> list = (List<Object>) value;
       setProperty("init", null, null);
       int n = list.size() - 1;
       setProperty("thisID", list.get(n), null);
@@ -90,7 +90,7 @@ public class CGO extends Draw {
         cgoMesh.color = color;
         cgoMesh.useColix = useColix;
       }
-      cgoMesh.isValid = setCGO((JmolList<Object>) value);
+      cgoMesh.isValid = setCGO((List<Object>) value);
       if (cgoMesh.isValid) {
         scale(cgoMesh, newScale);
         cgoMesh.initialize(T.fullylit, null, null);
@@ -126,7 +126,7 @@ public class CGO extends Draw {
         deleteMeshI(i);
   }
 
-  private boolean setCGO(JmolList<Object> data) {
+  private boolean setCGO(List<Object> data) {
     if (cgoMesh == null)
       allocMesh(null, null);
     cgoMesh.clear("cgo");

@@ -1,6 +1,9 @@
 package org.jmol.util;
 
 
+import javajs.vec.P3;
+import javajs.vec.V3;
+
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 

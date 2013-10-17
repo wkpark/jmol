@@ -23,7 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -32,6 +32,7 @@ import java.util.Properties;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.io.JmolOutputChannel;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -42,13 +43,12 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 
 
@@ -199,7 +199,7 @@ public final class BioModel extends Model{
   public int calculateStruts(ModelSet modelSet, BS bs1, BS bs2) {
 
     // only check the atoms in THIS model
-    JmolList<Atom> vCA = new  JmolList<Atom>();
+    List<Atom> vCA = new  List<Atom>();
     Atom a1 = null;
     BS bsCheck;
     if (bs1.equals(bs2)) {
@@ -222,7 +222,7 @@ public final class BioModel extends Model{
     short mad = (short) (viewer.getFloat(T.strutdefaultradius) * 2000);
     int delta = viewer.getInt(T.strutspacing);
     boolean strutsMultiple = viewer.getBoolean(T.strutsmultiple);
-    JmolList<Atom[]> struts = getBioPolymer(a1.getPolymerIndexInModel())
+    List<Atom[]> struts = getBioPolymer(a1.getPolymerIndexInModel())
         .calculateStruts(modelSet, bs1, bs2, vCA, thresh, delta, strutsMultiple);
     for (int i = 0; i < struts.size(); i++) {
       Atom[] o = struts.get(i);
@@ -248,7 +248,7 @@ public final class BioModel extends Model{
   
   
   @Override
-  public void getPolymerPointsAndVectors(BS bs, JmolList<P3[]> vList,
+  public void getPolymerPointsAndVectors(BS bs, List<P3[]> vList,
                                          boolean isTraceAlpha,
                                          float sheetSmoothing) {
     int last = Integer.MAX_VALUE - 1;
@@ -270,7 +270,7 @@ public final class BioModel extends Model{
 
   
   @Override
-  public JmolList<BS> getBioBranches(JmolList<BS> biobranches) {
+  public List<BS> getBioBranches(List<BS> biobranches) {
     // scan through biopolymers quickly -- 
     BS bsBranch;
     for (int j = 0; j < bioPolymerCount; j++) {
@@ -279,7 +279,7 @@ public final class BioModel extends Model{
       int iAtom = bsBranch.nextSetBit(0);
       if (iAtom >= 0) {
         if (biobranches == null)
-          biobranches = new  JmolList<BS>();
+          biobranches = new  List<BS>();
         biobranches.addLast(bsBranch);
       }
     }
@@ -319,12 +319,12 @@ public final class BioModel extends Model{
 
   @Override
   public void getRasmolHydrogenBonds(BS bsA, BS bsB,
-                                     JmolList<Bond> vHBonds, boolean nucleicOnly,
+                                     List<Bond> vHBonds, boolean nucleicOnly,
                                      int nMax, boolean dsspIgnoreHydrogens,
                                      BS bsHBonds) {    
     boolean doAdd = (vHBonds == null);
     if (doAdd)
-      vHBonds = new  JmolList<Bond>();
+      vHBonds = new  List<Bond>();
     if (nMax < 0)
       nMax = Integer.MAX_VALUE;
     boolean asDSSP = (bsB == null);
@@ -446,10 +446,10 @@ public final class BioModel extends Model{
   @Override
   public void getAllPolymerInfo(
                                 BS bs,
-                                Map<String, JmolList<Map<String, Object>>> finalInfo,
-                                JmolList<Map<String, Object>> modelVector) {
+                                Map<String, List<Map<String, Object>>> finalInfo,
+                                List<Map<String, Object>> modelVector) {
     Map<String, Object> modelInfo = new Hashtable<String, Object>();
-    JmolList<Map<String, Object>> info = new  JmolList<Map<String, Object>>();
+    List<Map<String, Object>> info = new  List<Map<String, Object>>();
     for (int ip = 0; ip < bioPolymerCount; ip++) {
       Map<String, Object> polyInfo = bioPolymers[ip].getPolymerInfo(bs); 
       if (!polyInfo.isEmpty())

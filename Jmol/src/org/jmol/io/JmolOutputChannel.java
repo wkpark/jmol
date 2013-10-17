@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import org.jmol.api.BytePoster;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 /**
  * 

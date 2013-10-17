@@ -33,19 +33,20 @@ import org.jmol.constant.EnumAxesMode;
 import org.jmol.constant.EnumCallback;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
+import org.jmol.java.BS;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
 
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.J2SIgnoreImport;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 
 import java.util.Arrays;

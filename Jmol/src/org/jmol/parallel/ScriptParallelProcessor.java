@@ -23,7 +23,7 @@
 
 package org.jmol.parallel;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -59,7 +59,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
       return;
     this.viewer = viewer;
     boolean inParallel = !viewer.isParallel() && viewer.setParallel(true);
-    JmolList<ShapeManager> vShapeManagers = new  JmolList<ShapeManager>();
+    List<ShapeManager> vShapeManagers = new  List<ShapeManager>();
     error = null;
     counter = 0;
     if (Logger.debugging)
@@ -90,7 +90,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
     viewer.setParallel(false);
   }
 
-  void mergeResults(JmolList<ShapeManager> vShapeManagers) {
+  void mergeResults(List<ShapeManager> vShapeManagers) {
     try {
       for (int i = 0; i < vShapeManagers.size(); i++)
         viewer.mergeShapes(vShapeManagers.get(i).getShapes());
@@ -109,7 +109,7 @@ public class ScriptParallelProcessor extends ScriptFunction implements JmolParal
     }
   }
 
-  private JmolList<ScriptProcess> processes = new  JmolList<ScriptProcess>();
+  private List<ScriptProcess> processes = new  List<ScriptProcess>();
 
   public void addProcess(String name, ScriptContext context) {
     processes.addLast(new ScriptProcess(name, context));

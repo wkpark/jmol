@@ -27,7 +27,7 @@
 
 package org.jmol.adapter.readers.xtal;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
@@ -45,7 +45,7 @@ import org.jmol.util.Txt;
 public class VaspOutcarReader extends AtomSetCollectionReader {
 
   private String[] atomNames;
-  private JmolList<String> elementNames; //this array is to store the name of the element 
+  private List<String> elementNames; //this array is to store the name of the element 
   private int atomCount = 0;
   private boolean inputOnly;
   private boolean mDsimulation = false; //this is for MD simulations
@@ -105,7 +105,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
       VRHFIN =H: ultrasoft test 
    */
   private void readElementNames() throws Exception {
-    elementNames = new  JmolList<String>();
+    elementNames = new  List<String>();
     String elementList = "";
     while (readLine() != null && line.indexOf("VRHFIN") < 0) {
       int pt = (line.contains("_") ? 2 : 1);

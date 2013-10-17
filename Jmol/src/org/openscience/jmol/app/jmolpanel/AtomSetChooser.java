@@ -66,8 +66,8 @@ import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.script.T;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.lang.SB;
 import org.jmol.viewer.JC;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 

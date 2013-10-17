@@ -38,7 +38,7 @@ import java.util.Map;
 import org.jmol.image.ImageEncoder;
 import org.jmol.io.JmolBinary;
 import org.jmol.io.JmolOutputChannel;
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 
 /**
  * JpegEncoder - The JPEG main program which performs a jpeg compression of an

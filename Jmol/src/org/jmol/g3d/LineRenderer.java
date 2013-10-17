@@ -45,7 +45,7 @@ package org.jmol.g3d;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;

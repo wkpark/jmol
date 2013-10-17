@@ -26,7 +26,7 @@ package org.jmol.modelset;
 
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.util.Txt;

@@ -2,16 +2,16 @@ package org.jmol.viewer;
 
 import java.util.Map;
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.TickInfo;
 import org.jmol.shape.AtomShape;
 import org.jmol.shape.Measures;
 import org.jmol.shape.Shape;
-import org.jmol.util.BS;
 import org.jmol.util.JmolFont;
-import org.jmol.util.JmolList;
-import org.jmol.util.SB;
+import javajs.util.List;
+import javajs.lang.SB;
 
 abstract class JmolStateCreator {
 
@@ -37,7 +37,7 @@ abstract class JmolStateCreator {
   abstract void getShapeSetState(AtomShape atomShape, Shape shape, int monomerCount, Group[] monomers,
                      BS bsSizeDefault, Map<String, BS> temp, Map<String, BS> temp2);
 
-  abstract String getMeasurementState(Measures shape, JmolList<Measurement> mList, int measurementCount,
+  abstract String getMeasurementState(Measures shape, List<Measurement> mList, int measurementCount,
                              JmolFont font3d, TickInfo tickInfo);
 
   abstract String getBondState(Shape shape, BS bsOrderSet, boolean reportAll);

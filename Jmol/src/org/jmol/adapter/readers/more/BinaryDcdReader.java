@@ -24,12 +24,12 @@
 
 package org.jmol.adapter.readers.more;
 
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.lang.SB;
 
 
 

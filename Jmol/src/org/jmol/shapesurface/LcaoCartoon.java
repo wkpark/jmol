@@ -26,13 +26,13 @@
 package org.jmol.shapesurface;
 
 
+import org.jmol.java.BS;
 import org.jmol.shape.Shape;
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 public class LcaoCartoon extends Isosurface {
 

@@ -26,14 +26,15 @@ package org.jmol.g3d;
 
 
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.util.P3;
-import org.jmol.util.Point3fi;
-import org.jmol.util.P3i;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.Point3fi;
+
+import javajs.vec.V3;
 
 
 /**
@@ -384,7 +385,7 @@ public class HermiteRenderer implements G3DRenderer {
     // only used for meshRibbon, so fill = false 
     P3i[] endPoints = {p2, p1, p6, p5};
     // stores all points for top+bottom strands of 1 segment
-    JmolList<P3i> points = new JmolList<P3i>();
+    List<P3i> points = new List<P3i>();
     int whichPoint = 0;
 
     int numTopStrandPoints = 2; //first and last points automatically included

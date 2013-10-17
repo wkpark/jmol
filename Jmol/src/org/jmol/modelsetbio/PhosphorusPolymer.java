@@ -25,9 +25,9 @@ package org.jmol.modelsetbio;
 
 
 import org.jmol.io.JmolOutputChannel;
+import org.jmol.java.BS;
 import org.jmol.modelset.LabelToken;
-import org.jmol.util.BS;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.viewer.Viewer;
 
 

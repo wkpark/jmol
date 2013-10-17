@@ -2,7 +2,7 @@ package org.openscience.jvxl.simplewriter;
 
 
 import org.jmol.jvxl.data.VolumeData;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 public class VoxelDataCreator {
 

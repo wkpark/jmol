@@ -25,7 +25,7 @@ package org.jmol.jvxl.readers;
 
 import java.io.BufferedReader;
 
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 /**
  * UHBD reader

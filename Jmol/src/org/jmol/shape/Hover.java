@@ -24,12 +24,13 @@
 
 package org.jmol.shape;
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Text;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
+import javajs.vec.P3i;
+
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
-import org.jmol.util.P3i;
 import org.jmol.viewer.JC;
 
 public class Hover extends TextShape {

@@ -32,22 +32,23 @@ import java.util.Map;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumVdw;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.SB;
+
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.lang.SB;
 import org.jmol.util.Vibration;
 
 public class ShapeManager {
@@ -336,7 +337,7 @@ public class ShapeManager {
         Shape shape = shapes[i];
         if (shape != null) {
           String shapeType = JC.shapeClassBases[i];
-          JmolList<Map<String, Object>> shapeDetail = shape.getShapeDetail();
+          List<Map<String, Object>> shapeDetail = shape.getShapeDetail();
           if (shapeDetail != null)
             info.put(shapeType, shapeDetail);
         }

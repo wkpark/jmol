@@ -1529,11 +1529,11 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     } 
   }
   
-  org.jmol.util.Dimension resizeInnerPanel(String data) {
+  javajs.awt.Dimension resizeInnerPanel(String data) {
     int width = viewer.getScreenWidth();
     int height = viewer.getScreenHeight();
     String info = width + " " + height;
-    org.jmol.util.Dimension d = new org.jmol.util.Dimension();
+    javajs.awt.Dimension d = new javajs.awt.Dimension(0,0);
     if (data == null) {
       data = info;
    } else {

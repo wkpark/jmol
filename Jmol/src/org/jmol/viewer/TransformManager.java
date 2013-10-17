@@ -27,21 +27,21 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolNavigatorInterface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.constant.EnumStereoMode;
+import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.thread.JmolThread;
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.P4;
-import org.jmol.util.SB;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.P4;
+import javajs.lang.SB;
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3i;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 import org.jmol.util.Vibration;
 
 import org.jmol.util.Quaternion;
@@ -401,7 +401,7 @@ public class TransformManager {
                                     float endDegrees, boolean isClockwise,
                                     boolean isSpin, BS bsAtoms,
                                     boolean isGesture, V3 translation,
-                                    JmolList<P3> finalPoints,
+                                    List<P3> finalPoints,
                                     float[] dihedralList) {
 
     // *THE* Viewer INTERNAL frame rotation entry point
@@ -2005,7 +2005,7 @@ public class TransformManager {
   }
 
   private void setSpin(JmolScriptEvaluator eval, boolean spinOn,
-                       float endDegrees, JmolList<P3> endPositions, float[] dihedralList, 
+                       float endDegrees, List<P3> endPositions, float[] dihedralList, 
                        BS bsAtoms,
                        boolean isGesture) {
     if (navOn && spinOn)
@@ -2667,7 +2667,7 @@ public class TransformManager {
     return true;
   }
 
-  public void navigateList(JmolScriptEvaluator eval, JmolList<Object[]> list) {
+  public void navigateList(JmolScriptEvaluator eval, List<Object[]> list) {
     if (getNav())
       nav.navigateList(eval, list);
   }

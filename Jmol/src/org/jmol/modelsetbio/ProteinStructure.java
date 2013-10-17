@@ -26,9 +26,9 @@ package org.jmol.modelsetbio;
 import java.util.Map;
 
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.P3;
-import org.jmol.util.V3;
+import javajs.array.ArrayUtil;
+import javajs.vec.P3;
+import javajs.vec.V3;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Logger;

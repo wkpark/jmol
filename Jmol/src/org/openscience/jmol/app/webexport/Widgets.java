@@ -3,7 +3,7 @@ package org.openscience.jmol.app.webexport;
 
 import org.jmol.i18n.GT;
 import org.jmol.util.ColorUtil;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 class Widgets { 
   

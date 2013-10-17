@@ -28,7 +28,7 @@ package org.jmol.script;
 import java.util.Map;
 
 import org.jmol.api.JmolParallelProcessor;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 public class ScriptContext {
   

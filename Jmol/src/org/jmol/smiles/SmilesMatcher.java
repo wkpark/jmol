@@ -27,10 +27,11 @@ package org.jmol.smiles;
 
 
 import org.jmol.api.SmilesMatcherInterface;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
+
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Txt;
 
@@ -257,8 +258,8 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   public void getSubstructureSets(String[] smarts, JmolNode[] atoms, int atomCount,
-                                  int flags, BS bsSelected, JmolList<BS> ret, 
-                                  JmolList<BS>[] vRings) {
+                                  int flags, BS bsSelected, List<BS> ret, 
+                                  List<BS>[] vRings) {
     InvalidSmilesException.setLastError(null);
     SmilesParser sp = new SmilesParser(true);
     SmilesSearch search = null;
@@ -385,11 +386,11 @@ public class SmilesMatcher implements SmilesMatcherInterface {
         return search.search(false);
       case MODE_ARRAY:
         search.asVector = true;
-        JmolList<BS> vb = (JmolList<BS>) search.search(false);
+        List<BS> vb = (List<BS>) search.search(false);
         return vb.toArray(new BS[vb.size()]);
       case MODE_MAP:
         search.getMaps = true;
-        JmolList<int[]> vl = (JmolList<int[]>) search.search(false);
+        List<int[]> vl = (List<int[]>) search.search(false);
         return vl.toArray(ArrayUtil.newInt2(vl.size()));
       }
     } catch (Exception e) {

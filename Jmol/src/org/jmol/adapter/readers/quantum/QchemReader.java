@@ -28,12 +28,12 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 import java.io.IOException;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -276,8 +276,8 @@ $end
     int shellCount = 0;
     int gaussianCount = 0;
     // local variables
-    shells = new  JmolList<int[]>();
-    JmolList<String[]> gdata = new  JmolList<String[]>();
+    shells = new  List<int[]>();
+    List<String[]> gdata = new  List<String[]>();
     String[] tokens;
 
     discardLinesUntilStartsWith("$basis");

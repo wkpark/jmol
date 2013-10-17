@@ -26,12 +26,12 @@ package org.jmol.io2;
 
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Map;
 
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 
 /* a simple compound document reader. 
@@ -52,7 +52,7 @@ public class CompoundDocument extends BinaryDocument{
 
 //  RandomAccessFile file;
   CompoundDocHeader header = new CompoundDocHeader(this);
-  JmolList<CompoundDocDirEntry> directory = new  JmolList<CompoundDocDirEntry>();
+  List<CompoundDocDirEntry> directory = new  List<CompoundDocDirEntry>();
   CompoundDocDirEntry rootEntry;
 
   int[] SAT;
@@ -91,7 +91,7 @@ public class CompoundDocument extends BinaryDocument{
     getDirectoryTable();
   }
 
-  public JmolList<CompoundDocDirEntry> getDirectory() {
+  public List<CompoundDocDirEntry> getDirectory() {
     return directory;
   }
 

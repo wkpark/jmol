@@ -28,10 +28,10 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 /*
  * 

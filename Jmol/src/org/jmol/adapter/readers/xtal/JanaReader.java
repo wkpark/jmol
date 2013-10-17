@@ -31,11 +31,13 @@ import java.util.Map;
 import org.jmol.adapter.readers.cif.ModulationReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.io.JmolBinary;
-import org.jmol.util.BS;
-import org.jmol.util.JmolList;
+import org.jmol.java.BS;
+
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
+
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
 import org.jmol.util.Txt;
 
 /**
@@ -45,7 +47,7 @@ import org.jmol.util.Txt;
 
 public class JanaReader extends ModulationReader {
 
-  private JmolList<float[]> lattvecs;
+  private List<float[]> lattvecs;
   private int thisSub;
   
   @Override
@@ -204,7 +206,7 @@ public class JanaReader extends ModulationReader {
       return;
     }
     if (lattvecs == null)
-      lattvecs = new JmolList<float[]>();
+      lattvecs = new List<float[]>();
     lattvecs.addLast(a);
   }
 

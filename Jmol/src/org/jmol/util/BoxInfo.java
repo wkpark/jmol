@@ -27,7 +27,16 @@ package org.jmol.util;
 
 
 import org.jmol.modelset.ModelSet;
-import org.jmol.util.JmolList;
+import javajs.util.List;
+
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.P4;
+import javajs.vec.Point3fi;
+import javajs.vec.V3;
+import javajs.vec.Tuple3f;
+import javajs.vec.Tuple4f;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -81,8 +90,8 @@ public class BoxInfo {
    * @return    a set of points
    * 
    */
-  public JmolList<Object> intersectPlane(ModelSet modelSet, P4 plane, float scale, int flags) {
-    JmolList<Object> v = new  JmolList<Object>();
+  public List<Object> intersectPlane(ModelSet modelSet, P4 plane, float scale, int flags) {
+    List<Object> v = new  List<Object>();
     v.addLast(getCanonicalCopy(scale));
     return modelSet.intersectPlane(plane, v, flags);
   }

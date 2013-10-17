@@ -27,8 +27,7 @@ package org.jmol.modelset;
 
 
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolEdge;
@@ -36,6 +35,7 @@ import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 
 import org.jmol.viewer.JC;
+import org.jmol.java.BS;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.script.T;
 

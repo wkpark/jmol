@@ -27,12 +27,12 @@ package org.jmol.smiles;
 
 
 
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.JmolNode;
-import org.jmol.util.P3;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.V3;
 
 public class SmilesAromatic {
   /** 
@@ -237,8 +237,8 @@ public class SmilesAromatic {
   }
   
   static void checkAromaticStrict(JmolNode[] jmolAtoms,
-                                         BS bsAromatic, JmolList<Object> v5,
-                                         JmolList<Object> v6) {
+                                         BS bsAromatic, List<Object> v5,
+                                         List<Object> v6) {
     BS bsStrict = new BS();
     BS bsTest = new BS();
     for (int i = v5.size(); --i >= 0; ) {
@@ -274,8 +274,8 @@ public class SmilesAromatic {
    * @param is5
    */
   private static void checkAromaticStrict2(JmolNode[] jmolAtoms,
-                                          BS bsStrict, JmolList<Object> v5,
-                                          JmolList<Object> v6, BS bsRing,
+                                          BS bsStrict, List<Object> v5,
+                                          List<Object> v6, BS bsRing,
                                           boolean is5) {
     // I believe this gives the wrong answer for mmff94_dative.mol2 CIKSEU10
     // but at least it agrees with MMFF94.  -- Bob Hanson

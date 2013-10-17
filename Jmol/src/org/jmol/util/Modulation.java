@@ -1,5 +1,7 @@
 package org.jmol.util;
 
+import javajs.vec.P3;
+
 /**
  * A class to allow for more complex vibrations and associated phenomena, such
  * as modulated crystals, including Fourier series, Crenel functions, and

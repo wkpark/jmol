@@ -30,23 +30,23 @@ import java.util.Map;
 
 
 import org.jmol.api.SymmetryInterface;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
-import org.jmol.util.BS;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.JmolMolecule;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
+import javajs.vec.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
-import org.jmol.util.SB;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.lang.SB;
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3i;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 
 public class Symmetry implements SymmetryInterface {
   
@@ -646,7 +646,7 @@ public class Symmetry implements SymmetryInterface {
     return ((Symmetry) (uc2)).unitCell.isSameAs(unitCell);
   }
 
-  public void addLatticeVectors(JmolList<float[]> lattvecs) {
+  public void addLatticeVectors(List<float[]> lattvecs) {
     spaceGroup.addLatticeVectors(lattvecs);
   }
 

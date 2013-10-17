@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import com.sparshui.GestureType;
 
@@ -82,7 +82,7 @@ class ClientConnection {
 	 * @return Vector
 	 * @throws IOException
 	 */
-	private JmolList<GestureType> getGestures(int groupID) throws IOException {
+	private List<GestureType> getGestures(int groupID) throws IOException {
 		return _protocol.getGestures(groupID);
 	}
 
@@ -115,7 +115,7 @@ class ClientConnection {
 			//System.out.println("[ClientConnection] Getting Group Gestures ID:
 			// " + groupID);
 		  // gestureID may be a string indicating a user-defined class to load.
-			JmolList<GestureType> gestureTypes = getGestures(groupID);
+			List<GestureType> gestureTypes = getGestures(groupID);
 			group = new Group(groupID, gestureTypes, _protocol);
 			_groups.put(gid, group);
 		}

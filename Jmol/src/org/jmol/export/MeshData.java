@@ -1,11 +1,11 @@
 package org.jmol.export;
 
 
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.P3;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 
 /**
  * Class to generate mesh data (faces, vertices, and normals) for several kinds

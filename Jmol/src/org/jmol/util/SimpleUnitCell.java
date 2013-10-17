@@ -24,6 +24,11 @@
 
 package org.jmol.util;
 
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.V3;
+import javajs.vec.Tuple3f;
+
 
 
 /**

@@ -33,21 +33,22 @@ import java.util.Map;
 import java.util.Set;
 
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Bond.BondSet;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
+import javajs.util.List;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+import javajs.lang.SB;
+import javajs.vec.V3;
 
 
 /**
@@ -200,8 +201,8 @@ public class SV extends T {
       return newVariable(matrix4f, x);
     if (x instanceof Map)
       return getVariableMap((Map<String, ?>)x);
-    if (x instanceof JmolList)
-      return getVariableList((JmolList) x);
+    if (x instanceof List)
+      return getVariableList((List) x);
     if (Escape.isAV(x))
       return getVariableAV((SV[]) x);
     if (Escape.isAI(x))
@@ -232,7 +233,7 @@ public class SV extends T {
      *            return Clazz.instanceOf(x, Array);
      */
     {
-       return x instanceof JmolList<?>
+       return x instanceof List<?>
           || x instanceof SV[] 
           || x instanceof byte[] 
           || x instanceof int[] 
@@ -268,74 +269,74 @@ public class SV extends T {
     return newVariable(hash, x);
   }
 
-  public static SV getVariableList(JmolList<?> v) {
+  public static SV getVariableList(List<?> v) {
     int len = v.size();
     if (len > 0 && v.get(0) instanceof SV)
       return newVariable(varray, v);
-    JmolList<SV> objects = new  JmolList<SV>();
+    List<SV> objects = new  List<SV>();
     for (int i = 0; i < len; i++)
       objects.addLast(getVariable(v.get(i)));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAV(SV[] v) {
-    JmolList<SV> objects = new  JmolList<SV>();
+    List<SV> objects = new  List<SV>();
     for (int i = 0; i < v.length; i++)
       objects.addLast(v[i]);
     return newVariable(varray, objects);
   }
 
   public static SV getVariableAD(double[] f) {
-    JmolList<SV> objects = new  JmolList<SV>();
+    List<SV> objects = new  List<SV>();
     for (int i = 0; i < f.length; i++)
       objects.addLast(newVariable(decimal, Float.valueOf((float) f[i])));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAS(String[] s) {
-    JmolList<SV> objects = new  JmolList<SV>();
+    List<SV> objects = new  List<SV>();
     for (int i = 0; i < s.length; i++)
       objects.addLast(newVariable(string, s[i]));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAP(P3[] p) {
-    JmolList<SV> objects = new  JmolList<SV>();
+    List<SV> objects = new  List<SV>();
     for (int i = 0; i < p.length; i++)
       objects.addLast(newVariable(point3f, p[i]));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAFF(float[][] fx) {
-    JmolList<SV> objects = new  JmolList<SV>();
+    List<SV> objects = new  List<SV>();
     for (int i = 0; i < fx.length; i++)
       objects.addLast(getVariableAF(fx[i]));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAII(int[][] ix) {
-    JmolList<SV> objects = new  JmolList<SV>();
+    List<SV> objects = new  List<SV>();
     for (int i = 0; i < ix.length; i++)
       objects.addLast(getVariableAI(ix[i]));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAF(float[] f) {
-    JmolList<SV> objects = new  JmolList<SV>();
+    List<SV> objects = new  List<SV>();
     for (int i = 0; i < f.length; i++)
       objects.addLast(newVariable(decimal, Float.valueOf(f[i])));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAI(int[] ix) {
-    JmolList<SV> objects = new  JmolList<SV>();
+    List<SV> objects = new  List<SV>();
     for (int i = 0; i < ix.length; i++)
       objects.addLast(newScriptVariableInt(ix[i]));
     return newVariable(varray, objects);
   }
 
   static SV getVariableAB(byte[] ix) {
-    JmolList<SV> objects = new  JmolList<SV>();
+    List<SV> objects = new  List<SV>();
     for (int i = 0; i < ix.length; i++)
       objects.addLast(newScriptVariableInt(ix[i]));
     return newVariable(varray, objects);
@@ -368,8 +369,8 @@ public class SV extends T {
             (Map<String, SV>) v.value);
         break;
       case varray:
-        JmolList<SV> o2 = new  JmolList<SV>();
-        JmolList<SV> o1 = v.getList();
+        List<SV> o2 = new  List<SV>();
+        List<SV> o1 = v.getList();
         for (int i = 0; i < o1.size(); i++)
           o2.addLast(o1.get(i));
         value = o2;
@@ -589,7 +590,7 @@ public class SV extends T {
       BS bs = bsSelectToken(x);
       return (x.value instanceof BondSet ? Escape.eBond(bs) : Escape.eBS(bs));
     case varray:
-      JmolList<SV> sv = ((SV) x).getList();
+      List<SV> sv = ((SV) x).getList();
       i = x.intValue;
       if (i <= 0)
         i = sv.size() - i;
@@ -671,7 +672,7 @@ public class SV extends T {
       map.put(vx, Boolean.TRUE);
       if (isEscaped)
         sb.append("[");
-      JmolList<SV> sx = vx.getList();
+      List<SV> sx = vx.getList();
       for (int i = 0; i < sx.size(); i++) {
         if (isEscaped && i > 0)
           sb.append(",");
@@ -726,8 +727,8 @@ public class SV extends T {
 
   static SV concatList(SV x1, SV x2,
                                           boolean asNew) {
-    JmolList<SV> v1 = x1.getList();
-    JmolList<SV> v2 = x2.getList();
+    List<SV> v1 = x1.getList();
+    List<SV> v2 = x2.getList();
     if (!asNew) {
       if (v2 == null)
         v1.addLast(newScriptVariableToken(x2));
@@ -736,7 +737,7 @@ public class SV extends T {
           v1.addLast(v2.get(i));
       return x1;
     }
-    JmolList<SV> vlist = new JmolList<SV>();
+    List<SV> vlist = new List<SV>();
     //(v1 == null ? 1 : v1.size()) + (v2 == null ? 1 : v2.size())
     if (v1 == null)
       vlist.addLast(x1);
@@ -923,8 +924,8 @@ public class SV extends T {
         return newVariable(string, "");
       if (i2 == i1)
         return ((SV) tokenIn).getList().get(i1 - 1);
-      JmolList<SV> o2 = new  JmolList<SV>();
-      JmolList<SV> o1 = ((SV) tokenIn).getList();
+      List<SV> o2 = new  List<SV>();
+      List<SV> o1 = ((SV) tokenIn).getList();
       n = i2 - i1 + 1;
       for (int i = 0; i < n; i++)
         o2.addLast(newScriptVariableToken(o1.get(i + i1 - 1)));
@@ -955,7 +956,7 @@ public class SV extends T {
       }
       if (selector != 0 && Math.abs(selector) <= len
           && var.tok == varray) {
-        JmolList<SV> sv = var.getList();
+        List<SV> sv = var.getList();
         if (sv.size() == len) {
           float[] data = new float[len];
           for (int i = 0; i < len; i++)
@@ -1080,7 +1081,7 @@ public class SV extends T {
     Object[] of = new Object[] { vd, vf, ve, null, null, null};
     if (var.tok != varray)
       return sprintf(strFormat, var, of, vd, vf, ve, getS, getP, getQ);
-    JmolList<SV> sv = var.getList();
+    List<SV> sv = var.getList();
     String[] list2 = new String[sv.size()];
     for (int i = 0; i < list2.length; i++)
       list2[i] = sprintf(strFormat, sv.get(i), of, vd, vf, ve, getS, getP, getQ);
@@ -1145,7 +1146,7 @@ public class SV extends T {
       return bsSelectVar(x);
     case varray:
       BS bs = new BS();
-      JmolList<SV> sv = (JmolList<SV>) x.value;
+      List<SV> sv = (List<SV>) x.value;
       for (int i = 0; i < sv.size(); i++)
         if (!sv.get(i).unEscapeBitSetArray(bs) && allowNull)
           return null;
@@ -1188,8 +1189,8 @@ public class SV extends T {
       case string:
         return sValue(x).compareTo(sValue(y));
       case varray:
-        JmolList<SV> sx = x.getList();
-        JmolList<SV> sy = y.getList();
+        List<SV> sx = x.getList();
+        List<SV> sy = y.getList();
         if (sx.size() != sy.size())
           return (sx.size() < sy.size() ? -1 : 1);
         int iPt = arrayPt;
@@ -1212,7 +1213,7 @@ public class SV extends T {
    * @return sorted or reversed array
    */
   public SV sortOrReverse(int arrayPt) {
-    JmolList<SV> x = getList();
+    List<SV> x = getList();
     if (x == null || x.size() < 2) 
       return this;
     if (arrayPt == Integer.MIN_VALUE) {
@@ -1255,23 +1256,23 @@ public class SV extends T {
   public static String[] listValue(T x) {
     if (x.tok != varray)
       return new String[] { sValue(x) };
-    JmolList<SV> sv = ((SV) x).getList();
+    List<SV> sv = ((SV) x).getList();
     String[] list = new String[sv.size()];
     for (int i = sv.size(); --i >= 0;)
       list[i] = sValue(sv.get(i));
     return list;
   }
 
-  static JmolList<Object> listAny(SV x) {
-    JmolList<Object> list = new JmolList<Object>();
-    JmolList<SV> l = x.getList();
+  static List<Object> listAny(SV x) {
+    List<Object> list = new List<Object>();
+    List<SV> l = x.getList();
     for (int i = 0; i < l.size(); i++) {
       SV v = l.get(i);
-      JmolList<SV> l2 = v.getList();
+      List<SV> l2 = v.getList();
       if (l2 == null) {
         list.addLast(v.value);        
       } else {
-        JmolList<Object> o = new JmolList<Object>();
+        List<Object> o = new List<Object>();
         for (int j = 0; j < l2.size(); j++) {
           v = l2.get(j);
         }
@@ -1283,7 +1284,7 @@ public class SV extends T {
   public static float[] flistValue(T x, int nMin) {
     if (x.tok != varray)
       return new float[] { fValue(x) };
-    JmolList<SV> sv = ((SV) x).getList();
+    List<SV> sv = ((SV) x).getList();
     float[] list;
     list = new float[Math.max(nMin, sv.size())];
     if (nMin == 0)
@@ -1310,7 +1311,7 @@ public class SV extends T {
       return;
     }
     tok = varray;
-    JmolList<SV> o2 = new  JmolList<SV>(); //dim;
+    List<SV> o2 = new  List<SV>(); //dim;
     for (int i = 0; i < dim; i++) {
       float[] a = new float[dim];
       if (m3 == null)
@@ -1328,8 +1329,8 @@ public class SV extends T {
   }
 
   @SuppressWarnings("unchecked")
-  public JmolList<SV> getList() {
-    return (tok == varray ? (JmolList<SV>) value : null);
+  public List<SV> getList() {
+    return (tok == varray ? (List<SV>) value : null);
   }
 
 }

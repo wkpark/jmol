@@ -28,14 +28,15 @@ import org.jmol.constant.EnumStructure;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Chain;
-import org.jmol.util.AxisAngle4f;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.P3;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.viewer.JC;
 
 public class AminoMonomer extends AlphaMonomer {

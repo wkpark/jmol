@@ -13,12 +13,12 @@ import org.jmol.api.JmolImageEncoder;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
 import org.jmol.io.JmolOutputChannel;
+import org.jmol.java.BS;
 import org.jmol.script.T;
-import org.jmol.util.BS;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 
@@ -751,9 +751,9 @@ abstract class OutputManager {
   private String createZipSet(String script,
                               String[] scripts, boolean includeRemoteFiles,
                               JmolOutputChannel out) {
-     JmolList<Object> v = new  JmolList<Object>();
+     List<Object> v = new  List<Object>();
      FileManager fm = viewer.fileManager;
-     JmolList<String> fileNames = new  JmolList<String>();
+     List<String> fileNames = new  List<String>();
      Hashtable<Object, String> crcMap = new Hashtable<Object, String>();
      boolean haveSceneScript = (scripts != null && scripts.length == 3 && scripts[1]
          .startsWith(SCENE_TAG));
@@ -770,7 +770,7 @@ abstract class OutputManager {
          fileNames.addLast(scripts[i]);
      }
      int nFiles = fileNames.size();
-     JmolList<String> newFileNames = new  JmolList<String>();
+     List<String> newFileNames = new  List<String>();
      for (int iFile = 0; iFile < nFiles; iFile++) {
        String name = fileNames.get(iFile);
        boolean isLocal = !viewer.isJS && FileManager.isLocal(name);
@@ -846,7 +846,7 @@ abstract class OutputManager {
   private String addPngFileBytes(String name, byte[] ret, int iFile,
                                  Hashtable<Object, String> crcMap,
                                  boolean isSparDir, String newName, int ptSlash,
-                                 JmolList<Object> v) {
+                                 List<Object> v) {
      Integer crcValue = Integer.valueOf(JmolBinary.getCrcValue(ret));
      // only add to the data list v when the data in the file is new
      if (crcMap.containsKey(crcValue)) {
@@ -889,7 +889,7 @@ abstract class OutputManager {
 
   private String writeZipFile(double privateKey, FileManager fm, Viewer viewer,
                              JmolOutputChannel out,
-                             JmolList<Object> fileNamesAndByteArrays, String msg) {
+                             List<Object> fileNamesAndByteArrays, String msg) {
     
     byte[] buf = new byte[1024];
     long nBytesOut = 0;

@@ -249,7 +249,7 @@ public abstract class Tuple3f implements Serializable {
     return (int) (bits ^ (bits >> 32));
   }
 
-  static int floatToIntBits0(float f) {
+  public static int floatToIntBits0(float f) {
     return (f == 0 ? 0 : Float.floatToIntBits(f));
   }
 

@@ -31,13 +31,14 @@ import java.util.Map;
 
 
 import org.jmol.api.SymmetryInterface;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.JmolList;
+import javajs.array.ArrayUtil;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 
 /*
@@ -1377,7 +1378,7 @@ class SpaceGroup {
     } : spaceGroupDefinitions);
   }
 
-  public void addLatticeVectors(JmolList<float[]> lattvecs) {
+  public void addLatticeVectors(List<float[]> lattvecs) {
     int nOps = latticeOp = operationCount;
     for (int j = 0; j < lattvecs.size(); j++) {
       float[] data = lattvecs.get(j);
@@ -1399,7 +1400,7 @@ class SpaceGroup {
 
   public int getSiteMultiplicity(P3 pt, UnitCell unitCell) {
     int n = finalOperations.length;
-    JmolList<P3> pts = new JmolList<P3>();
+    List<P3> pts = new List<P3>();
     for (int i = n; --i >= 0;) {
       P3 pt1 = P3.newP(pt);
       finalOperations[i].transform(pt1);

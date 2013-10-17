@@ -27,8 +27,8 @@ import java.applet.Applet;
 import java.awt.Event;
 import java.awt.Graphics;
 
-import org.jmol.util.BS;
 import org.jmol.util.Logger;
+import org.jmol.java.BS;
 import org.jmol.smiles.InvalidSmilesException;
 import org.jmol.smiles.SmilesMatcher;
 

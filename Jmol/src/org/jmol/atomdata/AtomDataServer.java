@@ -4,8 +4,9 @@ import java.io.BufferedInputStream;
 
 
 import org.jmol.api.AtomIndexIterator;
-import org.jmol.util.BS;
-import org.jmol.util.P3;
+import org.jmol.java.BS;
+
+import javajs.vec.P3;
 
 
 

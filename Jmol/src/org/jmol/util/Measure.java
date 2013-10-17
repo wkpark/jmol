@@ -24,7 +24,13 @@
 package org.jmol.util;
 
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
+
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P4;
+import javajs.vec.V3;
+import javajs.vec.Tuple3f;
 
 
 
@@ -441,7 +447,7 @@ final public class Measure {
     averagePoint.scale(1f / nPoints);
   }
 
-  public static P3[] getCenterAndPoints(JmolList<P3> vPts) {
+  public static P3[] getCenterAndPoints(List<P3> vPts) {
     int n = vPts.size();
     P3[] pts = new P3[n + 1];
     pts[0] = new P3();
@@ -454,7 +460,7 @@ final public class Measure {
     return pts;
   }
 
-  public static float getTransformMatrix4(JmolList<P3> ptsA, JmolList<P3> ptsB, Matrix4f m, P3 centerA) {
+  public static float getTransformMatrix4(List<P3> ptsA, List<P3> ptsB, Matrix4f m, P3 centerA) {
     P3[] cptsA = getCenterAndPoints(ptsA);
     P3[] cptsB = getCenterAndPoints(ptsB);
     //System.out.println("draw d1 @{point" + cptsA[0] + "}");
@@ -586,8 +592,8 @@ final public class Measure {
     return (float) Math.sqrt(sum2 / n);
   }
 
-  public static JmolList<P3> transformPoints(JmolList<P3> vPts, Matrix4f m4, P3 center) {
-    JmolList<P3> v = new  JmolList<P3>();
+  public static List<P3> transformPoints(List<P3> vPts, Matrix4f m4, P3 center) {
+    List<P3> v = new  List<P3>();
     for (int i = 0; i < vPts.size(); i++) {
       P3 pt = P3.newP(vPts.get(i));
       pt.sub(center);
@@ -625,7 +631,7 @@ final public class Measure {
    * @param plane2
    * @return       [ point, vector ] or []
    */
-  public static JmolList<Object> getIntersectionPP(P4 plane1, P4 plane2) {
+  public static List<Object> getIntersectionPP(P4 plane1, P4 plane2) {
     float a1 = plane1.x;
     float b1 = plane1.y;
     float c1 = plane1.z;
@@ -666,7 +672,7 @@ final public class Measure {
       y = (a2 * d1 - d2 * a1) / diff;
       z = 0;
     }
-    JmolList<Object>list = new  JmolList<Object>();
+    List<Object>list = new  List<Object>();
     list.addLast(P3.new3(x, y, z));
     nxn.normalize();
     list.addLast(nxn);

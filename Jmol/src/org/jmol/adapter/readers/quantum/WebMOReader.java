@@ -28,13 +28,13 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Atom;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 
 /**
@@ -254,8 +254,8 @@ public class WebMOReader extends MopacSlaterReader {
 
      */
 
-    JmolList<int[]> sdata = new  JmolList<int[]>();
-    JmolList<float[]> gdata = new  JmolList<float[]>();
+    List<int[]> sdata = new  List<int[]>();
+    List<float[]> gdata = new  List<float[]>();
     int atomIndex = 0;
     int gaussianPtr = 0;
 
@@ -333,7 +333,7 @@ public class WebMOReader extends MopacSlaterReader {
       return;
     }
     Map<String, Object> mo = new Hashtable<String, Object>();
-    JmolList<String> data = new  JmolList<String>();
+    List<String> data = new  List<String>();
     float energy = parseFloatStr(readLine());
     float occupancy = parseFloatStr(readLine());
     while (getLine()) {

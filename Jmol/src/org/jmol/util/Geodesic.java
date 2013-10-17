@@ -27,6 +27,8 @@ package org.jmol.util;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.vec.V3;
+
   /**
    * 
    * Consolidated Geodesic from dotsRenderer 3/19/07 Bob Hanson
@@ -119,7 +121,7 @@ import java.util.Map;
  * 
  */
 
-@J2SRequireImport({org.jmol.util.ArrayUtil.class})
+@J2SRequireImport({javajs.array.ArrayUtil.class})
 public class Geodesic {
   
   private final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));

@@ -3,12 +3,10 @@ package com.sparshui.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.jmol.api.JmolGestureServerInterface;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
 
 import com.sparshui.common.ConnectionType;
@@ -33,7 +31,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
   ServerSocket _clientSocket;
   ServerSocket _deviceSocket;
   ServerSocket _mySocket;
-  private JmolList<ClientConnection> _clients = new JmolList<ClientConnection>();
+  private List<ClientConnection> _clients = new List<ClientConnection>();
   private int port;
 
   InputDeviceConnection ic = null;
@@ -272,8 +270,8 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
         // with the client. In this case, we will want
         // to remove the client.
         if (clients_to_remove == null)
-          clients_to_remove = new ArrayList<ClientConnection>();
-        clients_to_remove.add(client);
+          clients_to_remove = new List<ClientConnection>();
+        clients_to_remove.addLast(client);
       }
     }
     if (clients_to_remove != null)

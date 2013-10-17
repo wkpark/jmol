@@ -33,8 +33,8 @@ import org.jmol.modelsetbio.Sheet;
 import org.jmol.script.T;
 import org.jmol.shapebio.BioShape;
 import org.jmol.util.GData;
-import org.jmol.util.P3;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.V3;
 
 
 public class RocketsRenderer extends StrandsRenderer {

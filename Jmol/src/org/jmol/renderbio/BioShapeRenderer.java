@@ -25,6 +25,7 @@
 package org.jmol.renderbio;
 
 import org.jmol.constant.EnumStructure;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom; //import org.jmol.modelsetbio.AlphaMonomer;
 import org.jmol.modelsetbio.CarbohydratePolymer;
 import org.jmol.modelsetbio.Monomer;
@@ -34,17 +35,17 @@ import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shapebio.BioShape;
 import org.jmol.shapebio.BioShapeCollection;
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Hermite;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
 import org.jmol.util.Normix;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.V3;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.V3;
 
 /**
    * @author Alexander Rose

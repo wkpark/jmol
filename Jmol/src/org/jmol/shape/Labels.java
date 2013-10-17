@@ -25,16 +25,16 @@
 package org.jmol.shape;
 
 import org.jmol.constant.EnumPalette;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
 
@@ -148,7 +148,7 @@ public class Labels extends AtomShape {
 
     if ("labels" == propertyName) {
       setScaling();
-      JmolList<String> labels = (JmolList<String>) value;
+      List<String> labels = (List<String>) value;
       for (int i = bsSelected.nextSetBit(0), pt = 0; i >= 0 && i < atomCount; i = bsSelected
           .nextSetBit(i + 1)) {
         String strLabel = labels.get(pt++);

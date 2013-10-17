@@ -10,24 +10,25 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jmol.io.JmolOutputChannel;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.GData;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix4f;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix4f;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -76,7 +77,7 @@ public class _ObjExporter extends __CartesianExporter {
   /** HashSet for textures. */
   Set<Short> textures = new HashSet<Short>();
   /** List of texture files created. */
-  JmolList<String> textureFiles;
+  List<String> textureFiles;
 
   /** Number for the next mesh of this type. */
   private int sphereNum = 1;
@@ -461,7 +462,7 @@ public class _ObjExporter extends __CartesianExporter {
     output("\nmtllib " + mtlFile.getName() + "\n");
 
     // Keep a list of texture files created
-    textureFiles = new  JmolList<String>();
+    textureFiles = new  List<String>();
     debugPrint("End initializeOutput:");
     return true;
   }
@@ -913,9 +914,9 @@ public class _ObjExporter extends __CartesianExporter {
     Tuple3f[] normals = data.normals;
     int nNormals = data.normalCount;
     int[] map2 = null;
-    JmolList<String> vNormals = null;
+    List<String> vNormals = null;
     if (normals != null) {
-      vNormals = new  JmolList<String>();
+      vNormals = new  List<String>();
       map2 = getNormalMap(normals, nNormals, bsValid, vNormals);
       nNormals = vNormals.size();
       output("# Number of normals: " + nNormals + "\n");

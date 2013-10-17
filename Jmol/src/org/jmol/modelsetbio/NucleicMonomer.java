@@ -32,10 +32,10 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Chain;
-import org.jmol.util.JmolList;
-import org.jmol.util.P3;
+import javajs.util.List;
+import javajs.vec.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.viewer.JC;
 
 public class NucleicMonomer extends PhosphorusMonomer {
@@ -483,7 +483,7 @@ public boolean isCrossLinked(Group g) {
   }
  
   @Override
-  public boolean getCrossLinkLead(JmolList<Integer> vReturn) {
+  public boolean getCrossLinkLead(List<Integer> vReturn) {
     Atom N = (isPurine ? getN1() : getN3());
     //System.out.println(N.getInfo());
     Bond[] bonds = N.getBonds();

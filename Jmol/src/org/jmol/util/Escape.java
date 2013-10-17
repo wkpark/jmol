@@ -25,12 +25,19 @@
 
 package org.jmol.util;
 
-import org.jmol.util.JmolList;
 import java.util.Iterator;
-
 import java.util.Map;
 
+import javajs.util.List;
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P4;
+import javajs.vec.Tuple3f;
 
+
+import org.jmol.java.BS;
 import org.jmol.script.SV;
 
 
@@ -79,8 +86,8 @@ public class Escape {
       return "null";
     if (x instanceof String)
       return eS((String) x);
-    if (x instanceof JmolList<?>)
-      return eV((JmolList<SV>) x);
+    if (x instanceof List<?>)
+      return eV((List<SV>) x);
     if (x instanceof BS) 
       return eBS((BS) x);
     if (x instanceof Tuple3f)
@@ -288,7 +295,7 @@ public class Escape {
     return "\\u" + s.substring(s.length() - 4);
   }
 
-  public static String eV(JmolList<SV> list) {
+  public static String eV(List<SV> list) {
     if (list == null)
       return eS("");
     SB s = new SB();
@@ -761,11 +768,11 @@ public class Escape {
       sb.append("]");
       return packageJSONSb(infoType, sb);
     }
-    if (info instanceof JmolList) {
+    if (info instanceof List) {
       sb.append("[ ");
-      int imax = ((JmolList<?>) info).size();
+      int imax = ((List<?>) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toJSON(null, ((JmolList<?>) info).get(i)));
+        sb.append(sep).append(toJSON(null, ((List<?>) info).get(i)));
         sep = ",";
       }
       sb.append(" ]");
@@ -922,10 +929,10 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "float[][]", sb);
     }
-    if (info instanceof JmolList<?>) {
-      int imax = ((JmolList<?>) info).size();
+    if (info instanceof List<?>) {
+      int imax = ((List<?>) info).size();
       for (int i = 0; i < imax; i++) {
-        sb.append(toReadable(name + "[" + (i + 1) + "]", ((JmolList<?>) info).get(i)));
+        sb.append(toReadable(name + "[" + (i + 1) + "]", ((List<?>) info).get(i)));
       }
       return packageReadableSb(name, "List[" + imax + "]", sb);
     }
@@ -1031,7 +1038,7 @@ public class Escape {
     //TODO -- should recognize '..' as well as "..." ?
     if (data == null || !data.startsWith("[") || !data.endsWith("]"))
       return null; 
-    JmolList<String> v = new  JmolList<String>();
+    List<String> v = new  List<String>();
     int[] next = new int[1];
     next[0] = 1;
     while (next[0] < data.length()) {

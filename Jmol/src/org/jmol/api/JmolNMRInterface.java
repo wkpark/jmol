@@ -2,13 +2,13 @@ package org.jmol.api;
 
 import java.util.Map;
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
-import org.jmol.util.BS;
-import org.jmol.util.JmolList;
-import org.jmol.util.SB;
+import javajs.util.List;
+import javajs.lang.SB;
 import org.jmol.util.Tensor;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 
 public interface JmolNMRInterface {
@@ -81,7 +81,7 @@ public interface JmolNMRInterface {
   public float getChemicalShift(Atom atom);  
   public boolean setChemicalShiftReference(String element, float value);
 
-  public JmolList<Object> getTensorInfo(String tensorType, String infoType, BS bs);
+  public List<Object> getTensorInfo(String tensorType, String infoType, BS bs);
 
   public Map<String, Integer> getMinDistances(MeasurementData md);
 

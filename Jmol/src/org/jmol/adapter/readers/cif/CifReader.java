@@ -31,23 +31,24 @@ import org.jmol.api.JmolLineReader;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.io.CifDataReader;
+import org.jmol.java.BS;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
 
 import org.jmol.script.T;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 import java.util.Map;
 
 
-import org.jmol.util.BS;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
+
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 
 /**
@@ -98,8 +99,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   private int nMolecular = 0;
   
 
-  private  JmolList<Matrix4f> vBiomts;
-  private  JmolList<Map<String, Object>> vBiomolecules;
+  private  List<Matrix4f> vBiomts;
+  private  List<Map<String, Object>> vBiomolecules;
   private Map<String,Matrix4f> htBiomts;
   private Map<String, Map<String, Object>> htSites;
 
@@ -318,7 +319,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       Map<String, Object> biomolecule = vBiomolecules.get(i);
       String[] ops = Txt.split((String) biomolecule.get("operators"), ",");
       String assemblies = (String) biomolecule.get("assemblies");
-      vBiomts = new  JmolList<Matrix4f>();
+      vBiomts = new  List<Matrix4f>();
       biomolecule.put("biomts", vBiomts);
       vBiomts.addLast(mident);
       for (int j = 0; j < ops.length; j++) {
@@ -369,7 +370,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   ////////////////////////////////////////////////////////////////
 
   private Hashtable<String, Object> htAudit;
-  private JmolList<String> symops;
+  private List<String> symops;
   /**
    *  initialize a new atom set
    *  
@@ -701,7 +702,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
 
 
   private Map<String, Float> atomTypes;
-  private  JmolList<Object[]> bondTypes = new  JmolList<Object[]>();
+  private  List<Object[]> bondTypes = new  List<Object[]>();
 
   private String disorderAssembly = ".";
   private String lastDisorderAssembly;
@@ -1331,13 +1332,13 @@ _pdbx_struct_oper_list.vector[3]
     if (!checkFilterKey("ASSEMBLY " + iMolecule + ";"))
       return;
     if (vBiomolecules == null) {
-      vBiomolecules = new  JmolList<Map<String,Object>>();
+      vBiomolecules = new  List<Map<String,Object>>();
     }
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("molecule", Integer.valueOf(iMolecule));
     info.put("assemblies", "$" + assem[ASSEM_LIST].replace(',', '$'));
     info.put("operators", assem[ASSEM_OPERS]);
-    info.put("biomts", new  JmolList<Matrix4f>());
+    info.put("biomts", new  List<Matrix4f>());
     Logger.info("assembly " + iMolecule + " operators " + assem[ASSEM_OPERS] + " ASYM_IDs " + assem[ASSEM_LIST]);
     vBiomolecules.addLast(info);
     assem = null;
@@ -1785,7 +1786,7 @@ _pdbx_struct_oper_list.vector[3]
   private void processSymmetryOperationsLoopBlock() throws Exception {
     parseLoopParameters(symmetryOperationsFields);
     int nRefs = 0;
-    symops = new JmolList<String>();
+    symops = new List<String>();
     for (int i = propertyCount; --i >= 0;)
       if (fieldOf[i] != NONE)
         nRefs++;

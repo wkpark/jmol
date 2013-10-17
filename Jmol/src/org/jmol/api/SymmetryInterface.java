@@ -3,17 +3,18 @@ package org.jmol.api;
 import java.util.Map;
 
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
-import org.jmol.util.BS;
-import org.jmol.util.JmolList;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
+import javajs.util.List;
+import javajs.vec.P3;
 import org.jmol.util.Tensor;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3i;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 
 public interface SymmetryInterface {
 
@@ -173,7 +174,7 @@ public interface SymmetryInterface {
 
   public void unitize(P3 ptFrac);
 
-  public void addLatticeVectors(JmolList<float[]> lattvecs);
+  public void addLatticeVectors(List<float[]> lattvecs);
 
   public int getLatticeOp();
 

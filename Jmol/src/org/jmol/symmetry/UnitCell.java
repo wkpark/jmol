@@ -28,14 +28,15 @@ package org.jmol.symmetry;
 import org.jmol.api.Interface;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Escape;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
+import javajs.vec.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.SimpleUnitCell;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3i;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 import org.jmol.viewer.JC;
 
 /**

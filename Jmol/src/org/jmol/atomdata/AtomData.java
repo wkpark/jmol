@@ -115,8 +115,9 @@ package org.jmol.atomdata;
 
 
 
-import org.jmol.util.BS;
-import org.jmol.util.P3;
+import org.jmol.java.BS;
+
+import javajs.vec.P3;
 
 
 

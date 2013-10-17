@@ -14,7 +14,7 @@
 
 package org.jmol.io;
 
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 public class Base64 {
 

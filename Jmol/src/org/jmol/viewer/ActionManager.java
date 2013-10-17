@@ -23,7 +23,7 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -32,18 +32,19 @@ import org.jmol.api.ApiPlatform;
 import org.jmol.api.Event;
 import org.jmol.api.EventManager;
 import org.jmol.i18n.GT;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.script.T;
 import org.jmol.thread.HoverWatcherThread;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
-import org.jmol.util.Point3fi;
+import javajs.vec.P3;
+import javajs.vec.Point3fi;
+
 import org.jmol.util.Rectangle;
 import org.jmol.util.Txt;
 import org.jmol.viewer.binding.Binding;
@@ -688,7 +689,7 @@ public class ActionManager implements EventManager {
   
   public Map<String, Object> getMouseInfo() {
     Map<String, Object> info = new Hashtable<String, Object>();
-    JmolList<Object> vb = new JmolList<Object>();
+    List<Object> vb = new List<Object>();
     for (Object obj : binding.getBindings().values()) {
       if (obj instanceof Boolean)
         continue;

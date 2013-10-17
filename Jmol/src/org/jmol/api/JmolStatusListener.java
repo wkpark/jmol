@@ -26,7 +26,7 @@ package org.jmol.api;
 
 import java.util.Map;
 
-import org.jmol.util.Dimension;
+import javajs.awt.Dimension;
 
 public interface JmolStatusListener extends JmolCallbackListener {
 /*

@@ -127,24 +127,24 @@ import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.io.JmolBinary;
 import org.jmol.io.JmolOutputChannel;
+import org.jmol.java.BS;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.calc.MarchingSquares;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
+import javajs.vec.P3;
+import javajs.vec.P4;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 public class SurfaceGenerator {
 
@@ -888,7 +888,7 @@ public class SurfaceGenerator {
     }
 
     if ("functionXY" == propertyName) {
-      params.setFunctionXY((JmolList<Object>) value);
+      params.setFunctionXY((List<Object>) value);
       if (params.isContoured)
         volumeData.setPlaneParameters(P4.new4(0, 0, 1, 0)); // xy plane
       // through
@@ -900,7 +900,7 @@ public class SurfaceGenerator {
     }
 
     if ("functionXYZ" == propertyName) {
-      params.setFunctionXYZ((JmolList<Object>) value);
+      params.setFunctionXYZ((List<Object>) value);
       processState();
       return true;
     }
@@ -1226,7 +1226,7 @@ public class SurfaceGenerator {
     surfaceReader = null;
   }
 
-  public JmolList<Object[]> getSlabInfo() {
+  public List<Object[]> getSlabInfo() {
     return params.slabInfo;
   }
   

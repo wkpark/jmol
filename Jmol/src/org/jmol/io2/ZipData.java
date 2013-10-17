@@ -26,7 +26,7 @@
 package org.jmol.io2;
 
 import org.jmol.io.JmolBinary;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 
 public class ZipData {

@@ -24,7 +24,7 @@
 
 package org.jmol.minimize.forcefield;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Map;
 
@@ -64,7 +64,7 @@ class CalculationsMMFF extends Calculations {
   CalculationsMMFF(ForceField ff, Map<Integer, Object> ffParams, 
       MinAtom[] minAtoms, MinBond[] minBonds, 
       MinAngle[] minAngles, MinTorsion[] minTorsions, MinPosition[] minPositions,
-      JmolList<Object[]> constraints) {
+      List<Object[]> constraints) {
     super(ff, minAtoms, minBonds, minAngles, minTorsions, minPositions, constraints);
     mmff = (ForceFieldMMFF) ff;
     this.ffParams = ffParams;
@@ -86,29 +86,29 @@ class CalculationsMMFF extends Calculations {
   @Override
   boolean setupCalculations() {
 
-    JmolList<Object[]> calc;
+    List<Object[]> calc;
 
     DistanceCalc distanceCalc = new DistanceCalc();
-    calc = calculations[CALC_DISTANCE] = new  JmolList<Object[]>();
+    calc = calculations[CALC_DISTANCE] = new  List<Object[]>();
     for (int i = 0; i < bondCount; i++)
       distanceCalc.setData(calc, minBonds[i]);
 
-    calc = calculations[CALC_ANGLE] = new  JmolList<Object[]>();
+    calc = calculations[CALC_ANGLE] = new  List<Object[]>();
     AngleCalc angleCalc = new AngleCalc();
     for (int i = 0; i < angleCount; i++)
       angleCalc.setData(calc, minAngles[i]);
 
-    calc = calculations[CALC_STRETCH_BEND] = new  JmolList<Object[]>();
+    calc = calculations[CALC_STRETCH_BEND] = new  List<Object[]>();
     SBCalc sbCalc = new SBCalc();
     for (int i = 0; i < angleCount; i++)
       sbCalc.setData(calc, minAngles[i]);
 
-    calc = calculations[CALC_TORSION] = new  JmolList<Object[]>();
+    calc = calculations[CALC_TORSION] = new  List<Object[]>();
     TorsionCalc torsionCalc = new TorsionCalc();
     for (int i = 0; i < torsionCount; i++)
       torsionCalc.setData(calc, minTorsions[i]);
 
-    calc = calculations[CALC_OOP] = new  JmolList<Object[]>();
+    calc = calculations[CALC_OOP] = new  List<Object[]>();
     // set up the special atom arrays
     OOPCalc oopCalc = new OOPCalc();
     for (int i = 0; i < atomCount; i++)
@@ -116,15 +116,15 @@ class CalculationsMMFF extends Calculations {
         oopCalc.setData(calc, i);
 
 //    if (minPositions != null) {
-//      calc = calculations[CALC_POSITION] = new JmolList<Object[]>();
+//      calc = calculations[CALC_POSITION] = new List<Object[]>();
 //      // set up the special atom arrays
 //      //PositionCalc posCalc = new PositionCalc();
 //      //for (int i = minPositions.length; --i >= 0;)
 //      //  posCalc.setData(calc, minPositions[i].data, minPositions[i].ddata);
 //    }
 
-    pairSearch(calculations[CALC_VDW] = new  JmolList<Object[]>(), new VDWCalc(),
-        calculations[CALC_ES] = new  JmolList<Object[]>(), new ESCalc());
+    pairSearch(calculations[CALC_VDW] = new  List<Object[]>(), new VDWCalc(),
+        calculations[CALC_ES] = new  List<Object[]>(), new ESCalc());
 
     return true;
   }
@@ -212,7 +212,7 @@ class CalculationsMMFF extends Calculations {
     double r0, kb;
     double delta2;
 
-    void setData(JmolList<Object[]> calc, MinBond bond) {
+    void setData(List<Object[]> calc, MinBond bond) {
       ia = bond.data[0];
       ib = bond.data[1];
       Object data = getParameterObj(bond);
@@ -248,7 +248,7 @@ class CalculationsMMFF extends Calculations {
   
   class AngleCalc extends Calculation {
 
-    void setData(JmolList<Object[]> calc, MinAngle angle) {
+    void setData(List<Object[]> calc, MinAngle angle) {
       Object data = getParameterObj(angle);
       if (data == null)
         return;
@@ -293,7 +293,7 @@ class CalculationsMMFF extends Calculations {
 
   class SBCalc extends Calculation {
     
-    void setData(JmolList<Object[]> calc, MinAngle angle) {
+    void setData(List<Object[]> calc, MinAngle angle) {
       // not applicable for linear types
       if (isLinear(angle.data[1]))
         return;
@@ -342,7 +342,7 @@ class CalculationsMMFF extends Calculations {
 
   class TorsionCalc extends Calculation {
 
-    void setData(JmolList<Object[]> calc, MinTorsion t) {
+    void setData(List<Object[]> calc, MinTorsion t) {
       if (isLinear(t.data[1]) || isLinear(t.data[2]))
         return;
       Object data = getParameterObj(t);
@@ -405,7 +405,7 @@ class CalculationsMMFF extends Calculations {
 //      return 0;
 //    }
 //
-//    public void setData(JmolList<Object[]> calc, int[] data, double[] ddata) {
+//    public void setData(List<Object[]> calc, int[] data, double[] ddata) {
 //      // TODO
 //      
 //    }
@@ -419,7 +419,7 @@ class CalculationsMMFF extends Calculations {
 
     int[] list = new int[4];
     
-    void setData(JmolList<Object[]> calc, int i) {
+    void setData(List<Object[]> calc, int i) {
       if (minAtoms[i].nBonds != 3)
         return;// should not be possible...
       int[] indices = minAtoms[i].getBondedAtomIndexes();
@@ -461,7 +461,7 @@ class CalculationsMMFF extends Calculations {
   class VDWCalc extends PairCalc {
     
     @Override
-    void setData(JmolList<Object[]> calc, int ia, int ib) {
+    void setData(List<Object[]> calc, int ia, int ib) {
       a = minAtoms[ia];
       b = minAtoms[ib];
       double[] dataA = (double[]) getParameter(a.vdwKey);
@@ -534,7 +534,7 @@ class CalculationsMMFF extends Calculations {
     private static final double BUFF = 0.05;
 
     @Override
-    void setData(JmolList<Object[]> calc, int ia, int ib) {
+    void setData(List<Object[]> calc, int ia, int ib) {
       if (minAtoms[ia].partialCharge == 0 || minAtoms[ib].partialCharge == 0)
         return;
       calc.addLast(new Object[] { new int[] { ia, ib }, new double[] {

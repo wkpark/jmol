@@ -27,12 +27,12 @@ package org.jmol.shape;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumAxesMode;
+import org.jmol.java.BS;
 import org.jmol.script.T;
-import org.jmol.util.BS;
 import org.jmol.util.Escape;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.lang.SB;
+import javajs.vec.V3;
 import org.jmol.viewer.JC;
 
 public class Axes extends FontLineShape {

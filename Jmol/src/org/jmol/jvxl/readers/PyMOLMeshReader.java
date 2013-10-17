@@ -27,9 +27,9 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 
 /**
@@ -44,8 +44,8 @@ import org.jmol.util.SB;
 
 class PyMOLMeshReader extends MapFileReader {
 
-  private JmolList<Object> data;
-  private JmolList<Object> voxelList;
+  private List<Object> data;
+  private List<Object> voxelList;
   private String surfaceName;
   private int pymolType;
   private boolean isMesh;
@@ -73,7 +73,7 @@ class PyMOLMeshReader extends MapFileReader {
     init2MFR(sg, null);
     allowSigma = true;
     nSurfaces = 1;
-    Hashtable<String, JmolList<Object>> map = (Hashtable<String, JmolList<Object>>) sg.getReaderData();    
+    Hashtable<String, List<Object>> map = (Hashtable<String, List<Object>>) sg.getReaderData();    
     data = map.get(params.calculationType);
     if (data == null)
       return;
@@ -98,8 +98,8 @@ class PyMOLMeshReader extends MapFileReader {
   }
 
   @SuppressWarnings("unchecked")
-  private static JmolList<Object> getList(JmolList<Object> list, int i) {
-    return (JmolList<Object>) list.get(i);
+  private static List<Object> getList(List<Object> list, int i) {
+    return (List<Object>) list.get(i);
   }
 
   // mesh data:
@@ -178,7 +178,7 @@ class PyMOLMeshReader extends MapFileReader {
 
     // reading the map data
 
-    JmolList<Object> t;
+    List<Object> t;
 
     jvxlFileHeaderBuffer = new SB();
     jvxlFileHeaderBuffer.append("PyMOL surface reader\n");
@@ -186,7 +186,7 @@ class PyMOLMeshReader extends MapFileReader {
         + ")\n");
 
     // cell parameters
-    JmolList<Object> s = getList(data, 1);
+    List<Object> s = getList(data, 1);
     t = getList(s, 0);
     // change in format between PyMOL versions? States?
     // sometimes list is in a wrapper list.
@@ -269,7 +269,7 @@ class PyMOLMeshReader extends MapFileReader {
     return getFloat(voxelList, pt++);
   }
 
-  private float getFloat(JmolList<Object> list, int i) {
+  private float getFloat(List<Object> list, int i) {
     return ((Number) list.get(i)).floatValue();
   }
 

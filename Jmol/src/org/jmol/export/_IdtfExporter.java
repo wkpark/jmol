@@ -29,26 +29,27 @@
  
 package org.jmol.export;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Hashtable;
 
 import java.util.Map;
 
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
+
+import org.jmol.java.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Geodesic;
-import org.jmol.util.Matrix4f;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.lang.SB;
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix4f;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 
 public class _IdtfExporter extends __CartesianExporter {
@@ -482,12 +483,12 @@ public class _IdtfExporter extends __CartesianExporter {
   //    return q.q0 + " " + q.q1  + " " + q.q2 + " " + q.q3;
  // }
 
-  private Map<String, JmolList<String>> htNodes = new Hashtable<String, JmolList<String>>();
+  private Map<String, List<String>> htNodes = new Hashtable<String, List<String>>();
   
   private void outputNodes() {
-    for (Map.Entry<String, JmolList<String>> entry : htNodes.entrySet()) {
+    for (Map.Entry<String, List<String>> entry : htNodes.entrySet()) {
       String key = entry.getKey();
-      JmolList<String> v = entry.getValue();
+      List<String> v = entry.getValue();
       output("NODE \"MODEL\" {\n");
       output("NODE_NAME \"" + key + "\"\n");
       System.out.println("output idtf " + key);
@@ -534,9 +535,9 @@ public class _IdtfExporter extends __CartesianExporter {
     checkPoint(center);
     addColix(colix, false);
     String key = "Sphere_" + colix;
-    JmolList<String> v = htNodes.get(key);
+    List<String> v = htNodes.get(key);
     if (v == null) {
-      v = new  JmolList<String>();
+      v = new  List<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -653,9 +654,9 @@ public class _IdtfExporter extends __CartesianExporter {
     int n = (ptX != null && endcaps == GData.ENDCAPS_NONE ? 2 : 1);
     for (int i = 0; i < n; i++) {
       String key = "Cylinder" + (i == 0 ? "_" : "In_") + colix;
-      JmolList<String> v = htNodes.get(key);
+      List<String> v = htNodes.get(key);
       if (v == null) {
-        v = new  JmolList<String>();
+        v = new  List<String>();
         htNodes.put(key, v);
         addShader(key, colix);
       }
@@ -706,9 +707,9 @@ public class _IdtfExporter extends __CartesianExporter {
     }
     addColix(colix, false);
     String key = "Ellipse_" + colix;
-    JmolList<String> v = htNodes.get(key);
+    List<String> v = htNodes.get(key);
     if (v == null) {
-      v = new  JmolList<String>();
+      v = new  List<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -730,9 +731,9 @@ public class _IdtfExporter extends __CartesianExporter {
     }
     addColix(colix, false);
     String key = "Circle_" + colix;
-    JmolList<String> v = htNodes.get(key);
+    List<String> v = htNodes.get(key);
     if (v == null) {
-      v = new  JmolList<String>();
+      v = new  List<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -805,7 +806,7 @@ public class _IdtfExporter extends __CartesianExporter {
                                short[] polygonColixes, int nVertices,
                                int nPolygons, int nFaces, BS bsPolygons,
                                int faceVertexMax, short colix,
-                               JmolList<Short> colorList, Map<Short, Integer> htColixes,
+                               List<Short> colorList, Map<Short, Integer> htColixes,
                                P3 offset) {
     addColix(colix, polygonColixes != null || colixes != null);
     if (polygonColixes != null) {
@@ -823,9 +824,9 @@ public class _IdtfExporter extends __CartesianExporter {
     // normals, part 1
 
     SB sbFaceNormalIndices = sbTemp = new SB();
-    JmolList<String> vNormals = null;
+    List<String> vNormals = null;
     if (normals != null) {
-      vNormals = new  JmolList<String>();
+      vNormals = new  List<String>();
       map = getNormalMap(normals, nVertices, null, vNormals);
       outputIndices(indices, map, nPolygons, bsPolygons, faceVertexMax);
     }
@@ -887,7 +888,7 @@ public class _IdtfExporter extends __CartesianExporter {
     String key = "mesh" + (++iObj);
     addMeshData(key, nFaces, nCoord, nNormals, nColors, sbFaceCoordIndices,
         sbFaceNormalIndices, sbColorIndexes, sbCoords, sbNormals, sbColors);
-    JmolList<String> v = new  JmolList<String>();
+    List<String> v = new  List<String>();
     htNodes.put(key, v);
     addShader(key, colix);
     cylinderMatrix.setIdentity();
@@ -935,9 +936,9 @@ public class _IdtfExporter extends __CartesianExporter {
     checkPoint(ptTip);
     addColix(colix, false);
     String key = "Cone_" + colix;
-    JmolList<String> v = htNodes.get(key);
+    List<String> v = htNodes.get(key);
     if (v == null) {
-      v = new  JmolList<String>();
+      v = new  List<String>();
       htNodes.put(key, v);
       addShader(key, colix);
     }
@@ -991,7 +992,7 @@ public class _IdtfExporter extends __CartesianExporter {
     addColix(colix, false);
     String key = "T" + (++iObj);
     models.append(getTriangleResource(key, pt1, pt2, pt3));
-    JmolList<String> v = new  JmolList<String>();
+    List<String> v = new  List<String>();
     htNodes.put(key, v);
     addShader(key, colix);
     if (cylinderMatrix == null)

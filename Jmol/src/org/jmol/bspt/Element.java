@@ -23,8 +23,8 @@
 package org.jmol.bspt;
 
 
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.lang.SB;
 
 /**
  * the internal tree is made up of elements ... either Node or Leaf

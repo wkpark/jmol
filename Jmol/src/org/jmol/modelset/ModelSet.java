@@ -25,31 +25,32 @@
 
 package org.jmol.modelset;
 
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
 import org.jmol.util.Measure;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P4;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.lang.SB;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 
 import org.jmol.viewer.JC;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
+import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.shape.Shape;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 
 import java.util.Hashtable;
@@ -494,7 +495,7 @@ import java.util.Map;
                                   BS bsExclude) {
     short mad = viewer.getMadBond();
     for (int i = baseModelIndex; i < modelCount; i++) {
-      JmolList<int[]> vConnect = (JmolList<int[]>) getModelAuxiliaryInfoValue(i, "PDB_CONECT_bonds");
+      List<int[]> vConnect = (List<int[]>) getModelAuxiliaryInfoValue(i, "PDB_CONECT_bonds");
       if (vConnect == null)
         continue;
       int nConnect = vConnect.size();
@@ -729,7 +730,7 @@ import java.util.Map;
    * @param pts
    * @return            BitSet of new atoms
    */
-  public BS addHydrogens(JmolList<Atom> vConnections, P3[] pts) {
+  public BS addHydrogens(List<Atom> vConnections, P3[] pts) {
     int modelIndex = modelCount - 1;
     BS bs = new BS();
     if (isTrajectory(modelIndex) || models[modelIndex].getGroupCount() > 1) {
@@ -808,7 +809,7 @@ import java.util.Map;
       if (bonds == null)
         return;
       BS bsAtoms = new BS();
-      JmolList<P3> vNot = new  JmolList<P3>();
+      List<P3> vNot = new  List<P3>();
       BS bsModel = viewer.getModelUndeletedAtomsBitSet(thisAtom.modelIndex);
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);

@@ -41,9 +41,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.zip.GZIPOutputStream;
+
+import javajs.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -70,7 +71,7 @@ import javax.swing.event.ListSelectionListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Txt;
@@ -654,20 +655,20 @@ abstract class WebPanel extends JPanel implements ActionListener,
         } catch (IOException IOe) {
           throw IOe;
         }
-        List<String> filesToCopy = new  ArrayList<String>();
+        List<String> filesToCopy = new List<String>();
         String localPath = localAppletPath.getText();
         if (localPath.equals(".") || remoteAppletPath.getText().equals(".")) {
-          filesToCopy.add(localPath + "/Jmol.js");
-          filesToCopy.add(localPath + "/JmolApplet.jar");
+          filesToCopy.addLast(localPath + "/Jmol.js");
+          filesToCopy.addLast(localPath + "/JmolApplet.jar");
         }
         JmolBinary.getFileReferences(script, filesToCopy);
-        List<String> copiedFileNames = new  ArrayList<String>();
+        ArrayList<String> copiedFileNames = new  ArrayList<String>();
         int nFiles = filesToCopy.size();
         for (int iFile = 0; iFile < nFiles; iFile++) {
           String newName = copyBinaryFile(filesToCopy.get(iFile), datadirPath);
           copiedFileNames.add(newName.substring(newName.lastIndexOf('/') + 1));
         }
-        script = Txt.replaceQuotedStrings(script, filesToCopy, copiedFileNames);
+        script = replaceQuotedStrings(script, filesToCopy, copiedFileNames);
         LogPanel.log("      ..." + GT._("adding {0}", javaname + ".spt"));
         viewer.writeTextFile(datadirPath + "/" + javaname + ".spt", script);
       }
@@ -761,6 +762,19 @@ abstract class WebPanel extends JPanel implements ActionListener,
       throw IOe;
     }
     return fileName;
+  }
+
+  public static String replaceQuotedStrings(String s, ArrayList<String> list,
+                                            ArrayList<String> newList) {
+    int n = list.size();
+    for (int i = 0; i < n; i++) {
+      String name = list.get(i);
+      String newName = newList.get(i);
+      if (!newName.equals(name))
+        s = Txt.simpleReplace(s, "\"" + name + "\"", "\"" + newName
+            + "\"");
+    }
+    return s;
   }
 
   public BS allSelectedWidgets() {
@@ -901,7 +915,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
 class ArrayListTransferHandler extends TransferHandler {
   DataFlavor localArrayListFlavor, serialArrayListFlavor;
   String localArrayListType = DataFlavor.javaJVMLocalObjectMimeType
-      + ";class=org.jmol.util.List";
+      + ";class=java.util.ArrayList";
   JList<?> source = null;
   int[] sourceIndices = null;
   int addIndex = -1; // Location where items were added
@@ -1072,17 +1086,17 @@ class ArrayListTransferHandler extends TransferHandler {
     if (c instanceof JList<?>) {
       source = (JList<?>) c;
       sourceIndices = source.getSelectedIndices();
-      List<?> values = source.getSelectedValuesList();
+      java.util.List<?> values = source.getSelectedValuesList();
       if (values == null || values.size() == 0) {
         return null;
       }
-      List<String> alist = new ArrayList<String>(values.size());
+      List<String> alist = new List<String>();
       for (int i = 0; i < values.size(); i++) {
         Object o = values.get(i);
         String str = o.toString();
         if (str == null)
           str = "";
-        alist.add(str);
+        alist.addLast(str);
       }
       return new ArrayListTransferable(alist);
     }

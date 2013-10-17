@@ -35,11 +35,11 @@ import java.util.Map;
 import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.io.JmolBinary;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
-import org.jmol.util.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 /*
  * a simple molecular electrostatic potential cube generator

@@ -24,13 +24,12 @@
 package org.jmol.viewer;
 
 import org.jmol.script.T;
-import org.jmol.util.BS;
-import org.jmol.util.Dimension;
+import javajs.awt.Dimension;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.Txt;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Hashtable;
 
@@ -43,6 +42,7 @@ import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.constant.EnumCallback;
+import org.jmol.java.BS;
 
 /**
  * 
@@ -182,8 +182,8 @@ public class StatusManager {
    * 
    */
   
-  private Map<String, JmolList<JmolList<Object>>> messageQueue = new Hashtable<String, JmolList<JmolList<Object>>>();
-  Map<String, JmolList<JmolList<Object>>> getMessageQueue() {
+  private Map<String, List<List<Object>>> messageQueue = new Hashtable<String, List<List<Object>>>();
+  Map<String, List<List<Object>>> getMessageQueue() {
     return messageQueue;
   }
   
@@ -201,20 +201,20 @@ public class StatusManager {
       int intInfo, Object statusInfo, boolean isReplace) {
     if (!recordStatus(statusName))
       return;
-    JmolList<Object> msgRecord = new JmolList<Object>();
+    List<Object> msgRecord = new List<Object>();
     msgRecord.addLast(Integer.valueOf(++statusPtr));
     msgRecord.addLast(statusName);
     msgRecord.addLast(Integer.valueOf(intInfo));
     msgRecord.addLast(statusInfo);
-    JmolList<JmolList<Object>> statusRecordSet = (isReplace ? null : messageQueue.get(statusName));
+    List<List<Object>> statusRecordSet = (isReplace ? null : messageQueue.get(statusName));
     if (statusRecordSet == null)
-      messageQueue.put(statusName, statusRecordSet = new  JmolList<JmolList<Object>>());
+      messageQueue.put(statusName, statusRecordSet = new  List<List<Object>>());
     else if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
       statusRecordSet.remove(0);    
     statusRecordSet.addLast(msgRecord);
   }
   
-  synchronized JmolList<JmolList<JmolList<Object>>> getStatusChanged(
+  synchronized List<List<List<Object>>> getStatusChanged(
                                                                  String newStatusList) {
     /*
      * returns a Vector of statusRecordSets, one per status type,
@@ -245,9 +245,9 @@ public class StatusManager {
           Logger.debug("StatusManager messageQueue = " + statusList);
       }
     }
-    JmolList<JmolList<JmolList<Object>>> list = new JmolList<JmolList<JmolList<Object>>>();
+    List<List<List<Object>>> list = new List<List<List<Object>>>();
     if (getList)
-      for (Map.Entry<String, JmolList<JmolList<Object>>> e: messageQueue.entrySet())
+      for (Map.Entry<String, List<List<Object>>> e: messageQueue.entrySet())
         list.addLast(e.getValue());
     messageQueue.clear();
     statusPtr = 0;
@@ -706,7 +706,7 @@ public class StatusManager {
   }
 
   public Dimension resizeInnerPanel(int width, int height) {
-   return (jmolStatusListener == null ? new Dimension().set(width, height) :
+   return (jmolStatusListener == null ? new Dimension(width, height) :
       jmolStatusListener.resizeInnerPanel("preferredWidthHeight " + width + " " + height + ";"));    
   }
 

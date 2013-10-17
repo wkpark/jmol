@@ -34,10 +34,10 @@ import java.util.Map;
 import org.jmol.awt.AwtClipboard;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 
@@ -104,7 +104,7 @@ final public class OutputManagerAwt extends OutputManager {
     String fileExt = type.toLowerCase();
     String[] scenes = Txt.split(script0, "pause scene ");
     Map<String, String> htScenes = new Hashtable<String, String>();
-    JmolList<Integer> list = new JmolList<Integer>();
+    List<Integer> list = new List<Integer>();
     String script = getSceneScript(scenes, htScenes, list);
     if (Logger.debugging)
       Logger.debug(script);
@@ -156,7 +156,7 @@ final public class OutputManagerAwt extends OutputManager {
   }
 
   private String getSceneScript(String[] scenes, Map<String, String> htScenes,
-                                JmolList<Integer> list) {
+                                List<Integer> list) {
     // no ".spt.png" -- that's for the sceneScript-only version
     // that we will create here.
     // extract scenes based on "pause scene ..." commands

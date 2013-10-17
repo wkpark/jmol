@@ -33,17 +33,17 @@ import java.util.Map.Entry;
 
 import org.jmol.api.JmolNMRInterface;
 import org.jmol.io.JmolBinary;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Model;
-import org.jmol.util.BS;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Tensor;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -99,15 +99,15 @@ public class NMRCalculation implements JmolNMRInterface {
    * @return list of Tensors
    */
   @SuppressWarnings("unchecked")
-  private JmolList<Tensor> getInteractionTensorList(String type, BS bsA) {
+  private List<Tensor> getInteractionTensorList(String type, BS bsA) {
     if (type != null)
       type = type.toLowerCase();
     BS bsModels = viewer.getModelBitSet(bsA, false);
     BS bs1 = getAtomSiteBS(bsA);
     int iAtom = (bs1.cardinality() == 1 ? bs1.nextSetBit(0) : -1);
-    JmolList<Tensor> list = new JmolList<Tensor>();
+    List<Tensor> list = new List<Tensor>();
     for (int i = bsModels.nextSetBit(0); i >= 0; i = bsModels.nextSetBit(i + 1)) {
-      JmolList<Tensor> tensors = (JmolList<Tensor>) viewer
+      List<Tensor> tensors = (List<Tensor>) viewer
           .getModelAuxiliaryInfoValue(i, "interactionTensors");
       if (tensors == null)
         continue;
@@ -207,7 +207,7 @@ public class NMRCalculation implements JmolNMRInterface {
       BS bs = new BS();
       bs.set(a1.index);
       bs.set(a2.index);
-      JmolList<Tensor> list = getInteractionTensorList(type, bs);
+      List<Tensor> list = getInteractionTensorList(type, bs);
       if (list.size() == 0)
         return Float.NaN;
       isc = list.get(0);
@@ -221,7 +221,7 @@ public class NMRCalculation implements JmolNMRInterface {
 
   @SuppressWarnings("unchecked")
   private String getISCtype(Atom a1, String type) {
-    JmolList<Tensor> tensors = (JmolList<Tensor>) viewer.getModelAuxiliaryInfoValue(a1.modelIndex, "interactionTensors");
+    List<Tensor> tensors = (List<Tensor>) viewer.getModelAuxiliaryInfoValue(a1.modelIndex, "interactionTensors");
     if (tensors == null)
       return null;
     type = (type == null ? "" : type.toLowerCase());
@@ -351,7 +351,7 @@ public class NMRCalculation implements JmolNMRInterface {
     }
     if (Character.isDigit(what.charAt(0)))
       return isotopeData.get(what);
-    JmolList<Object> info = new JmolList<Object>();
+    List<Object> info = new List<Object>();
     for (Entry<String, double[]> e: isotopeData.entrySet()) {
       String key = e.getKey();
       if (Character.isDigit(key.charAt(0)) && key.endsWith(what))
@@ -393,19 +393,19 @@ public class NMRCalculation implements JmolNMRInterface {
     return true;
   }
 
-  public JmolList<Object> getTensorInfo(String tensorType, String infoType,
+  public List<Object> getTensorInfo(String tensorType, String infoType,
                                         BS bs) {
     if ("".equals(tensorType))
       tensorType = null;
     infoType = (infoType == null ? ";all." : ";" + infoType + ".");
-    JmolList<Object> data = new JmolList<Object>();
-    JmolList<Object> list1;
+    List<Object> data = new List<Object>();
+    List<Object> list1;
     if (";dc.".equals(infoType)) {
       // tensorType is irrelevant for dipolar coupling constant
       Atom[] atoms = viewer.modelSet.atoms;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
         for (int j = bs.nextSetBit(i + 1); j >= 0; j = bs.nextSetBit(j + 1)) {
-          list1 = new JmolList<Object>();
+          list1 = new List<Object>();
           list1.addLast(Integer.valueOf(atoms[i].index));
           list1.addLast(Integer.valueOf(atoms[j].index));
           list1
@@ -417,11 +417,11 @@ public class NMRCalculation implements JmolNMRInterface {
     if (tensorType == null || tensorType.startsWith("isc")) {
       boolean isJ = infoType.equals(";j.");
       boolean isEta = infoType.equals(";eta.");
-      JmolList<Tensor> list = getInteractionTensorList(tensorType, bs);
+      List<Tensor> list = getInteractionTensorList(tensorType, bs);
       int n = (list == null ? 0 : list.size());
       for (int i = 0; i < n; i++) {
         Tensor t = list.get(i);
-        list1 = new JmolList<Object>();
+        list1 = new List<Object>();
         list1.addLast(Integer.valueOf(t.atomIndex1));
         list1.addLast(Integer.valueOf(t.atomIndex2));
         list1.addLast(isEta || isJ ? Float.valueOf(getIsoOrAnisoHz(isJ, null,

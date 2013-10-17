@@ -24,8 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.script.T;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
@@ -34,6 +33,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.StaticConstants;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Model;

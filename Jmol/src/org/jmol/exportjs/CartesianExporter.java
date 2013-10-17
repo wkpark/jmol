@@ -31,17 +31,18 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.JmolList;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.Tuple3f;
+import javajs.util.List;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.Tuple3f;
 
 /*
  * for programs that use the standard 3D coordinates.
@@ -124,7 +125,7 @@ abstract public class CartesianExporter extends Exporter {
   }
 
   protected int[] getNormalMap(Tuple3f[] normals, int nNormals,
-                               BS bsValid, JmolList<String> vNormals) {
+                               BS bsValid, List<String> vNormals) {
     Map<String, Integer> htNormals = new Hashtable<String, Integer>();
     int[] normalMap = new int[nNormals];
     for (int i = 0; i < nNormals; i++) {

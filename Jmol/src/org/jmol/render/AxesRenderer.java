@@ -28,8 +28,9 @@ import org.jmol.script.T;
 import org.jmol.shape.Axes;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
-import org.jmol.util.P3;
-import org.jmol.util.Point3fi;
+import javajs.vec.P3;
+import javajs.vec.Point3fi;
+
 import org.jmol.viewer.StateManager;
 
 

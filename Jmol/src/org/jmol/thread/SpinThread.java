@@ -26,11 +26,11 @@
 package org.jmol.thread;
 
 
+import org.jmol.java.BS;
 import org.jmol.script.T;
-import org.jmol.util.BS;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
@@ -41,7 +41,7 @@ public class SpinThread extends JmolThread {
    */
   private TransformManager transformManager;
   private float endDegrees;
-  private JmolList<P3> endPositions;
+  private List<P3> endPositions;
   private float[] dihedralList;
   private float nDegrees;
   private BS bsAtoms;
@@ -64,7 +64,7 @@ public class SpinThread extends JmolThread {
     setViewer(viewer, "SpinThread");
     Object[] options = (Object[]) params;
 
-    //f//loat endDegrees, JmolList<P3> endPositions, float[] dihedralList, BS bsAtoms, boolean isNav,
+    //f//loat endDegrees, List<P3> endPositions, float[] dihedralList, BS bsAtoms, boolean isNav,
     //boolean isGesture) {
 
     //Float.valueOf(endDegrees), endPositions, dihedralList,
@@ -77,7 +77,7 @@ public class SpinThread extends JmolThread {
       isNav = true;
     } else {
       endDegrees = ((Float) options[0]).floatValue();
-      endPositions = (JmolList<P3>) options[1];
+      endPositions = (List<P3>) options[1];
       dihedralList = (float[]) options[2];
       if (dihedralList != null)
         bsBranches = viewer.getBsBranches(dihedralList);

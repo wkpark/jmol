@@ -113,24 +113,25 @@
 package org.jmol.jvxl.readers;
 
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.java.BS;
 import org.jmol.jvxl.data.VolumeData;
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ContactPair;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
+import javajs.vec.P4;
 import org.jmol.util.Parser;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 import org.jmol.viewer.JC;
 
@@ -292,7 +293,7 @@ public class Parameters {
   boolean isCavity;
   Boolean pocket; //three states: TRUE, FALSE, and NULL
   int minSet;
-  public JmolList<Object[]> slabInfo;
+  public List<Object[]> slabInfo;
   float slabPlaneOffset = Float.NaN;
 
   float[] theProperty;
@@ -570,16 +571,16 @@ public class Parameters {
     }
   }
   
-  public JmolList<Object> functionInfo;
+  public List<Object> functionInfo;
   
-  void setFunctionXY(JmolList<Object> value) {
+  void setFunctionXY(List<Object> value) {
     dataType = SURFACE_FUNCTIONXY;
     functionInfo = value;
     cutoff = Parser.FLOAT_MIN_SAFE;
     isEccentric = isAnisotropic = false;
   }
 
-  void setFunctionXYZ(JmolList<Object> value) {
+  void setFunctionXYZ(List<Object> value) {
     dataType = SURFACE_FUNCTIONXYZ;
     functionInfo = value;
     if (cutoff == Float.MAX_VALUE)
@@ -709,7 +710,7 @@ public class Parameters {
           .error("MO ERROR: No basis functions found in file for MO calculation. (GAUSSIAN 'gfprint' keyword may be missing?)");
       title = new String[] {"no basis functions found in file"};
     } else {
-      JmolList<Object> mos = (JmolList<Object>) moData.get("mos");
+      List<Object> mos = (List<Object>) moData.get("mos");
       qmOrbitalCount = mos.size();
       calculationType = (String) moData.get("calculationType");
       calculationType = "Molecular orbital #" + qm_moNumber + "/"
@@ -872,7 +873,7 @@ public class Parameters {
 
     public void addSlabInfo(Object[] slabObject) {
     if (slabInfo == null)
-      slabInfo = new  JmolList<Object[]>();
+      slabInfo = new  List<Object[]>();
     slabInfo.addLast(slabObject);
   }
 

@@ -4,9 +4,10 @@ package org.jmol.api;
 
 
 
-import org.jmol.util.BS;
-import org.jmol.util.JmolList;
-import org.jmol.util.P3;
+import org.jmol.java.BS;
+
+import javajs.util.List;
+import javajs.vec.P3;
 
 
 public interface MOCalculationInterface {
@@ -15,7 +16,7 @@ public interface MOCalculationInterface {
                                  BS bsExclude,
                                  BS[] bsMolecules,
                                  String calculationType, P3[] atomCoordAngstroms,
-                                 int firstAtomOffset, JmolList<int[]> shells,
+                                 int firstAtomOffset, List<int[]> shells,
                                  float[][] gaussians,
                                  int[][] dfCoefMaps, 
                                  Object slaters, float[] moCoefficients,

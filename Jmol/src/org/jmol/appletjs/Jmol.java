@@ -34,18 +34,18 @@ import org.jmol.constant.EnumCallback;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
-import org.jmol.util.Dimension;
+import javajs.awt.Dimension;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 
 
 import java.awt.Event;
 import java.net.URL;
 import java.net.MalformedURLException;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -493,7 +493,7 @@ public class Jmol implements JmolSyncInterface {
     }
 
     public Dimension resizeInnerPanel(String data) {
-      return new Dimension().set(0, 0);
+      return new Dimension(0, 0);
     }
 
     public boolean notifyEnabled(EnumCallback type) {
@@ -908,7 +908,7 @@ public class Jmol implements JmolSyncInterface {
           return "";
       }
 
-      JmolList<String> apps = new  JmolList<String>();
+      List<String> apps = new  List<String>();
       JmolAppletRegistry.findApplets(appletName, syncId, fullName, apps);
       int nApplets = apps.size();
       if (nApplets == 0) {

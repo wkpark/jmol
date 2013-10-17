@@ -4,7 +4,7 @@ package org.jmol.api;
 import java.net.URL;
 
 import org.jmol.util.JmolFont;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 public interface ApiPlatform {
 

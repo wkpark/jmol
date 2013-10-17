@@ -25,8 +25,8 @@ package org.jmol.bspt;
 
 import org.jmol.modelset.Atom;
 import org.jmol.util.Escape;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.lang.SB;
 
 /**
  * A leaf of Point3f objects in the bsp tree

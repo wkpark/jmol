@@ -28,13 +28,15 @@ import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.script.T;
 import org.jmol.shape.Measures;
-import org.jmol.util.AxisAngle4f;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.P3;
-import org.jmol.util.Point3fi;
-import org.jmol.util.P3i;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.Point3fi;
+
 
 
 public class MeasuresRenderer extends LabelsRenderer {

@@ -29,18 +29,19 @@ package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.P3;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Tensor;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Arrays;
 
 
@@ -111,7 +112,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private int[] atomFrag;
   private int[] primitiveToIndex;
   private float[] nuclearCharges;
-  private JmolList<String> vCoords;
+  private List<String> vCoords;
 
   private Double energy;
   private P3 ptOriginShift = new P3();
@@ -539,11 +540,11 @@ public class CrystalReader extends AtomSetCollectionReader {
   // 
 
 
-  private JmolList<String> vPrimitiveMapping;
+  private List<String> vPrimitiveMapping;
   private void readPrimitiveMapping() throws Exception {
     if (havePrimitiveMapping)
       return;
-    vPrimitiveMapping = new JmolList<String>();    
+    vPrimitiveMapping = new List<String>();    
     while (readLine() != null && line.indexOf("NUMBER") < 0)
       vPrimitiveMapping.addLast(line);
   }
@@ -728,7 +729,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   private void readCoordLines() throws Exception {
     readLine();
     readLine();
-    vCoords = new  JmolList<String>();
+    vCoords = new  List<String>();
     while (readLine() != null && line.length() > 0)
       vCoords.addLast(line);
   }
@@ -921,7 +922,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     // This line is always there
     boolean haveIntensities = (line.indexOf("INTENS") >= 0);
     readLine();
-    JmolList<String[]> vData = new  JmolList<String[]>();
+    List<String[]> vData = new  List<String[]>();
     int freqAtomCount = atomCount;
     while (readLine() != null && line.length() > 0) {
       int i0 = parseIntRange(line, 1, 5);

@@ -23,7 +23,7 @@
 
 package org.jmol.viewer;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
@@ -36,6 +36,7 @@ import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -57,7 +58,6 @@ import org.jmol.shape.Hover;
 import org.jmol.shape.Labels;
 import org.jmol.shape.Measures;
 import org.jmol.shape.Shape;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
@@ -68,10 +68,10 @@ import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
 import org.jmol.util.ModulationSet;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.viewer.StateManager.GlobalSettings;
 
 /**
@@ -1043,7 +1043,7 @@ public class StateCreator extends JmolStateCreator {
 
   @Override
   String getMeasurementState(Measures shape,
-                                    JmolList<Measurement> mList,
+                                    List<Measurement> mList,
                                     int measurementCount, JmolFont font3d,
                                     TickInfo ti) {
     SB commands = new SB();
@@ -1769,8 +1769,8 @@ public class StateCreator extends JmolStateCreator {
       // CTRL-Y: type = -1 REDO
       viewer.stopMinimization();
       String s = "";
-      JmolList<String> list1;
-      JmolList<String> list2;
+      List<String> list1;
+      List<String> list2;
       switch (type) {
       default:
       case T.undomove:
@@ -1908,7 +1908,7 @@ public class StateCreator extends JmolStateCreator {
       if (script.startsWith("Peaks: [")) {
         // JSpecView simulation
         String[] list = Escape.unescapeStringArray(script.substring(7));
-        JmolList<String> peaks = new JmolList<String>();
+        List<String> peaks = new List<String>();
         for (int i = 0; i < list.length; i++)
           peaks.addLast(list[i]);
         viewer.getModelSet().setModelAuxiliaryInfo(

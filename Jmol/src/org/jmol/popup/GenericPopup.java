@@ -26,18 +26,18 @@ package org.jmol.popup;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.i18n.GT;
 import org.jmol.i18n.Language;
+import org.jmol.java.BS;
 import org.jmol.script.T;
-import org.jmol.util.BS;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Map;
 import java.util.Properties;
@@ -85,20 +85,20 @@ abstract public class GenericPopup implements JmolPopupInterface,
   private Map<String, Object> modelInfo;
 
   private Map<String, Object> htMenus = new Hashtable<String, Object>();
-  private JmolList<Object> NotPDB = new JmolList<Object>();
-  private JmolList<Object> PDBOnly = new JmolList<Object>();
-  private JmolList<Object> FileUnitOnly = new JmolList<Object>();
-  private JmolList<Object> FileMolOnly = new JmolList<Object>();
-  private JmolList<Object> UnitcellOnly = new JmolList<Object>();
-  private JmolList<Object> SingleModelOnly = new JmolList<Object>();
-  private JmolList<Object> FramesOnly = new JmolList<Object>();
-  private JmolList<Object> VibrationOnly = new JmolList<Object>();
-  private JmolList<Object> SymmetryOnly = new JmolList<Object>();
-  private JmolList<Object> SignedOnly = new JmolList<Object>();
-  private JmolList<Object> AppletOnly = new JmolList<Object>();
-  private JmolList<Object> ChargesOnly = new JmolList<Object>();
-  private JmolList<Object> TemperatureOnly = new JmolList<Object>();
-  private JmolList<Object> Special = new JmolList<Object>();
+  private List<Object> NotPDB = new List<Object>();
+  private List<Object> PDBOnly = new List<Object>();
+  private List<Object> FileUnitOnly = new List<Object>();
+  private List<Object> FileMolOnly = new List<Object>();
+  private List<Object> UnitcellOnly = new List<Object>();
+  private List<Object> SingleModelOnly = new List<Object>();
+  private List<Object> FramesOnly = new List<Object>();
+  private List<Object> VibrationOnly = new List<Object>();
+  private List<Object> SymmetryOnly = new List<Object>();
+  private List<Object> SignedOnly = new List<Object>();
+  private List<Object> AppletOnly = new List<Object>();
+  private List<Object> ChargesOnly = new List<Object>();
+  private List<Object> TemperatureOnly = new List<Object>();
+  private List<Object> Special = new List<Object>();
 
   private boolean allowSignedFeatures;
   private boolean isJS;
@@ -121,8 +121,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
 
   private String group3List;
   private int[] group3Counts;
-  private JmolList<String> cnmrPeaks;
-  private JmolList<String> hnmrPeaks;
+  private List<String> cnmrPeaks;
+  private List<String> hnmrPeaks;
 
   public GenericPopup() {
     // required by reflection
@@ -392,8 +392,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
     isVibration = (viewer.modelHasVibrationVectors(modelIndex));
     haveCharges = (viewer.havePartialCharges());
     haveBFactors = (viewer.getBooleanProperty("haveBFactors"));
-    cnmrPeaks = (JmolList<String>) modelInfo.get("jdxAtomSelect_13CNMR");
-    hnmrPeaks = (JmolList<String>) modelInfo.get("jdxAtomSelect_1HNMR");
+    cnmrPeaks = (List<String>) modelInfo.get("jdxAtomSelect_13CNMR");
+    hnmrPeaks = (List<String>) modelInfo.get("jdxAtomSelect_1HNMR");
   }
 
   private void updateFileTypeDependentMenus() {
@@ -706,7 +706,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
     menuEnable(menu, isOK);
   }
 
-  private boolean setSpectraMenu(Object menu, JmolList<String> peaks) {
+  private boolean setSpectraMenu(Object menu, List<String> peaks) {
     if (menu == null)
       return false;
     menuEnable(menu, false);
@@ -752,8 +752,8 @@ abstract public class GenericPopup implements JmolPopupInterface,
     if (menu == null)
       return;
     menuRemoveAll(menu, 0);
-    JmolList<Map<String, Object>> mos = (moData == null ? null
-        : (JmolList<Map<String, Object>>) (moData.get("mos")));
+    List<Map<String, Object>> mos = (moData == null ? null
+        : (List<Map<String, Object>>) (moData.get("mos")));
     int nOrb = (mos == null ? 0 : mos.size());
     String text = getMenuText("surfMoComputedMenuText");
     if (nOrb == 0) {
@@ -1093,9 +1093,9 @@ abstract public class GenericPopup implements JmolPopupInterface,
       }
       menuRemoveAll(submenu, 0);
       menuEnable(submenu, false);
-      JmolList<Map<String, Object>> biomolecules;
+      List<Map<String, Object>> biomolecules;
       if (modelIndex >= 0
-          && (biomolecules = (JmolList<Map<String, Object>>) viewer
+          && (biomolecules = (List<Map<String, Object>>) viewer
               .getModelAuxiliaryInfoValue(modelIndex, "biomolecules")) != null) {
         menuEnable(submenu, true);
         int nBiomolecules = biomolecules.size();

@@ -24,7 +24,7 @@
 
 package org.jmol.g3d;
 
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.GData;
 import org.jmol.util.Shader;
 

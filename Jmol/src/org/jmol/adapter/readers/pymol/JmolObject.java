@@ -30,17 +30,18 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.java.BS;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
-import org.jmol.util.P3;
+import javajs.util.List;
+import javajs.vec.P3;
+import javajs.vec.Point3fi;
+
 import org.jmol.util.Parser;
-import org.jmol.util.Point3fi;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 
@@ -224,7 +225,7 @@ class JmolObject {
 
     switch (id) {
     case JC.SHAPE_CGO:
-      sm.viewer.setCGO((JmolList<Object>) info);
+      sm.viewer.setCGO((List<Object>) info);
       break;
     case JC.SHAPE_DOTS:
     case JC.SHAPE_BALLS:
@@ -245,7 +246,7 @@ class JmolObject {
       sm.loadShape(id);
       MeasurementData md = (MeasurementData) info;
       md.setModelSet(m);
-      JmolList<Object> points = md.points;
+      List<Object> points = md.points;
       for (int i = points.size(); --i >= 0;)
         ((Point3fi) points.get(i)).modelIndex = (short) modelIndex;
       sm.setShapePropertyBs(id, "measure", md, bsAtoms);
@@ -310,7 +311,7 @@ class JmolObject {
       }
       break;
     case T.mep:
-      JmolList<Object> mep = (JmolList<Object>) info;
+      List<Object> mep = (List<Object>) info;
       sID = mep.get(mep.size() - 2).toString();
       String mapID = mep.get(mep.size() - 1).toString();
       float min = PyMOLScene.floatAt(PyMOLScene.listAt(mep, 3), 0);
@@ -327,7 +328,7 @@ class JmolObject {
       break;
     case T.mesh:
       modelIndex = sm.viewer.getCurrentModelIndex();
-      JmolList<Object> mesh = (JmolList<Object>) info;
+      List<Object> mesh = (List<Object>) info;
       sID = mesh.get(mesh.size() - 2).toString();
       sb = new SB();
       sb.append("isosurface ID ").append(Escape.eS(sID)).append(" model ")
@@ -336,7 +337,7 @@ class JmolObject {
           .append(Escape.eS(sID)).append(" mesh nofill frontonly");
       float within = PyMOLScene.floatAt(PyMOLScene.listAt(PyMOLScene.listAt(
           mesh, 2), 0), 11);
-      JmolList<Object> list = PyMOLScene.listAt(PyMOLScene.listAt(PyMOLScene
+      List<Object> list = PyMOLScene.listAt(PyMOLScene.listAt(PyMOLScene
           .listAt(mesh, 2), 0), 12);
       if (within > 0) {
         P3 pt = new P3();

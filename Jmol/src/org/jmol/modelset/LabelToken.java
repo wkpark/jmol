@@ -30,9 +30,9 @@ import java.util.Map;
 
 
 import org.jmol.util.Escape;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.Tuple3f;
+import javajs.vec.Tuple3f;
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 

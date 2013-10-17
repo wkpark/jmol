@@ -29,13 +29,13 @@ import java.util.Random;
 
 
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.JmolList;
+import javajs.array.ArrayUtil;
+import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.api.Interface;
 import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
@@ -67,7 +67,7 @@ class IsoMOReader extends AtomDataReader {
   @Override
   @SuppressWarnings("unchecked")
   protected void setup(boolean isMapData) {
-    mos = (JmolList<Map<String, Object>>) params.moData.get("mos");
+    mos = (List<Map<String, Object>>) params.moData.get("mos");
     linearCombination = params.qm_moLinearCombination;
     Map<String, Object> mo = (mos != null && linearCombination == null ? mos
         .get(params.qm_moNumber - 1) : null);
@@ -290,7 +290,7 @@ class IsoMOReader extends AtomDataReader {
   private P3[] points;
   private V3 vTemp;
   MOCalculationInterface q;
-  JmolList<Map<String, Object>> mos;
+  List<Map<String, Object>> mos;
   boolean isNci;
   float[] coef; 
   int[][] dfCoefMaps;
@@ -340,7 +340,7 @@ class IsoMOReader extends AtomDataReader {
     case Parameters.QM_TYPE_GAUSSIAN:
       return q.setupCalculation(volumeData, bsMySelected, null, null, (String) params.moData
                       .get("calculationType"),
-          atomData.atomXyz, atomData.firstAtomIndex, (JmolList<int[]>) params.moData.get("shells"), (float[][]) params.moData
+          atomData.atomXyz, atomData.firstAtomIndex, (List<int[]>) params.moData.get("shells"), (float[][]) params.moData
                           .get("gaussians"), dfCoefMaps, null,
           coef, linearCombination, params.isSquaredLinear, coefs,
           null, params.moData.get("isNormalized") == null, points, params.parameters, params.testFlags);

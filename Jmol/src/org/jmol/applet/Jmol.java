@@ -47,7 +47,7 @@ import java.awt.Event;
 import java.awt.Graphics;
 import java.net.URL;
 import java.net.MalformedURLException;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -874,8 +874,8 @@ public class Jmol implements WrappedApplet {
       return JmolAppletRegistry.htRegistry;
     }
 
-    public org.jmol.util.Dimension resizeInnerPanel(String data) {
-      return new org.jmol.util.Dimension().set(0, 0);
+    public javajs.awt.Dimension resizeInnerPanel(String data) {
+      return new javajs.awt.Dimension(0, 0);
     }
 
     public boolean notifyEnabled(EnumCallback type) {
@@ -1291,7 +1291,7 @@ public class Jmol implements WrappedApplet {
           return "";
       }
 
-      JmolList<String> apps = new JmolList<String>();
+      List<String> apps = new List<String>();
       JmolAppletRegistry.findApplets(appletName, syncId, fullName, apps);
       int nApplets = apps.size();
       if (nApplets == 0) {

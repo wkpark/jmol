@@ -24,7 +24,7 @@
 
 package org.jmol.smiles;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Iterator;
 
@@ -32,15 +32,16 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.lang.SB;
+
+import org.jmol.java.BS;
 import org.jmol.smiles.SmilesSearch.VTemp;
 
 /**
@@ -107,7 +108,7 @@ public class SmilesGenerator {
     BS bsIgnore = new BS();
     String lastComponent = null;
     String s;
-    JmolList<Integer> vLinks = new  JmolList<Integer>();
+    List<Integer> vLinks = new  List<Integer>();
     try {
       int len = 0;
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
@@ -441,7 +442,7 @@ public class SmilesGenerator {
     int nSp2Atoms = 0;
     int atomicNumber = atom.getElementNumber();
     int nH = 0;
-    JmolList<JmolEdge> v = new  JmolList<JmolEdge>();
+    List<JmolEdge> v = new  List<JmolEdge>();
     JmolEdge bond0 = null;
     JmolEdge bondPrev = null;
     JmolEdge[] bonds = atom.getEdges();
@@ -689,11 +690,11 @@ public class SmilesGenerator {
    * @param v
    * @return  "@" or "@@" or ""
    */
-  private String sortInorganic(JmolNode atom, JmolList<JmolEdge> v) {
+  private String sortInorganic(JmolNode atom, List<JmolEdge> v) {
     int atomIndex = atom.getIndex();
     int n = v.size();
-    JmolList<JmolEdge[]> axialPairs = new  JmolList<JmolEdge[]>();
-    JmolList<JmolEdge> bonds = new  JmolList<JmolEdge>();
+    List<JmolEdge[]> axialPairs = new  List<JmolEdge[]>();
+    List<JmolEdge> bonds = new  List<JmolEdge>();
     JmolNode a1, a2;
     JmolEdge bond1, bond2;
     BS bsDone = new BS();

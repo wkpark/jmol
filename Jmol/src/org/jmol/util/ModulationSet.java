@@ -3,6 +3,12 @@ package org.jmol.util;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.util.List;
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.V3;
+
 /**
  * A class to group a set of modulations for an atom as a "vibration"
  * Extends V3 so that it will be a displacement, and its value will be an occupancy
@@ -21,7 +27,7 @@ public class ModulationSet extends Vibration {
 
   public float vOcc0;
 
-  private JmolList<Modulation> mods;
+  private List<Modulation> mods;
   private Matrix3f gammaE;
   private int t = Integer.MAX_VALUE;  
   private double[] qlen;
@@ -65,7 +71,7 @@ public class ModulationSet extends Vibration {
    */
 
   public ModulationSet(String id, P3 r, int modDim, 
-                       JmolList<Modulation> mods, Matrix3f gammaE, 
+                       List<Modulation> mods, Matrix3f gammaE, 
                        Matrix4f gammaIS, Matrix4f q123w, double[] qlen) {
     this.id = id;
     this.modDim = modDim;

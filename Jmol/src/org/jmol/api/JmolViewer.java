@@ -32,12 +32,12 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.jmol.io.JmolOutputChannel;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.BoxInfo;
-import org.jmol.util.Dimension;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
-import org.jmol.util.V3;
+import javajs.awt.Dimension;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 
 /**

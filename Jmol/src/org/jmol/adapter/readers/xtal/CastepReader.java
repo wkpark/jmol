@@ -42,17 +42,17 @@
 
 package org.jmol.adapter.readers.xtal;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 
 /**
@@ -755,7 +755,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     applySymmetryAndSetTrajectory();
     if (isGammaPoint)
       qvec = null;
-    JmolList<Float> freqs = new  JmolList<Float>();
+    List<Float> freqs = new  List<Float>();
     while (readLine() != null && line.indexOf("Phonon") < 0) {
       tokens = getTokens();
       freqs.addLast(Float.valueOf(parseFloatStr(tokens[1])));

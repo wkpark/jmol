@@ -2,9 +2,9 @@ package org.jmol.jvxl.api;
 
 
 
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.V3;
 
 public interface VertexDataServer {
   

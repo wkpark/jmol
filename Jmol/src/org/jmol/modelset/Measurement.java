@@ -25,13 +25,15 @@ package org.jmol.modelset;
 
 import java.util.Map;
 
-import org.jmol.util.AxisAngle4f;
 import org.jmol.util.Escape;
-import org.jmol.util.P3;
-import org.jmol.util.Point3fi;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.P3;
+import javajs.vec.Point3fi;
+
 import org.jmol.util.Measure;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+import javajs.lang.SB;
+import javajs.vec.V3;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
@@ -40,7 +42,7 @@ import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 public class Measurement {
 
@@ -413,8 +415,8 @@ public class Measurement {
     return sameAsIJ(countPlusIndices, pts, i, j);
   }
 
-  public JmolList<String> toVector(boolean asBitSet) {
-    JmolList<String> V = new JmolList<String>();
+  public List<String> toVector(boolean asBitSet) {
+    List<String> V = new List<String>();
     for (int i = 1; i <= count; i++)
       V.addLast(getLabel(i, asBitSet, false));
     V.addLast(strMeasurement);
@@ -473,7 +475,7 @@ public class Measurement {
         && sameAs(2, 4));
   }
 
-  public static int find(JmolList<Measurement> measurements, Measurement m) {
+  public static int find(List<Measurement> measurements, Measurement m) {
     int[] indices = m.getCountPlusIndices();
     Point3fi[] points = m.getPoints();
     for (int i = measurements.size(); --i >= 0;)

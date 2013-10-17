@@ -26,15 +26,14 @@ package org.jmol.jvxl.readers;
 import java.util.Date;
 
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.ContactPair;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.lang.SB;
+import javajs.vec.V3;
 
 import org.jmol.util.Txt;
 
@@ -42,6 +41,7 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumVdw;
+import org.jmol.java.BS;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.MeshData;
 

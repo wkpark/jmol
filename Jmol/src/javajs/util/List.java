@@ -45,7 +45,7 @@ public class List<V> extends ArrayList<V> {
   @Override
   @Deprecated
   public boolean add(V v) {
-    throw new NullPointerException("use addLast(value), not add(value) in JmolList for JavaScript compatibility");
+    throw new NullPointerException("use addLast(value), not add(value) in List for JavaScript compatibility");
   }
   
   public boolean addLast(V v) {

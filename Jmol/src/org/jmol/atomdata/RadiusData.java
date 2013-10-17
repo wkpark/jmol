@@ -115,7 +115,7 @@ package org.jmol.atomdata;
 
 
 import org.jmol.constant.EnumVdw;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 public class RadiusData {
   public String info;

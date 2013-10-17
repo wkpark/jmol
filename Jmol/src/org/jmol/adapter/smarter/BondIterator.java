@@ -25,7 +25,7 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapterBondIterator;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 
 class BondIterator extends JmolAdapterBondIterator {
 	private BS bsAtoms;

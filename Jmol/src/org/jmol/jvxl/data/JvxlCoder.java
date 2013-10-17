@@ -25,19 +25,19 @@ package org.jmol.jvxl.data;
 
 
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Map;
 
 import org.jmol.io.XmlUtil;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 
 
@@ -260,7 +260,7 @@ public class JvxlCoder {
   public static String jvxlGetInfoData(JvxlData jvxlData, boolean vertexDataOnly) {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
-    JmolList<String[]> attribs = new  JmolList<String[]>();
+    List<String[]> attribs = new  List<String[]>();
      
     int nSurfaceInts = jvxlData.nSurfaceInts;// jvxlData.jvxlSurfaceData.length();
     int bytesUncompressedEdgeData = (vertexDataOnly ? 0
@@ -391,7 +391,7 @@ public class JvxlCoder {
     return info.toString();
   }
   
-  private static void addAttrib(JmolList<String[]> attribs, String name, String value) {
+  private static void addAttrib(List<String[]> attribs, String name, String value) {
     attribs.addLast(new String[] { name, value });
   }
 
@@ -434,7 +434,7 @@ public class JvxlCoder {
    * @param contours
    * @param sb
    */
-  private static void jvxlEncodeContourData(JmolList<Object>[] contours, SB sb) {
+  private static void jvxlEncodeContourData(List<Object>[] contours, SB sb) {
     XmlUtil.openTagAttr(sb, "jvxlContourData", new String[] { "count", "" + contours.length });
     for (int i = 0; i < contours.length; i++) {
       if (contours[i].size() < CONTOUR_POINTS) {
@@ -468,7 +468,7 @@ public class JvxlCoder {
    * @param polygonIndexes
    * @param vertices
    */
-  public static void set3dContourVector(JmolList<Object> v, int[][] polygonIndexes, P3[] vertices) {
+  public static void set3dContourVector(List<Object> v, int[][] polygonIndexes, P3[] vertices) {
     // we must add points only after the MarchingCubes process has completed.
     if (v.size() < CONTOUR_POINTS)
       return;

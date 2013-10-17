@@ -26,7 +26,7 @@ package org.jmol.smiles;
 
 
 import org.jmol.smiles.SmilesSearch.VTemp;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 public class SmilesMeasure  {
 

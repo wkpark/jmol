@@ -25,7 +25,7 @@
 
 package org.jmol.constant;
 
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 
 /**

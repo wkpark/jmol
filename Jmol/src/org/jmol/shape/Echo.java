@@ -24,12 +24,12 @@
 
 package org.jmol.shape;
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.script.T;
-import org.jmol.util.BS;
 import org.jmol.util.C;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 

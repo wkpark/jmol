@@ -28,7 +28,7 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
 import java.io.IOException;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -37,12 +37,13 @@ import java.util.Map;
 import org.jmol.util.Txt;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
+
+import javajs.array.ArrayUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 /**
  * Reader for Gaussian 94/98/03/09 output files.
@@ -366,8 +367,8 @@ public class GaussianReader extends MOReader {
    */
 
   private void readBasis() throws Exception {
-    shells = new  JmolList<int[]>();
-    JmolList<String[]> gdata = new  JmolList<String[]>();
+    shells = new  List<int[]>();
+    List<String[]> gdata = new  List<String[]>();
     int atomCount = 0;
     gaussianCount = 0;
     shellCount = 0;
@@ -484,7 +485,7 @@ public class GaussianReader extends MOReader {
     if (shells == null)
       return;
     Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(5);
-    JmolList<String>[] data = ArrayUtil.createArrayOfArrayList(5);
+    List<String>[] data = ArrayUtil.createArrayOfArrayList(5);
     int nThisLine = 0;
     boolean isNOtype = line.contains("Natural Orbital"); //gfprint pop(full,NO)
     while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {
@@ -501,7 +502,7 @@ public class GaussianReader extends MOReader {
         }
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
-          data[i] = new  JmolList<String>();
+          data[i] = new  List<String>();
           String sym;
           if (isNOtype) {
             mos[i]

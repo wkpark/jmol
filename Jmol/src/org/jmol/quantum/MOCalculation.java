@@ -26,10 +26,11 @@ package org.jmol.quantum;
 import org.jmol.api.MOCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
 import org.jmol.constant.EnumQuantumShell;
-import org.jmol.util.BS;
-import org.jmol.util.JmolList;
+import org.jmol.java.BS;
+
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 
 
@@ -102,7 +103,7 @@ public class MOCalculation extends QuantumCalculation implements
   private double[] EX, EY, EZ;
   
   private String calculationType;
-  private JmolList<int[]> shells;
+  private List<int[]> shells;
   private float[][] gaussians;
   //Hashtable aoOrdersDF;
   private SlaterData[] slaters;
@@ -129,7 +130,7 @@ public class MOCalculation extends QuantumCalculation implements
   public boolean setupCalculation(VolumeDataInterface volumeData, BS bsSelected,
                         BS bsExclude, BS[] bsMolecules,
                         String calculationType, P3[] atomCoordAngstroms,
-                        int firstAtomOffset, JmolList<int[]> shells,
+                        int firstAtomOffset, List<int[]> shells,
                         float[][] gaussians,
                         int[][] dfCoefMaps, Object slaters, float[] moCoefficients,
                         float[] linearCombination, boolean isSquaredLinear, 

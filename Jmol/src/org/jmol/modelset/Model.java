@@ -31,12 +31,13 @@ import java.util.Properties;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.io.JmolOutputChannel;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
+
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
-import org.jmol.util.JmolList;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+import javajs.util.List;
+import javajs.vec.P3;
+import javajs.lang.SB;
 
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
@@ -328,7 +329,7 @@ public class Model {
    * @param bioBranches
    * @return updated bioBranches
    */
-  public JmolList<BS> getBioBranches(JmolList<BS> bioBranches) {
+  public List<BS> getBioBranches(List<BS> bioBranches) {
     return bioBranches;
   }
 
@@ -357,7 +358,7 @@ public class Model {
    * @param dsspIgnoreHydrogens
    * @param bsHBonds
    */
-  public void getRasmolHydrogenBonds(BS bsA, BS bsB, JmolList<Bond> vHBonds,
+  public void getRasmolHydrogenBonds(BS bsA, BS bsB, List<Bond> vHBonds,
                                      boolean nucleicOnly, int nMax,
                                      boolean dsspIgnoreHydrogens, BS bsHBonds) {
   }
@@ -397,8 +398,8 @@ public class Model {
    */
   public void getAllPolymerInfo(
                                 BS bs,
-                                Map<String, JmolList<Map<String, Object>>> finalInfo,
-                                JmolList<Map<String, Object>> modelVector) {
+                                Map<String, List<Map<String, Object>>> finalInfo,
+                                List<Map<String, Object>> modelVector) {
   }
 
   public int getBioPolymerCount() {
@@ -411,7 +412,7 @@ public class Model {
    * @param isTraceAlpha
    * @param sheetSmoothing
    */
-  public void getPolymerPointsAndVectors(BS bs, JmolList<P3[]> vList,
+  public void getPolymerPointsAndVectors(BS bs, List<P3[]> vList,
                                          boolean isTraceAlpha,
                                          float sheetSmoothing) {
   }

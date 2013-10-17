@@ -24,21 +24,21 @@
 
 package org.jmol.minimize;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
 
 import org.jmol.api.MinimizerInterface;
 import org.jmol.i18n.GT;
+import org.jmol.java.BS;
 import org.jmol.minimize.forcefield.ForceField;
 import org.jmol.minimize.forcefield.ForceFieldMMFF;
 import org.jmol.minimize.forcefield.ForceFieldUFF;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
@@ -79,7 +79,7 @@ public class Minimizer implements MinimizerInterface {
   private BS bsFixedDefault;
   private BS bsFixed;
   
-  public JmolList<Object[]> constraints;
+  public List<Object[]> constraints;
   
   private boolean isSilent;
   
@@ -143,7 +143,7 @@ public class Minimizer implements MinimizerInterface {
       return;
     }
     if (constraints == null) {
-      constraints = new  JmolList<Object[]>();
+      constraints = new  List<Object[]>();
       constraintMap = new Hashtable<String, Object[]>();
     }
     if (atoms[1] > atoms[nAtoms]) {
@@ -347,7 +347,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   private void getBonds() {
-    JmolList<MinBond> bondInfo = new  JmolList<MinBond>();
+    List<MinBond> bondInfo = new  List<MinBond>();
     bondCount = 0;
     int i1, i2;
     for (int i = 0; i < rawBondCount; i++) {
@@ -387,7 +387,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void getAngles() {
-    JmolList<MinAngle> vAngles = new  JmolList<MinAngle>();
+    List<MinAngle> vAngles = new  List<MinAngle>();
     int[] atomList;
     int ic;
     for (int i = 0; i < bondCount; i++) {
@@ -430,7 +430,7 @@ public class Minimizer implements MinimizerInterface {
   }
 
   public void getTorsions() {
-    JmolList<MinTorsion> vTorsions = new  JmolList<MinTorsion>();
+    List<MinTorsion> vTorsions = new  List<MinTorsion>();
     int id;
     // extend all angles a-b-c by one, but only
     // when when c > b or a > b

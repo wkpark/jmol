@@ -26,7 +26,7 @@
 package org.jmol.thread;
 
 
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 

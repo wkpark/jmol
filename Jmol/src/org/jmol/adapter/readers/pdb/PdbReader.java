@@ -32,12 +32,13 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix4f;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 
 import java.util.Hashtable;
@@ -123,10 +124,10 @@ public class PdbReader extends AtomSetCollectionReader {
   private Map<String, Boolean> htElementsInCurrentGroup;
   private Map<String, Map<String, String>> htMolIds;
   
-  private  JmolList<Map<String, String>> vCompnds;
-  private  JmolList<Matrix4f> vBiomts;
-  private  JmolList<Map<String, Object>> vBiomolecules;
-  private  JmolList<Map<String, Object>> vTlsModels;
+  private  List<Map<String, String>> vCompnds;
+  private  List<Matrix4f> vBiomts;
+  private  List<Map<String, Object>> vBiomolecules;
+  private  List<Map<String, Object>> vTlsModels;
   private SB sbTlsErrors;
 
   protected int[] chainAtomCounts;  
@@ -192,7 +193,7 @@ public class PdbReader extends AtomSetCollectionReader {
    getTlsGroups = checkFilterKey("TLS");
    if (htParams.containsKey("vTlsModels")) {
      // from   load files "tls.out" "xxxx.pdb"
-     vTlsModels = ( JmolList<Map<String, Object>>) htParams.remove("vTlsModels");
+     vTlsModels = ( List<Map<String, Object>>) htParams.remove("vTlsModels");
    }
    String s = getFilter("TYPE ");
    if (s != null) {
@@ -468,7 +469,7 @@ public class PdbReader extends AtomSetCollectionReader {
     if (vCompnds == null) {
       if (isSource)
         return;
-      vCompnds = new  JmolList<Map<String,String>>();
+      vCompnds = new  List<Map<String,String>>();
       htMolIds = new Hashtable<String, Map<String,String>>();
       currentCompnd = new Hashtable<String, String>();
       currentCompnd.put("select", "(*)");
@@ -523,7 +524,7 @@ public class PdbReader extends AtomSetCollectionReader {
     for (int i = vBiomolecules.size(); --i >= 0;) {
       Map<String, Object> biomolecule = vBiomolecules.get(i);
       String chain = (String) biomolecule.get("chains");
-      int nTransforms = ((JmolList<Matrix4f>) biomolecule.get("biomts")).size();
+      int nTransforms = ((List<Matrix4f>) biomolecule.get("biomts")).size();
       int nAtoms = 0;
       for (int j = chain.length() - 1; --j >= 0;)
         if (chain.charAt(j) == ':')
@@ -567,8 +568,8 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
  
   
   private void remark350() throws Exception {
-     JmolList<Matrix4f> biomts = null;
-    vBiomolecules = new  JmolList<Map<String,Object>>();
+     List<Matrix4f> biomts = null;
+    vBiomolecules = new  List<Map<String,Object>>();
     chainAtomCounts = new int[255];
     String title = "";
     String chainlist = "";
@@ -591,7 +592,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
             Logger.info("biomolecule " + iMolecule + ": number of transforms: "
                 + nBiomt);
           info = new Hashtable<String, Object>();
-          biomts = new  JmolList<Matrix4f>();
+          biomts = new  List<Matrix4f>();
           iMolecule = parseIntStr(line.substring(line.indexOf(":") + 1));
           title = line.trim();
           info.put("molecule", Integer.valueOf(iMolecule));
@@ -1485,9 +1486,9 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     int nGroups = 0;
     int iGroup = 0;
     String components = null;
-     JmolList<Map<String, Object>> tlsGroups = null;
+     List<Map<String, Object>> tlsGroups = null;
     Map<String, Object> tlsGroup = null;
-     JmolList<Map<String, Object>> ranges = null;
+     List<Map<String, Object>> ranges = null;
     Map<String, Object> range = null;
     String remark = line.substring(0, 11);
     while (readLine() != null && line.startsWith(remark)) {
@@ -1498,7 +1499,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
         Logger.info(line);
         if (tokens[1].equalsIgnoreCase("GROUP")) {
           tlsGroup = new Hashtable<String, Object>();
-          ranges = new  JmolList<Map<String, Object>>();
+          ranges = new  List<Map<String, Object>>();
           tlsGroup.put("ranges", ranges);
           tlsGroups.addLast(tlsGroup);
           tlsGroupID = parseIntStr(tokens[tokens.length - 1]);
@@ -1511,8 +1512,8 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
             if (nGroups < 1)
               break;
             if (vTlsModels == null)
-              vTlsModels = new  JmolList<Map<String, Object>>();
-            tlsGroups = new  JmolList<Map<String, Object>>();
+              vTlsModels = new  List<Map<String, Object>>();
+            tlsGroups = new  List<Map<String, Object>>();
             appendLoadNote(line.substring(11).trim());
           }
         } else if (tokens[0].equalsIgnoreCase("COMPONENTS")) {
@@ -1660,9 +1661,9 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
   private void setTlsGroups(int iGroup, int iModel, SymmetryInterface symmetry) {
 
     // TLS.groupCount   Integer
-    // TLS.groups       JmolList of Map
+    // TLS.groups       List of Map
     //   .id            String
-    //   .ranges        JmolList of Map
+    //   .ranges        List of Map
     //      .chains     String
     //      .residues   int[2]
     //   .origin        P3
@@ -1680,7 +1681,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     
     Logger.info("TLS model " + (iModel + 1) + " set " + (iGroup + 1));
     Map<String, Object> tlsGroupInfo = vTlsModels.get(iGroup);
-    JmolList<Map<String, Object>> groups = ( JmolList<Map<String, Object>>) tlsGroupInfo
+    List<Map<String, Object>> groups = ( List<Map<String, Object>>) tlsGroupInfo
         .get("groups");
     int index0 = atomSetCollection.getAtomSetAtomIndex(iModel);
     int[] data = new int[atomSetCollection.getAtomSetAtomCount(iModel)];
@@ -1689,7 +1690,7 @@ COLUMNS       DATA TYPE         FIELD            DEFINITION
     int nGroups = groups.size();
     for (int i = 0; i < nGroups; i++) {
       Map<String, Object> group = groups.get(i);
-      JmolList<Map<String, Object>> ranges = ( JmolList<Map<String, Object>>) group
+      List<Map<String, Object>> ranges = ( List<Map<String, Object>>) group
           .get("ranges");
       tlsGroupID = ((Integer) group.get("id")).intValue();
       for (int j = ranges.size(); --j >= 0;) {

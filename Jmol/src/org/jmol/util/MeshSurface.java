@@ -3,8 +3,14 @@ package org.jmol.util;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.java.BS;
 import org.jmol.script.T;
-import org.jmol.util.JmolList;
+import javajs.util.List;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P4;
+import javajs.vec.V3;
+import javajs.vec.Tuple3f;
 
 public class MeshSurface {
 
@@ -304,7 +310,7 @@ public class MeshSurface {
 
 
   
-  public void slabPolygonsList(JmolList<Object[]> slabInfo, boolean allowCap) {
+  public void slabPolygonsList(List<Object[]> slabInfo, boolean allowCap) {
     for (int i = 0; i < slabInfo.size(); i++)
       if (!slabPolygons(slabInfo.get(i), allowCap))
           break;
@@ -514,7 +520,7 @@ public class MeshSurface {
    * @param isGhost       translucent slab, so we mark slabbed triangles
    */
   public void getIntersection(float distance, P4 plane,
-                              P3[] ptCenters, JmolList<P3[]> vData,
+                              P3[] ptCenters, List<P3[]> vData,
                               float[] fData, BS bsSource,
                               MeshSurface meshSurface, boolean andCap, boolean doClean,
                               int tokType, boolean isGhost) {
@@ -559,7 +565,7 @@ public class MeshSurface {
     double absD = Math.abs(distance);
     float d1, d2, d3, valA, valB, valC;
     int sourceA = 0, sourceB = 0, sourceC = 0, setA = 0;
-    JmolList<int[]> iPts = (andCap ? new  JmolList<int[]>() : null);
+    List<int[]> iPts = (andCap ? new  List<int[]>() : null);
     if (polygonCount == 0) {
       for (int i = mergeVertexCount0; i < vertexCount; i++) {
         if (Float.isNaN(fData[i])

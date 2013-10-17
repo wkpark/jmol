@@ -25,7 +25,7 @@ package org.jmol.adapter.readers.cif;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,14 +33,15 @@ import java.util.Map.Entry;
 //import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
 import org.jmol.util.Modulation;
 import org.jmol.util.ModulationSet;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.lang.SB;
 import org.jmol.util.Tensor;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 
 /**
@@ -79,7 +80,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
   private P3 q1;  
   private V3 q1Norm;  
   private Map<String, P3> htModulation;
-  private Map<String, JmolList<Modulation>> htAtomMods;
+  private Map<String, List<Modulation>> htAtomMods;
   protected Map<String, Object> htSubsystems;
   
   
@@ -276,7 +277,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
             : type == 'U' ? Modulation.TYPE_U_FOURIER
             : Modulation.TYPE_DISP_FOURIER);
         if (htAtomMods == null)
-          htAtomMods = new Hashtable<String, JmolList<Modulation>>();
+          htAtomMods = new Hashtable<String, List<Modulation>>();
         int fn = (id == 'S' ? 0 : parseIntStr(key.substring(2)));
         if (fn == 0) {
           addAtomModulation(atomName, axis, type, params, utens, qlist100);
@@ -305,9 +306,9 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
 
   private void addAtomModulation(String atomName, char axis, int type,
                                  P3 params, String utens, P3 qcoefs) {
-    JmolList<Modulation> list = htAtomMods.get(atomName);
+    List<Modulation> list = htAtomMods.get(atomName);
     if (list == null)
-      htAtomMods.put(atomName, list = new JmolList<Modulation>());
+      htAtomMods.put(atomName, list = new List<Modulation>());
     list.addLast(new Modulation(axis, type, params, utens, qcoefs));
   }
 
@@ -334,7 +335,7 @@ abstract public class ModulationReader extends AtomSetCollectionReader {
    */
   public void modulateAtom(Atom a, SB sb) {
       
-    JmolList<Modulation> list = htAtomMods.get(a.atomName);
+    List<Modulation> list = htAtomMods.get(a.atomName);
     if (list == null || symmetry == null || a.bsSymmetry == null)
       return;
     int iop = a.bsSymmetry.nextSetBit(0);

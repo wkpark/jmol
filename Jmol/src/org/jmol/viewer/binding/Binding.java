@@ -1,6 +1,6 @@
 package org.jmol.viewer.binding;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -11,7 +11,7 @@ import org.jmol.api.Event;
 import org.jmol.api.Interface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 
 
@@ -308,14 +308,14 @@ abstract public class Binding {
     SB sb = new SB();
     String qlow = (qualifiers == null || qualifiers.equalsIgnoreCase("all") ? null
         : qualifiers.toLowerCase());
-    JmolList<String>[] names = new JmolList[actionInfo.length];
-    JmolList<String[]> user = new JmolList<String[]>();
+    List<String>[] names = new List[actionInfo.length];
+    List<String[]> user = new List<String[]>();
     for (Object obj : bindings.values()) {
       if (Escape.isAI(obj)) {
         int[] info = (int[]) obj;
         int i = info[1];
         if (names[i] == null)
-          names[i] = new JmolList<String>();
+          names[i] = new List<String>();
         String name = getMouseActionName(info[0], true);
         if (qlow == null
           || (actionNames[i] + ";" + actionInfo[i] + ";" + name).toLowerCase().indexOf(qlow) >= 0)

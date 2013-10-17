@@ -23,13 +23,13 @@
 
 package org.jmol.script;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Map;
 
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -89,7 +89,7 @@ abstract class ScriptCompilationTokenParser {
   protected boolean isMathExpressionCommand;
   protected boolean isSetOrDefine;
 
-  private JmolList<T> ltokenPostfix;
+  private List<T> ltokenPostfix;
 
   protected boolean isEmbeddedExpression;
   protected boolean isCommaAsOrAllowed;
@@ -147,7 +147,7 @@ abstract class ScriptCompilationTokenParser {
 
   protected boolean compileExpression() {
     int firstToken = (isSetOrDefine && !isSetBrace ? 2 : 1);
-    ltokenPostfix = new  JmolList<T>();
+    ltokenPostfix = new  List<T>();
     itokenInfix = 0;
     T tokenBegin = null;
     int tok = tokAt(1);

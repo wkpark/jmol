@@ -30,15 +30,15 @@ import org.jmol.shape.Mesh;
 import org.jmol.shapecgo.CGO;
 import org.jmol.shapecgo.CGOMesh;
 import org.jmol.util.C;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
+import javajs.vec.P3;
+import javajs.vec.P3i;
 
 public class CGORenderer extends DrawRenderer {
 
   private CGOMesh cgoMesh;
-  private JmolList<Object> cmds;
+  private List<Object> cmds;
   private P3 pt3 = new P3();
   private short colix0, colix1, colix2, normix0, normix1, normix2, normix;
   private boolean doColor;

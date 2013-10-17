@@ -31,7 +31,7 @@ import org.jmol.api.JmolSyncInterface;
 import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.dialog.Dialog;
-import org.jmol.util.Dimension;
+import javajs.awt.Dimension;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;

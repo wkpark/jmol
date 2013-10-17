@@ -4,7 +4,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.Serializable;
 
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 /**
  * Represents a 2D location with float values.

@@ -26,21 +26,22 @@
 package org.jmol.export;
 
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
 
 
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 
 public class _VrmlExporter extends __CartesianExporter {
@@ -305,7 +306,7 @@ public class _VrmlExporter extends __CartesianExporter {
                                short[] polygonColixes,
                                int nVertices, int nPolygons, int nFaces, BS bsPolygons,
                                int faceVertexMax, short colix,
-                               JmolList<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
+                               List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
     output("Shape {\n");
     outputAppearance(colix, false);
     output(" geometry IndexedFaceSet {\n");
@@ -328,7 +329,7 @@ public class _VrmlExporter extends __CartesianExporter {
     // normals
 
     if (normals != null) {
-      JmolList<String> vNormals = new  JmolList<String>();
+      List<String> vNormals = new  List<String>();
       map = getNormalMap(normals, nVertices, null, vNormals);
       output("  solid FALSE\n  normalPerVertex TRUE\n   normal Normal {\n  vector [\n");
       outputNormals(vNormals);
@@ -363,14 +364,14 @@ public class _VrmlExporter extends __CartesianExporter {
       output(map[face[0]] + " " + map[face[2]] + " " + map[face[3]] + " -1\n");
   }
 
-  protected void outputNormals(JmolList<String> vNormals) {
+  protected void outputNormals(List<String> vNormals) {
     int n = vNormals.size();
     for (int i = 0; i < n; i++) {
       output(vNormals.get(i));
     }
   }
 
-  protected void outputColors(JmolList<Short> colorList) {
+  protected void outputColors(List<Short> colorList) {
     int nColors = colorList.size();
     for (int i = 0; i < nColors; i++) {
       String color = rgbFractionalFromColix(colorList.get(i).shortValue());

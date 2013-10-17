@@ -29,8 +29,8 @@ import java.io.BufferedReader;
 
 import org.jmol.io.XmlUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.lang.SB;
 
 
 public class XmlReader {

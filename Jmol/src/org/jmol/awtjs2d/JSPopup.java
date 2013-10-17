@@ -24,7 +24,7 @@
 package org.jmol.awtjs2d;
 
 import org.jmol.popup.GenericPopup;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 /**
  * all popup-related awt/swing class references are in this file.

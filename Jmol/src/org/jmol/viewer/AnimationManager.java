@@ -27,12 +27,12 @@ package org.jmol.viewer;
 import java.util.Map;
 
 import org.jmol.thread.JmolThread;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
-//import org.jmol.util.JmolList;
+//import javajs.util.List;
 
 import org.jmol.api.Interface;
 import org.jmol.constant.EnumAnimationMode;
+import org.jmol.java.BS;
 import org.jmol.modelset.ModelSet;
 
 public class AnimationManager {

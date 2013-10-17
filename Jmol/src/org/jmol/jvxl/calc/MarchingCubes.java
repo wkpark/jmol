@@ -25,17 +25,17 @@ package org.jmol.jvxl.calc;
 
 
 
+import org.jmol.java.BS;
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;
-import org.jmol.util.BS;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.P4;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.P4;
+import javajs.lang.SB;
 import org.jmol.util.TriangleData;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 public class MarchingCubes extends TriangleData {
 

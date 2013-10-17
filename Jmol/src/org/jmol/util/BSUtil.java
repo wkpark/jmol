@@ -25,6 +25,8 @@ package org.jmol.util;
 
 import java.util.Map;
 
+import org.jmol.java.BS;
+
 
 final public class BSUtil {
 

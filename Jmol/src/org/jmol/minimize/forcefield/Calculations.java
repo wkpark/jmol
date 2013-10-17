@@ -27,18 +27,18 @@ package org.jmol.minimize.forcefield;
 
 
 
+import org.jmol.java.BS;
 import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
 import org.jmol.minimize.MinPosition;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Util;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
-import org.jmol.util.JmolList;
-import org.jmol.util.SB;
+import javajs.array.ArrayUtil;
+import javajs.util.List;
+import javajs.vec.Vector3d;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.Vector3d;
 
 
 abstract class Calculations {
@@ -59,7 +59,7 @@ abstract class Calculations {
   final static int CALC_MAX = 7;
 
   ForceField ff;
-  JmolList<Object[]>[] calculations = ArrayUtil.createArrayOfArrayList(CALC_MAX);
+  List<Object[]>[] calculations = ArrayUtil.createArrayOfArrayList(CALC_MAX);
 
   int atomCount;
   int bondCount;
@@ -70,17 +70,17 @@ abstract class Calculations {
   MinAngle[] minAngles;
   MinTorsion[] minTorsions;
   MinPosition[] minPositions;
-  JmolList<Object[]> constraints;
+  List<Object[]> constraints;
   boolean isPreliminary;
 
-  public void setConstraints(JmolList<Object[]> constraints) {
+  public void setConstraints(List<Object[]> constraints) {
     this.constraints = constraints;
   }
 
   Calculations(ForceField ff, 
       MinAtom[] minAtoms, MinBond[] minBonds,
       MinAngle[] minAngles, MinTorsion[] minTorsions, MinPosition[] minPositions,
-      JmolList<Object[]> constraints) {
+      List<Object[]> constraints) {
     this.ff = ff;
     this.minAtoms = minAtoms;
     this.minBonds = minBonds;
@@ -139,12 +139,12 @@ abstract class Calculations {
 
   abstract class PairCalc extends Calculation {
     
-    abstract void setData(JmolList<Object[]> calc, int ia, int ib);
+    abstract void setData(List<Object[]> calc, int ia, int ib);
 
   }
   
-  protected void pairSearch(JmolList<Object[]> calc1, PairCalc pc1, 
-                            JmolList<Object[]> calc2, PairCalc pc2) {
+  protected void pairSearch(List<Object[]> calc1, PairCalc pc1, 
+                            List<Object[]> calc2, PairCalc pc2) {
     for (int i = 0; i < atomCount - 1; i++) {
       BS bsVdw = minAtoms[i].bsVdw;
       for (int j = bsVdw.nextSetBit(0); j >= 0; j = bsVdw.nextSetBit(j + 1)) {
@@ -158,7 +158,7 @@ abstract class Calculations {
   private double calc(int iType, boolean gradients) {
     logging = loggingEnabled && !silent;
     this.gradients = gradients;
-    JmolList<Object[]> calcs = calculations[iType];
+    List<Object[]> calcs = calculations[iType];
     int nCalc;
     double energy = 0;
     if (calcs == null || (nCalc = calcs.size()) == 0)

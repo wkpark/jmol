@@ -24,6 +24,10 @@
 
 package org.jmol.util;
 
+import org.jmol.java.BS;
+
+import javajs.util.List;
+
 
 
 
@@ -57,7 +61,7 @@ public interface JmolNode {
   public int getChainID();
   public String getChainIDStr();
   public int getOffsetResidueAtom(String name, int offset);
-  public boolean getCrossLinkLeadAtomIndexes(JmolList<Integer> vReturn);
+  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn);
   public void getGroupBits(BS bs);
   public boolean isLeadAtom();
   public boolean isCrossLinked(JmolNode node);

@@ -24,10 +24,11 @@ package org.jmol.bspt;
 
 
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
+
+import org.jmol.java.BS;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 /**
  * A Binary Space Partitioning Forest

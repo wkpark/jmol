@@ -24,6 +24,10 @@
 
 package org.jmol.util;
 
+import javajs.vec.V3;
+
+import org.jmol.java.BS;
+
 
 /**
  * Provides quantization of normalized vectors so that shading for

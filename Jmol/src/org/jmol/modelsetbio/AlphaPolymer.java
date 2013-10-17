@@ -23,7 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 
 
@@ -33,12 +33,12 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
 
 import org.jmol.io.JmolOutputChannel;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.lang.SB;
+import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 
 public class AlphaPolymer extends BioPolymer {
@@ -184,17 +184,17 @@ public class AlphaPolymer extends BioPolymer {
    * 
    */
   @Override
-  public JmolList<Atom[]> calculateStruts(ModelSet modelSet, BS bs1,
-                                      BS bs2, JmolList<Atom> vCA, float thresh,
+  public List<Atom[]> calculateStruts(ModelSet modelSet, BS bs1,
+                                      BS bs2, List<Atom> vCA, float thresh,
                                       int delta, boolean allowMultiple) {
     return calculateStrutsStatic(modelSet, bs1, bs2, vCA, thresh, delta,
         allowMultiple);
   }
     
-  private JmolList<Atom[]> calculateStrutsStatic(ModelSet modelSet, BS bs1, BS bs2,
-                                             JmolList<Atom> vCA, float thresh,
+  private List<Atom[]> calculateStrutsStatic(ModelSet modelSet, BS bs1, BS bs2,
+                                             List<Atom> vCA, float thresh,
                                              int delta, boolean allowMultiple) {
-    JmolList<Atom[]> vStruts = new  JmolList<Atom[]>(); // the output vector
+    List<Atom[]> vStruts = new  List<Atom[]>(); // the output vector
     float thresh2 = thresh * thresh; // use distance squared for speed
 
     int n = vCA.size();  // the set of alpha carbons
@@ -339,8 +339,8 @@ public class AlphaPolymer extends BioPolymer {
      : i * (2 * n - i - 1) / 2 + j - i - 1);
   }
 
-  private static void setStrut(int i, int j, int n, JmolList<Atom> vCA, BS bs1, BS bs2, 
-                        JmolList<Atom[]> vStruts,
+  private static void setStrut(int i, int j, int n, List<Atom> vCA, BS bs1, BS bs2, 
+                        List<Atom[]> vStruts,
                         BS bsStruts, BS bsNotAvailable,
                         BS bsNearbyResidues, int delta) {
     Atom a1 = vCA.get(i);

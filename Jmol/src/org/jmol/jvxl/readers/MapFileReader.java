@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.SimpleUnitCell;
 
 // DSN6, MRC, and XPLOR readers

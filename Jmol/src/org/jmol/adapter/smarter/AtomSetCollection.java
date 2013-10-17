@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Collections;
 import java.util.Hashtable;
 
@@ -35,21 +35,24 @@ import java.util.Properties;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
+
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+
 import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.SimpleUnitCell;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 
 @SuppressWarnings("unchecked")
@@ -178,9 +181,9 @@ public class AtomSetCollection {
   boolean isTrajectory;    
   private int trajectoryStepCount = 0;
   
-  private JmolList<P3[]> trajectorySteps;
-  private JmolList<V3[]> vibrationSteps;
-  private JmolList<String> trajectoryNames;
+  private List<P3[]> trajectorySteps;
+  private List<V3[]> vibrationSteps;
+  private List<String> trajectoryNames;
   boolean doFixPeriodic;
   public void setDoFixPeriodic() {
     doFixPeriodic = true;
@@ -192,11 +195,11 @@ public class AtomSetCollection {
   public boolean allowMultiple;
   AtomSetCollectionReader reader;
 
-  private JmolList<AtomSetCollectionReader> readerList;
+  private List<AtomSetCollectionReader> readerList;
   
   public AtomSetCollection(String fileTypeName,
       AtomSetCollectionReader reader, 
-      AtomSetCollection[] array, JmolList<?> list) {
+      AtomSetCollection[] array, List<?> list) {
     
     // merging files
     
@@ -210,7 +213,7 @@ public class AtomSetCollection {
     setAtomSetCollectionAuxiliaryInfo("properties", p);
     if (array != null) {
       int n = 0;
-      readerList = new JmolList<AtomSetCollectionReader>();
+      readerList = new List<AtomSetCollectionReader>();
       for (int i = 0; i < array.length; i++) 
         if (array[i].atomCount > 0 || array[i].reader != null && array[i].reader.mustFinalizeModelSet) 
           appendAtomSetCollection(n++, array[i]);
@@ -223,7 +226,7 @@ public class AtomSetCollection {
     }
   }
 
-  private void appendAtomSetCollectionList(JmolList<?> list) {
+  private void appendAtomSetCollectionList(List<?> list) {
     int n = list.size();
     if (n == 0) {
       errorMessage = "No file found!";
@@ -232,8 +235,8 @@ public class AtomSetCollection {
       
     for (int i = 0; i < n; i++) {
       Object o = list.get(i);
-      if (o instanceof JmolList)
-        appendAtomSetCollectionList((JmolList<?>) o);
+      if (o instanceof List)
+        appendAtomSetCollectionList((List<?>) o);
       else
         appendAtomSetCollection(i, (AtomSetCollection) o);
     }  
@@ -241,7 +244,7 @@ public class AtomSetCollection {
   
   public void setTrajectory() {
     if (!isTrajectory) {
-      trajectorySteps = new  JmolList<P3[]>();
+      trajectorySteps = new  List<P3[]>();
     }
     isTrajectory = true;
     addTrajectoryStep();
@@ -375,9 +378,9 @@ public class AtomSetCollection {
       bonds[i].atomSetIndex = atomSetCount - 1 - atoms[bonds[i].atomIndex1].atomSetIndex;
     reverseSets(bonds, bondCount);
     //getAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max" ??
-    JmolList<Atom>[] lists = ArrayUtil.createArrayOfArrayList(atomSetCount);
+    List<Atom>[] lists = ArrayUtil.createArrayOfArrayList(atomSetCount);
     for (int i = 0; i < atomSetCount; i++)
-      lists[i] = new  JmolList<Atom>();
+      lists[i] = new  List<Atom>();
     for (int i = 0; i < atomCount; i++)
       lists[atoms[i].atomSetIndex].addLast(atoms[i]);
     int[] newIndex = new int[atomCount];
@@ -402,9 +405,9 @@ public class AtomSetCollection {
   }
 
   private void reverseSets(AtomSetObject[] o, int n) {
-    JmolList<AtomSetObject>[] lists = ArrayUtil.createArrayOfArrayList(atomSetCount);
+    List<AtomSetObject>[] lists = ArrayUtil.createArrayOfArrayList(atomSetCount);
     for (int i = 0; i < atomSetCount; i++)
-      lists[i] = new  JmolList<AtomSetObject>();
+      lists[i] = new  List<AtomSetObject>();
     for (int i = 0; i < n; i++) {
       int index = o[i].atomSetIndex;
       if (index < 0)
@@ -422,7 +425,7 @@ public class AtomSetCollection {
       ArrayUtil.swap(o, i, n - 1 - i);
   }
 
-  private static void reverseList(JmolList<?> list) {
+  private static void reverseList(List<?> list) {
     if (list == null)
       return;
     Collections.reverse(list); 
@@ -667,7 +670,7 @@ public class AtomSetCollection {
   }
 
 
-  JmolList<int[]> vConnect;
+  List<int[]> vConnect;
   int connectNextAtomIndex = 0;
   int connectNextAtomSet = 0;
   int[] connectLast;
@@ -675,7 +678,7 @@ public class AtomSetCollection {
   public void addConnection(int[] is) {
     if (vConnect == null) {
       connectLast = null;
-      vConnect = new  JmolList<int[]>();
+      vConnect = new  List<int[]>();
     }
     if (connectLast != null) {
       if (is[0] == connectLast[0] 
@@ -1420,7 +1423,7 @@ public class AtomSetCollection {
         t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
   }
 
-  public void applySymmetryBio(JmolList<Matrix4f> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
+  public void applySymmetryBio(List<Matrix4f> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
     if (latticeCells != null && latticeCells[0] != 0) {
       Logger.error("Cannot apply biomolecule when lattice cells are indicated");
       return;
@@ -1574,7 +1577,7 @@ public class AtomSetCollection {
     if (! atomSetCollectionAuxiliaryInfo.containsKey(auxKey)) {
       return false;
     }
-    JmolList<Float> atomData = (JmolList<Float>) atomSetCollectionAuxiliaryInfo.get(auxKey);
+    List<Float> atomData = (List<Float>) atomSetCollectionAuxiliaryInfo.get(auxKey);
     for (int i = atomData.size(); --i >= 0;)
       atoms[i].partialCharge = atomData.get(i).floatValue();
     Logger.info("Setting partial charges type " + auxKey);
@@ -1609,7 +1612,7 @@ public class AtomSetCollection {
     }
     if (haveVibrations) {
       if (vibrationSteps == null) {
-        vibrationSteps = new  JmolList<V3[]>();
+        vibrationSteps = new  List<V3[]>();
         for (int i = 0; i < trajectoryStepCount; i++)
           vibrationSteps.addLast(null);
       }
@@ -1636,7 +1639,7 @@ public class AtomSetCollection {
     return x;
   }
 
-  public void finalizeTrajectoryAs(JmolList<P3[]> trajectorySteps, JmolList<V3[]> vibrationSteps) {
+  public void finalizeTrajectoryAs(List<P3[]> trajectorySteps, List<V3[]> vibrationSteps) {
     this.trajectorySteps = trajectorySteps;
     this.vibrationSteps = vibrationSteps;
     trajectoryStepCount = trajectorySteps.size();
@@ -1732,7 +1735,7 @@ public class AtomSetCollection {
     if (trajectoryStepCount == 0)
       return;
     if (trajectoryNames == null) {
-      trajectoryNames = new  JmolList<String>();
+      trajectoryNames = new  List<String>();
     }
     for (int i = trajectoryNames.size(); i < trajectoryStepCount; i++)
       trajectoryNames.addLast(null);
@@ -1837,7 +1840,7 @@ public class AtomSetCollection {
     if (!atomSetAuxiliaryInfo[currentAtomSetIndex].containsKey(auxKey)) {
       return false;
     }
-    JmolList<Float> atomData = (JmolList<Float>) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex, auxKey);
+    List<Float> atomData = (List<Float>) getAtomSetAuxiliaryInfoValue(currentAtomSetIndex, auxKey);
     for (int i = atomData.size(); --i >= 0;) {
       atoms[i].partialCharge = atomData.get(i).floatValue();
     }

@@ -25,21 +25,21 @@
 
 package org.jmol.shapesurface;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Hashtable;
 
 import java.util.Map;
 
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.P4;
-import org.jmol.util.SB;
+import javajs.vec.P4;
+import javajs.lang.SB;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.constant.EnumQuantumShell;
+import org.jmol.java.BS;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.readers.Parameters;
 
@@ -114,9 +114,9 @@ public class MolecularOrbital extends Isosurface {
       } else {
         Object[] slabInfo = (Object[]) value;
         int tok = ((Integer) slabInfo[0]).intValue();
-        moSlab = (JmolList<Object>) thisModel.get("slab");
+        moSlab = (List<Object>) thisModel.get("slab");
         if (moSlab == null)
-          thisModel.put("slab", moSlab = new  JmolList<Object>());
+          thisModel.put("slab", moSlab = new  List<Object>());
         if (tok == T.none) {
           moSlab = null;
           thisModel.remove("slab");
@@ -328,7 +328,7 @@ public class MolecularOrbital extends Isosurface {
       return moLinearCombination;
     if (propertyName == "showMO") {
       SB str = new SB();
-      JmolList<Map<String, Object>> mos = (JmolList<Map<String, Object>>) (sg.getMoData().get("mos"));
+      List<Map<String, Object>> mos = (List<Map<String, Object>>) (sg.getMoData().get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       int thisMO = param;
       int currentMO = moNumber;
@@ -377,7 +377,7 @@ public class MolecularOrbital extends Isosurface {
     //sg = null; // not Molecular Orbitals
   }
 
-  private JmolList<Object> moSlab;
+  private List<Object> moSlab;
   private Integer moSlabValue;
   
   @SuppressWarnings("unchecked")
@@ -404,7 +404,7 @@ public class MolecularOrbital extends Isosurface {
     moMonteCarloCount = (Integer) thisModel.get("monteCarloCount");
     moRandomSeed = (Integer) thisModel.get("randomSeed");
     moSlabValue = (Integer)  thisModel.get("slabValue");
-    moSlab = (JmolList<Object>) thisModel.get("slab");
+    moSlab = (List<Object>) thisModel.get("slab");
     if (moRandomSeed == null)
       thisModel.put("randomSeed", moRandomSeed = Integer.valueOf(
           ((int) -System.currentTimeMillis())% 10000));

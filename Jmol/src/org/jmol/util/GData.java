@@ -3,6 +3,11 @@ package org.jmol.util;
 
 import java.awt.Image;
 
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.V3;
+
 
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolGraphicsInterface;

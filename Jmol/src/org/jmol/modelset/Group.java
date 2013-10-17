@@ -24,17 +24,17 @@
 package org.jmol.modelset;
 
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.Quaternion;
 import org.jmol.util.J2SRequireImport;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.viewer.JC;
 import org.jmol.constant.EnumStructure;
+import org.jmol.java.BS;
 import org.jmol.script.T;
 
 import java.util.Hashtable;
@@ -506,7 +506,7 @@ public class Group {
    * @param vReturn
    * @return T/F
    */
-  public boolean getCrossLinkLead(JmolList<Integer> vReturn) {
+  public boolean getCrossLinkLead(List<Integer> vReturn) {
     return false;
   }
 

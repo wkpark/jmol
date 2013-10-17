@@ -24,6 +24,10 @@
 
 package org.jmol.util;
 
+import javajs.vec.P3;
+import javajs.vec.V3;
+import javajs.vec.Tuple3f;
+
 
 
 public class Hermite {

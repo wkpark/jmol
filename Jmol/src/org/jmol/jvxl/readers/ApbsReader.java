@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 
 
 import org.jmol.util.Parser;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 class ApbsReader extends VolumeFileReader {
 

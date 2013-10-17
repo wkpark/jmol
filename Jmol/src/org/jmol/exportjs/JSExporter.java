@@ -30,13 +30,13 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.GData;
 import org.jmol.util.J2SRequireImport;
 import org.jmol.util.JmolFont;
-import org.jmol.util.P3;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 
 @J2SRequireImport( { org.jmol.exportjs.Exporter.class,
     org.jmol.exportjs.CartesianExporter.class,

@@ -26,18 +26,19 @@ package org.jmol.shapespecial;
 
 import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.SB;
+import javajs.lang.SB;
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+
 import org.jmol.viewer.JC;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.geodesic.EnvelopeCalculation;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 
 import java.util.Hashtable;

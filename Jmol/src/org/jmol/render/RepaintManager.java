@@ -27,10 +27,10 @@ import java.util.Map;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.JmolRepaintManager;
+import org.jmol.java.BS;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;
-import org.jmol.util.BS;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.Rectangle;

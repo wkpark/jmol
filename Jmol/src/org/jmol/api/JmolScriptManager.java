@@ -2,8 +2,9 @@ package org.jmol.api;
 
 
 
-import org.jmol.util.BS;
-import org.jmol.util.JmolList;
+import org.jmol.java.BS;
+
+import javajs.util.List;
 import org.jmol.viewer.Viewer;
 
 public interface JmolScriptManager {
@@ -20,11 +21,11 @@ public interface JmolScriptManager {
   
   void waitForQueue();
 
-  JmolList<JmolList<Object>> getScriptQueue();
+  List<List<Object>> getScriptQueue();
 
   void queueThreadFinished(int pt);
 
-  JmolList<Object> getScriptItem(boolean b, boolean startedByCommandThread);
+  List<Object> getScriptItem(boolean b, boolean startedByCommandThread);
 
   String evalStringQuietSync(String strScript, boolean isQuiet,
                              boolean allowSyncScript);

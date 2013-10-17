@@ -63,7 +63,7 @@
 package org.jmol.image;
 
 import org.jmol.script.T;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -115,7 +115,7 @@ public class GifEncoder extends ImageEncoder {
     }
   }
 
-  static class ColorVector extends JmolList<ColorItem> {
+  static class ColorVector extends List<ColorItem> {
     void sort() {
       CountComparator comparator = new CountComparator();
       Collections.sort(this, comparator);
@@ -368,7 +368,7 @@ public class GifEncoder extends ImageEncoder {
    * @return map from all unique colors to a specific index
    */
   private Map<Integer, AdaptiveColorCollection> finalizeColorMap(
-                                                                 JmolList<ColorItem> colors,
+                                                                 List<ColorItem> colors,
                                                                  Map<Integer, AdaptiveColorCollection> colors256) {
     int mapSize = 1 << bitsPerPixel;
     red = new int[mapSize];

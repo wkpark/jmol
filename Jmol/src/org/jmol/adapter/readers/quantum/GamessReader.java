@@ -24,19 +24,19 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Txt;
 
 abstract public class GamessReader extends MOReader {
 
-  protected JmolList<String> atomNames;
+  protected List<String> atomNames;
 
   abstract protected void readAtomsInBohrCoordinates() throws Exception;  
  
@@ -52,7 +52,7 @@ abstract public class GamessReader extends MOReader {
   }
 
   protected void readGaussianBasis(String initiator, String terminator) throws Exception {
-    JmolList<String[]> gdata = new  JmolList<String[]>();
+    List<String[]> gdata = new  List<String[]>();
     gaussianCount = 0;
     int nGaussians = 0;
     shellCount = 0;
@@ -61,8 +61,8 @@ abstract public class GamessReader extends MOReader {
     discardLinesUntilContains(initiator);
     readLine();
     int[] slater = null;
-    Map<String, JmolList<int[]>> shellsByAtomType = new Hashtable<String, JmolList<int[]>>();
-    JmolList<int[]> slatersByAtomType = new  JmolList<int[]>();
+    Map<String, List<int[]>> shellsByAtomType = new Hashtable<String, List<int[]>>();
+    List<int[]> slatersByAtomType = new  List<int[]>();
     String atomType = null;
     
     while (readLine() != null && line.indexOf(terminator) < 0) {
@@ -80,7 +80,7 @@ abstract public class GamessReader extends MOReader {
           }
           shellsByAtomType.put(atomType, slatersByAtomType);
         }
-        slatersByAtomType = new  JmolList<int[]>();
+        slatersByAtomType = new  List<int[]>();
         atomType = tokens[0];
         break;
       case 0:
@@ -118,10 +118,10 @@ abstract public class GamessReader extends MOReader {
     }
     int atomCount = atomNames.size();
     if (shells == null && atomCount > 0) {
-      shells = new  JmolList<int[]>();
+      shells = new  List<int[]>();
       for (int i = 0; i < atomCount; i++) {
         atomType = atomNames.get(i);
-        JmolList<int[]> slaters = shellsByAtomType.get(atomType);
+        List<int[]> slaters = shellsByAtomType.get(atomType);
         if (slaters == null) {
           Logger.error("slater for atom " + i + " atomType " + atomType
               + " was not found in listing. Ignoring molecular orbitals");

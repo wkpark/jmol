@@ -31,14 +31,14 @@ package org.jmol.export;
 import java.util.Map;
 
 
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.GData;
-import org.jmol.util.JmolList;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.util.List;
+import javajs.vec.P3;
+import javajs.lang.SB;
+import javajs.vec.Matrix3f;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 
 /*
@@ -254,7 +254,7 @@ public class _TachyonExporter extends __RayTracerExporter {
                                short[] polygonColixes, int nVertices,
                                int nPolygons, int nFaces, BS bsPolygons,
                                int faceVertexMax, short colix,
-                               JmolList<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
+                               List<Short> colorList, Map<Short, Integer> htColixes, P3 offset) {
     if (polygonColixes != null) {
       boolean isAll = (bsPolygons == null);
       int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));

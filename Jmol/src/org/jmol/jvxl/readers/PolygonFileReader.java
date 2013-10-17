@@ -26,7 +26,7 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.util.Date;
 
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 
 

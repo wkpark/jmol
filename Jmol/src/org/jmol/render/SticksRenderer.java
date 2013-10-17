@@ -27,15 +27,15 @@ package org.jmol.render;
 
 
 import org.jmol.constant.EnumPalette;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.script.T;
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.P3;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.V3;
 import org.jmol.viewer.JC;
 
 public class SticksRenderer extends FontLineShapeRenderer {

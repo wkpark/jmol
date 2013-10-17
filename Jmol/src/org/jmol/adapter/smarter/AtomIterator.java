@@ -26,10 +26,11 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterAtomIterator;
-import org.jmol.util.BS;
-import org.jmol.util.JmolList;
-import org.jmol.util.P3;
-import org.jmol.util.V3;
+import org.jmol.java.BS;
+
+import javajs.util.List;
+import javajs.vec.P3;
+import javajs.vec.V3;
 
 
 /* **************************************************************
@@ -101,7 +102,7 @@ class AtomIterator implements JmolAdapterAtomIterator {
 	}
 
 	
-	public JmolList<Object> getTensors() {
+	public List<Object> getTensors() {
 		return atom.tensors;
 	}
 

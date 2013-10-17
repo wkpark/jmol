@@ -26,9 +26,9 @@ package org.jmol.shapebio;
 
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumVdw;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
-import org.jmol.util.BS;
 
 public class Trace extends BioShapeCollection {
 

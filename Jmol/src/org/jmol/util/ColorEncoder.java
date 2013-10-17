@@ -23,7 +23,7 @@
  */
 package org.jmol.util;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -32,6 +32,7 @@ import java.util.Map;
 import org.jmol.viewer.JC;
 import org.jmol.constant.EnumPalette;
 
+import javajs.vec.P3;
 
 /*
  * 
@@ -494,7 +495,7 @@ import org.jmol.constant.EnumPalette;
   public Map<String, Object> getColorKey() {
     Map<String, Object> info = new Hashtable<String, Object>();
     int segmentCount = getPaletteColorCount(currentPalette);
-    JmolList<P3> colors = new  JmolList<P3>();//segmentCount);
+    List<P3> colors = new  List<P3>();//segmentCount);
 /*    
     boolean isReverse = isReversed;
     

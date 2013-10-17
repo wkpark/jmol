@@ -25,7 +25,8 @@
 
 package org.jmol.util;
 
-import java.util.List;
+import javajs.util.List;
+import javajs.lang.SB;
 
 public class Txt {
 

@@ -29,13 +29,14 @@ import java.io.BufferedReader;
 import org.jmol.api.Interface;
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.atomdata.AtomData;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
+
+import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.lang.SB;
+import javajs.vec.V3;
 
 
 abstract class VolumeFileReader extends SurfaceFileReader {

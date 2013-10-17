@@ -24,7 +24,7 @@
 
 package org.jmol.symmetry;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 
 
@@ -33,16 +33,17 @@ import org.jmol.util.Txt;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P4;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.lang.SB;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 import org.jmol.modelset.ModelSet;
 import org.jmol.script.T;
 
@@ -1131,7 +1132,7 @@ class SymmetryOperation extends Matrix4f {
         // so if a point is in the plane, then N dot X = -d
         float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
         P4 plane = P4.new4(vtemp.x, vtemp.y, vtemp.z, w);
-        JmolList<Object> v = new  JmolList<Object>();
+        List<Object> v = new  List<Object>();
         v.addLast(uc.getCanonicalCopy(1.05f));
         modelSet.intersectPlane(plane, v, 3);
 

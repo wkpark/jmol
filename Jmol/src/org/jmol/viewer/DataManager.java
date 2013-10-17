@@ -27,15 +27,15 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.constant.EnumVdw;
+import org.jmol.java.BS;
 import org.jmol.script.T;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 
 /*

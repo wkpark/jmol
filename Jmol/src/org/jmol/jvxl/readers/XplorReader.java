@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.viewer.Viewer;
 
 class XplorReader extends MapFileReader {

@@ -1,6 +1,12 @@
 package org.jmol.util;
 
+import javajs.util.List;
+
 import org.jmol.api.Triangulator;
+import org.jmol.java.BS;
+
+import javajs.vec.P3i;
+import javajs.vec.P4;
 
 public class TriangleData implements Triangulator {
 
@@ -307,7 +313,7 @@ public class TriangleData implements Triangulator {
    */
 
 
-  public JmolList<Object> intersectPlane(P4 plane, JmolList<Object> v, int flags) {
+  public List<Object> intersectPlane(P4 plane, List<Object> v, int flags) {
     if (plane == null) {
       v.addLast(fullCubePolygon);
       return v;

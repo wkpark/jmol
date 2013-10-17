@@ -28,14 +28,15 @@ package org.jmol.smiles;
 
 
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
+
+import org.jmol.java.BS;
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 //import org.jmol.util.Logger;
 
@@ -694,7 +695,7 @@ public class SmilesAtom extends P3 implements JmolNode {
     return bond.isHydrogen();
   }
 
-  public boolean getCrossLinkLeadAtomIndexes(JmolList<Integer> vLinks) {
+  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vLinks) {
     for (int k = 0; k < bonds.length; k++)
       if (bonds[k].order == SmilesBond.TYPE_BIO_PAIR)
         vLinks.addLast(Integer.valueOf(bonds[k].getOtherAtom(this).index));

@@ -25,7 +25,7 @@
 
 package org.jmol.modelset;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
@@ -41,23 +41,25 @@ import org.jmol.bspt.Bspf;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
+
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
+import javajs.vec.P4;
 import org.jmol.util.Tensor;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 import org.jmol.util.Vibration;
 
 import org.jmol.util.Measure;
@@ -126,8 +128,8 @@ abstract public class AtomCollection {
   public Atom[] atoms;
   public int atomCount;
 
-  public JmolList<P3> getAtomPointVector(BS bs) {
-    JmolList<P3> v = new  JmolList<P3>();
+  public List<P3> getAtomPointVector(BS bs) {
+    List<P3> v = new  List<P3>();
     if (bs != null) {
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
         v.addLast(atoms[i]);
@@ -158,7 +160,7 @@ abstract public class AtomCollection {
   float[] hydrophobicities;
   
   public Object[][] atomTensorList; // specifically now for {*}.adpmin {*}.adpmax
-  public Map<String, JmolList<Object>> atomTensors;
+  public Map<String, List<Object>> atomTensors;
 
   protected int[] surfaceDistance100s;
 
@@ -451,13 +453,13 @@ abstract public class AtomCollection {
   protected void setAtomCoord2(BS bs, int tokType, Object xyzValues) {
     P3 xyz = null;
     P3[] values = null;
-    JmolList<P3> v = null;
+    List<P3> v = null;
     int type = 0;
     int nValues = 1;
     if (xyzValues instanceof P3) {
       xyz = (P3) xyzValues;
-    } else if (xyzValues instanceof JmolList<?>) {
-      v = (JmolList<P3>) xyzValues;
+    } else if (xyzValues instanceof List<?>) {
+      v = (List<P3>) xyzValues;
       if ((nValues = v.size()) == 0)
         return;
       type = 1;
@@ -1189,7 +1191,7 @@ abstract public class AtomCollection {
    */
   public P3[][] calculateHydrogens(BS bs, int[] nTotal,
                                             boolean doAll, boolean justCarbon,
-                                            JmolList<Atom> vConnect) {
+                                            List<Atom> vConnect) {
     V3 z = new V3();
     V3 x = new V3();
     P3[][] hAtoms = new P3[atomCount][];
@@ -2593,9 +2595,9 @@ abstract public class AtomCollection {
   private void deleteAtomTensors(BS bsAtoms) {
     if (atomTensors == null)
       return;
-    JmolList<String> toDelete = new JmolList<String>();
+    List<String> toDelete = new List<String>();
     for (String key: atomTensors.keySet()) {
-      JmolList<Object> list = atomTensors.get(key);
+      List<Object> list = atomTensors.get(key);
       for (int i = list.size(); --i >= 0;) {
         Tensor t = (Tensor) list.get(i);
         if (bsAtoms.get(t.atomIndex1) || t.atomIndex2 >= 0 && bsAtoms.get(t.atomIndex2))
@@ -2608,11 +2610,11 @@ abstract public class AtomCollection {
       atomTensors.remove(toDelete.get(i));
   }
 
-  public void setAtomTensors(int atomIndex, JmolList<Object> list) {
+  public void setAtomTensors(int atomIndex, List<Object> list) {
     if (list == null || list.size() == 0)
       return;
     if (atomTensors == null)
-     atomTensors = new Hashtable<String, JmolList<Object>>();
+     atomTensors = new Hashtable<String, List<Object>>();
     if (atomTensorList == null)
       atomTensorList = new Object[atoms.length][];
     atomTensorList = (Object[][]) ArrayUtil.ensureLength(atomTensorList, atoms.length);
@@ -2628,7 +2630,7 @@ abstract public class AtomCollection {
     }
   }
 
-  private static Object[] getTensorList(JmolList<Object> list) {
+  private static Object[] getTensorList(List<Object> list) {
     int pt = -1;
     boolean haveTLS = false;
     int n = list.size();
@@ -2677,19 +2679,19 @@ abstract public class AtomCollection {
 
   public void addTensor(Tensor t, String type) {
     type = type.toLowerCase();
-    JmolList<Object> tensors = atomTensors.get(type);
+    List<Object> tensors = atomTensors.get(type);
     if (tensors == null)
-      atomTensors.put(type, tensors = new JmolList<Object>()); 
+      atomTensors.put(type, tensors = new List<Object>()); 
     tensors.addLast(t);
   }
 
-  public JmolList<Object> getAllAtomTensors(String type) {
+  public List<Object> getAllAtomTensors(String type) {
     if (atomTensors == null)
       return null;
     if (type != null)
       return atomTensors.get(type.toLowerCase());
-    JmolList<Object> list = new JmolList<Object>();
-    for (Entry<String, JmolList<Object>> e : atomTensors.entrySet())
+    List<Object> list = new List<Object>();
+    for (Entry<String, List<Object>> e : atomTensors.entrySet())
       list.addAll(e.getValue());
     return list;
   }

@@ -25,14 +25,15 @@ package org.jmol.quantum;
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.api.VolumeDataInterface;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
+
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 
 
@@ -130,7 +131,7 @@ public class NciCalculation extends QuantumCalculation implements
                                   BS bsSelected, BS bsExcluded,
                                   BS[] bsMolecules, String calculationType,
                                   P3[] atomCoordAngstroms,
-                                  int firstAtomOffset, JmolList<int[]> shells,
+                                  int firstAtomOffset, List<int[]> shells,
                                   float[][] gaussians, int[][] dfCoefMaps,
                                   Object slaters, float[] moCoefficients,
                                   float[] linearCombination, boolean isSquaredLinear,

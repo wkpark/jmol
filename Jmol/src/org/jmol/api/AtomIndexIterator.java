@@ -3,9 +3,9 @@ package org.jmol.api;
 
 
 import org.jmol.atomdata.RadiusData;
+import org.jmol.java.BS;
 import org.jmol.modelset.ModelCollection;
-import org.jmol.util.BS;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 
 /**

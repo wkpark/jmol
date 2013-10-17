@@ -25,7 +25,7 @@
 
 package org.jmol.modelset;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Date;
 import java.util.Enumeration;
@@ -47,31 +47,32 @@ import org.jmol.bspt.CubeIterator;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
 
-import org.jmol.util.BS;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.Elements;
 import org.jmol.util.ModulationSet;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
+import javajs.vec.P3;
+import javajs.vec.P4;
+import javajs.vec.Point3fi;
+
 import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Point3fi;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.io.XmlUtil;
+import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.StateManager.Orientation;
@@ -158,7 +159,7 @@ abstract public class ModelCollection extends BondCollection {
    *        1 -- edges only 2 -- triangles only 3 -- both
    * @return Vector
    */
-  public JmolList<Object> getPlaneIntersection(int type, P4 plane,
+  public List<Object> getPlaneIntersection(int type, P4 plane,
                                            float scale, int flags,
                                            int modelIndex) {
     P3[] pts = null;
@@ -173,7 +174,7 @@ abstract public class ModelCollection extends BondCollection {
       pts = boxInfo.getCanonicalCopy(scale);
       break;
     }
-    JmolList<Object> v = new  JmolList<Object>();
+    List<Object> v = new  List<Object>();
     v.addLast(pts);
     return intersectPlane(plane, v, flags);
   }
@@ -460,7 +461,7 @@ abstract public class ModelCollection extends BondCollection {
    * @return array of two lists of points, centers first if desired
    */
 
-  public P3[][] getCenterAndPoints(JmolList<Object[]> vAtomSets,
+  public P3[][] getCenterAndPoints(List<Object[]> vAtomSets,
                                    boolean addCenters) {
     BS bsAtoms1, bsAtoms2;
     int n = (addCenters ? 1 : 0);
@@ -541,7 +542,7 @@ abstract public class ModelCollection extends BondCollection {
     }
   }
 
-  public JmolList<StateScript> stateScripts = new  JmolList<StateScript>();
+  public List<StateScript> stateScripts = new  List<StateScript>();
   /*
    * stateScripts are connect commands that must be executed in sequence.
    * 
@@ -829,14 +830,14 @@ abstract public class ModelCollection extends BondCollection {
     }
   */
 
-  public JmolList<P3[]> trajectorySteps;
-  protected JmolList<V3[]> vibrationSteps;
+  public List<P3[]> trajectorySteps;
+  protected List<V3[]> vibrationSteps;
 
   protected int mergeTrajectories(boolean isTrajectory) {
     if (trajectorySteps == null) {
       if (!isTrajectory)
         return 0;
-      trajectorySteps = new  JmolList<P3[]>();
+      trajectorySteps = new  List<P3[]>();
     }
     for (int i = trajectorySteps.size(); i < modelCount; i++)
       trajectorySteps.addLast(null);
@@ -1050,7 +1051,7 @@ abstract public class ModelCollection extends BondCollection {
             .getBioPolymerCount());
   }
 
-  public void getPolymerPointsAndVectors(BS bs, JmolList<P3[]> vList,
+  public void getPolymerPointsAndVectors(BS bs, List<P3[]> vList,
                                          boolean isTraceAlpha,
                                          float sheetSmoothing) {
     for (int i = 0; i < modelCount; ++i)
@@ -1117,7 +1118,7 @@ abstract public class ModelCollection extends BondCollection {
    */
 
   public void calcRasmolHydrogenBonds(BS bsA, BS bsB,
-                                      JmolList<Bond> vHBonds, boolean nucleicOnly,
+                                      List<Bond> vHBonds, boolean nucleicOnly,
                                       int nMax, boolean dsspIgnoreHydrogens,
                                       BS bsHBonds) {
     boolean isSame = (bsB == null || bsA.equals(bsB));
@@ -1152,7 +1153,7 @@ abstract public class ModelCollection extends BondCollection {
     // go ahead and take first three atoms
     // for PDB files, do not include NON-protein groups.
     int n = 0;
-    JmolList<Quaternion> v = new  JmolList<Quaternion>();
+    List<Quaternion> v = new  List<Quaternion>();
     for (int i = bsAtoms.nextSetBit(0); i >= 0 && n < nMax; i = bsAtoms
         .nextSetBit(i + 1)) {
       Group g = atoms[i].group;
@@ -1701,7 +1702,7 @@ abstract public class ModelCollection extends BondCollection {
     moleculeCount = 0;
     Model m = null;
     BS[] bsModelAtoms = new BS[modelCount];
-    JmolList<BS> biobranches = null;
+    List<BS> biobranches = null;
     for (int i = 0; i < modelCount; i++) {
       // TODO: Trajectories?
       bsModelAtoms[i] = viewer.getModelUndeletedAtomsBitSet(i);
@@ -2120,7 +2121,7 @@ abstract public class ModelCollection extends BondCollection {
       return bs;
     BS bsA = null;
     BS bsB = null;
-    JmolList<Bond> vHBonds = new  JmolList<Bond>();
+    List<Bond> vHBonds = new  List<Bond>();
     if (specInfo.length() == 0) {
       bsA = bsB = viewer.getModelUndeletedAtomsBitSet(-1);
       calcRasmolHydrogenBonds(bsA, bsB, vHBonds, true, 1, false, null);
@@ -2902,7 +2903,7 @@ abstract public class ModelCollection extends BondCollection {
       if (moData == null) {
         continue;
       }
-      JmolList<Map<String, Object>> mos = (JmolList<Map<String, Object>>) (moData
+      List<Map<String, Object>> mos = (List<Map<String, Object>>) (moData
           .get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0) {
@@ -3170,7 +3171,7 @@ abstract public class ModelCollection extends BondCollection {
                       int atomicAndIsotopeNumber, String atomName,
                       int atomSerial, int atomSite, P3 xyz,
                       float radius, V3 vib, int formalCharge, float partialCharge,
-                      int occupancy, float bfactor, JmolList<Object> tensors,
+                      int occupancy, float bfactor, List<Object> tensors,
                       boolean isHetero, byte specialAtomID, BS atomSymmetry) {
     Atom atom = new Atom(modelIndex, atomCount, xyz, radius, atomSymmetry,
         atomSite, (short) atomicAndIsotopeNumber, formalCharge, isHetero);
@@ -3420,7 +3421,7 @@ abstract public class ModelCollection extends BondCollection {
     Map<String, Object> info = modelSetAuxiliaryInfo;
     if (info == null)
       return null;
-    JmolList<Map<String, Object>> models = new  JmolList<Map<String, Object>>();
+    List<Map<String, Object>> models = new  List<Map<String, Object>>();
     for (int i = 0; i < modelCount; ++i) {
       if (bsModels != null && !bsModels.get(i)) {
         continue;
@@ -3433,7 +3434,7 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   public int[][] getDihedralMap(int[] alist) {
-    JmolList<int[]> list = new JmolList<int[]>();
+    List<int[]> list = new List<int[]>();
     int n = alist.length;
     Atom ai = null, aj = null, ak = null, al = null;
     for (int i = n - 1; --i >= 0;)
@@ -3599,7 +3600,7 @@ abstract public class ModelCollection extends BondCollection {
 
   private Triangulator triangulator;
   
-  public JmolList<Object> intersectPlane(P4 plane, JmolList<Object> v, int i) {
+  public List<Object> intersectPlane(P4 plane, List<Object> v, int i) {
     return (triangulator == null ? (triangulator = (Triangulator) Interface
         .getOptionInterface("util.TriangleData")) : triangulator)
         .intersectPlane(plane, v, i);

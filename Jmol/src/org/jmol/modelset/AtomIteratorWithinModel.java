@@ -32,8 +32,9 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.CubeIterator;
-import org.jmol.util.BS;
-import org.jmol.util.P3;
+import org.jmol.java.BS;
+
+import javajs.vec.P3;
 import org.jmol.viewer.Viewer;
 
 public class AtomIteratorWithinModel implements AtomIndexIterator {

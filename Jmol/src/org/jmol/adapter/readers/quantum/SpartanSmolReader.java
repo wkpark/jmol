@@ -31,7 +31,7 @@ import java.util.Map;
 import org.jmol.io2.BinaryDocument;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 /*
  * Spartan SMOL and .spartan compound document reader and .spartan06 zip files

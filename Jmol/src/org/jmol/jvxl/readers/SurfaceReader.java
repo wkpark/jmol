@@ -26,6 +26,7 @@ package org.jmol.jvxl.readers;
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
 import org.jmol.io.JmolOutputChannel;
+import org.jmol.java.BS;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.calc.MarchingCubes;
@@ -34,19 +35,19 @@ import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.lang.SB;
+import javajs.vec.V3;
 
 
 public abstract class SurfaceReader implements VertexDataServer {
@@ -1041,7 +1042,7 @@ public abstract class SurfaceReader implements VertexDataServer {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS, null);
   }
   
-  public void slabIsosurface(JmolList<Object[]> slabInfo) {
+  public void slabIsosurface(List<Object[]> slabInfo) {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     meshData.slabPolygonsList(slabInfo, true);

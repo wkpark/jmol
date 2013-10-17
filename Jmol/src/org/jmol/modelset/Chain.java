@@ -23,7 +23,7 @@
  */
 package org.jmol.modelset;
 
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 
 public final class Chain {
 

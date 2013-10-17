@@ -32,9 +32,9 @@ import org.jmol.shapespecial.Dipole;
 import org.jmol.shapespecial.Dipoles;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.V3;
 
 public class DipolesRenderer extends ShapeRenderer {
 

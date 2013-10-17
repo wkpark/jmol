@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -52,7 +52,7 @@ import org.jmol.api.ZInputStream;
 import org.jmol.io.JmolBinary;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 
@@ -263,7 +263,7 @@ public class ZipUtil implements JmolZipUtility {
                                                   boolean addManifest)
       throws IOException {
     bis = JmolBinary.checkPngZipStream(bis);
-    JmolList<String> v = new  JmolList<String>();
+    List<String> v = new  List<String>();
     ZipInputStream zis = new ZipInputStream(bis);
     ZipEntry ze;
     String manifest = null;
@@ -409,7 +409,7 @@ public class ZipUtil implements JmolZipUtility {
       if (path != null)
         return JmolAdapter.NOTE_SCRIPT_FILE + fileName + path + "\n";
     }
-    JmolList<Object> vCollections = new  JmolList<Object>();
+    List<Object> vCollections = new  List<Object>();
     Map<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>()
         : null);
     int nFiles = 0;
@@ -481,7 +481,7 @@ public class ZipUtil implements JmolZipUtility {
               continue;
             return atomSetCollections;
           } else if (atomSetCollections instanceof AtomSetCollection
-              || atomSetCollections instanceof JmolList<?>) {
+              || atomSetCollections instanceof List<?>) {
             if (haveManifest && !exceptFiles)
               htCollections.put(thisEntry, atomSetCollections);
             else
@@ -687,7 +687,7 @@ public class ZipUtil implements JmolZipUtility {
         || outputFileData.startsWith("FILE NOT FOUND")
         || outputFileData.indexOf("<html") >= 0)
       return new String[] { "M0001" };
-    JmolList<String> v = new  JmolList<String>();
+    List<String> v = new  List<String>();
     String token;
     String lasttoken = "";
     try {

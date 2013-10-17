@@ -101,6 +101,7 @@ import java.util.Map;
 import org.jmol.api.JmolDocument;
 import org.jmol.io.JmolBinary;
 import org.jmol.io.JmolOutputChannel;
+import org.jmol.java.BS;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
@@ -112,25 +113,25 @@ import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
 import org.jmol.shape.Shape;
 import org.jmol.util.Escape;
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.ColorUtil;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.P4;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.P4;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -189,7 +190,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
 
   private float withinDistance2;
   private boolean isWithinNot;
-  private JmolList<P3> withinPoints;
+  private List<P3> withinPoints;
   private float[] cutoffRange;
 
   //private boolean allowContourLines;
@@ -457,7 +458,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       displayWithinDistance2 = ((Float) o[0]).floatValue();
       isDisplayWithinNot = (displayWithinDistance2 < 0);
       displayWithinDistance2 *= displayWithinDistance2;
-      displayWithinPoints = (JmolList<P3>) o[3];
+      displayWithinPoints = (List<P3>) o[3];
       if (displayWithinPoints.size() == 0)
         displayWithinPoints = viewer.getAtomPointVector((BS) o[2]);
       return;
@@ -623,7 +624,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       withinDistance2 = ((Float) o[0]).floatValue();
       isWithinNot = (withinDistance2 < 0);
       withinDistance2 *= withinDistance2;
-      withinPoints = (JmolList<P3>) o[3];
+      withinPoints = (List<P3>) o[3];
       if (withinPoints.size() == 0)
         withinPoints = viewer.getAtomPointVector((BS) o[2]);
     } else if (("nci" == propertyName || "orbital" == propertyName)
@@ -770,7 +771,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       if (mesh == null)
         return false;
       data[3] = Integer.valueOf(mesh.modelIndex);
-      mesh.getIntersection(0, (P4) data[1], null, (JmolList<P3[]>) data[2], null, null, null, false, false, T.plane, false);
+      mesh.getIntersection(0, (P4) data[1], null, (List<P3[]>) data[2], null, null, null, false, false, T.plane, false);
       return true;
     }
     if (property == "getBoundingBox") {
@@ -1421,7 +1422,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       thisMesh.havePlanarContours = true;
     setPropertySuper("token", Integer.valueOf(explicitContours ? T.nofill : T.fill), null);
     setPropertySuper("token", Integer.valueOf(explicitContours ? T.contourlines : T.nocontourlines), null);
-    JmolList<Object[]> slabInfo = sg.getSlabInfo();
+    List<Object[]> slabInfo = sg.getSlabInfo();
     if (slabInfo != null) {
       thisMesh.slabPolygonsList(slabInfo, false);
       thisMesh.reinitializeLightingAndColor(viewer);
@@ -1514,8 +1515,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   @Override
-  public JmolList<Map<String, Object>> getShapeDetail() {
-    JmolList<Map<String, Object>> V = new  JmolList<Map<String, Object>>();
+  public List<Map<String, Object>> getShapeDetail() {
+    List<Map<String, Object>> V = new  List<Map<String, Object>>();
     for (int i = 0; i < meshCount; i++) {
       Map<String, Object> info = new Hashtable<String, Object>();
       IsosurfaceMesh mesh = isomeshes[i];
@@ -1593,7 +1594,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       String s;
       float f = 1 - 1.0f * (y - keyXy[1]) / (keyXy[3] - keyXy[1]);
       if (thisMesh.showContourLines) {
-        JmolList<Object>[] vContours = thisMesh.getContours();
+        List<Object>[] vContours = thisMesh.getContours();
         if (vContours == null) {
           if (thisMesh.jvxlData.contourValues == null)
             return;
@@ -1815,18 +1816,18 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       dmin2 <<= 1;
     }
     int pickedVertex = -1;
-    JmolList<Object> pickedContour = null;
+    List<Object> pickedContour = null;
     IsosurfaceMesh m = null;
     for (int i = 0; i < meshCount; i++) {
       m = isomeshes[i];
       if (!isPickable(m, bsVisible))
         continue;
-      JmolList<Object>[] vs = m.jvxlData.vContours;
+      List<Object>[] vs = m.jvxlData.vContours;
       int ilast = (m.firstRealVertex < 0 ? 0 : m.firstRealVertex);
       int pickedJ = 0;
       if (vs != null && vs.length > 0) {
         for (int j = 0; j < vs.length; j++) {
-          JmolList<Object> vc = vs[j];
+          List<Object> vc = vs[j];
           int n = vc.size() - 1;
           for (int k = JvxlCoder.CONTOUR_POINTS; k < n; k++) {
             P3 v = (P3) vc.get(k);

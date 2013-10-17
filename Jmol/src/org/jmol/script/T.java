@@ -29,8 +29,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jmol.util.JmolList;
-import org.jmol.util.ArrayUtil;
+import javajs.util.List;
+import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 
 /**
@@ -81,7 +81,7 @@ public class T {
   
   public final static int seqcode    =  5;
   public final static int hash       =  6;  // associative array; Hashtable
-  public final static int varray     =  7;  // JmolList<ScriptVariable>
+  public final static int varray     =  7;  // List<ScriptVariable>
   public final static int point3f    =  8;
   public final static int point4f    =  9;  
   public final static int bitset     =  10;
@@ -1429,9 +1429,9 @@ public class T {
     return cmds;
   }
   
-  public static JmolList<T> getAtomPropertiesLike(String type) {
+  public static List<T> getAtomPropertiesLike(String type) {
     type = type.toLowerCase();
-    JmolList<T> v = new  JmolList<T>();
+    List<T> v = new  List<T>();
     boolean isAll = (type.length() == 0);
     for (Map.Entry<String, T> entry : tokenMap.entrySet()) {
       String name = entry.getKey();
@@ -1452,7 +1452,7 @@ public class T {
         : type.equals("misc") ? misc 
         : type.equals("mathfunc") ? mathfunc : scriptCommand);
     int notattr = (attr == setparam ? deprecatedparam : nada);
-    JmolList<String> v = new  JmolList<String>();
+    List<String> v = new  List<String>();
     for (Map.Entry<String, T> entry : tokenMap.entrySet()) {
       String name = entry.getKey();
       T token = entry.getValue();
@@ -1477,7 +1477,7 @@ public class T {
       map = tokenMap;
     else
       asCommand = false;
-    JmolList<String> v = new  JmolList<String>();
+    List<String> v = new  List<String>();
     str = str.toLowerCase();
     for (String name : map.keySet()) {
       if (!name.startsWith(str))

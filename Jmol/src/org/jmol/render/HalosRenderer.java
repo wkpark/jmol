@@ -25,10 +25,10 @@
 
 package org.jmol.render;
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 import org.jmol.shape.Halos;
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.viewer.JC;
 

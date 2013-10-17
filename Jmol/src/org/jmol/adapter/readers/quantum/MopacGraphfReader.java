@@ -25,9 +25,9 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -149,8 +149,8 @@ public class MopacGraphfReader extends MopacSlaterReader {
   private float[][] invMatrix;
   
   private boolean isNewFormat;
-  private JmolList<float[]> orbitalData;
-  private JmolList<String> orbitalInfo;
+  private List<float[]> orbitalData;
+  private List<String> orbitalInfo;
   
   private void readMolecularOrbitals(boolean isBeta) throws Exception {
     
@@ -165,9 +165,9 @@ public class MopacGraphfReader extends MopacSlaterReader {
       return;
     isNewFormat = (line.indexOf("ORBITAL") >= 0);
     if (isNewFormat) {
-      orbitalData = new  JmolList<float[]>();
+      orbitalData = new  List<float[]>();
       if (line.length() > 10)
-        orbitalInfo = new  JmolList<String>();
+        orbitalInfo = new  List<String>();
     } else {
       list = new float[nCoefficients][nCoefficients];
     }

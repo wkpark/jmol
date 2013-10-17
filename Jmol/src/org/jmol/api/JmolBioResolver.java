@@ -3,12 +3,12 @@ package org.jmol.api;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelLoader;
-import org.jmol.util.BS;
 
 public interface JmolBioResolver {
 

@@ -31,7 +31,7 @@ import java.util.Map;
 import org.jmol.api.JmolDocument;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 
 //import java.io.RandomAccessFile;

@@ -25,18 +25,17 @@
 
 package org.jmol.modelset;
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
@@ -49,9 +48,10 @@ import org.jmol.api.JmolBioResolver;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumVdw;
+import org.jmol.java.BS;
 
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Arrays;
 
 import java.util.Hashtable;
@@ -173,7 +173,7 @@ public final class ModelLoader {
     }
     jmolData = (String) modelSet.getModelSetAuxiliaryInfoValue("jmolData");
     fileHeader = (String) modelSet.getModelSetAuxiliaryInfoValue("fileHeader");
-    modelSet.trajectorySteps = (JmolList<P3[]>) modelSet
+    modelSet.trajectorySteps = (List<P3[]>) modelSet
         .getModelSetAuxiliaryInfoValue("trajectorySteps");
     isTrajectory = (modelSet.trajectorySteps != null);
     isPyMOLsession  = modelSet.getModelSetAuxiliaryInfoBoolean("isPyMOL");
@@ -184,7 +184,7 @@ public final class ModelLoader {
       info.remove("pdbNoHydrogens");
       info.remove("trajectorySteps");
       if (isTrajectory)
-        modelSet.vibrationSteps = (JmolList<V3[]>) info.remove("vibrationSteps");
+        modelSet.vibrationSteps = (List<V3[]>) info.remove("vibrationSteps");
     }
     noAutoBond = modelSet.getModelSetAuxiliaryInfoBoolean("noAutoBond");
     is2D = modelSet.getModelSetAuxiliaryInfoBoolean("is2D");
@@ -286,7 +286,7 @@ public final class ModelLoader {
       if (baseTrajectoryCount > 0) {
         if (isTrajectory) {
           if (mergeModelSet.vibrationSteps == null) {
-            mergeModelSet.vibrationSteps = new  JmolList<V3[]>();
+            mergeModelSet.vibrationSteps = new  List<V3[]>();
             for (int i = mergeModelSet.trajectorySteps.size(); --i >= 0; )
               mergeModelSet.vibrationSteps.addLast(null);
           }
@@ -829,7 +829,7 @@ public final class ModelLoader {
   private void addAtom(boolean isPDB, BS atomSymmetry, int atomSite,
                        Object atomUid, int atomicAndIsotopeNumber,
                        String atomName, int formalCharge, float partialCharge,
-                       JmolList<Object> tensors, int occupancy, float bfactor,
+                       List<Object> tensors, int occupancy, float bfactor,
                        P3 xyz, boolean isHetero,
                        int atomSerial, String group3,
                        V3 vib,
@@ -931,7 +931,7 @@ public final class ModelLoader {
     modelSet.defaultCovalentMad = mad;
   }
   
-  private JmolList<Bond> vStereo;
+  private List<Bond> vStereo;
   
   private Bond bondAtoms(Object atomUid1, Object atomUid2, short order) {
     Atom atom1 = htAtomMap.get(atomUid1);
@@ -955,7 +955,7 @@ public final class ModelLoader {
     if (isNear || isFar) {
       bond = modelSet.bondMutually(atom1, atom2, (is2D ? order : 1), modelSet.getDefaultMadFromOrder(1), 0);
       if (vStereo == null) {
-        vStereo = new  JmolList<Bond>();
+        vStereo = new  List<Bond>();
       }
       vStereo.addLast(bond);
     } else {

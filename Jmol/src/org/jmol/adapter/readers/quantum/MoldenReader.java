@@ -2,7 +2,7 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.Atom;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -10,8 +10,9 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
+
+import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -180,8 +181,8 @@ public class MoldenReader extends MopacSlaterReader {
        0.1285000000D+00  0.2384999379D-02
       s   10 1.00
      */
-    shells = new  JmolList<int[]>();
-    JmolList<float[]> gdata = new  JmolList<float[]>();
+    shells = new  List<int[]>();
+    List<float[]> gdata = new  List<float[]>();
     int atomIndex = 0;
     int gaussianPtr = 0;
     nCoef = 0;
@@ -280,7 +281,7 @@ public class MoldenReader extends MopacSlaterReader {
     String[] tokens = getMoTokens(line);
     while (tokens != null && tokens.length > 0 && tokens[0].indexOf('[') < 0) {
       Map<String, Object> mo = new Hashtable<String, Object>();
-      JmolList<String> data = new JmolList<String>();
+      List<String> data = new List<String>();
       float energy = Float.NaN;
       float occupancy = Float.NaN;
       String symmetry = null;
@@ -388,7 +389,7 @@ public class MoldenReader extends MopacSlaterReader {
 
   private boolean readFreqsAndModes() throws Exception {
     String[] tokens;
-    JmolList<String> frequencies = new  JmolList<String>();
+    List<String> frequencies = new  List<String>();
  //   BitSet bsOK = new BitSet();
  //   int iFreq = 0;
     while (readLine() != null && line.indexOf('[') < 0) {
@@ -449,7 +450,7 @@ max-force
 
   */
   private boolean readGeometryOptimization() throws Exception {
-    JmolList<String> energies = new  JmolList<String>();
+    List<String> energies = new  List<String>();
     readLine(); // energy
     while (readLine() != null 
         && line.indexOf("force") < 0)

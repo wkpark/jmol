@@ -25,12 +25,13 @@
 package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
 
 import org.jmol.api.SmilesMatcherInterface;
+import org.jmol.java.BS;
 import org.jmol.minimize.MinAngle;
 import org.jmol.minimize.MinAtom;
 import org.jmol.minimize.MinBond;
@@ -39,8 +40,7 @@ import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Minimizer;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
@@ -202,7 +202,7 @@ public class ForceFieldMMFF extends ForceField {
   private static final int TYPE_OOP = 0xD;     // 00 1101;
   
 
-  private static JmolList<AtomType> atomTypes;
+  private static List<AtomType> atomTypes;
   private static Map<Integer, Object> ffParams;
 
   private int[] rawAtomTypes;
@@ -225,7 +225,7 @@ public class ForceFieldMMFF extends ForceField {
    * vRings[2] list of all 5-membered rings
    * vRings[3] list of aromatic 5-membered and 6-membered rings
    */
-  private JmolList<BS>[] vRings;
+  private List<BS>[] vRings;
   
   public ForceFieldMMFF(Minimizer m) {
     this.minimizer = m;
@@ -453,7 +453,7 @@ public class ForceFieldMMFF extends ForceField {
 
   
   private void getAtomTypes(String fileName) {
-    JmolList<AtomType> types = new  JmolList<AtomType>();
+    List<AtomType> types = new  List<AtomType>();
     String line = null;
     try {
       BufferedReader br = getBufferedReader(fileName);
@@ -804,8 +804,8 @@ public class ForceFieldMMFF extends ForceField {
    */
   private static int[] setAtomTypes(Atom[] atoms, BS bsAtoms,
                                     SmilesMatcherInterface smartsMatcher,
-                                    JmolList<BS>[] vRings, boolean allowUnknowns) {
-    JmolList<BS> bitSets = new  JmolList<BS>();
+                                    List<BS>[] vRings, boolean allowUnknowns) {
+    List<BS> bitSets = new  List<BS>();
     String[] smarts = new String[atomTypes.size()];
     int[] types = new int[atoms.length];
     BS bsElements = new BS();
@@ -1012,7 +1012,7 @@ public class ForceFieldMMFF extends ForceField {
     return minAtoms[iAtom].ffType;
   }
   
-  private boolean checkRings(JmolList<BS> v, int[] minlist, int n) {
+  private boolean checkRings(List<BS> v, int[] minlist, int n) {
     if (v != null)
       for (int i = v.size(); --i >= 0;) {
         BS bs = v.get(i);

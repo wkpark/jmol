@@ -29,8 +29,8 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.P4;
-import org.jmol.util.SB;
+import javajs.vec.P4;
+import javajs.lang.SB;
 import org.jmol.jvxl.data.JvxlCoder;
 
 public class JvxlReader extends JvxlXmlReader {

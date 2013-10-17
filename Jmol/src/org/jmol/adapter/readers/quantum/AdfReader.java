@@ -27,11 +27,11 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.quantum.SlaterData;
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
 //import org.jmol.util.Escape;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -69,7 +69,7 @@ public class AdfReader extends SlaterReader {
 
   
   private Map<String, SymmetryData> htSymmetries;
-  private JmolList<SymmetryData> vSymmetries;
+  private List<SymmetryData> vSymmetries;
   private String energy = null;
   private int nXX = 0;
   private String symLine;
@@ -231,7 +231,7 @@ OR
  B1
  B2
      */
-    vSymmetries = new  JmolList<SymmetryData>();
+    vSymmetries = new  List<SymmetryData>();
     htSymmetries = new Hashtable<String, SymmetryData>();
     readLine();
     int index = 0;

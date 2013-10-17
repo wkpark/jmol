@@ -27,7 +27,7 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 import java.util.Map;
 
@@ -56,7 +56,7 @@ public class GamessUKReader extends GamessReader {
     if (line.indexOf("molecular geometry") >= 0) {
       if (!doGetModel(++modelNumber, null))
         return checkLastModel();
-      atomNames = new  JmolList<String>();
+      atomNames = new  List<String>();
       readAtomsInBohrCoordinates();
       return true;
     }
@@ -189,13 +189,13 @@ public class GamessUKReader extends GamessReader {
    ======================================================================================
 
    */
-  private JmolList<String> symmetries;
-  private JmolList<Float> occupancies;
+  private List<String> symmetries;
+  private List<Float> occupancies;
    
    private void readOrbitalSymmetryAndOccupancy() throws Exception {
      readLines(4);
-     symmetries = new  JmolList<String>();
-     occupancies = new  JmolList<Float>();
+     symmetries = new  List<String>();
+     occupancies = new  List<Float>();
      while (readLine() != null && line.indexOf("====") < 0) {
        String[] tokens = getTokensStr(line.substring(20));
        symmetries.addLast(tokens[0] + " " + tokens[1]);

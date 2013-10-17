@@ -3,14 +3,15 @@ package org.jmol.adapter.readers.pymol;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.BS;
-import org.jmol.util.JmolList;
+import org.jmol.java.BS;
+
+import javajs.util.List;
 
 class PyMOLGroup {
   String name;
   String objectNameID;
   Map<String, PyMOLGroup> list = new Hashtable<String, PyMOLGroup>();
-  JmolList<Object> object;
+  List<Object> object;
   boolean visible = true;
   boolean occluded = false;
   BS bsAtoms = new BS();

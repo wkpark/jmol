@@ -26,7 +26,7 @@
 package org.jmol.symmetry;
 
 
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.util.SimpleUnitCell;
 
 import java.util.Map;

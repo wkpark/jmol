@@ -26,9 +26,9 @@
 package org.jmol.symmetry;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3i;
-import org.jmol.util.SB;
+import javajs.lang.SB;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3i;
 
 class HallRotationTerm {
   

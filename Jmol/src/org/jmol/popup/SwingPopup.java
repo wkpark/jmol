@@ -24,7 +24,7 @@
 package org.jmol.popup;
 
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;

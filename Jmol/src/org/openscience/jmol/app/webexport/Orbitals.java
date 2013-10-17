@@ -168,7 +168,7 @@ public class Orbitals extends JPanel {//implements ActionListener {
 //
 //      //Create the list and list view to handle the list of 
 //      //orbital files.
-////      ArrayListTransferHandler arrayListHandler = new JmolListTransferHandler(
+////      ArrayListTransferHandler arrayListHandler = new ListTransferHandler(
 //  //        null);
 //      DefaultListModel<String> orbfilelist = new DefaultListModel<String>();
 //      OrbList = new JList<String>(orbfilelist);

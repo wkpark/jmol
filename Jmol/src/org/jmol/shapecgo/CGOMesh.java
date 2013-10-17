@@ -24,14 +24,14 @@
 
 package org.jmol.shapecgo;
 
+import org.jmol.java.BS;
 import org.jmol.shapespecial.DrawMesh;
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
-import org.jmol.util.Tuple3f;
+import javajs.vec.Tuple3f;
 
 /*
  * Compiled Graphical Object -- ala PyMOL
@@ -41,7 +41,7 @@ import org.jmol.util.Tuple3f;
 
 public class CGOMesh extends DrawMesh {
   
-  public JmolList<Object> cmds;
+  public List<Object> cmds;
 
   CGOMesh(String thisID, short colix, int index) {
     super(thisID, colix, index);
@@ -112,7 +112,7 @@ public class CGOMesh extends DrawMesh {
   }
 
   @SuppressWarnings("unchecked")
-  boolean set(JmolList<Object> list) {
+  boolean set(List<Object> list) {
     // vertices will be in list.get(0). normals?
     width = 200;
     diameter = 0;//200;
@@ -122,10 +122,10 @@ public class CGOMesh extends DrawMesh {
       if (list.get(0) instanceof Float) {
         cmds = list;
       } else {
-        cmds = (JmolList<Object>) list.get(1);
+        cmds = (List<Object>) list.get(1);
         if (cmds == null)
-          cmds = (JmolList<Object>) list.get(0);
-        cmds = (JmolList<Object>) cmds.get(1);
+          cmds = (List<Object>) list.get(0);
+        cmds = (List<Object>) cmds.get(1);
       }
 
       int n = cmds.size();
@@ -185,8 +185,8 @@ public class CGOMesh extends DrawMesh {
     nList.addLast(Short.valueOf(Normix.get2SidedNormix(vTemp, bsTemp)));
   }
 
-  public JmolList<Short> nList = new JmolList<Short>();
-  public JmolList<Short> cList = new JmolList<Short>();
+  public List<Short> nList = new List<Short>();
+  public List<Short> cList = new List<Short>();
   
   /**
    * 

@@ -26,7 +26,7 @@ package org.jmol.script;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 
 
 import org.jmol.api.Interface;
@@ -34,11 +34,11 @@ import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.api.JmolScriptManager;
 import org.jmol.api.ZInputStream;
 import org.jmol.io.JmolBinary;
+import org.jmol.java.BS;
 import org.jmol.thread.JmolThread;
-import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.StatusManager;
@@ -60,9 +60,9 @@ public class ScriptManager implements JmolScriptManager {
   private JmolThread commandWatcherThread;
   
 
-  public JmolList<JmolList<Object>> scriptQueue = new  JmolList<JmolList<Object>>();
+  public List<List<Object>> scriptQueue = new  List<List<Object>>();
 
-  public JmolList<JmolList<Object>> getScriptQueue() {
+  public List<List<Object>> getScriptQueue() {
     return scriptQueue;
   }
 
@@ -124,7 +124,7 @@ public class ScriptManager implements JmolScriptManager {
         (strScript.indexOf("javascript") < 0 
             || strScript.indexOf("#javascript ") >= 0));
     // scripts with #javascript will be processed at the browser end
-    JmolList<Object> scriptItem = new  JmolList<Object>();
+    List<Object> scriptItem = new  List<Object>();
     scriptItem.addLast(strScript);
     scriptItem.addLast(statusList);
     scriptItem.addLast(returnType);
@@ -195,10 +195,10 @@ public class ScriptManager implements JmolScriptManager {
     queueThreads[pt].start();
   }
 
-  public JmolList<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
+  public List<Object> getScriptItem(boolean watching, boolean isByCommandWatcher) {
     if (viewer.isSingleThreaded && viewer.queueOnHold)
       return null;
-    JmolList<Object> scriptItem = scriptQueue.get(0);
+    List<Object> scriptItem = scriptQueue.get(0);
     int flag = (((Integer) scriptItem.get(5)).intValue());
     boolean isOK = (watching ? flag < 0 
         : isByCommandWatcher ? flag == 0
@@ -286,7 +286,7 @@ public class ScriptManager implements JmolScriptManager {
   public void runScriptNow() {
     // from ScriptQueueThread
     if (scriptQueue.size() > 0) {
-      JmolList<Object> scriptItem = getScriptItem(true, true);
+      List<Object> scriptItem = getScriptItem(true, true);
       if (scriptItem != null) {
         scriptItem.set(5, Integer.valueOf(0));
         startScriptQueue(true);

@@ -25,19 +25,19 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.SB;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.lang.SB;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.constant.EnumPalette;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.Group;
@@ -210,7 +210,7 @@ public abstract class Shape {
     if (propertyName == "setProperties") {
       if (bsSelected == null)
         bsSelected = viewer.getSelectionSet(false);
-      JmolList<Object[]> propertyList = (JmolList<Object[]>) value;
+      List<Object[]> propertyList = (List<Object[]>) value;
       while (propertyList.size() > 0) {
         Object[] data = propertyList.remove(0);
         setProperty(((String) data[0]).intern(), data[1], bsSelected);
@@ -338,7 +338,7 @@ public abstract class Shape {
         pid) : colix);
   }
 
-  public JmolList<Map<String, Object>> getShapeDetail() {
+  public List<Map<String, Object>> getShapeDetail() {
     return null;
   }
 

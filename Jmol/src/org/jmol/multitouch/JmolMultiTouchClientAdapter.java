@@ -25,7 +25,7 @@ package org.jmol.multitouch;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 import org.jmol.viewer.Viewer;
 
 public abstract class JmolMultiTouchClientAdapter implements JmolMultiTouchAdapter {

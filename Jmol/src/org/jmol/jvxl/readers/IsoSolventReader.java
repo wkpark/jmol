@@ -24,24 +24,24 @@
 
 package org.jmol.jvxl.readers;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Hashtable;
 
 import java.util.Map;
 
 
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure; 
 import org.jmol.util.MeshSurface;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.P4;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.P4;
 import org.jmol.util.TempArray;
-import org.jmol.util.V3;
+import javajs.vec.V3;
 
 import org.jmol.api.AtomIndexIterator;
+import org.jmol.java.BS;
 import org.jmol.jvxl.data.MeshData;
 
 class IsoSolventReader extends AtomDataReader {
@@ -146,8 +146,8 @@ class IsoSolventReader extends AtomDataReader {
   private BS bsSurfacePoints, bsSurfaceDone;
   private BS[] bsLocale;
   private Map<String, Edge> htEdges;
-  private JmolList<Edge> vEdges;
-  private JmolList<Face> vFaces;
+  private List<Edge> vEdges;
+  private List<Face> vFaces;
   protected V3 vTemp = new V3();
   protected P4 plane = new P4();
 
@@ -247,7 +247,7 @@ class IsoSolventReader extends AtomDataReader {
     }
     unsetVoxelData();
     // apply cap here
-    JmolList<Object[]> info = params.slabInfo;
+    List<Object[]> info = params.slabInfo;
     if (info != null)
       for (int i = 0; i < info.size(); i++)
         if (((Boolean) info.get(i)[2]).booleanValue()
@@ -706,7 +706,7 @@ class IsoSolventReader extends AtomDataReader {
       // PHASE I: Construction of the surface edge and face data
 
       // 1) -- same as MSMS -- get edges
-      vEdges = new  JmolList<Edge>();
+      vEdges = new  List<Edge>();
       bsLocale = new BS[myAtomCount];
       htEdges = new Hashtable<String, Edge>();
       getEdges();
@@ -714,7 +714,7 @@ class IsoSolventReader extends AtomDataReader {
 
       // 2) -- as in MSMS BUT get two faces for each atom triple
       // 3) -- check for interference of solvent position with other atoms
-      vFaces = new  JmolList<Face>();
+      vFaces = new  List<Face>();
       getFaces();
       Logger.info(vFaces.size() + " faces");
       bsLocale = null;
@@ -807,14 +807,14 @@ class IsoSolventReader extends AtomDataReader {
       this.ib = Math.max(ia, ib);
     }
 
-    private JmolList<Face> aFaces;
+    private List<Face> aFaces;
     void addFace(Face f) {
       if (f == null) {
         nInvalid++;
         return;
       }
       if (aFaces == null)
-        aFaces = new  JmolList<Face>();
+        aFaces = new  List<Face>();
       aFaces.addLast(f);
       nFaces++;
     }

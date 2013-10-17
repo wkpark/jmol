@@ -26,17 +26,17 @@ package org.jmol.render;
 
 
 import org.jmol.api.SymmetryInterface;
+import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shape.MeshCollection;
-import org.jmol.util.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.GData;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.P4;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.P4;
+import javajs.vec.V3;
 
 public abstract class MeshRenderer extends ShapeRenderer {
 

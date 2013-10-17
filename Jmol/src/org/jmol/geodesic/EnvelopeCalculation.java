@@ -24,14 +24,14 @@
 
 package org.jmol.geodesic;
 
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Geodesic;
-import org.jmol.util.Matrix3f;
 import org.jmol.util.Normix;
-import org.jmol.util.P3;
-import org.jmol.util.V3;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
+import javajs.vec.V3;
 import org.jmol.viewer.JC;
 
 import org.jmol.api.AtomIndexIterator;
@@ -39,6 +39,7 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
+import org.jmol.java.BS;
 
 
 

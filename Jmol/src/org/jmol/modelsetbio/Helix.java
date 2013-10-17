@@ -26,8 +26,8 @@ package org.jmol.modelsetbio;
 
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Measure;
-import org.jmol.util.P3;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.V3;
 
 public class Helix extends ProteinStructure {
 

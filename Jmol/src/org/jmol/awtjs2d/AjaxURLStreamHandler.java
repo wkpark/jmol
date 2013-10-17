@@ -5,7 +5,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 /**
  * 

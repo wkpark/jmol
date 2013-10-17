@@ -29,24 +29,25 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
+import org.jmol.java.BS;
 import org.jmol.script.T;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
+import javajs.util.List;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Normix;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P4;
 import org.jmol.util.Quaternion;
-import org.jmol.util.SB;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.lang.SB;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 import org.jmol.api.SymmetryInterface;
 
 //import javax.vecmath.Matrix3f;
@@ -59,7 +60,7 @@ public class Mesh extends MeshSurface {
   
   public short meshColix;
   public short[] normixes;
-  public JmolList<P3[]> lineData;
+  public List<P3[]> lineData;
   public String thisID;
   public boolean isValid = true;
   public String scriptCommand;
@@ -241,7 +242,7 @@ public class Mesh extends MeshSurface {
 
   //public Vector data1;
   //public Vector data2;
-  //public JmolList<Object> xmlProperties;
+  //public List<Object> xmlProperties;
   public boolean colorDensity;
   public Object cappingObject;
   public Object slabbingObject;
@@ -368,7 +369,7 @@ public class Mesh extends MeshSurface {
    * @param showWithinDistance2
    * @param isWithinNot
    */
-  public void setShowWithin(JmolList<P3> showWithinPoints,
+  public void setShowWithin(List<P3> showWithinPoints,
                             float showWithinDistance2, boolean isWithinNot) {
     if (showWithinPoints.size() == 0) {
       bsDisplay = (isWithinNot ? BSUtil.newBitSet2(0, vertexCount) : null);
@@ -380,7 +381,7 @@ public class Mesh extends MeshSurface {
         bsDisplay.set(i);
   }
 
-  public static boolean checkWithin(P3 pti, JmolList<P3> withinPoints,
+  public static boolean checkWithin(P3 pti, List<P3> withinPoints,
                                     float withinDistance2, boolean isWithinNot) {
     if (withinPoints.size() != 0)
       for (int i = withinPoints.size(); --i >= 0;)

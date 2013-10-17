@@ -5,7 +5,7 @@ import java.io.DataInputStream;
 import java.util.Map;
 
 import org.jmol.io.JmolOutputChannel;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 public interface JmolDocument {
 

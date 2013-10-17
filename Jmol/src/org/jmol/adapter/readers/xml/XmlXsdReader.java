@@ -25,7 +25,7 @@ package org.jmol.adapter.readers.xml;
 
 
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.Txt;
 
 /**

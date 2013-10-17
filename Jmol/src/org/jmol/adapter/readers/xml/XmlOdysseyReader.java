@@ -27,7 +27,7 @@ package org.jmol.adapter.readers.xml;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 /**
  * An Odyssey xodydata reader

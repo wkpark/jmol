@@ -32,7 +32,7 @@ public class SB {
   public static SB newN(int n) {
     /**
      * @j2sNative
-     *            return new javajs.util.SB(); 
+     *            return new javajs.lang.SB(); 
      */
     {
       // not perfect, because it requires defining sb twice. 
@@ -47,7 +47,7 @@ public class SB {
     /**
      * @j2sNative 
      * 
-     * var sb = new javajs.util.SB();
+     * var sb = new javajs.lang.SB();
      * sb.s = s;
      * return sb; 
      * 

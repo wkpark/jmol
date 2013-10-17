@@ -30,7 +30,7 @@ import org.jmol.api.JmolAdapter;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 
 public class GromacsReader extends AtomSetCollectionReader {

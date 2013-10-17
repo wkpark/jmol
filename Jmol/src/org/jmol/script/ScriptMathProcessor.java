@@ -23,7 +23,7 @@
  */
 package org.jmol.script;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import java.util.Arrays;
 
 import java.util.Hashtable;
@@ -32,23 +32,24 @@ import java.util.Set;
 import java.util.Map;
 
 
+import org.jmol.java.BS;
 import org.jmol.modelset.Bond.BondSet;
-import org.jmol.util.ArrayUtil;
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
+import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.Matrix4f;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.Matrix4f;
+import javajs.vec.P3;
+import javajs.vec.P4;
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 
 public class ScriptMathProcessor {
@@ -106,7 +107,7 @@ public class ScriptMathProcessor {
       isOK = operate();
     if (isOK) {
       if (asVector) {
-        JmolList<SV> result = new  JmolList<SV>();
+        List<SV> result = new  List<SV>();
         for (int i = 0; i <= xPt; i++)
           result.addLast(SV.selectItemVar(xStack[i]));
         return SV.newVariable(T.vector, result);
@@ -119,7 +120,7 @@ public class ScriptMathProcessor {
           x = SV.selectItemVar(x);
         if (asBitSet && x.tok == 
           T.varray)
-          x = SV.newVariable(T.bitset, SV.unEscapeBitSetArray((JmolList<SV>)x.value, false));
+          x = SV.newVariable(T.bitset, SV.unEscapeBitSetArray((List<SV>)x.value, false));
         return x;
       }
     }
@@ -188,7 +189,7 @@ public class ScriptMathProcessor {
     return wasX = true;
   }
 
-  public boolean addXList(JmolList<?> x) {
+  public boolean addXList(List<?> x) {
     putX(SV.getVariableList(x));
     return wasX = true;
   }
@@ -886,7 +887,7 @@ public class ScriptMathProcessor {
           bs.set(x);
           return addXBs(bs);
         case T.varray:
-          JmolList<SV> sv = (JmolList<SV>) x2.value;
+          List<SV> sv = (List<SV>) x2.value;
           for (int i = sv.size(); --i >= 0;) {
             int b = sv.get(i).asInt();
             if (b >= 0)
@@ -1446,7 +1447,7 @@ public class ScriptMathProcessor {
     if (chk)
       return addXStr("");
     BS bs = SV.bsSelectVar(x2);
-    JmolList<T> tokens;
+    List<T> tokens;
     int n = bs.cardinality();
     if (n == 0
         || (tokens = T.getAtomPropertiesLike(abbr.substring(0, abbr
@@ -1482,7 +1483,7 @@ public class ScriptMathProcessor {
       return addXStr("");
     BoxInfo b = viewer.getBoxInfo(SV.bsSelectVar(x2), 1);
     P3[] pts = b.getBoundBoxPoints(true);
-    JmolList<P3> list = new  JmolList<P3>();
+    List<P3> list = new  List<P3>();
     for (int i = 0; i < 4; i++)
       list.addLast(pts[i]);
     return addXList(list);

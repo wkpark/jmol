@@ -120,12 +120,13 @@ import org.jmol.io.XmlUtil;
 import org.jmol.jvxl.readers.SurfaceReader;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Matrix3f;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.P4;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.P4;
+import javajs.lang.SB;
+import javajs.vec.V3;
 
 public class VolumeData implements VolumeDataInterface {
 

@@ -31,21 +31,21 @@ import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumVdw;
+import org.jmol.java.BS;
 import org.jmol.script.T;
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolList;
-import org.jmol.util.P3;
+import javajs.util.List;
+import javajs.vec.P3;
 import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
-import org.jmol.util.Point3fi;
-import org.jmol.util.SB;
-import org.jmol.util.Tuple3f;
-import org.jmol.util.V3;
+import javajs.lang.SB;
+import javajs.vec.Point3fi;
+import javajs.vec.Tuple3f;
+import javajs.vec.V3;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
@@ -1464,7 +1464,7 @@ final public class Atom extends Point3fi implements JmolNode {
     return group.isCrossLinked(((Atom) node).getGroup());
   }
 
-  public boolean getCrossLinkLeadAtomIndexes(JmolList<Integer> vReturn) {
+  public boolean getCrossLinkLeadAtomIndexes(List<Integer> vReturn) {
     return group.getCrossLinkLead(vReturn);
   }
   

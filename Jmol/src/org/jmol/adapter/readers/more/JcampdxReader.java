@@ -26,12 +26,10 @@ package org.jmol.adapter.readers.more;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Txt;
 
 import org.jmol.adapter.readers.molxyz.MolReader;
@@ -40,12 +38,12 @@ import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.java.BS;
 
-import org.jmol.util.BS;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.SB;
+import javajs.lang.SB;
 
 /**
  * A preliminary reader for JCAMP-DX files having ##$MODELS= and ##$PEAKS= records
@@ -101,7 +99,7 @@ public class JcampdxReader extends MolReader {
   private String thisModelID;
   private AtomSetCollection models;
   private String modelIdList = "";
-  private  JmolList<String> peakData = new  JmolList<String>();
+  private  List<String> peakData = new  List<String>();
   private String lastModel = "";
   private int selectedModel;
   private int[] peakIndex;
@@ -352,7 +350,7 @@ public class JcampdxReader extends MolReader {
       piUnitsX = getQuotedAttribute(line, "xLabel");
       piUnitsY = getQuotedAttribute(line, "yLabel");
       Map<String, Object[]> htSets = new Hashtable<String, Object[]>();
-      List<Object[]> list = new ArrayList<Object[]>();
+      List<Object[]> list = new List<Object[]>();
       while ((line = reader.readLine()) != null
           && !(line = line.trim()).startsWith("</" + tag1)) {
         if (line.startsWith(tag2)) {
@@ -384,7 +382,7 @@ public class JcampdxReader extends MolReader {
             o = new Object[] { stringInfo,
                 (atoms == null ? null : new BS()) };
             htSets.put(key, o);
-            list.add(o);
+            list.addLast(o);
           }
           BS bs = (BS) o[1];
           if (bs != null) {
@@ -454,7 +452,7 @@ public class JcampdxReader extends MolReader {
     // only in JSpecView
   }
 
-  private void add(JmolList<String> peakData, String info) {
+  private void add(List<String> peakData, String info) {
     peakData.addLast(info);
   }
 
@@ -505,11 +503,11 @@ public class JcampdxReader extends MolReader {
       bsModels.set(i);      
       String s;
       if (getAttribute(line, "atoms").length() != 0) {
-        JmolList<String> peaks = (JmolList<String>) atomSetCollection
+        List<String> peaks = (List<String>) atomSetCollection
             .getAtomSetAuxiliaryInfoValue(i, key);
         if (peaks == null)
           atomSetCollection.setAtomSetAuxiliaryInfoForSet(key,
-              peaks = new  JmolList<String>(), i);
+              peaks = new  List<String>(), i);
         peaks.addLast(line);
         s = type + ": ";
       } else if (atomSetCollection.getAtomSetAuxiliaryInfoValue(i, "jdxModelSelect") == null) {

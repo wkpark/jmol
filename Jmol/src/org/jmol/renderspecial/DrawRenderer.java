@@ -26,23 +26,24 @@ package org.jmol.renderspecial;
 
 
 
+import org.jmol.java.BS;
 import org.jmol.render.MeshRenderer;
 import org.jmol.script.T;
 import org.jmol.shape.Mesh;
 import org.jmol.shapespecial.Draw;
 import org.jmol.shapespecial.DrawMesh;
 import org.jmol.shapespecial.Draw.EnumDrawType;
-import org.jmol.util.AxisAngle4f;
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.GData;
 import org.jmol.util.Hermite;
-import org.jmol.util.JmolList;
-import org.jmol.util.Matrix3f;
+import javajs.util.List;
 import org.jmol.util.Measure;
-import org.jmol.util.P3;
-import org.jmol.util.P3i;
-import org.jmol.util.V3;
+
+import javajs.vec.AxisAngle4f;
+import javajs.vec.Matrix3f;
+import javajs.vec.P3;
+import javajs.vec.P3i;
+import javajs.vec.V3;
 import org.jmol.viewer.ActionManager;
 
 public class DrawRenderer extends MeshRenderer {
@@ -340,7 +341,7 @@ public class DrawRenderer extends MeshRenderer {
     }
   }
 
-  private void drawLineData(JmolList<P3[]> lineData) {
+  private void drawLineData(List<P3[]> lineData) {
     if (diameter == 0)
       diameter = 3;
     for (int i = lineData.size(); --i >= 0;) {

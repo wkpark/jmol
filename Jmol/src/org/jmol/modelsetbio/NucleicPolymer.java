@@ -28,20 +28,20 @@ package org.jmol.modelsetbio;
 
 
 import org.jmol.io.JmolOutputChannel;
+import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.HBond;
 import org.jmol.modelset.LabelToken;
 import org.jmol.script.T;
-import org.jmol.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolList;
+import javajs.util.List;
 import org.jmol.util.Measure;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
-import org.jmol.util.SB;
-import org.jmol.util.V3;
+import javajs.vec.P3;
+import javajs.vec.P4;
+import javajs.lang.SB;
+import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 
 
@@ -93,7 +93,7 @@ public class NucleicPolymer extends BioPolymer {
   
   @Override
   public void calcRasmolHydrogenBonds(BioPolymer polymer, BS bsA, 
-                                      BS bsB, JmolList<Bond> vAtoms,
+                                      BS bsB, List<Bond> vAtoms,
                                       int nMaxPerResidue, int[][][] min, 
                                       boolean checkDistances, boolean dsspIgnoreHydrogens) {
     NucleicPolymer other = (NucleicPolymer) polymer;
@@ -155,7 +155,7 @@ public class NucleicPolymer extends BioPolymer {
     }
   }
 
-  static protected int addHydrogenBond(JmolList<Bond> vAtoms, Atom atom1, Atom atom2) {
+  static protected int addHydrogenBond(List<Bond> vAtoms, Atom atom1, Atom atom2) {
     if (atom1 == null || atom2 == null)
       return 0;
     vAtoms.addLast(new HBond(atom1, atom2, JmolEdge.BOND_H_NUCLEOTIDE, (short) 1, C.INHERIT_ALL, 0));

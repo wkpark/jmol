@@ -25,7 +25,7 @@ package org.jmol.jvxl.readers;
 
 
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
+import javajs.vec.P3;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;

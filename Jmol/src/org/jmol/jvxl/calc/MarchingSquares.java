@@ -29,10 +29,10 @@ import java.util.Map;
 
 import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.VolumeData;
-import org.jmol.util.ArrayUtil;
+import javajs.array.ArrayUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.P3;
-import org.jmol.util.P4;
+import javajs.vec.P3;
+import javajs.vec.P4;
 
 public class MarchingSquares {
 

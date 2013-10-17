@@ -1,7 +1,8 @@
 package org.jmol.g3d;
 
+import javajs.vec.P3i;
+
 import org.jmol.util.JmolFont;
-import org.jmol.util.P3i;
 
 class TextString extends P3i {
   

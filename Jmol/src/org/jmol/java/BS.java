@@ -23,27 +23,21 @@
  * have any questions.
  */
 
-package javajs.util;
+package org.jmol.java;
 
-import javajs.lang.SB;
+import org.jmol.util.SB;
 
 
 /**
  * 
- * a fast 32-bit BitSet optimized for Java2Script -- about 25 times faster than
- * java.util.BitSet
+ * a fast 64-bit BitSet optimized as 32-bit in Java2Script -- about 25 times faster than
+ * java.util.BitSet in JavaScript.
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  * 
- *         Additions by Bob Hanson to allow for JavaScript mix of int/long Note
- *         that Firefox (Sept 2012) does not really treat "Int32Array" as such,
- *         because any element can be pushed into being a 64-bit number, which
- *         really isn't because the last 8 bits are not usable.
- * 
- *         This class implements a vector of bits that grows as needed. Each
+ *         This class implements a 64-bit vector of bits that grows as needed. Each
  *         component of the bit set has a {@code boolean} value. The bits of a
  *         {@code BitSet} are indexed by nonnegative integers. Individual
- *         indexed bits can be examined, set, or cleared. One {@code BitSet} may
  *         be used to modify the contents of another {@code BitSet} through
  *         logical AND, logical inclusive OR, and logical exclusive OR
  *         operations.
@@ -73,24 +67,23 @@ import javajs.lang.SB;
  * @author Martin Buchholz
  * @since JDK1.0
  */
-public class BitSet implements Cloneable {
+public class BS implements Cloneable {
   /*
-   * BitSets are packed into arrays of "words."
-   * 
-   * An int, which consists of 32 bits, requiring 5 address bits, is used for
-   * the JavaScript port.
+   * BitSets are packed into arrays of "words." Currently a word is a long,
+   * which consists of 64 bits, requiring 6 address bits. The choice of word
+   * size is determined purely by performance concerns.
    */
-  private final static int ADDRESS_BITS_PER_WORD = 5;
+  private final static int ADDRESS_BITS_PER_WORD = 6;
   private final static int BITS_PER_WORD = 1 << ADDRESS_BITS_PER_WORD;
+//  private final static int BIT_INDEX_MASK = BITS_PER_WORD - 1;
 
   /* Used to shift left or right for a partial word mask */
-  private static final int WORD_MASK = 0xffffffff;
-
+  private static final long WORD_MASK = 0xffffffffffffffffL;
 
   /**
    * The internal field corresponding to the serialField "bits".
    */
-  private int[] words;
+  private long[] words;
 
   /**
    * The number of words in the logical size of this BitSet.
@@ -109,31 +102,16 @@ public class BitSet implements Cloneable {
   /**
    * Given a bit index, return word index containing it.
    * @param bitIndex 
-   * @return b
+   * @return index
    */
   private static int wordIndex(int bitIndex) {
     return bitIndex >> ADDRESS_BITS_PER_WORD;
   }
 
   /**
-   * Sets the field wordsInUse to the logical size in words of the bit set.
-   * WARNING:This method assumes that the number of words actually in use is
-   * less than or equal to the current value of wordsInUse!
-   */
-  private void recalculateWordsInUse() {
-    // Traverse the bitset until a used word is found
-    int i;
-    for (i = wordsInUse - 1; i >= 0; i--)
-      if (words[i] != 0)
-        break;
-
-    wordsInUse = i + 1; // The new logical size
-  }
-
-  /**
    * Creates a new bit set. All bits are initially {@code false}.
    */
-  public BitSet() {
+  public BS() {
     initWords(BITS_PER_WORD);
     sizeIsSticky = false;
   }
@@ -149,10 +127,33 @@ public class BitSet implements Cloneable {
    * @throws NegativeArraySizeException
    *           if the specified initial size is negative
    */
-  public static BitSet newN(int nbits) {
-    BitSet bs = new BitSet();
+  public static BS newN(int nbits) {
+    BS bs = new BS();
     bs.init(nbits);
     return bs;
+  }
+
+  // /**
+  // * Every public method must preserve these invariants.
+  // */
+  // private void checkInvariants() {
+  // assert(wordsInUse == 0 || words[wordsInUse - 1] != 0);
+  // assert(wordsInUse >= 0 && wordsInUse <= words.length);
+  // assert(wordsInUse == words.length || words[wordsInUse] == 0);
+  // }
+  /**
+   * Sets the field wordsInUse to the logical size in words of the bit set.
+   * WARNING:This method assumes that the number of words actually in use is
+   * less than or equal to the current value of wordsInUse!
+   */
+  private void recalculateWordsInUse() {
+    // Traverse the bitset until a used word is found
+    int i;
+    for (i = wordsInUse - 1; i >= 0; i--)
+      if (words[i] != 0)
+        break;
+
+    wordsInUse = i + 1; // The new logical size
   }
 
   private void init(int nbits) {
@@ -164,7 +165,7 @@ public class BitSet implements Cloneable {
   }
 
   private void initWords(int nbits) {
-    words = new int[wordIndex(nbits - 1) + 1];
+    words = new long[wordIndex(nbits - 1) + 1];
   }
 
   /**
@@ -198,6 +199,86 @@ public class BitSet implements Cloneable {
     }
   }
 
+  // /**
+  // * Checks that fromIndex ... toIndex is a valid range of bit indices.
+  // */
+  // private static void checkRange(int fromIndex, int toIndex) {
+  // if (fromIndex < 0)
+  // throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
+  // if (toIndex < 0)
+  // throw new IndexOutOfBoundsException("toIndex < 0: " + toIndex);
+  // if (fromIndex > toIndex)
+  // throw new IndexOutOfBoundsException("fromIndex: " + fromIndex +
+  // " > toIndex: " + toIndex);
+  // }
+
+//  /**
+//   * Sets the bit at the specified index to the complement of its current value.
+//   * 
+//   * @param bitIndex
+//   *          the index of the bit to flip
+//   * @throws IndexOutOfBoundsException
+//   *           if the specified index is negative
+//   * @since 1.4
+//   */
+//  public void flip(int bitIndex) {
+//    if (bitIndex < 0)
+//      throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
+//
+//    int wordIndex = wordIndex(bitIndex);
+//    expandTo(wordIndex);
+//
+//    words[wordIndex] ^= (1L << bitIndex);
+//
+//    recalculateWordsInUse();
+//    // checkInvariants();
+//  }
+//
+//  /**
+//   * Sets each bit from the specified {@code fromIndex} (inclusive) to the
+//   * specified {@code toIndex} (exclusive) to the complement of its current
+//   * value.
+//   * 
+//   * @param fromIndex
+//   *          index of the first bit to flip
+//   * @param toIndex
+//   *          index after the last bit to flip
+//   * @throws IndexOutOfBoundsException
+//   *           if {@code fromIndex} is negative, or {@code toIndex} is negative,
+//   *           or {@code fromIndex} is larger than {@code toIndex}
+//   * @since 1.4
+//   */
+//  public void flip(int fromIndex, int toIndex) {
+//    // checkRange(fromIndex, toIndex);
+//
+//    if (fromIndex == toIndex)
+//      return;
+//
+//    int startWordIndex = wordIndex(fromIndex);
+//    int endWordIndex = wordIndex(toIndex - 1);
+//    expandTo(endWordIndex);
+//
+//    long firstWordMask = WORD_MASK << fromIndex;
+//    long lastWordMask = WORD_MASK >>> -toIndex;
+//    if (startWordIndex == endWordIndex) {
+//      // Case 1: One word
+//      words[startWordIndex] ^= (firstWordMask & lastWordMask);
+//    } else {
+//      // Case 2: Multiple words
+//      // Handle first word
+//      words[startWordIndex] ^= firstWordMask;
+//
+//      // Handle intermediate words, if any
+//      for (int i = startWordIndex + 1; i < endWordIndex; i++)
+//        words[i] ^= WORD_MASK;
+//
+//      // Handle last word
+//      words[endWordIndex] ^= lastWordMask;
+//    }
+//
+//    recalculateWordsInUse();
+//    // checkInvariants();
+//  }
 
   /**
    * Sets the bit at the specified index to {@code true}.
@@ -215,8 +296,9 @@ public class BitSet implements Cloneable {
     int wordIndex = wordIndex(bitIndex);
     expandTo(wordIndex);
 
-    words[wordIndex] |= (1 << bitIndex); // Restores invariants
+    words[wordIndex] |= (1L << bitIndex); // Restores invariants
 
+    // checkInvariants();
   }
 
   /**
@@ -251,6 +333,7 @@ public class BitSet implements Cloneable {
    * @since 1.4
    */
   public void setBits(int fromIndex, int toIndex) {
+    // checkRange(fromIndex, toIndex);
 
     if (fromIndex == toIndex)
       return;
@@ -260,8 +343,8 @@ public class BitSet implements Cloneable {
     int endWordIndex = wordIndex(toIndex - 1);
     expandTo(endWordIndex);
 
-    int firstWordMask = WORD_MASK << fromIndex;
-    int lastWordMask = WORD_MASK >>> -toIndex;
+    long firstWordMask = WORD_MASK << fromIndex;
+    long lastWordMask = WORD_MASK >>> -toIndex;
     if (startWordIndex == endWordIndex) {
       // Case 1: One word
       words[startWordIndex] |= (firstWordMask & lastWordMask);
@@ -277,7 +360,31 @@ public class BitSet implements Cloneable {
       // Handle last word (restores invariants)
       words[endWordIndex] |= lastWordMask;
     }
+
+    // checkInvariants();
   }
+
+//  /**
+//   * Sets the bits from the specified {@code fromIndex} (inclusive) to the
+//   * specified {@code toIndex} (exclusive) to the specified value.
+//   * 
+//   * @param fromIndex
+//   *          index of the first bit to be set
+//   * @param toIndex
+//   *          index after the last bit to be set
+//   * @param value
+//   *          value to set the selected bits to
+//   * @throws IndexOutOfBoundsException
+//   *           if {@code fromIndex} is negative, or {@code toIndex} is negative,
+//   *           or {@code fromIndex} is larger than {@code toIndex}
+//   * @since 1.4
+//   */
+//  public void setBitsTo(int fromIndex, int toIndex, boolean value) {
+//    if (value)
+//      setBits(fromIndex, toIndex);
+//    else
+//      clear(fromIndex, toIndex);
+//  }
 
   /**
    * Sets the bit specified by the index to {@code false}.
@@ -296,9 +403,10 @@ public class BitSet implements Cloneable {
     if (wordIndex >= wordsInUse)
       return;
 
-    words[wordIndex] &= ~(1 << bitIndex);
+    words[wordIndex] &= ~(1L << bitIndex);
 
     recalculateWordsInUse();
+    // checkInvariants();
   }
 
   /**
@@ -315,6 +423,8 @@ public class BitSet implements Cloneable {
    * @since 1.4
    */
   public void clearBits(int fromIndex, int toIndex) {
+    // checkRange(fromIndex, toIndex);
+
     if (fromIndex == toIndex)
       return;
 
@@ -328,8 +438,8 @@ public class BitSet implements Cloneable {
       endWordIndex = wordsInUse - 1;
     }
 
-    int firstWordMask = WORD_MASK << fromIndex;
-    int lastWordMask = WORD_MASK >>> -toIndex;
+    long firstWordMask = WORD_MASK << fromIndex;
+    long lastWordMask = WORD_MASK >>> -toIndex;
     if (startWordIndex == endWordIndex) {
       // Case 1: One word
       words[startWordIndex] &= ~(firstWordMask & lastWordMask);
@@ -347,6 +457,7 @@ public class BitSet implements Cloneable {
     }
 
     recalculateWordsInUse();
+    // checkInvariants();
   }
 
   /**
@@ -374,10 +485,70 @@ public class BitSet implements Cloneable {
     if (bitIndex < 0)
       throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
 
+    // checkInvariants();
+
     int wordIndex = wordIndex(bitIndex);
     return (wordIndex < wordsInUse)
-        && ((words[wordIndex] & (1 << bitIndex)) != 0);
+        && ((words[wordIndex] & (1L << bitIndex)) != 0);
   }
+//
+//  /**
+//   * Returns a new {@code BitSet} composed of bits from this {@code BitSet} from
+//   * {@code fromIndex} (inclusive) to {@code toIndex} (exclusive).
+//   * 
+//   * @param fromIndex
+//   *          index of the first bit to include
+//   * @param toIndex
+//   *          index after the last bit to include
+//   * @return a new {@code BitSet} from a range of this {@code BitSet}
+//   * @throws IndexOutOfBoundsException
+//   *           if {@code fromIndex} is negative, or {@code toIndex} is negative,
+//   *           or {@code fromIndex} is larger than {@code toIndex}
+//   * @since 1.4
+//   */
+//  public BitSet getBits(int fromIndex, int toIndex) {
+//    // checkRange(fromIndex, toIndex);
+//
+//    // checkInvariants();
+//
+//    int len = length();
+//
+//    // If no set bits in range return empty bitset
+//    if (len <= fromIndex || fromIndex == toIndex)
+//      return newN(0);
+//
+//    // An optimization
+//    if (toIndex > len)
+//      toIndex = len;
+//
+//    BitSet result = newN(toIndex - fromIndex);
+//    int targetWords = wordIndex(toIndex - fromIndex - 1) + 1;
+//    int sourceIndex = wordIndex(fromIndex);
+//    boolean wordAligned = ((fromIndex & BIT_INDEX_MASK) == 0);
+//
+//    // Process all words but the last word
+//    for (int i = 0; i < targetWords - 1; i++, sourceIndex++)
+//      result.words[i] = wordAligned ? words[sourceIndex]
+//          : (words[sourceIndex] >>> fromIndex)
+//              | (words[sourceIndex + 1] << -fromIndex);
+//
+//    // Process the last word
+//    long lastWordMask = WORD_MASK >>> -toIndex;
+//    result.words[targetWords - 1] = ((toIndex - 1) & BIT_INDEX_MASK) < (fromIndex & BIT_INDEX_MASK) ? /*
+//                                                                                                       * straddles
+//                                                                                                       * source
+//                                                                                                       * words
+//                                                                                                       */
+//    ((words[sourceIndex] >>> fromIndex) | (words[sourceIndex + 1] & lastWordMask) << -fromIndex)
+//        : ((words[sourceIndex] & lastWordMask) >>> fromIndex);
+//
+//    // Set wordsInUse correctly
+//    result.wordsInUse = targetWords;
+//    result.recalculateWordsInUse();
+//    // result.checkInvariants();
+//
+//    return result;
+//  }
 
   /**
    * Returns the index of the first bit that is set to {@code true} that occurs
@@ -407,15 +578,17 @@ public class BitSet implements Cloneable {
     if (fromIndex < 0)
       throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
 
+    // checkInvariants();
+
     int u = wordIndex(fromIndex);
     if (u >= wordsInUse)
       return -1;
 
-    int word = words[u] & (WORD_MASK << fromIndex);
+    long word = words[u] & (WORD_MASK << fromIndex);
 
     while (true) {
       if (word != 0)
-        return (u * BITS_PER_WORD) + Integer.numberOfTrailingZeros(word);
+        return (u * BITS_PER_WORD) + Long.numberOfTrailingZeros(word);
       if (++u == wordsInUse)
         return -1;
       word = words[u];
@@ -439,15 +612,17 @@ public class BitSet implements Cloneable {
     if (fromIndex < 0)
       throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
 
+    // checkInvariants();
+
     int u = wordIndex(fromIndex);
     if (u >= wordsInUse)
       return fromIndex;
 
-    int word = ~words[u] & (WORD_MASK << fromIndex);
+    long word = ~words[u] & (WORD_MASK << fromIndex);
 
     while (true) {
       if (word != 0)
-        return (u * BITS_PER_WORD) + Integer.numberOfTrailingZeros(word);
+        return (u * BITS_PER_WORD) + Long.numberOfTrailingZeros(word);
       if (++u == wordsInUse)
         return wordsInUse * BITS_PER_WORD;
       word = ~words[u];
@@ -467,7 +642,7 @@ public class BitSet implements Cloneable {
       return 0;
 
     return BITS_PER_WORD * (wordsInUse - 1)
-        + (BITS_PER_WORD - Integer.numberOfLeadingZeros(words[wordsInUse - 1]));
+        + (BITS_PER_WORD - Long.numberOfLeadingZeros(words[wordsInUse - 1]));
   }
 
   /**
@@ -491,7 +666,7 @@ public class BitSet implements Cloneable {
    *         specified {@code BitSet}
    * @since 1.4
    */
-  public boolean intersects(BitSet set) {
+  public boolean intersects(BS set) {
     for (int i = Math.min(wordsInUse, set.wordsInUse) - 1; i >= 0; i--)
       if ((words[i] & set.words[i]) != 0)
         return true;
@@ -507,7 +682,7 @@ public class BitSet implements Cloneable {
   public int cardinality() {
     int sum = 0;
     for (int i = 0; i < wordsInUse; i++)
-      sum += Integer.bitCount(words[i]);
+      sum += Long.bitCount(words[i]);
     return sum;
   }
 
@@ -520,7 +695,7 @@ public class BitSet implements Cloneable {
    * @param set
    *          a bit set
    */
-  public void and(BitSet set) {
+  public void and(BS set) {
     if (this == set)
       return;
 
@@ -532,6 +707,7 @@ public class BitSet implements Cloneable {
       words[i] &= set.words[i];
 
     recalculateWordsInUse();
+    // checkInvariants();
   }
 
   /**
@@ -543,7 +719,7 @@ public class BitSet implements Cloneable {
    * @param set
    *          a bit set
    */
-  public void or(BitSet set) {
+  public void or(BS set) {
     if (this == set)
       return;
 
@@ -563,6 +739,8 @@ public class BitSet implements Cloneable {
       System.arraycopy(set.words, wordsInCommon, words, wordsInCommon,
           wordsInUse - wordsInCommon);
 
+    // recalculateWordsInUse() is unnecessary
+    // checkInvariants();
   }
 
   /**
@@ -579,7 +757,7 @@ public class BitSet implements Cloneable {
    * @param set
    *          a bit set
    */
-  public void xor(BitSet set) {
+  public void xor(BS set) {
     int wordsInCommon = Math.min(wordsInUse, set.wordsInUse);
 
     if (wordsInUse < set.wordsInUse) {
@@ -597,6 +775,7 @@ public class BitSet implements Cloneable {
           set.wordsInUse - wordsInCommon);
 
     recalculateWordsInUse();
+    // checkInvariants();
   }
 
   /**
@@ -607,12 +786,13 @@ public class BitSet implements Cloneable {
    *          the {@code BitSet} with which to mask this {@code BitSet}
    * @since 1.2
    */
-  public void andNot(BitSet set) {
+  public void andNot(BS set) {
     // Perform logical (a & !b) on words in common
     for (int i = Math.min(wordsInUse, set.wordsInUse) - 1; i >= 0; i--)
       words[i] &= ~set.words[i];
 
     recalculateWordsInUse();
+    // checkInvariants();
   }
 
   /**
@@ -626,7 +806,7 @@ public class BitSet implements Cloneable {
    * nonnegative values of <code>k</code>) if and only if the expression
    * 
    * <pre>
-   * ((k &gt;&gt; 6) &lt; words.length) &amp;&amp; ((words[k &gt;&gt; 6] &amp; (1 &lt;&lt; (bit &amp; 0x3F))) != 0)
+   * ((k &gt;&gt; 6) &lt; words.length) &amp;&amp; ((words[k &gt;&gt; 6] &amp; (1L &lt;&lt; (bit &amp; 0x3F))) != 0)
    * </pre>
    * 
    * is true. Then the following definition of the <code>hashCode</code> method
@@ -687,12 +867,15 @@ public class BitSet implements Cloneable {
    */
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof BitSet))
+    if (!(obj instanceof BS))
       return false;
     if (this == obj)
       return true;
 
-    BitSet set = (BitSet) obj;
+    BS set = (BS) obj;
+
+    // checkInvariants();
+    // set.checkInvariants();
 
     if (wordsInUse != set.wordsInUse)
       return false;
@@ -704,6 +887,8 @@ public class BitSet implements Cloneable {
 
     return true;
   }
+
+  private final static long[] emptyBitmap = new long[0];
 
   /**
    * Cloning this {@code BitSet} produces a new {@code BitSet} that is equal to
@@ -717,17 +902,21 @@ public class BitSet implements Cloneable {
   public Object clone() {
     if (!sizeIsSticky && wordsInUse != words.length)
       setLength(wordsInUse);
-    return copy(this);
+
+    try {
+      BS result = (BS) super.clone();
+      if (result.wordsInUse == 0)
+        result.words = emptyBitmap;
+      else
+        result.words = words.clone();
+      return result;
+    } catch (CloneNotSupportedException e) {
+      throw new InternalError();
+    }
   }
 
-  /**
-   * Attempts to reduce internal storage used for the bits in this bit set.
-   * Calling this method may, but is not required to, affect the value returned
-   * by a subsequent call to the {@link #size()} method.
-   * @param n 
-   */
   private void setLength(int n) {
-    int[] a = new int[n];
+    long[] a = new long[n];
     System.arraycopy(words, 0, a, 0, Math.min(wordsInUse, n));
     words = a;
   }
@@ -747,7 +936,7 @@ public class BitSet implements Cloneable {
    * BitSet drPepper = new BitSet();
    * </pre>
    * 
-   * Now {@code drPepper.toString()} returns "{}".
+   * Now {@code drPepper.toString()} returns empty braces.
    * <p>
    * 
    * <pre>
@@ -768,6 +957,7 @@ public class BitSet implements Cloneable {
    */
   @Override
   public String toString() {
+    // checkInvariants();
 
     int numBits = (wordsInUse > 128) ? cardinality() : wordsInUse
         * BITS_PER_WORD;
@@ -789,34 +979,6 @@ public class BitSet implements Cloneable {
     return b.toString();
   }
   
-  private final static int[] emptyBitmap = new int[0];
-
-  /**
-   * fast copy
-   * 
-   * @param bitsetToCopy
-   * @return bs
-   */
-  public static BitSet copy(BitSet bitsetToCopy) {
-    BitSet bs = null;
-    /**
-     * @j2sNative
-     * 
-     *            bs = Clazz.clone(bitsetToCopy);
-     * 
-     */
-    {
-      bs = new BitSet();
-    }
-    int wordCount = bitsetToCopy.wordsInUse;
-    if (wordCount == 0) {
-      bs.words = emptyBitmap;
-    } else {
-      bs.words = new int[wordCount];
-      System.arraycopy(bitsetToCopy.words, 0, bs.words, 0, wordCount);
-    }
-    return bs;
-  }
 
   /**
    * 
@@ -830,6 +992,5 @@ public class BitSet implements Cloneable {
         n--;
     return n;
   }
-
 
 }

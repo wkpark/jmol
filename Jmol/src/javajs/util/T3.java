@@ -14,7 +14,7 @@
    makes no representations about the suitability of this software for any
    purpose.  It is provided "AS IS" with NO WARRANTY.
 */
-package javajs.vec;
+package javajs.util;
 
 import java.io.Serializable;
 

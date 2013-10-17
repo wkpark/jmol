@@ -28,6 +28,8 @@ package org.jmol.util;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.J2SIgnoreImport;
+
 
 /**
  * Logger mechanism.

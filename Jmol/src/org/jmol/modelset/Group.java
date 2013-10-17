@@ -24,13 +24,13 @@
 package org.jmol.modelset;
 
 
+import javajs.J2SRequireImport;
 import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import javajs.vec.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.J2SRequireImport;
 import javajs.vec.V3;
 import org.jmol.viewer.JC;
 import org.jmol.constant.EnumStructure;

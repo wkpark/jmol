@@ -41,9 +41,9 @@ import org.jmol.script.T;
 import org.jmol.util.Escape;
 
 import org.jmol.util.BSUtil;
-import org.jmol.util.J2SIgnoreImport;
 import org.jmol.util.Logger;
 
+import javajs.J2SIgnoreImport;
 import javajs.vec.Matrix3f;
 import javajs.vec.P3;
 import javajs.lang.SB;

@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+
+import javajs.J2SIgnoreImport;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -56,7 +58,6 @@ import javajs.lang.SB;
 import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 
-import org.jmol.util.J2SIgnoreImport;
 
 @J2SIgnoreImport({java.io.BufferedOutputStream.class, java.util.zip.ZipOutputStream.class})
 public class ZipUtil implements JmolZipUtility {

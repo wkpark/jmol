@@ -28,7 +28,8 @@ import java.text.MessageFormat;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.J2SRequireImport;
+import javajs.J2SRequireImport;
+
 import org.jmol.util.Logger; 
 
 /**

@@ -27,6 +27,7 @@ package org.jmol.util;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.J2SRequireImport;
 import javajs.vec.V3;
 
   /**

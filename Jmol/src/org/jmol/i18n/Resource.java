@@ -3,9 +3,10 @@ package org.jmol.i18n;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javajs.J2SIgnoreImport;
+
 import org.jmol.util.Txt;
 
-import org.jmol.util.J2SIgnoreImport;
 import org.jmol.util.Logger;
 
 @J2SIgnoreImport({java.util.ResourceBundle.class,java.util.Locale.class})

@@ -26,9 +26,10 @@ package org.jmol.viewer;
 
 import org.jmol.script.T;
 import org.jmol.util.Elements;
-import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+
+import javajs.J2SRequireImport;
 import javajs.lang.SB;
 import org.jmol.util.Txt;
 import javajs.vec.V3;

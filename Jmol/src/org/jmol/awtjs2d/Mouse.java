@@ -33,8 +33,9 @@ import org.jmol.api.Event;
 import org.jmol.api.PlatformViewer;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
-import org.jmol.util.J2SRequireImport;
 import org.jmol.util.Logger;
+
+import javajs.J2SRequireImport;
 import javajs.vec.V3;
 import org.jmol.viewer.Viewer;
 

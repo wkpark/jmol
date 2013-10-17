@@ -86,6 +86,8 @@ import org.jmol.constant.EnumFileStatus;
 import org.jmol.constant.EnumStructure;
 import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
+
+import javajs.J2SIgnoreImport;
 import javajs.array.ArrayUtil;
 import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
@@ -96,7 +98,6 @@ import org.jmol.util.CommandHistory;
 import javajs.awt.Dimension;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
-import org.jmol.util.J2SIgnoreImport;
 import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;

@@ -1,4 +1,4 @@
-package org.jmol.util;
+package javajs;
 
 public @interface J2SRequireImport {
 

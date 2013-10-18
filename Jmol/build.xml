@@ -441,6 +441,7 @@ all support for previous versions removed
         <exclude name="**/*.dx" />
         <exclude name="ant/**" />
         <include name="com/**" />
+        <include name="javajs/**" />
         <exclude name="**/Test*.class" />
         <exclude name="**/jmol/jcamp/**" />
         <exclude name="**/jmol/applet/*" />
@@ -465,6 +466,7 @@ all support for previous versions removed
         <exclude name="**/Test*.class" />
         <exclude name="ant/**" />
         <exclude name="com/**" />
+        <include name="**/javajs/**" />
         <include name="**/jmol/**" />
         <exclude name="**/jmol/_documents/**" />
         <exclude name="**/jmol/applet/**" />
@@ -801,6 +803,7 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
+        <include name="javajs/**" />
         <include name="org/jmol/adapter/smarter/**" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/applet/**" />
@@ -1054,6 +1057,7 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
+        <include name="javajs/**" />
 		<include name="org/jmol/adapter/smarter/**" />
   		<include name="org/jmol/api/**" />
   		<include name="org/jmol/applet/**" />
@@ -1281,6 +1285,7 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
+        <include name="javajs/**" />
         <include name="org/jmol/adapter/smarter/**" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/applet/**" />

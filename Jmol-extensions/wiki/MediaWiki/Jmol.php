@@ -4,9 +4,10 @@
  *
  * @file
  * @ingroup Extensions
- * @version 3.3_dev
+ * @version 4.0_dev
  * @author Nicolas Vervelle
  * @author Angel Herraez
+ * @author Jaime Prilusky
  * @author Jmol Development team
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License 2.0 or later
  * @link http://wiki.jmol.org/index.php/MediaWiki Documentation
@@ -31,6 +32,8 @@
  * Nov. 10 - version 3.3 - by NV
     Adds Compatibility with MW 1.16
 	Removes the dependency on StubManager
+ * Oct. 2013 - version 4.0 - by JP
+    Adds support for JSmol
  */
 
 //<source lang=php>
@@ -42,11 +45,11 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 }
 
 # Initialisation
-$jmolDir = dirname(__FILE__);
-$wgAutoloadClasses['Jmol'] = "$jmolDir/Jmol.body.php";
-$wgExtensionMessagesFiles['Jmol'] = "$jmolDir/Jmol.i18n.php";
+$jsmolWikiDir = dirname(__FILE__);
+$wgAutoloadClasses['Jmol'] = "$jsmolWikiDir/Jmol.body.php";
+$wgExtensionMessagesFiles['Jmol'] = "$jsmolWikiDir/Jmol.i18n.php";
 
-$wgJmolVersion = '3.3_dev';
+$wgJmolVersion = '4.0_dev';
 
 // Bump this when updating Jmol.js or JmolMediaWiki.js to help update caches
 $wgJmolScriptVersion = $wgJmolVersion . '_1';
@@ -57,7 +60,7 @@ $wgExtensionCredits['parserhook'][] = array(
 	'name'           => 'Jmol',
 	'descriptionmsg' => 'jmol-desc',
 	'version'        => $wgJmolVersion,
-	'author'         => array( 'Nicolas Vervelle', 'Angel Herraez', 'Jmol Development Team' ),
+	'author'         => array( 'Nicolas Vervelle', 'Angel Herraez', 'Jaime Prilusky', 'Jmol Development Team' ),
 	'url'            => 'http://www.mediawiki.org/wiki/Extension:Jmol',
 );
 
@@ -73,6 +76,7 @@ global $wgJmolDefaultAppletSize;
 global $wgJmolDefaultScript;
 global $wgJmolExtensionPath;
 global $wgJmolForceNameSpace;
+global $wgJmolForceHTML5;
 global $wgJmolShowWarnings;
 global $wgJmolUsingSignedAppletByDefault;
 
@@ -87,7 +91,7 @@ $wgJmolAuthorizeUploadedFile = true;
 $wgJmolAuthorizeUrl = false;
 $wgJmolDefaultAppletSize = "400";
 $wgJmolDefaultScript = "";
-$wgJmolExtensionPath = $wgScriptPath."/extensions/Jmol";
+$wgJmolExtensionPath = $wgScriptPath."/extensions/jsmol/wiki"; // Jmol";
 $wgJmolForceNameSpace = "";
 $wgJmolShowWarnings = true;
 $wgJmolUsingSignedAppletByDefault = false;

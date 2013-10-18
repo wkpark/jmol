@@ -6,6 +6,7 @@
  * 
  * @author Nicolas Vervelle
  * @author Angel Herraez
+ * @author Jaime Prilusky
  * @author Jmol Development team
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License 2.0 or later
@@ -18,7 +19,7 @@ if (!defined('MEDIAWIKI')) {
   die('This file is a MediaWiki extension, it is not a valid entry point');
 }
 
-require_once("Title.php");
+// require_once("Title.php");
 
 /* Global configuration parameters */
 global $wgJmolAuthorizeChoosingSignedApplet;
@@ -28,6 +29,7 @@ global $wgJmolDefaultAppletSize;
 global $wgJmolDefaultScript;
 global $wgJmolExtensionPath;
 global $wgJmolForceNameSpace;
+global $wgJmolForceHTML5;
 global $wgJmolShowWarnings;
 global $wgJmolUsingSignedAppletByDefault;
 
@@ -325,69 +327,59 @@ class Jmol {
 
 	// Internal function to make a Jmol applet
 	private function renderInternalJmolApplet( $prefix, $postfix, $sep ) {
-		global $wgJmolAuthorizeUrl, $wgJmolAuthorizeUploadedFile;
-		global $wgJmolForceNameSpace, $wgJmolExtensionPath, $wgScriptPath;
+      global $wgJmolAuthorizeUrl, $wgJmolAuthorizeUploadedFile;
+      global $wgJmolForceNameSpace, $wgJmolExtensionPath, $wgScriptPath;
+      
+      $output = $prefix;
+      $output .= 'Info0.width = ' . $this->mValSize . ';Info0.height = ' . $this->mValSize . ';';
+      $output .= 'Info0.color = "' . $this->mValColor . '";';
+      if ( $this->mValSigned == "true" ) {
+        $output .= 'Info0.jarFile = "JmolAppletSigned.jar"; Info0.isSigned = true;'; 
+      } else {
+        $output .= 'Info0.jarFile = "JmolApplet.jar"; Info0.isSigned = false;'; 
+      }
+      $output .= 'jmolApplet0 = Jmol.getApplet("jmolApplet0",Info0);';
 
-		$output = $prefix;
-		// initialize now goes in the body, thus allowing signed applet:
-		$output .= "jmolInitialize(" . $sep . $wgJmolExtensionPath . $sep . ", ";
-		if ( $this->mValSigned == "true" ) {
-			$output .= "true";
-		} else { 
-			$output .= "false";
-		}
-		$output .= "); " .
-		           "_jmol.noEval = true; ";
-
-		$output .=
-			"jmolCheckBrowser(" .
-				$sep . "popup" . $sep . ", " .
-				$sep . $wgJmolExtensionPath . "/browsercheck" . $sep . ", " .
-				$sep . "onclick" . $sep . ");" .
-			"jmolSetAppletColor(" .
-				$sep . $this->escapeScript( $this->mValColor ) . $sep . ");";
-		if ( $this->mValUploadedFileContents != "" ) {
+      if ( $this->mValUploadedFileContents != "" ) {
 			if ( $wgJmolAuthorizeUploadedFile == true ) {
-				$title = Title::makeTitleSafe( NS_IMAGE, $this->mValUploadedFileContents );
-				$article = new Article($title);
-				if ( !is_null( $title ) && $article->exists() ) {
-					$file = new Image($title);
-					$this->mValUrlContents = $file->getURL();
+				$file = wfLocalFile( $this->mValUploadedFileContents );
+				if (!is_null($file)) {
+				  $this->mValUrlContents = $file->getURL();
 				}
 			} else {
-				return $this->showWarning( wfMsg( 'jmol-nouploadedfilecontents' ) );
-			}
-		}
-		if ( $this->mValWikiPageContents != "" ) {
-			if ( $wgJmolAuthorizeUrl == true ) {
-				$this->mValUrlContents = $wgScriptPath."/index.php?title=";	// AH - fix for non-root wikis
-				if ( $wgJmolForceNameSpace != "" ) {
-					$this->mValUrlContents .= $wgJmolForceNameSpace . ":";
-				}
-				$this->mValUrlContents .= $this->mValWikiPageContents . "&action=raw";
-			} else {
-				return $this->showWarning( wfMsg( 'jmol-nowikipagecontents' ) );
-			}
-		}
-		if ( $this->mValUrlContents != "" ) {
-			$output .= "jmolApplet(" .
-				$this->escapeScript( $this->mValSize ) . ", " .
-				$sep . "set echo p 50% 50%;set echo p center;echo " . wfMsg( 'jmol-loading' ) . ";refresh;" .
-					"load " . $this->escapeScript( $this->mValUrlContents ) . "; " .
-					$this->escapeScript( $this->mValScript ) . $sep;
+              return $this->showWarning( wfMsg( 'jmol-nouploadedfilecontents' ) );
+            }
+      } elseif ( $this->mValWikiPageContents != "" ) {
+        if ( $wgJmolAuthorizeUrl == true ) {
+          $this->mValUrlContents = $wgScriptPath."/index.php?title=";	// AH - fix for non-root wikis
+          if ( $wgJmolForceNameSpace != "" ) {
+            $this->mValUrlContents .= $wgJmolForceNameSpace . ":";
+          }
+          $this->mValUrlContents .= $this->mValWikiPageContents . "&action=raw";
 		} else {
-			$output .= "jmolAppletInline(" .
-				$this->escapeScript( $this->mValSize ) . ", " .
-				$sep . $this->escapeScript( $this->mValInlineContents ) . $sep . ", " .
-				$sep . $this->escapeScript( $this->mValScript ) . $sep;
+		  return $this->showWarning( wfMsg( 'jmol-nowikipagecontents' ) );
 		}
-		if ( $this->mValName != "" ) {
-			$output .= "," . $sep . $this->escapeScript( $this->mValName ) . $sep;
-		}
-		$output .= ");";
-		$output .= $postfix;
+      } 
+      if ( $this->mValUrlContents != "" ) {
+        $output .= 'Jmol.script(jmolApplet0,"set echo p 50% 50%;set echo p center;echo ' 
+                   . wfMsg( 'jmol-loading' ) . ';refresh;load ' . $this->escapeScript( $this->mValUrlContents ) . ';' 
+                   . $this->escapeScript( $this->mValScript ) . '"); ';
+      } else { // mValInlineContents
+// 		$this->mValInlineContents = preg_replace( "/\n/", "\\n'+\n'", $this->mValInlineContents );
+//         $output .= "\nvar structure = '" . $this->mValInlineContents . "';\n"
+//                    . 'Jmol.script(jmolApplet0,"load $structure ' 
+//                    . $this->escapeScript( $this->mValScript ) . '"); ';
 
-		return $output;
+		$this->mValInlineContents = preg_replace( "/\n/", "\\n\"+\n\"", $this->mValInlineContents );
+        $output .= "\nvar structure = \"" . $this->mValInlineContents . "\";\n"
+                   . 'Jmol.script(jmolApplet0,"load $structure ' 
+                   . $this->escapeScript( $this->mValScript ) . '"); ';
+
+      }
+      return $output . $postfix;
+// 		if ( $this->mValName != "" ) {
+// 			$output .= "," . $sep . $this->escapeScript( $this->mValName ) . $sep;
+// 		}
 	}
 
 	// Function called for outputing a warning
@@ -643,34 +635,17 @@ class Jmol {
 	// DIRECTING THE EXTENSION //
 	// *********************** //
 
-	private function parseJmolTag( $text, $params, &$parser ) {
+	private function parseJmolTag( $text, $params, $parser ) {
 		global $wgJmolExtensionPath, $wgJmolScriptVersion;
-
 		$parser->disableCache();
-
-		// Add scripts in the header if needed
-		$parser->getOutput()->addHeadItem(
-			Html::linkedScript( $wgJmolExtensionPath . "/Jmol.js?version=" . $wgJmolScriptVersion ),
-			'JmolScript' );
-		$parser->getOutput()->addHeadItem(
-			Html::linkedScript( $wgJmolExtensionPath . "/JmolMediaWiki.js?version=" . $wgJmolScriptVersion ),
-			'JmolMediaWikiScript' );
-
+        $this->initializeJSmol($parser);
 		// Add element to display file
 		return $this->renderJmol( $text );
 	}
 
-	private function parseJmolFileTag( $text, $params, &$parser ) {
+	private function parseJmolFileTag( $text, $params, $parser ) {
 		global $wgJmolExtensionPath, $wgJmolScriptVersion, $wgJmolAuthorizeUploadedFile;
-
-		// Add scripts in the header if needed
-		$parser->getOutput()->addHeadItem(
-			Html::linkedScript( $wgJmolExtensionPath . "/Jmol.js?version=" . $wgJmolScriptVersion ),
-			'JmolScript' );
-		$parser->getOutput()->addHeadItem(
-			Html::linkedScript( $wgJmolExtensionPath . "/JmolMediaWiki.js?version=" . $wgJmolScriptVersion ),
-			'JmolMediaWikiScript' );
-
+        $this->initializeJSmol($parser);
 		// Add element to display file
 		$result =
 			"<a href=\"javascript:void(0)\"" .
@@ -686,9 +661,8 @@ class Jmol {
 		if ( $wgJmolAuthorizeUploadedFile != true ) {
 			return $this->showWarning( wfMsg( 'jmol-nouploadedfilecontents' ) );
 		}
-		$title = Title::makeTitleSafe( NS_IMAGE, $text );
-		$article = new Article($title);
-		if ( !is_null( $title ) && $article->exists() ) {
+		$file = wfLocalFile( $this->mValUploadedFileContents );
+		if ( !is_null( $file )) {
 			$file = new Image($title);
 			$result .= "jmolApplet( 500, \\'" .
 				"set echo p 50% 50%;" .
@@ -708,17 +682,9 @@ class Jmol {
 		return $result;
 	}
 
-	private function parseJmolPdbTag( $text, $params, &$parser ) {
+	private function parseJmolPdbTag( $text, $params, $parser ) {
 		global $wgJmolExtensionPath, $wgJmolScriptVersion;
-
-		// Add scripts in the header if needed
-		$parser->getOutput()->addHeadItem(
-			Html::linkedScript( $wgJmolExtensionPath . "/Jmol.js?version=" . $wgJmolScriptVersion ),
-			'JmolScript' );
-		$parser->getOutput()->addHeadItem(
-			Html::linkedScript( $wgJmolExtensionPath . "/JmolMediaWiki.js?version=" . $wgJmolScriptVersion ),
-			'JmolMediaWikiScript' );
-
+        $this->initializeJSmol($parser);
 		// Add element to display file
 		$result =
 			"<a href=\"javascript:void(0)\"" .
@@ -748,17 +714,9 @@ class Jmol {
 		return $result;
 	}
 
-	private function parseJmolSmilesTag( $text, $params, &$parser ) {
+	private function parseJmolSmilesTag( $text, $params, $parser ) {
 		global $wgJmolExtensionPath, $wgJmolScriptVersion;
-
-		// Add scripts in the header if needed
-		$parser->getOutput()->addHeadItem(
-			Html::linkedScript( $wgJmolExtensionPath . "/Jmol.js?version=" . $wgJmolScriptVersion ),
-			'JmolScript' );
-		$parser->getOutput()->addHeadItem(
-			Html::linkedScript( $wgJmolExtensionPath . "/JmolMediaWiki.js?version=" . $wgJmolScriptVersion ),
-			'JmolMediaWikiScript' );
-
+        $this->initializeJSmol($parser);
 		// Add element to display file
 		$result =
 			"<a href=\"javascript:void(0)\"" .
@@ -824,7 +782,7 @@ class Jmol {
 	 * @param Parser &$parser Parser
 	 * @return string
 	 */
-	public function jmolTag( $text, $params, &$parser ) {
+	public function jmolTag( $text, $params, $parser ) {
 		if ( $this->mInJmol ) {
 			return htmlspecialchars( "<jmol>$text</jmol>" );
 		} else {
@@ -843,7 +801,7 @@ class Jmol {
 	 * @param Parser &$parser Parser
 	 * @return string
 	 */
-	public function jmolFileTag( $text, $params, &$parser ) {
+	public function jmolFileTag( $text, $params, $parser ) {
 		if ( $this->mInJmol ) {
 			return htmlspecialchars( "<jmolFile>$text</jmolFile>" );
 		} else {
@@ -862,7 +820,7 @@ class Jmol {
 	 * @param Parser &$parser Parser
 	 * @return string
 	 */
-	public function jmolPdbTag( $text, $params, &$parser ) {
+	public function jmolPdbTag( $text, $params, $parser ) {
 		if ( $this->mInJmol ) {
 			return htmlspecialchars( "<jmolPdb>$text</jmolPdb>" );
 		} else {
@@ -881,7 +839,7 @@ class Jmol {
 	 * @param Parser &$parser Parser
 	 * @return string
 	 */
-	public function jmolSmilesTag( $text, $params, &$parser ) {
+	public function jmolSmilesTag( $text, $params, $parser ) {
 		if ( $this->mInJmol ) {
 			return htmlspecialchars( "<jmolSmiles>$text</jmolSmiles>" );
 		} else {
@@ -891,6 +849,47 @@ class Jmol {
 			return $ret;
 		}
 	}
+
+function initializeJSmol($parser) {
+  global $wgOut,$wgScriptPath,$initializeJSmolDone,$reqUse;
+  global $wgJmolDefaultAppletSize,$wgJmolForceHTML5;
+  if ($initializeJSmolDone == false) {
+    $wikiDir = dirname(__FILE__);
+    $jsmolDir = dirname($wikiDir);
+    $extensionsDir = dirname($jsmolDir);
+    $mediawikiDir = dirname($extensionsDir);
+    require_once ($mediawikiDir . '/includes/Title.php');
+    require_once ($wikiDir . '/Mobile_Detect.php');
+    $detect = new Mobile_Detect;
+    $reqUse = ($detect->isMobile()) ? 'HTML5' : 'JAVA';
+    if ($wgJmolForceHTML5 == true) { $reqUse = 'HTML5';}
+    $deferApplet = 'false'; // ($detect->isMobile() ? ($detect->isTablet() ? 'false' : 'true') : 'false');
+    $jsmolPath = $wgScriptPath . '/extensions/jsmol';
+    
+    $isSigned = ($this->mValSigned == "true") ? 'true' : 'false';
+    $parser->mOutput->addHeadItem('<script type="text/javascript" src="' . $jsmolPath . '/JSmol.min.js"></script>');
+    $parser->mOutput->addHeadItem('<script type="text/javascript" src="' . $jsmolPath . '/js/Jmol2.js"></script>');
+    $wgOut->addHTML('<script type="text/javascript" language="Javascript">
+var Info0 = {
+use: "' . $reqUse . '",
+disableJ2SLoadMonitor: false, // true,
+disableInitialConsole: false, // true,
+jarPath: "' . $jsmolPath . '/java",
+j2sPath: "' . $jsmolPath . '/j2s",
+jarFile: "JmolApplet.jar",
+isSigned: ' . $isSigned . ',
+serverURL: "' . $jsmolPath . '/php/jsmol.php",
+coverCommand: "",
+coverTitle: "Loading ... Please wait.",  // tip that is displayed before model starts to load
+deferApplet: ' . $deferApplet . ', // true == the model should not be loaded until the image is clicked 
+deferUncover: true, // true == the image should remain until command execution is complete
+width:' . $wgJmolDefaultAppletSize . ', height:' . $wgJmolDefaultAppletSize . '
+};
+</script>');
+    $initializeJSmolDone = true;
+  }
+  return true;
+}
 
 	// *************** //
 	// MEDIAWIKI HOOKS //

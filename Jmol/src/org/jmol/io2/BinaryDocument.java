@@ -246,7 +246,7 @@ public class BinaryDocument extends ByteConverter implements JmolDocument {
      * @j2sNative
      * 
      * this.readByteArray(this.t8, 0, 8);
-     * return org.jmol.io2.BinaryDocument.bytesToDoubleToFloat(this.t8, 0, this.isBigEndian);
+     * return javajs.util.ByteConverter.bytesToDoubleToFloat(this.t8, 0, this.isBigEndian);
      *  
      */
     {

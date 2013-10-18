@@ -117,4 +117,9 @@ abstract public class JComponent {
 		+ (height > 0 ?"height:" + height + "px;" : defaultPercent > 0 ? "height:"+defaultPercent+"%;" : "")
 		+ (bgcolor == null ? "" : "background-color:" + JSVColorUtil.colorToCssString(bgcolor) + ";");
 	}
+	
+  public void repaint() {
+    // for inheritance
+  }
+
 }

@@ -58,6 +58,8 @@ public class JTable extends JComponent implements ListSelectionModel, ColumnSele
 	 * It will be the function of the JavaScript on the 
 	 * page to do with selectionListener what is desired.
 	 * 
+	 * @param listener 
+	 * 
 	 */
 	public void addListSelectionListener(Object listener) {
 		selectionListener = listener;
@@ -70,7 +72,7 @@ public class JTable extends JComponent implements ListSelectionModel, ColumnSele
 	@Override
 	public String toHTML() {
 		SB sb = new SB();
-		sb.append("\n<table id='" + id + "_table' class='JTable' style='width:100%;height:100%'>");
+		sb.append("\n<table id='" + id + "_table' class='JTable' >");
 		tableModel.toHTML(sb, id, bsSelectedRows);
 		sb.append("\n</table>\n");
 		return sb.toString();

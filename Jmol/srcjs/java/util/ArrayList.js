@@ -334,7 +334,12 @@ throw new IndexOutOfBoundsException();
 return result;
 },"~N"); 
 
-//$_M(c$, "removeObject")
+$_M(c$, "removeObject", function(o) {
+	var i = this.indexOf(o);
+	if (i < 0)return null;
+	return this.remove(i);
+}, "~O");
+
 $_V(c$,"removeRange",
 function(start,end){
 if(start>=0&&start<=end&&end<=this.size()){

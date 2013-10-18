@@ -104,7 +104,7 @@ public class Group {
 
     // moved to after processing. 
     if (state == TouchState.DEATH)
-      _touchPoints.remove(changedPoint);
+      _touchPoints.removeObj(changedPoint);
 
     try {
       _clientProtocol.processEvents(_id, events);

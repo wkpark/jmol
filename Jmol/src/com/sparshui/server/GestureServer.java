@@ -276,7 +276,7 @@ public class GestureServer implements Runnable, JmolGestureServerInterface {
     }
     if (clients_to_remove != null)
       for (int i = 0; i < clients_to_remove.size(); i++) {
-        main._clients.remove(clients_to_remove.get(i));
+        main._clients.removeObj(clients_to_remove.get(i));
         Logger.info("[GestureServer] Client Disconnected");
       }
     return isClaimed;

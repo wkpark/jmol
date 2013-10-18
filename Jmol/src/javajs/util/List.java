@@ -62,6 +62,16 @@ public class List<V> extends ArrayList<V> {
     }
   }
   
+  /**
+   * @j2sIgnore
+   * 
+   */
+  @Override
+  @Deprecated
+  public boolean remove(Object v) {
+    throw new NullPointerException("use removeObj(obj), not remove(obj) in List for JavaScript compatibility");
+  }
+  
   public boolean removeObj(Object v) {
     /**
      * no overloading of remove(Object) in JavaScript

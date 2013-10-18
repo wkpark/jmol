@@ -19,7 +19,7 @@ public class JScrollPane extends JContainer {
 		sb.append("\n</div>\n");
 		return sb.toString();
 	}
-
+	
 	public void setMinimumSize(Dimension dimension) {
 		// TODO Auto-generated method stub
 		

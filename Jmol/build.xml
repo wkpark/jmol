@@ -410,9 +410,7 @@ all support for previous versions removed
     <unjar dest="${appjars.dir}" src="${lib.dir}/${itext.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/${commons-cli.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/JSpecView.jar"/>
-  	<delete dir="${appjars.dir}/javajs/api" />
-  	  	<delete dir="${appjars.dir}/javajs/awt" />
-  	    	<delete dir="${appjars.dir}/javajs/util" />
+  	<delete dir="${appjars.dir}/javajs" />
   	<delete dir="${appjars.dir}/org/jmol" />
     <touch file="build/libjars.timestamp"/>
   </target>

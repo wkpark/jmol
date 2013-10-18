@@ -27,11 +27,10 @@ package org.jmol.adapter.readers.quantum;
 import java.util.Hashtable;
 import java.util.Map;
 
-
-import org.jmol.io2.BinaryDocument;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
+import javajs.util.ByteConverter;
 import javajs.util.SB;
 
 /*
@@ -162,8 +161,9 @@ public class SpartanSmolReader extends SpartanInputReader {
     for (int i = 0; i < tokens.length; i++)
       bytes[i] = (byte) Parser.parseIntRadix(tokens[i], 16);
     mat = new float[16];
+    ByteConverter bc = new ByteConverter();
     for (int i = 16, j = bytes.length - 8; --i >= 0; j -= 8)
-      mat[i] = BinaryDocument.bytesToDoubleToFloat(bytes, j, false);
+      mat[i] = bc.bytesToDoubleToFloat(bytes, j, false);
     setTransform(mat[0], mat[1], mat[2], mat[4], mat[5], mat[6], mat[8],
         mat[9], mat[10]);
   }

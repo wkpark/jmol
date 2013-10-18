@@ -1,8 +1,8 @@
 package javajs.swing;
 
 import javajs.api.GenericColor;
+import javajs.awt.ColorUtil;
 import javajs.awt.Dimension;
-import jspecview.util.JSVColorUtil;
 
 abstract public class JComponent {
 	
@@ -115,7 +115,7 @@ abstract public class JComponent {
 		int height = (renderHeight > 0 ? renderHeight : getSubcomponentHeight());
 		return (width > 0 ? "width:" + width +"px;" : defaultPercent > 0 ? "width:"+defaultPercent+"%;" : "")
 		+ (height > 0 ?"height:" + height + "px;" : defaultPercent > 0 ? "height:"+defaultPercent+"%;" : "")
-		+ (bgcolor == null ? "" : "background-color:" + JSVColorUtil.colorToCssString(bgcolor) + ";");
+		+ (bgcolor == null ? "" : "background-color:" + ColorUtil.toCSSString(bgcolor) + ";");
 	}
 	
   public void repaint() {

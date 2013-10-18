@@ -36,4 +36,5 @@ public class Color implements GenericColor {
 		argb = ((a << 24) | (r << 16) | (g << 8) | b) & 0xFFFFFFFF;
 		return this;
 	}
+	
 }

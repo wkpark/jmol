@@ -724,10 +724,8 @@ public class Parser {
      * 
      * @j2sNative
      * 
-     *    i = parseInt(s, i);
-     *    if (isNaN(i))
-     *      throw new NumberFormatException("Not a Number : "+s);
-     *    return i;
+     *    return Integer.parseIntRadix(s, i);
+     *    
      */
     {
       return Integer.parseInt(s, i);

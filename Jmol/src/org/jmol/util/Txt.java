@@ -42,10 +42,7 @@ public class Txt {
   private final static float[] formatAdds = { 0.5f, 0.05f, 0.005f, 0.0005f,
     0.00005f, 0.000005f, 0.0000005f, 0.00000005f, 0.000000005f, 0.0000000005f };
 
-  private final static Boolean[] useNumberLocalization = new Boolean[1];
-  {
-    useNumberLocalization[0] = Boolean.TRUE;
-  }
+  private final static Boolean[] useNumberLocalization = new Boolean[] { Boolean.TRUE };
   
   public static void setUseNumberLocalization(boolean TF) {
     useNumberLocalization[0] = (TF ? Boolean.TRUE : Boolean.FALSE);

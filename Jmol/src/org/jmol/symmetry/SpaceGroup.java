@@ -414,7 +414,7 @@ class SpaceGroup {
     if (xyz0.startsWith("x1,x2,x3,x4") && modulationDimension == 0) {
       xyzList.clear();
       operationCount = 0;
-      modulationDimension = Parser.parseInt(xyz0.substring(xyz0
+      modulationDimension = javajs.util.ParserJS.parseInt(xyz0.substring(xyz0
           .lastIndexOf("x") + 1)) - 3;
     }
 

@@ -69,6 +69,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolFont;
+import org.jmol.util.ParserBS;
 import org.jmol.util.Point3fi;
 
 import javajs.util.ArrayUtil;
@@ -83,6 +84,7 @@ import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
+import javajs.util.ParserJS;
 
 import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
@@ -1469,7 +1471,7 @@ public class ScriptExt implements JmolScriptExtension {
           } else {
             data = new float[atomCount];
             if (!chk)
-              Parser.parseStringInfestedFloatArray(""
+              ParserBS.parseStringInfestedFloatArray(""
                   + eval.getParameter(vname, T.string), null, data);
           }
           if (!chk/* && (surfaceObjectSeen)*/)
@@ -4237,7 +4239,7 @@ public class ScriptExt implements JmolScriptExtension {
       viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
       return;
     }
-    String[] tokens = Parser.getTokens(dataLabel);
+    String[] tokens = ParserJS.getTokens(dataLabel);
     if (dataType.indexOf("property_") == 0
         && !(tokens.length == 2 && tokens[1].equals("set"))) {
       BS bs = viewer.getSelectionSet(false);
@@ -4254,17 +4256,17 @@ public class ScriptExt implements JmolScriptExtension {
         if (tokens.length == 3) {
           // DATA "property_whatever [atomField] [propertyField]"
           dataLabel = tokens[0];
-          atomNumberField = Parser.parseInt(tokens[1]);
-          propertyField = Parser.parseInt(tokens[2]);
+          atomNumberField = javajs.util.ParserJS.parseInt(tokens[1]);
+          propertyField = javajs.util.ParserJS.parseInt(tokens[2]);
         }
         if (tokens.length == 5) {
           // DATA
           // "property_whatever [atomField] [atomFieldColumnCount] [propertyField] [propertyDataColumnCount]"
           dataLabel = tokens[0];
-          atomNumberField = Parser.parseInt(tokens[1]);
-          atomNumberFieldColumnCount = Parser.parseInt(tokens[2]);
-          propertyField = Parser.parseInt(tokens[3]);
-          propertyFieldColumnCount = Parser.parseInt(tokens[4]);
+          atomNumberField = javajs.util.ParserJS.parseInt(tokens[1]);
+          atomNumberFieldColumnCount = javajs.util.ParserJS.parseInt(tokens[2]);
+          propertyField = javajs.util.ParserJS.parseInt(tokens[3]);
+          propertyFieldColumnCount = javajs.util.ParserJS.parseInt(tokens[4]);
         }
       }
       if (atomNumberField < 0)
@@ -8129,7 +8131,7 @@ public class ScriptExt implements JmolScriptExtension {
     } else {
       sList1 = (Txt.split((String) x1.value, "\n"));
       list1 = new float[len = sList1.length];
-      Parser.parseFloatArrayData(sList1, list1);
+      ParserJS.parseFloatArrayData(sList1, list1);
     }
 
     if (isAll) {
@@ -8153,7 +8155,7 @@ public class ScriptExt implements JmolScriptExtension {
     } else {
       sList2 = Txt.split((String) x2.value, "\n");
       list2 = new float[sList2.length];
-      Parser.parseFloatArrayData(sList2, list2);
+      ParserJS.parseFloatArrayData(sList2, list2);
       len = Math.min(list1.length, list2.length);
     }
     
@@ -8532,8 +8534,8 @@ public class ScriptExt implements JmolScriptExtension {
     }
     s = sb.toString();
     float f;
-    return (Float.isNaN(f = Parser.parseFloatStrict(s)) ? mp.addXStr(s) : s
-        .indexOf(".") >= 0 ? mp.addXFloat(f) : mp.addXInt(Parser.parseInt(s)));
+    return (Float.isNaN(f = ParserJS.parseFloatStrict(s)) ? mp.addXStr(s) : s
+        .indexOf(".") >= 0 ? mp.addXFloat(f) : mp.addXInt(javajs.util.ParserJS.parseInt(s)));
   }
 
   private boolean evaluateData(SV[] args) {
@@ -8558,7 +8560,7 @@ public class ScriptExt implements JmolScriptExtension {
       int iField = args[1].asInt();
       int nBytes = args[2].asInt();
       int firstLine = args[3].asInt();
-      float[] f = Parser.extractData(selected, iField, nBytes, firstLine);
+      float[] f = ParserBS.extractData(selected, iField, nBytes, firstLine);
       return mp.addXStr(Escape.escapeFloatA(f, false));
     }
 

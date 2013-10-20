@@ -1,4 +1,5 @@
-package javajs.swing;
+package javajs.awt;
+
 
 public class BorderLayout extends LayoutManager {
 
@@ -7,5 +8,5 @@ public class BorderLayout extends LayoutManager {
 	public static final String SOUTH = "South";
 	public static final String EAST = "East";
 	public static final String WEST = "West";
-
+	
 }

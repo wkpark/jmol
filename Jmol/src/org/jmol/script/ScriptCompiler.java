@@ -39,6 +39,7 @@ import org.jmol.modelset.Bond.BondSet;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 import javajs.util.M3;
 import javajs.util.M4;
@@ -1062,7 +1063,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case T.sync:
       if (nTokens == 1 && lookForSyncID()) {
         String ident = script.substring(ichToken, ichToken + cchToken);
-        int iident = Parser.parseInt(ident);
+        int iident = javajs.util.ParserJS.parseInt(ident);
         if (iident == Integer.MIN_VALUE || Math.abs(iident) < 1000)
           addTokenToPrefix(T.o(T.identifier, ident));
         else
@@ -1118,7 +1119,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return CONTINUE;
     }
     if (lookingAtDecimal()) {
-      value = Parser.fVal(script.substring(ichToken, ichToken + cchToken));
+      value = ParserJS.fVal(script.substring(ichToken, ichToken + cchToken));
       int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(
           ichToken, ichToken + cchToken)));
       addTokenToPrefix(T.tv(T.decimal, intValue, Float.valueOf(value)));
@@ -2397,7 +2398,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (!isOK)
       return Float.NaN;
     cchToken = ichT - ichToken;
-    return (float) Parser.dVal(script.substring(pt0, ichT));
+    return (float) ParserJS.dVal(script.substring(pt0, ichT));
   }
 
   private boolean lookingAtDecimal() {

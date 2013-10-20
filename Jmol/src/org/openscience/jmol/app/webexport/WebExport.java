@@ -48,7 +48,6 @@ import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.util.Parser;
 import org.openscience.jmol.app.HistoryFile;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
 
@@ -77,9 +76,9 @@ public class WebExport extends JPanel implements WindowListener {
     localAppletPath = historyFile.getProperty("webMakerLocalAppletPath", "..");
     pageAuthorName = historyFile.getProperty("webMakerPageAuthorName",
         GT._("Jmol Web Page Maker"));
-    popInWidth=Parser.parseInt(historyFile.getProperty("webMakerPopInWidth", "300"));
-    popInHeight=Parser.parseInt(historyFile.getProperty("webMakerPopInHeight", "300"));
-    scriptButtonPercent = Parser.parseInt(historyFile.getProperty(
+    popInWidth=javajs.util.ParserJS.parseInt(historyFile.getProperty("webMakerPopInWidth", "300"));
+    popInHeight=javajs.util.ParserJS.parseInt(historyFile.getProperty("webMakerPopInHeight", "300"));
+    scriptButtonPercent = javajs.util.ParserJS.parseInt(historyFile.getProperty(
         "webMakerScriptButtonPercent", "60"));
 
     //Define the tabbed pane

@@ -32,9 +32,11 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
+import javajs.util.DecimalFormat;
 import javajs.util.M3;
 import javajs.util.P3;
-import org.jmol.util.Parser;
+import javajs.util.ParserJS;
+
 import org.jmol.util.Quaternion;
 import org.jmol.util.Tensor;
 import org.jmol.util.Txt;
@@ -401,10 +403,10 @@ public class CrystalReader extends AtomSetCollectionReader {
    */
   private void setPrimitiveVolumeAndDensity() {
     if (primitiveVolume != 0)
-      atomSetCollection.setAtomSetModelProperty("volumePrimitive", Txt
+      atomSetCollection.setAtomSetModelProperty("volumePrimitive", DecimalFormat
           .formatDecimal(primitiveVolume, 3));
     if (primitiveDensity != 0)
-      atomSetCollection.setAtomSetModelProperty("densityPrimitive", Txt
+      atomSetCollection.setAtomSetModelProperty("densityPrimitive", DecimalFormat
           .formatDecimal(primitiveDensity, 3));
   }
   
@@ -984,8 +986,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetModelProperty("IRactivity", data[2]);
     atomSetCollection.setAtomSetModelProperty("Ramanactivity", data[3]);
     atomSetCollection.setAtomSetName((isLongMode ? "LO " : "") + data[0] + " "
-        + Txt.formatDecimal(freq, 2) + " cm-1 ("
-        + Txt.formatDecimal(Parser.fVal(data[1]), 0)
+        + DecimalFormat.formatDecimal(freq, 2) + " cm-1 ("
+        + DecimalFormat.formatDecimal(ParserJS.fVal(data[1]), 0)
         + " km/Mole), " + activity);
   }
 

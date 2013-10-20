@@ -36,9 +36,10 @@ import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.net.URL;
 
+import javajs.util.ParserJS;
+
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 public class AppletWrapper extends Applet {
 
@@ -287,9 +288,9 @@ public class AppletWrapper extends Applet {
     if (strColor != null) {
       if (strColor.length() == 7 && strColor.charAt(0) == '#') {
         try {
-          int red = Parser.parseIntRadix(strColor.substring(1, 3), 16);
-          int grn = Parser.parseIntRadix(strColor.substring(3, 5), 16);
-          int blu = Parser.parseIntRadix(strColor.substring(5, 7), 16);
+          int red = ParserJS.parseIntRadix(strColor.substring(1, 3), 16);
+          int grn = ParserJS.parseIntRadix(strColor.substring(3, 5), 16);
+          int blu = ParserJS.parseIntRadix(strColor.substring(5, 7), 16);
           return new Color(red, grn, blu);
         } catch (NumberFormatException e) {
         }

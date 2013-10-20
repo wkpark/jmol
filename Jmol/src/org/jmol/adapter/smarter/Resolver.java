@@ -28,12 +28,13 @@ import java.io.BufferedReader;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javajs.util.ParserJS;
+
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.io.LimitedLineReader;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 
 public class Resolver {
@@ -488,7 +489,7 @@ public class Resolver {
     for (int i = 0; i < lines.length; i++) {
       if (lines[i].startsWith("mol 1"))
         return false;  /* hin format also uses "atom " */
-      String[] tokens = Parser.getTokens(lines[i]);
+      String[] tokens = ParserJS.getTokens(lines[i]);
       if (tokens.length == 0)
         continue;
       if (tokens[0].startsWith("atom") && tokens.length >= 5
@@ -561,7 +562,7 @@ public class Resolver {
           return false;
         Integer.parseInt(tokens2.nextToken());
         for (int i = 3; --i >= 0;)
-          Parser.fVal(tokens2.nextToken());
+          ParserJS.fVal(tokens2.nextToken());
         if (n == 5)
           Integer.parseInt(tokens2.nextToken());
       }
@@ -609,7 +610,7 @@ public class Resolver {
   }
   
   private static boolean checkGromacs(String[] lines) {
-    if (Parser.parseInt(lines[1]) == Integer.MIN_VALUE)
+    if (javajs.util.ParserJS.parseInt(lines[1]) == Integer.MIN_VALUE)
       return false;
     int len = -1;
     for (int i = 2; i < 16 && len != 0; i++)

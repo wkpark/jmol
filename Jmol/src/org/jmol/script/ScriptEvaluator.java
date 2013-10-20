@@ -66,12 +66,15 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
+import org.jmol.util.ParserBS;
 
 import javajs.util.A4;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
+import javajs.util.ParserJS;
+
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.T3;
@@ -1532,7 +1535,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           String s = Atom.atomPropertyString(viewer, atom, tok);
           switch (minmaxtype) {
           case T.allfloat:
-            fout[i] = Parser.parseFloat(s);
+            fout[i] = ParserJS.parseFloat(s);
             break;
           default:
             if (vout == null)
@@ -1641,7 +1644,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             fout[i] = ((Integer) v).floatValue();
             break;
           case 2:
-            fout[i] = Parser.parseFloat((String) v);
+            fout[i] = ParserJS.parseFloat((String) v);
             break;
           case 3:
             fout[i] = ((P3) v).length();
@@ -1797,7 +1800,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       break;
     case T.string:
       if (sValue == null)
-        list = Parser.getTokens(SV.sValue(tokenValue));
+        list = ParserJS.getTokens(SV.sValue(tokenValue));
       break;
     }
     if (list != null) {
@@ -1806,7 +1809,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         fvalues = new float[nValues];
         for (int i = nValues; --i >= 0;)
           fvalues[i] = (tok == T.element ? Elements.elementNumberFromSymbol(
-              list[i], false) : Parser.parseFloat(list[i]));
+              list[i], false) : ParserJS.parseFloat(list[i]));
       }
       if (tokenValue.tok != T.varray && nValues == 1) {
         if (isStrProperty)
@@ -1918,7 +1921,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     pt = extensions.indexOf("##SCRIPT_START=");
     if (pt < 0)
       return 0;
-    pt = Parser.parseInt(extensions.substring(pt + 15));
+    pt = javajs.util.ParserJS.parseInt(extensions.substring(pt + 15));
     if (pt == Integer.MIN_VALUE)
       return 0;
     for (pc = 0; pc < lineIndices.length; pc++) {
@@ -4400,7 +4403,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     case T.string:
       s = SV.sValue(st[i]);
       s = Txt.replaceAllCharacter(s, "{},[]\"'", ' ');
-      fparams = Parser.parseFloatArray(s);
+      fparams = ParserJS.parseFloatArray(s);
       n = fparams.length;
       break;
     case T.varray:
@@ -7473,7 +7476,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           index++;
           name = parameterAsString(index++);
           data = new float[viewer.getAtomCount()];
-          Parser.parseStringInfestedFloatArray(""
+          ParserBS.parseStringInfestedFloatArray(""
               + getParameter(name, T.string), null, (float[]) data);
           pal = EnumPalette.PROPERTY;
         }
@@ -7666,7 +7669,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (slen < 3 || !(getToken(1).value instanceof String))
       invArg();
     String setName = ((String) getToken(1).value).toLowerCase();
-    if (Parser.parseInt(setName) != Integer.MIN_VALUE)
+    if (javajs.util.ParserJS.parseInt(setName) != Integer.MIN_VALUE)
       invArg();
     if (chk)
       return;
@@ -9369,7 +9372,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     checkLength(-3);
     String text = "";
     String applet = "";
-    int port = Parser.parseInt(optParameterAsString(1));
+    int port = javajs.util.ParserJS.parseInt(optParameterAsString(1));
     if (port == Integer.MIN_VALUE) {
       port = 0;
       switch (slen) {
@@ -11184,7 +11187,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         int modelNumber;
         boolean useModelNumber = false;
         if (modelDotted.indexOf(".") < 0) {
-          modelNumber = Parser.parseInt(modelDotted);
+          modelNumber = javajs.util.ParserJS.parseInt(modelDotted);
           useModelNumber = true;
         } else {
           modelNumber = getFloatEncodedInt(modelDotted);

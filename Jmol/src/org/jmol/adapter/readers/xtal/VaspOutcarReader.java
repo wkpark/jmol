@@ -27,11 +27,11 @@
 
 package org.jmol.adapter.readers.xtal;
 
+import javajs.util.DecimalFormat;
 import javajs.util.List;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.Txt;
 
 /**
  * http://cms.mpi.univie.ac.at/vasp/
@@ -307,7 +307,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
 
   private void setAtomSetInfoMd() {
     atomSetCollection.setAtomSetName("Temp. = "
-        + Txt.formatDecimal((temp), 2) + " K, Energy = " + totEne
+        + DecimalFormat.formatDecimal((temp), 2) + " K, Energy = " + totEne
         + " eV");
     atomSetCollection.setAtomSetAuxiliaryInfo("Energy", totEne);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Energy", totEne);
@@ -317,9 +317,9 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetAuxiliaryInfo("Kinetic", electronEne);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Kinetic", kinEne);
     atomSetCollection.setAtomSetAuxiliaryInfo("Temperature",
-        Txt.formatDecimal((temp), 2));
+        DecimalFormat.formatDecimal((temp), 2));
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("Temperature",
-        Txt.formatDecimal((temp), 2));
+        DecimalFormat.formatDecimal((temp), 2));
   }
 
   /*  

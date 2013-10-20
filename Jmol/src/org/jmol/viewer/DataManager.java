@@ -33,8 +33,10 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
+import org.jmol.util.ParserBS;
+
 import javajs.util.ArrayUtil;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 
@@ -99,7 +101,7 @@ class DataManager {
       }
       if (bsUserVdws == null)
         setUserVdw(defaultVdw);
-      Parser.parseFloatArrayFromMatchAndField(stringData, bsUserVdws, 1, 0,
+      ParserBS.parseFloatArrayFromMatchAndField(stringData, bsUserVdws, 1, 0,
           (int[]) data[DATA_SELECTION_MAP], 2, 0, userVdws, 1);
       for (int i = userVdws.length; --i >= 0;)
         userVdwMars[i] = (int) Math.floor(userVdws[i] * 1000);
@@ -121,13 +123,13 @@ class DataManager {
       float[] floatData = (depth == DATA_TYPE_AF ? (float[]) data[DATA_VALUE] : null);
       String[] strData = null;
       if (field == Integer.MIN_VALUE
-          && (strData = Parser.getTokens(stringData)).length > 1)
+          && (strData = ParserJS.getTokens(stringData)).length > 1)
         field = 0;
 
       if (field == Integer.MIN_VALUE) {
         // set the selected data elements to a single value
         bs = (BS) data[DATA_SELECTION_MAP];
-        Parser.setSelectedFloats(Parser.parseFloat(stringData), bs, f);
+        setSelectedFloats(ParserJS.parseFloat(stringData), bs, f);
       } else if (field == 0 || field == Integer.MAX_VALUE) {
         // just get the selected token values
         bs = (BS) data[DATA_SELECTION_MAP];
@@ -140,19 +142,19 @@ class DataManager {
             for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
               f[i] = floatData[i];
         } else {
-          Parser.parseFloatArrayBsData(strData == null ? Parser.getTokens(stringData)
+          ParserBS.parseFloatArrayBsData(strData == null ? ParserJS.getTokens(stringData)
               : strData, bs, f);
         }
       } else if (matchField <= 0) {
         // get the specified field >= 1 for the selected atoms
         bs = (BS) data[DATA_SELECTION_MAP];
-        Parser.parseFloatArrayFromMatchAndField(stringData, bs, 0, 0, null,
+        ParserBS.parseFloatArrayFromMatchAndField(stringData, bs, 0, 0, null,
             field, fieldColumnCount, f, 1);
       } else {
         // get the selected field, with an integer match in a specified field
         // in this case, bs is created and indicates which data points were set
         int[] iData = (int[]) data[DATA_SELECTION_MAP];
-        Parser.parseFloatArrayFromMatchAndField(stringData, null, matchField,
+        ParserBS.parseFloatArrayFromMatchAndField(stringData, null, matchField,
             matchFieldColumnCount, iData, field, fieldColumnCount, f, 1);
         bs = new BS();
         for (int i = iData.length; --i >= 0;)
@@ -180,6 +182,19 @@ class DataManager {
       }
     }
     dataValues.put(type, data);
+  }
+
+  /**
+   * 
+   * @param f
+   * @param bs
+   * @param data
+   */
+  private static void setSelectedFloats(float f, BS bs, float[] data) {
+    boolean isAll = (bs == null);
+    int i0 = (isAll ? 0 : bs.nextSetBit(0));
+    for (int i = i0; i >= 0 && i < data.length; i = (isAll ? i + 1 : bs.nextSetBit(i + 1)))
+      data[i] = f;
   }
 
   Object[] getData(String type) {

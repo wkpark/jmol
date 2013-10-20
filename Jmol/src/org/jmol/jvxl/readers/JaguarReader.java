@@ -26,8 +26,8 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 
 
-import org.jmol.util.Parser;
 
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 /*
@@ -92,7 +92,7 @@ class JaguarReader extends VolumeFileReader {
     while ((atomLine = readLine()) != null
         && atomLine.indexOf("origin=") < 0) {
     }
-    String[] tokens = Parser.getTokensAt(atomLine, 0);
+    String[] tokens = ParserJS.getTokensAt(atomLine, 0);
     if (tokens.length == 4 && tokens[0].equals("origin=")) {
       volumetricOrigin.set(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
           parseFloatStr(tokens[3]));
@@ -107,7 +107,7 @@ class JaguarReader extends VolumeFileReader {
     readExtents(1);
     readExtents(2);
     
-    tokens = Parser.getTokens(readLine());
+    tokens = ParserJS.getTokens(readLine());
     voxelCounts[0] = parseIntStr(tokens[1]);
     voxelCounts[1] = parseIntStr(tokens[2]);
     voxelCounts[2] = parseIntStr(tokens[3]);
@@ -143,7 +143,7 @@ class JaguarReader extends VolumeFileReader {
    * @exception Exception -- generally a reader issue
    */
   private void readExtents(int voxelVectorIndex) throws Exception {
-    String[] tokens = Parser.getTokens(readLine());
+    String[] tokens = ParserJS.getTokens(readLine());
     extents[voxelVectorIndex] = parseFloatStr(tokens[voxelVectorIndex + 1]);
   }
 }

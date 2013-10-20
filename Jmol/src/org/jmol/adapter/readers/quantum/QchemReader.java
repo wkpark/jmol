@@ -29,12 +29,13 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 import java.io.IOException;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.ParserJS;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -676,7 +677,7 @@ $end
       // we have all the info we need 
       for (int i = 0; i < nMO; i++) {
         MOInfo moInfo = moInfos[moid[i]];
-        mos[i].put("energy", Float.valueOf(Parser.fVal(energy[i])));
+        mos[i].put("energy", Float.valueOf(ParserJS.fVal(energy[i])));
         mos[i].put("coefficients", mocoef[i]);
         String label = alphaBeta;
         int ne = moInfo.ne;

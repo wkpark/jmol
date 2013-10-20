@@ -26,8 +26,8 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 
@@ -46,7 +46,7 @@ class CubeReader extends VolumeFileReader {
     jvxlFileHeaderBuffer.append(readLine()).appendC('\n');
     jvxlFileHeaderBuffer.append(readLine()).appendC('\n');
     String atomLine = readLine();
-    String[] tokens = Parser.getTokensAt(atomLine, 0);
+    String[] tokens = ParserJS.getTokensAt(atomLine, 0);
     atomCount = parseIntStr(tokens[0]);
     negativeAtomCount = (atomCount < 0); // MO list
     if (negativeAtomCount)

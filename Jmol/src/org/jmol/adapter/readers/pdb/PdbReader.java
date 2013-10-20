@@ -33,10 +33,10 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 import javajs.util.M4;
 import javajs.util.P3;
@@ -199,7 +199,7 @@ public class PdbReader extends AtomSetCollectionReader {
    String s = getFilter("TYPE ");
    if (s != null) {
      // first column, nColumns;
-     String[] tokens = Parser.getTokens(s.replace(',', ' '));
+     String[] tokens = ParserJS.getTokens(s.replace(',', ' '));
      atomTypePt0 = Integer.parseInt(tokens[0]) - 1;
      int pt = tokens[1].indexOf("=");
      if (pt >= 0) {
@@ -721,10 +721,10 @@ REMARK 290 REMARK: NULL
       //  26973856 = Integer.parseInt("100000", 10) - Integer.parseInt("A0000",36) 
       //           + (Integer.parseInt("100000",36) - Integer.parseInt("A0000",36))
       return (isBase10 || Character.isDigit(c) ? parseIntRange(line, i, j)
-          : Parser.parseIntRadix(line.substring(i, j), 36) + (Character.isUpperCase(c) ? -16696160 : 26973856));
+          : ParserJS.parseIntRadix(line.substring(i, j), 36) + (Character.isUpperCase(c) ? -16696160 : 26973856));
     case MODE_HEX:
       if (!isBase10)
-        return serial = Parser.parseIntRadix(line.substring(i, j), 16);
+        return serial = ParserJS.parseIntRadix(line.substring(i, j), 16);
       // reset from MODEL or new chain
       serMode = MODE_PDB;
       return getSerial(i, j);
@@ -750,11 +750,11 @@ REMARK 290 REMARK: NULL
       //  756496 = Integer.parseInt("10000", 10) - Integer.parseInt("A000",36) 
       //         + (Integer.parseInt("10000",36) - Integer.parseInt("A000",36)) 
       return (isBase10 || Character.isDigit(c) ? parseIntRange(line, i, j)
-          : Parser.parseIntRadix(line.substring(i, j), 36)
+          : ParserJS.parseIntRadix(line.substring(i, j), 36)
               + (Character.isUpperCase(c) ? -456560 : 756496));
     case MODE_HEX:
       if (!isBase10)
-        return Parser.parseIntRadix(line.substring(i, j), 16);
+        return ParserJS.parseIntRadix(line.substring(i, j), 16);
       // reset from MODEL or new chain
       seqMode = MODE_PDB;
       return getSeqNo(i, j);

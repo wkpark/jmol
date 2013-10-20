@@ -1,4 +1,4 @@
-package javajs.swing;
+package javajs.awt;
 
 public class LayoutManager {
 

@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 import javajs.util.A4;
 import javajs.util.M3;
@@ -456,7 +457,7 @@ public class Escape {
   private static String escapeNice(String s) {
     if (s == null)
       return "null";
-    float f = Parser.parseFloatStrict(s);
+    float f = ParserJS.parseFloatStrict(s);
     return (Float.isNaN(f) ? eS(s) : s);
   }
 
@@ -487,7 +488,7 @@ public class Escape {
     str = str.substring(1, str.length() - 1);
     int[] next = new int[1];
     for (; nPoints < 5; nPoints++) {
-      points[nPoints] = Parser.parseFloatNext(str, next);
+      points[nPoints] = ParserJS.parseFloatNext(str, next);
       if (Float.isNaN(points[nPoints])) {
         if (next[0] >= str.length() || str.charAt(next[0]) != ',')
           break;
@@ -574,12 +575,12 @@ public class Escape {
     int[] next = new int[1];
     int nPoints = 0;
     for (; nPoints < 16; nPoints++) {
-      points[nPoints] = Parser.parseFloatNext(str, next);
+      points[nPoints] = ParserJS.parseFloatNext(str, next);
       if (Float.isNaN(points[nPoints])) {
         break;
       }
     }
-    if (!Float.isNaN(Parser.parseFloatNext(str, next)))
+    if (!Float.isNaN(ParserJS.parseFloatNext(str, next)))
       return strMatrix; // overflow
     if (nPoints == 9)
       return M3.newA(points);

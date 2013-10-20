@@ -44,11 +44,11 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Parser;
 
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
+import javajs.util.ParserJS;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
@@ -711,7 +711,7 @@ public class IsosurfaceMesh extends Mesh {
 
   void setJvxlDataRendering() {
     if (jvxlData.rendering != null) {
-      String[] tokens = Parser.getTokens(jvxlData.rendering);
+      String[] tokens = ParserJS.getTokens(jvxlData.rendering);
       for (int i = 0; i < tokens.length; i++)
         setTokenProperty(T.getTokFromName(tokens[i]), true);
     }

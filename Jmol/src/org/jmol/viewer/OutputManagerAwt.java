@@ -38,7 +38,6 @@ import javajs.util.List;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 
@@ -169,7 +168,7 @@ final public class OutputManagerAwt extends OutputManager {
     for (int i = 1; i < scenes.length; i++) {
       scenes[i - 1] = Txt.trim(scenes[i - 1], "\t\n\r ");
       int[] pt = new int[1];
-      iScene = Parser.parseIntNext(scenes[i], pt);
+      iScene = javajs.util.ParserJS.parseIntNext(scenes[i], pt);
       if (iScene == Integer.MIN_VALUE)
         return "bad scene ID: " + iScene;
       scenes[i] = scenes[i].substring(pt[0]);

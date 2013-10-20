@@ -42,6 +42,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import javajs.util.A4;
+import javajs.util.DecimalFormat;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -1220,7 +1221,7 @@ public class ScriptMathProcessor {
         // neg is scientific notation
         if (n == 0)
           return addXInt(Math.round(f));
-        s = Txt.formatDecimal(f, n);
+        s = DecimalFormat.formatDecimal(f, n);
         return addXStr(s);
       case T.string:
         s = (String) x1.value;

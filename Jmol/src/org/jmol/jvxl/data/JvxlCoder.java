@@ -36,7 +36,6 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 import javajs.util.P3;
 import org.jmol.util.Txt;
 
@@ -1087,7 +1086,7 @@ public class JvxlCoder {
     boolean isset = false;
     int[] next = new int[1];
     while (true) {
-      dataCount = (nPrev++ < 0 ? dataCount : Parser.parseIntNext(data, next));
+      dataCount = (nPrev++ < 0 ? dataCount : javajs.util.ParserJS.parseIntNext(data, next));
       if (dataCount == Integer.MIN_VALUE) 
         break;
       if (dataCount < 0) {
@@ -1209,7 +1208,7 @@ public class JvxlCoder {
         case '7':
         case '8':
         case '9':
-          int nChar = Parser.parseIntNext(data, next);
+          int nChar = javajs.util.ParserJS.parseIntNext(data, next);
           for (int c = 0; c < nChar; c++)
             dataOut.appendC(chLast);
           i = next[0];

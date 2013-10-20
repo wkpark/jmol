@@ -32,7 +32,6 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.java.BS;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 import javajs.util.ArrayUtil;
 import javajs.util.SB;
@@ -535,7 +534,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
                                          SB bs) {
     if (atomLine.indexOf("ANGSTROMS") >= 0)
       isAngstroms = true;
-    int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : Parser
+    int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : javajs.util.ParserJS
         .parseInt(strAtomCount));
     switch (atomCount) {
     case Integer.MIN_VALUE:

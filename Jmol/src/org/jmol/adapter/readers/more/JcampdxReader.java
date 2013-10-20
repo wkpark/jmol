@@ -30,6 +30,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import org.jmol.util.Txt;
@@ -237,7 +238,7 @@ public class JcampdxReader extends MolReader {
     modelIdList += key;
     String baseModel = getAttribute(line, "baseModel");
     String modelType = getAttribute(line, "type").toLowerCase();
-    float vibScale = Parser.parseFloat(getAttribute(line, "vibrationScale"));
+    float vibScale = ParserJS.parseFloat(getAttribute(line, "vibrationScale"));
     if (modelType.equals("xyzvib"))
       modelType = "xyz";
     else if (modelType.length() == 0)

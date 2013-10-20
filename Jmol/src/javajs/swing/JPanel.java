@@ -1,5 +1,7 @@
 package javajs.swing;
 
+import javajs.awt.BorderLayout;
+import javajs.awt.LayoutManager;
 import javajs.util.SB;
 
 public class JPanel extends JComponent {

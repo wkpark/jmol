@@ -41,12 +41,13 @@ import javajs.util.List;
 import javajs.util.SB;
 
 import org.jmol.util.Measure;
-import org.jmol.util.Parser;
 
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
+import javajs.util.ParserJS;
+
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.V3;
@@ -723,7 +724,7 @@ public class SV extends T {
       return 1;
     if (s.equalsIgnoreCase("false") || s.length() == 0)
       return 0;
-    return Parser.parseFloatStrict(s);
+    return ParserJS.parseFloatStrict(s);
   }
 
   static SV concatList(SV x1, SV x2,

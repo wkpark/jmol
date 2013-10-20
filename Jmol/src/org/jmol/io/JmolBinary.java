@@ -41,6 +41,7 @@ import org.jmol.api.ZInputStream;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -156,21 +157,21 @@ public class JmolBinary {
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
 
-    String[] tokens = Parser.getTokens(line);
+    String[] tokens = ParserJS.getTokens(line);
     String line2 = br.readLineWithNewline();// second line
-    if (tokens.length == 2 && Parser.parseInt(tokens[0]) == 3
-        && Parser.parseInt(tokens[1]) != Integer.MIN_VALUE) {
-      tokens = Parser.getTokens(line2);
-      if (tokens.length == 3 && Parser.parseInt(tokens[0]) != Integer.MIN_VALUE
-          && Parser.parseInt(tokens[1]) != Integer.MIN_VALUE
-          && Parser.parseInt(tokens[2]) != Integer.MIN_VALUE)
+    if (tokens.length == 2 && javajs.util.ParserJS.parseInt(tokens[0]) == 3
+        && javajs.util.ParserJS.parseInt(tokens[1]) != Integer.MIN_VALUE) {
+      tokens = ParserJS.getTokens(line2);
+      if (tokens.length == 3 && javajs.util.ParserJS.parseInt(tokens[0]) != Integer.MIN_VALUE
+          && javajs.util.ParserJS.parseInt(tokens[1]) != Integer.MIN_VALUE
+          && javajs.util.ParserJS.parseInt(tokens[2]) != Integer.MIN_VALUE)
         return "PltFormatted";
     }
     String line3 = br.readLineWithNewline(); // third line
     if (line.startsWith("v ") && line2.startsWith("v ") && line3.startsWith("v "))
         return "Obj";
     //next line should be the atom line
-    int nAtoms = Parser.parseInt(line3);
+    int nAtoms = javajs.util.ParserJS.parseInt(line3);
     if (nAtoms == Integer.MIN_VALUE)
       return (line3.indexOf("+") == 0 ? "Jvxl+" : null);
     if (nAtoms >= 0)
@@ -179,7 +180,7 @@ public class JmolBinary {
     for (int i = 4 + nAtoms; --i >= 0;)
       if ((line = br.readLineWithNewline()) == null)
         return null;
-    int nSurfaces = Parser.parseInt(line);
+    int nSurfaces = javajs.util.ParserJS.parseInt(line);
     if (nSurfaces == Integer.MIN_VALUE)
       return null;
     return (nSurfaces < 0 ? "Jvxl" : "Cube"); //Final test looks at surface definition line

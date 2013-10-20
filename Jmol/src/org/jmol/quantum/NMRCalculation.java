@@ -39,10 +39,10 @@ import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.Model;
 import org.jmol.util.Escape;
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 import org.jmol.util.Tensor;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
@@ -309,7 +309,7 @@ public class NMRCalculation implements JmolNMRInterface {
           Logger.info(line);
         if (line.indexOf("#") >= 0)
           continue;
-        String[] tokens = Parser.getTokens(line);
+        String[] tokens = ParserJS.getTokens(line);
         String name = tokens[0];
         String defaultIso = tokens[2] + name;
         if (debugging)

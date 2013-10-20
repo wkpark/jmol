@@ -879,7 +879,7 @@ public class ActionManager implements EventManager {
    * 
    * @param key
    * @param modifiers
-   * @return 
+   * @return true if handled 
    */
   public boolean keyPressed(int key, int modifiers) {
     if (keyProcessing)

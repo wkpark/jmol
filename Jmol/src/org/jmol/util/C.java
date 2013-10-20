@@ -26,6 +26,7 @@ package org.jmol.util;
 
 
 import javajs.util.ArrayUtil;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import org.jmol.constant.EnumPalette;
@@ -419,7 +420,7 @@ public class C {
   public static short[] getColixArray(String colorNames) {
     if (colorNames == null || colorNames.length() == 0)
       return null;
-    String[] colors = Parser.getTokens(colorNames);
+    String[] colors = ParserJS.getTokens(colorNames);
     short[] colixes = new short[colors.length];
     for (int j = 0; j < colors.length; j++) {
       colixes[j] = getColix(ColorUtil.getArgbFromString(colors[j]));

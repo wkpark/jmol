@@ -27,11 +27,11 @@ package org.jmol.viewer;
 import org.jmol.script.T;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 import javajs.J2SRequireImport;
 import org.jmol.util.Txt;
 
+import javajs.util.ParserJS;
 import javajs.util.SB;
 import javajs.util.V3;
 
@@ -107,8 +107,6 @@ public class JC {
   }
 
   public final static boolean officialRelease = false;
-
-  public final static String CLASSBASE_OPTIONS = "org.jmol.";
 
   public final static String DEFAULT_HELP_PATH = "http://chemapps.stolaf.edu/jmol/docs/index.htm";
 
@@ -918,7 +916,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // unfortunately, this change is not backward compatible.
     if (isLegacy && (pt = s.indexOf("O3'")) >= 0)
       s = s.substring(0, pt);
-    String[] temp = Parser.getTokens(s);
+    String[] temp = ParserJS.getTokens(s);
     String[][] info = new String[temp.length / 2][];
     for (int i = 0, p = 0; i < info.length; i++) {
       String source = temp[p++];
@@ -1528,7 +1526,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static String getShapeClassName(int shapeID, boolean isRenderer) {
     if (shapeID < 0)
       return shapeClassBases[~shapeID];
-    return CLASSBASE_OPTIONS + (isRenderer ? "render" : "shape") 
+    return "org.jmol." + (isRenderer ? "render" : "shape") 
         + (shapeID >= SHAPE_MIN_SECONDARY && shapeID < SHAPE_MAX_SECONDARY 
             ? "bio."
         : shapeID >= SHAPE_MIN_SPECIAL && shapeID < SHAPE_MAX_SPECIAL 

@@ -26,6 +26,8 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import javajs.util.ParserJS;
+
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.io.JmolOutputChannel;
@@ -97,43 +99,43 @@ abstract class SurfaceFileReader extends SurfaceReader {
   protected int[] next = new int[1];
 
   protected String[] getTokens() {
-    return Parser.getTokensAt(line, 0);
+    return ParserJS.getTokensAt(line, 0);
   }
 
   protected float parseFloat() {
-    return Parser.parseFloatNext(line, next);
+    return ParserJS.parseFloatNext(line, next);
   }
 
   protected float parseFloatStr(String s) {
     next[0] = 0;
-    return Parser.parseFloatNext(s, next);
+    return ParserJS.parseFloatNext(s, next);
   }
 
   protected float parseFloatRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return Parser.parseFloatRange(s, iEnd, next);
+    return ParserJS.parseFloatRange(s, iEnd, next);
   }
 
   protected int parseInt() {
-    return Parser.parseIntNext(line, next);
+    return javajs.util.ParserJS.parseIntNext(line, next);
   }
 
   protected int parseIntStr(String s) {
     next[0] = 0;
-    return Parser.parseIntNext(s, next);
+    return javajs.util.ParserJS.parseIntNext(s, next);
   }
 
   protected int parseIntNext(String s) {
-    return Parser.parseIntNext(s, next);
+    return javajs.util.ParserJS.parseIntNext(s, next);
   }
 
   protected float[] parseFloatArrayStr(String s) {
     next[0] = 0;
-    return Parser.parseFloatArrayNext(s, next, null, null, null);
+    return ParserJS.parseFloatArrayNext(s, next, null, null, null);
   }
 
   protected float[] parseFloatArray(float[] a, String strStart, String strEnd) {
-    return Parser.parseFloatArrayNext(line, next, a, strStart, strEnd);
+    return ParserJS.parseFloatArrayNext(line, next, a, strStart, strEnd);
   }
 
   protected String getQuotedStringNext() {

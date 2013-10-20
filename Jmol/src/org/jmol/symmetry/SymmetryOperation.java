@@ -36,6 +36,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.Parser;
+import org.jmol.util.ParserBS;
 
 import javajs.util.M3;
 import javajs.util.M4;
@@ -204,12 +205,12 @@ class SymmetryOperation extends M4 {
        * The coordinates we are using here 
        */
       this.xyz = xyz;
-      Parser.parseStringInfestedFloatArray(xyz, null, rotTransMatrix);
+      ParserBS.parseStringInfestedFloatArray(xyz, null, rotTransMatrix);
       return setFromMatrix(null, isReverse);
     }
     if (xyz.indexOf("[[") == 0) {
       xyz = xyz.replace('[',' ').replace(']',' ').replace(',',' ');
-      Parser.parseStringInfestedFloatArray(xyz, null, rotTransMatrix);
+      ParserBS.parseStringInfestedFloatArray(xyz, null, rotTransMatrix);
       for (int i = 0; i < n; i++) {
         float v = rotTransMatrix[i];
         if (Float.isNaN(v))

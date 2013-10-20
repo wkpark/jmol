@@ -26,6 +26,7 @@ package org.jmol.smiles;
 
 
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -641,9 +642,9 @@ public class SmilesParser {
             isNot = true;
             s = s.substring(1);
           }
-          float min = (pt + 1 == pt2 ? 0 : Parser.fVal(s));
+          float min = (pt + 1 == pt2 ? 0 : ParserJS.fVal(s));
           s = strMeasure.substring(pt2 + 1);
-          float max = (s.length() == 0 ? Float.MAX_VALUE : Parser.fVal(s));
+          float max = (s.length() == 0 ? Float.MAX_VALUE : ParserJS.fVal(s));
           m = new SmilesMeasure(molecule, index, type, min, max, isNot);
           molecule.measures.addLast(m);
           if (index > 0)

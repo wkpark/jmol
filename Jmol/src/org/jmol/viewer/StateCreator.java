@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import java.util.Arrays;
@@ -1794,8 +1795,8 @@ public class StateCreator extends JmolStateCreator {
         // must save current state, coord, etc.
         // but this destroys actionStatesRedo
         int[] pt = new int[] { 1 };
-        type = Parser.parseIntNext(s, pt);
-        taintedAtom = Parser.parseIntNext(s, pt);
+        type = javajs.util.ParserJS.parseIntNext(s, pt);
+        taintedAtom = javajs.util.ParserJS.parseIntNext(s, pt);
         undoMoveActionClear(taintedAtom, type, false);
       }
       //System.out.println("redo type = " + type + " size=" + actionStates.size()
@@ -1966,7 +1967,7 @@ public class StateCreator extends JmolStateCreator {
 
   @Override
   void mouseScript(String script) {
-    String[] tokens = Parser.getTokens(script);
+    String[] tokens = ParserJS.getTokens(script);
     String key = tokens[1];
     try {
       key = (key.toLowerCase() + "...............").substring(0, 15);
@@ -1982,52 +1983,52 @@ public class StateCreator extends JmolStateCreator {
       case 0: //zoombyfactor
         switch (tokens.length) {
         case 3:
-          viewer.zoomByFactor(Parser.parseFloat(tokens[2]),
+          viewer.zoomByFactor(ParserJS.parseFloat(tokens[2]),
               Integer.MAX_VALUE, Integer.MAX_VALUE);
           return;
         case 5:
-          viewer.zoomByFactor(Parser.parseFloat(tokens[2]), Parser
-              .parseInt(tokens[3]), Parser.parseInt(tokens[4]));
+          viewer.zoomByFactor(ParserJS.parseFloat(tokens[2]), javajs.util.ParserJS
+              .parseInt(tokens[3]), javajs.util.ParserJS.parseInt(tokens[4]));
           return;
         }
         break;
       case 15: //zoomby
         switch (tokens.length) {
         case 3:
-          viewer.zoomBy(Parser.parseInt(tokens[2]));
+          viewer.zoomBy(javajs.util.ParserJS.parseInt(tokens[2]));
           return;
         }
         break;
       case 30: // rotatezby
         switch (tokens.length) {
         case 3:
-          viewer.rotateZBy(Parser.parseInt(tokens[2]), Integer.MAX_VALUE,
+          viewer.rotateZBy(javajs.util.ParserJS.parseInt(tokens[2]), Integer.MAX_VALUE,
               Integer.MAX_VALUE);
           return;
         case 5:
-          viewer.rotateZBy(Parser.parseInt(tokens[2]), Parser
-              .parseInt(tokens[3]), Parser.parseInt(tokens[4]));
+          viewer.rotateZBy(javajs.util.ParserJS.parseInt(tokens[2]), javajs.util.ParserJS
+              .parseInt(tokens[3]), javajs.util.ParserJS.parseInt(tokens[4]));
         }
         break;
       case 45: // rotatexyby
-        viewer.rotateXYBy(Parser.parseFloat(tokens[2]), Parser
+        viewer.rotateXYBy(ParserJS.parseFloat(tokens[2]), ParserJS
             .parseFloat(tokens[3]));
         return;
       case 60: // translatexyby
-        viewer.translateXYBy(Parser.parseInt(tokens[2]), Parser
+        viewer.translateXYBy(javajs.util.ParserJS.parseInt(tokens[2]), javajs.util.ParserJS
             .parseInt(tokens[3]));
         return;
       case 75: // rotatemolecule
-        viewer.rotateSelected(Parser.parseFloat(tokens[2]), Parser
+        viewer.rotateSelected(ParserJS.parseFloat(tokens[2]), ParserJS
             .parseFloat(tokens[3]), null);
         return;
       case 90:// spinxyby
-        viewer.spinXYBy(Parser.parseInt(tokens[2]), Parser.parseInt(tokens[3]),
-            Parser.parseFloat(tokens[4]));
+        viewer.spinXYBy(javajs.util.ParserJS.parseInt(tokens[2]), javajs.util.ParserJS.parseInt(tokens[3]),
+            ParserJS.parseFloat(tokens[4]));
         return;
       case 105: // rotatearcball
-        viewer.rotateArcBall(Parser.parseInt(tokens[2]), Parser
-            .parseInt(tokens[3]), Parser.parseFloat(tokens[4]));
+        viewer.rotateArcBall(javajs.util.ParserJS.parseInt(tokens[2]), javajs.util.ParserJS
+            .parseInt(tokens[3]), ParserJS.parseFloat(tokens[4]));
         return;
       }
     } catch (Exception e) {

@@ -30,6 +30,7 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
+import javajs.util.ParserJS;
 import javajs.util.SB;
 import javajs.util.V3;
 
@@ -101,11 +102,11 @@ public class XmlVaspReader extends XmlReader {
       atomSetCollection.setDoFixPeriodic();
       atomSetCollection.newAtomSet();
       if (enthalpy != null) {
-        atomSetCollection.setAtomSetAuxiliaryInfo("enthalpy", Double.valueOf(Parser.dVal(enthalpy)));
+        atomSetCollection.setAtomSetAuxiliaryInfo("enthalpy", Double.valueOf(ParserJS.dVal(enthalpy)));
       }
       if (gibbsEnergy != null) {
         atomSetCollection.setAtomSetEnergy("" + gibbsEnergy, parseFloatStr(gibbsEnergy));
-        atomSetCollection.setAtomSetAuxiliaryInfo("gibbsEnergy", Double.valueOf(Parser.dVal(gibbsEnergy)));
+        atomSetCollection.setAtomSetAuxiliaryInfo("gibbsEnergy", Double.valueOf(ParserJS.dVal(gibbsEnergy)));
       }
       if (enthalpy != null && gibbsEnergy != null)
         atomSetCollection.setAtomSetName("Enthalpy = " + enthalpy + " eV Gibbs Energy = " + gibbsEnergy + " eV");

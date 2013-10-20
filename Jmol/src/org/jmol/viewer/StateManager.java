@@ -44,6 +44,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 
 import javajs.J2SIgnoreImport;
+import javajs.util.DecimalFormat;
 import javajs.util.SB;
 import javajs.util.M3;
 import javajs.util.P3;
@@ -1445,8 +1446,8 @@ public class StateManager {
           bTotal = runtime.totalMemory() / 1000000f;
           bFree = runtime.freeMemory() / 1000000f;
         }
-        String value = Txt.formatDecimal(bTotal - bFree, 1) + "/"
-            + Txt.formatDecimal(bTotal, 1);
+        String value = DecimalFormat.formatDecimal(bTotal - bFree, 1) + "/"
+            + DecimalFormat.formatDecimal(bTotal, 1);
         htNonbooleanParameterValues.put("_memory", value);
       }
       if (htNonbooleanParameterValues.containsKey(name))

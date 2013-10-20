@@ -27,11 +27,12 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 import org.jmol.util.Txt;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.ParserJS;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -495,7 +496,7 @@ abstract public class MOReader extends BasisFunctionReader {
       return;
     case HEADER_GAMESS_UK_MO:
       for (int i = 0; i < nThisLine; i++)
-        mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
+        mos[i].put("energy", Float.valueOf(ParserJS.fVal(tokens[i])));
       readLines(5);
       return;
     case HEADER_GAMESS_ORIGINAL:
@@ -504,7 +505,7 @@ abstract public class MOReader extends BasisFunctionReader {
       if (tokens.length == 0)
         tokens = getTokensStr(readLine());
       for (int i = 0; i < nThisLine; i++) {
-        mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
+        mos[i].put("energy", Float.valueOf(ParserJS.fVal(tokens[i])));
       }
       readLine();
       break;

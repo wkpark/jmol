@@ -34,7 +34,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 /**
  * CSF file reader based on CIF idea -- fluid property fields.
@@ -228,7 +227,7 @@ public class CsfReader extends MopacSlaterReader {
             continue out;
           break;
         case objID1:
-          thisAtomID = Parser.parseInt(field);
+          thisAtomID = javajs.util.ParserJS.parseInt(field);
           break;
         case objID2:
           thisBondID = field2+field;
@@ -298,7 +297,7 @@ public class CsfReader extends MopacSlaterReader {
           Logger.warn("field == null in " + line);
         switch (fieldTypes[i]) {
         case ID:
-          atom.atomSerial = Parser.parseInt(field);
+          atom.atomSerial = javajs.util.ParserJS.parseInt(field);
           break;
         case sym:
           atom.elementSymbol = field;

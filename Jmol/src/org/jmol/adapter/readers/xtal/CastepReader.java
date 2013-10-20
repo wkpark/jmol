@@ -42,6 +42,7 @@
 
 package org.jmol.adapter.readers.xtal;
 
+import javajs.util.DecimalFormat;
 import javajs.util.List;
 
 
@@ -800,7 +801,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       if (isTrajectory)
         atomSetCollection.setTrajectory();
       atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
-      atomSetCollection.setAtomSetName(Txt.formatDecimal(freq, 2)
+      atomSetCollection.setAtomSetName(DecimalFormat.formatDecimal(freq, 2)
           + " cm-1 " + qname);
     }
   }

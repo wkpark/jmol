@@ -102,13 +102,17 @@ import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.ParserBS;
+
 import javajs.util.P3;
 import javajs.util.P4;
 import org.jmol.util.Rectangle;
 import javajs.util.A4;
+import javajs.util.DecimalFormat;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3i;
+import javajs.util.ParserJS;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.util.Vibration;
@@ -6039,7 +6043,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setIntPropertyTok(key, tok, SV.newVariable(T.string, value).asInt());
       break;
     case T.floatparam:
-      setFloatPropertyTok(key, tok, Parser.parseFloat(value));
+      setFloatPropertyTok(key, tok, ParserJS.parseFloat(value));
       break;
     default:
       setStringPropertyTok(key, tok, value);
@@ -6922,7 +6926,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       break;
     case T.usenumberlocalization:
       // 11.1.21
-      Txt.setUseNumberLocalization(global.useNumberLocalization = value);
+      DecimalFormat.setUseNumberLocalization(global.useNumberLocalization = value);
       break;
     case T.frank:
       key = "showFrank";
@@ -8563,7 +8567,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     fdata = new float[nX][nY];
     float[] f = new float[nX * nY];
-    Parser.parseStringInfestedFloatArray(data, null, f);
+    ParserBS.parseStringInfestedFloatArray(data, null, f);
     for (int i = 0, n = 0; i < nX; i++)
       for (int j = 0; j < nY; j++)
         fdata[i][j] = f[n++];
@@ -8588,7 +8592,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     xyzdata = new float[nX][nY][nZ];
     float[] f = new float[nX * nY * nZ];
-    Parser.parseStringInfestedFloatArray(data, null, f);
+    ParserBS.parseStringInfestedFloatArray(data, null, f);
     for (int i = 0, n = 0; i < nX; i++)
       for (int j = 0; j < nY; j++)
         for (int k = 0; k < nZ; k++)
@@ -9745,12 +9749,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setStateScriptVersion(String version) {
     if (version != null) {
-      String[] tokens = Parser.getTokens(version.replace('.', ' ').replace('_',
+      String[] tokens = ParserJS.getTokens(version.replace('.', ' ').replace('_',
           ' '));
       try {
-        int main = Parser.parseInt(tokens[0]); //11
-        int sub = Parser.parseInt(tokens[1]); //9
-        int minor = Parser.parseInt(tokens[2]); //24
+        int main = javajs.util.ParserJS.parseInt(tokens[0]); //11
+        int sub = javajs.util.ParserJS.parseInt(tokens[1]); //9
+        int minor = javajs.util.ParserJS.parseInt(tokens[2]); //24
         if (minor == Integer.MIN_VALUE) // RCxxx
           minor = 0;
         if (main != Integer.MIN_VALUE && sub != Integer.MIN_VALUE) {

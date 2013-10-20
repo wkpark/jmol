@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import java.util.Arrays;
@@ -55,7 +56,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 import javajs.util.M3;
 import javajs.util.P3;
@@ -239,7 +239,7 @@ public class PropertyManager implements JmolPropertyManager {
     propertyName = names[0];
     int n;
     for (int i = 1; i < names.length; i++) {
-      if ((n = Parser.parseInt(names[i])) != Integer.MIN_VALUE)
+      if ((n = javajs.util.ParserJS.parseInt(names[i])) != Integer.MIN_VALUE)
         args[i] = SV.newScriptVariableInt(n);
       else
         args[i] = SV.newVariable(T.string, names[i]);
@@ -451,9 +451,9 @@ public class PropertyManager implements JmolPropertyManager {
       width = -1;
       int pt;
       if ((pt = params.indexOf("height=")) >= 0)
-        height = Parser.parseInt(params.substring(pt + 7));
+        height = javajs.util.ParserJS.parseInt(params.substring(pt + 7));
       if ((pt = params.indexOf("width=")) >= 0)
-        width = Parser.parseInt(params.substring(pt + 6));
+        width = javajs.util.ParserJS.parseInt(params.substring(pt + 6));
       if (width < 0 && height < 0)
         height = width = -1;
       else if (width < 0)
@@ -464,7 +464,7 @@ public class PropertyManager implements JmolPropertyManager {
         returnType = "string";
       String type = "JPG";
       if (params.indexOf("type=") >= 0)
-        type = Parser.getTokens(Txt.replaceAllCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
+        type = ParserJS.getTokens(Txt.replaceAllCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
       String[] errMsg = new String[1];
       byte[] bytes = viewer.getImageAsBytes(type.toUpperCase(), width,  height, -1, errMsg);
       return (errMsg[0] != null ? errMsg[0] : returnType == null ? bytes : Base64
@@ -1285,7 +1285,7 @@ public class PropertyManager implements JmolPropertyManager {
     viewer.getAtomIdentityInfo(atom2.index, infoB);
     info.put("atom1", infoA);
     info.put("atom2", infoB);
-    info.put("order", Float.valueOf(Parser.fVal(JmolEdge
+    info.put("order", Float.valueOf(ParserJS.fVal(JmolEdge
         .getBondOrderNumberFromOrder(bond.order))));
     info.put("type", JmolEdge.getBondOrderNameFromOrder(bond.order));
     info.put("radius", Float.valueOf((float) (bond.mad / 2000.)));

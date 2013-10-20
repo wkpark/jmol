@@ -27,6 +27,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.util.P3;
+import javajs.util.ParserJS;
 import javajs.util.T3;
 
 
@@ -393,9 +394,9 @@ public class ColorUtil {
             .length() - 1), ",");
         if (tokens.length != 3)
           return 0;
-        float red = Parser.parseFloat(tokens[0]);
-        float grn = Parser.parseFloat(tokens[1]);
-        float blu = Parser.parseFloat(tokens[2]);
+        float red = ParserJS.parseFloat(tokens[0]);
+        float grn = ParserJS.parseFloat(tokens[1]);
+        float blu = ParserJS.parseFloat(tokens[2]);
         return colorTriadToInt(red, grn, blu);
       }
       switch (len) {
@@ -415,7 +416,7 @@ public class ColorUtil {
     }
     if (len == 7 && strColor.charAt(0) == '#') {
       try {
-        return Parser.parseIntRadix(strColor.substring(1, 7), 16) | 0xFF000000;
+        return ParserJS.parseIntRadix(strColor.substring(1, 7), 16) | 0xFF000000;
       } catch (Exception e) {
         return 0;
       }

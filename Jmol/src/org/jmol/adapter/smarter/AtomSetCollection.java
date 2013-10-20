@@ -50,7 +50,6 @@ import javajs.util.P3i;
 
 import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Txt;
 import javajs.util.V3;
@@ -1444,7 +1443,7 @@ public class AtomSetCollection {
     int iAtomFirst = getLastAtomSetAtomIndex();
     int atomMax = atomCount;
     if (filter.indexOf("#<") >= 0) {
-      len = Math.min(len, Parser.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
+      len = Math.min(len, javajs.util.ParserJS.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
       filter = Txt.simpleReplace(filter, "#<", "_<");
     }
     for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++)

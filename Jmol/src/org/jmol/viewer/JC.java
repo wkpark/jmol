@@ -28,6 +28,7 @@ import org.jmol.script.T;
 import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 
+import javajs.J2SIgnoreImport;
 import javajs.J2SRequireImport;
 import org.jmol.util.Txt;
 
@@ -42,7 +43,8 @@ import java.util.Map;
 import java.util.Properties;
 
 
-@J2SRequireImport({java.util.Properties.class,java.io.BufferedInputStream.class,javajs.util.SB.class})
+@J2SIgnoreImport({java.util.Properties.class,java.io.BufferedInputStream.class})
+@J2SRequireImport({javajs.util.SB.class, org.jmol.util.Txt.class})
 public class JC {
 
   // axes mode constants --> org.jmol.constant.EnumAxesMode
@@ -57,50 +59,51 @@ public class JC {
     String tmpVersion = null;
     String tmpDate = null;
 
-    // Reading version from resource   inside jar
-    BufferedInputStream bis = null;
-    InputStream is = null;
-    try {
-      /**
-       * definitions are incorporated into j2s/java/core.z.js by j2s/makelib.bat 
-       * 
-       * @j2sNative
-       * 
-       *            tmpVersion = ___JmolVersion; tmpDate = ___JmolDate;
-       */
-      {
+    /**
+     * definitions are incorporated into j2s/java/core.z.js by buildtojs.xml
+     * 
+     * @j2sNative
+     * 
+     *            tmpVersion = ___JmolVersion; tmpDate = ___JmolDate;
+     */
+    {
+      BufferedInputStream bis = null;
+      InputStream is = null;
+      try {
+        // Reading version from resource   inside jar
         is = JC.class.getClassLoader().getResourceAsStream(
             "org/jmol/viewer/Jmol.properties");
         bis = new BufferedInputStream(is);
         Properties props = new Properties();
         props.load(bis);
-        tmpVersion = Txt.trimQuotes(props.getProperty("___JmolVersion", tmpVersion));
+        tmpVersion = Txt.trimQuotes(props.getProperty("___JmolVersion",
+            tmpVersion));
         tmpDate = Txt.trimQuotes(props.getProperty("___JmolDate", tmpDate));
-      }
-      if (tmpDate != null) {
-        tmpDate = tmpDate.substring(7, 24);
-        // NOTE : date is updated in the properties by SVN, and is in the format
-        // "$Date$"
-        //  0         1         2
-        //  012345678901234567890123456789
-      }
-    } catch (Exception e) {
-      // Nothing to do
-    } finally {
-      if (bis != null) {
-        try {
-          bis.close();
-        } catch (Exception e) {
-          // Nothing to do
+      } catch (Exception e) {
+        // Nothing to do
+      } finally {
+        if (bis != null) {
+          try {
+            bis.close();
+          } catch (Exception e) {
+            // Nothing to do
+          }
+        }
+        if (is != null) {
+          try {
+            is.close();
+          } catch (Exception e) {
+            // Nothing to do
+          }
         }
       }
-      if (is != null) {
-        try {
-          is.close();
-        } catch (Exception e) {
-          // Nothing to do
-        }
-      }
+    }
+    if (tmpDate != null) {
+      tmpDate = tmpDate.substring(7, 24);
+      // NOTE : date is updated in the properties by SVN, and is in the format
+      // "$Date$"
+      //  0         1         2
+      //  012345678901234567890123456789
     }
     version = (tmpVersion != null ? tmpVersion : "(Unknown version)");
     date = (tmpDate != null ? tmpDate : "(Unknown date)");

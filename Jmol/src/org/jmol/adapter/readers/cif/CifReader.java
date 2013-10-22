@@ -97,6 +97,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   private boolean haveAromatic;
   private int conformationIndex;
   private int nMolecular = 0;
+  private boolean readIdeal = true;
   
 
   private  List<M4> vBiomts;
@@ -125,6 +126,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     if (conf != null)
       configurationPtr = parseIntStr(conf);
     isMolecular = checkFilterKey("MOLECUL");
+    readIdeal = !checkFilterKey("NOIDEAL");
     filterAssembly = checkFilterKey("$");
 
     if (isMolecular) {
@@ -1008,17 +1010,17 @@ public class CifReader extends ModulationReader implements JmolLineReader {
           break;
         case CHEM_COMP_AC_X_IDEAL:
           float x = parseFloatStr(field);
-          if (!Float.isNaN(x))
+          if (readIdeal && !Float.isNaN(x))
             atom.x = x;
           break;
         case CHEM_COMP_AC_Y_IDEAL:
           float y = parseFloatStr(field);
-          if (!Float.isNaN(y))
+          if (readIdeal && !Float.isNaN(y))
             atom.y = y;
           break;
         case CHEM_COMP_AC_Z_IDEAL:
           float z = parseFloatStr(field);
-          if (!Float.isNaN(z))
+          if (readIdeal && !Float.isNaN(z))
             atom.z = z;
           break;
         case CHEM_COMP_AC_X:

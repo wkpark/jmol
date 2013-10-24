@@ -35,7 +35,7 @@ public class ByteConverter {
      * @j2sNative
      * 
      *       if (x == 0) return 0;
-     *       var o = org.jmol.io2.BinaryDocument;
+     *       var o = javajs.util.ByteConverter;
      *       if (o.fracIEEE == null);
      *         o.setFracIEEE();
      *       var m = ((x & 0x7F800000) >> 23);

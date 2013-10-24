@@ -24,8 +24,6 @@
 
 package javajs.util;
 
-//import org.jmol.util.Parser;
-
 /**
  * created to remove ambiguities and make a simpler DecimalFormat
  */

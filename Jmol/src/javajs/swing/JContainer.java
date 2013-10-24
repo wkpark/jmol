@@ -20,12 +20,12 @@ public class JContainer extends JComponent {
 	}
 
 	@Override
-	protected int getSubcomponentWidth() {
+	public int getSubcomponentWidth() {
 		return (list.size() == 1 ? list.get(0).getSubcomponentWidth() : 0);
 	}
 	
 	@Override
-	protected int getSubcomponentHeight() {
+	public int getSubcomponentHeight() {
 		return (list.size() == 1 ? list.get(0).getSubcomponentHeight() : 0);
 	}
 	@Override

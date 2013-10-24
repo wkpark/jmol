@@ -27,7 +27,7 @@ public class JSplitPane extends JComponent {
 	}
 
 	@Override
-	protected int getSubcomponentWidth() {
+	public int getSubcomponentWidth() {
 		int w = this.width;
 		if (w == 0) {
 			int wleft = left.getSubcomponentWidth();
@@ -43,7 +43,7 @@ public class JSplitPane extends JComponent {
 	}
 	
 	@Override
-	protected int getSubcomponentHeight() {
+	public int getSubcomponentHeight() {
 		int h = this.height;
 		if (h == 0) {
 			int hleft = left.getSubcomponentHeight();

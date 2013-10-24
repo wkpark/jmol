@@ -13,6 +13,11 @@ public class JDialog extends JContainer {
   private JContentPane contentPane;
   private String title;
   private String html;
+  private int zIndex = 9000;
+  
+  public void setZIndex(int zIndex) {
+    this.zIndex = zIndex;
+  }
   
   int[] loc;
 
@@ -92,7 +97,7 @@ public class JDialog extends JContainer {
       renderHeight = defaultHeight;
     int h = renderHeight - headerHeight;
     SB sb = new SB();
-    sb.append("\n<div id='" + id + "' class='JDialog' style='" + getCSSstyle(0) + "z-index:9000;position:relative;top:0px;left:0px;reize:both;'>\n");
+    sb.append("\n<div id='" + id + "' class='JDialog' style='" + getCSSstyle(0) + "z-index:" + zIndex + ";position:relative;top:0px;left:0px;reize:both;'>\n");
     sb.append("\n<div id='" + id + "_title' class='JDialogTitle' style='width:100%;height:25px;padding:5px 5px 5px 5px;height:"+headerHeight+"px'>"
         +"<span style='text-align:center;'>" + title + "</span><span style='position:absolute;text-align:right;right:1px;'>"
         + "<input type=button id='" + id + "_closer' onclick='Jmol.Dialog.windowClosing(this)' value='x' /></span></div>\n");

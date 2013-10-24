@@ -747,6 +747,7 @@ all support for previous versions removed
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" manifest="manifest/applet.txt" >
 	  <fileset dir="${applet.classes.dir}">
 	    <include name="org/jmol/modelsetbio/**" />
+	    <include name="org/jmol/dssx/**" />
 	    <include name="org/jmol/renderbio/**" />
 	    <include name="org/jmol/shapebio/**" />
 	  </fileset>
@@ -1236,6 +1237,7 @@ all support for previous versions removed
     <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" manifest="manifest/applet.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/modelsetbio/**" />
+	    <include name="org/jmol/dssx/**" />
         <include name="org/jmol/shapebio/**" />
         <include name="org/jmol/renderbio/**" />
       </fileset>

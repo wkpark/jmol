@@ -820,6 +820,7 @@ public abstract class AtomSetCollectionReader {
   // ALL:  "CENTER" "REVERSEMODELS"
   // MANY: "NOVIB" "NOMO"
   // CASTEP: "CHARGE=HIRSH q={i,j,k};"
+  // CIF: "ASSEMBLY n"
   // CRYSTAL: "CONV" (conventional), "INPUT"
   // CSF, SPARTAN: "NOORIENT"
   // GAMESS-US:  "CHARGE=LOW"

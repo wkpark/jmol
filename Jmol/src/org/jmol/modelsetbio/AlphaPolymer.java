@@ -95,7 +95,7 @@ public class AlphaPolymer extends BioPolymer {
       bsAssigned.setBits(istart, iend + 1);
   }
 
-  protected void addStructureProtected(EnumStructure type, 
+  public void addStructureProtected(EnumStructure type, 
                              String structureID, int serialID, int strandCount,
                              int indexStart, int indexEnd) {
 

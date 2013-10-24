@@ -53,7 +53,7 @@ import java.util.Map;
 
 public abstract class BioPolymer {
 
-  Monomer[] monomers;
+  public Monomer[] monomers;
 
   // these arrays will be one longer than the polymerCount
   // we probably should have better names for these things
@@ -989,18 +989,6 @@ public abstract class BioPolymer {
     for (int i = bsTemp.nextSetBit(0); i >= 0 && i < monomerCount; i = bsTemp
         .nextSetBit(i + 1))
       monomers[i].selectAtoms(bsResult);
-  }
-
-  public String calculateDssp(BioPolymer[] bioPolymers,
-                                    int bioPolymerCount, List<Bond> vHBonds,
-                                    boolean doReport,
-                                    boolean dsspIgnoreHydrogens,
-                                    boolean setStructure) {
-    // Here because we are calling a static method in AminoPolymer for the 
-    // entire SET of polymers, just using the first one, which may or may not
-    // be an AminoPolymer.
-    return AminoPolymer.calculateStructuresDssp(bioPolymers, bioPolymerCount,
-        vHBonds, doReport, dsspIgnoreHydrogens, setStructure);
   }
 
   /**

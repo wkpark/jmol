@@ -125,7 +125,9 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     String conf = getFilter("CONF ");
     if (conf != null)
       configurationPtr = parseIntStr(conf);
-    isMolecular = checkFilterKey("MOLECUL");
+    if (checkFilterKey("BIOMOLECULE")) // PDB format
+      filter = Txt.simpleReplace(filter, "BIOMOLECULE","ASSEMBLY");
+    isMolecular = checkFilterKey("MOLECUL"); // molecular; molecule
     readIdeal = !checkFilterKey("NOIDEAL");
     filterAssembly = checkFilterKey("$");
 

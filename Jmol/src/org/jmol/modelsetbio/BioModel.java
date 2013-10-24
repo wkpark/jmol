@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.Properties;
 
 
+import org.jmol.api.DSSPInterface;
+import org.jmol.api.Interface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
@@ -119,8 +121,14 @@ public final class BioModel extends Model{
       for (int i = bioPolymerCount; --i >= 0;)
         if (bioPolymers[i] instanceof AlphaPolymer)
           ((AlphaPolymer) bioPolymers[i]).calculateStructures(includeAlpha);
-    return (asDSSP ? bioPolymers[0].calculateDssp(bioPolymers, bioPolymerCount,
-        null, doReport, dsspIgnoreHydrogen, setStructure) : "");
+    return (asDSSP ? calculateDssp(null, doReport, dsspIgnoreHydrogen, setStructure) : "");
+  }
+  
+  private String calculateDssp(List<Bond> vHBonds, boolean doReport,
+                               boolean dsspIgnoreHydrogen, boolean setStructure) {
+    return ((DSSPInterface) Interface.getOptionInterface("dssx.DSSP"))
+        .calculateDssp(bioPolymers, bioPolymerCount, vHBonds, doReport,
+            dsspIgnoreHydrogen, setStructure);
   }
 
   @Override
@@ -331,8 +339,7 @@ public final class BioModel extends Model{
     boolean asDSSP = (bsB == null);
     BioPolymer bp, bp1;
     if (asDSSP && bioPolymerCount > 0) {
-      bioPolymers[0].calculateDssp(bioPolymers, bioPolymerCount,
-          vHBonds, false, dsspIgnoreHydrogens, false);
+      calculateDssp(vHBonds, false, dsspIgnoreHydrogens, false);
     } else {
       for (int i = bioPolymerCount; --i >= 0;) {
         bp = bioPolymers[i];

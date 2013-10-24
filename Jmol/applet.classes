@@ -30,6 +30,7 @@ org/jmol/awt/*.java
 org/jmol/bspt/*.java
 org/jmol/console/*.java
 org/jmol/dialog/*.java
+org/jmol/dssx/*.java
 org/jmol/export/*.java
 org/jmol/export/dialog/*.java
 org/jmol/export/history/*.java

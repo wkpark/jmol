@@ -193,7 +193,7 @@ public class AminoMonomer extends AlphaMonomer {
     return nitrogenHydrogenPoint;
   }
   
-  P3 getExplicitNH() {
+  public P3 getExplicitNH() {
     Atom nitrogen = getNitrogenAtom();
     Atom h = null;
     Bond[] bonds = nitrogen.getBonds();

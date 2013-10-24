@@ -192,6 +192,8 @@ public class PdbReader extends AtomSetCollectionReader {
    pdbHeader = (getHeader ? new SB() : null);
    applySymmetry = !checkFilterKey("NOSYMMETRY");
    getTlsGroups = checkFilterKey("TLS");
+   if (checkFilterKey("ASSEMBLY")) // CIF syntax
+     filter = Txt.simpleReplace(filter, "ASSEMBLY", "BIOMOLECULE");
    if (htParams.containsKey("vTlsModels")) {
      // from   load files "tls.out" "xxxx.pdb"
      vTlsModels = ( List<Map<String, Object>>) htParams.remove("vTlsModels");

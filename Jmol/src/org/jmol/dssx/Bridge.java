@@ -23,19 +23,25 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.modelsetbio;
+package org.jmol.dssx;
 
 import java.util.Map;
 
 import org.jmol.modelset.Atom;
 import org.jmol.util.Escape;
 
-class APBridge {
-  protected Atom a, b;
-  protected int[][] ladder;
-  protected boolean isAntiparallel;
+/**
+ * A class for cataloging ladder bridges in a DSSP calculation
+ * 
+ * @author hansonr
+ * 
+ */
+class Bridge {
+  Atom a, b;
+  int[][] ladder;
+  boolean isAntiparallel;
   
-  protected APBridge(Atom a, Atom b, Map<int[][], Boolean> htLadders) {
+  Bridge(Atom a, Atom b, Map<int[][], Boolean> htLadders) {
     this.a = a;
     this.b = b;
     ladder = new int[2][2];
@@ -44,16 +50,8 @@ class APBridge {
     addLadder(htLadders);
   }
   
-  private void addLadder(Map<int[][], Boolean> htLadders) {
-    htLadders.put(ladder, (isAntiparallel ? Boolean.TRUE : Boolean.FALSE));
-  }
-
-  @Override
-  public String toString() {
-    return (isAntiparallel ? "a " : "p ") + a + " - " + b + "\t" + Escape.e(ladder);
-  }
-  protected boolean addBridge(APBridge bridge,  Map<int[][], Boolean> htLadders) {
-    if (bridge == null || bridge.isAntiparallel != isAntiparallel
+  boolean addBridge(Bridge bridge,  Map<int[][], Boolean> htLadders) {
+    if (bridge.isAntiparallel != isAntiparallel
         || !canAdd(bridge) || !bridge.canAdd(this))
       return false;
     extendLadder(bridge.ladder[0][0], bridge.ladder[1][0]);
@@ -66,7 +64,11 @@ class APBridge {
     return true;
   }
 
-  private boolean canAdd(APBridge bridge) {
+  private void addLadder(Map<int[][], Boolean> htLadders) {
+    htLadders.put(ladder, (isAntiparallel ? Boolean.TRUE : Boolean.FALSE));
+  }
+
+  private boolean canAdd(Bridge bridge) {
     int index1 = bridge.a.index;
     int index2 = bridge.b.index;
     // no crossing of ladder rungs (2WUJ)
@@ -87,4 +89,10 @@ class APBridge {
     if (ladder[1][1] < index2)
       ladder[1][1] = index2;
   }
+  
+  @Override
+  public String toString() {
+    return (isAntiparallel ? "a " : "p ") + a + " - " + b + "\t" + Escape.e(ladder);
+  }
+
 }

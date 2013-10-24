@@ -345,7 +345,7 @@ public class ZipUtil implements JmolZipUtility {
     }
   }
 
-  public InputStream getUnGzippedInputStream(byte[] bytes) {
+  private InputStream getUnGzippedInputStream(byte[] bytes) {
     try {
       InputStream is = new ByteArrayInputStream(bytes);
       do {

@@ -1311,8 +1311,8 @@ _pdbx_struct_oper_list.vector[3]
 
   private void processAssemblyGenBlock() throws Exception {
     parseLoopParameters(assemblyFields);
-    assem = new String[3];
     while (tokenizer.getData()) {
+      assem = new String[3];
       int count = 0;
       int p;
       for (int i = 0; i < tokenizer.fieldCount; ++i) {

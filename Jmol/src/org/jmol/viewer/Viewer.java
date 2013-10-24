@@ -661,7 +661,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private void setStartupBooleans() {
     setBooleanProperty("_applet", isApplet);
-    setBooleanProperty("_jspecview", false);
+    setBooleanProperty("_JSpecView".toLowerCase(), false);
     setBooleanProperty("_signedApplet", isSignedApplet);
     setBooleanProperty("_headless", apiPlatform.isHeadless());
     setStringProperty("_restrict", "\"" + access + "\"");
@@ -5223,7 +5223,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   private boolean doHaveJDX() {
     // once-on, never off
-    return (haveJDX || (haveJDX = getBooleanProperty("_jspecview")));
+    return (haveJDX || (haveJDX = getBooleanProperty("_JSpecView".toLowerCase())));
   }
 
   private JmolJSpecView getJSV() {
@@ -5252,7 +5252,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public Object getJspecViewProperties(Object myParam) {
-    // from getProperty("jspecview...")
+    // from getProperty("JSpecView...")
     Object o = statusManager.getJspecViewProperties("" + myParam);
     if (o != null)
       haveJDX = true;

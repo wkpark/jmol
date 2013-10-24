@@ -1,9 +1,10 @@
-package org.jmol.awtjs2d;
+package javajs.util;
 
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.util.Hashtable;
 import java.util.Map;
+
 
 /**
  * 
@@ -11,7 +12,7 @@ import java.util.Map;
  * 
  */
 
-class AjaxURLStreamHandlerFactory implements URLStreamHandlerFactory {
+public class AjaxURLStreamHandlerFactory implements URLStreamHandlerFactory {
 
 	Map<String, AjaxURLStreamHandler> htFactories = new Hashtable<String, AjaxURLStreamHandler>();
 	

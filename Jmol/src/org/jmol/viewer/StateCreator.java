@@ -1950,7 +1950,7 @@ public class StateCreator extends JmolStateCreator {
           script += ";select visible & (" + select + ")";
         if (script2 != null)
           script += ";" + script2;
-      } else if (script.toLowerCase().startsWith("jspecview")) {
+      } else if (script.toUpperCase().startsWith("JSPECVIEW")) {
         if (!disableSend)
           sm.syncSend(viewer.fullName + "JSpecView" + script.substring(9), ">",
               0);

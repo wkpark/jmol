@@ -81,7 +81,7 @@ public class JSpecView implements JmolJSpecView {
     if (msg != null)
       viewer.scriptEcho(Logger.debugging ? peak : msg);
     peak = viewer.fullName + "JSpecView: " + peak;
-    Logger.info("Jmol>JSV " + peak);
+    Logger.info("Jmol.JSpecView.sendJSpecView Jmol>JSV " + peak);
     viewer.statusManager.syncSend(peak, ">", 0);
   }
 

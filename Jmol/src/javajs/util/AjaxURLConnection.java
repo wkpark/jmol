@@ -1,4 +1,4 @@
-package org.jmol.awtjs2d;
+package javajs.util;
 
 import java.io.IOException;
 import java.net.URL;
@@ -9,9 +9,9 @@ import java.net.URLConnection;
  * A method to allow a JavaScript Ajax 
  * 
  */
-public class JSURLConnection extends URLConnection {
+public class AjaxURLConnection extends URLConnection {
 
-	protected JSURLConnection(URL url) {
+	protected AjaxURLConnection(URL url) {
 		super(url);
 	}
 
@@ -51,17 +51,17 @@ public class JSURLConnection extends URLConnection {
 		// not expected to be used. 
 	}
 
-	void outputBytes(byte[] bytes) {
+	public void outputBytes(byte[] bytes) {
   	//      type = "application/octet-stream;";
 		bytesOut = bytes;
   }
 
-  void outputString(String post) {
+  public void outputString(String post) {
   	postOut = post;
   	//     type = "application/x-www-form-urlencoded";
   }
 
-	public Object getStringXBuilder() {
+	public Object getSB() {
 		return doAjax();
 	}
 

@@ -149,7 +149,7 @@ public class PropertyManager implements JmolPropertyManager {
     "isosurfaceInfo"  , "", "",
     "isosurfaceData"  , "", "",
     "consoleText"     , "", "",
-    "jspecView"       , "<key>", "",
+    "JSpecView"       , "<key>", "",
     "scriptQueueInfo" , "", "",
     "nmrInfo" , "<elementSymbol> or 'all' or 'shifts'", "all",
   };

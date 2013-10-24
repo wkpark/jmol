@@ -695,6 +695,7 @@ public class Jmol implements JmolSyncInterface {
 			String syncCallback = callbacks.get(EnumCallback.SYNC);
 			if (!mayScript || syncCallback == null || !haveDocumentAccess && !syncCallback.startsWith("Jmol."))
 				return info;
+			Logger.info("Jmol.notifySync " + appletName + " >> " + info);
 			try {
 				/**
 				 * @j2sNative 

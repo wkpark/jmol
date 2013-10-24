@@ -2,6 +2,8 @@ package org.jmol.awtjs2d;
 
 import java.net.URL;
 
+import javajs.util.AjaxURLConnection;
+
 import org.jmol.api.JmolFileInterface;
 import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
@@ -55,12 +57,12 @@ class JSFile implements JmolFileInterface {
   static Object getBufferedURLInputStream(URL url, byte[] outputBytes,
       String post) {
     try {
-      JSURLConnection conn = (JSURLConnection) url.openConnection();
+      AjaxURLConnection conn = (AjaxURLConnection) url.openConnection();
       if (outputBytes != null)
         conn.outputBytes(outputBytes);
       else if (post != null)
         conn.outputString(post);
-      return conn.getStringXBuilder();
+      return conn.getSB();
     } catch (Exception e) {
       return e.toString();
     }

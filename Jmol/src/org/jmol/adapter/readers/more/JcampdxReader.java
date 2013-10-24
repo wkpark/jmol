@@ -114,7 +114,8 @@ public class JcampdxReader extends MolReader {
     
     // tells Jmol to start talking with JSpecView
     
-    viewer.setBooleanProperty("_jspecview", true);
+    viewer.setBooleanProperty("_JSpecView".toLowerCase(), true); 
+    // necessary to not use "jspecview" here, as buildtojs.xml will change that to "_JSV"
     if (isTrajectory) {
       Logger.warn("TRAJECTORY keyword ignored");
       isTrajectory = false;

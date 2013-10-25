@@ -357,8 +357,8 @@ public class ScriptManager implements JmolScriptManager {
     if (outputBuffer != null)
       return (strErrorMessageUntranslated == null ? outputBuffer.toString()
           : strErrorMessageUntranslated);
-    // get Vector of Vectors of Vectors info
-    Object info = viewer.getStatusChanged(statusList);
+    // get Vector of Vectors of Vectors info ("object") or, for the applet, JSON ("json")
+    Object info = viewer.getProperty(returnType, "jmolStatus", statusList);
     viewer.getStatusChanged(oldStatusList);
     return info;
   }

@@ -316,6 +316,7 @@ public class StateCreator extends JmolStateCreator {
         }
       }
 
+      boolean loadUC = false;
       if (ms.unitCells != null) {
         boolean haveModulation = false;
         for (int i = 0; i < modelCount; i++) {
@@ -324,14 +325,20 @@ public class StateCreator extends JmolStateCreator {
             continue;
           commands.append("  frame ").append(ms.getModelNumberDotted(i));
           P3 pt = symmetry.getFractionalOffset();
-          if (pt != null)
+          if (pt != null && (pt.x != 0 || pt.y != 0 || pt.z != 0)) {
             commands.append("; set unitcell ").append(Escape.eP(pt));
+            loadUC = true;
+          }
           pt = symmetry.getUnitCellMultiplier();
-          if (pt != null)
+          if (pt != null) {
             commands.append("; set unitcell ").append(Escape.eP(pt));
+            loadUC = true;
+          }
           commands.append(";\n");
           haveModulation |= (viewer.modelGetLastVibrationIndex(i, T.modulation) >= 0);
         }
+        if (loadUC)
+          viewer.loadShape(JC.SHAPE_UCCAGE); // just in case
         getShapeState(commands, isAll, JC.SHAPE_UCCAGE);
         //        if (viewer.getObjectMad(StateManager.OBJ_UNITCELL) == 0)
         //        commands.append("  unitcell OFF;\n");

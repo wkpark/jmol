@@ -54,7 +54,7 @@ class UnitCell extends SimpleUnitCell {
   
   private P3[] vertices; // eight corners
   private P3 cartesianOffset = new P3();
-  private P3 fractionalOffset = new P3();
+  private P3 fractionalOffset;
   
   UnitCell() {
     
@@ -134,13 +134,13 @@ class UnitCell extends SimpleUnitCell {
   void setOffset(P3 pt) {
     if (pt == null)
       return;
-    // from "unitcell {i j k}" via uccage
     if (pt.x >= 100 || pt.y >= 100) {
-      unitCellMultiplier = P3.newP(pt);
+      // from "unitcell {aaa bbb scale}"
+      unitCellMultiplier = (pt.z == 0 ? null : P3.newP(pt));
       return;
     }
-    if (pt.x == 0 && pt.y == 0 && pt.z == 0)
-      unitCellMultiplier = null;
+    // from "unitcell {i j k}"
+    fractionalOffset = new P3();
     fractionalOffset.setT(pt);
     matrixCartesianToFractional.m03 = -pt.x;
     matrixCartesianToFractional.m13 = -pt.y;
@@ -164,6 +164,7 @@ class UnitCell extends SimpleUnitCell {
     matrixFractionalToCartesian.m03 = cartesianOffset.x;
     matrixFractionalToCartesian.m13 = cartesianOffset.y;
     matrixFractionalToCartesian.m23 = cartesianOffset.z;
+    fractionalOffset = new P3();
     fractionalOffset.setT(cartesianOffset);
     matrixCartesianToFractional.m03 = 0;
     matrixCartesianToFractional.m13 = 0;
@@ -221,7 +222,6 @@ class UnitCell extends SimpleUnitCell {
   }
   
   P3 getFractionalOffset() {
-    // no references??
     return fractionalOffset;
   }
   
@@ -456,6 +456,10 @@ class UnitCell extends SimpleUnitCell {
           && !(Float.isNaN(notionalUnitcell[i]) && Float
               .isNaN(uc.notionalUnitcell[i])))
         return false;
+    if (fractionalOffset == null)
+      return (uc.fractionalOffset == null);
+    if (uc.fractionalOffset == null)
+      return false;
     if (fractionalOffset.distanceSquared(uc.fractionalOffset) != 0)
       return false;
     return true;

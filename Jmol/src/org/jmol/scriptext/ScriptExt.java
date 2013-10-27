@@ -4770,8 +4770,8 @@ public class ScriptExt implements JmolScriptExtension {
       }
 
       if (pt + 2 == argCount) {
-        data = SV.sValue(tokenAt(++pt, args));
-        if (data.length() > 0 && data.charAt(0) != '.')
+        String s = SV.sValue(tokenAt(++pt, args));
+        if (s.length() > 0 && s.charAt(0) != '.')
           type = val.toUpperCase();
       }
       switch (tokAtArray(pt, args)) {

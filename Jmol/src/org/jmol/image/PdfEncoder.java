@@ -23,17 +23,8 @@
  */
 package org.jmol.image;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfTemplate;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.awt.BasicStroke;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.util.Hashtable;
 import java.util.Map;
-
-import org.jmol.api.ApiPlatform;
 
 /**
  * A relatively primitive PDF generator that just makes a document with an image
@@ -42,7 +33,9 @@ import org.jmol.api.ApiPlatform;
  */
 public class PdfEncoder extends ImageEncoder {
 
-  private Image image;
+  private boolean isLandscape;
+  private PDFCreator pdf;
+  private String comment, date;
 
   public PdfEncoder() {
     // for Class.forName  
@@ -50,35 +43,60 @@ public class PdfEncoder extends ImageEncoder {
 
   @Override
   protected void setParams(Map<String, Object> params) {
-    // n/a
-    //
-    // note that even the signed applet will not have this interface 
-    // because the com.lowagie package (itext.jar) is 1.8 MB and is 
-    // not included in the applet installation. 
-  }
-
-  @Override
-  protected void encodeImage(ApiPlatform apiPlatform, Object objImage)
-      throws Exception {
-    // obviously not going  work in JavaScript. We just let it throw the error in generate().
-    this.image = (Image) objImage;
+  	isLandscape = (quality > 1);
+    comment = "Jmol " + (String) params.get("comment");
+    date = (String) params.get("date");
   }
 
   @Override
   protected void generate() throws Exception {
-    Document document = new Document();
-    PdfWriter writer = PdfWriter.getInstance(document, out);
-    document.open();
-    PdfContentByte cb = writer.getDirectContent();
-    PdfTemplate tp = cb.createTemplate(width, height);
-    Graphics2D g2 = tp.createGraphics(width, height);
-    g2.setStroke(new BasicStroke(0.1f));
-    tp.setWidth(width);
-    tp.setHeight(height);
-    g2.drawImage(image, 0, 0, width, height, 0, 0, width, height, null);
-    g2.dispose();
-    cb.addTemplate(tp, 72, 720 - height);
-    document.close();
+    pdf = new PDFCreator();
+    int pageWidth = 8 * 72;
+    int pageHeight = 11 * 72;
+    pdf.openDocument(out, pageWidth, pageHeight, isLandscape); // A4 or Letter
+    addMyImage(pageWidth, pageHeight);
+    Map<String, String> ht = new Hashtable<String, String>();
+    if (comment != null)
+      ht.put("Producer", comment);
+    ht.put("Author", "JMol");
+    ht.put("CreationDate", date);
+    pdf.addInfo(ht);
+    pdf.closeDocument();
+  }
+
+  /**
+   * centered on the page
+   * 
+   * @param pageWidth
+   * @param pageHeight
+   */
+  private void addMyImage(int pageWidth, int pageHeight) {
+    pdf.addImageResource("img1", width, height, pixels, true);
+    int w = (isLandscape ? pageHeight : pageWidth);
+    int h = (isLandscape ? pageWidth : pageHeight);
+    int iw = width;
+    int ih = height;
+    if (iw > 0.9 * w) {
+      ih = (int) (ih * 0.9 * w / iw);
+      iw = (int) (w * 0.9);
+    }
+    if (ih > 0.9 * h) {
+      iw = (int) (iw * 0.9 * h / ih);
+      ih = (int) (h * 0.9);
+    }
+    int x = 0;
+    int y = 0;
+    int x1 = iw;
+    int y1 = ih;
+    if (w > iw) {
+      x = (w - iw) / 2;
+      x1 = iw + x;
+    }
+    if (h > ih) {
+      y = (h - ih) / 2;
+      y1 = ih + y;
+    }
+    pdf.drawImage("img1", x, y, x1, y1, 0, 0, width, height);
   }
 
 }

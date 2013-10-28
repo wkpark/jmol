@@ -143,7 +143,7 @@ abstract class OutputManager {
       fileName = out.getFileName();
       String comment = null;
       Object stateData = null;
-      params.put("date", viewer.apiPlatform.getDateFormat());
+      params.put("date", viewer.apiPlatform.getDateFormat(false));
       if (type.startsWith("JP")) {
         type = Txt.simpleReplace(type, "E", "");
         if (type.equals("JPG64")) {
@@ -153,6 +153,8 @@ abstract class OutputManager {
           comment = (!asBytes ? (String) getWrappedState(null, null, image,
               null) : "");
         }
+      } else if (type.equals("PDF")) {
+        comment = "";
       } else if (type.startsWith("PNG")) {
         comment = "";
         boolean isPngj = type.equals("PNGJ");
@@ -724,7 +726,7 @@ abstract class OutputManager {
       boolean doClear = (data.equals("$CLEAR$"));
       if (data.indexOf("$NOW$") >= 0)
         data = Txt.simpleReplace(data, "$NOW$", viewer.apiPlatform
-            .getDateFormat());
+            .getDateFormat(false));
       if (viewer.logFileName == null) {
         Logger.info(data);
         return;

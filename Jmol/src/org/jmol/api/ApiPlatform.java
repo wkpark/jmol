@@ -116,7 +116,7 @@ public interface ApiPlatform extends FontManager {
 
   void notifyEndOfRendering();
 
-  String getDateFormat();
+  String getDateFormat(boolean isoiec8824);
   
   JmolFileInterface newFile(String name);
   

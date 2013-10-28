@@ -65,7 +65,7 @@
   <property name="docbook-xml" value="docbook-xml-4.4" />
   <!--property name="vecmath.jar" value="vecmath1.2-1.14.jar" / -->
   <property name="naga.jar" value="naga-3_0.jar" />
-  <property name="itext.jar" value="itext-1.4.5.jar" />
+  <!--property name="itext.jar" value="itext-1.4.5.jar" / -->
   <property name="commons-cli.jar" value="commons-cli-1.0.jar" />
   <property name="saxon.jar" value="saxon.jar" />
   <property name="saxon.main" value="com.icl.saxon.StyleSheet" />
@@ -374,7 +374,7 @@ all support for previous versions removed
           <!-- srcfiles dir="${lib.dir}" includes="${vecmath.jar}"/ -->
           <srcfiles dir="${lib.dir}" includes="${naga.jar}"/>
           <!-- srcfiles dir="${lib.dir}" includes="Acme.jar"/ -->
-          <srcfiles dir="${lib.dir}" includes="${itext.jar}"/>
+          <!-- srcfiles dir="${lib.dir}" includes="${itext.jar}"/ -->
           <srcfiles dir="${lib.dir}" includes="${commons-cli.jar}"/>
           <srcfiles dir="${lib.dir}" includes="JSpecView.jar"/>
         </uptodate>
@@ -407,7 +407,7 @@ all support for previous versions removed
     <!-- unjar dest="${appjars.dir}" src="${lib.dir}/${vecmath.jar}"/ -->
     <unjar dest="${appjars.dir}" src="${lib.dir}/${naga.jar}"/>
     <!-- unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/ -->
-    <unjar dest="${appjars.dir}" src="${lib.dir}/${itext.jar}"/>
+    <!-- unjar dest="${appjars.dir}" src="${lib.dir}/${itext.jar}"/ -->
     <unjar dest="${appjars.dir}" src="${lib.dir}/${commons-cli.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/JSpecView.jar"/>
   	<delete dir="${appjars.dir}/javajs" />

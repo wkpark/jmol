@@ -303,13 +303,21 @@ public class Platform implements ApiPlatform {
 		return JSFont.newFont(fontFace, isBold, isItalic, fontSize, "px");
 	}
 
-  public String getDateFormat() {
+  public String getDateFormat(boolean isoiec8824) {
     /**
      * 
      * Mon Jan 07 2013 19:54:39 GMT-0600 (Central Standard Time)
+     * or YYYYMMDDHHmmssOHH'mm'
      * 
      * @j2sNative
      * 
+     * if (isoiec8824) {
+     *   var d = new Date();
+     *   var x = d.toString().split(" ");
+     *   var MM = "0" + d.getMonth(); MM = MM.substring(MM.length - 2);
+     *   var dd = "0" + d.getDate(); dd = dd.substring(dd.length - 2);
+     *   return x[3] + MM + dd + x[4].replace(/\:/g,"") + x[5].substring(3,6) + "'" + x[5].substring(6,8) + "'"   
+     * }
      * return ("" + (new Date())).split(" (")[0];
      */
     {

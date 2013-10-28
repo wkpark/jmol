@@ -1,11 +1,13 @@
 package org.jmol.image;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
 
 import javajs.util.SB;
 
@@ -73,15 +75,17 @@ class PDFObject extends SB {
 					setAsStream();
 				streamLen = stream.length;
 				boolean doDeflate = (streamLen > 1000);
-				if (doDeflate) {
-					byte[] output = new byte[streamLen];
-					Deflater compresser = new Deflater();
-					compresser.setInput(stream);
-					compresser.finish();
-					streamLen = compresser.deflate(output);
-					stream = output;
-					dictionary.put("Filter", "/FlateDecode");
-				}
+        if (doDeflate) {
+          Deflater deflater = new Deflater(9);
+          ByteArrayOutputStream outBytes = new ByteArrayOutputStream(1024);
+          DeflaterOutputStream compBytes = new DeflaterOutputStream(outBytes,
+              deflater);
+          compBytes.write(stream, 0, streamLen);
+          compBytes.finish();
+          stream = outBytes.toByteArray();
+          dictionary.put("Filter", "/FlateDecode");
+          streamLen = stream.length;
+        }
 				dictionary.put("Length", "" + streamLen);
 			}
 			write(os, getDictionaryText(dictionary, "\n").getBytes(), 0);

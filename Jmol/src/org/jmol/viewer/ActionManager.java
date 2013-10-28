@@ -24,6 +24,8 @@
 package org.jmol.viewer;
 
 import javajs.util.List;
+import javajs.util.ParserJS;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -705,7 +707,7 @@ public class ActionManager implements EventManager {
     info.put("bindingName", binding.getName());
     info.put("actionNames", actionNames);
     info.put("actionInfo", actionInfo);
-    info.put("bindingInfo", Txt.split(getBindingInfo(null), "\n"));
+    info.put("bindingInfo", ParserJS.split(getBindingInfo(null), "\n"));
     return info;
   }
 

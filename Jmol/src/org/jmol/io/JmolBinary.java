@@ -493,7 +493,7 @@ public class JmolBinary {
       while ((i = script.indexOf(tag, i + 1)) >= 0) {
         String s = Parser.getQuotedStringAt(script, i);
         if (s.indexOf("::") >= 0)
-          s = Txt.split(s, "::")[1];
+          s = ParserJS.split(s, "::")[1];
         fileList.addLast(s);
       }
     }
@@ -559,7 +559,7 @@ public class JmolBinary {
       return "";
     String ch = (manifest.indexOf('\n') >= 0 ? "\n" : "\r");
     if (manifest.indexOf(".spt") >= 0) {
-      String[] s = Txt.split(manifest, ch);
+      String[] s = ParserJS.split(manifest, ch);
       for (int i = s.length; --i >= 0;)
         if (s[i].indexOf(".spt") >= 0)
           return "|" + Txt.trim(s[i], "\r\n \t");

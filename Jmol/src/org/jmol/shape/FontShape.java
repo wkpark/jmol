@@ -24,7 +24,7 @@
 
 package org.jmol.shape;
 
-import org.jmol.util.JmolFont;
+import javajs.awt.Font;
 
 
 public abstract class FontShape extends Shape {
@@ -33,7 +33,7 @@ public abstract class FontShape extends Shape {
 
   protected String myType;
 
-  public JmolFont font3d;
+  public Font font3d;
 
   @Override
   public void initShape() {
@@ -42,7 +42,7 @@ public abstract class FontShape extends Shape {
 
   public void setPropFS(String propertyName, Object value) {
     if ("font" == propertyName) {
-      font3d = (JmolFont) value;
+      font3d = (Font) value;
       return;
     }
   }

@@ -138,7 +138,7 @@ public class JcampdxReader extends MolReader {
         htParams.put("peakIndex", peakIndex);
       }
       if (!htParams.containsKey("subFileName"))
-        peakFilePath = Escape.eS(Txt.split(filePath, "|")[0]);
+        peakFilePath = Escape.eS(ParserJS.split(filePath, "|")[0]);
     } else {
       peakIndex = new int[1];
     }

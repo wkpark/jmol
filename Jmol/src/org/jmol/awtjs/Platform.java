@@ -1,6 +1,6 @@
 package org.jmol.awtjs;
 
-import org.jmol.util.JmolFont;
+import javajs.awt.Font;
 
 /**
  * 
@@ -46,7 +46,7 @@ public class Platform extends org.jmol.awtjs2d.Platform {
 	}
 
   @Override
-	public int[] getTextPixels(String text, JmolFont font3d, Object gObj,
+	public int[] getTextPixels(String text, Font font3d, Object gObj,
 			Object image, int width, int height, int ascent) {
 		return Image
 				.getTextPixels(text, font3d, gObj, image, width, height, ascent);
@@ -80,29 +80,29 @@ public class Platform extends org.jmol.awtjs2d.Platform {
 	// /// FONT
 
   @Override
-	public int fontStringWidth(JmolFont font, Object fontMetrics, String text) {
-		return Font.stringWidth(font, fontMetrics, text);
+	public int fontStringWidth(Font font, String text) {
+		return JSFont.stringWidth(font, text);
 	}
 
   @Override
 	public int getFontAscent(Object fontMetrics) {
-		return Font.getAscent(fontMetrics);
+		return JSFont.getAscent(fontMetrics);
 	}
 
   @Override
 	public int getFontDescent(Object fontMetrics) {
-		return Font.getDescent(fontMetrics);
+		return JSFont.getDescent(fontMetrics);
 	}
 
   @Override
-	public Object getFontMetrics(JmolFont font, Object graphics) {
-		return Font.getFontMetrics(graphics, font);
+	public Object getFontMetrics(Font font, Object graphics) {
+		return JSFont.getFontMetrics(graphics, font);
 	}
 
   @Override
 	public Object newFont(String fontFace, boolean isBold, boolean isItalic,
 			float fontSize) {
-		return Font.newFont(fontFace, isBold, isItalic, fontSize);
+		return JSFont.newFont(fontFace, isBold, isItalic, fontSize);
 	}
 
 }

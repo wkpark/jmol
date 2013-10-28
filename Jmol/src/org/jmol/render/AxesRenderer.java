@@ -26,10 +26,10 @@ package org.jmol.render;
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.script.T;
 import org.jmol.shape.Axes;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Point3fi;
 
+import javajs.awt.Font;
 import javajs.util.P3;
 
 import org.jmol.viewer.StateManager;
@@ -70,7 +70,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
     EnumAxesMode axesMode = viewer.getAxesMode();
     imageFontScaling = viewer.getImageFontScaling();
     if (viewer.areAxesTainted()) {
-      JmolFont f = axes.font3d;
+      Font f = axes.font3d;
       axes.initShape();
       if (f != null)
         axes.font3d = f;

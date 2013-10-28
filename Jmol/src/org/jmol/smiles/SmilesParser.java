@@ -177,7 +177,7 @@ public class SmilesParser {
     if (isSmarts && pattern.indexOf("[$") >= 0)
       pattern = parseVariableLength(pattern);
     if (pattern.indexOf("||") >= 0) {
-      String[] patterns = Txt.split(pattern, "||");  
+      String[] patterns = ParserJS.split(pattern, "||");  
       String toDo = "";
       search.subSearches = new SmilesSearch[patterns.length];
       for (int i = 0; i < patterns.length; i++) {
@@ -221,7 +221,7 @@ public class SmilesParser {
       }
     }
     if (pattern.indexOf("||") >= 0) {
-      String[] patterns = Txt.split(pattern, "||");
+      String[] patterns = ParserJS.split(pattern, "||");
       for (int i = 0; i < patterns.length; i++)
         sout.append("||").append(parseVariableLength(patterns[i]));
     } else {

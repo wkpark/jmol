@@ -27,6 +27,7 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 
 import javajs.util.ArrayUtil;
+import javajs.util.ColorUtil;
 import javajs.util.List;
 import javajs.util.ParserJS;
 import javajs.util.SB;
@@ -42,7 +43,6 @@ import org.jmol.jvxl.data.MeshData;
 import org.jmol.shapesurface.IsosurfaceMesh;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 

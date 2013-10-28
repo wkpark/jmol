@@ -28,7 +28,6 @@ import org.jmol.script.T;
 import javajs.util.ArrayUtil;
 
 import org.jmol.util.C;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
@@ -120,7 +119,7 @@ class ColorManager {
   short colixBackgroundContrast;
 
   void setColixBackgroundContrast(int argb) {
-    colixBackgroundContrast = ColorUtil.getBgContrast(argb);
+    colixBackgroundContrast = C.getBgContrast(argb);
   }
 
   short getColixBondPalette(Bond bond, int pid) {

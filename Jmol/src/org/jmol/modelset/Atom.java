@@ -34,11 +34,11 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.C;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
 
+import javajs.util.ColorUtil;
 import javajs.util.List;
 import javajs.util.SB;
 import javajs.util.P3;

@@ -30,17 +30,17 @@ import java.awt.Image;
 import java.io.IOException;
 
 
-import org.jmol.util.Txt;
 
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 
+import javajs.awt.Font;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.A4;
@@ -195,7 +195,7 @@ public abstract class Exporter {
   
   boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
     this.viewer = viewer;
-    appletName = Txt.split(viewer.getHtmlName(), "_")[0];
+    appletName = ParserJS.split(viewer.getHtmlName(), "_")[0];
     this.g3d = g3d;
     this.privateKey = privateKey;
     backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);
@@ -429,7 +429,7 @@ public abstract class Exporter {
    * @param text 
    * @param font3d  
    */
-  void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
+  void plotText(int x, int y, int z, short colix, String text, Font font3d) {
     // TODO
   }
 

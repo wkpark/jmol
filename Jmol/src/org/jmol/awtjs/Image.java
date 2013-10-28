@@ -26,7 +26,7 @@
 package org.jmol.awtjs;
 
 
-import org.jmol.util.JmolFont;
+import javajs.awt.Font;
 
 /**
  * methods required by Jmol that access java.awt.Image
@@ -70,7 +70,7 @@ class Image {
 	 * @param ascent 
    * @return null
    */
-	public static int[] getTextPixels(String text, JmolFont font3d, Object gObj,
+	public static int[] getTextPixels(String text, Font font3d, Object gObj,
 			Object image, int width, int height, int ascent) {
 		return null;
 	}

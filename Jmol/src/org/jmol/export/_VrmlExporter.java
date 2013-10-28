@@ -26,6 +26,7 @@
 package org.jmol.export;
 
 
+import javajs.awt.Font;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -34,7 +35,6 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import javajs.util.P3;
 import org.jmol.util.Quaternion;
@@ -489,7 +489,7 @@ public class _VrmlExporter extends __CartesianExporter {
   }
 
   @Override
-  void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
+  void plotText(int x, int y, int z, short colix, String text, Font font3d) {
     if (z < 3)
       z = viewer.getFrontPlane();
     String useFontStyle = font3d.fontStyle.toUpperCase();

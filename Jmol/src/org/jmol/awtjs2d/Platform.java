@@ -8,8 +8,8 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolPopupInterface;
-import org.jmol.util.JmolFont;
 
+import javajs.awt.Font;
 import javajs.util.AjaxURLStreamHandlerFactory;
 import javajs.util.P3;
 import org.jmol.api.PlatformViewer;
@@ -206,7 +206,7 @@ public class Platform implements ApiPlatform {
 	  return grabPixels(canvas, width, height, null, 0, 0);
 	}
 
-	public int[] getTextPixels(String text, JmolFont font3d, Object context,
+	public int[] getTextPixels(String text, Font font3d, Object context,
 			Object image, int width, int height, int ascent) {
 		return Image.getTextPixels(text, font3d, context, width, height, ascent);
 	}
@@ -282,25 +282,25 @@ public class Platform implements ApiPlatform {
 
 	// /// FONT
 
-	public int fontStringWidth(JmolFont font, Object context, String text) {
-		return Font.stringWidth(font, context, text);
+	public int fontStringWidth(Font font, String text) {
+		return JSFont.stringWidth(font, context, text);
 	}
 
 	public int getFontAscent(Object context) {
-		return Font.getAscent(context);
+		return JSFont.getAscent(context);
 	}
 
 	public int getFontDescent(Object context) {
-		return Font.getDescent(context);
+		return JSFont.getDescent(context);
 	}
 
-	public Object getFontMetrics(JmolFont font, Object context) {
-		return Font.getFontMetrics(font, context);
+	public Object getFontMetrics(Font font, Object context) {
+		return JSFont.getFontMetrics(font, context);
 	}
 
 	public Object newFont(String fontFace, boolean isBold, boolean isItalic,
 			float fontSize) {
-		return Font.newFont(fontFace, isBold, isItalic, fontSize, "px");
+		return JSFont.newFont(fontFace, isBold, isItalic, fontSize, "px");
 	}
 
   public String getDateFormat() {

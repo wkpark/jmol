@@ -39,12 +39,12 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 
+import javajs.util.ColorUtil;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;

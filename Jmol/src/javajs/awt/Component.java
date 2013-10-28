@@ -1,7 +1,8 @@
 package javajs.awt;
 
 import javajs.api.GenericColor;
-import javajs.api.JSController;
+import javajs.api.SwingController;
+import javajs.util.ColorUtil;
 
 abstract public class Component {
 
@@ -12,7 +13,7 @@ abstract public class Component {
   protected int width;
   protected int height;
   protected String id;
-  protected JSController controller;
+  protected SwingController controller;
 
   Object actionListener;
 

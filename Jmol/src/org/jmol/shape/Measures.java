@@ -34,13 +34,13 @@ import org.jmol.modelset.MeasurementPending;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolFont;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Txt;
 import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
 
+import javajs.awt.Font;
 import javajs.util.List;
 
 
@@ -66,7 +66,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
   
   TickInfo tickInfo;
   TickInfo defaultTickInfo;
-  public JmolFont font3d;
+  public Font font3d;
   private Map<String, Integer> htMin;
   
   @Override
@@ -106,7 +106,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     }
 
     if ("font" == propertyName) {
-      font3d = (JmolFont) value;
+      font3d = (Font) value;
       return;
     }
 

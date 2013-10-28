@@ -32,8 +32,8 @@ import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
-import org.jmol.util.JmolFont;
 
+import javajs.awt.Font;
 import javajs.util.ArrayUtil;
 import javajs.util.List;
 import org.jmol.viewer.ActionManager;
@@ -215,7 +215,7 @@ public class Labels extends AtomShape {
     }
 
     if ("font" == propertyName) {
-      byte fid = ((JmolFont) value).fid;
+      byte fid = ((Font) value).fid;
       if (!setDefaults)
         for (int i = bsSelected.nextSetBit(0); i >= 0 && i < atomCount; i = bsSelected
             .nextSetBit(i + 1))
@@ -392,7 +392,7 @@ public class Labels extends AtomShape {
       byte fid = (bsFontSet != null && bsFontSet.get(i) ? fids[i] : -1);
       if (fid < 0)
         setFont(i, fid = defaultFontId);
-      JmolFont font = JmolFont.getFont3D(fid);
+      Font font = Font.getFont3D(fid);
       short colix = getColix2(i, atoms[i], false);
       text = Text.newLabel(gdata, font, strings[i], colix, getColix2(i, atoms[i], true), 
           0, scalePixelsPerMicron, value);

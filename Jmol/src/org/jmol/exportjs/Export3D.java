@@ -31,10 +31,10 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.HermiteRenderer;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.MeshSurface;
 
+import javajs.awt.Font;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -347,7 +347,7 @@ final public class Export3D implements JmolRendererInterface {
    * @param bgcolix 
    */
 
-  public void drawString(String str, JmolFont font3d, int xBaseline,
+  public void drawString(String str, Font font3d, int xBaseline,
                          int yBaseline, int z, int zSlab, short bgcolix) {
     // axis, labels, measures
     if (str == null)
@@ -374,7 +374,7 @@ final public class Export3D implements JmolRendererInterface {
    * @param bgColix 
    */
 
-  public void drawStringNoSlab(String str, JmolFont font3d, int xBaseline,
+  public void drawStringNoSlab(String str, Font font3d, int xBaseline,
                                int yBaseline, int z, short bgColix) {
     // echo, frank, hover, molecularOrbital, uccage
     if (str == null)
@@ -805,7 +805,7 @@ final public class Export3D implements JmolRendererInterface {
     g3d.setFontFid(fid);
   }
 
-  public JmolFont getFont3DCurrent() {
+  public Font getFont3DCurrent() {
     return g3d.getFont3DCurrent();
   }
 
@@ -861,7 +861,7 @@ final public class Export3D implements JmolRendererInterface {
     return g3d.getTransformedVertexVectors();
   }
 
-  public JmolFont getFont3DScaled(JmolFont font, float scale) {
+  public Font getFont3DScaled(Font font, float scale) {
     return g3d.getFont3DScaled(font, scale);
   }
 

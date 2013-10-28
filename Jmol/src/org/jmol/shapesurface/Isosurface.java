@@ -115,7 +115,6 @@ import org.jmol.shape.Shape;
 import org.jmol.util.Escape;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
-import org.jmol.util.ColorUtil;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
@@ -126,6 +125,7 @@ import org.jmol.util.MeshSurface;
 import org.jmol.util.Parser;
 
 import javajs.util.A4;
+import javajs.util.ColorUtil;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;

@@ -13,7 +13,6 @@ import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.C;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.GData;
 
@@ -28,6 +27,7 @@ import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 
 import javajs.util.A4;
+import javajs.util.ColorUtil;
 import javajs.util.M4;
 import javajs.util.T3;
 import javajs.util.V3;

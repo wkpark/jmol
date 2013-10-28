@@ -38,13 +38,13 @@ import javajs.awt.Dimension;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.ParserBS;
-import org.jmol.util.Txt;
 
 
 import java.awt.Event;
 import java.net.URL;
 import java.net.MalformedURLException;
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -969,7 +969,7 @@ public class Jmol implements JmolSyncInterface {
     	  System.out.println(strInfo);
     	}
     } else {
-    	 String[] tokens = Txt.split(callback, ".");
+    	 String[] tokens = ParserJS.split(callback, ".");
     	/**
     	 * @j2sNative
     	 * 

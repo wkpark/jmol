@@ -45,6 +45,7 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
+import javajs.util.ParserJS;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.P4;
@@ -595,7 +596,7 @@ public final class Resolver implements JmolBioResolver {
   }
 
   public String fixPropertyValue(BS bsAtoms, String data) {
-    String[] aData = Txt.split(data, "\n");
+    String[] aData = ParserJS.split(data, "\n");
     Atom[] atoms = modelSet.atoms;
     String[] newData = new String[bsAtoms.cardinality()];
     String lastData = "";

@@ -28,8 +28,10 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.util.ColorUtil;
-import org.jmol.util.JmolFont;
+
+import javajs.awt.Font;
+import javajs.util.ColorUtil;
+
 
 
 /**
@@ -68,8 +70,8 @@ class TextRenderer {
   private boolean isInvalid;
   private final static byte[] translucency = new byte[] { 7, 6, 5, 4, 3, 2, 1, 8 };
   private static boolean working;
-  private final static Map<JmolFont, Map<String, TextRenderer>> htFont3d = new Hashtable<JmolFont, Map<String, TextRenderer>>();
-  private final static Map<JmolFont, Map<String, TextRenderer>> htFont3dAntialias = new Hashtable<JmolFont, Map<String, TextRenderer>>();
+  private final static Map<Font, Map<String, TextRenderer>> htFont3d = new Hashtable<Font, Map<String, TextRenderer>>();
+  private final static Map<Font, Map<String, TextRenderer>> htFont3dAntialias = new Hashtable<Font, Map<String, TextRenderer>>();
 
   synchronized static void clearFontCache() {
     if (working)
@@ -79,7 +81,7 @@ class TextRenderer {
   }
 
   static int plot(int x, int y, int z, int argb, int bgargb,
-                         String text, JmolFont font3d,
+                         String text, Font font3d,
                          Graphics3D g3d, JmolRendererInterface jmolRenderer, boolean antialias) {
     if (text.length() == 0)
       return 0;
@@ -115,7 +117,7 @@ class TextRenderer {
   }
 
   private static int plotByCharacter(int x, int y, int z, int argb, int bgargb,
-                                      String text, JmolFont font3d, 
+                                      String text, Font font3d, 
                                       Graphics3D g3d, JmolRendererInterface jmolRenderer,
                                       boolean antialias) {
     //int subscale = 1; //could be something less than that
@@ -208,7 +210,7 @@ class TextRenderer {
    * @param text
    * @param font3d
    */
-  private TextRenderer(String text, JmolFont font3d) {
+  private TextRenderer(String text, Font font3d) {
     ascent = font3d.getAscent();
     height = font3d.getHeight();
     width = font3d.stringWidth(text);
@@ -219,10 +221,10 @@ class TextRenderer {
   }
 
   private synchronized static TextRenderer getPlotText3D(int x, int y, Graphics3D g3d,
-                                               String text, JmolFont font3d,
+                                               String text, Font font3d,
                                                boolean antialias) {
     TextRenderer.working = true;
-    Map<JmolFont, Map<String, TextRenderer>> ht = (antialias ? TextRenderer.htFont3dAntialias : TextRenderer.htFont3d);
+    Map<Font, Map<String, TextRenderer>> ht = (antialias ? TextRenderer.htFont3dAntialias : TextRenderer.htFont3d);
     Map<String, TextRenderer> htForThisFont = ht.get(font3d);
     TextRenderer text3d = null;
     boolean newFont = false;
@@ -258,7 +260,7 @@ class TextRenderer {
    * @param font3d
    * @param g3d
    */
-  private void setTranslucency(String text, JmolFont font3d, Graphics3D g3d) {
+  private void setTranslucency(String text, Font font3d, Graphics3D g3d) {
     int[] pixels = g3d.apiPlatform.getTextPixels(text, font3d, g3d.platform
         .getGraphicsForTextOrImage(mapWidth, height),
         g3d.platform.offscreenImage, mapWidth, height, ascent);

@@ -29,7 +29,8 @@ import java.util.Map;
 
 
 import org.jmol.java.BS;
-import org.jmol.util.ColorUtil;
+
+import javajs.util.ColorUtil;
 import javajs.util.P3;
 import javajs.util.ParserJS;
 

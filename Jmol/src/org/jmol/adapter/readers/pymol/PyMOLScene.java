@@ -16,12 +16,12 @@ import org.jmol.modelset.Text;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolFont;
 import org.jmol.util.Point3fi;
 
+import javajs.awt.Font;
 import javajs.util.ArrayUtil;
+import javajs.util.ColorUtil;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -1094,10 +1094,10 @@ class PyMOLScene implements JmolSceneGenerator {
   }
 
   short getColix(int colorIndex, float translucency) {
-    short colix = (colorIndex == PyMOL.COLOR_BACK ? (ColorUtil
-        .getBgContrast(bgRgb) == C.WHITE ? C.BLACK : C.WHITE)
-        : colorIndex == PyMOL.COLOR_FRONT ? ColorUtil.getBgContrast(bgRgb) : C
-            .getColixO(Integer.valueOf(PyMOL.getRGB(colorIndex))));
+    short colix = (colorIndex == PyMOL.COLOR_BACK 
+        ? (C.getBgContrast(bgRgb) == C.WHITE ? C.BLACK : C.WHITE)
+        : colorIndex == PyMOL.COLOR_FRONT ? C.getBgContrast(bgRgb) : 
+          C.getColixO(Integer.valueOf(PyMOL.getRGB(colorIndex))));
 
     return C.getColixTranslucent3(colix, translucency > 0, translucency);
   }
@@ -1223,7 +1223,7 @@ class PyMOLScene implements JmolSceneGenerator {
       style = "BoldItalic";
       break;
     }
-    JmolFont font = viewer.getFont3D(face, style, fontSize == 0 ? 12 : fontSize
+    Font font = viewer.getFont3D(face, style, fontSize == 0 ? 12 : fontSize
         * factor);
     Text t = Text.newLabel(viewer.getGraphicsData(), font, label, getColix(
         colorIndex, 0), (short) 0, 0, 0, labelOffset);

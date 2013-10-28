@@ -24,9 +24,10 @@
 
 package org.jmol.shape;
 
+import javajs.awt.Font;
+
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
-import org.jmol.util.JmolFont;
 
 
 public class Frank extends FontShape {
@@ -39,8 +40,8 @@ public class Frank extends FontShape {
   public final static int frankMargin = 4;
 
   public String frankString = "Jmol";
-  JmolFont currentMetricsFont3d;
-  JmolFont baseFont3d;
+  Font currentMetricsFont3d;
+  Font baseFont3d;
   public int frankWidth;
   public int frankAscent;
   public int frankDescent;

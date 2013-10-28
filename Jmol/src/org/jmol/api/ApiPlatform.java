@@ -3,10 +3,12 @@ package org.jmol.api;
 
 import java.net.URL;
 
-import org.jmol.util.JmolFont;
+
+import javajs.api.FontManager;
+import javajs.awt.Font;
 import javajs.util.P3;
 
-public interface ApiPlatform {
+public interface ApiPlatform extends FontManager {
 
   public final static int CURSOR_DEFAULT = 0;
   public final static int CURSOR_CROSSHAIR = 1;
@@ -41,18 +43,6 @@ public interface ApiPlatform {
 
   JmolMouseInterface getMouseManager(double privateKey, Object display);
 
-  ///// Font
-  
-  int fontStringWidth(JmolFont font, Object fontMetrics, String text);
-
-  int getFontAscent(Object fontMetrics);
-
-  int getFontDescent(Object fontMetrics);
-
-  Object getFontMetrics(JmolFont font, Object graphics);
-
-  Object newFont(String fontFace, boolean isBold, boolean isItalic, float fontSize);
-
   ///// core Image handling
   
   Object allocateRgbImage(int windowWidth, int windowHeight, int[] pBuffer,
@@ -81,7 +71,7 @@ public interface ApiPlatform {
   
   void renderScreenImage(Object g, Object currentSize);
 
-  int[] getTextPixels(String text, JmolFont font3d, Object gObj,
+  int[] getTextPixels(String text, Font font3d, Object gObj,
                       Object image, int mapWidth, int height,
                       int ascent);
 

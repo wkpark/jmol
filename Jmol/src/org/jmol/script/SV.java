@@ -1120,7 +1120,7 @@ public class SV extends T {
     case 1:
       return sValue(args[0]);
     }
-    String[] format = Txt.split(Txt.simpleReplace(sValue(args[0]), "%%","\1"), "%");
+    String[] format = ParserJS.split(Txt.simpleReplace(sValue(args[0]), "%%","\1"), "%");
     SB sb = new SB();
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {

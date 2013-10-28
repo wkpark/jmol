@@ -26,6 +26,7 @@ package org.jmol.jvxl.data;
 
 
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import java.util.Map;
@@ -224,7 +225,7 @@ public class JvxlCoder {
           "\n" + (cmd.indexOf("#") < 0 ? cmd : cmd.substring(0, cmd.indexOf("#"))) + "\n");
     if (state != null) {
       if (state.indexOf("** XML ** ") >=0) {
-        state = Txt.split(state, "** XML **")[1].trim(); 
+        state = ParserJS.split(state, "** XML **")[1].trim(); 
         XmlUtil.appendTag(data, "jvxlIsosurfaceState",  "\n" + state + "\n");
       } else {
         XmlUtil.appendCdata(data, "jvxlIsosurfaceState", null, "\n" + state);

@@ -1,6 +1,6 @@
 package org.jmol.awtjs;
 
-import org.jmol.util.JmolFont;
+import javajs.awt.Font;
 
 /**
  * methods required by Jmol that access java.awt.Font
@@ -9,26 +9,51 @@ import org.jmol.util.JmolFont;
  * 
  */
 
-class Font {
+class JSFont {
 
+	/**
+   * @param fontFace  
+	 * @param isBold 
+	 * @param isItalic 
+	 * @param fontSize 
+	 * @return null
+   */
 	static Object newFont(String fontFace, boolean isBold, boolean isItalic,
 			float fontSize) {
 		return null;
 	}
 
+	/**
+   * @param graphics  
+	 * @param font 
+	 * @return null
+   */
 	static Object getFontMetrics(Object graphics, Object font) {
 		return null;
 	}
 
+	/**
+   * @param fontMetrics  
+	 * @return 0
+   */
 	static int getAscent(Object fontMetrics) {
 		return 0;
 	}
 
+  /**
+   * @param fontMetrics  
+   * @return 0
+   */
 	static int getDescent(Object fontMetrics) {
 		return 0;
 	}
 
-	static int stringWidth(JmolFont font, Object fontMetrics, String text) {
+  /**
+   * @param font 
+   * @param text 
+   * @return 0
+   */
+	static int stringWidth(Font font, String text) {
 		return 0;
 	}
 }

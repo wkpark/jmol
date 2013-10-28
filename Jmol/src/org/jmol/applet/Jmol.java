@@ -48,6 +48,8 @@ import java.awt.Graphics;
 import java.net.URL;
 import java.net.MalformedURLException;
 import javajs.util.List;
+import javajs.util.ParserJS;
+
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -1270,7 +1272,7 @@ public class Jmol implements WrappedApplet {
     private void showStatus(String message) {
       try {
         System.out.println(message);
-        appletWrapper.showStatus(Txt.simpleReplace(Txt.split(message, "\n")[0], "'", "\\'"));
+        appletWrapper.showStatus(Txt.simpleReplace(ParserJS.split(message, "\n")[0], "'", "\\'"));
         sendJsTextStatus(message);
       } catch (Exception e) {
         //ignore if page is closing
@@ -1343,7 +1345,7 @@ public class Jmol implements WrappedApplet {
       return "";
     //System.out.println(callback);
     if (callback.indexOf(".") > 0) {
-      String[] mods = Txt.split(callback, ".");
+      String[] mods = ParserJS.split(callback, ".");
       //System.out.println(Escape.eAS(mods, true));
       for (int i = 0; i < mods.length - 1; i++) {
         //System.out.println(jso);

@@ -27,11 +27,11 @@ package org.jmol.shape;
 import org.jmol.java.BS;
 import org.jmol.modelset.Text;
 
+import javajs.awt.Font;
 import javajs.util.ArrayUtil;
 import javajs.util.P3i;
 
 import org.jmol.util.C;
-import org.jmol.util.JmolFont;
 import org.jmol.viewer.JC;
 
 public class Hover extends TextShape {
@@ -52,7 +52,7 @@ public class Hover extends TextShape {
   public void initShape() {
     super.initShape();
     isHover = true;
-    JmolFont font3d = gdata.getFont3DFSS(FONTFACE, FONTSTYLE, FONTSIZE);
+    Font font3d = gdata.getFont3DFSS(FONTFACE, FONTSTYLE, FONTSIZE);
     short bgcolix = C.getColixS("#FFFFC3"); // 255, 255, 195
     short colix = C.BLACK;
     currentObject = hoverText = Text.newLabel(gdata, font3d, null, colix, bgcolix, JC.ALIGN_LEFT, 0,

@@ -233,7 +233,7 @@ public class PropertyManager implements JmolPropertyManager {
     propertyName = propertyName.replace(']', ' ').replace('[', ' ').replace(
         '.', ' ');
     propertyName = Txt.simpleReplace(propertyName, "  ", " ");
-    String[] names = Txt.split(Txt.trim(propertyName, " "),
+    String[] names = ParserJS.split(Txt.trim(propertyName, " "),
         " ");
     SV[] args = new SV[names.length];
     propertyName = names[0];
@@ -542,7 +542,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (objHeader instanceof Map) {
       return (haveType ? ((Map<?, ?>) objHeader).get(type) : objHeader);
     }
-    String[] lines = Txt.split((String) objHeader, "\n");
+    String[] lines = ParserJS.split((String) objHeader, "\n");
     // this is meant to be for PDB files only
     if (lines.length == 0
         || lines[0].length() < 6

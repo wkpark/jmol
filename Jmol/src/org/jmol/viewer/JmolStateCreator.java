@@ -9,7 +9,8 @@ import org.jmol.modelset.TickInfo;
 import org.jmol.shape.AtomShape;
 import org.jmol.shape.Measures;
 import org.jmol.shape.Shape;
-import org.jmol.util.JmolFont;
+
+import javajs.awt.Font;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -30,7 +31,7 @@ abstract class JmolStateCreator {
   abstract String getModelState(SB sfunc, boolean isAll,
                                boolean withProteinStructure);
 
-  abstract String getFontState(String myType, JmolFont font3d);
+  abstract String getFontState(String myType, Font font3d);
 
   abstract String getFontLineShapeState(String s, String myType, TickInfo[] tickInfos);
 
@@ -38,7 +39,7 @@ abstract class JmolStateCreator {
                      BS bsSizeDefault, Map<String, BS> temp, Map<String, BS> temp2);
 
   abstract String getMeasurementState(Measures shape, List<Measurement> mList, int measurementCount,
-                             JmolFont font3d, TickInfo tickInfo);
+                             Font font3d, TickInfo tickInfo);
 
   abstract String getBondState(Shape shape, BS bsOrderSet, boolean reportAll);
 

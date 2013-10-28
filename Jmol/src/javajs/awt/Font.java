@@ -21,12 +21,12 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.util;
+package javajs.awt;
 
 
+import javajs.api.FontManager;
 import javajs.util.ArrayUtil;
 
-import org.jmol.api.ApiPlatform;
 
 /**
  *<p>
@@ -39,7 +39,7 @@ import org.jmol.api.ApiPlatform;
  *
  * @author Miguel, miguel@jmol.org
  */
-final public class JmolFont {
+final public class Font {
 
   public final byte fid;
   public final String fontFace;
@@ -50,15 +50,15 @@ final public class JmolFont {
   public final float fontSize;
   public final Object font;
   private final Object fontMetrics;
-  private ApiPlatform apiPlatform;
+  private FontManager manager;
   private int ascent;
   private int descent;
   private boolean isBold;
   private boolean isItalic;
   
-  private JmolFont(ApiPlatform apiPlatform, byte fid, int idFontFace,
+  private Font(FontManager manager, byte fid, int idFontFace,
       int idFontStyle, float fontSize, float fontSizeNominal, Object graphics) {
-    this.apiPlatform = apiPlatform;
+    this.manager = manager;
     this.fid = fid;
     this.fontFace = fontFaces[idFontFace];
     this.fontStyle = fontStyles[idFontStyle];
@@ -68,11 +68,11 @@ final public class JmolFont {
     this.isBold = (idFontStyle & FONT_STYLE_BOLD) == FONT_STYLE_BOLD;
     this.isItalic = (idFontStyle & FONT_STYLE_ITALIC) == FONT_STYLE_ITALIC;
     this.fontSizeNominal = fontSizeNominal;
-    font = apiPlatform.newFont(fontFaces[idFontFace], isBold, isItalic,
+    font = manager.newFont(fontFaces[idFontFace], isBold, isItalic,
         fontSize);
-    fontMetrics = apiPlatform.getFontMetrics(this, graphics);
-    descent = apiPlatform.getFontDescent(fontMetrics);
-    ascent = apiPlatform.getFontAscent(fontMetrics);
+    fontMetrics = manager.getFontMetrics(this, graphics);
+    descent = manager.getFontDescent(fontMetrics);
+    ascent = manager.getFontAscent(fontMetrics);
 
     //System.out.println("font3d constructed for fontsizeNominal=" + fontSizeNominal + "  and fontSize=" + fontSize);
   }
@@ -82,15 +82,15 @@ final public class JmolFont {
   private final static int FONT_ALLOCATION_UNIT = 8;
   private static int fontkeyCount = 1;
   private static int[] fontkeys = new int[FONT_ALLOCATION_UNIT];
-  private static JmolFont[] font3ds = new JmolFont[FONT_ALLOCATION_UNIT];
+  private static Font[] font3ds = new Font[FONT_ALLOCATION_UNIT];
 
-  public static JmolFont getFont3D(byte fontID) {
+  public static Font getFont3D(byte fontID) {
     return font3ds[fontID & 0xFF];
   }
-
-  public static synchronized JmolFont createFont3D(int fontface, int fontstyle,
+  
+  public static synchronized Font createFont3D(int fontface, int fontstyle,
                                        float fontsize, float fontsizeNominal,
-                                       ApiPlatform apiPlatform, Object graphicsForMetrics) {
+                                       FontManager manager, Object graphicsForMetrics) {
     //if (graphicsForMetrics == null)
      // return null;
     if (fontsize > 0xFF)
@@ -105,8 +105,8 @@ final public class JmolFont {
     int fontIndexNext = fontkeyCount++;
     if (fontIndexNext == fontkeys.length)
       fontkeys = ArrayUtil.arrayCopyI(fontkeys, fontIndexNext + FONT_ALLOCATION_UNIT);
-      font3ds = (JmolFont[]) ArrayUtil.arrayCopyObject(font3ds, fontIndexNext + FONT_ALLOCATION_UNIT);
-    JmolFont font3d = new JmolFont(apiPlatform, (byte) fontIndexNext, fontface, fontstyle,
+      font3ds = (Font[]) ArrayUtil.arrayCopyObject(font3ds, fontIndexNext + FONT_ALLOCATION_UNIT);
+    Font font3d = new Font(manager, (byte) fontIndexNext, fontface, fontstyle,
         fontsize, fontsizeNominal, graphicsForMetrics);
     // you must set the font3d before setting the fontkey in order
     // to prevent a race condition with getFont3D
@@ -154,9 +154,13 @@ final public class JmolFont {
   public int getHeight() {
     return getAscent() + getDescent();
   }
+
+  public Object getFontMetrics() {
+    return fontMetrics;
+  }
   
   public int stringWidth(String text) {
-    return apiPlatform.fontStringWidth(this, fontMetrics, text);
+    return manager.fontStringWidth(this, text);
   }
 
   public String getInfo() {

@@ -858,9 +858,9 @@ public abstract class AtomSetCollectionReader {
     if (checkFilterKey("NAME=")) {
       nameRequired = filter.substring(filter.indexOf("NAME=") + 5);
       if (nameRequired.startsWith("'"))
-        nameRequired = Txt.split(nameRequired, "'")[1]; 
+        nameRequired = ParserJS.split(nameRequired, "'")[1]; 
       else if (nameRequired.startsWith("\""))
-        nameRequired = Txt.split(nameRequired, "\"")[1]; 
+        nameRequired = ParserJS.split(nameRequired, "\"")[1]; 
       filter0 = filter = Txt.simpleReplace(filter, nameRequired,"");
       filter0 = filter = Txt.simpleReplace(filter, "NAME=","");
     }

@@ -4,10 +4,10 @@ package org.jmol.api;
 import java.util.Map;
 
 import org.jmol.modelset.Atom;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.MeshSurface;
 
+import javajs.awt.Font;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -43,7 +43,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
 
   public abstract void setFontFid(byte fid);
 
-  public abstract JmolFont getFont3DCurrent();
+  public abstract Font getFont3DCurrent();
 
   public abstract void setNoisySurfaceShade(P3i screenA, P3i screenB,
                                             P3i screenC);
@@ -165,7 +165,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
    * @param bgColix TODO
    */
 
-  public abstract void drawString(String str, JmolFont font3d, int xBaseline,
+  public abstract void drawString(String str, Font font3d, int xBaseline,
                                   int yBaseline, int z, int zSlab, short bgColix);
 
   public abstract void plotImagePixel(int argb, int x, int y, int z, int shade, int bgargb);
@@ -187,7 +187,7 @@ public interface JmolRendererInterface extends JmolGraphicsInterface {
    * @param bgColix TODO
    */
 
-  public abstract void drawStringNoSlab(String str, JmolFont font3d,
+  public abstract void drawStringNoSlab(String str, Font font3d,
                                         int xBaseline, int yBaseline, int z, short bgColix);
 
   public abstract void fillEllipsoid(P3 center, P3[] points, int x,

@@ -385,7 +385,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private float fraction(String f) {
-    String[] ab = Txt.split(f, "/");
+    String[] ab = ParserJS.split(f, "/");
     return (ab.length == 2 ? parseFloatStr(ab[0]) / parseFloatStr(ab[1]) : 0);
   }
 

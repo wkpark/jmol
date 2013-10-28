@@ -3,6 +3,7 @@ package org.jmol.util;
 
 import java.awt.Image;
 
+import javajs.awt.Font;
 import javajs.util.ArrayUtil;
 import javajs.util.M3;
 import javajs.util.P3;
@@ -437,32 +438,32 @@ public class GData implements JmolGraphicsInterface {
    * a fontID is a byte that contains the size + the face + the style
    * ***************************************************************/
 
-  public JmolFont getFont3D(float fontSize) {
-    return JmolFont.createFont3D(JmolFont.FONT_FACE_SANS, JmolFont.FONT_STYLE_PLAIN,
+  public Font getFont3D(float fontSize) {
+    return Font.createFont3D(Font.FONT_FACE_SANS, Font.FONT_STYLE_PLAIN,
         fontSize, fontSize, apiPlatform, graphicsForMetrics);
   }
 
-  public JmolFont getFont3DFS(String fontFace, float fontSize) {
-    return JmolFont.createFont3D(JmolFont.getFontFaceID(fontFace),
-        JmolFont.FONT_STYLE_PLAIN, fontSize, fontSize, apiPlatform, graphicsForMetrics);
+  public Font getFont3DFS(String fontFace, float fontSize) {
+    return Font.createFont3D(Font.getFontFaceID(fontFace),
+        Font.FONT_STYLE_PLAIN, fontSize, fontSize, apiPlatform, graphicsForMetrics);
   }
 
   public byte getFontFidFS(String fontFace, float fontSize) {
     return getFont3DFSS(fontFace, "Bold", fontSize).fid;
   }
 
-  public JmolFont getFont3DFSS(String fontFace, String fontStyle, float fontSize) {
-    int iStyle = JmolFont.getFontStyleID(fontStyle);
+  public Font getFont3DFSS(String fontFace, String fontStyle, float fontSize) {
+    int iStyle = Font.getFontStyleID(fontStyle);
     if (iStyle < 0)
       iStyle = 0;
-    return JmolFont.createFont3D(JmolFont.getFontFaceID(fontFace), iStyle, fontSize,
+    return Font.createFont3D(Font.getFontFaceID(fontFace), iStyle, fontSize,
         fontSize, apiPlatform, graphicsForMetrics);
   }
 
-  public JmolFont getFont3DScaled(JmolFont font, float scale) {
+  public Font getFont3DScaled(Font font, float scale) {
     // TODO: problem here is that we are assigning a bold font, then not DEassigning it
     float newScale = font.fontSizeNominal * scale;
-    return (newScale == font.fontSize ? font : JmolFont.createFont3D(
+    return (newScale == font.fontSize ? font : Font.createFont3D(
         font.idFontFace, font.idFontStyle, newScale, font.fontSizeNominal, apiPlatform, graphicsForMetrics));
   }
 
@@ -472,7 +473,7 @@ public class GData implements JmolGraphicsInterface {
 
   // {"Plain", "Bold", "Italic", "BoldItalic"};
   public static int getFontStyleID(String fontStyle) {
-    return JmolFont.getFontStyleID(fontStyle);
+    return Font.getFontStyleID(fontStyle);
   }
 
   /**
@@ -604,7 +605,7 @@ public class GData implements JmolGraphicsInterface {
    *  
    */
   public void plotText(int x, int y, int z, int colorArgbOrGray, int bgColor,
-                       String text, JmolFont font3d, JmolRendererInterface jmolRenderer) {
+                       String text, Font font3d, JmolRendererInterface jmolRenderer) {
   }
 
   /**
@@ -613,14 +614,14 @@ public class GData implements JmolGraphicsInterface {
   public void renderBackground(JmolRendererInterface jmolRenderer) {
   }
 
-  public JmolFont getFont3DCurrent() {
+  public Font getFont3DCurrent() {
     return null;
   }
 
   /**
    * @param font3d  
    */
-  public void setFont(JmolFont font3d) {
+  public void setFont(Font font3d) {
   }
 
   /**

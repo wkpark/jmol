@@ -24,9 +24,10 @@
 
 package org.jmol.shape;
 
+import javajs.awt.Font;
+
 import org.jmol.java.BS;
 import org.jmol.modelset.Text;
-import org.jmol.util.JmolFont;
 
 public abstract class TextShape extends Object2dShape {
 
@@ -51,7 +52,7 @@ public abstract class TextShape extends Object2dShape {
     }
 
     if ("font" == propertyName) {
-      currentFont = (JmolFont) value;
+      currentFont = (Font) value;
       if (currentObject == null) {
         if (isAll)
           for (Text t : objects.values())

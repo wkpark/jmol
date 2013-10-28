@@ -25,6 +25,7 @@
 
 package org.jmol.shapesurface;
 
+import javajs.util.ColorUtil;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -45,7 +46,6 @@ import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
 import org.jmol.util.ColorEncoder;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.ContactPair;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;

@@ -34,8 +34,9 @@ import java.util.Map;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.C;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+
+import javajs.awt.Font;
 import javajs.util.List;
 
 import javajs.util.A4;
@@ -347,7 +348,7 @@ abstract public class __CartesianExporter extends ___Exporter {
   }
 
   @Override
-  void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
+  void plotText(int x, int y, int z, short colix, String text, Font font3d) {
     // over-ridden in VRML and X3D
     // trick here is that we use Jmol's standard g3d package to construct
     // the bitmap, but then output to jmolRenderer, which returns control

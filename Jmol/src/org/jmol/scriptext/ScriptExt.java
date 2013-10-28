@@ -64,14 +64,13 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolFont;
 import org.jmol.util.ParserBS;
 import org.jmol.util.Point3fi;
 
+import javajs.awt.Font;
 import javajs.util.ArrayUtil;
 import javajs.util.List;
 import javajs.util.SB;
@@ -80,6 +79,7 @@ import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
+import javajs.util.ColorUtil;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -1271,7 +1271,7 @@ public class ScriptExt implements JmolScriptExtension {
         break;
       case T.boundbox:
         if (fullCommand.indexOf("# BBOX=") >= 0) {
-          String[] bbox = Txt.split(Parser.getQuotedAttribute(
+          String[] bbox = ParserJS.split(Parser.getQuotedAttribute(
               fullCommand, "# BBOX"), ",");
           pts = new P3[] { (P3) Escape.uP(bbox[0]), (P3) Escape.uP(bbox[1]) };
         } else if (eval.isCenterParameter(i + 1)) {
@@ -5353,7 +5353,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (name.equals("/") && (len = slen) == 4) {
         name = parameterAsString(3).toLowerCase();
         if (!chk) {
-          String[] info = Txt.split(viewer.getStateInfo(), "\n");
+          String[] info = ParserJS.split(viewer.getStateInfo(), "\n");
           SB sb = new SB();
           for (int i = 0; i < info.length; i++)
             if (info[i].toLowerCase().indexOf(name) >= 0)
@@ -6515,7 +6515,7 @@ public class ScriptExt implements JmolScriptExtension {
     Boolean intramolecular = null;
     int tokAction = T.opToggle;
     String strFormat = null;
-    JmolFont font = null;
+    Font font = null;
 
     List<Object> points = new List<Object>();
     BS bs = new BS();
@@ -8054,7 +8054,7 @@ public class ScriptExt implements JmolScriptExtension {
           s += Escape.eBS(bs);
         }
       }
-      return mp.addXAS(Txt.split(s, sArg));
+      return mp.addXAS(ParserJS.split(s, sArg));
     case T.join:
       if (s.length() > 0 && s.charAt(s.length() - 1) == '\n')
         s = s.substring(0, s.length() - 1);
@@ -8085,10 +8085,10 @@ public class ScriptExt implements JmolScriptExtension {
       int itab = (args[0].tok == T.string ? 0 : 1);
       String tab = SV.sValue(args[itab]);
       sList1 = (x1.tok == T.varray ? SV.listValue(x1)
-          : Txt.split(SV.sValue(x1), "\n"));
+          : ParserJS.split(SV.sValue(x1), "\n"));
       x2 = args[1 - itab];
       sList2 = (x2.tok == T.varray ? SV.listValue(x2)
-          : Txt.split(SV.sValue(x2), "\n"));
+          : ParserJS.split(SV.sValue(x2), "\n"));
       sList3 = new String[len = Math.max(sList1.length, sList2.length)];
       for (int i = 0; i < len; i++)
         sList3[i] = (i >= sList1.length ? "" : sList1[i]) + tab
@@ -8129,7 +8129,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (x1.tok == T.varray) {
       len = alist1.size();
     } else {
-      sList1 = (Txt.split((String) x1.value, "\n"));
+      sList1 = (ParserJS.split((String) x1.value, "\n"));
       list1 = new float[len = sList1.length];
       ParserJS.parseFloatArrayData(sList1, list1);
     }
@@ -8153,7 +8153,7 @@ public class ScriptExt implements JmolScriptExtension {
     } else if (x2.tok == T.varray) {
       len = Math.min(len, alist2.size());
     } else {
-      sList2 = Txt.split((String) x2.value, "\n");
+      sList2 = ParserJS.split((String) x2.value, "\n");
       list2 = new float[sList2.length];
       ParserJS.parseFloatArrayData(sList2, list2);
       len = Math.min(list1.length, list2.length);

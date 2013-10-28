@@ -32,7 +32,6 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Quaternion;
-import org.jmol.util.Txt;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
@@ -51,6 +50,7 @@ import org.jmol.java.BS;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import java.util.Arrays;
@@ -534,7 +534,7 @@ public final class ModelLoader {
     String loadState = (String) modelSet.modelSetAuxiliaryInfo.remove("loadState");
     SB loadScript = (SB)modelSet.modelSetAuxiliaryInfo.remove("loadScript");
     if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
-      String[] lines = Txt.split(loadState, "\n");
+      String[] lines = ParserJS.split(loadState, "\n");
       SB sb = new SB();
       for (int i = 0; i < lines.length; i++) {
         int pt = m.loadState.indexOf(lines[i]);

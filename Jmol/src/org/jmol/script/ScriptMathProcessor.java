@@ -37,16 +37,18 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Bond.BondSet;
 import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import javajs.util.A4;
+import javajs.util.ColorUtil;
 import javajs.util.DecimalFormat;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
+import javajs.util.ParserJS;
+
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.T3;
@@ -812,7 +814,7 @@ public class ScriptMathProcessor {
           s = SV.sValue(x2);
         }
         s = Txt.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
-        return addXAS(Txt.split(s, "\n"));
+        return addXAS(ParserJS.split(s, "\n"));
       case T.color:
         switch (x2.tok) {
         case T.string:

@@ -24,6 +24,7 @@
 package org.jmol.util;
 
 import javajs.util.ArrayUtil;
+import javajs.util.ColorUtil;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -596,18 +597,16 @@ import javajs.util.P3;
     if (n < 2)
       n = JC.argbsRoygbScale.length;
     int[] b = new int[n];
-    float red1 = (((color1 & 0xFF0000) >> 16) & 0xFF) / 255f;
-    float green1 = (((color1 & 0xFF00) >> 8) & 0xFF) / 255f;
-    float blue1 = (color1 & 0xFF) / 255f;
-    float red2 = (((color2 & 0xFF0000) >> 16) & 0xFF) / 255f;
-    float green2 = (((color2 & 0xFF00) >> 8) & 0xFF) / 255f;
-    float blue2 = (color2 & 0xFF) / 255f;
-    float dr = (red2 - red1) / (n - 1);
-    float dg = (green2 - green1) / (n - 1);
-    float db = (blue2 - blue1) / (n - 1);
+    float[] rgb1 = new float[3];
+    float[] rgb2 = new float[3];
+    ColorUtil.toRGBf(color1, rgb1);
+    ColorUtil.toRGBf(color2, rgb2);
+    float dr = (rgb2[0] - rgb1[0]) / (n - 1);
+    float dg = (rgb2[1] - rgb1[1]) / (n - 1);
+    float db = (rgb2[2] - rgb1[2]) / (n - 1);
     for (int i = 0; i < n; i++)
-      b[i] = ColorUtil.colorTriadToInt(red1 + dr * i, green1 + dg * i, blue1
-          + db * i);
+      b[i] = ColorUtil.colorTriadToInt(rgb1[0] + dr * i, rgb1[1] + dg * i,
+          rgb1[2] + db * i);
     return b;
   }
   private int[] getPaletteBW() {

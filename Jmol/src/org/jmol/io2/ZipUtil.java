@@ -35,6 +35,7 @@ import java.io.StringReader;
 
 import javajs.J2SIgnoreImport;
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -556,7 +557,7 @@ public class ZipUtil implements JmolZipUtility {
       // if a manifest exists, it sets the files and file order
 
       if (haveManifest && !exceptFiles) {
-        String[] list = Txt.split(manifest, "|");
+        String[] list = ParserJS.split(manifest, "|");
         for (int i = 0; i < list.length; i++) {
           String file = list[i];
           if (file.length() == 0 || file.indexOf("#") == 0)
@@ -719,7 +720,7 @@ public class ZipUtil implements JmolZipUtility {
         if ((token = tokens.nextToken()).equals(")"))
           v.addLast(lasttoken);
         else if (token.equals("Start-") && tokens.nextToken().equals("Molecule"))
-          v.addLast(Txt.split(tokens.nextToken(), "\"")[1]);
+          v.addLast(ParserJS.split(tokens.nextToken(), "\"")[1]);
         lasttoken = token;
       }
     } catch (Exception e) {

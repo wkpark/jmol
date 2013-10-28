@@ -25,9 +25,10 @@
 
 package org.jmol.render;
 
+import javajs.awt.Font;
+
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.Text;
-import org.jmol.util.JmolFont;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
@@ -95,7 +96,7 @@ class TextRenderer {
         text.zSlab);
   }
 
-  static void renderSimpleLabel(JmolRendererInterface g3d, JmolFont font,
+  static void renderSimpleLabel(JmolRendererInterface g3d, Font font,
                                  String strLabel, short colix, short bgcolix,
                                  float[] boxXY, int z, int zSlab,
                                  int xOffset, int yOffset, float ascent,

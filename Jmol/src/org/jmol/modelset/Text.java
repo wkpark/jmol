@@ -24,12 +24,14 @@
 package org.jmol.modelset;
 
 
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+
+import javajs.awt.Font;
 import javajs.util.P3;
+import javajs.util.ParserJS;
+
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
-import org.jmol.util.Txt;
 
 public class Text extends Object2d {
 
@@ -47,7 +49,7 @@ public class Text extends Object2d {
 
   public String[] lines;
 
-  public JmolFont font;
+  public Font font;
   private byte fid;
   private int ascent;
   public int descent;
@@ -67,7 +69,7 @@ public class Text extends Object2d {
   Text() {
   }
 
-  static public Text newLabel(GData gdata, JmolFont font, String text,
+  static public Text newLabel(GData gdata, Font font, String text,
                               short colix, short bgcolix, int align, float scalePixelsPerMicron, float[] value) {
     // for labels and hover
     Text t = new Text();
@@ -77,7 +79,7 @@ public class Text extends Object2d {
     return t;
   }
 
-  public static Text newEcho(Viewer viewer, GData gdata, JmolFont font, String target,
+  public static Text newEcho(Viewer viewer, GData gdata, Font font, String target,
                       short colix, int valign, int align,
                       float scalePixelsPerMicron) {
     // for echo
@@ -93,7 +95,7 @@ public class Text extends Object2d {
     return t;
   }
 
-  private void set(GData gdata, JmolFont font, short colix, int align, boolean isLabelOrHover,
+  private void set(GData gdata, Font font, short colix, int align, boolean isLabelOrHover,
                    float scalePixelsPerMicron, float[] value) {
     this.scalePixelsPerMicron = scalePixelsPerMicron;
     this.gdata = gdata;
@@ -114,7 +116,7 @@ public class Text extends Object2d {
     if (this.fid == fid)
       return;
     fontScale = 0;
-    setFont(JmolFont.getFont3D(fid), true);
+    setFont(Font.getFont3D(fid), true);
   }
 
   public void setText(String text) {
@@ -149,7 +151,7 @@ public class Text extends Object2d {
     recalc();
   }
   
-  public void setFont(JmolFont f3d, boolean doAll) {
+  public void setFont(Font f3d, boolean doAll) {
     font = f3d;
     if (font == null)
       return;
@@ -194,7 +196,7 @@ public class Text extends Object2d {
     }
     if (font == null)
       return;
-    lines = Txt.split(text, "|");
+    lines = ParserJS.split(text, "|");
     textWidth = 0;
     widths = new int[lines.length];
     for (int i = lines.length; --i >= 0;)

@@ -23,6 +23,7 @@
 
 package org.jmol.viewer;
 
+import javajs.awt.Font;
 import javajs.util.List;
 import javajs.util.ParserJS;
 import javajs.util.SB;
@@ -67,7 +68,6 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
 import org.jmol.util.ModulationSet;
 import org.jmol.util.Parser;
@@ -737,7 +737,7 @@ public class StateCreator extends JmolStateCreator {
       appendCmd(s, "set labelFront");
     else if ((l.defaultZPos & JC.LABEL_GROUP_FLAG) != 0)
       appendCmd(s, "set labelGroup");
-    appendCmd(s, Shape.getFontCommand("label", JmolFont
+    appendCmd(s, Shape.getFontCommand("label", Font
         .getFont3D(l.defaultFontId)));
     return s.toString();
   }
@@ -968,7 +968,7 @@ public class StateCreator extends JmolStateCreator {
   }
 
   @Override
-  String getFontState(String myType, JmolFont font3d) {
+  String getFontState(String myType, Font font3d) {
     int objId = StateManager.getObjectIdFromName(myType
         .equalsIgnoreCase("axes") ? "axis" : myType);
     if (objId < 0)
@@ -1053,7 +1053,7 @@ public class StateCreator extends JmolStateCreator {
   @Override
   String getMeasurementState(Measures shape,
                                     List<Measurement> mList,
-                                    int measurementCount, JmolFont font3d,
+                                    int measurementCount, Font font3d,
                                     TickInfo ti) {
     SB commands = new SB();
     appendCmd(commands, "measures delete");
@@ -1296,7 +1296,7 @@ public class StateCreator extends JmolStateCreator {
           BSUtil.setMapBitSet(temp2, i, i, "set toggleLabel");
         if (l.bsFontSet != null && l.bsFontSet.get(i))
           BSUtil.setMapBitSet(temp2, i, i, Shape.getFontCommand("label",
-              JmolFont.getFont3D(l.fids[i])));
+              Font.getFont3D(l.fids[i])));
       }
       s = getCommands(temp, temp2, "select")
           + getCommands(null, temp3, "select");

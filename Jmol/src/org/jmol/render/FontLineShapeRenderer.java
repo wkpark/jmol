@@ -26,10 +26,10 @@ package org.jmol.render;
 
 import org.jmol.constant.EnumAxesMode;
 import org.jmol.modelset.TickInfo;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Point3fi;
 
+import javajs.awt.Font;
 import javajs.util.P3;
 import javajs.util.P3i;
 
@@ -43,7 +43,7 @@ public abstract class FontLineShapeRenderer extends ShapeRenderer {
 
   protected float imageFontScaling;
   protected Point3fi atomA, atomB, atomC, atomD;
-  protected JmolFont font3d;
+  protected Font font3d;
 
   final protected P3i pt0i = new P3i();
   final protected P3i pt1i = new P3i();

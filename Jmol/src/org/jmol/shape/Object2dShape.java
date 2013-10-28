@@ -9,8 +9,9 @@ import org.jmol.api.ApiPlatform;
 import org.jmol.java.BS;
 import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
-import org.jmol.util.JmolFont;
 import org.jmol.util.Logger;
+
+import javajs.awt.Font;
 import javajs.util.P3;
 import org.jmol.util.Txt;
 
@@ -20,7 +21,7 @@ public abstract class Object2dShape extends Shape {
 
   public Map<String, Text> objects = new Hashtable<String, Text>();
   Object2d currentObject;
-  JmolFont currentFont;
+  Font currentFont;
   Object currentColor;
   Object currentBgColor;
   float currentTranslucentLevel;

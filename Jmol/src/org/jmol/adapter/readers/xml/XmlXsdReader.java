@@ -24,9 +24,10 @@
 package org.jmol.adapter.readers.xml;
 
 
+import javajs.util.ParserJS;
+
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.java.BS;
-import org.jmol.util.Txt;
 
 /**
  * An XML reader for Materials Studio .xsd files   http://accelrys.com/products/materials-studio/
@@ -105,7 +106,7 @@ public class XmlXsdReader extends XmlReader {
       return;
     }
     if ("Bond".equalsIgnoreCase(localName)) {
-      String[] atoms = Txt.split(atts.get("Connects"), ",");
+      String[] atoms = ParserJS.split(atts.get("Connects"), ",");
       int order = 1;
       if (atts.containsKey("Type")) {
         String type = atts.get("Type");

@@ -26,8 +26,9 @@
 package org.jmol.shape;
 
 import org.jmol.util.C;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
+
+import javajs.awt.Font;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -356,7 +357,7 @@ public abstract class Shape {
             : colixes[i]), atom.getColix());
   }
   
-  public static String getFontCommand(String type, JmolFont font) {
+  public static String getFontCommand(String type, Font font) {
     if (font == null)
       return "";
     return "font " + type + " " + font.getInfo();

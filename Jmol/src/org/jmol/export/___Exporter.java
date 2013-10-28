@@ -29,6 +29,7 @@ package org.jmol.export;
 import java.awt.Image;
 import java.text.SimpleDateFormat;
 
+import javajs.awt.Font;
 import javajs.util.ArrayUtil;
 import javajs.util.List;
 import javajs.util.SB;
@@ -45,7 +46,6 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 import org.jmol.util.C;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
@@ -578,7 +578,7 @@ public abstract class ___Exporter {
     outputComment("end image " + nImage);
   }
 
-  void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
+  void plotText(int x, int y, int z, short colix, String text, Font font3d) {
     // trick here is that we use Jmol's standard g3d package to construct
     // the bitmap, but then output to jmolRenderer, which returns control
     // here via drawPixel.

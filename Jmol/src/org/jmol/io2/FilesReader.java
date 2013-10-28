@@ -5,13 +5,14 @@ import java.io.BufferedReader;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
+import javajs.util.ParserJS;
+
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolFilesReaderInterface;
 import org.jmol.io.DataReader;
 import org.jmol.io.JmolBinary;
 import org.jmol.util.Logger;
-import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
 
@@ -90,7 +91,7 @@ public class FilesReader implements JmolFilesReaderInterface {
     String[] subFileList = null;
     htParams.remove("subFileList");
     if (name.indexOf("|") >= 0) {
-      subFileList = Txt.split(name, "|");
+      subFileList = ParserJS.split(name, "|");
       name = subFileList[0];
     }
     Object t = fm.getUnzippedReaderOrStreamFromName(name, null,

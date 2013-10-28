@@ -34,6 +34,7 @@ import org.jmol.api.SymmetryInterface;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -454,7 +455,7 @@ class SpaceGroup {
   private void generateOperatorsFromXyzInfo(String xyzInfo) {
     addOperation(null, 0);
     addSymmetry("x,y,z", 0);
-    String[] terms = Txt.split(xyzInfo.toLowerCase(), ";");
+    String[] terms = ParserJS.split(xyzInfo.toLowerCase(), ";");
     for (int i = 0; i < terms.length; i++)
       addSymmetry(terms[i], 0);
   }
@@ -720,12 +721,12 @@ class SpaceGroup {
   private static String lastInfo = "";
   
   private void buildSpaceGroup(String cifLine) {
-    String[] terms = Txt.split(cifLine.toLowerCase(), ";");
+    String[] terms = ParserJS.split(cifLine.toLowerCase(), ";");
     String[] parts;
 
     intlTableNumberFull = terms[0].trim(); // International Table Number :
                                            // options
-    parts = Txt.split(intlTableNumberFull, ":");
+    parts = ParserJS.split(intlTableNumberFull, ":");
     intlTableNumber = parts[0];
     intlTableNumberExt = (parts.length == 1 ? "" : parts[1]);
     ambiguityType = '\0';
@@ -751,7 +752,7 @@ class SpaceGroup {
 
     hmSymbolFull = Character.toUpperCase(terms[2].charAt(0))
         + terms[2].substring(1);
-    parts = Txt.split(hmSymbolFull, ":");
+    parts = ParserJS.split(hmSymbolFull, ":");
     hmSymbol = parts[0];
     hmSymbolExt = (parts.length == 1 ? "" : parts[1]);
     int pt = hmSymbol.indexOf(" -3");

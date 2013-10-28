@@ -1,6 +1,6 @@
 package org.jmol.awtjs2d;
 
-import org.jmol.util.JmolFont;
+import javajs.awt.Font;
 
 /**
  * methods required by Jmol that access java.awt.Font
@@ -9,7 +9,7 @@ import org.jmol.util.JmolFont;
  * 
  */
 
-class Font {
+class JSFont {
 
   static Object newFont(String fontFace, boolean isBold, boolean isItalic, float fontSize, String type) {
     // "px" are different from "pt" here.
@@ -26,7 +26,7 @@ class Font {
    * @param context  
    * @return the context
    */
-  static Object getFontMetrics(JmolFont font, Object context) {
+  static Object getFontMetrics(Font font, Object context) {
     /**
      * 
      * @j2sNative
@@ -83,7 +83,7 @@ class Font {
    * @param text 
    * @return width
    */
-  static int stringWidth(JmolFont font, Object context, String text) {
+  static int stringWidth(Font font, Object context, String text) {
     /**
      * @j2sNative
      * context.font = font.font;

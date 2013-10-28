@@ -23,6 +23,7 @@
  */
 package org.jmol.script;
 
+import javajs.awt.Font;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -58,9 +59,7 @@ import org.jmol.thread.JmolThread;
 import org.jmol.util.BSUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.Elements;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
@@ -69,6 +68,7 @@ import org.jmol.util.Parser;
 import org.jmol.util.ParserBS;
 
 import javajs.util.A4;
+import javajs.util.ColorUtil;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -4502,7 +4502,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (s.startsWith("[\"")) {
         Object o = viewer.evaluateExpression(s);
         if (o instanceof String)
-          return Txt.split((String) o, "\n");
+          return ParserJS.split((String) o, "\n");
       }
       return new String[] { s };
     case T.spacebeforesquare:
@@ -11019,7 +11019,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       fontstyle = fontface;
       fontface = "SansSerif";
     }
-    JmolFont font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
+    Font font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
     sm.loadShape(shapeType);
     setShapeProperty(shapeType, "font", font3d);
     if (scaleAngstromsPerPixel >= 0)

@@ -25,6 +25,7 @@
 package org.jmol.util;
 
 import javajs.util.ArrayUtil;
+import javajs.util.ColorUtil;
 import javajs.util.M4;
 import javajs.util.V3;
 
@@ -109,7 +110,7 @@ public class Shader {
   private int rgbContrast;
 
   public void setCel(boolean celOn, int argb) {
-    argb = C.getArgb(ColorUtil.getBgContrast(argb));
+    argb = C.getArgb(C.getBgContrast(argb));
     if (argb == 0xFF000000)
       argb = 0xFF040404; // problem here is with antialiasDisplay on white background
     if (this.celOn == celOn && rgbContrast == argb)

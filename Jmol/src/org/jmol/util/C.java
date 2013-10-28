@@ -26,6 +26,7 @@ package org.jmol.util;
 
 
 import javajs.util.ArrayUtil;
+import javajs.util.ColorUtil;
 import javajs.util.ParserJS;
 import javajs.util.SB;
 
@@ -447,5 +448,10 @@ public class C {
     int a = (argb >> 24) & 0xFF;
     return (a == 0xFF ? getColix(argb) : getColixTranslucent3(getColix(argb), true, a / 255f));
   }  
+
+  public static short getBgContrast(int argb) {
+    return ((ColorUtil.calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? WHITE
+        : BLACK);
+  }
 
 }

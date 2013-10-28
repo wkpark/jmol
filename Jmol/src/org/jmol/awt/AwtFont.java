@@ -7,8 +7,6 @@ import java.text.AttributedCharacterIterator.Attribute;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.util.JmolFont;
-
 /**
  * methods required by Jmol that access java.awt.Font
  * 
@@ -16,7 +14,7 @@ import org.jmol.util.JmolFont;
  * 
  */
 
-class Font {
+class AwtFont {
 
   static Object newFont(String fontFace, boolean isBold, boolean isItalic, float fontSize) {
     Map<Attribute, Object> fontMap = new Hashtable<Attribute, Object>();
@@ -29,7 +27,7 @@ class Font {
     return new java.awt.Font(fontMap);
   }
 
-  static Object getFontMetrics(JmolFont font, Object graphics) {
+  static Object getFontMetrics(javajs.awt.Font font, Object graphics) {
     return ((Graphics) graphics).getFontMetrics((java.awt.Font) font.font);
   }
 

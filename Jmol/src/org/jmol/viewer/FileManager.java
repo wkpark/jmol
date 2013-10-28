@@ -51,6 +51,7 @@ import org.jmol.util.Escape;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.ParserJS;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -575,7 +576,7 @@ public class FileManager implements BytePoster {
     }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
-      subFileList = Txt.split(name, "|");
+      subFileList = ParserJS.split(name, "|");
       if (bytes == null)
         Logger.info("FileManager opening 3 " + name);
       name = subFileList[0];
@@ -671,7 +672,7 @@ public class FileManager implements BytePoster {
     }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
-      subFileList = Txt.split(name, "|");
+      subFileList = ParserJS.split(name, "|");
       name = subFileList[0];
     }
     BufferedInputStream bis = null;
@@ -760,7 +761,7 @@ public class FileManager implements BytePoster {
     String fullName = name;
     String[] subFileList = null;
     if (name.indexOf("|") >= 0) {
-      subFileList = Txt.split(name, "|");
+      subFileList = ParserJS.split(name, "|");
       name = subFileList[0];
       allowZip = true;
     }

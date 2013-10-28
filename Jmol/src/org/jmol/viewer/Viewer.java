@@ -92,12 +92,12 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.CommandHistory;
 import javajs.awt.Dimension;
+import javajs.awt.Font;
+
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
@@ -108,6 +108,7 @@ import javajs.util.P3;
 import javajs.util.P4;
 import org.jmol.util.Rectangle;
 import javajs.util.A4;
+import javajs.util.ColorUtil;
 import javajs.util.DecimalFormat;
 import javajs.util.M3;
 import javajs.util.M4;
@@ -1607,7 +1608,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return C.getColix(argb);
   }
 
-  public String getFontState(String myType, JmolFont font3d) {
+  public String getFontState(String myType, Font font3d) {
     return getStateCreator().getFontState(myType, font3d);
   }
 
@@ -7756,7 +7757,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // //////////////////////////////////////////////////////////////
   // font stuff
   // //////////////////////////////////////////////////////////////
-  public JmolFont getFont3D(String fontFace, String fontStyle, float fontSize) {
+  public Font getFont3D(String fontFace, String fontStyle, float fontSize) {
     return gdata.getFont3DFSS(fontFace, fontStyle, fontSize);
   }
 
@@ -10041,7 +10042,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public String getMeasurementState(Measures measures,
                                     List<Measurement> mList,
-                                    int measurementCount, JmolFont font3d,
+                                    int measurementCount, Font font3d,
                                     TickInfo ti) {
     return getStateCreator().getMeasurementState(measures, mList,
         measurementCount, font3d, ti);

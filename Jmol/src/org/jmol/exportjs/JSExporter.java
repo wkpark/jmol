@@ -32,9 +32,9 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.util.GData;
-import org.jmol.util.JmolFont;
 
 import javajs.J2SRequireImport;
+import javajs.awt.Font;
 import javajs.util.P3;
 import javajs.util.T3;
 import javajs.util.V3;
@@ -239,7 +239,7 @@ public class JSExporter extends CartesianExporter {
   }
 
   @Override
-  void plotText(int x, int y, int z, short colix, String text, JmolFont font3d) {
+  void plotText(int x, int y, int z, short colix, String text, Font font3d) {
     // TODO -- not sure how to handle z exactly. 
     // These are screen coordinates. You have to use
     // viewer.unTransformPoint(pointScreen, pointAngstroms) 

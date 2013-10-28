@@ -27,7 +27,8 @@ package org.jmol.shapecgo;
 import org.jmol.java.BS;
 import org.jmol.shapespecial.DrawMesh;
 import org.jmol.util.C;
-import org.jmol.util.ColorUtil;
+
+import javajs.util.ColorUtil;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;

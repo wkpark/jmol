@@ -36,11 +36,11 @@ import org.jmol.constant.EnumStereoMode;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
 import org.jmol.util.C;
-import org.jmol.util.JmolFont;
 import org.jmol.util.GData;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Normix;
 
+import javajs.awt.Font;
 import javajs.util.ArrayUtil;
 import javajs.util.M3;
 import javajs.util.M4;
@@ -222,7 +222,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   private boolean isScreened;
   private int argbNoisyUp, argbNoisyDn;
 
-  private JmolFont currentFont;
+  private Font currentFont;
   private Pixelator pixel;
 
   protected int zMargin;
@@ -933,7 +933,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param bgColix 
    */
   
-  public void drawString(String str, JmolFont font3d,
+  public void drawString(String str, Font font3d,
                          int xBaseline, int yBaseline, int z, int zSlab, short bgColix) {
     //axis, labels, measures, echo    
     currentShadeIndex = 0; 
@@ -956,7 +956,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
    * @param bgColix 
    */
   
-  public void drawStringNoSlab(String str, JmolFont font3d, 
+  public void drawStringNoSlab(String str, Font font3d, 
                                int xBaseline, int yBaseline,
                                int z, short bgColix) {
     // echo, frank, hover, molecularOrbital, uccage
@@ -997,7 +997,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   @Override
   public void plotText(int x, int y, int z, int argb,
-                int bgargb, String text, JmolFont font3d, JmolRendererInterface jmolRenderer) {
+                int bgargb, String text, Font font3d, JmolRendererInterface jmolRenderer) {
     TextRenderer.plot(x, y, z, argb, bgargb, text, font3d, this, 
         jmolRenderer, antialiasThisFrame);    
   }
@@ -1022,16 +1022,16 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
 
   @Override
   public void setFontFid(byte fid) {
-    currentFont = JmolFont.getFont3D(fid);
+    currentFont = Font.getFont3D(fid);
   }
   
   @Override
-  public void setFont(JmolFont font3d) {
+  public void setFont(Font font3d) {
     currentFont = font3d;
   }
   
   @Override
-  public JmolFont getFont3DCurrent() {
+  public Font getFont3DCurrent() {
     return currentFont;
   }
 

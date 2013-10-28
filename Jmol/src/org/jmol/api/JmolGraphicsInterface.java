@@ -1,6 +1,6 @@
 package org.jmol.api;
 
-import org.jmol.util.JmolFont;
+import javajs.awt.Font;
 
 public interface JmolGraphicsInterface {
 
@@ -20,7 +20,7 @@ public interface JmolGraphicsInterface {
 
   public abstract void setDepth(int depthValue);
 
-  public abstract JmolFont getFont3DScaled(JmolFont font3d, float imageFontScaling);
+  public abstract Font getFont3DScaled(Font font3d, float imageFontScaling);
 
   public abstract byte getFontFid(float fontSize);
 

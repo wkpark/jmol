@@ -29,8 +29,9 @@ import java.util.Map;
 
 
 import org.jmol.jvxl.data.JvxlCoder;
-import org.jmol.util.ColorUtil;
 import org.jmol.util.Logger;
+
+import javajs.util.ColorUtil;
 import javajs.util.P3;
 
 /* simple Neutral File Format reader 

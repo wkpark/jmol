@@ -46,6 +46,8 @@ import org.jmol.util.Logger;
 
 import javajs.util.M4;
 import javajs.util.P3;
+import javajs.util.ParserJS;
+
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Txt;
 import javajs.util.V3;
@@ -321,7 +323,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       return;
     for (int i = vBiomolecules.size(); --i >= 0;) {
       Map<String, Object> biomolecule = vBiomolecules.get(i);
-      String[] ops = Txt.split((String) biomolecule.get("operators"), ",");
+      String[] ops = ParserJS.split((String) biomolecule.get("operators"), ",");
       String assemblies = (String) biomolecule.get("assemblies");
       vBiomts = new  List<M4>();
       biomolecule.put("biomts", vBiomts);

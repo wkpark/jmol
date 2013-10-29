@@ -25,7 +25,8 @@
 
 package org.jmol.util;
 
-import javajs.util.ParserJS;
+import javajs.util.ArrayUtil;
+import javajs.util.Parser;
 
 import org.jmol.java.BS;
 
@@ -43,7 +44,7 @@ public class ParserBS {
    * @return  number of floats
    */
   public static int parseStringInfestedFloatArray(String str, BS bs, float[] data) {
-    return ParserBS.parseFloatArrayBsData(ParserJS.getTokens(str), bs, data);
+    return ParserBS.parseFloatArrayBsData(Parser.getTokens(str), bs, data);
   }
 
   public static int parseFloatArrayBsData(String[] tokens, BS bs, float[] data) {
@@ -54,7 +55,7 @@ public class ParserBS {
     boolean haveBitSet = (bs != null);
     for (int i = (haveBitSet ? bs.nextSetBit(0) : 0); i >= 0 && i < len && n < nTokens; i = (haveBitSet ? bs.nextSetBit(i + 1) : i + 1)) {
       float f;
-      while (Float.isNaN(f = ParserJS.parseFloat(tokens[n++])) 
+      while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) 
           && n < nTokens) {
       }
       if (!Float.isNaN(f))
@@ -91,7 +92,7 @@ public class ParserBS {
     float f;
     int i = -1;
     boolean isMatch = (matchData != null);
-    int[] lines = Parser.markLines(str, (str.indexOf('\n') >= 0 ? '\n' : ';'));
+    int[] lines = markLines(str, (str.indexOf('\n') >= 0 ? '\n' : ';'));
     int iLine = (firstLine <= 1 || firstLine >= lines.length ? 0 : firstLine - 1);
     int pt = (iLine == 0 ? 0 : lines[iLine - 1]);
     int nLines = lines.length;
@@ -104,22 +105,22 @@ public class ParserBS {
     for (; iLine < nLines; iLine++) {
       String line = str.substring(pt, lines[iLine]).trim();
       pt = lines[iLine];
-      String[] tokens = (fieldColumnCount <= 0 ? ParserJS.getTokens(line) : null);
+      String[] tokens = (fieldColumnCount <= 0 ? Parser.getTokens(line) : null);
       // check for inappropriate data -- line too short or too few tokens or NaN for data
       // and parse data
       if (fieldColumnCount <= 0) {
         if (tokens.length < minLen
-            || Float.isNaN(f = ParserJS.parseFloat(tokens[field - 1])))
+            || Float.isNaN(f = Parser.parseFloat(tokens[field - 1])))
           continue;
       } else {
         if (line.length() < minLen
-            || Float.isNaN(f = ParserJS.parseFloat(line.substring(field - 1, field
+            || Float.isNaN(f = Parser.parseFloat(line.substring(field - 1, field
                 + fieldColumnCount - 1))))
           continue;
       }
       int iData;
       if (isMatch) {
-        iData = ParserJS.parseInt(tokens == null ? line.substring(fieldMatch - 1,
+        iData = Parser.parseInt(tokens == null ? line.substring(fieldMatch - 1,
             fieldMatch + fieldMatchColumnCount - 1) : tokens[fieldMatch - 1]);
         // in the fieldMatch column we have an integer pointing into matchData
         // we replace that number then with the corresponding number in matchData
@@ -146,10 +147,71 @@ public class ParserBS {
     return data;
   }
 
-  public static float[] extractData(String data, int field, int nBytes,
-                                    int firstLine) {
-    return parseFloatArrayFromMatchAndField(data, null, 0, 0, null, field,
-        nBytes, null, firstLine);
+  public static String fixDataString(String str) {
+    str = str.replace(';', str.indexOf('\n') < 0 ? '\n' : ' ');
+    str = Txt.trim(str, "\n \t");
+    str = Txt.simpleReplace(str, "\n ", "\n");
+    str = Txt.simpleReplace(str, "\n\n", "\n");
+    return str;    
   }
+  
+  public static float[][] parseFloatArray2d(String str) {
+    str = fixDataString(str);
+    int[] lines = markLines(str, '\n');
+    int nLines = lines.length;
+    float[][] data = ArrayUtil.newFloat2(nLines);
+    for (int iLine = 0, pt = 0; iLine < nLines; pt = lines[iLine++]) {
+      String[] tokens = Parser.getTokens(str.substring(pt, lines[iLine]));
+      Parser.parseFloatArrayData(tokens, data[iLine] = new float[tokens.length]);
+    }
+    return data;
+  }
+
+  public static float[][][] parseFloatArray3d(String str) {
+    str = fixDataString(str);
+    int[] lines = markLines(str, '\n');
+    int nLines = lines.length;
+    String[] tokens = Parser.getTokens(str.substring(0, lines[0]));
+    if (tokens.length != 3)
+      return new float[0][0][0];
+    int nX = Parser.parseInt(tokens[0]);
+    int nY = Parser.parseInt(tokens[1]);
+    int nZ = Parser.parseInt(tokens[2]);
+    if (nX < 1 || nY < 1 || nZ < 1)
+      return new float[1][1][1];
+    float[][][] data = ArrayUtil.newFloat3(nX, nY);
+    int iX = 0;
+    int iY = 0;
+    for (int iLine = 1, pt = lines[0]; iLine < nLines && iX < nX; pt = lines[iLine++]) {
+      tokens = Parser.getTokens(str.substring(pt, lines[iLine]));
+      if (tokens.length < nZ)
+        continue;
+      Parser.parseFloatArrayData(tokens, data[iX][iY] = new float[tokens.length]);
+      if (++iY == nY) {
+        iX++;
+        iY = 0;
+      } 
+    }
+    if (iX != nX) {
+      System.out.println("Error reading 3D data -- nX = " + nX + ", but only " + iX + " blocks read");      
+      return new float[1][1][1];
+    }
+    return data;
+  }
+
+  public static int[] markLines(String data, char eol) {
+    int nLines = 0;
+    for (int i = data.length(); --i >=0;)
+      if (data.charAt(i) == eol)
+        nLines++;
+    int[] lines = new int[nLines + 1];
+    nLines = 0;
+    int pt = 0;
+    while ((pt = data.indexOf(eol, pt)) >= 0)
+      lines[nLines++] = ++pt;
+    lines[nLines] = data.length();
+    return lines;
+  }
+
 
 }

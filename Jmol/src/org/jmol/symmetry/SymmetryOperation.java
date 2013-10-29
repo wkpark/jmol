@@ -35,7 +35,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import org.jmol.util.ParserBS;
 
 import javajs.util.M3;

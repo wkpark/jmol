@@ -24,20 +24,16 @@
 
 package org.jmol.smiles;
 
-
-
-
-
-
-import org.jmol.java.BS;
-import org.jmol.util.Elements;
-import org.jmol.util.JmolEdge;
-
 import javajs.util.ArrayUtil;
 import javajs.util.List;
+import javajs.util.P3;
+
+import org.jmol.java.BS;
+
+import org.jmol.util.Elements;
+import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
-import javajs.util.P3;
 
 //import org.jmol.util.Logger;
 

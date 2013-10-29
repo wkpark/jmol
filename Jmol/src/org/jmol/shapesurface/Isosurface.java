@@ -122,7 +122,7 @@ import javajs.util.SB;
 
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 
 import javajs.util.A4;
 import javajs.util.ColorUtil;

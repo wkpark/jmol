@@ -27,12 +27,13 @@ package org.jmol.smiles;
 
 
 
-import org.jmol.java.BS;
-import org.jmol.util.JmolEdge;
 import javajs.util.List;
-import org.jmol.util.JmolNode;
 import javajs.util.P3;
 import javajs.util.V3;
+
+import org.jmol.java.BS;
+import org.jmol.util.JmolEdge;
+import org.jmol.util.JmolNode;
 
 public class SmilesAromatic {
   /** 

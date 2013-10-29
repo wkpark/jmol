@@ -24,14 +24,17 @@
 
 package org.jmol.smiles;
 
-import javajs.util.List;
-import javajs.util.SB;
-
 import java.util.Iterator;
-
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.util.List;
+import javajs.util.SB;
+import javajs.util.P3;
+
+import org.jmol.java.BS;
+
+import org.jmol.smiles.SmilesSearch.VTemp;
 
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
@@ -39,10 +42,6 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Logger;
-import javajs.util.P3;
-
-import org.jmol.java.BS;
-import org.jmol.smiles.SmilesSearch.VTemp;
 
 /**
  * Double bond, allene, square planar and tetrahedral stereochemistry only

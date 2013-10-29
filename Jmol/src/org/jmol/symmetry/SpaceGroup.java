@@ -34,11 +34,11 @@ import org.jmol.api.SymmetryInterface;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 
 import javajs.util.M4;
 import javajs.util.P3;
@@ -415,7 +415,7 @@ class SpaceGroup {
     if (xyz0.startsWith("x1,x2,x3,x4") && modulationDimension == 0) {
       xyzList.clear();
       operationCount = 0;
-      modulationDimension = javajs.util.ParserJS.parseInt(xyz0.substring(xyz0
+      modulationDimension = javajs.util.Parser.parseInt(xyz0.substring(xyz0
           .lastIndexOf("x") + 1)) - 3;
     }
 
@@ -455,7 +455,7 @@ class SpaceGroup {
   private void generateOperatorsFromXyzInfo(String xyzInfo) {
     addOperation(null, 0);
     addSymmetry("x,y,z", 0);
-    String[] terms = ParserJS.split(xyzInfo.toLowerCase(), ";");
+    String[] terms = Parser.split(xyzInfo.toLowerCase(), ";");
     for (int i = 0; i < terms.length; i++)
       addSymmetry(terms[i], 0);
   }
@@ -721,12 +721,12 @@ class SpaceGroup {
   private static String lastInfo = "";
   
   private void buildSpaceGroup(String cifLine) {
-    String[] terms = ParserJS.split(cifLine.toLowerCase(), ";");
+    String[] terms = Parser.split(cifLine.toLowerCase(), ";");
     String[] parts;
 
     intlTableNumberFull = terms[0].trim(); // International Table Number :
                                            // options
-    parts = ParserJS.split(intlTableNumberFull, ":");
+    parts = Parser.split(intlTableNumberFull, ":");
     intlTableNumber = parts[0];
     intlTableNumberExt = (parts.length == 1 ? "" : parts[1]);
     ambiguityType = '\0';
@@ -752,7 +752,7 @@ class SpaceGroup {
 
     hmSymbolFull = Character.toUpperCase(terms[2].charAt(0))
         + terms[2].substring(1);
-    parts = ParserJS.split(hmSymbolFull, ":");
+    parts = Parser.split(hmSymbolFull, ":");
     hmSymbol = parts[0];
     hmSymbolExt = (parts.length == 1 ? "" : parts[1]);
     int pt = hmSymbol.indexOf(" -3");

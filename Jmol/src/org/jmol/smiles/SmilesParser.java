@@ -26,16 +26,15 @@ package org.jmol.smiles;
 
 
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 import java.util.Hashtable;
 import java.util.Map;
 
-
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import org.jmol.util.Txt;
 import org.jmol.util.Logger;
 
@@ -177,7 +176,7 @@ public class SmilesParser {
     if (isSmarts && pattern.indexOf("[$") >= 0)
       pattern = parseVariableLength(pattern);
     if (pattern.indexOf("||") >= 0) {
-      String[] patterns = ParserJS.split(pattern, "||");  
+      String[] patterns = Parser.split(pattern, "||");  
       String toDo = "";
       search.subSearches = new SmilesSearch[patterns.length];
       for (int i = 0; i < patterns.length; i++) {
@@ -221,7 +220,7 @@ public class SmilesParser {
       }
     }
     if (pattern.indexOf("||") >= 0) {
-      String[] patterns = ParserJS.split(pattern, "||");
+      String[] patterns = Parser.split(pattern, "||");
       for (int i = 0; i < patterns.length; i++)
         sout.append("||").append(parseVariableLength(patterns[i]));
     } else {
@@ -642,9 +641,9 @@ public class SmilesParser {
             isNot = true;
             s = s.substring(1);
           }
-          float min = (pt + 1 == pt2 ? 0 : ParserJS.fVal(s));
+          float min = (pt + 1 == pt2 ? 0 : Parser.fVal(s));
           s = strMeasure.substring(pt2 + 1);
-          float max = (s.length() == 0 ? Float.MAX_VALUE : ParserJS.fVal(s));
+          float max = (s.length() == 0 ? Float.MAX_VALUE : Parser.fVal(s));
           m = new SmilesMeasure(molecule, index, type, min, max, isNot);
           molecule.measures.addLast(m);
           if (index > 0)

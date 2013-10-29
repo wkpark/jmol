@@ -48,7 +48,7 @@ import javajs.util.ColorUtil;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
@@ -711,7 +711,7 @@ public class IsosurfaceMesh extends Mesh {
 
   void setJvxlDataRendering() {
     if (jvxlData.rendering != null) {
-      String[] tokens = ParserJS.getTokens(jvxlData.rendering);
+      String[] tokens = Parser.getTokens(jvxlData.rendering);
       for (int i = 0; i < tokens.length; i++)
         setTokenProperty(T.getTokFromName(tokens[i]), true);
     }

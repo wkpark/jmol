@@ -28,7 +28,7 @@ package org.jmol.util;
 import java.util.List;
 
 import javajs.util.DecimalFormat;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 import javajs.util.T3;
 import javajs.util.T4;
@@ -313,7 +313,7 @@ public class Txt {
     strFormat = simpleReplace(strFormat, "%%", "\1");
     strFormat = simpleReplace(strFormat, "%p", "%6.2p");
     strFormat = simpleReplace(strFormat, "%q", "%6.2q");
-    String[] format = ParserJS.split(strFormat, "%");
+    String[] format = Parser.split(strFormat, "%");
     SB sb = new SB();
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {

@@ -8,7 +8,7 @@ import org.jmol.script.T;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -295,7 +295,7 @@ public class MeshSurface {
   public static Object[] getCapSlabObject(String s, boolean isCap) {
     try {
       if (s.indexOf("array") == 0) {
-        String[] pts = ParserJS.split(s.substring(6, s.length() - 1), ",");
+        String[] pts = Parser.split(s.substring(6, s.length() - 1), ",");
         return TempArray.getSlabObjectType(T.boundbox, new P3[] {
             (P3) Escape.uP(pts[0]),
             (P3) Escape.uP(pts[1]),

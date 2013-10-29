@@ -24,15 +24,14 @@
 
 package org.jmol.smiles;
 
-
+import javajs.util.ArrayUtil;
+import javajs.util.List;
 
 import org.jmol.api.SmilesMatcherInterface;
+
 import org.jmol.java.BS;
 
 import org.jmol.util.BSUtil;
-
-import javajs.util.ArrayUtil;
-import javajs.util.List;
 import org.jmol.util.JmolNode;
 import org.jmol.util.Txt;
 

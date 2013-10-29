@@ -46,7 +46,7 @@ import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
@@ -724,7 +724,7 @@ public class SV extends T {
       return 1;
     if (s.equalsIgnoreCase("false") || s.length() == 0)
       return 0;
-    return ParserJS.parseFloatStrict(s);
+    return Parser.parseFloatStrict(s);
   }
 
   static SV concatList(SV x1, SV x2,
@@ -1120,7 +1120,7 @@ public class SV extends T {
     case 1:
       return sValue(args[0]);
     }
-    String[] format = ParserJS.split(Txt.simpleReplace(sValue(args[0]), "%%","\1"), "%");
+    String[] format = Parser.split(Txt.simpleReplace(sValue(args[0]), "%%","\1"), "%");
     SB sb = new SB();
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {

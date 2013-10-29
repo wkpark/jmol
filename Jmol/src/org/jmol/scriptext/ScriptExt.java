@@ -84,14 +84,13 @@ import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
+import javajs.util.V3;
 
-import org.jmol.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.TempArray;
 import org.jmol.util.Txt;
-import javajs.util.V3;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
@@ -1271,7 +1270,7 @@ public class ScriptExt implements JmolScriptExtension {
         break;
       case T.boundbox:
         if (fullCommand.indexOf("# BBOX=") >= 0) {
-          String[] bbox = ParserJS.split(Parser.getQuotedAttribute(
+          String[] bbox = Parser.split(Parser.getQuotedAttribute(
               fullCommand, "# BBOX"), ",");
           pts = new P3[] { (P3) Escape.uP(bbox[0]), (P3) Escape.uP(bbox[1]) };
         } else if (eval.isCenterParameter(i + 1)) {
@@ -4193,22 +4192,8 @@ public class ScriptExt implements JmolScriptExtension {
     if (chk)
       return;
     boolean isDefault = (dataLabel.toLowerCase().indexOf("(default)") >= 0);
-    data = new Object[4];
-    if (dataType.equals("element_vdw")) {
-      // vdw for now
-      data[0] = dataType;
-      data[1] = dataString.replace(';', '\n');
-      int n = Elements.elementNumberMax;
-      int[] eArray = new int[n + 1];
-      for (int ie = 1; ie <= n; ie++)
-        eArray[ie] = ie;
-      data[2] = eArray;
-      data[3] = Integer.valueOf(0);
-      viewer.setData("element_vdw", data, n, 0, 0, 0, 0);
-      return;
-    }
     if (dataType.equals("connect_atoms")) {
-      viewer.connect(Parser.parseFloatArray2d(dataString));
+      viewer.connect(ParserBS.parseFloatArray2d(dataString));
       return;
     }
     if (dataType.indexOf("ligand_") == 0) {
@@ -4223,10 +4208,25 @@ public class ScriptExt implements JmolScriptExtension {
           dataString.trim());
       return;
     }
+    data = new Object[4];
+    // not saving this data in the state?
+    if (dataType.equals("element_vdw")) {
+      // vdw for now
+      data[0] = dataType;
+      data[1] = dataString.replace(';', '\n');
+      int n = Elements.elementNumberMax;
+      int[] eArray = new int[n + 1];
+      for (int ie = 1; ie <= n; ie++)
+        eArray[ie] = ie;
+      data[2] = eArray;
+      data[3] = Integer.valueOf(0);
+      viewer.setData("element_vdw", data, n, 0, 0, 0, 0);
+      return;
+    }
     if (dataType.indexOf("data2d_") == 0) {
       // data2d_someName
       data[0] = dataLabel;
-      data[1] = Parser.parseFloatArray2d(dataString);
+      data[1] = ParserBS.parseFloatArray2d(dataString);
       data[3] = Integer.valueOf(2);
       viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
       return;
@@ -4234,12 +4234,12 @@ public class ScriptExt implements JmolScriptExtension {
     if (dataType.indexOf("data3d_") == 0) {
       // data3d_someName
       data[0] = dataLabel;
-      data[1] = Parser.parseFloatArray3d(dataString);
+      data[1] = ParserBS.parseFloatArray3d(dataString);
       data[3] = Integer.valueOf(3);
       viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
       return;
     }
-    String[] tokens = ParserJS.getTokens(dataLabel);
+    String[] tokens = Parser.getTokens(dataLabel);
     if (dataType.indexOf("property_") == 0
         && !(tokens.length == 2 && tokens[1].equals("set"))) {
       BS bs = viewer.getSelectionSet(false);
@@ -4256,17 +4256,17 @@ public class ScriptExt implements JmolScriptExtension {
         if (tokens.length == 3) {
           // DATA "property_whatever [atomField] [propertyField]"
           dataLabel = tokens[0];
-          atomNumberField = javajs.util.ParserJS.parseInt(tokens[1]);
-          propertyField = javajs.util.ParserJS.parseInt(tokens[2]);
+          atomNumberField = javajs.util.Parser.parseInt(tokens[1]);
+          propertyField = javajs.util.Parser.parseInt(tokens[2]);
         }
         if (tokens.length == 5) {
           // DATA
           // "property_whatever [atomField] [atomFieldColumnCount] [propertyField] [propertyDataColumnCount]"
           dataLabel = tokens[0];
-          atomNumberField = javajs.util.ParserJS.parseInt(tokens[1]);
-          atomNumberFieldColumnCount = javajs.util.ParserJS.parseInt(tokens[2]);
-          propertyField = javajs.util.ParserJS.parseInt(tokens[3]);
-          propertyFieldColumnCount = javajs.util.ParserJS.parseInt(tokens[4]);
+          atomNumberField = javajs.util.Parser.parseInt(tokens[1]);
+          atomNumberFieldColumnCount = javajs.util.Parser.parseInt(tokens[2]);
+          propertyField = javajs.util.Parser.parseInt(tokens[3]);
+          propertyFieldColumnCount = javajs.util.Parser.parseInt(tokens[4]);
         }
       }
       if (atomNumberField < 0)
@@ -5183,7 +5183,7 @@ public class ScriptExt implements JmolScriptExtension {
           invArg();
       }
       if (!chk)
-        showString(viewer.getDefaultVdwTypeNameOrData(0, vdwType));
+        showString(viewer.getDefaultVdwNameOrData(0, vdwType, null));
       return;
     case T.function:
       eval.checkLength23();
@@ -5353,7 +5353,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (name.equals("/") && (len = slen) == 4) {
         name = parameterAsString(3).toLowerCase();
         if (!chk) {
-          String[] info = ParserJS.split(viewer.getStateInfo(), "\n");
+          String[] info = Parser.split(viewer.getStateInfo(), "\n");
           SB sb = new SB();
           for (int i = 0; i < info.length; i++)
             if (info[i].toLowerCase().indexOf(name) >= 0)
@@ -5908,7 +5908,7 @@ public class ScriptExt implements JmolScriptExtension {
           }
           if (isProperty)
             viewer.setData(property2, new Object[] { property2, dataOut, bsOut,
-                Integer.valueOf(0) }, viewer.getAtomCount(), 0, 0,
+                Integer.valueOf(0), Boolean.TRUE }, viewer.getAtomCount(), 0, 0,
                 Integer.MAX_VALUE, 0);
           else
             viewer.setAtomProperty(bsOut, tokProp2, 0, 0, null, dataOut, null);
@@ -8054,7 +8054,7 @@ public class ScriptExt implements JmolScriptExtension {
           s += Escape.eBS(bs);
         }
       }
-      return mp.addXAS(ParserJS.split(s, sArg));
+      return mp.addXAS(Parser.split(s, sArg));
     case T.join:
       if (s.length() > 0 && s.charAt(s.length() - 1) == '\n')
         s = s.substring(0, s.length() - 1);
@@ -8085,10 +8085,10 @@ public class ScriptExt implements JmolScriptExtension {
       int itab = (args[0].tok == T.string ? 0 : 1);
       String tab = SV.sValue(args[itab]);
       sList1 = (x1.tok == T.varray ? SV.listValue(x1)
-          : ParserJS.split(SV.sValue(x1), "\n"));
+          : Parser.split(SV.sValue(x1), "\n"));
       x2 = args[1 - itab];
       sList2 = (x2.tok == T.varray ? SV.listValue(x2)
-          : ParserJS.split(SV.sValue(x2), "\n"));
+          : Parser.split(SV.sValue(x2), "\n"));
       sList3 = new String[len = Math.max(sList1.length, sList2.length)];
       for (int i = 0; i < len; i++)
         sList3[i] = (i >= sList1.length ? "" : sList1[i]) + tab
@@ -8129,9 +8129,9 @@ public class ScriptExt implements JmolScriptExtension {
     if (x1.tok == T.varray) {
       len = alist1.size();
     } else {
-      sList1 = (ParserJS.split((String) x1.value, "\n"));
+      sList1 = (Parser.split((String) x1.value, "\n"));
       list1 = new float[len = sList1.length];
-      ParserJS.parseFloatArrayData(sList1, list1);
+      Parser.parseFloatArrayData(sList1, list1);
     }
 
     if (isAll) {
@@ -8153,9 +8153,9 @@ public class ScriptExt implements JmolScriptExtension {
     } else if (x2.tok == T.varray) {
       len = Math.min(len, alist2.size());
     } else {
-      sList2 = ParserJS.split((String) x2.value, "\n");
+      sList2 = Parser.split((String) x2.value, "\n");
       list2 = new float[sList2.length];
-      ParserJS.parseFloatArrayData(sList2, list2);
+      Parser.parseFloatArrayData(sList2, list2);
       len = Math.min(list1.length, list2.length);
     }
     
@@ -8534,8 +8534,8 @@ public class ScriptExt implements JmolScriptExtension {
     }
     s = sb.toString();
     float f;
-    return (Float.isNaN(f = ParserJS.parseFloatStrict(s)) ? mp.addXStr(s) : s
-        .indexOf(".") >= 0 ? mp.addXFloat(f) : mp.addXInt(javajs.util.ParserJS.parseInt(s)));
+    return (Float.isNaN(f = Parser.parseFloatStrict(s)) ? mp.addXStr(s) : s
+        .indexOf(".") >= 0 ? mp.addXFloat(f) : mp.addXInt(javajs.util.Parser.parseInt(s)));
   }
 
   private boolean evaluateData(SV[] args) {
@@ -8560,7 +8560,8 @@ public class ScriptExt implements JmolScriptExtension {
       int iField = args[1].asInt();
       int nBytes = args[2].asInt();
       int firstLine = args[3].asInt();
-      float[] f = ParserBS.extractData(selected, iField, nBytes, firstLine);
+      float[] f = ParserBS.parseFloatArrayFromMatchAndField(selected, null, 0,
+          0, null, iField, nBytes, null, firstLine);
       return mp.addXStr(Escape.escapeFloatA(f, false));
     }
 

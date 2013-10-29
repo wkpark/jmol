@@ -36,7 +36,7 @@ import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P3i;
 
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import javajs.util.V3;
 
 import org.jmol.java.BS;

@@ -27,7 +27,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 
@@ -116,7 +116,7 @@ public class ScriptManager implements JmolScriptManager {
     if (commandWatcherThread == null && useCommandWatcherThread)
       startCommandWatcher(true);
     if (commandWatcherThread != null && strScript.indexOf("/*SPLIT*/") >= 0) {
-      String[] scripts = ParserJS.split(strScript, "/*SPLIT*/");
+      String[] scripts = Parser.split(strScript, "/*SPLIT*/");
       for (int i = 0; i < scripts.length; i++)
         addScr(returnType, scripts[i], statusList, isScriptFile, isQuiet);
       return "split into " + scripts.length + " sections for processing";

@@ -39,7 +39,7 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
 import javajs.util.P3;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 /*
  * a simple molecular electrostatic potential cube generator
@@ -230,12 +230,12 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
       while ((line = br.readLine()) != null) {
         if (line.startsWith("#"))
           continue;
-        String[] vs = ParserJS.getTokens(line);
+        String[] vs = Parser.getTokens(line);
         if (vs.length < 2)
           continue;
         if (Logger.debugging)
           Logger.debug(line);
-        htAtomicPotentials.put(vs[0], Float.valueOf(ParserJS.parseFloat(vs[1])));
+        htAtomicPotentials.put(vs[0], Float.valueOf(Parser.parseFloat(vs[1])));
       }
       br.close();
     } catch (Exception e) {

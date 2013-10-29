@@ -31,7 +31,7 @@ import org.jmol.script.T;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;

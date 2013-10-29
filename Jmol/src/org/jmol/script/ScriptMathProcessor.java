@@ -47,7 +47,7 @@ import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
@@ -814,7 +814,7 @@ public class ScriptMathProcessor {
           s = SV.sValue(x2);
         }
         s = Txt.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
-        return addXAS(ParserJS.split(s, "\n"));
+        return addXAS(Parser.split(s, "\n"));
       case T.color:
         switch (x2.tok) {
         case T.string:

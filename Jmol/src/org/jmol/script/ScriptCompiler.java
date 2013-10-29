@@ -26,7 +26,7 @@ package org.jmol.script;
 import org.jmol.util.Escape;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -39,7 +39,7 @@ import org.jmol.modelset.Bond.BondSet;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 import javajs.util.M3;
 import javajs.util.M4;
@@ -1063,7 +1063,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case T.sync:
       if (nTokens == 1 && lookForSyncID()) {
         String ident = script.substring(ichToken, ichToken + cchToken);
-        int iident = javajs.util.ParserJS.parseInt(ident);
+        int iident = javajs.util.Parser.parseInt(ident);
         if (iident == Integer.MIN_VALUE || Math.abs(iident) < 1000)
           addTokenToPrefix(T.o(T.identifier, ident));
         else
@@ -1119,7 +1119,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return CONTINUE;
     }
     if (lookingAtDecimal()) {
-      value = ParserJS.fVal(script.substring(ichToken, ichToken + cchToken));
+      value = Parser.fVal(script.substring(ichToken, ichToken + cchToken));
       int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(
           ichToken, ichToken + cchToken)));
       addTokenToPrefix(T.tv(T.decimal, intValue, Float.valueOf(value)));
@@ -2398,7 +2398,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (!isOK)
       return Float.NaN;
     cchToken = ichT - ichToken;
-    return (float) ParserJS.dVal(script.substring(pt0, ichT));
+    return (float) Parser.dVal(script.substring(pt0, ichT));
   }
 
   private boolean lookingAtDecimal() {

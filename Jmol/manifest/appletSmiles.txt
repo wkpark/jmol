@@ -1,5 +1,8 @@
 Main-Class: JmolSmiles
 Sealed: true
+Application-Name: JmolSmiles
+Application-Library-Allowable-Codebase: *
+Permissions: sandbox
 
 Name: org/jmol/api/
 Sealed: false

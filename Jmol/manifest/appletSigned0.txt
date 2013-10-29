@@ -3,7 +3,7 @@ Sealed: true
 Codebase: *
 Application-Name: Jmol
 Application-Library-Allowable-Codebase: *
-Permissions: sandbox
+Permissions: all-permissions
 
 Name: org/jmol/api/
 Sealed: false

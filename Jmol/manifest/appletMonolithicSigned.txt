@@ -1,11 +1,9 @@
-Manifest-Version: 1.0
+Main-Class: JmolApplet
 Sealed: true
 Codebase: *
 Application-Name: Jmol
 Application-Library-Allowable-Codebase: *
+Permissions: all-permissions
 
 Name: org/jmol/api/
 Sealed: false
-Codebase: *
-Application-Name: Jmol
-Application-Library-Allowable-Codebase: *

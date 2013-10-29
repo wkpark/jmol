@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-Name: org/jmol/translation/
 Sealed: true
 Codebase: *
 Application-Name: Jmol
 Application-Library-Allowable-Codebase: *
+Permissions: sandbox

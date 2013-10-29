@@ -50,7 +50,7 @@ import java.io.FileInputStream;
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import javax.swing.JRadioButton;
 import javax.swing.BoxLayout;
@@ -636,9 +636,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     clearHistory = Boolean.getBoolean("clearHistory");
 
     minBondDistance =
-      ParserJS.fVal(currentProperties.getProperty("minBondDistance"));
+      Parser.fVal(currentProperties.getProperty("minBondDistance"));
     bondTolerance =
-      ParserJS.fVal(currentProperties.getProperty("bondTolerance"));
+      Parser.fVal(currentProperties.getProperty("bondTolerance"));
     marBond = Short.parseShort(currentProperties.getProperty("marBond"));
     percentVdwAtom =
       Integer.parseInt(currentProperties.getProperty("percentVdwAtom"));

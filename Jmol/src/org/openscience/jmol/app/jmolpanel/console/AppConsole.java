@@ -35,7 +35,7 @@ import java.net.URL;
 import java.util.List;
 
 
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -180,7 +180,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
     if (enabledButtons == null)
       enabledButtons = ALL_BUTTONS;
     JScrollPane consolePane = new JScrollPane(console);
-    String[] tokens = ParserJS.getTokens(enabledButtons);
+    String[] tokens = Parser.getTokens(enabledButtons);
     for (int i = 0; i < tokens.length; i++)
       enableButton(tokens[i]);
     setEnabled(undoButton, false);

@@ -339,5 +339,10 @@ public class Platform implements ApiPlatform {
     return JSFile.getBufferedURLInputStream(url, outputBytes, post);
   }
 
+  public String getLocalUrl(String fileName) {
+    // n/a (dialogs only)
+    return null;
+  }
+
 
 }

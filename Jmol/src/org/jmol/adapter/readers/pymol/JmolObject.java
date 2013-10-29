@@ -42,7 +42,7 @@ import javajs.util.List;
 import javajs.util.SB;
 import javajs.util.P3;
 
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 

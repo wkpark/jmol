@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.AccessControlException;
 
 import org.jmol.api.JmolFileInterface;
+import org.jmol.util.Txt;
 
 /**
  * a subclass of File allowing extension to JavaScript
@@ -24,8 +26,14 @@ class AwtFile extends File implements JmolFileInterface {
   }
 
   public JmolFileInterface getParentAsFile() {
-    File file = getParentFile();
-    return (file == null ? null : new AwtFile(file.getAbsolutePath()));
+    AwtFile f = null;
+    try {
+      File file = getParentFile();
+      f = new AwtFile(file.getAbsolutePath());
+    } catch (AccessControlException e) {
+      //
+    }
+    return f;
   }
 
   static Object getBufferedFileInputStream(String name) {
@@ -63,6 +71,42 @@ class AwtFile extends File implements JmolFileInterface {
     } catch (IOException e) {
       return e.getMessage();
     }
+  }
+
+  public String getFullPath() {
+    String path = null;
+    try {
+      path = getAbsolutePath();
+    } catch (AccessControlException e) {
+      // Unsigned applet cannot do this.
+    }
+    return path;
+  }
+  
+  private final static String[] urlPrefixPairs = { "http:", "http://", "www.",
+    "http://www.", "https:", "https://", "ftp:", "ftp://", "file:",
+    "file:///" };
+
+  static String getLocalUrl(JmolFileInterface file) {
+    // entering a url on a file input box will be accepted,
+    // but cause an error later. We can fix that...
+    // return null if there is no problem, the real url if there is
+    if (file.getName().startsWith("="))
+      return file.getName();
+    String path = file.getFullPath();
+    if (path == null)
+      return null;
+      path = path.replace('\\', '/');
+    for (int i = 0; i < urlPrefixPairs.length; i++)
+      if (path.indexOf(urlPrefixPairs[i]) == 0)
+        return null;
+    // looking for /xxx/xxxx/file://...
+    for (int i = 0; i < urlPrefixPairs.length; i += 2)
+      if (path.indexOf(urlPrefixPairs[i]) > 0)
+        return urlPrefixPairs[i + 1]
+            + Txt.trim(path.substring(path.indexOf(urlPrefixPairs[i])
+                + urlPrefixPairs[i].length()), "/");
+    return null;
   }
 
 }

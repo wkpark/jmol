@@ -2,7 +2,7 @@ package org.jmol.api;
 
 public interface JmolFileInterface {
 
-  String getAbsolutePath();
+  String getFullPath();
 
   String getName();
 

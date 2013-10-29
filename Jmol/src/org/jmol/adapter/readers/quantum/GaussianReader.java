@@ -31,7 +31,7 @@ import java.io.IOException;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import java.util.Hashtable;
 
@@ -508,7 +508,7 @@ public class GaussianReader extends MOReader {
           String sym;
           if (isNOtype) {
             mos[i]
-                .put("occupancy", Float.valueOf(ParserJS.parseFloat(tokens[i + 2])));
+                .put("occupancy", Float.valueOf(Parser.parseFloat(tokens[i + 2])));
           } else {
             sym = tokens[i];
             mos[i].put("symmetry", sym);
@@ -525,7 +525,7 @@ public class GaussianReader extends MOReader {
         if (tokens.length != nThisLine)
           tokens = getStrings(line, nThisLine, 10);
         for (int i = 0; i < nThisLine; i++) {
-          mos[i].put("energy", Float.valueOf(ParserJS.fVal(tokens[i])));
+          mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
           System.out.println(i + " gaussian energy " + mos[i].get("energy"));
         }
         continue;

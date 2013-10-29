@@ -124,4 +124,6 @@ public interface ApiPlatform extends FontManager {
   
   Object getBufferedURLInputStream(URL url, byte[] outputBytes, String post);
 
+  String getLocalUrl(String fileName);
+
 }

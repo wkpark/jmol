@@ -4,7 +4,7 @@ import org.jmol.adapter.smarter.Atom;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -412,7 +412,7 @@ public class MoldenReader extends MopacSlaterReader {
       if (haveVib)
         atomSetCollection.cloneLastAtomSet();
       haveVib = true;
-      atomSetCollection.setAtomSetFrequency(null, null, "" + ParserJS.dVal(frequencies.get(nFreq)), null);
+      atomSetCollection.setAtomSetFrequency(null, null, "" + Parser.dVal(frequencies.get(nFreq)), null);
       int i0 = atomSetCollection.getLastAtomSetAtomIndex();
       for (int i = 0; i < modelAtomCount; i++) {
         tokens = getTokensStr(readLine());
@@ -454,7 +454,7 @@ max-force
     readLine(); // energy
     while (readLine() != null 
         && line.indexOf("force") < 0)
-      energies.addLast("" + ParserJS.dVal(line.trim()));
+      energies.addLast("" + Parser.dVal(line.trim()));
     skipTo("[GEOMETRIES] XYZ");
     int nGeom = energies.size();
     int firstModel = (optOnly || desiredModelNumber >= 0 ? 0 : 1);

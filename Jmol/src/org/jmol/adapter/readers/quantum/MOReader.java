@@ -31,7 +31,7 @@ import org.jmol.util.Txt;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import java.util.Hashtable;
 
@@ -496,7 +496,7 @@ abstract public class MOReader extends BasisFunctionReader {
       return;
     case HEADER_GAMESS_UK_MO:
       for (int i = 0; i < nThisLine; i++)
-        mos[i].put("energy", Float.valueOf(ParserJS.fVal(tokens[i])));
+        mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
       readLines(5);
       return;
     case HEADER_GAMESS_ORIGINAL:
@@ -505,7 +505,7 @@ abstract public class MOReader extends BasisFunctionReader {
       if (tokens.length == 0)
         tokens = getTokensStr(readLine());
       for (int i = 0; i < nThisLine; i++) {
-        mos[i].put("energy", Float.valueOf(ParserJS.fVal(tokens[i])));
+        mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
       }
       readLine();
       break;

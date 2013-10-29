@@ -227,7 +227,7 @@ public class CsfReader extends MopacSlaterReader {
             continue out;
           break;
         case objID1:
-          thisAtomID = javajs.util.ParserJS.parseInt(field);
+          thisAtomID = javajs.util.Parser.parseInt(field);
           break;
         case objID2:
           thisBondID = field2+field;
@@ -297,7 +297,7 @@ public class CsfReader extends MopacSlaterReader {
           Logger.warn("field == null in " + line);
         switch (fieldTypes[i]) {
         case ID:
-          atom.atomSerial = javajs.util.ParserJS.parseInt(field);
+          atom.atomSerial = javajs.util.Parser.parseInt(field);
           break;
         case sym:
           atom.elementSymbol = field;

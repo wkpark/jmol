@@ -24,7 +24,7 @@
 package org.jmol.adapter.readers.xml;
 
 
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.java.BS;
@@ -106,7 +106,7 @@ public class XmlXsdReader extends XmlReader {
       return;
     }
     if ("Bond".equalsIgnoreCase(localName)) {
-      String[] atoms = ParserJS.split(atts.get("Connects"), ",");
+      String[] atoms = Parser.split(atts.get("Connects"), ",");
       int order = 1;
       if (atts.containsKey("Type")) {
         String type = atts.get("Type");

@@ -34,7 +34,7 @@ import java.io.IOException;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import java.util.Hashtable;
 
@@ -677,7 +677,7 @@ $end
       // we have all the info we need 
       for (int i = 0; i < nMO; i++) {
         MOInfo moInfo = moInfos[moid[i]];
-        mos[i].put("energy", Float.valueOf(ParserJS.fVal(energy[i])));
+        mos[i].put("energy", Float.valueOf(Parser.fVal(energy[i])));
         mos[i].put("coefficients", mocoef[i]);
         String label = alphaBeta;
         int ne = moInfo.ne;

@@ -29,7 +29,7 @@ import org.jmol.adapter.smarter.Atom;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import java.util.Hashtable;
 
@@ -409,7 +409,7 @@ Orbital energies (a.u.):
         }
         tokens = getStrings(readLine().substring(21), nThisLine, 10);
         for (int i = 0; i < nThisLine; i++) {
-          mos[i].put("energy", Float.valueOf(ParserJS.fVal(tokens[i])));
+          mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
         }
         continue;
       }

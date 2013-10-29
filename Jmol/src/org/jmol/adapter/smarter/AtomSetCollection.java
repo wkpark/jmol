@@ -1443,7 +1443,7 @@ public class AtomSetCollection {
     int iAtomFirst = getLastAtomSetAtomIndex();
     int atomMax = atomCount;
     if (filter.indexOf("#<") >= 0) {
-      len = Math.min(len, javajs.util.ParserJS.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
+      len = Math.min(len, javajs.util.Parser.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
       filter = Txt.simpleReplace(filter, "#<", "_<");
     }
     for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++)

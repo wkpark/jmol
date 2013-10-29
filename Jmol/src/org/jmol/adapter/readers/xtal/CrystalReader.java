@@ -35,7 +35,7 @@ import org.jmol.util.Logger;
 import javajs.util.DecimalFormat;
 import javajs.util.M3;
 import javajs.util.P3;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import org.jmol.util.Quaternion;
 import org.jmol.util.Tensor;
@@ -385,7 +385,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private float fraction(String f) {
-    String[] ab = ParserJS.split(f, "/");
+    String[] ab = Parser.split(f, "/");
     return (ab.length == 2 ? parseFloatStr(ab[0]) / parseFloatStr(ab[1]) : 0);
   }
 
@@ -987,7 +987,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetModelProperty("Ramanactivity", data[3]);
     atomSetCollection.setAtomSetName((isLongMode ? "LO " : "") + data[0] + " "
         + DecimalFormat.formatDecimal(freq, 2) + " cm-1 ("
-        + DecimalFormat.formatDecimal(ParserJS.fVal(data[1]), 0)
+        + DecimalFormat.formatDecimal(Parser.fVal(data[1]), 0)
         + " km/Mole), " + activity);
   }
 

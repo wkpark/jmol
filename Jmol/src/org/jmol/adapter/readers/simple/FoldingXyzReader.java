@@ -30,7 +30,7 @@ import org.jmol.adapter.smarter.Atom;
 import java.util.StringTokenizer;
 
 import javajs.util.ArrayUtil;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 
 /**
@@ -52,7 +52,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
       StringTokenizer tokens = new StringTokenizer(line, " \t");
       if (tokens.hasMoreTokens()) {
         atomSetCollection.newAtomSet();
-      	int modelAtomCount = ParserJS.parseIntRadix(tokens.nextToken(), 10);
+      	int modelAtomCount = Parser.parseIntRadix(tokens.nextToken(), 10);
       	if (tokens.hasMoreTokens())
       	  atomSetCollection.setAtomSetName("Protein " + tokens.nextToken());
       	readAtoms(modelAtomCount);

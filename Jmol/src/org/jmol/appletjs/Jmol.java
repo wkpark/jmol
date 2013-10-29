@@ -44,7 +44,7 @@ import java.awt.Event;
 import java.net.URL;
 import java.net.MalformedURLException;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -969,7 +969,7 @@ public class Jmol implements JmolSyncInterface {
     	  System.out.println(strInfo);
     	}
     } else {
-    	 String[] tokens = ParserJS.split(callback, ".");
+    	 String[] tokens = Parser.split(callback, ".");
     	/**
     	 * @j2sNative
     	 * 

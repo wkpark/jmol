@@ -42,7 +42,7 @@ import javajs.util.M3;
 import javajs.util.P3;
 import org.jmol.util.Quaternion;
 
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.V3;
 import javajs.util.List;
 import javajs.util.SB;
@@ -858,9 +858,9 @@ public abstract class AtomSetCollectionReader {
     if (checkFilterKey("NAME=")) {
       nameRequired = filter.substring(filter.indexOf("NAME=") + 5);
       if (nameRequired.startsWith("'"))
-        nameRequired = ParserJS.split(nameRequired, "'")[1]; 
+        nameRequired = Parser.split(nameRequired, "'")[1]; 
       else if (nameRequired.startsWith("\""))
-        nameRequired = ParserJS.split(nameRequired, "\"")[1]; 
+        nameRequired = Parser.split(nameRequired, "\"")[1]; 
       filter0 = filter = Txt.simpleReplace(filter, nameRequired,"");
       filter0 = filter = Txt.simpleReplace(filter, "NAME=","");
     }
@@ -1461,7 +1461,7 @@ public abstract class AtomSetCollectionReader {
   // parser functions are static, so they need notstatic counterparts
 
   protected String[] getTokens() {
-    return ParserJS.getTokens(line);
+    return Parser.getTokens(line);
   }
 
   protected void parseStringInfestedFloatArray(String s, float[] data) {
@@ -1471,75 +1471,75 @@ public abstract class AtomSetCollectionReader {
   protected static float[] getTokensFloat(String s, float[] f, int n) {
     if (f == null)
       f = new float[n];
-    ParserJS.parseFloatArrayDataN(getTokensStr(s), f, n);
+    Parser.parseFloatArrayDataN(getTokensStr(s), f, n);
     return f;
   }
 
   public static String[] getTokensStr(String s) {
-    return ParserJS.getTokens(s);
+    return Parser.getTokens(s);
   }
 
   protected static String[] getTokensAt(String s, int iStart) {
-    return ParserJS.getTokensAt(s, iStart);
+    return Parser.getTokensAt(s, iStart);
   }
 
   protected float parseFloat() {
-    return ParserJS.parseFloatNext(line, next);
+    return Parser.parseFloatNext(line, next);
   }
 
   public float parseFloatStr(String s) {
     next[0] = 0;
-    return ParserJS.parseFloatNext(s, next);
+    return Parser.parseFloatNext(s, next);
   }
 
   protected float parseFloatRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return ParserJS.parseFloatRange(s, iEnd, next);
+    return Parser.parseFloatRange(s, iEnd, next);
   }
 
   protected int parseInt() {
-    return javajs.util.ParserJS.parseIntNext(line, next);
+    return javajs.util.Parser.parseIntNext(line, next);
   }
 
   public int parseIntStr(String s) {
     next[0] = 0;
-    return javajs.util.ParserJS.parseIntNext(s, next);
+    return javajs.util.Parser.parseIntNext(s, next);
   }
 
   protected int parseIntAt(String s, int iStart) {
     next[0] = iStart;
-    return javajs.util.ParserJS.parseIntNext(s, next);
+    return javajs.util.Parser.parseIntNext(s, next);
   }
 
   protected int parseIntRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return ParserJS.parseIntRange(s, iEnd, next);
+    return Parser.parseIntRange(s, iEnd, next);
   }
 
   protected String parseToken() {
-    return ParserJS.parseTokenNext(line, next);
+    return Parser.parseTokenNext(line, next);
   }
 
   protected String parseTokenStr(String s) {
     next[0] = 0;
-    return ParserJS.parseTokenNext(s, next);
+    return Parser.parseTokenNext(s, next);
   }
 
   protected String parseTokenNext(String s) {
-    return ParserJS.parseTokenNext(s, next);
+    return Parser.parseTokenNext(s, next);
   }
 
   protected String parseTokenRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return ParserJS.parseTokenRange(s, iEnd, next);
+    return Parser.parseTokenRange(s, iEnd, next);
   }
 
   protected static String parseTrimmedAt(String s, int iStart) {
-    return ParserJS.parseTrimmedAt(s, iStart);
+    return Parser.parseTrimmedAt(s, iStart);
   }
 
   protected static String parseTrimmedRange(String s, int iStart, int iEnd) {
-    return ParserJS.parseTrimmedRange(s, iStart, iEnd);
+    return Parser.parseTrimmedRange(s, iStart, iEnd);
   }
 
   /**

@@ -362,11 +362,11 @@ public class XmlCmlReader extends XmlReader {
           // (as in PDB files)
           // but it causes problems in cif-derived files that involve a1 and a1_1, for instance
           isSerial = (id != null && id.length() > 1 && id.startsWith("a")
-              && javajs.util.ParserJS.parseInt(id.substring(1)) != Integer.MIN_VALUE);
+              && javajs.util.Parser.parseInt(id.substring(1)) != Integer.MIN_VALUE);
           checkedSerial = true;
         } 
         if (isSerial)
-          atom.atomSerial = javajs.util.ParserJS.parseInt(id.substring(1));
+          atom.atomSerial = javajs.util.Parser.parseInt(id.substring(1));
         if (atts.containsKey("xFract")
             && (parent.iHaveUnitCell || !atts.containsKey("x3"))) {
           parent.setFractionalCoordinates(true);
@@ -597,8 +597,8 @@ public class XmlCmlReader extends XmlReader {
     parent.applySymmetryToBonds = true;
     //System.out.println("atomsetcollection addnewbond " + a1 + " " + a2);
     if (isSerial)
-      atomSetCollection.addNewBondWithMappedSerialNumbers(javajs.util.ParserJS.parseInt(a1.substring(1)),
-          javajs.util.ParserJS.parseInt(a2.substring(1)), order);
+      atomSetCollection.addNewBondWithMappedSerialNumbers(javajs.util.Parser.parseInt(a1.substring(1)),
+          javajs.util.Parser.parseInt(a2.substring(1)), order);
       else
         atomSetCollection.addNewBondFromNames(a1, a2, order);
   }

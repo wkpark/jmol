@@ -30,7 +30,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 import org.jmol.util.Txt;
@@ -45,7 +45,6 @@ import org.jmol.java.BS;
 
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 
 /**
  * A preliminary reader for JCAMP-DX files having ##$MODELS= and ##$PEAKS= records
@@ -138,7 +137,7 @@ public class JcampdxReader extends MolReader {
         htParams.put("peakIndex", peakIndex);
       }
       if (!htParams.containsKey("subFileName"))
-        peakFilePath = Escape.eS(ParserJS.split(filePath, "|")[0]);
+        peakFilePath = Escape.eS(Parser.split(filePath, "|")[0]);
     } else {
       peakIndex = new int[1];
     }
@@ -239,7 +238,7 @@ public class JcampdxReader extends MolReader {
     modelIdList += key;
     String baseModel = getAttribute(line, "baseModel");
     String modelType = getAttribute(line, "type").toLowerCase();
-    float vibScale = ParserJS.parseFloat(getAttribute(line, "vibrationScale"));
+    float vibScale = Parser.parseFloat(getAttribute(line, "vibrationScale"));
     if (modelType.equals("xyzvib"))
       modelType = "xyz";
     else if (modelType.length() == 0)

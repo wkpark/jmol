@@ -247,5 +247,9 @@ public class Platform implements ApiPlatform {
     return AwtFile.getBufferedURLInputStream(url, outputBytes, post);
   }
 
+  public String getLocalUrl(String fileName) {
+    return AwtFile.getLocalUrl(newFile(fileName));
+  }
+
     
 }

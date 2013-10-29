@@ -255,16 +255,6 @@ abstract class OutputManager {
                                  Map<String, Object> params, String[] errRet)
       throws IOException {
     type = type.substring(0, 1) + type.substring(1).toLowerCase();
-    /**
-     * @j2sNative
-     * 
-     *            if (type == "Pdf") type += ":";
-     * 
-     */
-    {
-      // JSmol spoiler for PDF -- even if it is present, we couldn't run it.
-    }
-
     JmolImageEncoder ie = (JmolImageEncoder) Interface
         .getInterface("org.jmol.image." + type + "Encoder");
     if (ie == null) {

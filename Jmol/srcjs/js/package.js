@@ -193,7 +193,7 @@ var	basefile = base + "core.z.js";
 	ClazzLoader.jarClasspath (base + "corebio.z.js",	[
 		"J.adapter.readers.pdb.PdbReader",
 		"J.adapter.smarter.Structure",
-		"J.dssx.APBridge",
+		"J.dssx.Bridge",
 		"J.dssx.DSSP",		
 		"J.api.JmolBioResolver",
 		"J.modelsetbio.Resolver",

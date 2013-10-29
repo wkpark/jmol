@@ -5,7 +5,7 @@ import java.io.BufferedReader;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
@@ -91,7 +91,7 @@ public class FilesReader implements JmolFilesReaderInterface {
     String[] subFileList = null;
     htParams.remove("subFileList");
     if (name.indexOf("|") >= 0) {
-      subFileList = ParserJS.split(name, "|");
+      subFileList = Parser.split(name, "|");
       name = subFileList[0];
     }
     Object t = fm.getUnzippedReaderOrStreamFromName(name, null,

@@ -52,13 +52,13 @@ import javajs.util.A4;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.P4;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
+import org.jmol.util.ParserBS;
 import org.jmol.util.Tensor;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
 import javajs.util.T3;
 import javajs.util.V3;
@@ -838,20 +838,20 @@ abstract public class AtomCollection {
       bs = BSUtil.newBitSet(atomCount);
       break;
     }
-    int[] lines = Parser.markLines(dataString, ';');
+    int[] lines = ParserBS.markLines(dataString, ';');
     int n = 0;
     try {
-      int nData = javajs.util.ParserJS.parseInt(dataString.substring(0, lines[0] - 1));
+      int nData = javajs.util.Parser.parseInt(dataString.substring(0, lines[0] - 1));
       for (int i = 1; i <= nData; i++) {
-        String[] tokens = ParserJS.getTokens(ParserJS.parseTrimmed(dataString.substring(
+        String[] tokens = Parser.getTokens(Parser.parseTrimmed(dataString.substring(
             lines[i], lines[i + 1] - 1)));
-        int atomIndex = javajs.util.ParserJS.parseInt(tokens[0]) - 1;
+        int atomIndex = javajs.util.Parser.parseInt(tokens[0]) - 1;
         if (atomIndex < 0 || atomIndex >= atomCount)
           continue;
         Atom atom = atoms[atomIndex];
         n++;
         int pt = tokens.length - 1;
-        float x = ParserJS.parseFloat(tokens[pt]);
+        float x = Parser.parseFloat(tokens[pt]);
         switch (type) {
         case TAINT_MAX:
           fData[atomIndex] = x;
@@ -904,17 +904,17 @@ abstract public class AtomCollection {
   }
   
   private void loadCoordinates(String data, boolean isVibrationVectors, boolean doTaint) {
-    int[] lines = Parser.markLines(data, ';');
+    int[] lines = ParserBS.markLines(data, ';');
     V3 v = (isVibrationVectors ? new V3() : null);
     try {
-      int nData = javajs.util.ParserJS.parseInt(data.substring(0, lines[0] - 1));
+      int nData = javajs.util.Parser.parseInt(data.substring(0, lines[0] - 1));
       for (int i = 1; i <= nData; i++) {
-        String[] tokens = ParserJS.getTokens(ParserJS.parseTrimmed(data.substring(
+        String[] tokens = Parser.getTokens(Parser.parseTrimmed(data.substring(
             lines[i], lines[i + 1])));
-        int atomIndex = javajs.util.ParserJS.parseInt(tokens[0]) - 1;
-        float x = ParserJS.parseFloat(tokens[3]);
-        float y = ParserJS.parseFloat(tokens[4]);
-        float z = ParserJS.parseFloat(tokens[5]);
+        int atomIndex = javajs.util.Parser.parseInt(tokens[0]) - 1;
+        float x = Parser.parseFloat(tokens[3]);
+        float y = Parser.parseFloat(tokens[4]);
+        float z = Parser.parseFloat(tokens[5]);
         if (isVibrationVectors) {
           v.set(x, y, z);
           setAtomVibrationVector(atomIndex, v);

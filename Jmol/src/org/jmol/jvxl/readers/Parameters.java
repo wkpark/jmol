@@ -130,7 +130,7 @@ import javajs.util.A4;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.P4;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import javajs.util.V3;
 
 import org.jmol.viewer.JC;

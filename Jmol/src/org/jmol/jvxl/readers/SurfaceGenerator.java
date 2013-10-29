@@ -141,7 +141,7 @@ import javajs.util.ArrayUtil;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import javajs.util.P3;
 import javajs.util.P4;
 import org.jmol.util.Txt;

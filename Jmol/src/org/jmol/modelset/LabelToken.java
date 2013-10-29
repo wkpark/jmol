@@ -32,7 +32,7 @@ import java.util.Map;
 import org.jmol.util.Escape;
 import org.jmol.util.Txt;
 
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 import javajs.util.T3;
 import org.jmol.script.T;
@@ -423,7 +423,7 @@ public class LabelToken {
           if (lt.data instanceof Object[]) {// either that or it is null
             lt.data = ((Object[]) lt.data)[1];
             if (lt.data instanceof String)
-              lt.data = ParserJS.split((String) lt.data, "\n");
+              lt.data = Parser.split((String) lt.data, "\n");
             if (!(Escape.isAS(lt.data)))
               lt.data = null;
           }

@@ -40,7 +40,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 
 import javajs.awt.Font;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.A4;
@@ -195,7 +195,7 @@ public abstract class Exporter {
   
   boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
     this.viewer = viewer;
-    appletName = ParserJS.split(viewer.getHtmlName(), "_")[0];
+    appletName = Parser.split(viewer.getHtmlName(), "_")[0];
     this.g3d = g3d;
     this.privateKey = privateKey;
     backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);

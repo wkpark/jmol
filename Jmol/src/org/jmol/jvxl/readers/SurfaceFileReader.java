@@ -26,12 +26,12 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.io.JmolOutputChannel;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 
 /**
  * PolygonFileReader or VolumeFileReader
@@ -99,43 +99,43 @@ abstract class SurfaceFileReader extends SurfaceReader {
   protected int[] next = new int[1];
 
   protected String[] getTokens() {
-    return ParserJS.getTokensAt(line, 0);
+    return Parser.getTokensAt(line, 0);
   }
 
   protected float parseFloat() {
-    return ParserJS.parseFloatNext(line, next);
+    return Parser.parseFloatNext(line, next);
   }
 
   protected float parseFloatStr(String s) {
     next[0] = 0;
-    return ParserJS.parseFloatNext(s, next);
+    return Parser.parseFloatNext(s, next);
   }
 
   protected float parseFloatRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return ParserJS.parseFloatRange(s, iEnd, next);
+    return Parser.parseFloatRange(s, iEnd, next);
   }
 
   protected int parseInt() {
-    return javajs.util.ParserJS.parseIntNext(line, next);
+    return javajs.util.Parser.parseIntNext(line, next);
   }
 
   protected int parseIntStr(String s) {
     next[0] = 0;
-    return javajs.util.ParserJS.parseIntNext(s, next);
+    return javajs.util.Parser.parseIntNext(s, next);
   }
 
   protected int parseIntNext(String s) {
-    return javajs.util.ParserJS.parseIntNext(s, next);
+    return javajs.util.Parser.parseIntNext(s, next);
   }
 
   protected float[] parseFloatArrayStr(String s) {
     next[0] = 0;
-    return ParserJS.parseFloatArrayNext(s, next, null, null, null);
+    return Parser.parseFloatArrayNext(s, next, null, null, null);
   }
 
   protected float[] parseFloatArray(float[] a, String strStart, String strEnd) {
-    return ParserJS.parseFloatArrayNext(line, next, a, strStart, strEnd);
+    return Parser.parseFloatArrayNext(line, next, a, strStart, strEnd);
   }
 
   protected String getQuotedStringNext() {

@@ -534,7 +534,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
                                          SB bs) {
     if (atomLine.indexOf("ANGSTROMS") >= 0)
       isAngstroms = true;
-    int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : javajs.util.ParserJS
+    int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : javajs.util.Parser
         .parseInt(strAtomCount));
     switch (atomCount) {
     case Integer.MIN_VALUE:

@@ -29,7 +29,7 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 import javajs.util.P4;
 import org.jmol.jvxl.data.JvxlCoder;
@@ -66,7 +66,7 @@ public class JvxlReader extends JvxlXmlReader {
     jvxlFileHeaderBuffer.append(line).appendC('\n');
     jvxlFileHeaderBuffer.append(skipComments(false));
     String atomLine = line;
-    String[] tokens = ParserJS.getTokensAt(atomLine, 0);
+    String[] tokens = Parser.getTokensAt(atomLine, 0);
     isXLowToHigh = false;
     negativeAtomCount = true;
     atomCount = 0;

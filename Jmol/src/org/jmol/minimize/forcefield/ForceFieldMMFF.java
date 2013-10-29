@@ -28,7 +28,7 @@ import java.io.BufferedReader;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import java.util.Hashtable;
 
@@ -370,52 +370,52 @@ public class ForceFieldMMFF extends ForceField {
         switch (dataType) {
         case TYPE_OOP:
         case TYPE_TORSION: 
-          a4 = javajs.util.ParserJS.parseInt(line.substring(18,20).trim());
+          a4 = javajs.util.Parser.parseInt(line.substring(18,20).trim());
           //$FALL-THROUGH$
         case TYPE_ANGLE:
         case TYPE_SB:
         case TYPE_SBDEF:
-          a3 = javajs.util.ParserJS.parseInt(line.substring(13,15).trim());
+          a3 = javajs.util.Parser.parseInt(line.substring(13,15).trim());
           //$FALL-THROUGH$
         case TYPE_BNDK:
         case TYPE_BOND:
         case TYPE_CHRG:
-          a2 = javajs.util.ParserJS.parseInt(line.substring(8,10).trim());
+          a2 = javajs.util.Parser.parseInt(line.substring(8,10).trim());
           //$FALL-THROUGH$
         case TYPE_PBCI:
         case TYPE_VDW:
-          a1 = javajs.util.ParserJS.parseInt(line.substring(3,5).trim());
+          a1 = javajs.util.Parser.parseInt(line.substring(3,5).trim());
           break;
         }
         switch (dataType) {
         case TYPE_BNDK: // empirical bond stretch: kb, r0 (reversed in file) 
           value = new double[] {
-              ParserJS.dVal(line.substring(19,25).trim()),
-              ParserJS.dVal(line.substring(13,18).trim()) };
+              Parser.dVal(line.substring(19,25).trim()),
+              Parser.dVal(line.substring(13,18).trim()) };
           break;
         case TYPE_BOND: // bond stretch: kb, r0 
           value = new double[] {
-              ParserJS.dVal(line.substring(14,20).trim()),
-              ParserJS.dVal(line.substring(25,31).trim()) };
+              Parser.dVal(line.substring(14,20).trim()),
+              Parser.dVal(line.substring(25,31).trim()) };
          break;
         case TYPE_ANGLE:   // angles: ka, theta0
         case TYPE_SB:  // stretch-bend: kbaIJK, kbaKJI
           value = new double[] {
-              ParserJS.dVal(line.substring(19,25).trim()),
-              ParserJS.dVal(line.substring(28,35).trim()) };
+              Parser.dVal(line.substring(19,25).trim()),
+              Parser.dVal(line.substring(28,35).trim()) };
           break;
         case TYPE_CHRG: // bond chrg
-          value = Float.valueOf(ParserJS.fVal(line.substring(10,20).trim()));
+          value = Float.valueOf(Parser.fVal(line.substring(10,20).trim()));
           break;
         case TYPE_OOP: // oop: koop  
-          value = new double[] { ParserJS.dVal(line.substring(24,30).trim()) };
+          value = new double[] { Parser.dVal(line.substring(24,30).trim()) };
           break;
         case TYPE_PBCI:
-          value = Float.valueOf(ParserJS.fVal(line.substring(5,15).trim()));
+          value = Float.valueOf(Parser.fVal(line.substring(5,15).trim()));
           break;
         case TYPE_SBDEF: // default stretch-bend: F(I_J,K),F(K_J,I)  
-          double v1 = ParserJS.dVal(line.substring(19,25).trim());
-          double v2 = ParserJS.dVal(line.substring(28,35).trim());
+          double v1 = Parser.dVal(line.substring(19,25).trim());
+          double v2 = Parser.dVal(line.substring(28,35).trim());
           value = new double[] { v1, v2 };
           Integer key = MinObject.getKey(type, a1, a2, a3, a4);
           data.put(key, value);
@@ -426,17 +426,17 @@ public class ForceFieldMMFF extends ForceField {
           break;
         case TYPE_TORSION: // tor: v1, v2, v3
           value = new double[] {
-              ParserJS.dVal(line.substring(22,28).trim()),
-              ParserJS.dVal(line.substring(30,36).trim()),
-              ParserJS.dVal(line.substring(38,44).trim())
+              Parser.dVal(line.substring(22,28).trim()),
+              Parser.dVal(line.substring(30,36).trim()),
+              Parser.dVal(line.substring(38,44).trim())
               };
           break;
         case TYPE_VDW: // vdw alpha-i, N-i, A-i, G-i, DA
           value = new double[] {
-              ParserJS.dVal(line.substring(10,15).trim()),
-              ParserJS.dVal(line.substring(20,25).trim()),
-              ParserJS.dVal(line.substring(30,35).trim()),
-              ParserJS.dVal(line.substring(40,45).trim()),
+              Parser.dVal(line.substring(10,15).trim()),
+              Parser.dVal(line.substring(20,25).trim()),
+              Parser.dVal(line.substring(30,35).trim()),
+              Parser.dVal(line.substring(40,45).trim()),
               line.charAt(46) // '-', 'A', 'D'
               };
           break;
@@ -473,11 +473,11 @@ public class ForceFieldMMFF extends ForceField {
         //0123456789012345678901234567890123456789012345678901234567890123456789
         //Mg 12 99  0  24  0 DIPOSITIVE MAGNESIUM CATI [MgD0]
         //#AtSym ElemNo mmType HType formalCharge*12 val Desc Smiles
-        int elemNo = javajs.util.ParserJS.parseInt(line.substring(3,5).trim());
-        int mmType = javajs.util.ParserJS.parseInt(line.substring(6,8).trim());
-        int hType = javajs.util.ParserJS.parseInt(line.substring(9,11).trim());
-        float formalCharge = ParserJS.fVal(line.substring(12,15).trim())/12;
-        int val = javajs.util.ParserJS.parseInt(line.substring(16,18).trim());
+        int elemNo = javajs.util.Parser.parseInt(line.substring(3,5).trim());
+        int mmType = javajs.util.Parser.parseInt(line.substring(6,8).trim());
+        int hType = javajs.util.Parser.parseInt(line.substring(9,11).trim());
+        float formalCharge = Parser.fVal(line.substring(12,15).trim())/12;
+        int val = javajs.util.Parser.parseInt(line.substring(16,18).trim());
         String desc = line.substring(19,44).trim();
         String smarts = line.substring(45).trim();
         types.addLast(at = new AtomType(elemNo, mmType, hType, formalCharge, val, desc, smarts));

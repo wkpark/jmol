@@ -36,7 +36,7 @@ import org.jmol.util.Escape;
 
 import org.jmol.util.Logger;
 import javajs.util.P3;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.V3;

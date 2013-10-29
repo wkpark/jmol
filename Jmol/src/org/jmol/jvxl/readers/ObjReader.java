@@ -32,7 +32,7 @@ import org.jmol.java.BS;
 
 import javajs.util.ColorUtil;
 import javajs.util.P3;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 /*
  * 
@@ -110,8 +110,8 @@ class ObjReader extends PmeshReader {
       switch (line.charAt(0)) {
       case 'v':
         next[0] = 2;
-        pt.set(ParserJS.parseFloatNext(line, next), ParserJS.parseFloatNext(line, next),
-            ParserJS.parseFloatNext(line, next));
+        pt.set(Parser.parseFloatNext(line, next), Parser.parseFloatNext(line, next),
+            Parser.parseFloatNext(line, next));
         boolean addHt = false;
         if (htPymol == null) {
           i = nVertices;
@@ -142,19 +142,19 @@ class ObjReader extends PmeshReader {
           htPymol = null;
         nPts = 0;
         nPolygons++;
-        String[] tokens = ParserJS.getTokens(line);
+        String[] tokens = Parser.getTokens(line);
         int vertexCount = tokens.length - 1;
         if (vertexCount == 4)
           htPymol = null;
         if (htPymol == null) {
-          ia = javajs.util.ParserJS.parseInt(tokens[1]) - 1;
-          ib = javajs.util.ParserJS.parseInt(tokens[2]) - 1;
-          ic = javajs.util.ParserJS.parseInt(tokens[3]) - 1;
+          ia = javajs.util.Parser.parseInt(tokens[1]) - 1;
+          ib = javajs.util.Parser.parseInt(tokens[2]) - 1;
+          ic = javajs.util.Parser.parseInt(tokens[3]) - 1;
           pmeshError = " " + ia + " " + ib + " " + ic + " " + line;
           if (!bsOK.get(ia) || !bsOK.get(ib) || !bsOK.get(ic))
             continue;
           if (vertexCount == 4) {
-            id = javajs.util.ParserJS.parseInt(tokens[4]) - 1;
+            id = javajs.util.Parser.parseInt(tokens[4]) - 1;
             boolean isOK = (bsOK.get(id));
             nTriangles = addTriangleCheck(ia, ib, ic, (isOK ? 3 : 7), 0, false, color);
             if (isOK)

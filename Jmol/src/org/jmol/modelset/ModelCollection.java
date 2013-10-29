@@ -27,7 +27,7 @@ package org.jmol.modelset;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 import java.util.Date;
@@ -64,7 +64,7 @@ import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.V3;
@@ -2929,7 +2929,7 @@ abstract public class ModelCollection extends BondCollection {
           type += sym;
         }
         String energy = "" + mo.get("energy");
-        if (Float.isNaN(ParserJS.parseFloat(energy)))
+        if (Float.isNaN(Parser.parseFloat(energy)))
           sb.append(Txt.sprintf("model %-2s;  mo %-2i # %s\n",
               "sis", new Object[] {getModelNumberDotted(m), Integer.valueOf(i + 1),
                   type }));

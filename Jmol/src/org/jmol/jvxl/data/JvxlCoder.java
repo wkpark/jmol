@@ -26,7 +26,7 @@ package org.jmol.jvxl.data;
 
 
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 import java.util.Map;
@@ -225,7 +225,7 @@ public class JvxlCoder {
           "\n" + (cmd.indexOf("#") < 0 ? cmd : cmd.substring(0, cmd.indexOf("#"))) + "\n");
     if (state != null) {
       if (state.indexOf("** XML ** ") >=0) {
-        state = ParserJS.split(state, "** XML **")[1].trim(); 
+        state = Parser.split(state, "** XML **")[1].trim(); 
         XmlUtil.appendTag(data, "jvxlIsosurfaceState",  "\n" + state + "\n");
       } else {
         XmlUtil.appendCdata(data, "jvxlIsosurfaceState", null, "\n" + state);
@@ -1087,7 +1087,7 @@ public class JvxlCoder {
     boolean isset = false;
     int[] next = new int[1];
     while (true) {
-      dataCount = (nPrev++ < 0 ? dataCount : javajs.util.ParserJS.parseIntNext(data, next));
+      dataCount = (nPrev++ < 0 ? dataCount : javajs.util.Parser.parseIntNext(data, next));
       if (dataCount == Integer.MIN_VALUE) 
         break;
       if (dataCount < 0) {
@@ -1209,7 +1209,7 @@ public class JvxlCoder {
         case '7':
         case '8':
         case '9':
-          int nChar = javajs.util.ParserJS.parseIntNext(data, next);
+          int nChar = javajs.util.Parser.parseIntNext(data, next);
           for (int c = 0; c < nChar; c++)
             dataOut.appendC(chLast);
           i = next[0];

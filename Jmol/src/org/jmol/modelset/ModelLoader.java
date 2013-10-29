@@ -50,7 +50,7 @@ import org.jmol.java.BS;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 import java.util.Arrays;
@@ -534,7 +534,7 @@ public final class ModelLoader {
     String loadState = (String) modelSet.modelSetAuxiliaryInfo.remove("loadState");
     SB loadScript = (SB)modelSet.modelSetAuxiliaryInfo.remove("loadScript");
     if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
-      String[] lines = ParserJS.split(loadState, "\n");
+      String[] lines = Parser.split(loadState, "\n");
       SB sb = new SB();
       for (int i = 0; i < lines.length; i++) {
         int pt = m.loadState.indexOf(lines[i]);

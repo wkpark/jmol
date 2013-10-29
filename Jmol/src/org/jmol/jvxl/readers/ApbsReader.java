@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 
 
 
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 class ApbsReader extends VolumeFileReader {
@@ -56,7 +56,7 @@ class ApbsReader extends VolumeFileReader {
     jvxlFileHeaderBuffer.append("APBS OpenDx DATA ").append(line).append("\n");
     jvxlFileHeaderBuffer.append("see http://apbs.sourceforge.net\n");
     String atomLine = readLine();
-    String[] tokens = ParserJS.getTokens(atomLine);
+    String[] tokens = Parser.getTokens(atomLine);
     if (tokens.length >= 4) {
       volumetricOrigin.set(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]),
           parseFloatStr(tokens[3]));

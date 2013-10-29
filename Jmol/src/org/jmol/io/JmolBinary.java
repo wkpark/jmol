@@ -41,11 +41,11 @@ import org.jmol.api.ZInputStream;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
@@ -157,21 +157,21 @@ public class JmolBinary {
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
 
-    String[] tokens = ParserJS.getTokens(line);
+    String[] tokens = Parser.getTokens(line);
     String line2 = br.readLineWithNewline();// second line
-    if (tokens.length == 2 && javajs.util.ParserJS.parseInt(tokens[0]) == 3
-        && javajs.util.ParserJS.parseInt(tokens[1]) != Integer.MIN_VALUE) {
-      tokens = ParserJS.getTokens(line2);
-      if (tokens.length == 3 && javajs.util.ParserJS.parseInt(tokens[0]) != Integer.MIN_VALUE
-          && javajs.util.ParserJS.parseInt(tokens[1]) != Integer.MIN_VALUE
-          && javajs.util.ParserJS.parseInt(tokens[2]) != Integer.MIN_VALUE)
+    if (tokens.length == 2 && javajs.util.Parser.parseInt(tokens[0]) == 3
+        && javajs.util.Parser.parseInt(tokens[1]) != Integer.MIN_VALUE) {
+      tokens = Parser.getTokens(line2);
+      if (tokens.length == 3 && javajs.util.Parser.parseInt(tokens[0]) != Integer.MIN_VALUE
+          && javajs.util.Parser.parseInt(tokens[1]) != Integer.MIN_VALUE
+          && javajs.util.Parser.parseInt(tokens[2]) != Integer.MIN_VALUE)
         return "PltFormatted";
     }
     String line3 = br.readLineWithNewline(); // third line
     if (line.startsWith("v ") && line2.startsWith("v ") && line3.startsWith("v "))
         return "Obj";
     //next line should be the atom line
-    int nAtoms = javajs.util.ParserJS.parseInt(line3);
+    int nAtoms = javajs.util.Parser.parseInt(line3);
     if (nAtoms == Integer.MIN_VALUE)
       return (line3.indexOf("+") == 0 ? "Jvxl+" : null);
     if (nAtoms >= 0)
@@ -180,7 +180,7 @@ public class JmolBinary {
     for (int i = 4 + nAtoms; --i >= 0;)
       if ((line = br.readLineWithNewline()) == null)
         return null;
-    int nSurfaces = javajs.util.ParserJS.parseInt(line);
+    int nSurfaces = javajs.util.Parser.parseInt(line);
     if (nSurfaces == Integer.MIN_VALUE)
       return null;
     return (nSurfaces < 0 ? "Jvxl" : "Cube"); //Final test looks at surface definition line
@@ -493,7 +493,7 @@ public class JmolBinary {
       while ((i = script.indexOf(tag, i + 1)) >= 0) {
         String s = Parser.getQuotedStringAt(script, i);
         if (s.indexOf("::") >= 0)
-          s = ParserJS.split(s, "::")[1];
+          s = Parser.split(s, "::")[1];
         fileList.addLast(s);
       }
     }
@@ -559,7 +559,7 @@ public class JmolBinary {
       return "";
     String ch = (manifest.indexOf('\n') >= 0 ? "\n" : "\r");
     if (manifest.indexOf(".spt") >= 0) {
-      String[] s = ParserJS.split(manifest, ch);
+      String[] s = Parser.split(manifest, ch);
       for (int i = s.length; --i >= 0;)
         if (s[i].indexOf(".spt") >= 0)
           return "|" + Txt.trim(s[i], "\r\n \t");

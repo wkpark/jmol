@@ -26,7 +26,7 @@ package org.jmol.minimize.forcefield;
 
 import java.io.BufferedReader;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 
 import java.util.Hashtable;
 
@@ -130,7 +130,7 @@ public class ForceFieldUFF extends ForceField {
       n = 0;
     boolean isAromatic = false;
     if (smarts.charAt(1) == '#') {
-      elemNo = javajs.util.ParserJS.parseInt(smarts.substring(2, len - 1));
+      elemNo = javajs.util.Parser.parseInt(smarts.substring(2, len - 1));
     } else {
       String s = smarts.substring(1, (n > 0 ? len - 3 : len - 1));
       if (s.equals(s.toLowerCase())) {
@@ -192,7 +192,7 @@ public class ForceFieldUFF extends ForceField {
       br = getBufferedReader(fileName);
       String line;
       while ((line = br.readLine()) != null) {
-        String[] vs = ParserJS.getTokens(line);
+        String[] vs = Parser.getTokens(line);
         if (vs.length < 13)
           continue;
         if (Logger.debugging)
@@ -205,18 +205,18 @@ public class ForceFieldUFF extends ForceField {
           ffParam.sVal = new String[1];
           ffParam.sVal[0] = vs[1]; // atom type
           
-          ffParam.dVal[CalculationsUFF.PAR_R] = ParserJS.parseFloat(vs[2]); // r1
-          ffParam.dVal[CalculationsUFF.PAR_THETA] = ParserJS.parseFloat(vs[3]) 
+          ffParam.dVal[CalculationsUFF.PAR_R] = Parser.parseFloat(vs[2]); // r1
+          ffParam.dVal[CalculationsUFF.PAR_THETA] = Parser.parseFloat(vs[3]) 
              * Calculations.DEG_TO_RAD; // theta0(radians)
-          ffParam.dVal[CalculationsUFF.PAR_X] = ParserJS.parseFloat(vs[4]); // x1
-          ffParam.dVal[CalculationsUFF.PAR_D] = ParserJS.parseFloat(vs[5]); // D1
-          ffParam.dVal[CalculationsUFF.PAR_ZETA] = ParserJS.parseFloat(vs[6]); // zeta
-          ffParam.dVal[CalculationsUFF.PAR_Z] = ParserJS.parseFloat(vs[7]); // Z1
-          ffParam.dVal[CalculationsUFF.PAR_V] = ParserJS.parseFloat(vs[8]); // Vi
-          ffParam.dVal[CalculationsUFF.PAR_U] = ParserJS.parseFloat(vs[9]); // Uj
-          ffParam.dVal[CalculationsUFF.PAR_XI] = ParserJS.parseFloat(vs[10]); // Xi
-          ffParam.dVal[CalculationsUFF.PAR_HARD] = ParserJS.parseFloat(vs[11]); // Hard
-          ffParam.dVal[CalculationsUFF.PAR_RADIUS] = ParserJS.parseFloat(vs[12]); // Radius
+          ffParam.dVal[CalculationsUFF.PAR_X] = Parser.parseFloat(vs[4]); // x1
+          ffParam.dVal[CalculationsUFF.PAR_D] = Parser.parseFloat(vs[5]); // D1
+          ffParam.dVal[CalculationsUFF.PAR_ZETA] = Parser.parseFloat(vs[6]); // zeta
+          ffParam.dVal[CalculationsUFF.PAR_Z] = Parser.parseFloat(vs[7]); // Z1
+          ffParam.dVal[CalculationsUFF.PAR_V] = Parser.parseFloat(vs[8]); // Vi
+          ffParam.dVal[CalculationsUFF.PAR_U] = Parser.parseFloat(vs[9]); // Uj
+          ffParam.dVal[CalculationsUFF.PAR_XI] = Parser.parseFloat(vs[10]); // Xi
+          ffParam.dVal[CalculationsUFF.PAR_HARD] = Parser.parseFloat(vs[11]); // Hard
+          ffParam.dVal[CalculationsUFF.PAR_RADIUS] = Parser.parseFloat(vs[12]); // Radius
           
           ffParam.iVal = new int[1];
 
@@ -264,7 +264,7 @@ public class ForceFieldUFF extends ForceField {
       String line;
       while ((line = br.readLine()) != null) {
         if (line.length() > 4 && line.substring(0, 4).equals("atom")) {
-          String[] vs = ParserJS.getTokens(line);
+          String[] vs = Parser.getTokens(line);
           String[] info = new String[] { vs[1], vs[2] };
           types.addLast(info);
         }

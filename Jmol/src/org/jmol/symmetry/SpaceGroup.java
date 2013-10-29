@@ -38,7 +38,6 @@ import javajs.util.Parser;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
-import javajs.util.Parser;
 
 import javajs.util.M4;
 import javajs.util.P3;

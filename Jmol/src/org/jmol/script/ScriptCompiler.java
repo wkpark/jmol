@@ -39,7 +39,6 @@ import org.jmol.modelset.Bond.BondSet;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.Parser;
 import javajs.util.SB;
 import javajs.util.M3;
 import javajs.util.M4;

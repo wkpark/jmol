@@ -31,7 +31,6 @@ import javajs.util.Parser;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.io.JmolOutputChannel;
-import javajs.util.Parser;
 
 /**
  * PolygonFileReader or VolumeFileReader

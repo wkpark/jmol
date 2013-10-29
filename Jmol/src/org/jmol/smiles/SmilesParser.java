@@ -34,7 +34,6 @@ import java.util.Map;
 
 import org.jmol.util.Elements;
 import org.jmol.util.JmolEdge;
-import javajs.util.Parser;
 import org.jmol.util.Txt;
 import org.jmol.util.Logger;
 

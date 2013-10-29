@@ -45,7 +45,6 @@ import javajs.util.Parser;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
-import javajs.util.Parser;
 import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;

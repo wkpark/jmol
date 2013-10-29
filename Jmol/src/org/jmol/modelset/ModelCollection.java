@@ -64,7 +64,6 @@ import org.jmol.util.Tensor;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-import javajs.util.Parser;
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.V3;

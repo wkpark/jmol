@@ -439,7 +439,9 @@ all support for previous versions removed
         <exclude name="**/*.dx" />
         <exclude name="ant/**" />
         <include name="com/**" />
-        <include name="javajs/**" />
+        <include name="javajs/api/**" />
+        <include name="javajs/awt/**" />
+        <include name="javajs/util/**" />
         <exclude name="**/Test*.class" />
         <exclude name="**/jmol/jcamp/**" />
         <exclude name="**/jmol/applet/*" />
@@ -464,7 +466,9 @@ all support for previous versions removed
         <exclude name="**/Test*.class" />
         <exclude name="ant/**" />
         <exclude name="com/**" />
-        <include name="**/javajs/**" />
+        <include name="javajs/api/**" />
+        <include name="javajs/awt/**" />
+        <include name="javajs/util/**" />
         <include name="**/jmol/**" />
         <exclude name="**/jmol/_documents/**" />
         <exclude name="**/jmol/applet/**" />
@@ -802,7 +806,9 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
-        <include name="javajs/**" />
+        <include name="javajs/api/**" />
+        <include name="javajs/awt/**" />
+        <include name="javajs/util/**" />
         <include name="org/jmol/adapter/smarter/**" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/applet/**" />
@@ -813,6 +819,7 @@ all support for previous versions removed
         <include name="org/jmol/g3d/**" />
         <include name="org/jmol/geodesic/**" />
         <include name="org/jmol/i18n/**" />
+        <include name="org/jmol/java/**" />
         <include name="org/jmol/modelset/**" />
         <include name="org/jmol/script/**" />
         <include name="org/jmol/shape/**" />
@@ -1056,7 +1063,9 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
-        <include name="javajs/**" />
+        <include name="javajs/api/**" />
+        <include name="javajs/awt/**" />
+        <include name="javajs/util/**" />
 		<include name="org/jmol/adapter/smarter/**" />
   		<include name="org/jmol/api/**" />
   		<include name="org/jmol/applet/**" />
@@ -1067,6 +1076,7 @@ all support for previous versions removed
 		<include name="org/jmol/g3d/**" />
 		<include name="org/jmol/geodesic/**" />
 		<include name="org/jmol/i18n/**" />
+        <include name="org/jmol/java/**" />
 		<include name="org/jmol/modelset/**" />
         <include name="org/jmol/render/**" />
         <include name="org/jmol/script/**" />
@@ -1285,7 +1295,9 @@ all support for previous versions removed
       <fileset dir="${applet.classes.dir}">
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
-        <include name="javajs/**" />
+        <include name="javajs/api/**" />
+        <include name="javajs/awt/**" />
+        <include name="javajs/util/**" />
         <include name="org/jmol/adapter/smarter/**" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/applet/**" />
@@ -1296,6 +1308,7 @@ all support for previous versions removed
         <include name="org/jmol/g3d/**" />
         <include name="org/jmol/geodesic/**" />
         <include name="org/jmol/i18n/**" />
+        <include name="org/jmol/java/**" />
         <include name="org/jmol/modelset/**" />
         <include name="org/jmol/render/**" />
         <include name="org/jmol/script/**" />

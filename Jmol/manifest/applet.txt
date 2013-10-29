@@ -1,2 +1,5 @@
 Manifest-Version: 1.0
 Sealed: true
+Codebase: *
+Application-Name: Jmol
+Application-Library-Allowable-Codebase: *

@@ -25,7 +25,7 @@ package org.jmol.viewer;
 
 import javajs.awt.Font;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 import java.util.Arrays;
@@ -70,7 +70,6 @@ import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.ModulationSet;
-import org.jmol.util.Parser;
 import javajs.util.P3;
 import org.jmol.util.Txt;
 import javajs.util.V3;
@@ -147,8 +146,7 @@ public class StateCreator extends JmolStateCreator {
     if (isAll || type.equalsIgnoreCase("variableState"))
       s.append(getVariableState(global, sfunc)); // removed in 12.1.16; unnecessary in state // ARGH!!!
     if (isAll || type.equalsIgnoreCase("dataState"))
-      getDataState(viewer.dataManager, s, sfunc, getAtomicPropertyState(
-          (byte) -1, null));
+      s.append(getDataState(sfunc));
     // connections, atoms, bonds, labels, echos, shapes
     if (isAll || type.equalsIgnoreCase("modelState"))
       s.append(getModelState(sfunc, true, viewer
@@ -180,6 +178,38 @@ public class StateCreator extends JmolStateCreator {
     return s.toString();
   }
 
+  private String getDataState(SB sfunc) {
+    SB commands = new SB();
+    boolean haveData = false;
+    String atomProps = getAtomicPropertyState((byte) -1, null);
+    if (atomProps.length() > 0) {
+      haveData = true;
+      commands.append(atomProps);
+    }
+    if (viewer.userVdws != null) {
+      String info = viewer.getDefaultVdwNameOrData(0, EnumVdw.USER,
+          viewer.bsUserVdws);
+      if (info.length() > 0) {
+        haveData = true;
+        commands.append(info);
+      }
+    }    
+    if (viewer.nmrCalculation != null)
+      haveData |= viewer.nmrCalculation.getState(commands);
+    if (viewer.dataManager != null)
+      haveData |= viewer.dataManager.getDataState(this, commands);
+    if (!haveData)
+      return "";
+    
+    String cmd = "";
+    if (sfunc != null) {
+      sfunc.append("  _setDataState;\n");
+      cmd = "function _setDataState() {\n";
+      commands.append("}\n\n");
+    }
+    return cmd + commands.toString();
+  }
+
   private String getDefinedState(SB sfunc, boolean isAll) {
     ModelSet ms = viewer.modelSet;
     int len = ms.stateScripts.size();
@@ -203,7 +233,6 @@ public class StateCreator extends JmolStateCreator {
       sfunc.append("  _setDefinedState;\n");
       cmd = "function _setDefinedState() {\n\n";
     }
-
     if (sfunc != null)
       commands.append("\n}\n\n");
     return cmd + commands.toString();
@@ -491,8 +520,8 @@ public class StateCreator extends JmolStateCreator {
             ms.tainted[AtomCollection.TAINT_ELEMENT].andNot(bs);
         }
         m.loadScript = new SB();
-        Viewer.getInlineData(commands, viewer.getModelExtract(bs, false, true,
-            "MOL"), i > 0);
+        getInlineData(commands, viewer.getModelExtract(bs, false, true,
+            "MOL"), i > 0, null);
       } else {
         commands.appendSB(m.loadScript);
       }
@@ -510,65 +539,13 @@ public class StateCreator extends JmolStateCreator {
     cmds.append(s);
   }
 
-  private void getDataState(DataManager dm, SB state, SB sfunc, String atomProps) {
-    if (dm.dataValues == null)
-      return;
-    SB sb = new SB();
-    boolean haveData = false;
-    if (atomProps.length() > 0) {
-      haveData = true;
-      sb.append(atomProps);
-    }
-    for (String name : dm.dataValues.keySet()) {
-      if (name.indexOf("property_") == 0) {
-        Object[] obj = dm.dataValues.get(name);
-        if (obj.length > DataManager.DATA_SAVE_IN_STATE
-            && obj[DataManager.DATA_SAVE_IN_STATE] == Boolean.FALSE)
-          continue;
-        haveData = true;
-        Object data = obj[1];
-        if (data != null && ((Integer) obj[3]).intValue() == 1) {
-          getAtomicPropertyStateBuffer(sb, AtomCollection.TAINT_MAX,
-              (BS) obj[2], name, (float[]) data);
-          sb.append("\n");
-        } else {
-          sb.append("\n").append(Escape.encapsulateData(name, data, 0));//j2s issue?
-        }
-      } else if (name.indexOf("data2d") == 0) {
-        Object[] obj = dm.dataValues.get(name);
-        Object data = obj[1];
-        if (data != null && ((Integer) obj[3]).intValue() == 2) {
-          haveData = true;
-          sb.append("\n").append(Escape.encapsulateData(name, data, 2));
-        }
-      } else if (name.indexOf("data3d") == 0) {
-        Object[] obj = dm.dataValues.get(name);
-        Object data = obj[1];
-        if (data != null && ((Integer) obj[3]).intValue() == 3) {
-          haveData = true;
-          sb.append("\n").append(Escape.encapsulateData(name, data, 3));
-        }
-      }
-    }
-    if (dm.userVdws != null) {
-      String info = dm.getDefaultVdwNameOrData(0, EnumVdw.USER, dm.bsUserVdws);
-      if (info.length() > 0) {
-        haveData = true;
-        sb.append(info);
-      }
-    }
-
-    if (viewer.nmrCalculation != null)
-      haveData |= viewer.getNMRCalculation().getState(sb);
-    if (!haveData)
-      return;
-    if (sfunc != null)
-      state.append("function _setDataState() {\n");
-    state.appendSB(sb);
-    if (sfunc != null) {
-      sfunc.append("  _setDataState;\n");
-      state.append("}\n\n");
-    }
+  @Override
+  public void getInlineData(SB loadScript, String strModel, boolean isAppend, String loadFilter) {
+    String tag = (isAppend ? "append" : "model") + " inline";
+    loadScript.append("load /*data*/ data \"").append(tag).append("\"\n")
+        .append(strModel).append("end \"").append(tag)
+        .append(loadFilter == null || loadFilter.length() == 0 ? "" : " filter" + Escape.eS(loadFilter))
+        .append("\";");
   }
 
   private String getColorState(ColorManager cm, SB sfunc) {
@@ -1463,11 +1440,11 @@ public class StateCreator extends JmolStateCreator {
     if (g.defaultLoadScript.length() > 0)
       g.setS("defaultLoadScript", g.defaultLoadScript);
     appendCmd(str, "set defaultStructureDssp " + g.defaultStructureDSSP);
-    String sMode = viewer.getDefaultVdwTypeNameOrData(Integer.MIN_VALUE, null);
+    String sMode = viewer.getDefaultVdwNameOrData(Integer.MIN_VALUE, null, null);
     appendCmd(str, "set defaultVDW " + sMode);
     if (sMode.equals("User"))
       appendCmd(str, viewer
-          .getDefaultVdwTypeNameOrData(Integer.MAX_VALUE, null));
+          .getDefaultVdwNameOrData(Integer.MAX_VALUE, null, null));
     appendCmd(str, "set forceAutoBond " + g.forceAutoBond);
     appendCmd(str, "#set defaultDirectory " + Escape.eS(g.defaultDirectory));
     appendCmd(str, "#set loadFormat " + Escape.eS(g.loadFormat));
@@ -1802,8 +1779,8 @@ public class StateCreator extends JmolStateCreator {
         // must save current state, coord, etc.
         // but this destroys actionStatesRedo
         int[] pt = new int[] { 1 };
-        type = javajs.util.ParserJS.parseIntNext(s, pt);
-        taintedAtom = javajs.util.ParserJS.parseIntNext(s, pt);
+        type = javajs.util.Parser.parseIntNext(s, pt);
+        taintedAtom = javajs.util.Parser.parseIntNext(s, pt);
         undoMoveActionClear(taintedAtom, type, false);
       }
       //System.out.println("redo type = " + type + " size=" + actionStates.size()
@@ -1834,7 +1811,7 @@ public class StateCreator extends JmolStateCreator {
         bs = viewer.getModelUndeletedAtomsBitSet(modelIndex);
         sb.append("zap ");
         sb.append(Escape.eBS(bs)).append(";");
-        DataManager.getInlineData(sb, viewer.getModelExtract(bs, false, true,
+        getInlineData(sb, viewer.getModelExtract(bs, false, true,
             "MOL"), true, null);
         sb.append("set refreshing false;").append(
             viewer.actionManager.getPickingState()).append(
@@ -1974,7 +1951,7 @@ public class StateCreator extends JmolStateCreator {
 
   @Override
   void mouseScript(String script) {
-    String[] tokens = ParserJS.getTokens(script);
+    String[] tokens = Parser.getTokens(script);
     String key = tokens[1];
     try {
       key = (key.toLowerCase() + "...............").substring(0, 15);
@@ -1990,52 +1967,52 @@ public class StateCreator extends JmolStateCreator {
       case 0: //zoombyfactor
         switch (tokens.length) {
         case 3:
-          viewer.zoomByFactor(ParserJS.parseFloat(tokens[2]),
+          viewer.zoomByFactor(Parser.parseFloat(tokens[2]),
               Integer.MAX_VALUE, Integer.MAX_VALUE);
           return;
         case 5:
-          viewer.zoomByFactor(ParserJS.parseFloat(tokens[2]), javajs.util.ParserJS
-              .parseInt(tokens[3]), javajs.util.ParserJS.parseInt(tokens[4]));
+          viewer.zoomByFactor(Parser.parseFloat(tokens[2]), javajs.util.Parser
+              .parseInt(tokens[3]), javajs.util.Parser.parseInt(tokens[4]));
           return;
         }
         break;
       case 15: //zoomby
         switch (tokens.length) {
         case 3:
-          viewer.zoomBy(javajs.util.ParserJS.parseInt(tokens[2]));
+          viewer.zoomBy(javajs.util.Parser.parseInt(tokens[2]));
           return;
         }
         break;
       case 30: // rotatezby
         switch (tokens.length) {
         case 3:
-          viewer.rotateZBy(javajs.util.ParserJS.parseInt(tokens[2]), Integer.MAX_VALUE,
+          viewer.rotateZBy(javajs.util.Parser.parseInt(tokens[2]), Integer.MAX_VALUE,
               Integer.MAX_VALUE);
           return;
         case 5:
-          viewer.rotateZBy(javajs.util.ParserJS.parseInt(tokens[2]), javajs.util.ParserJS
-              .parseInt(tokens[3]), javajs.util.ParserJS.parseInt(tokens[4]));
+          viewer.rotateZBy(javajs.util.Parser.parseInt(tokens[2]), javajs.util.Parser
+              .parseInt(tokens[3]), javajs.util.Parser.parseInt(tokens[4]));
         }
         break;
       case 45: // rotatexyby
-        viewer.rotateXYBy(ParserJS.parseFloat(tokens[2]), ParserJS
+        viewer.rotateXYBy(Parser.parseFloat(tokens[2]), Parser
             .parseFloat(tokens[3]));
         return;
       case 60: // translatexyby
-        viewer.translateXYBy(javajs.util.ParserJS.parseInt(tokens[2]), javajs.util.ParserJS
+        viewer.translateXYBy(javajs.util.Parser.parseInt(tokens[2]), javajs.util.Parser
             .parseInt(tokens[3]));
         return;
       case 75: // rotatemolecule
-        viewer.rotateSelected(ParserJS.parseFloat(tokens[2]), ParserJS
+        viewer.rotateSelected(Parser.parseFloat(tokens[2]), Parser
             .parseFloat(tokens[3]), null);
         return;
       case 90:// spinxyby
-        viewer.spinXYBy(javajs.util.ParserJS.parseInt(tokens[2]), javajs.util.ParserJS.parseInt(tokens[3]),
-            ParserJS.parseFloat(tokens[4]));
+        viewer.spinXYBy(javajs.util.Parser.parseInt(tokens[2]), javajs.util.Parser.parseInt(tokens[3]),
+            Parser.parseFloat(tokens[4]));
         return;
       case 105: // rotatearcball
-        viewer.rotateArcBall(javajs.util.ParserJS.parseInt(tokens[2]), javajs.util.ParserJS
-            .parseInt(tokens[3]), ParserJS.parseFloat(tokens[4]));
+        viewer.rotateArcBall(javajs.util.Parser.parseInt(tokens[2]), javajs.util.Parser
+            .parseInt(tokens[3]), Parser.parseFloat(tokens[4]));
         return;
       }
     } catch (Exception e) {

@@ -32,7 +32,7 @@ import javajs.J2SIgnoreImport;
 import javajs.J2SRequireImport;
 import org.jmol.util.Txt;
 
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 import javajs.util.V3;
 
@@ -919,7 +919,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // unfortunately, this change is not backward compatible.
     if (isLegacy && (pt = s.indexOf("O3'")) >= 0)
       s = s.substring(0, pt);
-    String[] temp = ParserJS.getTokens(s);
+    String[] temp = Parser.getTokens(s);
     String[][] info = new String[temp.length / 2][];
     for (int i = 0, p = 0; i < info.length; i++) {
       String source = temp[p++];
@@ -1643,4 +1643,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ALIGN_LEFT = 1;
   public final static int ALIGN_CENTER = 2;
   public final static int ALIGN_RIGHT = 3;
+  
+  
 }

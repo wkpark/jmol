@@ -51,7 +51,7 @@ import org.jmol.util.Escape;
 
 import javajs.util.ArrayUtil;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -127,10 +127,11 @@ public class FileManager implements BytePoster {
 
   void setAppletContext(String documentBase) {
     try {
-      
+      // local-file applet will deliver "" here.
+      System.out.println("setting document base to " + documentBase);      
       appletDocumentBaseURL = (documentBase.length() == 0 ? null : new URL((URL) null, documentBase, null));
     } catch (MalformedURLException e) {
-      // never mind
+      System.out.println("error setting document base to " + documentBase);
     }
   }
 
@@ -221,13 +222,8 @@ public class FileManager implements BytePoster {
   }
 
   Object createAtomSetCollectionFromString(String strModel,
-                                           SB loadScript,
                                            Map<String, Object> htParams,
-                                           boolean isAppend,
-                                           boolean isLoadVariable) {
-    if (!isLoadVariable)
-      DataManager.getInlineData(loadScript, strModel, isAppend, viewer
-          .getDefaultLoadFilter());
+                                           boolean isAppend) {
     setLoadState(htParams);
     boolean isAddH = (strModel.indexOf(JC.ADD_HYDROGEN_TITLE) >= 0);
     String[] fnames = (isAddH ? getFileInfo() : null);
@@ -576,7 +572,7 @@ public class FileManager implements BytePoster {
     }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
-      subFileList = ParserJS.split(name, "|");
+      subFileList = Parser.split(name, "|");
       if (bytes == null)
         Logger.info("FileManager opening 3 " + name);
       name = subFileList[0];
@@ -672,7 +668,7 @@ public class FileManager implements BytePoster {
     }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
-      subFileList = ParserJS.split(name, "|");
+      subFileList = Parser.split(name, "|");
       name = subFileList[0];
     }
     BufferedInputStream bis = null;
@@ -761,7 +757,7 @@ public class FileManager implements BytePoster {
     String fullName = name;
     String[] subFileList = null;
     if (name.indexOf("|") >= 0) {
-      subFileList = ParserJS.split(name, "|");
+      subFileList = Parser.split(name, "|");
       name = subFileList[0];
       allowZip = true;
     }
@@ -892,6 +888,8 @@ public class FileManager implements BytePoster {
       "file:" };
 
   public static int urlTypeIndex(String name) {
+    if (name == null)
+      return -2; // local unsigned applet
     for (int i = 0; i < urlPrefixes.length; ++i) {
       if (name.startsWith(urlPrefixes[i])) {
         return i;
@@ -910,19 +908,22 @@ public class FileManager implements BytePoster {
 
 
   /**
+   * [0] and [2] may return same as [1] in the 
+   * case of a local unsigned applet.
    * 
    * @param name
-   * @param isFullLoad false only when just checking path
+   * @param isFullLoad
+   *        false only when just checking path
    * @return [0] full path name, [1] file name without path, [2] full URL
    */
-  public String[] classifyName(String name, boolean isFullLoad) {
+  private String[] classifyName(String name, boolean isFullLoad) {
     if (name == null)
       return new String[] { null };
     boolean doSetPathForAllFiles = (pathForAllFiles.length() > 0);
     if (name.startsWith("?")) {
-       if ((name = viewer.dialogAsk("Load", name.substring(1))) == null)
-         return new String[] { isFullLoad ? "#CANCELED#" : null };
-       doSetPathForAllFiles = false;
+      if ((name = viewer.dialogAsk("Load", name.substring(1))) == null)
+        return new String[] { isFullLoad ? "#CANCELED#" : null };
+      doSetPathForAllFiles = false;
     }
     JmolFileInterface file = null;
     URL url = null;
@@ -936,8 +937,27 @@ public class FileManager implements BytePoster {
     name = viewer.resolveDatabaseFormat(name);
     if (name.indexOf(":") < 0 && name.indexOf("/") != 0)
       name = addDirectory(viewer.getDefaultDirectory(), name);
-    if (appletDocumentBaseURL != null) {
-      // This code is only for the applet
+    if (appletDocumentBaseURL == null) {
+      // This code is for the app or signed local applet 
+      // -- no local file reading for headless
+      if (urlTypeIndex(name) >= 0 || viewer.haveAccess(ACCESS.NONE)
+          || viewer.haveAccess(ACCESS.READSPT) && !name.endsWith(".spt")
+          && !name.endsWith("/")) {
+        try {
+          url = new URL((URL) null, name, null);
+        } catch (MalformedURLException e) {
+          return new String[] { isFullLoad ? e.toString() : null };
+        }
+      } else {
+        file = viewer.apiPlatform.newFile(name);
+        String s = file.getFullPath();
+        // local unsigned applet may have access control issue here and get a null return
+        String fname = file.getName();
+        names = new String[] { (s == null ? fname : s), fname,
+            (s == null ? fname : "file:/" + s.replace('\\', '/')) };
+      }
+    } else {
+      // This code is only for the non-local applet
       try {
         if (name.indexOf(":\\") == 1 || name.indexOf(":/") == 1)
           name = "file:/" + name;
@@ -946,22 +966,6 @@ public class FileManager implements BytePoster {
         url = new URL(appletDocumentBaseURL, name, null);
       } catch (MalformedURLException e) {
         return new String[] { isFullLoad ? e.toString() : null };
-      }
-    } else {
-      // This code is for the app -- no local file reading for headless
-      if (urlTypeIndex(name) >= 0 
-          || viewer.haveAccess(ACCESS.NONE) 
-          || viewer.haveAccess(ACCESS.READSPT) 
-              && !name.endsWith(".spt") && !name.endsWith("/")) {
-        try {
-          url = new URL((URL) null, name, null);
-        } catch (MalformedURLException e) {
-          return new String[] { isFullLoad ? e.toString() : null };
-        }
-      } else {
-        file = viewer.apiPlatform.newFile(name);
-        names = new String[] { file.getAbsolutePath(), file.getName(),
-            "file:/" + file.getAbsolutePath().replace('\\', '/') };
       }
     }
     if (url != null) {
@@ -1041,30 +1045,6 @@ public class FileManager implements BytePoster {
         : names[0].replace('\\', '/'));
   }
 
-  private final static String[] urlPrefixPairs = { "http:", "http://", "www.",
-      "http://www.", "https:", "https://", "ftp:", "ftp://", "file:",
-      "file:///" };
-
-  String getLocalUrl(String fileName) {
-    JmolFileInterface file = viewer.apiPlatform.newFile(fileName);
-    // entering a url on a file input box will be accepted,
-    // but cause an error later. We can fix that...
-    // return null if there is no problem, the real url if there is
-    if (file.getName().startsWith("="))
-      return file.getName();
-    String path = file.getAbsolutePath().replace('\\', '/');
-    for (int i = 0; i < urlPrefixPairs.length; i++)
-      if (path.indexOf(urlPrefixPairs[i]) == 0)
-        return null;
-    // looking for /xxx/xxxx/file://...
-    for (int i = 0; i < urlPrefixPairs.length; i += 2)
-      if (path.indexOf(urlPrefixPairs[i]) > 0)
-        return urlPrefixPairs[i + 1]
-            + Txt.trim(path.substring(path.indexOf(urlPrefixPairs[i])
-                + urlPrefixPairs[i].length()), "/");
-    return null;
-  }
-
   public static JmolFileInterface getLocalDirectory(Viewer viewer, boolean forDialog) {
     String localDir = (String) viewer
         .getParameter(forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
@@ -1076,7 +1056,11 @@ public class FileManager implements BytePoster {
     if (viewer.isApplet() && localDir.indexOf("file:/") == 0)
       localDir = localDir.substring(6);
     JmolFileInterface f = viewer.apiPlatform.newFile(localDir);
-    return f.isDirectory() ? f : f.getParentAsFile();
+    try {
+      return f.isDirectory() ? f : f.getParentAsFile();
+    } catch (Exception e) {
+      return  null;
+    }
   }
 
   /**
@@ -1115,7 +1099,12 @@ public class FileManager implements BytePoster {
       return file.substring(6);
     if (file.indexOf("/") == 0 || file.indexOf(":") >= 0)
       return file;
-    JmolFileInterface dir = getLocalDirectory(viewer, false);
+    JmolFileInterface dir = null;
+    try {
+      dir = getLocalDirectory(viewer, false);
+    } catch (Exception e) {
+      // access control for unsigned applet
+    }
     return (dir == null ? file : fixPath(dir.toString() + "/" + file));
   }
 

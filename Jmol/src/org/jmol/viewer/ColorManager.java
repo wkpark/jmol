@@ -31,7 +31,7 @@ import org.jmol.util.C;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.StaticConstants;
 import org.jmol.java.BS;

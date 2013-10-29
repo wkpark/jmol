@@ -35,7 +35,7 @@ import org.jmol.awt.AwtClipboard;
 import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.Escape;
 import javajs.util.List;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -103,7 +103,7 @@ final public class OutputManagerAwt extends OutputManager {
     sceneFile = Txt.simpleReplace(sceneFile, ".spt", "");
     String fileRoot = sceneFile;
     String fileExt = type.toLowerCase();
-    String[] scenes = ParserJS.split(script0, "pause scene ");
+    String[] scenes = Parser.split(script0, "pause scene ");
     Map<String, String> htScenes = new Hashtable<String, String>();
     List<Integer> list = new List<Integer>();
     String script = getSceneScript(scenes, htScenes, list);
@@ -169,7 +169,7 @@ final public class OutputManagerAwt extends OutputManager {
     for (int i = 1; i < scenes.length; i++) {
       scenes[i - 1] = Txt.trim(scenes[i - 1], "\t\n\r ");
       int[] pt = new int[1];
-      iScene = javajs.util.ParserJS.parseIntNext(scenes[i], pt);
+      iScene = javajs.util.Parser.parseIntNext(scenes[i], pt);
       if (iScene == Integer.MIN_VALUE)
         return "bad scene ID: " + iScene;
       scenes[i] = scenes[i].substring(pt[0]);

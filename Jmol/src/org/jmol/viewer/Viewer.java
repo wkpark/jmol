@@ -49,6 +49,7 @@ import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JSmolInterface;
+import org.jmol.api.JmolDataManager;
 import org.jmol.api.JmolNMRInterface;
 import org.jmol.api.JmolPopupInterface;
 import org.jmol.api.ApiPlatform;
@@ -101,7 +102,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
+import javajs.util.Parser;
 import org.jmol.util.ParserBS;
 
 import javajs.util.P3;
@@ -113,7 +114,6 @@ import javajs.util.DecimalFormat;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3i;
-import javajs.util.ParserJS;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.util.Vibration;
@@ -255,7 +255,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   AnimationManager animationManager;
   ColorManager colorManager;
-  DataManager dataManager;
+  JmolDataManager dataManager;
   ShapeManager shapeManager;
   SelectionManager selectionManager;
   JmolRepaintManager repaintManager;
@@ -527,7 +527,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     modelManager = new ModelManager(this);
     shapeManager = new ShapeManager(this);
     tempArray = new TempArray();
-    dataManager = new DataManager(this);
     animationManager = new AnimationManager(this);
     o = info.get("repaintManager");
     if (o == null)
@@ -629,6 +628,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     apiPlatform.setViewer(this, canvas);
   }
 
+  private JmolDataManager getDataManager() {
+    return (dataManager == null ? (dataManager = ((JmolDataManager) Interface
+        .getOptionInterface("viewer.DataManager")).set(this)) : dataManager);
+  }
+  
   private JmolScriptManager getScriptManager() {
     if (allowScripting && scriptManager == null) {
       scriptManager = (JmolScriptManager) Interface
@@ -1905,7 +1909,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public String getLocalUrl(String fileName) {
-    return fileManager.getLocalUrl(fileName);
+    return apiPlatform.getLocalUrl(fileName);
   }
 
   public BufferedInputStream getBufferedInputStream(String fullPathName) {
@@ -2328,9 +2332,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     if (strModel != null) {
       if (!isAppend)
         zap(true, false/*true*/, false);
+      if (!isLoadVariable && (!haveFileData || isString))
+          getStateCreator().getInlineData(loadScript, strModel, isAppend, getDefaultLoadFilter());
       atomSetCollection = fileManager.createAtomSetCollectionFromString(
-          strModel, loadScript, htParams, isAppend, isLoadVariable
-              || haveFileData && !isString);
+          strModel, htParams, isAppend);
     } else {
 
       // if the filename has a "?" at the beginning, we don't zap, 
@@ -2547,8 +2552,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       loadScript = new SB();
     if (!isAppend)
       zap(true, false/*true*/, false);
+    if (!isLoadCommand)
+      getStateCreator().getInlineData(loadScript, strModel, isAppend,
+          getDefaultLoadFilter());
     Object atomSetCollection = fileManager.createAtomSetCollectionFromString(
-        strModel, loadScript, htParams, isAppend, isLoadCommand);
+        strModel, htParams, isAppend);
     return createModelSetAndReturnError(atomSetCollection, isAppend,
         loadScript, null);
   }
@@ -2952,7 +2960,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       chainList.clear();
       colorManager.clear();
       definedAtomSets.clear();
-      dataManager.clear();
+      if (dataManager != null)
+        dataManager.clear();
       if (resetUndo) {
         if (zapModelKit && global.modelKitMode) {
           openStringInlineParamsAppend(JC.MODELKIT_ZAP_STRING, null, true);
@@ -3621,7 +3630,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setCurrentColorRange(String label) {
     float[] data = getDataFloat(label);
-    BS bs = (data == null ? null : (BS) (dataManager.getData(label))[2]);
+    BS bs = (data == null ? null : (BS) (getDataManager().getData(label))[2]);
     if (bs != null && global.rangeSelected)
       bs.and(getSelectionSet(false));
     setCurrentColorRangeData(data, bs);
@@ -3639,28 +3648,28 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void setData(String type, Object[] data, int arrayCount,
                       int matchField, int matchFieldColumnCount, int field,
                       int fieldColumnCount) {
-    dataManager.setData(type, data, arrayCount, getAtomCount(), matchField,
+    getDataManager().setData(type, data, arrayCount, getAtomCount(), matchField,
         matchFieldColumnCount, field, fieldColumnCount);
   }
 
   public Object[] getData(String type) {
-    return dataManager.getData(type);
+    return getDataManager().getData(type);
   }
 
   public float[] getDataFloat(String label) {
-    return dataManager.getDataFloatA(label);
+    return getDataManager().getDataFloatA(label);
   }
 
   public float[][] getDataFloat2D(String label) {
-    return dataManager.getDataFloat2D(label);
+    return getDataManager().getDataFloat2D(label);
   }
 
   public float[][][] getDataFloat3D(String label) {
-    return dataManager.getDataFloat3D(label);
+    return getDataManager().getDataFloat3D(label);
   }
 
   public float getDataFloatAt(String label, int atomIndex) {
-    return dataManager.getDataFloat(label, atomIndex);
+    return getDataManager().getDataFloat(label, atomIndex);
   }
 
   @Override
@@ -6044,7 +6053,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setIntPropertyTok(key, tok, SV.newVariable(T.string, value).asInt());
       break;
     case T.floatparam:
-      setFloatPropertyTok(key, tok, ParserJS.parseFloat(value));
+      setFloatPropertyTok(key, tok, Parser.parseFloat(value));
       break;
     default:
       setStringPropertyTok(key, tok, value);
@@ -8876,21 +8885,21 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public int getVanderwaalsMar(int i) {
-    return (dataManager.defaultVdw == EnumVdw.USER ? dataManager.userVdwMars[i]
-        : Elements.getVanderwaalsMar(i, dataManager.defaultVdw));
+    return (defaultVdw == EnumVdw.USER ? userVdwMars[i]
+        : Elements.getVanderwaalsMar(i, defaultVdw));
   }
 
   @SuppressWarnings("incomplete-switch")
   public int getVanderwaalsMarType(int atomicAndIsotopeNumber, EnumVdw type) {
     if (type == null)
-      type = dataManager.defaultVdw;
+      type = defaultVdw;
     else
       switch (type) {
       case USER:
-        if (dataManager.bsUserVdws == null)
-          type = dataManager.defaultVdw;
+        if (bsUserVdws == null)
+          type = defaultVdw;
         else
-          return dataManager.userVdwMars[atomicAndIsotopeNumber & 127];
+          return userVdwMars[atomicAndIsotopeNumber & 127];
         break;
       case AUTO:
       case JMOL:
@@ -8898,8 +8907,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       case RASMOL:
         // could be a bug here -- why override these
         // with dataManager's if not AUTO?
-        if (dataManager.defaultVdw != EnumVdw.AUTO)
-          type = dataManager.defaultVdw;
+        if (defaultVdw != EnumVdw.AUTO)
+          type = defaultVdw;
         break;
       }
     return (Elements.getVanderwaalsMar(atomicAndIsotopeNumber, type));
@@ -8909,13 +8918,66 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     EnumVdw vType = EnumVdw.getVdwType(type);
     if (vType == null)
       vType = EnumVdw.AUTO;
-    dataManager.setDefaultVdw(vType);
-    global.setS("defaultVDW", getDefaultVdwTypeNameOrData(Integer.MIN_VALUE,
-        null));
+    setDefaultVdw(vType);
+    global.setS("defaultVDW", getDefaultVdwNameOrData(Integer.MIN_VALUE,
+        null, null));
   }
 
-  public String getDefaultVdwTypeNameOrData(int iMode, EnumVdw vType) {
-    return dataManager.getDefaultVdwNameOrData(iMode, vType, null);
+  public void setDefaultVdw(EnumVdw type) {
+    // only allowed types here are VDW_JMOL, VDW_BABEL, VDW_RASMOL, VDW_USER, VDW_AUTO
+    switch (type) {
+    case JMOL:
+    case BABEL:
+    case RASMOL:
+    case AUTO:
+    case USER:
+      break;
+    default:
+      type = EnumVdw.JMOL;
+    }
+    if (type != defaultVdw && type == EnumVdw.USER  
+        && bsUserVdws == null)
+      setUserVdw(defaultVdw);
+    defaultVdw = type;    
+  }
+
+  BS bsUserVdws;
+  float[] userVdws;
+  int[] userVdwMars;
+  
+  void setUserVdw(EnumVdw mode) {
+    userVdwMars = new int[Elements.elementNumberMax];
+    userVdws = new float[Elements.elementNumberMax];
+    bsUserVdws = new BS();
+    if (mode == EnumVdw.USER)
+      mode = EnumVdw.JMOL;
+    for (int i = 1; i < Elements.elementNumberMax; i++) {
+      userVdwMars[i] = Elements.getVanderwaalsMar(i, mode);
+      userVdws[i] = userVdwMars[i] / 1000f;
+    }
+  }
+
+
+  public String getDefaultVdwNameOrData(int mode, EnumVdw type, BS bs) {
+    // called by getDataState and via Viewer: Eval.calculate,
+    // Eval.show, StateManager.getLoadState, Viewer.setDefaultVdw
+    switch (mode) {
+    case Integer.MIN_VALUE:
+      // iMode Integer.MIN_VALUE -- just the name
+      return defaultVdw.getVdwLabel();
+    case Integer.MAX_VALUE:
+      // iMode = Integer.MAX_VALUE -- user, only selected
+      if ((bs = bsUserVdws) == null)
+        return "";
+      type = EnumVdw.USER;
+      break;
+    }
+    if (type == null || type == EnumVdw.AUTO)
+     type = defaultVdw;
+    if (type == EnumVdw.USER && bsUserVdws == null)
+      setUserVdw(defaultVdw);
+
+    return getDataManager().getDefaultVdwNameOrData(type, bs);
   }
 
   public int deleteAtoms(BS bs, boolean fullModels) {
@@ -8965,7 +9027,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     selectionManager.deleteModelAtoms(bsDeleted);
     BSUtil.deleteBits(getFrameOffsets(), bsDeleted);
     setFrameOffsets(getFrameOffsets());
-    dataManager.deleteModelAtoms(firstAtomIndex, nAtoms, bsDeleted);
+    getDataManager().deleteModelAtoms(firstAtomIndex, nAtoms, bsDeleted);
   }
 
   public BS getDeletedAtoms() {
@@ -9013,6 +9075,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       eval.resumeEval(sc);
     }
   }
+
+  EnumVdw defaultVdw = EnumVdw.JMOL;
 
   public String cd(String dir) {
     if (dir == null) {
@@ -9652,12 +9716,6 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         bsAtoms, true, true);
   }
 
-  public static void getInlineData(SB loadScript, String strModel,
-                                   boolean isAppend) {
-    // because the model is a modelKit atom set
-    DataManager.getInlineData(loadScript, strModel, isAppend, null);
-  }
-
   public boolean isAtomPDB(int i) {
     return modelSet.isAtomPDB(i);
   }
@@ -9750,12 +9808,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setStateScriptVersion(String version) {
     if (version != null) {
-      String[] tokens = ParserJS.getTokens(version.replace('.', ' ').replace('_',
+      String[] tokens = Parser.getTokens(version.replace('.', ' ').replace('_',
           ' '));
       try {
-        int main = javajs.util.ParserJS.parseInt(tokens[0]); //11
-        int sub = javajs.util.ParserJS.parseInt(tokens[1]); //9
-        int minor = javajs.util.ParserJS.parseInt(tokens[2]); //24
+        int main = javajs.util.Parser.parseInt(tokens[0]); //11
+        int sub = javajs.util.Parser.parseInt(tokens[1]); //9
+        int minor = javajs.util.Parser.parseInt(tokens[2]); //24
         if (minor == Integer.MIN_VALUE) // RCxxx
           minor = 0;
         if (main != Integer.MIN_VALUE && sub != Integer.MIN_VALUE) {

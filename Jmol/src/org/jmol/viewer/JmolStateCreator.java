@@ -14,7 +14,7 @@ import javajs.awt.Font;
 import javajs.util.List;
 import javajs.util.SB;
 
-abstract class JmolStateCreator {
+public abstract class JmolStateCreator {
 
   abstract void setViewer(Viewer viewer);
 
@@ -73,5 +73,6 @@ abstract class JmolStateCreator {
 
   abstract String getAtomDefs(Map<String, Object> names);
 
-
+  abstract void getInlineData(SB loadScript, String strModel, boolean isAppend,
+                     String defaultLoadFilter);
 }

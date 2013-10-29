@@ -26,8 +26,10 @@ package org.jmol.viewer;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.jmol.api.JmolDataManager;
 import org.jmol.constant.EnumVdw;
 import org.jmol.java.BS;
+import org.jmol.modelset.AtomCollection;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
@@ -36,7 +38,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.ParserBS;
 
 import javajs.util.ArrayUtil;
-import javajs.util.ParserJS;
+import javajs.util.Parser;
 import javajs.util.SB;
 
 
@@ -46,16 +48,22 @@ import javajs.util.SB;
  * 
  */
 
-class DataManager {
+public class DataManager implements JmolDataManager {
 
-  Map<String, Object[]> dataValues = new Hashtable<String, Object[]>();
-
-  Viewer viewer;
-  DataManager(Viewer viewer) {
+  private Map<String, Object[]> dataValues = new Hashtable<String, Object[]>();
+  
+  private Viewer viewer;
+  
+  public DataManager() {
+    // for reflection
+  }
+  
+  public JmolDataManager set(Viewer viewer) {
     this.viewer = viewer;
+    return this;
   }
 
-  void clear() {
+  public void clear() {
     dataValues.clear();
   }
   
@@ -67,9 +75,9 @@ class DataManager {
   private final static int DATA_VALUE = 1;
   private final static int DATA_SELECTION_MAP = 2;
   private final static int DATA_TYPE = 3;
-  final static int DATA_SAVE_IN_STATE = 4;
+  private final static int DATA_SAVE_IN_STATE = 4;
     
-  void setData(String type, Object[] data, int arrayCount, int actualAtomCount,
+  public void setData(String type, Object[] data, int arrayCount, int actualAtomCount,
                int matchField, int matchFieldColumnCount, int field,
                int fieldColumnCount) {
     //Eval
@@ -94,17 +102,17 @@ class DataManager {
     if (type.equals("element_vdw")) {
       String stringData = ((String) data[DATA_VALUE]).trim();
       if (stringData.length() == 0) {
-        userVdwMars = null;
-        userVdws = null;
-        bsUserVdws = null;
+        viewer.userVdwMars = null;
+        viewer.userVdws = null;
+        viewer.bsUserVdws = null;
         return;
       }
-      if (bsUserVdws == null)
-        setUserVdw(defaultVdw);
-      ParserBS.parseFloatArrayFromMatchAndField(stringData, bsUserVdws, 1, 0,
-          (int[]) data[DATA_SELECTION_MAP], 2, 0, userVdws, 1);
-      for (int i = userVdws.length; --i >= 0;)
-        userVdwMars[i] = (int) Math.floor(userVdws[i] * 1000);
+      if (viewer.bsUserVdws == null)
+        viewer.setUserVdw(viewer.defaultVdw);
+      ParserBS.parseFloatArrayFromMatchAndField(stringData, viewer.bsUserVdws, 1, 0,
+          (int[]) data[DATA_SELECTION_MAP], 2, 0, viewer.userVdws, 1);
+      for (int i = viewer.userVdws.length; --i >= 0;)
+        viewer.userVdwMars[i] = (int) Math.floor(viewer.userVdws[i] * 1000);
       return;
     }
     if (data[DATA_SELECTION_MAP] != null && arrayCount > 0) {
@@ -123,13 +131,13 @@ class DataManager {
       float[] floatData = (depth == DATA_TYPE_AF ? (float[]) data[DATA_VALUE] : null);
       String[] strData = null;
       if (field == Integer.MIN_VALUE
-          && (strData = ParserJS.getTokens(stringData)).length > 1)
+          && (strData = Parser.getTokens(stringData)).length > 1)
         field = 0;
 
       if (field == Integer.MIN_VALUE) {
         // set the selected data elements to a single value
         bs = (BS) data[DATA_SELECTION_MAP];
-        setSelectedFloats(ParserJS.parseFloat(stringData), bs, f);
+        setSelectedFloats(Parser.parseFloat(stringData), bs, f);
       } else if (field == 0 || field == Integer.MAX_VALUE) {
         // just get the selected token values
         bs = (BS) data[DATA_SELECTION_MAP];
@@ -142,7 +150,7 @@ class DataManager {
             for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
               f[i] = floatData[i];
         } else {
-          ParserBS.parseFloatArrayBsData(strData == null ? ParserJS.getTokens(stringData)
+          ParserBS.parseFloatArrayBsData(strData == null ? Parser.getTokens(stringData)
               : strData, bs, f);
         }
       } else if (matchField <= 0) {
@@ -197,8 +205,8 @@ class DataManager {
       data[i] = f;
   }
 
-  Object[] getData(String type) {
-    if (dataValues == null || type == null)
+  public Object[] getData(String type) {
+    if (dataValues.size() == 0 || type == null)
       return null;
     if (!type.equalsIgnoreCase("types"))
       return dataValues.get(type);
@@ -211,8 +219,8 @@ class DataManager {
     return info;
   }
 
-  float[] getDataFloatA(String label) {
-    if (dataValues == null)
+  public float[] getDataFloatA(String label) {
+    if (dataValues.size() == 0)
       return null;
     Object[] data = getData(label);
     if (data == null || ((Integer)data[DATA_TYPE]).intValue() != DATA_TYPE_AF)
@@ -220,8 +228,8 @@ class DataManager {
     return (float[]) data[DATA_VALUE];
   }
 
-  float getDataFloat(String label, int atomIndex) {
-    if (dataValues != null) {
+  public float getDataFloat(String label, int atomIndex) {
+    if (dataValues.size() > 0) {
       Object[] data = getData(label);
       if (data != null && ((Integer)data[DATA_TYPE]).intValue() == DATA_TYPE_AF) {
         float[] f = (float[]) data[DATA_VALUE];
@@ -232,8 +240,8 @@ class DataManager {
     return Float.NaN;
   }
 
-  float[][] getDataFloat2D(String label) {
-    if (dataValues == null)
+  public float[][] getDataFloat2D(String label) {
+    if (dataValues.size() == 0)
       return null;
     Object[] data = getData(label);
     if (data == null || ((Integer)data[DATA_TYPE]).intValue() != DATA_ARRAY_FF)
@@ -241,8 +249,8 @@ class DataManager {
     return (float[][]) data[DATA_VALUE];
   }
 
-  float[][][] getDataFloat3D(String label) {
-    if (dataValues == null)
+  public float[][][] getDataFloat3D(String label) {
+    if (dataValues.size() == 0)
       return null;
     Object[] data = getData(label);
     if (data == null || ((Integer)data[DATA_TYPE]).intValue() != DATA_ARRAY_FFF)
@@ -250,8 +258,8 @@ class DataManager {
     return (float[][][]) data[DATA_VALUE];
   }
 
-  void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsDeleted) {
-    if (dataValues == null)
+  public void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsDeleted) {
+    if (dataValues.size() == 0)
       return;
     for (String name: dataValues.keySet()) {
       if (name.indexOf("property_") == 0) {
@@ -272,59 +280,7 @@ class DataManager {
     }    
   }
 
-  float[] userVdws;
-  int[] userVdwMars;
-  EnumVdw defaultVdw = EnumVdw.JMOL;
-  BS bsUserVdws;
-  
-  private void setUserVdw(EnumVdw mode) {
-    userVdwMars = new int[Elements.elementNumberMax];
-    userVdws = new float[Elements.elementNumberMax];
-    bsUserVdws = new BS();
-    if (mode == EnumVdw.USER)
-      mode = EnumVdw.JMOL;
-    for (int i = 1; i < Elements.elementNumberMax; i++) {
-      userVdwMars[i] = Elements.getVanderwaalsMar(i, mode);
-      userVdws[i] = userVdwMars[i] / 1000f;
-    }
-  }
-
-  void setDefaultVdw(EnumVdw type) {
-    // only allowed types here are VDW_JMOL, VDW_BABEL, VDW_RASMOL, VDW_USER, VDW_AUTO
-    switch (type) {
-    case JMOL:
-    case BABEL:
-    case RASMOL:
-    case AUTO:
-    case USER:
-      break;
-    default:
-      type = EnumVdw.JMOL;
-    }
-    if (type != defaultVdw && type == EnumVdw.USER  
-        && bsUserVdws == null)
-      setUserVdw(defaultVdw);
-    defaultVdw = type;    
-  }
-
-  String getDefaultVdwNameOrData(int mode, EnumVdw type, BS bs) {
-    // called by getDataState and via Viewer: Eval.calculate,
-    // Eval.show, StateManager.getLoadState, Viewer.setDefaultVdw
-    switch (mode) {
-    case Integer.MIN_VALUE:
-      // iMode Integer.MIN_VALUE -- just the name
-      return defaultVdw.getVdwLabel();
-    case Integer.MAX_VALUE:
-      // iMode = Integer.MAX_VALUE -- user, only selected
-      if ((bs = bsUserVdws) == null)
-        return "";
-      type = EnumVdw.USER;
-      break;
-    }
-    if (type == null || type == EnumVdw.AUTO)
-     type = defaultVdw;
-    if (type == EnumVdw.USER && bsUserVdws == null)
-      setUserVdw(defaultVdw);
+  public String getDefaultVdwNameOrData(EnumVdw type, BS bs) {
     SB sb = new SB();
     sb.append(type.getVdwLabel()).append("\n");
     boolean isAll = (bs == null);
@@ -333,19 +289,49 @@ class DataManager {
     for (int i = i0; i < i1 && i >= 0; i = (isAll ? i + 1 : bs
         .nextSetBit(i + 1)))
       sb.appendI(i).appendC('\t').appendF(
-          type == EnumVdw.USER ? userVdws[i] : Elements
+          type == EnumVdw.USER ? viewer.userVdws[i] : Elements
               .getVanderwaalsMar(i, type) / 1000f).appendC('\t').append(
           Elements.elementSymbolFromNumber(i)).appendC('\n');
     return (bs == null ? sb.toString() : "\n  DATA \"element_vdw\"\n"
         + sb.append("  end \"element_vdw\";\n\n").toString());
   }
 
-  static void getInlineData(SB loadScript, String strModel, boolean isAppend, String loadFilter) {
-    String tag = (isAppend ? "append" : "model") + " inline";
-    loadScript.append("load /*data*/ data \"").append(tag).append("\"\n")
-        .append(strModel).append("end \"").append(tag)
-        .append(loadFilter == null || loadFilter.length() == 0 ? "" : " filter" + Escape.eS(loadFilter))
-        .append("\";");
+  public boolean getDataState(JmolStateCreator sc, SB sb) {
+    if (dataValues.size() == 0)
+      return false;
+    boolean haveData = false;
+    for (String name : dataValues.keySet()) {
+      if (name.indexOf("property_") == 0) {
+        Object[] obj = dataValues.get(name);
+        if (obj.length > DATA_SAVE_IN_STATE
+            && obj[DATA_SAVE_IN_STATE] == Boolean.FALSE)
+          continue;
+        haveData = true;
+        Object data = obj[1];
+        if (data != null && ((Integer) obj[3]).intValue() == 1) {
+          sc.getAtomicPropertyStateBuffer(sb, AtomCollection.TAINT_MAX,
+              (BS) obj[2], name, (float[]) data);
+          sb.append("\n");
+        } else {
+          sb.append("\n").append(Escape.encapsulateData(name, data, 0));//j2s issue?
+        }
+      } else if (name.indexOf("data2d") == 0) {
+        Object[] obj = dataValues.get(name);
+        Object data = obj[1];
+        if (data != null && ((Integer) obj[3]).intValue() == 2) {
+          haveData = true;
+          sb.append("\n").append(Escape.encapsulateData(name, data, 2));
+        }
+      } else if (name.indexOf("data3d") == 0) {
+        Object[] obj = dataValues.get(name);
+        Object data = obj[1];
+        if (data != null && ((Integer) obj[3]).intValue() == 3) {
+          haveData = true;
+          sb.append("\n").append(Escape.encapsulateData(name, data, 3));
+        }
+      }
+    }
+    return haveData;
   }
   
 }

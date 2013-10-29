@@ -24,23 +24,17 @@
 
 package javajs.util;
 
-
-
-
-
-
-
-public class ParserJS {
+public class Parser {
 
   public static int parseInt(String str) {
-    return ParserJS.parseIntNext(str, new int[] {0});
+    return Parser.parseIntNext(str, new int[] {0});
   }
 
   public static int parseIntNext(String str, int[] next) {
     int cch = str.length();
     if (next[0] < 0 || next[0] >= cch)
       return Integer.MIN_VALUE;
-    return ParserJS.parseIntChecked(str, cch, next);
+    return Parser.parseIntChecked(str, cch, next);
   }
 
   public static int parseIntChecked(String str, int ichMax, int[] next) {
@@ -50,7 +44,7 @@ public class ParserJS {
     if (ich < 0)
       return Integer.MIN_VALUE;
     int ch;
-    while (ich < ichMax && ParserJS.isWhiteSpace(str, ich))
+    while (ich < ichMax && Parser.isWhiteSpace(str, ich))
       ++ich;
     boolean negative = false;
     if (ich < ichMax && str.charAt(ich) == 45) { //"-"
@@ -139,7 +133,7 @@ public class ParserJS {
           }
           nzero = -nzero;
         } 
-        if (iscale  < ParserJS.decimalScale.length) {
+        if (iscale  < Parser.decimalScale.length) {
           ival2 = (ival2 * 10f) + (ch - 48)*1f;
           iscale++;
         }
@@ -152,10 +146,10 @@ public class ParserJS {
     if (!digitSeen) {
       value = Float.NaN;
     } else if (ival2 > 0) {
-      value = ival2 * ParserJS.decimalScale[iscale - 1];
+      value = ival2 * Parser.decimalScale[iscale - 1];
       if (nzero > 1) {
-        if (nzero - 2 < ParserJS.decimalScale.length) {
-          value *= ParserJS.decimalScale[nzero - 2];
+        if (nzero - 2 < Parser.decimalScale.length) {
+          value *= Parser.decimalScale[nzero - 2];
         } else {
           value *= Math.pow(10, 1 - nzero);
         }
@@ -177,10 +171,10 @@ public class ParserJS {
       int exponent = parseIntChecked(str, ichMax, next);
       if (exponent == Integer.MIN_VALUE)
         return Float.NaN;
-      if (exponent > 0 && exponent <= ParserJS.tensScale.length)
-        value *= ParserJS.tensScale[exponent - 1];
-      else if (exponent < 0 && -exponent <= ParserJS.decimalScale.length)
-        value *= ParserJS.decimalScale[-exponent - 1];
+      if (exponent > 0 && exponent <= Parser.tensScale.length)
+        value *= Parser.tensScale[exponent - 1];
+      else if (exponent < 0 && -exponent <= Parser.decimalScale.length)
+        value *= Parser.decimalScale[-exponent - 1];
       else if (exponent != 0)
         value *= Math.pow(10, exponent);
     } else {
@@ -193,7 +187,7 @@ public class ParserJS {
     if (value == Float.POSITIVE_INFINITY)
       value = Float.MAX_VALUE;
     return (!isStrict || (!isExponent || isDecimal)
-        && ParserJS.checkTrailingText(str, next[0], ichMax) ? value : Float.NaN);
+        && Parser.checkTrailingText(str, next[0], ichMax) ? value : Float.NaN);
   }
 
   public final static float[] tensScale = { 10f, 100f, 1000f, 10000f, 100000f, 1000000f };
@@ -217,7 +211,7 @@ public class ParserJS {
   }
 
   public static float[] parseFloatArray(String str) {
-    return ParserJS.parseFloatArrayNext(str, new int[1], null, null, null);
+    return Parser.parseFloatArrayNext(str, new int[1], null, null, null);
   }
 
   public static int parseFloatArrayInfested(String[] tokens, float[] data) {
@@ -227,7 +221,7 @@ public class ParserJS {
     int max = 0;
     for (int i = 0; i >= 0 && i < len && n < nTokens; i++) {
       float f;
-      while (Float.isNaN(f = ParserJS.parseFloat(tokens[n++])) 
+      while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) 
           && n < nTokens) {
       }
       if (!Float.isNaN(f))
@@ -264,7 +258,7 @@ public class ParserJS {
       else
         str = str.substring(0, pt);
       next[0] += pt + 1;
-      String[] tokens = ParserJS.getTokens(str);
+      String[] tokens = Parser.getTokens(str);
       if (f == null)
         f = new float[tokens.length];
       n = parseFloatArrayInfested(tokens, f);
@@ -320,19 +314,19 @@ public class ParserJS {
   }
 
   public static String[] getTokens(String line) {
-    return ParserJS.getTokensAt(line, 0);
+    return Parser.getTokensAt(line, 0);
   }
 
   public static String parseToken(String str) {
-    return ParserJS.parseTokenNext(str, new int[] {0});
+    return Parser.parseTokenNext(str, new int[] {0});
   }
 
   public static String parseTrimmed(String str) {
-    return ParserJS.parseTrimmedRange(str, 0, str.length());
+    return Parser.parseTrimmedRange(str, 0, str.length());
   }
 
   public static String parseTrimmedAt(String str, int ichStart) {
-    return ParserJS.parseTrimmedRange(str, ichStart, str.length());
+    return Parser.parseTrimmedRange(str, ichStart, str.length());
   }
 
   public static String parseTrimmedRange(String str, int ichStart, int ichMax) {
@@ -341,7 +335,7 @@ public class ParserJS {
       cch = ichMax;
     if (cch < ichStart)
       return "";
-    return ParserJS.parseTrimmedChecked(str, ichStart, cch);
+    return Parser.parseTrimmedChecked(str, ichStart, cch);
   }
 
   public static String[] getTokensAt(String line, int ich) {
@@ -350,12 +344,12 @@ public class ParserJS {
     int cchLine = line.length();
     if (ich < 0 || ich > cchLine)
       return null;
-    int tokenCount = ParserJS.countTokens(line, ich);
+    int tokenCount = Parser.countTokens(line, ich);
     String[] tokens = new String[tokenCount];
     int[] next = new int[1];
     next[0] = ich;
     for (int i = 0; i < tokenCount; ++i)
-      tokens[i] = ParserJS.parseTokenChecked(line, cchLine, next);
+      tokens[i] = Parser.parseTokenChecked(line, cchLine, next);
     return tokens;
   }
 
@@ -381,7 +375,7 @@ public class ParserJS {
     int cch = str.length();
     if (next[0] < 0 || next[0] >= cch)
       return null;
-    return ParserJS.parseTokenChecked(str, cch, next);
+    return Parser.parseTokenChecked(str, cch, next);
   }
 
   public static String parseTokenRange(String str, int ichMax, int[] next) {
@@ -390,7 +384,7 @@ public class ParserJS {
       ichMax = cch;
     if (next[0] < 0 || next[0] >= ichMax)
       return null;
-    return ParserJS.parseTokenChecked(str, ichMax, next);
+    return Parser.parseTokenChecked(str, ichMax, next);
   }
 
   public static String parseTokenChecked(String str, int ichMax, int[] next) {
@@ -462,7 +456,7 @@ public class ParserJS {
    *  @param data    the array to fill
    */
   public static void parseFloatArrayData(String[] tokens, float[] data) {
-    ParserJS.parseFloatArrayDataN(tokens, data, data.length);
+    Parser.parseFloatArrayDataN(tokens, data, data.length);
   }
 
   /**
@@ -514,5 +508,63 @@ public class ParserJS {
     lines[pt] = text.substring(i, len);
     return lines;
   }
+
+  public final static float FLOAT_MIN_SAFE = 2E-45f; 
+  // Float.MIN_ VALUE is not reliable with JavaScript because of the float/double difference there
+  
+  /// general static string-parsing class ///
+
+  // next[0] tracks the pointer within the string so these can all be static.
+  // but the methods parseFloat, parseInt, parseToken, parseTrimmed, and getTokens do not require this.
+
+//  public static String concatTokens(String[] tokens, int iFirst, int iEnd) {
+//    String str = "";
+//    String sep = "";
+//    for (int i = iFirst; i < iEnd; i++) {
+//      if (i < tokens.length) {
+//        str += sep + tokens[i];
+//        sep = " ";
+//      }
+//    }
+//    return str;
+//  }
+  
+  public static String getQuotedStringAt(String line, int ipt0) {
+    int[] next = new int[] { ipt0 };
+    return getQuotedStringNext(line, next);
+  }
+  
+  public static String getQuotedStringNext(String line, int[] next) {
+    String value = line;
+    int i = next[0];
+    if (i < 0 || (i = value.indexOf("\"", i)) < 0)
+      return "";
+    next[0] = ++i;
+    value = value.substring(i);
+    i = -1;
+    while (++i < value.length() && value.charAt(i) != '"')
+      if (value.charAt(i) == '\\')
+        i++;
+    next[0] += i + 1;
+    return value.substring(0, i);
+  }
+  
+  public static boolean isOneOf(String key, String semiList) {
+    if (semiList.length() == 0)
+      return false;
+    if (semiList.charAt(0) != ';')
+      semiList = ";" + semiList + ";";
+    return key.indexOf(";") < 0  && semiList.indexOf(';' + key + ';') >= 0;
+  }
+
+  public static String getQuotedAttribute(String info, String name) {
+    int i = info.indexOf(name + "=");
+    return (i < 0 ? null : getQuotedStringAt(info, i));
+  }
+
+  public static float approx(float f, float n) {
+    return Math.round (f * n) / n;
+  }
+
 
 }

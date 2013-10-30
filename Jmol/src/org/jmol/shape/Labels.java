@@ -34,7 +34,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 
 import javajs.awt.Font;
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.JC;
@@ -317,13 +317,13 @@ public class Labels extends AtomShape {
           .nextSetBit(i + 1)) {
         Atom atom = atoms[i];
         if (formats == null || i >= formats.length)
-          formats = ArrayUtil.ensureLengthS(formats, i + 1);
+          formats = AU.ensureLengthS(formats, i + 1);
         if (strings != null && strings.length > i && strings[i] != null) {
           mads[i] = (short) (mode == 0 && mads[i] < 0 || mode == 1 ? 1 : -1);
         } else {
           if (bsSizeSet == null)
             bsSizeSet = new BS();
-          strings = ArrayUtil.ensureLengthS(strings, i + 1);
+          strings = AU.ensureLengthS(strings, i + 1);
           if (atom.getGroup3(false).equals("UNK")) {
             if (strLabelUNK == null) {
               strLabelUNK = viewer.getStandardLabelFormat(1);
@@ -367,15 +367,15 @@ public class Labels extends AtomShape {
       labelBoxes = null;
       int firstAtomDeleted = ((int[]) ((Object[]) value)[2])[1];
       int nAtomsDeleted = ((int[]) ((Object[]) value)[2])[2];
-      fids = (byte[]) ArrayUtil.deleteElements(fids, firstAtomDeleted,
+      fids = (byte[]) AU.deleteElements(fids, firstAtomDeleted,
           nAtomsDeleted);
-      bgcolixes = (short[]) ArrayUtil.deleteElements(bgcolixes,
+      bgcolixes = (short[]) AU.deleteElements(bgcolixes,
           firstAtomDeleted, nAtomsDeleted);
-      offsets = (int[]) ArrayUtil.deleteElements(offsets, firstAtomDeleted,
+      offsets = (int[]) AU.deleteElements(offsets, firstAtomDeleted,
           nAtomsDeleted);
-      formats = (String[]) ArrayUtil.deleteElements(formats, firstAtomDeleted,
+      formats = (String[]) AU.deleteElements(formats, firstAtomDeleted,
           nAtomsDeleted);
-      strings = (String[]) ArrayUtil.deleteElements(strings, firstAtomDeleted,
+      strings = (String[]) AU.deleteElements(strings, firstAtomDeleted,
           nAtomsDeleted);
       BSUtil.deleteBits(bsFontSet, bsSelected);
       BSUtil.deleteBits(bsBgColixSet, bsSelected);
@@ -464,9 +464,9 @@ public class Labels extends AtomShape {
   private void addString(Atom atom, int i, String label, String strLabel) {
     atom.setShapeVisibility(myVisibilityFlag, label != null);
     if (strings == null || i >= strings.length)
-      strings = ArrayUtil.ensureLengthS(strings, i + 1);
+      strings = AU.ensureLengthS(strings, i + 1);
     if (formats == null || i >= formats.length)
-      formats = ArrayUtil.ensureLengthS(formats, i + 1);
+      formats = AU.ensureLengthS(formats, i + 1);
     strings[i] = label;
     formats[i] = (strLabel != null && strLabel.indexOf("%{") >= 0 ? label
         : strLabel);
@@ -517,7 +517,7 @@ public class Labels extends AtomShape {
     if (bgcolixes == null || i >= bgcolixes.length) {
       if (bgcolix == 0)
         return;
-      bgcolixes = ArrayUtil.ensureLengthShort(bgcolixes, i + 1);
+      bgcolixes = AU.ensureLengthShort(bgcolixes, i + 1);
     }
     bgcolixes[i] = bgcolix;
     bsBgColixSet.setBitTo(i, bgcolix != 0);
@@ -530,7 +530,7 @@ public class Labels extends AtomShape {
     if (offsets == null || i >= offsets.length) {
       if (offset == 0)
         return;
-      offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
+      offsets = AU.ensureLengthI(offsets, i + 1);
     }
     offsets[i] = (offsets[i] & JC.LABEL_FLAGS) | (offset << JC.LABEL_FLAG_OFFSET);
     if (isExact)
@@ -544,7 +544,7 @@ public class Labels extends AtomShape {
     if (offsets == null || i >= offsets.length) {
       if (alignment == JC.ALIGN_LEFT)
         return;
-      offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
+      offsets = AU.ensureLengthI(offsets, i + 1);
     }
     offsets[i] = (offsets[i] & ~JC.LABEL_ALIGN_FLAGS) | (alignment << 2);
     text = getLabel(i);
@@ -560,7 +560,7 @@ public class Labels extends AtomShape {
     if (offsets == null || i >= offsets.length) {
       if (pointer == JC.POINTER_NONE)
         return;
-      offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
+      offsets = AU.ensureLengthI(offsets, i + 1);
     }
     offsets[i] = (offsets[i] & ~JC.LABEL_POINTER_FLAGS) + pointer;
     text = getLabel(i);
@@ -572,7 +572,7 @@ public class Labels extends AtomShape {
     if (offsets == null || i >= offsets.length) {
       if (!TF)
         return;
-      offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
+      offsets = AU.ensureLengthI(offsets, i + 1);
     }
     offsets[i] = (offsets[i] & ~JC.LABEL_ZPOS_FLAGS) + (TF ? JC.LABEL_FRONT_FLAG : 0);
   }
@@ -581,7 +581,7 @@ public class Labels extends AtomShape {
     if (offsets == null || i >= offsets.length) {
       if (!TF)
         return;
-      offsets = ArrayUtil.ensureLengthI(offsets, i + 1);
+      offsets = AU.ensureLengthI(offsets, i + 1);
     }
     offsets[i] = (offsets[i] & ~JC.LABEL_ZPOS_FLAGS) + (TF ? JC.LABEL_GROUP_FLAG : 0);
   }
@@ -590,7 +590,7 @@ public class Labels extends AtomShape {
     if (fids == null || i >= fids.length) {
       if (fid == zeroFontId)
         return;
-      fids = ArrayUtil.ensureLengthByte(fids, i + 1);
+      fids = AU.ensureLengthByte(fids, i + 1);
     }
     fids[i] = fid;
     bsFontSet.set(i);

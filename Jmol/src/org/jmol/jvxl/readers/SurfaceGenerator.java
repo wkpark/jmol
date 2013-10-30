@@ -136,13 +136,13 @@ import org.jmol.jvxl.calc.MarchingSquares;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
-import javajs.util.OutputChannel;
-import javajs.util.Parser;
+import javajs.util.OC;
+import javajs.util.PT;
 import javajs.util.P3;
 import javajs.util.P4;
 import org.jmol.util.Txt;
@@ -166,7 +166,7 @@ public class SurfaceGenerator {
   public String getFileType() {
     return fileType;
   }
-  private OutputChannel out;
+  private OC out;
     
   public void setVersion(String version) {
     this.version = version;
@@ -350,7 +350,7 @@ public class SurfaceGenerator {
         params.script = (String) value;
         if (params.script != null && params.script.indexOf(";#") >= 0) {
           // crude hack for ScriptEvaluator messing up
-          params.script = Txt.simpleReplace(params.script, ";#", "; #");
+          params.script = javajs.util.PT.simpleReplace(params.script, ";#", "; #");
         }
       }
       return false; // more to do
@@ -468,7 +468,7 @@ public class SurfaceGenerator {
     }
 
     if ("parameters" == propertyName) {
-      params.parameters = ArrayUtil.ensureLengthA((float[]) value, 2);
+      params.parameters = AU.ensureLengthA((float[]) value, 2);
       if (params.parameters.length > 0 && params.parameters[0] != 0)
         params.cutoff = params.parameters[0];
       return true;
@@ -1001,7 +1001,7 @@ public class SurfaceGenerator {
     }
 
     if ("outputChannel" == propertyName) {
-      out = (OutputChannel) value;
+      out = (OC) value;
       return true;
     }
 
@@ -1286,7 +1286,7 @@ public class SurfaceGenerator {
 
       String fname = params.fileName;
       fname = fname.substring(0, fname.indexOf("/", 10));
-      fname += Parser.getQuotedStringAt(fileType,
+      fname += PT.getQuotedStringAt(fileType,
           fileType.indexOf("A HREF") + 1);
       params.fileName = fname;
       value = atomDataServer.getBufferedInputStream(fname);
@@ -1450,7 +1450,7 @@ public class SurfaceGenerator {
       atomDataServer.log(msg);
   }
 
-  void setOutputChannel(JmolDocument binaryDoc, OutputChannel out) {
+  void setOutputChannel(JmolDocument binaryDoc, OC out) {
     if (meshDataServer == null)
       return;
      meshDataServer.setOutputChannel(binaryDoc, out);    

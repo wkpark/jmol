@@ -33,7 +33,7 @@ import netscape.javascript.JSObject;
 
 import org.jmol.api.JmolSyncInterface;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import org.jmol.util.Logger;
 
@@ -62,7 +62,7 @@ final class JmolAppletRegistry {
   synchronized static void findApplets(String appletName, String mySyncId,
                                        String excludeName, List<String> apps) {
     if (appletName != null && appletName.indexOf(",") >= 0) {
-      String[] names = Parser.split(appletName, ",");
+      String[] names = PT.split(appletName, ",");
       for (int i = 0; i < names.length; i++)
         findApplets(names[i], mySyncId, excludeName, apps);
       return;

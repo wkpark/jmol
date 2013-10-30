@@ -38,7 +38,7 @@ import org.jmol.shape.Mesh;
 import org.jmol.util.C;
 import org.jmol.util.Logger;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.V3;
 import org.jmol.viewer.JC;
 
@@ -353,7 +353,7 @@ public class BioShape extends AtomShape {
         if (colixesBack == null)
           colixesBack = new short[colixes.length];
         if (colixesBack.length < colixes.length)
-          colixesBack = ArrayUtil.ensureLengthShort(colixesBack, colixes.length);
+          colixesBack = AU.ensureLengthShort(colixesBack, colixes.length);
         colixesBack[i] = colix;
       }
     }

@@ -31,7 +31,7 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.shapespecial.Draw;
 import org.jmol.util.Escape;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 public class CGO extends Draw {
@@ -52,7 +52,7 @@ public class CGO extends Draw {
   @Override
   public void allocMesh(String thisID, Mesh m) {
     int index = meshCount++;
-    meshes = cmeshes = (CGOMesh[]) ArrayUtil.ensureLength(cmeshes,
+    meshes = cmeshes = (CGOMesh[]) AU.ensureLength(cmeshes,
         meshCount * 2);
     currentMesh = thisMesh = cgoMesh = cmeshes[index] = (m == null ? new CGOMesh(thisID,
         colix, index) : (CGOMesh) m);
@@ -109,7 +109,7 @@ public class CGO extends Draw {
   protected void deleteMeshElement(int i) {
     if (meshes[i] == currentMesh)
       currentMesh = cgoMesh = null;
-    meshes = cmeshes = (CGOMesh[]) ArrayUtil
+    meshes = cmeshes = (CGOMesh[]) AU
         .deleteElements(meshes, i, 1);
   }
 

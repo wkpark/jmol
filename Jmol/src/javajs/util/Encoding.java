@@ -23,7 +23,7 @@
  *  02110-1301, USA.
  */
 
-package org.jmol.io;
+package javajs.util;
 
 public enum Encoding {
   NONE, UTF8, UTF_16BE, UTF_16LE, UTF_32BE, UTF_32LE

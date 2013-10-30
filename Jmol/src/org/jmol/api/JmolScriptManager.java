@@ -47,7 +47,7 @@ public interface JmolScriptManager {
 
   boolean isQueueProcessing();
 
-  void openFileAsync(String fileName, boolean pdbCartoons);
+  void openFileAsync(String fileName, int flags);
 
 }
 

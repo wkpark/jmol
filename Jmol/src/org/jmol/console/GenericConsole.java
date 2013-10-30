@@ -28,6 +28,8 @@ import java.awt.event.KeyEvent;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.util.PT;
+
 import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
@@ -36,7 +38,6 @@ import org.jmol.api.JmolViewer;
 import org.jmol.constant.EnumCallback;
 import org.jmol.i18n.GT;
 import org.jmol.script.T;
-import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
@@ -169,8 +170,8 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     String cmd = null;
     if (!asCommand && (notThis.charAt(0) == '"' || notThis.charAt(0) == '\'')) {
       char q = notThis.charAt(0);
-      notThis = Txt.trim(notThis, "\"\'");
-      String stub = Txt.trim(splitCmd[2], "\"\'");
+      notThis = PT.trim(notThis, "\"\'");
+      String stub = PT.trim(splitCmd[2], "\"\'");
       cmd = nextFileName(stub, nTab);
       if (cmd != null)
         cmd = splitCmd[0] + splitCmd[1] + q + cmd + q;

@@ -48,9 +48,9 @@ import org.jmol.constant.EnumVdw;
 import org.jmol.java.BS;
 
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import java.util.Arrays;
@@ -456,12 +456,12 @@ public final class ModelLoader {
       jbr.initializeHydrogenAddition();
     if (trajectoryCount > 1)
       modelSet.modelCount += trajectoryCount - 1;
-    modelSet.models = (Model[]) ArrayUtil.arrayCopyObject(modelSet.models, modelSet.modelCount);
-    modelSet.modelFileNumbers = ArrayUtil.arrayCopyI(modelSet.modelFileNumbers, modelSet.modelCount);
-    modelSet.modelNumbers = ArrayUtil.arrayCopyI(modelSet.modelNumbers, modelSet.modelCount);
-    modelSet.modelNumbersForAtomLabel = ArrayUtil.arrayCopyS(modelSet.modelNumbersForAtomLabel, modelSet.modelCount);
-    modelSet.modelNames = ArrayUtil.arrayCopyS(modelSet.modelNames, modelSet.modelCount);
-    modelSet.frameTitles = ArrayUtil.arrayCopyS(modelSet.frameTitles, modelSet.modelCount);
+    modelSet.models = (Model[]) AU.arrayCopyObject(modelSet.models, modelSet.modelCount);
+    modelSet.modelFileNumbers = AU.arrayCopyI(modelSet.modelFileNumbers, modelSet.modelCount);
+    modelSet.modelNumbers = AU.arrayCopyI(modelSet.modelNumbers, modelSet.modelCount);
+    modelSet.modelNumbersForAtomLabel = AU.arrayCopyS(modelSet.modelNumbersForAtomLabel, modelSet.modelCount);
+    modelSet.modelNames = AU.arrayCopyS(modelSet.modelNames, modelSet.modelCount);
+    modelSet.frameTitles = AU.arrayCopyS(modelSet.frameTitles, modelSet.modelCount);
     if (merging)
       for (int i = 0; i < mergeModelSet.modelCount; i++)
         (modelSet.models[i] = mergeModelSet.models[i]).modelSet = modelSet;
@@ -492,7 +492,7 @@ public final class ModelLoader {
     // set private values
 
     group3Lists = new String[modelSet.modelCount + 1];
-    group3Counts = ArrayUtil.newInt2(modelSet.modelCount + 1);
+    group3Counts = AU.newInt2(modelSet.modelCount + 1);
 
     structuresDefinedInFile = new BS();
 
@@ -534,7 +534,7 @@ public final class ModelLoader {
     String loadState = (String) modelSet.modelSetAuxiliaryInfo.remove("loadState");
     SB loadScript = (SB)modelSet.modelSetAuxiliaryInfo.remove("loadScript");
     if (loadScript.indexOf("Viewer.AddHydrogens") < 0 || !m.isModelKit) {
-      String[] lines = Parser.split(loadState, "\n");
+      String[] lines = PT.split(loadState, "\n");
       SB sb = new SB();
       for (int i = 0; i < lines.length; i++) {
         int pt = m.loadState.indexOf(lines[i]);
@@ -874,10 +874,10 @@ public final class ModelLoader {
       currentGroupInsertionCode = groupInsertionCode;
       currentGroup3 = group3i;
       while (groupCount >= group3Of.length) {
-        chainOf = (Chain[]) ArrayUtil.doubleLength(chainOf);
-        group3Of = ArrayUtil.doubleLengthS(group3Of);
-        seqcodes = ArrayUtil.doubleLengthI(seqcodes);
-        firstAtomIndexes = ArrayUtil.doubleLengthI(firstAtomIndexes);
+        chainOf = (Chain[]) AU.doubleLength(chainOf);
+        group3Of = AU.doubleLengthS(group3Of);
+        seqcodes = AU.doubleLengthI(seqcodes);
+        firstAtomIndexes = AU.doubleLengthI(firstAtomIndexes);
       }
       firstAtomIndexes[groupCount] = modelSet.atomCount;
       chainOf[groupCount] = currentChain;
@@ -894,7 +894,7 @@ public final class ModelLoader {
     if (chain != null)
       return chain;
     if (model.chainCount == model.chains.length)
-      model.chains = (Chain[])ArrayUtil.doubleLength(model.chains);
+      model.chains = (Chain[])AU.doubleLength(model.chains);
     return model.chains[model.chainCount++] = new Chain(model, chainID);
   }
 
@@ -966,7 +966,7 @@ public final class ModelLoader {
       }
     }
     if (modelSet.bondCount == modelSet.bonds.length) {
-      modelSet.bonds = (Bond[]) ArrayUtil.arrayCopyObject(modelSet.bonds, modelSet.bondCount + BondCollection.BOND_GROWTH_INCREMENT);
+      modelSet.bonds = (Bond[]) AU.arrayCopyObject(modelSet.bonds, modelSet.bondCount + BondCollection.BOND_GROWTH_INCREMENT);
     }
     modelSet.setBond(modelSet.bondCount++, bond);
     return bond;
@@ -1189,7 +1189,7 @@ public final class ModelLoader {
 
   private void addGroup(Chain chain, Group group) {
     if (chain.groupCount == chain.groups.length)
-      chain.groups = (Group[])ArrayUtil.doubleLength(chain.groups);
+      chain.groups = (Group[])AU.doubleLength(chain.groups);
     chain.groups[chain.groupCount++] = group;
   }
 
@@ -1202,7 +1202,7 @@ public final class ModelLoader {
     if (pt < 0) {
       group3Lists[ptm] += ",[" + g3code + "]";
       pt = group3Lists[ptm].indexOf(g3code);
-      group3Counts[ptm] = ArrayUtil.arrayCopyI(
+      group3Counts[ptm] = AU.arrayCopyI(
           group3Counts[ptm], group3Counts[ptm].length + 10);
     }
     group3Counts[ptm][pt / 6]++;
@@ -1222,7 +1222,7 @@ public final class ModelLoader {
     if (modelSet.atomCount < modelSet.atoms.length)
       modelSet.growAtomArrays(modelSet.atomCount);
     if (modelSet.bondCount < modelSet.bonds.length)
-      modelSet.bonds = (Bond[]) ArrayUtil.arrayCopyObject(modelSet.bonds, modelSet.bondCount);
+      modelSet.bonds = (Bond[]) AU.arrayCopyObject(modelSet.bonds, modelSet.bondCount);
 
     // free bonds cache 
 

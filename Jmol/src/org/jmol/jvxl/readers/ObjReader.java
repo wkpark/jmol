@@ -30,9 +30,9 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 
-import javajs.util.ColorUtil;
+import javajs.util.CU;
 import javajs.util.P3;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 /*
  * 
@@ -104,14 +104,14 @@ class ObjReader extends PmeshReader {
       if (line.length() < 2 || line.charAt(1) != ' ') {
         if (params.readAllData && line.startsWith("usemtl"))
           // usemtl k00FF00
-            color = ColorUtil.getArgbFromString("[x" + line.substring(8) + "]");
+            color = CU.getArgbFromString("[x" + line.substring(8) + "]");
         continue;
       }
       switch (line.charAt(0)) {
       case 'v':
         next[0] = 2;
-        pt.set(Parser.parseFloatNext(line, next), Parser.parseFloatNext(line, next),
-            Parser.parseFloatNext(line, next));
+        pt.set(PT.parseFloatNext(line, next), PT.parseFloatNext(line, next),
+            PT.parseFloatNext(line, next));
         boolean addHt = false;
         if (htPymol == null) {
           i = nVertices;
@@ -142,19 +142,19 @@ class ObjReader extends PmeshReader {
           htPymol = null;
         nPts = 0;
         nPolygons++;
-        String[] tokens = Parser.getTokens(line);
+        String[] tokens = PT.getTokens(line);
         int vertexCount = tokens.length - 1;
         if (vertexCount == 4)
           htPymol = null;
         if (htPymol == null) {
-          ia = javajs.util.Parser.parseInt(tokens[1]) - 1;
-          ib = javajs.util.Parser.parseInt(tokens[2]) - 1;
-          ic = javajs.util.Parser.parseInt(tokens[3]) - 1;
+          ia = javajs.util.PT.parseInt(tokens[1]) - 1;
+          ib = javajs.util.PT.parseInt(tokens[2]) - 1;
+          ic = javajs.util.PT.parseInt(tokens[3]) - 1;
           pmeshError = " " + ia + " " + ib + " " + ic + " " + line;
           if (!bsOK.get(ia) || !bsOK.get(ib) || !bsOK.get(ic))
             continue;
           if (vertexCount == 4) {
-            id = javajs.util.Parser.parseInt(tokens[4]) - 1;
+            id = javajs.util.PT.parseInt(tokens[4]) - 1;
             boolean isOK = (bsOK.get(id));
             nTriangles = addTriangleCheck(ia, ib, ic, (isOK ? 3 : 7), 0, false, color);
             if (isOK)
@@ -173,7 +173,7 @@ class ObjReader extends PmeshReader {
       case 'g':
         htPymol = null;
         if (params.readAllData)
-          color = ColorUtil.getArgbFromString("[x" + line.substring(3) + "]");
+          color = CU.getArgbFromString("[x" + line.substring(3) + "]");
         break;
       }
     }

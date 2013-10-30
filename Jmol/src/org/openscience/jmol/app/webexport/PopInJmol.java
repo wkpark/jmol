@@ -117,15 +117,15 @@ class PopInJmol extends WebPanel implements ChangeListener {
           + javaname + "'," + JmolSizeW + "," + JmolSizeH + ")");
     } else {
       String s = htmlAppletTemplate;
-      s = Txt.simpleReplace(s, "@CLASS@", "" + divClass);
-      s = Txt.simpleReplace(s, "@I@", "" + i);
-      s = Txt.simpleReplace(s, "@WIDTH@", "" + JmolSizeW);
-      s = Txt.simpleReplace(s, "@HEIGHT@", "" + JmolSizeH);
-      s = Txt.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
-      s = Txt.simpleReplace(s, "@APPLETNAME@", GT.escapeHTML(javaname));
-      s = Txt.simpleReplace(s, "@LEFTWIDGETS@", "");// no left widgets
+      s = javajs.util.PT.simpleReplace(s, "@CLASS@", "" + divClass);
+      s = javajs.util.PT.simpleReplace(s, "@I@", "" + i);
+      s = javajs.util.PT.simpleReplace(s, "@WIDTH@", "" + JmolSizeW);
+      s = javajs.util.PT.simpleReplace(s, "@HEIGHT@", "" + JmolSizeH);
+      s = javajs.util.PT.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
+      s = javajs.util.PT.simpleReplace(s, "@APPLETNAME@", GT.escapeHTML(javaname));
+      s = javajs.util.PT.simpleReplace(s, "@LEFTWIDGETS@", "");// no left widgets
                                                            // for now
-      s = Txt.simpleReplace(s, "@RIGHTWIDGETS@", widgetDefs);
+      s = javajs.util.PT.simpleReplace(s, "@RIGHTWIDGETS@", widgetDefs);
       appletDefs.append(s);
     }
     return html;

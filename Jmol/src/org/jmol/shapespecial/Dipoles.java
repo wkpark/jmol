@@ -40,7 +40,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -298,7 +298,7 @@ public class Dipoles extends Shape {
         } else if (dipoles[i].modelIndex == modelIndex) {
           if (dipoles[i] == currentDipole)
             currentDipole = null;            
-          dipoles = (Dipole[]) ArrayUtil.deleteElements(dipoles, i, 1);
+          dipoles = (Dipole[]) AU.deleteElements(dipoles, i, 1);
           dipoleCount--;
         }
       currentDipole = null;
@@ -529,7 +529,7 @@ public class Dipoles extends Shape {
   }
 
   private Dipole allocDipole(String thisID, String dipoleInfo) {
-    dipoles = (Dipole[]) ArrayUtil.ensureLength(dipoles, dipoleCount + 1);
+    dipoles = (Dipole[]) AU.ensureLength(dipoles, dipoleCount + 1);
     if (thisID == null || thisID.length() == 0)
       thisID = "dipole" + (dipoleCount + 1);
     Dipole d = dipoles[dipoleCount++] = new Dipole(viewer

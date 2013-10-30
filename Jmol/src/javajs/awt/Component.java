@@ -2,7 +2,7 @@ package javajs.awt;
 
 import javajs.api.GenericColor;
 import javajs.api.SwingController;
-import javajs.util.ColorUtil;
+import javajs.util.CU;
 
 abstract public class Component {
 
@@ -116,7 +116,7 @@ abstract public class Component {
     int height = (renderHeight > 0 ? renderHeight : getSubcomponentHeight());
     return (width > 0 ? "width:" + width +"px;" : defaultPercent > 0 ? "width:"+defaultPercent+"%;" : "")
     + (height > 0 ?"height:" + height + "px;" : defaultPercent > 0 ? "height:"+defaultPercent+"%;" : "")
-    + (bgcolor == null ? "" : "background-color:" + ColorUtil.toCSSString(bgcolor) + ";");
+    + (bgcolor == null ? "" : "background-color:" + CU.toCSSString(bgcolor) + ";");
   }
   
   public void repaint() {

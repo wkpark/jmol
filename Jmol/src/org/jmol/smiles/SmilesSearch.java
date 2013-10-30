@@ -24,7 +24,7 @@
 
 package org.jmol.smiles;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.P3;
 import javajs.util.SB;
@@ -124,13 +124,13 @@ public class SmilesSearch extends JmolMolecule {
 
   void setAtomArray() {
     if (patternAtoms.length > atomCount)
-      patternAtoms = (SmilesAtom[]) ArrayUtil.arrayCopyObject(patternAtoms, atomCount);
+      patternAtoms = (SmilesAtom[]) AU.arrayCopyObject(patternAtoms, atomCount);
     nodes = patternAtoms;
   }
 
   SmilesAtom addAtom() {
     if (atomCount >= patternAtoms.length)
-      patternAtoms = (SmilesAtom[]) ArrayUtil.doubleLength(patternAtoms);
+      patternAtoms = (SmilesAtom[]) AU.doubleLength(patternAtoms);
     SmilesAtom sAtom = new SmilesAtom().setIndex(atomCount);
     patternAtoms[atomCount] = sAtom;
     atomCount++;
@@ -192,7 +192,7 @@ public class SmilesSearch extends JmolMolecule {
     boolean aromaticStrict = ((flags & JmolEdge.FLAG_AROMATIC_STRICT) != 0);
     boolean aromaticDefined = ((flags & JmolEdge.FLAG_AROMATIC_DEFINED) != 0);
     if (aromaticStrict && vRings == null)
-      vRings = ArrayUtil.createArrayOfArrayList(4); 
+      vRings = AU.createArrayOfArrayList(4); 
     if (aromaticDefined && needAromatic) {
       // predefined aromatic bonds
       bsAromatic = SmilesAromatic.checkAromaticDefined(jmolAtoms, bsSelected);

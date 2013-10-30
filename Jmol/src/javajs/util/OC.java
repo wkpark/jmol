@@ -40,7 +40,7 @@ import javajs.api.BytePoster;
  *  
  */
 
-public class OutputChannel extends OutputStream {
+public class OC extends OutputStream {
  
   private BytePoster bytePoster; // only necessary for writing to http:// or https://
   private String fileName;
@@ -53,7 +53,7 @@ public class OutputChannel extends OutputStream {
   private SB sb;
   private String type;
   
-  public OutputChannel setParams(BytePoster bytePoster, String fileName,
+  public OC setParams(BytePoster bytePoster, String fileName,
                                      boolean asWriter, OutputStream os) {
     this.bytePoster = bytePoster;
     this.fileName = fileName;
@@ -92,7 +92,7 @@ public class OutputChannel extends OutputStream {
    * @return this, for chaining like a standard StringBuffer
    * 
    */
-  public OutputChannel append(String s) {
+  public OC append(String s) {
     try {
       if (bw != null) {
         bw.write(s);

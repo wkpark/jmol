@@ -37,8 +37,8 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.ParserBS;
 
-import javajs.util.ArrayUtil;
-import javajs.util.Parser;
+import javajs.util.AU;
+import javajs.util.PT;
 import javajs.util.SB;
 
 
@@ -121,7 +121,7 @@ public class DataManager implements JmolDataManager {
       Object[] oldData = dataValues.get(type);
       BS bs;
       float[] f = (oldData == null || createNew ? new float[actualAtomCount]
-          : ArrayUtil.ensureLengthA(((float[]) oldData[1]), actualAtomCount));
+          : AU.ensureLengthA(((float[]) oldData[1]), actualAtomCount));
 
       // check to see if the data COULD be interpreted as a string of float values
       // and if so, do that. This pre-fetches the tokens in that case.
@@ -131,13 +131,13 @@ public class DataManager implements JmolDataManager {
       float[] floatData = (depth == DATA_TYPE_AF ? (float[]) data[DATA_VALUE] : null);
       String[] strData = null;
       if (field == Integer.MIN_VALUE
-          && (strData = Parser.getTokens(stringData)).length > 1)
+          && (strData = PT.getTokens(stringData)).length > 1)
         field = 0;
 
       if (field == Integer.MIN_VALUE) {
         // set the selected data elements to a single value
         bs = (BS) data[DATA_SELECTION_MAP];
-        setSelectedFloats(Parser.parseFloat(stringData), bs, f);
+        setSelectedFloats(PT.parseFloat(stringData), bs, f);
       } else if (field == 0 || field == Integer.MAX_VALUE) {
         // just get the selected token values
         bs = (BS) data[DATA_SELECTION_MAP];
@@ -150,7 +150,7 @@ public class DataManager implements JmolDataManager {
             for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
               f[i] = floatData[i];
         } else {
-          ParserBS.parseFloatArrayBsData(strData == null ? Parser.getTokens(stringData)
+          ParserBS.parseFloatArrayBsData(strData == null ? PT.getTokens(stringData)
               : strData, bs, f);
         }
       } else if (matchField <= 0) {
@@ -267,10 +267,10 @@ public class DataManager implements JmolDataManager {
         BSUtil.deleteBits((BS) obj[2], bsDeleted);
         switch (((Integer)obj[3]).intValue()) {
         case DATA_TYPE_AF:
-          obj[1] = ArrayUtil.deleteElements(obj[1], firstAtomIndex, nAtoms);
+          obj[1] = AU.deleteElements(obj[1], firstAtomIndex, nAtoms);
           break;
         case DATA_ARRAY_FF:
-          obj[1] = ArrayUtil.deleteElements(obj[1], firstAtomIndex, nAtoms);
+          obj[1] = AU.deleteElements(obj[1], firstAtomIndex, nAtoms);
           break;
         default:
           // is there anything else??

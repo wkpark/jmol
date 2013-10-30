@@ -115,22 +115,23 @@ import org.jmol.util.Escape;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import javajs.util.A4;
-import javajs.util.ColorUtil;
-import javajs.util.OutputChannel;
+import javajs.util.CU;
+import javajs.util.OC;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.P4;
+
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.V3;
@@ -147,7 +148,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   @Override
   public void allocMesh(String thisID, Mesh m) {
     int index = meshCount++;
-    meshes = isomeshes = (IsosurfaceMesh[]) ArrayUtil.ensureLength(isomeshes,
+    meshes = isomeshes = (IsosurfaceMesh[]) AU.ensureLength(isomeshes,
         meshCount * 2);
     currentMesh = thisMesh = isomeshes[index] = (m == null ? new IsosurfaceMesh(
         thisID, colix, index) : (IsosurfaceMesh) m);
@@ -649,7 +650,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       scriptAppendix = "";
       String script = (value instanceof String ? (String) value : null);
       int pt = (script == null ? -1 : script.indexOf("# ID="));
-      actualID = (pt >= 0 ? Parser.getQuotedStringAt(script, pt) : null);
+      actualID = (pt >= 0 ? PT.getQuotedStringAt(script, pt) : null);
       setPropertySuper("thisID", MeshCollection.PREVIOUS_MESH_ID, null);
       if (script != null && !(iHaveBitSets = getScriptBitSets(script, null)))
         sg.setParameter("select", bs);
@@ -695,7 +696,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
           meshCount--;
           if (m == currentMesh)
             currentMesh = thisMesh = null;
-          meshes = isomeshes = (IsosurfaceMesh[]) ArrayUtil.deleteElements(
+          meshes = isomeshes = (IsosurfaceMesh[]) AU.deleteElements(
               meshes, i, 1);
         } else if (m.modelIndex > modelIndex) {
           m.modelIndex--;
@@ -961,16 +962,16 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     int modelCount = viewer.getModelCount();
     if (modelCount > 1)
       appendCmd(sb, "frame " + viewer.getModelNumberDotted(imesh.modelIndex));
-    cmd = Txt.simpleReplace(cmd, ";; isosurface map"," map");
-    cmd = Txt.simpleReplace(cmd, "; isosurface map", " map");
+    cmd = javajs.util.PT.simpleReplace(cmd, ";; isosurface map"," map");
+    cmd = javajs.util.PT.simpleReplace(cmd, "; isosurface map", " map");
     cmd = cmd.replace('\t', ' ');
-    cmd = Txt.simpleReplace(cmd, ";#", "; #");
+    cmd = javajs.util.PT.simpleReplace(cmd, ";#", "; #");
     int pt = cmd.indexOf("; #");
     if (pt >= 0)
       cmd = cmd.substring(0, pt);
     if (imesh.connections != null)
       cmd += " connect " + Escape.eAI(imesh.connections);
-    cmd = Txt.trim(cmd, ";");
+    cmd = PT.trim(cmd, ";");
     if (imesh.linkedMesh != null)
       cmd += " LINK"; // for lcaoCartoon state
     if (myType == "lcaoCartoon" && imesh.atomIndex >= 0)
@@ -1068,10 +1069,10 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   protected void getCapSlabInfo(String script) {
     int i = script.indexOf("# SLAB=");
     if (i >= 0)
-      sg.setParameter("slab", MeshSurface.getCapSlabObject(Parser.getQuotedStringAt(script, i), false));
+      sg.setParameter("slab", MeshSurface.getCapSlabObject(PT.getQuotedStringAt(script, i), false));
     i = script.indexOf("# CAP=");
     if (i >= 0)
-      sg.setParameter("slab", MeshSurface.getCapSlabObject(Parser.getQuotedStringAt(script, i), true));
+      sg.setParameter("slab", MeshSurface.getCapSlabObject(PT.getQuotedStringAt(script, i), true));
   }
 
   private boolean iHaveModelIndex;
@@ -1304,7 +1305,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.invalidatePolygons();
   }
 
-  public void setOutputChannel(JmolDocument binaryDoc, OutputChannel out) {
+  public void setOutputChannel(JmolDocument binaryDoc, OC out) {
     binaryDoc.setOutputChannel(out);
   }
 
@@ -1502,7 +1503,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     else
       thisMesh.scriptCommand = script + scriptAppendix;
     if (!explicitID && script != null && (pt = script.indexOf("# ID=")) >= 0)
-      thisMesh.thisID = Parser.getQuotedStringAt(script, pt);
+      thisMesh.thisID = PT.getQuotedStringAt(script, pt);
   }
 
   public void addRequiredFile(String fileName) {
@@ -1551,7 +1552,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (s != null)
       info.put("jvxlInfo", s.replace('\n', ' '));
     info.put("modelIndex", Integer.valueOf(mesh.modelIndex));
-    info.put("color", ColorUtil.colorPtFromInt2(C
+    info.put("color", CU.colorPtFromInt2(C
         .getArgb(mesh.colix)));
     if (mesh.colorEncoder != null)
       info.put("colorKey", mesh.colorEncoder.getColorKey());

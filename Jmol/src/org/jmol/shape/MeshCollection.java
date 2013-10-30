@@ -38,7 +38,7 @@ import java.util.Map;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -109,7 +109,7 @@ public abstract class MeshCollection extends Shape {
     // this particular version is only run from privately;
     // isosurface and draw both have overriding methods
     int index = meshCount++;
-    meshes = (Mesh[])ArrayUtil.ensureLength(meshes, meshCount * 2);
+    meshes = (Mesh[])AU.ensureLength(meshes, meshCount * 2);
     currentMesh = meshes[index] = (m == null ? new Mesh().mesh1(thisID, colix, index) : m);
     currentMesh.color = color;
     currentMesh.index = index;

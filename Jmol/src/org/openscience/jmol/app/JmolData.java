@@ -23,7 +23,7 @@
  */
 package org.openscience.jmol.app;
 
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.util.Escape;
@@ -52,7 +52,7 @@ public class JmolData {
     jmolApp.isDataOnly = true;
     //jmolApp.info.put("exit", Boolean.TRUE);
 
-    String[] args = Parser.split(commandOptions, " "); // doesn't allow for double-quoted 
+    String[] args = PT.split(commandOptions, " "); // doesn't allow for double-quoted 
     jmolApp.parseCommandLine(args);
     return new JmolData(jmolApp);
   }

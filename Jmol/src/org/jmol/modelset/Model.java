@@ -34,8 +34,8 @@ import org.jmol.java.BS;
 
 import org.jmol.util.BSUtil;
 
-import javajs.util.ArrayUtil;
-import javajs.util.OutputChannel;
+import javajs.util.AU;
+import javajs.util.OC;
 import javajs.util.List;
 import javajs.util.SB;
 import javajs.util.P3;
@@ -293,11 +293,11 @@ public class Model {
   }
 
   protected void freezeM() {
-    chains = (Chain[]) ArrayUtil.arrayCopyObject(chains, chainCount);
+    chains = (Chain[]) AU.arrayCopyObject(chains, chainCount);
     groupCount = -1;
     getGroupCount();
     for (int i = 0; i < chainCount; ++i)
-      chains[i].groups = (Group[]) ArrayUtil.arrayCopyObject(chains[i].groups,
+      chains[i].groups = (Group[]) AU.arrayCopyObject(chains[i].groups,
           chains[i].groupCount);
   }
 
@@ -315,7 +315,7 @@ public class Model {
    * @param tokens
    */
   public void getPdbData(Viewer viewer, String type, char ctype,
-                         boolean isDraw, BS bsSelected, OutputChannel out,
+                         boolean isDraw, BS bsSelected, OC out,
                          LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
   }
 

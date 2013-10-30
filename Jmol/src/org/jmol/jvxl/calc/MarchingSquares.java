@@ -31,7 +31,7 @@ import org.jmol.jvxl.api.VertexDataServer;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.util.Logger;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.P3;
 import javajs.util.P4;
 
@@ -122,7 +122,7 @@ public class MarchingSquares {
 
   public int addContourVertex(P3 vertexXYZ, float value) {
     if (contourVertexCount == contourVertexes.length)
-      contourVertexes = (ContourVertex[]) ArrayUtil
+      contourVertexes = (ContourVertex[]) AU
           .doubleLength(contourVertexes);
     int vPt = surfaceReader.addVertexCopy(vertexXYZ, value, VERTEX_POINT);
     contourVertexes[contourVertexCount++] = new ContourVertex(vertexXYZ);
@@ -177,7 +177,7 @@ public class MarchingSquares {
   public int addTriangle(int iA, int iB, int iC, int check, int check2) {
     //System.out.println("addT " + iA + " " + iB + " " + iC);
     if (triangleCount == triangles.length)
-      triangles = (Triangle[]) ArrayUtil.doubleLength(triangles);
+      triangles = (Triangle[]) AU.doubleLength(triangles);
     triangles[triangleCount++] = new Triangle(iA, iB, iC, check, check2);
     return 0;
   }

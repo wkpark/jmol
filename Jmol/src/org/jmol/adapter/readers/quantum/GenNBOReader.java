@@ -31,7 +31,7 @@ import org.jmol.util.Logger;
 import java.io.BufferedReader;
 import java.io.StringReader;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -254,7 +254,7 @@ public class GenNBOReader extends MOReader {
 
     // read basis functions
     shells = new  List<int[]>();
-    gaussians = ArrayUtil.newFloat2(gaussianCount);
+    gaussians = AU.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++)
       gaussians[i] = new float[6];
     readLine(); // ----------

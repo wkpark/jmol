@@ -27,7 +27,7 @@ import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -227,7 +227,7 @@ public class CsfReader extends MopacSlaterReader {
             continue out;
           break;
         case objID1:
-          thisAtomID = javajs.util.Parser.parseInt(field);
+          thisAtomID = javajs.util.PT.parseInt(field);
           break;
         case objID2:
           thisBondID = field2+field;
@@ -297,7 +297,7 @@ public class CsfReader extends MopacSlaterReader {
           Logger.warn("field == null in " + line);
         switch (fieldTypes[i]) {
         case ID:
-          atom.atomSerial = javajs.util.Parser.parseInt(field);
+          atom.atomSerial = javajs.util.PT.parseInt(field);
           break;
         case sym:
           atom.elementSymbol = field;
@@ -597,7 +597,7 @@ public class CsfReader extends MopacSlaterReader {
 
     nOrbitals = (nSlaters + nGaussians);
     boolean isGaussian = (sto_gto.equals("gto"));
-    float[][] zetas = ArrayUtil.newFloat2(nOrbitals);
+    float[][] zetas = AU.newFloat2(nOrbitals);
     float[][] contractionCoefs = null;
     String[] types = new String[nOrbitals];
     int[] shells = new int[nOrbitals];
@@ -660,7 +660,7 @@ public class CsfReader extends MopacSlaterReader {
             gdata.addLast(new float[] { zetas[ipt][i], contractionCoefs[ipt][i] });
         }
       }
-      float[][] garray = ArrayUtil.newFloat2(gaussianCount);
+      float[][] garray = AU.newFloat2(gaussianCount);
       for (int i = 0; i < gaussianCount; i++)
         garray[i] = gdata.get(i);
       moData.put("shells", sdata);

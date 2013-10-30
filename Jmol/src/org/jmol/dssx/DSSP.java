@@ -43,7 +43,7 @@ import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
 //import javajs.util.List;
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -385,7 +385,7 @@ public class DSSP implements DSSPInterface {
     //   This part is the same as the Rasmol hydrogen bond calculation
     //
 
-    int[][][][] min = ArrayUtil.newInt4(bioPolymerCount);
+    int[][][][] min = AU.newInt4(bioPolymerCount);
     for (int i = 0; i < bioPolymerCount; i++) {
       if (!(bioPolymers[i] instanceof AminoPolymer))
         continue;
@@ -662,7 +662,7 @@ public class DSSP implements DSSPInterface {
   private String dumpTags(AminoPolymer ap, String lines, BS bsBad, int mode) {
     String prefix = ap.monomers[0].getLeadAtom().getChainID() + "."
         + (ap.bioPolymerIndexInModel + 1);
-    lines = Txt.simpleReplace(lines, "$", prefix);
+    lines = javajs.util.PT.simpleReplace(lines, "$", prefix);
     int iFirst = ap.monomers[0].getResno();
     String pre = "\n" + prefix;
     SB sb = new SB();

@@ -33,8 +33,11 @@ import java.util.Properties;
 
 import org.jmol.java.BS;
 import org.jmol.util.BoxInfo;
+
+import javajs.api.GenericPlatform;
+import javajs.api.JSInterface;
 import javajs.awt.Dimension;
-import javajs.util.OutputChannel;
+import javajs.util.OC;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.V3;
@@ -48,7 +51,7 @@ import org.jmol.viewer.Viewer;
  *
  **/
 
-abstract public class JmolViewer {
+abstract public class JmolViewer implements JSInterface {
 
   // several; methods were deprecated and removed in 13.1.15. All are accessible via "getXxxx" methods:
   
@@ -103,7 +106,7 @@ abstract public class JmolViewer {
                                           String fullName, URL documentBase,
                                           URL codeBase, String commandOptions,
                                           JmolStatusListener statusListener,
-                                          ApiPlatform implementedPlatform) {
+                                          GenericPlatform implementedPlatform) {
     Map<String, Object> info = new Hashtable<String, Object>();
     if (display != null)
       info.put("display", display);
@@ -496,12 +499,12 @@ abstract public class JmolViewer {
 
   abstract public JmolAdapter getModelAdapter();
 
-  abstract public void openFileAsyncPDB(String fileName, boolean pdbCartoons);
+  abstract public void openFileAsyncSpecial(String fileName, int flags);
   public void openFileAsync(String fileName) {
-    openFileAsyncPDB(fileName, false);    
+    openFileAsyncSpecial(fileName, 0);    
   }
   
-  abstract public Object getFileAsBytes(String fullPathName, OutputChannel out);
+  abstract public Object getFileAsBytes(String fullPathName, OC out);
 
   abstract public String getErrorMessage();
   abstract public String getErrorMessageUn();
@@ -513,15 +516,15 @@ abstract public class JmolViewer {
   abstract public void processMultitouchEvent(int groupID, int eventType, int touchID, int iData,
                            P3 pt, long time);
 
-  abstract public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
+  abstract public boolean processMouseEvent(int id, int x, int y, int modifiers,
                                      long when);
 
   public void mouseEvent(int id, int x, int y, int modifiers,
                          long when) {
-    handleOldJvm10Event(id, x, y, modifiers, when);
+    processMouseEvent(id, x, y, modifiers, when);
   }
 
-  public ApiPlatform apiPlatform; // used in Viewer and JmolViewer
+  public GenericPlatform apiPlatform; // used in Viewer and JmolViewer
 
   /**
    * old -- not used in 12.2

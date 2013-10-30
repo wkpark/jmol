@@ -532,7 +532,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         break;
       }
       String id = json.getString("id");
-      String path = Txt.simpleReplace(contentPath, "%ID%", id).replace(
+      String path = javajs.util.PT.simpleReplace(contentPath, "%ID%", id).replace(
           '\\', '/');
       File f = new File(path);
       Logger.info("JsonNiosService Setting path to " + f.getAbsolutePath());

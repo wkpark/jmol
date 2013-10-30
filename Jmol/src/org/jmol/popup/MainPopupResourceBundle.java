@@ -28,7 +28,7 @@ import java.util.Properties;
 
 import org.jmol.i18n.GT;
 
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 
@@ -612,7 +612,7 @@ public class MainPopupResourceBundle extends PopupResource {
         "front", GT._("Front"),
         "left", GT._("Left"),
         "right", GT._("Right"),
-        "top", Parser.split(GT._("Top[as in \"view from the top, from above\" - (translators: remove this bracketed part]"), "[")[0],
+        "top", PT.split(GT._("Top[as in \"view from the top, from above\" - (translators: remove this bracketed part]"), "[")[0],
         "bottom", GT._("Bottom"),
         "back", GT._("Back"),
 

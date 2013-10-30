@@ -23,8 +23,9 @@
  */
 package org.jmol.viewer;
 
+import javajs.util.Base64;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import java.util.Arrays;
@@ -37,7 +38,6 @@ import java.util.Properties;
 
 import org.jmol.api.JmolPropertyManager;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.io.Base64;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -232,14 +232,14 @@ public class PropertyManager implements JmolPropertyManager {
   private Object getModelProperty(String propertyName, Object propertyValue) {
     propertyName = propertyName.replace(']', ' ').replace('[', ' ').replace(
         '.', ' ');
-    propertyName = Txt.simpleReplace(propertyName, "  ", " ");
-    String[] names = Parser.split(Txt.trim(propertyName, " "),
+    propertyName = javajs.util.PT.simpleReplace(propertyName, "  ", " ");
+    String[] names = PT.split(PT.trim(propertyName, " "),
         " ");
     SV[] args = new SV[names.length];
     propertyName = names[0];
     int n;
     for (int i = 1; i < names.length; i++) {
-      if ((n = javajs.util.Parser.parseInt(names[i])) != Integer.MIN_VALUE)
+      if ((n = javajs.util.PT.parseInt(names[i])) != Integer.MIN_VALUE)
         args[i] = SV.newScriptVariableInt(n);
       else
         args[i] = SV.newVariable(T.string, names[i]);
@@ -451,9 +451,9 @@ public class PropertyManager implements JmolPropertyManager {
       width = -1;
       int pt;
       if ((pt = params.indexOf("height=")) >= 0)
-        height = javajs.util.Parser.parseInt(params.substring(pt + 7));
+        height = javajs.util.PT.parseInt(params.substring(pt + 7));
       if ((pt = params.indexOf("width=")) >= 0)
-        width = javajs.util.Parser.parseInt(params.substring(pt + 6));
+        width = javajs.util.PT.parseInt(params.substring(pt + 6));
       if (width < 0 && height < 0)
         height = width = -1;
       else if (width < 0)
@@ -464,7 +464,7 @@ public class PropertyManager implements JmolPropertyManager {
         returnType = "string";
       String type = "JPG";
       if (params.indexOf("type=") >= 0)
-        type = Parser.getTokens(Txt.replaceAllCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
+        type = PT.getTokens(PT.replaceAllCharacter(params.substring(params.indexOf("type=") + 5), ";,", ' '))[0];
       String[] errMsg = new String[1];
       byte[] bytes = viewer.getImageAsBytes(type.toUpperCase(), width,  height, -1, errMsg);
       return (errMsg[0] != null ? errMsg[0] : returnType == null ? bytes : Base64
@@ -542,7 +542,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (objHeader instanceof Map) {
       return (haveType ? ((Map<?, ?>) objHeader).get(type) : objHeader);
     }
-    String[] lines = Parser.split((String) objHeader, "\n");
+    String[] lines = PT.split((String) objHeader, "\n");
     // this is meant to be for PDB files only
     if (lines.length == 0
         || lines[0].length() < 6
@@ -1285,7 +1285,7 @@ public class PropertyManager implements JmolPropertyManager {
     viewer.getAtomIdentityInfo(atom2.index, infoB);
     info.put("atom1", infoA);
     info.put("atom2", infoB);
-    info.put("order", Float.valueOf(Parser.fVal(JmolEdge
+    info.put("order", Float.valueOf(PT.fVal(JmolEdge
         .getBondOrderNumberFromOrder(bond.order))));
     info.put("type", JmolEdge.getBondOrderNameFromOrder(bond.order));
     info.put("radius", Float.valueOf((float) (bond.mad / 2000.)));

@@ -32,16 +32,15 @@ import java.util.Map;
 
 import org.jmol.api.SymmetryInterface;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
 
 import javajs.util.M4;
 import javajs.util.P3;
-import org.jmol.util.Txt;
 
 /*
  * 
@@ -414,7 +413,7 @@ class SpaceGroup {
     if (xyz0.startsWith("x1,x2,x3,x4") && modulationDimension == 0) {
       xyzList.clear();
       operationCount = 0;
-      modulationDimension = javajs.util.Parser.parseInt(xyz0.substring(xyz0
+      modulationDimension = javajs.util.PT.parseInt(xyz0.substring(xyz0
           .lastIndexOf("x") + 1)) - 3;
     }
 
@@ -433,7 +432,7 @@ class SpaceGroup {
       // ! in character 0 indicates we are using the symop() function and want to be explicit
       if (xyzList.containsKey(xyz))
         return xyzList.get(xyz).intValue();
-      if (latticeOp < 0 && xyzList.containsKey(Txt.simpleReplace(Txt.simpleReplace(xyz, "+1/2", ""), "+1/2", "")))
+      if (latticeOp < 0 && xyzList.containsKey(javajs.util.PT.simpleReplace(javajs.util.PT.simpleReplace(xyz, "+1/2", ""), "+1/2", "")))
         latticeOp = operationCount;
       xyzList.put(xyz, Integer.valueOf(operationCount));
     }
@@ -442,7 +441,7 @@ class SpaceGroup {
     if (operations == null)
       operations = new SymmetryOperation[4];
     if (operationCount == operations.length)
-      operations = (SymmetryOperation[]) ArrayUtil.arrayCopyObject(operations,
+      operations = (SymmetryOperation[]) AU.arrayCopyObject(operations,
           operationCount * 2);
     operations[operationCount++] = op;
     if (Logger.debugging)
@@ -454,7 +453,7 @@ class SpaceGroup {
   private void generateOperatorsFromXyzInfo(String xyzInfo) {
     addOperation(null, 0);
     addSymmetry("x,y,z", 0);
-    String[] terms = Parser.split(xyzInfo.toLowerCase(), ";");
+    String[] terms = PT.split(xyzInfo.toLowerCase(), ";");
     for (int i = 0; i < terms.length; i++)
       addSymmetry(terms[i], 0);
   }
@@ -581,13 +580,13 @@ class SpaceGroup {
     }
 
     if (nameType != NAME_HALL && !haveExtension
-        && Parser.isOneOf(name, ambiguousNames)) {
+        && PT.isOneOf(name, ambiguousNames)) {
       ext = "?";
       haveExtension = true;
     }
 
     // generate spaceless abbreviation "P m m m" --> "Pmmm"  "P 2(1)/c" --> "P21/c"
-    String abbr = Txt.replaceAllCharacters(name, " ()", "");
+    String abbr = PT.replaceAllCharacters(name, " ()", "");
 
     SpaceGroup s;
 
@@ -720,12 +719,12 @@ class SpaceGroup {
   private static String lastInfo = "";
   
   private void buildSpaceGroup(String cifLine) {
-    String[] terms = Parser.split(cifLine.toLowerCase(), ";");
+    String[] terms = PT.split(cifLine.toLowerCase(), ";");
     String[] parts;
 
     intlTableNumberFull = terms[0].trim(); // International Table Number :
                                            // options
-    parts = Parser.split(intlTableNumberFull, ":");
+    parts = PT.split(intlTableNumberFull, ":");
     intlTableNumber = parts[0];
     intlTableNumberExt = (parts.length == 1 ? "" : parts[1]);
     ambiguityType = '\0';
@@ -751,7 +750,7 @@ class SpaceGroup {
 
     hmSymbolFull = Character.toUpperCase(terms[2].charAt(0))
         + terms[2].substring(1);
-    parts = Parser.split(hmSymbolFull, ":");
+    parts = PT.split(hmSymbolFull, ":");
     hmSymbol = parts[0];
     hmSymbolExt = (parts.length == 1 ? "" : parts[1]);
     int pt = hmSymbol.indexOf(" -3");
@@ -760,9 +759,9 @@ class SpaceGroup {
         hmSymbolAlternative = (hmSymbol.substring(0, pt) + " 3"
             + hmSymbol.substring(pt + 3)).toLowerCase();
       }
-    hmSymbolAbbr = Txt.simpleReplace(hmSymbol, " ", "");
-    hmSymbolAbbrShort = Txt.simpleReplace(hmSymbol, " 1", "");
-    hmSymbolAbbrShort = Txt.simpleReplace(hmSymbolAbbrShort, " ", "");
+    hmSymbolAbbr = javajs.util.PT.simpleReplace(hmSymbol, " ", "");
+    hmSymbolAbbrShort = javajs.util.PT.simpleReplace(hmSymbol, " 1", "");
+    hmSymbolAbbrShort = javajs.util.PT.simpleReplace(hmSymbolAbbrShort, " ", "");
 
     hallSymbol = terms[3];
     if (hallSymbol.length() > 1)
@@ -1392,7 +1391,7 @@ class SpaceGroup {
         SymmetryOperation newOp = new SymmetryOperation(null, null, 0, 0,
             doNormalize);
         newOp.modDim = modulationDimension;
-        newOp.rotTransMatrix = ArrayUtil.arrayCopyF(rotTrans, -1);
+        newOp.rotTransMatrix = AU.arrayCopyF(rotTrans, -1);
         newOp.setFromMatrix(data, false);
         newOp.xyzOriginal = newOp.xyz;
         addOp(newOp, newOp.xyz, true);

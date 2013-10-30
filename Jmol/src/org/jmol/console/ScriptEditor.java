@@ -32,7 +32,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -136,7 +136,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       openButton = setButton(GT._("Open"));
     loadButton = setButton(GT._("Script"));
     checkButton = setButton(GT._("Check"));
-    topButton = setButton(Parser.split(GT._("Top[as in \"go to the top\" - (translators: remove this bracketed part]"), "[")[0]);
+    topButton = setButton(PT.split(GT._("Top[as in \"go to the top\" - (translators: remove this bracketed part]"), "[")[0]);
     stepButton = setButton(GT._("Step"));
     runButton = setButton(GT._("Run"));
     pauseButton = setButton(GT._("Pause"));

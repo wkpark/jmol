@@ -27,7 +27,7 @@ package org.jmol.modelset;
 import javajs.J2SRequireImport;
 import org.jmol.util.BSUtil;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import javajs.util.P3;
@@ -252,7 +252,7 @@ public class Group {
   
   synchronized static short addGroup3Name(String group3) {
     if (group3NameCount == group3Names.length)
-      group3Names = ArrayUtil.doubleLengthS(group3Names);
+      group3Names = AU.doubleLengthS(group3Names);
     short groupID = group3NameCount++;
     group3Names[groupID] = group3;
     htGroup.put(group3, Short.valueOf(groupID));

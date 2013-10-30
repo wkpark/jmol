@@ -25,13 +25,13 @@ package org.jmol.viewer;
 
 import org.jmol.script.T;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 
 import org.jmol.util.C;
 import org.jmol.util.Elements;
 import org.jmol.util.GData;
 import org.jmol.util.Logger;
-import javajs.util.Parser;
+import javajs.util.PT;
 import org.jmol.constant.EnumPalette;
 import org.jmol.constant.StaticConstants;
 import org.jmol.java.BS;
@@ -69,7 +69,7 @@ class ColorManager {
     this.viewer = viewer;
     g3d = gdata;
     argbsCpk = EnumPalette.argbsCpk;
-    altArgbsCpk = ArrayUtil.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
+    altArgbsCpk = AU.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
   }
 
   void clear() {
@@ -89,12 +89,12 @@ class ColorManager {
   void setDefaultColors(boolean isRasmol) {
     if (isRasmol) {
       isDefaultColorRasmol = true;
-      argbsCpk = ArrayUtil.arrayCopyI(ColorEncoder.getRasmolScale(), -1);
+      argbsCpk = AU.arrayCopyI(ColorEncoder.getRasmolScale(), -1);
     } else {
       isDefaultColorRasmol = false;
       argbsCpk = EnumPalette.argbsCpk;
     }
-    altArgbsCpk = ArrayUtil.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
+    altArgbsCpk = AU.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
     propertyColorEncoder.createColorScheme((isRasmol ? "Rasmol="
         : "Jmol="), true, true);
     for (int i = EnumPalette.argbsCpk.length; --i >= 0;)
@@ -285,8 +285,8 @@ class ColorManager {
       return;
     argb = getJmolOrRasmolArgb(id, argb);
     if (argbsCpk == EnumPalette.argbsCpk) {
-      argbsCpk = ArrayUtil.arrayCopyRangeI(EnumPalette.argbsCpk, 0, -1);
-      altArgbsCpk = ArrayUtil.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
+      argbsCpk = AU.arrayCopyRangeI(EnumPalette.argbsCpk, 0, -1);
+      altArgbsCpk = AU.arrayCopyRangeI(JC.altArgbsCpk, 0, -1);
     }
     if (id < Elements.elementNumberMax) {
       argbsCpk[id] = argb;
@@ -310,7 +310,7 @@ class ColorManager {
     colorData = data;
     propertyColorEncoder.currentPalette = propertyColorEncoder.createColorScheme(
         colorScheme, true, false);
-    propertyColorEncoder.hi = Parser.FLOAT_MIN_SAFE;
+    propertyColorEncoder.hi = PT.FLOAT_MIN_SAFE;
     propertyColorEncoder.lo = Float.MAX_VALUE;
     if (data == null)
       return;

@@ -33,10 +33,11 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
-import org.jmol.api.EventManager;
-import org.jmol.api.JmolMouseInterface;
-import org.jmol.api.Event;
-import org.jmol.api.PlatformViewer;
+import javajs.api.EventManager;
+import javajs.api.GenericMouseInterface;
+import javajs.api.PlatformViewer;
+import javajs.awt.event.Event;
+
 import org.jmol.script.T;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -52,7 +53,7 @@ import org.jmol.viewer.Viewer;
  */
 
 class Mouse implements MouseWheelListener, MouseListener,
-    MouseMotionListener, KeyListener, JmolMouseInterface {
+    MouseMotionListener, KeyListener, GenericMouseInterface {
 
   private Viewer viewer;
   private EventManager manager;
@@ -86,7 +87,7 @@ class Mouse implements MouseWheelListener, MouseListener,
     display.removeKeyListener(this);
   }
 
-  public boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time) {
+  public boolean processEvent(int id, int x, int y, int modifiers, long time) {
     modifiers = applyLeftMouse(modifiers);
     switch (id) {
     case Event.MOUSE_DOWN:
@@ -363,7 +364,7 @@ class Mouse implements MouseWheelListener, MouseListener,
   private int xWhenPressed, yWhenPressed, modifiersWhenPressed10;
 
   public void processTwoPointGesture(float[][][] touches) {
-    // TODO
+    // n/a
     
   }
 

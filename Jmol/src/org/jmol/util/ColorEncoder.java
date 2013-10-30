@@ -23,9 +23,11 @@
  */
 package org.jmol.util;
 
-import javajs.util.ArrayUtil;
-import javajs.util.ColorUtil;
+import javajs.util.AU;
+import javajs.util.CU;
 import javajs.util.List;
+import javajs.util.PT;
+
 import java.util.Hashtable;
 
 import java.util.Map;
@@ -259,7 +261,7 @@ import javajs.util.P3;
     int pt = Math.max(colorScheme.indexOf("=")
         , colorScheme.indexOf("["));
     if (pt >= 0) {
-      String name = Txt.replaceAllCharacters(colorScheme
+      String name = PT.replaceAllCharacters(colorScheme
           .substring(0, pt), " =", "");
       if (name.length() > 0)
         isOverloaded = true;
@@ -268,9 +270,9 @@ import javajs.util.P3;
         // also allow xxx=red,blue,green
         
         colorScheme = "[" + colorScheme.substring(pt + 1).trim() + "]";
-        colorScheme = Txt.simpleReplace(colorScheme.replace('\n', ' '), "  ", " ");
-        colorScheme = Txt.simpleReplace(colorScheme, ", ", ",").replace(' ',',');
-        colorScheme = Txt.simpleReplace(colorScheme, ",", "][");
+        colorScheme = PT.simpleReplace(colorScheme.replace('\n', ' '), "  ", " ");
+        colorScheme = PT.simpleReplace(colorScheme, ", ", ",").replace(' ',',');
+        colorScheme = PT.simpleReplace(colorScheme, ",", "][");
       }
       pt = -1;
       while ((pt = colorScheme.indexOf("[", pt + 1)) >= 0)
@@ -287,10 +289,10 @@ import javajs.util.P3;
         int pt2 = colorScheme.indexOf("]", pt);
         if (pt2 < 0)
           pt2 = colorScheme.length() - 1;
-        int c = ColorUtil.getArgbFromString(colorScheme.substring(pt,
+        int c = CU.getArgbFromString(colorScheme.substring(pt,
             pt2 + 1));
         if (c == 0) // try without the brackets
-          c = ColorUtil.getArgbFromString(colorScheme.substring(pt + 1, pt2).trim());        
+          c = CU.getArgbFromString(colorScheme.substring(pt + 1, pt2).trim());        
         if (c == 0) {
           Logger.error("error in color value: "
               + colorScheme.substring(pt, pt2 + 1));
@@ -345,11 +347,11 @@ import javajs.util.P3;
     case ROYGB:
       return propertyColorEncoder.argbsRoygb;
     case BGYOR:
-      return ArrayUtil.arrayCopyRangeRevI(propertyColorEncoder.argbsRoygb, 0, -1);
+      return AU.arrayCopyRangeRevI(propertyColorEncoder.argbsRoygb, 0, -1);
     case LOW:
-      return ArrayUtil.arrayCopyRangeI(propertyColorEncoder.argbsRoygb, 0, propertyColorEncoder.ihalf);
+      return AU.arrayCopyRangeI(propertyColorEncoder.argbsRoygb, 0, propertyColorEncoder.ihalf);
     case HIGH:
-      int[] a = ArrayUtil.arrayCopyRangeI(propertyColorEncoder.argbsRoygb, propertyColorEncoder.argbsRoygb.length - 2 * propertyColorEncoder.ihalf, -1);
+      int[] a = AU.arrayCopyRangeI(propertyColorEncoder.argbsRoygb, propertyColorEncoder.argbsRoygb.length - 2 * propertyColorEncoder.ihalf, -1);
       b = new int[propertyColorEncoder.ihalf];
       for (int i = b.length, j = a.length; --i >= 0 && --j >= 0;)
         b[i] = a[j--];
@@ -361,7 +363,7 @@ import javajs.util.P3;
     case RWB:
       return propertyColorEncoder.argbsRwb;
     case BWR:
-      return ArrayUtil.arrayCopyRangeRevI(propertyColorEncoder.argbsRwb, 0, -1);
+      return AU.arrayCopyRangeRevI(propertyColorEncoder.argbsRwb, 0, -1);
     case JMOL:
       return propertyColorEncoder.argbsCpk;
     case RASMOL:
@@ -373,7 +375,7 @@ import javajs.util.P3;
     case USER:
       return propertyColorEncoder.userScale;
     case RESU:
-      return ArrayUtil.arrayCopyRangeRevI(propertyColorEncoder.userScale, 0, -1);
+      return AU.arrayCopyRangeRevI(propertyColorEncoder.userScale, 0, -1);
     default:
       return null;
     }
@@ -515,7 +517,7 @@ import javajs.util.P3;
 
     for (int i = 0; i < segmentCount; i++) {
       values[i] = (isReversed ? hi - i * quantum : lo + i * quantum);
-      colors.addLast(ColorUtil.colorPtFromInt2(getArgb(values[i] + f)));
+      colors.addLast(CU.colorPtFromInt2(getArgb(values[i] + f)));
     }
     values[segmentCount] = (isReversed ? lo : hi);
     info.put("values", values);
@@ -588,7 +590,7 @@ import javajs.util.P3;
     int[] b = new int[JC.argbsRoygbScale.length];
     for (int i = 0; i < b.length; i++) {
       float xff = (1f / b.length * (b.length - i));        
-      b[i] = ColorUtil.colorTriadToFFRGB(xff, xff, xff);
+      b[i] = CU.colorTriadToFFRGB(xff, xff, xff);
     }
     return propertyColorEncoder.paletteWB = b;
   }
@@ -599,13 +601,13 @@ import javajs.util.P3;
     int[] b = new int[n];
     float[] rgb1 = new float[3];
     float[] rgb2 = new float[3];
-    ColorUtil.toRGB3f(color1, rgb1);
-    ColorUtil.toRGB3f(color2, rgb2);
+    CU.toRGB3f(color1, rgb1);
+    CU.toRGB3f(color2, rgb2);
     float dr = (rgb2[0] - rgb1[0]) / (n - 1);
     float dg = (rgb2[1] - rgb1[1]) / (n - 1);
     float db = (rgb2[2] - rgb1[2]) / (n - 1);
     for (int i = 0; i < n; i++)
-      b[i] = ColorUtil.colorTriadToFFRGB(rgb1[0] + dr * i, rgb1[1] + dg * i,
+      b[i] = CU.colorTriadToFFRGB(rgb1[0] + dr * i, rgb1[1] + dg * i,
           rgb1[2] + db * i);
     return b;
   }
@@ -615,7 +617,7 @@ import javajs.util.P3;
     int[] b = new int[JC.argbsRoygbScale.length];
     for (int i = 0; i < b.length; i++) {
       float xff = (1f / b.length * i); 
-      b[i] = ColorUtil.colorTriadToFFRGB(xff, xff, xff);
+      b[i] = CU.colorTriadToFFRGB(xff, xff, xff);
     }
     return propertyColorEncoder.paletteBW = b;
   }

@@ -24,7 +24,7 @@
 package org.jmol.adapter.readers.simple;
 
 
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
@@ -58,7 +58,7 @@ public class MopacReader extends AtomSetCollectionReader {
       else if (line.indexOf("2002") >= 0)
         mopacVersion = 2002;
       else if (line.indexOf("MOPAC2") >= 0)
-        mopacVersion = javajs.util.Parser.parseInt(line.substring(line.indexOf("MOPAC2") + 5));
+        mopacVersion = javajs.util.PT.parseInt(line.substring(line.indexOf("MOPAC2") + 5));
     }
     Logger.info("MOPAC version " + mopacVersion);
   }
@@ -234,7 +234,7 @@ void processAtomicCharges() throws Exception {
       if (line.toUpperCase().indexOf("ROOT") >= 0) {
         discardLinesUntilNonBlank();
         tokens = getTokens();
-        if (Float.isNaN(Parser.parseFloatStrict(tokens[tokens.length - 1]))) {
+        if (Float.isNaN(PT.parseFloatStrict(tokens[tokens.length - 1]))) {
           discardLinesUntilNonBlank();
           tokens = getTokens();
         }
@@ -243,10 +243,10 @@ void processAtomicCharges() throws Exception {
         int iAtom0 = atomSetCollection.getAtomCount();
         int atomCount = atomSetCollection.getLastAtomSetAtomCount();
         boolean[] ignore = new boolean[frequencyCount];
-        float freq1 = Parser.parseFloatStrict(tokens[0]);
+        float freq1 = PT.parseFloatStrict(tokens[0]);
         boolean ignoreNegative = (freq1 < 0);
         for (int i = 0; i < frequencyCount; ++i) {
-          ignore[i] = done || (done = (!ignoreNegative && Parser.parseFloatStrict(tokens[i]) < 1))
+          ignore[i] = done || (done = (!ignoreNegative && PT.parseFloatStrict(tokens[i]) < 1))
           || !doGetVibration(++vibrationNumber);
           if (ignore[i])
             continue;  

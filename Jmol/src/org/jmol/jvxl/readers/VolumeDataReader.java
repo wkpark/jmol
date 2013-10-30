@@ -28,7 +28,7 @@ import org.jmol.atomdata.AtomDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.SB;
 import javajs.util.P3;
 
@@ -108,7 +108,7 @@ abstract class VolumeDataReader extends SurfaceReader {
     }
     newVoxelDataCube();
     for (int x = 0; x < nPointsX; ++x) {
-      float[][] plane = ArrayUtil.newFloat2(nPointsY);
+      float[][] plane = AU.newFloat2(nPointsY);
       voxelData[x] = plane;
       int ptyz = 0;
       for (int y = 0; y < nPointsY; ++y) {

@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.A4;
 import javajs.util.M3;
@@ -75,7 +75,7 @@ public class Escape {
   }
 
   public static String matrixToScript(Object m) {
-    return Txt.replaceAllCharacters(m.toString(), "\n\r ","").replace('\t',' ');
+    return PT.replaceAllCharacters(m.toString(), "\n\r ","").replace('\t',' ');
   }
 
   public static String eP4(P4 x) {
@@ -107,9 +107,9 @@ public class Escape {
     if (isAP(x))
       return eAP((P3[]) x);
     if (x instanceof M3) 
-      return Txt.simpleReplace(((M3) x).toString(), "\t", ",\t");
+      return PT.simpleReplace(((M3) x).toString(), "\t", ",\t");
     if (x instanceof M4) 
-      return Txt.simpleReplace(((M4) x).toString(), "\t", ",\t");
+      return PT.simpleReplace(((M4) x).toString(), "\t", ",\t");
     if (x instanceof A4) {
       A4 a = (A4) x;
       return "{" + a.x + " " + a.y + " " + a.z + " " + (float) (a.angle * 180d/Math.PI) + "}";
@@ -457,7 +457,7 @@ public class Escape {
   private static String escapeNice(String s) {
     if (s == null)
       return "null";
-    float f = Parser.parseFloatStrict(s);
+    float f = PT.parseFloatStrict(s);
     return (Float.isNaN(f) ? eS(s) : s);
   }
 
@@ -488,7 +488,7 @@ public class Escape {
     str = str.substring(1, str.length() - 1);
     int[] next = new int[1];
     for (; nPoints < 5; nPoints++) {
-      points[nPoints] = Parser.parseFloatNext(str, next);
+      points[nPoints] = PT.parseFloatNext(str, next);
       if (Float.isNaN(points[nPoints])) {
         if (next[0] >= str.length() || str.charAt(next[0]) != ',')
           break;
@@ -575,12 +575,12 @@ public class Escape {
     int[] next = new int[1];
     int nPoints = 0;
     for (; nPoints < 16; nPoints++) {
-      points[nPoints] = Parser.parseFloatNext(str, next);
+      points[nPoints] = PT.parseFloatNext(str, next);
       if (Float.isNaN(points[nPoints])) {
         break;
       }
     }
-    if (!Float.isNaN(Parser.parseFloatNext(str, next)))
+    if (!Float.isNaN(PT.parseFloatNext(str, next)))
       return strMatrix; // overflow
     if (nPoints == 9)
       return M3.newA(points);
@@ -660,8 +660,8 @@ public class Escape {
     {}
     if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
       return s;
-    s = Txt.simpleReplace(s, "\"", "''");
-    s = Txt.simpleReplace(s, "\n", " | ");
+    s = PT.simpleReplace(s, "\"", "''");
+    s = PT.simpleReplace(s, "\n", " | ");
     return "\"" + s + "\"";
   }
 
@@ -1044,10 +1044,10 @@ public class Escape {
     int[] next = new int[1];
     next[0] = 1;
     while (next[0] < data.length()) {
-      String s = Parser.getQuotedStringNext(data, next);
+      String s = PT.getQuotedStringNext(data, next);
       if (s == null)
         return null;
-      v.addLast(Txt.simpleReplace(s, "\\\"", "\""));      
+      v.addLast(PT.simpleReplace(s, "\\\"", "\""));      
       while (next[0] < data.length() && data.charAt(next[0]) != '"')
         next[0]++;
     }    
@@ -1055,11 +1055,11 @@ public class Escape {
   }
 
   public static String escapeUrl(String url) {
-    url = Txt.simpleReplace(url, "\n", "");
-    url = Txt.simpleReplace(url, "%", "%25");
-    url = Txt.simpleReplace(url, "[", "%5B");
-    url = Txt.simpleReplace(url, "]", "%5D");
-    url = Txt.simpleReplace(url, " ", "%20");
+    url = PT.simpleReplace(url, "\n", "");
+    url = PT.simpleReplace(url, "%", "%25");
+    url = PT.simpleReplace(url, "[", "%5B");
+    url = PT.simpleReplace(url, "]", "%5D");
+    url = PT.simpleReplace(url, " ", "%20");
     return url;
   }
 

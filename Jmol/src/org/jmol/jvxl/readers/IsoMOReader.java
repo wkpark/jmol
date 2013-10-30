@@ -29,7 +29,7 @@ import java.util.Random;
 
 
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -101,7 +101,7 @@ class IsoMOReader extends AtomDataReader {
         coef = (float[]) mo.get("coefficients");
         dfCoefMaps = (int[][]) mo.get("dfCoefMaps");
       } else {
-        coefs = ArrayUtil.newFloat2(mos.size());
+        coefs = AU.newFloat2(mos.size());
         for (int i = 1; i < linearCombination.length; i += 2) {
           int j = (int) linearCombination[i];
           if (j > mos.size() || j < 1)

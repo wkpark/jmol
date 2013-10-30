@@ -24,7 +24,7 @@
 
 package org.jmol.shapesurface;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -44,11 +44,11 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.MeshSurface;
 
-import javajs.util.ColorUtil;
+import javajs.util.CU;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
@@ -473,7 +473,7 @@ public class IsosurfaceMesh extends Mesh {
     if (jvxlData.contourColixes != null) {
       // set in SurfaceReader.colorData()
       for (int i = 0; i < jvxlData.contourColixes.length; i++) {
-        colors.addLast(ColorUtil.colorPtFromInt2(C
+        colors.addLast(CU.colorPtFromInt2(C
             .getArgb(jvxlData.contourColixes[i])));
       }
       ht.put("colors", colors);
@@ -711,7 +711,7 @@ public class IsosurfaceMesh extends Mesh {
 
   void setJvxlDataRendering() {
     if (jvxlData.rendering != null) {
-      String[] tokens = Parser.getTokens(jvxlData.rendering);
+      String[] tokens = PT.getTokens(jvxlData.rendering);
       for (int i = 0; i < tokens.length; i++)
         setTokenProperty(T.getTokFromName(tokens[i]), true);
     }
@@ -871,11 +871,11 @@ public class IsosurfaceMesh extends Mesh {
             : m.bsSlabDisplay.cardinality());
     if (vertices == null)
       vertices = new P3[0];
-    vertices = (P3[]) ArrayUtil.ensureLength(vertices, nV);
-    vertexValues = ArrayUtil.ensureLengthA(vertexValues, nV);
+    vertices = (P3[]) AU.ensureLength(vertices, nV);
+    vertexValues = AU.ensureLengthA(vertexValues, nV);
     boolean haveSources = (vertexSource != null && (m == null || m.vertexSource != null));
-    vertexSource = ArrayUtil.ensureLengthI(vertexSource, nV);
-    int[][] newPolygons = ArrayUtil.newInt2(nP);
+    vertexSource = AU.ensureLengthI(vertexSource, nV);
+    int[][] newPolygons = AU.newInt2(nP);
     // note -- no attempt here to merge vertices
     int ipt = mergePolygons(this, 0, 0, newPolygons);
     if (m != null) {
@@ -980,7 +980,7 @@ public class IsosurfaceMesh extends Mesh {
         // copy points because at least some will be needed by both sides,
         // and in some cases triangles will be split multiple times
         
-        int[] p = ArrayUtil.arrayCopyRangeI(polygonIndexes[j], 0, -1);
+        int[] p = AU.arrayCopyRangeI(polygonIndexes[j], 0, -1);
         for (int k = 0; k < 3; k++) {
           int pk = p[k];
           p[k] = addIntersectionVertex(vertices[pk], vertexValues[pk], 

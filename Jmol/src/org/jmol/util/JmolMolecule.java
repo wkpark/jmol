@@ -27,7 +27,7 @@ package org.jmol.util;
 
 import org.jmol.java.BS;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 
 
@@ -284,7 +284,7 @@ public class JmolMolecule {
   }
   
   private static JmolMolecule[] allocateArray(JmolMolecule[] molecules, int len) {
-    return (len == molecules.length ? molecules : (JmolMolecule[]) ArrayUtil
+    return (len == molecules.length ? molecules : (JmolMolecule[]) AU
         .arrayCopyObject(molecules, len));
   }
   

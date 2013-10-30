@@ -31,7 +31,7 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 
 import java.util.Hashtable;
@@ -224,7 +224,7 @@ class SpartanArchive {
      */
 
     List<int[]> shells = new  List<int[]>();
-    float[][] gaussians = ArrayUtil.newFloat2(gaussianCount);
+    float[][] gaussians = AU.newFloat2(gaussianCount);
     int[] typeArray = new int[gaussianCount];
     //if (false) { // checking these still
     // r.getDFMap(DC_LIST, JmolAdapter.SHELL_D_CARTESIAN, BasisFunctionReader.CANONICAL_DC_LIST, 3);

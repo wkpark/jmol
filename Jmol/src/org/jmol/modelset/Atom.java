@@ -38,7 +38,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
 
-import javajs.util.ColorUtil;
+import javajs.util.CU;
 import javajs.util.List;
 import javajs.util.SB;
 import javajs.util.P3;
@@ -1446,7 +1446,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case T.xyz:
       return atom;
     case T.color:
-      return ColorUtil.colorPtFromInt2(
+      return CU.colorPtFromInt2(
           atom.group.chain.model.modelSet.viewer.getColorArgbOrGray(atom.getColix())
           );
     }

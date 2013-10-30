@@ -24,7 +24,7 @@
 
 package org.jmol.util;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.V3;
@@ -81,7 +81,7 @@ public class SimpleUnitCell {
   protected void set(float[] parameters) {
     if (!isValid(parameters))
       return;
-    notionalUnitcell = ArrayUtil.arrayCopyF(parameters, parameters.length);
+    notionalUnitcell = AU.arrayCopyF(parameters, parameters.length);
 
     a = parameters[0];
     b = parameters[1];
@@ -113,7 +113,7 @@ public class SimpleUnitCell {
       beta = (c < 0 ? 90 : va.angle(vc) / toRadians);
       gamma = (b < 0 ? 90 : va.angle(vb) / toRadians);
       if (c < 0) {
-        float[] n = ArrayUtil.arrayCopyF(parameters, -1);
+        float[] n = AU.arrayCopyF(parameters, -1);
         if (b < 0) {
           vb.set(0, 0, 1);
           vb.cross(vb, va);

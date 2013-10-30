@@ -1,6 +1,6 @@
 package javajs.swing;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.SB;
 
 
@@ -21,7 +21,7 @@ public class Grid {
 		if (c.gridx >= ncols) {
 			ncols = c.gridx + 1;
 			for (int i = 0; i < nrows; i++) {
-				grid[i] = (Cell[]) ArrayUtil.ensureLength(grid[i], ncols * 2);
+				grid[i] = (Cell[]) AU.ensureLength(grid[i], ncols * 2);
 			}
 		}
 		if (c.gridy >= nrows) {

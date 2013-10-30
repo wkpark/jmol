@@ -26,7 +26,7 @@ package org.jmol.modelsetbio;
 import java.util.Map;
 
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.P3;
 import javajs.util.V3;
 
@@ -193,7 +193,7 @@ public abstract class ProteinStructure {
   public void getInfo(Map<String, Object> info) {
     info.put("type", type.getBioStructureTypeName(false));
     int[] leadAtomIndices = apolymer.getLeadAtomIndices();
-    int[] iArray = ArrayUtil.arrayCopyRangeI(leadAtomIndices, monomerIndexFirst, monomerIndexFirst + monomerCount);
+    int[] iArray = AU.arrayCopyRangeI(leadAtomIndices, monomerIndexFirst, monomerIndexFirst + monomerCount);
     info.put("leadAtomIndices", iArray);
     calcAxis();
     if (axisA == null)

@@ -34,7 +34,7 @@ import javajs.util.P3;
 
 
 
-final public class ArrayUtil {
+final public class AU {
 
   /**
    * Very important that this not be used with Int32Array or Float32Array,

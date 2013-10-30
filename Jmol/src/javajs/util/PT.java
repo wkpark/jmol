@@ -24,17 +24,23 @@
 
 package javajs.util;
 
-public class Parser {
+/**
+ * a combination of Parsing and Text-related utility classes
+ * 
+ * @author hansonr
+ * 
+ */
+public class PT {
 
   public static int parseInt(String str) {
-    return Parser.parseIntNext(str, new int[] {0});
+    return PT.parseIntNext(str, new int[] {0});
   }
 
   public static int parseIntNext(String str, int[] next) {
     int cch = str.length();
     if (next[0] < 0 || next[0] >= cch)
       return Integer.MIN_VALUE;
-    return Parser.parseIntChecked(str, cch, next);
+    return PT.parseIntChecked(str, cch, next);
   }
 
   public static int parseIntChecked(String str, int ichMax, int[] next) {
@@ -44,7 +50,7 @@ public class Parser {
     if (ich < 0)
       return Integer.MIN_VALUE;
     int ch;
-    while (ich < ichMax && Parser.isWhiteSpace(str, ich))
+    while (ich < ichMax && PT.isWhiteSpace(str, ich))
       ++ich;
     boolean negative = false;
     if (ich < ichMax && str.charAt(ich) == 45) { //"-"
@@ -133,7 +139,7 @@ public class Parser {
           }
           nzero = -nzero;
         } 
-        if (iscale  < Parser.decimalScale.length) {
+        if (iscale  < PT.decimalScale.length) {
           ival2 = (ival2 * 10f) + (ch - 48)*1f;
           iscale++;
         }
@@ -146,10 +152,10 @@ public class Parser {
     if (!digitSeen) {
       value = Float.NaN;
     } else if (ival2 > 0) {
-      value = ival2 * Parser.decimalScale[iscale - 1];
+      value = ival2 * PT.decimalScale[iscale - 1];
       if (nzero > 1) {
-        if (nzero - 2 < Parser.decimalScale.length) {
-          value *= Parser.decimalScale[nzero - 2];
+        if (nzero - 2 < PT.decimalScale.length) {
+          value *= PT.decimalScale[nzero - 2];
         } else {
           value *= Math.pow(10, 1 - nzero);
         }
@@ -171,10 +177,10 @@ public class Parser {
       int exponent = parseIntChecked(str, ichMax, next);
       if (exponent == Integer.MIN_VALUE)
         return Float.NaN;
-      if (exponent > 0 && exponent <= Parser.tensScale.length)
-        value *= Parser.tensScale[exponent - 1];
-      else if (exponent < 0 && -exponent <= Parser.decimalScale.length)
-        value *= Parser.decimalScale[-exponent - 1];
+      if (exponent > 0 && exponent <= PT.tensScale.length)
+        value *= PT.tensScale[exponent - 1];
+      else if (exponent < 0 && -exponent <= PT.decimalScale.length)
+        value *= PT.decimalScale[-exponent - 1];
       else if (exponent != 0)
         value *= Math.pow(10, exponent);
     } else {
@@ -187,7 +193,7 @@ public class Parser {
     if (value == Float.POSITIVE_INFINITY)
       value = Float.MAX_VALUE;
     return (!isStrict || (!isExponent || isDecimal)
-        && Parser.checkTrailingText(str, next[0], ichMax) ? value : Float.NaN);
+        && PT.checkTrailingText(str, next[0], ichMax) ? value : Float.NaN);
   }
 
   public final static float[] tensScale = { 10f, 100f, 1000f, 10000f, 100000f, 1000000f };
@@ -211,7 +217,7 @@ public class Parser {
   }
 
   public static float[] parseFloatArray(String str) {
-    return Parser.parseFloatArrayNext(str, new int[1], null, null, null);
+    return PT.parseFloatArrayNext(str, new int[1], null, null, null);
   }
 
   public static int parseFloatArrayInfested(String[] tokens, float[] data) {
@@ -221,7 +227,7 @@ public class Parser {
     int max = 0;
     for (int i = 0; i >= 0 && i < len && n < nTokens; i++) {
       float f;
-      while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) 
+      while (Float.isNaN(f = PT.parseFloat(tokens[n++])) 
           && n < nTokens) {
       }
       if (!Float.isNaN(f))
@@ -258,7 +264,7 @@ public class Parser {
       else
         str = str.substring(0, pt);
       next[0] += pt + 1;
-      String[] tokens = Parser.getTokens(str);
+      String[] tokens = PT.getTokens(str);
       if (f == null)
         f = new float[tokens.length];
       n = parseFloatArrayInfested(tokens, f);
@@ -314,19 +320,19 @@ public class Parser {
   }
 
   public static String[] getTokens(String line) {
-    return Parser.getTokensAt(line, 0);
+    return PT.getTokensAt(line, 0);
   }
 
   public static String parseToken(String str) {
-    return Parser.parseTokenNext(str, new int[] {0});
+    return PT.parseTokenNext(str, new int[] {0});
   }
 
   public static String parseTrimmed(String str) {
-    return Parser.parseTrimmedRange(str, 0, str.length());
+    return PT.parseTrimmedRange(str, 0, str.length());
   }
 
   public static String parseTrimmedAt(String str, int ichStart) {
-    return Parser.parseTrimmedRange(str, ichStart, str.length());
+    return PT.parseTrimmedRange(str, ichStart, str.length());
   }
 
   public static String parseTrimmedRange(String str, int ichStart, int ichMax) {
@@ -335,7 +341,7 @@ public class Parser {
       cch = ichMax;
     if (cch < ichStart)
       return "";
-    return Parser.parseTrimmedChecked(str, ichStart, cch);
+    return PT.parseTrimmedChecked(str, ichStart, cch);
   }
 
   public static String[] getTokensAt(String line, int ich) {
@@ -344,12 +350,12 @@ public class Parser {
     int cchLine = line.length();
     if (ich < 0 || ich > cchLine)
       return null;
-    int tokenCount = Parser.countTokens(line, ich);
+    int tokenCount = PT.countTokens(line, ich);
     String[] tokens = new String[tokenCount];
     int[] next = new int[1];
     next[0] = ich;
     for (int i = 0; i < tokenCount; ++i)
-      tokens[i] = Parser.parseTokenChecked(line, cchLine, next);
+      tokens[i] = PT.parseTokenChecked(line, cchLine, next);
     return tokens;
   }
 
@@ -375,7 +381,7 @@ public class Parser {
     int cch = str.length();
     if (next[0] < 0 || next[0] >= cch)
       return null;
-    return Parser.parseTokenChecked(str, cch, next);
+    return PT.parseTokenChecked(str, cch, next);
   }
 
   public static String parseTokenRange(String str, int ichMax, int[] next) {
@@ -384,7 +390,7 @@ public class Parser {
       ichMax = cch;
     if (next[0] < 0 || next[0] >= ichMax)
       return null;
-    return Parser.parseTokenChecked(str, ichMax, next);
+    return PT.parseTokenChecked(str, ichMax, next);
   }
 
   public static String parseTokenChecked(String str, int ichMax, int[] next) {
@@ -456,7 +462,7 @@ public class Parser {
    *  @param data    the array to fill
    */
   public static void parseFloatArrayData(String[] tokens, float[] data) {
-    Parser.parseFloatArrayDataN(tokens, data, data.length);
+    PT.parseFloatArrayDataN(tokens, data, data.length);
   }
 
   /**
@@ -564,6 +570,145 @@ public class Parser {
 
   public static float approx(float f, float n) {
     return Math.round (f * n) / n;
+  }
+
+  /**
+   * Does a clean replace of strFrom in str with strTo. This method has far
+   * faster performance than just String.replace() when str does not contain
+   * strFrom, but is about 15% slower when it does. (Note that
+   * String.replace(CharSeq, CharSeq) was introduced in Java 1.5. Finally
+   * getting around to using it in Jmol!)
+   * 
+   * @param str
+   * @param strFrom
+   * @param strTo
+   * @return replaced string
+   */
+  public static String simpleReplace(String str, String strFrom, String strTo) {
+    if (str == null || strFrom.length() == 0 || str.indexOf(strFrom) < 0)
+      return str;
+    boolean isOnce = (strTo.indexOf(strFrom) >= 0);
+    do {
+      str = str.replace(strFrom, strTo);
+    } while (!isOnce && str.indexOf(strFrom) >= 0);
+    return str;
+  }
+
+  public static String formatF(float value, int width, int precision,
+                              boolean alignLeft, boolean zeroPad) {
+    return PT.formatS(DF.formatDecimal(value, precision), width, 0, alignLeft, zeroPad);
+  }
+
+  /**
+   * 
+   * @param value
+   * @param width
+   * @param precision
+   * @param alignLeft
+   * @param zeroPad
+   * @param allowOverflow IGNORED
+   * @return formatted string
+   */
+  public static String formatD(double value, int width, int precision,
+                              boolean alignLeft, boolean zeroPad, boolean allowOverflow) {
+    return PT.formatS(DF.formatDecimal((float)value, -1 - precision), width, 0, alignLeft, zeroPad);
+  }
+
+  /**
+   * 
+   * @param value       
+   * @param width       number of columns
+   * @param precision   precision > 0 ==> precision = number of characters max from left
+   *                    precision < 0 ==> -1 - precision = number of char. max from right
+   * @param alignLeft
+   * @param zeroPad     generally for numbers turned strings
+   * @return            formatted string
+   */
+  public static String formatS(String value, int width, int precision,
+                              boolean alignLeft, boolean zeroPad) {
+    if (value == null)
+      return "";
+    int len = value.length();
+    if (precision != Integer.MAX_VALUE && precision > 0
+        && precision < len)
+      value = value.substring(0, precision);
+    else if (precision < 0 && len + precision >= 0)
+      value = value.substring(len + precision + 1);
+  
+    int padLength = width - value.length();
+    if (padLength <= 0)
+      return value;
+    boolean isNeg = (zeroPad && !alignLeft && value.charAt(0) == '-');
+    char padChar = (zeroPad ? '0' : ' ');
+    char padChar0 = (isNeg ? '-' : padChar);
+  
+    SB sb = new SB();
+    if (alignLeft)
+      sb.append(value);
+    sb.appendC(padChar0);
+    for (int i = padLength; --i > 0;)
+      // this is correct, not >= 0
+      sb.appendC(padChar);
+    if (!alignLeft)
+      sb.append(isNeg ? padChar + value.substring(1) : value);
+    return sb.toString();
+  }
+
+  /**
+   * Does a clean replace of any of the characters in str with strTo
+   * If strTo contains strFrom, then only a single pass is done.
+   * Otherwise, multiple passes are made until no more replacements can be made.
+   * 
+   * @param str
+   * @param strFrom
+   * @param strTo
+   * @return  replaced string
+   */
+  public static String replaceAllCharacters(String str, String strFrom,
+                                            String strTo) {
+    for (int i = strFrom.length(); --i >= 0;) {
+      String chFrom = strFrom.substring(i, i + 1);
+      str = simpleReplace(str, chFrom, strTo);
+    }
+    return str;
+  }
+
+  public static String trim(String str, String chars) {
+    if (chars.length() == 0)
+      return str.trim();
+    int len = str.length();
+    int k = 0;
+    while (k < len && chars.indexOf(str.charAt(k)) >= 0)
+      k++;
+    int m = str.length() - 1;
+    while (m > k && chars.indexOf(str.charAt(m)) >= 0)
+      m--;
+    return str.substring(k, m + 1);
+  }
+
+  public static String trimQuotes(String value) {
+    return (value != null && value.length() > 1 && value.startsWith("\"")
+        && value.endsWith("\"") ? value.substring(1, value.length() - 1)
+        : value);
+  }
+
+  /**
+   * Does a clean replace of any of the characters in str with chrTo
+   * If strTo contains strFrom, then only a single pass is done.
+   * Otherwise, multiple passes are made until no more replacements can be made.
+   * 
+   * @param str
+   * @param strFrom
+   * @param chTo
+   * @return  replaced string
+   */
+  public static String replaceAllCharacter(String str, String strFrom,
+                                            char chTo) {
+    if (str == null)
+      return null;
+    for (int i = strFrom.length(); --i >= 0;)
+      str = str.replace(strFrom.charAt(i), chTo);
+    return str;
   }
 
 

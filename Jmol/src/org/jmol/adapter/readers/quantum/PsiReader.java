@@ -27,9 +27,9 @@ package org.jmol.adapter.readers.quantum;
 
 import org.jmol.adapter.smarter.Atom;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import java.util.Hashtable;
 
@@ -235,7 +235,7 @@ public class PsiReader extends MOReader {
       gaussianCount += nGaussians;
       readLine();
     }
-    float[][] garray = ArrayUtil.newFloat2(gaussianCount);
+    float[][] garray = AU.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++) {
       tokens = gdata.get(i);
       garray[i] = new float[tokens.length];
@@ -392,8 +392,8 @@ Orbital energies (a.u.):
     //TODO: This reader will fail for G orbitals
     //TODO: No way to check order
     
-    Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(5);
-    List<String>[] data = ArrayUtil.createArrayOfArrayList(5);
+    Map<String, Object>[] mos = AU.createArrayOfHashtable(5);
+    List<String>[] data = AU.createArrayOfArrayList(5);
     int nThisLine = 0;
     while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {
       String[] tokens = getTokens();
@@ -409,7 +409,7 @@ Orbital energies (a.u.):
         }
         tokens = getStrings(readLine().substring(21), nThisLine, 10);
         for (int i = 0; i < nThisLine; i++) {
-          mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
+          mos[i].put("energy", Float.valueOf(PT.fVal(tokens[i])));
         }
         continue;
       }

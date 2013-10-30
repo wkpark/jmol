@@ -34,8 +34,9 @@ import java.io.OutputStream;
 import java.io.StringReader;
 
 import javajs.J2SIgnoreImport;
+import javajs.api.ZInputStream;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -53,7 +54,6 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolZipUtility;
-import org.jmol.api.ZInputStream;
 import org.jmol.io.JmolBinary;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -557,7 +557,7 @@ public class ZipUtil implements JmolZipUtility {
       // if a manifest exists, it sets the files and file order
 
       if (haveManifest && !exceptFiles) {
-        String[] list = Parser.split(manifest, "|");
+        String[] list = PT.split(manifest, "|");
         for (int i = 0; i < list.length; i++) {
           String file = list[i];
           if (file.length() == 0 || file.indexOf("#") == 0)
@@ -720,7 +720,7 @@ public class ZipUtil implements JmolZipUtility {
         if ((token = tokens.nextToken()).equals(")"))
           v.addLast(lasttoken);
         else if (token.equals("Start-") && tokens.nextToken().equals("Molecule"))
-          v.addLast(Parser.split(tokens.nextToken(), "\"")[1]);
+          v.addLast(PT.split(tokens.nextToken(), "\"")[1]);
         lasttoken = token;
       }
     } catch (Exception e) {

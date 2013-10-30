@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javajs.api.GenericColor;
 
-public class ColorUtil {
+public class CU {
 
   public static String toRGBHexString(GenericColor c) {
     int rgb = c.getRGB();    
@@ -384,13 +384,13 @@ public class ColorUtil {
     if (strColor.charAt(0) == '[' && strColor.charAt(len - 1) == ']') {
       String check;
       if (strColor.indexOf(",") >= 0) {
-        String[] tokens = Parser.split(strColor.substring(1, strColor
+        String[] tokens = PT.split(strColor.substring(1, strColor
             .length() - 1), ",");
         if (tokens.length != 3)
           return 0;
-        float red = Parser.parseFloat(tokens[0]);
-        float grn = Parser.parseFloat(tokens[1]);
-        float blu = Parser.parseFloat(tokens[2]);
+        float red = PT.parseFloat(tokens[0]);
+        float grn = PT.parseFloat(tokens[1]);
+        float blu = PT.parseFloat(tokens[2]);
         return colorTriadToFFRGB(red, grn, blu);
       }
       switch (len) {
@@ -410,7 +410,7 @@ public class ColorUtil {
     }
     if (len == 7 && strColor.charAt(0) == '#') {
       try {
-        return Parser.parseIntRadix(strColor.substring(1, 7), 16) | 0xFF000000;
+        return PT.parseIntRadix(strColor.substring(1, 7), 16) | 0xFF000000;
       } catch (Exception e) {
         return 0;
       }

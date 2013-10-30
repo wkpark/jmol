@@ -24,7 +24,7 @@
 
 package org.jmol.g3d;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 
 import org.jmol.util.GData;
 import org.jmol.util.Shader;
@@ -471,18 +471,18 @@ class CylinderRenderer {
 
   private int allocRaster(boolean isPrecision) {
     while (rasterCount >= xRaster.length) {
-      xRaster = ArrayUtil.doubleLengthI(xRaster);
-      yRaster = ArrayUtil.doubleLengthI(yRaster);
-      zRaster = ArrayUtil.doubleLengthI(zRaster);
-      tRaster = ArrayUtil.doubleLengthF(tRaster);
+      xRaster = AU.doubleLengthI(xRaster);
+      yRaster = AU.doubleLengthI(yRaster);
+      zRaster = AU.doubleLengthI(zRaster);
+      tRaster = AU.doubleLengthF(tRaster);
     }
     while (rasterCount >= fp8ShadeIndexUp.length)
-      fp8ShadeIndexUp = ArrayUtil.doubleLengthI(fp8ShadeIndexUp);
+      fp8ShadeIndexUp = AU.doubleLengthI(fp8ShadeIndexUp);
     if (isPrecision)
       while (rasterCount >= txRaster.length) {
-        txRaster = ArrayUtil.doubleLengthF(txRaster);
-        tyRaster = ArrayUtil.doubleLengthF(tyRaster);
-        tzRaster = ArrayUtil.doubleLengthF(tzRaster);
+        txRaster = AU.doubleLengthF(txRaster);
+        tyRaster = AU.doubleLengthF(tyRaster);
+        tzRaster = AU.doubleLengthF(tzRaster);
       }
     return rasterCount++;
   }

@@ -29,9 +29,9 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 import org.jmol.util.Txt;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import java.util.Hashtable;
 
@@ -110,7 +110,7 @@ abstract public class MOReader extends BasisFunctionReader {
     getNBOCharges = (filter != null && filterMO());
     if (filter == null)
       return;
-    String f = Txt.simpleReplace(filter, "NBOCHARGES", "");
+    String f = javajs.util.PT.simpleReplace(filter, "NBOCHARGES", "");
     if (f.length() < 3)
       filter = null;
   }
@@ -411,8 +411,8 @@ abstract public class MOReader extends BasisFunctionReader {
           // NBOs
         }
         if (mos == null || nThisLine > mos.length) {
-          mos = ArrayUtil.createArrayOfHashtable(nThisLine);
-          data = ArrayUtil.createArrayOfArrayList(nThisLine);
+          mos = AU.createArrayOfHashtable(nThisLine);
+          data = AU.createArrayOfArrayList(nThisLine);
         }
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable<String, Object>();
@@ -496,7 +496,7 @@ abstract public class MOReader extends BasisFunctionReader {
       return;
     case HEADER_GAMESS_UK_MO:
       for (int i = 0; i < nThisLine; i++)
-        mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
+        mos[i].put("energy", Float.valueOf(PT.fVal(tokens[i])));
       readLines(5);
       return;
     case HEADER_GAMESS_ORIGINAL:
@@ -505,7 +505,7 @@ abstract public class MOReader extends BasisFunctionReader {
       if (tokens.length == 0)
         tokens = getTokensStr(readLine());
       for (int i = 0; i < nThisLine; i++) {
-        mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
+        mos[i].put("energy", Float.valueOf(PT.fVal(tokens[i])));
       }
       readLine();
       break;
@@ -579,15 +579,15 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx yyyyyyyyyyyyyyyyyyyyyyyyyyy zzzzzzz ....... ffffffff
       return;
     Hashtable<String, Integer> ht = new Hashtable<String, Integer>();
     for (int i = moTypes.size(); --i >= 0;)
-      ht.put(Txt.simpleReplace(moTypes.get(i).substring(10), " ", ""),
+      ht.put(javajs.util.PT.simpleReplace(moTypes.get(i).substring(10), " ", ""),
           Integer.valueOf(i + iMo0));
     List<String[]> strSecondOrderData = new  List<String[]>();
     while (readLine() != null && line.indexOf("NBO") < 0) {
       if (line.length() < 5 || line.charAt(4) != '.')
         continue;
       strSecondOrderData.addLast(new String[] {
-          Txt.simpleReplace(line.substring(5, 27).trim(), " ", ""),
-          Txt.simpleReplace(line.substring(32, 54).trim(), " ", ""),
+          javajs.util.PT.simpleReplace(line.substring(5, 27).trim(), " ", ""),
+          javajs.util.PT.simpleReplace(line.substring(32, 54).trim(), " ", ""),
           line.substring(55, 62).trim(), line.substring(71).trim() });
     }
     float[][] secondOrderData = new float[strSecondOrderData.size()][4];

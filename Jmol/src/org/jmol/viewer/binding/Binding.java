@@ -1,5 +1,6 @@
 package org.jmol.viewer.binding;
 
+import javajs.awt.event.Event;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -9,7 +10,6 @@ import java.util.Iterator;
 
 import java.util.Map;
 
-import org.jmol.api.Event;
 import org.jmol.api.Interface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;

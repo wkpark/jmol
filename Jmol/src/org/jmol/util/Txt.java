@@ -27,8 +27,7 @@ package org.jmol.util;
 
 import java.util.List;
 
-import javajs.util.DecimalFormat;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.T3;
 import javajs.util.T4;
@@ -36,66 +35,6 @@ import javajs.util.T4;
 public class Txt {
 
 //  private final static DecimalFormat[] formatters = new DecimalFormat[10];
-
-  public static String formatF(float value, int width, int precision,
-                              boolean alignLeft, boolean zeroPad) {
-    return formatS(DecimalFormat.formatDecimal(value, precision), width, 0, alignLeft, zeroPad);
-  }
-
-  /**
-   * 
-   * @param value
-   * @param width
-   * @param precision
-   * @param alignLeft
-   * @param zeroPad
-   * @param allowOverflow IGNORED
-   * @return formatted string
-   */
-  public static String formatD(double value, int width, int precision,
-                              boolean alignLeft, boolean zeroPad, boolean allowOverflow) {
-    return formatS(DecimalFormat.formatDecimal((float)value, -1 - precision), width, 0, alignLeft, zeroPad);
-  }
-
-  /**
-   * 
-   * @param value       
-   * @param width       number of columns
-   * @param precision   precision > 0 ==> precision = number of characters max from left
-   *                    precision < 0 ==> -1 - precision = number of char. max from right
-   * @param alignLeft
-   * @param zeroPad     generally for numbers turned strings
-   * @return            formatted string
-   */
-  public static String formatS(String value, int width, int precision,
-                              boolean alignLeft, boolean zeroPad) {
-    if (value == null)
-      return "";
-    int len = value.length();
-    if (precision != Integer.MAX_VALUE && precision > 0
-        && precision < len)
-      value = value.substring(0, precision);
-    else if (precision < 0 && len + precision >= 0)
-      value = value.substring(len + precision + 1);
-
-    int padLength = width - value.length();
-    if (padLength <= 0)
-      return value;
-    boolean isNeg = (zeroPad && !alignLeft && value.charAt(0) == '-');
-    char padChar = (zeroPad ? '0' : ' ');
-    char padChar0 = (isNeg ? '-' : padChar);
-
-    SB sb = new SB();
-    if (alignLeft)
-      sb.append(value);
-    sb.appendC(padChar0);
-    for (int i = padLength; --i > 0;)
-      // this is correct, not >= 0
-      sb.appendC(padChar);
-    if (!alignLeft)
-      sb.append(isNeg ? padChar + value.substring(1) : value);
-    return sb.toString();
-  }
 
   public static String formatStringS(String strFormat, String key, String strT) {
     return formatString(strFormat, key, strT, Float.NaN, Double.NaN, false);
@@ -196,12 +135,12 @@ public class Txt {
           }
 
         }
-        return simpleReplace(strFormat, "%%", "%");
+        return PT.simpleReplace(strFormat, "%%", "%");
       } catch (Exception e) {
         //
       }
     System.out.println("TextFormat.sprintf error " + list + " " + strFormat);
-    return simpleReplace(strFormat, "%", "?");
+    return PT.simpleReplace(strFormat, "%", "?");
   }
 
   /**
@@ -278,13 +217,13 @@ public class Txt {
         }
         ich += len;
         if (!Float.isNaN(floatT))
-          strLabel += formatF(floatT, width, precision, alignLeft,
+          strLabel += PT.formatF(floatT, width, precision, alignLeft,
               zeroPad);
         else if (strT != null)
-          strLabel += formatS(strT, width, precision, alignLeft,
+          strLabel += PT.formatS(strT, width, precision, alignLeft,
               zeroPad);
         else if (!Double.isNaN(doubleT))
-          strLabel += formatD(doubleT, width, precision, alignLeft,
+          strLabel += PT.formatD(doubleT, width, precision, alignLeft,
               zeroPad, true);
         if (doOne)
           break;
@@ -310,10 +249,10 @@ public class Txt {
   public static String formatCheck(String strFormat) {
     if (strFormat == null || strFormat.indexOf('p') < 0 && strFormat.indexOf('q') < 0)
       return strFormat;
-    strFormat = simpleReplace(strFormat, "%%", "\1");
-    strFormat = simpleReplace(strFormat, "%p", "%6.2p");
-    strFormat = simpleReplace(strFormat, "%q", "%6.2q");
-    String[] format = Parser.split(strFormat, "%");
+    strFormat = PT.simpleReplace(strFormat, "%%", "\1");
+    strFormat = PT.simpleReplace(strFormat, "%p", "%6.2p");
+    strFormat = PT.simpleReplace(strFormat, "%q", "%6.2q");
+    String[] format = PT.split(strFormat, "%");
     SB sb = new SB();
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
@@ -365,91 +304,6 @@ public class Txt {
       sb.append(s);
     sb.append(f.substring(pt + 1));
     return sb.toString();
-  }
-
-  /**
-   * Does a clean replace of any of the characters in str with strTo
-   * If strTo contains strFrom, then only a single pass is done.
-   * Otherwise, multiple passes are made until no more replacements can be made.
-   * 
-   * @param str
-   * @param strFrom
-   * @param strTo
-   * @return  replaced string
-   */
-  public static String replaceAllCharacters(String str, String strFrom,
-                                            String strTo) {
-    for (int i = strFrom.length(); --i >= 0;) {
-      String chFrom = strFrom.substring(i, i + 1);
-      str = simpleReplace(str, chFrom, strTo);
-    }
-    return str;
-  }
-  
-  /**
-   * Does a clean replace of any of the characters in str with chrTo
-   * If strTo contains strFrom, then only a single pass is done.
-   * Otherwise, multiple passes are made until no more replacements can be made.
-   * 
-   * @param str
-   * @param strFrom
-   * @param chTo
-   * @return  replaced string
-   */
-  public static String replaceAllCharacter(String str, String strFrom,
-                                            char chTo) {
-    if (str == null)
-      return null;
-    for (int i = strFrom.length(); --i >= 0;)
-      str = str.replace(strFrom.charAt(i), chTo);
-    return str;
-  }
-  
-  /**
-   * Does a clean replace of strFrom in str with strTo. This method has far
-   * faster performance than just String.replace() when str does not contain
-   * strFrom, but is about 15% slower when it does. (Note that
-   * String.replace(CharSeq, CharSeq) was introduced in Java 1.5. Finally
-   * getting around to using it in Jmol!)
-   * 
-   * @param str
-   * @param strFrom
-   * @param strTo
-   * @return replaced string
-   */
-  public static String simpleReplace(String str, String strFrom, String strTo) {
-    if (str == null || strFrom.length() == 0 || str.indexOf(strFrom) < 0)
-      return str;
-    boolean isOnce = (strTo.indexOf(strFrom) >= 0);
-    do {
-      str = str.replace(strFrom, strTo);
-    } while (!isOnce && str.indexOf(strFrom) >= 0);
-    return str;
-  }
-  
-
-//  static {
-//    long t = System.currentTimeMillis();
-//    for (int i = 0; i < 100000; i++)
-//      simpleReplace("2329823jadf", "a", "b");
-//    System.out.println(System.currentTimeMillis() - t);
-//    t = System.currentTimeMillis();
-//    for (int i = 0; i < 100000; i++)
-//      "2329823jadf".replace("a", "b");
-//    System.out.println(System.currentTimeMillis() - t);
-//  }
-  
-  public static String trim(String str, String chars) {
-    if (chars.length() == 0)
-      return str.trim();
-    int len = str.length();
-    int k = 0;
-    while (k < len && chars.indexOf(str.charAt(k)) >= 0)
-      k++;
-    int m = str.length() - 1;
-    while (m > k && chars.indexOf(str.charAt(m)) >= 0)
-      m--;
-    return str.substring(k, m + 1);
   }
 
   public static void leftJustify(SB s, String s1, String s2) {
@@ -550,7 +404,7 @@ public class Txt {
       String name = list.get(i);
       String newName = newList.get(i);
       if (!newName.equals(name))
-        s = simpleReplace(s, "\"" + name + "\"", "\"" + newName
+        s = PT.simpleReplace(s, "\"" + name + "\"", "\"" + newName
             + "\"");
     }
     return s;
@@ -563,7 +417,7 @@ public class Txt {
       String name = list.get(i);
       String newName = newList.get(i);
       if (!newName.equals(name))
-        s = simpleReplace(s, name, newName);
+        s = PT.simpleReplace(s, name, newName);
     }
     return s;
   }
@@ -606,11 +460,5 @@ public class Txt {
     }
     return ichT;
   }
-
-	public static String trimQuotes(String value) {
-	  return (value != null && value.length() > 1 && value.startsWith("\"")
-	      && value.endsWith("\"") ? value.substring(1, value.length() - 1)
-	      : value);
-	}
 
 }

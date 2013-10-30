@@ -230,10 +230,10 @@ public class StatusManager {
     boolean isAdd = (newStatusList.length() > 0 && newStatusList.charAt(0) == '+');
     boolean getList = false;
     if (isRemove) {
-      statusList = Txt.simpleReplace(statusList, newStatusList
+      statusList = javajs.util.PT.simpleReplace(statusList, newStatusList
           .substring(1, newStatusList.length()), "");
     } else {
-      newStatusList = Txt.simpleReplace(newStatusList, "+", "");
+      newStatusList = javajs.util.PT.simpleReplace(newStatusList, "+", "");
       if (statusList.equals(newStatusList) || isAdd
           && statusList.indexOf(newStatusList) >= 0) {
         getList = true;

@@ -71,7 +71,7 @@ import org.jmol.util.ParserBS;
 import org.jmol.util.Point3fi;
 
 import javajs.awt.Font;
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -79,12 +79,12 @@ import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
-import javajs.util.ColorUtil;
+import javajs.util.CU;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.V3;
 
 import org.jmol.util.Quaternion;
@@ -547,7 +547,7 @@ public class ScriptExt implements JmolScriptExtension {
       }
 
       if (intramolecular != null) {
-        params = (params == null ? new float[2] : ArrayUtil.ensureLengthA(
+        params = (params == null ? new float[2] : AU.ensureLengthA(
             params, 2));
         params[1] = (intramolecular.booleanValue() ? 1 : 2);
       }
@@ -837,7 +837,7 @@ public class ScriptExt implements JmolScriptExtension {
         default:
           nTriangles = Math.max(0, intParameter(eval.iToken));
         }
-        int[][] polygons = ArrayUtil.newInt2(nTriangles);
+        int[][] polygons = AU.newInt2(nTriangles);
         for (int j = 0; j < nTriangles; j++) {
           float[] f = (vpolygons == null ? eval.floatParameterSet(++eval.iToken, 3,
               4) : SV.flistValue(vpolygons.get(j), 0));
@@ -1270,7 +1270,7 @@ public class ScriptExt implements JmolScriptExtension {
         break;
       case T.boundbox:
         if (fullCommand.indexOf("# BBOX=") >= 0) {
-          String[] bbox = Parser.split(Parser.getQuotedAttribute(
+          String[] bbox = PT.split(PT.getQuotedAttribute(
               fullCommand, "# BBOX"), ",");
           pts = new P3[] { (P3) Escape.uP(bbox[0]), (P3) Escape.uP(bbox[1]) };
         } else if (eval.isCenterParameter(i + 1)) {
@@ -1379,7 +1379,7 @@ public class ScriptExt implements JmolScriptExtension {
           eval.checkLast(eval.iToken);
         i = eval.iToken;
         if (fullCommand.indexOf("# WITHIN=") >= 0)
-          bs = Escape.uB(Parser.getQuotedAttribute(fullCommand, "# WITHIN"));
+          bs = Escape.uB(PT.getQuotedAttribute(fullCommand, "# WITHIN"));
         else if (!havePt)
           bs = (eval.expressionResult instanceof BS ? (BS) eval.expressionResult : null);
         if (!chk) {
@@ -2099,7 +2099,7 @@ public class ScriptExt implements JmolScriptExtension {
           break;
         }
         // override of function or data name when saved as a state
-        String dName = Parser.getQuotedAttribute(fullCommand, "# DATA"
+        String dName = PT.getQuotedAttribute(fullCommand, "# DATA"
             + (isFxy ? "2" : ""));
         if (dName == null)
           dName = "inline";
@@ -2395,7 +2395,7 @@ public class ScriptExt implements JmolScriptExtension {
           invArg();
         // inline PMESH data
         if (isPmesh)
-          str = Txt.replaceAllCharacter(str, "{,}|", ' ');
+          str = PT.replaceAllCharacter(str, "{,}|", ' ');
         if (eval.logMessages)
           Logger.debug("pmesh inline data:\n" + str);
         propertyValue = (chk ? null : str);
@@ -2470,7 +2470,7 @@ public class ScriptExt implements JmolScriptExtension {
         if (propertyValue == null) {
           if (fullCommand.indexOf("# FILE" + nFiles + "=") >= 0) {
             // old way, abandoned
-            filename = Parser
+            filename = PT
                 .getQuotedAttribute(fullCommand, "# FILE" + nFiles);
             if (tokAt(i + 1) == T.as)
               i += 2; // skip that
@@ -3492,7 +3492,7 @@ public class ScriptExt implements JmolScriptExtension {
           .substring(0, 1);
       if (type.equals("a") || type.equals("r"))
         isDerivative = true;
-      if (!Parser.isOneOf(type, ";w;x;y;z;r;a;")) // a absolute; r relative
+      if (!PT.isOneOf(type, ";w;x;y;z;r;a;")) // a absolute; r relative
         eval.evalError("QUATERNION [w,x,y,z,a,r] [difference][2]", null);
       type = "quaternion " + type + (isDerivative ? " difference" : "")
           + (isSecondDerivative ? "2" : "") + (isDraw ? " draw" : "");
@@ -4018,7 +4018,7 @@ public class ScriptExt implements JmolScriptExtension {
       tok = tokAt(i++);
     if (tok != T.leftsquare)
       invArg();
-    float[][] fparams = ArrayUtil.newFloat2(nX);
+    float[][] fparams = AU.newFloat2(nX);
     int n = 0;
     while (tok != T.rightsquare) {
       tok = getToken(i).tok;
@@ -4059,7 +4059,7 @@ public class ScriptExt implements JmolScriptExtension {
       tok = tokAt(i++);
     if (tok != T.leftsquare || nX <= 0)
       invArg();
-    float[][][] fparams = ArrayUtil.newFloat3(nX, -1);
+    float[][][] fparams = AU.newFloat3(nX, -1);
     int n = 0;
     while (tok != T.rightsquare) {
       tok = getToken(i).tok;
@@ -4239,7 +4239,7 @@ public class ScriptExt implements JmolScriptExtension {
       viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
       return;
     }
-    String[] tokens = Parser.getTokens(dataLabel);
+    String[] tokens = PT.getTokens(dataLabel);
     if (dataType.indexOf("property_") == 0
         && !(tokens.length == 2 && tokens[1].equals("set"))) {
       BS bs = viewer.getSelectionSet(false);
@@ -4256,17 +4256,17 @@ public class ScriptExt implements JmolScriptExtension {
         if (tokens.length == 3) {
           // DATA "property_whatever [atomField] [propertyField]"
           dataLabel = tokens[0];
-          atomNumberField = javajs.util.Parser.parseInt(tokens[1]);
-          propertyField = javajs.util.Parser.parseInt(tokens[2]);
+          atomNumberField = javajs.util.PT.parseInt(tokens[1]);
+          propertyField = javajs.util.PT.parseInt(tokens[2]);
         }
         if (tokens.length == 5) {
           // DATA
           // "property_whatever [atomField] [atomFieldColumnCount] [propertyField] [propertyDataColumnCount]"
           dataLabel = tokens[0];
-          atomNumberField = javajs.util.Parser.parseInt(tokens[1]);
-          atomNumberFieldColumnCount = javajs.util.Parser.parseInt(tokens[2]);
-          propertyField = javajs.util.Parser.parseInt(tokens[3]);
-          propertyFieldColumnCount = javajs.util.Parser.parseInt(tokens[4]);
+          atomNumberField = javajs.util.PT.parseInt(tokens[1]);
+          atomNumberFieldColumnCount = javajs.util.PT.parseInt(tokens[2]);
+          propertyField = javajs.util.PT.parseInt(tokens[3]);
+          propertyFieldColumnCount = javajs.util.PT.parseInt(tokens[4]);
         }
       }
       if (atomNumberField < 0)
@@ -4696,7 +4696,7 @@ public class ScriptExt implements JmolScriptExtension {
         break;
       case T.scene:
         val = SV.sValue(tokenAt(++pt, args)).toUpperCase();
-        if (Parser.isOneOf(val, ";PNG;PNGJ;")) {
+        if (PT.isOneOf(val, ";PNG;PNGJ;")) {
           sceneType = val;
           pt++;
         }
@@ -4709,7 +4709,7 @@ public class ScriptExt implements JmolScriptExtension {
         T t = T.getTokenFromName(SV.sValue(args[pt]).toLowerCase());
         if (t != null)
           type = SV.sValue(t).toUpperCase();
-        if (Parser.isOneOf(type, driverList.toUpperCase())) {
+        if (PT.isOneOf(type, driverList.toUpperCase())) {
           // povray, maya, vrml, idtf
           pt++;
           type = type.substring(0, 1).toUpperCase()
@@ -4719,7 +4719,7 @@ public class ScriptExt implements JmolScriptExtension {
           if (isCommand)
             fileName = "Jmol." + type.toLowerCase();
           break;
-        } else if (Parser.isOneOf(type, ";ZIP;ZIPALL;SPT;STATE;")) {
+        } else if (PT.isOneOf(type, ";ZIP;ZIPALL;SPT;STATE;")) {
           pt++;
           break;
         } else {
@@ -4741,7 +4741,7 @@ public class ScriptExt implements JmolScriptExtension {
         // if (isApplet)
         // evalError(GT._("The {0} command is not available for the applet.",
         // "WRITE CLIPBOARD"));
-      } else if (Parser.isOneOf(val.toLowerCase(), JC.IMAGE_TYPES)) {
+      } else if (PT.isOneOf(val.toLowerCase(), JC.IMAGE_TYPES)) {
         if (tokAtArray(pt + 1, args) == T.integer
             && tokAtArray(pt + 2, args) == T.integer) {
           width = SV.iValue(tokenAt(++pt, args));
@@ -4749,7 +4749,7 @@ public class ScriptExt implements JmolScriptExtension {
         }
         if (tokAtArray(pt + 1, args) == T.integer)
           quality = SV.iValue(tokenAt(++pt, args));
-      } else if (Parser.isOneOf(val.toLowerCase(),
+      } else if (PT.isOneOf(val.toLowerCase(),
           ";xyz;xyzrn;xyzvib;mol;sdf;v2000;v3000;cd;pdb;pqr;cml;")) {
         type = val.toUpperCase();
         if (pt + 1 == argCount)
@@ -4764,7 +4764,7 @@ public class ScriptExt implements JmolScriptExtension {
       // write isosurface t.jvxl
 
       if (type.equals("(image)")
-          && Parser.isOneOf(val.toLowerCase(), JC.IMAGE_OR_SCENE)) {
+          && PT.isOneOf(val.toLowerCase(), JC.IMAGE_OR_SCENE)) {
         type = val.toUpperCase();
         pt++;
       }
@@ -4840,7 +4840,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (type.equals("COORD"))
         type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
             .substring(fileName.lastIndexOf(".") + 1).toUpperCase() : "XYZ");
-      isImage = Parser.isOneOf(type.toLowerCase(), JC.IMAGE_OR_SCENE);
+      isImage = PT.isOneOf(type.toLowerCase(), JC.IMAGE_OR_SCENE);
       if (scripts != null) {
         if (type.equals("PNG"))
           type = "PNGJ";
@@ -4849,7 +4849,7 @@ public class ScriptExt implements JmolScriptExtension {
       }
       if (!isImage
           && !isExport
-          && !Parser
+          && !PT
               .isOneOf(
                   type,
                   ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CD;CML;XYZ;XYZRN;XYZVIB;MENU;MOL;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
@@ -5353,7 +5353,7 @@ public class ScriptExt implements JmolScriptExtension {
       if (name.equals("/") && (len = slen) == 4) {
         name = parameterAsString(3).toLowerCase();
         if (!chk) {
-          String[] info = Parser.split(viewer.getStateInfo(), "\n");
+          String[] info = PT.split(viewer.getStateInfo(), "\n");
           SB sb = new SB();
           for (int i = 0; i < info.length; i++)
             if (info[i].toLowerCase().indexOf(name) >= 0)
@@ -5397,7 +5397,7 @@ public class ScriptExt implements JmolScriptExtension {
       } else {
         String sg = parameterAsString(2);
         if (!chk)
-          info = viewer.getSpaceGroupInfo(Txt.simpleReplace(sg, "''",
+          info = viewer.getSpaceGroupInfo(javajs.util.PT.simpleReplace(sg, "''",
               "\""));
       }
       if (info != null)
@@ -6743,7 +6743,7 @@ public class ScriptExt implements JmolScriptExtension {
 
   private float[] getFlexFitList(BS bs1, BS bs2, String smiles1)
       throws ScriptException {
-    int[][] mapSet = ArrayUtil.newInt2(2);
+    int[][] mapSet = AU.newInt2(2);
     getSmilesCorrelation(bs1, bs2, smiles1, null, null, null, null, true,
         false, mapSet, null);
     int[][] bondMap1 = viewer.getDihedralMap(mapSet[0]);
@@ -7183,7 +7183,7 @@ public class ScriptExt implements JmolScriptExtension {
         int nMatch = ptsB.size() / nAtoms;
         List<int[][]> ret = new List<int[][]>();
         for (int i = 0, pt = 0; i < nMatch; i++) {
-          int[][] a = ArrayUtil.newInt2(nAtoms);
+          int[][] a = AU.newInt2(nAtoms);
           ret.addLast(a);
           for (int j = 0; j < nAtoms; j++, pt++)
             a[j] = new int[] { ((Atom) ptsA.get(j)).index,
@@ -7588,7 +7588,7 @@ public class ScriptExt implements JmolScriptExtension {
             asMinArray = (nBitSets >= 1);
           else if (s.equalsIgnoreCase("asArray"))
             asArray = (nBitSets >= 1);
-          else if (Parser.isOneOf(s.toLowerCase(),
+          else if (PT.isOneOf(s.toLowerCase(),
               ";nm;nanometers;pm;picometers;angstroms;ang;au;") || s.endsWith("hz"))
             units = s.toLowerCase();
           else
@@ -8023,10 +8023,10 @@ public class ScriptExt implements JmolScriptExtension {
     String sReplace = SV.sValue(args[1]);
     String s = (x.tok == T.varray ? null : SV.sValue(x));
     if (s != null)
-      return mp.addXStr(Txt.simpleReplace(s, sFind, sReplace));
+      return mp.addXStr(javajs.util.PT.simpleReplace(s, sFind, sReplace));
     String[] list = SV.listValue(x);
     for (int i = list.length; --i >= 0;)
-      list[i] = Txt.simpleReplace(list[i], sFind, sReplace);
+      list[i] = javajs.util.PT.simpleReplace(list[i], sFind, sReplace);
     return mp.addXAS(list);
   }
 
@@ -8054,17 +8054,17 @@ public class ScriptExt implements JmolScriptExtension {
           s += Escape.eBS(bs);
         }
       }
-      return mp.addXAS(Parser.split(s, sArg));
+      return mp.addXAS(PT.split(s, sArg));
     case T.join:
       if (s.length() > 0 && s.charAt(s.length() - 1) == '\n')
         s = s.substring(0, s.length() - 1);
-      return mp.addXStr(Txt.simpleReplace(s, "\n", sArg));
+      return mp.addXStr(javajs.util.PT.simpleReplace(s, "\n", sArg));
     case T.trim:
       if (s != null)
-        return mp.addXStr(Txt.trim(s, sArg));      
+        return mp.addXStr(PT.trim(s, sArg));      
       String[] list = SV.listValue(x);
       for (int i = list.length; --i >= 0;)
-        list[i] = Txt.trim(list[i], sArg);
+        list[i] = PT.trim(list[i], sArg);
       return mp.addXAS(list);
     }
     return mp.addXStr("");
@@ -8085,10 +8085,10 @@ public class ScriptExt implements JmolScriptExtension {
       int itab = (args[0].tok == T.string ? 0 : 1);
       String tab = SV.sValue(args[itab]);
       sList1 = (x1.tok == T.varray ? SV.listValue(x1)
-          : Parser.split(SV.sValue(x1), "\n"));
+          : PT.split(SV.sValue(x1), "\n"));
       x2 = args[1 - itab];
       sList2 = (x2.tok == T.varray ? SV.listValue(x2)
-          : Parser.split(SV.sValue(x2), "\n"));
+          : PT.split(SV.sValue(x2), "\n"));
       sList3 = new String[len = Math.max(sList1.length, sList2.length)];
       for (int i = 0; i < len; i++)
         sList3[i] = (i >= sList1.length ? "" : sList1[i]) + tab
@@ -8129,9 +8129,9 @@ public class ScriptExt implements JmolScriptExtension {
     if (x1.tok == T.varray) {
       len = alist1.size();
     } else {
-      sList1 = (Parser.split((String) x1.value, "\n"));
+      sList1 = (PT.split((String) x1.value, "\n"));
       list1 = new float[len = sList1.length];
-      Parser.parseFloatArrayData(sList1, list1);
+      PT.parseFloatArrayData(sList1, list1);
     }
 
     if (isAll) {
@@ -8153,9 +8153,9 @@ public class ScriptExt implements JmolScriptExtension {
     } else if (x2.tok == T.varray) {
       len = Math.min(len, alist2.size());
     } else {
-      sList2 = Parser.split((String) x2.value, "\n");
+      sList2 = PT.split((String) x2.value, "\n");
       list2 = new float[sList2.length];
-      Parser.parseFloatArrayData(sList2, list2);
+      PT.parseFloatArrayData(sList2, list2);
       len = Math.min(list1.length, list2.length);
     }
     
@@ -8534,8 +8534,8 @@ public class ScriptExt implements JmolScriptExtension {
     }
     s = sb.toString();
     float f;
-    return (Float.isNaN(f = Parser.parseFloatStrict(s)) ? mp.addXStr(s) : s
-        .indexOf(".") >= 0 ? mp.addXFloat(f) : mp.addXInt(javajs.util.Parser.parseInt(s)));
+    return (Float.isNaN(f = PT.parseFloatStrict(s)) ? mp.addXStr(s) : s
+        .indexOf(".") >= 0 ? mp.addXFloat(f) : mp.addXInt(javajs.util.PT.parseInt(s)));
   }
 
   private boolean evaluateData(SV[] args) {
@@ -8590,7 +8590,7 @@ public class ScriptExt implements JmolScriptExtension {
       float[] f2 = (type.indexOf("property_") == 0 ? viewer.getDataFloat(type)
           : null);
       if (f2 != null) {
-        f1 = ArrayUtil.arrayCopyF(f1, -1);
+        f1 = AU.arrayCopyF(f1, -1);
         for (int i = Math.min(f1.length, f2.length); --i >= 0;)
           f1[i] += f2[i];
       }
@@ -8857,7 +8857,7 @@ public class ScriptExt implements JmolScriptExtension {
     }
     Map<String, Object> key = ce.getColorKey();
     if (getValue)
-      return mp.addXPt(ColorUtil.colorPtFromInt2(ce
+      return mp.addXPt(CU.colorPtFromInt2(ce
           .getArgb(hi == Float.MAX_VALUE ? lo : value)));
     return mp.addXVar(SV.getVariableMap(key));
   }

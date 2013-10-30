@@ -1,4 +1,4 @@
-package org.jmol.api;
+package javajs.api;
 
 public interface EventManager {
 

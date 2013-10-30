@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -51,7 +51,6 @@ import javajs.util.P3i;
 import org.jmol.util.Tensor;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
-import org.jmol.util.Txt;
 import javajs.util.V3;
 
 
@@ -378,7 +377,7 @@ public class AtomSetCollection {
       bonds[i].atomSetIndex = atomSetCount - 1 - atoms[bonds[i].atomIndex1].atomSetIndex;
     reverseSets(bonds, bondCount);
     //getAtomSetAuxiliaryInfo("PDB_CONECT_firstAtom_count_max" ??
-    List<Atom>[] lists = ArrayUtil.createArrayOfArrayList(atomSetCount);
+    List<Atom>[] lists = AU.createArrayOfArrayList(atomSetCount);
     for (int i = 0; i < atomSetCount; i++)
       lists[i] = new  List<Atom>();
     for (int i = 0; i < atomCount; i++)
@@ -405,7 +404,7 @@ public class AtomSetCollection {
   }
 
   private void reverseSets(AtomSetObject[] o, int n) {
-    List<AtomSetObject>[] lists = ArrayUtil.createArrayOfArrayList(atomSetCount);
+    List<AtomSetObject>[] lists = AU.createArrayOfArrayList(atomSetCount);
     for (int i = 0; i < atomSetCount; i++)
       lists[i] = new  List<AtomSetObject>();
     for (int i = 0; i < n; i++) {
@@ -422,7 +421,7 @@ public class AtomSetCollection {
   private void reverseObject(Object[] o) {
     int n = atomSetCount;
     for (int i = n/2; --i >= 0; )
-      ArrayUtil.swap(o, i, n - 1 - i);
+      AU.swap(o, i, n - 1 - i);
   }
 
   private static void reverseList(List<?> list) {
@@ -434,7 +433,7 @@ public class AtomSetCollection {
   private void reverseArray(int[] a) {
     int n = atomSetCount;
     for (int i = n/2; --i >= 0; )
-      ArrayUtil.swapInt(a, i, n - 1 - i);
+      AU.swapInt(a, i, n - 1 - i);
   }
 
   private void getList(boolean isAltLoc) {
@@ -625,9 +624,9 @@ public class AtomSetCollection {
   public void addAtom(Atom atom) {
     if (atomCount == atoms.length) {
       if (atomCount > 200000)
-        atoms = (Atom[])ArrayUtil.ensureLength(atoms, atomCount + 50000);
+        atoms = (Atom[])AU.ensureLength(atoms, atomCount + 50000);
       else
-        atoms = (Atom[])ArrayUtil.doubleLength(atoms);
+        atoms = (Atom[])AU.doubleLength(atoms);
     }
     if (atomSetCount == 0)
       newAtomSet();
@@ -751,7 +750,7 @@ public class AtomSetCollection {
       return;
     }
     if (bondCount == bonds.length)
-      bonds = (Bond[])ArrayUtil.arrayCopyObject(bonds, bondCount + 1024);
+      bonds = (Bond[])AU.arrayCopyObject(bonds, bondCount + 1024);
     bonds[bondCount++] = bond;
     atomSetBondCounts[currentAtomSetIndex]++;
   }
@@ -785,7 +784,7 @@ public class AtomSetCollection {
   
   public void addStructure(Structure structure) {
     if (structureCount == structures.length)
-      structures = (Structure[])ArrayUtil.arrayCopyObject(structures,
+      structures = (Structure[])AU.arrayCopyObject(structures,
                                                       structureCount + 32);
     structures[structureCount++] = structure;
   }
@@ -1443,8 +1442,8 @@ public class AtomSetCollection {
     int iAtomFirst = getLastAtomSetAtomIndex();
     int atomMax = atomCount;
     if (filter.indexOf("#<") >= 0) {
-      len = Math.min(len, javajs.util.Parser.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
-      filter = Txt.simpleReplace(filter, "#<", "_<");
+      len = Math.min(len, javajs.util.PT.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
+      filter = javajs.util.PT.simpleReplace(filter, "#<", "_<");
     }
     for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++)
       atoms[iAtom].bsSymmetry = BSUtil.newAndSetBit(0);
@@ -1684,14 +1683,14 @@ public class AtomSetCollection {
     }    
     currentAtomSetIndex = atomSetCount++;
     if (atomSetCount > atomSetNumbers.length) {
-      atomSetAtomIndexes = ArrayUtil.doubleLengthI(atomSetAtomIndexes);
-      atomSetAtomCounts = ArrayUtil.doubleLengthI(atomSetAtomCounts);
-      atomSetBondCounts = ArrayUtil.doubleLengthI(atomSetBondCounts);
-      atomSetAuxiliaryInfo = (Map<String, Object>[]) ArrayUtil.doubleLength(atomSetAuxiliaryInfo);
+      atomSetAtomIndexes = AU.doubleLengthI(atomSetAtomIndexes);
+      atomSetAtomCounts = AU.doubleLengthI(atomSetAtomCounts);
+      atomSetBondCounts = AU.doubleLengthI(atomSetBondCounts);
+      atomSetAuxiliaryInfo = (Map<String, Object>[]) AU.doubleLength(atomSetAuxiliaryInfo);
     }
     atomSetAtomIndexes[currentAtomSetIndex] = atomCount;
     if (atomSetCount + trajectoryStepCount > atomSetNumbers.length) {
-      atomSetNumbers = ArrayUtil.doubleLengthI(atomSetNumbers);
+      atomSetNumbers = AU.doubleLengthI(atomSetNumbers);
     }
     if (isTrajectory) {
       atomSetNumbers[currentAtomSetIndex + trajectoryStepCount] = atomSetCount + trajectoryStepCount;

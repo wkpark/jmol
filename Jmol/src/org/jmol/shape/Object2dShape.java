@@ -5,12 +5,12 @@ import java.util.Iterator;
 import java.util.Map;
 
 
-import org.jmol.api.ApiPlatform;
 import org.jmol.java.BS;
 import org.jmol.modelset.Object2d;
 import org.jmol.modelset.Text;
 import org.jmol.util.Logger;
 
+import javajs.api.GenericPlatform;
 import javajs.awt.Font;
 import javajs.util.P3;
 import org.jmol.util.Txt;
@@ -233,13 +233,13 @@ public abstract class Object2dShape extends Shape {
       if (s != null) {
         haveScripts = true;
         if (obj.checkObjectClicked(isAntialiased, x, y, bsVisible)) {
-          viewer.setCursor(ApiPlatform.CURSOR_HAND);
+          viewer.setCursor(GenericPlatform.CURSOR_HAND);
           return true;
         }
       }
     }
     if (haveScripts)
-      viewer.setCursor(ApiPlatform.CURSOR_DEFAULT);
+      viewer.setCursor(GenericPlatform.CURSOR_DEFAULT);
     return false;
   }
 

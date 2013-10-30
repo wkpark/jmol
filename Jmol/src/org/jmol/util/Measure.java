@@ -31,7 +31,7 @@ import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.V3;
 import javajs.util.T3;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import org.jmol.viewer.JC;
 import org.jmol.api.Interface;
@@ -140,7 +140,7 @@ final public class Measure {
     V3 vda = new V3();
     V3 vcb = V3.newV(n);
     if (v_dot_n == 0)
-      v_dot_n = Parser.FLOAT_MIN_SAFE; // allow for perpendicular axis to vab
+      v_dot_n = PT.FLOAT_MIN_SAFE; // allow for perpendicular axis to vab
     vcb.scale(v_dot_n);
     vda.sub2(vcb, vab);
     vda.scale(0.5f);
@@ -156,7 +156,7 @@ final public class Measure {
     if (tokType == T.point) {
       return pt_a_prime;
     }
-    if (v_dot_n != Parser.FLOAT_MIN_SAFE)
+    if (v_dot_n != PT.FLOAT_MIN_SAFE)
       n.scale(v_dot_n);
     // must calculate directed angle:
     P3 pt_b_prime = P3.newP(pt_a_prime);
@@ -180,7 +180,7 @@ final public class Measure {
       return "measure " + Escape.eP(a) + Escape.eP(pt_a_prime) + Escape.eP(pt_b_prime) + Escape.eP(b);
     // for now... array:
     float residuesPerTurn = Math.abs(theta == 0 ? 0 : 360f / theta);
-    float pitch = Math.abs(v_dot_n == Parser.FLOAT_MIN_SAFE ? 0 : n.length() * (theta == 0 ? 1 : 360f / theta));
+    float pitch = Math.abs(v_dot_n == PT.FLOAT_MIN_SAFE ? 0 : n.length() * (theta == 0 ? 1 : 360f / theta));
     switch (tokType) {
     case T.array:
       return new Object[] {pt_a_prime, n, r,  P3.new3(theta, pitch, residuesPerTurn)};

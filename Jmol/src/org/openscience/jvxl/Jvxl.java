@@ -46,7 +46,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.jmol.jvxl.readers.SurfaceGenerator;
 import org.jmol.util.Logger;
 import javajs.util.P4;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 public class Jvxl {
 
@@ -184,7 +184,7 @@ public class Jvxl {
     blockData = (line.hasOption("B"));
 
     if (line.hasOption("i")) {
-      fileIndex = javajs.util.Parser.parseInt(line.getOptionValue("i"));
+      fileIndex = javajs.util.PT.parseInt(line.getOptionValue("i"));
     }
 
     if (line.hasOption("f")) {
@@ -238,21 +238,21 @@ public class Jvxl {
         isPositiveOnly = true;
         s = s.substring(1);
       }
-      cutoff = Parser.parseFloat(s);
+      cutoff = PT.parseFloat(s);
     }
 
     if (line.hasOption("n")) {
       if (bicolor)
         Logger.warn("--min option ignored; incompatible with --bicolor");
       else
-        min = Parser.parseFloat(line.getOptionValue("n"));
+        min = PT.parseFloat(line.getOptionValue("n"));
     }
 
     if (line.hasOption("x")) {
       if (bicolor)
         Logger.warn("--max option ignored; incompatible with --bicolor");
       else
-        max = Parser.parseFloat(line.getOptionValue("x"));
+        max = PT.parseFloat(line.getOptionValue("x"));
     }
 
     //    if (line.hasOption("P")) {
@@ -357,19 +357,19 @@ public class Jvxl {
     if (str.equalsIgnoreCase("yz"))
       return P4.new4(1, 0, 0, 0);
     if (str.indexOf("x=") == 0) {
-      return P4.new4(1, 0, 0, -Parser.parseFloat(str.substring(2)));
+      return P4.new4(1, 0, 0, -PT.parseFloat(str.substring(2)));
     }
     if (str.indexOf("y=") == 0) {
-      return P4.new4(0, 1, 0, -Parser.parseFloat(str.substring(2)));
+      return P4.new4(0, 1, 0, -PT.parseFloat(str.substring(2)));
     }
     if (str.indexOf("z=") == 0) {
-      return P4.new4(0, 0, 1, -Parser.parseFloat(str.substring(2)));
+      return P4.new4(0, 0, 1, -PT.parseFloat(str.substring(2)));
     }
     if (str.indexOf("{") == 0) {
       str = str.replace(',', ' ');
       int[] next = new int[1];
-      return P4.new4(Parser.parseFloatNext(str, next), Parser.parseFloatNext(str,
-          next), Parser.parseFloatNext(str, next), Parser.parseFloatNext(str, next));
+      return P4.new4(PT.parseFloatNext(str, next), PT.parseFloatNext(str,
+          next), PT.parseFloatNext(str, next), PT.parseFloatNext(str, next));
     }
     return null;
   }

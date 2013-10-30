@@ -2,7 +2,7 @@ package org.jmol.image;
 
 import java.util.zip.CRC32;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 
 abstract class CRCEncoder extends ImageEncoder {
 
@@ -26,7 +26,7 @@ abstract class CRCEncoder extends ImageEncoder {
   }
 
   protected byte[] getBytes() {
-    return (dataLen == pngBytes.length ? pngBytes : ArrayUtil.arrayCopyByte(
+    return (dataLen == pngBytes.length ? pngBytes : AU.arrayCopyByte(
         pngBytes, dataLen));
   }
 
@@ -101,7 +101,7 @@ abstract class CRCEncoder extends ImageEncoder {
     int newPos = bytePos + data.length;
     dataLen = Math.max(dataLen, newPos);
     if (newPos > pngBytes.length)
-      pngBytes = ArrayUtil.arrayCopyByte(pngBytes, newPos + 16);
+      pngBytes = AU.arrayCopyByte(pngBytes, newPos + 16);
     System.arraycopy(data, 0, pngBytes, bytePos, data.length);
     bytePos = newPos;
   }

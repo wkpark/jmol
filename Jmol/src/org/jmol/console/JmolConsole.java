@@ -39,7 +39,7 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 
 
@@ -151,7 +151,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
     }
     
     protected String getFile(int n) {
-      return ArrayUtil.sortedItem(v, n);
+      return AU.sortedItem(v, n);
     }
   }
   

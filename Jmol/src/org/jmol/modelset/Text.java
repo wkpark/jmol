@@ -28,7 +28,7 @@ import org.jmol.util.GData;
 
 import javajs.awt.Font;
 import javajs.util.P3;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -196,7 +196,7 @@ public class Text extends Object2d {
     }
     if (font == null)
       return;
-    lines = Parser.split(text, "|");
+    lines = PT.split(text, "|");
     textWidth = 0;
     widths = new int[lines.length];
     for (int i = lines.length; --i >= 0;)

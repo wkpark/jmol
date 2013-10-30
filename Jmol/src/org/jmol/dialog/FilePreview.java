@@ -163,9 +163,9 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
       if (fileName.indexOf(".spt") >= 0) {
         script = "script " + script;
       } else {
-        script = Txt.simpleReplace((String) display.getViewer()
+        script = javajs.util.PT.simpleReplace((String) display.getViewer()
             .getParameter("defaultdropscript"), "%FILE", script + " 1");
-        script = Txt.simpleReplace(script, "%ALLOWCARTOONS", ""
+        script = javajs.util.PT.simpleReplace(script, "%ALLOWCARTOONS", ""
             + isCartoonsSelected());
       }
     }

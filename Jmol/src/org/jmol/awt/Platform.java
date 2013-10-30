@@ -13,17 +13,17 @@ import javax.swing.JDialog;
 
 import netscape.javascript.JSObject;
 
-import org.jmol.api.ApiPlatform;
 import org.jmol.api.Interface;
-import org.jmol.api.JmolFileInterface;
-import org.jmol.api.JmolMouseInterface;
-import org.jmol.api.JmolPopupInterface;
-import org.jmol.api.PlatformViewer;
 
+import javajs.api.GenericPlatform;
+import javajs.api.GenericFileInterface;
+import javajs.api.GenericMouseInterface;
+import javajs.api.GenericMenuInterface;
+import javajs.api.PlatformViewer;
 import javajs.awt.Font;
 import javajs.util.P3;
 
-public class Platform implements ApiPlatform {
+public class Platform implements GenericPlatform {
 
   PlatformViewer viewer;
   
@@ -41,8 +41,8 @@ public class Platform implements ApiPlatform {
     Display.getFullScreenDimensions(display, widthHeight);        
   }
   
-  public JmolPopupInterface getMenuPopup(String menuStructure, char type) {
-    JmolPopupInterface jmolpopup = (JmolPopupInterface) Interface.getOptionInterface(
+  public GenericMenuInterface getMenuPopup(String menuStructure, char type) {
+    GenericMenuInterface jmolpopup = (GenericMenuInterface) Interface.getOptionInterface(
         type == 'j' ? "popup.JmolPopup" : "modelkit.ModelKitPopup");
     if (jmolpopup != null)
       jmolpopup.jpiInitialize(viewer, menuStructure);
@@ -86,7 +86,7 @@ public class Platform implements ApiPlatform {
 
   ////// Mouse
 
-  public JmolMouseInterface getMouseManager(double privateKey, Object display) {
+  public GenericMouseInterface getMouseManager(double privateKey, Object display) {
     return new Mouse(privateKey, viewer, display);
   }
 
@@ -234,7 +234,7 @@ public class Platform implements ApiPlatform {
             .format(new Date()));
   }
 
-  public JmolFileInterface newFile(String name) {
+  public GenericFileInterface newFile(String name) {
     return new AwtFile(name);
   }
 

@@ -31,7 +31,7 @@ import java.util.Map;
 
 import javajs.util.M3;
 import javajs.util.P3;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.V3;
 
 import org.jmol.java.BS;
@@ -156,7 +156,7 @@ public class Tensor {
     default:
       // dump all key/value pairs
       Map<String, Object> info = new Hashtable<String, Object>();
-      String[] s = Parser.getTokens(Txt.replaceAllCharacter(infoList, ";.", ' ').trim());
+      String[] s = PT.getTokens(PT.replaceAllCharacter(infoList, ";.", ' ').trim());
       Arrays.sort(s);
       for (int i = 0; i < s.length; i++) {
         Object o = getInfo(s[i]);

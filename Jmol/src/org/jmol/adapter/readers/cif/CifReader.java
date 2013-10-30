@@ -46,7 +46,7 @@ import org.jmol.util.Logger;
 
 import javajs.util.M4;
 import javajs.util.P3;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Txt;
@@ -128,7 +128,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
     if (conf != null)
       configurationPtr = parseIntStr(conf);
     if (checkFilterKey("BIOMOLECULE")) // PDB format
-      filter = Txt.simpleReplace(filter, "BIOMOLECULE","ASSEMBLY");
+      filter = javajs.util.PT.simpleReplace(filter, "BIOMOLECULE","ASSEMBLY");
     isMolecular = checkFilterKey("MOLECUL"); // molecular; molecule
     readIdeal = !checkFilterKey("NOIDEAL");
     filterAssembly = checkFilterKey("$");
@@ -246,7 +246,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         auditBlockCode = tokenizer.fullTrim(data).toUpperCase();
         appendLoadNote(auditBlockCode);
         if (htAudit != null && auditBlockCode.contains("_MOD_")) {
-          String key = Txt.simpleReplace(auditBlockCode, "_MOD_", "_REFRNCE_");
+          String key = javajs.util.PT.simpleReplace(auditBlockCode, "_MOD_", "_REFRNCE_");
           if ((atomSetCollection.symmetry = (SymmetryInterface) htAudit.get(key)) != null) {
             notionalUnitCell = atomSetCollection.symmetry.getNotionalUnitCell();
             iHaveUnitCell = true;
@@ -264,7 +264,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   }
   
   private String fixKey(String key) {
-    return Txt.simpleReplace(key, ".", "_").toLowerCase();
+    return javajs.util.PT.simpleReplace(key, ".", "_").toLowerCase();
   }
 
   protected void newModel(int modelNo) throws Exception {    
@@ -323,7 +323,7 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       return;
     for (int i = vBiomolecules.size(); --i >= 0;) {
       Map<String, Object> biomolecule = vBiomolecules.get(i);
-      String[] ops = Parser.split((String) biomolecule.get("operators"), ",");
+      String[] ops = PT.split((String) biomolecule.get("operators"), ",");
       String assemblies = (String) biomolecule.get("assemblies");
       vBiomts = new  List<M4>();
       biomolecule.put("biomts", vBiomts);
@@ -1810,7 +1810,7 @@ _pdbx_struct_oper_list.vector[3]
         case SYM_SSG_XYZ:
           // check for non-standard record x~1~,x~2~,x~3~,x~4~  kIsfCqpM.cif
           if (field.indexOf('~') >= 0)
-            field = Txt.simpleReplace(field, "~", "");
+            field = javajs.util.PT.simpleReplace(field, "~", "");
           //$FALL-THROUGH$
         case SYM_SSG_OP:
           incommensurate = true;

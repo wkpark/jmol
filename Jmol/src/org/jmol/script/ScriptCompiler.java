@@ -26,7 +26,7 @@ package org.jmol.script;
 import org.jmol.util.Escape;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
-import javajs.util.Parser;
+import javajs.util.PT;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -37,7 +37,7 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Bond.BondSet;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 import javajs.util.M3;
@@ -707,7 +707,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         }
         if (doEval) {
           if (iCommand == lnLength) {
-            lineNumbers = ArrayUtil.doubleLengthShort(lineNumbers);
+            lineNumbers = AU.doubleLengthShort(lineNumbers);
             int[][] lnI = new int[lnLength * 2][2];
             System.arraycopy(lineIndices, 0, lnI, 0, lnLength);
             lineIndices = lnI;
@@ -1029,7 +1029,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
             // skip entirely if not recognized
             int tok = (strFormat.indexOf("=") == 0
                 || strFormat.indexOf("$") == 0 ? T.string
-                : Parser.isOneOf(strFormat = strFormat.toLowerCase(),
+                : PT.isOneOf(strFormat = strFormat.toLowerCase(),
                     JC.LOAD_ATOM_DATA_TYPES) ? T.identifier : 0);
             if (tok != 0) {
               addTokenToPrefix(T.o(tok, strFormat));
@@ -1062,7 +1062,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     case T.sync:
       if (nTokens == 1 && lookForSyncID()) {
         String ident = script.substring(ichToken, ichToken + cchToken);
-        int iident = javajs.util.Parser.parseInt(ident);
+        int iident = javajs.util.PT.parseInt(ident);
         if (iident == Integer.MIN_VALUE || Math.abs(iident) < 1000)
           addTokenToPrefix(T.o(T.identifier, ident));
         else
@@ -1100,7 +1100,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
         && lookingAtImpliedString(true, true, true)) {
       String str = script.substring(ichToken, ichToken + cchToken);
       if (tokCommand == T.label
-          && Parser.isOneOf(str.toLowerCase(), "on;off;hide;display"))
+          && PT.isOneOf(str.toLowerCase(), "on;off;hide;display"))
         addTokenToPrefix(T.getTokenFromName(str.toLowerCase()));
       else
         addTokenToPrefix(T.o(T.string, str));
@@ -1118,7 +1118,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
       return CONTINUE;
     }
     if (lookingAtDecimal()) {
-      value = Parser.fVal(script.substring(ichToken, ichToken + cchToken));
+      value = PT.fVal(script.substring(ichToken, ichToken + cchToken));
       int intValue = (ScriptEvaluator.getFloatEncodedInt(script.substring(
           ichToken, ichToken + cchToken)));
       addTokenToPrefix(T.tv(T.decimal, intValue, Float.valueOf(value)));
@@ -2397,7 +2397,7 @@ public class ScriptCompiler extends ScriptCompilationTokenParser {
     if (!isOK)
       return Float.NaN;
     cchToken = ichT - ichToken;
-    return (float) Parser.dVal(script.substring(pt0, ichT));
+    return (float) PT.dVal(script.substring(pt0, ichT));
   }
 
   private boolean lookingAtDecimal() {

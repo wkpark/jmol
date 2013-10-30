@@ -106,7 +106,6 @@ var	basefile = base + "core.z.js";
 	]);
 
 	ClazzLoader.jarClasspath (base + "coremenu.z.js",	[
-		"J.api.JmolPopupInterface",
 		"J.awtjs2d.JSmolPopup",		
 		"$.JSPopup",
 		"$.JSmolPopup",
@@ -119,7 +118,7 @@ var	basefile = base + "core.z.js";
 	ClazzLoader.jarClasspath (base + "corebinary.z.js",	[
     "java.io.DataInputStream",
     "$.PushbackInputStream",
-    "javajs.util.ByteConverter",
+    "JU.BC",
     "J.api.JmolDocument",
     "J.io2.BinaryDocument"
 	]);

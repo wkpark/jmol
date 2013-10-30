@@ -3,16 +3,16 @@ package org.jmol.awtjs2d;
 import java.net.URL;
 
 
-import org.jmol.api.ApiPlatform;
 import org.jmol.api.Interface;
-import org.jmol.api.JmolFileInterface;
-import org.jmol.api.JmolMouseInterface;
-import org.jmol.api.JmolPopupInterface;
 
+import javajs.api.GenericPlatform;
+import javajs.api.GenericFileInterface;
+import javajs.api.GenericMouseInterface;
+import javajs.api.GenericMenuInterface;
+import javajs.api.PlatformViewer;
 import javajs.awt.Font;
 import javajs.util.AjaxURLStreamHandlerFactory;
 import javajs.util.P3;
-import org.jmol.api.PlatformViewer;
 
 /**
  * JavaScript 2D canvas version requires Ajax-based URL stream processing.
@@ -27,7 +27,7 @@ import org.jmol.api.PlatformViewer;
  * @author Bob Hanson
  *
  */
-public class Platform implements ApiPlatform {
+public class Platform implements GenericPlatform {
   Object canvas;
   PlatformViewer viewer;
   Object context;
@@ -76,7 +76,7 @@ public class Platform implements ApiPlatform {
     return false;
   }
 
-  public JmolMouseInterface getMouseManager(double privateKey, Object display) {
+  public GenericMouseInterface getMouseManager(double privateKey, Object display) {
     return new Mouse(privateKey, viewer, display);
   }
 
@@ -91,10 +91,10 @@ public class Platform implements ApiPlatform {
 		Display.getFullScreenDimensions(canvas, widthHeight);
 	}
 
-  public JmolPopupInterface getMenuPopup(String menuStructure,
+  public GenericMenuInterface getMenuPopup(String menuStructure,
                                          char type) {
     String c = (type == 'j' ? "awtjs2d.JSmolPopup" : "awtjs2d.JSModelKitPopup");
-    JmolPopupInterface jmolpopup = (JmolPopupInterface) Interface
+    GenericMenuInterface jmolpopup = (GenericMenuInterface) Interface
         .getOptionInterface(c);
     try {
       if (jmolpopup != null)
@@ -325,7 +325,7 @@ public class Platform implements ApiPlatform {
     }
   }
 
-  public JmolFileInterface newFile(String name) {
+  public GenericFileInterface newFile(String name) {
     return new JSFile(name);
   }
 

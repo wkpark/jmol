@@ -32,11 +32,11 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Map;
 
-import javajs.util.Parser;
+import javajs.api.ZInputStream;
+import javajs.util.PT;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
-import org.jmol.api.ZInputStream;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
@@ -95,7 +95,7 @@ public class FileReader {
         String name = fullPathNameIn;
         String[] subFileList = null;
         if (name.indexOf("|") >= 0 && !name.endsWith(".zip")) {
-          subFileList = Parser.split(name, "|");
+          subFileList = PT.split(name, "|");
           name = subFileList[0];
         }
         if (subFileList != null)

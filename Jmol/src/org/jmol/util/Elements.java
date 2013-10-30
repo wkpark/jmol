@@ -27,7 +27,7 @@ package org.jmol.util;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import org.jmol.constant.EnumVdw;
 import org.jmol.java.BS;
@@ -219,7 +219,7 @@ public class Elements {
       int pt = elementSymbol.length() - 2;
       if (pt >= 0 && Character.isDigit(elementSymbol.charAt(pt)))
         pt++;
-      int isotope = (pt > 0 ? Parser.parseInt(elementSymbol.substring(0, pt)) : 0);
+      int isotope = (pt > 0 ? PT.parseInt(elementSymbol.substring(0, pt)) : 0);
       if (isotope > 0) {
         int n = elementNumberFromSymbol(elementSymbol.substring(pt), true);
         if (n > 0) {  

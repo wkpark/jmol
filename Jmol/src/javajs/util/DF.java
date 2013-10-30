@@ -27,7 +27,7 @@ package javajs.util;
 /**
  * created to remove ambiguities and make a simpler DecimalFormat
  */
-public class DecimalFormat {
+public class DF {
 
   private final static String[] formattingStrings = { "0", "0.0", "0.00",
       "0.000", "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000",
@@ -49,7 +49,7 @@ public class DecimalFormat {
         || value == Double.POSITIVE_INFINITY 
         || Double.isNaN(value))
       return "" + value;
-    return DecimalFormat.formatDecimal((float) value, decimalDigits);
+    return DF.formatDecimal((float) value, decimalDigits);
   }
 
   /**
@@ -83,8 +83,8 @@ public class DecimalFormat {
       }
       String s = ("" + d).toUpperCase();
       int i = s.indexOf("E");
-      n = Parser.parseInt(s.substring(i + 1)) + n;
-      return (i < 0 ? "" + value : formatDecimal(Parser.parseFloat(s.substring(
+      n = PT.parseInt(s.substring(i + 1)) + n;
+      return (i < 0 ? "" + value : formatDecimal(PT.parseFloat(s.substring(
           0, i)), decimalDigits - 1)
           + "E" + (n >= 0 ? "+" : "") + n);
     }
@@ -100,7 +100,7 @@ public class DecimalFormat {
       return s1 + formattingStrings[decimalDigits].substring(1);
     int pt1 = s1.indexOf("E-");
     if (pt1 > 0) {
-      n = Parser.parseInt(s1.substring(pt1 + 1));
+      n = PT.parseInt(s1.substring(pt1 + 1));
       // 3.567E-2
       // 0.03567
       s1 = "0." + zeros.substring(0, -n - 1) + s1.substring(0, 1) + s1.substring(2, pt1);
@@ -112,7 +112,7 @@ public class DecimalFormat {
     // 3567.800000000
     // 1.234E10 %3.8f -> 12340000000.00000000
     if (pt1 > 0) {
-      n = Parser.parseInt(s1.substring(pt1 + 1));
+      n = PT.parseInt(s1.substring(pt1 + 1));
       s1 = s1.substring(0, 1) + s1.substring(2, pt1) + zeros;
       s1 = s1.substring(0, n + 1) + "." + s1.substring(n + 1);
       pt = s1.indexOf(".");

@@ -31,8 +31,8 @@ import java.util.Map;
 import org.jmol.api.JmolDocument;
 import org.jmol.util.Logger;
 
-import javajs.util.ByteConverter;
-import javajs.util.OutputChannel;
+import javajs.util.BC;
+import javajs.util.OC;
 import javajs.util.SB;
 
 
@@ -50,7 +50,7 @@ import javajs.util.SB;
  * 
  */
 
-public class BinaryDocument extends ByteConverter implements JmolDocument {
+public class BinaryDocument extends BC implements JmolDocument {
 
   public BinaryDocument() {  
   }
@@ -297,8 +297,8 @@ public class BinaryDocument extends ByteConverter implements JmolDocument {
     return nBytes;
   }
 
-  OutputChannel out;
-  public void setOutputChannel(OutputChannel out) {
+  OC out;
+  public void setOutputChannel(OC out) {
       this.out = out;
   }
 

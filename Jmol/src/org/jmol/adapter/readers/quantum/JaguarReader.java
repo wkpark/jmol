@@ -28,7 +28,7 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -175,7 +175,7 @@ public class JaguarReader extends MOReader {
     String lastAtom = "";
     int iAtom = -1;
     int[][] sdata = new int[moCount][4];
-    List<float[]>[] sgdata = ArrayUtil.createArrayOfArrayList(moCount);
+    List<float[]>[] sgdata = AU.createArrayOfArrayList(moCount);
     String[] tokens;
     gaussianCount = 0;
 
@@ -211,7 +211,7 @@ public class JaguarReader extends MOReader {
         }
       }
     }
-    float[][] garray = ArrayUtil.newFloat2(gaussianCount);
+    float[][] garray = AU.newFloat2(gaussianCount);
     List<int[]> sarray = new  List<int[]>();
     gaussianCount = 0;
     for (int i = 0; i < moCount; i++)
@@ -295,7 +295,7 @@ public class JaguarReader extends MOReader {
       gdata.addLast(new float[] { z, rCoef });
     }
 
-    float[][] garray = ArrayUtil.newFloat2(gaussianCount);
+    float[][] garray = AU.newFloat2(gaussianCount);
     for (int i = gdata.size(); --i >= 0;)
       garray[i] = gdata.get(i);
     moData.put("shells", sarray);

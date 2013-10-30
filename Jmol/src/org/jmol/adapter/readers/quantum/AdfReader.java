@@ -30,7 +30,7 @@ import org.jmol.quantum.SlaterData;
 import org.jmol.util.Logger;
 //import org.jmol.util.Escape;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -378,7 +378,7 @@ OR
       readLine();
       int nLine = getTokensStr(readLine()).length;
       readLine();
-      sd.mos = ArrayUtil.createArrayOfHashtable(sd.nSFO);
+      sd.mos = AU.createArrayOfHashtable(sd.nSFO);
       String[][] data = new String[sd.nSFO][];
       fillDataBlock(data, 0);
       for (int j = 1; j < nLine; j++) {

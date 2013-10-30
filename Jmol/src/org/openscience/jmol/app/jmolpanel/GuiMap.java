@@ -286,7 +286,7 @@ public class GuiMap {
       setTranslations();
     language = GT.getLanguage();
     for (int i = 0; i < translations.length; i += 2)
-      str = Txt.simpleReplace(str, translations[i], translations[i + 1]);
+      str = javajs.util.PT.simpleReplace(str, translations[i], translations[i + 1]);
     return str;
   }
 

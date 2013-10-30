@@ -23,7 +23,7 @@
  */
 package org.jmol.g3d;
 
-import org.jmol.api.ApiPlatform;
+import javajs.api.GenericPlatform;
 
 /**
  *<p>
@@ -50,9 +50,9 @@ class Platform3D {
   boolean useClearingThread = false;
 
   private ClearingThread clearingThread;
-  ApiPlatform apiPlatform;
+  GenericPlatform apiPlatform;
 
-  Platform3D(ApiPlatform apiPlatform) {
+  Platform3D(GenericPlatform apiPlatform) {
     initialize(desireClearingThread);
     this.apiPlatform = apiPlatform;
   }

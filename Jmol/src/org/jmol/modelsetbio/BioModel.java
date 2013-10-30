@@ -23,8 +23,8 @@
  */
 package org.jmol.modelsetbio;
 
-import javajs.util.ArrayUtil;
-import javajs.util.OutputChannel;
+import javajs.util.AU;
+import javajs.util.OC;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -91,7 +91,7 @@ public final class BioModel extends Model{
   @Override
   public void freeze() {
     freezeM();
-    bioPolymers = (BioPolymer[])ArrayUtil.arrayCopyObject(bioPolymers, bioPolymerCount);
+    bioPolymers = (BioPolymer[])AU.arrayCopyObject(bioPolymers, bioPolymerCount);
   }
   
   public void addSecondaryStructure(EnumStructure type, String structureID,
@@ -242,7 +242,7 @@ public final class BioModel extends Model{
   
   @Override
   public void setStructureList(Map<EnumStructure, float[]> structureList) {
-    bioPolymers = (BioPolymer[])ArrayUtil.arrayCopyObject(bioPolymers, bioPolymerCount);
+    bioPolymers = (BioPolymer[])AU.arrayCopyObject(bioPolymers, bioPolymerCount);
     for (int i = bioPolymerCount; --i >= 0; )
       bioPolymers[i].setStructureList(structureList);
   }
@@ -440,7 +440,7 @@ public final class BioModel extends Model{
     if (bioPolymers.length == 0)
       clearBioPolymers();
     if (bioPolymerCount == bioPolymers.length)
-      bioPolymers = (BioPolymer[])ArrayUtil.doubleLength(bioPolymers);
+      bioPolymers = (BioPolymer[])AU.doubleLength(bioPolymers);
     polymer.bioPolymerIndexInModel = bioPolymerCount;
     bioPolymers[bioPolymerCount++] = polymer;
   }
@@ -731,7 +731,7 @@ public final class BioModel extends Model{
   @Override
   public void getPdbData(Viewer viewer, String type, char ctype,
                          boolean isDraw, BS bsSelected,
-                         OutputChannel out, LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
+                         OC out, LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
     boolean bothEnds = false;
     char qtype = (ctype != 'R' ? 'r' : type.length() > 13
         && type.indexOf("ramachandran ") >= 0 ? type.charAt(13) : 'R');

@@ -29,7 +29,6 @@ import java.util.Comparator;
 import java.util.Map;
 
 
-import org.jmol.api.ApiPlatform;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.constant.EnumStereoMode;
@@ -40,8 +39,9 @@ import org.jmol.util.GData;
 import org.jmol.util.MeshSurface;
 import org.jmol.util.Normix;
 
+import javajs.api.GenericPlatform;
 import javajs.awt.Font;
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -236,7 +236,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
   }
   
   @Override
-  public void initialize(ApiPlatform apiPlatform) {
+  public void initialize(GenericPlatform apiPlatform) {
     this.apiPlatform = apiPlatform;
     platform = new Platform3D(apiPlatform);
     graphicsForMetrics = platform.getGraphicsForMetrics();
@@ -965,7 +965,7 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
     if (strings == null)
       strings = new TextString[10];
     if (stringCount == strings.length)
-      strings = (TextString[]) ArrayUtil.doubleLength(strings);
+      strings = (TextString[]) AU.doubleLength(strings);
     TextString t = new TextString();
     t.setText(str, font3d == null ? currentFont : (currentFont = font3d), argbCurrent, 
         C.isColixTranslucent(bgColix) ?  // shift colix translucency mask into integer alpha position

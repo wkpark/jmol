@@ -25,7 +25,7 @@
 
 package org.jmol.shapesurface;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -293,7 +293,7 @@ public class MolecularOrbital extends Isosurface {
             currentMesh = null;
             thisModel = null;
           }
-          meshes = (IsosurfaceMesh[]) ArrayUtil.deleteElements(meshes, i, 1);
+          meshes = (IsosurfaceMesh[]) AU.deleteElements(meshes, i, 1);
           continue;
         }
         Map<String, Object> htModel = htModels.get(meshes[i].thisID);

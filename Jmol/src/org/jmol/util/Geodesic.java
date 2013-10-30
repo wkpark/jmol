@@ -28,7 +28,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.J2SRequireImport;
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.V3;
 
   /**
@@ -123,7 +123,7 @@ import javajs.util.V3;
  * 
  */
 
-@J2SRequireImport({javajs.util.ArrayUtil.class})
+@J2SRequireImport({javajs.util.AU.class})
 public class Geodesic {
   
   private final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));
@@ -227,8 +227,8 @@ public class Geodesic {
     // from getVertexCount()
     //only one per applet set
     short[] v = new short[lvl + 1];
-    neighborVertexesArrays = ArrayUtil.newShort2(lvl + 1);
-    faceVertexesArrays = ArrayUtil.newShort2(lvl + 1);
+    neighborVertexesArrays = AU.newShort2(lvl + 1);
+    faceVertexesArrays = AU.newShort2(lvl + 1);
     vertexVectors = new V3[12];
     vertexVectors[0] = V3.new3(0, 0, halfRoot5);
     for (int i = 0; i < 5; ++i) {
@@ -282,7 +282,7 @@ public class Geodesic {
     int oldEdgesCount = oldVertexCount + oldFaceCount - 2;
     int newVertexCount = oldVertexCount + oldEdgesCount;
     int newFaceCount = 4 * oldFaceCount;
-    vertexVectors = (V3[]) ArrayUtil.arrayCopyObject(vertexVectors, newVertexCount);
+    vertexVectors = (V3[]) AU.arrayCopyObject(vertexVectors, newVertexCount);
 
     short[] newFacesVertexes = new short[3 * newFaceCount];
     faceVertexesArrays[level + 1] = newFacesVertexes;

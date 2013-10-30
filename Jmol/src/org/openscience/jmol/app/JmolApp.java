@@ -289,7 +289,7 @@ public class JmolApp implements JmolAppAPI {
     // port for JSON mode communication
     
     if (line.hasOption("P"))
-      port =  javajs.util.Parser.parseInt(line.getOptionValue("P"));
+      port =  javajs.util.PT.parseInt(line.getOptionValue("P"));
     if (port > 0)
       info.put("port", Integer.valueOf(port));
 
@@ -402,10 +402,10 @@ public class JmolApp implements JmolAppAPI {
       String geometry = line.getOptionValue("g");
       int indexX = geometry.indexOf('x');
       if (indexX > 0) {
-        width = javajs.util.Parser.parseInt(geometry.substring(0, indexX));
-        height = javajs.util.Parser.parseInt(geometry.substring(indexX + 1));
+        width = javajs.util.PT.parseInt(geometry.substring(0, indexX));
+        height = javajs.util.PT.parseInt(geometry.substring(indexX + 1));
       } else {
-        width = height = javajs.util.Parser.parseInt(geometry);
+        width = height = javajs.util.PT.parseInt(geometry);
       }
       startupWidth = -1;
     }
@@ -424,7 +424,7 @@ public class JmolApp implements JmolAppAPI {
     if (line.hasOption("w")) {
       int quality = -1;
       if (line.hasOption("q"))
-        quality = javajs.util.Parser.parseInt(line.getOptionValue("q"));
+        quality = javajs.util.PT.parseInt(line.getOptionValue("q"));
       String type_name = line.getOptionValue("w");
       if (type_name != null) {
         if (type_name.length() == 0)
@@ -435,7 +435,7 @@ public class JmolApp implements JmolAppAPI {
         String type = type_name.substring(0, i).toUpperCase();
         type_name = type_name.substring(i + 1).trim();
         if (type.indexOf(" ") >= 0) {
-          quality = javajs.util.Parser.parseInt(type.substring(type.indexOf(" ")).trim());
+          quality = javajs.util.PT.parseInt(type.substring(type.indexOf(" ")).trim());
           type.substring(0, type.indexOf(" "));
         }
         if (GraphicsEnvironment.isHeadless()) {
@@ -452,7 +452,7 @@ public class JmolApp implements JmolAppAPI {
       }
     }
     if (GraphicsEnvironment.isHeadless())
-        info.put("headlistMaxTimeMs", Integer.valueOf(1000 * (line.hasOption("T") ? javajs.util.Parser.parseInt(line.getOptionValue("T")) : 60)));
+        info.put("headlistMaxTimeMs", Integer.valueOf(1000 * (line.hasOption("T") ? javajs.util.PT.parseInt(line.getOptionValue("T")) : 60)));
 
     // the next three are coupled -- if the -n command line option is 
     // given, but -I is not, then the -x is added, but not vice-versa. 

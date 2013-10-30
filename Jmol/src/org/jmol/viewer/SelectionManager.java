@@ -25,7 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.script.T;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 
 import org.jmol.util.BSUtil;
 
@@ -271,7 +271,7 @@ public class SelectionManager {
     if (listeners.length == 0)
       listeners = new JmolSelectionListener[1];
     else
-      listeners = (JmolSelectionListener[]) ArrayUtil.doubleLength(listeners);
+      listeners = (JmolSelectionListener[]) AU.doubleLength(listeners);
     listeners[len] = listener;
   }
 

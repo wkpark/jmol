@@ -85,8 +85,8 @@ public class TlsDataOnlyReader extends AtomSetCollectionReader {
         range = new Hashtable<String, Object>();
         char chain1 = tokens[1].charAt(0);
         char chain2 = tokens[3].charAt(0);
-        int res1 = javajs.util.Parser.parseInt(tokens[2]);
-        int res2 = javajs.util.Parser.parseInt(tokens[4]);
+        int res1 = javajs.util.PT.parseInt(tokens[2]);
+        int res2 = javajs.util.PT.parseInt(tokens[4]);
         // ALL ? 
         if (chain1 == chain2) {
           range.put("chains", "" + chain1 + chain2);

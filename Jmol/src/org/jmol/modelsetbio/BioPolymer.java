@@ -35,9 +35,9 @@ import org.jmol.util.Escape;
 
 import org.jmol.util.Logger;
 
-import javajs.util.OutputChannel;
+import javajs.util.OC;
 import javajs.util.P3;
-import javajs.util.Parser;
+import javajs.util.PT;
 import org.jmol.util.Quaternion;
 import org.jmol.util.Txt;
 import javajs.util.V3;
@@ -272,7 +272,7 @@ public abstract class BioPolymer {
       leadMidpoints = new P3[monomerCount + 1];
       leadPoints = new P3[monomerCount + 1];
       wingVectors = new V3[monomerCount + 1];
-      sheetSmoothing = Parser.FLOAT_MIN_SAFE;
+      sheetSmoothing = PT.FLOAT_MIN_SAFE;
     }
     if (reversed == null)
       reversed = BS.newN(monomerCount);
@@ -478,7 +478,7 @@ public abstract class BioPolymer {
                                       BS bsAtoms, BS bsSelected,
                                       boolean bothEnds, boolean isDraw,
                                       boolean addHeader, LabelToken[] tokens,
-                                      OutputChannel pdbATOM,
+                                      OC pdbATOM,
                                       SB pdbCONECT, BS bsWritten) {
     boolean calcRamachandranStraightness = (qtype == 'C' || qtype == 'P');
     boolean isRamachandran = (ctype == 'R' || ctype == 'S'
@@ -606,7 +606,7 @@ public abstract class BioPolymer {
                               boolean writeRamachandranStraightness,
                               boolean quaternionStraightness, float factor,
                               boolean isAmino, boolean isRelativeAlias,
-                              LabelToken[] tokens, OutputChannel pdbATOM,
+                              LabelToken[] tokens, OC pdbATOM,
                               SB pdbCONECT, BS bsWritten) {
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
     Quaternion q;
@@ -1038,7 +1038,7 @@ public abstract class BioPolymer {
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep,
                          int derivType, BS bsAtoms, BS bsSelected,
                          boolean bothEnds, boolean isDraw, boolean addHeader,
-                         LabelToken[] tokens, OutputChannel pdbATOM,
+                         LabelToken[] tokens, OC pdbATOM,
                          SB pdbCONECT, BS bsWritten) {
     return;
   }

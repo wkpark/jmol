@@ -30,9 +30,8 @@ import org.jmol.util.Logger;
 
 import javajs.J2SIgnoreImport;
 import javajs.J2SRequireImport;
-import org.jmol.util.Txt;
 
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.V3;
 
@@ -76,9 +75,9 @@ public class JC {
         bis = new BufferedInputStream(is);
         Properties props = new Properties();
         props.load(bis);
-        tmpVersion = Txt.trimQuotes(props.getProperty("___JmolVersion",
+        tmpVersion = PT.trimQuotes(props.getProperty("___JmolVersion",
             tmpVersion));
-        tmpDate = Txt.trimQuotes(props.getProperty("___JmolDate", tmpDate));
+        tmpDate = PT.trimQuotes(props.getProperty("___JmolDate", tmpDate));
       } catch (Exception e) {
         // Nothing to do
       } finally {
@@ -919,7 +918,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // unfortunately, this change is not backward compatible.
     if (isLegacy && (pt = s.indexOf("O3'")) >= 0)
       s = s.substring(0, pt);
-    String[] temp = Parser.getTokens(s);
+    String[] temp = PT.getTokens(s);
     String[][] info = new String[temp.length / 2][];
     for (int i = 0, p = 0; i < info.length; i++) {
       String source = temp[p++];

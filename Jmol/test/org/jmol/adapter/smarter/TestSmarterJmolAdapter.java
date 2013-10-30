@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 import java.util.Hashtable;
 import java.util.zip.GZIPInputStream;
 
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import org.jmol.util.JUnitLogger;
 import org.jmol.util.Logger;
@@ -135,7 +135,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     if (testOne != null && !directory.equals(testOne))
       return;
     File dir = new File(datafileDirectory, directory);
-    String[] exts = Parser.split(ext, ";");
+    String[] exts = PT.split(ext, ";");
     for (int ie = 0; ie < exts.length; ie++) {
       final String e = exts[ie];
       String[] files = dir.list(new FilenameFilter() {

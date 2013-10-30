@@ -30,7 +30,7 @@ import java.util.Map;
 import org.jmol.api.JmolRendererInterface;
 
 import javajs.awt.Font;
-import javajs.util.ColorUtil;
+import javajs.util.CU;
 
 
 
@@ -133,7 +133,7 @@ class TextRenderer {
           int pt = text.indexOf(">", i);
           if (pt < 0)
             continue;
-          argb = ColorUtil.getArgbFromString(text.substring(i + 7, pt).trim());
+          argb = CU.getArgbFromString(text.substring(i + 7, pt).trim());
           i = pt;
           continue;
         }

@@ -24,12 +24,13 @@
 
 package org.jmol.adapter.readers.simple;
 
+import javajs.util.PT;
+
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Atom;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.Txt;
 
 public class JmeReader extends AtomSetCollectionReader {
   /*
@@ -85,10 +86,10 @@ public class JmeReader extends AtomSetCollectionReader {
       String elementSymbol = (indexColon > 0 ? strAtom.substring(0, indexColon)
           : strAtom);
       if (elementSymbol.indexOf("+") >= 0) {
-        elementSymbol = Txt.trim(elementSymbol, "+");
+        elementSymbol = PT.trim(elementSymbol, "+");
         atom.formalCharge = 1;
       } else if (elementSymbol.indexOf("-") >= 0) {
-        elementSymbol = Txt.trim(elementSymbol, "-");
+        elementSymbol = PT.trim(elementSymbol, "-");
         atom.formalCharge = -1;
       }
       atom.elementSymbol = elementSymbol;

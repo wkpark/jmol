@@ -25,8 +25,8 @@
 
 package org.jmol.util;
 
-import javajs.util.ArrayUtil;
-import javajs.util.Parser;
+import javajs.util.AU;
+import javajs.util.PT;
 
 import org.jmol.java.BS;
 
@@ -44,7 +44,7 @@ public class ParserBS {
    * @return  number of floats
    */
   public static int parseStringInfestedFloatArray(String str, BS bs, float[] data) {
-    return ParserBS.parseFloatArrayBsData(Parser.getTokens(str), bs, data);
+    return ParserBS.parseFloatArrayBsData(PT.getTokens(str), bs, data);
   }
 
   public static int parseFloatArrayBsData(String[] tokens, BS bs, float[] data) {
@@ -55,7 +55,7 @@ public class ParserBS {
     boolean haveBitSet = (bs != null);
     for (int i = (haveBitSet ? bs.nextSetBit(0) : 0); i >= 0 && i < len && n < nTokens; i = (haveBitSet ? bs.nextSetBit(i + 1) : i + 1)) {
       float f;
-      while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) 
+      while (Float.isNaN(f = PT.parseFloat(tokens[n++])) 
           && n < nTokens) {
       }
       if (!Float.isNaN(f))
@@ -105,22 +105,22 @@ public class ParserBS {
     for (; iLine < nLines; iLine++) {
       String line = str.substring(pt, lines[iLine]).trim();
       pt = lines[iLine];
-      String[] tokens = (fieldColumnCount <= 0 ? Parser.getTokens(line) : null);
+      String[] tokens = (fieldColumnCount <= 0 ? PT.getTokens(line) : null);
       // check for inappropriate data -- line too short or too few tokens or NaN for data
       // and parse data
       if (fieldColumnCount <= 0) {
         if (tokens.length < minLen
-            || Float.isNaN(f = Parser.parseFloat(tokens[field - 1])))
+            || Float.isNaN(f = PT.parseFloat(tokens[field - 1])))
           continue;
       } else {
         if (line.length() < minLen
-            || Float.isNaN(f = Parser.parseFloat(line.substring(field - 1, field
+            || Float.isNaN(f = PT.parseFloat(line.substring(field - 1, field
                 + fieldColumnCount - 1))))
           continue;
       }
       int iData;
       if (isMatch) {
-        iData = Parser.parseInt(tokens == null ? line.substring(fieldMatch - 1,
+        iData = PT.parseInt(tokens == null ? line.substring(fieldMatch - 1,
             fieldMatch + fieldMatchColumnCount - 1) : tokens[fieldMatch - 1]);
         // in the fieldMatch column we have an integer pointing into matchData
         // we replace that number then with the corresponding number in matchData
@@ -149,9 +149,9 @@ public class ParserBS {
 
   public static String fixDataString(String str) {
     str = str.replace(';', str.indexOf('\n') < 0 ? '\n' : ' ');
-    str = Txt.trim(str, "\n \t");
-    str = Txt.simpleReplace(str, "\n ", "\n");
-    str = Txt.simpleReplace(str, "\n\n", "\n");
+    str = PT.trim(str, "\n \t");
+    str = PT.simpleReplace(str, "\n ", "\n");
+    str = PT.simpleReplace(str, "\n\n", "\n");
     return str;    
   }
   
@@ -159,10 +159,10 @@ public class ParserBS {
     str = fixDataString(str);
     int[] lines = markLines(str, '\n');
     int nLines = lines.length;
-    float[][] data = ArrayUtil.newFloat2(nLines);
+    float[][] data = AU.newFloat2(nLines);
     for (int iLine = 0, pt = 0; iLine < nLines; pt = lines[iLine++]) {
-      String[] tokens = Parser.getTokens(str.substring(pt, lines[iLine]));
-      Parser.parseFloatArrayData(tokens, data[iLine] = new float[tokens.length]);
+      String[] tokens = PT.getTokens(str.substring(pt, lines[iLine]));
+      PT.parseFloatArrayData(tokens, data[iLine] = new float[tokens.length]);
     }
     return data;
   }
@@ -171,22 +171,22 @@ public class ParserBS {
     str = fixDataString(str);
     int[] lines = markLines(str, '\n');
     int nLines = lines.length;
-    String[] tokens = Parser.getTokens(str.substring(0, lines[0]));
+    String[] tokens = PT.getTokens(str.substring(0, lines[0]));
     if (tokens.length != 3)
       return new float[0][0][0];
-    int nX = Parser.parseInt(tokens[0]);
-    int nY = Parser.parseInt(tokens[1]);
-    int nZ = Parser.parseInt(tokens[2]);
+    int nX = PT.parseInt(tokens[0]);
+    int nY = PT.parseInt(tokens[1]);
+    int nZ = PT.parseInt(tokens[2]);
     if (nX < 1 || nY < 1 || nZ < 1)
       return new float[1][1][1];
-    float[][][] data = ArrayUtil.newFloat3(nX, nY);
+    float[][][] data = AU.newFloat3(nX, nY);
     int iX = 0;
     int iY = 0;
     for (int iLine = 1, pt = lines[0]; iLine < nLines && iX < nX; pt = lines[iLine++]) {
-      tokens = Parser.getTokens(str.substring(pt, lines[iLine]));
+      tokens = PT.getTokens(str.substring(pt, lines[iLine]));
       if (tokens.length < nZ)
         continue;
-      Parser.parseFloatArrayData(tokens, data[iX][iY] = new float[tokens.length]);
+      PT.parseFloatArrayData(tokens, data[iX][iY] = new float[tokens.length]);
       if (++iY == nY) {
         iX++;
         iY = 0;

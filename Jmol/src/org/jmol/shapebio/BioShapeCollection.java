@@ -36,7 +36,7 @@ import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.modelsetbio.Monomer;
 import org.jmol.shape.Shape;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
@@ -126,7 +126,7 @@ public abstract class BioShapeCollection extends Shape {
           b.modelIndex--;
           b.leadAtomIndices = b.bioPolymer.getLeadAtomIndices();
         } else if (b.modelIndex == modelIndex) {
-          bioShapes = (BioShape[]) ArrayUtil.deleteElements(bioShapes, i, 1);
+          bioShapes = (BioShape[]) AU.deleteElements(bioShapes, i, 1);
         }
       }
       return;

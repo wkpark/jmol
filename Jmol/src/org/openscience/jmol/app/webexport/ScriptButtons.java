@@ -68,10 +68,10 @@ class ScriptButtons extends WebPanel {
     int nbuttons = getInstanceList().getModel().getSize();
     if (!allSelectedWidgets().isEmpty())
       appletheightpercent = 85;
-    html = Txt.simpleReplace(html, "@WIDTHPERCENT@", "" + size);
-    html = Txt.simpleReplace(html, "@LEFTPERCENT@", "" + leftpercent);
-    html = Txt.simpleReplace(html, "@NBUTTONS@", "" + nbuttons);
-    html = Txt.simpleReplace(html, "@HEIGHT@", "" + appletheightpercent);
+    html = javajs.util.PT.simpleReplace(html, "@WIDTHPERCENT@", "" + size);
+    html = javajs.util.PT.simpleReplace(html, "@LEFTPERCENT@", "" + leftpercent);
+    html = javajs.util.PT.simpleReplace(html, "@NBUTTONS@", "" + nbuttons);
+    html = javajs.util.PT.simpleReplace(html, "@HEIGHT@", "" + appletheightpercent);
     return html;
   }
 
@@ -104,18 +104,18 @@ class ScriptButtons extends WebPanel {
       widgetDefs += "</tr></tbody></table>";
     }
     if (i == 0)
-      html = Txt.simpleReplace(html, "@APPLETNAME0@", GT.escapeHTML(buttonname));
+      html = javajs.util.PT.simpleReplace(html, "@APPLETNAME0@", GT.escapeHTML(buttonname));
     if (useAppletJS) {
       String info = "info for " + name;
       appletDefs.append("\naddAppletButton(" + i + ",'" + buttonname + "',\""
           + name + "\",\"" + info + "\");");
     } else {
       String s = htmlAppletTemplate;
-      s = Txt.simpleReplace(s, "@APPLETNAME0@", GT.escapeHTML(buttonname));
-      s = Txt.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
-      s = Txt.simpleReplace(s, "@LABEL@", GT.escapeHTML(name));
-      s = Txt.simpleReplace(s, "@I@", ""+i);
-      s = Txt.simpleReplace(s, "@WIDGETSTR@", widgetDefs);
+      s = javajs.util.PT.simpleReplace(s, "@APPLETNAME0@", GT.escapeHTML(buttonname));
+      s = javajs.util.PT.simpleReplace(s, "@NAME@", GT.escapeHTML(name));
+      s = javajs.util.PT.simpleReplace(s, "@LABEL@", GT.escapeHTML(name));
+      s = javajs.util.PT.simpleReplace(s, "@I@", ""+i);
+      s = javajs.util.PT.simpleReplace(s, "@WIDGETSTR@", widgetDefs);
       appletDefs.append(s);
     }
     return html;

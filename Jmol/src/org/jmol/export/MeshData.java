@@ -3,7 +3,7 @@ package org.jmol.export;
 
 import org.jmol.util.MeshSurface;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.P3;
 import javajs.util.T3;
 import javajs.util.V3;
@@ -75,7 +75,7 @@ class MeshData {
     int ndeg = 10;
     int n = 360 / ndeg;
     int vertexCount = n + 1;
-    int[][] faces = ArrayUtil.newInt2(n);
+    int[][] faces = AU.newInt2(n);
     for (int i = 0; i < n; i++) {
       faces[i] = new int[] { i, (i + 1) % n, n };
     }
@@ -125,7 +125,7 @@ class MeshData {
     int ndeg = 10;
     int n = 360 / ndeg;
     P3[] vertices = new P3[n + 1];
-    int[][] faces = ArrayUtil.newInt2(n);
+    int[][] faces = AU.newInt2(n);
     for (int i = 0; i < n; i++)
       faces[i] = new int[] { i, (i + 1) % n, n };
     double d = ndeg / 180. * Math.PI;
@@ -148,7 +148,7 @@ class MeshData {
     int ndeg = 10;
     int vertexCount = 360 / ndeg * 2;
     int n = vertexCount / 2;
-    int[][] faces = ArrayUtil.newInt2(vertexCount);
+    int[][] faces = AU.newInt2(vertexCount);
     int fpt = -1;
     for (int i = 0; i < n; i++) {
       if (inSide) {

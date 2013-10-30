@@ -23,7 +23,6 @@
  */
 package org.jmol.popup;
 
-import org.jmol.api.JmolPopupInterface;
 import org.jmol.i18n.GT;
 import org.jmol.i18n.Language;
 import org.jmol.java.BS;
@@ -31,7 +30,9 @@ import org.jmol.script.T;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javajs.util.Parser;
+
+import javajs.api.GenericMenuInterface;
+import javajs.util.PT;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -44,7 +45,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
 
-abstract public class GenericPopup implements JmolPopupInterface,
+abstract public class GenericPopup implements GenericMenuInterface,
     JmolAbstractMenu {
 
   //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
@@ -278,13 +279,13 @@ abstract public class GenericPopup implements JmolPopupInterface,
       id = id.replace('_', ' ');
       if (script.indexOf("[]") < 0)
         script = "[] " + script;
-      return Txt.simpleReplace(script, "[]", id);
+      return javajs.util.PT.simpleReplace(script, "[]", id);
     } else if (script.indexOf("?FILEROOT?") >= 0) {
-      script = Txt.simpleReplace(script, "FILEROOT?", modelSetRoot);
+      script = javajs.util.PT.simpleReplace(script, "FILEROOT?", modelSetRoot);
     } else if (script.indexOf("?FILE?") >= 0) {
-      script = Txt.simpleReplace(script, "FILE?", modelSetFileName);
+      script = javajs.util.PT.simpleReplace(script, "FILE?", modelSetFileName);
     } else if (script.indexOf("?PdbId?") >= 0) {
-      script = Txt.simpleReplace(script, "PdbId?", "=xxxx");
+      script = javajs.util.PT.simpleReplace(script, "PdbId?", "=xxxx");
     }
     return script;
   }
@@ -586,7 +587,7 @@ abstract public class GenericPopup implements JmolPopupInterface,
         what = what.substring(pt + 1);
         if ((pt = what.indexOf("|")) >= 0)
           what = (TF ? what.substring(0, pt) : what.substring(pt + 1)).trim();
-        what = Txt.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
+        what = javajs.util.PT.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
       }
     }
     viewer.evalStringQuiet(what);
@@ -715,11 +716,11 @@ abstract public class GenericPopup implements JmolPopupInterface,
       return false;
     for (int i = 0; i < n; i++) {
       String peak = peaks.get(i);
-      String title = Parser.getQuotedAttribute(peak, "title");
-      String atoms = Parser.getQuotedAttribute(peak, "atoms");
+      String title = PT.getQuotedAttribute(peak, "title");
+      String atoms = PT.getQuotedAttribute(peak, "atoms");
       if (atoms != null)
         menuCreateItem(menu, title, "select visible & (@"
-            + Txt.simpleReplace(atoms, ",", " or @") + ")", "Focus" + i);
+            + javajs.util.PT.simpleReplace(atoms, ",", " or @") + ")", "Focus" + i);
     }
     menuEnable(menu, true);
     return true;

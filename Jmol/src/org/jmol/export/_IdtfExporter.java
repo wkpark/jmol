@@ -29,7 +29,7 @@
  
 package org.jmol.export;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -555,7 +555,7 @@ public class _IdtfExporter extends __CartesianExporter {
     int vertexCount = Geodesic.getVertexCount(2);
     short[] f = Geodesic.getFaceVertexes(2);
     int nFaces = f.length / 3;
-    int[][] faces = ArrayUtil.newInt2(nFaces);
+    int[][] faces = AU.newInt2(nFaces);
     int fpt = -1;
     for (int i = 0; i < nFaces; i++)
       faces[i] = new int[] { f[++fpt], f[++fpt], f[++fpt] };
@@ -750,7 +750,7 @@ public class _IdtfExporter extends __CartesianExporter {
     int ndeg = 10;
     int vertexCount = 360 / ndeg * 2;
     int n = vertexCount / 2;
-    int[][] faces = ArrayUtil.newInt2(vertexCount);
+    int[][] faces = AU.newInt2(vertexCount);
     int fpt = -1;
     for (int i = 0; i < n; i++) {
       if (inSide) {
@@ -959,7 +959,7 @@ public class _IdtfExporter extends __CartesianExporter {
     int ndeg = 10;
     int n = 360 / ndeg;
     int vertexCount = n + 1;
-    int[][] faces = ArrayUtil.newInt2(n);
+    int[][] faces = AU.newInt2(n);
     for (int i = 0; i < n; i++)
       faces[i] = new int[] { i, (i + 1) % n, n };
     P3[] vertexes = new P3[vertexCount];
@@ -1001,7 +1001,7 @@ public class _IdtfExporter extends __CartesianExporter {
     v.addLast(getParentItem("Jmol", cylinderMatrix));
   }
 
-  private int[][] triangleFace = ArrayUtil.newInt2(1);
+  private int[][] triangleFace = AU.newInt2(1);
   {
     triangleFace[0] = new int[] { 0, 1, 2 };
   }

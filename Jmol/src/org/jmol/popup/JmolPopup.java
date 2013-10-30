@@ -23,7 +23,8 @@
  */
 package org.jmol.popup;
 
-import org.jmol.api.PlatformViewer;
+import javajs.api.PlatformViewer;
+
 import org.jmol.i18n.GT;
 import org.jmol.viewer.Viewer;
 

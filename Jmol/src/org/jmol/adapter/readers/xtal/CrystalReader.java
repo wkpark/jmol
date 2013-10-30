@@ -32,10 +32,10 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
-import javajs.util.DecimalFormat;
+import javajs.util.DF;
 import javajs.util.M3;
 import javajs.util.P3;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import org.jmol.util.Quaternion;
 import org.jmol.util.Tensor;
@@ -385,7 +385,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private float fraction(String f) {
-    String[] ab = Parser.split(f, "/");
+    String[] ab = PT.split(f, "/");
     return (ab.length == 2 ? parseFloatStr(ab[0]) / parseFloatStr(ab[1]) : 0);
   }
 
@@ -403,10 +403,10 @@ public class CrystalReader extends AtomSetCollectionReader {
    */
   private void setPrimitiveVolumeAndDensity() {
     if (primitiveVolume != 0)
-      atomSetCollection.setAtomSetModelProperty("volumePrimitive", DecimalFormat
+      atomSetCollection.setAtomSetModelProperty("volumePrimitive", DF
           .formatDecimal(primitiveVolume, 3));
     if (primitiveDensity != 0)
-      atomSetCollection.setAtomSetModelProperty("densityPrimitive", DecimalFormat
+      atomSetCollection.setAtomSetModelProperty("densityPrimitive", DF
           .formatDecimal(primitiveDensity, 3));
   }
   
@@ -788,7 +788,7 @@ public class CrystalReader extends AtomSetCollectionReader {
   }
 
   private void readEnergy() {
-    line = Txt.simpleReplace(line, "( ", "(");
+    line = javajs.util.PT.simpleReplace(line, "( ", "(");
     String[] tokens = getTokens();
     energy = Double.valueOf(Double.parseDouble(tokens[2]));
     setEnergy();
@@ -882,8 +882,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     String Sfrag = "";
     while (readLine() != null && line.indexOf("(") >= 0)
       Sfrag += line;
-    Sfrag = Txt.simpleReplace(Sfrag, "(", " ");
-    Sfrag = Txt.simpleReplace(Sfrag, ")", " ");
+    Sfrag = javajs.util.PT.simpleReplace(Sfrag, "(", " ");
+    Sfrag = javajs.util.PT.simpleReplace(Sfrag, ")", " ");
     String[] tokens = getTokensStr(Sfrag);
     for (int i = 0, pos = 0; i < numAtomsFrag; i++, pos += 3)
       atomFrag[i] = getAtomIndexFromPrimitiveIndex(parseIntStr(tokens[pos]) - 1);
@@ -986,8 +986,8 @@ public class CrystalReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetModelProperty("IRactivity", data[2]);
     atomSetCollection.setAtomSetModelProperty("Ramanactivity", data[3]);
     atomSetCollection.setAtomSetName((isLongMode ? "LO " : "") + data[0] + " "
-        + DecimalFormat.formatDecimal(freq, 2) + " cm-1 ("
-        + DecimalFormat.formatDecimal(Parser.fVal(data[1]), 0)
+        + DF.formatDecimal(freq, 2) + " cm-1 ("
+        + DF.formatDecimal(PT.fVal(data[1]), 0)
         + " km/Mole), " + activity);
   }
 
@@ -1055,7 +1055,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     String data = "";
     while (readLine() != null && (line.length() < 4 || Character.isDigit(line.charAt(3))))
       data += line;
-    data = Txt.simpleReplace(data, "-", " -");
+    data = javajs.util.PT.simpleReplace(data, "-", " -");
     String[] tokens = getTokensStr(data);
     for (int i = 0, pt = nfields - 1; i < atomCount; i++, pt += nfields) {
       int iConv = getAtomIndexFromPrimitiveIndex(i);

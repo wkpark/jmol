@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -759,7 +759,7 @@ public class NWChemReader extends MOReader {
         gaussianCount += nGaussians;
       }
     }
-    gaussians = ArrayUtil.newFloat2(gaussianCount);
+    gaussians = AU.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++)
       gaussians[i] = gdata.get(i);
     Logger.info(gaussianCount + " Gaussians read");

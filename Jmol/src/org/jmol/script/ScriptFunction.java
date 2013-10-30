@@ -23,7 +23,7 @@
 
 package org.jmol.script;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -131,7 +131,7 @@ public class ScriptFunction implements JmolScriptFunction {
     int nCommands = pt - cmdpt0;
     function.setScript(script.substring(chpt0, ichCurrentCommand));
     T[][] aatoken = function.aatoken = new T[nCommands][];
-    function.lineIndices = ArrayUtil.newInt2(nCommands);
+    function.lineIndices = AU.newInt2(nCommands);
     function.lineNumbers = new short[nCommands];
     short line0 = (short) (lineNumbers[cmdpt0] - 1);
     for (int i = 0; i < nCommands; i++) {

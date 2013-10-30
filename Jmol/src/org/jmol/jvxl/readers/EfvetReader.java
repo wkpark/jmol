@@ -28,7 +28,7 @@ import java.io.BufferedReader;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.util.Logger;
 
-import javajs.util.ColorUtil;
+import javajs.util.CU;
 import javajs.util.P3;
 /*
  * A simple EFVET file reader -- vertices and triangles only
@@ -143,7 +143,7 @@ class EfvetReader extends PolygonFileReader {
         setVertexAnisotropy(pt);
       int v = vertexMap[i + 1] = addVC(pt, value, i);
       if (v >= 0 && jvxlData.vertexColors != null) {
-        jvxlData.vertexColors[v] = ColorUtil.colorTriadToFFRGB(values[6], values[7], values[8]);
+        jvxlData.vertexColors[v] = CU.colorTriadToFFRGB(values[6], values[7], values[8]);
         jvxlData.nVertexColors++;
       }
     }

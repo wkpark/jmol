@@ -25,9 +25,9 @@
 package org.jmol.util;
 
 
-import javajs.util.ArrayUtil;
-import javajs.util.ColorUtil;
-import javajs.util.Parser;
+import javajs.util.AU;
+import javajs.util.CU;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.constant.EnumPalette;
@@ -193,24 +193,24 @@ public class C {
       int newSize = oldSize * 2;
       if (newSize > LAST_AVAILABLE_COLIX + 1)
         newSize = LAST_AVAILABLE_COLIX + 1;
-      argbs = ArrayUtil.arrayCopyI(argbs, newSize);
+      argbs = AU.arrayCopyI(argbs, newSize);
       //int[] t0 = new int[newSize];
       //System.arraycopy(argbs, 0, t0, 0, oldSize);
       //argbs = t0;
 
       if (argbsGreyscale != null)
-        argbsGreyscale = ArrayUtil.arrayCopyI(argbsGreyscale, newSize);
+        argbsGreyscale = AU.arrayCopyI(argbsGreyscale, newSize);
     }
     argbs[colixMax] = argb;
     if (argbsGreyscale != null)
-      argbsGreyscale[colixMax] = ColorUtil.toFFGGGfromRGB(argb);
+      argbsGreyscale[colixMax] = CU.toFFGGGfromRGB(argb);
     colixHash.put(argb, colixMax);
     return (colixMax < LAST_AVAILABLE_COLIX ? colixMax++ : colixMax);
   }
 
   static void setLastGrey(int argb) {
     calcArgbsGreyscale();
-    argbsGreyscale[LAST_AVAILABLE_COLIX] = ColorUtil.toFFGGGfromRGB(argb);
+    argbsGreyscale[LAST_AVAILABLE_COLIX] = CU.toFFGGGfromRGB(argb);
   }
 
   synchronized static void calcArgbsGreyscale() {
@@ -218,7 +218,7 @@ public class C {
       return;
     int[] a = new int[argbs.length];
     for (int i = argbs.length; --i >= SPECIAL_COLIX_MAX;)
-      a[i] = ColorUtil.toFFGGGfromRGB(argbs[i]);
+      a[i] = CU.toFFGGGfromRGB(argbs[i]);
     argbsGreyscale = a;
   }
 
@@ -408,7 +408,7 @@ public class C {
   }
 
   public static short getColixS(String colorName) {
-    int argb = ColorUtil.getArgbFromString(colorName);
+    int argb = CU.getArgbFromString(colorName);
     if (argb != 0)
       return getColix(argb);
     if ("none".equalsIgnoreCase(colorName))
@@ -421,10 +421,10 @@ public class C {
   public static short[] getColixArray(String colorNames) {
     if (colorNames == null || colorNames.length() == 0)
       return null;
-    String[] colors = Parser.getTokens(colorNames);
+    String[] colors = PT.getTokens(colorNames);
     short[] colixes = new short[colors.length];
     for (int j = 0; j < colors.length; j++) {
-      colixes[j] = getColix(ColorUtil.getArgbFromString(colors[j]));
+      colixes[j] = getColix(CU.getArgbFromString(colors[j]));
       if (colixes[j] == 0)
         return null;
     }
@@ -450,7 +450,7 @@ public class C {
   }  
 
   public static short getBgContrast(int argb) {
-    return ((ColorUtil.toFFGGGfromRGB(argb) & 0xFF) < 128 ? WHITE
+    return ((CU.toFFGGGfromRGB(argb) & 0xFF) < 128 ? WHITE
         : BLACK);
   }
 

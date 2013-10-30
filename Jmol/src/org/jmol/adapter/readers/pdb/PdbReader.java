@@ -33,7 +33,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
 import org.jmol.util.Escape;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -193,7 +193,7 @@ public class PdbReader extends AtomSetCollectionReader {
    applySymmetry = !checkFilterKey("NOSYMMETRY");
    getTlsGroups = checkFilterKey("TLS");
    if (checkFilterKey("ASSEMBLY")) // CIF syntax
-     filter = Txt.simpleReplace(filter, "ASSEMBLY", "BIOMOLECULE");
+     filter = javajs.util.PT.simpleReplace(filter, "ASSEMBLY", "BIOMOLECULE");
    if (htParams.containsKey("vTlsModels")) {
      // from   load files "tls.out" "xxxx.pdb"
      vTlsModels = ( List<Map<String, Object>>) htParams.remove("vTlsModels");
@@ -201,7 +201,7 @@ public class PdbReader extends AtomSetCollectionReader {
    String s = getFilter("TYPE ");
    if (s != null) {
      // first column, nColumns;
-     String[] tokens = Parser.getTokens(s.replace(',', ' '));
+     String[] tokens = PT.getTokens(s.replace(',', ' '));
      atomTypePt0 = Integer.parseInt(tokens[0]) - 1;
      int pt = tokens[1].indexOf("=");
      if (pt >= 0) {
@@ -518,7 +518,7 @@ public class PdbReader extends AtomSetCollectionReader {
     currentCompnd.put(currentKey, value);
     if (currentKey.equals("CHAIN"))
       currentCompnd.put("select", "(:"
-          + Txt.simpleReplace(Txt
+          + javajs.util.PT.simpleReplace(javajs.util.PT
               .simpleReplace(value, ", ", ",:"), " ", "") + ")");
   }
 
@@ -723,10 +723,10 @@ REMARK 290 REMARK: NULL
       //  26973856 = Integer.parseInt("100000", 10) - Integer.parseInt("A0000",36) 
       //           + (Integer.parseInt("100000",36) - Integer.parseInt("A0000",36))
       return (isBase10 || Character.isDigit(c) ? parseIntRange(line, i, j)
-          : Parser.parseIntRadix(line.substring(i, j), 36) + (Character.isUpperCase(c) ? -16696160 : 26973856));
+          : PT.parseIntRadix(line.substring(i, j), 36) + (Character.isUpperCase(c) ? -16696160 : 26973856));
     case MODE_HEX:
       if (!isBase10)
-        return serial = Parser.parseIntRadix(line.substring(i, j), 16);
+        return serial = PT.parseIntRadix(line.substring(i, j), 16);
       // reset from MODEL or new chain
       serMode = MODE_PDB;
       return getSerial(i, j);
@@ -752,11 +752,11 @@ REMARK 290 REMARK: NULL
       //  756496 = Integer.parseInt("10000", 10) - Integer.parseInt("A000",36) 
       //         + (Integer.parseInt("10000",36) - Integer.parseInt("A000",36)) 
       return (isBase10 || Character.isDigit(c) ? parseIntRange(line, i, j)
-          : Parser.parseIntRadix(line.substring(i, j), 36)
+          : PT.parseIntRadix(line.substring(i, j), 36)
               + (Character.isUpperCase(c) ? -456560 : 756496));
     case MODE_HEX:
       if (!isBase10)
-        return Parser.parseIntRadix(line.substring(i, j), 16);
+        return PT.parseIntRadix(line.substring(i, j), 16);
       // reset from MODEL or new chain
       seqMode = MODE_PDB;
       return getSeqNo(i, j);

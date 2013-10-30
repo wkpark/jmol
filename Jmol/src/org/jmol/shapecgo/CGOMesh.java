@@ -28,7 +28,7 @@ import org.jmol.java.BS;
 import org.jmol.shapespecial.DrawMesh;
 import org.jmol.util.C;
 
-import javajs.util.ColorUtil;
+import javajs.util.CU;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
@@ -178,7 +178,7 @@ public class CGOMesh extends DrawMesh {
   
   private void addColix(int i) {
     getPoint(i, vTemp);
-    cList.addLast(Short.valueOf(C.getColix(ColorUtil.colorPtToFFRGB(vTemp))));
+    cList.addLast(Short.valueOf(C.getColix(CU.colorPtToFFRGB(vTemp))));
   }
 
   private void addNormix(int i) {

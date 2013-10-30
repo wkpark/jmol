@@ -26,21 +26,20 @@ package org.jmol.script;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 
+import javajs.api.ZInputStream;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.api.JmolScriptManager;
-import org.jmol.api.ZInputStream;
 import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.thread.JmolThread;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.StatusManager;
 import org.jmol.viewer.Viewer;
@@ -116,7 +115,7 @@ public class ScriptManager implements JmolScriptManager {
     if (commandWatcherThread == null && useCommandWatcherThread)
       startCommandWatcher(true);
     if (commandWatcherThread != null && strScript.indexOf("/*SPLIT*/") >= 0) {
-      String[] scripts = Parser.split(strScript, "/*SPLIT*/");
+      String[] scripts = PT.split(strScript, "/*SPLIT*/");
       for (int i = 0; i < scripts.length; i++)
         addScr(returnType, scripts[i], statusList, isScriptFile, isQuiet);
       return "split into " + scripts.length + " sections for processing";
@@ -411,7 +410,7 @@ public class ScriptManager implements JmolScriptManager {
         && strScript.indexOf("#NOSYNC;") < 0)
       viewer.syncScript(strScript + " #NOSYNC;", null, 0);
     if (eval.isPaused() && strScript.charAt(0) != '!')
-      strScript = '!' + Txt.trim(strScript, "\n\r\t ");
+      strScript = '!' + PT.trim(strScript, "\n\r\t ");
     boolean isInsert = (strScript.length() > 0 && strScript.charAt(0) == '!');
     if (isInsert)
       strScript = strScript.substring(1);
@@ -499,10 +498,11 @@ public class ScriptManager implements JmolScriptManager {
    * From file dropping.
    * 
    * @param fileName 
-   * @param pdbCartoons 
+   * @param flags 1=pdbCartoons 
    * 
    */
-  public void openFileAsync(String fileName, boolean pdbCartoons) {
+  public void openFileAsync(String fileName, int flags) {
+    boolean pdbCartoons = (flags == 1);
     String cmd = null;
     fileName = fileName.trim();
     boolean allowScript = (!fileName.startsWith("\t"));
@@ -539,8 +539,8 @@ public class ScriptManager implements JmolScriptManager {
           cmd = "isosurface sign red blue ";
         } else if (!type.equals("spt")) {
           cmd = viewer.global.defaultDropScript;
-          cmd = Txt.simpleReplace(cmd, "%FILE", fileName);
-          cmd = Txt.simpleReplace(cmd, "%ALLOWCARTOONS", ""
+          cmd = javajs.util.PT.simpleReplace(cmd, "%FILE", fileName);
+          cmd = javajs.util.PT.simpleReplace(cmd, "%ALLOWCARTOONS", ""
               + pdbCartoons);
           if (cmd.toLowerCase().startsWith("zap") && isCached)
             cmd = cmd.substring(3);

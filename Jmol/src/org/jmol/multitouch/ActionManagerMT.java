@@ -24,12 +24,13 @@
 package org.jmol.multitouch;
 
 import org.jmol.script.T;
+
+import javajs.api.GenericPlatform;
+import javajs.awt.event.Event;
 import javajs.util.List;
 
 
 
-import org.jmol.api.ApiPlatform;
-import org.jmol.api.Event;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolTouchSimulatorInterface;
 import org.jmol.util.Logger;
@@ -245,7 +246,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
     case DRAG_EVENT:
       if (iData == 2) {
         // This is a 2-finger drag
-        setMotion(ApiPlatform.CURSOR_MOVE, true);
+        setMotion(GenericPlatform.CURSOR_MOVE, true);
         viewer.translateXYBy((int) pt.x, (int) pt.y);
         logEvent("Drag", pt);
       }
@@ -257,7 +258,7 @@ public class ActionManagerMT extends ActionManager implements JmolMultiTouchClie
       viewer.log("SparshUI reports no driver present -- setting haveMultiTouchInput FALSE");
       break;
     case ROTATE_EVENT:
-      setMotion(ApiPlatform.CURSOR_MOVE, true);
+      setMotion(GenericPlatform.CURSOR_MOVE, true);
       viewer.rotateZBy((int) pt.z, Integer.MAX_VALUE, Integer.MAX_VALUE);
       logEvent("Rotate", pt);
       break;

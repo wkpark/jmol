@@ -42,7 +42,7 @@ import javajs.util.List;
 import javajs.util.SB;
 import javajs.util.P3;
 
-import javajs.util.Parser;
+import javajs.util.PT;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 
@@ -284,7 +284,7 @@ class JmolObject {
           lighting = "mesh nofill";
           resolution = " resolution 1.5";
         }
-        boolean haveMep = Parser.isOneOf(sID, mepList);
+        boolean haveMep = PT.isOneOf(sID, mepList);
         String model = m.models[modelIndex].getModelNumberDotted();
         //        BS bsIgnore = sm.viewer.getAtomsWithinRadius(0.1f, bsAtoms, true, 
         //            new RadiusData(null, 0.1f, EnumType.ABSOLUTE, null));
@@ -349,7 +349,7 @@ class JmolObject {
         }
         sb.append(" ]");
       }
-      if (doCache && !Parser.isOneOf(sID, mepList))
+      if (doCache && !PT.isOneOf(sID, mepList))
         sb.append(";isosurface cache");
       sb.append(";set meshScale ").appendI(size / 500);
       break;

@@ -39,13 +39,13 @@ import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.Escape;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
 
-import javajs.util.OutputChannel;
+import javajs.util.OC;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.P3i;
@@ -277,7 +277,7 @@ public abstract class SurfaceReader implements VertexDataServer {
    * 
    * @param out
    */
-  protected void setOutputChannel(OutputChannel out) {
+  protected void setOutputChannel(OC out) {
     // only for file readers
   }
  
@@ -558,7 +558,7 @@ public abstract class SurfaceReader implements VertexDataServer {
     yzCount = nPointsY * nPointsZ;
     if (!isQuiet)
       Logger.info("reading data progressively -- yzCount = " + yzCount);
-    yzPlanes = ArrayUtil.newFloat2(2);
+    yzPlanes = AU.newFloat2(2);
     yzPlanes[0] = new float[yzCount];
     yzPlanes[1] = new float[yzCount];
   }

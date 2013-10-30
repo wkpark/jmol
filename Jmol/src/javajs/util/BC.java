@@ -1,8 +1,8 @@
 package javajs.util;
 
-public class ByteConverter {
+public class BC {
 
-  public ByteConverter() {
+  public BC() {
     // for reflection
   }
   

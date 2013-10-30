@@ -36,7 +36,7 @@ import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P3i;
 
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.V3;
 
 import org.jmol.java.BS;
@@ -151,9 +151,9 @@ public class EllipsoidsRenderer extends ShapeRenderer {
     if (options != null) {
       options = ";" + options + ";";
       for (int i = 0; i < OPT_COUNT; i++) {
-        if (Parser.isOneOf(OPTS[i], options))
+        if (PT.isOneOf(OPTS[i], options))
         bOptions[i] = true;
-      else if (Parser.isOneOf("no" + OPTS[i], options))
+      else if (PT.isOneOf("no" + OPTS[i], options))
         bOptions[i] = false;
       }
     }

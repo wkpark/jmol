@@ -25,7 +25,7 @@ package javajs.awt;
 
 
 import javajs.api.FontManager;
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 
 
 /**
@@ -104,8 +104,8 @@ final public class Font {
         return font3ds[i];
     int fontIndexNext = fontkeyCount++;
     if (fontIndexNext == fontkeys.length)
-      fontkeys = ArrayUtil.arrayCopyI(fontkeys, fontIndexNext + FONT_ALLOCATION_UNIT);
-      font3ds = (Font[]) ArrayUtil.arrayCopyObject(font3ds, fontIndexNext + FONT_ALLOCATION_UNIT);
+      fontkeys = AU.arrayCopyI(fontkeys, fontIndexNext + FONT_ALLOCATION_UNIT);
+      font3ds = (Font[]) AU.arrayCopyObject(font3ds, fontIndexNext + FONT_ALLOCATION_UNIT);
     Font font3d = new Font(manager, (byte) fontIndexNext, fontface, fontstyle,
         fontsize, fontsizeNominal, graphicsForMetrics);
     // you must set the font3d before setting the fontkey in order

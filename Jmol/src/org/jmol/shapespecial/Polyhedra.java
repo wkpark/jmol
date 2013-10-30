@@ -37,7 +37,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Normix;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.P3i;
@@ -210,7 +210,7 @@ public class Polyhedra extends AtomShape {
       for (int i = polyhedronCount; --i >= 0;) {
         if (polyhedrons[i].modelIndex == modelIndex) {
           polyhedronCount--;
-          polyhedrons = (Polyhedron[]) ArrayUtil.deleteElements(polyhedrons, i, 1);
+          polyhedrons = (Polyhedron[]) AU.deleteElements(polyhedrons, i, 1);
         } else if (polyhedrons[i].modelIndex > modelIndex) {
           polyhedrons[i].modelIndex--;
         }
@@ -274,7 +274,7 @@ public class Polyhedra extends AtomShape {
               : constructRadiusPolyhedron(i, iter));
       if (p != null) {
         if (polyhedronCount == polyhedrons.length)
-          polyhedrons = (Polyhedron[]) ArrayUtil.doubleLength(polyhedrons);
+          polyhedrons = (Polyhedron[]) AU.doubleLength(polyhedrons);
         polyhedrons[polyhedronCount++] = p;
       }
       if (haveBitSetVertices)

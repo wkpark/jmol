@@ -29,9 +29,9 @@ import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
 import java.io.IOException;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import java.util.Hashtable;
 
@@ -407,7 +407,7 @@ public class GaussianReader extends MOReader {
           gaussianCount += nGaussians;
           for (int i = 0; i < nGaussians; i++) {
             readLine();
-            line = Txt.simpleReplace(line, "D ", "D+");
+            line = javajs.util.PT.simpleReplace(line, "D ", "D+");
             tokens = getTokens();
             if (Logger.debugging)
               Logger.debug("Gaussians " + (i + 1) + " " + Escape.eAS(tokens, true));
@@ -443,7 +443,7 @@ public class GaussianReader extends MOReader {
     }
     if (atomCount == 0)
       atomCount = 1;
-    gaussians = ArrayUtil.newFloat2(gaussianCount);
+    gaussians = AU.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++) {
       tokens = gdata.get(i);
       gaussians[i] = new float[tokens.length];
@@ -486,8 +486,8 @@ public class GaussianReader extends MOReader {
   private void readMolecularOrbitals() throws Exception {
     if (shells == null)
       return;
-    Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(5);
-    List<String>[] data = ArrayUtil.createArrayOfArrayList(5);
+    Map<String, Object>[] mos = AU.createArrayOfHashtable(5);
+    List<String>[] data = AU.createArrayOfArrayList(5);
     int nThisLine = 0;
     boolean isNOtype = line.contains("Natural Orbital"); //gfprint pop(full,NO)
     while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {
@@ -508,7 +508,7 @@ public class GaussianReader extends MOReader {
           String sym;
           if (isNOtype) {
             mos[i]
-                .put("occupancy", Float.valueOf(Parser.parseFloat(tokens[i + 2])));
+                .put("occupancy", Float.valueOf(PT.parseFloat(tokens[i + 2])));
           } else {
             sym = tokens[i];
             mos[i].put("symmetry", sym);
@@ -525,7 +525,7 @@ public class GaussianReader extends MOReader {
         if (tokens.length != nThisLine)
           tokens = getStrings(line, nThisLine, 10);
         for (int i = 0; i < nThisLine; i++) {
-          mos[i].put("energy", Float.valueOf(Parser.fVal(tokens[i])));
+          mos[i].put("energy", Float.valueOf(PT.fVal(tokens[i])));
           System.out.println(i + " gaussian energy " + mos[i].get("energy"));
         }
         continue;
@@ -535,7 +535,7 @@ public class GaussianReader extends MOReader {
       }
       try {
         // must fix "7D 0 " to be "7D0  " and "7F 0 " to be "7F0  " Jmol 13.0.RC6
-        line = Txt.simpleReplace(line, " 0 ", "0  ");
+        line = javajs.util.PT.simpleReplace(line, " 0 ", "0  ");
         tokens = getTokens();
         String type = tokens[tokens.length - nThisLine - 1].substring(1);
         if (Character.isDigit(type.charAt(0)))

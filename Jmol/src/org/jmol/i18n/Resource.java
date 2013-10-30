@@ -144,7 +144,7 @@ class Resource {
   }
 
   static String fix(String line) {
-    return Txt.simpleReplace(line.substring(line.indexOf("\"") + 1, line
+    return javajs.util.PT.simpleReplace(line.substring(line.indexOf("\"") + 1, line
         .lastIndexOf("\"")), "\\n", "\n");
   }
 

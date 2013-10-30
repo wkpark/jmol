@@ -1,6 +1,6 @@
 package org.jmol.util;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 
 import org.jmol.api.Triangulator;
@@ -373,7 +373,7 @@ public class TriangleData implements Triangulator {
           i++;
       }
       
-      int[][]polygons = ArrayUtil.newInt2(triangles.length >> 2);
+      int[][]polygons = AU.newInt2(triangles.length >> 2);
       v.addLast(polygons);
       for (int i = 0; i < triangles.length; i++)
           polygons[i >> 2] = new int[] { list[triangles[i++]], 

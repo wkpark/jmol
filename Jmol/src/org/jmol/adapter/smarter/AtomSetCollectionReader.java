@@ -41,13 +41,12 @@ import javajs.util.M3;
 import javajs.util.P3;
 import org.jmol.util.Quaternion;
 
-import javajs.util.OutputChannel;
-import javajs.util.Parser;
+import javajs.util.OC;
+import javajs.util.PT;
 import javajs.util.V3;
 import javajs.util.List;
 import javajs.util.SB;
 
-import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
 
@@ -179,7 +178,7 @@ public abstract class AtomSetCollectionReader {
   protected float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
   protected int desiredModelNumber = Integer.MIN_VALUE;
   protected SymmetryInterface symmetry;
-  protected OutputChannel out;
+  protected OC out;
   protected boolean iHaveFractionalCoordinates;
   protected boolean doPackUnitCell;
   protected String strSupercell;
@@ -465,7 +464,7 @@ public abstract class AtomSetCollectionReader {
     isSequential = htParams.containsKey("isSequential");
     readerName = (String) htParams.get("readerName");
     if (htParams.containsKey("outputChannel"))
-      out = (OutputChannel) htParams.get("outputChannel");
+      out = (OC) htParams.get("outputChannel");
     //parameterData = (String) htParams.get("parameterData");
     if (htParams.containsKey("vibrationNumber"))
       desiredVibrationNumber = ((Integer) htParams.get("vibrationNumber"))
@@ -858,11 +857,11 @@ public abstract class AtomSetCollectionReader {
     if (checkFilterKey("NAME=")) {
       nameRequired = filter.substring(filter.indexOf("NAME=") + 5);
       if (nameRequired.startsWith("'"))
-        nameRequired = Parser.split(nameRequired, "'")[1]; 
+        nameRequired = PT.split(nameRequired, "'")[1]; 
       else if (nameRequired.startsWith("\""))
-        nameRequired = Parser.split(nameRequired, "\"")[1]; 
-      filter0 = filter = Txt.simpleReplace(filter, nameRequired,"");
-      filter0 = filter = Txt.simpleReplace(filter, "NAME=","");
+        nameRequired = PT.split(nameRequired, "\"")[1]; 
+      filter0 = filter = javajs.util.PT.simpleReplace(filter, nameRequired,"");
+      filter0 = filter = javajs.util.PT.simpleReplace(filter, "NAME=","");
     }
     if (filter == null)
       return;
@@ -1461,7 +1460,7 @@ public abstract class AtomSetCollectionReader {
   // parser functions are static, so they need notstatic counterparts
 
   protected String[] getTokens() {
-    return Parser.getTokens(line);
+    return PT.getTokens(line);
   }
 
   protected void parseStringInfestedFloatArray(String s, float[] data) {
@@ -1471,75 +1470,75 @@ public abstract class AtomSetCollectionReader {
   protected static float[] getTokensFloat(String s, float[] f, int n) {
     if (f == null)
       f = new float[n];
-    Parser.parseFloatArrayDataN(getTokensStr(s), f, n);
+    PT.parseFloatArrayDataN(getTokensStr(s), f, n);
     return f;
   }
 
   public static String[] getTokensStr(String s) {
-    return Parser.getTokens(s);
+    return PT.getTokens(s);
   }
 
   protected static String[] getTokensAt(String s, int iStart) {
-    return Parser.getTokensAt(s, iStart);
+    return PT.getTokensAt(s, iStart);
   }
 
   protected float parseFloat() {
-    return Parser.parseFloatNext(line, next);
+    return PT.parseFloatNext(line, next);
   }
 
   public float parseFloatStr(String s) {
     next[0] = 0;
-    return Parser.parseFloatNext(s, next);
+    return PT.parseFloatNext(s, next);
   }
 
   protected float parseFloatRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return Parser.parseFloatRange(s, iEnd, next);
+    return PT.parseFloatRange(s, iEnd, next);
   }
 
   protected int parseInt() {
-    return javajs.util.Parser.parseIntNext(line, next);
+    return javajs.util.PT.parseIntNext(line, next);
   }
 
   public int parseIntStr(String s) {
     next[0] = 0;
-    return javajs.util.Parser.parseIntNext(s, next);
+    return javajs.util.PT.parseIntNext(s, next);
   }
 
   protected int parseIntAt(String s, int iStart) {
     next[0] = iStart;
-    return javajs.util.Parser.parseIntNext(s, next);
+    return javajs.util.PT.parseIntNext(s, next);
   }
 
   protected int parseIntRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return Parser.parseIntRange(s, iEnd, next);
+    return PT.parseIntRange(s, iEnd, next);
   }
 
   protected String parseToken() {
-    return Parser.parseTokenNext(line, next);
+    return PT.parseTokenNext(line, next);
   }
 
   protected String parseTokenStr(String s) {
     next[0] = 0;
-    return Parser.parseTokenNext(s, next);
+    return PT.parseTokenNext(s, next);
   }
 
   protected String parseTokenNext(String s) {
-    return Parser.parseTokenNext(s, next);
+    return PT.parseTokenNext(s, next);
   }
 
   protected String parseTokenRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return Parser.parseTokenRange(s, iEnd, next);
+    return PT.parseTokenRange(s, iEnd, next);
   }
 
   protected static String parseTrimmedAt(String s, int iStart) {
-    return Parser.parseTrimmedAt(s, iStart);
+    return PT.parseTrimmedAt(s, iStart);
   }
 
   protected static String parseTrimmedRange(String s, int iStart, int iEnd) {
-    return Parser.parseTrimmedRange(s, iStart, iEnd);
+    return PT.parseTrimmedRange(s, iStart, iEnd);
   }
 
   /**

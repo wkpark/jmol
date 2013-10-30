@@ -28,7 +28,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Geodesic;
 import org.jmol.util.Normix;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.V3;
@@ -567,11 +567,11 @@ public final class EnvelopeCalculation {
           + neighborRadius)
         continue;
       if (neighborCount == neighborIndices.length) {
-        neighborIndices = ArrayUtil.doubleLengthI(neighborIndices);
-        neighborCenters = (P3[]) ArrayUtil.doubleLength(neighborCenters);
-        neighborPlusProbeRadii2 = ArrayUtil
+        neighborIndices = AU.doubleLengthI(neighborIndices);
+        neighborCenters = (P3[]) AU.doubleLength(neighborCenters);
+        neighborPlusProbeRadii2 = AU
             .doubleLengthF(neighborPlusProbeRadii2);
-        neighborRadii2 = ArrayUtil.doubleLengthF(neighborRadii2);
+        neighborRadii2 = AU.doubleLengthF(neighborRadii2);
       }
       neighborCenters[neighborCount] = atomData.atomXyz[indexN];
       neighborIndices[neighborCount] = indexN;
@@ -589,12 +589,12 @@ public final class EnvelopeCalculation {
    * @param nAtomsDeleted
    */
   public void deleteAtoms(int firstAtomDeleted, int nAtomsDeleted) {
-    dotsConvexMaps = (BS[]) ArrayUtil.deleteElements(dotsConvexMaps, firstAtomDeleted, nAtomsDeleted);
+    dotsConvexMaps = (BS[]) AU.deleteElements(dotsConvexMaps, firstAtomDeleted, nAtomsDeleted);
     dotsConvexMax = dotsConvexMaps.length;
     if (mads != null)
-      mads = (short[]) ArrayUtil.deleteElements(mads, firstAtomDeleted, nAtomsDeleted);
-    atomData.atomRadius = (float[]) ArrayUtil.deleteElements(atomData.atomRadius, firstAtomDeleted, nAtomsDeleted);
-    atomData.atomXyz = (P3[]) ArrayUtil.deleteElements(atomData.atomXyz, firstAtomDeleted, nAtomsDeleted);
+      mads = (short[]) AU.deleteElements(mads, firstAtomDeleted, nAtomsDeleted);
+    atomData.atomRadius = (float[]) AU.deleteElements(atomData.atomRadius, firstAtomDeleted, nAtomsDeleted);
+    atomData.atomXyz = (P3[]) AU.deleteElements(atomData.atomXyz, firstAtomDeleted, nAtomsDeleted);
     atomData.atomCount -= nAtomsDeleted;
     atomCount = atomData.atomCount;
     

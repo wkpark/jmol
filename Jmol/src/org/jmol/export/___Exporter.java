@@ -30,7 +30,7 @@ import java.awt.Image;
 import java.text.SimpleDateFormat;
 
 import javajs.awt.Font;
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -51,7 +51,7 @@ import org.jmol.util.MeshSurface;
 import javajs.util.P3;
 import org.jmol.util.Quaternion;
 
-import javajs.util.OutputChannel;
+import javajs.util.OC;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3i;
@@ -146,7 +146,7 @@ public abstract class ___Exporter {
   protected Viewer viewer;
   protected double privateKey;
   protected JmolRendererInterface jmolRenderer;
-  protected OutputChannel out;
+  protected OC out;
   protected String fileName;
   protected String commandLineOptions;
   
@@ -228,7 +228,7 @@ public abstract class ___Exporter {
     cameraDistance = cameraFactors[3].x;
     aperatureAngle = cameraFactors[3].y;
     scalePixelsPerAngstrom = cameraFactors[3].z;
-    out = (OutputChannel) params.get("outputChannel");
+    out = (OC) params.get("outputChannel");
     commandLineOptions = (String) params.get("params");
     fileName = out.getFileName();
     outputHeader();
@@ -397,7 +397,7 @@ public abstract class ___Exporter {
     int n = 360 / ndeg;
     ms.colix = colix;
     ms.vertices = new P3[ms.vertexCount = n + 1];
-    ms.polygonIndexes = ArrayUtil.newInt2(ms.polygonCount = n);
+    ms.polygonIndexes = AU.newInt2(ms.polygonCount = n);
     for (int i = 0; i < n; i++)
       ms.polygonIndexes[i] = new int[] {i, (i + 1) % n, n };
     double d = ndeg / 180. * Math.PI; 

@@ -37,21 +37,21 @@ import java.util.Map;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolDomReaderInterface;
-import org.jmol.api.JmolFileInterface;
 import org.jmol.api.JmolFilesReaderInterface;
-import org.jmol.api.ApiPlatform;
-import org.jmol.io.Base64;
 import org.jmol.io.DataReader;
 import org.jmol.io.FileReader;
 import org.jmol.io.JmolBinary;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
 
+import javajs.api.GenericPlatform;
 import javajs.api.BytePoster;
-import javajs.util.ArrayUtil;
-import javajs.util.OutputChannel;
+import javajs.api.GenericFileInterface;
+import javajs.util.AU;
+import javajs.util.Base64;
+import javajs.util.OC;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -378,7 +378,7 @@ public class FileManager implements BytePoster {
             return errMsg[0];
           if (isPngjBinaryPost) {
             outputBytes = bytes;
-            name = Txt.simpleReplace(name, "?_", "=_");
+            name = javajs.util.PT.simpleReplace(name, "?_", "=_");
           } else {
             name = new SB().append(name).append("=").appendSB(
                 Base64.getBase64(bytes)).toString();
@@ -572,7 +572,7 @@ public class FileManager implements BytePoster {
     }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
-      subFileList = Parser.split(name, "|");
+      subFileList = PT.split(name, "|");
       if (bytes == null)
         Logger.info("FileManager opening 3 " + name);
       name = subFileList[0];
@@ -668,7 +668,7 @@ public class FileManager implements BytePoster {
     }
     String fullName = name;
     if (name.indexOf("|") >= 0) {
-      subFileList = Parser.split(name, "|");
+      subFileList = PT.split(name, "|");
       name = subFileList[0];
     }
     BufferedInputStream bis = null;
@@ -748,7 +748,7 @@ public class FileManager implements BytePoster {
     return JmolBinary.getZipDirectoryAndClose((BufferedInputStream) t, addManifest);
   }
 
-  public Object getFileAsBytes(String name, OutputChannel out,
+  public Object getFileAsBytes(String name, OC out,
                                boolean allowZip) {
     // ?? used by eval of "WRITE FILE"
     // will be full path name
@@ -757,7 +757,7 @@ public class FileManager implements BytePoster {
     String fullName = name;
     String[] subFileList = null;
     if (name.indexOf("|") >= 0) {
-      subFileList = Parser.split(name, "|");
+      subFileList = PT.split(name, "|");
       name = subFileList[0];
       allowZip = true;
     }
@@ -820,7 +820,7 @@ public class FileManager implements BytePoster {
         fullPathName = "cannot read file name: " + name;
         break;
       }
-      ApiPlatform apiPlatform = viewer.apiPlatform;
+      GenericPlatform apiPlatform = viewer.apiPlatform;
       fullPathName = names[0].replace('\\', '/');
       if (fullPathName.indexOf("|") > 0) {
         Object ret = getFileAsBytes(fullPathName, null, true);
@@ -925,7 +925,7 @@ public class FileManager implements BytePoster {
         return new String[] { isFullLoad ? "#CANCELED#" : null };
       doSetPathForAllFiles = false;
     }
-    JmolFileInterface file = null;
+    GenericFileInterface file = null;
     URL url = null;
     String[] names = null;
     if (name.startsWith("cache://")) {
@@ -979,7 +979,7 @@ public class FileManager implements BytePoster {
       Logger.info("FileManager substituting " + name0 + " --> " + names[0]);
     }
     if (isFullLoad && (file != null || urlTypeIndex(names[0]) == URL_LOCAL)) {
-      String path = (file == null ? Txt.trim(names[0].substring(5), "/")
+      String path = (file == null ? PT.trim(names[0].substring(5), "/")
           : names[0]);
       int pt = path.length() - names[1].length() - 1;
       if (pt > 0) {
@@ -1014,7 +1014,7 @@ public class FileManager implements BytePoster {
 
   private static String fixPath(String path) {
     path = path.replace('\\', '/');
-    path = Txt.simpleReplace(path, "/./", "/");
+    path = javajs.util.PT.simpleReplace(path, "/./", "/");
     int pt = path.lastIndexOf("//") + 1;
     if (pt < 1)
       pt = path.indexOf(":/") + 1;
@@ -1028,7 +1028,7 @@ public class FileManager implements BytePoster {
     while ((pt = path.lastIndexOf("/../")) >= 0) {
       int pt0 = path.substring(0, pt).lastIndexOf("/");
       if (pt0 < 0)
-        return Txt.simpleReplace(protocol + path, "/../", "/");
+        return javajs.util.PT.simpleReplace(protocol + path, "/../", "/");
       path = path.substring(0, pt0) + path.substring(pt + 3);
     }
     if (path.length() == 0)
@@ -1045,7 +1045,7 @@ public class FileManager implements BytePoster {
         : names[0].replace('\\', '/'));
   }
 
-  public static JmolFileInterface getLocalDirectory(Viewer viewer, boolean forDialog) {
+  public static GenericFileInterface getLocalDirectory(Viewer viewer, boolean forDialog) {
     String localDir = (String) viewer
         .getParameter(forDialog ? "currentLocalPath" : "defaultDirectoryLocal");
     if (forDialog && localDir.length() == 0)
@@ -1055,7 +1055,7 @@ public class FileManager implements BytePoster {
           .getProperty("user.dir", ".")));
     if (viewer.isApplet() && localDir.indexOf("file:/") == 0)
       localDir = localDir.substring(6);
-    JmolFileInterface f = viewer.apiPlatform.newFile(localDir);
+    GenericFileInterface f = viewer.apiPlatform.newFile(localDir);
     try {
       return f.isDirectory() ? f : f.getParentAsFile();
     } catch (Exception e) {
@@ -1099,7 +1099,7 @@ public class FileManager implements BytePoster {
       return file.substring(6);
     if (file.indexOf("/") == 0 || file.indexOf(":") >= 0)
       return file;
-    JmolFileInterface dir = null;
+    GenericFileInterface dir = null;
     try {
       dir = getLocalDirectory(viewer, false);
     } catch (Exception e) {
@@ -1115,13 +1115,13 @@ public class FileManager implements BytePoster {
       script = setScriptFileRefs(script, localPath, true);
     if (remotePath != null)
       script = setScriptFileRefs(script, remotePath, false);
-    script = Txt.simpleReplace(script, "\1\"", "\"");
+    script = javajs.util.PT.simpleReplace(script, "\1\"", "\"");
     if (scriptPath != null) {
       while (scriptPath.endsWith("/"))
         scriptPath = scriptPath.substring(0, scriptPath.length() - 1);
       for (int ipt = 0; ipt < scriptFilePrefixes.length; ipt++) {
         String tag = scriptFilePrefixes[ipt];
-        script = Txt.simpleReplace(script, tag + ".", tag + scriptPath);
+        script = javajs.util.PT.simpleReplace(script, tag + ".", tag + scriptPath);
       }
     }
     return script;
@@ -1182,13 +1182,13 @@ public class FileManager implements BytePoster {
   }
 
   public static String fixFileNameVariables(String format, String fname) {
-    String str = Txt.simpleReplace(format, "%FILE", fname);
+    String str = javajs.util.PT.simpleReplace(format, "%FILE", fname);
     if (str.indexOf("%LC") < 0)
       return str;
     fname = fname.toLowerCase();
-    str = Txt.simpleReplace(str, "%LCFILE", fname);
+    str = javajs.util.PT.simpleReplace(str, "%LCFILE", fname);
     if (fname.length() == 4)
-      str = Txt.simpleReplace(str, "%LC13", fname.substring(1, 3));
+      str = javajs.util.PT.simpleReplace(str, "%LC13", fname.substring(1, 3));
     return str;
   }
 
@@ -1250,7 +1250,7 @@ public class FileManager implements BytePoster {
       cachePut(fileName, data);
     } else {
       if (fileName.endsWith("*"))
-        return ArrayUtil.removeMapKeys(cache, fileName.substring(0, fileName.length() - 1));
+        return AU.removeMapKeys(cache, fileName.substring(0, fileName.length() - 1));
       data = cache.remove(fileName.replace('\\', '/'));
     }
     return (data == null ? 0 : data instanceof String ? ((String) data).length()

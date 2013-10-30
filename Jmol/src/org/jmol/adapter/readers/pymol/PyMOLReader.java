@@ -295,7 +295,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         String name = e.getKey();
         if (!"names".equals(name)) {
           viewer.log("\n===" + name + "===");
-          viewer.log(Txt.simpleReplace(e.getValue().toString(), "[",
+          viewer.log(javajs.util.PT.simpleReplace(e.getValue().toString(), "[",
               "\n["));
         }
       }
@@ -305,7 +305,7 @@ public class PyMOLReader extends PdbReader implements PymolAtomReader {
         List<Object> list = (List<Object>) names.get(i);
         viewer.log(" =" + list.get(0).toString() + "=");
         try {
-          viewer.log(Txt.simpleReplace(list.toString(), "[", "\n["));
+          viewer.log(javajs.util.PT.simpleReplace(list.toString(), "[", "\n["));
         } catch (Throwable e) {
           //
         }

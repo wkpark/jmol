@@ -3,22 +3,22 @@ package org.jmol.util;
 
 import java.awt.Image;
 
+import javajs.api.GenericPlatform;
 import javajs.awt.Font;
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.V3;
 
 
-import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolGraphicsInterface;
 import org.jmol.api.JmolRendererInterface;
 import org.jmol.constant.EnumStereoMode;
 
 public class GData implements JmolGraphicsInterface {
 
-  public ApiPlatform apiPlatform;
+  public GenericPlatform apiPlatform;
 
   public boolean translucentCoverOnly = false;
   public void setTranslucentCoverOnly(boolean TF) {
@@ -66,7 +66,7 @@ public class GData implements JmolGraphicsInterface {
     shader = new Shader();
   }
   
-  public void initialize(ApiPlatform apiPlatform) {
+  public void initialize(GenericPlatform apiPlatform) {
     this.apiPlatform = apiPlatform;
   }
 
@@ -204,7 +204,7 @@ public class GData implements JmolGraphicsInterface {
 
   public short getChangeableColix(int id, int argb) {
     if (id >= changeableColixMap.length)
-      changeableColixMap = ArrayUtil.arrayCopyShort(changeableColixMap, id + 16);
+      changeableColixMap = AU.arrayCopyShort(changeableColixMap, id + 16);
     if (changeableColixMap[id] == 0)
       changeableColixMap[id] = C.getColix(argb);
     return (short) (id | C.CHANGEABLE_MASK);

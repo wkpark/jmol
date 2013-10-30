@@ -1409,9 +1409,9 @@ abstract class ScriptCompilationTokenParser {
       if (value != null)
         msg += ": " + value;
     } else {
-      msg = Txt.simpleReplace(msg, "{0}", value);
+      msg = javajs.util.PT.simpleReplace(msg, "{0}", value);
       if (msg.indexOf("{1}") >= 0)
-        msg = Txt.simpleReplace(msg, "{1}", more);
+        msg = javajs.util.PT.simpleReplace(msg, "{1}", more);
       else if (more != null)
         msg += ": " + more;
     }

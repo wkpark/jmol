@@ -24,7 +24,7 @@
 
 package org.jmol.smiles;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 
 import org.jmol.api.SmilesMatcherInterface;
@@ -228,12 +228,12 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     
 
   public String reverseChirality(String smiles) {
-    smiles = Txt.simpleReplace(smiles, "@@", "!@");
-    smiles = Txt.simpleReplace(smiles, "@", "@@");
-    smiles = Txt.simpleReplace(smiles, "!@@", "@");
-    smiles = Txt.simpleReplace(smiles, "@@SP", "@SP");
-    smiles = Txt.simpleReplace(smiles, "@@OH", "@OH");
-    smiles = Txt.simpleReplace(smiles, "@@TB", "@TB");
+    smiles = javajs.util.PT.simpleReplace(smiles, "@@", "!@");
+    smiles = javajs.util.PT.simpleReplace(smiles, "@", "@@");
+    smiles = javajs.util.PT.simpleReplace(smiles, "!@@", "@");
+    smiles = javajs.util.PT.simpleReplace(smiles, "@@SP", "@SP");
+    smiles = javajs.util.PT.simpleReplace(smiles, "@@OH", "@OH");
+    smiles = javajs.util.PT.simpleReplace(smiles, "@@TB", "@TB");
     return smiles;
   }
 
@@ -391,7 +391,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       case MODE_MAP:
         search.getMaps = true;
         List<int[]> vl = (List<int[]>) search.search(false);
-        return vl.toArray(ArrayUtil.newInt2(vl.size()));
+        return vl.toArray(AU.newInt2(vl.size()));
       }
     } catch (Exception e) {
       if (InvalidSmilesException.getLastError() == null)
@@ -402,7 +402,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   }
 
   private int countStereo(String s) {
-    s = Txt.simpleReplace(s, "@@","@");
+    s = javajs.util.PT.simpleReplace(s, "@@","@");
     int i = s.lastIndexOf('@') + 1;
     int n = 0;
     for (; --i >= 0;)

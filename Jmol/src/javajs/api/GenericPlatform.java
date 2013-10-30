@@ -1,14 +1,12 @@
-package org.jmol.api;
+package javajs.api;
 
 
 import java.net.URL;
 
-
-import javajs.api.FontManager;
 import javajs.awt.Font;
 import javajs.util.P3;
 
-public interface ApiPlatform extends FontManager {
+public interface GenericPlatform extends FontManager {
 
   public final static int CURSOR_DEFAULT = 0;
   public final static int CURSOR_CROSSHAIR = 1;
@@ -41,7 +39,7 @@ public interface ApiPlatform extends FontManager {
 
   ////  Mouse 
 
-  JmolMouseInterface getMouseManager(double privateKey, Object display);
+  GenericMouseInterface getMouseManager(double privateKey, Object display);
 
   ///// core Image handling
   
@@ -108,7 +106,7 @@ public interface ApiPlatform extends FontManager {
    */
   boolean waitForDisplay(Object boolIsEcho, Object image) throws InterruptedException;
 
-  JmolPopupInterface getMenuPopup(String menuStructure, char type);
+  GenericMenuInterface getMenuPopup(String menuStructure, char type);
 
   Object getJsObjectInfo(Object[] jsObject, String method, Object[] args);
 
@@ -118,7 +116,7 @@ public interface ApiPlatform extends FontManager {
 
   String getDateFormat(boolean isoiec8824);
   
-  JmolFileInterface newFile(String name);
+  GenericFileInterface newFile(String name);
   
   Object getBufferedFileInputStream(String name);
   

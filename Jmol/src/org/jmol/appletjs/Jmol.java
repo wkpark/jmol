@@ -44,7 +44,7 @@ import java.awt.Event;
 import java.net.URL;
 import java.net.MalformedURLException;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -292,7 +292,7 @@ public class Jmol implements JmolSyncInterface {
   public boolean handleEvent(Event e) {
     if (viewer == null)
       return false;
-    return viewer.handleOldJvm10Event(e.id, e.x, e.y, e.modifiers, e.when);
+    return viewer.processMouseEvent(e.id, e.x, e.y, e.modifiers, e.when);
   }
 
   private String scriptProcessor(String script, String statusParams,
@@ -969,7 +969,7 @@ public class Jmol implements JmolSyncInterface {
     	  System.out.println(strInfo);
     	}
     } else {
-    	 String[] tokens = Parser.split(callback, ".");
+    	 String[] tokens = PT.split(callback, ".");
     	/**
     	 * @j2sNative
     	 * 

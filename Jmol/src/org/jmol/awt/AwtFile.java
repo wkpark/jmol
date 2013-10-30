@@ -9,8 +9,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.AccessControlException;
 
-import org.jmol.api.JmolFileInterface;
-import org.jmol.util.Txt;
+import javajs.api.GenericFileInterface;
+import javajs.util.PT;
+
 
 /**
  * a subclass of File allowing extension to JavaScript
@@ -19,13 +20,13 @@ import org.jmol.util.Txt;
  * 
  */
 
-class AwtFile extends File implements JmolFileInterface {
+class AwtFile extends File implements GenericFileInterface {
 
   AwtFile(String name) {
     super(name);
   }
 
-  public JmolFileInterface getParentAsFile() {
+  public GenericFileInterface getParentAsFile() {
     AwtFile f = null;
     try {
       File file = getParentFile();
@@ -87,7 +88,7 @@ class AwtFile extends File implements JmolFileInterface {
     "http://www.", "https:", "https://", "ftp:", "ftp://", "file:",
     "file:///" };
 
-  static String getLocalUrl(JmolFileInterface file) {
+  static String getLocalUrl(GenericFileInterface file) {
     // entering a url on a file input box will be accepted,
     // but cause an error later. We can fix that...
     // return null if there is no problem, the real url if there is
@@ -104,7 +105,7 @@ class AwtFile extends File implements JmolFileInterface {
     for (int i = 0; i < urlPrefixPairs.length; i += 2)
       if (path.indexOf(urlPrefixPairs[i]) > 0)
         return urlPrefixPairs[i + 1]
-            + Txt.trim(path.substring(path.indexOf(urlPrefixPairs[i])
+            + PT.trim(path.substring(path.indexOf(urlPrefixPairs[i])
                 + urlPrefixPairs[i].length()), "/");
     return null;
   }

@@ -34,13 +34,12 @@ import java.util.Map;
 import org.jmol.awt.AwtClipboard;
 import org.jmol.util.Escape;
 
-import javajs.util.OutputChannel;
+import javajs.util.OC;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
-import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer.ACCESS;
 
 final public class OutputManagerAwt extends OutputManager {
@@ -83,7 +82,7 @@ final public class OutputManagerAwt extends OutputManager {
   }
 
   @Override
-  OutputChannel openOutputChannel(double privateKey, String fileName,
+  OC openOutputChannel(double privateKey, String fileName,
                                       boolean asWriter, boolean asAppend)
       throws IOException {
     boolean isLocal = FileManager.isLocal(fileName);
@@ -91,7 +90,7 @@ final public class OutputManagerAwt extends OutputManager {
       asAppend = false;
     return (fileName != null && !viewer.haveAccess(ACCESS.ALL)
         || !viewer.checkPrivateKey(privateKey) ? null
-        : (new OutputChannel()).setParams(viewer.fileManager, fileName, asWriter,
+        : (new OC()).setParams(viewer.fileManager, fileName, asWriter,
             (isLocal ? new FileOutputStream(fileName, asAppend) : null)));
   }
 
@@ -101,16 +100,16 @@ final public class OutputManagerAwt extends OutputManager {
     String script0 = viewer.getFileAsString(sceneFile);
     if (script0 == null)
       return "no such file: " + sceneFile;
-    sceneFile = Txt.simpleReplace(sceneFile, ".spt", "");
+    sceneFile = javajs.util.PT.simpleReplace(sceneFile, ".spt", "");
     String fileRoot = sceneFile;
     String fileExt = type.toLowerCase();
-    String[] scenes = Parser.split(script0, "pause scene ");
+    String[] scenes = PT.split(script0, "pause scene ");
     Map<String, String> htScenes = new Hashtable<String, String>();
     List<Integer> list = new List<Integer>();
     String script = getSceneScript(scenes, htScenes, list);
     if (Logger.debugging)
       Logger.debug(script);
-    script0 = Txt.simpleReplace(script0, "pause scene", "delay "
+    script0 = javajs.util.PT.simpleReplace(script0, "pause scene", "delay "
         + viewer.animationManager.lastFrameDelay + " # scene");
     String[] str = new String[] { script0, script, null };
     viewer.saveState("_scene0");
@@ -168,9 +167,9 @@ final public class OutputManagerAwt extends OutputManager {
         " Jmol ").append(Viewer.getJmolVersion()).append(
         "\n{\nsceneScripts={");
     for (int i = 1; i < scenes.length; i++) {
-      scenes[i - 1] = Txt.trim(scenes[i - 1], "\t\n\r ");
+      scenes[i - 1] = PT.trim(scenes[i - 1], "\t\n\r ");
       int[] pt = new int[1];
-      iScene = javajs.util.Parser.parseIntNext(scenes[i], pt);
+      iScene = javajs.util.PT.parseIntNext(scenes[i], pt);
       if (iScene == Integer.MIN_VALUE)
         return "bad scene ID: " + iScene;
       scenes[i] = scenes[i].substring(pt[0]);

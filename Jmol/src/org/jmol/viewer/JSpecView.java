@@ -8,7 +8,7 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import javajs.util.List;
 import org.jmol.util.Logger;
-import javajs.util.Parser;
+import javajs.util.PT;
 import org.jmol.util.Txt;
 
 public class JSpecView implements JmolJSpecView {
@@ -56,13 +56,13 @@ public class JSpecView implements JmolJSpecView {
       System.out.println("Jmol JSpecView.java bspeak="  + bsPeak);
       if (bsPeak == null) {
         htPeaks.put(peak, bsPeak = new BS());
-        String satoms = Parser.getQuotedAttribute(peak, "atoms");
-        String select = Parser.getQuotedAttribute(peak, "select");
+        String satoms = PT.getQuotedAttribute(peak, "atoms");
+        String select = PT.getQuotedAttribute(peak, "select");
         System.out.println("Jmol JSpecView.java satoms select " + satoms + " " + select);
         String script = "";
         if (satoms != null)
           script += "visible & (atomno="
-              + Txt.simpleReplace(satoms, ",", " or atomno=") + ")";
+              + javajs.util.PT.simpleReplace(satoms, ",", " or atomno=") + ")";
         else if (select != null)
           script += "visible & (" + select + ")";
         System.out.println("Jmol JSpecView.java script : " + script);
@@ -77,7 +77,7 @@ public class JSpecView implements JmolJSpecView {
 
 
   private void sendJSpecView(String peak) {
-    String msg = Parser.getQuotedAttribute(peak, "title");
+    String msg = PT.getQuotedAttribute(peak, "title");
     if (msg != null)
       viewer.scriptEcho(Logger.debugging ? peak : msg);
     peak = viewer.fullName + "JSpecView: " + peak;

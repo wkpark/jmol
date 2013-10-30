@@ -38,8 +38,8 @@ import java.util.Map;
 import org.jmol.image.ImageEncoder;
 import org.jmol.io.JmolBinary;
 
-import javajs.util.ArrayUtil;
-import javajs.util.OutputChannel;
+import javajs.util.AU;
+import javajs.util.OC;
 
 /**
  * JpegEncoder - The JPEG main program which performs a jpeg compression of an
@@ -367,8 +367,8 @@ class DCT {
    */
   //public int QUALITY = 80;
 
-  int[][] quantum = ArrayUtil.newInt2(2);
-  double[][] divisors = ArrayUtil.newDouble2(2);
+  int[][] quantum = AU.newInt2(2);
+  double[][] divisors = AU.newDouble2(2);
 
   /**
    * Quantitization Matrix for luminace.
@@ -804,7 +804,7 @@ class Huffman {
    * @param acCode
    **/
 
-  void HuffmanBlockEncoder(OutputChannel out, int zigzag[], int prec,
+  void HuffmanBlockEncoder(OC out, int zigzag[], int prec,
                            int dcCode, int acCode) {
     int temp, temp2, nbits, k, r, i;
 
@@ -871,7 +871,7 @@ class Huffman {
   // Uses an integer long (32 bits) buffer to store the Huffman encoded bits
   // and sends them to out by the byte.
 
-  void bufferIt(OutputChannel out, int code, int size) {
+  void bufferIt(OC out, int code, int size) {
     int putBuffer = code;
     int putBits = bufferPutBits;
 
@@ -894,7 +894,7 @@ class Huffman {
 
   }
 
-  void flushBuffer(OutputChannel out) {
+  void flushBuffer(OC out) {
     int putBuffer = bufferPutBuffer;
     int putBits = bufferPutBits;
     while (putBits >= 8) {
@@ -923,8 +923,8 @@ class Huffman {
     dc_matrix1 = new int[12][2];
     ac_matrix0 = new int[255][2];
     ac_matrix1 = new int[255][2];
-    dc_matrix = ArrayUtil.newInt3(2, -1);
-    ac_matrix = ArrayUtil.newInt3(2, -1);
+    dc_matrix = AU.newInt3(2, -1);
+    ac_matrix = AU.newInt3(2, -1);
     int p, l, i, lastp, si, code;
     int[] huffsize = new int[257];
     int[] huffcode = new int[257];
@@ -1097,7 +1097,7 @@ class JpegObj {
   private int maxVsampFactor;
 
   public JpegObj() {
-    components = ArrayUtil.newFloat3(numberOfComponents, -1);
+    components = AU.newFloat3(numberOfComponents, -1);
     compWidth = new int[numberOfComponents];
     compHeight = new int[numberOfComponents];
     blockWidth = new int[numberOfComponents];

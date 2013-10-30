@@ -24,7 +24,7 @@
 
 package org.jmol.adapter.readers.quantum;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -109,7 +109,7 @@ abstract public class GamessReader extends MOReader {
     }
     if (atomType != null)
       shellsByAtomType.put(atomType, slatersByAtomType);
-    gaussians = ArrayUtil.newFloat2(gaussianCount);
+    gaussians = AU.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++) {
       tokens = gdata.get(i);
       gaussians[i] = new float[tokens.length - 3];
@@ -310,7 +310,7 @@ $SYSTEM OPTIONS
         if (calculationType.length() > 0)
           calculationType += " ";
         calculationType += igauss + "-"
-            + Txt.simpleReplace(gbasis, "N", "");
+            + javajs.util.PT.simpleReplace(gbasis, "N", "");
         if ("T".equals(calcOptions.get("basis_options_DIFFSP"))) {
           // check if we have diffuse S on H's too => "++" instead of "+"
           if ("T".equals(calcOptions.get("basis_options_DIFFS")))
@@ -382,7 +382,7 @@ $SYSTEM OPTIONS
     while (readLine() != null && (line = line.trim()).length() > 0) {
       if (line.indexOf("=") < 0)
         continue;
-      String[] tokens = getTokensStr(Txt.simpleReplace(line, "="," = ") + " ?");
+      String[] tokens = getTokensStr(javajs.util.PT.simpleReplace(line, "="," = ") + " ?");
       for (int i = 0; i < tokens.length; i++) {
         if (!tokens[i].equals("="))
           continue;

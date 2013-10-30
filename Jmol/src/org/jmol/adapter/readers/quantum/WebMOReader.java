@@ -28,7 +28,7 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Atom;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -285,7 +285,7 @@ public class WebMOReader extends MopacSlaterReader {
       }
       sdata.addLast(slater);
     }
-    float[][] garray = ArrayUtil.newFloat2(gaussianPtr);
+    float[][] garray = AU.newFloat2(gaussianPtr);
     for (int i = 0; i < gaussianPtr; i++) {
       garray[i] = gdata.get(i);
     }

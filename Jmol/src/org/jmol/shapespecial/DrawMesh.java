@@ -31,7 +31,7 @@ import org.jmol.shape.Mesh;
 import org.jmol.shapespecial.Draw.EnumDrawType;
 import org.jmol.util.BSUtil;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.P3;
 import javajs.util.V3;
 
@@ -119,11 +119,11 @@ public class DrawMesh extends Mesh {
     if (modelIndex >= polygonCount)
       return;
     polygonCount--;
-    polygonIndexes = (int[][]) ArrayUtil.deleteElements(polygonIndexes, modelIndex, 1);
-    drawTypes = (EnumDrawType[]) ArrayUtil.deleteElements(drawTypes, modelIndex, 1);
-    drawVertexCounts = (int[]) ArrayUtil.deleteElements(drawVertexCounts, modelIndex, 1);
-    ptCenters = (P3[]) ArrayUtil.deleteElements(ptCenters, modelIndex, 1);
-    axes = (V3[]) ArrayUtil.deleteElements(axes, modelIndex, 1);
+    polygonIndexes = (int[][]) AU.deleteElements(polygonIndexes, modelIndex, 1);
+    drawTypes = (EnumDrawType[]) AU.deleteElements(drawTypes, modelIndex, 1);
+    drawVertexCounts = (int[]) AU.deleteElements(drawVertexCounts, modelIndex, 1);
+    ptCenters = (P3[]) AU.deleteElements(ptCenters, modelIndex, 1);
+    axes = (V3[]) AU.deleteElements(axes, modelIndex, 1);
     BS bs = BSUtil.newAndSetBit(modelIndex);
     BSUtil.deleteBits(modelFlags, bs);
     //no! title = (String[]) ArrayUtil.deleteElements(title, modelIndex, 1);

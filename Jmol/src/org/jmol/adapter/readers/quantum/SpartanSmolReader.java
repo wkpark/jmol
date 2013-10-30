@@ -29,8 +29,8 @@ import java.util.Map;
 
 import org.jmol.util.Logger;
 
-import javajs.util.ByteConverter;
-import javajs.util.Parser;
+import javajs.util.BC;
+import javajs.util.PT;
 import javajs.util.SB;
 
 /*
@@ -159,9 +159,9 @@ public class SpartanSmolReader extends SpartanInputReader {
       return;
     byte[] bytes = new byte[tokens.length];
     for (int i = 0; i < tokens.length; i++)
-      bytes[i] = (byte) Parser.parseIntRadix(tokens[i], 16);
+      bytes[i] = (byte) PT.parseIntRadix(tokens[i], 16);
     mat = new float[16];
-    ByteConverter bc = new ByteConverter();
+    BC bc = new BC();
     for (int i = 16, j = bytes.length - 8; --i >= 0; j -= 8)
       mat[i] = bc.bytesToDoubleToFloat(bytes, j, false);
     setTransform(mat[0], mat[1], mat[2], mat[4], mat[5], mat[6], mat[8],

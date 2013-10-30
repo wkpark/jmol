@@ -32,9 +32,9 @@ import org.jmol.util.Logger;
 
 import java.io.IOException;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import java.util.Hashtable;
 
@@ -305,7 +305,7 @@ $end
       }
     }
     // now rearrange the gaussians (direct copy from GaussianReader)
-    gaussians = ArrayUtil.newFloat2(gaussianCount);
+    gaussians = AU.newFloat2(gaussianCount);
     for (int i = 0; i < gaussianCount; i++) {
       tokens = gdata.get(i);
       gaussians[i] = new float[tokens.length];
@@ -619,8 +619,8 @@ $end
   boolean fSpherical = false;
   
   private int readMOs(boolean restricted, MOInfo[] moInfos) throws Exception {
-    Map<String, Object>[] mos = ArrayUtil.createArrayOfHashtable(6); // max 6 MO's per line
-    float[][] mocoef = ArrayUtil.newFloat2(6); // coefficients for each MO
+    Map<String, Object>[] mos = AU.createArrayOfHashtable(6); // max 6 MO's per line
+    float[][] mocoef = AU.newFloat2(6); // coefficients for each MO
     int[] moid = new int[6]; // mo numbers
     String[] tokens, energy;
     int nMOs = 0;
@@ -677,7 +677,7 @@ $end
       // we have all the info we need 
       for (int i = 0; i < nMO; i++) {
         MOInfo moInfo = moInfos[moid[i]];
-        mos[i].put("energy", Float.valueOf(Parser.fVal(energy[i])));
+        mos[i].put("energy", Float.valueOf(PT.fVal(energy[i])));
         mos[i].put("coefficients", mocoef[i]);
         String label = alphaBeta;
         int ne = moInfo.ne;

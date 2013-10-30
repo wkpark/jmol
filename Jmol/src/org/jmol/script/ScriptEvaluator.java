@@ -23,6 +23,7 @@
  */
 package org.jmol.script;
 
+import javajs.api.GenericPlatform;
 import javajs.awt.Font;
 import javajs.util.List;
 import javajs.util.SB;
@@ -31,7 +32,6 @@ import java.util.Hashtable;
 
 import java.util.Map;
 
-import org.jmol.api.ApiPlatform;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolScriptEvaluator;
 import org.jmol.api.JmolScriptFunction;
@@ -63,12 +63,12 @@ import org.jmol.util.GData;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import javajs.util.Parser;
+import javajs.util.PT;
 import org.jmol.util.ParserBS;
 
 import javajs.util.A4;
-import javajs.util.ColorUtil;
-import javajs.util.OutputChannel;
+import javajs.util.CU;
+import javajs.util.OC;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -565,9 +565,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     try {
       s = script.substring(ichBegin, ichEnd);
       if (s.indexOf("\\\n") >= 0)
-        s = Txt.simpleReplace(s, "\\\n", "  ");
+        s = javajs.util.PT.simpleReplace(s, "\\\n", "  ");
       if (s.indexOf("\\\r") >= 0)
-        s = Txt.simpleReplace(s, "\\\r", "  ");
+        s = javajs.util.PT.simpleReplace(s, "\\\r", "  ");
       // int i;
       // for (i = s.length(); --i >= 0 && !ScriptCompiler.eol(s.charAt(i), 0);
       // ){
@@ -673,8 +673,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     try {
       pushContext(null, "getAtomBitSet");
       String scr = "select (" + atomExpression + ")";
-      scr = Txt.replaceAllCharacters(scr, "\n\r", "),(");
-      scr = Txt.simpleReplace(scr, "()", "(none)");
+      scr = PT.replaceAllCharacters(scr, "\n\r", "),(");
+      scr = javajs.util.PT.simpleReplace(scr, "()", "(none)");
       if (compileScript(null, scr, false)) {
         st = aatoken[0];
         bs = atomExpression(st, 1, 0, false, false, true, true);
@@ -1534,7 +1534,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           String s = Atom.atomPropertyString(viewer, atom, tok);
           switch (minmaxtype) {
           case T.allfloat:
-            fout[i] = Parser.parseFloat(s);
+            fout[i] = PT.parseFloat(s);
             break;
           default:
             if (vout == null)
@@ -1608,7 +1608,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
           break;
         case T.color:
-          ColorUtil.toRGBpt(viewer.getColorArgbOrGray(bond.colix),
+          CU.toRGBpt(viewer.getColorArgbOrGray(bond.colix),
               ptT);
           switch (minmaxtype) {
           case T.all:
@@ -1643,7 +1643,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             fout[i] = ((Integer) v).floatValue();
             break;
           case 2:
-            fout[i] = Parser.parseFloat((String) v);
+            fout[i] = PT.parseFloat((String) v);
             break;
           case 3:
             fout[i] = ((P3) v).length();
@@ -1753,11 +1753,11 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           SV svi = sv.get(i);
           pt = SV.ptValue(svi);
           if (pt != null) {
-            values[i] = ColorUtil.colorPtToFFRGB(pt);
+            values[i] = CU.colorPtToFFRGB(pt);
           } else if (svi.tok == T.integer) {
             values[i] = svi.intValue;
           } else {
-            values[i] = ColorUtil.getArgbFromString(svi.asString());
+            values[i] = CU.getArgbFromString(svi.asString());
             if (values[i] == 0)
               values[i] = svi.asInt();
           }
@@ -1768,7 +1768,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         prop = "colorValues";
         break;
       case T.point3f:
-        value = Integer.valueOf(ColorUtil.colorPtToFFRGB((P3) tokenValue.value));
+        value = Integer.valueOf(CU.colorPtToFFRGB((P3) tokenValue.value));
         break;
       case T.string:
         value = tokenValue.value;
@@ -1799,7 +1799,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       break;
     case T.string:
       if (sValue == null)
-        list = Parser.getTokens(SV.sValue(tokenValue));
+        list = PT.getTokens(SV.sValue(tokenValue));
       break;
     }
     if (list != null) {
@@ -1808,7 +1808,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         fvalues = new float[nValues];
         for (int i = nValues; --i >= 0;)
           fvalues[i] = (tok == T.element ? Elements.elementNumberFromSymbol(
-              list[i], false) : Parser.parseFloat(list[i]));
+              list[i], false) : PT.parseFloat(list[i]));
       }
       if (tokenValue.tok != T.varray && nValues == 1) {
         if (isStrProperty)
@@ -1902,9 +1902,9 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       // we first check for paths into ZIP files and adjust accordingly
       int pt = Math.max(filename.lastIndexOf("|"), filename.lastIndexOf("/"));
       path = path.substring(0, pt + 1);
-      strScript = Txt.simpleReplace(strScript, "$SCRIPT_PATH$/", path);
+      strScript = javajs.util.PT.simpleReplace(strScript, "$SCRIPT_PATH$/", path);
       // now replace the variable itself
-      strScript = Txt.simpleReplace(strScript, "$SCRIPT_PATH$", path);
+      strScript = javajs.util.PT.simpleReplace(strScript, "$SCRIPT_PATH$", path);
     }
     return strScript;
   }
@@ -1920,7 +1920,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     pt = extensions.indexOf("##SCRIPT_START=");
     if (pt < 0)
       return 0;
-    pt = javajs.util.Parser.parseInt(extensions.substring(pt + 15));
+    pt = javajs.util.PT.parseInt(extensions.substring(pt + 15));
     if (pt == Integer.MIN_VALUE)
       return 0;
     for (pc = 0; pc < lineIndices.length; pc++) {
@@ -3094,13 +3094,13 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (value != null)
         msg += ": " + value;
     } else {
-      msg = Txt.simpleReplace(msg, "{0}", value);
+      msg = javajs.util.PT.simpleReplace(msg, "{0}", value);
       if (msg.indexOf("{1}") >= 0)
-        msg = Txt.simpleReplace(msg, "{1}", more);
+        msg = javajs.util.PT.simpleReplace(msg, "{1}", more);
       else if (more != null)
         msg += ": " + more;
       if (msg.indexOf("{2}") >= 0)
-        msg = Txt.simpleReplace(msg, "{2}", more);
+        msg = javajs.util.PT.simpleReplace(msg, "{2}", more);
     }
     if (doTranslate)
       GT.setDoTranslate(true);
@@ -3743,23 +3743,23 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         float comparisonFloat = Float.NaN;
         if (val instanceof P3) {
           if (tokWhat == T.color) {
-            comparisonValue = ColorUtil.colorPtToFFRGB((P3) val);
+            comparisonValue = CU.colorPtToFFRGB((P3) val);
             tokValue = T.integer;
             isIntProperty = true;
           }
         } else if (val instanceof String) {
           if (tokWhat == T.color) {
-            comparisonValue = ColorUtil.getArgbFromString((String) val);
+            comparisonValue = CU.getArgbFromString((String) val);
             if (comparisonValue == 0 && T.tokAttr(tokValue, T.identifier)) {
               val = getStringParameter((String) val, true);
               if (((String) val).startsWith("{")) {
                 val = Escape.uP((String) val);
                 if (val instanceof P3)
-                  comparisonValue = ColorUtil.colorPtToFFRGB((P3) val);
+                  comparisonValue = CU.colorPtToFFRGB((P3) val);
                 else
                   comparisonValue = 0;
               } else {
-                comparisonValue = ColorUtil.getArgbFromString((String) val);
+                comparisonValue = CU.getArgbFromString((String) val);
               }
             }
             tokValue = T.integer;
@@ -4401,8 +4401,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     switch (tokAt(i)) {
     case T.string:
       s = SV.sValue(st[i]);
-      s = Txt.replaceAllCharacter(s, "{},[]\"'", ' ');
-      fparams = Parser.parseFloatArray(s);
+      s = PT.replaceAllCharacter(s, "{},[]\"'", ' ');
+      fparams = PT.parseFloatArray(s);
       n = fparams.length;
       break;
     case T.varray:
@@ -4501,7 +4501,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (s.startsWith("[\"")) {
         Object o = viewer.evaluateExpression(s);
         if (o instanceof String)
-          return Parser.split((String) o, "\n");
+          return PT.split((String) o, "\n");
       }
       return new String[] { s };
     case T.spacebeforesquare:
@@ -4823,7 +4823,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     return (tok == T.navy || tok == T.spacebeforesquare || tok == T.leftsquare
         || tok == T.varray || tok == T.point3f || isPoint3f(i) || (tok == T.string || T
         .tokAttr(tok, T.identifier))
-        && ColorUtil.getArgbFromString((String) st[i].value) != 0);
+        && CU.getArgbFromString((String) st[i].value) != 0);
   }
 
   public int getArgbParam(int index) throws ScriptException {
@@ -4848,7 +4848,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         //$FALL-THROUGH$
       case T.navy:
       case T.string:
-        return ColorUtil.getArgbFromString(parameterAsString(index));
+        return CU.getArgbFromString(parameterAsString(index));
       case T.spacebeforesquare:
         return getColorTriad(index + 2);
       case T.leftsquare:
@@ -4871,7 +4871,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (pt == null)
       error(ERROR_colorExpected);
-    return ColorUtil.colorPtToFFRGB(pt);
+    return CU.colorPtToFFRGB(pt);
   }
 
   private int getColorTriad(int i) throws ScriptException {
@@ -4934,8 +4934,8 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (getToken(++i).tok != T.rightsquare)
       error(ERROR_badRGBColor);
     if (pt != null)
-      return ColorUtil.colorPtToFFRGB(pt);
-    if ((n = ColorUtil.getArgbFromString("[" + hex + "]")) == 0)
+      return CU.colorPtToFFRGB(pt);
+    if ((n = CU.getArgbFromString("[" + hex + "]")) == 0)
       error(ERROR_badRGBColor);
     return n;
   }
@@ -5691,7 +5691,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
             .toLowerCase());
         int n = (tokAt(i) == T.nada ? 5 : intParameter(i++));
         s = "; rotate Y 10 10;delay 2.0; rotate Y -10 -10; delay 2.0;rotate Y -10 -10; delay 2.0;rotate Y 10 10;delay 2.0";
-        s = Txt.simpleReplace(s, "10", "" + n);
+        s = javajs.util.PT.simpleReplace(s, "10", "" + n);
         break;
       case T.spin:
         looping = true;
@@ -5712,7 +5712,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           viewer.setNavigationMode(false);
         if (axis == "" || "xyz".indexOf(axis) < 0)
           axis = "y";
-        s = Txt.simpleReplace(s, "Y", axis);
+        s = javajs.util.PT.simpleReplace(s, "Y", axis);
         s = "capture " + Escape.eS(fileName) + sfps + s + ";capture;";
         script(0, null, s);
         return;
@@ -5749,7 +5749,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   public void setCursorWait(boolean TF) {
     if (!chk)
-      viewer.setCursor(TF ? ApiPlatform.CURSOR_WAIT : ApiPlatform.CURSOR_DEFAULT);
+      viewer.setCursor(TF ? GenericPlatform.CURSOR_WAIT : GenericPlatform.CURSOR_DEFAULT);
   }
 
   private void processShapeCommand(int tok) throws ScriptException {
@@ -7401,7 +7401,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       return;
     boolean isTranslucent = (theTok == T.translucent);
     if (isTranslucent || theTok == T.opaque) {
-      if (translucentLevel == Parser.FLOAT_MIN_SAFE)
+      if (translucentLevel == PT.FLOAT_MIN_SAFE)
         invArg();
       translucency = parameterAsString(index++);
       if (isTranslucent && isFloatParameter(index))
@@ -7668,7 +7668,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (slen < 3 || !(getToken(1).value instanceof String))
       invArg();
     String setName = ((String) getToken(1).value).toLowerCase();
-    if (javajs.util.Parser.parseInt(setName) != Integer.MIN_VALUE)
+    if (javajs.util.PT.parseInt(setName) != Integer.MIN_VALUE)
       invArg();
     if (chk)
       return;
@@ -7865,7 +7865,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         i++;
         loadScript.append(" " + modelName);
         tokType = (tok == T.identifier
-            && Parser.isOneOf(modelName.toLowerCase(), JC.LOAD_ATOM_DATA_TYPES) ? T
+            && PT.isOneOf(modelName.toLowerCase(), JC.LOAD_ATOM_DATA_TYPES) ? T
             .getTokFromName(modelName)
             : T.nada);
         if (tokType != T.nada) {
@@ -8187,7 +8187,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         int iGroup = Integer.MIN_VALUE;
         if (tokAt(i) == T.spacegroup) {
           ++i;
-          spacegroup = Txt.simpleReplace(parameterAsString(i++), "''",
+          spacegroup = javajs.util.PT.simpleReplace(parameterAsString(i++), "''",
               "\"");
           sOptions += " spacegroup " + Escape.eS(spacegroup);
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
@@ -8389,7 +8389,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     // set up the output stream from AS keyword
 
-    OutputChannel out = null;
+    OC out = null;
     if (localName != null) {
       if (localName.equals("."))
         localName = viewer.getFilePath(filename, true);
@@ -8768,7 +8768,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       }
 
     BS bsAtoms = null;
-    float degreesPerSecond = Parser.FLOAT_MIN_SAFE;
+    float degreesPerSecond = PT.FLOAT_MIN_SAFE;
     int nPoints = 0;
     float endDegrees = Float.MAX_VALUE;
     boolean isMolecular = false;
@@ -8836,7 +8836,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           // rotate spin ... [degreesPerSecond]
           // rotate spin ... [endDegrees] [degreesPerSecond]
           // rotate spin BRANCH <DihedralList> [seconds]
-          if (degreesPerSecond == Parser.FLOAT_MIN_SAFE) {
+          if (degreesPerSecond == PT.FLOAT_MIN_SAFE) {
             degreesPerSecond = floatParameter(i);
             continue;
           } else if (endDegrees == Float.MAX_VALUE) {
@@ -8850,7 +8850,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           if (endDegrees == Float.MAX_VALUE) {
             endDegrees = floatParameter(i);
             continue;
-          } else if (degreesPerSecond == Parser.FLOAT_MIN_SAFE) {
+          } else if (degreesPerSecond == PT.FLOAT_MIN_SAFE) {
             degreesPerSecond = floatParameter(i);
             isSpin = true;
             continue;
@@ -9023,7 +9023,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
       if (bsAtoms == null)
         bsAtoms = bsCompare;
     }
-    float rate = (degreesPerSecond == Parser.FLOAT_MIN_SAFE ? 10
+    float rate = (degreesPerSecond == PT.FLOAT_MIN_SAFE ? 10
         : endDegrees == Float.MAX_VALUE ? degreesPerSecond
             : (degreesPerSecond < 0) == (endDegrees > 0) ?
             // -n means number of seconds, not degreesPerSecond
@@ -9114,7 +9114,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         && (endDegrees == 0 || degreesPerSecond == 0)) {
       // need a token rotation
       endDegrees = 0.01f;
-      rate = (degreesPerSecond == Parser.FLOAT_MIN_SAFE ? 0.01f
+      rate = (degreesPerSecond == PT.FLOAT_MIN_SAFE ? 0.01f
           : degreesPerSecond < 0 ?
           // -n means number of seconds, not degreesPerSecond
           -endDegrees / degreesPerSecond
@@ -9371,7 +9371,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     checkLength(-3);
     String text = "";
     String applet = "";
-    int port = javajs.util.Parser.parseInt(optParameterAsString(1));
+    int port = javajs.util.PT.parseInt(optParameterAsString(1));
     if (port == Integer.MIN_VALUE) {
       port = 0;
       switch (slen) {
@@ -9384,7 +9384,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         // sync (*) text
         applet = parameterAsString(1);
         if (applet.indexOf("jmolApplet") == 0
-            || Parser.isOneOf(applet, ";*;.;^;")) {
+            || PT.isOneOf(applet, ";*;.;^;")) {
           text = "ON";
           if (!chk)
             viewer.syncScript(text, applet, 0);
@@ -11186,7 +11186,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         int modelNumber;
         boolean useModelNumber = false;
         if (modelDotted.indexOf(".") < 0) {
-          modelNumber = javajs.util.Parser.parseInt(modelDotted);
+          modelNumber = javajs.util.PT.parseInt(modelDotted);
           useModelNumber = true;
         } else {
           modelNumber = getFloatEncodedInt(modelDotted);
@@ -11394,7 +11394,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
       String lckey = key.toLowerCase();
       if (lckey.indexOf("label") == 0
-          && Parser
+          && PT
               .isOneOf(key.substring(5).toLowerCase(),
                   ";front;group;atom;offset;offsetexact;pointer;alignment;toggle;scalereference;")) {
         if (setLabel(key.substring(5)))
@@ -11811,12 +11811,12 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
   private boolean setUnits(String units, int tok) throws ScriptException {
     if (tok == T.measurementunits
-        && (units.endsWith("hz") || Parser.isOneOf(units.toLowerCase(),
+        && (units.endsWith("hz") || PT.isOneOf(units.toLowerCase(),
             ";angstroms;au;bohr;nanometers;nm;picometers;pm;vanderwaals;vdw;"))) {
       if (!chk)
         viewer.setUnits(units, true);
     } else if (tok == T.energyunits
-        && Parser.isOneOf(units.toLowerCase(), ";kcal;kj;")) {
+        && PT.isOneOf(units.toLowerCase(), ";kcal;kj;")) {
       if (!chk)
         viewer.setUnits(units, false);
     } else {
@@ -12237,7 +12237,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int tok = tokAt(index);
     String type = optParameterAsString(index).toLowerCase();
     if (slen == index + 1
-        && Parser.isOneOf(type, ";window;unitcell;molecular;")) {
+        && PT.isOneOf(type, ";window;unitcell;molecular;")) {
       setBooleanProperty("axes" + type, true);
       return;
     }

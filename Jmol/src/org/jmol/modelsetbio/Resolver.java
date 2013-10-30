@@ -45,7 +45,7 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.P4;
@@ -539,7 +539,7 @@ public final class Resolver implements JmolBioResolver {
       if (type == null)
         continue;
       htKeysUsed.put(skey, Boolean.TRUE);
-      bonds[i].setOrder(javajs.util.Parser.parseInt(type));
+      bonds[i].setOrder(javajs.util.PT.parseInt(type));
     }
 
     for (String key : htBondMap.keySet()) {
@@ -573,7 +573,7 @@ public final class Resolver implements JmolBioResolver {
       if ((value = htKeysBad.get(a1.getGroup3(false) + ":" + a1.getAtomName())) == null
           && ((value = htKeysBad.get(a2.getGroup3(false) + ":" + a2.getAtomName())) == null))
         continue;
-      bonds[i].setOrder(javajs.util.Parser.parseInt(value));
+      bonds[i].setOrder(javajs.util.PT.parseInt(value));
       Logger.info("assigning order " + bonds[i].order + " to bond " + bonds[i]);
     }
   }
@@ -596,7 +596,7 @@ public final class Resolver implements JmolBioResolver {
   }
 
   public String fixPropertyValue(BS bsAtoms, String data) {
-    String[] aData = Parser.split(data, "\n");
+    String[] aData = PT.split(data, "\n");
     Atom[] atoms = modelSet.atoms;
     String[] newData = new String[bsAtoms.cardinality()];
     String lastData = "";

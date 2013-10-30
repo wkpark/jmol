@@ -33,7 +33,7 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
@@ -63,11 +63,11 @@ public abstract class AtomShape extends Shape {
     atomCount = modelSet.getAtomCount();
     // in case this is due to "load append"
     if (mads != null)
-      mads = ArrayUtil.arrayCopyShort(mads, atomCount);
+      mads = AU.arrayCopyShort(mads, atomCount);
     if (colixes != null)
-      colixes = ArrayUtil.arrayCopyShort(colixes, atomCount);
+      colixes = AU.arrayCopyShort(colixes, atomCount);
     if (paletteIDs != null)
-      paletteIDs = ArrayUtil.arrayCopyByte(paletteIDs, atomCount);
+      paletteIDs = AU.arrayCopyByte(paletteIDs, atomCount);
   }
 
   @Override
@@ -182,11 +182,11 @@ public abstract class AtomShape extends Shape {
       atomCount = modelSet.getAtomCount();
       int firstAtomDeleted = info[1];
       int nAtomsDeleted = info[2];
-      mads = (short[]) ArrayUtil.deleteElements(mads, firstAtomDeleted,
+      mads = (short[]) AU.deleteElements(mads, firstAtomDeleted,
           nAtomsDeleted);
-      colixes = (short[]) ArrayUtil.deleteElements(colixes, firstAtomDeleted,
+      colixes = (short[]) AU.deleteElements(colixes, firstAtomDeleted,
           nAtomsDeleted);
-      paletteIDs = (byte[]) ArrayUtil.deleteElements(paletteIDs,
+      paletteIDs = (byte[]) AU.deleteElements(paletteIDs,
           firstAtomDeleted, nAtomsDeleted);
       BSUtil.deleteBits(bsSizeSet, bs);
       BSUtil.deleteBits(bsColixSet, bs);
@@ -199,8 +199,8 @@ public abstract class AtomShape extends Shape {
     if (colixes == null || atomIndex >= colixes.length) {
       if (colix == C.INHERIT_ALL)
         return;
-      colixes = ArrayUtil.ensureLengthShort(colixes, atomIndex + 1);
-      paletteIDs = ArrayUtil.ensureLengthByte(paletteIDs, atomIndex + 1);
+      colixes = AU.ensureLengthShort(colixes, atomIndex + 1);
+      paletteIDs = AU.ensureLengthByte(paletteIDs, atomIndex + 1);
     }
     if (bsColixSet == null)
       bsColixSet = BS.newN(atomCount);

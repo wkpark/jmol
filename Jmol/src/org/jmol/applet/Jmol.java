@@ -48,7 +48,7 @@ import java.awt.Graphics;
 import java.net.URL;
 import java.net.MalformedURLException;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -599,7 +599,7 @@ public class Jmol implements WrappedApplet {
   public boolean handleEvent(Event e) {
     if (viewer == null)
       return false;
-    return viewer.handleOldJvm10Event(e.id, e.x, e.y, e.modifiers, e.when);
+    return viewer.processMouseEvent(e.id, e.x, e.y, e.modifiers, e.when);
   }
 
   // code to record last and average times
@@ -1272,7 +1272,7 @@ public class Jmol implements WrappedApplet {
     private void showStatus(String message) {
       try {
         System.out.println(message);
-        appletWrapper.showStatus(Txt.simpleReplace(Parser.split(message, "\n")[0], "'", "\\'"));
+        appletWrapper.showStatus(javajs.util.PT.simpleReplace(PT.split(message, "\n")[0], "'", "\\'"));
         sendJsTextStatus(message);
       } catch (Exception e) {
         //ignore if page is closing
@@ -1345,7 +1345,7 @@ public class Jmol implements WrappedApplet {
       return "";
     //System.out.println(callback);
     if (callback.indexOf(".") > 0) {
-      String[] mods = Parser.split(callback, ".");
+      String[] mods = PT.split(callback, ".");
       //System.out.println(Escape.eAS(mods, true));
       for (int i = 0; i < mods.length - 1; i++) {
         //System.out.println(jso);

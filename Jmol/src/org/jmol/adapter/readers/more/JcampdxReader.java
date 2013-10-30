@@ -30,7 +30,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.util.Txt;
@@ -137,7 +137,7 @@ public class JcampdxReader extends MolReader {
         htParams.put("peakIndex", peakIndex);
       }
       if (!htParams.containsKey("subFileName"))
-        peakFilePath = Escape.eS(Parser.split(filePath, "|")[0]);
+        peakFilePath = Escape.eS(PT.split(filePath, "|")[0]);
     } else {
       peakIndex = new int[1];
     }
@@ -222,7 +222,7 @@ public class JcampdxReader extends MolReader {
   }
 
   private static String getAttribute(String line, String tag) {
-    String attr = Parser.getQuotedAttribute(line, tag);
+    String attr = PT.getQuotedAttribute(line, tag);
     return (attr == null ? "" : attr);
   }
 
@@ -238,7 +238,7 @@ public class JcampdxReader extends MolReader {
     modelIdList += key;
     String baseModel = getAttribute(line, "baseModel");
     String modelType = getAttribute(line, "type").toLowerCase();
-    float vibScale = Parser.parseFloat(getAttribute(line, "vibrationScale"));
+    float vibScale = PT.parseFloat(getAttribute(line, "vibrationScale"));
     if (modelType.equals("xyzvib"))
       modelType = "xyz";
     else if (modelType.length() == 0)
@@ -433,7 +433,7 @@ public class JcampdxReader extends MolReader {
   }
 
   private String simpleReplace(String s, String sfrom, String sto) {
-    return Txt.simpleReplace(s, sfrom, sto);
+    return javajs.util.PT.simpleReplace(s, sfrom, sto);
   }
 
   private String escape(String s) {
@@ -441,7 +441,7 @@ public class JcampdxReader extends MolReader {
   }
 
   private String getQuotedAttribute(String s, String attr) {
-    return Parser.getQuotedAttribute(s, attr);
+    return PT.getQuotedAttribute(s, attr);
   }
 
   /**

@@ -5,7 +5,7 @@ import java.io.DataInputStream;
 import java.util.Map;
 
 
-import javajs.util.OutputChannel;
+import javajs.util.OC;
 import javajs.util.SB;
 
 public interface JmolDocument {
@@ -48,6 +48,6 @@ public interface JmolDocument {
 
   void close();
 
-  void setOutputChannel(OutputChannel out);
+  void setOutputChannel(OC out);
 
 }

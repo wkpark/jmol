@@ -27,7 +27,7 @@ package org.jmol.modelsetbio;
 import org.jmol.java.BS;
 import org.jmol.modelset.LabelToken;
 
-import javajs.util.OutputChannel;
+import javajs.util.OC;
 import javajs.util.SB;
 
 import org.jmol.viewer.Viewer;
@@ -44,7 +44,7 @@ class PhosphorusPolymer extends BioPolymer {
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
                          BS bsAtoms, BS bsSelected, 
                          boolean bothEnds, boolean isDraw, 
-                         boolean addHeader, LabelToken[] tokens, OutputChannel pdbATOM, SB pdbCONECT, BS bsWritten) {
+                         boolean addHeader, LabelToken[] tokens, OC pdbATOM, SB pdbCONECT, BS bsWritten) {
     getPdbData(viewer, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, 
         isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);
   }   

@@ -25,7 +25,7 @@ package org.jmol.viewer;
 
 import javajs.awt.Font;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import java.util.Arrays;
@@ -1779,8 +1779,8 @@ public class StateCreator extends JmolStateCreator {
         // must save current state, coord, etc.
         // but this destroys actionStatesRedo
         int[] pt = new int[] { 1 };
-        type = javajs.util.Parser.parseIntNext(s, pt);
-        taintedAtom = javajs.util.Parser.parseIntNext(s, pt);
+        type = javajs.util.PT.parseIntNext(s, pt);
+        taintedAtom = javajs.util.PT.parseIntNext(s, pt);
         undoMoveActionClear(taintedAtom, type, false);
       }
       //System.out.println("redo type = " + type + " size=" + actionStates.size()
@@ -1903,14 +1903,14 @@ public class StateCreator extends JmolStateCreator {
       }
       if (script.startsWith("Select: ")) {
         // from JSpecView peak pick
-        String filename = Parser.getQuotedAttribute(script, "file");
+        String filename = PT.getQuotedAttribute(script, "file");
         if (filename.startsWith(SIMULATION_PROTOCOL + "MOL="))
           filename = null; // from our sending; don't reload
-        String modelID = Parser.getQuotedAttribute(script, "model");
-        String baseModel = Parser.getQuotedAttribute(script, "baseModel");
-        String atoms = Parser.getQuotedAttribute(script, "atoms");
-        String select = Parser.getQuotedAttribute(script, "select");
-        String script2 = Parser.getQuotedAttribute(script, "script");
+        String modelID = PT.getQuotedAttribute(script, "model");
+        String baseModel = PT.getQuotedAttribute(script, "baseModel");
+        String atoms = PT.getQuotedAttribute(script, "atoms");
+        String select = PT.getQuotedAttribute(script, "select");
+        String script2 = PT.getQuotedAttribute(script, "script");
         boolean isNIH = (modelID != null && modelID.startsWith("$"));
         if (isNIH)
           filename = (String) viewer.setLoadFormat(modelID, '$', false);
@@ -1924,12 +1924,12 @@ public class StateCreator extends JmolStateCreator {
           return; // file was found, or no file was indicated, but not this model -- ignore
         script = (modelIndex == -1 && filename != null ? script = "load "
             + Escape.eS(filename) : "");
-        script = Txt.simpleReplace(script, SIMULATION_PROTOCOL, "");
+        script = javajs.util.PT.simpleReplace(script, SIMULATION_PROTOCOL, "");
         if (id != null)
           script += ";model " + Escape.eS(id);
         if (atoms != null)
           script += ";select visible & (@"
-              + Txt.simpleReplace(atoms, ",", " or @") + ")";
+              + javajs.util.PT.simpleReplace(atoms, ",", " or @") + ")";
         else if (select != null)
           script += ";select visible & (" + select + ")";
         if (script2 != null)
@@ -1951,7 +1951,7 @@ public class StateCreator extends JmolStateCreator {
 
   @Override
   void mouseScript(String script) {
-    String[] tokens = Parser.getTokens(script);
+    String[] tokens = PT.getTokens(script);
     String key = tokens[1];
     try {
       key = (key.toLowerCase() + "...............").substring(0, 15);
@@ -1967,52 +1967,52 @@ public class StateCreator extends JmolStateCreator {
       case 0: //zoombyfactor
         switch (tokens.length) {
         case 3:
-          viewer.zoomByFactor(Parser.parseFloat(tokens[2]),
+          viewer.zoomByFactor(PT.parseFloat(tokens[2]),
               Integer.MAX_VALUE, Integer.MAX_VALUE);
           return;
         case 5:
-          viewer.zoomByFactor(Parser.parseFloat(tokens[2]), javajs.util.Parser
-              .parseInt(tokens[3]), javajs.util.Parser.parseInt(tokens[4]));
+          viewer.zoomByFactor(PT.parseFloat(tokens[2]), javajs.util.PT
+              .parseInt(tokens[3]), javajs.util.PT.parseInt(tokens[4]));
           return;
         }
         break;
       case 15: //zoomby
         switch (tokens.length) {
         case 3:
-          viewer.zoomBy(javajs.util.Parser.parseInt(tokens[2]));
+          viewer.zoomBy(javajs.util.PT.parseInt(tokens[2]));
           return;
         }
         break;
       case 30: // rotatezby
         switch (tokens.length) {
         case 3:
-          viewer.rotateZBy(javajs.util.Parser.parseInt(tokens[2]), Integer.MAX_VALUE,
+          viewer.rotateZBy(javajs.util.PT.parseInt(tokens[2]), Integer.MAX_VALUE,
               Integer.MAX_VALUE);
           return;
         case 5:
-          viewer.rotateZBy(javajs.util.Parser.parseInt(tokens[2]), javajs.util.Parser
-              .parseInt(tokens[3]), javajs.util.Parser.parseInt(tokens[4]));
+          viewer.rotateZBy(javajs.util.PT.parseInt(tokens[2]), javajs.util.PT
+              .parseInt(tokens[3]), javajs.util.PT.parseInt(tokens[4]));
         }
         break;
       case 45: // rotatexyby
-        viewer.rotateXYBy(Parser.parseFloat(tokens[2]), Parser
+        viewer.rotateXYBy(PT.parseFloat(tokens[2]), PT
             .parseFloat(tokens[3]));
         return;
       case 60: // translatexyby
-        viewer.translateXYBy(javajs.util.Parser.parseInt(tokens[2]), javajs.util.Parser
+        viewer.translateXYBy(javajs.util.PT.parseInt(tokens[2]), javajs.util.PT
             .parseInt(tokens[3]));
         return;
       case 75: // rotatemolecule
-        viewer.rotateSelected(Parser.parseFloat(tokens[2]), Parser
+        viewer.rotateSelected(PT.parseFloat(tokens[2]), PT
             .parseFloat(tokens[3]), null);
         return;
       case 90:// spinxyby
-        viewer.spinXYBy(javajs.util.Parser.parseInt(tokens[2]), javajs.util.Parser.parseInt(tokens[3]),
-            Parser.parseFloat(tokens[4]));
+        viewer.spinXYBy(javajs.util.PT.parseInt(tokens[2]), javajs.util.PT.parseInt(tokens[3]),
+            PT.parseFloat(tokens[4]));
         return;
       case 105: // rotatearcball
-        viewer.rotateArcBall(javajs.util.Parser.parseInt(tokens[2]), javajs.util.Parser
-            .parseInt(tokens[3]), Parser.parseFloat(tokens[4]));
+        viewer.rotateArcBall(javajs.util.PT.parseInt(tokens[2]), javajs.util.PT
+            .parseInt(tokens[3]), PT.parseFloat(tokens[4]));
         return;
       }
     } catch (Exception e) {

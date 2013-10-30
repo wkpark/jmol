@@ -24,7 +24,7 @@
 
 package org.jmol.shapespecial;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -68,7 +68,7 @@ public class Draw extends MeshCollection {
   @Override
   public void allocMesh(String thisID, Mesh m) {
     int index = meshCount++;
-    meshes = dmeshes = (DrawMesh[]) ArrayUtil.ensureLength(dmeshes,
+    meshes = dmeshes = (DrawMesh[]) AU.ensureLength(dmeshes,
         meshCount * 2);
     currentMesh = thisMesh = dmeshes[index] = (m == null ? new DrawMesh(thisID,
         colix, index) : (DrawMesh) m);
@@ -431,7 +431,7 @@ public void initShape() {
  protected void deleteMeshElement(int i) {
    if (meshes[i] == currentMesh)
      currentMesh = thisMesh = null;
-   meshes = dmeshes = (CGOMesh[]) ArrayUtil
+   meshes = dmeshes = (CGOMesh[]) AU
        .deleteElements(meshes, i, 1);
 }
 

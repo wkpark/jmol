@@ -30,7 +30,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.ContactPair;
 import org.jmol.util.Logger;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.P3i;
@@ -309,13 +309,13 @@ abstract class AtomDataReader extends VolumeDataReader {
     int nAtoms = myAtomCount;
     if (nearbyAtomCount != 0) {
       nAtoms += nearbyAtomCount;
-      atomRadius = ArrayUtil.arrayCopyF(atomRadius, nAtoms);
-      atomXyz = (P3[]) ArrayUtil.arrayCopyObject(atomXyz, nAtoms);
+      atomRadius = AU.arrayCopyF(atomRadius, nAtoms);
+      atomXyz = (P3[]) AU.arrayCopyObject(atomXyz, nAtoms);
       if (atomIndex != null)
-        atomIndex = ArrayUtil.arrayCopyI(atomIndex, nAtoms);
+        atomIndex = AU.arrayCopyI(atomIndex, nAtoms);
 
       if (props != null)
-        atomProp = ArrayUtil.arrayCopyF(atomProp, nAtoms);
+        atomProp = AU.arrayCopyF(atomProp, nAtoms);
       for (int i = bsNearby.nextSetBit(0); i >= 0; i = bsNearby
           .nextSetBit(i + 1)) {
         if (props != null)
@@ -391,7 +391,7 @@ abstract class AtomDataReader extends VolumeDataReader {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES, null);
     if (params.vertexSource != null) {
-      params.vertexSource = ArrayUtil.arrayCopyI(params.vertexSource,
+      params.vertexSource = AU.arrayCopyI(params.vertexSource,
           meshData.vertexCount);
       for (int i = 0; i < meshData.vertexCount; i++)
         params.vertexSource[i] = Math.abs(params.vertexSource[i]) - 1;

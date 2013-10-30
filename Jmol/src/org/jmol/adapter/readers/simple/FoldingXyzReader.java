@@ -29,8 +29,8 @@ import org.jmol.adapter.smarter.Atom;
 
 import java.util.StringTokenizer;
 
-import javajs.util.ArrayUtil;
-import javajs.util.Parser;
+import javajs.util.AU;
+import javajs.util.PT;
 
 
 /**
@@ -52,7 +52,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
       StringTokenizer tokens = new StringTokenizer(line, " \t");
       if (tokens.hasMoreTokens()) {
         atomSetCollection.newAtomSet();
-      	int modelAtomCount = Parser.parseIntRadix(tokens.nextToken(), 10);
+      	int modelAtomCount = PT.parseIntRadix(tokens.nextToken(), 10);
       	if (tokens.hasMoreTokens())
       	  atomSetCollection.setAtomSetName("Protein " + tokens.nextToken());
       	readAtoms(modelAtomCount);
@@ -66,7 +66,7 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
    */
   void readAtoms(int modelAtomCount) throws Exception {
   	// Stores bond informations
-  	int[][] bonds = ArrayUtil.newInt2(modelAtomCount + 1);
+  	int[][] bonds = AU.newInt2(modelAtomCount + 1);
   	for (int i = 0; i <= modelAtomCount; ++i) {
   	  bonds[i] = null;
   	}
@@ -104,12 +104,12 @@ public class FoldingXyzReader extends AtomSetCollectionReader {
         int bondNum = Integer.MIN_VALUE;
         while ((bondNum = parseInt()) > 0) {
           if (bondCount == bonds[i].length) {
-          	bonds[i] = ArrayUtil.arrayCopyI(bonds[i], bondCount + 1); 
+          	bonds[i] = AU.arrayCopyI(bonds[i], bondCount + 1); 
           }
           bonds[i][bondCount++] = bondNum - 1;
         }
         if (bondCount < bonds[i].length) {
-          bonds[i] = ArrayUtil.arrayCopyI(bonds[i], bondCount);
+          bonds[i] = AU.arrayCopyI(bonds[i], bondCount);
         }
       }
     }

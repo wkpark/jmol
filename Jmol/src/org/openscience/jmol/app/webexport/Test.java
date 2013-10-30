@@ -152,9 +152,9 @@ public class Test extends JPanel implements ActionListener {
       }
       // Change the state string so that it will work as a script with an
       // animated moveto...
-      statestr = Txt.simpleReplace(statestr, "set refreshing false;",
+      statestr = javajs.util.PT.simpleReplace(statestr, "set refreshing false;",
           "set refreshing true;");
-      statestr = Txt.simpleReplace(statestr,
+      statestr = javajs.util.PT.simpleReplace(statestr,
           "moveto /* time, axisAngle */ 0.0",
           "moveto /* time, axisAngle */ 5.0");
       LogPanel.log("The state below should have a 5 second moveto time...");

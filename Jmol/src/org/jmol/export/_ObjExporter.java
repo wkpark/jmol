@@ -15,7 +15,7 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.GData;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -23,12 +23,12 @@ import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 import javajs.util.P3;
 import org.jmol.util.Quaternion;
-import org.jmol.util.Txt;
 
 import javajs.util.A4;
-import javajs.util.ColorUtil;
-import javajs.util.OutputChannel;
+import javajs.util.CU;
+import javajs.util.OC;
 import javajs.util.M4;
+import javajs.util.PT;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
@@ -69,7 +69,7 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private boolean normalizeUV = true;
   /** BufferedWriter for the .mtl file. */
-  private OutputChannel mtlout;
+  private OC mtlout;
   /** Path of the OBJ file without the extension. */
   String objFileRootName;
   /** File for the .mtl file. */
@@ -361,7 +361,7 @@ public class _ObjExporter extends __CartesianExporter {
     if (meshSurface.normals != null)
       meshSurface.normalCount = meshSurface.vertexCount;
     boolean isAll = (bsPolygons == null);
-    int[][] faces = ArrayUtil.newInt2(isAll ? nPolygons : bsPolygons.cardinality());
+    int[][] faces = AU.newInt2(isAll ? nPolygons : bsPolygons.cardinality());
     int i0 = (isAll ? nPolygons - 1 : bsPolygons.nextSetBit(0));
     for (int i = i0, ipt = 0; i >= 0; i = isAll ? i - 1 : bsPolygons
         .nextSetBit(i + 1)) {
@@ -661,9 +661,9 @@ public class _ObjExporter extends __CartesianExporter {
         // Get the vertex colors and average them
         sum.set(0, 0, 0);
         for (int iVertex : face)
-          sum.add(ColorUtil.colorPtFromInt2(g3d.getColorArgbOrGray(colixes[iVertex])));
+          sum.add(CU.colorPtFromInt2(g3d.getColorArgbOrGray(colixes[iVertex])));
         sum.scale(1.0f / face.length);
-        rgb = ColorUtil.colorPtToFFRGB(sum);
+        rgb = CU.colorPtToFFRGB(sum);
       } else {
         rgb = g3d.getColorArgbOrGray(colixes[i]);
       }
@@ -755,7 +755,7 @@ public class _ObjExporter extends __CartesianExporter {
     String name;
     if (center instanceof Atom) {
       Atom atom = (Atom) center;
-      name = Txt.replaceAllCharacters(atom.getAtomName(), " \t", "") + "_Atom";
+      name = PT.replaceAllCharacters(atom.getAtomName(), " \t", "") + "_Atom";
     } else if (rx == ry && rx == rz) {
       // Is a sphere
       name = "Sphere" + sphereNum++;

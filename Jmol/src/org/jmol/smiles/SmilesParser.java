@@ -26,7 +26,7 @@ package org.jmol.smiles;
 
 
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import java.util.Hashtable;
@@ -175,7 +175,7 @@ public class SmilesParser {
     if (isSmarts && pattern.indexOf("[$") >= 0)
       pattern = parseVariableLength(pattern);
     if (pattern.indexOf("||") >= 0) {
-      String[] patterns = Parser.split(pattern, "||");  
+      String[] patterns = PT.split(pattern, "||");  
       String toDo = "";
       search.subSearches = new SmilesSearch[patterns.length];
       for (int i = 0; i < patterns.length; i++) {
@@ -219,7 +219,7 @@ public class SmilesParser {
       }
     }
     if (pattern.indexOf("||") >= 0) {
-      String[] patterns = Parser.split(pattern, "||");
+      String[] patterns = PT.split(pattern, "||");
       for (int i = 0; i < patterns.length; i++)
         sout.append("||").append(parseVariableLength(patterns[i]));
     } else {
@@ -640,9 +640,9 @@ public class SmilesParser {
             isNot = true;
             s = s.substring(1);
           }
-          float min = (pt + 1 == pt2 ? 0 : Parser.fVal(s));
+          float min = (pt + 1 == pt2 ? 0 : PT.fVal(s));
           s = strMeasure.substring(pt2 + 1);
-          float max = (s.length() == 0 ? Float.MAX_VALUE : Parser.fVal(s));
+          float max = (s.length() == 0 ? Float.MAX_VALUE : PT.fVal(s));
           m = new SmilesMeasure(molecule, index, type, min, max, isNot);
           molecule.measures.addLast(m);
           if (index > 0)
@@ -822,7 +822,7 @@ public class SmilesParser {
         } else {
           switch (ch) {
           case '"':
-            String type = Parser.getQuotedStringAt(pattern, index);
+            String type = PT.getQuotedStringAt(pattern, index);
             index += type.length() + 2;
             newAtom.setAtomType(type);
             break;
@@ -1381,14 +1381,14 @@ public class SmilesParser {
    * @return  comments and white space removed, also ^^ to '
    */
   static String cleanPattern(String pattern) {
-    pattern = Txt.replaceAllCharacters(pattern, " \t\n\r", "");
-    pattern = Txt.simpleReplace(pattern, "^^", "'");
+    pattern = PT.replaceAllCharacters(pattern, " \t\n\r", "");
+    pattern = javajs.util.PT.simpleReplace(pattern, "^^", "'");
     int i = 0;
     int i2 = 0;
     while ((i = pattern.indexOf("//*")) >= 0
         && (i2 = pattern.indexOf("*//")) >= i)
       pattern = pattern.substring(0, i) + pattern.substring(i2 + 3);
-    pattern = Txt.simpleReplace(pattern, "//", "");
+    pattern = javajs.util.PT.simpleReplace(pattern, "//", "");
     return pattern;
   }
 

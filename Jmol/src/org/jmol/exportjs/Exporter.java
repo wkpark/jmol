@@ -39,8 +39,8 @@ import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 
 import javajs.awt.Font;
-import javajs.util.OutputChannel;
-import javajs.util.Parser;
+import javajs.util.OC;
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.A4;
@@ -139,7 +139,7 @@ public abstract class Exporter {
   protected double privateKey;
   protected JmolRendererInterface jmolRenderer;
   protected SB output;
-  protected OutputChannel out;
+  protected OC out;
   protected String fileName;
   protected String commandLineOptions;
   
@@ -195,7 +195,7 @@ public abstract class Exporter {
   
   boolean initializeOutput(Viewer viewer, double privateKey, GData g3d, Object output) {
     this.viewer = viewer;
-    appletName = Parser.split(viewer.getHtmlName(), "_")[0];
+    appletName = PT.split(viewer.getHtmlName(), "_")[0];
     this.g3d = g3d;
     this.privateKey = privateKey;
     backgroundColix = viewer.getObjectColix(StateManager.OBJ_BACKGROUND);

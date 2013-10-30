@@ -42,9 +42,10 @@ import java.awt.image.Raster;
 import java.awt.image.SinglePixelPackedSampleModel;
 import java.net.URL;
 
+import javajs.api.PlatformViewer;
+
 import javax.swing.JPanel;
 
-import org.jmol.api.PlatformViewer;
 import org.jmol.util.Escape;
 import org.jmol.viewer.Viewer;
 

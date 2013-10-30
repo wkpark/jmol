@@ -24,8 +24,8 @@
 
 package org.jmol.util;
 
-import javajs.util.ArrayUtil;
-import javajs.util.ColorUtil;
+import javajs.util.AU;
+import javajs.util.CU;
 import javajs.util.M4;
 import javajs.util.V3;
 
@@ -105,7 +105,7 @@ public class Shader {
   public float intenseFraction = specularPower / 100f;
   public float specularFactor = specularPercent / 100f;
   
-  private int[][] ashades = ArrayUtil.newInt2(128);
+  private int[][] ashades = AU.newInt2(128);
   private int[][] ashadesGreyscale;
   private int rgbContrast;
 
@@ -150,7 +150,7 @@ public class Shader {
     checkShades();
     colix &= C.OPAQUE_MASK;
     if (ashadesGreyscale == null)
-      ashadesGreyscale = ArrayUtil.newInt2(ashades.length);
+      ashadesGreyscale = AU.newInt2(ashades.length);
     int[] shadesGreyscale = ashadesGreyscale[colix];
     if (shadesGreyscale == null)
       shadesGreyscale = ashadesGreyscale[colix] =
@@ -161,9 +161,9 @@ public class Shader {
   private void checkShades() {
     if (ashades != null && ashades.length == C.colixMax)
       return;
-    ashades = ArrayUtil.arrayCopyII(ashades, C.colixMax);
+    ashades = AU.arrayCopyII(ashades, C.colixMax);
     if (ashadesGreyscale != null)
-      ashadesGreyscale = ArrayUtil.arrayCopyII(ashadesGreyscale, C.colixMax);
+      ashadesGreyscale = AU.arrayCopyII(ashadesGreyscale, C.colixMax);
   }
   
   public void flushShades() {
@@ -214,7 +214,7 @@ public class Shader {
         blu0++;
         if (f < 0.1f)
           f += 0.1f;
-        rgb = ColorUtil.rgb((int) Math.floor(red0), (int) Math.floor(grn0),
+        rgb = CU.rgb((int) Math.floor(red0), (int) Math.floor(grn0),
             (int) Math.floor(blu0));
         continue;
       }
@@ -233,7 +233,7 @@ public class Shader {
      float grnStep = grn0 * f;
      float bluStep = blu0 * f;
 
-     int _rgb = ColorUtil.rgb((int) Math.floor(red), (int) Math.floor(grn),
+     int _rgb = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
          (int) Math.floor(blu));
      for (i = 0; i < max; ++i)
        shades[i] = _rgb;
@@ -242,7 +242,7 @@ public class Shader {
      grn += grnStep * max;
      blu += bluStep * max;
 
-     _rgb = ColorUtil.rgb((int) Math.floor(red), (int) Math.floor(grn),
+     _rgb = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
          (int) Math.floor(blu));
      for (; i < shadeIndexMax; i++)
        shades[i] = _rgb;
@@ -258,7 +258,7 @@ public class Shader {
       float bluStep = blu0 * f;
 
       for (i = 0; i < shadeIndexNormal; ++i) {
-        shades[i] = ColorUtil.rgb((int) Math.floor(red), (int) Math.floor(grn),
+        shades[i] = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
             (int) Math.floor(blu));
         red += redStep;
         grn += grnStep;
@@ -276,13 +276,13 @@ public class Shader {
         red += redStep;
         grn += grnStep;
         blu += bluStep;
-        shades[i] = ColorUtil.rgb((int) Math.floor(red), (int) Math.floor(grn),
+        shades[i] = CU.rgb((int) Math.floor(red), (int) Math.floor(grn),
             (int) Math.floor(blu));
       }
     }
     if (greyScale)
       for (; --i >= 0;)
-        shades[i] = ColorUtil.toFFGGGfromRGB(shades[i]);
+        shades[i] = CU.toFFGGGfromRGB(shades[i]);
     return shades;
   }
 
@@ -477,7 +477,7 @@ public class Shader {
   private final static int SLIM = 20;
   private final static int SDIM = SLIM * 2;
   public final static int maxSphereCache = 128;
-  public int[][] sphereShapeCache = ArrayUtil.newInt2(maxSphereCache);
+  public int[][] sphereShapeCache = AU.newInt2(maxSphereCache);
   public byte[][][] ellipsoidShades;
   public int nOut;
   public int nIn;

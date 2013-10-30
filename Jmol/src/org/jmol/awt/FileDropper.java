@@ -99,7 +99,7 @@ public class FileDropper implements DropTargetListener {
         // ignore
       }
     }
-    viewer.openFileAsyncPDB(fname, true);
+    viewer.openFileAsyncSpecial(fname, 1);
   }
 
   private void loadFiles(List<File> fileList) {

@@ -122,7 +122,7 @@ import org.jmol.java.BS;
 //import org.jmol.util.Escape;
 import org.jmol.util.MeshSurface;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.P3;
 import javajs.util.V3;
 
@@ -273,7 +273,7 @@ public class MeshData extends MeshSurface {
       if (surfaceSet[i] == null)
         break;
     if (i == surfaceSet.length)
-      surfaceSet = (BS[]) ArrayUtil.ensureLength(surfaceSet, surfaceSet.length + 100);
+      surfaceSet = (BS[]) AU.ensureLength(surfaceSet, surfaceSet.length + 100);
     surfaceSet[i] = new BS();
     surfaceSet[i].set(v1);
     surfaceSet[i].set(v2);

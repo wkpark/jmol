@@ -24,7 +24,7 @@
 
 package org.jmol.smiles;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.P3;
 
@@ -132,7 +132,7 @@ public class SmilesAtom extends P3 implements JmolNode {
     if (atomsOr == null)
       atomsOr = new SmilesAtom[2];
     if (nAtomsOr >= atomsOr.length)
-      atomsOr = (SmilesAtom[]) ArrayUtil.doubleLength(atomsOr);
+      atomsOr = (SmilesAtom[]) AU.doubleLength(atomsOr);
     SmilesAtom sAtom = new SmilesAtom().setIndex(index);
     sAtom.parent = this;
     atomsOr[nAtomsOr] = sAtom;
@@ -540,7 +540,7 @@ public class SmilesAtom extends P3 implements JmolNode {
    */
   void addBond(SmilesBond bond) {
     if (bondCount >= bonds.length)
-      bonds = (SmilesBond[]) ArrayUtil.doubleLength(bonds);
+      bonds = (SmilesBond[]) AU.doubleLength(bonds);
     //if (Logger.debugging)
     //Logger.debug("adding bond to " + this + ": " + bond.getAtom1() + " " + bond.getAtom2());
     bonds[bondCount] = bond;
@@ -549,11 +549,11 @@ public class SmilesAtom extends P3 implements JmolNode {
 
   public void setBondArray() {
     if (bonds.length > bondCount) 
-      bonds = (SmilesBond[]) ArrayUtil.arrayCopyObject(bonds, bondCount);
+      bonds = (SmilesBond[]) AU.arrayCopyObject(bonds, bondCount);
     if (atomsOr != null && atomsOr.length > nAtomsOr)
-      atomsOr = (SmilesAtom[]) ArrayUtil.arrayCopyObject(atomsOr, atomsOr.length);
+      atomsOr = (SmilesAtom[]) AU.arrayCopyObject(atomsOr, atomsOr.length);
     if (primitives != null && primitives.length > nPrimitives)
-      primitives = (SmilesAtom[]) ArrayUtil.arrayCopyObject(primitives, primitives.length);
+      primitives = (SmilesAtom[]) AU.arrayCopyObject(primitives, primitives.length);
     for (int i = 0; i < bonds.length; i++) {
       if (isBioAtom && bonds[i].order == SmilesBond.TYPE_AROMATIC)
         bonds[i].order = SmilesBond.TYPE_BIO_PAIR;

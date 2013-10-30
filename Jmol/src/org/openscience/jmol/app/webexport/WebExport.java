@@ -76,9 +76,9 @@ public class WebExport extends JPanel implements WindowListener {
     localAppletPath = historyFile.getProperty("webMakerLocalAppletPath", "..");
     pageAuthorName = historyFile.getProperty("webMakerPageAuthorName",
         GT._("Jmol Web Page Maker"));
-    popInWidth=javajs.util.Parser.parseInt(historyFile.getProperty("webMakerPopInWidth", "300"));
-    popInHeight=javajs.util.Parser.parseInt(historyFile.getProperty("webMakerPopInHeight", "300"));
-    scriptButtonPercent = javajs.util.Parser.parseInt(historyFile.getProperty(
+    popInWidth=javajs.util.PT.parseInt(historyFile.getProperty("webMakerPopInWidth", "300"));
+    popInHeight=javajs.util.PT.parseInt(historyFile.getProperty("webMakerPopInHeight", "300"));
+    scriptButtonPercent = javajs.util.PT.parseInt(historyFile.getProperty(
         "webMakerScriptButtonPercent", "60"));
 
     //Define the tabbed pane

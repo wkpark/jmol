@@ -25,7 +25,7 @@
 
 package org.jmol.modelset;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -52,7 +52,7 @@ import javajs.util.A4;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.P4;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import org.jmol.util.ParserBS;
 import org.jmol.util.Tensor;
@@ -307,12 +307,12 @@ abstract public class AtomCollection {
   
   // the maximum BondingRadius seen in this set of atoms
   // used in autobonding
-  protected float maxBondingRadius = Parser.FLOAT_MIN_SAFE;
-  private float maxVanderwaalsRadius = Parser.FLOAT_MIN_SAFE;
+  protected float maxBondingRadius = PT.FLOAT_MIN_SAFE;
+  private float maxVanderwaalsRadius = PT.FLOAT_MIN_SAFE;
 
   public float getMaxVanderwaalsRadius() {
     //Dots
-    if (maxVanderwaalsRadius == Parser.FLOAT_MIN_SAFE)
+    if (maxVanderwaalsRadius == PT.FLOAT_MIN_SAFE)
       findMaxRadii();
     return maxVanderwaalsRadius;
   }
@@ -841,17 +841,17 @@ abstract public class AtomCollection {
     int[] lines = ParserBS.markLines(dataString, ';');
     int n = 0;
     try {
-      int nData = javajs.util.Parser.parseInt(dataString.substring(0, lines[0] - 1));
+      int nData = javajs.util.PT.parseInt(dataString.substring(0, lines[0] - 1));
       for (int i = 1; i <= nData; i++) {
-        String[] tokens = Parser.getTokens(Parser.parseTrimmed(dataString.substring(
+        String[] tokens = PT.getTokens(PT.parseTrimmed(dataString.substring(
             lines[i], lines[i + 1] - 1)));
-        int atomIndex = javajs.util.Parser.parseInt(tokens[0]) - 1;
+        int atomIndex = javajs.util.PT.parseInt(tokens[0]) - 1;
         if (atomIndex < 0 || atomIndex >= atomCount)
           continue;
         Atom atom = atoms[atomIndex];
         n++;
         int pt = tokens.length - 1;
-        float x = Parser.parseFloat(tokens[pt]);
+        float x = PT.parseFloat(tokens[pt]);
         switch (type) {
         case TAINT_MAX:
           fData[atomIndex] = x;
@@ -907,14 +907,14 @@ abstract public class AtomCollection {
     int[] lines = ParserBS.markLines(data, ';');
     V3 v = (isVibrationVectors ? new V3() : null);
     try {
-      int nData = javajs.util.Parser.parseInt(data.substring(0, lines[0] - 1));
+      int nData = javajs.util.PT.parseInt(data.substring(0, lines[0] - 1));
       for (int i = 1; i <= nData; i++) {
-        String[] tokens = Parser.getTokens(Parser.parseTrimmed(data.substring(
+        String[] tokens = PT.getTokens(PT.parseTrimmed(data.substring(
             lines[i], lines[i + 1])));
-        int atomIndex = javajs.util.Parser.parseInt(tokens[0]) - 1;
-        float x = Parser.parseFloat(tokens[3]);
-        float y = Parser.parseFloat(tokens[4]);
-        float z = Parser.parseFloat(tokens[5]);
+        int atomIndex = javajs.util.PT.parseInt(tokens[0]) - 1;
+        float x = PT.parseFloat(tokens[3]);
+        float y = PT.parseFloat(tokens[4]);
+        float z = PT.parseFloat(tokens[5]);
         if (isVibrationVectors) {
           v.set(x, y, z);
           setAtomVibrationVector(atomIndex, v);
@@ -1825,7 +1825,7 @@ abstract public class AtomCollection {
     // determine geometry
 
     int nAngles = nAttached * (nAttached - 1) / 2;
-    int[][] angles = ArrayUtil.newInt2(nAngles);
+    int[][] angles = AU.newInt2(nAngles);
     
     // all attached angles must be around 180, 120, or 90 degrees
     
@@ -2188,7 +2188,7 @@ abstract public class AtomCollection {
     case T.spec_atom:
       String atomSpec = ((String) specInfo).toUpperCase();
       if (atomSpec.indexOf("\\?") >= 0)
-        atomSpec = Txt.simpleReplace(atomSpec, "\\?", "\1");
+        atomSpec = javajs.util.PT.simpleReplace(atomSpec, "\\?", "\1");
       // / here xx*yy is NOT changed to "xx??????????yy"
       for (i = atomCount; --i >= 0;)
         if (isAtomNameMatch(atoms[i], atomSpec, false))
@@ -2318,7 +2318,7 @@ abstract public class AtomCollection {
     BS bs = getSpecNameOrNull(identifier, false);
     
     if (identifier.indexOf("\\?") >= 0)
-      identifier = Txt.simpleReplace(identifier, "\\?","\1");
+      identifier = javajs.util.PT.simpleReplace(identifier, "\\?","\1");
     if (bs != null || identifier.indexOf("?") > 0)
       return bs;
     // now check with * option ON
@@ -2387,7 +2387,7 @@ abstract public class AtomCollection {
     BS bs = null;
     name = name.toUpperCase();
     if (name.indexOf("\\?") >= 0)
-      name = Txt.simpleReplace(name, "\\?","\1");
+      name = javajs.util.PT.simpleReplace(name, "\\?","\1");
     for (int i = atomCount; --i >= 0;) {
       String g3 = atoms[i].getGroup3(true);
       if (g3 != null && g3.length() > 0) {
@@ -2543,7 +2543,7 @@ abstract public class AtomCollection {
 
   protected void deleteModelAtoms(int firstAtomIndex, int nAtoms, BS bsAtoms) {
     // all atoms in the model are being deleted here
-    atoms = (Atom[]) ArrayUtil.deleteElements(atoms, firstAtomIndex, nAtoms);
+    atoms = (Atom[]) AU.deleteElements(atoms, firstAtomIndex, nAtoms);
     atomCount = atoms.length;
     for (int j = firstAtomIndex; j < atomCount; j++) {
       atoms[j].index = j;
@@ -2554,22 +2554,22 @@ abstract public class AtomCollection {
       BSUtil.deleteBits(bsModulated, bsAtoms);
 
     deleteAtomTensors(bsAtoms);
-    atomNames = (String[]) ArrayUtil.deleteElements(atomNames, firstAtomIndex,
+    atomNames = (String[]) AU.deleteElements(atomNames, firstAtomIndex,
         nAtoms);
-    atomTypes = (String[]) ArrayUtil.deleteElements(atomTypes, firstAtomIndex,
+    atomTypes = (String[]) AU.deleteElements(atomTypes, firstAtomIndex,
         nAtoms);
-    atomSerials = (int[]) ArrayUtil.deleteElements(atomSerials, firstAtomIndex,
+    atomSerials = (int[]) AU.deleteElements(atomSerials, firstAtomIndex,
         nAtoms);
-    bfactor100s = (short[]) ArrayUtil.deleteElements(bfactor100s,
+    bfactor100s = (short[]) AU.deleteElements(bfactor100s,
         firstAtomIndex, nAtoms);
     hasBfactorRange = false;
-    occupancies = (byte[]) ArrayUtil.deleteElements(occupancies,
+    occupancies = (byte[]) AU.deleteElements(occupancies,
         firstAtomIndex, nAtoms);
-    partialCharges = (float[]) ArrayUtil.deleteElements(partialCharges,
+    partialCharges = (float[]) AU.deleteElements(partialCharges,
         firstAtomIndex, nAtoms);
-    atomTensorList = (Object[][]) ArrayUtil.deleteElements(atomTensorList,
+    atomTensorList = (Object[][]) AU.deleteElements(atomTensorList,
         firstAtomIndex, nAtoms);
-    vibrations = (Vibration[]) ArrayUtil.deleteElements(vibrations,
+    vibrations = (Vibration[]) AU.deleteElements(vibrations,
         firstAtomIndex, nAtoms);
     nSurfaceAtoms = 0;
     bsSurface = null;
@@ -2619,7 +2619,7 @@ abstract public class AtomCollection {
      atomTensors = new Hashtable<String, List<Object>>();
     if (atomTensorList == null)
       atomTensorList = new Object[atoms.length][];
-    atomTensorList = (Object[][]) ArrayUtil.ensureLength(atomTensorList, atoms.length);
+    atomTensorList = (Object[][]) AU.ensureLength(atomTensorList, atoms.length);
     atomTensorList[atomIndex] = getTensorList(list);
     for (int i = list.size(); --i >= 0;) {
       Tensor t = (Tensor) list.get(i);

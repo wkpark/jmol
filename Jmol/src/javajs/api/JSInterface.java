@@ -1,6 +1,6 @@
-package org.jmol.api;
+package javajs.api;
 
-public interface JSmolInterface {
+public interface JSInterface {
 
   int cacheFileByName(String fileName, boolean isAdd);
   
@@ -8,9 +8,9 @@ public interface JSmolInterface {
   
 	Object getApplet();
 
-	boolean handleOldJvm10Event(int id, int x, int y, int modifiers, long time);
+	boolean processMouseEvent(int id, int x, int y, int modifiers, long time);
 
-  void openFileAsyncPDB(String fileName, boolean pdbCartoons);
+  void openFileAsyncSpecial(String fileName, int flags);
 
     void processTwoPointGesture(float[][][] touches);
 

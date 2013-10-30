@@ -28,9 +28,9 @@ import java.io.BufferedReader;
 
 import org.jmol.util.Logger;
 
-import javajs.util.ColorUtil;
+import javajs.util.CU;
 import javajs.util.P3;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 /*
  * 
@@ -157,7 +157,7 @@ class KinemageReader extends PmeshReader {
     if (atom.indexOf(findString) < 0)
       return -1;
     }
-    String[] tokens = Parser.getTokens(line.substring(line.indexOf("}") + 1));
+    String[] tokens = PT.getTokens(line.substring(line.indexOf("}") + 1));
     float value = assignValueFromGapColorForKin(tokens[0]);
     if (Float.isNaN(value))
       return -1;
@@ -184,9 +184,9 @@ class KinemageReader extends PmeshReader {
       }
     }
     retColor[0] = getColor(tokens[0]);
-    tokens = Parser.getTokens(tokens[i].replace(',', ' '));
-    P3 pt = P3.new3(Parser.parseFloat(tokens[0]), Parser
-        .parseFloat(tokens[1]), Parser.parseFloat(tokens[2]));
+    tokens = PT.getTokens(tokens[i].replace(',', ' '));
+    P3 pt = P3.new3(PT.parseFloat(tokens[0]), PT
+        .parseFloat(tokens[1]), PT.parseFloat(tokens[2]));
     if (isAnisotropic)
       setVertexAnisotropy(pt);
     return addVertexCopy(pt, value, nVertices++);
@@ -197,7 +197,7 @@ class KinemageReader extends PmeshReader {
       color = "skyblue";
     else if (color.equals("sea"))
       color = "seagreen";
-    return ColorUtil.getArgbFromString(color); 
+    return CU.getArgbFromString(color); 
   }
   
   /*

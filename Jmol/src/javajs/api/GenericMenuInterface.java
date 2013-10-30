@@ -1,6 +1,7 @@
-package org.jmol.api;
+package javajs.api;
 
-public interface JmolPopupInterface {
+
+public interface GenericMenuInterface {
 
   public void jpiDispose();
   public Object jpiGetMenuAsObject();

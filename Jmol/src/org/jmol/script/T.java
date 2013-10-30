@@ -29,7 +29,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import org.jmol.util.Logger;
 
@@ -1488,7 +1488,7 @@ public class T {
           : true)
         v.addLast(name);
     }
-    return ArrayUtil.sortedItem(v, n);
+    return AU.sortedItem(v, n);
   }
 
   static {

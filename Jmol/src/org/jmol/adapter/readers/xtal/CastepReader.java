@@ -42,7 +42,7 @@
 
 package org.jmol.adapter.readers.xtal;
 
-import javajs.util.DecimalFormat;
+import javajs.util.DF;
 import javajs.util.List;
 
 
@@ -119,11 +119,11 @@ public class CastepReader extends AtomSetCollectionReader {
       if (chargeType != null && chargeType.length() > 4)
         chargeType = chargeType.substring(0, 4);
       filter = filter.replace('(', '{').replace(')', '}');
-      filter = Txt.simpleReplace(filter, "  ", " ");
+      filter = javajs.util.PT.simpleReplace(filter, "  ", " ");
       isAllQ = checkFilterKey("Q=ALL");
       if (!isAllQ && filter.indexOf("{") >= 0)
         setDesiredQpt(filter.substring(filter.indexOf("{")));
-      filter = Txt.simpleReplace(filter, "-PT", "");
+      filter = javajs.util.PT.simpleReplace(filter, "-PT", "");
     }
     continuing = readFileData();
   }
@@ -801,7 +801,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       if (isTrajectory)
         atomSetCollection.setTrajectory();
       atomSetCollection.setAtomSetFrequency(null, null, "" + freq, null);
-      atomSetCollection.setAtomSetName(DecimalFormat.formatDecimal(freq, 2)
+      atomSetCollection.setAtomSetName(DF.formatDecimal(freq, 2)
           + " cm-1 " + qname);
     }
   }

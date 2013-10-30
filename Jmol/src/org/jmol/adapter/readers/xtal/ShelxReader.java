@@ -26,7 +26,7 @@ package org.jmol.adapter.readers.xtal;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 
 import org.jmol.util.Logger;
 
@@ -198,7 +198,7 @@ public class ShelxReader extends AtomSetCollectionReader {
     } else {
       int oldCount = sfacElementSymbols.length;
       int tokenCount = sfacTokens.length;
-      sfacElementSymbols = ArrayUtil.arrayCopyS(sfacElementSymbols, oldCount + tokenCount);
+      sfacElementSymbols = AU.arrayCopyS(sfacElementSymbols, oldCount + tokenCount);
       for (int i = tokenCount; --i >= 0;)
         sfacElementSymbols[oldCount + i] = sfacTokens[i];
     }
@@ -218,7 +218,7 @@ public class ShelxReader extends AtomSetCollectionReader {
       sfacElementSymbols = new String[1];
     } else {
       oldCount = sfacElementSymbols.length;
-      sfacElementSymbols = ArrayUtil.arrayCopyS(sfacElementSymbols, oldCount + 1);
+      sfacElementSymbols = AU.arrayCopyS(sfacElementSymbols, oldCount + 1);
       sfacElementSymbols[oldCount] = elementSymbol;
     }
     sfacElementSymbols[oldCount] = elementSymbol;

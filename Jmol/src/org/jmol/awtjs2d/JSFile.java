@@ -2,9 +2,9 @@ package org.jmol.awtjs2d;
 
 import java.net.URL;
 
+import javajs.api.GenericFileInterface;
 import javajs.util.AjaxURLConnection;
 
-import org.jmol.api.JmolFileInterface;
 import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
@@ -15,12 +15,12 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-class JSFile implements JmolFileInterface {
+class JSFile implements GenericFileInterface {
 
   private String name;
 	private String fullName;
 
-  static JmolFileInterface newFile(String name) {
+  static GenericFileInterface newFile(String name) {
     return new JSFile(name);
   }
 
@@ -29,11 +29,11 @@ class JSFile implements JmolFileInterface {
   	fullName = name;
   	if (!fullName.startsWith("/") && FileManager.urlTypeIndex(name) < 0)
   		fullName = Viewer.jsDocumentBase + "/" + fullName;
-  	fullName = Txt.simpleReplace(fullName, "/./", "/");
+  	fullName = javajs.util.PT.simpleReplace(fullName, "/./", "/");
   	name = name.substring(name.lastIndexOf("/") + 1);
   }
 
-  public JmolFileInterface getParentAsFile() {
+  public GenericFileInterface getParentAsFile() {
   	int pt = fullName.lastIndexOf("/");
   	return (pt < 0 ? null : new JSFile(fullName.substring(0, pt)));
   }

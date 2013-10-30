@@ -35,7 +35,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Escape;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -479,11 +479,11 @@ public class Mesh extends MeshSurface {
     info.put("haveQuads", Boolean.valueOf(haveQuads));
     info.put("haveValues", Boolean.valueOf(vertexValues != null));
     if (vertexCount > 0 && isAll)
-      info.put("vertices", ArrayUtil.arrayCopyPt(vertices, vertexCount));
+      info.put("vertices", AU.arrayCopyPt(vertices, vertexCount));
     if (vertexValues != null && isAll)
-      info.put("vertexValues", ArrayUtil.arrayCopyF(vertexValues, vertexCount));
+      info.put("vertexValues", AU.arrayCopyF(vertexValues, vertexCount));
     if (polygonCount > 0 && isAll)
-      info.put("polygons", ArrayUtil.arrayCopyII(polygonIndexes, polygonCount));
+      info.put("polygons", AU.arrayCopyII(polygonIndexes, polygonCount));
     return info;
   }
 

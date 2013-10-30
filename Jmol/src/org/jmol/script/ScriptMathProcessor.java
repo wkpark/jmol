@@ -23,7 +23,7 @@
  */
 package org.jmol.script;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import java.util.Arrays;
 
@@ -41,16 +41,15 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import javajs.util.A4;
-import javajs.util.ColorUtil;
-import javajs.util.DecimalFormat;
+import javajs.util.CU;
+import javajs.util.DF;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.P4;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import org.jmol.util.Quaternion;
-import org.jmol.util.Txt;
 import javajs.util.T3;
 import javajs.util.V3;
 import org.jmol.viewer.Viewer;
@@ -139,7 +138,7 @@ public class ScriptMathProcessor {
     if (skipping)
       return;
     if (++xPt == xStack.length)
-      xStack = (SV[]) ArrayUtil.doubleLength(xStack);
+      xStack = (SV[]) AU.doubleLength(xStack);
     if (logMessages) {
       Logger.debug("\nputX: " + x);
     }
@@ -150,14 +149,14 @@ public class ScriptMathProcessor {
 
   private void putOp(T op) {
     if (++oPt >= oStack.length)
-      oStack = (T[]) ArrayUtil.doubleLength(oStack);
+      oStack = (T[]) AU.doubleLength(oStack);
     oStack[oPt] = op;
     ptid++;
   }
 
   private void putIf(char c) {
     if (++ifPt >= ifStack.length)
-      ifStack = (char[]) ArrayUtil.doubleLength(ifStack);
+      ifStack = (char[]) AU.doubleLength(ifStack);
     ifStack[ifPt] = c;
   }
 
@@ -804,7 +803,7 @@ public class ScriptMathProcessor {
         case T.matrix3f:
         case T.matrix4f:
           s = SV.sValue(x2);
-          s = Txt.simpleReplace(s.substring(1, s.length() - 1), "],[",
+          s = javajs.util.PT.simpleReplace(s.substring(1, s.length() - 1), "],[",
               "]\n[");
           break;
         case T.string:
@@ -813,21 +812,21 @@ public class ScriptMathProcessor {
         default:
           s = SV.sValue(x2);
         }
-        s = Txt.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
-        return addXAS(Parser.split(s, "\n"));
+        s = javajs.util.PT.simpleReplace(s, "\n\r", "\n").replace('\r', '\n');
+        return addXAS(PT.split(s, "\n"));
       case T.color:
         switch (x2.tok) {
         case T.string:
         case T.varray:
           s = SV.sValue(x2);
           pt = new P3();
-          return addXPt(ColorUtil.colorPtFromString(s, pt));
+          return addXPt(CU.colorPtFromString(s, pt));
         case T.integer:
         case T.decimal:
           return addXPt(viewer.getColorPointForPropertyValue(SV
               .fValue(x2)));
         case T.point3f:
-          return addXStr(Escape.escapeColor(ColorUtil
+          return addXStr(Escape.escapeColor(CU
               .colorPtToFFRGB((P3) x2.value)));
         default:
           // handle bitset later
@@ -1223,28 +1222,28 @@ public class ScriptMathProcessor {
         // neg is scientific notation
         if (n == 0)
           return addXInt(Math.round(f));
-        s = DecimalFormat.formatDecimal(f, n);
+        s = DF.formatDecimal(f, n);
         return addXStr(s);
       case T.string:
         s = (String) x1.value;
         if (n == 0)
-          return addXStr(Txt.trim(s, "\n\t "));
+          return addXStr(PT.trim(s, "\n\t "));
         if (n == 9999)
           return addXStr(s.toUpperCase());
         if (n == -9999)
           return addXStr(s.toLowerCase());
         if (n > 0)
-          return addXStr(Txt.formatS(s, n, n, false, false));
-        return addXStr(Txt.formatS(s, n, n - 1, true, false));
+          return addXStr(PT.formatS(s, n, n, false, false));
+        return addXStr(PT.formatS(s, n, n - 1, true, false));
       case T.varray:
         String[] list = SV.listValue(x1);
         for (int i = 0; i < list.length; i++) {
           if (n == 0)
             list[i] = list[i].trim();
           else if (n > 0)
-            list[i] = Txt.formatS(list[i], n, n, true, false);
+            list[i] = PT.formatS(list[i], n, n, true, false);
           else
-            list[i] = Txt.formatS(s, -n, n, false, false);
+            list[i] = PT.formatS(s, -n, n, false, false);
         }
         return addXAS(list);
       case T.point3f:

@@ -31,7 +31,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Eigen;
 import org.jmol.util.Escape;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import javajs.util.P3;
@@ -486,7 +486,7 @@ public class NciCalculation extends QuantumCalculation implements
     yzCount = nY * nZ;
   }
   
-  private float[][] yzPlanesRho = ArrayUtil.newFloat2(2);
+  private float[][] yzPlanesRho = AU.newFloat2(2);
   private float[] p0, p1, p2;
   
   /**

@@ -23,16 +23,16 @@
  */
 package org.jmol.viewer;
 
+import javajs.api.GenericPlatform;
+import javajs.api.EventManager;
+import javajs.awt.event.Event;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 
 import java.util.Hashtable;
 
 import java.util.Map;
 
-import org.jmol.api.ApiPlatform;
-import org.jmol.api.Event;
-import org.jmol.api.EventManager;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -707,7 +707,7 @@ public class ActionManager implements EventManager {
     info.put("bindingName", binding.getName());
     info.put("actionNames", actionNames);
     info.put("actionInfo", actionInfo);
-    info.put("bindingInfo", Parser.split(getBindingInfo(null), "\n"));
+    info.put("bindingInfo", PT.split(getBindingInfo(null), "\n"));
     return info;
   }
 
@@ -941,7 +941,7 @@ public class ActionManager implements EventManager {
       moved.modifiers &= ~Binding.CTRL;
     }
     if (moved.modifiers == 0)
-      viewer.setCursor(ApiPlatform.CURSOR_DEFAULT);
+      viewer.setCursor(GenericPlatform.CURSOR_DEFAULT);
     if (!viewer.getBoolean(T.navigationmode))
       return;
     //if (viewer.getBooleanProperty("showKeyStrokes", false))
@@ -1004,8 +1004,8 @@ public class ActionManager implements EventManager {
         checkMotionRotateZoom(LEFT_DRAGGED, 0, 0, 0, false);
         return;
       }
-      if (viewer.getCursor() == ApiPlatform.CURSOR_ZOOM)//if (dragSelectedMode)
-        viewer.setCursor(ApiPlatform.CURSOR_DEFAULT);
+      if (viewer.getCursor() == GenericPlatform.CURSOR_ZOOM)//if (dragSelectedMode)
+        viewer.setCursor(GenericPlatform.CURSOR_DEFAULT);
       return;
     case Event.PRESSED:
       setMouseMode();
@@ -1017,7 +1017,7 @@ public class ActionManager implements EventManager {
       }
       pressAction = Binding.getMouseAction(pressedCount, buttonMods,
           Event.PRESSED);
-      viewer.setCursor(ApiPlatform.CURSOR_HAND);
+      viewer.setCursor(GenericPlatform.CURSOR_HAND);
       pressed.setCurrent(current, 1);
       dragged.setCurrent(current, 1);
       viewer.setFocus();
@@ -1195,7 +1195,7 @@ public class ActionManager implements EventManager {
     if (dragAtomIndex >= 0) {
       switch (atomPickingMode) {
       case PICKING_DRAG_SELECTED:
-        setMotion(ApiPlatform.CURSOR_MOVE, true);
+        setMotion(GenericPlatform.CURSOR_MOVE, true);
         if (isBound(dragWheelAction, ACTION_rotateSelected)
             && viewer.getBoolean(T.allowrotateselected)) {
           viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
@@ -1218,7 +1218,7 @@ public class ActionManager implements EventManager {
         if (dragGesture.getPointCount() == 1)
           viewer.undoMoveActionClear(dragAtomIndex, AtomCollection.TAINT_COORD,
               true);
-        setMotion(ApiPlatform.CURSOR_MOVE, true);
+        setMotion(GenericPlatform.CURSOR_MOVE, true);
         if (isBound(dragWheelAction, ACTION_rotateSelected)) {
           viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
               bs);
@@ -1280,7 +1280,7 @@ public class ActionManager implements EventManager {
       else
         viewer.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE,
             Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
-      setMotion(ApiPlatform.CURSOR_MOVE, true);
+      setMotion(GenericPlatform.CURSOR_MOVE, true);
       if (isBound(dragWheelAction, ACTION_rotateSelected)
           && viewer.getBoolean(T.allowrotateselected))
         viewer.rotateSelected(getDegrees(deltaX, 0), getDegrees(deltaY, 1),
@@ -1295,7 +1295,7 @@ public class ActionManager implements EventManager {
         && (isBound(dragWheelAction, ACTION_dragDrawObject) || isBound(
             dragWheelAction, ACTION_dragDrawPoint)) || labelMode
         && isBound(dragWheelAction, ACTION_dragLabel)) {
-      setMotion(ApiPlatform.CURSOR_MOVE, true);
+      setMotion(GenericPlatform.CURSOR_MOVE, true);
       viewer.checkObjectDragged(dragged.x, dragged.y, x, y, dragWheelAction);
       return;
     }
@@ -1318,11 +1318,11 @@ public class ActionManager implements EventManager {
     if (isBound(dragWheelAction, ACTION_rotateZorZoom)) {
       if (deltaX == 0 && Math.abs(deltaY) > 1) {
         // if (deltaY < 0 && deltaX > deltaY || deltaY > 0 && deltaX < deltaY)
-        setMotion(ApiPlatform.CURSOR_ZOOM, true);
+        setMotion(GenericPlatform.CURSOR_ZOOM, true);
         viewer.zoomBy(deltaY + (deltaY > 0 ? -1 : 1));
       } else if (deltaY == 0 && Math.abs(deltaX) > 1) {
         // if (deltaX < 0 && deltaY > deltaX || deltaX > 0 && deltaY < deltaX)
-        setMotion(ApiPlatform.CURSOR_MOVE, true);
+        setMotion(GenericPlatform.CURSOR_MOVE, true);
         viewer.rotateZBy(-deltaX + (deltaX > 0 ? 1 : -1), Integer.MAX_VALUE,
             Integer.MAX_VALUE);
       }
@@ -1331,7 +1331,7 @@ public class ActionManager implements EventManager {
       zoomByFactor(deltaY, Integer.MAX_VALUE, Integer.MAX_VALUE);
       return;
     } else if (isBound(dragWheelAction, ACTION_rotateZ)) {
-      setMotion(ApiPlatform.CURSOR_MOVE, true);
+      setMotion(GenericPlatform.CURSOR_MOVE, true);
       viewer.rotateZBy(-deltaX, Integer.MAX_VALUE, Integer.MAX_VALUE);
       return;
     }
@@ -1356,7 +1356,7 @@ public class ActionManager implements EventManager {
       Logger.debug(Binding.getMouseActionName(pressAction, false));
     viewer.checkInMotion(0);
     viewer.setInMotion(false);
-    viewer.setCursor(ApiPlatform.CURSOR_DEFAULT);
+    viewer.setCursor(GenericPlatform.CURSOR_DEFAULT);
     dragGesture.add(dragAction, x, y, time);
     if (dragRelease)
       viewer.setRotateBondIndex(Integer.MIN_VALUE);
@@ -1544,10 +1544,10 @@ public class ActionManager implements EventManager {
       P3 nearestPoint = null;
       if (script.indexOf("_ATOM") >= 0) {
         int iatom = findNearestAtom(x, y, null, true);
-        script = Txt.simpleReplace(script, "_ATOM", "({"
+        script = javajs.util.PT.simpleReplace(script, "_ATOM", "({"
             + (iatom >= 0 ? "" + iatom : "") + "})");
         if (iatom >= 0)
-          script = Txt.simpleReplace(script, "_POINT", Escape.eP(viewer
+          script = javajs.util.PT.simpleReplace(script, "_POINT", Escape.eP(viewer
               .getModelSet().atoms[iatom]));
       }
       if (!drawMode
@@ -1557,25 +1557,25 @@ public class ActionManager implements EventManager {
         if (t != null && (nearestPoint = (P3) t.get("pt")) != null) {
           boolean isBond = t.get("type").equals("bond");
           if (isBond)
-            script = Txt.simpleReplace(script, "_BOND", "[{"
+            script = javajs.util.PT.simpleReplace(script, "_BOND", "[{"
                 + t.get("index") + "}]");
-          script = Txt.simpleReplace(script, "_POINT", Escape
+          script = javajs.util.PT.simpleReplace(script, "_POINT", Escape
               .eP(nearestPoint));
-          script = Txt.simpleReplace(script, "_OBJECT", Escape
+          script = javajs.util.PT.simpleReplace(script, "_OBJECT", Escape
               .escapeMap(t));
         }
-        script = Txt.simpleReplace(script, "_BOND", "[{}]");
-        script = Txt.simpleReplace(script, "_OBJECT", "{}");
+        script = javajs.util.PT.simpleReplace(script, "_BOND", "[{}]");
+        script = javajs.util.PT.simpleReplace(script, "_OBJECT", "{}");
       }
-      script = Txt.simpleReplace(script, "_POINT", "{}");
-      script = Txt.simpleReplace(script, "_ACTION", "" + mouseAction);
-      script = Txt.simpleReplace(script, "_X", "" + x);
-      script = Txt.simpleReplace(script, "_Y", ""
+      script = javajs.util.PT.simpleReplace(script, "_POINT", "{}");
+      script = javajs.util.PT.simpleReplace(script, "_ACTION", "" + mouseAction);
+      script = javajs.util.PT.simpleReplace(script, "_X", "" + x);
+      script = javajs.util.PT.simpleReplace(script, "_Y", ""
           + (viewer.getScreenHeight() - y));
-      script = Txt.simpleReplace(script, "_DELTAX", "" + deltaX);
-      script = Txt.simpleReplace(script, "_DELTAY", "" + deltaY);
-      script = Txt.simpleReplace(script, "_TIME", "" + time);
-      script = Txt.simpleReplace(script, "_MODE", "" + mode);
+      script = javajs.util.PT.simpleReplace(script, "_DELTAX", "" + deltaX);
+      script = javajs.util.PT.simpleReplace(script, "_DELTAY", "" + deltaY);
+      script = javajs.util.PT.simpleReplace(script, "_TIME", "" + time);
+      script = javajs.util.PT.simpleReplace(script, "_MODE", "" + mode);
       if (script.startsWith("+:")) {
         passThrough = true;
         script = script.substring(2);
@@ -1604,9 +1604,9 @@ public class ActionManager implements EventManager {
     boolean isZoom = (isRotateZorZoom && (deltaX == 0 || Math.abs(deltaY) > 5 * Math
         .abs(deltaX)));
     int cursor = (isZoom || isZoomArea(moved.x)
-        || isBound(mouseAction, ACTION_wheelZoom) ? ApiPlatform.CURSOR_ZOOM : isRotateXY
-        || isRotateZorZoom ? ApiPlatform.CURSOR_MOVE : isBound(mouseAction,
-        ACTION_center) ? ApiPlatform.CURSOR_HAND : ApiPlatform.CURSOR_DEFAULT);
+        || isBound(mouseAction, ACTION_wheelZoom) ? GenericPlatform.CURSOR_ZOOM : isRotateXY
+        || isRotateZorZoom ? GenericPlatform.CURSOR_MOVE : isBound(mouseAction,
+        ACTION_center) ? GenericPlatform.CURSOR_HAND : GenericPlatform.CURSOR_DEFAULT);
     setMotion(cursor, isDrag);
     return (isZoom || isSlideZoom);
   }
@@ -1702,7 +1702,7 @@ public class ActionManager implements EventManager {
   private void enterMeasurementMode(int iAtom) {
     viewer.setPicked(-1);
     viewer.setPicked(iAtom);
-    viewer.setCursor(ApiPlatform.CURSOR_CROSSHAIR);
+    viewer.setCursor(GenericPlatform.CURSOR_CROSSHAIR);
     viewer.setPendingMeasurement(measurementPending = 
         viewer.getMP());
     measurementQueued = measurementPending;
@@ -1732,7 +1732,7 @@ public class ActionManager implements EventManager {
     if (measurementPending == null)
       return;
     viewer.setPendingMeasurement(measurementPending = null);
-    viewer.setCursor(ApiPlatform.CURSOR_DEFAULT);
+    viewer.setCursor(GenericPlatform.CURSOR_DEFAULT);
   }
 
   private void getSequence() {
@@ -1765,7 +1765,7 @@ public class ActionManager implements EventManager {
 
   protected void setMotion(int cursor, boolean inMotion) {
     switch (viewer.getCursor()) {
-    case ApiPlatform.CURSOR_WAIT:
+    case GenericPlatform.CURSOR_WAIT:
       break;
     default:
       viewer.setCursor(cursor);
@@ -1777,7 +1777,7 @@ public class ActionManager implements EventManager {
   protected void zoomByFactor(int dz, int x, int y) {
     if (dz == 0)
       return;
-    setMotion(ApiPlatform.CURSOR_ZOOM, true);
+    setMotion(GenericPlatform.CURSOR_ZOOM, true);
     viewer.zoomByFactor((float) Math.pow(mouseWheelFactor, dz), x, y);
     viewer.setInMotion(false);
   }

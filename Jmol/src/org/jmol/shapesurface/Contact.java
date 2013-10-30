@@ -25,7 +25,7 @@
 
 package org.jmol.shapesurface;
 
-import javajs.util.ColorUtil;
+import javajs.util.CU;
 import javajs.util.List;
 import java.util.Hashtable;
 
@@ -252,7 +252,7 @@ public class Contact extends Isosurface {
       ce = viewer.getColorEncoder("rwb");
       ce.setRange(-0.5f, 0.5f, false);
     } else if (defaultColor != null) {
-      setPropI("color", Integer.valueOf(ColorUtil
+      setPropI("color", Integer.valueOf(CU
           .getArgbFromString(defaultColor)), null);
     } else if (displayType == T.nci) {
       ce = viewer.getColorEncoder("bgr");

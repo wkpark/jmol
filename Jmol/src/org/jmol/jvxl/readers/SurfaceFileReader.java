@@ -26,8 +26,8 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import javajs.util.OutputChannel;
-import javajs.util.Parser;
+import javajs.util.OC;
+import javajs.util.PT;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
@@ -39,7 +39,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
 
   protected BufferedReader br;
   protected JmolDocument binarydoc;
-  protected OutputChannel out;
+  protected OC out;
 
   SurfaceFileReader() {
   }
@@ -63,7 +63,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
   
   @Override
-  protected void setOutputChannel(OutputChannel out) {
+  protected void setOutputChannel(OC out) {
     if (binarydoc == null)
       this.out = out;
     else
@@ -98,47 +98,47 @@ abstract class SurfaceFileReader extends SurfaceReader {
   protected int[] next = new int[1];
 
   protected String[] getTokens() {
-    return Parser.getTokensAt(line, 0);
+    return PT.getTokensAt(line, 0);
   }
 
   protected float parseFloat() {
-    return Parser.parseFloatNext(line, next);
+    return PT.parseFloatNext(line, next);
   }
 
   protected float parseFloatStr(String s) {
     next[0] = 0;
-    return Parser.parseFloatNext(s, next);
+    return PT.parseFloatNext(s, next);
   }
 
   protected float parseFloatRange(String s, int iStart, int iEnd) {
     next[0] = iStart;
-    return Parser.parseFloatRange(s, iEnd, next);
+    return PT.parseFloatRange(s, iEnd, next);
   }
 
   protected int parseInt() {
-    return javajs.util.Parser.parseIntNext(line, next);
+    return javajs.util.PT.parseIntNext(line, next);
   }
 
   protected int parseIntStr(String s) {
     next[0] = 0;
-    return javajs.util.Parser.parseIntNext(s, next);
+    return javajs.util.PT.parseIntNext(s, next);
   }
 
   protected int parseIntNext(String s) {
-    return javajs.util.Parser.parseIntNext(s, next);
+    return javajs.util.PT.parseIntNext(s, next);
   }
 
   protected float[] parseFloatArrayStr(String s) {
     next[0] = 0;
-    return Parser.parseFloatArrayNext(s, next, null, null, null);
+    return PT.parseFloatArrayNext(s, next, null, null, null);
   }
 
   protected float[] parseFloatArray(float[] a, String strStart, String strEnd) {
-    return Parser.parseFloatArrayNext(line, next, a, strStart, strEnd);
+    return PT.parseFloatArrayNext(line, next, a, strStart, strEnd);
   }
 
   protected String getQuotedStringNext() {
-    return Parser.getQuotedStringNext(line, next);
+    return PT.getQuotedStringNext(line, next);
   }
 
   protected void skipTo(String info, String what) throws Exception {

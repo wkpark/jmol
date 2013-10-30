@@ -33,7 +33,7 @@ import org.jmol.java.BS;
 
 import org.jmol.util.Logger;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.SB;
 import javajs.util.P3;
 import javajs.util.V3;
@@ -278,13 +278,13 @@ abstract class VolumeFileReader extends SurfaceFileReader {
           skipVoxels(nSkipZ);
       }
     } else {
-      voxelData = ArrayUtil.newFloat3(nPointsX, -1);
+      voxelData = AU.newFloat3(nPointsX, -1);
       // Note downsampling not allowed for JVXL files
       // This filling of voxelData should only be needed
       // for mapped data.
 
       for (int x = 0; x < nPointsX; ++x) {
-        float[][] plane = ArrayUtil.newFloat2(nPointsY);
+        float[][] plane = AU.newFloat2(nPointsY);
         voxelData[x] = plane;
         for (int y = 0; y < nPointsY; ++y) {
           float[] strip = new float[nPointsZ];
@@ -534,7 +534,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
                                          SB bs) {
     if (atomLine.indexOf("ANGSTROMS") >= 0)
       isAngstroms = true;
-    int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : javajs.util.Parser
+    int atomCount = (strAtomCount == null ? Integer.MAX_VALUE : javajs.util.PT
         .parseInt(strAtomCount));
     switch (atomCount) {
     case Integer.MIN_VALUE:

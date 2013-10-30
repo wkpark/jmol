@@ -6,9 +6,9 @@ import java.util.Map;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -111,7 +111,7 @@ public class MeshSurface {
     if (vertexCount == 0)
       vertices = new P3[SEED_COUNT];
     else if (vertexCount == vertices.length)
-      vertices = (P3[]) ArrayUtil.doubleLength(vertices);
+      vertices = (P3[]) AU.doubleLength(vertices);
     vertices[vertexCount] = P3.newP(vertex);
     return vertexCount++;
   }
@@ -130,14 +130,14 @@ public class MeshSurface {
     if (polygonCount < 0)
       return;
     if (polygonIndexes == null || polygonCount > polygonIndexes.length)
-      polygonIndexes = ArrayUtil.newInt2(polygonCount);
+      polygonIndexes = AU.newInt2(polygonCount);
   }
 
   public int addVCVal(P3 vertex, float value) {
     if (vertexCount == 0)
       vertexValues = new float[SEED_COUNT];
     else if (vertexCount >= vertexValues.length)
-      vertexValues = ArrayUtil.doubleLengthF(vertexValues);
+      vertexValues = AU.doubleLengthF(vertexValues);
     vertexValues[vertexCount] = value;
     return addV(vertex);
   } 
@@ -180,9 +180,9 @@ public class MeshSurface {
   private int addPolygon(int[] polygon, BS bs) {
     int n = polygonCount;
     if (polygonCount == 0)
-      polygonIndexes = ArrayUtil.newInt2(SEED_COUNT);
+      polygonIndexes = AU.newInt2(SEED_COUNT);
     else if (polygonCount == polygonIndexes.length)
-      polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
+      polygonIndexes = (int[][]) AU.doubleLength(polygonIndexes);
     if (bs != null)
       bs.set(polygonCount);
     polygonIndexes[polygonCount++] = polygon;
@@ -193,7 +193,7 @@ public class MeshSurface {
     if (polygonColixes == null) {
       polygonColixes = new short[SEED_COUNT];
     } else if (index >= polygonColixes.length) {
-      polygonColixes = ArrayUtil.doubleLengthShort(polygonColixes);
+      polygonColixes = AU.doubleLengthShort(polygonColixes);
     }
     polygonColixes[index] = colix;
   }
@@ -295,7 +295,7 @@ public class MeshSurface {
   public static Object[] getCapSlabObject(String s, boolean isCap) {
     try {
       if (s.indexOf("array") == 0) {
-        String[] pts = Parser.split(s.substring(6, s.length() - 1), ",");
+        String[] pts = PT.split(s.substring(6, s.length() - 1), ",");
         return TempArray.getSlabObjectType(T.boundbox, new P3[] {
             (P3) Escape.uP(pts[0]),
             (P3) Escape.uP(pts[1]),
@@ -486,12 +486,12 @@ public class MeshSurface {
     
     if (vertexSource != null) {
       if (vertexCount >= vertexSource.length)
-        vertexSource = ArrayUtil.doubleLengthI(vertexSource);
+        vertexSource = AU.doubleLengthI(vertexSource);
       vertexSource[vertexCount] = source;
     }
     if (vertexSets != null) {
       if (vertexCount >= vertexSets.length)
-        vertexSets = ArrayUtil.doubleLengthI(vertexSets);
+        vertexSets = AU.doubleLengthI(vertexSets);
       vertexSets[vertexCount] = set;
     }
     int i = addVCVal(vertex, value);
@@ -872,7 +872,7 @@ public class MeshSurface {
       for (int i = 0; i < vertexCount; i++)
         if (bsv.get(i))
           vTemp[n++] = vertices[i];
-      int[][] pTemp = ArrayUtil.newInt2(nPoly);
+      int[][] pTemp = AU.newInt2(nPoly);
       nPoly = 0;
       for (int i = 0; i < polygonCount; i++)
         if (polygonIndexes[i] != null) {
@@ -1032,7 +1032,7 @@ public class MeshSurface {
     int vertexCount = Geodesic.getVertexCount(lvl);
     short[] f = Geodesic.getFaceVertexes(lvl);
     int nFaces = f.length / 3;
-    int[][] faces = ArrayUtil.newInt2(nFaces);
+    int[][] faces = AU.newInt2(nFaces);
     for (int i = 0, fpt = 0; i < nFaces; i++) {
       faces[i] = new int[] { f[fpt++], f[fpt++], f[fpt++] };
     }

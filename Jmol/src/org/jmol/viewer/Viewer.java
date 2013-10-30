@@ -47,18 +47,14 @@ import org.jmol.modelset.Bond.BondSet;
 import org.jmol.modelset.ModelCollection.StateScript;
 
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import org.jmol.api.JSmolInterface;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.JmolNMRInterface;
-import org.jmol.api.JmolPopupInterface;
-import org.jmol.api.ApiPlatform;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolJSpecView;
-import org.jmol.api.JmolMouseInterface;
 import org.jmol.api.JmolParallelProcessor;
 import org.jmol.api.JmolPropertyManager;
 import org.jmol.api.JmolRendererInterface;
@@ -72,7 +68,6 @@ import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.api.MepCalculationInterface;
 import org.jmol.api.MinimizerInterface;
-import org.jmol.api.PlatformViewer;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
@@ -93,6 +88,11 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.CommandHistory;
+
+import javajs.api.GenericPlatform;
+import javajs.api.GenericMouseInterface;
+import javajs.api.GenericMenuInterface;
+import javajs.api.PlatformViewer;
 import javajs.awt.Dimension;
 import javajs.awt.Font;
 
@@ -101,16 +101,16 @@ import org.jmol.util.Escape;
 import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
-import javajs.util.Parser;
+import javajs.util.PT;
 import org.jmol.util.ParserBS;
 
 import javajs.util.P3;
 import javajs.util.P4;
 import org.jmol.util.Rectangle;
 import javajs.util.A4;
-import javajs.util.ColorUtil;
-import javajs.util.DecimalFormat;
-import javajs.util.OutputChannel;
+import javajs.util.CU;
+import javajs.util.DF;
+import javajs.util.OC;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3i;
@@ -125,7 +125,7 @@ import org.jmol.util.Txt;
 import org.jmol.viewer.StateManager.Orientation;
 import org.jmol.viewer.binding.Binding;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -185,7 +185,7 @@ import java.io.StringReader;
  */
 
 @J2SIgnoreImport( { Runtime.class })
-public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer, JSmolInterface {
+public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer {
 
   @Override
   protected void finalize() throws Throwable {
@@ -331,7 +331,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
                                              URL codeBase,
                                              String commandOptions,
                                              JmolStatusListener statusListener,
-                                             ApiPlatform implementedPlatform) {
+                                             GenericPlatform implementedPlatform) {
     Map<String, Object> info = new Hashtable<String, Object>();
     info.put("display", display);
     info.put("adapter", modelAdapter);
@@ -481,7 +481,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       isJS = isWebGL || (platform.indexOf(".awtjs2d.") >= 0);
       o = Interface.getInterface(platform);
     }
-    apiPlatform = (ApiPlatform) o;
+    apiPlatform = (GenericPlatform) o;
     display = info.get("display");
     isSingleThreaded = apiPlatform.isSingleThreaded();
     noGraphicsAllowed = checkOption2("noGraphics", "-n");
@@ -554,8 +554,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (appletProxy != null)
         setStringProperty("appletProxy", appletProxy);
       if (isSignedApplet) {
-        logFilePath = Txt.simpleReplace(appletCodeBase, "file://", "");
-        logFilePath = Txt.simpleReplace(logFilePath, "file:/", "");
+        logFilePath = javajs.util.PT.simpleReplace(appletCodeBase, "file://", "");
+        logFilePath = javajs.util.PT.simpleReplace(logFilePath, "file:/", "");
         if (logFilePath.indexOf("//") >= 0)
           logFilePath = null;
         else
@@ -691,7 +691,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return display;
   }
 
-  private JmolMouseInterface mouse;
+  private GenericMouseInterface mouse;
 
   public void clearMouse() {
     mouse.clear();
@@ -708,10 +708,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
   
   @Override
-  public boolean handleOldJvm10Event(int id, int x, int y, int modifiers,
+  public boolean processMouseEvent(int id, int x, int y, int modifiers,
                                      long time) {
     // also used for JavaScript from jQuery
-    return mouse.handleOldJvm10Event(id, x, y, modifiers, time);
+    return mouse.processEvent(id, x, y, modifiers, time);
   }
 
   public void reset(boolean includingSpin) {
@@ -1394,7 +1394,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setSpin(String key, int value) {
     // Eval
-    if (!Parser.isOneOf(key, "x;y;z;fps;X;Y;Z;FPS"))
+    if (!PT.isOneOf(key, "x;y;z;fps;X;Y;Z;FPS"))
       return;
     int i = "x;y;z;fps;X;Y;Z;FPS".indexOf(key);
     switch (i) {
@@ -1565,7 +1565,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   void setObjectColor(String name, String colorName) {
     if (colorName == null || colorName.length() == 0)
       return;
-    setObjectArgb(name, ColorUtil.getArgbFromString(colorName));
+    setObjectArgb(name, CU.getArgbFromString(colorName));
   }
 
   public void setObjectVisibility(String name, boolean b) {
@@ -1696,7 +1696,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public P3 getColorPointForPropertyValue(float val) {
     // x = {atomno=3}.partialcharge.color
-    return ColorUtil.colorPtFromInt2(gdata.getColorArgbOrGray(colorManager
+    return CU.colorPtFromInt2(gdata.getColorArgbOrGray(colorManager
         .getColixForPropertyValue(val)));
   }
 
@@ -2003,12 +2003,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * the file
    * 
    * @param fileName
-   * @param pdbCartoons
+   * @param flags  1 = check PDBcartoons
    * 
    */
   @Override
-  public void openFileAsyncPDB(String fileName, boolean pdbCartoons) {
-    getScriptManager().openFileAsync(fileName, pdbCartoons);
+  public void openFileAsyncSpecial(String fileName, int flags) {
+    getScriptManager().openFileAsync(fileName, flags);
   }
 
   /**
@@ -2124,7 +2124,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         String fname = fileNames[i];
         if (fileTypes != null && fileTypes[i] != null)
           fname = fileTypes[i] + "::" + fname;
-        s = Txt.simpleReplace(s, "$FILENAME" + (i + 1) + "$", Escape
+        s = javajs.util.PT.simpleReplace(s, "$FILENAME" + (i + 1) + "$", Escape
             .eS(fname.replace('\\', '/')));
       }
 
@@ -2172,7 +2172,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       // may have been modified.
       if (htParams.containsKey("loadScript"))
         loadScript = (SB) htParams.get("loadScript");
-      htParams.put("loadScript", loadScript = new SB().append(Txt
+      htParams.put("loadScript", loadScript = new SB().append(javajs.util.PT
           .simpleReplace(loadScript.toString(), "$FILENAME$", Escape.eS(fname
               .replace('\\', '/')))));
     }
@@ -2324,7 +2324,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
           return "cannot find string data";
       if (loadScript != null)
         htParams
-            .put("loadScript", loadScript = new SB().append(Txt
+            .put("loadScript", loadScript = new SB().append(javajs.util.PT
                 .simpleReplace(loadScript.toString(), "$FILENAME$",
                     "data \"model inline\"\n" + strModel
                         + "end \"model inline\"")));
@@ -2503,8 +2503,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       // by the web page <embed> mechanism, browsers differ
       // in how they handle CR and LF. Some will pass it,
       // some will not.
-      strModel = Txt.simpleReplace(strModel, "\n", "");
-      strModel = Txt.simpleReplace(strModel, "\\/n", "\n");
+      strModel = javajs.util.PT.simpleReplace(strModel, "\n", "");
+      strModel = javajs.util.PT.simpleReplace(strModel, "\\/n", "\n");
       newLine = 0;
     }
     if (newLine != 0 && newLine != '\n') {
@@ -2515,7 +2515,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (i < len && strModel.charAt(i) == newLine)
         strModel = strModel.substring(i + 1);
       if (repEmpty)
-        strModel = Txt.simpleReplace(strModel, "" + newLine, "");
+        strModel = javajs.util.PT.simpleReplace(strModel, "" + newLine, "");
       else
         strModel = strModel.replace(newLine, '\n');
     }
@@ -2722,7 +2722,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   @Override
-  public Object getFileAsBytes(String pathName, OutputChannel out) {
+  public Object getFileAsBytes(String pathName, OC out) {
     return fileManager.getFileAsBytes(pathName, out, true);
   }
 
@@ -4755,7 +4755,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       if (name.startsWith("$$")) {
         // 2D version
         f = f.substring(1);
-        format = Txt.simpleReplace(global.smilesUrlFormat,
+        format = javajs.util.PT.simpleReplace(global.smilesUrlFormat,
             "&get3d=True", "");
         return Txt.formatStringS(format, "FILE", Escape.escapeUrl(f));
       }
@@ -4939,7 +4939,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     setTainted(true);
   }
 
-  private int currentCursor = ApiPlatform.CURSOR_DEFAULT;
+  private int currentCursor = GenericPlatform.CURSOR_DEFAULT;
 
   public int getCursor() {
     return currentCursor;
@@ -6053,7 +6053,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       setIntPropertyTok(key, tok, SV.newVariable(T.string, value).asInt());
       break;
     case T.floatparam:
-      setFloatPropertyTok(key, tok, Parser.parseFloat(value));
+      setFloatPropertyTok(key, tok, PT.parseFloat(value));
       break;
     default:
       setStringPropertyTok(key, tok, value);
@@ -6140,7 +6140,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         global.quaternionFrame = value.substring(0, 2);
       else
         global.quaternionFrame = "" + (value.toLowerCase() + "p").charAt(0);
-      if (!Parser.isOneOf(global.quaternionFrame, JC.allowedQuaternionFrames))
+      if (!PT.isOneOf(global.quaternionFrame, JC.allowedQuaternionFrames))
         global.quaternionFrame = "p";
       modelSet.setHaveStraightness(false);
       break;
@@ -6936,7 +6936,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       break;
     case T.usenumberlocalization:
       // 11.1.21
-      DecimalFormat.setUseNumberLocalization(global.useNumberLocalization = value);
+      DF.setUseNumberLocalization(global.useNumberLocalization = value);
       break;
     case T.frank:
       key = "showFrank";
@@ -7780,11 +7780,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     String text = text0;
     boolean isEscaped = (text.indexOf("\\") >= 0);
     if (isEscaped) {
-      text = Txt.simpleReplace(text, "\\%", "\1");
-      text = Txt.simpleReplace(text, "\\@", "\2");
+      text = javajs.util.PT.simpleReplace(text, "\\%", "\1");
+      text = javajs.util.PT.simpleReplace(text, "\\@", "\2");
       isEscaped = !text.equals(text0);
     }
-    text = Txt.simpleReplace(text, "%{", "@{");
+    text = javajs.util.PT.simpleReplace(text, "%{", "@{");
     String name;
     while ((i = text.indexOf("@{")) >= 0) {
       i++;
@@ -7802,8 +7802,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       text = text.substring(0, i0 - 2) + v.toString() + text.substring(i + 1);
     }
     if (isEscaped) {
-      text = Txt.simpleReplace(text, "\2", "@");
-      text = Txt.simpleReplace(text, "\1", "%");
+      text = javajs.util.PT.simpleReplace(text, "\2", "@");
+      text = javajs.util.PT.simpleReplace(text, "\1", "%");
     }
     return text;
   }
@@ -7949,8 +7949,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   JmolAppConsoleInterface appConsole;
   JmolScriptEditorInterface scriptEditor;
-  JmolPopupInterface jmolpopup;
-  private JmolPopupInterface modelkitPopup;
+  GenericMenuInterface jmolpopup;
+  private GenericMenuInterface modelkitPopup;
   private Map<String, Object> headlessImageParams;
 
   @Override
@@ -8226,7 +8226,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       // if(type.equals("XYZ"))
       exp = "\"\" + {selected}.size + \"\n\n\"+{selected}.label(\"%-2e %10.5x %10.5y %10.5z\").lines";
     if (!atomExpression.equals("selected"))
-      exp = Txt.simpleReplace(exp, "selected", atomExpression);
+      exp = javajs.util.PT.simpleReplace(exp, "selected", atomExpression);
     return (String) evaluateExpression(exp);
   }
 
@@ -8238,7 +8238,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return modelSet.getHelixData(bs, tokType);
   }
 
-  public String getPdbAtomData(BS bs, OutputChannel sb) {
+  public String getPdbAtomData(BS bs, OC sb) {
     return modelSet.getPdbAtomData(bs == null ? getSelectionSet(true) : bs, sb);
   }
 
@@ -8642,7 +8642,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void getHelp(String what) {
     if (global.helpPath.indexOf("?") < 0) {
       if (what.length() > 0 && what.indexOf("?") != 0)
-        what = "?search=" + Txt.simpleReplace(what, " ", "%20");
+        what = "?search=" + javajs.util.PT.simpleReplace(what, " ", "%20");
       what += (what.length() == 0 ? "?ver=" : "&ver=") + JC.version;
     } else {
       what = "&" + what;
@@ -8657,7 +8657,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public String getChemicalInfo(String smiles, char type, String info) {
     String s = (String) setLoadFormat("_" + smiles, type, false);
     if (type == '/')
-      s += Txt.simpleReplace(info, " ", "%20");
+      s += javajs.util.PT.simpleReplace(info, " ", "%20");
     return getFileAsString4(s, -1, false, false);
   }
 
@@ -8683,7 +8683,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   public void addCommand(String command) {
     if (autoExit || !haveDisplay || !getPreserveState())
       return;
-    commandHistory.addCommand(Txt.replaceAllCharacters(command,
+    commandHistory.addCommand(PT.replaceAllCharacters(command,
         "\r\n\t", " "));
   }
 
@@ -8714,7 +8714,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // image and file export
   // ///////////////////////////////////////////////////////////////
 
-  public OutputChannel getOutputChannel(String localName, String[] fullPath) {
+  public OC getOutputChannel(String localName, String[] fullPath) {
     return getOutputManager().getOutputChannel(localName, fullPath);
   }
 
@@ -9145,7 +9145,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       undoClear();
       if (Logger.getLogLevel() == 0)
         Logger.setLogLevel(Logger.LEVEL_INFO);
-      setCursor(ApiPlatform.CURSOR_DEFAULT);
+      setCursor(GenericPlatform.CURSOR_DEFAULT);
       setBooleanProperty("refreshing", true);
       fileManager.setPathForAllFiles("");
       Logger.error("viewer handling error condition: " + er + "  ");
@@ -9660,7 +9660,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
           1);
       int atomCount = modelSet.getAtomCount();
       modelSet.assignAtom(atomIndex, type, true);
-      if (!Parser.isOneOf(type, ";Mi;Pl;X;"))
+      if (!PT.isOneOf(type, ";Mi;Pl;X;"))
         modelSet.setAtomNamesAndNumbers(atomIndex, -atomCount, null);
       statusManager.modifySend(atomIndex, modelSet.atoms[atomIndex].modelIndex,
           -1);
@@ -9687,7 +9687,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void assignConnect(int index, int index2) {
     clearModelDependentObjects();
-    float[][] connections = ArrayUtil.newFloat2(1);
+    float[][] connections = AU.newFloat2(1);
     connections[0] = new float[] { index, index2 };
     int modelIndex = modelSet.atoms[index].modelIndex;
     statusManager.modifySend(index, modelIndex, 2);
@@ -9809,12 +9809,12 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
 
   public void setStateScriptVersion(String version) {
     if (version != null) {
-      String[] tokens = Parser.getTokens(version.replace('.', ' ').replace('_',
+      String[] tokens = PT.getTokens(version.replace('.', ' ').replace('_',
           ' '));
       try {
-        int main = javajs.util.Parser.parseInt(tokens[0]); //11
-        int sub = javajs.util.Parser.parseInt(tokens[1]); //9
-        int minor = javajs.util.Parser.parseInt(tokens[2]); //24
+        int main = javajs.util.PT.parseInt(tokens[0]); //11
+        int sub = javajs.util.PT.parseInt(tokens[1]); //9
+        int minor = javajs.util.PT.parseInt(tokens[2]); //24
         if (minor == Integer.MIN_VALUE) // RCxxx
           minor = 0;
         if (main != Integer.MIN_VALUE && sub != Integer.MIN_VALUE) {
@@ -9846,7 +9846,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     } else {
       String fileName = (String) params.get("fileName");
       String[] fullPath = (String[]) params.get("fullPath");
-      OutputChannel out = getOutputChannel(fileName, fullPath);
+      OC out = getOutputChannel(fileName, fullPath);
       if (out == null)
         return null;
       params.put("outputChannel", out);
@@ -10447,7 +10447,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // delegated to JmolFileAdapter
   // ///////////////////////////////////////////////////////////////
 
-  public OutputChannel openExportChannel(double privateKey, String fileName,
+  public OC openExportChannel(double privateKey, String fileName,
                                   boolean asWriter) throws IOException {
     return getOutputManager().openOutputChannel(privateKey, fileName, asWriter, false);
   }

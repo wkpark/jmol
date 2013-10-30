@@ -6,6 +6,8 @@ import java.io.InputStream;
 
 import java.util.Map;
 
+import javajs.api.ZInputStream;
+
 import org.jmol.viewer.FileManager;
 
 public interface JmolZipUtility {

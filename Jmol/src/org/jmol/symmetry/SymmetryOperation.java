@@ -35,7 +35,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import javajs.util.Parser;
+import javajs.util.PT;
 import org.jmol.util.ParserBS;
 
 import javajs.util.M3;
@@ -306,12 +306,12 @@ class SymmetryOperation extends M4 {
     float decimalMultiplier = 1f;
     xyz += ",";
     if (incommensurate) {
-      xyz = Txt.simpleReplace(xyz, "x1", "x");
-      xyz = Txt.simpleReplace(xyz, "x2", "y");
-      xyz = Txt.simpleReplace(xyz, "x3", "z");
-      xyz = Txt.simpleReplace(xyz, "x4", "x");
-      xyz = Txt.simpleReplace(xyz, "x5", "y");
-      xyz = Txt.simpleReplace(xyz, "x6", "z");
+      xyz = javajs.util.PT.simpleReplace(xyz, "x1", "x");
+      xyz = javajs.util.PT.simpleReplace(xyz, "x2", "y");
+      xyz = javajs.util.PT.simpleReplace(xyz, "x3", "z");
+      xyz = javajs.util.PT.simpleReplace(xyz, "x4", "x");
+      xyz = javajs.util.PT.simpleReplace(xyz, "x5", "y");
+      xyz = javajs.util.PT.simpleReplace(xyz, "x6", "z");
     }
     for (int i = 0; i < xyz.length(); i++) {
       ch = xyz.charAt(i);
@@ -705,7 +705,7 @@ class SymmetryOperation extends M4 {
             Quaternion.getQuaternionFrame(pt00, pt01, pt02)));
     P3 pa1 = (P3) info[0];
     V3 ax1 = (V3) info[1];
-    int ang1 = (int) Math.abs(Parser.approx(((P3) info[3]).x, 1));
+    int ang1 = (int) Math.abs(PT.approx(((P3) info[3]).x, 1));
     float pitch1 = approxF(((P3) info[3]).y);
 
     if (haveinversion) {
@@ -1309,7 +1309,7 @@ class SymmetryOperation extends M4 {
   }
   
   private static float approxF(float f) {
-    return Parser.approx(f, 100);
+    return PT.approx(f, 100);
   }
 
   public static void normalizeTranslation(M4 operation) {

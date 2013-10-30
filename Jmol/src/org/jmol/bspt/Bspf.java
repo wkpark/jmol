@@ -28,7 +28,7 @@ package org.jmol.bspt;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.P3;
 
 /**
@@ -79,8 +79,8 @@ public final class Bspf {
   
   public void addTuple(int bsptIndex, P3 tuple) {
     if (bsptIndex >= bspts.length) {
-      bspts = (Bspt[]) ArrayUtil.arrayCopyObject(bspts, bsptIndex + 1);
-      bsptsValid = ArrayUtil.arrayCopyBool(bsptsValid, bsptIndex + 1);
+      bspts = (Bspt[]) AU.arrayCopyObject(bspts, bsptIndex + 1);
+      bsptsValid = AU.arrayCopyBool(bsptsValid, bsptIndex + 1);
     }
     Bspt bspt = bspts[bsptIndex];
     if (bspt == null) {
@@ -114,7 +114,7 @@ public final class Bspf {
     if (bsptIndex < 0)
       return getNewCubeIterator(-1 - bsptIndex);
     if (bsptIndex >= cubeIterators.length)
-      cubeIterators = (CubeIterator[]) ArrayUtil.arrayCopyObject(cubeIterators,
+      cubeIterators = (CubeIterator[]) AU.arrayCopyObject(cubeIterators,
           bsptIndex + 1);
     if (cubeIterators[bsptIndex] == null && bspts[bsptIndex] != null)
       cubeIterators[bsptIndex] = getNewCubeIterator(bsptIndex);

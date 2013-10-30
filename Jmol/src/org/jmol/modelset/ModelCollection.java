@@ -25,10 +25,10 @@
 
 package org.jmol.modelset;
 
-import javajs.util.ArrayUtil;
-import javajs.util.OutputChannel;
+import javajs.util.AU;
+import javajs.util.OC;
 import javajs.util.List;
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import java.util.Date;
@@ -1180,7 +1180,7 @@ abstract public class ModelCollection extends BondCollection {
    *        StringXBuilder or BufferedWriter
    * @return PDB file data string
    */
-  public String getPdbAtomData(BS bs, OutputChannel out) {
+  public String getPdbAtomData(BS bs, OC out) {
     if (atomCount == 0 || bs.nextSetBit(0) < 0)
       return "";
     if (out == null)
@@ -1288,7 +1288,7 @@ abstract public class ModelCollection extends BondCollection {
 
   @SuppressWarnings("static-access")
   public String getPdbData(int modelIndex, String type, BS bsSelected,
-                           Object[] parameters, OutputChannel out) {
+                           Object[] parameters, OC out) {
     if (isJmolDataFrameForModel(modelIndex))
       modelIndex = getJmolDataSourceFrame(modelIndex);
     if (modelIndex < 0)
@@ -2306,7 +2306,7 @@ abstract public class ModelCollection extends BondCollection {
     if (mad == 0)
       mad = 1;
     // null values for bitsets means "all"
-    if (maxBondingRadius == Parser.FLOAT_MIN_SAFE)
+    if (maxBondingRadius == PT.FLOAT_MIN_SAFE)
       findMaxRadii();
     float bondTolerance = viewer.getFloat(T.bondtolerance);
     float minBondDistance = viewer.getFloat(T.minbonddistance);
@@ -2397,7 +2397,7 @@ abstract public class ModelCollection extends BondCollection {
     if (mad == 0)
       mad = 1;
     // null values for bitsets means "all"
-    if (maxBondingRadius == Parser.FLOAT_MIN_SAFE)
+    if (maxBondingRadius == PT.FLOAT_MIN_SAFE)
       findMaxRadii();
     float bondTolerance = viewer.getFloat(T.bondtolerance);
     float minBondDistance = viewer.getFloat(T.minbonddistance);
@@ -2794,15 +2794,15 @@ abstract public class ModelCollection extends BondCollection {
 
   public void createModels(int n) {
     int newModelCount = modelCount + n;
-    Model[] newModels = (Model[]) ArrayUtil.arrayCopyObject(models,
+    Model[] newModels = (Model[]) AU.arrayCopyObject(models,
         newModelCount);
     validateBspf(false);
-    modelNumbers = ArrayUtil.arrayCopyI(modelNumbers, newModelCount);
-    modelFileNumbers = ArrayUtil.arrayCopyI(modelFileNumbers, newModelCount);
-    modelNumbersForAtomLabel = ArrayUtil.arrayCopyS(modelNumbersForAtomLabel,
+    modelNumbers = AU.arrayCopyI(modelNumbers, newModelCount);
+    modelFileNumbers = AU.arrayCopyI(modelFileNumbers, newModelCount);
+    modelNumbersForAtomLabel = AU.arrayCopyS(modelNumbersForAtomLabel,
         newModelCount);
-    modelNames = ArrayUtil.arrayCopyS(modelNames, newModelCount);
-    frameTitles = ArrayUtil.arrayCopyS(frameTitles, newModelCount);
+    modelNames = AU.arrayCopyS(modelNames, newModelCount);
+    frameTitles = AU.arrayCopyS(frameTitles, newModelCount);
     int f = getModelFileNumber(modelCount - 1) / 1000000 + 1;
     for (int i = modelCount, pt = 0; i < newModelCount; i++) {
       modelNumbers[i] = i + modelCount;
@@ -2813,12 +2813,12 @@ abstract public class ModelCollection extends BondCollection {
     String[] group3Lists = (String[]) getModelSetAuxiliaryInfoValue("group3Lists");
     if (group3Lists != null) {
       int[][] group3Counts = (int[][]) getModelSetAuxiliaryInfoValue("group3Counts");
-      group3Lists = ArrayUtil.arrayCopyS(group3Lists, newModelCount);
-      group3Counts = ArrayUtil.arrayCopyII(group3Counts, newModelCount);
+      group3Lists = AU.arrayCopyS(group3Lists, newModelCount);
+      group3Counts = AU.arrayCopyII(group3Counts, newModelCount);
       modelSetAuxiliaryInfo.put("group3Lists", group3Lists);
       modelSetAuxiliaryInfo.put("group3Counts", group3Counts);
     }
-    unitCells = (SymmetryInterface[]) ArrayUtil.arrayCopyObject(unitCells,
+    unitCells = (SymmetryInterface[]) AU.arrayCopyObject(unitCells,
         newModelCount);
     for (int i = modelCount; i < newModelCount; i++) {
       newModels[i] = new Model((ModelSet) this, i, -1, null, null, null);
@@ -2844,14 +2844,14 @@ abstract public class ModelCollection extends BondCollection {
       return;
     }
 
-    modelNumbers = (int[]) ArrayUtil
+    modelNumbers = (int[]) AU
         .deleteElements(modelNumbers, modelIndex, 1);
-    modelFileNumbers = (int[]) ArrayUtil.deleteElements(modelFileNumbers,
+    modelFileNumbers = (int[]) AU.deleteElements(modelFileNumbers,
         modelIndex, 1);
-    modelNumbersForAtomLabel = (String[]) ArrayUtil.deleteElements(
+    modelNumbersForAtomLabel = (String[]) AU.deleteElements(
         modelNumbersForAtomLabel, modelIndex, 1);
-    modelNames = (String[]) ArrayUtil.deleteElements(modelNames, modelIndex, 1);
-    frameTitles = (String[]) ArrayUtil.deleteElements(frameTitles, modelIndex,
+    modelNames = (String[]) AU.deleteElements(modelNames, modelIndex, 1);
+    frameTitles = (String[]) AU.deleteElements(frameTitles, modelIndex,
         1);
     thisStateModel = -1;
     String[] group3Lists = (String[]) getModelSetAuxiliaryInfoValue("group3Lists");
@@ -2867,15 +2867,15 @@ abstract public class ModelCollection extends BondCollection {
         }
     }
     if (group3Lists != null) {
-      modelSetAuxiliaryInfo.put("group3Lists", ArrayUtil.deleteElements(
+      modelSetAuxiliaryInfo.put("group3Lists", AU.deleteElements(
           group3Lists, modelIndex, 1));
-      modelSetAuxiliaryInfo.put("group3Counts", ArrayUtil.deleteElements(
+      modelSetAuxiliaryInfo.put("group3Counts", AU.deleteElements(
           group3Counts, modelIndex, 1));
     }
 
     //fix cellInfos array
     if (unitCells != null) {
-      unitCells = (SymmetryInterface[]) ArrayUtil.deleteElements(unitCells,
+      unitCells = (SymmetryInterface[]) AU.deleteElements(unitCells,
           modelIndex, 1);
     }
     
@@ -2928,7 +2928,7 @@ abstract public class ModelCollection extends BondCollection {
           type += sym;
         }
         String energy = "" + mo.get("energy");
-        if (Float.isNaN(Parser.parseFloat(energy)))
+        if (Float.isNaN(PT.parseFloat(energy)))
           sb.append(Txt.sprintf("model %-2s;  mo %-2i # %s\n",
               "sis", new Object[] {getModelNumberDotted(m), Integer.valueOf(i + 1),
                   type }));
@@ -3071,7 +3071,7 @@ abstract public class ModelCollection extends BondCollection {
         break;
       Atom atom = atoms[i];
       String name = atom.getAtomName();
-      Txt.simpleReplace(name, "\"", "''");
+      javajs.util.PT.simpleReplace(name, "\"", "''");
       bsAtoms.set(atom.index);
       xmlUtil.appendTag(sb, "atom/", new String[] { "id",
           "a" + (atom.index + 1), "title", atom.getAtomName(), "elementType",
@@ -3147,24 +3147,24 @@ abstract public class ModelCollection extends BondCollection {
   }
 
   protected void growAtomArrays(int newLength) {
-    atoms = (Atom[]) ArrayUtil.arrayCopyObject(atoms, newLength);
+    atoms = (Atom[]) AU.arrayCopyObject(atoms, newLength);
     if (vibrations != null)
-      vibrations = (Vibration[]) ArrayUtil.arrayCopyObject(vibrations,
+      vibrations = (Vibration[]) AU.arrayCopyObject(vibrations,
           newLength);
     if (occupancies != null)
-      occupancies = ArrayUtil.arrayCopyByte(occupancies, newLength);
+      occupancies = AU.arrayCopyByte(occupancies, newLength);
     if (bfactor100s != null)
-      bfactor100s = ArrayUtil.arrayCopyShort(bfactor100s, newLength);
+      bfactor100s = AU.arrayCopyShort(bfactor100s, newLength);
     if (partialCharges != null)
-      partialCharges = ArrayUtil.arrayCopyF(partialCharges, newLength);
+      partialCharges = AU.arrayCopyF(partialCharges, newLength);
     if (atomTensorList != null)
-      atomTensorList = (Object[][]) ArrayUtil.arrayCopyObject(atomTensorList, newLength);
+      atomTensorList = (Object[][]) AU.arrayCopyObject(atomTensorList, newLength);
     if (atomNames != null)
-      atomNames = ArrayUtil.arrayCopyS(atomNames, newLength);
+      atomNames = AU.arrayCopyS(atomNames, newLength);
     if (atomTypes != null)
-      atomTypes = ArrayUtil.arrayCopyS(atomTypes, newLength);
+      atomTypes = AU.arrayCopyS(atomTypes, newLength);
     if (atomSerials != null)
-      atomSerials = ArrayUtil.arrayCopyI(atomSerials, newLength);
+      atomSerials = AU.arrayCopyI(atomSerials, newLength);
   }
 
   public Atom addAtom(int modelIndex, Group group,
@@ -3457,7 +3457,7 @@ abstract public class ModelCollection extends BondCollection {
         }
       }
     n = list.size();
-    int[][] ilist = ArrayUtil.newInt2(n);
+    int[][] ilist = AU.newInt2(n);
     for (int i = n; --i >= 0;)
       ilist[n - i - 1] = list.get(i);
     return ilist;

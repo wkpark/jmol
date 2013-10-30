@@ -25,11 +25,12 @@ package org.jmol.modelkit;
 
 import java.net.URL;
 
+import javajs.api.PlatformViewer;
+
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import org.jmol.api.PlatformViewer;
 import org.jmol.i18n.GT;
 import org.jmol.popup.PopupResource;
 import org.jmol.popup.SwingPopup;

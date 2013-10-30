@@ -124,8 +124,8 @@ public class MagresReader extends AtomSetCollectionReader {
     if (!(line.startsWith("<") && line.endsWith(">"))
        && !(line.startsWith("[") && line.endsWith("]")))      
       return currentBlock;
-    line = Txt.simpleReplace(line, "<", "[");
-    line = Txt.simpleReplace(line, ">", "]");
+    line = javajs.util.PT.simpleReplace(line, "<", "[");
+    line = javajs.util.PT.simpleReplace(line, ">", "]");
     switch (("..............." +
     		     "[calculation].." +
     		     "[/calculation]." +

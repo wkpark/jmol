@@ -28,7 +28,7 @@ import org.jmol.java.BS;
 import org.jmol.modelset.Text;
 
 import javajs.awt.Font;
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.P3i;
 
 import org.jmol.util.C;
@@ -116,7 +116,7 @@ public class Hover extends TextShape {
       if (atomFormats != null) {
         int firstAtomDeleted = ((int[])((Object[])value)[2])[1];
         int nAtomsDeleted = ((int[])((Object[])value)[2])[2];
-        atomFormats = (String[]) ArrayUtil.deleteElements(atomFormats, firstAtomDeleted, nAtomsDeleted);
+        atomFormats = (String[]) AU.deleteElements(atomFormats, firstAtomDeleted, nAtomsDeleted);
       }
       atomIndex = -1;
       return;

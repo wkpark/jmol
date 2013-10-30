@@ -27,7 +27,7 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.java.BS;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.P3;
 import org.jmol.util.Tensor;
@@ -86,7 +86,7 @@ public class Atom extends P3 implements Cloneable {
     if (vib != null)
       a.vib = V3.newV(a.vib);
     if (anisoBorU != null)
-      a.anisoBorU = ArrayUtil.arrayCopyF(anisoBorU, -1);
+      a.anisoBorU = AU.arrayCopyF(anisoBorU, -1);
     if (tensors != null) {
       a.tensors = new List<Object>();
       for (int i = tensors.size(); --i >= 0;)

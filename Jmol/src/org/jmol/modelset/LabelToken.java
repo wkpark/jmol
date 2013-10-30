@@ -30,11 +30,11 @@ import java.util.Map;
 
 
 import org.jmol.util.Escape;
-import org.jmol.util.Txt;
 
-import javajs.util.Parser;
+import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.T3;
+
 import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 
@@ -423,7 +423,7 @@ public class LabelToken {
           if (lt.data instanceof Object[]) {// either that or it is null
             lt.data = ((Object[]) lt.data)[1];
             if (lt.data instanceof String)
-              lt.data = Parser.split((String) lt.data, "\n");
+              lt.data = PT.split((String) lt.data, "\n");
             if (!(Escape.isAS(lt.data)))
               lt.data = null;
           }
@@ -572,17 +572,17 @@ public class LabelToken {
 
   private String format(float floatT, String strT, T3 ptT) {
     if (!Float.isNaN(floatT)) {
-      return Txt.formatF(floatT, width, precision, alignLeft, zeroPad);
+      return PT.formatF(floatT, width, precision, alignLeft, zeroPad);
     } else if (strT != null) {
-      return Txt.formatS(strT, width, precision, alignLeft, zeroPad);
+      return PT.formatS(strT, width, precision, alignLeft, zeroPad);
     } else if (ptT != null) {
       if (width == 0 && precision == Integer.MAX_VALUE) {
         width = 6;
         precision = 2;
       }
-      return Txt.formatF(ptT.x, width, precision, false, false)
-          + Txt.formatF(ptT.y, width, precision, false, false)
-          + Txt.formatF(ptT.z, width, precision, false, false);
+      return PT.formatF(ptT.x, width, precision, false, false)
+          + PT.formatF(ptT.y, width, precision, false, false)
+          + PT.formatF(ptT.z, width, precision, false, false);
     } else {
       return text;
     }

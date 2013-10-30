@@ -35,7 +35,7 @@ import org.jmol.minimize.MinPosition;
 import org.jmol.minimize.MinTorsion;
 import org.jmol.minimize.Util;
 
-import javajs.util.ArrayUtil;
+import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.SB;
 import javajs.util.V3d;
@@ -60,7 +60,7 @@ abstract class Calculations {
   final static int CALC_MAX = 7;
 
   ForceField ff;
-  List<Object[]>[] calculations = ArrayUtil.createArrayOfArrayList(CALC_MAX);
+  List<Object[]>[] calculations = AU.createArrayOfArrayList(CALC_MAX);
 
   int atomCount;
   int bondCount;

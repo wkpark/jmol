@@ -20,8 +20,8 @@ import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
 
 import javajs.awt.Font;
-import javajs.util.ArrayUtil;
-import javajs.util.ColorUtil;
+import javajs.util.AU;
+import javajs.util.CU;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -632,7 +632,7 @@ class PyMOLScene implements JmolSceneGenerator {
 
   @SuppressWarnings("unchecked")
   static int getColorPt(Object o) {
-    return (o instanceof Integer ? ((Integer) o).intValue() : ColorUtil
+    return (o instanceof Integer ? ((Integer) o).intValue() : CU
         .colorPtToFFRGB(pointAt((List<Object>) o, 0, ptTemp)));
   }
 
@@ -838,7 +838,7 @@ class PyMOLScene implements JmolSceneGenerator {
       JmolObject jo;
       // from reader
       jo = addJmolObject(T.atoms, bsAtoms, null);
-      colixes = ArrayUtil.ensureLengthShort(colixes, atomCount);
+      colixes = AU.ensureLengthShort(colixes, atomCount);
       for (int i = atomCount; --i >= atomCount0;)
         colixes[i] = (short) atomColorList.get(i).intValue();
       jo.setColors(colixes, 0);

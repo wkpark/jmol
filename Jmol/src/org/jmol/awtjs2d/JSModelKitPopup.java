@@ -25,7 +25,8 @@ package org.jmol.awtjs2d;
 
 //import java.net.URL;
 
-import org.jmol.api.PlatformViewer;
+import javajs.api.PlatformViewer;
+
 import org.jmol.i18n.GT;
 import org.jmol.modelkit.ModelKitPopupResourceBundle;
 import org.jmol.popup.PopupResource;

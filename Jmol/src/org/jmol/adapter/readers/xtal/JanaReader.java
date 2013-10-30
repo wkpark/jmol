@@ -211,7 +211,7 @@ public class JanaReader extends ModulationReader {
   }
 
   private void symmetry() throws Exception {
-    setSymmetryOperator(Txt.simpleReplace(line.substring(9).trim()," ", ","));
+    setSymmetryOperator(javajs.util.PT.simpleReplace(line.substring(9).trim()," ", ","));
   }
 
   private final String LABELS = "xyz";

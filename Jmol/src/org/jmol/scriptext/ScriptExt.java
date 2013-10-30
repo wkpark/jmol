@@ -8857,7 +8857,7 @@ public class ScriptExt implements JmolScriptExtension {
     }
     Map<String, Object> key = ce.getColorKey();
     if (getValue)
-      return mp.addXPt(ColorUtil.colorPointFromInt2(ce
+      return mp.addXPt(ColorUtil.colorPtFromInt2(ce
           .getArgb(hi == Float.MAX_VALUE ? lo : value)));
     return mp.addXVar(SV.getVariableMap(key));
   }

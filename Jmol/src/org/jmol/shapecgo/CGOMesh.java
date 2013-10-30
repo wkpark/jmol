@@ -178,7 +178,7 @@ public class CGOMesh extends DrawMesh {
   
   private void addColix(int i) {
     getPoint(i, vTemp);
-    cList.addLast(Short.valueOf(C.getColix(ColorUtil.colorPtToInt(vTemp))));
+    cList.addLast(Short.valueOf(C.getColix(ColorUtil.colorPtToFFRGB(vTemp))));
   }
 
   private void addNormix(int i) {

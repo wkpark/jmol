@@ -633,7 +633,7 @@ class PyMOLScene implements JmolSceneGenerator {
   @SuppressWarnings("unchecked")
   static int getColorPt(Object o) {
     return (o instanceof Integer ? ((Integer) o).intValue() : ColorUtil
-        .colorPtToInt(pointAt((List<Object>) o, 0, ptTemp)));
+        .colorPtToFFRGB(pointAt((List<Object>) o, 0, ptTemp)));
   }
 
   static int intAt(List<Object> list, int i) {

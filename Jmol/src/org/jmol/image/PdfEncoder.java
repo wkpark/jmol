@@ -26,6 +26,8 @@ package org.jmol.image;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.export.PDFCreator;
+
 /**
  * A relatively primitive PDF generator that just makes a document with an image
  * in it.
@@ -35,7 +37,7 @@ public class PdfEncoder extends ImageEncoder {
 
   private boolean isLandscape;
   private PDFCreator pdf;
-  private String comment, date;
+  private String comment;
 
   public PdfEncoder() {
     // for Class.forName  
@@ -45,7 +47,6 @@ public class PdfEncoder extends ImageEncoder {
   protected void setParams(Map<String, Object> params) {
   	isLandscape = (quality > 1);
     comment = "Jmol " + (String) params.get("comment");
-    date = (String) params.get("date");
   }
 
   @Override
@@ -53,7 +54,8 @@ public class PdfEncoder extends ImageEncoder {
     pdf = new PDFCreator();
     int pageWidth = 8 * 72;
     int pageHeight = 11 * 72;
-    pdf.openDocument(out, pageWidth, pageHeight, isLandscape); // A4 or Letter
+    pdf.setOutputStream(out);
+    pdf.newDocument(pageWidth, pageHeight, isLandscape); // A4 or Letter
     addMyImage(pageWidth, pageHeight);
     Map<String, String> ht = new Hashtable<String, String>();
     if (comment != null)
@@ -64,6 +66,7 @@ public class PdfEncoder extends ImageEncoder {
     pdf.closeDocument();
   }
 
+  
   /**
    * centered on the page
    * 

@@ -515,7 +515,7 @@ import javajs.util.P3;
 
     for (int i = 0; i < segmentCount; i++) {
       values[i] = (isReversed ? hi - i * quantum : lo + i * quantum);
-      colors.addLast(ColorUtil.colorPointFromInt2(getArgb(values[i] + f)));
+      colors.addLast(ColorUtil.colorPtFromInt2(getArgb(values[i] + f)));
     }
     values[segmentCount] = (isReversed ? lo : hi);
     info.put("values", values);
@@ -588,7 +588,7 @@ import javajs.util.P3;
     int[] b = new int[JC.argbsRoygbScale.length];
     for (int i = 0; i < b.length; i++) {
       float xff = (1f / b.length * (b.length - i));        
-      b[i] = ColorUtil.colorTriadToInt(xff, xff, xff);
+      b[i] = ColorUtil.colorTriadToFFRGB(xff, xff, xff);
     }
     return propertyColorEncoder.paletteWB = b;
   }
@@ -599,13 +599,13 @@ import javajs.util.P3;
     int[] b = new int[n];
     float[] rgb1 = new float[3];
     float[] rgb2 = new float[3];
-    ColorUtil.toRGBf(color1, rgb1);
-    ColorUtil.toRGBf(color2, rgb2);
+    ColorUtil.toRGB3f(color1, rgb1);
+    ColorUtil.toRGB3f(color2, rgb2);
     float dr = (rgb2[0] - rgb1[0]) / (n - 1);
     float dg = (rgb2[1] - rgb1[1]) / (n - 1);
     float db = (rgb2[2] - rgb1[2]) / (n - 1);
     for (int i = 0; i < n; i++)
-      b[i] = ColorUtil.colorTriadToInt(rgb1[0] + dr * i, rgb1[1] + dg * i,
+      b[i] = ColorUtil.colorTriadToFFRGB(rgb1[0] + dr * i, rgb1[1] + dg * i,
           rgb1[2] + db * i);
     return b;
   }
@@ -615,7 +615,7 @@ import javajs.util.P3;
     int[] b = new int[JC.argbsRoygbScale.length];
     for (int i = 0; i < b.length; i++) {
       float xff = (1f / b.length * i); 
-      b[i] = ColorUtil.colorTriadToInt(xff, xff, xff);
+      b[i] = ColorUtil.colorTriadToFFRGB(xff, xff, xff);
     }
     return propertyColorEncoder.paletteBW = b;
   }

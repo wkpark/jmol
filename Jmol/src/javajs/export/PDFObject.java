@@ -1,4 +1,4 @@
-package org.jmol.image;
+package javajs.export;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,9 +11,10 @@ import java.util.zip.DeflaterOutputStream;
 
 import javajs.util.SB;
 
+
 /**
  * A rudimentary class for working with PDF document creation.
- * Written from scratch based on PDF Reference 13
+ * Written from scratch based on PDF Reference 13.
  * 
  * @author hansonr  Bob Hanson hansonr@stolaf.edu  10/28/2013
  * 
@@ -38,11 +39,11 @@ class PDFObject extends SB {
 		return type.substring(0, 1) + index;
 	}
 	
-	public boolean isFont() {
+	boolean isFont() {
 		return "Font".equals(type);
 	}
 
-	public void setStream(byte[] stream) {
+	void setStream(byte[] stream) {
 		this.stream = stream;
 	}
 
@@ -141,7 +142,7 @@ class PDFObject extends SB {
 		return d;
 	}
 
-	public void addResource(String type, String key, String value) {
+	void addResource(String type, String key, String value) {
 		Map<String, Object> r = createSubdict(dictionary, "Resources");
 		if (type != null)
 			r = createSubdict(r, type);

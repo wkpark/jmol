@@ -203,14 +203,14 @@ public class C {
     }
     argbs[colixMax] = argb;
     if (argbsGreyscale != null)
-      argbsGreyscale[colixMax] = ColorUtil.calcGreyscaleRgbFromRgb(argb);
+      argbsGreyscale[colixMax] = ColorUtil.toFFGGGfromRGB(argb);
     colixHash.put(argb, colixMax);
     return (colixMax < LAST_AVAILABLE_COLIX ? colixMax++ : colixMax);
   }
 
   static void setLastGrey(int argb) {
     calcArgbsGreyscale();
-    argbsGreyscale[LAST_AVAILABLE_COLIX] = ColorUtil.calcGreyscaleRgbFromRgb(argb);
+    argbsGreyscale[LAST_AVAILABLE_COLIX] = ColorUtil.toFFGGGfromRGB(argb);
   }
 
   synchronized static void calcArgbsGreyscale() {
@@ -218,7 +218,7 @@ public class C {
       return;
     int[] a = new int[argbs.length];
     for (int i = argbs.length; --i >= SPECIAL_COLIX_MAX;)
-      a[i] = ColorUtil.calcGreyscaleRgbFromRgb(argbs[i]);
+      a[i] = ColorUtil.toFFGGGfromRGB(argbs[i]);
     argbsGreyscale = a;
   }
 
@@ -450,7 +450,7 @@ public class C {
   }  
 
   public static short getBgContrast(int argb) {
-    return ((ColorUtil.calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128 ? WHITE
+    return ((ColorUtil.toFFGGGfromRGB(argb) & 0xFF) < 128 ? WHITE
         : BLACK);
   }
 

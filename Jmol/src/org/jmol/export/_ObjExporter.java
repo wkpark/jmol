@@ -661,9 +661,9 @@ public class _ObjExporter extends __CartesianExporter {
         // Get the vertex colors and average them
         sum.set(0, 0, 0);
         for (int iVertex : face)
-          sum.add(ColorUtil.colorPointFromInt2(g3d.getColorArgbOrGray(colixes[iVertex])));
+          sum.add(ColorUtil.colorPtFromInt2(g3d.getColorArgbOrGray(colixes[iVertex])));
         sum.scale(1.0f / face.length);
-        rgb = ColorUtil.colorPtToInt(sum);
+        rgb = ColorUtil.colorPtToFFRGB(sum);
       } else {
         rgb = g3d.getColorArgbOrGray(colixes[i]);
       }

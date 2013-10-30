@@ -821,14 +821,14 @@ public class ScriptMathProcessor {
         case T.varray:
           s = SV.sValue(x2);
           pt = new P3();
-          return addXPt(ColorUtil.colorPointFromString(s, pt));
+          return addXPt(ColorUtil.colorPtFromString(s, pt));
         case T.integer:
         case T.decimal:
           return addXPt(viewer.getColorPointForPropertyValue(SV
               .fValue(x2)));
         case T.point3f:
           return addXStr(Escape.escapeColor(ColorUtil
-              .colorPtToInt((P3) x2.value)));
+              .colorPtToFFRGB((P3) x2.value)));
         default:
           // handle bitset later
         }

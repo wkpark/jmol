@@ -143,7 +143,7 @@ class EfvetReader extends PolygonFileReader {
         setVertexAnisotropy(pt);
       int v = vertexMap[i + 1] = addVC(pt, value, i);
       if (v >= 0 && jvxlData.vertexColors != null) {
-        jvxlData.vertexColors[v] = ColorUtil.colorTriadToInt(values[6], values[7], values[8]);
+        jvxlData.vertexColors[v] = ColorUtil.colorTriadToFFRGB(values[6], values[7], values[8]);
         jvxlData.nVertexColors++;
       }
     }

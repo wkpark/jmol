@@ -1608,7 +1608,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           }
           break;
         case T.color:
-          ColorUtil.colorPointFromInt(viewer.getColorArgbOrGray(bond.colix),
+          ColorUtil.toRGBpt(viewer.getColorArgbOrGray(bond.colix),
               ptT);
           switch (minmaxtype) {
           case T.all:
@@ -1753,7 +1753,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           SV svi = sv.get(i);
           pt = SV.ptValue(svi);
           if (pt != null) {
-            values[i] = ColorUtil.colorPtToInt(pt);
+            values[i] = ColorUtil.colorPtToFFRGB(pt);
           } else if (svi.tok == T.integer) {
             values[i] = svi.intValue;
           } else {
@@ -1768,7 +1768,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         prop = "colorValues";
         break;
       case T.point3f:
-        value = Integer.valueOf(ColorUtil.colorPtToInt((P3) tokenValue.value));
+        value = Integer.valueOf(ColorUtil.colorPtToFFRGB((P3) tokenValue.value));
         break;
       case T.string:
         value = tokenValue.value;
@@ -3743,7 +3743,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         float comparisonFloat = Float.NaN;
         if (val instanceof P3) {
           if (tokWhat == T.color) {
-            comparisonValue = ColorUtil.colorPtToInt((P3) val);
+            comparisonValue = ColorUtil.colorPtToFFRGB((P3) val);
             tokValue = T.integer;
             isIntProperty = true;
           }
@@ -3755,7 +3755,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
               if (((String) val).startsWith("{")) {
                 val = Escape.uP((String) val);
                 if (val instanceof P3)
-                  comparisonValue = ColorUtil.colorPtToInt((P3) val);
+                  comparisonValue = ColorUtil.colorPtToFFRGB((P3) val);
                 else
                   comparisonValue = 0;
               } else {
@@ -4871,7 +4871,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
     if (pt == null)
       error(ERROR_colorExpected);
-    return ColorUtil.colorPtToInt(pt);
+    return ColorUtil.colorPtToFFRGB(pt);
   }
 
   private int getColorTriad(int i) throws ScriptException {
@@ -4934,7 +4934,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     if (getToken(++i).tok != T.rightsquare)
       error(ERROR_badRGBColor);
     if (pt != null)
-      return ColorUtil.colorPtToInt(pt);
+      return ColorUtil.colorPtToFFRGB(pt);
     if ((n = ColorUtil.getArgbFromString("[" + hex + "]")) == 0)
       error(ERROR_badRGBColor);
     return n;

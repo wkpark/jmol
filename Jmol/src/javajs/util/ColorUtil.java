@@ -28,12 +28,6 @@ public class ColorUtil {
     return "rgba(" + ((rgb>>16)&0xFF) + "," + ((rgb>>8)&0xff) + "," + (rgb&0xff) + "," + opacity/255f  + ")"; 
   }
   
-  public static void toRGBf(int c, float[] f) {
-    f[0] = ((c >> 16) & 0xFF) / 255f; // red
-    f[1] = ((c >> 8) & 0xFF) / 255f;
-    f[2] = (c & 0xFF) / 255f;
-  }
-
   private final static String[] colorNames = {
     "black",                // 000000
     "pewhite",              // ffffff
@@ -397,7 +391,7 @@ public class ColorUtil {
         float red = Parser.parseFloat(tokens[0]);
         float grn = Parser.parseFloat(tokens[1]);
         float blu = Parser.parseFloat(tokens[2]);
-        return colorTriadToInt(red, grn, blu);
+        return colorTriadToFFRGB(red, grn, blu);
       }
       switch (len) {
       case 9:
@@ -425,7 +419,7 @@ public class ColorUtil {
     return (boxedArgb == null ? 0 : boxedArgb.intValue());
   }
 
-  public static int colorTriadToInt(float x, float y, float z) {
+  public static int colorTriadToFFRGB(float x, float y, float z) {
     if (x <= 1 && y <= 1 && z <= 1) {
       if (x > 0)
         x = x * 256 - 1;
@@ -441,23 +435,29 @@ public class ColorUtil {
     return 0xFF000000 | (red << 16) | (grn << 8) | blu;
   }
 
-  public final static P3 colorPointFromString(String colorName, P3 pt) {
-    return colorPointFromInt(getArgbFromString(colorName), pt);
+  public final static P3 colorPtFromString(String colorName, P3 pt) {
+    return toRGBpt(getArgbFromString(colorName), pt);
   }
 
-  public final static P3 colorPointFromInt2(int color) {
+  public final static P3 colorPtFromInt2(int color) {
     return P3.new3((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
   }
 
-  public static int colorPtToInt(T3 pt) {
-    return colorTriadToInt(pt.x, pt.y, pt.z);
+  public static int colorPtToFFRGB(T3 pt) {
+    return colorTriadToFFRGB(pt.x, pt.y, pt.z);
   }
 
-  public final static P3 colorPointFromInt(int color, P3 pt) {
-    pt.z = color & 0xFF;
-    pt.y = (color >> 8) & 0xFF;
+  public final static P3 toRGBpt(int color, P3 pt) {
     pt.x = (color >> 16) & 0xFF;
+    pt.y = (color >> 8) & 0xFF;
+    pt.z = color & 0xFF;
     return pt;
+  }
+
+  public static void toRGB3f(int c, float[] f) {
+    f[0] = ((c >> 16) & 0xFF) / 255f; // red
+    f[1] = ((c >> 8) & 0xFF) / 255f;
+    f[2] = (c & 0xFF) / 255f;
   }
 
   /**
@@ -469,7 +469,7 @@ public class ColorUtil {
    * @param rgb the rgb value
    * @return a grayscale value in the range 0 - 255 decimal
    */
-  public static int calcGreyscaleRgbFromRgb(int rgb) {
+  public static int toFFGGGfromRGB(int rgb) {
     int grey = (((2989 * ((rgb >> 16) & 0xFF)) +
                 (5870 * ((rgb >> 8) & 0xFF)) +
                 (1140 * (rgb & 0xFF)) + 5000) / 10000) & 0xFFFFFF;

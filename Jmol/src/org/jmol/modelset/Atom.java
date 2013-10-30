@@ -1446,7 +1446,7 @@ final public class Atom extends Point3fi implements JmolNode {
     case T.xyz:
       return atom;
     case T.color:
-      return ColorUtil.colorPointFromInt2(
+      return ColorUtil.colorPtFromInt2(
           atom.group.chain.model.modelSet.viewer.getColorArgbOrGray(atom.getColix())
           );
     }

@@ -88,7 +88,7 @@ class NffReader extends PolygonFileReader {
           vertexMap.clear();
           continue;
         case 'f':
-          color = ColorUtil.colorTriadToInt(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]), parseFloatStr(tokens[3]));
+          color = ColorUtil.colorTriadToFFRGB(parseFloatStr(tokens[1]), parseFloatStr(tokens[2]), parseFloatStr(tokens[3]));
           continue;
         case 'p':
           if (line.equals("pp 3")) {

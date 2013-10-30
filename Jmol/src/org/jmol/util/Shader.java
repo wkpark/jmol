@@ -282,7 +282,7 @@ public class Shader {
     }
     if (greyScale)
       for (; --i >= 0;)
-        shades[i] = ColorUtil.calcGreyscaleRgbFromRgb(shades[i]);
+        shades[i] = ColorUtil.toFFGGGfromRGB(shades[i]);
     return shades;
   }
 

@@ -27,8 +27,6 @@ package org.jmol.io;
 
 import javajs.util.SB;
 
-import org.jmol.util.Txt;
-
 //import javajs.util.List;
 //import java.util.Iterator;
 //

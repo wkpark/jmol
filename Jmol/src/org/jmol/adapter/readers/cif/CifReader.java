@@ -49,7 +49,6 @@ import javajs.util.P3;
 import javajs.util.PT;
 
 import org.jmol.util.SimpleUnitCell;
-import org.jmol.util.Txt;
 import javajs.util.V3;
 
 

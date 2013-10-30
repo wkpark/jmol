@@ -572,7 +572,7 @@ public class ScriptExt implements JmolScriptExtension {
       setShapeProperty(JC.SHAPE_CONTACT, "slab", userSlabObject);
     if (bsA != null && (displayType == T.nci || localOnly)) {
       Object volume = getShapeProperty(JC.SHAPE_CONTACT, "volume");
-      if (Escape.isAD(volume)) {
+      if (PT.isAD(volume)) {
         double[] vs = (double[]) volume;
         double v = 0;
         for (int i = 0; i < vs.length; i++)
@@ -9110,7 +9110,7 @@ public class ScriptExt implements JmolScriptExtension {
     List<SV> sv = null;
     int ndata = 0;
     while (true) {
-      if (Escape.isAF(floatOrSVArray)) {
+      if (PT.isAF(floatOrSVArray)) {
         data = (float[]) floatOrSVArray;
         ndata = data.length;
         if (ndata == 0)

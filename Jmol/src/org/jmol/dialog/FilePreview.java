@@ -40,7 +40,6 @@ import javax.swing.JPanel;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
 /**

@@ -74,7 +74,6 @@ import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.Txt;
 import org.openscience.jmol.app.jmolpanel.GuiMap;
 import org.openscience.jmol.app.jmolpanel.HelpDialog;
 

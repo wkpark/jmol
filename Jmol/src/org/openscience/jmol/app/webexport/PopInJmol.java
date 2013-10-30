@@ -38,7 +38,6 @@ import javax.swing.event.ChangeListener;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
-import org.jmol.util.Txt;
 
 class PopInJmol extends WebPanel implements ChangeListener {
 

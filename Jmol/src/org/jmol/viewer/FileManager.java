@@ -42,7 +42,6 @@ import org.jmol.io.DataReader;
 import org.jmol.io.FileReader;
 import org.jmol.io.JmolBinary;
 import org.jmol.script.T;
-import org.jmol.util.Escape;
 
 import javajs.api.GenericPlatform;
 import javajs.api.BytePoster;
@@ -305,7 +304,7 @@ public class FileManager implements BytePoster {
 
   private DataReader newDataReader(Object data) {
     String reader = (data instanceof String ? "String"
-        : Escape.isAS(data) ? "Array" 
+        : PT.isAS(data) ? "Array" 
         : data instanceof List<?> ? "List" : null);
     if (reader == null)
       return null;
@@ -411,7 +410,7 @@ public class FileManager implements BytePoster {
             if (allowReader && !JmolBinary.isBase64(sb))
               return JmolBinary.getBufferedReaderForString(sb.toString());
             ret = JmolBinary.getBISForStringXBuilder(sb);
-          } else if (Escape.isAB(ret)) {
+          } else if (PT.isAB(ret)) {
             ret = new BufferedInputStream(
                 new ByteArrayInputStream((byte[]) ret));
           }
@@ -492,7 +491,7 @@ public class FileManager implements BytePoster {
                                                  boolean isBinary,
                                                  boolean doSpecialLoad) {
     Object data = cacheGet(name, false);
-    boolean isBytes = Escape.isAB(data);
+    boolean isBytes = PT.isAB(data);
     byte[] bytes = (isBytes ? (byte[]) data : null);
     if (name.startsWith("cache://")) {
       if (data == null)
@@ -824,7 +823,7 @@ public class FileManager implements BytePoster {
       fullPathName = names[0].replace('\\', '/');
       if (fullPathName.indexOf("|") > 0) {
         Object ret = getFileAsBytes(fullPathName, null, true);
-        if (!Escape.isAB(ret)) {
+        if (!PT.isAB(ret)) {
           fullPathName = "" + ret;
           break;
         }
@@ -1261,7 +1260,7 @@ public class FileManager implements BytePoster {
     Map<String, Integer> map = new Hashtable<String, Integer>();
     for (Map.Entry<String, Object> entry : cache.entrySet())
       map.put(entry.getKey(), Integer
-          .valueOf(Escape.isAB(entry.getValue()) ? ((byte[]) entry
+          .valueOf(PT.isAB(entry.getValue()) ? ((byte[]) entry
               .getValue()).length : entry.getValue().toString().length()));
     return map;
   }

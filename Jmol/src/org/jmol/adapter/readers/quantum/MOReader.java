@@ -27,8 +27,6 @@ package org.jmol.adapter.readers.quantum;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
-import org.jmol.util.Txt;
-
 import javajs.util.AU;
 import javajs.util.List;
 import javajs.util.PT;

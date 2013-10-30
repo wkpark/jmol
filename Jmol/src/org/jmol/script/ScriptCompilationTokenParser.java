@@ -30,7 +30,6 @@ import java.util.Map;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import javajs.util.P3;
-import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.jmol.i18n.GT;

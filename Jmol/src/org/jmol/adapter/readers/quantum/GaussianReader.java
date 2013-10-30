@@ -38,8 +38,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-import org.jmol.util.Txt;
-
 import org.jmol.api.JmolAdapter;
 import org.jmol.java.BS;
 

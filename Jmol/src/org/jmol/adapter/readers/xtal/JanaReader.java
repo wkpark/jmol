@@ -38,7 +38,6 @@ import org.jmol.util.Logger;
 
 import javajs.util.M4;
 import javajs.util.P3;
-import org.jmol.util.Txt;
 
 /**
  * A reader for Jana M50+M40 file pairs.  *

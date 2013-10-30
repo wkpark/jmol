@@ -207,23 +207,23 @@ public class SV extends T {
       return getVariableList((List) x);
     if (Escape.isAV(x))
       return getVariableAV((SV[]) x);
-    if (Escape.isAI(x))
+    if (PT.isAI(x))
       return getVariableAI((int[]) x);
-    if (Escape.isAB(x))
+    if (PT.isAB(x))
       return getVariableAB((byte[]) x);
-    if (Escape.isAF(x))
+    if (PT.isAF(x))
       return getVariableAF((float[]) x);
-    if (Escape.isAD(x))
+    if (PT.isAD(x))
       return getVariableAD((double[]) x);
-    if (Escape.isAS(x))
+    if (PT.isAS(x))
       return getVariableAS((String[]) x);
-    if (Escape.isAP(x))
+    if (PT.isAP(x))
       return getVariableAP((P3[]) x);
-    if (Escape.isAII(x))
+    if (PT.isAII(x))
       return getVariableAII((int[][]) x);
-    if (Escape.isAFF(x))
+    if (PT.isAFF(x))
       return getVariableAFF((float[][]) x);
-    if (Escape.isAFloat(x))
+    if (PT.isAFloat(x))
       return newVariable(listf, x);
     return newVariable(string, Escape.toReadable(null, x));
   }
@@ -1125,7 +1125,7 @@ public class SV extends T {
     sb.append(format[0]);
     for (int i = 1; i < format.length; i++) {
       Object ret = sprintf(Txt.formatCheck("%" + format[i]), (i < args.length ? args[i] : null));
-      if (Escape.isAS(ret)) {
+      if (PT.isAS(ret)) {
         String[] list = (String[]) ret;
         for (int j = 0; j < list.length; j++)
           sb.append(list[j]).append("\n");

@@ -24,6 +24,8 @@
 
 package javajs.util;
 
+import java.util.Map;
+
 /**
  * a combination of Parsing and Text-related utility classes
  * 
@@ -33,14 +35,14 @@ package javajs.util;
 public class PT {
 
   public static int parseInt(String str) {
-    return PT.parseIntNext(str, new int[] {0});
+    return parseIntNext(str, new int[] {0});
   }
 
   public static int parseIntNext(String str, int[] next) {
     int cch = str.length();
     if (next[0] < 0 || next[0] >= cch)
       return Integer.MIN_VALUE;
-    return PT.parseIntChecked(str, cch, next);
+    return parseIntChecked(str, cch, next);
   }
 
   public static int parseIntChecked(String str, int ichMax, int[] next) {
@@ -50,7 +52,7 @@ public class PT {
     if (ich < 0)
       return Integer.MIN_VALUE;
     int ch;
-    while (ich < ichMax && PT.isWhiteSpace(str, ich))
+    while (ich < ichMax && isWhiteSpace(str, ich))
       ++ich;
     boolean negative = false;
     if (ich < ichMax && str.charAt(ich) == 45) { //"-"
@@ -139,7 +141,7 @@ public class PT {
           }
           nzero = -nzero;
         } 
-        if (iscale  < PT.decimalScale.length) {
+        if (iscale  < decimalScale.length) {
           ival2 = (ival2 * 10f) + (ch - 48)*1f;
           iscale++;
         }
@@ -152,10 +154,10 @@ public class PT {
     if (!digitSeen) {
       value = Float.NaN;
     } else if (ival2 > 0) {
-      value = ival2 * PT.decimalScale[iscale - 1];
+      value = ival2 * decimalScale[iscale - 1];
       if (nzero > 1) {
-        if (nzero - 2 < PT.decimalScale.length) {
-          value *= PT.decimalScale[nzero - 2];
+        if (nzero - 2 < decimalScale.length) {
+          value *= decimalScale[nzero - 2];
         } else {
           value *= Math.pow(10, 1 - nzero);
         }
@@ -177,10 +179,10 @@ public class PT {
       int exponent = parseIntChecked(str, ichMax, next);
       if (exponent == Integer.MIN_VALUE)
         return Float.NaN;
-      if (exponent > 0 && exponent <= PT.tensScale.length)
-        value *= PT.tensScale[exponent - 1];
-      else if (exponent < 0 && -exponent <= PT.decimalScale.length)
-        value *= PT.decimalScale[-exponent - 1];
+      if (exponent > 0 && exponent <= tensScale.length)
+        value *= tensScale[exponent - 1];
+      else if (exponent < 0 && -exponent <= decimalScale.length)
+        value *= decimalScale[-exponent - 1];
       else if (exponent != 0)
         value *= Math.pow(10, exponent);
     } else {
@@ -193,7 +195,7 @@ public class PT {
     if (value == Float.POSITIVE_INFINITY)
       value = Float.MAX_VALUE;
     return (!isStrict || (!isExponent || isDecimal)
-        && PT.checkTrailingText(str, next[0], ichMax) ? value : Float.NaN);
+        && checkTrailingText(str, next[0], ichMax) ? value : Float.NaN);
   }
 
   public final static float[] tensScale = { 10f, 100f, 1000f, 10000f, 100000f, 1000000f };
@@ -217,7 +219,7 @@ public class PT {
   }
 
   public static float[] parseFloatArray(String str) {
-    return PT.parseFloatArrayNext(str, new int[1], null, null, null);
+    return parseFloatArrayNext(str, new int[1], null, null, null);
   }
 
   public static int parseFloatArrayInfested(String[] tokens, float[] data) {
@@ -227,7 +229,7 @@ public class PT {
     int max = 0;
     for (int i = 0; i >= 0 && i < len && n < nTokens; i++) {
       float f;
-      while (Float.isNaN(f = PT.parseFloat(tokens[n++])) 
+      while (Float.isNaN(f = parseFloat(tokens[n++])) 
           && n < nTokens) {
       }
       if (!Float.isNaN(f))
@@ -264,7 +266,7 @@ public class PT {
       else
         str = str.substring(0, pt);
       next[0] += pt + 1;
-      String[] tokens = PT.getTokens(str);
+      String[] tokens = getTokens(str);
       if (f == null)
         f = new float[tokens.length];
       n = parseFloatArrayInfested(tokens, f);
@@ -320,19 +322,19 @@ public class PT {
   }
 
   public static String[] getTokens(String line) {
-    return PT.getTokensAt(line, 0);
+    return getTokensAt(line, 0);
   }
 
   public static String parseToken(String str) {
-    return PT.parseTokenNext(str, new int[] {0});
+    return parseTokenNext(str, new int[] {0});
   }
 
   public static String parseTrimmed(String str) {
-    return PT.parseTrimmedRange(str, 0, str.length());
+    return parseTrimmedRange(str, 0, str.length());
   }
 
   public static String parseTrimmedAt(String str, int ichStart) {
-    return PT.parseTrimmedRange(str, ichStart, str.length());
+    return parseTrimmedRange(str, ichStart, str.length());
   }
 
   public static String parseTrimmedRange(String str, int ichStart, int ichMax) {
@@ -341,7 +343,7 @@ public class PT {
       cch = ichMax;
     if (cch < ichStart)
       return "";
-    return PT.parseTrimmedChecked(str, ichStart, cch);
+    return parseTrimmedChecked(str, ichStart, cch);
   }
 
   public static String[] getTokensAt(String line, int ich) {
@@ -350,12 +352,12 @@ public class PT {
     int cchLine = line.length();
     if (ich < 0 || ich > cchLine)
       return null;
-    int tokenCount = PT.countTokens(line, ich);
+    int tokenCount = countTokens(line, ich);
     String[] tokens = new String[tokenCount];
     int[] next = new int[1];
     next[0] = ich;
     for (int i = 0; i < tokenCount; ++i)
-      tokens[i] = PT.parseTokenChecked(line, cchLine, next);
+      tokens[i] = parseTokenChecked(line, cchLine, next);
     return tokens;
   }
 
@@ -381,7 +383,7 @@ public class PT {
     int cch = str.length();
     if (next[0] < 0 || next[0] >= cch)
       return null;
-    return PT.parseTokenChecked(str, cch, next);
+    return parseTokenChecked(str, cch, next);
   }
 
   public static String parseTokenRange(String str, int ichMax, int[] next) {
@@ -390,7 +392,7 @@ public class PT {
       ichMax = cch;
     if (next[0] < 0 || next[0] >= ichMax)
       return null;
-    return PT.parseTokenChecked(str, ichMax, next);
+    return parseTokenChecked(str, ichMax, next);
   }
 
   public static String parseTokenChecked(String str, int ichMax, int[] next) {
@@ -462,7 +464,7 @@ public class PT {
    *  @param data    the array to fill
    */
   public static void parseFloatArrayData(String[] tokens, float[] data) {
-    PT.parseFloatArrayDataN(tokens, data, data.length);
+    parseFloatArrayDataN(tokens, data, data.length);
   }
 
   /**
@@ -596,7 +598,7 @@ public class PT {
 
   public static String formatF(float value, int width, int precision,
                               boolean alignLeft, boolean zeroPad) {
-    return PT.formatS(DF.formatDecimal(value, precision), width, 0, alignLeft, zeroPad);
+    return formatS(DF.formatDecimal(value, precision), width, 0, alignLeft, zeroPad);
   }
 
   /**
@@ -611,7 +613,7 @@ public class PT {
    */
   public static String formatD(double value, int width, int precision,
                               boolean alignLeft, boolean zeroPad, boolean allowOverflow) {
-    return PT.formatS(DF.formatDecimal((float)value, -1 - precision), width, 0, alignLeft, zeroPad);
+    return formatS(DF.formatDecimal((float)value, -1 - precision), width, 0, alignLeft, zeroPad);
   }
 
   /**
@@ -709,6 +711,325 @@ public class PT {
     for (int i = strFrom.length(); --i >= 0;)
       str = str.replace(strFrom.charAt(i), chTo);
     return str;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static String toJSON(String infoType, Object info) {
+  
+    //Logger.debug(infoType+" -- "+info);
+  
+    SB sb = new SB();
+    String sep = "";
+    if (info == null)
+      return packageJSON(infoType, null);
+    if (info instanceof Integer || info instanceof Float
+        || info instanceof Double)
+      return packageJSON(infoType, info.toString());
+    if (info instanceof String)
+      return packageJSON(infoType, fixString((String) info));
+    if (isAS(info)) {
+      sb.append("[");
+      int imax = ((String[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(fixString(((String[]) info)[i]));
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (isAI(info)) {
+      sb.append("[");
+      int imax = ((int[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).appendI(((int[]) info)[i]);
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (isAF(info)) {
+      sb.append("[");
+      int imax = ((float[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).appendF(((float[]) info)[i]);
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (isAD(info)) {
+      sb.append("[");
+      int imax = ((double[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).appendD(((double[]) info)[i]);
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (isAP(info)) {
+      sb.append("[");
+      int imax = ((P3[]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep);
+        addJsonTuple(sb, ((P3[]) info)[i]);
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (isASS(info)) {
+      sb.append("[");
+      int imax = ((String[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toJSON(null, ((String[][]) info)[i]));
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (isAII(info)) {
+      sb.append("[");
+      int imax = ((int[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toJSON(null, ((int[][]) info)[i]));
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (isAFF(info)) {
+      sb.append("[");
+      int imax = ((float[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toJSON(null, ((float[][]) info)[i]));
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (isAFFF(info)) {
+      sb.append("[");
+      int imax = ((float[][][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toJSON(null, ((float[][][]) info)[i]));
+        sep = ",";
+      }
+      sb.append("]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (info instanceof List) {
+      sb.append("[ ");
+      int imax = ((List<?>) info).size();
+      for (int i = 0; i < imax; i++) {
+        sb.append(sep).append(toJSON(null, ((List<?>) info).get(i)));
+        sep = ",";
+      }
+      sb.append(" ]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (info instanceof M4) {
+      float[] x = new float[4];
+      M4 m4 = (M4) info;
+      sb.appendC('[');
+      for (int i = 0; i < 4; i++) {
+        if (i > 0)
+          sb.appendC(',');
+        m4.getRow(i, x);
+        sb.append(toJSON(null, x));
+      }
+      sb.appendC(']');
+      return packageJSONSb(infoType, sb);
+    }
+    if (info instanceof M3) {
+      float[] x = new float[3];
+      M3 m3 = (M3) info;
+      sb.appendC('[');
+      for (int i = 0; i < 3; i++) {
+        if (i > 0)
+          sb.appendC(',');
+        m3.getRow(i, x);
+        sb.append(toJSON(null, x));
+      }
+      sb.appendC(']');
+      return packageJSONSb(infoType, sb);
+    }
+    if (info instanceof T3) {
+      addJsonTuple(sb, (T3) info);
+      return packageJSONSb(infoType, sb);
+    }
+    if (info instanceof A4) {
+      sb.append("[").appendF(((A4) info).x).append(",").appendF(
+          ((A4) info).y).append(",").appendF(((A4) info).z)
+          .append(",").appendF(
+              (float) (((A4) info).angle * 180d / Math.PI))
+          .append("]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (info instanceof P4) {
+      sb.append("[").appendF(((P4) info).x).append(",").appendF(((P4) info).y)
+          .append(",").appendF(((P4) info).z).append(",")
+          .appendF(((P4) info).w).append("]");
+      return packageJSONSb(infoType, sb);
+    }
+    if (info instanceof Map) {
+      sb.append("{ ");
+      for (String key : ((Map<String, ?>) info).keySet()) {
+        sb.append(sep).append(
+            packageJSON(key, toJSON(null, ((Map<?, ?>) info).get(key))));
+        sep = ",";
+      }
+      sb.append(" }");
+      return packageJSONSb(infoType, sb);
+    }
+    return packageJSON(infoType, fixString(info.toString()));
+  }
+
+  public static String packageJSONSb(String infoType, SB sb) {
+    return packageJSON(infoType, sb.toString());
+  }
+
+  public static String packageJSON(String infoType, String info) {
+    if (infoType == null)
+      return info;
+    return "\"" + infoType + "\": " + info;
+  }
+
+  public static String fixString(String s) {
+    /**
+     * @j2sNative
+     * 
+     * if (typeof s == "undefined") return "null"
+     * 
+     */
+    {}
+    if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
+      return s;
+    s = simpleReplace(s, "\"", "''");
+    s = simpleReplace(s, "\n", " | ");
+    return "\"" + s + "\"";
+  }
+
+  public static void addJsonTuple(SB sb, T3 pt) {
+    sb.append("[")
+    .appendF(pt.x).append(",")
+    .appendF(pt.y).append(",")
+    .appendF(pt.z).append("]");
+  }
+
+  public static boolean isAS(Object x) {
+    /**
+     * 
+     * look also for array with first null element
+     * so untypable -- just call it a String[]
+     * (group3Lists, created in ModelLoader)
+     * 
+     * @j2sNative
+     *  return Clazz.isAS(x);
+     */
+    {
+    return x instanceof String[];
+    }
+  }
+
+  public static boolean isASS(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isASS(x);
+     */
+    {
+    return x instanceof String[][];
+    }
+  }
+
+  public static boolean isAP(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAP(x);
+     */
+    {
+    return x instanceof P3[];
+    }
+  }
+
+  public static boolean isAF(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAF(x);
+     */
+    {
+    return x instanceof float[];
+    }
+  }
+
+  public static boolean isAFloat(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAFloat(x);
+     */
+    {
+    return x instanceof Float[];
+    }
+  }
+
+  public static boolean isAD(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAF(x);
+     */
+    {
+    return x instanceof double[];
+    }
+  }
+
+  public static boolean isAB(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAI(x);
+     */
+    {
+    return x instanceof byte[];
+    }
+  }
+
+  public static boolean isAI(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAI(x);
+     */
+    {
+    return x instanceof int[];
+    }
+  }
+
+  public static boolean isAII(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAII(x);
+     */
+    {
+    return (x instanceof int[][]);
+    }
+  }
+
+  public static boolean isAFF(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAFF(x);
+     */
+    {
+    return x instanceof float[][];
+    }
+  }
+
+  public static boolean isAFFF(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.isAFFF(x);
+     */
+    {
+    return x instanceof float[][][];
+    }
   }
 
 

@@ -27,8 +27,6 @@ import org.jmol.script.T;
 import javajs.awt.Dimension;
 import org.jmol.util.Logger;
 import javajs.util.P3;
-import org.jmol.util.Txt;
-
 import javajs.util.List;
 
 import java.util.Hashtable;

@@ -788,7 +788,7 @@ abstract class OutputManager {
            // all remote files, and any file that was opened from a ZIP collection
            Object ret = (isSparDir ? fm.spardirCache.get(name) : fm
                .getFileAsBytes(name, null, true));
-           if (!Escape.isAB(ret))
+           if (!PT.isAB(ret))
              return (String) ret;
            newName = addPngFileBytes(name, (byte[]) ret, iFile,
                crcMap, isSparDir, newName, ptSlash, v);
@@ -925,7 +925,7 @@ abstract class OutputManager {
         if (fnameShort == null)
           fnameShort = fname;
         if (data != null)
-          bytes = (Escape.isAB(data) ? (byte[]) data : ((String) data)
+          bytes = (PT.isAB(data) ? (byte[]) data : ((String) data)
               .getBytes());
         if (bytes == null)
           bytes = (byte[]) fileNamesAndByteArrays.get(i + 2);

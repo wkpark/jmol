@@ -32,7 +32,6 @@ import java.util.Map;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
-import org.jmol.util.Txt;
 
 abstract public class GamessReader extends MOReader {
 

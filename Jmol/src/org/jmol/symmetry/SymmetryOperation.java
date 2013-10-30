@@ -29,8 +29,6 @@ import javajs.util.SB;
 
 
 
-import org.jmol.util.Txt;
-
 import org.jmol.api.SymmetryInterface;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;

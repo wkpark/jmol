@@ -5,7 +5,6 @@ import java.net.URL;
 import javajs.api.GenericFileInterface;
 import javajs.util.AjaxURLConnection;
 
-import org.jmol.util.Txt;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
 

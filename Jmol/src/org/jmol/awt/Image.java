@@ -43,10 +43,10 @@ import java.awt.image.SinglePixelPackedSampleModel;
 import java.net.URL;
 
 import javajs.api.PlatformViewer;
+import javajs.util.PT;
 
 import javax.swing.JPanel;
 
-import org.jmol.util.Escape;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -62,7 +62,7 @@ class Image {
       return Toolkit.getDefaultToolkit().createImage((URL) data);
     if (data instanceof String)
       return Toolkit.getDefaultToolkit().createImage((String) data);
-    if (Escape.isAB(data))
+    if (PT.isAB(data))
       return Toolkit.getDefaultToolkit().createImage((byte[]) data);
     return null;
   }

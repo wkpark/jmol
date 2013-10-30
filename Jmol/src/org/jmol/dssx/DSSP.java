@@ -39,7 +39,6 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
-import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
 //import javajs.util.List;

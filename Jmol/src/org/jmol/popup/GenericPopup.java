@@ -33,7 +33,6 @@ import org.jmol.util.Logger;
 
 import javajs.api.GenericMenuInterface;
 import javajs.util.PT;
-import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 

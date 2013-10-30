@@ -38,9 +38,6 @@ import org.jmol.viewer.Viewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
-import org.jmol.util.Txt;
-
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Event;

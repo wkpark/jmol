@@ -42,7 +42,7 @@ import org.openscience.jmol.app.jsonkiosk.KioskFrame;
 import org.openscience.jmol.app.surfacetool.SurfaceTool;
 import org.jmol.script.T;
 import org.jmol.util.Logger;
-import org.jmol.util.ParserBS;
+import org.jmol.util.Parser;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.HistoryFile;
@@ -1548,7 +1548,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     if (info == null)
       return d.set(width, height);
     float[] dims = new float[2];
-    int n = ParserBS.parseStringInfestedFloatArray(info, null, dims);
+    int n = Parser.parseStringInfestedFloatArray(info, null, dims);
     if (n < 2)
       return d.set(width, height);
     System.out.println("JmolPanel requesting display "+ info + " " +dims[0] + " " + dims[1]);

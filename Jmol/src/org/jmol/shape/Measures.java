@@ -42,6 +42,7 @@ import org.jmol.script.T;
 
 import javajs.awt.Font;
 import javajs.util.List;
+import javajs.util.PT;
 
 
 import java.util.Hashtable;
@@ -443,7 +444,7 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
       deleteI(((Integer)value).intValue());
     } else if (value instanceof String) {
       doAction(null, (String) value, T.delete);
-    } else if (Escape.isAI(value)) {
+    } else if (PT.isAI(value)) {
       defineAll(Integer.MIN_VALUE, new Measurement().setPoints(modelSet, (int[])value, null, null), true, false, false);
     }
   }

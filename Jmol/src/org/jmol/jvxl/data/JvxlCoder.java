@@ -38,7 +38,6 @@ import org.jmol.util.C;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import javajs.util.P3;
-import org.jmol.util.Txt;
 
 
 public class JvxlCoder {

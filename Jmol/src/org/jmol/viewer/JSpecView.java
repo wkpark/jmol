@@ -9,7 +9,6 @@ import org.jmol.modelset.Atom;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import javajs.util.PT;
-import org.jmol.util.Txt;
 
 public class JSpecView implements JmolJSpecView {
 

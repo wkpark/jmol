@@ -33,7 +33,6 @@ import org.jmol.java.BS;
 
 import org.jmol.util.BSUtil;
 import org.jmol.util.JmolNode;
-import org.jmol.util.Txt;
 
 /** 
  * Originating author: Nicholas Vervelle

@@ -27,7 +27,6 @@ import java.io.BufferedReader;
 
 import org.jmol.io.JmolBinary;
 import org.jmol.util.Logger;
-import org.jmol.util.Txt;
 
 /*
  * 

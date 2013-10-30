@@ -225,7 +225,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (requestedReadable)
       return Escape.toReadable(infoType, info);
     else if (returnType.equalsIgnoreCase("JSON"))
-      return "{" + Escape.toJSON(infoType, info) + "}";
+      return "{" + PT.toJSON(infoType, info) + "}";
     return info;
   }
 
@@ -277,7 +277,7 @@ public class PropertyManager implements JmolPropertyManager {
         return "";
       }
 
-      if (Escape.isAI(property)) {
+      if (PT.isAI(property)) {
         int[] ilist = (int[]) property;
         if (pt < 0)
           pt += ilist.length;
@@ -285,7 +285,7 @@ public class PropertyManager implements JmolPropertyManager {
           return Integer.valueOf(ilist[pt]);
         return "";
       }
-      if (Escape.isAD(property)) {
+      if (PT.isAD(property)) {
         double[] dlist = (double[]) property;
         if (pt < 0)
           pt += dlist.length;
@@ -293,7 +293,7 @@ public class PropertyManager implements JmolPropertyManager {
           return Double.valueOf(dlist[pt]);
         return "";
       }
-      if (Escape.isAF(property)) {
+      if (PT.isAF(property)) {
         float[] flist = (float[]) property;
         if (pt < 0)
           pt += flist.length;
@@ -301,7 +301,7 @@ public class PropertyManager implements JmolPropertyManager {
           return Float.valueOf(flist[pt]);
         return "";
       }
-      if (Escape.isAII(property)) {
+      if (PT.isAII(property)) {
         int[][] iilist = (int[][]) property;
         if (pt < 0)
           pt += iilist.length;
@@ -309,7 +309,7 @@ public class PropertyManager implements JmolPropertyManager {
           return extractProperty(iilist[pt], args, ptr);
         return "";
       }
-      if (Escape.isAFF(property)) {
+      if (PT.isAFF(property)) {
         float[][] fflist = (float[][]) property;
         if (pt < 0)
           pt += fflist.length;
@@ -317,7 +317,7 @@ public class PropertyManager implements JmolPropertyManager {
           return extractProperty(fflist[pt], args, ptr);
         return "";
       }
-      if (Escape.isAS(property)) {
+      if (PT.isAS(property)) {
         String[] slist = (String[]) property;
         if (pt < 0)
           pt += slist.length;

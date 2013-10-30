@@ -2,6 +2,7 @@ package org.jmol.viewer.binding;
 
 import javajs.awt.event.Event;
 import javajs.util.List;
+import javajs.util.PT;
 import javajs.util.SB;
 
 import java.util.Arrays;
@@ -312,7 +313,7 @@ abstract public class Binding {
     List<String>[] names = new List[actionInfo.length];
     List<String[]> user = new List<String[]>();
     for (Object obj : bindings.values()) {
-      if (Escape.isAI(obj)) {
+      if (PT.isAI(obj)) {
         int[] info = (int[]) obj;
         int i = info[1];
         if (names[i] == null)
@@ -321,7 +322,7 @@ abstract public class Binding {
         if (qlow == null
           || (actionNames[i] + ";" + actionInfo[i] + ";" + name).toLowerCase().indexOf(qlow) >= 0)
         names[i].addLast(name);
-      } else if (Escape.isAS(obj)) {
+      } else if (PT.isAS(obj)) {
         String action = ((String[]) obj)[0];
         String script = ((String[]) obj)[1];
         if (qlow == null || qlow.indexOf("user") >= 0 || action.indexOf(qlow) >= 0 || script.indexOf(qlow) >= 0)

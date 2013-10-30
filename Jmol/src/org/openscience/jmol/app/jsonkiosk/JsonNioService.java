@@ -45,7 +45,6 @@ import org.jmol.util.Logger;
 
 import javajs.util.SB;
 import javajs.util.P3;
-import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
 //import com.json.JSONArray;

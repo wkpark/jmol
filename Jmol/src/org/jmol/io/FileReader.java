@@ -37,7 +37,6 @@ import javajs.util.PT;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
-import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.Viewer;
@@ -68,7 +67,7 @@ public class FileReader {
     nameAsGivenIn = nameAsGiven;
     fileTypeIn = type;
     this.reader = (reader instanceof BufferedReader ? reader : reader instanceof Reader ? new BufferedReader((Reader) reader) : null);
-    this.bytes = (Escape.isAB(reader) ? (byte[]) reader : null);
+    this.bytes = (PT.isAB(reader) ? (byte[]) reader : null);
     this.htParams = htParams;
     this.isAppend = isAppend;
   }

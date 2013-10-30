@@ -71,7 +71,6 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.ModulationSet;
 import javajs.util.P3;
-import org.jmol.util.Txt;
 import javajs.util.V3;
 import org.jmol.viewer.StateManager.GlobalSettings;
 

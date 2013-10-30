@@ -29,7 +29,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
-import org.jmol.util.Escape;
 
 import javajs.util.PT;
 import javajs.util.SB;
@@ -424,7 +423,7 @@ public class LabelToken {
             lt.data = ((Object[]) lt.data)[1];
             if (lt.data instanceof String)
               lt.data = PT.split((String) lt.data, "\n");
-            if (!(Escape.isAS(lt.data)))
+            if (!(PT.isAS(lt.data)))
               lt.data = null;
           }
           lt.tok = (lt.data == null ? T.string : T.array);

@@ -25,7 +25,6 @@ package org.jmol.adapter.readers.xtal;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.util.Txt;
 
 /**
  * A reader for Wein2k DFT files.  

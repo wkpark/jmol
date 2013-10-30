@@ -148,6 +148,15 @@ public class PDFCreator {
   private Map<Object, PDFObject> images;
   
   public void addImageResource(Object newImage, int width, int height, int[] buffer, boolean isRGB) {
+    /**
+     * @j2sNative
+     * 
+     * if (!newImage.hashCode)newImage = [ newImage ];
+     * 
+     */
+    {
+      
+    }
     if (images == null)
       images = new Hashtable<Object, PDFObject>();
     PDFObject imageObj = newObject("XObject");
@@ -290,6 +299,20 @@ public class PDFCreator {
 
   public void drawImage(Object image, int destX0, int destY0,
       int destX1, int destY1, int srcX0, int srcY0, int srcX1, int srcY1) {
+    /**
+     * @j2sNative
+     * 
+     * if (!newImage.hashCode) {
+     *  var hc = Math.random();
+     *  newImage.hashCode = function(){return hc};
+     *  newImage.equals = function(a){return this.hashCode() == a.hashCode()};
+     * } 
+     * 
+     */
+    {
+      
+    }
+
     PDFObject imageObj = images.get(image);
     if (imageObj == null)
       return;

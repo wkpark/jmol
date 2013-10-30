@@ -96,15 +96,15 @@ public class Escape {
       return eP((T3) x);
     if (x instanceof P4)
       return eP4((P4) x);
-    if (isAS(x))
+    if (PT.isAS(x))
       return eAS((String[]) x, true);
-    if (isAI(x))
+    if (PT.isAI(x))
       return eAI((int[]) x);
-    if (isAF(x))
+    if (PT.isAF(x))
       return eAF((float[]) x);
-    if (isAD(x))
+    if (PT.isAD(x))
       return eAD((double[]) x);
-    if (isAP(x))
+    if (PT.isAP(x))
       return eAP((P3[]) x);
     if (x instanceof M3) 
       return PT.simpleReplace(((M3) x).toString(), "\t", ",\t");
@@ -116,148 +116,10 @@ public class Escape {
     }    
     if (x instanceof Map)
       return escapeMap((Map<String, Object>) x);
-    if (isAII(x) || isAFF(x) || isAFFF(x)) 
-      return toJSON(null, x);
+    if (PT.isAII(x) || PT.isAFF(x) || PT.isAFFF(x)) 
+      return PT.toJSON(null, x);
     return x.toString();
   }
-
-  // only remaining instanceof in code are a few Object[], Token[], Quaternion[] references
-  // where it should not make any difference
-  public static boolean isAS(Object x) {
-    /**
-     * 
-     * look also for array with first null element
-     * so untypable -- just call it a String[]
-     * (group3Lists, created in ModelLoader)
-     * 
-     * @j2sNative
-     *  return Clazz.isAS(x);
-     */
-    {
-    return x instanceof String[];
-    }
-  }
-
-  public static boolean isASS(Object x) {
-    /**
-     * @j2sNative
-     *  return Clazz.isASS(x);
-     */
-    {
-    return x instanceof String[][];
-    }
-  }
-
-  public static boolean isAP(Object x) {
-    /**
-     * @j2sNative
-     *  return Clazz.isAP(x);
-     */
-    {
-    return x instanceof P3[];
-    }
-  }
-
-  public static boolean isAF(Object x) {
-    /**
-     * @j2sNative
-     *  return Clazz.isAF(x);
-     */
-    {
-    return x instanceof float[];
-    }
-  }
-
-
-  public static boolean isAFloat(Object x) {
-    /**
-     * @j2sNative
-     *  return Clazz.isAFloat(x);
-     */
-    {
-    return x instanceof Float[];
-    }
-  }
-  public static boolean isAV(Object x) {
-    /**
-     * @j2sNative
-     *  return Clazz.instanceOf(x[0], org.jmol.script.SV);
-     */
-    {
-    return x instanceof SV[];
-    }
-  }
-
-  public static boolean isAD(Object x) {
-    /**
-     * @j2sNative
-     *  return Clazz.isAF(x);
-     */
-    {
-    return x instanceof double[];
-    }
-  }
-
-  public static boolean isAB(Object x) {
-    /**
-     * @j2sNative
-     *  return Clazz.isAI(x);
-     */
-    {
-    return x instanceof byte[];
-    }
-  }
-  
-//  public static boolean isASh(Object x) {
-//    /**
-//     * @j2sNative
-//     *  return Clazz.isAI(x);
-//     */
-//     {
-//    return x instanceof short[];
-//     }
-//  }
-  
-  public static boolean isAI(Object x) {
-    /**
-     * @j2sNative
-     *  return Clazz.isAI(x);
-     */
-    {
-    return x instanceof int[];
-    }
-  }
-
-  public static boolean isAII(Object x) {
-    /**
-     * @j2sNative
-     *  return Clazz.isAII(x);
-     */
-    {
-    return (x instanceof int[][]);
-    }
-  }
-
-  public static boolean isAFF(Object x) {
-    /**
-     * @j2sNative
-     *  return Clazz.isAFF(x);
-     */
-    {
-    return x instanceof float[][];
-    }
-  }
-
-  public static boolean isAFFF(Object x) {
-    /**
-     * @j2sNative
-     *  return Clazz.isAFFF(x);
-     */
-    {
-    return x instanceof float[][][];
-    }
-  }
-
 
   private final static String escapable = "\\\\\tt\rr\nn\"\""; 
 
@@ -336,7 +198,7 @@ public class Escape {
    */
   public static String escapeFloatA(float[] f, boolean asArray) {
     if (asArray)
-      return toJSON(null, f); // or just use escape(f)
+      return PT.toJSON(null, f); // or just use escape(f)
     SB sb = new SB();
     for (int i = 0; i < f.length; i++) {
       if (i > 0)
@@ -640,210 +502,6 @@ public class Escape {
     return s.toString();
   }
 
-  private static String packageJSONSb(String infoType, SB sb) {
-    return packageJSON(infoType, sb.toString());
-  }
-
-  private static String packageJSON(String infoType, String info) {
-    if (infoType == null)
-      return info;
-    return "\"" + infoType + "\": " + info;
-  }
-
-  private static String fixString(String s) {
-    /**
-     * @j2sNative
-     * 
-     * if (typeof s == "undefined") return "null"
-     * 
-     */
-    {}
-    if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
-      return s;
-    s = PT.simpleReplace(s, "\"", "''");
-    s = PT.simpleReplace(s, "\n", " | ");
-    return "\"" + s + "\"";
-  }
-
-  @SuppressWarnings("unchecked")
-  public static String toJSON(String infoType, Object info) {
-
-    //Logger.debug(infoType+" -- "+info);
-
-    SB sb = new SB();
-    String sep = "";
-    if (info == null)
-      return packageJSON(infoType, null);
-    if (info instanceof Integer || info instanceof Float
-        || info instanceof Double)
-      return packageJSON(infoType, info.toString());
-    if (info instanceof String)
-      return packageJSON(infoType, fixString((String) info));
-    if (isAS(info)) {
-      sb.append("[");
-      int imax = ((String[]) info).length;
-      for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(fixString(((String[]) info)[i]));
-        sep = ",";
-      }
-      sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAI(info)) {
-      sb.append("[");
-      int imax = ((int[]) info).length;
-      for (int i = 0; i < imax; i++) {
-        sb.append(sep).appendI(((int[]) info)[i]);
-        sep = ",";
-      }
-      sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAF(info)) {
-      sb.append("[");
-      int imax = ((float[]) info).length;
-      for (int i = 0; i < imax; i++) {
-        sb.append(sep).appendF(((float[]) info)[i]);
-        sep = ",";
-      }
-      sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAD(info)) {
-      sb.append("[");
-      int imax = ((double[]) info).length;
-      for (int i = 0; i < imax; i++) {
-        sb.append(sep).appendD(((double[]) info)[i]);
-        sep = ",";
-      }
-      sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAP(info)) {
-      sb.append("[");
-      int imax = ((P3[]) info).length;
-      for (int i = 0; i < imax; i++) {
-        sb.append(sep);
-        addJsonTuple(sb, ((P3[]) info)[i]);
-        sep = ",";
-      }
-      sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isASS(info)) {
-      sb.append("[");
-      int imax = ((String[][]) info).length;
-      for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toJSON(null, ((String[][]) info)[i]));
-        sep = ",";
-      }
-      sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAII(info)) {
-      sb.append("[");
-      int imax = ((int[][]) info).length;
-      for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toJSON(null, ((int[][]) info)[i]));
-        sep = ",";
-      }
-      sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAFF(info)) {
-      sb.append("[");
-      int imax = ((float[][]) info).length;
-      for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toJSON(null, ((float[][]) info)[i]));
-        sep = ",";
-      }
-      sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (isAFFF(info)) {
-      sb.append("[");
-      int imax = ((float[][][]) info).length;
-      for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toJSON(null, ((float[][][]) info)[i]));
-        sep = ",";
-      }
-      sb.append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof List) {
-      sb.append("[ ");
-      int imax = ((List<?>) info).size();
-      for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(toJSON(null, ((List<?>) info).get(i)));
-        sep = ",";
-      }
-      sb.append(" ]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof M4) {
-      float[] x = new float[4];
-      M4 m4 = (M4) info;
-      sb.appendC('[');
-      for (int i = 0; i < 4; i++) {
-        if (i > 0)
-          sb.appendC(',');
-        m4.getRow(i, x);
-        sb.append(toJSON(null, x));
-      }
-      sb.appendC(']');
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof M3) {
-      float[] x = new float[3];
-      M3 m3 = (M3) info;
-      sb.appendC('[');
-      for (int i = 0; i < 3; i++) {
-        if (i > 0)
-          sb.appendC(',');
-        m3.getRow(i, x);
-        sb.append(toJSON(null, x));
-      }
-      sb.appendC(']');
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof T3) {
-      addJsonTuple(sb, (T3) info);
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof A4) {
-      sb.append("[").appendF(((A4) info).x).append(",").appendF(
-          ((A4) info).y).append(",").appendF(((A4) info).z)
-          .append(",").appendF(
-              (float) (((A4) info).angle * 180d / Math.PI))
-          .append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof P4) {
-      sb.append("[").appendF(((P4) info).x).append(",").appendF(((P4) info).y)
-          .append(",").appendF(((P4) info).z).append(",")
-          .appendF(((P4) info).w).append("]");
-      return packageJSONSb(infoType, sb);
-    }
-    if (info instanceof Map) {
-      sb.append("{ ");
-      for (String key : ((Map<String, ?>) info).keySet()) {
-        sb.append(sep).append(
-            packageJSON(key, toJSON(null, ((Map<?, ?>) info).get(key))));
-        sep = ",";
-      }
-      sb.append(" }");
-      return packageJSONSb(infoType, sb);
-    }
-    return packageJSON(infoType, fixString(info.toString()));
-  }
-
-  private static void addJsonTuple(SB sb, T3 pt) {
-    sb.append("[")
-    .appendF(pt.x).append(",")
-    .appendF(pt.y).append(",")
-    .appendF(pt.z).append("]");
-  }
-
   public static String toReadable(String name, Object info) {
     SB sb =new SB();
     String sep = "";
@@ -851,7 +509,7 @@ public class Escape {
       return "null";
     if (info instanceof String)
       return packageReadable(name, null, eS((String) info));
-    if (isAS(info)) {
+    if (PT.isAS(info)) {
       sb.append("[");
       int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -861,7 +519,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "String[" + imax + "]", sb);
     }
-    if (isAI(info)) {
+    if (PT.isAI(info)) {
       sb.append("[");
       int imax = ((int[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -871,7 +529,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "int[" + imax + "]", sb);
     }
-    if (isAF(info)) {
+    if (PT.isAF(info)) {
       sb.append("[");
       int imax = ((float[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -881,7 +539,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "float[" + imax + "]", sb);
     }
-    if (isAD(info)) {
+    if (PT.isAD(info)) {
       sb.append("[");
       int imax = ((double[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -891,7 +549,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "double[" + imax + "]", sb);
     }
-    if (isAP(info)) {
+    if (PT.isAP(info)) {
       sb.append("[");
       int imax = ((P3[]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -901,7 +559,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "point3f[" + imax + "]", sb);
     }
-    if (isASS(info)) {
+    if (PT.isASS(info)) {
       sb.append("[");
       int imax = ((String[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -911,7 +569,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "String[" + imax + "][]", sb);
     }
-    if (isAII(info)) {
+    if (PT.isAII(info)) {
       sb.append("[");
       int imax = ((int[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -921,7 +579,7 @@ public class Escape {
       sb.append("]");
       return packageReadableSb(name, "int[" + imax + "][]", sb);
     }
-    if (isAFF(info)) {
+    if (PT.isAFF(info)) {
       sb.append("[\n");
       int imax = ((float[][]) info).length;
       for (int i = 0; i < imax; i++) {
@@ -1061,6 +719,16 @@ public class Escape {
     url = PT.simpleReplace(url, "]", "%5D");
     url = PT.simpleReplace(url, " ", "%20");
     return url;
+  }
+
+  public static boolean isAV(Object x) {
+    /**
+     * @j2sNative
+     *  return Clazz.instanceOf(x[0], org.jmol.scriSV);
+     */
+    {
+    return x instanceof SV[];
+    }
   }
 
 

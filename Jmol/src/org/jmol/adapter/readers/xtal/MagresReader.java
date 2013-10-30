@@ -16,8 +16,6 @@ import javajs.util.SB;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Tensor;
-import org.jmol.util.Txt;
-
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 

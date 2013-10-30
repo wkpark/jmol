@@ -40,8 +40,6 @@ import org.jmol.util.Logger;
 
 import javajs.util.M4;
 import javajs.util.P3;
-import org.jmol.util.Txt;
-
 import java.util.Hashtable;
 
 import java.util.Map;

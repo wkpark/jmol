@@ -38,7 +38,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.jmol.util.Txt;
 import org.jmol.viewer.Viewer;
 
 public class Test extends JPanel implements ActionListener {

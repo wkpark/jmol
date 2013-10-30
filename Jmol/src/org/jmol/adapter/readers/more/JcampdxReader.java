@@ -33,8 +33,6 @@ import javajs.util.List;
 import javajs.util.PT;
 import javajs.util.SB;
 
-import org.jmol.util.Txt;
-
 import org.jmol.adapter.readers.molxyz.MolReader;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Bond;

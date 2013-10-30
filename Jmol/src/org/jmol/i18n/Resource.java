@@ -5,8 +5,6 @@ import java.util.ResourceBundle;
 
 import javajs.J2SIgnoreImport;
 
-import org.jmol.util.Txt;
-
 import org.jmol.util.Logger;
 
 @J2SIgnoreImport({java.util.ResourceBundle.class,java.util.Locale.class})

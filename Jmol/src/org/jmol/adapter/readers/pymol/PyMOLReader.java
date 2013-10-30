@@ -43,7 +43,6 @@ import org.jmol.util.BoxInfo;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
 import javajs.util.P3;
-import org.jmol.util.Txt;
 import javajs.util.V3;
 
 /**

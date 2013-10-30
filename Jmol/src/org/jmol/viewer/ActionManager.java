@@ -49,7 +49,6 @@ import org.jmol.util.Point3fi;
 import javajs.util.P3;
 
 import org.jmol.util.Rectangle;
-import org.jmol.util.Txt;
 import org.jmol.viewer.binding.Binding;
 import org.jmol.viewer.binding.JmolBinding;
 
@@ -696,7 +695,7 @@ public class ActionManager implements EventManager {
     for (Object obj : binding.getBindings().values()) {
       if (obj instanceof Boolean)
         continue;
-      if (Escape.isAI(obj)) {
+      if (PT.isAI(obj)) {
         int[] binding = (int[]) obj;
         obj = new String[] { Binding.getMouseActionName(binding[0], false),
             getActionName(binding[1]) };
@@ -1538,7 +1537,7 @@ public class ActionManager implements EventManager {
     Map<String, Object> ht = binding.getBindings();
     String mkey = mouseAction + "\t";
     for (String key : ht.keySet()) {
-      if (key.indexOf(mkey) != 0 || !Escape.isAS(obj = ht.get(key)))
+      if (key.indexOf(mkey) != 0 || !PT.isAS(obj = ht.get(key)))
         continue;
       String script = ((String[]) obj)[1];
       P3 nearestPoint = null;

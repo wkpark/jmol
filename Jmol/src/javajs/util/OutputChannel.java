@@ -1,4 +1,4 @@
-package org.jmol.io;
+package javajs.util;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -6,9 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import org.jmol.api.BytePoster;
 
-import javajs.util.SB;
+import javajs.api.BytePoster;
 
 /**
  * 
@@ -35,9 +34,13 @@ import javajs.util.SB;
  * send characters or bytes to a JavaScript function
  *  when JavaScript and (typeof fileName == "function")
  *  
+ *  
+ *  @author hansonr  Bob Hanson hansonr@stolaf.edu  9/2013
+ *  
+ *  
  */
 
-public class JmolOutputChannel extends OutputStream {
+public class OutputChannel extends OutputStream {
  
   private BytePoster bytePoster; // only necessary for writing to http:// or https://
   private String fileName;
@@ -50,7 +53,7 @@ public class JmolOutputChannel extends OutputStream {
   private SB sb;
   private String type;
   
-  public JmolOutputChannel setParams(BytePoster bytePoster, String fileName,
+  public OutputChannel setParams(BytePoster bytePoster, String fileName,
                                      boolean asWriter, OutputStream os) {
     this.bytePoster = bytePoster;
     this.fileName = fileName;
@@ -89,7 +92,7 @@ public class JmolOutputChannel extends OutputStream {
    * @return this, for chaining like a standard StringBuffer
    * 
    */
-  public JmolOutputChannel append(String s) {
+  public OutputChannel append(String s) {
     try {
       if (bw != null) {
         bw.write(s);
@@ -207,11 +210,13 @@ public class JmolOutputChannel extends OutputStream {
     } catch (Exception e) {
       // ignore closing issues
     }
-    closed = true;
-    if (isCanceled)
+    if (isCanceled) {
+      closed = true;
       return null;
-    if (fileName == null)
+    }
+    if (fileName == null || closed)
       return (sb == null ? null : sb.toString());
+    closed = true;
     /**
      * @j2sNative
      * 
@@ -219,6 +224,7 @@ public class JmolOutputChannel extends OutputStream {
      *            this.sb.toString()); if (typeof this.fileName == "function") {
      *            this.fileName(data); } else { Jmol._doAjax(this.fileName,
      *            null, data); }
+     *            
      * 
      */
     {

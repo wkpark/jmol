@@ -45,7 +45,6 @@ import org.jmol.constant.EnumStereoMode;
 import org.jmol.constant.EnumVdw;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -69,6 +68,7 @@ import org.jmol.util.ParserBS;
 
 import javajs.util.A4;
 import javajs.util.ColorUtil;
+import javajs.util.OutputChannel;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -8389,7 +8389,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
 
     // set up the output stream from AS keyword
 
-    JmolOutputChannel out = null;
+    OutputChannel out = null;
     if (localName != null) {
       if (localName.equals("."))
         localName = viewer.getFilePath(filename, true);

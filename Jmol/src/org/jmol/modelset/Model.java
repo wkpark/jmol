@@ -30,12 +30,12 @@ import java.util.Properties;
 
 import org.jmol.api.SymmetryInterface;
 import org.jmol.constant.EnumStructure;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 
 import org.jmol.util.BSUtil;
 
 import javajs.util.ArrayUtil;
+import javajs.util.OutputChannel;
 import javajs.util.List;
 import javajs.util.SB;
 import javajs.util.P3;
@@ -315,7 +315,7 @@ public class Model {
    * @param tokens
    */
   public void getPdbData(Viewer viewer, String type, char ctype,
-                         boolean isDraw, BS bsSelected, JmolOutputChannel out,
+                         boolean isDraw, BS bsSelected, OutputChannel out,
                          LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
   }
 

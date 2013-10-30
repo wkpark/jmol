@@ -29,10 +29,10 @@ import java.io.DataInputStream;
 import java.util.Map;
 
 import org.jmol.api.JmolDocument;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.Logger;
 
 import javajs.util.ByteConverter;
+import javajs.util.OutputChannel;
 import javajs.util.SB;
 
 
@@ -297,8 +297,8 @@ public class BinaryDocument extends ByteConverter implements JmolDocument {
     return nBytes;
   }
 
-  JmolOutputChannel out;
-  public void setOutputChannel(JmolOutputChannel out) {
+  OutputChannel out;
+  public void setOutputChannel(OutputChannel out) {
       this.out = out;
   }
 

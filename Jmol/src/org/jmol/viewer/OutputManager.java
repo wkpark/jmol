@@ -12,10 +12,11 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolImageEncoder;
 import org.jmol.i18n.GT;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
+
+import javajs.util.OutputChannel;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -31,7 +32,7 @@ abstract class OutputManager {
 
   abstract String getClipboardText();
 
-  abstract JmolOutputChannel openOutputChannel(double privateKey,
+  abstract OutputChannel openOutputChannel(double privateKey,
                                                String fileName,
                                                boolean asWriter,
                                                boolean asAppend)
@@ -64,7 +65,7 @@ abstract class OutputManager {
     String text = (String) params.get("text");
     byte[] bytes = (byte[]) params.get("bytes");
     int quality = getInt(params, "quality", Integer.MIN_VALUE);
-    JmolOutputChannel out = (JmolOutputChannel) params.get("outputChannel");
+    OutputChannel out = (OutputChannel) params.get("outputChannel");
     boolean closeStream = (out == null);
     int len = -1;
     try {
@@ -126,7 +127,7 @@ abstract class OutputManager {
     String fileName = (String) params.get("fileName");
     String[] scripts = (String[]) params.get("scripts");
     Object objImage = params.get("image");
-    JmolOutputChannel out = (JmolOutputChannel) params.get("outputChannel");
+    OutputChannel out = (OutputChannel) params.get("outputChannel");
     boolean asBytes = (out == null && fileName == null);
     boolean closeChannel = (out == null && fileName != null);
     boolean releaseImage = (objImage == null);
@@ -159,7 +160,7 @@ abstract class OutputManager {
         comment = "";
         boolean isPngj = type.equals("PNGJ");
         if (isPngj) {// get zip file data
-          JmolOutputChannel outTemp = getOutputChannel(null, null);
+          OutputChannel outTemp = getOutputChannel(null, null);
           getWrappedState(fileName, scripts, image, outTemp);
           stateData = outTemp.toByteArray();
         } else if (!asBytes) {
@@ -215,7 +216,7 @@ abstract class OutputManager {
    */
 
   Object getWrappedState(String fileName, String[] scripts, Object objImage,
-                         JmolOutputChannel out) {
+                         OutputChannel out) {
     int width = viewer.apiPlatform.getImageWidth(objImage);
     int height = viewer.apiPlatform.getImageHeight(objImage);
     if (width > 0 && !viewer.global.imageState && out == null
@@ -251,7 +252,7 @@ abstract class OutputManager {
    * @throws IOException
    */
   private boolean createTheImage(Object objImage, String type,
-                                 JmolOutputChannel out,
+                                 OutputChannel out,
                                  Map<String, Object> params, String[] errRet)
       throws IOException {
     type = type.substring(0, 1) + type.substring(1).toLowerCase();
@@ -271,7 +272,7 @@ abstract class OutputManager {
     return handleOutputToFile(params, true);
   }
 
-  JmolOutputChannel getOutputChannel(String fileName, String[] fullPath) {
+  OutputChannel getOutputChannel(String fileName, String[] fullPath) {
     if (!viewer.haveAccess(ACCESS.ALL))
       return null;
     if (fileName != null) {
@@ -449,7 +450,7 @@ abstract class OutputManager {
   String writeFileData(String fileName, String type, int modelIndex,
                        Object[] parameters) {
     String[] fullPath = new String[1];
-    JmolOutputChannel out = getOutputChannel(fileName, fullPath);
+    OutputChannel out = getOutputChannel(fileName, fullPath);
     if (out == null)
       return "";
     fileName = fullPath[0];
@@ -571,7 +572,7 @@ abstract class OutputManager {
         String[] scripts = (String[]) params.get("scripts");
         if (scripts != null && type.equals("ZIP"))
           type = "ZIPALL";
-        JmolOutputChannel out = getOutputChannel(fileName, null);
+        OutputChannel out = getOutputChannel(fileName, null);
         sret = createZipSet(text, scripts, type.equals("ZIPALL"), out);
       } else if (type.equals("SCENE")) {
         sret = createSceneSet(fileName, text, width, height);
@@ -586,12 +587,12 @@ abstract class OutputManager {
           // allow Jmol to do it            
           String msg = null;
           if (captureMode != Integer.MIN_VALUE) {
-            JmolOutputChannel out = null;
+            OutputChannel out = null;
             Map<String, Object> cparams = viewer.captureParams;
             switch (captureMode) {
             case T.movie:
               if (cparams != null)
-                ((JmolOutputChannel) cparams.get("outputChannel"))
+                ((OutputChannel) cparams.get("outputChannel"))
                     .closeChannel();
               out = getOutputChannel(localName, null);
               if (out == null) {
@@ -721,7 +722,7 @@ abstract class OutputManager {
         Logger.info(data);
         return;
       }
-      JmolOutputChannel out = (viewer.haveAccess(ACCESS.ALL) ? openOutputChannel(privateKey,
+      OutputChannel out = (viewer.haveAccess(ACCESS.ALL) ? openOutputChannel(privateKey,
           viewer.logFileName, true, !doClear) : null);
       if (!doClear) {
         int ptEnd = data.indexOf('\0');
@@ -743,7 +744,7 @@ abstract class OutputManager {
 
   private String createZipSet(String script,
                               String[] scripts, boolean includeRemoteFiles,
-                              JmolOutputChannel out) {
+                              OutputChannel out) {
      List<Object> v = new  List<Object>();
      FileManager fm = viewer.fileManager;
      List<String> fileNames = new  List<String>();
@@ -881,7 +882,7 @@ abstract class OutputManager {
    */
 
   private String writeZipFile(double privateKey, FileManager fm, Viewer viewer,
-                             JmolOutputChannel out,
+                             OutputChannel out,
                              List<Object> fileNamesAndByteArrays, String msg) {
     
     byte[] buf = new byte[1024];

@@ -33,7 +33,7 @@ import java.io.IOException;
 /**
  * 
  * Modified by Bob Hanson hansonr@stolaf.edu to be a subclass of ImageEncoder
- * and to use JmolOutputChannel instead of just returning bytes. Also includes: 
+ * and to use javajs.util.OutputChannel instead of just returning bytes. Also includes: 
  *  
  * -- JavaScript-compatible image processing
  *  

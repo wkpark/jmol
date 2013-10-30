@@ -24,7 +24,7 @@
 
 package org.jmol.viewer;
 
-import org.jmol.io.JmolOutputChannel;
+import javajs.util.OutputChannel;
 
 public class OutputManagerJS extends OutputManager {
 
@@ -48,9 +48,9 @@ public class OutputManagerJS extends OutputManager {
   }
 
   @Override
-  JmolOutputChannel openOutputChannel(double privateKey, String fileName,
+  OutputChannel openOutputChannel(double privateKey, String fileName,
                                       boolean asWriter, boolean asAppend) {
-    return (new JmolOutputChannel())
+    return (new OutputChannel())
         .setParams(viewer.fileManager, fileName, asWriter, null);
   }
 

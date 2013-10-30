@@ -34,7 +34,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.api.BytePoster;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.JmolDomReaderInterface;
@@ -45,11 +44,12 @@ import org.jmol.io.Base64;
 import org.jmol.io.DataReader;
 import org.jmol.io.FileReader;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.script.T;
 import org.jmol.util.Escape;
 
+import javajs.api.BytePoster;
 import javajs.util.ArrayUtil;
+import javajs.util.OutputChannel;
 import javajs.util.List;
 import javajs.util.Parser;
 import javajs.util.SB;
@@ -748,7 +748,7 @@ public class FileManager implements BytePoster {
     return JmolBinary.getZipDirectoryAndClose((BufferedInputStream) t, addManifest);
   }
 
-  public Object getFileAsBytes(String name, JmolOutputChannel out,
+  public Object getFileAsBytes(String name, OutputChannel out,
                                boolean allowZip) {
     // ?? used by eval of "WRITE FILE"
     // will be full path name

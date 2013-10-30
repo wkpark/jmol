@@ -100,7 +100,6 @@ import java.util.Map;
 
 import org.jmol.api.JmolDocument;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.data.JvxlCoder;
@@ -126,6 +125,7 @@ import javajs.util.Parser;
 
 import javajs.util.A4;
 import javajs.util.ColorUtil;
+import javajs.util.OutputChannel;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3;
@@ -1304,7 +1304,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.invalidatePolygons();
   }
 
-  public void setOutputChannel(JmolDocument binaryDoc, JmolOutputChannel out) {
+  public void setOutputChannel(JmolDocument binaryDoc, OutputChannel out) {
     binaryDoc.setOutputChannel(out);
   }
 

@@ -24,7 +24,6 @@
 package org.jmol.modelsetbio;
 
 import org.jmol.constant.EnumStructure;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -35,6 +34,8 @@ import org.jmol.modelset.ModelSet;
 import org.jmol.util.Escape;
 
 import org.jmol.util.Logger;
+
+import javajs.util.OutputChannel;
 import javajs.util.P3;
 import javajs.util.Parser;
 import org.jmol.util.Quaternion;
@@ -477,7 +478,7 @@ public abstract class BioPolymer {
                                       BS bsAtoms, BS bsSelected,
                                       boolean bothEnds, boolean isDraw,
                                       boolean addHeader, LabelToken[] tokens,
-                                      JmolOutputChannel pdbATOM,
+                                      OutputChannel pdbATOM,
                                       SB pdbCONECT, BS bsWritten) {
     boolean calcRamachandranStraightness = (qtype == 'C' || qtype == 'P');
     boolean isRamachandran = (ctype == 'R' || ctype == 'S'
@@ -605,7 +606,7 @@ public abstract class BioPolymer {
                               boolean writeRamachandranStraightness,
                               boolean quaternionStraightness, float factor,
                               boolean isAmino, boolean isRelativeAlias,
-                              LabelToken[] tokens, JmolOutputChannel pdbATOM,
+                              LabelToken[] tokens, OutputChannel pdbATOM,
                               SB pdbCONECT, BS bsWritten) {
     String prefix = (derivType > 0 ? "dq" + (derivType == 2 ? "2" : "") : "q");
     Quaternion q;
@@ -1037,7 +1038,7 @@ public abstract class BioPolymer {
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep,
                          int derivType, BS bsAtoms, BS bsSelected,
                          boolean bothEnds, boolean isDraw, boolean addHeader,
-                         LabelToken[] tokens, JmolOutputChannel pdbATOM,
+                         LabelToken[] tokens, OutputChannel pdbATOM,
                          SB pdbCONECT, BS bsWritten) {
     return;
   }

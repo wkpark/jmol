@@ -38,6 +38,8 @@ import org.jmol.io.JmolBinary;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
+import org.jmol.viewer.Viewer;
+
 import javajs.util.P3;
 import javajs.util.Parser;
 
@@ -91,6 +93,7 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
   private float[] potentials;
   private P3[] atomCoordAngstroms;
   private BS bsSelected;
+  private Viewer viewer;
   
   public MepCalculation() {
     rangeBohrOrAngstroms = 8; // Angstroms
@@ -98,6 +101,10 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     unitFactor = 1;
   }
   
+  public void set(Viewer viewer) {
+    this.viewer = viewer;
+  }
+
   public void assignPotentials(Atom[] atoms, float[] potentials,
                                BS bsAromatic, BS bsCarbonyl,
                                BS bsIgnore, String data) {
@@ -212,12 +219,15 @@ public class MepCalculation extends QuantumCalculation implements MepCalculation
     try {
       InputStream is;
       if (data == null) {
-        URL url = null;
+        Object url = null;
         if ((url = this.getClass().getResource(resourceName)) == null) {
           Logger.error("Couldn't find file: " + resourceName);
           return;
         }
-        is = (InputStream) url.getContent();
+        if (url instanceof URL) // Java
+          is = (InputStream) ((URL) url).getContent();
+        else // JavaScript
+          is = viewer.getBufferedInputStream((String) url);
       } else {
         is = new ByteArrayInputStream(data.getBytes());
       }

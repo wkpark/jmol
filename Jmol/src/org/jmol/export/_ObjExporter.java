@@ -9,7 +9,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.C;
@@ -28,6 +27,7 @@ import org.jmol.util.Txt;
 
 import javajs.util.A4;
 import javajs.util.ColorUtil;
+import javajs.util.OutputChannel;
 import javajs.util.M4;
 import javajs.util.T3;
 import javajs.util.V3;
@@ -69,7 +69,7 @@ public class _ObjExporter extends __CartesianExporter {
    */
   private boolean normalizeUV = true;
   /** BufferedWriter for the .mtl file. */
-  private JmolOutputChannel mtlout;
+  private OutputChannel mtlout;
   /** Path of the OBJ file without the extension. */
   String objFileRootName;
   /** File for the .mtl file. */

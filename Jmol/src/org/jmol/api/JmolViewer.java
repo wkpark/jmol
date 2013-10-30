@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.util.BoxInfo;
 import javajs.awt.Dimension;
+import javajs.util.OutputChannel;
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.V3;
@@ -501,7 +501,7 @@ abstract public class JmolViewer {
     openFileAsyncPDB(fileName, false);    
   }
   
-  abstract public Object getFileAsBytes(String fullPathName, JmolOutputChannel out);
+  abstract public Object getFileAsBytes(String fullPathName, OutputChannel out);
 
   abstract public String getErrorMessage();
   abstract public String getErrorMessageUn();

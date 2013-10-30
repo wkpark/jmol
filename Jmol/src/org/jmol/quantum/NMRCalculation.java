@@ -282,8 +282,8 @@ public class NMRCalculation implements JmolNMRInterface {
   }
 
   /**
-   * Creates the data set necessary for doing NMR calculations. Values
-   * are retrievable using getProperty "nmrInfo" "Xx"; each entry is 
+   * Creates the data set necessary for doing NMR calculations. Values are
+   * retrievable using getProperty "nmrInfo" "Xx"; each entry is
    * float[+/-isotopeNumber, g, Q], where [0] < 0 for the default value.
    * 
    */
@@ -292,12 +292,17 @@ public class NMRCalculation implements JmolNMRInterface {
     boolean debugging = Logger.debugging;
     try {
       InputStream is;
-      URL url = null;
+      Object url = null;
       if ((url = this.getClass().getResource("nmr_data.txt")) == null) {
         Logger.error("Couldn't find file: " + resource);
         return;
       }
-      is = (InputStream) url.getContent();
+      if (url instanceof URL) {
+        is = (InputStream) ((URL) url).getContent();
+      } else {
+        // JavaScript
+        is = viewer.getBufferedInputStream((String) url);
+      }
       br = JmolBinary.getBufferedReader(new BufferedInputStream(is), null);
       String line;
       // "#extracted by Simone Sturniolo from ROBIN K. HARRIS, EDWIN D. BECKER, SONIA M. CABRAL DE MENEZES, ROBIN GOODFELLOW, AND PIERRE GRANGER, Pure Appl. Chem., Vol. 73, No. 11, pp. 1795–1818, 2001. NMR NOMENCLATURE. NUCLEAR SPIN PROPERTIES AND CONVENTIONS FOR CHEMICAL SHIFTS (IUPAC Recommendations 2001)"
@@ -317,7 +322,8 @@ public class NMRCalculation implements JmolNMRInterface {
         for (int i = 3; i < tokens.length; i += 3) {
           int n = Integer.parseInt(tokens[i]);
           String isoname = n + name;
-          double[] dataGQ = new double[] { n, Double.parseDouble(tokens[i + 1]),
+          double[] dataGQ = new double[] { n,
+              Double.parseDouble(tokens[i + 1]),
               Double.parseDouble(tokens[i + 2]) };
           if (debugging)
             Logger.info(isoname + "  " + Escape.eAD(dataGQ));

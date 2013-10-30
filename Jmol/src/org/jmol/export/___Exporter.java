@@ -41,7 +41,6 @@ import java.util.Map;
 
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
@@ -51,6 +50,8 @@ import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 import javajs.util.P3;
 import org.jmol.util.Quaternion;
+
+import javajs.util.OutputChannel;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3i;
@@ -145,7 +146,7 @@ public abstract class ___Exporter {
   protected Viewer viewer;
   protected double privateKey;
   protected JmolRendererInterface jmolRenderer;
-  protected JmolOutputChannel out;
+  protected OutputChannel out;
   protected String fileName;
   protected String commandLineOptions;
   
@@ -227,7 +228,7 @@ public abstract class ___Exporter {
     cameraDistance = cameraFactors[3].x;
     aperatureAngle = cameraFactors[3].y;
     scalePixelsPerAngstrom = cameraFactors[3].z;
-    out = (JmolOutputChannel) params.get("outputChannel");
+    out = (OutputChannel) params.get("outputChannel");
     commandLineOptions = (String) params.get("params");
     fileName = out.getFileName();
     outputHeader();

@@ -24,6 +24,7 @@
 package org.jmol.modelsetbio;
 
 import javajs.util.ArrayUtil;
+import javajs.util.OutputChannel;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -36,7 +37,6 @@ import java.util.Properties;
 import org.jmol.api.DSSPInterface;
 import org.jmol.api.Interface;
 import org.jmol.constant.EnumStructure;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -731,7 +731,7 @@ public final class BioModel extends Model{
   @Override
   public void getPdbData(Viewer viewer, String type, char ctype,
                          boolean isDraw, BS bsSelected,
-                         JmolOutputChannel out, LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
+                         OutputChannel out, LabelToken[] tokens, SB pdbCONECT, BS bsWritten) {
     boolean bothEnds = false;
     char qtype = (ctype != 'R' ? 'r' : type.length() > 13
         && type.indexOf("ramachandran ") >= 0 ? type.charAt(13) : 'R');

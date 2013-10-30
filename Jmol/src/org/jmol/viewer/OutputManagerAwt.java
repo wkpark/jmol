@@ -32,8 +32,9 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.jmol.awt.AwtClipboard;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.util.Escape;
+
+import javajs.util.OutputChannel;
 import javajs.util.List;
 import javajs.util.Parser;
 import javajs.util.SB;
@@ -82,7 +83,7 @@ final public class OutputManagerAwt extends OutputManager {
   }
 
   @Override
-  JmolOutputChannel openOutputChannel(double privateKey, String fileName,
+  OutputChannel openOutputChannel(double privateKey, String fileName,
                                       boolean asWriter, boolean asAppend)
       throws IOException {
     boolean isLocal = FileManager.isLocal(fileName);
@@ -90,7 +91,7 @@ final public class OutputManagerAwt extends OutputManager {
       asAppend = false;
     return (fileName != null && !viewer.haveAccess(ACCESS.ALL)
         || !viewer.checkPrivateKey(privateKey) ? null
-        : (new JmolOutputChannel()).setParams(viewer.fileManager, fileName, asWriter,
+        : (new OutputChannel()).setParams(viewer.fileManager, fileName, asWriter,
             (isLocal ? new FileOutputStream(fileName, asAppend) : null)));
   }
 

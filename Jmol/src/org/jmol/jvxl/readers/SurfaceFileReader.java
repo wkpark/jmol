@@ -26,11 +26,11 @@ package org.jmol.jvxl.readers;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import javajs.util.OutputChannel;
 import javajs.util.Parser;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDocument;
-import org.jmol.io.JmolOutputChannel;
 
 /**
  * PolygonFileReader or VolumeFileReader
@@ -39,7 +39,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
 
   protected BufferedReader br;
   protected JmolDocument binarydoc;
-  protected JmolOutputChannel out;
+  protected OutputChannel out;
 
   SurfaceFileReader() {
   }
@@ -63,7 +63,7 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
   
   @Override
-  protected void setOutputChannel(JmolOutputChannel out) {
+  protected void setOutputChannel(OutputChannel out) {
     if (binarydoc == null)
       this.out = out;
     else

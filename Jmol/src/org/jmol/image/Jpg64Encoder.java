@@ -35,23 +35,24 @@ package org.jmol.image;
 import java.io.IOException;
 import java.util.Map;
 
+import javajs.util.OutputChannel;
+
 import org.jmol.io.Base64;
-import org.jmol.io.JmolOutputChannel;
 
 public class Jpg64Encoder extends JpgEncoder {
 
-  private JmolOutputChannel outTemp;
+  private OutputChannel outTemp;
 
   @Override
   protected void setParams(Map<String, Object> params) {
     defaultQuality = 75;
-    outTemp = (JmolOutputChannel) params.remove("outputChannelTemp");
+    outTemp = (OutputChannel) params.remove("outputChannelTemp");
     super.setParams(params);
   }
 
   @Override
   protected void generate() throws IOException {
-    JmolOutputChannel out0 = out;
+    OutputChannel out0 = out;
     out = outTemp;
     super.generate();
     byte[] bytes = Base64.getBytes64(out.toByteArray());

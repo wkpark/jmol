@@ -23,6 +23,7 @@
  */
 package org.jmol.modelsetbio;
 
+import javajs.util.OutputChannel;
 import javajs.util.List;
 import javajs.util.SB;
 
@@ -33,7 +34,6 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.ModelSet;
 
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
@@ -62,7 +62,7 @@ public class AlphaPolymer extends BioPolymer {
   public void getPdbData(Viewer viewer, char ctype, char qtype, int mStep, int derivType,
                          BS bsAtoms, BS bsSelected, 
                          boolean bothEnds, boolean isDraw, boolean addHeader, 
-                         LabelToken[] tokens, JmolOutputChannel pdbATOM, 
+                         LabelToken[] tokens, OutputChannel pdbATOM, 
                          SB pdbCONECT, BS bsWritten) {
     getPdbData(viewer, this, ctype, qtype, mStep, derivType, bsAtoms, bsSelected, bothEnds, 
         isDraw, addHeader, tokens, pdbATOM, pdbCONECT, bsWritten);

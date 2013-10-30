@@ -4,8 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.util.Map;
 
-import org.jmol.io.JmolOutputChannel;
 
+import javajs.util.OutputChannel;
 import javajs.util.SB;
 
 public interface JmolDocument {
@@ -48,6 +48,6 @@ public interface JmolDocument {
 
   void close();
 
-  void setOutputChannel(JmolOutputChannel out);
+  void setOutputChannel(OutputChannel out);
 
 }

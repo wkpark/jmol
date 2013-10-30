@@ -33,7 +33,6 @@ import org.jmol.thread.TimeoutThread;
 import org.jmol.i18n.GT;
 import org.jmol.io.CifDataReader;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -111,6 +110,7 @@ import org.jmol.util.Rectangle;
 import javajs.util.A4;
 import javajs.util.ColorUtil;
 import javajs.util.DecimalFormat;
+import javajs.util.OutputChannel;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.P3i;
@@ -2722,7 +2722,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   @Override
-  public Object getFileAsBytes(String pathName, JmolOutputChannel out) {
+  public Object getFileAsBytes(String pathName, OutputChannel out) {
     return fileManager.getFileAsBytes(pathName, out, true);
   }
 
@@ -8238,7 +8238,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     return modelSet.getHelixData(bs, tokType);
   }
 
-  public String getPdbAtomData(BS bs, JmolOutputChannel sb) {
+  public String getPdbAtomData(BS bs, OutputChannel sb) {
     return modelSet.getPdbAtomData(bs == null ? getSelectionSet(true) : bs, sb);
   }
 
@@ -8714,7 +8714,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // image and file export
   // ///////////////////////////////////////////////////////////////
 
-  public JmolOutputChannel getOutputChannel(String localName, String[] fullPath) {
+  public OutputChannel getOutputChannel(String localName, String[] fullPath) {
     return getOutputManager().getOutputChannel(localName, fullPath);
   }
 
@@ -8851,6 +8851,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     float[] potentials = new float[getAtomCount()];
     MepCalculationInterface m = (MepCalculationInterface) Interface
         .getOptionInterface("quantum.MlpCalculation");
+    m.set(this);
     String data = (fileName == null ? null : getFileAsString(fileName));
     m.assignPotentials(modelSet.atoms, potentials, getSmartsMatch("a",
         bsSelected), getSmartsMatch("/noAromatic/[$(C=O),$(O=C),$(NC=O)]",
@@ -9845,7 +9846,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     } else {
       String fileName = (String) params.get("fileName");
       String[] fullPath = (String[]) params.get("fullPath");
-      JmolOutputChannel out = getOutputChannel(fileName, fullPath);
+      OutputChannel out = getOutputChannel(fileName, fullPath);
       if (out == null)
         return null;
       params.put("outputChannel", out);
@@ -10446,7 +10447,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   // delegated to JmolFileAdapter
   // ///////////////////////////////////////////////////////////////
 
-  public JmolOutputChannel openExportChannel(double privateKey, String fileName,
+  public OutputChannel openExportChannel(double privateKey, String fileName,
                                   boolean asWriter) throws IOException {
     return getOutputManager().openOutputChannel(privateKey, fileName, asWriter, false);
   }

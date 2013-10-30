@@ -26,6 +26,7 @@
 package org.jmol.modelset;
 
 import javajs.util.ArrayUtil;
+import javajs.util.OutputChannel;
 import javajs.util.List;
 import javajs.util.Parser;
 import javajs.util.SB;
@@ -70,7 +71,6 @@ import javajs.util.V3;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.io.XmlUtil;
 import org.jmol.java.BS;
 import org.jmol.script.T;
@@ -1180,7 +1180,7 @@ abstract public class ModelCollection extends BondCollection {
    *        StringXBuilder or BufferedWriter
    * @return PDB file data string
    */
-  public String getPdbAtomData(BS bs, JmolOutputChannel out) {
+  public String getPdbAtomData(BS bs, OutputChannel out) {
     if (atomCount == 0 || bs.nextSetBit(0) < 0)
       return "";
     if (out == null)
@@ -1288,7 +1288,7 @@ abstract public class ModelCollection extends BondCollection {
 
   @SuppressWarnings("static-access")
   public String getPdbData(int modelIndex, String type, BS bsSelected,
-                           Object[] parameters, JmolOutputChannel out) {
+                           Object[] parameters, OutputChannel out) {
     if (isJmolDataFrameForModel(modelIndex))
       modelIndex = getJmolDataSourceFrame(modelIndex);
     if (modelIndex < 0)

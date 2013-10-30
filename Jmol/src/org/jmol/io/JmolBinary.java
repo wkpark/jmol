@@ -40,6 +40,7 @@ import org.jmol.api.JmolZipUtility;
 import org.jmol.api.ZInputStream;
 
 import javajs.util.ArrayUtil;
+import javajs.util.OutputChannel;
 import javajs.util.List;
 import javajs.util.Parser;
 import javajs.util.SB;
@@ -414,7 +415,7 @@ public class JmolBinary {
   }
 
   public static Object getStreamAsBytes(BufferedInputStream bis,
-                                         JmolOutputChannel out) throws IOException {
+                                         OutputChannel out) throws IOException {
     byte[] buf = new byte[1024];
     byte[] bytes = (out == null ? new byte[4096] : null);
     int len = 0;

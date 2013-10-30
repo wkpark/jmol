@@ -88,7 +88,7 @@ import org.jmol.util.Logger;
  * 
  * -- allows progressive production of animated GIF via Jmol CAPTURE command
  * 
- * -- uses general purpose JmolOutputChannel for byte-handling options
+ * -- uses general purpose javajs.util.OutputChannel for byte-handling options
  *    such as posting to a server, writing to disk, and retrieving bytes.
  *    
  * -- allows JavaScript port

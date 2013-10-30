@@ -32,7 +32,6 @@ import java.io.IOException;
 
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.util.GData;
@@ -40,6 +39,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.MeshSurface;
 
 import javajs.awt.Font;
+import javajs.util.OutputChannel;
 import javajs.util.Parser;
 import javajs.util.SB;
 import javajs.util.P3;
@@ -139,7 +139,7 @@ public abstract class Exporter {
   protected double privateKey;
   protected JmolRendererInterface jmolRenderer;
   protected SB output;
-  protected JmolOutputChannel out;
+  protected OutputChannel out;
   protected String fileName;
   protected String commandLineOptions;
   

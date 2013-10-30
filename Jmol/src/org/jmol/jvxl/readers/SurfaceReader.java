@@ -25,7 +25,6 @@ package org.jmol.jvxl.readers;
 
 
 import org.jmol.api.QuantumPlaneCalculationInterface;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.api.VertexDataServer;
@@ -46,6 +45,7 @@ import javajs.util.SB;
 
 import org.jmol.util.Logger;
 
+import javajs.util.OutputChannel;
 import javajs.util.M3;
 import javajs.util.P3;
 import javajs.util.P3i;
@@ -277,7 +277,7 @@ public abstract class SurfaceReader implements VertexDataServer {
    * 
    * @param out
    */
-  protected void setOutputChannel(JmolOutputChannel out) {
+  protected void setOutputChannel(OutputChannel out) {
     // only for file readers
   }
  

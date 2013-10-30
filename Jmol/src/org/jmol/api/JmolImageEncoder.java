@@ -2,11 +2,12 @@ package org.jmol.api;
 
 import java.util.Map;
 
-import org.jmol.io.JmolOutputChannel;
+import javajs.util.OutputChannel;
+
 
 public interface JmolImageEncoder {
 
   public boolean createImage(ApiPlatform apiPlatform, String type,
-                             Object objImage, JmolOutputChannel out,
+                             Object objImage, OutputChannel out,
                              Map<String, Object> params, String[] errRet);
 }

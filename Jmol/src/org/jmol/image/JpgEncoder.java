@@ -37,9 +37,9 @@ import java.util.Map;
 
 import org.jmol.image.ImageEncoder;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolOutputChannel;
 
 import javajs.util.ArrayUtil;
+import javajs.util.OutputChannel;
 
 /**
  * JpegEncoder - The JPEG main program which performs a jpeg compression of an
@@ -804,7 +804,7 @@ class Huffman {
    * @param acCode
    **/
 
-  void HuffmanBlockEncoder(JmolOutputChannel out, int zigzag[], int prec,
+  void HuffmanBlockEncoder(OutputChannel out, int zigzag[], int prec,
                            int dcCode, int acCode) {
     int temp, temp2, nbits, k, r, i;
 
@@ -871,7 +871,7 @@ class Huffman {
   // Uses an integer long (32 bits) buffer to store the Huffman encoded bits
   // and sends them to out by the byte.
 
-  void bufferIt(JmolOutputChannel out, int code, int size) {
+  void bufferIt(OutputChannel out, int code, int size) {
     int putBuffer = code;
     int putBits = bufferPutBits;
 
@@ -894,7 +894,7 @@ class Huffman {
 
   }
 
-  void flushBuffer(JmolOutputChannel out) {
+  void flushBuffer(OutputChannel out) {
     int putBuffer = bufferPutBuffer;
     int putBits = bufferPutBits;
     while (putBits >= 8) {

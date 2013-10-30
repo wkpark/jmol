@@ -523,16 +523,12 @@ abstract public class ForceField {
   }
   
   protected BufferedReader getResource(URL url) throws IOException {
-    /**
-     * @j2sNative
-     * 
-     * return this.minimizer.viewer.getBufferedReaderOrErrorMessageFromName(url.toString(),[null,null],false); 
-     * 
-     * 
-     */
-    {
-    return JmolBinary.getBufferedReader(new BufferedInputStream((InputStream) url.getContent()), null);
-    }
+    if (this.minimizer.viewer.isJS)
+      return (BufferedReader) this.minimizer.viewer
+          .getBufferedReaderOrErrorMessageFromName(url.toString(),
+              new String[] { null, null }, false);
+    return JmolBinary.getBufferedReader(new BufferedInputStream(
+        (InputStream) url.getContent()), null);
   }
 
 

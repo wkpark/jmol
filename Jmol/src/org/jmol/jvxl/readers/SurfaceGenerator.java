@@ -126,7 +126,6 @@ import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.io.JmolBinary;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.JvxlData;
@@ -141,6 +140,8 @@ import javajs.util.ArrayUtil;
 import javajs.util.List;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
+
+import javajs.util.OutputChannel;
 import javajs.util.Parser;
 import javajs.util.P3;
 import javajs.util.P4;
@@ -165,7 +166,7 @@ public class SurfaceGenerator {
   public String getFileType() {
     return fileType;
   }
-  private JmolOutputChannel out;
+  private OutputChannel out;
     
   public void setVersion(String version) {
     this.version = version;
@@ -1000,7 +1001,7 @@ public class SurfaceGenerator {
     }
 
     if ("outputChannel" == propertyName) {
-      out = (JmolOutputChannel) value;
+      out = (OutputChannel) value;
       return true;
     }
 
@@ -1449,7 +1450,7 @@ public class SurfaceGenerator {
       atomDataServer.log(msg);
   }
 
-  void setOutputChannel(JmolDocument binaryDoc, JmolOutputChannel out) {
+  void setOutputChannel(JmolDocument binaryDoc, OutputChannel out) {
     if (meshDataServer == null)
       return;
      meshDataServer.setOutputChannel(binaryDoc, out);    

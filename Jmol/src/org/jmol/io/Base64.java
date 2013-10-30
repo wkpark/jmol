@@ -39,7 +39,7 @@ public class Base64 {
     41,42,43,44, 45,46,47,48, 49,50,51,0,  0,0,0,0,      //0x70-0x7F
   };
     
-//  public static void write(byte[] bytes, JmolOutputChannel out) {
+//  public static void write(byte[] bytes, OutputChannel out) {
 //    SB sb = getBase64(bytes);
 //    int len = sb.length();
 //    byte[] b = new byte[1];

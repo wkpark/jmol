@@ -54,9 +54,10 @@ package org.jmol.image;
 
 import java.util.Map;
 
+import javajs.util.OutputChannel;
+
 import org.jmol.api.ApiPlatform;
 import org.jmol.api.JmolImageEncoder;
-import org.jmol.io.JmolOutputChannel;
 
 
 /**
@@ -72,7 +73,7 @@ import org.jmol.io.JmolOutputChannel;
 
 public abstract class ImageEncoder implements JmolImageEncoder {
 
-  protected JmolOutputChannel out;
+  protected OutputChannel out;
 
   protected int width = -1;
   protected int height = -1;
@@ -91,7 +92,7 @@ public abstract class ImageEncoder implements JmolImageEncoder {
    * @return  true if successful
    */
   public boolean createImage(ApiPlatform apiPlatform, String type,
-                              Object objImage, JmolOutputChannel out,
+                              Object objImage, OutputChannel out,
                               Map<String, Object> params, String[] errRet) {
     this.out = out;
     this.errRet = errRet;

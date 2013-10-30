@@ -32,7 +32,6 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolDocument;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.io.JmolOutputChannel;
 import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
@@ -42,6 +41,7 @@ import javajs.util.M3;
 import javajs.util.P3;
 import org.jmol.util.Quaternion;
 
+import javajs.util.OutputChannel;
 import javajs.util.Parser;
 import javajs.util.V3;
 import javajs.util.List;
@@ -179,7 +179,7 @@ public abstract class AtomSetCollectionReader {
   protected float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
   protected int desiredModelNumber = Integer.MIN_VALUE;
   protected SymmetryInterface symmetry;
-  protected JmolOutputChannel out;
+  protected OutputChannel out;
   protected boolean iHaveFractionalCoordinates;
   protected boolean doPackUnitCell;
   protected String strSupercell;
@@ -465,7 +465,7 @@ public abstract class AtomSetCollectionReader {
     isSequential = htParams.containsKey("isSequential");
     readerName = (String) htParams.get("readerName");
     if (htParams.containsKey("outputChannel"))
-      out = (JmolOutputChannel) htParams.get("outputChannel");
+      out = (OutputChannel) htParams.get("outputChannel");
     //parameterData = (String) htParams.get("parameterData");
     if (htParams.containsKey("vibrationNumber"))
       desiredVibrationNumber = ((Integer) htParams.get("vibrationNumber"))

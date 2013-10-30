@@ -67,7 +67,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
-import org.jmol.util.ParserBS;
+import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 
 import javajs.awt.Font;
@@ -1470,7 +1470,7 @@ public class ScriptExt implements JmolScriptExtension {
           } else {
             data = new float[atomCount];
             if (!chk)
-              ParserBS.parseStringInfestedFloatArray(""
+              Parser.parseStringInfestedFloatArray(""
                   + eval.getParameter(vname, T.string), null, data);
           }
           if (!chk/* && (surfaceObjectSeen)*/)
@@ -4193,7 +4193,7 @@ public class ScriptExt implements JmolScriptExtension {
       return;
     boolean isDefault = (dataLabel.toLowerCase().indexOf("(default)") >= 0);
     if (dataType.equals("connect_atoms")) {
-      viewer.connect(ParserBS.parseFloatArray2d(dataString));
+      viewer.connect(Parser.parseFloatArray2d(dataString));
       return;
     }
     if (dataType.indexOf("ligand_") == 0) {
@@ -4226,7 +4226,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (dataType.indexOf("data2d_") == 0) {
       // data2d_someName
       data[0] = dataLabel;
-      data[1] = ParserBS.parseFloatArray2d(dataString);
+      data[1] = Parser.parseFloatArray2d(dataString);
       data[3] = Integer.valueOf(2);
       viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
       return;
@@ -4234,7 +4234,7 @@ public class ScriptExt implements JmolScriptExtension {
     if (dataType.indexOf("data3d_") == 0) {
       // data3d_someName
       data[0] = dataLabel;
-      data[1] = ParserBS.parseFloatArray3d(dataString);
+      data[1] = Parser.parseFloatArray3d(dataString);
       data[3] = Integer.valueOf(3);
       viewer.setData(dataLabel, data, 0, 0, 0, 0, 0);
       return;
@@ -8560,7 +8560,7 @@ public class ScriptExt implements JmolScriptExtension {
       int iField = args[1].asInt();
       int nBytes = args[2].asInt();
       int firstLine = args[3].asInt();
-      float[] f = ParserBS.parseFloatArrayFromMatchAndField(selected, null, 0,
+      float[] f = Parser.parseFloatArrayFromMatchAndField(selected, null, 0,
           0, null, iField, nBytes, null, firstLine);
       return mp.addXStr(Escape.escapeFloatA(f, false));
     }

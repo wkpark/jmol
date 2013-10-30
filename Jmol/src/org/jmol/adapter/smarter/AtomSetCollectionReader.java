@@ -35,7 +35,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Logger;
-import org.jmol.util.ParserBS;
+import org.jmol.util.Parser;
 
 import javajs.util.M3;
 import javajs.util.P3;
@@ -1464,7 +1464,7 @@ public abstract class AtomSetCollectionReader {
   }
 
   protected void parseStringInfestedFloatArray(String s, float[] data) {
-    ParserBS.parseStringInfestedFloatArray(s, null, data);
+    Parser.parseStringInfestedFloatArray(s, null, data);
   }
 
   protected static float[] getTokensFloat(String s, float[] f, int n) {

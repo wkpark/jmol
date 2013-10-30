@@ -37,7 +37,7 @@ import org.jmol.viewer.Viewer;
 import javajs.awt.Dimension;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.ParserBS;
+import org.jmol.util.Parser;
 
 
 import java.awt.Event;
@@ -810,7 +810,7 @@ public class Jmol implements JmolSyncInterface {
           }
           nX = Math.abs(nX);
           float[] fdata = new float[nX * nY];
-          ParserBS.parseStringInfestedFloatArray(data, null, fdata);
+          Parser.parseStringInfestedFloatArray(data, null, fdata);
           for (int i = 0, ipt = 0; i < nX; i++) {
             for (int j = 0; j < nY; j++, ipt++) {
               fxy[i][j] = fdata[ipt];

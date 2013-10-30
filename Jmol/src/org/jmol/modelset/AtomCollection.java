@@ -54,7 +54,7 @@ import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
 
-import org.jmol.util.ParserBS;
+import org.jmol.util.Parser;
 import org.jmol.util.Tensor;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolEdge;
@@ -838,7 +838,7 @@ abstract public class AtomCollection {
       bs = BSUtil.newBitSet(atomCount);
       break;
     }
-    int[] lines = ParserBS.markLines(dataString, ';');
+    int[] lines = Parser.markLines(dataString, ';');
     int n = 0;
     try {
       int nData = javajs.util.PT.parseInt(dataString.substring(0, lines[0] - 1));
@@ -904,7 +904,7 @@ abstract public class AtomCollection {
   }
   
   private void loadCoordinates(String data, boolean isVibrationVectors, boolean doTaint) {
-    int[] lines = ParserBS.markLines(data, ';');
+    int[] lines = Parser.markLines(data, ';');
     V3 v = (isVibrationVectors ? new V3() : null);
     try {
       int nData = javajs.util.PT.parseInt(data.substring(0, lines[0] - 1));

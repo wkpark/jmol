@@ -35,7 +35,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import org.jmol.util.ParserBS;
+import org.jmol.util.Parser;
 
 import javajs.util.AU;
 import javajs.util.PT;
@@ -109,7 +109,7 @@ public class DataManager implements JmolDataManager {
       }
       if (viewer.bsUserVdws == null)
         viewer.setUserVdw(viewer.defaultVdw);
-      ParserBS.parseFloatArrayFromMatchAndField(stringData, viewer.bsUserVdws, 1, 0,
+      Parser.parseFloatArrayFromMatchAndField(stringData, viewer.bsUserVdws, 1, 0,
           (int[]) data[DATA_SELECTION_MAP], 2, 0, viewer.userVdws, 1);
       for (int i = viewer.userVdws.length; --i >= 0;)
         viewer.userVdwMars[i] = (int) Math.floor(viewer.userVdws[i] * 1000);
@@ -150,19 +150,19 @@ public class DataManager implements JmolDataManager {
             for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
               f[i] = floatData[i];
         } else {
-          ParserBS.parseFloatArrayBsData(strData == null ? PT.getTokens(stringData)
+          Parser.parseFloatArrayBsData(strData == null ? PT.getTokens(stringData)
               : strData, bs, f);
         }
       } else if (matchField <= 0) {
         // get the specified field >= 1 for the selected atoms
         bs = (BS) data[DATA_SELECTION_MAP];
-        ParserBS.parseFloatArrayFromMatchAndField(stringData, bs, 0, 0, null,
+        Parser.parseFloatArrayFromMatchAndField(stringData, bs, 0, 0, null,
             field, fieldColumnCount, f, 1);
       } else {
         // get the selected field, with an integer match in a specified field
         // in this case, bs is created and indicates which data points were set
         int[] iData = (int[]) data[DATA_SELECTION_MAP];
-        ParserBS.parseFloatArrayFromMatchAndField(stringData, null, matchField,
+        Parser.parseFloatArrayFromMatchAndField(stringData, null, matchField,
             matchFieldColumnCount, iData, field, fieldColumnCount, f, 1);
         bs = new BS();
         for (int i = iData.length; --i >= 0;)

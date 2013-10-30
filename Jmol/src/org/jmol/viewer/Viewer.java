@@ -102,7 +102,7 @@ import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import javajs.util.PT;
-import org.jmol.util.ParserBS;
+import org.jmol.util.Parser;
 
 import javajs.util.P3;
 import javajs.util.P4;
@@ -8577,7 +8577,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     fdata = new float[nX][nY];
     float[] f = new float[nX * nY];
-    ParserBS.parseStringInfestedFloatArray(data, null, f);
+    Parser.parseStringInfestedFloatArray(data, null, f);
     for (int i = 0, n = 0; i < nX; i++)
       for (int j = 0; j < nY; j++)
         fdata[i][j] = f[n++];
@@ -8602,7 +8602,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     }
     xyzdata = new float[nX][nY][nZ];
     float[] f = new float[nX * nY * nZ];
-    ParserBS.parseStringInfestedFloatArray(data, null, f);
+    Parser.parseStringInfestedFloatArray(data, null, f);
     for (int i = 0, n = 0; i < nX; i++)
       for (int j = 0; j < nY; j++)
         for (int k = 0; k < nZ; k++)

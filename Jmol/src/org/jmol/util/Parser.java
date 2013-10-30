@@ -30,7 +30,7 @@ import javajs.util.PT;
 
 import org.jmol.java.BS;
 
-public class ParserBS {
+public class Parser {
 
   /**
    * parses a "dirty" string for floats. If there are non-float tokens, 
@@ -44,7 +44,7 @@ public class ParserBS {
    * @return  number of floats
    */
   public static int parseStringInfestedFloatArray(String str, BS bs, float[] data) {
-    return ParserBS.parseFloatArrayBsData(PT.getTokens(str), bs, data);
+    return Parser.parseFloatArrayBsData(PT.getTokens(str), bs, data);
   }
 
   public static int parseFloatArrayBsData(String[] tokens, BS bs, float[] data) {

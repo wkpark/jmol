@@ -64,7 +64,7 @@ import org.jmol.util.JmolEdge;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import javajs.util.PT;
-import org.jmol.util.ParserBS;
+import org.jmol.util.Parser;
 
 import javajs.util.A4;
 import javajs.util.CU;
@@ -7475,7 +7475,7 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
           index++;
           name = parameterAsString(index++);
           data = new float[viewer.getAtomCount()];
-          ParserBS.parseStringInfestedFloatArray(""
+          Parser.parseStringInfestedFloatArray(""
               + getParameter(name, T.string), null, (float[]) data);
           pal = EnumPalette.PROPERTY;
         }

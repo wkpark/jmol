@@ -69,7 +69,7 @@ public class BC {
         
       /**
        * @j2sNative
-       *       var o = javajs.util.ByteConverter;
+       *       var o = javajs.util.BC;
        *       var b1, b2, b3, b4, b5;
        *       
        *       if (isBigEndian) {

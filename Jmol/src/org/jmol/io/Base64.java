@@ -83,16 +83,19 @@ public class Base64 {
   public static byte[] decodeBase64(String strBase64) {
     int nBytes = 0;
     int ch;
+    int pt0 = strBase64.indexOf(";base64,") + 1;
+    if (pt0 > 0)
+      pt0 += 7;
     char[] chars64 = strBase64.toCharArray();
     int len64 = chars64.length;
     if (len64 == 0)
       return new byte[0];
-    for (int i = len64; --i >= 0;)
+    for (int i = len64; --i >= pt0;)
       nBytes += ((ch = chars64[i] & 0x7F) == 'A' || decode64[ch] > 0 ? 3 : 0);
     nBytes = nBytes >> 2;
     byte[] bytes = new byte[nBytes];
     int offset = 18;
-    for (int i = 0, pt = 0, b = 0; i < len64; i++) {
+    for (int i = pt0, pt = 0, b = 0; i < len64; i++) {
       if (decode64[ch = chars64[i] & 0x7F] > 0 || ch == 'A' || ch == '=') {
         b |= decode64[ch] << offset;
         //System.out.println(chars64[i] + " " + decode64[ch] + " " + offset + " " + Integer.toHexString(b));

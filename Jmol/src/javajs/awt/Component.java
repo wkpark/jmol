@@ -25,7 +25,7 @@ abstract public class Component {
     /**
      * @j2sNative
      *            
-     *            Jmol.Dialog.register(this, type);
+     *            SwingController.register(this, type);
      */
     {
       id = type + ("" + Math.random()).substring(3);
@@ -41,6 +41,14 @@ abstract public class Component {
 
   public void setText(String text) {
     this.text = text;
+    /**
+     * @j2sNative
+     * 
+     * SwingController.setText(this);
+     * 
+     */
+    {
+    }
   }
 
   public void setName(String name) {
@@ -79,7 +87,7 @@ abstract public class Component {
     /**
      * @j2sNative
      * 
-     * Jmol.Dialog.setVisible(this);
+     * SwingController.setVisible(this);
      * 
      */
   }

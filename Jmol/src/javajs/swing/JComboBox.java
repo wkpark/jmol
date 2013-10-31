@@ -17,7 +17,7 @@ public class JComboBox<T>  extends JComponent {
 		/**
 		 * @j2sNative
 		 * 
-		 * Jmol.Dialog.setSelectedIndex(this);
+		 * SwingController.setSelectedIndex(this);
 		 * 
 		 */
 		{
@@ -35,7 +35,7 @@ public class JComboBox<T>  extends JComponent {
 	@Override
 	public String toHTML() {
 		SB sb = new SB();
-		sb.append("\n<select id='" + id + "' class='JComboBox' onchange='Jmol.Dialog.click(this)'>\n");		
+		sb.append("\n<select id='" + id + "' class='JComboBox' onchange='SwingController.click(this)'>\n");		
 		for (int i = 0; i < info.length; i++)
 			sb.append("\n<option class='JComboBox_option'" + (i == selectedIndex ? "selected":"") + ">" + info[i] + "</option>");
 		sb.append("\n</select>\n");

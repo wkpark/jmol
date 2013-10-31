@@ -1,4 +1,4 @@
-/* Jmol 12.0 script library Jmol.js 9:48 PM 1/31/2011 Bob Hanson
+/* Jmol 12.0 script library Jmol.js 10/31/2013 5:12:44 PM Bob Hanson
 
 
 NOTE: THIS LIBRARY IS DEPRECATED STARTING WITH Jmol 13.0. 
@@ -90,6 +90,8 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bh 4/2010  -- added jmolSetMemoryMb(nMb)
 // ah 1/2011  -- wider detection of browsers; more browsers now use the object tag instead of the applet tag;
 //               fix of object tag (removed classid) accounts for change of behavior in Chrome
+// bh 5/2013  -- fix for master checkbox click not actuating checkboxes
+// bh 10/2013 -- fix for local signed applet having wrong default directory in Java v45 
 
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
@@ -590,6 +592,7 @@ var _jmol = {
   targetText: ",0",
   scripts: [""],
   params: {
+  documentLocation: document.location.href,
   syncId: ("" + Math.random()).substring(3),
   progressbar: "true",
   progresscolor: "blue",
@@ -767,6 +770,8 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     var tHeader, tFooter;
     codebase || jmolInitialize(".");
     params.name = "jmolApplet" + nameSuffix
+    params.permissions = (archivePath.indexOf("Signed") >= 0 ? "all-permissions" : "sandbox");
+    
     if (useIEObject || useHtml4Object) {
       params.archive = archivePath;
       params.mayscript = 'true';
@@ -1070,10 +1075,9 @@ function _jmolFindAppletInWindow(win, target) {
     var doc = win.document;
     if (doc.getElementById(target))
       return doc.getElementById(target);
-    else if (doc.applets)
+    if (doc.applets)
       return doc.applets[target];
-    else
-      return doc[target];
+    return doc[target];
 }
 
 function _jmolAddScript(script) {
@@ -1148,8 +1152,9 @@ function _jmolNotifyMaster(m){
 function _jmolNotifyGroup(m, isOn){
   //called when a master item is checked
   for (var chkBox in m.chkGroup){
-    var item = m.chkGroup[chkBox]
-    item.checked = isOn;
+    var item = m.chkGroup[chkBox]    
+    if (item.checked != isOn)
+      item.click();
     if (_jmol.checkboxMasters[item.id])
       _jmolNotifyGroup(_jmol.checkboxMasters[item.id], isOn)
   }

@@ -113,17 +113,17 @@ abstract public class JmolViewer implements JSInterface {
     if (modelAdapter != null)
       info.put("adapter", modelAdapter);
     if (statusListener != null)
-      info.put("statusListener", statusListener);
+      info.put("statuslistener", statusListener);
     if (implementedPlatform != null)
       info.put("platform", implementedPlatform);
     if (commandOptions != null)
        info.put("options", commandOptions);
     if (fullName != null)
-      info.put("fullName", fullName);
+      info.put("fullname", fullName);
     if (documentBase != null)
-      info.put("documentBase", documentBase);
+      info.put("documentbase", documentBase);
     if (codeBase != null)
-      info.put("codeBase", codeBase);    
+      info.put("codebase", codeBase);    
     return new Viewer(info);
   }
   

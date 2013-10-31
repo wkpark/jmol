@@ -266,36 +266,38 @@ public class Jmol implements WrappedApplet {
   }
 
   private void initWindows() {
-    String options = "-applet";
+    Map<String, Object> info = new Hashtable<String, Object>();
+    addValue(info, null, "applet", Boolean.TRUE);
     isSigned = getBooleanValue("signed", false) || appletWrapper.isSigned();
     if (isSigned)
-      options += "-signed";
+      addValue(info, null, "signedApplet", Boolean.TRUE);
     if (getBooleanValue("useCommandThread", isSigned))
-      options += "-threaded";
+      addValue(info, null, "useCommandThread", Boolean.TRUE);
+    String options = "";
     if (isSigned && getBooleanValue("multiTouchSparshUI-simulated", false))
       options += "-multitouch-sparshui-simulated";
     else if (isSigned && getBooleanValue("multiTouchSparshUI", false)) // true for testing JmolAppletSignedMT.jar
       options += "-multitouch-sparshui";
-    String s = getValue("MaximumSize", null);
-    if (s != null)
-      options += "-maximumSize " + s;
-    // note, -appletProxy must be the LAST item added
-    s = getValue("JmolAppletProxy", null);
-    if (s != null)
-      options += "-appletProxy " + s;
+    addValue(info, null, "options", options);
+    addValue(info, null, "display", appletWrapper);
+    addValue(info, null, "statusListener", new MyStatusListener());
+    addValue(info, null, "fullName", fullName);
+    addValue(info, null, "documentBase", appletWrapper.getDocumentBase());
+    addValue(info, null, "codeBase", appletWrapper.getCodeBase());
     if (getBooleanValue("noScripting", false))
-      options += "-noScripting ";
-    
-    viewer = JmolViewer.allocateViewer(appletWrapper, null, fullName,
-        appletWrapper.getDocumentBase(), appletWrapper.getCodeBase(), options,
-        new MyStatusListener());
+      addValue(info, null, "noScripting", Boolean.TRUE);
+
+    addValue(info, "MaximumSize", "maximumSize", null);
+    addValue(info, "JmolAppletProxy", "appletProxy", null);
+    addValue(info, "documentLocation",  null, null);
+    viewer = new Viewer(info);
     String menuFile = getParameter("menuFile");
     if (menuFile != null)
       viewer.getProperty("DATA_API", "setMenu", viewer
           .getFileAsString(menuFile));
     try {
-      UIManager.setLookAndFeel(UIManager
-          .getCrossPlatformLookAndFeelClassName());
+      UIManager
+          .setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
     } catch (Throwable exc) {
       System.err.println("Error loading L&F: " + exc);
     }
@@ -335,6 +337,14 @@ public class Jmol implements WrappedApplet {
             + haveDocumentAccess);
       }
     }
+  }
+
+  private void addValue(Map<String, Object> info, String key, String putKey,
+                        Object value) {
+    if (key != null)
+      value = getValue(key, null);
+    if (value != null)
+      info.put(putKey == null ? key : putKey, value);
   }
 
   private void initApplication() {

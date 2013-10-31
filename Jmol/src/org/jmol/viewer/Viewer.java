@@ -539,6 +539,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     setJmolStatusListener(statusListener);
     if (isApplet) {
       Logger.info("viewerOptions: \n" + Escape.escapeMap(viewerOptions));
+      // Java only, because Signed applet can't find correct path when local.
+      String path = (String) viewerOptions.get("documentLocation");
+      if (!isJS && path != null && path.startsWith("file:/")) {
+        path = path.substring(0, path.substring(0, (path + "?").indexOf("?")).lastIndexOf("/"));
+        Logger.info("setting current directory to " + path);
+        cd(path);
+      }
       jsDocumentBase = appletDocumentBase;
       i = jsDocumentBase.indexOf("#");
       if (i >= 0)

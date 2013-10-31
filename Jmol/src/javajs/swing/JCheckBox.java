@@ -29,9 +29,10 @@ public class JCheckBox extends JComponent {
 
 	@Override
 	public String toHTML() {
-		SB sb = new SB();
-		sb.append("<input type=checkbox id='" + id + "' class='JCheckBox' style='" + getCSSstyle(0) + "' onclick='Jmol.Dialog.click(this)'>");
-		return sb.toString();
+		String s = "<input type=checkbox id='" + id + "' class='JCheckBox' style='" + getCSSstyle(0) 
+    + "' " + (selected ? "checked='checked' " : "") + "onclick='Jmol.Dialog.click(this)'>"
+    + "<label for='" + id + "'>" + text + "</label>";
+		return s;
 	}
 
 

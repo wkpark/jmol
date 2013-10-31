@@ -40,8 +40,19 @@ public class JDialog extends JContainer {
     this.title = title;
   }
 
+  public void pack() {
+    html = null;
+  }
+
   public void validate() {
-    //unnecessary here, or could set renderWidth and renderHeight
+    html = null;
+  }
+
+  @Override
+  public void setVisible(boolean tf) {
+    if (tf && html == null)
+      setDialog();
+    super.setVisible(tf);
   }
 
   public void dispose() {
@@ -57,10 +68,6 @@ public class JDialog extends JContainer {
       }
       
     }
-  }
-
-  public void pack() {
-    //setDialog();
   }
 
   @Override

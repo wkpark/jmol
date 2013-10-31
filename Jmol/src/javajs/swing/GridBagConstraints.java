@@ -39,9 +39,8 @@ public class GridBagConstraints {
 
 	String getStyle(boolean margins) {
 		return "style='" + (margins ? 
-				"margin:" + insets.top + "px " + (ipadx + insets.left) + "px "
-				+ insets.bottom + "px " + (ipady + insets.right)
-				+ "px;"
+				"margin:" + insets.top + "px " + (ipady + insets.right) + "px "
+				+ insets.bottom + "px " + (ipadx + insets.left) + "px;"
 				: "text-align:" + (anchor == EAST ? "right" : anchor == WEST? "left" : "center")) + "'";
 	}
 

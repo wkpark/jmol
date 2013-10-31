@@ -34,8 +34,6 @@ import javajs.util.T4;
 
 public class Txt {
 
-//  private final static DecimalFormat[] formatters = new DecimalFormat[10];
-
   public static String formatStringS(String strFormat, String key, String strT) {
     return formatString(strFormat, key, strT, Float.NaN, Double.NaN, false);
   }

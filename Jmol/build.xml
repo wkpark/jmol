@@ -1152,8 +1152,7 @@ all support for previous versions removed
         <include name="org/jmol/thread/**" />
 		<include name="org/jmol/util/**" />
         <include name="org/jmol/io/**" />
-        <exclude name="org/jmol/util/BitSet32.class" />
-		<include name="org/jmol/viewer/**" />
+ 		<include name="org/jmol/viewer/**" />
       </fileset>    	
       <indexjars>
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Console.jar" />

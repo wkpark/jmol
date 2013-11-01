@@ -9004,7 +9004,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return n;
     }
     // fileManager.addLoadScript("zap " + Escape.escape(bs));
-    statusManager.modifySend(-1, modelSet.atoms[atomIndex].modelIndex, 5);
+    int modelIndex = modelSet.atoms[atomIndex].modelIndex;
+    statusManager.modifySend(-1, modelIndex, 5);
     setCurrentModelIndexClear(0, false);
     animationManager.setAnimationOn(false);
     BS bsD0 = BSUtil.copy(getDeletedAtoms());
@@ -9022,7 +9023,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     refreshMeasures(true);
     if (bsD0 != null)
       bsDeleted.andNot(bsD0);
-    statusManager.modifySend(-1, modelSet.atoms[atomIndex].modelIndex, -5);
+    statusManager.modifySend(-1, modelIndex, -5);
     return BSUtil.cardinalityOf(bsDeleted);
   }
 

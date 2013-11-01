@@ -35,6 +35,7 @@ import javajs.util.V3;
 import org.jmol.viewer.JC;
 
 import org.jmol.api.AtomIndexIterator;
+import org.jmol.api.JmolEnvCalc;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
@@ -136,7 +137,7 @@ import org.jmol.java.BS;
  *
  ****************************************************************/
 
-public final class EnvelopeCalculation {
+public final class EnvelopeCalculation implements JmolEnvCalc {
 
   
   private BS geodesicMap;

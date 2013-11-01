@@ -854,6 +854,12 @@ all support for previous versions removed
         <fileset dir="${jmol.applet.build.dir}" includes="JmolApplet0_i18n_*.jar" />
       </indexjars>
     </jar>
+    <signjar keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}">
+    	<fileset dir="build" >
+    		<include name="JmolApplet.jar" />
+    		<include name="JmolApplet0*.jar" />
+    	</fileset>
+    </signjar>
 
 	<echo message="creating JmolLib.jar" level="info" />
     <jar destfile="${jmol.applet.build.dir}/JmolLib.jar"

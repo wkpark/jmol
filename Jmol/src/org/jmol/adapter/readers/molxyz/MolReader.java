@@ -227,7 +227,7 @@ public class MolReader extends AtomSetCollectionReader {
       float x, y, z;
       int charge = 0;
       int isotope = 0;
-      int iAtom = i + 1;
+      int iAtom = Integer.MIN_VALUE;
       if (isV3000) {
         checkLineContinuation();
         String[] tokens = getTokens();
@@ -295,7 +295,8 @@ public class MolReader extends AtomSetCollectionReader {
       atom.elementSymbol = elementSymbol;
       atom.formalCharge = charge;
       setAtomCoordXYZ(atom, x, y, z);
-      atom.atomSerial = iAtom;
+      if (iAtom != Integer.MIN_VALUE)
+        atom.atomSerial = iAtom;
       atomSetCollection.addAtomWithMappedSerialNumber(atom);
     }
     if (isV3000)

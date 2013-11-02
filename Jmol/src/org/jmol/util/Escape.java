@@ -712,15 +712,6 @@ public class Escape {
     return v.toArray(new String[v.size()]);
   }
 
-  public static String escapeUrl(String url) {
-    url = PT.simpleReplace(url, "\n", "");
-    url = PT.simpleReplace(url, "%", "%25");
-    url = PT.simpleReplace(url, "[", "%5B");
-    url = PT.simpleReplace(url, "]", "%5D");
-    url = PT.simpleReplace(url, " ", "%20");
-    return url;
-  }
-
   public static boolean isAV(Object x) {
     /**
      * @j2sNative

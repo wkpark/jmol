@@ -1032,5 +1032,15 @@ public class PT {
     }
   }
 
+  public static String escapeUrl(String url) {
+    url = simpleReplace(url, "\n", "");
+    url = simpleReplace(url, "%", "%25");
+    url = simpleReplace(url, "#", "%23");
+    url = simpleReplace(url, "[", "%5B");
+    url = simpleReplace(url, "]", "%5D");
+    url = simpleReplace(url, " ", "%20");
+    return url;
+  }
+
 
 }

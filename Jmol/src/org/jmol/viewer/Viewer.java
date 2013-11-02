@@ -4754,7 +4754,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
             f = f.substring(5);
           if (fl.startsWith("cas:"))
             f = f.substring(4);
-          f = "name/" + Escape.escapeUrl(f);
+          f = "name/" + PT.escapeUrl(f);
         }
       }
       return Txt.formatStringS(format, "FILE", f);
@@ -4764,7 +4764,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         f = f.substring(1);
         format = javajs.util.PT.simpleReplace(global.smilesUrlFormat,
             "&get3d=True", "");
-        return Txt.formatStringS(format, "FILE", Escape.escapeUrl(f));
+        return Txt.formatStringS(format, "FILE", PT.escapeUrl(f));
       }
       //$FALL-THROUGH$
     case 'N':
@@ -4772,7 +4772,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
     case 'I':
     case 'K':
     case '/':
-      f = Escape.escapeUrl(f);
+      f = PT.escapeUrl(f);
       switch (type) {
       case 'N':
         format = global.nihResolverFormat + "/names";

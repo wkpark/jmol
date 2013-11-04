@@ -350,7 +350,10 @@ public class MolReader extends AtomSetCollectionReader {
           stereo = parseIntRange(line, 9, 12);
       }
       order = fixOrder(order, stereo);
-      atomSetCollection.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
+      if (isV3000)
+        atomSetCollection.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
+      else
+        atomSetCollection.addNewBondWithOrder(iAtom1 - 1, iAtom2 - 1, order);        
     }
     if (isV3000)
       discardLinesUntilContains("END BOND");

@@ -863,7 +863,7 @@ all support for previous versions removed
       </indexjars>
     </jar>
     <if>
-      <available file="resouces/certificate/Jmol.p12" />
+      <available file="resources/certificate/Jmol.p12" />
       <then>
         <signjar keystore="resources/certificate/Jmol.p12"
                  storetype="pkcs12"

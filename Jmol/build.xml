@@ -1377,8 +1377,10 @@ all support for previous versions removed
       <fileset dir="src" />
     </copy>
 
-    <copy todir="build/dist/jmol-${version}/selfSignedCertificate" >
-      <fileset dir="selfSignedCertificate" />
+    <copy todir="build/dist/jmol-${version}/resources" >
+      <fileset dir="resources">
+        <exclude name="**/*.p12" />
+      </fileset>
     </copy>
 
     <copy todir="build/dist/jmol-${version}/${lib.dir}" >
@@ -1793,7 +1795,7 @@ all support for previous versions removed
   <!-- tools -->
   <target name="sign-jar-file" >
     <if>
-      <available file="resouces/certificate/Jmol.p12" />
+      <available file="resources/certificate/Jmol.p12" />
       <then>
         <signjar jar="${sign-jar-file-src}"
                  signedjar="${sign-jar-file-dest}"

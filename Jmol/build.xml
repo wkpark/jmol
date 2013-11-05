@@ -445,6 +445,7 @@ all support for previous versions removed
         <include name="com/**" />
         <include name="javajs/api/**" />
         <include name="javajs/awt/**" />
+        <include name="javajs/export/**" />
         <include name="javajs/util/**" />
         <exclude name="**/Test*.class" />
         <exclude name="**/jmol/jcamp/**" />
@@ -469,6 +470,7 @@ all support for previous versions removed
         <exclude name="com/**" />
         <include name="javajs/api/**" />
         <include name="javajs/awt/**" />
+        <include name="javajs/export/**" />
         <include name="javajs/util/**" />
         <include name="**/jmol/**" />
         <exclude name="**/jmol/_documents/**" />
@@ -618,6 +620,7 @@ all support for previous versions removed
 
   <target name="applet-jar" id="applet-jar"
           depends="applet-classes,appletjars">
+    <echo message="Creating JmolApplet.jar" />
     <jar destfile="${jmol.applet.build.dir}/JmolApplet.jar"
          manifest="manifest/appletMonolithic.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
@@ -633,6 +636,7 @@ all support for previous versions removed
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
 
+    <echo message="Creating JmolApplet0xxx.jar" />
     <for list="${all.JmolApplet.languages}" delimiter=","
          param="current.Jmol.language">
       <sequential>
@@ -900,18 +904,20 @@ all support for previous versions removed
   </target>
 
   <target name="signed-applet" id="signed-applet" depends="applet-jar">
+    <echo message="Creating JmolAppletsigned.jar" />
     <jar destfile="${tempjar}"
          manifest="manifest/appletMonolithicSigned.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
         <include name="**/*" />
         <exclude name="JmolSmiles*" />
+        <include name="javajs/swing/**" />
         <exclude name="org/openscience/**/*" />
       </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
     <signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
              signedjar="${jmol.applet.build.dir}/JmolAppletSigned.jar" />
-  	
+    <echo message="Creating JmolAppletsigned0xxx.jar" />
     <for list="${all.JmolApplet.languages}" delimiter=","
          param="current.Jmol.language">
       <sequential>
@@ -1139,6 +1145,7 @@ all support for previous versions removed
         <include name="jmol75x29x8.gif" />
         <include name="javajs/api/**" />
         <include name="javajs/awt/**" />
+        <include name="javajs/export/**" />
         <include name="javajs/util/**" />
 		<include name="org/jmol/adapter/smarter/**" />
   		<include name="org/jmol/api/**" />
@@ -1197,6 +1204,7 @@ all support for previous versions removed
 
   <target name="smiles-applet-jar" id="smiles-applet-jar"
           depends="applet-classes">
+    <echo message="Creating JmolSmilesApplet.jar" />
     <jar destfile="${jmol.applet.build.dir}/JmolSmilesApplet.jar"
          manifest="manifest/appletSmiles.txt" index="true" >
       <fileset dir="${classes.dir}" >

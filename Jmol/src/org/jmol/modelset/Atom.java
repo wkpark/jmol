@@ -1233,10 +1233,6 @@ final public class Atom extends Point3fi implements JmolNode {
     case T.strucno:
       return atom.getStrucNo();
     case T.symop:
-      // a little weird:
-      // First we determine how many operations we have in this model.
-      // Then we get the symmetry bitset, which shows the assignments
-      // of symmetry for this atom.
       return (atom.atomSymmetry == null ? 0 : atom.atomSymmetry.nextSetBit(0) + 1);
     case T.valence:
       return atom.getValence();

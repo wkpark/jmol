@@ -1430,7 +1430,8 @@ public class AtomSetCollection {
     doNormalize = false;
     symmetry = null;
     getSymmetry();
-    setNotionalUnitCell(notionalUnitCell, null, unitCellOffset);
+    if (!Float.isNaN(notionalUnitCell[0])) // PDB can do this
+      setNotionalUnitCell(notionalUnitCell, null, unitCellOffset);
     getSymmetry().setSpaceGroup(doNormalize);
     addSpaceGroupOperation("x,y,z");
     setAtomSetSpaceGroupName("biomolecule");

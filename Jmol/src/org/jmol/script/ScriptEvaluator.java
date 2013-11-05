@@ -1370,7 +1370,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     }
 
     int n = 0;
-    int ivvMinMax = 0;
     int ivMinMax = 0;
     float fvMinMax = 0;
     double sum = 0;
@@ -1389,7 +1388,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
     int mode = (isPt ? 3 : isString ? 2 : isInt ? 1 : 0);
     if (isAtoms) {
       boolean haveBitSet = (bs != null);
-      int iModel = -1;
       int i0, i1;
       if (haveIndex) {
         i0 = index;
@@ -1460,45 +1458,6 @@ public class ScriptEvaluator implements JmolScriptEvaluator {
         case 1: // isInt
           int iv = 0;
           switch (tok) {
-          case T.symop:
-            // a little weird:
-            // First we determine how many operations we have in this model.
-            // Then we get the symmetry bitset, which shows the assignments
-            // of symmetry for this atom.
-            if (atom.getModelIndex() != iModel)
-              iModel = atom.getModelIndex();
-            BS bsSym = atom.getAtomSymmetry();
-            if (bsSym == null)
-              break;
-            int p = 0;
-            switch (minmaxtype) {
-            case T.min:
-              ivvMinMax = Integer.MAX_VALUE;
-              break;
-            case T.max:
-              ivvMinMax = Integer.MIN_VALUE;
-              break;
-            }
-            for (int k = bsSym.nextSetBit(0); k >= 0; k = bsSym
-                .nextSetBit(k + 1)) {
-              iv += k + 1;
-              switch (minmaxtype) {
-              case T.min:
-                ivvMinMax = Math.min(ivvMinMax, k + 1);
-                break;
-              case T.max:
-                ivvMinMax = Math.max(ivvMinMax, k + 1);
-                break;
-              }
-              p++;
-            }
-            switch (minmaxtype) {
-            case T.min:
-            case T.max:
-              iv = ivvMinMax;
-            }
-            n += p - 1;
-            break;
           case T.configuration:
           case T.cell:
             errorStr(ERROR_unrecognizedAtomProperty, T.nameOf(tok));

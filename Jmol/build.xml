@@ -70,7 +70,7 @@
   <property name="commons-cli.jar" value="commons-cli-1.0.jar" />
   <property name="saxon.jar" value="saxon.jar" />
   <property name="saxon.main" value="com.icl.saxon.StyleSheet" />
-  <property name="sign.store" value="selfSignedCertificate/selfSignedCertificate.store" />
+  <property name="sign.store" value="resources/selfSignedCertificate/selfSignedCertificate.store" />
   <property name="sign.pass" value="selfSignedCertificate" />
   <property name="sign.alias" value="selfSignedCertificate" />
 
@@ -456,9 +456,10 @@ all support for previous versions removed
       <fileset dir="${appjars.dir}" includes="**/*"/>
       <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
     </jar>
-    <signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.build.dir}/Jmol.jar" />
-    <!-- to verify that a .jar file is signed: jarsigner -verify foo.jar -->
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.build.dir}/Jmol.jar" />
+    </antcall>
   	
     <jar destfile="${tempjar}"
          manifest="manifest/applicationData.txt">
@@ -489,9 +490,10 @@ all support for previous versions removed
       <fileset dir="${appjars.dir}" includes="**/cli/** **/naga/**" />
       <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
     </jar>
-    <signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.build.dir}/JmolData.jar" />
-    <!-- to verify that a .jar file is signed: jarsigner -verify foo.jar -->
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.build.dir}/JmolData.jar" />
+    </antcall>
 
     <copy todir="${jmol.build.dir}">
       <fileset dir=".">
@@ -520,9 +522,10 @@ all support for previous versions removed
       </fileset>
       <fileset dir="${appjars.dir}" includes="**/*"/>
     </jar>
-
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.build.dir}/Jvxl.jar" />
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.build.dir}/Jvxl.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}"
          manifest="manifest/chimetojmol.txt">
@@ -530,9 +533,10 @@ all support for previous versions removed
         <include name="org/openscience/chimetojmol/*" />
       </fileset>
     </jar>
-
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.build.dir}/ChimeToJmol.jar" />
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.build.dir}/ChimeToJmol.jar" />
+    </antcall>
 
   	<delete file="{tempjar}" />
 
@@ -858,12 +862,31 @@ all support for previous versions removed
         <fileset dir="${jmol.applet.build.dir}" includes="JmolApplet0_i18n_*.jar" />
       </indexjars>
     </jar>
-    <signjar keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}">
-    	<fileset dir="build" >
-    		<include name="JmolApplet.jar" />
-    		<include name="JmolApplet0*.jar" />
-    	</fileset>
-    </signjar>
+    <if>
+      <available file="resouces/certificate/Jmol.p12" />
+      <then>
+        <signjar keystore="resources/certificate/Jmol.p12"
+                 storetype="pkcs12"
+                 storepass="${Jmol.p12.password}"
+                 alias="${Jmol.p12.alias}"
+                 keypass="${Jmol.p12key.password}">
+          <fileset dir="build" >
+            <include name="JmolApplet.jar" />
+            <include name="JmolApplet0*.jar" />
+          </fileset>
+        </signjar>
+      </then>
+      <else>
+        <signjar keystore="${sign.store}"
+                 storepass="${sign.pass}"
+                 alias="${sign.alias}">
+          <fileset dir="build" >
+            <include name="JmolApplet.jar" />
+            <include name="JmolApplet0*.jar" />
+          </fileset>
+        </signjar>
+      </else>
+    </if>
 
 	<echo message="creating JmolLib.jar" level="info" />
     <jar destfile="${jmol.applet.build.dir}/JmolLib.jar"
@@ -915,9 +938,12 @@ all support for previous versions removed
       </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
-    <signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned.jar" />
-    <echo message="Creating JmolAppletsigned0xxx.jar" />
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.build.dir}/JmolAppletSigned.jar" />
+    </antcall>
+
+  	<echo message="Creating JmolAppletsigned0xxx.jar" />
     <for list="${all.JmolApplet.languages}" delimiter=","
          param="current.Jmol.language">
       <sequential>
@@ -927,8 +953,10 @@ all support for previous versions removed
                <include name="org/jmol/translation/JmolApplet/@{current.Jmol.language}/**" />
              </fileset>
         </jar>
-        <signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-                     signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_i18n_@{current.Jmol.language}.jar" />
+        <antcall target="sign-jar-file">
+          <param name="sign-jar-file-src"  value="${tempjar}" />
+          <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_i18n_@{current.Jmol.language}.jar" />
+        </antcall>
       </sequential>
     </for>
 
@@ -937,8 +965,10 @@ all support for previous versions removed
         <include name="org/jmol/console/**" />
       </fileset>
     </jar>
-   	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Console.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Console.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
@@ -946,8 +976,10 @@ all support for previous versions removed
         <include name="org/jmol/image/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Image.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Image.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
@@ -956,8 +988,10 @@ all support for previous versions removed
         <include name="org/jmol/modelkit/images/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
+    </antcall>
 
   	<jar destfile="${tempjar}"
     	manifest="manifest/appletSigned.txt" index="true" >
@@ -966,58 +1000,70 @@ all support for previous versions removed
         <include name="com/sparshui/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_MultiTouch.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Multitouch.jar" />
+    </antcall>
 
   	<jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/navigate/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Navigate.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Navigate.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/parallel/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Parallel.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Parallel.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/popup/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/molxyz/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/cif/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCif.jar"/>
-
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCif.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/pdb/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersPdb.jar"/>
-
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersPdb.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
@@ -1025,8 +1071,10 @@ all support for previous versions removed
         <include name="org/jmol/io2/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMore.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMore.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
@@ -1034,8 +1082,10 @@ all support for previous versions removed
         <include name="org/jmol/quantum/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersQuantum.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersQuantum.jar" />
+    </antcall>
   	
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
@@ -1044,41 +1094,50 @@ all support for previous versions removed
         <include name="org/jmol/shapecgo/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersPyMOL.jar"/>
-  	
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersPyMOL.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/simple/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersSimple.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersSimple.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/xtal/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXtal.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXtal.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/xml/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar" />
+    </antcall>
 
   	<jar destfile="${tempjar}" manifest="manifest/appletSigned.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/scriptext/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ScriptExt.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ScriptExt.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt" >
       <fileset dir="${applet.classes.dir}">
@@ -1088,8 +1147,10 @@ all support for previous versions removed
         <include name="org/jmol/renderbio/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt" >
       <fileset dir="${applet.classes.dir}">
@@ -1097,8 +1158,10 @@ all support for previous versions removed
         <include name="org/jmol/renderspecial/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt" >
       <fileset dir="${applet.classes.dir}">
@@ -1107,33 +1170,40 @@ all support for previous versions removed
         <include name="org/jmol/rendersurface/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSurface.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSurface.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/smiles/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Smiles.jar"/>
-
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Smiles.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/spectrum/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Spectrum.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Spectrum.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/symmetry/**" />
       </fileset>
     </jar>
-  	<signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Symmetry.jar"/>
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Symmetry.jar" />
+    </antcall>
 
     <jar destfile="${tempjar}"
          manifest="manifest/appletSigned0.txt"
@@ -1194,13 +1264,14 @@ all support for previous versions removed
         <fileset dir="${jmol.applet.build.dir}" includes="JmolAppletSigned0_i18n_*.jar" />
       </indexjars>
     </jar>
-    <signjar jar="${tempjar}" keystore="${sign.store}" storepass="${sign.pass}" alias="${sign.alias}"
-  			 signedjar="${jmol.applet.build.dir}/JmolAppletSigned0.jar" />
-  	
+    <antcall target="sign-jar-file">
+      <param name="sign-jar-file-src"  value="${tempjar}" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0.jar" />
+    </antcall>
 
     <delete file="{tempjar}" />
 
-    </target>
+  </target>
 
   <target name="smiles-applet-jar" id="smiles-applet-jar"
           depends="applet-classes">
@@ -1717,6 +1788,30 @@ all support for previous versions removed
     </javac>
     <mkdir dir="${tests.dir}"/>
     <jar destfile="${tests.dir}/Tests.jar" basedir="${test-classes.dir}" />
+  </target>
+
+  <!-- tools -->
+  <target name="sign-jar-file" >
+    <if>
+      <available file="resouces/certificate/Jmol.p12" />
+      <then>
+        <signjar jar="${sign-jar-file-src}"
+                 signedjar="${sign-jar-file-dest}"
+                 keystore="resources/certificate/Jmol.p12"
+                 storetype="pkcs12"
+                 storepass="${Jmol.p12.password}"
+                 alias="wpcleaner-sign"
+                 keypass="${Jmol.p12key.password}" />
+      </then>
+      <else>
+        <signjar jar="${sign-jar-file-src}"
+                 signedjar="${sign-jar-file-dest}"
+                 keystore="${sign.store}"
+                 storepass="${sign.pass}"
+                 alias="${sign.alias}" />
+      </else>
+    </if>
+    <!-- to verify that a .jar file is signed: jarsigner -verify foo.jar -->
   </target>
 
   <!-- i18n stuff -->

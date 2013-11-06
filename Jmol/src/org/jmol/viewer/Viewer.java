@@ -4120,30 +4120,31 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
       return;
     if (mode == 6 && getInMotion(true))
       return;
-    /**
-     * @j2sNative
-     * 
-     *            if (typeof Jmol == "undefined") return; if (!this.isWebGL) {
-     *            if (mode == 7)return; if (mode > 0)
-     *            this.repaintManager.repaintIfReady(); } else if (mode == 2 ||
-     *            mode == 7) {
-     *            this.transformManager.finalizeTransformParameters(); if
-     *            (Jmol._refresh) Jmol._refresh(this.applet, mode, strWhy,
-     *            [this.transformManager.fixedRotationCenter,
-     *            this.transformManager.getRotationQuaternion(),
-     *            this.transformManager.xTranslationFraction,
-     *            this.transformManager.yTranslationFraction,
-     *            this.transformManager.modelRadius,
-     *            this.transformManager.scalePixelsPerAngstrom,
-     *            this.transformManager.zoomPercent ]); if (mode == 7)return; }
-     */
-    {
-      if (mode == 7)
-        return;
-      if (mode > 0)
+    if (isWebGL) {
+      if (mode == 2 || mode == 7) {
+        transformManager.finalizeTransformParameters();
+        /**
+         * @j2sNative
+         * 
+         *            if (!self.Jmol) return;
+         *            if(Jmol._refresh) Jmol._refresh(this.applet, mode, strWhy,
+         *            [this.transformManager.fixedRotationCenter,
+         *            this.transformManager.getRotationQuaternion(),
+         *            this.transformManager.xTranslationFraction,
+         *            this.transformManager.yTranslationFraction,
+         *            this.transformManager.scalePixelsPerAngstrom,
+         *            this.transformManager.zoomPercent ]);
+         */
+        {
+        }
+
+      }
+    } else {
+      if (mode > 0 && mode != 7)
         repaintManager.repaintIfReady("refresh " + mode + " " + strWhy);
     }
-
+    if (mode == 7)
+      return;
     if (mode % 3 != 0 && statusManager.doSync())
       statusManager.setSync(mode == 2 ? strWhy : null);
   }
@@ -4303,6 +4304,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
   }
 
   public Map<String, Object> captureParams;
+  private Map<String, Object> jsParams;
 
   /**
    * for JavaScript only
@@ -4311,16 +4313,26 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    * @param height
    */
   public void updateJS(int width, int height) {
-    /**
-     * @j2sNative
-     * 
-     *            if (!this.isWebGL) {
-     *            this.renderScreenImageStereo(this.apiPlatform.context, null,
-     *            width, height); return; } if (this.updateWindow(width,
-     *            height)){ this.render(); } this.notifyViewerRepaintDone();
-     * 
-     */
-    {
+    if (this.isWebGL) {
+      if (jsParams == null) {
+        jsParams = new Hashtable<String, Object>();
+        jsParams.put("type", "JS");
+      }
+      if (updateWindow(width, height))
+        this.render();
+      this.notifyViewerRepaintDone();
+    } else {
+      Object g = null;
+      /**
+       * @j2sNative
+       * 
+       * g = this.apiPlatform.context;
+       * 
+       * 
+       */
+      {
+      }
+      renderScreenImageStereo(g, null,width, height);
     }
   }
 
@@ -4362,15 +4374,8 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    *         of Jmol-Android a canvas in the case of JSmol
    */
   private Object getImage(boolean isDouble, boolean isImageWrite) {
-    /**
-     * @j2sNative
-     * 
-     *            if (this.isWebGL)return null;
-     * 
-     */
-    {
-    }
-
+    if (isWebGL)
+      return null;
     Object image = null;
     try {
       beginRendering(isDouble, isImageWrite);
@@ -4406,15 +4411,10 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         transformManager.ptOffset);
     int[] minMax = shapeManager.transformAtoms();
     transformManager.bsSelectedAtoms = null;
-    /**
-     * @j2sNative
-     * 
-     *            if (this.isWebGL) { this.repaintManager.renderExport("JS",
-     *            this.gdata, this.modelSet, null);
-     *            this.notifyViewerRepaintDone(); return; }
-     * 
-     */
-    {
+    if (this.isWebGL) {
+      repaintManager.renderExport(gdata, modelSet, jsParams);
+      notifyViewerRepaintDone();
+      return;
     }
     repaintManager.render(gdata, modelSet, true, minMax);
     if (gdata.setPass2(antialias2)) {
@@ -4438,49 +4438,38 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    */
   @Override
   public Object getScreenImageBuffer(Object graphic, boolean isImageWrite) {
-    /**
-     * 
-     * will be a canvas for JSmol HTML5 only
-     * 
-     * @j2sNative
-     * 
-     *            if (this.isWebGL)return null
-     * 
-     */
-    {
+    if (isWebGL)
+      return null;
+    boolean mergeImages = (graphic == null && isStereoDouble());
+    Object imageBuffer;
+    if (transformManager.stereoMode.isBiColor()) {
+      beginRendering(true, isImageWrite);
+      render();
+      gdata.endRendering();
+      gdata.snapshotAnaglyphChannelBytes();
+      beginRendering(false, isImageWrite);
+      render();
+      gdata.endRendering();
+      gdata.applyAnaglygh(transformManager.stereoMode,
+          transformManager.stereoColors);
+      imageBuffer = gdata.getScreenImage(isImageWrite);
+    } else {
+      imageBuffer = getImage(isStereoDouble(), isImageWrite);
     }
-    {
-      boolean mergeImages = (graphic == null && isStereoDouble());
-      Object imageBuffer;
-      if (transformManager.stereoMode.isBiColor()) {
-        beginRendering(true, isImageWrite);
-        render();
-        gdata.endRendering();
-        gdata.snapshotAnaglyphChannelBytes();
-        beginRendering(false, isImageWrite);
-        render();
-        gdata.endRendering();
-        gdata.applyAnaglygh(transformManager.stereoMode,
-            transformManager.stereoColors);
-        imageBuffer = gdata.getScreenImage(isImageWrite);
-      } else {
-        imageBuffer = getImage(isStereoDouble(), isImageWrite);
-      }
-      Object imageBuffer2 = null;
-      if (mergeImages) {
-        imageBuffer2 = apiPlatform.newBufferedImage(imageBuffer,
-            dimScreen.width << 1, dimScreen.height);
-        graphic = apiPlatform.getGraphics(imageBuffer2);
-      }
-      if (graphic != null) {
-        if (isStereoDouble()) {
-          render1(graphic, imageBuffer, dimScreen.width, 0);
-          imageBuffer = getImage(false, false);
-        }
-        render1(graphic, imageBuffer, 0, 0);
-      }
-      return (mergeImages ? imageBuffer2 : imageBuffer);
+    Object imageBuffer2 = null;
+    if (mergeImages) {
+      imageBuffer2 = apiPlatform.newBufferedImage(imageBuffer,
+          dimScreen.width << 1, dimScreen.height);
+      graphic = apiPlatform.getGraphics(imageBuffer2);
     }
+    if (graphic != null) {
+      if (isStereoDouble()) {
+        render1(graphic, imageBuffer, dimScreen.width, 0);
+        imageBuffer = getImage(false, false);
+      }
+      render1(graphic, imageBuffer, 0, 0);
+    }
+    return (mergeImages ? imageBuffer2 : imageBuffer);
   }
 
   /**
@@ -4488,17 +4477,7 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
    */
   @Override
   public byte[] getImageAsBytes(String type, int width, int height, int quality, String[] errMsg) {
-    /**
-     * 
-     * 
-     * @j2sNative
-     * 
-     *            if (this.isWebGL)return null
-     * 
-     */
-    {
-    }
-    return getOutputManager().getImageAsBytes(type, width, height, quality, errMsg);
+    return (isWebGL ? null : getOutputManager().getImageAsBytes(type, width, height, quality, errMsg));
   }
 
   @Override
@@ -8004,13 +7983,13 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
         appConsole = null;
       } else if (appConsole == null && paramInfo != null
           && ((Boolean) paramInfo).booleanValue()) {
+        if (isJS) {
+          appConsole = (JmolAppConsoleInterface) Interface
+              .getOptionInterface("consolejs.AppletConsole");
+        }
         /**
          * @j2sNative
          * 
-         *            this.appConsole = org.jmol.api.Interface
-         *            .getOptionInterface("consolejs.AppletConsole"); if
-         *            (this.appConsole != null) { this.appConsole.start(this);
-         *            return this.appConsole; }
          * 
          */
         {
@@ -8028,10 +8007,11 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
               }
           }
         }
-        if (appConsole != null)
-          appConsole.start(this);
       }
-      scriptEditor = (appConsole == null ? null : appConsole.getScriptEditor());
+      if (appConsole != null)
+        appConsole.start(this);
+      scriptEditor = (isJS || appConsole == null ? null : appConsole
+          .getScriptEditor());
       return appConsole;
     case 100:
       if (appConsole == null && paramInfo != null

@@ -35,7 +35,7 @@ public class BC {
      * @j2sNative
      * 
      *       if (x == 0) return 0;
-     *       var o = javajs.util.ByteConverter;
+     *       var o = javajs.util.BC;
      *       if (o.fracIEEE == null);
      *         o.setFracIEEE();
      *       var m = ((x & 0x7F800000) >> 23);

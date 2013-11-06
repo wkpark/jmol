@@ -323,7 +323,7 @@ public class Escape {
     return (Float.isNaN(f) ? eS(s) : s);
   }
 
-  public static Object unescapePointOrBitsetOrMatrixOrArray(String s) {
+  public static Object uABsM(String s) {
     if (s.charAt(0) == '{')
       return uP(s);
     if ((isStringArray(s)

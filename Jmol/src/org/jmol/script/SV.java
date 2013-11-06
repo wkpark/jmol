@@ -1049,7 +1049,7 @@ public class SV extends T {
     if (s != null && s.length() == 0)
       return s;
     if (v == null)
-      v = Escape.unescapePointOrBitsetOrMatrixOrArray(s);
+      v = Escape.uABsM(s);
     if (v instanceof P3)
       return (newVariable(point3f, v));
     if (v instanceof P4)

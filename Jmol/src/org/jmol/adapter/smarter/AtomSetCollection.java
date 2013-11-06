@@ -33,6 +33,7 @@ import java.util.Hashtable;
 
 import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 
 import org.jmol.api.Interface;
@@ -1242,8 +1243,8 @@ public class AtomSetCollection {
 
   
   private void finalizeSymmetry(int iAtomFirst, int noSymmetryCount) {
-    symmetry.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
     String name = (String) getAtomSetAuxiliaryInfoValue(-1, "spaceGroup");
+    symmetry.setFinalOperations(name, atoms, iAtomFirst, noSymmetryCount, doNormalize);
     if (name == null || name.equals("unspecified!"))
       setAtomSetSpaceGroupName(symmetry.getSpaceGroupName());
   }
@@ -1422,19 +1423,33 @@ public class AtomSetCollection {
         t.eigenValues, t.isIsotropic ? "iso" : t.type, t.id), null, reset);
   }
 
-  public void applySymmetryBio(List<M4> biomts, float[] notionalUnitCell, boolean applySymmetryToBonds, String filter) {
+  private final static int PARTICLE_NONE = 0;
+  private final static int PARTICLE_CHAIN = 1;
+  private final static int PARTICLE_SYMOP = 2;
+
+  public void applySymmetryBio(Map<String, Object> thisBiomolecule,
+                               float[] notionalUnitCell,
+                               boolean applySymmetryToBonds, String filter) {
     if (latticeCells != null && latticeCells[0] != 0) {
       Logger.error("Cannot apply biomolecule when lattice cells are indicated");
       return;
     }
+    int particleMode = (filter.indexOf("BYCHAIN") >= 0 ? PARTICLE_CHAIN
+        : filter.indexOf("BYSYMOP") >= 0 ? PARTICLE_SYMOP : PARTICLE_NONE);
+
     doNormalize = false;
     symmetry = null;
-    getSymmetry();
-    if (!Float.isNaN(notionalUnitCell[0])) // PDB can do this
+    List<M4> biomts = (List<M4>) thisBiomolecule.get("biomts");
+    if (biomts.size() < 2)
+      return;
+    // TODO what about cif? 
+    if (!Float.isNaN(notionalUnitCell[0])) // PDB can do this; 
       setNotionalUnitCell(notionalUnitCell, null, unitCellOffset);
     getSymmetry().setSpaceGroup(doNormalize);
+    symmetry.setUnitCell(null);
     addSpaceGroupOperation("x,y,z");
-    setAtomSetSpaceGroupName("biomolecule");
+    String name = (String) thisBiomolecule.get("name");
+    setAtomSetSpaceGroupName(name);
     int len = biomts.size();
     this.applySymmetryToBonds = applySymmetryToBonds;
     bondCount0 = bondCount;
@@ -1442,13 +1457,58 @@ public class AtomSetCollection {
     int[] atomMap = (addBonds ? new int[atomCount] : null);
     int iAtomFirst = getLastAtomSetAtomIndex();
     int atomMax = atomCount;
+    Map<Integer, BS> ht = new Hashtable<Integer, BS>();
+    int nChain = 0;
+    switch (particleMode) {
+    case PARTICLE_CHAIN:
+      for (int i = atomMax; --i >= iAtomFirst;) {
+        Integer id = Integer.valueOf(atoms[i].chainID);
+        BS bs = ht.get(id);
+        if (bs == null) {
+          nChain++;
+          ht.put(id, bs = new BS());
+        }
+        bs.set(i);
+      }
+      bsAtoms = new BS();
+      for (int i = 0; i < nChain; i++) {
+        bsAtoms.set(atomMax + i);
+        Atom a = new Atom();
+        a.set(0, 0, 0);
+        addAtom(a);
+      }
+      int ichain = 0;
+      for (Entry<Integer, BS> e : ht.entrySet()) {
+        Atom a = atoms[atomMax + ichain++];
+        BS bs = e.getValue();
+        for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
+          a.add(atoms[i]);
+        a.scale(1f / bs.cardinality());
+        a.atomName = "Pt" + ichain;
+      }
+      iAtomFirst = atomMax;
+      atomMax += nChain;
+      break;
+    case PARTICLE_SYMOP:
+      bsAtoms = new BS();
+      bsAtoms.set(atomMax);
+      Atom a = atoms[atomMax] = new Atom();
+      a.set(0, 0, 0);
+      for (int i = atomMax; --i >= iAtomFirst;)
+        a.add(atoms[i]);
+      a.scale(1f / (atomMax - iAtomFirst));
+      a.atomName = "Pt";
+      iAtomFirst = atomMax++;
+      break;
+    }
     if (filter.indexOf("#<") >= 0) {
-      len = Math.min(len, javajs.util.PT.parseInt(filter.substring(filter.indexOf("#<") + 2)) - 1);
+      len = Math.min(len, javajs.util.PT.parseInt(filter.substring(filter
+          .indexOf("#<") + 2)) - 1);
       filter = javajs.util.PT.simpleReplace(filter, "#<", "_<");
     }
     for (int iAtom = iAtomFirst; iAtom < atomMax; iAtom++)
       atoms[iAtom].bsSymmetry = BSUtil.newAndSetBit(0);
-    for (int i = 1; i < len; i++) { 
+    for (int i = 1; i < len; i++) {
       if (filter.indexOf("!#") >= 0) {
         if (filter.indexOf("!#" + (i + 1) + ";") >= 0)
           continue;
@@ -1466,10 +1526,10 @@ public class AtomSetCollection {
           Atom atom1;
           if (addBonds)
             atomMap[atomSite] = atomCount;
-            atom1 = newCloneAtom(atoms[iAtom]);
-            if (bsAtoms != null)
-              bsAtoms.set(atom1.index);
-            atom1.atomSite = atomSite;
+          atom1 = newCloneAtom(atoms[iAtom]);
+          if (bsAtoms != null)
+            bsAtoms.set(atom1.index);
+          atom1.atomSite = atomSite;
           mat.transform(atom1);
           atom1.bsSymmetry = BSUtil.newAndSetBit(i);
           if (addBonds) {
@@ -1486,22 +1546,24 @@ public class AtomSetCollection {
           errorMessage = "appendAtomCollection error: " + e;
         }
       }
-      mat.m03 /= notionalUnitCell[0];
+      mat.m03 /= notionalUnitCell[0]; // PDB could have set this to Float.NaN
+      if (Float.isNaN(mat.m03))
+        mat.m03 = 1;
       mat.m13 /= notionalUnitCell[1];
       mat.m23 /= notionalUnitCell[2];
-      if (symmetry != null && i > 0)
-        symmetry.addSpaceGroupOperationM(mat);
+      if (i > 0)
+        symmetry.addBioMoleculeOperation(mat, false);
     }
     int noSymmetryCount = atomMax - iAtomFirst;
     setAtomSetAuxiliaryInfo("presymmetryAtomIndex", Integer.valueOf(iAtomFirst));
-    setAtomSetAuxiliaryInfo("presymmetryAtomCount", Integer.valueOf(noSymmetryCount));
+    setAtomSetAuxiliaryInfo("presymmetryAtomCount", Integer
+        .valueOf(noSymmetryCount));
     setAtomSetAuxiliaryInfo("biosymmetryCount", Integer.valueOf(len));
-    if (symmetry != null) {
-      finalizeSymmetry(iAtomFirst, noSymmetryCount);
-      setSymmetryOps();
-    }
+    setAtomSetAuxiliaryInfo("biosymmetry", symmetry);
+    finalizeSymmetry(iAtomFirst, noSymmetryCount);
+    setSymmetryOps();
     symmetry = null;
-    coordinatesAreFractional = false; 
+    coordinatesAreFractional = false;
     setAtomSetAuxiliaryInfo("hasSymmetry", Boolean.TRUE);
     setGlobalBoolean(GLOBAL_SYMMETRY);
     //TODO: need to clone bonds
@@ -1985,17 +2047,11 @@ public class AtomSetCollection {
        int n = atomSetAtomCounts[i];
        int atom0 = atomSetAtomIndexes[i];
        pt.set(0,0,0);
-       for (int j = atom0 + n; --j >= atom0; ) {
-         pt.x += atoms[j].x;
-         pt.y += atoms[j].y;
-         pt.z += atoms[j].z;
-       }
+       for (int j = atom0 + n; --j >= atom0; )
+         pt.add(atoms[j]);
        pt.scale(1f/n);
-       for (int j = atom0 + n; --j >= atom0; ) {
-         atoms[j].x -= pt.x;
-         atoms[j].y -= pt.y;
-         atoms[j].z -= pt.z;
-       }
+       for (int j = atom0 + n; --j >= atom0; )
+         atoms[j].sub(pt);
     }
   }
   

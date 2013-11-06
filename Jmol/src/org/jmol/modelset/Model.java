@@ -170,6 +170,7 @@ public class Model {
   public Properties properties;
   float defaultRotationRadius;
   String defaultStructure;
+  public SymmetryInterface biosymmetry;
 
   public Orientation orientation;
 
@@ -183,9 +184,11 @@ public class Model {
       auxiliaryInfo = new Hashtable<String, Object>();
     }
     this.auxiliaryInfo = auxiliaryInfo;
-    if (auxiliaryInfo.containsKey("biosymmetryCount"))
+    if (auxiliaryInfo.containsKey("biosymmetryCount")) {
       biosymmetryCount = ((Integer) auxiliaryInfo.get("biosymmetryCount"))
           .intValue();
+      biosymmetry = (SymmetryInterface) auxiliaryInfo.get("biosymmetry");
+    }
     this.properties = properties;
     if (jmolData == null) {
       jmolFrameType = "modelSet";

@@ -1,4 +1,3 @@
-
 /* $RCSfile$
  * $Author: hansonr $
  * $Date: 2012-09-11 19:29:26 -0500 (Tue, 11 Sep 2012) $
@@ -39,7 +38,6 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
-
 import java.awt.Event;
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -50,11 +48,11 @@ import javajs.util.SB;
 import java.util.Hashtable;
 import java.util.Map;
 
-
 /**
  * Java2Script rendition of Jmol using HTML5-only or WebGL-based graphics
  * 
- * @author Bob Hanson hansonr@stolaf.edu, Takanori Nakane, with the assistance of Jhou Renjian
+ * @author Bob Hanson hansonr@stolaf.edu, Takanori Nakane, with the assistance
+ *         of Jhou Renjian
  * 
  */
 
@@ -82,26 +80,26 @@ public class Jmol implements JmolSyncInterface {
   protected Object gRight;
   protected JmolViewer viewer;
   protected Map<EnumCallback, String> callbacks = new Hashtable<EnumCallback, String>();
-  
-  private Map<String, Object>viewerOptions;
-	private Map<String, Object> htParams = new Hashtable<String, Object>();
-	
-	Jmol jmol;
 
-  public Jmol(Map<String, Object>viewerOptions) {
-  	if (viewerOptions == null)
-  		viewerOptions = new Hashtable<String, Object>();
-  	this.viewerOptions = viewerOptions;
-  	for (Map.Entry<String, Object> entry : viewerOptions.entrySet())
-  		htParams.put(entry.getKey().toLowerCase(), entry.getValue());
+  private Map<String, Object> viewerOptions;
+  private Map<String, Object> htParams = new Hashtable<String, Object>();
+
+  Jmol jmol;
+
+  public Jmol(Map<String, Object> viewerOptions) {
+    if (viewerOptions == null)
+      viewerOptions = new Hashtable<String, Object>();
+    this.viewerOptions = viewerOptions;
+    for (Map.Entry<String, Object> entry : viewerOptions.entrySet())
+      htParams.put(entry.getKey().toLowerCase(), entry.getValue());
     init();
   }
-  
+
   public void jmolReady() {
     System.out.println("Jmol applet " + fullName + " ready");
     viewer.getBooleanProperty("__appletReady");
   }
-  
+
   public void destroy() {
     gRight = null;
     JmolAppletRegistry.checkOut(fullName);
@@ -128,7 +126,7 @@ public class Jmol implements JmolSyncInterface {
   //}
 
   public void init() {
-  	jmol = this;
+    jmol = this;
     htmlName = getParameter("name");
     syncId = getParameter("syncId");
     fullName = htmlName + "__" + syncId + "__";
@@ -136,20 +134,21 @@ public class Jmol implements JmolSyncInterface {
     setLogging();
     GT.ignoreApplicationBundle();
     viewerOptions.remove("debug");
-  	viewerOptions.put("fullName", fullName);
+    viewerOptions.put("fullName", fullName);
 
-    haveDocumentAccess = "true".equalsIgnoreCase("" + getValue("allowjavascript", "true"));
-     
+    haveDocumentAccess = "true".equalsIgnoreCase(""
+        + getValue("allowjavascript", "true"));
+
     JmolAppletRegistry.checkIn(fullName, this);
     initWindows();
     initApplication();
   }
 
   private void initWindows() {
-  	viewerOptions.put("applet", Boolean.TRUE);
-  	if (getParameter("statusListener") == null)
-  		viewerOptions.put("statusListener", new MyStatusListener());
-  	viewer = new Viewer(viewerOptions);
+    viewerOptions.put("applet", Boolean.TRUE);
+    if (getParameter("statusListener") == null)
+      viewerOptions.put("statusListener", new MyStatusListener());
+    viewer = new Viewer(viewerOptions);
     mayScript = true;
   }
 
@@ -190,24 +189,24 @@ public class Jmol implements JmolSyncInterface {
     //				.warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
     //}
     if (callbacks.get(EnumCallback.SCRIPT) == null
-    		&& callbacks.get(EnumCallback.ERROR) == null)
-    	if (callbacks.get(EnumCallback.MESSAGE) != null /* || statusForm != null
-    			|| statusText != null */) {
-    		if (doTranslate && (getValue("doTranslate", null) == null)) {
-    			doTranslate = false;
-    			Logger
-    					.warn("Note -- Presence of message callback disables translation;"
-    							+ " to enable message translation use jmolSetTranslation(true) prior to jmolApplet()");
-    		}
-    		if (doTranslate)
-    			Logger
-    					.warn("Note -- Automatic language translation may affect parsing of message callbacks"
-    							+ " messages; use scriptCallback or errorCallback to process errors");
-    	}
+        && callbacks.get(EnumCallback.ERROR) == null)
+      if (callbacks.get(EnumCallback.MESSAGE) != null /* || statusForm != null
+                                                      || statusText != null */) {
+        if (doTranslate && (getValue("doTranslate", null) == null)) {
+          doTranslate = false;
+          Logger
+              .warn("Note -- Presence of message callback disables translation;"
+                  + " to enable message translation use jmolSetTranslation(true) prior to jmolApplet()");
+        }
+        if (doTranslate)
+          Logger
+              .warn("Note -- Automatic language translation may affect parsing of message callbacks"
+                  + " messages; use scriptCallback or errorCallback to process errors");
+      }
 
     if (!doTranslate) {
-    	GT.setDoTranslate(false);
-    	Logger.warn("Note -- language translation disabled");
+      GT.setDoTranslate(false);
+      Logger.warn("Note -- language translation disabled");
     }
 
     //statusForm = getValue("StatusForm", null);
@@ -221,7 +220,7 @@ public class Jmol implements JmolSyncInterface {
 
     // should the popupMenu be loaded ?
     if (!getBooleanValue("popupMenu", true))
-    	viewer.getProperty("DATA_API", "disablePopupMenu", null);
+      viewer.getProperty("DATA_API", "disablePopupMenu", null);
 
     String scriptParam = getValue("script", "");
     viewer.popHoldRepaint("applet init");
@@ -281,12 +280,12 @@ public class Jmol implements JmolSyncInterface {
 
   protected void sendJsTextStatus(String message) {
     System.out.println(message);
-  	// not implemented
+    // not implemented
   }
 
   protected void sendJsTextareaStatus(String message) {
     System.out.println(message);
-  	// not implemented
+    // not implemented
   }
 
   public boolean handleEvent(Event e) {
@@ -378,8 +377,8 @@ public class Jmol implements JmolSyncInterface {
 
   /**
    * @j2sIgnore
-   * @param infoType 
-   * @return value 
+   * @param infoType
+   * @return value
    * 
    */
   public Object getProperty(String infoType) {
@@ -389,8 +388,8 @@ public class Jmol implements JmolSyncInterface {
   /**
    * @j2sOverride
    * 
-   * @param infoType 
-   * @param paramInfo 
+   * @param infoType
+   * @param paramInfo
    * @return value
    * 
    * 
@@ -400,17 +399,18 @@ public class Jmol implements JmolSyncInterface {
     /**
      * @j2sNative
      * 
-     * paramInfo || (paramInfo = "");
+     *            paramInfo || (paramInfo = "");
      * 
      */
-    {}
+    {
+    }
     return viewer.getProperty(null, infoType, paramInfo);
   }
 
   /**
    * @j2sIgnore
-   * @param infoType 
-   * @return value 
+   * @param infoType
+   * @return value
    * 
    */
   public String getPropertyAsString(String infoType) {
@@ -420,8 +420,8 @@ public class Jmol implements JmolSyncInterface {
   /**
    * @j2sOverride
    * 
-   * @param infoType 
-   * @param paramInfo 
+   * @param infoType
+   * @param paramInfo
    * @return value
    * 
    * 
@@ -431,17 +431,18 @@ public class Jmol implements JmolSyncInterface {
     /**
      * @j2sNative
      * 
-     * paramInfo || (paramInfo = "");
+     *            paramInfo || (paramInfo = "");
      * 
      */
-    {}
+    {
+    }
     return viewer.getProperty("readable", infoType, paramInfo).toString();
   }
 
   /**
    * @j2sIgnore
-   * @param infoType 
-   * @return value 
+   * @param infoType
+   * @return value
    * 
    */
   public String getPropertyAsJSON(String infoType) {
@@ -451,8 +452,8 @@ public class Jmol implements JmolSyncInterface {
   /**
    * @j2sOverride
    * 
-   * @param infoType 
-   * @param paramInfo 
+   * @param infoType
+   * @param paramInfo
    * @return value
    * 
    * 
@@ -462,14 +463,16 @@ public class Jmol implements JmolSyncInterface {
     /**
      * @j2sNative
      * 
-     * paramInfo || (paramInfo = "");
+     *            paramInfo || (paramInfo = "");
      * 
      */
-    {}
+    {
+    }
     return viewer.getProperty("JSON", infoType, paramInfo).toString();
   }
 
-  public String loadInlineString(String strModel, String script, boolean isAppend) {
+  public String loadInlineString(String strModel, String script,
+                                 boolean isAppend) {
     String errMsg = viewer.loadInlineAppend(strModel, isAppend);
     if (errMsg == null)
       script(script);
@@ -477,7 +480,7 @@ public class Jmol implements JmolSyncInterface {
   }
 
   public String loadInlineArray(String[] strModels, String script,
-                              boolean isAppend) {
+                                boolean isAppend) {
     if (strModels == null || strModels.length == 0)
       return null;
     String errMsg = viewer.loadInline(strModels, isAppend);
@@ -486,9 +489,210 @@ public class Jmol implements JmolSyncInterface {
     return errMsg;
   }
 
+  public void register(String id, JmolSyncInterface jsi) {
+    JmolAppletRegistry.checkIn(id, jsi);
+  }
+
+  boolean haveNotifiedError;
+
+  String doNotifySync(String info, String appletName) {
+    String syncCallback = callbacks.get(EnumCallback.SYNC);
+    if (!mayScript || syncCallback == null || !haveDocumentAccess
+        && !syncCallback.startsWith("Jmol."))
+      return info;
+    // ignoring 
+    Logger.info("Jmol.notifySync " + appletName + " >> " + info);
+    try {
+      /**
+       * @j2sNative
+       * 
+       *    if (syncCallback=="Jmol._mySyncCallback")
+       *      return Jmol._mySyncCallback(this.htmlName, info, appletName);
+       *    var f = eval(syncCallback);
+       *    return f(this.htmlName, info, appletName);
+       */
+      {
+        System.out.println(appletName);
+      }
+    } catch (Exception e) {
+      if (!haveNotifiedError)
+        if (Logger.debugging) {
+          Logger.debug("syncCallback call error to " + syncCallback + ": " + e);
+        }
+      haveNotifiedError = true;
+    }
+    return info;
+  }
+
+  /**
+   * critical that native calls are not within inner classes! or they will
+   * break;
+   * 
+   * @param strEval
+   * @return result
+   * 
+   */
+  String doEval(String strEval) {
+    try {
+      /**
+       * @j2sNative return "" + eval(strEval);
+       */
+      {
+      }
+    } catch (Exception e) {
+      Logger.error("# error evaluating " + strEval + ":" + e.toString());
+    }
+    return "";
+  }
+
+  float[][] doFunctionXY(String functionName, int nX, int nY) {
+    /*three options:
+     * 
+     *  nX > 0  and  nY > 0        return one at a time, with (slow) individual function calls
+     *  nX < 0  and  nY > 0        return a string that can be parsed to give the list of values
+     *  nX < 0  and  nY < 0        fill the supplied float[-nX][-nY] array directly in JavaScript 
+     *  
+     */
+
+    //System.out.println("functionXY" + nX + " " + nY  + " " + functionName);
+    float[][] fxy = new float[Math.abs(nX)][Math.abs(nY)];
+    if (!mayScript || !haveDocumentAccess || nX == 0 || nY == 0)
+      return fxy;
+    try {
+      if (nX > 0 && nY > 0) { // fill with individual function calls (slow)
+        for (int i = 0; i < nX; i++)
+          for (int j = 0; j < nY; j++) {
+            /**
+             * @j2sNative
+             * 
+             *            fxy[i][j] = eval(functionName)(this.htmlName, i, j);
+             */
+            {
+            }
+          }
+      } else if (nY > 0) { // fill with parsed values from a string (pretty fast)
+        String data;
+        /**
+         * @j2sNative
+         * 
+         *            data = eval(functionName)(this.htmlName, nX, nY);
+         * 
+         */
+        {
+          data = "";
+        }
+        nX = Math.abs(nX);
+        float[] fdata = new float[nX * nY];
+        Parser.parseStringInfestedFloatArray(data, null, fdata);
+        for (int i = 0, ipt = 0; i < nX; i++) {
+          for (int j = 0; j < nY; j++, ipt++) {
+            fxy[i][j] = fdata[ipt];
+          }
+        }
+      } else { // fill float[][] directly using JavaScript
+        /**
+         * @j2sNative
+         * 
+         *            data = eval(functionName)(htmlName, nX, nY, fxy);
+         * 
+         */
+        {
+          System.out.println(functionName);
+        }
+      }
+    } catch (Exception e) {
+      Logger.error("Exception " + e + " with nX, nY: " + nX + " " + nY);
+    }
+    // for (int i = 0; i < nX; i++)
+    // for (int j = 0; j < nY; j++)
+    //System.out.println("i j fxy " + i + " " + j + " " + fxy[i][j]);
+    return fxy;
+  }
+
+  float[][][] doFunctionXYZ(String functionName, int nX, int nY, int nZ) {
+    float[][][] fxyz = new float[Math.abs(nX)][Math.abs(nY)][Math.abs(nZ)];
+    if (!mayScript || !haveDocumentAccess || nX == 0 || nY == 0 || nZ == 0)
+      return fxyz;
+    try {
+      /**
+       * @j2sNative
+       * 
+       *            eval(functionName)(this.htmlName, nX, nY, nZ, fxyz);
+       * 
+       */
+      {
+      }
+    } catch (Exception e) {
+      Logger.error("Exception " + e + " for " + functionName
+          + " with nX, nY, nZ: " + nX + " " + nY + " " + nZ);
+    }
+    // for (int i = 0; i < nX; i++)
+    // for (int j = 0; j < nY; j++)
+    // for (int k = 0; k < nZ; k++)
+    //System.out.println("i j k fxyz " + i + " " + j + " " + k + " " + fxyz[i][j][k]);
+    return fxyz;
+  }
+
+
+  boolean doShowUrl(String urlString) {
+    if (Logger.debugging) {
+      Logger.debug("showUrl(" + urlString + ")");
+    }
+    if (urlString != null && urlString.length() > 0) {
+      try {
+        URL url = new URL((URL) null, urlString, null);
+        /**
+         * @j2sNative window.open(url);
+         */
+        {
+          System.out.println(url);
+        }
+      } catch (MalformedURLException mue) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
+  protected static String doSendCallback(String strInfo, String callback,
+                                       Object[] data) {
+    if (callback == null || callback.length() == 0) {
+    } else if (callback.equals("alert")) {
+      /**
+       * @j2sNative alert(strInfo); return "";
+       */
+      {
+        System.out.println(strInfo);
+      }
+    } else {
+      String[] tokens = PT.split(callback, ".");
+      /**
+       * @j2sNative
+       * 
+       *      try{ 
+       *          var o = window[tokens[0]];
+       *          for (i = 1; i < tokens.length; i++){ 
+       *              o = o[tokens[i]] 
+       *          } 
+       *          return o(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]); 
+       *      } catch (e) { 
+       *          System.out.println(callback + " failed " + e); 
+       *      }
+       */
+      {
+        System.out.println(tokens + " " + data);
+      }
+    }
+    return "";
+  }
+
+  ///////////  NO J2SNATIVE CALLS AFTER THIS POINT! //////////
+  
+ 
   class MyStatusListener implements JmolStatusListener {
 
-    public Map<String, Object>  getRegistryInfo() {
+    public Map<String, Object> getRegistryInfo() {
       JmolAppletRegistry.checkIn(null, null); //cleans registry
       return JmolAppletRegistry.htRegistry;
     }
@@ -511,8 +715,8 @@ public class Jmol implements JmolSyncInterface {
       case SYNC:
       case SCRIPT:
         return true;
-      case APPLETREADY:  // Jmol 12.1.48
-      case ATOMMOVED:  // Jmol 12.1.48
+      case APPLETREADY: // Jmol 12.1.48
+      case ATOMMOVED: // Jmol 12.1.48
       case CLICK:
       case HOVER:
       case MINIMIZATION:
@@ -521,8 +725,6 @@ public class Jmol implements JmolSyncInterface {
       }
       return (callbacks.get(type) != null);
     }
-
-    private boolean haveNotifiedError;
 
     @SuppressWarnings("incomplete-switch")
     public void notifyCallback(EnumCallback type, Object[] data) {
@@ -535,7 +737,7 @@ public class Jmol implements JmolSyncInterface {
           .toString());
 
       //System.out.println("Jmol.java notifyCallback " + type + " " + callback
-       //+ " " + strInfo);
+      //+ " " + strInfo);
       switch (type) {
       case APPLETREADY:
         data[3] = jmol;
@@ -551,7 +753,8 @@ public class Jmol implements JmolSyncInterface {
         // x, y, action, int[] {action}
         // the fourth parameter allows an application to change the action
         if ("alert".equals(callback))
-          strInfo = "x=" + data[1] + " y=" + data[2] + " action=" + data[3] + " clickCount=" + data[4];
+          strInfo = "x=" + data[1] + " y=" + data[2] + " action=" + data[3]
+              + " clickCount=" + data[4];
         break;
       case ANIMFRAME:
         // Note: twos-complement. To get actual frame number, use
@@ -580,9 +783,11 @@ public class Jmol implements JmolSyncInterface {
           data = new Object[] { htmlName,
               Integer.valueOf(Math.max(frameNo, -2 - frameNo)),
               Integer.valueOf(fileNo), Integer.valueOf(modelNo),
-              Integer.valueOf(Math.abs(firstNo)), Integer.valueOf(Math.abs(lastNo)),
+              Integer.valueOf(Math.abs(firstNo)),
+              Integer.valueOf(Math.abs(lastNo)),
               Integer.valueOf(isAnimationRunning ? 1 : 0),
-              Integer.valueOf(animationDirection), Integer.valueOf(currentDirection) };
+              Integer.valueOf(animationDirection),
+              Integer.valueOf(currentDirection) };
         }
         break;
       case ECHO:
@@ -591,8 +796,8 @@ public class Jmol implements JmolSyncInterface {
         if (!doCallback) {
           if (isScriptQueued)
             toConsole = true;
-          doCallback = (!isPrivate && 
-              (callback = callbacks.get((type = EnumCallback.MESSAGE))) != null);
+          doCallback = (!isPrivate && (callback = callbacks
+              .get((type = EnumCallback.MESSAGE))) != null);
         }
         if (!toConsole)
           output(strInfo);
@@ -600,8 +805,8 @@ public class Jmol implements JmolSyncInterface {
       case LOADSTRUCT:
         String errorMsg = (String) data[4];
         if (errorMsg != null) {
-          errorMsg = (errorMsg.indexOf("NOTE:") >= 0 ? "" : GT
-              ._("File Error:")) + errorMsg;
+          errorMsg = (errorMsg.indexOf("NOTE:") >= 0 ? "" : GT._("File Error:"))
+              + errorMsg;
           showStatus(errorMsg);
           notifyCallback(EnumCallback.MESSAGE, new Object[] { "", errorMsg });
           return;
@@ -610,7 +815,8 @@ public class Jmol implements JmolSyncInterface {
       case MEASURE:
         // pending, deleted, or completed
         if (!doCallback)
-          doCallback = ((callback = callbacks.get((type = EnumCallback.MESSAGE))) != null);
+          doCallback = ((callback = callbacks
+              .get((type = EnumCallback.MESSAGE))) != null);
         String status = (String) data[3];
         if (status.indexOf("Picked") >= 0 || status.indexOf("Sequence") >= 0) {// picking mode
           showStatus(strInfo); // set picking measure distance
@@ -642,35 +848,39 @@ public class Jmol implements JmolSyncInterface {
           // termination messsage ONLY if script callback enabled -- not to
           // message queue
           // for compatibility reasons
-          doCallback = ((callback = callbacks.get((type = EnumCallback.MESSAGE))) != null);
+          doCallback = ((callback = callbacks
+              .get((type = EnumCallback.MESSAGE))) != null);
         }
         output(strInfo);
         showStatus(strInfo);
         break;
       case STRUCTUREMODIFIED:
-        notifyStructureModified(((Integer) data[1]).intValue(), ((Integer) data[2]).intValue());
+        notifyStructureModified(((Integer) data[1]).intValue(),
+            ((Integer) data[2]).intValue());
         break;
       case SYNC:
         sendScript(strInfo, (String) data[2], true, doCallback);
         return;
       }
       if (toConsole) {
-        JmolCallbackListener appConsole = (JmolCallbackListener) viewer.getProperty("DATA_API", "getAppConsole", null);
+        JmolCallbackListener appConsole = (JmolCallbackListener) viewer
+            .getProperty("DATA_API", "getAppConsole", null);
         if (appConsole != null) {
           appConsole.notifyCallback(type, data);
           output(strInfo);
           sendJsTextareaStatus(strInfo);
         }
       }
-      if (!doCallback || !mayScript || callback == null || !haveDocumentAccess && !callback.startsWith("Jmol."))
+      if (!doCallback || !mayScript || callback == null || !haveDocumentAccess
+          && !callback.startsWith("Jmol."))
         return;
       try {
-          sendCallback(strInfo, callback, data);
+        doSendCallback(strInfo, callback, data);
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.debugging) {
-            Logger.debug(type.name()
-                + "Callback call error to " + callback + ": " + e);
+            Logger.debug(type.name() + "Callback call error to " + callback
+                + ": " + e);
           }
         haveNotifiedError = true;
       }
@@ -678,9 +888,8 @@ public class Jmol implements JmolSyncInterface {
 
     private void notifyStructureModified(int modelIndex, int mode) {
       // TODO
-      
-    }
 
+    }
 
     private void output(String s) {
       if (outputBuffer != null && s != null)
@@ -690,31 +899,6 @@ public class Jmol implements JmolSyncInterface {
     private void notifyScriptTermination() {
       // this had to do with button callbacks
     }
-
-		private String notifySync(String info, String appletName) {
-			String syncCallback = callbacks.get(EnumCallback.SYNC);
-			if (!mayScript || syncCallback == null || !haveDocumentAccess && !syncCallback.startsWith("Jmol."))
-				return info;
-			Logger.info("Jmol.notifySync " + appletName + " >> " + info);
-			try {
-				/**
-				 * @j2sNative 
-				 * 
-				 * return eval(syncCallback)(this.htmlName, info, appletName);
-				 */
-				{
-				  System.out.println(appletName);
-				}
-			} catch (Exception e) {
-				if (!haveNotifiedError)
-					if (Logger.debugging) {
-						Logger.debug("syncCallback call error to " + syncCallback + ": "
-								+ e);
-					}
-				haveNotifiedError = true;
-			}
-			return info;
-		}
 
     public void setCallbackFunction(String callbackName, String callbackFunction) {
       if (callbackName.equalsIgnoreCase("modelkit"))
@@ -729,11 +913,12 @@ public class Jmol implements JmolSyncInterface {
       if (callback != null && (loading || callback != EnumCallback.EVAL)) {
         if (callbackFunction == null)
           callbacks.remove(callback);
-        else         
+        else
           callbacks.put(callback, callbackFunction);
         return;
       }
-      consoleMessage("Available callbacks include: " + EnumCallback.getNameList().replace(';',' ').trim());
+      consoleMessage("Available callbacks include: "
+          + EnumCallback.getNameList().replace(';', ' ').trim());
     }
 
     public String eval(String strEval) {
@@ -748,16 +933,7 @@ public class Jmol implements JmolSyncInterface {
         notifyCallback(EnumCallback.EVAL, new Object[] { null, strEval });
         return "";
       }
-      try {
-      	/**
-      	 * @j2sNative
-      	 *   return "" + eval(a);// strEval -- Java2Script is compressing this file for some reason
-      	 */
-      	{}
-      } catch (Exception e) {
-        Logger.error("# error evaluating " + strEval + ":" + e.toString());
-      }
-      return "";
+      return doEval(strEval);
     }
 
     /**
@@ -766,117 +942,24 @@ public class Jmol implements JmolSyncInterface {
      * @param type
      * @param text_or_bytes
      * @param quality
-     * @return          null (canceled) or a message starting with OK or an error message
+     * @return null (canceled) or a message starting with OK or an error message
      */
-    public String createImage(String fileName, String type, Object text_or_bytes,
-                              int quality) {
+    public String createImage(String fileName, String type,
+                              Object text_or_bytes, int quality) {
       return null;
     }
 
     public float[][] functionXY(String functionName, int nX, int nY) {
-      /*three options:
-       * 
-       *  nX > 0  and  nY > 0        return one at a time, with (slow) individual function calls
-       *  nX < 0  and  nY > 0        return a string that can be parsed to give the list of values
-       *  nX < 0  and  nY < 0        fill the supplied float[-nX][-nY] array directly in JavaScript 
-       *  
-       */
-
-      //System.out.println("functionXY" + nX + " " + nY  + " " + functionName);
-      float[][] fxy = new float[Math.abs(nX)][Math.abs(nY)];
-      if (!mayScript || !haveDocumentAccess || nX == 0 || nY == 0)
-        return fxy;
-      try {
-        if (nX > 0 && nY > 0) { // fill with individual function calls (slow)
-          for (int i = 0; i < nX; i++)
-            for (int j = 0; j < nY; j++) {
-            	/**
-            	 * @j2sNative
-            	 * 
-            	 *   fxy[i][j] = eval(functionName)(this.htmlName, i, j);
-            	 */
-            	{}
-            }
-        } else if (nY > 0) { // fill with parsed values from a string (pretty fast)
-        	String data;
-        	/**
-        	 * @j2sNative
-        	 * 
-        	 *           	data = eval(functionName)(this.htmlName, nX, nY);
-        	 *           
-        	 */
-          {
-          	data = "";
-          }
-          nX = Math.abs(nX);
-          float[] fdata = new float[nX * nY];
-          Parser.parseStringInfestedFloatArray(data, null, fdata);
-          for (int i = 0, ipt = 0; i < nX; i++) {
-            for (int j = 0; j < nY; j++, ipt++) {
-              fxy[i][j] = fdata[ipt];
-            }
-          }
-        } else { // fill float[][] directly using JavaScript
-        	/**
-        	 * @j2sNative
-        	 * 
-        	 *           	data = eval(functionName)(htmlName, nX, nY, fxy);
-        	 *           
-        	 */
-        	{}
-        }
-      } catch (Exception e) {
-        Logger.error("Exception " + e + " with nX, nY: " + nX
-            + " " + nY);
-      }
-     // for (int i = 0; i < nX; i++)
-       // for (int j = 0; j < nY; j++)
-         //System.out.println("i j fxy " + i + " " + j + " " + fxy[i][j]);
-      return fxy;
+      return doFunctionXY(functionName, nX, nY);
     }
 
     public float[][][] functionXYZ(String functionName, int nX, int nY, int nZ) {
-      float[][][] fxyz = new float[Math.abs(nX)][Math.abs(nY)][Math.abs(nZ)];
-      if (!mayScript  || !haveDocumentAccess || nX == 0 || nY == 0 || nZ == 0)
-        return fxyz;
-      try {
-      	/**
-      	 * @j2sNative
-      	 * 
-      	 *           	eval(functionName)(this.htmlName, nX, nY, nZ, fxyz);
-      	 *           
-      	 */
-      	{
-      	}
-      } catch (Exception e) {
-        Logger.error("Exception " + e + " for " + functionName + " with nX, nY, nZ: " + nX
-            + " " + nY + " " + nZ);
-      }
-     // for (int i = 0; i < nX; i++)
-      // for (int j = 0; j < nY; j++)
-        // for (int k = 0; k < nZ; k++)
-         //System.out.println("i j k fxyz " + i + " " + j + " " + k + " " + fxyz[i][j][k]);
-      return fxyz;
+      return doFunctionXYZ(functionName, nX, nY, nZ);
     }
 
     public void showUrl(String urlString) {
-      if (Logger.debugging) {
-        Logger.debug("showUrl(" + urlString + ")");
-      }
-      if (urlString != null && urlString.length() > 0) {
-        try {
-          URL url = new URL((URL) null, urlString, null);
-          /**
-           * @j2sNative
-           *   window.open(url);
-           */
-          {
-          	System.out.println(url);
-          }
-        } catch (MalformedURLException mue) {
-          consoleMessage("Malformed URL:" + urlString);
-        }
-      }
+      if (!doShowUrl(urlString))
+        consoleMessage("Malformed URL:" + urlString);
     }
 
     @Override
@@ -897,20 +980,20 @@ public class Jmol implements JmolSyncInterface {
     }
 
     private void consoleMessage(String message) {
-      notifyCallback(EnumCallback.ECHO, new Object[] {"", message });
+      notifyCallback(EnumCallback.ECHO, new Object[] { "", message });
     }
 
     private String sendScript(String script, String appletName, boolean isSync,
                               boolean doCallback) {
       if (doCallback) {
-        script = notifySync(script, appletName);
+        script = doNotifySync(script, appletName);
         // if the notified JavaScript function returns "" or 0, then 
         // we do NOT continue to notify the other applets
         if (script == null || script.length() == 0 || script.equals("0"))
           return "";
       }
 
-      List<String> apps = new  List<String>();
+      List<String> apps = new List<String>();
       JmolAppletRegistry.findApplets(appletName, syncId, fullName, apps);
       int nApplets = apps.size();
       if (nApplets == 0) {
@@ -919,8 +1002,10 @@ public class Jmol implements JmolSyncInterface {
         return "";
       }
       SB sb = (isSync ? null : new SB());
-      boolean getGraphics = (isSync && script.equals(Viewer.SYNC_GRAPHICS_MESSAGE));
-      boolean setNoGraphics = (isSync && script.equals(Viewer.SYNC_NO_GRAPHICS_MESSAGE));
+      boolean getGraphics = (isSync && script
+          .equals(Viewer.SYNC_GRAPHICS_MESSAGE));
+      boolean setNoGraphics = (isSync && script
+          .equals(Viewer.SYNC_NO_GRAPHICS_MESSAGE));
       if (getGraphics)
         gRight = null;
       for (int i = 0; i < nApplets; i++) {
@@ -932,13 +1017,14 @@ public class Jmol implements JmolSyncInterface {
           Logger.debug(fullName + " sending to " + theApplet + ": " + script);
         try {
           if (isScriptable && (getGraphics || setNoGraphics)) {
-            gRight = ((JmolScriptInterface)app).setStereoGraphics(getGraphics);
+            gRight = ((JmolScriptInterface) app).setStereoGraphics(getGraphics);
             return "";
           }
           if (isSync)
             app.syncScript(script);
           else if (isScriptable)
-            sb.append(((JmolScriptInterface)app).scriptWait(script, "output")).append("\n");
+            sb.append(((JmolScriptInterface) app).scriptWait(script, "output"))
+                .append("\n");
         } catch (Exception e) {
           String msg = htmlName + " couldn't send to " + theApplet + ": "
               + script + ": " + e;
@@ -954,43 +1040,5 @@ public class Jmol implements JmolSyncInterface {
       // only used on JSpecView side
       return null;
     }
-
-  }
-
-  protected static String sendCallback(String strInfo, String callback, Object[] data) {
-    if (callback == null || callback.length() == 0) {
-    } else if (callback.equals("alert")) {
-    	/**
-    	 * @j2sNative
-    	 * 	alert(strInfo);
-    	 *  return "";
-    	 */
-    	{
-    	  System.out.println(strInfo);
-    	}
-    } else {
-    	 String[] tokens = PT.split(callback, ".");
-    	/**
-    	 * @j2sNative
-    	 * 
-    	 * try{
-    	 *   var o = window[tokens[0]]
-    	 *   for (i = 1; i < tokens.length; i++){
-    	 *     o = o[tokens[i]]
-    	 *   }
-    	 *   return o(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
-    	 * } catch (e) {
-    	 *	 System.out.println(callback + " failed " + e);
-    	 * }
-    	 */
-    	{
-    		System.out.println(tokens + " " + data);
-    	}
-    }
-    return "";
-  }
-
-  public void register(String id, JmolSyncInterface jsi) {
-    JmolAppletRegistry.checkIn(id, jsi); 
   }
 }

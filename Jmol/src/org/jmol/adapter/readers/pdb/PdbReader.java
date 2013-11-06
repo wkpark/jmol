@@ -124,7 +124,7 @@ public class PdbReader extends AtomSetCollectionReader {
   private Map<String, Map<String, String>> htMolIds;
   
   private  List<Map<String, String>> vCompnds;
-  private  List<M4> vBiomts;
+  private  Map<String, Object> thisBiomolecule;
   private  List<Map<String, Object>> vBiomolecules;
   private  List<Map<String, Object>> vTlsModels;
   private SB sbTlsErrors;
@@ -352,17 +352,18 @@ public class PdbReader extends AtomSetCollectionReader {
   protected void finalizeReaderPDB() throws Exception {
     checkNotPDB();
     atomSetCollection.connectAll(maxSerial, isConnectStateBug);
+    SymmetryInterface symmetry;
     if (vBiomolecules != null && vBiomolecules.size() > 0
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
       setBiomoleculeAtomCounts();
-      if (vBiomts != null && applySymmetry) {
-        atomSetCollection.applySymmetryBio(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
+      if (thisBiomolecule != null && applySymmetry) {
+        atomSetCollection.applySymmetryBio(thisBiomolecule, notionalUnitCell, applySymmetryToBonds, filter);
         vTlsModels = null; // for now, no TLS groups for biomolecules
       }
     }
     if (vTlsModels != null) {
-      SymmetryInterface symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
+      symmetry = (SymmetryInterface) Interface.getOptionInterface("symmetry.Symmetry");
       int n = atomSetCollection.getAtomSetCount();
       if (n == vTlsModels.size()) {
         for (int i = n; --i >= 0;)
@@ -596,6 +597,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           biomts = new  List<M4>();
           iMolecule = parseIntStr(line.substring(line.indexOf(":") + 1));
           title = line.trim();
+          info.put("name", "biomolecule " + iMolecule);
           info.put("molecule", Integer.valueOf(iMolecule));
           info.put("title", title);
           info.put("chains", "");
@@ -619,7 +621,7 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
           if (checkFilterKey("BIOMOLECULE " + iMolecule + ";")) {
             setFilter(filter.replace(':', '_') + chainlist);
             Logger.info("filter set to \"" + filter + "\"");
-            this.vBiomts = biomts;
+            thisBiomolecule = info;
           }
           info.put("chains", chainlist);
           continue;
@@ -652,8 +654,8 @@ REMARK 350   BIOMT3   3  0.000000  0.000000  1.000000        0.00000
         }
       } catch (Exception e) {
         // probably just 
-        this.vBiomts = null;
-        this.vBiomolecules = null;
+        thisBiomolecule = null;
+        vBiomolecules = null;
         return;
       }
     }
@@ -1220,7 +1222,8 @@ Polyproline 10
       a = Float.NaN; // 1 for a means no unit cell
     setUnitCell(a, getFloat(15, 9), getFloat(24, 9), getFloat(33,
         7), getFloat(40, 7), getFloat(47, 7));
-    setSpaceGroupName(parseTrimmedRange(line, 55, 66));
+    if (spaceGroup == null)
+      setSpaceGroupName(parseTrimmedRange(line, 55, 66));
   }
 
   private float getFloat(int ich, int cch) throws Exception {

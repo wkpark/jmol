@@ -59,9 +59,9 @@ public interface SymmetryInterface {
 
   public Object getLatticeDesignation();
 
-  public void setFinalOperations(P3[] atoms, int iAtomFirst,
-                                          int noSymmetryCount,
-                                          boolean doNormalize);
+  public void setFinalOperations(String name, P3[] atoms,
+                                          int iAtomFirst,
+                                          int noSymmetryCount, boolean doNormalize);
 
   public int getSpaceGroupOperationCount();
 
@@ -122,15 +122,13 @@ public interface SymmetryInterface {
 
   public void setSymmetryInfo(int modelIndex, Map<String, Object> modelAuxiliaryInfo);
 
-  public Object[] getSymmetryOperationDescription(ModelSet modelSet,
-                                                         int iSym, 
-                                                         SymmetryInterface cellInfo, P3 pt1, P3 pt2, String id);
-
+  public boolean isBio();
+  
   public boolean isPolymer();
 
   public boolean isSlab();
 
-  public void addSpaceGroupOperationM(M4 mat);
+  public int addBioMoleculeOperation(M4 mat, boolean isReverse);
 
   public void setMinMaxLatticeParameters(P3i minXYZ, P3i maxXYZ);
 
@@ -181,5 +179,7 @@ public interface SymmetryInterface {
   public M4 getOperationGammaIS(int iop);
 
   public int getSiteMultiplicity(P3 a);
+
+  public void setBioMolecules(String name, List<M4> vBiomts);
   
 }

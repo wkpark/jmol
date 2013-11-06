@@ -786,7 +786,7 @@ protected void resetObjects() {
           bsAllModels = new BS();
         for (int j = 0; j < modelBasedPoints.length; j++)
           if (iModel < 0 || j == iModel) {
-            Object point = Escape.unescapePointOrBitsetOrMatrixOrArray(modelBasedPoints[j]);
+            Object point = Escape.uABsM(modelBasedPoints[j]);
             bsAllModels.set(j);
             if (point instanceof P3) {
               addPoint((P3) point, j);

@@ -2741,6 +2741,7 @@ public class ScriptExt implements JmolScriptExtension {
     setShapeProperty(iShape, "clear", null);
     if (toCache)
       setShapeProperty(iShape, "cache", null);
+    listIsosurface(iShape);
     return true;
   }
 
@@ -4085,11 +4086,10 @@ public class ScriptExt implements JmolScriptExtension {
   }
 
   private boolean listIsosurface(int iShape) throws ScriptException {
-    ScriptEvaluator eval = this.eval;
-    eval.checkLength23();
+    String s = (slen > 3 ? "0" : tokAt(2) == T.nada ? "" : " " + getToken(2).value);
     if (!chk)
       showString((String) getShapeProperty(iShape, "list"
-          + (tokAt(2) == T.nada ? "" : " " + getToken(2).value)));
+          + s));
     return true;
   }
 

@@ -42,11 +42,13 @@ import java.util.Hashtable;
 import java.util.Map;
 
 
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import javajs.util.M4;
 import javajs.util.P3;
 import javajs.util.PT;
+import javajs.util.SB;
 
 import org.jmol.util.SimpleUnitCell;
 import javajs.util.V3;
@@ -101,8 +103,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   private boolean readIdeal = true;
   
 
-  private  List<M4> vBiomts;
   private  List<Map<String, Object>> vBiomolecules;
+  private Map<String, Object> thisBiomolecule;
   private Map<String,M4> htBiomts;
   private Map<String, Map<String, Object>> htSites;
 
@@ -110,7 +112,6 @@ public class CifReader extends ModulationReader implements JmolLineReader {
   
   private String appendedData;
   private boolean skipping;
-  private boolean haveChainsLC;
   private int nAtoms;
 
   private String auditBlockCode;
@@ -302,9 +303,8 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         && atomSetCollection.getAtomCount() > 0) {
       atomSetCollection.setAtomSetAuxiliaryInfo("biomolecules", vBiomolecules);
       setBiomolecules();
-      if (vBiomts != null && vBiomts.size() > 1) {
-        atomSetCollection.applySymmetryBio(vBiomts, notionalUnitCell, applySymmetryToBonds, filter);
-      }
+      if (thisBiomolecule != null)
+        atomSetCollection.applySymmetryBio(thisBiomolecule, notionalUnitCell, applySymmetryToBonds, filter);
     }
     finalizeReaderASCR();
     String header = tokenizer.getFileHeader();
@@ -324,15 +324,15 @@ public class CifReader extends ModulationReader implements JmolLineReader {
       Map<String, Object> biomolecule = vBiomolecules.get(i);
       String[] ops = PT.split((String) biomolecule.get("operators"), ",");
       String assemblies = (String) biomolecule.get("assemblies");
-      vBiomts = new  List<M4>();
-      biomolecule.put("biomts", vBiomts);
-      vBiomts.addLast(mident);
+      List<M4> biomts = new  List<M4>();
+      biomolecule.put("biomts", biomts);
+      biomts.addLast  (mident);
       for (int j = 0; j < ops.length; j++) {
-        M4 m = htBiomts.get(ops[j]);
+        M4 m = getOpMatrix(ops[j]);
         if (m != null && !m.equals(mident))
-          vBiomts.addLast(m);
+          biomts.addLast(m);
       }
-      if (vBiomts.size() < 2)
+      if (biomts.size() < 2)
         return;
       BS bsAll = new BS();
       for (int j = assemblies.length() - 1; --j >= 0;)
@@ -346,6 +346,16 @@ public class CifReader extends ModulationReader implements JmolLineReader {
         atomSetCollection.bsAtoms = bsAll;
       biomolecule.put("atomCount", Integer.valueOf(nAtoms * ops.length));
     }
+  }
+
+  private M4 getOpMatrix(String ops) {
+    int pt = ops.indexOf("|");
+    if (pt >= 0) {
+      M4 m = M4.newM(htBiomts.get(ops.substring(0, pt)));
+      m.mulM4(htBiomts.get(ops.substring(pt+1)));
+      return m;
+    }
+    return htBiomts.get(ops);
   }
 
   @Override
@@ -1060,8 +1070,6 @@ public class CifReader extends ModulationReader implements JmolLineReader {
           assemblyId = firstChar;
           break;
         case AUTH_ASYM_ID:
-          if (!haveChainsLC && !field.toUpperCase().equals(field))
-            haveChainsLC = (viewer.getChainID("lc") != 0); // force chainCaseSensitive
           atom.chainID = viewer.getChainID(field);
           break;
         case SEQ_ID:
@@ -1340,13 +1348,53 @@ _pdbx_struct_oper_list.vector[3]
       vBiomolecules = new  List<Map<String,Object>>();
     }
     Map<String, Object> info = new Hashtable<String, Object>();
+    info.put("name", "biomolecule " + iMolecule);
     info.put("molecule", Integer.valueOf(iMolecule));
     info.put("assemblies", "$" + assem[ASSEM_LIST].replace(',', '$'));
-    info.put("operators", assem[ASSEM_OPERS]);
+    info.put("operators", decodeAssemblyOperators(assem[ASSEM_OPERS]));
     info.put("biomts", new  List<M4>());
+    thisBiomolecule = info;
     Logger.info("assembly " + iMolecule + " operators " + assem[ASSEM_OPERS] + " ASYM_IDs " + assem[ASSEM_LIST]);
     vBiomolecules.addLast(info);
     assem = null;
+  }
+
+  private String decodeAssemblyOperators(String ops) {
+    
+//    Identifies the operation of collection of operations 
+//    from category PDBX_STRUCT_OPER_LIST.  
+//
+//    Operation expressions may have the forms:
+//
+//     (1)        the single operation 1
+//     (1,2,5)    the operations 1, 2, 5
+//     (1-4)      the operations 1,2,3 and 4
+//     (1,2)(3,4) the combinations of operations
+//                3 and 4 followed by 1 and 2 (i.e.
+//                the cartesian product of parenthetical
+//                groups applied from right to left)
+    int pt = ops.indexOf(")(");
+    if (pt >= 0)
+      return crossBinary(decodeAssemblyOperators(ops.substring(0, pt + 1)),decodeAssemblyOperators(ops.substring(pt + 1)));
+    if (ops.startsWith("(")) {
+      if (ops.indexOf("-") >= 0)
+        ops = Escape.uB("({" + ops.substring(1, ops.length() - 1).replace('-', ':') + "})").toString();
+      ops = PT.simpleReplace(ops, " ", "");
+      ops = ops.substring(1, ops.length() - 1);
+    }
+    return ops;
+  }
+
+  private String crossBinary(String ops1,
+                             String ops2) {
+    SB sb = new SB();
+    String[] opsLeft = PT.split(ops1, ",");
+    String[] opsRight = PT.split(ops2, ",");
+    for (int i = 0; i < opsLeft.length; i++)
+      for (int j = 0; j < opsRight.length; j++)
+        sb.append(",").append(opsLeft[i]).append("|").append(opsRight[j]);
+    System.out.println(ops1 + "\n" + ops2 + "\n" + sb.toString());
+    return sb.toString().substring(1);
   }
 
   private void processStructOperListBlock() throws Exception {

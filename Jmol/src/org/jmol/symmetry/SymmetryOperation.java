@@ -74,6 +74,7 @@ class SymmetryOperation extends M4 {
   int modDim;
   float[] rotTransMatrix;
   M4 gammaIS;
+  private boolean isBio;
 
 
   /**
@@ -107,7 +108,8 @@ class SymmetryOperation extends M4 {
     setM(op); // sets the underlying Matrix4f
     if (op.rotTransMatrix.length == 32)
        setMod456();
-    doFinalize();
+    if (!op.isFinalized)
+      doFinalize();
     if (doNormalize)
       setOffset(atoms, atomIndex, countOrId);
   }
@@ -143,7 +145,7 @@ class SymmetryOperation extends M4 {
 
   String dumpInfo() {
     return "\n" + xyz + "\ninternal matrix representation:\n"
-        + ((M4) this).toString();
+        + toString();
   }
 
   final static String dumpSeitz(M4 s) {
@@ -186,7 +188,7 @@ class SymmetryOperation extends M4 {
       xyz = xyz.substring(1);
     if (xyz.indexOf("xyz matrix:") == 0) {
       /* note: these terms must in unit cell fractional coordinates!
-       * CASTEP CML matrix is in fractional coordinates, but do not take into accout
+       * CASTEP CML matrix is in fractional coordinates, but do not take into account
        * hexagonal systems. Thus, in wurtzite.cml, for P 6c 2'c:
        *
        * "transform3": 
@@ -200,10 +202,9 @@ class SymmetryOperation extends M4 {
        * But, then, what coordinate would you feed this? Fractional coordinates of what?
        * The real transform is something like x-y,x,z here.
        * 
-       * The coordinates we are using here 
        */
       this.xyz = xyz;
-      Parser.parseStringInfestedFloatArray(xyz, null, rotTransMatrix);
+      Parser.parseStringInfestedFloatArray(xyz, null, rotTransMatrix);        
       return setFromMatrix(null, isReverse);
     }
     if (xyz.indexOf("[[") == 0) {
@@ -220,7 +221,8 @@ class SymmetryOperation extends M4 {
       isFinalized = true;
       if (isReverse)
         invertM(this);
-      this.xyz = getXYZFromMatrix(this, false, false, false);
+      isBio = (xyz.indexOf("bio") >= 0);
+      this.xyz = (isBio ? toString() : getXYZFromMatrix(this, false, false, false));
       return true;
     }
     String strOut = getMatrixFromString(this, xyz, rotTransMatrix, false);
@@ -578,34 +580,23 @@ class SymmetryOperation extends M4 {
   
   /**
    * 
-   * @param modelSet TODO
+   * @param modelSet
+   *        TODO
    * @param uc
    * @param pt00
-   * @param ptTarget 
+   * @param ptTarget
    * @param id
-   * @return Object[] containing: 
-   *              [0]      xyz (Jones-Faithful calculated from matrix)
-   *              [1]      xyzOriginal (Provided by calling method) 
-   *              [2]      info ("C2 axis", for example) 
-   *              [3]      draw commands 
-   *              [4]      translation vector (fractional)  
-   *              [5]      translation vector (Cartesian)  
-   *              [6]      inversion point 
-   *              [7]      axis point 
-   *              [8]      axis vector (defines plane if angle = 0
-   *              [9]      angle of rotation
-   *              [10]      matrix representation
+   * @return Object[] containing: [0] xyz (Jones-Faithful calculated from
+   *         matrix) [1] xyzOriginal (Provided by calling method) [2] info
+   *         ("C2 axis", for example) [3] draw commands [4] translation vector
+   *         (fractional) [5] translation vector (Cartesian) [6] inversion point
+   *         [7] axis point [8] axis vector (defines plane if angle = 0 [9]
+   *         angle of rotation [10] matrix representation
    */
-  public Object[] getDescription(ModelSet modelSet, SymmetryInterface uc, P3 pt00, P3 ptTarget, String id) {
+  Object[] getDescription(ModelSet modelSet, SymmetryInterface uc,
+                                 P3 pt00, P3 ptTarget, String id) {
     if (!isFinalized)
       doFinalize();
-    return getDescription(modelSet, this, xyzOriginal, uc, pt00, ptTarget, id);
-  }
-  
-  private static Object[] getDescription(ModelSet modelSet,
-                                         SymmetryOperation m,
-                                         String xyzOriginal, SymmetryInterface uc,
-                                         P3 pt00, P3 ptTarget, String id) {
     V3 vtemp = new V3();
     P3 ptemp = new P3();
     P3 pt01 = new P3();
@@ -613,7 +604,8 @@ class SymmetryOperation extends M4 {
     P3 pt03 = new P3();
     V3 ftrans = new V3();
     V3 vtrans = new V3();
-    String xyz = getXYZFromMatrix(m, false, false, false);
+    String xyz = (isBio ? xyzOriginal : getXYZFromMatrix(this, false, false,
+        false));
     boolean typeOnly = (id == null);
     if (pt00 == null || Float.isNaN(pt00.x))
       pt00 = new P3();
@@ -626,7 +618,7 @@ class SymmetryOperation extends M4 {
       uc.toUnitCell(pt01, ptemp);
       uc.toUnitCell(pt02, ptemp);
       uc.toFractional(pt01, false);
-      m.transform(pt01);
+      transform(pt01);
       uc.toCartesian(pt01, false);
       uc.toUnitCell(pt01, ptemp);
       if (pt01.distance(pt02) > 0.1f)
@@ -635,7 +627,7 @@ class SymmetryOperation extends M4 {
       pt02.setT(ptTarget);
       uc.toFractional(pt01, false);
       uc.toFractional(pt02, false);
-      m.transform(pt01);
+      transform(pt01);
       vtrans.sub2(pt02, pt01);
       pt01.set(0, 0, 0);
       pt02.set(0, 0, 0);
@@ -654,10 +646,10 @@ class SymmetryOperation extends M4 {
     uc.toFractional(p1, false);
     uc.toFractional(p2, false);
     uc.toFractional(p3, false);
-    m.transform2(p0, p0);
-    m.transform2(p1, p1);
-    m.transform2(p2, p2);
-    m.transform2(p3, p3);
+    transform2(p0, p0);
+    transform2(p1, p1);
+    transform2(p2, p2);
+    transform2(p3, p3);
     p0.add(vtrans);
     p1.add(vtrans);
     p2.add(vtrans);
@@ -927,7 +919,7 @@ class SymmetryOperation extends M4 {
     if (isinversion) {
       ptemp.setT(ipt);
       uc.toFractional(ptemp, false);
-      info1 = "inversion center|" + fcoord(ptemp);
+      info1 = "inversion center|" + coord(ptemp);
     } else if (isrotation) {
       if (haveinversion) {
         info1 = "" + (360 / ang) + "-bar axis";
@@ -935,19 +927,19 @@ class SymmetryOperation extends M4 {
         info1 = "" + (360 / ang) + "-fold screw axis";
         ptemp.setT(ax1);
         uc.toFractional(ptemp, false);
-        info1 += "|translation: " + fcoord(ptemp);
+        info1 += "|translation: " + coord(ptemp);
       } else {
         info1 = "C" + (360 / ang) + " axis";
       }
     } else if (trans != null) {
-      String s = " " + fcoord(ftrans);
+      String s = " " + coord(ftrans);
       if (istranslation) {
         info1 = "translation:" + s;
       } else if (ismirrorplane) {
         float fx = approxF(ftrans.x);
         float fy = approxF(ftrans.y);
         float fz = approxF(ftrans.z);
-        s = " " + fcoord(ftrans);
+        s = " " + coord(ftrans);
         if (fx != 0 && fy != 0 && fz != 0)
           info1 = "d-";
         else if (fx != 0 && fy != 0 || fy != 0 && fz != 0 || fz != 0 && fx != 0)
@@ -967,7 +959,7 @@ class SymmetryOperation extends M4 {
     if (haveinversion && !isinversion) {
       ptemp.setT(ipt);
       uc.toFractional(ptemp, false);
-      info1 += "|inversion center at " + fcoord(ptemp);
+      info1 += "|inversion center at " + coord(ptemp);
     }
 
     String cmds = null;
@@ -977,7 +969,9 @@ class SymmetryOperation extends M4 {
       // delete previous elements of this user-settable ID
 
       draw1 = new SB();
-      draw1.append("// " + xyzOriginal + "|" + xyz + "|" + info1 + "\n");
+      draw1.append(
+          ("// " + xyzOriginal + "|" + xyz + "|" + info1).replace('\n', ' '))
+          .append("\n");
       draw1.append(drawid).append("* delete");
 
       // draw the initial frame
@@ -1024,8 +1018,7 @@ class SymmetryOperation extends M4 {
             vtemp.scale(3);
             ptemp.scaleAdd2(-1, vtemp, pa1);
             draw1.append(drawid).append("rotVector2 diameter 0.1 ").append(
-                Escape.eP(pa1)).append(Escape.eP(ptemp)).append(
-                " color red");
+                Escape.eP(pa1)).append(Escape.eP(ptemp)).append(" color red");
           }
           scale = p0.distance(pt1);
           draw1.append(drawid).append("rotLine1 ").append(Escape.eP(pt1))
@@ -1035,17 +1028,15 @@ class SymmetryOperation extends M4 {
         } else if (pitch1 == 0) {
           boolean isSpecial = (pt00.distance(p0) < 0.2f);
           if (!isSpecial) {
-            draw1.append(drawid).append("rotLine1 ")
-                .append(Escape.eP(pt00)).append(Escape.eP(pa1)).append(
-                    " color red");
+            draw1.append(drawid).append("rotLine1 ").append(Escape.eP(pt00))
+                .append(Escape.eP(pa1)).append(" color red");
             draw1.append(drawid).append("rotLine2 ").append(Escape.eP(p0))
                 .append(Escape.eP(pa1)).append(" color red");
           }
           vtemp.scale(3);
           ptemp.scaleAdd2(-1, vtemp, pa1);
           draw1.append(drawid).append("rotVector2 diameter 0.1 ").append(
-              Escape.eP(pa1)).append(Escape.eP(ptemp)).append(
-              " color red");
+              Escape.eP(pa1)).append(Escape.eP(ptemp)).append(" color red");
           pt1.setT(pa1);
           if (pitch1 == 0 && pt00.distance(p0) < 0.2)
             pt1.scaleAdd2(0.5f, pt1, vtemp);
@@ -1087,8 +1078,8 @@ class SymmetryOperation extends M4 {
         // draw the main vector
 
         draw1.append(drawid).append("rotVector1 vector diameter 0.1 ").append(
-            Escape.eP(pa1)).append(Escape.eP(vtemp)).append("color ")
-            .append(color);
+            Escape.eP(pa1)).append(Escape.eP(vtemp)).append("color ").append(
+            color);
       }
 
       if (ismirrorplane) {
@@ -1097,8 +1088,7 @@ class SymmetryOperation extends M4 {
 
         if (pt00.distance(pt0) > 0.2)
           draw1.append(drawid).append("planeVector arrow ").append(
-              Escape.eP(pt00)).append(Escape.eP(pt0)).append(
-              " color indigo");
+              Escape.eP(pt00)).append(Escape.eP(pt0)).append(" color indigo");
 
         // faint inverted frame if trans is not null
 
@@ -1131,7 +1121,7 @@ class SymmetryOperation extends M4 {
         // so if a point is in the plane, then N dot X = -d
         float w = -vtemp.x * pa1.x - vtemp.y * pa1.y - vtemp.z * pa1.z;
         P4 plane = P4.new4(vtemp.x, vtemp.y, vtemp.z, w);
-        List<Object> v = new  List<Object>();
+        List<Object> v = new List<Object>();
         v.addLast(uc.getCanonicalCopy(1.05f));
         modelSet.intersectPlane(plane, v, 3);
 
@@ -1162,9 +1152,8 @@ class SymmetryOperation extends M4 {
 
         draw1.append(drawid).append("invPoint diameter 0.4 ").append(
             Escape.eP(ipt));
-        draw1.append(drawid).append("invArrow arrow ").append(
-            Escape.eP(pt00)).append(Escape.eP(ptinv)).append(
-            " color indigo");
+        draw1.append(drawid).append("invArrow arrow ").append(Escape.eP(pt00))
+            .append(Escape.eP(ptinv)).append(" color indigo");
         if (!isinversion) {
           ptemp.setT(ptinv);
           ptemp.add(pt00);
@@ -1253,16 +1242,21 @@ class SymmetryOperation extends M4 {
     if (ax1 != null)
       ax1.normalize();
     M4 m2 = null;
-    m2 = M4.newM(m);
+    m2 = M4.newM(this);
     if (vtrans.length() != 0) {
       m2.m03 += vtrans.x;
       m2.m13 += vtrans.y;
       m2.m23 += vtrans.z;
     }
-    xyz = getXYZFromMatrix(m2, false, false, false);
+    xyz = (isBio ? m2.toString() : getXYZFromMatrix(m2, false, false, false));
     return new Object[] { xyz, xyzOriginal, info1, cmds, approx0(ftrans),
         approx0(trans), approx0(ipt), approx0(pa1), approx0(ax1),
         Integer.valueOf(ang1), m2, vtrans };
+  }
+
+  private String coord(T3 p) {
+    approx0(p);
+    return (isBio ? p.x + " " + p.y + " " + p.z : fcoord(p));
   }
 
   private static void drawLine(SB s, String id, float diameter, P3 pt0, P3 pt1,

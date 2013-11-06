@@ -116,16 +116,15 @@ public class Symmetry implements SymmetryInterface {
   
   public void setSpaceGroup(boolean doNormalize) {
     if (spaceGroup == null)
-      spaceGroup = (SpaceGroup.getNull()).set(doNormalize);
+      spaceGroup = (SpaceGroup.getNull(true)).set(doNormalize);
   }
 
   public int addSpaceGroupOperation(String xyz, int opId) {
     return spaceGroup.addSymmetry(xyz, opId);
   }
 
-  public void addSpaceGroupOperationM(M4 mat) {
-    spaceGroup.addSymmetry("=" + 
-        SymmetryOperation.getXYZFromMatrix(mat, false, false, false), 0);    
+  public int addBioMoleculeOperation(M4 mat, boolean isReverse) {
+    return spaceGroup.addSymmetry((isReverse ? "!" : "") + "[[bio" + mat, 0);    
   }
 
   public void setLattice(int latt) {
@@ -154,6 +153,11 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup != null;
   }
 
+  public void setBioMolecules(String name, List<M4> vBiomts) {
+    unitCell = UnitCell.newA(null);
+    spaceGroup = SpaceGroup.createSpaceGroup(-1, name, vBiomts);
+  }
+
   public boolean haveSpaceGroup() {
     return (spaceGroup != null);
   }
@@ -168,7 +172,9 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup.getLatticeDesignation();
   }
 
-  public void setFinalOperations(P3[] atoms, int iAtomFirst, int noSymmetryCount, boolean doNormalize) {
+  public void setFinalOperations(String name, P3[] atoms, int iAtomFirst, int noSymmetryCount, boolean doNormalize) {
+    if (name != null && name.startsWith("bio"))
+      spaceGroup.name = name;
     spaceGroup.setFinalOperations(atoms, iAtomFirst, noSymmetryCount, doNormalize);
   }
 
@@ -237,7 +243,7 @@ public class Symmetry implements SymmetryInterface {
   }
 
   public String[] getSymmetryOperations() {
-    return symmetryInfo.symmetryOperations;
+    return symmetryInfo == null ? spaceGroup.getOperationList() : symmetryInfo.symmetryOperations;
   }
 
   public boolean isPeriodic() {
@@ -417,29 +423,31 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @SuppressWarnings("unchecked")
-  public Map<String, Object> getSpaceGroupInfo(ModelSet modelSet, int modelIndex,
+  public Map<String, Object> getSpaceGroupInfo(ModelSet modelSet,
+                                               int modelIndex,
                                                String spaceGroup, int symOp,
-                                               P3 pt1, P3 pt2,
-                                               String drawID) {
+                                               P3 pt1, P3 pt2, String drawID) {
     String strOperations = null;
     Map<String, Object> info = null;
     SymmetryInterface cellInfo = null;
     Object[][] infolist = null;
     if (spaceGroup == null) {
       if (modelIndex <= 0)
-        modelIndex = (pt1 instanceof Atom ? ((Atom) pt1).modelIndex : modelSet.viewer
-            .getCurrentModelIndex());
+        modelIndex = (pt1 instanceof Atom ? ((Atom) pt1).modelIndex
+            : modelSet.viewer.getCurrentModelIndex());
+      boolean isBio = false;
       if (modelIndex < 0)
         strOperations = "no single current model";
-      else if ((cellInfo = modelSet.getUnitCell(modelIndex)) == null)
+      else if (!(isBio = (cellInfo = modelSet.models[modelIndex].biosymmetry) != null)
+          && (cellInfo = modelSet.getUnitCell(modelIndex)) == null)
         strOperations = "not applicable";
       if (strOperations != null) {
         info = new Hashtable<String, Object>();
         info.put("spaceGroupInfo", strOperations);
         info.put("symmetryInfo", "");
       } else if (pt1 == null && drawID == null && symOp != 0) {
-        info = (Map<String, Object>) modelSet.getModelAuxiliaryInfoValue(modelIndex,
-            "spaceGroupInfo");
+        info = (Map<String, Object>) modelSet.getModelAuxiliaryInfoValue(
+            modelIndex, "spaceGroupInfo");
       }
       if (info != null)
         return info;
@@ -448,21 +456,25 @@ public class Symmetry implements SymmetryInterface {
         modelSet.setModelAuxiliaryInfo(modelIndex, "spaceGroupInfo", info);
       spaceGroup = cellInfo.getSpaceGroupName();
       String[] list = cellInfo.getSymmetryOperations();
+      SpaceGroup sg = (isBio ? ((Symmetry) cellInfo).spaceGroup : null);
       String jf = "";
       if (list == null) {
         strOperations = "\n no symmetry operations employed";
       } else {
-        setSpaceGroup(false);
+        if (isBio)
+          this.spaceGroup = (SpaceGroup.getNull(false)).set(false);
+        else
+          setSpaceGroup(false);
         strOperations = "\n" + list.length + " symmetry operations employed:";
         infolist = new Object[list.length][];
         for (int i = 0; i < list.length; i++) {
-          int iSym = addSpaceGroupOperation("=" + list[i], i + 1);
+          int iSym = (isBio ? addBioMoleculeOperation(sg.finalOperations[i], false) : addSpaceGroupOperation("=" + list[i], i + 1));
           if (iSym < 0)
             continue;
           jf += ";" + list[i];
           infolist[i] = (symOp > 0 && symOp - 1 != iSym ? null
-              : getSymmetryOperationDescription(modelSet, iSym, cellInfo,
-                  pt1, pt2, drawID));
+              : getSymmetryOperationDescription(modelSet, iSym, cellInfo, pt1,
+                  pt2, drawID));
           if (infolist[i] != null)
             strOperations += "\n" + (i + 1) + "\t" + infolist[i][0] + "\t"
                 + infolist[i][2];
@@ -475,16 +487,18 @@ public class Symmetry implements SymmetryInterface {
       info = new Hashtable<String, Object>();
     }
     info.put("spaceGroupName", spaceGroup);
-    String data = getSpaceGroupInfo(spaceGroup, cellInfo);
     if (infolist != null) {
       info.put("operations", infolist);
       info.put("symmetryInfo", strOperations);
     }
-    if (data == null || data.equals("?"))
-      data = "could not identify space group from name: " + spaceGroup
-          + "\nformat: show spacegroup \"2\" or \"P 2c\" "
-          + "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"";
-    info.put("spaceGroupInfo", data);
+    if (!spaceGroup.startsWith("bio")) {
+      String data = getSpaceGroupInfo(spaceGroup, cellInfo);
+      if (data == null || data.equals("?"))
+        data = "could not identify space group from name: " + spaceGroup
+            + "\nformat: show spacegroup \"2\" or \"P 2c\" "
+            + "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"";
+      info.put("spaceGroupInfo", data);
+    }
     return info;
   }
 
@@ -493,22 +507,26 @@ public class Symmetry implements SymmetryInterface {
     if (pt2 != null)
       return modelSet.getSymmetryOperation(iModel, null, op, pt, pt2,
           (id == null ? "sym" : id), type == T.label);
+    SymmetryInterface symTemp = modelSet.getSymTemp(false);
+
+    boolean isBio = uc.isBio();
+    Symmetry sym = (Symmetry) uc;
+    int iop = op;
     if (xyz == null) {
       String[] ops = uc.getSymmetryOperations();
       if (ops == null || op == 0 || Math.abs(op) > ops.length)
         return "";
       if (op > 0) {
-        xyz = ops[op - 1];
+        xyz = ops[iop = op - 1];
       } else {
-        xyz = ops[-1 - op];
+        xyz = ops[iop = -1 - op];
       }
     } else {
-      op = 0;
+      iop = op = 0;
     }
-    SymmetryInterface symTemp = modelSet.getSymTemp(false);
     symTemp.setSpaceGroup(false);
-    int iSym = symTemp.addSpaceGroupOperation((op < 0 ? "!" : "=") + xyz, Math
-        .abs(op));
+    int iSym = (isBio ? symTemp.addBioMoleculeOperation(sym.spaceGroup.finalOperations[iop], op < 0) : 
+      symTemp.addSpaceGroupOperation((op < 0 ? "!" : "=") + xyz, Math.abs(op)));
     if (iSym < 0)
       return "";
     symTemp.setUnitCell(uc.getNotionalUnitCell());
@@ -524,7 +542,7 @@ public class Symmetry implements SymmetryInterface {
       return sympt;
     }
     // null id means "array info only" but here we want the draw commands
-    info = symTemp.getSymmetryOperationDescription(modelSet, iSym, uc, pt,
+    info = ((Symmetry)symTemp).getSymmetryOperationDescription(modelSet, iSym, uc, pt,
         pt2, (id == null ? "sym" : id));
     int ang = ((Integer) info[9]).intValue();
     /*
@@ -663,7 +681,8 @@ public class Symmetry implements SymmetryInterface {
     return spaceGroup.getSiteMultiplicity(pt,unitCell);
   }
 
-
-
+  public boolean isBio() {
+    return spaceGroup.isBio;
+  }
 
 }  

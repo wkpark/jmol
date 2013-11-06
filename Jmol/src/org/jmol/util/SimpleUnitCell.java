@@ -79,6 +79,8 @@ public class SimpleUnitCell {
   }
   
   protected void set(float[] parameters) {
+    if (parameters == null)
+      parameters = new float[] {1, 1, 1, 90, 90, 90};
     if (!isValid(parameters))
       return;
     notionalUnitcell = AU.arrayCopyF(parameters, parameters.length);

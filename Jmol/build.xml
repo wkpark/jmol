@@ -869,7 +869,8 @@ all support for previous versions removed
                  storetype="pkcs12"
                  storepass="${Jmol.p12.password}"
                  alias="${Jmol.p12.alias}"
-                 keypass="${Jmol.p12key.password}">
+                 keypass="${Jmol.p12key.password}"
+                 tsaurl="http://time.certum.pl/">
           <fileset dir="build" >
             <include name="JmolApplet.jar" />
             <include name="JmolApplet0*.jar" />
@@ -1803,7 +1804,8 @@ all support for previous versions removed
                  storetype="pkcs12"
                  storepass="${Jmol.p12.password}"
                  alias="wpcleaner-sign"
-                 keypass="${Jmol.p12key.password}" />
+                 keypass="${Jmol.p12key.password}"
+                 tsaurl="http://time.certum.pl/" />
       </then>
       <else>
         <signjar jar="${sign-jar-file-src}"

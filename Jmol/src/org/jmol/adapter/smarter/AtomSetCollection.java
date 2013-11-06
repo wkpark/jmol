@@ -1485,6 +1485,7 @@ public class AtomSetCollection {
           a.add(atoms[i]);
         a.scale(1f / bs.cardinality());
         a.atomName = "Pt" + ichain;
+        a.chainID = e.getKey().intValue();
       }
       iAtomFirst = atomMax;
       atomMax += nChain;

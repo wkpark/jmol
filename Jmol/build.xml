@@ -940,7 +940,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.build.dir}/JmolAppletSigned.jar" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned.jar" />
     </antcall>
 
   	<echo message="Creating JmolAppletsigned0xxx.jar" />
@@ -1002,7 +1002,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Multitouch.jar" />
+      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_MultiTouch.jar" />
     </antcall>
 
   	<jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">

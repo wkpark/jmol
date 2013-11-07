@@ -1393,7 +1393,7 @@ _pdbx_struct_oper_list.vector[3]
     for (int i = 0; i < opsLeft.length; i++)
       for (int j = 0; j < opsRight.length; j++)
         sb.append(",").append(opsLeft[i]).append("|").append(opsRight[j]);
-    System.out.println(ops1 + "\n" + ops2 + "\n" + sb.toString());
+    //System.out.println((ops1 + "\n" + ops2 + "\n" + sb.toString()).length());
     return sb.toString().substring(1);
   }
 

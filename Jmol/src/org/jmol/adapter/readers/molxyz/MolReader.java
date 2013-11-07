@@ -76,6 +76,7 @@ public class MolReader extends AtomSetCollectionReader {
 
   private boolean is2D;
   private boolean isV3000;
+  private boolean haveAtomSerials;
   protected String dimension;
   protected boolean allow2D = true;
   
@@ -100,6 +101,7 @@ public class MolReader extends AtomSetCollectionReader {
     if (doGetModel(++modelNumber, null)) {
       processMolSdHeader();
       processCtab(isMDL);
+      isV3000 = haveAtomSerials = false;
       if (isLastModel(modelNumber)) {
         continuing = false;
         return false;
@@ -218,11 +220,16 @@ public class MolReader extends AtomSetCollectionReader {
     applySymmetryAndSetTrajectory();
   }
 
+  // 0         1         2         3         4         5         6         7
+  // 01234567890123456789012345678901234567890123456789012345678901234567890
+  // xxxxx.xxxxyyyyy.yyyyzzzzz.zzzz aaaddcccssshhhbbbvvvHHHrrriiimmmnnneee
+  
   private void readAtoms(int atomCount) throws Exception {
     if (isV3000)
       discardLinesUntilContains("BEGIN ATOM");
     for (int i = 0; i < atomCount; ++i) {
       readLine();
+      int len = line.length();
       String elementSymbol;
       float x, y, z;
       int charge = 0;
@@ -248,31 +255,38 @@ public class MolReader extends AtomSetCollectionReader {
         if (isotope > 1 && elementSymbol.equals("H"))
           isotope = 1 - isotope;
       } else {
-        if (line.length() > 34) {
-          elementSymbol = line.substring(31, 34).trim();
-        } else {
-          // deal with older Mol format where nothing after the symbol is used
-          elementSymbol = line.substring(31).trim();
-        }
         x = parseFloatRange(line, 0, 10);
         y = parseFloatRange(line, 10, 20);
         z = parseFloatRange(line, 20, 30);
-        if (line.length() >= 39) {
-          int code = parseIntRange(line, 36, 39);
-          if (code >= 1 && code <= 7)
-            charge = 4 - code;
-          code = parseIntRange(line, 34, 36);
-          if (code != 0 && code >= -3 && code <= 4) {
-            isotope = JmolAdapter.getNaturalIsotope(JmolAdapter
-                .getElementNumber(elementSymbol));
-            switch (isotope) {
-            case 0:
-              break;
-            case 1:
-              isotope = -code;
-              break;
-            default:
-              isotope += code;
+        if (len < 34) {
+          // deal with older Mol format where nothing after the symbol is used
+          elementSymbol = line.substring(31).trim();
+        } else {
+          elementSymbol = line.substring(31, 34).trim();
+          if (len >= 39) {
+            int code = parseIntRange(line, 36, 39);
+            if (code >= 1 && code <= 7)
+              charge = 4 - code;
+            code = parseIntRange(line, 34, 36);
+            if (code != 0 && code >= -3 && code <= 4) {
+              isotope = JmolAdapter.getNaturalIsotope(JmolAdapter
+                  .getElementNumber(elementSymbol));
+              switch (isotope) {
+              case 0:
+                break;
+              case 1:
+                isotope = -code;
+                break;
+              default:
+                isotope += code;
+              }
+            }
+            if (len >= 63) {
+              iAtom = parseIntRange(line, 60, 63);
+              if (iAtom == 0)
+                iAtom = Integer.MIN_VALUE;
+              if (iAtom != Integer.MAX_VALUE)
+                haveAtomSerials = true;
             }
           }
         }
@@ -295,9 +309,13 @@ public class MolReader extends AtomSetCollectionReader {
       atom.elementSymbol = elementSymbol;
       atom.formalCharge = charge;
       setAtomCoordXYZ(atom, x, y, z);
-      if (iAtom != Integer.MIN_VALUE)
+      if (iAtom == Integer.MIN_VALUE) {
+        atomSetCollection.addAtom(atom); 
+      } else {
+        haveAtomSerials = true;
         atom.atomSerial = iAtom;
-      atomSetCollection.addAtomWithMappedSerialNumber(atom);
+        atomSetCollection.addAtomWithMappedSerialNumber(atom);
+      }
     }
     if (isV3000)
       discardLinesUntilContains("END ATOM");
@@ -350,7 +368,7 @@ public class MolReader extends AtomSetCollectionReader {
           stereo = parseIntRange(line, 9, 12);
       }
       order = fixOrder(order, stereo);
-      if (isV3000)
+      if (haveAtomSerials)
         atomSetCollection.addNewBondWithMappedSerialNumbers(iAtom1, iAtom2, order);
       else
         atomSetCollection.addNewBondWithOrder(iAtom1 - 1, iAtom2 - 1, order);        

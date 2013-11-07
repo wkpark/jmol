@@ -24,9 +24,11 @@ class AwtFile extends File implements GenericFileInterface {
 
   AwtFile(String name) {
     super(name);
+    System.out.println("AwtFIle:" + name);
   }
 
   public GenericFileInterface getParentAsFile() {
+    System.out.println("AwtFIle.getParentAsFile called");
     AwtFile f = null;
     try {
       File file = getParentFile();
@@ -81,6 +83,7 @@ class AwtFile extends File implements GenericFileInterface {
     } catch (AccessControlException e) {
       // Unsigned applet cannot do this.
     }
+    System.out.println("AwtFIle.getFullPath for " + path);
     return path;
   }
   

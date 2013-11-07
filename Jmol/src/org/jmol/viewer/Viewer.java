@@ -8007,9 +8007,9 @@ public class Viewer extends JmolViewer implements AtomDataServer, PlatformViewer
               }
           }
         }
+        if (appConsole != null)
+          appConsole.start(this);
       }
-      if (appConsole != null)
-        appConsole.start(this);
       scriptEditor = (isJS || appConsole == null ? null : appConsole
           .getScriptEditor());
       return appConsole;

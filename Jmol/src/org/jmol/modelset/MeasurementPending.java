@@ -79,7 +79,6 @@ public class MeasurementPending extends Measurement {
   private int lastIndex = -1;
   
   synchronized public int addPoint(int atomIndex, Point3fi ptClicked, boolean doSet) {
-    System.out.println("addPoint " + atomIndex);
     haveModified = (atomIndex != lastIndex);
     lastIndex = atomIndex;
     if (ptClicked == null) {

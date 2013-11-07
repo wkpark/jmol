@@ -101,7 +101,7 @@ public class MolReader extends AtomSetCollectionReader {
     if (doGetModel(++modelNumber, null)) {
       processMolSdHeader();
       processCtab(isMDL);
-      isV3000 = haveAtomSerials = false;
+      isV3000 = false;
       if (isLastModel(modelNumber)) {
         continuing = false;
         return false;
@@ -285,9 +285,9 @@ public class MolReader extends AtomSetCollectionReader {
               iAtom = parseIntRange(line, 60, 63);
               if (iAtom == 0)
                 iAtom = Integer.MIN_VALUE;
-              if (iAtom != Integer.MAX_VALUE)
-                haveAtomSerials = true;
             }
+            if (iAtom == Integer.MIN_VALUE && haveAtomSerials)
+              iAtom = i + 1;
           }
         }
       }

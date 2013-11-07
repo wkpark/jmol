@@ -286,6 +286,7 @@ public class MolReader extends AtomSetCollectionReader {
               if (iAtom == 0)
                 iAtom = Integer.MIN_VALUE;
             }
+            // previous model in series may have atom numbers indicated
             if (iAtom == Integer.MIN_VALUE && haveAtomSerials)
               iAtom = i + 1;
           }

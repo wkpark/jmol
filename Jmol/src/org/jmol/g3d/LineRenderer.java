@@ -269,58 +269,58 @@ final class LineRenderer {
       float dz = z2t - z1t;
       if (cc1 != 0) { //cohen-sutherland line clipping
         if ((cc1 & GData.xLT) != 0) {
-          y1t += (-x1t * dy) / dx;
-          z1t += (-x1t * dz) / dx;
+          y1t += (int) ((-x1t * dy) / dx);
+          z1t += (int) ((-x1t * dz) / dx);
           x1t = 0;
         } else if ((cc1 & GData.xGT) != 0) {
-          y1t += ((xLast - x1t) * dy) / dx;
-          z1t += ((xLast - x1t) * dz) / dx;
+          y1t += (int) (((xLast - x1t) * dy) / dx);
+          z1t += (int) (((xLast - x1t) * dz) / dx);
           x1t = xLast;
         } else if ((cc1 & GData.yLT) != 0) {
-          x1t += (-y1t * dx) / dy;
-          z1t += (-y1t * dz) / dy;
+          x1t += (int) ((-y1t * dx) / dy);
+          z1t += (int) ((-y1t * dz) / dy);
           y1t = 0;
         } else if ((cc1 & GData.yGT) != 0) {
-          x1t += ((yLast - y1t) * dx) / dy;
-          z1t += ((yLast - y1t) * dz) / dy;
+          x1t += (int) (((yLast - y1t) * dx) / dy);
+          z1t += (int) (((yLast - y1t) * dz) / dy);
           y1t = yLast;
         } else if ((cc1 & GData.zLT) != 0) {
-          x1t += ((slab - z1t) * dx) / dz;
-          y1t += ((slab - z1t) * dy) / dz;
+          x1t += (int) (((slab - z1t) * dx) / dz);
+          y1t += (int) (((slab - z1t) * dy) / dz);
           z1t = slab;
         } else // must be zGT
         {
-          x1t += ((depth - z1t) * dx) / dz;
-          y1t += ((depth - z1t) * dy) / dz;
+          x1t += (int) (((depth - z1t) * dx) / dz);
+          y1t += (int) (((depth - z1t) * dy) / dz);
           z1t = depth;
         }
 
         cc1 = g3d.clipCode3(x1t, y1t, z1t);
       } else {
         if ((cc2 & GData.xLT) != 0) {
-          y2t += (-x2t * dy) / dx;
-          z2t += (-x2t * dz) / dx;
+          y2t += (int) ((-x2t * dy) / dx);
+          z2t += (int) ((-x2t * dz) / dx);
           x2t = 0;
         } else if ((cc2 & GData.xGT) != 0) {
-          y2t += ((xLast - x2t) * dy) / dx;
-          z2t += ((xLast - x2t) * dz) / dx;
+          y2t += (int) (((xLast - x2t) * dy) / dx);
+          z2t += (int) (((xLast - x2t) * dz) / dx);
           x2t = xLast;
         } else if ((cc2 & GData.yLT) != 0) {
-          x2t += (-y2t * dx) / dy;
-          z2t += (-y2t * dz) / dy;
+          x2t += (int) ((-y2t * dx) / dy);
+          z2t += (int) ((-y2t * dz) / dy);
           y2t = 0;
         } else if ((cc2 & GData.yGT) != 0) {
-          x2t += ((yLast - y2t) * dx) / dy;
-          z2t += ((yLast - y2t) * dz) / dy;
+          x2t += (int) (((yLast - y2t) * dx) / dy);
+          z2t += (int) (((yLast - y2t) * dz) / dy);
           y2t = yLast;
         } else if ((cc2 & GData.zLT) != 0) {
-          x2t += ((slab - z2t) * dx) / dz;
-          y2t += ((slab - z2t) * dy) / dz;
+          x2t += (int) (((slab - z2t) * dx) / dz);
+          y2t += (int) (((slab - z2t) * dy) / dz);
           z2t = slab;
         } else // must be zGT
         {
-          x2t += ((depth - z2t) * dx) / dz;
-          y2t += ((depth - z2t) * dy) / dz;
+          x2t += (int) (((depth - z2t) * dx) / dz);
+          y2t += (int) (((depth - z2t) * dy) / dz);
           z2t = depth;
         }
         cc2 = g3d.clipCode3(x2t, y2t, z2t);

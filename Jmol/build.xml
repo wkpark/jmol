@@ -50,6 +50,7 @@
   <property name="tests.source.dir" value="source-tests" />
   <property name="lib.dir" value="jars" />
   <property name="plugin.dir" value="plugin-jars" />
+  <property name="jmol.build.dir" value="build" />
   <property name="appjars.dir" value="build/appjars" />
   <property name="classes.dir" value="build/classes" />
   <property name="test-classes.dir" value="build/test-classes" />
@@ -58,19 +59,15 @@
   <property name="apisio.classes.dir" value="build/apisio-classes" />
   <property name="tests.dir" value="build/unit.tests" />
   <property name="javadoc.dir" value="build/javadoc" />
-  <property name="jmol.applet.build.dir" value="build" />
-  <property name="tempjar" value="${jmol.applet.build.dir}/tempjar" />
+  <property name="tempjar" value="build/tempjar" />
   <property name="jmol.applet.web.dir" value="appletweb" />
-  <property name="jmol.build.dir" value="build" />
   <property name="docbook-xsl" value="docbook-xsl-1.76.1" />
   <property name="docbook-xml" value="docbook-xml-4.4" />
-  <!--property name="vecmath.jar" value="vecmath1.2-1.14.jar" / -->
   <property name="naga.jar" value="naga-3_0.jar" />
-  <!--property name="itext.jar" value="itext-1.4.5.jar" / -->
   <property name="commons-cli.jar" value="commons-cli-1.0.jar" />
   <property name="saxon.jar" value="saxon.jar" />
   <property name="saxon.main" value="com.icl.saxon.StyleSheet" />
-  <property name="sign.store" value="resources/selfSignedCertificate/selfSignedCertificate.store" />
+  <property name="sign.store" value="ca-cert/selfSignedCertificate/selfSignedCertificate.store" />
   <property name="sign.pass" value="selfSignedCertificate" />
   <property name="sign.alias" value="selfSignedCertificate" />
 
@@ -458,7 +455,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.build.dir}/Jmol.jar" />
+      <param name="sign-jar-file-dest" value="Jmol.jar" />
     </antcall>
   	
     <jar destfile="${tempjar}"
@@ -492,7 +489,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.build.dir}/JmolData.jar" />
+      <param name="sign-jar-file-dest" value="JmolData.jar" />
     </antcall>
 
     <copy todir="${jmol.build.dir}">
@@ -524,7 +521,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.build.dir}/Jvxl.jar" />
+      <param name="sign-jar-file-dest" value="Jvxl.jar" />
     </antcall>
 
     <jar destfile="${tempjar}"
@@ -535,7 +532,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.build.dir}/ChimeToJmol.jar" />
+      <param name="sign-jar-file-dest" value="ChimeToJmol.jar" />
     </antcall>
 
   	<delete file="{tempjar}" />
@@ -625,7 +622,7 @@ all support for previous versions removed
   <target name="applet-jar" id="applet-jar"
           depends="applet-classes,appletjars">
     <echo message="Creating JmolApplet.jar" />
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet.jar"
+    <jar destfile="${jmol.build.dir}/JmolApplet.jar"
          manifest="manifest/appletMonolithic.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
         <include name="**/*" />
@@ -644,7 +641,7 @@ all support for previous versions removed
     <for list="${all.JmolApplet.languages}" delimiter=","
          param="current.Jmol.language">
       <sequential>
-        <jar destfile="${jmol.applet.build.dir}/JmolApplet0_i18n_@{current.Jmol.language}.jar"
+        <jar destfile="${jmol.build.dir}/JmolApplet0_i18n_@{current.Jmol.language}.jar"
              manifest="manifest/applet_i18n.txt" >
           <fileset dir="${applet.classes.dir}">
             <include name="org/jmol/translation/JmolApplet/@{current.Jmol.language}/**" />
@@ -653,14 +650,14 @@ all support for previous versions removed
       </sequential>
     </for>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Image.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_Image.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/dialog/**" />
         <include name="org/jmol/image/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_Minimize.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/minimize/**/**" />
         <include name="org/jmol/modelkit/images/**" />
@@ -668,50 +665,50 @@ all support for previous versions removed
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Navigate.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_Navigate.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/navigate/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Console.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_Console.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
     	<include name="org/jmol/console/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_Popup.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/popup/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_ReadersMolXyz.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/molxyz/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersCif.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_ReadersCif.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/cif/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersPdb.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_ReadersPdb.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/pdb/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersQuantum.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_ReadersQuantum.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/quantum/**" />
         <include name="org/jmol/quantum/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersPyMOL.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_ReadersPyMOL.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/pymol/**" />
         <include name="org/jmol/rendercgo/**" />
@@ -719,38 +716,38 @@ all support for previous versions removed
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_ReadersMore.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/more/**" />
         <include name="org/jmol/io2/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersSimple.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_ReadersSimple.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/simple/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersXtal.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_ReadersXtal.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/xtal/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_ReadersXml.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/adapter/readers/xml/**" />
       </fileset>
     </jar>
 
-  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_ScriptExt.jar" manifest="manifest/applet.txt" >
+  	<jar destfile="${jmol.build.dir}/JmolApplet0_ScriptExt.jar" manifest="manifest/applet.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/scriptext/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" manifest="manifest/applet.txt" >
+    <jar destfile="${jmol.build.dir}/JmolApplet0_ShapeBio.jar" manifest="manifest/applet.txt" >
 	  <fileset dir="${applet.classes.dir}">
 	    <include name="org/jmol/modelsetbio/**" />
 	    <include name="org/jmol/dssx/**" />
@@ -759,14 +756,14 @@ all support for previous versions removed
 	  </fileset>
 	</jar>
 	  	
-  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" manifest="manifest/applet.txt" >
+  	<jar destfile="${jmol.build.dir}/JmolApplet0_ShapeSpecial.jar" manifest="manifest/applet.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/renderspecial/**" />
         <include name="org/jmol/shapespecial/**" />
       </fileset>
     </jar>
 
-  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeSurface.jar" manifest="manifest/applet.txt" >
+  	<jar destfile="${jmol.build.dir}/JmolApplet0_ShapeSurface.jar" manifest="manifest/applet.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/jvxl/**" />
         <include name="org/jmol/shapesurface/**" />
@@ -774,25 +771,25 @@ all support for previous versions removed
       </fileset>
     </jar>
 
-  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Smiles.jar" manifest="manifest/applet.txt">
+  	<jar destfile="${jmol.build.dir}/JmolApplet0_Smiles.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/smiles/**" />
       </fileset>
     </jar>
 
-  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Parallel.jar" manifest="manifest/applet.txt">
+  	<jar destfile="${jmol.build.dir}/JmolApplet0_Parallel.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/parallel/**" />
       </fileset>
     </jar>
 
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Spectrum.jar" manifest="manifest/applet.txt">
+    <jar destfile="${jmol.build.dir}/JmolApplet0_Spectrum.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/spectrum/**" />
       </fileset>
     </jar>
 
-  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Symmetry.jar" manifest="manifest/applet.txt">
+  	<jar destfile="${jmol.build.dir}/JmolApplet0_Symmetry.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/symmetry/**" />
       </fileset>
@@ -801,7 +798,7 @@ all support for previous versions removed
 
     <!-- vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv -->
     <!-- changes to this must be replicated below for the signed applet -->
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet0.jar"  manifest="manifest/applet0.txt"
+    <jar destfile="${jmol.build.dir}/JmolApplet0.jar"  manifest="manifest/applet0.txt"
          index="true" >
       <!-- javax/vecmath -->
       <fileset dir="${appletjars.dir}" includes="**/*"/>
@@ -836,36 +833,36 @@ all support for previous versions removed
       <!-- changes to this must be replicated below for the signed applet -->
       <indexjars>
       	<!-- no export or multitouch here - this is the unsigned applet -->
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Console.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Image.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Minimize.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Navigate.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Parallel.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersCif.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersPdb.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersQuantum.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersPyMOL.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersSimple.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" /> 
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXtal.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ScriptExt.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSurface.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Smiles.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_Console.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_Image.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_Minimize.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_Navigate.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_Parallel.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_Popup.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ReadersCif.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ReadersPdb.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ReadersMolXyz.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ReadersMore.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ReadersQuantum.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ReadersPyMOL.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ReadersSimple.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ReadersXml.jar" /> 
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ReadersXtal.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ScriptExt.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ShapeBio.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ShapeSpecial.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_ShapeSurface.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_Smiles.jar" />
       	
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Spectrum.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Symmetry.jar" />
-        <fileset dir="${jmol.applet.build.dir}" includes="JmolApplet0_i18n_*.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_Spectrum.jar" />
+        <pathelement path="${jmol.build.dir}/JmolApplet0_Symmetry.jar" />
+        <fileset dir="${jmol.build.dir}" includes="JmolApplet0_i18n_*.jar" />
       </indexjars>
     </jar>
     <if>
-      <available file="resources/certificate/Jmol.p12" />
+      <available file="ca-cert/certificate/Jmol.p12" />
       <then>
-        <signjar keystore="resources/certificate/Jmol.p12"
+        <signjar keystore="ca-cert/certificate/Jmol.p12"
                  storetype="pkcs12"
                  storepass="${Jmol.p12.password}"
                  alias="${Jmol.p12.alias}"
@@ -890,7 +887,7 @@ all support for previous versions removed
     </if>
 
 	<echo message="creating JmolLib.jar" level="info" />
-    <jar destfile="${jmol.applet.build.dir}/JmolLib.jar"
+    <jar destfile="${jmol.build.dir}/JmolLib.jar"
          manifest="manifest/jmolLib.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
         <include name="**/*" />
@@ -941,7 +938,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned.jar" />
     </antcall>
 
   	<echo message="Creating JmolAppletsigned0xxx.jar" />
@@ -956,7 +953,7 @@ all support for previous versions removed
         </jar>
         <antcall target="sign-jar-file">
           <param name="sign-jar-file-src"  value="${tempjar}" />
-          <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_i18n_@{current.Jmol.language}.jar" />
+          <param name="sign-jar-file-dest" value="JmolAppletSigned0_i18n_@{current.Jmol.language}.jar" />
         </antcall>
       </sequential>
     </for>
@@ -968,7 +965,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Console.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_Console.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -979,7 +976,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Image.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_Image.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -991,7 +988,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_Minimize.jar" />
     </antcall>
 
   	<jar destfile="${tempjar}"
@@ -1003,7 +1000,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_MultiTouch.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_MultiTouch.jar" />
     </antcall>
 
   	<jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1013,7 +1010,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Navigate.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_Navigate.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1023,7 +1020,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Parallel.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_Parallel.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1033,7 +1030,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_Popup.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1043,7 +1040,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ReadersMolXyz.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1053,7 +1050,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCif.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ReadersCif.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1063,7 +1060,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersPdb.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ReadersPdb.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1074,7 +1071,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMore.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ReadersMore.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1085,7 +1082,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersQuantum.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ReadersQuantum.jar" />
     </antcall>
   	
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1097,7 +1094,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersPyMOL.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ReadersPyMOL.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1107,7 +1104,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersSimple.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ReadersSimple.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1117,7 +1114,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXtal.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ReadersXtal.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1127,7 +1124,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ReadersXml.jar" />
     </antcall>
 
   	<jar destfile="${tempjar}" manifest="manifest/appletSigned.txt" >
@@ -1137,7 +1134,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ScriptExt.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ScriptExt.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt" >
@@ -1150,7 +1147,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ShapeBio.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt" >
@@ -1161,7 +1158,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ShapeSpecial.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt" >
@@ -1173,7 +1170,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSurface.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_ShapeSurface.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1183,7 +1180,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Smiles.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_Smiles.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1193,7 +1190,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Spectrum.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_Spectrum.jar" />
     </antcall>
 
     <jar destfile="${tempjar}" manifest="manifest/appletSigned.txt">
@@ -1203,7 +1200,7 @@ all support for previous versions removed
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0_Symmetry.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0_Symmetry.jar" />
     </antcall>
 
     <jar destfile="${tempjar}"
@@ -1239,35 +1236,35 @@ all support for previous versions removed
  		<include name="org/jmol/viewer/**" />
       </fileset>    	
       <indexjars>
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Console.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Image.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Minimize.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_MultiTouch.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Navigate.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Parallel.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCif.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersPdb.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMore.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersQuantum.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersPyMOL.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersSimple.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar" /> 
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXtal.jar" /> 
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ScriptExt.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSurface.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Smiles.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Spectrum.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Symmetry.jar" />
-        <fileset dir="${jmol.applet.build.dir}" includes="JmolAppletSigned0_i18n_*.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_Console.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_Image.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_Minimize.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_MultiTouch.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_Navigate.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_Parallel.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_Popup.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ReadersCif.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ReadersPdb.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ReadersMore.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ReadersQuantum.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ReadersPyMOL.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ReadersSimple.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ReadersXml.jar" /> 
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ReadersXtal.jar" /> 
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ScriptExt.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ShapeBio.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_ShapeSurface.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_Smiles.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_Spectrum.jar" />
+        <pathelement path="${jmol.build.dir}/JmolAppletSigned0_Symmetry.jar" />
+        <fileset dir="${jmol.build.dir}" includes="JmolAppletSigned0_i18n_*.jar" />
       </indexjars>
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-src"  value="${tempjar}" />
-      <param name="sign-jar-file-dest" value="${jmol.applet.build.dir}/JmolAppletSigned0.jar" />
+      <param name="sign-jar-file-dest" value="JmolAppletSigned0.jar" />
     </antcall>
 
     <delete file="{tempjar}" />
@@ -1277,7 +1274,7 @@ all support for previous versions removed
   <target name="smiles-applet-jar" id="smiles-applet-jar"
           depends="applet-classes">
     <echo message="Creating JmolSmilesApplet.jar" />
-    <jar destfile="${jmol.applet.build.dir}/JmolSmilesApplet.jar"
+    <jar destfile="${jmol.build.dir}/JmolSmilesApplet.jar"
          manifest="manifest/appletSmiles.txt" index="true" >
       <fileset dir="${classes.dir}" >
         <include name="JmolSmiles.class"/>
@@ -1378,8 +1375,8 @@ all support for previous versions removed
       <fileset dir="src" />
     </copy>
 
-    <copy todir="build/dist/jmol-${version}/resources" >
-      <fileset dir="resources">
+    <copy todir="build/dist/jmol-${version}/ca-cert" >
+      <fileset dir="ca-cert">
         <exclude name="**/*.p12" />
       </fileset>
     </copy>
@@ -1564,7 +1561,7 @@ all support for previous versions removed
         <include name="JmolSmiles.jar" />
         <include name="JmolApplet*.jar" />
         <include name="${jmol.build.dir}/Jmol.jar" />
-        <include name="${jmol.applet.build.dir}/JmolApplet*.jar" />
+        <include name="${jmol.build.dir}/JmolApplet*.jar" />
         <include name="${jmol.build.dir}/JmolData.jar" />
         <include name="${jmol.build.dir}/JmolSmiles.jar" />
       </fileset>
@@ -1796,23 +1793,25 @@ all support for previous versions removed
   <!-- tools -->
   <target name="sign-jar-file" >
     <if>
-      <available file="resources/certificate/Jmol.p12" />
+      <available file="ca-cert/certificate/Jmol.p12" />
       <then>
         <signjar jar="${sign-jar-file-src}"
-                 signedjar="${sign-jar-file-dest}"
-                 keystore="resources/certificate/Jmol.p12"
+                 signedjar="${jmol.build.dir}/${sign-jar-file-dest}"
+                 keystore="ca-cert/certificate/Jmol.p12"
                  storetype="pkcs12"
                  storepass="${Jmol.p12.password}"
                  alias="wpcleaner-sign"
                  keypass="${Jmol.p12key.password}"
                  tsaurl="http://time.certum.pl/" />
+        <copy file="${jmol.build.dir}/${sign-jar-file-dest}" tofile="ca-trusted/${sign-jar-file-dest}" />
       </then>
       <else>
         <signjar jar="${sign-jar-file-src}"
-                 signedjar="${sign-jar-file-dest}"
+                 signedjar="${jmol.build.dir}/${sign-jar-file-dest}"
                  keystore="${sign.store}"
                  storepass="${sign.pass}"
                  alias="${sign.alias}" />
+        <copy file="${jmol.build.dir}/${sign-jar-file-dest}" tofile="ca-untrusted/${sign-jar-file-dest}" />
       </else>
     </if>
     <!-- to verify that a .jar file is signed: jarsigner -verify foo.jar -->
@@ -1829,9 +1828,9 @@ all support for previous versions removed
   <target name="dotnet" depends="applet-jar">
     <exec executable="${ikvm.home}/ikvmc.exe">
       <arg value="-target:library"/>
-      <arg value="-out:${jmol.applet.build.dir}/JmolLib.dll"/>
+      <arg value="-out:${jmol.build.dir}/JmolLib.dll"/>
       <arg value="-debug"/>
-      <arg value="${jmol.applet.build.dir}/JmolLib.jar"/>
+      <arg value="${jmol.build.dir}/JmolLib.jar"/>
       <!-- arg value="${lib.dir}/${vecmath.jar}"/ -->
     </exec>
   </target>

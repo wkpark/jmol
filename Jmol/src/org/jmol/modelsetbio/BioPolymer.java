@@ -288,16 +288,16 @@ public abstract class BioPolymer {
     leadMidpoints[0] = getInitiatorPoint();
     leadPoints[0] = leadPoint = getLeadPoint(0);
     V3 previousVectorD = null;
-    // proteins:
-    // C O (wing)
-    // \ |
-    // CA--N--C O (wing)
-    // (lead) \ |
-    // CA--N--C
-    // (lead) \
-    // CA--N
-    // (lead)
-    // mon# 2 1 0
+    //proteins:
+    //       C        O (wing)
+    //        \       |
+    //         CA--N--C        O (wing)
+    //      (lead)     \       |    
+    //                  CA--N--C 
+    //               (lead)     \
+    //                           CA--N
+    //                        (lead)
+    // mon#    2         1        0
     for (int i = 1; i < monomerCount; ++i) {
       leadPointPrev = leadPoint;
       leadPoints[i] = leadPoint = getLeadPoint(i);

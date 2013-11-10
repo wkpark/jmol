@@ -582,23 +582,24 @@ public class T {
   public final static int bondcount     = intproperty | 4;
   public final static int cell          = intproperty | 5;
   public final static int centroid      = intproperty | 6;
-  public final static int configuration = intproperty | 6 | scriptCommand;
+  public final static int chainno       = intproperty | 7;
+  public final static int configuration = intproperty | 8 | scriptCommand;
   //color: see xxx(a, b, c, d)
-  public final static int elemisono     = intproperty | 7;
-  public final static int elemno        = intproperty | 8 | settable;
+  public final static int elemisono     = intproperty | 9;
+  public final static int elemno        = intproperty | 10 | settable;
   //file: see xxx(a)
-  public final static int formalcharge  = intproperty | 9 | setparam | settable;
-  public final static int groupid       = intproperty | 10;
-  public final static int groupindex    = intproperty | 11;
-  public final static int model         = intproperty | 12 | scriptCommand;
-  public final static int modelindex    = intproperty | 13;
-  public final static int molecule      = intproperty | 14;
-  public final static int polymer       = intproperty | 15;
-  public final static int polymerlength = intproperty | 16;
-  public final static int resno         = intproperty | 17;
-  public final static int site          = intproperty | 18;
-  public final static int strucno       = intproperty | 19;
-  public final static int valence       = intproperty | 20 | settable;
+  public final static int formalcharge  = intproperty | 11 | setparam | settable;
+  public final static int groupid       = intproperty | 12;
+  public final static int groupindex    = intproperty | 13;
+  public final static int model         = intproperty | 14 | scriptCommand;
+  public final static int modelindex    = intproperty | 15;
+  public final static int molecule      = intproperty | 16;
+  public final static int polymer       = intproperty | 17;
+  public final static int polymerlength = intproperty | 18;
+  public final static int resno         = intproperty | 19;
+  public final static int site          = intproperty | 20;
+  public final static int strucno       = intproperty | 21;
+  public final static int valence       = intproperty | 22 | settable;
 
   // float values must be multiplied by 100 prior to comparing to integer values
 
@@ -1811,6 +1812,7 @@ public class T {
       "cell",            T.t(cell),
       "chain",           T.t(chain),
       "chains",          null,
+      "chainNo",         T.t(chainno),
       "chemicalShift",   T.t(chemicalshift),
       "cs",              null,
       "clash",           T.t(clash),

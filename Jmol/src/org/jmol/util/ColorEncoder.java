@@ -92,16 +92,17 @@ import javajs.util.P3;
   public final static int HIGH  = 9;
   public final static int BW  = 10;
   public final static int WB  = 11;
-  public final static int USER = -12;
-  public final static int RESU = -13;
-  public final static int INHERIT = 14;
-  public final static int ALT = 15; // == 0
+  public final static int FRIENDLY = 12; // color-blind friendly
+  public final static int USER = -13;
+  public final static int RESU = -14;
+  public final static int INHERIT = 15;
+  public final static int ALT = 16; // == 0
 
   private final static String[] colorSchemes = {
     "roygb", "bgyor", 
     BYELEMENT_JMOL, BYELEMENT_RASMOL, BYRESIDUE_SHAPELY, 
     BYRESIDUE_AMINO, 
-    "rwb", "bwr", "low", "high", "bw", "wb",
+    "rwb", "bwr", "low", "high", "bw", "wb", "friendly",
     // custom
     "user", "resu", "inherit",
     // ALT_NAMES:
@@ -126,6 +127,7 @@ import javajs.util.P3;
   // these are only implemented in the MASTER colorEncoder
   private int[] paletteBW;
   private int[] paletteWB;
+  private int[] paletteFriendly;
   private int[] argbsCpk;
   private int[] argbsRoygb;
   private int[] argbsRwb;
@@ -170,6 +172,9 @@ import javajs.util.P3;
       int iScheme = createColorScheme(name, false, isOverloaded);
       if (isOverloaded)
         switch (iScheme) {
+        case FRIENDLY:
+          paletteFriendly = getPaletteAC();
+          break;
         case BW:
           paletteBW = getPaletteBW();
           break;
@@ -356,6 +361,8 @@ import javajs.util.P3;
       for (int i = b.length, j = a.length; --i >= 0 && --j >= 0;)
         b[i] = a[j--];
       return b;
+    case FRIENDLY:
+      return getPaletteAC();
     case BW:
       return getPaletteBW();
     case WB:
@@ -401,6 +408,9 @@ import javajs.util.P3;
     switch (palette) {
     case CUSTOM:
       return thisScale.length;
+    case FRIENDLY:
+      getPaletteAC();
+      return propertyColorEncoder.paletteFriendly.length;
     case BW:
     case WB:
       getPaletteBW();
@@ -441,6 +451,8 @@ import javajs.util.P3;
         hi = thisScale.length;
       }
       return thisScale[quantize(val, lo, hi, n)];
+    case FRIENDLY:
+      return getPaletteAC()[quantize(val, lo, hi, n)];
     case BW:
       return getPaletteBW()[quantize(val, lo, hi, n)];
     case WB:
@@ -582,6 +594,13 @@ import javajs.util.P3;
       rasmolScale[argb >> 24] = argb | 0xFF000000;
     }
     return rasmolScale;
+  }
+
+  private int[] getPaletteAC() {
+    return (propertyColorEncoder.paletteFriendly == null ? propertyColorEncoder.paletteFriendly = new int[] { 0x808080, 0x104BA9, 0xAA00A2,
+        0xC9F600, 0xFFA200, 0x284A7E, 0x7F207B, 0x9FB82E, 0xBF8B30, 0x052D6E,
+        0x6E0069, 0x83A000, 0xA66A00, 0x447BD4, 0xD435CD, 0xD8FA3F, 0xFFBA40,
+        0x6A93D4, 0xD460CF, 0xE1FA71, 0xFFCC73 } : propertyColorEncoder.paletteFriendly);
   }
 
   private int[] getPaletteWB() {

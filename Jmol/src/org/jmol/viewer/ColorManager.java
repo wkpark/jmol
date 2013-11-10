@@ -250,12 +250,7 @@ class ColorManager {
       break;
     case StaticConstants.PALETTE_CHAIN:
       int chain = atom.getChainID();
-      if (chain < 0)
-        chain = 0;
-      else if (chain >= 256)
-        chain -= 256;
-      chain &= 0x1F;
-      chain = chain % JC.argbsChainAtom.length;
+      chain = ((chain < 0 ? 0 : chain >= 256 ? chain - 256 : chain) & 0x1F) % JC.argbsChainAtom.length;
       argb = (atom.isHetero() ? JC.argbsChainHetero : JC.argbsChainAtom)[chain];
       break;
     }

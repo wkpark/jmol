@@ -155,7 +155,7 @@ public class LabelToken {
       T.volume, T.unitxyz, T.fracxyz, T.xyz, T.fuxyz,
       T.fux, T.fuy, T.fuz, T.hydrophobic, T.screenx, 
       T.screeny, T.screenz, T.screenxyz, // added in 12.3.30
-      T.magneticshielding, T.chemicalshift
+      T.magneticshielding, T.chemicalshift, T.chainno
   };
 
   public LabelToken() {

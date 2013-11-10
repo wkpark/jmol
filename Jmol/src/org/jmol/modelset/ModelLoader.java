@@ -426,6 +426,7 @@ public final class ModelLoader {
   }
 
   private Group[] mergeGroups;
+  private int iChain;
   
   private void initializeAtomBondModelCounts(int nAtoms) {
     int trajectoryCount = adapterTrajectoryCount;
@@ -745,12 +746,13 @@ public final class ModelLoader {
     int nRead = 0;
     Model[] models = modelSet.models;
     if (modelSet.modelCount > 0)
-      nullGroup = new Group().setGroup(new Chain(modelSet.models[baseModelIndex], ' '), "",
+      nullGroup = new Group().setGroup(new Chain(modelSet.models[baseModelIndex], 32, -1), "",
           0, -1, -1);
     while (iterAtom.hasNext()) {
       nRead++;
       int modelIndex = iterAtom.getAtomSetIndex() + baseModelIndex;
       if (modelIndex != iLast) {
+        iChain = 0;
         currentModelIndex = modelIndex;
         currentModel = models[modelIndex];
         currentChainID = Integer.MAX_VALUE;
@@ -895,7 +897,7 @@ public final class ModelLoader {
       return chain;
     if (model.chainCount == model.chains.length)
       model.chains = (Chain[])AU.doubleLength(model.chains);
-    return model.chains[model.chainCount++] = new Chain(model, chainID);
+    return model.chains[model.chainCount++] = new Chain(model, chainID, (chainID == 0 || chainID == 32 ? -1 : iChain++));
   }
 
   private void iterateOverAllNewBonds(JmolAdapter adapter,

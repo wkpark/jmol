@@ -1187,6 +1187,8 @@ final public class Atom extends Point3fi implements JmolNode {
       return atom.getIndex();
     case T.bondcount:
       return atom.getCovalentBondCount();
+    case T.chainno:
+      return atom.group.chain.index + 1;
     case T.color:
       return atom.group.chain.model.modelSet.viewer.getColorArgbOrGray(atom.getColix());
     case T.element:

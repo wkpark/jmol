@@ -29,6 +29,7 @@ public final class Chain {
 
   public Model model;
   public int chainID;
+  public int index;
   public boolean isDna, isRna;
   
   int groupCount;
@@ -39,9 +40,10 @@ public final class Chain {
     return model.modelSet.atoms[index];
   }
   
-  Chain(Model model, int chainID) {
+  Chain(Model model, int chainID, int index) {
     this.model = model;
     this.chainID = chainID;
+    this.index = index;
   }
 
   public Group getGroup(int groupIndex) {

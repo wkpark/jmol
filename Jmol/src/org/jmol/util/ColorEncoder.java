@@ -408,13 +408,9 @@ import javajs.util.P3;
     switch (palette) {
     case CUSTOM:
       return thisScale.length;
-    case FRIENDLY:
-      getPaletteAC();
-      return propertyColorEncoder.paletteFriendly.length;
     case BW:
     case WB:
-      getPaletteBW();
-      return propertyColorEncoder.paletteBW.length;
+      return getPaletteBW().length;
     case ROYGB:
     case BGYOR:
       return propertyColorEncoder.argbsRoygb.length;
@@ -435,6 +431,8 @@ import javajs.util.P3;
       return propertyColorEncoder.argbsShapely.length;
     case AMINO:
       return propertyColorEncoder.argbsAmino.length;
+    case FRIENDLY:
+      return getPaletteAC().length;
     default:
       return 0;
     }
@@ -451,8 +449,6 @@ import javajs.util.P3;
         hi = thisScale.length;
       }
       return thisScale[quantize(val, lo, hi, n)];
-    case FRIENDLY:
-      return getPaletteAC()[quantize(val, lo, hi, n)];
     case BW:
       return getPaletteBW()[quantize(val, lo, hi, n)];
     case WB:
@@ -481,6 +477,8 @@ import javajs.util.P3;
       return propertyColorEncoder.argbsShapely[colorIndex(val, n)];
     case AMINO:
       return propertyColorEncoder.argbsAmino[colorIndex(val, n)];
+    case FRIENDLY:
+      return getPaletteAC()[colorIndexRepeat(val, n)];
     default:
       return GRAY;
     }
@@ -708,7 +706,12 @@ import javajs.util.P3;
   }
 
   private final static int colorIndex(float q, int segmentCount) {
-    return (int) Math.floor(q <= 0 | q >= segmentCount ? 0 : q);
+    return (int) Math.floor(q <= 0 || q >= segmentCount ? 0 : q);
+  }
+
+  private final static int colorIndexRepeat(float q, int segmentCount) {
+    int i = (int) Math.floor(q <= 0 ? 0 : q);
+    return i % segmentCount;
   }
 /*  
   static {

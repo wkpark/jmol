@@ -1180,6 +1180,7 @@ public class ScriptExt implements JmolScriptExtension {
     boolean isFxy = false;
     boolean haveSlab = false;
     boolean haveIntersection = false;
+    boolean isFrontOnly = false;
     float[] data = null;
     String cmd = null;
     int thisSetNumber = Integer.MIN_VALUE;
@@ -1416,16 +1417,7 @@ public class ScriptExt implements JmolScriptExtension {
           }
           propertyName = "property";
           if (smoothing == null) {
-            boolean allowSmoothing = true;
-            switch (tokProperty) {
-            case T.atomindex:
-            case T.atomno:
-            case T.elemno:
-            case T.color:
-            case T.resno:
-              allowSmoothing = false;
-              break;
-            }
+            boolean allowSmoothing = T.tokAttr(tokProperty, T.floatproperty);
             smoothing = (allowSmoothing
                 && viewer.getIsosurfacePropertySmoothing(false) == 1 ? Boolean.TRUE
                 : Boolean.FALSE);
@@ -1528,6 +1520,7 @@ public class ScriptExt implements JmolScriptExtension {
           BSUtil.invertInPlace(bs2, viewer.getAtomCount());
           addShapeProperty(propertyList, "ignore", bs2);
           sbCommand.append(" ignore ").append(Escape.eBS(bs2));
+          isFrontOnly = true;
         }
         if (surfaceObjectSeen || isMapped) {
           sbCommand.append(" select " + Escape.eBS(bs1));
@@ -2655,12 +2648,14 @@ public class ScriptExt implements JmolScriptExtension {
       if (defaultMesh) {
         setShapeProperty(iShape, "token", Integer.valueOf(T.mesh));
         setShapeProperty(iShape, "token", Integer.valueOf(T.nofill));
-        setShapeProperty(iShape, "token", Integer.valueOf(T.frontonly));
+        isFrontOnly = true;
         sbCommand.append(" mesh nofill frontOnly");
       }
     }
     if (lattice != null) // before MAP, this is a display option
       setShapeProperty(JC.SHAPE_ISOSURFACE, "lattice", lattice);
+    if (isFrontOnly)
+      setShapeProperty(iShape, "token", Integer.valueOf(T.frontonly));
     if (iptDisplayProperty > 0) {
       if (!eval.setMeshDisplayProperty(iShape, iptDisplayProperty, 0))
         invArg();
